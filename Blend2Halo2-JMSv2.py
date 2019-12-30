@@ -3,8 +3,8 @@ bl_info = {
     'author': 'Cyboryxmen, Modified by Fulsy + MosesofEgypt" + General_101',
     'version': (0, 0, 1),
     'blender': (2, 80, 0),
-    'location': 'File > Export > Halo 2 Jason Model Specification (.jms)',
-    'description': 'Import-Export Halo 2 Jason Model Specification File (.jms)',
+    'location': 'File > Export > Halo 2 Jointed Model Skeleton (.jms)',
+    'description': 'Import-Export Halo 2 Jointed Model Skeleton File (.jms)',
     'warning': '',
     'category': 'Import-Export'}
 
@@ -121,6 +121,7 @@ def deselect_layers(y):
 #MAKING IMPORT-EXPORT OPERATOR!
 #This operator is the main flow control setup. It's also responsible for the file browser.
 class ExportJMSv2(Operator, ExportHelper):
+    """Write a JMS file"""
     bl_idname = "export_jmsv2.export"
     bl_label = "Export JMSv2"
 
@@ -136,7 +137,7 @@ class ExportJMSv2(Operator, ExportHelper):
 
 #This allows the operator to appear in the import/export menu
 def menu_func_export(self, context):
-    self.layout.operator(ExportJMSv2.bl_idname, text="Halo 2 Jason Model Specification (.jms)")
+    self.layout.operator(ExportJMSv2.bl_idname, text="Halo 2 Jointed Model Skeleton (.jms)")
 
 def register():
     bpy.utils.register_class(ExportJMSv2)
@@ -187,6 +188,7 @@ def export_jmsv2(opinstance, filepath):
     markerslist = []
     geometrylist = []
     mesheslist = []
+    vertexgroups = []
     regionslist = ["unnamed"]
 
     vertices = []
@@ -332,6 +334,11 @@ def export_jmsv2(opinstance, filepath):
     print("gathering faces and vertices...")
     print(mesheslist)
     for mesh in mesheslist:
+        c = 0 
+        vertexgroups.clear()
+        for groups in mesh.vertex_groups:
+            vertexgroups.append(mesh.vertex_groups[c].name)
+            c = c + 1     
         region_name = find_region(mesh)
         if region_name is None:
             region_name = regionslist[0]
@@ -353,6 +360,7 @@ def export_jmsv2(opinstance, filepath):
         mesh_loops = mesh.data.loops
         mesh_verts = mesh.data.vertices
 
+        print('vertex groups', list(vertexgroups))
         for face in mesh.data.polygons:
             jms_triangle = JmsTriangle()
             triangles.append(jms_triangle)
@@ -371,10 +379,23 @@ def export_jmsv2(opinstance, filepath):
 
                 pos  = matrix@vert.co
                 norm = matrix@(vert.co + vert.normal) - pos
-                jms_vertex.node0 = node_index
+
                 jms_vertex.pos = pos
                 jms_vertex.norm = norm
                 jms_vertex.uv = uv
+                if len(vert.groups) > 0:
+                    vertex_group = vert.groups[0].group
+                    print('vertex_group', vert.groups[0].group)
+                    object_vertex_group = vertexgroups[vertex_group]
+                    print('object_vertex_group', vertexgroups[vertex_group])
+                    armature_obj = bpy.data.objects["Armature"].data.bones[object_vertex_group]
+                    print('armature_obj', bpy.data.objects["Armature"].data.bones[object_vertex_group])
+                    jms_vertex.node0 = nodeslist.index(armature_obj)                
+                    print('vertex group index', vertexgroups[vert.groups[0].group])
+                    jms_vertex.node0_weight = '%0.10f' % vert.groups[0].weight
+                else:
+                    jms_vertex.node0 - 0
+                    jms_vertex.node0_weight = '0.0000000000'
 
     print("preparation complete!")
     print("Here are the meshes to be exported:")
@@ -490,9 +511,7 @@ def export_jmsv2(opinstance, filepath):
             matrix = marker.matrix_world
 
             radius = abs(marker.scale[0])
-            global_coord = marker.matrix_world.translation
-            local_coord = marker.matrix_world.inverted() @ global_coord
-            pos  = global_coord
+            pos  = matrix@marker.location
             quat = marker.matrix_local.to_quaternion().inverted()
 
             quat_i = Decimal(quat[1]).quantize(Decimal('1.0000000000'))
