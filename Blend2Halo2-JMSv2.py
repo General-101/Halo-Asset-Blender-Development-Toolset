@@ -18,8 +18,8 @@ import re
 from decimal import *
 
 from bpy_extras.io_utils import ExportHelper
-from bpy.props import StringProperty, BoolProperty, EnumProperty
-from bpy.types import Operator
+from bpy.props import StringProperty, BoolProperty, EnumProperty, FloatProperty, IntProperty, PointerProperty
+from bpy.types import Operator, Panel, PropertyGroup
 
 getcontext().prec = 13
 
@@ -118,6 +118,51 @@ def deselect_layers(y):
         bpy.context.view_layer.layer_collection.children
         x+=1
 
+class JMSv2_ObjectProps(Panel):
+    bl_label = "Region and Permutation"
+    bl_idname = "region/permutation_panel"
+    bl_space_type = "PROPERTIES"
+    bl_region_type = "WINDOW"
+    bl_context = "material"
+    bl_options = {"DEFAULT_CLOSED"}
+
+    object_proprties: BoolProperty(
+        name = "Region/Permutation name",
+        default = True,
+        description = "What is the name for your region and permutation"
+        )
+
+    def draw(self, context):
+        layout = self.layout      
+        layout.use_property_split = True
+
+        box = layout.box()
+        box.label(text = "Region/Permutation name")
+
+        flow = box.grid_flow(row_major=True, columns=0, even_columns=True, even_rows=False, align=False)
+
+        obj = context.object
+        jmsv2 = obj.active_material.jmsv2
+        
+        row = box.row()
+        row.prop(jmsv2, "Region")
+        
+        row = box.row()
+        row.prop(jmsv2, "Permutation")        
+
+class JMSv2_ObjectPropertiesGroup(PropertyGroup):
+    Region : StringProperty(
+        name = "Region",
+        default = "Default",
+        description = "Set region name."
+        )   
+
+    Permutation : StringProperty(
+        name = "Permutation",
+        default = "Default",
+        description = "Set permutation name."
+        )          
+        
 #MAKING IMPORT-EXPORT OPERATOR!
 #This operator is the main flow control setup. It's also responsible for the file browser.
 class ExportJMSv2(Operator, ExportHelper):
@@ -134,26 +179,42 @@ class ExportJMSv2(Operator, ExportHelper):
 
     def execute(self, context):
         return export_jmsv2(self, self.filepath)
+        
+classesjmsv2 = (
+    JMSv2_ObjectPropertiesGroup,
+    JMSv2_ObjectProps,
+    ExportJMSv2
+)          
 
 #This allows the operator to appear in the import/export menu
 def menu_func_export(self, context):
     self.layout.operator(ExportJMSv2.bl_idname, text="Halo 2 Jointed Model Skeleton (.jms)")
 
 def register():
-    bpy.utils.register_class(ExportJMSv2)
+    for clsjmsv2 in classesjmsv2:
+        bpy.utils.register_class(clsjmsv2)
     bpy.types.TOPBAR_MT_file_export.append(menu_func_export)
+    bpy.types.Material.jmsv2 = PointerProperty(type=JMSv2_ObjectPropertiesGroup, name="JMSv2 Properties", description="JMSv2 Object properties")
 
 def unregister():
-    bpy.utils.unregister_class(ExportJMSv2)
+    for clsjmsv2 in classesjmsv2:
+        bpy.utils.unregister_class(clsjmsv2)
     bpy.types.TOPBAR_MT_file_export.remove(menu_func_export)
+    del bpy.types.Material.jmsv2
 
 if __name__ == "__main__":
     register()
 
 class JmsVertex:
-    node0 = -1
-    node1 = -1
+    node_influence_count = '-1'
+    node0 = '-1'
+    node1 = '-1'
+    node2 = '-1'
+    node3 = '-1'
     node0_weight = '1.0000000000'
+    node1_weight = '1.0000000000'
+    node2_weight = '1.0000000000'
+    node3_weight = '1.0000000000'
     pos = None
     norm = None
     uv = None
@@ -360,7 +421,7 @@ def export_jmsv2(opinstance, filepath):
         mesh_loops = mesh.data.loops
         mesh_verts = mesh.data.vertices
 
-        print('vertex groups', list(vertexgroups))
+        #print('vertex groups', list(vertexgroups))
         for face in mesh.data.polygons:
             jms_triangle = JmsTriangle()
             triangles.append(jms_triangle)
@@ -384,18 +445,31 @@ def export_jmsv2(opinstance, filepath):
                 jms_vertex.norm = norm
                 jms_vertex.uv = uv
                 if len(vert.groups) > 0:
-                    vertex_group = vert.groups[0].group
-                    print('vertex_group', vert.groups[0].group)
-                    object_vertex_group = vertexgroups[vertex_group]
-                    print('object_vertex_group', vertexgroups[vertex_group])
-                    armature_obj = bpy.data.objects["Armature"].data.bones[object_vertex_group]
-                    print('armature_obj', bpy.data.objects["Armature"].data.bones[object_vertex_group])
-                    jms_vertex.node0 = nodeslist.index(armature_obj)                
-                    print('vertex group index', vertexgroups[vert.groups[0].group])
-                    jms_vertex.node0_weight = '%0.10f' % vert.groups[0].weight
+                    #node0
+                    value = len(vert.groups)
+                    if value > 4:
+                        value = 4
+                    jms_vertex.node_influence_count = value
+                    for n in range(len(vert.groups)):
+                        vertex_group = vert.groups[n].group
+                        object_vertex_group = vertexgroups[vertex_group]
+                        armature_obj = bpy.data.objects["Armature"].data.bones[object_vertex_group]       
+                        if n == 0:
+                            jms_vertex.node0 = nodeslist.index(armature_obj)      
+                            jms_vertex.node0_weight = '%0.10f' % vert.groups[0].weight 
+                        if n == 1:
+                            jms_vertex.node1 = nodeslist.index(armature_obj)      
+                            jms_vertex.node1_weight = '%0.10f' % vert.groups[1].weight        
+                        if n == 2:
+                            jms_vertex.node2 = nodeslist.index(armature_obj)      
+                            jms_vertex.node2_weight = '%0.10f' % vert.groups[2].weight  
+                        if n == 3:
+                            jms_vertex.node3 = nodeslist.index(armature_obj)      
+                            jms_vertex.node3_weight = '%0.10f' % vert.groups[3].weight                               
                 else:
-                    jms_vertex.node0 - 0
-                    jms_vertex.node0_weight = '0.0000000000'
+                    jms_vertex.node_influence_count = '1'
+                    jms_vertex.node0 = '0'
+                    jms_vertex.node0_weight = '1.0000000000'
 
     print("preparation complete!")
     print("Here are the meshes to be exported:")
@@ -480,8 +554,8 @@ def export_jmsv2(opinstance, filepath):
             )
             
         for material in materialslist:
-            Permutation = 'default'
-            Region = 'default'
+            Permutation = material.jmsv2.Permutation
+            Region = material.jmsv2.Region
             print("writing material:{}...".format(material.name))
             f.write('\n;MATERIAL %s' % (materialslist.index(material)))
             f.write('\n%s' % material.name)
@@ -502,16 +576,15 @@ def export_jmsv2(opinstance, filepath):
             name = marker.name.replace(' ', '')[+1:]
             print("writing marker data:{}...".format(name))
             region = 0
-            if not any(marker.vertex_groups):
+            marker_parent = bpy.data.objects[marker.name].parent_bone
+            if marker_parent == None:
                 node = 0
             else:
-                gi = marker.vertex_groups[0].name
-                node0 = bpy.data.armatures['Armature'].bones['%s' % gi]
-                node = nodeslist.index(node0)
-            matrix = marker.matrix_world
-
+                marker_node_index = bpy.data.armatures['Armature'].bones['%s' % marker_parent]
+                node = nodeslist.index(marker_node_index)
+                
             radius = abs(marker.scale[0])
-            pos  = matrix@marker.location
+            pos  = marker.matrix_local.to_translation()
             quat = marker.matrix_local.to_quaternion().inverted()
 
             quat_i = Decimal(quat[1]).quantize(Decimal('1.0000000000'))
@@ -581,8 +654,16 @@ def export_jmsv2(opinstance, filepath):
             vert_string =  '\n;VERTEX %s' % (vertices.index(jms_vertex))
             vert_string += '\n%0.10f\t%0.10f\t%0.10f' % (pos_x, pos_y, pos_z)
             vert_string += '\n%0.10f\t%0.10f\t%0.10f' % (norm_i, norm_j, norm_k)
-            vert_string += '\n%s' % (1)
-            vert_string += '\n%s\n%s' % (jms_vertex.node0, jms_vertex.node0_weight)
+            vert_string += '\n%s' % (jms_vertex.node_influence_count)
+            for s in range(int(jms_vertex.node_influence_count)):
+                if s == 0:
+                    vert_string += '\n%s\n%s' % (jms_vertex.node0, jms_vertex.node0_weight)
+                if s == 1:
+                    vert_string += '\n%s\n%s' % (jms_vertex.node1, jms_vertex.node1_weight)
+                if s == 2:
+                    vert_string += '\n%s\n%s' % (jms_vertex.node2, jms_vertex.node2_weight)
+                if s == 3:
+                    vert_string += '\n%s\n%s' % (jms_vertex.node3, jms_vertex.node3_weight)                    
             vert_string += '\n%s' % (1)
             vert_string += '\n%0.10f\t%0.10f\n' % (tex_u, tex_v)
             f.write(vert_string)
