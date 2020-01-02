@@ -117,8 +117,7 @@ def deselect_layers(y):
     for bool in y:
         bpy.context.view_layer.layer_collection.children
         x+=1
-
-class JMSv2_ObjectProps(Panel):
+class JMSv2_MaterialProps(Panel):
     bl_label = "Region and Permutation"
     bl_idname = "region/permutation_panel"
     bl_space_type = "PROPERTIES"
@@ -137,31 +136,71 @@ class JMSv2_ObjectProps(Panel):
         layout.use_property_split = True
 
         box = layout.box()
-        box.label(text = "Region/Permutation name")
+        box.label(text = "Region/Permutation name") 
 
         flow = box.grid_flow(row_major=True, columns=0, even_columns=True, even_rows=False, align=False)
 
         obj = context.object
-        jmsv2 = obj.active_material.jmsv2
+        jmsv2_material = obj.active_material.jmsv2
         
         row = box.row()
-        row.prop(jmsv2, "Region")
+        row.prop(jmsv2_material, "Region")
         
         row = box.row()
-        row.prop(jmsv2, "Permutation")        
+        row.prop(jmsv2_material, "Permutation")        
 
-class JMSv2_ObjectPropertiesGroup(PropertyGroup):
+class JMSv2_ObjectProps(Panel):
+    bl_label = "JMS Object Properties"
+    bl_idname = "jms_object_panel"
+    bl_space_type = "PROPERTIES"
+    bl_region_type = "WINDOW"
+    bl_context = "object"
+    bl_options = {"DEFAULT_CLOSED"}
+
+    object_proprties: BoolProperty(
+        name = "Primitive Type",
+        default = True,
+        description = "How the object is handled on export"
+        )
+
+    def draw(self, context):
+        layout = self.layout      
+        layout.use_property_split = True
+
+        box = layout.box()
+        box.label(text = "Primitive Type")        
+
+        flow = box.grid_flow(row_major=True, columns=0, even_columns=True, even_rows=False, align=False)
+
+        obj = context.object
+        jmsv2_object = obj.jmsv2   
+
+        row = box.row()
+        row.prop(jmsv2_object, "JMSv2_Object_Type")
+        
+class JMSv2_MaterialPropertiesGroup(PropertyGroup):
     Region : StringProperty(
         name = "Region",
         default = "Default",
         description = "Set region name."
-        )   
+        )
 
     Permutation : StringProperty(
         name = "Permutation",
         default = "Default",
         description = "Set permutation name."
-        )          
+        )
+        
+class JMSv2_ObjectPropertiesGroup(PropertyGroup):
+    JMSv2_Object_Type : EnumProperty(
+        name="Dropdown:",
+        description="Apply Data to attribute.",
+        items=[ ('SPHERE', "SPHERE", ""),
+                ('BOX', "BOX", ""),
+                ('CAPSULES', "CAPSULES", ""),
+                ('CONVEX SHAPES', "CONVEX SHAPES", ""),
+               ]
+        )           
         
 #MAKING IMPORT-EXPORT OPERATOR!
 #This operator is the main flow control setup. It's also responsible for the file browser.
@@ -181,6 +220,8 @@ class ExportJMSv2(Operator, ExportHelper):
         return export_jmsv2(self, self.filepath)
         
 classesjmsv2 = (
+    JMSv2_MaterialPropertiesGroup,
+    JMSv2_MaterialProps,
     JMSv2_ObjectPropertiesGroup,
     JMSv2_ObjectProps,
     ExportJMSv2
@@ -194,19 +235,21 @@ def register():
     for clsjmsv2 in classesjmsv2:
         bpy.utils.register_class(clsjmsv2)
     bpy.types.TOPBAR_MT_file_export.append(menu_func_export)
-    bpy.types.Material.jmsv2 = PointerProperty(type=JMSv2_ObjectPropertiesGroup, name="JMSv2 Properties", description="JMSv2 Object properties")
+    bpy.types.Material.jmsv2 = PointerProperty(type=JMSv2_MaterialPropertiesGroup, name="JMS Material Properties", description="JMS Material properties")
+    bpy.types.Object.jmsv2 = PointerProperty(type=JMSv2_ObjectPropertiesGroup, name="JMS Object Properties", description="JMS Object properties")    
 
 def unregister():
     for clsjmsv2 in classesjmsv2:
         bpy.utils.unregister_class(clsjmsv2)
     bpy.types.TOPBAR_MT_file_export.remove(menu_func_export)
     del bpy.types.Material.jmsv2
-
+    del bpy.types.Object.jmsv2
+    
 if __name__ == "__main__":
     register()
 
 class JmsVertex:
-    node_influence_count = '-1'
+    node_influence_count = '0'
     node0 = '-1'
     node1 = '-1'
     node2 = '-1'
@@ -248,8 +291,13 @@ def export_jmsv2(opinstance, filepath):
 
     markerslist = []
     geometrylist = []
+    sphereslist = []
+    boxeslist = []
+    capsuleslist = []
+    convexshapeslist = []
     mesheslist = []
     vertexgroups = []
+    convexvertexgroups = []
     regionslist = ["unnamed"]
 
     vertices = []
@@ -277,6 +325,16 @@ def export_jmsv2(opinstance, filepath):
 
         elif re.match("#", obj.name):
             markerslist.append(obj)
+            
+        elif obj.name[0:1].lower() == '$':
+            if obj.jmsv2.JMSv2_Object_Type == 'SPHERE':
+                sphereslist.append(obj)
+            if obj.jmsv2.JMSv2_Object_Type == 'BOX':
+                boxeslist.append(obj)               
+            if obj.jmsv2.JMSv2_Object_Type == 'CAPSULES':
+                capsuleslist.append(obj)    
+            if obj.jmsv2.JMSv2_Object_Type == 'CONVEX SHAPES':
+                convexshapeslist.append(obj)                  
 
         elif obj.type== 'MESH':
             geometrylist.append(obj)
@@ -312,6 +370,14 @@ def export_jmsv2(opinstance, filepath):
         del geometrylist[geometrylist.index(mainframe)]
     elif mainframe in markerslist:
         del markerslist[markerslist.index(mainframe)]
+    elif mainframe in sphereslist:
+        del sphereslist[sphereslist.index(mainframe)]
+    elif mainframe in boxeslist:
+        del boxeslist[boxeslist.index(mainframe)]
+    elif mainframe in capsuleslist:
+        del capsuleslist[capsuleslist.index(mainframe)]
+    elif mainframe in convexshapeslist:
+        del convexshapeslist[convexshapeslist.index(mainframe)]         
 
     # Comb through geometry list, remove objects not linked to frame from list
     for obj in geometrylist:
@@ -331,7 +397,7 @@ def export_jmsv2(opinstance, filepath):
 #        if testparent!=mainframe:
 #            del markerslist[markerslist.index(obj)]
 
-    if len(geometrylist) == 0:
+    if len(geometrylist) == 0 and len(sphereslist) == 0 and len(boxeslist) == 0 and len(capsuleslist) == 0 and len(convexshapeslist) == 0:
         throw_exception(2, "lol", opinstance)
         return {'CANCELLED'}
 
@@ -344,7 +410,43 @@ def export_jmsv2(opinstance, filepath):
         else:
             throw_exception(3, obj.name, opinstance)
             return {'CANCELLED'}
+            
+    for spheres in sphereslist:
+        if len(spheres.material_slots)!=0:
+            for slot in spheres.material_slots:
+                if slot.material not in materialslist:
+                    materialslist.append(slot.material)
+        else:
+            throw_exception(3, spheres.name, opinstance)
+            return {'CANCELLED'}
+            
+    for boxes in boxeslist:
+        if len(boxes.material_slots)!=0:
+            for slot in boxes.material_slots:
+                if slot.material not in materialslist:
+                    materialslist.append(slot.material)
+        else:
+            throw_exception(3, boxes.name, opinstance)
+            return {'CANCELLED'}        
 
+    for capsules in capsuleslist:
+        if len(capsules.material_slots)!=0:
+            for slot in capsules.material_slots:
+                if slot.material not in materialslist:
+                    materialslist.append(slot.material)
+        else:
+            throw_exception(3, capsules.name, opinstance)
+            return {'CANCELLED'}  
+
+    for convexshapes in convexshapeslist:
+        if len(convexshapes.material_slots)!=0:
+            for slot in convexshapes.material_slots:
+                if slot.material not in materialslist:
+                    materialslist.append(slot.material)
+        else:
+            throw_exception(3, convexshapes.name, opinstance)
+            return {'CANCELLED'}             
+            
     print("gathering regions...")
     for collections in bpy.data.collections:
         regionslist.append(collections.name)
@@ -574,6 +676,7 @@ def export_jmsv2(opinstance, filepath):
 
         for marker in markerslist:
             name = marker.name.replace(' ', '')[+1:]
+            fixed_name = name.split('.')[0]
             print("writing marker data:{}...".format(name))
             region = 0
             marker_parent = bpy.data.objects[marker.name].parent_bone
@@ -583,7 +686,7 @@ def export_jmsv2(opinstance, filepath):
                 marker_node_index = bpy.data.armatures['Armature'].bones['%s' % marker_parent]
                 node = nodeslist.index(marker_node_index)
                 
-            radius = abs(marker.scale[0])
+            radius = abs(marker.dimensions[0]/2)
             pos  = marker.matrix_local.to_translation()
             quat = marker.matrix_local.to_quaternion().inverted()
 
@@ -596,7 +699,7 @@ def export_jmsv2(opinstance, filepath):
             pos_z = Decimal(pos[2]).quantize(Decimal('1.0000000000'))*scale
 
             f.write('\n;MARKER %s' % (markerslist.index(marker)))
-            f.write('\n%s' % name)
+            f.write('\n%s' % fixed_name)
             f.write('\n%s' % node)
             f.write('\n%0.10f\t%0.10f\t%0.10f\t%0.10f' % (quat_i, quat_j, quat_k, quat_w))
             f.write('\n%0.10f\t%0.10f\t%0.10f' % (pos_x, pos_y, pos_z))
@@ -686,7 +789,7 @@ def export_jmsv2(opinstance, filepath):
         #write sphere               
         f.write(
             '\n;### SPHERES ###' +
-            '\n0' +
+            '\n%s' % len(sphereslist) +
             '\n;\t<name>' +
             '\n;\t<parent>' +
             '\n;\t<material>' +        
@@ -694,11 +797,48 @@ def export_jmsv2(opinstance, filepath):
             '\n;\t<translation <x,y,z>>' +
             '\n;\t<radius>\n'      
             ) 
+            
+        for spheres in sphereslist:
+            name = spheres.name.replace(' ', '')[+1:]
+            print("writing spheres data:{}...".format(name))
+            print('parent type', bpy.data.objects[spheres.name].parent_type)
+            print('parent bone', bpy.data.objects[spheres.name].parent_bone)            
+            spheres_parent_type = bpy.data.objects[spheres.name].parent_type
+            spheres_parent_bone = bpy.data.objects[spheres.name].parent_bone
+            sphere_materials = spheres.data.materials
+            if spheres_parent_type == "BONE":              
+                spheres_node_index = bpy.data.armatures['Armature'].bones['%s' % spheres_parent_bone]
+                node = nodeslist.index(spheres_node_index)
+            else: 
+                node = -1
+            if len(sphere_materials) > 0:
+                sphere_material_index = materialslist.index(sphere_materials[0])
+            else:
+                sphere_material_index = -1              
+            radius = abs(spheres.dimensions[0]/2)
+            pos  = spheres.matrix_local.to_translation()
+            quat = spheres.matrix_local.to_quaternion()
 
+            quat_i = Decimal(quat[1]).quantize(Decimal('1.0000000000'))
+            quat_j = Decimal(quat[2]).quantize(Decimal('1.0000000000'))
+            quat_k = Decimal(quat[3]).quantize(Decimal('1.0000000000'))
+            quat_w = Decimal(quat[0]).quantize(Decimal('1.0000000000'))
+            pos_x = Decimal(pos[0]).quantize(Decimal('1.0000000000'))*scale
+            pos_y = Decimal(pos[1]).quantize(Decimal('1.0000000000'))*scale
+            pos_z = Decimal(pos[2]).quantize(Decimal('1.0000000000'))*scale
+
+            f.write('\n;SPHERE %s' % (sphereslist.index(spheres)))
+            f.write('\n%s' % name)
+            f.write('\n%s' % node)
+            f.write('\n%s' % sphere_material_index)            
+            f.write('\n%0.10f\t%0.10f\t%0.10f\t%0.10f' % (quat_i, quat_j, quat_k, quat_w))
+            f.write('\n%0.10f\t%0.10f\t%0.10f' % (pos_x, pos_y, pos_z))          
+            f.write('\n%0.10f\n' % radius)
+            
         #write boxes               
         f.write(
             '\n;### BOXES ###' +
-            '\n0' +
+            '\n%s' % len(boxeslist) +
             '\n;\t<name>' +
             '\n;\t<parent>' +
             '\n;\t<material>' +        
@@ -709,10 +849,51 @@ def export_jmsv2(opinstance, filepath):
             '\n;\t<height (z)>\n'        
              )
              
+        for boxes in boxeslist:
+            name = boxes.name.replace(' ', '')[+1:]
+            print("writing boxes data:{}...".format(name))
+            print('parent type', bpy.data.objects[boxes.name].parent_type)
+            print('parent bone', bpy.data.objects[boxes.name].parent_bone)            
+            boxes_parent_type = bpy.data.objects[boxes.name].parent_type
+            boxes_parent_bone = bpy.data.objects[boxes.name].parent_bone
+            box_materials = boxes.data.materials
+            if boxes_parent_type == "BONE":              
+                boxes_node_index = bpy.data.armatures['Armature'].bones['%s' % boxes_parent_bone]
+                node = nodeslist.index(boxes_node_index)
+            else: 
+                node = -1
+            if len(box_materials) > 0:
+                boxes_material_index = materialslist.index(box_materials[0])
+            else:
+                boxes_material_index = -1              
+            dimension_x = abs(boxes.dimensions[0]/2)
+            dimension_y = abs(boxes.dimensions[1]/2)           
+            dimension_z = abs(boxes.dimensions[2]/2)            
+            pos  = boxes.matrix_local.to_translation()
+            quat = boxes.matrix_local.to_quaternion()
+
+            quat_i = Decimal(quat[1]).quantize(Decimal('1.0000000000'))
+            quat_j = Decimal(quat[2]).quantize(Decimal('1.0000000000'))
+            quat_k = Decimal(quat[3]).quantize(Decimal('1.0000000000'))
+            quat_w = Decimal(quat[0]).quantize(Decimal('1.0000000000'))
+            pos_x = Decimal(pos[0]).quantize(Decimal('1.0000000000'))*scale
+            pos_y = Decimal(pos[1]).quantize(Decimal('1.0000000000'))*scale
+            pos_z = Decimal(pos[2]).quantize(Decimal('1.0000000000'))*scale
+
+            f.write('\n;BOXES %s' % (boxeslist.index(boxes)))
+            f.write('\n%s' % name)
+            f.write('\n%s' % node)
+            f.write('\n%s' % boxes_material_index)            
+            f.write('\n%0.10f\t%0.10f\t%0.10f\t%0.10f' % (quat_i, quat_j, quat_k, quat_w))
+            f.write('\n%0.10f\t%0.10f\t%0.10f' % (pos_x, pos_y, pos_z))          
+            f.write('\n%0.10f' % dimension_x)
+            f.write('\n%0.10f' % dimension_y)
+            f.write('\n%0.10f\n' % dimension_z)            
+            
         #write capsules               
         f.write(
             '\n;### CAPSULES ###' +
-            '\n0' +
+            '\n%s' % len(capsuleslist) +
             '\n;\t<name>' +
             '\n;\t<parent>' +
             '\n;\t<material>' +        
@@ -721,19 +902,109 @@ def export_jmsv2(opinstance, filepath):
             '\n;\t<height>' +
             '\n;\t<radius>\n'        
              )  
+             
+        for capsules in capsuleslist:
+            name = capsules.name.replace(' ', '')[+1:]
+            print("writing capsules data:{}...".format(name))
+            print('parent type', bpy.data.objects[capsules.name].parent_type)
+            print('parent bone', bpy.data.objects[capsules.name].parent_bone)            
+            capsules_parent_type = bpy.data.objects[capsules.name].parent_type
+            capsules_parent_bone = bpy.data.objects[capsules.name].parent_bone
+            capsules_materials = capsules.data.materials
+            if capsules_parent_type == "BONE":              
+                capsules_node_index = bpy.data.armatures['Armature'].bones['%s' % capsules_parent_bone]
+                node = nodeslist.index(capsules_node_index)
+            else: 
+                node = -1
+            if len(capsules_materials) > 0:
+                capsules_material_index = materialslist.index(capsules_materials[0])
+            else:
+                capsules_material_index = -1              
+            dimension_x = abs(capsules.dimensions[0]/2)         
+            dimension_z = abs(capsules.dimensions[2]/2)            
+            pos  = capsules.matrix_local.to_translation()
+            quat = capsules.matrix_local.to_quaternion()
+
+            quat_i = Decimal(quat[1]).quantize(Decimal('1.0000000000'))
+            quat_j = Decimal(quat[2]).quantize(Decimal('1.0000000000'))
+            quat_k = Decimal(quat[3]).quantize(Decimal('1.0000000000'))
+            quat_w = Decimal(quat[0]).quantize(Decimal('1.0000000000'))
+            pos_x = Decimal(pos[0]).quantize(Decimal('1.0000000000'))*scale
+            pos_y = Decimal(pos[1]).quantize(Decimal('1.0000000000'))*scale
+            pos_z = Decimal(pos[2]).quantize(Decimal('1.0000000000'))*scale
+
+            f.write('\n;CAPSULES %s' % (capsuleslist.index(capsules)))
+            f.write('\n%s' % name)
+            f.write('\n%s' % node)
+            f.write('\n%s' % capsules_material_index)            
+            f.write('\n%0.10f\t%0.10f\t%0.10f\t%0.10f' % (quat_i, quat_j, quat_k, quat_w))
+            f.write('\n%0.10f\t%0.10f\t%0.10f' % (pos_x, pos_y, pos_z))          
+            f.write('\n%0.10f' % dimension_x)
+            f.write('\n%0.10f\n' % dimension_z)                  
 
         #write convex shapes               
         f.write(
             '\n;### CONVEX SHAPES ###' +
-            '\n0' +
+            '\n%s' % len(convexshapeslist) +
             '\n;\t<name>' +
             '\n;\t<parent>' +
             '\n;\t<material>' +        
             '\n;\t<rotation <i,j,k,w>>' +
             '\n;\t<translation <x,y,z>>' +
             '\n;\t<vertex count>' +
-            '\n;\t<vertices>\n'        
-             )  
+            '\n;\t<...vertices>\n'        
+             )
+             
+        for convexshapes in convexshapeslist:
+            c = 0 
+            for groups in convexshapes.vertex_groups:
+                convexvertexgroups.append(convexshapes.vertex_groups[c].name)
+                c = c + 1       
+            print('convex vertex groups', convexvertexgroups)
+            name = convexshapes.name.replace(' ', '')[+1:]
+            print("writing convex shapes data:{}...".format(name))
+            print('parent type', bpy.data.objects[convexshapes.name].parent_type)
+            print('parent bone', bpy.data.objects[convexshapes.name].parent_bone)            
+            convexshapes_parent_type = bpy.data.objects[convexshapes.name].parent_type
+            convexshapes_parent_bone = bpy.data.objects[convexshapes.name].parent_bone
+            convexshapes_materials = convexshapes.data.materials
+            if len(convexshapes.data.vertices[0].groups) > 0:
+                vertex_group_convex = convexshapes.data.vertices[0].groups[0].group
+                convex_object_vertex_group = convexvertexgroups[vertex_group_convex]
+                armature_convex_obj = bpy.data.objects["Armature"].data.bones[convex_object_vertex_group]       
+                test = nodeslist.index(armature_convex_obj)  
+            else:
+                test = 0
+            node = test
+            if len(convexshapes_materials) > 0:
+                convexshapes_material_index = materialslist.index(convexshapes_materials[0])
+            else:
+                convexshapes_material_index = -1  
+                
+            pos  = convexshapes.matrix_local.to_translation()
+            quat = convexshapes.matrix_local.to_quaternion() @ armature_convex_obj.matrix_local.to_quaternion()
+            x_test = pos[0] - armature_convex_obj.head_local[0]
+            y_test = pos[1] - armature_convex_obj.head_local[1]
+            z_test = pos[2] - armature_convex_obj.head_local[2]            
+            quat_i = Decimal(quat[1]).quantize(Decimal('1.0000000000'))
+            quat_j = Decimal(quat[2]).quantize(Decimal('1.0000000000'))
+            quat_k = Decimal(quat[3]).quantize(Decimal('1.0000000000'))
+            quat_w = Decimal(quat[0]).quantize(Decimal('1.0000000000'))
+            pos_x = Decimal(pos[0]).quantize(Decimal('1.0000000000'))*scale
+            pos_y = Decimal(pos[1]).quantize(Decimal('1.0000000000'))*scale
+            pos_z = Decimal(pos[2]).quantize(Decimal('1.0000000000'))*scale
+
+            f.write('\n;CONVEX SHAPES %s' % (convexshapeslist.index(convexshapes)))
+            f.write('\n%s' % name)
+            f.write('\n%s' % node)
+            f.write('\n%s' % convexshapes_material_index)            
+            f.write('\n%0.10f\t%0.10f\t%0.10f\t%0.10f' % (quat_i, quat_j, quat_k, quat_w))
+            f.write('\n%0.10f\t%0.10f\t%0.10f' % (x_test, y_test, z_test))          
+            f.write('\n%s' % len(convexshapes.data.vertices))
+            for vertex in convexshapes.data.vertices:
+                f.write('\n%0.10f\t%0.10f\t%0.10f' % (vertex.co[0], vertex.co[1], vertex.co[2]))   
+            f.write('\n')
+            convexvertexgroups.clear()
 
         #write rag dolls              
         f.write(
