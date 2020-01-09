@@ -119,7 +119,7 @@ def deselect_layers(y):
         x+=1
 class JMSv2_MaterialProps(Panel):
     bl_label = "Region and Permutation"
-    bl_idname = "region/permutation_panel"
+    bl_idname = "JMSV2_PT_RegionPermutationPanel"
     bl_space_type = "PROPERTIES"
     bl_region_type = "WINDOW"
     bl_context = "material"
@@ -151,7 +151,7 @@ class JMSv2_MaterialProps(Panel):
 
 class JMSv2_ObjectProps(Panel):
     bl_label = "JMS Object Properties"
-    bl_idname = "jms_object_panel"
+    bl_idname = "JMSV2_PT_JMSObjectPanel"
     bl_space_type = "PROPERTIES"
     bl_region_type = "WINDOW"
     bl_context = "object"
@@ -211,7 +211,7 @@ class ExportJMSv2(Operator, ExportHelper):
 
     filename_ext = ".jms"
 
-    filter_glob = StringProperty(
+    filter_glob: StringProperty(
             default="*.jms",
             options={'HIDDEN'},
             )
