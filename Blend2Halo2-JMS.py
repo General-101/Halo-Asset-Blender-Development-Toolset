@@ -63,7 +63,7 @@ def get_sibling(armature, bone, bone_list = [], *args):
 
         return sibling
 
-def export_jms(context, filepath, report, encoding, extension, jms_version):
+def export_jms(context, filepath, report, encoding, extension, jms_version, game_version):
 
     file = open(filepath + extension, 'w', encoding='%s' % encoding)
 
@@ -202,6 +202,17 @@ def export_jms(context, filepath, report, encoding, extension, jms_version):
     marker_count = len(marker_list)
     region_count = len(region_list)
 
+    if version > 8209:
+        decimal_1 = '\n%0.10f'
+        decimal_2 = '\n%0.10f\t%0.10f'
+        decimal_3 = '\n%0.10f\t%0.10f\t%0.10f'
+        decimal_4 = '\n%0.10f\t%0.10f\t%0.10f\t%0.10f'
+    else:
+        decimal_1 = '\n%0.6f'
+        decimal_2 = '\n%0.10f\t%0.10f'
+        decimal_3 = '\n%0.6f\t%0.6f\t%0.6f'
+        decimal_4 = '\n%0.6f\t%0.6f\t%0.6f\t%0.6f'
+
     #write header
     if version >= 8205:
         file.write(
@@ -242,10 +253,17 @@ def export_jms(context, filepath, report, encoding, extension, jms_version):
         else:
             first_sibling_node = joined_list.index(find_sibling_node)
 
-        if node.parent == None:
-            parent_node = -1
+        if version >= 8205:
+            if node.parent == None:
+                parent_node = -1
+            else:
+                parent_node = joined_list.index(node.parent)
+
         else:
-            parent_node = joined_list.index(node)
+            if node.parent == None:
+                parent_node = -1
+            else:
+                parent_node = joined_list.index(node)
 
         pose_bone = armature.pose.bones['%s' % (node.name)]
 
@@ -273,16 +291,17 @@ def export_jms(context, filepath, report, encoding, extension, jms_version):
                 '\n;NODE %s' % (joined_list.index(node)) +
                 '\n%s' % (node.name) +
                 '\n%s' % (parent_node) +
-                '\n%0.6f\t%0.6f\t%0.6f\t%0.6f' % (quat_i, quat_j, quat_k, quat_w) +
-                '\n%0.6f\t%0.6f\t%0.6f\n' % (pos_x, pos_y, pos_z)
+                decimal_4 % (quat_i, quat_j, quat_k, quat_w) +
+                decimal_3 % (pos_x, pos_y, pos_z) +
+                '\n'
                 )
         else:
             file.write(
                 '\n%s' % (node.name) +
                 '\n%s' % (first_child_node) +
                 '\n%s' % (first_sibling_node) +
-                '\n%0.6f\t%0.6f\t%0.6f\t%0.6f' % (quat_i, quat_j, quat_k, quat_w) +
-                '\n%0.6f\t%0.6f\t%0.6f' % (pos_x, pos_y, pos_z)
+                decimal_4 % (quat_i, quat_j, quat_k, quat_w) +
+                decimal_3 % (pos_x, pos_y, pos_z)
                 )
 
     #write materials
@@ -293,26 +312,25 @@ def export_jms(context, filepath, report, encoding, extension, jms_version):
         '\n;\t<name>' +
         '\n;\t<???/LOD/Permutation/Region>\n'
         )
-
     else:
         file.write(
             '\n%s' % (material_count)
             )
 
     for material in material_list:
+        if obj.jms.Permutation == " ":
+            Permutation = 'Default'
+
+        else:
+            Permutation = obj.jms.Permutation
+
+        if obj.jms.Region == " ":
+            Region = 'Default'
+
+        else:
+            Region = obj.jms.Region
+
         if version >= 8205:
-            if obj.jms.Permutation == " ":
-                Permutation = 'Default'
-
-            else:
-                Permutation = obj.jms.Permutation
-
-            if obj.jms.Region == " ":
-                Region = 'Default'
-
-            else:
-                Region = obj.jms.Region
-
             file.write(
             '\n;MATERIAL %s' % (material_list.index(material)) +
             '\n%s' % material.name +
@@ -320,10 +338,20 @@ def export_jms(context, filepath, report, encoding, extension, jms_version):
             )
 
         else:
-            file.write(
-                '\n%s' % (material.name) +
-                '\n%s' % ('<none>')
-                )
+            if game_version == 'haloce':
+                file.write(
+                    '\n%s' % (material.name) +
+                    '\n%s' % ('<none>')
+                    )
+            else:
+                file.write(
+                    '\n%s' % (material.name) +
+                    '\n%s %s' % (Permutation, Region)
+                    )
+                if version >= 8205:
+                    file.write(
+                        '\n'
+                        )
 
     #write markers
     if version >= 8205:
@@ -376,10 +404,10 @@ def export_jms(context, filepath, report, encoding, extension, jms_version):
                 '\n;MARKER %s' % (marker_list.index(marker)) +
                 '\n%s' % (fixed_name) +
                 '\n%s' % (parent_index) +
-                '\n%0.6f\t%0.6f\t%0.6f\t%0.6f' % (quat_i, quat_j, quat_k, quat_w) +
-                '\n%0.6f\t%0.6f\t%0.6f' % (pos_x, pos_y, pos_z) +
-                '\n' +
-                '\n%0.6f' % (radius)
+                decimal_4 % (quat_i, quat_j, quat_k, quat_w) +
+                decimal_3 % (pos_x, pos_y, pos_z) +
+                decimal_1 % (radius) +
+                '\n'
                 )
 
 
@@ -388,9 +416,9 @@ def export_jms(context, filepath, report, encoding, extension, jms_version):
                 '\n%s' % (fixed_name) +
                 '\n%s' % (region) +
                 '\n%s' % (parent_index) +
-                '\n%0.6f\t%0.6f\t%0.6f\t%0.6f' % (quat_i, quat_j, quat_k, quat_w) +
-                '\n%0.6f\t%0.6f\t%0.6f' % (pos_x, pos_y, pos_z) +
-                '\n%0.6f' % (radius)
+                decimal_4 % (quat_i, quat_j, quat_k, quat_w) +
+                decimal_3 % (pos_x, pos_y, pos_z) +
+                decimal_1 % (radius)
                 )
 
     #write regions
@@ -531,60 +559,74 @@ def export_jms(context, filepath, report, encoding, extension, jms_version):
             if int(jms_vertex.node_influence_count) == 1:
                 file.write(
                     '\n;VERTEX %s' % (vertices.index(jms_vertex)) +
-                    '\n%0.10f\t%0.10f\t%0.10f' % (pos_x, pos_y, pos_z) +
-                    '\n%0.10f\t%0.10f\t%0.10f' % (norm_i, norm_j, norm_k) +
+                    decimal_3 % (pos_x, pos_y, pos_z) +
+                    decimal_3 % (norm_i, norm_j, norm_k) +
                     '\n%s' % (jms_vertex.node_influence_count) +
-                    '\n%s\n%0.6f' % (jms_vertex.node0, float(jms_vertex.node0_weight)) +
+                    '\n%s' % (jms_vertex.node0) +
+                    decimal_1 % (float(jms_vertex.node0_weight)) +
                     '\n%s' % (tex_coord_count) +
-                    '\n%0.10f\t%0.10f\n' % (tex_u, tex_v)
+                    decimal_2 % (tex_u, tex_v) +
+                    '\n'
                     )
             if int(jms_vertex.node_influence_count) == 2:
                 file.write(
                     '\n;VERTEX %s' % (vertices.index(jms_vertex)) +
-                    '\n%0.10f\t%0.10f\t%0.10f' % (pos_x, pos_y, pos_z) +
-                    '\n%0.10f\t%0.10f\t%0.10f' % (norm_i, norm_j, norm_k) +
+                    decimal_3 % (pos_x, pos_y, pos_z) +
+                    decimal_3 % (norm_i, norm_j, norm_k) +
                     '\n%s' % (jms_vertex.node_influence_count) +
-                    '\n%s\n%0.6f' % (jms_vertex.node0, float(jms_vertex.node0_weight)) +
-                    '\n%s\n%0.6f' % (jms_vertex.node1, float(jms_vertex.node1_weight)) +
+                    '\n%s' % (jms_vertex.node0) +
+                    decimal_1 % (float(jms_vertex.node0_weight)) +
+                    '\n%s' % (jms_vertex.node1) +
+                    decimal_1 % (float(jms_vertex.node1_weight)) +
                     '\n%s' % (tex_coord_count) +
-                    '\n%0.10f\t%0.10f\n' % (tex_u, tex_v)
+                    decimal_2 % (tex_u, tex_v) +
+                    '\n'
                     )
             if int(jms_vertex.node_influence_count) == 3:
                 file.write(
                     '\n;VERTEX %s' % (vertices.index(jms_vertex)) +
-                    '\n%0.10f\t%0.10f\t%0.10f' % (pos_x, pos_y, pos_z) +
-                    '\n%0.10f\t%0.10f\t%0.10f' % (norm_i, norm_j, norm_k) +
+                    decimal_3 % (pos_x, pos_y, pos_z) +
+                    decimal_3 % (norm_i, norm_j, norm_k) +
                     '\n%s' % (jms_vertex.node_influence_count) +
-                    '\n%s\n%0.6f' % (jms_vertex.node0, float(jms_vertex.node0_weight)) +
-                    '\n%s\n%0.6f' % (jms_vertex.node1, float(jms_vertex.node1_weight)) +
-                    '\n%s\n%0.6f' % (jms_vertex.node2, float(jms_vertex.node2_weight)) +
+                    '\n%s' % (jms_vertex.node0) +
+                    decimal_1 % (float(jms_vertex.node0_weight)) +
+                    '\n%s' % (jms_vertex.node1) +
+                    decimal_1 % (float(jms_vertex.node1_weight)) +
+                    '\n%s' % (jms_vertex.node2) +
+                    decimal_1 % (float(jms_vertex.node2_weight)) +
                     '\n%s' % (tex_coord_count) +
-                    '\n%0.10f\t%0.10f\n' % (tex_u, tex_v)
+                    decimal_2 % (tex_u, tex_v) +
+                    '\n'
                     )
             if int(jms_vertex.node_influence_count) == 4:
                 file.write(
                     '\n;VERTEX %s' % (vertices.index(jms_vertex)) +
-                    '\n%0.10f\t%0.10f\t%0.10f' % (pos_x, pos_y, pos_z) +
-                    '\n%0.10f\t%0.10f\t%0.10f' % (norm_i, norm_j, norm_k) +
+                    decimal_3 % (pos_x, pos_y, pos_z) +
+                    decimal_3 % (norm_i, norm_j, norm_k) +
                     '\n%s' % (jms_vertex.node_influence_count) +
-                    '\n%s\n%0.6f' % (jms_vertex.node0, float(jms_vertex.node0_weight)) +
-                    '\n%s\n%0.6f' % (jms_vertex.node1, float(jms_vertex.node1_weight)) +
-                    '\n%s\n%0.6f' % (jms_vertex.node2, float(jms_vertex.node2_weight)) +
-                    '\n%s\n%0.6f' % (jms_vertex.node3, float(jms_vertex.node3_weight)) +
+                    '\n%s' % (jms_vertex.node0) +
+                    decimal_1 % (float(jms_vertex.node0_weight)) +
+                    '\n%s' % (jms_vertex.node1) +
+                    decimal_1 % (float(jms_vertex.node1_weight)) +
+                    '\n%s' % (jms_vertex.node2) +
+                    decimal_1 % (float(jms_vertex.node2_weight)) +
+                    '\n%s' % (jms_vertex.node3) +
+                    decimal_1 % (float(jms_vertex.node3_weight)) +
                     '\n%s' % (tex_coord_count) +
-                    '\n%0.10f\t%0.10f\n' % (tex_u, tex_v)
+                    decimal_2 % (tex_u, tex_v) +
+                    '\n'
                     )
 
         else:
             file.write(
                 '\n%s' % (jms_vertex.node0) +
-                '\n%0.6f\t%0.6f\t%0.6f' % (pos_x, pos_y, pos_z) +
-                '\n%0.6f\t%0.6f\t%0.6f' % (norm_i, norm_j, norm_k) +
+                decimal_3 % (pos_x, pos_y, pos_z) +
+                decimal_3 % (norm_i, norm_j, norm_k) +
                 '\n%s' % (jms_vertex.node1) +
-                '\n%0.6f' % float(jms_vertex.node1_weight) +
-                '\n%0.6f' % float(tex_u) +
-                '\n%0.6f' % float(tex_v) +
-                '\n%0.6f' % float(tex_w)
+                decimal_1 % float(jms_vertex.node1_weight) +
+                decimal_1 % float(tex_u) +
+                decimal_1 % float(tex_v) +
+                decimal_1 % float(tex_w)
                 )
 
     if version >= 8205:
@@ -618,7 +660,7 @@ def export_jms(context, filepath, report, encoding, extension, jms_version):
             '\n'
             )
 
-    if version >= 8205:
+    if version >= 8206:
         file.write(
             '\n;### SPHERES ###' +
             '\n%s' % len(sphere_list) +
@@ -665,9 +707,10 @@ def export_jms(context, filepath, report, encoding, extension, jms_version):
                 '\n%s' % name +
                 '\n%s' % parent_index +
                 '\n%s' % sphere_material_index +
-                '\n%0.10f\t%0.10f\t%0.10f\t%0.10f' % (quat_i, quat_j, quat_k, quat_w) +
-                '\n%0.10f\t%0.10f\t%0.10f' % (pos_x, pos_y, pos_z) +
-                '\n%0.10f\n' % radius
+                decimal_4 % (quat_i, quat_j, quat_k, quat_w) +
+                decimal_3 % (pos_x, pos_y, pos_z) +
+                decimal_1 % radius +
+                '\n'
                 )
 
         #write boxes
@@ -719,11 +762,12 @@ def export_jms(context, filepath, report, encoding, extension, jms_version):
                 '\n%s' % name +
                 '\n%s' % parent_index +
                 '\n%s' % boxes_material_index +
-                '\n%0.10f\t%0.10f\t%0.10f\t%0.10f' % (quat_i, quat_j, quat_k, quat_w) +
-                '\n%0.10f\t%0.10f\t%0.10f' % (pos_x, pos_y, pos_z) +
-                '\n%0.10f' % dimension_x +
-                '\n%0.10f' % dimension_y +
-                '\n%0.10f\n' % dimension_z
+                decimal_4 % (quat_i, quat_j, quat_k, quat_w) +
+                decimal_3 % (pos_x, pos_y, pos_z) +
+                decimal_1 % dimension_x +
+                decimal_1 % dimension_y +
+                decimal_1 % dimension_z +
+                '\n'
                 )
 
         #write capsules
@@ -781,10 +825,11 @@ def export_jms(context, filepath, report, encoding, extension, jms_version):
                 '\n%s' % name +
                 '\n%s' % parent_index +
                 '\n%s' % capsule_material_index +
-                '\n%0.10f\t%0.10f\t%0.10f\t%0.10f' % (quat_i, quat_j, quat_k, quat_w) +
-                '\n%0.10f\t%0.10f\t%0.10f' % (pos_x, pos_y, pos_z) +
-                '\n%0.10f' % pill_height +
-                '\n%0.10f\n' % radius
+                decimal_4 % (quat_i, quat_j, quat_k, quat_w) +
+                decimal_3 % (pos_x, pos_y, pos_z) +
+                decimal_1 % pill_height +
+                decimal_1 % radius +
+                '\n'
                 )
 
         #write convex shapes
@@ -814,7 +859,7 @@ def export_jms(context, filepath, report, encoding, extension, jms_version):
 
             capsule_matrix = convex_shape.matrix_world
             if convex_shape.parent:
-                capsule_matrix = parent_bone.matrix_local.inverted() @ convex_shape.matrix_world
+                capsule_matrix = parent_bone.matrix_local.inverted() @ convex_shape.matrix_local
 
             pos  = capsule_matrix.translation
             quat = capsule_matrix.to_quaternion().inverted()
@@ -828,102 +873,135 @@ def export_jms(context, filepath, report, encoding, extension, jms_version):
             pos_z = Decimal(pos[2]).quantize(Decimal('1.0000000000'))
 
             file.write(
-                '\n;CONVEX SHAPES %s' % (convex_shape_list.index(convex_shape)) +
+                '\n;CONVEX %s' % (convex_shape_list.index(convex_shape)) +
                 '\n%s' % name +
                 '\n%s' % parent_index +
                 '\n%s' % convex_shape_material_index +
-                '\n%0.10f\t%0.10f\t%0.10f\t%0.10f' % (quat_i, quat_j, quat_k, quat_w) +
-                '\n%0.10f\t%0.10f\t%0.10f' % (pos_x, pos_y, pos_z) +
+                decimal_4 % (quat_i, quat_j, quat_k, quat_w) +
+                decimal_3 % (pos_x, pos_y, pos_z) +
                 '\n%s' % len(convex_shape.data.vertices)
                 )
             for vertex in convex_shape.data.vertices:
                 file.write(
-                    '\n%0.10f\t%0.10f\t%0.10f' % (vertex.co[0], vertex.co[1], vertex.co[2])
+                    decimal_3 % (vertex.co[0], vertex.co[1], vertex.co[2])
                      )
             file.write('\n')
 
-        #write rag dolls
-        file.write(
-            '\n;### RAGDOLLS ###' +
-            '\n0' +
-            '\n;\t<name>' +
-            '\n;\t<attached index>' +
-            '\n;\t<referenced index>' +
-            '\n;\t<attached transform>' +
-            '\n;\t<reference transform>' +
-            '\n;\t<min twist>' +
-            '\n;\t<max twist>' +
-            '\n;\t<min cone>' +
-            '\n;\t<max cone>' +
-            '\n;\t<min plane>' +
-            '\n;\t<max plane>\n'
-             )
+        if version > 8209:
+            #write rag dolls
+            file.write(
+                '\n;### RAGDOLLS ###' +
+                '\n0' +
+                '\n;\t<name>' +
+                '\n;\t<attached index>' +
+                '\n;\t<referenced index>' +
+                '\n;\t<attached transform>' +
+                '\n;\t<reference transform>' +
+                '\n;\t<min twist>' +
+                '\n;\t<max twist>' +
+                '\n;\t<min cone>' +
+                '\n;\t<max cone>' +
+                '\n;\t<min plane>' +
+                '\n;\t<max plane>\n'
+                 )
 
-        #write hinges
-        file.write(
-            '\n;### HINGES ###' +
-            '\n0' +
-            '\n;\t<name>' +
-            '\n;\t<body A index>' +
-            '\n;\t<body B index>' +
-            '\n;\t<body A transform>' +
-            '\n;\t<body B transform>' +
-            '\n;\t<is limited>' +
-            '\n;\t<friction limit>' +
-            '\n;\t<min angle>' +
-            '\n;\t<max angle>\n'
-             )
+            #write hinges
+            file.write(
+                '\n;### HINGES ###' +
+                '\n0' +
+                '\n;\t<name>' +
+                '\n;\t<body A index>' +
+                '\n;\t<body B index>' +
+                '\n;\t<body A transform>' +
+                '\n;\t<body B transform>' +
+                '\n;\t<is limited>' +
+                '\n;\t<friction limit>' +
+                '\n;\t<min angle>' +
+                '\n;\t<max angle>\n'
+                 )
 
-        #write car wheel
-        file.write(
-            '\n;### CAR WHEEL ###' +
-            '\n0' +
-            '\n;\t<name>' +
-            '\n;\t<chassis index>' +
-            '\n;\t<wheel index>' +
-            '\n;\t<chassis transform>' +
-            '\n;\t<wheel transform>' +
-            '\n;\t<suspension transform>' +
-            '\n;\t<suspension min limit>' +
-            '\n;\t<suspension max limit>' +
-            '\n;\t<friction limit>' +
-            '\n;\t<velocity>' +
-            '\n;\t<gain>\n'
-             )
+            #write car wheel
+            file.write(
+                '\n;### CAR WHEEL ###' +
+                '\n0' +
+                '\n;\t<name>' +
+                '\n;\t<chassis index>' +
+                '\n;\t<wheel index>' +
+                '\n;\t<chassis transform>' +
+                '\n;\t<wheel transform>' +
+                '\n;\t<suspension transform>' +
+                '\n;\t<suspension min limit>' +
+                '\n;\t<suspension max limit>' +
+                '\n;\t<friction limit>' +
+                '\n;\t<velocity>' +
+                '\n;\t<gain>\n'
+                 )
 
-        #write point to point
-        file.write(
-            '\n;### POINT TO POINT ###' +
-            '\n0' +
-            '\n;\t<name>' +
-            '\n;\t<body A index>' +
-            '\n;\t<body B index>' +
-            '\n;\t<body A transform>' +
-            '\n;\t<body B transform>' +
-            '\n;\t<constraint type>' +
-            '\n;\t<x min limit>' +
-            '\n;\t<x max limit>' +
-            '\n;\t<y min limit>' +
-            '\n;\t<y max limit>' +
-            '\n;\t<z min limit>' +
-            '\n;\t<z max limit>' +
-            '\n;\t<spring length>\n'
-             )
+            #write point to point
+            file.write(
+                '\n;### POINT TO POINT ###' +
+                '\n0' +
+                '\n;\t<name>' +
+                '\n;\t<body A index>' +
+                '\n;\t<body B index>' +
+                '\n;\t<body A transform>' +
+                '\n;\t<body B transform>' +
+                '\n;\t<constraint type>' +
+                '\n;\t<x min limit>' +
+                '\n;\t<x max limit>' +
+                '\n;\t<y min limit>' +
+                '\n;\t<y max limit>' +
+                '\n;\t<z min limit>' +
+                '\n;\t<z max limit>' +
+                '\n;\t<spring length>\n'
+                 )
 
-        #write prismatic
-        file.write(
-            '\n;### PRISMATIC ###' +
-            '\n0' +
-            '\n;\t<name>' +
-            '\n;\t<body A index>' +
-            '\n;\t<body B index>' +
-            '\n;\t<body A transform>' +
-            '\n;\t<body B transform>' +
-            '\n;\t<is limited>' +
-            '\n;\t<friction limit>' +
-            '\n;\t<min limit>' +
-            '\n;\t<max limit>\n'
-             )
+            #write prismatic
+            file.write(
+                '\n;### PRISMATIC ###' +
+                '\n0' +
+                '\n;\t<name>' +
+                '\n;\t<body A index>' +
+                '\n;\t<body B index>' +
+                '\n;\t<body A transform>' +
+                '\n;\t<body B transform>' +
+                '\n;\t<is limited>' +
+                '\n;\t<friction limit>' +
+                '\n;\t<min limit>' +
+                '\n;\t<max limit>\n'
+                 )
+        else:
+            #write rag dolls
+            file.write(
+                '\n;### RAGDOLLS ###' +
+                '\n0' +
+                '\n;\t<name>' +
+                '\n;\t<attached index>' +
+                '\n;\t<referenced index>' +
+                '\n;\t<attached transform>' +
+                '\n;\t<reference transform>' +
+                '\n;\t<min twist>' +
+                '\n;\t<max twist>' +
+                '\n;\t<min cone>' +
+                '\n;\t<max cone>' +
+                '\n;\t<min plane>' +
+                '\n;\t<max plane>\n'
+                 )
+
+            #write hinges
+            file.write(
+                '\n;### HINGES ###' +
+                '\n0' +
+                '\n;\t<name>' +
+                '\n;\t<body A index>' +
+                '\n;\t<body B index>' +
+                '\n;\t<body A transform>' +
+                '\n;\t<body B transform>' +
+                '\n;\t<is limited>' +
+                '\n;\t<friction limit>' +
+                '\n;\t<min angle>' +
+                '\n;\t<max angle>\n'
+                 )
 
         #write bounding sphere
         file.write(
@@ -1011,9 +1089,9 @@ class ExportJMS(Operator, ExportHelper):
         name="Version:",
         description="What version to use for the model file",
         default="3",
-        items=[ ('0', "8197", "CE/H2"),
-                ('1', "8198", "CE/H2"),
-                ('2', "8199", "CE/H2"),
+        items=[ ('0', "8197", "CE/H2 Non-functional"),
+                ('1', "8198", "CE/H2 Non-functional"),
+                ('2', "8199", "CE/H2 Non-functional"),
                 ('3', "8200", "CE/H2"),
                 ('4', "8201", "H2"),
                 ('5', "8202", "H2"),
@@ -1028,13 +1106,22 @@ class ExportJMS(Operator, ExportHelper):
                ]
         )
 
+    game_version: EnumProperty(
+        name="Version:",
+        description="What version to use for the model file",
+        default="halo2",
+        items=[ ('haloce', "Halo CE", "Match Blitzkrieg for CE importing"),
+                ('halo2', "Halo 2", "Changed the texture path into a region/permutation definition to match Halo 2's JMS parser"),
+               ]
+        )
+
     filter_glob: StringProperty(
             default="*.jms;*.jmp",
             options={'HIDDEN'},
             )
 
     def execute(self, context):
-        return export_jms(context, self.filepath, self.report, self.encoding, self.extension, self.jms_version)
+        return export_jms(context, self.filepath, self.report, self.encoding, self.extension, self.jms_version, self.game_version)
 
 classesjms = (
     JMS_ObjectPropertiesGroup,
