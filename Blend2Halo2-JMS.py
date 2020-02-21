@@ -163,6 +163,7 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
     for node in node_list:
         if node.parent == None:
             layer_count.append(None)
+
         else:
             if not node.parent.name in layer_count:
                 layer_count.append(node.parent.name)
@@ -207,9 +208,10 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
         decimal_2 = '\n%0.10f\t%0.10f'
         decimal_3 = '\n%0.10f\t%0.10f\t%0.10f'
         decimal_4 = '\n%0.10f\t%0.10f\t%0.10f\t%0.10f'
+
     else:
         decimal_1 = '\n%0.6f'
-        decimal_2 = '\n%0.10f\t%0.10f'
+        decimal_2 = '\n%0.6f\t%0.6f'
         decimal_3 = '\n%0.6f\t%0.6f\t%0.6f'
         decimal_4 = '\n%0.6f\t%0.6f\t%0.6f\t%0.6f'
 
@@ -220,6 +222,7 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
             '\n%s' % (version) +
             '\n;\t<8197-8210>\n'
             )
+
     else:
         file.write(
             '%s' % (version) +
@@ -256,12 +259,14 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
         if version >= 8205:
             if node.parent == None:
                 parent_node = -1
+
             else:
                 parent_node = joined_list.index(node.parent)
 
         else:
             if node.parent == None:
                 parent_node = -1
+
             else:
                 parent_node = joined_list.index(node)
 
@@ -295,6 +300,7 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
                 decimal_3 % (pos_x, pos_y, pos_z) +
                 '\n'
                 )
+
         else:
             file.write(
                 '\n%s' % (node.name) +
@@ -312,6 +318,7 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
         '\n;\t<name>' +
         '\n;\t<???/LOD/Permutation/Region>\n'
         )
+
     else:
         file.write(
             '\n%s' % (material_count)
@@ -343,11 +350,13 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
                     '\n%s' % (material.name) +
                     '\n%s' % ('<none>')
                     )
+
             else:
                 file.write(
                     '\n%s' % (material.name) +
                     '\n%s %s' % (Permutation, Region)
                     )
+
                 if version >= 8205:
                     file.write(
                         '\n'
@@ -375,6 +384,7 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
         fixed_name = name.split('.')[0]
         if obj.jms.Region == " ":
             region = region_list.index('unnamed')
+
         else:
             region = region_list.index(obj.jms.Region)
 
@@ -409,7 +419,6 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
                 decimal_1 % (radius) +
                 '\n'
                 )
-
 
         else:
             file.write(
@@ -472,6 +481,7 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
 
             if obj.jms.Region == " ":
                 region = region_list.index('unnamed')
+
             else:
                 region = region_list.index(obj.jms.Region)
 
@@ -497,6 +507,7 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
                     value = len(vert.groups)
                     if value > 4:
                         value = 4
+
                     jms_vertex.node_influence_count = value
                     for n in range(len(vert.groups)):
                         vertex_group = vert.groups[n].group
@@ -505,15 +516,19 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
                         if n == 0:
                             jms_vertex.node0 = joined_list.index(armature_obj)
                             jms_vertex.node0_weight = '%0.6f' % vert.groups[0].weight
+
                         if n == 1:
                             jms_vertex.node1 = joined_list.index(armature_obj)
                             jms_vertex.node1_weight = '%0.6f' % vert.groups[1].weight
+
                         if n == 2:
                             jms_vertex.node2 = joined_list.index(armature_obj)
                             jms_vertex.node2_weight = '%0.10f' % vert.groups[2].weight
+
                         if n == 3:
                             jms_vertex.node3 = joined_list.index(armature_obj)
                             jms_vertex.node3_weight = '%0.10f' % vert.groups[3].weight
+
                 else:
                     jms_vertex.node_influence_count = '1'
                     jms_vertex.node0 = '0'
@@ -531,6 +546,7 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
             '\n;\t<texture coordinate count>' +
             '\n;\t\t<texture coordinates <u,v>>\n'
             )
+
     else:
         file.write(
             '\n%s' % (len(vertices))
@@ -568,6 +584,7 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
                     decimal_2 % (tex_u, tex_v) +
                     '\n'
                     )
+
             if int(jms_vertex.node_influence_count) == 2:
                 file.write(
                     '\n;VERTEX %s' % (vertices.index(jms_vertex)) +
@@ -582,6 +599,7 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
                     decimal_2 % (tex_u, tex_v) +
                     '\n'
                     )
+
             if int(jms_vertex.node_influence_count) == 3:
                 file.write(
                     '\n;VERTEX %s' % (vertices.index(jms_vertex)) +
@@ -598,6 +616,7 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
                     decimal_2 % (tex_u, tex_v) +
                     '\n'
                     )
+
             if int(jms_vertex.node_influence_count) == 4:
                 file.write(
                     '\n;VERTEX %s' % (vertices.index(jms_vertex)) +
@@ -636,6 +655,7 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
             '\n;\t<material index>' +
             '\n;\t<vertex indices <v0,v1,v2>>\n'
             )
+
     else:
         file.write(
             '\n%s' % (len(triangles))
@@ -648,6 +668,7 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
                 '\n%s' % (tri.material) +
                 '\n%s\t%s\t%s\n' % (tri.v0, tri.v1, tri.v2)
                 )
+
         else:
             file.write(
                 '\n%s' % (tri.region) +
@@ -678,6 +699,7 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
             sphere_materials = spheres.data.materials
             if len(sphere_materials) > 0:
                 sphere_material_index = material_list.index(sphere_materials[0])
+
             else:
                 sphere_material_index = -1
 
@@ -732,8 +754,10 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
             box_materials = boxes.data.materials
             if len(box_materials) > 0:
                 boxes_material_index = material_list.index(box_materials[0])
+
             else:
                 boxes_material_index = -1
+
             parent_index = -1
             if boxes.parent_bone:
                 parent_bone = armature.data.bones[boxes.parent_bone]
@@ -788,8 +812,10 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
             capsule_materials = capsule.data.materials
             if len(capsule_materials) > 0:
                 capsule_material_index = material_list.index(capsule_materials[0])
+
             else:
                 capsule_material_index = -1
+
             parent_index = -1
             if capsule.parent_bone:
                 parent_bone = armature.data.bones[capsule.parent_bone]
@@ -817,6 +843,7 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
             pill_height_math = scale_z - scale_x
             if pill_height_math < 0:
                 pill_height = 0
+
             else:
                 pill_height = pill_height_math
 
@@ -850,8 +877,10 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
             convex_shape_materials = convex_shape.data.materials
             if len(convex_shape_materials) > 0:
                 convex_shape_material_index = material_list.index(convex_shape_materials[0])
+
             else:
                 convex_shape_material_index = -1
+
             parent_index = -1
             if convex_shape.parent_bone:
                 parent_bone = armature.data.bones[convex_shape.parent_bone]
@@ -881,10 +910,12 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
                 decimal_3 % (pos_x, pos_y, pos_z) +
                 '\n%s' % len(convex_shape.data.vertices)
                 )
+
             for vertex in convex_shape.data.vertices:
                 file.write(
                     decimal_3 % (vertex.co[0], vertex.co[1], vertex.co[2])
                      )
+
             file.write('\n')
 
         if version > 8209:
@@ -970,6 +1001,7 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
                 '\n;\t<min limit>' +
                 '\n;\t<max limit>\n'
                  )
+
         else:
             #write rag dolls
             file.write(
