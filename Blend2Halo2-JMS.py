@@ -9,6 +9,7 @@ bl_info = {
     "category": "Import-Export"}
 
 import bpy
+import bmesh
 import math
 
 from math import ceil
@@ -23,10 +24,10 @@ class JmsVertex:
     node1 = '-1'
     node2 = '-1'
     node3 = '-1'
-    node0_weight = '0.000000'
-    node1_weight = '0.000000'
-    node2_weight = '0.000000'
-    node3_weight = '0.000000'
+    node0_weight = '0.0000000000'
+    node1_weight = '0.0000000000'
+    node2_weight = '0.0000000000'
+    node3_weight = '0.0000000000'
     pos = None
     norm = None
     uv = None
@@ -37,6 +38,18 @@ class JmsTriangle:
     v2 = 0
     region = 0
     material = 0
+
+def triangulate_object(obj):
+    me = obj.data
+    # Get a BMesh representation
+    bm = bmesh.new()
+    bm.from_mesh(me)
+
+    bmesh.ops.triangulate(bm, faces=bm.faces[:], quad_method='BEAUTY', ngon_method='BEAUTY')
+
+    # Finish up, write the bmesh back to the mesh
+    bm.to_mesh(me)
+    bm.free()
 
 def get_child(bone, bone_list = [], *args):
     for node in bone_list:
@@ -59,11 +72,15 @@ def get_sibling(armature, bone, bone_list = [], *args):
             sibling = None
 
         else:
-            sibling = armature.data.bones['%s' % sibling_list[next_sibling_node].name]
+            if not armature:
+                sibling = bpy.data.objects['%s' % sibling_list[next_sibling_node].name]
+
+            else:
+                sibling = armature.data.bones['%s' % sibling_list[next_sibling_node].name]
 
         return sibling
 
-def export_jms(context, filepath, report, encoding, extension, jms_version, game_version):
+def export_jms(context, filepath, report, encoding, extension, jms_version, game_version, triangulate_faces):
 
     file = open(filepath + extension, 'w', encoding='%s' % encoding)
 
@@ -104,6 +121,9 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
             bpy.context.view_layer.objects.active = obj
             obj.select_set(True)
             node_list = list(obj.data.bones)
+
+        elif obj.name[0:2].lower() == 'b_' or obj.name[0:5].lower() == "frame":
+            node_list.append(obj)
 
         elif obj.name[0:1].lower() == '#':
             marker_list.append(obj)
@@ -162,7 +182,7 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
 
     for node in node_list:
         if node.parent == None:
-            layer_count.append(None)
+            layer_count.append(node)
 
         else:
             if not node.parent.name in layer_count:
@@ -173,25 +193,46 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
         reversed_joined_list = root_list + reversed_children_list
         layer_index = layer_count.index(layer)
         if layer_index == 0:
-            root_list.append(armature.data.bones[0])
+            if armature_count == 0:
+                root_list.append(bpy.data.objects[layer_count[0]])
+
+            else:
+                root_list.append(armature.data.bones[0])
 
         else:
             for node in node_list:
-                if node.parent != None:
-                    if armature.data.bones['%s' % node.parent.name] in joined_list and not node in children_list:
-                        sort_list.append(node.name)
-                        reversed_sort_list.append(node.name)
+                if armature_count == 0:
+                    if node.parent != None:
+                        if bpy.data.objects[node.parent.name] in joined_list and not node in children_list:
+                            sort_list.append(node.name)
+                            reversed_sort_list.append(node.name)
+
+                else:
+                    if node.parent != None:
+                        if armature.data.bones['%s' % node.parent.name] in joined_list and not node in children_list:
+                            sort_list.append(node.name)
+                            reversed_sort_list.append(node.name)
 
             sort_list.sort()
             reversed_sort_list.sort()
             reversed_sort_list.reverse()
             for sort in sort_list:
-                if not armature.data.bones['%s' % sort] in children_list:
-                    children_list.append(armature.data.bones['%s' % sort])
+                if armature_count == 0:
+                    if not bpy.data.objects[sort] in children_list:
+                        children_list.append(bpy.data.objects[sort])
+
+                else:
+                    if not armature.data.bones['%s' % sort] in children_list:
+                        children_list.append(armature.data.bones['%s' % sort])
 
             for sort in reversed_sort_list:
-                if not armature.data.bones['%s' % sort] in reversed_children_list:
-                    reversed_children_list.append(armature.data.bones['%s' % sort])
+                if armature_count == 0:
+                    if not bpy.data.objects[sort] in reversed_children_list:
+                        reversed_children_list.append(bpy.data.objects[sort])
+
+                else:
+                    if not armature.data.bones['%s' % sort] in reversed_children_list:
+                        reversed_children_list.append(armature.data.bones['%s' % sort])
 
         joined_list = root_list + children_list
         reversed_joined_list = root_list + reversed_children_list
@@ -270,11 +311,18 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
             else:
                 parent_node = joined_list.index(node)
 
-        pose_bone = armature.pose.bones['%s' % (node.name)]
+        if armature_count == 0:
+            bone_matrix = node.matrix_world
 
-        bone_matrix = pose_bone.matrix
-        if pose_bone.parent and not version >= 8205:
-            bone_matrix = pose_bone.parent.matrix.inverted() @ pose_bone.matrix
+            if node.parent and not version >= 8205:
+                bone_matrix = node.parent.matrix_local @ node.matrix_world
+
+        else:
+            pose_bone = armature.pose.bones['%s' % (node.name)]
+
+            bone_matrix = pose_bone.matrix
+            if pose_bone.parent and not version >= 8205:
+                bone_matrix = pose_bone.parent.matrix.inverted() @ pose_bone.matrix
 
         pos  = bone_matrix.translation
         if version >= 8205:
@@ -283,13 +331,13 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
         else:
             quat = bone_matrix.to_quaternion().inverted()
 
-        quat_i = Decimal(quat[1]).quantize(Decimal('1.000000'))
-        quat_j = Decimal(quat[2]).quantize(Decimal('1.000000'))
-        quat_k = Decimal(quat[3]).quantize(Decimal('1.000000'))
-        quat_w = Decimal(quat[0]).quantize(Decimal('1.000000'))
-        pos_x = Decimal(pos[0]).quantize(Decimal('1.000000'))
-        pos_y = Decimal(pos[1]).quantize(Decimal('1.000000'))
-        pos_z = Decimal(pos[2]).quantize(Decimal('1.000000'))
+        quat_i = Decimal(quat[1]).quantize(Decimal('1.0000000000'))
+        quat_j = Decimal(quat[2]).quantize(Decimal('1.0000000000'))
+        quat_k = Decimal(quat[3]).quantize(Decimal('1.0000000000'))
+        quat_w = Decimal(quat[0]).quantize(Decimal('1.0000000000'))
+        pos_x = Decimal(pos[0]).quantize(Decimal('1.0000000000'))
+        pos_y = Decimal(pos[1]).quantize(Decimal('1.0000000000'))
+        pos_z = Decimal(pos[2]).quantize(Decimal('1.0000000000'))
 
         if version >= 8205:
             file.write(
@@ -389,11 +437,17 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
             region = region_list.index(obj.jms.Region)
 
         parent_index = 0
-        if marker.parent_bone:
-            parent_bone = armature.data.bones[marker.parent_bone]
-            parent_index = joined_list.index(parent_bone)
+        if armature_count == 0:
+            if marker.parent:
+                parent_bone = bpy.data.objects[marker.parent.name]
+                parent_index = joined_list.index(parent_bone)
 
-        radius = abs(marker.dimensions[0]/2)
+        else:
+            if marker.parent_bone:
+                parent_bone = armature.data.bones[marker.parent_bone]
+                parent_index = joined_list.index(parent_bone)
+
+        radius = marker.dimensions[0]/2
         marker_matrix = marker.matrix_world
         if marker.parent:
             marker_matrix = parent_bone.matrix_local.inverted() @ marker.matrix_world
@@ -463,6 +517,9 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
 
     #write vertices
     for geometry in geometry_list:
+        if triangulate_faces:
+            triangulate_object(geometry)
+
         c = 0
         vertexgroups.clear()
         for groups in geometry.vertex_groups:
@@ -489,7 +546,12 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
             jms_triangle.v1 = len(vertices) + 1
             jms_triangle.v2 = len(vertices) + 2
             jms_triangle.region = region
-            jms_triangle.material = material_list.index(geometry.data.materials[face.material_index])
+            if len(geometry.material_slots)!=0:
+                jms_triangle.material = material_list.index(geometry.data.materials[face.material_index])
+
+            else:
+                jms_triangle.material = -1
+
             for loop_index in face.loop_indices:
                 vert = mesh_verts[mesh_loops[loop_index].vertex_index]
                 uv = uv_layer[loop_index].uv
@@ -503,7 +565,7 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
                 jms_vertex.pos = pos
                 jms_vertex.norm = norm
                 jms_vertex.uv = uv
-                if len(vert.groups) > 0:
+                if len(vert.groups) != 0:
                     value = len(vert.groups)
                     if value > 4:
                         value = 4
@@ -530,9 +592,14 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
                             jms_vertex.node3_weight = '%0.10f' % vert.groups[3].weight
 
                 else:
+                    parent_index = 0
+                    if geometry.parent:
+                        parent_bone = bpy.data.objects[geometry.parent.name]
+                        parent_index = joined_list.index(parent_bone)
+
                     jms_vertex.node_influence_count = '1'
-                    jms_vertex.node0 = '0'
-                    jms_vertex.node0_weight = '1.000000'
+                    jms_vertex.node0 = parent_index
+                    jms_vertex.node0_weight = '1.0000000000'
 
     if version >= 8205:
         file.write(
@@ -704,9 +771,15 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
                 sphere_material_index = -1
 
             parent_index = -1
-            if spheres.parent_bone:
-                parent_bone = armature.data.bones[spheres.parent_bone]
-                parent_index = joined_list.index(parent_bone)
+            if armature_count == 0:
+                if spheres.parent:
+                    parent_bone = bpy.data.objects[spheres.parent.name]
+                    parent_index = joined_list.index(parent_bone)
+
+            else:
+                if spheres.parent_bone:
+                    parent_bone = armature.data.bones[spheres.parent_bone]
+                    parent_index = joined_list.index(parent_bone)
 
             radius = abs(spheres.dimensions[0]/2)
             sphere_matrix = spheres.matrix_world
@@ -759,9 +832,15 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
                 boxes_material_index = -1
 
             parent_index = -1
-            if boxes.parent_bone:
-                parent_bone = armature.data.bones[boxes.parent_bone]
-                parent_index = joined_list.index(parent_bone)
+            if armature_count == 0:
+                if boxes.parent:
+                    parent_bone = bpy.data.objects[boxes.parent.name]
+                    parent_index = joined_list.index(parent_bone)
+
+            else:
+                if boxes.parent_bone:
+                    parent_bone = armature.data.bones[boxes.parent_bone]
+                    parent_index = joined_list.index(parent_bone)
 
             dimension_x = abs(boxes.dimensions[0]/2)
             dimension_y = abs(boxes.dimensions[1]/2)
@@ -817,9 +896,15 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
                 capsule_material_index = -1
 
             parent_index = -1
-            if capsule.parent_bone:
-                parent_bone = armature.data.bones[capsule.parent_bone]
-                parent_index = joined_list.index(parent_bone)
+            if armature_count == 0:
+                if capsule.parent:
+                    parent_bone = bpy.data.objects[capsule.parent.name]
+                    parent_index = joined_list.index(parent_bone)
+
+            else:
+                if capsule.parent_bone:
+                    parent_bone = armature.data.bones[capsule.parent_bone]
+                    parent_index = joined_list.index(parent_bone)
 
             capsule_matrix = capsule.matrix_world
             if capsule.parent:
@@ -882,16 +967,22 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
                 convex_shape_material_index = -1
 
             parent_index = -1
-            if convex_shape.parent_bone:
-                parent_bone = armature.data.bones[convex_shape.parent_bone]
-                parent_index = joined_list.index(parent_bone)
+            if armature_count == 0:
+                if convex_shape.parent:
+                    parent_bone = bpy.data.objects[convex_shape.parent.name]
+                    parent_index = joined_list.index(parent_bone)
 
-            capsule_matrix = convex_shape.matrix_world
+            else:
+                if convex_shape.parent_bone:
+                    parent_bone = armature.data.bones[convex_shape.parent_bone]
+                    parent_index = joined_list.index(parent_bone)
+
+            convex_matrix = convex_shape.matrix_world
             if convex_shape.parent:
-                capsule_matrix = parent_bone.matrix_local.inverted() @ convex_shape.matrix_local
+                convex_matrix = parent_bone.matrix_local.inverted() @ convex_shape.matrix_local
 
-            pos  = capsule_matrix.translation
-            quat = capsule_matrix.to_quaternion().inverted()
+            pos  = convex_matrix.translation
+            quat = convex_matrix.to_quaternion().inverted()
 
             quat_i = Decimal(quat[1]).quantize(Decimal('1.0000000000'))
             quat_j = Decimal(quat[2]).quantize(Decimal('1.0000000000'))
@@ -1147,13 +1238,19 @@ class ExportJMS(Operator, ExportHelper):
                ]
         )
 
+    triangulate_faces: BoolProperty(
+        name ="Triangulate faces",
+        description = "Automatically triangulate all faces (recommended)",
+        default = True,
+        )
+
     filter_glob: StringProperty(
-            default="*.jms;*.jmp",
-            options={'HIDDEN'},
-            )
+        default="*.jms;*.jmp",
+        options={'HIDDEN'},
+        )
 
     def execute(self, context):
-        return export_jms(context, self.filepath, self.report, self.encoding, self.extension, self.jms_version, self.game_version)
+        return export_jms(context, self.filepath, self.report, self.encoding, self.extension, self.jms_version, self.game_version, self.triangulate_faces)
 
 classesjms = (
     JMS_ObjectPropertiesGroup,
