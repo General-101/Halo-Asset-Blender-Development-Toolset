@@ -51,6 +51,30 @@ def triangulate_object(obj):
     bm.to_mesh(me)
     bm.free()
 
+def unhide_all_collections():
+    for collection_viewport in bpy.context.view_layer.layer_collection.children:
+        collection_viewport.hide_viewport = False
+
+    for collection_hide in bpy.data.collections:
+        collection_hide.hide_select = False
+        collection_hide.hide_viewport = False
+        collection_hide.hide_render = False
+
+def unhide_all_objects():
+    context = bpy.context
+    for obj in context.view_layer.objects:
+        if obj.hide_set:
+            obj.hide_set(False)
+
+        if obj.hide_select:
+            obj.hide_select = False
+
+        if obj.hide_viewport:
+            obj.hide_viewport = False
+
+        if obj.hide_render:
+            obj.hide_render = False
+
 def get_child(bone, bone_list = [], *args):
     for node in bone_list:
         if bone == node.parent:
@@ -82,6 +106,8 @@ def get_sibling(armature, bone, bone_list = [], *args):
 
 def export_jms(context, filepath, report, encoding, extension, jms_version, game_version, triangulate_faces):
 
+    unhide_all_collections()
+    unhide_all_objects()
     file = open(filepath + extension, 'w', encoding='%s' % encoding)
 
     object_list = list(bpy.context.scene.objects)
