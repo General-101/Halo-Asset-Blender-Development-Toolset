@@ -220,7 +220,7 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
         layer_index = layer_count.index(layer)
         if layer_index == 0:
             if armature_count == 0:
-                root_list.append(bpy.data.objects[layer_count[0]])
+                root_list.append(bpy.data.objects[layer_count[0].name])
 
             else:
                 root_list.append(armature.data.bones[0])
