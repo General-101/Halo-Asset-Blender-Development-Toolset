@@ -619,9 +619,15 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
 
                 else:
                     parent_index = 0
-                    if geometry.parent:
-                        parent_bone = bpy.data.objects[geometry.parent.name]
-                        parent_index = joined_list.index(parent_bone)
+                    if armature_count == 0:
+                        if geometry.parent:
+                            parent_bone = bpy.data.objects[geometry.parent.name]
+                            parent_index = joined_list.index(parent_bone)
+
+                    else:
+                        if geometry.parent_bone:
+                            parent_bone = armature.data.bones[geometry.parent_bone]
+                            parent_index = joined_list.index(parent_bone)
 
                     jms_vertex.node_influence_count = '1'
                     jms_vertex.node0 = parent_index
