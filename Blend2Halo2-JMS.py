@@ -105,18 +105,18 @@ def get_sibling(armature, bone, bone_list = [], *args):
         return sibling
 
 def get_region(default_region, region, region_list = [], *args):
-    if len(region) == 0 and not default_region in region_list:
-        return default_region
-
     if not len(region) == 0:
         return region
 
-def get_permutation(default_permutation, permutation, permutation_list = [], *args):
-    if len(permutation) == 0 and not default_permutation in permutation_list:
-        return default_permutation
+    else:
+        return default_region
 
+def get_permutation(default_permutation, permutation, permutation_list = [], *args):
     if not len(permutation) == 0:
         return permutation
+
+    else:
+        return default_permutation
 
 def export_jms(context, filepath, report, encoding, extension, jms_version, game_version, triangulate_faces):
 
@@ -154,9 +154,15 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
     if game_version == 'halo2':
         default_region = 'Default'
         default_permutation = 'Default'
-    else:
+
+    elif game_version == 'haloce':
         default_region = 'unnamed'
         default_permutation = 'unnamed'
+
+    else:
+        report({'ERROR'}, "How did you even choose an option that doesn't exist?")
+        file.close()
+        return {'CANCELLED'}
 
     version = 8197 + int(jms_version)
     node_checksum = 0
@@ -171,6 +177,7 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
     bpy.ops.object.select_all(action='DESELECT')
 
     for obj in object_list:
+        assigned_materials_list = []
         find_region = get_region(default_region, obj.jms.Region, region_list)
         find_permutation = get_permutation(default_permutation, obj.jms.Permutation, permutation_list)
         if obj.type == 'ARMATURE':
@@ -181,46 +188,36 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
             node_list = list(obj.data.bones)
 
         elif obj.name[0:2].lower() == 'b_' or obj.name[0:5].lower() == "frame":
+            node_list.append(obj)
             if armature_count > 0:
                 report({'ERROR'}, "Using both armature and object mesh node setup. Choose one or the other.")
                 file.close()
                 return {'CANCELLED'}
 
-            node_list.append(obj)
-
         elif obj.name[0:1].lower() == '#':
             marker_list.append(obj)
-            if not obj.jms.Region in region_list:
-                region_list.append(find_region)
+            region_list.append(find_region)
 
         elif obj.name[0:1].lower() == '$':
             if obj.jms.Object_Type == 'SPHERE':
                 sphere_list.append(obj)
-                if not obj.jms.Region in region_list:
-                    region_list.append(find_region)
-                if not obj.jms.Permutation in permutation_list:
-                    permutation_list.append(find_permutation)
+                region_list.append(find_region)
+                permutation_list.append(find_permutation)
 
             elif obj.jms.Object_Type == 'BOX':
                 box_list.append(obj)
-                if not obj.jms.Region in region_list:
-                    region_list.append(find_region)
-                if not obj.jms.Permutation in permutation_list:
-                    permutation_list.append(find_permutation)
+                region_list.append(find_region)
+                permutation_list.append(find_permutation)
 
             elif obj.jms.Object_Type == 'CAPSULES':
                 capsule_list.append(obj)
-                if not obj.jms.Region in region_list:
-                    region_list.append(find_region)
-                if not obj.jms.Permutation in permutation_list:
-                    permutation_list.append(find_permutation)
+                region_list.append(find_region)
+                permutation_list.append(find_permutation)
 
             elif obj.jms.Object_Type == 'CONVEX SHAPES':
                 convex_shape_list.append(obj)
-                if not obj.jms.Region in region_list:
-                    region_list.append(find_region)
-                if not obj.jms.Permutation in permutation_list:
-                    permutation_list.append(find_permutation)
+                region_list.append(find_region)
+                permutation_list.append(find_permutation)
 
             else:
                 report({'ERROR'}, "How did you even choose an option that doesn't exist?")
@@ -229,25 +226,39 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
 
         elif obj.type== 'MESH':
             geometry_list.append(obj)
-            if not obj.jms.Region in region_list:
-                region_list.append(find_region)
-            if not obj.jms.Permutation in permutation_list:
-                permutation_list.append(find_permutation)
+            region_list.append(find_region)
+            permutation_list.append(find_permutation)
+
+        if len(obj.material_slots)!=0 and not obj.name[0:1].lower() == '#' and not obj.name[0:2].lower() == 'b_' and not obj.name[0:5].lower() == "frame":
+            for f in obj.data.polygons:
+                slot = obj.material_slots[f.material_index]
+                mat = slot.material
+                if mat is not None:
+                    if mat not in assigned_materials_list:
+                        assigned_materials_list.append(mat)
 
         if len(obj.material_slots)!=0 and not obj.name[0:1].lower() == '#' and not obj.name[0:2].lower() == 'b_' and not obj.name[0:5].lower() == "frame":
             for slot in obj.material_slots:
                 if game_version == 'halo2':
-                    if [slot.material, obj.jms.Region, obj.jms.Permutation] not in material_list:
+                    if [slot.material, obj.jms.Region, obj.jms.Permutation] not in material_list and slot.material in assigned_materials_list:
                         material_list.append([slot.material, obj.jms.Region, obj.jms.Permutation])
-                else:
+
+                elif game_version == 'haloce':
                     if slot.material not in material_list:
                         material_list.append(slot.material)
+
+                else:
+                    report({'ERROR'}, "How did you even choose an option that doesn't exist?")
+                    file.close()
+                    return {'CANCELLED'}
 
         if armature_count >= 2:
             report({'ERROR'}, "More than one armature object. Please delete all but one.")
             file.close()
             return {'CANCELLED'}
 
+    region_list = list(dict.fromkeys(region_list))
+    permutation_list = list(dict.fromkeys(permutation_list))
     node_count = len(node_list)
     material_count = len(material_list)
     marker_count = len(marker_list)
@@ -261,6 +272,11 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
 
     if version >= 8201 and game_version == 'haloce':
         report({'ERROR'}, "This version is not supported for CE. Choose from 8197-8200 if you wish to export for CE.")
+        file.close()
+        return {'CANCELLED'}
+
+    if encoding == 'UTF-16LE' and game_version == 'haloce':
+        report({'ERROR'}, "This encoding is not supported for CE. Choose UTF-8 if you wish to export for CE.")
         file.close()
         return {'CANCELLED'}
 
@@ -351,12 +367,12 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
     #write nodes
     if version >= 8205:
         file.write(
-        '\n;### NODES ###' +
-        '\n%s' % (node_count) +
-        '\n;\t<name>' +
-        '\n;\t<parent node index>' +
-        '\n;\t<default rotation <i,j,k,w>>' +
-        '\n;\t<default translation <x,y,z>>\n'
+            '\n;### NODES ###' +
+            '\n%s' % (node_count) +
+            '\n;\t<name>' +
+            '\n;\t<parent node index>' +
+            '\n;\t<default rotation <i,j,k,w>>' +
+            '\n;\t<default translation <x,y,z>>\n'
         )
 
     for node in joined_list:
@@ -424,7 +440,7 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
                 decimal_4 % (quat_i, quat_j, quat_k, quat_w) +
                 decimal_3 % (pos_x, pos_y, pos_z) +
                 '\n'
-                )
+            )
 
         else:
             file.write(
@@ -433,21 +449,21 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
                 '\n%s' % (first_sibling_node) +
                 decimal_4 % (quat_i, quat_j, quat_k, quat_w) +
                 decimal_3 % (pos_x, pos_y, pos_z)
-                )
+            )
 
     #write materials
     if version >= 8205:
         file.write(
-        '\n;### MATERIALS ###' +
-        '\n%s' % (material_count) +
-        '\n;\t<name>' +
-        '\n;\t<???/LOD/Permutation/Region>\n'
+            '\n;### MATERIALS ###' +
+            '\n%s' % (material_count) +
+            '\n;\t<name>' +
+            '\n;\t<???/LOD/Permutation/Region>\n'
         )
 
     else:
         file.write(
             '\n%s' % (material_count)
-            )
+        )
 
     for material in material_list:
         if game_version == 'halo2':
@@ -467,9 +483,9 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
 
         if version >= 8205:
             file.write(
-            '\n;MATERIAL %s' % (material_list.index([material[0], untouched_region, untouched_permutation])) +
-            '\n%s' % material[0].name +
-            '\n%s %s\n' % (Permutation, Region)
+                '\n;MATERIAL %s' % (material_list.index([material[0], untouched_region, untouched_permutation])) +
+                '\n%s' % material[0].name +
+                '\n%s %s\n' % (Permutation, Region)
             )
 
         else:
@@ -477,13 +493,13 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
                 file.write(
                     '\n%s' % (material.name) +
                     '\n%s' % ('<none>')
-                    )
+                )
 
             else:
                 file.write(
                     '\n%s' % (material[0].name) +
                     '\n%s %s' % (Permutation, Region)
-                    )
+                )
 
                 if version >= 8205:
                     file.write(
@@ -500,12 +516,12 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
             '\n;\t<rotation <i,j,k,w>>' +
             '\n;\t<translation <x,y,z>>' +
             '\n;\t<radius>\n'
-            )
+        )
 
     else:
         file.write(
             '\n%s' % (marker_count)
-            )
+        )
 
     for marker in marker_list:
         name = marker.name.replace(' ', '')[+1:]
@@ -552,7 +568,7 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
                 decimal_3 % (pos_x, pos_y, pos_z) +
                 decimal_1 % (radius) +
                 '\n'
-                )
+            )
 
         else:
             file.write(
@@ -562,18 +578,18 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
                 decimal_4 % (quat_i, quat_j, quat_k, quat_w) +
                 decimal_3 % (pos_x, pos_y, pos_z) +
                 decimal_1 % (radius)
-                )
+            )
 
     #write regions
     if version <= 8204:
         file.write(
             '\n%s' % (region_count)
-            )
+        )
 
         for region in region_list:
             file.write(
                 '\n%s' % (region)
-                )
+            )
 
     if version >= 8205:
         #write instance xref paths
@@ -582,7 +598,7 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
             '\n0' +
             '\n;\t<path to .MAX file>' +
             '\n;\t<name>\n'
-            )
+        )
 
         #write instance markers
         file.write(
@@ -593,7 +609,7 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
             '\n;\t<path index>' +
             '\n;\t<rotation <i,j,k,w>>' +
             '\n;\t<translation <x,y,z>>\n'
-            )
+        )
 
     #write vertices
     for geometry in geometry_list:
@@ -633,12 +649,17 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
                 else:
                     jms_triangle.material = -1
 
-            else:
+            elif game_version == 'haloce':
                 if len(geometry.material_slots)!=0:
                     jms_triangle.material = material_list.index(geometry.data.materials[face.material_index])
 
                 else:
                     jms_triangle.material = -1
+
+            else:
+                report({'ERROR'}, "How did you even choose an option that doesn't exist?")
+                file.close()
+                return {'CANCELLED'}
 
             for loop_index in face.loop_indices:
                 vert = mesh_verts[mesh_loops[loop_index].vertex_index]
@@ -659,23 +680,23 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
                         value = 4
 
                     jms_vertex.node_influence_count = value
-                    for n in range(len(vert.groups)):
-                        vertex_group = vert.groups[n].group
+                    for group_index in range(len(vert.groups)):
+                        vertex_group = vert.groups[group_index].group
                         object_vertex_group = vertexgroups[vertex_group]
                         armature_obj = armature.data.bones[object_vertex_group]
-                        if n == 0:
+                        if group_index == 0:
                             jms_vertex.node0 = joined_list.index(armature_obj)
                             jms_vertex.node0_weight = '%0.6f' % vert.groups[0].weight
 
-                        if n == 1:
+                        if group_index == 1:
                             jms_vertex.node1 = joined_list.index(armature_obj)
                             jms_vertex.node1_weight = '%0.6f' % vert.groups[1].weight
 
-                        if n == 2:
+                        if group_index == 2:
                             jms_vertex.node2 = joined_list.index(armature_obj)
                             jms_vertex.node2_weight = '%0.10f' % vert.groups[2].weight
 
-                        if n == 3:
+                        if group_index == 3:
                             jms_vertex.node3 = joined_list.index(armature_obj)
                             jms_vertex.node3_weight = '%0.10f' % vert.groups[3].weight
 
@@ -706,12 +727,12 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
             '\n;\t\t<weight>' +
             '\n;\t<texture coordinate count>' +
             '\n;\t\t<texture coordinates <u,v>>\n'
-            )
+        )
 
     else:
         file.write(
             '\n%s' % (len(vertices))
-            )
+        )
 
     for jms_vertex in vertices:
         pos  = jms_vertex.pos
@@ -744,7 +765,7 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
                     '\n%s' % (tex_coord_count) +
                     decimal_2 % (tex_u, tex_v) +
                     '\n'
-                    )
+                )
 
             if int(jms_vertex.node_influence_count) == 2:
                 file.write(
@@ -759,7 +780,7 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
                     '\n%s' % (tex_coord_count) +
                     decimal_2 % (tex_u, tex_v) +
                     '\n'
-                    )
+                )
 
             if int(jms_vertex.node_influence_count) == 3:
                 file.write(
@@ -776,7 +797,7 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
                     '\n%s' % (tex_coord_count) +
                     decimal_2 % (tex_u, tex_v) +
                     '\n'
-                    )
+                )
 
             if int(jms_vertex.node_influence_count) == 4:
                 file.write(
@@ -795,7 +816,7 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
                     '\n%s' % (tex_coord_count) +
                     decimal_2 % (tex_u, tex_v) +
                     '\n'
-                    )
+                )
 
         else:
             file.write(
@@ -807,7 +828,7 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
                 decimal_1 % float(tex_u) +
                 decimal_1 % float(tex_v) +
                 decimal_1 % float(tex_w)
-                )
+            )
 
     if version >= 8205:
         file.write(
@@ -815,12 +836,12 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
             '\n%s' % len(triangles) +
             '\n;\t<material index>' +
             '\n;\t<vertex indices <v0,v1,v2>>\n'
-            )
+        )
 
     else:
         file.write(
             '\n%s' % (len(triangles))
-            )
+        )
 
     for tri in triangles:
         if version >= 8205:
@@ -828,19 +849,19 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
                 '\n;TRIANGLE %s' % (triangles.index(tri)) +
                 '\n%s' % (tri.material) +
                 '\n%s\t%s\t%s\n' % (tri.v0, tri.v1, tri.v2)
-                )
+            )
 
         else:
             file.write(
                 '\n%s' % (tri.region) +
                 '\n%s' % (tri.material) +
                 '\n%s\t%s\t%s' % (tri.v0, tri.v1, tri.v2)
-                )
+            )
 
     if version <= 8204:
         file.write(
             '\n'
-            )
+        )
 
     if version >= 8206:
         file.write(
@@ -852,7 +873,7 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
             '\n;\t<rotation <i,j,k,w>>' +
             '\n;\t<translation <x,y,z>>' +
             '\n;\t<radius>\n'
-            )
+        )
 
         #write sphere
         for spheres in sphere_list:
@@ -875,7 +896,7 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
                     parent_bone = armature.data.bones[spheres.parent_bone]
                     parent_index = joined_list.index(parent_bone)
 
-            radius = abs(spheres.dimensions[0]/2)
+            radius = spheres.dimensions[0]/2
             sphere_matrix = spheres.matrix_world
             if spheres.parent:
                 sphere_matrix = parent_bone.matrix_local.inverted() @ spheres.matrix_world
@@ -900,7 +921,7 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
                 decimal_3 % (pos_x, pos_y, pos_z) +
                 decimal_1 % radius +
                 '\n'
-                )
+            )
 
         #write boxes
         file.write(
@@ -914,7 +935,7 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
             '\n;\t<width (x)>' +
             '\n;\t<length (y)>' +
             '\n;\t<height (z)>\n'
-             )
+        )
 
         for boxes in box_list:
             name = boxes.name.replace(' ', '')[+1:]
@@ -936,9 +957,9 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
                     parent_bone = armature.data.bones[boxes.parent_bone]
                     parent_index = joined_list.index(parent_bone)
 
-            dimension_x = abs(boxes.dimensions[0]/2)
-            dimension_y = abs(boxes.dimensions[1]/2)
-            dimension_z = abs(boxes.dimensions[2]/2)
+            dimension_x = boxes.dimensions[0]/2
+            dimension_y = boxes.dimensions[1]/2
+            dimension_z = boxes.dimensions[2]/2
             box_matrix = boxes.matrix_world
             if boxes.parent:
                 box_matrix = parent_bone.matrix_local.inverted() @ boxes.matrix_world
@@ -965,7 +986,7 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
                 decimal_1 % dimension_y +
                 decimal_1 % dimension_z +
                 '\n'
-                )
+            )
 
         #write capsules
         file.write(
@@ -1036,7 +1057,7 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
                 decimal_1 % pill_height +
                 decimal_1 % radius +
                 '\n'
-                )
+            )
 
         #write convex shapes
         file.write(
@@ -1049,7 +1070,7 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
             '\n;\t<translation <x,y,z>>' +
             '\n;\t<vertex count>' +
             '\n;\t<...vertices>\n'
-             )
+        )
 
         for convex_shape in convex_shape_list:
             name = convex_shape.name.replace(' ', '')[+1:]
@@ -1094,12 +1115,12 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
                 decimal_4 % (quat_i, quat_j, quat_k, quat_w) +
                 decimal_3 % (pos_x, pos_y, pos_z) +
                 '\n%s' % len(convex_shape.data.vertices)
-                )
+            )
 
             for vertex in convex_shape.data.vertices:
                 file.write(
                     decimal_3 % (vertex.co[0], vertex.co[1], vertex.co[2])
-                     )
+                )
 
             file.write('\n')
 
@@ -1119,7 +1140,7 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
                 '\n;\t<max cone>' +
                 '\n;\t<min plane>' +
                 '\n;\t<max plane>\n'
-                 )
+            )
 
             #write hinges
             file.write(
@@ -1134,7 +1155,7 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
                 '\n;\t<friction limit>' +
                 '\n;\t<min angle>' +
                 '\n;\t<max angle>\n'
-                 )
+            )
 
             #write car wheel
             file.write(
@@ -1151,7 +1172,7 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
                 '\n;\t<friction limit>' +
                 '\n;\t<velocity>' +
                 '\n;\t<gain>\n'
-                 )
+            )
 
             #write point to point
             file.write(
@@ -1170,7 +1191,7 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
                 '\n;\t<z min limit>' +
                 '\n;\t<z max limit>' +
                 '\n;\t<spring length>\n'
-                 )
+            )
 
             #write prismatic
             file.write(
@@ -1185,7 +1206,7 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
                 '\n;\t<friction limit>' +
                 '\n;\t<min limit>' +
                 '\n;\t<max limit>\n'
-                 )
+            )
 
         else:
             #write rag dolls
@@ -1203,7 +1224,7 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
                 '\n;\t<max cone>' +
                 '\n;\t<min plane>' +
                 '\n;\t<max plane>\n'
-                 )
+            )
 
             #write hinges
             file.write(
@@ -1218,7 +1239,7 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
                 '\n;\t<friction limit>' +
                 '\n;\t<min angle>' +
                 '\n;\t<max angle>\n'
-                 )
+            )
 
         #write bounding sphere
         file.write(
@@ -1226,7 +1247,7 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
             '\n0' +
             '\n;\t<translation <x,y,z>>' +
             '\n;\t<radius>\n'
-             )
+        )
 
     file.close()
     return {'FINISHED'}
@@ -1310,25 +1331,25 @@ class ExportJMS(Operator, ExportHelper):
                 ('1', "8198", "CE/H2 Non-functional"),
                 ('2', "8199", "CE/H2 Non-functional"),
                 ('3', "8200", "CE/H2"),
-                ('4', "8201", "H2"),
-                ('5', "8202", "H2"),
-                ('6', "8203", "H2"),
-                ('7', "8204", "H2"),
+                ('4', "8201", "H2 Non-functional"),
+                ('5', "8202", "H2 Non-functional"),
+                ('6', "8203", "H2 Non-functional"),
+                ('7', "8204", "H2 Non-functional"),
                 ('8', "8205", "H2"),
-                ('9', "8206", "H2"),
-                ('10', "8207", "H2"),
-                ('11', "8208", "H2"),
+                ('9', "8206", "H2 Non-functional"),
+                ('10', "8207", "H2 Non-functional"),
+                ('11', "8208", "H2 Non-functional"),
                 ('12', "8209", "H2"),
                 ('13', "8210", "H2"),
                ]
         )
 
     game_version: EnumProperty(
-        name="Version:",
-        description="What version to use for the model file",
+        name="Game:",
+        description="What game will the model file be used for",
         default="halo2",
-        items=[ ('haloce', "Halo CE", "Match Blitzkrieg for CE importing"),
-                ('halo2', "Halo 2", "Changed the texture path into a region/permutation definition to match Halo 2's JMS parser"),
+        items=[ ('haloce', "Halo CE", "Export a JMS intended for Halo Custom Edition"),
+                ('halo2', "Halo 2", "Export a JMS intended for Halo 2 Vista"),
                ]
         )
 
