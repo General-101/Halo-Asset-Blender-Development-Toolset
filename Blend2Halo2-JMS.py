@@ -149,7 +149,7 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
     permutation_list = []
     triangles = []
     vertices = []
-    vertexgroups = []
+    vertex_groups = []
 
     if game_version == 'halo2':
         default_region = 'Default'
@@ -168,7 +168,7 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
     node_checksum = 0
 
     if len(object_list) == 0:
-        report({'ERROR'}, "No objects in scene.")
+        report({'ERROR'}, 'No objects in scene.')
         file.close()
         return {'CANCELLED'}
 
@@ -187,7 +187,7 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
             obj.select_set(True)
             node_list = list(obj.data.bones)
 
-        elif obj.name[0:2].lower() == 'b_' or obj.name[0:5].lower() == "frame":
+        elif obj.name[0:2].lower() == 'b_' or obj.name[0:5].lower() == 'frame':
             node_list.append(obj)
             if armature_count > 0:
                 report({'ERROR'}, "Using both armature and object mesh node setup. Choose one or the other.")
@@ -229,7 +229,7 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
             region_list.append(find_region)
             permutation_list.append(find_permutation)
 
-        if len(obj.material_slots)!=0 and not obj.name[0:1].lower() == '#' and not obj.name[0:2].lower() == 'b_' and not obj.name[0:5].lower() == "frame":
+        if len(obj.material_slots)!=0 and not obj.name[0:1].lower() == '#' and not obj.name[0:2].lower() == 'b_' and not obj.name[0:5].lower() == 'frame':
             for f in obj.data.polygons:
                 slot = obj.material_slots[f.material_index]
                 mat = slot.material
@@ -237,7 +237,6 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
                     if mat not in assigned_materials_list:
                         assigned_materials_list.append(mat)
 
-        if len(obj.material_slots)!=0 and not obj.name[0:1].lower() == '#' and not obj.name[0:2].lower() == 'b_' and not obj.name[0:5].lower() == "frame":
             for slot in obj.material_slots:
                 if game_version == 'halo2':
                     if [slot.material, obj.jms.Region, obj.jms.Permutation] not in material_list and slot.material in assigned_materials_list:
@@ -253,7 +252,7 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
                     return {'CANCELLED'}
 
         if armature_count >= 2:
-            report({'ERROR'}, "More than one armature object. Please delete all but one.")
+            report({'ERROR'}, 'More than one armature object. Please delete all but one.')
             file.close()
             return {'CANCELLED'}
 
@@ -266,17 +265,22 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
 
     #JMSv2 files can have JMS files without a node for physics.
     if version <= 8204 and len(node_list) == 0:
-        report({'ERROR'}, "No nodes in scene. Add an armature or object mesh named frame or b_")
+        report({'ERROR'}, 'No nodes in scene. Add an armature or object mesh named frame or b_')
         file.close()
         return {'CANCELLED'}
 
     if version >= 8201 and game_version == 'haloce':
-        report({'ERROR'}, "This version is not supported for CE. Choose from 8197-8200 if you wish to export for CE.")
+        report({'ERROR'}, 'This version is not supported for CE. Choose from 8197-8200 if you wish to export for CE.')
         file.close()
         return {'CANCELLED'}
 
     if encoding == 'UTF-16LE' and game_version == 'haloce':
-        report({'ERROR'}, "This encoding is not supported for CE. Choose UTF-8 if you wish to export for CE.")
+        report({'ERROR'}, 'This encoding is not supported for CE. Choose UTF-8 if you wish to export for CE.')
+        file.close()
+        return {'CANCELLED'}
+
+    if extension == '.JMP' and game_version == 'halo2':
+        report({'ERROR'}, 'This extension is not used in Halo 2 Vista')
         file.close()
         return {'CANCELLED'}
 
@@ -626,9 +630,9 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
             triangulate_object(geometry)
 
         c = 0
-        vertexgroups.clear()
+        vertex_groups.clear()
         for groups in geometry.vertex_groups:
-            vertexgroups.append(geometry.vertex_groups[c].name)
+            vertex_groups.append(geometry.vertex_groups[c].name)
             c = c + 1
 
         matrix = geometry.matrix_world
@@ -677,8 +681,8 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
                 jms_vertex = JmsVertex()
                 vertices.append(jms_vertex)
 
-                pos  = matrix@vert.co
-                norm = matrix@(vert.co + vert.normal) - pos
+                pos  = matrix @ vert.co
+                norm = matrix @ (vert.co + vert.normal) - pos
 
                 jms_vertex.pos = pos
                 jms_vertex.norm = norm
@@ -691,8 +695,13 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
                     jms_vertex.node_influence_count = value
                     for group_index in range(len(vert.groups)):
                         vertex_group = vert.groups[group_index].group
-                        object_vertex_group = vertexgroups[vertex_group]
-                        armature_obj = armature.data.bones[object_vertex_group]
+                        object_vertex_group = vertex_groups[vertex_group]
+                        if armature_count == 0:
+                            armature_obj = bpy.data.objects[object_vertex_group]
+
+                        else:
+                            armature_obj = armature.data.bones[object_vertex_group]
+
                         if group_index == 0:
                             jms_vertex.node0 = joined_list.index(armature_obj)
                             jms_vertex.node0_weight = '%0.6f' % vert.groups[0].weight
@@ -762,70 +771,27 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
         tex_v = Decimal(uv[1]).quantize(Decimal('1.000000'))
         tex_w = 0
 
+        for node_influence_index in range(int(jms_vertex.node_influence_count)):
+            if node_influence_index == 0:
+                jms_node = '\n%s%s' % (jms_vertex.node0, decimal_1 % float(jms_vertex.node0_weight))
+            elif node_influence_index == 1:
+                jms_node += '\n%s%s' % (jms_vertex.node1, decimal_1 % float(jms_vertex.node1_weight))
+            elif node_influence_index == 2:
+                jms_node += '\n%s%s' % (jms_vertex.node2, decimal_1 % float(jms_vertex.node2_weight))
+            else:
+                jms_node += '\n%s%s' % (jms_vertex.node3, decimal_1 % float(jms_vertex.node3_weight))
+
         if version >= 8205:
-            if int(jms_vertex.node_influence_count) == 1:
-                file.write(
-                    '\n;VERTEX %s' % (vertices.index(jms_vertex)) +
-                    decimal_3 % (pos_x, pos_y, pos_z) +
-                    decimal_3 % (norm_i, norm_j, norm_k) +
-                    '\n%s' % (jms_vertex.node_influence_count) +
-                    '\n%s' % (jms_vertex.node0) +
-                    decimal_1 % (float(jms_vertex.node0_weight)) +
-                    '\n%s' % (tex_coord_count) +
-                    decimal_2 % (tex_u, tex_v) +
-                    '\n'
-                )
-
-            if int(jms_vertex.node_influence_count) == 2:
-                file.write(
-                    '\n;VERTEX %s' % (vertices.index(jms_vertex)) +
-                    decimal_3 % (pos_x, pos_y, pos_z) +
-                    decimal_3 % (norm_i, norm_j, norm_k) +
-                    '\n%s' % (jms_vertex.node_influence_count) +
-                    '\n%s' % (jms_vertex.node0) +
-                    decimal_1 % (float(jms_vertex.node0_weight)) +
-                    '\n%s' % (jms_vertex.node1) +
-                    decimal_1 % (float(jms_vertex.node1_weight)) +
-                    '\n%s' % (tex_coord_count) +
-                    decimal_2 % (tex_u, tex_v) +
-                    '\n'
-                )
-
-            if int(jms_vertex.node_influence_count) == 3:
-                file.write(
-                    '\n;VERTEX %s' % (vertices.index(jms_vertex)) +
-                    decimal_3 % (pos_x, pos_y, pos_z) +
-                    decimal_3 % (norm_i, norm_j, norm_k) +
-                    '\n%s' % (jms_vertex.node_influence_count) +
-                    '\n%s' % (jms_vertex.node0) +
-                    decimal_1 % (float(jms_vertex.node0_weight)) +
-                    '\n%s' % (jms_vertex.node1) +
-                    decimal_1 % (float(jms_vertex.node1_weight)) +
-                    '\n%s' % (jms_vertex.node2) +
-                    decimal_1 % (float(jms_vertex.node2_weight)) +
-                    '\n%s' % (tex_coord_count) +
-                    decimal_2 % (tex_u, tex_v) +
-                    '\n'
-                )
-
-            if int(jms_vertex.node_influence_count) == 4:
-                file.write(
-                    '\n;VERTEX %s' % (vertices.index(jms_vertex)) +
-                    decimal_3 % (pos_x, pos_y, pos_z) +
-                    decimal_3 % (norm_i, norm_j, norm_k) +
-                    '\n%s' % (jms_vertex.node_influence_count) +
-                    '\n%s' % (jms_vertex.node0) +
-                    decimal_1 % (float(jms_vertex.node0_weight)) +
-                    '\n%s' % (jms_vertex.node1) +
-                    decimal_1 % (float(jms_vertex.node1_weight)) +
-                    '\n%s' % (jms_vertex.node2) +
-                    decimal_1 % (float(jms_vertex.node2_weight)) +
-                    '\n%s' % (jms_vertex.node3) +
-                    decimal_1 % (float(jms_vertex.node3_weight)) +
-                    '\n%s' % (tex_coord_count) +
-                    decimal_2 % (tex_u, tex_v) +
-                    '\n'
-                )
+            file.write(
+                '\n;VERTEX %s' % (vertices.index(jms_vertex)) +
+                decimal_3 % (pos_x, pos_y, pos_z) +
+                decimal_3 % (norm_i, norm_j, norm_k) +
+                '\n%s' % (jms_vertex.node_influence_count) +
+                (jms_node) +
+                '\n%s' % (tex_coord_count) +
+                decimal_2 % (tex_u, tex_v) +
+                '\n'
+            )
 
         else:
             file.write(
