@@ -138,6 +138,7 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
     keyframes = []
     armature = []
     armature_count = 0
+    mesh_frame_count = 0    
     material_list = []
     marker_list = []
     geometry_list = []
@@ -186,9 +187,14 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
             bpy.context.view_layer.objects.active = obj
             obj.select_set(True)
             node_list = list(obj.data.bones)
+            if mesh_frame_count > 0:
+                report({'ERROR'}, "Using both armature and object mesh node setup. Choose one or the other.")
+                file.close()
+                return {'CANCELLED'}            
 
         elif obj.name[0:2].lower() == 'b_' or obj.name[0:5].lower() == 'frame':
             node_list.append(obj)
+            mesh_frame_count += 1
             if armature_count > 0:
                 report({'ERROR'}, "Using both armature and object mesh node setup. Choose one or the other.")
                 file.close()
@@ -461,7 +467,7 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
             '\n;### MATERIALS ###' +
             '\n%s' % (material_count) +
             '\n;\t<name>' +
-            '\n;\t<???/LOD/Permutation/Region>\n'
+            '\n;\t<(?Material ID?) LOD Permutation Region>\n'
         )
 
     else:
@@ -633,7 +639,7 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
         vertex_groups.clear()
         for groups in geometry.vertex_groups:
             vertex_groups.append(geometry.vertex_groups[c].name)
-            c = c + 1
+            c += 1
 
         matrix = geometry.matrix_world
 
@@ -704,11 +710,11 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
 
                         if group_index == 0:
                             jms_vertex.node0 = joined_list.index(armature_obj)
-                            jms_vertex.node0_weight = '%0.6f' % vert.groups[0].weight
+                            jms_vertex.node0_weight = '%0.10f' % vert.groups[0].weight
 
                         if group_index == 1:
                             jms_vertex.node1 = joined_list.index(armature_obj)
-                            jms_vertex.node1_weight = '%0.6f' % vert.groups[1].weight
+                            jms_vertex.node1_weight = '%0.10f' % vert.groups[1].weight
 
                         if group_index == 2:
                             jms_vertex.node2 = joined_list.index(armature_obj)
