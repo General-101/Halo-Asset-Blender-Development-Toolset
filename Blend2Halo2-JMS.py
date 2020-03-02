@@ -61,8 +61,7 @@ def unhide_all_collections():
         collection_hide.hide_render = False
 
 def unhide_all_objects():
-    context = bpy.context
-    for obj in context.view_layer.objects:
+    for obj in bpy.context.view_layer.objects:
         if obj.hide_set:
             obj.hide_set(False)
 
@@ -126,6 +125,7 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
     unhide_all_objects()
 
     object_list = list(bpy.context.scene.objects)
+
     node_list = []
     layer_count = []
     root_list = []
@@ -135,10 +135,10 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
     reversed_joined_list = []
     sort_list = []
     reversed_sort_list = []
-    keyframes = []
     armature = []
     armature_count = 0
-    mesh_frame_count = 0    
+    mesh_frame_count = 0
+
     material_list = []
     marker_list = []
     geometry_list = []
@@ -146,11 +146,11 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
     box_list = []
     capsule_list = []
     convex_shape_list = []
-    region_list = []
-    permutation_list = []
     triangles = []
     vertices = []
-    vertex_groups = []
+
+    region_list = []
+    permutation_list = []
 
     if game_version == 'halo2':
         default_region = 'Default'
@@ -190,7 +190,7 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
             if mesh_frame_count > 0:
                 report({'ERROR'}, "Using both armature and object mesh node setup. Choose one or the other.")
                 file.close()
-                return {'CANCELLED'}            
+                return {'CANCELLED'}
 
         elif obj.name[0:2].lower() == 'b_' or obj.name[0:5].lower() == 'frame':
             node_list.append(obj)
@@ -205,30 +205,31 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
             region_list.append(find_region)
 
         elif obj.name[0:1].lower() == '$':
-            if obj.jms.Object_Type == 'SPHERE':
-                sphere_list.append(obj)
-                region_list.append(find_region)
-                permutation_list.append(find_permutation)
+            if version >= 8205:
+                if obj.jms.Object_Type == 'SPHERE':
+                    sphere_list.append(obj)
+                    region_list.append(find_region)
+                    permutation_list.append(find_permutation)
 
-            elif obj.jms.Object_Type == 'BOX':
-                box_list.append(obj)
-                region_list.append(find_region)
-                permutation_list.append(find_permutation)
+                elif obj.jms.Object_Type == 'BOX':
+                    box_list.append(obj)
+                    region_list.append(find_region)
+                    permutation_list.append(find_permutation)
 
-            elif obj.jms.Object_Type == 'CAPSULES':
-                capsule_list.append(obj)
-                region_list.append(find_region)
-                permutation_list.append(find_permutation)
+                elif obj.jms.Object_Type == 'CAPSULES':
+                    capsule_list.append(obj)
+                    region_list.append(find_region)
+                    permutation_list.append(find_permutation)
 
-            elif obj.jms.Object_Type == 'CONVEX SHAPES':
-                convex_shape_list.append(obj)
-                region_list.append(find_region)
-                permutation_list.append(find_permutation)
+                elif obj.jms.Object_Type == 'CONVEX SHAPES':
+                    convex_shape_list.append(obj)
+                    region_list.append(find_region)
+                    permutation_list.append(find_permutation)
 
-            else:
-                report({'ERROR'}, "How did you even choose an option that doesn't exist?")
-                file.close()
-                return {'CANCELLED'}
+                else:
+                    report({'ERROR'}, "How did you even choose an option that doesn't exist?")
+                    file.close()
+                    return {'CANCELLED'}
 
         elif obj.type== 'MESH':
             geometry_list.append(obj)
@@ -245,11 +246,15 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
 
             for slot in obj.material_slots:
                 if game_version == 'halo2':
-                    if [slot.material, obj.jms.Region, obj.jms.Permutation] not in material_list and slot.material in assigned_materials_list:
-                        material_list.append([slot.material, obj.jms.Region, obj.jms.Permutation])
+                    if obj.name[0:1].lower() == '$':
+                        if [slot.material, obj.jms.Region, obj.jms.Permutation] not in material_list and slot.material in assigned_materials_list and version >= 8205:
+                            material_list.append([slot.material, obj.jms.Region, obj.jms.Permutation])
+                    elif obj.type== 'MESH':
+                        if [slot.material, obj.jms.Region, obj.jms.Permutation] not in material_list and slot.material in assigned_materials_list:
+                            material_list.append([slot.material, obj.jms.Region, obj.jms.Permutation])
 
                 elif game_version == 'haloce':
-                    if slot.material not in material_list:
+                    if slot.material not in material_list and not obj.name[0:1].lower() == '$':
                         material_list.append(slot.material)
 
                 else:
@@ -292,11 +297,11 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
 
     for node in node_list:
         if node.parent == None:
-            layer_count.append(node)
+            layer_count.append(None)
 
         else:
-            if not node.parent.name in layer_count:
-                layer_count.append(node.parent.name)
+            if not node.parent in layer_count:
+                layer_count.append(node.parent)
 
     for layer in layer_count:
         joined_list = root_list + children_list
@@ -504,8 +509,8 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
                 for node in material.node_tree.nodes:
                     if node.type == 'TEX_IMAGE':
                         select_mat = node.image.filepath
-                        image_extension = select_mat.split('.')[1]
-                        image_path = select_mat.split('.')[0]
+                        image_extension = select_mat.rsplit('.', 1)[1]
+                        image_path = select_mat.rsplit('.', 1)[0]
                         if image_extension.lower() == 'tif':
                             texture_path = image_path
 
@@ -543,8 +548,8 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
         )
 
     for marker in marker_list:
-        name = marker.name.replace(' ', '')[+1:]
-        fixed_name = name.split('.')[0]
+        name = marker.name.replace(' ', '')[+1:] #remove marker symbol from name
+        fixed_name = name.rsplit('.', 1)[0] #remove name change from duplicating objects in Blender
         if not marker.jms.Region:
             region = region_list.index(default_region)
 
@@ -632,14 +637,14 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
 
     #write vertices
     for geometry in geometry_list:
+        vertex_groups = []
         if triangulate_faces:
             triangulate_object(geometry)
 
-        c = 0
-        vertex_groups.clear()
+        vertex_group_index = 0
         for groups in geometry.vertex_groups:
-            vertex_groups.append(geometry.vertex_groups[c].name)
-            c += 1
+            vertex_groups.append(geometry.vertex_groups[vertex_group_index].name)
+            vertex_group_index += 1
 
         matrix = geometry.matrix_world
 
@@ -771,12 +776,6 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
         norm_j = Decimal(norm[1]).quantize(Decimal('1.000000'))
         norm_k = Decimal(norm[2]).quantize(Decimal('1.000000'))
 
-        tex_coord_count = 1
-
-        tex_u = Decimal(uv[0]).quantize(Decimal('1.000000'))
-        tex_v = Decimal(uv[1]).quantize(Decimal('1.000000'))
-        tex_w = 0
-
         for node_influence_index in range(int(jms_vertex.node_influence_count)):
             if node_influence_index == 0:
                 jms_node = '\n%s%s' % (jms_vertex.node0, decimal_1 % float(jms_vertex.node0_weight))
@@ -786,6 +785,12 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
                 jms_node += '\n%s%s' % (jms_vertex.node2, decimal_1 % float(jms_vertex.node2_weight))
             else:
                 jms_node += '\n%s%s' % (jms_vertex.node3, decimal_1 % float(jms_vertex.node3_weight))
+
+        tex_coord_count = 1
+
+        tex_u = Decimal(uv[0]).quantize(Decimal('1.000000'))
+        tex_v = Decimal(uv[1]).quantize(Decimal('1.000000'))
+        tex_w = 0
 
         if version >= 8205:
             file.write(
@@ -861,7 +866,7 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
             name = spheres.name.replace(' ', '')[+1:]
             sphere_materials = spheres.data.materials
             if len(sphere_materials) > 0:
-                sphere_material_index = material_list.index(sphere_materials[0])
+                sphere_material_index = material_list.index([sphere_materials[0], spheres.jms.Region, spheres.jms.Permutation])
 
             else:
                 sphere_material_index = -1
@@ -922,7 +927,7 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
             name = boxes.name.replace(' ', '')[+1:]
             box_materials = boxes.data.materials
             if len(box_materials) > 0:
-                boxes_material_index = material_list.index(box_materials[0])
+                boxes_material_index = material_list.index([box_materials[0], boxes.jms.Region, boxes.jms.Permutation])
 
             else:
                 boxes_material_index = -1
@@ -986,7 +991,7 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
             name = capsule.name.replace(' ', '')[+1:]
             capsule_materials = capsule.data.materials
             if len(capsule_materials) > 0:
-                capsule_material_index = material_list.index(capsule_materials[0])
+                capsule_material_index = material_list.index([capsule_materials[0], capsule.jms.Region, capsule.jms.Permutation])
 
             else:
                 capsule_material_index = -1
@@ -1057,7 +1062,7 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
             name = convex_shape.name.replace(' ', '')[+1:]
             convex_shape_materials = convex_shape.data.materials
             if len(convex_shape_materials) > 0:
-                convex_shape_material_index = material_list.index(convex_shape_materials[0])
+                convex_shape_material_index = material_list.index([convex_shape_materials[0], convex_shape.jms.Region, convex_shape.jms.Permutation])
 
             else:
                 convex_shape_material_index = -1
