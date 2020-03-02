@@ -9,8 +9,8 @@ bl_info = {
     "category": "Import-Export"}
 
 import bpy
-import bmesh
 import math
+import bmesh
 
 from math import ceil
 from decimal import *
@@ -490,9 +490,18 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
 
         else:
             if game_version == 'haloce':
+                texture_path = '<none>'
+                for node in material.node_tree.nodes:
+                    if node.type == 'TEX_IMAGE':
+                        select_mat = node.image.filepath
+                        image_extension = select_mat.split('.')[1]
+                        image_path = select_mat.split('.')[0]
+                        if image_extension.lower() == 'tif':
+                            texture_path = image_path
+
                 file.write(
                     '\n%s' % (material.name) +
-                    '\n%s' % ('<none>')
+                    '\n%s' % (texture_path)
                 )
 
             else:
