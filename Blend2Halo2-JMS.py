@@ -128,6 +128,7 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
 
     node_list = []
     layer_count = []
+    layer_root = []    
     root_list = []
     children_list = []
     reversed_children_list = []
@@ -299,6 +300,7 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
     for node in node_list:
         if node.parent == None:
             layer_count.append(None)
+            layer_root.append(node)
 
         else:
             if not node.parent in layer_count:
@@ -310,7 +312,7 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
         layer_index = layer_count.index(layer)
         if layer_index == 0:
             if armature_count == 0:
-                root_list.append(layer_count[0])
+                root_list.append(layer_root[0])
 
             else:
                 root_list.append(armature.data.bones[0])
@@ -536,7 +538,7 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
     for marker in marker_list:
         name = marker.name.replace(' ', '')[+1:] #remove marker symbol from name
         fixed_name = name.rsplit('.', 1)[0] #remove name change from duplicating objects in Blender
-        region = region_list.index(default_region)
+        region = -1
         if len(marker.jms.Region) != 0:
             region = region_list.index(marker.jms.Region)
 
@@ -639,10 +641,11 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
         for face in geometry.data.polygons:
             jms_triangle = JmsTriangle()
             triangles.append(jms_triangle)
-
-            region = region_list.index(default_region)
+            
             if len(geometry.jms.Region) != 0:
                 region = region_list.index(geometry.jms.Region)
+            else:
+                region = region_list.index(default_region)            
 
             jms_triangle.v0 = len(vertices)
             jms_triangle.v1 = len(vertices) + 1
