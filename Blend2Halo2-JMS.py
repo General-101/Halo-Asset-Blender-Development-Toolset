@@ -841,11 +841,23 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
 
         #write sphere
         for spheres in sphere_list:
+            assigned_sphere_materials_list = []
             name = spheres.name.replace(' ', '')[+1:]
-            sphere_materials = spheres.data.materials
             sphere_material_index = -1
-            if len(sphere_materials) != 0:
-                sphere_material_index = material_list.index([sphere_materials[0], spheres.jms.Region, spheres.jms.Permutation])
+            sphere_materials = spheres.data.materials   
+            if len(sphere_materials) != 0:            
+                for f in spheres.data.polygons:
+                    slot = spheres.material_slots[f.material_index]
+                    mat = slot.material
+                    if mat is not None:
+                        if mat not in assigned_sphere_materials_list:
+                            assigned_sphere_materials_list.append(mat)
+
+            if len(assigned_sphere_materials_list) > 1:
+                report({'WARNING'}, "Physics object %s has more than one material assigned to it's faces. Please use only one material." % (spheres.name))
+                
+            if len(assigned_sphere_materials_list) != 0:
+                sphere_material_index = material_list.index([assigned_sphere_materials_list[0], spheres.jms.Region, spheres.jms.Permutation])
 
             parent_index = -1
             if armature_count == 0:
@@ -900,11 +912,23 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
         )
 
         for boxes in box_list:
+            assigned_boxes_materials_list = []        
             name = boxes.name.replace(' ', '')[+1:]
-            box_materials = boxes.data.materials
             boxes_material_index = -1
-            if len(box_materials) != 0:
-                boxes_material_index = material_list.index([box_materials[0], boxes.jms.Region, boxes.jms.Permutation])
+            box_materials = boxes.data.materials
+            if len(box_materials) != 0:            
+                for f in boxes.data.polygons:
+                    slot = boxes.material_slots[f.material_index]
+                    mat = slot.material
+                    if mat is not None:
+                        if mat not in assigned_boxes_materials_list:
+                            assigned_boxes_materials_list.append(mat)
+
+            if len(assigned_boxes_materials_list) > 1:
+                report({'WARNING'}, "Physics object %s has more than one material assigned to it's faces. Please use only one material." % (boxes.name))
+                
+            if len(assigned_boxes_materials_list) != 0:
+                boxes_material_index = material_list.index([assigned_boxes_materials_list[0], boxes.jms.Region, boxes.jms.Permutation])
 
             parent_index = -1
             if armature_count == 0:
@@ -962,11 +986,23 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
              )
 
         for capsule in capsule_list:
+            assigned_capsule_materials_list = []         
             name = capsule.name.replace(' ', '')[+1:]
-            capsule_materials = capsule.data.materials
             capsule_material_index = -1
-            if len(capsule_materials) != 0:
-                capsule_material_index = material_list.index([capsule_materials[0], capsule.jms.Region, capsule.jms.Permutation])
+            capsule_materials = capsule.data.materials
+            if len(capsule_materials) != 0:            
+                for f in capsule.data.polygons:
+                    slot = capsule.material_slots[f.material_index]
+                    mat = slot.material
+                    if mat is not None:
+                        if mat not in assigned_capsule_materials_list:
+                            assigned_capsule_materials_list.append(mat)
+
+            if len(assigned_capsule_materials_list) > 1:
+                report({'WARNING'}, "Physics object %s has more than one material assigned to it's faces. Please use only one material." % (capsule.name))
+                
+            if len(assigned_capsule_materials_list) != 0:
+                capsule_material_index = material_list.index([assigned_capsule_materials_list[0], capsule.jms.Region, capsule.jms.Permutation])
 
             parent_index = -1
             if armature_count == 0:
@@ -1031,11 +1067,23 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
         )
 
         for convex_shape in convex_shape_list:
+            assigned_convex_shape_materials_list = []         
             name = convex_shape.name.replace(' ', '')[+1:]
             convex_shape_materials = convex_shape.data.materials
             convex_shape_material_index = -1
-            if len(convex_shape_materials) != 0:
-                convex_shape_material_index = material_list.index([convex_shape_materials[0], convex_shape.jms.Region, convex_shape.jms.Permutation])
+            if len(convex_shape_materials) != 0:            
+                for f in convex_shape.data.polygons:
+                    slot = convex_shape.material_slots[f.material_index]
+                    mat = slot.material
+                    if mat is not None:
+                        if mat not in assigned_convex_shape_materials_list:
+                            assigned_convex_shape_materials_list.append(mat)
+
+            if len(assigned_convex_shape_materials_list) > 1:
+                report({'WARNING'}, "Physics object %s has more than one material assigned to it's faces. Please use only one material." % (convex_shape.name))
+                
+            if len(assigned_convex_shape_materials_list) != 0:
+                convex_shape_material_index = material_list.index([assigned_convex_shape_materials_list[0], convex_shape.jms.Region, convex_shape.jms.Permutation])
 
             parent_index = -1
             if armature_count == 0:
