@@ -40,18 +40,6 @@ class JmsTriangle:
     region = 0
     material = 0
 
-def triangulate_object(obj):
-    me = obj.data
-    # Get a BMesh representation
-    bm = bmesh.new()
-    bm.from_mesh(me)
-
-    bmesh.ops.triangulate(bm, faces=bm.faces[:], quad_method='BEAUTY', ngon_method='BEAUTY')
-
-    # Finish up, write the bmesh back to the mesh
-    bm.to_mesh(me)
-    bm.free()
-
 def unhide_all_collections():
     for collection_viewport in bpy.context.view_layer.layer_collection.children:
         collection_viewport.hide_viewport = False
@@ -234,8 +222,13 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
                     return {'CANCELLED'}
 
         elif obj.type== 'MESH':
+            modifier_list = []
             if triangulate_faces:
-                obj.modifiers.new("TRIANGULATE", type='TRIANGULATE')
+                for modifier in obj.modifiers:
+                    modifier_list.append(modifier.type)
+
+                if not 'TRIANGULATE' in modifier_list:
+                    obj.modifiers.new("Triangulate", type='TRIANGULATE')
 
             depsgraph = bpy.context.evaluated_depsgraph_get()
             object_eval = obj.evaluated_get(depsgraph)
@@ -658,7 +651,6 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
             if game_version == 'halo2':
                 jms_triangle.material = -1
                 if len(geometry.material_slots) != 0:
-                    print(geometry.data.materials[face.material_index].name)
                     jms_triangle.material = material_list.index([bpy.data.materials[geometry.data.materials[face.material_index].name], geometry.jms.Region, geometry.jms.Permutation])
 
             elif game_version == 'haloce':
@@ -1377,7 +1369,6 @@ class ExportJMS(Operator, ExportHelper):
         )
 
     def execute(self, context):
-        print(sys.argv)
         if len(sys.argv) > 2:
             self.filepath = sys.argv[6]
 
