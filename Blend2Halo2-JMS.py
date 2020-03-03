@@ -128,7 +128,7 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
 
     node_list = []
     layer_count = []
-    layer_root = []    
+    layer_root = []
     root_list = []
     children_list = []
     reversed_children_list = []
@@ -233,7 +233,12 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
                     return {'CANCELLED'}
 
         elif obj.type== 'MESH':
-            geometry_list.append(obj)
+            if triangulate_faces:
+                obj.modifiers.new("TRIANGULATE", type='TRIANGULATE')
+
+            depsgraph = bpy.context.evaluated_depsgraph_get()
+            object_eval = obj.evaluated_get(depsgraph)
+            geometry_list.append(object_eval)
             region_list.append(find_region)
             permutation_list.append(find_permutation)
 
@@ -624,8 +629,6 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
     #write vertices
     for geometry in geometry_list:
         vertex_groups = []
-        if triangulate_faces:
-            triangulate_object(geometry)
 
         vertex_group_index = 0
         for groups in geometry.vertex_groups:
@@ -641,11 +644,11 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
         for face in geometry.data.polygons:
             jms_triangle = JmsTriangle()
             triangles.append(jms_triangle)
-            
+
             if len(geometry.jms.Region) != 0:
                 region = region_list.index(geometry.jms.Region)
             else:
-                region = region_list.index(default_region)            
+                region = region_list.index(default_region)
 
             jms_triangle.v0 = len(vertices)
             jms_triangle.v1 = len(vertices) + 1
@@ -654,7 +657,8 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
             if game_version == 'halo2':
                 jms_triangle.material = -1
                 if len(geometry.material_slots) != 0:
-                    jms_triangle.material = material_list.index([geometry.data.materials[face.material_index], geometry.jms.Region, geometry.jms.Permutation])
+                    print(geometry.data.materials[face.material_index].name)
+                    jms_triangle.material = material_list.index([bpy.data.materials[geometry.data.materials[face.material_index].name], geometry.jms.Region, geometry.jms.Permutation])
 
             elif game_version == 'haloce':
                 jms_triangle.material = -1
@@ -847,8 +851,8 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
             assigned_sphere_materials_list = []
             name = spheres.name.replace(' ', '')[+1:]
             sphere_material_index = -1
-            sphere_materials = spheres.data.materials   
-            if len(sphere_materials) != 0:            
+            sphere_materials = spheres.data.materials
+            if len(sphere_materials) != 0:
                 for f in spheres.data.polygons:
                     slot = spheres.material_slots[f.material_index]
                     mat = slot.material
@@ -858,7 +862,7 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
 
             if len(assigned_sphere_materials_list) > 1:
                 report({'WARNING'}, "Physics object %s has more than one material assigned to it's faces. Please use only one material." % (spheres.name))
-                
+
             if len(assigned_sphere_materials_list) != 0:
                 sphere_material_index = material_list.index([assigned_sphere_materials_list[0], spheres.jms.Region, spheres.jms.Permutation])
 
@@ -915,11 +919,11 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
         )
 
         for boxes in box_list:
-            assigned_boxes_materials_list = []        
+            assigned_boxes_materials_list = []
             name = boxes.name.replace(' ', '')[+1:]
             boxes_material_index = -1
             box_materials = boxes.data.materials
-            if len(box_materials) != 0:            
+            if len(box_materials) != 0:
                 for f in boxes.data.polygons:
                     slot = boxes.material_slots[f.material_index]
                     mat = slot.material
@@ -929,7 +933,7 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
 
             if len(assigned_boxes_materials_list) > 1:
                 report({'WARNING'}, "Physics object %s has more than one material assigned to it's faces. Please use only one material." % (boxes.name))
-                
+
             if len(assigned_boxes_materials_list) != 0:
                 boxes_material_index = material_list.index([assigned_boxes_materials_list[0], boxes.jms.Region, boxes.jms.Permutation])
 
@@ -989,11 +993,11 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
              )
 
         for capsule in capsule_list:
-            assigned_capsule_materials_list = []         
+            assigned_capsule_materials_list = []
             name = capsule.name.replace(' ', '')[+1:]
             capsule_material_index = -1
             capsule_materials = capsule.data.materials
-            if len(capsule_materials) != 0:            
+            if len(capsule_materials) != 0:
                 for f in capsule.data.polygons:
                     slot = capsule.material_slots[f.material_index]
                     mat = slot.material
@@ -1003,7 +1007,7 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
 
             if len(assigned_capsule_materials_list) > 1:
                 report({'WARNING'}, "Physics object %s has more than one material assigned to it's faces. Please use only one material." % (capsule.name))
-                
+
             if len(assigned_capsule_materials_list) != 0:
                 capsule_material_index = material_list.index([assigned_capsule_materials_list[0], capsule.jms.Region, capsule.jms.Permutation])
 
@@ -1070,11 +1074,11 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
         )
 
         for convex_shape in convex_shape_list:
-            assigned_convex_shape_materials_list = []         
+            assigned_convex_shape_materials_list = []
             name = convex_shape.name.replace(' ', '')[+1:]
             convex_shape_materials = convex_shape.data.materials
             convex_shape_material_index = -1
-            if len(convex_shape_materials) != 0:            
+            if len(convex_shape_materials) != 0:
                 for f in convex_shape.data.polygons:
                     slot = convex_shape.material_slots[f.material_index]
                     mat = slot.material
@@ -1084,7 +1088,7 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
 
             if len(assigned_convex_shape_materials_list) > 1:
                 report({'WARNING'}, "Physics object %s has more than one material assigned to it's faces. Please use only one material." % (convex_shape.name))
-                
+
             if len(assigned_convex_shape_materials_list) != 0:
                 convex_shape_material_index = material_list.index([assigned_convex_shape_materials_list[0], convex_shape.jms.Region, convex_shape.jms.Permutation])
 
