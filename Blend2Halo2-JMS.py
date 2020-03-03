@@ -8,6 +8,7 @@ bl_info = {
     "wiki_url": "https://num0005.github.io/h2codez_docs/w/H2Tool/Render_Model/render_model.html",
     "category": "Import-Export"}
 
+import sys
 import bpy
 import math
 import bmesh
@@ -663,7 +664,7 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
             elif game_version == 'haloce':
                 jms_triangle.material = -1
                 if len(geometry.material_slots) != 0:
-                    jms_triangle.material = material_list.index(geometry.data.materials[face.material_index])
+                    jms_triangle.material = material_list.index(bpy.data.materials[geometry.data.materials[face.material_index].name])
 
             else:
                 report({'ERROR'}, "How did you even choose an option that doesn't exist?")
@@ -1376,6 +1377,10 @@ class ExportJMS(Operator, ExportHelper):
         )
 
     def execute(self, context):
+        print(sys.argv)
+        if len(sys.argv) > 2:
+            self.filepath = sys.argv[6]
+
         return export_jms(context, self.filepath, self.report, self.encoding, self.extension, self.jms_version, self.game_version, self.triangulate_faces)
 
 classesjms = (
@@ -1401,3 +1406,4 @@ def unregister():
 
 if __name__ == '__main__':
     register()
+    bpy.ops.export_jms.export()
