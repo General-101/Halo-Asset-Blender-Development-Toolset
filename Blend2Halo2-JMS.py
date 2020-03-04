@@ -225,6 +225,9 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
             modifier_list = []
             if triangulate_faces:
                 for modifier in obj.modifiers:
+                    modifier.show_render = True
+                    modifier.show_viewport = True
+                    modifier.show_in_editmode = True
                     modifier_list.append(modifier.type)
 
                 if not 'TRIANGULATE' in modifier_list:
