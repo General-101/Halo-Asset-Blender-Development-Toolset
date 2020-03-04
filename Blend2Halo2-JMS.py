@@ -8,10 +8,12 @@ bl_info = {
     "wiki_url": "https://num0005.github.io/h2codez_docs/w/H2Tool/Render_Model/render_model.html",
     "category": "Import-Export"}
 
+import os
 import sys
 import bpy
 import math
 import bmesh
+import argparse
 
 from math import ceil
 from decimal import *
@@ -501,7 +503,7 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
                         image_filepath = node.image.filepath
                         image_extension = image_filepath.rsplit('.', 1)[1]
                         image_path = image_filepath.rsplit('.', 1)[0]
-                        if image_extension.lower() == 'tif':
+                        if image_extension.lower() == 'tif' and os.path.exists(image_filepath):
                             texture_path = image_path
 
                 file.write(
@@ -1372,8 +1374,31 @@ class ExportJMS(Operator, ExportHelper):
         )
 
     def execute(self, context):
-        if len(sys.argv) > 2:
-            self.filepath = sys.argv[6]
+        if '--' in sys.argv:
+            argv = sys.argv[sys.argv.index('--') + 1:]
+            parser = argparse.ArgumentParser()
+            parser.add_argument('-arg1', '--filepath', dest='filepath', metavar='FILE', required = True)
+            parser.add_argument('-arg2', '--encoding', dest='encoding', type=str, required = True)   
+            parser.add_argument('-arg3', '--extension', dest='extension', type=str, required = True)            
+            parser.add_argument('-arg4', '--jms_version', dest='jms_version', type=str, required = True)
+            parser.add_argument('-arg5', '--game_version', dest='game_version', type=str, required = True)  
+            parser.add_argument('-arg6', '--triangulate_faces', dest='triangulate_faces', type=bool, required = True)            
+            args = parser.parse_known_args(argv)[0]
+            # print parameters
+            print('filepath: ', args.filepath)
+            print('encoding: ', args.encoding)
+            print('extension: ', args.extension)
+            print('jms_version: ', args.jms_version)
+            print('game_version: ', args.game_version)
+            print('triangulate_faces: ', args.triangulate_faces)
+
+        if len(self.filepath) == 0:
+            self.filepath = args.filepath
+            self.encoding = args.encoding
+            self.extension = args.extension
+            self.jms_version = args.jms_version
+            self.game_version = args.game_version
+            self.triangulate_faces = args.triangulate_faces            
 
         return export_jms(context, self.filepath, self.report, self.encoding, self.extension, self.jms_version, self.game_version, self.triangulate_faces)
 
