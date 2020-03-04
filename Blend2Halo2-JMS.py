@@ -1378,11 +1378,11 @@ class ExportJMS(Operator, ExportHelper):
             argv = sys.argv[sys.argv.index('--') + 1:]
             parser = argparse.ArgumentParser()
             parser.add_argument('-arg1', '--filepath', dest='filepath', metavar='FILE', required = True)
-            parser.add_argument('-arg2', '--encoding', dest='encoding', type=str, required = True)   
-            parser.add_argument('-arg3', '--extension', dest='extension', type=str, required = True)            
-            parser.add_argument('-arg4', '--jms_version', dest='jms_version', type=str, required = True)
-            parser.add_argument('-arg5', '--game_version', dest='game_version', type=str, required = True)  
-            parser.add_argument('-arg6', '--triangulate_faces', dest='triangulate_faces', type=bool, required = True)            
+            parser.add_argument('-arg2', '--encoding', dest='encoding', type=str, default="UTF-16LE")   
+            parser.add_argument('-arg3', '--extension', dest='extension', type=str, default=".JMS")            
+            parser.add_argument('-arg4', '--jms_version', dest='jms_version', type=str, default="3")
+            parser.add_argument('-arg5', '--game_version', dest='game_version', type=str, default="halo2")  
+            parser.add_argument('-arg6', '--triangulate_faces', dest='triangulate_faces', type=bool, default=True)            
             args = parser.parse_known_args(argv)[0]
             # print parameters
             print('filepath: ', args.filepath)
