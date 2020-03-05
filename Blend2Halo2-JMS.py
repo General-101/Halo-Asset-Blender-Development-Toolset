@@ -193,8 +193,20 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
                 return {'CANCELLED'}
 
         elif obj.name[0:1].lower() == '#':
-            marker_list.append(obj)
-            region_list.append(find_region)
+            if game_version == 'haloce':
+                if not obj.parent == None:
+                    if obj.parent.type == 'ARMATURE' or obj.parent.name[0:2].lower() == 'b_' or obj.parent.name[0:5].lower() == 'frame':
+                        marker_list.append(obj)
+                        region_list.append(find_region)
+
+            elif game_version == 'halo2':
+                marker_list.append(obj)
+                region_list.append(find_region)
+
+            else:
+                report({'ERROR'}, "How did you even choose an option that doesn't exist?")
+                file.close()
+                return {'CANCELLED'}
 
         elif obj.name[0:1].lower() == '$':
             if version >= 8205:
@@ -224,22 +236,48 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
                     return {'CANCELLED'}
 
         elif obj.type== 'MESH':
-            modifier_list = []
-            if triangulate_faces:
-                for modifier in obj.modifiers:
-                    modifier.show_render = True
-                    modifier.show_viewport = True
-                    modifier.show_in_editmode = True
-                    modifier_list.append(modifier.type)
+            if game_version == 'haloce':
+                if not obj.parent == None:
+                    if obj.parent.type == 'ARMATURE' or obj.parent.name[0:2].lower() == 'b_' or obj.parent.name[0:5].lower() == 'frame':
+                        modifier_list = []
+                        if triangulate_faces:
+                            for modifier in obj.modifiers:
+                                modifier.show_render = True
+                                modifier.show_viewport = True
+                                modifier.show_in_editmode = True
+                                modifier_list.append(modifier.type)
 
-                if not 'TRIANGULATE' in modifier_list:
-                    obj.modifiers.new("Triangulate", type='TRIANGULATE')
+                            if not 'TRIANGULATE' in modifier_list:
+                                obj.modifiers.new("Triangulate", type='TRIANGULATE')
 
-            depsgraph = bpy.context.evaluated_depsgraph_get()
-            object_eval = obj.evaluated_get(depsgraph)
-            geometry_list.append(object_eval)
-            region_list.append(find_region)
-            permutation_list.append(find_permutation)
+                        depsgraph = bpy.context.evaluated_depsgraph_get()
+                        object_eval = obj.evaluated_get(depsgraph)
+                        geometry_list.append(object_eval)
+                        region_list.append(find_region)
+                        permutation_list.append(find_permutation)
+
+            elif game_version == 'halo2':
+                modifier_list = []
+                if triangulate_faces:
+                    for modifier in obj.modifiers:
+                        modifier.show_render = True
+                        modifier.show_viewport = True
+                        modifier.show_in_editmode = True
+                        modifier_list.append(modifier.type)
+
+                    if not 'TRIANGULATE' in modifier_list:
+                        obj.modifiers.new("Triangulate", type='TRIANGULATE')
+
+                depsgraph = bpy.context.evaluated_depsgraph_get()
+                object_eval = obj.evaluated_get(depsgraph)
+                geometry_list.append(object_eval)
+                region_list.append(find_region)
+                permutation_list.append(find_permutation)
+
+            else:
+                report({'ERROR'}, "How did you even choose an option that doesn't exist?")
+                file.close()
+                return {'CANCELLED'}
 
         if len(obj.material_slots)!= 0 and not obj.name[0:1].lower() == '#' and not obj.name[0:2].lower() == 'b_' and not obj.name[0:5].lower() == 'frame':
             for f in obj.data.polygons:
@@ -1378,11 +1416,11 @@ class ExportJMS(Operator, ExportHelper):
             argv = sys.argv[sys.argv.index('--') + 1:]
             parser = argparse.ArgumentParser()
             parser.add_argument('-arg1', '--filepath', dest='filepath', metavar='FILE', required = True)
-            parser.add_argument('-arg2', '--encoding', dest='encoding', type=str, default="UTF-16LE")   
-            parser.add_argument('-arg3', '--extension', dest='extension', type=str, default=".JMS")            
+            parser.add_argument('-arg2', '--encoding', dest='encoding', type=str, default="UTF-16LE")
+            parser.add_argument('-arg3', '--extension', dest='extension', type=str, default=".JMS")
             parser.add_argument('-arg4', '--jms_version', dest='jms_version', type=str, default="3")
-            parser.add_argument('-arg5', '--game_version', dest='game_version', type=str, default="halo2")  
-            parser.add_argument('-arg6', '--triangulate_faces', dest='triangulate_faces', type=bool, default=True)            
+            parser.add_argument('-arg5', '--game_version', dest='game_version', type=str, default="halo2")
+            parser.add_argument('-arg6', '--triangulate_faces', dest='triangulate_faces', type=bool, default=True)
             args = parser.parse_known_args(argv)[0]
             # print parameters
             print('filepath: ', args.filepath)
@@ -1398,7 +1436,7 @@ class ExportJMS(Operator, ExportHelper):
             self.extension = args.extension
             self.jms_version = args.jms_version
             self.game_version = args.game_version
-            self.triangulate_faces = args.triangulate_faces            
+            self.triangulate_faces = args.triangulate_faces
 
         return export_jms(context, self.filepath, self.report, self.encoding, self.extension, self.jms_version, self.game_version, self.triangulate_faces)
 
