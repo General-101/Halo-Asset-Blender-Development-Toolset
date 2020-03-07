@@ -1,46 +1,38 @@
-bl_info = {
-    "name": "Blend2Halo2 JMS",
-    "author": "Cyboryxmen, modified by Fulsy + MosesofEgypt + General_101",
-    "version": (0, 0, 1),
-    "blender": (2, 80, 0),
-    "location": "File > Export",
-    "description": "Export Halo 2/CE Jointed Model Skeleton File (.jms)",
-    "wiki_url": "https://num0005.github.io/h2codez_docs/w/H2Tool/Render_Model/render_model.html",
-    "category": "Import-Export"}
+# ##### BEGIN UNLICENSED BLOCK #####
+#
+# This is free and unencumbered software released into the public domain.
+#
+# Anyone is free to copy, modify, publish, use, compile, sell, or
+# distribute this software, either in source code form or as a compiled
+# binary, for any purpose, commercial or non-commercial, and by any
+# means.
+#
+# In jurisdictions that recognize copyright laws, the author or authors
+# of this software dedicate any and all copyright interest in the
+# software to the public domain. We make this dedication for the benefit
+# of the public at large and to the detriment of our heirs and
+# successors. We intend this dedication to be an overt act of
+# relinquishment in perpetuity of all present and future rights to this
+# software under copyright law.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+# MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+# IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+# OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+# ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+# OTHER DEALINGS IN THE SOFTWARE.
+#
+# For more information, please refer to <http://unlicense.org>
+#
+# ##### END UNLICENSED BLOCK #####
 
-import os
-import sys
 import bpy
-import math
-import bmesh
-import argparse
+import os
 
-from math import ceil
 from decimal import *
-from bpy_extras.io_utils import ExportHelper
-from bpy.types import Operator, Panel, PropertyGroup
-from bpy.props import StringProperty, BoolProperty, EnumProperty, FloatProperty, IntProperty, PointerProperty
-
-class JmsVertex:
-    node_influence_count = '0'
-    node0 = '-1'
-    node1 = '-1'
-    node2 = '-1'
-    node3 = '-1'
-    node0_weight = '0.0000000000'
-    node1_weight = '0.0000000000'
-    node2_weight = '0.0000000000'
-    node3_weight = '0.0000000000'
-    pos = None
-    norm = None
-    uv = None
-
-class JmsTriangle:
-    v0 = 0
-    v1 = 0
-    v2 = 0
-    region = 0
-    material = 0
+from io_scene_jms.__init__ import JmsVertex
+from io_scene_jms.__init__ import JmsTriangle
 
 def unhide_all_collections():
     for collection_viewport in bpy.context.view_layer.layer_collection.children:
@@ -51,19 +43,14 @@ def unhide_all_collections():
         collection_hide.hide_viewport = False
         collection_hide.hide_render = False
 
+
+
 def unhide_all_objects():
     for obj in bpy.context.view_layer.objects:
-        if obj.hide_set:
-            obj.hide_set(False)
-
-        if obj.hide_select:
-            obj.hide_select = False
-
-        if obj.hide_viewport:
-            obj.hide_viewport = False
-
-        if obj.hide_render:
-            obj.hide_render = False
+        obj.hide_set(False)
+        obj.hide_select = False
+        obj.hide_viewport = False
+        obj.hide_render = False
 
 def get_child(bone, bone_list = [], *args):
     for node in bone_list:
@@ -94,15 +81,21 @@ def get_sibling(armature, bone, bone_list = [], *args):
 
         return sibling
 
-def get_region(default_region, region, region_list = [], *args):
+def get_region(default_region, region, game_version):
     if not len(region) == 0:
+        if game_version == 'halo2':
+            region = region.replace(' ', '_').replace('\t', '_')
+
         return region
 
     else:
         return default_region
 
-def get_permutation(default_permutation, permutation, permutation_list = [], *args):
+def get_permutation(default_permutation, permutation, game_version):
     if not len(permutation) == 0:
+        if game_version == 'halo2':
+            permutation = permutation.replace(' ', '_').replace('\t', '_')
+            
         return permutation
 
     else:
@@ -171,8 +164,8 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
 
     for obj in object_list:
         assigned_materials_list = []
-        find_region = get_region(default_region, obj.jms.Region, region_list)
-        find_permutation = get_permutation(default_permutation, obj.jms.Permutation, permutation_list)
+        find_region = get_region(default_region, obj.jms.Region, game_version)
+        find_permutation = get_permutation(default_permutation, obj.jms.Permutation, game_version)
         if obj.type == 'ARMATURE':
             armature_count += 1
             armature = obj
@@ -333,6 +326,11 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
         report({'ERROR'}, 'This encoding is not supported for CE. Choose UTF-8 if you wish to export for CE.')
         file.close()
         return {'CANCELLED'}
+        
+    if encoding == 'utf_8' and game_version == 'halo2':
+        report({'ERROR'}, 'This encoding is not supported for Halo 2. Choose UTF-16 if you wish to export for Halo 2.')
+        file.close()
+        return {'CANCELLED'}       
 
     if extension == '.JMP' and game_version == 'halo2':
         report({'ERROR'}, 'This extension is not used in Halo 2 Vista')
@@ -520,45 +518,51 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
             untouched_permutation = material[2]
             Permutation = default_permutation
             Region = default_region
+            '''
+            This doesn't matter for CE but for Halo 2 the region or permutation names can't have any whitespace.
+            Lets fix that here to make sure nothing goes wrong.
+            '''            
             if len(material[2]) != 0:
-                Permutation = material[2]
+                safe_permutation = material[2].replace(' ', '_').replace('\t', '_')
+                Permutation = safe_permutation
 
             if len(material[1]) != 0:
-                Region = material[1]
-
-        if version >= 8205:
-            file.write(
-                '\n;MATERIAL %s' % (material_list.index([material[0], untouched_region, untouched_permutation])) +
-                '\n%s' % material[0].name +
-                '\n%s %s\n' % (Permutation, Region)
-            )
-
-        else:
-            if game_version == 'haloce':
-                texture_path = '<none>'
-                for node in material.node_tree.nodes:
-                    if node.type == 'TEX_IMAGE':
-                        image_filepath = node.image.filepath
-                        image_extension = image_filepath.rsplit('.', 1)[1]
-                        image_path = image_filepath.rsplit('.', 1)[0]
-                        if image_extension.lower() == 'tif' and os.path.exists(image_filepath):
-                            texture_path = image_path
-
+                safe_region = material[1].replace(' ', '_').replace('\t', '_')
+                Region = safe_region
+                    
+            if version >= 8205:
                 file.write(
-                    '\n%s' % (material.name) +
-                    '\n%s' % (texture_path)
+                    '\n;MATERIAL %s' % (material_list.index([material[0], untouched_region, untouched_permutation])) +
+                    '\n%s' % material[0].name +
+                    '\n%s %s\n' % (Permutation, Region) +
+                    '\n'                    
                 )
-
+                
             else:
                 file.write(
                     '\n%s' % (material[0].name) +
                     '\n%s %s' % (Permutation, Region)
                 )
+                
+        elif game_version == 'haloce':
+            texture_path = '<none>'
+            for node in material.node_tree.nodes:
+                if node.type == 'TEX_IMAGE':
+                    image_filepath = node.image.filepath
+                    image_extension = image_filepath.rsplit('.', 1)[1]
+                    image_path = image_filepath.rsplit('.', 1)[0]
+                    if image_extension.lower() == 'tif' and os.path.exists(image_filepath):
+                        texture_path = image_path
 
-                if version >= 8205:
-                    file.write(
-                        '\n'
-                    )
+            file.write(
+                '\n%s' % (material.name) +
+                '\n%s' % (texture_path)
+            )
+            
+        else:
+            report({'ERROR'}, "How did you even choose an option that doesn't exist?")
+            file.close()
+            return {'CANCELLED'}            
 
     #write markers
     if version >= 8205:
@@ -577,8 +581,8 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
             '\n%s' % (marker_count)
         )
 
-    for marker in marker_list:
-        name = marker.name.replace(' ', '')[+1:] #remove marker symbol from name
+    for marker in marker_list: 
+        name = marker.name.split('#', 1)[1] #remove marker symbol from name
         fixed_name = name.rsplit('.', 1)[0] #remove name change from duplicating objects in Blender
         region = -1
         if len(marker.jms.Region) != 0:
@@ -681,9 +685,20 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
         for face in geometry.data.polygons:
             jms_triangle = JmsTriangle()
             triangles.append(jms_triangle)
-
+            safe_region = geometry.jms.Region.replace(' ', '_').replace('\t', '_')
+            
             if len(geometry.jms.Region) != 0:
-                region = region_list.index(geometry.jms.Region)
+                if game_version == 'halo2':
+                    region = safe_region
+                    
+                elif game_version == 'haloce':
+                    Region = geometry.jms.Region
+                    
+                else:
+                    report({'ERROR'}, "How did you even choose an option that doesn't exist?")
+                    file.close()
+                    return {'CANCELLED'}
+
             else:
                 region = region_list.index(default_region)
 
@@ -885,7 +900,7 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
         #write sphere
         for spheres in sphere_list:
             assigned_sphere_materials_list = []
-            name = spheres.name.replace(' ', '')[+1:]
+            name = spheres.name.split('$', 1)[1]
             sphere_material_index = -1
             sphere_materials = spheres.data.materials
             if len(sphere_materials) != 0:
@@ -956,7 +971,7 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
 
         for boxes in box_list:
             assigned_boxes_materials_list = []
-            name = boxes.name.replace(' ', '')[+1:]
+            name = boxes.name.split('$', 1)[1]
             boxes_material_index = -1
             box_materials = boxes.data.materials
             if len(box_materials) != 0:
@@ -1030,7 +1045,7 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
 
         for capsule in capsule_list:
             assigned_capsule_materials_list = []
-            name = capsule.name.replace(' ', '')[+1:]
+            name = capsule.name.split('$', 1)[1]
             capsule_material_index = -1
             capsule_materials = capsule.data.materials
             if len(capsule_materials) != 0:
@@ -1072,9 +1087,9 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
             pos_x = Decimal(pos[0]).quantize(Decimal('1.0000000000'))
             pos_y = Decimal(pos[1]).quantize(Decimal('1.0000000000'))
             pos_z = Decimal(pos[2]).quantize(Decimal('1.0000000000'))
-            scale_x = obj.dimensions[0]
-            scale_y = obj.dimensions[1]
-            scale_z = obj.dimensions[2]
+            scale_x = capsule.dimensions[0]
+            scale_y = capsule.dimensions[1]
+            scale_z = capsule.dimensions[2]
 
             radius = scale_y/2
             pill_height_math = scale_z - scale_x
@@ -1111,7 +1126,7 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
 
         for convex_shape in convex_shape_list:
             assigned_convex_shape_materials_list = []
-            name = convex_shape.name.replace(' ', '')[+1:]
+            name = convex_shape.name.split('$', 1)[1]
             convex_shape_materials = convex_shape.data.materials
             convex_shape_material_index = -1
             if len(convex_shape_materials) != 0:
@@ -1299,168 +1314,5 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
     file.close()
     return {'FINISHED'}
 
-class JMS_ObjectProps(Panel):
-    bl_label = "JMS Object Properties"
-    bl_idname = "JMS_PT_RegionPermutationPanel"
-    bl_space_type = "PROPERTIES"
-    bl_region_type = "WINDOW"
-    bl_context = "object"
-    bl_options = {"DEFAULT_CLOSED"}
-
-    def draw(self, context):
-        layout = self.layout
-
-        obj = context.object
-        jms = obj.jms
-
-        row = layout.row()
-        row.prop(jms, "Region")
-
-        row = layout.row()
-        row.prop(jms, "Permutation")
-
-        row = layout.row()
-        row.prop(jms, "Object_Type")
-
-class JMS_ObjectPropertiesGroup(PropertyGroup):
-    Region : StringProperty(
-        name = "Region",
-        default = "",
-        description = "Set region name."
-        )
-
-    Permutation : StringProperty(
-        name = "Permutation",
-        default = "",
-        description = "Set permutation name."
-        )
-
-    Object_Type : EnumProperty(
-        name="Object Type",
-        description="Select object type to write mesh as",
-        default = "CONVEX SHAPES",
-        items=[ ('SPHERE', "Sphere", ""),
-                ('BOX', "Box", ""),
-                ('CAPSULES', "Pill", ""),
-                ('CONVEX SHAPES', "Convex Shape", ""),
-               ]
-        )
-
-class ExportJMS(Operator, ExportHelper):
-    """Write a JMS file"""
-    bl_idname = "export_jms.export"
-    bl_label = "Export JMS"
-
-    filename_ext = ''
-
-    encoding: EnumProperty(
-        name="Encoding:",
-        description="What encoding to use for the model file",
-        default="UTF-16LE",
-        items=[ ('utf_8', "UTF-8", "For CE"),
-                ('UTF-16LE', "UTF-16", "For H2"),
-               ]
-        )
-
-    extension: EnumProperty(
-        name="Extension:",
-        description="What extension to use for the model file",
-        items=[ ('.JMS', "JMS", "Jointed Model Skeleton CE/H2"),
-                ('.JMP', "JMP", "Jointed Model Physics CE"),
-               ]
-        )
-
-    jms_version: EnumProperty(
-        name="Version:",
-        description="What version to use for the model file",
-        default="8200",
-        items=[ ('8197', "8197", "CE/H2 Non-functional"),
-                ('8198', "8198", "CE/H2 Non-functional"),
-                ('8199', "8199", "CE/H2 Non-functional"),
-                ('8200', "8200", "CE/H2"),
-                ('8201', "8201", "H2 Non-functional"),
-                ('8202', "8202", "H2 Non-functional"),
-                ('8203', "8203", "H2 Non-functional"),
-                ('8204', "8204", "H2 Non-functional"),
-                ('8205', "8205", "H2"),
-                ('8206', "8206", "H2 Non-functional"),
-                ('8207', "8207", "H2 Non-functional"),
-                ('8208', "8208", "H2 Non-functional"),
-                ('8209', "8209", "H2"),
-                ('8210', "8210", "H2"),
-               ]
-        )
-
-    game_version: EnumProperty(
-        name="Game:",
-        description="What game will the model file be used for",
-        default="halo2",
-        items=[ ('haloce', "Halo CE", "Export a JMS intended for Halo Custom Edition"),
-                ('halo2', "Halo 2", "Export a JMS intended for Halo 2 Vista"),
-               ]
-        )
-
-    triangulate_faces: BoolProperty(
-        name ="Triangulate faces",
-        description = "Automatically triangulate all faces (recommended)",
-        default = True,
-        )
-
-    filter_glob: StringProperty(
-        default="*.jms;*.jmp",
-        options={'HIDDEN'},
-        )
-
-    def execute(self, context):
-        if '--' in sys.argv:
-            argv = sys.argv[sys.argv.index('--') + 1:]
-            parser = argparse.ArgumentParser()
-            parser.add_argument('-arg1', '--filepath', dest='filepath', metavar='FILE', required = True)
-            parser.add_argument('-arg2', '--encoding', dest='encoding', type=str, default="UTF-16LE")
-            parser.add_argument('-arg3', '--extension', dest='extension', type=str, default=".JMS")
-            parser.add_argument('-arg4', '--jms_version', dest='jms_version', type=str, default="8200")
-            parser.add_argument('-arg5', '--game_version', dest='game_version', type=str, default="halo2")
-            parser.add_argument('-arg6', '--triangulate_faces', dest='triangulate_faces', action='store_true')
-            args = parser.parse_known_args(argv)[0]
-            # print parameters
-            print('filepath: ', args.filepath)
-            print('encoding: ', args.encoding)
-            print('extension: ', args.extension)
-            print('jms_version: ', args.jms_version)
-            print('game_version: ', args.game_version)
-            print('triangulate_faces: ', args.triangulate_faces)
-
-        if len(self.filepath) == 0:
-            self.filepath = args.filepath
-            self.encoding = args.encoding
-            self.extension = args.extension
-            self.jms_version = args.jms_version
-            self.game_version = args.game_version
-            self.triangulate_faces = args.triangulate_faces
-
-        return export_jms(context, self.filepath, self.report, self.encoding, self.extension, self.jms_version, self.game_version, self.triangulate_faces)
-
-classesjms = (
-    JMS_ObjectPropertiesGroup,
-    JMS_ObjectProps,
-    ExportJMS
-)
-
-def menu_func_export(self, context):
-    self.layout.operator(ExportJMS.bl_idname, text="Halo Jointed Model Skeleton (.jms)")
-
-def register():
-    for clsjms in classesjms:
-        bpy.utils.register_class(clsjms)
-    bpy.types.TOPBAR_MT_file_export.append(menu_func_export)
-    bpy.types.Object.jms = PointerProperty(type=JMS_ObjectPropertiesGroup, name="JMS Object Properties", description="JMS Object properties")
-
-def unregister():
-    for clsjms in reversed(classesjms):
-        bpy.utils.unregister_class(clsjms)
-    bpy.types.TOPBAR_MT_file_export.remove(menu_func_export)
-    del bpy.types.Object.jms
-
 if __name__ == '__main__':
-    register()
     bpy.ops.export_jms.export()
