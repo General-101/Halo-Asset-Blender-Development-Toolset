@@ -43,8 +43,6 @@ def unhide_all_collections():
         collection_hide.hide_viewport = False
         collection_hide.hide_render = False
 
-
-
 def unhide_all_objects():
     for obj in bpy.context.view_layer.objects:
         obj.hide_set(False)
@@ -81,21 +79,15 @@ def get_sibling(armature, bone, bone_list = [], *args):
 
         return sibling
 
-def get_region(default_region, region, game_version):
+def get_region(default_region, region):
     if not len(region) == 0:
-        if game_version == 'halo2':
-            region = region.replace(' ', '_').replace('\t', '_')
-
         return region
 
     else:
         return default_region
 
-def get_permutation(default_permutation, permutation, game_version):
+def get_permutation(default_permutation, permutation):
     if not len(permutation) == 0:
-        if game_version == 'halo2':
-            permutation = permutation.replace(' ', '_').replace('\t', '_')
-            
         return permutation
 
     else:
@@ -164,8 +156,8 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
 
     for obj in object_list:
         assigned_materials_list = []
-        find_region = get_region(default_region, obj.jms.Region, game_version)
-        find_permutation = get_permutation(default_permutation, obj.jms.Permutation, game_version)
+        find_region = get_region(default_region, obj.jms.Region)
+        find_permutation = get_permutation(default_permutation, obj.jms.Permutation)
         if obj.type == 'ARMATURE':
             armature_count += 1
             armature = obj
@@ -326,11 +318,11 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
         report({'ERROR'}, 'This encoding is not supported for CE. Choose UTF-8 if you wish to export for CE.')
         file.close()
         return {'CANCELLED'}
-        
+
     if encoding == 'utf_8' and game_version == 'halo2':
         report({'ERROR'}, 'This encoding is not supported for Halo 2. Choose UTF-16 if you wish to export for Halo 2.')
         file.close()
-        return {'CANCELLED'}       
+        return {'CANCELLED'}
 
     if extension == '.JMP' and game_version == 'halo2':
         report({'ERROR'}, 'This extension is not used in Halo 2 Vista')
@@ -521,7 +513,7 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
             '''
             This doesn't matter for CE but for Halo 2 the region or permutation names can't have any whitespace.
             Lets fix that here to make sure nothing goes wrong.
-            '''            
+            '''
             if len(material[2]) != 0:
                 safe_permutation = material[2].replace(' ', '_').replace('\t', '_')
                 Permutation = safe_permutation
@@ -529,21 +521,20 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
             if len(material[1]) != 0:
                 safe_region = material[1].replace(' ', '_').replace('\t', '_')
                 Region = safe_region
-                    
+
             if version >= 8205:
                 file.write(
                     '\n;MATERIAL %s' % (material_list.index([material[0], untouched_region, untouched_permutation])) +
                     '\n%s' % material[0].name +
-                    '\n%s %s\n' % (Permutation, Region) +
-                    '\n'                    
+                    '\n%s %s\n' % (Permutation, Region)
                 )
-                
+
             else:
                 file.write(
                     '\n%s' % (material[0].name) +
                     '\n%s %s' % (Permutation, Region)
                 )
-                
+
         elif game_version == 'haloce':
             texture_path = '<none>'
             for node in material.node_tree.nodes:
@@ -558,11 +549,11 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
                 '\n%s' % (material.name) +
                 '\n%s' % (texture_path)
             )
-            
+
         else:
             report({'ERROR'}, "How did you even choose an option that doesn't exist?")
             file.close()
-            return {'CANCELLED'}            
+            return {'CANCELLED'}
 
     #write markers
     if version >= 8205:
@@ -581,7 +572,7 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
             '\n%s' % (marker_count)
         )
 
-    for marker in marker_list: 
+    for marker in marker_list:
         name = marker.name.split('#', 1)[1] #remove marker symbol from name
         fixed_name = name.rsplit('.', 1)[0] #remove name change from duplicating objects in Blender
         region = -1
@@ -685,15 +676,14 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
         for face in geometry.data.polygons:
             jms_triangle = JmsTriangle()
             triangles.append(jms_triangle)
-            safe_region = geometry.jms.Region.replace(' ', '_').replace('\t', '_')
-            
+
             if len(geometry.jms.Region) != 0:
                 if game_version == 'halo2':
-                    region = safe_region
-                    
+                    region = geometry.jms.Region
+
                 elif game_version == 'haloce':
                     Region = geometry.jms.Region
-                    
+
                 else:
                     report({'ERROR'}, "How did you even choose an option that doesn't exist?")
                     file.close()
