@@ -57,7 +57,6 @@ from bpy.types import (
 from bpy.props import (
         BoolProperty,
         EnumProperty,
-        IntProperty,
         PointerProperty,
         StringProperty,
         )
