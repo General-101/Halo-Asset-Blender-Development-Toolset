@@ -304,8 +304,8 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
     region_count = len(region_list)
 
     #JMSv2 files can have JMS files without a node for physics.
-    if version <= 8204 and len(node_list) == 0:
-        report({'ERROR'}, 'No nodes in scene. Add an armature or object mesh named frame or b_')
+    if game_version == 'haloce' and len(node_list) == 0:
+        report({'ERROR'}, 'No nodes in scene. Add an armature or object mesh named frame')
         file.close()
         return {'CANCELLED'}
 
@@ -436,14 +436,9 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
 
         if not find_sibling_node == None:
             first_sibling_node = joined_list.index(find_sibling_node)
-
-        if version >= 8205:
-            if not node.parent == None:
-                parent_node = joined_list.index(node.parent)
-
-        else:
-            if not node.parent == None:
-                parent_node = joined_list.index(node)
+            
+        if not node.parent == None:
+            parent_node = joined_list.index(node.parent)
 
         if armature_count == 0:
             bone_matrix = node.matrix_world
