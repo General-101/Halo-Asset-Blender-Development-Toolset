@@ -95,8 +95,6 @@ def get_permutation(default_permutation, permutation):
 
 def export_jms(context, filepath, report, encoding, extension, jms_version, game_version, triangulate_faces):
 
-    file = open(filepath + extension, 'w', encoding='%s' % encoding)
-
     unhide_all_collections()
     unhide_all_objects()
 
@@ -139,7 +137,6 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
 
     else:
         report({'ERROR'}, "How did you even choose an option that doesn't exist?")
-        file.close()
         return {'CANCELLED'}
 
     version = int(jms_version)
@@ -147,7 +144,6 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
 
     if len(object_list) == 0:
         report({'ERROR'}, 'No objects in scene.')
-        file.close()
         return {'CANCELLED'}
 
     bpy.context.view_layer.objects.active = object_list[0]
@@ -166,7 +162,6 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
             node_list = list(obj.data.bones)
             if mesh_frame_count > 0:
                 report({'ERROR'}, "Using both armature and object mesh node setup. Choose one or the other.")
-                file.close()
                 return {'CANCELLED'}
 
         elif obj.name[0:2].lower() == 'b_' or obj.name[0:5].lower() == 'frame':
@@ -174,7 +169,6 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
             mesh_frame_count += 1
             if armature_count > 0:
                 report({'ERROR'}, "Using both armature and object mesh node setup. Choose one or the other.")
-                file.close()
                 return {'CANCELLED'}
 
         elif obj.name[0:1].lower() == '#':
@@ -190,7 +184,6 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
 
             else:
                 report({'ERROR'}, "How did you even choose an option that doesn't exist?")
-                file.close()
                 return {'CANCELLED'}
 
         elif obj.name[0:1].lower() == '$':
@@ -217,7 +210,6 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
 
                 else:
                     report({'ERROR'}, "How did you even choose an option that doesn't exist?")
-                    file.close()
                     return {'CANCELLED'}
 
         elif obj.type== 'MESH':
@@ -261,7 +253,6 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
 
             else:
                 report({'ERROR'}, "How did you even choose an option that doesn't exist?")
-                file.close()
                 return {'CANCELLED'}
 
         if len(obj.material_slots)!= 0 and not obj.name[0:1].lower() == '#' and not obj.name[0:2].lower() == 'b_' and not obj.name[0:5].lower() == 'frame':
@@ -288,13 +279,7 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
 
                 else:
                     report({'ERROR'}, "How did you even choose an option that doesn't exist?")
-                    file.close()
                     return {'CANCELLED'}
-
-        if armature_count >= 2:
-            report({'ERROR'}, 'More than one armature object. Please delete all but one.')
-            file.close()
-            return {'CANCELLED'}
 
     region_list = list(dict.fromkeys(region_list))
     permutation_list = list(dict.fromkeys(permutation_list))
@@ -303,30 +288,28 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
     marker_count = len(marker_list)
     region_count = len(region_list)
 
-    #JMSv2 files can have JMS files without a node for physics.
-    if game_version == 'haloce' and len(node_list) == 0:
+    if armature_count >= 2:
+        report({'ERROR'}, 'More than one armature object. Please delete all but one.')
+        return {'CANCELLED'}
+            
+    if game_version == 'haloce' and len(node_list) == 0: #JMSv2 files can have JMS files without a node for physics.
         report({'ERROR'}, 'No nodes in scene. Add an armature or object mesh named frame')
-        file.close()
         return {'CANCELLED'}
 
     if version >= 8201 and game_version == 'haloce':
         report({'ERROR'}, 'This version is not supported for CE. Choose from 8197-8200 if you wish to export for CE.')
-        file.close()
         return {'CANCELLED'}
 
     if encoding == 'UTF-16LE' and game_version == 'haloce':
         report({'ERROR'}, 'This encoding is not supported for CE. Choose UTF-8 if you wish to export for CE.')
-        file.close()
         return {'CANCELLED'}
 
     if encoding == 'utf_8' and game_version == 'halo2':
         report({'ERROR'}, 'This encoding is not supported for Halo 2. Choose UTF-16 if you wish to export for Halo 2.')
-        file.close()
         return {'CANCELLED'}
 
     if extension == '.JMP' and game_version == 'halo2':
         report({'ERROR'}, 'This extension is not used in Halo 2 Vista')
-        file.close()
         return {'CANCELLED'}
 
     for node in node_list:
@@ -399,6 +382,8 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
         decimal_3 = '\n%0.6f\t%0.6f\t%0.6f'
         decimal_4 = '\n%0.6f\t%0.6f\t%0.6f\t%0.6f'
 
+    file = open(filepath + extension, 'w', encoding='%s' % encoding)
+    
     #write header
     if version >= 8205:
         file.write(
@@ -436,7 +421,7 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
 
         if not find_sibling_node == None:
             first_sibling_node = joined_list.index(find_sibling_node)
-            
+
         if not node.parent == None:
             parent_node = joined_list.index(node.parent)
 
