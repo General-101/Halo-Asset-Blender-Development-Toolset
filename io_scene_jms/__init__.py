@@ -103,6 +103,9 @@ class JMS_ObjectProps(Panel):
         row.prop(jms, "Permutation")
 
         row = layout.row()
+        row.prop(jms, "level_of_detail")
+
+        row = layout.row()
         row.prop(jms, "Object_Type")
 
 class JMS_ObjectPropertiesGroup(PropertyGroup):
@@ -116,6 +119,18 @@ class JMS_ObjectPropertiesGroup(PropertyGroup):
         name = "Permutation",
         default = "",
         description = "Set permutation name."
+        )
+
+    level_of_detail: EnumProperty(
+        name="LOD:",
+        description="What LOD to use for the object",
+        items=[ ('0', "L1", ""),
+                ('1', "L2", ""),
+                ('2', "L3", ""),
+                ('3', "L4", ""),
+                ('4', "L5", ""),
+                ('5', "L6", ""),
+               ]
         )
 
     Object_Type : EnumProperty(

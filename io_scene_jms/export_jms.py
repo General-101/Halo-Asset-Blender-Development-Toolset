@@ -93,8 +93,65 @@ def get_permutation(default_permutation, permutation):
     else:
         return default_permutation
 
-def export_jms(context, filepath, report, encoding, extension, jms_version, game_version, triangulate_faces):
+def get_default_region_permutation_name(game_version):
+    if game_version == 'haloce':
+        default_name = 'unnamed'
 
+    elif game_version == 'halo2':
+        default_name = 'Default'
+
+    return default_name
+
+def get_lod(lod_setting):
+    if lod_setting == '0':
+        LOD_name = 'L1'
+
+    elif lod_setting == '1':
+        LOD_name = 'L2'
+
+    elif lod_setting == '2':
+        LOD_name = 'L3'
+
+    elif lod_setting == '3':
+        LOD_name = 'L4'
+
+    elif lod_setting == '4':
+        LOD_name = 'L5'
+
+    elif lod_setting == '5':
+        LOD_name = 'L6'
+
+    else:
+        LOD_name = ''
+
+    return LOD_name
+
+def error_pass(armature_count, report, game_version, node_count, version, encoding, extension):
+    if armature_count >= 2:
+        report({'ERROR'}, 'More than one armature object. Please delete all but one.')
+        return {'CANCELLED'}
+
+    elif game_version == 'haloce' and node_count == 0: #JMSv2 files can have JMS files without a node for physics.
+        report({'ERROR'}, 'No nodes in scene. Add an armature or object mesh named frame')
+        return {'CANCELLED'}
+
+    elif version >= 8201 and game_version == 'haloce':
+        report({'ERROR'}, 'This version is not supported for CE. Choose from 8197-8200 if you wish to export for CE.')
+        return {'CANCELLED'}
+
+    elif encoding == 'UTF-16LE' and game_version == 'haloce':
+        report({'ERROR'}, 'This encoding is not supported for CE. Choose UTF-8 if you wish to export for CE.')
+        return {'CANCELLED'}
+
+    elif encoding == 'utf_8' and game_version == 'halo2':
+        report({'ERROR'}, 'This encoding is not supported for Halo 2. Choose UTF-16 if you wish to export for Halo 2.')
+        return {'CANCELLED'}
+
+    elif extension == '.JMP' and game_version == 'halo2':
+        report({'ERROR'}, 'This extension is not used in Halo 2 Vista')
+        return {'CANCELLED'}
+
+def export_jms(context, filepath, report, encoding, extension, jms_version, game_version, triangulate_faces):
     unhide_all_collections()
     unhide_all_objects()
 
@@ -126,18 +183,8 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
 
     region_list = []
     permutation_list = []
-
-    if game_version == 'halo2':
-        default_region = 'Default'
-        default_permutation = 'Default'
-
-    elif game_version == 'haloce':
-        default_region = 'unnamed'
-        default_permutation = 'unnamed'
-
-    else:
-        report({'ERROR'}, "How did you even choose an option that doesn't exist?")
-        return {'CANCELLED'}
+    default_region = get_default_region_permutation_name(game_version)
+    default_permutation = get_default_region_permutation_name(game_version)
 
     version = int(jms_version)
     node_checksum = 0
@@ -267,11 +314,11 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
                 if game_version == 'halo2':
                     if obj.name[0:1].lower() == '$':
                         if [slot.material, obj.jms.Region, obj.jms.Permutation] not in material_list and slot.material in assigned_materials_list and version >= 8205:
-                            material_list.append([slot.material, obj.jms.Region, obj.jms.Permutation])
+                            material_list.append([slot.material, obj.jms.level_of_detail, obj.jms.Region, obj.jms.Permutation])
 
                     elif obj.type== 'MESH':
                         if [slot.material, obj.jms.Region, obj.jms.Permutation] not in material_list and slot.material in assigned_materials_list:
-                            material_list.append([slot.material, obj.jms.Region, obj.jms.Permutation])
+                            material_list.append([slot.material, obj.jms.level_of_detail, obj.jms.Region, obj.jms.Permutation])
 
                 elif game_version == 'haloce':
                     if slot.material not in material_list and not obj.name[0:1].lower() == '$':
@@ -287,30 +334,6 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
     material_count = len(material_list)
     marker_count = len(marker_list)
     region_count = len(region_list)
-
-    if armature_count >= 2:
-        report({'ERROR'}, 'More than one armature object. Please delete all but one.')
-        return {'CANCELLED'}
-            
-    if game_version == 'haloce' and len(node_list) == 0: #JMSv2 files can have JMS files without a node for physics.
-        report({'ERROR'}, 'No nodes in scene. Add an armature or object mesh named frame')
-        return {'CANCELLED'}
-
-    if version >= 8201 and game_version == 'haloce':
-        report({'ERROR'}, 'This version is not supported for CE. Choose from 8197-8200 if you wish to export for CE.')
-        return {'CANCELLED'}
-
-    if encoding == 'UTF-16LE' and game_version == 'haloce':
-        report({'ERROR'}, 'This encoding is not supported for CE. Choose UTF-8 if you wish to export for CE.')
-        return {'CANCELLED'}
-
-    if encoding == 'utf_8' and game_version == 'halo2':
-        report({'ERROR'}, 'This encoding is not supported for Halo 2. Choose UTF-16 if you wish to export for Halo 2.')
-        return {'CANCELLED'}
-
-    if extension == '.JMP' and game_version == 'halo2':
-        report({'ERROR'}, 'This extension is not used in Halo 2 Vista')
-        return {'CANCELLED'}
 
     for node in node_list:
         if node.parent == None:
@@ -382,8 +405,10 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
         decimal_3 = '\n%0.6f\t%0.6f\t%0.6f'
         decimal_4 = '\n%0.6f\t%0.6f\t%0.6f\t%0.6f'
 
+    error_pass(armature_count, report, game_version, node_count, version, encoding, extension)
+
     file = open(filepath + extension, 'w', encoding='%s' % encoding)
-    
+
     #write header
     if version >= 8205:
         file.write(
@@ -486,33 +511,35 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
 
     for material in material_list:
         if game_version == 'halo2':
-            untouched_region = material[1]
-            untouched_permutation = material[2]
+            untouched_lod = material[1]
+            untouched_region = material[2]
+            untouched_permutation = material[3]
+            LOD = get_lod(material[1])
             Permutation = default_permutation
             Region = default_region
             '''
             This doesn't matter for CE but for Halo 2 the region or permutation names can't have any whitespace.
             Lets fix that here to make sure nothing goes wrong.
             '''
-            if len(material[2]) != 0:
-                safe_permutation = material[2].replace(' ', '_').replace('\t', '_')
+            if len(material[3]) != 0:
+                safe_permutation = material[3].replace(' ', '_').replace('\t', '_')
                 Permutation = safe_permutation
 
-            if len(material[1]) != 0:
-                safe_region = material[1].replace(' ', '_').replace('\t', '_')
+            if len(material[2]) != 0:
+                safe_region = material[2].replace(' ', '_').replace('\t', '_')
                 Region = safe_region
 
             if version >= 8205:
                 file.write(
-                    '\n;MATERIAL %s' % (material_list.index([material[0], untouched_region, untouched_permutation])) +
+                    '\n;MATERIAL %s' % (material_list.index([material[0], untouched_lod, untouched_region, untouched_permutation])) +
                     '\n%s' % material[0].name +
-                    '\n%s %s\n' % (Permutation, Region)
+                    '\n%s %s %s\n' % (LOD, Permutation, Region)
                 )
 
             else:
                 file.write(
                     '\n%s' % (material[0].name) +
-                    '\n%s %s' % (Permutation, Region)
+                    '\n%s %s' % (LOD, Permutation, Region)
                 )
 
         elif game_version == 'haloce':
@@ -679,7 +706,7 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
             if game_version == 'halo2':
                 jms_triangle.material = -1
                 if len(geometry.material_slots) != 0:
-                    jms_triangle.material = material_list.index([bpy.data.materials[geometry.data.materials[face.material_index].name], geometry.jms.Region, geometry.jms.Permutation])
+                    jms_triangle.material = material_list.index([bpy.data.materials[geometry.data.materials[face.material_index].name], geometry.jms.level_of_detail, geometry.jms.Region, geometry.jms.Permutation])
 
             elif game_version == 'haloce':
                 jms_triangle.material = -1
@@ -885,7 +912,7 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
                 report({'WARNING'}, "Physics object %s has more than one material assigned to it's faces. Please use only one material." % (spheres.name))
 
             if len(assigned_sphere_materials_list) != 0:
-                sphere_material_index = material_list.index([assigned_sphere_materials_list[0], spheres.jms.Region, spheres.jms.Permutation])
+                sphere_material_index = material_list.index([assigned_sphere_materials_list[0], spheres.jms.level_of_detail, spheres.jms.Region, spheres.jms.Permutation])
 
             parent_index = -1
             if armature_count == 0:
@@ -956,7 +983,7 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
                 report({'WARNING'}, "Physics object %s has more than one material assigned to it's faces. Please use only one material." % (boxes.name))
 
             if len(assigned_boxes_materials_list) != 0:
-                boxes_material_index = material_list.index([assigned_boxes_materials_list[0], boxes.jms.Region, boxes.jms.Permutation])
+                boxes_material_index = material_list.index([assigned_boxes_materials_list[0], boxes.jms.level_of_detail, boxes.jms.Region, boxes.jms.Permutation])
 
             parent_index = -1
             if armature_count == 0:
@@ -1030,7 +1057,7 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
                 report({'WARNING'}, "Physics object %s has more than one material assigned to it's faces. Please use only one material." % (capsule.name))
 
             if len(assigned_capsule_materials_list) != 0:
-                capsule_material_index = material_list.index([assigned_capsule_materials_list[0], capsule.jms.Region, capsule.jms.Permutation])
+                capsule_material_index = material_list.index([assigned_capsule_materials_list[0], capsule.jms.level_of_detail, capsule.jms.Region, capsule.jms.Permutation])
 
             parent_index = -1
             if armature_count == 0:
@@ -1111,7 +1138,7 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
                 report({'WARNING'}, "Physics object %s has more than one material assigned to it's faces. Please use only one material." % (convex_shape.name))
 
             if len(assigned_convex_shape_materials_list) != 0:
-                convex_shape_material_index = material_list.index([assigned_convex_shape_materials_list[0], convex_shape.jms.Region, convex_shape.jms.Permutation])
+                convex_shape_material_index = material_list.index([assigned_convex_shape_materials_list[0], convex_shape.jms.level_of_detail, convex_shape.jms.Region, convex_shape.jms.Permutation])
 
             parent_index = -1
             if armature_count == 0:
