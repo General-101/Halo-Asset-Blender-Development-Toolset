@@ -126,13 +126,17 @@ def get_lod(lod_setting):
 
     return LOD_name
 
-def error_pass(armature_count, report, game_version, node_count, version, encoding, extension):
+def error_pass(armature_count, report, game_version, node_count, version, encoding, extension, geometry_list, marker_list):
     if armature_count >= 2:
         report({'ERROR'}, 'More than one armature object. Please delete all but one.')
         return {'CANCELLED'}
 
     elif game_version == 'haloce' and node_count == 0: #JMSv2 files can have JMS files without a node for physics.
         report({'ERROR'}, 'No nodes in scene. Add an armature or object mesh named frame')
+        return {'CANCELLED'}
+
+    elif game_version == 'haloce' and len(geometry_list) == 0 and len(marker_list) == 0:
+        report({'ERROR'}, 'No geometry in scene.')
         return {'CANCELLED'}
 
     elif version >= 8201 and game_version == 'haloce':
@@ -313,11 +317,11 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
             for slot in obj.material_slots:
                 if game_version == 'halo2':
                     if obj.name[0:1].lower() == '$':
-                        if [slot.material, obj.jms.Region, obj.jms.Permutation] not in material_list and slot.material in assigned_materials_list and version >= 8205:
+                        if [slot.material, obj.jms.level_of_detail, obj.jms.Region, obj.jms.Permutation] not in material_list and slot.material in assigned_materials_list and version >= 8205:
                             material_list.append([slot.material, obj.jms.level_of_detail, obj.jms.Region, obj.jms.Permutation])
 
                     elif obj.type== 'MESH':
-                        if [slot.material, obj.jms.Region, obj.jms.Permutation] not in material_list and slot.material in assigned_materials_list:
+                        if [slot.material, obj.jms.level_of_detail, obj.jms.Region, obj.jms.Permutation] not in material_list and slot.material in assigned_materials_list:
                             material_list.append([slot.material, obj.jms.level_of_detail, obj.jms.Region, obj.jms.Permutation])
 
                 elif game_version == 'haloce':
@@ -327,6 +331,10 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
                 else:
                     report({'ERROR'}, "How did you even choose an option that doesn't exist?")
                     return {'CANCELLED'}
+        else:
+            if game_version == 'haloce':
+                if None not in material_list and not obj.name[0:1].lower() == '$' and not obj.name[0:1].lower() == '#' and not obj.name[0:2].lower() == 'b_' and not obj.name[0:5].lower() == 'frame':
+                    material_list.append(None)
 
     region_list = list(dict.fromkeys(region_list))
     permutation_list = list(dict.fromkeys(permutation_list))
@@ -405,7 +413,7 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
         decimal_3 = '\n%0.6f\t%0.6f\t%0.6f'
         decimal_4 = '\n%0.6f\t%0.6f\t%0.6f\t%0.6f'
 
-    error_pass(armature_count, report, game_version, node_count, version, encoding, extension)
+    error_pass(armature_count, report, game_version, node_count, version, encoding, extension, geometry_list, marker_list)
 
     file = open(filepath + extension, 'w', encoding='%s' % encoding)
 
@@ -539,21 +547,26 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
             else:
                 file.write(
                     '\n%s' % (material[0].name) +
-                    '\n%s %s' % (LOD, Permutation, Region)
+                    '\n%s %s %s' % (LOD, Permutation, Region)
                 )
 
         elif game_version == 'haloce':
+            material_name = '<none>'
             texture_path = '<none>'
-            for node in material.node_tree.nodes:
-                if node.type == 'TEX_IMAGE':
-                    image_filepath = node.image.filepath
-                    image_extension = image_filepath.rsplit('.', 1)[1]
-                    image_path = image_filepath.rsplit('.', 1)[0]
-                    if image_extension.lower() == 'tif' and os.path.exists(image_filepath):
-                        texture_path = image_path
+            if not material == None:
+                for node in material.node_tree.nodes:
+                    if node.type == 'TEX_IMAGE':
+                        image_filepath = node.image.filepath
+                        image_extension = image_filepath.rsplit('.', 1)[1]
+                        image_path = image_filepath.rsplit('.', 1)[0]
+                        if image_extension.lower() == 'tif' and os.path.exists(image_filepath):
+                            texture_path = image_path
+
+            if not material == None:
+                material_name = material.name
 
             file.write(
-                '\n%s' % (material.name) +
+                '\n%s' % (material_name) +
                 '\n%s' % (texture_path)
             )
 
@@ -676,6 +689,8 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
 
         matrix = geometry.matrix_world
 
+        region_name = geometry.jms.Region
+
         uv_layer = geometry.data.uv_layers.active.data
         mesh_loops = geometry.data.loops
         mesh_verts = geometry.data.vertices
@@ -684,32 +699,23 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
             jms_triangle = JmsTriangle()
             triangles.append(jms_triangle)
 
-            if len(geometry.jms.Region) != 0:
-                if game_version == 'halo2':
-                    region = geometry.jms.Region
-
-                elif game_version == 'haloce':
-                    Region = geometry.jms.Region
-
-                else:
-                    report({'ERROR'}, "How did you even choose an option that doesn't exist?")
-                    file.close()
-                    return {'CANCELLED'}
+            if region_name != 0:
+                region_index = region_list.index(region_name)
 
             else:
-                region = region_list.index(default_region)
+                region_index = region_list.index(default_region)
 
             jms_triangle.v0 = len(vertices)
             jms_triangle.v1 = len(vertices) + 1
             jms_triangle.v2 = len(vertices) + 2
-            jms_triangle.region = region
+            jms_triangle.region = region_index
             if game_version == 'halo2':
                 jms_triangle.material = -1
                 if len(geometry.material_slots) != 0:
                     jms_triangle.material = material_list.index([bpy.data.materials[geometry.data.materials[face.material_index].name], geometry.jms.level_of_detail, geometry.jms.Region, geometry.jms.Permutation])
 
             elif game_version == 'haloce':
-                jms_triangle.material = -1
+                jms_triangle.material = material_list.index(None)
                 if len(geometry.material_slots) != 0:
                     jms_triangle.material = material_list.index(bpy.data.materials[geometry.data.materials[face.material_index].name])
 
@@ -1153,7 +1159,7 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
 
             convex_matrix = convex_shape.matrix_world
             if convex_shape.parent:
-                convex_matrix = parent_bone.matrix_local.inverted() @ convex_shape.matrix_local
+                convex_matrix = parent_bone.matrix_local.inverted() @ convex_shape.matrix_world
 
             pos  = convex_matrix.translation
             quat = convex_matrix.to_quaternion().inverted()
