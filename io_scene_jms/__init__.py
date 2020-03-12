@@ -108,6 +108,9 @@ class JMS_ObjectProps(Panel):
         row = layout.row()
         row.prop(jms, "Object_Type")
 
+        row = layout.row()
+        row.prop(jms, "XREF_path")
+
 class JMS_ObjectPropertiesGroup(PropertyGroup):
     Region : StringProperty(
         name = "Region",
@@ -144,6 +147,12 @@ class JMS_ObjectPropertiesGroup(PropertyGroup):
                ]
         )
 
+    XREF_path: StringProperty(
+        name="XREF Object",
+        description="Select a path to a .MAX file",
+        subtype="FILE_PATH"
+    )
+
 class ExportJMS(Operator, ExportHelper):
     """Write a JMS file"""
     bl_idname = "export_jms.export"
@@ -171,7 +180,7 @@ class ExportJMS(Operator, ExportHelper):
     jms_version: EnumProperty(
         name="Version:",
         description="What version to use for the model file",
-        default="8200",
+        default="8210",
         items=[ ('8197', "8197", "CE/H2 Non-functional"),
                 ('8198', "8198", "CE/H2 Non-functional"),
                 ('8199', "8199", "CE/H2 Non-functional"),
@@ -216,7 +225,7 @@ class ExportJMS(Operator, ExportHelper):
             parser.add_argument('-arg1', '--filepath', dest='filepath', metavar='FILE', required = True)
             parser.add_argument('-arg2', '--encoding', dest='encoding', type=str, default="UTF-16LE")
             parser.add_argument('-arg3', '--extension', dest='extension', type=str, default=".JMS")
-            parser.add_argument('-arg4', '--jms_version', dest='jms_version', type=str, default="8200")
+            parser.add_argument('-arg4', '--jms_version', dest='jms_version', type=str, default="8210")
             parser.add_argument('-arg5', '--game_version', dest='game_version', type=str, default="halo2")
             parser.add_argument('-arg6', '--triangulate_faces', dest='triangulate_faces', action='store_true')
             args = parser.parse_known_args(argv)[0]

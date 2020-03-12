@@ -31,6 +31,8 @@ import bpy
 import os
 
 from decimal import *
+from random import seed
+from random import randint
 from io_scene_jms.__init__ import JmsVertex
 from io_scene_jms.__init__ import JmsTriangle
 
@@ -177,13 +179,16 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
 
     material_list = []
     marker_list = []
+    instance_xref_paths = []
+    instance_markers = []
     geometry_list = []
+    triangles = []
+    vertices = []
     sphere_list = []
     box_list = []
     capsule_list = []
     convex_shape_list = []
-    triangles = []
-    vertices = []
+    bounding_sphere = []
 
     region_list = []
     permutation_list = []
@@ -263,6 +268,14 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
                     report({'ERROR'}, "How did you even choose an option that doesn't exist?")
                     return {'CANCELLED'}
 
+        elif not len(obj.jms.XREF_path) == 0:
+            instance_markers.append(obj)
+            if not obj.jms.XREF_path in instance_xref_paths:
+                instance_xref_paths.append(obj.jms.XREF_path)
+
+        elif obj.name[0:1].lower() == ',':
+            bounding_sphere.append(obj)
+
         elif obj.type== 'MESH':
             if game_version == 'haloce':
                 if not obj.parent == None:
@@ -306,7 +319,7 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
                 report({'ERROR'}, "How did you even choose an option that doesn't exist?")
                 return {'CANCELLED'}
 
-        if len(obj.material_slots)!= 0 and not obj.name[0:1].lower() == '#' and not obj.name[0:2].lower() == 'b_' and not obj.name[0:5].lower() == 'frame':
+        if len(obj.material_slots)!= 0 and len(obj.jms.XREF_path) == 0 and not obj.name[0:1].lower() == '#' and not obj.name[0:2].lower() == 'b_' and not obj.name[0:5].lower() == 'frame':
             for f in obj.data.polygons:
                 slot = obj.material_slots[f.material_index]
                 mat = slot.material
@@ -331,6 +344,7 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
                 else:
                     report({'ERROR'}, "How did you even choose an option that doesn't exist?")
                     return {'CANCELLED'}
+
         else:
             if game_version == 'haloce':
                 if None not in material_list and not obj.name[0:1].lower() == '$' and not obj.name[0:1].lower() == '#' and not obj.name[0:2].lower() == 'b_' and not obj.name[0:5].lower() == 'frame':
@@ -342,6 +356,9 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
     material_count = len(material_list)
     marker_count = len(marker_list)
     region_count = len(region_list)
+    instance_xref_paths_count = len(instance_xref_paths)
+    instance_markers_count = len(instance_markers)
+    bounding_sphere_count = len(bounding_sphere)
 
     for node in node_list:
         if node.parent == None:
@@ -554,6 +571,7 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
             material_name = '<none>'
             texture_path = '<none>'
             if not material == None:
+                material_name = material.name
                 for node in material.node_tree.nodes:
                     if node.type == 'TEX_IMAGE':
                         image_filepath = node.image.filepath
@@ -561,9 +579,6 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
                         image_path = image_filepath.rsplit('.', 1)[0]
                         if image_extension.lower() == 'tif' and os.path.exists(image_filepath):
                             texture_path = image_path
-
-            if not material == None:
-                material_name = material.name
 
             file.write(
                 '\n%s' % (material_name) +
@@ -662,21 +677,53 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
         #write instance xref paths
         file.write(
             '\n;### INSTANCE XREF PATHS ###' +
-            '\n0' +
+            '\n%s' % (instance_xref_paths_count) +
             '\n;\t<path to .MAX file>' +
             '\n;\t<name>\n'
         )
 
+        for int_xref_path in instance_xref_paths:
+            file.write(
+                '\n;XREF %s' % (instance_xref_paths.index(int_xref_path)) +
+                '\n%s' % (bpy.path.abspath(int_xref_path)) +
+                '\n%s\n' % (os.path.basename(int_xref_path).rsplit('.', 1)[0])
+            )
+
         #write instance markers
         file.write(
             '\n;### INSTANCE MARKERS ###' +
-            '\n0' +
+            '\n%s' % (instance_markers_count) +
             '\n;\t<name>' +
             '\n;\t<unique identifier>' +
             '\n;\t<path index>' +
             '\n;\t<rotation <i,j,k,w>>' +
             '\n;\t<translation <x,y,z>>\n'
         )
+
+        seed(1)
+        for int_markers in instance_markers:
+            unique_identifier = -1 * (randint(0, 3000000000))
+
+            pos  = int_markers.matrix_world.translation
+            quat = int_markers.matrix_world.to_quaternion().inverted()
+
+            quat_i = Decimal(quat[1]).quantize(Decimal('1.0000000000'))
+            quat_j = Decimal(quat[2]).quantize(Decimal('1.0000000000'))
+            quat_k = Decimal(quat[3]).quantize(Decimal('1.0000000000'))
+            quat_w = Decimal(quat[0]).quantize(Decimal('1.0000000000'))
+            pos_x = Decimal(pos[0]).quantize(Decimal('1.0000000000'))
+            pos_y = Decimal(pos[1]).quantize(Decimal('1.0000000000'))
+            pos_z = Decimal(pos[2]).quantize(Decimal('1.0000000000'))
+
+            file.write(
+                '\n;XREF OBJECT %s' % (instance_markers.index(int_markers)) +
+                '\n%s' % (int_markers.name) +
+                '\n%s' % (unique_identifier) +
+                '\n%s' % (instance_xref_paths.index(int_markers.jms.XREF_path)) +
+                decimal_4 % (quat_i, quat_j, quat_k, quat_w) +
+                decimal_3 % (pos_x, pos_y, pos_z) +
+                '\n'
+            )
 
     #write vertices
     for geometry in geometry_list:
@@ -822,7 +869,7 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
                 jms_node += '\n%s%s' % (jms_vertex.node1, decimal_1 % float(jms_vertex.node1_weight))
             elif node_influence_index == 2:
                 jms_node += '\n%s%s' % (jms_vertex.node2, decimal_1 % float(jms_vertex.node2_weight))
-            else:
+            elif node_influence_index == 3:
                 jms_node += '\n%s%s' % (jms_vertex.node3, decimal_1 % float(jms_vertex.node3_weight))
 
         tex_coord_count = 1
@@ -1309,10 +1356,31 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
         #write bounding sphere
         file.write(
             '\n;### BOUNDING SPHERE ###' +
-            '\n0' +
+            '\n%s' % (bounding_sphere_count) +
             '\n;\t<translation <x,y,z>>' +
             '\n;\t<radius>\n'
         )
+
+        for bound_sphere in bounding_sphere:
+            radius = bound_sphere.dimensions[0]/2
+
+            pos  = bound_sphere.matrix_world.translation
+            quat = bound_sphere.matrix_world.to_quaternion().inverted()
+
+            quat_i = Decimal(quat[1]).quantize(Decimal('1.0000000000'))
+            quat_j = Decimal(quat[2]).quantize(Decimal('1.0000000000'))
+            quat_k = Decimal(quat[3]).quantize(Decimal('1.0000000000'))
+            quat_w = Decimal(quat[0]).quantize(Decimal('1.0000000000'))
+            pos_x = Decimal(pos[0]).quantize(Decimal('1.0000000000'))
+            pos_y = Decimal(pos[1]).quantize(Decimal('1.0000000000'))
+            pos_z = Decimal(pos[2]).quantize(Decimal('1.0000000000'))
+
+            file.write(
+                '\n;BOUNDING SPHERE %s' % (bounding_sphere.index(bound_sphere)) +
+                decimal_3 % (pos_x, pos_y, pos_z) +
+                decimal_1 % radius +
+                '\n'
+            )
 
     file.close()
     return {'FINISHED'}
