@@ -31,6 +31,7 @@ import bpy
 import os
 
 from decimal import *
+from math import degrees
 from random import seed
 from random import randint
 from io_scene_jms.__init__ import JmsVertex
@@ -188,6 +189,11 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
     box_list = []
     capsule_list = []
     convex_shape_list = []
+    ragdoll_list = []
+    hinge_list = []
+    car_wheel_list = []
+    point_to_point_list = []
+    prismatic_list = []
     bounding_sphere = []
 
     region_list = []
@@ -244,7 +250,11 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
 
         elif obj.name[0:1].lower() == '$':
             if version >= 8205:
-                if obj.jms.Object_Type == 'SPHERE':
+                if not obj.rigid_body_constraint == None:
+                    if obj.rigid_body_constraint.type == 'HINGE':
+                        hinge_list.append(obj)
+
+                elif obj.jms.Object_Type == 'SPHERE':
                     sphere_list.append(obj)
                     region_list.append(find_region)
                     permutation_list.append(find_permutation)
@@ -359,6 +369,11 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
     instance_xref_paths_count = len(instance_xref_paths)
     instance_markers_count = len(instance_markers)
     bounding_sphere_count = len(bounding_sphere)
+    ragdoll_count = len(ragdoll_list)
+    hinge_count = len(hinge_list)
+    car_wheel_count = len(car_wheel_list)
+    point_to_point_count = len(point_to_point_list)
+    prismatic_count = len(prismatic_list)
 
     for node in node_list:
         if node.parent == None:
@@ -746,7 +761,7 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
             jms_triangle = JmsTriangle()
             triangles.append(jms_triangle)
 
-            if region_name != 0:
+            if len(region_name) != 0:
                 region_index = region_list.index(region_name)
 
             else:
@@ -1236,43 +1251,131 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
 
             file.write('\n')
 
+        #write rag dolls
+        file.write(
+            '\n;### RAGDOLLS ###' +
+            '\n%s' % (ragdoll_count) +
+            '\n;\t<name>' +
+            '\n;\t<attached index>' +
+            '\n;\t<referenced index>' +
+            '\n;\t<attached transform>' +
+            '\n;\t<reference transform>' +
+            '\n;\t<min twist>' +
+            '\n;\t<max twist>' +
+            '\n;\t<min cone>' +
+            '\n;\t<max cone>' +
+            '\n;\t<min plane>' +
+            '\n;\t<max plane>\n'
+        )
+
+        #write hinges
+        file.write(
+            '\n;### HINGES ###' +
+            '\n%s' % (hinge_count) +
+            '\n;\t<name>' +
+            '\n;\t<body A index>' +
+            '\n;\t<body B index>' +
+            '\n;\t<body A transform>' +
+            '\n;\t<body B transform>' +
+            '\n;\t<is limited>' +
+            '\n;\t<friction limit>' +
+            '\n;\t<min angle>' +
+            '\n;\t<max angle>\n'
+        )
+
+        for hinge in hinge_list:
+            name = hinge.name.split('$', 1)[1]
+            body_a_obj = hinge.rigid_body_constraint.object1
+            body_b_obj = hinge.rigid_body_constraint.object2
+            body_a_index = -1
+            body_b_index = -1
+            if armature_count == 0:
+                if body_a_obj:
+                    if body_a_obj.parent:
+                        parent_bone_a = bpy.data.objects[body_a_obj.parent.name]
+                        parent_index = joined_list.index(parent_bone_a)
+                        body_a_index = parent_index
+
+                if body_b_obj:
+                    if body_b_obj.parent:
+                        parent_bone_b = bpy.data.objects[body_b_obj.parent.name]
+                        parent_index = joined_list.index(parent_bone_b)
+                        body_b_index = parent_index
+
+            else:
+                if body_a_obj:
+                    if body_a_obj.parent_bone:
+                        parent_bone_a = armature.data.bones[body_a_obj.parent_bone]
+                        parent_index = joined_list.index(parent_bone_a)
+                        body_a_index = parent_index
+
+                if body_b_obj:
+                    if body_b_obj.parent_bone:
+                        parent_bone_b = armature.data.bones[body_b_obj.parent_bone]
+                        parent_index = joined_list.index(parent_bone_b)
+                        body_b_index = parent_index
+
+            body_a_matrix = hinge.matrix_world
+            if body_a_obj.parent:
+                body_a_matrix = parent_bone_a.matrix_local.inverted() @ hinge.matrix_world
+
+            body_b_matrix = hinge.matrix_world
+            if body_b_obj.parent:
+                body_b_matrix = parent_bone_b.matrix_local.inverted() @ hinge.matrix_world
+
+            pos  = body_a_matrix.translation
+            quat = body_a_matrix.to_quaternion().inverted()
+            pos2  = body_b_matrix.translation
+            quat2 = body_b_matrix.to_quaternion().inverted()
+
+            is_limited = int(hinge.rigid_body_constraint.use_limit_ang_z)
+            friction_limit = 0
+            if body_b_obj:
+                friction_limit = body_b_obj.rigid_body.angular_damping
+
+            min_angle = 0
+            max_angle = 0
+            if is_limited:
+                min_angle = degrees(hinge.rigid_body_constraint.limit_ang_z_lower)
+                max_angle = degrees(hinge.rigid_body_constraint.limit_ang_z_upper)
+
+            quat_i = Decimal(quat[1]).quantize(Decimal('1.0000000000'))
+            quat_j = Decimal(quat[2]).quantize(Decimal('1.0000000000'))
+            quat_k = Decimal(quat[3]).quantize(Decimal('1.0000000000'))
+            quat_w = Decimal(quat[0]).quantize(Decimal('1.0000000000'))
+            pos_x = Decimal(pos[0]).quantize(Decimal('1.0000000000'))
+            pos_y = Decimal(pos[1]).quantize(Decimal('1.0000000000'))
+            pos_z = Decimal(pos[2]).quantize(Decimal('1.0000000000'))
+
+            quat_i2 = Decimal(quat2[1]).quantize(Decimal('1.0000000000'))
+            quat_j2 = Decimal(quat2[2]).quantize(Decimal('1.0000000000'))
+            quat_k2 = Decimal(quat2[3]).quantize(Decimal('1.0000000000'))
+            quat_w2 = Decimal(quat2[0]).quantize(Decimal('1.0000000000'))
+            pos_x2 = Decimal(pos2[0]).quantize(Decimal('1.0000000000'))
+            pos_y2 = Decimal(pos2[1]).quantize(Decimal('1.0000000000'))
+            pos_z2 = Decimal(pos2[2]).quantize(Decimal('1.0000000000'))
+
+            file.write(
+                '\n;HINGE %s' % (hinge_list.index(hinge)) +
+                '\n%s' % name +
+                '\n%s' % body_a_index +
+                '\n%s' % body_b_index +
+                decimal_4 % (quat_i, quat_j, quat_k, quat_w) +
+                decimal_3 % (pos_x, pos_y, pos_z) +
+                decimal_4 % (quat_i2, quat_j2, quat_k2, quat_w2) +
+                decimal_3 % (pos_x2, pos_y2, pos_z2) +
+                '\n%s' % (is_limited) +
+                decimal_1 % (friction_limit) +
+                decimal_1 % (min_angle) +
+                decimal_1 % (max_angle) +
+                '\n'
+            )
+
         if version > 8209:
-            #write rag dolls
-            file.write(
-                '\n;### RAGDOLLS ###' +
-                '\n0' +
-                '\n;\t<name>' +
-                '\n;\t<attached index>' +
-                '\n;\t<referenced index>' +
-                '\n;\t<attached transform>' +
-                '\n;\t<reference transform>' +
-                '\n;\t<min twist>' +
-                '\n;\t<max twist>' +
-                '\n;\t<min cone>' +
-                '\n;\t<max cone>' +
-                '\n;\t<min plane>' +
-                '\n;\t<max plane>\n'
-            )
-
-            #write hinges
-            file.write(
-                '\n;### HINGES ###' +
-                '\n0' +
-                '\n;\t<name>' +
-                '\n;\t<body A index>' +
-                '\n;\t<body B index>' +
-                '\n;\t<body A transform>' +
-                '\n;\t<body B transform>' +
-                '\n;\t<is limited>' +
-                '\n;\t<friction limit>' +
-                '\n;\t<min angle>' +
-                '\n;\t<max angle>\n'
-            )
-
             #write car wheel
             file.write(
                 '\n;### CAR WHEEL ###' +
-                '\n0' +
+                '\n%s' % (car_wheel_count) +
                 '\n;\t<name>' +
                 '\n;\t<chassis index>' +
                 '\n;\t<wheel index>' +
@@ -1289,7 +1392,7 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
             #write point to point
             file.write(
                 '\n;### POINT TO POINT ###' +
-                '\n0' +
+                '\n%s' % (point_to_point_count) +
                 '\n;\t<name>' +
                 '\n;\t<body A index>' +
                 '\n;\t<body B index>' +
@@ -1308,7 +1411,7 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
             #write prismatic
             file.write(
                 '\n;### PRISMATIC ###' +
-                '\n0' +
+                '\n%s' % (prismatic_count) +
                 '\n;\t<name>' +
                 '\n;\t<body A index>' +
                 '\n;\t<body B index>' +
@@ -1318,39 +1421,6 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
                 '\n;\t<friction limit>' +
                 '\n;\t<min limit>' +
                 '\n;\t<max limit>\n'
-            )
-
-        else:
-            #write rag dolls
-            file.write(
-                '\n;### RAGDOLLS ###' +
-                '\n0' +
-                '\n;\t<name>' +
-                '\n;\t<attached index>' +
-                '\n;\t<referenced index>' +
-                '\n;\t<attached transform>' +
-                '\n;\t<reference transform>' +
-                '\n;\t<min twist>' +
-                '\n;\t<max twist>' +
-                '\n;\t<min cone>' +
-                '\n;\t<max cone>' +
-                '\n;\t<min plane>' +
-                '\n;\t<max plane>\n'
-            )
-
-            #write hinges
-            file.write(
-                '\n;### HINGES ###' +
-                '\n0' +
-                '\n;\t<name>' +
-                '\n;\t<body A index>' +
-                '\n;\t<body B index>' +
-                '\n;\t<body A transform>' +
-                '\n;\t<body B transform>' +
-                '\n;\t<is limited>' +
-                '\n;\t<friction limit>' +
-                '\n;\t<min angle>' +
-                '\n;\t<max angle>\n'
             )
 
         #write bounding sphere
@@ -1365,12 +1435,7 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
             radius = bound_sphere.dimensions[0]/2
 
             pos  = bound_sphere.matrix_world.translation
-            quat = bound_sphere.matrix_world.to_quaternion().inverted()
 
-            quat_i = Decimal(quat[1]).quantize(Decimal('1.0000000000'))
-            quat_j = Decimal(quat[2]).quantize(Decimal('1.0000000000'))
-            quat_k = Decimal(quat[3]).quantize(Decimal('1.0000000000'))
-            quat_w = Decimal(quat[0]).quantize(Decimal('1.0000000000'))
             pos_x = Decimal(pos[0]).quantize(Decimal('1.0000000000'))
             pos_y = Decimal(pos[1]).quantize(Decimal('1.0000000000'))
             pos_z = Decimal(pos[2]).quantize(Decimal('1.0000000000'))
