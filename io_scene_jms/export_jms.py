@@ -301,9 +301,13 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
                             if not 'TRIANGULATE' in modifier_list:
                                 obj.modifiers.new("Triangulate", type='TRIANGULATE')
 
-                        depsgraph = bpy.context.evaluated_depsgraph_get()
-                        object_eval = obj.evaluated_get(depsgraph)
-                        geometry_list.append(object_eval)
+                            depsgraph = bpy.context.evaluated_depsgraph_get()
+                            object_eval = obj.evaluated_get(depsgraph)
+                            geometry_list.append(object_eval)
+
+                        else:
+                            geometry_list.append(obj)
+
                         region_list.append(find_region)
                         permutation_list.append(find_permutation)
 
@@ -319,9 +323,13 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
                     if not 'TRIANGULATE' in modifier_list:
                         obj.modifiers.new("Triangulate", type='TRIANGULATE')
 
-                depsgraph = bpy.context.evaluated_depsgraph_get()
-                object_eval = obj.evaluated_get(depsgraph)
-                geometry_list.append(object_eval)
+                    depsgraph = bpy.context.evaluated_depsgraph_get()
+                    object_eval = obj.evaluated_get(depsgraph)
+                    geometry_list.append(object_eval)
+
+                else:
+                    geometry_list.append(obj)
+
                 region_list.append(find_region)
                 permutation_list.append(find_permutation)
 
@@ -511,7 +519,7 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
         quat_i = Decimal(quat[1]).quantize(Decimal('1.0000000000'))
         quat_j = Decimal(quat[2]).quantize(Decimal('1.0000000000'))
         quat_k = Decimal(quat[3]).quantize(Decimal('1.0000000000'))
-        quat_w = Decimal(quat[0]).quantize(Decimal('1.0000000000'))
+        quat_w = Decimal(-quat[0]).quantize(Decimal('1.0000000000'))
         pos_x = Decimal(pos[0]).quantize(Decimal('1.0000000000'))
         pos_y = Decimal(pos[1]).quantize(Decimal('1.0000000000'))
         pos_z = Decimal(pos[2]).quantize(Decimal('1.0000000000'))
