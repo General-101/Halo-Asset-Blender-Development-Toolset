@@ -1,5 +1,5 @@
-# H2V-Blender-JMSv2-Exporter
-An exporter for Blender to create assets for H2V
+# H2V-Blender-JMS-Exporter
+An exporter for Blender to create assets for H2V/CE
 
 Credit to Cyboryxmen for making the original script. 
 
