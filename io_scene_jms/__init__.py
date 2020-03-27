@@ -39,12 +39,19 @@ bl_info = {
     "support": 'COMMUNITY',
     "category": "Import-Export"}
 
+if "bpy" in locals():
+    import importlib
+    if "import_jms" in locals():
+        importlib.reload(import_jms)
+    if "export_jms" in locals():
+        importlib.reload(export_jms)
+
 import bpy
 import sys
 import argparse
-import io_scene_jms.export_jms as halo
 
 from bpy_extras.io_utils import (
+        ImportHelper,
         ExportHelper,
         )
 
@@ -155,19 +162,10 @@ class JMS_ObjectPropertiesGroup(PropertyGroup):
 
 class ExportJMS(Operator, ExportHelper):
     """Write a JMS file"""
-    bl_idname = "export_jms.export"
+    bl_idname = "export_scene.jms"
     bl_label = "Export JMS"
 
     filename_ext = ''
-
-    encoding: EnumProperty(
-        name="Encoding:",
-        description="What encoding to use for the model file",
-        default="UTF-16LE",
-        items=[ ('utf_8', "UTF-8", "For CE"),
-                ('UTF-16LE', "UTF-16", "For H2"),
-               ]
-        )
 
     extension: EnumProperty(
         name="Extension:",
@@ -219,19 +217,17 @@ class ExportJMS(Operator, ExportHelper):
         )
 
     def execute(self, context):
+        from . import export_jms
         if '--' in sys.argv:
             argv = sys.argv[sys.argv.index('--') + 1:]
             parser = argparse.ArgumentParser()
             parser.add_argument('-arg1', '--filepath', dest='filepath', metavar='FILE', required = True)
-            parser.add_argument('-arg2', '--encoding', dest='encoding', type=str, default="UTF-16LE")
             parser.add_argument('-arg3', '--extension', dest='extension', type=str, default=".JMS")
             parser.add_argument('-arg4', '--jms_version', dest='jms_version', type=str, default="8210")
             parser.add_argument('-arg5', '--game_version', dest='game_version', type=str, default="halo2")
             parser.add_argument('-arg6', '--triangulate_faces', dest='triangulate_faces', action='store_true')
             args = parser.parse_known_args(argv)[0]
-            # print parameters
             print('filepath: ', args.filepath)
-            print('encoding: ', args.encoding)
             print('extension: ', args.extension)
             print('jms_version: ', args.jms_version)
             print('game_version: ', args.game_version)
@@ -239,20 +235,49 @@ class ExportJMS(Operator, ExportHelper):
 
         if len(self.filepath) == 0:
             self.filepath = args.filepath
-            self.encoding = args.encoding
             self.extension = args.extension
             self.jms_version = args.jms_version
             self.game_version = args.game_version
             self.triangulate_faces = args.triangulate_faces
 
-        return halo.export_jms(context, self.filepath, self.report, self.encoding, self.extension, self.jms_version, self.game_version, self.triangulate_faces)
+        return export_jms.write_file(context, self.filepath, self.report, self.extension, self.jms_version, self.game_version, self.triangulate_faces)
+
+class ImportJMS(Operator, ImportHelper):
+    """Import a JMS file"""
+    bl_idname = "import_scene.jms"
+    bl_label = "Import JMS"
+
+    filename_ext = '.JMS'
+
+    filter_glob: StringProperty(
+        default="*.jms;*.jmp",
+        options={'HIDDEN'},
+        )
+
+    def execute(self, context):
+        from . import import_jms
+        if '--' in sys.argv:
+            argv = sys.argv[sys.argv.index('--') + 1:]
+            parser = argparse.ArgumentParser()
+            parser.add_argument('-arg1', '--filepath', dest='filepath', metavar='FILE', required = True)
+            args = parser.parse_known_args(argv)[0]
+            print('filepath: ', args.filepath)
+
+        if len(self.filepath) == 0:
+            self.filepath = args.filepath
+
+        return import_jms.load_file(context, self.filepath, self.report)
 
 def menu_func_export(self, context):
     self.layout.operator(ExportJMS.bl_idname, text="Halo Jointed Model Skeleton (.jms)")
 
+def menu_func_import(self, context):
+    self.layout.operator(ImportJMS.bl_idname, text="Halo Jointed Model Skeleton (.jms)")
+
 classesjms = (
     JMS_ObjectPropertiesGroup,
     JMS_ObjectProps,
+    ImportJMS,
     ExportJMS
 )
 
@@ -260,12 +285,14 @@ def register():
     for clsjms in classesjms:
         bpy.utils.register_class(clsjms)
     bpy.types.TOPBAR_MT_file_export.append(menu_func_export)
+    bpy.types.TOPBAR_MT_file_import.append(menu_func_import)
     bpy.types.Object.jms = PointerProperty(type=JMS_ObjectPropertiesGroup, name="JMS Object Properties", description="JMS Object properties")
 
 def unregister():
     for clsjms in reversed(classesjms):
         bpy.utils.unregister_class(clsjms)
     bpy.types.TOPBAR_MT_file_export.remove(menu_func_export)
+    bpy.types.TOPBAR_MT_file_import.remove(menu_func_import)
     del bpy.types.Object.jms
 
 if __name__ == '__main__':

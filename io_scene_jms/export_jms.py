@@ -27,15 +27,13 @@
 #
 # ##### END UNLICENSED BLOCK #####
 
-import bpy
 import os
+import bpy
 
 from decimal import *
-from math import degrees
 from random import seed
+from math import degrees
 from random import randint
-from io_scene_jms.__init__ import JmsVertex
-from io_scene_jms.__init__ import JmsTriangle
 
 def unhide_all_collections():
     for collection_viewport in bpy.context.view_layer.layer_collection.children:
@@ -129,7 +127,19 @@ def get_lod(lod_setting):
 
     return LOD_name
 
-def error_pass(armature_count, report, game_version, node_count, version, encoding, extension, geometry_list, marker_list):
+def get_encoding(game_version):
+    if game_version == 'haloce':
+        encoding = 'utf_8'
+
+    elif game_version == 'halo2':
+        encoding = 'utf-16le'
+
+    else:
+        encoding = 'utf_8'
+
+    return encoding
+
+def error_pass(armature_count, report, game_version, node_count, version, extension, geometry_list, marker_list):
     if armature_count >= 2:
         report({'ERROR'}, 'More than one armature object. Please delete all but one.')
         return {'CANCELLED'}
@@ -146,19 +156,14 @@ def error_pass(armature_count, report, game_version, node_count, version, encodi
         report({'ERROR'}, 'This version is not supported for CE. Choose from 8197-8200 if you wish to export for CE.')
         return {'CANCELLED'}
 
-    elif encoding == 'UTF-16LE' and game_version == 'haloce':
-        report({'ERROR'}, 'This encoding is not supported for CE. Choose UTF-8 if you wish to export for CE.')
-        return {'CANCELLED'}
-
-    elif encoding == 'utf_8' and game_version == 'halo2':
-        report({'ERROR'}, 'This encoding is not supported for Halo 2. Choose UTF-16 if you wish to export for Halo 2.')
-        return {'CANCELLED'}
-
     elif extension == '.JMP' and game_version == 'halo2':
         report({'ERROR'}, 'This extension is not used in Halo 2 Vista')
         return {'CANCELLED'}
 
-def export_jms(context, filepath, report, encoding, extension, jms_version, game_version, triangulate_faces):
+def write_file(context, filepath, report, extension, jms_version, game_version, triangulate_faces):
+    from . import JmsVertex
+    from . import JmsTriangle
+
     unhide_all_collections()
     unhide_all_objects()
 
@@ -183,6 +188,7 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
     instance_xref_paths = []
     instance_markers = []
     geometry_list = []
+    original_geometry_list = []
     triangles = []
     vertices = []
     sphere_list = []
@@ -301,12 +307,15 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
                             if not 'TRIANGULATE' in modifier_list:
                                 obj.modifiers.new("Triangulate", type='TRIANGULATE')
 
-                            depsgraph = bpy.context.evaluated_depsgraph_get()
-                            object_eval = obj.evaluated_get(depsgraph)
-                            geometry_list.append(object_eval)
+                            depsgraph = context.evaluated_depsgraph_get()
+                            obj_for_convert = obj.evaluated_get(depsgraph)
+                            me = obj_for_convert.to_mesh(preserve_all_data_layers=True, depsgraph=depsgraph)
+                            geometry_list.append(me)
+                            original_geometry_list.append(obj)
 
                         else:
-                            geometry_list.append(obj)
+                            geometry_list.append(obj.to_mesh(preserve_all_data_layers=True))
+                            original_geometry_list.append(obj)
 
                         region_list.append(find_region)
                         permutation_list.append(find_permutation)
@@ -323,12 +332,15 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
                     if not 'TRIANGULATE' in modifier_list:
                         obj.modifiers.new("Triangulate", type='TRIANGULATE')
 
-                    depsgraph = bpy.context.evaluated_depsgraph_get()
-                    object_eval = obj.evaluated_get(depsgraph)
-                    geometry_list.append(object_eval)
+                    depsgraph = context.evaluated_depsgraph_get()
+                    obj_for_convert = obj.evaluated_get(depsgraph)
+                    me = obj_for_convert.to_mesh(preserve_all_data_layers=True, depsgraph=depsgraph)
+                    geometry_list.append(me)
+                    original_geometry_list.append(obj)
 
                 else:
-                    geometry_list.append(obj)
+                    geometry_list.append(obj.to_mesh(preserve_all_data_layers=True))
+                    original_geometry_list.append(obj)
 
                 region_list.append(find_region)
                 permutation_list.append(find_permutation)
@@ -453,9 +465,9 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
         decimal_3 = '\n%0.6f\t%0.6f\t%0.6f'
         decimal_4 = '\n%0.6f\t%0.6f\t%0.6f\t%0.6f'
 
-    error_pass(armature_count, report, game_version, node_count, version, encoding, extension, geometry_list, marker_list)
+    error_pass(armature_count, report, game_version, node_count, version, extension, geometry_list, marker_list)
 
-    file = open(filepath + extension, 'w', encoding='%s' % encoding)
+    file = open(filepath + extension, 'w', encoding='%s' % get_encoding(game_version))
 
     #write header
     if version >= 8205:
@@ -750,22 +762,19 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
 
     #write vertices
     for geometry in geometry_list:
-        vertex_groups = []
+        item_index = int(geometry_list.index(geometry))
+        original_geo = original_geometry_list[item_index]
+        vertex_groups = original_geo.vertex_groups.keys()
 
-        vertex_group_index = 0
-        for groups in geometry.vertex_groups:
-            vertex_groups.append(geometry.vertex_groups[vertex_group_index].name)
-            vertex_group_index += 1
+        matrix = original_geo.matrix_world
 
-        matrix = geometry.matrix_world
+        region_name = original_geo.jms.Region
 
-        region_name = geometry.jms.Region
+        uv_layer = geometry.uv_layers.active.data[:]
+        mesh_loops = geometry.loops
+        mesh_verts = geometry.vertices[:]
 
-        uv_layer = geometry.data.uv_layers.active.data
-        mesh_loops = geometry.data.loops
-        mesh_verts = geometry.data.vertices
-
-        for face in geometry.data.polygons:
+        for face in geometry.polygons:
             jms_triangle = JmsTriangle()
             triangles.append(jms_triangle)
 
@@ -781,13 +790,13 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
             jms_triangle.region = region_index
             if game_version == 'halo2':
                 jms_triangle.material = -1
-                if len(geometry.material_slots) != 0:
-                    jms_triangle.material = material_list.index([bpy.data.materials[geometry.data.materials[face.material_index].name], geometry.jms.level_of_detail, geometry.jms.Region, geometry.jms.Permutation])
+                if len(original_geo.material_slots) != 0:
+                    jms_triangle.material = material_list.index([bpy.data.materials[geometry.materials[face.material_index].name], original_geo.jms.level_of_detail, original_geo.jms.Region, original_geo.jms.Permutation])
 
             elif game_version == 'haloce':
                 jms_triangle.material = material_list.index(None)
-                if len(geometry.material_slots) != 0:
-                    jms_triangle.material = material_list.index(bpy.data.materials[geometry.data.materials[face.material_index].name])
+                if len(original_geo.material_slots) != 0:
+                    jms_triangle.material = material_list.index(bpy.data.materials[geometry.materials[face.material_index].name])
 
             else:
                 report({'ERROR'}, "How did you even choose an option that doesn't exist?")
@@ -807,6 +816,7 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
                 jms_vertex.pos = pos
                 jms_vertex.norm = norm
                 jms_vertex.uv = uv
+
                 if len(vert.groups) != 0:
                     value = len(vert.groups)
                     if value > 4:
@@ -1459,4 +1469,4 @@ def export_jms(context, filepath, report, encoding, extension, jms_version, game
     return {'FINISHED'}
 
 if __name__ == '__main__':
-    bpy.ops.export_jms.export()
+    bpy.ops.export_scene.jms()
