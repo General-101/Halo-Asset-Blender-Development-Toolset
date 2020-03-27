@@ -74,7 +74,7 @@ def load_file(context, filepath, report):
         if not line.strip(): continue
         if not line.startswith(";"):
             processed_file.append(line.replace('\n', ''))
-            foutput.write('%s' % line)
+            #foutput.write('%s' % line)
 
     armature = []
     node_list = []
