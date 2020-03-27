@@ -69,7 +69,7 @@ def load_file(context, filepath, report):
     processed_file = []
     encode = test_encoding(filepath)
     file = open(filepath, "r", encoding=encode)
-    foutput = open("C:\\Users\\Steven\\Desktop\\Test.JMS", "w")
+    #foutput = open("C:\\Users\\Steven\\Desktop\\Test.JMS", "w")
     for line in file:
         if not line.strip(): continue
         if not line.startswith(";"):
