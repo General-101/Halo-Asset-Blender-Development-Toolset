@@ -794,9 +794,11 @@ def write_file(context, filepath, report, extension, jms_version, game_version, 
                     jms_triangle.material = material_list.index([bpy.data.materials[geometry.materials[face.material_index].name], original_geo.jms.level_of_detail, original_geo.jms.Region, original_geo.jms.Permutation])
 
             elif game_version == 'haloce':
-                jms_triangle.material = material_list.index(None)
                 if len(original_geo.material_slots) != 0:
                     jms_triangle.material = material_list.index(bpy.data.materials[geometry.materials[face.material_index].name])
+
+                else:
+                    jms_triangle.material = material_list.index(None)
 
             else:
                 report({'ERROR'}, "How did you even choose an option that doesn't exist?")
@@ -851,13 +853,13 @@ def write_file(context, filepath, report, extension, jms_version, game_version, 
                 else:
                     parent_index = 0
                     if armature_count == 0:
-                        if geometry.parent:
-                            parent_bone = bpy.data.objects[geometry.parent.name]
+                        if original_geo.parent:
+                            parent_bone = bpy.data.objects[original_geo.parent.name]
                             parent_index = joined_list.index(parent_bone)
 
                     else:
-                        if geometry.parent_bone:
-                            parent_bone = armature.data.bones[geometry.parent_bone]
+                        if original_geo.parent_bone:
+                            parent_bone = armature.data.bones[original_geo.parent_bone]
                             parent_index = joined_list.index(parent_bone)
 
                     jms_vertex.node_influence_count = '1'
