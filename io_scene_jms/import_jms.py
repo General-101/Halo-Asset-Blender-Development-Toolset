@@ -56,7 +56,7 @@ def test_encoding(filepath):
                 zero_count =+ 1
 
         if zero_count > 0:
-            if not byte == b'\x00'
+            if not byte == b'\x00':
                 return 'utf-16le'
 
             elif byte == b'\x00':
