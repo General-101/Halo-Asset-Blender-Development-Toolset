@@ -7,4 +7,4 @@ Additional credits to Fulsy#1228 and MosesofEgypt#2751 for some modifications to
 
 Contact General_101#9814 for info or questions about this version of the script.
 
-Requires Blender 2.8 public release
+Requires Blender 2.79 public release

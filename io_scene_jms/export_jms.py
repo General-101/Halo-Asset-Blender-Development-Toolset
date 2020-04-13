@@ -35,17 +35,17 @@ from random import seed
 from math import degrees
 from random import randint
 
-def unhide_all_collections():
-    for collection_viewport in bpy.context.view_layer.layer_collection.children:
-        collection_viewport.hide_viewport = False
-
-    for collection_hide in bpy.data.collections:
-        collection_hide.hide_select = False
-        collection_hide.hide_viewport = False
-        collection_hide.hide_render = False
+#def unhide_all_collections():
+#    for collection_viewport in bpy.context.view_layer.layer_collection.children:
+#        collection_viewport.hide_viewport = False
+#
+#    for collection_hide in bpy.data.collections:
+#        collection_hide.hide_select = False
+#        collection_hide.hide_viewport = False
+#        collection_hide.hide_render = False
 
 def unhide_all_objects():
-    for obj in bpy.context.view_layer.objects:
+    for obj in bpy.context.scene.objects:
         obj.hide_set(False)
         obj.hide_select = False
         obj.hide_viewport = False
@@ -164,8 +164,8 @@ def write_file(context, filepath, report, extension, jms_version, game_version, 
     from . import JmsVertex
     from . import JmsTriangle
 
-    unhide_all_collections()
-    unhide_all_objects()
+    #unhide_all_collections()
+    #unhide_all_objects()
 
     object_list = list(bpy.context.scene.objects)
 
@@ -214,7 +214,7 @@ def write_file(context, filepath, report, extension, jms_version, game_version, 
         report({'ERROR'}, 'No objects in scene.')
         return {'CANCELLED'}
 
-    bpy.context.view_layer.objects.active = object_list[0]
+    bpy.context.scene.objects.active = object_list[0]
     bpy.ops.object.mode_set(mode = 'OBJECT')
     bpy.ops.object.select_all(action='DESELECT')
 
@@ -225,8 +225,8 @@ def write_file(context, filepath, report, extension, jms_version, game_version, 
         if obj.type == 'ARMATURE':
             armature_count += 1
             armature = obj
-            bpy.context.view_layer.objects.active = obj
-            obj.select_set(True)
+            bpy.context.scene.objects.active = obj
+            obj.select = True
             node_list = list(obj.data.bones)
             if mesh_frame_count > 0:
                 report({'ERROR'}, "Using both armature and object mesh node setup. Choose one or the other.")
@@ -307,15 +307,10 @@ def write_file(context, filepath, report, extension, jms_version, game_version, 
                             if not 'TRIANGULATE' in modifier_list:
                                 obj.modifiers.new("Triangulate", type='TRIANGULATE')
 
-                            depsgraph = context.evaluated_depsgraph_get()
-                            obj_for_convert = obj.evaluated_get(depsgraph)
-                            me = obj_for_convert.to_mesh(preserve_all_data_layers=True, depsgraph=depsgraph)
-                            geometry_list.append(me)
-                            original_geometry_list.append(obj)
+                            geometry_list.append(obj)
 
                         else:
-                            geometry_list.append(obj.to_mesh(preserve_all_data_layers=True))
-                            original_geometry_list.append(obj)
+                            geometry_list.append(obj.to_mesh())
 
                         region_list.append(find_region)
                         permutation_list.append(find_permutation)
@@ -332,15 +327,10 @@ def write_file(context, filepath, report, extension, jms_version, game_version, 
                     if not 'TRIANGULATE' in modifier_list:
                         obj.modifiers.new("Triangulate", type='TRIANGULATE')
 
-                    depsgraph = context.evaluated_depsgraph_get()
-                    obj_for_convert = obj.evaluated_get(depsgraph)
-                    me = obj_for_convert.to_mesh(preserve_all_data_layers=True, depsgraph=depsgraph)
-                    geometry_list.append(me)
-                    original_geometry_list.append(obj)
+                    geometry_list.append(obj)
 
                 else:
-                    geometry_list.append(obj.to_mesh(preserve_all_data_layers=True))
-                    original_geometry_list.append(obj)
+                    geometry_list.append(obj)
 
                 region_list.append(find_region)
                 permutation_list.append(find_permutation)
@@ -521,7 +511,7 @@ def write_file(context, filepath, report, extension, jms_version, game_version, 
 
             bone_matrix = pose_bone.matrix
             if pose_bone.parent and not version >= 8205:
-                bone_matrix = pose_bone.parent.matrix.inverted() @ pose_bone.matrix
+                bone_matrix = pose_bone.parent.matrix.inverted() * pose_bone.matrix
 
         pos  = bone_matrix.translation
         quat = bone_matrix.to_quaternion().inverted()
@@ -531,7 +521,7 @@ def write_file(context, filepath, report, extension, jms_version, game_version, 
         quat_i = Decimal(quat[1]).quantize(Decimal('1.0000000000'))
         quat_j = Decimal(quat[2]).quantize(Decimal('1.0000000000'))
         quat_k = Decimal(quat[3]).quantize(Decimal('1.0000000000'))
-        quat_w = Decimal(-quat[0]).quantize(Decimal('1.0000000000'))
+        quat_w = Decimal(quat[0]).quantize(Decimal('1.0000000000'))
         pos_x = Decimal(pos[0]).quantize(Decimal('1.0000000000'))
         pos_y = Decimal(pos[1]).quantize(Decimal('1.0000000000'))
         pos_z = Decimal(pos[2]).quantize(Decimal('1.0000000000'))
@@ -607,13 +597,13 @@ def write_file(context, filepath, report, extension, jms_version, game_version, 
             texture_path = '<none>'
             if not material == None:
                 material_name = material.name
-                for node in material.node_tree.nodes:
-                    if node.type == 'TEX_IMAGE':
-                        image_filepath = node.image.filepath
-                        image_extension = image_filepath.rsplit('.', 1)[1]
-                        image_path = image_filepath.rsplit('.', 1)[0]
-                        if image_extension.lower() == 'tif' and os.path.exists(image_filepath):
-                            texture_path = image_path
+ #               for node in material.node_tree.nodes:
+ #                   if node.type == 'TEX_IMAGE':
+ #                       image_filepath = node.image.filepath
+ #                       image_extension = image_filepath.rsplit('.', 1)[1]
+ #                       image_path = image_filepath.rsplit('.', 1)[0]
+ #                       if image_extension.lower() == 'tif' and os.path.exists(image_filepath):
+ #                           texture_path = image_path
 
             file.write(
                 '\n%s' % (material_name) +
@@ -663,7 +653,7 @@ def write_file(context, filepath, report, extension, jms_version, game_version, 
         radius = marker.dimensions[0]/2
         marker_matrix = marker.matrix_world
         if marker.parent:
-            marker_matrix = parent_bone.matrix_local.inverted() @ marker.matrix_world
+            marker_matrix = parent_bone.matrix_local.inverted() * marker.matrix_world
 
         pos  = marker_matrix.translation
         quat = marker_matrix.to_quaternion().inverted()
@@ -762,19 +752,17 @@ def write_file(context, filepath, report, extension, jms_version, game_version, 
 
     #write vertices
     for geometry in geometry_list:
-        item_index = int(geometry_list.index(geometry))
-        original_geo = original_geometry_list[item_index]
-        vertex_groups = original_geo.vertex_groups.keys()
+        vertex_groups = geometry.vertex_groups.keys()
 
-        matrix = original_geo.matrix_world
+        matrix = geometry.matrix_world
 
-        region_name = original_geo.jms.Region
+        region_name = geometry.jms.Region
 
-        uv_layer = geometry.uv_layers.active.data[:]
-        mesh_loops = geometry.loops
-        mesh_verts = geometry.vertices[:]
+        uv_layer = geometry.data.uv_layers.active.data
+        mesh_loops = geometry.data.loops
+        mesh_verts = geometry.data.vertices
 
-        for face in geometry.polygons:
+        for face in geometry.data.polygons:
             jms_triangle = JmsTriangle()
             triangles.append(jms_triangle)
 
@@ -790,12 +778,13 @@ def write_file(context, filepath, report, extension, jms_version, game_version, 
             jms_triangle.region = region_index
             if game_version == 'halo2':
                 jms_triangle.material = -1
-                if len(original_geo.material_slots) != 0:
-                    jms_triangle.material = material_list.index([bpy.data.materials[geometry.materials[face.material_index].name], original_geo.jms.level_of_detail, original_geo.jms.Region, original_geo.jms.Permutation])
+                print(material_list)
+                if len(geometry.material_slots) != 0:
+                    jms_triangle.material = material_list.index([geometry.data.materials[face.material_index], geometry.jms.level_of_detail, geometry.jms.Region, geometry.jms.Permutation])
 
             elif game_version == 'haloce':
-                if len(original_geo.material_slots) != 0:
-                    jms_triangle.material = material_list.index(bpy.data.materials[geometry.materials[face.material_index].name])
+                if len(geometry.material_slots) != 0:
+                    jms_triangle.material = material_list.index(geometry.data.materials[face.material_index])
 
                 else:
                     jms_triangle.material = material_list.index(None)
@@ -812,8 +801,8 @@ def write_file(context, filepath, report, extension, jms_version, game_version, 
                 jms_vertex = JmsVertex()
                 vertices.append(jms_vertex)
 
-                pos  = matrix @ vert.co
-                norm = matrix @ (vert.co + vert.normal) - pos
+                pos  = matrix * vert.co
+                norm = matrix * (vert.co + vert.normal) - pos
 
                 jms_vertex.pos = pos
                 jms_vertex.norm = norm
@@ -853,13 +842,13 @@ def write_file(context, filepath, report, extension, jms_version, game_version, 
                 else:
                     parent_index = 0
                     if armature_count == 0:
-                        if original_geo.parent:
-                            parent_bone = bpy.data.objects[original_geo.parent.name]
+                        if geometry.parent:
+                            parent_bone = bpy.data.objects[geometry.parent.name]
                             parent_index = joined_list.index(parent_bone)
 
                     else:
-                        if original_geo.parent_bone:
-                            parent_bone = armature.data.bones[original_geo.parent_bone]
+                        if geometry.parent_bone:
+                            parent_bone = armature.data.bones[geometry.parent_bone]
                             parent_index = joined_list.index(parent_bone)
 
                     jms_vertex.node_influence_count = '1'

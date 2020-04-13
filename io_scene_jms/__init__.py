@@ -31,7 +31,7 @@ bl_info = {
     "name": "Blend2Halo2 JMS",
     "author": "Cyboryxmen, modified by Fulsy + MosesofEgypt + General_101",
     "version": (0, 0, 1),
-    "blender": (2, 80, 0),
+    "blender": (2, 79, 0),
     "location": "File > Export",
     "description": "Export Halo 2/CE Jointed Model Skeleton File (.jms)",
     "warning": "",
@@ -119,19 +119,19 @@ class JMS_ObjectProps(Panel):
         row.prop(jms, "XREF_path")
 
 class JMS_ObjectPropertiesGroup(PropertyGroup):
-    Region : StringProperty(
+    Region = StringProperty(
         name = "Region",
         default = "",
         description = "Set region name."
         )
 
-    Permutation : StringProperty(
+    Permutation = StringProperty(
         name = "Permutation",
         default = "",
         description = "Set permutation name."
         )
 
-    level_of_detail: EnumProperty(
+    level_of_detail= EnumProperty(
         name="LOD:",
         description="What LOD to use for the object",
         items=[ ('0', "L1", ""),
@@ -143,7 +143,7 @@ class JMS_ObjectPropertiesGroup(PropertyGroup):
                ]
         )
 
-    Object_Type : EnumProperty(
+    Object_Type = EnumProperty(
         name="Object Type",
         description="Select object type to write mesh as",
         default = "CONVEX SHAPES",
@@ -154,7 +154,7 @@ class JMS_ObjectPropertiesGroup(PropertyGroup):
                ]
         )
 
-    XREF_path: StringProperty(
+    XREF_path= StringProperty(
         name="XREF Object",
         description="Select a path to a .MAX file",
         subtype="FILE_PATH"
@@ -167,7 +167,7 @@ class ExportJMS(Operator, ExportHelper):
 
     filename_ext = ''
 
-    extension: EnumProperty(
+    extension= EnumProperty(
         name="Extension:",
         description="What extension to use for the model file",
         items=[ ('.JMS', "JMS", "Jointed Model Skeleton CE/H2"),
@@ -175,7 +175,7 @@ class ExportJMS(Operator, ExportHelper):
                ]
         )
 
-    jms_version: EnumProperty(
+    jms_version= EnumProperty(
         name="Version:",
         description="What version to use for the model file",
         default="8210",
@@ -196,7 +196,7 @@ class ExportJMS(Operator, ExportHelper):
                ]
         )
 
-    game_version: EnumProperty(
+    game_version= EnumProperty(
         name="Game:",
         description="What game will the model file be used for",
         default="halo2",
@@ -205,13 +205,13 @@ class ExportJMS(Operator, ExportHelper):
                ]
         )
 
-    triangulate_faces: BoolProperty(
+    triangulate_faces= BoolProperty(
         name ="Triangulate faces",
         description = "Automatically triangulate all faces (recommended)",
         default = True,
         )
 
-    filter_glob: StringProperty(
+    filter_glob= StringProperty(
         default="*.jms;*.jmp",
         options={'HIDDEN'},
         )
@@ -249,7 +249,7 @@ class ImportJMS(Operator, ImportHelper):
 
     filename_ext = '.JMS'
 
-    filter_glob: StringProperty(
+    filter_glob= StringProperty(
         default="*.jms;*.jmp",
         options={'HIDDEN'},
         )
@@ -284,15 +284,15 @@ classesjms = (
 def register():
     for clsjms in classesjms:
         bpy.utils.register_class(clsjms)
-    bpy.types.TOPBAR_MT_file_export.append(menu_func_export)
-    bpy.types.TOPBAR_MT_file_import.append(menu_func_import)
+    bpy.types.INFO_MT_file_export.append(menu_func_export)
+    bpy.types.INFO_MT_file_import.append(menu_func_import)
     bpy.types.Object.jms = PointerProperty(type=JMS_ObjectPropertiesGroup, name="JMS Object Properties", description="JMS Object properties")
 
 def unregister():
     for clsjms in reversed(classesjms):
         bpy.utils.unregister_class(clsjms)
-    bpy.types.TOPBAR_MT_file_export.remove(menu_func_export)
-    bpy.types.TOPBAR_MT_file_import.remove(menu_func_import)
+    bpy.types.INFO_MT_file_export.remove(menu_func_export)
+    bpy.types.INFO_MT_file_import.remove(menu_func_import)
     del bpy.types.Object.jms
 
 if __name__ == '__main__':
