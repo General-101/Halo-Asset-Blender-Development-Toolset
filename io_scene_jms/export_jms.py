@@ -377,7 +377,7 @@ def write_file(context, filepath, report, extension, jms_version, game_version, 
 
         else:
             if game_version == 'haloce':
-                if None not in material_list and not obj.name[0:1].lower() == '$' and not obj.name[0:1].lower() == '#' and not obj.name[0:2].lower() == 'b_' and not obj.name[0:5].lower() == 'frame':
+                if None not in material_list and not obj.name[0:1].lower() == '$' and not obj.name[0:1].lower() == '#' and not obj.name[0:2].lower() == 'b_' and not obj.name[0:5].lower() == 'frame' and not obj.type == 'ARMATURE':
                     material_list.append(None)
 
     region_list = list(dict.fromkeys(region_list))
