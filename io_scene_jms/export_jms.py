@@ -530,7 +530,7 @@ def write_file(context, filepath, report, extension, jms_version, game_version, 
         quat_i = Decimal(quat[1]).quantize(Decimal('1.0000000000'))
         quat_j = Decimal(quat[2]).quantize(Decimal('1.0000000000'))
         quat_k = Decimal(quat[3]).quantize(Decimal('1.0000000000'))
-        quat_w = Decimal(-quat[0]).quantize(Decimal('1.0000000000'))
+        quat_w = Decimal(quat[0]).quantize(Decimal('1.0000000000'))
         pos_x = Decimal(pos[0]).quantize(Decimal('1.0000000000'))
         pos_y = Decimal(pos[1]).quantize(Decimal('1.0000000000'))
         pos_z = Decimal(pos[2]).quantize(Decimal('1.0000000000'))
