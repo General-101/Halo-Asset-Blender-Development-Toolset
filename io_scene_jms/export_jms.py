@@ -214,7 +214,6 @@ def write_file(context, filepath, report, extension, jms_version, game_version, 
         report({'ERROR'}, 'No objects in scene.')
         return {'CANCELLED'}
 
-    bpy.context.view_layer.objects.active = object_list[0]
     bpy.ops.object.mode_set(mode = 'OBJECT')
     bpy.ops.object.select_all(action='DESELECT')
 
