@@ -214,9 +214,6 @@ def write_file(context, filepath, report, extension, jms_version, game_version, 
         report({'ERROR'}, 'No objects in scene.')
         return {'CANCELLED'}
 
-    bpy.ops.object.mode_set(mode = 'OBJECT')
-    bpy.ops.object.select_all(action='DESELECT')
-
     for obj in object_list:
         assigned_materials_list = []
         find_region = get_region(default_region, obj.jms.Region)
@@ -292,6 +289,8 @@ def write_file(context, filepath, report, extension, jms_version, game_version, 
             bounding_sphere.append(obj)
 
         elif obj.type== 'MESH':
+            bpy.context.view_layer.objects.active = obj
+            bpy.ops.object.mode_set(mode = 'OBJECT')
             if game_version == 'haloce':
                 if not obj.parent == None:
                     if obj.parent.type == 'ARMATURE' or obj.parent.name[0:2].lower() == 'b_' or obj.parent.name[0:5].lower() == 'frame':
@@ -320,29 +319,30 @@ def write_file(context, filepath, report, extension, jms_version, game_version, 
                         permutation_list.append(find_permutation)
 
             elif game_version == 'halo2':
-                modifier_list = []
-                if triangulate_faces:
-                    for modifier in obj.modifiers:
-                        modifier.show_render = True
-                        modifier.show_viewport = True
-                        modifier.show_in_editmode = True
-                        modifier_list.append(modifier.type)
+                if bpy.context.object.data.uv_layers:
+                    modifier_list = []
+                    if triangulate_faces:
+                        for modifier in obj.modifiers:
+                            modifier.show_render = True
+                            modifier.show_viewport = True
+                            modifier.show_in_editmode = True
+                            modifier_list.append(modifier.type)
 
-                    if not 'TRIANGULATE' in modifier_list:
-                        obj.modifiers.new("Triangulate", type='TRIANGULATE')
+                        if not 'TRIANGULATE' in modifier_list:
+                            obj.modifiers.new("Triangulate", type='TRIANGULATE')
 
-                    depsgraph = context.evaluated_depsgraph_get()
-                    obj_for_convert = obj.evaluated_get(depsgraph)
-                    me = obj_for_convert.to_mesh(preserve_all_data_layers=True, depsgraph=depsgraph)
-                    geometry_list.append(me)
-                    original_geometry_list.append(obj)
+                        depsgraph = context.evaluated_depsgraph_get()
+                        obj_for_convert = obj.evaluated_get(depsgraph)
+                        me = obj_for_convert.to_mesh(preserve_all_data_layers=True, depsgraph=depsgraph)
+                        geometry_list.append(me)
+                        original_geometry_list.append(obj)
 
-                else:
-                    geometry_list.append(obj.to_mesh(preserve_all_data_layers=True))
-                    original_geometry_list.append(obj)
+                    else:
+                        geometry_list.append(obj.to_mesh(preserve_all_data_layers=True))
+                        original_geometry_list.append(obj)
 
-                region_list.append(find_region)
-                permutation_list.append(find_permutation)
+                    region_list.append(find_region)
+                    permutation_list.append(find_permutation)
 
             else:
                 report({'ERROR'}, "How did you even choose an option that doesn't exist?")
@@ -376,7 +376,7 @@ def write_file(context, filepath, report, extension, jms_version, game_version, 
 
         else:
             if game_version == 'haloce':
-                if None not in material_list and not obj.name[0:1].lower() == '$' and not obj.name[0:1].lower() == '#' and not obj.name[0:2].lower() == 'b_' and not obj.name[0:5].lower() == 'frame' and not obj.type == 'ARMATURE':
+                if None not in material_list and not obj.name[0:1].lower() == '$' and not obj.name[0:1].lower() == '#' and not obj.name[0:2].lower() == 'b_' and not obj.name[0:5].lower() == 'frame' and not obj.type == 'ARMATURE' and not obj.parent == None:
                     material_list.append(None)
 
     region_list = list(dict.fromkeys(region_list))
@@ -466,7 +466,13 @@ def write_file(context, filepath, report, extension, jms_version, game_version, 
 
     error_pass(armature_count, report, game_version, node_count, version, extension, geometry_list, marker_list)
 
-    file = open(filepath + extension, 'w', encoding='%s' % get_encoding(game_version))
+    if filepath[-3:].lower() == 'jms' or filepath[-3:].lower() == 'jmr':
+        true_extension = ''
+
+    else:
+        true_extension = extension
+
+    file = open(filepath + true_extension, 'w', encoding='%s' % get_encoding(game_version))
 
     #write header
     if version >= 8205:
