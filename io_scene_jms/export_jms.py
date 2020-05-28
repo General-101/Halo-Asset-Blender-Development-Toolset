@@ -229,6 +229,8 @@ def write_file(context, filepath, report, extension, jms_version, game_version, 
                 return {'CANCELLED'}
 
         elif obj.name[0:2].lower() == 'b_' or obj.name[0:5].lower() == 'frame':
+            bpy.context.view_layer.objects.active = obj
+            bpy.ops.object.mode_set(mode = 'OBJECT')
             node_list.append(obj)
             mesh_frame_count += 1
             if armature_count > 0:
@@ -1024,7 +1026,7 @@ def write_file(context, filepath, report, extension, jms_version, game_version, 
                 sphere_matrix = parent_bone.matrix_local.inverted() @ spheres.matrix_world
 
             pos  = sphere_matrix.translation
-            quat = sphere_matrix.to_quaternion().inverted()
+            quat = sphere_matrix.to_quaternion()
 
             quat_i = Decimal(quat[1]).quantize(Decimal('1.0000000000'))
             quat_j = Decimal(quat[2]).quantize(Decimal('1.0000000000'))
@@ -1097,7 +1099,7 @@ def write_file(context, filepath, report, extension, jms_version, game_version, 
                 box_matrix = parent_bone.matrix_local.inverted() @ boxes.matrix_world
 
             pos  = box_matrix.translation
-            quat = box_matrix.to_quaternion().inverted()
+            quat = box_matrix.to_quaternion()
 
             quat_i = Decimal(quat[1]).quantize(Decimal('1.0000000000'))
             quat_j = Decimal(quat[2]).quantize(Decimal('1.0000000000'))
@@ -1168,7 +1170,7 @@ def write_file(context, filepath, report, extension, jms_version, game_version, 
                 capsule_matrix = parent_bone.matrix_local.inverted() @ capsule.matrix_world
 
             pos  = capsule_matrix.translation
-            quat = capsule_matrix.to_quaternion().inverted()
+            quat = capsule_matrix.to_quaternion()
 
             quat_i = Decimal(quat[1]).quantize(Decimal('1.0000000000'))
             quat_j = Decimal(quat[2]).quantize(Decimal('1.0000000000'))
@@ -1249,7 +1251,7 @@ def write_file(context, filepath, report, extension, jms_version, game_version, 
                 convex_matrix = parent_bone.matrix_local.inverted() @ convex_shape.matrix_world
 
             pos  = convex_matrix.translation
-            quat = convex_matrix.to_quaternion().inverted()
+            quat = convex_matrix.to_quaternion()
 
             quat_i = Decimal(quat[1]).quantize(Decimal('1.0000000000'))
             quat_j = Decimal(quat[2]).quantize(Decimal('1.0000000000'))
