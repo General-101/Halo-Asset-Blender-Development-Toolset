@@ -258,6 +258,9 @@ def write_file(context, filepath, report, extension, jms_version, game_version, 
                     if obj.rigid_body_constraint.type == 'HINGE':
                         hinge_list.append(obj)
 
+                    elif obj.rigid_body_constraint.type == 'GENERIC':
+                        ragdoll_list.append(obj)
+
                 elif obj.jms.Object_Type == 'SPHERE':
                     sphere_list.append(obj)
                     region_list.append(find_region)
@@ -1108,7 +1111,7 @@ def write_file(context, filepath, report, extension, jms_version, game_version, 
             pos_z = Decimal(pos[2]).quantize(Decimal('1.0000000000'))
             dimension_x = Decimal(dimension[0]).quantize(Decimal('1.0000000000'))
             dimension_y = Decimal(dimension[1]).quantize(Decimal('1.0000000000'))
-            dimension_z = Decimal(dimension[2]).quantize(Decimal('1.0000000000'))          
+            dimension_z = Decimal(dimension[2]).quantize(Decimal('1.0000000000'))
 
             file.write(
                 '\n;BOXES %s' % (box_list.index(boxes)) +
@@ -1296,6 +1299,106 @@ def write_file(context, filepath, report, extension, jms_version, game_version, 
             '\n;\t<max plane>\n'
         )
 
+        for ragdoll in ragdoll_list:
+            name = ragdoll.name.split('$', 1)[1]
+            body_a_obj = ragdoll.rigid_body_constraint.object1
+            body_b_obj = ragdoll.rigid_body_constraint.object2
+            body_a_index = -1
+            body_b_index = -1
+            if armature_count == 0:
+                if body_a_obj:
+                    if body_a_obj.parent:
+                        parent_bone_a = bpy.data.objects[body_a_obj.parent.name]
+                        parent_index = joined_list.index(parent_bone_a)
+                        body_a_index = parent_index
+
+                if body_b_obj:
+                    if body_b_obj.parent:
+                        parent_bone_b = bpy.data.objects[body_b_obj.parent.name]
+                        parent_index = joined_list.index(parent_bone_b)
+                        body_b_index = parent_index
+
+            else:
+                if body_a_obj:
+                    if body_a_obj.parent_bone:
+                        parent_bone_a = armature.data.bones[body_a_obj.parent_bone]
+                        parent_index = joined_list.index(parent_bone_a)
+                        body_a_index = parent_index
+
+                if body_b_obj:
+                    if body_b_obj.parent_bone:
+                        parent_bone_b = armature.data.bones[body_b_obj.parent_bone]
+                        parent_index = joined_list.index(parent_bone_b)
+                        body_b_index = parent_index
+
+            body_a_matrix = ragdoll.matrix_world
+            if body_a_obj.parent:
+                body_a_matrix = parent_bone_a.matrix_local.inverted() @ ragdoll.matrix_world
+
+            body_b_matrix = ragdoll.matrix_world
+            if body_b_obj.parent:
+                body_b_matrix = parent_bone_b.matrix_local.inverted() @ ragdoll.matrix_world
+
+            pos_a  = body_a_matrix.translation
+            quat_a = body_a_matrix.to_quaternion().inverted()
+            pos_b  = body_b_matrix.translation
+            quat_b = body_b_matrix.to_quaternion().inverted()
+
+            min_angle_x = 0
+            max_angle_x = 0
+            max_angle_y = 0
+            max_angle_y = 0
+            min_angle_z = 0
+            max_angle_z = 0
+
+            is_limited_x = int(ragdoll.rigid_body_constraint.use_limit_ang_x)
+            is_limited_y = int(ragdoll.rigid_body_constraint.use_limit_ang_y)
+            is_limited_z = int(ragdoll.rigid_body_constraint.use_limit_ang_z)
+
+            if is_limited_x:
+                min_angle_x = degrees(ragdoll.rigid_body_constraint.limit_ang_x_lower)
+                max_angle_x = degrees(ragdoll.rigid_body_constraint.limit_ang_x_upper)
+            if is_limited_y:
+                min_angle_y = degrees(ragdoll.rigid_body_constraint.limit_ang_y_lower)
+                max_angle_y = degrees(ragdoll.rigid_body_constraint.limit_ang_y_upper)
+            if is_limited_z:
+                min_angle_z = degrees(ragdoll.rigid_body_constraint.limit_ang_z_lower)
+                max_angle_z = degrees(ragdoll.rigid_body_constraint.limit_ang_z_upper)
+
+            quat_a_i = Decimal(quat_a[1]).quantize(Decimal('1.0000000000'))
+            quat_a_j = Decimal(quat_a[2]).quantize(Decimal('1.0000000000'))
+            quat_a_k = Decimal(quat_a[3]).quantize(Decimal('1.0000000000'))
+            quat_a_w = Decimal(quat_a[0]).quantize(Decimal('1.0000000000'))
+            pos_a_x = Decimal(pos_a[0]).quantize(Decimal('1.0000000000'))
+            pos_a_y = Decimal(pos_a[1]).quantize(Decimal('1.0000000000'))
+            pos_a_z = Decimal(pos_a[2]).quantize(Decimal('1.0000000000'))
+
+            quat_b_i = Decimal(quat_b[1]).quantize(Decimal('1.0000000000'))
+            quat_b_j = Decimal(quat_b[2]).quantize(Decimal('1.0000000000'))
+            quat_b_k = Decimal(quat_b[3]).quantize(Decimal('1.0000000000'))
+            quat_b_w = Decimal(quat_b[0]).quantize(Decimal('1.0000000000'))
+            pos_b_x = Decimal(pos_b[0]).quantize(Decimal('1.0000000000'))
+            pos_b_y = Decimal(pos_b[1]).quantize(Decimal('1.0000000000'))
+            pos_b_z = Decimal(pos_b[2]).quantize(Decimal('1.0000000000'))
+
+            file.write(
+                '\n;RAGDOLL %s' % (ragdoll_list.index(ragdoll)) +
+                '\n%s' % name +
+                '\n%s' % body_a_index +
+                '\n%s' % body_b_index +
+                decimal_4 % (quat_a_i, quat_a_j, quat_a_k, quat_a_w) +
+                decimal_3 % (pos_a_x, pos_a_y, pos_a_z) +
+                decimal_4 % (quat_b_i, quat_b_j, quat_b_k, quat_b_w) +
+                decimal_3 % (pos_b_x, pos_b_y, pos_b_z) +
+                decimal_1 % (min_angle_x) +
+                decimal_1 % (max_angle_x) +
+                decimal_1 % (min_angle_y) +
+                decimal_1 % (max_angle_y) +
+                decimal_1 % (min_angle_z) +
+                decimal_1 % (max_angle_z) +
+                '\n'
+            )
+
         #write hinges
         file.write(
             '\n;### HINGES ###' +
@@ -1351,47 +1454,50 @@ def write_file(context, filepath, report, extension, jms_version, game_version, 
             if body_b_obj.parent:
                 body_b_matrix = parent_bone_b.matrix_local.inverted() @ hinge.matrix_world
 
-            pos  = body_a_matrix.translation
-            quat = body_a_matrix.to_quaternion().inverted()
-            pos2  = body_b_matrix.translation
-            quat2 = body_b_matrix.to_quaternion().inverted()
+            pos_a  = body_a_matrix.translation
+            quat_a = body_a_matrix.to_quaternion().inverted()
+            pos_b  = body_b_matrix.translation
+            quat_b = body_b_matrix.to_quaternion().inverted()
 
-            is_limited = int(hinge.rigid_body_constraint.use_limit_ang_z)
             friction_limit = 0
+
             if body_b_obj:
                 friction_limit = body_b_obj.rigid_body.angular_damping
 
             min_angle = 0
             max_angle = 0
+
+            is_limited = int(hinge.rigid_body_constraint.use_limit_ang_z)
+
             if is_limited:
                 min_angle = degrees(hinge.rigid_body_constraint.limit_ang_z_lower)
                 max_angle = degrees(hinge.rigid_body_constraint.limit_ang_z_upper)
 
-            quat_i = Decimal(quat[1]).quantize(Decimal('1.0000000000'))
-            quat_j = Decimal(quat[2]).quantize(Decimal('1.0000000000'))
-            quat_k = Decimal(quat[3]).quantize(Decimal('1.0000000000'))
-            quat_w = Decimal(quat[0]).quantize(Decimal('1.0000000000'))
-            pos_x = Decimal(pos[0]).quantize(Decimal('1.0000000000'))
-            pos_y = Decimal(pos[1]).quantize(Decimal('1.0000000000'))
-            pos_z = Decimal(pos[2]).quantize(Decimal('1.0000000000'))
+            quat_a_i = Decimal(quat_a[1]).quantize(Decimal('1.0000000000'))
+            quat_a_j = Decimal(quat_a[2]).quantize(Decimal('1.0000000000'))
+            quat_a_k = Decimal(quat_a[3]).quantize(Decimal('1.0000000000'))
+            quat_a_w = Decimal(quat_a[0]).quantize(Decimal('1.0000000000'))
+            pos_a_x = Decimal(pos_a[0]).quantize(Decimal('1.0000000000'))
+            pos_a_y = Decimal(pos_a[1]).quantize(Decimal('1.0000000000'))
+            pos_a_z = Decimal(pos_a[2]).quantize(Decimal('1.0000000000'))
 
-            quat_i2 = Decimal(quat2[1]).quantize(Decimal('1.0000000000'))
-            quat_j2 = Decimal(quat2[2]).quantize(Decimal('1.0000000000'))
-            quat_k2 = Decimal(quat2[3]).quantize(Decimal('1.0000000000'))
-            quat_w2 = Decimal(quat2[0]).quantize(Decimal('1.0000000000'))
-            pos_x2 = Decimal(pos2[0]).quantize(Decimal('1.0000000000'))
-            pos_y2 = Decimal(pos2[1]).quantize(Decimal('1.0000000000'))
-            pos_z2 = Decimal(pos2[2]).quantize(Decimal('1.0000000000'))
+            quat_b_i = Decimal(quat_b[1]).quantize(Decimal('1.0000000000'))
+            quat_b_j = Decimal(quat_b[2]).quantize(Decimal('1.0000000000'))
+            quat_b_k = Decimal(quat_b[3]).quantize(Decimal('1.0000000000'))
+            quat_b_w = Decimal(quat_b[0]).quantize(Decimal('1.0000000000'))
+            pos_b_x = Decimal(pos_b[0]).quantize(Decimal('1.0000000000'))
+            pos_b_y = Decimal(pos_b[1]).quantize(Decimal('1.0000000000'))
+            pos_b_z = Decimal(pos_b[2]).quantize(Decimal('1.0000000000'))
 
             file.write(
                 '\n;HINGE %s' % (hinge_list.index(hinge)) +
                 '\n%s' % name +
                 '\n%s' % body_a_index +
                 '\n%s' % body_b_index +
-                decimal_4 % (quat_i, quat_j, quat_k, quat_w) +
-                decimal_3 % (pos_x, pos_y, pos_z) +
-                decimal_4 % (quat_i2, quat_j2, quat_k2, quat_w2) +
-                decimal_3 % (pos_x2, pos_y2, pos_z2) +
+                decimal_4 % (quat_a_i, quat_a_j, quat_a_k, quat_a_w) +
+                decimal_3 % (pos_a_x, pos_a_y, pos_a_z) +
+                decimal_4 % (quat_b_i, quat_b_j, quat_b_k, quat_b_w) +
+                decimal_3 % (pos_b_x, pos_b_y, pos_b_z) +
                 '\n%s' % (is_limited) +
                 decimal_1 % (friction_limit) +
                 decimal_1 % (min_angle) +
