@@ -1091,15 +1091,13 @@ def write_file(context, filepath, report, extension, jms_version, game_version, 
                     parent_bone = armature.data.bones[boxes.parent_bone]
                     parent_index = joined_list.index(parent_bone)
 
-            dimension_x = boxes.dimensions[0]/2
-            dimension_y = boxes.dimensions[1]/2
-            dimension_z = boxes.dimensions[2]/2
             box_matrix = boxes.matrix_world
             if boxes.parent:
                 box_matrix = parent_bone.matrix_local.inverted() @ boxes.matrix_world
 
             pos  = box_matrix.translation
             quat = box_matrix.to_quaternion()
+            dimension = boxes.dimensions
 
             quat_i = Decimal(quat[1]).quantize(Decimal('1.0000000000'))
             quat_j = Decimal(quat[2]).quantize(Decimal('1.0000000000'))
@@ -1108,6 +1106,9 @@ def write_file(context, filepath, report, extension, jms_version, game_version, 
             pos_x = Decimal(pos[0]).quantize(Decimal('1.0000000000'))
             pos_y = Decimal(pos[1]).quantize(Decimal('1.0000000000'))
             pos_z = Decimal(pos[2]).quantize(Decimal('1.0000000000'))
+            dimension_x = Decimal(dimension[0]).quantize(Decimal('1.0000000000'))
+            dimension_y = Decimal(dimension[1]).quantize(Decimal('1.0000000000'))
+            dimension_z = Decimal(dimension[2]).quantize(Decimal('1.0000000000'))          
 
             file.write(
                 '\n;BOXES %s' % (box_list.index(boxes)) +
