@@ -261,6 +261,9 @@ def write_file(context, filepath, report, extension, jms_version, game_version, 
                     elif obj.rigid_body_constraint.type == 'GENERIC':
                         ragdoll_list.append(obj)
 
+                    elif obj.rigid_body_constraint.type == 'GENERIC_SPRING':
+                        point_to_point_list.append(obj)
+
                 elif obj.jms.Object_Type == 'SPHERE':
                     sphere_list.append(obj)
                     region_list.append(find_region)
@@ -290,7 +293,7 @@ def write_file(context, filepath, report, extension, jms_version, game_version, 
             if not obj.jms.XREF_path in instance_xref_paths:
                 instance_xref_paths.append(obj.jms.XREF_path)
 
-        elif obj.name[0:1].lower() == ',':
+        elif obj.jms.bounding_radius == True:
             bounding_sphere.append(obj)
 
         elif obj.type== 'MESH':
@@ -355,11 +358,18 @@ def write_file(context, filepath, report, extension, jms_version, game_version, 
 
         if len(obj.material_slots)!= 0 and len(obj.jms.XREF_path) == 0 and not obj.name[0:1].lower() == '#' and not obj.name[0:2].lower() == 'b_' and not obj.name[0:5].lower() == 'frame':
             for f in obj.data.polygons:
-                slot = obj.material_slots[f.material_index]
-                mat = slot.material
-                if mat is not None:
-                    if mat not in assigned_materials_list:
-                        assigned_materials_list.append(mat)
+                object_materials = len(obj.material_slots) - 1
+                if not f.material_index > object_materials:
+                    slot = obj.material_slots[f.material_index]
+                    mat = slot.material
+                    if mat is not None:
+                        if mat not in assigned_materials_list:
+                            assigned_materials_list.append(mat)
+
+                else:
+                    if game_version == 'haloce':
+                        if None not in material_list and not obj.name[0:1].lower() == '$' and not obj.name[0:1].lower() == '#' and not obj.name[0:2].lower() == 'b_' and not obj.name[0:5].lower() == 'frame' and not obj.type == 'ARMATURE' and not obj.parent == None:
+                            material_list.append(None)
 
             for slot in obj.material_slots:
                 if game_version == 'halo2':
@@ -798,14 +808,22 @@ def write_file(context, filepath, report, extension, jms_version, game_version, 
             jms_triangle.v1 = len(vertices) + 1
             jms_triangle.v2 = len(vertices) + 2
             jms_triangle.region = region_index
+
+            object_materials = len(original_geo.material_slots) - 1
+
             if game_version == 'halo2':
                 jms_triangle.material = -1
                 if len(original_geo.material_slots) != 0:
-                    jms_triangle.material = material_list.index([bpy.data.materials[geometry.materials[face.material_index].name], original_geo.jms.level_of_detail, original_geo.jms.Region, original_geo.jms.Permutation])
+                    if not face.material_index > object_materials:
+                        jms_triangle.material = material_list.index([bpy.data.materials[geometry.materials[face.material_index].name], original_geo.jms.level_of_detail, original_geo.jms.Region, original_geo.jms.Permutation])
 
             elif game_version == 'haloce':
                 if len(original_geo.material_slots) != 0:
-                    jms_triangle.material = material_list.index(bpy.data.materials[geometry.materials[face.material_index].name])
+                    if not face.material_index > object_materials:
+                        jms_triangle.material = material_list.index(bpy.data.materials[geometry.materials[face.material_index].name])
+
+                    else:
+                        jms_triangle.material = material_list.index(None)
 
                 else:
                     jms_triangle.material = material_list.index(None)
@@ -1332,12 +1350,14 @@ def write_file(context, filepath, report, extension, jms_version, game_version, 
                         body_b_index = parent_index
 
             body_a_matrix = ragdoll.matrix_world
-            if body_a_obj.parent:
-                body_a_matrix = parent_bone_a.matrix_local.inverted() @ ragdoll.matrix_world
+            if body_a_obj:
+                if body_a_obj.parent:
+                    body_a_matrix = parent_bone_a.matrix_local.inverted() @ ragdoll.matrix_world
 
             body_b_matrix = ragdoll.matrix_world
-            if body_b_obj.parent:
-                body_b_matrix = parent_bone_b.matrix_local.inverted() @ ragdoll.matrix_world
+            if body_b_obj:
+                if body_b_obj.parent:
+                    body_b_matrix = parent_bone_b.matrix_local.inverted() @ ragdoll.matrix_world
 
             pos_a  = body_a_matrix.translation
             quat_a = body_a_matrix.to_quaternion().inverted()
@@ -1447,12 +1467,14 @@ def write_file(context, filepath, report, extension, jms_version, game_version, 
                         body_b_index = parent_index
 
             body_a_matrix = hinge.matrix_world
-            if body_a_obj.parent:
-                body_a_matrix = parent_bone_a.matrix_local.inverted() @ hinge.matrix_world
+            if body_a_obj:
+                if body_a_obj.parent:
+                    body_a_matrix = parent_bone_a.matrix_local.inverted() @ hinge.matrix_world
 
             body_b_matrix = hinge.matrix_world
-            if body_b_obj.parent:
-                body_b_matrix = parent_bone_b.matrix_local.inverted() @ hinge.matrix_world
+            if body_b_obj:
+                if body_b_obj.parent:
+                    body_b_matrix = parent_bone_b.matrix_local.inverted() @ hinge.matrix_world
 
             pos_a  = body_a_matrix.translation
             quat_a = body_a_matrix.to_quaternion().inverted()
@@ -1541,6 +1563,145 @@ def write_file(context, filepath, report, extension, jms_version, game_version, 
                 '\n;\t<z max limit>' +
                 '\n;\t<spring length>\n'
             )
+
+            for point_to_point in point_to_point_list:
+                name = point_to_point.name.split('$', 1)[1]
+                body_a_obj = point_to_point.rigid_body_constraint.object1
+                body_b_obj = point_to_point.rigid_body_constraint.object2
+                body_a_index = -1
+                body_b_index = -1
+                if armature_count == 0:
+                    if body_a_obj:
+                        if body_a_obj.parent:
+                            parent_bone_a = bpy.data.objects[body_a_obj.parent.name]
+                            parent_index = joined_list.index(parent_bone_a)
+                            body_a_index = parent_index
+
+                    if body_b_obj:
+                        if body_b_obj.parent:
+                            parent_bone_b = bpy.data.objects[body_b_obj.parent.name]
+                            parent_index = joined_list.index(parent_bone_b)
+                            body_b_index = parent_index
+
+                else:
+                    if body_a_obj:
+                        if body_a_obj.parent_bone:
+                            parent_bone_a = armature.data.bones[body_a_obj.parent_bone]
+                            parent_index = joined_list.index(parent_bone_a)
+                            body_a_index = parent_index
+
+                    if body_b_obj:
+                        if body_b_obj.parent_bone:
+                            parent_bone_b = armature.data.bones[body_b_obj.parent_bone]
+                            parent_index = joined_list.index(parent_bone_b)
+                            body_b_index = parent_index
+
+                body_a_matrix = point_to_point.matrix_world
+                if body_a_obj:
+                    if body_a_obj.parent:
+                        body_a_matrix = parent_bone_a.matrix_local.inverted() @ point_to_point.matrix_world
+
+                body_b_matrix = point_to_point.matrix_world
+                if body_b_obj:
+                    if body_b_obj.parent:
+                        body_b_matrix = parent_bone_b.matrix_local.inverted() @ point_to_point.matrix_world
+
+                pos_a  = body_a_matrix.translation
+                quat_a = body_a_matrix.to_quaternion().inverted()
+                pos_b  = body_b_matrix.translation
+                quat_b = body_b_matrix.to_quaternion().inverted()
+
+                is_limited_x = int(point_to_point.rigid_body_constraint.use_limit_ang_x)
+                is_limited_y = int(point_to_point.rigid_body_constraint.use_limit_ang_y)
+                is_limited_z = int(point_to_point.rigid_body_constraint.use_limit_ang_z)
+
+                is_spring_z = int(point_to_point.rigid_body_constraint.use_limit_lin_z)
+
+                constraint_type = 0
+
+                min_angle_x = degrees(0)
+                max_angle_x = degrees(0)
+                min_angle_y = degrees(0)
+                max_angle_y = degrees(0)
+                min_angle_z = degrees(0)
+                max_angle_z = degrees(0)
+
+                spring_length = degrees(0)
+
+                if is_limited_x == False and is_limited_y == False and is_limited_z == False and is_spring_z == False:
+                    constraint_type = 0
+
+                    min_angle_x = degrees(point_to_point.rigid_body_constraint.limit_ang_x_lower)
+                    max_angle_x = degrees(point_to_point.rigid_body_constraint.limit_ang_x_upper)
+                    min_angle_y = degrees(point_to_point.rigid_body_constraint.limit_ang_y_lower)
+                    max_angle_y = degrees(point_to_point.rigid_body_constraint.limit_ang_y_upper)
+                    min_angle_z = degrees(point_to_point.rigid_body_constraint.limit_ang_z_lower)
+                    max_angle_z = degrees(point_to_point.rigid_body_constraint.limit_ang_z_upper)
+
+                    spring_length = degrees(0)
+
+                elif is_limited_x == True and is_limited_y == True and is_limited_z == True and is_spring_z == False:
+                    constraint_type = 1
+
+                    min_angle_x = degrees(point_to_point.rigid_body_constraint.limit_ang_x_lower)
+                    max_angle_x = degrees(point_to_point.rigid_body_constraint.limit_ang_x_upper)
+                    min_angle_y = degrees(point_to_point.rigid_body_constraint.limit_ang_y_lower)
+                    max_angle_y = degrees(point_to_point.rigid_body_constraint.limit_ang_y_upper)
+                    min_angle_z = degrees(point_to_point.rigid_body_constraint.limit_ang_z_lower)
+                    max_angle_z = degrees(point_to_point.rigid_body_constraint.limit_ang_z_upper)
+
+                    spring_length = degrees(0)
+
+                elif is_limited_x == False and is_limited_y == False and is_limited_z == False and is_spring_z == True:
+                    constraint_type = 2
+
+                    min_angle_x = degrees(point_to_point.rigid_body_constraint.limit_ang_x_lower)
+                    max_angle_x = degrees(point_to_point.rigid_body_constraint.limit_ang_x_upper)
+                    min_angle_y = degrees(point_to_point.rigid_body_constraint.limit_ang_y_lower)
+                    max_angle_y = degrees(point_to_point.rigid_body_constraint.limit_ang_y_upper)
+                    min_angle_z = degrees(point_to_point.rigid_body_constraint.limit_ang_z_lower)
+                    max_angle_z = degrees(point_to_point.rigid_body_constraint.limit_ang_z_upper)
+
+                    spring_length = degrees(point_to_point.rigid_body_constraint.limit_lin_z_upper)
+
+                else:
+                    report({'WARNING'}, 'Improper point to point.')
+
+                quat_a_i = Decimal(quat_a[1]).quantize(Decimal('1.0000000000'))
+                quat_a_j = Decimal(quat_a[2]).quantize(Decimal('1.0000000000'))
+                quat_a_k = Decimal(quat_a[3]).quantize(Decimal('1.0000000000'))
+                quat_a_w = Decimal(quat_a[0]).quantize(Decimal('1.0000000000'))
+                pos_a_x = Decimal(pos_a[0]).quantize(Decimal('1.0000000000'))
+                pos_a_y = Decimal(pos_a[1]).quantize(Decimal('1.0000000000'))
+                pos_a_z = Decimal(pos_a[2]).quantize(Decimal('1.0000000000'))
+
+                quat_b_i = Decimal(quat_b[1]).quantize(Decimal('1.0000000000'))
+                quat_b_j = Decimal(quat_b[2]).quantize(Decimal('1.0000000000'))
+                quat_b_k = Decimal(quat_b[3]).quantize(Decimal('1.0000000000'))
+                quat_b_w = Decimal(quat_b[0]).quantize(Decimal('1.0000000000'))
+                pos_b_x = Decimal(pos_b[0]).quantize(Decimal('1.0000000000'))
+                pos_b_y = Decimal(pos_b[1]).quantize(Decimal('1.0000000000'))
+                pos_b_z = Decimal(pos_b[2]).quantize(Decimal('1.0000000000'))
+
+                file.write(
+                    '\n;POINT_TO_POINT %s' % (point_to_point_list.index(point_to_point)) +
+                    '\n%s' % name +
+                    '\n%s' % body_a_index +
+                    '\n%s' % body_b_index +
+                    decimal_4 % (quat_a_i, quat_a_j, quat_a_k, quat_a_w) +
+                    decimal_3 % (pos_a_x, pos_a_y, pos_a_z) +
+                    decimal_4 % (quat_b_i, quat_b_j, quat_b_k, quat_b_w) +
+                    decimal_3 % (pos_b_x, pos_b_y, pos_b_z) +
+                    '\n%s' % (constraint_type) +
+                    decimal_1 % (min_angle_x) +
+                    decimal_1 % (max_angle_x) +
+                    decimal_1 % (min_angle_y) +
+                    decimal_1 % (max_angle_y) +
+                    decimal_1 % (min_angle_z) +
+                    decimal_1 % (max_angle_z) +
+                    decimal_1 % (spring_length) +
+                    '\n'
+                )
 
             #write prismatic
             file.write(

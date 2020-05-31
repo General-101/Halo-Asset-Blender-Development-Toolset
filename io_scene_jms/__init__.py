@@ -104,6 +104,9 @@ class JMS_ObjectProps(Panel):
         jms = obj.jms
 
         row = layout.row()
+        row.prop(jms, "bounding_radius")
+
+        row = layout.row()
         row.prop(jms, "Region")
 
         row = layout.row()
@@ -119,6 +122,12 @@ class JMS_ObjectProps(Panel):
         row.prop(jms, "XREF_path")
 
 class JMS_ObjectPropertiesGroup(PropertyGroup):
+    bounding_radius: BoolProperty(
+        name ="Bounding Radius",
+        description = "Sets object as a bounding radius",
+        default = False,
+        )
+
     Region : StringProperty(
         name = "Region",
         default = "",
