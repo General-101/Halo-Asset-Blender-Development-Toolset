@@ -30,7 +30,7 @@
 bl_info = {
     "name": "Blend2Halo2 JMS",
     "author": "Cyboryxmen, modified by Fulsy + MosesofEgypt + General_101",
-    "version": (0, 0, 1),
+    "version": (1, 0, 0),
     "blender": (2, 80, 0),
     "location": "File > Export",
     "description": "Export Halo 2/CE Jointed Model Skeleton File (.jms)",

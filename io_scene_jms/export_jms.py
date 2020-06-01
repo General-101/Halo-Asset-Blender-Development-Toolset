@@ -142,23 +142,26 @@ def get_encoding(game_version):
 def error_pass(armature_count, report, game_version, node_count, version, extension, geometry_list, marker_list):
     if armature_count >= 2:
         report({'ERROR'}, 'More than one armature object. Please delete all but one.')
-        return {'CANCELLED'}
+        return True
 
     elif game_version == 'haloce' and node_count == 0: #JMSv2 files can have JMS files without a node for physics.
         report({'ERROR'}, 'No nodes in scene. Add an armature or object mesh named frame')
-        return {'CANCELLED'}
+        return True
 
     elif game_version == 'haloce' and len(geometry_list) == 0 and len(marker_list) == 0:
         report({'ERROR'}, 'No geometry in scene.')
-        return {'CANCELLED'}
+        return True
 
     elif version >= 8201 and game_version == 'haloce':
         report({'ERROR'}, 'This version is not supported for CE. Choose from 8197-8200 if you wish to export for CE.')
-        return {'CANCELLED'}
+        return True
 
     elif extension == '.JMP' and game_version == 'halo2':
         report({'ERROR'}, 'This extension is not used in Halo 2 Vista')
-        return {'CANCELLED'}
+        return True
+
+    else:
+        return False
 
 def write_file(context, filepath, report, extension, jms_version, game_version, triangulate_faces):
     from . import JmsVertex
@@ -479,12 +482,12 @@ def write_file(context, filepath, report, extension, jms_version, game_version, 
         decimal_3 = '\n%0.6f\t%0.6f\t%0.6f'
         decimal_4 = '\n%0.6f\t%0.6f\t%0.6f\t%0.6f'
 
-    error_pass(armature_count, report, game_version, node_count, version, extension, geometry_list, marker_list)
+    if error_pass(armature_count, report, game_version, node_count, version, extension, geometry_list, marker_list):
+        return {'CANCELLED'}
 
-    if filepath[-3:].lower() == 'jms' or filepath[-3:].lower() == 'jmr':
-        true_extension = ''
-
-    else:
+    extension_list = ['jms', 'jmp']
+    true_extension = ''
+    if not filepath[-3:].lower() in extension_list:
         true_extension = extension
 
     file = open(filepath + true_extension, 'w', encoding='%s' % get_encoding(game_version))
@@ -1743,6 +1746,7 @@ def write_file(context, filepath, report, extension, jms_version, game_version, 
             )
 
     file.close()
+    report({'INFO'}, "Export completed successfully")
     return {'FINISHED'}
 
 if __name__ == '__main__':
