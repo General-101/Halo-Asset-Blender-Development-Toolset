@@ -632,11 +632,12 @@ def write_file(context, filepath, report, extension, jms_version, game_version, 
                 material_name = material.name
                 for node in material.node_tree.nodes:
                     if node.type == 'TEX_IMAGE':
-                        image_filepath = node.image.filepath
-                        image_extension = image_filepath.rsplit('.', 1)[1]
-                        image_path = image_filepath.rsplit('.', 1)[0]
-                        if image_extension.lower() == 'tif' and os.path.exists(image_filepath):
-                            texture_path = image_path
+                        if not node.image == None:
+                            image_filepath = node.image.filepath
+                            image_extension = image_filepath.rsplit('.', 1)[1]
+                            image_path = image_filepath.rsplit('.', 1)[0]
+                            if image_extension.lower() == 'tif' and os.path.exists(image_filepath):
+                                texture_path = image_path
 
             file.write(
                 '\n%s' % (material_name) +
