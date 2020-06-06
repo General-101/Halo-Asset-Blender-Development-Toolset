@@ -139,7 +139,7 @@ def get_encoding(game_version):
 
     return encoding
 
-def error_pass(armature_count, report, game_version, node_count, version, extension, geometry_list, marker_list):
+def error_pass(armature_count, report, game_version, node_count, version, extension, geometry_list, marker_list, root_node_count):
     if armature_count >= 2:
         report({'ERROR'}, 'More than one armature object. Please delete all but one.')
         return True
@@ -158,6 +158,10 @@ def error_pass(armature_count, report, game_version, node_count, version, extens
 
     elif extension == '.JMP' and game_version == 'halo2':
         report({'ERROR'}, 'This extension is not used in Halo 2 Vista')
+        return True
+
+    elif root_node_count >= 2:
+        report({'ERROR'}, "More than one root node. Please remove or rename objects until you only have one root frame object.")
         return True
 
     else:
@@ -185,6 +189,7 @@ def write_file(context, filepath, report, extension, jms_version, game_version, 
     armature = []
     armature_count = 0
     mesh_frame_count = 0
+    root_node_count = 0
 
     material_list = []
     marker_list = []
@@ -231,6 +236,9 @@ def write_file(context, filepath, report, extension, jms_version, game_version, 
                 report({'ERROR'}, "Using both armature and object mesh node setup. Choose one or the other.")
                 return {'CANCELLED'}
 
+            if obj.parent == None:
+                root_node_count += 1
+
         elif obj.name[0:2].lower() == 'b_' or obj.name[0:5].lower() == 'frame':
             bpy.context.view_layer.objects.active = obj
             bpy.ops.object.mode_set(mode = 'OBJECT')
@@ -239,6 +247,9 @@ def write_file(context, filepath, report, extension, jms_version, game_version, 
             if armature_count > 0:
                 report({'ERROR'}, "Using both armature and object mesh node setup. Choose one or the other.")
                 return {'CANCELLED'}
+
+            if obj.parent == None:
+                root_node_count += 1
 
         elif obj.name[0:1].lower() == '#':
             if game_version == 'haloce':
@@ -482,7 +493,7 @@ def write_file(context, filepath, report, extension, jms_version, game_version, 
         decimal_3 = '\n%0.6f\t%0.6f\t%0.6f'
         decimal_4 = '\n%0.6f\t%0.6f\t%0.6f\t%0.6f'
 
-    if error_pass(armature_count, report, game_version, node_count, version, extension, geometry_list, marker_list):
+    if error_pass(armature_count, report, game_version, node_count, version, extension, geometry_list, marker_list, root_node_count):
         return {'CANCELLED'}
 
     extension_list = ['jms', 'jmp']
@@ -636,7 +647,7 @@ def write_file(context, filepath, report, extension, jms_version, game_version, 
                             image_filepath = bpy.path.abspath(node.image.filepath)
                             image_extension = image_filepath.rsplit('.', 1)[1]
                             image_path = image_filepath.rsplit('.', 1)[0]
-                            if image_extension.lower() == 'tif' and os.path.exists(bpy.path.abspath(image_filepath)):
+                            if image_extension.lower() == 'tif' and os.path.exists(image_filepath):
                                 texture_path = image_path
 
             file.write(
@@ -1121,7 +1132,7 @@ def write_file(context, filepath, report, extension, jms_version, game_version, 
                 box_matrix = parent_bone.matrix_local.inverted() @ boxes.matrix_world
 
             pos  = box_matrix.translation
-            quat = box_matrix.to_quaternion()
+            quat = box_matrix.to_quaternion().inverted()
             dimension = boxes.dimensions
 
             quat_i = Decimal(quat[1]).quantize(Decimal('1.0000000000'))
@@ -1196,7 +1207,7 @@ def write_file(context, filepath, report, extension, jms_version, game_version, 
                 capsule_matrix = parent_bone.matrix_local.inverted() @ capsule.matrix_world
 
             pos  = capsule_matrix.translation
-            quat = capsule_matrix.to_quaternion()
+            quat = capsule_matrix.to_quaternion().inverted()
 
             quat_i = Decimal(quat[1]).quantize(Decimal('1.0000000000'))
             quat_j = Decimal(quat[2]).quantize(Decimal('1.0000000000'))
@@ -1277,7 +1288,7 @@ def write_file(context, filepath, report, extension, jms_version, game_version, 
                 convex_matrix = parent_bone.matrix_local.inverted() @ convex_shape.matrix_world
 
             pos  = convex_matrix.translation
-            quat = convex_matrix.to_quaternion()
+            quat = convex_matrix.to_quaternion().inverted()
 
             quat_i = Decimal(quat[1]).quantize(Decimal('1.0000000000'))
             quat_j = Decimal(quat[2]).quantize(Decimal('1.0000000000'))
@@ -1366,7 +1377,7 @@ def write_file(context, filepath, report, extension, jms_version, game_version, 
             pos_a  = body_a_matrix.translation
             quat_a = body_a_matrix.to_quaternion().inverted()
             pos_b  = body_b_matrix.translation
-            quat_b = body_b_matrix.to_quaternion().inverted()
+            quat_b = body_b_matrix.to_quaternion().inverted().inverted()
 
             min_angle_x = 0
             max_angle_x = 0
