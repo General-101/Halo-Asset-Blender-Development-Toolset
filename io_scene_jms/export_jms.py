@@ -239,7 +239,7 @@ def write_file(context, filepath, report, extension, jms_version, game_version, 
             if obj.parent == None:
                 root_node_count += 1
 
-        elif obj.name[0:2].lower() == 'b_' or obj.name[0:5].lower() == 'frame':
+        elif obj.name[0:2].lower() == 'b_' or obj.name[0:4].lower() == 'bone' or obj.name[0:5].lower() == 'frame':
             bpy.context.view_layer.objects.active = obj
             bpy.ops.object.mode_set(mode = 'OBJECT')
             node_list.append(obj)
@@ -254,7 +254,7 @@ def write_file(context, filepath, report, extension, jms_version, game_version, 
         elif obj.name[0:1].lower() == '#':
             if game_version == 'haloce':
                 if not obj.parent == None:
-                    if obj.parent.type == 'ARMATURE' or obj.parent.name[0:2].lower() == 'b_' or obj.parent.name[0:5].lower() == 'frame':
+                    if obj.parent.type == 'ARMATURE' or obj.parent.name[0:2].lower() == 'b_' or obj.name[0:4].lower() == 'bone' or obj.parent.name[0:5].lower() == 'frame':
                         marker_list.append(obj)
                         region_list.append(find_region)
 
@@ -315,7 +315,7 @@ def write_file(context, filepath, report, extension, jms_version, game_version, 
             bpy.ops.object.mode_set(mode = 'OBJECT')
             if game_version == 'haloce':
                 if not obj.parent == None:
-                    if obj.parent.type == 'ARMATURE' or obj.parent.name[0:2].lower() == 'b_' or obj.parent.name[0:5].lower() == 'frame':
+                    if obj.parent.type == 'ARMATURE' or obj.parent.name[0:2].lower() == 'b_' or obj.name[0:4].lower() == 'bone' or obj.parent.name[0:5].lower() == 'frame':
                         modifier_list = []
                         if triangulate_faces:
                             for modifier in obj.modifiers:
@@ -370,7 +370,7 @@ def write_file(context, filepath, report, extension, jms_version, game_version, 
                 report({'ERROR'}, "How did you even choose an option that doesn't exist?")
                 return {'CANCELLED'}
 
-        if len(obj.material_slots)!= 0 and len(obj.jms.XREF_path) == 0 and not obj.name[0:1].lower() == '#' and not obj.name[0:2].lower() == 'b_' and not obj.name[0:5].lower() == 'frame':
+        if len(obj.material_slots)!= 0 and len(obj.jms.XREF_path) == 0 and not obj.name[0:1].lower() == '#' and not obj.name[0:2].lower() == 'b_' and not obj.name[0:4].lower() == 'bone' and not obj.name[0:5].lower() == 'frame':
             for f in obj.data.polygons:
                 object_materials = len(obj.material_slots) - 1
                 if not f.material_index > object_materials:
@@ -382,7 +382,7 @@ def write_file(context, filepath, report, extension, jms_version, game_version, 
 
                 else:
                     if game_version == 'haloce':
-                        if None not in material_list and not obj.name[0:1].lower() == '$' and not obj.name[0:1].lower() == '#' and not obj.name[0:2].lower() == 'b_' and not obj.name[0:5].lower() == 'frame' and not obj.type == 'ARMATURE' and not obj.parent == None:
+                        if None not in material_list and not obj.name[0:1].lower() == '$' and not obj.name[0:1].lower() == '#' and not obj.name[0:2].lower() == 'b_' and not obj.name[0:4].lower() == 'bone' and not obj.name[0:5].lower() == 'frame' and not obj.type == 'ARMATURE' and not obj.parent == None:
                             material_list.append(None)
 
             for slot in obj.material_slots:
@@ -405,7 +405,7 @@ def write_file(context, filepath, report, extension, jms_version, game_version, 
 
         else:
             if game_version == 'haloce':
-                if None not in material_list and not obj.name[0:1].lower() == '$' and not obj.name[0:1].lower() == '#' and not obj.name[0:2].lower() == 'b_' and not obj.name[0:5].lower() == 'frame' and not obj.type == 'ARMATURE' and not obj.parent == None:
+                if None not in material_list and not obj.name[0:1].lower() == '$' and not obj.name[0:1].lower() == '#' and not obj.name[0:2].lower() == 'b_' and not obj.name[0:4].lower() == 'bone' and not obj.name[0:5].lower() == 'frame' and not obj.type == 'ARMATURE' and not obj.parent == None:
                     material_list.append(None)
 
     region_list = list(dict.fromkeys(region_list))
@@ -641,14 +641,15 @@ def write_file(context, filepath, report, extension, jms_version, game_version, 
             texture_path = '<none>'
             if not material == None:
                 material_name = material.name
-                for node in material.node_tree.nodes:
-                    if node.type == 'TEX_IMAGE':
-                        if not node.image == None:
-                            image_filepath = bpy.path.abspath(node.image.filepath)
-                            image_extension = image_filepath.rsplit('.', 1)[1]
-                            image_path = image_filepath.rsplit('.', 1)[0]
-                            if image_extension.lower() == 'tif' and os.path.exists(image_filepath):
-                                texture_path = image_path
+                if not material.node_tree == None:
+                    for node in material.node_tree.nodes:
+                        if node.type == 'TEX_IMAGE':
+                            if not node.image == None:
+                                image_filepath = bpy.path.abspath(node.image.filepath)
+                                image_extension = image_filepath.rsplit('.', 1)[1]
+                                image_path = image_filepath.rsplit('.', 1)[0]
+                                if image_extension.lower() == 'tif' and os.path.exists(image_filepath):
+                                    texture_path = image_path
 
             file.write(
                 '\n%s' % (material_name) +
