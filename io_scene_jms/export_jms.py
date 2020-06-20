@@ -498,7 +498,8 @@ def write_file(context, filepath, report, extension, jms_version, game_version, 
 
     extension_list = ['jms', 'jmp']
     true_extension = ''
-    if not filepath[-3:].lower() in extension_list:
+    extension_char = (len(extension)) - 1
+    if not filepath[-(extension_char):].lower() in extension_list or not filepath[-(extension_char):].lower() in extension.lower():      
         true_extension = extension
 
     file = open(filepath + true_extension, 'w', encoding='%s' % get_encoding(game_version))
