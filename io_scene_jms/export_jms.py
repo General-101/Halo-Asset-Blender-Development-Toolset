@@ -383,7 +383,7 @@ def write_file(context, filepath, report, extension, jms_version, game_version, 
 
                 else:
                     if game_version == 'haloce':
-                        if None not in material_list and not obj.name[0:1].lower() == '$' and not obj.name[0:1].lower() == '#' and not obj.name[0:2].lower() == 'b_' and not obj.name[0:4].lower() == 'bone' and not obj.name[0:5].lower() == 'frame' and not obj.type == 'ARMATURE' and not obj.parent == None:
+                        if None not in material_list and not obj.name[0:1].lower() == '$' and not obj.name[0:1].lower() == '#' and not obj.name[0:2].lower() == 'b_' and not obj.name[0:4].lower() == 'bone' and not obj.name[0:5].lower() == 'frame' and not obj.type == 'ARMATURE' and not obj.parent == None and obj.materials[f.material_index] is None:
                             material_list.append(None)
 
             for slot in obj.material_slots:
@@ -833,12 +833,17 @@ def write_file(context, filepath, report, extension, jms_version, game_version, 
                 jms_triangle.material = -1
                 if len(original_geo.material_slots) != 0:
                     if not face.material_index > object_materials:
-                        jms_triangle.material = material_list.index([bpy.data.materials[geometry.materials[face.material_index].name], original_geo.jms.level_of_detail, original_geo.jms.Region, original_geo.jms.Permutation])
+                        if geometry.materials[face.material_index] is not None:
+                            jms_triangle.material = material_list.index([bpy.data.materials[geometry.materials[face.material_index].name], original_geo.jms.level_of_detail, original_geo.jms.Region, original_geo.jms.Permutation])
 
             elif game_version == 'haloce':
                 if len(original_geo.material_slots) != 0:
                     if not face.material_index > object_materials:
-                        jms_triangle.material = material_list.index(bpy.data.materials[geometry.materials[face.material_index].name])
+                        if geometry.materials[face.material_index] is not None:
+                            jms_triangle.material = material_list.index(bpy.data.materials[geometry.materials[face.material_index].name])
+
+                        else:
+                            jms_triangle.material = material_list.index(None)
 
                     else:
                         jms_triangle.material = material_list.index(None)
