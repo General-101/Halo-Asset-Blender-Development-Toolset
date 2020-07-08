@@ -871,35 +871,65 @@ def write_file(context, filepath, report, extension, jms_version, game_version, 
                 jms_vertex.uv = uv
 
                 if len(vert.groups) != 0:
-                    value = len(vert.groups)
+                    object_vert_group_list = []
+                    vertex_vert_group_list = []
+                    for group_index in range(len(vert.groups)):
+                        vert_group = vert.groups[group_index].group
+                        object_vertex_group = vertex_groups[vert_group]
+                        if object_vertex_group in bpy.data.objects:
+                            vertex_vert_group_list.append(group_index)
+                            if bpy.data.objects[object_vertex_group] in joined_list:
+                                object_vert_group_list.append(vert_group)
+
+                    value = len(object_vert_group_list)
                     if value > 4:
                         value = 4
 
                     jms_vertex.node_influence_count = value
-                    for group_index in range(len(vert.groups)):
-                        vertex_group = vert.groups[group_index].group
-                        object_vertex_group = vertex_groups[vertex_group]
+
+                    if len(object_vert_group_list) != 0:
+                        for group_index in object_vert_group_list:
+                            item_index = int(object_vert_group_list.index(group_index))
+                            vert_index = int(vertex_vert_group_list[item_index])
+                            vert_group = vert.groups[vert_index].group
+                            object_vertex_group = vertex_groups[vert_group]
+                            if armature_count == 0:
+                                node_obj = bpy.data.objects[object_vertex_group]
+
+                            else:
+                                node_obj = armature.data.bones[object_vertex_group]
+
+                            if item_index == 0:
+                                jms_vertex.node0 = joined_list.index(node_obj)
+                                jms_vertex.node0_weight = '%0.10f' % vert.groups[vert_index].weight
+
+                            if item_index == 1:
+                                jms_vertex.node1 = joined_list.index(node_obj)
+                                jms_vertex.node1_weight = '%0.10f' % vert.groups[vert_index].weight
+
+                            if item_index == 2:
+                                jms_vertex.node2 = joined_list.index(node_obj)
+                                jms_vertex.node2_weight = '%0.10f' % vert.groups[vert_index].weight
+
+                            if item_index == 3:
+                                jms_vertex.node3 = joined_list.index(node_obj)
+                                jms_vertex.node3_weight = '%0.10f' % vert.groups[vert_index].weight
+
+                    else:
+                        parent_index = 0
                         if armature_count == 0:
-                            node_obj = bpy.data.objects[object_vertex_group]
+                            if original_geo.parent:
+                                parent_bone = bpy.data.objects[original_geo.parent.name]
+                                parent_index = joined_list.index(parent_bone)
 
                         else:
-                            node_obj = armature.data.bones[object_vertex_group]
+                            if original_geo.parent_bone:
+                                parent_bone = armature.data.bones[original_geo.parent_bone]
+                                parent_index = joined_list.index(parent_bone)
 
-                        if group_index == 0:
-                            jms_vertex.node0 = joined_list.index(node_obj)
-                            jms_vertex.node0_weight = '%0.10f' % vert.groups[0].weight
-
-                        if group_index == 1:
-                            jms_vertex.node1 = joined_list.index(node_obj)
-                            jms_vertex.node1_weight = '%0.10f' % vert.groups[1].weight
-
-                        if group_index == 2:
-                            jms_vertex.node2 = joined_list.index(node_obj)
-                            jms_vertex.node2_weight = '%0.10f' % vert.groups[2].weight
-
-                        if group_index == 3:
-                            jms_vertex.node3 = joined_list.index(node_obj)
-                            jms_vertex.node3_weight = '%0.10f' % vert.groups[3].weight
+                        jms_vertex.node_influence_count = '1'
+                        jms_vertex.node0 = parent_index
+                        jms_vertex.node0_weight = '1.0000000000'
 
                 else:
                     parent_index = 0
