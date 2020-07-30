@@ -105,26 +105,25 @@ def get_default_region_permutation_name(game_version):
     return default_name
 
 def get_lod(lod_setting):
-    if lod_setting == '0':
+    LOD_name = None
+
+    if lod_setting == '1':
         LOD_name = 'L1'
 
-    elif lod_setting == '1':
+    elif lod_setting == '2':
         LOD_name = 'L2'
 
-    elif lod_setting == '2':
+    elif lod_setting == '3':
         LOD_name = 'L3'
 
-    elif lod_setting == '3':
+    elif lod_setting == '4':
         LOD_name = 'L4'
 
-    elif lod_setting == '4':
+    elif lod_setting == '5':
         LOD_name = 'L5'
 
-    elif lod_setting == '5':
+    elif lod_setting == '6':
         LOD_name = 'L6'
-
-    else:
-        LOD_name = ''
 
     return LOD_name
 
@@ -139,6 +138,148 @@ def get_encoding(game_version):
         encoding = 'utf_8'
 
     return encoding
+
+def get_material(game_version, original_geo, face, geometry, material_list):
+    object_materials = len(original_geo.material_slots) - 1
+    if game_version == 'halo2':
+        assigned_material = -1
+        if len(original_geo.material_slots) != 0:
+            if not face.material_index > object_materials:
+                if geometry.materials[face.material_index] is not None:
+                    assigned_material = material_list.index([bpy.data.materials[geometry.materials[face.material_index].name], original_geo.jms.level_of_detail, original_geo.jms.Region, original_geo.jms.Permutation])
+
+    elif game_version == 'haloce':
+        if len(original_geo.material_slots) != 0:
+            if not face.material_index > object_materials:
+                if geometry.materials[face.material_index] is not None:
+                    assigned_material = material_list.index(bpy.data.materials[geometry.materials[face.material_index].name])
+
+                else:
+                    assigned_material = material_list.index(None)
+
+            else:
+                assigned_material = material_list.index(None)
+
+        else:
+            assigned_material = material_list.index(None)
+
+    return assigned_material
+
+def get_dimensions(mesh_a_matrix, mesh_a, mesh_b_matrix, mesh_b, invert, scale, version, jms_vertex, is_vertex, is_bone):
+    from . import JmsDimensions
+    object_dimensions = JmsDimensions()
+    if is_vertex:
+        pos = jms_vertex.pos
+        JmsDimensions.pos_x_a = Decimal(pos[0] * scale).quantize(Decimal('1.0000000000'))
+        JmsDimensions.pos_y_a = Decimal(pos[1] * scale).quantize(Decimal('1.0000000000'))
+        JmsDimensions.pos_z_a = Decimal(pos[2] * scale).quantize(Decimal('1.0000000000'))
+
+    else:
+        if mesh_a:
+            pos  = mesh_a_matrix.translation
+            quat = mesh_a_matrix.to_quaternion().inverted()
+            if version >= 8205:
+                quat = mesh_a_matrix.to_quaternion()
+
+            if not is_bone:
+                dimension = mesh_a.dimensions
+                pill_height_math = (dimension[2] * scale) - (dimension[0] * scale)
+                if pill_height_math < 0:
+                    pill_height = 0
+
+                else:
+                    pill_height = pill_height_math
+
+            JmsDimensions.quat_i_a = Decimal(quat[1]).quantize(Decimal('1.0000000000'))
+            JmsDimensions.quat_j_a = Decimal(quat[2]).quantize(Decimal('1.0000000000'))
+            JmsDimensions.quat_k_a = Decimal(quat[3]).quantize(Decimal('1.0000000000'))
+            JmsDimensions.quat_w_a = Decimal(quat[0] * invert).quantize(Decimal('1.0000000000'))
+            JmsDimensions.pos_x_a = Decimal(pos[0] * scale).quantize(Decimal('1.0000000000'))
+            JmsDimensions.pos_y_a = Decimal(pos[1] * scale).quantize(Decimal('1.0000000000'))
+            JmsDimensions.pos_z_a = Decimal(pos[2] * scale).quantize(Decimal('1.0000000000'))
+            if not is_bone:
+                JmsDimensions.dimension_x_a = Decimal(dimension[0] * scale).quantize(Decimal('1.0000000000'))
+                JmsDimensions.dimension_y_a = Decimal(dimension[1] * scale).quantize(Decimal('1.0000000000'))
+                JmsDimensions.dimension_z_a = Decimal(dimension[2] * scale).quantize(Decimal('1.0000000000'))
+                JmsDimensions.radius_a = Decimal((dimension[0] * scale) / 2).quantize(Decimal('1.0000000000'))
+                JmsDimensions.pill_z_a = Decimal(pill_height).quantize(Decimal('1.0000000000'))
+
+        if mesh_b:
+            pos  = mesh_b_matrix.translation
+            quat = mesh_b_matrix.to_quaternion().inverted()
+            if version >= 8205:
+                quat = mesh_b_matrix.to_quaternion()
+
+            if not is_bone:
+                dimension = mesh_b.dimensions
+                pill_height_math = (dimension[2] * scale) - (dimension[0] * scale)
+                if pill_height_math < 0:
+                    pill_height = 0
+
+                else:
+                    pill_height = pill_height_math
+
+            JmsDimensions.quat_i_b = Decimal(quat[1]).quantize(Decimal('1.0000000000'))
+            JmsDimensions.quat_j_b = Decimal(quat[2]).quantize(Decimal('1.0000000000'))
+            JmsDimensions.quat_k_b = Decimal(quat[3]).quantize(Decimal('1.0000000000'))
+            JmsDimensions.quat_w_b = Decimal(quat[0] * invert).quantize(Decimal('1.0000000000'))
+            JmsDimensions.pos_x_b = Decimal(pos[0] * scale).quantize(Decimal('1.0000000000'))
+            JmsDimensions.pos_y_b = Decimal(pos[1] * scale).quantize(Decimal('1.0000000000'))
+            JmsDimensions.pos_z_b = Decimal(pos[2] * scale).quantize(Decimal('1.0000000000'))
+            if not is_bone:
+                JmsDimensions.dimension_x_b = Decimal(dimension[0] * scale).quantize(Decimal('1.0000000000'))
+                JmsDimensions.dimension_y_b = Decimal(dimension[1] * scale).quantize(Decimal('1.0000000000'))
+                JmsDimensions.dimension_z_b = Decimal(dimension[2] * scale).quantize(Decimal('1.0000000000'))
+                JmsDimensions.radius_b = Decimal((dimension[0] * scale) / 2).quantize(Decimal('1.0000000000'))
+                JmsDimensions.pill_z_b = Decimal(pill_height).quantize(Decimal('1.0000000000'))
+
+    return object_dimensions
+
+def get_parent(armature_count, armature, mesh, joined_list, default_parent):
+    parent_index = default_parent
+    if armature_count == 0:
+        if mesh:
+            if mesh.parent:
+                parent_bone_a = bpy.data.objects[mesh.parent.name]
+                parent_index = joined_list.index(parent_bone_a)
+
+    else:
+        if mesh:
+            if mesh.parent_bone:
+                parent_bone_a = armature.data.bones[mesh.parent_bone]
+                parent_index = joined_list.index(parent_bone_a)
+
+    return parent_index
+
+def get_version(jms_version_ce, jms_version_h2, game_version):
+    version = 0
+    if game_version == 'haloce':
+        version = int(jms_version_ce)
+
+    if game_version == 'halo2':
+        version = int(jms_version_h2)
+
+    return version
+
+def get_extension(extension_ce, extension_h2, game_version):
+    extension = ''
+    if game_version == 'haloce':
+        extension = extension_ce
+
+    if game_version == 'halo2':
+        extension = extension_h2
+
+    return extension
+
+def set_scale(scale_enum, scale_float):
+    scale = 1
+    if scale_enum == '1':
+        scale = 100
+
+    if scale_enum == '2':
+        scale = scale_float
+
+    return scale
 
 def error_pass(armature_count, report, game_version, node_count, version, extension, geometry_list, marker_list, root_node_count):
     if armature_count >= 2:
@@ -168,7 +309,7 @@ def error_pass(armature_count, report, game_version, node_count, version, extens
     else:
         return False
 
-def write_file(context, filepath, report, extension, jms_version, game_version, triangulate_faces):
+def write_file(context, filepath, report, extension_ce, extension_h2, jms_version_ce, jms_version_h2, game_version, triangulate_faces, scale_enum, scale_float):
     from . import JmsVertex
     from . import JmsTriangle
 
@@ -216,8 +357,10 @@ def write_file(context, filepath, report, extension, jms_version, game_version, 
     default_region = get_default_region_permutation_name(game_version)
     default_permutation = get_default_region_permutation_name(game_version)
 
-    version = int(jms_version)
+    version = get_version(jms_version_ce, jms_version_h2, game_version)
+    extension = get_extension(extension_ce, extension_h2, game_version)
     node_checksum = 0
+    scale = set_scale(scale_enum, scale_float)
 
     if len(object_list) == 0:
         report({'ERROR'}, 'No objects in scene.')
@@ -552,6 +695,8 @@ def write_file(context, filepath, report, extension, jms_version, game_version, 
             if node.parent and not version >= 8205:
                 bone_matrix = node.parent.matrix_local @ node.matrix_world
 
+            mesh_dimensions = get_dimensions(bone_matrix, node, None, None, -1, scale, version, None, False, False)
+
         else:
             pose_bone = armature.pose.bones['%s' % (node.name)]
 
@@ -559,26 +704,15 @@ def write_file(context, filepath, report, extension, jms_version, game_version, 
             if pose_bone.parent and not version >= 8205:
                 bone_matrix = pose_bone.parent.matrix.inverted() @ pose_bone.matrix
 
-        pos  = bone_matrix.translation
-        quat = bone_matrix.to_quaternion().inverted()
-        if version >= 8205:
-            quat = bone_matrix.to_quaternion()
-
-        quat_i = Decimal(quat[1]).quantize(Decimal('1.0000000000'))
-        quat_j = Decimal(quat[2]).quantize(Decimal('1.0000000000'))
-        quat_k = Decimal(quat[3]).quantize(Decimal('1.0000000000'))
-        quat_w = Decimal(quat[0]).quantize(Decimal('1.0000000000'))
-        pos_x = Decimal(pos[0]).quantize(Decimal('1.0000000000'))
-        pos_y = Decimal(pos[1]).quantize(Decimal('1.0000000000'))
-        pos_z = Decimal(pos[2]).quantize(Decimal('1.0000000000'))
+            mesh_dimensions = get_dimensions(bone_matrix, node, None, None, -1, scale, version, None, False, True)
 
         if version >= 8205:
             file.write(
                 '\n;NODE %s' % (joined_list.index(node)) +
                 '\n%s' % (node.name) +
                 '\n%s' % (parent_node) +
-                decimal_4 % (quat_i, quat_j, quat_k, quat_w) +
-                decimal_3 % (pos_x, pos_y, pos_z) +
+                decimal_4 % (mesh_dimensions.quat_i_a, mesh_dimensions.quat_j_a, mesh_dimensions.quat_k_a, mesh_dimensions.quat_w_a) +
+                decimal_3 % (mesh_dimensions.pos_x_a, mesh_dimensions.pos_y_a, mesh_dimensions.pos_z_a) +
                 '\n'
             )
 
@@ -587,8 +721,8 @@ def write_file(context, filepath, report, extension, jms_version, game_version, 
                 '\n%s' % (node.name) +
                 '\n%s' % (first_child_node) +
                 '\n%s' % (first_sibling_node) +
-                decimal_4 % (quat_i, quat_j, quat_k, quat_w) +
-                decimal_3 % (pos_x, pos_y, pos_z)
+                decimal_4 % (mesh_dimensions.quat_i_a, mesh_dimensions.quat_j_a, mesh_dimensions.quat_k_a, mesh_dimensions.quat_w_a) +
+                decimal_3 % (mesh_dimensions.pos_x_a, mesh_dimensions.pos_y_a, mesh_dimensions.pos_z_a)
             )
 
     #write materials
@@ -625,17 +759,25 @@ def write_file(context, filepath, report, extension, jms_version, game_version, 
                 safe_region = material[2].replace(' ', '_').replace('\t', '_')
                 Region = safe_region
 
+            material_definition = '(%s)' % (bpy.data.materials.find(material[0].name))
+            if not LOD == None:
+                material_definition += ' %s' % (LOD)
+            if not Permutation == '':
+                material_definition += ' %s' % (Permutation)
+            if not Region == '':
+                material_definition += ' %s' % (Region)
+
             if version >= 8205:
                 file.write(
                     '\n;MATERIAL %s' % (material_list.index([material[0], untouched_lod, untouched_region, untouched_permutation])) +
                     '\n%s' % material[0].name +
-                    '\n%s %s %s\n' % (LOD, Permutation, Region)
+                    '\n%s\n' % (material_definition)
                 )
 
             else:
                 file.write(
                     '\n%s' % (material[0].name) +
-                    '\n%s %s %s' % (LOD, Permutation, Region)
+                    '\n%s' % (material_definition)
                 )
 
         elif game_version == 'haloce':
@@ -687,41 +829,22 @@ def write_file(context, filepath, report, extension, jms_version, game_version, 
         if len(marker.jms.Region) != 0:
             region = region_list.index(marker.jms.Region)
 
-        parent_index = 0
-        if armature_count == 0:
-            if marker.parent:
-                parent_bone = bpy.data.objects[marker.parent.name]
-                parent_index = joined_list.index(parent_bone)
+        parent_index = get_parent(armature_count, armature, marker, joined_list, 0)
 
-        else:
-            if marker.parent_bone:
-                parent_bone = armature.data.bones[marker.parent_bone]
-                parent_index = joined_list.index(parent_bone)
-
-        radius = marker.dimensions[0]/2
         marker_matrix = marker.matrix_world
         if marker.parent:
-            marker_matrix = parent_bone.matrix_local.inverted() @ marker.matrix_world
+            marker_matrix = marker.parent.matrix_local.inverted() @ marker.matrix_world
 
-        pos  = marker_matrix.translation
-        quat = marker_matrix.to_quaternion().inverted()
-
-        quat_i = Decimal(quat[1]).quantize(Decimal('1.0000000000'))
-        quat_j = Decimal(quat[2]).quantize(Decimal('1.0000000000'))
-        quat_k = Decimal(quat[3]).quantize(Decimal('1.0000000000'))
-        quat_w = Decimal(-quat[0]).quantize(Decimal('1.0000000000'))
-        pos_x = Decimal(pos[0]).quantize(Decimal('1.0000000000'))
-        pos_y = Decimal(pos[1]).quantize(Decimal('1.0000000000'))
-        pos_z = Decimal(pos[2]).quantize(Decimal('1.0000000000'))
+        mesh_dimensions = get_dimensions(marker_matrix, marker, None, None, -1, scale, version, None, False, False)
 
         if version >= 8205:
             file.write(
                 '\n;MARKER %s' % (marker_list.index(marker)) +
                 '\n%s' % (fixed_name) +
                 '\n%s' % (parent_index) +
-                decimal_4 % (quat_i, quat_j, quat_k, quat_w) +
-                decimal_3 % (pos_x, pos_y, pos_z) +
-                decimal_1 % (radius) +
+                decimal_4 % (mesh_dimensions.quat_i_a, mesh_dimensions.quat_j_a, mesh_dimensions.quat_k_a, mesh_dimensions.quat_w_a) +
+                decimal_3 % (mesh_dimensions.pos_x_a, mesh_dimensions.pos_y_a, mesh_dimensions.pos_z_a) +
+                decimal_1 % (mesh_dimensions.radius_a) +
                 '\n'
             )
 
@@ -730,9 +853,9 @@ def write_file(context, filepath, report, extension, jms_version, game_version, 
                 '\n%s' % (fixed_name) +
                 '\n%s' % (region) +
                 '\n%s' % (parent_index) +
-                decimal_4 % (quat_i, quat_j, quat_k, quat_w) +
-                decimal_3 % (pos_x, pos_y, pos_z) +
-                decimal_1 % (radius)
+                decimal_4 % (mesh_dimensions.quat_i_a, mesh_dimensions.quat_j_a, mesh_dimensions.quat_k_a, mesh_dimensions.quat_w_a) +
+                decimal_3 % (mesh_dimensions.pos_x_a, mesh_dimensions.pos_y_a, mesh_dimensions.pos_z_a) +
+                decimal_1 % (mesh_dimensions.radius_a)
             )
 
     #write regions
@@ -774,27 +897,19 @@ def write_file(context, filepath, report, extension, jms_version, game_version, 
         )
 
         seed(1)
+        starting_ID = -1 * (randint(0, 3000000000))
         for int_markers in instance_markers:
-            unique_identifier = -1 * (randint(0, 3000000000))
-
-            pos  = int_markers.matrix_world.translation
-            quat = int_markers.matrix_world.to_quaternion().inverted()
-
-            quat_i = Decimal(quat[1]).quantize(Decimal('1.0000000000'))
-            quat_j = Decimal(quat[2]).quantize(Decimal('1.0000000000'))
-            quat_k = Decimal(quat[3]).quantize(Decimal('1.0000000000'))
-            quat_w = Decimal(-quat[0]).quantize(Decimal('1.0000000000'))
-            pos_x = Decimal(pos[0]).quantize(Decimal('1.0000000000'))
-            pos_y = Decimal(pos[1]).quantize(Decimal('1.0000000000'))
-            pos_z = Decimal(pos[2]).quantize(Decimal('1.0000000000'))
+            unique_identifier = starting_ID + instance_markers.index(int_markers)
+            int_markers_matrix = int_markers.matrix_world
+            mesh_dimensions = get_dimensions(int_markers_matrix, int_markers, None, None, -1, scale, version, None, False, False)
 
             file.write(
                 '\n;XREF OBJECT %s' % (instance_markers.index(int_markers)) +
                 '\n%s' % (int_markers.name) +
                 '\n%s' % (unique_identifier) +
                 '\n%s' % (instance_xref_paths.index(int_markers.jms.XREF_path)) +
-                decimal_4 % (quat_i, quat_j, quat_k, quat_w) +
-                decimal_3 % (pos_x, pos_y, pos_z) +
+                decimal_4 % (mesh_dimensions.quat_i_a, mesh_dimensions.quat_j_a, mesh_dimensions.quat_k_a, mesh_dimensions.quat_w_a) +
+                decimal_3 % (mesh_dimensions.pos_x_a, mesh_dimensions.pos_y_a, mesh_dimensions.pos_z_a) +
                 '\n'
             )
 
@@ -827,34 +942,7 @@ def write_file(context, filepath, report, extension, jms_version, game_version, 
             jms_triangle.v2 = len(vertices) + 2
             jms_triangle.region = region_index
 
-            object_materials = len(original_geo.material_slots) - 1
-
-            if game_version == 'halo2':
-                jms_triangle.material = -1
-                if len(original_geo.material_slots) != 0:
-                    if not face.material_index > object_materials:
-                        if geometry.materials[face.material_index] is not None:
-                            jms_triangle.material = material_list.index([bpy.data.materials[geometry.materials[face.material_index].name], original_geo.jms.level_of_detail, original_geo.jms.Region, original_geo.jms.Permutation])
-
-            elif game_version == 'haloce':
-                if len(original_geo.material_slots) != 0:
-                    if not face.material_index > object_materials:
-                        if geometry.materials[face.material_index] is not None:
-                            jms_triangle.material = material_list.index(bpy.data.materials[geometry.materials[face.material_index].name])
-
-                        else:
-                            jms_triangle.material = material_list.index(None)
-
-                    else:
-                        jms_triangle.material = material_list.index(None)
-
-                else:
-                    jms_triangle.material = material_list.index(None)
-
-            else:
-                report({'ERROR'}, "How did you even choose an option that doesn't exist?")
-                file.close()
-                return {'CANCELLED'}
+            jms_triangle.material = get_material(game_version, original_geo, face, geometry, material_list)
 
             for loop_index in face.loop_indices:
                 vert = mesh_verts[mesh_loops[loop_index].vertex_index]
@@ -916,32 +1004,14 @@ def write_file(context, filepath, report, extension, jms_version, game_version, 
                                 jms_vertex.node3_weight = '%0.10f' % vert.groups[vert_index].weight
 
                     else:
-                        parent_index = 0
-                        if armature_count == 0:
-                            if original_geo.parent:
-                                parent_bone = bpy.data.objects[original_geo.parent.name]
-                                parent_index = joined_list.index(parent_bone)
-
-                        else:
-                            if original_geo.parent_bone:
-                                parent_bone = armature.data.bones[original_geo.parent_bone]
-                                parent_index = joined_list.index(parent_bone)
+                        parent_index = get_parent(armature_count, armature, original_geo, joined_list, 0)
 
                         jms_vertex.node_influence_count = '1'
                         jms_vertex.node0 = parent_index
                         jms_vertex.node0_weight = '1.0000000000'
 
                 else:
-                    parent_index = 0
-                    if armature_count == 0:
-                        if original_geo.parent:
-                            parent_bone = bpy.data.objects[original_geo.parent.name]
-                            parent_index = joined_list.index(parent_bone)
-
-                    else:
-                        if original_geo.parent_bone:
-                            parent_bone = armature.data.bones[original_geo.parent_bone]
-                            parent_index = joined_list.index(parent_bone)
+                    parent_index = get_parent(armature_count, armature, original_geo, joined_list, 0)
 
                     jms_vertex.node_influence_count = '1'
                     jms_vertex.node0 = parent_index
@@ -966,17 +1036,14 @@ def write_file(context, filepath, report, extension, jms_version, game_version, 
         )
 
     for jms_vertex in vertices:
-        pos  = jms_vertex.pos
         norm = jms_vertex.norm
         uv   = jms_vertex.uv
 
-        pos_x = Decimal(pos[0]).quantize(Decimal('1.000000'))
-        pos_y = Decimal(pos[1]).quantize(Decimal('1.000000'))
-        pos_z = Decimal(pos[2]).quantize(Decimal('1.000000'))
+        mesh_dimensions = get_dimensions(None, None, None, None, -1, scale, version, jms_vertex, True, False)
 
-        norm_i = Decimal(norm[0]).quantize(Decimal('1.000000'))
-        norm_j = Decimal(norm[1]).quantize(Decimal('1.000000'))
-        norm_k = Decimal(norm[2]).quantize(Decimal('1.000000'))
+        norm_i = Decimal(norm[0]).quantize(Decimal('1.0000000000'))
+        norm_j = Decimal(norm[1]).quantize(Decimal('1.0000000000'))
+        norm_k = Decimal(norm[2]).quantize(Decimal('1.0000000000'))
 
         for node_influence_index in range(int(jms_vertex.node_influence_count)):
             if node_influence_index == 0:
@@ -990,14 +1057,14 @@ def write_file(context, filepath, report, extension, jms_version, game_version, 
 
         tex_coord_count = 1
 
-        tex_u = Decimal(uv[0]).quantize(Decimal('1.000000'))
-        tex_v = Decimal(uv[1]).quantize(Decimal('1.000000'))
+        tex_u = Decimal(uv[0]).quantize(Decimal('1.0000000000'))
+        tex_v = Decimal(uv[1]).quantize(Decimal('1.0000000000'))
         tex_w = 0
 
         if version >= 8205:
             file.write(
                 '\n;VERTEX %s' % (vertices.index(jms_vertex)) +
-                decimal_3 % (pos_x, pos_y, pos_z) +
+                decimal_3 % (mesh_dimensions.pos_x_a, mesh_dimensions.pos_y_a, mesh_dimensions.pos_z_a) +
                 decimal_3 % (norm_i, norm_j, norm_k) +
                 '\n%s' % (jms_vertex.node_influence_count) +
                 (jms_node) +
@@ -1009,7 +1076,7 @@ def write_file(context, filepath, report, extension, jms_version, game_version, 
         else:
             file.write(
                 '\n%s' % (jms_vertex.node0) +
-                decimal_3 % (pos_x, pos_y, pos_z) +
+                decimal_3 % (mesh_dimensions.pos_x_a, mesh_dimensions.pos_y_a, mesh_dimensions.pos_z_a) +
                 decimal_3 % (norm_i, norm_j, norm_k) +
                 '\n%s' % (jms_vertex.node1) +
                 decimal_1 % float(jms_vertex.node1_weight) +
@@ -1067,57 +1134,26 @@ def write_file(context, filepath, report, extension, jms_version, game_version, 
         for spheres in sphere_list:
             assigned_sphere_materials_list = []
             name = spheres.name.split('$', 1)[1]
-            sphere_material_index = -1
-            sphere_materials = spheres.data.materials
-            if len(sphere_materials) != 0:
-                for f in spheres.data.polygons:
-                    slot = spheres.material_slots[f.material_index]
-                    mat = slot.material
-                    if mat is not None:
-                        if mat not in assigned_sphere_materials_list:
-                            assigned_sphere_materials_list.append(mat)
+            mesh_sphere = spheres.to_mesh()
+            face = mesh_sphere.polygons[0]
+            sphere_material_index = get_material(game_version, spheres, face, mesh_sphere, material_list)
 
-            if len(assigned_sphere_materials_list) > 1:
-                report({'WARNING'}, "Physics object %s has more than one material assigned to it's faces. Please use only one material." % (spheres.name))
+            parent_index = get_parent(armature_count, armature, spheres, joined_list, -1)
 
-            if len(assigned_sphere_materials_list) != 0:
-                sphere_material_index = material_list.index([assigned_sphere_materials_list[0], spheres.jms.level_of_detail, spheres.jms.Region, spheres.jms.Permutation])
-
-            parent_index = -1
-            if armature_count == 0:
-                if spheres.parent:
-                    parent_bone = bpy.data.objects[spheres.parent.name]
-                    parent_index = joined_list.index(parent_bone)
-
-            else:
-                if spheres.parent_bone:
-                    parent_bone = armature.data.bones[spheres.parent_bone]
-                    parent_index = joined_list.index(parent_bone)
-
-            radius = spheres.dimensions[0]/2
             sphere_matrix = spheres.matrix_world
             if spheres.parent:
-                sphere_matrix = parent_bone.matrix_local.inverted() @ spheres.matrix_world
+                sphere_matrix = spheres.parent.matrix_local.inverted() @ spheres.matrix_world
 
-            pos  = sphere_matrix.translation
-            quat = sphere_matrix.to_quaternion()
-
-            quat_i = Decimal(quat[1]).quantize(Decimal('1.0000000000'))
-            quat_j = Decimal(quat[2]).quantize(Decimal('1.0000000000'))
-            quat_k = Decimal(quat[3]).quantize(Decimal('1.0000000000'))
-            quat_w = Decimal(-quat[0]).quantize(Decimal('1.0000000000'))
-            pos_x = Decimal(pos[0]).quantize(Decimal('1.0000000000'))
-            pos_y = Decimal(pos[1]).quantize(Decimal('1.0000000000'))
-            pos_z = Decimal(pos[2]).quantize(Decimal('1.0000000000'))
+            mesh_dimensions = get_dimensions(sphere_matrix, spheres, None, None, -1, scale, version, None, False, False)
 
             file.write(
                 '\n;SPHERE %s' % (sphere_list.index(spheres)) +
                 '\n%s' % name +
                 '\n%s' % parent_index +
                 '\n%s' % sphere_material_index +
-                decimal_4 % (quat_i, quat_j, quat_k, quat_w) +
-                decimal_3 % (pos_x, pos_y, pos_z) +
-                decimal_1 % radius +
+                decimal_4 % (mesh_dimensions.quat_i_a, mesh_dimensions.quat_j_a, mesh_dimensions.quat_k_a, mesh_dimensions.quat_w_a) +
+                decimal_3 % (mesh_dimensions.pos_x_a, mesh_dimensions.pos_y_a, mesh_dimensions.pos_z_a) +
+                decimal_1 % mesh_dimensions.radius_a +
                 '\n'
             )
 
@@ -1138,62 +1174,28 @@ def write_file(context, filepath, report, extension, jms_version, game_version, 
         for boxes in box_list:
             assigned_boxes_materials_list = []
             name = boxes.name.split('$', 1)[1]
-            boxes_material_index = -1
-            box_materials = boxes.data.materials
-            if len(box_materials) != 0:
-                for f in boxes.data.polygons:
-                    slot = boxes.material_slots[f.material_index]
-                    mat = slot.material
-                    if mat is not None:
-                        if mat not in assigned_boxes_materials_list:
-                            assigned_boxes_materials_list.append(mat)
+            mesh_boxes = boxes.to_mesh()
+            face = mesh_boxes.polygons[0]
+            boxes_material_index = get_material(game_version, boxes, face, mesh_boxes, material_list)
 
-            if len(assigned_boxes_materials_list) > 1:
-                report({'WARNING'}, "Physics object %s has more than one material assigned to it's faces. Please use only one material." % (boxes.name))
-
-            if len(assigned_boxes_materials_list) != 0:
-                boxes_material_index = material_list.index([assigned_boxes_materials_list[0], boxes.jms.level_of_detail, boxes.jms.Region, boxes.jms.Permutation])
-
-            parent_index = -1
-            if armature_count == 0:
-                if boxes.parent:
-                    parent_bone = bpy.data.objects[boxes.parent.name]
-                    parent_index = joined_list.index(parent_bone)
-
-            else:
-                if boxes.parent_bone:
-                    parent_bone = armature.data.bones[boxes.parent_bone]
-                    parent_index = joined_list.index(parent_bone)
+            parent_index = get_parent(armature_count, armature, boxes, joined_list, -1)
 
             box_matrix = boxes.matrix_world
             if boxes.parent:
-                box_matrix = parent_bone.matrix_local.inverted() @ boxes.matrix_world
+                box_matrix = boxes.parent.matrix_local.inverted() @ boxes.matrix_world
 
-            pos  = box_matrix.translation
-            quat = box_matrix.to_quaternion().inverted()
-            dimension = boxes.dimensions
-
-            quat_i = Decimal(quat[1]).quantize(Decimal('1.0000000000'))
-            quat_j = Decimal(quat[2]).quantize(Decimal('1.0000000000'))
-            quat_k = Decimal(quat[3]).quantize(Decimal('1.0000000000'))
-            quat_w = Decimal(-quat[0]).quantize(Decimal('1.0000000000'))
-            pos_x = Decimal(pos[0]).quantize(Decimal('1.0000000000'))
-            pos_y = Decimal(pos[1]).quantize(Decimal('1.0000000000'))
-            pos_z = Decimal(pos[2]).quantize(Decimal('1.0000000000'))
-            dimension_x = Decimal(dimension[0]).quantize(Decimal('1.0000000000'))
-            dimension_y = Decimal(dimension[1]).quantize(Decimal('1.0000000000'))
-            dimension_z = Decimal(dimension[2]).quantize(Decimal('1.0000000000'))
+            mesh_dimensions = get_dimensions(box_matrix, boxes, None, None, -1, scale, version, None, False, False)
 
             file.write(
                 '\n;BOXES %s' % (box_list.index(boxes)) +
                 '\n%s' % name +
                 '\n%s' % parent_index +
                 '\n%s' % boxes_material_index +
-                decimal_4 % (quat_i, quat_j, quat_k, quat_w) +
-                decimal_3 % (pos_x, pos_y, pos_z) +
-                decimal_1 % dimension_x +
-                decimal_1 % dimension_y +
-                decimal_1 % dimension_z +
+                decimal_4 % (mesh_dimensions.quat_i_a, mesh_dimensions.quat_j_a, mesh_dimensions.quat_k_a, mesh_dimensions.quat_w_a) +
+                decimal_3 % (mesh_dimensions.pos_x_a, mesh_dimensions.pos_y_a, mesh_dimensions.pos_z_a) +
+                decimal_1 % mesh_dimensions.dimension_x_a +
+                decimal_1 % mesh_dimensions.dimension_y_a +
+                decimal_1 % mesh_dimensions.dimension_z_a +
                 '\n'
             )
 
@@ -1213,68 +1215,27 @@ def write_file(context, filepath, report, extension, jms_version, game_version, 
         for capsule in capsule_list:
             assigned_capsule_materials_list = []
             name = capsule.name.split('$', 1)[1]
-            capsule_material_index = -1
-            capsule_materials = capsule.data.materials
-            if len(capsule_materials) != 0:
-                for f in capsule.data.polygons:
-                    slot = capsule.material_slots[f.material_index]
-                    mat = slot.material
-                    if mat is not None:
-                        if mat not in assigned_capsule_materials_list:
-                            assigned_capsule_materials_list.append(mat)
+            mesh_capsule = capsule.to_mesh()
+            face = mesh_capsule.polygons[0]
+            capsule_material_index = get_material(game_version, capsule, face, mesh_capsule, material_list)
 
-            if len(assigned_capsule_materials_list) > 1:
-                report({'WARNING'}, "Physics object %s has more than one material assigned to it's faces. Please use only one material." % (capsule.name))
-
-            if len(assigned_capsule_materials_list) != 0:
-                capsule_material_index = material_list.index([assigned_capsule_materials_list[0], capsule.jms.level_of_detail, capsule.jms.Region, capsule.jms.Permutation])
-
-            parent_index = -1
-            if armature_count == 0:
-                if capsule.parent:
-                    parent_bone = bpy.data.objects[capsule.parent.name]
-                    parent_index = joined_list.index(parent_bone)
-
-            else:
-                if capsule.parent_bone:
-                    parent_bone = armature.data.bones[capsule.parent_bone]
-                    parent_index = joined_list.index(parent_bone)
+            parent_index = get_parent(armature_count, armature, capsule, joined_list, -1)
 
             capsule_matrix = capsule.matrix_world
             if capsule.parent:
-                capsule_matrix = parent_bone.matrix_local.inverted() @ capsule.matrix_world
+                capsule_matrix = capsule.parent.matrix_local.inverted() @ capsule.matrix_world
 
-            pos  = capsule_matrix.translation
-            quat = capsule_matrix.to_quaternion().inverted()
-
-            quat_i = Decimal(quat[1]).quantize(Decimal('1.0000000000'))
-            quat_j = Decimal(quat[2]).quantize(Decimal('1.0000000000'))
-            quat_k = Decimal(quat[3]).quantize(Decimal('1.0000000000'))
-            quat_w = Decimal(-quat[0]).quantize(Decimal('1.0000000000'))
-            pos_x = Decimal(pos[0]).quantize(Decimal('1.0000000000'))
-            pos_y = Decimal(pos[1]).quantize(Decimal('1.0000000000'))
-            pos_z = Decimal(pos[2]).quantize(Decimal('1.0000000000'))
-            scale_x = capsule.dimensions[0]
-            scale_y = capsule.dimensions[1]
-            scale_z = capsule.dimensions[2]
-
-            radius = scale_y/2
-            pill_height_math = scale_z - scale_x
-            if pill_height_math < 0:
-                pill_height = 0
-
-            else:
-                pill_height = pill_height_math
+            mesh_dimensions = get_dimensions(capsule_matrix, capsule, None, None, -1, scale, version, None, False, False)
 
             file.write(
                 '\n;CAPSULES %s' % (capsule_list.index(capsule)) +
                 '\n%s' % name +
                 '\n%s' % parent_index +
                 '\n%s' % capsule_material_index +
-                decimal_4 % (quat_i, quat_j, quat_k, quat_w) +
-                decimal_3 % (pos_x, pos_y, pos_z) +
-                decimal_1 % pill_height +
-                decimal_1 % radius +
+                decimal_4 % (mesh_dimensions.quat_i_a, mesh_dimensions.quat_j_a, mesh_dimensions.quat_k_a, mesh_dimensions.quat_w_a) +
+                decimal_3 % (mesh_dimensions.pos_x_a, mesh_dimensions.pos_y_a, mesh_dimensions.pos_z_a) +
+                decimal_1 % mesh_dimensions.pill_z_a +
+                decimal_1 % mesh_dimensions.radius_a +
                 '\n'
             )
 
@@ -1294,61 +1255,54 @@ def write_file(context, filepath, report, extension, jms_version, game_version, 
         for convex_shape in convex_shape_list:
             assigned_convex_shape_materials_list = []
             name = convex_shape.name.split('$', 1)[1]
-            convex_shape_materials = convex_shape.data.materials
-            convex_shape_material_index = -1
-            if len(convex_shape_materials) != 0:
-                for f in convex_shape.data.polygons:
-                    slot = convex_shape.material_slots[f.material_index]
-                    mat = slot.material
-                    if mat is not None:
-                        if mat not in assigned_convex_shape_materials_list:
-                            assigned_convex_shape_materials_list.append(mat)
+            modifier_list = []
+            if triangulate_faces:
+                for modifier in convex_shape.modifiers:
+                    modifier.show_render = True
+                    modifier.show_viewport = True
+                    modifier.show_in_editmode = True
+                    modifier_list.append(modifier.type)
 
-            if len(assigned_convex_shape_materials_list) > 1:
-                report({'WARNING'}, "Physics object %s has more than one material assigned to it's faces. Please use only one material." % (convex_shape.name))
+                if not 'TRIANGULATE' in modifier_list:
+                    convex_shape.modifiers.new("Triangulate", type='TRIANGULATE')
 
-            if len(assigned_convex_shape_materials_list) != 0:
-                convex_shape_material_index = material_list.index([assigned_convex_shape_materials_list[0], convex_shape.jms.level_of_detail, convex_shape.jms.Region, convex_shape.jms.Permutation])
-
-            parent_index = -1
-            if armature_count == 0:
-                if convex_shape.parent:
-                    parent_bone = bpy.data.objects[convex_shape.parent.name]
-                    parent_index = joined_list.index(parent_bone)
+                depsgraph = context.evaluated_depsgraph_get()
+                convex_shape_for_convert = convex_shape.evaluated_get(depsgraph)
+                mesh_convex_shape = convex_shape_for_convert.to_mesh(preserve_all_data_layers=True, depsgraph=depsgraph)
 
             else:
-                if convex_shape.parent_bone:
-                    parent_bone = armature.data.bones[convex_shape.parent_bone]
-                    parent_index = joined_list.index(parent_bone)
+                mesh_convex_shape = convex_shape_for_convert.to_mesh(preserve_all_data_layers=True)
+
+            convex_shape_vert_count = len(mesh_convex_shape.vertices)
+            face = mesh_convex_shape.polygons[0]
+            convex_shape_material_index = get_material(game_version, convex_shape, face, mesh_convex_shape, material_list)
+
+            parent_index = get_parent(armature_count, armature, convex_shape, joined_list, -1)
 
             convex_matrix = convex_shape.matrix_world
             if convex_shape.parent:
-                convex_matrix = parent_bone.matrix_local.inverted() @ convex_shape.matrix_world
+                convex_matrix = convex_shape.parent.matrix_local.inverted() @ convex_shape.matrix_world
 
-            pos  = convex_matrix.translation
-            quat = convex_matrix.to_quaternion().inverted()
-
-            quat_i = Decimal(quat[1]).quantize(Decimal('1.0000000000'))
-            quat_j = Decimal(quat[2]).quantize(Decimal('1.0000000000'))
-            quat_k = Decimal(quat[3]).quantize(Decimal('1.0000000000'))
-            quat_w = Decimal(-quat[0]).quantize(Decimal('1.0000000000'))
-            pos_x = Decimal(pos[0]).quantize(Decimal('1.0000000000'))
-            pos_y = Decimal(pos[1]).quantize(Decimal('1.0000000000'))
-            pos_z = Decimal(pos[2]).quantize(Decimal('1.0000000000'))
+            mesh_dimensions = get_dimensions(convex_matrix, convex_shape, None, None, -1, scale, version, None, False, False)
 
             file.write(
                 '\n;CONVEX %s' % (convex_shape_list.index(convex_shape)) +
                 '\n%s' % name +
                 '\n%s' % parent_index +
                 '\n%s' % convex_shape_material_index +
-                decimal_4 % (quat_i, quat_j, quat_k, quat_w) +
-                decimal_3 % (pos_x, pos_y, pos_z) +
-                '\n%s' % len(convex_shape.data.vertices)
+                decimal_4 % (mesh_dimensions.quat_i_a, mesh_dimensions.quat_j_a, mesh_dimensions.quat_k_a, mesh_dimensions.quat_w_a) +
+                decimal_3 % (mesh_dimensions.pos_x_a, mesh_dimensions.pos_y_a, mesh_dimensions.pos_z_a) +
+                '\n%s' % convex_shape_vert_count
             )
 
-            for vertex in convex_shape.data.vertices:
+            for vertex in mesh_convex_shape.vertices:
+                pos  = matrix @ vertex.co
+                jms_vertex = JmsVertex()
+                jms_vertex.pos = pos
+                mesh_dimensions = get_dimensions(None, None, None, None, -1, scale, version, jms_vertex, True, False)
+
                 file.write(
-                    decimal_3 % (vertex.co[0], vertex.co[1], vertex.co[2])
+                decimal_3 % (mesh_dimensions.pos_x_a, mesh_dimensions.pos_y_a, mesh_dimensions.pos_z_a)
                 )
 
             file.write('\n')
@@ -1374,48 +1328,18 @@ def write_file(context, filepath, report, extension, jms_version, game_version, 
             name = ragdoll.name.split('$', 1)[1]
             body_a_obj = ragdoll.rigid_body_constraint.object1
             body_b_obj = ragdoll.rigid_body_constraint.object2
-            body_a_index = -1
-            body_b_index = -1
-            if armature_count == 0:
-                if body_a_obj:
-                    if body_a_obj.parent:
-                        parent_bone_a = bpy.data.objects[body_a_obj.parent.name]
-                        parent_index = joined_list.index(parent_bone_a)
-                        body_a_index = parent_index
+            body_a_index = get_parent(armature_count, armature, body_a_obj, joined_list, -1)
+            body_b_index = get_parent(armature_count, armature, body_b_obj, joined_list, -1)
 
-                if body_b_obj:
-                    if body_b_obj.parent:
-                        parent_bone_b = bpy.data.objects[body_b_obj.parent.name]
-                        parent_index = joined_list.index(parent_bone_b)
-                        body_b_index = parent_index
-
-            else:
-                if body_a_obj:
-                    if body_a_obj.parent_bone:
-                        parent_bone_a = armature.data.bones[body_a_obj.parent_bone]
-                        parent_index = joined_list.index(parent_bone_a)
-                        body_a_index = parent_index
-
-                if body_b_obj:
-                    if body_b_obj.parent_bone:
-                        parent_bone_b = armature.data.bones[body_b_obj.parent_bone]
-                        parent_index = joined_list.index(parent_bone_b)
-                        body_b_index = parent_index
-
-            body_a_matrix = ragdoll.matrix_world
+            body_a_matrix = body_a_obj.matrix_world
             if body_a_obj:
                 if body_a_obj.parent:
-                    body_a_matrix = parent_bone_a.matrix_local.inverted() @ ragdoll.matrix_world
+                    body_a_matrix = body_a_obj.parent.matrix_local.inverted() @ body_a_obj.matrix_world
 
-            body_b_matrix = ragdoll.matrix_world
+            body_b_matrix = body_b_obj.matrix_world
             if body_b_obj:
                 if body_b_obj.parent:
-                    body_b_matrix = parent_bone_b.matrix_local.inverted() @ ragdoll.matrix_world
-
-            pos_a  = body_a_matrix.translation
-            quat_a = body_a_matrix.to_quaternion().inverted()
-            pos_b  = body_b_matrix.translation
-            quat_b = body_b_matrix.to_quaternion().inverted().inverted()
+                    body_b_matrix = body_b_obj.parent.matrix_local.inverted() @ body_b_obj.matrix_world
 
             min_angle_x = 0
             max_angle_x = 0
@@ -1438,31 +1362,17 @@ def write_file(context, filepath, report, extension, jms_version, game_version, 
                 min_angle_z = degrees(ragdoll.rigid_body_constraint.limit_ang_z_lower)
                 max_angle_z = degrees(ragdoll.rigid_body_constraint.limit_ang_z_upper)
 
-            quat_a_i = Decimal(quat_a[1]).quantize(Decimal('1.0000000000'))
-            quat_a_j = Decimal(quat_a[2]).quantize(Decimal('1.0000000000'))
-            quat_a_k = Decimal(quat_a[3]).quantize(Decimal('1.0000000000'))
-            quat_a_w = Decimal(-quat_a[0]).quantize(Decimal('1.0000000000'))
-            pos_a_x = Decimal(pos_a[0]).quantize(Decimal('1.0000000000'))
-            pos_a_y = Decimal(pos_a[1]).quantize(Decimal('1.0000000000'))
-            pos_a_z = Decimal(pos_a[2]).quantize(Decimal('1.0000000000'))
-
-            quat_b_i = Decimal(quat_b[1]).quantize(Decimal('1.0000000000'))
-            quat_b_j = Decimal(quat_b[2]).quantize(Decimal('1.0000000000'))
-            quat_b_k = Decimal(quat_b[3]).quantize(Decimal('1.0000000000'))
-            quat_b_w = Decimal(-quat_b[0]).quantize(Decimal('1.0000000000'))
-            pos_b_x = Decimal(pos_b[0]).quantize(Decimal('1.0000000000'))
-            pos_b_y = Decimal(pos_b[1]).quantize(Decimal('1.0000000000'))
-            pos_b_z = Decimal(pos_b[2]).quantize(Decimal('1.0000000000'))
+            mesh_dimensions = get_dimensions(body_a_matrix, body_a_obj, body_b_matrix, body_b_obj, -1, scale, version, None, False, False)
 
             file.write(
                 '\n;RAGDOLL %s' % (ragdoll_list.index(ragdoll)) +
                 '\n%s' % name +
                 '\n%s' % body_a_index +
                 '\n%s' % body_b_index +
-                decimal_4 % (quat_a_i, quat_a_j, quat_a_k, quat_a_w) +
-                decimal_3 % (pos_a_x, pos_a_y, pos_a_z) +
-                decimal_4 % (quat_b_i, quat_b_j, quat_b_k, quat_b_w) +
-                decimal_3 % (pos_b_x, pos_b_y, pos_b_z) +
+                decimal_4 % (mesh_dimensions.quat_i_a, mesh_dimensions.quat_j_a, mesh_dimensions.quat_k_a, mesh_dimensions.quat_w_a) +
+                decimal_3 % (mesh_dimensions.pos_x_a, mesh_dimensions.pos_y_a, mesh_dimensions.pos_z_a) +
+                decimal_4 % (mesh_dimensions.quat_i_b, mesh_dimensions.quat_j_b, mesh_dimensions.quat_k_b, mesh_dimensions.quat_w_b) +
+                decimal_3 % (mesh_dimensions.pos_x_b, mesh_dimensions.pos_y_b, mesh_dimensions.pos_z_b) +
                 decimal_1 % (min_angle_x) +
                 decimal_1 % (max_angle_x) +
                 decimal_1 % (min_angle_y) +
@@ -1491,48 +1401,18 @@ def write_file(context, filepath, report, extension, jms_version, game_version, 
             name = hinge.name.split('$', 1)[1]
             body_a_obj = hinge.rigid_body_constraint.object1
             body_b_obj = hinge.rigid_body_constraint.object2
-            body_a_index = -1
-            body_b_index = -1
-            if armature_count == 0:
-                if body_a_obj:
-                    if body_a_obj.parent:
-                        parent_bone_a = bpy.data.objects[body_a_obj.parent.name]
-                        parent_index = joined_list.index(parent_bone_a)
-                        body_a_index = parent_index
-
-                if body_b_obj:
-                    if body_b_obj.parent:
-                        parent_bone_b = bpy.data.objects[body_b_obj.parent.name]
-                        parent_index = joined_list.index(parent_bone_b)
-                        body_b_index = parent_index
-
-            else:
-                if body_a_obj:
-                    if body_a_obj.parent_bone:
-                        parent_bone_a = armature.data.bones[body_a_obj.parent_bone]
-                        parent_index = joined_list.index(parent_bone_a)
-                        body_a_index = parent_index
-
-                if body_b_obj:
-                    if body_b_obj.parent_bone:
-                        parent_bone_b = armature.data.bones[body_b_obj.parent_bone]
-                        parent_index = joined_list.index(parent_bone_b)
-                        body_b_index = parent_index
+            body_a_index = get_parent(armature_count, armature, body_a_obj, joined_list, -1)
+            body_b_index = get_parent(armature_count, armature, body_b_obj, joined_list, -1)
 
             body_a_matrix = hinge.matrix_world
             if body_a_obj:
                 if body_a_obj.parent:
-                    body_a_matrix = parent_bone_a.matrix_local.inverted() @ hinge.matrix_world
+                    body_a_matrix = body_a_obj.parent.matrix_local.inverted() @ hinge.matrix_world
 
             body_b_matrix = hinge.matrix_world
             if body_b_obj:
                 if body_b_obj.parent:
-                    body_b_matrix = parent_bone_b.matrix_local.inverted() @ hinge.matrix_world
-
-            pos_a  = body_a_matrix.translation
-            quat_a = body_a_matrix.to_quaternion().inverted()
-            pos_b  = body_b_matrix.translation
-            quat_b = body_b_matrix.to_quaternion().inverted()
+                    body_b_matrix = body_b_obj.parent.matrix_local.inverted() @ hinge.matrix_world
 
             friction_limit = 0
 
@@ -1548,31 +1428,17 @@ def write_file(context, filepath, report, extension, jms_version, game_version, 
                 min_angle = degrees(hinge.rigid_body_constraint.limit_ang_z_lower)
                 max_angle = degrees(hinge.rigid_body_constraint.limit_ang_z_upper)
 
-            quat_a_i = Decimal(quat_a[1]).quantize(Decimal('1.0000000000'))
-            quat_a_j = Decimal(quat_a[2]).quantize(Decimal('1.0000000000'))
-            quat_a_k = Decimal(quat_a[3]).quantize(Decimal('1.0000000000'))
-            quat_a_w = Decimal(-quat_a[0]).quantize(Decimal('1.0000000000'))
-            pos_a_x = Decimal(pos_a[0]).quantize(Decimal('1.0000000000'))
-            pos_a_y = Decimal(pos_a[1]).quantize(Decimal('1.0000000000'))
-            pos_a_z = Decimal(pos_a[2]).quantize(Decimal('1.0000000000'))
-
-            quat_b_i = Decimal(quat_b[1]).quantize(Decimal('1.0000000000'))
-            quat_b_j = Decimal(quat_b[2]).quantize(Decimal('1.0000000000'))
-            quat_b_k = Decimal(quat_b[3]).quantize(Decimal('1.0000000000'))
-            quat_b_w = Decimal(-quat_b[0]).quantize(Decimal('1.0000000000'))
-            pos_b_x = Decimal(pos_b[0]).quantize(Decimal('1.0000000000'))
-            pos_b_y = Decimal(pos_b[1]).quantize(Decimal('1.0000000000'))
-            pos_b_z = Decimal(pos_b[2]).quantize(Decimal('1.0000000000'))
+            mesh_dimensions = get_dimensions(body_a_matrix, body_a_obj, body_b_matrix, body_b_obj, -1, scale, version, None, False, False)
 
             file.write(
                 '\n;HINGE %s' % (hinge_list.index(hinge)) +
                 '\n%s' % name +
                 '\n%s' % body_a_index +
                 '\n%s' % body_b_index +
-                decimal_4 % (quat_a_i, quat_a_j, quat_a_k, quat_a_w) +
-                decimal_3 % (pos_a_x, pos_a_y, pos_a_z) +
-                decimal_4 % (quat_b_i, quat_b_j, quat_b_k, quat_b_w) +
-                decimal_3 % (pos_b_x, pos_b_y, pos_b_z) +
+                decimal_4 % (mesh_dimensions.quat_i_a, mesh_dimensions.quat_j_a, mesh_dimensions.quat_k_a, mesh_dimensions.quat_w_a) +
+                decimal_3 % (mesh_dimensions.pos_x_a, mesh_dimensions.pos_y_a, mesh_dimensions.pos_z_a) +
+                decimal_4 % (mesh_dimensions.quat_i_b, mesh_dimensions.quat_j_b, mesh_dimensions.quat_k_b, mesh_dimensions.quat_w_b) +
+                decimal_3 % (mesh_dimensions.pos_x_b, mesh_dimensions.pos_y_b, mesh_dimensions.pos_z_b) +
                 '\n%s' % (is_limited) +
                 decimal_1 % (friction_limit) +
                 decimal_1 % (min_angle) +
@@ -1621,48 +1487,18 @@ def write_file(context, filepath, report, extension, jms_version, game_version, 
                 name = point_to_point.name.split('$', 1)[1]
                 body_a_obj = point_to_point.rigid_body_constraint.object1
                 body_b_obj = point_to_point.rigid_body_constraint.object2
-                body_a_index = -1
-                body_b_index = -1
-                if armature_count == 0:
-                    if body_a_obj:
-                        if body_a_obj.parent:
-                            parent_bone_a = bpy.data.objects[body_a_obj.parent.name]
-                            parent_index = joined_list.index(parent_bone_a)
-                            body_a_index = parent_index
-
-                    if body_b_obj:
-                        if body_b_obj.parent:
-                            parent_bone_b = bpy.data.objects[body_b_obj.parent.name]
-                            parent_index = joined_list.index(parent_bone_b)
-                            body_b_index = parent_index
-
-                else:
-                    if body_a_obj:
-                        if body_a_obj.parent_bone:
-                            parent_bone_a = armature.data.bones[body_a_obj.parent_bone]
-                            parent_index = joined_list.index(parent_bone_a)
-                            body_a_index = parent_index
-
-                    if body_b_obj:
-                        if body_b_obj.parent_bone:
-                            parent_bone_b = armature.data.bones[body_b_obj.parent_bone]
-                            parent_index = joined_list.index(parent_bone_b)
-                            body_b_index = parent_index
+                body_a_index = get_parent(armature_count, armature, body_a_obj, joined_list, -1)
+                body_b_index = get_parent(armature_count, armature, body_b_obj, joined_list, -1)
 
                 body_a_matrix = point_to_point.matrix_world
                 if body_a_obj:
                     if body_a_obj.parent:
-                        body_a_matrix = parent_bone_a.matrix_local.inverted() @ point_to_point.matrix_world
+                        body_a_matrix = body_a_obj.parent.matrix_local.inverted() @ point_to_point.matrix_world
 
                 body_b_matrix = point_to_point.matrix_world
                 if body_b_obj:
                     if body_b_obj.parent:
-                        body_b_matrix = parent_bone_b.matrix_local.inverted() @ point_to_point.matrix_world
-
-                pos_a  = body_a_matrix.translation
-                quat_a = body_a_matrix.to_quaternion().inverted()
-                pos_b  = body_b_matrix.translation
-                quat_b = body_b_matrix.to_quaternion().inverted()
+                        body_b_matrix = body_b_obj.parent.matrix_local.inverted() @ point_to_point.matrix_world
 
                 is_limited_x = int(point_to_point.rigid_body_constraint.use_limit_ang_x)
                 is_limited_y = int(point_to_point.rigid_body_constraint.use_limit_ang_y)
@@ -1720,31 +1556,17 @@ def write_file(context, filepath, report, extension, jms_version, game_version, 
                 else:
                     report({'WARNING'}, 'Improper point to point.')
 
-                quat_a_i = Decimal(quat_a[1]).quantize(Decimal('1.0000000000'))
-                quat_a_j = Decimal(quat_a[2]).quantize(Decimal('1.0000000000'))
-                quat_a_k = Decimal(quat_a[3]).quantize(Decimal('1.0000000000'))
-                quat_a_w = Decimal(-quat_a[0]).quantize(Decimal('1.0000000000'))
-                pos_a_x = Decimal(pos_a[0]).quantize(Decimal('1.0000000000'))
-                pos_a_y = Decimal(pos_a[1]).quantize(Decimal('1.0000000000'))
-                pos_a_z = Decimal(pos_a[2]).quantize(Decimal('1.0000000000'))
-
-                quat_b_i = Decimal(quat_b[1]).quantize(Decimal('1.0000000000'))
-                quat_b_j = Decimal(quat_b[2]).quantize(Decimal('1.0000000000'))
-                quat_b_k = Decimal(quat_b[3]).quantize(Decimal('1.0000000000'))
-                quat_b_w = Decimal(-quat_b[0]).quantize(Decimal('1.0000000000'))
-                pos_b_x = Decimal(pos_b[0]).quantize(Decimal('1.0000000000'))
-                pos_b_y = Decimal(pos_b[1]).quantize(Decimal('1.0000000000'))
-                pos_b_z = Decimal(pos_b[2]).quantize(Decimal('1.0000000000'))
+                mesh_dimensions = get_dimensions(body_a_matrix, body_a_obj, body_b_matrix, body_b_obj, -1, scale, version, None, False, False)
 
                 file.write(
                     '\n;POINT_TO_POINT %s' % (point_to_point_list.index(point_to_point)) +
                     '\n%s' % name +
                     '\n%s' % body_a_index +
                     '\n%s' % body_b_index +
-                    decimal_4 % (quat_a_i, quat_a_j, quat_a_k, quat_a_w) +
-                    decimal_3 % (pos_a_x, pos_a_y, pos_a_z) +
-                    decimal_4 % (quat_b_i, quat_b_j, quat_b_k, quat_b_w) +
-                    decimal_3 % (pos_b_x, pos_b_y, pos_b_z) +
+                    decimal_4 % (mesh_dimensions.quat_i_a, mesh_dimensions.quat_j_a, mesh_dimensions.quat_k_a, mesh_dimensions.quat_w_a) +
+                    decimal_3 % (mesh_dimensions.pos_x_a, mesh_dimensions.pos_y_a, mesh_dimensions.pos_z_a) +
+                    decimal_4 % (mesh_dimensions.quat_i_b, mesh_dimensions.quat_j_b, mesh_dimensions.quat_k_b, mesh_dimensions.quat_w_b) +
+                    decimal_3 % (mesh_dimensions.pos_x_b, mesh_dimensions.pos_y_b, mesh_dimensions.pos_z_b) +
                     '\n%s' % (constraint_type) +
                     decimal_1 % (min_angle_x) +
                     decimal_1 % (max_angle_x) +
@@ -1780,18 +1602,14 @@ def write_file(context, filepath, report, extension, jms_version, game_version, 
         )
 
         for bound_sphere in bounding_sphere:
-            radius = bound_sphere.dimensions[0]/2
+            bound_sphere_matrix = bound_sphere.matrix_world
 
-            pos  = bound_sphere.matrix_world.translation
-
-            pos_x = Decimal(pos[0]).quantize(Decimal('1.0000000000'))
-            pos_y = Decimal(pos[1]).quantize(Decimal('1.0000000000'))
-            pos_z = Decimal(pos[2]).quantize(Decimal('1.0000000000'))
+            mesh_dimensions = get_dimensions(bound_sphere_matrix, bound_sphere, None, None, -1, scale, version, None, False, False)
 
             file.write(
                 '\n;BOUNDING SPHERE %s' % (bounding_sphere.index(bound_sphere)) +
-                decimal_3 % (pos_x, pos_y, pos_z) +
-                decimal_1 % radius +
+                decimal_3 % (mesh_dimensions.pos_x_a, mesh_dimensions.pos_y_a, mesh_dimensions.pos_z_a) +
+                decimal_1 % mesh_dimensions.radius_a +
                 '\n'
             )
 

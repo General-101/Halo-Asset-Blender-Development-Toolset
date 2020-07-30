@@ -64,6 +64,7 @@ from bpy.types import (
 from bpy.props import (
         BoolProperty,
         EnumProperty,
+        FloatProperty,
         PointerProperty,
         StringProperty,
         )
@@ -81,6 +82,32 @@ class JmsVertex:
     pos = None
     norm = None
     uv = None
+
+class JmsDimensions:
+    quat_i_a = '0'
+    quat_j_a = '0'
+    quat_k_a = '0'
+    quat_w_a = '0'
+    pos_x_a = '0'
+    pos_y_a = '0'
+    pos_z_a = '0'
+    scale_x_a = '0'
+    scale_y_a = '0'
+    scale_z_a = '0'
+    radius_a = '0'
+    pill_z_a = '0'
+    quat_i_b = '0'
+    quat_j_b = '0'
+    quat_k_b = '0'
+    quat_w_b = '0'
+    pos_x_b = '0'
+    pos_y_b = '0'
+    pos_z_b = '0'
+    scale_x_b = '0'
+    scale_y_b = '0'
+    scale_z_b = '0'
+    radius_b = '0'
+    pill_z_b = '0'
 
 class JmsTriangle:
     v0 = 0
@@ -143,12 +170,13 @@ class JMS_ObjectPropertiesGroup(PropertyGroup):
     level_of_detail: EnumProperty(
         name="LOD:",
         description="What LOD to use for the object",
-        items=[ ('0', "L1", ""),
-                ('1', "L2", ""),
-                ('2', "L3", ""),
-                ('3', "L4", ""),
-                ('4', "L5", ""),
-                ('5', "L6", ""),
+        items=[ ('0', "NONE", ""),
+                ('1', "L1", ""),
+                ('2', "L2", ""),
+                ('3', "L3", ""),
+                ('4', "L4", ""),
+                ('5', "L5", ""),
+                ('6', "L6", ""),
                ]
         )
 
@@ -176,22 +204,40 @@ class ExportJMS(Operator, ExportHelper):
 
     filename_ext = ''
 
-    extension: EnumProperty(
+    extension_ce: EnumProperty(
         name="Extension:",
         description="What extension to use for the model file",
-        items=[ ('.JMS', "JMS", "Jointed Model Skeleton CE/H2"),
+        items=[ ('.JMS', "JMS", "Jointed Model Skeleton CE"),
                 ('.JMP', "JMP", "Jointed Model Physics CE"),
                ]
         )
 
-    jms_version: EnumProperty(
+    extension_h2: EnumProperty(
+        name="Extension:",
+        description="What extension to use for the model file",
+        items=[ ('.JMS', "JMS", "Jointed Model Skeleton H2"),
+               ]
+        )
+
+    jms_version_ce: EnumProperty(
+        name="Version:",
+        description="What version to use for the model file",
+        default="8200",
+        items=[ ('8197', "8197", "CE Non-functional"),
+                ('8198', "8198", "CE Non-functional"),
+                ('8199', "8199", "CE Non-functional"),
+                ('8200', "8200", "CE"),
+               ]
+        )
+
+    jms_version_h2: EnumProperty(
         name="Version:",
         description="What version to use for the model file",
         default="8210",
-        items=[ ('8197', "8197", "CE/H2 Non-functional"),
-                ('8198', "8198", "CE/H2 Non-functional"),
-                ('8199', "8199", "CE/H2 Non-functional"),
-                ('8200', "8200", "CE/H2"),
+        items=[ ('8197', "8197", "H2 Non-functional"),
+                ('8198', "8198", "H2 Non-functional"),
+                ('8199', "8199", "H2 Non-functional"),
+                ('8200', "8200", "H2"),
                 ('8201', "8201", "H2 Non-functional"),
                 ('8202', "8202", "H2 Non-functional"),
                 ('8203', "8203", "H2 Non-functional"),
@@ -220,6 +266,21 @@ class ExportJMS(Operator, ExportHelper):
         default = True,
         )
 
+    scale_enum: EnumProperty(
+    name="Scale",
+        items=(
+            ('0', "Default", "Export at 1:1"),
+            ('1', "JMS",     "Export at x100"),
+            ('2', "Custom",  "Set your own scaling multiplier."),
+        )
+    )
+    scale_float: FloatProperty(
+        name="Custom Scale",
+        description="Choose a custom value to multiply position values by.",
+        default=1.0,
+        min=1.0,
+    )
+
     filter_glob: StringProperty(
         default="*.jms;*.jmp",
         options={'HIDDEN'},
@@ -231,25 +292,63 @@ class ExportJMS(Operator, ExportHelper):
             argv = sys.argv[sys.argv.index('--') + 1:]
             parser = argparse.ArgumentParser()
             parser.add_argument('-arg1', '--filepath', dest='filepath', metavar='FILE', required = True)
-            parser.add_argument('-arg2', '--extension', dest='extension', type=str, default=".JMS")
-            parser.add_argument('-arg3', '--jms_version', dest='jms_version', type=str, default="8210")
-            parser.add_argument('-arg4', '--game_version', dest='game_version', type=str, default="halo2")
-            parser.add_argument('-arg5', '--triangulate_faces', dest='triangulate_faces', action='store_true')
+            parser.add_argument('-arg2', '--extension_ce', dest='extension_ce', type=str, default=".JMS")
+            parser.add_argument('-arg3', '--extension_h2', dest='extension_h2', type=str, default=".JMS")
+            parser.add_argument('-arg4', '--jms_version_ce', dest='jms_version_ce', type=str, default="8200")
+            parser.add_argument('-arg5', '--jms_version_h2', dest='jms_version_h2', type=str, default="8210")
+            parser.add_argument('-arg6', '--game_version', dest='game_version', type=str, default="halo2")
+            parser.add_argument('-arg7', '--triangulate_faces', dest='triangulate_faces', action='store_true')
             args = parser.parse_known_args(argv)[0]
             print('filepath: ', args.filepath)
-            print('extension: ', args.extension)
-            print('jms_version: ', args.jms_version)
+            print('extension_ce: ', args.extension_ce)
+            print('extension_h2: ', args.extension_h2)
+            print('jms_version_ce: ', args.jms_version_ce)
+            print('jms_version_h2: ', args.jms_version_h2)
             print('game_version: ', args.game_version)
             print('triangulate_faces: ', args.triangulate_faces)
-
-        if len(self.filepath) == 0:
             self.filepath = args.filepath
-            self.extension = args.extension
-            self.jms_version = args.jms_version
+            self.extension_ce = args.extension_ce
+            self.extension_h2 = args.extension_h2
+            self.jms_version_ce = args.jms_version_ce
+            self.jms_version_h2 = args.jms_version_h2
             self.game_version = args.game_version
             self.triangulate_faces = args.triangulate_faces
 
-        return export_jms.write_file(context, self.filepath, self.report, self.extension, self.jms_version, self.game_version, self.triangulate_faces)
+        return export_jms.write_file(context, self.filepath, self.report, self.extension_ce, self.extension_h2, self.jms_version_ce, self.jms_version_h2, self.game_version, self.triangulate_faces, self.scale_enum, self.scale_float)
+
+    def draw(self, context):
+        layout = self.layout
+
+        box = layout.box()
+        box.label(text="File Details:")
+        row = box.row()
+        row.prop(self, "game_version")
+
+        if self.game_version == 'haloce':
+            row = box.row()
+            row.prop(self, "extension_ce")
+            row = box.row()
+            row.prop(self, "jms_version_ce")
+
+        elif self.game_version == 'halo2':
+            row = box.row()
+            row.prop(self, "extension_h2")
+            row = box.row()
+            row.prop(self, "jms_version_h2")
+
+        box = layout.box()
+        box.label(text="Triangulate:")
+        row = box.row()
+        row.prop(self, "triangulate_faces")
+
+        box = layout.box()
+        box.label(text="Scale:")
+        row = box.row()
+        row.prop(self, "scale_enum", expand=True)
+
+        if self.scale_enum == '2':
+            row = box.row()
+            row.prop(self, "scale_float")
 
 class ImportJMS(Operator, ImportHelper):
     """Import a JMS file"""
