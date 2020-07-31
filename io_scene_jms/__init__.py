@@ -204,6 +204,15 @@ class ExportJMS(Operator, ExportHelper):
 
     filename_ext = ''
 
+    extension: EnumProperty(
+        name="Extension:",
+        description="What extension to use for the model file",
+        options={'HIDDEN'},
+        items=[ ('.JMS', "JMS", "Jointed Model Skeleton CE"),
+                ('.JMP', "JMP", "Jointed Model Physics CE"),
+               ]
+        )
+
     extension_ce: EnumProperty(
         name="Extension:",
         description="What extension to use for the model file",
@@ -216,6 +225,28 @@ class ExportJMS(Operator, ExportHelper):
         name="Extension:",
         description="What extension to use for the model file",
         items=[ ('.JMS', "JMS", "Jointed Model Skeleton H2"),
+               ]
+        )
+
+    jms_version: EnumProperty(
+        name="Version:",
+        description="What version to use for the model file",
+        default="8200",
+        options={'HIDDEN'},
+        items=[ ('8197', "8197", "H2 Non-functional"),
+                ('8198', "8198", "H2 Non-functional"),
+                ('8199', "8199", "H2 Non-functional"),
+                ('8200', "8200", "H2"),
+                ('8201', "8201", "H2 Non-functional"),
+                ('8202', "8202", "H2 Non-functional"),
+                ('8203', "8203", "H2 Non-functional"),
+                ('8204', "8204", "H2 Non-functional"),
+                ('8205', "8205", "H2"),
+                ('8206', "8206", "H2 Non-functional"),
+                ('8207', "8207", "H2 Non-functional"),
+                ('8208', "8208", "H2 Non-functional"),
+                ('8209', "8209", "H2"),
+                ('8210', "8210", "H2"),
                ]
         )
 
@@ -286,35 +317,39 @@ class ExportJMS(Operator, ExportHelper):
         options={'HIDDEN'},
         )
 
+    console: BoolProperty(
+        name ="Console",
+        description = "Is your console running?",
+        default = False,
+        options={'HIDDEN'},
+        )
+
     def execute(self, context):
         from . import export_jms
         if '--' in sys.argv:
             argv = sys.argv[sys.argv.index('--') + 1:]
             parser = argparse.ArgumentParser()
             parser.add_argument('-arg1', '--filepath', dest='filepath', metavar='FILE', required = True)
-            parser.add_argument('-arg2', '--extension_ce', dest='extension_ce', type=str, default=".JMS")
-            parser.add_argument('-arg3', '--extension_h2', dest='extension_h2', type=str, default=".JMS")
-            parser.add_argument('-arg4', '--jms_version_ce', dest='jms_version_ce', type=str, default="8200")
-            parser.add_argument('-arg5', '--jms_version_h2', dest='jms_version_h2', type=str, default="8210")
-            parser.add_argument('-arg6', '--game_version', dest='game_version', type=str, default="halo2")
-            parser.add_argument('-arg7', '--triangulate_faces', dest='triangulate_faces', action='store_true')
+            parser.add_argument('-arg2', '--extension', dest='extension', type=str, default=".JMS")
+            parser.add_argument('-arg3', '--jms_version', dest='jms_version', type=str, default="8200")
+            parser.add_argument('-arg4', '--game_version', dest='game_version', type=str, default="halo2")
+            parser.add_argument('-arg5', '--triangulate_faces', dest='triangulate_faces', action='store_true')
+            parser.add_argument('-arg6', '--console', dest='console', action='store_true', default=True)
             args = parser.parse_known_args(argv)[0]
             print('filepath: ', args.filepath)
-            print('extension_ce: ', args.extension_ce)
-            print('extension_h2: ', args.extension_h2)
-            print('jms_version_ce: ', args.jms_version_ce)
-            print('jms_version_h2: ', args.jms_version_h2)
+            print('extension: ', args.extension)
+            print('jms_version: ', args.jms_version)
             print('game_version: ', args.game_version)
             print('triangulate_faces: ', args.triangulate_faces)
+            print('console: ', args.console)
             self.filepath = args.filepath
-            self.extension_ce = args.extension_ce
-            self.extension_h2 = args.extension_h2
-            self.jms_version_ce = args.jms_version_ce
-            self.jms_version_h2 = args.jms_version_h2
+            self.extension = args.extension
+            self.jms_version = args.jms_version
             self.game_version = args.game_version
             self.triangulate_faces = args.triangulate_faces
+            self.console = args.console
 
-        return export_jms.write_file(context, self.filepath, self.report, self.extension_ce, self.extension_h2, self.jms_version_ce, self.jms_version_h2, self.game_version, self.triangulate_faces, self.scale_enum, self.scale_float)
+        return export_jms.write_file(context, self.filepath, self.report, self.extension, self.extension_ce, self.extension_h2, self.jms_version, self.jms_version_ce, self.jms_version_h2, self.game_version, self.triangulate_faces, self.scale_enum, self.scale_float, self.console)
 
     def draw(self, context):
         layout = self.layout

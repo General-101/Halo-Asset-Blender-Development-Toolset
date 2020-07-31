@@ -251,23 +251,31 @@ def get_parent(armature_count, armature, mesh, joined_list, default_parent):
 
     return parent_index
 
-def get_version(jms_version_ce, jms_version_h2, game_version):
+def get_version(jms_version_console, jms_version_ce, jms_version_h2, game_version, console):
     version = 0
-    if game_version == 'haloce':
-        version = int(jms_version_ce)
+    if console:
+        version = int(jms_version_console)
 
-    if game_version == 'halo2':
-        version = int(jms_version_h2)
+    else:
+        if game_version == 'haloce':
+            version = int(jms_version_ce)
+
+        if game_version == 'halo2':
+            version = int(jms_version_h2)
 
     return version
 
-def get_extension(extension_ce, extension_h2, game_version):
+def get_extension(extension_console, extension_ce, extension_h2, game_version, console):
     extension = ''
-    if game_version == 'haloce':
-        extension = extension_ce
+    if console:
+        extension = extension_console
 
-    if game_version == 'halo2':
-        extension = extension_h2
+    else:
+        if game_version == 'haloce':
+            extension = extension_ce
+
+        if game_version == 'halo2':
+            extension = extension_h2
 
     return extension
 
@@ -309,7 +317,7 @@ def error_pass(armature_count, report, game_version, node_count, version, extens
     else:
         return False
 
-def write_file(context, filepath, report, extension_ce, extension_h2, jms_version_ce, jms_version_h2, game_version, triangulate_faces, scale_enum, scale_float):
+def write_file(context, filepath, report, extension, extension_ce, extension_h2, jms_version, jms_version_ce, jms_version_h2, game_version, triangulate_faces, scale_enum, scale_float, console):
     from . import JmsVertex
     from . import JmsTriangle
 
@@ -357,8 +365,8 @@ def write_file(context, filepath, report, extension_ce, extension_h2, jms_versio
     default_region = get_default_region_permutation_name(game_version)
     default_permutation = get_default_region_permutation_name(game_version)
 
-    version = get_version(jms_version_ce, jms_version_h2, game_version)
-    extension = get_extension(extension_ce, extension_h2, game_version)
+    version = get_version(jms_version, jms_version_ce, jms_version_h2, game_version, console)
+    extension = get_extension(extension, extension_ce, extension_h2, game_version, console)
     node_checksum = 0
     scale = set_scale(scale_enum, scale_float)
 
