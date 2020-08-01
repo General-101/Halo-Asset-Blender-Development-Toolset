@@ -300,9 +300,9 @@ class ExportJMS(Operator, ExportHelper):
     scale_enum: EnumProperty(
     name="Scale",
         items=(
-            ('0', "Default", "Export at 1:1"),
-            ('1', "JMS",     "Export at x100"),
-            ('2', "Custom",  "Set your own scaling multiplier."),
+            ('0', "Default(JMS)", "Export at 1:1"),
+            ('1', "World Units",  "Export at x100"),
+            ('2', "Custom",       "Set your own scaling multiplier."),
         )
     )
     scale_float: FloatProperty(
