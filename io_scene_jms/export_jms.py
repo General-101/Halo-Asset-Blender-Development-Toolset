@@ -38,19 +38,13 @@ from random import randint
 def unhide_all_collections():
     for collection_viewport in bpy.context.view_layer.layer_collection.children:
         collection_viewport.exclude = False
-        collection_viewport.hide_viewport = False
 
     for collection_hide in bpy.data.collections:
-        collection_hide.hide_select = False
         collection_hide.hide_viewport = False
-        collection_hide.hide_render = False
 
 def unhide_all_objects():
     for obj in bpy.context.view_layer.objects:
-        obj.hide_set(False)
-        obj.hide_select = False
         obj.hide_viewport = False
-        obj.hide_render = False
 
 def get_child(bone, bone_list = [], *args):
     for node in bone_list:
@@ -104,26 +98,42 @@ def get_default_region_permutation_name(game_version):
 
     return default_name
 
-def get_lod(lod_setting):
+def get_lod(lod_setting, game_version):
     LOD_name = None
+    if game_version == 'haloce':
+        if lod_setting == '1':
+            LOD_name = 'superlow'
 
-    if lod_setting == '1':
-        LOD_name = 'L1'
+        elif lod_setting == '2':
+            LOD_name = 'low'
 
-    elif lod_setting == '2':
-        LOD_name = 'L2'
+        elif lod_setting == '3':
+            LOD_name = 'medium'
 
-    elif lod_setting == '3':
-        LOD_name = 'L3'
+        elif lod_setting == '4':
+            LOD_name = 'high'
 
-    elif lod_setting == '4':
-        LOD_name = 'L4'
+        elif lod_setting == '5':
+            LOD_name = 'superhigh'
 
-    elif lod_setting == '5':
-        LOD_name = 'L5'
+    elif game_version == 'halo2':
+        if lod_setting == '1':
+            LOD_name = 'L1'
 
-    elif lod_setting == '6':
-        LOD_name = 'L6'
+        elif lod_setting == '2':
+            LOD_name = 'L2'
+
+        elif lod_setting == '3':
+            LOD_name = 'L3'
+
+        elif lod_setting == '4':
+            LOD_name = 'L4'
+
+        elif lod_setting == '5':
+            LOD_name = 'L5'
+
+        elif lod_setting == '6':
+            LOD_name = 'L6'
 
     return LOD_name
 
@@ -317,7 +327,7 @@ def error_pass(armature_count, report, game_version, node_count, version, extens
     else:
         return False
 
-def write_file(context, filepath, report, extension, extension_ce, extension_h2, jms_version, jms_version_ce, jms_version_h2, game_version, triangulate_faces, scale_enum, scale_float, console):
+def write_file(context, filepath, report, extension, extension_ce, extension_h2, jms_version, jms_version_ce, jms_version_h2, game_version, triangulate_faces, scale_enum, scale_float, console, permutation_ce, level_of_detail_ce, hidden_geo):
     from . import JmsVertex
     from . import JmsTriangle
 
@@ -364,6 +374,7 @@ def write_file(context, filepath, report, extension, extension_ce, extension_h2,
     permutation_list = []
     default_region = get_default_region_permutation_name(game_version)
     default_permutation = get_default_region_permutation_name(game_version)
+    level_of_detail_ce = get_lod(level_of_detail_ce, game_version)
 
     version = get_version(jms_version, jms_version_ce, jms_version_h2, game_version, console)
     extension = get_extension(extension, extension_ce, extension_h2, game_version, console)
@@ -375,6 +386,16 @@ def write_file(context, filepath, report, extension, extension_ce, extension_h2,
         return {'CANCELLED'}
 
     for obj in object_list:
+        #print(bpy.context.view_layer.layer_collection.children)
+        #collection_list = obj.users_collection
+        #ignore = False
+
+        #for collection in collection_list:
+            #test = bpy.data.collections[collection.name]
+            #if test.hide_viewport or obj.hide_viewport:
+                #ignore = True
+
+        #if not ignore:
         assigned_materials_list = []
         find_region = get_region(default_region, obj.jms.Region)
         find_permutation = get_permutation(default_permutation, obj.jms.Permutation)
@@ -654,7 +675,27 @@ def write_file(context, filepath, report, extension, extension_ce, extension_h2,
     if not filepath[-(extension_char):].lower() in extension_list or not filepath[-(extension_char):].lower() in extension.lower():
         true_extension = extension
 
-    file = open(filepath + true_extension, 'w', encoding='%s' % get_encoding(game_version))
+    ce_settings = ''
+    directory = filepath.rsplit('\\', 1)[0]
+    filename = filepath.rsplit('\\', 1)[1]
+
+    if game_version == 'haloce':
+        if not permutation_ce == '':
+            ce_settings += '%s ' % (permutation_ce.replace(' ', '_').replace('\t', '_'))
+
+            if level_of_detail_ce == None:
+                ce_settings += '%s ' % ('superhigh')
+
+        if not level_of_detail_ce == None:
+            if permutation_ce == '':
+                ce_settings += '%s ' % ('unnamed')
+
+            ce_settings += '%s ' % (level_of_detail_ce)
+
+        if not permutation_ce == '' or not level_of_detail_ce == None:
+            filename = ''
+
+    file = open(directory + "\\" + ce_settings + filename + true_extension, 'w', encoding='%s' % get_encoding(game_version))
 
     #write header
     if version >= 8205:
@@ -752,7 +793,7 @@ def write_file(context, filepath, report, extension, extension_ce, extension_h2,
             untouched_lod = material[1]
             untouched_region = material[2]
             untouched_permutation = material[3]
-            LOD = get_lod(material[1])
+            LOD = get_lod(material[1], game_version)
             Permutation = default_permutation
             Region = default_region
             '''
@@ -1279,7 +1320,7 @@ def write_file(context, filepath, report, extension, extension_ce, extension_h2,
                 mesh_convex_shape = convex_shape_for_convert.to_mesh(preserve_all_data_layers=True, depsgraph=depsgraph)
 
             else:
-                mesh_convex_shape = convex_shape_for_convert.to_mesh(preserve_all_data_layers=True)
+                mesh_convex_shape = convex_shape.to_mesh(preserve_all_data_layers=True)
 
             convex_shape_vert_count = len(mesh_convex_shape.vertices)
             face = mesh_convex_shape.polygons[0]

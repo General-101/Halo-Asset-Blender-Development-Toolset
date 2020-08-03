@@ -137,17 +137,17 @@ def load_file(context, filepath, report):
     bpy.ops.pose.armature_apply(selected=False)
     bpy.ops.object.mode_set(mode = 'OBJECT')
 
-    for vert in range(vert_count):
-        starting_position = 2 + (node_count * 4) + 1 + (material_count * 2) + 1 + (marker_count * 5) + 1 + (instance_xref_path_count * 2) + 1 + (instance_markers_count * 5)
-        vert_translation = processed_file[vertex_index + starting_position + 1]
-        vert_normal = processed_file[vertex_index + starting_position + 2]
-        vertex_group_count = processed_file[vertex_index + starting_position + 3]
-        vert_translation_list = vert_translation.split()
-        vert_normal_list = vert_normal.split()
-        if not [vert_translation_list[0], vert_translation_list[1], vert_translation_list[2], vert_normal_list[0], vert_normal_list[1], vert_normal_list[2]] in translation_list:
-            translation_list.append([vert_translation_list[0], vert_translation_list[1], vert_translation_list[2], vert_normal_list[0], vert_normal_list[1], vert_normal_list[2]])
+#    for vert in range(vert_count):
+#        starting_position = 2 + (node_count * 4) + 1 + (material_count * 2) + 1 + (marker_count * 5) + 1 + (instance_xref_path_count * 2) + 1 + (instance_markers_count * 5)
+#        vert_translation = processed_file[vertex_index + starting_position + 1]
+#        vert_normal = processed_file[vertex_index + starting_position + 2]
+#        vertex_group_count = processed_file[vertex_index + starting_position + 3]
+#        vert_translation_list = vert_translation.split()
+#        vert_normal_list = vert_normal.split()
+#        if not [vert_translation_list[0], vert_translation_list[1], vert_translation_list[2], vert_normal_list[0], vert_normal_list[1], vert_normal_list[2]] in translation_list:
+#            translation_list.append([vert_translation_list[0], vert_translation_list[1], vert_translation_list[2], vert_normal_list[0], vert_normal_list[1], vert_normal_list[2]])
 
-        vertex_index += 5 + (int(vertex_group_count) * 2)
+#        vertex_index += 5 + (int(vertex_group_count) * 2)
 
     return {'FINISHED'}
 

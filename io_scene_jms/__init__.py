@@ -126,29 +126,59 @@ class JMS_ObjectProps(Panel):
 
     def draw(self, context):
         layout = self.layout
-
         obj = context.object
         jms = obj.jms
+        box = layout.box()
+        box.label(text="Game Version:")
 
-        row = layout.row()
-        row.prop(jms, "bounding_radius")
+        col = box.column(align=True)
 
-        row = layout.row()
-        row.prop(jms, "Region")
+        row = col.row()
+        row.prop(jms, "game_version", text='')
 
-        row = layout.row()
-        row.prop(jms, "Permutation")
+        box = layout.box()
+        box.label(text="Object Details:")
 
-        row = layout.row()
-        row.prop(jms, "level_of_detail")
+        col = box.column(align=True)
 
-        row = layout.row()
-        row.prop(jms, "Object_Type")
 
-        row = layout.row()
-        row.prop(jms, "XREF_path")
+        if jms.game_version == 'haloce':
+            row = col.row()
+            row.label(text='Region:')
+            row.prop(jms, "Region", text='')
+
+        elif jms.game_version == 'halo2':
+            row = col.row()
+            row.label(text='Bounding Radius:')
+            row.prop(jms, "bounding_radius", text='')
+            row = col.row()
+            row.label(text='Region:')
+            row.prop(jms, "Region", text='')
+            row = col.row()
+            row.label(text='Permutation:')
+            row.prop(jms, "Permutation", text='')
+            row = col.row()
+            row.label(text='LOD:')
+            row.prop(jms, "level_of_detail", text='')
+            row = col.row()
+            row.label(text='Object Type:')
+            row.prop(jms, "Object_Type", text='')
+            row = col.row()
+            row.label(text='XREF Path:')
+            row.prop(jms, "XREF_path", text='')
+
+
 
 class JMS_ObjectPropertiesGroup(PropertyGroup):
+    game_version: EnumProperty(
+        name="Game:",
+        description="Show options relevant to the selected game.",
+        default="halo2",
+        items=[ ('haloce', "Halo CE", "Halo CE options"),
+                ('halo2', "Halo 2", "Halo 2 Vista options"),
+               ]
+        )
+
     bounding_radius: BoolProperty(
         name ="Bounding Radius",
         description = "Sets object as a bounding radius",
@@ -158,13 +188,13 @@ class JMS_ObjectPropertiesGroup(PropertyGroup):
     Region : StringProperty(
         name = "Region",
         default = "",
-        description = "Set region name."
+        description = "Set region name"
         )
 
     Permutation : StringProperty(
         name = "Permutation",
         default = "",
-        description = "Set permutation name."
+        description = "Set permutation name"
         )
 
     level_of_detail: EnumProperty(
@@ -203,6 +233,24 @@ class ExportJMS(Operator, ExportHelper):
     bl_label = "Export JMS"
 
     filename_ext = ''
+
+    permutation_ce: StringProperty(
+        name="Permutation",
+        description="Permutation for a JMS file",
+        subtype="FILE_NAME"
+    )
+
+    level_of_detail_ce: EnumProperty(
+        name="LOD:",
+        description="What LOD to use for the JMS file",
+        items=[ ('0', "NONE", ""),
+                ('1', "SuperLow", ""),
+                ('2', "Low", ""),
+                ('3', "Medium", ""),
+                ('4', "High", ""),
+                ('5', "SuperHigh", ""),
+               ]
+        )
 
     extension: EnumProperty(
         name="Extension:",
@@ -297,12 +345,18 @@ class ExportJMS(Operator, ExportHelper):
         default = True,
         )
 
+    hidden_geo: BoolProperty(
+        name ="Export hidden geometry",
+        description = "Whether or not we ignore geometry that has scene options that make exporting it complicated(NOT FUNCTIONAL CURRENTLY)",
+        default = True,
+        )
+
     scale_enum: EnumProperty(
     name="Scale",
         items=(
-            ('0', "Default(JMS)", "Export at 1:1"),
-            ('1', "World Units",  "Export at x100"),
-            ('2', "Custom",       "Set your own scaling multiplier."),
+            ('0', "Default(JMS)", "Export as is"),
+            ('1', "World Units",  "Multiply position values by 100 units"),
+            ('2', "Custom",       "Set your own scale multiplier."),
         )
     )
     scale_float: FloatProperty(
@@ -349,32 +403,53 @@ class ExportJMS(Operator, ExportHelper):
             self.triangulate_faces = args.triangulate_faces
             self.console = args.console
 
-        return export_jms.write_file(context, self.filepath, self.report, self.extension, self.extension_ce, self.extension_h2, self.jms_version, self.jms_version_ce, self.jms_version_h2, self.game_version, self.triangulate_faces, self.scale_enum, self.scale_float, self.console)
+        return export_jms.write_file(context, self.filepath, self.report, self.extension, self.extension_ce, self.extension_h2, self.jms_version, self.jms_version_ce, self.jms_version_h2, self.game_version, self.triangulate_faces, self.scale_enum, self.scale_float, self.console, self.permutation_ce, self.level_of_detail_ce, self.hidden_geo)
 
     def draw(self, context):
         layout = self.layout
 
         box = layout.box()
-        box.label(text="File Details:")
-        row = box.row()
-        row.prop(self, "game_version")
+        box.label(text="Game Version:")
+        col = box.column(align=True)
 
-        if self.game_version == 'haloce':
-            row = box.row()
-            row.prop(self, "extension_ce")
-            row = box.row()
-            row.prop(self, "jms_version_ce")
-
-        elif self.game_version == 'halo2':
-            row = box.row()
-            row.prop(self, "extension_h2")
-            row = box.row()
-            row.prop(self, "jms_version_h2")
+        row = col.row()
+        row.prop(self, "game_version", text='')
 
         box = layout.box()
-        box.label(text="Triangulate:")
-        row = box.row()
-        row.prop(self, "triangulate_faces")
+        box.label(text="File Details:")
+        col = box.column(align=True)
+
+        if self.game_version == 'haloce':
+            row = col.row()
+            row.label(text='Extension:')
+            row.prop(self, "extension_ce", text='')
+            row = col.row()
+            row.label(text='JMS Version:')
+            row.prop(self, "jms_version_ce", text='')
+            row = col.row()
+            row.label(text='Permutation:')
+            row.prop(self, "permutation_ce", text='')
+            row = col.row()
+            row.label(text='LOD:')
+            row.prop(self, "level_of_detail_ce", text='')
+
+        elif self.game_version == 'halo2':
+            row = col.row()
+            row.label(text='Extension:')
+            row.prop(self, "extension_h2", text='')
+            row = col.row()
+            row.label(text='JMS Version:')
+            row.prop(self, "jms_version_h2", text='')
+
+        box = layout.box()
+        box.label(text="Scene Options:")
+        col = box.column(align=True)
+        row = col.row()
+        row.label(text='Triangulate:')
+        row.prop(self, "triangulate_faces", text='')
+        #row = col.row()
+        #row.label(text='Export Hidden Geometry:')
+        #row.prop(self, "hidden_geo", text='')
 
         box = layout.box()
         box.label(text="Scale:")
