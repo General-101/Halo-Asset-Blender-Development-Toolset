@@ -34,6 +34,7 @@ from decimal import *
 from random import seed
 from math import degrees
 from random import randint
+from bpy_extras import io_utils
 
 def unhide_all_collections():
     for collection_viewport in bpy.context.view_layer.layer_collection.children:
@@ -838,7 +839,7 @@ def write_file(context, filepath, report, extension, extension_ce, extension_h2,
                     for node in material.node_tree.nodes:
                         if node.type == 'TEX_IMAGE':
                             if not node.image == None:
-                                image_filepath = bpy.path.abspath(node.image.filepath)
+                                image_filepath = io_utils.path_reference(node.image.filepath, directory, directory, mode='AUTO', copy_subdir='', copy_set=None, library=None)
                                 image_extension = image_filepath.rsplit('.', 1)[1]
                                 image_path = image_filepath.rsplit('.', 1)[0]
                                 if image_extension.lower() == 'tif' and os.path.exists(image_filepath):
