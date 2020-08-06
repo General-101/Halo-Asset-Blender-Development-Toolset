@@ -31,10 +31,9 @@ import os
 import bpy
 
 from decimal import *
-from random import seed
 from math import degrees
-from random import randint
 from bpy_extras import io_utils
+from random import seed, randint
 
 def unhide_all_collections():
     for collection_viewport in bpy.context.view_layer.layer_collection.children:
@@ -43,54 +42,65 @@ def unhide_all_collections():
     for collection_hide in bpy.data.collections:
         collection_hide.hide_viewport = False
 
-def unhide_all_objects():
-    for obj in bpy.context.view_layer.objects:
-        obj.hide_viewport = False
+def unhide_object(mesh):
+    mesh.hide_set(False)
+    mesh.hide_viewport = False
 
 def get_child(bone, bone_list = [], *args):
+    set_node = None
     for node in bone_list:
         if bone == node.parent:
-            return node
+            set_node = node
+
+    return set_node
 
 def get_sibling(armature, bone, bone_list = [], *args):
     sibling_list = []
+    set_sibling = None
     for node in bone_list:
         if bone.parent == node.parent:
             sibling_list.append(node)
 
     if len(sibling_list) <= 1:
-        return None
+        set_sibling = None
 
     else:
         sibling_node = sibling_list.index(bone)
         next_sibling_node = sibling_node + 1
         if next_sibling_node >= len(sibling_list):
-            sibling = None
+            set_sibling = None
 
         else:
             if not armature:
-                sibling = bpy.data.objects['%s' % sibling_list[next_sibling_node].name]
+                set_sibling = bpy.data.objects['%s' % sibling_list[next_sibling_node].name]
 
             else:
-                sibling = armature.data.bones['%s' % sibling_list[next_sibling_node].name]
+                set_sibling = armature.data.bones['%s' % sibling_list[next_sibling_node].name]
 
-        return sibling
+    return set_sibling
 
 def get_region(default_region, region):
+    set_region = None
     if not len(region) == 0:
-        return region
+        set_region = region
 
     else:
-        return default_region
+        set_region = default_region
+
+    return set_region
 
 def get_permutation(default_permutation, permutation):
+    set_permutation = None
     if not len(permutation) == 0:
-        return permutation
+        set_permutation = permutation
 
     else:
-        return default_permutation
+        set_permutation = default_permutation
+
+    return set_permutation
 
 def get_default_region_permutation_name(game_version):
+    default_name = None
     if game_version == 'haloce':
         default_name = 'unnamed'
 
@@ -139,27 +149,19 @@ def get_lod(lod_setting, game_version):
     return LOD_name
 
 def get_encoding(game_version):
+    encoding = None
     if game_version == 'haloce':
         encoding = 'utf_8'
 
     elif game_version == 'halo2':
         encoding = 'utf-16le'
 
-    else:
-        encoding = 'utf_8'
-
     return encoding
 
 def get_material(game_version, original_geo, face, geometry, material_list):
     object_materials = len(original_geo.material_slots) - 1
-    if game_version == 'halo2':
-        assigned_material = -1
-        if len(original_geo.material_slots) != 0:
-            if not face.material_index > object_materials:
-                if geometry.materials[face.material_index] is not None:
-                    assigned_material = material_list.index([bpy.data.materials[geometry.materials[face.material_index].name], original_geo.jms.level_of_detail, original_geo.jms.Region, original_geo.jms.Permutation])
-
-    elif game_version == 'haloce':
+    assigned_material = None
+    if game_version == 'haloce':
         if len(original_geo.material_slots) != 0:
             if not face.material_index > object_materials:
                 if geometry.materials[face.material_index] is not None:
@@ -173,6 +175,13 @@ def get_material(game_version, original_geo, face, geometry, material_list):
 
         else:
             assigned_material = material_list.index(None)
+
+    elif game_version == 'halo2':
+        assigned_material = -1
+        if len(original_geo.material_slots) != 0:
+            if not face.material_index > object_materials:
+                if geometry.materials[face.material_index] is not None:
+                    assigned_material = material_list.index([bpy.data.materials[geometry.materials[face.material_index].name], original_geo.jms.level_of_detail, original_geo.jms.Region, original_geo.jms.Permutation])
 
     return assigned_material
 
@@ -246,14 +255,37 @@ def get_dimensions(mesh_a_matrix, mesh_a, mesh_b_matrix, mesh_b, invert, scale, 
 
     return object_dimensions
 
-def get_parent(armature_count, armature, mesh, joined_list, default_parent):
+def get_hierarchy(mesh):
+    no_parent = False
+    hierarchy_list = []
+    current_mesh = mesh
+    while no_parent == False:
+        hierarchy_list.append(current_mesh)
+        if not current_mesh.parent == None:
+            current_mesh = current_mesh.parent
+
+        else:
+            no_parent = True
+
+    return hierarchy_list
+
+def get_parent(armature_count, armature, mesh, joined_list, node_list, default_parent):
     parent_index = default_parent
     if armature_count == 0:
         if mesh:
             if mesh.parent:
-                parent_bone_a = bpy.data.objects[mesh.parent.name]
-                parent_index = joined_list.index(parent_bone_a)
+                if mesh.parent.hide_viewport == False and mesh.hide_get() == False and mesh.parent in node_list:
+                    parent_bone_a = bpy.data.objects[mesh.parent.name]
+                    parent_index = joined_list.index(parent_bone_a)
 
+                else:
+                    done = False
+                    mesh_hierarchy = get_hierarchy(mesh)
+                    for item in mesh_hierarchy:
+                        if item.hide_viewport == False and mesh_hierarchy.index(item) >= 1 and item in node_list and done == False:
+                            done = True
+                            parent_bone_a = bpy.data.objects[item.name]
+                            parent_index = joined_list.index(parent_bone_a)
     else:
         if mesh:
             if mesh.parent_bone:
@@ -263,7 +295,7 @@ def get_parent(armature_count, armature, mesh, joined_list, default_parent):
     return parent_index
 
 def get_version(jms_version_console, jms_version_ce, jms_version_h2, game_version, console):
-    version = 0
+    version = None
     if console:
         version = int(jms_version_console)
 
@@ -277,7 +309,7 @@ def get_version(jms_version_console, jms_version_ce, jms_version_h2, game_versio
     return version
 
 def get_extension(extension_console, extension_ce, extension_h2, game_version, console):
-    extension = ''
+    extension = None
     if console:
         extension = extension_console
 
@@ -300,43 +332,57 @@ def set_scale(scale_enum, scale_float):
 
     return scale
 
+def set_ignore(mesh):
+    collection_list = mesh.users_collection
+    ignore = False
+    if mesh.hide_viewport or mesh.hide_get():
+        ignore = True
+
+    for collection in collection_list:
+        if not collection.name == 'Master Collection':
+            access_collection = bpy.data.collections[collection.name]
+            if access_collection.hide_viewport:
+                ignore = True
+
+    return ignore
+
 def error_pass(armature_count, report, game_version, node_count, version, extension, geometry_list, marker_list, root_node_count):
+    result = False
     if armature_count >= 2:
         report({'ERROR'}, 'More than one armature object. Please delete all but one.')
-        return True
+        result = True
 
     elif game_version == 'haloce' and node_count == 0: #JMSv2 files can have JMS files without a node for physics.
         report({'ERROR'}, 'No nodes in scene. Add an armature or object mesh named frame')
-        return True
+        result = True
 
     elif game_version == 'haloce' and len(geometry_list) == 0 and len(marker_list) == 0:
         report({'ERROR'}, 'No geometry in scene.')
-        return True
+        result = True
 
     elif version >= 8201 and game_version == 'haloce':
         report({'ERROR'}, 'This version is not supported for CE. Choose from 8197-8200 if you wish to export for CE.')
-        return True
+        result = True
 
     elif extension == '.JMP' and game_version == 'halo2':
         report({'ERROR'}, 'This extension is not used in Halo 2 Vista')
-        return True
+        result = True
 
     elif root_node_count >= 2:
         report({'ERROR'}, "More than one root node. Please remove or rename objects until you only have one root frame object.")
-        return True
+        result = True
 
-    else:
-        return False
+    return result
 
 def write_file(context, filepath, report, extension, extension_ce, extension_h2, jms_version, jms_version_ce, jms_version_h2, game_version, triangulate_faces, scale_enum, scale_float, console, permutation_ce, level_of_detail_ce, hidden_geo):
     from . import JmsVertex
     from . import JmsTriangle
 
     unhide_all_collections()
-    unhide_all_objects()
 
     object_list = list(bpy.context.scene.objects)
 
+    object_properties = []
     node_list = []
     layer_count = []
     layer_root = []
@@ -387,20 +433,15 @@ def write_file(context, filepath, report, extension, extension_ce, extension_h2,
         return {'CANCELLED'}
 
     for obj in object_list:
-        #print(bpy.context.view_layer.layer_collection.children)
-        #collection_list = obj.users_collection
-        #ignore = False
+        object_properties.append([obj.hide_get(), obj.hide_viewport])
+        if hidden_geo:
+            unhide_object(obj)
 
-        #for collection in collection_list:
-            #test = bpy.data.collections[collection.name]
-            #if test.hide_viewport or obj.hide_viewport:
-                #ignore = True
-
-        #if not ignore:
         assigned_materials_list = []
         find_region = get_region(default_region, obj.jms.Region)
         find_permutation = get_permutation(default_permutation, obj.jms.Permutation)
         if obj.type == 'ARMATURE':
+            unhide_object(obj)
             armature_count += 1
             armature = obj
             bpy.context.view_layer.objects.active = obj
@@ -414,6 +455,7 @@ def write_file(context, filepath, report, extension, extension_ce, extension_h2,
                 root_node_count += 1
 
         elif obj.name[0:2].lower() == 'b_' or obj.name[0:4].lower() == 'bone' or obj.name[0:5].lower() == 'frame':
+            unhide_object(obj)
             bpy.context.view_layer.objects.active = obj
             bpy.ops.object.mode_set(mode = 'OBJECT')
             node_list.append(obj)
@@ -426,70 +468,102 @@ def write_file(context, filepath, report, extension, extension_ce, extension_h2,
                 root_node_count += 1
 
         elif obj.name[0:1].lower() == '#':
-            if game_version == 'haloce':
-                if not obj.parent == None:
-                    if obj.parent.type == 'ARMATURE' or obj.parent.name[0:2].lower() == 'b_' or obj.name[0:4].lower() == 'bone' or obj.parent.name[0:5].lower() == 'frame':
-                        marker_list.append(obj)
-                        region_list.append(find_region)
+            if set_ignore(obj) == False or hidden_geo:
+                if game_version == 'haloce':
+                    if not obj.parent == None:
+                        if obj.parent.type == 'ARMATURE' or obj.parent.name[0:2].lower() == 'b_' or obj.name[0:4].lower() == 'bone' or obj.parent.name[0:5].lower() == 'frame':
+                            marker_list.append(obj)
+                            region_list.append(find_region)
 
-            elif game_version == 'halo2':
-                marker_list.append(obj)
-                region_list.append(find_region)
-
-            else:
-                report({'ERROR'}, "How did you even choose an option that doesn't exist?")
-                return {'CANCELLED'}
-
-        elif obj.name[0:1].lower() == '$':
-            if version >= 8205:
-                if not obj.rigid_body_constraint == None:
-                    if obj.rigid_body_constraint.type == 'HINGE':
-                        hinge_list.append(obj)
-
-                    elif obj.rigid_body_constraint.type == 'GENERIC':
-                        ragdoll_list.append(obj)
-
-                    elif obj.rigid_body_constraint.type == 'GENERIC_SPRING':
-                        point_to_point_list.append(obj)
-
-                elif obj.jms.Object_Type == 'SPHERE':
-                    sphere_list.append(obj)
+                elif game_version == 'halo2':
+                    marker_list.append(obj)
                     region_list.append(find_region)
-                    permutation_list.append(find_permutation)
-
-                elif obj.jms.Object_Type == 'BOX':
-                    box_list.append(obj)
-                    region_list.append(find_region)
-                    permutation_list.append(find_permutation)
-
-                elif obj.jms.Object_Type == 'CAPSULES':
-                    capsule_list.append(obj)
-                    region_list.append(find_region)
-                    permutation_list.append(find_permutation)
-
-                elif obj.jms.Object_Type == 'CONVEX SHAPES':
-                    convex_shape_list.append(obj)
-                    region_list.append(find_region)
-                    permutation_list.append(find_permutation)
 
                 else:
                     report({'ERROR'}, "How did you even choose an option that doesn't exist?")
                     return {'CANCELLED'}
 
+        elif obj.name[0:1].lower() == '$':
+            if version >= 8205:
+                if set_ignore(obj) == False or hidden_geo:
+                    if not obj.rigid_body_constraint == None:
+                        if obj.rigid_body_constraint.type == 'HINGE':
+                            hinge_list.append(obj)
+
+                        elif obj.rigid_body_constraint.type == 'GENERIC':
+                            ragdoll_list.append(obj)
+
+                        elif obj.rigid_body_constraint.type == 'GENERIC_SPRING':
+                            point_to_point_list.append(obj)
+
+                    elif obj.jms.Object_Type == 'SPHERE':
+                        sphere_list.append(obj)
+                        region_list.append(find_region)
+                        permutation_list.append(find_permutation)
+
+                    elif obj.jms.Object_Type == 'BOX':
+                        box_list.append(obj)
+                        region_list.append(find_region)
+                        permutation_list.append(find_permutation)
+
+                    elif obj.jms.Object_Type == 'CAPSULES':
+                        capsule_list.append(obj)
+                        region_list.append(find_region)
+                        permutation_list.append(find_permutation)
+
+                    elif obj.jms.Object_Type == 'CONVEX SHAPES':
+                        convex_shape_list.append(obj)
+                        region_list.append(find_region)
+                        permutation_list.append(find_permutation)
+
+                    else:
+                        report({'ERROR'}, "How did you even choose an option that doesn't exist?")
+                        return {'CANCELLED'}
+
         elif not len(obj.jms.XREF_path) == 0:
-            instance_markers.append(obj)
-            if not obj.jms.XREF_path in instance_xref_paths:
-                instance_xref_paths.append(obj.jms.XREF_path)
+            if set_ignore(obj) == False or hidden_geo:
+                instance_markers.append(obj)
+                if not obj.jms.XREF_path in instance_xref_paths:
+                    instance_xref_paths.append(obj.jms.XREF_path)
 
         elif obj.jms.bounding_radius == True:
-            bounding_sphere.append(obj)
+            if set_ignore(obj) == False or hidden_geo:
+                bounding_sphere.append(obj)
 
         elif obj.type== 'MESH':
-            bpy.context.view_layer.objects.active = obj
-            bpy.ops.object.mode_set(mode = 'OBJECT')
-            if game_version == 'haloce':
-                if not obj.parent == None:
-                    if obj.parent.type == 'ARMATURE' or obj.parent.name[0:2].lower() == 'b_' or obj.name[0:4].lower() == 'bone' or obj.parent.name[0:5].lower() == 'frame':
+            if set_ignore(obj) == False or hidden_geo:
+                bpy.context.view_layer.objects.active = obj
+                bpy.ops.object.mode_set(mode = 'OBJECT')
+                if game_version == 'haloce':
+                    if not obj.parent == None:
+                        if obj.parent.type == 'ARMATURE' or obj.parent.name[0:2].lower() == 'b_' or obj.name[0:4].lower() == 'bone' or obj.parent.name[0:5].lower() == 'frame':
+                            modifier_list = []
+                            if triangulate_faces:
+                                for modifier in obj.modifiers:
+                                    modifier.show_render = True
+                                    modifier.show_viewport = True
+                                    modifier.show_in_editmode = True
+                                    modifier_list.append(modifier.type)
+
+                                if not 'TRIANGULATE' in modifier_list:
+                                    obj.modifiers.new("Triangulate", type='TRIANGULATE')
+
+                                depsgraph = context.evaluated_depsgraph_get()
+                                obj_for_convert = obj.evaluated_get(depsgraph)
+                                me = obj_for_convert.to_mesh(preserve_all_data_layers=True, depsgraph=depsgraph)
+                                geometry_list.append(me)
+                                original_geometry_list.append(obj)
+                                print("Hello")
+
+                            else:
+                                geometry_list.append(obj.to_mesh(preserve_all_data_layers=True))
+                                original_geometry_list.append(obj)
+
+                            region_list.append(find_region)
+                            permutation_list.append(find_permutation)
+
+                elif game_version == 'halo2':
+                    if bpy.context.object.data.uv_layers:
                         modifier_list = []
                         if triangulate_faces:
                             for modifier in obj.modifiers:
@@ -514,73 +588,49 @@ def write_file(context, filepath, report, extension, extension_ce, extension_h2,
                         region_list.append(find_region)
                         permutation_list.append(find_permutation)
 
-            elif game_version == 'halo2':
-                if bpy.context.object.data.uv_layers:
-                    modifier_list = []
-                    if triangulate_faces:
-                        for modifier in obj.modifiers:
-                            modifier.show_render = True
-                            modifier.show_viewport = True
-                            modifier.show_in_editmode = True
-                            modifier_list.append(modifier.type)
-
-                        if not 'TRIANGULATE' in modifier_list:
-                            obj.modifiers.new("Triangulate", type='TRIANGULATE')
-
-                        depsgraph = context.evaluated_depsgraph_get()
-                        obj_for_convert = obj.evaluated_get(depsgraph)
-                        me = obj_for_convert.to_mesh(preserve_all_data_layers=True, depsgraph=depsgraph)
-                        geometry_list.append(me)
-                        original_geometry_list.append(obj)
-
-                    else:
-                        geometry_list.append(obj.to_mesh(preserve_all_data_layers=True))
-                        original_geometry_list.append(obj)
-
-                    region_list.append(find_region)
-                    permutation_list.append(find_permutation)
-
-            else:
-                report({'ERROR'}, "How did you even choose an option that doesn't exist?")
-                return {'CANCELLED'}
-
-        if len(obj.material_slots)!= 0 and len(obj.jms.XREF_path) == 0 and not obj.name[0:1].lower() == '#' and not obj.name[0:2].lower() == 'b_' and not obj.name[0:4].lower() == 'bone' and not obj.name[0:5].lower() == 'frame':
-            for f in obj.data.polygons:
-                object_materials = len(obj.material_slots) - 1
-                if not f.material_index > object_materials:
-                    slot = obj.material_slots[f.material_index]
-                    mat = slot.material
-                    if mat is not None:
-                        if mat not in assigned_materials_list:
-                            assigned_materials_list.append(mat)
-
-                else:
-                    if game_version == 'haloce':
-                        if None not in material_list and not obj.name[0:1].lower() == '$' and not obj.name[0:1].lower() == '#' and not obj.name[0:2].lower() == 'b_' and not obj.name[0:4].lower() == 'bone' and not obj.name[0:5].lower() == 'frame' and not obj.type == 'ARMATURE' and not obj.parent == None and obj.materials[f.material_index] is None:
-                            material_list.append(None)
-
-            for slot in obj.material_slots:
-                if game_version == 'halo2':
-                    if obj.name[0:1].lower() == '$':
-                        if [slot.material, obj.jms.level_of_detail, obj.jms.Region, obj.jms.Permutation] not in material_list and slot.material in assigned_materials_list and version >= 8205:
-                            material_list.append([slot.material, obj.jms.level_of_detail, obj.jms.Region, obj.jms.Permutation])
-
-                    elif obj.type== 'MESH':
-                        if [slot.material, obj.jms.level_of_detail, obj.jms.Region, obj.jms.Permutation] not in material_list and slot.material in assigned_materials_list:
-                            material_list.append([slot.material, obj.jms.level_of_detail, obj.jms.Region, obj.jms.Permutation])
-
-                elif game_version == 'haloce':
-                    if slot.material not in material_list and not obj.name[0:1].lower() == '$':
-                        material_list.append(slot.material)
-
                 else:
                     report({'ERROR'}, "How did you even choose an option that doesn't exist?")
                     return {'CANCELLED'}
 
+        if len(obj.material_slots)!= 0 and len(obj.jms.XREF_path) == 0 and not obj.name[0:1].lower() == '#' and not obj.name[0:2].lower() == 'b_' and not obj.name[0:4].lower() == 'bone' and not obj.name[0:5].lower() == 'frame':
+            if set_ignore(obj) == False or hidden_geo:
+                for face in obj.data.polygons:
+                    object_materials = len(obj.material_slots) - 1
+                    if not face.material_index > object_materials:
+                        slot = obj.material_slots[face.material_index]
+                        mat = slot.material
+                        if mat is not None:
+                            if mat not in assigned_materials_list:
+                                assigned_materials_list.append(mat)
+
+                    else:
+                        if game_version == 'haloce':
+                            if None not in material_list and not obj.name[0:1].lower() == '$' and not obj.name[0:1].lower() == '#' and not obj.name[0:2].lower() == 'b_' and not obj.name[0:4].lower() == 'bone' and not obj.name[0:5].lower() == 'frame' and not obj.type == 'ARMATURE' and not obj.parent == None and obj.materials[f.material_index] is None and not obj.jms.bounding_radius == True and len(obj.jms.XREF_path) == 0:
+                                material_list.append(None)
+
+                for slot in obj.material_slots:
+                    if game_version == 'haloce':
+                        if slot.material not in material_list and not obj.name[0:1].lower() == '$':
+                            material_list.append(slot.material)
+
+                    elif game_version == 'halo2':
+                        if obj.name[0:1].lower() == '$':
+                            if [slot.material, obj.jms.level_of_detail, obj.jms.Region, obj.jms.Permutation] not in material_list and slot.material in assigned_materials_list and version >= 8205:
+                                material_list.append([slot.material, obj.jms.level_of_detail, obj.jms.Region, obj.jms.Permutation])
+
+                        elif obj.type== 'MESH':
+                            if [slot.material, obj.jms.level_of_detail, obj.jms.Region, obj.jms.Permutation] not in material_list and slot.material in assigned_materials_list:
+                                material_list.append([slot.material, obj.jms.level_of_detail, obj.jms.Region, obj.jms.Permutation])
+
+                    else:
+                        report({'ERROR'}, "How did you even choose an option that doesn't exist?")
+                        return {'CANCELLED'}
+
         else:
             if game_version == 'haloce':
-                if None not in material_list and not obj.name[0:1].lower() == '$' and not obj.name[0:1].lower() == '#' and not obj.name[0:2].lower() == 'b_' and not obj.name[0:4].lower() == 'bone' and not obj.name[0:5].lower() == 'frame' and not obj.type == 'ARMATURE' and not obj.parent == None:
-                    material_list.append(None)
+                if set_ignore(obj) == False or hidden_geo:
+                    if None not in material_list and not obj.name[0:1].lower() == '$' and not obj.name[0:1].lower() == '#' and not obj.name[0:2].lower() == 'b_' and not obj.name[0:4].lower() == 'bone' and not obj.name[0:5].lower() == 'frame' and not obj.type == 'ARMATURE' and not obj.parent == None and not obj.jms.bounding_radius == True and len(obj.jms.XREF_path) == 0:
+                        material_list.append(None)
 
     region_list = list(dict.fromkeys(region_list))
     permutation_list = list(dict.fromkeys(permutation_list))
@@ -879,7 +929,7 @@ def write_file(context, filepath, report, extension, extension_ce, extension_h2,
         if len(marker.jms.Region) != 0:
             region = region_list.index(marker.jms.Region)
 
-        parent_index = get_parent(armature_count, armature, marker, joined_list, 0)
+        parent_index = get_parent(armature_count, armature, marker, joined_list, node_list, 0)
 
         marker_matrix = marker.matrix_world
         if marker.parent:
@@ -949,7 +999,7 @@ def write_file(context, filepath, report, extension, extension_ce, extension_h2,
         seed(1)
         starting_ID = -1 * (randint(0, 3000000000))
         for int_markers in instance_markers:
-            unique_identifier = starting_ID + instance_markers.index(int_markers)
+            unique_identifier = starting_ID + (-1 * instance_markers.index(int_markers))
             int_markers_matrix = int_markers.matrix_world
             mesh_dimensions = get_dimensions(int_markers_matrix, int_markers, None, None, -1, scale, version, None, False, False)
 
@@ -1014,10 +1064,17 @@ def write_file(context, filepath, report, extension, extension_ce, extension_h2,
                     for group_index in range(len(vert.groups)):
                         vert_group = vert.groups[group_index].group
                         object_vertex_group = vertex_groups[vert_group]
-                        if object_vertex_group in bpy.data.objects:
-                            vertex_vert_group_list.append(group_index)
-                            if bpy.data.objects[object_vertex_group] in joined_list:
-                                object_vert_group_list.append(vert_group)
+                        if armature_count == 0:
+                            if object_vertex_group in bpy.data.objects:
+                                vertex_vert_group_list.append(group_index)
+                                if bpy.data.objects[object_vertex_group] in joined_list:
+                                    object_vert_group_list.append(vert_group)
+
+                        else:
+                            if armature.data.bones[object_vertex_group] in node_list:
+                                vertex_vert_group_list.append(group_index)
+                                if armature.data.bones[object_vertex_group] in joined_list:
+                                    object_vert_group_list.append(vert_group)
 
                     value = len(object_vert_group_list)
                     if value > 4:
@@ -1054,14 +1111,14 @@ def write_file(context, filepath, report, extension, extension_ce, extension_h2,
                                 jms_vertex.node3_weight = '%0.10f' % vert.groups[vert_index].weight
 
                     else:
-                        parent_index = get_parent(armature_count, armature, original_geo, joined_list, 0)
+                        parent_index = get_parent(armature_count, armature, original_geo, joined_list, node_list, 0)
 
                         jms_vertex.node_influence_count = '1'
                         jms_vertex.node0 = parent_index
                         jms_vertex.node0_weight = '1.0000000000'
 
                 else:
-                    parent_index = get_parent(armature_count, armature, original_geo, joined_list, 0)
+                    parent_index = get_parent(armature_count, armature, original_geo, joined_list, node_list, 0)
 
                     jms_vertex.node_influence_count = '1'
                     jms_vertex.node0 = parent_index
@@ -1182,13 +1239,12 @@ def write_file(context, filepath, report, extension, extension_ce, extension_h2,
 
         #write sphere
         for spheres in sphere_list:
-            assigned_sphere_materials_list = []
             name = spheres.name.split('$', 1)[1]
             mesh_sphere = spheres.to_mesh()
             face = mesh_sphere.polygons[0]
             sphere_material_index = get_material(game_version, spheres, face, mesh_sphere, material_list)
 
-            parent_index = get_parent(armature_count, armature, spheres, joined_list, -1)
+            parent_index = get_parent(armature_count, armature, spheres, joined_list, node_list, -1)
 
             sphere_matrix = spheres.matrix_world
             if spheres.parent:
@@ -1222,13 +1278,12 @@ def write_file(context, filepath, report, extension, extension_ce, extension_h2,
         )
 
         for boxes in box_list:
-            assigned_boxes_materials_list = []
             name = boxes.name.split('$', 1)[1]
             mesh_boxes = boxes.to_mesh()
             face = mesh_boxes.polygons[0]
             boxes_material_index = get_material(game_version, boxes, face, mesh_boxes, material_list)
 
-            parent_index = get_parent(armature_count, armature, boxes, joined_list, -1)
+            parent_index = get_parent(armature_count, armature, boxes, joined_list, node_list, -1)
 
             box_matrix = boxes.matrix_world
             if boxes.parent:
@@ -1263,13 +1318,12 @@ def write_file(context, filepath, report, extension, extension_ce, extension_h2,
              )
 
         for capsule in capsule_list:
-            assigned_capsule_materials_list = []
             name = capsule.name.split('$', 1)[1]
             mesh_capsule = capsule.to_mesh()
             face = mesh_capsule.polygons[0]
             capsule_material_index = get_material(game_version, capsule, face, mesh_capsule, material_list)
 
-            parent_index = get_parent(armature_count, armature, capsule, joined_list, -1)
+            parent_index = get_parent(armature_count, armature, capsule, joined_list, node_list, -1)
 
             capsule_matrix = capsule.matrix_world
             if capsule.parent:
@@ -1303,7 +1357,7 @@ def write_file(context, filepath, report, extension, extension_ce, extension_h2,
         )
 
         for convex_shape in convex_shape_list:
-            assigned_convex_shape_materials_list = []
+            matrix = convex_shape.matrix_world
             name = convex_shape.name.split('$', 1)[1]
             modifier_list = []
             if triangulate_faces:
@@ -1327,7 +1381,7 @@ def write_file(context, filepath, report, extension, extension_ce, extension_h2,
             face = mesh_convex_shape.polygons[0]
             convex_shape_material_index = get_material(game_version, convex_shape, face, mesh_convex_shape, material_list)
 
-            parent_index = get_parent(armature_count, armature, convex_shape, joined_list, -1)
+            parent_index = get_parent(armature_count, armature, convex_shape, joined_list, node_list, -1)
 
             convex_matrix = convex_shape.matrix_world
             if convex_shape.parent:
@@ -1378,8 +1432,8 @@ def write_file(context, filepath, report, extension, extension_ce, extension_h2,
             name = ragdoll.name.split('$', 1)[1]
             body_a_obj = ragdoll.rigid_body_constraint.object1
             body_b_obj = ragdoll.rigid_body_constraint.object2
-            body_a_index = get_parent(armature_count, armature, body_a_obj, joined_list, -1)
-            body_b_index = get_parent(armature_count, armature, body_b_obj, joined_list, -1)
+            body_a_index = get_parent(armature_count, armature, body_a_obj, joined_list, node_list, -1)
+            body_b_index = get_parent(armature_count, armature, body_b_obj, joined_list, node_list, -1)
 
             body_a_matrix = body_a_obj.matrix_world
             if body_a_obj:
@@ -1451,8 +1505,8 @@ def write_file(context, filepath, report, extension, extension_ce, extension_h2,
             name = hinge.name.split('$', 1)[1]
             body_a_obj = hinge.rigid_body_constraint.object1
             body_b_obj = hinge.rigid_body_constraint.object2
-            body_a_index = get_parent(armature_count, armature, body_a_obj, joined_list, -1)
-            body_b_index = get_parent(armature_count, armature, body_b_obj, joined_list, -1)
+            body_a_index = get_parent(armature_count, armature, body_a_obj, joined_list, node_list, -1)
+            body_b_index = get_parent(armature_count, armature, body_b_obj, joined_list, node_list, -1)
 
             body_a_matrix = hinge.matrix_world
             if body_a_obj:
@@ -1537,8 +1591,8 @@ def write_file(context, filepath, report, extension, extension_ce, extension_h2,
                 name = point_to_point.name.split('$', 1)[1]
                 body_a_obj = point_to_point.rigid_body_constraint.object1
                 body_b_obj = point_to_point.rigid_body_constraint.object2
-                body_a_index = get_parent(armature_count, armature, body_a_obj, joined_list, -1)
-                body_b_index = get_parent(armature_count, armature, body_b_obj, joined_list, -1)
+                body_a_index = get_parent(armature_count, armature, body_a_obj, joined_list, node_list, -1)
+                body_b_index = get_parent(armature_count, armature, body_b_obj, joined_list, node_list, -1)
 
                 body_a_matrix = point_to_point.matrix_world
                 if body_a_obj:
@@ -1664,6 +1718,13 @@ def write_file(context, filepath, report, extension, extension_ce, extension_h2,
             )
 
     file.close()
+
+    for obj in object_list:
+        item_index = object_list.index(obj)
+        property_value = object_properties[item_index]
+        obj.hide_set(property_value[0])
+        obj.hide_viewport = property_value[1]
+
     report({'INFO'}, "Export completed successfully")
     return {'FINISHED'}
 

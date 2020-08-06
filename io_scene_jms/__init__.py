@@ -116,6 +116,36 @@ class JmsTriangle:
     region = 0
     material = 0
 
+class JMS_SceneProps(Panel):
+    bl_label = "JMS Scene Properties"
+    bl_idname = "JMS_PT_GameVersionPanel"
+    bl_space_type = 'PROPERTIES'
+    bl_region_type = 'WINDOW'
+    bl_context = "scene"
+    bl_options = {'DEFAULT_CLOSED'}
+
+    def draw(self, context):
+        layout = self.layout
+        scene = context.scene
+        jms = scene.jms
+        box = layout.box()
+        box.label(text="Game Version:")
+
+        col = box.column(align=True)
+
+        row = col.row()
+        row.prop(jms, "game_version", text='')
+
+class JMS_ScenePropertiesGroup(PropertyGroup):
+    game_version: EnumProperty(
+        name="Game:",
+        description="Show options relevant to the selected game.",
+        default="halo2",
+        items=[ ('haloce', "Halo CE", "Halo CE options"),
+                ('halo2', "Halo 2", "Halo 2 Vista options"),
+               ]
+        )
+
 class JMS_ObjectProps(Panel):
     bl_label = "JMS Object Properties"
     bl_idname = "JMS_PT_RegionPermutationPanel"
@@ -127,58 +157,41 @@ class JMS_ObjectProps(Panel):
     def draw(self, context):
         layout = self.layout
         obj = context.object
-        jms = obj.jms
-        box = layout.box()
-        box.label(text="Game Version:")
-
-        col = box.column(align=True)
-
-        row = col.row()
-        row.prop(jms, "game_version", text='')
+        obj_jms = obj.jms
+        scene = context.scene
+        scene_jms = scene.jms
 
         box = layout.box()
         box.label(text="Object Details:")
 
         col = box.column(align=True)
 
-
-        if jms.game_version == 'haloce':
+        if scene_jms.game_version == 'haloce':
             row = col.row()
             row.label(text='Region:')
-            row.prop(jms, "Region", text='')
+            row.prop(obj_jms, "Region", text='')
 
-        elif jms.game_version == 'halo2':
+        elif scene_jms.game_version == 'halo2':
             row = col.row()
             row.label(text='Bounding Radius:')
-            row.prop(jms, "bounding_radius", text='')
+            row.prop(obj_jms, "bounding_radius", text='')
             row = col.row()
             row.label(text='Region:')
-            row.prop(jms, "Region", text='')
+            row.prop(obj_jms, "Region", text='')
             row = col.row()
             row.label(text='Permutation:')
-            row.prop(jms, "Permutation", text='')
+            row.prop(obj_jms, "Permutation", text='')
             row = col.row()
             row.label(text='LOD:')
-            row.prop(jms, "level_of_detail", text='')
+            row.prop(obj_jms, "level_of_detail", text='')
             row = col.row()
             row.label(text='Object Type:')
-            row.prop(jms, "Object_Type", text='')
+            row.prop(obj_jms, "Object_Type", text='')
             row = col.row()
             row.label(text='XREF Path:')
-            row.prop(jms, "XREF_path", text='')
-
-
+            row.prop(obj_jms, "XREF_path", text='')
 
 class JMS_ObjectPropertiesGroup(PropertyGroup):
-    game_version: EnumProperty(
-        name="Game:",
-        description="Show options relevant to the selected game.",
-        default="halo2",
-        items=[ ('haloce', "Halo CE", "Halo CE options"),
-                ('halo2', "Halo 2", "Halo 2 Vista options"),
-               ]
-        )
-
     bounding_radius: BoolProperty(
         name ="Bounding Radius",
         description = "Sets object as a bounding radius",
@@ -447,9 +460,9 @@ class ExportJMS(Operator, ExportHelper):
         row = col.row()
         row.label(text='Triangulate:')
         row.prop(self, "triangulate_faces", text='')
-        #row = col.row()
-        #row.label(text='Export Hidden Geometry:')
-        #row.prop(self, "hidden_geo", text='')
+        row = col.row()
+        row.label(text='Export Hidden Geometry:')
+        row.prop(self, "hidden_geo", text='')
 
         box = layout.box()
         box.label(text="Scale:")
@@ -480,8 +493,6 @@ class ImportJMS(Operator, ImportHelper):
             parser.add_argument('-arg1', '--filepath', dest='filepath', metavar='FILE', required = True)
             args = parser.parse_known_args(argv)[0]
             print('filepath: ', args.filepath)
-
-        if len(self.filepath) == 0:
             self.filepath = args.filepath
 
         return import_jms.load_file(context, self.filepath, self.report)
@@ -494,7 +505,9 @@ def menu_func_import(self, context):
 
 classesjms = (
     JMS_ObjectPropertiesGroup,
+    JMS_ScenePropertiesGroup,
     JMS_ObjectProps,
+    JMS_SceneProps,
     ImportJMS,
     ExportJMS
 )
@@ -505,6 +518,7 @@ def register():
     bpy.types.TOPBAR_MT_file_export.append(menu_func_export)
     bpy.types.TOPBAR_MT_file_import.append(menu_func_import)
     bpy.types.Object.jms = PointerProperty(type=JMS_ObjectPropertiesGroup, name="JMS Object Properties", description="JMS Object properties")
+    bpy.types.Scene.jms = PointerProperty(type=JMS_ScenePropertiesGroup, name="JMS Scene Properties", description="JMS Scene properties")
 
 def unregister():
     for clsjms in reversed(classesjms):
@@ -512,6 +526,7 @@ def unregister():
     bpy.types.TOPBAR_MT_file_export.remove(menu_func_export)
     bpy.types.TOPBAR_MT_file_import.remove(menu_func_import)
     del bpy.types.Object.jms
+    del bpy.types.Scene.jms
 
 if __name__ == '__main__':
     register()
