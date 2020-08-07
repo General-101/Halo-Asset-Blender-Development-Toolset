@@ -401,10 +401,12 @@ class ExportJMS(Operator, ExportHelper):
             parser.add_argument('-arg3', '--jms_version', dest='jms_version', type=str, default="8200")
             parser.add_argument('-arg4', '--game_version', dest='game_version', type=str, default="halo2")
             parser.add_argument('-arg5', '--triangulate_faces', dest='triangulate_faces', action='store_true')
-            parser.add_argument('-arg6', '--hidden_geo', dest='hidden_geo', action='store_true')            
-            parser.add_argument('-arg7', '--permutation', dest='permutation_ce', type=str, default="")            
-            parser.add_argument('-arg8', '--lod', dest='level_of_detail_ce', type=str, default="0")            
-            parser.add_argument('-arg9', '--console', dest='console', action='store_true', default=True)
+            parser.add_argument('-arg6', '--hidden_geo', dest='hidden_geo', action='store_true')
+            parser.add_argument('-arg7', '--permutation', dest='permutation_ce', type=str, default="")
+            parser.add_argument('-arg8', '--lod', dest='level_of_detail_ce', type=str, default="0")
+            parser.add_argument('-arg9', '--scale_enum', dest='scale_enum', type=str, default="0")
+            parser.add_argument('-arg10', '--scale_float', dest='scale_float', type=float, default=1.0)
+            parser.add_argument('-arg11', '--console', dest='console', action='store_true', default=True)
             args = parser.parse_known_args(argv)[0]
             print('filepath: ', args.filepath)
             print('extension: ', args.extension)
@@ -413,7 +415,9 @@ class ExportJMS(Operator, ExportHelper):
             print('triangulate_faces: ', args.triangulate_faces)
             print('hidden_geo: ', args.hidden_geo)
             print('permutation_ce: ', args.permutation_ce)
-            print('level_of_detail_ce: ', args.level_of_detail_ce)            
+            print('level_of_detail_ce: ', args.level_of_detail_ce)
+            print('scale_enum: ', args.scale_enum)
+            print('scale_float: ', args.scale_float)
             print('console: ', args.console)
             self.filepath = args.filepath
             self.extension = args.extension
@@ -422,7 +426,9 @@ class ExportJMS(Operator, ExportHelper):
             self.triangulate_faces = args.triangulate_faces
             self.hidden_geo = args.hidden_geo
             self.permutation_ce = args.permutation_ce
-            self.level_of_detail_ce = args.level_of_detail_ce            
+            self.level_of_detail_ce = args.level_of_detail_ce
+            self.scale_enum = args.scale_enum
+            self.scale_float = args.scale_float
             self.console = args.console
 
         return export_jms.write_file(context, self.filepath, self.report, self.extension, self.extension_ce, self.extension_h2, self.jms_version, self.jms_version_ce, self.jms_version_h2, self.game_version, self.triangulate_faces, self.scale_enum, self.scale_float, self.console, self.permutation_ce, self.level_of_detail_ce, self.hidden_geo)
