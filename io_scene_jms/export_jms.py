@@ -1357,7 +1357,6 @@ def write_file(context, filepath, report, extension, extension_ce, extension_h2,
         )
 
         for convex_shape in convex_shape_list:
-            matrix = convex_shape.matrix_world
             name = convex_shape.name.split('$', 1)[1]
             modifier_list = []
             if triangulate_faces:
@@ -1400,7 +1399,7 @@ def write_file(context, filepath, report, extension, extension_ce, extension_h2,
             )
 
             for vertex in mesh_convex_shape.vertices:
-                pos  = matrix @ vertex.co
+                pos  = convex_matrix @ vertex.co
                 jms_vertex = JmsVertex()
                 jms_vertex.pos = pos
                 mesh_dimensions = get_dimensions(None, None, None, None, -1, scale, version, jms_vertex, True, False)
