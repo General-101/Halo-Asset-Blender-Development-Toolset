@@ -553,7 +553,6 @@ def write_file(context, filepath, report, extension, extension_ce, extension_h2,
                                 me = obj_for_convert.to_mesh(preserve_all_data_layers=True, depsgraph=depsgraph)
                                 geometry_list.append(me)
                                 original_geometry_list.append(obj)
-                                print("Hello")
 
                             else:
                                 geometry_list.append(obj.to_mesh(preserve_all_data_layers=True))
@@ -720,9 +719,9 @@ def write_file(context, filepath, report, extension, extension_ce, extension_h2,
     if error_pass(armature_count, report, game_version, node_count, version, extension, geometry_list, marker_list, root_node_count):
         return {'CANCELLED'}
 
-    extension_list = ['jms', 'jmp']
+    extension_list = ['.jms', '.jmp']
     true_extension = ''
-    extension_char = (len(extension)) - 1
+    extension_char = (len(extension))
     if not filepath[-(extension_char):].lower() in extension_list or not filepath[-(extension_char):].lower() in extension.lower():
         true_extension = extension
 
