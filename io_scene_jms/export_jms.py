@@ -49,7 +49,7 @@ def unhide_object(mesh):
 def get_child(bone, bone_list = [], *args):
     set_node = None
     for node in bone_list:
-        if bone == node.parent:
+        if bone == node.parent and not set_node:
             set_node = node
 
     return set_node
@@ -346,6 +346,98 @@ def set_ignore(mesh):
 
     return ignore
 
+def sort_by_layer(node_list, armature, armature_count, reversed_list):
+    layer_count = []
+    layer_root = []
+    root_list = []
+    children_list = []
+    reversed_children_list = []
+    joined_list = []
+    reversed_joined_list = []
+    sort_list = []
+    reversed_sort_list = []
+    sorted_list = []
+    for node in node_list:
+        if node.parent == None:
+            layer_count.append(None)
+            layer_root.append(node)
+
+        else:
+            if not node.parent in layer_count:
+                layer_count.append(node.parent)
+
+    for layer in layer_count:
+        joined_list = root_list + children_list
+        reversed_joined_list = root_list + reversed_children_list
+        layer_index = layer_count.index(layer)
+        if layer_index == 0:
+            if armature_count == 0:
+                root_list.append(layer_root[0])
+
+            else:
+                root_list.append(armature.data.bones[0])
+
+        else:
+            for node in node_list:
+                if armature_count == 0:
+                    if node.parent != None:
+                        if node.parent in joined_list and not node in children_list:
+                            sort_list.append(node.name)
+                            reversed_sort_list.append(node.name)
+
+                else:
+                    if node.parent != None:
+                        if armature.data.bones['%s' % node.parent.name] in joined_list and not node in children_list:
+                            sort_list.append(node.name)
+                            reversed_sort_list.append(node.name)
+
+            sort_list.sort()
+            reversed_sort_list.sort()
+            reversed_sort_list.reverse()
+            for sort in sort_list:
+                if armature_count == 0:
+                    if not bpy.data.objects[sort] in children_list:
+                        children_list.append(bpy.data.objects[sort])
+
+                else:
+                    if not armature.data.bones['%s' % sort] in children_list:
+                        children_list.append(armature.data.bones['%s' % sort])
+
+            for sort in reversed_sort_list:
+                if armature_count == 0:
+                    if not bpy.data.objects[sort] in reversed_children_list:
+                        reversed_children_list.append(bpy.data.objects[sort])
+
+                else:
+                    if not armature.data.bones['%s' % sort] in reversed_children_list:
+                        reversed_children_list.append(armature.data.bones['%s' % sort])
+
+        joined_list = root_list + children_list
+        reversed_joined_list = root_list + reversed_children_list
+
+    if reversed_list:
+        sorted_list = reversed_joined_list
+
+    else:
+        sorted_list = joined_list
+
+    return sorted_list
+
+def sort_list(node_list, armature, armature_count, reversed_list, game_version, jms_version):
+    jms_version = int(jms_version)
+    sorted_list = []
+    if game_version == 'haloce':
+        sorted_list = sort_by_layer(node_list, armature, armature_count, reversed_list)
+
+    elif game_version == 'halo2':
+        if jms_version <= 8204:
+            sorted_list = sorted_list = sort_by_layer(node_list, armature, armature_count, reversed_list)
+
+        else:
+            sorted_list = node_list
+
+    return sorted_list
+
 def error_pass(armature_count, report, game_version, node_count, version, extension, geometry_list, marker_list, root_node_count):
     result = False
     if armature_count >= 2:
@@ -384,15 +476,6 @@ def write_file(context, filepath, report, extension, extension_ce, extension_h2,
 
     object_properties = []
     node_list = []
-    layer_count = []
-    layer_root = []
-    root_list = []
-    children_list = []
-    reversed_children_list = []
-    joined_list = []
-    reversed_joined_list = []
-    sort_list = []
-    reversed_sort_list = []
     armature = []
     armature_count = 0
     mesh_frame_count = 0
@@ -646,63 +729,6 @@ def write_file(context, filepath, report, extension, extension_ce, extension_h2,
     point_to_point_count = len(point_to_point_list)
     prismatic_count = len(prismatic_list)
 
-    for node in node_list:
-        if node.parent == None:
-            layer_count.append(None)
-            layer_root.append(node)
-
-        else:
-            if not node.parent in layer_count:
-                layer_count.append(node.parent)
-
-    for layer in layer_count:
-        joined_list = root_list + children_list
-        reversed_joined_list = root_list + reversed_children_list
-        layer_index = layer_count.index(layer)
-        if layer_index == 0:
-            if armature_count == 0:
-                root_list.append(layer_root[0])
-
-            else:
-                root_list.append(armature.data.bones[0])
-
-        else:
-            for node in node_list:
-                if armature_count == 0:
-                    if node.parent != None:
-                        if node.parent in joined_list and not node in children_list:
-                            sort_list.append(node.name)
-                            reversed_sort_list.append(node.name)
-
-                else:
-                    if node.parent != None:
-                        if armature.data.bones['%s' % node.parent.name] in joined_list and not node in children_list:
-                            sort_list.append(node.name)
-                            reversed_sort_list.append(node.name)
-
-            sort_list.sort()
-            reversed_sort_list.sort()
-            reversed_sort_list.reverse()
-            for sort in sort_list:
-                if armature_count == 0:
-                    if not bpy.data.objects[sort] in children_list:
-                        children_list.append(bpy.data.objects[sort])
-
-                else:
-                    if not armature.data.bones['%s' % sort] in children_list:
-                        children_list.append(armature.data.bones['%s' % sort])
-
-            for sort in reversed_sort_list:
-                if armature_count == 0:
-                    if not bpy.data.objects[sort] in reversed_children_list:
-                        reversed_children_list.append(bpy.data.objects[sort])
-
-                else:
-                    if not armature.data.bones['%s' % sort] in reversed_children_list:
-                        reversed_children_list.append(armature.data.bones['%s' % sort])
-
-        joined_list = root_list + children_list
-        reversed_joined_list = root_list + reversed_children_list
 
     if version > 8209:
         decimal_1 = '\n%0.10f'
@@ -718,6 +744,9 @@ def write_file(context, filepath, report, extension, extension_ce, extension_h2,
 
     if error_pass(armature_count, report, game_version, node_count, version, extension, geometry_list, marker_list, root_node_count):
         return {'CANCELLED'}
+
+    joined_list = sort_list(node_list, armature, armature_count, False, game_version, jms_version)
+    reversed_joined_list = sort_list(node_list, armature, armature_count, True, game_version, jms_version)
 
     extension_list = ['.jms', '.jmp']
     true_extension = ''
