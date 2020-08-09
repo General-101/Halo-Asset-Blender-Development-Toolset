@@ -431,7 +431,7 @@ def sort_list(node_list, armature, armature_count, reversed_list, game_version, 
 
     elif game_version == 'halo2':
         if jms_version <= 8204:
-            sorted_list = sorted_list = sort_by_layer(node_list, armature, armature_count, reversed_list)
+            sorted_list = sort_by_layer(node_list, armature, armature_count, reversed_list)
 
         else:
             sorted_list = node_list
