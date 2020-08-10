@@ -26,6 +26,7 @@
 
 import os
 import bpy
+import bmesh
 import mathutils
 from numpy import array
 
@@ -109,7 +110,7 @@ def load_file(context, filepath, report):
         parent_list.append(parent_index)
         node_rotation = processed_file[node_index + 4].split()
         node_translation = processed_file[node_index + 5].split()
-        quat = mathutils.Quaternion((-float(node_rotation[3]), float(node_rotation[0]), float(node_rotation[1]), float(node_rotation[2])))
+        quat = mathutils.Quaternion((float(node_rotation[3]), float(node_rotation[0]), float(node_rotation[1]), float(node_rotation[2])))
         transform_matrix = quat.to_matrix().to_4x4()
         transform_matrix[0][3] = float(node_translation[0])
         transform_matrix[1][3] = float(node_translation[1])
@@ -137,17 +138,46 @@ def load_file(context, filepath, report):
     bpy.ops.pose.armature_apply(selected=False)
     bpy.ops.object.mode_set(mode = 'OBJECT')
 
-#    for vert in range(vert_count):
-#        starting_position = 2 + (node_count * 4) + 1 + (material_count * 2) + 1 + (marker_count * 5) + 1 + (instance_xref_path_count * 2) + 1 + (instance_markers_count * 5)
-#        vert_translation = processed_file[vertex_index + starting_position + 1]
-#        vert_normal = processed_file[vertex_index + starting_position + 2]
-#        vertex_group_count = processed_file[vertex_index + starting_position + 3]
-#        vert_translation_list = vert_translation.split()
-#        vert_normal_list = vert_normal.split()
-#        if not [vert_translation_list[0], vert_translation_list[1], vert_translation_list[2], vert_normal_list[0], vert_normal_list[1], vert_normal_list[2]] in translation_list:
-#            translation_list.append([vert_translation_list[0], vert_translation_list[1], vert_translation_list[2], vert_normal_list[0], vert_normal_list[1], vert_normal_list[2]])
+    verts = []
+    mesh = bpy.data.meshes.new("mesh")
+    obj = bpy.data.objects.new("MyObject", mesh)
 
-#        vertex_index += 5 + (int(vertex_group_count) * 2)
+    collection = bpy.context.collection
+    view_layer = bpy.context.view_layer
+    collection.objects.link(obj)
+    view_layer.objects.active = obj
+    obj.select_set(True)
+
+    mesh = bpy.context.object.data
+    bm = bmesh.new()
+
+    for vert in range(vert_count):
+        starting_position = 2 + (node_count * 4) + 1 + (material_count * 2) + 1 + (marker_count * 5) + 1 + (instance_xref_path_count * 2) + 1 + (instance_markers_count * 5)
+        vert_translation = processed_file[vertex_index + starting_position + 1]
+        vert_normal = processed_file[vertex_index + starting_position + 2]
+        vertex_group_count = processed_file[vertex_index + starting_position + 3]
+        print('vert index: ', vert)
+        print('starting line position: ', starting_position + 1)
+        print('line position translation: ', vertex_index + starting_position + 1 + 1)
+        print('translation: ', vert_translation)
+        print('line position normal: ', vertex_index + starting_position + 2 + 1)
+        print('normal: ', vert_normal)
+        print('line position group count: ', vertex_index + starting_position + 3 + 1)
+        print('group count: ', vertex_group_count)
+        print(' ')
+        vert_translation_list = vert_translation.split()
+        vert_normal_list = vert_normal.split()
+        verts.append([float(vert_translation_list[0]), float(vert_translation_list[1]), float(vert_translation_list[2])])
+        if not [vert_translation_list[0], vert_translation_list[1], vert_translation_list[2], vert_normal_list[0], vert_normal_list[1], vert_normal_list[2]] in translation_list:
+            translation_list.append([vert_translation_list[0], vert_translation_list[1], vert_translation_list[2], vert_normal_list[0], vert_normal_list[1], vert_normal_list[2]])
+
+        vertex_index += 4 + (int(vertex_group_count) * 2)
+
+    for v in verts:
+        bm.verts.new(v)
+
+    bm.to_mesh(mesh)
+    bm.free()
 
     return {'FINISHED'}
 

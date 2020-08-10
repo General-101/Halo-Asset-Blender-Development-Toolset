@@ -423,14 +423,14 @@ def sort_by_layer(node_list, armature, armature_count, reversed_list):
 
     return sorted_list
 
-def sort_list(node_list, armature, armature_count, reversed_list, game_version, jms_version):
-    jms_version = int(jms_version)
+def sort_list(node_list, armature, armature_count, reversed_list, game_version, version):
+    version = int(version)
     sorted_list = []
     if game_version == 'haloce':
         sorted_list = sort_by_layer(node_list, armature, armature_count, reversed_list)
 
     elif game_version == 'halo2':
-        if jms_version <= 8204:
+        if version <= 8204:
             sorted_list = sort_by_layer(node_list, armature, armature_count, reversed_list)
 
         else:
@@ -745,8 +745,8 @@ def write_file(context, filepath, report, extension, extension_ce, extension_h2,
     if error_pass(armature_count, report, game_version, node_count, version, extension, geometry_list, marker_list, root_node_count):
         return {'CANCELLED'}
 
-    joined_list = sort_list(node_list, armature, armature_count, False, game_version, jms_version)
-    reversed_joined_list = sort_list(node_list, armature, armature_count, True, game_version, jms_version)
+    joined_list = sort_list(node_list, armature, armature_count, False, game_version, version)
+    reversed_joined_list = sort_list(node_list, armature, armature_count, True, game_version, version)
 
     extension_list = ['.jms', '.jmp']
     true_extension = ''
