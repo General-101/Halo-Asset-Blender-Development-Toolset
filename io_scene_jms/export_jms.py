@@ -198,8 +198,6 @@ def get_dimensions(mesh_a_matrix, mesh_a, mesh_b_matrix, mesh_b, invert, scale, 
         if mesh_a:
             pos  = mesh_a_matrix.translation
             quat = mesh_a_matrix.to_quaternion().inverted()
-            if version >= 8205:
-                quat = mesh_a_matrix.to_quaternion()
 
             if not is_bone:
                 dimension = mesh_a.dimensions
@@ -227,8 +225,6 @@ def get_dimensions(mesh_a_matrix, mesh_a, mesh_b_matrix, mesh_b, invert, scale, 
         if mesh_b:
             pos  = mesh_b_matrix.translation
             quat = mesh_b_matrix.to_quaternion().inverted()
-            if version >= 8205:
-                quat = mesh_b_matrix.to_quaternion()
 
             if not is_bone:
                 dimension = mesh_b.dimensions
