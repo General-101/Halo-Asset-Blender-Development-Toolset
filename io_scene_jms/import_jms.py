@@ -86,8 +86,9 @@ def load_file(context, filepath, report):
     vertex_index = 0
     version = int(processed_file[0])
 
-    if not version == 8210:
-        report({'ERROR'}, 'Only works with JMS 8210')
+    version_list = [8209, 8210]
+    if not version in version_list:
+        report({'ERROR'}, 'Importer does not support this JMS version')
         return {'CANCELLED'}
 
     node_count = int(processed_file[1])
@@ -156,22 +157,29 @@ def load_file(context, filepath, report):
         vert_translation = processed_file[vertex_index + starting_position + 1]
         vert_normal = processed_file[vertex_index + starting_position + 2]
         vertex_group_count = processed_file[vertex_index + starting_position + 3]
-        print('vert index: ', vert)
-        print('starting line position: ', starting_position + 1)
-        print('line position translation: ', vertex_index + starting_position + 1 + 1)
-        print('translation: ', vert_translation)
-        print('line position normal: ', vertex_index + starting_position + 2 + 1)
-        print('normal: ', vert_normal)
-        print('line position group count: ', vertex_index + starting_position + 3 + 1)
-        print('group count: ', vertex_group_count)
-        print(' ')
+        vertex_uv_count = processed_file[vertex_index + starting_position + (int(vertex_group_count) * 2) + 4]
+#        print('vert index: ', vert)
+#        print('starting line position: ', starting_position + 1)
+#        print('line position translation: ', vertex_index + starting_position + 1 + 1)
+#        print('translation: ', vert_translation)
+#        print('line position normal: ', vertex_index + starting_position + 2 + 1)
+#        print('normal: ', vert_normal)
+#        print('line position group count: ', vertex_index + starting_position + 3 + 1)
+#        print('group count: ', vertex_group_count)
+#        print('line position uv count: ', vertex_index + starting_position + (int(vertex_group_count) * 2) + 4 + 1)
+#        print('uv count: ', vertex_uv_count)
+#        print(' ')
         vert_translation_list = vert_translation.split()
         vert_normal_list = vert_normal.split()
         verts.append([float(vert_translation_list[0]), float(vert_translation_list[1]), float(vert_translation_list[2])])
         if not [vert_translation_list[0], vert_translation_list[1], vert_translation_list[2], vert_normal_list[0], vert_normal_list[1], vert_normal_list[2]] in translation_list:
             translation_list.append([vert_translation_list[0], vert_translation_list[1], vert_translation_list[2], vert_normal_list[0], vert_normal_list[1], vert_normal_list[2]])
 
-        vertex_index += 4 + (int(vertex_group_count) * 2)
+        total_uv_lines = 0
+        for x in range(int(vertex_uv_count)):
+            total_uv_lines += 1
+
+        vertex_index += 4 + (int(vertex_group_count) * 2 + total_uv_lines)
 
     for v in verts:
         bm.verts.new(v)

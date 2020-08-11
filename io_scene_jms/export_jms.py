@@ -201,12 +201,14 @@ def get_dimensions(mesh_a_matrix, mesh_a, mesh_b_matrix, mesh_b, invert, scale, 
 
             if not is_bone:
                 dimension = mesh_a.dimensions
-                pill_height_math = (dimension[2] * scale) - (dimension[0] * scale)
-                if pill_height_math < 0:
-                    pill_height = 0
 
-                else:
-                    pill_height = pill_height_math
+                #The reason this code exists is to try to copy how capsules work in 3DS Max.
+                #To get original height for 3DS Max do (radius_jms * 2) + height_jms
+                #The maximum value of radius is height / 2
+                pill_radius = ((dimension[0] / 2) * scale)
+                pill_height = (dimension[2] * scale) - (pill_radius * 2)
+                if pill_height <= 0:
+                    pill_height = 0
 
             JmsDimensions.quat_i_a = Decimal(quat[1]).quantize(Decimal('1.0000000000'))
             JmsDimensions.quat_j_a = Decimal(quat[2]).quantize(Decimal('1.0000000000'))
@@ -219,7 +221,7 @@ def get_dimensions(mesh_a_matrix, mesh_a, mesh_b_matrix, mesh_b, invert, scale, 
                 JmsDimensions.dimension_x_a = Decimal(dimension[0] * scale).quantize(Decimal('1.0000000000'))
                 JmsDimensions.dimension_y_a = Decimal(dimension[1] * scale).quantize(Decimal('1.0000000000'))
                 JmsDimensions.dimension_z_a = Decimal(dimension[2] * scale).quantize(Decimal('1.0000000000'))
-                JmsDimensions.radius_a = Decimal((dimension[0] * scale) / 2).quantize(Decimal('1.0000000000'))
+                JmsDimensions.radius_a = Decimal(pill_radius).quantize(Decimal('1.0000000000'))
                 JmsDimensions.pill_z_a = Decimal(pill_height).quantize(Decimal('1.0000000000'))
 
         if mesh_b:
@@ -228,12 +230,14 @@ def get_dimensions(mesh_a_matrix, mesh_a, mesh_b_matrix, mesh_b, invert, scale, 
 
             if not is_bone:
                 dimension = mesh_b.dimensions
-                pill_height_math = (dimension[2] * scale) - (dimension[0] * scale)
-                if pill_height_math < 0:
-                    pill_height = 0
 
-                else:
-                    pill_height = pill_height_math
+                #The reason this code exists is to try to copy how capsules work in 3DS Max.
+                #To get original height for 3DS Max do (radius_jms * 2) + height_jms
+                #The maximum value of radius is height / 2
+                pill_radius = ((dimension[0] / 2) * scale)
+                pill_height = (dimension[2] * scale) - (pill_radius * 2)
+                if pill_height <= 0:
+                    pill_height = 0
 
             JmsDimensions.quat_i_b = Decimal(quat[1]).quantize(Decimal('1.0000000000'))
             JmsDimensions.quat_j_b = Decimal(quat[2]).quantize(Decimal('1.0000000000'))
@@ -246,7 +250,7 @@ def get_dimensions(mesh_a_matrix, mesh_a, mesh_b_matrix, mesh_b, invert, scale, 
                 JmsDimensions.dimension_x_b = Decimal(dimension[0] * scale).quantize(Decimal('1.0000000000'))
                 JmsDimensions.dimension_y_b = Decimal(dimension[1] * scale).quantize(Decimal('1.0000000000'))
                 JmsDimensions.dimension_z_b = Decimal(dimension[2] * scale).quantize(Decimal('1.0000000000'))
-                JmsDimensions.radius_b = Decimal((dimension[0] * scale) / 2).quantize(Decimal('1.0000000000'))
+                JmsDimensions.radius_b = Decimal(pill_radius).quantize(Decimal('1.0000000000'))
                 JmsDimensions.pill_z_b = Decimal(pill_height).quantize(Decimal('1.0000000000'))
 
     return object_dimensions
@@ -317,6 +321,22 @@ def get_extension(extension_console, extension_ce, extension_h2, game_version, c
             extension = extension_h2
 
     return extension
+
+def get_matrix(obj, is_local, armature):
+    object_matrix = None
+    if armature:
+        object_matrix = obj.matrix_world
+        if obj.parent_bone and is_local:
+            parent_object = armature.data.bones[obj.parent_bone]
+            object_matrix = parent_object.matrix_local.inverted() @ obj.matrix_world
+
+    else:
+        object_matrix = obj.matrix_world
+        if obj.parent and is_local:
+            parent_object = bpy.data.objects[obj.parent.name]
+            object_matrix = parent_object.matrix_local.inverted() @ obj.matrix_world
+
+    return object_matrix
 
 def set_scale(scale_enum, scale_float):
     scale = 1
@@ -955,9 +975,7 @@ def write_file(context, filepath, report, extension, extension_ce, extension_h2,
 
         parent_index = get_parent(armature_count, armature, marker, joined_list, node_list, 0)
 
-        marker_matrix = marker.matrix_world
-        if marker.parent:
-            marker_matrix = marker.parent.matrix_local.inverted() @ marker.matrix_world
+        marker_matrix = get_matrix(marker, True, armature)
 
         mesh_dimensions = get_dimensions(marker_matrix, marker, None, None, -1, scale, version, None, False, False)
 
@@ -1270,9 +1288,7 @@ def write_file(context, filepath, report, extension, extension_ce, extension_h2,
 
             parent_index = get_parent(armature_count, armature, spheres, joined_list, node_list, -1)
 
-            sphere_matrix = spheres.matrix_world
-            if spheres.parent:
-                sphere_matrix = spheres.parent.matrix_local.inverted() @ spheres.matrix_world
+            sphere_matrix = get_matrix(spheres, True, armature)
 
             mesh_dimensions = get_dimensions(sphere_matrix, spheres, None, None, -1, scale, version, None, False, False)
 
@@ -1309,9 +1325,7 @@ def write_file(context, filepath, report, extension, extension_ce, extension_h2,
 
             parent_index = get_parent(armature_count, armature, boxes, joined_list, node_list, -1)
 
-            box_matrix = boxes.matrix_world
-            if boxes.parent:
-                box_matrix = boxes.parent.matrix_local.inverted() @ boxes.matrix_world
+            box_matrix = get_matrix(boxes, True, armature)
 
             mesh_dimensions = get_dimensions(box_matrix, boxes, None, None, -1, scale, version, None, False, False)
 
@@ -1349,9 +1363,7 @@ def write_file(context, filepath, report, extension, extension_ce, extension_h2,
 
             parent_index = get_parent(armature_count, armature, capsule, joined_list, node_list, -1)
 
-            capsule_matrix = capsule.matrix_world
-            if capsule.parent:
-                capsule_matrix = capsule.parent.matrix_local.inverted() @ capsule.matrix_world
+            capsule_matrix = get_matrix(capsule, True, armature)
 
             mesh_dimensions = get_dimensions(capsule_matrix, capsule, None, None, -1, scale, version, None, False, False)
 
@@ -1406,9 +1418,7 @@ def write_file(context, filepath, report, extension, extension_ce, extension_h2,
 
             parent_index = get_parent(armature_count, armature, convex_shape, joined_list, node_list, -1)
 
-            convex_matrix = convex_shape.matrix_world
-            if convex_shape.parent:
-                convex_matrix = convex_shape.parent.matrix_local.inverted() @ convex_shape.matrix_world
+            convex_matrix = get_matrix(convex_shape, True, armature)
 
             mesh_dimensions = get_dimensions(convex_matrix, convex_shape, None, None, -1, scale, version, None, False, False)
 
@@ -1458,19 +1468,12 @@ def write_file(context, filepath, report, extension, extension_ce, extension_h2,
             body_a_index = get_parent(armature_count, armature, body_a_obj, joined_list, node_list, -1)
             body_b_index = get_parent(armature_count, armature, body_b_obj, joined_list, node_list, -1)
 
-            body_a_matrix = body_a_obj.matrix_world
-            if body_a_obj:
-                if body_a_obj.parent:
-                    body_a_matrix = body_a_obj.parent.matrix_local.inverted() @ body_a_obj.matrix_world
-
-            body_b_matrix = body_b_obj.matrix_world
-            if body_b_obj:
-                if body_b_obj.parent:
-                    body_b_matrix = body_b_obj.parent.matrix_local.inverted() @ body_b_obj.matrix_world
+            body_a_matrix = get_matrix(body_a_obj, True, armature)
+            body_b_matrix = get_matrix(body_b_obj, True, armature)
 
             min_angle_x = 0
             max_angle_x = 0
-            max_angle_y = 0
+            min_angle_y = 0
             max_angle_y = 0
             min_angle_z = 0
             max_angle_z = 0
@@ -1531,15 +1534,8 @@ def write_file(context, filepath, report, extension, extension_ce, extension_h2,
             body_a_index = get_parent(armature_count, armature, body_a_obj, joined_list, node_list, -1)
             body_b_index = get_parent(armature_count, armature, body_b_obj, joined_list, node_list, -1)
 
-            body_a_matrix = hinge.matrix_world
-            if body_a_obj:
-                if body_a_obj.parent:
-                    body_a_matrix = body_a_obj.parent.matrix_local.inverted() @ hinge.matrix_world
-
-            body_b_matrix = hinge.matrix_world
-            if body_b_obj:
-                if body_b_obj.parent:
-                    body_b_matrix = body_b_obj.parent.matrix_local.inverted() @ hinge.matrix_world
+            body_a_matrix = get_matrix(body_a_obj, True, armature)
+            body_b_matrix = get_matrix(body_b_obj, True, armature)
 
             friction_limit = 0
 
@@ -1617,15 +1613,8 @@ def write_file(context, filepath, report, extension, extension_ce, extension_h2,
                 body_a_index = get_parent(armature_count, armature, body_a_obj, joined_list, node_list, -1)
                 body_b_index = get_parent(armature_count, armature, body_b_obj, joined_list, node_list, -1)
 
-                body_a_matrix = point_to_point.matrix_world
-                if body_a_obj:
-                    if body_a_obj.parent:
-                        body_a_matrix = body_a_obj.parent.matrix_local.inverted() @ point_to_point.matrix_world
-
-                body_b_matrix = point_to_point.matrix_world
-                if body_b_obj:
-                    if body_b_obj.parent:
-                        body_b_matrix = body_b_obj.parent.matrix_local.inverted() @ point_to_point.matrix_world
+                body_a_matrix = get_matrix(body_a_obj, True, armature)
+                body_b_matrix = get_matrix(body_b_obj, True, armature)
 
                 is_limited_x = int(point_to_point.rigid_body_constraint.use_limit_ang_x)
                 is_limited_y = int(point_to_point.rigid_body_constraint.use_limit_ang_y)
