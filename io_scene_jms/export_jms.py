@@ -322,19 +322,19 @@ def get_extension(extension_console, extension_ce, extension_h2, game_version, c
 
     return extension
 
-def get_matrix(obj, is_local, armature):
+def get_matrix(obj_a, obj_b, is_local, armature):
     object_matrix = None
     if armature:
-        object_matrix = obj.matrix_world
-        if obj.parent_bone and is_local:
-            parent_object = armature.data.bones[obj.parent_bone]
-            object_matrix = parent_object.matrix_local.inverted() @ obj.matrix_world
+        object_matrix = obj_a.matrix_world
+        if obj_b.parent_bone and is_local:
+            parent_object = armature.data.bones[obj_b.parent_bone]
+            object_matrix = parent_object.matrix_local.inverted() @ obj_a.matrix_world
 
     else:
-        object_matrix = obj.matrix_world
-        if obj.parent and is_local:
-            parent_object = bpy.data.objects[obj.parent.name]
-            object_matrix = parent_object.matrix_local.inverted() @ obj.matrix_world
+        object_matrix = obj_a.matrix_world
+        if obj_b.parent and is_local:
+            parent_object = bpy.data.objects[obj_b.parent.name]
+            object_matrix = parent_object.matrix_local.inverted() @ obj_a.matrix_world
 
     return object_matrix
 
@@ -975,7 +975,7 @@ def write_file(context, filepath, report, extension, extension_ce, extension_h2,
 
         parent_index = get_parent(armature_count, armature, marker, joined_list, node_list, 0)
 
-        marker_matrix = get_matrix(marker, True, armature)
+        marker_matrix = get_matrix(marker, marker, True, armature)
 
         mesh_dimensions = get_dimensions(marker_matrix, marker, None, None, -1, scale, version, None, False, False)
 
@@ -1113,7 +1113,7 @@ def write_file(context, filepath, report, extension, extension_ce, extension_h2,
                                     object_vert_group_list.append(vert_group)
 
                         else:
-                            if armature.data.bones[object_vertex_group] in node_list:
+                            if object_vertex_group in armature.data.bones:
                                 vertex_vert_group_list.append(group_index)
                                 if armature.data.bones[object_vertex_group] in joined_list:
                                     object_vert_group_list.append(vert_group)
@@ -1288,7 +1288,7 @@ def write_file(context, filepath, report, extension, extension_ce, extension_h2,
 
             parent_index = get_parent(armature_count, armature, spheres, joined_list, node_list, -1)
 
-            sphere_matrix = get_matrix(spheres, True, armature)
+            sphere_matrix = get_matrix(spheres, spheres, True, armature)
 
             mesh_dimensions = get_dimensions(sphere_matrix, spheres, None, None, -1, scale, version, None, False, False)
 
@@ -1325,7 +1325,7 @@ def write_file(context, filepath, report, extension, extension_ce, extension_h2,
 
             parent_index = get_parent(armature_count, armature, boxes, joined_list, node_list, -1)
 
-            box_matrix = get_matrix(boxes, True, armature)
+            box_matrix = get_matrix(boxes, boxes, True, armature)
 
             mesh_dimensions = get_dimensions(box_matrix, boxes, None, None, -1, scale, version, None, False, False)
 
@@ -1363,7 +1363,7 @@ def write_file(context, filepath, report, extension, extension_ce, extension_h2,
 
             parent_index = get_parent(armature_count, armature, capsule, joined_list, node_list, -1)
 
-            capsule_matrix = get_matrix(capsule, True, armature)
+            capsule_matrix = get_matrix(capsule, capsule, True, armature)
 
             mesh_dimensions = get_dimensions(capsule_matrix, capsule, None, None, -1, scale, version, None, False, False)
 
@@ -1418,7 +1418,7 @@ def write_file(context, filepath, report, extension, extension_ce, extension_h2,
 
             parent_index = get_parent(armature_count, armature, convex_shape, joined_list, node_list, -1)
 
-            convex_matrix = get_matrix(convex_shape, True, armature)
+            convex_matrix = get_matrix(convex_shape, convex_shape, True, armature)
 
             mesh_dimensions = get_dimensions(convex_matrix, convex_shape, None, None, -1, scale, version, None, False, False)
 
@@ -1467,9 +1467,8 @@ def write_file(context, filepath, report, extension, extension_ce, extension_h2,
             body_b_obj = ragdoll.rigid_body_constraint.object2
             body_a_index = get_parent(armature_count, armature, body_a_obj, joined_list, node_list, -1)
             body_b_index = get_parent(armature_count, armature, body_b_obj, joined_list, node_list, -1)
-
-            body_a_matrix = get_matrix(body_a_obj, True, armature)
-            body_b_matrix = get_matrix(body_b_obj, True, armature)
+            body_a_matrix = get_matrix(ragdoll, body_a_obj, True, armature)
+            body_b_matrix = get_matrix(ragdoll, body_b_obj, True, armature)
 
             min_angle_x = 0
             max_angle_x = 0
@@ -1534,8 +1533,8 @@ def write_file(context, filepath, report, extension, extension_ce, extension_h2,
             body_a_index = get_parent(armature_count, armature, body_a_obj, joined_list, node_list, -1)
             body_b_index = get_parent(armature_count, armature, body_b_obj, joined_list, node_list, -1)
 
-            body_a_matrix = get_matrix(body_a_obj, True, armature)
-            body_b_matrix = get_matrix(body_b_obj, True, armature)
+            body_a_matrix = get_matrix(hinge, body_a_obj, True, armature)
+            body_b_matrix = get_matrix(hinge, body_b_obj, True, armature)
 
             friction_limit = 0
 
@@ -1613,8 +1612,8 @@ def write_file(context, filepath, report, extension, extension_ce, extension_h2,
                 body_a_index = get_parent(armature_count, armature, body_a_obj, joined_list, node_list, -1)
                 body_b_index = get_parent(armature_count, armature, body_b_obj, joined_list, node_list, -1)
 
-                body_a_matrix = get_matrix(body_a_obj, True, armature)
-                body_b_matrix = get_matrix(body_b_obj, True, armature)
+                body_a_matrix = get_matrix(body_a_obj, point_to_point, True, armature)
+                body_b_matrix = get_matrix(body_b_obj, point_to_point, True, armature)
 
                 is_limited_x = int(point_to_point.rigid_body_constraint.use_limit_ang_x)
                 is_limited_y = int(point_to_point.rigid_body_constraint.use_limit_ang_y)
