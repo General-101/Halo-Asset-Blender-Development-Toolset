@@ -771,8 +771,8 @@ def write_file(context, filepath, report, extension, extension_ce, extension_h2,
         true_extension = extension
 
     ce_settings = ''
-    directory = filepath.rsplit('\\', 1)[0]
-    filename = filepath.rsplit('\\', 1)[1]
+    directory = filepath.rsplit(os.sep, 1)[0]
+    filename = filepath.rsplit(os.sep, 1)[1]
 
     if game_version == 'haloce':
         if not permutation_ce == '':
@@ -790,7 +790,7 @@ def write_file(context, filepath, report, extension, extension_ce, extension_h2,
         if not permutation_ce == '' or not level_of_detail_ce == None:
             filename = ''
 
-    file = open(directory + "\\" + ce_settings + filename + true_extension, 'w', encoding='%s' % get_encoding(game_version))
+    file = open(directory + os.sep + ce_settings + filename + true_extension, 'w', encoding='%s' % get_encoding(game_version))
 
     #write header
     if version >= 8205:
