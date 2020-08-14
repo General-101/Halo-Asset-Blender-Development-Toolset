@@ -269,30 +269,39 @@ def get_hierarchy(mesh):
 
     return hierarchy_list
 
-def get_parent(armature_count, armature, mesh, joined_list, node_list, default_parent):
+def get_parent(armature, mesh, joined_list, default_parent, get_index):
+    parent_object = None
     parent_index = default_parent
-    if armature_count == 0:
+    parent = None
+    if armature:
+        if mesh:
+            if mesh.parent_bone:
+                parent_object = armature.data.bones[mesh.parent_bone]
+                parent_index = joined_list.index(parent_object)
+
+    else:
         if mesh:
             if mesh.parent:
-                if mesh.parent.hide_viewport == False and mesh.hide_get() == False and mesh.parent in node_list:
-                    parent_bone_a = bpy.data.objects[mesh.parent.name]
-                    parent_index = joined_list.index(parent_bone_a)
+                if mesh.parent.hide_viewport == False and mesh.hide_get() == False and mesh.parent in joined_list:
+                    parent_object = bpy.data.objects[mesh.parent.name]
+                    parent_index = joined_list.index(parent_object)
 
                 else:
                     done = False
                     mesh_hierarchy = get_hierarchy(mesh)
                     for item in mesh_hierarchy:
-                        if item.hide_viewport == False and mesh_hierarchy.index(item) >= 1 and item in node_list and done == False:
+                        if item.hide_viewport == False and mesh_hierarchy.index(item) >= 1 and item in joined_list and done == False:
                             done = True
-                            parent_bone_a = bpy.data.objects[item.name]
-                            parent_index = joined_list.index(parent_bone_a)
-    else:
-        if mesh:
-            if mesh.parent_bone:
-                parent_bone_a = armature.data.bones[mesh.parent_bone]
-                parent_index = joined_list.index(parent_bone_a)
+                            parent_object = bpy.data.objects[item.name]
+                            parent_index = joined_list.index(parent_object)
 
-    return parent_index
+    if get_index:
+        parent = parent_index
+
+    else:
+        parent = parent_object
+
+    return parent
 
 def get_version(jms_version_console, jms_version_ce, jms_version_h2, game_version, console):
     version = None
@@ -322,18 +331,18 @@ def get_extension(extension_console, extension_ce, extension_h2, game_version, c
 
     return extension
 
-def get_matrix(obj_a, obj_b, is_local, armature):
+def get_matrix(obj_a, obj_b, is_local, armature, joined_list):
     object_matrix = None
     if armature:
         object_matrix = obj_a.matrix_world
         if obj_b.parent_bone and is_local:
-            parent_object = armature.data.bones[obj_b.parent_bone]
+            parent_object = get_parent(armature, obj_b, joined_list, -1, False)
             object_matrix = parent_object.matrix_local.inverted() @ obj_a.matrix_world
 
     else:
         object_matrix = obj_a.matrix_world
         if obj_b.parent and is_local:
-            parent_object = bpy.data.objects[obj_b.parent.name]
+            parent_object = get_parent(armature, obj_b, joined_list, -1, False)
             object_matrix = parent_object.matrix_local.inverted() @ obj_a.matrix_world
 
     return object_matrix
@@ -362,7 +371,7 @@ def set_ignore(mesh):
 
     return ignore
 
-def sort_by_layer(node_list, armature, armature_count, reversed_list):
+def sort_by_layer(node_list, armature, reversed_list):
     layer_count = []
     layer_root = []
     root_list = []
@@ -387,7 +396,7 @@ def sort_by_layer(node_list, armature, armature_count, reversed_list):
         reversed_joined_list = root_list + reversed_children_list
         layer_index = layer_count.index(layer)
         if layer_index == 0:
-            if armature_count == 0:
+            if armature:
                 root_list.append(layer_root[0])
 
             else:
@@ -395,15 +404,15 @@ def sort_by_layer(node_list, armature, armature_count, reversed_list):
 
         else:
             for node in node_list:
-                if armature_count == 0:
+                if armature:
                     if node.parent != None:
-                        if node.parent in joined_list and not node in children_list:
+                        if armature.data.bones['%s' % node.parent.name] in joined_list and not node in children_list:
                             sort_list.append(node.name)
                             reversed_sort_list.append(node.name)
 
                 else:
                     if node.parent != None:
-                        if armature.data.bones['%s' % node.parent.name] in joined_list and not node in children_list:
+                        if node.parent in joined_list and not node in children_list:
                             sort_list.append(node.name)
                             reversed_sort_list.append(node.name)
 
@@ -411,22 +420,22 @@ def sort_by_layer(node_list, armature, armature_count, reversed_list):
             reversed_sort_list.sort()
             reversed_sort_list.reverse()
             for sort in sort_list:
-                if armature_count == 0:
-                    if not bpy.data.objects[sort] in children_list:
-                        children_list.append(bpy.data.objects[sort])
-
-                else:
+                if armature:
                     if not armature.data.bones['%s' % sort] in children_list:
                         children_list.append(armature.data.bones['%s' % sort])
 
-            for sort in reversed_sort_list:
-                if armature_count == 0:
-                    if not bpy.data.objects[sort] in reversed_children_list:
-                        reversed_children_list.append(bpy.data.objects[sort])
-
                 else:
+                    if not bpy.data.objects[sort] in children_list:
+                        children_list.append(bpy.data.objects[sort])
+
+            for sort in reversed_sort_list:
+                if armature:
                     if not armature.data.bones['%s' % sort] in reversed_children_list:
                         reversed_children_list.append(armature.data.bones['%s' % sort])
+
+                else:
+                    if not bpy.data.objects[sort] in reversed_children_list:
+                        reversed_children_list.append(bpy.data.objects[sort])
 
         joined_list = root_list + children_list
         reversed_joined_list = root_list + reversed_children_list
@@ -439,15 +448,15 @@ def sort_by_layer(node_list, armature, armature_count, reversed_list):
 
     return sorted_list
 
-def sort_list(node_list, armature, armature_count, reversed_list, game_version, version):
+def sort_list(node_list, armature, reversed_list, game_version, version):
     version = int(version)
     sorted_list = []
     if game_version == 'haloce':
-        sorted_list = sort_by_layer(node_list, armature, armature_count, reversed_list)
+        sorted_list = sort_by_layer(node_list, armature, reversed_list)
 
     elif game_version == 'halo2':
         if version <= 8204:
-            sorted_list = sort_by_layer(node_list, armature, armature_count, reversed_list)
+            sorted_list = sort_by_layer(node_list, armature, reversed_list)
 
         else:
             sorted_list = node_list
@@ -492,7 +501,7 @@ def write_file(context, filepath, report, extension, extension_ce, extension_h2,
 
     object_properties = []
     node_list = []
-    armature = []
+    armature = None
     armature_count = 0
     mesh_frame_count = 0
     root_node_count = 0
@@ -745,7 +754,6 @@ def write_file(context, filepath, report, extension, extension_ce, extension_h2,
     point_to_point_count = len(point_to_point_list)
     prismatic_count = len(prismatic_list)
 
-
     if version > 8209:
         decimal_1 = '\n%0.10f'
         decimal_2 = '\n%0.10f\t%0.10f'
@@ -761,8 +769,8 @@ def write_file(context, filepath, report, extension, extension_ce, extension_h2,
     if error_pass(armature_count, report, game_version, node_count, version, extension, geometry_list, marker_list, root_node_count):
         return {'CANCELLED'}
 
-    joined_list = sort_list(node_list, armature, armature_count, False, game_version, version)
-    reversed_joined_list = sort_list(node_list, armature, armature_count, True, game_version, version)
+    joined_list = sort_list(node_list, armature, False, game_version, version)
+    reversed_joined_list = sort_list(node_list, armature, True, game_version, version)
 
     extension_list = ['.jms', '.jmp']
     true_extension = ''
@@ -833,15 +841,7 @@ def write_file(context, filepath, report, extension, extension_ce, extension_h2,
         if not node.parent == None:
             parent_node = joined_list.index(node.parent)
 
-        if armature_count == 0:
-            bone_matrix = node.matrix_world
-
-            if node.parent and not version >= 8205:
-                bone_matrix = node.parent.matrix_local @ node.matrix_world
-
-            mesh_dimensions = get_dimensions(bone_matrix, node, None, None, -1, scale, version, None, False, False)
-
-        else:
+        if armature:
             pose_bone = armature.pose.bones['%s' % (node.name)]
 
             bone_matrix = pose_bone.matrix
@@ -849,6 +849,14 @@ def write_file(context, filepath, report, extension, extension_ce, extension_h2,
                 bone_matrix = pose_bone.parent.matrix.inverted() @ pose_bone.matrix
 
             mesh_dimensions = get_dimensions(bone_matrix, node, None, None, -1, scale, version, None, False, True)
+
+        else:
+            bone_matrix = node.matrix_world
+
+            if node.parent and not version >= 8205:
+                bone_matrix = node.parent.matrix_local @ node.matrix_world
+
+            mesh_dimensions = get_dimensions(bone_matrix, node, None, None, -1, scale, version, None, False, False)
 
         if version >= 8205:
             file.write(
@@ -884,17 +892,37 @@ def write_file(context, filepath, report, extension, extension_ce, extension_h2,
         )
 
     for material in material_list:
-        if game_version == 'halo2':
+        if game_version == 'haloce':
+            material_name = '<none>'
+            texture_path = '<none>'
+            if not material == None:
+                material_name = material.name
+                if not material.node_tree == None:
+                    for node in material.node_tree.nodes:
+                        if node.type == 'TEX_IMAGE':
+                            if not node.image == None:
+                                image_filepath = io_utils.path_reference(node.image.filepath, directory, directory, mode='AUTO', copy_subdir='', copy_set=None, library=None)
+                                image_extension = image_filepath.rsplit('.', 1)[1]
+                                image_path = image_filepath.rsplit('.', 1)[0]
+                                if image_extension.lower() == 'tif' and os.path.exists(image_filepath):
+                                    texture_path = image_path
+
+            file.write(
+                '\n%s' % (material_name) +
+                '\n%s' % (texture_path)
+            )
+
+        elif game_version == 'halo2':
             untouched_lod = material[1]
             untouched_region = material[2]
             untouched_permutation = material[3]
             LOD = get_lod(material[1], game_version)
             Permutation = default_permutation
             Region = default_region
-            '''
-            This doesn't matter for CE but for Halo 2 the region or permutation names can't have any whitespace.
-            Lets fix that here to make sure nothing goes wrong.
-            '''
+
+            #This doesn't matter for CE but for Halo 2 the region or permutation names can't have any whitespace.
+            #Lets fix that here to make sure nothing goes wrong.
+
             if len(material[3]) != 0:
                 safe_permutation = material[3].replace(' ', '_').replace('\t', '_')
                 Permutation = safe_permutation
@@ -924,26 +952,6 @@ def write_file(context, filepath, report, extension, extension_ce, extension_h2,
                     '\n%s' % (material_definition)
                 )
 
-        elif game_version == 'haloce':
-            material_name = '<none>'
-            texture_path = '<none>'
-            if not material == None:
-                material_name = material.name
-                if not material.node_tree == None:
-                    for node in material.node_tree.nodes:
-                        if node.type == 'TEX_IMAGE':
-                            if not node.image == None:
-                                image_filepath = io_utils.path_reference(node.image.filepath, directory, directory, mode='AUTO', copy_subdir='', copy_set=None, library=None)
-                                image_extension = image_filepath.rsplit('.', 1)[1]
-                                image_path = image_filepath.rsplit('.', 1)[0]
-                                if image_extension.lower() == 'tif' and os.path.exists(image_filepath):
-                                    texture_path = image_path
-
-            file.write(
-                '\n%s' % (material_name) +
-                '\n%s' % (texture_path)
-            )
-
         else:
             report({'ERROR'}, "How did you even choose an option that doesn't exist?")
             file.close()
@@ -972,11 +980,8 @@ def write_file(context, filepath, report, extension, extension_ce, extension_h2,
         region = -1
         if len(marker.jms.Region) != 0:
             region = region_list.index(marker.jms.Region)
-
-        parent_index = get_parent(armature_count, armature, marker, joined_list, node_list, 0)
-
-        marker_matrix = get_matrix(marker, marker, True, armature)
-
+        parent_index = get_parent(armature, marker, joined_list, 0, True)
+        marker_matrix = get_matrix(marker, marker, True, armature, joined_list)
         mesh_dimensions = get_dimensions(marker_matrix, marker, None, None, -1, scale, version, None, False, False)
 
         if version >= 8205:
@@ -1106,7 +1111,7 @@ def write_file(context, filepath, report, extension, extension_ce, extension_h2,
                     for group_index in range(len(vert.groups)):
                         vert_group = vert.groups[group_index].group
                         object_vertex_group = vertex_groups[vert_group]
-                        if armature_count == 0:
+                        if armature:
                             if object_vertex_group in bpy.data.objects:
                                 vertex_vert_group_list.append(group_index)
                                 if bpy.data.objects[object_vertex_group] in joined_list:
@@ -1130,7 +1135,7 @@ def write_file(context, filepath, report, extension, extension_ce, extension_h2,
                             vert_index = int(vertex_vert_group_list[item_index])
                             vert_group = vert.groups[vert_index].group
                             object_vertex_group = vertex_groups[vert_group]
-                            if armature_count == 0:
+                            if armature:
                                 node_obj = bpy.data.objects[object_vertex_group]
 
                             else:
@@ -1153,14 +1158,14 @@ def write_file(context, filepath, report, extension, extension_ce, extension_h2,
                                 jms_vertex.node3_weight = '%0.10f' % vert.groups[vert_index].weight
 
                     else:
-                        parent_index = get_parent(armature_count, armature, original_geo, joined_list, node_list, 0)
+                        parent_index = get_parent(armature, original_geo, joined_list, 0, True)
 
                         jms_vertex.node_influence_count = '1'
                         jms_vertex.node0 = parent_index
                         jms_vertex.node0_weight = '1.0000000000'
 
                 else:
-                    parent_index = get_parent(armature_count, armature, original_geo, joined_list, node_list, 0)
+                    parent_index = get_parent(armature, original_geo, joined_list, 0, True)
 
                     jms_vertex.node_influence_count = '1'
                     jms_vertex.node0 = parent_index
@@ -1286,9 +1291,9 @@ def write_file(context, filepath, report, extension, extension_ce, extension_h2,
             face = mesh_sphere.polygons[0]
             sphere_material_index = get_material(game_version, spheres, face, mesh_sphere, material_list)
 
-            parent_index = get_parent(armature_count, armature, spheres, joined_list, node_list, -1)
+            parent_index = get_parent(armature, spheres, joined_list, -1, True)
 
-            sphere_matrix = get_matrix(spheres, spheres, True, armature)
+            sphere_matrix = get_matrix(spheres, spheres, True, armature, joined_list)
 
             mesh_dimensions = get_dimensions(sphere_matrix, spheres, None, None, -1, scale, version, None, False, False)
 
@@ -1323,9 +1328,9 @@ def write_file(context, filepath, report, extension, extension_ce, extension_h2,
             face = mesh_boxes.polygons[0]
             boxes_material_index = get_material(game_version, boxes, face, mesh_boxes, material_list)
 
-            parent_index = get_parent(armature_count, armature, boxes, joined_list, node_list, -1)
+            parent_index = get_parent(armature, boxes, joined_list, -1, True)
 
-            box_matrix = get_matrix(boxes, boxes, True, armature)
+            box_matrix = get_matrix(boxes, boxes, True, armature, joined_list)
 
             mesh_dimensions = get_dimensions(box_matrix, boxes, None, None, -1, scale, version, None, False, False)
 
@@ -1361,9 +1366,9 @@ def write_file(context, filepath, report, extension, extension_ce, extension_h2,
             face = mesh_capsule.polygons[0]
             capsule_material_index = get_material(game_version, capsule, face, mesh_capsule, material_list)
 
-            parent_index = get_parent(armature_count, armature, capsule, joined_list, node_list, -1)
+            parent_index = get_parent(armature, capsule, joined_list, -1, True)
 
-            capsule_matrix = get_matrix(capsule, capsule, True, armature)
+            capsule_matrix = get_matrix(capsule, capsule, True, armature, joined_list)
 
             mesh_dimensions = get_dimensions(capsule_matrix, capsule, None, None, -1, scale, version, None, False, False)
 
@@ -1416,9 +1421,9 @@ def write_file(context, filepath, report, extension, extension_ce, extension_h2,
             face = mesh_convex_shape.polygons[0]
             convex_shape_material_index = get_material(game_version, convex_shape, face, mesh_convex_shape, material_list)
 
-            parent_index = get_parent(armature_count, armature, convex_shape, joined_list, node_list, -1)
+            parent_index = get_parent(armature, convex_shape, joined_list, -1, True)
 
-            convex_matrix = get_matrix(convex_shape, convex_shape, True, armature)
+            convex_matrix = get_matrix(convex_shape, convex_shape, True, armature, joined_list)
 
             mesh_dimensions = get_dimensions(convex_matrix, convex_shape, None, None, -1, scale, version, None, False, False)
 
@@ -1465,10 +1470,10 @@ def write_file(context, filepath, report, extension, extension_ce, extension_h2,
             name = ragdoll.name.split('$', 1)[1]
             body_a_obj = ragdoll.rigid_body_constraint.object1
             body_b_obj = ragdoll.rigid_body_constraint.object2
-            body_a_index = get_parent(armature_count, armature, body_a_obj, joined_list, node_list, -1)
-            body_b_index = get_parent(armature_count, armature, body_b_obj, joined_list, node_list, -1)
-            body_a_matrix = get_matrix(ragdoll, body_a_obj, True, armature)
-            body_b_matrix = get_matrix(ragdoll, body_b_obj, True, armature)
+            body_a_index = get_parent(armature, body_a_obj, joined_list, -1, True)
+            body_b_index = get_parent(armature, body_b_obj, joined_list, -1, True)
+            body_a_matrix = get_matrix(ragdoll, body_a_obj, True, armature, joined_list)
+            body_b_matrix = get_matrix(ragdoll, body_b_obj, True, armature, joined_list)
 
             min_angle_x = 0
             max_angle_x = 0
@@ -1530,11 +1535,11 @@ def write_file(context, filepath, report, extension, extension_ce, extension_h2,
             name = hinge.name.split('$', 1)[1]
             body_a_obj = hinge.rigid_body_constraint.object1
             body_b_obj = hinge.rigid_body_constraint.object2
-            body_a_index = get_parent(armature_count, armature, body_a_obj, joined_list, node_list, -1)
-            body_b_index = get_parent(armature_count, armature, body_b_obj, joined_list, node_list, -1)
+            body_a_index = get_parent(armature, body_a_obj, joined_list, -1, True)
+            body_b_index = get_parent(armature, body_b_obj, joined_list, -1, True)
 
-            body_a_matrix = get_matrix(hinge, body_a_obj, True, armature)
-            body_b_matrix = get_matrix(hinge, body_b_obj, True, armature)
+            body_a_matrix = get_matrix(hinge, body_a_obj, True, armature, joined_list)
+            body_b_matrix = get_matrix(hinge, body_b_obj, True, armature, joined_list)
 
             friction_limit = 0
 
@@ -1609,11 +1614,11 @@ def write_file(context, filepath, report, extension, extension_ce, extension_h2,
                 name = point_to_point.name.split('$', 1)[1]
                 body_a_obj = point_to_point.rigid_body_constraint.object1
                 body_b_obj = point_to_point.rigid_body_constraint.object2
-                body_a_index = get_parent(armature_count, armature, body_a_obj, joined_list, node_list, -1)
-                body_b_index = get_parent(armature_count, armature, body_b_obj, joined_list, node_list, -1)
+                body_a_index = get_parent(armature, body_a_obj, joined_list, -1, True)
+                body_b_index = get_parent(armature, body_b_obj, joined_list, -1, True)
 
-                body_a_matrix = get_matrix(body_a_obj, point_to_point, True, armature)
-                body_b_matrix = get_matrix(body_b_obj, point_to_point, True, armature)
+                body_a_matrix = get_matrix(body_a_obj, point_to_point, True, armature, joined_list)
+                body_b_matrix = get_matrix(body_b_obj, point_to_point, True, armature, joined_list)
 
                 is_limited_x = int(point_to_point.rigid_body_constraint.use_limit_ang_x)
                 is_limited_y = int(point_to_point.rigid_body_constraint.use_limit_ang_y)

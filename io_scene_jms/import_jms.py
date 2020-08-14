@@ -41,13 +41,15 @@ def test_encoding(filepath):
     BOM = data.read(3)
     zero_count = 0
 
+    encoding = None
+
     if BOM.startswith(UTF_8_BOM) or BOM.startswith(UTF_16_BE_BOM) or BOM.startswith(UTF_16_LE_BOM):
         if file_size & 1:
-            return 'utf-8-sig'
+            encoding = 'utf-8-sig'
 
         else:
             if BOM.startswith(UTF_16_BE_BOM) or BOM.startswith(UTF_16_LE_BOM):
-                return 'utf-16'
+                encoding = 'utf-16'
 
     else:
         byte = data.read(1)
@@ -58,13 +60,15 @@ def test_encoding(filepath):
 
         if zero_count > 0:
             if not byte == b'\x00':
-                return 'utf-16le'
+                encoding = 'utf-16le'
 
             elif byte == b'\x00':
-                return 'utf-16be'
+                encoding = 'utf-16be'
 
         else:
-            return 'utf-8'
+            encoding = 'utf-8'
+
+    return encoding
 
 def load_file(context, filepath, report):
     processed_file = []
