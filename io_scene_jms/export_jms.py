@@ -71,11 +71,11 @@ def get_sibling(armature, bone, bone_list = [], *args):
             set_sibling = None
 
         else:
-            if not armature:
-                set_sibling = bpy.data.objects['%s' % sibling_list[next_sibling_node].name]
+            if armature:
+                set_sibling = armature.data.bones['%s' % sibling_list[next_sibling_node].name]
 
             else:
-                set_sibling = armature.data.bones['%s' % sibling_list[next_sibling_node].name]
+                set_sibling = bpy.data.objects['%s' % sibling_list[next_sibling_node].name]
 
     return set_sibling
 
@@ -397,10 +397,10 @@ def sort_by_layer(node_list, armature, reversed_list):
         layer_index = layer_count.index(layer)
         if layer_index == 0:
             if armature:
-                root_list.append(layer_root[0])
+                root_list.append(armature.data.bones[0])
 
             else:
-                root_list.append(armature.data.bones[0])
+                root_list.append(layer_root[0])
 
         else:
             for node in node_list:
@@ -1112,15 +1112,15 @@ def write_file(context, filepath, report, extension, extension_ce, extension_h2,
                         vert_group = vert.groups[group_index].group
                         object_vertex_group = vertex_groups[vert_group]
                         if armature:
-                            if object_vertex_group in bpy.data.objects:
-                                vertex_vert_group_list.append(group_index)
-                                if bpy.data.objects[object_vertex_group] in joined_list:
-                                    object_vert_group_list.append(vert_group)
-
-                        else:
                             if object_vertex_group in armature.data.bones:
                                 vertex_vert_group_list.append(group_index)
                                 if armature.data.bones[object_vertex_group] in joined_list:
+                                    object_vert_group_list.append(vert_group)
+
+                        else:
+                            if object_vertex_group in bpy.data.objects:
+                                vertex_vert_group_list.append(group_index)
+                                if bpy.data.objects[object_vertex_group] in joined_list:
                                     object_vert_group_list.append(vert_group)
 
                     value = len(object_vert_group_list)
@@ -1136,10 +1136,10 @@ def write_file(context, filepath, report, extension, extension_ce, extension_h2,
                             vert_group = vert.groups[vert_index].group
                             object_vertex_group = vertex_groups[vert_group]
                             if armature:
-                                node_obj = bpy.data.objects[object_vertex_group]
+                                node_obj = armature.data.bones[object_vertex_group]
 
                             else:
-                                node_obj = armature.data.bones[object_vertex_group]
+                                node_obj = bpy.data.objects[object_vertex_group]
 
                             if item_index == 0:
                                 jms_vertex.node0 = joined_list.index(node_obj)
