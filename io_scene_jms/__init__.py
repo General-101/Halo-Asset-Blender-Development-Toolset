@@ -125,26 +125,203 @@ class JMS_SceneProps(Panel):
     bl_options = {'DEFAULT_CLOSED'}
 
     def draw(self, context):
-        layout = self.layout
         scene = context.scene
-        jms = scene.jms
+        scene_jms = scene.jms
+        layout = self.layout
+
         box = layout.box()
         box.label(text="Game Version:")
-
         col = box.column(align=True)
 
         row = col.row()
-        row.prop(jms, "game_version", text='')
+        row.prop(scene_jms, "game_version", text='')
+
+        box = layout.box()
+        box.label(text="File Details:")
+        col = box.column(align=True)
+
+        if scene_jms.game_version == 'haloce':
+            row = col.row()
+            row.label(text='Extension:')
+            row.prop(scene_jms, "extension_ce", text='')
+            row = col.row()
+            row.label(text='JMS Version:')
+            row.prop(scene_jms, "jms_version_ce", text='')
+            row = col.row()
+            row.label(text='Permutation:')
+            row.prop(scene_jms, "permutation_ce", text='')
+            row = col.row()
+            row.label(text='LOD:')
+            row.prop(scene_jms, "level_of_detail_ce", text='')
+
+        elif scene_jms.game_version == 'halo2':
+            row = col.row()
+            row.label(text='Extension:')
+            row.prop(scene_jms, "extension_h2", text='')
+            row = col.row()
+            row.label(text='JMS Version:')
+            row.prop(scene_jms, "jms_version_h2", text='')
+
+        box = layout.box()
+        box.label(text="Scene Options:")
+        col = box.column(align=True)
+        row = col.row()
+        row.label(text='Triangulate:')
+        row.prop(scene_jms, "triangulate_faces", text='')
+        row = col.row()
+        row.label(text='Export Hidden Geometry:')
+        row.prop(scene_jms, "hidden_geo", text='')
+        row = col.row()
+        row.label(text='Use As Default Export Settings:')
+        row.prop(scene_jms, "use_scene_properties", text='')
+
+        box = layout.box()
+        box.label(text="Scale:")
+        row = box.row()
+        row.prop(scene_jms, "scale_enum", expand=True)
+
+        if scene_jms.scale_enum == '2':
+            row = box.row()
+            row.prop(scene_jms, "scale_float")
 
 class JMS_ScenePropertiesGroup(PropertyGroup):
-    game_version: EnumProperty(
-        name="Game:",
-        description="Show options relevant to the selected game.",
-        default="halo2",
-        items=[ ('haloce', "Halo CE", "Halo CE options"),
-                ('halo2', "Halo 2", "Halo 2 Vista options"),
+    permutation_ce: StringProperty(
+        name="Permutation",
+        description="Permutation for a JMS file",
+        subtype="FILE_NAME"
+    )
+
+    level_of_detail_ce: EnumProperty(
+        name="LOD:",
+        description="What LOD to use for the JMS file",
+        items=[ ('0', "NONE", ""),
+                ('1', "SuperLow", ""),
+                ('2', "Low", ""),
+                ('3', "Medium", ""),
+                ('4', "High", ""),
+                ('5', "SuperHigh", ""),
                ]
         )
+
+    extension: EnumProperty(
+        name="Extension:",
+        description="What extension to use for the model file",
+        options={'HIDDEN'},
+        items=[ ('.JMS', "JMS", "Jointed Model Skeleton CE"),
+                ('.JMP', "JMP", "Jointed Model Physics CE"),
+               ]
+        )
+
+    extension_ce: EnumProperty(
+        name="Extension:",
+        description="What extension to use for the model file",
+        items=[ ('.JMS', "JMS", "Jointed Model Skeleton CE"),
+                ('.JMP', "JMP", "Jointed Model Physics CE"),
+               ]
+        )
+
+    extension_h2: EnumProperty(
+        name="Extension:",
+        description="What extension to use for the model file",
+        items=[ ('.JMS', "JMS", "Jointed Model Skeleton H2"),
+               ]
+        )
+
+    jms_version: EnumProperty(
+        name="Version:",
+        description="What version to use for the model file",
+        default="8200",
+        options={'HIDDEN'},
+        items=[ ('8197', "8197", "H2 Non-functional"),
+                ('8198', "8198", "H2 Non-functional"),
+                ('8199', "8199", "H2 Non-functional"),
+                ('8200', "8200", "H2"),
+                ('8201', "8201", "H2 Non-functional"),
+                ('8202', "8202", "H2 Non-functional"),
+                ('8203', "8203", "H2 Non-functional"),
+                ('8204', "8204", "H2 Non-functional"),
+                ('8205', "8205", "H2"),
+                ('8206', "8206", "H2 Non-functional"),
+                ('8207', "8207", "H2 Non-functional"),
+                ('8208', "8208", "H2 Non-functional"),
+                ('8209', "8209", "H2"),
+                ('8210', "8210", "H2"),
+               ]
+        )
+
+    jms_version_ce: EnumProperty(
+        name="Version:",
+        description="What version to use for the model file",
+        default="8200",
+        items=[ ('8197', "8197", "CE Non-functional"),
+                ('8198', "8198", "CE Non-functional"),
+                ('8199', "8199", "CE Non-functional"),
+                ('8200', "8200", "CE"),
+               ]
+        )
+
+    jms_version_h2: EnumProperty(
+        name="Version:",
+        description="What version to use for the model file",
+        default="8210",
+        items=[ ('8197', "8197", "H2 Non-functional"),
+                ('8198', "8198", "H2 Non-functional"),
+                ('8199', "8199", "H2 Non-functional"),
+                ('8200', "8200", "H2"),
+                ('8201', "8201", "H2 Non-functional"),
+                ('8202', "8202", "H2 Non-functional"),
+                ('8203', "8203", "H2 Non-functional"),
+                ('8204', "8204", "H2 Non-functional"),
+                ('8205', "8205", "H2"),
+                ('8206', "8206", "H2 Non-functional"),
+                ('8207', "8207", "H2 Non-functional"),
+                ('8208', "8208", "H2 Non-functional"),
+                ('8209', "8209", "H2"),
+                ('8210', "8210", "H2"),
+               ]
+        )
+
+    game_version: EnumProperty(
+        name="Game:",
+        description="What game will the model file be used for",
+        default="halo2",
+        items=[ ('haloce', "Halo CE", "Export a JMS intended for Halo Custom Edition"),
+                ('halo2', "Halo 2", "Export a JMS intended for Halo 2 Vista"),
+               ]
+        )
+
+    triangulate_faces: BoolProperty(
+        name ="Triangulate faces",
+        description = "Automatically triangulate all faces (recommended)",
+        default = True,
+        )
+
+    use_scene_properties: BoolProperty(
+        name ="Use scene properties",
+        description = "Use the options set in the scene or uncheck this to override",
+        default = False,
+        )
+
+    hidden_geo: BoolProperty(
+        name ="Export hidden geometry",
+        description = "Whether or not we ignore geometry that is hidden",
+        default = True,
+        )
+
+    scale_enum: EnumProperty(
+    name="Scale",
+        items=(
+            ('0', "Default(JMS)", "Export as is"),
+            ('1', "World Units",  "Multiply position values by 100 units"),
+            ('2', "Custom",       "Set your own scale multiplier."),
+        )
+    )
+    scale_float: FloatProperty(
+        name="Custom Scale",
+        description="Choose a custom value to multiply position values by.",
+        default=1.0,
+        min=1.0,
+    )
 
 class JMS_ObjectProps(Panel):
     bl_label = "JMS Object Properties"
@@ -358,9 +535,15 @@ class ExportJMS(Operator, ExportHelper):
         default = True,
         )
 
+    use_scene_properties: BoolProperty(
+        name ="Use scene properties",
+        description = "Use the options set in the scene or uncheck this to override",
+        default = False,
+        )
+
     hidden_geo: BoolProperty(
         name ="Export hidden geometry",
-        description = "Whether or not we ignore geometry that has scene options that make exporting it complicated(NOT FUNCTIONAL CURRENTLY)",
+        description = "Whether or not we ignore geometry that has scene options that make exporting it complicated",
         default = True,
         )
 
@@ -434,38 +617,63 @@ class ExportJMS(Operator, ExportHelper):
         return export_jms.write_file(context, self.filepath, self.report, self.extension, self.extension_ce, self.extension_h2, self.jms_version, self.jms_version_ce, self.jms_version_h2, self.game_version, self.triangulate_faces, self.scale_enum, self.scale_float, self.console, self.permutation_ce, self.level_of_detail_ce, self.hidden_geo)
 
     def draw(self, context):
+        scene = context.scene
+        scene_jms = scene.jms
         layout = self.layout
+        is_enabled = True
+        if scene_jms.use_scene_properties:
+            is_enabled = False
 
         box = layout.box()
         box.label(text="Game Version:")
         col = box.column(align=True)
 
         row = col.row()
+        row.enabled = is_enabled
         row.prop(self, "game_version", text='')
 
         box = layout.box()
         box.label(text="File Details:")
         col = box.column(align=True)
 
+        if scene_jms.use_scene_properties:
+            self.game_version = scene_jms.game_version
+            self.extension_ce = scene_jms.extension_ce
+            self.jms_version_ce = scene_jms.jms_version_ce
+            self.permutation_ce = scene_jms.permutation_ce
+            self.level_of_detail_ce = scene_jms.level_of_detail_ce
+            self.extension_h2 = scene_jms.extension_h2
+            self.jms_version_h2 = scene_jms.jms_version_h2
+            self.triangulate_faces = scene_jms.triangulate_faces
+            self.hidden_geo = scene_jms.hidden_geo
+            self.scale_enum = scene_jms.scale_enum
+            self.scale_float = scene_jms.scale_float
+
         if self.game_version == 'haloce':
             row = col.row()
+            row.enabled = is_enabled
             row.label(text='Extension:')
             row.prop(self, "extension_ce", text='')
             row = col.row()
+            row.enabled = is_enabled
             row.label(text='JMS Version:')
             row.prop(self, "jms_version_ce", text='')
             row = col.row()
+            row.enabled = is_enabled
             row.label(text='Permutation:')
             row.prop(self, "permutation_ce", text='')
             row = col.row()
+            row.enabled = is_enabled
             row.label(text='LOD:')
             row.prop(self, "level_of_detail_ce", text='')
 
         elif self.game_version == 'halo2':
             row = col.row()
+            row.enabled = is_enabled
             row.label(text='Extension:')
             row.prop(self, "extension_h2", text='')
             row = col.row()
+            row.enabled = is_enabled
             row.label(text='JMS Version:')
             row.prop(self, "jms_version_h2", text='')
 
@@ -473,19 +681,26 @@ class ExportJMS(Operator, ExportHelper):
         box.label(text="Scene Options:")
         col = box.column(align=True)
         row = col.row()
+        row.enabled = is_enabled
         row.label(text='Triangulate:')
         row.prop(self, "triangulate_faces", text='')
         row = col.row()
+        row.enabled = is_enabled
         row.label(text='Export Hidden Geometry:')
         row.prop(self, "hidden_geo", text='')
+        row = col.row()
+        row.label(text='Use Scene Export Settings:')
+        row.prop(scene_jms, "use_scene_properties", text='')
 
         box = layout.box()
         box.label(text="Scale:")
         row = box.row()
+        row.enabled = is_enabled
         row.prop(self, "scale_enum", expand=True)
 
         if self.scale_enum == '2':
             row = box.row()
+            row.enabled = is_enabled
             row.prop(self, "scale_float")
 
 class ImportJMS(Operator, ImportHelper):

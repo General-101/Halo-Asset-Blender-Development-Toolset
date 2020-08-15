@@ -1290,11 +1290,8 @@ def write_file(context, filepath, report, extension, extension_ce, extension_h2,
             mesh_sphere = spheres.to_mesh()
             face = mesh_sphere.polygons[0]
             sphere_material_index = get_material(game_version, spheres, face, mesh_sphere, material_list)
-
             parent_index = get_parent(armature, spheres, joined_list, -1, True)
-
             sphere_matrix = get_matrix(spheres, spheres, True, armature, joined_list)
-
             mesh_dimensions = get_dimensions(sphere_matrix, spheres, None, None, -1, scale, version, None, False, False)
 
             file.write(
@@ -1327,11 +1324,8 @@ def write_file(context, filepath, report, extension, extension_ce, extension_h2,
             mesh_boxes = boxes.to_mesh()
             face = mesh_boxes.polygons[0]
             boxes_material_index = get_material(game_version, boxes, face, mesh_boxes, material_list)
-
             parent_index = get_parent(armature, boxes, joined_list, -1, True)
-
             box_matrix = get_matrix(boxes, boxes, True, armature, joined_list)
-
             mesh_dimensions = get_dimensions(box_matrix, boxes, None, None, -1, scale, version, None, False, False)
 
             file.write(
@@ -1365,11 +1359,8 @@ def write_file(context, filepath, report, extension, extension_ce, extension_h2,
             mesh_capsule = capsule.to_mesh()
             face = mesh_capsule.polygons[0]
             capsule_material_index = get_material(game_version, capsule, face, mesh_capsule, material_list)
-
             parent_index = get_parent(armature, capsule, joined_list, -1, True)
-
             capsule_matrix = get_matrix(capsule, capsule, True, armature, joined_list)
-
             mesh_dimensions = get_dimensions(capsule_matrix, capsule, None, None, -1, scale, version, None, False, False)
 
             file.write(
@@ -1420,11 +1411,8 @@ def write_file(context, filepath, report, extension, extension_ce, extension_h2,
             convex_shape_vert_count = len(mesh_convex_shape.vertices)
             face = mesh_convex_shape.polygons[0]
             convex_shape_material_index = get_material(game_version, convex_shape, face, mesh_convex_shape, material_list)
-
             parent_index = get_parent(armature, convex_shape, joined_list, -1, True)
-
             convex_matrix = get_matrix(convex_shape, convex_shape, True, armature, joined_list)
-
             mesh_dimensions = get_dimensions(convex_matrix, convex_shape, None, None, -1, scale, version, None, False, False)
 
             file.write(
@@ -1474,14 +1462,13 @@ def write_file(context, filepath, report, extension, extension_ce, extension_h2,
             body_b_index = get_parent(armature, body_b_obj, joined_list, -1, True)
             body_a_matrix = get_matrix(ragdoll, body_a_obj, True, armature, joined_list)
             body_b_matrix = get_matrix(ragdoll, body_b_obj, True, armature, joined_list)
-
+            mesh_dimensions = get_dimensions(body_a_matrix, body_a_obj, body_b_matrix, body_b_obj, -1, scale, version, None, False, False)
             min_angle_x = 0
             max_angle_x = 0
             min_angle_y = 0
             max_angle_y = 0
             min_angle_z = 0
             max_angle_z = 0
-
             is_limited_x = int(ragdoll.rigid_body_constraint.use_limit_ang_x)
             is_limited_y = int(ragdoll.rigid_body_constraint.use_limit_ang_y)
             is_limited_z = int(ragdoll.rigid_body_constraint.use_limit_ang_z)
@@ -1489,14 +1476,14 @@ def write_file(context, filepath, report, extension, extension_ce, extension_h2,
             if is_limited_x:
                 min_angle_x = degrees(ragdoll.rigid_body_constraint.limit_ang_x_lower)
                 max_angle_x = degrees(ragdoll.rigid_body_constraint.limit_ang_x_upper)
+
             if is_limited_y:
                 min_angle_y = degrees(ragdoll.rigid_body_constraint.limit_ang_y_lower)
                 max_angle_y = degrees(ragdoll.rigid_body_constraint.limit_ang_y_upper)
+
             if is_limited_z:
                 min_angle_z = degrees(ragdoll.rigid_body_constraint.limit_ang_z_lower)
                 max_angle_z = degrees(ragdoll.rigid_body_constraint.limit_ang_z_upper)
-
-            mesh_dimensions = get_dimensions(body_a_matrix, body_a_obj, body_b_matrix, body_b_obj, -1, scale, version, None, False, False)
 
             file.write(
                 '\n;RAGDOLL %s' % (ragdoll_list.index(ragdoll)) +
@@ -1537,25 +1524,20 @@ def write_file(context, filepath, report, extension, extension_ce, extension_h2,
             body_b_obj = hinge.rigid_body_constraint.object2
             body_a_index = get_parent(armature, body_a_obj, joined_list, -1, True)
             body_b_index = get_parent(armature, body_b_obj, joined_list, -1, True)
-
             body_a_matrix = get_matrix(hinge, body_a_obj, True, armature, joined_list)
             body_b_matrix = get_matrix(hinge, body_b_obj, True, armature, joined_list)
-
+            mesh_dimensions = get_dimensions(body_a_matrix, body_a_obj, body_b_matrix, body_b_obj, -1, scale, version, None, False, False)
+            is_limited = int(hinge.rigid_body_constraint.use_limit_ang_z)
             friction_limit = 0
+            min_angle = 0
+            max_angle = 0
 
             if body_b_obj:
                 friction_limit = body_b_obj.rigid_body.angular_damping
 
-            min_angle = 0
-            max_angle = 0
-
-            is_limited = int(hinge.rigid_body_constraint.use_limit_ang_z)
-
             if is_limited:
                 min_angle = degrees(hinge.rigid_body_constraint.limit_ang_z_lower)
                 max_angle = degrees(hinge.rigid_body_constraint.limit_ang_z_upper)
-
-            mesh_dimensions = get_dimensions(body_a_matrix, body_a_obj, body_b_matrix, body_b_obj, -1, scale, version, None, False, False)
 
             file.write(
                 '\n;HINGE %s' % (hinge_list.index(hinge)) +
@@ -1616,67 +1598,54 @@ def write_file(context, filepath, report, extension, extension_ce, extension_h2,
                 body_b_obj = point_to_point.rigid_body_constraint.object2
                 body_a_index = get_parent(armature, body_a_obj, joined_list, -1, True)
                 body_b_index = get_parent(armature, body_b_obj, joined_list, -1, True)
-
                 body_a_matrix = get_matrix(body_a_obj, point_to_point, True, armature, joined_list)
                 body_b_matrix = get_matrix(body_b_obj, point_to_point, True, armature, joined_list)
-
+                mesh_dimensions = get_dimensions(body_a_matrix, body_a_obj, body_b_matrix, body_b_obj, -1, scale, version, None, False, False)
                 is_limited_x = int(point_to_point.rigid_body_constraint.use_limit_ang_x)
                 is_limited_y = int(point_to_point.rigid_body_constraint.use_limit_ang_y)
                 is_limited_z = int(point_to_point.rigid_body_constraint.use_limit_ang_z)
-
                 is_spring_z = int(point_to_point.rigid_body_constraint.use_limit_lin_z)
-
                 constraint_type = 0
-
                 min_angle_x = degrees(0)
                 max_angle_x = degrees(0)
                 min_angle_y = degrees(0)
                 max_angle_y = degrees(0)
                 min_angle_z = degrees(0)
                 max_angle_z = degrees(0)
-
                 spring_length = degrees(0)
 
                 if is_limited_x == False and is_limited_y == False and is_limited_z == False and is_spring_z == False:
                     constraint_type = 0
-
                     min_angle_x = degrees(point_to_point.rigid_body_constraint.limit_ang_x_lower)
                     max_angle_x = degrees(point_to_point.rigid_body_constraint.limit_ang_x_upper)
                     min_angle_y = degrees(point_to_point.rigid_body_constraint.limit_ang_y_lower)
                     max_angle_y = degrees(point_to_point.rigid_body_constraint.limit_ang_y_upper)
                     min_angle_z = degrees(point_to_point.rigid_body_constraint.limit_ang_z_lower)
                     max_angle_z = degrees(point_to_point.rigid_body_constraint.limit_ang_z_upper)
-
                     spring_length = degrees(0)
 
                 elif is_limited_x == True and is_limited_y == True and is_limited_z == True and is_spring_z == False:
                     constraint_type = 1
-
                     min_angle_x = degrees(point_to_point.rigid_body_constraint.limit_ang_x_lower)
                     max_angle_x = degrees(point_to_point.rigid_body_constraint.limit_ang_x_upper)
                     min_angle_y = degrees(point_to_point.rigid_body_constraint.limit_ang_y_lower)
                     max_angle_y = degrees(point_to_point.rigid_body_constraint.limit_ang_y_upper)
                     min_angle_z = degrees(point_to_point.rigid_body_constraint.limit_ang_z_lower)
                     max_angle_z = degrees(point_to_point.rigid_body_constraint.limit_ang_z_upper)
-
                     spring_length = degrees(0)
 
                 elif is_limited_x == False and is_limited_y == False and is_limited_z == False and is_spring_z == True:
                     constraint_type = 2
-
                     min_angle_x = degrees(point_to_point.rigid_body_constraint.limit_ang_x_lower)
                     max_angle_x = degrees(point_to_point.rigid_body_constraint.limit_ang_x_upper)
                     min_angle_y = degrees(point_to_point.rigid_body_constraint.limit_ang_y_lower)
                     max_angle_y = degrees(point_to_point.rigid_body_constraint.limit_ang_y_upper)
                     min_angle_z = degrees(point_to_point.rigid_body_constraint.limit_ang_z_lower)
                     max_angle_z = degrees(point_to_point.rigid_body_constraint.limit_ang_z_upper)
-
                     spring_length = degrees(point_to_point.rigid_body_constraint.limit_lin_z_upper)
 
                 else:
                     report({'WARNING'}, 'Improper point to point.')
-
-                mesh_dimensions = get_dimensions(body_a_matrix, body_a_obj, body_b_matrix, body_b_obj, -1, scale, version, None, False, False)
 
                 file.write(
                     '\n;POINT_TO_POINT %s' % (point_to_point_list.index(point_to_point)) +
@@ -1723,7 +1692,6 @@ def write_file(context, filepath, report, extension, extension_ce, extension_h2,
 
         for bound_sphere in bounding_sphere:
             bound_sphere_matrix = bound_sphere.matrix_world
-
             mesh_dimensions = get_dimensions(bound_sphere_matrix, bound_sphere, None, None, -1, scale, version, None, False, False)
 
             file.write(
