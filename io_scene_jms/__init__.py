@@ -171,6 +171,17 @@ class JMS_SceneProps(Panel):
         row = col.row()
         row.label(text='Export Hidden Geometry:')
         row.prop(scene_jms, "hidden_geo", text='')
+        if scene_jms.game_version == 'halo2':
+            row = col.row()
+            row.label(text='Export Render Geometry:')
+            row.prop(scene_jms, "export_render", text='')
+            row = col.row()
+            row.label(text='Export Collision Geometry:')
+            row.prop(scene_jms, "export_collision", text='')
+            row = col.row()
+            row.label(text='Export Physics Geometry:')
+            row.prop(scene_jms, "export_physics", text='')
+
         row = col.row()
         row.label(text='Use As Default Export Settings:')
         row.prop(scene_jms, "use_scene_properties", text='')
@@ -305,6 +316,24 @@ class JMS_ScenePropertiesGroup(PropertyGroup):
     hidden_geo: BoolProperty(
         name ="Export hidden geometry",
         description = "Whether or not we ignore geometry that is hidden",
+        default = True,
+        )
+
+    export_render: BoolProperty(
+        name ="Export render geometry",
+        description = "Export render geometry",
+        default = True,
+        )
+
+    export_collision: BoolProperty(
+        name ="Export collision geometry",
+        description = "Export collision geometry",
+        default = True,
+        )
+
+    export_physics: BoolProperty(
+        name ="Export physics geometry",
+        description = "Export physics geometry",
         default = True,
         )
 
@@ -547,6 +576,24 @@ class ExportJMS(Operator, ExportHelper):
         default = True,
         )
 
+    export_render: BoolProperty(
+        name ="Export render geometry",
+        description = "Export render geometry",
+        default = True,
+        )
+
+    export_collision: BoolProperty(
+        name ="Export collision geometry",
+        description = "Export collision geometry",
+        default = True,
+        )
+
+    export_physics: BoolProperty(
+        name ="Export physics geometry",
+        description = "Export physics geometry",
+        default = True,
+        )
+
     scale_enum: EnumProperty(
     name="Scale",
         items=(
@@ -576,6 +623,27 @@ class ExportJMS(Operator, ExportHelper):
 
     def execute(self, context):
         from . import export_jms
+        keywords = [context,
+                    self.filepath,
+                    self.report,
+                    self.extension,
+                    self.extension_ce,
+                    self.extension_h2,
+                    self.jms_version,
+                    self.jms_version_ce,
+                    self.jms_version_h2,
+                    self.game_version,
+                    self.triangulate_faces,
+                    self.scale_enum,
+                    self.scale_float,
+                    self.console,
+                    self.permutation_ce,
+                    self.level_of_detail_ce,
+                    self.hidden_geo,
+                    self.export_render,
+                    self.export_collision,
+                    self.export_physics]
+
         if '--' in sys.argv:
             argv = sys.argv[sys.argv.index('--') + 1:]
             parser = argparse.ArgumentParser()
@@ -614,7 +682,7 @@ class ExportJMS(Operator, ExportHelper):
             self.scale_float = args.scale_float
             self.console = args.console
 
-        return export_jms.write_file(context, self.filepath, self.report, self.extension, self.extension_ce, self.extension_h2, self.jms_version, self.jms_version_ce, self.jms_version_h2, self.game_version, self.triangulate_faces, self.scale_enum, self.scale_float, self.console, self.permutation_ce, self.level_of_detail_ce, self.hidden_geo)
+        return export_jms.write_file(*keywords)
 
     def draw(self, context):
         scene = context.scene
@@ -646,6 +714,9 @@ class ExportJMS(Operator, ExportHelper):
             self.jms_version_h2 = scene_jms.jms_version_h2
             self.triangulate_faces = scene_jms.triangulate_faces
             self.hidden_geo = scene_jms.hidden_geo
+            self.export_render = scene_jms.export_render
+            self.export_collision = scene_jms.export_collision
+            self.export_physics = scene_jms.export_physics
             self.scale_enum = scene_jms.scale_enum
             self.scale_float = scene_jms.scale_float
 
@@ -688,6 +759,20 @@ class ExportJMS(Operator, ExportHelper):
         row.enabled = is_enabled
         row.label(text='Export Hidden Geometry:')
         row.prop(self, "hidden_geo", text='')
+        if self.game_version == 'halo2':
+            row = col.row()
+            row.enabled = is_enabled
+            row.label(text='Export Render Geometry:')
+            row.prop(self, "export_render", text='')
+            row = col.row()
+            row.enabled = is_enabled
+            row.label(text='Export Collision Geometry:')
+            row.prop(self, "export_collision", text='')
+            row = col.row()
+            row.enabled = is_enabled
+            row.label(text='Export Physics Geometry:')
+            row.prop(self, "export_physics", text='')
+
         row = col.row()
         row.label(text='Use Scene Export Settings:')
         row.prop(scene_jms, "use_scene_properties", text='')
