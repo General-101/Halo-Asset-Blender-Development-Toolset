@@ -28,51 +28,13 @@ import os
 import bpy
 import bmesh
 import mathutils
+
 from numpy import array
-
-def test_encoding(filepath):
-    UTF_8_BOM = b'\xef\xbb\xbf'
-    UTF_16_BE_BOM = b'\xfe\xff'
-    UTF_16_LE_BOM = b'\xff\xfe'
-
-    data = open(filepath, 'rb')
-
-    file_size = os.path.getsize(filepath)
-    BOM = data.read(3)
-    zero_count = 0
-
-    encoding = None
-
-    if BOM.startswith(UTF_8_BOM) or BOM.startswith(UTF_16_BE_BOM) or BOM.startswith(UTF_16_LE_BOM):
-        if file_size & 1:
-            encoding = 'utf-8-sig'
-
-        else:
-            if BOM.startswith(UTF_16_BE_BOM) or BOM.startswith(UTF_16_LE_BOM):
-                encoding = 'utf-16'
-
-    else:
-        byte = data.read(1)
-        while byte != b"":
-            byte = data.read(1)
-            if byte == b'\x00':
-                zero_count =+ 1
-
-        if zero_count > 0:
-            if not byte == b'\x00':
-                encoding = 'utf-16le'
-
-            elif byte == b'\x00':
-                encoding = 'utf-16be'
-
-        else:
-            encoding = 'utf-8'
-
-    return encoding
+from io_scene_halo.global_functions import global_functions
 
 def load_file(context, filepath, report):
     processed_file = []
-    encode = test_encoding(filepath)
+    encode = global_functions.test_encoding(filepath)
     file = open(filepath, "r", encoding=encode)
     #foutput = open("C:\\Users\\Steven\\Desktop\\Test.JMS", "w")
     for line in file:

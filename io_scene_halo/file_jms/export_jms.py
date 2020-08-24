@@ -34,50 +34,10 @@ from decimal import *
 from math import degrees
 from bpy_extras import io_utils
 from random import seed, randint
-
-def unhide_all_collections():
-    for collection_viewport in bpy.context.view_layer.layer_collection.children:
-        collection_viewport.exclude = False
-
-    for collection_hide in bpy.data.collections:
-        collection_hide.hide_viewport = False
-
-def unhide_object(mesh):
-    mesh.hide_set(False)
-    mesh.hide_viewport = False
-
-def get_child(bone, bone_list = [], *args):
-    set_node = None
-    for node in bone_list:
-        if bone == node.parent and not set_node:
-            set_node = node
-
-    return set_node
-
-def get_sibling(armature, bone, bone_list = [], *args):
-    sibling_list = []
-    set_sibling = None
-    for node in bone_list:
-        if bone.parent == node.parent:
-            sibling_list.append(node)
-
-    if len(sibling_list) <= 1:
-        set_sibling = None
-
-    else:
-        sibling_node = sibling_list.index(bone)
-        next_sibling_node = sibling_node + 1
-        if next_sibling_node >= len(sibling_list):
-            set_sibling = None
-
-        else:
-            if armature:
-                set_sibling = armature.data.bones['%s' % sibling_list[next_sibling_node].name]
-
-            else:
-                set_sibling = bpy.data.objects['%s' % sibling_list[next_sibling_node].name]
-
-    return set_sibling
+from io_scene_halo.global_functions import global_functions
+from io_scene_halo.global_functions.global_functions import JmsVertex
+from io_scene_halo.global_functions.global_functions import JmsTriangle
+from io_scene_halo.global_functions.global_functions import JmsDimensions
 
 def get_region(default_region, region):
     set_region = None
@@ -148,16 +108,6 @@ def get_lod(lod_setting, game_version):
 
     return LOD_name
 
-def get_encoding(game_version):
-    encoding = None
-    if game_version == 'haloce':
-        encoding = 'utf_8'
-
-    elif game_version == 'halo2':
-        encoding = 'utf-16le'
-
-    return encoding
-
 def get_material(game_version, original_geo, face, geometry, material_list):
     object_materials = len(original_geo.material_slots) - 1
     assigned_material = None
@@ -185,193 +135,6 @@ def get_material(game_version, original_geo, face, geometry, material_list):
 
     return assigned_material
 
-def get_dimensions(mesh_a_matrix, mesh_a, mesh_b_matrix, mesh_b, invert, scale, version, jms_vertex, is_vertex, is_bone):
-    from . import JmsDimensions
-    object_dimensions = JmsDimensions()
-    if is_vertex:
-        pos = jms_vertex.pos
-        JmsDimensions.pos_x_a = Decimal(pos[0] * scale).quantize(Decimal('1.0000000000'))
-        JmsDimensions.pos_y_a = Decimal(pos[1] * scale).quantize(Decimal('1.0000000000'))
-        JmsDimensions.pos_z_a = Decimal(pos[2] * scale).quantize(Decimal('1.0000000000'))
-
-    else:
-        if mesh_a:
-            pos  = mesh_a_matrix.translation
-            quat = mesh_a_matrix.to_quaternion().inverted()
-
-            if not is_bone:
-                dimension = mesh_a.dimensions
-
-                #The reason this code exists is to try to copy how capsules work in 3DS Max.
-                #To get original height for 3DS Max do (radius_jms * 2) + height_jms
-                #The maximum value of radius is height / 2
-                pill_radius = ((dimension[0] / 2) * scale)
-                pill_height = (dimension[2] * scale) - (pill_radius * 2)
-                if pill_height <= 0:
-                    pill_height = 0
-
-            JmsDimensions.quat_i_a = Decimal(quat[1]).quantize(Decimal('1.0000000000'))
-            JmsDimensions.quat_j_a = Decimal(quat[2]).quantize(Decimal('1.0000000000'))
-            JmsDimensions.quat_k_a = Decimal(quat[3]).quantize(Decimal('1.0000000000'))
-            JmsDimensions.quat_w_a = Decimal(quat[0] * invert).quantize(Decimal('1.0000000000'))
-            JmsDimensions.pos_x_a = Decimal(pos[0] * scale).quantize(Decimal('1.0000000000'))
-            JmsDimensions.pos_y_a = Decimal(pos[1] * scale).quantize(Decimal('1.0000000000'))
-            JmsDimensions.pos_z_a = Decimal(pos[2] * scale).quantize(Decimal('1.0000000000'))
-            if not is_bone:
-                JmsDimensions.dimension_x_a = Decimal(dimension[0] * scale).quantize(Decimal('1.0000000000'))
-                JmsDimensions.dimension_y_a = Decimal(dimension[1] * scale).quantize(Decimal('1.0000000000'))
-                JmsDimensions.dimension_z_a = Decimal(dimension[2] * scale).quantize(Decimal('1.0000000000'))
-                JmsDimensions.radius_a = Decimal(pill_radius).quantize(Decimal('1.0000000000'))
-                JmsDimensions.pill_z_a = Decimal(pill_height).quantize(Decimal('1.0000000000'))
-
-        if mesh_b:
-            pos  = mesh_b_matrix.translation
-            quat = mesh_b_matrix.to_quaternion().inverted()
-
-            if not is_bone:
-                dimension = mesh_b.dimensions
-
-                #The reason this code exists is to try to copy how capsules work in 3DS Max.
-                #To get original height for 3DS Max do (radius_jms * 2) + height_jms
-                #The maximum value of radius is height / 2
-                pill_radius = ((dimension[0] / 2) * scale)
-                pill_height = (dimension[2] * scale) - (pill_radius * 2)
-                if pill_height <= 0:
-                    pill_height = 0
-
-            JmsDimensions.quat_i_b = Decimal(quat[1]).quantize(Decimal('1.0000000000'))
-            JmsDimensions.quat_j_b = Decimal(quat[2]).quantize(Decimal('1.0000000000'))
-            JmsDimensions.quat_k_b = Decimal(quat[3]).quantize(Decimal('1.0000000000'))
-            JmsDimensions.quat_w_b = Decimal(quat[0] * invert).quantize(Decimal('1.0000000000'))
-            JmsDimensions.pos_x_b = Decimal(pos[0] * scale).quantize(Decimal('1.0000000000'))
-            JmsDimensions.pos_y_b = Decimal(pos[1] * scale).quantize(Decimal('1.0000000000'))
-            JmsDimensions.pos_z_b = Decimal(pos[2] * scale).quantize(Decimal('1.0000000000'))
-            if not is_bone:
-                JmsDimensions.dimension_x_b = Decimal(dimension[0] * scale).quantize(Decimal('1.0000000000'))
-                JmsDimensions.dimension_y_b = Decimal(dimension[1] * scale).quantize(Decimal('1.0000000000'))
-                JmsDimensions.dimension_z_b = Decimal(dimension[2] * scale).quantize(Decimal('1.0000000000'))
-                JmsDimensions.radius_b = Decimal(pill_radius).quantize(Decimal('1.0000000000'))
-                JmsDimensions.pill_z_b = Decimal(pill_height).quantize(Decimal('1.0000000000'))
-
-    return object_dimensions
-
-def get_hierarchy(mesh):
-    no_parent = False
-    hierarchy_list = []
-    current_mesh = mesh
-    while no_parent == False:
-        hierarchy_list.append(current_mesh)
-        if not current_mesh.parent == None:
-            current_mesh = current_mesh.parent
-
-        else:
-            no_parent = True
-
-    return hierarchy_list
-
-def get_parent(armature, mesh, joined_list, default_parent, get_index):
-    parent_object = None
-    parent_index = default_parent
-    parent = None
-    if armature:
-        if mesh:
-            if mesh.parent_bone:
-                parent_object = armature.data.bones[mesh.parent_bone]
-                parent_index = joined_list.index(parent_object)
-
-    else:
-        if mesh:
-            if mesh.parent:
-                if mesh.parent.hide_viewport == False and mesh.hide_get() == False and mesh.parent in joined_list:
-                    parent_object = bpy.data.objects[mesh.parent.name]
-                    parent_index = joined_list.index(parent_object)
-
-                else:
-                    done = False
-                    mesh_hierarchy = get_hierarchy(mesh)
-                    for item in mesh_hierarchy:
-                        if item.hide_viewport == False and mesh_hierarchy.index(item) >= 1 and item in joined_list and done == False:
-                            done = True
-                            parent_object = bpy.data.objects[item.name]
-                            parent_index = joined_list.index(parent_object)
-
-    if get_index:
-        parent = parent_index
-
-    else:
-        parent = parent_object
-
-    return parent
-
-def get_version(jms_version_console, jms_version_ce, jms_version_h2, game_version, console):
-    version = None
-    if console:
-        version = int(jms_version_console)
-
-    else:
-        if game_version == 'haloce':
-            version = int(jms_version_ce)
-
-        if game_version == 'halo2':
-            version = int(jms_version_h2)
-
-    return version
-
-def get_extension(extension_console, extension_ce, extension_h2, game_version, console):
-    extension = None
-    if console:
-        extension = extension_console
-
-    else:
-        if game_version == 'haloce':
-            extension = extension_ce
-
-        if game_version == 'halo2':
-            extension = extension_h2
-
-    return extension
-
-def get_matrix(obj_a, obj_b, is_local, armature, joined_list, is_node, version):
-    object_matrix = None
-    if is_node:
-        if armature:
-            pose_bone = armature.pose.bones['%s' % (obj_a.name)]
-            object_matrix = pose_bone.matrix
-            if pose_bone.parent and not version >= 8205:
-                #Files at or above 8205 use absolute transform instead of local transform for nodes
-                object_matrix = pose_bone.parent.matrix.inverted() @ pose_bone.matrix
-
-        else:
-            object_matrix = obj_a.matrix_world
-            if obj_a.parent and not version >= 8205:
-                #Files at or above 8205 use absolute transform instead of local transform for nodes
-                object_matrix = obj_a.parent.matrix_local @ obj_a.matrix_world
-
-    else:
-        if armature:
-            object_matrix = obj_a.matrix_world
-            if obj_b.parent_bone and is_local:
-                parent_object = get_parent(armature, obj_b, joined_list, -1, False)
-                object_matrix = parent_object.matrix_local.inverted() @ obj_a.matrix_world
-
-        else:
-            object_matrix = obj_a.matrix_world
-            if obj_b.parent and is_local:
-                parent_object = get_parent(armature, obj_b, joined_list, -1, False)
-                object_matrix = parent_object.matrix_local.inverted() @ obj_a.matrix_world
-
-    return object_matrix
-
-def set_scale(scale_enum, scale_float):
-    scale = 1
-    if scale_enum == '1':
-        scale = 100
-
-    if scale_enum == '2':
-        scale = scale_float
-
-    return scale
-
 def set_ignore(mesh):
     collection_list = mesh.users_collection
     ignore = False
@@ -385,98 +148,6 @@ def set_ignore(mesh):
                 ignore = True
 
     return ignore
-
-def sort_by_layer(node_list, armature, reversed_list):
-    layer_count = []
-    layer_root = []
-    root_list = []
-    children_list = []
-    reversed_children_list = []
-    joined_list = []
-    reversed_joined_list = []
-    sort_list = []
-    reversed_sort_list = []
-    sorted_list = []
-    for node in node_list:
-        if node.parent == None:
-            layer_count.append(None)
-            layer_root.append(node)
-
-        else:
-            if not node.parent in layer_count:
-                layer_count.append(node.parent)
-
-    for layer in layer_count:
-        joined_list = root_list + children_list
-        reversed_joined_list = root_list + reversed_children_list
-        layer_index = layer_count.index(layer)
-        if layer_index == 0:
-            if armature:
-                root_list.append(armature.data.bones[0])
-
-            else:
-                root_list.append(layer_root[0])
-
-        else:
-            for node in node_list:
-                if armature:
-                    if node.parent != None:
-                        if armature.data.bones['%s' % node.parent.name] in joined_list and not node in children_list:
-                            sort_list.append(node.name)
-                            reversed_sort_list.append(node.name)
-
-                else:
-                    if node.parent != None:
-                        if node.parent in joined_list and not node in children_list:
-                            sort_list.append(node.name)
-                            reversed_sort_list.append(node.name)
-
-            sort_list.sort()
-            reversed_sort_list.sort()
-            reversed_sort_list.reverse()
-            for sort in sort_list:
-                if armature:
-                    if not armature.data.bones['%s' % sort] in children_list:
-                        children_list.append(armature.data.bones['%s' % sort])
-
-                else:
-                    if not bpy.data.objects[sort] in children_list:
-                        children_list.append(bpy.data.objects[sort])
-
-            for sort in reversed_sort_list:
-                if armature:
-                    if not armature.data.bones['%s' % sort] in reversed_children_list:
-                        reversed_children_list.append(armature.data.bones['%s' % sort])
-
-                else:
-                    if not bpy.data.objects[sort] in reversed_children_list:
-                        reversed_children_list.append(bpy.data.objects[sort])
-
-        joined_list = root_list + children_list
-        reversed_joined_list = root_list + reversed_children_list
-
-    if reversed_list:
-        sorted_list = reversed_joined_list
-
-    else:
-        sorted_list = joined_list
-
-    return sorted_list
-
-def sort_list(node_list, armature, reversed_list, game_version, version):
-    version = int(version)
-    sorted_list = []
-    if game_version == 'haloce':
-        sorted_list = sort_by_layer(node_list, armature, reversed_list)
-
-    elif game_version == 'halo2':
-        if version <= 8204:
-            sorted_list = sort_by_layer(node_list, armature, reversed_list)
-
-        else:
-            sorted_list = node_list
-
-    return sorted_list
 
 def gather_materials(obj, version, game_version, material_list):
     assigned_materials_list = []
@@ -513,34 +184,6 @@ def gather_materials(obj, version, game_version, material_list):
 
     return material_list
 
-def error_pass(armature_count, report, game_version, node_count, version, extension, geometry_list, marker_list, root_node_count):
-    result = False
-    if armature_count >= 2:
-        report({'ERROR'}, 'More than one armature object. Please delete all but one.')
-        result = True
-
-    elif game_version == 'haloce' and node_count == 0: #JMSv2 files can have JMS files without a node for physics.
-        report({'ERROR'}, 'No nodes in scene. Add an armature or object mesh named frame')
-        result = True
-
-    elif game_version == 'haloce' and len(geometry_list) == 0 and len(marker_list) == 0:
-        report({'ERROR'}, 'No geometry in scene.')
-        result = True
-
-    elif version >= 8201 and game_version == 'haloce':
-        report({'ERROR'}, 'This version is not supported for CE. Choose from 8197-8200 if you wish to export for CE.')
-        result = True
-
-    elif extension == '.JMP' and game_version == 'halo2':
-        report({'ERROR'}, 'This extension is not used in Halo 2 Vista')
-        result = True
-
-    elif root_node_count >= 2:
-        report({'ERROR'}, "More than one root node. Please remove or rename objects until you only have one root frame object.")
-        result = True
-
-    return result
-
 def file_layout(context,
                 filepath,
                 report,
@@ -564,15 +207,12 @@ def file_layout(context,
                 export_physics,
                 model_type):
 
-    from . import JmsVertex
-    from . import JmsTriangle
-
     object_properties = []
     node_list = []
     armature = None
     armature_count = 0
     mesh_frame_count = 0
-    root_node_count = 0
+    object_count = len(object_list)
 
     material_list = []
     marker_list = []
@@ -599,48 +239,34 @@ def file_layout(context,
     default_permutation = get_default_region_permutation_name(game_version)
     level_of_detail_ce = get_lod(level_of_detail_ce, game_version)
 
-    version = get_version(jms_version, jms_version_ce, jms_version_h2, game_version, console)
-    extension = get_extension(extension, extension_ce, extension_h2, game_version, console)
+    version = global_functions.get_version(jms_version, jms_version_ce, jms_version_h2, game_version, console)
+    extension = global_functions.get_extension(extension, extension_ce, extension_h2, game_version, console)
     node_checksum = 0
-    scale = set_scale(scale_enum, scale_float)
+    scale = global_functions.set_scale(scale_enum, scale_float)
+    for obj in object_list:
+        bpy.context.view_layer.objects.active = obj
+        bpy.ops.object.mode_set(mode = 'OBJECT')
 
-    if len(object_list) == 0:
-        report({'ERROR'}, 'No objects in scene.')
-        return {'CANCELLED'}
+    depsgraph = context.evaluated_depsgraph_get()
 
     for obj in object_list:
         object_properties.append([obj.hide_get(), obj.hide_viewport])
         if hidden_geo:
-            unhide_object(obj)
+            global_functions.unhide_object(obj)
 
         find_region = get_region(default_region, obj.jms.Region)
         find_permutation = get_permutation(default_permutation, obj.jms.Permutation)
         if obj.type == 'ARMATURE':
-            unhide_object(obj)
+            global_functions.unhide_object(obj)
             armature_count += 1
             armature = obj
-            bpy.context.view_layer.objects.active = obj
             obj.select_set(True)
             node_list = list(obj.data.bones)
-            if mesh_frame_count > 0:
-                report({'ERROR'}, "Using both armature and object mesh node setup. Choose one or the other.")
-                return {'CANCELLED'}
-
-            if obj.parent == None:
-                root_node_count += 1
 
         elif obj.name[0:2].lower() == 'b_' or obj.name[0:4].lower() == 'bone' or obj.name[0:5].lower() == 'frame':
-            unhide_object(obj)
-            bpy.context.view_layer.objects.active = obj
-            bpy.ops.object.mode_set(mode = 'OBJECT')
+            global_functions.unhide_object(obj)
             node_list.append(obj)
             mesh_frame_count += 1
-            if armature_count > 0:
-                report({'ERROR'}, "Using both armature and object mesh node setup. Choose one or the other.")
-                return {'CANCELLED'}
-
-            if obj.parent == None:
-                root_node_count += 1
 
         elif obj.name[0:1].lower() == '#':
             if set_ignore(obj) == False or hidden_geo:
@@ -662,8 +288,6 @@ def file_layout(context,
         elif obj.name[0:1].lower() == '@' and game_version == 'halo2':
             if set_ignore(obj) == False or hidden_geo:
                 if export_collision:
-                    bpy.context.view_layer.objects.active = obj
-                    bpy.ops.object.mode_set(mode = 'OBJECT')
                     if bpy.context.object.data.uv_layers:
                         material_list = gather_materials(obj, version, game_version, material_list)
                         modifier_list = []
@@ -677,7 +301,6 @@ def file_layout(context,
                             if not 'TRIANGULATE' in modifier_list:
                                 obj.modifiers.new("Triangulate", type='TRIANGULATE')
 
-                            depsgraph = context.evaluated_depsgraph_get()
                             obj_for_convert = obj.evaluated_get(depsgraph)
                             me = obj_for_convert.to_mesh(preserve_all_data_layers=True, depsgraph=depsgraph)
                             geometry_list.append(me)
@@ -740,8 +363,6 @@ def file_layout(context,
 
         elif obj.type== 'MESH':
             if set_ignore(obj) == False or hidden_geo:
-                bpy.context.view_layer.objects.active = obj
-                bpy.ops.object.mode_set(mode = 'OBJECT')
                 if game_version == 'haloce':
                     if not obj.parent == None:
                         if obj.parent.type == 'ARMATURE' or obj.parent.name[0:2].lower() == 'b_' or obj.name[0:4].lower() == 'bone' or obj.parent.name[0:5].lower() == 'frame':
@@ -757,7 +378,6 @@ def file_layout(context,
                                 if not 'TRIANGULATE' in modifier_list:
                                     obj.modifiers.new("Triangulate", type='TRIANGULATE')
 
-                                depsgraph = context.evaluated_depsgraph_get()
                                 obj_for_convert = obj.evaluated_get(depsgraph)
                                 me = obj_for_convert.to_mesh(preserve_all_data_layers=True, depsgraph=depsgraph)
                                 geometry_list.append(me)
@@ -785,7 +405,6 @@ def file_layout(context,
                                 if not 'TRIANGULATE' in modifier_list:
                                     obj.modifiers.new("Triangulate", type='TRIANGULATE')
 
-                                depsgraph = context.evaluated_depsgraph_get()
                                 obj_for_convert = obj.evaluated_get(depsgraph)
                                 me = obj_for_convert.to_mesh(preserve_all_data_layers=True, depsgraph=depsgraph)
                                 geometry_list.append(me)
@@ -816,6 +435,7 @@ def file_layout(context,
     car_wheel_count = len(car_wheel_list)
     point_to_point_count = len(point_to_point_list)
     prismatic_count = len(prismatic_list)
+    root_node_count = global_functions.count_root_nodes(node_list)
 
     if version > 8209:
         decimal_1 = '\n%0.10f'
@@ -829,17 +449,11 @@ def file_layout(context,
         decimal_3 = '\n%0.6f\t%0.6f\t%0.6f'
         decimal_4 = '\n%0.6f\t%0.6f\t%0.6f\t%0.6f'
 
-    if error_pass(armature_count, report, game_version, node_count, version, extension, geometry_list, marker_list, root_node_count):
+    if global_functions.error_pass(armature_count, report, game_version, node_count, version, extension, geometry_list, marker_list, root_node_count, False, mesh_frame_count, object_count):
         return {'CANCELLED'}
 
-    joined_list = sort_list(node_list, armature, False, game_version, version)
-    reversed_joined_list = sort_list(node_list, armature, True, game_version, version)
-
-    extension_list = ['.jms', '.jmp']
-    true_extension = ''
-    extension_char = (len(extension))
-    if not filepath[-(extension_char):].lower() in extension_list or not filepath[-(extension_char):].lower() in extension.lower():
-        true_extension = extension
+    joined_list = global_functions.sort_list(node_list, armature, False, game_version, version, True)
+    reversed_joined_list = global_functions.sort_list(node_list, armature, True, game_version, version, True)
 
     ce_settings = ''
     directory = filepath.rsplit(os.sep, 1)[0]
@@ -861,7 +475,7 @@ def file_layout(context,
         if not permutation_ce == '' or not level_of_detail_ce == None:
             filename = ''
 
-    file = open(directory + os.sep + ce_settings + filename + model_type + true_extension, 'w', encoding='%s' % get_encoding(game_version))
+    file = open(directory + os.sep + ce_settings + filename + model_type + global_functions.get_true_extension(filepath, extension, False), 'w', encoding='%s' % global_functions.get_encoding(game_version))
 
     #write header
     if version >= 8205:
@@ -890,8 +504,8 @@ def file_layout(context,
         )
 
     for node in joined_list:
-        find_child_node = get_child(node, reversed_joined_list)
-        find_sibling_node = get_sibling(armature, node, reversed_joined_list)
+        find_child_node = global_functions.get_child(node, reversed_joined_list)
+        find_sibling_node = global_functions.get_sibling(armature, node, reversed_joined_list)
         first_child_node = -1
         first_sibling_node = -1
         parent_node = -1
@@ -908,8 +522,8 @@ def file_layout(context,
         if armature:
             is_bone = True
 
-        bone_matrix = get_matrix(node, node, True, armature, joined_list, is_bone, version)
-        mesh_dimensions = get_dimensions(bone_matrix, node, None, None, -1, scale, version, None, False, is_bone)
+        bone_matrix = global_functions.get_matrix(node, node, True, armature, joined_list, is_bone, version)
+        mesh_dimensions = global_functions.get_dimensions(bone_matrix, node, None, None, -1, scale, version, None, False, is_bone, armature)
 
         if version >= 8205:
             file.write(
@@ -1033,9 +647,9 @@ def file_layout(context,
         region = -1
         if len(marker.jms.Region) != 0:
             region = region_list.index(marker.jms.Region)
-        parent_index = get_parent(armature, marker, joined_list, 0, True)
-        marker_matrix = get_matrix(marker, marker, True, armature, joined_list, False, version)
-        mesh_dimensions = get_dimensions(marker_matrix, marker, None, None, -1, scale, version, None, False, False)
+        parent_index = global_functions.get_parent(armature, marker, joined_list, 0, True)
+        marker_matrix = global_functions.get_matrix(marker, marker, True, armature, joined_list, False, version)
+        mesh_dimensions = global_functions.get_dimensions(marker_matrix, marker, None, None, -1, scale, version, None, False, False, armature)
 
         if version >= 8205:
             file.write(
@@ -1100,8 +714,8 @@ def file_layout(context,
         starting_ID = -1 * (randint(0, 3000000000))
         for int_markers in instance_markers:
             unique_identifier = starting_ID + (-1 * instance_markers.index(int_markers))
-            int_markers_matrix = get_matrix(int_markers, int_markers, False, armature, joined_list, False, version)
-            mesh_dimensions = get_dimensions(int_markers_matrix, int_markers, None, None, -1, scale, version, None, False, False)
+            int_markers_matrix = global_functions.get_matrix(int_markers, int_markers, False, armature, joined_list, False, version)
+            mesh_dimensions = global_functions.get_dimensions(int_markers_matrix, int_markers, None, None, -1, scale, version, None, False, False, armature)
 
             file.write(
                 '\n;XREF OBJECT %s' % (instance_markers.index(int_markers)) +
@@ -1119,7 +733,7 @@ def file_layout(context,
         original_geo = original_geometry_list[item_index]
         vertex_groups = original_geo.vertex_groups.keys()
 
-        original_geo_matrix = get_matrix(original_geo, original_geo, False, armature, joined_list, False, version)
+        original_geo_matrix = global_functions.get_matrix(original_geo, original_geo, False, armature, joined_list, False, version)
 
         region_name = original_geo.jms.Region
 
@@ -1211,14 +825,14 @@ def file_layout(context,
                                 jms_vertex.node3_weight = '%0.10f' % vert.groups[vert_index].weight
 
                     else:
-                        parent_index = get_parent(armature, original_geo, joined_list, 0, True)
+                        parent_index = global_functions.get_parent(armature, original_geo, joined_list, 0, True)
 
                         jms_vertex.node_influence_count = '1'
                         jms_vertex.node0 = parent_index
                         jms_vertex.node0_weight = '1.0000000000'
 
                 else:
-                    parent_index = get_parent(armature, original_geo, joined_list, 0, True)
+                    parent_index = global_functions.get_parent(armature, original_geo, joined_list, 0, True)
 
                     jms_vertex.node_influence_count = '1'
                     jms_vertex.node0 = parent_index
@@ -1246,7 +860,7 @@ def file_layout(context,
         norm = jms_vertex.norm
         uv   = jms_vertex.uv
 
-        mesh_dimensions = get_dimensions(None, None, None, None, -1, scale, version, jms_vertex, True, False)
+        mesh_dimensions = global_functions.get_dimensions(None, None, None, None, -1, scale, version, jms_vertex, True, False, armature)
 
         norm_i = Decimal(norm[0]).quantize(Decimal('1.0000000000'))
         norm_j = Decimal(norm[1]).quantize(Decimal('1.0000000000'))
@@ -1343,9 +957,9 @@ def file_layout(context,
             mesh_sphere = spheres.to_mesh()
             face = mesh_sphere.polygons[0]
             sphere_material_index = get_material(game_version, spheres, face, mesh_sphere, material_list)
-            parent_index = get_parent(armature, spheres, joined_list, -1, True)
-            sphere_matrix = get_matrix(spheres, spheres, True, armature, joined_list, False, version)
-            mesh_dimensions = get_dimensions(sphere_matrix, spheres, None, None, -1, scale, version, None, False, False)
+            parent_index = global_functions.get_parent(armature, spheres, joined_list, -1, True)
+            sphere_matrix = global_functions.get_matrix(spheres, spheres, True, armature, joined_list, False, version)
+            mesh_dimensions = global_functions.get_dimensions(sphere_matrix, spheres, None, None, -1, scale, version, None, False, False, armature)
 
             file.write(
                 '\n;SPHERE %s' % (sphere_list.index(spheres)) +
@@ -1377,9 +991,9 @@ def file_layout(context,
             mesh_boxes = boxes.to_mesh()
             face = mesh_boxes.polygons[0]
             boxes_material_index = get_material(game_version, boxes, face, mesh_boxes, material_list)
-            parent_index = get_parent(armature, boxes, joined_list, -1, True)
-            box_matrix = get_matrix(boxes, boxes, True, armature, joined_list, False, version)
-            mesh_dimensions = get_dimensions(box_matrix, boxes, None, None, -1, scale, version, None, False, False)
+            parent_index = global_functions.get_parent(armature, boxes, joined_list, -1, True)
+            box_matrix = global_functions.get_matrix(boxes, boxes, True, armature, joined_list, False, version)
+            mesh_dimensions = global_functions.get_dimensions(box_matrix, boxes, None, None, -1, scale, version, None, False, False, armature)
 
             file.write(
                 '\n;BOXES %s' % (box_list.index(boxes)) +
@@ -1412,9 +1026,9 @@ def file_layout(context,
             mesh_capsule = capsule.to_mesh()
             face = mesh_capsule.polygons[0]
             capsule_material_index = get_material(game_version, capsule, face, mesh_capsule, material_list)
-            parent_index = get_parent(armature, capsule, joined_list, -1, True)
-            capsule_matrix = get_matrix(capsule, capsule, True, armature, joined_list, False, version)
-            mesh_dimensions = get_dimensions(capsule_matrix, capsule, None, None, -1, scale, version, None, False, False)
+            parent_index = global_functions.get_parent(armature, capsule, joined_list, -1, True)
+            capsule_matrix = global_functions.get_matrix(capsule, capsule, True, armature, joined_list, False, version)
+            mesh_dimensions = global_functions.get_dimensions(capsule_matrix, capsule, None, None, -1, scale, version, None, False, False, armature)
 
             file.write(
                 '\n;CAPSULES %s' % (capsule_list.index(capsule)) +
@@ -1454,7 +1068,6 @@ def file_layout(context,
                 if not 'TRIANGULATE' in modifier_list:
                     convex_shape.modifiers.new("Triangulate", type='TRIANGULATE')
 
-                depsgraph = context.evaluated_depsgraph_get()
                 convex_shape_for_convert = convex_shape.evaluated_get(depsgraph)
                 mesh_convex_shape = convex_shape_for_convert.to_mesh(preserve_all_data_layers=True, depsgraph=depsgraph)
 
@@ -1464,9 +1077,9 @@ def file_layout(context,
             convex_shape_vert_count = len(mesh_convex_shape.vertices)
             face = mesh_convex_shape.polygons[0]
             convex_shape_material_index = get_material(game_version, convex_shape, face, mesh_convex_shape, material_list)
-            parent_index = get_parent(armature, convex_shape, joined_list, -1, True)
-            convex_matrix = get_matrix(convex_shape, convex_shape, True, armature, joined_list, False, version)
-            mesh_dimensions = get_dimensions(convex_matrix, convex_shape, None, None, -1, scale, version, None, False, False)
+            parent_index = global_functions.get_parent(armature, convex_shape, joined_list, -1, True)
+            convex_matrix = global_functions.get_matrix(convex_shape, convex_shape, True, armature, joined_list, False, version)
+            mesh_dimensions = global_functions.get_dimensions(convex_matrix, convex_shape, None, None, -1, scale, version, None, False, False, armature)
 
             file.write(
                 '\n;CONVEX %s' % (convex_shape_list.index(convex_shape)) +
@@ -1482,7 +1095,7 @@ def file_layout(context,
                 pos  = convex_matrix @ vertex.co
                 jms_vertex = JmsVertex()
                 jms_vertex.pos = pos
-                mesh_dimensions = get_dimensions(None, None, None, None, -1, scale, version, jms_vertex, True, False)
+                mesh_dimensions = global_functions.get_dimensions(None, None, None, None, -1, scale, version, jms_vertex, True, False, armature)
 
                 file.write(
                 decimal_3 % (mesh_dimensions.pos_x_a, mesh_dimensions.pos_y_a, mesh_dimensions.pos_z_a)
@@ -1511,11 +1124,11 @@ def file_layout(context,
             name = ragdoll.name.split('$', 1)[1]
             body_a_obj = ragdoll.rigid_body_constraint.object1
             body_b_obj = ragdoll.rigid_body_constraint.object2
-            body_a_index = get_parent(armature, body_a_obj, joined_list, -1, True)
-            body_b_index = get_parent(armature, body_b_obj, joined_list, -1, True)
-            body_a_matrix = get_matrix(ragdoll, body_a_obj, True, armature, joined_list, False, version)
-            body_b_matrix = get_matrix(ragdoll, body_b_obj, True, armature, joined_list, False, version)
-            mesh_dimensions = get_dimensions(body_a_matrix, body_a_obj, body_b_matrix, body_b_obj, -1, scale, version, None, False, False)
+            body_a_index = global_functions.get_parent(armature, body_a_obj, joined_list, -1, True)
+            body_b_index = global_functions.get_parent(armature, body_b_obj, joined_list, -1, True)
+            body_a_matrix = global_functions.get_matrix(ragdoll, body_a_obj, True, armature, joined_list, False, version)
+            body_b_matrix = global_functions.get_matrix(ragdoll, body_b_obj, True, armature, joined_list, False, version)
+            mesh_dimensions = global_functions.get_dimensions(body_a_matrix, body_a_obj, body_b_matrix, body_b_obj, -1, scale, version, None, False, False, armature)
             min_angle_x = 0
             max_angle_x = 0
             min_angle_y = 0
@@ -1575,11 +1188,11 @@ def file_layout(context,
             name = hinge.name.split('$', 1)[1]
             body_a_obj = hinge.rigid_body_constraint.object1
             body_b_obj = hinge.rigid_body_constraint.object2
-            body_a_index = get_parent(armature, body_a_obj, joined_list, -1, True)
-            body_b_index = get_parent(armature, body_b_obj, joined_list, -1, True)
-            body_a_matrix = get_matrix(hinge, body_a_obj, True, armature, joined_list, False, version)
-            body_b_matrix = get_matrix(hinge, body_b_obj, True, armature, joined_list, False, version)
-            mesh_dimensions = get_dimensions(body_a_matrix, body_a_obj, body_b_matrix, body_b_obj, -1, scale, version, None, False, False)
+            body_a_index = global_functions.get_parent(armature, body_a_obj, joined_list, -1, True)
+            body_b_index = global_functions.get_parent(armature, body_b_obj, joined_list, -1, True)
+            body_a_matrix = global_functions.get_matrix(hinge, body_a_obj, True, armature, joined_list, False, version)
+            body_b_matrix = global_functions.get_matrix(hinge, body_b_obj, True, armature, joined_list, False, version)
+            mesh_dimensions = global_functions.get_dimensions(body_a_matrix, body_a_obj, body_b_matrix, body_b_obj, -1, scale, version, None, False, False, armature)
             is_limited = int(hinge.rigid_body_constraint.use_limit_ang_z)
             friction_limit = 0
             min_angle = 0
@@ -1649,11 +1262,11 @@ def file_layout(context,
                 name = point_to_point.name.split('$', 1)[1]
                 body_a_obj = point_to_point.rigid_body_constraint.object1
                 body_b_obj = point_to_point.rigid_body_constraint.object2
-                body_a_index = get_parent(armature, body_a_obj, joined_list, -1, True)
-                body_b_index = get_parent(armature, body_b_obj, joined_list, -1, True)
-                body_a_matrix = get_matrix(body_a_obj, point_to_point, True, armature, joined_list, False, version)
-                body_b_matrix = get_matrix(body_b_obj, point_to_point, True, armature, joined_list, False, version)
-                mesh_dimensions = get_dimensions(body_a_matrix, body_a_obj, body_b_matrix, body_b_obj, -1, scale, version, None, False, False)
+                body_a_index = global_functions.get_parent(armature, body_a_obj, joined_list, -1, True)
+                body_b_index = global_functions.get_parent(armature, body_b_obj, joined_list, -1, True)
+                body_a_matrix = global_functions.get_matrix(body_a_obj, point_to_point, True, armature, joined_list, False, version)
+                body_b_matrix = global_functions.get_matrix(body_b_obj, point_to_point, True, armature, joined_list, False, version)
+                mesh_dimensions = global_functions.get_dimensions(body_a_matrix, body_a_obj, body_b_matrix, body_b_obj, -1, scale, version, None, False, False, armature)
                 is_limited_x = int(point_to_point.rigid_body_constraint.use_limit_ang_x)
                 is_limited_y = int(point_to_point.rigid_body_constraint.use_limit_ang_y)
                 is_limited_z = int(point_to_point.rigid_body_constraint.use_limit_ang_z)
@@ -1744,8 +1357,8 @@ def file_layout(context,
         )
 
         for bound_sphere in bounding_sphere:
-            bound_sphere_matrix = get_matrix(bound_sphere, bound_sphere, False, armature, joined_list, False, version)
-            mesh_dimensions = get_dimensions(bound_sphere_matrix, bound_sphere, None, None, -1, scale, version, None, False, False)
+            bound_sphere_matrix = global_functions.get_matrix(bound_sphere, bound_sphere, False, armature, joined_list, False, version)
+            mesh_dimensions = global_functions.get_dimensions(bound_sphere_matrix, bound_sphere, None, None, -1, scale, version, None, False, False, armature)
 
             file.write(
                 '\n;BOUNDING SPHERE %s' % (bounding_sphere.index(bound_sphere)) +
@@ -1761,6 +1374,8 @@ def file_layout(context,
         property_value = object_properties[item_index]
         obj.hide_set(property_value[0])
         obj.hide_viewport = property_value[1]
+
+    report({'INFO'}, "Export completed successfully")
 
 def write_file(context,
                filepath,
@@ -1783,7 +1398,7 @@ def write_file(context,
                export_collision,
                export_physics):
 
-    unhide_all_collections()
+    global_functions.unhide_all_collections()
 
     object_list = list(bpy.context.scene.objects)
     node_count = 0
@@ -1844,6 +1459,10 @@ def write_file(context,
                 hidden_geo,
                 object_list]
 
+    if render_count == 0 and collision_count == 0 and physics_count == 0:
+        report({'ERROR'}, "No objects in scene")
+        return {'CANCELLED'}
+
     if game_version == 'haloce':
         model_type = ""
         file_layout(*keywords, True, True, True, model_type)
@@ -1865,7 +1484,6 @@ def write_file(context,
         report({'ERROR'}, "How did you even choose an option that doesn't exist?")
         return {'CANCELLED'}
 
-    report({'INFO'}, "Export completed successfully")
     return {'FINISHED'}
 
 if __name__ == '__main__':
