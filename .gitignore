@@ -1,1 +1,4 @@
-io_scene_jms/__pycache__/
+io_scene_halo/__pycache__/
+io_scene_halo/global_functions/__pycache__/
+io_scene_halo/file_jma/__pycache__/
+io_scene_halo/file_jms/__pycache__/
