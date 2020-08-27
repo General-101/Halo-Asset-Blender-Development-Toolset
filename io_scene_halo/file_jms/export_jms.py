@@ -522,7 +522,7 @@ def file_layout(context,
         if armature:
             is_bone = True
 
-        bone_matrix = global_functions.get_matrix(node, node, True, armature, joined_list, is_bone, version)
+        bone_matrix = global_functions.get_matrix(node, node, True, armature, joined_list, is_bone, version, False)
         mesh_dimensions = global_functions.get_dimensions(bone_matrix, node, None, None, -1, scale, version, None, False, is_bone, armature)
 
         if version >= 8205:
@@ -648,7 +648,7 @@ def file_layout(context,
         if len(marker.jms.Region) != 0:
             region = region_list.index(marker.jms.Region)
         parent_index = global_functions.get_parent(armature, marker, joined_list, 0, True)
-        marker_matrix = global_functions.get_matrix(marker, marker, True, armature, joined_list, False, version)
+        marker_matrix = global_functions.get_matrix(marker, marker, True, armature, joined_list, False, version, False)
         mesh_dimensions = global_functions.get_dimensions(marker_matrix, marker, None, None, -1, scale, version, None, False, False, armature)
 
         if version >= 8205:
@@ -714,7 +714,7 @@ def file_layout(context,
         starting_ID = -1 * (randint(0, 3000000000))
         for int_markers in instance_markers:
             unique_identifier = starting_ID + (-1 * instance_markers.index(int_markers))
-            int_markers_matrix = global_functions.get_matrix(int_markers, int_markers, False, armature, joined_list, False, version)
+            int_markers_matrix = global_functions.get_matrix(int_markers, int_markers, False, armature, joined_list, False, version, False)
             mesh_dimensions = global_functions.get_dimensions(int_markers_matrix, int_markers, None, None, -1, scale, version, None, False, False, armature)
 
             file.write(
@@ -733,7 +733,7 @@ def file_layout(context,
         original_geo = original_geometry_list[item_index]
         vertex_groups = original_geo.vertex_groups.keys()
 
-        original_geo_matrix = global_functions.get_matrix(original_geo, original_geo, False, armature, joined_list, False, version)
+        original_geo_matrix = global_functions.get_matrix(original_geo, original_geo, False, armature, joined_list, False, version, False)
 
         region_name = original_geo.jms.Region
 
@@ -958,7 +958,7 @@ def file_layout(context,
             face = mesh_sphere.polygons[0]
             sphere_material_index = get_material(game_version, spheres, face, mesh_sphere, material_list)
             parent_index = global_functions.get_parent(armature, spheres, joined_list, -1, True)
-            sphere_matrix = global_functions.get_matrix(spheres, spheres, True, armature, joined_list, False, version)
+            sphere_matrix = global_functions.get_matrix(spheres, spheres, True, armature, joined_list, False, version, False)
             mesh_dimensions = global_functions.get_dimensions(sphere_matrix, spheres, None, None, -1, scale, version, None, False, False, armature)
 
             file.write(
@@ -992,7 +992,7 @@ def file_layout(context,
             face = mesh_boxes.polygons[0]
             boxes_material_index = get_material(game_version, boxes, face, mesh_boxes, material_list)
             parent_index = global_functions.get_parent(armature, boxes, joined_list, -1, True)
-            box_matrix = global_functions.get_matrix(boxes, boxes, True, armature, joined_list, False, version)
+            box_matrix = global_functions.get_matrix(boxes, boxes, True, armature, joined_list, False, version, False)
             mesh_dimensions = global_functions.get_dimensions(box_matrix, boxes, None, None, -1, scale, version, None, False, False, armature)
 
             file.write(
@@ -1027,7 +1027,7 @@ def file_layout(context,
             face = mesh_capsule.polygons[0]
             capsule_material_index = get_material(game_version, capsule, face, mesh_capsule, material_list)
             parent_index = global_functions.get_parent(armature, capsule, joined_list, -1, True)
-            capsule_matrix = global_functions.get_matrix(capsule, capsule, True, armature, joined_list, False, version)
+            capsule_matrix = global_functions.get_matrix(capsule, capsule, True, armature, joined_list, False, version, False)
             mesh_dimensions = global_functions.get_dimensions(capsule_matrix, capsule, None, None, -1, scale, version, None, False, False, armature)
 
             file.write(
@@ -1078,7 +1078,7 @@ def file_layout(context,
             face = mesh_convex_shape.polygons[0]
             convex_shape_material_index = get_material(game_version, convex_shape, face, mesh_convex_shape, material_list)
             parent_index = global_functions.get_parent(armature, convex_shape, joined_list, -1, True)
-            convex_matrix = global_functions.get_matrix(convex_shape, convex_shape, True, armature, joined_list, False, version)
+            convex_matrix = global_functions.get_matrix(convex_shape, convex_shape, True, armature, joined_list, False, version, False)
             mesh_dimensions = global_functions.get_dimensions(convex_matrix, convex_shape, None, None, -1, scale, version, None, False, False, armature)
 
             file.write(
@@ -1126,8 +1126,8 @@ def file_layout(context,
             body_b_obj = ragdoll.rigid_body_constraint.object2
             body_a_index = global_functions.get_parent(armature, body_a_obj, joined_list, -1, True)
             body_b_index = global_functions.get_parent(armature, body_b_obj, joined_list, -1, True)
-            body_a_matrix = global_functions.get_matrix(ragdoll, body_a_obj, True, armature, joined_list, False, version)
-            body_b_matrix = global_functions.get_matrix(ragdoll, body_b_obj, True, armature, joined_list, False, version)
+            body_a_matrix = global_functions.get_matrix(ragdoll, body_a_obj, True, armature, joined_list, False, version, False)
+            body_b_matrix = global_functions.get_matrix(ragdoll, body_b_obj, True, armature, joined_list, False, version, False)
             mesh_dimensions = global_functions.get_dimensions(body_a_matrix, body_a_obj, body_b_matrix, body_b_obj, -1, scale, version, None, False, False, armature)
             min_angle_x = 0
             max_angle_x = 0
@@ -1190,8 +1190,8 @@ def file_layout(context,
             body_b_obj = hinge.rigid_body_constraint.object2
             body_a_index = global_functions.get_parent(armature, body_a_obj, joined_list, -1, True)
             body_b_index = global_functions.get_parent(armature, body_b_obj, joined_list, -1, True)
-            body_a_matrix = global_functions.get_matrix(hinge, body_a_obj, True, armature, joined_list, False, version)
-            body_b_matrix = global_functions.get_matrix(hinge, body_b_obj, True, armature, joined_list, False, version)
+            body_a_matrix = global_functions.get_matrix(hinge, body_a_obj, True, armature, joined_list, False, version, False)
+            body_b_matrix = global_functions.get_matrix(hinge, body_b_obj, True, armature, joined_list, False, version, False)
             mesh_dimensions = global_functions.get_dimensions(body_a_matrix, body_a_obj, body_b_matrix, body_b_obj, -1, scale, version, None, False, False, armature)
             is_limited = int(hinge.rigid_body_constraint.use_limit_ang_z)
             friction_limit = 0
@@ -1264,8 +1264,8 @@ def file_layout(context,
                 body_b_obj = point_to_point.rigid_body_constraint.object2
                 body_a_index = global_functions.get_parent(armature, body_a_obj, joined_list, -1, True)
                 body_b_index = global_functions.get_parent(armature, body_b_obj, joined_list, -1, True)
-                body_a_matrix = global_functions.get_matrix(body_a_obj, point_to_point, True, armature, joined_list, False, version)
-                body_b_matrix = global_functions.get_matrix(body_b_obj, point_to_point, True, armature, joined_list, False, version)
+                body_a_matrix = global_functions.get_matrix(body_a_obj, point_to_point, True, armature, joined_list, False, version, False)
+                body_b_matrix = global_functions.get_matrix(body_b_obj, point_to_point, True, armature, joined_list, False, version, False)
                 mesh_dimensions = global_functions.get_dimensions(body_a_matrix, body_a_obj, body_b_matrix, body_b_obj, -1, scale, version, None, False, False, armature)
                 is_limited_x = int(point_to_point.rigid_body_constraint.use_limit_ang_x)
                 is_limited_y = int(point_to_point.rigid_body_constraint.use_limit_ang_y)
@@ -1357,7 +1357,7 @@ def file_layout(context,
         )
 
         for bound_sphere in bounding_sphere:
-            bound_sphere_matrix = global_functions.get_matrix(bound_sphere, bound_sphere, False, armature, joined_list, False, version)
+            bound_sphere_matrix = global_functions.get_matrix(bound_sphere, bound_sphere, False, armature, joined_list, False, version, False)
             mesh_dimensions = global_functions.get_dimensions(bound_sphere_matrix, bound_sphere, None, None, -1, scale, version, None, False, False, armature)
 
             file.write(

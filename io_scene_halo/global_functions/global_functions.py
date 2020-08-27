@@ -141,24 +141,12 @@ def error_pass(armature_count, report, game_version, node_count, version, extens
         report({'ERROR'}, 'No nodes in scene. Add an armature or object mesh named frame')
         result = True
 
-    elif game_version == 'haloce' and len(geometry_list) == 0 and len(marker_list) == 0 and not animation:
-        report({'ERROR'}, 'No geometry in scene.')
-        result = True
-
-    elif version >= 8201 and game_version == 'haloce':
-        report({'ERROR'}, 'This version is not supported for CE. Choose from 8197-8200 if you wish to export for CE.')
-        result = True
-
     elif extension == '.JMP' and game_version == 'halo2':
         report({'ERROR'}, 'This extension is not used in Halo 2 Vista')
         result = True
 
     elif root_node_count >= 2:
         report({'ERROR'}, "More than one root node. Please remove or rename objects until you only have one root frame object.")
-        result = True
-
-    elif version >= 16393 and game_version == 'haloce' and animation:
-        report({'ERROR'}, 'This version is not supported for Halo CE. Choose from 16390-16392 if you wish to export for Halo CE.')
         result = True
 
     elif extension in h2_extension_list and game_version == 'haloce':
@@ -169,9 +157,22 @@ def error_pass(armature_count, report, game_version, node_count, version, extens
         report({'ERROR'}, 'No objects in scene.')
         result = True
 
+    if animation:
+        if version >= 16393 and game_version == 'haloce':
+            report({'ERROR'}, 'This version is not supported for Halo CE. Choose from 16390-16392 if you wish to export for Halo CE.')
+            result = True
+
     if not animation:
         if mesh_frame_count > 0 and armature_count > 0:
             report({'ERROR'}, "Using both armature and object mesh node setup. Choose one or the other.")
+            result = True
+
+        elif game_version == 'haloce' and len(geometry_list) == 0 and len(marker_list) == 0:
+            report({'ERROR'}, 'No geometry in scene.')
+            result = True
+
+        elif version >= 8201 and game_version == 'haloce':
+            report({'ERROR'}, 'This version is not supported for CE. Choose from 8197-8200 if you wish to export for CE.')
             result = True
 
     return result
@@ -343,19 +344,19 @@ def get_true_extension(filepath, extension, is_import):
 
     return true_extension
 
-def get_matrix(obj_a, obj_b, is_local, armature, joined_list, is_node, version):
+def get_matrix(obj_a, obj_b, is_local, armature, joined_list, is_node, version, animation):
     object_matrix = None
     if is_node:
         if armature:
             pose_bone = armature.pose.bones['%s' % (obj_a.name)]
             object_matrix = pose_bone.matrix
-            if pose_bone.parent and not version >= 8205:
+            if pose_bone.parent and not version >= get_version_matrix_check(animation):
                 #Files at or above 8205 use absolute transform instead of local transform for nodes
                 object_matrix = pose_bone.parent.matrix.inverted() @ pose_bone.matrix
 
         else:
             object_matrix = obj_a.matrix_world
-            if obj_a.parent and not version >= 8205:
+            if obj_a.parent and not version >= get_version_matrix_check(animation):
                 #Files at or above 8205 use absolute transform instead of local transform for nodes
                 object_matrix = obj_a.parent.matrix_local @ obj_a.matrix_world
 
@@ -540,3 +541,14 @@ def count_root_nodes(node_list):
             root_node_count += 1
 
     return root_node_count
+
+def get_version_matrix_check(animation):
+    matrix_version = None
+    if animation:
+        matrix_version = 16394
+
+    else:
+        matrix_version = 8205
+
+    return matrix_version
+

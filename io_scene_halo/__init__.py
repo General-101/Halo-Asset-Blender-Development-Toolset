@@ -45,7 +45,7 @@ if "bpy" in locals():
     if "export_jma" in locals():
         importlib.reload(export_jma)
     if "import_jma" in locals():
-        importlib.reload(import_jma)        
+        importlib.reload(import_jma)
     if "global_functions" in locals():
         importlib.reload(global_functions)
 

@@ -169,7 +169,7 @@ def write_file(context,
             if armature:
                 is_bone = True
 
-            bone_matrix = global_functions.get_matrix(node, node, True, armature, joined_list, is_bone, version)
+            bone_matrix = global_functions.get_matrix(node, node, True, armature, joined_list, is_bone, version, True)
             mesh_dimensions = global_functions.get_dimensions(bone_matrix, node, None, None, -1, scale, version, None, False, is_bone, armature)
 
             file.write(
