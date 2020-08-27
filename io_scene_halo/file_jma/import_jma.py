@@ -33,23 +33,18 @@ def load_file(context, filepath, report):
     processed_file = []
     encode = global_functions.test_encoding(filepath)
     file = open(filepath, "r", encoding=encode)
-    #foutput = open("C:\\Users\\Steven\\Desktop\\Test.JMA", "w")
     for line in file:
         if not line.strip(): continue
         if not line.startswith(";"):
             processed_file.append(line.replace('\n', ''))
-            #foutput.write('%s' % line)
 
     armature = []
     node_list = []
     child_list = []
     sibling_list = []
     parent_list = []
-    node_matrix = []
-    translation_list = []
     node_index = 0
     frame_index = 0
-    frame_set = 0
     version = int(processed_file[0])
 
     version_list = [16390,16391,16392,16393,16394,16395]
@@ -95,7 +90,6 @@ def load_file(context, filepath, report):
             sibling_list.append(sibling_node_index)
             node_index += 3
 
-    bpy.ops.object.mode_set(mode = 'POSE')
     for frame in range(transform_count):
         current_frame = frame + 1
         bpy.context.scene.frame_set(current_frame)
@@ -104,26 +98,23 @@ def load_file(context, filepath, report):
             node_rotation = processed_file[frame_index + node_index + 7].split()
             node_translation = processed_file[frame_index + node_index + 8].split()
             node_scale = processed_file[frame_index + node_index + 9]
-            matrix_rotation = Quaternion(((float(node_rotation[3]) * -1), float(node_rotation[0]), float(node_rotation[1]), float(node_rotation[2]))).inverted().to_matrix().to_4x4()
-            matrix_translation = Matrix.Translation(Vector((float(node_translation[0]), float(node_translation[1]), float(node_translation[2]))))
-            if version > 16394:
-                rotation = matrix_rotation
-                pos = matrix_translation.translation
+            file_matrix = Quaternion(((float(node_rotation[3]) * -1), float(node_rotation[0]), float(node_rotation[1]), float(node_rotation[2]))).inverted().to_matrix().to_4x4()
+            file_matrix[0][3] = float(node_translation[0])
+            file_matrix[1][3] = float(node_translation[1])
+            file_matrix[2][3] = float(node_translation[2])
+            if version >= 16394:
+                matrix = file_matrix
 
             else:
-                rotation = matrix_rotation
-                pos = matrix_translation.translation
+                matrix = file_matrix
+                if pose_bone.parent:
+                    matrix = pose_bone.parent.matrix @ file_matrix
 
-
-            armature.pose.bones[node].matrix = rotation
-            bpy.context.view_layer.update()
-            armature.pose.bones[node].matrix.translation = pos
+            armature.pose.bones[node].matrix = matrix
             bpy.context.view_layer.update()
             armature.pose.bones[node].keyframe_insert('location')
             armature.pose.bones[node].keyframe_insert('rotation_quaternion')
             frame_index += 3
-
-        frame_set += 1
 
     if version == 16395:
         biped_controller = processed_file[frame_index + node_index + 7]
