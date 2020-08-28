@@ -130,7 +130,7 @@ def get_encoding(game_version):
 
     return encoding
 
-def error_pass(armature_count, report, game_version, node_count, version, extension, geometry_list, marker_list, root_node_count, animation, mesh_frame_count, object_count):
+def error_pass(armature_count, report, game_version, node_count, version, extension, geometry_list, marker_count, root_node_count, animation, mesh_frame_count, object_count):
     result = False
     h2_extension_list = ['JRMX', 'JMH']
     if armature_count >= 2:
@@ -167,7 +167,7 @@ def error_pass(armature_count, report, game_version, node_count, version, extens
             report({'ERROR'}, "Using both armature and object mesh node setup. Choose one or the other.")
             result = True
 
-        elif game_version == 'haloce' and len(geometry_list) == 0 and len(marker_list) == 0:
+        elif game_version == 'haloce' and len(geometry_list) == 0 and marker_count == 0:
             report({'ERROR'}, 'No geometry in scene.')
             result = True
 
@@ -365,17 +365,17 @@ def get_matrix(obj_a, obj_b, is_local, armature, joined_list, is_node, version, 
             object_matrix = obj_a.matrix_world
             if obj_b.parent_bone and is_local:
                 parent_object = get_parent(armature, obj_b, joined_list, -1, False)
-                object_matrix = parent_object.matrix_local.inverted() @ obj_a.matrix_world
+                object_matrix = parent_object.matrix_world.inverted() @ obj_a.matrix_world
 
         else:
             object_matrix = obj_a.matrix_world
             if obj_b.parent and is_local:
                 parent_object = get_parent(armature, obj_b, joined_list, -1, False)
-                object_matrix = parent_object.matrix_local.inverted() @ obj_a.matrix_world
+                object_matrix = parent_object.matrix_world.inverted() @ obj_a.matrix_world
 
     return object_matrix
 
-def get_dimensions(mesh_a_matrix, mesh_a, mesh_b_matrix, mesh_b, invert, custom_scale, version, jms_vertex, is_vertex, is_bone, armature):
+def get_dimensions(mesh_a_matrix, mesh_a, mesh_b_matrix, mesh_b, invert, custom_scale, version, jms_vertex, is_vertex, is_bone, armature, animation):
     object_dimensions = JmsDimensions()
     if is_vertex:
         pos = jms_vertex.pos
@@ -387,6 +387,9 @@ def get_dimensions(mesh_a_matrix, mesh_a, mesh_b_matrix, mesh_b, invert, custom_
         if mesh_a:
             pos  = mesh_a_matrix.translation
             quat = mesh_a_matrix.to_quaternion().inverted()
+            if version >= get_version_matrix_check(animation):
+                quat = mesh_a_matrix.to_quaternion()
+
             if is_bone:
                 pose_bone = armature.pose.bones[mesh_a.name]
                 scale = pose_bone.scale
@@ -425,6 +428,9 @@ def get_dimensions(mesh_a_matrix, mesh_a, mesh_b_matrix, mesh_b, invert, custom_
         if mesh_b:
             pos  = mesh_b_matrix.translation
             quat = mesh_b_matrix.to_quaternion().inverted()
+            if version >= get_version_matrix_check(animation):
+                quat = mesh_a_matrix.to_quaternion()
+
             if is_bone:
                 pose_bone = armature.pose.bones[mesh_b.name]
                 scale = pose_bone.scale

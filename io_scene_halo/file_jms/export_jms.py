@@ -288,7 +288,7 @@ def file_layout(context,
         elif obj.name[0:1].lower() == '@' and game_version == 'halo2':
             if set_ignore(obj) == False or hidden_geo:
                 if export_collision:
-                    if bpy.context.object.data.uv_layers:
+                    if obj.data.uv_layers:
                         material_list = gather_materials(obj, version, game_version, material_list)
                         modifier_list = []
                         if triangulate_faces:
@@ -361,11 +361,38 @@ def file_layout(context,
             if set_ignore(obj) == False or hidden_geo:
                 bounding_sphere.append(obj)
 
-        elif obj.type== 'MESH':
+        elif obj.type == 'MESH':
             if set_ignore(obj) == False or hidden_geo:
-                if game_version == 'haloce':
-                    if not obj.parent == None:
-                        if obj.parent.type == 'ARMATURE' or obj.parent.name[0:2].lower() == 'b_' or obj.name[0:4].lower() == 'bone' or obj.parent.name[0:5].lower() == 'frame':
+                if obj.data.uv_layers:
+                    if game_version == 'haloce':
+                        if not obj.parent == None:
+                            if obj.parent.type == 'ARMATURE' or obj.parent.name[0:2].lower() == 'b_' or obj.name[0:4].lower() == 'bone' or obj.parent.name[0:5].lower() == 'frame':
+                                material_list = gather_materials(obj, version, game_version, material_list)
+                                modifier_list = []
+                                if triangulate_faces:
+                                    for modifier in obj.modifiers:
+                                        modifier.show_render = True
+                                        modifier.show_viewport = True
+                                        modifier.show_in_editmode = True
+                                        modifier_list.append(modifier.type)
+
+                                    if not 'TRIANGULATE' in modifier_list:
+                                        obj.modifiers.new("Triangulate", type='TRIANGULATE')
+
+                                    obj_for_convert = obj.evaluated_get(depsgraph)
+                                    me = obj_for_convert.to_mesh(preserve_all_data_layers=True, depsgraph=depsgraph)
+                                    geometry_list.append(me)
+                                    original_geometry_list.append(obj)
+
+                                else:
+                                    geometry_list.append(obj.to_mesh(preserve_all_data_layers=True))
+                                    original_geometry_list.append(obj)
+
+                                region_list.append(find_region)
+                                permutation_list.append(find_permutation)
+
+                    elif game_version == 'halo2':
+                        if export_render:
                             material_list = gather_materials(obj, version, game_version, material_list)
                             modifier_list = []
                             if triangulate_faces:
@@ -390,36 +417,9 @@ def file_layout(context,
                             region_list.append(find_region)
                             permutation_list.append(find_permutation)
 
-                elif game_version == 'halo2':
-                    if export_render:
-                        if bpy.context.object.data.uv_layers:
-                            material_list = gather_materials(obj, version, game_version, material_list)
-                            modifier_list = []
-                            if triangulate_faces:
-                                for modifier in obj.modifiers:
-                                    modifier.show_render = True
-                                    modifier.show_viewport = True
-                                    modifier.show_in_editmode = True
-                                    modifier_list.append(modifier.type)
-
-                                if not 'TRIANGULATE' in modifier_list:
-                                    obj.modifiers.new("Triangulate", type='TRIANGULATE')
-
-                                obj_for_convert = obj.evaluated_get(depsgraph)
-                                me = obj_for_convert.to_mesh(preserve_all_data_layers=True, depsgraph=depsgraph)
-                                geometry_list.append(me)
-                                original_geometry_list.append(obj)
-
-                            else:
-                                geometry_list.append(obj.to_mesh(preserve_all_data_layers=True))
-                                original_geometry_list.append(obj)
-
-                            region_list.append(find_region)
-                            permutation_list.append(find_permutation)
-
-                else:
-                    report({'ERROR'}, "How did you even choose an option that doesn't exist?")
-                    return {'CANCELLED'}
+                    else:
+                        report({'ERROR'}, "How did you even choose an option that doesn't exist?")
+                        return {'CANCELLED'}
 
     region_list = list(dict.fromkeys(region_list))
     permutation_list = list(dict.fromkeys(permutation_list))
@@ -449,7 +449,7 @@ def file_layout(context,
         decimal_3 = '\n%0.6f\t%0.6f\t%0.6f'
         decimal_4 = '\n%0.6f\t%0.6f\t%0.6f\t%0.6f'
 
-    if global_functions.error_pass(armature_count, report, game_version, node_count, version, extension, geometry_list, marker_list, root_node_count, False, mesh_frame_count, object_count):
+    if global_functions.error_pass(armature_count, report, game_version, node_count, version, extension, geometry_list, marker_count, root_node_count, False, mesh_frame_count, object_count):
         return {'CANCELLED'}
 
     joined_list = global_functions.sort_list(node_list, armature, False, game_version, version, True)
@@ -523,7 +523,7 @@ def file_layout(context,
             is_bone = True
 
         bone_matrix = global_functions.get_matrix(node, node, True, armature, joined_list, True, version, False)
-        mesh_dimensions = global_functions.get_dimensions(bone_matrix, node, None, None, -1, scale, version, None, False, is_bone, armature)
+        mesh_dimensions = global_functions.get_dimensions(bone_matrix, node, None, None, -1, scale, version, None, False, is_bone, armature, False)
 
         if version >= 8205:
             file.write(
@@ -649,7 +649,7 @@ def file_layout(context,
             region = region_list.index(marker.jms.Region)
         parent_index = global_functions.get_parent(armature, marker, joined_list, 0, True)
         marker_matrix = global_functions.get_matrix(marker, marker, True, armature, joined_list, False, version, False)
-        mesh_dimensions = global_functions.get_dimensions(marker_matrix, marker, None, None, -1, scale, version, None, False, False, armature)
+        mesh_dimensions = global_functions.get_dimensions(marker_matrix, marker, None, None, -1, scale, version, None, False, False, armature, False)
 
         if version >= 8205:
             file.write(
@@ -715,7 +715,7 @@ def file_layout(context,
         for int_markers in instance_markers:
             unique_identifier = starting_ID + (-1 * instance_markers.index(int_markers))
             int_markers_matrix = global_functions.get_matrix(int_markers, int_markers, False, armature, joined_list, False, version, False)
-            mesh_dimensions = global_functions.get_dimensions(int_markers_matrix, int_markers, None, None, -1, scale, version, None, False, False, armature)
+            mesh_dimensions = global_functions.get_dimensions(int_markers_matrix, int_markers, None, None, -1, scale, version, None, False, False, armature, False)
 
             file.write(
                 '\n;XREF OBJECT %s' % (instance_markers.index(int_markers)) +
@@ -860,7 +860,7 @@ def file_layout(context,
         norm = jms_vertex.norm
         uv   = jms_vertex.uv
 
-        mesh_dimensions = global_functions.get_dimensions(None, None, None, None, -1, scale, version, jms_vertex, True, False, armature)
+        mesh_dimensions = global_functions.get_dimensions(None, None, None, None, -1, scale, version, jms_vertex, True, False, armature, False)
 
         norm_i = Decimal(norm[0]).quantize(Decimal('1.0000000000'))
         norm_j = Decimal(norm[1]).quantize(Decimal('1.0000000000'))
@@ -959,7 +959,7 @@ def file_layout(context,
             sphere_material_index = get_material(game_version, spheres, face, mesh_sphere, material_list)
             parent_index = global_functions.get_parent(armature, spheres, joined_list, -1, True)
             sphere_matrix = global_functions.get_matrix(spheres, spheres, True, armature, joined_list, False, version, False)
-            mesh_dimensions = global_functions.get_dimensions(sphere_matrix, spheres, None, None, -1, scale, version, None, False, False, armature)
+            mesh_dimensions = global_functions.get_dimensions(sphere_matrix, spheres, None, None, -1, scale, version, None, False, False, armature, False)
 
             file.write(
                 '\n;SPHERE %s' % (sphere_list.index(spheres)) +
@@ -993,7 +993,7 @@ def file_layout(context,
             boxes_material_index = get_material(game_version, boxes, face, mesh_boxes, material_list)
             parent_index = global_functions.get_parent(armature, boxes, joined_list, -1, True)
             box_matrix = global_functions.get_matrix(boxes, boxes, True, armature, joined_list, False, version, False)
-            mesh_dimensions = global_functions.get_dimensions(box_matrix, boxes, None, None, -1, scale, version, None, False, False, armature)
+            mesh_dimensions = global_functions.get_dimensions(box_matrix, boxes, None, None, -1, scale, version, None, False, False, armature, False)
 
             file.write(
                 '\n;BOXES %s' % (box_list.index(boxes)) +
@@ -1028,7 +1028,7 @@ def file_layout(context,
             capsule_material_index = get_material(game_version, capsule, face, mesh_capsule, material_list)
             parent_index = global_functions.get_parent(armature, capsule, joined_list, -1, True)
             capsule_matrix = global_functions.get_matrix(capsule, capsule, True, armature, joined_list, False, version, False)
-            mesh_dimensions = global_functions.get_dimensions(capsule_matrix, capsule, None, None, -1, scale, version, None, False, False, armature)
+            mesh_dimensions = global_functions.get_dimensions(capsule_matrix, capsule, None, None, -1, scale, version, None, False, False, armature, False)
 
             file.write(
                 '\n;CAPSULES %s' % (capsule_list.index(capsule)) +
@@ -1079,7 +1079,7 @@ def file_layout(context,
             convex_shape_material_index = get_material(game_version, convex_shape, face, mesh_convex_shape, material_list)
             parent_index = global_functions.get_parent(armature, convex_shape, joined_list, -1, True)
             convex_matrix = global_functions.get_matrix(convex_shape, convex_shape, True, armature, joined_list, False, version, False)
-            mesh_dimensions = global_functions.get_dimensions(convex_matrix, convex_shape, None, None, -1, scale, version, None, False, False, armature)
+            mesh_dimensions = global_functions.get_dimensions(convex_matrix, convex_shape, None, None, -1, scale, version, None, False, False, armature, False)
 
             file.write(
                 '\n;CONVEX %s' % (convex_shape_list.index(convex_shape)) +
@@ -1095,7 +1095,7 @@ def file_layout(context,
                 pos  = convex_matrix @ vertex.co
                 jms_vertex = JmsVertex()
                 jms_vertex.pos = pos
-                mesh_dimensions = global_functions.get_dimensions(None, None, None, None, -1, scale, version, jms_vertex, True, False, armature)
+                mesh_dimensions = global_functions.get_dimensions(None, None, None, None, -1, scale, version, jms_vertex, True, False, armature, False)
 
                 file.write(
                 decimal_3 % (mesh_dimensions.pos_x_a, mesh_dimensions.pos_y_a, mesh_dimensions.pos_z_a)
@@ -1128,7 +1128,7 @@ def file_layout(context,
             body_b_index = global_functions.get_parent(armature, body_b_obj, joined_list, -1, True)
             body_a_matrix = global_functions.get_matrix(ragdoll, body_a_obj, True, armature, joined_list, False, version, False)
             body_b_matrix = global_functions.get_matrix(ragdoll, body_b_obj, True, armature, joined_list, False, version, False)
-            mesh_dimensions = global_functions.get_dimensions(body_a_matrix, body_a_obj, body_b_matrix, body_b_obj, -1, scale, version, None, False, False, armature)
+            mesh_dimensions = global_functions.get_dimensions(body_a_matrix, body_a_obj, body_b_matrix, body_b_obj, -1, scale, version, None, False, False, armature, False)
             min_angle_x = 0
             max_angle_x = 0
             min_angle_y = 0
@@ -1192,7 +1192,7 @@ def file_layout(context,
             body_b_index = global_functions.get_parent(armature, body_b_obj, joined_list, -1, True)
             body_a_matrix = global_functions.get_matrix(hinge, body_a_obj, True, armature, joined_list, False, version, False)
             body_b_matrix = global_functions.get_matrix(hinge, body_b_obj, True, armature, joined_list, False, version, False)
-            mesh_dimensions = global_functions.get_dimensions(body_a_matrix, body_a_obj, body_b_matrix, body_b_obj, -1, scale, version, None, False, False, armature)
+            mesh_dimensions = global_functions.get_dimensions(body_a_matrix, body_a_obj, body_b_matrix, body_b_obj, -1, scale, version, None, False, False, armature, False)
             is_limited = int(hinge.rigid_body_constraint.use_limit_ang_z)
             friction_limit = 0
             min_angle = 0
@@ -1266,7 +1266,7 @@ def file_layout(context,
                 body_b_index = global_functions.get_parent(armature, body_b_obj, joined_list, -1, True)
                 body_a_matrix = global_functions.get_matrix(body_a_obj, point_to_point, True, armature, joined_list, False, version, False)
                 body_b_matrix = global_functions.get_matrix(body_b_obj, point_to_point, True, armature, joined_list, False, version, False)
-                mesh_dimensions = global_functions.get_dimensions(body_a_matrix, body_a_obj, body_b_matrix, body_b_obj, -1, scale, version, None, False, False, armature)
+                mesh_dimensions = global_functions.get_dimensions(body_a_matrix, body_a_obj, body_b_matrix, body_b_obj, -1, scale, version, None, False, False, armature, False)
                 is_limited_x = int(point_to_point.rigid_body_constraint.use_limit_ang_x)
                 is_limited_y = int(point_to_point.rigid_body_constraint.use_limit_ang_y)
                 is_limited_z = int(point_to_point.rigid_body_constraint.use_limit_ang_z)
@@ -1358,7 +1358,7 @@ def file_layout(context,
 
         for bound_sphere in bounding_sphere:
             bound_sphere_matrix = global_functions.get_matrix(bound_sphere, bound_sphere, False, armature, joined_list, False, version, False)
-            mesh_dimensions = global_functions.get_dimensions(bound_sphere_matrix, bound_sphere, None, None, -1, scale, version, None, False, False, armature)
+            mesh_dimensions = global_functions.get_dimensions(bound_sphere_matrix, bound_sphere, None, None, -1, scale, version, None, False, False, armature, False)
 
             file.write(
                 '\n;BOUNDING SPHERE %s' % (bounding_sphere.index(bound_sphere)) +
@@ -1459,7 +1459,7 @@ def write_file(context,
                 hidden_geo,
                 object_list]
 
-    if render_count == 0 and collision_count == 0 and physics_count == 0:
+    if render_count == 0 and collision_count == 0 and physics_count == 0 and marker_count == 0:
         report({'ERROR'}, "No objects in scene")
         return {'CANCELLED'}
 

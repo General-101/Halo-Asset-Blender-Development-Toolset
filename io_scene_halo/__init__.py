@@ -25,14 +25,14 @@
 # ##### END MIT LICENSE BLOCK #####
 
 bl_info = {
-    "name": "Halo Jointed Model Exporter",
+    "name": "Halo Jointed Model Toolset",
     "author": "General_101",
     "version": (1, 0, 0),
     "blender": (2, 80, 0),
     "location": "File > Import-Export",
-    "description": "Export Halo 2/CE Jointed Model Skeleton File (.jms) and Halo 2/CE Jointed Model Animation File (.jma) with basic support for H2 Jointed Model Skeleton File importing. Originally by Cyboryxmen with changes by Fulsy + MosesofEgypt + con",
+    "description": "Export Halo 2/CE Jointed Model Skeleton File (.jms) and Import-Export Halo 2/CE Jointed Model Animation File (.jma). Originally by Cyboryxmen with changes by Fulsy + MosesofEgypt + con",
     "warning": "",
-    "wiki_url": "https://num0005.github.io/h2codez_docs/w/H2Tool/Render_Model/render_model.html",
+    "wiki_url": "https://num0005.github.io/h2codez_docs/",
     "support": 'COMMUNITY',
     "category": "Import-Export"}
 

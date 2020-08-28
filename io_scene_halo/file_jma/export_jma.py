@@ -26,8 +26,6 @@
 
 import bpy
 
-from math import ceil
-from decimal import *
 from io_scene_halo.global_functions import global_functions
 
 def write_file(context,
@@ -170,7 +168,7 @@ def write_file(context,
                 is_bone = True
 
             bone_matrix = global_functions.get_matrix(node, node, True, armature, joined_list, True, version, True)
-            mesh_dimensions = global_functions.get_dimensions(bone_matrix, node, None, None, -1, scale, version, None, False, is_bone, armature)
+            mesh_dimensions = global_functions.get_dimensions(bone_matrix, node, None, None, -1, scale, version, None, False, is_bone, armature, True)
 
             file.write(
                 decimal_3 % (mesh_dimensions.pos_x_a, mesh_dimensions.pos_y_a, mesh_dimensions.pos_z_a) +
