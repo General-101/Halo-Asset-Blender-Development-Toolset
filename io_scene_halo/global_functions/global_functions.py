@@ -551,4 +551,3 @@ def get_version_matrix_check(animation):
         matrix_version = 8205
 
     return matrix_version
-

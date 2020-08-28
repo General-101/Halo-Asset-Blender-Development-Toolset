@@ -52,7 +52,7 @@ def load_file(context, filepath, report):
         report({'ERROR'}, 'Importer does not support this %s version' % global_functions.get_true_extension(filepath, None, True))
         return {'CANCELLED'}
 
-    if version > 16394:
+    if version >= 16394:
         node_checksum = int(processed_file[1])
         transform_count = int(processed_file[2])
         frame_rate = int(processed_file[3])
@@ -72,7 +72,7 @@ def load_file(context, filepath, report):
     bpy.context.view_layer.objects.active = armature
     bpy.context.scene.frame_end = transform_count
     bpy.context.scene.render.fps = frame_rate
-    if version > 16394:
+    if version >= 16394:
         for node in range(node_count):
             node_name = processed_file[node_index + 7]
             parent_index = int(processed_file[node_index + 8])
@@ -95,10 +95,10 @@ def load_file(context, filepath, report):
         bpy.context.scene.frame_set(current_frame)
         for node in node_list:
             pose_bone = armature.pose.bones[node]
-            node_rotation = processed_file[frame_index + node_index + 7].split()
-            node_translation = processed_file[frame_index + node_index + 8].split()
+            node_translation = processed_file[frame_index + node_index + 7].split()
+            node_rotation = processed_file[frame_index + node_index + 8].split()
             node_scale = processed_file[frame_index + node_index + 9]
-            file_matrix = Quaternion(((float(node_rotation[3]) * -1), float(node_rotation[0]), float(node_rotation[1]), float(node_rotation[2]))).inverted().to_matrix().to_4x4()
+            file_matrix = Quaternion(((float(node_rotation[3]) * -1), float(node_rotation[0]), float(node_rotation[1]), float(node_rotation[2]))).to_matrix().to_4x4()
             file_matrix[0][3] = float(node_translation[0])
             file_matrix[1][3] = float(node_translation[1])
             file_matrix[2][3] = float(node_translation[2])
