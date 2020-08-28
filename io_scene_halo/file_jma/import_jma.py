@@ -98,7 +98,7 @@ def load_file(context, filepath, report):
             node_translation = processed_file[frame_index + node_index + 7].split()
             node_rotation = processed_file[frame_index + node_index + 8].split()
             node_scale = processed_file[frame_index + node_index + 9]
-            file_matrix = Quaternion(((float(node_rotation[3]) * -1), float(node_rotation[0]), float(node_rotation[1]), float(node_rotation[2]))).to_matrix().to_4x4()
+            file_matrix = Quaternion(((float(node_rotation[3])), float(node_rotation[0]), float(node_rotation[1]), float(node_rotation[2]))).inverted().to_matrix().to_4x4()
             file_matrix[0][3] = float(node_translation[0])
             file_matrix[1][3] = float(node_translation[1])
             file_matrix[2][3] = float(node_translation[2])

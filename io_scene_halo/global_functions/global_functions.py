@@ -358,7 +358,7 @@ def get_matrix(obj_a, obj_b, is_local, armature, joined_list, is_node, version, 
             object_matrix = obj_a.matrix_world
             if obj_a.parent and not version >= get_version_matrix_check(animation):
                 #Files at or above 8205 use absolute transform instead of local transform for nodes
-                object_matrix = obj_a.parent.matrix_local @ obj_a.matrix_world
+                object_matrix = obj_a.parent.matrix_world.inverted() @ obj_a.matrix_world
 
     else:
         if armature:
@@ -408,7 +408,7 @@ def get_dimensions(mesh_a_matrix, mesh_a, mesh_b_matrix, mesh_b, invert, custom_
             JmsDimensions.quat_i_a = Decimal(quat[1]).quantize(Decimal('1.0000000000'))
             JmsDimensions.quat_j_a = Decimal(quat[2]).quantize(Decimal('1.0000000000'))
             JmsDimensions.quat_k_a = Decimal(quat[3]).quantize(Decimal('1.0000000000'))
-            JmsDimensions.quat_w_a = Decimal(quat[0] * invert).quantize(Decimal('1.0000000000'))
+            JmsDimensions.quat_w_a = Decimal(quat[0]).quantize(Decimal('1.0000000000'))
             JmsDimensions.pos_x_a = Decimal(pos[0] * custom_scale).quantize(Decimal('1.0000000000'))
             JmsDimensions.pos_y_a = Decimal(pos[1] * custom_scale).quantize(Decimal('1.0000000000'))
             JmsDimensions.pos_z_a = Decimal(pos[2] * custom_scale).quantize(Decimal('1.0000000000'))
@@ -446,7 +446,7 @@ def get_dimensions(mesh_a_matrix, mesh_a, mesh_b_matrix, mesh_b, invert, custom_
             JmsDimensions.quat_i_b = Decimal(quat[1]).quantize(Decimal('1.0000000000'))
             JmsDimensions.quat_j_b = Decimal(quat[2]).quantize(Decimal('1.0000000000'))
             JmsDimensions.quat_k_b = Decimal(quat[3]).quantize(Decimal('1.0000000000'))
-            JmsDimensions.quat_w_b = Decimal(quat[0] * invert).quantize(Decimal('1.0000000000'))
+            JmsDimensions.quat_w_b = Decimal(quat[0]).quantize(Decimal('1.0000000000'))
             JmsDimensions.pos_x_b = Decimal(pos[0] * custom_scale).quantize(Decimal('1.0000000000'))
             JmsDimensions.pos_y_b = Decimal(pos[1] * custom_scale).quantize(Decimal('1.0000000000'))
             JmsDimensions.pos_z_b = Decimal(pos[2] * custom_scale).quantize(Decimal('1.0000000000'))
