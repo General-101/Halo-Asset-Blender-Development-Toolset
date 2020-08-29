@@ -38,11 +38,12 @@ def load_file(context, filepath, report):
         if not line.startswith(";"):
             processed_file.append(line.replace('\n', ''))
 
-    armature = []
+    armature = None
     node_list = []
     child_list = []
     sibling_list = []
     parent_list = []
+    object_list = list(bpy.context.scene.objects)
     node_index = 0
     frame_index = 0
     version = int(processed_file[0])
@@ -68,8 +69,6 @@ def load_file(context, filepath, report):
         node_count = int(processed_file[5])
         node_checksum = int(processed_file[6])
 
-    armature = bpy.data.objects['Armature']
-    bpy.context.view_layer.objects.active = armature
     bpy.context.scene.frame_end = transform_count
     bpy.context.scene.render.fps = frame_rate
     if version >= 16394:
@@ -90,6 +89,69 @@ def load_file(context, filepath, report):
             sibling_list.append(sibling_node_index)
             node_index += 3
 
+    for obj in object_list:
+        if armature is None:
+            if obj.type == 'ARMATURE':
+                exist_count = 0
+                armature_bone_list = []
+                armature_bone_list = list(obj.data.bones)
+                for node in armature_bone_list:
+                    if node.name in node_list:
+                        exist_count += 1
+
+                if exist_count == len(node_list):
+                    armature = obj
+                    bpy.context.view_layer.objects.active = armature
+
+    if armature == None:
+        if version >= 16394:
+            report({'WARNING'}, "No valid armature detected. One will be created but expect issues with visuals in scene due to no proper rest position")
+            armdata = bpy.data.armatures.new('Armature')
+            ob_new = bpy.data.objects.new('Armature', armdata)
+            bpy.context.collection.objects.link(ob_new)
+            armature = ob_new
+            bpy.context.view_layer.objects.active = armature
+            for node in node_list:
+                parent_name = parent_list[node_list.index(node)]
+                node_translation = processed_file[frame_index + node_index + 7].split()
+                node_rotation = processed_file[frame_index + node_index + 8].split()
+                node_scale = processed_file[frame_index + node_index + 9]
+                file_matrix = Quaternion(((float(node_rotation[3])), float(node_rotation[0]), float(node_rotation[1]), float(node_rotation[2]))).inverted().to_matrix().to_4x4()
+                if version >= 16394:
+                    file_matrix = Quaternion(((float(node_rotation[3])), float(node_rotation[0]), float(node_rotation[1]), float(node_rotation[2]))).to_matrix().to_4x4()
+
+                file_matrix[0][3] = float(node_translation[0])
+                file_matrix[1][3] = float(node_translation[1])
+                file_matrix[2][3] = float(node_translation[2])
+                bpy.ops.object.mode_set(mode = 'EDIT')
+                armature.data.edit_bones.new(node)
+                armature.data.edit_bones[node].tail[2] = 5
+                bpy.ops.object.mode_set(mode = 'POSE')
+                pose_bone = armature.pose.bones[node]
+                if version >= 16394:
+                    matrix = file_matrix
+
+                else:
+                    matrix = file_matrix
+                    if pose_bone.parent:
+                        matrix = pose_bone.parent.matrix @ file_matrix
+
+                if not parent_name == -1:
+                    bpy.ops.object.mode_set(mode = 'EDIT')
+                    armature.data.edit_bones[node].parent = armature.data.edit_bones[node_list[parent_name]]
+
+                bpy.ops.object.mode_set(mode = 'POSE')
+                armature.pose.bones[node].matrix = matrix
+                frame_index += 3
+
+            bpy.ops.pose.armature_apply(selected=False)
+
+        else:
+            report({'ERROR'}, "No valid armature detected.")
+            return {'CANCELLED'}
+
+    frame_index = 0
+    bpy.ops.object.mode_set(mode = 'POSE')
     for frame in range(transform_count):
         current_frame = frame + 1
         bpy.context.scene.frame_set(current_frame)
@@ -123,7 +185,7 @@ def load_file(context, filepath, report):
         biped_controller = processed_file[frame_index + node_index + 7]
 
     bpy.context.scene.frame_set(1)
-
+    bpy.ops.object.mode_set(mode = 'OBJECT')
     report({'INFO'}, "Import completed successfully")
     return {'FINISHED'}
 
