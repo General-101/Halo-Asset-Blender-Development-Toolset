@@ -29,32 +29,6 @@ import bpy
 from mathutils import Vector, Quaternion, Matrix
 from io_scene_halo.global_functions import global_functions
 
-def create_skeleton(armature, node_list):
-    for node in node_list:
-        armature.data.edit_bones.new(node)
-        armature.data.edit_bones[node].tail[2] = 5
-
-def find_children(node_list, child_list, sibling_list, node_index):
-    last_sibling = False
-    current_node = node_list[node_index]
-    item_index = node_list.index(current_node)
-    current_child = child_list[item_index]
-    current_sibling = sibling_list[item_index]
-    child_of_current_node = current_child
-    children = []
-    while last_sibling == False:
-        if not child_of_current_node == -1:
-            children.append(child_of_current_node)
-            current_node = node_list[child_of_current_node]
-            item_index = node_list.index(current_node)
-            current_child = child_list[item_index]
-            current_sibling = sibling_list[item_index]
-            child_of_current_node = current_sibling
-        if current_sibling == -1:
-            last_sibling = True
-
-    return children
-
 def load_file(context, filepath, report):
     processed_file = []
     encode = global_functions.test_encoding(filepath)
@@ -137,11 +111,11 @@ def load_file(context, filepath, report):
         armature = ob_new
         bpy.context.view_layer.objects.active = armature
         bpy.ops.object.mode_set(mode = 'EDIT')
-        create_skeleton(armature, node_list)
+        global_functions.create_skeleton(armature, node_list)
         if version <= 16393:
             for node in node_list:
                 node_index = node_list.index(node)
-                children_names = find_children(node_list, child_list, sibling_list, node_index)
+                children_names = global_functions.find_children(node_list, child_list, sibling_list, node_index)
                 for child in children_names:
                     armature.data.edit_bones[child].parent = armature.data.edit_bones[node]
 

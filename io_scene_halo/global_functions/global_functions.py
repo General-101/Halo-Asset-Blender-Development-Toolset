@@ -558,3 +558,29 @@ def get_version_matrix_check(animation):
         matrix_version = 8205
 
     return matrix_version
+
+def create_skeleton(armature, node_list):
+    for node in node_list:
+        armature.data.edit_bones.new(node)
+        armature.data.edit_bones[node].tail[2] = 5
+
+def find_children(node_list, child_list, sibling_list, node_index):
+    last_sibling = False
+    current_node = node_list[node_index]
+    item_index = node_list.index(current_node)
+    current_child = child_list[item_index]
+    current_sibling = sibling_list[item_index]
+    child_of_current_node = current_child
+    children = []
+    while last_sibling == False:
+        if not child_of_current_node == -1:
+            children.append(child_of_current_node)
+            current_node = node_list[child_of_current_node]
+            item_index = node_list.index(current_node)
+            current_child = child_list[item_index]
+            current_sibling = sibling_list[item_index]
+            child_of_current_node = current_sibling
+        if current_sibling == -1:
+            last_sibling = True
+
+    return children

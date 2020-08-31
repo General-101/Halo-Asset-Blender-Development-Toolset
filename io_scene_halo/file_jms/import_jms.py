@@ -27,80 +27,145 @@
 import os
 import bpy
 import bmesh
-import mathutils
 
-from numpy import array
+from mathutils import Vector, Quaternion, Matrix
 from io_scene_halo.global_functions import global_functions
 
 def load_file(context, filepath, report):
     processed_file = []
     encode = global_functions.test_encoding(filepath)
     file = open(filepath, "r", encoding=encode)
-    #foutput = open("C:\\Users\\Steven\\Desktop\\Test.JMS", "w")
     for line in file:
         if not line.strip(): continue
         if not line.startswith(";"):
             processed_file.append(line.replace('\n', ''))
-            #foutput.write('%s' % line)
 
     armature = []
     node_list = []
+    child_list = []
+    sibling_list = []
     parent_list = []
     node_transforms = []
     translation_list = []
-    node_index = 0
+    node_line_index = 0
     vertex_index = 0
     version = int(processed_file[0])
 
-    version_list = [8209, 8210]
+    version_list = [8197, 8198, 8199, 8200, 8201, 8202, 8203, 8204, 8205, 8206, 8207, 8208, 8209, 8210]
     if not version in version_list:
-        report({'ERROR'}, 'Importer does not support this JMS version')
+        report({'ERROR'}, 'Importer does not support this %s version' % global_functions.get_true_extension(filepath, None, True))
         return {'CANCELLED'}
 
-    node_count = int(processed_file[1])
-    material_count = int(processed_file[2 + (node_count * 4)])
-    marker_count = int(processed_file[2 + (node_count * 4) + 1 + (material_count * 2)])
-    instance_xref_path_count = int(processed_file[2 + (node_count * 4) + 1 + (material_count * 2) + 1 + (marker_count * 5)])
-    instance_markers_count = int(processed_file[2 + (node_count * 4) + 1 + (material_count * 2) + 1 + (marker_count * 5) + 1 + (instance_xref_path_count * 2)])
-    vert_count = int(processed_file[2 + (node_count * 4) + 1 + (material_count * 2) + 1 + (marker_count * 5) + 1 + (instance_xref_path_count * 2) + 1 + (instance_markers_count * 5)])
+    if version >= 8205:
+        node_start = 1
+        node_count = int(processed_file[node_start])
+        material_start = 2 + (node_count * 4)
+        material_count = int(processed_file[material_start])
+        marker_start = material_start + 1 + (material_count * 2)
+        marker_count = int(processed_file[marker_start])
+        instance_xref_path_start = marker_start + 1 + (marker_count * 5)
+        instance_xref_path_count = int(processed_file[instance_xref_path_start])
+        instance_markers_start = instance_xref_path_start + 1 + (instance_xref_path_count * 2)
+        instance_markers_count = int(processed_file[instance_markers_start])
+        vertex_start = instance_markers_start + 1 + (instance_markers_count * 5)
+        vertex_count = int(processed_file[vertex_start])
+        for count in range(vertex_count):
+            vertex_group_count = int(processed_file[vertex_index + vertex_start + 3])
+            vertex_uv_count = int(processed_file[vertex_index + vertex_start + (vertex_group_count * 2) + 4])
+            total_uv_lines = 0
+            for x in range(vertex_uv_count):
+                total_uv_lines += 1
+
+            vertex_index += 4 + (vertex_group_count * 2) + total_uv_lines
+
+        triangle_start = vertex_start + vertex_index + 1
+        triangle_count = int(processed_file[triangle_start])
+
+    else:
+        node_start = 2
+        node_count = int(processed_file[node_start])
+        material_start = 3 + (node_count * 5)
+        material_count = int(processed_file[material_start])
+        marker_start = material_start + 1 + (material_count * 2)
+        marker_count = int(processed_file[marker_start])
+        region_start = marker_start + 1 + (marker_count * 6)
+        region_count = int(processed_file[region_start])
+        vertex_start = region_start + 1 + region_count
+        vertex_count = int(processed_file[vertex_start])
+        triangle_start = vertex_start + (vertex_count * 8) + 1
+        triangle_count = int(processed_file[triangle_start])
+
+    if version >= 8205:
+        for node in range(node_count):
+            node_name = processed_file[node_line_index + 2]
+            parent_index = int(processed_file[node_line_index + 3])
+            node_list.append(node_name)
+            parent_list.append(parent_index)
+            node_line_index += 4
+
+    else:
+        for node in range(node_count):
+            node_name = processed_file[node_line_index + 3]
+            child_node_index = int(processed_file[node_line_index + 4])
+            sibling_node_index = int(processed_file[node_line_index + 5])
+            node_list.append(node_name)
+            child_list.append(child_node_index)
+            sibling_list.append(sibling_node_index)
+            node_line_index += 5
 
     armdata = bpy.data.armatures.new('Armature')
     ob_new = bpy.data.objects.new('Armature', armdata)
     bpy.context.collection.objects.link(ob_new)
     armature = ob_new
     bpy.context.view_layer.objects.active = armature
-
-    for node in range(node_count):
-        node_name = processed_file[node_index + 2]
-        parent_index = processed_file[node_index + 3]
-        node_list.append(node_name)
-        parent_list.append(parent_index)
-        node_rotation = processed_file[node_index + 4].split()
-        node_translation = processed_file[node_index + 5].split()
-        quat = mathutils.Quaternion((float(node_rotation[3]), float(node_rotation[0]), float(node_rotation[1]), float(node_rotation[2])))
-        transform_matrix = quat.to_matrix().to_4x4()
-        transform_matrix[0][3] = float(node_translation[0])
-        transform_matrix[1][3] = float(node_translation[1])
-        transform_matrix[2][3] = float(node_translation[2])
-        node_transforms.append(transform_matrix)
-        bpy.ops.object.mode_set(mode = 'EDIT')
-        armature.data.edit_bones.new('%s' % node_name)
-        armature.data.edit_bones['%s' % node_name].tail[2] = 1
-        node_index += 4
+    bpy.ops.object.mode_set(mode = 'EDIT')
+    global_functions.create_skeleton(armature, node_list)
+    node_line_index = 0
+    if version <= 8204:
+        for node in node_list:
+            node_index = node_list.index(node)
+            children_names = global_functions.find_children(node_list, child_list, sibling_list, node_index)
+            for child in children_names:
+                armature.data.edit_bones[child].parent = armature.data.edit_bones[node]
 
     for node in node_list:
-        if node_list.index(node) == 0:
-            parent_name = None
+        if version >= 8205:
+            node_rotation = processed_file[node_line_index + 4].split()
+            node_translation = processed_file[node_line_index + 5].split()
+            parent_name = parent_list[node_list.index(node)]
+            node_set = 4
 
         else:
-            parent_name = parent_list[int(node_list.index(node))]
+            node_rotation = processed_file[node_line_index + 6].split()
+            node_translation = processed_file[node_line_index + 7].split()
+            parent_name = -1
+            node_set = 5
 
-        if not parent_name == None:
-            bpy.ops.object.mode_set(mode = 'EDIT')
-            armature.data.edit_bones[node].parent = armature.data.edit_bones[node_list[int(parent_name)]]
+        file_matrix = Quaternion(((float(node_rotation[3])), float(node_rotation[0]), float(node_rotation[1]), float(node_rotation[2]))).inverted().to_matrix().to_4x4()
+        if version >= 8205:
+            file_matrix = Quaternion(((float(node_rotation[3])), float(node_rotation[0]), float(node_rotation[1]), float(node_rotation[2]))).to_matrix().to_4x4()
+
+        file_matrix[0][3] = float(node_translation[0])
+        file_matrix[1][3] = float(node_translation[1])
+        file_matrix[2][3] = float(node_translation[2])
 
         bpy.ops.object.mode_set(mode = 'POSE')
-        armature.pose.bones['%s' % node].matrix = node_transforms[int(node_list.index(node))]
+        pose_bone = armature.pose.bones[node]
+        if version >= 8205:
+            matrix = file_matrix
+
+        else:
+            matrix = file_matrix
+            if pose_bone.parent:
+                matrix = pose_bone.parent.matrix @ file_matrix
+
+        if not parent_name == -1:
+            bpy.ops.object.mode_set(mode = 'EDIT')
+            armature.data.edit_bones[node].parent = armature.data.edit_bones[node_list[parent_name]]
+
+        bpy.ops.object.mode_set(mode = 'POSE')
+        armature.pose.bones[node].matrix = matrix
+        node_line_index += node_set
 
     bpy.ops.pose.armature_apply(selected=False)
     bpy.ops.object.mode_set(mode = 'OBJECT')
@@ -118,34 +183,30 @@ def load_file(context, filepath, report):
     mesh = bpy.context.object.data
     bm = bmesh.new()
 
-    for vert in range(vert_count):
-        starting_position = 2 + (node_count * 4) + 1 + (material_count * 2) + 1 + (marker_count * 5) + 1 + (instance_xref_path_count * 2) + 1 + (instance_markers_count * 5)
-        vert_translation = processed_file[vertex_index + starting_position + 1]
-        vert_normal = processed_file[vertex_index + starting_position + 2]
-        vertex_group_count = processed_file[vertex_index + starting_position + 3]
-        vertex_uv_count = processed_file[vertex_index + starting_position + (int(vertex_group_count) * 2) + 4]
-#        print('vert index: ', vert)
-#        print('starting line position: ', starting_position + 1)
-#        print('line position translation: ', vertex_index + starting_position + 1 + 1)
-#        print('translation: ', vert_translation)
-#        print('line position normal: ', vertex_index + starting_position + 2 + 1)
-#        print('normal: ', vert_normal)
-#        print('line position group count: ', vertex_index + starting_position + 3 + 1)
-#        print('group count: ', vertex_group_count)
-#        print('line position uv count: ', vertex_index + starting_position + (int(vertex_group_count) * 2) + 4 + 1)
-#        print('uv count: ', vertex_uv_count)
-#        print(' ')
-        vert_translation_list = vert_translation.split()
-        vert_normal_list = vert_normal.split()
-        verts.append([float(vert_translation_list[0]), float(vert_translation_list[1]), float(vert_translation_list[2])])
-        if not [vert_translation_list[0], vert_translation_list[1], vert_translation_list[2], vert_normal_list[0], vert_normal_list[1], vert_normal_list[2]] in translation_list:
-            translation_list.append([vert_translation_list[0], vert_translation_list[1], vert_translation_list[2], vert_normal_list[0], vert_normal_list[1], vert_normal_list[2]])
+    vertex_index = 0
+    for vert in range(vertex_count):
+        if version >= 8205:
+            vert_translation = processed_file[vertex_index + vertex_start + 1]
+            vert_normal = processed_file[vertex_index + vertex_start + 2]
+            vertex_group_count = processed_file[vertex_index + vertex_start + 3]
+            vertex_uv_count = processed_file[vertex_index + vertex_start + (int(vertex_group_count) * 2) + 4]
+            vert_translation_list = vert_translation.split()
+            vert_normal_list = vert_normal.split()
+            verts.append([float(vert_translation_list[0]), float(vert_translation_list[1]), float(vert_translation_list[2])])
+            total_uv_lines = 0
+            for x in range(int(vertex_uv_count)):
+                total_uv_lines += 1
 
-        total_uv_lines = 0
-        for x in range(int(vertex_uv_count)):
-            total_uv_lines += 1
+            vertex_index += 4 + (int(vertex_group_count) * 2 + total_uv_lines)
 
-        vertex_index += 4 + (int(vertex_group_count) * 2 + total_uv_lines)
+        else:
+            vert_translation = processed_file[vertex_index + vertex_start + 2]
+            vert_normal = processed_file[vertex_index + vertex_start + 3]
+            vert_translation_list = vert_translation.split()
+            vert_normal_list = vert_normal.split()
+            verts.append([float(vert_translation_list[0]), float(vert_translation_list[1]), float(vert_translation_list[2])])
+
+            vertex_index += 8
 
     for v in verts:
         bm.verts.new(v)
