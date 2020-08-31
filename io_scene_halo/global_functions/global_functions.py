@@ -365,7 +365,8 @@ def get_matrix(obj_a, obj_b, is_local, armature, joined_list, is_node, version, 
             object_matrix = obj_a.matrix_world
             if obj_b.parent_bone and is_local:
                 parent_object = get_parent(armature, obj_b, joined_list, -1, False)
-                object_matrix = parent_object.matrix_world.inverted() @ obj_a.matrix_world
+                pose_bone = armature.pose.bones['%s' % (parent_object.name)]
+                object_matrix = pose_bone.matrix.inverted() @ obj_a.matrix_world
 
         else:
             object_matrix = obj_a.matrix_world
