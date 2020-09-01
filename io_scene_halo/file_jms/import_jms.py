@@ -208,8 +208,16 @@ def load_file(context, filepath, report):
 
             vertex_index += 8
 
-    for v in verts:
-        bm.verts.new(v)
+    vertex_index = 0
+    for tri in range(triangle_count):
+        p1 = verts[0 + vertex_index]
+        p2 = verts[1 + vertex_index]
+        p3 = verts[2 + vertex_index] 
+        v1 = bm.verts.new((float(p1[0]), float(p1[1]), float(p1[2])))
+        v2 = bm.verts.new((float(p2[0]), float(p2[1]), float(p2[2])))
+        v3 = bm.verts.new((float(p3[0]), float(p3[1]), float(p3[2])))
+        bm.faces.new((v1, v2, v3))
+        vertex_index += 3
 
     bm.to_mesh(mesh)
     bm.free()
