@@ -210,7 +210,6 @@ def file_layout(context,
     armature_count = 0
     mesh_frame_count = 0
     object_count = len(object_list)
-
     material_list = []
     marker_list = []
     instance_xref_paths = []
@@ -229,13 +228,11 @@ def file_layout(context,
     point_to_point_list = []
     prismatic_list = []
     bounding_sphere = []
-
     region_list = []
     permutation_list = []
     default_region = get_default_region_permutation_name(game_version)
     default_permutation = get_default_region_permutation_name(game_version)
     level_of_detail_ce = get_lod(level_of_detail_ce, game_version)
-
     version = global_functions.get_version(jms_version, jms_version_ce, jms_version_h2, game_version, console)
     extension = global_functions.get_extension(extension, extension_ce, extension_h2, game_version, console)
     node_checksum = 0
@@ -433,7 +430,6 @@ def file_layout(context,
     point_to_point_count = len(point_to_point_list)
     prismatic_count = len(prismatic_list)
     root_node_count = global_functions.count_root_nodes(node_list)
-
     if version > 8209:
         decimal_1 = '\n%0.10f'
         decimal_2 = '\n%0.10f\t%0.10f'
@@ -451,11 +447,9 @@ def file_layout(context,
 
     joined_list = global_functions.sort_list(node_list, armature, False, game_version, version, True)
     reversed_joined_list = global_functions.sort_list(node_list, armature, True, game_version, version, True)
-
     ce_settings = ''
     directory = filepath.rsplit(os.sep, 1)[0]
     filename = filepath.rsplit(os.sep, 1)[1]
-
     if game_version == 'haloce':
         if not permutation_ce == '':
             ce_settings += '%s ' % (permutation_ce.replace(' ', '_').replace('\t', '_'))
@@ -473,7 +467,6 @@ def file_layout(context,
             filename = ''
 
     file = open(directory + os.sep + ce_settings + filename + model_type + global_functions.get_true_extension(filepath, extension, False), 'w', encoding='%s' % global_functions.get_encoding(game_version))
-
     #write header
     if version >= 8205:
         file.write(
@@ -521,7 +514,6 @@ def file_layout(context,
 
         bone_matrix = global_functions.get_matrix(node, node, True, armature, joined_list, True, version, False)
         mesh_dimensions = global_functions.get_dimensions(bone_matrix, node, None, None, -1, scale, version, None, False, is_bone, armature, False)
-
         if version >= 8205:
             file.write(
                 '\n;NODE %s' % (joined_list.index(node)) +
@@ -583,10 +575,8 @@ def file_layout(context,
             LOD = get_lod(material[1], game_version)
             Permutation = default_permutation
             Region = default_region
-
             #This doesn't matter for CE but for Halo 2 the region or permutation names can't have any whitespace.
             #Lets fix that here to make sure nothing goes wrong.
-
             if len(material[3]) != 0:
                 safe_permutation = material[3].replace(' ', '_').replace('\t', '_')
                 Permutation = safe_permutation
@@ -598,8 +588,10 @@ def file_layout(context,
             material_definition = '(%s)' % (bpy.data.materials.find(material[0].name))
             if not LOD == None:
                 material_definition += ' %s' % (LOD)
+
             if not Permutation == '':
                 material_definition += ' %s' % (Permutation)
+
             if not Region == '':
                 material_definition += ' %s' % (Region)
 
@@ -644,6 +636,7 @@ def file_layout(context,
         region = -1
         if len(marker.jms.Region) != 0:
             region = region_list.index(marker.jms.Region)
+
         parent_index = global_functions.get_parent(armature, marker, joined_list, 0, True)
         marker_matrix = global_functions.get_matrix(marker, marker, True, armature, joined_list, False, version, False)
         mesh_dimensions = global_functions.get_dimensions(marker_matrix, marker, None, None, -1, scale, version, None, False, False, armature, False)
@@ -713,7 +706,6 @@ def file_layout(context,
             unique_identifier = starting_ID + (-1 * instance_markers.index(int_markers))
             int_markers_matrix = global_functions.get_matrix(int_markers, int_markers, False, armature, joined_list, False, version, False)
             mesh_dimensions = global_functions.get_dimensions(int_markers_matrix, int_markers, None, None, -1, scale, version, None, False, False, armature, False)
-
             file.write(
                 '\n;XREF OBJECT %s' % (instance_markers.index(int_markers)) +
                 '\n%s' % (int_markers.name) +
@@ -729,15 +721,11 @@ def file_layout(context,
         item_index = int(geometry_list.index(geometry))
         original_geo = original_geometry_list[item_index]
         vertex_groups = original_geo.vertex_groups.keys()
-
         original_geo_matrix = global_functions.get_matrix(original_geo, original_geo, False, armature, joined_list, False, version, False)
-
         region_name = original_geo.jms.Region
-
         uv_layer = geometry.uv_layers.active.data[:]
         mesh_loops = geometry.loops
         mesh_verts = geometry.vertices[:]
-
         for face in geometry.polygons:
             jms_triangle = JmsTriangle()
             triangles.append(jms_triangle)
@@ -752,23 +740,17 @@ def file_layout(context,
             jms_triangle.v1 = len(vertices) + 1
             jms_triangle.v2 = len(vertices) + 2
             jms_triangle.region = region_index
-
             jms_triangle.material = get_material(game_version, original_geo, face, geometry, material_list)
-
             for loop_index in face.loop_indices:
                 vert = mesh_verts[mesh_loops[loop_index].vertex_index]
                 uv = uv_layer[loop_index].uv
-
                 jms_vertex = JmsVertex()
                 vertices.append(jms_vertex)
-
                 pos  = original_geo_matrix @ vert.co
                 norm = original_geo_matrix @ (vert.co + vert.normal) - pos
-
                 jms_vertex.pos = pos
                 jms_vertex.norm = norm
                 jms_vertex.uv = uv
-
                 if len(vert.groups) != 0:
                     object_vert_group_list = []
                     vertex_vert_group_list = []
@@ -792,7 +774,6 @@ def file_layout(context,
                         value = 4
 
                     jms_vertex.node_influence_count = value
-
                     if len(object_vert_group_list) != 0:
                         for group_index in object_vert_group_list:
                             item_index = int(object_vert_group_list.index(group_index))
@@ -823,14 +804,12 @@ def file_layout(context,
 
                     else:
                         parent_index = global_functions.get_parent(armature, original_geo, joined_list, 0, True)
-
                         jms_vertex.node_influence_count = '1'
                         jms_vertex.node0 = parent_index
                         jms_vertex.node0_weight = '1.0000000000'
 
                 else:
                     parent_index = global_functions.get_parent(armature, original_geo, joined_list, 0, True)
-
                     jms_vertex.node_influence_count = '1'
                     jms_vertex.node0 = parent_index
                     jms_vertex.node0_weight = '1.0000000000'
@@ -856,29 +835,27 @@ def file_layout(context,
     for jms_vertex in vertices:
         norm = jms_vertex.norm
         uv   = jms_vertex.uv
-
         mesh_dimensions = global_functions.get_dimensions(None, None, None, None, -1, scale, version, jms_vertex, True, False, armature, False)
-
         norm_i = Decimal(norm[0]).quantize(Decimal('1.0000000000'))
         norm_j = Decimal(norm[1]).quantize(Decimal('1.0000000000'))
         norm_k = Decimal(norm[2]).quantize(Decimal('1.0000000000'))
-
         for node_influence_index in range(int(jms_vertex.node_influence_count)):
             if node_influence_index == 0:
                 jms_node = '\n%s%s' % (jms_vertex.node0, decimal_1 % float(jms_vertex.node0_weight))
+
             elif node_influence_index == 1:
                 jms_node += '\n%s%s' % (jms_vertex.node1, decimal_1 % float(jms_vertex.node1_weight))
+
             elif node_influence_index == 2:
                 jms_node += '\n%s%s' % (jms_vertex.node2, decimal_1 % float(jms_vertex.node2_weight))
+
             elif node_influence_index == 3:
                 jms_node += '\n%s%s' % (jms_vertex.node3, decimal_1 % float(jms_vertex.node3_weight))
 
         tex_coord_count = 1
-
         tex_u = Decimal(uv[0]).quantize(Decimal('1.0000000000'))
         tex_v = Decimal(uv[1]).quantize(Decimal('1.0000000000'))
         tex_w = 0
-
         if version >= 8205:
             file.write(
                 '\n;VERTEX %s' % (vertices.index(jms_vertex)) +
@@ -957,7 +934,6 @@ def file_layout(context,
             parent_index = global_functions.get_parent(armature, spheres, joined_list, -1, True)
             sphere_matrix = global_functions.get_matrix(spheres, spheres, True, armature, joined_list, False, version, False)
             mesh_dimensions = global_functions.get_dimensions(sphere_matrix, spheres, None, None, -1, scale, version, None, False, False, armature, False)
-
             file.write(
                 '\n;SPHERE %s' % (sphere_list.index(spheres)) +
                 '\n%s' % name +
@@ -991,7 +967,6 @@ def file_layout(context,
             parent_index = global_functions.get_parent(armature, boxes, joined_list, -1, True)
             box_matrix = global_functions.get_matrix(boxes, boxes, True, armature, joined_list, False, version, False)
             mesh_dimensions = global_functions.get_dimensions(box_matrix, boxes, None, None, -1, scale, version, None, False, False, armature, False)
-
             file.write(
                 '\n;BOXES %s' % (box_list.index(boxes)) +
                 '\n%s' % name +
@@ -1026,7 +1001,6 @@ def file_layout(context,
             parent_index = global_functions.get_parent(armature, capsule, joined_list, -1, True)
             capsule_matrix = global_functions.get_matrix(capsule, capsule, True, armature, joined_list, False, version, False)
             mesh_dimensions = global_functions.get_dimensions(capsule_matrix, capsule, None, None, -1, scale, version, None, False, False, armature, False)
-
             file.write(
                 '\n;CAPSULES %s' % (capsule_list.index(capsule)) +
                 '\n%s' % name +
@@ -1077,7 +1051,6 @@ def file_layout(context,
             parent_index = global_functions.get_parent(armature, convex_shape, joined_list, -1, True)
             convex_matrix = global_functions.get_matrix(convex_shape, convex_shape, True, armature, joined_list, False, version, False)
             mesh_dimensions = global_functions.get_dimensions(convex_matrix, convex_shape, None, None, -1, scale, version, None, False, False, armature, False)
-
             file.write(
                 '\n;CONVEX %s' % (convex_shape_list.index(convex_shape)) +
                 '\n%s' % name +
@@ -1093,7 +1066,6 @@ def file_layout(context,
                 jms_vertex = JmsVertex()
                 jms_vertex.pos = pos
                 mesh_dimensions = global_functions.get_dimensions(None, None, None, None, -1, scale, version, jms_vertex, True, False, armature, False)
-
                 file.write(
                 decimal_3 % (mesh_dimensions.pos_x_a, mesh_dimensions.pos_y_a, mesh_dimensions.pos_z_a)
                 )
@@ -1135,7 +1107,6 @@ def file_layout(context,
             is_limited_x = int(ragdoll.rigid_body_constraint.use_limit_ang_x)
             is_limited_y = int(ragdoll.rigid_body_constraint.use_limit_ang_y)
             is_limited_z = int(ragdoll.rigid_body_constraint.use_limit_ang_z)
-
             if is_limited_x:
                 min_angle_x = degrees(ragdoll.rigid_body_constraint.limit_ang_x_lower)
                 max_angle_x = degrees(ragdoll.rigid_body_constraint.limit_ang_x_upper)
@@ -1194,7 +1165,6 @@ def file_layout(context,
             friction_limit = 0
             min_angle = 0
             max_angle = 0
-
             if body_b_obj:
                 friction_limit = body_b_obj.rigid_body.angular_damping
 
@@ -1276,7 +1246,6 @@ def file_layout(context,
                 min_angle_z = degrees(0)
                 max_angle_z = degrees(0)
                 spring_length = degrees(0)
-
                 if is_limited_x == False and is_limited_y == False and is_limited_z == False and is_spring_z == False:
                     constraint_type = 0
                     min_angle_x = degrees(point_to_point.rigid_body_constraint.limit_ang_x_lower)
@@ -1356,7 +1325,6 @@ def file_layout(context,
         for bound_sphere in bounding_sphere:
             bound_sphere_matrix = global_functions.get_matrix(bound_sphere, bound_sphere, False, armature, joined_list, False, version, False)
             mesh_dimensions = global_functions.get_dimensions(bound_sphere_matrix, bound_sphere, None, None, -1, scale, version, None, False, False, armature, False)
-
             file.write(
                 '\n;BOUNDING SPHERE %s' % (bounding_sphere.index(bound_sphere)) +
                 decimal_3 % (mesh_dimensions.pos_x_a, mesh_dimensions.pos_y_a, mesh_dimensions.pos_z_a) +
@@ -1365,7 +1333,6 @@ def file_layout(context,
             )
 
     file.close()
-
     for obj in object_list:
         item_index = object_list.index(obj)
         property_value = object_properties[item_index]
@@ -1405,7 +1372,6 @@ def write_file(context,
     xref_count = 0
     bounding_radius_count = 0
     render_count = 0
-
     for obj in object_list:
         if obj.type == 'ARMATURE':
             node_count += 1

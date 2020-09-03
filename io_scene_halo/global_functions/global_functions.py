@@ -281,15 +281,11 @@ def test_encoding(filepath):
     UTF_8_BOM = b'\xef\xbb\xbf'
     UTF_16_BE_BOM = b'\xfe\xff'
     UTF_16_LE_BOM = b'\xff\xfe'
-
     data = open(filepath, 'rb')
-
     file_size = os.path.getsize(filepath)
     BOM = data.read(3)
     zero_count = 0
-
     encoding = None
-
     if BOM.startswith(UTF_8_BOM) or BOM.startswith(UTF_16_BE_BOM) or BOM.startswith(UTF_16_LE_BOM):
         if file_size & 1:
             encoding = 'utf-8-sig'
@@ -580,6 +576,7 @@ def find_children(node_list, child_list, sibling_list, node_index):
             current_child = child_list[item_index]
             current_sibling = sibling_list[item_index]
             child_of_current_node = current_sibling
+
         if current_sibling == -1:
             last_sibling = True
 

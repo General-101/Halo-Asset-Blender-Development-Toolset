@@ -46,8 +46,8 @@ def load_file(context, filepath, report):
     object_list = list(bpy.context.scene.objects)
     node_line_index = 0
     frame_index = 0
+    frame_line_index = 0
     version = int(processed_file[0])
-
     version_list = [16390,16391,16392,16393,16394,16395]
     if not version in version_list:
         report({'ERROR'}, 'Importer does not support this %s version' % global_functions.get_true_extension(filepath, None, True))
@@ -126,9 +126,9 @@ def load_file(context, filepath, report):
             else:
                 parent_name = -1
 
-            node_translation = processed_file[frame_index + node_line_index + 7].split()
-            node_rotation = processed_file[frame_index + node_line_index + 8].split()
-            node_scale = processed_file[frame_index + node_line_index + 9]
+            node_translation = processed_file[frame_line_index + node_line_index + 7].split()
+            node_rotation = processed_file[frame_line_index + node_line_index + 8].split()
+            node_scale = processed_file[frame_line_index + node_line_index + 9]
             file_matrix = Quaternion(((float(node_rotation[3])), float(node_rotation[0]), float(node_rotation[1]), float(node_rotation[2]))).inverted().to_matrix().to_4x4()
             if version >= 16394:
                 file_matrix = Quaternion(((float(node_rotation[3])), float(node_rotation[0]), float(node_rotation[1]), float(node_rotation[2]))).to_matrix().to_4x4()
@@ -136,7 +136,6 @@ def load_file(context, filepath, report):
             file_matrix[0][3] = float(node_translation[0])
             file_matrix[1][3] = float(node_translation[1])
             file_matrix[2][3] = float(node_translation[2])
-
             bpy.ops.object.mode_set(mode = 'POSE')
             pose_bone = armature.pose.bones[node]
             if version >= 16394:
@@ -153,11 +152,10 @@ def load_file(context, filepath, report):
 
             bpy.ops.object.mode_set(mode = 'POSE')
             armature.pose.bones[node].matrix = matrix
-            frame_index += 3
+            frame_line_index += 3
 
         bpy.ops.pose.armature_apply(selected=False)
 
-    frame_index = 0
     bpy.ops.object.mode_set(mode = 'POSE')
     for frame in range(transform_count):
         current_frame = frame + 1

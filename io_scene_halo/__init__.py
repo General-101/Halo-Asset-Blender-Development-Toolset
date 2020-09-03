@@ -40,12 +40,16 @@ if "bpy" in locals():
     import importlib
     if "import_jms" in locals():
         importlib.reload(import_jms)
+
     if "export_jms" in locals():
         importlib.reload(export_jms)
+
     if "export_jma" in locals():
         importlib.reload(export_jma)
+
     if "import_jma" in locals():
         importlib.reload(import_jma)
+
     if "global_functions" in locals():
         importlib.reload(global_functions)
 
@@ -80,23 +84,18 @@ class JMA_SceneProps(Panel):
     bl_region_type = 'WINDOW'
     bl_context = "scene"
     bl_options = {'DEFAULT_CLOSED'}
-
     def draw(self, context):
         scene = context.scene
         scene_jma = scene.jma
         layout = self.layout
-
         box = layout.box()
         box.label(text="Game Version:")
         col = box.column(align=True)
-
         row = col.row()
         row.prop(scene_jma, "game_version", text='')
-
         box = layout.box()
         box.label(text="File Details:")
         col = box.column(align=True)
-
         if scene_jma.game_version == 'haloce':
             row = col.row()
             row.label(text='Extension:')
@@ -119,12 +118,10 @@ class JMA_SceneProps(Panel):
         row = col.row()
         row.label(text='Use As Default Export Settings:')
         row.prop(scene_jma, "use_scene_properties", text='')
-
         box = layout.box()
         box.label(text="Scale:")
         row = box.row()
         row.prop(scene_jma, "scale_enum", expand=True)
-
         if scene_jma.scale_enum == '2':
             row = box.row()
             row.prop(scene_jma, "scale_float")
@@ -241,6 +238,7 @@ class JMA_ScenePropertiesGroup(PropertyGroup):
             ('2', "Custom",       "Set your own scale multiplier."),
         )
     )
+
     scale_float: FloatProperty(
         name="Custom Scale",
         description="Choose a custom value to multiply position values by.",
@@ -255,23 +253,18 @@ class JMS_SceneProps(Panel):
     bl_region_type = 'WINDOW'
     bl_context = "scene"
     bl_options = {'DEFAULT_CLOSED'}
-
     def draw(self, context):
         scene = context.scene
         scene_jms = scene.jms
         layout = self.layout
-
         box = layout.box()
         box.label(text="Game Version:")
         col = box.column(align=True)
-
         row = col.row()
         row.prop(scene_jms, "game_version", text='')
-
         box = layout.box()
         box.label(text="File Details:")
         col = box.column(align=True)
-
         if scene_jms.game_version == 'haloce':
             row = col.row()
             row.label(text='Extension:')
@@ -317,12 +310,10 @@ class JMS_SceneProps(Panel):
         row = col.row()
         row.label(text='Use As Default Export Settings:')
         row.prop(scene_jms, "use_scene_properties", text='')
-
         box = layout.box()
         box.label(text="Scale:")
         row = box.row()
         row.prop(scene_jms, "scale_enum", expand=True)
-
         if scene_jms.scale_enum == '2':
             row = box.row()
             row.prop(scene_jms, "scale_float")
@@ -477,6 +468,7 @@ class JMS_ScenePropertiesGroup(PropertyGroup):
             ('2', "Custom",       "Set your own scale multiplier."),
         )
     )
+
     scale_float: FloatProperty(
         name="Custom Scale",
         description="Choose a custom value to multiply position values by.",
@@ -491,19 +483,15 @@ class JMS_ObjectProps(Panel):
     bl_region_type = "WINDOW"
     bl_context = "object"
     bl_options = {"DEFAULT_CLOSED"}
-
     def draw(self, context):
         layout = self.layout
         obj = context.object
         obj_jms = obj.jms
         scene = context.scene
         scene_jms = scene.jms
-
         box = layout.box()
         box.label(text="Object Details:")
-
         col = box.column(align=True)
-
         if scene_jms.game_version == 'haloce':
             row = col.row()
             row.label(text='Region:')
@@ -582,7 +570,6 @@ class ExportJMS(Operator, ExportHelper):
     """Write a JMS file"""
     bl_idname = "export_scene.jms"
     bl_label = "Export JMS"
-
     filename_ext = ''
 
     permutation_ce: StringProperty(
@@ -734,6 +721,7 @@ class ExportJMS(Operator, ExportHelper):
             ('2', "Custom",       "Set your own scale multiplier."),
         )
     )
+
     scale_float: FloatProperty(
         name="Custom Scale",
         description="Choose a custom value to multiply position values by.",
@@ -827,15 +815,12 @@ class ExportJMS(Operator, ExportHelper):
         box = layout.box()
         box.label(text="Game Version:")
         col = box.column(align=True)
-
         row = col.row()
         row.enabled = is_enabled
         row.prop(self, "game_version", text='')
-
         box = layout.box()
         box.label(text="File Details:")
         col = box.column(align=True)
-
         if scene_jms.use_scene_properties:
             self.game_version = scene_jms.game_version
             self.extension_ce = scene_jms.extension_ce
@@ -908,13 +893,11 @@ class ExportJMS(Operator, ExportHelper):
         row = col.row()
         row.label(text='Use Scene Export Settings:')
         row.prop(scene_jms, "use_scene_properties", text='')
-
         box = layout.box()
         box.label(text="Scale:")
         row = box.row()
         row.enabled = is_enabled
         row.prop(self, "scale_enum", expand=True)
-
         if self.scale_enum == '2':
             row = box.row()
             row.enabled = is_enabled
@@ -924,7 +907,6 @@ class ImportJMS(Operator, ImportHelper):
     """Import a JMS file"""
     bl_idname = "import_scene.jms"
     bl_label = "Import JMS"
-
     filename_ext = '.JMS'
 
     filter_glob: StringProperty(
@@ -948,7 +930,6 @@ class ExportJMA(Operator, ExportHelper):
     """Write a JMA file"""
     bl_idname = "export_jma.export"
     bl_label = "Export Animation"
-
     filename_ext = ''
 
     extension: EnumProperty(
@@ -1079,6 +1060,7 @@ class ExportJMA(Operator, ExportHelper):
             ('2', "Custom",       "Set your own scale multiplier."),
         )
     )
+
     scale_float: FloatProperty(
         name="Custom Scale",
         description="Choose a custom value to multiply position values by.",
@@ -1166,15 +1148,12 @@ class ExportJMA(Operator, ExportHelper):
         box = layout.box()
         box.label(text="Game Version:")
         col = box.column(align=True)
-
         row = col.row()
         row.enabled = is_enabled
         row.prop(self, "game_version", text='')
-
         box = layout.box()
         box.label(text="File Details:")
         col = box.column(align=True)
-
         if scene_jma.use_scene_properties:
             self.game_version = scene_jma.game_version
             self.extension_ce = scene_jma.extension_ce
@@ -1214,13 +1193,11 @@ class ExportJMA(Operator, ExportHelper):
         row = col.row()
         row.label(text='Use Scene Export Settings:')
         row.prop(scene_jma, "use_scene_properties", text='')
-
         box = layout.box()
         box.label(text="Custom Frame Rate:")
         row = box.row()
         row.enabled = is_enabled
         row.prop(self, "custom_frame_rate", text='')
-
         if self.custom_frame_rate == 'CUSTOM':
             row = box.row()
             row.enabled = is_enabled
@@ -1231,7 +1208,6 @@ class ExportJMA(Operator, ExportHelper):
         row = box.row()
         row.enabled = is_enabled
         row.prop(self, "scale_enum", expand=True)
-
         if self.scale_enum == '2':
             row = box.row()
             row.enabled = is_enabled
@@ -1241,7 +1217,6 @@ class ImportJMA(Operator, ImportHelper):
     """Import a JMA file"""
     bl_idname = "import_scene.jma"
     bl_label = "Import JMA"
-
     filename_ext = '.JMA'
 
     filter_glob: StringProperty(
@@ -1285,6 +1260,7 @@ classeshalo = (
 def register():
     for clshalo in classeshalo:
         bpy.utils.register_class(clshalo)
+
     bpy.types.TOPBAR_MT_file_export.append(menu_func_export)
     bpy.types.TOPBAR_MT_file_import.append(menu_func_import)
     bpy.types.Object.jms = PointerProperty(type=JMS_ObjectPropertiesGroup, name="JMS Object Properties", description="JMS Object properties")
@@ -1294,6 +1270,7 @@ def register():
 def unregister():
     for clshalo in reversed(classeshalo):
         bpy.utils.unregister_class(clshalo)
+
     bpy.types.TOPBAR_MT_file_export.remove(menu_func_export)
     bpy.types.TOPBAR_MT_file_import.remove(menu_func_import)
     del bpy.types.Object.jms

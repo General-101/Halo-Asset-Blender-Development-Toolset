@@ -46,7 +46,6 @@ def write_file(context,
                console):
 
     global_functions.unhide_all_collections()
-
     object_properties = []
     object_list = list(bpy.context.scene.objects)
     object_count = len(object_list)
@@ -54,11 +53,9 @@ def write_file(context,
     armature = []
     armature_count = 0
     root_node_count = 0
-
     first_frame = bpy.context.scene.frame_start
     last_frame = bpy.context.scene.frame_end + 1
     total_frame_count = bpy.context.scene.frame_end - first_frame + 1
-
     for obj in object_list:
         object_properties.append([obj.hide_get(), obj.hide_viewport])
         if obj.type == 'ARMATURE':
@@ -73,7 +70,6 @@ def write_file(context,
     node_checksum = 0
     scale = global_functions.set_scale(scale_enum, scale_float)
     transform_count = total_frame_count
-
     if custom_frame_rate == 'CUSTOM':
         frame_rate_value = frame_rate_float
 
@@ -81,12 +77,10 @@ def write_file(context,
         frame_rate_value = int(custom_frame_rate)
 
     frame_rate = frame_rate_value
-
     #actor related items are hardcoded due to them being an unused feature in tool. Do not attempt to do anything to write this out as it is a waste of time and will get you nothing.
     actor_count = 1
     actor_name = 'unnamedActor'
     node_count = len(node_list)
-
     if version > 16394:
         decimal_1 = '\n%0.10f'
         decimal_2 = '\n%0.10f\t%0.10f'
@@ -104,9 +98,7 @@ def write_file(context,
 
     joined_list = global_functions.sort_list(node_list, armature, False, game_version, version, True)
     reversed_joined_list = global_functions.sort_list(node_list, armature, True, game_version, version, True)
-
     file = open(filepath + global_functions.get_true_extension(filepath, extension, False), 'w', encoding='%s' % global_functions.get_encoding(game_version))
-
     #write header
     if version >= 16394:
         file.write(
@@ -169,7 +161,6 @@ def write_file(context,
 
             bone_matrix = global_functions.get_matrix(node, node, True, armature, joined_list, True, version, True)
             mesh_dimensions = global_functions.get_dimensions(bone_matrix, node, None, None, -1, scale, version, None, False, is_bone, armature, True)
-
             file.write(
                 decimal_3 % (mesh_dimensions.pos_x_a, mesh_dimensions.pos_y_a, mesh_dimensions.pos_z_a) +
                 decimal_4 % (mesh_dimensions.quat_i_a, mesh_dimensions.quat_j_a, mesh_dimensions.quat_k_a, mesh_dimensions.quat_w_a) +
