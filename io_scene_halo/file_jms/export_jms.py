@@ -1062,7 +1062,7 @@ def file_layout(context,
             )
 
             for vertex in mesh_convex_shape.vertices:
-                pos  = convex_matrix @ vertex.co
+                pos  = vertex.co
                 jms_vertex = JmsVertex()
                 jms_vertex.pos = pos
                 mesh_dimensions = global_functions.get_dimensions(None, None, None, None, -1, scale, version, jms_vertex, True, False, armature, False)

@@ -742,7 +742,7 @@ class ExportJMS(Operator, ExportHelper):
         )
 
     def execute(self, context):
-        from .file_jms import export_jms
+        from io_scene_halo.file_jms import export_jms
         keywords = [context,
                     self.filepath,
                     self.report,
@@ -915,7 +915,7 @@ class ImportJMS(Operator, ImportHelper):
         )
 
     def execute(self, context):
-        from .file_jms import import_jms
+        from io_scene_halo.file_jms import import_jms
         if '--' in sys.argv:
             argv = sys.argv[sys.argv.index('--') + 1:]
             parser = argparse.ArgumentParser()
@@ -1081,7 +1081,7 @@ class ExportJMA(Operator, ExportHelper):
         )
 
     def execute(self, context):
-        from .file_jma import export_jma
+        from io_scene_halo.file_jma import export_jma
         keywords = [context,
                     self.filepath,
                     self.report,
@@ -1225,7 +1225,7 @@ class ImportJMA(Operator, ImportHelper):
         )
 
     def execute(self, context):
-        from .file_jma import import_jma
+        from io_scene_halo.file_jma import import_jma
         if '--' in sys.argv:
             argv = sys.argv[sys.argv.index('--') + 1:]
             parser = argparse.ArgumentParser()
@@ -1268,14 +1268,13 @@ def register():
     bpy.types.Scene.jma = PointerProperty(type=JMA_ScenePropertiesGroup, name="JMA Scene Properties", description="JMA Scene properties")
 
 def unregister():
-    for clshalo in reversed(classeshalo):
-        bpy.utils.unregister_class(clshalo)
-
     bpy.types.TOPBAR_MT_file_export.remove(menu_func_export)
     bpy.types.TOPBAR_MT_file_import.remove(menu_func_import)
     del bpy.types.Object.jms
     del bpy.types.Scene.jms
     del bpy.types.Scene.jma
+    for clshalo in classeshalo:
+        bpy.utils.unregister_class(clshalo)
 
 if __name__ == '__main__':
     register()

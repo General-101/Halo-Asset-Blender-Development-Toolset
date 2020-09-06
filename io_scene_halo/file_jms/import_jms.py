@@ -31,10 +31,11 @@ import bmesh
 from mathutils import Vector, Quaternion, Matrix
 from io_scene_halo.global_functions import global_functions
 
-def generate_object(node_list, object_parent_index, object_type, object_name, object_radius, create_type, version, armature, object_rotation, object_translation, object_region, region_list, xref_path_list, xref_path_index, vertex_start, vertex_count, triangle_count, processed_file, box_object_x_scale, box_object_y_scale, box_object_z_scale):
+def generate_object(node_list, object_parent_index, object_type, object_name, object_radius, create_type, version, armature, object_rotation, object_translation, object_region, region_list, xref_path_list, xref_path_index, vertex_start, vertex_count, triangle_count, processed_file, object_x_scale, object_y_scale, object_z_scale, convex_shape_vertex_count_start):
     verts = []
     vertex_index = 0
     triangle_index = 0
+    convex_shape_vertex_index = 0
     collection = bpy.context.collection
     view_layer = bpy.context.view_layer
     bpy.ops.object.select_all(action='DESELECT')
@@ -59,12 +60,13 @@ def generate_object(node_list, object_parent_index, object_type, object_name, ob
     bm = bmesh.new()
 
     if create_type == 'sphere':
-        object_deminsion = object_radius * 2
-        object_mesh.jms.Object_Type = 'SPHERE'
         bmesh.ops.create_uvsphere(bm, u_segments=32, v_segments=16, diameter=1)
 
     elif create_type == 'cube':
         bmesh.ops.create_cube(bm, size=1.0)
+
+    elif create_type == 'cylinder':
+        bmesh.ops.create_cone(bm, cap_ends=True, cap_tris=False, segments=12, diameter1=3, diameter2=3, depth=5)
 
     elif create_type == 'mesh':
         for vert in range(vertex_count):
@@ -100,15 +102,15 @@ def generate_object(node_list, object_parent_index, object_type, object_name, ob
             bm.faces.new((v1, v2, v3))
             triangle_index += 3
 
+    elif create_type == 'convex':
+        for vert in range(vertex_count):
+            vert_translation = processed_file[vertex_start + 1 + convex_shape_vertex_index]
+            vert_translation_list = vert_translation.split()
+            bm.verts.new((float(vert_translation_list[0]), float(vert_translation_list[1]), float(vert_translation_list[2])))
+            convex_shape_vertex_index += 1
+
     bm.to_mesh(mesh)
     bm.free()
-    if object_type == 'marker':
-        if version <= 8204:
-            object_mesh.jms.Region = region_list[object_region]
-
-    elif object_type == 'xref':
-        if version >= 8205:
-            object_mesh.jms.XREF_path = xref_path_list[xref_path_index]
 
     armature.select_set(True)
     view_layer.objects.active = armature
@@ -141,13 +143,38 @@ def generate_object(node_list, object_parent_index, object_type, object_name, ob
     bpy.ops.object.select_all(action='DESELECT')
     object_mesh.select_set(True)
     view_layer.objects.active = object_mesh
-    if create_type == 'sphere':
-        object_mesh.dimensions = (object_deminsion, object_deminsion, object_deminsion)
 
-    elif create_type == 'cube' and not box_object_x_scale is None:
+    if create_type == 'convex':
+        bpy.ops.object.mode_set(mode='EDIT')
+        bpy.ops.mesh.select_all(action='SELECT')
+        bpy.ops.mesh.convex_hull(delete_unused=True, use_existing_faces=True, join_triangles=True)
+        bpy.ops.object.mode_set(mode='OBJECT')
+        object_mesh.jms.Object_Type = 'CONVEX SHAPES'
+
+    elif create_type == 'sphere':
+        if object_type == 'marker':
+            if version <= 8204:
+                object_mesh.jms.Region = region_list[object_region]
+
+        object_mesh.jms.Object_Type = 'SPHERE'
+        object_dimension = object_radius * 2
+        object_mesh.dimensions = (object_dimension, object_dimension, object_dimension)
+
+    elif create_type == 'cube':
         object_mesh.jms.Object_Type = 'BOX'
-        object_mesh.dimensions = (box_object_x_scale, box_object_y_scale, box_object_z_scale)
+        if object_type == 'xref':
+            if version >= 8205:
+                object_mesh.jms.XREF_path = xref_path_list[xref_path_index]
 
+        else:
+            object_mesh.dimensions = (object_x_scale, object_y_scale, object_z_scale)
+
+    elif create_type == 'cylinder':
+        object_mesh.jms.Object_Type = 'CAPSULES'
+        object_dimension = object_radius * 2
+        object_mesh.dimensions = (object_dimension, object_dimension, (object_dimension + object_z_scale))
+
+    bpy.ops.object.select_all(action='DESELECT')
 
 def load_file(context, filepath, report):
     processed_file = []
@@ -174,6 +201,8 @@ def load_file(context, filepath, report):
     node_line_index = 0
     node_index = 0
     vertex_line_index = 0
+    total_convex_shape_vertex_index = 0
+    total_convex_shape_vertex_count = 0
     version = int(processed_file[0])
     collection = bpy.context.collection
     view_layer = bpy.context.view_layer
@@ -214,13 +243,15 @@ def load_file(context, filepath, report):
             box_start = sphere_start + 1 + (sphere_count * 6)
             box_count = int(processed_file[box_start])
             capsule_start = box_start + 1 + (box_count * 8)
-            print(capsule_start)
             capsule_count = int(processed_file[capsule_start])
-            convex_shape_start = vertex_start + vertex_line_index + 1
-            print(convex_shape_start)
-            convex_shape_count = int(processed_file[triangle_start])
-            ragdoll_start = vertex_start + vertex_line_index + 1
-            ragdoll_count = int(processed_file[triangle_start])
+            convex_shape_start = capsule_start + 1 + (capsule_count * 7)
+            convex_shape_count = int(processed_file[convex_shape_start])
+            for count in range(convex_shape_count):
+                convex_shape_vertex_count = int(processed_file[convex_shape_start + 6 + ((count * 6) + total_convex_shape_vertex_index)])
+                total_convex_shape_vertex_index += convex_shape_vertex_count
+
+            ragdoll_start = convex_shape_start + 1 + (convex_shape_count * 6) + total_convex_shape_vertex_index
+            ragdoll_count = int(processed_file[ragdoll_start])
             hinge_start = vertex_start + vertex_line_index + 1
             hinge_count = int(processed_file[triangle_start])
             car_wheel_start = vertex_start + vertex_line_index + 1
@@ -319,7 +350,9 @@ def load_file(context, filepath, report):
         armature.pose.bones[node].matrix = matrix
         node_index += node_set
 
-    bpy.ops.pose.armature_apply(selected=False)
+    if not node_count == 0:
+        bpy.ops.pose.armature_apply(selected=False)
+
     bpy.ops.object.mode_set(mode = 'OBJECT')
     #gather regions
     if version <= 8204:
@@ -344,7 +377,7 @@ def load_file(context, filepath, report):
             marker_translation = processed_file[marker_start + 5 + (6 * marker)].split()
             marker_radius = float(processed_file[marker_start + 6 + (6 * marker)])
 
-        generate_object(node_list, marker_parent_index, 'marker', marker_name, marker_radius, 'sphere', version, armature, marker_rotation, marker_translation, marker_region_index, region_list, None, None, None, None, None, None, None, None, None)
+        generate_object(node_list, marker_parent_index, 'marker', marker_name, marker_radius, 'sphere', version, armature, marker_rotation, marker_translation, marker_region_index, region_list, None, None, None, None, None, None, None, None, None, None)
 
     if version >= 8205:
         #gather xref paths
@@ -359,10 +392,11 @@ def load_file(context, filepath, report):
             xref_object_rotation = processed_file[instance_markers_start + 4 + (xref_marker * 5)].split()
             xref_object_translation = processed_file[instance_markers_start + 5 + (xref_marker * 5)].split()
 
-            generate_object(node_list, None, 'xref', xref_object_name, None, 'cube', version, armature, xref_object_rotation, xref_object_translation, None, None, xref_path_list, xref_path_index, None, None, None, None, None, None, None)
+            generate_object(node_list, None, 'xref', xref_object_name, None, 'cube', version, armature, xref_object_rotation, xref_object_translation, None, None, xref_path_list, xref_path_index, None, None, None, None, None, None, None, None)
 
     #generate mesh object
-    generate_object(node_list, None, 'mesh', object_name, None, 'mesh', version, armature, None, None, None, None, None, None, vertex_start, vertex_count, triangle_count, processed_file, None, None, None)
+    if not vertex_count == 0:
+        generate_object(node_list, None, 'mesh', object_name, None, 'mesh', version, armature, None, None, None, None, None, None, vertex_start, vertex_count, triangle_count, processed_file, None, None, None, None)
 
     if version >= 8206:
         #generate sphere objects
@@ -374,7 +408,7 @@ def load_file(context, filepath, report):
             sphere_object_translation = processed_file[sphere_start + 5 + (sphere * 6)].split()
             sphere_object_radius = float(processed_file[sphere_start + 6 + (sphere * 6)])
 
-            generate_object(node_list, sphere_parent_index, 'physics', sphere_object_name, sphere_object_radius, 'sphere', version, armature, sphere_object_rotation, sphere_object_translation, None, None, None, None, None, None, None, None, None, None, None)
+            generate_object(node_list, sphere_parent_index, 'physics', sphere_object_name, sphere_object_radius, 'sphere', version, armature, sphere_object_rotation, sphere_object_translation, None, None, None, None, None, None, None, None, None, None, None, None)
 
         #generate box objects
         for box in range(box_count):
@@ -387,7 +421,32 @@ def load_file(context, filepath, report):
             box_object_y_scale = float(processed_file[box_start + 7 + (box * 8)])
             box_object_z_scale = float(processed_file[box_start + 8 + (box * 8)])
 
-            generate_object(node_list, box_parent_index, 'physics', box_object_name, None, 'cube', version, armature, box_object_rotation, box_object_translation, None, None, None, None, None, None, None, None, box_object_x_scale, box_object_y_scale, box_object_z_scale)
+            generate_object(node_list, box_parent_index, 'physics', box_object_name, None, 'cube', version, armature, box_object_rotation, box_object_translation, None, None, None, None, None, None, None, None, box_object_x_scale, box_object_y_scale, box_object_z_scale, None)
+
+        #generate pill objects
+        for capsule in range(capsule_count):
+            pill_object_name = processed_file[capsule_start + 1 + (capsule * 7)]
+            pill_parent_index = int(processed_file[capsule_start + 2 + (capsule * 7)])
+            pill_material_index = int(processed_file[capsule_start + 3 + (capsule * 7)])
+            pill_object_rotation = processed_file[capsule_start + 4 + (capsule * 7)].split()
+            pill_object_translation = processed_file[capsule_start + 5 + (capsule * 7)].split()
+            pill_object_height = float(processed_file[capsule_start + 6 + (capsule * 7)])
+            pill_object_radius = float(processed_file[capsule_start + 7 + (capsule * 7)])
+
+            generate_object(node_list, pill_parent_index, 'physics', pill_object_name, pill_object_radius, 'cylinder', version, armature, pill_object_rotation, pill_object_translation, None, None, None, None, None, None, None, None, None, None, pill_object_height, None)
+
+        #generate convex shape objects
+        for convex_shape in range(convex_shape_count):
+            convex_shape_object_name = processed_file[convex_shape_start + 1 + (convex_shape * 6) + total_convex_shape_vertex_count]
+            convex_shape_parent_index = int(processed_file[convex_shape_start + 2 + (convex_shape * 6) + total_convex_shape_vertex_count])
+            convex_shape_material_index = int(processed_file[convex_shape_start + 3 + (convex_shape * 6) + total_convex_shape_vertex_count])
+            convex_shape_object_rotation = processed_file[convex_shape_start + 4 + (convex_shape * 6) + total_convex_shape_vertex_count].split()
+            convex_shape_object_translation = processed_file[convex_shape_start + 5 + (convex_shape * 6) + total_convex_shape_vertex_count].split()
+            convex_shape_vertex_count_start = convex_shape_start + 6 + (convex_shape * 6) + total_convex_shape_vertex_count
+            convex_shape_vertex_count = int(processed_file[convex_shape_vertex_count_start])
+            total_convex_shape_vertex_count += convex_shape_vertex_count
+
+            generate_object(node_list, convex_shape_parent_index, 'physics', convex_shape_object_name, None, 'convex', version, armature, convex_shape_object_rotation, convex_shape_object_translation, None, None, None, None, convex_shape_vertex_count_start, convex_shape_vertex_count, None, processed_file, None, None, None, convex_shape_vertex_count_start)
 
     return {'FINISHED'}
 
