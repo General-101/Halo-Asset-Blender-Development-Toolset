@@ -31,7 +31,7 @@ import bmesh
 from mathutils import Vector, Quaternion, Matrix
 from io_scene_halo.global_functions import global_functions
 
-def generate_object(node_list, object_parent_index, object_type, object_name, object_radius, create_type, version, armature, object_rotation, object_translation, object_region, region_list, xref_path_list, xref_path_index, vertex_start, vertex_count, triangle_count, processed_file, object_x_scale, object_y_scale, object_z_scale, convex_shape_vertex_count_start):
+def generate_object(node_list, object_parent_index, object_type, object_name, object_radius, create_type, version, armature, object_rotation, object_translation, object_region, region_list, xref_path_list, xref_path_index, vertex_start, vertex_count, triangle_count, processed_file, object_x_scale, object_y_scale, object_z_scale, convex_shape_vertex_count_start, material_index, game_version, material_name_list, material_definition_list):
     verts = []
     vertex_index = 0
     triangle_index = 0
@@ -144,6 +144,24 @@ def generate_object(node_list, object_parent_index, object_type, object_name, ob
     object_mesh.select_set(True)
     view_layer.objects.active = object_mesh
 
+    if not material_definition_list == None and not object_type == 'mesh':
+        material_name = material_name_list[material_index]
+        material_definition = material_definition_list[material_index]
+        mat = bpy.data.materials.get(material_name)
+        if mat is None:
+            mat = bpy.data.materials.new(name=material_name)
+
+        if object_mesh.data.materials:
+            object_mesh.data.materials[0] = mat
+
+        else:
+            object_mesh.data.materials.append(mat)
+
+        if game_version == 'halo2':
+            material_parts = material_definition.split()
+            object_mesh.jms.Region = material_parts[-1]
+            object_mesh.jms.Permutation = material_parts[-2]
+
     if create_type == 'convex':
         bpy.ops.object.mode_set(mode='EDIT')
         bpy.ops.mesh.select_all(action='SELECT')
@@ -198,12 +216,15 @@ def load_file(context, filepath, report):
     region_list = []
     xref_path_list = []
     xref_file_name_list = []
+    material_name_list = []
+    material_definition_list = []
     node_line_index = 0
     node_index = 0
     vertex_line_index = 0
     total_convex_shape_vertex_index = 0
     total_convex_shape_vertex_count = 0
     version = int(processed_file[0])
+    game_version = None
     collection = bpy.context.collection
     view_layer = bpy.context.view_layer
     object_name = bpy.path.basename(filepath).rsplit('.', 1)[0]
@@ -354,6 +375,18 @@ def load_file(context, filepath, report):
         bpy.ops.pose.armature_apply(selected=False)
 
     bpy.ops.object.mode_set(mode = 'OBJECT')
+    #gather materials
+    for material in range(material_count):
+        material_name = material_start + 1 + + (2 * material)
+        material_definition = material_start + 2 + (2 * material)
+        material_name_list.append(processed_file[material_name])
+        material_definition_list.append(processed_file[material_definition])
+        if processed_file[material_definition].startswith("("):
+            game_version = 'halo2'
+
+        else:
+            game_version = 'haloce'
+
     #gather regions
     if version <= 8204:
         for region in range(region_count):
@@ -377,7 +410,7 @@ def load_file(context, filepath, report):
             marker_translation = processed_file[marker_start + 5 + (6 * marker)].split()
             marker_radius = float(processed_file[marker_start + 6 + (6 * marker)])
 
-        generate_object(node_list, marker_parent_index, 'marker', marker_name, marker_radius, 'sphere', version, armature, marker_rotation, marker_translation, marker_region_index, region_list, None, None, None, None, None, None, None, None, None, None)
+        generate_object(node_list, marker_parent_index, 'marker', marker_name, marker_radius, 'sphere', version, armature, marker_rotation, marker_translation, marker_region_index, region_list, None, None, None, None, None, None, None, None, None, None, None, None, None, None)
 
     if version >= 8205:
         #gather xref paths
@@ -392,11 +425,11 @@ def load_file(context, filepath, report):
             xref_object_rotation = processed_file[instance_markers_start + 4 + (xref_marker * 5)].split()
             xref_object_translation = processed_file[instance_markers_start + 5 + (xref_marker * 5)].split()
 
-            generate_object(node_list, None, 'xref', xref_object_name, None, 'cube', version, armature, xref_object_rotation, xref_object_translation, None, None, xref_path_list, xref_path_index, None, None, None, None, None, None, None, None)
+            generate_object(node_list, None, 'xref', xref_object_name, None, 'cube', version, armature, xref_object_rotation, xref_object_translation, None, None, xref_path_list, xref_path_index, None, None, None, None, None, None, None, None, None, None, None, None)
 
     #generate mesh object
     if not vertex_count == 0:
-        generate_object(node_list, None, 'mesh', object_name, None, 'mesh', version, armature, None, None, None, None, None, None, vertex_start, vertex_count, triangle_count, processed_file, None, None, None, None)
+        generate_object(node_list, None, 'mesh', object_name, None, 'mesh', version, armature, None, None, None, None, None, None, vertex_start, vertex_count, triangle_count, processed_file, None, None, None, None, None, game_version, material_name_list, material_definition_list)
 
     if version >= 8206:
         #generate sphere objects
@@ -408,7 +441,7 @@ def load_file(context, filepath, report):
             sphere_object_translation = processed_file[sphere_start + 5 + (sphere * 6)].split()
             sphere_object_radius = float(processed_file[sphere_start + 6 + (sphere * 6)])
 
-            generate_object(node_list, sphere_parent_index, 'physics', sphere_object_name, sphere_object_radius, 'sphere', version, armature, sphere_object_rotation, sphere_object_translation, None, None, None, None, None, None, None, None, None, None, None, None)
+            generate_object(node_list, sphere_parent_index, 'physics', sphere_object_name, sphere_object_radius, 'sphere', version, armature, sphere_object_rotation, sphere_object_translation, None, None, None, None, None, None, None, None, None, None, None, None, sphere_material_index, game_version, material_name_list, material_definition_list)
 
         #generate box objects
         for box in range(box_count):
@@ -421,7 +454,7 @@ def load_file(context, filepath, report):
             box_object_y_scale = float(processed_file[box_start + 7 + (box * 8)])
             box_object_z_scale = float(processed_file[box_start + 8 + (box * 8)])
 
-            generate_object(node_list, box_parent_index, 'physics', box_object_name, None, 'cube', version, armature, box_object_rotation, box_object_translation, None, None, None, None, None, None, None, None, box_object_x_scale, box_object_y_scale, box_object_z_scale, None)
+            generate_object(node_list, box_parent_index, 'physics', box_object_name, None, 'cube', version, armature, box_object_rotation, box_object_translation, None, None, None, None, None, None, None, None, box_object_x_scale, box_object_y_scale, box_object_z_scale, None, box_material_index, game_version, material_name_list, material_definition_list)
 
         #generate pill objects
         for capsule in range(capsule_count):
@@ -433,7 +466,7 @@ def load_file(context, filepath, report):
             pill_object_height = float(processed_file[capsule_start + 6 + (capsule * 7)])
             pill_object_radius = float(processed_file[capsule_start + 7 + (capsule * 7)])
 
-            generate_object(node_list, pill_parent_index, 'physics', pill_object_name, pill_object_radius, 'cylinder', version, armature, pill_object_rotation, pill_object_translation, None, None, None, None, None, None, None, None, None, None, pill_object_height, None)
+            generate_object(node_list, pill_parent_index, 'physics', pill_object_name, pill_object_radius, 'cylinder', version, armature, pill_object_rotation, pill_object_translation, None, None, None, None, None, None, None, None, None, None, pill_object_height, None, pill_material_index, game_version, material_name_list, material_definition_list)
 
         #generate convex shape objects
         for convex_shape in range(convex_shape_count):
@@ -446,7 +479,7 @@ def load_file(context, filepath, report):
             convex_shape_vertex_count = int(processed_file[convex_shape_vertex_count_start])
             total_convex_shape_vertex_count += convex_shape_vertex_count
 
-            generate_object(node_list, convex_shape_parent_index, 'physics', convex_shape_object_name, None, 'convex', version, armature, convex_shape_object_rotation, convex_shape_object_translation, None, None, None, None, convex_shape_vertex_count_start, convex_shape_vertex_count, None, processed_file, None, None, None, convex_shape_vertex_count_start)
+            generate_object(node_list, convex_shape_parent_index, 'physics', convex_shape_object_name, None, 'convex', version, armature, convex_shape_object_rotation, convex_shape_object_translation, None, None, None, None, convex_shape_vertex_count_start, convex_shape_vertex_count, None, processed_file, None, None, None, convex_shape_vertex_count_start, convex_shape_material_index, game_version, material_name_list, material_definition_list)
 
     return {'FINISHED'}
 

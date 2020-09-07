@@ -241,8 +241,6 @@ def file_layout(context,
         bpy.context.view_layer.objects.active = obj
         bpy.ops.object.mode_set(mode = 'OBJECT')
 
-    depsgraph = context.evaluated_depsgraph_get()
-
     for obj in object_list:
         object_properties.append([obj.hide_get(), obj.hide_viewport])
         if hidden_geo:
@@ -294,6 +292,8 @@ def file_layout(context,
 
                             if not 'TRIANGULATE' in modifier_list:
                                 obj.modifiers.new("Triangulate", type='TRIANGULATE')
+
+                            depsgraph = context.evaluated_depsgraph_get()
 
                             obj_for_convert = obj.evaluated_get(depsgraph)
                             me = obj_for_convert.to_mesh(preserve_all_data_layers=True, depsgraph=depsgraph)
@@ -373,6 +373,8 @@ def file_layout(context,
                                     if not 'TRIANGULATE' in modifier_list:
                                         obj.modifiers.new("Triangulate", type='TRIANGULATE')
 
+                                    depsgraph = context.evaluated_depsgraph_get()
+
                                     obj_for_convert = obj.evaluated_get(depsgraph)
                                     me = obj_for_convert.to_mesh(preserve_all_data_layers=True, depsgraph=depsgraph)
                                     geometry_list.append(me)
@@ -398,6 +400,8 @@ def file_layout(context,
 
                                 if not 'TRIANGULATE' in modifier_list:
                                     obj.modifiers.new("Triangulate", type='TRIANGULATE')
+
+                                depsgraph = context.evaluated_depsgraph_get()
 
                                 obj_for_convert = obj.evaluated_get(depsgraph)
                                 me = obj_for_convert.to_mesh(preserve_all_data_layers=True, depsgraph=depsgraph)
@@ -1038,6 +1042,8 @@ def file_layout(context,
 
                 if not 'TRIANGULATE' in modifier_list:
                     convex_shape.modifiers.new("Triangulate", type='TRIANGULATE')
+
+                depsgraph = context.evaluated_depsgraph_get()
 
                 convex_shape_for_convert = convex_shape.evaluated_get(depsgraph)
                 mesh_convex_shape = convex_shape_for_convert.to_mesh(preserve_all_data_layers=True, depsgraph=depsgraph)
