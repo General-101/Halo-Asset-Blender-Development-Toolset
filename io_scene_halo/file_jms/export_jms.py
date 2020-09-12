@@ -337,9 +337,10 @@ def file_layout(context,
                         permutation_list.append(find_permutation)
 
                     elif obj.jms.Object_Type == 'CONVEX SHAPES':
-                        convex_shape_list.append(obj)
-                        region_list.append(find_region)
-                        permutation_list.append(find_permutation)
+                        if convex_shape.type == 'MESH':
+                            convex_shape_list.append(obj)
+                            region_list.append(find_region)
+                            permutation_list.append(find_permutation)
 
                     else:
                         report({'ERROR'}, "How did you even choose an option that doesn't exist?")
@@ -347,9 +348,10 @@ def file_layout(context,
 
         elif not len(obj.jms.XREF_path) == 0 and game_version == 'halo2':
             if set_ignore(obj) == False or hidden_geo:
-                instance_markers.append(obj)
-                if not obj.jms.XREF_path in instance_xref_paths:
-                    instance_xref_paths.append(obj.jms.XREF_path)
+                if export_render:
+                    instance_markers.append(obj)
+                    if not obj.jms.XREF_path in instance_xref_paths:
+                        instance_xref_paths.append(obj.jms.XREF_path)
 
         elif obj.jms.bounding_radius == True and game_version == 'halo2':
             if set_ignore(obj) == False or hidden_geo:
@@ -679,12 +681,21 @@ def file_layout(context,
 
     if version >= 8205:
         #write instance xref paths
-        file.write(
-            '\n;### INSTANCE XREF PATHS ###' +
-            '\n%s' % (instance_xref_paths_count) +
-            '\n;\t<path to .MAX file>' +
-            '\n;\t<name>\n'
-        )
+
+        if version == 8205:
+            file.write(
+                '\n;### INSTANCE XREF PATHS ###' +
+                '\n%s' % (instance_xref_paths_count) +
+                '\n;\t<name>\n'
+            )
+
+        else:
+            file.write(
+                '\n;### INSTANCE XREF PATHS ###' +
+                '\n%s' % (instance_xref_paths_count) +
+                '\n;\t<path to .MAX file>' +
+                '\n;\t<name>\n'
+            )
 
         for int_xref_path in instance_xref_paths:
             file.write(
@@ -1096,9 +1107,17 @@ def file_layout(context,
         )
 
         for ragdoll in ragdoll_list:
-            name = ragdoll.name.split('$', 1)[1]
             body_a_obj = ragdoll.rigid_body_constraint.object1
             body_b_obj = ragdoll.rigid_body_constraint.object2
+            body_a_name = 'Null'
+            body_b_name = 'Null'
+            if body_a_obj:
+                body_a_name = body_a_obj.name.split('$', 1)[1]
+
+            if body_b_obj:
+                body_b_name = body_b_obj.name.split('$', 1)[1]
+
+            name = 'ragdoll:%s:%s' % (body_a_name, body_b_name)
             body_a_index = global_functions.get_parent(armature, body_a_obj, joined_list, -1, True)
             body_b_index = global_functions.get_parent(armature, body_b_obj, joined_list, -1, True)
             body_a_matrix = global_functions.get_matrix(ragdoll, body_a_obj, True, armature, joined_list, False, version, False)
@@ -1159,9 +1178,17 @@ def file_layout(context,
         )
 
         for hinge in hinge_list:
-            name = hinge.name.split('$', 1)[1]
             body_a_obj = hinge.rigid_body_constraint.object1
             body_b_obj = hinge.rigid_body_constraint.object2
+            body_a_name = 'Null'
+            body_b_name = 'Null'
+            if body_a_obj:
+                body_a_name = body_a_obj.name.split('$', 1)[1]
+
+            if body_b_obj:
+                body_b_name = body_b_obj.name.split('$', 1)[1]
+
+            name = 'hinge:%s:%s' % (body_a_name, body_b_name)
             body_a_index = global_functions.get_parent(armature, body_a_obj, joined_list, -1, True)
             body_b_index = global_functions.get_parent(armature, body_b_obj, joined_list, -1, True)
             body_a_matrix = global_functions.get_matrix(hinge, body_a_obj, True, armature, joined_list, False, version, False)
@@ -1232,9 +1259,17 @@ def file_layout(context,
             )
 
             for point_to_point in point_to_point_list:
-                name = point_to_point.name.split('$', 1)[1]
                 body_a_obj = point_to_point.rigid_body_constraint.object1
                 body_b_obj = point_to_point.rigid_body_constraint.object2
+                body_a_name = 'Null'
+                body_b_name = 'Null'
+                if body_a_obj:
+                    body_a_name = body_a_obj.name.split('$', 1)[1]
+
+                if body_b_obj:
+                    body_b_name = body_b_obj.name.split('$', 1)[1]
+
+                name = 'point_to_point:%s:%s' % (body_a_name, body_b_name)
                 body_a_index = global_functions.get_parent(armature, body_a_obj, joined_list, -1, True)
                 body_b_index = global_functions.get_parent(armature, body_b_obj, joined_list, -1, True)
                 body_a_matrix = global_functions.get_matrix(body_a_obj, point_to_point, True, armature, joined_list, False, version, False)

@@ -27,172 +27,14 @@
 import os
 import bpy
 import bmesh
+import random
 
 from mathutils import Vector, Quaternion, Matrix
 from io_scene_halo.global_functions import global_functions
 
-def generate_object(node_list, object_parent_index, object_type, object_name, object_radius, create_type, version, armature, object_rotation, object_translation, object_region, region_list, xref_path_list, xref_path_index, vertex_start, vertex_count, triangle_count, processed_file, object_x_scale, object_y_scale, object_z_scale, convex_shape_vertex_count_start, material_index, game_version, material_name_list, material_definition_list):
-    verts = []
-    vertex_index = 0
-    triangle_index = 0
-    convex_shape_vertex_index = 0
-    collection = bpy.context.collection
-    view_layer = bpy.context.view_layer
-    bpy.ops.object.select_all(action='DESELECT')
-    if not object_parent_index == -1 and not object_parent_index == None:
-        parent_name = node_list[object_parent_index]
-
-    object_name_prefix = object_name
-    if object_type == 'marker':
-        object_name_prefix = '#%s' % object_name
-
-    elif object_type == 'collision':
-        object_name_prefix = '@%s' % object_name
-
-    elif object_type == 'physics':
-        object_name_prefix = '$%s' % object_name
-
-    mesh = bpy.data.meshes.new(object_name_prefix)
-    object_mesh = bpy.data.objects.new(object_name_prefix, mesh)
-    collection.objects.link(object_mesh)
-    view_layer.objects.active = object_mesh
-    object_mesh.select_set(True)
-    bm = bmesh.new()
-
-    if create_type == 'sphere':
-        bmesh.ops.create_uvsphere(bm, u_segments=32, v_segments=16, diameter=1)
-
-    elif create_type == 'cube':
-        bmesh.ops.create_cube(bm, size=1.0)
-
-    elif create_type == 'cylinder':
-        bmesh.ops.create_cone(bm, cap_ends=True, cap_tris=False, segments=12, diameter1=3, diameter2=3, depth=5)
-
-    elif create_type == 'mesh':
-        for vert in range(vertex_count):
-            if version >= 8205:
-                vert_translation = processed_file[vertex_index + vertex_start + 1]
-                vert_normal = processed_file[vertex_index + vertex_start + 2]
-                vertex_group_count = int(processed_file[vertex_index + vertex_start + 3])
-                vertex_uv_count = processed_file[vertex_index + vertex_start + (vertex_group_count * 2) + 4]
-                vert_translation_list = vert_translation.split()
-                vert_normal_list = vert_normal.split()
-                verts.append([float(vert_translation_list[0]), float(vert_translation_list[1]), float(vert_translation_list[2])])
-                total_uv_lines = 0
-                for x in range(int(vertex_uv_count)):
-                    total_uv_lines += 1
-
-                vertex_index += 4 + (vertex_group_count * 2) + total_uv_lines
-
-            else:
-                vert_translation = processed_file[vertex_index + vertex_start + 2]
-                vert_normal = processed_file[vertex_index + vertex_start + 3]
-                vert_translation_list = vert_translation.split()
-                vert_normal_list = vert_normal.split()
-                verts.append([float(vert_translation_list[0]), float(vert_translation_list[1]), float(vert_translation_list[2])])
-                vertex_index += 8
-
-        for tri in range(triangle_count):
-            p1 = verts[0 + triangle_index]
-            p2 = verts[1 + triangle_index]
-            p3 = verts[2 + triangle_index]
-            v1 = bm.verts.new((float(p1[0]), float(p1[1]), float(p1[2])))
-            v2 = bm.verts.new((float(p2[0]), float(p2[1]), float(p2[2])))
-            v3 = bm.verts.new((float(p3[0]), float(p3[1]), float(p3[2])))
-            bm.faces.new((v1, v2, v3))
-            triangle_index += 3
-
-    elif create_type == 'convex':
-        for vert in range(vertex_count):
-            vert_translation = processed_file[vertex_start + 1 + convex_shape_vertex_index]
-            vert_translation_list = vert_translation.split()
-            bm.verts.new((float(vert_translation_list[0]), float(vert_translation_list[1]), float(vert_translation_list[2])))
-            convex_shape_vertex_index += 1
-
-    bm.to_mesh(mesh)
-    bm.free()
-
-    armature.select_set(True)
-    view_layer.objects.active = armature
-    if not object_parent_index == -1 and not object_parent_index == None:
-        bpy.ops.object.mode_set(mode='EDIT')
-        armature.data.edit_bones.active = armature.data.edit_bones[parent_name]
-        bpy.ops.object.mode_set(mode='OBJECT')
-        bpy.ops.object.parent_set(type='BONE', keep_transform=True)
-
-    else:
-        bpy.ops.object.parent_set(type='ARMATURE', keep_transform=True)
-
-    if not object_type == 'mesh':
-        file_matrix = Quaternion(((float(object_rotation[3])), float(object_rotation[0]), float(object_rotation[1]), float(object_rotation[2]))).inverted().to_matrix().to_4x4()
-        if version >= 8205:
-            file_matrix = Quaternion(((float(object_rotation[3])), float(object_rotation[0]), float(object_rotation[1]), float(object_rotation[2]))).to_matrix().to_4x4()
-
-        file_matrix[0][3] = float(object_translation[0])
-        file_matrix[1][3] = float(object_translation[1])
-        file_matrix[2][3] = float(object_translation[2])
-        matrix = file_matrix
-        if not object_parent_index == -1 and not object_parent_index == None:
-            bpy.ops.object.mode_set(mode = 'POSE')
-            pose_bone = armature.pose.bones[parent_name]
-            matrix = pose_bone.matrix @ file_matrix
-
-        object_mesh.matrix_world = matrix
-
-    bpy.ops.object.mode_set(mode='OBJECT')
-    bpy.ops.object.select_all(action='DESELECT')
-    object_mesh.select_set(True)
-    view_layer.objects.active = object_mesh
-
-    if not material_definition_list == None and not object_type == 'mesh':
-        material_name = material_name_list[material_index]
-        material_definition = material_definition_list[material_index]
-        mat = bpy.data.materials.get(material_name)
-        if mat is None:
-            mat = bpy.data.materials.new(name=material_name)
-
-        if object_mesh.data.materials:
-            object_mesh.data.materials[0] = mat
-
-        else:
-            object_mesh.data.materials.append(mat)
-
-        if game_version == 'halo2':
-            material_parts = material_definition.split()
-            object_mesh.jms.Region = material_parts[-1]
-            object_mesh.jms.Permutation = material_parts[-2]
-
-    if create_type == 'convex':
-        bpy.ops.object.mode_set(mode='EDIT')
-        bpy.ops.mesh.select_all(action='SELECT')
-        bpy.ops.mesh.convex_hull(delete_unused=True, use_existing_faces=True, join_triangles=True)
-        bpy.ops.object.mode_set(mode='OBJECT')
-        object_mesh.jms.Object_Type = 'CONVEX SHAPES'
-
-    elif create_type == 'sphere':
-        if object_type == 'marker':
-            if version <= 8204:
-                object_mesh.jms.Region = region_list[object_region]
-
-        object_mesh.jms.Object_Type = 'SPHERE'
-        object_dimension = object_radius * 2
-        object_mesh.dimensions = (object_dimension, object_dimension, object_dimension)
-
-    elif create_type == 'cube':
-        object_mesh.jms.Object_Type = 'BOX'
-        if object_type == 'xref':
-            if version >= 8205:
-                object_mesh.jms.XREF_path = xref_path_list[xref_path_index]
-
-        else:
-            object_mesh.dimensions = (object_x_scale, object_y_scale, object_z_scale)
-
-    elif create_type == 'cylinder':
-        object_mesh.jms.Object_Type = 'CAPSULES'
-        object_dimension = object_radius * 2
-        object_mesh.dimensions = (object_dimension, object_dimension, (object_dimension + object_z_scale))
-
-    bpy.ops.object.select_all(action='DESELECT')
+def get_random_color():
+    r, g, b = [random.random() for i in range(3)]
+    return r, g, b, 1
 
 def load_file(context, filepath, report):
     processed_file = []
@@ -206,7 +48,7 @@ def load_file(context, filepath, report):
             #foutput.write('%s' % line)
 
     #foutput.close()
-    armature = []
+    armature = None
     node_list = []
     child_list = []
     sibling_list = []
@@ -218,9 +60,13 @@ def load_file(context, filepath, report):
     xref_file_name_list = []
     material_name_list = []
     material_definition_list = []
+    verts = []
+    object_list = list(bpy.context.scene.objects)
     node_line_index = 0
     node_index = 0
     vertex_line_index = 0
+    vertex_index = 0
+    triangle_index = 0
     total_convex_shape_vertex_index = 0
     total_convex_shape_vertex_count = 0
     version = int(processed_file[0])
@@ -273,16 +119,21 @@ def load_file(context, filepath, report):
 
             ragdoll_start = convex_shape_start + 1 + (convex_shape_count * 6) + total_convex_shape_vertex_index
             ragdoll_count = int(processed_file[ragdoll_start])
-            hinge_start = vertex_start + vertex_line_index + 1
-            hinge_count = int(processed_file[triangle_start])
-            car_wheel_start = vertex_start + vertex_line_index + 1
-            car_wheel_count = int(processed_file[triangle_start])
-            point_to_point_start = vertex_start + vertex_line_index + 1
-            point_to_point_count = int(processed_file[triangle_start])
-            prismatic_start = vertex_start + vertex_line_index + 1
-            prismatic_count = int(processed_file[triangle_start])
-            bounding_sphere_start = vertex_start + vertex_line_index + 1
-            bounding_sphere_count = int(processed_file[triangle_start])
+            hinge_start = ragdoll_start + 1 + (ragdoll_count * 13)
+            hinge_count = int(processed_file[hinge_start])
+            if version >= 8206:
+                car_wheel_start = hinge_start + 1 + (hinge_count * 11)
+                car_wheel_count = int(processed_file[car_wheel_start])
+                point_to_point_start = car_wheel_start + 1 + (car_wheel_count * 11)
+                point_to_point_count = int(processed_file[point_to_point_start])
+                prismatic_start = point_to_point_start + 1 + (point_to_point_count * 15)
+                prismatic_count = int(processed_file[prismatic_start])
+                bounding_sphere_start = prismatic_start + 1 + (prismatic_count * 9)
+                bounding_sphere_count = int(processed_file[bounding_sphere_start])
+
+            else:
+                bounding_sphere_start = hinge_start + 1 + (hinge_count * 11)
+                bounding_sphere_count = int(processed_file[bounding_sphere_start])
 
     else:
         node_start = 2
@@ -317,64 +168,80 @@ def load_file(context, filepath, report):
             sibling_list.append(sibling_node_index)
             node_line_index += 5
 
-    #generate armature from node list
-    bpy.ops.object.select_all(action='DESELECT')
-    armdata = bpy.data.armatures.new('Armature')
-    ob_new = bpy.data.objects.new('Armature', armdata)
-    collection.objects.link(ob_new)
-    armature = ob_new
-    view_layer.objects.active = armature
-    bpy.ops.object.mode_set(mode = 'EDIT')
-    global_functions.create_skeleton(armature, node_list)
-    if version <= 8204:
+    for obj in object_list:
+        if armature is None:
+            if obj.type == 'ARMATURE':
+                exist_count = 0
+                armature_bone_list = []
+                armature_bone_list = list(obj.data.bones)
+                for node in armature_bone_list:
+                    if node.name in node_list:
+                        exist_count += 1
+
+                if exist_count == len(node_list):
+                    armature = obj
+                    view_layer.objects.active = armature
+
+    if armature == None:
+        #generate armature from node list
+        bpy.ops.object.select_all(action='DESELECT')
+        armdata = bpy.data.armatures.new('Armature')
+        ob_new = bpy.data.objects.new('Armature', armdata)
+        collection.objects.link(ob_new)
+        armature = ob_new
+        view_layer.objects.active = armature
+        bpy.ops.object.mode_set(mode = 'EDIT')
+        global_functions.create_skeleton(armature, node_list)
+        if version <= 8204:
+            for node in node_list:
+                node_list_index = node_list.index(node)
+                children_names = global_functions.find_children(node_list, child_list, sibling_list, node_list_index)
+                for child in children_names:
+                    armature.data.edit_bones[child].parent = armature.data.edit_bones[node]
+
         for node in node_list:
-            node_list_index = node_list.index(node)
-            children_names = global_functions.find_children(node_list, child_list, sibling_list, node_list_index)
-            for child in children_names:
-                armature.data.edit_bones[child].parent = armature.data.edit_bones[node]
+            if version >= 8205:
+                node_rotation = processed_file[node_index + 4].split()
+                node_translation = processed_file[node_index + 5].split()
+                parent_name = parent_list[node_list.index(node)]
+                node_set = 4
 
-    for node in node_list:
-        if version >= 8205:
-            node_rotation = processed_file[node_index + 4].split()
-            node_translation = processed_file[node_index + 5].split()
-            parent_name = parent_list[node_list.index(node)]
-            node_set = 4
+            else:
+                node_rotation = processed_file[node_index + 6].split()
+                node_translation = processed_file[node_index + 7].split()
+                parent_name = -1
+                node_set = 5
 
-        else:
-            node_rotation = processed_file[node_index + 6].split()
-            node_translation = processed_file[node_index + 7].split()
-            parent_name = -1
-            node_set = 5
+            file_matrix = Quaternion(((float(node_rotation[3])), float(node_rotation[0]), float(node_rotation[1]), float(node_rotation[2]))).inverted().to_matrix().to_4x4()
+            if version >= 8205:
+                file_matrix = Quaternion(((float(node_rotation[3])), float(node_rotation[0]), float(node_rotation[1]), float(node_rotation[2]))).to_matrix().to_4x4()
 
-        file_matrix = Quaternion(((float(node_rotation[3])), float(node_rotation[0]), float(node_rotation[1]), float(node_rotation[2]))).inverted().to_matrix().to_4x4()
-        if version >= 8205:
-            file_matrix = Quaternion(((float(node_rotation[3])), float(node_rotation[0]), float(node_rotation[1]), float(node_rotation[2]))).to_matrix().to_4x4()
+            file_matrix[0][3] = float(node_translation[0])
+            file_matrix[1][3] = float(node_translation[1])
+            file_matrix[2][3] = float(node_translation[2])
+            bpy.ops.object.mode_set(mode = 'POSE')
+            pose_bone = armature.pose.bones[node]
+            if version >= 8205:
+                matrix = file_matrix
 
-        file_matrix[0][3] = float(node_translation[0])
-        file_matrix[1][3] = float(node_translation[1])
-        file_matrix[2][3] = float(node_translation[2])
-        bpy.ops.object.mode_set(mode = 'POSE')
-        pose_bone = armature.pose.bones[node]
-        if version >= 8205:
-            matrix = file_matrix
+            else:
+                matrix = file_matrix
+                if pose_bone.parent:
+                    matrix = pose_bone.parent.matrix @ file_matrix
 
-        else:
-            matrix = file_matrix
-            if pose_bone.parent:
-                matrix = pose_bone.parent.matrix @ file_matrix
+            if not parent_name == -1:
+                bpy.ops.object.mode_set(mode = 'EDIT')
+                armature.data.edit_bones[node].parent = armature.data.edit_bones[node_list[parent_name]]
 
-        if not parent_name == -1:
-            bpy.ops.object.mode_set(mode = 'EDIT')
-            armature.data.edit_bones[node].parent = armature.data.edit_bones[node_list[parent_name]]
+            bpy.ops.object.mode_set(mode = 'POSE')
+            armature.pose.bones[node].matrix = matrix
+            node_index += node_set
 
-        bpy.ops.object.mode_set(mode = 'POSE')
-        armature.pose.bones[node].matrix = matrix
-        node_index += node_set
+        if not node_count == 0:
+            bpy.ops.pose.armature_apply(selected=False)
 
-    if not node_count == 0:
-        bpy.ops.pose.armature_apply(selected=False)
+        bpy.ops.object.mode_set(mode = 'OBJECT')
 
-    bpy.ops.object.mode_set(mode = 'OBJECT')
     #gather materials
     for material in range(material_count):
         material_name = material_start + 1 + + (2 * material)
@@ -410,7 +277,56 @@ def load_file(context, filepath, report):
             marker_translation = processed_file[marker_start + 5 + (6 * marker)].split()
             marker_radius = float(processed_file[marker_start + 6 + (6 * marker)])
 
-        generate_object(node_list, marker_parent_index, 'marker', marker_name, marker_radius, 'sphere', version, armature, marker_rotation, marker_translation, marker_region_index, region_list, None, None, None, None, None, None, None, None, None, None, None, None, None, None)
+        bpy.ops.object.select_all(action='DESELECT')
+        if not marker_parent_index == -1:
+            parent_name = node_list[marker_parent_index]
+
+        object_name_prefix = '#%s' % marker_name
+        mesh = bpy.data.meshes.new(object_name_prefix)
+        object_mesh = bpy.data.objects.new(object_name_prefix, mesh)
+        collection.objects.link(object_mesh)
+        view_layer.objects.active = object_mesh
+        object_mesh.select_set(True)
+        bm = bmesh.new()
+        bmesh.ops.create_uvsphere(bm, u_segments=32, v_segments=16, diameter=1)
+        bm.to_mesh(mesh)
+        bm.free()
+        armature.select_set(True)
+        view_layer.objects.active = armature
+        if not marker_parent_index == -1:
+            bpy.ops.object.mode_set(mode='EDIT')
+            armature.data.edit_bones.active = armature.data.edit_bones[parent_name]
+            bpy.ops.object.mode_set(mode='OBJECT')
+            bpy.ops.object.parent_set(type='BONE', keep_transform=True)
+
+        else:
+            bpy.ops.object.parent_set(type='ARMATURE', keep_transform=True)
+
+        file_matrix = Quaternion(((float(marker_rotation[3])), float(marker_rotation[0]), float(marker_rotation[1]), float(marker_rotation[2]))).inverted().to_matrix().to_4x4()
+        if version >= 8205:
+            file_matrix = Quaternion(((float(marker_rotation[3])), float(marker_rotation[0]), float(marker_rotation[1]), float(marker_rotation[2]))).to_matrix().to_4x4()
+
+        file_matrix[0][3] = float(marker_translation[0])
+        file_matrix[1][3] = float(marker_translation[1])
+        file_matrix[2][3] = float(marker_translation[2])
+        matrix = file_matrix
+        if not marker_parent_index == -1:
+            bpy.ops.object.mode_set(mode = 'POSE')
+            pose_bone = armature.pose.bones[parent_name]
+            matrix = pose_bone.matrix @ file_matrix
+
+        object_mesh.matrix_world = matrix
+        bpy.ops.object.mode_set(mode='OBJECT')
+        bpy.ops.object.select_all(action='DESELECT')
+        object_mesh.select_set(True)
+        view_layer.objects.active = object_mesh
+        if version <= 8204:
+            object_mesh.jms.Region = region_list[marker_region_index]
+
+        object_mesh.jms.Object_Type = 'SPHERE'
+        object_dimension = marker_radius * 2
+        object_mesh.dimensions = (object_dimension, object_dimension, object_dimension)
+        bpy.ops.object.select_all(action='DESELECT')
 
     if version >= 8205:
         #gather xref paths
@@ -425,11 +341,86 @@ def load_file(context, filepath, report):
             xref_object_rotation = processed_file[instance_markers_start + 4 + (xref_marker * 5)].split()
             xref_object_translation = processed_file[instance_markers_start + 5 + (xref_marker * 5)].split()
 
-            generate_object(node_list, None, 'xref', xref_object_name, None, 'cube', version, armature, xref_object_rotation, xref_object_translation, None, None, xref_path_list, xref_path_index, None, None, None, None, None, None, None, None, None, None, None, None)
+            bpy.ops.object.select_all(action='DESELECT')
+            mesh = bpy.data.meshes.new(xref_object_name)
+            object_mesh = bpy.data.objects.new(xref_object_name, mesh)
+            collection.objects.link(object_mesh)
+            view_layer.objects.active = object_mesh
+            object_mesh.select_set(True)
+            bm = bmesh.new()
+            bmesh.ops.create_cube(bm, size=1.0)
+            bm.to_mesh(mesh)
+            bm.free()
+            armature.select_set(True)
+            view_layer.objects.active = armature
+            bpy.ops.object.parent_set(type='ARMATURE', keep_transform=True)
+            file_matrix = Quaternion(((float(xref_object_rotation[3])), float(xref_object_rotation[0]), float(xref_object_rotation[1]), float(xref_object_rotation[2]))).inverted().to_matrix().to_4x4()
+            if version >= 8205:
+                file_matrix = Quaternion(((float(xref_object_rotation[3])), float(xref_object_rotation[0]), float(xref_object_rotation[1]), float(xref_object_rotation[2]))).to_matrix().to_4x4()
+
+            file_matrix[0][3] = float(xref_object_translation[0])
+            file_matrix[1][3] = float(xref_object_translation[1])
+            file_matrix[2][3] = float(xref_object_translation[2])
+            matrix = file_matrix
+            object_mesh.matrix_world = matrix
+            bpy.ops.object.mode_set(mode='OBJECT')
+            bpy.ops.object.select_all(action='DESELECT')
+            object_mesh.select_set(True)
+            view_layer.objects.active = object_mesh
+            object_mesh.jms.Object_Type = 'BOX'
+            if version >= 8205:
+                object_mesh.jms.XREF_path = xref_path_list[xref_path_index]
+
+            bpy.ops.object.select_all(action='DESELECT')
 
     #generate mesh object
     if not vertex_count == 0:
-        generate_object(node_list, None, 'mesh', object_name, None, 'mesh', version, armature, None, None, None, None, None, None, vertex_start, vertex_count, triangle_count, processed_file, None, None, None, None, None, game_version, material_name_list, material_definition_list)
+        bpy.ops.object.select_all(action='DESELECT')
+        mesh = bpy.data.meshes.new(object_name)
+        object_mesh = bpy.data.objects.new(object_name, mesh)
+        collection.objects.link(object_mesh)
+        view_layer.objects.active = object_mesh
+        object_mesh.select_set(True)
+        bm = bmesh.new()
+        for vert in range(vertex_count):
+            if version >= 8205:
+                vert_translation = processed_file[vertex_index + vertex_start + 1]
+                vert_normal = processed_file[vertex_index + vertex_start + 2]
+                vertex_group_count = int(processed_file[vertex_index + vertex_start + 3])
+                vertex_uv_count = processed_file[vertex_index + vertex_start + (vertex_group_count * 2) + 4]
+                vert_translation_list = vert_translation.split()
+                vert_normal_list = vert_normal.split()
+                verts.append([float(vert_translation_list[0]), float(vert_translation_list[1]), float(vert_translation_list[2])])
+                total_uv_lines = 0
+                for x in range(int(vertex_uv_count)):
+                    total_uv_lines += 1
+
+                vertex_index += 4 + (vertex_group_count * 2) + total_uv_lines
+
+            else:
+                vert_translation = processed_file[vertex_index + vertex_start + 2]
+                vert_normal = processed_file[vertex_index + vertex_start + 3]
+                vert_translation_list = vert_translation.split()
+                vert_normal_list = vert_normal.split()
+                verts.append([float(vert_translation_list[0]), float(vert_translation_list[1]), float(vert_translation_list[2])])
+                vertex_index += 8
+
+        for tri in range(triangle_count):
+            p1 = verts[0 + triangle_index]
+            p2 = verts[1 + triangle_index]
+            p3 = verts[2 + triangle_index]
+            v1 = bm.verts.new((float(p1[0]), float(p1[1]), float(p1[2])))
+            v2 = bm.verts.new((float(p2[0]), float(p2[1]), float(p2[2])))
+            v3 = bm.verts.new((float(p3[0]), float(p3[1]), float(p3[2])))
+            bm.faces.new((v1, v2, v3))
+            triangle_index += 3
+
+        bm.to_mesh(mesh)
+        bm.free()
+        armature.select_set(True)
+        view_layer.objects.active = armature
+        bpy.ops.object.parent_set(type='ARMATURE', keep_transform=True)
+        bpy.ops.object.select_all(action='DESELECT')
 
     if version >= 8206:
         #generate sphere objects
@@ -441,7 +432,72 @@ def load_file(context, filepath, report):
             sphere_object_translation = processed_file[sphere_start + 5 + (sphere * 6)].split()
             sphere_object_radius = float(processed_file[sphere_start + 6 + (sphere * 6)])
 
-            generate_object(node_list, sphere_parent_index, 'physics', sphere_object_name, sphere_object_radius, 'sphere', version, armature, sphere_object_rotation, sphere_object_translation, None, None, None, None, None, None, None, None, None, None, None, None, sphere_material_index, game_version, material_name_list, material_definition_list)
+            bpy.ops.object.select_all(action='DESELECT')
+            if not sphere_parent_index == -1:
+                parent_name = node_list[sphere_parent_index]
+
+            object_name_prefix = '$%s' % sphere_object_name
+            mesh = bpy.data.meshes.new(object_name_prefix)
+            object_mesh = bpy.data.objects.new(object_name_prefix, mesh)
+            collection.objects.link(object_mesh)
+            view_layer.objects.active = object_mesh
+            object_mesh.select_set(True)
+            bm = bmesh.new()
+            bmesh.ops.create_uvsphere(bm, u_segments=32, v_segments=16, diameter=1)
+            bm.to_mesh(mesh)
+            bm.free()
+            armature.select_set(True)
+            view_layer.objects.active = armature
+            if not sphere_parent_index == -1:
+                bpy.ops.object.mode_set(mode='EDIT')
+                armature.data.edit_bones.active = armature.data.edit_bones[parent_name]
+                bpy.ops.object.mode_set(mode='OBJECT')
+                bpy.ops.object.parent_set(type='BONE', keep_transform=True)
+
+            else:
+                bpy.ops.object.parent_set(type='ARMATURE', keep_transform=True)
+
+            file_matrix = Quaternion(((float(sphere_object_rotation[3])), float(sphere_object_rotation[0]), float(sphere_object_rotation[1]), float(sphere_object_rotation[2]))).inverted().to_matrix().to_4x4()
+            if version >= 8205:
+                file_matrix = Quaternion(((float(sphere_object_rotation[3])), float(sphere_object_rotation[0]), float(sphere_object_rotation[1]), float(sphere_object_rotation[2]))).to_matrix().to_4x4()
+
+            file_matrix[0][3] = float(sphere_object_translation[0])
+            file_matrix[1][3] = float(sphere_object_translation[1])
+            file_matrix[2][3] = float(sphere_object_translation[2])
+            matrix = file_matrix
+            if not sphere_parent_index == -1:
+                bpy.ops.object.mode_set(mode = 'POSE')
+                pose_bone = armature.pose.bones[parent_name]
+                matrix = pose_bone.matrix @ file_matrix
+
+            object_mesh.matrix_world = matrix
+            bpy.ops.object.mode_set(mode='OBJECT')
+            bpy.ops.object.select_all(action='DESELECT')
+            object_mesh.select_set(True)
+            view_layer.objects.active = object_mesh
+            if not sphere_material_index == -1:
+                material_name = material_name_list[sphere_material_index]
+                material_definition = material_definition_list[sphere_material_index]
+                mat = bpy.data.materials.get(material_name)
+                if mat is None:
+                    mat = bpy.data.materials.new(name=material_name)
+
+                if object_mesh.data.materials:
+                    object_mesh.data.materials[0] = mat
+
+                else:
+                    object_mesh.data.materials.append(mat)
+
+                mat.diffuse_color = get_random_color()
+                if game_version == 'halo2':
+                    material_parts = material_definition.split()
+                    object_mesh.jms.Region = material_parts[-1]
+                    object_mesh.jms.Permutation = material_parts[-2]
+
+            object_mesh.jms.Object_Type = 'SPHERE'
+            object_dimension = sphere_object_radius * 2
+            object_mesh.dimensions = (object_dimension, object_dimension, object_dimension)
+            bpy.ops.object.select_all(action='DESELECT')
 
         #generate box objects
         for box in range(box_count):
@@ -454,7 +510,72 @@ def load_file(context, filepath, report):
             box_object_y_scale = float(processed_file[box_start + 7 + (box * 8)])
             box_object_z_scale = float(processed_file[box_start + 8 + (box * 8)])
 
-            generate_object(node_list, box_parent_index, 'physics', box_object_name, None, 'cube', version, armature, box_object_rotation, box_object_translation, None, None, None, None, None, None, None, None, box_object_x_scale, box_object_y_scale, box_object_z_scale, None, box_material_index, game_version, material_name_list, material_definition_list)
+            bpy.ops.object.select_all(action='DESELECT')
+            if not box_parent_index == -1:
+                parent_name = node_list[box_parent_index]
+
+            object_name_prefix = '$%s' % box_object_name
+            mesh = bpy.data.meshes.new(object_name_prefix)
+            object_mesh = bpy.data.objects.new(object_name_prefix, mesh)
+            collection.objects.link(object_mesh)
+            view_layer.objects.active = object_mesh
+            object_mesh.select_set(True)
+            bm = bmesh.new()
+            bmesh.ops.create_cube(bm, size=1.0)
+            bm.to_mesh(mesh)
+            bm.free()
+            armature.select_set(True)
+            view_layer.objects.active = armature
+            if not box_parent_index == -1:
+                bpy.ops.object.mode_set(mode='EDIT')
+                armature.data.edit_bones.active = armature.data.edit_bones[parent_name]
+                bpy.ops.object.mode_set(mode='OBJECT')
+                bpy.ops.object.parent_set(type='BONE', keep_transform=True)
+
+            else:
+                bpy.ops.object.parent_set(type='ARMATURE', keep_transform=True)
+
+            file_matrix = Quaternion(((float(box_object_rotation[3])), float(box_object_rotation[0]), float(box_object_rotation[1]), float(box_object_rotation[2]))).inverted().to_matrix().to_4x4()
+            if version >= 8205:
+                file_matrix = Quaternion(((float(box_object_rotation[3])), float(box_object_rotation[0]), float(box_object_rotation[1]), float(box_object_rotation[2]))).to_matrix().to_4x4()
+
+            file_matrix[0][3] = float(box_object_translation[0])
+            file_matrix[1][3] = float(box_object_translation[1])
+            file_matrix[2][3] = float(box_object_translation[2])
+            matrix = file_matrix
+            if not box_parent_index == -1:
+                bpy.ops.object.mode_set(mode = 'POSE')
+                pose_bone = armature.pose.bones[parent_name]
+                matrix = pose_bone.matrix @ file_matrix
+
+            object_mesh.matrix_world = matrix
+
+            bpy.ops.object.mode_set(mode='OBJECT')
+            bpy.ops.object.select_all(action='DESELECT')
+            object_mesh.select_set(True)
+            view_layer.objects.active = object_mesh
+            if not box_material_index == -1:
+                material_name = material_name_list[box_material_index]
+                material_definition = material_definition_list[box_material_index]
+                mat = bpy.data.materials.get(material_name)
+                if mat is None:
+                    mat = bpy.data.materials.new(name=material_name)
+
+                if object_mesh.data.materials:
+                    object_mesh.data.materials[0] = mat
+
+                else:
+                    object_mesh.data.materials.append(mat)
+
+                mat.diffuse_color = get_random_color()
+                if game_version == 'halo2':
+                    material_parts = material_definition.split()
+                    object_mesh.jms.Region = material_parts[-1]
+                    object_mesh.jms.Permutation = material_parts[-2]
+
+            object_mesh.jms.Object_Type = 'BOX'
+            object_mesh.dimensions = (box_object_x_scale, box_object_y_scale, box_object_z_scale)
+            bpy.ops.object.select_all(action='DESELECT')
 
         #generate pill objects
         for capsule in range(capsule_count):
@@ -466,7 +587,73 @@ def load_file(context, filepath, report):
             pill_object_height = float(processed_file[capsule_start + 6 + (capsule * 7)])
             pill_object_radius = float(processed_file[capsule_start + 7 + (capsule * 7)])
 
-            generate_object(node_list, pill_parent_index, 'physics', pill_object_name, pill_object_radius, 'cylinder', version, armature, pill_object_rotation, pill_object_translation, None, None, None, None, None, None, None, None, None, None, pill_object_height, None, pill_material_index, game_version, material_name_list, material_definition_list)
+            bpy.ops.object.select_all(action='DESELECT')
+            if not pill_parent_index == -1:
+                parent_name = node_list[pill_parent_index]
+
+            object_name_prefix = '$%s' % pill_object_name
+            mesh = bpy.data.meshes.new(object_name_prefix)
+            object_mesh = bpy.data.objects.new(object_name_prefix, mesh)
+            collection.objects.link(object_mesh)
+            view_layer.objects.active = object_mesh
+            object_mesh.select_set(True)
+            bm = bmesh.new()
+            bmesh.ops.create_cone(bm, cap_ends=True, cap_tris=False, segments=12, diameter1=3, diameter2=3, depth=5)
+            bm.transform(Matrix.Translation((0, 0, 2.5)))
+            bm.to_mesh(mesh)
+            bm.free()
+            armature.select_set(True)
+            view_layer.objects.active = armature
+            if not pill_parent_index == -1:
+                bpy.ops.object.mode_set(mode='EDIT')
+                armature.data.edit_bones.active = armature.data.edit_bones[parent_name]
+                bpy.ops.object.mode_set(mode='OBJECT')
+                bpy.ops.object.parent_set(type='BONE', keep_transform=True)
+
+            else:
+                bpy.ops.object.parent_set(type='ARMATURE', keep_transform=True)
+
+            file_matrix = Quaternion(((float(pill_object_rotation[3])), float(pill_object_rotation[0]), float(pill_object_rotation[1]), float(pill_object_rotation[2]))).inverted().to_matrix().to_4x4()
+            if version >= 8205:
+                file_matrix = Quaternion(((float(pill_object_rotation[3])), float(pill_object_rotation[0]), float(pill_object_rotation[1]), float(pill_object_rotation[2]))).to_matrix().to_4x4()
+
+            file_matrix[0][3] = float(pill_object_translation[0])
+            file_matrix[1][3] = float(pill_object_translation[1])
+            file_matrix[2][3] = float(pill_object_translation[2])
+            matrix = file_matrix
+            if not pill_parent_index == -1:
+                bpy.ops.object.mode_set(mode = 'POSE')
+                pose_bone = armature.pose.bones[parent_name]
+                matrix = pose_bone.matrix @ file_matrix
+
+            object_mesh.matrix_world = matrix
+            bpy.ops.object.mode_set(mode='OBJECT')
+            bpy.ops.object.select_all(action='DESELECT')
+            object_mesh.select_set(True)
+            view_layer.objects.active = object_mesh
+            if not pill_material_index == -1:
+                material_name = material_name_list[pill_material_index]
+                material_definition = material_definition_list[pill_material_index]
+                mat = bpy.data.materials.get(material_name)
+                if mat is None:
+                    mat = bpy.data.materials.new(name=material_name)
+
+                if object_mesh.data.materials:
+                    object_mesh.data.materials[0] = mat
+
+                else:
+                    object_mesh.data.materials.append(mat)
+
+                mat.diffuse_color = get_random_color()
+                if game_version == 'halo2':
+                    material_parts = material_definition.split()
+                    object_mesh.jms.Region = material_parts[-1]
+                    object_mesh.jms.Permutation = material_parts[-2]
+
+            object_mesh.jms.Object_Type = 'CAPSULES'
+            object_dimension = pill_object_radius * 2
+            object_mesh.dimensions = (object_dimension, object_dimension, (object_dimension + pill_object_height))
+            bpy.ops.object.select_all(action='DESELECT')
 
         #generate convex shape objects
         for convex_shape in range(convex_shape_count):
@@ -478,8 +665,180 @@ def load_file(context, filepath, report):
             convex_shape_vertex_count_start = convex_shape_start + 6 + (convex_shape * 6) + total_convex_shape_vertex_count
             convex_shape_vertex_count = int(processed_file[convex_shape_vertex_count_start])
             total_convex_shape_vertex_count += convex_shape_vertex_count
+            convex_shape_vertex_index = 0
 
-            generate_object(node_list, convex_shape_parent_index, 'physics', convex_shape_object_name, None, 'convex', version, armature, convex_shape_object_rotation, convex_shape_object_translation, None, None, None, None, convex_shape_vertex_count_start, convex_shape_vertex_count, None, processed_file, None, None, None, convex_shape_vertex_count_start, convex_shape_material_index, game_version, material_name_list, material_definition_list)
+            bpy.ops.object.select_all(action='DESELECT')
+            if not convex_shape_parent_index == -1:
+                parent_name = node_list[convex_shape_parent_index]
+
+            object_name_prefix = '$%s' % convex_shape_object_name
+            mesh = bpy.data.meshes.new(object_name_prefix)
+            object_mesh = bpy.data.objects.new(object_name_prefix, mesh)
+            collection.objects.link(object_mesh)
+            view_layer.objects.active = object_mesh
+            object_mesh.select_set(True)
+            bm = bmesh.new()
+            for vert in range(convex_shape_vertex_count):
+                print(convex_shape_vertex_count_start + 1 + convex_shape_vertex_index)
+                vert_translation = processed_file[convex_shape_vertex_count_start + 1 + convex_shape_vertex_index]
+                vert_translation_list = vert_translation.split()
+                bm.verts.new((float(vert_translation_list[0]), float(vert_translation_list[1]), float(vert_translation_list[2])))
+                convex_shape_vertex_index += 1
+
+            bm.to_mesh(mesh)
+            bm.free()
+            armature.select_set(True)
+            view_layer.objects.active = armature
+            if not convex_shape_parent_index == -1:
+                bpy.ops.object.mode_set(mode='EDIT')
+                armature.data.edit_bones.active = armature.data.edit_bones[parent_name]
+                bpy.ops.object.mode_set(mode='OBJECT')
+                bpy.ops.object.parent_set(type='BONE', keep_transform=True)
+
+            else:
+                bpy.ops.object.parent_set(type='ARMATURE', keep_transform=True)
+
+            file_matrix = Quaternion(((float(convex_shape_object_rotation[3])), float(convex_shape_object_rotation[0]), float(convex_shape_object_rotation[1]), float(convex_shape_object_rotation[2]))).inverted().to_matrix().to_4x4()
+            if version >= 8205:
+                file_matrix = Quaternion(((float(convex_shape_object_rotation[3])), float(convex_shape_object_rotation[0]), float(convex_shape_object_rotation[1]), float(convex_shape_object_rotation[2]))).to_matrix().to_4x4()
+
+            file_matrix[0][3] = float(convex_shape_object_translation[0])
+            file_matrix[1][3] = float(convex_shape_object_translation[1])
+            file_matrix[2][3] = float(convex_shape_object_translation[2])
+            matrix = file_matrix
+            if not convex_shape_parent_index == -1:
+                bpy.ops.object.mode_set(mode = 'POSE')
+                pose_bone = armature.pose.bones[parent_name]
+                matrix = pose_bone.matrix @ file_matrix
+
+            object_mesh.matrix_world = matrix
+            bpy.ops.object.mode_set(mode='OBJECT')
+            bpy.ops.object.select_all(action='DESELECT')
+            object_mesh.select_set(True)
+            view_layer.objects.active = object_mesh
+            if not convex_shape_material_index == -1:
+                material_name = material_name_list[convex_shape_material_index]
+                material_definition = material_definition_list[convex_shape_material_index]
+                mat = bpy.data.materials.get(material_name)
+                if mat is None:
+                    mat = bpy.data.materials.new(name=material_name)
+
+                if object_mesh.data.materials:
+                    object_mesh.data.materials[0] = mat
+
+                else:
+                    object_mesh.data.materials.append(mat)
+
+                mat.diffuse_color = get_random_color()
+                if game_version == 'halo2':
+                    material_parts = material_definition.split()
+                    object_mesh.jms.Region = material_parts[-1]
+                    object_mesh.jms.Permutation = material_parts[-2]
+
+            bpy.ops.object.mode_set(mode='EDIT')
+            bpy.ops.mesh.select_all(action='SELECT')
+            bpy.ops.mesh.convex_hull(delete_unused=True, use_existing_faces=True, join_triangles=True)
+            bpy.ops.object.mode_set(mode='OBJECT')
+            object_mesh.jms.Object_Type = 'CONVEX SHAPES'
+            bpy.ops.object.select_all(action='DESELECT')
+
+        #generate ragdoll objects
+        for ragdoll in range(ragdoll_count):
+            ragdoll_object_name = processed_file[ragdoll_start + 1 + (ragdoll * 13)]
+            ragdoll_attached_index = int(processed_file[ragdoll_start + 2 + (ragdoll * 13)])
+            ragdoll_referenced_index = int(processed_file[ragdoll_start + 3 + (ragdoll * 13)])
+            ragdoll_attached_object_rotation = processed_file[ragdoll_start + 4 + (ragdoll * 13)].split()
+            ragdoll_attached_object_translation = processed_file[ragdoll_start + 5 + (ragdoll * 13)].split()
+            ragdoll_referenced_object_rotation = processed_file[ragdoll_start + 6 + (ragdoll * 13)].split()
+            ragdoll_referenced_object_translation = processed_file[ragdoll_start + 7 + (ragdoll * 13)].split()
+            ragdoll_object_min_twist = float(processed_file[ragdoll_start + 8 + (ragdoll * 13)])
+            ragdoll_object_max_twist = float(processed_file[ragdoll_start + 9 + (ragdoll * 13)])
+            ragdoll_object_min_cone = float(processed_file[ragdoll_start + 10 + (ragdoll * 13)])
+            ragdoll_object_max_cone = float(processed_file[ragdoll_start + 11 + (ragdoll * 13)])
+            ragdoll_object_min_plane = float(processed_file[ragdoll_start + 12 + (ragdoll * 13)])
+            ragdoll_object_max_plane = float(processed_file[ragdoll_start + 13 + (ragdoll * 13)])
+
+            bpy.ops.object.select_all(action='DESELECT')
+            if not ragdoll_attached_index == -1:
+                attached_index = node_list[ragdoll_attached_index]
+
+            if not ragdoll_referenced_index == -1:
+                referenced_index = node_list[ragdoll_referenced_index]
+
+            object_name_prefix = '$%s' % ragdoll_object_name
+            object_empty = bpy.data.objects.new(object_name_prefix, None)
+            collection.objects.link(object_empty)
+            object_empty.empty_display_size = 2
+            object_empty.empty_display_type = 'ARROWS'
+            view_layer.objects.active = object_empty
+            object_empty.select_set(True)
+            armature.select_set(True)
+            view_layer.objects.active = armature
+            bpy.ops.object.parent_set(type='ARMATURE', keep_transform=True)
+            file_matrix = Quaternion(((float(ragdoll_attached_object_rotation[3])), float(ragdoll_attached_object_rotation[0]), float(ragdoll_attached_object_rotation[1]), float(ragdoll_attached_object_rotation[2]))).inverted().to_matrix().to_4x4()
+            if version >= 8205:
+                file_matrix = Quaternion(((float(ragdoll_attached_object_rotation[3])), float(ragdoll_attached_object_rotation[0]), float(ragdoll_attached_object_rotation[1]), float(ragdoll_attached_object_rotation[2]))).to_matrix().to_4x4()
+
+            file_matrix[0][3] = float(ragdoll_attached_object_translation[0])
+            file_matrix[1][3] = float(ragdoll_attached_object_translation[1])
+            file_matrix[2][3] = float(ragdoll_attached_object_translation[2])
+            matrix = file_matrix
+            if not ragdoll_attached_index == -1:
+                bpy.ops.object.mode_set(mode = 'POSE')
+                pose_bone = armature.pose.bones[attached_index]
+                matrix = pose_bone.matrix @ file_matrix
+
+            object_empty.matrix_world = matrix
+            bpy.ops.object.mode_set(mode='OBJECT')
+            bpy.ops.object.select_all(action='DESELECT')
+
+        #generate hinge objects
+        for hinge in range(hinge_count):
+            hinge_object_name = processed_file[hinge_start + 1 + (hinge * 11)]
+            hinge_attached_index = int(processed_file[hinge_start + 2 + (hinge * 11)])
+            hinge_referenced_index = int(processed_file[hinge_start + 3 + (hinge * 11)])
+            hinge_attached_object_rotation = processed_file[hinge_start + 4 + (hinge * 11)].split()
+            hinge_attached_object_translation = processed_file[hinge_start + 5 + (hinge * 11)].split()
+            hinge_referenced_object_rotation = processed_file[hinge_start + 6 + (hinge * 11)].split()
+            hinge_referenced_object_translation = processed_file[hinge_start + 7 + (hinge * 11)].split()
+            hinge_object_is_limited = int(processed_file[hinge_start + 8 + (hinge * 11)])
+            hinge_object_friction_limit = float(processed_file[hinge_start + 9 + (hinge * 11)])
+            hinge_object_min_angle = float(processed_file[hinge_start + 10 + (hinge * 11)])
+            hinge_object_max_angle = float(processed_file[hinge_start + 11 + (hinge * 11)])
+
+            bpy.ops.object.select_all(action='DESELECT')
+            if not hinge_attached_index == -1:
+                attached_index = node_list[hinge_attached_index]
+
+            if not hinge_referenced_index == -1:
+                referenced_index = node_list[hinge_referenced_index]
+
+            object_name_prefix = '$%s' % hinge_object_name
+            object_empty = bpy.data.objects.new(object_name_prefix, None)
+            collection.objects.link(object_empty)
+            object_empty.empty_display_size = 2
+            object_empty.empty_display_type = 'ARROWS'
+            view_layer.objects.active = object_empty
+            object_empty.select_set(True)
+            armature.select_set(True)
+            view_layer.objects.active = armature
+            bpy.ops.object.parent_set(type='ARMATURE', keep_transform=True)
+            file_matrix = Quaternion(((float(hinge_attached_object_rotation[3])), float(hinge_attached_object_rotation[0]), float(hinge_attached_object_rotation[1]), float(hinge_attached_object_rotation[2]))).inverted().to_matrix().to_4x4()
+            if version >= 8205:
+                file_matrix = Quaternion(((float(hinge_attached_object_rotation[3])), float(hinge_attached_object_rotation[0]), float(hinge_attached_object_rotation[1]), float(hinge_attached_object_rotation[2]))).to_matrix().to_4x4()
+
+            file_matrix[0][3] = float(hinge_attached_object_translation[0])
+            file_matrix[1][3] = float(hinge_attached_object_translation[1])
+            file_matrix[2][3] = float(hinge_attached_object_translation[2])
+            matrix = file_matrix
+            if not hinge_attached_index == -1:
+                bpy.ops.object.mode_set(mode = 'POSE')
+                pose_bone = armature.pose.bones[attached_index]
+                matrix = pose_bone.matrix @ file_matrix
+
+            object_empty.matrix_world = matrix
+            bpy.ops.object.mode_set(mode='OBJECT')
+            bpy.ops.object.select_all(action='DESELECT')
 
     return {'FINISHED'}
 
