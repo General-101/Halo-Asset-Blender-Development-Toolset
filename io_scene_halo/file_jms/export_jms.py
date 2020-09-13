@@ -204,6 +204,7 @@ def file_layout(context,
                 export_physics,
                 model_type):
 
+    view_layer = bpy.context.view_layer
     object_properties = []
     node_list = []
     armature = None
@@ -237,11 +238,10 @@ def file_layout(context,
     extension = global_functions.get_extension(extension, extension_ce, extension_h2, game_version, console)
     node_checksum = 0
     scale = global_functions.set_scale(scale_enum, scale_float)
-    bpy.ops.object.select_all(action='DESELECT')
     for obj in object_list:
         modifier_list = []
         obj.select_set(True)
-        bpy.context.view_layer.objects.active = obj
+        view_layer.objects.active = obj
         bpy.ops.object.mode_set(mode = 'OBJECT')
         if triangulate_faces:
             for modifier in obj.modifiers:
@@ -1371,8 +1371,8 @@ def write_file(context,
                export_physics):
 
     global_functions.unhide_all_collections()
-
-    object_list = list(bpy.context.scene.objects)
+    scene = bpy.context.scene
+    object_list = list(scene.objects)
     node_count = 0
     marker_count = 0
     collision_count = 0

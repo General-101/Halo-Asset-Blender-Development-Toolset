@@ -48,6 +48,9 @@ def load_file(context, filepath, report):
             #foutput.write('%s' % line)
 
     #foutput.close()
+    collection = bpy.context.collection
+    scene = bpy.context.scene
+    view_layer = bpy.context.view_layer
     armature = None
     node_list = []
     child_list = []
@@ -61,7 +64,7 @@ def load_file(context, filepath, report):
     material_name_list = []
     material_definition_list = []
     verts = []
-    object_list = list(bpy.context.scene.objects)
+    object_list = list(scene.objects)
     node_line_index = 0
     node_index = 0
     vertex_line_index = 0
@@ -71,8 +74,7 @@ def load_file(context, filepath, report):
     total_convex_shape_vertex_count = 0
     version = int(processed_file[0])
     game_version = None
-    collection = bpy.context.collection
-    view_layer = bpy.context.view_layer
+
     object_name = bpy.path.basename(filepath).rsplit('.', 1)[0]
     version_list = [8197, 8198, 8199, 8200, 8201, 8202, 8203, 8204, 8205, 8206, 8207, 8208, 8209, 8210]
     if not version in version_list:

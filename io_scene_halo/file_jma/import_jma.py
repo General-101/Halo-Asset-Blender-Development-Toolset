@@ -38,12 +38,15 @@ def load_file(context, filepath, report):
         if not line.startswith(";"):
             processed_file.append(line.replace('\n', ''))
 
+    collection = bpy.context.collection
+    scene = bpy.context.scene
+    view_layer = bpy.context.view_layer
     armature = None
     node_list = []
     child_list = []
     sibling_list = []
     parent_list = []
-    object_list = list(bpy.context.scene.objects)
+    object_list = list(scene.objects)
     node_line_index = 0
     frame_index = 0
     frame_line_index = 0
@@ -69,8 +72,8 @@ def load_file(context, filepath, report):
         node_count = int(processed_file[5])
         node_checksum = int(processed_file[6])
 
-    bpy.context.scene.frame_end = transform_count
-    bpy.context.scene.render.fps = frame_rate
+    scene.frame_end = transform_count
+    scene.render.fps = frame_rate
     if version >= 16394:
         for node in range(node_count):
             node_name = processed_file[node_line_index + 7]
@@ -101,15 +104,15 @@ def load_file(context, filepath, report):
 
                 if exist_count == len(node_list):
                     armature = obj
-                    bpy.context.view_layer.objects.active = armature
+                    view_layer.objects.active = armature
 
     if armature == None:
         report({'WARNING'}, "No valid armature detected. One will be created but expect issues with visuals in scene due to no proper rest position")
         armdata = bpy.data.armatures.new('Armature')
         ob_new = bpy.data.objects.new('Armature', armdata)
-        bpy.context.collection.objects.link(ob_new)
+        collection.objects.link(ob_new)
         armature = ob_new
-        bpy.context.view_layer.objects.active = armature
+        view_layer.objects.active = armature
         bpy.ops.object.mode_set(mode = 'EDIT')
         global_functions.create_skeleton(armature, node_list)
         if version <= 16393:
@@ -159,7 +162,7 @@ def load_file(context, filepath, report):
     bpy.ops.object.mode_set(mode = 'POSE')
     for frame in range(transform_count):
         current_frame = frame + 1
-        bpy.context.scene.frame_set(current_frame)
+        scene.frame_set(current_frame)
         for node in node_list:
             pose_bone = armature.pose.bones[node]
             node_translation = processed_file[frame_index + node_line_index + 7].split()
@@ -181,7 +184,7 @@ def load_file(context, filepath, report):
                     matrix = pose_bone.parent.matrix @ file_matrix
 
             armature.pose.bones[node].matrix = matrix
-            bpy.context.view_layer.update()
+            view_layer.update()
             armature.pose.bones[node].keyframe_insert('location')
             armature.pose.bones[node].keyframe_insert('rotation_quaternion')
             frame_index += 3
@@ -189,7 +192,7 @@ def load_file(context, filepath, report):
     if version == 16395:
         biped_controller = processed_file[frame_index + node_line_index + 7]
 
-    bpy.context.scene.frame_set(1)
+    scene.frame_set(1)
     bpy.ops.object.mode_set(mode = 'OBJECT')
     report({'INFO'}, "Import completed successfully")
     return {'FINISHED'}

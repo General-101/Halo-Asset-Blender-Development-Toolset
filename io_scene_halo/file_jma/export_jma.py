@@ -46,23 +46,25 @@ def write_file(context,
                console):
 
     global_functions.unhide_all_collections()
+    scene = bpy.context.scene
+    view_layer = bpy.context.view_layer
     object_properties = []
-    object_list = list(bpy.context.scene.objects)
+    object_list = list(scene.objects)
     object_count = len(object_list)
     node_list = []
     armature = []
     armature_count = 0
     root_node_count = 0
-    first_frame = bpy.context.scene.frame_start
-    last_frame = bpy.context.scene.frame_end + 1
-    total_frame_count = bpy.context.scene.frame_end - first_frame + 1
+    first_frame = scene.frame_start
+    last_frame = scene.frame_end + 1
+    total_frame_count = scene.frame_end - first_frame + 1
     for obj in object_list:
         object_properties.append([obj.hide_get(), obj.hide_viewport])
         if obj.type == 'ARMATURE':
             global_functions.unhide_object(obj)
             armature_count += 1
             armature = obj
-            bpy.context.view_layer.objects.active = obj
+            view_layer.objects.active = obj
             obj.select_set(True)
             node_list = list(obj.data.bones)
 
@@ -190,7 +192,7 @@ def write_file(context,
         '\n'
         )
 
-    bpy.context.scene.frame_set(1)
+    scene.frame_set(1)
     file.close()
     for obj in object_list:
         item_index = object_list.index(obj)
