@@ -237,9 +237,25 @@ def file_layout(context,
     extension = global_functions.get_extension(extension, extension_ce, extension_h2, game_version, console)
     node_checksum = 0
     scale = global_functions.set_scale(scale_enum, scale_float)
+    bpy.ops.object.select_all(action='DESELECT')
     for obj in object_list:
+        modifier_list = []
+        obj.select_set(True)
         bpy.context.view_layer.objects.active = obj
         bpy.ops.object.mode_set(mode = 'OBJECT')
+        if triangulate_faces:
+            for modifier in obj.modifiers:
+                modifier.show_render = True
+                modifier.show_viewport = True
+                modifier.show_in_editmode = True
+                modifier_list.append(modifier.type)
+
+            if not 'TRIANGULATE' in modifier_list:
+                obj.modifiers.new("Triangulate", type='TRIANGULATE')
+
+        obj.select_set(False)
+
+    depsgraph = context.evaluated_depsgraph_get()
 
     for obj in object_list:
         object_properties.append([obj.hide_get(), obj.hide_viewport])
@@ -252,7 +268,6 @@ def file_layout(context,
             global_functions.unhide_object(obj)
             armature_count += 1
             armature = obj
-            obj.select_set(True)
             node_list = list(obj.data.bones)
 
         elif obj.name[0:2].lower() == 'b_' or obj.name[0:4].lower() == 'bone' or obj.name[0:5].lower() == 'frame':
@@ -282,19 +297,7 @@ def file_layout(context,
                 if export_collision:
                     if obj.data.uv_layers:
                         material_list = gather_materials(obj, version, game_version, material_list)
-                        modifier_list = []
                         if triangulate_faces:
-                            for modifier in obj.modifiers:
-                                modifier.show_render = True
-                                modifier.show_viewport = True
-                                modifier.show_in_editmode = True
-                                modifier_list.append(modifier.type)
-
-                            if not 'TRIANGULATE' in modifier_list:
-                                obj.modifiers.new("Triangulate", type='TRIANGULATE')
-
-                            depsgraph = context.evaluated_depsgraph_get()
-
                             obj_for_convert = obj.evaluated_get(depsgraph)
                             me = obj_for_convert.to_mesh(preserve_all_data_layers=True, depsgraph=depsgraph)
                             geometry_list.append(me)
@@ -310,7 +313,6 @@ def file_layout(context,
         elif obj.name[0:1].lower() == '$' and game_version == 'halo2':
             if set_ignore(obj) == False or hidden_geo:
                 if export_physics:
-                    material_list = gather_materials(obj, version, game_version, material_list)
                     if not obj.rigid_body_constraint == None:
                         if obj.rigid_body_constraint.type == 'HINGE':
                             hinge_list.append(obj)
@@ -321,30 +323,31 @@ def file_layout(context,
                         elif obj.rigid_body_constraint.type == 'GENERIC_SPRING':
                             point_to_point_list.append(obj)
 
-                    elif obj.jms.Object_Type == 'SPHERE':
-                        sphere_list.append(obj)
-                        region_list.append(find_region)
-                        permutation_list.append(find_permutation)
+                    if obj.type == 'MESH':
+                        material_list = gather_materials(obj, version, game_version, material_list)
+                        if obj.jms.Object_Type == 'SPHERE':
+                            sphere_list.append(obj)
+                            region_list.append(find_region)
+                            permutation_list.append(find_permutation)
 
-                    elif obj.jms.Object_Type == 'BOX':
-                        box_list.append(obj)
-                        region_list.append(find_region)
-                        permutation_list.append(find_permutation)
+                        elif obj.jms.Object_Type == 'BOX':
+                            box_list.append(obj)
+                            region_list.append(find_region)
+                            permutation_list.append(find_permutation)
 
-                    elif obj.jms.Object_Type == 'CAPSULES':
-                        capsule_list.append(obj)
-                        region_list.append(find_region)
-                        permutation_list.append(find_permutation)
+                        elif obj.jms.Object_Type == 'CAPSULES':
+                            capsule_list.append(obj)
+                            region_list.append(find_region)
+                            permutation_list.append(find_permutation)
 
-                    elif obj.jms.Object_Type == 'CONVEX SHAPES':
-                        if convex_shape.type == 'MESH':
+                        elif obj.jms.Object_Type == 'CONVEX SHAPES':
                             convex_shape_list.append(obj)
                             region_list.append(find_region)
                             permutation_list.append(find_permutation)
 
-                    else:
-                        report({'ERROR'}, "How did you even choose an option that doesn't exist?")
-                        return {'CANCELLED'}
+                        else:
+                            report({'ERROR'}, "How did you even choose an option that doesn't exist?")
+                            return {'CANCELLED'}
 
         elif not len(obj.jms.XREF_path) == 0 and game_version == 'halo2':
             if set_ignore(obj) == False or hidden_geo:
@@ -364,19 +367,7 @@ def file_layout(context,
                         if not obj.parent == None:
                             if obj.parent.type == 'ARMATURE' or obj.parent.name[0:2].lower() == 'b_' or obj.name[0:4].lower() == 'bone' or obj.parent.name[0:5].lower() == 'frame':
                                 material_list = gather_materials(obj, version, game_version, material_list)
-                                modifier_list = []
                                 if triangulate_faces:
-                                    for modifier in obj.modifiers:
-                                        modifier.show_render = True
-                                        modifier.show_viewport = True
-                                        modifier.show_in_editmode = True
-                                        modifier_list.append(modifier.type)
-
-                                    if not 'TRIANGULATE' in modifier_list:
-                                        obj.modifiers.new("Triangulate", type='TRIANGULATE')
-
-                                    depsgraph = context.evaluated_depsgraph_get()
-
                                     obj_for_convert = obj.evaluated_get(depsgraph)
                                     me = obj_for_convert.to_mesh(preserve_all_data_layers=True, depsgraph=depsgraph)
                                     geometry_list.append(me)
@@ -392,19 +383,7 @@ def file_layout(context,
                     elif game_version == 'halo2':
                         if export_render:
                             material_list = gather_materials(obj, version, game_version, material_list)
-                            modifier_list = []
                             if triangulate_faces:
-                                for modifier in obj.modifiers:
-                                    modifier.show_render = True
-                                    modifier.show_viewport = True
-                                    modifier.show_in_editmode = True
-                                    modifier_list.append(modifier.type)
-
-                                if not 'TRIANGULATE' in modifier_list:
-                                    obj.modifiers.new("Triangulate", type='TRIANGULATE')
-
-                                depsgraph = context.evaluated_depsgraph_get()
-
                                 obj_for_convert = obj.evaluated_get(depsgraph)
                                 me = obj_for_convert.to_mesh(preserve_all_data_layers=True, depsgraph=depsgraph)
                                 geometry_list.append(me)
@@ -1043,19 +1022,7 @@ def file_layout(context,
 
         for convex_shape in convex_shape_list:
             name = convex_shape.name.split('$', 1)[1]
-            modifier_list = []
             if triangulate_faces:
-                for modifier in convex_shape.modifiers:
-                    modifier.show_render = True
-                    modifier.show_viewport = True
-                    modifier.show_in_editmode = True
-                    modifier_list.append(modifier.type)
-
-                if not 'TRIANGULATE' in modifier_list:
-                    convex_shape.modifiers.new("Triangulate", type='TRIANGULATE')
-
-                depsgraph = context.evaluated_depsgraph_get()
-
                 convex_shape_for_convert = convex_shape.evaluated_get(depsgraph)
                 mesh_convex_shape = convex_shape_for_convert.to_mesh(preserve_all_data_layers=True, depsgraph=depsgraph)
 
