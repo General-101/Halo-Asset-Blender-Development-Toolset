@@ -42,6 +42,7 @@ class JmsVertex:
     pos = None
     norm = None
     uv = None
+    uv_2 = None
 
 class JmsDimensions:
     quat_i_a = '0'
@@ -75,6 +76,14 @@ class JmsTriangle:
     v2 = 0
     region = 0
     material = 0
+
+class JmsMaterial:
+    name = None
+    texture_path = None
+    slot_index = None
+    lod = None
+    permutation = None
+    region = None
 
 def unhide_all_collections():
     for collection_viewport in bpy.context.view_layer.layer_collection.children:

@@ -31,6 +31,9 @@ import random
 
 from mathutils import Vector, Quaternion, Matrix
 from io_scene_halo.global_functions import global_functions
+from io_scene_halo.global_functions.global_functions import JmsVertex
+from io_scene_halo.global_functions.global_functions import JmsTriangle
+from io_scene_halo.global_functions.global_functions import JmsMaterial
 
 def get_random_color():
     r, g, b = [random.random() for i in range(3)]
@@ -61,9 +64,10 @@ def load_file(context, filepath, report):
     region_list = []
     xref_path_list = []
     xref_file_name_list = []
-    material_name_list = []
-    material_definition_list = []
-    verts = []
+    region_permutation_list = []
+    materials = []
+    triangles = []
+    vertices = []
     object_list = list(scene.objects)
     node_line_index = 0
     node_index = 0
@@ -74,7 +78,6 @@ def load_file(context, filepath, report):
     total_convex_shape_vertex_count = 0
     version = int(processed_file[0])
     game_version = None
-
     object_name = bpy.path.basename(filepath).rsplit('.', 1)[0]
     version_list = [8197, 8198, 8199, 8200, 8201, 8202, 8203, 8204, 8205, 8206, 8207, 8208, 8209, 8210]
     if not version in version_list:
@@ -150,6 +153,127 @@ def load_file(context, filepath, report):
         vertex_count = int(processed_file[vertex_start])
         triangle_start = vertex_start + (vertex_count * 8) + 1
         triangle_count = int(processed_file[triangle_start])
+
+    #gather materials
+    for material in range(material_count):
+        jms_material = JmsMaterial()
+        materials.append(jms_material)
+        material_name = processed_file[material_start + 1 + + (2 * material)]
+        material_definition = processed_file[material_start + 2 + (2 * material)]
+        is_drive = os.path.splitdrive(material_definition)
+        jms_material.name = material_name
+        if material_definition.startswith("<none>") or material_definition.startswith("/") or not is_drive[0] == '':
+            game_version = 'haloce'
+            jms_material.texture_path = material_definition
+
+        else:
+            game_version = 'halo2'
+            material_definition_items = material_definition.split()
+            jms_material.slot_index = material_definition_items[0]
+            jms_material.lod = material_definition_items[1]
+            jms_material.permutation = material_definition_items[2]
+            jms_material.region = material_definition_items[3]
+
+    #gather triangles
+    for triangle in range(triangle_count):
+        jms_triangle = JmsTriangle()
+        triangles.append(jms_triangle)
+        if version >= 8205:
+            triangle_material_index = int(processed_file[triangle_start + 1 + (triangle * 2)])
+            triangle_verts = processed_file[triangle_start + 2 + (triangle * 2)].split()
+            material = materials[triangle_material_index]
+            region = material.region
+            permutation = material.permutation
+            if not [region, permutation] in region_permutation_list:
+                region_permutation_list.append([region, permutation])
+
+        else:
+            triangle_region_index = int(processed_file[triangle_start + 1 + (triangle * 3)])
+            triangle_material_index = int(processed_file[triangle_start + 2 + (triangle * 3)])
+            triangle_verts = processed_file[triangle_start + 3 + (triangle * 3)].split()
+            jms_triangle.region = triangle_region_index
+            if not region_list[triangle_region_index] in region_permutation_list:
+                region_permutation_list.append(region)
+
+        jms_triangle.v0 = int(triangle_verts[0])
+        jms_triangle.v1 = int(triangle_verts[1])
+        jms_triangle.v2 = int(triangle_verts[2])
+        jms_triangle.material = triangle_material_index
+
+    #gather vertices
+    for vert in range(vertex_count):
+        jms_vertex = JmsVertex()
+        vertices.append(jms_vertex)
+        vertex_group_index = []
+        vertex_group_weight = []
+        vertex_uv = []
+        if version >= 8205:
+            vert_translation = processed_file[vertex_index + vertex_start + 1].split()
+            vert_normal = processed_file[vertex_index + vertex_start + 2].split()
+            vertex_group_count = int(processed_file[vertex_index + vertex_start + 3])
+            for group in range(vertex_group_count):
+                vertex_group_index.append(int(processed_file[vertex_index + vertex_start + 4 + (group * 2)]))
+                vertex_group_weight.append(float(processed_file[vertex_index + vertex_start + 5 + (group * 2)]))
+
+            vertex_uv_count = int(processed_file[vertex_index + vertex_start + (vertex_group_count * 2) + 4])
+            for uv in range(vertex_uv_count):
+                vertex_uv.append(processed_file[vertex_index + vertex_start + (uv * 2) + 5].split())
+
+            total_uv_lines = 0
+            for x in range(int(vertex_uv_count)):
+                total_uv_lines += 1
+
+            vertex_index += 4 + (vertex_group_count * 2) + total_uv_lines
+
+        else:
+            node_count = 0
+            node_0 = int(processed_file[vertex_index + vertex_start + 1])
+            vert_translation = processed_file[vertex_index + vertex_start + 2].split()
+            vert_normal = processed_file[vertex_index + vertex_start + 3].split()
+            node_1 = int(processed_file[vertex_index + vertex_start + 4])
+            node_1_weight = float(processed_file[vertex_index + vertex_start + 5])
+            node_0_weight = 1 - node_1_weight
+            vertex_uv_count = 1
+            tex_u = float(processed_file[vertex_index + vertex_start + 6])
+            tex_v = float(processed_file[vertex_index + vertex_start + 7])
+            vertex_uv.append((tex_u, tex_v))
+            if not node_0 == -1:
+                node_count += 1
+                vertex_group_index.append(node_0)
+                vertex_group_weight.append(node_0_weight)
+
+            if not node_1 == -1:
+                node_count += 1
+                vertex_group_index.append(node_1)
+                vertex_group_weight.append(node_1_weight)
+
+            vertex_group_count = node_count
+            vertex_index += 8
+
+        jms_vertex.pos = vert_translation
+        jms_vertex.norm = vert_normal
+        if vertex_uv_count >= 1:
+            jms_vertex.uv = vertex_uv[0]
+
+        if vertex_uv_count >= 2:
+            jms_vertex.uv_2 = vertex_uv[1]
+
+        jms_vertex.node_influence_count = vertex_group_count
+        if vertex_group_count >= 1:
+            jms_vertex.node0 = vertex_group_index[0]
+            jms_vertex.node0_weight = vertex_group_weight[0]
+
+        if vertex_group_count >= 2:
+            jms_vertex.node1 = vertex_group_index[1]
+            jms_vertex.node1_weight = vertex_group_weight[1]
+
+        if vertex_group_count >= 3:
+            jms_vertex.node2 = vertex_group_index[2]
+            jms_vertex.node2_weight = vertex_group_weight[2]
+
+        if vertex_group_count >= 4:
+            jms_vertex.node3 = vertex_group_index[3]
+            jms_vertex.node3_weight = vertex_group_weight[3]
 
     #gather node details
     if version >= 8205:
@@ -243,18 +367,6 @@ def load_file(context, filepath, report):
             bpy.ops.pose.armature_apply(selected=False)
 
         bpy.ops.object.mode_set(mode = 'OBJECT')
-
-    #gather materials
-    for material in range(material_count):
-        material_name = material_start + 1 + + (2 * material)
-        material_definition = material_start + 2 + (2 * material)
-        material_name_list.append(processed_file[material_name])
-        material_definition_list.append(processed_file[material_definition])
-        if processed_file[material_definition].startswith("("):
-            game_version = 'halo2'
-
-        else:
-            game_version = 'haloce'
 
     #gather regions
     if version <= 8204:
@@ -377,52 +489,120 @@ def load_file(context, filepath, report):
 
     #generate mesh object
     if not vertex_count == 0:
-        bpy.ops.object.select_all(action='DESELECT')
-        mesh = bpy.data.meshes.new(object_name)
-        object_mesh = bpy.data.objects.new(object_name, mesh)
-        collection.objects.link(object_mesh)
-        view_layer.objects.active = object_mesh
-        object_mesh.select_set(True)
-        bm = bmesh.new()
-        for vert in range(vertex_count):
-            if version >= 8205:
-                vert_translation = processed_file[vertex_index + vertex_start + 1]
-                vert_normal = processed_file[vertex_index + vertex_start + 2]
-                vertex_group_count = int(processed_file[vertex_index + vertex_start + 3])
-                vertex_uv_count = processed_file[vertex_index + vertex_start + (vertex_group_count * 2) + 4]
-                vert_translation_list = vert_translation.split()
-                vert_normal_list = vert_normal.split()
-                verts.append([float(vert_translation_list[0]), float(vert_translation_list[1]), float(vert_translation_list[2])])
-                total_uv_lines = 0
-                for x in range(int(vertex_uv_count)):
-                    total_uv_lines += 1
+        for region_permutation in region_permutation_list:
+            vertex_groups = []
+            object_region = object_name
+            if game_version == 'haloce':
+                object_region = '%s_%s' % (object_name, region_permutation)
 
-                vertex_index += 4 + (vertex_group_count * 2) + total_uv_lines
+            elif game_version == 'halo2':
+                object_region = '%s_%s_%s' % (object_name, region_permutation[0], region_permutation[1])
 
-            else:
-                vert_translation = processed_file[vertex_index + vertex_start + 2]
-                vert_normal = processed_file[vertex_index + vertex_start + 3]
-                vert_translation_list = vert_translation.split()
-                vert_normal_list = vert_normal.split()
-                verts.append([float(vert_translation_list[0]), float(vert_translation_list[1]), float(vert_translation_list[2])])
-                vertex_index += 8
+            bpy.ops.object.select_all(action='DESELECT')
+            mesh = bpy.data.meshes.new(object_region)
+            object_mesh = bpy.data.objects.new(object_region, mesh)
+            collection.objects.link(object_mesh)
+            view_layer.objects.active = object_mesh
+            object_mesh.select_set(True)
+            bm = bmesh.new()
+            for triangle in range(triangle_count):
+                tri = triangles[triangle]
+                mat = materials[tri.material]
+                if version >= 8201 or game_version == 'halo2':
+                    region = mat.region
+                    permutation = mat.permutation
+                    current_region_permutation = [region, permutation]
 
-        for tri in range(triangle_count):
-            p1 = verts[0 + triangle_index]
-            p2 = verts[1 + triangle_index]
-            p3 = verts[2 + triangle_index]
-            v1 = bm.verts.new((float(p1[0]), float(p1[1]), float(p1[2])))
-            v2 = bm.verts.new((float(p2[0]), float(p2[1]), float(p2[2])))
-            v3 = bm.verts.new((float(p3[0]), float(p3[1]), float(p3[2])))
-            bm.faces.new((v1, v2, v3))
-            triangle_index += 3
+                else:
+                    region = tri.region
+                    current_region_permutation = region
 
-        bm.to_mesh(mesh)
-        bm.free()
-        armature.select_set(True)
-        view_layer.objects.active = armature
-        bpy.ops.object.parent_set(type='ARMATURE', keep_transform=True)
-        bpy.ops.object.select_all(action='DESELECT')
+                if region_permutation == current_region_permutation:
+                    p1 = vertices[tri.v0].pos
+                    p2 = vertices[tri.v1].pos
+                    p3 = vertices[tri.v2].pos
+                    for index in range(3):
+                        if index == 0:
+                            vert_index = tri.v0
+
+                        elif index == 1:
+                            vert_index = tri.v1
+
+                        elif index == 2:
+                            vert_index = tri.v2
+
+                        if not vertices[vert_index].node0 == -1 and not vertices[vert_index].node0 in vertex_groups:
+                            vertex_groups.append( vertices[vert_index].node0)
+
+                        if not vertices[vert_index].node1 == -1 and not vertices[vert_index].node1 in vertex_groups:
+                            vertex_groups.append( vertices[vert_index].node1)
+
+                        if not vertices[vert_index].node2 == -1 and not vertices[vert_index].node2 in vertex_groups:
+                            vertex_groups.append( vertices[vert_index].node2)
+
+                        if not vertices[vert_index].node3 == -1 and not vertices[vert_index].node3 in vertex_groups:
+                            vertex_groups.append( vertices[vert_index].node3)
+
+                    v1 = bm.verts.new((float(p1[0]), float(p1[1]), float(p1[2])))
+                    v2 = bm.verts.new((float(p2[0]), float(p2[1]), float(p2[2])))
+                    v3 = bm.verts.new((float(p3[0]), float(p3[1]), float(p3[2])))
+                    bm.faces.new((v1, v2, v3))
+                    if not tri.material == -1:
+                        material_list = []
+                        material_name = mat.name
+                        mat = bpy.data.materials.get(material_name)
+                        if mat is None:
+                            mat = bpy.data.materials.new(name=material_name)
+
+                        for slot in object_mesh.material_slots:
+                            material_list.append(slot.material)
+
+                        if not mat in material_list:
+                            object_mesh.data.materials.append(mat)
+
+                        mat.diffuse_color = get_random_color()
+
+            bm.to_mesh(mesh)
+            bm.free()
+            triangle_index = 0
+            for triangle in range(triangle_count):
+                tri = triangles[triangle]
+                mat = materials[tri.material]
+                if version >= 8201 or game_version == 'halo2':
+                    region = mat.region
+                    permutation = mat.permutation
+                    current_region_permutation = [region, permutation]
+
+                else:
+                    region = tri.region
+                    current_region_permutation = region
+
+                if region_permutation == current_region_permutation:
+                    if not tri.material == -1:
+                        material_list = []
+                        material_name = mat.name
+                        for slot in object_mesh.material_slots:
+                            material_list.append(slot.material)
+
+                        material_index = material_list.index(bpy.data.materials[material_name])
+                        object_mesh.data.polygons[triangle_index].material_index = material_index
+
+                    triangle_index += 1
+
+            for group in vertex_groups:
+                object_mesh.vertex_groups.new(name = node_list[int(group)])
+
+            if game_version == 'haloce':
+                object_mesh.jms.Region = region
+
+            elif game_version == 'halo2':
+                object_mesh.jms.Region = region
+                object_mesh.jms.Permutation = permutation
+
+            armature.select_set(True)
+            view_layer.objects.active = armature
+            bpy.ops.object.parent_set(type='ARMATURE', keep_transform=True)
+            bpy.ops.object.select_all(action='DESELECT')
 
     if version >= 8206:
         #generate sphere objects
@@ -681,7 +861,6 @@ def load_file(context, filepath, report):
             object_mesh.select_set(True)
             bm = bmesh.new()
             for vert in range(convex_shape_vertex_count):
-                print(convex_shape_vertex_count_start + 1 + convex_shape_vertex_index)
                 vert_translation = processed_file[convex_shape_vertex_count_start + 1 + convex_shape_vertex_index]
                 vert_translation_list = vert_translation.split()
                 bm.verts.new((float(vert_translation_list[0]), float(vert_translation_list[1]), float(vert_translation_list[2])))
