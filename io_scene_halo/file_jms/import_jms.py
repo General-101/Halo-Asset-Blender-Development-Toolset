@@ -169,10 +169,21 @@ def load_file(context, filepath, report):
         else:
             game_version = 'halo2'
             material_definition_items = material_definition.split()
-            jms_material.slot_index = material_definition_items[0]
-            jms_material.lod = material_definition_items[1]
-            jms_material.permutation = material_definition_items[2]
-            jms_material.region = material_definition_items[3]
+            if len(material_definition_items) >= 1:
+                jms_material.region = material_definition_items[-1]
+
+            if len(material_definition_items) >= 2:
+                jms_material.permutation = material_definition_items[-2]
+
+            if len(material_definition_items) >= 3:
+                if material_definition_items[-3].startswith("L"):
+                    jms_material.lod = material_definition_items[-3]
+
+                else:
+                    jms_material.slot_index = material_definition_items[-3]
+
+            if len(material_definition_items) >= 4:
+                jms_material.slot_index = material_definition_items[-4]
 
     #gather triangles
     for triangle in range(triangle_count):
@@ -505,6 +516,13 @@ def load_file(context, filepath, report):
             view_layer.objects.active = object_mesh
             object_mesh.select_set(True)
             bm = bmesh.new()
+            if game_version == 'haloce':
+                object_mesh.jms.Region = region_permutation
+
+            elif game_version == 'halo2':
+                object_mesh.jms.Region = region_permutation[0]
+                object_mesh.jms.Permutation = region_permutation[1]
+
             for triangle in range(triangle_count):
                 tri = triangles[triangle]
                 mat = materials[tri.material]
@@ -592,13 +610,6 @@ def load_file(context, filepath, report):
             for group in vertex_groups:
                 object_mesh.vertex_groups.new(name = node_list[int(group)])
 
-            if game_version == 'haloce':
-                object_mesh.jms.Region = region
-
-            elif game_version == 'halo2':
-                object_mesh.jms.Region = region
-                object_mesh.jms.Permutation = permutation
-
             armature.select_set(True)
             view_layer.objects.active = armature
             bpy.ops.object.parent_set(type='ARMATURE', keep_transform=True)
@@ -658,8 +669,12 @@ def load_file(context, filepath, report):
             object_mesh.select_set(True)
             view_layer.objects.active = object_mesh
             if not sphere_material_index == -1:
-                material_name = material_name_list[sphere_material_index]
-                material_definition = material_definition_list[sphere_material_index]
+                mat = materials[sphere_material_index]
+                if game_version == 'halo2':
+                    object_mesh.jms.Region = mat.region
+                    object_mesh.jms.Permutation = mat.permutation
+
+                material_name = mat.name
                 mat = bpy.data.materials.get(material_name)
                 if mat is None:
                     mat = bpy.data.materials.new(name=material_name)
@@ -671,10 +686,6 @@ def load_file(context, filepath, report):
                     object_mesh.data.materials.append(mat)
 
                 mat.diffuse_color = get_random_color()
-                if game_version == 'halo2':
-                    material_parts = material_definition.split()
-                    object_mesh.jms.Region = material_parts[-1]
-                    object_mesh.jms.Permutation = material_parts[-2]
 
             object_mesh.jms.Object_Type = 'SPHERE'
             object_dimension = sphere_object_radius * 2
@@ -737,8 +748,12 @@ def load_file(context, filepath, report):
             object_mesh.select_set(True)
             view_layer.objects.active = object_mesh
             if not box_material_index == -1:
-                material_name = material_name_list[box_material_index]
-                material_definition = material_definition_list[box_material_index]
+                mat = materials[box_material_index]
+                if game_version == 'halo2':
+                    object_mesh.jms.Region = mat.region
+                    object_mesh.jms.Permutation = mat.permutation
+
+                material_name = mat.name
                 mat = bpy.data.materials.get(material_name)
                 if mat is None:
                     mat = bpy.data.materials.new(name=material_name)
@@ -750,10 +765,6 @@ def load_file(context, filepath, report):
                     object_mesh.data.materials.append(mat)
 
                 mat.diffuse_color = get_random_color()
-                if game_version == 'halo2':
-                    material_parts = material_definition.split()
-                    object_mesh.jms.Region = material_parts[-1]
-                    object_mesh.jms.Permutation = material_parts[-2]
 
             object_mesh.jms.Object_Type = 'BOX'
             object_mesh.dimensions = (box_object_x_scale, box_object_y_scale, box_object_z_scale)
@@ -814,8 +825,12 @@ def load_file(context, filepath, report):
             object_mesh.select_set(True)
             view_layer.objects.active = object_mesh
             if not pill_material_index == -1:
-                material_name = material_name_list[pill_material_index]
-                material_definition = material_definition_list[pill_material_index]
+                mat = materials[pill_material_index]
+                if game_version == 'halo2':
+                    object_mesh.jms.Region = mat.region
+                    object_mesh.jms.Permutation = mat.permutation
+
+                material_name = mat.name
                 mat = bpy.data.materials.get(material_name)
                 if mat is None:
                     mat = bpy.data.materials.new(name=material_name)
@@ -827,10 +842,6 @@ def load_file(context, filepath, report):
                     object_mesh.data.materials.append(mat)
 
                 mat.diffuse_color = get_random_color()
-                if game_version == 'halo2':
-                    material_parts = material_definition.split()
-                    object_mesh.jms.Region = material_parts[-1]
-                    object_mesh.jms.Permutation = material_parts[-2]
 
             object_mesh.jms.Object_Type = 'CAPSULES'
             object_dimension = pill_object_radius * 2
@@ -898,8 +909,12 @@ def load_file(context, filepath, report):
             object_mesh.select_set(True)
             view_layer.objects.active = object_mesh
             if not convex_shape_material_index == -1:
-                material_name = material_name_list[convex_shape_material_index]
-                material_definition = material_definition_list[convex_shape_material_index]
+                mat = materials[convex_shape_material_index]
+                if game_version == 'halo2':
+                    object_mesh.jms.Region = mat.region
+                    object_mesh.jms.Permutation = mat.permutation
+
+                material_name = mat.name
                 mat = bpy.data.materials.get(material_name)
                 if mat is None:
                     mat = bpy.data.materials.new(name=material_name)
@@ -911,10 +926,6 @@ def load_file(context, filepath, report):
                     object_mesh.data.materials.append(mat)
 
                 mat.diffuse_color = get_random_color()
-                if game_version == 'halo2':
-                    material_parts = material_definition.split()
-                    object_mesh.jms.Region = material_parts[-1]
-                    object_mesh.jms.Permutation = material_parts[-2]
 
             bpy.ops.object.mode_set(mode='EDIT')
             bpy.ops.mesh.select_all(action='SELECT')
