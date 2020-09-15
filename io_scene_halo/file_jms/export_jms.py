@@ -358,7 +358,8 @@ def file_layout(context,
 
         elif obj.jms.bounding_radius == True and game_version == 'halo2':
             if set_ignore(obj) == False or hidden_geo:
-                bounding_sphere.append(obj)
+                if export_render:
+                    bounding_sphere.append(obj)
 
         elif obj.type == 'MESH':
             if set_ignore(obj) == False or hidden_geo:

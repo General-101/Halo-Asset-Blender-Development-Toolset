@@ -59,7 +59,6 @@ def load_file(context, filepath, report):
     child_list = []
     sibling_list = []
     parent_list = []
-    node_transforms = []
     translation_list = []
     region_list = []
     xref_path_list = []
@@ -185,6 +184,11 @@ def load_file(context, filepath, report):
             if len(material_definition_items) >= 4:
                 jms_material.slot_index = material_definition_items[-4]
 
+    #gather regions
+    if version <= 8204:
+        for region in range(region_count):
+            region_list.append(processed_file[region_start + 1 + region])
+
     #gather triangles
     for triangle in range(triangle_count):
         jms_triangle = JmsTriangle()
@@ -203,7 +207,8 @@ def load_file(context, filepath, report):
             triangle_material_index = int(processed_file[triangle_start + 2 + (triangle * 3)])
             triangle_verts = processed_file[triangle_start + 3 + (triangle * 3)].split()
             jms_triangle.region = triangle_region_index
-            if not region_list[triangle_region_index] in region_permutation_list:
+            region = region_list[triangle_region_index]
+            if not region in region_permutation_list:
                 region_permutation_list.append(region)
 
         jms_triangle.v0 = int(triangle_verts[0])
@@ -237,7 +242,7 @@ def load_file(context, filepath, report):
             vertex_index += 4 + (vertex_group_count * 2) + total_uv_lines
 
         else:
-            node_count = 0
+            valid_node = 0
             node_0 = int(processed_file[vertex_index + vertex_start + 1])
             vert_translation = processed_file[vertex_index + vertex_start + 2].split()
             vert_normal = processed_file[vertex_index + vertex_start + 3].split()
@@ -249,16 +254,16 @@ def load_file(context, filepath, report):
             tex_v = float(processed_file[vertex_index + vertex_start + 7])
             vertex_uv.append((tex_u, tex_v))
             if not node_0 == -1:
-                node_count += 1
+                valid_node += 1
                 vertex_group_index.append(node_0)
                 vertex_group_weight.append(node_0_weight)
 
             if not node_1 == -1:
-                node_count += 1
+                valid_node += 1
                 vertex_group_index.append(node_1)
                 vertex_group_weight.append(node_1_weight)
 
-            vertex_group_count = node_count
+            vertex_group_count = valid_node
             vertex_index += 8
 
         jms_vertex.pos = vert_translation
@@ -271,20 +276,20 @@ def load_file(context, filepath, report):
 
         jms_vertex.node_influence_count = vertex_group_count
         if vertex_group_count >= 1:
-            jms_vertex.node0 = vertex_group_index[0]
-            jms_vertex.node0_weight = vertex_group_weight[0]
+            jms_vertex.node0 = int(vertex_group_index[0])
+            jms_vertex.node0_weight = float(vertex_group_weight[0])
 
         if vertex_group_count >= 2:
-            jms_vertex.node1 = vertex_group_index[1]
-            jms_vertex.node1_weight = vertex_group_weight[1]
+            jms_vertex.node1 = int(vertex_group_index[1])
+            jms_vertex.node1_weight = float(vertex_group_weight[1])
 
         if vertex_group_count >= 3:
-            jms_vertex.node2 = vertex_group_index[2]
-            jms_vertex.node2_weight = vertex_group_weight[2]
+            jms_vertex.node2 = int(vertex_group_index[2])
+            jms_vertex.node2_weight = float(vertex_group_weight[2])
 
         if vertex_group_count >= 4:
-            jms_vertex.node3 = vertex_group_index[3]
-            jms_vertex.node3_weight = vertex_group_weight[3]
+            jms_vertex.node3 = int(vertex_group_index[3])
+            jms_vertex.node3_weight = float(vertex_group_weight[3])
 
     #gather node details
     if version >= 8205:
@@ -379,25 +384,20 @@ def load_file(context, filepath, report):
 
         bpy.ops.object.mode_set(mode = 'OBJECT')
 
-    #gather regions
-    if version <= 8204:
-        for region in range(region_count):
-            region_list.append(processed_file[region_start + 1 + region])
-
     #generate marker objects
     for marker in range(marker_count):
         if version >= 8205:
             marker_name = processed_file[marker_start + 1 + (5 * marker)]
-            marker_parent_index = int(processed_file[marker_start + 2 + (5 * marker)])
             marker_region_index = None
+            marker_parent_index = int(processed_file[marker_start + 2 + (5 * marker)])
             marker_rotation = processed_file[marker_start + 3 + (5 * marker)].split()
             marker_translation = processed_file[marker_start + 4 + (5 * marker)].split()
             marker_radius = float(processed_file[marker_start + 5 + (5 * marker)])
 
         else:
             marker_name = processed_file[marker_start + 1 + (6 * marker)]
-            marker_parent_index = int(processed_file[marker_start + 2 + (6 * marker)])
-            marker_region_index = int(processed_file[marker_start + 3 + (6 * marker)])
+            marker_region_index = int(processed_file[marker_start + 2 + (6 * marker)])
+            marker_parent_index = int(processed_file[marker_start + 3 + (6 * marker)])
             marker_rotation = processed_file[marker_start + 4 + (6 * marker)].split()
             marker_translation = processed_file[marker_start + 5 + (6 * marker)].split()
             marker_radius = float(processed_file[marker_start + 6 + (6 * marker)])
@@ -445,7 +445,7 @@ def load_file(context, filepath, report):
         bpy.ops.object.select_all(action='DESELECT')
         object_mesh.select_set(True)
         view_layer.objects.active = object_mesh
-        if version <= 8204:
+        if version <= 8204 and not marker_region_index == -1:
             object_mesh.jms.Region = region_list[marker_region_index]
 
         object_mesh.jms.Object_Type = 'SPHERE'
@@ -533,33 +533,25 @@ def load_file(context, filepath, report):
 
                 else:
                     region = tri.region
-                    current_region_permutation = region
+                    current_region_permutation = region_list[region]
 
                 if region_permutation == current_region_permutation:
                     p1 = vertices[tri.v0].pos
                     p2 = vertices[tri.v1].pos
                     p3 = vertices[tri.v2].pos
-                    for index in range(3):
-                        if index == 0:
-                            vert_index = tri.v0
+                    tri_vert_list = [tri.v0, tri.v1, tri.v2]
+                    for tri_vert in tri_vert_list:
+                        if not int(vertices[tri_vert].node0) == -1 and not vertices[tri_vert].node0 in vertex_groups:
+                            vertex_groups.append(vertices[tri_vert].node0)
 
-                        elif index == 1:
-                            vert_index = tri.v1
+                        if not int(vertices[tri_vert].node1) == -1 and not vertices[tri_vert].node1 in vertex_groups:
+                            vertex_groups.append(vertices[tri_vert].node1)
 
-                        elif index == 2:
-                            vert_index = tri.v2
+                        if not int(vertices[tri_vert].node2) == -1 and not vertices[tri_vert].node2 in vertex_groups:
+                            vertex_groups.append(vertices[tri_vert].node2)
 
-                        if not vertices[vert_index].node0 == -1 and not vertices[vert_index].node0 in vertex_groups:
-                            vertex_groups.append( vertices[vert_index].node0)
-
-                        if not vertices[vert_index].node1 == -1 and not vertices[vert_index].node1 in vertex_groups:
-                            vertex_groups.append( vertices[vert_index].node1)
-
-                        if not vertices[vert_index].node2 == -1 and not vertices[vert_index].node2 in vertex_groups:
-                            vertex_groups.append( vertices[vert_index].node2)
-
-                        if not vertices[vert_index].node3 == -1 and not vertices[vert_index].node3 in vertex_groups:
-                            vertex_groups.append( vertices[vert_index].node3)
+                        if not int(vertices[tri_vert].node3) == -1 and not vertices[tri_vert].node3 in vertex_groups:
+                            vertex_groups.append(vertices[tri_vert].node3)
 
                     v1 = bm.verts.new((float(p1[0]), float(p1[1]), float(p1[2])))
                     v2 = bm.verts.new((float(p2[0]), float(p2[1]), float(p2[2])))
@@ -582,7 +574,12 @@ def load_file(context, filepath, report):
 
             bm.to_mesh(mesh)
             bm.free()
+
+            for group in vertex_groups:
+                object_mesh.vertex_groups.new(name = node_list[group])
+
             triangle_index = 0
+            vertex_index = 0
             for triangle in range(triangle_count):
                 tri = triangles[triangle]
                 mat = materials[tri.material]
@@ -596,6 +593,7 @@ def load_file(context, filepath, report):
                     current_region_permutation = region
 
                 if region_permutation == current_region_permutation:
+                    tri_verts = [tri.v0, tri.v1, tri.v2]
                     if not tri.material == -1:
                         material_list = []
                         material_name = mat.name
@@ -605,10 +603,26 @@ def load_file(context, filepath, report):
                         material_index = material_list.index(bpy.data.materials[material_name])
                         object_mesh.data.polygons[triangle_index].material_index = material_index
 
-                    triangle_index += 1
+                    for verts in tri_verts:
+                        if not int(vertices[verts].node0) == -1:
+                            group_name = node_list[vertices[verts].node0]
+                            object_mesh.vertex_groups[group_name].add([object_mesh.data.vertices[vertex_index].index], vertices[verts].node0_weight, 'REPLACE')
 
-            for group in vertex_groups:
-                object_mesh.vertex_groups.new(name = node_list[int(group)])
+                        if not int(vertices[verts].node1) == -1:
+                            group_name = node_list[vertices[verts].node1]
+                            object_mesh.vertex_groups[group_name].add([object_mesh.data.vertices[vertex_index].index], vertices[verts].node1_weight, 'REPLACE')
+
+                        if not int(vertices[verts].node2) == -1:
+                            group_name = node_list[vertices[verts].node2]
+                            object_mesh.vertex_groups[group_name].add([object_mesh.data.vertices[vertex_index].index], vertices[verts].node2_weight, 'REPLACE')
+
+                        if not int(vertices[verts].node3) == -1:
+                            group_name = node_list[vertices[verts].node3]
+                            object_mesh.vertex_groups[group_name].add([object_mesh.data.vertices[vertex_index].index], vertices[verts].node3_weight, 'REPLACE')
+
+                        vertex_index += 1
+
+                    triangle_index += 1
 
             armature.select_set(True)
             view_layer.objects.active = armature
@@ -859,7 +873,6 @@ def load_file(context, filepath, report):
             convex_shape_vertex_count = int(processed_file[convex_shape_vertex_count_start])
             total_convex_shape_vertex_count += convex_shape_vertex_count
             convex_shape_vertex_index = 0
-
             bpy.ops.object.select_all(action='DESELECT')
             if not convex_shape_parent_index == -1:
                 parent_name = node_list[convex_shape_parent_index]
@@ -949,7 +962,6 @@ def load_file(context, filepath, report):
             ragdoll_object_max_cone = float(processed_file[ragdoll_start + 11 + (ragdoll * 13)])
             ragdoll_object_min_plane = float(processed_file[ragdoll_start + 12 + (ragdoll * 13)])
             ragdoll_object_max_plane = float(processed_file[ragdoll_start + 13 + (ragdoll * 13)])
-
             bpy.ops.object.select_all(action='DESELECT')
             if not ragdoll_attached_index == -1:
                 attached_index = node_list[ragdoll_attached_index]
@@ -997,7 +1009,6 @@ def load_file(context, filepath, report):
             hinge_object_friction_limit = float(processed_file[hinge_start + 9 + (hinge * 11)])
             hinge_object_min_angle = float(processed_file[hinge_start + 10 + (hinge * 11)])
             hinge_object_max_angle = float(processed_file[hinge_start + 11 + (hinge * 11)])
-
             bpy.ops.object.select_all(action='DESELECT')
             if not hinge_attached_index == -1:
                 attached_index = node_list[hinge_attached_index]
@@ -1030,6 +1041,87 @@ def load_file(context, filepath, report):
 
             object_empty.matrix_world = matrix
             bpy.ops.object.mode_set(mode='OBJECT')
+            bpy.ops.object.select_all(action='DESELECT')
+
+        #generate point to point objects
+        for point_to_point in range(point_to_point_count):
+            point_to_point_object_name = processed_file[point_to_point_start + 1 + (point_to_point * 15)]
+            point_to_point_attached_index = int(processed_file[point_to_point_start + 2 + (point_to_point * 15)])
+            point_to_point_referenced_index = int(processed_file[point_to_point_start + 3 + (point_to_point * 15)])
+            point_to_point_attached_object_rotation = processed_file[point_to_point_start + 4 + (point_to_point * 15)].split()
+            point_to_point_attached_object_translation = processed_file[point_to_point_start + 5 + (point_to_point * 15)].split()
+            point_to_point_referenced_object_rotation = processed_file[point_to_point_start + 6 + (point_to_point * 15)].split()
+            point_to_point_referenced_object_translation = processed_file[point_to_point_start + 7 + (point_to_point * 15)].split()
+            point_to_point_object_constraint_type = int(processed_file[point_to_point_start + 8 + (point_to_point * 15)])
+            point_to_point_object_x_min_limit = float(processed_file[point_to_point_start + 9 + (point_to_point * 15)])
+            point_to_point_object_x_max_limit = float(processed_file[point_to_point_start + 10 + (point_to_point * 15)])
+            point_to_point_object_y_min_limit = float(processed_file[point_to_point_start + 11 + (point_to_point * 15)])
+            point_to_point_object_y_max_limit = float(processed_file[point_to_point_start + 12 + (point_to_point * 15)])
+            point_to_point_object_z_min_limit = float(processed_file[point_to_point_start + 13 + (point_to_point * 15)])
+            point_to_point_object_z_max_limit = float(processed_file[point_to_point_start + 14 + (point_to_point * 15)])
+            point_to_point_object_spring_length = float(processed_file[point_to_point_start + 15 + (point_to_point * 15)])
+            bpy.ops.object.select_all(action='DESELECT')
+            if not point_to_point_attached_index == -1:
+                attached_index = node_list[point_to_point_attached_index]
+
+            if not point_to_point_referenced_index == -1:
+                referenced_index = node_list[point_to_point_referenced_index]
+
+            object_name_prefix = '$%s' % point_to_point_object_name
+            object_empty = bpy.data.objects.new(object_name_prefix, None)
+            collection.objects.link(object_empty)
+            object_empty.empty_display_size = 2
+            object_empty.empty_display_type = 'ARROWS'
+            view_layer.objects.active = object_empty
+            object_empty.select_set(True)
+            armature.select_set(True)
+            view_layer.objects.active = armature
+            bpy.ops.object.parent_set(type='ARMATURE', keep_transform=True)
+            file_matrix = Quaternion(((float(point_to_point_attached_object_rotation[3])), float(point_to_point_attached_object_rotation[0]), float(point_to_point_attached_object_rotation[1]), float(point_to_point_attached_object_rotation[2]))).inverted().to_matrix().to_4x4()
+            if version >= 8205:
+                file_matrix = Quaternion(((float(point_to_point_attached_object_rotation[3])), float(point_to_point_attached_object_rotation[0]), float(point_to_point_attached_object_rotation[1]), float(point_to_point_attached_object_rotation[2]))).to_matrix().to_4x4()
+
+            file_matrix[0][3] = float(point_to_point_attached_object_translation[0])
+            file_matrix[1][3] = float(point_to_point_attached_object_translation[1])
+            file_matrix[2][3] = float(point_to_point_attached_object_translation[2])
+            matrix = file_matrix
+            if not point_to_point_attached_index == -1:
+                bpy.ops.object.mode_set(mode = 'POSE')
+                pose_bone = armature.pose.bones[attached_index]
+                matrix = pose_bone.matrix @ file_matrix
+
+            object_empty.matrix_world = matrix
+            bpy.ops.object.mode_set(mode='OBJECT')
+            bpy.ops.object.select_all(action='DESELECT')
+
+        #generate bounding sphere objects
+        for bounding_sphere in range(bounding_sphere_count):
+            bounding_sphere_object_translation = processed_file[bounding_sphere_start + 1 + (bounding_sphere * 2)].split()
+            bounding_sphere_object_radius = float(processed_file[bounding_sphere_start + 2 + (bounding_sphere * 2)])
+            name = 'bounding_sphere_%s' % bounding_sphere
+            bpy.ops.object.select_all(action='DESELECT')
+            mesh = bpy.data.meshes.new(name)
+            object_mesh = bpy.data.objects.new(name, mesh)
+            collection.objects.link(object_mesh)
+            view_layer.objects.active = object_mesh
+            object_mesh.select_set(True)
+            bm = bmesh.new()
+            bmesh.ops.create_uvsphere(bm, u_segments=32, v_segments=16, diameter=1)
+            bm.to_mesh(mesh)
+            bm.free()
+            armature.select_set(True)
+            view_layer.objects.active = armature
+            bpy.ops.object.parent_set(type='ARMATURE', keep_transform=True)
+            matrix = Matrix.Translation((float(bounding_sphere_object_translation[0]), float(bounding_sphere_object_translation[1]), float(bounding_sphere_object_translation[2]))).to_4x4()
+            object_mesh.matrix_world = matrix
+            bpy.ops.object.mode_set(mode='OBJECT')
+            bpy.ops.object.select_all(action='DESELECT')
+            object_mesh.select_set(True)
+            view_layer.objects.active = object_mesh
+            object_mesh.jms.Object_Type = 'SPHERE'
+            object_mesh.jms.bounding_radius = True
+            object_dimension = bounding_sphere_object_radius * 2
+            object_mesh.dimensions = (object_dimension, object_dimension, object_dimension)
             bpy.ops.object.select_all(action='DESELECT')
 
     return {'FINISHED'}
