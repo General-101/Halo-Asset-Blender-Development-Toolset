@@ -233,7 +233,7 @@ def load_file(context, filepath, report):
 
             vertex_uv_count = int(processed_file[vertex_index + vertex_start + (vertex_group_count * 2) + 4])
             for uv in range(vertex_uv_count):
-                vertex_uv.append(processed_file[vertex_index + vertex_start + (uv * 2) + 5].split())
+                vertex_uv.append(processed_file[vertex_index + vertex_start + (vertex_group_count * 2) + (uv * 2) + 5].split())
 
             total_uv_lines = 0
             for x in range(int(vertex_uv_count)):
@@ -252,7 +252,7 @@ def load_file(context, filepath, report):
             vertex_uv_count = 1
             tex_u = float(processed_file[vertex_index + vertex_start + 6])
             tex_v = float(processed_file[vertex_index + vertex_start + 7])
-            vertex_uv.append((tex_u, tex_v))
+            vertex_uv.append([tex_u, tex_v])
             if not node_0 == -1:
                 valid_node += 1
                 vertex_group_index.append(node_0)
@@ -268,12 +268,11 @@ def load_file(context, filepath, report):
 
         jms_vertex.pos = vert_translation
         jms_vertex.norm = vert_normal
-        if vertex_uv_count >= 1:
-            jms_vertex.uv = vertex_uv[0]
+        uv_list =[]
+        for uv in range(vertex_uv_count):
+            uv_list.append(vertex_uv[uv])
 
-        if vertex_uv_count >= 2:
-            jms_vertex.uv_2 = vertex_uv[1]
-
+        jms_vertex.uv = uv_list
         jms_vertex.node_influence_count = vertex_group_count
         if vertex_group_count >= 1:
             jms_vertex.node0 = int(vertex_group_index[0])
@@ -590,7 +589,7 @@ def load_file(context, filepath, report):
 
                 else:
                     region = tri.region
-                    current_region_permutation = region
+                    current_region_permutation = region_list[region]
 
                 if region_permutation == current_region_permutation:
                     tri_verts = [tri.v0, tri.v1, tri.v2]
@@ -604,6 +603,22 @@ def load_file(context, filepath, report):
                         object_mesh.data.polygons[triangle_index].material_index = material_index
 
                     for verts in tri_verts:
+                        for uv in vertices[verts].uv:
+                            uv_index = vertices[verts].uv.index(uv)
+                            if object_mesh.data.uv_layers:
+                                if len(object_mesh.data.uv_layers) > uv_index:
+                                    object_mesh.data.uv_layers.active = object_mesh.data.uv_layers[uv_index]
+
+                                else:
+                                    object_mesh.data.uv_layers.new()
+                                    object_mesh.data.uv_layers.active = object_mesh.data.uv_layers[uv_index]
+
+                            else:
+                                object_mesh.data.uv_layers.new()
+                                object_mesh.data.uv_layers.active = object_mesh.data.uv_layers[uv_index]
+
+                            object_mesh.data.uv_layers.active.data[vertex_index].uv = (float(uv[0]), float(uv[1]))
+
                         if not int(vertices[verts].node0) == -1:
                             group_name = node_list[vertices[verts].node0]
                             object_mesh.vertex_groups[group_name].add([object_mesh.data.vertices[vertex_index].index], vertices[verts].node0_weight, 'REPLACE')

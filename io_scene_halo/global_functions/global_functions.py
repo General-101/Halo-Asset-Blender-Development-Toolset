@@ -42,7 +42,6 @@ class JmsVertex:
     pos = None
     norm = None
     uv = None
-    uv_2 = None
 
 class JmsDimensions:
     quat_i_a = '0'
