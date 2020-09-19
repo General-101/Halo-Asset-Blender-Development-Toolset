@@ -125,7 +125,7 @@ def load_file(context, filepath, report):
             ragdoll_count = int(processed_file[ragdoll_start])
             hinge_start = ragdoll_start + 1 + (ragdoll_count * 13)
             hinge_count = int(processed_file[hinge_start])
-            if version >= 8206:
+            if version > 8209:
                 car_wheel_start = hinge_start + 1 + (hinge_count * 11)
                 car_wheel_count = int(processed_file[car_wheel_start])
                 point_to_point_start = car_wheel_start + 1 + (car_wheel_count * 11)
@@ -196,9 +196,14 @@ def load_file(context, filepath, report):
         if version >= 8205:
             triangle_material_index = int(processed_file[triangle_start + 1 + (triangle * 2)])
             triangle_verts = processed_file[triangle_start + 2 + (triangle * 2)].split()
-            material = materials[triangle_material_index]
-            region = material.region
-            permutation = material.permutation
+            if not triangle_material_index == -1:
+                material = materials[triangle_material_index]
+                region = material.region
+                permutation = material.permutation
+            else:
+                region = None
+                permutation = None
+
             if not [region, permutation] in region_permutation_list:
                 region_permutation_list.append([region, permutation])
 
@@ -1058,56 +1063,57 @@ def load_file(context, filepath, report):
             bpy.ops.object.mode_set(mode='OBJECT')
             bpy.ops.object.select_all(action='DESELECT')
 
-        #generate point to point objects
-        for point_to_point in range(point_to_point_count):
-            point_to_point_object_name = processed_file[point_to_point_start + 1 + (point_to_point * 15)]
-            point_to_point_attached_index = int(processed_file[point_to_point_start + 2 + (point_to_point * 15)])
-            point_to_point_referenced_index = int(processed_file[point_to_point_start + 3 + (point_to_point * 15)])
-            point_to_point_attached_object_rotation = processed_file[point_to_point_start + 4 + (point_to_point * 15)].split()
-            point_to_point_attached_object_translation = processed_file[point_to_point_start + 5 + (point_to_point * 15)].split()
-            point_to_point_referenced_object_rotation = processed_file[point_to_point_start + 6 + (point_to_point * 15)].split()
-            point_to_point_referenced_object_translation = processed_file[point_to_point_start + 7 + (point_to_point * 15)].split()
-            point_to_point_object_constraint_type = int(processed_file[point_to_point_start + 8 + (point_to_point * 15)])
-            point_to_point_object_x_min_limit = float(processed_file[point_to_point_start + 9 + (point_to_point * 15)])
-            point_to_point_object_x_max_limit = float(processed_file[point_to_point_start + 10 + (point_to_point * 15)])
-            point_to_point_object_y_min_limit = float(processed_file[point_to_point_start + 11 + (point_to_point * 15)])
-            point_to_point_object_y_max_limit = float(processed_file[point_to_point_start + 12 + (point_to_point * 15)])
-            point_to_point_object_z_min_limit = float(processed_file[point_to_point_start + 13 + (point_to_point * 15)])
-            point_to_point_object_z_max_limit = float(processed_file[point_to_point_start + 14 + (point_to_point * 15)])
-            point_to_point_object_spring_length = float(processed_file[point_to_point_start + 15 + (point_to_point * 15)])
-            bpy.ops.object.select_all(action='DESELECT')
-            if not point_to_point_attached_index == -1:
-                attached_index = node_list[point_to_point_attached_index]
+        if version > 8209:
+            #generate point to point objects
+            for point_to_point in range(point_to_point_count):
+                point_to_point_object_name = processed_file[point_to_point_start + 1 + (point_to_point * 15)]
+                point_to_point_attached_index = int(processed_file[point_to_point_start + 2 + (point_to_point * 15)])
+                point_to_point_referenced_index = int(processed_file[point_to_point_start + 3 + (point_to_point * 15)])
+                point_to_point_attached_object_rotation = processed_file[point_to_point_start + 4 + (point_to_point * 15)].split()
+                point_to_point_attached_object_translation = processed_file[point_to_point_start + 5 + (point_to_point * 15)].split()
+                point_to_point_referenced_object_rotation = processed_file[point_to_point_start + 6 + (point_to_point * 15)].split()
+                point_to_point_referenced_object_translation = processed_file[point_to_point_start + 7 + (point_to_point * 15)].split()
+                point_to_point_object_constraint_type = int(processed_file[point_to_point_start + 8 + (point_to_point * 15)])
+                point_to_point_object_x_min_limit = float(processed_file[point_to_point_start + 9 + (point_to_point * 15)])
+                point_to_point_object_x_max_limit = float(processed_file[point_to_point_start + 10 + (point_to_point * 15)])
+                point_to_point_object_y_min_limit = float(processed_file[point_to_point_start + 11 + (point_to_point * 15)])
+                point_to_point_object_y_max_limit = float(processed_file[point_to_point_start + 12 + (point_to_point * 15)])
+                point_to_point_object_z_min_limit = float(processed_file[point_to_point_start + 13 + (point_to_point * 15)])
+                point_to_point_object_z_max_limit = float(processed_file[point_to_point_start + 14 + (point_to_point * 15)])
+                point_to_point_object_spring_length = float(processed_file[point_to_point_start + 15 + (point_to_point * 15)])
+                bpy.ops.object.select_all(action='DESELECT')
+                if not point_to_point_attached_index == -1:
+                    attached_index = node_list[point_to_point_attached_index]
 
-            if not point_to_point_referenced_index == -1:
-                referenced_index = node_list[point_to_point_referenced_index]
+                if not point_to_point_referenced_index == -1:
+                    referenced_index = node_list[point_to_point_referenced_index]
 
-            object_name_prefix = '$%s' % point_to_point_object_name
-            object_empty = bpy.data.objects.new(object_name_prefix, None)
-            collection.objects.link(object_empty)
-            object_empty.empty_display_size = 2
-            object_empty.empty_display_type = 'ARROWS'
-            view_layer.objects.active = object_empty
-            object_empty.select_set(True)
-            armature.select_set(True)
-            view_layer.objects.active = armature
-            bpy.ops.object.parent_set(type='ARMATURE', keep_transform=True)
-            file_matrix = Quaternion(((float(point_to_point_attached_object_rotation[3])), float(point_to_point_attached_object_rotation[0]), float(point_to_point_attached_object_rotation[1]), float(point_to_point_attached_object_rotation[2]))).inverted().to_matrix().to_4x4()
-            if version >= 8205:
-                file_matrix = Quaternion(((float(point_to_point_attached_object_rotation[3])), float(point_to_point_attached_object_rotation[0]), float(point_to_point_attached_object_rotation[1]), float(point_to_point_attached_object_rotation[2]))).to_matrix().to_4x4()
+                object_name_prefix = '$%s' % point_to_point_object_name
+                object_empty = bpy.data.objects.new(object_name_prefix, None)
+                collection.objects.link(object_empty)
+                object_empty.empty_display_size = 2
+                object_empty.empty_display_type = 'ARROWS'
+                view_layer.objects.active = object_empty
+                object_empty.select_set(True)
+                armature.select_set(True)
+                view_layer.objects.active = armature
+                bpy.ops.object.parent_set(type='ARMATURE', keep_transform=True)
+                file_matrix = Quaternion(((float(point_to_point_attached_object_rotation[3])), float(point_to_point_attached_object_rotation[0]), float(point_to_point_attached_object_rotation[1]), float(point_to_point_attached_object_rotation[2]))).inverted().to_matrix().to_4x4()
+                if version >= 8205:
+                    file_matrix = Quaternion(((float(point_to_point_attached_object_rotation[3])), float(point_to_point_attached_object_rotation[0]), float(point_to_point_attached_object_rotation[1]), float(point_to_point_attached_object_rotation[2]))).to_matrix().to_4x4()
 
-            file_matrix[0][3] = float(point_to_point_attached_object_translation[0])
-            file_matrix[1][3] = float(point_to_point_attached_object_translation[1])
-            file_matrix[2][3] = float(point_to_point_attached_object_translation[2])
-            matrix = file_matrix
-            if not point_to_point_attached_index == -1:
-                bpy.ops.object.mode_set(mode = 'POSE')
-                pose_bone = armature.pose.bones[attached_index]
-                matrix = pose_bone.matrix @ file_matrix
+                file_matrix[0][3] = float(point_to_point_attached_object_translation[0])
+                file_matrix[1][3] = float(point_to_point_attached_object_translation[1])
+                file_matrix[2][3] = float(point_to_point_attached_object_translation[2])
+                matrix = file_matrix
+                if not point_to_point_attached_index == -1:
+                    bpy.ops.object.mode_set(mode = 'POSE')
+                    pose_bone = armature.pose.bones[attached_index]
+                    matrix = pose_bone.matrix @ file_matrix
 
-            object_empty.matrix_world = matrix
-            bpy.ops.object.mode_set(mode='OBJECT')
-            bpy.ops.object.select_all(action='DESELECT')
+                object_empty.matrix_world = matrix
+                bpy.ops.object.mode_set(mode='OBJECT')
+                bpy.ops.object.select_all(action='DESELECT')
 
         #generate bounding sphere objects
         for bounding_sphere in range(bounding_sphere_count):
