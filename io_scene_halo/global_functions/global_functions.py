@@ -26,63 +26,36 @@
 
 import os
 import bpy
+import random, colorsys
 
 from decimal import *
-
-class JmsVertex:
-    node_influence_count = '0'
-    node0 = '-1'
-    node1 = '-1'
-    node2 = '-1'
-    node3 = '-1'
-    node0_weight = '0.0000000000'
-    node1_weight = '0.0000000000'
-    node2_weight = '0.0000000000'
-    node3_weight = '0.0000000000'
-    pos = None
-    norm = None
-    uv = None
+from mathutils import Vector, Quaternion, Matrix
 
 class JmsDimensions:
-    quat_i_a = '0'
-    quat_j_a = '0'
-    quat_k_a = '0'
-    quat_w_a = '0'
-    pos_x_a = '0'
-    pos_y_a = '0'
-    pos_z_a = '0'
-    scale_x_a = '0'
-    scale_y_a = '0'
-    scale_z_a = '0'
-    radius_a = '0'
-    pill_z_a = '0'
-    quat_i_b = '0'
-    quat_j_b = '0'
-    quat_k_b = '0'
-    quat_w_b = '0'
-    pos_x_b = '0'
-    pos_y_b = '0'
-    pos_z_b = '0'
-    scale_x_b = '0'
-    scale_y_b = '0'
-    scale_z_b = '0'
-    radius_b = '0'
-    pill_z_b = '0'
-
-class JmsTriangle:
-    v0 = 0
-    v1 = 0
-    v2 = 0
-    region = 0
-    material = 0
-
-class JmsMaterial:
-    name = None
-    texture_path = None
-    slot_index = None
-    lod = None
-    permutation = None
-    region = None
+    quat_i_a = '0.0000000000'
+    quat_j_a = '0.0000000000'
+    quat_k_a = '0.0000000000'
+    quat_w_a = '0.0000000000'
+    pos_x_a = '0.0000000000'
+    pos_y_a = '0.0000000000'
+    pos_z_a = '0.0000000000'
+    scale_x_a = '0.0000000000'
+    scale_y_a = '0.0000000000'
+    scale_z_a = '0.0000000000'
+    radius_a = '0.0000000000'
+    pill_z_a = '0.0000000000'
+    quat_i_b = '0.0000000000'
+    quat_j_b = '0.0000000000'
+    quat_k_b = '0.0000000000'
+    quat_w_b = '0.0000000000'
+    pos_x_b = '0.0000000000'
+    pos_y_b = '0.0000000000'
+    pos_z_b = '0.0000000000'
+    scale_x_b = '0.0000000000'
+    scale_y_b = '0.0000000000'
+    scale_z_b = '0.0000000000'
+    radius_b = '0.0000000000'
+    pill_z_b = '0.0000000000'
 
 def unhide_all_collections():
     for collection_viewport in bpy.context.view_layer.layer_collection.children:
@@ -95,7 +68,7 @@ def unhide_object(mesh):
     mesh.hide_set(False)
     mesh.hide_viewport = False
 
-def get_child(bone, bone_list = [], *args):
+def get_child(bone, bone_list):
     set_node = None
     for node in bone_list:
         if bone == node.parent and not set_node:
@@ -103,7 +76,7 @@ def get_child(bone, bone_list = [], *args):
 
     return set_node
 
-def get_sibling(armature, bone, bone_list = [], *args):
+def get_sibling(armature, bone, bone_list):
     sibling_list = []
     set_sibling = None
     for node in bone_list:
@@ -130,10 +103,10 @@ def get_sibling(armature, bone, bone_list = [], *args):
 
 def get_encoding(game_version):
     encoding = None
-    if game_version == 'haloce':
+    if game_version == 'haloce' or game_version == 'halo2utf8':
         encoding = 'utf_8'
 
-    elif game_version == 'halo2':
+    elif game_version == 'halo2vista':
         encoding = 'utf-16le'
 
     return encoding
@@ -147,10 +120,6 @@ def error_pass(armature_count, report, game_version, node_count, version, extens
 
     elif game_version == 'haloce' and node_count == 0: #JMSv2 files can have JMS files without a node for physics.
         report({'ERROR'}, 'No nodes in scene. Add an armature or object mesh named frame')
-        result = True
-
-    elif extension == '.JMP' and game_version == 'halo2':
-        report({'ERROR'}, 'This extension is not used in Halo 2 Vista')
         result = True
 
     elif root_node_count >= 2:
@@ -185,7 +154,7 @@ def error_pass(armature_count, report, game_version, node_count, version, extens
 
     return result
 
-def sort_by_layer(node_list, armature, reversed_list):
+def sort_by_layer(node_list, armature):
     layer_count = []
     layer_root = []
     root_list = []
@@ -195,7 +164,6 @@ def sort_by_layer(node_list, armature, reversed_list):
     reversed_joined_list = []
     sort_list = []
     reversed_sort_list = []
-    sorted_list = []
     for node in node_list:
         if node.parent == None:
             layer_count.append(None)
@@ -254,34 +222,42 @@ def sort_by_layer(node_list, armature, reversed_list):
         joined_list = root_list + children_list
         reversed_joined_list = root_list + reversed_children_list
 
-    if reversed_list:
-        sorted_list = reversed_joined_list
+    return (joined_list, reversed_joined_list)
 
-    else:
-        sorted_list = joined_list
+def sort_by_index(node_list):
+    root_node = []
+    child_nodes = []
+    for node in node_list:
+        if node.parent == None:
+            root_node.append(node)
 
-    return sorted_list
+        else:
+            child_nodes.append(node)
 
-def sort_list(node_list, armature, reversed_list, game_version, version, animation):
+    sorted_list = root_node + child_nodes
+
+    return (sorted_list, sorted_list)
+
+def sort_list(node_list, armature, game_version, version, animation):
     version = int(version)
     sorted_list = []
     if game_version == 'haloce':
-        sorted_list = sort_by_layer(node_list, armature, reversed_list)
+        sorted_list = sort_by_layer(node_list, armature)
 
     elif game_version == 'halo2':
         if animation:
             if version <= 16394:
-                sorted_list = sort_by_layer(node_list, armature, reversed_list)
+                sorted_list = sort_by_layer(node_list, armature)
 
             else:
-                sorted_list = node_list
+                sorted_list = sort_by_index(node_list)
 
         else:
             if version <= 8204:
-                sorted_list = sort_by_layer(node_list, armature, reversed_list)
+                sorted_list = sort_by_layer(node_list, armature)
 
             else:
-                sorted_list = node_list
+                sorted_list = sort_by_index(node_list)
 
     return sorted_list
 
@@ -292,46 +268,54 @@ def test_encoding(filepath):
     data = open(filepath, 'rb')
     file_size = os.path.getsize(filepath)
     BOM = data.read(3)
-    zero_count = 0
     encoding = None
-    if BOM.startswith(UTF_8_BOM) or BOM.startswith(UTF_16_BE_BOM) or BOM.startswith(UTF_16_LE_BOM):
-        if file_size & 1:
-            encoding = 'utf-8-sig'
-
-        else:
-            if BOM.startswith(UTF_16_BE_BOM) or BOM.startswith(UTF_16_LE_BOM):
-                encoding = 'utf-16'
-
+    # first check the boms
+    if BOM.startswith(UTF_8_BOM):
+        encoding = 'utf-8-sig'
+    elif BOM.startswith(UTF_16_BE_BOM) or BOM.startswith(UTF_16_LE_BOM):
+        encoding = 'utf-16'
     else:
-        byte = data.read(1)
-        while byte != b"":
-            byte = data.read(1)
-            if byte == b'\x00':
-                zero_count =+ 1
-
-        if zero_count > 0:
-            if not byte == b'\x00':
-                encoding = 'utf-16le'
-
-            elif byte == b'\x00':
-                encoding = 'utf-16be'
-
-        else:
+        if file_size % 2: # can't be USC-2/UTF-16 if the number of bytes is odd
             encoding = 'utf-8'
+        else:
+            # get the first half a kilobyte
+            data.seek(0)
+            sample_bytes = data.read(0x200)
 
+            even_zeros = 0
+            odd_zeros = 0
+
+            for idx, byte in enumerate(sample_bytes):
+                if byte != 0:
+                    continue
+                if idx % 2:
+                    odd_zeros += 1
+                else:
+                    even_zeros += 1
+            ## if there are no null bytes we assume we are dealing with a utf-8 file
+            ## if there are null bytes, assume utf-16 and guess endianness based on where the null bytes are
+            if even_zeros == 0 and odd_zeros == 0:
+                encoding = 'utf-8'
+            elif odd_zeros > even_zeros:
+                encoding = 'utf-16-le'
+            else:
+                encoding = 'utf-16-be'
+
+
+    data.close()
     return encoding
 
-def get_version(jms_version_console, jms_version_ce, jms_version_h2, game_version, console):
+def get_version(file_version_console, file_version_ce, file_version_h2, game_version, console):
     version = None
     if console:
-        version = int(jms_version_console)
+        version = int(file_version_console)
 
     else:
         if game_version == 'haloce':
-            version = int(jms_version_ce)
+            version = int(file_version_ce)
 
-        if game_version == 'halo2':
-            version = int(jms_version_h2)
+        elif game_version == 'halo2':
+            version = int(file_version_h2)
 
     return version
 
@@ -339,7 +323,7 @@ def get_true_extension(filepath, extension, is_import):
     extension_list = ['.jma', '.jmm', '.jmt', '.jmo', '.jmr', '.jmrx', '.jmh', '.jmz', '.jmw', '.jms', '.jmp']
     true_extension = ''
     if is_import:
-        true_extension = filepath.rsplit('.', 1)[1]
+        true_extension = filepath.rsplit('.', 1)[1].lower()
 
     else:
         extension_char = (len(extension))
@@ -348,51 +332,57 @@ def get_true_extension(filepath, extension, is_import):
 
     return true_extension
 
-def get_matrix(obj_a, obj_b, is_local, armature, joined_list, is_node, version, animation):
-    object_matrix = None
+def get_matrix(obj_a, obj_b, is_local, armature, joined_list, is_node, version, filetype, constraint):
+    object_matrix = Matrix.Translation((0, 0, 0))
     if is_node:
         if armature:
             pose_bone = armature.pose.bones['%s' % (obj_a.name)]
             object_matrix = pose_bone.matrix
-            if pose_bone.parent and not version >= get_version_matrix_check(animation):
+            if pose_bone.parent and not version >= get_version_matrix_check(filetype):
                 #Files at or above 8205 use absolute transform instead of local transform for nodes
                 object_matrix = pose_bone.parent.matrix.inverted() @ pose_bone.matrix
 
         else:
             object_matrix = obj_a.matrix_world
-            if obj_a.parent and not version >= get_version_matrix_check(animation):
+            if obj_a.parent and not version >= get_version_matrix_check(filetype):
                 #Files at or above 8205 use absolute transform instead of local transform for nodes
                 object_matrix = obj_a.parent.matrix_world.inverted() @ obj_a.matrix_world
 
     else:
         if armature:
             object_matrix = obj_a.matrix_world
-            if obj_b.parent_bone and is_local:
-                parent_object = get_parent(armature, obj_b, joined_list, -1, False)
-                pose_bone = armature.pose.bones['%s' % (parent_object.name)]
-                object_matrix = pose_bone.matrix.inverted() @ obj_a.matrix_world
+            bone_test = armature.data.bones.get(obj_b.parent_bone)
+            if obj_b.parent_bone and is_local and bone_test:
+                parent_object = get_parent(armature, obj_b, joined_list, -1)
+                pose_bone = armature.pose.bones['%s' % (parent_object[1].name)]
+                if constraint:
+                    object_matrix = obj_a.matrix_world.inverted() @ pose_bone.matrix
+                else:
+                    object_matrix = pose_bone.matrix.inverted() @ obj_a.matrix_world
 
         else:
             object_matrix = obj_a.matrix_world
             if obj_b.parent and is_local:
-                parent_object = get_parent(armature, obj_b, joined_list, -1, False)
-                object_matrix = parent_object.matrix_world.inverted() @ obj_a.matrix_world
+                parent_object = get_parent(armature, obj_b, joined_list, -1)
+                if constraint:
+                    object_matrix = obj_a.matrix_world.inverted() @ parent_object[1].matrix_world
+                else:
+                    object_matrix = parent_object[1].matrix_world.inverted() @ obj_a.matrix_world
 
     return object_matrix
 
-def get_dimensions(mesh_a_matrix, mesh_a, mesh_b_matrix, mesh_b, invert, custom_scale, version, jms_vertex, is_vertex, is_bone, armature, animation):
+def get_dimensions(mesh_a_matrix, mesh_a, mesh_b_matrix, mesh_b, custom_scale, version, jms_vertex, is_vertex, is_bone, armature, filetype):
     object_dimensions = JmsDimensions()
     if is_vertex:
-        pos = jms_vertex.pos
-        JmsDimensions.pos_x_a = Decimal(pos[0] * custom_scale).quantize(Decimal('1.0000000000'))
-        JmsDimensions.pos_y_a = Decimal(pos[1] * custom_scale).quantize(Decimal('1.0000000000'))
-        JmsDimensions.pos_z_a = Decimal(pos[2] * custom_scale).quantize(Decimal('1.0000000000'))
+        JmsDimensions.pos_x_a = float(jms_vertex[0] * custom_scale)
+        JmsDimensions.pos_y_a = float(jms_vertex[1] * custom_scale)
+        JmsDimensions.pos_z_a = float(jms_vertex[2] * custom_scale)
 
     else:
         if mesh_a:
             pos  = mesh_a_matrix.translation
             quat = mesh_a_matrix.to_quaternion().inverted()
-            if version >= get_version_matrix_check(animation):
+            if version >= get_version_matrix_check(filetype):
                 quat = mesh_a_matrix.to_quaternion()
 
             if is_bone:
@@ -413,27 +403,27 @@ def get_dimensions(mesh_a_matrix, mesh_a, mesh_b_matrix, mesh_b, invert, custom_
                 if pill_height <= 0:
                     pill_height = 0
 
-            JmsDimensions.quat_i_a = Decimal(quat[1]).quantize(Decimal('1.0000000000'))
-            JmsDimensions.quat_j_a = Decimal(quat[2]).quantize(Decimal('1.0000000000'))
-            JmsDimensions.quat_k_a = Decimal(quat[3]).quantize(Decimal('1.0000000000'))
-            JmsDimensions.quat_w_a = Decimal(quat[0]).quantize(Decimal('1.0000000000'))
-            JmsDimensions.pos_x_a = Decimal(pos[0] * custom_scale).quantize(Decimal('1.0000000000'))
-            JmsDimensions.pos_y_a = Decimal(pos[1] * custom_scale).quantize(Decimal('1.0000000000'))
-            JmsDimensions.pos_z_a = Decimal(pos[2] * custom_scale).quantize(Decimal('1.0000000000'))
-            JmsDimensions.scale_x_a = Decimal(scale[0]).quantize(Decimal('1.0000000000'))
-            JmsDimensions.scale_y_a = Decimal(scale[1]).quantize(Decimal('1.0000000000'))
-            JmsDimensions.scale_z_a = Decimal(scale[2]).quantize(Decimal('1.0000000000'))
+            JmsDimensions.quat_i_a = float(quat[1])
+            JmsDimensions.quat_j_a = float(quat[2])
+            JmsDimensions.quat_k_a = float(quat[3])
+            JmsDimensions.quat_w_a = float(quat[0])
+            JmsDimensions.pos_x_a = float(pos[0] * custom_scale)
+            JmsDimensions.pos_y_a = float(pos[1] * custom_scale)
+            JmsDimensions.pos_z_a = float(pos[2] * custom_scale)
+            JmsDimensions.scale_x_a = float(scale[0])
+            JmsDimensions.scale_y_a = float(scale[1])
+            JmsDimensions.scale_z_a = float(scale[2])
             if not is_bone:
-                JmsDimensions.dimension_x_a = Decimal(dimension[0] * custom_scale).quantize(Decimal('1.0000000000'))
-                JmsDimensions.dimension_y_a = Decimal(dimension[1] * custom_scale).quantize(Decimal('1.0000000000'))
-                JmsDimensions.dimension_z_a = Decimal(dimension[2] * custom_scale).quantize(Decimal('1.0000000000'))
-                JmsDimensions.radius_a = Decimal(pill_radius).quantize(Decimal('1.0000000000'))
-                JmsDimensions.pill_z_a = Decimal(pill_height).quantize(Decimal('1.0000000000'))
+                JmsDimensions.dimension_x_a = float(dimension[0] * custom_scale)
+                JmsDimensions.dimension_y_a = float(dimension[1] * custom_scale)
+                JmsDimensions.dimension_z_a = float(dimension[2] * custom_scale)
+                JmsDimensions.radius_a = float(pill_radius)
+                JmsDimensions.pill_z_a = float(pill_height)
 
         if mesh_b:
             pos  = mesh_b_matrix.translation
             quat = mesh_b_matrix.to_quaternion().inverted()
-            if version >= get_version_matrix_check(animation):
+            if version >= get_version_matrix_check(filetype):
                 quat = mesh_a_matrix.to_quaternion()
 
             if is_bone:
@@ -454,22 +444,22 @@ def get_dimensions(mesh_a_matrix, mesh_a, mesh_b_matrix, mesh_b, invert, custom_
                 if pill_height <= 0:
                     pill_height = 0
 
-            JmsDimensions.quat_i_b = Decimal(quat[1]).quantize(Decimal('1.0000000000'))
-            JmsDimensions.quat_j_b = Decimal(quat[2]).quantize(Decimal('1.0000000000'))
-            JmsDimensions.quat_k_b = Decimal(quat[3]).quantize(Decimal('1.0000000000'))
-            JmsDimensions.quat_w_b = Decimal(quat[0]).quantize(Decimal('1.0000000000'))
-            JmsDimensions.pos_x_b = Decimal(pos[0] * custom_scale).quantize(Decimal('1.0000000000'))
-            JmsDimensions.pos_y_b = Decimal(pos[1] * custom_scale).quantize(Decimal('1.0000000000'))
-            JmsDimensions.pos_z_b = Decimal(pos[2] * custom_scale).quantize(Decimal('1.0000000000'))
-            JmsDimensions.scale_x_b = Decimal(scale[0]).quantize(Decimal('1.0000000000'))
-            JmsDimensions.scale_y_b = Decimal(scale[1]).quantize(Decimal('1.0000000000'))
-            JmsDimensions.scale_z_b = Decimal(scale[2]).quantize(Decimal('1.0000000000'))
+            JmsDimensions.quat_i_b = float(quat[1])
+            JmsDimensions.quat_j_b = float(quat[2])
+            JmsDimensions.quat_k_b = float(quat[3])
+            JmsDimensions.quat_w_b = float(quat[0])
+            JmsDimensions.pos_x_b = float(pos[0] * custom_scale)
+            JmsDimensions.pos_y_b = float(pos[1] * custom_scale)
+            JmsDimensions.pos_z_b = float(pos[2] * custom_scale)
+            JmsDimensions.scale_x_b = float(scale[0])
+            JmsDimensions.scale_y_b = float(scale[1])
+            JmsDimensions.scale_z_b = float(scale[2])
             if not is_bone:
-                JmsDimensions.dimension_x_b = Decimal(dimension[0] * custom_scale).quantize(Decimal('1.0000000000'))
-                JmsDimensions.dimension_y_b = Decimal(dimension[1] * custom_scale).quantize(Decimal('1.0000000000'))
-                JmsDimensions.dimension_z_b = Decimal(dimension[2] * custom_scale).quantize(Decimal('1.0000000000'))
-                JmsDimensions.radius_b = Decimal(pill_radius).quantize(Decimal('1.0000000000'))
-                JmsDimensions.pill_z_b = Decimal(pill_height).quantize(Decimal('1.0000000000'))
+                JmsDimensions.dimension_x_b = float(dimension[0] * custom_scale)
+                JmsDimensions.dimension_y_b = float(dimension[1] * custom_scale)
+                JmsDimensions.dimension_z_b = float(dimension[2] * custom_scale)
+                JmsDimensions.radius_b = float(pill_radius)
+                JmsDimensions.pill_z_b = float(pill_height)
 
     return object_dimensions
 
@@ -482,66 +472,60 @@ def get_extension(extension_console, extension_ce, extension_h2, game_version, c
         if game_version == 'haloce':
             extension = extension_ce
 
-        if game_version == 'halo2':
+        elif game_version == 'halo2':
             extension = extension_h2
+
 
     return extension
 
 def get_hierarchy(mesh):
-    no_parent = False
-    hierarchy_list = []
-    current_mesh = mesh
-    while no_parent == False:
-        hierarchy_list.append(current_mesh)
-        if not current_mesh.parent == None:
-            current_mesh = current_mesh.parent
-
-        else:
-            no_parent = True
+    hierarchy_list = [mesh]
+    while mesh.parent:
+        mesh = mesh.parent
+        hierarchy_list.append(mesh)
 
     return hierarchy_list
 
-def get_parent(armature, mesh, joined_list, default_parent, get_index):
+def get_parent(armature, mesh, joined_list, default_parent):
     parent_object = None
     parent_index = default_parent
     parent = None
-    if armature:
-        if mesh:
-            if mesh.parent_bone:
-                parent_object = armature.data.bones[mesh.parent_bone]
-                parent_index = joined_list.index(parent_object)
 
-    else:
-        if mesh:
-            if mesh.parent:
-                if mesh.parent.hide_viewport == False and mesh.hide_get() == False and mesh.parent in joined_list:
-                    parent_object = bpy.data.objects[mesh.parent.name]
-                    parent_index = joined_list.index(parent_object)
+    if mesh:
+        if armature:
+            parent = mesh.parent_bone
+        else:
+            parent = mesh.parent
 
+        while parent:
+            if armature:
+                bone_test = armature.data.bones.get(mesh.parent_bone)
+                if bone_test:
+                    mesh = armature.data.bones[mesh.parent_bone]
+                    if mesh in joined_list:
+                        parent_object = mesh
+                        break
                 else:
-                    done = False
-                    mesh_hierarchy = get_hierarchy(mesh)
-                    for item in mesh_hierarchy:
-                        if item.hide_viewport == False and mesh_hierarchy.index(item) >= 1 and item in joined_list and done == False:
-                            done = True
-                            parent_object = bpy.data.objects[item.name]
-                            parent_index = joined_list.index(parent_object)
+                    break
 
-    if get_index:
-        parent = parent_index
+            else:
+                mesh = mesh.parent
+                if mesh in joined_list and mesh.hide_viewport == False and mesh.hide_get() == False:
+                    parent_object = mesh
+                    break
 
-    else:
-        parent = parent_object
+        if parent_object:
+            parent_index = joined_list.index(parent_object)
 
-    return parent
+    return (parent_index, parent_object)
 
 def set_scale(scale_enum, scale_float):
     scale = 1
     if scale_enum == '1':
-        scale = 100
+        scale = float(100)
 
     if scale_enum == '2':
-        scale = scale_float
+        scale = float(scale_float)
 
     return scale
 
@@ -553,39 +537,252 @@ def count_root_nodes(node_list):
 
     return root_node_count
 
-def get_version_matrix_check(animation):
+def get_version_matrix_check(filetype):
     matrix_version = None
-    if animation:
+    if filetype == 'JMA':
         matrix_version = 16394
 
-    else:
+    elif filetype == 'JMS':
         matrix_version = 8205
+
+    elif filetype == 'ASS':
+        matrix_version = 0
 
     return matrix_version
 
-def create_skeleton(armature, node_list):
-    for node in node_list:
-        armature.data.edit_bones.new(node)
-        armature.data.edit_bones[node].tail[2] = 5
+def gather_materials(game_version, material, material_list, export_type, region, permutation, lod):
+    assigned_materials_list = []
+    if material is not None:
+        if material not in assigned_materials_list:
+            assigned_materials_list.append(material)
 
-def find_children(node_list, child_list, sibling_list, node_index):
-    last_sibling = False
-    current_node = node_list[node_index]
-    item_index = node_list.index(current_node)
-    current_child = child_list[item_index]
-    current_sibling = sibling_list[item_index]
-    child_of_current_node = current_child
-    children = []
-    while last_sibling == False:
-        if not child_of_current_node == -1:
-            children.append(child_of_current_node)
-            current_node = node_list[child_of_current_node]
-            item_index = node_list.index(current_node)
-            current_child = child_list[item_index]
-            current_sibling = sibling_list[item_index]
-            child_of_current_node = current_sibling
+    else:
+        if game_version == 'haloce' and not None in material_list:
+            material_list.append(None)
 
-        if current_sibling == -1:
-            last_sibling = True
+    if game_version == 'haloce':
+        if material not in material_list:
+            material_list.append(material)
 
-    return children
+    elif game_version == 'halo2':
+        if export_type == 'JMS':
+            if material not in material_list and material in assigned_materials_list:
+                material_list.append(material)
+
+        if export_type == 'ASS':
+            if material not in material_list and material in assigned_materials_list:
+                material_list.append(material)
+
+    else:
+        if game_version == 'haloce' and not None in material_list:
+            material_list.append(None)
+
+    return material_list
+
+def set_ignore(mesh):
+    collection_list = mesh.users_collection
+    ignore = False
+    if mesh.hide_viewport or mesh.hide_get():
+        ignore = True
+
+    for collection in collection_list:
+        if not collection.name == 'Master Collection':
+            access_collection = bpy.data.collections[collection.name]
+            if access_collection.hide_viewport:
+                ignore = True
+
+    return ignore
+
+def get_material(game_version, original_geo, face, geometry, material_list, export_type, region, permutation):
+    object_materials = len(original_geo.material_slots) - 1
+    assigned_material = None
+    if game_version == 'haloce':
+        if len(original_geo.material_slots) != 0:
+            if not face.material_index > object_materials:
+                if geometry.materials[face.material_index] is not None:
+                    assigned_material = original_geo.material_slots[face.material_index].material
+
+                else:
+                    assigned_material = None
+
+            else:
+                assigned_material = None
+
+        else:
+            assigned_material = None
+
+    elif game_version == 'halo2':
+        assigned_material = -1
+        if len(original_geo.material_slots) != 0:
+            if not face.material_index > object_materials:
+                if geometry.materials[face.material_index] is not None:
+                    if export_type == 'JMS':
+                        assigned_material = [original_geo.material_slots[face.material_index].material, original_geo.data.ass_jms.level_of_detail, region, permutation]
+
+                    elif export_type == 'ASS':
+                        assigned_material = original_geo.material_slots[face.material_index].material
+
+    return assigned_material
+
+class AssetParseError(Exception):
+    pass
+
+class SceneParseError(Exception):
+    pass
+
+class HaloAsset:
+    """Helper class for reading in JMS/JMA/ASS files"""
+
+    def __init__(self, filepath):
+        self._elements = []
+        self._index = 0
+        with open(filepath, "r", encoding=test_encoding(filepath)) as file:
+            for line in file:
+                processed_line = line.split(";", 1)[0].strip()
+                for element in processed_line.split("\t"):
+                    if element != '': #Sternly written letters will be sent to the person or team who designed the split() function
+                        self._elements.append(element)
+
+    def left(self):
+        """Returns the number of elements left"""
+        if self._index < len(self._elements):
+            return len(self._elements) - self._index
+        else:
+            return 0
+
+    def skip(self, count):
+        """Skip forwards n elements"""
+        self._index += count
+
+    def next(self):
+        """Return the next element, raises AssetParseError on error"""
+        try:
+            self._index += 1
+            return self._elements[self._index - 1]
+        except:
+            raise AssetParseError()
+
+    def next_multiple(self, count):
+        """Returns an array of the next n elements, raises AssetParseError on error"""
+        try:
+            list = self._elements[self._index: self._index + count]
+            self._index += count
+            return list
+        except:
+            raise AssetParseError()
+
+    def next_vector(self):
+        """Return the next vector as mathutils.Vector, raises AssetParseError on error"""
+        return Vector((float(self.next()), float(self.next()), float(self.next())))
+
+    def are_quaternions_inverted(self):
+        """Override this to enable quaternion inversion for next_quaternion()"""
+        return False
+
+    def next_quaternion(self):
+        """Return the next quaternion as mathutils.Quaternion, raises AssetParseError on error"""
+        x = float(self.next())
+        y = float(self.next())
+        z = float(self.next())
+        w = float(self.next())
+        quat = Quaternion((w, x, y, z))
+        if self.are_quaternions_inverted():
+            quat.invert()
+        return quat
+
+def get_random_color():
+    rgb = colorsys.hsv_to_rgb(random.uniform(0, 1), random.uniform(0.3, 1), random.uniform(0.5, 0.8))
+    rgba = (rgb[0], rgb[1], rgb[2], 1)
+    return rgba
+
+def get_game_version(version, filetype):
+    game_version = None
+    if filetype == 'JMS':
+        if version >= 8201:
+            game_version = 'halo2'
+
+        else:
+            game_version = 'haloce'
+
+    elif filetype == 'JMA':
+        if version >= 16393:
+            game_version = 'halo2'
+
+        else:
+            game_version = 'haloce'
+
+    return game_version
+
+def lim32(n):
+    """Simulate a 32 bit unsigned interger overflow"""
+    return n & 0xFFFFFFFF
+
+def rotl_32(x, n):
+    """Rotate x left n-tims as a 32 bit interger"""
+    return lim32(x << n) | (x >> 32 - n)
+
+def rotr_32(x, n):
+    """Rotate x right n-times as a 32 bit interger"""
+    return (x >> n) | lim32(x << 32 - n)
+
+def halo_string_checksum(string):
+    """String checksum function matching halo exporter"""
+    checksum = 0
+    for byte in string.encode():
+        checksum = rotl_32(checksum, 1)
+        checksum += byte
+    return lim32(checksum)
+
+# Ported from https://github.com/preshing/RandomSequence
+class PreshingSequenceGenerator32:
+    """Peusdo-random sequence generator that repeats every 2**32 elements"""
+    @staticmethod
+    def __permuteQPR(x):
+        prime = 4294967291
+        if x >= prime: # The 5 integers out of range are mapped to themselves.
+            return x
+        residue = lim32(x**2 % prime)
+        if x <= (prime // 2):
+            return residue
+        else:
+            return lim32(prime - residue)
+    def __init__(self, seed_base = None, seed_offset = None):
+        import time
+        if seed_base == None:
+            seed_base = lim32(int(time.time() * 100000000)) ^ 0xac1fd838
+        if seed_offset == None:
+            seed_offset = lim32(int(time.time() * 100000000)) ^ 0x0b8dedd3
+        self.__index = PreshingSequenceGenerator32.__permuteQPR(lim32(PreshingSequenceGenerator32.__permuteQPR(seed_base) + 0x682f0161))
+        self.__intermediate_offset = PreshingSequenceGenerator32.__permuteQPR(lim32(PreshingSequenceGenerator32.__permuteQPR(seed_offset) + 0x46790905))
+
+    def next(self):
+        self.__index = lim32(self.__index + 1)
+        index_permut = PreshingSequenceGenerator32.__permuteQPR(self.__index)
+        return PreshingSequenceGenerator32.__permuteQPR(lim32(index_permut + self.__intermediate_offset) ^ 0x5bf03635)
+
+class RandomColorGenerator(PreshingSequenceGenerator32):
+    def next(self):
+        rng = super().next()
+        h = (rng >> 16) / 0xFFF # [0, 1]
+        saturation_raw = (rng & 0xFF) / 0xFF
+        brightness_raw = (rng >> 8 & 0xFF) / 0xFF
+        v = brightness_raw * 0.3 + 0.5 # [0.5, 0.8]
+        s = saturation_raw * 0.4 + 0.6 # [0.3, 1]
+        rgb = colorsys.hsv_to_rgb(h, s, v)
+        colors = (rgb[0], rgb[1] , rgb[2], 1)
+        return colors
+
+def node_hierarchy_checksum(nodes, node, checksum = 0):
+    checksum = lim32(rotl_32(checksum, 1) + halo_string_checksum(node.name))
+    checksum = rotl_32(checksum, 2)
+    child_idx = node.child
+    child_node = nodes[child_idx]
+    while child_idx != -1:
+        checksum = node_hierarchy_checksum(nodes, child_node, checksum)
+        child_idx = nodes[child_idx].sibling
+        child_node = nodes[child_idx]
+
+    # we undo the rotation state from the recursion, but we leave
+    # in the rotation from adding the string for this node.  This
+    # way, the order of siblings matters to the checksum.
+    return rotr_32(checksum, 2)

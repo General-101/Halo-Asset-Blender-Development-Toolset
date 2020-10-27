@@ -25,172 +25,322 @@
 # ##### END MIT LICENSE BLOCK #####
 
 import bpy
+import sys
+import traceback
 
-from mathutils import Vector, Quaternion, Matrix
+from enum import Flag, auto
+from mathutils import Vector, Quaternion, Matrix, Euler
 from io_scene_halo.global_functions import global_functions
 
-def load_file(context, filepath, report):
-    processed_file = []
-    encode = global_functions.test_encoding(filepath)
-    file = open(filepath, "r", encoding=encode)
-    for line in file:
-        if not line.strip(): continue
-        if not line.startswith(";"):
-            processed_file.append(line.replace('\n', ''))
+class JMAAsset(global_functions.HaloAsset):
+    """
+    Reads a JMA file into memory\n
+    self.node_checksum - checksum value or -1\n
+    self.version - JMA version\n
+    self.frame_rate - frame rate for animation\n
+    self.nodes - included for 16392+\n
+    self.node_count - included for 16390\n
+    self.transforms - 2D array of transforms [frame_idx][node_idx]\n
+    self.biped_controller_transforms - included for 16395
+    self.biped_controller_frame_type - BipedControllerFrameType enum
+    """
+    class Transform:
+        def __init__(self, vector, rotation, scale):
+            self.vector = vector
+            self.rotation = rotation
+            self.scale = scale
+    class Node:
+        def __init__(self, name, parent=None, child=None, sibling=None):
+            self.name = name
+            self.parent = parent
+            self.child = child
+            self.sibling = sibling
+            self.visited = False
+    class BipedControllerFrameType(Flag):
+        DISABLE = 0
+        DX = auto()
+        DY = auto()
+        DZ = auto()
+        DYAW = auto()
+
+        JMA = DX | DY
+        JMT = DX | DY | DYAW
+        JMRX = DX | DY | DZ | DYAW
+
+    def are_quaternions_inverted(self):
+        return self.version < 16394
+
+    def next_transform(self):
+        translation = self.next_vector()
+        rotation = self.next_quaternion()
+        scale = float(self.next())
+        return JMAAsset.Transform(translation, rotation, scale)
+
+    def __init__(self, filepath, game_version):
+        super().__init__(filepath)
+        extension = global_functions.get_true_extension(filepath, None, True)
+        self.node_checksum = -1
+        self.version = int(self.next())
+        version_list = (16390,16391,16392,16393,16394,16395)
+        if not self.version in version_list:
+            raise global_functions.AssetParseError("Importer does not support this " + extension + " version")
+        self.game_version = game_version
+        if game_version == 'auto':
+            self.game_version = global_functions.get_game_version(self.version, 'JMA')
+        if self.version >= 16394:
+            self.node_checksum = int(self.next())
+        transform_count = int(self.next())
+        self.frame_rate = float(self.next())
+        actor_count = int(self.next())
+        self.actor_name = self.next()
+        self.frame_count = transform_count
+
+        if actor_count != 1:
+            raise global_functions.AssetParseError(extension + " actor count must be 1!")
+
+        node_count = int(self.next())
+        if self.version < 16394:
+            self.node_checksum = int(self.next())
+        self.nodes = []
+        self.transforms = []
+        if self.version >= 16394:
+            for _ in range(node_count):
+                name = self.next()
+                parent = int(self.next())
+                self.nodes.append(JMAAsset.Node(name, parent=parent))
+        elif self.version >= 16392:
+            for _ in range(node_count):
+                name = self.next()
+                child = int(self.next())
+                sibling = int(self.next())
+                self.nodes.append(JMAAsset.Node(name, child=child, sibling=sibling))
+        elif self.version == 16391:
+            for _ in range(node_count):
+              self.nodes.append(JMAAsset.Node(self.next()))
+        else:
+            self.node_count = node_count
+
+        for _ in range(transform_count):
+            transforms_for_frame = []
+
+            for node_idx in range(node_count):
+                transforms_for_frame.append(self.next_transform())
+
+            self.transforms.append(transforms_for_frame)
+
+        self.biped_controller_frame_type = JMAAsset.BipedControllerFrameType.DISABLE
+        if self.version == 16395:
+            self.biped_controller_transforms = []
+            biped_controller_enabled = int(self.next())
+            if biped_controller_enabled > 0:
+                # different animation file types use the data differently
+                if extension == 'jma':
+                    self.biped_controller_frame_type = JMAAsset.BipedControllerFrameType.JMA
+                elif extension == 'jmt':
+                    self.biped_controller_frame_type = JMAAsset.BipedControllerFrameType.JMT
+                elif extension == 'jmrx':
+                    self.biped_controller_frame_type = JMAAsset.BipedControllerFrameType.JMRX
+
+                for _ in range(transform_count):
+                    self.biped_controller_transforms.append(self.next_transform())
+
+        if self.left() != 0: # is something wrong with the parser?
+            raise RuntimeError("%s elements left after parse end" % self.left())
+
+        # update node graph
+        if self.version >= 16394:
+            # loop over nodes and
+            for node_idx in range(node_count):
+                node = self.nodes[node_idx]
+                if node.parent == -1:
+                    continue # this is a root node, nothing to update
+                if node.parent >= len(self.nodes) or node.parent == node_idx:
+                    raise global_functions.AssetParseError("Malformed node graph (bad parent index)")
+                parent_node = self.nodes[node.parent]
+                if parent_node.child:
+                    node.sibling = parent_node.child
+                else:
+                    node.sibling = -1
+                if node.sibling >= len(self.nodes):
+                    raise global_functions.AssetParseError("Malformed node graph (sibling index out of range)")
+                parent_node.child = node_idx
+        elif self.version >= 16392:
+            for node_idx in range(node_count):
+                node = self.nodes[node_idx]
+                if node.child == -1:
+                    continue # no child nodes, nothing to update
+                if node.child >= len(self.nodes) or node.child == node_idx:
+                    raise global_functions.AssetParseError("Malformed node graph (bad child index)")
+                child_node = self.nodes[node.child]
+                while child_node != None:
+                    child_node.parent = node_idx
+                    if child_node.visited:
+                        raise global_functions.AssetParseError("Malformed node graph (circular reference)")
+                    child_node.visited = True
+                    if child_node.sibling >= len(self.nodes):
+                        raise global_functions.AssetParseError("Malformed node graph (sibling index out of range)")
+                    if child_node.sibling != -1:
+                        child_node = self.nodes[child_node.sibling]
+                    else:
+                        child_node = None
+
+def load_file(context, filepath, report, fix_parents, game_version):
+
+    try:
+        jma_file = JMAAsset(filepath, game_version)
+    except global_functions.AssetParseError as parse_error:
+        info = sys.exc_info()
+        traceback.print_exception(info[0], info[1], info[2])
+        report({'ERROR'}, "Bad file: {0}".format(parse_error))
+        return {'CANCELLED'}
+    except:
+        info = sys.exc_info()
+        traceback.print_exception(info[0], info[1], info[2])
+        report({'ERROR'}, "Internal error: {1}({0})".format(info[1], info[0]))
+        return {'CANCELLED'}
 
     collection = bpy.context.collection
     scene = bpy.context.scene
     view_layer = bpy.context.view_layer
     armature = None
-    node_list = []
-    child_list = []
-    sibling_list = []
-    parent_list = []
     object_list = list(scene.objects)
-    node_line_index = 0
-    frame_index = 0
-    frame_line_index = 0
-    version = int(processed_file[0])
-    version_list = [16390,16391,16392,16393,16394,16395]
-    if not version in version_list:
-        report({'ERROR'}, 'Importer does not support this %s version' % global_functions.get_true_extension(filepath, None, True))
-        return {'CANCELLED'}
-
-    if version >= 16394:
-        node_checksum = int(processed_file[1])
-        transform_count = int(processed_file[2])
-        frame_rate = int(processed_file[3])
-        actor_count = int(processed_file[4])
-        actor_name = processed_file[5]
-        node_count = int(processed_file[6])
-
-    else:
-        transform_count = int(processed_file[1])
-        frame_rate = int(processed_file[2])
-        actor_count = int(processed_file[3])
-        actor_name = processed_file[4]
-        node_count = int(processed_file[5])
-        node_checksum = int(processed_file[6])
-
-    scene.frame_end = transform_count
-    scene.render.fps = frame_rate
-    if version >= 16394:
-        for node in range(node_count):
-            node_name = processed_file[node_line_index + 7]
-            parent_index = int(processed_file[node_line_index + 8])
-            node_list.append(node_name)
-            parent_list.append(parent_index)
-            node_line_index += 2
-
-    else:
-        for node in range(node_count):
-            node_name = processed_file[node_line_index + 7]
-            child_node_index = int(processed_file[node_line_index + 8])
-            sibling_node_index = int(processed_file[node_line_index + 9])
-            node_list.append(node_name)
-            child_list.append(child_node_index)
-            sibling_list.append(sibling_node_index)
-            node_line_index += 3
 
     for obj in object_list:
         if armature is None:
             if obj.type == 'ARMATURE':
-                exist_count = 0
-                armature_bone_list = []
-                armature_bone_list = list(obj.data.bones)
-                for node in armature_bone_list:
-                    if node.name in node_list:
-                        exist_count += 1
+                is_armature_good = False
+                if jma_file.version == 16390:
+                    if len(obj.data.bones) == jma_file.node_count:
+                        is_armature_good = True
+                else:
+                    exist_count = 0
+                    armature_bone_list = list(obj.data.bones)
+                    for node in armature_bone_list:
+                        for jma_node in jma_file.nodes:
+                            if node.name == jma_node.name:
+                                exist_count += 1
+                    if exist_count == len(jma_file.nodes):
+                        is_armature_good = True
 
-                if exist_count == len(node_list):
+                if is_armature_good:
                     armature = obj
                     view_layer.objects.active = armature
 
     if armature == None:
-        report({'WARNING'}, "No valid armature detected. One will be created but expect issues with visuals in scene due to no proper rest position")
-        armdata = bpy.data.armatures.new('Armature')
-        ob_new = bpy.data.objects.new('Armature', armdata)
-        collection.objects.link(ob_new)
-        armature = ob_new
-        view_layer.objects.active = armature
-        bpy.ops.object.mode_set(mode = 'EDIT')
-        global_functions.create_skeleton(armature, node_list)
-        if version <= 16393:
-            for node in node_list:
-                node_index = node_list.index(node)
-                children_names = global_functions.find_children(node_list, child_list, sibling_list, node_index)
-                for child in children_names:
-                    armature.data.edit_bones[child].parent = armature.data.edit_bones[node]
+        if jma_file.version >= 16392:
+            report({'WARNING'}, "No valid armature detected. One will be created but expect issues with visuals in scene due to no proper rest position")
+            pelvis = None
+            thigh0 = None
+            thigh1 = None
+            spine1 = None
+            clavicle0 = None
+            clavicle1 = None
 
-        for node in node_list:
-            if version >= 16394:
-                parent_name = parent_list[node_list.index(node)]
+            armdata = bpy.data.armatures.new('Armature')
+            ob_new = bpy.data.objects.new('Armature', armdata)
+            collection.objects.link(ob_new)
+            armature = ob_new
+            view_layer.objects.active = armature
+            if fix_parents:
+                if game_version == 'halo2':
+                    for idx, jma_node in enumerate(jma_file.nodes):
+                        if 'pelvis' in jma_node.name:
+                            pelvis = idx
+                        if 'thigh' in jma_node.name:
+                            if thigh0 == None:
+                                thigh0 = idx
+                            else:
+                                thigh1 = idx
 
-            else:
-                parent_name = -1
+                        elif 'spine1' in jma_node.name:
+                            spine1 = idx
+                        elif 'clavicle' in jma_node.name:
+                            if clavicle0 == None:
+                                clavicle0 = idx
+                            else:
+                                clavicle1 = idx
 
-            node_translation = processed_file[frame_line_index + node_line_index + 7].split()
-            node_rotation = processed_file[frame_line_index + node_line_index + 8].split()
-            node_scale = processed_file[frame_line_index + node_line_index + 9]
-            file_matrix = Quaternion(((float(node_rotation[3])), float(node_rotation[0]), float(node_rotation[1]), float(node_rotation[2]))).inverted().to_matrix().to_4x4()
-            if version >= 16394:
-                file_matrix = Quaternion(((float(node_rotation[3])), float(node_rotation[0]), float(node_rotation[1]), float(node_rotation[2]))).to_matrix().to_4x4()
-
-            file_matrix[0][3] = float(node_translation[0])
-            file_matrix[1][3] = float(node_translation[1])
-            file_matrix[2][3] = float(node_translation[2])
-            bpy.ops.object.mode_set(mode = 'POSE')
-            pose_bone = armature.pose.bones[node]
-            if version >= 16394:
-                matrix = file_matrix
-
-            else:
-                matrix = file_matrix
-                if pose_bone.parent:
-                    matrix = pose_bone.parent.matrix @ file_matrix
-
-            if not parent_name == -1:
+            first_frame = jma_file.transforms[0]
+            for idx, jma_node in enumerate(jma_file.nodes):
                 bpy.ops.object.mode_set(mode = 'EDIT')
-                armature.data.edit_bones[node].parent = armature.data.edit_bones[node_list[parent_name]]
 
-            bpy.ops.object.mode_set(mode = 'POSE')
-            armature.pose.bones[node].matrix = matrix
-            frame_line_index += 3
+                armature.data.edit_bones.new(jma_node.name)
+                armature.data.edit_bones[jma_node.name].tail[2] = 5
 
-        bpy.ops.pose.armature_apply(selected=False)
+                parent_idx = jma_node.parent
 
+                matrix_translate = Matrix.Translation(first_frame[idx].vector)
+                matrix_scale = Matrix.Scale(first_frame[idx].scale, 4, (1, 1, 1))
+                matrix_rotation = first_frame[idx].rotation.to_matrix().to_4x4()
+
+                bpy.ops.object.mode_set(mode = 'POSE')
+                pose_bone = armature.pose.bones[jma_node.name]
+                transform_matrix = matrix_translate @ matrix_rotation @ matrix_scale
+                if jma_file.version < 16394 and pose_bone.parent:
+                    transform_matrix = pose_bone.parent.matrix @ transform_matrix
+
+                if not parent_idx == -1 and not parent_idx == None:
+                    parent = jma_file.nodes[parent_idx].name
+                    if 'thigh' in jma_node.name and not pelvis == None and not thigh0 == None and not thigh1 == None:
+                        parent = jma_file.nodes[pelvis].name
+                    elif 'clavicle' in jma_node.name and not spine1 == None and not clavicle0 == None and not clavicle1 == None:
+                        parent = jma_file.nodes[spine1].name
+
+                    bpy.ops.object.mode_set(mode = 'EDIT')
+                    armature.data.edit_bones[jma_node.name].parent = armature.data.edit_bones[parent]
+                    bpy.ops.object.mode_set(mode = 'POSE')
+
+                armature.pose.bones[jma_node.name].matrix = transform_matrix
+
+            bpy.ops.pose.armature_apply(selected=False)
+
+        else:
+            report({'ERROR'}, "No valid armature detected and not enough information to build valid skeleton due to version. Import will now be aborted")
+            return {'CANCELLED'}
+
+    scene.frame_end = jma_file.frame_count
+    scene.render.fps = jma_file.frame_rate
     bpy.ops.object.mode_set(mode = 'POSE')
-    for frame in range(transform_count):
-        current_frame = frame + 1
-        scene.frame_set(current_frame)
-        for node in node_list:
-            pose_bone = armature.pose.bones[node]
-            node_translation = processed_file[frame_index + node_line_index + 7].split()
-            node_rotation = processed_file[frame_index + node_line_index + 8].split()
-            node_scale = processed_file[frame_index + node_line_index + 9]
-            file_matrix = Quaternion(((float(node_rotation[3])), float(node_rotation[0]), float(node_rotation[1]), float(node_rotation[2]))).inverted().to_matrix().to_4x4()
-            if version >= 16394:
-                file_matrix = Quaternion(((float(node_rotation[3])), float(node_rotation[0]), float(node_rotation[1]), float(node_rotation[2]))).to_matrix().to_4x4()
 
-            file_matrix[0][3] = float(node_translation[0])
-            file_matrix[1][3] = float(node_translation[1])
-            file_matrix[2][3] = float(node_translation[2])
-            if version >= 16394:
-                matrix = file_matrix
+    nodes = jma_file.nodes
+    if jma_file.version == 16390:
+        nodes = global_functions.sort_by_layer(list(armature.data.bones), armature, False)
 
-            else:
-                matrix = file_matrix
-                if pose_bone.parent:
-                    matrix = pose_bone.parent.matrix @ file_matrix
+    for frame_idx, frame in enumerate(jma_file.transforms):
+        scene.frame_set(frame_idx + 1)
 
-            armature.pose.bones[node].matrix = matrix
+        if jma_file.biped_controller_frame_type != JMAAsset.BipedControllerFrameType.DISABLE:
+            controller_transform = jma_file.biped_controller_transforms[frame_idx]
+
+            if jma_file.biped_controller_frame_type & JMAAsset.BipedControllerFrameType.DX:
+                armature.location.x = controller_transform.vector[0]
+            if jma_file.biped_controller_frame_type & JMAAsset.BipedControllerFrameType.DY:
+                armature.location.y = controller_transform.vector[1]
+            if jma_file.biped_controller_frame_type & JMAAsset.BipedControllerFrameType.DZ:
+                armature.location.z = controller_transform.vector[2]
+
+            if jma_file.biped_controller_frame_type & JMAAsset.BipedControllerFrameType.DYAW:
+                armature.rotation_euler.z = controller_transform.rotation.to_euler().z
+
+            armature.keyframe_insert('location')
+            armature.keyframe_insert('rotation_euler')
             view_layer.update()
-            armature.pose.bones[node].keyframe_insert('location')
-            armature.pose.bones[node].keyframe_insert('rotation_quaternion')
-            frame_index += 3
 
-    if version == 16395:
-        biped_controller = processed_file[frame_index + node_line_index + 7]
+        for idx, node in enumerate(nodes):
+            pose_bone = armature.pose.bones[node.name]
+
+            matrix_scale = Matrix.Scale(frame[idx].scale, 4, (1, 1, 1))
+            matrix_rotation = frame[idx].rotation.to_matrix().to_4x4()
+            transform_matrix = Matrix.Translation(frame[idx].vector) @ matrix_rotation @ matrix_scale
+
+            if jma_file.version < 16394 and pose_bone.parent:
+                transform_matrix = pose_bone.parent.matrix @ transform_matrix
+
+            pose_bone.matrix = transform_matrix
+            view_layer.update()
+            pose_bone.keyframe_insert('location')
+            pose_bone.keyframe_insert('rotation_quaternion')
+            pose_bone.keyframe_insert('scale')
 
     scene.frame_set(1)
     bpy.ops.object.mode_set(mode = 'OBJECT')
