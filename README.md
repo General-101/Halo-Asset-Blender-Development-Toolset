@@ -18,12 +18,19 @@ on.
 
 Discord user num0005#8646 for help with code reviews and several features.
 
+The Blendkrieg toolset for some tips on importing assets.
+
+https://github.com/Sigmmma/Blendkrieg
+
 Script is fully capable of exporting render, collision, and physics geometry in the form a JMS text file
 for both CE and Halo 2. Script also has support for exporting animations done using the pose system 
 to a JMA text file for importing in both CE and Halo 2. On top of that this script also supports exporting 
 to an ASS text file for Halo 2 level importing.
 
 Info about how this tool can be used for Halo 2 can be found here.
+
+https://general-101.github.io/HEK-Docs/w/home.html
+
 https://num0005.github.io/h2codez_docs/w/home.html
 
 Contact General_101#9814 for further info or questions about this version of the script.
