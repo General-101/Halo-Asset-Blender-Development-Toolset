@@ -859,7 +859,7 @@ class JMSScene(global_functions.HaloAsset):
                 mesh_dimensions = global_functions.get_dimensions(None, None, None, None, custom_scale, version, pos, True, False, armature, 'JMS')
                 vert_translation = (mesh_dimensions.pos_x_a, mesh_dimensions.pos_y_a, mesh_dimensions.pos_z_a)
 
-                verts.append(JMSScene.Vertex(None, None, None, vert_translation, None, None, None))
+                verts.append(JMSScene.Vertex(None, None, None, vert_translation, None, None))
 
             self.convex_shapes.append(JMSScene.Convex_Shape(name, parent_index[0], material_index, rotation, translation, verts))
 

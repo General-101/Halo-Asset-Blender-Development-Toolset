@@ -244,7 +244,7 @@ def sort_list(node_list, armature, game_version, version, animation):
     if game_version == 'haloce':
         sorted_list = sort_by_layer(node_list, armature)
 
-    elif game_version == 'halo2':
+    elif game_version == 'halo2' or game_version == 'halo2utf8':
         if animation:
             if version <= 16394:
                 sorted_list = sort_by_layer(node_list, armature)
@@ -314,7 +314,7 @@ def get_version(file_version_console, file_version_ce, file_version_h2, game_ver
         if game_version == 'haloce':
             version = int(file_version_ce)
 
-        elif game_version == 'halo2':
+        elif game_version == 'halo2' or game_version == 'halo2utf8':
             version = int(file_version_h2)
 
     return version
@@ -472,7 +472,7 @@ def get_extension(extension_console, extension_ce, extension_h2, game_version, c
         if game_version == 'haloce':
             extension = extension_ce
 
-        elif game_version == 'halo2':
+        elif game_version == 'halo2' or game_version == 'halo2utf8':
             extension = extension_h2
 
 
@@ -564,7 +564,7 @@ def gather_materials(game_version, material, material_list, export_type, region,
         if material not in material_list:
             material_list.append(material)
 
-    elif game_version == 'halo2':
+    elif game_version == 'halo2' or game_version == 'halo2utf8':
         if export_type == 'JMS':
             if material not in material_list and material in assigned_materials_list:
                 material_list.append(material)
@@ -611,7 +611,7 @@ def get_material(game_version, original_geo, face, geometry, material_list, expo
         else:
             assigned_material = None
 
-    elif game_version == 'halo2':
+    elif game_version == 'halo2' or game_version == 'halo2utf8':
         assigned_material = -1
         if len(original_geo.material_slots) != 0:
             if not face.material_index > object_materials:
