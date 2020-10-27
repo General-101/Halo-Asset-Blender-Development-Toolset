@@ -1617,7 +1617,7 @@ class ExportJMS(Operator, ExportHelper):
     use_edge_angle: BoolProperty(
         name ="Use Edge Angle",
         description = "Split edges with high angle between faces.",
-        default = True,
+        default = False,
         )
 
     use_edge_sharp: BoolProperty(
