@@ -938,8 +938,13 @@ def load_file(context, filepath, report, game_version, fix_parents):
         vertex_groups = []
         active_region_permutations = []
         object_name = bpy.path.basename(filepath).rsplit('.', 1)[0]
-        if 'collision' in filepath:
-            object_name = '@%s' % object_name
+        if game_version == 'haloce':
+            if 'physics' in filepath or 'collision' in filepath:
+                object_name = '@%s' % object_name            
+        else:
+            if 'collision' in filepath:
+                object_name = '@%s' % object_name
+
         mesh = bpy.data.meshes.new(object_name)
         object_mesh = bpy.data.objects.new(object_name, mesh)
         collection.objects.link(object_mesh)

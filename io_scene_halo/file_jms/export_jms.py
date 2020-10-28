@@ -615,14 +615,14 @@ class JMSScene(global_functions.HaloAsset):
                         face_map_idx = geometry.face_maps.active.data[idx].value
                         region_permutation_face_map_name = original_geo.face_maps[face_map_idx].name.split()
                         if len(region_permutation_face_map_name) > 0:
-                            region = region_permutation_face_map_name[0]
-                        if not region in region_list:
-                            region_list.append(region)
-
-                        if len(region_permutation_face_map_name) > 1:
-                            permutation = region_permutation_face_map_name[1]
+                            permutation = region_permutation_face_map_name[0]
                         if not permutation in permutation_list:
                             permutation_list.append(permutation)
+
+                        if len(region_permutation_face_map_name) > 1:
+                            region = region_permutation_face_map_name[1]
+                        if not region in region_list:
+                            region_list.append(region)
 
                 material = global_functions.get_material(game_version, original_geo, face, geometry, material_list, 'JMS', region, permutation,)
                 material_index = -1
@@ -717,14 +717,14 @@ class JMSScene(global_functions.HaloAsset):
             if spheres.face_maps.active:
                 region_permutation_face_map_name = spheres.face_maps[0].name.split()
                 if len(region_permutation_face_map_name) > 0:
-                    region = region_permutation_face_map_name[0]
-                if not region in region_list:
-                    region_list.append(region)
-
-                if len(region_permutation_face_map_name) > 1:
-                    permutation = region_permutation_face_map_name[1]
+                    permutation = region_permutation_face_map_name[0]
                 if not permutation in permutation_list:
                     permutation_list.append(permutation)
+
+                if len(region_permutation_face_map_name) > 1:
+                    region = region_permutation_face_map_name[1]
+                if not region in region_list:
+                    region_list.append(region)
 
             material = global_functions.get_material(game_version, spheres, face, mesh_sphere, material_list, 'JMS', region, permutation,)
             material_index = -1
@@ -752,14 +752,14 @@ class JMSScene(global_functions.HaloAsset):
             if boxes.face_maps.active:
                 region_permutation_face_map_name = boxes.face_maps[0].name.split()
                 if len(region_permutation_face_map_name) > 0:
-                    region = region_permutation_face_map_name[0]
-                if not region in region_list:
-                    region_list.append(region)
-
-                if len(region_permutation_face_map_name) > 1:
-                    permutation = region_permutation_face_map_name[1]
+                    permutation = region_permutation_face_map_name[0]
                 if not permutation in permutation_list:
                     permutation_list.append(permutation)
+
+                if len(region_permutation_face_map_name) > 1:
+                    region = region_permutation_face_map_name[1]
+                if not region in region_list:
+                    region_list.append(region)
 
             material = global_functions.get_material(game_version, boxes, face, mesh_boxes, material_list, 'JMS', region, permutation,)
             material_index = -1
@@ -789,14 +789,14 @@ class JMSScene(global_functions.HaloAsset):
             if capsule.face_maps.active:
                 region_permutation_face_map_name = capsule.face_maps[0].name.split()
                 if len(region_permutation_face_map_name) > 0:
-                    region = region_permutation_face_map_name[0]
-                if not region in region_list:
-                    region_list.append(region)
-
-                if len(region_permutation_face_map_name) > 1:
-                    permutation = region_permutation_face_map_name[1]
+                    permutation = region_permutation_face_map_name[0]
                 if not permutation in permutation_list:
                     permutation_list.append(permutation)
+
+                if len(region_permutation_face_map_name) > 1:
+                    region = region_permutation_face_map_name[1]
+                if not region in region_list:
+                    region_list.append(region)
 
             material = global_functions.get_material(game_version, capsule, face, mesh_capsule, material_list, 'JMS', region, permutation,)
             material_index = -1
@@ -832,14 +832,14 @@ class JMSScene(global_functions.HaloAsset):
             if convex_shape.face_maps.active:
                 region_permutation_face_map_name = convex_shape.face_maps[0].name.split()
                 if len(region_permutation_face_map_name) > 0:
-                    region = region_permutation_face_map_name[0]
-                if not region in region_list:
-                    region_list.append(region)
-
-                if len(region_permutation_face_map_name) > 1:
-                    permutation = region_permutation_face_map_name[1]
+                    permutation = region_permutation_face_map_name[0]
                 if not permutation in permutation_list:
                     permutation_list.append(permutation)
+
+                if len(region_permutation_face_map_name) > 1:
+                    region = region_permutation_face_map_name[1]
+                if not region in region_list:
+                    region_list.append(region)
 
             material = global_functions.get_material(game_version, convex_shape, face, mesh_convex_shape, material_list, 'JMS', region, permutation,)
             material_index = -1
@@ -1336,7 +1336,7 @@ def write_file(context, filepath, report, version, game_version, encoding, apply
             file.write(
                 '\n;### INSTANCE XREF PATHS ###' +
                 '\n%s' % (len(jms_scene.xref_instances)) +
-                '\n;\t<path to .MAX file>' +
+                '\n;\t<path to asset file>' +
                 '\n;\t<name>\n'
             )
 
