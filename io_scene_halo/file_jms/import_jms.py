@@ -516,7 +516,7 @@ class JMSAsset(global_functions.HaloAsset):
 
                 flags = None
                 if self.version >= 8199:
-                    flags = int(self.next())
+                    flags = self.next()
 
             self.vertices.append(JMSAsset.Vertex(node_influence_count, node_set, region, translation, normal, uv_set))
 
