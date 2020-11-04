@@ -940,7 +940,7 @@ def load_file(context, filepath, report, game_version, fix_parents):
         object_name = bpy.path.basename(filepath).rsplit('.', 1)[0]
         if game_version == 'haloce':
             if 'physics' in filepath or 'collision' in filepath:
-                object_name = '@%s' % object_name            
+                object_name = '@%s' % object_name
         else:
             if 'collision' in filepath:
                 object_name = '@%s' % object_name

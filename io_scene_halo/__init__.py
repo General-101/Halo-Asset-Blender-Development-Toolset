@@ -450,6 +450,12 @@ class Halo_SceneProps(Panel):
         col = box.column(align=True)
         row = col.row()
         row.prop(scene_halo, "game_version", text='')
+        box = layout.box()
+        box.label(text="Export Settings:")
+        col = box.column(align=True)
+        row = col.row()
+        row.label(text='Expert Mode:')
+        row.prop(scene_halo, "expert_mode", text='')
 
 class Halo_ScenePropertiesGroup(PropertyGroup):
     game_version: EnumProperty(
@@ -459,6 +465,12 @@ class Halo_ScenePropertiesGroup(PropertyGroup):
         items=[ ('haloce', "Halo CE", "Show properties for Halo Custom Edition"),
                 ('halo2', "Halo 2", "Show properties for Halo 2 Vista"),
                ]
+        )
+
+    expert_mode: BoolProperty(
+        name ="Expert Mode",
+        description = "Reveal hidden options. If you're not a developer or know what you're doing then you probably shouldn't be messing with this.",
+        default = False,
         )
 
 class ASS_SceneProps(Panel):
@@ -472,6 +484,7 @@ class ASS_SceneProps(Panel):
     def draw(self, context):
         scene = context.scene
         scene_ass = scene.ass
+        scene_halo = scene.halo
 
         layout = self.layout
 
@@ -480,13 +493,14 @@ class ASS_SceneProps(Panel):
         col = box.column(align=True)
         row = col.row()
         row.prop(scene_ass, "game_version", text='')
-        box = layout.box()
-        box.label(text="File Details:")
-        col = box.column(align=True)
         if scene_ass.game_version == 'halo2vista':
-            row = col.row()
-            row.label(text='ASS Version:')
-            row.prop(scene_ass, "ass_version_h2", text='')
+            if scene_halo.expert_mode:
+                box = layout.box()
+                box.label(text="File Details:")
+                col = box.column(align=True)
+                row = col.row()
+                row.label(text='ASS Version:')
+                row.prop(scene_ass, "ass_version_h2", text='')
 
         box = layout.box()
         box.label(text="Scene Options:")
@@ -649,6 +663,7 @@ class JMA_SceneProps(Panel):
     def draw(self, context):
         scene = context.scene
         scene_jma = scene.jma
+        scene_halo = scene.halo
 
         layout = self.layout
 
@@ -664,17 +679,19 @@ class JMA_SceneProps(Panel):
             row = col.row()
             row.label(text='Extension:')
             row.prop(scene_jma, "extension_ce", text='')
-            row = col.row()
-            row.label(text='JMA Version:')
-            row.prop(scene_jma, "jma_version_ce", text='')
+            if scene_halo.expert_mode:
+                row = col.row()
+                row.label(text='JMA Version:')
+                row.prop(scene_jma, "jma_version_ce", text='')
 
         elif scene_jma.game_version == 'halo2vista':
             row = col.row()
             row.label(text='Extension:')
             row.prop(scene_jma, "extension_h2", text='')
-            row = col.row()
-            row.label(text='JMA Version:')
-            row.prop(scene_jma, "jma_version_h2", text='')
+            if scene_halo.expert_mode:
+                row = col.row()
+                row.label(text='JMA Version:')
+                row.prop(scene_jma, "jma_version_h2", text='')
 
         box = layout.box()
         box.label(text="Scene Options:")
@@ -827,6 +844,7 @@ class JMS_SceneProps(Panel):
     def draw(self, context):
         scene = context.scene
         scene_jms = scene.jms
+        scene_halo = scene.halo
 
         layout = self.layout
 
@@ -835,13 +853,15 @@ class JMS_SceneProps(Panel):
         col = box.column(align=True)
         row = col.row()
         row.prop(scene_jms, "game_version", text='')
-        box = layout.box()
-        box.label(text="File Details:")
-        col = box.column(align=True)
         if scene_jms.game_version == 'haloce':
-            row = col.row()
-            row.label(text='JMS Version:')
-            row.prop(scene_jms, "jms_version_ce", text='')
+            box = layout.box()
+            box.label(text="File Details:")
+            col = box.column(align=True)
+            if scene_halo.expert_mode:
+                row = col.row()
+                row.label(text='JMS Version:')
+                row.prop(scene_jms, "jms_version_ce", text='')
+
             row = col.row()
             row.label(text='Permutation:')
             row.prop(scene_jms, "permutation_ce", text='')
@@ -850,9 +870,13 @@ class JMS_SceneProps(Panel):
             row.prop(scene_jms, "level_of_detail_ce", text='')
 
         elif scene_jms.game_version == 'halo2vista':
-            row = col.row()
-            row.label(text='JMS Version:')
-            row.prop(scene_jms, "jms_version_h2", text='')
+            if scene_halo.expert_mode:
+                box = layout.box()
+                box.label(text="File Details:")
+                col = box.column(align=True)
+                row = col.row()
+                row.label(text='JMS Version:')
+                row.prop(scene_jms, "jms_version_h2", text='')
 
         box = layout.box()
         box.label(text="Mask Options:")
@@ -874,6 +898,9 @@ class JMS_SceneProps(Panel):
         box = layout.box()
         box.label(text="Scene Options:")
         col = box.column(align=True)
+        row = col.row()
+        row.label(text='Generate Asset Subdirectories:')
+        row.prop(scene_jms, "folder_structure", text='')
         row = col.row()
         row.label(text='Apply Modifiers:')
         row.prop(scene_jms, "apply_modifiers", text='')
@@ -990,6 +1017,12 @@ class JMS_ScenePropertiesGroup(PropertyGroup):
         items=[ ('haloce', "Halo CE", "Export a JMS intended for Halo Custom Edition"),
                 ('halo2vista', "Halo 2 Vista", "Export a JMS intended for Halo 2 Vista"),
                ]
+        )
+
+    folder_structure: BoolProperty(
+        name ="Generate Asset Subdirectories",
+        description = "Generate folder subdirectories for exported assets",
+        default = True,
         )
 
     apply_modifiers: BoolProperty(
@@ -1366,6 +1399,8 @@ class ExportASS(Operator, ExportHelper):
     def draw(self, context):
         scene = context.scene
         scene_ass = scene.ass
+        scene_halo = scene.halo
+
         layout = self.layout
         is_enabled = True
         if scene_ass.use_scene_properties:
@@ -1377,9 +1412,6 @@ class ExportASS(Operator, ExportHelper):
         row = col.row()
         row.enabled = is_enabled
         row.prop(self, "game_version", text='')
-        box = layout.box()
-        box.label(text="File Details:")
-        col = box.column(align=True)
         if scene_ass.use_scene_properties:
             self.game_version = scene_ass.game_version
             self.ass_version_h2 = scene_ass.ass_version_h2
@@ -1395,10 +1427,14 @@ class ExportASS(Operator, ExportHelper):
             self.scale_float = scene_ass.scale_float
 
         if self.game_version == 'halo2vista':
-            row = col.row()
-            row.enabled = is_enabled
-            row.label(text='ASS Version:')
-            row.prop(self, "ass_version_h2", text='')
+            if scene_halo.expert_mode:
+                box = layout.box()
+                box.label(text="File Details:")
+                col = box.column(align=True)
+                row = col.row()
+                row.enabled = is_enabled
+                row.label(text='ASS Version:')
+                row.prop(self, "ass_version_h2", text='')
 
         box = layout.box()
         box.label(text="Scene Options:")
@@ -1560,6 +1596,12 @@ class ExportJMS(Operator, ExportHelper):
                ]
         )
 
+    folder_structure: BoolProperty(
+        name ="Generate Asset Subdirectories",
+        description = "Generate folder subdirectories for exported assets",
+        default = True,
+        )
+
     apply_modifiers: BoolProperty(
         name ="Apply Modifiers",
         description = "Automatically apply modifiers. Does not permanently affect scene",
@@ -1673,24 +1715,26 @@ class ExportJMS(Operator, ExportHelper):
             parser.add_argument('-arg2', '--use_scene_properties', dest='use_scene_properties', action='store_true')
             parser.add_argument('-arg3', '--jms_version', dest='jms_version', type=str, default="8210")
             parser.add_argument('-arg4', '--game_version', dest='game_version', type=str, default="halo2vista")
-            parser.add_argument('-arg5', '--apply_modifiers', dest='apply_modifiers', action='store_true')
-            parser.add_argument('-arg6', '--triangulate_faces', dest='triangulate_faces', action='store_true')
-            parser.add_argument('-arg7', '--clean_normalize_weights', dest='clean_normalize_weights', action='store_true')
-            parser.add_argument('-arg8', '--hidden_geo', dest='hidden_geo', action='store_true')
-            parser.add_argument('-arg9', '--permutation', dest='permutation_ce', type=str, default="")
-            parser.add_argument('-arg10', '--lod', dest='level_of_detail_ce', type=str, default="0")
-            parser.add_argument('-arg11', '--edge_split', dest='edge_split', action='store_true')
-            parser.add_argument('-arg12', '--use_edge_angle', dest='use_edge_angle', action='store_true')
-            parser.add_argument('-arg13', '--use_edge_sharp', dest='use_edge_sharp', action='store_true')
-            parser.add_argument('-arg14', '--split_angle', dest='split_angle', type=float, default=1.0)
-            parser.add_argument('-arg15', '--scale_enum', dest='scale_enum', type=str, default="0")
-            parser.add_argument('-arg16', '--scale_float', dest='scale_float', type=float, default=1.0)
-            parser.add_argument('-arg17', '--console', dest='console', action='store_true', default=True)
+            parser.add_argument('-arg5', '--folder_structure', dest='folder_structure', action='store_true')
+            parser.add_argument('-arg6', '--apply_modifiers', dest='apply_modifiers', action='store_true')
+            parser.add_argument('-arg7', '--triangulate_faces', dest='triangulate_faces', action='store_true')
+            parser.add_argument('-arg8', '--clean_normalize_weights', dest='clean_normalize_weights', action='store_true')
+            parser.add_argument('-arg9', '--hidden_geo', dest='hidden_geo', action='store_true')
+            parser.add_argument('-arg10', '--permutation', dest='permutation_ce', type=str, default="")
+            parser.add_argument('-arg11', '--lod', dest='level_of_detail_ce', type=str, default="0")
+            parser.add_argument('-arg12', '--edge_split', dest='edge_split', action='store_true')
+            parser.add_argument('-arg13', '--use_edge_angle', dest='use_edge_angle', action='store_true')
+            parser.add_argument('-arg14', '--use_edge_sharp', dest='use_edge_sharp', action='store_true')
+            parser.add_argument('-arg15', '--split_angle', dest='split_angle', type=float, default=1.0)
+            parser.add_argument('-arg16', '--scale_enum', dest='scale_enum', type=str, default="0")
+            parser.add_argument('-arg17', '--scale_float', dest='scale_float', type=float, default=1.0)
+            parser.add_argument('-arg18', '--console', dest='console', action='store_true', default=True)
             args = parser.parse_known_args(argv)[0]
             print('filepath: ', args.filepath)
             print('use_scene_properties: ', args.use_scene_properties)
             print('jms_version: ', args.jms_version)
             print('game_version: ', args.game_version)
+            print('folder_structure: ', args.folder_structure)
             print('apply_modifiers: ', args.apply_modifiers)
             print('triangulate_faces: ', args.triangulate_faces)
             print('clean_normalize_weights: ', args.clean_normalize_weights)
@@ -1708,6 +1752,7 @@ class ExportJMS(Operator, ExportHelper):
             self.use_scene_properties = args.use_scene_properties
             self.jms_version = args.jms_version
             self.game_version = args.game_version
+            self.folder_structure = args.folder_structure
             self.apply_modifiers = args.apply_modifiers
             self.triangulate_faces = args.triangulate_faces
             self.clean_normalize_weights = args.clean_normalize_weights
@@ -1727,11 +1772,12 @@ class ExportJMS(Operator, ExportHelper):
         if self.game_version == 'halo2vista':
             game_version = 'halo2'
 
-        return run_code("export_jms.command_queue(context, self.filepath, self.report, self.jms_version, self.jms_version_ce, self.jms_version_h2, self.apply_modifiers, self.triangulate_faces, self.edge_split, self.use_edge_angle, self.use_edge_sharp, self.split_angle, self.clean_normalize_weights, self.scale_enum, self.scale_float, self.console, self.permutation_ce, self.level_of_detail_ce, self.hidden_geo, self.export_render, self.export_collision, self.export_physics, game_version, encoding)")
+        return run_code("export_jms.command_queue(context, self.filepath, self.report, self.jms_version, self.jms_version_ce, self.jms_version_h2, self.folder_structure, self.apply_modifiers, self.triangulate_faces, self.edge_split, self.use_edge_angle, self.use_edge_sharp, self.split_angle, self.clean_normalize_weights, self.scale_enum, self.scale_float, self.console, self.permutation_ce, self.level_of_detail_ce, self.hidden_geo, self.export_render, self.export_collision, self.export_physics, game_version, encoding)")
 
     def draw(self, context):
         scene = context.scene
         scene_jms = scene.jms
+        scene_halo = scene.halo
 
         layout = self.layout
 
@@ -1745,15 +1791,14 @@ class ExportJMS(Operator, ExportHelper):
         row = col.row()
         row.enabled = is_enabled
         row.prop(self, "game_version", text='')
-        box = layout.box()
-        box.label(text="File Details:")
-        col = box.column(align=True)
+
         if scene_jms.use_scene_properties:
             self.game_version = scene_jms.game_version
             self.jms_version_ce = scene_jms.jms_version_ce
             self.permutation_ce = scene_jms.permutation_ce
             self.level_of_detail_ce = scene_jms.level_of_detail_ce
             self.jms_version_h2 = scene_jms.jms_version_h2
+            self.folder_structure = scene_jms.folder_structure
             self.apply_modifiers = scene_jms.apply_modifiers
             self.triangulate_faces = scene_jms.triangulate_faces
             self.clean_normalize_weights = scene_jms.clean_normalize_weights
@@ -1769,10 +1814,15 @@ class ExportJMS(Operator, ExportHelper):
             self.scale_float = scene_jms.scale_float
 
         if self.game_version == 'haloce':
-            row = col.row()
-            row.enabled = is_enabled
-            row.label(text='JMS Version:')
-            row.prop(self, "jms_version_ce", text='')
+            box = layout.box()
+            box.label(text="File Details:")
+            col = box.column(align=True)
+            if scene_halo.expert_mode:
+                row = col.row()
+                row.enabled = is_enabled
+                row.label(text='JMS Version:')
+                row.prop(self, "jms_version_ce", text='')
+
             row = col.row()
             row.enabled = is_enabled
             row.label(text='Permutation:')
@@ -1783,10 +1833,14 @@ class ExportJMS(Operator, ExportHelper):
             row.prop(self, "level_of_detail_ce", text='')
 
         elif self.game_version == 'halo2vista':
-            row = col.row()
-            row.enabled = is_enabled
-            row.label(text='JMS Version:')
-            row.prop(self, "jms_version_h2", text='')
+            if scene_halo.expert_mode:
+                box = layout.box()
+                box.label(text="File Details:")
+                col = box.column(align=True)
+                row = col.row()
+                row.enabled = is_enabled
+                row.label(text='JMS Version:')
+                row.prop(self, "jms_version_h2", text='')
 
         box = layout.box()
         box.label(text="Mask Options:")
@@ -1812,6 +1866,10 @@ class ExportJMS(Operator, ExportHelper):
         box = layout.box()
         box.label(text="Scene Options:")
         col = box.column(align=True)
+        row = col.row()
+        row.enabled = is_enabled
+        row.label(text='Generate Asset Subdirectories:')
+        row.prop(self, "folder_structure", text='')
         row = col.row()
         row.enabled = is_enabled
         row.label(text='Apply Modifiers:')
@@ -2133,6 +2191,8 @@ class ExportJMA(Operator, ExportHelper):
         fps_options = [23.98, 24, 25, 29.97, 30, 50, 59.94, 60]
         scene = context.scene
         scene_jma = scene.jma
+        scene_halo = scene.halo
+
         layout = self.layout
         is_enabled = True
         if scene_jma.use_scene_properties:
@@ -2168,20 +2228,22 @@ class ExportJMA(Operator, ExportHelper):
             row.enabled = is_enabled
             row.label(text='Extension:')
             row.prop(self, "extension_ce", text='')
-            row = col.row()
-            row.enabled = is_enabled
-            row.label(text='JMA Version:')
-            row.prop(self, "jma_version_ce", text='')
+            if scene_halo.expert_mode:
+                row = col.row()
+                row.enabled = is_enabled
+                row.label(text='JMA Version:')
+                row.prop(self, "jma_version_ce", text='')
 
         elif self.game_version == 'halo2vista':
             row = col.row()
             row.enabled = is_enabled
             row.label(text='Extension:')
             row.prop(self, "extension_h2", text='')
-            row = col.row()
-            row.enabled = is_enabled
-            row.label(text='JMA Version:')
-            row.prop(self, "jma_version_h2", text='')
+            if scene_halo.expert_mode:
+                row = col.row()
+                row.enabled = is_enabled
+                row.label(text='JMA Version:')
+                row.prop(self, "jma_version_h2", text='')
 
         box = layout.box()
         box.label(text="Scene Options:")
@@ -2195,15 +2257,16 @@ class ExportJMA(Operator, ExportHelper):
         row = col.row()
         row.label(text='Use Scene Export Settings:')
         row.prop(scene_jma, "use_scene_properties", text='')
-        box = layout.box()
-        box.label(text="Custom Frame Rate:")
-        row = box.row()
-        row.enabled = is_enabled
-        row.prop(self, "custom_frame_rate", text='')
-        if self.custom_frame_rate == 'CUSTOM':
+        if scene_halo.expert_mode:
+            box = layout.box()
+            box.label(text="Custom Frame Rate:")
             row = box.row()
             row.enabled = is_enabled
-            row.prop(self, "frame_rate_float")
+            row.prop(self, "custom_frame_rate", text='')
+            if self.custom_frame_rate == 'CUSTOM':
+                row = box.row()
+                row.enabled = is_enabled
+                row.prop(self, "frame_rate_float")
 
         box = layout.box()
         box.label(text="Scale:")

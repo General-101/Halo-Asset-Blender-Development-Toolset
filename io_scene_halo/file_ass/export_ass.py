@@ -498,8 +498,11 @@ def write_file(context, filepath, report, ass_version, ass_version_h2, use_scene
     )
 
     for idx, instance in enumerate(ass_scene.instances):
-        instance_object = ass_scene.objects[instance.object_index]
-        node_index_list = instance_object.node_index_list
+        node_index_list = []
+        if not instance.object_index == -1:
+            instance_object = ass_scene.objects[instance.object_index]
+            node_index_list = instance_object.node_index_list
+
         file.write(
             '\n;INSTANCE %s' % (idx) +
             '\n%s' % (instance.object_index) +

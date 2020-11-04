@@ -220,7 +220,7 @@ def load_file(context, filepath, report, fix_parents, game_version):
                     for node in armature_bone_list:
                         for jma_node in jma_file.nodes:
                             if node.name == jma_node.name:
-                                scene_nodes.append(node.name)                                
+                                scene_nodes.append(node.name)
                                 exist_count += 1
                     if exist_count == len(jma_file.nodes):
                         is_armature_good = True
@@ -233,7 +233,7 @@ def load_file(context, filepath, report, fix_parents, game_version):
         if jma_file.version >= 16392:
             if len(scene_nodes) > 0:
                 for jma_node in jma_file.nodes:
-                    jma_nodes.append(jma_node.name)   
+                    jma_nodes.append(jma_node.name)
 
                 for jma_node in jma_nodes:
                     if not jma_node in scene_nodes:

@@ -111,49 +111,6 @@ def get_encoding(game_version):
 
     return encoding
 
-def error_pass(armature_count, report, game_version, node_count, version, extension, geometry_list, marker_count, root_node_count, animation, mesh_frame_count, object_count):
-    result = False
-    h2_extension_list = ['JRMX', 'JMH']
-    if armature_count >= 2:
-        report({'ERROR'}, 'More than one armature object. Please delete all but one.')
-        result = True
-
-    elif game_version == 'haloce' and node_count == 0: #JMSv2 files can have JMS files without a node for physics.
-        report({'ERROR'}, 'No nodes in scene. Add an armature or object mesh named frame')
-        result = True
-
-    elif root_node_count >= 2:
-        report({'ERROR'}, "More than one root node. Please remove or rename objects until you only have one root frame object.")
-        result = True
-
-    elif extension in h2_extension_list and game_version == 'haloce':
-        report({'ERROR'}, 'This extension is not used in Halo CE')
-        result = True
-
-    elif object_count == 0:
-        report({'ERROR'}, 'No objects in scene.')
-        result = True
-
-    if animation:
-        if version >= 16393 and game_version == 'haloce':
-            report({'ERROR'}, 'This version is not supported for Halo CE. Choose from 16390-16392 if you wish to export for Halo CE.')
-            result = True
-
-    if not animation:
-        if mesh_frame_count > 0 and armature_count > 0:
-            report({'ERROR'}, "Using both armature and object mesh node setup. Choose one or the other.")
-            result = True
-
-        elif game_version == 'haloce' and len(geometry_list) == 0 and marker_count == 0:
-            report({'ERROR'}, 'No geometry in scene.')
-            result = True
-
-        elif version >= 8201 and game_version == 'haloce':
-            report({'ERROR'}, 'This version is not supported for CE. Choose from 8197-8200 if you wish to export for CE.')
-            result = True
-
-    return result
-
 def sort_by_layer(node_list, armature):
     layer_count = []
     layer_root = []

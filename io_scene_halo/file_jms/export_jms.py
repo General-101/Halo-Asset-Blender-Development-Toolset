@@ -477,8 +477,9 @@ class JMSScene(global_functions.HaloAsset):
                                     original_geometry_list.append(obj)
 
         root_node_count = global_functions.count_root_nodes(node_list)
+        node_count = len(node_list)
 
-        if game_version == 'haloce' and len(node_list) == 0: #JMSv2 files can have JMS files without a node for physics.
+        if game_version == 'haloce' and node_count == 0: #JMSv2 files can have JMS files without a node for physics.
             raise global_functions.SceneParseError("No nodes in scene. Add an armature or object mesh named frame.")
 
         elif root_node_count >= 2:
@@ -494,7 +495,16 @@ class JMSScene(global_functions.HaloAsset):
             raise global_functions.SceneParseError("No geometry in scene.")
 
         elif game_version == 'haloce' and version >= 8201:
-            raise global_functions.SceneParseError("This version is not supported for CE. Choose from 8197-8200 if you wish to export for CE.")
+            raise global_functions.SceneParseError("This version is not supported for Halo CE. Choose from 8197-8200 if you wish to export for Halo CE.")
+
+        elif game_version == 'halo2' and version >= 8211:
+            raise global_functions.SceneParseError("This version is not supported for Halo 2. Choose from 8197-8210 if you wish to export for Halo 2.")
+
+        elif game_version == 'haloce' and node_count > 64:
+            raise global_functions.SceneParseError("This model has more nodes than Halo CE supports. Please limit your node count to 64 nodes")
+
+        elif game_version == 'halo2' and node_count > 255:
+            raise global_functions.SceneParseError("This model has more nodes than Halo 2 supports. Please limit your node count to 255 nodes")
 
         sorted_list = global_functions.sort_list(node_list, armature, game_version, version, False)
         joined_list = sorted_list[0]
@@ -1113,7 +1123,7 @@ class JMSScene(global_functions.HaloAsset):
 
             self.bounding_spheres.append(JMSScene.Bounding_Sphere(translation, scale))
 
-def write_file(context, filepath, report, version, game_version, encoding, apply_modifiers, custom_scale, permutation_ce, level_of_detail_ce, hidden_geo, export_render, export_collision, export_physics, model_type, object_list):
+def write_file(context, filepath, report, version, game_version, encoding, folder_structure, apply_modifiers, custom_scale, permutation_ce, level_of_detail_ce, hidden_geo, export_render, export_collision, export_physics, model_type, object_list):
     try:
         jms_scene = JMSScene(context, report, version, game_version, apply_modifiers, hidden_geo, export_render, export_collision, export_physics, custom_scale, object_list)
     except global_functions.SceneParseError as parse_error:
@@ -1147,6 +1157,12 @@ def write_file(context, filepath, report, version, game_version, encoding, apply
         filename = filename.rsplit('.', 1)[0]
 
     foldername = filename
+    blend_filename = bpy.path.basename(bpy.context.blend_data.filepath)
+    if len(blend_filename) > 0:
+        parent_folder = blend_filename.rsplit('.', 1)[0]
+    else:
+        parent_folder = 'default'
+
     if game_version == 'haloce':
         if not permutation_ce == '':
             ce_settings += '%s ' % (permutation_ce.replace(' ', '_').replace('\t', '_'))
@@ -1181,12 +1197,15 @@ def write_file(context, filepath, report, version, game_version, encoding, apply
     elif model_type == "_physics":
         folder_type = "physics"
 
-    output_path = directory + os.sep + foldername
+    if folder_structure:
+        output_path = directory + os.sep + parent_folder
+        root_directory = output_path + os.sep + folder_type
+        if not os.path.exists(output_path + os.sep + folder_type):
+            os.makedirs(output_path + os.sep + folder_type)
+    else:
+        root_directory = directory
 
-    if not os.path.exists(output_path + os.sep + folder_type):
-        os.makedirs(output_path + os.sep + folder_type)
-
-    file = open(output_path + os.sep + folder_type + os.sep + ce_settings + filename + model_type + extension, 'w', encoding=encoding)
+    file = open(root_directory + os.sep + ce_settings + filename + model_type + extension, 'w', encoding=encoding)
 
     if version >= 8205:
         version_bounds = '8197-8210'
@@ -1805,7 +1824,7 @@ def write_file(context, filepath, report, version, game_version, encoding, apply
     report({'INFO'}, "Export completed successfully")
     file.close()
 
-def command_queue(context, filepath, report, jms_version, jms_version_ce, jms_version_h2, apply_modifiers, triangulate_faces, edge_split, use_edge_angle, use_edge_sharp, split_angle, clean_normalize_weights, scale_enum, scale_float, console, permutation_ce, level_of_detail_ce, hidden_geo, export_render, export_collision, export_physics, game_version, encoding):
+def command_queue(context, filepath, report, jms_version, jms_version_ce, jms_version_h2, folder_structure, apply_modifiers, triangulate_faces, edge_split, use_edge_angle, use_edge_sharp, split_angle, clean_normalize_weights, scale_enum, scale_float, console, permutation_ce, level_of_detail_ce, hidden_geo, export_render, export_collision, export_physics, game_version, encoding):
     global_functions.unhide_all_collections()
     gen_2 = ('halo2')
     object_properties = []
@@ -1901,15 +1920,15 @@ def command_queue(context, filepath, report, jms_version, jms_version_ce, jms_ve
 
     if export_render and render_count > 0:
         model_type = ""
-        write_file(context, filepath, report, version, game_version, encoding, apply_modifiers, custom_scale, permutation_ce, level_of_detail_ce, hidden_geo, export_render, False, False, model_type, object_list)
+        write_file(context, filepath, report, version, game_version, encoding, folder_structure, apply_modifiers, custom_scale, permutation_ce, level_of_detail_ce, hidden_geo, export_render, False, False, model_type, object_list)
 
     if export_collision and collision_count > 0:
         model_type = "_collision"
-        write_file(context, filepath, report, version, game_version, encoding, apply_modifiers, custom_scale, permutation_ce, level_of_detail_ce, hidden_geo, False, export_collision, False, model_type, object_list)
+        write_file(context, filepath, report, version, game_version, encoding, folder_structure, apply_modifiers, custom_scale, permutation_ce, level_of_detail_ce, hidden_geo, False, export_collision, False, model_type, object_list)
 
     if export_physics and physics_count > 0:
         model_type = "_physics"
-        write_file(context, filepath, report, version, game_version, encoding, apply_modifiers, custom_scale, permutation_ce, level_of_detail_ce, hidden_geo, False, False, export_physics, model_type, object_list)
+        write_file(context, filepath, report, version, game_version, encoding, folder_structure, apply_modifiers, custom_scale, permutation_ce, level_of_detail_ce, hidden_geo, False, False, export_physics, model_type, object_list)
 
     for idx, obj in enumerate(object_list):
         property_value = object_properties[idx]
