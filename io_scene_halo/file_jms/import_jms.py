@@ -1142,7 +1142,7 @@ def load_file(context, filepath, report, game_version, fix_parents):
             else:
                 object_mesh.data.materials.append(mat)
 
-            mat.diffuse_color = global_functions.get_random_color()
+            mat.diffuse_color = random_color_gen.next()
 
         object_mesh.data.ass_jms.Object_Type = 'SPHERE'
         object_dimension = radius * 2
@@ -1206,7 +1206,7 @@ def load_file(context, filepath, report, game_version, fix_parents):
             else:
                 object_mesh.data.materials.append(mat)
 
-            mat.diffuse_color = global_functions.get_random_color()
+            mat.diffuse_color = random_color_gen.next()
 
         object_mesh.data.ass_jms.Object_Type = 'BOX'
         object_mesh.dimensions = (width, length, height)
@@ -1268,7 +1268,7 @@ def load_file(context, filepath, report, game_version, fix_parents):
             else:
                 object_mesh.data.materials.append(mat)
 
-            mat.diffuse_color = global_functions.get_random_color()
+            mat.diffuse_color = random_color_gen.next()
 
         object_mesh.data.ass_jms.Object_Type = 'CAPSULES'
         object_dimension = radius * 2
@@ -1333,7 +1333,7 @@ def load_file(context, filepath, report, game_version, fix_parents):
             else:
                 object_mesh.data.materials.append(mat)
 
-            mat.diffuse_color = global_functions.get_random_color()
+            mat.diffuse_color = random_color_gen.next()
 
         object_mesh.select_set(True)
         view_layer.objects.active = object_mesh

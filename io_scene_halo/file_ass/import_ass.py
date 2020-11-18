@@ -197,7 +197,7 @@ class ASSAsset(global_functions.HaloAsset):
             if bone_influence_count > 0:
                 self.skip(bone_influence_count)
 
-            if not object_index == -1 and not unique_id == -1 and not parent_id == -1:
+            if not object_index == -1 or not unique_id == -1 or not parent_id == -1:
                 self.instances.append(ASSAsset.Instance(true_name, object_index, unique_id, parent_id, inheritance_flag, local_transform, pivot_transform))
 
         if self.left() != 0: # is something wrong with the parser?
@@ -219,6 +219,7 @@ def load_file(context, filepath, report):
 
     collection = bpy.context.collection
     view_layer = bpy.context.view_layer
+    random_color_gen = global_functions.RandomColorGenerator() # generates a random sequence of colors
 
     if view_layer.objects.active:
         bpy.ops.object.mode_set(mode='OBJECT')
@@ -232,127 +233,128 @@ def load_file(context, filepath, report):
         object_mesh = bpy.data.objects.new(instance.name, mesh)
         collection.objects.link(object_mesh)
         object_index = instance.object_index
-        object_element = ass_file.objects[object_index]
-        geo_class = object_element.geo_class
-        object_material_index = object_element.material_index
-        if not object_material_index == -1:
-            mat = ass_file.materials[object_material_index]
-            material_name = mat.name
-            material_effect = mat.material_effect
-            mat = bpy.data.materials.get(material_name)
-            if mat is None:
-                mat = bpy.data.materials.new(name=material_name)
+        if not object_index == -1:
+            object_element = ass_file.objects[object_index]
+            geo_class = object_element.geo_class
+            object_material_index = object_element.material_index
+            if not object_material_index == -1:
+                mat = ass_file.materials[object_material_index]
+                material_name = mat.name
+                material_effect = mat.material_effect
+                mat = bpy.data.materials.get(material_name)
+                if mat is None:
+                    mat = bpy.data.materials.new(name=material_name)
 
-            if object_mesh.data.materials:
-                object_mesh.data.materials[0] = mat
+                if object_mesh.data.materials:
+                    object_mesh.data.materials[0] = mat
 
-            else:
-                object_mesh.data.materials.append(mat)
+                else:
+                    object_mesh.data.materials.append(mat)
 
-            mat.ass_jms.material_effect = material_effect
-            mat.diffuse_color = global_functions.get_random_color()
+                mat.ass_jms.material_effect = material_effect
+                mat.diffuse_color = random_color_gen.next()
 
-        if geo_class.lower() == 'pill':
-            bm = bmesh.new()
-            bmesh.ops.create_cone(bm, cap_ends=True, cap_tris=False, segments=12, diameter1=3, diameter2=3, depth=5)
-            bm.transform(Matrix.Translation((0, 0, 2.5)))
-            bm.to_mesh(mesh)
-            bm.free()
+            if geo_class.lower() == 'pill':
+                bm = bmesh.new()
+                bmesh.ops.create_cone(bm, cap_ends=True, cap_tris=False, segments=12, diameter1=3, diameter2=3, depth=5)
+                bm.transform(Matrix.Translation((0, 0, 2.5)))
+                bm.to_mesh(mesh)
+                bm.free()
 
-        elif geo_class.lower() == 'sphere':
-            bm = bmesh.new()
-            bmesh.ops.create_uvsphere(bm, u_segments=32, v_segments=16, diameter=1)
-            bm.to_mesh(mesh)
-            bm.free()
+            elif geo_class.lower() == 'sphere':
+                bm = bmesh.new()
+                bmesh.ops.create_uvsphere(bm, u_segments=32, v_segments=16, diameter=1)
+                bm.to_mesh(mesh)
+                bm.free()
 
-        elif geo_class.lower() == 'box':
-            bm = bmesh.new()
-            bmesh.ops.create_cube(bm, size=1.0)
-            bm.to_mesh(mesh)
-            bm.free()
+            elif geo_class.lower() == 'box':
+                bm = bmesh.new()
+                bmesh.ops.create_cube(bm, size=1.0)
+                bm.to_mesh(mesh)
+                bm.free()
 
-        elif geo_class.lower() == 'mesh':
-            vert_normal_list = []
-            vertex_groups = []
-            bm = bmesh.new()
-            object_triangles = object_element.triangles
-            for triangle in object_triangles:
-                triangle_material_index = triangle.material_index
-                if not triangle_material_index == -1:
-                    mat = ass_file.materials[triangle_material_index]
+            elif geo_class.lower() == 'mesh':
+                vert_normal_list = []
+                vertex_groups = []
+                bm = bmesh.new()
+                object_triangles = object_element.triangles
+                for triangle in object_triangles:
+                    triangle_material_index = triangle.material_index
+                    if not triangle_material_index == -1:
+                        mat = ass_file.materials[triangle_material_index]
 
-                p1 = object_element.vertices[triangle.v0].translation
-                p2 = object_element.vertices[triangle.v1].translation
-                p3 = object_element.vertices[triangle.v2].translation
+                    p1 = object_element.vertices[triangle.v0].translation
+                    p2 = object_element.vertices[triangle.v1].translation
+                    p3 = object_element.vertices[triangle.v2].translation
 
-                v1 = bm.verts.new((float(p1[0]), float(p1[1]), float(p1[2])))
-                v2 = bm.verts.new((float(p2[0]), float(p2[1]), float(p2[2])))
-                v3 = bm.verts.new((float(p3[0]), float(p3[1]), float(p3[2])))
-                bm.faces.new((v1, v2, v3))
-                vert_list = [triangle.v0, triangle.v1, triangle.v2]
-                for vert in vert_list:
-                    vert_normals = []
-                    ass_vert = object_element.vertices[vert]
-                    for normal in ass_vert.normal:
-                        vert_normals.append(normal)
+                    v1 = bm.verts.new((float(p1[0]), float(p1[1]), float(p1[2])))
+                    v2 = bm.verts.new((float(p2[0]), float(p2[1]), float(p2[2])))
+                    v3 = bm.verts.new((float(p3[0]), float(p3[1]), float(p3[2])))
+                    bm.faces.new((v1, v2, v3))
+                    vert_list = [triangle.v0, triangle.v1, triangle.v2]
+                    for vert in vert_list:
+                        vert_normals = []
+                        ass_vert = object_element.vertices[vert]
+                        for normal in ass_vert.normal:
+                            vert_normals.append(normal)
 
-                    vert_normal_list.append(vert_normals)
-                    for node_values in ass_vert.node_set:
-                        node_index = node_values[0]
-                        if not node_index == -1 and not node_index in vertex_groups:
-                            vertex_groups.append(node_index)
-                            object_mesh.vertex_groups.new(name = ass_file.instances[node_index].name)
+                        vert_normal_list.append(vert_normals)
+                        for node_values in ass_vert.node_set:
+                            node_index = node_values[0]
+                            if not node_index == -1 and not node_index in vertex_groups:
+                                vertex_groups.append(node_index)
+                                object_mesh.vertex_groups.new(name = ass_file.instances[node_index].name)
 
-            bm.verts.ensure_lookup_table()
-            bm.faces.ensure_lookup_table()
-            vertex_groups_names = object_mesh.vertex_groups.keys()
-            for idx, triangle in enumerate(object_triangles):
-                triangle_material_index = triangle.material_index
-                if not triangle_material_index == -1:
-                    material_list = []
-                    material_name = mat.name
-                    mat = bpy.data.materials.get(material_name)
-                    if mat is None:
-                        mat = bpy.data.materials.new(name=material_name)
+                bm.verts.ensure_lookup_table()
+                bm.faces.ensure_lookup_table()
+                vertex_groups_names = object_mesh.vertex_groups.keys()
+                for idx, triangle in enumerate(object_triangles):
+                    triangle_material_index = triangle.material_index
+                    if not triangle_material_index == -1:
+                        material_list = []
+                        material_name = mat.name
+                        mat = bpy.data.materials.get(material_name)
+                        if mat is None:
+                            mat = bpy.data.materials.new(name=material_name)
 
-                    for slot in object_mesh.material_slots:
-                        material_list.append(slot.material)
+                        for slot in object_mesh.material_slots:
+                            material_list.append(slot.material)
 
-                    if not mat in material_list:
-                        object_mesh.data.materials.append(mat)
+                        if not mat in material_list:
+                            object_mesh.data.materials.append(mat)
 
-                    mat.diffuse_color = global_functions.get_random_color()
-                    material_index = material_list.index(bpy.data.materials[material_name])
-                    bm.faces[idx].material_index = material_index
+                        mat.diffuse_color = random_color_gen.next()
+                        material_index = material_list.index(bpy.data.materials[material_name])
+                        bm.faces[idx].material_index = material_index
 
-                vert_list = [triangle.v0, triangle.v1, triangle.v2]
-                for vert_idx, vert in enumerate(vert_list):
-                    vertex_index = (3 * idx) + vert_idx
-                    ass_vert = object_element.vertices[vert]
-                    bm.verts[vertex_index].normal = ass_vert.normal
-                    for uv_idx, uv in enumerate(ass_vert.uv_set):
-                        uv_name = 'UVMap_%s' % uv_idx
-                        layer_uv = bm.loops.layers.uv.get(uv_name)
-                        if layer_uv is None:
-                            layer_uv = bm.loops.layers.uv.new(uv_name)
+                    vert_list = [triangle.v0, triangle.v1, triangle.v2]
+                    for vert_idx, vert in enumerate(vert_list):
+                        vertex_index = (3 * idx) + vert_idx
+                        ass_vert = object_element.vertices[vert]
+                        bm.verts[vertex_index].normal = ass_vert.normal
+                        for uv_idx, uv in enumerate(ass_vert.uv_set):
+                            uv_name = 'UVMap_%s' % uv_idx
+                            layer_uv = bm.loops.layers.uv.get(uv_name)
+                            if layer_uv is None:
+                                layer_uv = bm.loops.layers.uv.new(uv_name)
 
-                        loop = bm.faces[idx].loops[vert_idx]
-                        loop[layer_uv].uv = (uv[0], uv[1])
+                            loop = bm.faces[idx].loops[vert_idx]
+                            loop[layer_uv].uv = (uv[0], uv[1])
 
-                    for node_values in ass_vert.node_set:
-                        layer_deform = bm.verts.layers.deform.verify()
-                        node_index = node_values[0]
-                        node_weight = node_values[1]
-                        if not node_index == -1:
-                            group_name = ass_file.instances[node_index].name
-                            group_index = vertex_groups_names.index(group_name)
-                            vert_idx = bm.verts[vertex_index]
-                            vert_idx[layer_deform][group_index] = node_weight
+                        for node_values in ass_vert.node_set:
+                            layer_deform = bm.verts.layers.deform.verify()
+                            node_index = node_values[0]
+                            node_weight = node_values[1]
+                            if not node_index == -1:
+                                group_name = ass_file.instances[node_index].name
+                                group_index = vertex_groups_names.index(group_name)
+                                vert_idx = bm.verts[vertex_index]
+                                vert_idx[layer_deform][group_index] = node_weight
 
-            bm.to_mesh(mesh)
-            bm.free()
-            object_mesh.data.normals_split_custom_set(vert_normal_list)
-            object_mesh.data.use_auto_smooth = True
+                bm.to_mesh(mesh)
+                bm.free()
+                object_mesh.data.normals_split_custom_set(vert_normal_list)
+                object_mesh.data.use_auto_smooth = True
 
     sorted_parent_id.sort(key=lambda x:x[1])
     for idx, instance in enumerate(ass_file.instances):
@@ -361,12 +363,17 @@ def load_file(context, filepath, report):
         obj = bpy.data.objects[current_instance.name]
 
         object_index = current_instance.object_index
-        object_element = ass_file.objects[object_index]
+        geo_class = 'empty'
+        object_radius = 2
+        object_height = 1
+        object_extents = [1.0, 1.0, 1.0]
+        if not object_index == -1:
+            object_element = ass_file.objects[object_index]
 
-        geo_class = object_element.geo_class
-        object_radius = object_element.radius
-        object_height = object_element.height
-        object_extents = object_element.extents
+            geo_class = object_element.geo_class
+            object_radius = object_element.radius
+            object_height = object_element.height
+            object_extents = object_element.extents
 
         parent_index = current_instance.parent_id - 1
         local_transform = current_instance.local_transform
@@ -387,6 +394,7 @@ def load_file(context, filepath, report):
             obj.scale = (local_transform.scale, local_transform.scale , local_transform.scale)
         else:
             obj.scale = (local_transform.scale[0], local_transform.scale[1], local_transform.scale[2])
+
         if geo_class.lower() == 'pill':
             obj.data.ass_jms.Object_Type = 'CAPSULES'
             object_dimension = object_radius * 2

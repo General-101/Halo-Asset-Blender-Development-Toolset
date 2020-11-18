@@ -503,6 +503,13 @@ class ASS_SceneProps(Panel):
                 row.prop(scene_ass, "ass_version_h2", text='')
 
         box = layout.box()
+        box.label(text="Mask Options:")
+        col = box.column(align=True)
+        row = col.row()
+        row.label(text='Export Hidden Geometry:')
+        row.prop(scene_ass, "hidden_geo", text='')
+
+        box = layout.box()
         box.label(text="Scene Options:")
         col = box.column(align=True)
         row = col.row()
@@ -514,9 +521,6 @@ class ASS_SceneProps(Panel):
         row = col.row()
         row.label(text='Clean and Normalize Weights:')
         row.prop(scene_ass, "clean_normalize_weights", text='')
-        row = col.row()
-        row.label(text='Export Hidden Geometry:')
-        row.prop(scene_ass, "hidden_geo", text='')
         row = col.row()
         row.label(text='Use Edge Split:')
         row.prop(scene_ass, "edge_split", text='')
@@ -1437,6 +1441,14 @@ class ExportASS(Operator, ExportHelper):
                 row.prop(self, "ass_version_h2", text='')
 
         box = layout.box()
+        box.label(text="Mask Options:")
+        col = box.column(align=True)
+        row = col.row()
+        row.enabled = is_enabled
+        row.label(text='Export Hidden Geometry:')
+        row.prop(self, "hidden_geo", text='')
+
+        box = layout.box()
         box.label(text="Scene Options:")
         col = box.column(align=True)
         row = col.row()
@@ -1451,10 +1463,6 @@ class ExportASS(Operator, ExportHelper):
         row.enabled = is_enabled
         row.label(text='Clean and Normalize Weights:')
         row.prop(self, "clean_normalize_weights", text='')
-        row = col.row()
-        row.enabled = is_enabled
-        row.label(text='Export Hidden Geometry:')
-        row.prop(self, "hidden_geo", text='')
         row = col.row()
         row.enabled = is_enabled
         row.label(text='Use Edge Split:')

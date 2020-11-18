@@ -259,6 +259,7 @@ class ASSScene(global_functions.HaloAsset):
                         xref_name = original_geo.name
 
                     face = original_geo.data.polygons[0]
+                    extents = [geo_dimensions.dimension_x_a, geo_dimensions.dimension_y_a, geo_dimensions.dimension_z_a]
                     material = global_functions.get_material(game_version, original_geo, face, mesh, material_list, 'ASS', None, None,)
                     if not material == -1:
                         material_list = global_functions.gather_materials(game_version, material, material_list, 'ASS', None, None, None)
@@ -270,12 +271,15 @@ class ASSScene(global_functions.HaloAsset):
                         xref_name = original_geo.name
 
                     face = original_geo.data.polygons[0]
+                    height = (geo_dimensions.pill_z_a)
+                    radius = (geo_dimensions.radius_a)
                     material = global_functions.get_material(game_version, original_geo, face, mesh, material_list, 'ASS', None, None,)
                     if not material == -1:
                         material_list = global_functions.gather_materials(game_version, material, material_list, 'ASS', None, None, None)
                         material_index = material_list.index(material)
 
                 elif geo_class == 'MESH':
+                    mesh.calc_normals_split()
                     xref_path = bpy.path.abspath(original_geo.data.ass_jms.XREF_path)
                     if xref_path != "":
                         xref_name = original_geo.name
@@ -295,7 +299,7 @@ class ASSScene(global_functions.HaloAsset):
                         for loop_index in face.loop_indices:
                             vert = mesh.vertices[mesh.loops[loop_index].vertex_index]
                             translation = vert.co
-                            normal = vert.normal
+                            normal = mesh.loops[loop_index].normal
                             uv_set = []
                             for uv_index in range(len(mesh.uv_layers)):
                                 mesh.uv_layers.active = mesh.uv_layers[uv_index]
