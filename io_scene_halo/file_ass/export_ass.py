@@ -279,7 +279,6 @@ class ASSScene(global_functions.HaloAsset):
                         material_index = material_list.index(material)
 
                 elif geo_class == 'MESH':
-                    mesh.calc_normals_split()
                     xref_path = bpy.path.abspath(original_geo.data.ass_jms.XREF_path)
                     if xref_path != "":
                         xref_name = original_geo.name
@@ -299,7 +298,7 @@ class ASSScene(global_functions.HaloAsset):
                         for loop_index in face.loop_indices:
                             vert = mesh.vertices[mesh.loops[loop_index].vertex_index]
                             translation = vert.co
-                            normal = mesh.loops[loop_index].normal
+                            normal = vert.normal
                             uv_set = []
                             for uv_index in range(len(mesh.uv_layers)):
                                 mesh.uv_layers.active = mesh.uv_layers[uv_index]

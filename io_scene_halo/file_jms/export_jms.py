@@ -602,7 +602,6 @@ class JMSScene(global_functions.HaloAsset):
             self.xref_markers.append(JMSScene.XREF_Marker(name, unique_identifier, index, rotation, translation))
 
         for idx, geometry in enumerate(geometry_list):
-            geometry.calc_normals_split()
             original_geo = original_geometry_list[idx]
             vertex_groups = original_geo.vertex_groups.keys()
             original_geo_matrix = global_functions.get_matrix(original_geo, original_geo, False, armature, joined_list, False, version, 'JMS', 0)
@@ -649,7 +648,7 @@ class JMSScene(global_functions.HaloAsset):
                 for loop_index in face.loop_indices:
                     vert = geometry.vertices[geometry.loops[loop_index].vertex_index]
                     translation = original_geo_matrix @ vert.co
-                    normal = original_geo_matrix @ (vert.co + geometry.loops[loop_index].normal) - translation
+                    normal = original_geo_matrix @ (vert.co + vert.normal) - translation
                     region = region_index
                     uv_set = []
                     for uv_index in range(len(geometry.uv_layers)):
