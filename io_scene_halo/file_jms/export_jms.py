@@ -614,16 +614,20 @@ class JMSScene(global_functions.HaloAsset):
                     region_index = region_list.index(region_face_map_name)
                     if geometry.face_maps.active:
                         face_map_idx = geometry.face_maps.active.data[idx].value
-                        region_face_map_name = original_geo.face_maps[face_map_idx].name
-                        if not region_face_map_name in region_list:
-                            region_list.append(region_face_map_name)
+                        if not face_map_idx == -1:
+                            region_face_map_name = original_geo.face_maps[face_map_idx].name
+                            if not region_face_map_name in region_list:
+                                region_list.append(region_face_map_name)
 
                         region_index = region_list.index(region_face_map_name)
 
                 elif game_version == 'halo2':
                     if geometry.face_maps.active:
+                        region_permutation_face_map_name = [default_permutation, default_region]
                         face_map_idx = geometry.face_maps.active.data[idx].value
-                        region_permutation_face_map_name = original_geo.face_maps[face_map_idx].name.split()
+                        if not face_map_idx == -1:
+                            region_permutation_face_map_name = original_geo.face_maps[face_map_idx].name.split()
+
                         if len(region_permutation_face_map_name) > 0:
                             permutation = region_permutation_face_map_name[0]
                         if not permutation in permutation_list:
