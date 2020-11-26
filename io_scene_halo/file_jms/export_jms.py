@@ -660,8 +660,8 @@ class JMSScene(global_functions.HaloAsset):
                         uv = geometry.uv_layers.active.data[geometry.loops[loop_index].index].uv
                         uv_set.append(uv)
 
-                    if uv_set == None:
-                        uv_set = [0.0, 0.0]
+                    if not uv_set and version <= 8204:
+                        uv_set = [(0.0, 0.0)]
 
                     uv = uv_set
                     if len(vert.groups) != 0:
