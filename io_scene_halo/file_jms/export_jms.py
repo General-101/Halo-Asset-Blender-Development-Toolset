@@ -360,32 +360,15 @@ class JMSScene(global_functions.HaloAsset):
 
             elif obj.name[0:1].lower() == '#':
                 if global_functions.set_ignore(obj) == False or hidden_geo:
-                    if game_version == 'haloce':
-                        if not obj.parent == None:
-                            if obj.parent.type == 'ARMATURE' or parent_name.startswith(node_prefix_tuple):
-                                marker_list.append(obj)
-
-                    elif game_version in self.gen_2:
-                        if not export_physics:
+                    if not obj.parent == None:
+                        if obj.parent.type == 'ARMATURE' or parent_name.startswith(node_prefix_tuple):
                             marker_list.append(obj)
 
             elif obj.name[0:1].lower() == '@' and len(obj.data.polygons) > 0:
                 if global_functions.set_ignore(obj) == False or hidden_geo:
                     if export_collision:
-                        if game_version == 'haloce':
-                            if not obj.parent == None:
-                                if obj.parent.type == 'ARMATURE' or parent_name.startswith(node_prefix_tuple):
-                                    if apply_modifiers:
-                                        obj_for_convert = obj.evaluated_get(depsgraph)
-                                        me = obj_for_convert.to_mesh(preserve_all_data_layers=True, depsgraph=depsgraph)
-                                        geometry_list.append(me)
-                                        original_geometry_list.append(obj)
-
-                                    else:
-                                        geometry_list.append(obj.to_mesh(preserve_all_data_layers=True))
-                                        original_geometry_list.append(obj)
-
-                        elif game_version in self.gen_2:
+                        if not obj.parent == None:
+                            if obj.parent.type == 'ARMATURE' or parent_name.startswith(node_prefix_tuple):
                                 if apply_modifiers:
                                     obj_for_convert = obj.evaluated_get(depsgraph)
                                     me = obj_for_convert.to_mesh(preserve_all_data_layers=True, depsgraph=depsgraph)
@@ -396,55 +379,40 @@ class JMSScene(global_functions.HaloAsset):
                                     geometry_list.append(obj.to_mesh(preserve_all_data_layers=True))
                                     original_geometry_list.append(obj)
 
-            elif obj.name[0:1].lower() == '$':
+            elif obj.name[0:1].lower() == '$' and version > 8205:
                 if global_functions.set_ignore(obj) == False or hidden_geo:
                     if export_physics:
-                        if game_version == 'haloce':
-                            if obj.type == 'MESH' and len(obj.data.polygons) > 0:
-                                if not obj.parent == None:
-                                    if obj.parent.type == 'ARMATURE' or parent_name.startswith(node_prefix_tuple):
-                                        if apply_modifiers:
-                                            obj_for_convert = obj.evaluated_get(depsgraph)
-                                            me = obj_for_convert.to_mesh(preserve_all_data_layers=True, depsgraph=depsgraph)
-                                            geometry_list.append(me)
-                                            original_geometry_list.append(obj)
+                        if not obj.rigid_body_constraint == None:
+                            if obj.rigid_body_constraint.type == 'HINGE':
+                                hinge_list.append(obj)
 
-                                        else:
-                                            geometry_list.append(obj.to_mesh(preserve_all_data_layers=True))
-                                            original_geometry_list.append(obj)
+                            elif obj.rigid_body_constraint.type == 'GENERIC':
+                                ragdoll_list.append(obj)
 
-                        elif game_version in self.gen_2 and version > 8205:
-                            if not obj.rigid_body_constraint == None:
-                                if obj.rigid_body_constraint.type == 'HINGE':
-                                    hinge_list.append(obj)
+                            elif obj.rigid_body_constraint.type == 'GENERIC_SPRING':
+                                point_to_point_list.append(obj)
 
-                                elif obj.rigid_body_constraint.type == 'GENERIC':
-                                    ragdoll_list.append(obj)
+                        if obj.type == 'MESH':
+                            if obj.data.ass_jms.Object_Type == 'SPHERE':
+                                sphere_list.append(obj)
 
-                                elif obj.rigid_body_constraint.type == 'GENERIC_SPRING':
-                                    point_to_point_list.append(obj)
+                            elif obj.data.ass_jms.Object_Type == 'BOX':
+                                box_list.append(obj)
 
-                            if obj.type == 'MESH':
-                                if obj.data.ass_jms.Object_Type == 'SPHERE':
-                                    sphere_list.append(obj)
+                            elif obj.data.ass_jms.Object_Type == 'CAPSULES':
+                                capsule_list.append(obj)
 
-                                elif obj.data.ass_jms.Object_Type == 'BOX':
-                                    box_list.append(obj)
+                            elif obj.data.ass_jms.Object_Type == 'CONVEX SHAPES':
+                                convex_shape_list.append(obj)
 
-                                elif obj.data.ass_jms.Object_Type == 'CAPSULES':
-                                    capsule_list.append(obj)
-
-                                elif obj.data.ass_jms.Object_Type == 'CONVEX SHAPES':
-                                    convex_shape_list.append(obj)
-
-            elif obj.type == 'MESH' and not len(obj.data.ass_jms.XREF_path) == 0 and game_version in self.gen_2 and version > 8205:
+            elif obj.type == 'MESH' and not len(obj.data.ass_jms.XREF_path) == 0 and version > 8205:
                 if global_functions.set_ignore(obj) == False or hidden_geo:
                     if export_render:
                         instance_markers.append(obj)
                         if not obj.data.ass_jms.XREF_path in instance_xref_paths:
                             instance_xref_paths.append(obj.data.ass_jms.XREF_path)
 
-            elif obj.type == 'MESH' and obj.data.ass_jms.bounding_radius == True and game_version in self.gen_2 and version >= 8209:
+            elif obj.type == 'MESH' and obj.data.ass_jms.bounding_radius == True and version >= 8209:
                 if global_functions.set_ignore(obj) == False or hidden_geo:
                     if export_render:
                         bounding_sphere_list.append(obj)
@@ -452,20 +420,8 @@ class JMSScene(global_functions.HaloAsset):
             elif obj.type == 'MESH' and len(obj.data.polygons) > 0:
                 if global_functions.set_ignore(obj) == False or hidden_geo:
                     if export_render:
-                        if game_version == 'haloce':
-                            if not obj.parent == None:
-                                if obj.parent.type == 'ARMATURE' or parent_name.startswith(node_prefix_tuple):
-                                    if apply_modifiers:
-                                        obj_for_convert = obj.evaluated_get(depsgraph)
-                                        me = obj_for_convert.to_mesh(preserve_all_data_layers=True, depsgraph=depsgraph)
-                                        geometry_list.append(me)
-                                        original_geometry_list.append(obj)
-
-                                    else:
-                                        geometry_list.append(obj.to_mesh(preserve_all_data_layers=True))
-                                        original_geometry_list.append(obj)
-
-                        elif game_version in self.gen_2:
+                        if not obj.parent == None:
+                            if obj.parent.type == 'ARMATURE' or parent_name.startswith(node_prefix_tuple):
                                 if apply_modifiers:
                                     obj_for_convert = obj.evaluated_get(depsgraph)
                                     me = obj_for_convert.to_mesh(preserve_all_data_layers=True, depsgraph=depsgraph)
