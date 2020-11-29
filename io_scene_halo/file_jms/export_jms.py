@@ -392,18 +392,21 @@ class JMSScene(global_functions.HaloAsset):
                             elif obj.rigid_body_constraint.type == 'GENERIC_SPRING':
                                 point_to_point_list.append(obj)
 
-                        if obj.type == 'MESH':
-                            if obj.data.ass_jms.Object_Type == 'SPHERE':
-                                sphere_list.append(obj)
+                        else:
+                            if obj.type == 'MESH':
+                                phy_material = global_functions.get_material(game_version, obj, obj.data.polygons[0], obj.to_mesh(), None, 'JMS', None, None)
+                                if not phy_material == -1:
+                                    if obj.data.ass_jms.Object_Type == 'SPHERE':
+                                        sphere_list.append(obj)
 
-                            elif obj.data.ass_jms.Object_Type == 'BOX':
-                                box_list.append(obj)
+                                    elif obj.data.ass_jms.Object_Type == 'BOX':
+                                        box_list.append(obj)
 
-                            elif obj.data.ass_jms.Object_Type == 'CAPSULES':
-                                capsule_list.append(obj)
+                                    elif obj.data.ass_jms.Object_Type == 'CAPSULES':
+                                        capsule_list.append(obj)
 
-                            elif obj.data.ass_jms.Object_Type == 'CONVEX SHAPES':
-                                convex_shape_list.append(obj)
+                                    elif obj.data.ass_jms.Object_Type == 'CONVEX SHAPES':
+                                        convex_shape_list.append(obj)
 
             elif obj.type == 'MESH' and not len(obj.data.ass_jms.XREF_path) == 0 and version > 8205:
                 if global_functions.set_ignore(obj) == False or hidden_geo:
