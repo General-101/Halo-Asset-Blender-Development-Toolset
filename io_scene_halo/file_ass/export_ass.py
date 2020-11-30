@@ -162,16 +162,19 @@ class ASSScene(global_functions.HaloAsset):
                         me = obj.to_mesh(preserve_all_data_layers=True)
                         geometry_list.append((me, 'SPHERE', obj.name, obj.data.name))
                         original_geometry_list.append(obj)
+                        obj.to_mesh_clear()
 
                     elif obj.data.ass_jms.Object_Type == 'BOX':
                         me = obj.to_mesh(preserve_all_data_layers=True)
                         geometry_list.append((me, 'BOX', obj.name, obj.data.name))
                         original_geometry_list.append(obj)
+                        obj.to_mesh_clear()
 
                     elif obj.data.ass_jms.Object_Type == 'CAPSULES':
                         me = obj.to_mesh(preserve_all_data_layers=True)
                         geometry_list.append((me, 'PILL', obj.name, obj.data.name))
                         original_geometry_list.append(obj)
+                        obj.to_mesh_clear()
 
                     elif obj.data.ass_jms.Object_Type == 'CONVEX SHAPES':
                         if apply_modifiers:
@@ -184,6 +187,8 @@ class ASSScene(global_functions.HaloAsset):
                             me = obj.to_mesh(preserve_all_data_layers=True)
                             geometry_list.append((me, 'MESH', obj.name, obj.data.name))
                             original_geometry_list.append(obj)
+
+                        obj.to_mesh_clear()
 
         self.instances.append(ASSScene.Instance(name='Scene Root', local_transform=ASSScene.Transform(), pivot_transform=ASSScene.Transform()))
         for idx, geometry in enumerate(geometry_list):
@@ -297,8 +302,16 @@ class ASSScene(global_functions.HaloAsset):
                         triangles.append(ASSScene.Triangle(material_index, v0, v1, v2))
                         for loop_index in face.loop_indices:
                             vert = mesh.vertices[mesh.loops[loop_index].vertex_index]
+
+                            original_geo_matrix = global_functions.get_matrix(original_geo, original_geo, False, armature, original_geometry_list, False, version, 'ASS', 0)
+
                             translation = vert.co
-                            normal = vert.normal
+                            world_translation = original_geo_matrix @ vert.co
+
+                            mesh_dimensions = global_functions.get_dimensions(None, None, None, None, custom_scale, version, translation, True, False, armature, 'ASS')
+                            scaled_translation = (mesh_dimensions.pos_x_a, mesh_dimensions.pos_y_a, mesh_dimensions.pos_z_a)
+
+                            normal = (original_geo_matrix @ (vert.co + vert.normal) - world_translation).normalized()
                             uv_set = []
                             for uv_index in range(len(mesh.uv_layers)):
                                 mesh.uv_layers.active = mesh.uv_layers[uv_index]
@@ -348,7 +361,7 @@ class ASSScene(global_functions.HaloAsset):
                                         node_weight = float(vert.groups[vert_index].weight)
                                         node_set.append([node_index, node_weight])
 
-                            verts.append(ASSScene.Vertex(node_influence_count, node_set, translation, normal, uv_set))
+                            verts.append(ASSScene.Vertex(node_influence_count, node_set, scaled_translation, normal, uv_set))
 
 
                 self.objects.append(ASSScene.Object(geo_class, xref_path, xref_name, material_index, radius, extents, height, verts, triangles, node_index_list))

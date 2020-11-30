@@ -550,6 +550,17 @@ def set_ignore(mesh):
 
     return ignore
 
+def get_face_material(game_version, original_geo, face):
+    object_materials = len(original_geo.material_slots) - 1
+    assigned_material = None
+    assigned_material = -1
+    if len(original_geo.material_slots) != 0:
+        if not face.material_index > object_materials:
+            if face.material_index is not -1:
+                assigned_material = face.material_index
+
+    return assigned_material
+
 def get_material(game_version, original_geo, face, geometry, material_list, export_type, region, permutation):
     object_materials = len(original_geo.material_slots) - 1
     assigned_material = None

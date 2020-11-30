@@ -379,6 +379,8 @@ class JMSScene(global_functions.HaloAsset):
                                     geometry_list.append(obj.to_mesh(preserve_all_data_layers=True))
                                     original_geometry_list.append(obj)
 
+                                obj.to_mesh_clear()
+
             elif obj.name[0:1].lower() == '$' and version > 8205:
                 if global_functions.set_ignore(obj) == False or hidden_geo:
                     if export_physics:
@@ -394,7 +396,7 @@ class JMSScene(global_functions.HaloAsset):
 
                         else:
                             if obj.type == 'MESH':
-                                phy_material = global_functions.get_material(game_version, obj, obj.data.polygons[0], obj.to_mesh(), None, 'JMS', None, None)
+                                phy_material = global_functions.get_face_material(game_version, obj, obj.data.polygons[0])
                                 if not phy_material == -1:
                                     if obj.data.ass_jms.Object_Type == 'SPHERE':
                                         sphere_list.append(obj)
@@ -435,35 +437,46 @@ class JMSScene(global_functions.HaloAsset):
                                     geometry_list.append(obj.to_mesh(preserve_all_data_layers=True))
                                     original_geometry_list.append(obj)
 
+                                obj.to_mesh_clear()
+
         root_node_count = global_functions.count_root_nodes(node_list)
         node_count = len(node_list)
 
         if game_version == 'haloce' and node_count == 0: #JMSv2 files can have JMS files without a node for physics.
             raise global_functions.SceneParseError("No nodes in scene. Add an armature or object mesh named frame.")
+            return {'CANCELLED'}
 
         elif root_node_count >= 2:
             raise global_functions.SceneParseError("More than one root node. Please remove or rename objects until you only have one root frame object.")
+            return {'CANCELLED'}
 
         elif len(object_list) == 0:
             raise global_functions.SceneParseError("No objects in scene.")
+            return {'CANCELLED'}
 
         elif mesh_frame_count > 0 and armature_count > 0:
             raise global_functions.SceneParseError("Using both armature and object mesh node setup. Choose one or the other.")
+            return {'CANCELLED'}
 
         elif game_version == 'haloce' and len(geometry_list) == 0 and len(marker_list) == 0:
             raise global_functions.SceneParseError("No geometry in scene.")
+            return {'CANCELLED'}
 
         elif game_version == 'haloce' and version >= 8201:
             raise global_functions.SceneParseError("This version is not supported for Halo CE. Choose from 8197-8200 if you wish to export for Halo CE.")
+            return {'CANCELLED'}
 
         elif game_version == 'halo2' and version >= 8211:
             raise global_functions.SceneParseError("This version is not supported for Halo 2. Choose from 8197-8210 if you wish to export for Halo 2.")
+            return {'CANCELLED'}
 
         elif game_version == 'haloce' and node_count > 64:
             raise global_functions.SceneParseError("This model has more nodes than Halo CE supports. Please limit your node count to 64 nodes")
+            return {'CANCELLED'}
 
         elif game_version == 'halo2' and node_count > 255:
             raise global_functions.SceneParseError("This model has more nodes than Halo 2 supports. Please limit your node count to 255 nodes")
+            return {'CANCELLED'}
 
         sorted_list = global_functions.sort_list(node_list, armature, game_version, version, False)
         joined_list = sorted_list[0]
@@ -610,8 +623,12 @@ class JMSScene(global_functions.HaloAsset):
                 self.triangles.append(JMSScene.Triangle(region_index, material_index, v0, v1, v2))
                 for loop_index in face.loop_indices:
                     vert = geometry.vertices[geometry.loops[loop_index].vertex_index]
+
                     translation = original_geo_matrix @ vert.co
-                    normal = original_geo_matrix @ (vert.co + vert.normal) - translation
+                    mesh_dimensions = global_functions.get_dimensions(None, None, None, None, custom_scale, version, translation, True, False, armature, 'JMS')
+                    scaled_translation = (mesh_dimensions.pos_x_a, mesh_dimensions.pos_y_a, mesh_dimensions.pos_z_a)
+
+                    normal = (original_geo_matrix @ (vert.co + vert.normal) - translation).normalized()
                     region = region_index
                     uv_set = []
                     for uv_index in range(len(geometry.uv_layers)):
@@ -678,7 +695,7 @@ class JMSScene(global_functions.HaloAsset):
                         node_weight = float(1.0000000000)
                         node_set.append([node_index, node_weight])
 
-                    self.vertices.append(JMSScene.Vertex(node_influence_count, node_set, region, translation, normal, uv_set))
+                    self.vertices.append(JMSScene.Vertex(node_influence_count, node_set, region, scaled_translation, normal, uv_set))
 
         for spheres in sphere_list:
             name = spheres.name.split('$', 1)[1]
@@ -714,6 +731,7 @@ class JMSScene(global_functions.HaloAsset):
             scale = (mesh_dimensions.radius_a)
 
             self.spheres.append(JMSScene.Sphere(name, parent_index[0], material_index, rotation, translation, scale))
+            spheres.to_mesh_clear()
 
         for boxes in box_list:
             name = boxes.name.split('$', 1)[1]
@@ -751,6 +769,7 @@ class JMSScene(global_functions.HaloAsset):
             height = (mesh_dimensions.dimension_z_a)
 
             self.boxes.append(JMSScene.Box(name, parent_index[0], material_index, rotation, translation, width, length, height))
+            boxes.to_mesh_clear()
 
         for capsule in capsule_list:
             name = capsule.name.split('$', 1)[1]
@@ -787,6 +806,7 @@ class JMSScene(global_functions.HaloAsset):
             scale = (mesh_dimensions.radius_a)
 
             self.capsules.append(JMSScene.Capsule(name, parent_index[0], material_index, rotation, translation, height, scale))
+            capsule.to_mesh_clear()
 
         for convex_shape in convex_shape_list:
             verts = []
@@ -835,6 +855,7 @@ class JMSScene(global_functions.HaloAsset):
                 verts.append(JMSScene.Vertex(None, None, None, vert_translation, None, None))
 
             self.convex_shapes.append(JMSScene.Convex_Shape(name, parent_index[0], material_index, rotation, translation, verts))
+            convex_shape.to_mesh_clear()
 
         for region in region_list:
             name = region

@@ -82,27 +82,35 @@ class JMAScene(global_functions.HaloAsset):
 
         if self.node_count == 0: #JMSv2 files can have JMS files without a node for physics.
             raise global_functions.SceneParseError("No nodes in scene. Add an armature or object mesh named frame.")
+            return {'CANCELLED'}
 
         elif armature_count >= 2:
             raise global_functions.SceneParseError("More than one armature object. Please delete all but one.")
+            return {'CANCELLED'}
 
         elif root_node_count >= 2:
             raise global_functions.SceneParseError("More than one root node. Please remove or rename objects until you only have one root frame object.")
+            return {'CANCELLED'}
 
         elif len(object_list) == 0:
             raise global_functions.SceneParseError("No objects in scene.")
+            return {'CANCELLED'}
 
         elif extension in h2_extension_list and game_version == 'haloce':
             raise global_functions.SceneParseError("This extension is not used in Halo CE.")
+            return {'CANCELLED'}
 
         elif version >= 16393 and game_version == 'haloce':
             raise global_functions.SceneParseError("This version is not supported for Halo CE. Choose from 16390-16392 if you wish to export for Halo CE.")
+            return {'CANCELLED'}
 
         elif game_version == 'haloce' and self.node_count > 64:
             raise global_functions.SceneParseError("This model has more nodes than Halo CE supports. Please limit your node count to 64 nodes")
+            return {'CANCELLED'}
 
         elif game_version == 'halo2' and self.node_count > 255:
             raise global_functions.SceneParseError("This model has more nodes than Halo 2 supports. Please limit your node count to 255 nodes")
+            return {'CANCELLED'}
 
         self.node_checksum = 0
         for node in joined_list:
