@@ -442,41 +442,32 @@ class JMSScene(global_functions.HaloAsset):
         root_node_count = global_functions.count_root_nodes(node_list)
         node_count = len(node_list)
 
-        if game_version == 'haloce' and node_count == 0: #JMSv2 files can have JMS files without a node for physics.
+        if game_version == 'haloce' and node_count == 0 or not game_version == 'haloce' and not export_physics and node_count == 0: #JMSv2 files can have JMS files without a node for physics.
             raise global_functions.SceneParseError("No nodes in scene. Add an armature or object mesh named frame.")
-            return {'CANCELLED'}
 
         elif root_node_count >= 2:
             raise global_functions.SceneParseError("More than one root node. Please remove or rename objects until you only have one root frame object.")
-            return {'CANCELLED'}
 
         elif len(object_list) == 0:
             raise global_functions.SceneParseError("No objects in scene.")
-            return {'CANCELLED'}
 
         elif mesh_frame_count > 0 and armature_count > 0:
             raise global_functions.SceneParseError("Using both armature and object mesh node setup. Choose one or the other.")
-            return {'CANCELLED'}
 
         elif game_version == 'haloce' and len(geometry_list) == 0 and len(marker_list) == 0:
             raise global_functions.SceneParseError("No geometry in scene.")
-            return {'CANCELLED'}
 
         elif game_version == 'haloce' and version >= 8201:
             raise global_functions.SceneParseError("This version is not supported for Halo CE. Choose from 8197-8200 if you wish to export for Halo CE.")
-            return {'CANCELLED'}
 
         elif game_version == 'halo2' and version >= 8211:
             raise global_functions.SceneParseError("This version is not supported for Halo 2. Choose from 8197-8210 if you wish to export for Halo 2.")
-            return {'CANCELLED'}
 
         elif game_version == 'haloce' and node_count > 64:
             raise global_functions.SceneParseError("This model has more nodes than Halo CE supports. Please limit your node count to 64 nodes")
-            return {'CANCELLED'}
 
         elif game_version == 'halo2' and node_count > 255:
             raise global_functions.SceneParseError("This model has more nodes than Halo 2 supports. Please limit your node count to 255 nodes")
-            return {'CANCELLED'}
 
         sorted_list = global_functions.sort_list(node_list, armature, game_version, version, False)
         joined_list = sorted_list[0]

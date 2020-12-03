@@ -716,6 +716,17 @@ class JMA_SceneProps(Panel):
             row = box.row()
             row.prop(scene_jma, "scale_float")
 
+        box = layout.box()
+        box.label(text="Import:")
+        col = box.column(align=True)
+        row = col.row()
+        row.label(text='1st JMS Rest Positions:')
+        row.prop(scene_jma, "jms_path_a", text='')
+        if ".jms" in scene_jma.jms_path_a.lower():
+            row = col.row()
+            row.label(text='2nd JMS Rest Positions:')
+            row.prop(scene_jma, "jms_path_b", text='')
+
 class JMA_ScenePropertiesGroup(PropertyGroup):
     extension: EnumProperty(
         name="Extension:",
@@ -835,6 +846,18 @@ class JMA_ScenePropertiesGroup(PropertyGroup):
         description="Choose a custom value to multiply position values by.",
         default=1.0,
         min=1.0,
+    )
+
+    jms_path_a: StringProperty(
+        name="Primary JMS",
+        description="Select a path to a JMS containing the primary skeleton. Will be used for rest position.",
+        subtype="FILE_PATH"
+    )
+
+    jms_path_b: StringProperty(
+        name="Secondary JMS",
+        description="Select a path to a JMS containing the secondary skeleton. Will be used for rest position.",
+        subtype="FILE_PATH"
     )
 
 class JMS_SceneProps(Panel):
@@ -2308,6 +2331,16 @@ class ImportJMA(Operator, ImportHelper):
         default = True,
         )
 
+    jms_path_a: StringProperty(
+        name="Primary JMS",
+        description="Select a path to a JMS containing the primary skeleton. Will be used for rest position.",
+    )
+
+    jms_path_b: StringProperty(
+        name="Secondary JMS",
+        description="Select a path to a JMS containing the secondary skeleton. Will be used for rest position.",
+    )
+
     filter_glob: StringProperty(
         default="*.jma;*.jmm;*.jmt;*.jmo;*.jmr;*.jmrx;*.jmh;*.jmz;*.jmw",
         options={'HIDDEN'},
@@ -2326,9 +2359,13 @@ class ImportJMA(Operator, ImportHelper):
             self.filepath = args.filepath
             self.fix_parents = args.fix_parents
 
-        return run_code("import_jma.load_file(context, self.filepath, self.report, self.fix_parents, self.game_version)")
+        return run_code("import_jma.load_file(context, self.filepath, self.report, self.fix_parents, self.game_version, self.jms_path_a, self.jms_path_b)")
 
     def draw(self, context):
+        scene = context.scene
+        scene_jma = scene.jma
+        self.jms_path_a = scene_jma.jms_path_a
+        self.jms_path_b = scene_jma.jms_path_b
         layout = self.layout
 
         box = layout.box()
@@ -2343,6 +2380,17 @@ class ImportJMA(Operator, ImportHelper):
             row = col.row()
             row.label(text='Force node parents:')
             row.prop(self, "fix_parents", text='')
+
+        box = layout.box()
+        box.label(text="Import:")
+        col = box.column(align=True)
+        row = col.row()
+        row.label(text='Primary JMS:')
+        row.prop(self, "jms_path_a", text='')
+        if ".jms" in self.jms_path_a.lower():
+            row = col.row()
+            row.label(text='Secondary JMS:')
+            row.prop(self, "jms_path_b", text='')
 
 def menu_func_export(self, context):
     self.layout.operator(ExportASS.bl_idname, text='Halo Amalgam Scene Specification (.ass)')

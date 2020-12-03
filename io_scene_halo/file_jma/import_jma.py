@@ -28,7 +28,9 @@ import bpy
 import sys
 import traceback
 
+from os import path
 from enum import Flag, auto
+from io_scene_halo.file_jms import import_jms
 from mathutils import Vector, Quaternion, Matrix, Euler
 from io_scene_halo.global_functions import global_functions
 
@@ -184,10 +186,18 @@ class JMAAsset(global_functions.HaloAsset):
                     else:
                         child_node = None
 
-def load_file(context, filepath, report, fix_parents, game_version):
+def load_file(context, filepath, report, fix_parents, game_version, jms_path_a, jms_path_b):
+    jms_a_transform = False
+    jms_b_transform = False
 
     try:
         jma_file = JMAAsset(filepath, game_version)
+        if path.exists(jms_path_a):
+            jms_a_transform = True
+            jms_a_file = import_jms.JMSAsset(jms_path_a, "halo2")
+        if path.exists(jms_path_a) and path.exists(jms_path_b):
+            jms_b_transform = True
+            jms_b_file = import_jms.JMSAsset(jms_path_b, "halo2")
     except global_functions.AssetParseError as parse_error:
         info = sys.exc_info()
         traceback.print_exception(info[0], info[1], info[2])
@@ -207,6 +217,8 @@ def load_file(context, filepath, report, fix_parents, game_version):
 
     scene_nodes = []
     jma_nodes = []
+    jms_a_nodes = []
+    jms_b_nodes = []
     for obj in object_list:
         if armature is None:
             if obj.type == 'ARMATURE':
@@ -231,15 +243,44 @@ def load_file(context, filepath, report, fix_parents, game_version):
 
     if armature == None:
         if jma_file.version >= 16392:
-            if len(scene_nodes) > 0:
-                for jma_node in jma_file.nodes:
-                    jma_nodes.append(jma_node.name)
+            for jma_node in jma_file.nodes:
+                jma_nodes.append(jma_node.name)
 
+            if len(scene_nodes) > 0:
                 for jma_node in jma_nodes:
                     if not jma_node in scene_nodes:
                         report({'WARNING'}, "Node '%s' not found in an existing armature" % jma_node)
 
-            report({'WARNING'}, "No valid armature detected. One will be created but expect issues with visuals in scene due to no proper rest position")
+            if jms_a_transform and not jms_b_transform:
+                for jms_node in jms_a_file.nodes:
+                    jms_a_nodes.append(jms_node.name)
+
+                for jms_node_name in jms_a_nodes:
+                    if not jms_node_name in jma_nodes:
+                        jms_a_transform = False
+                        report({'WARNING'}, "Node '%s' from JMS skeleton not found in JMA skeleton." % jms_node_name)
+
+                report({'WARNING'}, "No valid armature detected. One will be created and the referenced JMS will be used for the rest position")
+
+            elif jms_a_transform and jms_b_transform:
+                for jms_node in jms_a_file.nodes:
+                    jms_a_nodes.append(jms_node.name)
+
+                for jms_node in jms_b_file.nodes:
+                    jms_b_nodes.append(jms_node.name)
+
+                jms_nodes = jms_a_nodes + jms_b_nodes
+
+                for jms_node_name in jms_nodes:
+                    if not jms_node_name in jma_nodes:
+                        jms_a_transform = False
+                        report({'WARNING'}, "Node '%s' from JMS skeleton not found in JMA skeleton." % jms_node_name)
+
+                report({'WARNING'}, "No valid armature detected. One will be created and the referenced JMS files will be used for the rest position")
+
+            else:
+                report({'WARNING'}, "No valid armature detected. One will be created but expect issues with visuals in scene due to no proper rest position")
+
             pelvis = None
             thigh0 = None
             thigh1 = None
@@ -280,15 +321,24 @@ def load_file(context, filepath, report, fix_parents, game_version):
 
                 parent_idx = jma_node.parent
 
-                matrix_translate = Matrix.Translation(first_frame[idx].vector)
-                matrix_scale = Matrix.Scale(first_frame[idx].scale, 4, (1, 1, 1))
-                matrix_rotation = first_frame[idx].rotation.to_matrix().to_4x4()
+                if jms_a_transform:
+                    if jma_node.name in jms_a_nodes:
+                        node_idx = jms_a_nodes.index(jma_node.name)
+                        rest_position = jms_a_file.transforms[0]
+                        jms_node = rest_position[node_idx]
 
-                bpy.ops.object.mode_set(mode = 'POSE')
-                pose_bone = armature.pose.bones[jma_node.name]
-                transform_matrix = matrix_translate @ matrix_rotation @ matrix_scale
-                if jma_file.version < 16394 and pose_bone.parent:
-                    transform_matrix = pose_bone.parent.matrix @ transform_matrix
+                    elif jma_node.name in jms_b_nodes:
+                        node_idx = jms_b_nodes.index(jma_node.name)
+                        rest_position = jms_b_file.transforms[0]
+                        jms_node = rest_position[node_idx]
+
+                    matrix_translate = Matrix.Translation(jms_node.vector)
+                    matrix_scale = Matrix.Scale(1, 4, (1, 1, 1))
+                    matrix_rotation = jms_node.rotation.to_matrix().to_4x4()
+                else:
+                    matrix_translate = Matrix.Translation(first_frame[idx].vector)
+                    matrix_scale = Matrix.Scale(1, 4, (1, 1, 1))
+                    matrix_rotation = first_frame[idx].rotation.to_matrix().to_4x4()
 
                 if not parent_idx == -1 and not parent_idx == None:
                     parent = jma_file.nodes[parent_idx].name
@@ -299,7 +349,12 @@ def load_file(context, filepath, report, fix_parents, game_version):
 
                     bpy.ops.object.mode_set(mode = 'EDIT')
                     armature.data.edit_bones[jma_node.name].parent = armature.data.edit_bones[parent]
-                    bpy.ops.object.mode_set(mode = 'POSE')
+
+                bpy.ops.object.mode_set(mode = 'POSE')
+                pose_bone = armature.pose.bones[jma_node.name]
+                transform_matrix = matrix_translate @ matrix_rotation @ matrix_scale
+                if jma_file.version < 16394 and pose_bone.parent and not jma_node.name == jms_a_nodes[0] and not jma_node.name == jms_b_nodes[0]:
+                    transform_matrix = pose_bone.parent.matrix @ transform_matrix
 
                 armature.pose.bones[jma_node.name].matrix = transform_matrix
 
