@@ -190,24 +190,13 @@ def load_file(context, filepath, report, fix_parents, game_version, jms_path_a, 
     jms_a_transform = False
     jms_b_transform = False
 
-    try:
-        jma_file = JMAAsset(filepath, game_version)
-        if path.exists(jms_path_a):
-            jms_a_transform = True
-            jms_a_file = import_jms.JMSAsset(jms_path_a, "halo2")
-        if path.exists(jms_path_a) and path.exists(jms_path_b):
-            jms_b_transform = True
-            jms_b_file = import_jms.JMSAsset(jms_path_b, "halo2")
-    except global_functions.AssetParseError as parse_error:
-        info = sys.exc_info()
-        traceback.print_exception(info[0], info[1], info[2])
-        report({'ERROR'}, "Bad file: {0}".format(parse_error))
-        return {'CANCELLED'}
-    except:
-        info = sys.exc_info()
-        traceback.print_exception(info[0], info[1], info[2])
-        report({'ERROR'}, "Internal error: {1}({0})".format(info[1], info[0]))
-        return {'CANCELLED'}
+    jma_file = JMAAsset(filepath, game_version)
+    if path.exists(jms_path_a):
+        jms_a_transform = True
+        jms_a_file = import_jms.JMSAsset(jms_path_a, "halo2")
+    if path.exists(jms_path_a) and path.exists(jms_path_b):
+        jms_b_transform = True
+        jms_b_file = import_jms.JMSAsset(jms_path_b, "halo2")
 
     collection = bpy.context.collection
     scene = bpy.context.scene

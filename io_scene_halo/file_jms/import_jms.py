@@ -730,18 +730,7 @@ class JMSAsset(global_functions.HaloAsset):
                         child_node = None
 
 def load_file(context, filepath, report, game_version, fix_parents):
-    try:
-        jms_file = JMSAsset(filepath, game_version)
-    except global_functions.AssetParseError as parse_error:
-        info = sys.exc_info()
-        traceback.print_exception(info[0], info[1], info[2])
-        report({'ERROR'}, "Bad file: {0}".format(parse_error))
-        return {'CANCELLED'}
-    except:
-        info = sys.exc_info()
-        traceback.print_exception(info[0], info[1], info[2])
-        report({'ERROR'}, "Internal error: {1}({0})".format(info[1], info[0]))
-        return {'CANCELLED'}
+    jms_file = JMSAsset(filepath, game_version)
 
     collection = bpy.context.collection
     scene = bpy.context.scene
