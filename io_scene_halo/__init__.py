@@ -24,9 +24,6 @@
 #
 # ##### END MIT LICENSE BLOCK #####
 
-ENABLE_DEBUGGING = False
-ENABLE_PROFILING = False
-
 bl_info = {
     "name": "Halo Asset Blender Development Toolset",
     "author": "General_101",
@@ -62,27 +59,38 @@ import argparse
 
 def run_code(code_string):
     def toolset_exec(code):
-        if ENABLE_PROFILING:
+        from io_scene_halo import config
+        if config.ENABLE_PROFILING:
             import cProfile
             cProfile.runctx(code, globals(), caller_locals)
         else:
             exec(code, globals(), caller_locals)
     import inspect
+    from io_scene_halo import crash_report
     frame = inspect.currentframe()
     try:
         caller_locals = frame.f_back.f_locals
+        report = caller_locals['self'].report
+
         # this hack is horrible but it works??
         toolset_exec(f"""locals()['__this_is_a_horrible_hack'] = {code_string}""")
         result = caller_locals['__this_is_a_horrible_hack']
         caller_locals.pop('__this_is_a_horrible_hack', None)
         return result
+
+    except global_functions.SceneParseError as parse_error:
+        crash_report.report_crash()
+        report({'ERROR'}, "Bad scene: {0}".format(parse_error))
+        return {'CANCELLED'}
+    except global_functions.AssetParseError as parse_error:
+        crash_report.report_crash()
+        report({'ERROR'}, "Bad file: {0}".format(parse_error))
+        return {'CANCELLED'}
     except:
-        import pdb, traceback
-        if not ENABLE_DEBUGGING:
-            raise
-        _extype, _value, tb = sys.exc_info()
-        traceback.print_exc()
-        pdb.post_mortem(tb)
+        crash_report.report_crash()
+        info = sys.exc_info()
+        report({'ERROR'}, "Internal error: {1}({0})".format(info[1], info[0]))
+        return {'CANCELLED'}
     finally:
         del frame
 

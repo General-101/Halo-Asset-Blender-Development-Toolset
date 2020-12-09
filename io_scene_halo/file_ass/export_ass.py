@@ -380,18 +380,7 @@ class ASSScene(global_functions.HaloAsset):
 def write_file(context, filepath, report, ass_version, ass_version_h2, use_scene_properties, hidden_geo, apply_modifiers, triangulate_faces, edge_split, use_edge_angle, use_edge_sharp, split_angle, clean_normalize_weights, scale_enum, scale_float, console, game_version, encoding):
     custom_scale = global_functions.set_scale(scale_enum, scale_float)
     version = global_functions.get_version(ass_version, None, ass_version_h2, game_version, console)
-    try:
-        ass_scene = ASSScene(context, report, version, game_version, apply_modifiers, triangulate_faces, edge_split, use_edge_angle, use_edge_sharp, split_angle, clean_normalize_weights, hidden_geo, custom_scale)
-    except global_functions.AssetParseError as parse_error:
-        info = sys.exc_info()
-        traceback.print_exception(info[0], info[1], info[2])
-        report({'ERROR'}, "Bad scene: {0}".format(parse_error))
-        return {'CANCELLED'}
-    except:
-        info = sys.exc_info()
-        traceback.print_exception(info[0], info[1], info[2])
-        report({'ERROR'}, "Internal error: {1}({0})".format(info[1], info[0]))
-        return {'CANCELLED'}
+    ass_scene = ASSScene(context, report, version, game_version, apply_modifiers, triangulate_faces, edge_split, use_edge_angle, use_edge_sharp, split_angle, clean_normalize_weights, hidden_geo, custom_scale)
 
     file = open(filepath, 'w', encoding=encoding)
 

@@ -172,18 +172,8 @@ def write_file(context, filepath, report, extension, extension_ce, extension_h2,
     else:
         frame_rate_value = int(custom_frame_rate)
 
-    try:
-        jma_scene = JMAScene(context, report, version, game_version, extension, custom_scale, biped_controller)
-    except global_functions.SceneParseError as parse_error:
-        info = sys.exc_info()
-        traceback.print_exception(info[0], info[1], info[2])
-        report({'ERROR'}, "Bad scene: {0}".format(parse_error))
-        return {'CANCELLED'}
-    except:
-        info = sys.exc_info()
-        traceback.print_exception(info[0], info[1], info[2])
-        report({'ERROR'}, "Internal error: {1}({0})".format(info[1], info[0]))
-        return {'CANCELLED'}
+
+    jma_scene = JMAScene(context, report, version, game_version, extension, custom_scale, biped_controller)
 
     if version > 16394:
         decimal_1 = '\n%0.10f'

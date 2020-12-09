@@ -1099,18 +1099,7 @@ class JMSScene(global_functions.HaloAsset):
             self.bounding_spheres.append(JMSScene.Bounding_Sphere(translation, scale))
 
 def write_file(context, filepath, report, version, game_version, encoding, folder_structure, apply_modifiers, custom_scale, permutation_ce, level_of_detail_ce, hidden_geo, export_render, export_collision, export_physics, model_type, object_list):
-    try:
-        jms_scene = JMSScene(context, report, version, game_version, apply_modifiers, hidden_geo, export_render, export_collision, export_physics, custom_scale, object_list)
-    except global_functions.SceneParseError as parse_error:
-        info = sys.exc_info()
-        traceback.print_exception(info[0], info[1], info[2])
-        report({'ERROR'}, "Bad scene: {0}".format(parse_error))
-        return {'CANCELLED'}
-    except:
-        info = sys.exc_info()
-        traceback.print_exception(info[0], info[1], info[2])
-        report({'ERROR'}, "Internal error: {1}({0})".format(info[1], info[0]))
-        return {'CANCELLED'}
+    jms_scene = JMSScene(context, report, version, game_version, apply_modifiers, hidden_geo, export_render, export_collision, export_physics, custom_scale, object_list)
 
     if version > 8209:
         decimal_1 = '\n%0.10f'

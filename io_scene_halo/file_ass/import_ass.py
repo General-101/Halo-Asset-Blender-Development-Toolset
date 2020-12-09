@@ -204,18 +204,7 @@ class ASSAsset(global_functions.HaloAsset):
             raise RuntimeError("%s elements left after parse end" % self.left())
 
 def load_file(context, filepath, report):
-    try:
-        ass_file = ASSAsset(filepath)
-    except global_functions.AssetParseError as parse_error:
-        info = sys.exc_info()
-        traceback.print_exception(info[0], info[1], info[2])
-        report({'ERROR'}, "Bad file: {0}".format(parse_error))
-        return {'CANCELLED'}
-    except:
-        info = sys.exc_info()
-        traceback.print_exception(info[0], info[1], info[2])
-        report({'ERROR'}, "Internal error: {1}({0})".format(info[1], info[0]))
-        return {'CANCELLED'}
+    ass_file = ASSAsset(filepath)
 
     collection = bpy.context.collection
     view_layer = bpy.context.view_layer
