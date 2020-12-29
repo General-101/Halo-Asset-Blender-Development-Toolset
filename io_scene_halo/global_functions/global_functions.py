@@ -658,11 +658,6 @@ class HaloAsset:
             quat.invert()
         return quat
 
-def get_random_color():
-    rgb = colorsys.hsv_to_rgb(random.uniform(0, 1), random.uniform(0.3, 1), random.uniform(0.5, 0.8))
-    rgba = (rgb[0], rgb[1], rgb[2], 1)
-    return rgba
-
 def get_game_version(version, filetype):
     game_version = None
     if filetype == 'JMS':

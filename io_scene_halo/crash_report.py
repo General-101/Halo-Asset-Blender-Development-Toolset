@@ -10,7 +10,7 @@ class CrashReport:
         self.zip_buffer = io.BytesIO()
         self.zfile = zipfile.ZipFile(self.zip_buffer, "w", zipfile.ZIP_DEFLATED)
 
-        self.add_file("readme.txt", 
+        self.add_file("readme.txt",
         f"""Crash report for Halo-Asset-Blender-Development-Toolset
 Please create an issue at {config.URL} or email {config.EMAIL}""")
 
@@ -46,6 +46,6 @@ def report_crash():
 
         dump_path = report.dump()
         print(f"Dumped crash report to {dump_path}")
-        
-        
+
+
 

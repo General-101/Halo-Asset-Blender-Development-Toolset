@@ -142,7 +142,7 @@ class JMSAsset(global_functions.HaloAsset):
             self.verts = verts
 
     class Ragdoll:
-        def __init__(self, name, attached_index=-1, referenced_index=-1, attached_rotation=None, attached_translation=None, referenced_rotation=None, referenced_translation=None, min_twist=0.0, max_twist=0.0, min_cone=0.0, max_cone=0.0, min_plane=0.0, max_plane=0.0, friction_limit=0.0):
+        def __init__(self, name, attached_index=-1, referenced_index=-1, attached_rotation=None, attached_translation=None, referenced_rotation=None, referenced_translation=None, min_twist=0.0, max_twist=0.0, min_cone=0.0, max_cone=0.0, min_plane=0.0, max_plane=0.0):
             self.name = name
             self.attached_index = attached_index
             self.referenced_index = referenced_index
@@ -502,11 +502,11 @@ class JMSAsset(global_functions.HaloAsset):
                     tex_u_value   = self.next()
                     tex_v_value   = self.next()
                     if 'NAN' in tex_u_value:
-                        tex_u = tex_u_value.rsplit('.', 1)[0]
+                        tex_u = float(tex_u_value.rsplit('.', 1)[0])
                     else:
                         tex_u = float(tex_u_value)
                     if 'NAN' in tex_v_value:
-                        tex_v = tex_v_value.rsplit('.', 1)[0]
+                        tex_v = float(tex_v_value.rsplit('.', 1)[0])
                     else:
                         tex_v = float(tex_v_value)
 

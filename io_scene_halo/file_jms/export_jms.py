@@ -379,8 +379,6 @@ class JMSScene(global_functions.HaloAsset):
                                     geometry_list.append(obj.to_mesh(preserve_all_data_layers=True))
                                     original_geometry_list.append(obj)
 
-                                obj.to_mesh_clear()
-
             elif obj.name[0:1].lower() == '$' and version > 8205:
                 if global_functions.set_ignore(obj) == False or hidden_geo:
                     if export_physics:
@@ -436,8 +434,6 @@ class JMSScene(global_functions.HaloAsset):
                                 else:
                                     geometry_list.append(obj.to_mesh(preserve_all_data_layers=True))
                                     original_geometry_list.append(obj)
-
-                                obj.to_mesh_clear()
 
         root_node_count = global_functions.count_root_nodes(node_list)
         node_count = len(node_list)
@@ -687,6 +683,8 @@ class JMSScene(global_functions.HaloAsset):
                         node_set.append([node_index, node_weight])
 
                     self.vertices.append(JMSScene.Vertex(node_influence_count, node_set, region, scaled_translation, normal, uv_set))
+
+            original_geo.to_mesh_clear()
 
         for spheres in sphere_list:
             name = spheres.name.split('$', 1)[1]

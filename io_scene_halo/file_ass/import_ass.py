@@ -157,8 +157,17 @@ class ASSAsset(global_functions.HaloAsset):
 
                     uv_count = int(self.next())
                     for uv in range(uv_count):
-                        tex_u = float(self.next())
-                        tex_v = float(self.next())
+                        tex_u_value   = self.next()
+                        tex_v_value   = self.next()
+                        if 'NAN' in tex_u_value:
+                            tex_u = float(tex_u_value.rsplit('.', 1)[0])
+                        else:
+                            tex_u = float(tex_u_value)
+                        if 'NAN' in tex_v_value:
+                            tex_v = float(tex_v_value.rsplit('.', 1)[0])
+                        else:
+                            tex_v = float(tex_v_value)
+
                         uv_set.append([tex_u, tex_v])
 
                     vertices.append(ASSAsset.Vertex(node_influence_count, node_set, translation, normal, uv_set))
@@ -321,6 +330,7 @@ def load_file(context, filepath, report):
                         vertex_index = (3 * idx) + vert_idx
                         ass_vert = object_element.vertices[vert]
                         bm.verts[vertex_index].normal = ass_vert.normal
+
                         for uv_idx, uv in enumerate(ass_vert.uv_set):
                             uv_name = 'UVMap_%s' % uv_idx
                             layer_uv = bm.loops.layers.uv.get(uv_name)
@@ -332,6 +342,7 @@ def load_file(context, filepath, report):
 
                         for node_values in ass_vert.node_set:
                             layer_deform = bm.verts.layers.deform.verify()
+
                             node_index = node_values[0]
                             node_weight = node_values[1]
                             if not node_index == -1:

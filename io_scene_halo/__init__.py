@@ -30,9 +30,9 @@ bl_info = {
     "version": (1, 0, 0),
     "blender": (2, 80, 0),
     "location": "File > Import-Export",
-    "description": "Import-Export Halo CE/2 Jointed Model Skeleton File (.jms), Import-Export Halo CE/2 Jointed Model Animation File (.jma), and Import-Export Halo 2 Amalgam Scene Specification File (.ass). Initial JMS base by Cyboryxmen with changes by Fulsy + MosesofEgypt + con for JMS portion. Initial ASS exporter by Dave Barnes (Aerial Dave)",
+    "description": "Import-Export Halo CE/2 Jointed Model Skeleton File (.jms), Import-Export Halo CE/2 Jointed Model Animation File (.jma), and Import-Export Halo 2 Amalgam Scene Specification File (.ass). Originally by Cyboryxmen with changes by Fulsy + MosesofEgypt + con for JMS portion. Initial ASS exporter by Dave Barnes (Aerial Dave)",
     "warning": "",
-    "wiki_url": "https://num0005.github.io/h2codez_docs/",
+    "wiki_url": "https://general-101.github.io/HEK-Docs/",
     "support": 'COMMUNITY',
     "category": "Import-Export"}
 
@@ -1380,7 +1380,7 @@ class ExportASS(Operator, ExportHelper):
             parser.add_argument('-arg1', '--filepath', dest='filepath', metavar='FILE', required = True)
             parser.add_argument('-arg2', '--use_scene_properties', dest='use_scene_properties', action='store_true')
             parser.add_argument('-arg3', '--ass_version', dest='ass_version', type=str, default="2")
-            parser.add_argument('-arg4', '--game_version', dest='game_version', type=str, default="halo2vista")
+            parser.add_argument('-arg4', '--game_version', dest='game_version', type=str, default="halo2utf8")
             parser.add_argument('-arg5', '--hidden_geo', dest='hidden_geo', action='store_true')
             parser.add_argument('-arg6', '--apply_modifiers', dest='apply_modifiers', action='store_true')
             parser.add_argument('-arg7', '--triangulate_faces', dest='triangulate_faces', action='store_true')
@@ -1426,7 +1426,7 @@ class ExportASS(Operator, ExportHelper):
 
         encoding = global_functions.get_encoding(self.game_version)
         game_version = self.game_version
-        if self.game_version == 'halo2vista':
+        if self.game_version == 'halo2utf8':
             game_version = 'halo2'
 
         return run_code("export_ass.write_file(*keywords, game_version, encoding)")
@@ -1461,7 +1461,7 @@ class ExportASS(Operator, ExportHelper):
             self.scale_enum = scene_ass.scale_enum
             self.scale_float = scene_ass.scale_float
 
-        if self.game_version == 'halo2vista':
+        if self.game_version == 'halo2utf8':
             if scene_halo.expert_mode:
                 box = layout.box()
                 box.label(text="File Details:")
@@ -2400,6 +2400,68 @@ class ImportJMA(Operator, ImportHelper):
             row.label(text='Secondary JMS:')
             row.prop(self, "jms_path_b", text='')
 
+
+class Halo_LightmapperPropertiesGroup(PropertyGroup):
+    res_x: IntProperty(
+        name="Image Width",
+        description="Set the width for images created during bulk",
+        default=256,
+        min=2,
+    )
+
+    res_y: IntProperty(
+        name="Image Height",
+        description="Set the height for images created during bulk",
+        default=256,
+        min=2,
+    )
+
+    fix_rotation: BoolProperty(
+        name ="Set Rotation",
+        description = "If you didn't mess with the obj direction settings then keep this enabled.",
+        default = True,
+        options={'HIDDEN'},
+        )
+
+class Halo_Lightmapper_Helper(Panel):
+    bl_label = "Halo Lightmapper Helper"
+    bl_idname = "HALO_PT_Lightmapper"
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "UI"
+    bl_category = "Halo Light"
+
+    def draw(self, context):
+        scene = context.scene
+        scene_halo_lightmapper = scene.halo_lightmapper
+
+        layout = self.layout
+        row = layout.row()
+
+        col = row.column(align=True)
+
+        row = col.row()
+        row.label(text='Image Width:')
+        row.prop(scene_halo_lightmapper, "res_x", text='')
+        row = col.row()
+        row.label(text='Image Height:')
+        row.prop(scene_halo_lightmapper, "res_y", text='')
+        row = col.row()
+        row.label(text='Fix Rotation:')
+        row.prop(scene_halo_lightmapper, "fix_rotation", text='')
+        row = col.row()
+        row.operator("halo_bulk.lightmapper_images", text="BULK!!!")
+
+class Bulk_Lightmap_Images(Operator):
+    bl_idname = 'halo_bulk.lightmapper_images'
+    bl_label = 'Add Cube'
+    bl_options = {"REGISTER", "UNDO"}
+
+    def execute(self, context):
+        from io_scene_halo.misc import lightmapper_prep
+        scene = context.scene
+        scene_halo_lightmapper = scene.halo_lightmapper
+        return run_code("lightmapper_prep.lightmap_bulk(context, scene_halo_lightmapper.res_x, scene_halo_lightmapper.res_y, scene_halo_lightmapper.fix_rotation)")
+
 def menu_func_export(self, context):
     self.layout.operator(ExportASS.bl_idname, text='Halo Amalgam Scene Specification (.ass)')
     self.layout.operator(ExportJMS.bl_idname, text="Halo Jointed Model Skeleton (.jms)")
@@ -2411,6 +2473,9 @@ def menu_func_import(self, context):
     self.layout.operator(ImportJMA.bl_idname, text="Halo Jointed Model Animation (.jma)")
 
 classeshalo = (
+    Bulk_Lightmap_Images,
+    Halo_Lightmapper_Helper,
+    Halo_LightmapperPropertiesGroup,
     ASS_JMS_MeshPropertiesGroup,
     ASS_JMS_MaterialPropertiesGroup,
     JMS_PhysicsPropertiesGroup,
@@ -2451,6 +2516,7 @@ def register():
     bpy.types.Scene.ass = PointerProperty(type=ASS_ScenePropertiesGroup, name="ASS Scene Properties", description="Set properties for the ASS exporter")
     bpy.types.Scene.jms = PointerProperty(type=JMS_ScenePropertiesGroup, name="JMS Scene Properties", description="Set properties for the JMS exporter")
     bpy.types.Scene.jma = PointerProperty(type=JMA_ScenePropertiesGroup, name="JMA Scene Properties", description="Set properties for the JMA exporter")
+    bpy.types.Scene.halo_lightmapper = PointerProperty(type=Halo_LightmapperPropertiesGroup, name="Halo Lightmapper Helper", description="Set properties for the lightmapper")
 
 def unregister():
     bpy.types.TOPBAR_MT_file_export.remove(menu_func_export)
@@ -2467,6 +2533,7 @@ def unregister():
     del bpy.types.Scene.ass
     del bpy.types.Scene.jms
     del bpy.types.Scene.jma
+    del bpy.types.Scene.halo_lightmapper
     for clshalo in classeshalo:
         bpy.utils.unregister_class(clshalo)
 

@@ -47,7 +47,11 @@ class ASSScene(global_functions.HaloAsset):
             self.effect = effect
 
     class Object:
-        def __init__(self, geo_class, xref_filepath, xref_objectname, material_index=-1, radius=0.0, extents=None, height=0.0, verts=None, triangles=None, node_index_list=None):
+        def __init__(self, geo_class, xref_filepath,
+                xref_objectname, material_index=-1, radius=0.0,
+                extents=None, height=0.0, verts=None,
+                triangles=None, node_index_list=None,
+            ):
             self.geo_class = geo_class
             self.xref_filepath = xref_filepath
             self.xref_objectname = xref_objectname
@@ -60,7 +64,11 @@ class ASSScene(global_functions.HaloAsset):
             self.node_index_list = node_index_list
 
     class Vertex:
-        def __init__(self, node_influence_count=0, node_set=None, translation=None, normal=None, uv_set=None):
+        def __init__(self,
+                node_influence_count=0, node_set=None,
+                translation=None, normal=None,
+                uv_set=None,
+            ):
             self.node_influence_count = node_influence_count
             self.node_set = node_set
             self.translation = translation
@@ -75,7 +83,9 @@ class ASSScene(global_functions.HaloAsset):
             self.v2 = v2
 
     class Instance:
-        def __init__(self, name, object_index=-1, unique_id=-1, parent_id=-1, inheritance_flag=0, local_transform=None, pivot_transform=None):
+        def __init__(self, name, object_index=-1, unique_id=-1, parent_id=-1,
+                inheritance_flag=0, local_transform=None, pivot_transform=None
+            ):
             self.name = name
             self.object_index = object_index
             self.unique_id = unique_id
@@ -84,7 +94,10 @@ class ASSScene(global_functions.HaloAsset):
             self.local_transform = local_transform
             self.pivot_transform = pivot_transform
 
-    def __init__(self, context, report, version, game_version, apply_modifiers, triangulate_faces, edge_split, use_edge_angle, use_edge_sharp, split_angle, clean_normalize_weights, hidden_geo, custom_scale):
+    def __init__(self, context, report, version, game_version,
+            apply_modifiers, triangulate_faces, edge_split, use_edge_angle, use_edge_sharp,
+            split_angle, clean_normalize_weights, hidden_geo, custom_scale
+        ):
         global_functions.unhide_all_collections()
         view_layer = bpy.context.view_layer
         object_list = list(bpy.context.scene.objects)
@@ -162,19 +175,16 @@ class ASSScene(global_functions.HaloAsset):
                         me = obj.to_mesh(preserve_all_data_layers=True)
                         geometry_list.append((me, 'SPHERE', obj.name, obj.data.name))
                         original_geometry_list.append(obj)
-                        obj.to_mesh_clear()
 
                     elif obj.data.ass_jms.Object_Type == 'BOX':
                         me = obj.to_mesh(preserve_all_data_layers=True)
                         geometry_list.append((me, 'BOX', obj.name, obj.data.name))
                         original_geometry_list.append(obj)
-                        obj.to_mesh_clear()
 
                     elif obj.data.ass_jms.Object_Type == 'CAPSULES':
                         me = obj.to_mesh(preserve_all_data_layers=True)
                         geometry_list.append((me, 'PILL', obj.name, obj.data.name))
                         original_geometry_list.append(obj)
-                        obj.to_mesh_clear()
 
                     elif obj.data.ass_jms.Object_Type == 'CONVEX SHAPES':
                         if apply_modifiers:
@@ -187,8 +197,6 @@ class ASSScene(global_functions.HaloAsset):
                             me = obj.to_mesh(preserve_all_data_layers=True)
                             geometry_list.append((me, 'MESH', obj.name, obj.data.name))
                             original_geometry_list.append(obj)
-
-                        obj.to_mesh_clear()
 
         self.instances.append(ASSScene.Instance(name='Scene Root', local_transform=ASSScene.Transform(), pivot_transform=ASSScene.Transform()))
         for idx, geometry in enumerate(geometry_list):
@@ -361,16 +369,34 @@ class ASSScene(global_functions.HaloAsset):
                                         node_weight = float(vert.groups[vert_index].weight)
                                         node_set.append([node_index, node_weight])
 
-                            verts.append(ASSScene.Vertex(node_influence_count, node_set, scaled_translation, normal, uv_set))
+                            verts.append(ASSScene.Vertex(
+                                node_influence_count,
+                                node_set,
+                                scaled_translation,
+                                normal,
+                                uv_set,
+                            ))
 
+                original_geo.to_mesh_clear()
 
-                self.objects.append(ASSScene.Object(geo_class, xref_path, xref_name, material_index, radius, extents, height, verts, triangles, node_index_list))
+                self.objects.append(ASSScene.Object(
+                    geo_class,
+                    xref_path,
+                    xref_name,
+                    material_index,
+                    radius,
+                    extents,
+                    height,
+                    verts,
+                    triangles,
+                    node_index_list,
+                ))
 
         for material in material_list:
-            name = material.name
-            effect_name = material.ass_jms.material_effect
-
-            self.materials.append(ASSScene.Material(name, effect_name))
+            self.materials.append(ASSScene.Material(
+                material.name,
+                material.ass_jms.material_effect,
+            ))
 
         for idx, obj in enumerate(object_list):
             property_value = object_properties[idx]
@@ -506,7 +532,8 @@ def write_file(context, filepath, report, ass_version, ass_version_h2, use_scene
         node_index_list = []
         if not instance.object_index == -1:
             instance_object = ass_scene.objects[instance.object_index]
-            node_index_list = instance_object.node_index_list
+            if not instance_object.node_index_list == None:
+                node_index_list = instance_object.node_index_list
 
         file.write(
             '\n;INSTANCE %s' % (idx) +
@@ -544,8 +571,8 @@ def write_file(context, filepath, report, ass_version, ass_version_h2, use_scene
                 '\n%0.10f\n' % (instance.pivot_transform.scale[0])
                 )
 
-        for node_infex in node_index_list:
-            file.write('%s\n' % node_infex)
+        for node_index in node_index_list:
+            file.write('%s\n' % node_index)
 
     file.close()
     report({'INFO'}, "Export completed successfully")
