@@ -309,6 +309,7 @@ def load_file(context, filepath, report):
                 for idx, triangle in enumerate(object_triangles):
                     triangle_material_index = triangle.material_index
                     if not triangle_material_index == -1:
+                        mat = ass_file.materials[triangle_material_index]
                         material_list = []
                         material_name = mat.name
                         mat = bpy.data.materials.get(material_name)
@@ -319,6 +320,7 @@ def load_file(context, filepath, report):
                             material_list.append(slot.material)
 
                         if not mat in material_list:
+                            material_list.append(mat)
                             object_mesh.data.materials.append(mat)
 
                         mat.diffuse_color = random_color_gen.next()
@@ -375,7 +377,10 @@ def load_file(context, filepath, report):
             object_height = object_element.height
             object_extents = object_element.extents
 
-        parent_index = current_instance.parent_id - 1
+        parent_index = current_instance.parent_id
+        if not parent_index == -1:
+            parent_index = current_instance.parent_id - 1
+
         local_transform = current_instance.local_transform
 
         matrix_rotation = local_transform.rotation.to_matrix().to_4x4()
