@@ -319,7 +319,7 @@ class ASSScene(global_functions.HaloAsset):
                             mesh_dimensions = global_functions.get_dimensions(None, None, None, None, custom_scale, version, translation, True, False, armature, 'ASS')
                             scaled_translation = (mesh_dimensions.pos_x_a, mesh_dimensions.pos_y_a, mesh_dimensions.pos_z_a)
 
-                            normal = (original_geo_matrix @ (vert.co + vert.normal) - world_translation).normalized()
+                            normal = (vert.normal).normalized()
                             uv_set = []
                             for uv_index in range(len(mesh.uv_layers)):
                                 mesh.uv_layers.active = mesh.uv_layers[uv_index]
