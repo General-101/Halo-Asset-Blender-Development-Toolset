@@ -262,7 +262,13 @@ def test_encoding(filepath):
     data.close()
     return encoding
 
-def get_version(file_version_console, file_version_ce, file_version_h2, game_version, console):
+def get_version(file_version_console,
+                file_version_ce,
+                file_version_h2,
+                game_version,
+                console
+                ):
+
     version = None
     if console:
         version = int(file_version_console)
@@ -420,7 +426,13 @@ def get_dimensions(mesh_a_matrix, mesh_a, mesh_b_matrix, mesh_b, custom_scale, v
 
     return object_dimensions
 
-def get_extension(extension_console, extension_ce, extension_h2, game_version, console):
+def get_extension(extension_console,
+                  extension_ce,
+                  extension_h2,
+                  game_version,
+                  console
+                  ):
+
     extension = None
     if console:
         extension = extension_console
@@ -431,7 +443,6 @@ def get_extension(extension_console, extension_ce, extension_h2, game_version, c
 
         elif game_version == 'halo2' or game_version == 'halo2utf8':
             extension = extension_h2
-
 
     return extension
 

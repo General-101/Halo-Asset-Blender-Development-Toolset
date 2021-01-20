@@ -37,18 +37,39 @@ from io_scene_halo.global_functions import global_functions
 
 class ASSAsset(global_functions.HaloAsset):
     class Transform:
-        def __init__(self, rotation, vector, scale):
+        def __init__(self,
+                     rotation,
+                     vector,
+                     scale
+                     ):
+
             self.rotation = rotation
             self.vector = vector
             self.scale = scale
 
     class Material:
-        def __init__(self, name, material_effect):
+        def __init__(self,
+                     name,
+                     material_effect
+                     ):
+
             self.name = name
             self.material_effect = material_effect
 
     class Object:
-        def __init__(self, geo_class, xref_filepath, xref_objectname, material_index=-1, radius=0.0, extents=None, height=0.0, vertices=None, triangles=None, node_index_list=None):
+        def __init__(self,
+                     geo_class,
+                     xref_filepath,
+                     xref_objectname,
+                     material_index=-1,
+                     radius=0.0,
+                     extents=None,
+                     height=0.0,
+                     vertices=None,
+                     triangles=None,
+                     node_index_list=None
+                     ):
+
             self.geo_class = geo_class
             self.xref_filepath = xref_filepath
             self.xref_objectname = xref_objectname
@@ -61,7 +82,13 @@ class ASSAsset(global_functions.HaloAsset):
             self.node_index_list = node_index_list
 
     class Vertex:
-        def __init__(self, node_influence_count=0, node_set=None, translation=None, normal=None, uv_set=None):
+        def __init__(self,
+                     node_influence_count=0,
+                     node_set=None,
+                     translation=None,
+                     normal=None,
+                     uv_set=None):
+
             self.node_influence_count = node_influence_count
             self.node_set = node_set
             self.translation = translation
@@ -69,14 +96,29 @@ class ASSAsset(global_functions.HaloAsset):
             self.uv_set = uv_set
 
     class Triangle:
-        def __init__(self, material_index=-1, v0=-1, v1=-1, v2=-1):
+        def __init__(self,
+                     material_index=-1,
+                     v0=-1,
+                     v1=-1,
+                     v2=-1
+                     ):
+
             self.material_index = material_index
             self.v0 = v0
             self.v1 = v1
             self.v2 = v2
 
     class Instance:
-        def __init__(self, name, object_index=-1, unique_id=-1, parent_id=-1, inheritance_flag=0, local_transform=None, pivot_transform=None):
+        def __init__(self,
+                     name,
+                     object_index=-1,
+                     unique_id=-1,
+                     parent_id=-1,
+                     inheritance_flag=0,
+                     local_transform=None,
+                     pivot_transform=None
+                     ):
+
             self.name = name
             self.object_index = object_index
             self.unique_id = unique_id
@@ -167,10 +209,16 @@ class ASSAsset(global_functions.HaloAsset):
                             tex_v = float(tex_v_value.rsplit('.', 1)[0])
                         else:
                             tex_v = float(tex_v_value)
+                        uv_set.append([tex_u,
+                                       tex_v,
+                                       ])
 
-                        uv_set.append([tex_u, tex_v])
-
-                    vertices.append(ASSAsset.Vertex(node_influence_count, node_set, translation, normal, uv_set))
+                    vertices.append(ASSAsset.Vertex(node_influence_count,
+                                                    node_set,
+                                                    translation,
+                                                    normal,
+                                                    uv_set
+                                                    ))
 
                 triangle_count = int(self.next())
                 for triangle in range(triangle_count):
@@ -181,7 +229,17 @@ class ASSAsset(global_functions.HaloAsset):
 
                     triangles.append(ASSAsset.Triangle(material_index, v0, v1, v2))
 
-            self.objects.append(ASSAsset.Object(geo_class, xref_path, xref_name, material_index, radius, extents, height, vertices, triangles, node_index_list))
+            self.objects.append(ASSAsset.Object(geo_class,
+                                                xref_path,
+                                                xref_name,
+                                                material_index,
+                                                radius,
+                                                extents,
+                                                height,
+                                                vertices,
+                                                triangles,
+                                                node_index_list
+                                                ))
 
         name_list = []
         instance_count = int(self.next())
@@ -382,23 +440,32 @@ def load_file(context, filepath, report):
             parent_index = current_instance.parent_id - 1
 
         local_transform = current_instance.local_transform
-
-        matrix_rotation = local_transform.rotation.to_matrix().to_4x4()
-        matrix_translation = Matrix.Translation(local_transform.vector)
-
-        local_transform_matrix = matrix_translation @ matrix_rotation
+        pivot_transform = current_instance.pivot_transform
 
         if not parent_index == -1:
             parent_instance = ass_file.instances[parent_index]
             parent_instance_name = parent_instance.name
             obj.parent = bpy.data.objects[parent_instance_name]
 
-        obj.matrix_local = local_transform_matrix
-        view_layer.update()
-        if ass_file.version >= 2:
-            obj.scale = (local_transform.scale, local_transform.scale , local_transform.scale)
+        local_scale = (local_transform.scale, local_transform.scale, local_transform.scale)
+        pivot_scale = (pivot_transform.scale, pivot_transform.scale, pivot_transform.scale)
+        if ass_file.version == 1:
+            local_scale = local_transform.scale
+            pivot_scale = pivot_transform.scale
+
+        if not object_index == -1:
+            output_rotation = local_transform.rotation @ pivot_transform.rotation
+            output_position = local_transform.rotation @ pivot_transform.vector * local_scale[0] + local_transform.vector
+            output_scale = local_scale[0] * pivot_scale[0]
+
+            obj.location = output_position
+            obj.rotation_euler =  output_rotation.to_euler()
+            obj.scale = (output_scale, output_scale, output_scale)
+
         else:
-            obj.scale = (local_transform.scale[0], local_transform.scale[1], local_transform.scale[2])
+            obj.location = local_transform.vector
+            obj.rotation_euler = local_transform.rotation.to_euler()
+            obj.scale = local_scale
 
         if geo_class.lower() == 'pill':
             obj.data.ass_jms.Object_Type = 'CAPSULES'
@@ -414,6 +481,7 @@ def load_file(context, filepath, report):
             obj.data.ass_jms.Object_Type = 'BOX'
             obj.dimensions = ((object_extents[0] * 2), (object_extents[1] * 2), (object_extents[2] * 2))
 
+        view_layer.update()
 
     report({'INFO'}, "Import completed successfully")
     return {'FINISHED'}

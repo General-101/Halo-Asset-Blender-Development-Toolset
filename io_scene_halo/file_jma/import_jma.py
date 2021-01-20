@@ -342,7 +342,14 @@ def load_file(context, filepath, report, fix_parents, game_version, jms_path_a, 
                 bpy.ops.object.mode_set(mode = 'POSE')
                 pose_bone = armature.pose.bones[jma_node.name]
                 transform_matrix = matrix_translate @ matrix_rotation @ matrix_scale
-                if jma_file.version < 16394 and pose_bone.parent and not jma_node.name == jms_a_nodes[0] and not jma_node.name == jms_b_nodes[0]:
+                primary_rest_positions = None
+                secondary_rest_positions = None
+                if jms_a_transform:
+                    primary_rest_positions = jms_a_nodes[0]
+                if jms_b_transform:
+                    secondary_rest_positions = jms_b_nodes[0]
+
+                if jma_file.version < 16394 and pose_bone.parent and not jma_node.name == primary_rest_positions and not jma_node.name == secondary_rest_positions:
                     transform_matrix = pose_bone.parent.matrix @ transform_matrix
 
                 armature.pose.bones[jma_node.name].matrix = transform_matrix

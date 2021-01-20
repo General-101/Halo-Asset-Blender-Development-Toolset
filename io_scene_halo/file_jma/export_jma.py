@@ -162,9 +162,39 @@ class JMAScene(global_functions.HaloAsset):
             obj.hide_set(property_value[0])
             obj.hide_viewport = property_value[1]
 
-def write_file(context, filepath, report, extension, extension_ce, extension_h2, jma_version, jma_version_ce, jma_version_h2, custom_frame_rate, frame_rate_float, biped_controller, scale_enum, scale_float, console, game_version, encoding):
-    version = global_functions.get_version(jma_version, jma_version_ce, jma_version_h2, game_version, console)
-    extension = global_functions.get_extension(extension, extension_ce, extension_h2, game_version, console)
+def write_file(context,
+               filepath,
+               report,
+               extension,
+               extension_ce,
+               extension_h2,
+               jma_version,
+               jma_version_ce,
+               jma_version_h2,
+               custom_frame_rate,
+               frame_rate_float,
+               biped_controller,
+               scale_enum,
+               scale_float,
+               console,
+               game_version,
+               encoding
+               ):
+
+    version = global_functions.get_version(jma_version,
+                                           jma_version_ce,
+                                           jma_version_h2,
+                                           game_version,
+                                           console
+                                           )
+
+    extension = global_functions.get_extension(extension,
+                                               extension_ce,
+                                               extension_h2,
+                                               game_version,
+                                               console
+                                               )
+
     custom_scale = global_functions.set_scale(scale_enum, scale_float)
     if custom_frame_rate == 'CUSTOM':
         frame_rate_value = frame_rate_float

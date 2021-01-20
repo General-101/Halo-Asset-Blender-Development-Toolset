@@ -152,7 +152,14 @@ class JMSScene(global_functions.HaloAsset):
             self.name = name
 
     class Vertex:
-        def __init__(self, node_influence_count=0, node_set=None, region=-1, translation=None, normal=None, uv_set=None):
+        def __init__(self,
+                     node_influence_count=0,
+                     node_set=None, region=-1,
+                     translation=None,
+                     normal=None,
+                     uv_set=None
+                     ):
+
             self.node_influence_count = node_influence_count
             self.node_set = node_set
             self.region = region
@@ -208,7 +215,22 @@ class JMSScene(global_functions.HaloAsset):
             self.verts = verts
 
     class Ragdoll:
-        def __init__(self, name, attached_index=-1, referenced_index=-1, attached_rotation=None, attached_translation=None, referenced_rotation=None, referenced_translation=None, min_twist=0.0, max_twist=0.0, min_cone=0.0, max_cone=0.0, min_plane=0.0, max_plane=0.0):
+        def __init__(self,
+                     name,
+                     attached_index=-1,
+                     referenced_index=-1,
+                     attached_rotation=None,
+                     attached_translation=None,
+                     referenced_rotation=None,
+                     referenced_translation=None,
+                     min_twist=0.0,
+                     max_twist=0.0,
+                     min_cone=0.0,
+                     max_cone=0.0,
+                     min_plane=0.0,
+                     max_plane=0.0,
+                     ):
+
             self.name = name
             self.attached_index = attached_index
             self.referenced_index = referenced_index
@@ -292,7 +314,9 @@ class JMSScene(global_functions.HaloAsset):
             self.scale = scale
 
     def __init__(self, context, report, version, game_version, apply_modifiers, hidden_geo, export_render, export_collision, export_physics, custom_scale, object_list):
-        self.gen_2 = ['halo2']
+        self.valid_gen_list = ['halo2',
+                               ]
+
         scene = bpy.context.scene
         view_layer = bpy.context.view_layer
         armature = None
@@ -682,7 +706,13 @@ class JMSScene(global_functions.HaloAsset):
                         node_weight = float(1.0000000000)
                         node_set.append([node_index, node_weight])
 
-                    self.vertices.append(JMSScene.Vertex(node_influence_count, node_set, region, scaled_translation, normal, uv_set))
+                    self.vertices.append(JMSScene.Vertex(node_influence_count,
+                                                         node_set,
+                                                         region,
+                                                         scaled_translation,
+                                                         normal,
+                                                         uv_set
+                                                         ))
 
             original_geo.to_mesh_clear()
 
@@ -841,7 +871,13 @@ class JMSScene(global_functions.HaloAsset):
                 mesh_dimensions = global_functions.get_dimensions(None, None, None, None, custom_scale, version, pos, True, False, armature, 'JMS')
                 vert_translation = (mesh_dimensions.pos_x_a, mesh_dimensions.pos_y_a, mesh_dimensions.pos_z_a)
 
-                verts.append(JMSScene.Vertex(None, None, None, vert_translation, None, None))
+                verts.append(JMSScene.Vertex(None,
+                                             None,
+                                             None,
+                                             vert_translation,
+                                             None,
+                                             None,
+                                             ))
 
             self.convex_shapes.append(JMSScene.Convex_Shape(name, parent_index[0], material_index, rotation, translation, verts))
             convex_shape.to_mesh_clear()
@@ -876,7 +912,7 @@ class JMSScene(global_functions.HaloAsset):
 
                                     texture_path = tex
 
-            elif game_version in self.gen_2:
+            elif game_version in self.valid_gen_list:
                 name = material[0].name
                 slot = bpy.data.materials.find(material[0].name)
                 lod = get_lod(material[1], game_version)
@@ -933,7 +969,20 @@ class JMSScene(global_functions.HaloAsset):
             referenced_rotation = (mesh_dimensions.quat_i_b, mesh_dimensions.quat_j_b, mesh_dimensions.quat_k_b, mesh_dimensions.quat_w_b)
             referenced_translation = (mesh_dimensions.pos_x_b, mesh_dimensions.pos_y_b, mesh_dimensions.pos_z_b)
 
-            self.ragdolls.append(JMSScene.Ragdoll(name, attached_index[0], referenced_index[0], attached_rotation, attached_translation, referenced_rotation, referenced_translation, min_twist, max_twist, min_cone, max_cone, min_plane, max_plane))
+            self.ragdolls.append(JMSScene.Ragdoll(name,
+                                                  attached_index[0],
+                                                  referenced_index[0],
+                                                  attached_rotation,
+                                                  attached_translation,
+                                                  referenced_rotation,
+                                                  referenced_translation,
+                                                  min_twist,
+                                                  max_twist,
+                                                  min_cone,
+                                                  max_cone,
+                                                  min_plane,
+                                                  max_plane,
+                                                  ))
 
         for hinge in hinge_list:
             body_a_obj = hinge.rigid_body_constraint.object1
@@ -1096,7 +1145,25 @@ class JMSScene(global_functions.HaloAsset):
 
             self.bounding_spheres.append(JMSScene.Bounding_Sphere(translation, scale))
 
-def write_file(context, filepath, report, version, game_version, encoding, folder_structure, apply_modifiers, custom_scale, permutation_ce, level_of_detail_ce, hidden_geo, export_render, export_collision, export_physics, model_type, object_list):
+def write_file(context,
+               filepath,
+               report,
+               version,
+               game_version,
+               encoding,
+               folder_structure,
+               apply_modifiers,
+               custom_scale,
+               permutation_ce,
+               level_of_detail_ce,
+               hidden_geo,
+               export_render,
+               export_collision,
+               export_physics,
+               model_type,
+               object_list,
+               ):
+
     jms_scene = JMSScene(context, report, version, game_version, apply_modifiers, hidden_geo, export_render, export_collision, export_physics, custom_scale, object_list)
 
     if version > 8209:
@@ -1235,7 +1302,7 @@ def write_file(context, filepath, report, version, game_version, encoding, folde
                 '\n%s' % (material.texture_path)
             )
 
-        elif game_version in jms_scene.gen_2:
+        elif game_version in jms_scene.valid_gen_list:
             material_definition = '(%s)' % (material.slot)
             if not material.lod == None:
                 material_definition += ' %s' % (material.lod)
@@ -1786,9 +1853,38 @@ def write_file(context, filepath, report, version, game_version, encoding, folde
     report({'INFO'}, "Export completed successfully")
     file.close()
 
-def command_queue(context, filepath, report, jms_version, jms_version_ce, jms_version_h2, folder_structure, apply_modifiers, triangulate_faces, edge_split, use_edge_angle, use_edge_sharp, split_angle, clean_normalize_weights, scale_enum, scale_float, console, permutation_ce, level_of_detail_ce, hidden_geo, export_render, export_collision, export_physics, game_version, encoding):
+
+def command_queue(context,
+                  filepath,
+                  report,
+                  jms_version,
+                  jms_version_ce,
+                  jms_version_h2,
+                  folder_structure,
+                  apply_modifiers,
+                  triangulate_faces,
+                  edge_split,
+                  use_edge_angle,
+                  use_edge_sharp,
+                  split_angle,
+                  clean_normalize_weights,
+                  scale_enum,
+                  scale_float,
+                  console,
+                  permutation_ce,
+                  level_of_detail_ce,
+                  hidden_geo,
+                  export_render,
+                  export_collision,
+                  export_physics,
+                  game_version,
+                  encoding,
+                  ):
+
     global_functions.unhide_all_collections()
-    gen_2 = ('halo2')
+    valid_gen_list = ('halo2',
+                      )
+
     object_properties = []
     scene = bpy.context.scene
     view_layer = bpy.context.view_layer
@@ -1800,7 +1896,13 @@ def command_queue(context, filepath, report, jms_version, jms_version_ce, jms_ve
     xref_count = 0
     bounding_radius_count = 0
     render_count = 0
-    version = global_functions.get_version(jms_version, jms_version_ce, jms_version_h2, game_version, console)
+    version = global_functions.get_version(jms_version,
+                                           jms_version_ce,
+                                           jms_version_h2,
+                                           game_version,
+                                           console
+                                           )
+
     level_of_detail_ce = get_lod(level_of_detail_ce, game_version)
     custom_scale = global_functions.set_scale(scale_enum, scale_float)
     node_prefix_tuple = ('b ', 'b_', 'bone', 'frame', 'bip01')
@@ -1859,7 +1961,7 @@ def command_queue(context, filepath, report, jms_version, jms_version_ce, jms_ve
             if global_functions.set_ignore(obj) == False or hidden_geo:
                 collision_count += 1
 
-        elif name[0:1] == '$' and game_version in gen_2:
+        elif name[0:1] == '$' and game_version in valid_gen_list:
             if global_functions.set_ignore(obj) == False or hidden_geo:
                 physics_count += 1
 
@@ -1882,15 +1984,66 @@ def command_queue(context, filepath, report, jms_version, jms_version_ce, jms_ve
 
     if export_render and render_count > 0:
         model_type = ""
-        write_file(context, filepath, report, version, game_version, encoding, folder_structure, apply_modifiers, custom_scale, permutation_ce, level_of_detail_ce, hidden_geo, export_render, False, False, model_type, object_list)
+        write_file(context,
+                   filepath,
+                   report,
+                   version,
+                   game_version,
+                   encoding,
+                   folder_structure,
+                   apply_modifiers,
+                   custom_scale,
+                   permutation_ce,
+                   level_of_detail_ce,
+                   hidden_geo,
+                   export_render,
+                   False,
+                   False,
+                   model_type,
+                   object_list,
+                   )
 
     if export_collision and collision_count > 0:
         model_type = "_collision"
-        write_file(context, filepath, report, version, game_version, encoding, folder_structure, apply_modifiers, custom_scale, permutation_ce, level_of_detail_ce, hidden_geo, False, export_collision, False, model_type, object_list)
+        write_file(context,
+                   filepath,
+                   report,
+                   version,
+                   game_version,
+                   encoding,
+                   folder_structure,
+                   apply_modifiers,
+                   custom_scale,
+                   permutation_ce,
+                   level_of_detail_ce,
+                   hidden_geo,
+                   False,
+                   export_collision,
+                   False,
+                   model_type,
+                   object_list,
+                   )
 
     if export_physics and physics_count > 0:
         model_type = "_physics"
-        write_file(context, filepath, report, version, game_version, encoding, folder_structure, apply_modifiers, custom_scale, permutation_ce, level_of_detail_ce, hidden_geo, False, False, export_physics, model_type, object_list)
+        write_file(context,
+                   filepath,
+                   report,
+                   version,
+                   game_version,
+                   encoding,
+                   folder_structure,
+                   apply_modifiers,
+                   custom_scale,
+                   permutation_ce,
+                   level_of_detail_ce,
+                   hidden_geo,
+                   False,
+                   False,
+                   export_physics,
+                   model_type,
+                   object_list,
+                   )
 
     for idx, obj in enumerate(object_list):
         property_value = object_properties[idx]

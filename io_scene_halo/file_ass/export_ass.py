@@ -36,22 +36,38 @@ from io_scene_halo.global_functions import global_functions
 
 class ASSScene(global_functions.HaloAsset):
     class Transform:
-        def __init__(self, rotation=(0.0, 0.0, 0.0, 1.0), vector=(0.0, 0.0, 0.0), scale=(1.0, 1.0, 1.0)):
+        def __init__(self,
+                     rotation=(0.0, 0.0, 0.0, 1.0),
+                     vector=(0.0, 0.0, 0.0),
+                     scale=(1.0, 1.0, 1.0)
+                     ):
+
             self.rotation = rotation
             self.vector = vector
             self.scale = scale
 
     class Material:
-        def __init__(self, name, effect):
+        def __init__(self,
+                     name,
+                     effect,
+                     ):
             self.name = name
             self.effect = effect
 
     class Object:
-        def __init__(self, geo_class, xref_filepath,
-                xref_objectname, material_index=-1, radius=0.0,
-                extents=None, height=0.0, verts=None,
-                triangles=None, node_index_list=None,
-            ):
+        def __init__(self,
+                     geo_class,
+                     xref_filepath,
+                     xref_objectname,
+                     material_index=-1,
+                     radius=0.0,
+                     extents=None,
+                     height=0.0,
+                     verts=None,
+                     triangles=None,
+                     node_index_list=None,
+                     ):
+
             self.geo_class = geo_class
             self.xref_filepath = xref_filepath
             self.xref_objectname = xref_objectname
@@ -65,10 +81,13 @@ class ASSScene(global_functions.HaloAsset):
 
     class Vertex:
         def __init__(self,
-                node_influence_count=0, node_set=None,
-                translation=None, normal=None,
-                uv_set=None,
-            ):
+                     node_influence_count=0,
+                     node_set=None,
+                     translation=None,
+                     normal=None,
+                     uv_set=None,
+                     ):
+
             self.node_influence_count = node_influence_count
             self.node_set = node_set
             self.translation = translation
@@ -76,16 +95,29 @@ class ASSScene(global_functions.HaloAsset):
             self.uv_set = uv_set
 
     class Triangle:
-        def __init__(self, material_index=-1, v0=-1, v1=-1, v2=-1):
+        def __init__(self,
+                     material_index=-1,
+                     v0=-1,
+                     v1=-1,
+                     v2=-1
+                     ):
+
             self.material_index = material_index
             self.v0 = v0
             self.v1 = v1
             self.v2 = v2
 
     class Instance:
-        def __init__(self, name, object_index=-1, unique_id=-1, parent_id=-1,
-                inheritance_flag=0, local_transform=None, pivot_transform=None
-            ):
+        def __init__(self,
+                     name,
+                     object_index=-1,
+                     unique_id=-1,
+                     parent_id=-1,
+                     inheritance_flag=0,
+                     local_transform=None,
+                     pivot_transform=None
+                     ):
+
             self.name = name
             self.object_index = object_index
             self.unique_id = unique_id
@@ -94,10 +126,22 @@ class ASSScene(global_functions.HaloAsset):
             self.local_transform = local_transform
             self.pivot_transform = pivot_transform
 
-    def __init__(self, context, report, version, game_version,
-            apply_modifiers, triangulate_faces, edge_split, use_edge_angle, use_edge_sharp,
-            split_angle, clean_normalize_weights, hidden_geo, custom_scale
-        ):
+    def __init__(self,
+                 context,
+                 report,
+                 version,
+                 game_version,
+                 apply_modifiers,
+                 triangulate_faces,
+                 edge_split,
+                 use_edge_angle,
+                 use_edge_sharp,
+                 split_angle,
+                 clean_normalize_weights,
+                 hidden_geo,
+                 custom_scale
+                 ):
+
         global_functions.unhide_all_collections()
         view_layer = bpy.context.view_layer
         object_list = list(bpy.context.scene.objects)
@@ -198,6 +242,11 @@ class ASSScene(global_functions.HaloAsset):
                             geometry_list.append((me, 'MESH', obj.name, obj.data.name))
                             original_geometry_list.append(obj)
 
+            else:
+                if global_functions.set_ignore(obj) == False or hidden_geo:
+                    geometry_list.append((None, 'EMPTY', obj.name, obj.data.name))
+                    original_geometry_list.append(obj)
+
         self.instances.append(ASSScene.Instance(name='Scene Root', local_transform=ASSScene.Transform(), pivot_transform=ASSScene.Transform()))
         for idx, geometry in enumerate(geometry_list):
             verts = []
@@ -208,7 +257,9 @@ class ASSScene(global_functions.HaloAsset):
             geo_class = geometry[1]
             geo_name = geometry[2]
             mesh_name = geometry[3]
-            object_index = unique_instance_geometry_list.index(mesh_name)
+            object_index = -1
+            if not geo_class == 'EMPTY':
+                object_index = unique_instance_geometry_list.index(mesh_name)
             material_index = -1
             radius = 2
             extents = [1.0, 1.0, 1.0]
@@ -245,7 +296,7 @@ class ASSScene(global_functions.HaloAsset):
                 scale = original_geo.scale
             local_transform = ASSScene.Transform(rotation, translation, scale)
             self.instances.append(ASSScene.Instance(geo_name, object_index, idx, parent_id, inheritance_flag, local_transform, pivot_transform=ASSScene.Transform()))
-            if not mesh_name in unique_instance_geometry_list_2:
+            if not mesh_name in unique_instance_geometry_list_2 and not object_index == -1:
                 unique_instance_geometry_list_2.append(mesh_name)
                 if geo_class == 'BONE':
                     armature_name = mesh.id_data.name
@@ -403,9 +454,35 @@ class ASSScene(global_functions.HaloAsset):
             obj.hide_set(property_value[0])
             obj.hide_viewport = property_value[1]
 
-def write_file(context, filepath, report, ass_version, ass_version_h2, use_scene_properties, hidden_geo, apply_modifiers, triangulate_faces, edge_split, use_edge_angle, use_edge_sharp, split_angle, clean_normalize_weights, scale_enum, scale_float, console, game_version, encoding):
+
+def write_file(context,
+               filepath,
+               report,
+               ass_version,
+               ass_version_h2,
+               use_scene_properties,
+               hidden_geo,
+               apply_modifiers,
+               triangulate_faces,
+               edge_split,
+               use_edge_angle,
+               use_edge_sharp,
+               split_angle,
+               clean_normalize_weights,
+               scale_enum,
+               scale_float,
+               console,
+               game_version,
+               encoding
+               ):
+
     custom_scale = global_functions.set_scale(scale_enum, scale_float)
-    version = global_functions.get_version(ass_version, None, ass_version_h2, game_version, console)
+    version = global_functions.get_version(ass_version,
+                                           None,
+                                           ass_version_h2,
+                                           game_version,
+                                           console)
+
     ass_scene = ASSScene(context, report, version, game_version, apply_modifiers, triangulate_faces, edge_split, use_edge_angle, use_edge_sharp, split_angle, clean_normalize_weights, hidden_geo, custom_scale)
 
     file = open(filepath, 'w', encoding=encoding)

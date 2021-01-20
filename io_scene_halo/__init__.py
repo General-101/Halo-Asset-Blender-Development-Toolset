@@ -52,6 +52,8 @@ if "bpy" in locals():
         importlib.reload(export_ass)
     if "global_functions" in locals():
         importlib.reload(global_functions)
+    if "lightmapper_prep" in locals():
+        importlib.reload(lightmapper_prep)
 
 import bpy
 import sys
@@ -295,6 +297,7 @@ class ASS_JMS_MaterialProps(Panel):
                 row.label(text='Decal Offset:')
                 row.prop(material_ass_jms, "decal_offset", text='')
 
+
 class ASS_JMS_MaterialPropertiesGroup(PropertyGroup):
     material_effect: StringProperty(
         name = "Material Effect",
@@ -440,6 +443,7 @@ class ASS_JMS_MaterialPropertiesGroup(PropertyGroup):
         default = False,
         )
 
+
 class Halo_SceneProps(Panel):
     bl_label = "Halo Scene Properties"
     bl_idname = "HALO_PT_GameVersionPanel"
@@ -470,7 +474,8 @@ class Halo_ScenePropertiesGroup(PropertyGroup):
         name="Game:",
         description="What game will you be exporting for",
         default="halo2",
-        items=[ ('haloce', "Halo CE", "Show properties for Halo Custom Edition"),
+        items=[
+                ('haloce', "Halo CE", "Show properties for Halo Custom Edition"),
                 ('halo2', "Halo 2", "Show properties for Halo 2 Vista"),
                ]
         )
@@ -509,6 +514,7 @@ class ASS_SceneProps(Panel):
                 row = col.row()
                 row.label(text='ASS Version:')
                 row.prop(scene_ass, "ass_version_h2", text='')
+
 
         box = layout.box()
         box.label(text="Mask Options:")
@@ -561,7 +567,8 @@ class ASS_ScenePropertiesGroup(PropertyGroup):
         name="Version:",
         description="What version to use for the model file",
         default="2",
-        items=[ ('1', "1", "H2"),
+        items=[
+                ('1', "1", "H2"),
                 ('2', "2", "H2"),
                ]
         )
@@ -575,11 +582,13 @@ class ASS_ScenePropertiesGroup(PropertyGroup):
                ]
         )
 
+
     game_version: EnumProperty(
         name="Game:",
         description="What game will the model file be used for",
         default="halo2utf8",
-        items=[ ('halo2utf8', "Halo 2", "Export a level intended for Halo 2 Vista"),
+        items=[
+                ('halo2utf8', "Halo 2", "Export a level intended for Halo 2 Vista"),
                ]
         )
 
@@ -705,6 +714,7 @@ class JMA_SceneProps(Panel):
                 row.label(text='JMA Version:')
                 row.prop(scene_jma, "jma_version_h2", text='')
 
+
         box = layout.box()
         box.label(text="Scene Options:")
         col = box.column(align=True)
@@ -712,6 +722,8 @@ class JMA_SceneProps(Panel):
             row = col.row()
             row.label(text='Biped Controller:')
             row.prop(scene_jma, "biped_controller", text='')
+
+
 
         row = col.row()
         row.label(text='Use As Default Export Settings:')
@@ -740,7 +752,8 @@ class JMA_ScenePropertiesGroup(PropertyGroup):
         name="Extension:",
         description="What extension to use for the animation file",
         options={'HIDDEN'},
-        items=[ ('.JMA', "JMA", "Jointed Model Animation CE/H2"),
+        items=[
+                ('.JMA', "JMA", "Jointed Model Animation CE/H2"),
                 ('.JMM', "JMM", "Jointed Model Moving CE/H2"),
                 ('.JMT', "JMT", "Jointed Model Turning CE/H2"),
                 ('.JMO', "JMO", "Jointed Model Overlay CE/H2"),
@@ -780,12 +793,14 @@ class JMA_ScenePropertiesGroup(PropertyGroup):
                ]
         )
 
+
     jma_version: EnumProperty(
         name="Version:",
         description="What version to use for the animation file",
         default="16395",
         options={'HIDDEN'},
-        items=[ ('16390', "16390", "CE/H2"),
+        items=[
+                ('16390', "16390", "CE/H2"),
                 ('16391', "16391", "CE/H2"),
                 ('16392', "16392", "CE/H2"),
                 ('16393', "16393", "H2"),
@@ -817,11 +832,13 @@ class JMA_ScenePropertiesGroup(PropertyGroup):
                ]
         )
 
+
     game_version: EnumProperty(
         name="Game:",
         description="What game will the model file be used for",
         default="halo2vista",
-        items=[ ('haloce', "Halo CE", "Export an animation intended for Halo CE"),
+        items=[
+                ('haloce', "Halo CE", "Export an animation intended for Halo CE"),
                 ('halo2vista', "Halo 2 Vista", "Export an animation intended for Halo 2 Vista"),
                ]
         )
@@ -867,6 +884,7 @@ class JMA_ScenePropertiesGroup(PropertyGroup):
         description="Select a path to a JMS containing the secondary skeleton. Will be used for rest position.",
         subtype="FILE_PATH"
     )
+
 
 class JMS_SceneProps(Panel):
     bl_label = "JMS Scene Properties"
@@ -996,7 +1014,8 @@ class JMS_ScenePropertiesGroup(PropertyGroup):
         description="What version to use for the model file",
         default="8200",
         options={'HIDDEN'},
-        items=[ ('8197', "8197", "CE/H2"),
+        items=[
+                ('8197', "8197", "CE/H2"),
                 ('8198', "8198", "CE/H2"),
                 ('8199', "8199", "CE/H2"),
                 ('8200', "8200", "CE/H2"),
@@ -1049,7 +1068,8 @@ class JMS_ScenePropertiesGroup(PropertyGroup):
         name="Game:",
         description="What game will the model file be used for",
         default="halo2vista",
-        items=[ ('haloce', "Halo CE", "Export a JMS intended for Halo Custom Edition"),
+        items=[
+                ('haloce', "Halo CE", "Export a JMS intended for Halo Custom Edition"),
                 ('halo2vista', "Halo 2 Vista", "Export a JMS intended for Halo 2 Vista"),
                ]
         )
@@ -1246,7 +1266,8 @@ class ExportASS(Operator, ExportHelper):
         name="Version:",
         description="What version to use for the model file",
         default="2",
-        items=[ ('1', "1", "H2 Non-functional"),
+        items=[
+                ('1', "1", "H2 Non-functional"),
                 ('2', "2", "H2"),
                ]
         )
@@ -1264,7 +1285,8 @@ class ExportASS(Operator, ExportHelper):
         name="Game:",
         description="What game will the model file be used for",
         default="halo2utf8",
-        items=[ ('halo2utf8', "Halo 2", "Export a level intended for Halo 2 Vista"),
+        items=[
+                ('halo2utf8', "Halo 2", "Export a level intended for Halo 2 Vista"),
                ]
         )
 
@@ -1577,7 +1599,8 @@ class ExportJMS(Operator, ExportHelper):
         description="What version to use for the model file",
         default="8200",
         options={'HIDDEN'},
-        items=[ ('8197', "8197", "CE/H2"),
+        items=[
+                ('8197', "8197", "CE/H2"),
                 ('8198', "8198", "CE/H2"),
                 ('8199', "8199", "CE/H2"),
                 ('8200', "8200", "CE/H2"),
@@ -1630,7 +1653,8 @@ class ExportJMS(Operator, ExportHelper):
         name="Game:",
         description="What game will the model file be used for",
         default="halo2vista",
-        items=[ ('haloce', "Halo CE", "Export a JMS intended for Halo Custom Edition"),
+        items=[
+                ('haloce', "Halo CE", "Export a JMS intended for Halo Custom Edition"),
                 ('halo2vista', "Halo 2 Vista", "Export a JMS intended for Halo 2 Vista"),
                ]
         )
@@ -2021,7 +2045,8 @@ class ExportJMA(Operator, ExportHelper):
         name="Extension:",
         description="What extension to use for the animation file",
         options={'HIDDEN'},
-        items=[ ('.JMA', "JMA", "Jointed Model Animation CE/H2"),
+        items=[
+                ('.JMA', "JMA", "Jointed Model Animation CE/H2"),
                 ('.JMM', "JMM", "Jointed Model Moving CE/H2"),
                 ('.JMT', "JMT", "Jointed Model Turning CE/H2"),
                 ('.JMO', "JMO", "Jointed Model Overlay CE/H2"),
@@ -2066,7 +2091,8 @@ class ExportJMA(Operator, ExportHelper):
         description="What version to use for the animation file",
         default="16395",
         options={'HIDDEN'},
-        items=[ ('16390', "16390", "CE/H2"),
+        items=[
+                ('16390', "16390", "CE/H2"),
                 ('16391', "16391", "CE/H2"),
                 ('16392', "16392", "CE/H2"),
                 ('16393', "16393", "H2"),
@@ -2102,7 +2128,8 @@ class ExportJMA(Operator, ExportHelper):
         name="Game:",
         description="What game will the model file be used for",
         default="halo2vista",
-        items=[ ('haloce', "Halo CE", "Export an animation intended for Halo CE"),
+        items=[
+                ('haloce', "Halo CE", "Export an animation intended for Halo CE"),
                 ('halo2vista', "Halo 2 Vista", "Export an animation intended for Halo 2 Vista"),
                ]
         )
@@ -2462,10 +2489,22 @@ class Bulk_Lightmap_Images(Operator):
         scene_halo_lightmapper = scene.halo_lightmapper
         return run_code("lightmapper_prep.lightmap_bulk(context, scene_halo_lightmapper.res_x, scene_halo_lightmapper.res_y, scene_halo_lightmapper.fix_rotation)")
 
+class ExportLightmap(Operator, ExportHelper):
+    """Write a LUV file"""
+    bl_idname = "export_luv.export"
+    bl_label = "Export LUV"
+    filename_ext = '.LUV'
+
+    def execute(self, context):
+        from io_scene_halo.misc import export_lightmap
+
+        return run_code("export_lightmap.write_file(context, self.filepath, self.report)")
+
 def menu_func_export(self, context):
     self.layout.operator(ExportASS.bl_idname, text='Halo Amalgam Scene Specification (.ass)')
     self.layout.operator(ExportJMS.bl_idname, text="Halo Jointed Model Skeleton (.jms)")
     self.layout.operator(ExportJMA.bl_idname, text="Halo Jointed Model Animation (.jma)")
+    self.layout.operator(ExportLightmap.bl_idname, text="Halo Lightmap UV (.luv)")
 
 def menu_func_import(self, context):
     self.layout.operator(ImportASS.bl_idname, text="Halo Amalgam Scene Specification (.ass)")
@@ -2473,6 +2512,7 @@ def menu_func_import(self, context):
     self.layout.operator(ImportJMA.bl_idname, text="Halo Jointed Model Animation (.jma)")
 
 classeshalo = (
+    ExportLightmap,
     Bulk_Lightmap_Images,
     Halo_Lightmapper_Helper,
     Halo_LightmapperPropertiesGroup,

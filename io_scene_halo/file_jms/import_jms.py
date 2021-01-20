@@ -86,7 +86,14 @@ class JMSAsset(global_functions.HaloAsset):
             self.name = name
 
     class Vertex:
-        def __init__(self, node_influence_count=0, node_set=None, region=-1, translation=None, normal=None, uv_set=None):
+        def __init__(self,
+                     node_influence_count=0,
+                     node_set=None, region=-1,
+                     translation=None,
+                     normal=None,
+                     uv_set=None
+                     ):
+
             self.node_influence_count = node_influence_count
             self.node_set = node_set
             self.region = region
@@ -142,7 +149,22 @@ class JMSAsset(global_functions.HaloAsset):
             self.verts = verts
 
     class Ragdoll:
-        def __init__(self, name, attached_index=-1, referenced_index=-1, attached_rotation=None, attached_translation=None, referenced_rotation=None, referenced_translation=None, min_twist=0.0, max_twist=0.0, min_cone=0.0, max_cone=0.0, min_plane=0.0, max_plane=0.0):
+        def __init__(self,
+                     name,
+                     attached_index=-1,
+                     referenced_index=-1,
+                     attached_rotation=None,
+                     attached_translation=None,
+                     referenced_rotation=None,
+                     referenced_translation=None,
+                     min_twist=0.0,
+                     max_twist=0.0,
+                     min_cone=0.0,
+                     max_cone=0.0,
+                     min_plane=0.0,
+                     max_plane=0.0,
+                     ):
+
             self.name = name
             self.attached_index = attached_index
             self.referenced_index = referenced_index
@@ -244,7 +266,23 @@ class JMSAsset(global_functions.HaloAsset):
         self.game_version = game_version
         if game_version == 'auto':
             self.game_version = global_functions.get_game_version(self.version, 'JMS')
-        version_list = (8197, 8198, 8199, 8200, 8201, 8202, 8203, 8204, 8205, 8206, 8207, 8208, 8209, 8210)
+
+        version_list = (8197,
+                        8198,
+                        8199,
+                        8200,
+                        8201,
+                        8202,
+                        8203,
+                        8204,
+                        8205,
+                        8206,
+                        8207,
+                        8208,
+                        8209,
+                        8210,
+                        )
+
         if not self.version in version_list:
             raise global_functions.AssetParseError("Importer does not support this " + extension + " version")
         if self.version < 8205:
@@ -518,7 +556,13 @@ class JMSAsset(global_functions.HaloAsset):
                 if self.version >= 8199:
                     flags = self.skip(1) #Unused int or boolean value. Don't know which but definitely not a float
 
-            self.vertices.append(JMSAsset.Vertex(node_influence_count, node_set, region, translation, normal, uv_set))
+            self.vertices.append(JMSAsset.Vertex(node_influence_count,
+                                                 node_set,
+                                                 region,
+                                                 translation,
+                                                 normal,
+                                                 uv_set
+                                                 ))
 
         triangle_count = int(self.next())
         for triangle in range(triangle_count):
@@ -609,7 +653,20 @@ class JMSAsset(global_functions.HaloAsset):
                 min_plane = float(self.next())
                 max_plane = float(self.next())
 
-                self.ragdolls.append(JMSAsset.Ragdoll(name, attached_index, referenced_index, attached_rotation, attached_translation, referenced_rotation, referenced_translation, min_twist, max_twist, min_cone, max_cone, min_plane, max_plane))
+                self.ragdolls.append(JMSAsset.Ragdoll(name,
+                                                      attached_index,
+                                                      referenced_index,
+                                                      attached_rotation,
+                                                      attached_translation,
+                                                      referenced_rotation,
+                                                      referenced_translation,
+                                                      min_twist,
+                                                      max_twist,
+                                                      min_cone,
+                                                      max_cone,
+                                                      min_plane,
+                                                      max_plane,
+                                                      ))
 
             hinge_count  = int(self.next())
             for hinge in range(hinge_count):
