@@ -27,41 +27,68 @@
 import bpy
 
 from math import radians
+from mathutils import Vector
+from io_scene_halo.global_functions import global_functions
 
-def lightmap_bulk(context, res_x, res_y, fix_rotation):
+def lightmap_bulk(context, res_x, res_y):
     scene = bpy.context.scene
     object_list = list(scene.objects)
 
     for object in object_list:
-        if fix_rotation:
-            object.rotation_euler =(0,0,radians(90.0))
+        node_spacing = 20.0
+        assigned_material_id = []
+        if object.type == 'MESH':
+            for polygon in object.data.polygons:
+                material_id = global_functions.get_face_material(None, object, polygon)
+                if not material_id in assigned_material_id:
+                    assigned_material_id.append(material_id)
 
-        for material in object.material_slots:
-            mat = bpy.data.materials[material.name]
-            tex_node = None
-            bsdf_node = None
-            for node in mat.node_tree.nodes:
-                if node.type == 'TEX_IMAGE':
-                    tex_node = node
+            for material_id in assigned_material_id:
+                mat = object.material_slots[material_id].material
+                mat.use_nodes = True
+                lightmap_tex_node = None
+                diffuse_tex_node = None
+                normal_tex_node = None
+                bsdf_node = None
+                for node in mat.node_tree.nodes:
+                    if node.type == 'TEX_IMAGE' and node.name == "lightmap_%s" % object.name:
+                        lightmap_tex_node = node
 
-                elif node.type == 'BSDF_PRINCIPLED':
-                    bsdf_node = node
+                    elif node.type == 'TEX_IMAGE' and node.name == "diffuse_%s" % mat.name:
+                        diffuse_tex_node = node
 
-            if bsdf_node is None:
-                bsdf_node = mat.node_tree.nodes.new('ShaderNodeBsdfDiffuse')
+                    elif node.type == 'TEX_IMAGE' and node.name == "normal_%s" % mat.name:
+                        normal_tex_node = node
 
-            if tex_node is None:
-                tex_node = mat.node_tree.nodes.new('ShaderNodeTexImage')
+                    elif node.type == 'BSDF_PRINCIPLED':
+                        bsdf_node = node
 
-            lightmap_image = bpy.data.images.get(object.name)
-            if lightmap_image is None:
-                lightmap_image = bpy.data.images.new(object.name, res_x, res_y)
+                if bsdf_node is None:
+                    bsdf_node = mat.node_tree.nodes.new('ShaderNodeBsdfPrincipled')
 
-            tex_node.image = lightmap_image
-            mat.node_tree.links.new(bsdf_node.inputs['Base Color'], tex_node.outputs['Color'])
+                lightmap_image = bpy.data.images.get(object.name)
+                if lightmap_image is None:
+                    lightmap_image = bpy.data.images.new(object.name, res_x, res_y)
+
+                if diffuse_tex_node is None:
+                    diffuse_tex_node = mat.node_tree.nodes.new('ShaderNodeTexImage')
+                    diffuse_tex_node.name = "diffuse_%s" % mat.name
+                    mat.node_tree.links.new(bsdf_node.inputs['Base Color'], diffuse_tex_node.outputs['Color'])
+                    diffuse_tex_node.location = Vector((bsdf_node.location.x + -250 + (-1 * node_spacing), bsdf_node.location.y))
+                    diffuse_tex_node = mat.node_tree.nodes.new('ShaderNodeTexImage')
+
+                if normal_tex_node is None:
+                    normal_tex_node = mat.node_tree.nodes.new('ShaderNodeTexImage')
+                    normal_tex_node.name = "normal_%s" % mat.name
+                    mat.node_tree.links.new(bsdf_node.inputs['Normal'], normal_tex_node.outputs['Color'])
+                    normal_tex_node.location = Vector((bsdf_node.location.x + -250 + (-1 * node_spacing), bsdf_node.location.y + -250))
+
+                if lightmap_tex_node is None:
+                    lightmap_tex_node = mat.node_tree.nodes.new('ShaderNodeTexImage')
+                    lightmap_tex_node.name = "lightmap_%s" % object.name
+                    lightmap_tex_node.location = Vector((bsdf_node.location.x, bsdf_node.location.y + -600 + (-1 * node_spacing)))
 
     return {'FINISHED'}
 
 if __name__ == '__main__':
     bpy.ops.halo_bulk.lightmapper_images()
-

@@ -313,7 +313,7 @@ class JMSScene(global_functions.HaloAsset):
             self.translation = translation
             self.scale = scale
 
-    def __init__(self, context, report, version, game_version, apply_modifiers, hidden_geo, export_render, export_collision, export_physics, custom_scale, object_list):
+    def __init__(self, context, report, version, game_version, apply_modifiers, hidden_geo, export_render, export_collision, export_physics, custom_scale, object_list, vertex_group_sort):
         self.valid_gen_list = ['halo2',
                                ]
 
@@ -489,7 +489,15 @@ class JMSScene(global_functions.HaloAsset):
         elif game_version == 'halo2' and node_count > 255:
             raise global_functions.SceneParseError("This model has more nodes than Halo 2 supports. Please limit your node count to 255 nodes")
 
-        sorted_list = global_functions.sort_list(node_list, armature, game_version, version, False)
+        dae_object = None
+        if vertex_group_sort:
+            for object in object_list:
+                if object.type == 'MESH' and not object.name[0:1].lower() == '#' and not object in node_list:
+                    if object.parent in node_list or object.parent == armature:
+                        dae_object = object
+                        break
+
+        sorted_list = global_functions.sort_list(node_list, armature, game_version, version, False, vertex_group_sort, dae_object)
         joined_list = sorted_list[0]
         reversed_joined_list = sorted_list[1]
         self.node_checksum = 0
@@ -1162,9 +1170,10 @@ def write_file(context,
                export_physics,
                model_type,
                object_list,
+               vertex_group_sort
                ):
 
-    jms_scene = JMSScene(context, report, version, game_version, apply_modifiers, hidden_geo, export_render, export_collision, export_physics, custom_scale, object_list)
+    jms_scene = JMSScene(context, report, version, game_version, apply_modifiers, hidden_geo, export_render, export_collision, export_physics, custom_scale, object_list, vertex_group_sort)
 
     if version > 8209:
         decimal_1 = '\n%0.10f'
@@ -1248,7 +1257,16 @@ def write_file(context,
     else:
         file.write(
             '%s' % (version) +
-            '\n%s' % (jms_scene.node_checksum) +
+            '\n%s' % (jms_scene.node_checksum)
+            )
+
+        if version >= 8203 and version <= 8204:
+            file.write(
+                '\n;' +
+                '\n;###Frames###'
+                )
+
+        file.write(
             '\n%s' % (len(jms_scene.nodes))
             )
 
@@ -1291,6 +1309,12 @@ def write_file(context,
         )
 
     else:
+        if version >= 8203 and version <= 8204:
+            file.write(
+                '\n;' +
+                '\n;###Materials###'
+                )
+
         file.write(
             '\n%s' % (len(jms_scene.materials))
         )
@@ -1318,10 +1342,10 @@ def write_file(context,
                 )
 
             else:
-                file.write(
-                    '\n%s' % (material.name) +
-                    '\n%s' % (material_definition)
-                )
+                file.write('\n%s' % (material.name))
+                if version >= 8203 and version <= 8204:
+                    file.write('\n%s' % (material.texture_path))
+                file.write('\n%s' % (material_definition))
 
     if version >= 8205:
         file.write(
@@ -1335,6 +1359,12 @@ def write_file(context,
         )
 
     else:
+        if version >= 8203 and version <= 8204:
+            file.write(
+                '\n;' +
+                '\n;###Markers###'
+                )
+
         file.write(
             '\n%s' % (len(jms_scene.markers))
         )
@@ -1362,25 +1392,14 @@ def write_file(context,
         if version >= 8205:
             file.write('\n')
 
-    if version <= 8204:
+    if version >= 8203 and version <= 8204:
         file.write(
-            '\n%s' % (len(jms_scene.regions))
-        )
-
-        for region in jms_scene.regions:
-            file.write(
-                '\n%s' % (region.name)
+            '\n;' +
+            '\n;###Instances###'
             )
 
-    if version >= 8205:
-        if version == 8205:
-            file.write(
-                '\n;### INSTANCE XREF PATHS ###' +
-                '\n%s' % (len(jms_scene.xref_instances)) +
-                '\n;\t<name>\n'
-            )
-
-        else:
+    if version >= 8203:
+        if version >= 8206:
             file.write(
                 '\n;### INSTANCE XREF PATHS ###' +
                 '\n%s' % (len(jms_scene.xref_instances)) +
@@ -1388,32 +1407,92 @@ def write_file(context,
                 '\n;\t<name>\n'
             )
 
-        for idx, xref_instance in enumerate(jms_scene.xref_instances):
+        elif version == 8205:
             file.write(
-                '\n;XREF %s' % (idx) +
-                '\n%s' % (xref_instance.path) +
-                '\n%s\n' % (xref_instance.name)
+                '\n;### INSTANCE XREF PATHS ###' +
+                '\n%s' % (len(jms_scene.xref_instances)) +
+                '\n;\t<name>\n'
             )
 
-        file.write(
-            '\n;### INSTANCE MARKERS ###' +
-            '\n%s' % (len(jms_scene.xref_markers)) +
-            '\n;\t<name>' +
-            '\n;\t<unique identifier>' +
-            '\n;\t<path index>' +
-            '\n;\t<rotation <i,j,k,w>>' +
-            '\n;\t<translation <x,y,z>>\n'
-        )
+        elif version >= 8203 and version <= 8204:
+            file.write(
+                '\n;' +
+                '\n;###Instance xref paths###' +
+                '\n%s' % (len(jms_scene.xref_instances))
+                )
+
+        for idx, xref_instance in enumerate(jms_scene.xref_instances):
+            if version >= 8205:
+                file.write(
+                    '\n;XREF %s' % (idx) +
+                    '\n%s' % (xref_instance.path) +
+                    '\n%s\n' % (xref_instance.name)
+                )
+            else:
+                file.write(
+                    '\n%s' % (xref_instance.path) +
+                    '\n%s\n' % (xref_instance.name)
+                )
+
+        if version >= 8205:
+            file.write(
+                '\n;### INSTANCE MARKERS ###' +
+                '\n%s' % (len(jms_scene.xref_markers)) +
+                '\n;\t<name>' +
+                '\n;\t<unique identifier>' +
+                '\n;\t<path index>' +
+                '\n;\t<rotation <i,j,k,w>>' +
+                '\n;\t<translation <x,y,z>>\n'
+            )
+
+        elif version >= 8203 and version <= 8204:
+            file.write(
+                '\n;' +
+                '\n;###Instance markers###' +
+                '\n%s' % (len(jms_scene.xref_markers))
+                )
 
         for idx, xref_marker in enumerate(jms_scene.xref_markers):
+            if version >= 8205:
+                file.write(
+                    '\n;XREF OBJECT %s' % (idx) +
+                    '\n%s' % (xref_marker.name) +
+                    '\n%s' % (xref_marker.unique_identifier) +
+                    '\n%s' % (xref_marker.index) +
+                    decimal_4 % (xref_marker.rotation) +
+                    decimal_3 % (xref_marker.translation) +
+                    '\n'
+                )
+            else:
+                file.write(
+                    '\n%s' % (xref_marker.name) +
+                    '\n%s' % (xref_marker.unique_identifier) +
+                    '\n%s' % (xref_marker.index) +
+                    decimal_4 % (xref_marker.rotation) +
+                    decimal_3 % (xref_marker.translation) +
+                    '\n'
+                )
+
+    if version >= 8203 and version <= 8204:
+        file.write(
+            '\n;' +
+            '\n;###Skin data###'
+            )
+
+    if version <= 8204:
+        if version >= 8203 and version <= 8204:
             file.write(
-                '\n;XREF OBJECT %s' % (idx) +
-                '\n%s' % (xref_marker.name) +
-                '\n%s' % (xref_marker.unique_identifier) +
-                '\n%s' % (xref_marker.index) +
-                decimal_4 % (xref_marker.rotation) +
-                decimal_3 % (xref_marker.translation) +
-                '\n'
+                '\n;' +
+                '\n;###Regions###'
+                )
+
+        file.write(
+            '\n%s' % (len(jms_scene.regions))
+        )
+
+        for region in jms_scene.regions:
+            file.write(
+                '\n%s' % (region.name)
             )
 
     if version >= 8205:
@@ -1430,6 +1509,12 @@ def write_file(context,
         )
 
     else:
+        if version >= 8203 and version <= 8204:
+            file.write(
+                '\n;' +
+                '\n;###Vertices###'
+                )
+
         file.write(
             '\n%s' % (len(jms_scene.vertices))
         )
@@ -1460,9 +1545,34 @@ def write_file(context,
             file.write('\n')
 
         else:
-            uv = vertex.uv_set[0]
-            tex_u = uv[0]
-            tex_v = uv[1]
+            uv_0 = vertex.uv_set[0]
+            tex_u_0 = uv_0[0]
+            tex_v_0 = uv_0[1]
+
+            uv_1 = None
+            tex_u_1 = 0.0
+            tex_v_1 = 0.0
+            if len(vertex.uv_set) > 1:
+                uv_1 = vertex.uv_set[1]
+                tex_u_1 = uv_1[0]
+                tex_v_1 = uv_1[1]
+
+            uv_2 = None
+            tex_u_2 = 0.0
+            tex_v_2 = 0.0
+            if len(vertex.uv_set) > 2:
+                uv_2 = vertex.uv_set[2]
+                tex_u_2 = uv_2[0]
+                tex_v_2 = uv_2[1]
+
+            uv_3 = None
+            tex_u_3 = 0.0
+            tex_v_3 = 0.0
+            if len(vertex.uv_set) > 3:
+                uv_3 = vertex.uv_set[3]
+                tex_u_3 = uv_3[0]
+                tex_v_3 = uv_3[1]
+
             if version < 8198:
                 file.write(
                     '\n%s' % (vertex.region)
@@ -1476,38 +1586,77 @@ def write_file(context,
             if len(vertex.node_set) > 1:
                 node1 = vertex.node_set[1]
 
+            node2 = (int(-1), float(0.0))
+            if len(vertex.node_set) > 2:
+                node2 = vertex.node_set[2]
+
+            node3 = (int(-1), float(0.0))
+            if len(vertex.node_set) > 3:
+                node3 = vertex.node_set[3]
 
             node0_index = node0[0]
             node0_weight = node0[1]
+
             node1_index = node1[0]
-            node1_weight = 0.0
-            if not node1_index == -1:
-                node1_weight = 1.0 - node0_weight
+            node1_weight = node1[1]
 
-            if node1_weight == 0:
-                node1_index = -1
+            node2_index = node2[0]
+            node2_weight = node2[1]
 
-            if node1_weight == 1:
-                node0_index = node1[0]
-                node1_index = -1
-                node1_weight = 0.0
+            node3_index = node3[0]
+            node3_weight = node3[1]
 
-            file.write(
-                '\n%s' % (node0_index) +
-                decimal_3 % (vertex.translation[0], vertex.translation[1], vertex.translation[2]) +
-                decimal_3 % (vertex.normal[0], vertex.normal[1], vertex.normal[2]) +
-                '\n%s' % (node1_index) +
-                decimal_1 % (node1_weight)
-            )
+            if version < 8202:
+                if not node1_index == -1:
+                    node1_weight = 1.0 - node0_weight
 
-            if version >= 8200:
+                if node1_weight == 0:
+                    node1_index = -1
+
+                if node1_weight == 1:
+                    node0_index = node1[0]
+                    node1_index = -1
+                    node1_weight = 0.0
+
+            if version >= 8204:
                 file.write(
-                    decimal_1 % (tex_u) +
-                    decimal_1 % (tex_v)
+                    '\n%s' % (node0_index) +
+                    decimal_1 % (node0_weight) +
+                    decimal_3 % (vertex.translation[0], vertex.translation[1], vertex.translation[2]) +
+                    decimal_3 % (vertex.normal[0], vertex.normal[1], vertex.normal[2]) +
+                    '\n%s' % (node1_index) +
+                    decimal_1 % (node1_weight) +
+                    '\n%s' % (node2_index) +
+                    decimal_1 % (node2_weight) +
+                    '\n%s' % (node3_index) +
+                    decimal_1 % (node3_weight)
+                )
+            else:
+                file.write(
+                    '\n%s' % (node0_index) +
+                    decimal_3 % (vertex.translation[0], vertex.translation[1], vertex.translation[2]) +
+                    decimal_3 % (vertex.normal[0], vertex.normal[1], vertex.normal[2]) +
+                    '\n%s' % (node1_index) +
+                    decimal_1 % (node1_weight)
                 )
 
+            if version >= 8200:
+                if version >= 8203 and version <= 8204:
+                    file.write(
+                        decimal_2 % (tex_u_0, tex_v_0) +
+                        decimal_2 % (tex_u_1, tex_v_1) +
+                        decimal_2 % (tex_u_2, tex_v_2) +
+                        decimal_2 % (tex_u_3, tex_v_3)
+                    )
+
+                else:
+                    file.write(
+                        decimal_1 % (tex_u_0) +
+                        decimal_1 % (tex_v_0)
+                    )
+
             else:
-                file.write(decimal_2 % (tex_u, tex_v))
+                file.write(decimal_2 % (tex_u_0, tex_v_0))
 
             if version >= 8199:
                 unused_flag = 0
@@ -1522,6 +1671,12 @@ def write_file(context,
         )
 
     else:
+        if version >= 8203 and version <= 8204:
+            file.write(
+                '\n;' +
+                '\n;###Faces###'
+                )
+
         file.write(
             '\n%s' % (len(jms_scene.triangles))
         )
@@ -1879,6 +2034,7 @@ def command_queue(context,
                   export_physics,
                   game_version,
                   encoding,
+                  vertex_group_sort
                   ):
 
     global_functions.unhide_all_collections()
@@ -2001,6 +2157,7 @@ def command_queue(context,
                    False,
                    model_type,
                    object_list,
+                   vertex_group_sort
                    )
 
     if export_collision and collision_count > 0:
@@ -2022,6 +2179,7 @@ def command_queue(context,
                    False,
                    model_type,
                    object_list,
+                   vertex_group_sort
                    )
 
     if export_physics and physics_count > 0:
@@ -2043,6 +2201,7 @@ def command_queue(context,
                    export_physics,
                    model_type,
                    object_list,
+                   vertex_group_sort
                    )
 
     for idx, obj in enumerate(object_list):

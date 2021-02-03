@@ -44,7 +44,7 @@ class JMAScene(global_functions.HaloAsset):
             self.child = child
             self.sibling = sibling
 
-    def __init__(self, context, report, version, game_version, extension, custom_scale, biped_controller):
+    def __init__(self, context, report, version, game_version, extension, custom_scale, biped_controller, vertex_group_sort):
         global_functions.unhide_all_collections()
         scene = bpy.context.scene
         view_layer = bpy.context.view_layer
@@ -76,7 +76,15 @@ class JMAScene(global_functions.HaloAsset):
         self.nodes = []
         root_node_count = global_functions.count_root_nodes(node_list)
         h2_extension_list = ['JRMX', 'JMH']
-        sorted_list = global_functions.sort_list(node_list, armature, game_version, version, False)
+        dae_object = None
+        if vertex_group_sort:
+            for object in object_list:
+                if object.type == 'MESH' and not object.name[0:1].lower() == '#' and not object in node_list:
+                    if object.parent in node_list or object.parent == armature:
+                        dae_object = object
+                        break
+
+        sorted_list = global_functions.sort_list(node_list, armature, game_version, version, False, vertex_group_sort, dae_object)
         joined_list = sorted_list[0]
         reversed_joined_list = sorted_list[1]
 
@@ -174,6 +182,7 @@ def write_file(context,
                custom_frame_rate,
                frame_rate_float,
                biped_controller,
+               vertex_group_sort,
                scale_enum,
                scale_float,
                console,
@@ -203,7 +212,7 @@ def write_file(context,
         frame_rate_value = int(custom_frame_rate)
 
 
-    jma_scene = JMAScene(context, report, version, game_version, extension, custom_scale, biped_controller)
+    jma_scene = JMAScene(context, report, version, game_version, extension, custom_scale, biped_controller, vertex_group_sort)
 
     if version > 16394:
         decimal_1 = '\n%0.10f'

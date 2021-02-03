@@ -195,7 +195,21 @@ def sort_by_index(node_list):
 
     return (sorted_list, sorted_list)
 
-def sort_list(node_list, armature, game_version, version, animation):
+def sort_by_vertex_group(node_list, dae_object):
+    vertex_group_nodes = []
+    node_list_names = []
+    for node in node_list:
+        node_list_names.append(node.name)
+
+    for vertex_group in dae_object.vertex_groups:
+        if vertex_group.name in node_list_names:
+            node_idx = node_list_names.index(vertex_group.name)
+            vertex_group_nodes.append(node_list[node_idx])
+
+    print(vertex_group_nodes)
+    return (vertex_group_nodes, vertex_group_nodes)
+
+def sort_list(node_list, armature, game_version, version, animation, dae_converter_hack, dae_object):
     version = int(version)
     sorted_list = []
     if game_version == 'haloce':
@@ -203,18 +217,26 @@ def sort_list(node_list, armature, game_version, version, animation):
 
     elif game_version == 'halo2' or game_version == 'halo2utf8':
         if animation:
-            if version <= 16394:
-                sorted_list = sort_by_layer(node_list, armature)
+            if dae_converter_hack:
+                sorted_list = sort_by_vertex_group(node_list, dae_object)
 
             else:
-                sorted_list = sort_by_index(node_list)
+                if version <= 16394:
+                    sorted_list = sort_by_layer(node_list, armature)
+
+                else:
+                    sorted_list = sort_by_index(node_list)
 
         else:
-            if version <= 8204:
-                sorted_list = sort_by_layer(node_list, armature)
+            if dae_converter_hack:
+                sorted_list = sort_by_vertex_group(node_list, dae_object)
 
             else:
-                sorted_list = sort_by_index(node_list)
+                if version <= 8204:
+                    sorted_list = sort_by_layer(node_list, armature)
+
+                else:
+                    sorted_list = sort_by_index(node_list)
 
     return sorted_list
 

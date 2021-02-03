@@ -330,6 +330,8 @@ class JMSAsset(global_functions.HaloAsset):
         material_count = int(self.next())
         for material in range(material_count):
             name = self.next()
+            if self.version >= 8203 and self.version <= 8204:
+                texture_definition = self.next()
             material_definition = self.next()
             if self.game_version == 'haloce':
                 self.materials.append(JMSAsset.Material(name, material_definition, None, None, None, None))
@@ -473,7 +475,7 @@ class JMSAsset(global_functions.HaloAsset):
             node_set = []
             uv_set = []
             region = None
-            if self.version >= 8204:
+            if self.version >= 8205:
                 translation = self.next_vector()
                 normal = self.next_vector()
                 node_influence_count = int(self.next())
@@ -506,19 +508,43 @@ class JMSAsset(global_functions.HaloAsset):
                     self.used_regions.append(region)
 
                 node_0_index = int(self.next())
+                if self.version == 8204:
+                    node_0_weight = float(self.next())
                 translation = self.next_vector()
                 normal = self.next_vector()
                 node_1_index = int(self.next())
                 node_1_weight = float(self.next())
-                node_set.append([node_0_index, 1])
+                node_2_index = -1
+                node_3_index = -1
+                if self.version == 8204:
+                    node_2_index = int(self.next())
+                    node_2_weight = float(self.next())
+                    node_3_index = int(self.next())
+                    node_3_weight = float(self.next())
+
+                if self.version >= 8204:
+                    node_set.append([node_0_index, node_0_weight])
+                else:
+                    node_set.append([node_0_index, 1])
+
                 node_set.append([node_1_index, node_1_weight])
+                if self.version >= 8204:
+                    node_set.append([node_2_index, node_2_weight])
+                    node_set.append([node_3_index, node_3_weight])
+
                 if not node_0_index == -1:
                     node_influence_count += 1
 
                 if not node_1_index == -1:
                     node_influence_count += 1
 
-                if self.version >= 8202:
+                if not node_2_index == -1:
+                    node_influence_count += 1
+
+                if not node_3_index == -1:
+                    node_influence_count += 1
+
+                if self.version >= 8205:
                     uv_count = int(self.next())
                     for uv in range(uv_count):
                         tex_u_value   = self.next()
@@ -537,20 +563,60 @@ class JMSAsset(global_functions.HaloAsset):
                         uv_set.append([u, v])
 
                 else:
-                    tex_u_value   = self.next()
-                    tex_v_value   = self.next()
-                    if 'NAN' in tex_u_value:
-                        tex_u = float(tex_u_value.rsplit('.', 1)[0])
-                    else:
-                        tex_u = float(tex_u_value)
-                    if 'NAN' in tex_v_value:
-                        tex_v = float(tex_v_value.rsplit('.', 1)[0])
-                    else:
-                        tex_v = float(tex_v_value)
+                    tex_0_u_value = self.next()
+                    tex_0_v_value = self.next()
+                    if self.version >= 8203:
+                        tex_1_u_value = self.next()
+                        tex_1_v_value = self.next()
+                        tex_2_u_value = self.next()
+                        tex_2_v_value = self.next()
+                        tex_3_u_value = self.next()
+                        tex_3_v_value = self.next()
 
-                    u = tex_u
-                    v = tex_v
-                    uv_set.append([u, v])
+                    if 'NAN' in tex_0_u_value:
+                        tex_0_u = float(tex_0_u_value.rsplit('.', 1)[0])
+                    else:
+                        tex_0_u = float(tex_0_u_value)
+                    if 'NAN' in tex_0_v_value:
+                        tex_0_v = float(tex_0_v_value.rsplit('.', 1)[0])
+                    else:
+                        tex_0_v = float(tex_0_v_value)
+
+                    if self.version >= 8203:
+                        if 'NAN' in tex_1_u_value:
+                            tex_1_u = float(tex_1_u_value.rsplit('.', 1)[0])
+                        else:
+                            tex_1_u = float(tex_1_u_value)
+                        if 'NAN' in tex_1_v_value:
+                            tex_1_v = float(tex_1_v_value.rsplit('.', 1)[0])
+                        else:
+                            tex_1_v = float(tex_1_v_value)
+
+                        if 'NAN' in tex_2_u_value:
+                            tex_2_u = float(tex_2_u_value.rsplit('.', 1)[0])
+                        else:
+                            tex_2_u = float(tex_2_u_value)
+                        if 'NAN' in tex_2_v_value:
+                            tex_2_v = float(tex_2_v_value.rsplit('.', 1)[0])
+                        else:
+                            tex_2_v = float(tex_2_v_value)
+
+                        if 'NAN' in tex_3_u_value:
+                            tex_3_u = float(tex_3_u_value.rsplit('.', 1)[0])
+                        else:
+                            tex_3_u = float(tex_3_u_value)
+                        if 'NAN' in tex_3_v_value:
+                            tex_3_v = float(tex_3_v_value.rsplit('.', 1)[0])
+                        else:
+                            tex_3_v = float(tex_3_v_value)
+
+                    if self.version >= 8203:
+                        uv_set.append([tex_0_u, tex_0_v])
+                        uv_set.append([tex_1_u, tex_1_v])
+                        uv_set.append([tex_2_u, tex_2_v])
+                        uv_set.append([tex_3_u, tex_3_v])
+                    else:
+                        uv_set.append([tex_0_u, tex_0_v])
 
                 flags = None
                 if self.version >= 8199:
