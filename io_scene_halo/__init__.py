@@ -724,10 +724,6 @@ class JMA_SceneProps(Panel):
             row.prop(scene_jma, "biped_controller", text='')
 
 
-        if scene_halo.expert_mode:
-            row = col.row()
-            row.label(text='Sort Nodes by Vertex Groups:')
-            row.prop(scene_jma, "vertex_group_sort", text='')
 
         row = col.row()
         row.label(text='Use As Default Export Settings:')
@@ -854,12 +850,6 @@ class JMA_ScenePropertiesGroup(PropertyGroup):
         options={'HIDDEN'},
         )
 
-    vertex_group_sort: BoolProperty(
-        name ="Sort Nodes by Vertex Groups",
-        description = "A hack for the DAEconverter app for Halo 2 Vista. Do not use if you are not exporting for this tool",
-        default = False,
-        )
-
     use_scene_properties: BoolProperty(
         name ="Use scene properties",
         description = "Use the options set in the scene or uncheck this to override",
@@ -976,11 +966,6 @@ class JMS_SceneProps(Panel):
         row = col.row()
         row.label(text='Use Edge Split:')
         row.prop(scene_jms, "edge_split", text='')
-        if scene_halo.expert_mode:
-            row = col.row()
-            row.label(text='Sort Nodes by Vertex Groups:')
-            row.prop(scene_jms, "vertex_group_sort", text='')
-
         row = col.row()
         row.label(text='Use As Default Export Settings:')
         row.prop(scene_jms, "use_scene_properties", text='')
@@ -1141,12 +1126,6 @@ class JMS_ScenePropertiesGroup(PropertyGroup):
         name ="Export physics geometry",
         description = "Whether or not we ignore geometry that is marked as physics",
         default = True,
-        )
-
-    vertex_group_sort: BoolProperty(
-        name ="Sort Nodes by Vertex Groups",
-        description = "A hack for the DAEconverter app for Halo 2 Vista. Do not use if you are not exporting for this tool",
-        default = False,
         )
 
     edge_split: BoolProperty(
@@ -1734,12 +1713,6 @@ class ExportJMS(Operator, ExportHelper):
         default = True,
         )
 
-    vertex_group_sort: BoolProperty(
-        name ="Sort Nodes by Vertex Groups",
-        description = "A hack for the DAEconverter app for Halo 2 Vista. Do not use if you are not exporting for this tool",
-        default = False,
-        )
-
     edge_split: BoolProperty(
         name ="Edge Split",
         description = "Apply a edge split modifier.",
@@ -1812,14 +1785,13 @@ class ExportJMS(Operator, ExportHelper):
             parser.add_argument('-arg9', '--hidden_geo', dest='hidden_geo', action='store_true')
             parser.add_argument('-arg10', '--permutation', dest='permutation_ce', type=str, default="")
             parser.add_argument('-arg11', '--lod', dest='level_of_detail_ce', type=str, default="0")
-            parser.add_argument('-arg12', '--vertex_group_sort', dest='vertex_group_sort', action='store_true')
-            parser.add_argument('-arg13', '--edge_split', dest='edge_split', action='store_true')
-            parser.add_argument('-arg14', '--use_edge_angle', dest='use_edge_angle', action='store_true')
-            parser.add_argument('-arg15', '--use_edge_sharp', dest='use_edge_sharp', action='store_true')
-            parser.add_argument('-arg16', '--split_angle', dest='split_angle', type=float, default=1.0)
-            parser.add_argument('-arg17', '--scale_enum', dest='scale_enum', type=str, default="0")
-            parser.add_argument('-arg18', '--scale_float', dest='scale_float', type=float, default=1.0)
-            parser.add_argument('-arg19', '--console', dest='console', action='store_true', default=True)
+            parser.add_argument('-arg12', '--edge_split', dest='edge_split', action='store_true')
+            parser.add_argument('-arg13', '--use_edge_angle', dest='use_edge_angle', action='store_true')
+            parser.add_argument('-arg14', '--use_edge_sharp', dest='use_edge_sharp', action='store_true')
+            parser.add_argument('-arg15', '--split_angle', dest='split_angle', type=float, default=1.0)
+            parser.add_argument('-arg16', '--scale_enum', dest='scale_enum', type=str, default="0")
+            parser.add_argument('-arg17', '--scale_float', dest='scale_float', type=float, default=1.0)
+            parser.add_argument('-arg18', '--console', dest='console', action='store_true', default=True)
             args = parser.parse_known_args(argv)[0]
             print('filepath: ', args.filepath)
             print('use_scene_properties: ', args.use_scene_properties)
@@ -1832,7 +1804,6 @@ class ExportJMS(Operator, ExportHelper):
             print('hidden_geo: ', args.hidden_geo)
             print('permutation_ce: ', args.permutation_ce)
             print('level_of_detail_ce: ', args.level_of_detail_ce)
-            print('vertex_group_sort: ', args.vertex_group_sort)
             print('edge_split: ', args.edge_split)
             print('use_edge_angle: ', args.use_edge_angle)
             print('use_edge_sharp: ', args.use_edge_sharp)
@@ -1851,7 +1822,6 @@ class ExportJMS(Operator, ExportHelper):
             self.hidden_geo = args.hidden_geo
             self.permutation_ce = args.permutation_ce
             self.level_of_detail_ce = args.level_of_detail_ce
-            self.vertex_group_sort = args.vertex_group_sort
             self.edge_split = args.edge_split
             self.use_edge_angle = args.use_edge_angle
             self.use_edge_sharp = args.use_edge_sharp
@@ -1865,7 +1835,7 @@ class ExportJMS(Operator, ExportHelper):
         if self.game_version == 'halo2vista':
             game_version = 'halo2'
 
-        return run_code("export_jms.command_queue(context, self.filepath, self.report, self.jms_version, self.jms_version_ce, self.jms_version_h2, self.folder_structure, self.apply_modifiers, self.triangulate_faces, self.edge_split, self.use_edge_angle, self.use_edge_sharp, self.split_angle, self.clean_normalize_weights, self.scale_enum, self.scale_float, self.console, self.permutation_ce, self.level_of_detail_ce, self.hidden_geo, self.export_render, self.export_collision, self.export_physics, game_version, encoding, self.vertex_group_sort)")
+        return run_code("export_jms.command_queue(context, self.filepath, self.report, self.jms_version, self.jms_version_ce, self.jms_version_h2, self.folder_structure, self.apply_modifiers, self.triangulate_faces, self.edge_split, self.use_edge_angle, self.use_edge_sharp, self.split_angle, self.clean_normalize_weights, self.scale_enum, self.scale_float, self.console, self.permutation_ce, self.level_of_detail_ce, self.hidden_geo, self.export_render, self.export_collision, self.export_physics, game_version, encoding)")
 
     def draw(self, context):
         scene = context.scene
@@ -1899,7 +1869,6 @@ class ExportJMS(Operator, ExportHelper):
             self.export_render = scene_jms.export_render
             self.export_collision = scene_jms.export_collision
             self.export_physics = scene_jms.export_physics
-            self.vertex_group_sort = scene_jms.vertex_group_sort
             self.edge_split = scene_jms.edge_split
             self.use_edge_angle = scene_jms.use_edge_angle
             self.split_angle = scene_jms.split_angle
@@ -1980,12 +1949,6 @@ class ExportJMS(Operator, ExportHelper):
         row.enabled = is_enabled
         row.label(text='Use Edge Split:')
         row.prop(self, "edge_split", text='')
-        if scene_halo.expert_mode:
-            row = col.row()
-            row.enabled = is_enabled
-            row.label(text='Sort Nodes by Vertex Groups:')
-            row.prop(self, "vertex_group_sort", text='')
-
         row = col.row()
         row.label(text='Use Scene Export Settings:')
         row.prop(scene_jms, "use_scene_properties", text='')
@@ -2201,12 +2164,6 @@ class ExportJMA(Operator, ExportHelper):
         options={'HIDDEN'},
         )
 
-    vertex_group_sort: BoolProperty(
-        name ="Sort Nodes by Vertex Groups",
-        description = "A hack for the DAEconverter app for Halo 2 Vista. Do not use if you are not exporting for this tool",
-        default = False,
-        )
-
     scale_enum: EnumProperty(
     name="Scale",
     description="Choose a preset value to multiply position values by.",
@@ -2250,7 +2207,6 @@ class ExportJMA(Operator, ExportHelper):
                     self.custom_frame_rate,
                     self.frame_rate_float,
                     self.biped_controller,
-                    self.vertex_group_sort,
                     self.scale_enum,
                     self.scale_float,
                     self.console]
@@ -2265,10 +2221,9 @@ class ExportJMA(Operator, ExportHelper):
             parser.add_argument('-arg5', '--custom_frame_rate', dest='custom_frame_rate', type=str, default="30")
             parser.add_argument('-arg6', '--frame_rate_float', dest='frame_rate_float', type=str, default=30)
             parser.add_argument('-arg7', '--biped_controller', dest='biped_controller', action='store_true')
-            parser.add_argument('-arg8', '--vertex_group_sort', dest='vertex_group_sort', action='store_true')
-            parser.add_argument('-arg9', '--scale_enum', dest='scale_enum', type=str, default="0")
-            parser.add_argument('-arg10', '--scale_float', dest='scale_float', type=float, default=1.0)
-            parser.add_argument('-arg11', '--console', dest='console', action='store_true', default=True)
+            parser.add_argument('-arg8', '--scale_enum', dest='scale_enum', type=str, default="0")
+            parser.add_argument('-arg9', '--scale_float', dest='scale_float', type=float, default=1.0)
+            parser.add_argument('-arg10', '--console', dest='console', action='store_true', default=True)
             args = parser.parse_known_args(argv)[0]
             print('filepath: ', args.filepath)
             print('extension: ', args.extension)
@@ -2277,7 +2232,6 @@ class ExportJMA(Operator, ExportHelper):
             print('custom_frame_rate: ', args.custom_frame_rate)
             print('frame_rate_float: ', args.frame_rate_float)
             print('biped_controller: ', args.biped_controller)
-            print('vertex_group_sort: ', args.vertex_group_sort)
             print('scale_enum: ', args.scale_enum)
             print('scale_float: ', args.scale_float)
             print('console: ', args.console)
@@ -2288,7 +2242,6 @@ class ExportJMA(Operator, ExportHelper):
             self.custom_frame_rate = args.custom_frame_rate
             self.frame_rate_float = args.frame_rate_float
             self.biped_controller = args.biped_controller
-            self.vertex_group_sort = args.vertex_group_sort
             self.scale_enum = args.scale_enum
             self.scale_float = args.scale_float
             self.console = args.console
@@ -2329,7 +2282,6 @@ class ExportJMA(Operator, ExportHelper):
             self.scale_enum = scene_jma.scale_enum
             self.scale_float = scene_jma.scale_float
             self.biped_controller = scene_jma.biped_controller
-            self.vertex_group_sort = scene_jma.vertex_group_sort
             if scene.render.fps not in fps_options:
                 self.custom_frame_rate = 'CUSTOM'
                 self.frame_rate_float = scene.render.fps
@@ -2368,11 +2320,6 @@ class ExportJMA(Operator, ExportHelper):
             row.label(text='Biped Controller:')
             row.prop(self, "biped_controller", text='')
 
-        if scene_halo.expert_mode:
-            row = col.row()
-            row.enabled = is_enabled
-            row.label(text='Sort Nodes by Vertex Groups:')
-            row.prop(self, "vertex_group_sort", text='')
 
         row = col.row()
         row.label(text='Use Scene Export Settings:')

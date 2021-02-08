@@ -313,7 +313,7 @@ class JMSScene(global_functions.HaloAsset):
             self.translation = translation
             self.scale = scale
 
-    def __init__(self, context, report, version, game_version, apply_modifiers, hidden_geo, export_render, export_collision, export_physics, custom_scale, object_list, vertex_group_sort):
+    def __init__(self, context, report, version, game_version, apply_modifiers, hidden_geo, export_render, export_collision, export_physics, custom_scale, object_list):
         self.valid_gen_list = ['halo2',
                                ]
 
@@ -489,15 +489,7 @@ class JMSScene(global_functions.HaloAsset):
         elif game_version == 'halo2' and node_count > 255:
             raise global_functions.SceneParseError("This model has more nodes than Halo 2 supports. Please limit your node count to 255 nodes")
 
-        dae_object = None
-        if vertex_group_sort:
-            for object in object_list:
-                if object.type == 'MESH' and not object.name[0:1].lower() == '#' and not object in node_list:
-                    if object.parent in node_list or object.parent == armature:
-                        dae_object = object
-                        break
-
-        sorted_list = global_functions.sort_list(node_list, armature, game_version, version, False, vertex_group_sort, dae_object)
+        sorted_list = global_functions.sort_list(node_list, armature, game_version, version, False)
         joined_list = sorted_list[0]
         reversed_joined_list = sorted_list[1]
         self.node_checksum = 0
@@ -1170,10 +1162,9 @@ def write_file(context,
                export_physics,
                model_type,
                object_list,
-               vertex_group_sort
                ):
 
-    jms_scene = JMSScene(context, report, version, game_version, apply_modifiers, hidden_geo, export_render, export_collision, export_physics, custom_scale, object_list, vertex_group_sort)
+    jms_scene = JMSScene(context, report, version, game_version, apply_modifiers, hidden_geo, export_render, export_collision, export_physics, custom_scale, object_list)
 
     if version > 8209:
         decimal_1 = '\n%0.10f'
@@ -2034,7 +2025,6 @@ def command_queue(context,
                   export_physics,
                   game_version,
                   encoding,
-                  vertex_group_sort
                   ):
 
     global_functions.unhide_all_collections()
@@ -2157,7 +2147,6 @@ def command_queue(context,
                    False,
                    model_type,
                    object_list,
-                   vertex_group_sort
                    )
 
     if export_collision and collision_count > 0:
@@ -2179,7 +2168,6 @@ def command_queue(context,
                    False,
                    model_type,
                    object_list,
-                   vertex_group_sort
                    )
 
     if export_physics and physics_count > 0:
@@ -2201,7 +2189,6 @@ def command_queue(context,
                    export_physics,
                    model_type,
                    object_list,
-                   vertex_group_sort
                    )
 
     for idx, obj in enumerate(object_list):
