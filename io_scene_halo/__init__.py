@@ -2444,12 +2444,13 @@ class Halo_LightmapperPropertiesGroup(PropertyGroup):
         min=2,
     )
 
-class Halo_Lightmapper_Helper(Panel):
-    bl_label = "Halo Lightmapper Helper"
-    bl_idname = "HALO_PT_Lightmapper"
+class Halo_Tools_Helper(Panel):
+    """Tools to help automate Halo workflow"""
+    bl_label = "Halo Tools Helper"
+    bl_idname = "HALO_PT_AutoTools"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
-    bl_category = "Halo Light"
+    bl_category = "Halo Tools"
 
     def draw(self, context):
         scene = context.scene
@@ -2458,7 +2459,9 @@ class Halo_Lightmapper_Helper(Panel):
         layout = self.layout
         row = layout.row()
 
-        col = row.column(align=True)
+        box = layout.box()
+        box.label(text="Lightmap Helper:")
+        col = box.column(align=True)
 
         row = col.row()
         row.label(text='Image Width:')
@@ -2469,9 +2472,16 @@ class Halo_Lightmapper_Helper(Panel):
         row = col.row()
         row.operator("halo_bulk.lightmapper_images", text="BULK!!!")
 
+        box = layout.box()
+        box.label(text="Bone Helper:")
+        col = box.column(align=True)
+        row = col.row()
+        row.operator("halo_bulk.bulk_bone_names", text="BULK!!!")
+
 class Bulk_Lightmap_Images(Operator):
+    """Create image nodes with a set size for all materials in the scene"""
     bl_idname = 'halo_bulk.lightmapper_images'
-    bl_label = 'Add Cube'
+    bl_label = 'Bulk Halo Images'
     bl_options = {"REGISTER", "UNDO"}
 
     def execute(self, context):
@@ -2479,6 +2489,18 @@ class Bulk_Lightmap_Images(Operator):
         scene = context.scene
         scene_halo_lightmapper = scene.halo_lightmapper
         return run_code("lightmapper_prep.lightmap_bulk(context, scene_halo_lightmapper.res_x, scene_halo_lightmapper.res_y)")
+
+class Bulk_Rename_Bones(Operator):
+    """Rename all bones in the scene to swap from Blender .L/.R to Halo l/r bone naming scheme and vice versa"""
+    bl_idname = 'halo_bulk.bulk_bone_names'
+    bl_label = 'Bulk Halo Bones'
+    bl_options = {"REGISTER", "UNDO"}
+
+    def execute(self, context):
+        from io_scene_halo.misc import rename_bones
+        scene = context.scene
+        scene_halo_bones = scene.halo_lightmapper
+        return run_code("rename_bones.rename_bones()")
 
 class ExportLightmap(Operator, ExportHelper):
     """Write a LUV file"""
@@ -2505,7 +2527,8 @@ def menu_func_import(self, context):
 classeshalo = (
     ExportLightmap,
     Bulk_Lightmap_Images,
-    Halo_Lightmapper_Helper,
+    Bulk_Rename_Bones,
+    Halo_Tools_Helper,
     Halo_LightmapperPropertiesGroup,
     ASS_JMS_MeshPropertiesGroup,
     ASS_JMS_MaterialPropertiesGroup,
