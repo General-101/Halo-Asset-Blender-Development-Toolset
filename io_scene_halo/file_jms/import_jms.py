@@ -1196,6 +1196,7 @@ def load_file(context, filepath, report, game_version, fix_parents):
         object_mesh.data.use_auto_smooth = True
         object_mesh.select_set(True)
         armature.select_set(True)
+        view_layer.objects.active = armature
         bpy.ops.object.parent_set(type='ARMATURE', keep_transform=True)
         object_mesh.select_set(False)
         armature.select_set(False)

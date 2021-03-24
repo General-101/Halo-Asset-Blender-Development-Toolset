@@ -471,15 +471,30 @@ def load_file(context, filepath, report):
             obj.data.ass_jms.Object_Type = 'CAPSULES'
             object_dimension = object_radius * 2
             obj.dimensions = (object_dimension, object_dimension, (object_dimension + object_height))
+            obj.select_set(True)
+            view_layer.objects.active = obj
+            bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
+            obj.select_set(False)
+            view_layer.objects.active = None
 
         elif geo_class.lower() == 'sphere':
             obj.data.ass_jms.Object_Type = 'SPHERE'
             object_dimension = object_radius * 2
             obj.dimensions = (object_dimension, object_dimension, object_dimension)
+            obj.select_set(True)
+            view_layer.objects.active = obj
+            bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
+            obj.select_set(False)
+            view_layer.objects.active = None
 
         elif geo_class.lower() == 'box':
             obj.data.ass_jms.Object_Type = 'BOX'
             obj.dimensions = ((object_extents[0] * 2), (object_extents[1] * 2), (object_extents[2] * 2))
+            obj.select_set(True)
+            view_layer.objects.active = obj
+            bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
+            obj.select_set(False)
+            view_layer.objects.active = None
 
         view_layer.update()
 

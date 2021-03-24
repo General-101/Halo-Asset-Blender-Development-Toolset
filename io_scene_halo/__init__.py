@@ -2473,10 +2473,16 @@ class Halo_Tools_Helper(Panel):
         row.operator("halo_bulk.lightmapper_images", text="BULK!!!")
 
         box = layout.box()
-        box.label(text="Bone Helper:")
+        box.label(text="Bone Name Helper:")
         col = box.column(align=True)
         row = col.row()
         row.operator("halo_bulk.bulk_bone_names", text="BULK!!!")
+
+        box = layout.box()
+        box.label(text="Bone Rotation Helper:")
+        col = box.column(align=True)
+        row = col.row()
+        row.operator("halo_bulk.bulk_bone_rotation", text="BULK!!!")
 
 class Bulk_Lightmap_Images(Operator):
     """Create image nodes with a set size for all materials in the scene"""
@@ -2493,14 +2499,22 @@ class Bulk_Lightmap_Images(Operator):
 class Bulk_Rename_Bones(Operator):
     """Rename all bones in the scene to swap from Blender .L/.R to Halo l/r bone naming scheme and vice versa"""
     bl_idname = 'halo_bulk.bulk_bone_names'
-    bl_label = 'Bulk Halo Bones'
+    bl_label = 'Bulk Halo Bones Names'
     bl_options = {"REGISTER", "UNDO"}
 
     def execute(self, context):
         from io_scene_halo.misc import rename_bones
-        scene = context.scene
-        scene_halo_bones = scene.halo_lightmapper
         return run_code("rename_bones.rename_bones()")
+
+class Bulk_Rotate_Bones(Operator):
+    """Add -180 degrees for the roll of all selected bones in edit mode."""
+    bl_idname = 'halo_bulk.bulk_bone_rotation'
+    bl_label = 'Bulk Halo Bones Rotate'
+    bl_options = {"REGISTER", "UNDO"}
+
+    def execute(self, context):
+        from io_scene_halo.misc import rotate_bones
+        return run_code("rotate_bones.rotate_bones()")
 
 class ExportLightmap(Operator, ExportHelper):
     """Write a LUV file"""
@@ -2528,6 +2542,7 @@ classeshalo = (
     ExportLightmap,
     Bulk_Lightmap_Images,
     Bulk_Rename_Bones,
+    Bulk_Rotate_Bones,
     Halo_Tools_Helper,
     Halo_LightmapperPropertiesGroup,
     ASS_JMS_MeshPropertiesGroup,
