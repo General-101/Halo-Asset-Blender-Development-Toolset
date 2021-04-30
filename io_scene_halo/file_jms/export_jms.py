@@ -317,8 +317,6 @@ class JMSScene(global_functions.HaloAsset):
         self.valid_gen_list = ['halo2',
                                ]
 
-        scene = bpy.context.scene
-        view_layer = bpy.context.view_layer
         armature = None
         armature_count = 0
         mesh_frame_count = 0
@@ -1152,6 +1150,7 @@ def write_file(context,
                game_version,
                encoding,
                folder_structure,
+               folder_type,
                apply_modifiers,
                custom_scale,
                permutation_ce,
@@ -1178,63 +1177,20 @@ def write_file(context,
         decimal_3 = '\n%0.6f\t%0.6f\t%0.6f'
         decimal_4 = '\n%0.6f\t%0.6f\t%0.6f\t%0.6f'
 
-    extension = '.JMS'
-    ce_settings = ''
-    directory = filepath.rsplit(os.sep, 1)[0]
-    filename = filepath.rsplit(os.sep, 1)[1]
-    if filename.lower().endswith('.jms') or filename.lower().endswith('.jmp'):
-        filename = filename.rsplit('.', 1)[0]
+    filename = global_functions.get_filename(game_version,
+                                             permutation_ce,
+                                             level_of_detail_ce,
+                                             folder_structure,
+                                             model_type,
+                                             filepath)
 
-    foldername = filename
-    blend_filename = bpy.path.basename(bpy.context.blend_data.filepath)
-    if len(blend_filename) > 0:
-        parent_folder = blend_filename.rsplit('.', 1)[0]
-    else:
-        parent_folder = 'default'
+    root_directory = global_functions.get_directory(game_version,
+                                                    model_type,
+                                                    folder_structure,
+                                                    folder_type,
+                                                    filepath)
 
-    if game_version == 'haloce':
-        if not permutation_ce == '':
-            ce_settings += '%s ' % (permutation_ce.replace(' ', '_').replace('\t', '_'))
-
-            if level_of_detail_ce == None:
-                ce_settings += '%s' % ('superhigh')
-
-        if not level_of_detail_ce == None:
-            if permutation_ce == '':
-                ce_settings += '%s ' % ('unnamed')
-
-            ce_settings += '%s' % (level_of_detail_ce)
-
-        if not permutation_ce == '' or not level_of_detail_ce == None:
-            filename = ''
-
-    level_prefix_tuple = ('b ', 'b_')
-    if game_version == 'haloce':
-        folder_type = "models"
-    else:
-        if jms_scene.nodes[0].name.lower().startswith(level_prefix_tuple):
-            folder_type = "structure"
-        else:
-            folder_type = "render"
-
-    if model_type == "_collision":
-        if game_version == 'haloce':
-            folder_type = "physics"
-        else:
-            folder_type = "collision"
-
-    elif model_type == "_physics":
-        folder_type = "physics"
-
-    if folder_structure:
-        output_path = directory + os.sep + parent_folder
-        root_directory = output_path + os.sep + folder_type
-        if not os.path.exists(output_path + os.sep + folder_type):
-            os.makedirs(output_path + os.sep + folder_type)
-    else:
-        root_directory = directory
-
-    file = open(root_directory + os.sep + ce_settings + filename + model_type + extension, 'w', encoding=encoding)
+    file = open(root_directory + os.sep + filename, 'w', encoding=encoding)
 
     if version >= 8205:
         version_bounds = '8197-8210'
@@ -2007,6 +1963,7 @@ def command_queue(context,
                   jms_version_ce,
                   jms_version_h2,
                   folder_structure,
+                  folder_type,
                   apply_modifiers,
                   triangulate_faces,
                   edge_split,
@@ -2129,7 +2086,7 @@ def command_queue(context,
         return {'CANCELLED'}
 
     if export_render and render_count > 0:
-        model_type = ""
+        model_type = "render"
         write_file(context,
                    filepath,
                    report,
@@ -2137,6 +2094,7 @@ def command_queue(context,
                    game_version,
                    encoding,
                    folder_structure,
+                   folder_type,
                    apply_modifiers,
                    custom_scale,
                    permutation_ce,
@@ -2150,7 +2108,7 @@ def command_queue(context,
                    )
 
     if export_collision and collision_count > 0:
-        model_type = "_collision"
+        model_type = "collision"
         write_file(context,
                    filepath,
                    report,
@@ -2158,6 +2116,7 @@ def command_queue(context,
                    game_version,
                    encoding,
                    folder_structure,
+                   folder_type,
                    apply_modifiers,
                    custom_scale,
                    permutation_ce,
@@ -2171,7 +2130,7 @@ def command_queue(context,
                    )
 
     if export_physics and physics_count > 0:
-        model_type = "_physics"
+        model_type = "physics"
         write_file(context,
                    filepath,
                    report,
@@ -2179,6 +2138,7 @@ def command_queue(context,
                    game_version,
                    encoding,
                    folder_structure,
+                   folder_type,
                    apply_modifiers,
                    custom_scale,
                    permutation_ce,

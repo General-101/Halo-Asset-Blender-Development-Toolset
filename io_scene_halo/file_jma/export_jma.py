@@ -24,6 +24,7 @@
 #
 # ##### END MIT LICENSE BLOCK #####
 
+import os
 import bpy
 import sys
 import traceback
@@ -174,6 +175,7 @@ def write_file(context,
                custom_frame_rate,
                frame_rate_float,
                biped_controller,
+               folder_structure,
                scale_enum,
                scale_float,
                console,
@@ -217,7 +219,16 @@ def write_file(context,
         decimal_3 = '\n%0.6f\t%0.6f\t%0.6f'
         decimal_4 = '\n%0.6f\t%0.6f\t%0.6f\t%0.6f'
 
-    file = open(filepath + global_functions.get_true_extension(filepath, extension, False), 'w', encoding=encoding)
+    filename = os.path.basename(filepath)
+
+    root_directory = global_functions.get_directory(game_version,
+                                                    "animations",
+                                                    folder_structure,
+                                                    "0",
+                                                    filepath)
+
+    file = open(root_directory + os.sep + filename + global_functions.get_true_extension(filepath, extension, False), 'w', encoding=encoding)
+
     #write header
     if version >= 16394:
         file.write(

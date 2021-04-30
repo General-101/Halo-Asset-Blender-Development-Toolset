@@ -244,7 +244,13 @@ class ASSScene(global_functions.HaloAsset):
 
             else:
                 if global_functions.set_ignore(obj) == False or hidden_geo:
-                    geometry_list.append((None, 'EMPTY', obj.name, obj.data.name))
+                    obj_name = None
+                    obj_data_name = None                    
+                    if obj.name:
+                        obj_name = obj.name
+                    if obj.data:
+                        obj_data_name = obj.data.name                      
+                    geometry_list.append((None, 'EMPTY', obj_name, obj_data_name))
                     original_geometry_list.append(obj)
 
         self.instances.append(ASSScene.Instance(name='Scene Root', local_transform=ASSScene.Transform(), pivot_transform=ASSScene.Transform()))
@@ -462,6 +468,7 @@ def write_file(context,
                ass_version_h2,
                use_scene_properties,
                hidden_geo,
+               folder_structure,
                apply_modifiers,
                triangulate_faces,
                edge_split,
@@ -485,7 +492,15 @@ def write_file(context,
 
     ass_scene = ASSScene(context, report, version, game_version, apply_modifiers, triangulate_faces, edge_split, use_edge_angle, use_edge_sharp, split_angle, clean_normalize_weights, hidden_geo, custom_scale)
 
-    file = open(filepath, 'w', encoding=encoding)
+    filename = os.path.basename(filepath)
+
+    root_directory = global_functions.get_directory(game_version,
+                                                    "render",
+                                                    folder_structure,
+                                                    "0",
+                                                    filepath)
+
+    file = open(root_directory + os.sep + filename, 'w', encoding=encoding)
 
     file.write(
         ';### HEADER ###' +

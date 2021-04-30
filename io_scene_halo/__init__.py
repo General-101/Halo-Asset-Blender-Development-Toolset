@@ -527,6 +527,9 @@ class ASS_SceneProps(Panel):
         box.label(text="Scene Options:")
         col = box.column(align=True)
         row = col.row()
+        row.label(text='Generate Asset Subdirectories:')
+        row.prop(scene_ass, "folder_structure", text='')
+        row = col.row()
         row.label(text='Apply Modifiers:')
         row.prop(scene_ass, "apply_modifiers", text='')
         row = col.row()
@@ -601,6 +604,12 @@ class ASS_ScenePropertiesGroup(PropertyGroup):
     hidden_geo: BoolProperty(
         name ="Export hidden geometry",
         description = "Whether or not we ignore geometry that has scene options that hides it from the viewport",
+        default = True,
+        )
+
+    folder_structure: BoolProperty(
+        name ="Generate Asset Subdirectories",
+        description = "Generate folder subdirectories for exported assets",
         default = True,
         )
 
@@ -718,6 +727,9 @@ class JMA_SceneProps(Panel):
         box = layout.box()
         box.label(text="Scene Options:")
         col = box.column(align=True)
+        row = col.row()
+        row.label(text='Generate Asset Subdirectories:')
+        row.prop(scene_jma, "folder_structure", text='')
         if scene_jma.game_version == 'halo2vista' and scene_jma.jma_version_h2 == '16395':
             row = col.row()
             row.label(text='Biped Controller:')
@@ -850,6 +862,12 @@ class JMA_ScenePropertiesGroup(PropertyGroup):
         options={'HIDDEN'},
         )
 
+    folder_structure: BoolProperty(
+        name ="Generate Asset Subdirectories",
+        description = "Generate folder subdirectories for exported assets",
+        default = True,
+        )
+
     use_scene_properties: BoolProperty(
         name ="Use scene properties",
         description = "Use the options set in the scene or uncheck this to override",
@@ -969,6 +987,14 @@ class JMS_SceneProps(Panel):
         row = col.row()
         row.label(text='Use As Default Export Settings:')
         row.prop(scene_jms, "use_scene_properties", text='')
+        if scene_jms.folder_structure == True and not scene_jms.game_version == 'haloce':
+            box = layout.box()
+            box.label(text="Subdirectory Type:")
+            col = box.column(align=True)
+            row = col.row()
+            row.label(text='Model Type:')
+            row.prop(scene_jms, "folder_type", text='')
+
         if scene_jms.edge_split == True:
             box = layout.box()
             box.label(text="Edge Split:")
@@ -1078,6 +1104,15 @@ class JMS_ScenePropertiesGroup(PropertyGroup):
         name ="Generate Asset Subdirectories",
         description = "Generate folder subdirectories for exported assets",
         default = True,
+        )
+
+    folder_type: EnumProperty(
+        name="Model Type:",
+        description="What type to use for the model file",
+        default="0",
+        items=[ ('0', "Structure", "Asset subdirectory intended for levels"),
+                ('1', "Render", "Asset subdirectory intended for models"),
+               ]
         )
 
     apply_modifiers: BoolProperty(
@@ -1302,6 +1337,12 @@ class ExportASS(Operator, ExportHelper):
         default = True,
         )
 
+    folder_structure: BoolProperty(
+        name ="Generate Asset Subdirectories",
+        description = "Generate folder subdirectories for exported assets",
+        default = True,
+        )
+
     apply_modifiers: BoolProperty(
         name ="Apply Modifiers",
         description = "Automatically apply modifiers. Does not permanently affect scene",
@@ -1385,6 +1426,7 @@ class ExportASS(Operator, ExportHelper):
                     self.ass_version_h2,
                     self.use_scene_properties,
                     self.hidden_geo,
+                    self.folder_structure,
                     self.apply_modifiers,
                     self.triangulate_faces,
                     self.edge_split,
@@ -1404,22 +1446,24 @@ class ExportASS(Operator, ExportHelper):
             parser.add_argument('-arg3', '--ass_version', dest='ass_version', type=str, default="2")
             parser.add_argument('-arg4', '--game_version', dest='game_version', type=str, default="halo2utf8")
             parser.add_argument('-arg5', '--hidden_geo', dest='hidden_geo', action='store_true')
-            parser.add_argument('-arg6', '--apply_modifiers', dest='apply_modifiers', action='store_true')
-            parser.add_argument('-arg7', '--triangulate_faces', dest='triangulate_faces', action='store_true')
-            parser.add_argument('-arg8', '--clean_normalize_weights', dest='clean_normalize_weights', action='store_true')
-            parser.add_argument('-arg9', '--edge_split', dest='edge_split', action='store_true')
-            parser.add_argument('-arg10', '--use_edge_angle', dest='use_edge_angle', action='store_true')
-            parser.add_argument('-arg11', '--use_edge_sharp', dest='use_edge_sharp', action='store_true')
-            parser.add_argument('-arg12', '--split_angle', dest='split_angle', type=float, default=1.0)
-            parser.add_argument('-arg13', '--scale_enum', dest='scale_enum', type=str, default="0")
-            parser.add_argument('-arg14', '--scale_float', dest='scale_float', type=float, default=1.0)
-            parser.add_argument('-arg15', '--console', dest='console', action='store_true', default=True)
+            parser.add_argument('-arg6', '--folder_structure', dest='folder_structure', action='store_true')
+            parser.add_argument('-arg7', '--apply_modifiers', dest='apply_modifiers', action='store_true')
+            parser.add_argument('-arg8', '--triangulate_faces', dest='triangulate_faces', action='store_true')
+            parser.add_argument('-arg9', '--clean_normalize_weights', dest='clean_normalize_weights', action='store_true')
+            parser.add_argument('-arg10', '--edge_split', dest='edge_split', action='store_true')
+            parser.add_argument('-arg11', '--use_edge_angle', dest='use_edge_angle', action='store_true')
+            parser.add_argument('-arg12', '--use_edge_sharp', dest='use_edge_sharp', action='store_true')
+            parser.add_argument('-arg13', '--split_angle', dest='split_angle', type=float, default=1.0)
+            parser.add_argument('-arg14', '--scale_enum', dest='scale_enum', type=str, default="0")
+            parser.add_argument('-arg15', '--scale_float', dest='scale_float', type=float, default=1.0)
+            parser.add_argument('-arg16', '--console', dest='console', action='store_true', default=True)
             args = parser.parse_known_args(argv)[0]
             print('filepath: ', args.filepath)
             print('use_scene_properties: ', args.use_scene_properties)
             print('ass_version: ', args.ass_version)
             print('game_version: ', args.game_version)
             print('hidden_geo: ', args.hidden_geo)
+            print('folder_structure: ', args.folder_structure)
             print('apply_modifiers: ', args.apply_modifiers)
             print('triangulate_faces: ', args.triangulate_faces)
             print('clean_normalize_weights: ', args.clean_normalize_weights)
@@ -1435,6 +1479,7 @@ class ExportASS(Operator, ExportHelper):
             self.game_version = args.game_version
             self.use_scene_properties = args.use_scene_properties
             self.hidden_geo = args.hidden_geo
+            self.folder_structure = args.folder_structure
             self.apply_modifiers = args.apply_modifiers
             self.triangulate_faces = args.triangulate_faces
             self.clean_normalize_weights = args.clean_normalize_weights
@@ -1476,6 +1521,7 @@ class ExportASS(Operator, ExportHelper):
             self.triangulate_faces = scene_ass.triangulate_faces
             self.clean_normalize_weights = scene_ass.clean_normalize_weights
             self.hidden_geo = scene_ass.hidden_geo
+            self.folder_structure = scene_ass.folder_structure
             self.edge_split = scene_ass.edge_split
             self.use_edge_angle = scene_ass.use_edge_angle
             self.use_edge_sharp = scene_ass.use_edge_sharp
@@ -1504,6 +1550,10 @@ class ExportASS(Operator, ExportHelper):
         box = layout.box()
         box.label(text="Scene Options:")
         col = box.column(align=True)
+        row = col.row()
+        row.enabled = is_enabled
+        row.label(text='Generate Asset Subdirectories:')
+        row.prop(self, "folder_structure", text='')
         row = col.row()
         row.enabled = is_enabled
         row.label(text='Apply Modifiers:')
@@ -1665,6 +1715,15 @@ class ExportJMS(Operator, ExportHelper):
         default = True,
         )
 
+    folder_type: EnumProperty(
+        name="Model Type:",
+        description="What type to use for the model file",
+        default="0",
+        items=[ ('0', "Structure", "Asset subdirectory intended for levels"),
+                ('1', "Render", "Asset subdirectory intended for models"),
+               ]
+        )
+
     apply_modifiers: BoolProperty(
         name ="Apply Modifiers",
         description = "Automatically apply modifiers. Does not permanently affect scene",
@@ -1779,25 +1838,27 @@ class ExportJMS(Operator, ExportHelper):
             parser.add_argument('-arg3', '--jms_version', dest='jms_version', type=str, default="8210")
             parser.add_argument('-arg4', '--game_version', dest='game_version', type=str, default="halo2vista")
             parser.add_argument('-arg5', '--folder_structure', dest='folder_structure', action='store_true')
-            parser.add_argument('-arg6', '--apply_modifiers', dest='apply_modifiers', action='store_true')
-            parser.add_argument('-arg7', '--triangulate_faces', dest='triangulate_faces', action='store_true')
-            parser.add_argument('-arg8', '--clean_normalize_weights', dest='clean_normalize_weights', action='store_true')
-            parser.add_argument('-arg9', '--hidden_geo', dest='hidden_geo', action='store_true')
-            parser.add_argument('-arg10', '--permutation', dest='permutation_ce', type=str, default="")
-            parser.add_argument('-arg11', '--lod', dest='level_of_detail_ce', type=str, default="0")
-            parser.add_argument('-arg12', '--edge_split', dest='edge_split', action='store_true')
-            parser.add_argument('-arg13', '--use_edge_angle', dest='use_edge_angle', action='store_true')
-            parser.add_argument('-arg14', '--use_edge_sharp', dest='use_edge_sharp', action='store_true')
-            parser.add_argument('-arg15', '--split_angle', dest='split_angle', type=float, default=1.0)
-            parser.add_argument('-arg16', '--scale_enum', dest='scale_enum', type=str, default="0")
-            parser.add_argument('-arg17', '--scale_float', dest='scale_float', type=float, default=1.0)
-            parser.add_argument('-arg18', '--console', dest='console', action='store_true', default=True)
+            parser.add_argument('-arg6', '--folder_type', dest='folder_type', action='0')
+            parser.add_argument('-arg7', '--apply_modifiers', dest='apply_modifiers', action='store_true')
+            parser.add_argument('-arg8', '--triangulate_faces', dest='triangulate_faces', action='store_true')
+            parser.add_argument('-arg9', '--clean_normalize_weights', dest='clean_normalize_weights', action='store_true')
+            parser.add_argument('-arg10', '--hidden_geo', dest='hidden_geo', action='store_true')
+            parser.add_argument('-arg11', '--permutation', dest='permutation_ce', type=str, default="")
+            parser.add_argument('-arg12', '--lod', dest='level_of_detail_ce', type=str, default="0")
+            parser.add_argument('-arg13', '--edge_split', dest='edge_split', action='store_true')
+            parser.add_argument('-arg14', '--use_edge_angle', dest='use_edge_angle', action='store_true')
+            parser.add_argument('-arg15', '--use_edge_sharp', dest='use_edge_sharp', action='store_true')
+            parser.add_argument('-arg16', '--split_angle', dest='split_angle', type=float, default=1.0)
+            parser.add_argument('-arg17', '--scale_enum', dest='scale_enum', type=str, default="0")
+            parser.add_argument('-arg18', '--scale_float', dest='scale_float', type=float, default=1.0)
+            parser.add_argument('-arg19', '--console', dest='console', action='store_true', default=True)
             args = parser.parse_known_args(argv)[0]
             print('filepath: ', args.filepath)
             print('use_scene_properties: ', args.use_scene_properties)
             print('jms_version: ', args.jms_version)
             print('game_version: ', args.game_version)
             print('folder_structure: ', args.folder_structure)
+            print('folder_type: ', args.folder_type)
             print('apply_modifiers: ', args.apply_modifiers)
             print('triangulate_faces: ', args.triangulate_faces)
             print('clean_normalize_weights: ', args.clean_normalize_weights)
@@ -1816,6 +1877,7 @@ class ExportJMS(Operator, ExportHelper):
             self.jms_version = args.jms_version
             self.game_version = args.game_version
             self.folder_structure = args.folder_structure
+            self.folder_type = args.folder_type
             self.apply_modifiers = args.apply_modifiers
             self.triangulate_faces = args.triangulate_faces
             self.clean_normalize_weights = args.clean_normalize_weights
@@ -1835,7 +1897,7 @@ class ExportJMS(Operator, ExportHelper):
         if self.game_version == 'halo2vista':
             game_version = 'halo2'
 
-        return run_code("export_jms.command_queue(context, self.filepath, self.report, self.jms_version, self.jms_version_ce, self.jms_version_h2, self.folder_structure, self.apply_modifiers, self.triangulate_faces, self.edge_split, self.use_edge_angle, self.use_edge_sharp, self.split_angle, self.clean_normalize_weights, self.scale_enum, self.scale_float, self.console, self.permutation_ce, self.level_of_detail_ce, self.hidden_geo, self.export_render, self.export_collision, self.export_physics, game_version, encoding)")
+        return run_code("export_jms.command_queue(context, self.filepath, self.report, self.jms_version, self.jms_version_ce, self.jms_version_h2, self.folder_structure, self.folder_type, self.apply_modifiers, self.triangulate_faces, self.edge_split, self.use_edge_angle, self.use_edge_sharp, self.split_angle, self.clean_normalize_weights, self.scale_enum, self.scale_float, self.console, self.permutation_ce, self.level_of_detail_ce, self.hidden_geo, self.export_render, self.export_collision, self.export_physics, game_version, encoding)")
 
     def draw(self, context):
         scene = context.scene
@@ -1862,6 +1924,7 @@ class ExportJMS(Operator, ExportHelper):
             self.level_of_detail_ce = scene_jms.level_of_detail_ce
             self.jms_version_h2 = scene_jms.jms_version_h2
             self.folder_structure = scene_jms.folder_structure
+            self.folder_type = scene_jms.folder_type
             self.apply_modifiers = scene_jms.apply_modifiers
             self.triangulate_faces = scene_jms.triangulate_faces
             self.clean_normalize_weights = scene_jms.clean_normalize_weights
@@ -1952,6 +2015,15 @@ class ExportJMS(Operator, ExportHelper):
         row = col.row()
         row.label(text='Use Scene Export Settings:')
         row.prop(scene_jms, "use_scene_properties", text='')
+        if self.folder_structure == True and not self.game_version == 'haloce':
+            box = layout.box()
+            box.label(text="Subdirectory Type:")
+            col = box.column(align=True)
+            row = col.row()
+            row.enabled = is_enabled
+            row.label(text='Model Type:')
+            row.prop(self, "folder_type", text='')
+
         if self.edge_split == True:
             box = layout.box()
             box.label(text="Edge Split:")
@@ -2164,6 +2236,12 @@ class ExportJMA(Operator, ExportHelper):
         options={'HIDDEN'},
         )
 
+    folder_structure: BoolProperty(
+        name ="Generate Asset Subdirectories",
+        description = "Generate folder subdirectories for exported assets",
+        default = True,
+        )
+
     scale_enum: EnumProperty(
     name="Scale",
     description="Choose a preset value to multiply position values by.",
@@ -2207,6 +2285,7 @@ class ExportJMA(Operator, ExportHelper):
                     self.custom_frame_rate,
                     self.frame_rate_float,
                     self.biped_controller,
+                    self.folder_structure,
                     self.scale_enum,
                     self.scale_float,
                     self.console]
@@ -2221,9 +2300,10 @@ class ExportJMA(Operator, ExportHelper):
             parser.add_argument('-arg5', '--custom_frame_rate', dest='custom_frame_rate', type=str, default="30")
             parser.add_argument('-arg6', '--frame_rate_float', dest='frame_rate_float', type=str, default=30)
             parser.add_argument('-arg7', '--biped_controller', dest='biped_controller', action='store_true')
-            parser.add_argument('-arg8', '--scale_enum', dest='scale_enum', type=str, default="0")
-            parser.add_argument('-arg9', '--scale_float', dest='scale_float', type=float, default=1.0)
-            parser.add_argument('-arg10', '--console', dest='console', action='store_true', default=True)
+            parser.add_argument('-arg8', '--folder_structure', dest='folder_structure', action='store_true')
+            parser.add_argument('-arg9', '--scale_enum', dest='scale_enum', type=str, default="0")
+            parser.add_argument('-arg10', '--scale_float', dest='scale_float', type=float, default=1.0)
+            parser.add_argument('-arg11', '--console', dest='console', action='store_true', default=True)
             args = parser.parse_known_args(argv)[0]
             print('filepath: ', args.filepath)
             print('extension: ', args.extension)
@@ -2232,6 +2312,7 @@ class ExportJMA(Operator, ExportHelper):
             print('custom_frame_rate: ', args.custom_frame_rate)
             print('frame_rate_float: ', args.frame_rate_float)
             print('biped_controller: ', args.biped_controller)
+            print('folder_structure: ', args.folder_structure)
             print('scale_enum: ', args.scale_enum)
             print('scale_float: ', args.scale_float)
             print('console: ', args.console)
@@ -2242,6 +2323,7 @@ class ExportJMA(Operator, ExportHelper):
             self.custom_frame_rate = args.custom_frame_rate
             self.frame_rate_float = args.frame_rate_float
             self.biped_controller = args.biped_controller
+            self.folder_structure = args.folder_structure
             self.scale_enum = args.scale_enum
             self.scale_float = args.scale_float
             self.console = args.console
@@ -2282,6 +2364,7 @@ class ExportJMA(Operator, ExportHelper):
             self.scale_enum = scene_jma.scale_enum
             self.scale_float = scene_jma.scale_float
             self.biped_controller = scene_jma.biped_controller
+            self.folder_structure = scene_jma.folder_structure
             if scene.render.fps not in fps_options:
                 self.custom_frame_rate = 'CUSTOM'
                 self.frame_rate_float = scene.render.fps
@@ -2314,6 +2397,10 @@ class ExportJMA(Operator, ExportHelper):
         box = layout.box()
         box.label(text="Scene Options:")
         col = box.column(align=True)
+        row = col.row()
+        row.enabled = is_enabled
+        row.label(text='Generate Asset Subdirectories:')
+        row.prop(self, "folder_structure", text='')
         if self.game_version == 'halo2vista' and self.jma_version_h2 == '16395':
             row = col.row()
             row.enabled = is_enabled

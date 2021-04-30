@@ -760,3 +760,102 @@ def node_hierarchy_checksum(nodes, node, checksum = 0):
     # in the rotation from adding the string for this node.  This
     # way, the order of siblings matters to the checksum.
     return rotr_32(checksum, 2)
+
+def get_filename(game_version,
+                 permutation_ce,
+                 level_of_detail_ce,
+                 folder_structure,
+                 model_type,
+                 filepath):
+
+    ce_settings = ''
+    extension = '.JMS'
+
+    filename = filepath.rsplit(os.sep, 1)[1]
+
+    if filename.lower().endswith('.jms') or filename.lower().endswith('.jmp'):
+        filename = filename.rsplit('.', 1)[0]
+
+    if game_version == 'haloce':
+        if not permutation_ce == '' or not level_of_detail_ce == None:
+            if not permutation_ce == '':
+                ce_settings += '%s ' % (permutation_ce.replace(' ', '_').replace('\t', '_'))
+            else:
+                ce_settings += '%s ' % ('unnamed')
+
+            if not level_of_detail_ce == None:
+                ce_settings += '%s' % (level_of_detail_ce)
+            else:
+                ce_settings += '%s' % ('superhigh')
+
+            filename = ce_settings
+
+    model_string = ""
+    if model_type == "collision":
+        model_string = "_collision"
+
+    elif model_type == "physics":
+        model_string = "_physics"
+
+    model_name = model_string
+    if folder_structure and game_version == 'haloce':
+        model_name = ""
+
+    filename = filename + model_name + extension
+
+    return filename
+
+def get_directory(game_version,
+                  model_type,
+                  folder_structure,
+                  asset_type,
+                  filepath):
+
+    directory = filepath.rsplit(os.sep, 1)[0]
+    blend_filename = bpy.path.basename(bpy.context.blend_data.filepath)
+
+    parent_folder = 'default'
+    if len(blend_filename) > 0:
+        parent_folder = blend_filename.rsplit('.', 1)[0]
+
+    if game_version == 'haloce':
+        folder_type = "models"
+    else:
+        if asset_type == "0":
+            folder_type = "structure"
+        else:
+            folder_type = "render"
+
+    if model_type == "collision":
+        if game_version == 'haloce':
+            folder_type = "physics"
+        else:
+            folder_type = "collision"
+
+    elif model_type == "physics":
+        folder_type = "physics"
+
+    elif model_type == "animations":
+        folder_type = "animations"
+
+    root_directory = directory
+
+    special_sauce = False
+
+    if folder_structure and not special_sauce:
+        folder_subdirectories = ("models", "structure", "render", "collision", "physics", "animations")
+        true_directory = directory
+        if not os.path.basename(directory) in folder_subdirectories:
+            for name in os.listdir(directory):
+                if os.path.isdir(os.path.join(directory, name)):
+                    if name in folder_subdirectories and os.path.basename(directory) == parent_folder:
+                        true_directory = os.path.dirname(directory)
+        else:
+            if os.path.basename(os.path.dirname(directory)) == parent_folder:
+                true_directory = os.path.dirname(os.path.dirname(directory))
+
+        root_directory = true_directory + os.sep + parent_folder + os.sep + folder_type
+        if not os.path.exists(root_directory):
+            os.makedirs(root_directory)
+
+    return root_directory
