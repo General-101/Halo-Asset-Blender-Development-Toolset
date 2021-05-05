@@ -104,6 +104,8 @@ class JMAScene(global_functions.HaloAsset):
 
         elif game_version == 'halo2' and self.node_count > 255:
             raise global_functions.SceneParseError("This model has more nodes than Halo 2 supports. Please limit your node count to 255 nodes")
+        elif game_version == 'halo3' and self.node_count > 255:
+            raise global_functions.SceneParseError("This model has more nodes than Halo 3 supports. Please limit your node count to 255 nodes")
 
         self.node_checksum = 0
         for node in joined_list:
@@ -169,9 +171,11 @@ def write_file(context,
                extension,
                extension_ce,
                extension_h2,
+               extension_h3,
                jma_version,
                jma_version_ce,
                jma_version_h2,
+               jma_version_h3,
                custom_frame_rate,
                frame_rate_float,
                biped_controller,
@@ -186,6 +190,7 @@ def write_file(context,
     version = global_functions.get_version(jma_version,
                                            jma_version_ce,
                                            jma_version_h2,
+                                           jma_version_h3,
                                            game_version,
                                            console
                                            )
@@ -193,6 +198,7 @@ def write_file(context,
     extension = global_functions.get_extension(extension,
                                                extension_ce,
                                                extension_h2,
+                                               extension_h3,
                                                game_version,
                                                console
                                                )
@@ -225,6 +231,7 @@ def write_file(context,
                                                     "animations",
                                                     folder_structure,
                                                     "0",
+                                                    False,
                                                     filepath)
 
     file = open(root_directory + os.sep + filename + global_functions.get_true_extension(filepath, extension, False), 'w', encoding=encoding)

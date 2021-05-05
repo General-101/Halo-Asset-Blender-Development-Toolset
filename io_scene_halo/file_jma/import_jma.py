@@ -295,7 +295,7 @@ def load_file(context, filepath, report, fix_parents, game_version, jms_path_a, 
                 armature = ob_new
                 view_layer.objects.active = armature
                 if fix_parents:
-                    if game_version == 'halo2':
+                    if game_version == 'halo2' or game_version == 'halo3':
                         for idx, jma_node in enumerate(jma_file.nodes):
                             if 'pelvis' in jma_node.name:
                                 pelvis = idx

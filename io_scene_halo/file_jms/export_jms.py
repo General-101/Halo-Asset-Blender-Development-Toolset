@@ -64,6 +64,8 @@ def get_default_region_permutation_name(game_version):
     elif game_version == 'halo2':
         default_name = 'Default'
 
+    elif game_version == 'halo3mcc':
+        default_name = 'Default'
     return default_name
 
 def get_lod(lod_setting, game_version):
@@ -103,6 +105,24 @@ def get_lod(lod_setting, game_version):
         elif lod_setting == '6':
             LOD_name = 'L6'
 
+    elif game_version == 'halo3mcc':
+        if lod_setting == '1':
+            LOD_name = 'L1'
+
+        elif lod_setting == '2':
+            LOD_name = 'L2'
+
+        elif lod_setting == '3':
+            LOD_name = 'L3'
+
+        elif lod_setting == '4':
+            LOD_name = 'L4'
+
+        elif lod_setting == '5':
+            LOD_name = 'L5'
+
+        elif lod_setting == '6':
+            LOD_name = 'L6'
     return LOD_name
 
 class JMSScene(global_functions.HaloAsset):
@@ -157,6 +177,7 @@ class JMSScene(global_functions.HaloAsset):
                      node_set=None, region=-1,
                      translation=None,
                      normal=None,
+                     color=None,
                      uv_set=None
                      ):
 
@@ -165,6 +186,7 @@ class JMSScene(global_functions.HaloAsset):
             self.region = region
             self.translation = translation
             self.normal = normal
+            self.color = color
             self.uv_set = uv_set
 
     class Triangle:
@@ -229,6 +251,7 @@ class JMSScene(global_functions.HaloAsset):
                      max_cone=0.0,
                      min_plane=0.0,
                      max_plane=0.0,
+                     friction_limit=0.0
                      ):
 
             self.name = name
@@ -244,6 +267,7 @@ class JMSScene(global_functions.HaloAsset):
             self.max_cone = max_cone
             self.min_plane = min_plane
             self.max_plane = max_plane
+            self.friction_limit = friction_limit
 
     class Hinge:
         def __init__(self, name, body_a_index=-1, body_b_index=-1, body_a_rotation=None, body_a_translation=None, body_b_rotation=None, body_b_translation=None, is_limited=0, friction_limit=0.0, min_angle=0.0, max_angle=0.0):
@@ -313,13 +337,20 @@ class JMSScene(global_functions.HaloAsset):
             self.translation = translation
             self.scale = scale
 
+    class Skylight:
+        def __init__(self, direction=None, radiant_intensity=None, solid_angle=0.0):
+            self.direction = direction
+            self.radiant_intensity = radiant_intensity
+            self.solid_angle = solid_angle
     def __init__(self, context, report, version, game_version, apply_modifiers, hidden_geo, export_render, export_collision, export_physics, custom_scale, object_list):
         self.valid_gen_list = ['halo2',
+                               'halo3mcc'
                                ]
 
         armature = None
         armature_count = 0
         mesh_frame_count = 0
+        world_node_count = 0
         default_region = get_default_region_permutation_name(game_version)
         default_permutation = get_default_region_permutation_name(game_version)
         region_list = ['unnamed']
@@ -344,6 +375,7 @@ class JMSScene(global_functions.HaloAsset):
         self.point_to_points = []
         self.prismatics = []
         self.bounding_spheres = []
+        self.skylights = []
         node_list = []
         material_list = []
         marker_list = []
@@ -361,6 +393,7 @@ class JMSScene(global_functions.HaloAsset):
         point_to_point_list = []
         prismatic_list = []
         bounding_sphere_list = []
+        skylight_list = []
         depsgraph = context.evaluated_depsgraph_get()
         node_prefix_tuple = ('b ', 'b_', 'bone', 'frame', 'bip01')
         for obj in object_list:
@@ -369,7 +402,10 @@ class JMSScene(global_functions.HaloAsset):
             if obj.parent:
                 parent_name = obj.parent.name.lower()
 
-            if obj.type == 'ARMATURE':
+            if name[0:1] == '!':
+                world_node_count += 1
+
+            elif obj.type == 'ARMATURE':
                 global_functions.unhide_object(obj)
                 armature_count += 1
                 armature = obj
@@ -441,6 +477,11 @@ class JMSScene(global_functions.HaloAsset):
                 if global_functions.set_ignore(obj) == False or hidden_geo:
                     if export_render:
                         bounding_sphere_list.append(obj)
+            elif obj.type == 'LIGHT' and version > 8212:
+                if global_functions.set_ignore(obj) == False or hidden_geo:
+                    if bpy.data.lights[obj.name].type == 'SPOT':
+                        if export_render:
+                            skylight_list.append(obj)
 
             elif obj.type == 'MESH' and len(obj.data.polygons) > 0:
                 if global_functions.set_ignore(obj) == False or hidden_geo:
@@ -487,6 +528,8 @@ class JMSScene(global_functions.HaloAsset):
         elif game_version == 'halo2' and node_count > 255:
             raise global_functions.SceneParseError("This model has more nodes than Halo 2 supports. Please limit your node count to 255 nodes")
 
+        elif game_version == 'halo3' and node_count > 255:
+            raise global_functions.SceneParseError("This model has more nodes than Halo 3 supports. Please limit your node count to 255 nodes")
         sorted_list = global_functions.sort_list(node_list, armature, game_version, version, False)
         joined_list = sorted_list[0]
         reversed_joined_list = sorted_list[1]
@@ -507,7 +550,7 @@ class JMSScene(global_functions.HaloAsset):
                 first_child_node = joined_list.index(find_child_node)
             if not find_sibling_node == None:
                 first_sibling_node = joined_list.index(find_sibling_node)
-            if not node.parent == None:
+            if not node.parent == None and not node.parent.name.startswith('!'):
                 parent_node = joined_list.index(node.parent)
 
             bone_matrix = global_functions.get_matrix(node, node, True, armature, joined_list, True, version, 'JMS', 0)
@@ -602,7 +645,7 @@ class JMSScene(global_functions.HaloAsset):
 
                         region_index = region_list.index(region_face_map_name)
 
-                elif game_version == 'halo2':
+                elif game_version == 'halo2' or game_version == 'halo3':
                     if geometry.face_maps.active:
                         region_permutation_face_map_name = [default_permutation, default_region]
                         face_map_idx = geometry.face_maps.active.data[idx].value
@@ -649,6 +692,10 @@ class JMSScene(global_functions.HaloAsset):
                         uv_set = [(0.0, 0.0)]
 
                     uv = uv_set
+                    color = (0.0, 0.0, 0.0)
+                    if geometry.vertex_colors:
+                        color_rgb = geometry.vertex_colors.active.data[loop_index].color
+                        color = color_rgb
                     if len(vert.groups) != 0:
                         object_vert_group_list = []
                         vertex_vert_group_list = []
@@ -709,6 +756,7 @@ class JMSScene(global_functions.HaloAsset):
                                                          region,
                                                          scaled_translation,
                                                          normal,
+                                                         color,
                                                          uv_set
                                                          ))
 
@@ -875,6 +923,7 @@ class JMSScene(global_functions.HaloAsset):
                                              vert_translation,
                                              None,
                                              None,
+                                             None
                                              ))
 
             self.convex_shapes.append(JMSScene.Convex_Shape(name, parent_index[0], material_index, rotation, translation, verts))
@@ -914,7 +963,7 @@ class JMSScene(global_functions.HaloAsset):
                 name = material[0].name
                 slot = bpy.data.materials.find(material[0].name)
                 lod = get_lod(material[1], game_version)
-                #This doesn't matter for CE but for Halo 2 the region or permutation names can't have any whitespace.
+                #This doesn't matter for CE but for Halo 2/3 the region or permutation names can't have any whitespace.
                 #Lets fix that here to make sure nothing goes wrong.
                 if len(material[2]) != 0:
                     region = material[2].replace(' ', '_').replace('\t', '_')
@@ -962,6 +1011,7 @@ class JMSScene(global_functions.HaloAsset):
                 min_plane = degrees(ragdoll.rigid_body_constraint.limit_ang_z_lower)
                 max_plane = degrees(ragdoll.rigid_body_constraint.limit_ang_z_upper)
 
+            friction_limit = 0
             attached_rotation = (mesh_dimensions.quat_i_a, mesh_dimensions.quat_j_a, mesh_dimensions.quat_k_a, mesh_dimensions.quat_w_a)
             attached_translation = (mesh_dimensions.pos_x_a, mesh_dimensions.pos_y_a, mesh_dimensions.pos_z_a)
             referenced_rotation = (mesh_dimensions.quat_i_b, mesh_dimensions.quat_j_b, mesh_dimensions.quat_k_b, mesh_dimensions.quat_w_b)
@@ -980,6 +1030,7 @@ class JMSScene(global_functions.HaloAsset):
                                                   max_cone,
                                                   min_plane,
                                                   max_plane,
+                                                  friction_limit
                                                   ))
 
         for hinge in hinge_list:
@@ -1143,6 +1194,12 @@ class JMSScene(global_functions.HaloAsset):
 
             self.bounding_spheres.append(JMSScene.Bounding_Sphere(translation, scale))
 
+        for light in skylight_list:
+            direction = (0, 0, 0)
+            radiant_intensity = (0, 0, 0)
+            solid_angle = (0)
+
+            self.skylights.append(JMSScene.Skylight(direction, radiant_intensity, solid_angle))
 def write_file(context,
                filepath,
                report,
@@ -1161,6 +1218,7 @@ def write_file(context,
                export_physics,
                model_type,
                object_list,
+               jmi
                ):
 
     jms_scene = JMSScene(context, report, version, game_version, apply_modifiers, hidden_geo, export_render, export_collision, export_physics, custom_scale, object_list)
@@ -1182,18 +1240,22 @@ def write_file(context,
                                              level_of_detail_ce,
                                              folder_structure,
                                              model_type,
+                                             False,
                                              filepath)
 
     root_directory = global_functions.get_directory(game_version,
                                                     model_type,
                                                     folder_structure,
                                                     folder_type,
+                                                    jmi,
                                                     filepath)
 
     file = open(root_directory + os.sep + filename, 'w', encoding=encoding)
 
     if version >= 8205:
         version_bounds = '8197-8210'
+        if game_version == 'halo3mcc':
+            version_bounds = '8197-8213'
 
         file.write(
             ';### VERSION ###' +
@@ -1455,6 +1517,10 @@ def write_file(context,
             '\n;\t\t<texture coordinates <u,v>>\n'
         )
 
+        if version >= 8211:
+            file.write(
+                ';\t<vertex color <r,g,b>>\n'
+            )
     else:
         if version >= 8203 and version <= 8204:
             file.write(
@@ -1489,6 +1555,10 @@ def write_file(context,
                 tex_v = uv[1]
                 file.write(decimal_2 % (tex_u, tex_v))
 
+            if version >= 8211:
+                file.write(
+                    decimal_3 % (vertex.color[0], vertex.color[1], vertex.color[2])
+                )
             file.write('\n')
 
         else:
@@ -1773,6 +1843,8 @@ def write_file(context,
             '\n;\t<max plane>\n'
         )
 
+        if version == 8213:
+            file.write(';\t<friction limit>\n')
         for idx, ragdoll in enumerate(jms_scene.ragdolls):
             file.write(
                 '\n;RAGDOLL %s' % (idx) +
@@ -1791,6 +1863,8 @@ def write_file(context,
                 decimal_1 % (ragdoll.max_plane)
             )
 
+            if version == 8213:
+                file.write(decimal_1 % (ragdoll.friction_limit))
             file.write('\n')
 
         #write hinges
@@ -1952,6 +2026,24 @@ def write_file(context,
                     '\n'
                 )
 
+        if version >= 8212:
+            #write skylight
+            file.write(
+                '\n;### SKYLIGHT ###' +
+                '\n%s' % (len(jms_scene.skylights)) +
+                '\n;\t<direction <x,y,z>>' +
+                '\n;\t<radiant intensity <x,y,z>>' +
+                '\n;\t<solid angle>\n'
+            )
+
+            for idx, light in enumerate(jms_scene.skylights):
+                file.write(
+                    '\n;SKYLIGHT %s' % (idx) +
+                    decimal_3 % (0, 0, 0) +
+                    decimal_3 % (0, 0, 0) +
+                    decimal_1 % (0) +
+                    '\n'
+                )
     report({'INFO'}, "Export completed successfully")
     file.close()
 
@@ -1962,6 +2054,7 @@ def command_queue(context,
                   jms_version,
                   jms_version_ce,
                   jms_version_h2,
+                  jms_version_h3,
                   folder_structure,
                   folder_type,
                   apply_modifiers,
@@ -1982,26 +2075,36 @@ def command_queue(context,
                   export_physics,
                   game_version,
                   encoding,
+                  world_nodes
                   ):
 
     global_functions.unhide_all_collections()
     valid_gen_list = ('halo2',
+                      'halo3mcc'
                       )
 
     object_properties = []
     scene = bpy.context.scene
     view_layer = bpy.context.view_layer
     object_list = list(scene.objects)
+    jmi = False
+    if not world_nodes == None:
+        jmi = True
+        object_list = world_nodes
+
+    world_node_count = 0
     node_count = 0
     marker_count = 0
     collision_count = 0
     physics_count = 0
     xref_count = 0
     bounding_radius_count = 0
+    skylight_count = 0
     render_count = 0
     version = global_functions.get_version(jms_version,
                                            jms_version_ce,
                                            jms_version_h2,
+                                           jms_version_h3,
                                            game_version,
                                            console
                                            )
@@ -2050,7 +2153,10 @@ def command_queue(context,
                         obj.modifiers[modifier_idx].use_edge_sharp = use_edge_sharp
 
         name = obj.name.lower()
-        if obj.type == 'ARMATURE':
+        if name[0:1] == '!':
+            world_node_count += 1
+
+        elif obj.type == 'ARMATURE':
             node_count += len(obj.data.bones)
 
         elif name.startswith(node_prefix_tuple):
@@ -2076,6 +2182,10 @@ def command_queue(context,
             if global_functions.set_ignore(obj) == False or hidden_geo:
                 bounding_radius_count += 1
 
+        elif obj.type == 'LIGHT' and version > 8212:
+            if global_functions.set_ignore(obj) == False or hidden_geo:
+                if bpy.data.lights[obj.name].type == 'SPOT':
+                    skylight_count += 1
         elif obj.type== 'MESH' and len(obj.data.polygons) > 0:
             if global_functions.set_ignore(obj) == False or hidden_geo:
                 render_count += 1
@@ -2105,6 +2215,7 @@ def command_queue(context,
                    False,
                    model_type,
                    object_list,
+                   jmi
                    )
 
     if export_collision and collision_count > 0:
@@ -2127,6 +2238,7 @@ def command_queue(context,
                    False,
                    model_type,
                    object_list,
+                   jmi
                    )
 
     if export_physics and physics_count > 0:
@@ -2149,6 +2261,7 @@ def command_queue(context,
                    export_physics,
                    model_type,
                    object_list,
+                   jmi
                    )
 
     for idx, obj in enumerate(object_list):

@@ -67,6 +67,7 @@ class ASSAsset(global_functions.HaloAsset):
                      height=0.0,
                      vertices=None,
                      triangles=None,
+                     light_properties=None,
                      node_index_list=None
                      ):
 
@@ -79,20 +80,53 @@ class ASSAsset(global_functions.HaloAsset):
             self.height = height
             self.vertices = vertices
             self.triangles = triangles
+            self.light_properties = light_properties
             self.node_index_list = node_index_list
 
+    class Light:
+        def __init__(self,
+                     light_type,
+                     light_color=None,
+                     intensity=0.0,
+                     hotspot_size=0.0,
+                     hotspot_falloff_size=0.0,
+                     uses_near_attenuation=0,
+                     near_attenuation_start=0.0,
+                     near_attenuation_end=0.0,
+                     uses_far_attenuation=0,
+                     far_attenuation_start=0,
+                     far_attenuation_end=0.0,
+                     light_shape=0,
+                     light_aspect_ratio=0.0
+                     ):
+
+            self.light_type = light_type
+            self.light_color = light_color
+            self.intensity = intensity
+            self.hotspot_size = hotspot_size
+            self.hotspot_falloff_size = hotspot_falloff_size
+            self.uses_near_attenuation = uses_near_attenuation
+            self.near_attenuation_start = near_attenuation_start
+            self.near_attenuation_end = near_attenuation_end
+            self.uses_far_attenuation = uses_far_attenuation
+            self.far_attenuation_start = far_attenuation_start
+            self.far_attenuation_end = far_attenuation_end
+            self.light_shape = light_shape
+            self.light_aspect_ratio = light_aspect_ratio
     class Vertex:
         def __init__(self,
                      node_influence_count=0,
                      node_set=None,
                      translation=None,
                      normal=None,
+                     color=None,
                      uv_set=None):
 
             self.node_influence_count = node_influence_count
             self.node_set = node_set
             self.translation = translation
             self.normal = normal
+            self.color = color
             self.uv_set = uv_set
 
     class Triangle:
@@ -155,6 +189,10 @@ class ASSAsset(global_functions.HaloAsset):
             name = self.next().strip('\"')
             material_effect = self.next().strip('\"')
             self.materials.append(ASSAsset.Material(name, material_effect))
+            if self.version >= 4:
+                material_string_count = int(self.next())
+                for string in range(material_string_count):
+                    self.skip(1) #Dont know what to do with these yet.
 
         object_count = int(self.next())
         for object in range(object_count):
@@ -168,6 +206,7 @@ class ASSAsset(global_functions.HaloAsset):
             radius = 2
             extents = [1.0, 1.0, 1.0]
             height = 1
+            light_properties = None
             if geo_class == 'SPHERE':
                 material_index = int(self.next())
                 radius = float(self.next())
@@ -186,8 +225,11 @@ class ASSAsset(global_functions.HaloAsset):
                 for vert in range(vert_count):
                     node_set = []
                     uv_set = []
+                    color = None
                     translation = self.next_vector()
                     normal = self.next_vector()
+                    if self.version >= 6:
+                        color = self.next_vector()
                     node_influence_count = int(self.next())
                     for node in range(node_influence_count):
                         node_index = int(self.next())
@@ -209,14 +251,19 @@ class ASSAsset(global_functions.HaloAsset):
                             tex_v = float(tex_v_value.rsplit('.', 1)[0])
                         else:
                             tex_v = float(tex_v_value)
+                        tex_w = None
+                        if self.version >= 7:
+                            tex_w = float(self.next())
                         uv_set.append([tex_u,
                                        tex_v,
+                                       tex_w
                                        ])
 
                     vertices.append(ASSAsset.Vertex(node_influence_count,
                                                     node_set,
                                                     translation,
                                                     normal,
+                                                    color,
                                                     uv_set
                                                     ))
 
@@ -229,6 +276,22 @@ class ASSAsset(global_functions.HaloAsset):
 
                     triangles.append(ASSAsset.Triangle(material_index, v0, v1, v2))
 
+            elif geo_class == 'GENERIC_LIGHT':
+                light_type = self.next().strip('\"')
+                light_color = self.next_vector()
+                intensity = float(self.next())
+                hotspot_size = float(self.next())
+                hotspot_falloff_size = float(self.next())
+                uses_near_attenuation = int(self.next())
+                near_attenuation_start = float(self.next())
+                near_attenuation_end = float(self.next())
+                uses_far_attenuation = int(self.next())
+                far_attenuation_start = float(self.next())
+                far_attenuation_end = float(self.next())
+                light_shape = int(self.next())
+                light_aspect_ratio = float(self.next())
+
+                light_properties = ASSAsset.Light(light_type, light_color, intensity, hotspot_size, hotspot_falloff_size, uses_near_attenuation, near_attenuation_start, near_attenuation_end, uses_far_attenuation, far_attenuation_start, far_attenuation_end, light_shape, light_aspect_ratio)
             self.objects.append(ASSAsset.Object(geo_class,
                                                 xref_path,
                                                 xref_name,
@@ -238,6 +301,7 @@ class ASSAsset(global_functions.HaloAsset):
                                                 height,
                                                 vertices,
                                                 triangles,
+                                                light_properties,
                                                 node_index_list
                                                 ))
 
@@ -391,6 +455,18 @@ def load_file(context, filepath, report):
                         ass_vert = object_element.vertices[vert]
                         bm.verts[vertex_index].normal = ass_vert.normal
 
+                        if not ass_vert.color == None and ass_file.version >= 6:
+                            color_r = ass_vert.color[0]
+                            color_g = ass_vert.color[1]
+                            color_b = ass_vert.color[2]
+                            color_a = 1
+
+                            layer_color = bm.loops.layers.color.get("color")
+                            if layer_color is None:
+                                layer_color = bm.loops.layers.color.new("color")
+
+                            loop = bm.faces[idx].loops[vert_idx]
+                            loop[layer_color] = (color_r, color_g, color_b, color_a)
                         for uv_idx, uv in enumerate(ass_vert.uv_set):
                             uv_name = 'UVMap_%s' % uv_idx
                             layer_uv = bm.loops.layers.uv.get(uv_name)

@@ -30,7 +30,7 @@ bl_info = {
     "version": (1, 0, 0),
     "blender": (2, 80, 0),
     "location": "File > Import-Export",
-    "description": "Import-Export Halo CE/2 Jointed Model Skeleton File (.jms), Import-Export Halo CE/2 Jointed Model Animation File (.jma), and Import-Export Halo 2 Amalgam Scene Specification File (.ass). Originally by Cyboryxmen with changes by Fulsy + MosesofEgypt + con for JMS portion. Initial ASS exporter by Dave Barnes (Aerial Dave)",
+    "description": "Import-Export Halo CE/2/3 Jointed Model Skeleton File (.jms), Import-Export Halo CE/2/3 Jointed Model Animation File (.jma), and Import-Export Halo 2/3 Amalgam Scene Specification File (.ass). Originally by Cyboryxmen with changes by Fulsy + MosesofEgypt + con for JMS portion. Initial ASS exporter by Dave Barnes (Aerial Dave)",
     "warning": "",
     "wiki_url": "https://general-101.github.io/HEK-Docs/",
     "support": 'COMMUNITY',
@@ -38,6 +38,10 @@ bl_info = {
 
 if "bpy" in locals():
     import importlib
+    if "import_jmi" in locals():
+        importlib.reload(import_jmi)
+    if "export_jmi" in locals():
+        importlib.reload(export_jmi)
     if "import_jms" in locals():
         importlib.reload(import_jms)
     if "export_jms" in locals():
@@ -147,7 +151,7 @@ class JMS_PhysicsProps(Panel):
         scene = context.scene
         scene_halo = scene.halo
 
-        if scene_halo.game_version == 'halo2':
+        if scene_halo.game_version == 'halo2' or scene_halo.game_version == 'halo3':
             return (ob and rbc and (rbc.type in {'GENERIC_SPRING'})
                     and context.engine in cls.COMPAT_ENGINES)
 
@@ -160,7 +164,7 @@ class JMS_PhysicsProps(Panel):
         ob = context.object
         obj_jms = ob.jms
 
-        if scene_halo.game_version == 'halo2':
+        if scene_halo.game_version == 'halo2' or scene_halo.game_version == 'halo3':
             box = layout.box()
             box.label(text="Spring Type:")
             col = box.column(align=True)
@@ -188,7 +192,7 @@ class ASS_JMS_MaterialProps(Panel):
         current_material = context.object.active_material
         if current_material is not None:
             material_ass_jms = current_material.ass_jms
-            if scene_halo.game_version == 'halo2':
+            if scene_halo.game_version == 'halo2' or scene_halo.game_version == 'halo3':
                 box = layout.box()
                 box.label(text="Material Effect:")
                 col = box.column(align=True)
@@ -297,6 +301,82 @@ class ASS_JMS_MaterialProps(Panel):
                 row.label(text='Decal Offset:')
                 row.prop(material_ass_jms, "decal_offset", text='')
 
+            if scene_halo.game_version == 'halo3':
+                row = col.row()
+                row.label(text='Two-sided:')
+                row.prop(material_ass_jms, "two_sided", text='')
+                row = col.row()
+                row.label(text='One-sided Transparent:')
+                row.prop(material_ass_jms, "transparent_1_sided", text='')
+                row = col.row()
+                row.label(text='Two-sided Transparent:')
+                row.prop(material_ass_jms, "transparent_2_sided", text='')
+                row = col.row()
+                row.label(text='Render Only:')
+                row.prop(material_ass_jms, "render_only", text='')
+                row = col.row()
+                row.label(text='Collision Only:')
+                row.prop(material_ass_jms, "collision_only", text='')
+                row = col.row()
+                row.label(text='Sphere Collision Only:')
+                row.prop(material_ass_jms, "sphere_collision_only", text='')
+                row = col.row()
+                row.label(text='Fog Plane:')
+                row.prop(material_ass_jms, "fog_plane", text='')
+                row = col.row()
+                row.label(text='Ladder:')
+                row.prop(material_ass_jms, "ladder", text='')
+                row = col.row()
+                row.label(text='Breakable:')
+                row.prop(material_ass_jms, "breakable", text='')
+                row = col.row()
+                row.label(text='AI Deafening:')
+                row.prop(material_ass_jms, "ai_deafening", text='')
+                row = col.row()
+                row.label(text='No Shadow:')
+                row.prop(material_ass_jms, "no_shadow", text='')
+                row = col.row()
+                row.label(text='Shadow Only:')
+                row.prop(material_ass_jms, "shadow_only", text='')
+                row = col.row()
+                row.label(text='Lightmap Only:')
+                row.prop(material_ass_jms, "lightmap_only", text='')
+                row = col.row()
+                row.label(text='Precise:')
+                row.prop(material_ass_jms, "precise", text='')
+                row = col.row()
+                row.label(text='Conveyor:')
+                row.prop(material_ass_jms, "conveyor", text='')
+                row = col.row()
+                row.label(text='Portal (One-Way):')
+                row.prop(material_ass_jms, "portal_1_way", text='')
+                row = col.row()
+                row.label(text='Portal (Door):')
+                row.prop(material_ass_jms, "portal_door", text='')
+                row = col.row()
+                row.label(text='Portal (Vis Blocker):')
+                row.prop(material_ass_jms, "portal_vis_blocker", text='')
+                row = col.row()
+                row.label(text='Dislikes Photons:')
+                row.prop(material_ass_jms, "dislike_photons", text='')
+                row = col.row()
+                row.label(text='Ignored by Lightmapper:')
+                row.prop(material_ass_jms, "ignored_by_lightmaps", text='')
+                row = col.row()
+                row.label(text='Portal (Sound Blocker):')
+                row.prop(material_ass_jms, "blocks_sound", text='')
+                row = col.row()
+                row.label(text='Decal Offset:')
+                row.prop(material_ass_jms, "decal_offset", text='')
+                row = col.row()
+                row.label(text='Water Surface:')
+                row.prop(material_ass_jms, "water_surface", text='')
+                row = col.row()
+                row.label(text='Slip Surface:')
+                row.prop(material_ass_jms, "slip_surface", text='')
+                row = col.row()
+                row.label(text='Group Transparents by Bit:')
+                row.prop(material_ass_jms, "group_transparents_by_plane", text='')
 
 class ASS_JMS_MaterialPropertiesGroup(PropertyGroup):
     material_effect: StringProperty(
@@ -443,6 +523,23 @@ class ASS_JMS_MaterialPropertiesGroup(PropertyGroup):
         default = False,
         )
 
+    slip_surface: BoolProperty(
+        name ="Blocks Sound",
+        description = "Offsets the faces that this material is applied to as it would normally for a decal.",
+        default = False,
+        )
+
+    water_surface: BoolProperty(
+        name ="Water Surface",
+        description = "This flag or shader symbol when applied to a material that is applied to a face or surface marks that surface as a water surface",
+        default = False,
+        )
+
+    group_transparents_by_plane: BoolProperty(
+        name ="Group Transparents by Plane",
+        description = "Group the transparent geometry by fitted planes.",
+        default = False,
+        )
 
 class Halo_SceneProps(Panel):
     bl_label = "Halo Scene Properties"
@@ -475,8 +572,9 @@ class Halo_ScenePropertiesGroup(PropertyGroup):
         description="What game will you be exporting for",
         default="halo2",
         items=[
-                ('haloce', "Halo CE", "Show properties for Halo Custom Edition"),
-                ('halo2', "Halo 2", "Show properties for Halo 2 Vista"),
+                ('haloce', "Halo CE", "Show properties for Halo Custom Edition Or Halo CE MCC"),
+                ('halo2', "Halo 2", "Show properties for Halo 2 Vista or Halo 2 MCC"),
+                ('halo3', "Halo 3", "Show properties for Halo 3 MCC"),
                ]
         )
 
@@ -506,7 +604,7 @@ class ASS_SceneProps(Panel):
         col = box.column(align=True)
         row = col.row()
         row.prop(scene_ass, "game_version", text='')
-        if scene_ass.game_version == 'halo2vista':
+        if scene_ass.game_version == 'halo2mcc':
             if scene_halo.expert_mode:
                 box = layout.box()
                 box.label(text="File Details:")
@@ -515,6 +613,14 @@ class ASS_SceneProps(Panel):
                 row.label(text='ASS Version:')
                 row.prop(scene_ass, "ass_version_h2", text='')
 
+        elif scene_ass.game_version == 'halo3mcc':
+            if scene_halo.expert_mode:
+                box = layout.box()
+                box.label(text="File Details:")
+                col = box.column(align=True)
+                row = col.row()
+                row.label(text='ASS Version:')
+                row.prop(scene_ass, "ass_version_h3", text='')
 
         box = layout.box()
         box.label(text="Mask Options:")
@@ -571,8 +677,13 @@ class ASS_ScenePropertiesGroup(PropertyGroup):
         description="What version to use for the model file",
         default="2",
         items=[
-                ('1', "1", "H2"),
-                ('2', "2", "H2"),
+                ('1', "1", "H2/H3"),
+                ('2', "2", "H2/H3"),
+                ('3', "3", "H3 Non-functional"),
+                ('4', "4", "H3 Non-functional"),
+                ('5', "5", "H3 Non-functional"),
+                ('6', "6", "H3 Non-functional"),
+                ('7', "7", "H3"),
                ]
         )
 
@@ -585,13 +696,27 @@ class ASS_ScenePropertiesGroup(PropertyGroup):
                ]
         )
 
+    ass_version_h3: EnumProperty(
+        name="Version:",
+        description="What version to use for the model file",
+        default="7",
+        items=[ ('1', "1", "H3"),
+                ('2', "2", "H3 "),
+                ('3', "3", "H3 Non-functional"),
+                ('4', "4", "H3 Non-functional"),
+                ('5', "5", "H3 Non-functional"),
+                ('6', "6", "H3 Non-functional"),
+                ('7', "7", "H3"),
+               ]
+        )
 
     game_version: EnumProperty(
         name="Game:",
         description="What game will the model file be used for",
-        default="halo2utf8",
+        default="halo2mcc",
         items=[
-                ('halo2utf8', "Halo 2", "Export a level intended for Halo 2 Vista"),
+                ('halo2mcc', "Halo 2", "Export a level intended for Halo 2 Vista or Halo 2 MCC"),
+                ('halo3mcc', "Halo 3 MCC", "Export a level intended for Halo 3 MCC"),
                ]
         )
 
@@ -714,7 +839,7 @@ class JMA_SceneProps(Panel):
                 row.label(text='JMA Version:')
                 row.prop(scene_jma, "jma_version_ce", text='')
 
-        elif scene_jma.game_version == 'halo2vista':
+        elif scene_jma.game_version == 'halo2vista' or scene_jma.game_version == 'halo2mcc':
             row = col.row()
             row.label(text='Extension:')
             row.prop(scene_jma, "extension_h2", text='')
@@ -723,6 +848,14 @@ class JMA_SceneProps(Panel):
                 row.label(text='JMA Version:')
                 row.prop(scene_jma, "jma_version_h2", text='')
 
+        elif scene_jma.game_version == 'halo3mcc':
+            row = col.row()
+            row.label(text='Extension:')
+            row.prop(scene_jma, "extension_h3", text='')
+            if scene_halo.expert_mode:
+                row = col.row()
+                row.label(text='JMA Version:')
+                row.prop(scene_jma, "jma_version_h3", text='')
 
         box = layout.box()
         box.label(text="Scene Options:")
@@ -735,7 +868,15 @@ class JMA_SceneProps(Panel):
             row.label(text='Biped Controller:')
             row.prop(scene_jma, "biped_controller", text='')
 
+        elif scene_jma.game_version == 'halo2mcc' and scene_jma.jma_version_h2 == '16395':
+            row = col.row()
+            row.label(text='Biped Controller:')
+            row.prop(scene_jma, "biped_controller", text='')
 
+        elif scene_jma.game_version == 'halo3mcc' and scene_jma.jma_version_h3 == '16395':
+            row = col.row()
+            row.label(text='Biped Controller:')
+            row.prop(scene_jma, "biped_controller", text='')
 
         row = col.row()
         row.label(text='Use As Default Export Settings:')
@@ -765,15 +906,15 @@ class JMA_ScenePropertiesGroup(PropertyGroup):
         description="What extension to use for the animation file",
         options={'HIDDEN'},
         items=[
-                ('.JMA', "JMA", "Jointed Model Animation CE/H2"),
-                ('.JMM', "JMM", "Jointed Model Moving CE/H2"),
-                ('.JMT', "JMT", "Jointed Model Turning CE/H2"),
-                ('.JMO', "JMO", "Jointed Model Overlay CE/H2"),
-                ('.JMR', "JMR", "Jointed Model Replacement CE/H2"),
-                ('.JMRX', "JMRX", "Jointed Model Replacement Extended H2"),
-                ('.JMH', "JMH", "Jointed Model Havok H2"),
-                ('.JMZ', "JMZ", "Jointed Model Height CE/H2"),
-                ('.JMW', "JMW", "Jointed Model World CE/H2"),
+                ('.JMA', "JMA", "Jointed Model Animation CE/H2/H3"),
+                ('.JMM', "JMM", "Jointed Model Moving CE/H2/H3"),
+                ('.JMT', "JMT", "Jointed Model Turning CE/H2/H3"),
+                ('.JMO', "JMO", "Jointed Model Overlay CE/H2/H3"),
+                ('.JMR', "JMR", "Jointed Model Replacement CE/H2/H3"),
+                ('.JMRX', "JMRX", "Jointed Model Replacement Extended H2/H3"),
+                ('.JMH', "JMH", "Jointed Model Havok H2/H3"),
+                ('.JMZ', "JMZ", "Jointed Model Height CE/H2/H3"),
+                ('.JMW', "JMW", "Jointed Model World CE/H2/H3"),
                ]
         )
 
@@ -805,6 +946,20 @@ class JMA_ScenePropertiesGroup(PropertyGroup):
                ]
         )
 
+    extension_h3: EnumProperty(
+        name="Extension:",
+        description="What extension to use for the animation file",
+        items=[ ('.JMA', "JMA", "Jointed Model Animation H3"),
+                ('.JMM', "JMM", "Jointed Model Moving H3"),
+                ('.JMT', "JMT", "Jointed Model Turning H3"),
+                ('.JMO', "JMO", "Jointed Model Overlay H3"),
+                ('.JMR', "JMR", "Jointed Model Replacement H3"),
+                ('.JMRX', "JMRX", "Jointed Model Replacement Extended H3"),
+                ('.JMH', "JMH", "Jointed Model Havok H3"),
+                ('.JMZ', "JMZ", "Jointed Model Height H3"),
+                ('.JMW', "JMW", "Jointed Model World H3"),
+               ]
+        )
 
     jma_version: EnumProperty(
         name="Version:",
@@ -812,12 +967,12 @@ class JMA_ScenePropertiesGroup(PropertyGroup):
         default="16395",
         options={'HIDDEN'},
         items=[
-                ('16390', "16390", "CE/H2"),
-                ('16391', "16391", "CE/H2"),
-                ('16392', "16392", "CE/H2"),
-                ('16393', "16393", "H2"),
-                ('16394', "16394", "H2"),
-                ('16395', "16395", "H2"),
+                ('16390', "16390", "CE/H2/H3"),
+                ('16391', "16391", "CE/H2/H3"),
+                ('16392', "16392", "CE/H2/H3"),
+                ('16393', "16393", "H2/H3"),
+                ('16394', "16394", "H2/H3"),
+                ('16395', "16395", "H2/H3"),
                ]
         )
 
@@ -844,14 +999,28 @@ class JMA_ScenePropertiesGroup(PropertyGroup):
                ]
         )
 
+    jma_version_h3: EnumProperty(
+        name="Version:",
+        description="What version to use for the animation file",
+        default="16395",
+        items=[ ('16390', "16390", "H3"),
+                ('16391', "16391", "H3"),
+                ('16392', "16392", "H3"),
+                ('16393', "16393", "H3"),
+                ('16394', "16394", "H3"),
+                ('16395', "16395", "H3"),
+               ]
+        )
 
     game_version: EnumProperty(
         name="Game:",
         description="What game will the model file be used for",
-        default="halo2vista",
+        default="halo2mcc",
         items=[
-                ('haloce', "Halo CE", "Export an animation intended for Halo CE"),
+                ('haloce', "Halo CE", "Export an animation intended for Halo Custom Edition Or Halo CE MCC"),
                 ('halo2vista', "Halo 2 Vista", "Export an animation intended for Halo 2 Vista"),
+                ('halo2mcc', "Halo 2 MCC", "Export an animation intended for Halo 2 MCC"),
+                ('halo3mcc', "Halo 3 MCC", "Export an animation intended for Halo 3 MCC"),
                ]
         )
 
@@ -903,6 +1072,257 @@ class JMA_ScenePropertiesGroup(PropertyGroup):
         subtype="FILE_PATH"
     )
 
+class JMI_SceneProps(Panel):
+    bl_label = "JMI Scene Properties"
+    bl_idname = "JMI_PT_GameVersionPanel"
+    bl_space_type = 'PROPERTIES'
+    bl_region_type = 'WINDOW'
+    bl_context = "scene"
+    bl_options = {'DEFAULT_CLOSED'}
+    bl_parent_id = "HALO_PT_GameVersionPanel"
+    def draw(self, context):
+        scene = context.scene
+        scene_jmi = scene.jmi
+        scene_halo = scene.halo
+
+        layout = self.layout
+
+        box = layout.box()
+        box.label(text="Game Version:")
+        col = box.column(align=True)
+        row = col.row()
+        row.prop(scene_jmi, "game_version", text='')
+        if scene_jmi.game_version == 'halo2mcc':
+            if scene_halo.expert_mode:
+                box = layout.box()
+                box.label(text="File Details:")
+                col = box.column(align=True)
+                row = col.row()
+                row.label(text='JMI Version:')
+                row.prop(scene_jmi, "jmi_version_h2", text='')
+
+        elif scene_jmi.game_version == 'halo3mcc':
+            if scene_halo.expert_mode:
+                box = layout.box()
+                box.label(text="File Details:")
+                col = box.column(align=True)
+                row = col.row()
+                row.label(text='JMI Version:')
+                row.prop(scene_jmi, "jmi_version_h3", text='')
+
+        box = layout.box()
+        box.label(text="Mask Options:")
+        col = box.column(align=True)
+        row = col.row()
+        row.label(text='Export Hidden Geometry:')
+        row.prop(scene_jmi, "hidden_geo", text='')
+        row = col.row()
+        row.label(text='Export Render Geometry:')
+        row.prop(scene_jmi, "export_render", text='')
+        row = col.row()
+        row.label(text='Export Collision Geometry:')
+        row.prop(scene_jmi, "export_collision", text='')
+        row = col.row()
+        row.label(text='Export Physics Geometry:')
+        row.prop(scene_jmi, "export_physics", text='')
+
+        box = layout.box()
+        box.label(text="Scene Options:")
+        col = box.column(align=True)
+        row = col.row()
+        row.label(text='Apply Modifiers:')
+        row.prop(scene_jmi, "apply_modifiers", text='')
+        row = col.row()
+        row.label(text='Triangulate:')
+        row.prop(scene_jmi, "triangulate_faces", text='')
+        row = col.row()
+        row.label(text='Clean and Normalize Weights:')
+        row.prop(scene_jmi, "clean_normalize_weights", text='')
+        row = col.row()
+        row.label(text='Use Edge Split:')
+        row.prop(scene_jmi, "edge_split", text='')
+        row = col.row()
+        row.label(text='Use As Default Export Settings:')
+        row.prop(scene_jmi, "use_scene_properties", text='')
+
+        box = layout.box()
+        box.label(text="Subdirectory Type:")
+        col = box.column(align=True)
+        row = col.row()
+        row.label(text='Model Type:')
+        row.prop(scene_jmi, "folder_type", text='')
+
+        if scene_jmi.edge_split == True:
+            box = layout.box()
+            box.label(text="Edge Split:")
+            col = box.column(align=True)
+            row = col.row()
+            row.label(text='Edge Angle:')
+            row.prop(scene_jmi, "use_edge_angle", text='')
+            row.active = scene_jmi.use_edge_angle
+            row.prop(scene_jmi, "split_angle", text='')
+            row = col.row()
+            row.label(text='Sharp Edges:')
+            row.prop(scene_jmi, "use_edge_sharp", text='')
+
+        box = layout.box()
+        box.label(text="Scale:")
+        row = box.row()
+        row.prop(scene_jmi, "scale_enum", expand=True)
+        if scene_jmi.scale_enum == '2':
+            row = box.row()
+            row.prop(scene_jmi, "scale_float")
+
+class JMI_ScenePropertiesGroup(PropertyGroup):
+    jmi_version: EnumProperty(
+        name="Version:",
+        description="What version to use for the model file",
+        default="8210",
+        options={'HIDDEN'},
+        items=[ ('8207', "8207", "H2/H3 Non-functional"),
+                ('8208', "8208", "H2/H3 Non-functional"),
+                ('8209', "8209", "H2/H3"),
+                ('8210', "8210", "H2/H3"),
+                ('8211', "8211", "H3 Non-functional"),
+                ('8212', "8212", "H3 Non-functional"),
+                ('8213', "8213", "H3"),
+               ]
+        )
+
+    jmi_version_h2: EnumProperty(
+        name="Version:",
+        description="What version to use for the model file",
+        default="8210",
+        items=[ ('8207', "8207", "H2 Non-functional"),
+                ('8208', "8208", "H2 Non-functional"),
+                ('8209', "8209", "H2"),
+                ('8210', "8210", "H2"),
+               ]
+        )
+
+    jmi_version_h3: EnumProperty(
+        name="Version:",
+        description="What version to use for the model file",
+        default="8213",
+        items=[ ('8207', "8207", "H3 Non-functional"),
+                ('8208', "8208", "H3 Non-functional"),
+                ('8209', "8209", "H3"),
+                ('8210', "8210", "H3"),
+                ('8211', "8211", "H3 Non-functional"),
+                ('8212', "8212", "H3 Non-functional"),
+                ('8213', "8213", "H3"),
+               ]
+        )
+
+    game_version: EnumProperty(
+        name="Game:",
+        description="What game will the model file be used for",
+        default="halo2mcc",
+        items=[ ('halo2mcc', "Halo 2 MCC", "Export a JMS intended for Halo 2 MCC"),
+                ('halo3mcc', "Halo 3 MCC", "Export a JMS intended for Halo 3 MCC"),
+               ]
+        )
+
+    folder_type: EnumProperty(
+        name="Model Type:",
+        description="What type to use for the model file",
+        default="0",
+        items=[ ('0', "Structure", "Asset subdirectory intended for levels"),
+                ('1', "Render", "Asset subdirectory intended for models"),
+               ]
+        )
+
+    apply_modifiers: BoolProperty(
+        name ="Apply Modifiers",
+        description = "Automatically apply modifiers. Does not permanently affect scene",
+        default = True,
+        )
+
+    triangulate_faces: BoolProperty(
+        name ="Triangulate faces",
+        description = "Automatically triangulate all faces. Does not permanently affect scene",
+        default = True,
+        )
+
+    clean_normalize_weights: BoolProperty(
+        name ="Clean and Normalize Weights",
+        description = "Remove unused vertex groups and normalize weights before export. Permanently affects scene",
+        default = True,
+        )
+
+    use_scene_properties: BoolProperty(
+        name ="Use scene properties",
+        description = "Use the options set in the scene or uncheck this to override",
+        default = False,
+        )
+
+    hidden_geo: BoolProperty(
+        name ="Export hidden geometry",
+        description = "Whether or not we ignore geometry that has scene options that hides it from the viewport",
+        default = True,
+        )
+
+    export_render: BoolProperty(
+        name ="Export render geometry",
+        description = "Whether or not we ignore geometry that is marked as render",
+        default = True,
+        )
+
+    export_collision: BoolProperty(
+        name ="Export collision geometry",
+        description = "Whether or not we ignore geometry that is marked as collision",
+        default = True,
+        )
+
+    export_physics: BoolProperty(
+        name ="Export physics geometry",
+        description = "Whether or not we ignore geometry that is marked as physics",
+        default = True,
+        )
+
+    edge_split: BoolProperty(
+        name ="Edge Split",
+        description = "Apply a edge split modifier.",
+        default = True,
+        )
+
+    use_edge_angle: BoolProperty(
+        name ="Use Edge Angle",
+        description = "Split edges with high angle between faces.",
+        default = False,
+        )
+
+    use_edge_sharp: BoolProperty(
+        name ="Use Edge Sharp",
+        description = "Split edges that are marked as sharp.",
+        default = True,
+        )
+
+    split_angle: FloatProperty(
+        name="Split Angle",
+        description="Angle above which to split edges.",
+        subtype='ANGLE',
+        default=0.523599,
+        min=0.0,
+        max=3.141593,
+    )
+
+    scale_enum: EnumProperty(
+    name="Scale",
+    description="Choose a preset value to multiply position values by.",
+        items=(
+            ('0', "Default(JMS)", "Export as is"),
+            ('1', "World Units",  "Multiply position values by 100 units"),
+            ('2', "Custom",       "Set your own scale multiplier."),
+        )
+    )
+
+    scale_float: FloatProperty(
+        name="Custom Scale",
+        description="Choose a custom value to multiply position values by.",
+        default=1.0,
+        min=1.0,
+    )
 
 class JMS_SceneProps(Panel):
     bl_label = "JMS Scene Properties"
@@ -940,7 +1360,7 @@ class JMS_SceneProps(Panel):
             row.label(text='LOD:')
             row.prop(scene_jms, "level_of_detail_ce", text='')
 
-        elif scene_jms.game_version == 'halo2vista':
+        elif scene_jms.game_version == 'halo2vista' or scene_jms.game_version == 'halo2mcc':
             if scene_halo.expert_mode:
                 box = layout.box()
                 box.label(text="File Details:")
@@ -949,6 +1369,14 @@ class JMS_SceneProps(Panel):
                 row.label(text='JMS Version:')
                 row.prop(scene_jms, "jms_version_h2", text='')
 
+        elif scene_jms.game_version == 'halo3mcc':
+            if scene_halo.expert_mode:
+                box = layout.box()
+                box.label(text="File Details:")
+                col = box.column(align=True)
+                row = col.row()
+                row.label(text='JMS Version:')
+                row.prop(scene_jms, "jms_version_h3", text='')
         box = layout.box()
         box.label(text="Mask Options:")
         col = box.column(align=True)
@@ -1041,20 +1469,23 @@ class JMS_ScenePropertiesGroup(PropertyGroup):
         default="8200",
         options={'HIDDEN'},
         items=[
-                ('8197', "8197", "CE/H2"),
-                ('8198', "8198", "CE/H2"),
-                ('8199', "8199", "CE/H2"),
-                ('8200', "8200", "CE/H2"),
-                ('8201', "8201", "H2 Non-functional"),
-                ('8202', "8202", "H2 Non-functional"),
-                ('8203', "8203", "H2 Non-functional"),
-                ('8204', "8204", "H2 Non-functional"),
-                ('8205', "8205", "H2"),
-                ('8206', "8206", "H2 Non-functional"),
-                ('8207', "8207", "H2 Non-functional"),
-                ('8208', "8208", "H2 Non-functional"),
-                ('8209', "8209", "H2"),
-                ('8210', "8210", "H2"),
+                ('8197', "8197", "CE/H2/H3"),
+                ('8198', "8198", "CE/H2/H3"),
+                ('8199', "8199", "CE/H2/H3"),
+                ('8200', "8200", "CE/H2/H3"),
+                ('8201', "8201", "H2/H3 Non-functional"),
+                ('8202', "8202", "H2/H3 Non-functional"),
+                ('8203', "8203", "H2/H3 Non-functional"),
+                ('8204', "8204", "H2/H3 Non-functional"),
+                ('8205', "8205", "H2/H3"),
+                ('8206', "8206", "H2/H3 Non-functional"),
+                ('8207', "8207", "H2/H3 Non-functional"),
+                ('8208', "8208", "H2/H3 Non-functional"),
+                ('8209', "8209", "H2/H3"),
+                ('8210', "8210", "H2/H3"),
+                ('8211', "8211", "H3 Non-functional"),
+                ('8212', "8212", "H3 Non-functional"),
+                ('8213', "8213", "H3"),
                ]
         )
 
@@ -1090,13 +1521,38 @@ class JMS_ScenePropertiesGroup(PropertyGroup):
                ]
         )
 
+    jms_version_h3: EnumProperty(
+        name="Version:",
+        description="What version to use for the model file",
+        default="8213",
+        items=[ ('8197', "8197", "H3"),
+                ('8198', "8198", "H3"),
+                ('8199', "8199", "H3"),
+                ('8200', "8200", "H3"),
+                ('8201', "8201", "H3 Non-functional"),
+                ('8202', "8202", "H3 Non-functional"),
+                ('8203', "8203", "H3 Non-functional"),
+                ('8204', "8204", "H3 Non-functional"),
+                ('8205', "8205", "H3"),
+                ('8206', "8206", "H3 Non-functional"),
+                ('8207', "8207", "H3 Non-functional"),
+                ('8208', "8208", "H3 Non-functional"),
+                ('8209', "8209", "H3"),
+                ('8210', "8210", "H3"),
+                ('8211', "8211", "H3 Non-functional"),
+                ('8212', "8212", "H3 Non-functional"),
+                ('8213', "8213", "H3"),
+               ]
+        )
     game_version: EnumProperty(
         name="Game:",
         description="What game will the model file be used for",
-        default="halo2vista",
+        default="halo2mcc",
         items=[
-                ('haloce', "Halo CE", "Export a JMS intended for Halo Custom Edition"),
+                ('haloce', "Halo CE", "Export a JMS intended for Halo Custom Edition Or Halo CE MCC"),
                 ('halo2vista', "Halo 2 Vista", "Export a JMS intended for Halo 2 Vista"),
+                ('halo2mcc', "Halo 2 MCC", "Export a JMS intended for Halo 2 MCC"),
+                ('halo3mcc', "Halo 3 MCC", "Export a JMS intended for Halo 3 MCC"),
                ]
         )
 
@@ -1224,7 +1680,7 @@ class ASS_JMS_MeshProps(Panel):
 
         ass_jms = None
         if hasattr(obj, 'ass_jms'):
-            if scene_halo.game_version == 'halo2':
+            if scene_halo.game_version == 'halo2' or scene_halo.game_version == 'halo3':
                 ass_jms = obj.ass_jms
 
         return ass_jms
@@ -1241,7 +1697,7 @@ class ASS_JMS_MeshProps(Panel):
         box = layout.box()
         box.label(text="JMS Mesh Details:")
         col = box.column(align=True)
-        if scene_halo.game_version == 'halo2':
+        if scene_halo.game_version == 'halo2' or scene_halo.game_version == 'halo3':
             row = col.row()
             row.label(text='Bounding Radius:')
             row.prop(obj_ass_jms, "bounding_radius", text='')
@@ -1302,8 +1758,13 @@ class ExportASS(Operator, ExportHelper):
         description="What version to use for the model file",
         default="2",
         items=[
-                ('1', "1", "H2 Non-functional"),
-                ('2', "2", "H2"),
+                ('1', "1", "H2/H3 Non-functional"),
+                ('2', "2", "H2/H3"),
+                ('3', "3", "H3 Non-functional"),
+                ('4', "4", "H3 Non-functional"),
+                ('5', "5", "H3 Non-functional"),
+                ('6', "6", "H3 Non-functional"),
+                ('7', "7", "H3"),
                ]
         )
 
@@ -1316,12 +1777,26 @@ class ExportASS(Operator, ExportHelper):
                ]
         )
 
+    ass_version_h3: EnumProperty(
+        name="Version:",
+        description="What version to use for the model file",
+        default="7",
+        items=[ ('1', "1", "H3 Non-functional"),
+                ('2', "2", "H3 "),
+                ('3', "3", "H3 Non-functional"),
+                ('4', "4", "H3 Non-functional"),
+                ('5', "5", "H3 Non-functional"),
+                ('6', "6", "H3 Non-functional"),
+                ('7', "7", "H3"),
+               ]
+        )
     game_version: EnumProperty(
         name="Game:",
         description="What game will the model file be used for",
-        default="halo2utf8",
+        default="halo2mcc",
         items=[
-                ('halo2utf8', "Halo 2", "Export a level intended for Halo 2 Vista"),
+                ('halo2mcc', "Halo 2", "Export a level intended for Halo 2 Vista or Halo 2 MCC"),
+                ('halo3mcc', "Halo 3 MCC", "Export a level intended for Halo 3 MCC"),
                ]
         )
 
@@ -1424,6 +1899,7 @@ class ExportASS(Operator, ExportHelper):
                     self.report,
                     self.ass_version,
                     self.ass_version_h2,
+                    self.ass_version_h3,
                     self.use_scene_properties,
                     self.hidden_geo,
                     self.folder_structure,
@@ -1444,7 +1920,7 @@ class ExportASS(Operator, ExportHelper):
             parser.add_argument('-arg1', '--filepath', dest='filepath', metavar='FILE', required = True)
             parser.add_argument('-arg2', '--use_scene_properties', dest='use_scene_properties', action='store_true')
             parser.add_argument('-arg3', '--ass_version', dest='ass_version', type=str, default="2")
-            parser.add_argument('-arg4', '--game_version', dest='game_version', type=str, default="halo2utf8")
+            parser.add_argument('-arg4', '--game_version', dest='game_version', type=str, default="halo2mcc")
             parser.add_argument('-arg5', '--hidden_geo', dest='hidden_geo', action='store_true')
             parser.add_argument('-arg6', '--folder_structure', dest='folder_structure', action='store_true')
             parser.add_argument('-arg7', '--apply_modifiers', dest='apply_modifiers', action='store_true')
@@ -1493,7 +1969,7 @@ class ExportASS(Operator, ExportHelper):
 
         encoding = global_functions.get_encoding(self.game_version)
         game_version = self.game_version
-        if self.game_version == 'halo2utf8':
+        if self.game_version == 'halo2mcc' or self.game_version == 'halo3mcc':
             game_version = 'halo2'
 
         return run_code("export_ass.write_file(*keywords, game_version, encoding)")
@@ -1517,6 +1993,7 @@ class ExportASS(Operator, ExportHelper):
         if scene_ass.use_scene_properties:
             self.game_version = scene_ass.game_version
             self.ass_version_h2 = scene_ass.ass_version_h2
+            self.ass_version_h3 = scene_ass.ass_version_h3
             self.apply_modifiers = scene_ass.apply_modifiers
             self.triangulate_faces = scene_ass.triangulate_faces
             self.clean_normalize_weights = scene_ass.clean_normalize_weights
@@ -1529,7 +2006,7 @@ class ExportASS(Operator, ExportHelper):
             self.scale_enum = scene_ass.scale_enum
             self.scale_float = scene_ass.scale_float
 
-        if self.game_version == 'halo2utf8':
+        if self.game_version == 'halo2mcc':
             if scene_halo.expert_mode:
                 box = layout.box()
                 box.label(text="File Details:")
@@ -1539,6 +2016,15 @@ class ExportASS(Operator, ExportHelper):
                 row.label(text='ASS Version:')
                 row.prop(self, "ass_version_h2", text='')
 
+        elif self.game_version == 'halo3mcc':
+            if scene_halo.expert_mode:
+                box = layout.box()
+                box.label(text="File Details:")
+                col = box.column(align=True)
+                row = col.row()
+                row.enabled = is_enabled
+                row.label(text='ASS Version:')
+                row.prop(self, "ass_version_h3", text='')
         box = layout.box()
         box.label(text="Mask Options:")
         col = box.column(align=True)
@@ -1650,20 +2136,23 @@ class ExportJMS(Operator, ExportHelper):
         default="8200",
         options={'HIDDEN'},
         items=[
-                ('8197', "8197", "CE/H2"),
-                ('8198', "8198", "CE/H2"),
-                ('8199', "8199", "CE/H2"),
-                ('8200', "8200", "CE/H2"),
-                ('8201', "8201", "H2 Non-functional"),
-                ('8202', "8202", "H2 Non-functional"),
-                ('8203', "8203", "H2 Non-functional"),
-                ('8204', "8204", "H2 Non-functional"),
-                ('8205', "8205", "H2"),
-                ('8206', "8206", "H2 Non-functional"),
-                ('8207', "8207", "H2 Non-functional"),
-                ('8208', "8208", "H2 Non-functional"),
-                ('8209', "8209", "H2"),
-                ('8210', "8210", "H2"),
+                ('8197', "8197", "CE/H2/H3"),
+                ('8198', "8198", "CE/H2/H3"),
+                ('8199', "8199", "CE/H2/H3"),
+                ('8200', "8200", "CE/H2/H3"),
+                ('8201', "8201", "H2/H3 Non-functional"),
+                ('8202', "8202", "H2/H3 Non-functional"),
+                ('8203', "8203", "H2/H3 Non-functional"),
+                ('8204', "8204", "H2/H3 Non-functional"),
+                ('8205', "8205", "H2/H3"),
+                ('8206', "8206", "H2/H3 Non-functional"),
+                ('8207', "8207", "H2/H3 Non-functional"),
+                ('8208', "8208", "H2/H3 Non-functional"),
+                ('8209', "8209", "H2/H3"),
+                ('8210', "8210", "H2/H3"),
+                ('8211', "8211", "H3 Non-functional"),
+                ('8212', "8212", "H3 Non-functional"),
+                ('8213', "8213", "H3"),
                ]
         )
 
@@ -1699,13 +2188,38 @@ class ExportJMS(Operator, ExportHelper):
                ]
         )
 
+    jms_version_h3: EnumProperty(
+        name="Version:",
+        description="What version to use for the model file",
+        default="8213",
+        items=[ ('8197', "8197", "H3"),
+                ('8198', "8198", "H3"),
+                ('8199', "8199", "H3"),
+                ('8200', "8200", "H3"),
+                ('8201', "8201", "H3 Non-functional"),
+                ('8202', "8202", "H3 Non-functional"),
+                ('8203', "8203", "H3 Non-functional"),
+                ('8204', "8204", "H3 Non-functional"),
+                ('8205', "8205", "H3"),
+                ('8206', "8206", "H3 Non-functional"),
+                ('8207', "8207", "H3 Non-functional"),
+                ('8208', "8208", "H3 Non-functional"),
+                ('8209', "8209", "H3"),
+                ('8210', "8210", "H3"),
+                ('8211', "8211", "H3 Non-functional"),
+                ('8212', "8212", "H3 Non-functional"),
+                ('8213', "8213", "H3"),
+               ]
+        )
     game_version: EnumProperty(
         name="Game:",
         description="What game will the model file be used for",
-        default="halo2vista",
+        default="halo2mcc",
         items=[
-                ('haloce', "Halo CE", "Export a JMS intended for Halo Custom Edition"),
+                ('haloce', "Halo CE", "Export a JMS intended for Halo Custom Edition or Halo CE MCC"),
                 ('halo2vista', "Halo 2 Vista", "Export a JMS intended for Halo 2 Vista"),
+                ('halo2mcc', "Halo 2 MCC", "Export a JMS intended for Halo 2 MCC"),
+                ('halo3mcc', "Halo 3 MCC", "Export a JMS intended for Halo 3 MCC"),
                ]
         )
 
@@ -1836,7 +2350,7 @@ class ExportJMS(Operator, ExportHelper):
             parser.add_argument('-arg1', '--filepath', dest='filepath', metavar='FILE', required = True)
             parser.add_argument('-arg2', '--use_scene_properties', dest='use_scene_properties', action='store_true')
             parser.add_argument('-arg3', '--jms_version', dest='jms_version', type=str, default="8210")
-            parser.add_argument('-arg4', '--game_version', dest='game_version', type=str, default="halo2vista")
+            parser.add_argument('-arg4', '--game_version', dest='game_version', type=str, default="halo2mcc")
             parser.add_argument('-arg5', '--folder_structure', dest='folder_structure', action='store_true')
             parser.add_argument('-arg6', '--folder_type', dest='folder_type', action='0')
             parser.add_argument('-arg7', '--apply_modifiers', dest='apply_modifiers', action='store_true')
@@ -1894,10 +2408,11 @@ class ExportJMS(Operator, ExportHelper):
 
         encoding = global_functions.get_encoding(self.game_version)
         game_version = self.game_version
-        if self.game_version == 'halo2vista':
+        world_nodes = None
+        if self.game_version == 'halo2vista' or self.game_version == 'halo2mcc':
             game_version = 'halo2'
 
-        return run_code("export_jms.command_queue(context, self.filepath, self.report, self.jms_version, self.jms_version_ce, self.jms_version_h2, self.folder_structure, self.folder_type, self.apply_modifiers, self.triangulate_faces, self.edge_split, self.use_edge_angle, self.use_edge_sharp, self.split_angle, self.clean_normalize_weights, self.scale_enum, self.scale_float, self.console, self.permutation_ce, self.level_of_detail_ce, self.hidden_geo, self.export_render, self.export_collision, self.export_physics, game_version, encoding)")
+        return run_code("export_jms.command_queue(context, self.filepath, self.report, self.jms_version, self.jms_version_ce, self.jms_version_h2, self.jms_version_h3, self.folder_structure, self.folder_type, self.apply_modifiers, self.triangulate_faces, self.edge_split, self.use_edge_angle, self.use_edge_sharp, self.split_angle, self.clean_normalize_weights, self.scale_enum, self.scale_float, self.console, self.permutation_ce, self.level_of_detail_ce, self.hidden_geo, self.export_render, self.export_collision, self.export_physics, game_version, encoding, world_nodes)")
 
     def draw(self, context):
         scene = context.scene
@@ -1923,6 +2438,7 @@ class ExportJMS(Operator, ExportHelper):
             self.permutation_ce = scene_jms.permutation_ce
             self.level_of_detail_ce = scene_jms.level_of_detail_ce
             self.jms_version_h2 = scene_jms.jms_version_h2
+            self.jms_version_h3 = scene_jms.jms_version_h3
             self.folder_structure = scene_jms.folder_structure
             self.folder_type = scene_jms.folder_type
             self.apply_modifiers = scene_jms.apply_modifiers
@@ -1958,7 +2474,7 @@ class ExportJMS(Operator, ExportHelper):
             row.label(text='LOD:')
             row.prop(self, "level_of_detail_ce", text='')
 
-        elif self.game_version == 'halo2vista':
+        elif self.game_version == 'halo2vista' or self.game_version == 'halo2mcc':
             if scene_halo.expert_mode:
                 box = layout.box()
                 box.label(text="File Details:")
@@ -1967,6 +2483,15 @@ class ExportJMS(Operator, ExportHelper):
                 row.enabled = is_enabled
                 row.label(text='JMS Version:')
                 row.prop(self, "jms_version_h2", text='')
+        elif self.game_version == 'halo3mcc':
+            if scene_halo.expert_mode:
+                box = layout.box()
+                box.label(text="File Details:")
+                col = box.column(align=True)
+                row = col.row()
+                row.enabled = is_enabled
+                row.label(text='JMS Version:')
+                row.prop(self, "jms_version_h3", text='')
 
         box = layout.box()
         box.label(text="Mask Options:")
@@ -2059,14 +2584,15 @@ class ImportJMS(Operator, ImportHelper):
         description="What game was the model file made for",
         default="auto",
         items=[ ('auto', "Auto", "Attempt to guess the game this JMS was intended for. Will default to CE if this fails."),
-                ('haloce', "Halo CE", "Import a JMS intended for Halo Custom Edition"),
-                ('halo2', "Halo 2", "Import a JMS intended for Halo 2 Vista"),
+                ('haloce', "Halo CE", "Import a JMS intended for Halo Custom Edition or Halo CE MCC"),
+                ('halo2', "Halo 2", "Import a JMS intended for Halo 2 Vista or Halo 2 MCC"),
+                ('halo3', "Halo 3", "Import a JMS intended for Halo 3 MCC"),
                ]
         )
 
     fix_parents: BoolProperty(
         name ="Force node parents",
-        description = "Force thigh bones to use pelvis and clavicles to use spine1. Used to match node import behavior used by Halo 2",
+        description = "Force thigh bones to use pelvis and clavicles to use spine1. Used to match node import behavior used by Halo 2, Halo 3, and Halo 3 ODST",
         default = True,
         )
 
@@ -2100,7 +2626,7 @@ class ImportJMS(Operator, ImportHelper):
         col = box.column(align=True)
         row = col.row()
         row.prop(self, "game_version", text='')
-        if self.game_version == 'auto' or self.game_version == 'halo2':
+        if self.game_version == 'auto' or self.game_version == 'halo2' or self.game_version == 'halo3':
             box = layout.box()
             box.label(text="Import Options:")
             col = box.column(align=True)
@@ -2118,15 +2644,15 @@ class ExportJMA(Operator, ExportHelper):
         description="What extension to use for the animation file",
         options={'HIDDEN'},
         items=[
-                ('.JMA', "JMA", "Jointed Model Animation CE/H2"),
-                ('.JMM', "JMM", "Jointed Model Moving CE/H2"),
-                ('.JMT', "JMT", "Jointed Model Turning CE/H2"),
-                ('.JMO', "JMO", "Jointed Model Overlay CE/H2"),
-                ('.JMR', "JMR", "Jointed Model Replacement CE/H2"),
-                ('.JMRX', "JMRX", "Jointed Model Replacement Extended H2"),
-                ('.JMH', "JMH", "Jointed Model Havok H2"),
-                ('.JMZ', "JMZ", "Jointed Model Height CE/H2"),
-                ('.JMW', "JMW", "Jointed Model World CE/H2"),
+                ('.JMA', "JMA", "Jointed Model Animation CE/H2/H3"),
+                ('.JMM', "JMM", "Jointed Model Moving CE/H2/H3"),
+                ('.JMT', "JMT", "Jointed Model Turning CE/H2/H3"),
+                ('.JMO', "JMO", "Jointed Model Overlay CE/H2/H3"),
+                ('.JMR', "JMR", "Jointed Model Replacement CE/H2/H3"),
+                ('.JMRX', "JMRX", "Jointed Model Replacement Extended H2/H3"),
+                ('.JMH', "JMH", "Jointed Model Havok H2/H3"),
+                ('.JMZ', "JMZ", "Jointed Model Height CE/H2/H3"),
+                ('.JMW', "JMW", "Jointed Model World CE/H2/H3"),
                ]
         )
 
@@ -2158,18 +2684,32 @@ class ExportJMA(Operator, ExportHelper):
                ]
         )
 
+    extension_h3: EnumProperty(
+        name="Extension:",
+        description="What extension to use for the animation file",
+        items=[ ('.JMA', "JMA", "Jointed Model Animation H3"),
+                ('.JMM', "JMM", "Jointed Model Moving H3"),
+                ('.JMT', "JMT", "Jointed Model Turning H3"),
+                ('.JMO', "JMO", "Jointed Model Overlay H3"),
+                ('.JMR', "JMR", "Jointed Model Replacement H3"),
+                ('.JMRX', "JMRX", "Jointed Model Replacement Extended H3"),
+                ('.JMH', "JMH", "Jointed Model Havok H3"),
+                ('.JMZ', "JMZ", "Jointed Model Height H3"),
+                ('.JMW', "JMW", "Jointed Model World H3"),
+               ]
+        )
     jma_version: EnumProperty(
         name="Version:",
         description="What version to use for the animation file",
         default="16395",
         options={'HIDDEN'},
         items=[
-                ('16390', "16390", "CE/H2"),
-                ('16391', "16391", "CE/H2"),
-                ('16392', "16392", "CE/H2"),
-                ('16393', "16393", "H2"),
-                ('16394', "16394", "H2"),
-                ('16395', "16395", "H2"),
+                ('16390', "16390", "CE/H2/H3"),
+                ('16391', "16391", "CE/H2/H3"),
+                ('16392', "16392", "CE/H2/H3"),
+                ('16393', "16393", "H2/H3"),
+                ('16394', "16394", "H2/H3"),
+                ('16395', "16395", "H2/H3"),
                ]
         )
 
@@ -2196,13 +2736,27 @@ class ExportJMA(Operator, ExportHelper):
                ]
         )
 
+    jma_version_h3: EnumProperty(
+        name="Version:",
+        description="What version to use for the animation file",
+        default="16395",
+        items=[ ('16390', "16390", "H3"),
+                ('16391', "16391", "H3"),
+                ('16392', "16392", "H3"),
+                ('16393', "16393", "H3"),
+                ('16394', "16394", "H3"),
+                ('16395', "16395", "H3"),
+               ]
+        )
     game_version: EnumProperty(
         name="Game:",
         description="What game will the model file be used for",
         default="halo2vista",
         items=[
-                ('haloce', "Halo CE", "Export an animation intended for Halo CE"),
+                ('haloce', "Halo CE", "Export an animation intended for Halo CE or Halo CE MCC"),
                 ('halo2vista', "Halo 2 Vista", "Export an animation intended for Halo 2 Vista"),
+                ('halo2mcc', "Halo 2 MCC", "Export an animation intended for Halo 2 MCC"),
+                ('halo3mcc', "Halo 3 MCC", "Export an animation intended for Halo 3 MCC"),
                ]
         )
 
@@ -2279,9 +2833,11 @@ class ExportJMA(Operator, ExportHelper):
                     self.extension,
                     self.extension_ce,
                     self.extension_h2,
+                    self.extension_h3,
                     self.jma_version,
                     self.jma_version_ce,
                     self.jma_version_h2,
+                    self.jma_version_h3,
                     self.custom_frame_rate,
                     self.frame_rate_float,
                     self.biped_controller,
@@ -2296,7 +2852,7 @@ class ExportJMA(Operator, ExportHelper):
             parser.add_argument('-arg1', '--filepath', dest='filepath', metavar='FILE', required = True)
             parser.add_argument('-arg2', '--extension', dest='extension', type=str, default=".JMA")
             parser.add_argument('-arg3', '--jma_version', dest='jma_version', type=str, default="16392")
-            parser.add_argument('-arg4', '--game_version', dest='game_version', type=str, default="halo2vista")
+            parser.add_argument('-arg4', '--game_version', dest='game_version', type=str, default="halo2mcc")
             parser.add_argument('-arg5', '--custom_frame_rate', dest='custom_frame_rate', type=str, default="30")
             parser.add_argument('-arg6', '--frame_rate_float', dest='frame_rate_float', type=str, default=30)
             parser.add_argument('-arg7', '--biped_controller', dest='biped_controller', action='store_true')
@@ -2330,7 +2886,7 @@ class ExportJMA(Operator, ExportHelper):
 
         encoding = global_functions.get_encoding(self.game_version)
         game_version = self.game_version
-        if self.game_version == 'halo2vista':
+        if self.game_version == 'halo2vista' or self.game_version == 'halo2mcc':
             game_version = 'halo2'
 
         return export_jma.write_file(*keywords, game_version, encoding)
@@ -2361,6 +2917,8 @@ class ExportJMA(Operator, ExportHelper):
             self.jma_version_ce = scene_jma.jma_version_ce
             self.extension_h2 = scene_jma.extension_h2
             self.jma_version_h2 = scene_jma.jma_version_h2
+            self.extension_h3 = scene_jma.extension_h3
+            self.jma_version_h3 = scene_jma.jma_version_h3
             self.scale_enum = scene_jma.scale_enum
             self.scale_float = scene_jma.scale_float
             self.biped_controller = scene_jma.biped_controller
@@ -2383,7 +2941,7 @@ class ExportJMA(Operator, ExportHelper):
                 row.label(text='JMA Version:')
                 row.prop(self, "jma_version_ce", text='')
 
-        elif self.game_version == 'halo2vista':
+        elif self.game_version == 'halo2vista' or self.game_version == 'halo2mcc':
             row = col.row()
             row.enabled = is_enabled
             row.label(text='Extension:')
@@ -2394,6 +2952,16 @@ class ExportJMA(Operator, ExportHelper):
                 row.label(text='JMA Version:')
                 row.prop(self, "jma_version_h2", text='')
 
+        elif self.game_version == 'halo3mcc':
+            row = col.row()
+            row.enabled = is_enabled
+            row.label(text='Extension:')
+            row.prop(self, "extension_h3", text='')
+            if scene_halo.expert_mode:
+                row = col.row()
+                row.enabled = is_enabled
+                row.label(text='JMA Version:')
+                row.prop(self, "jma_version_h3", text='')
         box = layout.box()
         box.label(text="Scene Options:")
         col = box.column(align=True)
@@ -2407,6 +2975,16 @@ class ExportJMA(Operator, ExportHelper):
             row.label(text='Biped Controller:')
             row.prop(self, "biped_controller", text='')
 
+        elif self.game_version == 'halo2mcc' and self.jma_version_h2 == '16395':
+            row = col.row()
+            row.enabled = is_enabled
+            row.label(text='Biped Controller:')
+            row.prop(self, "biped_controller", text='')
+        elif self.game_version == 'halo3mcc' and self.jma_version_h3 == '16395':
+            row = col.row()
+            row.enabled = is_enabled
+            row.label(text='Biped Controller:')
+            row.prop(self, "biped_controller", text='')
 
         row = col.row()
         row.label(text='Use Scene Export Settings:')
@@ -2443,14 +3021,15 @@ class ImportJMA(Operator, ImportHelper):
         description="What game was the model file made for",
         default="auto",
         items=[ ('auto', "Auto", "Attempt to guess the game this JMS was intended for. Will default to CE if this fails."),
-                ('haloce', "Halo CE", "Import a JMS intended for Halo Custom Edition"),
-                ('halo2', "Halo 2", "Import a JMS intended for Halo 2 Vista"),
+                ('haloce', "Halo CE", "Import a JMS intended for Halo Custom Edition or Halo CE MCC"),
+                ('halo2', "Halo 2", "Import a JMS intended for Halo 2 Vista or Halo 2 MCC"),
+                ('halo3', "Halo 3", "Import a JMS intended for Halo 3 MCC"),
                ]
         )
 
     fix_parents: BoolProperty(
         name ="Force node parents",
-        description = "Force thigh bones to use pelvis and clavicles to use spine1. Used to match node import behavior used by Halo 2",
+        description = "Force thigh bones to use pelvis and clavicles to use spine1. Used to match node import behavior used by Halo 2, Halo 3, and Halo 3 ODST",
         default = True,
         )
 
@@ -2496,7 +3075,7 @@ class ImportJMA(Operator, ImportHelper):
         col = box.column(align=True)
         row = col.row()
         row.prop(self, "game_version", text='')
-        if self.game_version == 'auto' or self.game_version == 'halo2':
+        if self.game_version == 'auto' or self.game_version == 'halo2' or self.game_version == 'halo3':
             box = layout.box()
             box.label(text="Import Options:")
             col = box.column(align=True)
@@ -2515,6 +3094,412 @@ class ImportJMA(Operator, ImportHelper):
             row.label(text='Secondary JMS:')
             row.prop(self, "jms_path_b", text='')
 
+class ExportJMI(Operator, ExportHelper):
+    """Write a JMI file"""
+    bl_idname = "export_jmi.export"
+    bl_label = "Export JMI"
+    filename_ext = ''
+
+    jmi_version: EnumProperty(
+        name="Version:",
+        description="What version to use for the model file",
+        default="8210",
+        options={'HIDDEN'},
+        items=[ ('8207', "8207", "H2/H3"),
+                ('8208', "8208", "H2/H3"),
+                ('8209', "8209", "H2/H3"),
+                ('8210', "8210", "H2/H3"),
+                ('8211', "8211", "H3"),
+                ('8212', "8212", "H3"),
+                ('8213', "8213", "H3"),
+               ]
+        )
+
+    jmi_version_h2: EnumProperty(
+        name="Version:",
+        description="What version to use for the model file",
+        default="8210",
+        items=[ ('8207', "8207", "H2"),
+                ('8208', "8208", "H2"),
+                ('8209', "8209", "H2"),
+                ('8210', "8210", "H2"),
+               ]
+        )
+
+    jmi_version_h3: EnumProperty(
+        name="Version:",
+        description="What version to use for the model file",
+        default="8213",
+        items=[ ('8207', "8207", "H3"),
+                ('8208', "8208", "H3"),
+                ('8209', "8209", "H3"),
+                ('8210', "8210", "H3"),
+                ('8211', "8211", "H3"),
+                ('8212', "8212", "H3"),
+                ('8213', "8213", "H3"),
+               ]
+        )
+    game_version: EnumProperty(
+        name="Game:",
+        description="What game will the model file be used for",
+        default="halo2mcc",
+        items=[ ('halo2mcc', "Halo 2 MCC", "Export a JMS set intended for Halo 2 MCC"),
+                ('halo3mcc', "Halo 3 MCC", "Export a JMS set intended for Halo 3 MCC"),
+               ]
+        )
+
+    folder_type: EnumProperty(
+        name="Model Type:",
+        description="What type to use for the model file",
+        default="0",
+        items=[ ('0', "Structure", "Asset subdirectory intended for levels"),
+                ('1', "Render", "Asset subdirectory intended for models"),
+               ]
+        )
+
+    apply_modifiers: BoolProperty(
+        name ="Apply Modifiers",
+        description = "Automatically apply modifiers. Does not permanently affect scene",
+        default = True,
+        )
+
+    triangulate_faces: BoolProperty(
+        name ="Triangulate faces",
+        description = "Automatically triangulate all faces. Does not permanently affect scene",
+        default = True,
+        )
+
+    clean_normalize_weights: BoolProperty(
+        name ="Clean and Normalize Weights",
+        description = "Remove unused vertex groups and normalize weights before export. Permanently affects scene",
+        default = True,
+        )
+
+    use_scene_properties: BoolProperty(
+        name ="Use scene properties",
+        description = "Use the options set in the scene or uncheck this to override",
+        default = False,
+        )
+
+    hidden_geo: BoolProperty(
+        name ="Export hidden geometry",
+        description = "Whether or not we ignore geometry that has scene options that hides it from the viewport",
+        default = True,
+        )
+
+    export_render: BoolProperty(
+        name ="Export render geometry",
+        description = "Whether or not we ignore geometry that is marked as render",
+        default = True,
+        )
+
+    export_collision: BoolProperty(
+        name ="Export collision geometry",
+        description = "Whether or not we ignore geometry that is marked as collision",
+        default = True,
+        )
+
+    export_physics: BoolProperty(
+        name ="Export physics geometry",
+        description = "Whether or not we ignore geometry that is marked as physics",
+        default = True,
+        )
+
+    edge_split: BoolProperty(
+        name ="Edge Split",
+        description = "Apply a edge split modifier.",
+        default = True,
+        )
+
+    use_edge_angle: BoolProperty(
+        name ="Use Edge Angle",
+        description = "Split edges with high angle between faces.",
+        default = False,
+        )
+
+    use_edge_sharp: BoolProperty(
+        name ="Use Edge Sharp",
+        description = "Split edges that are marked as sharp.",
+        default = True,
+        )
+
+    split_angle: FloatProperty(
+        name="Split Angle",
+        description="Angle above which to split edges.",
+        subtype='ANGLE',
+        default=0.523599,
+        min=0.0,
+        max=3.141593,
+    )
+
+    scale_enum: EnumProperty(
+    name="Scale",
+    description="Choose a preset value to multiply position values by.",
+        items=(
+            ('0', "Default(JMS)", "Export as is"),
+            ('1', "World Units",  "Multiply position values by 100 units"),
+            ('2', "Custom",       "Set your own scale multiplier."),
+        )
+    )
+
+    scale_float: FloatProperty(
+        name="Custom Scale",
+        description="Choose a custom value to multiply position values by.",
+        default=1.0,
+        min=1.0,
+    )
+
+    filter_glob: StringProperty(
+        default="*.jms;*.jmp",
+        options={'HIDDEN'},
+        )
+
+    console: BoolProperty(
+        name ="Console",
+        description = "Is your console running?",
+        default = False,
+        options={'HIDDEN'},
+        )
+
+    def execute(self, context):
+        from io_scene_halo.file_jmi import export_jmi
+        if '--' in sys.argv:
+            argv = sys.argv[sys.argv.index('--') + 1:]
+            parser = argparse.ArgumentParser()
+            parser.add_argument('-arg1', '--filepath', dest='filepath', metavar='FILE', required = True)
+            parser.add_argument('-arg2', '--use_scene_properties', dest='use_scene_properties', action='store_true')
+            parser.add_argument('-arg3', '--jms_version', dest='jms_version', type=str, default="8200")
+            parser.add_argument('-arg4', '--game_version', dest='game_version', type=str, default="halo2mcc")
+            parser.add_argument('-arg5', '--folder_type', dest='folder_type', action='store_true')
+            parser.add_argument('-arg6', '--apply_modifiers', dest='apply_modifiers', action='store_true')
+            parser.add_argument('-arg7', '--triangulate_faces', dest='triangulate_faces', action='store_true')
+            parser.add_argument('-arg8', '--clean_normalize_weights', dest='clean_normalize_weights', action='store_true')
+            parser.add_argument('-arg9', '--hidden_geo', dest='hidden_geo', action='store_true')
+            parser.add_argument('-arg10', '--edge_split', dest='edge_split', action='store_true')
+            parser.add_argument('-arg11', '--use_edge_angle', dest='use_edge_angle', action='store_true')
+            parser.add_argument('-arg12', '--use_edge_sharp', dest='use_edge_sharp', action='store_true')
+            parser.add_argument('-arg13', '--split_angle', dest='split_angle', type=float, default=1.0)
+            parser.add_argument('-arg14', '--scale_enum', dest='scale_enum', type=str, default="0")
+            parser.add_argument('-arg15', '--scale_float', dest='scale_float', type=float, default=1.0)
+            parser.add_argument('-arg16', '--console', dest='console', action='store_true', default=True)
+            args = parser.parse_known_args(argv)[0]
+            print('filepath: ', args.filepath)
+            print('use_scene_properties: ', args.use_scene_properties)
+            print('jms_version: ', args.jms_version)
+            print('game_version: ', args.game_version)
+            print('folder_type: ', args.folder_type)
+            print('apply_modifiers: ', args.apply_modifiers)
+            print('triangulate_faces: ', args.triangulate_faces)
+            print('clean_normalize_weights: ', args.clean_normalize_weights)
+            print('hidden_geo: ', args.hidden_geo)
+            print('edge_split: ', args.edge_split)
+            print('use_edge_angle: ', args.use_edge_angle)
+            print('use_edge_sharp: ', args.use_edge_sharp)
+            print('split_angle: ', args.split_angle)
+            print('scale_enum: ', args.scale_enum)
+            print('scale_float: ', args.scale_float)
+            print('console: ', args.console)
+            self.filepath = args.filepath
+            self.use_scene_properties = args.use_scene_properties
+            self.jms_version = args.jms_version
+            self.game_version = args.game_version
+            self.folder_type = args.folder_type
+            self.apply_modifiers = args.apply_modifiers
+            self.triangulate_faces = args.triangulate_faces
+            self.clean_normalize_weights = args.clean_normalize_weights
+            self.hidden_geo = args.hidden_geo
+            self.edge_split = args.edge_split
+            self.use_edge_angle = args.use_edge_angle
+            self.use_edge_sharp = args.use_edge_sharp
+            self.split_angle = args.split_angle
+            self.scale_enum = args.scale_enum
+            self.scale_float = args.scale_float
+            self.console = args.console
+
+        encoding = global_functions.get_encoding(self.game_version)
+        game_version = self.game_version
+        if self.game_version == 'halo2mcc':
+            game_version = 'halo2'
+
+        return run_code("export_jmi.write_file(context, self.filepath, self.report, self.jmi_version, self.jmi_version_h2, self.jmi_version_h3, self.apply_modifiers, self.triangulate_faces, self.folder_type, self.edge_split, self.use_edge_angle, self.use_edge_sharp, self.split_angle, self.clean_normalize_weights, self.scale_enum, self.scale_float, self.console, self.hidden_geo, self.export_render, self.export_collision, self.export_physics, game_version, encoding)")
+
+    def draw(self, context):
+        scene = context.scene
+        scene_jmi = scene.jmi
+        scene_halo = scene.halo
+
+        layout = self.layout
+
+        is_enabled = True
+        if scene_jmi.use_scene_properties:
+            is_enabled = False
+
+        box = layout.box()
+        box.label(text="Game Version:")
+        col = box.column(align=True)
+        row = col.row()
+        row.enabled = is_enabled
+        row.prop(self, "game_version", text='')
+        if scene_jmi.use_scene_properties:
+            self.game_version = scene_jmi.game_version
+            self.jmi_version_h2 = scene_jmi.jmi_version_h2
+            self.jmi_version_h3 = scene_jmi.jmi_version_h3
+            self.apply_modifiers = scene_jmi.apply_modifiers
+            self.triangulate_faces = scene_jmi.triangulate_faces
+            self.clean_normalize_weights = scene_jmi.clean_normalize_weights
+            self.hidden_geo = scene_jmi.hidden_geo
+            self.export_render = scene_jmi.export_render
+            self.export_collision = scene_jmi.export_collision
+            self.export_physics = scene_jmi.export_physics
+            self.edge_split = scene_jmi.edge_split
+            self.folder_type = scene_jmi.folder_type
+            self.use_edge_angle = scene_jmi.use_edge_angle
+            self.split_angle = scene_jmi.split_angle
+            self.use_edge_sharp = scene_jmi.use_edge_sharp
+            self.scale_enum = scene_jmi.scale_enum
+            self.scale_float = scene_jmi.scale_float
+
+        if self.game_version == 'halo2mcc':
+            if scene_halo.expert_mode:
+                box = layout.box()
+                box.label(text="File Details:")
+                col = box.column(align=True)
+                row = col.row()
+                row.enabled = is_enabled
+                row.label(text='JMI Version:')
+                row.prop(self, "jmi_version_h2", text='')
+
+        elif self.game_version == 'halo3mcc':
+            if scene_halo.expert_mode:
+                box = layout.box()
+                box.label(text="File Details:")
+                col = box.column(align=True)
+                row = col.row()
+                row.enabled = is_enabled
+                row.label(text='JMI Version:')
+                row.prop(self, "jmi_version_h3", text='')
+
+        box = layout.box()
+        box.label(text="Mask Options:")
+        col = box.column(align=True)
+        row = col.row()
+        row.enabled = is_enabled
+        row.label(text='Export Hidden Geometry:')
+        row.prop(self, "hidden_geo", text='')
+        row = col.row()
+        row.enabled = is_enabled
+        row.label(text='Export Render Geometry:')
+        row.prop(self, "export_render", text='')
+        row = col.row()
+        row.enabled = is_enabled
+        row.label(text='Export Collision Geometry:')
+        row.prop(self, "export_collision", text='')
+        row = col.row()
+        row.enabled = is_enabled
+        row.label(text='Export Physics Geometry:')
+        row.prop(self, "export_physics", text='')
+
+        box = layout.box()
+        box.label(text="Scene Options:")
+        col = box.column(align=True)
+        row = col.row()
+        row.enabled = is_enabled
+        row.label(text='Apply Modifiers:')
+        row.prop(self, "apply_modifiers", text='')
+        row = col.row()
+        row.enabled = is_enabled
+        row.label(text='Triangulate:')
+        row.prop(self, "triangulate_faces", text='')
+        row = col.row()
+        row.enabled = is_enabled
+        row.label(text='Clean and Normalize Weights:')
+        row.prop(self, "clean_normalize_weights", text='')
+        row = col.row()
+        row.enabled = is_enabled
+        row.label(text='Use Edge Split:')
+        row.prop(self, "edge_split", text='')
+        row = col.row()
+        row.label(text='Use Scene Export Settings:')
+        row.prop(scene_jmi, "use_scene_properties", text='')
+
+        box = layout.box()
+        box.label(text="Subdirectory Type:")
+        col = box.column(align=True)
+        row = col.row()
+        row.enabled = is_enabled
+        row.label(text='Model Type:')
+        row.prop(self, "folder_type", text='')
+
+        if self.edge_split == True:
+            box = layout.box()
+            box.label(text="Edge Split:")
+            col = box.column(align=True)
+            row = col.row()
+            row.enabled = is_enabled
+            row.label(text='Edge Angle:')
+            row.prop(self, "use_edge_angle", text='')
+            row.active = self.use_edge_angle
+            row.prop(self, "split_angle", text='')
+            row = col.row()
+            row.enabled = is_enabled
+            row.label(text='Sharp Edges:')
+            row.prop(self, "use_edge_sharp", text='')
+
+        box = layout.box()
+        box.label(text="Scale:")
+        row = box.row()
+        row.enabled = is_enabled
+        row.prop(self, "scale_enum", expand=True)
+        if self.scale_enum == '2':
+            row = box.row()
+            row.enabled = is_enabled
+            row.prop(self, "scale_float")
+
+class ImportJMI(Operator, ImportHelper):
+    """Import a JMI file"""
+    bl_idname = "import_scene.jmi"
+    bl_label = "Import JMI"
+    filename_ext = '.JMI'
+
+    filter_glob: StringProperty(
+        default="*.jmi",
+        options={'HIDDEN'},
+        )
+
+    def execute(self, context):
+        from io_scene_halo.file_jmi import import_jmi
+        if '--' in sys.argv:
+            argv = sys.argv[sys.argv.index('--') + 1:]
+            parser = argparse.ArgumentParser()
+            args = parser.parse_known_args(argv)[0]
+
+        return run_code("import_jmi.load_file(context, self.filepath, self.report)")
+
+class ImportWRL(Operator, ImportHelper):
+    """Import a Halo WRL file"""
+    bl_idname = "import_scene.wrl"
+    bl_label = "Import WRL"
+    filename_ext = '.WRL'
+
+    filter_glob: StringProperty(
+        default="*.wrl",
+        options={'HIDDEN'},
+        )
+
+    def execute(self, context):
+        from io_scene_halo.file_wrl import import_wrl
+        if '--' in sys.argv:
+            argv = sys.argv[sys.argv.index('--') + 1:]
+            parser = argparse.ArgumentParser()
+            parser.add_argument('-arg1', '--filepath', dest='filepath', metavar='FILE', required = True)
+            parser.add_argument('-arg2', '--fix_parents', dest='fix_parents', action='store_true')
+            args = parser.parse_known_args(argv)[0]
+            print('filepath: ', args.filepath)
+            print('fix_parents: ', args.fix_parents)
+            self.filepath = args.filepath
+            self.fix_parents = args.fix_parents
+
+        return run_code("import_wrl.convert_wrl_to_blend(context, self.filepath, self.report)")       
 
 class Halo_LightmapperPropertiesGroup(PropertyGroup):
     res_x: IntProperty(
@@ -2618,12 +3603,15 @@ def menu_func_export(self, context):
     self.layout.operator(ExportASS.bl_idname, text='Halo Amalgam Scene Specification (.ass)')
     self.layout.operator(ExportJMS.bl_idname, text="Halo Jointed Model Skeleton (.jms)")
     self.layout.operator(ExportJMA.bl_idname, text="Halo Jointed Model Animation (.jma)")
+    self.layout.operator(ExportJMI.bl_idname, text="Halo Jointed Model Instance (.jmi)")
     self.layout.operator(ExportLightmap.bl_idname, text="Halo Lightmap UV (.luv)")
 
 def menu_func_import(self, context):
     self.layout.operator(ImportASS.bl_idname, text="Halo Amalgam Scene Specification (.ass)")
     self.layout.operator(ImportJMS.bl_idname, text="Halo Jointed Model Skeleton (.jms)")
     self.layout.operator(ImportJMA.bl_idname, text="Halo Jointed Model Animation (.jma)")
+    self.layout.operator(ImportWRL.bl_idname, text="Halo WRL Debug Geometry (.wrl)")        
+    self.layout.operator(ImportJMI.bl_idname, text="Halo Jointed Model Instance (.jmi)")
 
 classeshalo = (
     ExportLightmap,
@@ -2638,6 +3626,7 @@ classeshalo = (
     Halo_ScenePropertiesGroup,
     ASS_ScenePropertiesGroup,
     JMS_ScenePropertiesGroup,
+    JMI_ScenePropertiesGroup,
     JMA_ScenePropertiesGroup,
     ASS_JMS_MeshProps,
     ASS_JMS_MaterialProps,
@@ -2645,6 +3634,7 @@ classeshalo = (
     Halo_SceneProps,
     ASS_SceneProps,
     JMS_SceneProps,
+    JMI_SceneProps,
     JMA_SceneProps,
     ImportASS,
     ExportASS,
@@ -2652,6 +3642,9 @@ classeshalo = (
     ExportJMS,
     ImportJMA,
     ExportJMA,
+    ImportWRL,     
+    ImportJMI,
+    ExportJMI
 )
 
 def register():
@@ -2671,6 +3664,7 @@ def register():
     bpy.types.Scene.halo = PointerProperty(type=Halo_ScenePropertiesGroup, name="Halo Scene Properties", description="Set properties for your scene")
     bpy.types.Scene.ass = PointerProperty(type=ASS_ScenePropertiesGroup, name="ASS Scene Properties", description="Set properties for the ASS exporter")
     bpy.types.Scene.jms = PointerProperty(type=JMS_ScenePropertiesGroup, name="JMS Scene Properties", description="Set properties for the JMS exporter")
+    bpy.types.Scene.jmi = PointerProperty(type=JMI_ScenePropertiesGroup, name="JMI Scene Properties", description="Set properties for the JMI exporter")
     bpy.types.Scene.jma = PointerProperty(type=JMA_ScenePropertiesGroup, name="JMA Scene Properties", description="Set properties for the JMA exporter")
     bpy.types.Scene.halo_lightmapper = PointerProperty(type=Halo_LightmapperPropertiesGroup, name="Halo Lightmapper Helper", description="Set properties for the lightmapper")
 
@@ -2688,6 +3682,7 @@ def unregister():
     del bpy.types.Scene.halo
     del bpy.types.Scene.ass
     del bpy.types.Scene.jms
+    del bpy.types.Scene.jmi
     del bpy.types.Scene.jma
     del bpy.types.Scene.halo_lightmapper
     for clshalo in classeshalo:

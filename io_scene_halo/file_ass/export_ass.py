@@ -50,9 +50,11 @@ class ASSScene(global_functions.HaloAsset):
         def __init__(self,
                      name,
                      effect,
+                     strings
                      ):
             self.name = name
             self.effect = effect
+            self.strings = strings
 
     class Object:
         def __init__(self,
@@ -66,6 +68,7 @@ class ASSScene(global_functions.HaloAsset):
                      verts=None,
                      triangles=None,
                      node_index_list=None,
+                     light_properties=None
                      ):
 
             self.geo_class = geo_class
@@ -78,7 +81,38 @@ class ASSScene(global_functions.HaloAsset):
             self.verts = verts
             self.triangles = triangles
             self.node_index_list = node_index_list
+            self.light_properties = light_properties
 
+    class Light:
+        def __init__(self,
+                     light_type,
+                     light_color=None,
+                     intensity=0.0,
+                     hotspot_size=0.0,
+                     hotspot_falloff_size=0.0,
+                     uses_near_attenuation=0,
+                     near_attenuation_start=0.0,
+                     near_attenuation_end=0.0,
+                     uses_far_attenuation=0,
+                     far_attenuation_start=0,
+                     far_attenuation_end=0.0,
+                     light_shape=0,
+                     light_aspect_ratio=0.0
+                     ):
+
+            self.light_type = light_type
+            self.light_color = light_color
+            self.intensity = intensity
+            self.hotspot_size = hotspot_size
+            self.hotspot_falloff_size = hotspot_falloff_size
+            self.uses_near_attenuation = uses_near_attenuation
+            self.near_attenuation_start = near_attenuation_start
+            self.near_attenuation_end = near_attenuation_end
+            self.uses_far_attenuation = uses_far_attenuation
+            self.far_attenuation_start = far_attenuation_start
+            self.far_attenuation_end = far_attenuation_end
+            self.light_shape = light_shape
+            self.light_aspect_ratio = light_aspect_ratio
     class Vertex:
         def __init__(self,
                      node_influence_count=0,
@@ -86,6 +120,7 @@ class ASSScene(global_functions.HaloAsset):
                      translation=None,
                      normal=None,
                      uv_set=None,
+                     color=None
                      ):
 
             self.node_influence_count = node_influence_count
@@ -93,6 +128,7 @@ class ASSScene(global_functions.HaloAsset):
             self.translation = translation
             self.normal = normal
             self.uv_set = uv_set
+            self.color = color
 
     class Triangle:
         def __init__(self,
@@ -209,6 +245,27 @@ class ASSScene(global_functions.HaloAsset):
                         original_geometry_list.append(bone)
                         object_count += 1
 
+            elif obj.type == 'LIGHT' and version >= 3:
+                if global_functions.set_ignore(obj) == False or hidden_geo:
+                    if bpy.data.lights[obj.name].type == 'SPOT':
+                        geometry_list.append((obj, 'SPOT_LGT', obj.name, obj.data.name))
+                        original_geometry_list.append(obj)
+                        object_count += 1
+
+                    elif bpy.data.lights[obj.name].type == 'AREA':
+                        geometry_list.append((obj, 'DIRECT_LGT', obj.name, obj.data.name))
+                        original_geometry_list.append(obj)
+                        object_count += 1
+
+                    elif bpy.data.lights[obj.name].type == 'POINT':
+                        geometry_list.append((obj, 'OMNI_LGT', obj.name, obj.data.name))
+                        original_geometry_list.append(obj)
+                        object_count += 1
+
+                    elif bpy.data.lights[obj.name].type == 'SUN':
+                        geometry_list.append((obj, 'AMBIENT_LGT', obj.name, obj.data.name))
+                        original_geometry_list.append(obj)
+                        object_count += 1
             elif obj.type== 'MESH' and len(obj.data.polygons) > 0:
                 if global_functions.set_ignore(obj) == False or hidden_geo:
                     if not obj.data.name in unique_instance_geometry_list:
@@ -270,6 +327,7 @@ class ASSScene(global_functions.HaloAsset):
             radius = 2
             extents = [1.0, 1.0, 1.0]
             height = 1
+            light_properties = None
             parent_id = 0
             inheritance_flag = 0
             xref_name = ""
@@ -304,6 +362,23 @@ class ASSScene(global_functions.HaloAsset):
             self.instances.append(ASSScene.Instance(geo_name, object_index, idx, parent_id, inheritance_flag, local_transform, pivot_transform=ASSScene.Transform()))
             if not mesh_name in unique_instance_geometry_list_2 and not object_index == -1:
                 unique_instance_geometry_list_2.append(mesh_name)
+                if geo_class == 'SPOT_LGT' or geo_class == 'DIRECT_LGT' or geo_class == 'OMNI_LGT' or geo_class == 'AMBIENT_LGT':
+                    light_type = geo_class
+                    color_rgb = (mesh.color[0], mesh.color[1], mesh.color[2])
+                    intensity = mesh.data.energy
+                    hotspot_size = 0.0
+                    hotspot_falloff_size = 0.0
+                    uses_near_attenuation = 0
+                    near_attenuation_start = 0.0
+                    near_attenuation_end = 0.0
+                    uses_far_attenuation = 0
+                    far_attenuation_start = 0.0
+                    far_attenuation_end = 0.0
+                    light_shape = 0
+                    light_aspect_ratio = 0.0
+
+                    light_properties = ASSScene.Light(light_type, color_rgb, intensity, hotspot_size, hotspot_falloff_size, uses_near_attenuation, near_attenuation_start, near_attenuation_end, uses_far_attenuation, far_attenuation_start, far_attenuation_end, light_shape, light_aspect_ratio)
+
                 if geo_class == 'BONE':
                     armature_name = mesh.id_data.name
                     armature = bpy.data.objects[armature_name]
@@ -384,6 +459,10 @@ class ASSScene(global_functions.HaloAsset):
                                 uv_set.append(uv)
 
                             uv = uv_set
+                            color = [(0.0, 0.0, 0.0)]
+                            if mesh.vertex_colors:
+                                color_rgb = mesh.vertex_colors.active.data[loop_index].color
+                                color = color_rgb
                             node_influence_count = 0
                             node_set = []
                             if len(vert.groups) != 0:
@@ -432,6 +511,7 @@ class ASSScene(global_functions.HaloAsset):
                                 scaled_translation,
                                 normal,
                                 uv_set,
+                                color
                             ))
 
                 original_geo.to_mesh_clear()
@@ -447,12 +527,14 @@ class ASSScene(global_functions.HaloAsset):
                     verts,
                     triangles,
                     node_index_list,
+                    light_properties
                 ))
 
         for material in material_list:
             self.materials.append(ASSScene.Material(
                 material.name,
                 material.ass_jms.material_effect,
+                []
             ))
 
         for idx, obj in enumerate(object_list):
@@ -466,6 +548,7 @@ def write_file(context,
                report,
                ass_version,
                ass_version_h2,
+               ass_version_h3,
                use_scene_properties,
                hidden_geo,
                folder_structure,
@@ -487,6 +570,7 @@ def write_file(context,
     version = global_functions.get_version(ass_version,
                                            None,
                                            ass_version_h2,
+                                           ass_version_h3,
                                            game_version,
                                            console)
 
@@ -498,6 +582,7 @@ def write_file(context,
                                                     "render",
                                                     folder_structure,
                                                     "0",
+                                                    False,
                                                     filepath)
 
     file = open(root_directory + os.sep + filename, 'w', encoding=encoding)
@@ -522,6 +607,10 @@ def write_file(context,
             '\n"%s"' % (material.name) +
             '\n"%s"\n' % (material.effect)
         )
+        if version >= 4:
+            file.write(
+                '%s\n' % (len(material.strings))
+            )
 
     file.write(
         '\n;### OBJECTS ###' +
@@ -529,7 +618,29 @@ def write_file(context,
     )
 
     for idx, geometry in enumerate(ass_scene.objects):
-        if geometry.geo_class == 'BONE':
+        if geometry.geo_class == 'SPOT_LGT' or geometry.geo_class == 'DIRECT_LGT' or geometry.geo_class == 'OMNI_LGT' or geometry.geo_class == 'AMBIENT_LGT':
+            file.write(
+                '\n;OBJECT %s' % (idx) +
+                '\n"%s"' % ('GENERIC_LIGHT') +
+                '\n"%s"' % (geometry.xref_filepath) +
+                '\n"%s"' % (geometry.xref_objectname) +
+                '\n"%s"' % (geometry.geo_class) +
+                '\n%0.10f\t%0.10f\t%0.10f' % (geometry.light_properties.light_color[0], geometry.light_properties.light_color[1], geometry.light_properties.light_color[2]) +
+                '\n%0.10f' % (geometry.light_properties.intensity) +
+                '\n%0.10f' % (geometry.light_properties.hotspot_size) +
+                '\n%0.10f' % (geometry.light_properties.hotspot_falloff_size) +
+                '\n%s' % (geometry.light_properties.uses_near_attenuation) +
+                '\n%0.10f' % (geometry.light_properties.near_attenuation_start) +
+                '\n%0.10f' % (geometry.light_properties.near_attenuation_end) +
+                '\n%s' % (geometry.light_properties.uses_far_attenuation) +
+                '\n%0.10f' % (geometry.light_properties.far_attenuation_start) +
+                '\n%0.10f' % (geometry.light_properties.far_attenuation_end) +
+                '\n%s' % (geometry.light_properties.light_shape) +
+                '\n%0.10f' % (geometry.light_properties.light_aspect_ratio) +
+                '\n'
+            )
+
+        elif geometry.geo_class == 'BONE':
             file.write(
                 '\n;OBJECT %s' % (idx) +
                 '\n"%s"' % ('SPHERE') +
@@ -589,6 +700,8 @@ def write_file(context,
                     '\n%0.10f\t%0.10f\t%0.10f' % (vert.normal[0], vert.normal[1], vert.normal[2])
                 )
 
+                if version >= 6:
+                    file.write('\n%0.10f\t%0.10f\t%0.10f' % (vert.color[0], vert.color[1], vert.color[2]))
                 file.write('\n%s' % (len(vert.node_set)))
 
                 for node in vert.node_set:
@@ -604,14 +717,25 @@ def write_file(context,
                     tex_u = uv[0]
                     tex_v = uv[1]
                     tex_w = 0
-                    file.write('\n%0.10f\t%0.10f' % (tex_u, tex_v))
+                    if version >= 5:
+                        file.write('\n%0.10f\t%0.10f\t%0.10f\n' % (tex_u, tex_v, tex_w))
+
+                    else:
+                        file.write('\n%0.10f\t%0.10f' % (tex_u, tex_v))
 
             file.write('\n%s' % (len(geometry.triangles)))
             for triangle in geometry.triangles:
-                file.write(
-                    '\n%s' % (triangle.material_index) +
-                    '\n%s\n%s\n%s' % (triangle.v0, triangle.v1, triangle.v2)
-                )
+                if version >= 3:
+                    file.write(
+                        '\n%s' % (triangle.material_index) +
+                        '\t\t%s\t%s\t%s' % (triangle.v0, triangle.v1, triangle.v2)
+                    )
+
+                else:
+                    file.write(
+                        '\n%s' % (triangle.material_index) +
+                        '\n%s\n%s\n%s' % (triangle.v0, triangle.v1, triangle.v2)
+                    )
 
             file.write('\n')
 

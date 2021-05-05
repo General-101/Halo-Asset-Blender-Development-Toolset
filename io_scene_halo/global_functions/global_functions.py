@@ -103,7 +103,7 @@ def get_sibling(armature, bone, bone_list):
 
 def get_encoding(game_version):
     encoding = None
-    if game_version == 'haloce' or game_version == 'halo2utf8':
+    if game_version == 'haloce' or game_version == 'halo2mcc' or game_version == 'halo3mcc':
         encoding = 'utf_8'
 
     elif game_version == 'halo2vista':
@@ -201,7 +201,7 @@ def sort_list(node_list, armature, game_version, version, animation):
     if game_version == 'haloce':
         sorted_list = sort_by_layer(node_list, armature)
 
-    elif game_version == 'halo2' or game_version == 'halo2utf8':
+    elif game_version == 'halo2' or game_version == 'halo3mcc':
         if animation:
             if version <= 16394:
                 sorted_list = sort_by_layer(node_list, armature)
@@ -265,6 +265,7 @@ def test_encoding(filepath):
 def get_version(file_version_console,
                 file_version_ce,
                 file_version_h2,
+                file_version_h3,
                 game_version,
                 console
                 ):
@@ -277,8 +278,10 @@ def get_version(file_version_console,
         if game_version == 'haloce':
             version = int(file_version_ce)
 
-        elif game_version == 'halo2' or game_version == 'halo2utf8':
+        elif game_version == 'halo2':
             version = int(file_version_h2)
+        elif game_version == 'halo3mcc':
+            version = int(file_version_h3)
 
     return version
 
@@ -429,6 +432,7 @@ def get_dimensions(mesh_a_matrix, mesh_a, mesh_b_matrix, mesh_b, custom_scale, v
 def get_extension(extension_console,
                   extension_ce,
                   extension_h2,
+                  extension_h3,
                   game_version,
                   console
                   ):
@@ -441,9 +445,11 @@ def get_extension(extension_console,
         if game_version == 'haloce':
             extension = extension_ce
 
-        elif game_version == 'halo2' or game_version == 'halo2utf8':
+        elif game_version == 'halo2':
             extension = extension_h2
 
+        elif game_version == 'halo3mcc':
+            extension = extension_h3
     return extension
 
 def get_hierarchy(mesh):
@@ -454,6 +460,13 @@ def get_hierarchy(mesh):
 
     return hierarchy_list
 
+def get_children(world_node):
+    children_hierarchy = [world_node]
+    for node in children_hierarchy:
+        for child in node.children:
+            children_hierarchy.append(child)
+
+    return children_hierarchy
 def get_parent(armature, mesh, joined_list, default_parent):
     parent_object = None
     parent_index = default_parent
@@ -502,6 +515,9 @@ def count_root_nodes(node_list):
     for node in node_list:
         if node.parent == None:
             root_node_count += 1
+        elif not node.parent == None:
+            if node.parent.name[0:1] == '!':
+                root_node_count += 1
 
     return root_node_count
 
@@ -532,7 +548,7 @@ def gather_materials(game_version, material, material_list, export_type, region,
         if material not in material_list:
             material_list.append(material)
 
-    elif game_version == 'halo2' or game_version == 'halo2utf8':
+    elif game_version == 'halo2' or game_version == 'halo3mcc':
         if export_type == 'JMS':
             if material not in material_list and material in assigned_materials_list:
                 material_list.append(material)
@@ -590,7 +606,7 @@ def get_material(game_version, original_geo, face, geometry, material_list, expo
         else:
             assigned_material = None
 
-    elif game_version == 'halo2' or game_version == 'halo2utf8':
+    elif game_version == 'halo2' or game_version == 'halo3mcc':
         assigned_material = -1
         if len(original_geo.material_slots) != 0:
             if not face.material_index > object_materials:
@@ -672,7 +688,10 @@ class HaloAsset:
 def get_game_version(version, filetype):
     game_version = None
     if filetype == 'JMS':
-        if version >= 8201:
+        if version >= 8211:
+            game_version = 'halo3'
+
+        elif version >= 8201:
             game_version = 'halo2'
 
         else:
@@ -766,14 +785,17 @@ def get_filename(game_version,
                  level_of_detail_ce,
                  folder_structure,
                  model_type,
+                 jmi,
                  filepath):
 
     ce_settings = ''
     extension = '.JMS'
+    if jmi:
+        extension = '.JMI'
 
     filename = filepath.rsplit(os.sep, 1)[1]
 
-    if filename.lower().endswith('.jms') or filename.lower().endswith('.jmp'):
+    if filename.lower().endswith('.jms') or filename.lower().endswith('.jmp') or filename.lower().endswith('.jmi'):
         filename = filename.rsplit('.', 1)[0]
 
     if game_version == 'haloce':
@@ -809,6 +831,7 @@ def get_directory(game_version,
                   model_type,
                   folder_structure,
                   asset_type,
+                  jmi,
                   filepath):
 
     directory = filepath.rsplit(os.sep, 1)[0]
@@ -841,6 +864,11 @@ def get_directory(game_version,
     root_directory = directory
 
     special_sauce = False
+    if jmi:
+        special_sauce = True
+        root_directory = directory + os.sep + folder_type
+        if not os.path.exists(root_directory):
+            os.makedirs(root_directory)
 
     if folder_structure and not special_sauce:
         folder_subdirectories = ("models", "structure", "render", "collision", "physics", "animations")

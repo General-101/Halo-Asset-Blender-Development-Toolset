@@ -91,6 +91,7 @@ class JMSAsset(global_functions.HaloAsset):
                      node_set=None, region=-1,
                      translation=None,
                      normal=None,
+                     color=None,
                      uv_set=None
                      ):
 
@@ -99,6 +100,7 @@ class JMSAsset(global_functions.HaloAsset):
             self.region = region
             self.translation = translation
             self.normal = normal
+            self.color = color
             self.uv_set = uv_set
 
     class Triangle:
@@ -163,6 +165,7 @@ class JMSAsset(global_functions.HaloAsset):
                      max_cone=0.0,
                      min_plane=0.0,
                      max_plane=0.0,
+                     friction_limit=0.0
                      ):
 
             self.name = name
@@ -178,6 +181,7 @@ class JMSAsset(global_functions.HaloAsset):
             self.max_cone = max_cone
             self.min_plane = min_plane
             self.max_plane = max_plane
+            self.friction_limit = friction_limit
 
     class Hinge:
         def __init__(self, name, body_a_index=-1, body_b_index=-1, body_a_rotation=None, body_a_translation=None, body_b_rotation=None, body_b_translation=None, is_limited=0, friction_limit=0.0, min_angle=0.0, max_angle=0.0):
@@ -281,6 +285,9 @@ class JMSAsset(global_functions.HaloAsset):
                         8208,
                         8209,
                         8210,
+                        8211,
+                        8212,
+                        8213
                         )
 
         if not self.version in version_list:
@@ -336,7 +343,7 @@ class JMSAsset(global_functions.HaloAsset):
             if self.game_version == 'haloce':
                 self.materials.append(JMSAsset.Material(name, material_definition, None, None, None, None))
 
-            elif self.game_version == 'halo2':
+            elif self.game_version == 'halo2' or self.game_version == 'halo3':
                 material_definition_items = material_definition.split()
                 lod_list = ['l1', 'l2', 'l3', 'l4', 'l5', 'l6']
                 slot_index = None
@@ -475,6 +482,7 @@ class JMSAsset(global_functions.HaloAsset):
             node_set = []
             uv_set = []
             region = None
+            color = None
             if self.version >= 8205:
                 translation = self.next_vector()
                 normal = self.next_vector()
@@ -500,6 +508,8 @@ class JMSAsset(global_functions.HaloAsset):
                     u = tex_u
                     v = tex_v
                     uv_set.append([u, v])
+                if self.version >= 8211:
+                    color = self.next_vector()
 
             else:
                 node_influence_count = 0
@@ -627,6 +637,7 @@ class JMSAsset(global_functions.HaloAsset):
                                                  region,
                                                  translation,
                                                  normal,
+                                                 color,
                                                  uv_set
                                                  ))
 
@@ -718,6 +729,9 @@ class JMSAsset(global_functions.HaloAsset):
                 max_cone = float(self.next())
                 min_plane = float(self.next())
                 max_plane = float(self.next())
+                friction_limit = None
+                if self.version >= 8213:
+                    friction_limit = float(self.next())
 
                 self.ragdolls.append(JMSAsset.Ragdoll(name,
                                                       attached_index,
@@ -732,6 +746,7 @@ class JMSAsset(global_functions.HaloAsset):
                                                       max_cone,
                                                       min_plane,
                                                       max_plane,
+                                                      friction_limit
                                                       ))
 
             hinge_count  = int(self.next())
@@ -812,6 +827,14 @@ class JMSAsset(global_functions.HaloAsset):
 
                 self.bounding_spheres.append(JMSAsset.Bounding_Sphere(translation, radius))
 
+        if self.version >= 8212:
+            skylight_count = int(self.next())
+            for skylight in range(skylight_count):
+                direction = self.next_vector()
+                radiant_intensity = self.next_vector()
+                solid_angle = float(self.next())
+
+                self.skylights.append(JMSAsset.Skylight(direction, radiant_intensity, solid_angle))
         if self.left() != 0: # is something wrong with the parser?
             raise RuntimeError("%s elements left after parse end" % self.left())
 
@@ -901,7 +924,7 @@ def load_file(context, filepath, report, game_version, fix_parents):
         armature.select_set(True)
         view_layer.objects.active = armature
         if fix_parents:
-            if game_version == 'halo2':
+            if game_version == 'halo2' or game_version == 'halo3':
                 for idx, jms_node in enumerate(jms_file.nodes):
                     if 'pelvis' in jms_node.name:
                         pelvis = idx
@@ -965,7 +988,7 @@ def load_file(context, filepath, report, game_version, fix_parents):
             region = material.region
             permutation = material.permutation
 
-        if jms_file.game_version == 'halo2':
+        if jms_file.game_version == 'halo2' or jms_file.game_version == 'halo3':
             if not [region, permutation] in region_permutation_list:
                 region_permutation_list.append([permutation, region])
 
@@ -1075,7 +1098,7 @@ def load_file(context, filepath, report, game_version, fix_parents):
                     region = jms_file.vertices[triangle.v0].region
                     current_region_permutation = jms_file.regions[region].name
 
-            elif game_version == 'halo2':
+            elif game_version == 'halo2' or game_version == 'halo3':
                 if not triangle_material_index == -1:
                     region = mat.region
                     permutation = mat.permutation
@@ -1128,7 +1151,7 @@ def load_file(context, filepath, report, game_version, fix_parents):
                     region = jms_file.vertices[triangle.v0].region
                     current_region_permutation = jms_file.regions[region].name
 
-            elif game_version == 'halo2':
+            elif game_version == 'halo2' or game_version == 'halo3':
                 if not triangle_material_index == -1:
                     region = mat.region
                     permutation = mat.permutation
@@ -1169,6 +1192,18 @@ def load_file(context, filepath, report, game_version, fix_parents):
                 vertex_index = (3 * idx) + vert_idx
                 jms_vert = jms_file.vertices[vert]
                 bm.verts[vertex_index].normal = jms_vert.normal
+                if not jms_vert.color == None and game_version == 'halo3' and version >= 8211:
+                    color_r = jms_vert.color[0]
+                    color_g = jms_vert.color[1]
+                    color_b = jms_vert.color[2]
+                    color_a = 1
+
+                    layer_color = bm.loops.layers.color.get("color")
+                    if layer_color is None:
+                        layer_color = bm.loops.layers.color.new("color")
+
+                    loop = bm.faces[idx].loops[vert_idx]
+                    loop[layer_color] = (color_r, color_g, color_b, color_a)
 
                 for uv_idx, uv in enumerate(jms_vert.uv_set):
                     uv_name = 'UVMap_%s' % uv_idx
