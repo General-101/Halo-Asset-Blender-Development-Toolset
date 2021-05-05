@@ -32,7 +32,7 @@ ASS Importing              | N/A                                                
  2. Toolset is currently missing support for importing or exporting certain Halo 3 JMS features such as skylights and the W coordinate.
  3. Physics constraints are not exported/imported properly from/to Blender. Work has to be done to see what is analogous between Blender's physics system and 3DS Max's Reactor physics simulation.
  4. WRL 2.0 files are not supported by the WRL importing solution provided by the toolset. Blender has 2.0 support but it may be somewhat unstable. We may reconsider if this turns out to be an issue.
- 5. JMS files imported into Blender do not have their triangles connected properly. This means that imported models are improper due to the exporter using vertex normals instead of loop normals.
+ 5. JMS/ASS files imported into Blender do not have their triangles connected properly. This means that imported models are improper due to the exporter using vertex normals instead of loop normals.
 
 ## Documentation
 See the following links for information on exporting or importing assets from these tools:
