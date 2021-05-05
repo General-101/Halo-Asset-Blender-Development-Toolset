@@ -1,4 +1,4 @@
-# Halo-Asset-Blender-Development-Toolset-Beta
+# Halo-Asset-Blender-Development-Toolset
 
 ## Toolset Description
 The Halo Asset Blender Development Toolset is a Blender addon developed in python to aid with creating assets for multiple Halo titles. This addon requires that you have Blender 2.8 or above on your system to function.
