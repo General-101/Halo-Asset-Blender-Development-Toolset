@@ -2124,7 +2124,7 @@ def command_queue(context,
                         view_layer.objects.active = obj
                         bpy.ops.object.mode_set(mode = 'EDIT')
                         bpy.ops.mesh.select_all(action='SELECT')
-                        bpy.ops.object.vertex_group_clean(group_select_mode='ALL', limit=0.0)
+                        bpy.ops.object.vertex_group_clean(group_select_mode='ALL', limit=0.001)
                         bpy.ops.object.vertex_group_normalize_all()
                         bpy.ops.object.mode_set(mode = 'OBJECT')
 
