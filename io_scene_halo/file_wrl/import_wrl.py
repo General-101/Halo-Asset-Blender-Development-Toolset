@@ -171,8 +171,10 @@ def convert_wrl_to_blend(context, filepath, report):
     input_stream = open(filepath, "r")
 
     vert_index = 1 # Vertex indexes start at 1 in OBJ
-    color_data = []
-    error_data = []
+    face_color_data = []
+    face_error_data = []
+    line_color_data = []
+    line_error_data = []
     face_data = []
     line_data = []
     vert_data = []
@@ -190,18 +192,27 @@ def convert_wrl_to_blend(context, filepath, report):
                 f_v1 = int("{1}".format(*vert_indices)) - 1
                 f_v2 = int("{2}".format(*vert_indices)) - 1
                 face_data.append((f_v0, f_v1, f_v2))
-                error_data.append(error_name)
+                face_error_data.append(error_name)
 
                 r = float("{x}".format(**separator.mtl_diffuse_colors[mat_idx]))
                 g = float("{y}".format(**separator.mtl_diffuse_colors[mat_idx]))
                 b = float("{z}".format(**separator.mtl_diffuse_colors[mat_idx]))
                 a = 1.0
-                color_data.append((r, g, b, a))
+                face_color_data.append((r, g, b, a))
 
         if separator.indexed_lines:
-            for indexed_line in separator.indexed_lines:
+            for mat_idx, indexed_line in enumerate(separator.indexed_lines):
                 vert_indices = [int(i) + vert_index for i in indexed_line]
-                line_data.append("{0} {1}".format(*vert_indices))
+                e_v0 = int("{0}".format(*vert_indices)) - 1
+                e_v1 = int("{1}".format(*vert_indices)) - 1
+                line_data.append((e_v0, e_v1))
+                line_error_data.append(error_name)
+
+                r = float("{x}".format(**separator.mtl_diffuse_colors[mat_idx]))
+                g = float("{y}".format(**separator.mtl_diffuse_colors[mat_idx]))
+                b = float("{z}".format(**separator.mtl_diffuse_colors[mat_idx]))
+                a = 1.0
+                line_color_data.append((r, g, b, a))
 
         for coord in separator.coords:
             # Put a list of all vertices at the start of the output
@@ -226,7 +237,7 @@ def convert_wrl_to_blend(context, filepath, report):
     portal_outside_object_mesh = bpy.data.objects.get("portal outside BSP (magenta)")
     portal_outside_bm = bmesh.new()
 
-    bad_edge_face_id = 0
+    bad_edge_edge_id = 0
     bad_edge_mesh = bpy.data.meshes.get("bad edge (red)")
     bad_edge_object_mesh = bpy.data.objects.get("bad edge (red)")
     bad_edge_bm = bmesh.new()
@@ -272,8 +283,8 @@ def convert_wrl_to_blend(context, filepath, report):
     unknown_bm = bmesh.new()
 
     for face_idx, face in enumerate(face_data):
-        face_color = color_data[face_idx]
-        face_error = error_data[face_idx]
+        face_color = face_color_data[face_idx]
+        face_error = face_error_data[face_idx]
         if face_error == "nearly coplanar surfaces (green, red)":
             face_error_name_0 = "nearly coplanar surfaces (green, red)"
             face_error_name_1 = "nearly coplanar surfaces (red)"
@@ -375,37 +386,6 @@ def convert_wrl_to_blend(context, filepath, report):
             portal_outside_object_mesh_materials = list(portal_outside_object_mesh.data.materials)
             portal_outside_bm.faces[portal_outside_face_id].material_index = portal_outside_object_mesh_materials.index(mat)
             portal_outside_face_id += 1
-
-        elif face_error == "bad edge (red)":
-            face_error_name_0 = "bad edge (red)"
-            if bad_edge_mesh is None:
-                bad_edge_mesh = bpy.data.meshes.new(face_error_name_0)
-            if bad_edge_object_mesh is None:
-                bad_edge_object_mesh = bpy.data.objects.new(face_error_name_0, bad_edge_mesh)
-                collection.objects.link(bad_edge_object_mesh)
-
-            p1 = vert_data[face[0]]
-            p2 = vert_data[face[1]]
-            p3 = vert_data[face[2]]
-            v1 = bad_edge_bm.verts.new((p1[0], p1[1], p1[2]))
-            v2 = bad_edge_bm.verts.new((p2[0], p2[1], p2[2]))
-            v3 = bad_edge_bm.verts.new((p3[0], p3[1], p3[2]))
-            bad_edge_bm.faces.new((v1, v2, v3))
-
-            bad_edge_bm.faces.ensure_lookup_table()
-
-            mat_red = bpy.data.materials.get(face_error_name_0)
-            if mat_red is None:
-                mat_red = bpy.data.materials.new(name=face_error_name_0)
-                mat_red.diffuse_color = (1.0, 0.0, 0.0, 1.0)
-                bad_edge_object_mesh.data.materials.append(mat_red)
-
-            if face_color == (1.0, 0.0, 0.0, 1.0):
-                mat = mat_red
-
-            bad_edge_object_mesh_materials = list(bad_edge_object_mesh.data.materials)
-            bad_edge_bm.faces[bad_edge_face_id].material_index = bad_edge_object_mesh_materials.index(mat)
-            bad_edge_face_id += 1
 
         elif face_error == "unearthed edge or T-junction (magenta)":
             face_error_name_0 = "unearthed edge or T-junction (magenta)"
@@ -654,6 +634,36 @@ def convert_wrl_to_blend(context, filepath, report):
             unknown_object_mesh_materials = list(unknown_object_mesh.data.materials)
             unknown_bm.faces[unknown_face_id].material_index = unknown_object_mesh_materials.index(mat)
             unknown_face_id += 1
+
+    for edge_idx, edge in enumerate(line_data):
+        edge_color = line_color_data[edge_idx]
+        edge_error = line_error_data[edge_idx]
+        if edge_error == "bad edge (red)":
+            edge_error_name_0 = "bad edge (red)"
+            if bad_edge_mesh is None:
+                bad_edge_mesh = bpy.data.meshes.new(edge_error_name_0)
+            if bad_edge_object_mesh is None:
+                bad_edge_object_mesh = bpy.data.objects.new(edge_error_name_0, bad_edge_mesh)
+                collection.objects.link(bad_edge_object_mesh)
+
+            p1 = vert_data[edge[0]]
+            p2 = vert_data[edge[1]]
+            v1 = bad_edge_bm.verts.new((p1[0], p1[1], p1[2]))
+            v2 = bad_edge_bm.verts.new((p2[0], p2[1], p2[2]))
+            bad_edge_bm.edges.new((v1, v2))
+
+            bad_edge_bm.edges.ensure_lookup_table()
+
+            mat_red = bpy.data.materials.get(edge_error_name_0)
+            if mat_red is None:
+                mat_red = bpy.data.materials.new(name=edge_error_name_0)
+                mat_red.diffuse_color = (1.0, 0.0, 0.0, 1.0)
+                bad_edge_object_mesh.data.materials.append(mat_red)
+
+            if edge_color == (1.0, 0.0, 0.0, 1.0):
+                mat = mat_red
+
+            bad_edge_edge_id += 1
 
     if coplanar_object_mesh:
         coplanar_bm.to_mesh(coplanar_mesh)
