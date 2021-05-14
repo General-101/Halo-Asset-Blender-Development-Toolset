@@ -282,6 +282,10 @@ def convert_wrl_to_blend(context, filepath, report):
     unknown_object_mesh = bpy.data.objects.get("unknown (white)")
     unknown_bm = bmesh.new()
 
+    if bpy.context.view_layer.objects.active:
+        bpy.ops.object.mode_set(mode='OBJECT')
+        bpy.ops.object.select_all(action='DESELECT')
+
     for face_idx, face in enumerate(face_data):
         face_color = face_color_data[face_idx]
         face_error = face_error_data[face_idx]
@@ -311,10 +315,16 @@ def convert_wrl_to_blend(context, filepath, report):
                 mat_red = bpy.data.materials.new(name=face_error_name_1)
                 mat_red.diffuse_color = (1.0, 0.0, 0.0, 1.0)
                 coplanar_object_mesh.data.materials.append(mat_red)
+            else:
+                if mat_red not in  list(coplanar_object_mesh.data.materials):
+                    coplanar_object_mesh.data.materials.append(mat_red)
             if mat_green is None:
                 mat_green = bpy.data.materials.new(name=face_error_name_2)
                 mat_green.diffuse_color = (0.0, 1.0, 0.0, 1.0)
                 coplanar_object_mesh.data.materials.append(mat_green)
+            else:
+                if mat_green not in  list(coplanar_object_mesh.data.materials):
+                    coplanar_object_mesh.data.materials.append(mat_green)
 
             if face_color == (1.0, 0.0, 0.0, 1.0):
                 mat = mat_red
@@ -348,6 +358,9 @@ def convert_wrl_to_blend(context, filepath, report):
                 mat_red = bpy.data.materials.new(name=face_error_name_0)
                 mat_red.diffuse_color = (1.0, 0.0, 0.0, 1.0)
                 degenerate_object_mesh.data.materials.append(mat_red)
+            else:
+                if mat_red not in  list(degenerate_object_mesh.data.materials):
+                    degenerate_object_mesh.data.materials.append(mat_red)
 
             if face_color == (1.0, 0.0, 0.0, 1.0):
                 mat = mat_red
@@ -379,6 +392,9 @@ def convert_wrl_to_blend(context, filepath, report):
                 mat_magenta = bpy.data.materials.new(name=face_error_name_0)
                 mat_magenta.diffuse_color = (1.0, 0.0, 1.0, 1.0)
                 portal_outside_object_mesh.data.materials.append(mat_magenta)
+            else:
+                if mat_magenta not in  list(portal_outside_object_mesh.data.materials):
+                    portal_outside_object_mesh.data.materials.append(mat_magenta)
 
             if face_color == (1.0, 0.0, 1.0, 1.0):
                 mat = mat_magenta
@@ -410,6 +426,9 @@ def convert_wrl_to_blend(context, filepath, report):
                 mat_magenta = bpy.data.materials.new(name=face_error_name_0)
                 mat_magenta.diffuse_color = (1.0, 0.0, 1.0, 1.0)
                 unearthed_edge_object_mesh.data.materials.append(mat_magenta)
+            else:
+                if mat_magenta not in  list(unearthed_edge_object_mesh.data.materials):
+                    unearthed_edge_object_mesh.data.materials.append(mat_magenta)
 
             if face_color == (1.0, 0.0, 1.0, 1.0):
                 mat = mat_magenta
@@ -441,6 +460,9 @@ def convert_wrl_to_blend(context, filepath, report):
                 mat_cyan = bpy.data.materials.new(name=face_error_name_0)
                 mat_cyan.diffuse_color = (0.0, 1.0, 1.0, 1.0)
                 surface_clipped_object_mesh.data.materials.append(mat_cyan)
+            else:
+                if mat_cyan not in  list(surface_clipped_object_mesh.data.materials):
+                    surface_clipped_object_mesh.data.materials.append(mat_cyan)
 
             if face_color == (0.0, 1.0, 1.0, 1.0):
                 mat = mat_cyan
@@ -472,6 +494,9 @@ def convert_wrl_to_blend(context, filepath, report):
                 mat_green = bpy.data.materials.new(name=face_error_name_0)
                 mat_green.diffuse_color = (0.0, 1.0, 0.0, 1.0)
                 portal_undivide_object_mesh.data.materials.append(mat_green)
+            else:
+                if mat_green not in  list(portal_undivide_object_mesh.data.materials):
+                    portal_undivide_object_mesh.data.materials.append(mat_green)
 
             if face_color == (0.0, 1.0, 0.0, 1.0):
                 mat = mat_green
@@ -503,6 +528,9 @@ def convert_wrl_to_blend(context, filepath, report):
                 mat_yellow = bpy.data.materials.new(name=face_error_name_0)
                 mat_yellow.diffuse_color = (1.0, 1.0, 0.0, 1.0)
                 portal_closed_object_mesh.data.materials.append(mat_yellow)
+            else:
+                if mat_yellow not in  list(portal_closed_object_mesh.data.materials):
+                    portal_closed_object_mesh.data.materials.append(mat_yellow)
 
             if face_color == (1.0, 1.0, 0.0, 1.0):
                 mat = mat_yellow
@@ -534,6 +562,9 @@ def convert_wrl_to_blend(context, filepath, report):
                 mat_orange = bpy.data.materials.new(name=face_error_name_0)
                 mat_orange.diffuse_color = (1.0, 0.65, 0.0, 1.0)
                 duplicate_triangle_object_mesh.data.materials.append(mat_orange)
+            else:
+                if mat_orange not in  list(duplicate_triangle_object_mesh.data.materials):
+                    duplicate_triangle_object_mesh.data.materials.append(mat_orange)
 
             if face_color == (1.0, 0.65, 0.0, 1.0):
                 mat = mat_orange
@@ -565,6 +596,9 @@ def convert_wrl_to_blend(context, filepath, report):
                 mat_black = bpy.data.materials.new(name=face_error_name_0)
                 mat_black.diffuse_color = (0.0, 0.0, 0.0, 1.0)
                 intersecting_fog_object_mesh.data.materials.append(mat_black)
+            else:
+                if mat_black not in  list(intersecting_fog_object_mesh.data.materials):
+                    intersecting_fog_object_mesh.data.materials.append(mat_black)
 
             if face_color == (0.0, 0.0, 0.0, 1.0):
                 mat = mat_black
@@ -596,6 +630,9 @@ def convert_wrl_to_blend(context, filepath, report):
                 mat_blue = bpy.data.materials.new(name=face_error_name_0)
                 mat_blue.diffuse_color = (0.0, 0.0, 1.0, 1.0)
                 degenerate_uv_object_mesh.data.materials.append(mat_blue)
+            else:
+                if mat_blue not in  list(degenerate_uv_object_mesh.data.materials):
+                    degenerate_uv_object_mesh.data.materials.append(mat_blue)
 
             if face_color == (0.0, 0.0, 1.0, 1.0):
                 mat = mat_blue
@@ -627,6 +664,9 @@ def convert_wrl_to_blend(context, filepath, report):
                 mat_white = bpy.data.materials.new(name=face_error_name_0)
                 mat_white.diffuse_color = (0.0, 0.0, 0.0, 1.0)
                 unknown_object_mesh.data.materials.append(mat_white)
+            else:
+                if mat_white not in  list(unknown_object_mesh.data.materials):
+                    unknown_object_mesh.data.materials.append(mat_white)
 
             if face_color == (0.0, 0.0, 0.0, 1.0):
                 mat = mat_white
@@ -659,6 +699,9 @@ def convert_wrl_to_blend(context, filepath, report):
                 mat_red = bpy.data.materials.new(name=edge_error_name_0)
                 mat_red.diffuse_color = (1.0, 0.0, 0.0, 1.0)
                 bad_edge_object_mesh.data.materials.append(mat_red)
+            else:
+                if mat_red not in  list(bad_edge_object_mesh.data.materials):
+                    bad_edge_object_mesh.data.materials.append(mat_red)
 
             if edge_color == (1.0, 0.0, 0.0, 1.0):
                 mat = mat_red
