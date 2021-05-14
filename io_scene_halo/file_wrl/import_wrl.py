@@ -560,13 +560,13 @@ def convert_wrl_to_blend(context, filepath, report):
             mat_orange = bpy.data.materials.get(face_error_name_0)
             if mat_orange is None:
                 mat_orange = bpy.data.materials.new(name=face_error_name_0)
-                mat_orange.diffuse_color = (1.0, 0.65, 0.0, 1.0)
+                mat_orange.diffuse_color = (1.0, 0.5, 0.0, 1.0)
                 duplicate_triangle_object_mesh.data.materials.append(mat_orange)
             else:
                 if mat_orange not in  list(duplicate_triangle_object_mesh.data.materials):
                     duplicate_triangle_object_mesh.data.materials.append(mat_orange)
 
-            if face_color == (1.0, 0.65, 0.0, 1.0):
+            if face_color == (1.0, 0.5, 0.0, 1.0):
                 mat = mat_orange
 
             duplicate_triangle_object_mesh_materials = list(duplicate_triangle_object_mesh.data.materials)
