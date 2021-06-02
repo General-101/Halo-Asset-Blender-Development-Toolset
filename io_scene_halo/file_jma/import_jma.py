@@ -382,7 +382,7 @@ def load_file(context, filepath, report, fix_parents, game_version, jms_path_a, 
 
     nodes = jma_file.nodes
     if jma_file.version == 16390:
-        nodes = global_functions.sort_by_layer(list(armature.data.bones), armature, False)
+        nodes = global_functions.sort_by_layer(list(armature.data.bones), armature)[0]
 
     for frame_idx, frame in enumerate(jma_file.transforms):
         scene.frame_set(frame_idx + 1)
