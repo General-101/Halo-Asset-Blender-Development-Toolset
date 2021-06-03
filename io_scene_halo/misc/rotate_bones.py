@@ -27,11 +27,20 @@
 import bpy
 
 from math import radians
+from mathutils import Matrix
 
 def rotate_bones():
     if bpy.context.selected_editable_bones:
         for bone in bpy.context.selected_editable_bones:
             bone.roll = bone.roll - radians(180)
+
+    return {'FINISHED'}
+
+def reset_bones():
+    if bpy.context.selected_editable_bones:
+        for bone in bpy.context.selected_editable_bones:
+            object_translation = bone.matrix.translation
+            bone.matrix = Matrix.Translation(object_translation)
 
     return {'FINISHED'}
 

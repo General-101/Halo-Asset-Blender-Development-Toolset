@@ -887,3 +887,38 @@ def get_directory(game_version,
             os.makedirs(root_directory)
 
     return root_directory
+
+def append_material_symbols(material, game_version):
+    name = material.name
+    if game_version == 'haloce':
+        if material.ass_jms.two_sided:
+            if "%" not in name:
+                name = name + "%"
+        if material.ass_jms.transparent_1_sided:
+            if "#" not in name:
+                name = name + "#"
+        if material.ass_jms.render_only:
+            if "!" not in name:
+                name = name + "!"
+        if material.ass_jms.sphere_collision_only:
+            if "*" not in name:
+                name = name + "*"
+        if material.ass_jms.fog_plane:
+            if "$" not in name:
+                name = name + "$"
+        if material.ass_jms.ladder:
+            if "^" not in name:
+                name = name + "^"
+        if material.ass_jms.breakable:
+            if "-" not in name:
+                name = name + "-"
+        if material.ass_jms.ai_deafening:
+            if "&" not in name:
+                name = name + "&"
+        if material.ass_jms.collision_only:
+            if "@" not in name:
+                name = name + "@"
+        if material.ass_jms.portal_exact:
+            if "." not in name:
+                name = name + "."
+    return name

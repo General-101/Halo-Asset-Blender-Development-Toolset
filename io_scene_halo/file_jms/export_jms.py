@@ -945,7 +945,7 @@ class JMSScene(global_functions.HaloAsset):
                 name = '<none>'
                 texture_path = '<none>'
                 if not material == None:
-                    name = material.name
+                    name = global_functions.append_material_symbols(material, game_version)
                     if not material.node_tree == None:
                         for node in material.node_tree.nodes:
                             if node.type == 'TEX_IMAGE':

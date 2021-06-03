@@ -3499,7 +3499,7 @@ class ImportWRL(Operator, ImportHelper):
             self.filepath = args.filepath
             self.fix_parents = args.fix_parents
 
-        return run_code("import_wrl.convert_wrl_to_blend(context, self.filepath, self.report)")       
+        return run_code("import_wrl.convert_wrl_to_blend(context, self.filepath, self.report)")
 
 class Halo_LightmapperPropertiesGroup(PropertyGroup):
     res_x: IntProperty(
@@ -3516,6 +3516,13 @@ class Halo_LightmapperPropertiesGroup(PropertyGroup):
         min=2,
     )
 
+class Halo_PrefixPropertiesGroup(PropertyGroup):
+    prefix_string: StringProperty(
+        name = "Prefix",
+        default = "",
+        description = "Set the new prefix for selected objects. Undo if you mess up cause you won't be able to try again!"
+        )
+
 class Halo_Tools_Helper(Panel):
     """Tools to help automate Halo workflow"""
     bl_label = "Halo Tools Helper"
@@ -3527,6 +3534,7 @@ class Halo_Tools_Helper(Panel):
     def draw(self, context):
         scene = context.scene
         scene_halo_lightmapper = scene.halo_lightmapper
+        scene_halo_prefix = scene.halo_prefix
 
         layout = self.layout
         row = layout.row()
@@ -3551,10 +3559,20 @@ class Halo_Tools_Helper(Panel):
         row.operator("halo_bulk.bulk_bone_names", text="BULK!!!")
 
         box = layout.box()
+        box.label(text="Node Prefix Helper:")
+        col = box.column(align=True)
+        row = col.row()
+        row.label(text='Prefix:')
+        row.prop(scene_halo_prefix, "prefix_string", text='')
+        row = col.row()
+        row.operator("halo_bulk.bulk_node_prefix", text="BULK!!!")
+
+        box = layout.box()
         box.label(text="Bone Rotation Helper:")
         col = box.column(align=True)
         row = col.row()
         row.operator("halo_bulk.bulk_bone_rotation", text="BULK!!!")
+        row.operator("halo_bulk.bulk_bone_reset", text="BULK!!!")
 
 class Bulk_Lightmap_Images(Operator):
     """Create image nodes with a set size for all materials in the scene"""
@@ -3578,6 +3596,18 @@ class Bulk_Rename_Bones(Operator):
         from io_scene_halo.misc import rename_bones
         return run_code("rename_bones.rename_bones()")
 
+class Bulk_Rename_Prefix(Operator):
+    """Rename prefixes for selected objects in the scene"""
+    bl_idname = 'halo_bulk.bulk_node_prefix'
+    bl_label = 'Bulk Halo Node Prefix'
+    bl_options = {"REGISTER", "UNDO"}
+
+    def execute(self, context):
+        from io_scene_halo.misc import rename_prefix
+        scene = context.scene
+        scene_halo_prefix = scene.halo_prefix
+        return run_code("rename_prefix.rename_prefix(scene_halo_prefix.prefix_string)")
+
 class Bulk_Rotate_Bones(Operator):
     """Add -180 degrees for the roll of all selected bones in edit mode."""
     bl_idname = 'halo_bulk.bulk_bone_rotation'
@@ -3587,6 +3617,16 @@ class Bulk_Rotate_Bones(Operator):
     def execute(self, context):
         from io_scene_halo.misc import rotate_bones
         return run_code("rotate_bones.rotate_bones()")
+
+class Bulk_Reset_Bones(Operator):
+    """Resets bone rotation of all selected bones in edit mode."""
+    bl_idname = 'halo_bulk.bulk_bone_reset'
+    bl_label = 'Bulk Halo Bones Reset'
+    bl_options = {"REGISTER", "UNDO"}
+
+    def execute(self, context):
+        from io_scene_halo.misc import rotate_bones
+        return run_code("rotate_bones.reset_bones()")
 
 class ExportLightmap(Operator, ExportHelper):
     """Write a LUV file"""
@@ -3610,16 +3650,19 @@ def menu_func_import(self, context):
     self.layout.operator(ImportASS.bl_idname, text="Halo Amalgam Scene Specification (.ass)")
     self.layout.operator(ImportJMS.bl_idname, text="Halo Jointed Model Skeleton (.jms)")
     self.layout.operator(ImportJMA.bl_idname, text="Halo Jointed Model Animation (.jma)")
-    self.layout.operator(ImportWRL.bl_idname, text="Halo WRL Debug Geometry (.wrl)")        
+    self.layout.operator(ImportWRL.bl_idname, text="Halo WRL Debug Geometry (.wrl)")
     self.layout.operator(ImportJMI.bl_idname, text="Halo Jointed Model Instance (.jmi)")
 
 classeshalo = (
     ExportLightmap,
     Bulk_Lightmap_Images,
     Bulk_Rename_Bones,
+    Bulk_Rename_Prefix,
     Bulk_Rotate_Bones,
+    Bulk_Reset_Bones,
     Halo_Tools_Helper,
     Halo_LightmapperPropertiesGroup,
+    Halo_PrefixPropertiesGroup,
     ASS_JMS_MeshPropertiesGroup,
     ASS_JMS_MaterialPropertiesGroup,
     JMS_PhysicsPropertiesGroup,
@@ -3642,7 +3685,7 @@ classeshalo = (
     ExportJMS,
     ImportJMA,
     ExportJMA,
-    ImportWRL,     
+    ImportWRL,
     ImportJMI,
     ExportJMI
 )
@@ -3667,6 +3710,7 @@ def register():
     bpy.types.Scene.jmi = PointerProperty(type=JMI_ScenePropertiesGroup, name="JMI Scene Properties", description="Set properties for the JMI exporter")
     bpy.types.Scene.jma = PointerProperty(type=JMA_ScenePropertiesGroup, name="JMA Scene Properties", description="Set properties for the JMA exporter")
     bpy.types.Scene.halo_lightmapper = PointerProperty(type=Halo_LightmapperPropertiesGroup, name="Halo Lightmapper Helper", description="Set properties for the lightmapper")
+    bpy.types.Scene.halo_prefix = PointerProperty(type=Halo_PrefixPropertiesGroup, name="Halo Prefix Helper", description="Set properties for node prefixes")
 
 def unregister():
     bpy.types.TOPBAR_MT_file_export.remove(menu_func_export)
@@ -3685,6 +3729,7 @@ def unregister():
     del bpy.types.Scene.jmi
     del bpy.types.Scene.jma
     del bpy.types.Scene.halo_lightmapper
+    del bpy.types.Scene.halo_prefix
     for clshalo in classeshalo:
         bpy.utils.unregister_class(clshalo)
 
