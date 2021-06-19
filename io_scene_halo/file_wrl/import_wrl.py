@@ -242,7 +242,7 @@ def convert_wrl_to_blend(context, filepath, report):
     bad_edge_object_mesh = bpy.data.objects.get("bad edge (red)")
     bad_edge_bm = bmesh.new()
 
-    unearthed_edge_face_id = 0
+    unearthed_edge_id = 0
     unearthed_edge_mesh = bpy.data.meshes.get("unearthed edge or T-junction (magenta)")
     unearthed_edge_object_mesh = bpy.data.objects.get("unearthed edge or T-junction (magenta)")
     unearthed_edge_bm = bmesh.new()
@@ -402,40 +402,6 @@ def convert_wrl_to_blend(context, filepath, report):
             portal_outside_object_mesh_materials = list(portal_outside_object_mesh.data.materials)
             portal_outside_bm.faces[portal_outside_face_id].material_index = portal_outside_object_mesh_materials.index(mat)
             portal_outside_face_id += 1
-
-        elif face_error == "unearthed edge or T-junction (magenta)":
-            face_error_name_0 = "unearthed edge or T-junction (magenta)"
-            if unearthed_edge_mesh is None:
-                unearthed_edge_mesh = bpy.data.meshes.new(face_error_name_0)
-            if unearthed_edge_object_mesh is None:
-                unearthed_edge_object_mesh = bpy.data.objects.new(face_error_name_0, unearthed_edge_mesh)
-                collection.objects.link(unearthed_edge_object_mesh)
-
-            p1 = vert_data[face[0]]
-            p2 = vert_data[face[1]]
-            p3 = vert_data[face[2]]
-            v1 = unearthed_edge_bm.verts.new((p1[0], p1[1], p1[2]))
-            v2 = unearthed_edge_bm.verts.new((p2[0], p2[1], p2[2]))
-            v3 = unearthed_edge_bm.verts.new((p3[0], p3[1], p3[2]))
-            unearthed_edge_bm.faces.new((v1, v2, v3))
-
-            unearthed_edge_bm.faces.ensure_lookup_table()
-
-            mat_magenta = bpy.data.materials.get(face_error_name_0)
-            if mat_magenta is None:
-                mat_magenta = bpy.data.materials.new(name=face_error_name_0)
-                mat_magenta.diffuse_color = (1.0, 0.0, 1.0, 1.0)
-                unearthed_edge_object_mesh.data.materials.append(mat_magenta)
-            else:
-                if mat_magenta not in  list(unearthed_edge_object_mesh.data.materials):
-                    unearthed_edge_object_mesh.data.materials.append(mat_magenta)
-
-            if face_color == (1.0, 0.0, 1.0, 1.0):
-                mat = mat_magenta
-
-            unearthed_edge_object_mesh_materials = list(unearthed_edge_object_mesh.data.materials)
-            unearthed_edge_bm.faces[unearthed_edge_face_id].material_index = unearthed_edge_object_mesh_materials.index(mat)
-            unearthed_edge_face_id += 1
 
         elif face_error == "surface clipped to no leaves (cyan)":
             face_error_name_0 = "surface clipped to no leaves (cyan)"
@@ -708,6 +674,37 @@ def convert_wrl_to_blend(context, filepath, report):
 
             bad_edge_edge_id += 1
 
+        if edge_error == "unearthed edge or T-junction (magenta)":
+            edge_error_name_0 = "unearthed edge or T-junction (magenta)"
+            if unearthed_edge_mesh is None:
+                unearthed_edge_mesh = bpy.data.meshes.new(edge_error_name_0)
+            if unearthed_edge_object_mesh is None:
+                unearthed_edge_object_mesh = bpy.data.objects.new(edge_error_name_0, unearthed_edge_mesh)
+                collection.objects.link(unearthed_edge_object_mesh)
+
+            p1 = vert_data[edge[0]]
+            p2 = vert_data[edge[1]]
+            v1 = unearthed_edge_bm.verts.new((p1[0], p1[1], p1[2]))
+            v2 = unearthed_edge_bm.verts.new((p2[0], p2[1], p2[2]))
+
+            unearthed_edge_bm.edges.new((v1, v2))
+
+            unearthed_edge_bm.edges.ensure_lookup_table()
+
+            mat_magenta = bpy.data.materials.get(edge_error_name_0)
+            if mat_magenta is None:
+                mat_magenta = bpy.data.materials.new(name=edge_error_name_0)
+                mat_magenta.diffuse_color = (1.0, 0.0, 1.0, 1.0)
+                unearthed_edge_object_mesh.data.materials.append(mat_magenta)
+            else:
+                if mat_magenta not in  list(unearthed_edge_object_mesh.data.materials):
+                    unearthed_edge_object_mesh.data.materials.append(mat_magenta)
+
+            if edge_color == (1.0, 0.0, 1.0, 1.0):
+                mat = mat_magenta
+
+            unearthed_edge_id += 1
+
     if coplanar_object_mesh:
         coplanar_bm.to_mesh(coplanar_mesh)
     coplanar_bm.free()
@@ -757,7 +754,6 @@ def convert_wrl_to_blend(context, filepath, report):
     unknown_bm.free()
 
     return {'FINISHED'}
-
 
 if __name__== "__main__":
     bpy.ops.import_scene.wrl()
