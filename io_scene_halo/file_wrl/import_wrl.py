@@ -328,7 +328,7 @@ def convert_wrl_to_blend(context, filepath, report):
     duplicate_triangle_bm = bmesh.new()
 
     intersecting_fog_face_id = 0
-    intersecting_fog_face_error_name = "duplicate triangle or overlapping surface (orange)"
+    intersecting_fog_face_error_name = "two fog planes intersected in a cluster (black)"
     intersecting_fog_mesh = None
     intersecting_fog_object_mesh = None
     intersecting_fog_bm = bmesh.new()
