@@ -164,6 +164,71 @@ def infer_error_type(binding_type, mtl_diffuse_colors):
             return "degenerate triangle or UVs" + color_info
     return "unknown" + color_info
 
+def get_material_name(diffuse, error_type):
+    mat_name = error_type
+    if error_type == "nearly coplanar surfaces (green, red)":
+        if diffuse == (1.0, 0.0, 0.0, 1.0):
+            mat_name = "nearly coplanar surfaces (red)"
+        elif diffuse == (0.0, 1.0, 0.0, 1.0):
+            mat_name = "nearly coplanar surfaces (green)"
+
+    return mat_name
+
+def generate_mesh_face(face_error_name, bm_mesh, bm_object, bm_error, vert_data, face, bm_face_id, face_color):
+    if bm_mesh is None:
+        bm_mesh = bpy.data.meshes.new(face_error_name)
+    if bm_object is None:
+        bm_object = bpy.data.objects.new(face_error_name, bm_mesh)
+        bpy.context.collection.objects.link(bm_object)
+
+    p1 = vert_data[face[0]]
+    p2 = vert_data[face[1]]
+    p3 = vert_data[face[2]]
+    v1 = bm_error.verts.new((p1[0], p1[1], p1[2]))
+    v2 = bm_error.verts.new((p2[0], p2[1], p2[2]))
+    v3 = bm_error.verts.new((p3[0], p3[1], p3[2]))
+    bm_error.faces.new((v1, v2, v3))
+
+    bm_error.faces.ensure_lookup_table()
+
+    mat_name = get_material_name(face_color, face_error_name)
+    error_mat = bpy.data.materials.get(mat_name)
+    if error_mat is None:
+        error_mat = bpy.data.materials.new(name=mat_name)
+        error_mat.diffuse_color = face_color
+        bm_object.data.materials.append(error_mat)
+    else:
+        if error_mat not in list(bm_object.data.materials):
+            bm_object.data.materials.append(error_mat)
+
+    bm_object_mesh_materials = list(bm_object.data.materials)
+    bm_error.faces[bm_face_id].material_index = bm_object_mesh_materials.index(error_mat)
+
+def generate_mesh_edge(face_error_name, bm_mesh, bm_object, bm_error, vert_data, edge, edge_color):
+    if bm_mesh is None:
+        bm_mesh = bpy.data.meshes.new(face_error_name)
+    if bm_object is None:
+        bm_object = bpy.data.objects.new(face_error_name, bm_mesh)
+        bpy.context.collection.objects.link(bm_object)
+
+    p1 = vert_data[edge[0]]
+    p2 = vert_data[edge[1]]
+    v1 = bm_error.verts.new((p1[0], p1[1], p1[2]))
+    v2 = bm_error.verts.new((p2[0], p2[1], p2[2]))
+    bm_error.edges.new((v1, v2))
+
+    bm_error.edges.ensure_lookup_table()
+
+    mat_name = get_material_name(edge_color, face_error_name)
+    error_mat = bpy.data.materials.get(mat_name)
+    if error_mat is None:
+        error_mat = bpy.data.materials.new(name=mat_name)
+        error_mat.diffuse_color = edge_color
+        bm_object.data.materials.append(error_mat)
+    else:
+        if error_mat not in  list(bm_object.data.materials):
+            bm_object.data.materials.append(error_mat)
+
 def convert_wrl_to_blend(context, filepath, report):
     '''
     Translates the WRL input stream to an OBJ output stream and imports into Blender.
@@ -178,8 +243,6 @@ def convert_wrl_to_blend(context, filepath, report):
     face_data = []
     line_data = []
     vert_data = []
-
-    collection = bpy.context.collection
 
     for separator in parse_wrl_to_ast(input_stream.read()):
         error_name = infer_error_type(separator.mtl_binding, separator.mtl_diffuse_colors)
@@ -223,63 +286,73 @@ def convert_wrl_to_blend(context, filepath, report):
             vert_index += 1
 
     coplanar_face_id = 0
-    coplanar_mesh = bpy.data.meshes.get("nearly coplanar surfaces (green, red)")
-    coplanar_object_mesh = bpy.data.objects.get("nearly coplanar surfaces (green, red)")
+    coplanar_face_error_name = "nearly coplanar surfaces (green, red)"
+    coplanar_mesh = None
+    coplanar_object_mesh = None
     coplanar_bm = bmesh.new()
 
     degenerate_face_id = 0
-    degenerate_mesh = bpy.data.meshes.get("degenerate or z-buffered triangle (red)")
-    degenerate_object_mesh = bpy.data.objects.get("degenerate or z-buffered triangle (red)")
+    degenerate_face_error_name = "degenerate or z-buffered triangle (red)"
+    degenerate_mesh = None
+    degenerate_object_mesh = None
     degenerate_bm = bmesh.new()
 
     portal_outside_face_id = 0
-    portal_outside_mesh = bpy.data.meshes.get("portal outside BSP (magenta)")
-    portal_outside_object_mesh = bpy.data.objects.get("portal outside BSP (magenta)")
+    portal_outside_face_error_name = "portal outside BSP (magenta)"
+    portal_outside_mesh = None
+    portal_outside_object_mesh = None
     portal_outside_bm = bmesh.new()
 
-    bad_edge_edge_id = 0
-    bad_edge_mesh = bpy.data.meshes.get("bad edge (red)")
-    bad_edge_object_mesh = bpy.data.objects.get("bad edge (red)")
-    bad_edge_bm = bmesh.new()
-
-    unearthed_edge_id = 0
-    unearthed_edge_mesh = bpy.data.meshes.get("unearthed edge or T-junction (magenta)")
-    unearthed_edge_object_mesh = bpy.data.objects.get("unearthed edge or T-junction (magenta)")
-    unearthed_edge_bm = bmesh.new()
-
     surface_clipped_face_id = 0
-    surface_clipped_mesh = bpy.data.meshes.get("surface clipped to no leaves (cyan)")
-    surface_clipped_object_mesh = bpy.data.objects.get("surface clipped to no leaves (cyan)")
+    surface_clipped_face_error_name = "surface clipped to no leaves (cyan)"
+    surface_clipped_mesh = None
+    surface_clipped_object_mesh = None
     surface_clipped_bm = bmesh.new()
 
     portal_undivide_face_id = 0
-    portal_undivide_mesh = bpy.data.meshes.get("portal does not divide space (green)")
-    portal_undivide_object_mesh = bpy.data.objects.get("portal does not divide space (green)")
+    portal_undivide_face_error_name = "portal does not divide space (green)"
+    portal_undivide_mesh = None
+    portal_undivide_object_mesh = None
     portal_undivide_bm = bmesh.new()
 
     portal_closed_face_id = 0
-    portal_closed_mesh = bpy.data.meshes.get("portal does not define two closed spaces (yellow)")
-    portal_closed_object_mesh = bpy.data.objects.get("portal does not define two closed spaces (yellow)")
+    portal_closed_face_error_name = "portal does not define two closed spaces (yellow)"
+    portal_closed_mesh = None
+    portal_closed_object_mesh = None
     portal_closed_bm = bmesh.new()
 
     duplicate_triangle_face_id = 0
-    duplicate_triangle_mesh = bpy.data.meshes.get("duplicate triangle or overlapping surface (orange)")
-    duplicate_triangle_object_mesh = bpy.data.objects.get("duplicate triangle or overlapping surface (orange)")
+    duplicate_triangle_face_error_name = "duplicate triangle or overlapping surface (orange)"
+    duplicate_triangle_mesh = None
+    duplicate_triangle_object_mesh = None
     duplicate_triangle_bm = bmesh.new()
 
     intersecting_fog_face_id = 0
-    intersecting_fog_mesh = bpy.data.meshes.get("two fog planes intersected in a cluster (black)")
-    intersecting_fog_object_mesh = bpy.data.objects.get("two fog planes intersected in a cluster (black)")
+    intersecting_fog_face_error_name = "duplicate triangle or overlapping surface (orange)"
+    intersecting_fog_mesh = None
+    intersecting_fog_object_mesh = None
     intersecting_fog_bm = bmesh.new()
 
     degenerate_uv_face_id = 0
-    degenerate_uv_mesh = bpy.data.meshes.get("degenerate triangle or UVs (blue)")
-    degenerate_uv_object_mesh = bpy.data.objects.get("degenerate triangle or UVs (blue)")
+    degenerate_uv_face_error_name = "degenerate triangle or UVs (blue)"
+    degenerate_uv_mesh = None
+    degenerate_uv_object_mesh = None
     degenerate_uv_bm = bmesh.new()
 
+    bad_edge_error_name = "bad edge (red)"
+    bad_edge_mesh = None
+    bad_edge_object_mesh = None
+    bad_edge_bm = bmesh.new()
+
+    unearthed_edge_error_name = "unearthed edge or T-junction (magenta)"
+    unearthed_edge_mesh = None
+    unearthed_edge_object_mesh = None
+    unearthed_edge_bm = bmesh.new()
+
     unknown_face_id = 0
-    unknown_mesh = bpy.data.meshes.get("unknown (white)")
-    unknown_object_mesh = bpy.data.objects.get("unknown (white)")
+    unknown_error_name = "unknown (white)"
+    unknown_mesh = None
+    unknown_object_mesh = None
     unknown_bm = bmesh.new()
 
     if bpy.context.view_layer.objects.active:
@@ -289,421 +362,83 @@ def convert_wrl_to_blend(context, filepath, report):
     for face_idx, face in enumerate(face_data):
         face_color = face_color_data[face_idx]
         face_error = face_error_data[face_idx]
-        if face_error == "nearly coplanar surfaces (green, red)":
-            face_error_name_0 = "nearly coplanar surfaces (green, red)"
-            face_error_name_1 = "nearly coplanar surfaces (red)"
-            face_error_name_2 = "nearly coplanar surfaces (green)"
-            if coplanar_mesh is None:
-                coplanar_mesh = bpy.data.meshes.new(face_error_name_0)
-            if coplanar_object_mesh is None:
-                coplanar_object_mesh = bpy.data.objects.new(face_error_name_0, coplanar_mesh)
-                collection.objects.link(coplanar_object_mesh)
-
-            p1 = vert_data[face[0]]
-            p2 = vert_data[face[1]]
-            p3 = vert_data[face[2]]
-            v1 = coplanar_bm.verts.new((p1[0], p1[1], p1[2]))
-            v2 = coplanar_bm.verts.new((p2[0], p2[1], p2[2]))
-            v3 = coplanar_bm.verts.new((p3[0], p3[1], p3[2]))
-            coplanar_bm.faces.new((v1, v2, v3))
-
-            coplanar_bm.faces.ensure_lookup_table()
-
-            mat_red = bpy.data.materials.get(face_error_name_1)
-            mat_green = bpy.data.materials.get(face_error_name_2)
-            if mat_red is None:
-                mat_red = bpy.data.materials.new(name=face_error_name_1)
-                mat_red.diffuse_color = (1.0, 0.0, 0.0, 1.0)
-                coplanar_object_mesh.data.materials.append(mat_red)
-            else:
-                if mat_red not in  list(coplanar_object_mesh.data.materials):
-                    coplanar_object_mesh.data.materials.append(mat_red)
-            if mat_green is None:
-                mat_green = bpy.data.materials.new(name=face_error_name_2)
-                mat_green.diffuse_color = (0.0, 1.0, 0.0, 1.0)
-                coplanar_object_mesh.data.materials.append(mat_green)
-            else:
-                if mat_green not in  list(coplanar_object_mesh.data.materials):
-                    coplanar_object_mesh.data.materials.append(mat_green)
-
-            if face_color == (1.0, 0.0, 0.0, 1.0):
-                mat = mat_red
-            elif face_color == (0.0, 1.0, 0.0, 1.0):
-                mat = mat_green
-
-            coplanar_object_mesh_materials = list(coplanar_object_mesh.data.materials)
-            coplanar_bm.faces[coplanar_face_id].material_index = coplanar_object_mesh_materials.index(mat)
+        if face_error == coplanar_face_error_name:
+            coplanar_mesh = bpy.data.meshes.get(coplanar_face_error_name)
+            coplanar_object_mesh = bpy.data.objects.get(coplanar_face_error_name)
+            generate_mesh_face(coplanar_face_error_name, coplanar_mesh, coplanar_object_mesh, coplanar_bm, vert_data, face, coplanar_face_id, face_color)
             coplanar_face_id += 1
 
-        elif face_error == "degenerate or z-buffered triangle (red)":
-            face_error_name_0 = "degenerate or z-buffered triangle (red)"
-            if degenerate_mesh is None:
-                degenerate_mesh = bpy.data.meshes.new(face_error_name_0)
-            if degenerate_object_mesh is None:
-                degenerate_object_mesh = bpy.data.objects.new(face_error_name_0, degenerate_mesh)
-                collection.objects.link(degenerate_object_mesh)
-
-            p1 = vert_data[face[0]]
-            p2 = vert_data[face[1]]
-            p3 = vert_data[face[2]]
-            v1 = degenerate_bm.verts.new((p1[0], p1[1], p1[2]))
-            v2 = degenerate_bm.verts.new((p2[0], p2[1], p2[2]))
-            v3 = degenerate_bm.verts.new((p3[0], p3[1], p3[2]))
-            degenerate_bm.faces.new((v1, v2, v3))
-
-            degenerate_bm.faces.ensure_lookup_table()
-
-            mat_red = bpy.data.materials.get(face_error_name_0)
-            if mat_red is None:
-                mat_red = bpy.data.materials.new(name=face_error_name_0)
-                mat_red.diffuse_color = (1.0, 0.0, 0.0, 1.0)
-                degenerate_object_mesh.data.materials.append(mat_red)
-            else:
-                if mat_red not in  list(degenerate_object_mesh.data.materials):
-                    degenerate_object_mesh.data.materials.append(mat_red)
-
-            if face_color == (1.0, 0.0, 0.0, 1.0):
-                mat = mat_red
-
-            degenerate_object_mesh_materials = list(degenerate_object_mesh.data.materials)
-            degenerate_bm.faces[degenerate_face_id].material_index = degenerate_object_mesh_materials.index(mat)
+        elif face_error == degenerate_face_error_name:
+            degenerate_mesh = bpy.data.meshes.get(degenerate_face_error_name)
+            degenerate_object_mesh = bpy.data.objects.get(degenerate_face_error_name)
+            generate_mesh_face(degenerate_face_error_name, degenerate_mesh, degenerate_object_mesh, degenerate_bm, vert_data, face, degenerate_face_id, face_color)
             degenerate_face_id += 1
 
-        elif face_error == "portal outside BSP (magenta)":
-            face_error_name_0 = "portal outside BSP (magenta)"
-            if portal_outside_mesh is None:
-                portal_outside_mesh = bpy.data.meshes.new(face_error_name_0)
-            if portal_outside_object_mesh is None:
-                portal_outside_object_mesh = bpy.data.objects.new(face_error_name_0, portal_outside_mesh)
-                collection.objects.link(portal_outside_object_mesh)
-
-            p1 = vert_data[face[0]]
-            p2 = vert_data[face[1]]
-            p3 = vert_data[face[2]]
-            v1 = portal_outside_bm.verts.new((p1[0], p1[1], p1[2]))
-            v2 = portal_outside_bm.verts.new((p2[0], p2[1], p2[2]))
-            v3 = portal_outside_bm.verts.new((p3[0], p3[1], p3[2]))
-            portal_outside_bm.faces.new((v1, v2, v3))
-
-            portal_outside_bm.faces.ensure_lookup_table()
-
-            mat_magenta = bpy.data.materials.get(face_error_name_0)
-            if mat_magenta is None:
-                mat_magenta = bpy.data.materials.new(name=face_error_name_0)
-                mat_magenta.diffuse_color = (1.0, 0.0, 1.0, 1.0)
-                portal_outside_object_mesh.data.materials.append(mat_magenta)
-            else:
-                if mat_magenta not in  list(portal_outside_object_mesh.data.materials):
-                    portal_outside_object_mesh.data.materials.append(mat_magenta)
-
-            if face_color == (1.0, 0.0, 1.0, 1.0):
-                mat = mat_magenta
-
-            portal_outside_object_mesh_materials = list(portal_outside_object_mesh.data.materials)
-            portal_outside_bm.faces[portal_outside_face_id].material_index = portal_outside_object_mesh_materials.index(mat)
+        elif face_error == portal_outside_face_error_name:
+            portal_outside_mesh = bpy.data.meshes.get(portal_outside_face_error_name)
+            portal_outside_object_mesh = bpy.data.objects.get(portal_outside_face_error_name)
+            generate_mesh_face(portal_outside_face_error_name, portal_outside_mesh, portal_outside_object_mesh, portal_outside_bm, vert_data, face, portal_outside_face_id, face_color)
             portal_outside_face_id += 1
 
-        elif face_error == "surface clipped to no leaves (cyan)":
-            face_error_name_0 = "surface clipped to no leaves (cyan)"
-            if surface_clipped_mesh is None:
-                surface_clipped_mesh = bpy.data.meshes.new(face_error_name_0)
-            if surface_clipped_object_mesh is None:
-                surface_clipped_object_mesh = bpy.data.objects.new(face_error_name_0, surface_clipped_mesh)
-                collection.objects.link(surface_clipped_object_mesh)
-
-            p1 = vert_data[face[0]]
-            p2 = vert_data[face[1]]
-            p3 = vert_data[face[2]]
-            v1 = surface_clipped_bm.verts.new((p1[0], p1[1], p1[2]))
-            v2 = surface_clipped_bm.verts.new((p2[0], p2[1], p2[2]))
-            v3 = surface_clipped_bm.verts.new((p3[0], p3[1], p3[2]))
-            surface_clipped_bm.faces.new((v1, v2, v3))
-
-            surface_clipped_bm.faces.ensure_lookup_table()
-
-            mat_cyan = bpy.data.materials.get(face_error_name_0)
-            if mat_cyan is None:
-                mat_cyan = bpy.data.materials.new(name=face_error_name_0)
-                mat_cyan.diffuse_color = (0.0, 1.0, 1.0, 1.0)
-                surface_clipped_object_mesh.data.materials.append(mat_cyan)
-            else:
-                if mat_cyan not in  list(surface_clipped_object_mesh.data.materials):
-                    surface_clipped_object_mesh.data.materials.append(mat_cyan)
-
-            if face_color == (0.0, 1.0, 1.0, 1.0):
-                mat = mat_cyan
-
-            surface_clipped_object_mesh_materials = list(surface_clipped_object_mesh.data.materials)
-            surface_clipped_bm.faces[surface_clipped_face_id].material_index = surface_clipped_object_mesh_materials.index(mat)
+        elif face_error == surface_clipped_face_error_name:
+            surface_clipped_mesh = bpy.data.meshes.get(surface_clipped_face_error_name)
+            surface_clipped_object_mesh = bpy.data.objects.get(surface_clipped_face_error_name)
+            generate_mesh_face(surface_clipped_face_error_name, surface_clipped_mesh, surface_clipped_object_mesh, surface_clipped_bm, vert_data, face, surface_clipped_face_id, face_color)
             surface_clipped_face_id += 1
 
-        elif face_error == "portal does not divide space (green)":
-            face_error_name_0 = "portal does not divide space (green)"
-            if portal_undivide_mesh is None:
-                portal_undivide_mesh = bpy.data.meshes.new(face_error_name_0)
-            if portal_undivide_object_mesh is None:
-                portal_undivide_object_mesh = bpy.data.objects.new(face_error_name_0, portal_undivide_mesh)
-                collection.objects.link(portal_undivide_object_mesh)
-
-            p1 = vert_data[face[0]]
-            p2 = vert_data[face[1]]
-            p3 = vert_data[face[2]]
-            v1 = portal_undivide_bm.verts.new((p1[0], p1[1], p1[2]))
-            v2 = portal_undivide_bm.verts.new((p2[0], p2[1], p2[2]))
-            v3 = portal_undivide_bm.verts.new((p3[0], p3[1], p3[2]))
-            portal_undivide_bm.faces.new((v1, v2, v3))
-
-            portal_undivide_bm.faces.ensure_lookup_table()
-
-            mat_green = bpy.data.materials.get(face_error_name_0)
-            if mat_green is None:
-                mat_green = bpy.data.materials.new(name=face_error_name_0)
-                mat_green.diffuse_color = (0.0, 1.0, 0.0, 1.0)
-                portal_undivide_object_mesh.data.materials.append(mat_green)
-            else:
-                if mat_green not in  list(portal_undivide_object_mesh.data.materials):
-                    portal_undivide_object_mesh.data.materials.append(mat_green)
-
-            if face_color == (0.0, 1.0, 0.0, 1.0):
-                mat = mat_green
-
-            portal_undivide_object_mesh_materials = list(portal_undivide_object_mesh.data.materials)
-            portal_undivide_bm.faces[portal_undivide_face_id].material_index = portal_undivide_object_mesh_materials.index(mat)
+        elif face_error == portal_undivide_face_error_name:
+            portal_undivide_mesh = bpy.data.meshes.get(portal_undivide_face_error_name)
+            portal_undivide_object_mesh = bpy.data.objects.get(portal_undivide_face_error_name)
+            generate_mesh_face(portal_undivide_face_error_name, portal_undivide_mesh, portal_undivide_object_mesh, portal_undivide_bm, vert_data, face, portal_undivide_face_id, face_color)
             portal_undivide_face_id += 1
 
-        elif face_error == "portal does not define two closed spaces (yellow)":
-            face_error_name_0 = "portal does not define two closed spaces (yellow)"
-            if portal_closed_mesh is None:
-                portal_closed_mesh = bpy.data.meshes.new(face_error_name_0)
-            if portal_closed_object_mesh is None:
-                portal_closed_object_mesh = bpy.data.objects.new(face_error_name_0, portal_closed_mesh)
-                collection.objects.link(portal_closed_object_mesh)
-
-            p1 = vert_data[face[0]]
-            p2 = vert_data[face[1]]
-            p3 = vert_data[face[2]]
-            v1 = portal_closed_bm.verts.new((p1[0], p1[1], p1[2]))
-            v2 = portal_closed_bm.verts.new((p2[0], p2[1], p2[2]))
-            v3 = portal_closed_bm.verts.new((p3[0], p3[1], p3[2]))
-            portal_closed_bm.faces.new((v1, v2, v3))
-
-            portal_closed_bm.faces.ensure_lookup_table()
-
-            mat_yellow = bpy.data.materials.get(face_error_name_0)
-            if mat_yellow is None:
-                mat_yellow = bpy.data.materials.new(name=face_error_name_0)
-                mat_yellow.diffuse_color = (1.0, 1.0, 0.0, 1.0)
-                portal_closed_object_mesh.data.materials.append(mat_yellow)
-            else:
-                if mat_yellow not in  list(portal_closed_object_mesh.data.materials):
-                    portal_closed_object_mesh.data.materials.append(mat_yellow)
-
-            if face_color == (1.0, 1.0, 0.0, 1.0):
-                mat = mat_yellow
-
-            portal_closed_object_mesh_materials = list(portal_closed_object_mesh.data.materials)
-            portal_closed_bm.faces[portal_closed_face_id].material_index = portal_closed_object_mesh_materials.index(mat)
+        elif face_error == portal_closed_face_error_name:
+            portal_closed_mesh = bpy.data.meshes.get(portal_closed_face_error_name)
+            portal_closed_object_mesh = bpy.data.objects.get(portal_closed_face_error_name)
+            generate_mesh_face(portal_closed_face_error_name, portal_closed_mesh, portal_closed_object_mesh, portal_closed_bm, vert_data, face, portal_closed_face_id, face_color)
             portal_closed_face_id += 1
 
-        elif face_error == "duplicate triangle or overlapping surface (orange)":
-            face_error_name_0 = "duplicate triangle or overlapping surface (orange)"
-            if duplicate_triangle_mesh is None:
-                duplicate_triangle_mesh = bpy.data.meshes.new(face_error_name_0)
-            if duplicate_triangle_object_mesh is None:
-                duplicate_triangle_object_mesh = bpy.data.objects.new(face_error_name_0, duplicate_triangle_mesh)
-                collection.objects.link(duplicate_triangle_object_mesh)
-
-            p1 = vert_data[face[0]]
-            p2 = vert_data[face[1]]
-            p3 = vert_data[face[2]]
-            v1 = duplicate_triangle_bm.verts.new((p1[0], p1[1], p1[2]))
-            v2 = duplicate_triangle_bm.verts.new((p2[0], p2[1], p2[2]))
-            v3 = duplicate_triangle_bm.verts.new((p3[0], p3[1], p3[2]))
-            duplicate_triangle_bm.faces.new((v1, v2, v3))
-
-            duplicate_triangle_bm.faces.ensure_lookup_table()
-
-            mat_orange = bpy.data.materials.get(face_error_name_0)
-            if mat_orange is None:
-                mat_orange = bpy.data.materials.new(name=face_error_name_0)
-                mat_orange.diffuse_color = (1.0, 0.5, 0.0, 1.0)
-                duplicate_triangle_object_mesh.data.materials.append(mat_orange)
-            else:
-                if mat_orange not in  list(duplicate_triangle_object_mesh.data.materials):
-                    duplicate_triangle_object_mesh.data.materials.append(mat_orange)
-
-            if face_color == (1.0, 0.5, 0.0, 1.0):
-                mat = mat_orange
-
-            duplicate_triangle_object_mesh_materials = list(duplicate_triangle_object_mesh.data.materials)
-            duplicate_triangle_bm.faces[duplicate_triangle_face_id].material_index = duplicate_triangle_object_mesh_materials.index(mat)
+        elif face_error == duplicate_triangle_face_error_name:
+            duplicate_triangle_mesh = bpy.data.meshes.get(duplicate_triangle_face_error_name)
+            duplicate_triangle_object_mesh = bpy.data.objects.get(duplicate_triangle_face_error_name)
+            generate_mesh_face(duplicate_triangle_face_error_name, duplicate_triangle_mesh, duplicate_triangle_object_mesh, duplicate_triangle_bm, vert_data, face, duplicate_triangle_face_id, face_color)
             duplicate_triangle_face_id += 1
 
-        elif face_error == "two fog planes intersected in a cluster (black)":
-            face_error_name_0 = "two fog planes intersected in a cluster (black)"
-            if intersecting_fog_mesh is None:
-                intersecting_fog_mesh = bpy.data.meshes.new(face_error_name_0)
-            if intersecting_fog_object_mesh is None:
-                intersecting_fog_object_mesh = bpy.data.objects.new(face_error_name_0, intersecting_fog_mesh)
-                collection.objects.link(intersecting_fog_object_mesh)
-
-            p1 = vert_data[face[0]]
-            p2 = vert_data[face[1]]
-            p3 = vert_data[face[2]]
-            v1 = intersecting_fog_bm.verts.new((p1[0], p1[1], p1[2]))
-            v2 = intersecting_fog_bm.verts.new((p2[0], p2[1], p2[2]))
-            v3 = intersecting_fog_bm.verts.new((p3[0], p3[1], p3[2]))
-            intersecting_fog_bm.faces.new((v1, v2, v3))
-
-            intersecting_fog_bm.faces.ensure_lookup_table()
-
-            mat_black = bpy.data.materials.get(face_error_name_0)
-            if mat_black is None:
-                mat_black = bpy.data.materials.new(name=face_error_name_0)
-                mat_black.diffuse_color = (0.0, 0.0, 0.0, 1.0)
-                intersecting_fog_object_mesh.data.materials.append(mat_black)
-            else:
-                if mat_black not in  list(intersecting_fog_object_mesh.data.materials):
-                    intersecting_fog_object_mesh.data.materials.append(mat_black)
-
-            if face_color == (0.0, 0.0, 0.0, 1.0):
-                mat = mat_black
-
-            intersecting_fog_object_mesh_materials = list(intersecting_fog_object_mesh.data.materials)
-            intersecting_fog_bm.faces[intersecting_fog_face_id].material_index = intersecting_fog_object_mesh_materials.index(mat)
+        elif face_error == intersecting_fog_face_error_name:
+            intersecting_fog_mesh = bpy.data.meshes.get(intersecting_fog_face_error_name)
+            intersecting_fog_object_mesh = bpy.data.objects.get(intersecting_fog_face_error_name)
+            generate_mesh_face(intersecting_fog_face_error_name, intersecting_fog_mesh, intersecting_fog_object_mesh, intersecting_fog_bm, vert_data, face, intersecting_fog_face_id, face_color)
             intersecting_fog_face_id += 1
 
-        elif face_error == "degenerate triangle or UVs (blue)":
-            face_error_name_0 = "degenerate triangle or UVs (blue)"
-            if degenerate_uv_mesh is None:
-                degenerate_uv_mesh = bpy.data.meshes.new(face_error_name_0)
-            if degenerate_uv_object_mesh is None:
-                degenerate_uv_object_mesh = bpy.data.objects.new(face_error_name_0, degenerate_uv_mesh)
-                collection.objects.link(degenerate_uv_object_mesh)
-
-            p1 = vert_data[face[0]]
-            p2 = vert_data[face[1]]
-            p3 = vert_data[face[2]]
-            v1 = degenerate_uv_bm.verts.new((p1[0], p1[1], p1[2]))
-            v2 = degenerate_uv_bm.verts.new((p2[0], p2[1], p2[2]))
-            v3 = degenerate_uv_bm.verts.new((p3[0], p3[1], p3[2]))
-            degenerate_uv_bm.faces.new((v1, v2, v3))
-
-            degenerate_uv_bm.faces.ensure_lookup_table()
-
-            mat_blue = bpy.data.materials.get(face_error_name_0)
-            if mat_blue is None:
-                mat_blue = bpy.data.materials.new(name=face_error_name_0)
-                mat_blue.diffuse_color = (0.0, 0.0, 1.0, 1.0)
-                degenerate_uv_object_mesh.data.materials.append(mat_blue)
-            else:
-                if mat_blue not in  list(degenerate_uv_object_mesh.data.materials):
-                    degenerate_uv_object_mesh.data.materials.append(mat_blue)
-
-            if face_color == (0.0, 0.0, 1.0, 1.0):
-                mat = mat_blue
-
-            degenerate_uv_object_mesh_materials = list(degenerate_uv_object_mesh.data.materials)
-            degenerate_uv_bm.faces[degenerate_uv_face_id].material_index = degenerate_uv_object_mesh_materials.index(mat)
+        elif face_error == degenerate_uv_face_error_name:
+            degenerate_uv_mesh = bpy.data.meshes.get(degenerate_uv_face_error_name)
+            degenerate_uv_object_mesh = bpy.data.objects.get(degenerate_uv_face_error_name)
+            generate_mesh_face(degenerate_uv_face_error_name, degenerate_uv_mesh, degenerate_uv_object_mesh, degenerate_uv_bm, vert_data, face, degenerate_uv_face_id, face_color)
             degenerate_uv_face_id += 1
 
-        elif face_error == "unknown (white)":
-            face_error_name_0 = "unknown (white)"
-            if unknown_mesh is None:
-                unknown_mesh = bpy.data.meshes.new(face_error_name_0)
-            if unknown_object_mesh is None:
-                unknown_object_mesh = bpy.data.objects.new(face_error_name_0, unknown_mesh)
-                collection.objects.link(unknown_object_mesh)
-
-            p1 = vert_data[face[0]]
-            p2 = vert_data[face[1]]
-            p3 = vert_data[face[2]]
-            v1 = unknown_bm.verts.new((p1[0], p1[1], p1[2]))
-            v2 = unknown_bm.verts.new((p2[0], p2[1], p2[2]))
-            v3 = unknown_bm.verts.new((p3[0], p3[1], p3[2]))
-            unknown_bm.faces.new((v1, v2, v3))
-
-            unknown_bm.faces.ensure_lookup_table()
-
-            mat_white = bpy.data.materials.get(face_error_name_0)
-            if mat_white is None:
-                mat_white = bpy.data.materials.new(name=face_error_name_0)
-                mat_white.diffuse_color = (0.0, 0.0, 0.0, 1.0)
-                unknown_object_mesh.data.materials.append(mat_white)
-            else:
-                if mat_white not in  list(unknown_object_mesh.data.materials):
-                    unknown_object_mesh.data.materials.append(mat_white)
-
-            if face_color == (0.0, 0.0, 0.0, 1.0):
-                mat = mat_white
-
-            unknown_object_mesh_materials = list(unknown_object_mesh.data.materials)
-            unknown_bm.faces[unknown_face_id].material_index = unknown_object_mesh_materials.index(mat)
+        else:
+            unknown_mesh = bpy.data.meshes.get(unknown_error_name)
+            unknown_object_mesh = bpy.data.objects.get(unknown_error_name)
+            generate_mesh_face(unknown_error_name, unknown_mesh, unknown_object_mesh, unknown_bm, vert_data, face, unknown_face_id, face_color)
             unknown_face_id += 1
 
     for edge_idx, edge in enumerate(line_data):
         edge_color = line_color_data[edge_idx]
         edge_error = line_error_data[edge_idx]
-        if edge_error == "bad edge (red)":
-            edge_error_name_0 = "bad edge (red)"
-            if bad_edge_mesh is None:
-                bad_edge_mesh = bpy.data.meshes.new(edge_error_name_0)
-            if bad_edge_object_mesh is None:
-                bad_edge_object_mesh = bpy.data.objects.new(edge_error_name_0, bad_edge_mesh)
-                collection.objects.link(bad_edge_object_mesh)
+        if edge_error == bad_edge_error_name:
+            bad_edge_mesh = bpy.data.meshes.get(bad_edge_error_name)
+            bad_edge_object_mesh = bpy.data.objects.get(bad_edge_error_name)
+            generate_mesh_edge(bad_edge_error_name, bad_edge_mesh, bad_edge_object_mesh, bad_edge_bm, vert_data, edge, edge_color)
 
-            p1 = vert_data[edge[0]]
-            p2 = vert_data[edge[1]]
-            v1 = bad_edge_bm.verts.new((p1[0], p1[1], p1[2]))
-            v2 = bad_edge_bm.verts.new((p2[0], p2[1], p2[2]))
-            bad_edge_bm.edges.new((v1, v2))
+        elif edge_error == unearthed_edge_error_name:
+            unearthed_edge_mesh = bpy.data.meshes.get(unearthed_edge_error_name)
+            unearthed_edge_object_mesh = bpy.data.objects.get(unearthed_edge_error_name)
+            generate_mesh_edge(unearthed_edge_error_name, unearthed_edge_mesh, unearthed_edge_object_mesh, unearthed_edge_bm, vert_data, edge, edge_color)
 
-            bad_edge_bm.edges.ensure_lookup_table()
-
-            mat_red = bpy.data.materials.get(edge_error_name_0)
-            if mat_red is None:
-                mat_red = bpy.data.materials.new(name=edge_error_name_0)
-                mat_red.diffuse_color = (1.0, 0.0, 0.0, 1.0)
-                bad_edge_object_mesh.data.materials.append(mat_red)
-            else:
-                if mat_red not in  list(bad_edge_object_mesh.data.materials):
-                    bad_edge_object_mesh.data.materials.append(mat_red)
-
-            if edge_color == (1.0, 0.0, 0.0, 1.0):
-                mat = mat_red
-
-            bad_edge_edge_id += 1
-
-        if edge_error == "unearthed edge or T-junction (magenta)":
-            edge_error_name_0 = "unearthed edge or T-junction (magenta)"
-            if unearthed_edge_mesh is None:
-                unearthed_edge_mesh = bpy.data.meshes.new(edge_error_name_0)
-            if unearthed_edge_object_mesh is None:
-                unearthed_edge_object_mesh = bpy.data.objects.new(edge_error_name_0, unearthed_edge_mesh)
-                collection.objects.link(unearthed_edge_object_mesh)
-
-            p1 = vert_data[edge[0]]
-            p2 = vert_data[edge[1]]
-            v1 = unearthed_edge_bm.verts.new((p1[0], p1[1], p1[2]))
-            v2 = unearthed_edge_bm.verts.new((p2[0], p2[1], p2[2]))
-
-            unearthed_edge_bm.edges.new((v1, v2))
-
-            unearthed_edge_bm.edges.ensure_lookup_table()
-
-            mat_magenta = bpy.data.materials.get(edge_error_name_0)
-            if mat_magenta is None:
-                mat_magenta = bpy.data.materials.new(name=edge_error_name_0)
-                mat_magenta.diffuse_color = (1.0, 0.0, 1.0, 1.0)
-                unearthed_edge_object_mesh.data.materials.append(mat_magenta)
-            else:
-                if mat_magenta not in  list(unearthed_edge_object_mesh.data.materials):
-                    unearthed_edge_object_mesh.data.materials.append(mat_magenta)
-
-            if edge_color == (1.0, 0.0, 1.0, 1.0):
-                mat = mat_magenta
-
-            unearthed_edge_id += 1
+        else:
+            bad_edge_mesh = bpy.data.meshes.get(unknown_error_name)
+            bad_edge_object_mesh = bpy.data.objects.get(unknown_error_name)
+            generate_mesh_edge(unknown_error_name, unknown_mesh, unknown_object_mesh, unknown_bm, vert_data, edge, edge_color)
 
     if coplanar_object_mesh:
         coplanar_bm.to_mesh(coplanar_mesh)
