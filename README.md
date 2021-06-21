@@ -8,25 +8,25 @@ The following games are or will be supported by this script:
 
  * Halo Custom Edition
  * Halo 2 Vista
- * Halo Combat Evolved Anniversary MCC - Custom Edition
+ * Halo Combat Evolved Anniversary MCC - Classic
  * Halo 2 Anniversary MCC - Classic
  * Halo 3 MCC
  * Halo 3 ODST MCC
 
 Script supports the following features:
 
-Feature                    | Halo Custom Edition/Halo Combat Evolved Anniversary MCC - Custom Edition | Halo 2 Vista/Halo 2 Anniversary MCC - Classic  | Halo 3 MCC/ Halo 3 ODST MCC
--------------------------- | ------------------------------------------------------------------------ | ---------------------------------------------- | ------------------------------------------
-Levels(JMS/ASS)            | Full Support                                                             | Full Support                                   | Untested(See 1 and 2)
-GBXmodel/Render Model(JMS) | Full Support                                                             | Full Support                                   | Untested(See 1 and 2)
-Collision Geometry(JMS)    | Full Support                                                             | Full Support                                   | Untested(See 1 and 2)
-Physics Models(JMS)        | Full Support                                                             | Partial Support(See 3)                         | Untested(See 1 and 2)
-Animations(JMA)            | Full Support                                                             | Full Support                                   | Untested(See 1)
-JMI Exporting              | N/A                                                                      | Full Support                                   | Full Support
-WRL Importing              | Full Support                                                             | No Support(See 4)                              | N/A
-JMS Importing              | Partial Support(See 5)                                                   | Partial Support(See 3 and 5)                   | Partial Support(See 3 and 5)
-JMA Importing              | Full Support                                                             | Full Support                                   | Full Support
-ASS Importing              | N/A                                                                      | Partial Support(See 5)                         | Partial Support(See 5) 
+Feature                    | Halo Custom Edition/Halo Combat Evolved Anniversary MCC - Classic | Halo 2 Vista/Halo 2 Anniversary MCC - Classic  | Halo 3 MCC/ Halo 3 ODST MCC
+-------------------------- | ----------------------------------------------------------------- | ---------------------------------------------- | ------------------------------------------
+Levels(JMS/ASS)            | Full Support                                                      | Full Support                                   | Untested(See 1 and 2)
+GBXmodel/Render Model(JMS) | Full Support                                                      | Full Support                                   | Untested(See 1 and 2)
+Collision Geometry(JMS)    | Full Support                                                      | Full Support                                   | Untested(See 1 and 2)
+Physics Models(JMS)        | Full Support                                                      | Partial Support(See 3)                         | Untested(See 1 and 2)
+Animations(JMA)            | Full Support                                                      | Full Support                                   | Untested(See 1)
+JMI Exporting              | N/A                                                               | Full Support                                   | Full Support
+WRL Importing              | Full Support                                                      | No Support(See 4)                              | N/A
+JMS Importing              | Partial Support(See 5)                                            | Partial Support(See 3 and 5)                   | Partial Support(See 3 and 5)
+JMA Importing              | Full Support                                                      | Full Support                                   | Full Support
+ASS Importing              | N/A                                                               | Partial Support(See 5)                         | Partial Support(See 5) 
 
  1. Toolset has only seen Halo 3 legacy JMS/JMA/ASS files. While it would likely work as is with the original toolset, there is no guarantee that this won't change in the future.
  2. Toolset is currently missing support for importing or exporting certain Halo 3 JMS features such as skylights and the W coordinate.
