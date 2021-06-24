@@ -31,7 +31,7 @@ from io_scene_halo.global_functions import global_functions
 
 def rename_prefix(prefix_string):
     node_prefix_tuple = ('b ', 'b_', 'bone ','bone_', 'frame', 'frame ','frame_', 'bip01', 'bip01 ', 'bip01_')
-    
+
     selected_objects_list = bpy.context.selected_objects
 
     if not selected_objects_list == None:
@@ -60,7 +60,7 @@ def rename_prefix(prefix_string):
                                 prefix_limiter += ("[{}]".format(letter))
                             object_name = re.split(prefix_limiter, object.name, flags=re.IGNORECASE)[1]
 
-                    object.name = prefix_string + object_name        
+                    object.name = prefix_string + object_name
 
     return {'FINISHED'}
 

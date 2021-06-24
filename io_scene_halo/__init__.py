@@ -570,7 +570,6 @@ class Halo_ScenePropertiesGroup(PropertyGroup):
     game_version: EnumProperty(
         name="Game:",
         description="What game will you be exporting for",
-        default="halo2",
         items=[
                 ('haloce', "Halo CE", "Show properties for Halo Custom Edition Or Halo CE MCC"),
                 ('halo2', "Halo 2", "Show properties for Halo 2 Vista or Halo 2 MCC"),
@@ -713,7 +712,6 @@ class ASS_ScenePropertiesGroup(PropertyGroup):
     game_version: EnumProperty(
         name="Game:",
         description="What game will the model file be used for",
-        default="halo2mcc",
         items=[
                 ('halo2mcc', "Halo 2", "Export a level intended for Halo 2 Vista or Halo 2 MCC"),
                 ('halo3mcc', "Halo 3 MCC", "Export a level intended for Halo 3 MCC"),
@@ -735,7 +733,7 @@ class ASS_ScenePropertiesGroup(PropertyGroup):
     folder_structure: BoolProperty(
         name ="Generate Asset Subdirectories",
         description = "Generate folder subdirectories for exported assets",
-        default = True,
+        default = False,
         )
 
     scale_enum: EnumProperty(
@@ -1015,7 +1013,6 @@ class JMA_ScenePropertiesGroup(PropertyGroup):
     game_version: EnumProperty(
         name="Game:",
         description="What game will the model file be used for",
-        default="halo2mcc",
         items=[
                 ('haloce', "Halo CE", "Export an animation intended for Halo Custom Edition Or Halo CE MCC"),
                 ('halo2vista', "Halo 2 Vista", "Export an animation intended for Halo 2 Vista"),
@@ -1034,7 +1031,7 @@ class JMA_ScenePropertiesGroup(PropertyGroup):
     folder_structure: BoolProperty(
         name ="Generate Asset Subdirectories",
         description = "Generate folder subdirectories for exported assets",
-        default = True,
+        default = False,
         )
 
     use_scene_properties: BoolProperty(
@@ -1177,7 +1174,6 @@ class JMI_ScenePropertiesGroup(PropertyGroup):
     jmi_version: EnumProperty(
         name="Version:",
         description="What version to use for the model file",
-        default="8210",
         options={'HIDDEN'},
         items=[ ('8207', "8207", "H2/H3 Non-functional"),
                 ('8208', "8208", "H2/H3 Non-functional"),
@@ -1217,7 +1213,6 @@ class JMI_ScenePropertiesGroup(PropertyGroup):
     game_version: EnumProperty(
         name="Game:",
         description="What game will the model file be used for",
-        default="halo2mcc",
         items=[ ('halo2mcc', "Halo 2 MCC", "Export a JMS intended for Halo 2 MCC"),
                 ('halo3mcc', "Halo 3 MCC", "Export a JMS intended for Halo 3 MCC"),
                ]
@@ -1547,7 +1542,6 @@ class JMS_ScenePropertiesGroup(PropertyGroup):
     game_version: EnumProperty(
         name="Game:",
         description="What game will the model file be used for",
-        default="halo2mcc",
         items=[
                 ('haloce', "Halo CE", "Export a JMS intended for Halo Custom Edition Or Halo CE MCC"),
                 ('halo2vista', "Halo 2 Vista", "Export a JMS intended for Halo 2 Vista"),
@@ -1559,7 +1553,7 @@ class JMS_ScenePropertiesGroup(PropertyGroup):
     folder_structure: BoolProperty(
         name ="Generate Asset Subdirectories",
         description = "Generate folder subdirectories for exported assets",
-        default = True,
+        default = False,
         )
 
     folder_type: EnumProperty(
@@ -1793,7 +1787,6 @@ class ExportASS(Operator, ExportHelper):
     game_version: EnumProperty(
         name="Game:",
         description="What game will the model file be used for",
-        default="halo2mcc",
         items=[
                 ('halo2mcc', "Halo 2", "Export a level intended for Halo 2 Vista or Halo 2 MCC"),
                 ('halo3mcc', "Halo 3 MCC", "Export a level intended for Halo 3 MCC"),
@@ -1815,7 +1808,7 @@ class ExportASS(Operator, ExportHelper):
     folder_structure: BoolProperty(
         name ="Generate Asset Subdirectories",
         description = "Generate folder subdirectories for exported assets",
-        default = True,
+        default = False,
         )
 
     apply_modifiers: BoolProperty(
@@ -2214,7 +2207,6 @@ class ExportJMS(Operator, ExportHelper):
     game_version: EnumProperty(
         name="Game:",
         description="What game will the model file be used for",
-        default="halo2mcc",
         items=[
                 ('haloce', "Halo CE", "Export a JMS intended for Halo Custom Edition or Halo CE MCC"),
                 ('halo2vista', "Halo 2 Vista", "Export a JMS intended for Halo 2 Vista"),
@@ -2226,7 +2218,7 @@ class ExportJMS(Operator, ExportHelper):
     folder_structure: BoolProperty(
         name ="Generate Asset Subdirectories",
         description = "Generate folder subdirectories for exported assets",
-        default = True,
+        default = False,
         )
 
     folder_type: EnumProperty(
@@ -2701,7 +2693,7 @@ class ExportJMA(Operator, ExportHelper):
     jma_version: EnumProperty(
         name="Version:",
         description="What version to use for the animation file",
-        default="16395",
+        default="16392",
         options={'HIDDEN'},
         items=[
                 ('16390', "16390", "CE/H2/H3"),
@@ -2751,7 +2743,6 @@ class ExportJMA(Operator, ExportHelper):
     game_version: EnumProperty(
         name="Game:",
         description="What game will the model file be used for",
-        default="halo2vista",
         items=[
                 ('haloce', "Halo CE", "Export an animation intended for Halo CE or Halo CE MCC"),
                 ('halo2vista', "Halo 2 Vista", "Export an animation intended for Halo 2 Vista"),
@@ -2793,7 +2784,7 @@ class ExportJMA(Operator, ExportHelper):
     folder_structure: BoolProperty(
         name ="Generate Asset Subdirectories",
         description = "Generate folder subdirectories for exported assets",
-        default = True,
+        default = False,
         )
 
     scale_enum: EnumProperty(
@@ -3142,7 +3133,6 @@ class ExportJMI(Operator, ExportHelper):
     game_version: EnumProperty(
         name="Game:",
         description="What game will the model file be used for",
-        default="halo2mcc",
         items=[ ('halo2mcc', "Halo 2 MCC", "Export a JMS set intended for Halo 2 MCC"),
                 ('halo3mcc', "Halo 3 MCC", "Export a JMS set intended for Halo 3 MCC"),
                ]
