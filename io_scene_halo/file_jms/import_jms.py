@@ -875,7 +875,7 @@ class JMSAsset(global_functions.HaloAsset):
                     else:
                         child_node = None
 
-def load_file(context, filepath, report, game_version, fix_parents):
+def load_file(context, filepath, report, game_version, reuse_armature, fix_parents):
     jms_file = JMSAsset(filepath, game_version)
 
     collection = bpy.context.collection
@@ -907,7 +907,7 @@ def load_file(context, filepath, report, game_version, fix_parents):
                 if exist_count == len(jms_file.nodes):
                     armature = obj
 
-    if armature == None:
+    if armature == None or not reuse_armature:
         pelvis = None
         thigh0 = None
         thigh1 = None

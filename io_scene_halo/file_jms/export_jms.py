@@ -342,7 +342,7 @@ class JMSScene(global_functions.HaloAsset):
             self.direction = direction
             self.radiant_intensity = radiant_intensity
             self.solid_angle = solid_angle
-    def __init__(self, context, report, version, game_version, apply_modifiers, hidden_geo, export_render, export_collision, export_physics, custom_scale, object_list):
+    def __init__(self, context, report, version, game_version, generate_checksum, apply_modifiers, hidden_geo, export_render, export_collision, export_physics, custom_scale, object_list):
         self.valid_gen_list = ['halo2',
                                'halo3mcc'
                                ]
@@ -581,7 +581,8 @@ class JMSScene(global_functions.HaloAsset):
 
             self.nodes.append(JMSScene.Node(name, children, child, sibling, parent, rotation, translation))
 
-        self.node_checksum = global_functions.node_hierarchy_checksum(self.nodes, self.nodes[0], self.node_checksum)
+        if generate_checksum:
+            self.node_checksum = global_functions.node_hierarchy_checksum(self.nodes, self.nodes[0], self.node_checksum)
 
         for marker in marker_list:
             untouched_name = marker.name.split('#', 1)[1] #remove marker symbol from name
@@ -1206,6 +1207,7 @@ def write_file(context,
                version,
                game_version,
                encoding,
+               generate_checksum,
                folder_structure,
                folder_type,
                apply_modifiers,
@@ -1221,7 +1223,7 @@ def write_file(context,
                jmi
                ):
 
-    jms_scene = JMSScene(context, report, version, game_version, apply_modifiers, hidden_geo, export_render, export_collision, export_physics, custom_scale, object_list)
+    jms_scene = JMSScene(context, report, version, game_version, generate_checksum, apply_modifiers, hidden_geo, export_render, export_collision, export_physics, custom_scale, object_list)
 
     if version > 8209:
         decimal_1 = '\n%0.10f'
@@ -2055,6 +2057,7 @@ def command_queue(context,
                   jms_version_ce,
                   jms_version_h2,
                   jms_version_h3,
+                  generate_checksum,
                   folder_structure,
                   folder_type,
                   apply_modifiers,
@@ -2203,6 +2206,7 @@ def command_queue(context,
                    version,
                    game_version,
                    encoding,
+                   generate_checksum,
                    folder_structure,
                    folder_type,
                    apply_modifiers,
@@ -2226,6 +2230,7 @@ def command_queue(context,
                    version,
                    game_version,
                    encoding,
+                   generate_checksum,
                    folder_structure,
                    folder_type,
                    apply_modifiers,
@@ -2249,6 +2254,7 @@ def command_queue(context,
                    version,
                    game_version,
                    encoding,
+                   generate_checksum,
                    folder_structure,
                    folder_type,
                    apply_modifiers,

@@ -89,7 +89,7 @@ def write_file(context, filepath, report, jmi_version, jmi_version_h2, jmi_versi
             os.makedirs(world_set)
 
         bulk_output = world_set + os.sep + world_name
-        export_jms.command_queue(context, bulk_output, report, jmi_version, None, jmi_version_h2, jmi_version_h3, True, folder_type, apply_modifiers, triangulate_faces, edge_split, use_edge_angle, use_edge_sharp, split_angle, clean_normalize_weights, scale_enum, scale_float, console, None, None, hidden_geo, export_render, export_collision, export_physics, game_version, encoding, world_nodes)
+        export_jms.command_queue(context, bulk_output, report, jmi_version, None, jmi_version_h2, jmi_version_h3, True, True, folder_type, apply_modifiers, triangulate_faces, edge_split, use_edge_angle, use_edge_sharp, split_angle, clean_normalize_weights, scale_enum, scale_float, console, None, None, hidden_geo, export_render, export_collision, export_physics, game_version, encoding, world_nodes)
 
     report({'INFO'}, "Export completed successfully")
     return {'FINISHED'}

@@ -45,7 +45,7 @@ class JMAScene(global_functions.HaloAsset):
             self.child = child
             self.sibling = sibling
 
-    def __init__(self, context, report, version, game_version, extension, custom_scale, biped_controller):
+    def __init__(self, context, report, version, generate_checksum, game_version, extension, custom_scale, biped_controller):
         global_functions.unhide_all_collections()
         scene = bpy.context.scene
         view_layer = bpy.context.view_layer
@@ -126,7 +126,8 @@ class JMAScene(global_functions.HaloAsset):
 
             self.nodes.append(JMAScene.Node(name, parent_node, first_child_node, first_sibling_node))
 
-        self.node_checksum = global_functions.node_hierarchy_checksum(self.nodes, self.nodes[0], self.node_checksum)
+        if generate_checksum:
+            self.node_checksum = global_functions.node_hierarchy_checksum(self.nodes, self.nodes[0], self.node_checksum)
 
         for frame in range(first_frame, last_frame):
             transforms_for_frame = []
@@ -176,6 +177,7 @@ def write_file(context,
                jma_version_ce,
                jma_version_h2,
                jma_version_h3,
+               generate_checksum,
                custom_frame_rate,
                frame_rate_float,
                biped_controller,
@@ -211,7 +213,7 @@ def write_file(context,
         frame_rate_value = int(custom_frame_rate)
 
 
-    jma_scene = JMAScene(context, report, version, game_version, extension, custom_scale, biped_controller)
+    jma_scene = JMAScene(context, report, version, generate_checksum, game_version, extension, custom_scale, biped_controller)
 
     if version > 16394:
         decimal_1 = '\n%0.10f'

@@ -828,6 +828,10 @@ class JMA_SceneProps(Panel):
         box = layout.box()
         box.label(text="File Details:")
         col = box.column(align=True)
+
+        row = col.row()
+        row.label(text='Generate Checksum:')
+        row.prop(scene_jma, "generate_checksum", text='')
         if scene_jma.game_version == 'haloce':
             row = col.row()
             row.label(text='Extension:')
@@ -1019,6 +1023,12 @@ class JMA_ScenePropertiesGroup(PropertyGroup):
                 ('halo2mcc', "Halo 2 MCC", "Export an animation intended for Halo 2 MCC"),
                 ('halo3mcc', "Halo 3 MCC", "Export an animation intended for Halo 3 MCC"),
                ]
+        )
+
+    generate_checksum: BoolProperty(
+        name ="Generate Node Checksum",
+        description = "Generates a checksum for the current node skeleton. Defaults to 0 if unchecked.",
+        default = True,
         )
 
     biped_controller: BoolProperty(
@@ -1354,6 +1364,9 @@ class JMS_SceneProps(Panel):
             row = col.row()
             row.label(text='LOD:')
             row.prop(scene_jms, "level_of_detail_ce", text='')
+            row = col.row()
+            row.label(text='Generate Checksum:')
+            row.prop(scene_jms, "generate_checksum", text='')
 
         elif scene_jms.game_version == 'halo2vista' or scene_jms.game_version == 'halo2mcc':
             if scene_halo.expert_mode:
@@ -1372,6 +1385,7 @@ class JMS_SceneProps(Panel):
                 row = col.row()
                 row.label(text='JMS Version:')
                 row.prop(scene_jms, "jms_version_h3", text='')
+
         box = layout.box()
         box.label(text="Mask Options:")
         col = box.column(align=True)
@@ -1548,6 +1562,12 @@ class JMS_ScenePropertiesGroup(PropertyGroup):
                 ('halo2mcc', "Halo 2 MCC", "Export a JMS intended for Halo 2 MCC"),
                 ('halo3mcc', "Halo 3 MCC", "Export a JMS intended for Halo 3 MCC"),
                ]
+        )
+
+    generate_checksum: BoolProperty(
+        name ="Generate Node Checksum",
+        description = "Generates a checksum for the current node skeleton. Defaults to 0 if unchecked.",
+        default = True,
         )
 
     folder_structure: BoolProperty(
@@ -2215,6 +2235,12 @@ class ExportJMS(Operator, ExportHelper):
                ]
         )
 
+    generate_checksum: BoolProperty(
+        name ="Generate Node Checksum",
+        description = "Generates a checksum for the current node skeleton. Defaults to 0 if unchecked.",
+        default = True,
+        )
+
     folder_structure: BoolProperty(
         name ="Generate Asset Subdirectories",
         description = "Generate folder subdirectories for exported assets",
@@ -2343,26 +2369,28 @@ class ExportJMS(Operator, ExportHelper):
             parser.add_argument('-arg2', '--use_scene_properties', dest='use_scene_properties', action='store_true')
             parser.add_argument('-arg3', '--jms_version', dest='jms_version', type=str, default="8210")
             parser.add_argument('-arg4', '--game_version', dest='game_version', type=str, default="halo2mcc")
-            parser.add_argument('-arg5', '--folder_structure', dest='folder_structure', action='store_true')
-            parser.add_argument('-arg6', '--folder_type', dest='folder_type', action='0')
-            parser.add_argument('-arg7', '--apply_modifiers', dest='apply_modifiers', action='store_true')
-            parser.add_argument('-arg8', '--triangulate_faces', dest='triangulate_faces', action='store_true')
-            parser.add_argument('-arg9', '--clean_normalize_weights', dest='clean_normalize_weights', action='store_true')
-            parser.add_argument('-arg10', '--hidden_geo', dest='hidden_geo', action='store_true')
-            parser.add_argument('-arg11', '--permutation', dest='permutation_ce', type=str, default="")
-            parser.add_argument('-arg12', '--lod', dest='level_of_detail_ce', type=str, default="0")
-            parser.add_argument('-arg13', '--edge_split', dest='edge_split', action='store_true')
-            parser.add_argument('-arg14', '--use_edge_angle', dest='use_edge_angle', action='store_true')
-            parser.add_argument('-arg15', '--use_edge_sharp', dest='use_edge_sharp', action='store_true')
-            parser.add_argument('-arg16', '--split_angle', dest='split_angle', type=float, default=1.0)
-            parser.add_argument('-arg17', '--scale_enum', dest='scale_enum', type=str, default="0")
-            parser.add_argument('-arg18', '--scale_float', dest='scale_float', type=float, default=1.0)
-            parser.add_argument('-arg19', '--console', dest='console', action='store_true', default=True)
+            parser.add_argument('-arg5', '--generate_checksum', dest='generate_checksum', action='store_true')
+            parser.add_argument('-arg6', '--folder_structure', dest='folder_structure', action='store_true')
+            parser.add_argument('-arg7', '--folder_type', dest='folder_type', action='0')
+            parser.add_argument('-arg8', '--apply_modifiers', dest='apply_modifiers', action='store_true')
+            parser.add_argument('-arg9', '--triangulate_faces', dest='triangulate_faces', action='store_true')
+            parser.add_argument('-arg10', '--clean_normalize_weights', dest='clean_normalize_weights', action='store_true')
+            parser.add_argument('-arg11', '--hidden_geo', dest='hidden_geo', action='store_true')
+            parser.add_argument('-arg12', '--permutation', dest='permutation_ce', type=str, default="")
+            parser.add_argument('-arg13', '--lod', dest='level_of_detail_ce', type=str, default="0")
+            parser.add_argument('-arg14', '--edge_split', dest='edge_split', action='store_true')
+            parser.add_argument('-arg15', '--use_edge_angle', dest='use_edge_angle', action='store_true')
+            parser.add_argument('-arg16', '--use_edge_sharp', dest='use_edge_sharp', action='store_true')
+            parser.add_argument('-arg17', '--split_angle', dest='split_angle', type=float, default=1.0)
+            parser.add_argument('-arg18', '--scale_enum', dest='scale_enum', type=str, default="0")
+            parser.add_argument('-arg19', '--scale_float', dest='scale_float', type=float, default=1.0)
+            parser.add_argument('-arg20', '--console', dest='console', action='store_true', default=True)
             args = parser.parse_known_args(argv)[0]
             print('filepath: ', args.filepath)
             print('use_scene_properties: ', args.use_scene_properties)
             print('jms_version: ', args.jms_version)
             print('game_version: ', args.game_version)
+            print('generate_checksum: ', args.generate_checksum)
             print('folder_structure: ', args.folder_structure)
             print('folder_type: ', args.folder_type)
             print('apply_modifiers: ', args.apply_modifiers)
@@ -2382,6 +2410,7 @@ class ExportJMS(Operator, ExportHelper):
             self.use_scene_properties = args.use_scene_properties
             self.jms_version = args.jms_version
             self.game_version = args.game_version
+            self.generate_checksum = args.generate_checksum
             self.folder_structure = args.folder_structure
             self.folder_type = args.folder_type
             self.apply_modifiers = args.apply_modifiers
@@ -2404,7 +2433,7 @@ class ExportJMS(Operator, ExportHelper):
         if self.game_version == 'halo2vista' or self.game_version == 'halo2mcc':
             game_version = 'halo2'
 
-        return run_code("export_jms.command_queue(context, self.filepath, self.report, self.jms_version, self.jms_version_ce, self.jms_version_h2, self.jms_version_h3, self.folder_structure, self.folder_type, self.apply_modifiers, self.triangulate_faces, self.edge_split, self.use_edge_angle, self.use_edge_sharp, self.split_angle, self.clean_normalize_weights, self.scale_enum, self.scale_float, self.console, self.permutation_ce, self.level_of_detail_ce, self.hidden_geo, self.export_render, self.export_collision, self.export_physics, game_version, encoding, world_nodes)")
+        return run_code("export_jms.command_queue(context, self.filepath, self.report, self.jms_version, self.jms_version_ce, self.jms_version_h2, self.jms_version_h3, self.generate_checksum, self.folder_structure, self.folder_type, self.apply_modifiers, self.triangulate_faces, self.edge_split, self.use_edge_angle, self.use_edge_sharp, self.split_angle, self.clean_normalize_weights, self.scale_enum, self.scale_float, self.console, self.permutation_ce, self.level_of_detail_ce, self.hidden_geo, self.export_render, self.export_collision, self.export_physics, game_version, encoding, world_nodes)")
 
     def draw(self, context):
         scene = context.scene
@@ -2428,6 +2457,7 @@ class ExportJMS(Operator, ExportHelper):
             self.game_version = scene_jms.game_version
             self.jms_version_ce = scene_jms.jms_version_ce
             self.permutation_ce = scene_jms.permutation_ce
+            self.generate_checksum = scene_jms.generate_checksum
             self.level_of_detail_ce = scene_jms.level_of_detail_ce
             self.jms_version_h2 = scene_jms.jms_version_h2
             self.jms_version_h3 = scene_jms.jms_version_h3
@@ -2465,6 +2495,10 @@ class ExportJMS(Operator, ExportHelper):
             row.enabled = is_enabled
             row.label(text='LOD:')
             row.prop(self, "level_of_detail_ce", text='')
+            row = col.row()
+            row.enabled = is_enabled
+            row.label(text='Generate Checksum:')
+            row.prop(self, "generate_checksum", text='')
 
         elif self.game_version == 'halo2vista' or self.game_version == 'halo2mcc':
             if scene_halo.expert_mode:
@@ -2582,6 +2616,12 @@ class ImportJMS(Operator, ImportHelper):
                ]
         )
 
+    reuse_armature: BoolProperty(
+        name ="Reuse Armature",
+        description = "Reuse a preexisting armature in the scene if it matches what is in the JMS file",
+        default = True,
+        )
+
     fix_parents: BoolProperty(
         name ="Force node parents",
         description = "Force thigh bones to use pelvis and clavicles to use spine1. Used to match node import behavior used by Halo 2, Halo 3, and Halo 3 ODST",
@@ -2600,7 +2640,8 @@ class ImportJMS(Operator, ImportHelper):
             parser = argparse.ArgumentParser()
             parser.add_argument('-arg1', '--filepath', dest='filepath', metavar='FILE', required = True)
             parser.add_argument('-arg2', '--game_version', dest='game_version', type=str, default="halo2")
-            parser.add_argument('-arg3', '--fix_parents', dest='fix_parents', action='store_true')
+            parser.add_argument('-arg3', '--reuse_armature', dest='reuse_armature', action='store_true')
+            parser.add_argument('-arg4', '--fix_parents', dest='fix_parents', action='store_true')
             args = parser.parse_known_args(argv)[0]
             print('filepath: ', args.filepath)
             print('game_version: ', args.game_version)
@@ -2609,7 +2650,7 @@ class ImportJMS(Operator, ImportHelper):
             self.game_version = args.game_version
             self.fix_parents = args.fix_parents
 
-        return run_code("import_jms.load_file(context, self.filepath, self.report, self.game_version, self.fix_parents)")
+        return run_code("import_jms.load_file(context, self.filepath, self.report, self.game_version, self.reuse_armature, self.fix_parents)")
 
     def draw(self, context):
         layout = self.layout
@@ -2618,10 +2659,15 @@ class ImportJMS(Operator, ImportHelper):
         col = box.column(align=True)
         row = col.row()
         row.prop(self, "game_version", text='')
+
+        box = layout.box()
+        box.label(text="Import Options:")
+        col = box.column(align=True)
+        
+        row = col.row()
+        row.label(text='Reuse Armature:')
+        row.prop(self, "reuse_armature", text='')
         if self.game_version == 'auto' or self.game_version == 'halo2' or self.game_version == 'halo3':
-            box = layout.box()
-            box.label(text="Import Options:")
-            col = box.column(align=True)
             row = col.row()
             row.label(text='Force node parents:')
             row.prop(self, "fix_parents", text='')
@@ -2740,6 +2786,13 @@ class ExportJMA(Operator, ExportHelper):
                 ('16395', "16395", "H3"),
                ]
         )
+
+    generate_checksum: BoolProperty(
+        name ="Generate Node Checksum",
+        description = "Generates a checksum for the current node skeleton. Defaults to 0 if unchecked.",
+        default = True,
+        )
+
     game_version: EnumProperty(
         name="Game:",
         description="What game will the model file be used for",
@@ -2829,6 +2882,7 @@ class ExportJMA(Operator, ExportHelper):
                     self.jma_version_ce,
                     self.jma_version_h2,
                     self.jma_version_h3,
+                    self.generate_checksum,
                     self.custom_frame_rate,
                     self.frame_rate_float,
                     self.biped_controller,
@@ -2844,18 +2898,20 @@ class ExportJMA(Operator, ExportHelper):
             parser.add_argument('-arg2', '--extension', dest='extension', type=str, default=".JMA")
             parser.add_argument('-arg3', '--jma_version', dest='jma_version', type=str, default="16392")
             parser.add_argument('-arg4', '--game_version', dest='game_version', type=str, default="halo2mcc")
-            parser.add_argument('-arg5', '--custom_frame_rate', dest='custom_frame_rate', type=str, default="30")
-            parser.add_argument('-arg6', '--frame_rate_float', dest='frame_rate_float', type=str, default=30)
-            parser.add_argument('-arg7', '--biped_controller', dest='biped_controller', action='store_true')
-            parser.add_argument('-arg8', '--folder_structure', dest='folder_structure', action='store_true')
-            parser.add_argument('-arg9', '--scale_enum', dest='scale_enum', type=str, default="0")
-            parser.add_argument('-arg10', '--scale_float', dest='scale_float', type=float, default=1.0)
-            parser.add_argument('-arg11', '--console', dest='console', action='store_true', default=True)
+            parser.add_argument('-arg5', '--generate_checksum', dest='generate_checksum', action='store_true')
+            parser.add_argument('-arg6', '--custom_frame_rate', dest='custom_frame_rate', type=str, default="30")
+            parser.add_argument('-arg7', '--frame_rate_float', dest='frame_rate_float', type=str, default=30)
+            parser.add_argument('-arg8', '--biped_controller', dest='biped_controller', action='store_true')
+            parser.add_argument('-arg9', '--folder_structure', dest='folder_structure', action='store_true')
+            parser.add_argument('-arg10', '--scale_enum', dest='scale_enum', type=str, default="0")
+            parser.add_argument('-arg11', '--scale_float', dest='scale_float', type=float, default=1.0)
+            parser.add_argument('-arg12', '--console', dest='console', action='store_true', default=True)
             args = parser.parse_known_args(argv)[0]
             print('filepath: ', args.filepath)
             print('extension: ', args.extension)
             print('jma_version: ', args.jma_version)
             print('game_version: ', args.game_version)
+            print('generate_checksum: ', args.generate_checksum)
             print('custom_frame_rate: ', args.custom_frame_rate)
             print('frame_rate_float: ', args.frame_rate_float)
             print('biped_controller: ', args.biped_controller)
@@ -2867,6 +2923,7 @@ class ExportJMA(Operator, ExportHelper):
             self.extension = args.extension
             self.jma_version = args.jma_version
             self.game_version = args.game_version
+            self.generate_checksum = args.generate_checksum
             self.custom_frame_rate = args.custom_frame_rate
             self.frame_rate_float = args.frame_rate_float
             self.biped_controller = args.biped_controller
@@ -2904,6 +2961,7 @@ class ExportJMA(Operator, ExportHelper):
         col = box.column(align=True)
         if scene_jma.use_scene_properties:
             self.game_version = scene_jma.game_version
+            self.generate_checksum = scene_jma.generate_checksum
             self.extension_ce = scene_jma.extension_ce
             self.jma_version_ce = scene_jma.jma_version_ce
             self.extension_h2 = scene_jma.extension_h2
@@ -2921,6 +2979,10 @@ class ExportJMA(Operator, ExportHelper):
             else:
                 self.custom_frame_rate = '%s' % (scene.render.fps)
 
+        row = col.row()
+        row.enabled = is_enabled
+        row.label(text='Generate Checksum:')
+        row.prop(self, "generate_checksum", text='')
         if self.game_version == 'haloce':
             row = col.row()
             row.enabled = is_enabled
@@ -2953,6 +3015,7 @@ class ExportJMA(Operator, ExportHelper):
                 row.enabled = is_enabled
                 row.label(text='JMA Version:')
                 row.prop(self, "jma_version_h3", text='')
+
         box = layout.box()
         box.label(text="Scene Options:")
         col = box.column(align=True)
