@@ -46,6 +46,3 @@ def report_crash():
 
         dump_path = report.dump()
         print(f"Dumped crash report to {dump_path}")
-
-
-

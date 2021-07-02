@@ -34,7 +34,7 @@ from math import degrees
 from bpy_extras import io_utils
 from random import seed, randint
 from mathutils import Vector, Quaternion, Matrix
-from io_scene_halo.global_functions import global_functions
+from ..global_functions import global_functions
 
 def get_region(default_region, region):
     set_region = None
@@ -420,7 +420,24 @@ class JMSScene(global_functions.HaloAsset):
                 if global_functions.set_ignore(obj) == False or hidden_geo:
                     if not obj.parent == None:
                         if obj.parent.type == 'ARMATURE' or parent_name.startswith(node_prefix_tuple):
-                            marker_list.append(obj)
+                            if hasattr(obj.data, 'jms'):
+                                if export_render and obj.data.jms.marker_mask_type =='0':
+                                    marker_list.append(obj)
+                                elif export_collision and obj.data.jms.marker_mask_type =='1':
+                                    marker_list.append(obj)
+                                elif export_physics and obj.data.jms.marker_mask_type =='2':
+                                    marker_list.append(obj)
+                                elif obj.data.jms.marker_mask_type =='3':
+                                    marker_list.append(obj)
+                            elif hasattr(obj, 'marker'):
+                                if export_render and obj.marker.marker_mask_type =='0':
+                                    marker_list.append(obj)
+                                elif export_collision and obj.marker.marker_mask_type =='1':
+                                    marker_list.append(obj)
+                                elif export_physics and obj.marker.marker_mask_type =='2':
+                                    marker_list.append(obj)
+                                elif obj.marker.marker_mask_type =='3':
+                                    marker_list.append(obj)
 
             elif obj.name[0:1].lower() == '@' and len(obj.data.polygons) > 0:
                 if global_functions.set_ignore(obj) == False or hidden_geo:
@@ -589,12 +606,27 @@ class JMSScene(global_functions.HaloAsset):
             name = untouched_name.rsplit('.', 1)[0] #remove name change from duplicating objects in Blender
 
             region_idx = -1
-            if marker.face_maps.active:
-                region_face_map_name = marker.face_maps[0].name
-                if not region_face_map_name in region_list:
-                    region_list.append(region_face_map_name)
+            if hasattr(obj.data, 'jms'):
+                if not marker.data.jms.marker_region == '':
+                    if not marker.data.jms.marker_region in region_list:
+                        region_list.append(marker.data.jms.marker_region)
 
-                region_idx = region_list.index(region_face_map_name)
+                    region_idx = region_list.index(marker.data.jms.marker_region)
+
+                else:
+                    if marker.face_maps.active:
+                        region_face_map_name = marker.face_maps[0].name
+                        if not region_face_map_name in region_list:
+                            region_list.append(region_face_map_name)
+
+                        region_idx = region_list.index(region_face_map_name)
+
+            elif hasattr(obj, 'marker'):
+                if not marker.marker.marker_region == '':
+                    if not marker.marker.marker_region in region_list:
+                        region_list.append(marker.marker.marker_region)
+
+                    region_idx = region_list.index(marker.marker.marker_region)
 
             parent_idx = global_functions.get_parent(armature, marker, joined_list, 0)
             marker_matrix = global_functions.get_matrix(marker, marker, True, armature, joined_list, False, version, 'JMS', 0)
@@ -2167,6 +2199,29 @@ def command_queue(context,
 
         elif name[0:1] == '#':
             if global_functions.set_ignore(obj) == False or hidden_geo:
+                if hasattr(obj.data, 'jms'):
+                    if obj.data.jms.marker_mask_type =='0':
+                        render_count += 1
+                    elif obj.data.jms.marker_mask_type =='1':
+                        collision_count += 1
+                    elif obj.data.jms.marker_mask_type =='2':
+                        physics_count += 1
+                    elif obj.data.jms.marker_mask_type =='3':
+                        render_count += 1
+                        collision_count += 1
+                        physics_count += 1
+                elif hasattr(obj, 'marker'):
+                    if obj.marker.marker_mask_type =='0':
+                        render_count += 1
+                    elif obj.marker.marker_mask_type =='1':
+                        collision_count += 1
+                    elif obj.marker.marker_mask_type =='2':
+                        physics_count += 1
+                    elif obj.marker.marker_mask_type =='3':
+                        render_count += 1
+                        collision_count += 1
+                        physics_count += 1
+
                 marker_count += 1
 
         elif name[0:1] == '@' and len(obj.data.polygons) > 0:

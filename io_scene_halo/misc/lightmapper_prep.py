@@ -28,7 +28,7 @@ import bpy
 
 from math import radians
 from mathutils import Vector
-from io_scene_halo.global_functions import global_functions
+from ..global_functions import global_functions
 
 def lightmap_bulk(context, res_x, res_y):
     scene = bpy.context.scene

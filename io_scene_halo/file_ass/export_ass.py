@@ -302,11 +302,11 @@ class ASSScene(global_functions.HaloAsset):
             else:
                 if global_functions.set_ignore(obj) == False or hidden_geo:
                     obj_name = None
-                    obj_data_name = None                    
+                    obj_data_name = None
                     if obj.name:
                         obj_name = obj.name
                     if obj.data:
-                        obj_data_name = obj.data.name                      
+                        obj_data_name = obj.data.name
                     geometry_list.append((None, 'EMPTY', obj_name, obj_data_name))
                     original_geometry_list.append(obj)
 
@@ -332,21 +332,27 @@ class ASSScene(global_functions.HaloAsset):
             inheritance_flag = 0
             xref_name = ""
             is_bone = False
+            parent = None
             if geo_class == 'BONE':
-                armature_name = original_geo.id_data.name
-                armature = bpy.data.objects[armature_name]
-                parent = original_geo.parent
-                is_bone = True
-            else:
-                if armature:
-                    parent = original_geo.parent_bone
-                else:
+                if original_geo.parent:
                     parent = original_geo.parent
+                is_bone = True
+
+            else:
+                if original_geo.parent:
+                    if original_geo.parent.type  == 'ARMATURE':
+                        armature_name = original_geo.parent.id_data.name
+                        armature = bpy.data.objects[armature_name]
+                        parent = original_geo.parent_bone
+
+                    else:
+                        parent = original_geo.parent
 
             if not parent == None:
                 if not geo_class == 'BONE':
                     if not original_geo.parent.type  == 'ARMATURE':
                         parent_id = original_geometry_list.index(parent) + 1
+
                 else:
                     parent_id = original_geometry_list.index(parent) + 1
 
@@ -378,13 +384,6 @@ class ASSScene(global_functions.HaloAsset):
                     light_aspect_ratio = 0.0
 
                     light_properties = ASSScene.Light(light_type, color_rgb, intensity, hotspot_size, hotspot_falloff_size, uses_near_attenuation, near_attenuation_start, near_attenuation_end, uses_far_attenuation, far_attenuation_start, far_attenuation_end, light_shape, light_aspect_ratio)
-
-                if geo_class == 'BONE':
-                    armature_name = mesh.id_data.name
-                    armature = bpy.data.objects[armature_name]
-                    xref_path = bpy.path.abspath(armature.data.ass_jms.XREF_path)
-                    if xref_path != "":
-                        xref_name = armature.name
 
                 elif geo_class == 'SPHERE':
                     xref_path = bpy.path.abspath(original_geo.data.ass_jms.XREF_path)
@@ -514,7 +513,8 @@ class ASSScene(global_functions.HaloAsset):
                                 color
                             ))
 
-                original_geo.to_mesh_clear()
+                if not geo_class == 'BONE':
+                    original_geo.to_mesh_clear()
 
                 self.objects.append(ASSScene.Object(
                     geo_class,

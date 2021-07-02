@@ -27,7 +27,7 @@
 import re
 import bpy
 
-from io_scene_halo.global_functions import global_functions
+from ..global_functions import global_functions
 
 def rename_bones():
     node_prefix_tuple = ('b ', 'b_', 'bone ','bone_', 'frame ','frame_', 'bip01 ', 'bip01_')
