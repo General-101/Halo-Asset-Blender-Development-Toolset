@@ -865,23 +865,22 @@ def get_directory(game_version,
 
     root_directory = directory
 
-    special_sauce = False
     if jmi:
-        special_sauce = True
         root_directory = directory + os.sep + folder_type
         if not os.path.exists(root_directory):
             os.makedirs(root_directory)
 
-    if folder_structure and not special_sauce:
+    if folder_structure and not jmi:
         folder_subdirectories = ("models", "structure", "render", "collision", "physics", "animations")
         true_directory = directory
         if not os.path.basename(directory) in folder_subdirectories:
             for name in os.listdir(directory):
                 if os.path.isdir(os.path.join(directory, name)):
-                    if name in folder_subdirectories and os.path.basename(directory) == parent_folder:
+                    if name in folder_subdirectories and os.path.basename(directory) == parent_folder.lower():
                         true_directory = os.path.dirname(directory)
+                        break
         else:
-            if os.path.basename(os.path.dirname(directory)) == parent_folder:
+            if os.path.basename(os.path.dirname(directory)) == parent_folder.lower():
                 true_directory = os.path.dirname(os.path.dirname(directory))
 
         root_directory = true_directory + os.sep + parent_folder + os.sep + folder_type
