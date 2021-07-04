@@ -876,11 +876,11 @@ def get_directory(game_version,
         if not os.path.basename(directory) in folder_subdirectories:
             for name in os.listdir(directory):
                 if os.path.isdir(os.path.join(directory, name)):
-                    if name in folder_subdirectories and os.path.basename(directory) == parent_folder.lower():
+                    if name in folder_subdirectories and os.path.basename(directory).lower() == parent_folder.lower():
                         true_directory = os.path.dirname(directory)
                         break
         else:
-            if os.path.basename(os.path.dirname(directory)) == parent_folder.lower():
+            if os.path.basename(os.path.dirname(directory)).lower() == parent_folder.lower():
                 true_directory = os.path.dirname(os.path.dirname(directory))
 
         root_directory = true_directory + os.sep + parent_folder + os.sep + folder_type
