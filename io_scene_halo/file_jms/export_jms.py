@@ -983,14 +983,18 @@ class JMSScene(global_functions.HaloAsset):
                         for node in material.node_tree.nodes:
                             if node.type == 'TEX_IMAGE':
                                 if not node.image == None:
-                                    image_filepath = bpy.path.abspath(node.image.filepath)
-                                    image_path = image_filepath.rsplit('.', 1)[0]
-                                    image_name = bpy.path.basename(image_path)
-                                    tex = image_name
-                                    if version >= 8200:
-                                        tex = image_path
+                                    if node.image.source == "FILE":
+                                        image_filepath = bpy.path.abspath(node.image.filepath)
+                                        image_path = image_filepath.rsplit('.', 1)[0]
+                                        image_name = bpy.path.basename(image_path)
+                                        tex = image_name
+                                        if version >= 8200:
+                                            tex = image_path
+                                    else:
+                                        tex = node.image.name
 
                                     texture_path = tex
+                                    break
 
             elif game_version in self.valid_gen_list:
                 name = material[0].name
