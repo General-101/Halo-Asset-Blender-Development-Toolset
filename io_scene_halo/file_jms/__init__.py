@@ -1072,7 +1072,7 @@ def register():
     bpy.types.TOPBAR_MT_file_import.append(menu_func_import)
     bpy.types.Scene.jms = PointerProperty(type=JMS_ScenePropertiesGroup, name="JMS Scene Properties", description="Set properties for the JMS exporter")
     bpy.types.Object.jms = PointerProperty(type=JMS_PhysicsPropertiesGroup, name="JMS Properties", description="Set properties for your constraints")
-    bpy.types.Mesh.jms = PointerProperty(type=JMS_MarkerPropertiesGroup, name="JMS Marker Properties", description="Set properties for your marker object")
+    bpy.types.Mesh.marker = PointerProperty(type=JMS_MarkerPropertiesGroup, name="JMS Marker Properties", description="Set properties for your marker object")
     bpy.types.Object.marker = PointerProperty(type=JMS_MarkerPropertiesGroup, name="JMS Marker Properties", description="Set properties for your marker object")
 
 def unregister():
@@ -1080,7 +1080,7 @@ def unregister():
     bpy.types.TOPBAR_MT_file_import.remove(menu_func_import)
     del bpy.types.Scene.jms
     del bpy.types.Object.jms
-    del bpy.types.Mesh.jms
+    del bpy.types.Mesh.marker
     del bpy.types.Object.marker
     for clshalo in classeshalo:
         bpy.utils.unregister_class(clshalo)
