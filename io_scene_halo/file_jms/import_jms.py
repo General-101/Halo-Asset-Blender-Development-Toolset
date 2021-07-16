@@ -475,6 +475,8 @@ class JMSAsset(global_functions.HaloAsset):
             region_count = int(self.next())
             for region in range(region_count):
                 name = self.next()
+                if name == "__unnamed":
+                    name = "unnamed"
                 self.regions.append(JMSAsset.Region(name))
 
         vertex_count = int(self.next())
