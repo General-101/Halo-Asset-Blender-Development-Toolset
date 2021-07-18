@@ -31,6 +31,7 @@ import socket
 import traceback
 
 from decimal import *
+from math import degrees
 from getpass import getuser
 from io_scene_halo.global_functions import global_functions
 
@@ -247,25 +248,26 @@ class ASSScene(global_functions.HaloAsset):
 
             elif obj.type == 'LIGHT' and version >= 3:
                 if global_functions.set_ignore(obj) == False or hidden_geo:
+                    if not obj.data.name in unique_instance_geometry_list:
+                        unique_instance_geometry_list.append(obj.data.name)
+                        object_count += 1
+
                     if bpy.data.lights[obj.name].type == 'SPOT':
                         geometry_list.append((obj, 'SPOT_LGT', obj.name, obj.data.name))
                         original_geometry_list.append(obj)
-                        object_count += 1
 
                     elif bpy.data.lights[obj.name].type == 'AREA':
                         geometry_list.append((obj, 'DIRECT_LGT', obj.name, obj.data.name))
                         original_geometry_list.append(obj)
-                        object_count += 1
 
                     elif bpy.data.lights[obj.name].type == 'POINT':
                         geometry_list.append((obj, 'OMNI_LGT', obj.name, obj.data.name))
                         original_geometry_list.append(obj)
-                        object_count += 1
 
                     elif bpy.data.lights[obj.name].type == 'SUN':
                         geometry_list.append((obj, 'AMBIENT_LGT', obj.name, obj.data.name))
                         original_geometry_list.append(obj)
-                        object_count += 1
+
             elif obj.type== 'MESH' and len(obj.data.polygons) > 0:
                 if global_functions.set_ignore(obj) == False or hidden_geo:
                     if not obj.data.name in unique_instance_geometry_list:
@@ -330,6 +332,7 @@ class ASSScene(global_functions.HaloAsset):
             light_properties = None
             parent_id = 0
             inheritance_flag = 0
+            xref_path = ""
             xref_name = ""
             is_bone = False
             parent = None
@@ -370,10 +373,10 @@ class ASSScene(global_functions.HaloAsset):
                 unique_instance_geometry_list_2.append(mesh_name)
                 if geo_class == 'SPOT_LGT' or geo_class == 'DIRECT_LGT' or geo_class == 'OMNI_LGT' or geo_class == 'AMBIENT_LGT':
                     light_type = geo_class
-                    color_rgb = (mesh.color[0], mesh.color[1], mesh.color[2])
+                    color_rgb = (mesh.data.color[0], mesh.data.color[1], mesh.data.color[2])
                     intensity = mesh.data.energy
-                    hotspot_size = 0.0
-                    hotspot_falloff_size = 0.0
+                    hotspot_size = -1.0
+                    hotspot_falloff_size = -1.0
                     uses_near_attenuation = 0
                     near_attenuation_start = 0.0
                     near_attenuation_end = 0.0
@@ -382,6 +385,24 @@ class ASSScene(global_functions.HaloAsset):
                     far_attenuation_end = 0.0
                     light_shape = 0
                     light_aspect_ratio = 0.0
+                    if geo_class == 'SPOT_LGT':
+                        hotspot_size = degrees(mesh.data.spot_size)
+                        hotspot_falloff_size = mesh.data.spot_blend * degrees(mesh.data.spot_size)
+
+                    if geo_class == 'DIRECT_LGT':
+                        light_shape_type = 0
+                        if mesh.data.shape == "RECTANGLE" or mesh.data.shape == "SQUARE":
+                            light_shape_type = 1
+                        light_shape = light_shape_type
+                        light_aspect_ratio = mesh.data.size
+
+                    if geo_class == 'SPOT_LGT' or geo_class == 'DIRECT_LGT':
+                        uses_near_attenuation = int(mesh.data.use_custom_distance)
+                        near_attenuation_start = mesh.data.cutoff_distance
+                        near_attenuation_end = mesh.data.cutoff_distance
+                        uses_far_attenuation = int(mesh.data.use_custom_distance)
+                        far_attenuation_start = mesh.data.cutoff_distance
+                        far_attenuation_end = mesh.data.cutoff_distance
 
                     light_properties = ASSScene.Light(light_type, color_rgb, intensity, hotspot_size, hotspot_falloff_size, uses_near_attenuation, near_attenuation_start, near_attenuation_end, uses_far_attenuation, far_attenuation_start, far_attenuation_end, light_shape, light_aspect_ratio)
 
@@ -458,7 +479,7 @@ class ASSScene(global_functions.HaloAsset):
                                 uv_set.append(uv)
 
                             uv = uv_set
-                            color = [(0.0, 0.0, 0.0)]
+                            color = (0.0, 0.0, 0.0)
                             if mesh.vertex_colors:
                                 color_rgb = mesh.vertex_colors.active.data[loop_index].color
                                 color = color_rgb

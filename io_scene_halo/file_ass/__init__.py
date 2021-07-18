@@ -492,7 +492,7 @@ class ExportASS(Operator, ExportHelper):
 
         encoding = global_functions.get_encoding(self.game_version)
         game_version = self.game_version
-        if self.game_version == 'halo2mcc' or self.game_version == 'halo3mcc':
+        if self.game_version == 'halo2mcc':
             game_version = 'halo2'
 
         return global_functions.run_code("export_ass.write_file(*keywords, game_version, encoding)")
