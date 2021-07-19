@@ -202,12 +202,13 @@ def load_file(context, filepath, report, fix_parents, game_version, jms_path_a, 
     jms_b_transform = False
 
     jma_file = JMAAsset(filepath, game_version, report)
-    if path.exists(jms_path_a):
+    if path.exists(bpy.path.abspath(jms_path_a)):
         jms_a_transform = True
-        jms_a_file = import_jms.JMSAsset(jms_path_a, "halo2")
-    if path.exists(jms_path_a) and path.exists(jms_path_b):
+        jms_a_file = import_jms.JMSAsset(bpy.path.abspath(jms_path_a), "halo2")
+
+    if path.exists(bpy.path.abspath(jms_path_a)) and path.exists(bpy.path.abspath(jms_path_b)):
         jms_b_transform = True
-        jms_b_file = import_jms.JMSAsset(jms_path_b, "halo2")
+        jms_b_file = import_jms.JMSAsset(bpy.path.abspath(jms_path_b), "halo2")
 
     collection = bpy.context.collection
     scene = bpy.context.scene
