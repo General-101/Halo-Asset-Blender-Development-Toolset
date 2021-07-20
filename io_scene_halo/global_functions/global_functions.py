@@ -103,14 +103,7 @@ def get_sibling(armature, bone, bone_list):
     return set_sibling
 
 def get_encoding(game_version):
-    encoding = None
-    if game_version == 'haloce' or game_version == 'halo2mcc' or game_version == 'halo3mcc':
-        encoding = 'utf_8'
-
-    elif game_version == 'halo2vista':
-        encoding = 'utf-16le'
-
-    return encoding
+    return 'utf_8'
 
 def sort_by_layer(node_list, armature):
     layer_count = []

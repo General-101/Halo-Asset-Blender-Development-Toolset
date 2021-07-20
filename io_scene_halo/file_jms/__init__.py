@@ -188,7 +188,7 @@ class JMS_SceneProps(Panel):
             row.label(text='Generate Checksum:')
             row.prop(scene_jms, "generate_checksum", text='')
 
-        elif scene_jms.game_version == 'halo2vista' or scene_jms.game_version == 'halo2mcc':
+        elif scene_jms.game_version == 'halo2':
             if scene_halo.expert_mode:
                 box = layout.box()
                 box.label(text="File Details:")
@@ -377,8 +377,7 @@ class JMS_ScenePropertiesGroup(PropertyGroup):
         name="Game:",
         description="What game will the model file be used for",
         items=[ ('haloce', "Halo CE", "Export an animation intended for Halo Custom Edition or Halo 1 Anniversary "),
-                ('halo2vista', "Halo 2 Vista", "Export a JMS intended for Halo 2 Vista"),
-                ('halo2mcc', "Halo 2 MCC", "Export a JMS intended for Halo 2 MCC"),
+                ('halo2', "Halo 2", "Export a JMS intended for Halo 2 Vista or Halo 2 MCC"),
                 ('halo3mcc', "Halo 3 MCC", "Export a JMS intended for Halo 3 MCC"),
                ]
         )
@@ -604,8 +603,7 @@ class ExportJMS(Operator, ExportHelper):
         name="Game:",
         description="What game will the model file be used for",
         items=[ ('haloce', "Halo CE", "Export an animation intended for Halo Custom Edition or Halo 1 Anniversary "),
-                ('halo2vista', "Halo 2 Vista", "Export a JMS intended for Halo 2 Vista"),
-                ('halo2mcc', "Halo 2 MCC", "Export a JMS intended for Halo 2 MCC"),
+                ('halo2', "Halo 2", "Export a JMS intended for Halo 2 Vista or Halo 2 MCC"),
                 ('halo3mcc', "Halo 3 MCC", "Export a JMS intended for Halo 3 MCC"),
                ]
         )
@@ -743,7 +741,7 @@ class ExportJMS(Operator, ExportHelper):
             parser.add_argument('-arg1', '--filepath', dest='filepath', metavar='FILE', required = True)
             parser.add_argument('-arg2', '--use_scene_properties', dest='use_scene_properties', action='store_true')
             parser.add_argument('-arg3', '--jms_version', dest='jms_version', type=str, default="8210")
-            parser.add_argument('-arg4', '--game_version', dest='game_version', type=str, default="halo2mcc")
+            parser.add_argument('-arg4', '--game_version', dest='game_version', type=str, default="halo2")
             parser.add_argument('-arg5', '--generate_checksum', dest='generate_checksum', action='store_true')
             parser.add_argument('-arg6', '--folder_structure', dest='folder_structure', action='store_true')
             parser.add_argument('-arg7', '--folder_type', dest='folder_type', action='0')
@@ -805,8 +803,6 @@ class ExportJMS(Operator, ExportHelper):
         encoding = global_functions.get_encoding(self.game_version)
         game_version = self.game_version
         world_nodes = None
-        if self.game_version == 'halo2vista' or self.game_version == 'halo2mcc':
-            game_version = 'halo2'
 
         return global_functions.run_code("export_jms.command_queue(context, self.filepath, self.report, self.jms_version, self.jms_version_ce, self.jms_version_h2, self.jms_version_h3, self.generate_checksum, self.folder_structure, self.folder_type, self.apply_modifiers, self.triangulate_faces, self.edge_split, self.use_edge_angle, self.use_edge_sharp, self.split_angle, self.clean_normalize_weights, self.scale_enum, self.scale_float, self.console, self.permutation_ce, self.level_of_detail_ce, self.hidden_geo, self.export_render, self.export_collision, self.export_physics, game_version, encoding, world_nodes)")
 
@@ -875,7 +871,7 @@ class ExportJMS(Operator, ExportHelper):
             row.label(text='Generate Checksum:')
             row.prop(self, "generate_checksum", text='')
 
-        elif self.game_version == 'halo2vista' or self.game_version == 'halo2mcc':
+        elif self.game_version == 'halo2':
             if scene_halo.expert_mode:
                 box = layout.box()
                 box.label(text="File Details:")

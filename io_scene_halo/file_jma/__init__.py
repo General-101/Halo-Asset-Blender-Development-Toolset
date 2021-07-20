@@ -171,9 +171,8 @@ class JMA_ScenePropertiesGroup(PropertyGroup):
     game_version: EnumProperty(
         name="Game:",
         description="What game will the model file be used for",
-        items=[ ('haloce', "Halo CE", "Export an animation intended for Halo Custom Edition or Halo 1 Anniversary "),
-                ('halo2vista', "Halo 2 Vista", "Export an animation intended for Halo 2 Vista"),
-                ('halo2mcc', "Halo 2 MCC", "Export an animation intended for Halo 2 MCC"),
+        items=[ ('haloce', "Halo CE", "Export an animation intended for Halo Custom Edition or Halo CE MCC"),
+                ('halo2', "Halo 2", "Export an animation intended for Halo 2 Vista or Halo 2 MCC"),
                 ('halo3mcc', "Halo 3 MCC", "Export an animation intended for Halo 3 MCC"),
                ]
         )
@@ -285,7 +284,7 @@ class JMA_SceneProps(Panel):
                 row.label(text='JMA Version:')
                 row.prop(scene_jma, "jma_version_ce", text='')
 
-        elif scene_jma.game_version == 'halo2vista' or scene_jma.game_version == 'halo2mcc':
+        elif scene_jma.game_version == 'halo2':
             row = col.row()
             row.label(text='Extension:')
             row.prop(scene_jma, "extension_h2", text='')
@@ -309,17 +308,12 @@ class JMA_SceneProps(Panel):
         row = col.row()
         row.label(text='Generate Asset Subdirectories:')
         row.prop(scene_jma, "folder_structure", text='')
-        if scene_jma.game_version == 'halo2vista' and scene_jma.jma_version_h2 == '16395':
+        if scene_jma.game_version == 'halo2' and scene_jma.jma_version_h2 == '16395':
             row = col.row()
             row.label(text='Biped Controller:')
             row.prop(scene_jma, "biped_controller", text='')
 
-        elif scene_jma.game_version == 'halo2mcc' and scene_jma.jma_version_h2 == '16395':
-            row = col.row()
-            row.label(text='Biped Controller:')
-            row.prop(scene_jma, "biped_controller", text='')
-
-        elif scene_jma.game_version == 'halo3mcc' and scene_jma.jma_version_h3 == '16395':
+        elif scene_jma.game_version == 'halo3' and scene_jma.jma_version_h3 == '16395':
             row = col.row()
             row.label(text='Biped Controller:')
             row.prop(scene_jma, "biped_controller", text='')
@@ -471,9 +465,8 @@ class ExportJMA(Operator, ExportHelper):
     game_version: EnumProperty(
         name="Game:",
         description="What game will the model file be used for",
-        items=[ ('haloce', "Halo CE", "Export an animation intended for Halo Custom Edition or Halo 1 Anniversary "),
-                ('halo2vista', "Halo 2 Vista", "Export an animation intended for Halo 2 Vista"),
-                ('halo2mcc', "Halo 2 MCC", "Export an animation intended for Halo 2 MCC"),
+        items=[ ('haloce', "Halo CE", "Export an animation intended for Halo Custom Edition or Halo CE MCC "),
+                ('halo2', "Halo 2", "Export an animation intended for Halo 2 Vista or Halo 2 MCC"),
                 ('halo3mcc', "Halo 3 MCC", "Export an animation intended for Halo 3 MCC"),
                ]
         )
@@ -589,7 +582,7 @@ class ExportJMA(Operator, ExportHelper):
             parser.add_argument('-arg1', '--filepath', dest='filepath', metavar='FILE', required = True)
             parser.add_argument('-arg2', '--extension', dest='extension', type=str, default=".JMA")
             parser.add_argument('-arg3', '--jma_version', dest='jma_version', type=str, default="16392")
-            parser.add_argument('-arg4', '--game_version', dest='game_version', type=str, default="halo2mcc")
+            parser.add_argument('-arg4', '--game_version', dest='game_version', type=str, default="halo2")
             parser.add_argument('-arg5', '--generate_checksum', dest='generate_checksum', action='store_true')
             parser.add_argument('-arg6', '--custom_frame_rate', dest='custom_frame_rate', type=str, default="30")
             parser.add_argument('-arg7', '--frame_rate_float', dest='frame_rate_float', type=str, default=30)
@@ -626,8 +619,6 @@ class ExportJMA(Operator, ExportHelper):
 
         encoding = global_functions.get_encoding(self.game_version)
         game_version = self.game_version
-        if self.game_version == 'halo2vista' or self.game_version == 'halo2mcc':
-            game_version = 'halo2'
 
         return export_jma.write_file(*keywords, game_version, encoding)
 
@@ -686,7 +677,7 @@ class ExportJMA(Operator, ExportHelper):
                 row.label(text='JMA Version:')
                 row.prop(self, "jma_version_ce", text='')
 
-        elif self.game_version == 'halo2vista' or self.game_version == 'halo2mcc':
+        elif self.game_version == 'halo2':
             row = col.row()
             row.enabled = is_enabled
             row.label(text='Extension:')
@@ -715,17 +706,12 @@ class ExportJMA(Operator, ExportHelper):
         row.enabled = is_enabled
         row.label(text='Generate Asset Subdirectories:')
         row.prop(self, "folder_structure", text='')
-        if self.game_version == 'halo2vista' and self.jma_version_h2 == '16395':
+        if self.game_version == 'halo2' and self.jma_version_h2 == '16395':
             row = col.row()
             row.enabled = is_enabled
             row.label(text='Biped Controller:')
             row.prop(self, "biped_controller", text='')
 
-        elif self.game_version == 'halo2mcc' and self.jma_version_h2 == '16395':
-            row = col.row()
-            row.enabled = is_enabled
-            row.label(text='Biped Controller:')
-            row.prop(self, "biped_controller", text='')
         elif self.game_version == 'halo3mcc' and self.jma_version_h3 == '16395':
             row = col.row()
             row.enabled = is_enabled
@@ -766,10 +752,10 @@ class ImportJMA(Operator, ImportHelper):
         name="Game:",
         description="What game was the model file made for",
         default="auto",
-        items=[ ('auto', "Auto", "Attempt to guess the game this JMS was intended for. Will default to CE if this fails."),
-                ('haloce', "Halo CE", "Import a JMS intended for Halo Custom Edition or Halo CE MCC"),
-                ('halo2', "Halo 2", "Import a JMS intended for Halo 2 Vista or Halo 2 MCC"),
-                ('halo3', "Halo 3", "Import a JMS intended for Halo 3 MCC"),
+        items=[ ('auto', "Auto", "Attempt to guess the game this animation was intended for. Will default to CE if this fails."),
+                ('haloce', "Halo CE", "Import an animation intended for Halo Custom Edition or Halo CE MCC"),
+                ('halo2', "Halo 2", "Import an animation intended for Halo 2 Vista or Halo 2 MCC"),
+                ('halo3', "Halo 3", "Import an animation intended for Halo 3 MCC"),
                ]
         )
 
