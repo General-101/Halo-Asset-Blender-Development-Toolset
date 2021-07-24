@@ -606,6 +606,15 @@ class JMSScene(global_functions.HaloAsset):
             name = untouched_name.rsplit('.', 1)[0] #remove name change from duplicating objects in Blender
 
             region_idx = -1
+
+            parent_idx = global_functions.get_parent(armature, marker, joined_list, 0)
+            marker_matrix = global_functions.get_matrix(marker, marker, True, armature, joined_list, False, version, 'JMS', 0)
+            mesh_dimensions = global_functions.get_dimensions(marker_matrix, marker, None, None, custom_scale, version, None, False, False, armature, 'JMS')
+
+            rotation = (mesh_dimensions.quat_i_a, mesh_dimensions.quat_j_a, mesh_dimensions.quat_k_a, mesh_dimensions.quat_w_a)
+            translation = (mesh_dimensions.pos_x_a, mesh_dimensions.pos_y_a, mesh_dimensions.pos_z_a)
+            scale = (mesh_dimensions.radius_a)
+
             if hasattr(obj.data, 'jms'):
                 if not marker.data.jms.marker_region == '':
                     if not marker.data.jms.marker_region in region_list:
@@ -628,13 +637,7 @@ class JMSScene(global_functions.HaloAsset):
 
                     region_idx = region_list.index(marker.marker.marker_region)
 
-            parent_idx = global_functions.get_parent(armature, marker, joined_list, 0)
-            marker_matrix = global_functions.get_matrix(marker, marker, True, armature, joined_list, False, version, 'JMS', 0)
-            mesh_dimensions = global_functions.get_dimensions(marker_matrix, marker, None, None, custom_scale, version, None, False, False, armature, 'JMS')
-
-            rotation = (mesh_dimensions.quat_i_a, mesh_dimensions.quat_j_a, mesh_dimensions.quat_k_a, mesh_dimensions.quat_w_a)
-            translation = (mesh_dimensions.pos_x_a, mesh_dimensions.pos_y_a, mesh_dimensions.pos_z_a)
-            scale = (mesh_dimensions.radius_a)
+                scale = (mesh_dimensions.scale_x_a)
 
             self.markers.append(JMSScene.Marker(name, region_idx, parent_idx[0], rotation, translation, scale))
 
