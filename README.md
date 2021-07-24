@@ -39,8 +39,6 @@ See the following links for information on exporting or importing assets from th
 
 [C20 Docs](https://c20.reclaimers.net/)
 
-[HEK Docs](https://general-101.github.io/HEK-Docs/w/home.html)
-
 [H2Codez Docs](https://num0005.github.io/h2codez_docs/w/home.html)
 
 ## Credits
