@@ -146,7 +146,7 @@ class JMSScene(global_functions.HaloAsset):
             self.region = region
 
     class Marker:
-        def __init__(self, name, region=-1, parent=-1, rotation=None, translation=None, scale=0.0):
+        def __init__(self, name, region=None, parent=-1, rotation=None, translation=None, scale=0.0):
             self.name = name
             self.region = region
             self.parent = parent
@@ -174,7 +174,8 @@ class JMSScene(global_functions.HaloAsset):
     class Vertex:
         def __init__(self,
                      node_influence_count=0,
-                     node_set=None, region=-1,
+                     node_set=None,
+                     region=None,
                      translation=None,
                      normal=None,
                      color=None,
@@ -190,7 +191,7 @@ class JMSScene(global_functions.HaloAsset):
             self.uv_set = uv_set
 
     class Triangle:
-        def __init__(self, region=-1, material_index=-1, v0=-1, v1=-1, v2=-1):
+        def __init__(self, region=None, material_index=-1, v0=-1, v1=-1, v2=-1):
             self.region = region
             self.material_index = material_index
             self.v0 = v0
@@ -353,7 +354,7 @@ class JMSScene(global_functions.HaloAsset):
         world_node_count = 0
         default_region = get_default_region_permutation_name(game_version)
         default_permutation = get_default_region_permutation_name(game_version)
-        region_list = ['unnamed']
+        self.region_list = []
         permutation_list = []
         self.nodes = []
         self.materials = []
@@ -605,7 +606,7 @@ class JMSScene(global_functions.HaloAsset):
             untouched_name = marker.name.split('#', 1)[1] #remove marker symbol from name
             name = untouched_name.rsplit('.', 1)[0] #remove name change from duplicating objects in Blender
 
-            region_idx = -1
+            region_name = "unnamed"
 
             parent_idx = global_functions.get_parent(armature, marker, joined_list, 0)
             marker_matrix = global_functions.get_matrix(marker, marker, True, armature, joined_list, False, version, 'JMS', 0)
@@ -615,31 +616,36 @@ class JMSScene(global_functions.HaloAsset):
             translation = (mesh_dimensions.pos_x_a, mesh_dimensions.pos_y_a, mesh_dimensions.pos_z_a)
             scale = (mesh_dimensions.radius_a)
 
-            if hasattr(obj.data, 'jms'):
-                if not marker.data.jms.marker_region == '':
-                    if not marker.data.jms.marker_region in region_list:
-                        region_list.append(marker.data.jms.marker_region)
+            if marker.type == 'EMPTY':
+                scale = (mesh_dimensions.scale_x_a)
+                if not marker.marker.marker_region == '':
+                    if not marker.marker.marker_region in self.region_list:
+                        self.region_list.append(marker.marker.marker_region)
 
-                    region_idx = region_list.index(marker.data.jms.marker_region)
+                    region_name = marker.marker.marker_region
+                else:
+                    if not region_name in self.region_list:
+                        self.region_list.append(region_name)
+
+            elif marker.type == 'MESH':
+                if marker.face_maps.active:
+                    region_face_map_name = marker.face_maps[0].name
+                    if not region_face_map_name in self.region_list:
+                        self.region_list.append(region_face_map_name)
+
+                    region_name = region_face_map_name
+
+                elif not marker.marker.marker_region == '':
+                    if not marker.marker.marker_region in self.region_list:
+                        self.region_list.append(marker.marker.marker_region)
+
+                    region_name = marker.marker.marker_region
 
                 else:
-                    if marker.face_maps.active:
-                        region_face_map_name = marker.face_maps[0].name
-                        if not region_face_map_name in region_list:
-                            region_list.append(region_face_map_name)
+                    if not region_name in self.region_list:
+                        self.region_list.append(region_name)
 
-                        region_idx = region_list.index(region_face_map_name)
-
-            elif hasattr(obj, 'marker'):
-                if not marker.marker.marker_region == '':
-                    if not marker.marker.marker_region in region_list:
-                        region_list.append(marker.marker.marker_region)
-
-                    region_idx = region_list.index(marker.marker.marker_region)
-
-                scale = (mesh_dimensions.scale_x_a)
-
-            self.markers.append(JMSScene.Marker(name, region_idx, parent_idx[0], rotation, translation, scale))
+            self.markers.append(JMSScene.Marker(name, region_name, parent_idx[0], rotation, translation, scale))
 
         for xref_path in instance_xref_paths:
             path = bpy.path.abspath(xref_path)
@@ -666,22 +672,22 @@ class JMSScene(global_functions.HaloAsset):
             vertex_groups = original_geo.vertex_groups.keys()
             original_geo_matrix = global_functions.get_matrix(original_geo, original_geo, False, armature, joined_list, False, version, 'JMS', 0)
             for idx, face in enumerate(geometry.polygons):
-                region_index = -1
+                region_name = "unnamed"
                 region = default_region
                 permutation = default_permutation
                 if game_version == 'haloce':
                     region_face_map_name = default_region
-                    region_index = region_list.index(region_face_map_name)
+                    region_name = region_face_map_name
                     if geometry.face_maps.active:
                         face_map_idx = geometry.face_maps.active.data[idx].value
                         if not face_map_idx == -1:
                             region_face_map_name = original_geo.face_maps[face_map_idx].name
-                            if not region_face_map_name in region_list:
-                                region_list.append(region_face_map_name)
+                            if not region_face_map_name in self.region_list:
+                                self.region_list.append(region_face_map_name)
 
-                        region_index = region_list.index(region_face_map_name)
+                        region_name = region_face_map_name
 
-                elif game_version == 'halo2' or game_version == 'halo3':
+                else:
                     if geometry.face_maps.active:
                         region_permutation_face_map_name = [default_permutation, default_region]
                         face_map_idx = geometry.face_maps.active.data[idx].value
@@ -695,8 +701,8 @@ class JMSScene(global_functions.HaloAsset):
 
                         if len(region_permutation_face_map_name) > 1:
                             region = region_permutation_face_map_name[1]
-                        if not region in region_list:
-                            region_list.append(region)
+                        if not region in self.region_list:
+                            self.region_list.append(region)
 
                 material = global_functions.get_material(game_version, original_geo, face, geometry, material_list, 'JMS', region, permutation,)
                 material_index = -1
@@ -708,7 +714,7 @@ class JMSScene(global_functions.HaloAsset):
                 v1 = len(self.vertices) + 1
                 v2 = len(self.vertices) + 2
 
-                self.triangles.append(JMSScene.Triangle(region_index, material_index, v0, v1, v2))
+                self.triangles.append(JMSScene.Triangle(region_name, material_index, v0, v1, v2))
                 for loop_index in face.loop_indices:
                     vert = geometry.vertices[geometry.loops[loop_index].vertex_index]
 
@@ -717,7 +723,7 @@ class JMSScene(global_functions.HaloAsset):
                     scaled_translation = (mesh_dimensions.pos_x_a, mesh_dimensions.pos_y_a, mesh_dimensions.pos_z_a)
 
                     normal = (original_geo_matrix @ (vert.co + vert.normal) - translation).normalized()
-                    region = region_index
+                    region = region_name
                     uv_set = []
                     for uv_index in range(len(geometry.uv_layers)):
                         geometry.uv_layers.active = geometry.uv_layers[uv_index]
@@ -814,8 +820,8 @@ class JMSScene(global_functions.HaloAsset):
 
                 if len(region_permutation_face_map_name) > 1:
                     region = region_permutation_face_map_name[1]
-                if not region in region_list:
-                    region_list.append(region)
+                if not region in self.region_list:
+                    self.region_list.append(region)
 
             material = global_functions.get_material(game_version, spheres, face, mesh_sphere, material_list, 'JMS', region, permutation,)
             material_index = -1
@@ -850,8 +856,8 @@ class JMSScene(global_functions.HaloAsset):
 
                 if len(region_permutation_face_map_name) > 1:
                     region = region_permutation_face_map_name[1]
-                if not region in region_list:
-                    region_list.append(region)
+                if not region in self.region_list:
+                    self.region_list.append(region)
 
             material = global_functions.get_material(game_version, boxes, face, mesh_boxes, material_list, 'JMS', region, permutation,)
             material_index = -1
@@ -888,8 +894,8 @@ class JMSScene(global_functions.HaloAsset):
 
                 if len(region_permutation_face_map_name) > 1:
                     region = region_permutation_face_map_name[1]
-                if not region in region_list:
-                    region_list.append(region)
+                if not region in self.region_list:
+                    self.region_list.append(region)
 
             material = global_functions.get_material(game_version, capsule, face, mesh_capsule, material_list, 'JMS', region, permutation,)
             material_index = -1
@@ -932,8 +938,8 @@ class JMSScene(global_functions.HaloAsset):
 
                 if len(region_permutation_face_map_name) > 1:
                     region = region_permutation_face_map_name[1]
-                if not region in region_list:
-                    region_list.append(region)
+                if not region in self.region_list:
+                    self.region_list.append(region)
 
             material = global_functions.get_material(game_version, convex_shape, face, mesh_convex_shape, material_list, 'JMS', region, permutation,)
             material_index = -1
@@ -965,7 +971,8 @@ class JMSScene(global_functions.HaloAsset):
             self.convex_shapes.append(JMSScene.Convex_Shape(name, parent_index[0], material_index, rotation, translation, verts))
             convex_shape.to_mesh_clear()
 
-        for region in region_list:
+        self.region_list.sort()
+        for region in self.region_list:
             name = region
 
             self.regions.append(JMSScene.Region(name))
@@ -1428,7 +1435,7 @@ def write_file(context,
         file.write('\n%s' % (marker.name))
 
         if version >= 8198 and version <= 8204:
-            file.write('\n%s' % (marker.region))
+            file.write('\n%s' % (jms_scene.region_list.index(marker.region)))
 
         file.write(
             '\n%s' % (marker.parent) +
@@ -1633,7 +1640,7 @@ def write_file(context,
 
             if version < 8198:
                 file.write(
-                    '\n%s' % (vertex.region)
+                    '\n%s' % (jms_scene.region_list.index(vertex.region))
                 )
 
             node0 = (int(-1), float(0.0))
@@ -1749,7 +1756,7 @@ def write_file(context,
 
         else:
             if version >= 8198:
-                file.write('\n%s' % (triangle.region))
+                file.write('\n%s' % (jms_scene.region_list.index(triangle.region)))
 
             file.write(
                 '\n%s' % (triangle.material_index) +
