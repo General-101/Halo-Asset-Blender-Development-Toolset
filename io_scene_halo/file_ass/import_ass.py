@@ -362,6 +362,7 @@ def load_file(context, filepath, report):
         object_element = ass_file.objects[idx]
         geo_class = object_element.geo_class
         object_material_index = object_element.material_index
+        vertex_groups = []
         if not object_material_index == -1:
             mat = ass_file.materials[object_material_index]
             if mesh.materials:
@@ -388,9 +389,7 @@ def load_file(context, filepath, report):
 
         elif geo_class.lower() == 'mesh':
             bm = bmesh.new()
-            mesh_materials = []
             vert_normal_list = []
-            vertex_groups = []
             object_triangles = object_element.triangles
             for triangle in object_triangles:
                 p1 = object_element.vertices[triangle.v0].translation
@@ -420,11 +419,12 @@ def load_file(context, filepath, report):
                 triangle_material_index = triangle.material_index
                 if not triangle_material_index == -1:
                     mat = ass_file.materials[triangle_material_index]
-                    if not bpy.data.materials[mat.name] in mesh_materials:
-                        mesh_materials.append(bpy.data.materials[mat.name])
+                    material_list = mesh.materials.keys()
+                    if not mat.name in material_list:
                         mesh.materials.append(bpy.data.materials[mat.name])
+                        material_list = mesh.materials.keys()
 
-                    bm.faces[idx].material_index = mesh_materials.index(bpy.data.materials[mat.name])
+                    bm.faces[idx].material_index = material_list.index(mat.name)
 
                 vert_list = [triangle.v0, triangle.v1, triangle.v2]
                 for vert_idx, vert in enumerate(vert_list):
@@ -444,6 +444,7 @@ def load_file(context, filepath, report):
 
                         loop = bm.faces[idx].loops[vert_idx]
                         loop[layer_color] = (color_r, color_g, color_b, color_a)
+
                     for uv_idx, uv in enumerate(ass_vert.uv_set):
                         uv_name = 'UVMap_%s' % uv_idx
                         layer_uv = bm.loops.layers.uv.get(uv_name)
@@ -479,36 +480,8 @@ def load_file(context, filepath, report):
         object_radius = 2
         object_height = 1
         object_extents = [1.0, 1.0, 1.0]
-        if not object_index == -1:
-            object_mesh = bpy.data.objects.new(instance.name, meshes[object_index])
-            for vertex_groups in mesh_vertex_groups:
-                for group in vertex_groups:
-                    if not group in object_mesh.vertex_groups:
-                        object_mesh.vertex_groups.new(name = group)
-        else:
-            object_mesh = bpy.data.objects.new(instance.name, None)
-
-        collection.objects.link(object_mesh)
-        if not object_index == -1:
-            object_element = ass_file.objects[object_index]
-
-            geo_class = object_element.geo_class
-            object_radius = object_element.radius
-            object_height = object_element.height
-            object_extents = object_element.extents
-
-        parent_index = instance.parent_id
-        if not parent_index == -1:
-            parent_index = instance.parent_id - 1
-
         local_transform = instance.local_transform
         pivot_transform = instance.pivot_transform
-
-        if not parent_index == -1:
-            parent_instance = ass_file.instances[parent_index]
-            parent_instance_name = parent_instance.name
-            object_mesh.parent = bpy.data.objects[parent_instance_name]
-
         local_scale = (local_transform.scale, local_transform.scale, local_transform.scale)
         pivot_scale = (pivot_transform.scale, pivot_transform.scale, pivot_transform.scale)
         if ass_file.version == 1:
@@ -516,6 +489,23 @@ def load_file(context, filepath, report):
             pivot_scale = pivot_transform.scale
 
         if not object_index == -1:
+            object_mesh = bpy.data.objects.new(instance.name, meshes[object_index])
+            collection.objects.link(object_mesh)
+
+            object_element = ass_file.objects[object_index]
+            geo_class = object_element.geo_class
+            object_radius = object_element.radius
+            object_height = object_element.height
+            object_extents = object_element.extents
+
+            parent_index = instance.parent_id
+            if not parent_index == -1:
+                parent_index = instance.parent_id - 1 #Subtracting by one to get the remove the scene root. Scene root isn't a real object and is just used as an origin
+                if not parent_index == -1:
+                    parent_instance = ass_file.instances[parent_index]
+                    parent_instance_name = parent_instance.name
+                    object_mesh.parent = bpy.data.objects[parent_instance_name]
+
             output_rotation = local_transform.rotation @ pivot_transform.rotation
             output_position = local_transform.rotation @ pivot_transform.vector * local_scale[0] + local_transform.vector
             output_scale = local_scale[0] * pivot_scale[0]
@@ -525,9 +515,25 @@ def load_file(context, filepath, report):
             object_mesh.scale = (output_scale, output_scale, output_scale)
 
         else:
+            object_mesh = bpy.data.objects.new(instance.name, None)
+            collection.objects.link(object_mesh)
+
+            parent_index = instance.parent_id
+            if not parent_index == -1:
+                parent_index = instance.parent_id - 1 #Subtracting by one to get the remove the scene root. Scene root isn't a real object and is just used as an origin
+                if not parent_index == -1:
+                    parent_instance = ass_file.instances[parent_index]
+                    parent_instance_name = parent_instance.name
+                    object_mesh.parent = bpy.data.objects[parent_instance_name]
+
             object_mesh.location = local_transform.vector
             object_mesh.rotation_euler = local_transform.rotation.to_euler()
             object_mesh.scale = local_scale
+
+        for vertex_groups in mesh_vertex_groups:
+            for group in vertex_groups:
+                if not group in object_mesh.vertex_groups:
+                    object_mesh.vertex_groups.new(name = group)
 
         if geo_class.lower() == 'pill':
             object_mesh.data.ass_jms.Object_Type = 'CAPSULES'
@@ -557,8 +563,6 @@ def load_file(context, filepath, report):
             bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
             object_mesh.select_set(False)
             view_layer.objects.active = None
-
-        view_layer.update()
 
     report({'INFO'}, "Import completed successfully")
     return {'FINISHED'}
