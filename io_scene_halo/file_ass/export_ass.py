@@ -252,19 +252,19 @@ class ASSScene(global_functions.HaloAsset):
                         unique_instance_geometry_list.append(obj.data.name)
                         object_count += 1
 
-                    if bpy.data.lights[obj.name].type == 'SPOT':
+                    if obj.data.type == 'SPOT':
                         geometry_list.append((obj, 'SPOT_LGT', obj.name, obj.data.name))
                         original_geometry_list.append(obj)
 
-                    elif bpy.data.lights[obj.name].type == 'AREA':
+                    elif obj.data.type == 'AREA':
                         geometry_list.append((obj, 'DIRECT_LGT', obj.name, obj.data.name))
                         original_geometry_list.append(obj)
 
-                    elif bpy.data.lights[obj.name].type == 'POINT':
+                    elif obj.data.type == 'POINT':
                         geometry_list.append((obj, 'OMNI_LGT', obj.name, obj.data.name))
                         original_geometry_list.append(obj)
 
-                    elif bpy.data.lights[obj.name].type == 'SUN':
+                    elif obj.data.type == 'SUN':
                         geometry_list.append((obj, 'AMBIENT_LGT', obj.name, obj.data.name))
                         original_geometry_list.append(obj)
 

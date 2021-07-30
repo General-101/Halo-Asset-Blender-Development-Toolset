@@ -32,6 +32,7 @@ import bmesh
 import random
 import traceback
 
+from math import degrees, radians
 from mathutils import Vector, Quaternion, Matrix
 from io_scene_halo.global_functions import global_functions
 
@@ -113,6 +114,7 @@ class ASSAsset(global_functions.HaloAsset):
             self.far_attenuation_end = far_attenuation_end
             self.light_shape = light_shape
             self.light_aspect_ratio = light_aspect_ratio
+
     class Vertex:
         def __init__(self,
                      node_influence_count=0,
@@ -309,9 +311,9 @@ class ASSAsset(global_functions.HaloAsset):
         instance_count = int(self.next())
         for instance in range(instance_count):
             object_index = int(self.next())
-            object_element = self.objects[object_index]
             bone_influence_count = 0
             if not object_index == -1:
+                object_element = self.objects[object_index]
                 bone_influence_count = len(object_element.node_index_list)
 
             name = self.next().strip('\"')
@@ -368,26 +370,26 @@ def load_file(context, filepath, report):
             if mesh.materials:
                 mesh.materials[0] = bpy.data.materials[mat.name]
 
-        if geo_class.lower() == 'pill':
+        if geo_class == 'PILL':
             bm = bmesh.new()
             bmesh.ops.create_cone(bm, cap_ends=True, cap_tris=False, segments=12, diameter1=3, diameter2=3, depth=5)
             bm.transform(Matrix.Translation((0, 0, 2.5)))
             bm.to_mesh(mesh)
             bm.free()
 
-        elif geo_class.lower() == 'sphere':
+        elif geo_class == 'SPHERE':
             bm = bmesh.new()
             bmesh.ops.create_uvsphere(bm, u_segments=32, v_segments=16, diameter=1)
             bm.to_mesh(mesh)
             bm.free()
 
-        elif geo_class.lower() == 'box':
+        elif geo_class == 'BOX':
             bm = bmesh.new()
             bmesh.ops.create_cube(bm, size=1.0)
             bm.to_mesh(mesh)
             bm.free()
 
-        elif geo_class.lower() == 'mesh':
+        elif geo_class == 'MESH':
             bm = bmesh.new()
             vert_normal_list = []
             object_triangles = object_element.triangles
@@ -470,13 +472,13 @@ def load_file(context, filepath, report):
 
         meshes.append(mesh)
         mesh_vertex_groups.append(vertex_groups)
-        if geo_class.lower() == 'mesh':
+        if geo_class == 'MESH':
             mesh.use_auto_smooth = True
             mesh.normals_split_custom_set(vert_normal_list)
 
     for idx, instance in enumerate(ass_file.instances):
         object_index = instance.object_index
-        geo_class = 'empty'
+        geo_class = 'EMPTY'
         object_radius = 2
         object_height = 1
         object_extents = [1.0, 1.0, 1.0]
@@ -489,14 +491,50 @@ def load_file(context, filepath, report):
             pivot_scale = pivot_transform.scale
 
         if not object_index == -1:
-            object_mesh = bpy.data.objects.new(instance.name, meshes[object_index])
-            collection.objects.link(object_mesh)
-
             object_element = ass_file.objects[object_index]
             geo_class = object_element.geo_class
             object_radius = object_element.radius
             object_height = object_element.height
             object_extents = object_element.extents
+
+            if geo_class == 'GENERIC_LIGHT':
+                light_type = "POINT"
+                if object_element.light_properties.light_type == 'SPOT_LGT':
+                    light_type = "SPOT"
+
+                elif object_element.light_properties.light_type == 'DIRECT_LGT':
+                    light_type = "AREA"
+
+                elif object_element.light_properties.light_type == 'OMNI_LGT':
+                    light_type = "POINT"
+
+                elif object_element.light_properties.light_type == 'AMBIENT_LGT':
+                    light_type = "SUN"
+
+                light_data = bpy.data.lights.new(instance.name, light_type)
+                object_mesh = bpy.data.objects.new(instance.name, light_data)
+                object_mesh.data.color = (object_element.light_properties.light_color)
+                object_mesh.data.energy = (object_element.light_properties.intensity)
+                if object_element.light_properties.light_type == 'SPOT_LGT':
+                        object_mesh.data.use_custom_distance = object_element.light_properties.uses_near_attenuation
+                        object_mesh.data.cutoff_distance = object_element.light_properties.near_attenuation_start
+                        object_mesh.data.spot_size = radians(object_element.light_properties.hotspot_size)
+                        object_mesh.data.spot_blend = object_element.light_properties.hotspot_falloff_size / object_element.light_properties.hotspot_size
+
+                elif object_element.light_properties.light_type == 'DIRECT_LGT':
+                    object_mesh.data.use_custom_distance = object_element.light_properties.uses_near_attenuation
+                    object_mesh.data.cutoff_distance = object_element.light_properties.near_attenuation_start
+                    object_element.light_properties.light_shape = 0
+                    light_shape_type = "DISK"
+                    if object_element.light_properties.light_shape == 1:
+                        light_shape_type = "RECTANGLE"
+                    object_mesh.data.shape = light_shape_type
+                    object_mesh.data.size = object_element.light_properties.light_aspect_ratio
+
+            else:
+                object_mesh = bpy.data.objects.new(instance.name, meshes[object_index])
+
+            collection.objects.link(object_mesh)
 
             parent_index = instance.parent_id
             if not parent_index == -1:
@@ -535,7 +573,7 @@ def load_file(context, filepath, report):
                 if not group in object_mesh.vertex_groups:
                     object_mesh.vertex_groups.new(name = group)
 
-        if geo_class.lower() == 'pill':
+        if geo_class == 'PILL':
             object_mesh.data.ass_jms.Object_Type = 'CAPSULES'
             object_dimension = object_radius * 2
             object_mesh.dimensions = (object_dimension, object_dimension, (object_dimension + object_height))
@@ -545,7 +583,7 @@ def load_file(context, filepath, report):
             object_mesh.select_set(False)
             view_layer.objects.active = None
 
-        elif geo_class.lower() == 'sphere':
+        elif geo_class == 'SPHERE':
             object_mesh.data.ass_jms.Object_Type = 'SPHERE'
             object_dimension = object_radius * 2
             object_mesh.dimensions = (object_dimension, object_dimension, object_dimension)
@@ -555,7 +593,7 @@ def load_file(context, filepath, report):
             object_mesh.select_set(False)
             view_layer.objects.active = None
 
-        elif geo_class.lower() == 'box':
+        elif geo_class == 'BOX':
             object_mesh.data.ass_jms.Object_Type = 'BOX'
             object_mesh.dimensions = ((object_extents[0] * 2), (object_extents[1] * 2), (object_extents[2] * 2))
             object_mesh.select_set(True)
