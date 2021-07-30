@@ -149,14 +149,13 @@ def generate_box(model_name):
     object_mesh.dimensions = halo_one_dimensions(model_name)
 
 def create_model(game_version, unit_type, char_model_name, vehi_model_name):
-    print(unit_type)
     if unit_type == "character":
         model_name = char_model_name
     else:
         model_name = vehi_model_name
 
-    script_folder_path = bpy.utils.script_path_user()
-    filepath = script_folder_path + "\\addons\\io_scene_halo\\resources\\" + game_version + "\\" + model_name + ".jms"
+    script_folder_path = path.dirname(path.dirname(__file__))
+    filepath = path.join(script_folder_path, "resources", game_version, model_name) + ".jms"
 
     if path.exists(filepath):
         generate_mesh(filepath, model_name)
