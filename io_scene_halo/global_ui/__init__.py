@@ -34,10 +34,13 @@ from bpy.types import (
         )
 
 from bpy.props import (
+        IntProperty,
         BoolProperty,
         EnumProperty,
+        FloatProperty,
+        StringProperty,
         PointerProperty,
-        StringProperty
+        FloatVectorProperty
         )
 
 from ..global_functions import global_functions
@@ -56,6 +59,12 @@ class ASS_JMS_MaterialProps(Panel):
 
         return mat
 
+    def draw_header(self, context):
+        current_material = context.object.active_material
+        if current_material is not None:
+            material_ass_jms = current_material.ass_jms
+            self.layout.prop(material_ass_jms, "is_bm", text='')
+
     def draw(self, context):
         layout = self.layout
         scene = context.scene
@@ -63,15 +72,33 @@ class ASS_JMS_MaterialProps(Panel):
         current_material = context.object.active_material
         if current_material is not None:
             material_ass_jms = current_material.ass_jms
+            layout.enabled = material_ass_jms.is_bm
             if scene_halo.game_version == 'halo2' or scene_halo.game_version == 'halo3':
-                box = layout.box()
-                box.label(text="Material Effect:")
-                col = box.column(align=True)
-                row = col.row()
+                row = layout.row()
+                row.label(text="Material Effect:")
                 row.prop(material_ass_jms, "material_effect", text='')
 
-            box = layout.box()
+class ASS_JMS_MaterialFlagsProps(Panel):
+    bl_label = "Flags"
+    bl_idname = "ASS_JMS_PT_MaterialFlagsPanel"
+    bl_space_type = 'PROPERTIES'
+    bl_region_type = 'WINDOW'
+    bl_context = "material"
+    bl_options = {'DEFAULT_CLOSED'}
+    bl_parent_id = "ASS_JMS_PT_MaterialPanel"
+
+    def draw(self, context):
+        layout = self.layout
+        scene = context.scene
+        scene_halo = scene.halo
+        current_material = context.object.active_material
+        if current_material is not None:
+            material_ass_jms = current_material.ass_jms
+            layout.enabled = material_ass_jms.is_bm
+            box = layout.split()
             col = box.column(align=True)
+            row = col.row()
+
             if scene_halo.game_version == 'haloce':
                 row = col.row()
                 row.label(text='Two-sided:')
@@ -141,6 +168,7 @@ class ASS_JMS_MaterialProps(Panel):
                 row = col.row()
                 row.label(text='Shadow Only:')
                 row.prop(material_ass_jms, "shadow_only", text='')
+                col = box.column()
                 row = col.row()
                 row.label(text='Lightmap Only:')
                 row.prop(material_ass_jms, "lightmap_only", text='')
@@ -209,6 +237,7 @@ class ASS_JMS_MaterialProps(Panel):
                 row = col.row()
                 row.label(text='Shadow Only:')
                 row.prop(material_ass_jms, "shadow_only", text='')
+                col = box.column()
                 row = col.row()
                 row.label(text='Lightmap Only:')
                 row.prop(material_ass_jms, "lightmap_only", text='')
@@ -228,9 +257,6 @@ class ASS_JMS_MaterialProps(Panel):
                 row.label(text='Portal (Vis Blocker):')
                 row.prop(material_ass_jms, "portal_vis_blocker", text='')
                 row = col.row()
-                row.label(text='Dislikes Photons:')
-                row.prop(material_ass_jms, "dislike_photons", text='')
-                row = col.row()
                 row.label(text='Ignored by Lightmapper:')
                 row.prop(material_ass_jms, "ignored_by_lightmaps", text='')
                 row = col.row()
@@ -240,14 +266,167 @@ class ASS_JMS_MaterialProps(Panel):
                 row.label(text='Decal Offset:')
                 row.prop(material_ass_jms, "decal_offset", text='')
                 row = col.row()
-                row.label(text='Water Surface:')
-                row.prop(material_ass_jms, "water_surface", text='')
-                row = col.row()
                 row.label(text='Slip Surface:')
                 row.prop(material_ass_jms, "slip_surface", text='')
-                row = col.row()
-                row.label(text='Group Transparents by Bit:')
-                row.prop(material_ass_jms, "group_transparents_by_plane", text='')
+
+class ASS_JMS_MaterialLightmapProps(Panel):
+    bl_label = "Lightmap Image Properties"
+    bl_idname = "ASS_JMS_PT_MaterialLightmapPanel"
+    bl_space_type = 'PROPERTIES'
+    bl_region_type = 'WINDOW'
+    bl_context = "material"
+    bl_options = {'DEFAULT_CLOSED'}
+    bl_parent_id = "ASS_JMS_PT_MaterialPanel"
+
+    @classmethod
+    def poll(self, context):
+        scene = context.scene
+        scene_halo = scene.halo
+
+        if scene_halo.game_version == 'halo3':
+            return True
+
+    def draw(self, context):
+        layout = self.layout
+        current_material = context.object.active_material
+        if current_material is not None:
+            material_ass_jms = current_material.ass_jms
+            layout.enabled = material_ass_jms.is_bm
+            col_split = layout.column(align=True).split()
+            col = layout.column(align=True)
+            col_split_b = layout.column(align=True).split()
+            col_b = layout.column(align=True)
+            row = col_split.row()
+            row.label(text='Override Lightmap Transparency:')
+            row.prop(material_ass_jms, "override_lightmap_transparency", text='')
+            row = col_split.row()
+            row.label(text='Ignore Default Resolution Scale:')
+            row.prop(material_ass_jms, "ignore_default_res_scale", text='')
+            row = col.row()
+            row.label(text='Two-sided Transparent Tint:')
+            row.prop(material_ass_jms, "two_sided_transparent_tint", text='')
+            row = col.row()
+            row.label(text='Additive Transparency:')
+            row.prop(material_ass_jms, "additive_transparency", text='')
+            row = col_split_b.row()
+            row.label(text='Lightmap Resolution:')
+            row.prop(material_ass_jms, "lightmap_res", text='')
+            row = col_split_b.row()
+            row.label(text='Photon Fidelity:')
+            row.prop(material_ass_jms, "photon_fidelity", text='')
+            row = col_b.row()
+            row.label(text='Use Shader Gel:')
+            row.prop(material_ass_jms, "use_shader_gel", text='')
+
+class ASS_JMS_MaterialBasicProps(Panel):
+    bl_label = "Lightmap Properties"
+    bl_idname = "ASS_JMS_PT_MaterialBasicPanel"
+    bl_space_type = 'PROPERTIES'
+    bl_region_type = 'WINDOW'
+    bl_context = "material"
+    bl_options = {'DEFAULT_CLOSED'}
+    bl_parent_id = "ASS_JMS_PT_MaterialPanel"
+
+    @classmethod
+    def poll(self, context):
+        scene = context.scene
+        scene_halo = scene.halo
+
+        if scene_halo.game_version == 'halo3':
+            return True
+
+    def draw(self, context):
+        layout = self.layout
+        current_material = context.object.active_material
+        if current_material is not None:
+            material_ass_jms = current_material.ass_jms
+            layout.enabled = material_ass_jms.is_bm
+            is_enabled = True
+            if material_ass_jms.power <= 0.0:
+                is_enabled = False
+            col = layout.column(align=True)
+            row = col.row()
+            row.label(text='Power:')
+            row.prop(material_ass_jms, "power", text='')
+            row = col.row()
+            row.enabled = is_enabled
+            row.label(text='Color:')
+            row.prop(material_ass_jms, "color", text='')
+            row = col.row()
+            row.enabled = is_enabled
+            row.label(text='Quality:')
+            row.prop(material_ass_jms, "quality", text='')
+            row = col.row()
+            row.enabled = is_enabled
+            row.label(text='Power Per Unit Area:')
+            row.prop(material_ass_jms, "power_per_unit_area", text='')
+            row = col.row()
+            row.enabled = is_enabled
+            row.label(text='Emissive Focus:')
+            row.prop(material_ass_jms, "emissive_focus", text='')
+
+class ASS_JMS_MaterialAttenuationProps(Panel):
+    bl_label = "Attenuation"
+    bl_idname = "ASS_JMS_PT_MaterialAttenuationPanel"
+    bl_space_type = 'PROPERTIES'
+    bl_region_type = 'WINDOW'
+    bl_context = "material"
+    bl_options = {'DEFAULT_CLOSED'}
+    bl_parent_id = "ASS_JMS_PT_MaterialBasicPanel"
+
+    def draw_header(self, context):
+        current_material = context.object.active_material
+        if current_material is not None:
+            material_ass_jms = current_material.ass_jms
+            if material_ass_jms.power <= 0.0 or not material_ass_jms.is_bm:
+                self.layout.enabled = False
+
+            self.layout.prop(material_ass_jms, "attenuation_enabled", text='')
+
+    def draw(self, context):
+        layout = self.layout
+        current_material = context.object.active_material
+        if current_material is not None:
+            material_ass_jms = current_material.ass_jms
+            if material_ass_jms.power <= 0.0 or not material_ass_jms.is_bm or not material_ass_jms.attenuation_enabled:
+                layout.enabled = False
+
+            col = layout.column(align=True)
+            row = col.row()
+            row.label(text='Falloff Distance:')
+            row.prop(material_ass_jms, "falloff_distance", text='')
+            row = col.row()
+            row.label(text='Cutoff Distance:')
+            row.prop(material_ass_jms, "cutoff_distance", text='')
+
+class ASS_JMS_MaterialFrustumProps(Panel):
+    bl_label = "Frustum"
+    bl_idname = "ASS_JMS_PT_MaterialFrustumPanel"
+    bl_space_type = 'PROPERTIES'
+    bl_region_type = 'WINDOW'
+    bl_context = "material"
+    bl_options = {'DEFAULT_CLOSED'}
+    bl_parent_id = "ASS_JMS_PT_MaterialBasicPanel"
+
+    def draw(self, context):
+        layout = self.layout
+        current_material = context.object.active_material
+        if current_material is not None:
+            material_ass_jms = current_material.ass_jms
+            layout.enabled = material_ass_jms.is_bm
+            if material_ass_jms.power <= 0.0:
+                layout.enabled = False
+
+            col = layout.column(align=True)
+            row = col.row()
+            row.label(text='Blend:')
+            row.prop(material_ass_jms, "frustum_blend", text='')
+            row = col.row()
+            row.label(text='Falloff:')
+            row.prop(material_ass_jms, "frustum_falloff", text='')
+            row = col.row()
+            row.label(text='Cutoff:')
+            row.prop(material_ass_jms, "frustum_cutoff", text='')
 
 class ASS_JMS_MaterialPropertiesGroup(PropertyGroup):
     material_effect: StringProperty(
@@ -412,6 +591,149 @@ class ASS_JMS_MaterialPropertiesGroup(PropertyGroup):
         default = False,
         )
 
+    override_lightmap_transparency: BoolProperty(
+        name ="Override Lightmap Transparency",
+        description = "This flag or shader symbol when applied to a material that is applied to a face or surface overrides the lightmap transparency for that surface",
+        default = False,
+        )
+
+    ignore_default_res_scale: BoolProperty(
+        name ="Ignore Default Resolution Scale",
+        description = "This flag or shader symbol when applied to a material that is applied to a face or surface overrides the default lightmap resolution for that surface",
+        default = False,
+        )
+
+    use_shader_gel: BoolProperty(
+        name ="Use Shader Gel",
+        description = "I have no idea what this is.",
+        default = False,
+        )
+
+    lightmap_res: FloatProperty(
+        name = "Lightmap Resolution",
+        description = "Lightmap resolution scale for the material.",
+        default = 1.0,
+        max = 50000.0,
+        min = 0.001,
+        )
+
+    photon_fidelity: IntProperty(
+        name = "Photon Fidelity",
+        description = "I have no idea what this is.",
+        default = 1,
+        max = 3,
+        min = 0,
+        )
+
+    two_sided_transparent_tint: FloatVectorProperty(
+        name = "Two-sided Transparent Tint",
+        description = "Tint for two-sided transparent meshes.",
+        subtype = 'COLOR',
+        default = (0.0, 0.0, 0.0),
+        max = 1.0,
+        min = 0.0,
+        )
+
+    additive_transparency: FloatVectorProperty(
+        name = "Additive Transparency",
+        description = "I have no idea what this is.",
+        subtype = 'COLOR',
+        default = (0.0, 0.0, 0.0),
+        max = 1.0,
+        min = 0.0,
+        )
+
+    power: FloatProperty(
+        name = "Power",
+        description = "Lightmap power for the material.",
+        default = 0.0,
+        max = 1000.0,
+        min = 0,
+        )
+
+    color: FloatVectorProperty(
+        name = "Color",
+        description = "Color of the light emitted by the material",
+        subtype = 'COLOR',
+        default = (1.0, 1.0, 1.0),
+        max = 1.0,
+        min = 0.0,
+        )
+
+    quality: FloatProperty(
+        name = "Quality",
+        description = "Lightmap quality for the material.",
+        default = 1.0,
+        max = 1000.0,
+        min = 0.1,
+        )
+
+    power_per_unit_area: BoolProperty(
+        name ="Power Per Unit Area",
+        description = "I have no idea what this is.",
+        default = False,
+        )
+
+    emissive_focus: FloatProperty(
+        name = "Emissive Focus",
+        description = "I have no idea what this is.",
+        default = 0.0,
+        max = 1.0,
+        min = 0.0,
+        )
+
+    attenuation_enabled: BoolProperty(
+        name ="Attenuation Enabled",
+        description = "I have no idea what this is.",
+        default = False,
+        )
+
+    falloff_distance: FloatProperty(
+        name = "Falloff Distance",
+        description = "I have no idea what this is.",
+        default = 1000.0,
+        max = 100000.0,
+        min = 0.0,
+        )
+
+    cutoff_distance: FloatProperty(
+        name = "Cutoff Distance",
+        description = "I have no idea what this is.",
+        default = 2000.0,
+        max = 100000.0,
+        min = 0.0,
+        )
+
+    frustum_blend: FloatProperty(
+        name = "Frustum Blend",
+        description = "I have no idea what this is.",
+        default = 0.0,
+        max = 1.0,
+        min = 0.0,
+        )
+
+    frustum_falloff: FloatProperty(
+        name = "Frustum Falloff",
+        description = "I have no idea what this is.",
+        default = 25.0,
+        max = 170.0,
+        min = 2.0,
+        )
+
+    frustum_cutoff: FloatProperty(
+        name = "Frustum Cutoff",
+        description = "I have no idea what this is.",
+        default = 45.0,
+        max = 170.0,
+        min = 2.0,
+        )
+
+    is_bm: BoolProperty(
+        name = "Halo Material Enabled",
+        description = "Enable material flags and settings",
+        default = False,
+        )
+
 class ASS_JMS_MeshProps(Panel):
     bl_label = "Halo Mesh Properties"
     bl_idname = "ASS_JMS_PT_MeshDetailsPanel"
@@ -543,6 +865,11 @@ classeshalo = (
     ASS_JMS_MaterialPropertiesGroup,
     ASS_JMS_MeshProps,
     ASS_JMS_MaterialProps,
+    ASS_JMS_MaterialFlagsProps,
+    ASS_JMS_MaterialLightmapProps,
+    ASS_JMS_MaterialBasicProps,
+    ASS_JMS_MaterialAttenuationProps,
+    ASS_JMS_MaterialFrustumProps,
     Halo_ScenePropertiesGroup,
     Halo_SceneProps,
 )

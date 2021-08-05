@@ -35,6 +35,75 @@ from math import degrees
 from getpass import getuser
 from io_scene_halo.global_functions import global_functions
 
+def get_material_strings(material):
+    material_strings = []
+    bm_flags = "BM_FLAGS "
+    bm_lmres = "BM_LMRES "
+    bm_lighting_basic = "BM_LIGHTING_BASIC "
+    bm_lighting_atten = "BM_LIGHTING_ATTEN "
+    bm_lighting_frus = "BM_LIGHTING_FRUS "
+
+    bm_flags += str(int(material.ass_jms.two_sided))
+    bm_flags += str(int(material.ass_jms.transparent_1_sided))
+    bm_flags += str(int(material.ass_jms.transparent_2_sided))
+    bm_flags += str(int(material.ass_jms.render_only))
+    bm_flags += str(int(material.ass_jms.collision_only))
+    bm_flags += str(int(material.ass_jms.sphere_collision_only))
+    bm_flags += str(int(material.ass_jms.fog_plane))
+    bm_flags += str(int(material.ass_jms.ladder))
+    bm_flags += str(int(material.ass_jms.breakable))
+    bm_flags += str(int(material.ass_jms.ai_deafening))
+    bm_flags += str(int(material.ass_jms.no_shadow))
+    bm_flags += str(int(material.ass_jms.shadow_only))
+    bm_flags += str(int(material.ass_jms.lightmap_only))
+    bm_flags += str(int(material.ass_jms.precise))
+    bm_flags += str(int(material.ass_jms.conveyor))
+    bm_flags += str(int(material.ass_jms.portal_1_way))
+    bm_flags += str(int(material.ass_jms.portal_door))
+    bm_flags += str(int(material.ass_jms.portal_vis_blocker))
+    bm_flags += str(int(material.ass_jms.ignored_by_lightmaps))
+    bm_flags += str(int(material.ass_jms.blocks_sound))
+    bm_flags += str(int(material.ass_jms.decal_offset))
+    bm_flags += str(int(material.ass_jms.slip_surface))
+
+    bm_lmres += '%0.10f ' % material.ass_jms.lightmap_res
+    bm_lmres += '%s ' % int(material.ass_jms.photon_fidelity)
+    bm_lmres += '%0.10f ' % material.ass_jms.two_sided_transparent_tint[0]
+    bm_lmres += '%0.10f ' % material.ass_jms.two_sided_transparent_tint[1]
+    bm_lmres += '%0.10f ' % material.ass_jms.two_sided_transparent_tint[2]
+    bm_lmres += '%s ' % int(material.ass_jms.override_lightmap_transparency)
+    bm_lmres += '%0.10f ' % material.ass_jms.additive_transparency[0]
+    bm_lmres += '%0.10f ' % material.ass_jms.additive_transparency[1]
+    bm_lmres += '%0.10f ' % material.ass_jms.additive_transparency[2]
+    bm_lmres += '%s ' % int(material.ass_jms.use_shader_gel)
+    bm_lmres += '%s' % int(material.ass_jms.ignore_default_res_scale)
+
+    bm_lighting_basic += '%0.10f ' % material.ass_jms.power
+    bm_lighting_basic += '%0.10f ' % material.ass_jms.color[0]
+    bm_lighting_basic += '%0.10f ' % material.ass_jms.color[1]
+    bm_lighting_basic += '%0.10f ' % material.ass_jms.color[2]
+    bm_lighting_basic += '%0.10f ' % material.ass_jms.quality
+    bm_lighting_basic += '%s ' % int(material.ass_jms.power_per_unit_area)
+    bm_lighting_basic += '%0.10f' % material.ass_jms.emissive_focus
+
+    bm_lighting_atten += '%s ' % int(material.ass_jms.attenuation_enabled)
+    bm_lighting_atten += '%0.10f ' % material.ass_jms.falloff_distance
+    bm_lighting_atten += '%0.10f' % material.ass_jms.cutoff_distance
+
+    bm_lighting_frus += '%0.10f ' % material.ass_jms.frustum_blend
+    bm_lighting_frus += '%0.10f ' % material.ass_jms.frustum_falloff
+    bm_lighting_frus += '%0.10f' % material.ass_jms.frustum_cutoff
+
+    if material.ass_jms.is_bm:
+        material_strings.append(bm_flags)
+        material_strings.append(bm_lmres)
+        if material.ass_jms.power > 0:
+            material_strings.append(bm_lighting_basic)
+            material_strings.append(bm_lighting_atten)
+            material_strings.append(bm_lighting_frus)
+
+    return material_strings
+
 class ASSScene(global_functions.HaloAsset):
     class Transform:
         def __init__(self,
@@ -114,6 +183,7 @@ class ASSScene(global_functions.HaloAsset):
             self.far_attenuation_end = far_attenuation_end
             self.light_shape = light_shape
             self.light_aspect_ratio = light_aspect_ratio
+
     class Vertex:
         def __init__(self,
                      node_influence_count=0,
@@ -552,10 +622,12 @@ class ASSScene(global_functions.HaloAsset):
                 ))
 
         for material in material_list:
+            material_strings = get_material_strings(material)
+
             self.materials.append(ASSScene.Material(
                 material.name,
                 material.ass_jms.material_effect,
-                []
+                material_strings
             ))
 
         for idx, obj in enumerate(object_list):
@@ -632,6 +704,10 @@ def write_file(context,
             file.write(
                 '%s\n' % (len(material.strings))
             )
+            for string in material.strings:
+                file.write(
+                    '"%s"\n' % (string)
+                )
 
     file.write(
         '\n;### OBJECTS ###' +
