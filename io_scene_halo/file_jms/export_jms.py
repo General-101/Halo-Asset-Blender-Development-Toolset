@@ -989,7 +989,7 @@ class JMSScene(global_functions.HaloAsset):
                                     break
 
             elif game_version in self.valid_gen_list:
-                name = material[0].name
+                name = global_functions.append_material_symbols(material[0], game_version)
                 slot = bpy.data.materials.find(material[0].name)
                 lod = get_lod(material[1], game_version)
                 #This doesn't matter for CE but for Halo 2/3 the region or permutation names can't have any whitespace.

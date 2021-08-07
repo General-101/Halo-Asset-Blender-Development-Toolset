@@ -578,7 +578,7 @@ def get_face_material(game_version, original_geo, face):
     assigned_material = -1
     if len(original_geo.material_slots) != 0:
         if not face.material_index > object_materials:
-            if face.material_index is not -1:
+            if face.material_index != -1:
                 assigned_material = face.material_index
 
     return assigned_material
@@ -882,40 +882,150 @@ def get_directory(game_version,
 
     return root_directory
 
+def count_steps(name, start, val):
+    real_pos = start
+    steps = 0
+    while real_pos < len(name) and real_pos > 0 and name[real_pos] != " ":
+        real_pos += val
+        steps += val
+
+    return steps
+
+def gather_symbols(used_symbols_list, processed_symbol_name):
+    symbol_name = "".join(processed_symbol_name)
+    symbol_list = ("%", "#", "?", "!", "@", "*", "$", "^", "-", "&", "=", ".", ";", ")", ">", "<", "|", "~", "(", "{", "}", "[")
+    for idx, char in enumerate(symbol_name): # loop through the characters in the name
+        if char in symbol_list: # Check if the character exists in the symbols list
+            symbol_name = symbol_name[:idx] + " " + symbol_name[idx + 1:]
+            if not char in used_symbols_list: # Check if it's already been appended
+                used_symbols_list += char
+
+        else:
+            if not char == " ": # If it isn't a whitespace then break cause we've hit the material name
+                break
+
+    return (used_symbols_list, symbol_name)
+
+def gather_parameters(name):
+    processed_name = name
+    processed_parameters = []
+    for lm_idx, char in enumerate(name): # loop through the characters in the name
+        parameter = ""
+        if char == ":":
+            value_length = count_steps(name, lm_idx, 1)
+            parameter_length = count_steps(name, lm_idx, -1) * -1
+            for num in range(parameter_length + value_length):
+                parameter += processed_name[lm_idx - parameter_length + num]
+                index = lm_idx - parameter_length + num
+                processed_name = processed_name[:index] + " " + processed_name[index + 1:]
+
+            processed_parameters.append(parameter)
+
+    return (processed_name, processed_parameters)
+
 def append_material_symbols(material, game_version):
     name = material.name
-    if game_version == 'haloce':
-        if material.ass_jms.two_sided:
-            if "%" not in name:
-                name = name + "%"
-        if material.ass_jms.transparent_1_sided:
-            if "#" not in name:
-                name = name + "#"
-        if material.ass_jms.render_only:
-            if "!" not in name:
-                name = name + "!"
-        if material.ass_jms.sphere_collision_only:
-            if "*" not in name:
-                name = name + "*"
-        if material.ass_jms.fog_plane:
-            if "$" not in name:
-                name = name + "$"
-        if material.ass_jms.ladder:
-            if "^" not in name:
-                name = name + "^"
-        if material.ass_jms.breakable:
-            if "-" not in name:
-                name = name + "-"
-        if material.ass_jms.ai_deafening:
-            if "&" not in name:
-                name = name + "&"
-        if material.ass_jms.collision_only:
-            if "@" not in name:
-                name = name + "@"
-        if material.ass_jms.portal_exact:
-            if "." not in name:
-                name = name + "."
-    return name
+    processed_symbol_name = name
+    if material.ass_jms.is_bm and not game_version == 'halo3':
+        processed_lightmap_properties = gather_parameters(name)
+        processed_lightmap_name = processed_lightmap_properties[0]
+        processed_parameters = processed_lightmap_properties[1]
+
+        symbol_properties = gather_symbols("", processed_lightmap_name)
+        symbol_properties = gather_symbols(symbol_properties[0], reversed(symbol_properties[1]))
+        used_symbol_list = symbol_properties[0]
+        processed_symbol_name = "".join(reversed(symbol_properties[1])).strip()
+        if game_version == 'haloce':
+            if material.ass_jms.two_sided or "%" in used_symbol_list:
+                processed_symbol_name += "%"
+            if material.ass_jms.transparent_1_sided or "#" in used_symbol_list:
+                processed_symbol_name += "#"
+            if material.ass_jms.render_only or "!" in used_symbol_list:
+                processed_symbol_name += "!"
+            if material.ass_jms.sphere_collision_only or "*" in used_symbol_list:
+                processed_symbol_name += "*"
+            if material.ass_jms.fog_plane or "$" in used_symbol_list:
+                processed_symbol_name += "$"
+            if material.ass_jms.ladder or "^" in used_symbol_list:
+                processed_symbol_name += "^"
+            if material.ass_jms.breakable or "-" in used_symbol_list:
+                processed_symbol_name += "-"
+            if material.ass_jms.ai_deafening or "&" in used_symbol_list:
+                processed_symbol_name += "&"
+            if material.ass_jms.collision_only or "@" in used_symbol_list:
+                processed_symbol_name += "@"
+            if material.ass_jms.portal_exact or "." in used_symbol_list:
+                processed_symbol_name += "."
+
+        elif game_version == 'halo2':
+            if material.ass_jms.two_sided or "%" in used_symbol_list:
+                processed_symbol_name += "%"
+            if material.ass_jms.transparent_1_sided or "#" in used_symbol_list:
+                processed_symbol_name += "#"
+            if material.ass_jms.transparent_2_sided or "?" in used_symbol_list:
+                processed_symbol_name += "?"
+            if material.ass_jms.render_only or "!" in used_symbol_list:
+                processed_symbol_name += "!"
+            if material.ass_jms.collision_only or "@" in used_symbol_list:
+                processed_symbol_name += "@"
+            if material.ass_jms.sphere_collision_only or "*" in used_symbol_list:
+                processed_symbol_name += "*"
+            if material.ass_jms.fog_plane or "$" in used_symbol_list:
+                processed_symbol_name += "$"
+            if material.ass_jms.ladder or "^" in used_symbol_list:
+                processed_symbol_name += "^"
+            if material.ass_jms.breakable or "-" in used_symbol_list:
+                processed_symbol_name += "-"
+            if material.ass_jms.ai_deafening or "&" in used_symbol_list:
+                processed_symbol_name += "&"
+            if material.ass_jms.no_shadow or "=" in used_symbol_list:
+                processed_symbol_name += "="
+            if material.ass_jms.shadow_only or "." in used_symbol_list:
+                processed_symbol_name += "."
+            if material.ass_jms.lightmap_only or ";" in used_symbol_list:
+                processed_symbol_name += ";"
+            if material.ass_jms.precise or ")" in used_symbol_list:
+                processed_symbol_name += ")"
+            if material.ass_jms.conveyor or ">" in used_symbol_list:
+                processed_symbol_name += ">"
+            if material.ass_jms.portal_1_way or "<" in used_symbol_list:
+                processed_symbol_name += "<"
+            if material.ass_jms.portal_door or "|" in used_symbol_list:
+                processed_symbol_name += "|"
+            if material.ass_jms.portal_vis_blocker or "~" in used_symbol_list:
+                processed_symbol_name += "~"
+            if material.ass_jms.dislike_photons or "(" in used_symbol_list:
+                processed_symbol_name += "("
+            if material.ass_jms.ignored_by_lightmaps or "{" in used_symbol_list:
+                processed_symbol_name += "{"
+            if material.ass_jms.blocks_sound or "}" in used_symbol_list:
+                processed_symbol_name += "}"
+            if material.ass_jms.decal_offset or "[" in used_symbol_list:
+                processed_symbol_name += "["
+            if material.ass_jms.lightmap_resolution_scale > 0.0:
+                processed_symbol_name += " lm:%s" % material.ass_jms.lightmap_resolution_scale
+            if material.ass_jms.lightmap_power_scale > 0.0:
+                processed_symbol_name += " lp:%s" % material.ass_jms.lightmap_power_scale
+            if material.ass_jms.lightmap_half_life > 0.0:
+                processed_symbol_name += " hl:%s" % material.ass_jms.lightmap_half_life
+            if material.ass_jms.lightmap_diffuse_scale > 0.0:
+                processed_symbol_name += " ds:%s" % material.ass_jms.lightmap_diffuse_scale
+
+            for parameter in processed_parameters:
+                split_parameter = parameter.split(':', 1)
+                if split_parameter[0].strip() == "lm" and not "lm" in processed_symbol_name:
+                    processed_symbol_name += " lm:%s" % split_parameter[1]
+
+                elif split_parameter[0].strip() == "lp" and not "lp" in processed_symbol_name:
+                    processed_symbol_name += " lp:%s" % split_parameter[1]
+
+                elif split_parameter[0].strip() == "hl" and not "hl" in processed_symbol_name:
+                    processed_symbol_name += " hl:%s" % split_parameter[1]
+
+                elif split_parameter[0].strip() == "ds" and not "ds" in processed_symbol_name:
+                    processed_symbol_name += " ds:%s" % split_parameter[1]
+
+    return processed_symbol_name
 
 def run_code(code_string):
     def toolset_exec(code):
