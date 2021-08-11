@@ -49,47 +49,51 @@ class JMIScene(global_functions.HaloAsset):
         for node in self.world_nodes:
             self.children_sets.append(global_functions.get_children(node))
 
-def write_file(context, filepath, report, jmi_version, jmi_version_h2, jmi_version_h3, apply_modifiers, triangulate_faces, folder_type, edge_split, use_edge_angle, use_edge_sharp, split_angle, clean_normalize_weights, scale_enum, scale_float, console, hidden_geo, export_render, export_collision, export_physics, game_version, encoding):
-    version = global_functions.get_version(jmi_version, None, jmi_version_h2, jmi_version_h3, game_version, console)
+def write_file(context, filepath, report, jmi_version, jmi_version_ce, jmi_version_h2, jmi_version_h3, apply_modifiers, triangulate_faces, folder_type, edge_split, use_edge_angle, use_edge_sharp, split_angle, clean_normalize_weights, scale_enum, scale_float, console, hidden_geo, export_render, export_collision, export_physics, game_version, encoding):
+    version = global_functions.get_version(jmi_version, jmi_version_ce, jmi_version_h2, jmi_version_h3, game_version, console)
 
     jmi_scene = JMIScene(context, report, filepath)
 
     filename = global_functions.get_filename(None, None, None, None, None, True, filepath)
     root_directory = global_functions.get_directory(None, None, None, folder_type, None, filepath)
 
-    file = open(root_directory + os.sep + filename, 'w', encoding=encoding)
+    if version >= 8207:
+        file = open(root_directory + os.sep + filename, 'w', encoding=encoding)
 
-    #write header
-    version_bounds = '8207-8210'
-    if game_version == 'halo3mcc':
-        version_bounds = '8207-8213'
+        #write header
+        version_bounds = '8207-8210'
+        if game_version == 'halo3mcc':
+            version_bounds = '8207-8213'
 
-    file.write(
-        ';### VERSION ###' +
-        '\n%s' % (version) +
-        '\n;\t<%s>\n' % (version_bounds) +
-        '\n'
-        )
+        file.write(
+            ';### VERSION ###' +
+            '\n%s' % (version) +
+            '\n;\t<%s>\n' % (version_bounds) +
+            '\n'
+            )
 
-    file.write(
-        ';### TOTAL OBJECTS ###' +
-        '\n%s' % (len(jmi_scene.children_sets)) +
-        '\n;\t<name>' +
-        '\n'
-        )
+        file.write(
+            ';### TOTAL OBJECTS ###' +
+            '\n%s' % (len(jmi_scene.children_sets)) +
+            '\n;\t<name>' +
+            '\n'
+            )
 
-    for world_nodes in jmi_scene.children_sets:
-        file.write('\n%s' % (world_nodes[0].name.split('!', 1)[1]))
+        for world_nodes in jmi_scene.children_sets:
+            file.write('\n%s' % (world_nodes[0].name.split('!', 1)[1]))
 
-    file.close()
-    for world_nodes in jmi_scene.children_sets:
+        file.close()
+
+    for idx, world_nodes in enumerate(jmi_scene.children_sets):
+        permutation_name = jmi_scene.world_nodes[idx].jmi.permutation_ce
+        lod_setting = jmi_scene.world_nodes[idx].jmi.level_of_detail_ce
         world_name = world_nodes[0].name.split('!', 1)[1]
         world_set = root_directory + os.sep + world_name
         if not os.path.exists(world_set):
             os.makedirs(world_set)
 
         bulk_output = world_set + os.sep + world_name
-        export_jms.command_queue(context, bulk_output, report, jmi_version, None, jmi_version_h2, jmi_version_h3, True, True, folder_type, apply_modifiers, triangulate_faces, edge_split, use_edge_angle, use_edge_sharp, split_angle, clean_normalize_weights, scale_enum, scale_float, console, None, None, hidden_geo, export_render, export_collision, export_physics, game_version, encoding, world_nodes)
+        export_jms.command_queue(context, bulk_output, report, jmi_version, jmi_version_ce, jmi_version_h2, jmi_version_h3, True, True, folder_type, apply_modifiers, triangulate_faces, edge_split, use_edge_angle, use_edge_sharp, split_angle, clean_normalize_weights, scale_enum, scale_float, console, permutation_name, lod_setting, hidden_geo, export_render, export_collision, export_physics, game_version, encoding, world_nodes)
 
     report({'INFO'}, "Export completed successfully")
     return {'FINISHED'}

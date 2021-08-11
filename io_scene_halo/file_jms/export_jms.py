@@ -343,7 +343,7 @@ class JMSScene(global_functions.HaloAsset):
             self.direction = direction
             self.radiant_intensity = radiant_intensity
             self.solid_angle = solid_angle
-    def __init__(self, context, report, version, game_version, generate_checksum, apply_modifiers, hidden_geo, export_render, export_collision, export_physics, custom_scale, object_list):
+    def __init__(self, context, report, version, game_version, generate_checksum, apply_modifiers, hidden_geo, export_render, export_collision, export_physics, custom_scale, object_list, jmi):
         self.valid_gen_list = ['halo2',
                                'halo3mcc'
                                ]
@@ -512,7 +512,7 @@ class JMSScene(global_functions.HaloAsset):
         if game_version == 'haloce' and node_count == 0 or not game_version == 'haloce' and not export_physics and node_count == 0: #JMSv2 files can have JMS files without a node for physics.
             raise global_functions.SceneParseError("No nodes in scene. Add an armature or object mesh named frame.")
 
-        elif root_node_count >= 2:
+        elif root_node_count >= 2 and not jmi:
             raise global_functions.SceneParseError("More than one root node. Please remove or rename objects until you only have one root frame object.")
 
         elif len(object_list) == 0:
@@ -1251,7 +1251,7 @@ def write_file(context,
                jmi
                ):
 
-    jms_scene = JMSScene(context, report, version, game_version, generate_checksum, apply_modifiers, hidden_geo, export_render, export_collision, export_physics, custom_scale, object_list)
+    jms_scene = JMSScene(context, report, version, game_version, generate_checksum, apply_modifiers, hidden_geo, export_render, export_collision, export_physics, custom_scale, object_list, jmi)
 
     if version > 8209:
         decimal_1 = '\n%0.10f'
@@ -2195,28 +2195,16 @@ def command_queue(context,
 
         elif name[0:1] == '#':
             if global_functions.set_ignore(obj) == False or hidden_geo:
-                if hasattr(obj.data, 'jms'):
-                    if obj.data.jms.marker_mask_type =='0':
-                        render_count += 1
-                    elif obj.data.jms.marker_mask_type =='1':
-                        collision_count += 1
-                    elif obj.data.jms.marker_mask_type =='2':
-                        physics_count += 1
-                    elif obj.data.jms.marker_mask_type =='3':
-                        render_count += 1
-                        collision_count += 1
-                        physics_count += 1
-                elif hasattr(obj, 'marker'):
-                    if obj.marker.marker_mask_type =='0':
-                        render_count += 1
-                    elif obj.marker.marker_mask_type =='1':
-                        collision_count += 1
-                    elif obj.marker.marker_mask_type =='2':
-                        physics_count += 1
-                    elif obj.marker.marker_mask_type =='3':
-                        render_count += 1
-                        collision_count += 1
-                        physics_count += 1
+                if obj.marker.marker_mask_type =='0':
+                    render_count += 1
+                elif obj.marker.marker_mask_type =='1':
+                    collision_count += 1
+                elif obj.marker.marker_mask_type =='2':
+                    physics_count += 1
+                elif obj.marker.marker_mask_type =='3':
+                    render_count += 1
+                    collision_count += 1
+                    physics_count += 1
 
                 marker_count += 1
 

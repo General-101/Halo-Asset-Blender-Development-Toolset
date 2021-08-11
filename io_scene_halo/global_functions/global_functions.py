@@ -116,7 +116,7 @@ def sort_by_layer(node_list, armature):
     sort_list = []
     reversed_sort_list = []
     for node in node_list:
-        if node.parent == None:
+        if node.parent == None and not node.name[0:1] == '!' or node.parent.name[0:1] == '!' and node.parent.parent == None:
             layer_count.append(None)
             layer_root.append(node)
 

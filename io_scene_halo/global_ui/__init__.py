@@ -779,53 +779,72 @@ class ASS_JMS_MaterialPropertiesGroup(PropertyGroup):
         min = 0.0,
         )
 
-class ASS_JMS_MeshProps(Panel):
+class Halo_MeshProps(Panel):
     bl_label = "Halo Mesh Properties"
-    bl_idname = "ASS_JMS_PT_MeshDetailsPanel"
+    bl_idname = "HALO_PT_MeshDetailsPanel"
     bl_space_type = "PROPERTIES"
     bl_region_type = "WINDOW"
     bl_context = "data"
     bl_options = {"DEFAULT_CLOSED"}
 
     @classmethod
+    def poll(cls, context):
+        scene = context.scene
+        scene_halo = scene.halo
+
+        obj = context.object
+        mesh = obj.data
+
+        show_panel = None
+        if hasattr(obj, 'marker') and obj.name[0:1].lower() == '#' or hasattr(mesh, 'ass_jms') and not scene_halo.game_version == 'haloce' or hasattr(obj, 'jmi') and obj.name[0:1].lower() == '!' and scene_halo.game_version == 'haloce':
+            show_panel = True
+
+        return show_panel
+
+    def draw(self, context):
+        layout = self.layout
+
+class ASS_JMS_MeshProps(Panel):
+    bl_label = "ASS/JMS Properties"
+    bl_idname = "ASS_JMS_PT_DetailsPanel"
+    bl_space_type = "PROPERTIES"
+    bl_region_type = "WINDOW"
+    bl_context = "data"
+    bl_options = {"DEFAULT_CLOSED"}
+    bl_parent_id = "HALO_PT_MeshDetailsPanel"
+
+    @classmethod
     def poll(self, context):
         scene = context.scene
         scene_halo = scene.halo
 
-        obj = context.object.data
+        mesh = context.object.data
 
         ass_jms = None
-        if hasattr(obj, 'ass_jms'):
-            if scene_halo.game_version == 'halo2' or scene_halo.game_version == 'halo3':
-                ass_jms = obj.ass_jms
+        if hasattr(mesh, 'ass_jms') and not scene_halo.game_version == 'haloce':
+            ass_jms = mesh.ass_jms
 
         return ass_jms
 
     def draw(self, context):
         layout = self.layout
 
-        obj = context.object.data
-        obj_ass_jms = obj.ass_jms
+        mesh = context.object.data
+        mesh_ass_jms = mesh.ass_jms
 
-        scene = context.scene
-        scene_halo = scene.halo
-
-        box = layout.box()
-        box.label(text="JMS Mesh Details:")
-        col = box.column(align=True)
-        if scene_halo.game_version == 'halo2' or scene_halo.game_version == 'halo3':
-            row = col.row()
-            row.label(text='Bounding Radius:')
-            row.prop(obj_ass_jms, "bounding_radius", text='')
-            row = col.row()
-            row.label(text='LOD:')
-            row.prop(obj_ass_jms, "level_of_detail", text='')
-            row = col.row()
-            row.label(text='Object Type:')
-            row.prop(obj_ass_jms, "Object_Type", text='')
-            row = col.row()
-            row.label(text='XREF Path:')
-            row.prop(obj_ass_jms, "XREF_path", text='')
+        col = layout.column(align=True)
+        row = col.row()
+        row.label(text='Bounding Radius:')
+        row.prop(mesh_ass_jms, "bounding_radius", text='')
+        row = col.row()
+        row.label(text='LOD:')
+        row.prop(mesh_ass_jms, "level_of_detail", text='')
+        row = col.row()
+        row.label(text='Object Type:')
+        row.prop(mesh_ass_jms, "Object_Type", text='')
+        row = col.row()
+        row.label(text='XREF Path:')
+        row.prop(mesh_ass_jms, "XREF_path", text='')
 
 class ASS_JMS_MeshPropertiesGroup(PropertyGroup):
     bounding_radius: BoolProperty(
@@ -908,6 +927,7 @@ class Halo_ScenePropertiesGroup(PropertyGroup):
 classeshalo = (
     ASS_JMS_MeshPropertiesGroup,
     ASS_JMS_MaterialPropertiesGroup,
+    Halo_MeshProps,
     ASS_JMS_MeshProps,
     ASS_JMS_MaterialProps,
     ASS_JMS_MaterialFlagsProps,
