@@ -204,11 +204,11 @@ def load_file(context, filepath, report, fix_parents, game_version, jms_path_a, 
     jma_file = JMAAsset(filepath, game_version, report)
     if path.exists(bpy.path.abspath(jms_path_a)):
         jms_a_transform = True
-        jms_a_file = import_jms.JMSAsset(bpy.path.abspath(jms_path_a), "halo2")
+        jms_a_file = import_jms.JMSAsset(bpy.path.abspath(jms_path_a), "auto")
 
     if path.exists(bpy.path.abspath(jms_path_a)) and path.exists(bpy.path.abspath(jms_path_b)):
         jms_b_transform = True
-        jms_b_file = import_jms.JMSAsset(bpy.path.abspath(jms_path_b), "halo2")
+        jms_b_file = import_jms.JMSAsset(bpy.path.abspath(jms_path_b), "auto")
 
     collection = bpy.context.collection
     scene = bpy.context.scene
@@ -403,7 +403,6 @@ def load_file(context, filepath, report, fix_parents, game_version, jms_path_a, 
 
             armature.keyframe_insert('location')
             armature.keyframe_insert('rotation_euler')
-            view_layer.update()
 
         for idx, node in enumerate(nodes):
             pose_bone = armature.pose.bones[node.name]
@@ -416,7 +415,7 @@ def load_file(context, filepath, report, fix_parents, game_version, jms_path_a, 
                 transform_matrix = pose_bone.parent.matrix @ transform_matrix
 
             pose_bone.matrix = transform_matrix
-            view_layer.update()
+
             pose_bone.keyframe_insert('location')
             pose_bone.keyframe_insert('rotation_quaternion')
             pose_bone.keyframe_insert('scale')
