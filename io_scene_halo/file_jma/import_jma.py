@@ -401,6 +401,7 @@ def load_file(context, filepath, report, fix_parents, game_version, jms_path_a, 
             if jma_file.biped_controller_frame_type & JMAAsset.BipedControllerFrameType.DYAW:
                 armature.rotation_euler.z = controller_transform.rotation.to_euler().z
 
+            view_layer.update()
             armature.keyframe_insert('location')
             armature.keyframe_insert('rotation_euler')
 
@@ -416,6 +417,8 @@ def load_file(context, filepath, report, fix_parents, game_version, jms_path_a, 
 
             pose_bone.matrix = transform_matrix
 
+            view_layer.update()
+            
             pose_bone.keyframe_insert('location')
             pose_bone.keyframe_insert('rotation_quaternion')
             pose_bone.keyframe_insert('scale')
