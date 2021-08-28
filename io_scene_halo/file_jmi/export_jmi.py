@@ -82,6 +82,8 @@ def write_file(context, filepath, report, jmi_version, jmi_version_ce, jmi_versi
         for world_nodes in jmi_scene.children_sets:
             file.write('\n%s' % (world_nodes[0].name.split('!', 1)[1]))
 
+        file.write('\n')
+        
         file.close()
 
     for idx, world_nodes in enumerate(jmi_scene.children_sets):
