@@ -1,0 +1,28 @@
+name: release
+
+on:
+  push:
+    paths-ignore:
+      - '*.md'
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.x # Version range or exact version of a Python version to use, using SemVer's version range syntax
+      - name: Do package
+        run: python build/create_zip.py
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: toolkit
+          path: output/
+      - name: Release to Github
+        uses: ncipollo/release-action@v1
+        with:
+          prerelease: false
+          token: '${{ secrets.GITHUB_TOKEN }}'
+          artifacts: output/*
+          tag: '${{ github.run_number }}'
