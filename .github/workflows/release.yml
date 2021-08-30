@@ -22,7 +22,7 @@ jobs:
       - name: Release to Github
         uses: ncipollo/release-action@v1
         with:
-          prerelease: true
+          prerelease: false
           token: '${{ secrets.GITHUB_TOKEN }}'
           artifacts: output/*
           tag: '${{ github.run_number }}'
