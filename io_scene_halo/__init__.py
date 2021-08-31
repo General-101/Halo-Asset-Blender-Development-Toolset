@@ -28,7 +28,7 @@ bl_info = {
     "name": "Halo Asset Blender Development Toolset",
     "author": "General_101",
     "version": (1, 0, 0),
-    "blender": (2, 80, 0),
+    "blender": (2, 83, 17),
     "location": "File > Import-Export",
     "description": "Import-Export Halo CE/2/3 Jointed Model Skeleton File (.jms), Import-Export Halo CE/2/3 Jointed Model Animation File (.jma), Import-Export Halo 2/3 Amalgam Scene Specification File (.ass), Import Halo CE Virtual Reality Modeling Language File (.wrl), and Export Halo 2 Vista H2Codez lightmap UV (.luv). Originally by Cyboryxmen with changes by Fulsy + MosesofEgypt + con for JMS portion. Initial ASS exporter by Dave Barnes (Aerial Dave). WRL importing originally by Con.",
     "warning": "",
