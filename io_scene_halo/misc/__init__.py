@@ -183,6 +183,12 @@ class Halo_Tools_Helper(Panel):
         row.operator("halo_bulk.bulk_bone_reset", text="BULK!!!")
 
         box = layout.box()
+        box.label(text="Cull Materials:")
+        col = box.column(align=True)
+        row = col.row()
+        row.operator("halo_bulk.cull_materials", text="BULK!!!")
+
+        box = layout.box()
         box.label(text="Scale Model Helper:")
         col = box.column(align=True)
         row = col.row()
@@ -254,6 +260,16 @@ class Bulk_Reset_Bones(Operator):
         from io_scene_halo.misc import rotate_bones
         return global_functions.run_code("rotate_bones.reset_bones()")
 
+class Cull_Materials(Operator):
+    """Sets unused material slots to none for the selected object."""
+    bl_idname = 'halo_bulk.cull_materials'
+    bl_label = 'Cull Materials'
+    bl_options = {"REGISTER", "UNDO"}
+
+    def execute(self, context):
+        from io_scene_halo.misc import cull_materials
+        return global_functions.run_code("cull_materials.cull_materials()")
+
 class Scale_Model(Operator):
     """Creates a model that matches the ingame scale."""
     bl_idname = 'halo_bulk.scale_model'
@@ -287,6 +303,7 @@ classeshalo = (
     Bulk_Rename_Prefix,
     Bulk_Rotate_Bones,
     Bulk_Reset_Bones,
+    Cull_Materials,
     Scale_Model,
     Halo_Tools_Helper,
     Halo_LightmapperPropertiesGroup,
