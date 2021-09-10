@@ -51,11 +51,13 @@ class ASSAsset(global_functions.HaloAsset):
     class Material:
         def __init__(self,
                      name,
-                     material_effect
+                     material_effect,
+                     material_strings
                      ):
 
             self.name = name
             self.material_effect = material_effect
+            self.material_strings = material_strings
 
     class Object:
         def __init__(self,
@@ -190,11 +192,13 @@ class ASSAsset(global_functions.HaloAsset):
         for material in range(material_count):
             name = self.next().strip('\"')
             material_effect = self.next().strip('\"')
-            self.materials.append(ASSAsset.Material(name, material_effect))
+            material_strings = []
             if self.version >= 4:
                 material_string_count = int(self.next())
                 for string in range(material_string_count):
-                    self.skip(1) #Dont know what to do with these yet.
+                    material_strings.append(self.next().strip('\"'))
+
+            self.materials.append(ASSAsset.Material(name, material_effect, material_strings))
 
         object_count = int(self.next())
         for object in range(object_count):
@@ -330,11 +334,73 @@ class ASSAsset(global_functions.HaloAsset):
             if bone_influence_count > 0:
                 self.skip(bone_influence_count)
 
-            if not object_index == -1 or not unique_id == -1 or not parent_id == -1:
-                self.instances.append(ASSAsset.Instance(true_name, object_index, unique_id, parent_id, inheritance_flag, local_transform, pivot_transform))
+            self.instances.append(ASSAsset.Instance(true_name, object_index, unique_id, parent_id, inheritance_flag, local_transform, pivot_transform))
 
         if self.left() != 0: # is something wrong with the parser?
             raise RuntimeError("%s elements left after parse end" % self.left())
+
+def set_ass_material_properties(ass_mat, mat):
+    material_effect = ass_mat.material_effect
+    material_strings = ass_mat.material_strings
+    mat.ass_jms.material_effect = material_effect
+    if len(material_strings) > 0:
+        mat.ass_jms.is_bm = True
+
+    for string in material_strings:
+        if string.startswith("BM_FLAGS"):
+            string_bitfield = string.split()[1] #Split the string and retrieve the bitfield.
+            mat.ass_jms.two_sided = int(string_bitfield[0])
+            mat.ass_jms.transparent_1_sided = int(string_bitfield[1])
+            mat.ass_jms.transparent_2_sided = int(string_bitfield[2])
+            mat.ass_jms.render_only = int(string_bitfield[3])
+            mat.ass_jms.collision_only = int(string_bitfield[4])
+            mat.ass_jms.sphere_collision_only = int(string_bitfield[5])
+            mat.ass_jms.fog_plane = int(string_bitfield[6])
+            mat.ass_jms.ladder = int(string_bitfield[7])
+            mat.ass_jms.breakable = int(string_bitfield[8])
+            mat.ass_jms.ai_deafening = int(string_bitfield[9])
+            mat.ass_jms.no_shadow = int(string_bitfield[10])
+            mat.ass_jms.shadow_only = int(string_bitfield[11])
+            mat.ass_jms.lightmap_only = int(string_bitfield[12])
+            mat.ass_jms.precise = int(string_bitfield[13])
+            mat.ass_jms.conveyor = int(string_bitfield[14])
+            mat.ass_jms.portal_1_way = int(string_bitfield[15])
+            mat.ass_jms.portal_door = int(string_bitfield[16])
+            mat.ass_jms.portal_vis_blocker = int(string_bitfield[17])
+            mat.ass_jms.ignored_by_lightmaps = int(string_bitfield[18])
+            mat.ass_jms.blocks_sound = int(string_bitfield[19])
+            mat.ass_jms.decal_offset = int(string_bitfield[20])
+            mat.ass_jms.slip_surface = int(string_bitfield[21])
+
+        elif string.startswith("BM_LMRES"):
+            lmres_string_args = string.split()
+            mat.ass_jms.lightmap_res = float(lmres_string_args[1])
+            mat.ass_jms.photon_fidelity = int(lmres_string_args[2])
+            mat.ass_jms.two_sided_transparent_tint = (float(lmres_string_args[3]), float(lmres_string_args[4]), float(lmres_string_args[5]))
+            mat.ass_jms.override_lightmap_transparency = int(lmres_string_args[6])
+            mat.ass_jms.additive_transparency = (float(lmres_string_args[7]), float(lmres_string_args[8]), float(lmres_string_args[9]))
+            mat.ass_jms.use_shader_gel = int(lmres_string_args[10])
+            mat.ass_jms.ignore_default_res_scale = int(lmres_string_args[11])
+
+        elif string.startswith("BM_LIGHTING_BASIC"):
+            lighting_basic_args = string.split()
+            mat.ass_jms.power = float(lighting_basic_args[1])
+            mat.ass_jms.color = (float(lighting_basic_args[2]), float(lighting_basic_args[3]), float(lighting_basic_args[4]))
+            mat.ass_jms.quality = float(lighting_basic_args[5])
+            mat.ass_jms.power_per_unit_area = int(lighting_basic_args[6])
+            mat.ass_jms.emissive_focus = float(lighting_basic_args[7])
+
+        elif string.startswith("BM_LIGHTING_ATTEN"):
+            lighting_attenuation_args = string.split()
+            mat.ass_jms.attenuation_enabled = int(lighting_attenuation_args[1])
+            mat.ass_jms.falloff_distance = float(lighting_attenuation_args[2])
+            mat.ass_jms.cutoff_distance = float(lighting_attenuation_args[3])
+
+        elif string.startswith("BM_LIGHTING_FRUS"):
+            lighting_frus_args = string.split()
+            mat.ass_jms.frustum_blend = float(lighting_frus_args[1])
+            mat.ass_jms.frustum_falloff = float(lighting_frus_args[2])
+            mat.ass_jms.frustum_cutoff = float(lighting_frus_args[3])
 
 def load_file(context, filepath, report):
     ass_file = ASSAsset(filepath)
@@ -349,14 +415,13 @@ def load_file(context, filepath, report):
         bpy.ops.object.mode_set(mode='OBJECT')
         bpy.ops.object.select_all(action='DESELECT')
 
-    for idx, mat in enumerate(ass_file.materials):
-        material_name = mat.name
-        material_effect = mat.material_effect
+    for idx, ass_mat in enumerate(ass_file.materials):
+        material_name = ass_mat.name
         mat = bpy.data.materials.get(material_name)
         if mat is None:
             mat = bpy.data.materials.new(name=material_name)
 
-        mat.ass_jms.material_effect = material_effect
+        set_ass_material_properties(ass_mat, mat)
         mat.diffuse_color = random_color_gen.next()
 
     for idx, object in enumerate(ass_file.objects):
@@ -478,6 +543,8 @@ def load_file(context, filepath, report):
 
     for idx, instance in enumerate(ass_file.instances):
         object_index = instance.object_index
+        unique_id = instance.unique_id
+        parent_id = instance.parent_id
         geo_class = 'EMPTY'
         object_radius = 2
         object_height = 1
@@ -490,117 +557,120 @@ def load_file(context, filepath, report):
             local_scale = local_transform.scale
             pivot_scale = pivot_transform.scale
 
-        if not object_index == -1:
-            object_element = ass_file.objects[object_index]
-            geo_class = object_element.geo_class
-            object_radius = object_element.radius
-            object_height = object_element.height
-            object_extents = object_element.extents
+        if not unique_id == -1:
+            if not object_index == -1:
+                object_element = ass_file.objects[object_index]
+                geo_class = object_element.geo_class
+                object_radius = object_element.radius
+                object_height = object_element.height
+                object_extents = object_element.extents
 
-            if geo_class == 'GENERIC_LIGHT':
-                light_type = "POINT"
-                if object_element.light_properties.light_type == 'SPOT_LGT':
-                    light_type = "SPOT"
-
-                elif object_element.light_properties.light_type == 'DIRECT_LGT':
-                    light_type = "AREA"
-
-                elif object_element.light_properties.light_type == 'OMNI_LGT':
+                if geo_class == 'GENERIC_LIGHT':
                     light_type = "POINT"
+                    if object_element.light_properties.light_type == 'SPOT_LGT':
+                        light_type = "SPOT"
 
-                elif object_element.light_properties.light_type == 'AMBIENT_LGT':
-                    light_type = "SUN"
+                    elif object_element.light_properties.light_type == 'DIRECT_LGT':
+                        light_type = "AREA"
 
-                light_data = bpy.data.lights.new(instance.name, light_type)
-                object_mesh = bpy.data.objects.new(instance.name, light_data)
-                object_mesh.data.color = (object_element.light_properties.light_color)
-                object_mesh.data.energy = (object_element.light_properties.intensity)
-                if object_element.light_properties.light_type == 'SPOT_LGT':
+                    elif object_element.light_properties.light_type == 'OMNI_LGT':
+                        light_type = "POINT"
+
+                    elif object_element.light_properties.light_type == 'AMBIENT_LGT':
+                        light_type = "SUN"
+
+                    light_data = bpy.data.lights.new(instance.name, light_type)
+                    object_mesh = bpy.data.objects.new(instance.name, light_data)
+                    object_mesh.data.color = (object_element.light_properties.light_color)
+                    object_mesh.data.energy = (object_element.light_properties.intensity)
+                    if object_element.light_properties.light_type == 'SPOT_LGT':
+                            object_mesh.data.use_custom_distance = object_element.light_properties.uses_near_attenuation
+                            object_mesh.data.cutoff_distance = object_element.light_properties.near_attenuation_start
+                            object_mesh.data.spot_size = radians(object_element.light_properties.hotspot_size)
+                            object_mesh.data.spot_blend = object_element.light_properties.hotspot_falloff_size / object_element.light_properties.hotspot_size
+
+                    elif object_element.light_properties.light_type == 'DIRECT_LGT':
                         object_mesh.data.use_custom_distance = object_element.light_properties.uses_near_attenuation
                         object_mesh.data.cutoff_distance = object_element.light_properties.near_attenuation_start
-                        object_mesh.data.spot_size = radians(object_element.light_properties.hotspot_size)
-                        object_mesh.data.spot_blend = object_element.light_properties.hotspot_falloff_size / object_element.light_properties.hotspot_size
+                        object_element.light_properties.light_shape = 0
+                        light_shape_type = "DISK"
+                        if object_element.light_properties.light_shape == 1:
+                            light_shape_type = "RECTANGLE"
+                        object_mesh.data.shape = light_shape_type
+                        object_mesh.data.size = object_element.light_properties.light_aspect_ratio
 
-                elif object_element.light_properties.light_type == 'DIRECT_LGT':
-                    object_mesh.data.use_custom_distance = object_element.light_properties.uses_near_attenuation
-                    object_mesh.data.cutoff_distance = object_element.light_properties.near_attenuation_start
-                    object_element.light_properties.light_shape = 0
-                    light_shape_type = "DISK"
-                    if object_element.light_properties.light_shape == 1:
-                        light_shape_type = "RECTANGLE"
-                    object_mesh.data.shape = light_shape_type
-                    object_mesh.data.size = object_element.light_properties.light_aspect_ratio
+                else:
+                    object_mesh = bpy.data.objects.new(instance.name, meshes[object_index])
+
+                collection.objects.link(object_mesh)
+
+                parent_index = instance.parent_id
+                if not parent_index == -1:
+                    parent_instance = ass_file.instances[parent_index]
+                    parent_instance_name = parent_instance.name
+                    parent_unique_id = parent_instance.unique_id
+                    parent_parent_id = parent_instance.parent_id
+                    if not parent_unique_id == -1 and not parent_parent_id == -1:
+                        object_mesh.parent = bpy.data.objects[parent_instance_name]
+
+                output_rotation = local_transform.rotation @ pivot_transform.rotation
+                output_position = local_transform.rotation @ pivot_transform.vector * local_scale[0] + local_transform.vector
+                output_scale = local_scale[0] * pivot_scale[0]
+
+                object_mesh.location = output_position
+                object_mesh.rotation_euler =  output_rotation.to_euler()
+                object_mesh.scale = (output_scale, output_scale, output_scale)
 
             else:
-                object_mesh = bpy.data.objects.new(instance.name, meshes[object_index])
+                object_mesh = bpy.data.objects.new(instance.name, None)
+                collection.objects.link(object_mesh)
 
-            collection.objects.link(object_mesh)
-
-            parent_index = instance.parent_id
-            if not parent_index == -1:
-                parent_index = instance.parent_id - 1 #Subtracting by one to get the remove the scene root. Scene root isn't a real object and is just used as an origin
+                parent_index = instance.parent_id
                 if not parent_index == -1:
                     parent_instance = ass_file.instances[parent_index]
                     parent_instance_name = parent_instance.name
-                    object_mesh.parent = bpy.data.objects[parent_instance_name]
+                    parent_unique_id = parent_instance.unique_id
+                    parent_parent_id = parent_instance.parent_id
+                    if not parent_unique_id == -1 and not parent_parent_id == -1:
+                        object_mesh.parent = bpy.data.objects[parent_instance_name]
 
-            output_rotation = local_transform.rotation @ pivot_transform.rotation
-            output_position = local_transform.rotation @ pivot_transform.vector * local_scale[0] + local_transform.vector
-            output_scale = local_scale[0] * pivot_scale[0]
+                object_mesh.location = local_transform.vector
+                object_mesh.rotation_euler = local_transform.rotation.to_euler()
+                object_mesh.scale = local_scale
 
-            object_mesh.location = output_position
-            object_mesh.rotation_euler =  output_rotation.to_euler()
-            object_mesh.scale = (output_scale, output_scale, output_scale)
+            for vertex_groups in mesh_vertex_groups:
+                for group in vertex_groups:
+                    if not group in object_mesh.vertex_groups:
+                        object_mesh.vertex_groups.new(name = group)
 
-        else:
-            object_mesh = bpy.data.objects.new(instance.name, None)
-            collection.objects.link(object_mesh)
+            if geo_class == 'PILL':
+                object_mesh.data.ass_jms.Object_Type = 'CAPSULES'
+                object_dimension = object_radius * 2
+                object_mesh.dimensions = (object_dimension, object_dimension, (object_dimension + object_height))
+                object_mesh.select_set(True)
+                view_layer.objects.active = object_mesh
+                bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
+                object_mesh.select_set(False)
+                view_layer.objects.active = None
 
-            parent_index = instance.parent_id
-            if not parent_index == -1:
-                parent_index = instance.parent_id - 1 #Subtracting by one to get the remove the scene root. Scene root isn't a real object and is just used as an origin
-                if not parent_index == -1:
-                    parent_instance = ass_file.instances[parent_index]
-                    parent_instance_name = parent_instance.name
-                    object_mesh.parent = bpy.data.objects[parent_instance_name]
+            elif geo_class == 'SPHERE':
+                object_mesh.data.ass_jms.Object_Type = 'SPHERE'
+                object_dimension = object_radius * 2
+                object_mesh.dimensions = (object_dimension, object_dimension, object_dimension)
+                object_mesh.select_set(True)
+                view_layer.objects.active = object_mesh
+                bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
+                object_mesh.select_set(False)
+                view_layer.objects.active = None
 
-            object_mesh.location = local_transform.vector
-            object_mesh.rotation_euler = local_transform.rotation.to_euler()
-            object_mesh.scale = local_scale
-
-        for vertex_groups in mesh_vertex_groups:
-            for group in vertex_groups:
-                if not group in object_mesh.vertex_groups:
-                    object_mesh.vertex_groups.new(name = group)
-
-        if geo_class == 'PILL':
-            object_mesh.data.ass_jms.Object_Type = 'CAPSULES'
-            object_dimension = object_radius * 2
-            object_mesh.dimensions = (object_dimension, object_dimension, (object_dimension + object_height))
-            object_mesh.select_set(True)
-            view_layer.objects.active = object_mesh
-            bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
-            object_mesh.select_set(False)
-            view_layer.objects.active = None
-
-        elif geo_class == 'SPHERE':
-            object_mesh.data.ass_jms.Object_Type = 'SPHERE'
-            object_dimension = object_radius * 2
-            object_mesh.dimensions = (object_dimension, object_dimension, object_dimension)
-            object_mesh.select_set(True)
-            view_layer.objects.active = object_mesh
-            bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
-            object_mesh.select_set(False)
-            view_layer.objects.active = None
-
-        elif geo_class == 'BOX':
-            object_mesh.data.ass_jms.Object_Type = 'BOX'
-            object_mesh.dimensions = ((object_extents[0] * 2), (object_extents[1] * 2), (object_extents[2] * 2))
-            object_mesh.select_set(True)
-            view_layer.objects.active = object_mesh
-            bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
-            object_mesh.select_set(False)
-            view_layer.objects.active = None
+            elif geo_class == 'BOX':
+                object_mesh.data.ass_jms.Object_Type = 'BOX'
+                object_mesh.dimensions = ((object_extents[0] * 2), (object_extents[1] * 2), (object_extents[2] * 2))
+                object_mesh.select_set(True)
+                view_layer.objects.active = object_mesh
+                bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
+                object_mesh.select_set(False)
+                view_layer.objects.active = None
 
     report({'INFO'}, "Import completed successfully")
     return {'FINISHED'}
