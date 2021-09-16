@@ -67,6 +67,18 @@ class Halo_PrefixPropertiesGroup(PropertyGroup):
         description = "Set the new prefix for selected objects. Undo if you mess up cause you won't be able to try again!"
         )
 
+class Perm_RegionPropertiesGroup(PropertyGroup):
+    permutation_string: StringProperty(
+        name = "Permutation",
+        default = "",
+        description = "Set the permutation for your model"
+        )
+    region_string: StringProperty(
+        name = "Region",
+        default = "",
+        description = "Set the region for your model"
+        )
+
 class Scale_ModelPropertiesGroup(PropertyGroup):
     game_version: EnumProperty(
         name="Game:",
@@ -143,6 +155,7 @@ class Halo_Tools_Helper(Panel):
         scene_halo_lightmapper = scene.halo_lightmapper
         scene_halo_prefix = scene.halo_prefix
         scene_scale_model = scene.scale_model
+        scene_perm_region = scene.set_perm_region
 
         layout = self.layout
         row = layout.row()
@@ -205,6 +218,18 @@ class Halo_Tools_Helper(Panel):
             row.prop(scene_scale_model, "halo_one_scale_model_vehi", text="")
         row = col.row()
         row.operator("halo_bulk.scale_model", text="BULK!!!")
+
+        box = layout.box()
+        box.label(text="Permutation Region Helper:")
+        col = box.column(align=True)
+        row = col.row()
+        row.label(text='Permutation:')
+        row.prop(scene_perm_region, "permutation_string", text='')
+        row = col.row()
+        row.label(text='Region:')
+        row.prop(scene_perm_region, "region_string", text='')
+        row = col.row()
+        row.operator("halo_bulk.perm_region_set", text="BULK!!!")
 
 class Bulk_Lightmap_Images(Operator):
     """Create image nodes with a set size for all materials in the scene"""
@@ -293,6 +318,19 @@ class ExportLightmap(Operator, ExportHelper):
 
         return global_functions.run_code("export_lightmap.write_file(context, self.filepath, self.report)")
 
+class PermRegionSet(Operator):
+    """Create a facemap with a permutation and a region"""
+    bl_idname = "halo_bulk.perm_region_set"
+    bl_label = "Create a Facemap"
+    bl_options = {"REGISTER", "UNDO"}
+
+    def execute(self, context):
+        scene = context.scene
+        scene_perm_region = scene.set_perm_region
+        from io_scene_halo.misc import region_perm_prep
+
+        return global_functions.run_code("region_perm_prep.create_facemap(scene_perm_region.permutation_string, scene_perm_region.region_string)")
+
 def menu_func_export(self, context):
     self.layout.operator(ExportLightmap.bl_idname, text="Halo Lightmap UV (.luv)")
 
@@ -305,10 +343,12 @@ classeshalo = (
     Bulk_Reset_Bones,
     Cull_Materials,
     Scale_Model,
+    PermRegionSet,
     Halo_Tools_Helper,
     Halo_LightmapperPropertiesGroup,
     Scale_ModelPropertiesGroup,
-    Halo_PrefixPropertiesGroup
+    Halo_PrefixPropertiesGroup,
+    Perm_RegionPropertiesGroup
 )
 
 def register():
@@ -319,12 +359,14 @@ def register():
     bpy.types.Scene.halo_lightmapper = PointerProperty(type=Halo_LightmapperPropertiesGroup, name="Halo Lightmapper Helper", description="Set properties for the lightmapper")
     bpy.types.Scene.halo_prefix = PointerProperty(type=Halo_PrefixPropertiesGroup, name="Halo Prefix Helper", description="Set properties for node prefixes")
     bpy.types.Scene.scale_model = PointerProperty(type=Scale_ModelPropertiesGroup, name="Halo Scale Model Helper", description="Create meshes for scale")
+    bpy.types.Scene.set_perm_region = PointerProperty(type=Perm_RegionPropertiesGroup, name="Halo Permutation Region Helper", description="Creates a facemap with the exact name we need")
 
 def unregister():
     bpy.types.TOPBAR_MT_file_export.remove(menu_func_export)
     del bpy.types.Scene.halo_lightmapper
     del bpy.types.Scene.halo_prefix
     del bpy.types.Scene.scale_model
+    del bpy.types.Scene.set_perm_region
     for clshalo in classeshalo:
         bpy.utils.unregister_class(clshalo)
 

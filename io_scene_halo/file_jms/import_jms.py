@@ -32,7 +32,7 @@ import bmesh
 import random
 import traceback
 
-from mathutils import Vector, Quaternion, Matrix
+from mathutils import Vector, Quaternion, Matrix, Euler
 from io_scene_halo.global_functions import global_functions
 
 class JMSAsset(global_functions.HaloAsset):
@@ -1692,6 +1692,25 @@ def load_file(context, filepath, report, game_version, reuse_armature, fix_paren
         object_mesh.data.ass_jms.bounding_radius = True
         object_dimension = radius * 2
         object_mesh.dimensions = (object_dimension, object_dimension, object_dimension)
+        object_mesh.select_set(False)
+        armature.select_set(False)
+
+    for idx, skylight in enumerate(jms_file.skylights):
+        name = 'skylight_%s' % idx
+        down_vector = Vector((0, 0, 1))
+
+        light_data = bpy.data.lights.new(name, "SUN")
+        object_mesh = bpy.data.objects.new(name, light_data)
+        collection.objects.link(object_mesh)
+        object_mesh.rotation_euler = down_vector.rotation_difference(skylight.direction).to_euler()
+        object_mesh.data.color = (skylight.radiant_intensity)
+        object_mesh.data.energy = (skylight.solid_angle)
+
+        object_mesh.select_set(True)
+        armature.select_set(True)
+        view_layer.objects.active = armature
+        bpy.ops.object.parent_set(type='ARMATURE', keep_transform=True)
+
         object_mesh.select_set(False)
         armature.select_set(False)
 

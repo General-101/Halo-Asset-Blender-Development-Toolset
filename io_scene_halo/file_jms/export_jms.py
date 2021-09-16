@@ -487,7 +487,7 @@ class JMSScene(global_functions.HaloAsset):
                         bounding_sphere_list.append(obj)
             elif obj.type == 'LIGHT' and version > 8212:
                 if global_functions.set_ignore(obj) == False or hidden_geo:
-                    if bpy.data.lights[obj.name].type == 'SPOT':
+                    if obj.data.type == 'SUN':
                         if export_render:
                             skylight_list.append(obj)
 
@@ -1224,11 +1224,15 @@ class JMSScene(global_functions.HaloAsset):
             self.bounding_spheres.append(JMSScene.Bounding_Sphere(translation, scale))
 
         for light in skylight_list:
-            direction = (0, 0, 0)
-            radiant_intensity = (0, 0, 0)
-            solid_angle = (0)
+            down_vector = Vector((0, 0, 1))
+            down_vector.rotate(light.rotation_euler)
+
+            direction = (down_vector[0], down_vector[1], down_vector[2])
+            radiant_intensity =  (light.data.color[0], light.data.color[1], light.data.color[2])
+            solid_angle = light.data.energy
 
             self.skylights.append(JMSScene.Skylight(direction, radiant_intensity, solid_angle))
+
 def write_file(context,
                filepath,
                report,
@@ -2069,9 +2073,9 @@ def write_file(context,
             for idx, light in enumerate(jms_scene.skylights):
                 file.write(
                     '\n;SKYLIGHT %s' % (idx) +
-                    decimal_3 % (0, 0, 0) +
-                    decimal_3 % (0, 0, 0) +
-                    decimal_1 % (0) +
+                    decimal_3 % light.direction +
+                    decimal_3 % light.radiant_intensity +
+                    decimal_1 % light.solid_angle +
                     '\n'
                 )
     report({'INFO'}, "Export completed successfully")
