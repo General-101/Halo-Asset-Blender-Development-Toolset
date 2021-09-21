@@ -26,33 +26,13 @@
 
 import bpy
 
-def string_empty_check(string):
-    is_empty = False
-    if len(string) == 0:
-        is_empty = True
-    elif string.isspace():
-        is_empty = True
-
-    return is_empty
-
-def create_facemap(permutation_string, region_string):
-    active_object = bpy.context.view_layer.objects.active
-    facemap_name = ""
-    #This doesn't matter for CE but for Halo 2/3 the region or permutation names can't have any whitespace.
-    #Lets fix that here to make sure nothing goes wrong.
-    if not string_empty_check(permutation_string):
-        facemap_name += permutation_string.replace(' ', '_').replace('\t', '_')
-
-    if not string_empty_check(region_string):
-        if not string_empty_check(facemap_name):
-            facemap_name += " "
-
-        facemap_name += region_string.replace(' ', '_').replace('\t', '_')
-
-    if not string_empty_check(facemap_name):
-        active_object.face_maps.new(name=facemap_name)
+def set_strength(strength_value):
+    selected_objects_list = bpy.context.selected_objects
+    for object in selected_objects_list:
+        if object.type == 'LIGHT':
+            object.data.energy = strength_value
 
     return {'FINISHED'}
 
 if __name__ == '__main__':
-    bpy.ops.halo_bulk.perm_region_set()
+    bpy.ops.halo_bulk.sun_strength()

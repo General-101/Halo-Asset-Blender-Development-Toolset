@@ -38,6 +38,7 @@ from bpy.types import (
 
 from bpy.props import (
         IntProperty,
+        FloatProperty,
         EnumProperty,
         PointerProperty,
         StringProperty
@@ -142,6 +143,16 @@ class Scale_ModelPropertiesGroup(PropertyGroup):
                ]
         )
 
+class Sun_StrengthPropertiesGroup(PropertyGroup):
+    strength: FloatProperty(
+        name="Sun Strength",
+        description="Set the strength value for lights",
+        precision=6,
+        default=0.063148,
+        max=1000000015047466200000000000000.0,
+        min=-1000000015047466200000000000000.0,
+    )
+
 class Halo_Tools_Helper(Panel):
     """Tools to help automate Halo workflow"""
     bl_label = "Halo Tools Helper"
@@ -154,6 +165,7 @@ class Halo_Tools_Helper(Panel):
         scene = context.scene
         scene_halo_lightmapper = scene.halo_lightmapper
         scene_halo_prefix = scene.halo_prefix
+        scene_sun_strength = scene.sun_strength
         scene_scale_model = scene.scale_model
         scene_perm_region = scene.set_perm_region
 
@@ -218,6 +230,15 @@ class Halo_Tools_Helper(Panel):
             row.prop(scene_scale_model, "halo_one_scale_model_vehi", text="")
         row = col.row()
         row.operator("halo_bulk.scale_model", text="BULK!!!")
+
+        box = layout.box()
+        box.label(text="Sun Strength:")
+        col = box.column(align=True)
+        row = col.row()
+        row.label(text='Sun Strength:')
+        row.prop(scene_sun_strength, "strength", text='')
+        row = col.row()
+        row.operator("halo_bulk.sun_strength", text="BULK!!!")
 
         box = layout.box()
         box.label(text="Permutation Region Helper:")
@@ -307,6 +328,18 @@ class Scale_Model(Operator):
         scene_scale_model = scene.scale_model
         return global_functions.run_code("scale_models.create_model(scene_scale_model.game_version, scene_scale_model.unit_type, scene_scale_model.halo_one_scale_model_char, scene_scale_model.halo_one_scale_model_vehi)")
 
+class SunStrength(Operator):
+    """Sets the strength for lights in bulk. Meant to help set values for sky lights until a proper sky generator script is made."""
+    bl_idname = 'halo_bulk.sun_strength'
+    bl_label = 'Sun Strength'
+    bl_options = {"REGISTER", "UNDO"}
+
+    def execute(self, context):
+        from io_scene_halo.misc import sun_strength
+        scene = context.scene
+        scene_sun_strength = scene.sun_strength
+        return global_functions.run_code("sun_strength.set_strength(scene_sun_strength.strength)")
+
 class ExportLightmap(Operator, ExportHelper):
     """Write a LUV file"""
     bl_idname = "export_luv.export"
@@ -343,10 +376,12 @@ classeshalo = (
     Bulk_Reset_Bones,
     Cull_Materials,
     Scale_Model,
+    SunStrength,
     PermRegionSet,
     Halo_Tools_Helper,
     Halo_LightmapperPropertiesGroup,
     Scale_ModelPropertiesGroup,
+    Sun_StrengthPropertiesGroup,
     Halo_PrefixPropertiesGroup,
     Perm_RegionPropertiesGroup
 )
@@ -359,6 +394,7 @@ def register():
     bpy.types.Scene.halo_lightmapper = PointerProperty(type=Halo_LightmapperPropertiesGroup, name="Halo Lightmapper Helper", description="Set properties for the lightmapper")
     bpy.types.Scene.halo_prefix = PointerProperty(type=Halo_PrefixPropertiesGroup, name="Halo Prefix Helper", description="Set properties for node prefixes")
     bpy.types.Scene.scale_model = PointerProperty(type=Scale_ModelPropertiesGroup, name="Halo Scale Model Helper", description="Create meshes for scale")
+    bpy.types.Scene.sun_strength = PointerProperty(type=Sun_StrengthPropertiesGroup, name="Sun Strength Helper", description="Set properties for sun lights in bulk")
     bpy.types.Scene.set_perm_region = PointerProperty(type=Perm_RegionPropertiesGroup, name="Halo Permutation Region Helper", description="Creates a facemap with the exact name we need")
 
 def unregister():
@@ -366,6 +402,7 @@ def unregister():
     del bpy.types.Scene.halo_lightmapper
     del bpy.types.Scene.halo_prefix
     del bpy.types.Scene.scale_model
+    del bpy.types.Scene.sun_strength
     del bpy.types.Scene.set_perm_region
     for clshalo in classeshalo:
         bpy.utils.unregister_class(clshalo)

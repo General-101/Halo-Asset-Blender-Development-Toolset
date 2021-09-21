@@ -1697,7 +1697,7 @@ def load_file(context, filepath, report, game_version, reuse_armature, fix_paren
 
     for idx, skylight in enumerate(jms_file.skylights):
         name = 'skylight_%s' % idx
-        down_vector = Vector((0, 0, 1))
+        down_vector = Vector((0, 0, -1))
 
         light_data = bpy.data.lights.new(name, "SUN")
         object_mesh = bpy.data.objects.new(name, light_data)

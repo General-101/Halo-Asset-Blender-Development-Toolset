@@ -485,6 +485,7 @@ class JMSScene(global_functions.HaloAsset):
                 if global_functions.set_ignore(obj) == False or hidden_geo:
                     if export_render:
                         bounding_sphere_list.append(obj)
+                        
             elif obj.type == 'LIGHT' and version > 8212:
                 if global_functions.set_ignore(obj) == False or hidden_geo:
                     if obj.data.type == 'SUN':
@@ -1224,7 +1225,7 @@ class JMSScene(global_functions.HaloAsset):
             self.bounding_spheres.append(JMSScene.Bounding_Sphere(translation, scale))
 
         for light in skylight_list:
-            down_vector = Vector((0, 0, 1))
+            down_vector = Vector((0, 0, -1))
             down_vector.rotate(light.rotation_euler)
 
             direction = (down_vector[0], down_vector[1], down_vector[2])
@@ -2230,7 +2231,7 @@ def command_queue(context,
 
         elif obj.type == 'LIGHT' and version > 8212:
             if global_functions.set_ignore(obj) == False or hidden_geo:
-                if bpy.data.lights[obj.name].type == 'SPOT':
+                if obj.data.type == 'SPOT':
                     skylight_count += 1
         elif obj.type== 'MESH' and len(obj.data.polygons) > 0:
             if global_functions.set_ignore(obj) == False or hidden_geo:
