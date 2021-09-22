@@ -41,7 +41,8 @@ from bpy.props import (
         FloatProperty,
         EnumProperty,
         PointerProperty,
-        StringProperty
+        StringProperty,
+        FloatVectorProperty
         )
 
 from ..global_functions import global_functions
@@ -143,7 +144,25 @@ class Scale_ModelPropertiesGroup(PropertyGroup):
                ]
         )
 
-class Sun_StrengthPropertiesGroup(PropertyGroup):
+class SkyPropertiesGroup(PropertyGroup):
+    zenith_color: FloatVectorProperty(
+        name = "Zenith Color",
+        description = "Set the color around the bottom rim of the hemisphere",
+        subtype = 'COLOR',
+        default = (1.0, 1.0, 1.0),
+        max = 1.0,
+        min = 0.0,
+        )
+
+    horizon_color: FloatVectorProperty(
+        name = "Horizon Color",
+        description = "Set the color for the upper area of the hemisphere",
+        subtype = 'COLOR',
+        default = (1.0, 1.0, 1.0),
+        max = 1.0,
+        min = 0.0,
+        )
+
     strength: FloatProperty(
         name="Sun Strength",
         description="Set the strength value for lights",
@@ -151,7 +170,7 @@ class Sun_StrengthPropertiesGroup(PropertyGroup):
         default=0.063148,
         max=1000000015047466200000000000000.0,
         min=-1000000015047466200000000000000.0,
-    )
+        )
 
 class Halo_Tools_Helper(Panel):
     """Tools to help automate Halo workflow"""
@@ -165,7 +184,7 @@ class Halo_Tools_Helper(Panel):
         scene = context.scene
         scene_halo_lightmapper = scene.halo_lightmapper
         scene_halo_prefix = scene.halo_prefix
-        scene_sun_strength = scene.sun_strength
+        scene_halo_sky = scene.halo_sky
         scene_scale_model = scene.scale_model
         scene_perm_region = scene.set_perm_region
 
@@ -232,13 +251,19 @@ class Halo_Tools_Helper(Panel):
         row.operator("halo_bulk.scale_model", text="BULK!!!")
 
         box = layout.box()
-        box.label(text="Sun Strength:")
+        box.label(text="Generate Skylights:")
         col = box.column(align=True)
         row = col.row()
-        row.label(text='Sun Strength:')
-        row.prop(scene_sun_strength, "strength", text='')
+        row.label(text='Zenith Color:')
+        row.prop(scene_halo_sky, "zenith_color", text='')
         row = col.row()
-        row.operator("halo_bulk.sun_strength", text="BULK!!!")
+        row.label(text='Horizon Color:')
+        row.prop(scene_halo_sky, "horizon_color", text='')
+        row = col.row()
+        row.label(text='Sun Strength:')
+        row.prop(scene_halo_sky, "strength", text='')
+        row = col.row()
+        row.operator("halo_bulk.generate_hemisphere", text="BULK!!!")
 
         box = layout.box()
         box.label(text="Permutation Region Helper:")
@@ -328,17 +353,17 @@ class Scale_Model(Operator):
         scene_scale_model = scene.scale_model
         return global_functions.run_code("scale_models.create_model(scene_scale_model.game_version, scene_scale_model.unit_type, scene_scale_model.halo_one_scale_model_char, scene_scale_model.halo_one_scale_model_vehi)")
 
-class SunStrength(Operator):
-    """Sets the strength for lights in bulk. Meant to help set values for sky lights until a proper sky generator script is made."""
-    bl_idname = 'halo_bulk.sun_strength'
+class GenerateHemisphere(Operator):
+    """Generates a hemisphere shaped set of skylights for Halo 3 sky models"""
+    bl_idname = 'halo_bulk.generate_hemisphere'
     bl_label = 'Sun Strength'
     bl_options = {"REGISTER", "UNDO"}
 
     def execute(self, context):
-        from io_scene_halo.misc import sun_strength
+        from io_scene_halo.misc import generate_hemisphere
         scene = context.scene
-        scene_sun_strength = scene.sun_strength
-        return global_functions.run_code("sun_strength.set_strength(scene_sun_strength.strength)")
+        scene_halo_sky = scene.halo_sky
+        return global_functions.run_code("generate_hemisphere.generate_hemisphere(scene_halo_sky.zenith_color, scene_halo_sky.horizon_color, scene_halo_sky.strength)")
 
 class ExportLightmap(Operator, ExportHelper):
     """Write a LUV file"""
@@ -376,12 +401,12 @@ classeshalo = (
     Bulk_Reset_Bones,
     Cull_Materials,
     Scale_Model,
-    SunStrength,
+    GenerateHemisphere,
     PermRegionSet,
     Halo_Tools_Helper,
     Halo_LightmapperPropertiesGroup,
     Scale_ModelPropertiesGroup,
-    Sun_StrengthPropertiesGroup,
+    SkyPropertiesGroup,
     Halo_PrefixPropertiesGroup,
     Perm_RegionPropertiesGroup
 )
@@ -394,14 +419,14 @@ def register():
     bpy.types.Scene.halo_lightmapper = PointerProperty(type=Halo_LightmapperPropertiesGroup, name="Halo Lightmapper Helper", description="Set properties for the lightmapper")
     bpy.types.Scene.halo_prefix = PointerProperty(type=Halo_PrefixPropertiesGroup, name="Halo Prefix Helper", description="Set properties for node prefixes")
     bpy.types.Scene.scale_model = PointerProperty(type=Scale_ModelPropertiesGroup, name="Halo Scale Model Helper", description="Create meshes for scale")
-    bpy.types.Scene.sun_strength = PointerProperty(type=Sun_StrengthPropertiesGroup, name="Sun Strength Helper", description="Set properties for sun lights in bulk")
+    bpy.types.Scene.halo_sky = PointerProperty(type=SkyPropertiesGroup, name="Sky Helper", description="Generate a sky for Halo 3")
     bpy.types.Scene.set_perm_region = PointerProperty(type=Perm_RegionPropertiesGroup, name="Halo Permutation Region Helper", description="Creates a facemap with the exact name we need")
 
 def unregister():
     bpy.types.TOPBAR_MT_file_export.remove(menu_func_export)
     del bpy.types.Scene.halo_lightmapper
     del bpy.types.Scene.halo_prefix
-    del bpy.types.Scene.scale_model
+    del bpy.types.Scene.halo_sky
     del bpy.types.Scene.sun_strength
     del bpy.types.Scene.set_perm_region
     for clshalo in classeshalo:

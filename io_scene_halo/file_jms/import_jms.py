@@ -498,14 +498,15 @@ class JMSAsset(global_functions.HaloAsset):
                 for uv in range(uv_count):
                     tex_u_value   = self.next()
                     tex_v_value   = self.next()
-                    if 'NAN' in tex_u_value:
-                        tex_u = float(tex_u_value.rsplit('.', 1)[0])
-                    else:
+                    try:
                         tex_u = float(tex_u_value)
-                    if 'NAN' in tex_v_value:
-                        tex_v = float(tex_v_value.rsplit('.', 1)[0])
-                    else:
+                    except ValueError:
+                        tex_u = float(tex_u_value.rsplit('.', 1)[0])
+
+                    try:
                         tex_v = float(tex_v_value)
+                    except ValueError:
+                        tex_v = float(tex_v_value.rsplit('.', 1)[0])
 
                     u = tex_u
                     v = tex_v
@@ -561,14 +562,15 @@ class JMSAsset(global_functions.HaloAsset):
                     for uv in range(uv_count):
                         tex_u_value   = self.next()
                         tex_v_value   = self.next()
-                        if 'NAN' in tex_u_value:
+                        try:
+                            tex_u = float(tex_u_value)                            
+                        except ValueError:
                             tex_u = float(tex_u_value.rsplit('.', 1)[0])
-                        else:
-                            tex_u = float(tex_u_value)
-                        if 'NAN' in tex_v_value:
-                            tex_v = float(tex_v_value.rsplit('.', 1)[0])
-                        else:
+
+                        try:
                             tex_v = float(tex_v_value)
+                        except ValueError:
+                            tex_v = float(tex_v_value.rsplit('.', 1)[0])
 
                         u = tex_u
                         v = tex_v
@@ -585,42 +587,46 @@ class JMSAsset(global_functions.HaloAsset):
                         tex_3_u_value = self.next()
                         tex_3_v_value = self.next()
 
-                    if 'NAN' in tex_0_u_value:
+                    try:
+                        tex_0_u = float(tex_0_u_value)                       
+                    except ValueError:
                         tex_0_u = float(tex_0_u_value.rsplit('.', 1)[0])
-                    else:
-                        tex_0_u = float(tex_0_u_value)
-                    if 'NAN' in tex_0_v_value:
-                        tex_0_v = float(tex_0_v_value.rsplit('.', 1)[0])
-                    else:
+
+                    try:
                         tex_0_v = float(tex_0_v_value)
+                    except ValueError:
+                        tex_0_v = float(tex_0_v_value.rsplit('.', 1)[0])
 
                     if self.version >= 8203:
-                        if 'NAN' in tex_1_u_value:
+                        try:
+                            tex_1_u = float(tex_1_u_value)                      
+                        except ValueError:
                             tex_1_u = float(tex_1_u_value.rsplit('.', 1)[0])
-                        else:
-                            tex_1_u = float(tex_1_u_value)
-                        if 'NAN' in tex_1_v_value:
-                            tex_1_v = float(tex_1_v_value.rsplit('.', 1)[0])
-                        else:
+
+                        try:
                             tex_1_v = float(tex_1_v_value)
+                        except ValueError:
+                            tex_1_v = float(tex_1_v_value.rsplit('.', 1)[0])
 
-                        if 'NAN' in tex_2_u_value:
+                        try:
+                            tex_2_u = float(tex_2_u_value)                     
+                        except ValueError:
                             tex_2_u = float(tex_2_u_value.rsplit('.', 1)[0])
-                        else:
-                            tex_2_u = float(tex_2_u_value)
-                        if 'NAN' in tex_2_v_value:
-                            tex_2_v = float(tex_2_v_value.rsplit('.', 1)[0])
-                        else:
-                            tex_2_v = float(tex_2_v_value)
 
-                        if 'NAN' in tex_3_u_value:
+                        try:
+                            tex_2_v = float(tex_2_v_value)
+                        except ValueError:
+                            tex_2_v = float(tex_2_v_value.rsplit('.', 1)[0])
+
+                        try:
+                            tex_3_u = float(tex_3_u_value)                   
+                        except ValueError:
                             tex_3_u = float(tex_3_u_value.rsplit('.', 1)[0])
-                        else:
-                            tex_3_u = float(tex_3_u_value)
-                        if 'NAN' in tex_3_v_value:
-                            tex_3_v = float(tex_3_v_value.rsplit('.', 1)[0])
-                        else:
+
+                        try:
                             tex_3_v = float(tex_3_v_value)
+                        except ValueError:
+                            tex_3_v = float(tex_3_v_value.rsplit('.', 1)[0])
 
                     if self.version >= 8203:
                         uv_set.append([tex_0_u, tex_0_v])
