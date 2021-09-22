@@ -202,13 +202,13 @@ class Halo_Tools_Helper(Panel):
         row.label(text='Image Height:')
         row.prop(scene_halo_lightmapper, "res_y", text='')
         row = col.row()
-        row.operator("halo_bulk.lightmapper_images", text="BULK!!!")
+        row.operator("halo_bulk.lightmapper_images", text="Generate Lightmap Images")
 
         box = layout.box()
         box.label(text="Bone Name Helper:")
         col = box.column(align=True)
         row = col.row()
-        row.operator("halo_bulk.bulk_bone_names", text="BULK!!!")
+        row.operator("halo_bulk.bulk_bone_names", text="Rename Bones Halo/Blender Style")
 
         box = layout.box()
         box.label(text="Node Prefix Helper:")
@@ -217,20 +217,20 @@ class Halo_Tools_Helper(Panel):
         row.label(text='Prefix:')
         row.prop(scene_halo_prefix, "prefix_string", text='')
         row = col.row()
-        row.operator("halo_bulk.bulk_node_prefix", text="BULK!!!")
+        row.operator("halo_bulk.bulk_node_prefix", text="Set Halo Node Pefix")
 
         box = layout.box()
         box.label(text="Bone Rotation Helper:")
         col = box.column(align=True)
         row = col.row()
-        row.operator("halo_bulk.bulk_bone_rotation", text="BULK!!!")
-        row.operator("halo_bulk.bulk_bone_reset", text="BULK!!!")
+        row.operator("halo_bulk.bulk_bone_rotation", text="Invert Bone Roll")
+        row.operator("halo_bulk.bulk_bone_reset", text="Reset Bone Rotation")
 
         box = layout.box()
         box.label(text="Cull Materials:")
         col = box.column(align=True)
         row = col.row()
-        row.operator("halo_bulk.cull_materials", text="BULK!!!")
+        row.operator("halo_bulk.cull_materials", text="Cull Materials")
 
         box = layout.box()
         box.label(text="Scale Model Helper:")
@@ -248,7 +248,7 @@ class Halo_Tools_Helper(Panel):
         else:
             row.prop(scene_scale_model, "halo_one_scale_model_vehi", text="")
         row = col.row()
-        row.operator("halo_bulk.scale_model", text="BULK!!!")
+        row.operator("halo_bulk.scale_model", text="Generate Scale Model")
 
         box = layout.box()
         box.label(text="Generate Skylights:")
@@ -263,7 +263,7 @@ class Halo_Tools_Helper(Panel):
         row.label(text='Sun Strength:')
         row.prop(scene_halo_sky, "strength", text='')
         row = col.row()
-        row.operator("halo_bulk.generate_hemisphere", text="BULK!!!")
+        row.operator("halo_bulk.generate_hemisphere", text="Generate Sky")
 
         box = layout.box()
         box.label(text="Permutation Region Helper:")
@@ -275,7 +275,7 @@ class Halo_Tools_Helper(Panel):
         row.label(text='Region:')
         row.prop(scene_perm_region, "region_string", text='')
         row = col.row()
-        row.operator("halo_bulk.perm_region_set", text="BULK!!!")
+        row.operator("halo_bulk.perm_region_set", text="Generate Facemap")
 
 class Bulk_Lightmap_Images(Operator):
     """Create image nodes with a set size for all materials in the scene"""
