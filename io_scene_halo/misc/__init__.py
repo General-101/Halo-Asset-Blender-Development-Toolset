@@ -145,6 +145,21 @@ class Scale_ModelPropertiesGroup(PropertyGroup):
         )
 
 class SkyPropertiesGroup(PropertyGroup):
+    sun_yaw: FloatProperty(
+        name="Sun Yaw",
+        description="Set the yaw for the sun.",
+        default=0.0,
+        min=0.0,
+        max=360.0
+    )
+
+    sun_pitch: FloatProperty(
+        name="Sun Pitch",
+        description="Set the pitch for the sun.",
+        default=0.0,
+        min=0.0,
+        max=360.0
+    )
     zenith_color: FloatVectorProperty(
         name = "Zenith Color",
         description = "Set the color around the bottom rim of the hemisphere",
@@ -253,6 +268,12 @@ class Halo_Tools_Helper(Panel):
         box = layout.box()
         box.label(text="Generate Skylights:")
         col = box.column(align=True)
+        row = col.row()
+        row.label(text='Sun Yaw:')
+        row.prop(scene_halo_sky, "sun_yaw", text='')
+        row = col.row()
+        row.label(text='Sun Pitch:')
+        row.prop(scene_halo_sky, "sun_pitch", text='')
         row = col.row()
         row.label(text='Zenith Color:')
         row.prop(scene_halo_sky, "zenith_color", text='')
@@ -363,7 +384,7 @@ class GenerateHemisphere(Operator):
         from io_scene_halo.misc import generate_hemisphere
         scene = context.scene
         scene_halo_sky = scene.halo_sky
-        return global_functions.run_code("generate_hemisphere.generate_hemisphere(scene_halo_sky.zenith_color, scene_halo_sky.horizon_color, scene_halo_sky.strength)")
+        return global_functions.run_code("generate_hemisphere.generate_hemisphere(scene_halo_sky.zenith_color, scene_halo_sky.horizon_color, scene_halo_sky.strength, scene_halo_sky.sun_yaw, scene_halo_sky.sun_pitch)")
 
 class ExportLightmap(Operator, ExportHelper):
     """Write a LUV file"""
