@@ -150,7 +150,7 @@ class SkyPropertiesGroup(PropertyGroup):
         description="Set the yaw for the sun.",
         default=0.0,
         min=0.0,
-        max=360.0
+        max=350.0
     )
 
     sun_pitch: FloatProperty(
@@ -158,7 +158,7 @@ class SkyPropertiesGroup(PropertyGroup):
         description="Set the pitch for the sun.",
         default=0.0,
         min=0.0,
-        max=360.0
+        max=80.0
     )
     zenith_color: FloatVectorProperty(
         name = "Zenith Color",

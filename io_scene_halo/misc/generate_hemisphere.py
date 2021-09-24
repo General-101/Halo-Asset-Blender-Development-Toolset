@@ -28,9 +28,9 @@ import bpy
 
 from math import degrees, radians
 
-columm_rot = 14.65
+columm_rot = 13.84615384615385
 column_elements = 26
-row_rot = 12.5
+row_rot = 11.25
 row_elements = 8
 
 def interpolate_color(color_a, color_b, steps):
@@ -54,7 +54,10 @@ def get_center_point(rotation, is_x_axis):
         light_spacing = columm_rot
 
     sun_id = round(rotation / light_spacing)
-    
+    print(light_spacing)
+    print(rotation)
+    print(is_x_axis)
+    print(sun_id)
     return sun_id
 
 def get_percentages(rotation, is_x_axis, color_loops):
@@ -156,11 +159,11 @@ def darken_color(color, light_x_idx, light_y_idx, percentage_list_y, percentage_
     return (color_r_xy, color_g_xy, color_b_xy)
 
 def generate_hemisphere(zenith_color, horizon_color, strength, sun_yaw, sun_pitch):
-    percentage_list_y = get_percentages(sun_yaw, False, False)
-    percentage_list_x = get_percentages(sun_pitch, True, True)
+    percentage_list_y = get_percentages(sun_pitch, False, False)
+    percentage_list_x = get_percentages(sun_yaw, True, True)
 
-    sun_row_id = get_center_point(sun_yaw, False)
-    sun_column_id = get_center_point(sun_pitch, True)
+    sun_row_id = get_center_point(sun_pitch, False)
+    sun_column_id = get_center_point(sun_yaw, True)
 
     color_list = interpolate_color(zenith_color, horizon_color, 6)
 
