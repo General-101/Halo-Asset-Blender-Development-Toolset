@@ -31,17 +31,18 @@ import argparse
 from bpy_extras.io_utils import ExportHelper
 
 from bpy.types import (
-        Operator,
         Panel,
+        Operator,
         PropertyGroup
         )
 
 from bpy.props import (
         IntProperty,
-        FloatProperty,
+        BoolProperty,
         EnumProperty,
-        PointerProperty,
+        FloatProperty,
         StringProperty,
+        PointerProperty,
         FloatVectorProperty
         )
 
@@ -145,21 +146,77 @@ class Scale_ModelPropertiesGroup(PropertyGroup):
         )
 
 class SkyPropertiesGroup(PropertyGroup):
-    sun_yaw: FloatProperty(
-        name="Sun Yaw",
-        description="Set the yaw for the sun.",
-        default=0.0,
-        min=0.0,
-        max=350.0
+    longitude_slices: IntProperty(
+        name="Longitude Slices",
+        description="How tessellated the dome is along the longitude line",
+        default=8,
+        min=8,
+        max=64,
     )
 
-    sun_pitch: FloatProperty(
-        name="Sun Pitch",
-        description="Set the pitch for the sun.",
-        default=0.0,
-        min=0.0,
-        max=80.0
+    lattitude_slices: IntProperty(
+        name="Lattitude Slices",
+        description="How tessellated the dome is along the lattitude line",
+        default=8,
+        min=8,
+        max=64,
     )
+
+    dome_radius: FloatProperty(
+        name="Radius",
+        description="The radius of our dome object",
+        default=8000.0,
+        min=100.0,
+        max=16000.0
+    )
+
+    horizontal_fov: FloatProperty(
+        name="Horizontal FOV",
+        description="How much of the dome to render horizontal",
+        default=360.0,
+        min=10.0,
+        max=360.0
+    )
+
+    vertical_fov: FloatProperty(
+        name="Vertical FOV",
+        description="How much of the dome to render vertically",
+        default=90.0,
+        min=10.0,
+        max=90.0
+    )
+
+    sky_type: EnumProperty(
+        name="Sky",
+        description="Choose what type of sky to use",
+        items=( ('0', "Standard", "Standard"),
+                ('1', "CIE",      "CIE"),
+                ('2', "Night",    "Night"),
+                ('3', "Custom",   "Custom"),
+                ('4', "HDR",      "HDR"),
+        )
+    )
+
+    cie_sky_number: IntProperty(
+        name="CIE Sky Number",
+        description="I don't even know",
+        default=0,
+        min=0,
+        max=12,
+    )
+
+    hdr_map: StringProperty(
+        name="HDR Map",
+        description="I don't even know. Something about a .PFM file",
+        subtype="FILE_PATH"
+    )
+
+    override_zenith_color: BoolProperty(
+        name ="Override Zenith Color",
+        description = "Override the color set for the zenith section of the dome",
+        default = False,
+    )
+
     zenith_color: FloatVectorProperty(
         name = "Zenith Color",
         description = "Set the color around the bottom rim of the hemisphere",
@@ -167,7 +224,13 @@ class SkyPropertiesGroup(PropertyGroup):
         default = (1.0, 1.0, 1.0),
         max = 1.0,
         min = 0.0,
-        )
+    )
+
+    override_horizon_color: BoolProperty(
+        name ="Override Horizon Color",
+        description = "Override the color set for the horizon section of the dome",
+        default = False,
+    )
 
     horizon_color: FloatVectorProperty(
         name = "Horizon Color",
@@ -176,16 +239,106 @@ class SkyPropertiesGroup(PropertyGroup):
         default = (1.0, 1.0, 1.0),
         max = 1.0,
         min = 0.0,
-        )
+    )
 
-    strength: FloatProperty(
-        name="Sun Strength",
-        description="Set the strength value for lights",
-        precision=6,
-        default=0.0631475821,
-        max=1000000015047466200000000000000.0,
-        min=-1000000015047466200000000000000.0,
-        )
+    haze_height: FloatProperty(
+        name="Haze Height",
+        description="I don't even know",
+        default=2.0,
+        min=2.0,
+        max=15.0
+    )
+
+    luminance_only: BoolProperty(
+        name ="Luminance Only",
+        description = "I don't even know",
+        default = False,
+    )
+
+    dome_intensity: FloatProperty(
+        name="Dome Intensity",
+        description="I don't even know",
+        default=1.0,
+        min=0.0,
+        max=2.0
+    )
+
+    sun_altittude: FloatProperty(
+        name="Sun Altittude",
+        description="Set the altittude for the sun.",
+        default=10.0,
+        min=0.0,
+        max=90.0
+    )
+
+    sun_heading: FloatProperty(
+        name="Sun Heading",
+        description="Set the heading for the sun.",
+        default=0.0,
+        min=0.0,
+        max=360.0
+    )
+
+    override_sun_color: BoolProperty(
+        name ="Use Custom Color",
+        description = "Override the color set vertex colors of the sun disk mesh",
+        default = False,
+    )
+
+    sun_color: FloatVectorProperty(
+        name = "Sun Color",
+        description = "Set the vertex colors of the sun disk mesh",
+        subtype = 'COLOR',
+        default = (1.0, 1.0, 1.0),
+        max = 1.0,
+        min = 0.0,
+    )
+
+    sun_intensity: FloatProperty(
+        name="Sun Intensity",
+        description="I don't even know",
+        default=1.0,
+        min=0.0,
+        max=30.0
+    )
+
+    sun_disc_size: FloatProperty(
+        name="Sun Disc Size",
+        description="The size of the disk used for our sun",
+        default=0.25,
+        min=0.01,
+        max=5.0
+    )
+
+    windowing: FloatProperty(
+        name="Windowing",
+        description="I don't even know",
+        default=0.9,
+        min=0.3,
+        max=1.0
+    )
+
+    air_cleaness: FloatProperty(
+        name="Air Cleaness",
+        description="I don't even know",
+        default=2.0,
+        min=1.67,
+        max=10.0
+    )
+
+    exposure: FloatProperty(
+        name="Exposure",
+        description="I don't even know",
+        default=0.0,
+        min=-30.0,
+        max=30.0
+    )
+
+    clamp_colors: BoolProperty(
+        name ="Clamp Colors",
+        description = "I don't even know",
+        default = False,
+    )
 
 class Halo_Tools_Helper(Panel):
     """Tools to help automate Halo workflow"""
@@ -199,7 +352,6 @@ class Halo_Tools_Helper(Panel):
         scene = context.scene
         scene_halo_lightmapper = scene.halo_lightmapper
         scene_halo_prefix = scene.halo_prefix
-        scene_halo_sky = scene.halo_sky
         scene_scale_model = scene.scale_model
         scene_perm_region = scene.set_perm_region
 
@@ -266,27 +418,6 @@ class Halo_Tools_Helper(Panel):
         row.operator("halo_bulk.scale_model", text="Generate Scale Model")
 
         box = layout.box()
-        box.label(text="Generate Skylights:")
-        col = box.column(align=True)
-        row = col.row()
-        row.label(text='Sun Yaw:')
-        row.prop(scene_halo_sky, "sun_yaw", text='')
-        row = col.row()
-        row.label(text='Sun Pitch:')
-        row.prop(scene_halo_sky, "sun_pitch", text='')
-        row = col.row()
-        row.label(text='Zenith Color:')
-        row.prop(scene_halo_sky, "zenith_color", text='')
-        row = col.row()
-        row.label(text='Horizon Color:')
-        row.prop(scene_halo_sky, "horizon_color", text='')
-        row = col.row()
-        row.label(text='Sun Strength:')
-        row.prop(scene_halo_sky, "strength", text='')
-        row = col.row()
-        row.operator("halo_bulk.generate_hemisphere", text="Generate Sky")
-
-        box = layout.box()
         box.label(text="Permutation Region Helper:")
         col = box.column(align=True)
         row = col.row()
@@ -297,6 +428,213 @@ class Halo_Tools_Helper(Panel):
         row.prop(scene_perm_region, "region_string", text='')
         row = col.row()
         row.operator("halo_bulk.perm_region_set", text="Generate Facemap")
+
+class Halo_Sky_Tools_Helper(Panel):
+    """Tools to help automate Halo workflow"""
+    bl_label = "Halo Sky Tools Helper"
+    bl_idname = "HALO_PT_SkyTools"
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "UI"
+    bl_category = "Halo Sky Tools"
+
+    def draw(self, context):
+        layout = self.layout
+        layout.operator("halo_bulk.generate_hemisphere", text="Generate Sky")
+
+class Halo_Sky_Dome(Panel):
+    bl_label = "Sky Dome"
+    bl_idname = "HALO_PT_SkyDome"
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "UI"
+    bl_options = {'DEFAULT_CLOSED'}
+    bl_parent_id = "HALO_PT_SkyTools"
+
+    def draw(self, context):
+        layout = self.layout
+        scene = context.scene
+        scene_halo_sky = scene.halo_sky
+
+        col = layout.column(align=True)
+        row = col.row()
+        row.label(text='Longitude Slices:')
+        row.prop(scene_halo_sky, "longitude_slices", text='')
+        row = col.row()
+        row.label(text='Lattitude Slices:')
+        row.prop(scene_halo_sky, "lattitude_slices", text='')
+        row = col.row()
+        row.label(text='Radius:')
+        row.prop(scene_halo_sky, "dome_radius", text='')
+        row = col.row()
+        row.label(text='Horizontal FOV:')
+        row.prop(scene_halo_sky, "horizontal_fov", text='')
+        row = col.row()
+        row.label(text='Vertical FOV:')
+        row.prop(scene_halo_sky, "vertical_fov", text='')
+        row = col.row()
+
+class Halo_Sky_Light(Panel):
+    bl_label = "Sky Light"
+    bl_idname = "HALO_PT_SkyLight"
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "UI"
+    bl_options = {'DEFAULT_CLOSED'}
+    bl_parent_id = "HALO_PT_SkyTools"
+
+    def draw(self, context):
+        layout = self.layout
+        scene = context.scene
+        scene_halo_sky = scene.halo_sky
+
+        col = layout.column(align=True)
+        row = col.row()
+        row.label(text='Sky:')
+        row.prop(scene_halo_sky, "sky_type", expand=True)
+        if scene_halo_sky.sky_type == '1':
+            row = col.row()
+            row.label(text='CIE Sky Number:')
+            row.prop(scene_halo_sky, "cie_sky_number", text='')
+
+        elif scene_halo_sky.sky_type == '4':
+            row = col.row()
+            row.label(text='HDR Map:')
+            row.prop(scene_halo_sky, "hdr_map", text='')
+
+        row = col.row()
+        row.label(text='Haze Height:')
+        row.prop(scene_halo_sky, "haze_height", text='', slider=True)
+        row = col.row()
+        row.label(text='Luminance Only:')
+        row.prop(scene_halo_sky, "luminance_only", text='')
+        row = col.row()
+        row.label(text='Dome Intensity:')
+        row.prop(scene_halo_sky, "dome_intensity", text='', slider=True)
+
+class Halo_Sky_Zenith_Color(Panel):
+    bl_label = "Zenith Color"
+    bl_idname = "HALO_PT_SkyZenithColor"
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "UI"
+    bl_options = {'DEFAULT_CLOSED'}
+    bl_parent_id = "HALO_PT_SkyLight"
+
+    def draw_header(self, context):
+        scene = context.scene
+        scene_halo_sky = scene.halo_sky
+        self.layout.prop(scene_halo_sky, "override_zenith_color", text='')
+
+    def draw(self, context):
+        layout = self.layout
+        scene = context.scene
+        scene_halo_sky = scene.halo_sky
+        if not scene_halo_sky.override_zenith_color:
+            layout.enabled = False
+
+        col = layout.column(align=True)
+        row = col.row()
+        row.prop(scene_halo_sky, "zenith_color", text='')
+
+class Halo_Sky_Horizon_Color(Panel):
+    bl_label = "Horizon Color"
+    bl_idname = "HALO_PT_SkyHorizonColor"
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "UI"
+    bl_options = {'DEFAULT_CLOSED'}
+    bl_parent_id = "HALO_PT_SkyLight"
+
+    def draw_header(self, context):
+        scene = context.scene
+        scene_halo_sky = scene.halo_sky
+        self.layout.prop(scene_halo_sky, "override_horizon_color", text='')
+
+    def draw(self, context):
+        layout = self.layout
+        scene = context.scene
+        scene_halo_sky = scene.halo_sky
+        if not scene_halo_sky.override_horizon_color:
+            layout.enabled = False
+
+        col = layout.column(align=True)
+        row = col.row()
+        row.prop(scene_halo_sky, "horizon_color", text='')
+
+class Halo_Sky_Sun_Light(Panel):
+    bl_label = "Sun Light"
+    bl_idname = "HALO_PT_SunLight"
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "UI"
+    bl_options = {'DEFAULT_CLOSED'}
+    bl_parent_id = "HALO_PT_SkyTools"
+
+    def draw(self, context):
+        layout = self.layout
+        scene = context.scene
+        scene_halo_sky = scene.halo_sky
+
+        col = layout.column(align=True)
+        row = col.row()
+        row.label(text='Sun Altittude:')
+        row.prop(scene_halo_sky, "sun_altittude", text='')
+        row = col.row()
+        row.label(text='Sun Heading:')
+        row.prop(scene_halo_sky, "sun_heading", text='')
+        row = col.row()
+        row.label(text='Sun Intensity:')
+        row.prop(scene_halo_sky, "sun_intensity", text='', slider=True)
+        row = col.row()
+        row.label(text='Sun Disc Size:')
+        row.prop(scene_halo_sky, "sun_disc_size", text='')
+        row = col.row()
+        row.label(text='Windowing:')
+        row.prop(scene_halo_sky, "windowing", text='')
+        row = col.row()
+
+class Halo_Sky_Sun_Color(Panel):
+    bl_label = "Sun Color"
+    bl_idname = "HALO_PT_SkySunColor"
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "UI"
+    bl_options = {'DEFAULT_CLOSED'}
+    bl_parent_id = "HALO_PT_SunLight"
+
+    def draw_header(self, context):
+        scene = context.scene
+        scene_halo_sky = scene.halo_sky
+        self.layout.prop(scene_halo_sky, "override_sun_color", text='')
+
+    def draw(self, context):
+        layout = self.layout
+        scene = context.scene
+        scene_halo_sky = scene.halo_sky
+        if not scene_halo_sky.override_sun_color:
+            layout.enabled = False
+
+        col = layout.column(align=True)
+        row = col.row()
+        row.prop(scene_halo_sky, "sun_color", text='')
+
+class Halo_Sky_Misc_Settings(Panel):
+    bl_label = "Misc Settings"
+    bl_idname = "HALO_PT_SkyMiscSettings"
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "UI"
+    bl_options = {'DEFAULT_CLOSED'}
+    bl_parent_id = "HALO_PT_SkyTools"
+
+    def draw(self, context):
+        layout = self.layout
+        scene = context.scene
+        scene_halo_sky = scene.halo_sky
+
+        col = layout.column(align=True)
+        row = col.row()
+        row.label(text='Air Cleaness:')
+        row.prop(scene_halo_sky, "air_cleaness", text='')
+        row = col.row()
+        row.label(text='Exposure:')
+        row.prop(scene_halo_sky, "exposure", text='')
+        row = col.row()
+        row.label(text='Clamp Colors:')
+        row.prop(scene_halo_sky, "clamp_colors", text='')
 
 class Bulk_Lightmap_Images(Operator):
     """Create image nodes with a set size for all materials in the scene"""
@@ -384,7 +722,7 @@ class GenerateHemisphere(Operator):
         from io_scene_halo.misc import generate_hemisphere
         scene = context.scene
         scene_halo_sky = scene.halo_sky
-        return global_functions.run_code("generate_hemisphere.generate_hemisphere(scene_halo_sky.zenith_color, scene_halo_sky.horizon_color, scene_halo_sky.strength, scene_halo_sky.sun_yaw, scene_halo_sky.sun_pitch)")
+        return global_functions.run_code("generate_hemisphere.generate_hemisphere(self.report, scene_halo_sky.longitude_slices, scene_halo_sky.lattitude_slices, scene_halo_sky.dome_radius, scene_halo_sky.horizontal_fov, scene_halo_sky.vertical_fov, scene_halo_sky.sky_type, scene_halo_sky.cie_sky_number, scene_halo_sky.hdr_map, scene_halo_sky.haze_height, scene_halo_sky.luminance_only, scene_halo_sky.dome_intensity, scene_halo_sky.override_zenith_color, scene_halo_sky.zenith_color, scene_halo_sky.override_horizon_color, scene_halo_sky.horizon_color, scene_halo_sky.sun_altittude, scene_halo_sky.sun_heading, scene_halo_sky.sun_intensity, scene_halo_sky.sun_disc_size, scene_halo_sky.windowing, scene_halo_sky.override_sun_color, scene_halo_sky.sun_color, scene_halo_sky.air_cleaness, scene_halo_sky.exposure, scene_halo_sky.clamp_colors)")
 
 class ExportLightmap(Operator, ExportHelper):
     """Write a LUV file"""
@@ -425,6 +763,14 @@ classeshalo = (
     GenerateHemisphere,
     PermRegionSet,
     Halo_Tools_Helper,
+    Halo_Sky_Tools_Helper,
+    Halo_Sky_Dome,
+    Halo_Sky_Light,
+    Halo_Sky_Zenith_Color,
+    Halo_Sky_Horizon_Color,
+    Halo_Sky_Sun_Light,
+    Halo_Sky_Sun_Color,
+    Halo_Sky_Misc_Settings,
     Halo_LightmapperPropertiesGroup,
     Scale_ModelPropertiesGroup,
     SkyPropertiesGroup,

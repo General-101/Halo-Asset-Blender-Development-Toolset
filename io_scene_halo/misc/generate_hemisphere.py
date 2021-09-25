@@ -50,14 +50,16 @@ def interpolate_color(color_a, color_b, steps):
 
 def get_center_point(rotation, is_x_axis):
     light_spacing = row_rot
+    max_elements = row_elements
     if is_x_axis:
         light_spacing = columm_rot
+        max_elements = column_elements
 
     sun_id = round(rotation / light_spacing)
-    print(light_spacing)
-    print(rotation)
-    print(is_x_axis)
-    print(sun_id)
+
+    if sun_id >= max_elements:
+        sun_id = 0
+
     return sun_id
 
 def get_percentages(rotation, is_x_axis, color_loops):
@@ -158,12 +160,38 @@ def darken_color(color, light_x_idx, light_y_idx, percentage_list_y, percentage_
     color_r_xy, color_g_xy, color_b_xy = ((color_r_y * percentage_x), (color_g_y * percentage_x), (color_b_y * percentage_x))
     return (color_r_xy, color_g_xy, color_b_xy)
 
-def generate_hemisphere(zenith_color, horizon_color, strength, sun_yaw, sun_pitch):
-    percentage_list_y = get_percentages(sun_pitch, False, False)
-    percentage_list_x = get_percentages(sun_yaw, True, True)
+def generate_hemisphere(report, 
+                        longitude_slices, 
+                        lattitude_slices, 
+                        dome_radius, 
+                        horizontal_fov, 
+                        vertical_fov, 
+                        sky_type, 
+                        cie_sky_number, 
+                        hdr_map, 
+                        haze_height, 
+                        luminance_only, 
+                        dome_intensity, 
+                        override_zenith_color, 
+                        zenith_color, 
+                        override_horizon_color, 
+                        horizon_color, 
+                        sun_altittude, 
+                        sun_heading, 
+                        sun_intensity, 
+                        sun_disc_size, 
+                        windowing, 
+                        override_sun_color, 
+                        sun_color, 
+                        air_cleaness, 
+                        exposure, 
+                        clamp_colors):
 
-    sun_row_id = get_center_point(sun_pitch, False)
-    sun_column_id = get_center_point(sun_yaw, True)
+    percentage_list_y = get_percentages(sun_altittude, False, False)
+    percentage_list_x = get_percentages(sun_heading, True, True)
+
+    sun_row_id = get_center_point(sun_altittude, False)
+    sun_column_id = get_center_point(sun_heading, True)
 
     color_list = interpolate_color(zenith_color, horizon_color, 6)
 
@@ -178,12 +206,12 @@ def generate_hemisphere(zenith_color, horizon_color, strength, sun_yaw, sun_pitc
 
             object_mesh.rotation_euler = rot_tuple
             if light_column == sun_column_id and light_row == sun_row_id:
-                print("%s is the sun point. Beat the shit out of him!!!" % name)
+                report({'INFO'}, "%s is the sun point." % name)
                 object_mesh.data.energy = 0.0000471239
-                object_mesh.data.color = (97070.6171875000, 82381.2265625000, 63777.9375000000)  
+                object_mesh.data.color = (sun_color * sun_intensity, sun_color * sun_intensity, sun_color * sun_intensity)
 
             else:
-                object_mesh.data.energy = strength
+                object_mesh.data.energy = 0.0631475821
                 object_mesh.data.color = darken_color(color_list[light_row], light_column, light_row, percentage_list_y, percentage_list_x)
 
     return {'FINISHED'}

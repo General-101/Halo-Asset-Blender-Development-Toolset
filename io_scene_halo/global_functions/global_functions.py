@@ -663,7 +663,19 @@ class HaloAsset:
 
     def next_vector(self):
         """Return the next vector as mathutils.Vector, raises AssetParseError on error"""
-        return Vector((float(self.next()), float(self.next()), float(self.next())))
+        next_p0 = self.next()
+        next_p1 = self.next()
+        next_p2 = self.next()
+        try:
+            p0 = float(next_p0)
+            p1 = float(next_p1)
+            p2 = float(next_p2)
+        except ValueError:
+            p0 = float(next_p0.rsplit('.', 1)[0])
+            p1 = float(next_p1.rsplit('.', 1)[0])
+            p2 = float(next_p2.rsplit('.', 1)[0])
+
+        return Vector((p0, p1, p2))
 
     def are_quaternions_inverted(self):
         """Override this to enable quaternion inversion for next_quaternion()"""
