@@ -179,8 +179,8 @@ def generate_hemisphere(zenith_color, horizon_color, strength, sun_yaw, sun_pitc
             object_mesh.rotation_euler = rot_tuple
             if light_column == sun_column_id and light_row == sun_row_id:
                 print("%s is the sun point. Beat the shit out of him!!!" % name)
-                object_mesh.data.energy = 0.000047
-                object_mesh.data.color = (1.0, 1.0, 1.0)  
+                object_mesh.data.energy = 0.0000471239
+                object_mesh.data.color = (97070.6171875000, 82381.2265625000, 63777.9375000000)  
 
             else:
                 object_mesh.data.energy = strength

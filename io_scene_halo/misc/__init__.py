@@ -182,7 +182,7 @@ class SkyPropertiesGroup(PropertyGroup):
         name="Sun Strength",
         description="Set the strength value for lights",
         precision=6,
-        default=0.063148,
+        default=0.0631475821,
         max=1000000015047466200000000000000.0,
         min=-1000000015047466200000000000000.0,
         )
