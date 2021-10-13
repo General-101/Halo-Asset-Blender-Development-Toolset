@@ -405,14 +405,13 @@ class ExportASS(Operator, ExportHelper):
         )
 
     def execute(self, context):
-        from io_scene_halo.file_ass import export_ass
+        from ..file_ass import export_ass
         keywords = [context,
                     self.filepath,
                     self.report,
                     self.ass_version,
                     self.ass_version_h2,
                     self.ass_version_h3,
-                    self.use_scene_properties,
                     self.hidden_geo,
                     self.folder_structure,
                     self.apply_modifiers,
@@ -594,7 +593,7 @@ class ImportASS(Operator, ImportHelper):
         )
 
     def execute(self, context):
-        from io_scene_halo.file_ass import import_ass
+        from ..file_ass import import_ass
         if '--' in sys.argv:
             argv = sys.argv[sys.argv.index('--') + 1:]
             parser = argparse.ArgumentParser()

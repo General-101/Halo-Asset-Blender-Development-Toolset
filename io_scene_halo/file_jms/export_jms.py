@@ -26,104 +26,12 @@
 
 import os
 import bpy
-import sys
-import traceback
 
 from decimal import *
 from math import degrees
-from bpy_extras import io_utils
 from random import seed, randint
-from mathutils import Vector, Quaternion, Matrix
-from ..global_functions import global_functions
-
-def get_region(default_region, region):
-    set_region = None
-    if not len(region) == 0:
-        set_region = region
-
-    else:
-        set_region = default_region
-
-    return set_region
-
-def get_permutation(default_permutation, permutation):
-    set_permutation = None
-    if not len(permutation) == 0:
-        set_permutation = permutation
-
-    else:
-        set_permutation = default_permutation
-
-    return set_permutation
-
-def get_default_region_permutation_name(game_version):
-    default_name = None
-    if game_version == 'haloce':
-        default_name = 'unnamed'
-
-    elif game_version == 'halo2':
-        default_name = 'Default'
-
-    elif game_version == 'halo3mcc':
-        default_name = 'Default'
-    return default_name
-
-def get_lod(lod_setting, game_version):
-    LOD_name = None
-    if game_version == 'haloce':
-        if lod_setting == '1':
-            LOD_name = 'superlow'
-
-        elif lod_setting == '2':
-            LOD_name = 'low'
-
-        elif lod_setting == '3':
-            LOD_name = 'medium'
-
-        elif lod_setting == '4':
-            LOD_name = 'high'
-
-        elif lod_setting == '5':
-            LOD_name = 'superhigh'
-
-    elif game_version == 'halo2':
-        if lod_setting == '1':
-            LOD_name = 'L1'
-
-        elif lod_setting == '2':
-            LOD_name = 'L2'
-
-        elif lod_setting == '3':
-            LOD_name = 'L3'
-
-        elif lod_setting == '4':
-            LOD_name = 'L4'
-
-        elif lod_setting == '5':
-            LOD_name = 'L5'
-
-        elif lod_setting == '6':
-            LOD_name = 'L6'
-
-    elif game_version == 'halo3mcc':
-        if lod_setting == '1':
-            LOD_name = 'L1'
-
-        elif lod_setting == '2':
-            LOD_name = 'L2'
-
-        elif lod_setting == '3':
-            LOD_name = 'L3'
-
-        elif lod_setting == '4':
-            LOD_name = 'L4'
-
-        elif lod_setting == '5':
-            LOD_name = 'L5'
-
-        elif lod_setting == '6':
-            LOD_name = 'L6'
-    return LOD_name
+from mathutils import Vector, Matrix
+from ..global_functions import mesh_processing, global_functions
 
 class JMSScene(global_functions.HaloAsset):
     class Node:
@@ -343,17 +251,10 @@ class JMSScene(global_functions.HaloAsset):
             self.direction = direction
             self.radiant_intensity = radiant_intensity
             self.solid_angle = solid_angle
-    def __init__(self, context, report, version, game_version, generate_checksum, apply_modifiers, hidden_geo, export_render, export_collision, export_physics, custom_scale, object_list, jmi):
-        self.valid_gen_list = ['halo2',
-                               'halo3mcc'
-                               ]
 
-        armature = None
-        armature_count = 0
-        mesh_frame_count = 0
-        world_node_count = 0
-        default_region = get_default_region_permutation_name(game_version)
-        default_permutation = get_default_region_permutation_name(game_version)
+    def __init__(self, version, game_version, generate_checksum, model_type, blend_scene):
+        default_region = mesh_processing.get_default_region_permutation_name(game_version)
+        default_permutation = mesh_processing.get_default_region_permutation_name(game_version)
         region_list = ['unnamed']
         permutation_list = []
         self.nodes = []
@@ -377,179 +278,20 @@ class JMSScene(global_functions.HaloAsset):
         self.prismatics = []
         self.bounding_spheres = []
         self.skylights = []
-        node_list = []
+
         material_list = []
-        marker_list = []
-        instance_xref_paths  = []
-        instance_markers = []
-        geometry_list = []
-        original_geometry_list = []
-        sphere_list = []
-        box_list = []
-        capsule_list = []
-        convex_shape_list = []
-        ragdoll_list = []
-        hinge_list = []
-        car_wheel_list = []
-        point_to_point_list = []
-        prismatic_list = []
-        bounding_sphere_list = []
-        skylight_list = []
-        depsgraph = context.evaluated_depsgraph_get()
-        node_prefix_tuple = ('b ', 'b_', 'bone', 'frame', 'bip01')
-        for obj in object_list:
-            name = obj.name.lower()
-            parent_name = None
-            if obj.parent:
-                parent_name = obj.parent.name.lower()
 
-            if name[0:1] == '!':
-                world_node_count += 1
-
-            elif obj.type == 'ARMATURE':
-                global_functions.unhide_object(obj)
-                armature_count += 1
-                armature = obj
-                node_list = list(obj.data.bones)
-
-            elif name.startswith(node_prefix_tuple):
-                global_functions.unhide_object(obj)
-                node_list.append(obj)
-                mesh_frame_count += 1
-
-            elif obj.name[0:1].lower() == '#':
-                if global_functions.set_ignore(obj) == False or hidden_geo:
-                    if not obj.parent == None:
-                        if obj.parent.type == 'ARMATURE' or parent_name.startswith(node_prefix_tuple):
-                            if export_render and obj.marker.marker_mask_type =='0':
-                                marker_list.append(obj)
-                            elif export_collision and obj.marker.marker_mask_type =='1':
-                                marker_list.append(obj)
-                            elif export_physics and obj.marker.marker_mask_type =='2':
-                                marker_list.append(obj)
-                            elif obj.marker.marker_mask_type =='3':
-                                marker_list.append(obj)
-
-            elif obj.name[0:1].lower() == '@' and len(obj.data.polygons) > 0:
-                if global_functions.set_ignore(obj) == False or hidden_geo:
-                    if export_collision:
-                        if not obj.parent == None:
-                            if obj.parent.type == 'ARMATURE' or parent_name.startswith(node_prefix_tuple):
-                                if apply_modifiers:
-                                    obj_for_convert = obj.evaluated_get(depsgraph)
-                                    me = obj_for_convert.to_mesh(preserve_all_data_layers=True, depsgraph=depsgraph)
-                                    geometry_list.append(me)
-                                    original_geometry_list.append(obj)
-
-                                else:
-                                    geometry_list.append(obj.to_mesh(preserve_all_data_layers=True))
-                                    original_geometry_list.append(obj)
-
-            elif obj.name[0:1].lower() == '$' and version > 8205:
-                if global_functions.set_ignore(obj) == False or hidden_geo:
-                    if export_physics:
-                        if not obj.rigid_body_constraint == None:
-                            if obj.rigid_body_constraint.type == 'HINGE':
-                                hinge_list.append(obj)
-
-                            elif obj.rigid_body_constraint.type == 'GENERIC':
-                                ragdoll_list.append(obj)
-
-                            elif obj.rigid_body_constraint.type == 'GENERIC_SPRING':
-                                point_to_point_list.append(obj)
-
-                        else:
-                            if obj.type == 'MESH':
-                                phy_material = global_functions.get_face_material(game_version, obj, obj.data.polygons[0])
-                                if not phy_material == -1:
-                                    if obj.data.ass_jms.Object_Type == 'SPHERE':
-                                        sphere_list.append(obj)
-
-                                    elif obj.data.ass_jms.Object_Type == 'BOX':
-                                        box_list.append(obj)
-
-                                    elif obj.data.ass_jms.Object_Type == 'CAPSULES':
-                                        capsule_list.append(obj)
-
-                                    elif obj.data.ass_jms.Object_Type == 'CONVEX SHAPES':
-                                        convex_shape_list.append(obj)
-
-            elif obj.type == 'MESH' and not len(obj.data.ass_jms.XREF_path) == 0 and version > 8205:
-                if global_functions.set_ignore(obj) == False or hidden_geo:
-                    if export_render:
-                        instance_markers.append(obj)
-                        if not obj.data.ass_jms.XREF_path in instance_xref_paths:
-                            instance_xref_paths.append(obj.data.ass_jms.XREF_path)
-
-            elif obj.type == 'MESH' and obj.data.ass_jms.bounding_radius == True and version >= 8209:
-                if global_functions.set_ignore(obj) == False or hidden_geo:
-                    if export_render:
-                        bounding_sphere_list.append(obj)
-                        
-            elif obj.type == 'LIGHT' and version > 8212:
-                if global_functions.set_ignore(obj) == False or hidden_geo:
-                    if obj.data.type == 'SUN':
-                        if export_render:
-                            skylight_list.append(obj)
-
-            elif obj.type == 'MESH' and len(obj.data.polygons) > 0:
-                if global_functions.set_ignore(obj) == False or hidden_geo:
-                    if export_render:
-                        if not obj.parent == None:
-                            if obj.parent.type == 'ARMATURE' or parent_name.startswith(node_prefix_tuple):
-                                if apply_modifiers:
-                                    obj_for_convert = obj.evaluated_get(depsgraph)
-                                    me = obj_for_convert.to_mesh(preserve_all_data_layers=True, depsgraph=depsgraph)
-                                    geometry_list.append(me)
-                                    original_geometry_list.append(obj)
-
-                                else:
-                                    geometry_list.append(obj.to_mesh(preserve_all_data_layers=True))
-                                    original_geometry_list.append(obj)
-
-        root_node_count = global_functions.count_root_nodes(node_list)
-        node_count = len(node_list)
-
-        if game_version == 'haloce' and node_count == 0 or not game_version == 'haloce' and not export_physics and node_count == 0: #JMSv2 files can have JMS files without a node for physics.
-            raise global_functions.SceneParseError("No nodes in scene. Add an armature or object mesh named frame.")
-
-        elif root_node_count >= 2 and not jmi:
-            raise global_functions.SceneParseError("More than one root node. Please remove or rename objects until you only have one root frame object.")
-
-        elif len(object_list) == 0:
-            raise global_functions.SceneParseError("No objects in scene.")
-
-        elif mesh_frame_count > 0 and armature_count > 0:
-            raise global_functions.SceneParseError("Using both armature and object mesh node setup. Choose one or the other.")
-
-        elif game_version == 'haloce' and len(geometry_list) == 0 and len(marker_list) == 0:
-            raise global_functions.SceneParseError("No geometry in scene.")
-
-        elif game_version == 'haloce' and version >= 8201:
-            raise global_functions.SceneParseError("This version is not supported for Halo CE. Choose from 8197-8200 if you wish to export for Halo CE.")
-
-        elif game_version == 'halo2' and version >= 8211:
-            raise global_functions.SceneParseError("This version is not supported for Halo 2. Choose from 8197-8210 if you wish to export for Halo 2.")
-
-        elif game_version == 'haloce' and node_count > 64:
-            raise global_functions.SceneParseError("This model has more nodes than Halo CE supports. Please limit your node count to 64 nodes")
-
-        elif game_version == 'halo2' and node_count > 255:
-            raise global_functions.SceneParseError("This model has more nodes than Halo 2 supports. Please limit your node count to 255 nodes")
-
-        elif game_version == 'halo3' and node_count > 255:
-            raise global_functions.SceneParseError("This model has more nodes than Halo 3 supports. Please limit your node count to 255 nodes")
-        sorted_list = global_functions.sort_list(node_list, armature, game_version, version, False)
+        sorted_list = global_functions.sort_list(blend_scene.node_list, blend_scene.armature, game_version, version, False)
         joined_list = sorted_list[0]
         reversed_joined_list = sorted_list[1]
         self.node_checksum = 0
         for node in joined_list:
             is_bone = False
-            if armature:
+            if blend_scene.armature:
                 is_bone = True
 
             find_child_node = global_functions.get_child(node, reversed_joined_list)
-            find_sibling_node = global_functions.get_sibling(armature, node, reversed_joined_list)
+            find_sibling_node = global_functions.get_sibling(blend_scene.armature, node, reversed_joined_list)
 
             first_child_node = -1
             first_sibling_node = -1
@@ -562,8 +304,8 @@ class JMSScene(global_functions.HaloAsset):
             if not node.parent == None and not node.parent.name.startswith('!'):
                 parent_node = joined_list.index(node.parent)
 
-            bone_matrix = global_functions.get_matrix(node, node, True, armature, joined_list, True, version, 'JMS', 0)
-            mesh_dimensions = global_functions.get_dimensions(bone_matrix, node, None, None, custom_scale, version, None, False, is_bone, armature, 'JMS')
+            bone_matrix = global_functions.get_matrix(node, node, True, blend_scene.armature, joined_list, True, version, 'JMS', 0)
+            mesh_dimensions = global_functions.get_dimensions(bone_matrix, node, None, None, version, None, False, is_bone, blend_scene.armature, 'JMS')
 
             name = node.name
             child = first_child_node
@@ -580,7 +322,8 @@ class JMSScene(global_functions.HaloAsset):
 
             if is_bone:
                 for child_node in current_node_children:
-                    children.append(joined_list.index(armature.data.bones[child_node]))
+                    children.append(joined_list.index(blend_scene.armature.data.bones[child_node]))
+
             else:
                 for child_node in current_node_children:
                     children.append(joined_list.index(bpy.data.objects[child_node]))
@@ -593,15 +336,25 @@ class JMSScene(global_functions.HaloAsset):
         if generate_checksum:
             self.node_checksum = global_functions.node_hierarchy_checksum(self.nodes, self.nodes[0], self.node_checksum)
 
-        for marker in marker_list:
+        all_marker_list = blend_scene.marker_list
+        if model_type == "render":
+            all_marker_list = blend_scene.marker_list + blend_scene.render_marker_list
+
+        elif model_type == "collision":
+            all_marker_list = blend_scene.marker_list + blend_scene.collision_marker_list
+
+        else:
+            all_marker_list = blend_scene.marker_list + blend_scene.physics_marker_list
+
+        for marker in all_marker_list:
             untouched_name = marker.name.split('#', 1)[1] #remove marker symbol from name
             name = untouched_name.rsplit('.', 1)[0] #remove name change from duplicating objects in Blender
 
             region_idx = -1
 
-            parent_idx = global_functions.get_parent(armature, marker, joined_list, 0)
-            marker_matrix = global_functions.get_matrix(marker, marker, True, armature, joined_list, False, version, 'JMS', 0)
-            mesh_dimensions = global_functions.get_dimensions(marker_matrix, marker, None, None, custom_scale, version, None, False, False, armature, 'JMS')
+            parent_idx = global_functions.get_parent(blend_scene.armature, marker, joined_list, 0)
+            marker_matrix = global_functions.get_matrix(marker, marker, True, blend_scene.armature, joined_list, False, version, 'JMS', 0)
+            mesh_dimensions = global_functions.get_dimensions(marker_matrix, marker, None, None, version, None, False, False, blend_scene.armature, 'JMS')
 
             rotation = (mesh_dimensions.quat_i_a, mesh_dimensions.quat_j_a, mesh_dimensions.quat_k_a, mesh_dimensions.quat_w_a)
             translation = (mesh_dimensions.pos_x_a, mesh_dimensions.pos_y_a, mesh_dimensions.pos_z_a)
@@ -631,329 +384,416 @@ class JMSScene(global_functions.HaloAsset):
 
             self.markers.append(JMSScene.Marker(name, region_idx, parent_idx[0], rotation, translation, scale))
 
-        for xref_path in instance_xref_paths:
-            path = bpy.path.abspath(xref_path)
-            name = os.path.basename(xref_path).rsplit('.', 1)[0]
+        if model_type == "render":
+            for xref_path in blend_scene.instance_xref_paths:
+                path = bpy.path.abspath(xref_path)
+                name = os.path.basename(xref_path).rsplit('.', 1)[0]
 
-            self.xref_instances.append(JMSScene.XREF(path, name))
+                self.xref_instances.append(JMSScene.XREF(path, name))
 
-        seed(1)
-        starting_ID = -1 * (randint(0, 3000000000))
-        for idx, int_markers in enumerate(instance_markers):
-            name = int_markers.name
-            unique_identifier = starting_ID - idx
-            index = instance_xref_paths.index(int_markers.data.ass_jms.XREF_path)
-            int_markers_matrix = global_functions.get_matrix(int_markers, int_markers, False, armature, joined_list, False, version, 'JMS', 0)
-            mesh_dimensions = global_functions.get_dimensions(int_markers_matrix, int_markers, None, None, custom_scale, version, None, False, False, armature, 'JMS')
+            seed(1)
+            starting_ID = -1 * (randint(0, 3000000000))
+            for idx, int_markers in enumerate(blend_scene.instance_markers):
+                name = int_markers.name
+                unique_identifier = starting_ID - idx
+                index = blend_scene.instance_xref_paths.index(int_markers.data.ass_jms.XREF_path)
+                int_markers_matrix = global_functions.get_matrix(int_markers, int_markers, False, blend_scene.armature, joined_list, False, version, 'JMS', 0)
+                mesh_dimensions = global_functions.get_dimensions(int_markers_matrix, int_markers, None, None, version, None, False, False, blend_scene.armature, 'JMS')
 
-            rotation = (mesh_dimensions.quat_i_a, mesh_dimensions.quat_j_a, mesh_dimensions.quat_k_a, mesh_dimensions.quat_w_a)
-            translation = (mesh_dimensions.pos_x_a, mesh_dimensions.pos_y_a, mesh_dimensions.pos_z_a)
+                rotation = (mesh_dimensions.quat_i_a, mesh_dimensions.quat_j_a, mesh_dimensions.quat_k_a, mesh_dimensions.quat_w_a)
+                translation = (mesh_dimensions.pos_x_a, mesh_dimensions.pos_y_a, mesh_dimensions.pos_z_a)
 
-            self.xref_markers.append(JMSScene.XREF_Marker(name, unique_identifier, index, rotation, translation))
+                self.xref_markers.append(JMSScene.XREF_Marker(name, unique_identifier, index, rotation, translation))
 
-        for idx, geometry in enumerate(geometry_list):
-            original_geo = original_geometry_list[idx]
-            vertex_groups = original_geo.vertex_groups.keys()
-            original_geo_matrix = global_functions.get_matrix(original_geo, original_geo, False, armature, joined_list, False, version, 'JMS', 0)
-            for idx, face in enumerate(geometry.polygons):
-                region_index = -1
+            for bound_sphere in blend_scene.bounding_sphere_list:
+                bound_sphere_matrix = global_functions.get_matrix(bound_sphere, bound_sphere, False, blend_scene.armature, joined_list, False, version, 'JMS', 0)
+                mesh_dimensions = global_functions.get_dimensions(bound_sphere_matrix, bound_sphere, None, None, version, None, False, False, blend_scene.armature, 'JMS')
+                translation = (mesh_dimensions.pos_x_a, mesh_dimensions.pos_y_a, mesh_dimensions.pos_z_a)
+                scale = mesh_dimensions.radius_a
+
+                self.bounding_spheres.append(JMSScene.Bounding_Sphere(translation, scale))
+
+            for light in blend_scene.skylight_list:
+                down_vector = Vector((0, 0, -1))
+                down_vector.rotate(light.rotation_euler)
+
+                direction = (down_vector[0], down_vector[1], down_vector[2])
+                radiant_intensity =  (light.data.color[0], light.data.color[1], light.data.color[2])
+                solid_angle = light.data.energy
+
+                self.skylights.append(JMSScene.Skylight(direction, radiant_intensity, solid_angle))
+
+        if model_type == "render" or model_type == "collision":
+            geometry_list = blend_scene.render_geometry_list
+            if model_type == "collision":
+                geometry_list = blend_scene.collision_geometry_list
+
+            for idx, geometry in enumerate(geometry_list):
+                vert_count = len(self.vertices)
+                material_list, mesh_triangles, mesh_vertices, region_list, permutation_list = mesh_processing.process_mesh_export_data(geometry, blend_scene.armature, joined_list, material_list, version, game_version, default_region, default_permutation, region_list, permutation_list, "JMS", JMSScene, vert_count)
+
+                self.triangles += mesh_triangles
+                self.vertices += mesh_vertices
+
+        if model_type == "physics":
+            for spheres in blend_scene.sphere_list:
+                name = spheres.name.split('$', 1)[1]
+                mesh_sphere = spheres.to_mesh()
+                face = mesh_sphere.polygons[0]
+
                 region = default_region
                 permutation = default_permutation
-                if game_version == 'haloce':
-                    region_face_map_name = default_region
-                    region_index = region_list.index(region_face_map_name)
-                    if geometry.face_maps.active:
-                        face_map_idx = geometry.face_maps.active.data[idx].value
-                        if not face_map_idx == -1:
-                            region_face_map_name = original_geo.face_maps[face_map_idx].name
-                            if not region_face_map_name in region_list:
-                                region_list.append(region_face_map_name)
+                if spheres.face_maps.active:
+                    face_set = spheres.face_maps[0].name.split()
+                    slot_index, lod, permutation, region = global_functions.material_definition_parser(False, face_set, default_region, default_permutation)
 
-                        region_index = region_list.index(region_face_map_name)
+                    if not permutation in permutation_list:
+                        permutation_list.append(permutation)
 
-                else:
-                    if geometry.face_maps.active:
-                        region_permutation_face_map_name = [default_permutation, default_region]
-                        face_map_idx = geometry.face_maps.active.data[idx].value
-                        if not face_map_idx == -1:
-                            region_permutation_face_map_name = original_geo.face_maps[face_map_idx].name.split()
+                    if not region in region_list:
+                        region_list.append(region)
 
-                        if len(region_permutation_face_map_name) > 0:
-                            permutation = region_permutation_face_map_name[0]
-                        if not permutation in permutation_list:
-                            permutation_list.append(permutation)
-
-                        if len(region_permutation_face_map_name) > 1:
-                            region = region_permutation_face_map_name[1]
-                        if not region in region_list:
-                            region_list.append(region)
-
-                material = global_functions.get_material(game_version, original_geo, face, geometry, material_list, 'JMS', region, permutation,)
+                material = global_functions.get_material(game_version, spheres, face, mesh_sphere, lod, region, permutation)
                 material_index = -1
                 if not material == -1:
-                    material_list = global_functions.gather_materials(game_version, material, material_list, 'JMS', region, permutation, original_geo.data.ass_jms.level_of_detail)
+                    material_list = global_functions.gather_materials(game_version, material, material_list, 'JMS')
                     material_index = material_list.index(material)
 
-                v0 = len(self.vertices)
-                v1 = len(self.vertices) + 1
-                v2 = len(self.vertices) + 2
+                parent_index = global_functions.get_parent(blend_scene.armature, spheres, joined_list, -1)
+                sphere_matrix = global_functions.get_matrix(spheres, spheres, True, blend_scene.armature, joined_list, False, version, 'JMS', 0)
+                mesh_dimensions = global_functions.get_dimensions(sphere_matrix, spheres, None, None, version, None, False, False, blend_scene.armature, 'JMS')
 
-                self.triangles.append(JMSScene.Triangle(region_index, material_index, v0, v1, v2))
-                for loop_index in face.loop_indices:
-                    vert = geometry.vertices[geometry.loops[loop_index].vertex_index]
+                rotation = (mesh_dimensions.quat_i_a, mesh_dimensions.quat_j_a, mesh_dimensions.quat_k_a, mesh_dimensions.quat_w_a)
+                translation = (mesh_dimensions.pos_x_a, mesh_dimensions.pos_y_a, mesh_dimensions.pos_z_a)
+                scale = (mesh_dimensions.radius_a)
 
-                    translation = original_geo_matrix @ vert.co
-                    mesh_dimensions = global_functions.get_dimensions(None, None, None, None, custom_scale, version, translation, True, False, armature, 'JMS')
-                    scaled_translation = (mesh_dimensions.pos_x_a, mesh_dimensions.pos_y_a, mesh_dimensions.pos_z_a)
+                self.spheres.append(JMSScene.Sphere(name, parent_index[0], material_index, rotation, translation, scale))
+                spheres.to_mesh_clear()
 
-                    normal = (original_geo_matrix @ (vert.co + vert.normal) - translation).normalized()
-                    region = region_index
-                    uv_set = []
-                    for uv_index in range(len(geometry.uv_layers)):
-                        geometry.uv_layers.active = geometry.uv_layers[uv_index]
-                        uv = geometry.uv_layers.active.data[geometry.loops[loop_index].index].uv
-                        uv_set.append(uv)
+            for boxes in blend_scene.box_list:
+                name = boxes.name.split('$', 1)[1]
+                mesh_boxes = boxes.to_mesh()
+                face = mesh_boxes.polygons[0]
 
-                    if not uv_set and version <= 8204:
-                        uv_set = [(0.0, 0.0)]
+                lod = None
+                region = default_region
+                permutation = default_permutation
+                if boxes.face_maps.active:
+                    face_set = boxes.face_maps[0].name.split()
+                    slot_index, lod, permutation, region = global_functions.material_definition_parser(False, face_set, default_region, default_permutation)
 
-                    uv = uv_set
-                    color = (0.0, 0.0, 0.0)
-                    if geometry.vertex_colors:
-                        color_rgb = geometry.vertex_colors.active.data[loop_index].color
-                        color = color_rgb
-                    if len(vert.groups) != 0:
-                        object_vert_group_list = []
-                        vertex_vert_group_list = []
-                        for group_index in range(len(vert.groups)):
-                            vert_group = vert.groups[group_index].group
-                            object_vertex_group = vertex_groups[vert_group]
-                            if armature:
-                                if object_vertex_group in armature.data.bones:
-                                    vertex_vert_group_list.append(group_index)
-                                    if armature.data.bones[object_vertex_group] in joined_list:
-                                        object_vert_group_list.append(vert_group)
+                    if not permutation in permutation_list:
+                        permutation_list.append(permutation)
 
-                            else:
-                                if object_vertex_group in bpy.data.objects:
-                                    vertex_vert_group_list.append(group_index)
-                                    if bpy.data.objects[object_vertex_group] in joined_list:
-                                        object_vert_group_list.append(vert_group)
+                    if not region in region_list:
+                        region_list.append(region)
 
-                        value = len(object_vert_group_list)
-                        if value > 4:
-                            value = 4
+                material = global_functions.get_material(game_version, boxes, face, mesh_boxes, lod, region, permutation)
+                material_index = -1
+                if not material == -1:
+                    material_list = global_functions.gather_materials(game_version, material, material_list, 'JMS')
+                    material_index = material_list.index(material)
 
-                        node_influence_count = int(value)
-                        node_set = []
-                        if len(object_vert_group_list) != 0:
-                            for idx, group_index in enumerate(object_vert_group_list):
-                                vert_index = int(vertex_vert_group_list[idx])
-                                vert_group = vert.groups[vert_index].group
-                                object_vertex_group = vertex_groups[vert_group]
-                                if armature:
-                                    node_obj = armature.data.bones[object_vertex_group]
+                parent_index = global_functions.get_parent(blend_scene.armature, boxes, joined_list, -1)
+                box_matrix = global_functions.get_matrix(boxes, boxes, True, blend_scene.armature, joined_list, False, version, 'JMS', 0)
+                mesh_dimensions = global_functions.get_dimensions(box_matrix, boxes, None, None, version, None, False, False, blend_scene.armature, 'JMS')
 
-                                else:
-                                    node_obj = bpy.data.objects[object_vertex_group]
+                rotation = (mesh_dimensions.quat_i_a, mesh_dimensions.quat_j_a, mesh_dimensions.quat_k_a, mesh_dimensions.quat_w_a)
+                translation = (mesh_dimensions.pos_x_a, mesh_dimensions.pos_y_a, mesh_dimensions.pos_z_a)
+                width = (mesh_dimensions.dimension_x_a)
+                length = (mesh_dimensions.dimension_y_a)
+                height = (mesh_dimensions.dimension_z_a)
 
-                                node_index = int(joined_list.index(node_obj))
-                                node_weight = float(vert.groups[vert_index].weight)
-                                node_set.append([node_index, node_weight])
+                self.boxes.append(JMSScene.Box(name, parent_index[0], material_index, rotation, translation, width, length, height))
+                boxes.to_mesh_clear()
 
-                        else:
-                            node_set = []
-                            parent_index = global_functions.get_parent(armature, original_geo, joined_list, 0)
-                            node_influence_count = int(1)
-                            node_index = int(parent_index[0])
-                            node_weight = float(1.0000000000)
-                            node_set.append([node_index, node_weight])
+            for capsule in blend_scene.capsule_list:
+                name = capsule.name.split('$', 1)[1]
+                mesh_capsule = capsule.to_mesh()
+                face = mesh_capsule.polygons[0]
 
-                    else:
-                        node_set = []
-                        parent_index = global_functions.get_parent(armature, original_geo, joined_list, 0)
-                        node_influence_count = int(1)
-                        node_index = int(parent_index[0])
-                        node_weight = float(1.0000000000)
-                        node_set.append([node_index, node_weight])
+                lod = None
+                region = default_region
+                permutation = default_permutation
+                if capsule.face_maps.active:
+                    face_set = capsule.face_maps[0].name.split()
+                    slot_index, lod, permutation, region = global_functions.material_definition_parser(False, face_set, default_region, default_permutation)
 
-                    self.vertices.append(JMSScene.Vertex(node_influence_count,
-                                                         node_set,
-                                                         region,
-                                                         scaled_translation,
-                                                         normal,
-                                                         color,
-                                                         uv_set
-                                                         ))
+                    if not permutation in permutation_list:
+                        permutation_list.append(permutation)
 
-            original_geo.to_mesh_clear()
+                    if not region in region_list:
+                        region_list.append(region)
 
-        for spheres in sphere_list:
-            name = spheres.name.split('$', 1)[1]
-            mesh_sphere = spheres.to_mesh()
-            face = mesh_sphere.polygons[0]
+                material = global_functions.get_material(game_version, capsule, face, mesh_capsule, lod, region, permutation)
+                material_index = -1
+                if not material == -1:
+                    material_list = global_functions.gather_materials(game_version, material, material_list, 'JMS')
+                    material_index = material_list.index(material)
 
-            region = default_region
-            permutation = default_permutation
-            if spheres.face_maps.active:
-                region_permutation_face_map_name = spheres.face_maps[0].name.split()
-                if len(region_permutation_face_map_name) > 0:
-                    permutation = region_permutation_face_map_name[0]
-                if not permutation in permutation_list:
-                    permutation_list.append(permutation)
+                parent_index = global_functions.get_parent(blend_scene.armature, capsule, joined_list, -1)
+                capsule_matrix = global_functions.get_matrix(capsule, capsule, True, blend_scene.armature, joined_list, False, version, 'JMS', 0)
+                mesh_dimensions = global_functions.get_dimensions(capsule_matrix, capsule, None, None, version, None, False, False, blend_scene.armature, 'JMS')
 
-                if len(region_permutation_face_map_name) > 1:
-                    region = region_permutation_face_map_name[1]
-                if not region in region_list:
-                    region_list.append(region)
+                rotation = (mesh_dimensions.quat_i_a, mesh_dimensions.quat_j_a, mesh_dimensions.quat_k_a, mesh_dimensions.quat_w_a)
+                translation = (mesh_dimensions.pos_x_a, mesh_dimensions.pos_y_a, mesh_dimensions.pos_z_a)
+                height = (mesh_dimensions.pill_z_a)
+                scale = (mesh_dimensions.radius_a)
 
-            material = global_functions.get_material(game_version, spheres, face, mesh_sphere, material_list, 'JMS', region, permutation,)
-            material_index = -1
-            if not material == -1:
-                material_list = global_functions.gather_materials(game_version, material, material_list, 'JMS', region, permutation, spheres.data.ass_jms.level_of_detail)
-                material_index = material_list.index(material)
+                self.capsules.append(JMSScene.Capsule(name, parent_index[0], material_index, rotation, translation, height, scale))
+                capsule.to_mesh_clear()
 
-            parent_index = global_functions.get_parent(armature, spheres, joined_list, -1)
-            sphere_matrix = global_functions.get_matrix(spheres, spheres, True, armature, joined_list, False, version, 'JMS', 0)
-            mesh_dimensions = global_functions.get_dimensions(sphere_matrix, spheres, None, None, custom_scale, version, None, False, False, armature, 'JMS')
+            for convex_shape in blend_scene.convex_shape_list:
+                verts = []
+                evaluated_geo = convex_shape[0]
+                original_geo = convex_shape[1]
+                name = original_geo.name.split('$', 1)[1]
 
-            rotation = (mesh_dimensions.quat_i_a, mesh_dimensions.quat_j_a, mesh_dimensions.quat_k_a, mesh_dimensions.quat_w_a)
-            translation = (mesh_dimensions.pos_x_a, mesh_dimensions.pos_y_a, mesh_dimensions.pos_z_a)
-            scale = (mesh_dimensions.radius_a)
+                face = evaluated_geo.polygons[0]
 
-            self.spheres.append(JMSScene.Sphere(name, parent_index[0], material_index, rotation, translation, scale))
-            spheres.to_mesh_clear()
+                lod = None
+                region = default_region
+                permutation = default_permutation
+                if evaluated_geo.face_maps.active:
+                    face_set = evaluated_geo.face_maps[0].name.split()
+                    slot_index, lod, permutation, region = global_functions.material_definition_parser(False, face_set, default_region, default_permutation)
 
-        for boxes in box_list:
-            name = boxes.name.split('$', 1)[1]
-            mesh_boxes = boxes.to_mesh()
-            face = mesh_boxes.polygons[0]
+                    if not permutation in permutation_list:
+                        permutation_list.append(permutation)
 
-            region = default_region
-            permutation = default_permutation
-            if boxes.face_maps.active:
-                region_permutation_face_map_name = boxes.face_maps[0].name.split()
-                if len(region_permutation_face_map_name) > 0:
-                    permutation = region_permutation_face_map_name[0]
-                if not permutation in permutation_list:
-                    permutation_list.append(permutation)
+                    if not region in region_list:
+                        region_list.append(region)
 
-                if len(region_permutation_face_map_name) > 1:
-                    region = region_permutation_face_map_name[1]
-                if not region in region_list:
-                    region_list.append(region)
+                material = global_functions.get_material(game_version, original_geo, face, evaluated_geo, lod, region, permutation)
+                material_index = -1
+                if not material == -1:
+                    material_list = global_functions.gather_materials(game_version, material, material_list, 'JMS')
+                    material_index = material_list.index(material)
 
-            material = global_functions.get_material(game_version, boxes, face, mesh_boxes, material_list, 'JMS', region, permutation,)
-            material_index = -1
-            if not material == -1:
-                material_list = global_functions.gather_materials(game_version, material, material_list, 'JMS', region, permutation, boxes.data.ass_jms.level_of_detail)
-                material_index = material_list.index(material)
+                parent_index = global_functions.get_parent(blend_scene.armature, original_geo, joined_list, -1)
+                convex_matrix = global_functions.get_matrix(original_geo, original_geo, True, blend_scene.armature, joined_list, False, version, 'JMS', 0)
 
-            parent_index = global_functions.get_parent(armature, boxes, joined_list, -1)
-            box_matrix = global_functions.get_matrix(boxes, boxes, True, armature, joined_list, False, version, 'JMS', 0)
-            mesh_dimensions = global_functions.get_dimensions(box_matrix, boxes, None, None, custom_scale, version, None, False, False, armature, 'JMS')
+                mesh_dimensions = global_functions.get_dimensions(convex_matrix, original_geo, None, None, version, None, False, False, blend_scene.armature, 'JMS')
 
-            rotation = (mesh_dimensions.quat_i_a, mesh_dimensions.quat_j_a, mesh_dimensions.quat_k_a, mesh_dimensions.quat_w_a)
-            translation = (mesh_dimensions.pos_x_a, mesh_dimensions.pos_y_a, mesh_dimensions.pos_z_a)
-            width = (mesh_dimensions.dimension_x_a)
-            length = (mesh_dimensions.dimension_y_a)
-            height = (mesh_dimensions.dimension_z_a)
+                rotation = (mesh_dimensions.quat_i_a, mesh_dimensions.quat_j_a, mesh_dimensions.quat_k_a, mesh_dimensions.quat_w_a)
+                translation = (mesh_dimensions.pos_x_a, mesh_dimensions.pos_y_a, mesh_dimensions.pos_z_a)
 
-            self.boxes.append(JMSScene.Box(name, parent_index[0], material_index, rotation, translation, width, length, height))
-            boxes.to_mesh_clear()
+                loc, rot, scale = original_geo.matrix_world.decompose()
 
-        for capsule in capsule_list:
-            name = capsule.name.split('$', 1)[1]
-            mesh_capsule = capsule.to_mesh()
-            face = mesh_capsule.polygons[0]
+                scale_x = Matrix.Scale(scale[0], 4, (1, 0, 0))
+                scale_y = Matrix.Scale(scale[1], 4, (0, 1, 0))
+                scale_z = Matrix.Scale(scale[2], 4, (0, 0, 1))
 
-            region = default_region
-            permutation = default_permutation
-            if capsule.face_maps.active:
-                region_permutation_face_map_name = capsule.face_maps[0].name.split()
-                if len(region_permutation_face_map_name) > 0:
-                    permutation = region_permutation_face_map_name[0]
-                if not permutation in permutation_list:
-                    permutation_list.append(permutation)
+                scale_matrix = scale_x @ scale_y @ scale_z
 
-                if len(region_permutation_face_map_name) > 1:
-                    region = region_permutation_face_map_name[1]
-                if not region in region_list:
-                    region_list.append(region)
+                for vertex in evaluated_geo.vertices:
+                    pos  = scale_matrix @ vertex.co
+                    mesh_dimensions = global_functions.get_dimensions(None, None, None, None, version, pos, True, False, blend_scene.armature, 'JMS')
+                    vert_translation = (mesh_dimensions.pos_x_a, mesh_dimensions.pos_y_a, mesh_dimensions.pos_z_a)
 
-            material = global_functions.get_material(game_version, capsule, face, mesh_capsule, material_list, 'JMS', region, permutation,)
-            material_index = -1
-            if not material == -1:
-                material_list = global_functions.gather_materials(game_version, material, material_list, 'JMS', region, permutation, capsule.data.ass_jms.level_of_detail)
-                material_index = material_list.index(material)
+                    verts.append(JMSScene.Vertex(None, None, None, vert_translation, None, None, None))
 
-            parent_index = global_functions.get_parent(armature, capsule, joined_list, -1)
-            capsule_matrix = global_functions.get_matrix(capsule, capsule, True, armature, joined_list, False, version, 'JMS', 0)
-            mesh_dimensions = global_functions.get_dimensions(capsule_matrix, capsule, None, None, custom_scale, version, None, False, False, armature, 'JMS')
+                self.convex_shapes.append(JMSScene.Convex_Shape(name, parent_index[0], material_index, rotation, translation, verts))
+                original_geo.to_mesh_clear()
 
-            rotation = (mesh_dimensions.quat_i_a, mesh_dimensions.quat_j_a, mesh_dimensions.quat_k_a, mesh_dimensions.quat_w_a)
-            translation = (mesh_dimensions.pos_x_a, mesh_dimensions.pos_y_a, mesh_dimensions.pos_z_a)
-            height = (mesh_dimensions.pill_z_a)
-            scale = (mesh_dimensions.radius_a)
+            for ragdoll in blend_scene.ragdoll_list:
+                body_a_obj = ragdoll.rigid_body_constraint.object1
+                body_b_obj = ragdoll.rigid_body_constraint.object2
+                body_a_name = 'Null'
+                body_b_name = 'Null'
+                if body_a_obj:
+                    body_a_name = body_a_obj.name.split('$', 1)[1]
 
-            self.capsules.append(JMSScene.Capsule(name, parent_index[0], material_index, rotation, translation, height, scale))
-            capsule.to_mesh_clear()
+                if body_b_obj:
+                    body_b_name = body_b_obj.name.split('$', 1)[1]
 
-        for convex_shape in convex_shape_list:
-            verts = []
-            name = convex_shape.name.split('$', 1)[1]
-            if apply_modifiers:
-                convex_shape_for_convert = convex_shape.evaluated_get(depsgraph)
-                mesh_convex_shape = convex_shape_for_convert.to_mesh(preserve_all_data_layers=True, depsgraph=depsgraph)
+                name = 'ragdoll:%s:%s' % (body_a_name, body_b_name)
+                attached_index = global_functions.get_parent(blend_scene.armature, body_a_obj, joined_list, -1)
+                referenced_index = global_functions.get_parent(blend_scene.armature, body_b_obj, joined_list, -1)
+                body_a_matrix = global_functions.get_matrix(ragdoll, body_a_obj, True, blend_scene.armature, joined_list, False, version, 'JMS', 1)
+                body_b_matrix = global_functions.get_matrix(ragdoll, body_b_obj, True, blend_scene.armature, joined_list, False, version, 'JMS', 1)
+                mesh_dimensions = global_functions.get_dimensions(body_a_matrix, body_a_obj, body_b_matrix, body_b_obj, version, None, False, False, blend_scene.armature, 'JMS')
+                is_limited_x = int(ragdoll.rigid_body_constraint.use_limit_ang_x)
+                is_limited_y = int(ragdoll.rigid_body_constraint.use_limit_ang_y)
+                is_limited_z = int(ragdoll.rigid_body_constraint.use_limit_ang_z)
+                min_twist = 0
+                max_twist = 0
+                if is_limited_x:
+                    min_twist = degrees(ragdoll.rigid_body_constraint.limit_ang_x_lower)
+                    max_twist = degrees(ragdoll.rigid_body_constraint.limit_ang_x_upper)
 
-            else:
-                mesh_convex_shape = convex_shape.to_mesh(preserve_all_data_layers=True)
+                min_cone = 0
+                max_cone = 0
+                if is_limited_y:
+                    min_cone = degrees(ragdoll.rigid_body_constraint.limit_ang_y_lower)
+                    max_cone = degrees(ragdoll.rigid_body_constraint.limit_ang_y_upper)
 
-            face = mesh_convex_shape.polygons[0]
+                min_plane = 0
+                max_plane = 0
+                if is_limited_z:
+                    min_plane = degrees(ragdoll.rigid_body_constraint.limit_ang_z_lower)
+                    max_plane = degrees(ragdoll.rigid_body_constraint.limit_ang_z_upper)
 
-            region = default_region
-            permutation = default_permutation
-            if convex_shape.face_maps.active:
-                region_permutation_face_map_name = convex_shape.face_maps[0].name.split()
-                if len(region_permutation_face_map_name) > 0:
-                    permutation = region_permutation_face_map_name[0]
-                if not permutation in permutation_list:
-                    permutation_list.append(permutation)
+                friction_limit = 0
+                attached_rotation = (mesh_dimensions.quat_i_a, mesh_dimensions.quat_j_a, mesh_dimensions.quat_k_a, mesh_dimensions.quat_w_a)
+                attached_translation = (mesh_dimensions.pos_x_a, mesh_dimensions.pos_y_a, mesh_dimensions.pos_z_a)
+                referenced_rotation = (mesh_dimensions.quat_i_b, mesh_dimensions.quat_j_b, mesh_dimensions.quat_k_b, mesh_dimensions.quat_w_b)
+                referenced_translation = (mesh_dimensions.pos_x_b, mesh_dimensions.pos_y_b, mesh_dimensions.pos_z_b)
 
-                if len(region_permutation_face_map_name) > 1:
-                    region = region_permutation_face_map_name[1]
-                if not region in region_list:
-                    region_list.append(region)
+                self.ragdolls.append(JMSScene.Ragdoll(name, attached_index[0], referenced_index[0], attached_rotation, attached_translation, referenced_rotation, referenced_translation, min_twist, max_twist, min_cone, max_cone, min_plane, max_plane, friction_limit))
 
-            material = global_functions.get_material(game_version, convex_shape, face, mesh_convex_shape, material_list, 'JMS', region, permutation,)
-            material_index = -1
-            if not material == -1:
-                material_list = global_functions.gather_materials(game_version, material, material_list, 'JMS', region, permutation, convex_shape.data.ass_jms.level_of_detail)
-                material_index = material_list.index(material)
+            for hinge in blend_scene.hinge_list:
+                body_a_obj = hinge.rigid_body_constraint.object1
+                body_b_obj = hinge.rigid_body_constraint.object2
+                body_a_name = 'Null'
+                body_b_name = 'Null'
+                if body_a_obj:
+                    body_a_name = body_a_obj.name.split('$', 1)[1]
 
-            parent_index = global_functions.get_parent(armature, convex_shape, joined_list, -1)
-            convex_matrix = global_functions.get_matrix(convex_shape, convex_shape, True, armature, joined_list, False, version, 'JMS', 0)
+                if body_b_obj:
+                    body_b_name = body_b_obj.name.split('$', 1)[1]
 
-            mesh_dimensions = global_functions.get_dimensions(convex_matrix, convex_shape, None, None, custom_scale, version, None, False, False, armature, 'JMS')
+                name = 'hinge:%s:%s' % (body_a_name, body_b_name)
+                body_a_index = global_functions.get_parent(blend_scene.armature, body_a_obj, joined_list, -1)
+                body_b_index = global_functions.get_parent(blend_scene.armature, body_b_obj, joined_list, -1)
+                body_a_matrix = global_functions.get_matrix(hinge, body_a_obj, True, blend_scene.armature, joined_list, False, version, 'JMS', 1)
+                body_b_matrix = global_functions.get_matrix(hinge, body_b_obj, True, blend_scene.armature, joined_list, False, version, 'JMS', 1)
+                mesh_dimensions = global_functions.get_dimensions(body_a_matrix, body_a_obj, body_b_matrix, body_b_obj, version, None, False, False, blend_scene.armature, 'JMS')
+                friction_limit = 0
+                if body_b_obj:
+                    friction_limit = body_b_obj.rigid_body.angular_damping
 
-            rotation = (mesh_dimensions.quat_i_a, mesh_dimensions.quat_j_a, mesh_dimensions.quat_k_a, mesh_dimensions.quat_w_a)
-            translation = (mesh_dimensions.pos_x_a, mesh_dimensions.pos_y_a, mesh_dimensions.pos_z_a)
-            for vertex in mesh_convex_shape.vertices:
-                pos  = vertex.co
-                mesh_dimensions = global_functions.get_dimensions(None, None, None, None, custom_scale, version, pos, True, False, armature, 'JMS')
-                vert_translation = (mesh_dimensions.pos_x_a, mesh_dimensions.pos_y_a, mesh_dimensions.pos_z_a)
+                min_angle = 0
+                max_angle = 0
+                is_limited = int(hinge.rigid_body_constraint.use_limit_ang_z)
+                if is_limited:
+                    min_angle = degrees(hinge.rigid_body_constraint.limit_ang_z_lower)
+                    max_angle = degrees(hinge.rigid_body_constraint.limit_ang_z_upper)
 
-                verts.append(JMSScene.Vertex(None,
-                                             None,
-                                             None,
-                                             vert_translation,
-                                             None,
-                                             None,
-                                             None
-                                             ))
+                body_a_rotation = (mesh_dimensions.quat_i_a, mesh_dimensions.quat_j_a, mesh_dimensions.quat_k_a, mesh_dimensions.quat_w_a)
+                body_a_translation = (mesh_dimensions.pos_x_a, mesh_dimensions.pos_y_a, mesh_dimensions.pos_z_a)
+                body_b_rotation = (mesh_dimensions.quat_i_b, mesh_dimensions.quat_j_b, mesh_dimensions.quat_k_b, mesh_dimensions.quat_w_b)
+                body_b_translation = (mesh_dimensions.pos_x_b, mesh_dimensions.pos_y_b, mesh_dimensions.pos_z_b)
 
-            self.convex_shapes.append(JMSScene.Convex_Shape(name, parent_index[0], material_index, rotation, translation, verts))
-            convex_shape.to_mesh_clear()
+                self.hinges.append(JMSScene.Hinge(name, body_a_index[0], body_b_index[0], body_a_rotation, body_a_translation, body_b_rotation, body_b_translation, is_limited, friction_limit, min_angle, max_angle))
+
+            for car_wheel in blend_scene.car_wheel_list:
+                chassis_obj = car_wheel.rigid_body_constraint.object1
+                wheel_obj = car_wheel.rigid_body_constraint.object2
+                chassis_name = 'Null'
+                wheel_name = 'Null'
+                if chassis_obj:
+                    chassis_name = chassis_obj.name.split('$', 1)[1]
+
+                if wheel_obj:
+                    wheel_name = wheel_obj.name.split('$', 1)[1]
+
+                name = 'hinge:%s:%s' % (chassis_name, wheel_name)
+                chassis_index = global_functions.get_parent(blend_scene.armature, chassis_obj, joined_list, -1)
+                wheel_index = global_functions.get_parent(blend_scene.armature, wheel_obj, joined_list, -1)
+                chassis_matrix = global_functions.get_matrix(hinge, chassis_obj, True, blend_scene.armature, joined_list, False, version, 'JMS', 1)
+                wheel_matrix = global_functions.get_matrix(hinge, wheel_obj, True, blend_scene.armature, joined_list, False, version, 'JMS', 1)
+                mesh_dimensions = global_functions.get_dimensions(chassis_matrix, chassis_obj, wheel_matrix, wheel_obj, version, None, False, False, blend_scene.armature, 'JMS')
+                suspension_min_limit = 0
+                suspension_max_limit = 0
+                if wheel_obj:
+                    suspension_min_limit = 0
+                    suspension_max_limit = 0
+
+                friction_limit = 0
+                velocity = 0
+                gain = 0
+
+                chassis_rotation = (mesh_dimensions.quat_i_a, mesh_dimensions.quat_j_a, mesh_dimensions.quat_k_a, mesh_dimensions.quat_w_a)
+                chassis_translation = (mesh_dimensions.pos_x_a, mesh_dimensions.pos_y_a, mesh_dimensions.pos_z_a)
+                wheel_rotation = (mesh_dimensions.quat_i_b, mesh_dimensions.quat_j_b, mesh_dimensions.quat_k_b, mesh_dimensions.quat_w_b)
+                wheel_translation = (mesh_dimensions.pos_x_b, mesh_dimensions.pos_y_b, mesh_dimensions.pos_z_b)
+                suspension_rotation = (mesh_dimensions.quat_i_b, mesh_dimensions.quat_j_b, mesh_dimensions.quat_k_b, mesh_dimensions.quat_w_b)
+                suspension_translation = (mesh_dimensions.pos_x_b, mesh_dimensions.pos_y_b, mesh_dimensions.pos_z_b)
+
+                self.car_wheels.append(JMSScene.Car_Wheel(name, chassis_index[0], wheel_index[0], chassis_rotation, chassis_translation, wheel_rotation, wheel_translation, suspension_rotation, suspension_translation, suspension_min_limit, suspension_max_limit, friction_limit, velocity, gain))
+
+            for point_to_point in blend_scene.point_to_point_list:
+                body_a_obj = point_to_point.rigid_body_constraint.object1
+                body_b_obj = point_to_point.rigid_body_constraint.object2
+                body_a_name = 'Null'
+                body_b_name = 'Null'
+                body_a_matrix = Matrix.Translation((0, 0, 0))
+                body_b_matrix = Matrix.Translation((0, 0, 0))
+                if body_a_obj:
+                    body_a_name = body_a_obj.name.split('$', 1)[1]
+                    body_a_matrix = global_functions.get_matrix(point_to_point, body_a_obj, True, blend_scene.armature, joined_list, False, version, 'JMS', 1)
+
+                if body_b_obj:
+                    body_b_name = body_b_obj.name.split('$', 1)[1]
+                    body_b_matrix = global_functions.get_matrix(point_to_point, body_b_obj, True, blend_scene.armature, joined_list, False, version, 'JMS', 1)
+
+                name = 'point_to_point:%s:%s' % (body_a_name, body_b_name)
+                body_a_index = global_functions.get_parent(blend_scene.armature, body_a_obj, joined_list, -1)
+                body_b_index = global_functions.get_parent(blend_scene.armature, body_b_obj, joined_list, -1)
+                mesh_dimensions = global_functions.get_dimensions(body_a_matrix, point_to_point, body_b_matrix, point_to_point, version, None, False, False, blend_scene.armature, 'JMS')
+
+                constraint_type = int(point_to_point.jms.jms_spring_type)
+                x_min_limit = degrees(-45.0)
+                x_max_limit = degrees(45.0)
+                if point_to_point.rigid_body_constraint.use_limit_ang_x is True and constraint_type == 1:
+                    x_min_limit = degrees(point_to_point.rigid_body_constraint.limit_ang_x_lower)
+                    x_max_limit = degrees(point_to_point.rigid_body_constraint.limit_ang_x_upper)
+
+                y_min_limit = degrees(-45.0)
+                y_max_limit = degrees(45.0)
+                if point_to_point.rigid_body_constraint.use_limit_ang_y is True and constraint_type == 1:
+                    y_min_limit = degrees(point_to_point.rigid_body_constraint.limit_ang_y_lower)
+                    y_max_limit = degrees(point_to_point.rigid_body_constraint.limit_ang_y_upper)
+
+                z_min_limit = degrees(-45.0)
+                z_max_limit = degrees(45.0)
+                if point_to_point.rigid_body_constraint.use_limit_ang_z is True and constraint_type == 1:
+                    z_min_limit = degrees(point_to_point.rigid_body_constraint.limit_ang_z_lower)
+                    z_max_limit = degrees(point_to_point.rigid_body_constraint.limit_ang_z_upper)
+
+                spring_length = float(0.0)
+                if point_to_point.rigid_body_constraint.use_limit_lin_z is True and constraint_type == 2:
+                    spring_length = float(point_to_point.rigid_body_constraint.limit_lin_z_upper)
+
+                body_a_rotation = (mesh_dimensions.quat_i_a, mesh_dimensions.quat_j_a, mesh_dimensions.quat_k_a, mesh_dimensions.quat_w_a)
+                body_a_translation = (mesh_dimensions.pos_x_a, mesh_dimensions.pos_y_a, mesh_dimensions.pos_z_a)
+                body_b_rotation = (mesh_dimensions.quat_i_b, mesh_dimensions.quat_j_b, mesh_dimensions.quat_k_b, mesh_dimensions.quat_w_b)
+                body_b_translation = (mesh_dimensions.pos_x_b, mesh_dimensions.pos_y_b, mesh_dimensions.pos_z_b)
+
+                self.point_to_points.append(JMSScene.Point_to_Point(name, body_a_index[0], body_b_index[0], body_a_rotation, body_a_translation, body_b_rotation, body_b_translation, constraint_type, x_min_limit, x_max_limit, y_min_limit, y_max_limit, z_min_limit, z_max_limit, spring_length))
+
+            for prismatic in blend_scene.prismatic_list:
+                body_a_obj = prismatic.rigid_body_constraint.object1
+                body_b_obj = prismatic.rigid_body_constraint.object2
+                body_a_name = 'Null'
+                body_b_name = 'Null'
+                if body_a_obj:
+                    body_a_name = chassis_obj.name.split('$', 1)[1]
+
+                if body_b_obj:
+                    body_b_name = wheel_obj.name.split('$', 1)[1]
+
+                name = 'hinge:%s:%s' % (body_a_name, body_b_name)
+                body_a_index = global_functions.get_parent(blend_scene.armature, body_a_obj, joined_list, -1)
+                body_b_index = global_functions.get_parent(blend_scene.armature, body_b_obj, joined_list, -1)
+                body_a_matrix = global_functions.get_matrix(prismatic, body_a_obj, True, blend_scene.armature, joined_list, False, version, 'JMS', 1)
+                body_b_matrix = global_functions.get_matrix(prismatic, body_b_obj, True, blend_scene.armature, joined_list, False, version, 'JMS', 1)
+                mesh_dimensions = global_functions.get_dimensions(body_a_matrix, body_a_obj, body_b_matrix, body_b_obj, version, None, False, False, blend_scene.armature, 'JMS')
+                is_limited = 0
+                friction_limit = 0
+                min_limit = 0
+                max_limit = 0
+                if wheel_obj:
+                    min_limit = 0
+                    max_limit = 0
+
+                body_a_rotation = (mesh_dimensions.quat_i_a, mesh_dimensions.quat_j_a, mesh_dimensions.quat_k_a, mesh_dimensions.quat_w_a)
+                body_a_translation = (mesh_dimensions.pos_x_a, mesh_dimensions.pos_y_a, mesh_dimensions.pos_z_a)
+                body_b_rotation = (mesh_dimensions.quat_i_b, mesh_dimensions.quat_j_b, mesh_dimensions.quat_k_b, mesh_dimensions.quat_w_b)
+                body_b_translation = (mesh_dimensions.pos_x_b, mesh_dimensions.pos_y_b, mesh_dimensions.pos_z_b)
+
+                self.prismatics.append(JMSScene.Prismatic(name, body_a_index[0], body_b_index[0], body_a_rotation, body_a_translation, body_b_rotation, body_b_translation, is_limited, friction_limit, min_limit, max_limit))
 
         for region in region_list:
             name = region
@@ -971,7 +811,7 @@ class JMSScene(global_functions.HaloAsset):
                 name = '<none>'
                 texture_path = '<none>'
                 if not material == None:
-                    name = global_functions.append_material_symbols(material, game_version)
+                    name = mesh_processing.append_material_symbols(material, game_version)
                     if not material.node_tree == None:
                         for node in material.node_tree.nodes:
                             if node.type == 'TEX_IMAGE':
@@ -983,16 +823,17 @@ class JMSScene(global_functions.HaloAsset):
                                         tex = image_name
                                         if version >= 8200:
                                             tex = image_path
+
                                     else:
                                         tex = node.image.name
 
                                     texture_path = tex
                                     break
 
-            elif game_version in self.valid_gen_list:
-                name = global_functions.append_material_symbols(material[0], game_version)
+            else:
+                name = mesh_processing.append_material_symbols(material[0], game_version)
                 slot = bpy.data.materials.find(material[0].name)
-                lod = get_lod(material[1], game_version)
+                lod = mesh_processing.get_lod(material[1], game_version)
                 #This doesn't matter for CE but for Halo 2/3 the region or permutation names can't have any whitespace.
                 #Lets fix that here to make sure nothing goes wrong.
                 if len(material[2]) != 0:
@@ -1003,260 +844,9 @@ class JMSScene(global_functions.HaloAsset):
 
             self.materials.append(JMSScene.Material(name, texture_path, slot, lod, permutation, region))
 
-        for ragdoll in ragdoll_list:
-            body_a_obj = ragdoll.rigid_body_constraint.object1
-            body_b_obj = ragdoll.rigid_body_constraint.object2
-            body_a_name = 'Null'
-            body_b_name = 'Null'
-            if body_a_obj:
-                body_a_name = body_a_obj.name.split('$', 1)[1]
+def write_file(filepath, report, version, game_version, encoding, generate_checksum, folder_structure, folder_type,permutation_ce, level_of_detail_ce, model_type, blend_scene, jmi):
 
-            if body_b_obj:
-                body_b_name = body_b_obj.name.split('$', 1)[1]
-
-            name = 'ragdoll:%s:%s' % (body_a_name, body_b_name)
-            attached_index = global_functions.get_parent(armature, body_a_obj, joined_list, -1)
-            referenced_index = global_functions.get_parent(armature, body_b_obj, joined_list, -1)
-            body_a_matrix = global_functions.get_matrix(ragdoll, body_a_obj, True, armature, joined_list, False, version, 'JMS', 1)
-            body_b_matrix = global_functions.get_matrix(ragdoll, body_b_obj, True, armature, joined_list, False, version, 'JMS', 1)
-            mesh_dimensions = global_functions.get_dimensions(body_a_matrix, body_a_obj, body_b_matrix, body_b_obj, custom_scale, version, None, False, False, armature, 'JMS')
-            is_limited_x = int(ragdoll.rigid_body_constraint.use_limit_ang_x)
-            is_limited_y = int(ragdoll.rigid_body_constraint.use_limit_ang_y)
-            is_limited_z = int(ragdoll.rigid_body_constraint.use_limit_ang_z)
-            min_twist = 0
-            max_twist = 0
-            if is_limited_x:
-                min_twist = degrees(ragdoll.rigid_body_constraint.limit_ang_x_lower)
-                max_twist = degrees(ragdoll.rigid_body_constraint.limit_ang_x_upper)
-
-            min_cone = 0
-            max_cone = 0
-            if is_limited_y:
-                min_cone = degrees(ragdoll.rigid_body_constraint.limit_ang_y_lower)
-                max_cone = degrees(ragdoll.rigid_body_constraint.limit_ang_y_upper)
-
-            min_plane = 0
-            max_plane = 0
-            if is_limited_z:
-                min_plane = degrees(ragdoll.rigid_body_constraint.limit_ang_z_lower)
-                max_plane = degrees(ragdoll.rigid_body_constraint.limit_ang_z_upper)
-
-            friction_limit = 0
-            attached_rotation = (mesh_dimensions.quat_i_a, mesh_dimensions.quat_j_a, mesh_dimensions.quat_k_a, mesh_dimensions.quat_w_a)
-            attached_translation = (mesh_dimensions.pos_x_a, mesh_dimensions.pos_y_a, mesh_dimensions.pos_z_a)
-            referenced_rotation = (mesh_dimensions.quat_i_b, mesh_dimensions.quat_j_b, mesh_dimensions.quat_k_b, mesh_dimensions.quat_w_b)
-            referenced_translation = (mesh_dimensions.pos_x_b, mesh_dimensions.pos_y_b, mesh_dimensions.pos_z_b)
-
-            self.ragdolls.append(JMSScene.Ragdoll(name,
-                                                  attached_index[0],
-                                                  referenced_index[0],
-                                                  attached_rotation,
-                                                  attached_translation,
-                                                  referenced_rotation,
-                                                  referenced_translation,
-                                                  min_twist,
-                                                  max_twist,
-                                                  min_cone,
-                                                  max_cone,
-                                                  min_plane,
-                                                  max_plane,
-                                                  friction_limit
-                                                  ))
-
-        for hinge in hinge_list:
-            body_a_obj = hinge.rigid_body_constraint.object1
-            body_b_obj = hinge.rigid_body_constraint.object2
-            body_a_name = 'Null'
-            body_b_name = 'Null'
-            if body_a_obj:
-                body_a_name = body_a_obj.name.split('$', 1)[1]
-
-            if body_b_obj:
-                body_b_name = body_b_obj.name.split('$', 1)[1]
-
-            name = 'hinge:%s:%s' % (body_a_name, body_b_name)
-            body_a_index = global_functions.get_parent(armature, body_a_obj, joined_list, -1)
-            body_b_index = global_functions.get_parent(armature, body_b_obj, joined_list, -1)
-            body_a_matrix = global_functions.get_matrix(hinge, body_a_obj, True, armature, joined_list, False, version, 'JMS', 1)
-            body_b_matrix = global_functions.get_matrix(hinge, body_b_obj, True, armature, joined_list, False, version, 'JMS', 1)
-            mesh_dimensions = global_functions.get_dimensions(body_a_matrix, body_a_obj, body_b_matrix, body_b_obj, custom_scale, version, None, False, False, armature, 'JMS')
-            friction_limit = 0
-            if body_b_obj:
-                friction_limit = body_b_obj.rigid_body.angular_damping
-
-            min_angle = 0
-            max_angle = 0
-            is_limited = int(hinge.rigid_body_constraint.use_limit_ang_z)
-            if is_limited:
-                min_angle = degrees(hinge.rigid_body_constraint.limit_ang_z_lower)
-                max_angle = degrees(hinge.rigid_body_constraint.limit_ang_z_upper)
-
-            body_a_rotation = (mesh_dimensions.quat_i_a, mesh_dimensions.quat_j_a, mesh_dimensions.quat_k_a, mesh_dimensions.quat_w_a)
-            body_a_translation = (mesh_dimensions.pos_x_a, mesh_dimensions.pos_y_a, mesh_dimensions.pos_z_a)
-            body_b_rotation = (mesh_dimensions.quat_i_b, mesh_dimensions.quat_j_b, mesh_dimensions.quat_k_b, mesh_dimensions.quat_w_b)
-            body_b_translation = (mesh_dimensions.pos_x_b, mesh_dimensions.pos_y_b, mesh_dimensions.pos_z_b)
-
-            self.hinges.append(JMSScene.Hinge(name, body_a_index[0], body_b_index[0], body_a_rotation, body_a_translation, body_b_rotation, body_b_translation, is_limited, friction_limit, min_angle, max_angle))
-
-        for car_wheel in car_wheel_list:
-            chassis_obj = car_wheel.rigid_body_constraint.object1
-            wheel_obj = car_wheel.rigid_body_constraint.object2
-            chassis_name = 'Null'
-            wheel_name = 'Null'
-            if chassis_obj:
-                chassis_name = chassis_obj.name.split('$', 1)[1]
-
-            if wheel_obj:
-                wheel_name = wheel_obj.name.split('$', 1)[1]
-
-            name = 'hinge:%s:%s' % (chassis_name, wheel_name)
-            chassis_index = global_functions.get_parent(armature, chassis_obj, joined_list, -1)
-            wheel_index = global_functions.get_parent(armature, wheel_obj, joined_list, -1)
-            chassis_matrix = global_functions.get_matrix(hinge, chassis_obj, True, armature, joined_list, False, version, 'JMS', 1)
-            wheel_matrix = global_functions.get_matrix(hinge, wheel_obj, True, armature, joined_list, False, version, 'JMS', 1)
-            mesh_dimensions = global_functions.get_dimensions(chassis_matrix, chassis_obj, wheel_matrix, wheel_obj, custom_scale, version, None, False, False, armature, 'JMS')
-            suspension_min_limit = 0
-            suspension_max_limit = 0
-            if wheel_obj:
-                suspension_min_limit = 0
-                suspension_max_limit = 0
-
-            friction_limit = 0
-            velocity = 0
-            gain = 0
-
-            chassis_rotation = (mesh_dimensions.quat_i_a, mesh_dimensions.quat_j_a, mesh_dimensions.quat_k_a, mesh_dimensions.quat_w_a)
-            chassis_translation = (mesh_dimensions.pos_x_a, mesh_dimensions.pos_y_a, mesh_dimensions.pos_z_a)
-            wheel_rotation = (mesh_dimensions.quat_i_b, mesh_dimensions.quat_j_b, mesh_dimensions.quat_k_b, mesh_dimensions.quat_w_b)
-            wheel_translation = (mesh_dimensions.pos_x_b, mesh_dimensions.pos_y_b, mesh_dimensions.pos_z_b)
-            suspension_rotation = (mesh_dimensions.quat_i_b, mesh_dimensions.quat_j_b, mesh_dimensions.quat_k_b, mesh_dimensions.quat_w_b)
-            suspension_translation = (mesh_dimensions.pos_x_b, mesh_dimensions.pos_y_b, mesh_dimensions.pos_z_b)
-
-            self.car_wheels.append(JMSScene.Car_Wheel(name, chassis_index[0], wheel_index[0], chassis_rotation, chassis_translation, wheel_rotation, wheel_translation, suspension_rotation, suspension_translation, suspension_min_limit, suspension_max_limit, friction_limit, velocity, gain))
-
-        for point_to_point in point_to_point_list:
-            body_a_obj = point_to_point.rigid_body_constraint.object1
-            body_b_obj = point_to_point.rigid_body_constraint.object2
-            body_a_name = 'Null'
-            body_b_name = 'Null'
-            body_a_matrix = Matrix.Translation((0, 0, 0))
-            body_b_matrix = Matrix.Translation((0, 0, 0))
-            if body_a_obj:
-                body_a_name = body_a_obj.name.split('$', 1)[1]
-                body_a_matrix = global_functions.get_matrix(point_to_point, body_a_obj, True, armature, joined_list, False, version, 'JMS', 1)
-
-            if body_b_obj:
-                body_b_name = body_b_obj.name.split('$', 1)[1]
-                body_b_matrix = global_functions.get_matrix(point_to_point, body_b_obj, True, armature, joined_list, False, version, 'JMS', 1)
-
-            name = 'point_to_point:%s:%s' % (body_a_name, body_b_name)
-            body_a_index = global_functions.get_parent(armature, body_a_obj, joined_list, -1)
-            body_b_index = global_functions.get_parent(armature, body_b_obj, joined_list, -1)
-            mesh_dimensions = global_functions.get_dimensions(body_a_matrix, point_to_point, body_b_matrix, point_to_point, custom_scale, version, None, False, False, armature, 'JMS')
-
-            constraint_type = int(point_to_point.jms.jms_spring_type)
-            x_min_limit = degrees(-45.0)
-            x_max_limit = degrees(45.0)
-            if point_to_point.rigid_body_constraint.use_limit_ang_x is True and constraint_type == 1:
-                x_min_limit = degrees(point_to_point.rigid_body_constraint.limit_ang_x_lower)
-                x_max_limit = degrees(point_to_point.rigid_body_constraint.limit_ang_x_upper)
-
-            y_min_limit = degrees(-45.0)
-            y_max_limit = degrees(45.0)
-            if point_to_point.rigid_body_constraint.use_limit_ang_y is True and constraint_type == 1:
-                y_min_limit = degrees(point_to_point.rigid_body_constraint.limit_ang_y_lower)
-                y_max_limit = degrees(point_to_point.rigid_body_constraint.limit_ang_y_upper)
-
-            z_min_limit = degrees(-45.0)
-            z_max_limit = degrees(45.0)
-            if point_to_point.rigid_body_constraint.use_limit_ang_z is True and constraint_type == 1:
-                z_min_limit = degrees(point_to_point.rigid_body_constraint.limit_ang_z_lower)
-                z_max_limit = degrees(point_to_point.rigid_body_constraint.limit_ang_z_upper)
-
-            spring_length = float(0.0)
-            if point_to_point.rigid_body_constraint.use_limit_lin_z is True and constraint_type == 2:
-                spring_length = float(point_to_point.rigid_body_constraint.limit_lin_z_upper)
-
-            body_a_rotation = (mesh_dimensions.quat_i_a, mesh_dimensions.quat_j_a, mesh_dimensions.quat_k_a, mesh_dimensions.quat_w_a)
-            body_a_translation = (mesh_dimensions.pos_x_a, mesh_dimensions.pos_y_a, mesh_dimensions.pos_z_a)
-            body_b_rotation = (mesh_dimensions.quat_i_b, mesh_dimensions.quat_j_b, mesh_dimensions.quat_k_b, mesh_dimensions.quat_w_b)
-            body_b_translation = (mesh_dimensions.pos_x_b, mesh_dimensions.pos_y_b, mesh_dimensions.pos_z_b)
-
-            self.point_to_points.append(JMSScene.Point_to_Point(name, body_a_index[0], body_b_index[0], body_a_rotation, body_a_translation, body_b_rotation, body_b_translation, constraint_type, x_min_limit, x_max_limit, y_min_limit, y_max_limit, z_min_limit, z_max_limit, spring_length))
-
-        for prismatic in prismatic_list:
-            body_a_obj = prismatic.rigid_body_constraint.object1
-            body_b_obj = prismatic.rigid_body_constraint.object2
-            body_a_name = 'Null'
-            body_b_name = 'Null'
-            if body_a_obj:
-                body_a_name = chassis_obj.name.split('$', 1)[1]
-
-            if body_b_obj:
-                body_b_name = wheel_obj.name.split('$', 1)[1]
-
-            name = 'hinge:%s:%s' % (body_a_name, body_b_name)
-            body_a_index = global_functions.get_parent(armature, body_a_obj, joined_list, -1)
-            body_b_index = global_functions.get_parent(armature, body_b_obj, joined_list, -1)
-            body_a_matrix = global_functions.get_matrix(prismatic, body_a_obj, True, armature, joined_list, False, version, 'JMS', 1)
-            body_b_matrix = global_functions.get_matrix(prismatic, body_b_obj, True, armature, joined_list, False, version, 'JMS', 1)
-            mesh_dimensions = global_functions.get_dimensions(body_a_matrix, body_a_obj, body_b_matrix, body_b_obj, custom_scale, version, None, False, False, armature, 'JMS')
-            is_limited = 0
-            friction_limit = 0
-            min_limit = 0
-            max_limit = 0
-            if wheel_obj:
-                min_limit = 0
-                max_limit = 0
-
-            body_a_rotation = (mesh_dimensions.quat_i_a, mesh_dimensions.quat_j_a, mesh_dimensions.quat_k_a, mesh_dimensions.quat_w_a)
-            body_a_translation = (mesh_dimensions.pos_x_a, mesh_dimensions.pos_y_a, mesh_dimensions.pos_z_a)
-            body_b_rotation = (mesh_dimensions.quat_i_b, mesh_dimensions.quat_j_b, mesh_dimensions.quat_k_b, mesh_dimensions.quat_w_b)
-            body_b_translation = (mesh_dimensions.pos_x_b, mesh_dimensions.pos_y_b, mesh_dimensions.pos_z_b)
-
-            self.prismatics.append(JMSScene.Prismatic(name, body_a_index[0], body_b_index[0], body_a_rotation, body_a_translation, body_b_rotation, body_b_translation, is_limited, friction_limit, min_limit, max_limit))
-
-        for bound_sphere in bounding_sphere_list:
-            bound_sphere_matrix = global_functions.get_matrix(bound_sphere, bound_sphere, False, armature, joined_list, False, version, 'JMS', 0)
-            mesh_dimensions = global_functions.get_dimensions(bound_sphere_matrix, bound_sphere, None, None, custom_scale, version, None, False, False, armature, 'JMS')
-            translation = (mesh_dimensions.pos_x_a, mesh_dimensions.pos_y_a, mesh_dimensions.pos_z_a)
-            scale = mesh_dimensions.radius_a
-
-            self.bounding_spheres.append(JMSScene.Bounding_Sphere(translation, scale))
-
-        for light in skylight_list:
-            down_vector = Vector((0, 0, -1))
-            down_vector.rotate(light.rotation_euler)
-
-            direction = (down_vector[0], down_vector[1], down_vector[2])
-            radiant_intensity =  (light.data.color[0], light.data.color[1], light.data.color[2])
-            solid_angle = light.data.energy
-
-            self.skylights.append(JMSScene.Skylight(direction, radiant_intensity, solid_angle))
-
-def write_file(context,
-               filepath,
-               report,
-               version,
-               game_version,
-               encoding,
-               generate_checksum,
-               folder_structure,
-               folder_type,
-               apply_modifiers,
-               custom_scale,
-               permutation_ce,
-               level_of_detail_ce,
-               hidden_geo,
-               export_render,
-               export_collision,
-               export_physics,
-               model_type,
-               object_list,
-               jmi
-               ):
-
-    jms_scene = JMSScene(context, report, version, game_version, generate_checksum, apply_modifiers, hidden_geo, export_render, export_collision, export_physics, custom_scale, object_list, jmi)
+    jms_scene = JMSScene(version, game_version, generate_checksum, model_type, blend_scene)
 
     if version > 8209:
         decimal_1 = '\n%0.10f'
@@ -1270,20 +860,8 @@ def write_file(context,
         decimal_3 = '\n%0.6f\t%0.6f\t%0.6f'
         decimal_4 = '\n%0.6f\t%0.6f\t%0.6f\t%0.6f'
 
-    filename = global_functions.get_filename(game_version,
-                                             permutation_ce,
-                                             level_of_detail_ce,
-                                             folder_structure,
-                                             model_type,
-                                             False,
-                                             filepath)
-
-    root_directory = global_functions.get_directory(game_version,
-                                                    model_type,
-                                                    folder_structure,
-                                                    folder_type,
-                                                    jmi,
-                                                    filepath)
+    filename = global_functions.get_filename(game_version, permutation_ce, level_of_detail_ce, folder_structure, model_type, False, filepath)
+    root_directory = global_functions.get_directory(game_version, model_type, folder_structure, folder_type, jmi, filepath)
 
     file = open(root_directory + os.sep + filename, 'w', encoding=encoding)
 
@@ -1370,7 +948,7 @@ def write_file(context,
                 '\n%s' % (material.texture_path)
             )
 
-        elif game_version in jms_scene.valid_gen_list:
+        else:
             material_definition = '(%s)' % (material.slot)
             if not material.lod == None:
                 material_definition += ' %s' % (material.lod)
@@ -2082,7 +1660,6 @@ def write_file(context,
     report({'INFO'}, "Export completed successfully")
     file.close()
 
-
 def command_queue(context,
                   filepath,
                   report,
@@ -2114,205 +1691,218 @@ def command_queue(context,
                   world_nodes
                   ):
 
-    global_functions.unhide_all_collections()
-    valid_gen_list = ('halo2',
-                      'halo3mcc'
-                      )
-
     object_properties = []
-    scene = bpy.context.scene
-    view_layer = bpy.context.view_layer
+    node_prefix_tuple = ('b ', 'b_', 'bone', 'frame', 'bip01')
+    limit_value = 0.001
+
+    world_node_count = 0
+    armature_count = 0
+    mesh_frame_count = 0
+    render_count = 0
+    collision_count = 0
+    physics_count = 0
+    armature = None
+    node_list = []
+    render_marker_list = []
+    collision_marker_list = []
+    physics_marker_list = []
+    marker_list = []
+    instance_xref_paths = []
+    instance_markers = []
+    render_geometry_list = []
+    collision_geometry_list = []
+    sphere_list = []
+    box_list = []
+    capsule_list = []
+    convex_shape_list = []
+    ragdoll_list = []
+    hinge_list = []
+    car_wheel_list = []
+    point_to_point_list = []
+    prismatic_list = []
+    bounding_sphere_list = []
+    skylight_list = []
+
+    scene = context.scene
+
     object_list = list(scene.objects)
+
+    global_functions.unhide_all_collections()
+
     jmi = False
     if not world_nodes == None:
         jmi = True
         object_list = world_nodes
 
-    world_node_count = 0
-    node_count = 0
-    marker_count = 0
-    collision_count = 0
-    physics_count = 0
-    xref_count = 0
-    bounding_radius_count = 0
-    skylight_count = 0
-    render_count = 0
-    version = global_functions.get_version(jms_version,
-                                           jms_version_ce,
-                                           jms_version_h2,
-                                           jms_version_h3,
-                                           game_version,
-                                           console
-                                           )
+    edge_split = global_functions.EdgeSplit(edge_split, use_edge_angle, split_angle, use_edge_sharp)
 
-    level_of_detail_ce = get_lod(level_of_detail_ce, game_version)
+    version = global_functions.get_version(jms_version, jms_version_ce, jms_version_h2, jms_version_h3, game_version, console)
+    level_of_detail_ce = mesh_processing.get_lod(level_of_detail_ce, game_version)
     custom_scale = global_functions.set_scale(scale_enum, scale_float)
-    node_prefix_tuple = ('b ', 'b_', 'bone', 'frame', 'bip01')
+
     for obj in object_list:
-        object_properties.append([obj.hide_get(), obj.hide_viewport])
+        if obj.type== 'MESH':
+            if clean_normalize_weights:
+                mesh_processing.vertex_group_clean_normalize(context, obj, limit_value)
+
+            if apply_modifiers:
+                mesh_processing.add_modifier(context, obj, triangulate_faces, edge_split)
+
+    depsgraph = context.evaluated_depsgraph_get()
+    for obj in object_list:
+        object_properties.append((obj.hide_get(), obj.hide_viewport))
         if hidden_geo:
-            global_functions.unhide_object(obj)
-
-        if obj.type == 'MESH':
-            if global_functions.set_ignore(obj) == False or hidden_geo:
-                if clean_normalize_weights:
-                    if len(obj.vertex_groups) > 0:
-                        view_layer.objects.active = obj
-                        bpy.ops.object.mode_set(mode = 'EDIT')
-                        bpy.ops.mesh.select_all(action='SELECT')
-                        bpy.ops.object.vertex_group_clean(group_select_mode='ALL', limit=0.001)
-                        bpy.ops.object.vertex_group_normalize_all()
-                        bpy.ops.object.mode_set(mode = 'OBJECT')
-
-                modifier_list = []
-                if apply_modifiers:
-                    for modifier in obj.modifiers:
-                        modifier.show_render = True
-                        modifier.show_viewport = True
-                        modifier.show_in_editmode = True
-                        modifier_list.append(modifier.type)
-
-                if triangulate_faces:
-                    if not 'TRIANGULATE' in modifier_list:
-                        obj.modifiers.new("Triangulate", type='TRIANGULATE')
-
-                if edge_split:
-                    if not 'EDGE_SPLIT' in modifier_list:
-                        edge_split = obj.modifiers.new("EdgeSplit", type='EDGE_SPLIT')
-                        edge_split.use_edge_angle = use_edge_angle
-                        edge_split.split_angle = split_angle
-                        edge_split.use_edge_sharp = use_edge_sharp
-                    else:
-                        modifier_idx = modifier_list.index('EDGE_SPLIT')
-                        obj.modifiers[modifier_idx].use_edge_angle = use_edge_angle
-                        obj.modifiers[modifier_idx].split_angle = split_angle
-                        obj.modifiers[modifier_idx].use_edge_sharp = use_edge_sharp
+            mesh_processing.unhide_object(obj)
 
         name = obj.name.lower()
+        parent_name = None
+        if obj.parent:
+            parent_name = obj.parent.name.lower()
+
         if name[0:1] == '!':
             world_node_count += 1
 
         elif obj.type == 'ARMATURE':
-            node_count += len(obj.data.bones)
+            mesh_processing.unhide_object(obj)
+            armature = obj
+            armature_bones = obj.data.bones
+            armature_count += 1
+            node_list = list(armature_bones)
 
         elif name.startswith(node_prefix_tuple):
-            node_count += 1
+            mesh_processing.unhide_object(obj)
+            mesh_frame_count += 1
+            node_list.append(obj)
 
         elif name[0:1] == '#':
-            if global_functions.set_ignore(obj) == False or hidden_geo:
-                if obj.marker.marker_mask_type =='0':
-                    render_count += 1
-                elif obj.marker.marker_mask_type =='1':
-                    collision_count += 1
-                elif obj.marker.marker_mask_type =='2':
-                    physics_count += 1
-                elif obj.marker.marker_mask_type =='3':
-                    render_count += 1
-                    collision_count += 1
-                    physics_count += 1
+            if mesh_processing.set_ignore(obj) == False or hidden_geo:
+                if not obj.parent == None:
+                    if obj.parent.type == 'ARMATURE' or parent_name.startswith(node_prefix_tuple):
+                        if export_render and obj.marker.marker_mask_type =='0':
+                            render_marker_list.append(obj)
+                            render_count += 1
 
-                marker_count += 1
+                        elif export_collision and obj.marker.marker_mask_type =='1':
+                            collision_marker_list.append(obj)
+                            collision_count += 1
+
+                        elif export_physics and obj.marker.marker_mask_type =='2':
+                            physics_marker_list.append(obj)
+                            physics_count += 1
+
+                        elif obj.marker.marker_mask_type =='3':
+                            marker_list.append(obj)
+                            render_count += 1
+                            collision_count += 1
+                            physics_count += 1
 
         elif name[0:1] == '@' and len(obj.data.polygons) > 0:
-            if global_functions.set_ignore(obj) == False or hidden_geo:
-                collision_count += 1
+            if mesh_processing.set_ignore(obj) == False or hidden_geo:
+                if export_collision:
+                    if not obj.parent == None:
+                        if obj.parent.type == 'ARMATURE' or parent_name.startswith(node_prefix_tuple):
+                            collision_count += 1
+                            if apply_modifiers:
+                                obj_for_convert = obj.evaluated_get(depsgraph)
+                                evaluted_mesh = obj_for_convert.to_mesh(preserve_all_data_layers=True, depsgraph=depsgraph)
+                                collision_geometry_list.append((evaluted_mesh, obj))
 
-        elif name[0:1] == '$' and game_version in valid_gen_list:
-            if global_functions.set_ignore(obj) == False or hidden_geo:
-                physics_count += 1
+                            else:
+                                evaluted_mesh = obj.to_mesh(preserve_all_data_layers=True)
+                                collision_geometry_list.append((evaluted_mesh, obj))
+
+        elif name[0:1] == '$' and not game_version == "haloce" and version > 8205:
+            if mesh_processing.set_ignore(obj) == False or hidden_geo:
+                if export_physics:
+                    physics_count += 1
+                    if not obj.rigid_body_constraint == None:
+                        if obj.rigid_body_constraint.type == 'HINGE':
+                            hinge_list.append(obj)
+
+                        elif obj.rigid_body_constraint.type == 'GENERIC':
+                            ragdoll_list.append(obj)
+
+                        elif obj.rigid_body_constraint.type == 'GENERIC_SPRING':
+                            point_to_point_list.append(obj)
+
+                    else:
+                        if obj.type == 'MESH':
+                            phy_material = global_functions.get_face_material(obj, obj.data.polygons[0])
+                            if not phy_material == -1:
+                                if obj.data.ass_jms.Object_Type == 'SPHERE':
+                                    sphere_list.append(obj)
+
+                                elif obj.data.ass_jms.Object_Type == 'BOX':
+                                    box_list.append(obj)
+
+                                elif obj.data.ass_jms.Object_Type == 'CAPSULES':
+                                    capsule_list.append(obj)
+
+                                elif obj.data.ass_jms.Object_Type == 'CONVEX SHAPES':
+                                    if apply_modifiers:
+                                        obj_for_convert = obj.evaluated_get(depsgraph)
+                                        evaluted_mesh = obj_for_convert.to_mesh(preserve_all_data_layers=True, depsgraph=depsgraph)
+                                        convex_shape_list.append((evaluted_mesh, obj))
+
+                                    else:
+                                        evaluted_mesh = obj.to_mesh(preserve_all_data_layers=True)
+                                        convex_shape_list.append((evaluted_mesh, obj))
 
         elif obj.type== 'MESH' and not len(obj.data.ass_jms.XREF_path) == 0 and version > 8205:
-            if global_functions.set_ignore(obj) == False or hidden_geo:
-                xref_count += 1
+            if mesh_processing.set_ignore(obj) == False or hidden_geo:
+                if export_render:
+                    instance_markers.append(obj)
+                    if not obj.data.ass_jms.XREF_path in instance_xref_paths:
+                        instance_xref_paths.append(obj.data.ass_jms.XREF_path)
+
 
         elif obj.type== 'MESH' and obj.data.ass_jms.bounding_radius and version >= 8209:
-            if global_functions.set_ignore(obj) == False or hidden_geo:
-                bounding_radius_count += 1
+            if mesh_processing.set_ignore(obj) == False or hidden_geo:
+                if export_render:
+                    bounding_sphere_list.append(obj)
 
         elif obj.type == 'LIGHT' and version > 8212:
-            if global_functions.set_ignore(obj) == False or hidden_geo:
-                if obj.data.type == 'SPOT':
-                    skylight_count += 1
+            if mesh_processing.set_ignore(obj) == False or hidden_geo:
+                if obj.data.type == 'SUN':
+                    if export_render:
+                        skylight_list.append(obj)
+
         elif obj.type== 'MESH' and len(obj.data.polygons) > 0:
-            if global_functions.set_ignore(obj) == False or hidden_geo:
-                render_count += 1
+            if mesh_processing.set_ignore(obj) == False or hidden_geo:
+                if export_render:
+                    if not obj.parent == None:
+                        if obj.parent.type == 'ARMATURE' or parent_name.startswith(node_prefix_tuple):
+                            render_count += 1
+                            if apply_modifiers:
+                                obj_for_convert = obj.evaluated_get(depsgraph)
+                                evaluted_mesh = obj_for_convert.to_mesh(preserve_all_data_layers=True, depsgraph=depsgraph)
+                                render_geometry_list.append((evaluted_mesh, obj))
 
+                            else:
+                                evaluted_mesh = obj.to_mesh(preserve_all_data_layers=True)
+                                render_geometry_list.append((evaluted_mesh, obj))
 
-    if render_count == 0 and collision_count == 0 and physics_count == 0 and marker_count == 0:
-        report({'ERROR'}, "No objects in scene")
-        return {'CANCELLED'}
+    blend_scene = global_functions.BlendScene(world_node_count, armature_count, mesh_frame_count, render_count, collision_count, physics_count, armature, node_list, render_marker_list, collision_marker_list, physics_marker_list, marker_list, instance_xref_paths, instance_markers, render_geometry_list, collision_geometry_list, sphere_list, box_list, capsule_list, convex_shape_list, ragdoll_list, hinge_list, car_wheel_list, point_to_point_list, prismatic_list, bounding_sphere_list, skylight_list)
 
-    if export_render and render_count > 0:
+    global_functions.validate_halo_scene(game_version, version, blend_scene, object_list, jmi, False, None)
+
+    if export_render and blend_scene.render_count > 0:
+        if not game_version == 'haloce' and len(blend_scene.node_list) == 0: #H2+ files can have JMS files without a node for physics.
+            raise global_functions.SceneParseError("No nodes in scene. Add an armature or object mesh named frame.")
+
         model_type = "render"
-        write_file(context,
-                   filepath,
-                   report,
-                   version,
-                   game_version,
-                   encoding,
-                   generate_checksum,
-                   folder_structure,
-                   folder_type,
-                   apply_modifiers,
-                   custom_scale,
-                   permutation_ce,
-                   level_of_detail_ce,
-                   hidden_geo,
-                   export_render,
-                   False,
-                   False,
-                   model_type,
-                   object_list,
-                   jmi
-                   )
+        write_file(filepath, report, version, game_version, encoding, generate_checksum, folder_structure, folder_type, permutation_ce, level_of_detail_ce, model_type, blend_scene, jmi)
 
-    if export_collision and collision_count > 0:
+    if export_collision and blend_scene.collision_count > 0:
+        if not game_version == 'haloce' and len(blend_scene.node_list) == 0: #H2+ files can have JMS files without a node for physics.
+            raise global_functions.SceneParseError("No nodes in scene. Add an armature or object mesh named frame.")
+
         model_type = "collision"
-        write_file(context,
-                   filepath,
-                   report,
-                   version,
-                   game_version,
-                   encoding,
-                   generate_checksum,
-                   folder_structure,
-                   folder_type,
-                   apply_modifiers,
-                   custom_scale,
-                   permutation_ce,
-                   level_of_detail_ce,
-                   hidden_geo,
-                   False,
-                   export_collision,
-                   False,
-                   model_type,
-                   object_list,
-                   jmi
-                   )
+        write_file(filepath, report, version, game_version, encoding, generate_checksum, folder_structure, folder_type, permutation_ce, level_of_detail_ce, model_type, blend_scene, jmi)
 
-    if export_physics and physics_count > 0:
+    if export_physics and blend_scene.physics_count > 0:
         model_type = "physics"
-        write_file(context,
-                   filepath,
-                   report,
-                   version,
-                   game_version,
-                   encoding,
-                   generate_checksum,
-                   folder_structure,
-                   folder_type,
-                   apply_modifiers,
-                   custom_scale,
-                   permutation_ce,
-                   level_of_detail_ce,
-                   hidden_geo,
-                   False,
-                   False,
-                   export_physics,
-                   model_type,
-                   object_list,
-                   jmi
-                   )
+        write_file(filepath, report, version, game_version, encoding, generate_checksum, folder_structure, folder_type, permutation_ce, level_of_detail_ce, model_type, blend_scene, jmi)
 
     for idx, obj in enumerate(object_list):
         property_value = object_properties[idx]

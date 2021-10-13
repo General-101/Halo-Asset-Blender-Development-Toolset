@@ -600,7 +600,7 @@ class ExportJMI(Operator, ExportHelper):
         )
 
     def execute(self, context):
-        from io_scene_halo.file_jmi import export_jmi
+        from ..file_jmi import export_jmi
         if '--' in sys.argv:
             argv = sys.argv[sys.argv.index('--') + 1:]
             parser = argparse.ArgumentParser()

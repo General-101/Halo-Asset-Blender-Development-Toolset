@@ -27,7 +27,7 @@
 import os
 import bpy
 import sys
-import random, colorsys
+import colorsys
 
 from decimal import *
 from mathutils import Vector, Quaternion, Matrix
@@ -58,16 +58,76 @@ class JmsDimensions:
     radius_b = '0.0000000000'
     pill_z_b = '0.0000000000'
 
+class BlendScene():
+    def __init__(self,
+                 world_node_count,
+                 armature_count,
+                 mesh_frame_count,
+                 render_count,
+                 collision_count,
+                 physics_count,
+                 armature,
+                 node_list,
+                 render_marker_list,
+                 collision_marker_list,
+                 physics_marker_list,
+                 marker_list,
+                 instance_xref_paths,
+                 instance_markers,
+                 render_geometry_list,
+                 collision_geometry_list,
+                 sphere_list,
+                 box_list,
+                 capsule_list,
+                 convex_shape_list,
+                 ragdoll_list,
+                 hinge_list,
+                 car_wheel_list,
+                 point_to_point_list,
+                 prismatic_list,
+                 bounding_sphere_list,
+                 skylight_list):
+        self.world_node_count = world_node_count
+        self.armature_count = armature_count
+        self.mesh_frame_count = mesh_frame_count
+        self.render_count = render_count
+        self.collision_count = collision_count
+        self.physics_count = physics_count
+        self.armature = armature
+        self.node_list = node_list
+        self.render_marker_list = render_marker_list
+        self.collision_marker_list = collision_marker_list
+        self.physics_marker_list = physics_marker_list
+        self.marker_list = marker_list
+        self.instance_xref_paths  = instance_xref_paths
+        self.instance_markers = instance_markers
+        self.render_geometry_list = render_geometry_list
+        self.collision_geometry_list = collision_geometry_list
+        self.sphere_list = sphere_list
+        self.box_list = box_list
+        self.capsule_list = capsule_list
+        self.convex_shape_list = convex_shape_list
+        self.ragdoll_list = ragdoll_list
+        self.hinge_list = hinge_list
+        self.car_wheel_list = car_wheel_list
+        self.point_to_point_list = point_to_point_list
+        self.prismatic_list = prismatic_list
+        self.bounding_sphere_list = bounding_sphere_list
+        self.skylight_list = skylight_list
+
+class EdgeSplit():
+    def __init__(self, is_enabled, use_edge_angle, split_angle, use_edge_sharp):
+        self.is_enabled = is_enabled
+        self.use_edge_angle = use_edge_angle
+        self.split_angle = split_angle
+        self.use_edge_sharp = use_edge_sharp
+
 def unhide_all_collections():
     for collection_viewport in bpy.context.view_layer.layer_collection.children:
         collection_viewport.exclude = False
 
     for collection_hide in bpy.data.collections:
         collection_hide.hide_viewport = False
-
-def unhide_object(mesh):
-    mesh.hide_set(False)
-    mesh.hide_viewport = False
 
 def get_child(bone, bone_list):
     set_node = None
@@ -223,11 +283,14 @@ def test_encoding(filepath):
     # first check the boms
     if BOM.startswith(UTF_8_BOM):
         encoding = 'utf-8-sig'
+
     elif BOM.startswith(UTF_16_BE_BOM) or BOM.startswith(UTF_16_LE_BOM):
         encoding = 'utf-16'
+
     else:
         if file_size % 2: # can't be USC-2/UTF-16 if the number of bytes is odd
             encoding = 'utf-8'
+
         else:
             # get the first half a kilobyte
             data.seek(0)
@@ -239,30 +302,29 @@ def test_encoding(filepath):
             for idx, byte in enumerate(sample_bytes):
                 if byte != 0:
                     continue
+
                 if idx % 2:
                     odd_zeros += 1
+
                 else:
                     even_zeros += 1
+
             ## if there are no null bytes we assume we are dealing with a utf-8 file
             ## if there are null bytes, assume utf-16 and guess endianness based on where the null bytes are
             if even_zeros == 0 and odd_zeros == 0:
                 encoding = 'utf-8'
+
             elif odd_zeros > even_zeros:
                 encoding = 'utf-16-le'
+
             else:
                 encoding = 'utf-16-be'
 
-
     data.close()
+
     return encoding
 
-def get_version(file_version_console,
-                file_version_ce,
-                file_version_h2,
-                file_version_h3,
-                game_version,
-                console
-                ):
+def get_version(file_version_console, file_version_ce, file_version_h2, file_version_h3, game_version, console):
 
     version = None
     if console:
@@ -274,6 +336,7 @@ def get_version(file_version_console,
 
         elif game_version == 'halo2':
             version = int(file_version_h2)
+
         elif game_version == 'halo3mcc':
             version = int(file_version_h3)
 
@@ -292,19 +355,19 @@ def get_true_extension(filepath, extension, is_import):
 
     return true_extension
 
-def get_matrix(obj_a, obj_b, is_local, armature, joined_list, is_node, version, filetype, constraint):
+def get_matrix(obj_a, obj_b, is_local, armature, joined_list, is_node, version, file_type, constraint):
     object_matrix = Matrix.Translation((0, 0, 0))
     if is_node:
         if armature:
             pose_bone = armature.pose.bones['%s' % (obj_a.name)]
             object_matrix = pose_bone.matrix
-            if pose_bone.parent and not version >= get_version_matrix_check(filetype):
+            if pose_bone.parent and not version >= get_version_matrix_check(file_type):
                 #Files at or above 8205 use absolute transform instead of local transform for nodes
                 object_matrix = pose_bone.parent.matrix.inverted() @ pose_bone.matrix
 
         else:
             object_matrix = obj_a.matrix_world
-            if obj_a.parent and not version >= get_version_matrix_check(filetype):
+            if obj_a.parent and not version >= get_version_matrix_check(file_type):
                 #Files at or above 8205 use absolute transform instead of local transform for nodes
                 object_matrix = obj_a.parent.matrix_world.inverted() @ obj_a.matrix_world
 
@@ -317,6 +380,7 @@ def get_matrix(obj_a, obj_b, is_local, armature, joined_list, is_node, version, 
                 pose_bone = armature.pose.bones['%s' % (parent_object[1].name)]
                 if constraint:
                     object_matrix = obj_a.matrix_world.inverted() @ pose_bone.matrix
+
                 else:
                     object_matrix = pose_bone.matrix.inverted() @ obj_a.matrix_world
 
@@ -326,17 +390,31 @@ def get_matrix(obj_a, obj_b, is_local, armature, joined_list, is_node, version, 
                 parent_object = get_parent(armature, obj_b, joined_list, -1)
                 if constraint:
                     object_matrix = obj_a.matrix_world.inverted() @ parent_object[1].matrix_world
+
                 else:
                     object_matrix = parent_object[1].matrix_world.inverted() @ obj_a.matrix_world
 
+        if object_matrix.determinant() < 0.0:
+            loc, rot, sca = object_matrix.decompose()
+            matrix_loc = Matrix.Translation(loc)
+            matrix_rot = rot.to_matrix().to_4x4()
+            invert_scale_x = sca[0] * -1
+            invert_scale_y = sca[1] * -1
+            invert_scale_z = sca[2] * -1
+            matrix_scale_x = Matrix.Scale(invert_scale_x, 4, (1, 0, 0))
+            matrix_scale_y = Matrix.Scale(invert_scale_y, 4, (0, 1, 0))
+            matrix_scale_z = Matrix.Scale(invert_scale_z, 4, (0, 0, 1))
+
+            object_matrix = matrix_loc @ matrix_rot @ (matrix_scale_x @ matrix_scale_y @ matrix_scale_z)
+
     return object_matrix
 
-def get_dimensions(mesh_a_matrix, mesh_a, mesh_b_matrix, mesh_b, custom_scale, version, jms_vertex, is_vertex, is_bone, armature, filetype):
+def get_dimensions(mesh_a_matrix, mesh_a, mesh_b_matrix, mesh_b, version, jms_vertex, is_vertex, is_bone, armature, filetype):
     object_dimensions = JmsDimensions()
     if is_vertex:
-        JmsDimensions.pos_x_a = float(jms_vertex[0] * custom_scale)
-        JmsDimensions.pos_y_a = float(jms_vertex[1] * custom_scale)
-        JmsDimensions.pos_z_a = float(jms_vertex[2] * custom_scale)
+        JmsDimensions.pos_x_a = float(jms_vertex[0])
+        JmsDimensions.pos_y_a = float(jms_vertex[1])
+        JmsDimensions.pos_z_a = float(jms_vertex[2])
 
     else:
         if mesh_a:
@@ -358,8 +436,8 @@ def get_dimensions(mesh_a_matrix, mesh_a, mesh_b_matrix, mesh_b, custom_scale, v
                 #The reason this code exists is to try to copy how capsules work in 3DS Max.
                 #To get original height for 3DS Max do (radius_jms * 2) + height_jms
                 #The maximum value of radius is height / 2
-                pill_radius = ((dimension[0] / 2) * custom_scale)
-                pill_height = (dimension[2] * custom_scale) - (pill_radius * 2)
+                pill_radius = ((dimension[0] / 2))
+                pill_height = (dimension[2]) - (pill_radius * 2)
                 if pill_height <= 0:
                     pill_height = 0
 
@@ -367,16 +445,16 @@ def get_dimensions(mesh_a_matrix, mesh_a, mesh_b_matrix, mesh_b, custom_scale, v
             JmsDimensions.quat_j_a = float(quat[2])
             JmsDimensions.quat_k_a = float(quat[3])
             JmsDimensions.quat_w_a = float(quat[0])
-            JmsDimensions.pos_x_a = float(pos[0] * custom_scale)
-            JmsDimensions.pos_y_a = float(pos[1] * custom_scale)
-            JmsDimensions.pos_z_a = float(pos[2] * custom_scale)
+            JmsDimensions.pos_x_a = float(pos[0])
+            JmsDimensions.pos_y_a = float(pos[1])
+            JmsDimensions.pos_z_a = float(pos[2])
             JmsDimensions.scale_x_a = float(scale[0])
             JmsDimensions.scale_y_a = float(scale[1])
             JmsDimensions.scale_z_a = float(scale[2])
             if not is_bone:
-                JmsDimensions.dimension_x_a = float(dimension[0] * custom_scale)
-                JmsDimensions.dimension_y_a = float(dimension[1] * custom_scale)
-                JmsDimensions.dimension_z_a = float(dimension[2] * custom_scale)
+                JmsDimensions.dimension_x_a = float(dimension[0])
+                JmsDimensions.dimension_y_a = float(dimension[1])
+                JmsDimensions.dimension_z_a = float(dimension[2])
                 JmsDimensions.radius_a = float(pill_radius)
                 JmsDimensions.pill_z_a = float(pill_height)
 
@@ -399,8 +477,8 @@ def get_dimensions(mesh_a_matrix, mesh_a, mesh_b_matrix, mesh_b, custom_scale, v
                 #The reason this code exists is to try to copy how capsules work in 3DS Max.
                 #To get original height for 3DS Max do (radius_jms * 2) + height_jms
                 #The maximum value of radius is height / 2
-                pill_radius = ((dimension[0] / 2) * custom_scale)
-                pill_height = (dimension[2] * custom_scale) - (pill_radius * 2)
+                pill_radius = ((dimension[0] / 2))
+                pill_height = (dimension[2]) - (pill_radius * 2)
                 if pill_height <= 0:
                     pill_height = 0
 
@@ -408,28 +486,22 @@ def get_dimensions(mesh_a_matrix, mesh_a, mesh_b_matrix, mesh_b, custom_scale, v
             JmsDimensions.quat_j_b = float(quat[2])
             JmsDimensions.quat_k_b = float(quat[3])
             JmsDimensions.quat_w_b = float(quat[0])
-            JmsDimensions.pos_x_b = float(pos[0] * custom_scale)
-            JmsDimensions.pos_y_b = float(pos[1] * custom_scale)
-            JmsDimensions.pos_z_b = float(pos[2] * custom_scale)
+            JmsDimensions.pos_x_b = float(pos[0])
+            JmsDimensions.pos_y_b = float(pos[1])
+            JmsDimensions.pos_z_b = float(pos[2])
             JmsDimensions.scale_x_b = float(scale[0])
             JmsDimensions.scale_y_b = float(scale[1])
             JmsDimensions.scale_z_b = float(scale[2])
             if not is_bone:
-                JmsDimensions.dimension_x_b = float(dimension[0] * custom_scale)
-                JmsDimensions.dimension_y_b = float(dimension[1] * custom_scale)
-                JmsDimensions.dimension_z_b = float(dimension[2] * custom_scale)
+                JmsDimensions.dimension_x_b = float(dimension[0])
+                JmsDimensions.dimension_y_b = float(dimension[1])
+                JmsDimensions.dimension_z_b = float(dimension[2])
                 JmsDimensions.radius_b = float(pill_radius)
                 JmsDimensions.pill_z_b = float(pill_height)
 
     return object_dimensions
 
-def get_extension(extension_console,
-                  extension_ce,
-                  extension_h2,
-                  extension_h3,
-                  game_version,
-                  console
-                  ):
+def get_extension(extension_console, extension_ce, extension_h2, extension_h3, game_version, console):
 
     extension = None
     if console:
@@ -444,6 +516,7 @@ def get_extension(extension_console,
 
         elif game_version == 'halo3mcc':
             extension = extension_h3
+
     return extension
 
 def get_hierarchy(mesh):
@@ -466,7 +539,6 @@ def get_parent(armature, mesh, joined_list, default_parent):
     parent_object = None
     parent_index = default_parent
     parent = None
-
     if mesh:
         if armature:
             parent = mesh.parent_bone
@@ -510,6 +582,7 @@ def count_root_nodes(node_list):
     for node in node_list:
         if node.parent == None:
             root_node_count += 1
+
         elif not node.parent == None:
             if node.parent.name[0:1] == '!':
                 root_node_count += 1
@@ -529,7 +602,7 @@ def get_version_matrix_check(filetype):
 
     return matrix_version
 
-def gather_materials(game_version, material, material_list, export_type, region, permutation, lod):
+def gather_materials(game_version, material, material_list, export_type):
     assigned_materials_list = []
     if material is not None:
         if material not in assigned_materials_list:
@@ -558,21 +631,7 @@ def gather_materials(game_version, material, material_list, export_type, region,
 
     return material_list
 
-def set_ignore(mesh):
-    collection_list = mesh.users_collection
-    ignore = False
-    if mesh.hide_viewport or mesh.hide_get():
-        ignore = True
-
-    for collection in collection_list:
-        if not collection.name == 'Master Collection':
-            access_collection = bpy.data.collections[collection.name]
-            if access_collection.hide_viewport:
-                ignore = True
-
-    return ignore
-
-def get_face_material(game_version, original_geo, face):
+def get_face_material(original_geo, face):
     object_materials = len(original_geo.material_slots) - 1
     assigned_material = None
     assigned_material = -1
@@ -583,7 +642,7 @@ def get_face_material(game_version, original_geo, face):
 
     return assigned_material
 
-def get_material(game_version, original_geo, face, geometry, material_list, export_type, region, permutation):
+def get_material(game_version, original_geo, face, geometry, lod, region, permutation):
     object_materials = len(original_geo.material_slots) - 1
     assigned_material = None
     if game_version == 'haloce':
@@ -606,11 +665,7 @@ def get_material(game_version, original_geo, face, geometry, material_list, expo
         if len(original_geo.material_slots) != 0:
             if not face.material_index > object_materials:
                 if geometry.materials[face.material_index] is not None:
-                    if export_type == 'JMS':
-                        assigned_material = [original_geo.material_slots[face.material_index].material, original_geo.data.ass_jms.level_of_detail, region, permutation]
-
-                    elif export_type == 'ASS':
-                        assigned_material = original_geo.material_slots[face.material_index].material
+                    assigned_material = [original_geo.material_slots[face.material_index].material, lod, region, permutation]
 
     return assigned_material
 
@@ -670,6 +725,7 @@ class HaloAsset:
             p0 = float(next_p0)
             p1 = float(next_p1)
             p2 = float(next_p2)
+
         except ValueError:
             p0 = float(next_p0.rsplit('.', 1)[0])
             p1 = float(next_p1.rsplit('.', 1)[0])
@@ -787,13 +843,7 @@ def node_hierarchy_checksum(nodes, node, checksum = 0):
     # way, the order of siblings matters to the checksum.
     return rotr_32(checksum, 2)
 
-def get_filename(game_version,
-                 permutation_ce,
-                 level_of_detail_ce,
-                 folder_structure,
-                 model_type,
-                 jmi,
-                 filepath):
+def get_filename(game_version, permutation_ce, level_of_detail_ce, folder_structure, model_type, jmi, filepath):
 
     ce_settings = ''
     extension = '.JMS'
@@ -834,13 +884,7 @@ def get_filename(game_version,
 
     return filename
 
-def get_directory(game_version,
-                  model_type,
-                  folder_structure,
-                  asset_type,
-                  jmi,
-                  filepath):
-
+def get_directory(game_version, model_type, folder_structure, asset_type, jmi, filepath):
     directory = filepath.rsplit(os.sep, 1)[0]
     blend_filename = bpy.path.basename(bpy.context.blend_data.filepath)
 
@@ -894,150 +938,190 @@ def get_directory(game_version,
 
     return root_directory
 
-def count_steps(name, start, val):
-    real_pos = start
-    steps = 0
-    while real_pos < len(name) and real_pos > 0 and name[real_pos] != " ":
-        real_pos += val
-        steps += val
+def validate_halo_scene(game_version, version, blend_scene, object_list, jmi, jma, extension):
+    raise_error = None
+    h2_extension_list = ['JRMX', 'JMH']
+    node_count = len(blend_scene.node_list)
+    if jma:
+        if node_count == 0:
+            raise_error = SceneParseError("No nodes in scene. Add an armature or object mesh named frame.")
 
-    return steps
+    if count_root_nodes(blend_scene.node_list) >= 2 and not jmi:
+        raise_error = SceneParseError("More than one root node. Please remove or rename objects until you only have one root frame object.")
 
-def gather_symbols(used_symbols_list, processed_symbol_name):
-    symbol_name = "".join(processed_symbol_name)
-    symbol_list = ("%", "#", "?", "!", "@", "*", "$", "^", "-", "&", "=", ".", ";", ")", ">", "<", "|", "~", "(", "{", "}", "[")
-    for idx, char in enumerate(symbol_name): # loop through the characters in the name
-        if char in symbol_list: # Check if the character exists in the symbols list
-            symbol_name = symbol_name[:idx] + " " + symbol_name[idx + 1:]
-            if not char in used_symbols_list: # Check if it's already been appended
-                used_symbols_list += char
+    elif blend_scene.mesh_frame_count > 0 and blend_scene.armature_count > 0:
+        raise_error = SceneParseError("Using both armature and object mesh node setup. Choose one or the other.")
+
+    elif len(object_list) == 0:
+        raise_error = SceneParseError("No objects in scene.")
+
+    if game_version == 'haloce':
+        if jma:
+            if version >= 16393 and game_version == 'haloce':
+                raise_error = SceneParseError("This version is not supported for Halo CE. Choose from 16390-16392 if you wish to export for Halo CE.")
+
+            elif extension in h2_extension_list and game_version == 'haloce':
+                raise_error = SceneParseError("This extension is not used in Halo CE.")
 
         else:
-            if not char == " ": # If it isn't a whitespace then break cause we've hit the material name
-                break
+            if version >= 8201:
+                raise_error = SceneParseError("This version is not supported for Halo CE. Choose from 8197-8200 if you wish to export for Halo CE.")
 
-    return (used_symbols_list, symbol_name)
+            elif len(blend_scene.render_geometry_list + blend_scene.collision_geometry_list + blend_scene.marker_list) == 0:
+                raise_error = SceneParseError("No geometry in scene.")
 
-def gather_parameters(name):
-    processed_name = name
-    processed_parameters = []
-    for lm_idx, char in enumerate(name): # loop through the characters in the name
-        parameter = ""
-        if char == ":":
-            value_length = count_steps(name, lm_idx, 1)
-            parameter_length = count_steps(name, lm_idx, -1) * -1
-            for num in range(parameter_length + value_length):
-                parameter += processed_name[lm_idx - parameter_length + num]
-                index = lm_idx - parameter_length + num
-                processed_name = processed_name[:index] + " " + processed_name[index + 1:]
+        if node_count == 0:
+            raise_error = SceneParseError("No nodes in scene. Add an armature or object mesh named frame.")
 
-            processed_parameters.append(parameter)
+        elif node_count > 64:
+            raise_error = SceneParseError("This model has more nodes than Halo CE supports. Please limit your node count to 64 nodes")
 
-    return (processed_name, processed_parameters)
+    else:
+        if not jma:
+            if game_version == 'halo2'and version >= 8211:
+                raise_error = SceneParseError("This version is not supported for Halo 2. Choose from 8197-8210 if you wish to export for Halo 2.")
 
-def append_material_symbols(material, game_version):
-    name = material.name
-    processed_symbol_name = name
-    if material.ass_jms.is_bm and not game_version == 'halo3':
-        processed_lightmap_properties = gather_parameters(name)
-        processed_lightmap_name = processed_lightmap_properties[0]
-        processed_parameters = processed_lightmap_properties[1]
+            elif len(blend_scene.render_geometry_list + blend_scene.collision_geometry_list + blend_scene.marker_list + blend_scene.hinge_list + blend_scene.ragdoll_list + blend_scene.point_to_point_list + blend_scene.sphere_list + blend_scene.box_list + blend_scene.capsule_list + blend_scene.convex_shape_list + blend_scene.instance_xref_paths + blend_scene.car_wheel_list + blend_scene.prismatic_list + blend_scene.bounding_sphere_list + blend_scene.skylight_list) == 0:
+                raise_error = SceneParseError("No geometry in scene.")
 
-        symbol_properties = gather_symbols("", processed_lightmap_name)
-        symbol_properties = gather_symbols(symbol_properties[0], reversed(symbol_properties[1]))
-        used_symbol_list = symbol_properties[0]
-        processed_symbol_name = "".join(reversed(symbol_properties[1])).strip()
-        if game_version == 'haloce':
-            if material.ass_jms.two_sided or "%" in used_symbol_list:
-                processed_symbol_name += "%"
-            if material.ass_jms.transparent_1_sided or "#" in used_symbol_list:
-                processed_symbol_name += "#"
-            if material.ass_jms.render_only or "!" in used_symbol_list:
-                processed_symbol_name += "!"
-            if material.ass_jms.sphere_collision_only or "*" in used_symbol_list:
-                processed_symbol_name += "*"
-            if material.ass_jms.fog_plane or "$" in used_symbol_list:
-                processed_symbol_name += "$"
-            if material.ass_jms.ladder or "^" in used_symbol_list:
-                processed_symbol_name += "^"
-            if material.ass_jms.breakable or "-" in used_symbol_list:
-                processed_symbol_name += "-"
-            if material.ass_jms.ai_deafening or "&" in used_symbol_list:
-                processed_symbol_name += "&"
-            if material.ass_jms.collision_only or "@" in used_symbol_list:
-                processed_symbol_name += "@"
-            if material.ass_jms.portal_exact or "." in used_symbol_list:
-                processed_symbol_name += "."
+        if node_count > 255:
+            if game_version == 'halo2':
+                raise_error = SceneParseError("This model has more nodes than Halo 2 supports. Please limit your node count to 255 nodes")
 
-        elif game_version == 'halo2':
-            if material.ass_jms.two_sided or "%" in used_symbol_list:
-                processed_symbol_name += "%"
-            if material.ass_jms.transparent_1_sided or "#" in used_symbol_list:
-                processed_symbol_name += "#"
-            if material.ass_jms.transparent_2_sided or "?" in used_symbol_list:
-                processed_symbol_name += "?"
-            if material.ass_jms.render_only or "!" in used_symbol_list:
-                processed_symbol_name += "!"
-            if material.ass_jms.collision_only or "@" in used_symbol_list:
-                processed_symbol_name += "@"
-            if material.ass_jms.sphere_collision_only or "*" in used_symbol_list:
-                processed_symbol_name += "*"
-            if material.ass_jms.fog_plane or "$" in used_symbol_list:
-                processed_symbol_name += "$"
-            if material.ass_jms.ladder or "^" in used_symbol_list:
-                processed_symbol_name += "^"
-            if material.ass_jms.breakable or "-" in used_symbol_list:
-                processed_symbol_name += "-"
-            if material.ass_jms.ai_deafening or "&" in used_symbol_list:
-                processed_symbol_name += "&"
-            if material.ass_jms.no_shadow or "=" in used_symbol_list:
-                processed_symbol_name += "="
-            if material.ass_jms.shadow_only or "." in used_symbol_list:
-                processed_symbol_name += "."
-            if material.ass_jms.lightmap_only or ";" in used_symbol_list:
-                processed_symbol_name += ";"
-            if material.ass_jms.precise or ")" in used_symbol_list:
-                processed_symbol_name += ")"
-            if material.ass_jms.conveyor or ">" in used_symbol_list:
-                processed_symbol_name += ">"
-            if material.ass_jms.portal_1_way or "<" in used_symbol_list:
-                processed_symbol_name += "<"
-            if material.ass_jms.portal_door or "|" in used_symbol_list:
-                processed_symbol_name += "|"
-            if material.ass_jms.portal_vis_blocker or "~" in used_symbol_list:
-                processed_symbol_name += "~"
-            if material.ass_jms.dislike_photons or "(" in used_symbol_list:
-                processed_symbol_name += "("
-            if material.ass_jms.ignored_by_lightmaps or "{" in used_symbol_list:
-                processed_symbol_name += "{"
-            if material.ass_jms.blocks_sound or "}" in used_symbol_list:
-                processed_symbol_name += "}"
-            if material.ass_jms.decal_offset or "[" in used_symbol_list:
-                processed_symbol_name += "["
-            if material.ass_jms.lightmap_resolution_scale > 0.0:
-                processed_symbol_name += " lm:%s" % material.ass_jms.lightmap_resolution_scale
-            if material.ass_jms.lightmap_power_scale > 0.0:
-                processed_symbol_name += " lp:%s" % material.ass_jms.lightmap_power_scale
-            if material.ass_jms.lightmap_half_life > 0.0:
-                processed_symbol_name += " hl:%s" % material.ass_jms.lightmap_half_life
-            if material.ass_jms.lightmap_diffuse_scale > 0.0:
-                processed_symbol_name += " ds:%s" % material.ass_jms.lightmap_diffuse_scale
+            else:
+                raise_error = SceneParseError("This model has more nodes than Halo 3 supports. Please limit your node count to 255 nodes")
 
-            for parameter in processed_parameters:
-                split_parameter = parameter.split(':', 1)
-                if split_parameter[0].strip() == "lm" and not "lm" in processed_symbol_name:
-                    processed_symbol_name += " lm:%s" % split_parameter[1]
+    if raise_error:
+        raise raise_error
 
-                elif split_parameter[0].strip() == "lp" and not "lp" in processed_symbol_name:
-                    processed_symbol_name += " lp:%s" % split_parameter[1]
+def string_empty_check(string):
+    is_empty = False
+    if not string == None:
+        if len(string) == 0:
+            is_empty = True
+        elif string.isspace():
+            is_empty = True
 
-                elif split_parameter[0].strip() == "hl" and not "hl" in processed_symbol_name:
-                    processed_symbol_name += " hl:%s" % split_parameter[1]
+    return is_empty
 
-                elif split_parameter[0].strip() == "ds" and not "ds" in processed_symbol_name:
-                    processed_symbol_name += " ds:%s" % split_parameter[1]
+def material_definition_helper(triangle_material_index, mat):
+    lod = None
+    region = None
+    permutation = None
+    material_definition = ""
+    if not triangle_material_index == -1:
+        lod = mat.lod
+        region = mat.region
+        permutation = mat.permutation
+        if not lod == None:
+            material_definition += mat.lod
 
-    return processed_symbol_name
+        if not region == None and not string_empty_check(permutation):
+            if not string_empty_check(material_definition):
+                material_definition += " "
+
+            material_definition += permutation
+
+        if not permutation == None and not string_empty_check(region):
+            if not string_empty_check(material_definition):
+                material_definition += " "
+
+            material_definition += region
+
+    return material_definition
+
+def material_definition_parser(is_import, material_definition_items, default_region, default_permutation):
+    lod_list = ['l1', 'l2', 'l3', 'l4', 'l5', 'l6']
+    slot_index = None
+    lod = None
+    region = default_region
+    permutation = default_permutation
+    if is_import:
+        region = None
+        permutation = None
+
+    if len(material_definition_items) == 1:
+        item_0 = material_definition_items[0].lower()
+        if item_0.startswith("(") and item_0.endswith(')'):
+            slot_index = material_definition_items[0]
+
+        elif item_0 in lod_list:
+            lod = material_definition_items[0]
+
+        else:
+            permutation = material_definition_items[0]
+
+    elif len(material_definition_items) == 2:
+        item_0 = material_definition_items[0].lower()
+        item_1 = material_definition_items[1].lower()
+        if item_0.startswith("(") and item_0.endswith(')'):
+            slot_index = material_definition_items[0]
+
+        elif item_0 in lod_list:
+            lod = material_definition_items[0]
+
+        else:
+            permutation = material_definition_items[0]
+
+        if item_1.startswith("(") and item_1.endswith(')'):
+            slot_index = material_definition_items[1]
+
+        elif item_1 in lod_list:
+            lod = material_definition_items[1]
+
+        else:
+            if permutation == None:
+                permutation = material_definition_items[1]
+
+            else:
+                region = material_definition_items[1]
+
+    elif len(material_definition_items) == 3:
+        item_0 = material_definition_items[0].lower()
+        item_1 = material_definition_items[1].lower()
+        item_2 = material_definition_items[2].lower()
+        if item_0.startswith("(") and item_0.endswith(')'):
+            slot_index = material_definition_items[0]
+
+        elif item_0 in lod_list:
+            lod = material_definition_items[0]
+
+        else:
+            permutation = material_definition_items[0]
+
+        if item_1.startswith("(") and item_1.endswith(')'):
+            slot_index = material_definition_items[1]
+
+        elif item_1 in lod_list:
+            lod = material_definition_items[1]
+
+        else:
+            if permutation == None:
+                permutation = material_definition_items[1]
+
+            else:
+                region = material_definition_items[1]
+
+        if item_2.startswith("(") and item_2.endswith(')'):
+            slot_index = material_definition_items[2]
+
+        elif item_2 in lod_list:
+            lod = material_definition_items[2]
+
+        else:
+            if permutation == None:
+                permutation = material_definition_items[2]
+
+            else:
+                region = material_definition_items[2]
+
+    elif len(material_definition_items) == 4:
+        slot_index = material_definition_items[0]
+        lod = material_definition_items[1]
+        permutation = material_definition_items[2]
+        region = material_definition_items[3]
+
+    return slot_index, lod, permutation, region
 
 def run_code(code_string):
     def toolset_exec(code):

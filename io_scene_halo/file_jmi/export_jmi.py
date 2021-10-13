@@ -26,24 +26,22 @@
 
 import os
 import bpy
-import sys
-import traceback
 
-from io_scene_halo.file_jms import export_jms
-from io_scene_halo.global_functions import global_functions
+from ..file_jms import export_jms
+from ..global_functions import mesh_processing, global_functions
 
 class JMIScene(global_functions.HaloAsset):
-    def __init__(self, context, report, filepath):
+    def __init__(self, context):
         self.world_nodes = []
         self.children_sets = []
 
         global_functions.unhide_all_collections()
-        scene = bpy.context.scene
+        scene = context.scene
         object_list = list(scene.objects)
 
         for obj in object_list:
             if obj.name[0:1].lower() == '!':
-                global_functions.unhide_object(obj)
+                mesh_processing.unhide_object(obj)
                 self.world_nodes.append(obj)
 
         for node in self.world_nodes:
@@ -52,7 +50,7 @@ class JMIScene(global_functions.HaloAsset):
 def write_file(context, filepath, report, jmi_version, jmi_version_ce, jmi_version_h2, jmi_version_h3, apply_modifiers, triangulate_faces, folder_type, edge_split, use_edge_angle, use_edge_sharp, split_angle, clean_normalize_weights, scale_enum, scale_float, console, hidden_geo, export_render, export_collision, export_physics, game_version, encoding):
     version = global_functions.get_version(jmi_version, jmi_version_ce, jmi_version_h2, jmi_version_h3, game_version, console)
 
-    jmi_scene = JMIScene(context, report, filepath)
+    jmi_scene = JMIScene(context)
 
     filename = global_functions.get_filename(None, None, None, None, None, True, filepath)
     root_directory = global_functions.get_directory(None, None, None, folder_type, None, filepath)
@@ -83,7 +81,7 @@ def write_file(context, filepath, report, jmi_version, jmi_version_ce, jmi_versi
             file.write('\n%s' % (world_nodes[0].name.split('!', 1)[1]))
 
         file.write('\n')
-        
+
         file.close()
 
     for idx, world_nodes in enumerate(jmi_scene.children_sets):

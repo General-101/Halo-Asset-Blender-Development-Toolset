@@ -25,14 +25,12 @@
 # ##### END MIT LICENSE BLOCK #####
 
 import bpy
-import sys
-import traceback
 
 from os import path
 from enum import Flag, auto
-from io_scene_halo.file_jms import import_jms
-from mathutils import Vector, Quaternion, Matrix, Euler
-from io_scene_halo.global_functions import global_functions
+from mathutils import Matrix
+from ..file_jms import import_jms
+from ..global_functions import global_functions
 
 class JMAAsset(global_functions.HaloAsset):
     """
@@ -51,6 +49,7 @@ class JMAAsset(global_functions.HaloAsset):
             self.vector = vector
             self.rotation = rotation
             self.scale = scale
+
     class Node:
         def __init__(self, name, parent=None, child=None, sibling=None):
             self.name = name
@@ -58,6 +57,7 @@ class JMAAsset(global_functions.HaloAsset):
             self.child = child
             self.sibling = sibling
             self.visited = False
+
     class BipedControllerFrameType(Flag):
         DISABLE = 0
         DX = auto()
@@ -76,6 +76,7 @@ class JMAAsset(global_functions.HaloAsset):
         translation = self.next_vector()
         rotation = self.next_quaternion()
         scale = float(self.next())
+
         return JMAAsset.Transform(translation, rotation, scale)
 
     def __init__(self, filepath, game_version, report):
@@ -87,11 +88,14 @@ class JMAAsset(global_functions.HaloAsset):
         version_list = (16390,16391,16392,16393,16394,16395)
         if not self.version in version_list:
             raise global_functions.AssetParseError("Importer does not support this " + extension + " version")
+
         self.game_version = game_version
         if game_version == 'auto':
             self.game_version = global_functions.get_game_version(self.version, 'JMA')
+
         if self.version >= 16394:
             self.node_checksum = int(self.next())
+
         transform_count = int(self.next())
         self.frame_rate = float(self.next())
         actor_count = int(self.next())
@@ -104,6 +108,7 @@ class JMAAsset(global_functions.HaloAsset):
         node_count = int(self.next())
         if self.version < 16394:
             self.node_checksum = int(self.next())
+
         self.nodes = []
         self.transforms = []
         if self.version >= 16394:
@@ -111,15 +116,18 @@ class JMAAsset(global_functions.HaloAsset):
                 name = self.next()
                 parent = int(self.next())
                 self.nodes.append(JMAAsset.Node(name, parent=parent))
+
         elif self.version >= 16392:
             for _ in range(node_count):
                 name = self.next()
                 child = int(self.next())
                 sibling = int(self.next())
                 self.nodes.append(JMAAsset.Node(name, child=child, sibling=sibling))
+
         elif self.version == 16391:
             for _ in range(node_count):
               self.nodes.append(JMAAsset.Node(self.next()))
+
         else:
             self.node_count = node_count
 
@@ -139,8 +147,10 @@ class JMAAsset(global_functions.HaloAsset):
                 # different animation file types use the data differently
                 if extension == 'jma':
                     self.biped_controller_frame_type = JMAAsset.BipedControllerFrameType.JMA
+
                 elif extension == 'jmt':
                     self.biped_controller_frame_type = JMAAsset.BipedControllerFrameType.JMT
+
                 elif extension == 'jmrx':
                     self.biped_controller_frame_type = JMAAsset.BipedControllerFrameType.JMRX
 
@@ -157,29 +167,37 @@ class JMAAsset(global_functions.HaloAsset):
                 node = self.nodes[node_idx]
                 if node.parent == -1:
                     continue # this is a root node, nothing to update
+
                 if node.parent >= len(self.nodes) or node.parent == node_idx:
                     report({'WARNING'}, "Malformed node graph (bad parent index)")
                     self.broken_skeleton = True
                     break
+
                 parent_node = self.nodes[node.parent]
                 if parent_node.child:
                     node.sibling = parent_node.child
+
                 else:
                     node.sibling = -1
+
                 if node.sibling >= len(self.nodes):
                     report({'WARNING'}, "Malformed node graph (sibling index out of range)")
                     self.broken_skeleton = True
                     break
+
                 parent_node.child = node_idx
+
         elif self.version >= 16392:
             for node_idx in range(node_count):
                 node = self.nodes[node_idx]
                 if node.child == -1:
                     continue # no child nodes, nothing to update
+
                 if node.child >= len(self.nodes) or node.child == node_idx:
                     report({'WARNING'}, "Malformed node graph (bad child index)")
                     self.broken_skeleton = True
                     break
+
                 child_node = self.nodes[node.child]
                 while child_node != None:
                     child_node.parent = node_idx
@@ -187,13 +205,16 @@ class JMAAsset(global_functions.HaloAsset):
                         report({'WARNING'}, "Malformed node graph (circular reference)")
                         self.broken_skeleton = True
                         break
+
                     child_node.visited = True
                     if child_node.sibling >= len(self.nodes):
                         report({'WARNING'}, "Malformed node graph (sibling index out of range)")
                         self.broken_skeleton = True
                         break
+
                     if child_node.sibling != -1:
                         child_node = self.nodes[child_node.sibling]
+
                     else:
                         child_node = None
 
@@ -210,9 +231,9 @@ def load_file(context, filepath, report, fix_parents, game_version, jms_path_a, 
         jms_b_transform = True
         jms_b_file = import_jms.JMSAsset(bpy.path.abspath(jms_path_b), "auto")
 
-    collection = bpy.context.collection
-    scene = bpy.context.scene
-    view_layer = bpy.context.view_layer
+    collection = context.collection
+    scene = context.scene
+    view_layer = context.view_layer
     armature = None
     object_list = list(scene.objects)
 
@@ -227,6 +248,7 @@ def load_file(context, filepath, report, fix_parents, game_version, jms_path_a, 
                 if jma_file.version == 16390:
                     if len(obj.data.bones) == jma_file.node_count:
                         is_armature_good = True
+
                 else:
                     exist_count = 0
                     armature_bone_list = list(obj.data.bones)
@@ -235,6 +257,7 @@ def load_file(context, filepath, report, fix_parents, game_version, jms_path_a, 
                             if node.name == jma_node.name:
                                 scene_nodes.append(node.name)
                                 exist_count += 1
+
                     if exist_count == len(jma_file.nodes):
                         is_armature_good = True
 
@@ -300,17 +323,21 @@ def load_file(context, filepath, report, fix_parents, game_version, jms_path_a, 
                         for idx, jma_node in enumerate(jma_file.nodes):
                             if 'pelvis' in jma_node.name:
                                 pelvis = idx
+
                             if 'thigh' in jma_node.name:
                                 if thigh0 == None:
                                     thigh0 = idx
+
                                 else:
                                     thigh1 = idx
 
                             elif 'spine1' in jma_node.name:
                                 spine1 = idx
+
                             elif 'clavicle' in jma_node.name:
                                 if clavicle0 == None:
                                     clavicle0 = idx
+
                                 else:
                                     clavicle1 = idx
 
@@ -346,6 +373,7 @@ def load_file(context, filepath, report, fix_parents, game_version, jms_path_a, 
                         parent = jma_file.nodes[parent_idx].name
                         if 'thigh' in jma_node.name and not pelvis == None and not thigh0 == None and not thigh1 == None:
                             parent = jma_file.nodes[pelvis].name
+
                         elif 'clavicle' in jma_node.name and not spine1 == None and not clavicle0 == None and not clavicle1 == None:
                             parent = jma_file.nodes[spine1].name
 
@@ -359,6 +387,7 @@ def load_file(context, filepath, report, fix_parents, game_version, jms_path_a, 
                     secondary_rest_positions = None
                     if jms_a_transform:
                         primary_rest_positions = jms_a_nodes[0]
+
                     if jms_b_transform:
                         secondary_rest_positions = jms_b_nodes[0]
 
@@ -393,8 +422,10 @@ def load_file(context, filepath, report, fix_parents, game_version, jms_path_a, 
 
             if jma_file.biped_controller_frame_type & JMAAsset.BipedControllerFrameType.DX:
                 armature.location.x = controller_transform.vector[0]
+
             if jma_file.biped_controller_frame_type & JMAAsset.BipedControllerFrameType.DY:
                 armature.location.y = controller_transform.vector[1]
+
             if jma_file.biped_controller_frame_type & JMAAsset.BipedControllerFrameType.DZ:
                 armature.location.z = controller_transform.vector[2]
 
@@ -418,7 +449,7 @@ def load_file(context, filepath, report, fix_parents, game_version, jms_path_a, 
             pose_bone.matrix = transform_matrix
 
             view_layer.update()
-            
+
             pose_bone.keyframe_insert('location')
             pose_bone.keyframe_insert('rotation_quaternion')
             pose_bone.keyframe_insert('scale')

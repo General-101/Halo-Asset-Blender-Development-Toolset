@@ -540,7 +540,7 @@ class ExportJMA(Operator, ExportHelper):
         )
 
     def execute(self, context):
-        from io_scene_halo.file_jma import export_jma
+        from ..file_jma import export_jma
         keywords = [context,
                     self.filepath,
                     self.report,
@@ -750,7 +750,7 @@ class ImportJMA(Operator, ImportHelper):
         )
 
     def execute(self, context):
-        from io_scene_halo.file_jma import import_jma
+        from ..file_jma import import_jma
         if '--' in sys.argv:
             argv = sys.argv[sys.argv.index('--') + 1:]
             parser = argparse.ArgumentParser()

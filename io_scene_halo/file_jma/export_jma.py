@@ -26,10 +26,9 @@
 
 import os
 import bpy
-import sys
-import traceback
 
-from io_scene_halo.global_functions import global_functions
+from ..global_functions import mesh_processing
+from ..global_functions import global_functions
 
 class JMAScene(global_functions.HaloAsset):
     class Transform:
@@ -47,11 +46,10 @@ class JMAScene(global_functions.HaloAsset):
 
     def __init__(self, context, report, version, generate_checksum, game_version, extension, custom_scale, biped_controller):
         global_functions.unhide_all_collections()
-        scene = bpy.context.scene
-        view_layer = bpy.context.view_layer
+        scene = context.scene
+        view_layer = context.view_layer
         object_properties = []
         object_list = list(scene.objects)
-        object_count = len(object_list)
         node_list = []
         armature = []
         armature_count = 0
@@ -61,7 +59,7 @@ class JMAScene(global_functions.HaloAsset):
         for obj in object_list:
             object_properties.append([obj.hide_get(), obj.hide_viewport])
             if obj.type == 'ARMATURE':
-                global_functions.unhide_object(obj)
+                mesh_processing.unhide_object(obj)
                 armature_count += 1
                 armature = obj
                 view_layer.objects.active = obj
@@ -75,37 +73,40 @@ class JMAScene(global_functions.HaloAsset):
         self.transforms = []
         self.biped_controller_transforms = []
         self.nodes = []
-        root_node_count = global_functions.count_root_nodes(node_list)
-        h2_extension_list = ['JRMX', 'JMH']
+
         sorted_list = global_functions.sort_list(node_list, armature, game_version, version, False)
         joined_list = sorted_list[0]
         reversed_joined_list = sorted_list[1]
 
-        if self.node_count == 0:
-            raise global_functions.SceneParseError("No nodes in scene. Add an armature or object mesh named frame.")
+        blend_scene = global_functions.BlendScene(0,
+                                armature_count,
+                                0,
+                                0,
+                                0,
+                                0,
+                                armature,
+                                node_list,
+                                None,
+                                None,
+                                None,
+                                None,
+                                None,
+                                None,
+                                None,
+                                None,
+                                None,
+                                None,
+                                None,
+                                None,
+                                None,
+                                None,
+                                None,
+                                None,
+                                None,
+                                None,
+                                None)
 
-        elif armature_count >= 2:
-            raise global_functions.SceneParseError("More than one armature object. Please delete all but one.")
-
-        elif root_node_count >= 2:
-            raise global_functions.SceneParseError("More than one root node. Please remove or rename objects until you only have one root frame object.")
-
-        elif len(object_list) == 0:
-            raise global_functions.SceneParseError("No objects in scene.")
-
-        elif extension in h2_extension_list and game_version == 'haloce':
-            raise global_functions.SceneParseError("This extension is not used in Halo CE.")
-
-        elif version >= 16393 and game_version == 'haloce':
-            raise global_functions.SceneParseError("This version is not supported for Halo CE. Choose from 16390-16392 if you wish to export for Halo CE.")
-
-        elif game_version == 'haloce' and self.node_count > 64:
-            raise global_functions.SceneParseError("This model has more nodes than Halo CE supports. Please limit your node count to 64 nodes")
-
-        elif game_version == 'halo2' and self.node_count > 255:
-            raise global_functions.SceneParseError("This model has more nodes than Halo 2 supports. Please limit your node count to 255 nodes")
-        elif game_version == 'halo3' and self.node_count > 255:
-            raise global_functions.SceneParseError("This model has more nodes than Halo 3 supports. Please limit your node count to 255 nodes")
+        global_functions.validate_halo_scene(game_version, version, blend_scene, object_list, False, True, extension)
 
         self.node_checksum = 0
         for node in joined_list:
@@ -132,13 +133,13 @@ class JMAScene(global_functions.HaloAsset):
         for frame in range(first_frame, last_frame):
             transforms_for_frame = []
             for node in joined_list:
-                bpy.context.scene.frame_set(frame)
+                context.scene.frame_set(frame)
                 is_bone = False
                 if armature:
                     is_bone = True
 
                 bone_matrix = global_functions.get_matrix(node, node, True, armature, joined_list, True, version, 'JMA', 0)
-                mesh_dimensions = global_functions.get_dimensions(bone_matrix, node, None, None, custom_scale, version, None, False, is_bone, armature, 'JMA')
+                mesh_dimensions = global_functions.get_dimensions(bone_matrix, node, None, None, version, None, False, is_bone, armature, 'JMA')
                 vector = (mesh_dimensions.pos_x_a, mesh_dimensions.pos_y_a, mesh_dimensions.pos_z_a)
                 rotation = (mesh_dimensions.quat_i_a, mesh_dimensions.quat_j_a, mesh_dimensions.quat_k_a, mesh_dimensions.quat_w_a)
                 scale = (mesh_dimensions.scale_x_a)
@@ -150,9 +151,9 @@ class JMAScene(global_functions.HaloAsset):
         #H2 specific biped controller data bool value.
         if version > 16394 and biped_controller:
             for frame in range(self.transform_count):
-                bpy.context.scene.frame_set(frame)
+                context.scene.frame_set(frame)
                 armature_matrix = global_functions.get_matrix(armature, armature, True, None, joined_list, False, version, 'JMA', 0)
-                mesh_dimensions = global_functions.get_dimensions(armature_matrix, armature, None, None, custom_scale, version, None, False, False, armature, 'JMA')
+                mesh_dimensions = global_functions.get_dimensions(armature_matrix, armature, None, None, version, None, False, False, armature, 'JMA')
 
                 vector = (mesh_dimensions.pos_x_a, mesh_dimensions.pos_y_a, mesh_dimensions.pos_z_a)
                 rotation = (mesh_dimensions.quat_i_a, mesh_dimensions.quat_j_a, mesh_dimensions.quat_k_a, mesh_dimensions.quat_w_a)
@@ -229,12 +230,7 @@ def write_file(context,
 
     filename = os.path.basename(filepath)
 
-    root_directory = global_functions.get_directory(game_version,
-                                                    "animations",
-                                                    folder_structure,
-                                                    "0",
-                                                    False,
-                                                    filepath)
+    root_directory = global_functions.get_directory(game_version, "animations", folder_structure, "0", False, filepath)
 
     file = open(root_directory + os.sep + filename + global_functions.get_true_extension(filepath, extension, False), 'w', encoding=encoding)
 

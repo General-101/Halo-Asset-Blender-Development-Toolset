@@ -25,8 +25,6 @@
 # ##### END MIT LICENSE BLOCK #####
 
 import bpy
-import sys
-import argparse
 
 from bpy_extras.io_utils import ExportHelper
 
@@ -70,7 +68,20 @@ class Halo_PrefixPropertiesGroup(PropertyGroup):
         description = "Set the new prefix for selected objects. Undo if you mess up cause you won't be able to try again!"
         )
 
-class Perm_RegionPropertiesGroup(PropertyGroup):
+class Face_SetPropertiesGroup(PropertyGroup):
+    level_of_detail: EnumProperty(
+        name="LOD:",
+        description="What LOD to use for the object",
+        items=[ ('NONE', "NONE", "No level of detail set"),
+                ('L1', "L1", "Super Low"),
+                ('L2', "L2", "Low"),
+                ('L3', "L3", "Medium"),
+                ('L4', "L4", "High"),
+                ('L5', "L5", "Super High"),
+                ('L6', "L6", "Hollywood"),
+               ]
+        )
+
     permutation_string: StringProperty(
         name = "Permutation",
         default = "",
@@ -104,25 +115,25 @@ class Scale_ModelPropertiesGroup(PropertyGroup):
         name="Halo 1 Character Models:",
         description="What model to create",
         items=[
-                ('captain', "Captain", "Captain Keyes Model"),
-                ('cortana', "Cortana", "Cortana Model"),
-                ('crewman', "Crewman", "Crewman Model"),
-                ('spartan', "Cyborg", "Cyborg Model"),
-                ('elite', "Elite", "Elite Model"),
-                ('engineer', "Engineer", "Engineer Model"),
-                ('flood_captain', "Flood Captain", "Flood Captain Model"),
-                ('flood_infection', "Flood Infection", "Flood Infection Model"),
-                ('flood_carrier', "Flood Carrier", "Flood Carrier Model"),
-                ('floodcombat_elite', "Flood Combat Elite", "Flood Combat Elite Model"),
-                ('floodcombat_human', "Flood Combat Human", "Flood Combat Human Model"),
-                ('grunt', "Grunt", "Grunt Model"),
-                ('hunter', "Hunter", "Hunter Model"),
-                ('jackal', "Jackal", "Jackal Model"),
-                ('marine', "Marine", "Marine Model"),
-                ('marine_armored', "Marine Armored", "Marine Armored Model"),
-                ('monitor', "Monitor", "Monitor Model"),
-                ('pilot', "Pilot", "Pilot Model"),
-                ('sentinel', "Sentinel", "Sentinel Model"),
+                ('0', "Captain", "Captain Keyes Model"),
+                ('1', "Cortana", "Cortana Model"),
+                ('2', "Crewman", "Crewman Model"),
+                ('3', "Cyborg", "Cyborg Model"),
+                ('4', "Elite", "Elite Model"),
+                ('5', "Engineer", "Engineer Model"),
+                ('6', "Flood Captain", "Flood Captain Model"),
+                ('7', "Flood Carrier", "Flood Carrier Model"),
+                ('8', "Flood Combat Elite", "Flood Combat Elite Model"),
+                ('9', "Flood Combat Human", "Flood Combat Human Model"),
+                ('10', "Flood Infection", "Flood Infection Model"),
+                ('11', "Grunt", "Grunt Model"),
+                ('12', "Hunter", "Hunter Model"),
+                ('13', "Jackal", "Jackal Model"),
+                ('14', "Marine", "Marine Model"),
+                ('15', "Marine Armored", "Marine Armored Model"),
+                ('16', "Monitor", "Monitor Model"),
+                ('17', "Pilot", "Pilot Model"),
+                ('18', "Sentinel", "Sentinel Model"),
                ]
         )
 
@@ -130,18 +141,135 @@ class Scale_ModelPropertiesGroup(PropertyGroup):
         name="Halo 1 Vehicle Models:",
         description="What model to create",
         items=[
-                ('banshee', "Banshee", "Banshee Model"),
-                ('c_gun_turret', "Covenant Gun Turret", "Covenant Gun Turret Model"),
-                ('c_dropship', "Covenant Dropship", "Covenant Dropship Model"),
-                ('fighterbomber', "Fighter Bomber", "Fighter Bomber Model"),
-                ('ghost', "Ghost", "Ghost Model"),
-                ('lifepod', "Lifepod", "Lifepod Model"),
-                ('lifepod_entry', "Lifepod Entry", "Lifepod Entry Model"),
-                ('pelican', "Pelican", "Pelican Model"),
-                ('rwarthog', "Rocket Warthog", "Rocket Warthog Model"),
-                ('scorpion', "Scorpion", "Scorpion Model"),
-                ('warthog', "Warthog", "Warthog Model"),
-                ('wraith', "Wraith", "Wraith Model"),
+                ('19', "Banshee", "Banshee Model"),
+                ('20', "Covenant Gun Turret", "Covenant Gun Turret Model"),
+                ('21', "Covenant Dropship", "Covenant Dropship Model"),
+                ('22', "Fighter Bomber", "Fighter Bomber Model"),
+                ('23', "Ghost", "Ghost Model"),
+                ('24', "Lifepod", "Lifepod Model"),
+                ('25', "Lifepod Entry", "Lifepod Entry Model"),
+                ('26', "Pelican", "Pelican Model"),
+                ('27', "Rocket Warthog", "Rocket Warthog Model"),
+                ('28', "Scorpion", "Scorpion Model"),
+                ('29', "Warthog", "Warthog Model"),
+                ('30', "Wraith", "Wraith Model"),
+               ]
+        )
+
+    halo_two_scale_model_char: EnumProperty(
+        name="Halo 2 Character Models:",
+        description="What model to create",
+        items=[
+                ('0', "Arbiter", "Arbiter Model"),
+                ('1', "Brute", "Brute Model"),
+                ('2', "Bugger", "Bugger Model"),
+                ('3', "Cortana", "Cortana Model"),
+                ('4', "Elite", "Elite Model"),
+                ('5', "Elite Heretic", "Elite Heretic Model"),
+                ('6', "Elite Ranger", "Elite Ranger Model"),
+                ('7', "Flood Carrier", "Flood Carrier Model"),
+                ('8', "Flood Combat Elite", "Flood Combat Elite Model"),
+                ('9', "Flood Combat Human", "Flood Combat Human Model"),
+                ('10', "Flood Infection", "Flood Infection Model"),
+                ('11', "Flood Juggernaut", "Flood Juggernaut Model"),
+                ('12', "Gravemind", "Gravemind Model"),
+                ('13', "Grunt", "Grunt Model"),
+                ('14', "Grunt Heretic", "Grunt Heretic Model"),
+                ('15', "Hunter", "Hunter Model"),
+                ('16', "Jackal", "Jackal Model"),
+                ('17', "Lord Hood", "Lord Hood Model"),
+                ('18', "Master Chief", "Master Chief Model"),
+                ('19', "Marine", "Marine Model"),
+                ('20', "Marine ODST", "Marine ODST Model"),
+                ('21', "Miranda", "Miranda Model"),
+                ('22', "Monitor", "Monitor Model"),
+                ('23', "Prophet Mercy", "Prophet Mercy Model"),
+                ('24', "Prophet Minor", "Prophet Minor Model"),
+                ('25', "Prophet Regret", "Prophet Regret Model"),
+                ('26', "Prophet Truth", "Prophet Truth Model"),
+                ('27', "Sentinel Aggressor", "Sentinel Aggressor Model"),
+                ('28', "Sentinel Constructor", "Sentinel Constructor Model"),
+                ('29', "Sentinel Enforcer", "Sentinel Enforcer Model"),
+               ]
+        )
+
+    halo_two_scale_model_vehi: EnumProperty(
+        name="Halo 2 Vehicle Models:",
+        description="What model to create",
+        items=[
+                ('30', "Banshee", "Banshee Model"),
+                ('31', "Covenant AP Turret", "Covenant AP Turret Model"),
+                ('32', "Falcon", "Falcon Model"),
+                ('33', "Ghost", "Ghost Model"),
+                ('34', "Gravity Throne", "Gravity Throne Model"),
+                ('35', "Human AP Turret", "Human AP Turret Model"),
+                ('36', "Insertion Pod", "Insertion Pod Model"),
+                ('37', "Longsword", "Longsword Model"),
+                ('38', "Pelican", "Pelican Model"),
+                ('39', "Phantom", "Phantom Model"),
+                ('40', "Scorpion", "Scorpion Model"),
+                ('41', "Shadow", "Shadow Model"),
+                ('42', "Spectre", "Spectre Model"),
+                ('43', "Warthog", "Warthog Model"),
+                ('44', "Wraith", "Wraith Model"),
+               ]
+        )
+
+    halo_three_scale_model_char: EnumProperty(
+        name="Halo 3 Character Models:",
+        description="What model to create",
+        items=[
+                ('0', "Arbiter", "Arbiter Model"),
+                ('1', "Brute", "Brute Model"),
+                ('2', "Bugger", "Bugger Model"),
+                ('3', "Cortana", "Cortana Model"),
+                ('4', "Elite", "Elite Model"),
+                ('5', "Flood Carrier", "Flood Carrier Model"),
+                ('6', "Flood Combat Brute", "Flood Combat Brute Model"),
+                ('7', "Flood Combat Elite", "Flood Combat Elite Model"),
+                ('8', "Flood Combat Human", "Flood Combat Human Model"),
+                ('9', "Flood Infection", "Flood Infection Model"),
+                ('10', "Flood Ranged", "Flood Ranged Model"),
+                ('11', "Flood Stalker", "Flood Stalker Model"),
+                ('12', "Flood Tank", "Flood Tank Model"),
+                ('13', "Grunt", "Grunt Model"),
+                ('14', "Hunter", "Hunter Model"),
+                ('15', "Jackal", "Jackal Model"),
+                ('16', "Lord Hood", "Lord Hood Model"),
+                ('17', "Master Chief", "Master Chief Model"),
+                ('18', "Marine", "Marine Model"),
+                ('19', "Marine ODST", "Marine ODST Model"),
+                ('20', "Miranda", "Miranda Model"),
+                ('21', "Monitor", "Monitor Model"),
+                ('22', "Prophet Truth", "Prophet Truth Model"),
+                ('23', "Sentinel Aggressor", "Sentinel Aggressor Model"),
+                ('24', "Sentinel Constructor", "Sentinel Constructor Model"),
+                ('25', "Worker", "Worker Model"),
+               ]
+        )
+
+    halo_three_scale_model_vehi: EnumProperty(
+        name="Halo 3 Vehicle Models:",
+        description="What model to create",
+        items=[
+                ('26', "Banshee", "Banshee Model"),
+                ('27', "Chopper", "Chopper Model"),
+                ('28', "Covenant Capital Ship", "Covenant Capital Ship Model"),
+                ('29', "Covenant Cruiser", "Covenant Cruiser Model"),
+                ('30', "Flood Cruiser", "Flood Cruiser Model"),
+                ('31', "Ghost", "Ghost Model"),
+                ('32', "Gravity Throne", "Gravity Throne Model"),
+                ('33', "Hornet", "Hornet Model"),
+                ('34', "Insertion Pod", "Insertion Pod Model"),
+                ('35', "Longsword", "Longsword Model"),
+                ('36', "Prowler", "Prowler Model"),
+                ('37', "Mongoose", "Mongoose Model"),
+                ('38', "Pelican", "Pelican Model"),
+                ('39', "Phantom", "Phantom Model"),
+                ('40', "Scorpion", "Scorpion Model"),
+                ('41', "Shade", "Shade Model"),
+                ('42', "Warthog", "Warthog Model"),
+                ('43', "Wraith", "Wraith Model"),
                ]
         )
 
@@ -353,7 +481,7 @@ class Halo_Tools_Helper(Panel):
         scene_halo_lightmapper = scene.halo_lightmapper
         scene_halo_prefix = scene.halo_prefix
         scene_scale_model = scene.scale_model
-        scene_perm_region = scene.set_perm_region
+        scene_halo_face_set = scene.halo_face_set
 
         layout = self.layout
         row = layout.row()
@@ -410,24 +538,44 @@ class Halo_Tools_Helper(Panel):
         row.prop(scene_scale_model, "unit_type", text="")
         row = col.row()
         row.label(text='Model:')
-        if scene_scale_model.unit_type == "character":
-            row.prop(scene_scale_model, "halo_one_scale_model_char", text="")
+        if scene_scale_model.game_version == "haloce":
+            if scene_scale_model.unit_type == "character":
+                row.prop(scene_scale_model, "halo_one_scale_model_char", text="")
+
+            else:
+                row.prop(scene_scale_model, "halo_one_scale_model_vehi", text="")
+
+        elif scene_scale_model.game_version == "halo2":
+            if scene_scale_model.unit_type == "character":
+                row.prop(scene_scale_model, "halo_two_scale_model_char", text="")
+
+            else:
+                row.prop(scene_scale_model, "halo_two_scale_model_vehi", text="")
+
         else:
-            row.prop(scene_scale_model, "halo_one_scale_model_vehi", text="")
+            if scene_scale_model.unit_type == "character":
+                row.prop(scene_scale_model, "halo_three_scale_model_char", text="")
+
+            else:
+                row.prop(scene_scale_model, "halo_three_scale_model_vehi", text="")
+
         row = col.row()
         row.operator("halo_bulk.scale_model", text="Generate Scale Model")
 
         box = layout.box()
-        box.label(text="Permutation Region Helper:")
+        box.label(text="Material Definition Helper:")
         col = box.column(align=True)
         row = col.row()
+        row.label(text='LOD:')
+        row.prop(scene_halo_face_set, "level_of_detail", text='')
+        row = col.row()
         row.label(text='Permutation:')
-        row.prop(scene_perm_region, "permutation_string", text='')
+        row.prop(scene_halo_face_set, "permutation_string", text='')
         row = col.row()
         row.label(text='Region:')
-        row.prop(scene_perm_region, "region_string", text='')
+        row.prop(scene_halo_face_set, "region_string", text='')
         row = col.row()
-        row.operator("halo_bulk.perm_region_set", text="Generate Facemap")
+        row.operator("halo_bulk.face_set", text="Generate Facemap")
 
 class Halo_Sky_Tools_Helper(Panel):
     """Tools to help automate Halo workflow"""
@@ -643,7 +791,7 @@ class Bulk_Lightmap_Images(Operator):
     bl_options = {"REGISTER", "UNDO"}
 
     def execute(self, context):
-        from io_scene_halo.misc import lightmapper_prep
+        from ..misc import lightmapper_prep
         scene = context.scene
         scene_halo_lightmapper = scene.halo_lightmapper
         return global_functions.run_code("lightmapper_prep.lightmap_bulk(context, scene_halo_lightmapper.res_x, scene_halo_lightmapper.res_y)")
@@ -655,7 +803,7 @@ class Bulk_Rename_Bones(Operator):
     bl_options = {"REGISTER", "UNDO"}
 
     def execute(self, context):
-        from io_scene_halo.misc import rename_bones
+        from ..misc import rename_bones
         return global_functions.run_code("rename_bones.rename_bones()")
 
 class Bulk_Rename_Prefix(Operator):
@@ -665,7 +813,7 @@ class Bulk_Rename_Prefix(Operator):
     bl_options = {"REGISTER", "UNDO"}
 
     def execute(self, context):
-        from io_scene_halo.misc import rename_prefix
+        from ..misc import rename_prefix
         scene = context.scene
         scene_halo_prefix = scene.halo_prefix
         return global_functions.run_code("rename_prefix.rename_prefix(scene_halo_prefix.prefix_string)")
@@ -677,7 +825,7 @@ class Bulk_Rotate_Bones(Operator):
     bl_options = {"REGISTER", "UNDO"}
 
     def execute(self, context):
-        from io_scene_halo.misc import rotate_bones
+        from ..misc import rotate_bones
         return global_functions.run_code("rotate_bones.rotate_bones()")
 
 class Bulk_Reset_Bones(Operator):
@@ -687,7 +835,7 @@ class Bulk_Reset_Bones(Operator):
     bl_options = {"REGISTER", "UNDO"}
 
     def execute(self, context):
-        from io_scene_halo.misc import rotate_bones
+        from ..misc import rotate_bones
         return global_functions.run_code("rotate_bones.reset_bones()")
 
 class Cull_Materials(Operator):
@@ -697,7 +845,7 @@ class Cull_Materials(Operator):
     bl_options = {"REGISTER", "UNDO"}
 
     def execute(self, context):
-        from io_scene_halo.misc import cull_materials
+        from ..misc import cull_materials
         return global_functions.run_code("cull_materials.cull_materials()")
 
 class Scale_Model(Operator):
@@ -707,10 +855,33 @@ class Scale_Model(Operator):
     bl_options = {"REGISTER", "UNDO"}
 
     def execute(self, context):
-        from io_scene_halo.misc import scale_models
+        from ..misc import scale_models
         scene = context.scene
         scene_scale_model = scene.scale_model
-        return global_functions.run_code("scale_models.create_model(scene_scale_model.game_version, scene_scale_model.unit_type, scene_scale_model.halo_one_scale_model_char, scene_scale_model.halo_one_scale_model_vehi)")
+        halo_1_unit_index = 0
+        halo_2_unit_index = 0
+        halo_3_unit_index = 0
+
+        if scene_scale_model.game_version == "haloce":
+            if scene_scale_model.unit_type == "character":
+                halo_1_unit_index = scene_scale_model.halo_one_scale_model_char
+            else:
+                halo_1_unit_index = scene_scale_model.halo_one_scale_model_vehi
+
+
+        elif scene_scale_model.game_version == "halo2":
+            if scene_scale_model.unit_type == "character":
+                halo_2_unit_index = scene_scale_model.halo_two_scale_model_char
+            else:
+                halo_2_unit_index = scene_scale_model.halo_two_scale_model_vehi
+
+        elif scene_scale_model.game_version == "halo3":
+            if scene_scale_model.unit_type == "character":
+                halo_3_unit_index = scene_scale_model.halo_three_scale_model_char
+            else:
+                halo_3_unit_index = scene_scale_model.halo_three_scale_model_vehi
+
+        return global_functions.run_code("scale_models.create_model(context, scene_scale_model.game_version, halo_1_unit_index, halo_2_unit_index, halo_3_unit_index)")
 
 class GenerateHemisphere(Operator):
     """Generates a hemisphere shaped set of skylights for Halo 3 sky models"""
@@ -719,7 +890,7 @@ class GenerateHemisphere(Operator):
     bl_options = {"REGISTER", "UNDO"}
 
     def execute(self, context):
-        from io_scene_halo.misc import generate_hemisphere
+        from ..misc import generate_hemisphere
         scene = context.scene
         scene_halo_sky = scene.halo_sky
         return global_functions.run_code("generate_hemisphere.generate_hemisphere(self.report, scene_halo_sky.longitude_slices, scene_halo_sky.lattitude_slices, scene_halo_sky.dome_radius, scene_halo_sky.horizontal_fov, scene_halo_sky.vertical_fov, scene_halo_sky.sky_type, scene_halo_sky.cie_sky_number, scene_halo_sky.hdr_map, scene_halo_sky.haze_height, scene_halo_sky.luminance_only, scene_halo_sky.dome_intensity, scene_halo_sky.override_zenith_color, scene_halo_sky.zenith_color, scene_halo_sky.override_horizon_color, scene_halo_sky.horizon_color, scene_halo_sky.sun_altittude, scene_halo_sky.sun_heading, scene_halo_sky.sun_intensity, scene_halo_sky.sun_disc_size, scene_halo_sky.windowing, scene_halo_sky.override_sun_color, scene_halo_sky.sun_color, scene_halo_sky.air_cleaness, scene_halo_sky.exposure, scene_halo_sky.clamp_colors)")
@@ -731,22 +902,22 @@ class ExportLightmap(Operator, ExportHelper):
     filename_ext = '.LUV'
 
     def execute(self, context):
-        from io_scene_halo.misc import export_lightmap
+        from ..misc import export_lightmap
 
         return global_functions.run_code("export_lightmap.write_file(context, self.filepath, self.report)")
 
-class PermRegionSet(Operator):
+class FaceSet(Operator):
     """Create a facemap with a permutation and a region"""
-    bl_idname = "halo_bulk.perm_region_set"
+    bl_idname = "halo_bulk.face_set"
     bl_label = "Create a Facemap"
     bl_options = {"REGISTER", "UNDO"}
 
     def execute(self, context):
         scene = context.scene
-        scene_perm_region = scene.set_perm_region
-        from io_scene_halo.misc import region_perm_prep
+        scene_face_set = scene.halo_face_set
+        from ..misc import face_set
 
-        return global_functions.run_code("region_perm_prep.create_facemap(scene_perm_region.permutation_string, scene_perm_region.region_string)")
+        return global_functions.run_code("face_set.create_facemap(scene_face_set.level_of_detail, scene_face_set.permutation_string, scene_face_set.region_string)")
 
 def menu_func_export(self, context):
     self.layout.operator(ExportLightmap.bl_idname, text="Halo Lightmap UV (.luv)")
@@ -761,7 +932,7 @@ classeshalo = (
     Cull_Materials,
     Scale_Model,
     GenerateHemisphere,
-    PermRegionSet,
+    FaceSet,
     Halo_Tools_Helper,
     Halo_Sky_Tools_Helper,
     Halo_Sky_Dome,
@@ -775,7 +946,7 @@ classeshalo = (
     Scale_ModelPropertiesGroup,
     SkyPropertiesGroup,
     Halo_PrefixPropertiesGroup,
-    Perm_RegionPropertiesGroup
+    Face_SetPropertiesGroup
 )
 
 def register():
@@ -787,15 +958,15 @@ def register():
     bpy.types.Scene.halo_prefix = PointerProperty(type=Halo_PrefixPropertiesGroup, name="Halo Prefix Helper", description="Set properties for node prefixes")
     bpy.types.Scene.scale_model = PointerProperty(type=Scale_ModelPropertiesGroup, name="Halo Scale Model Helper", description="Create meshes for scale")
     bpy.types.Scene.halo_sky = PointerProperty(type=SkyPropertiesGroup, name="Sky Helper", description="Generate a sky for Halo 3")
-    bpy.types.Scene.set_perm_region = PointerProperty(type=Perm_RegionPropertiesGroup, name="Halo Permutation Region Helper", description="Creates a facemap with the exact name we need")
+    bpy.types.Scene.halo_face_set = PointerProperty(type=Face_SetPropertiesGroup, name="Halo Face Set Helper", description="Creates a facemap with the exact name we need")
 
 def unregister():
     bpy.types.TOPBAR_MT_file_export.remove(menu_func_export)
     del bpy.types.Scene.halo_lightmapper
     del bpy.types.Scene.halo_prefix
+    del bpy.types.Scene.scale_model
     del bpy.types.Scene.halo_sky
-    del bpy.types.Scene.sun_strength
-    del bpy.types.Scene.set_perm_region
+    del bpy.types.Scene.halo_face_set
     for clshalo in classeshalo:
         bpy.utils.unregister_class(clshalo)
 

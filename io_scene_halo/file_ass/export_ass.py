@@ -26,16 +26,15 @@
 
 import os
 import bpy
-import sys
 import socket
-import traceback
 
 from decimal import *
 from math import degrees
 from getpass import getuser
-from io_scene_halo.global_functions import global_functions
+from ..global_functions import mesh_processing
+from ..global_functions import global_functions
 
-def get_material_strings(material):
+def get_material_strings(material, version):
     material_strings = []
     bm_flags = "BM_FLAGS "
     bm_lmres = "BM_LMRES "
@@ -71,12 +70,13 @@ def get_material_strings(material):
     bm_lmres += '%0.10f ' % material.ass_jms.two_sided_transparent_tint[0]
     bm_lmres += '%0.10f ' % material.ass_jms.two_sided_transparent_tint[1]
     bm_lmres += '%0.10f ' % material.ass_jms.two_sided_transparent_tint[2]
-    bm_lmres += '%s ' % int(material.ass_jms.override_lightmap_transparency)
-    bm_lmres += '%0.10f ' % material.ass_jms.additive_transparency[0]
-    bm_lmres += '%0.10f ' % material.ass_jms.additive_transparency[1]
-    bm_lmres += '%0.10f ' % material.ass_jms.additive_transparency[2]
-    bm_lmres += '%s ' % int(material.ass_jms.use_shader_gel)
-    bm_lmres += '%s' % int(material.ass_jms.ignore_default_res_scale)
+    if version >= 5:
+        bm_lmres += '%s ' % int(material.ass_jms.override_lightmap_transparency)
+        bm_lmres += '%0.10f ' % material.ass_jms.additive_transparency[0]
+        bm_lmres += '%0.10f ' % material.ass_jms.additive_transparency[1]
+        bm_lmres += '%0.10f ' % material.ass_jms.additive_transparency[2]
+        bm_lmres += '%s ' % int(material.ass_jms.use_shader_gel)
+        bm_lmres += '%s' % int(material.ass_jms.ignore_default_res_scale)
 
     bm_lighting_basic += '%0.10f ' % material.ass_jms.power
     bm_lighting_basic += '%0.10f ' % material.ass_jms.color[0]
@@ -84,7 +84,8 @@ def get_material_strings(material):
     bm_lighting_basic += '%0.10f ' % material.ass_jms.color[2]
     bm_lighting_basic += '%0.10f ' % material.ass_jms.quality
     bm_lighting_basic += '%s ' % int(material.ass_jms.power_per_unit_area)
-    bm_lighting_basic += '%0.10f' % material.ass_jms.emissive_focus
+    if version >= 5:
+        bm_lighting_basic += '%0.10f' % material.ass_jms.emissive_focus
 
     bm_lighting_atten += '%s ' % int(material.ass_jms.attenuation_enabled)
     bm_lighting_atten += '%0.10f ' % material.ass_jms.falloff_distance
@@ -117,14 +118,13 @@ class ASSScene(global_functions.HaloAsset):
             self.scale = scale
 
     class Material:
-        def __init__(self,
-                     name,
-                     effect,
-                     strings
-                     ):
+        def __init__(self, name, lod=None, permutation=None, region=None, group="", lightmap=[]):
             self.name = name
-            self.effect = effect
-            self.strings = strings
+            self.lod = lod
+            self.permutation = permutation
+            self.region = region
+            self.group = group
+            self.lightmap = lightmap
 
     class Object:
         def __init__(self,
@@ -188,27 +188,30 @@ class ASSScene(global_functions.HaloAsset):
         def __init__(self,
                      node_influence_count=0,
                      node_set=None,
+                     region=-1,
                      translation=None,
                      normal=None,
-                     uv_set=None,
-                     color=None
+                     color=None,
+                     uv_set=None
                      ):
 
             self.node_influence_count = node_influence_count
             self.node_set = node_set
+            self.region = region
             self.translation = translation
             self.normal = normal
-            self.uv_set = uv_set
             self.color = color
+            self.uv_set = uv_set
 
     class Triangle:
         def __init__(self,
+                     region=-1,
                      material_index=-1,
                      v0=-1,
                      v1=-1,
-                     v2=-1
-                     ):
+                     v2=-1):
 
+            self.region = region
             self.material_index = material_index
             self.v0 = v0
             self.v1 = v1
@@ -233,168 +236,147 @@ class ASSScene(global_functions.HaloAsset):
             self.local_transform = local_transform
             self.pivot_transform = pivot_transform
 
-    def __init__(self,
-                 context,
-                 report,
-                 version,
-                 game_version,
-                 apply_modifiers,
-                 triangulate_faces,
-                 edge_split,
-                 use_edge_angle,
-                 use_edge_sharp,
-                 split_angle,
-                 clean_normalize_weights,
-                 hidden_geo,
-                 custom_scale
-                 ):
-
+    def __init__(self, context, version, game_version, apply_modifiers, triangulate_faces, edge_split, use_edge_angle, use_edge_sharp, split_angle, clean_normalize_weights, hidden_geo, custom_scale):
         global_functions.unhide_all_collections()
-        view_layer = bpy.context.view_layer
+
+        default_region = mesh_processing.get_default_region_permutation_name(game_version)
+        default_permutation = mesh_processing.get_default_region_permutation_name(game_version)
+
+        limit_value = 0.001
+
+        region_list = []
+        permutation_list = []
+
         object_list = list(bpy.context.scene.objects)
+
+        edge_split = global_functions.EdgeSplit(edge_split, use_edge_angle, split_angle, use_edge_sharp)
+
         self.materials = []
         self.objects = []
         self.instances = []
         material_list = []
-        armature = []
+        armature = None
         geometry_list = []
-        original_geometry_list = []
-        unique_instance_geometry_list = []
-        unique_instance_geometry_list_2 = []
+        linked_object_list = []
+        linked_instance_list = []
+        instance_list = []
         object_properties = []
         object_count = 0
+
+        for obj in object_list:
+            if obj.type== 'MESH':
+                if clean_normalize_weights:
+                    mesh_processing.vertex_group_clean_normalize(context, obj, limit_value)
+
+                if apply_modifiers:
+                    mesh_processing.add_modifier(context, obj, triangulate_faces, edge_split)
+
+        depsgraph = context.evaluated_depsgraph_get()
         for obj in object_list:
             object_properties.append([obj.hide_get(), obj.hide_viewport])
             if hidden_geo:
-                global_functions.unhide_object(obj)
-
-            if obj.type == 'MESH':
-                if global_functions.set_ignore(obj) == False or hidden_geo:
-                    if clean_normalize_weights:
-                        if len(obj.vertex_groups) > 0:
-                            view_layer.objects.active = obj
-                            bpy.ops.object.mode_set(mode = 'EDIT')
-                            bpy.ops.mesh.select_all(action='SELECT')
-                            bpy.ops.object.vertex_group_clean(group_select_mode='ALL', limit=0.0)
-                            bpy.ops.object.vertex_group_normalize_all()
-                            bpy.ops.object.mode_set(mode = 'OBJECT')
-
-                modifier_list = []
-                if apply_modifiers:
-                    for modifier in obj.modifiers:
-                        modifier.show_render = True
-                        modifier.show_viewport = True
-                        modifier.show_in_editmode = True
-                        modifier_list.append(modifier.type)
-
-                if triangulate_faces:
-                    if not 'TRIANGULATE' in modifier_list:
-                        obj.modifiers.new("Triangulate", type='TRIANGULATE')
-
-                if edge_split:
-                    if not 'EDGE_SPLIT' in modifier_list:
-                        edge_split = obj.modifiers.new("EdgeSplit", type='EDGE_SPLIT')
-                        edge_split.use_edge_angle = use_edge_angle
-                        edge_split.split_angle = split_angle
-                        edge_split.use_edge_sharp = use_edge_sharp
-                    else:
-                        modifier_idx = modifier_list.index('EDGE_SPLIT')
-                        obj.modifiers[modifier_idx].use_edge_angle = use_edge_angle
-                        obj.modifiers[modifier_idx].split_angle = split_angle
-                        obj.modifiers[modifier_idx].use_edge_sharp = use_edge_sharp
-
-        depsgraph = context.evaluated_depsgraph_get()
+                mesh_processing.unhide_object(obj)
 
         for obj in object_list:
             if obj.type == 'ARMATURE':
-                if global_functions.set_ignore(obj) == False or hidden_geo:
+                if mesh_processing.set_ignore(obj) == False or hidden_geo:
                     for bone in obj.data.bones:
-                        if not bone.name in unique_instance_geometry_list:
-                            unique_instance_geometry_list.append(bone.name)
+                        instance_list.append(bone)
+                        if not bone.name in linked_object_list:
+                            linked_object_list.append(bone.name)
 
-                        geometry_list.append((bone, 'BONE', bone.name, bone.name))
-                        original_geometry_list.append(bone)
+                        geometry_list.append((bone, bone, 'BONE'))
                         object_count += 1
 
             elif obj.type == 'LIGHT' and version >= 3:
-                if global_functions.set_ignore(obj) == False or hidden_geo:
-                    if not obj.data.name in unique_instance_geometry_list:
-                        unique_instance_geometry_list.append(obj.data.name)
+                if mesh_processing.set_ignore(obj) == False or hidden_geo:
+                    instance_list.append(obj)
+                    if not obj.data.name in linked_object_list:
+                        linked_object_list.append(obj.name)
                         object_count += 1
 
                     if obj.data.type == 'SPOT':
-                        geometry_list.append((obj, 'SPOT_LGT', obj.name, obj.data.name))
-                        original_geometry_list.append(obj)
+                        geometry_list.append((obj, obj, 'SPOT_LGT'))
 
                     elif obj.data.type == 'AREA':
-                        geometry_list.append((obj, 'DIRECT_LGT', obj.name, obj.data.name))
-                        original_geometry_list.append(obj)
+                        geometry_list.append((obj, obj, 'DIRECT_LGT'))
 
                     elif obj.data.type == 'POINT':
-                        geometry_list.append((obj, 'OMNI_LGT', obj.name, obj.data.name))
-                        original_geometry_list.append(obj)
+                        geometry_list.append((obj, obj,'OMNI_LGT'))
 
                     elif obj.data.type == 'SUN':
-                        geometry_list.append((obj, 'AMBIENT_LGT', obj.name, obj.data.name))
-                        original_geometry_list.append(obj)
+                        geometry_list.append((obj, obj, 'AMBIENT_LGT'))
+
+                    else:
+                        print("Bad light")
 
             elif obj.type== 'MESH' and len(obj.data.polygons) > 0:
-                if global_functions.set_ignore(obj) == False or hidden_geo:
-                    if not obj.data.name in unique_instance_geometry_list:
-                        unique_instance_geometry_list.append(obj.data.name)
+                if mesh_processing.set_ignore(obj) == False or hidden_geo:
+                    instance_list.append(obj)
+                    if not obj.data.name in linked_object_list:
+                        linked_object_list.append(obj.data.name)
                         object_count += 1
 
                     if obj.data.ass_jms.Object_Type == 'SPHERE':
-                        me = obj.to_mesh(preserve_all_data_layers=True)
-                        geometry_list.append((me, 'SPHERE', obj.name, obj.data.name))
-                        original_geometry_list.append(obj)
+                        evaluted_mesh = obj.to_mesh(preserve_all_data_layers=True)
+                        geometry_list.append((evaluted_mesh, obj, 'SPHERE'))
 
                     elif obj.data.ass_jms.Object_Type == 'BOX':
-                        me = obj.to_mesh(preserve_all_data_layers=True)
-                        geometry_list.append((me, 'BOX', obj.name, obj.data.name))
-                        original_geometry_list.append(obj)
+                        evaluted_mesh = obj.to_mesh(preserve_all_data_layers=True)
+                        geometry_list.append((evaluted_mesh, obj, 'BOX'))
 
                     elif obj.data.ass_jms.Object_Type == 'CAPSULES':
-                        me = obj.to_mesh(preserve_all_data_layers=True)
-                        geometry_list.append((me, 'PILL', obj.name, obj.data.name))
-                        original_geometry_list.append(obj)
+                        evaluted_mesh = obj.to_mesh(preserve_all_data_layers=True)
+                        geometry_list.append((evaluted_mesh, obj, 'PILL'))
 
                     elif obj.data.ass_jms.Object_Type == 'CONVEX SHAPES':
                         if apply_modifiers:
                             obj_for_convert = obj.evaluated_get(depsgraph)
-                            me = obj_for_convert.to_mesh(preserve_all_data_layers=True, depsgraph=depsgraph)
-                            geometry_list.append((me, 'MESH', obj.name, obj.data.name))
-                            original_geometry_list.append(obj)
+                            evaluted_mesh = obj_for_convert.to_mesh(preserve_all_data_layers=True, depsgraph=depsgraph)
+                            geometry_list.append((evaluted_mesh, obj, 'MESH'))
 
                         else:
-                            me = obj.to_mesh(preserve_all_data_layers=True)
-                            geometry_list.append((me, 'MESH', obj.name, obj.data.name))
-                            original_geometry_list.append(obj)
+                            evaluted_mesh = obj.to_mesh(preserve_all_data_layers=True)
+                            geometry_list.append((evaluted_mesh, obj, 'MESH'))
+
+                    else:
+                        print("Bad object")
 
             else:
-                if global_functions.set_ignore(obj) == False or hidden_geo:
-                    obj_name = None
-                    obj_data_name = None
-                    if obj.name:
-                        obj_name = obj.name
+                if mesh_processing.set_ignore(obj) == False or hidden_geo:
+                    obj_data = None
+                    obj_mesh_data = None
+
+                    if obj:
+                        obj_data = obj
+
                     if obj.data:
-                        obj_data_name = obj.data.name
-                    geometry_list.append((None, 'EMPTY', obj_name, obj_data_name))
-                    original_geometry_list.append(obj)
+                        obj_mesh_data = obj.data
+
+                    geometry_list.append((obj_mesh_data, obj_data, 'EMPTY'))
+                    instance_list.append(obj_data)
 
         self.instances.append(ASSScene.Instance(name='Scene Root', local_transform=ASSScene.Transform(), pivot_transform=ASSScene.Transform()))
         for idx, geometry in enumerate(geometry_list):
             verts = []
             triangles = []
             node_index_list = []
-            original_geo = original_geometry_list[idx]
-            mesh = geometry[0]
-            geo_class = geometry[1]
-            geo_name = geometry[2]
-            mesh_name = geometry[3]
+
+            evaluted_mesh = geometry[0]
+            original_geo = geometry[1]
+            geo_class = geometry[2]
+
+            evaluted_mesh_name = None
+            if evaluted_mesh:
+                evaluted_mesh_name = evaluted_mesh.name
+
+            else:
+                evaluted_mesh_name = original_geo.name
+
             object_index = -1
             if not geo_class == 'EMPTY':
-                object_index = unique_instance_geometry_list.index(mesh_name)
+                object_index = linked_object_list.index(evaluted_mesh_name)
+
             material_index = -1
             radius = 2
             extents = [1.0, 1.0, 1.0]
@@ -404,47 +386,46 @@ class ASSScene(global_functions.HaloAsset):
             inheritance_flag = 0
             xref_path = ""
             xref_name = ""
+
             is_bone = False
             parent = None
             if geo_class == 'BONE':
-                if original_geo.parent:
-                    parent = original_geo.parent
                 is_bone = True
+                armature_name = original_geo.id_data.name
+                armature = bpy.data.objects[armature_name]
 
             else:
                 if original_geo.parent:
-                    if original_geo.parent.type  == 'ARMATURE':
-                        armature_name = original_geo.parent.id_data.name
-                        armature = bpy.data.objects[armature_name]
-                        parent = original_geo.parent_bone
+                    parent = original_geo.parent
+                    if original_geo.parent.type == 'ARMATURE':
+                        if original_geo.parent_type == 'BONE':
+                            parent = original_geo.parent.data.bones[original_geo.parent_bone]
 
-                    else:
-                        parent = original_geo.parent
+                        else:
+                            parent = original_geo.parent.data.bones[0]
 
             if not parent == None:
-                if not geo_class == 'BONE':
-                    if not original_geo.parent.type  == 'ARMATURE':
-                        parent_id = original_geometry_list.index(parent) + 1
+                parent_index = instance_list.index(parent)
+                parent_id = parent_index + 1
 
-                else:
-                    parent_id = original_geometry_list.index(parent) + 1
-
-            geo_matrix = global_functions.get_matrix(original_geo, original_geo, True, armature, original_geometry_list, is_bone, version, 'ASS', 0)
-            geo_dimensions = global_functions.get_dimensions(geo_matrix, original_geo, None, None, custom_scale, version, None, False, is_bone, armature, 'ASS')
+            geo_matrix = global_functions.get_matrix(original_geo, original_geo, True, armature, instance_list, is_bone, version, 'ASS', 0)
+            geo_dimensions = global_functions.get_dimensions(geo_matrix, original_geo, None, None, version, None, False, is_bone, armature, 'ASS')
             rotation = (geo_dimensions.quat_i_a, geo_dimensions.quat_j_a, geo_dimensions.quat_k_a, geo_dimensions.quat_w_a)
             translation = (geo_dimensions.pos_x_a, geo_dimensions.pos_y_a, geo_dimensions.pos_z_a)
             if geo_class == 'BONE':
                 scale = armature.pose.bones[original_geo.name].scale
+
             else:
                 scale = original_geo.scale
+
             local_transform = ASSScene.Transform(rotation, translation, scale)
-            self.instances.append(ASSScene.Instance(geo_name, object_index, idx, parent_id, inheritance_flag, local_transform, pivot_transform=ASSScene.Transform()))
-            if not mesh_name in unique_instance_geometry_list_2 and not object_index == -1:
-                unique_instance_geometry_list_2.append(mesh_name)
+            self.instances.append(ASSScene.Instance(original_geo.name, object_index, idx, parent_id, inheritance_flag, local_transform, pivot_transform=ASSScene.Transform()))
+            if not evaluted_mesh_name in linked_instance_list and not object_index == -1:
+                linked_instance_list.append(evaluted_mesh_name)
                 if geo_class == 'SPOT_LGT' or geo_class == 'DIRECT_LGT' or geo_class == 'OMNI_LGT' or geo_class == 'AMBIENT_LGT':
                     light_type = geo_class
-                    color_rgb = (mesh.data.color[0], mesh.data.color[1], mesh.data.color[2])
-                    intensity = mesh.data.energy
+                    color_rgb = (original_geo.data.color[0], original_geo.data.color[1], original_geo.data.color[2])
+                    intensity = original_geo.data.energy
                     hotspot_size = -1.0
                     hotspot_falloff_size = -1.0
                     uses_near_attenuation = 0
@@ -456,23 +437,23 @@ class ASSScene(global_functions.HaloAsset):
                     light_shape = 0
                     light_aspect_ratio = 0.0
                     if geo_class == 'SPOT_LGT':
-                        hotspot_size = degrees(mesh.data.spot_size)
-                        hotspot_falloff_size = mesh.data.spot_blend * degrees(mesh.data.spot_size)
+                        hotspot_size = degrees(original_geo.data.spot_size)
+                        hotspot_falloff_size = original_geo.data.spot_blend * degrees(original_geo.data.spot_size)
 
-                    if geo_class == 'DIRECT_LGT':
+                    elif geo_class == 'DIRECT_LGT':
                         light_shape_type = 0
-                        if mesh.data.shape == "RECTANGLE" or mesh.data.shape == "SQUARE":
+                        if original_geo.data.shape == "RECTANGLE" or original_geo.data.shape == "SQUARE":
                             light_shape_type = 1
                         light_shape = light_shape_type
-                        light_aspect_ratio = mesh.data.size
+                        light_aspect_ratio = original_geo.data.size
 
-                    if geo_class == 'SPOT_LGT' or geo_class == 'DIRECT_LGT':
-                        uses_near_attenuation = int(mesh.data.use_custom_distance)
-                        near_attenuation_start = mesh.data.cutoff_distance
-                        near_attenuation_end = mesh.data.cutoff_distance
-                        uses_far_attenuation = int(mesh.data.use_custom_distance)
-                        far_attenuation_start = mesh.data.cutoff_distance
-                        far_attenuation_end = mesh.data.cutoff_distance
+                    elif geo_class == 'SPOT_LGT' or geo_class == 'DIRECT_LGT':
+                        uses_near_attenuation = int(original_geo.data.use_custom_distance)
+                        near_attenuation_start = original_geo.data.cutoff_distance
+                        near_attenuation_end = original_geo.data.cutoff_distance
+                        uses_far_attenuation = int(original_geo.data.use_custom_distance)
+                        far_attenuation_start = original_geo.data.cutoff_distance
+                        far_attenuation_end = original_geo.data.cutoff_distance
 
                     light_properties = ASSScene.Light(light_type, color_rgb, intensity, hotspot_size, hotspot_falloff_size, uses_near_attenuation, near_attenuation_start, near_attenuation_end, uses_far_attenuation, far_attenuation_start, far_attenuation_end, light_shape, light_aspect_ratio)
 
@@ -481,11 +462,23 @@ class ASSScene(global_functions.HaloAsset):
                     if xref_path != "":
                         xref_name = original_geo.name
 
+                    region = default_region
+                    permutation = default_permutation
+                    if original_geo.face_maps.active:
+                        face_set = original_geo.face_maps[0].name.split()
+                        slot_index, lod, permutation, region = global_functions.material_definition_parser(False, face_set, default_region, default_permutation)
+
+                        if not permutation in permutation_list:
+                            permutation_list.append(permutation)
+
+                        if not region in region_list:
+                            region_list.append(region)
+
                     radius = geo_dimensions.radius_a
                     face = original_geo.data.polygons[0]
-                    material = global_functions.get_material(game_version, original_geo, face, mesh, material_list, 'ASS', None, None,)
+                    material = global_functions.get_material(game_version, original_geo, face, evaluted_mesh, lod, region, permutation)
                     if not material == -1:
-                        material_list = global_functions.gather_materials(game_version, material, material_list, 'ASS', None, None, None)
+                        material_list = global_functions.gather_materials(game_version, material, material_list, 'ASS')
                         material_index = material_list.index(material)
 
                 elif geo_class == 'BOX':
@@ -493,11 +486,24 @@ class ASSScene(global_functions.HaloAsset):
                     if xref_path != "":
                         xref_name = original_geo.name
 
+                    lod = None
+                    region = default_region
+                    permutation = default_permutation
+                    if original_geo.face_maps.active:
+                        face_set = original_geo.face_maps[0].name.split()
+                        slot_index, lod, permutation, region = global_functions.material_definition_parser(False, face_set, default_region, default_permutation)
+
+                        if not permutation in permutation_list:
+                            permutation_list.append(permutation)
+
+                        if not region in region_list:
+                            region_list.append(region)
+
                     face = original_geo.data.polygons[0]
                     extents = [geo_dimensions.dimension_x_a, geo_dimensions.dimension_y_a, geo_dimensions.dimension_z_a]
-                    material = global_functions.get_material(game_version, original_geo, face, mesh, material_list, 'ASS', None, None,)
+                    material = global_functions.get_material(game_version, original_geo, face, evaluted_mesh, lod, region, permutation)
                     if not material == -1:
-                        material_list = global_functions.gather_materials(game_version, material, material_list, 'ASS', None, None, None)
+                        material_list = global_functions.gather_materials(game_version, material, material_list, 'ASS')
                         material_index = material_list.index(material)
 
                 elif geo_class == 'PILL':
@@ -505,12 +511,25 @@ class ASSScene(global_functions.HaloAsset):
                     if xref_path != "":
                         xref_name = original_geo.name
 
+                    lod = None
+                    region = default_region
+                    permutation = default_permutation
+                    if original_geo.face_maps.active:
+                        face_set = original_geo.face_maps[0].name.split()
+                        slot_index, lod, permutation, region = global_functions.material_definition_parser(False, face_set, default_region, default_permutation)
+
+                        if not permutation in permutation_list:
+                            permutation_list.append(permutation)
+
+                        if not region in region_list:
+                            region_list.append(region)
+
                     face = original_geo.data.polygons[0]
                     height = (geo_dimensions.pill_z_a)
                     radius = (geo_dimensions.radius_a)
-                    material = global_functions.get_material(game_version, original_geo, face, mesh, material_list, 'ASS', None, None,)
+                    material = global_functions.get_material(game_version, original_geo, face, evaluted_mesh, lod, region, permutation)
                     if not material == -1:
-                        material_list = global_functions.gather_materials(game_version, material, material_list, 'ASS', None, None, None)
+                        material_list = global_functions.gather_materials(game_version, material, material_list, 'ASS')
                         material_index = material_list.index(material)
 
                 elif geo_class == 'MESH':
@@ -518,123 +537,37 @@ class ASSScene(global_functions.HaloAsset):
                     if xref_path != "":
                         xref_name = original_geo.name
 
-                    vertex_groups = original_geo.vertex_groups.keys()
-                    for face in mesh.polygons:
-                        v0 = len(verts)
-                        v1 = len(verts) + 1
-                        v2 = len(verts) + 2
-                        material = global_functions.get_material(game_version, original_geo, face, mesh, material_list, 'ASS', None, None,)
-                        material_index = -1
-                        if not material == -1:
-                            material_list = global_functions.gather_materials(game_version, material, material_list, 'ASS', None, None, None)
-                            material_index = material_list.index(material)
+                    geo_material_list, triangles, verts, geo_region_list, geo_permutation_list = mesh_processing.process_mesh_export_data(geometry, armature, instance_list, material_list, version, game_version, default_region, default_permutation, region_list, permutation_list, "ASS", ASSScene, 0)
 
-                        triangles.append(ASSScene.Triangle(material_index, v0, v1, v2))
-                        for loop_index in face.loop_indices:
-                            vert = mesh.vertices[mesh.loops[loop_index].vertex_index]
+                    material_list = geo_material_list
+                    region_list += geo_region_list
+                    permutation_list += geo_permutation_list
 
-                            original_geo_matrix = global_functions.get_matrix(original_geo, original_geo, False, armature, original_geometry_list, False, version, 'ASS', 0)
+                else:
+                    print("Bad object")
 
-                            translation = vert.co
-                            world_translation = original_geo_matrix @ vert.co
-
-                            mesh_dimensions = global_functions.get_dimensions(None, None, None, None, custom_scale, version, translation, True, False, armature, 'ASS')
-                            scaled_translation = (mesh_dimensions.pos_x_a, mesh_dimensions.pos_y_a, mesh_dimensions.pos_z_a)
-
-                            normal = (vert.normal).normalized()
-                            uv_set = []
-                            for uv_index in range(len(mesh.uv_layers)):
-                                mesh.uv_layers.active = mesh.uv_layers[uv_index]
-                                uv = mesh.uv_layers.active.data[mesh.loops[loop_index].index].uv
-                                uv_set.append(uv)
-
-                            uv = uv_set
-                            color = (0.0, 0.0, 0.0)
-                            if mesh.vertex_colors:
-                                color_rgb = mesh.vertex_colors.active.data[loop_index].color
-                                color = color_rgb
-                            node_influence_count = 0
-                            node_set = []
-                            if len(vert.groups) != 0:
-                                object_vert_group_list = []
-                                vertex_vert_group_list = []
-                                for group_index in range(len(vert.groups)):
-                                    vert_group = vert.groups[group_index].group
-                                    object_vertex_group = vertex_groups[vert_group]
-                                    if armature:
-                                        if object_vertex_group in armature.data.bones:
-                                            vertex_vert_group_list.append(group_index)
-                                            if armature.data.bones[object_vertex_group] in original_geometry_list:
-                                                object_vert_group_list.append(vert_group)
-
-                                    else:
-                                        if object_vertex_group in bpy.data.objects:
-                                            vertex_vert_group_list.append(group_index)
-                                            if bpy.data.objects[object_vertex_group] in original_geometry_list:
-                                                object_vert_group_list.append(vert_group)
-
-                                value = len(object_vert_group_list)
-                                if value > 4:
-                                    value = 4
-
-                                node_influence_count = int(value)
-                                if len(object_vert_group_list) != 0:
-                                    for idx, group_index in enumerate(object_vert_group_list):
-                                        vert_index = int(vertex_vert_group_list[idx])
-                                        vert_group = vert.groups[vert_index].group
-                                        object_vertex_group = vertex_groups[vert_group]
-                                        if armature:
-                                            node_obj = armature.data.bones[object_vertex_group]
-
-                                        else:
-                                            node_obj = bpy.data.objects[object_vertex_group]
-
-                                        node_index = int(original_geometry_list.index(node_obj))
-                                        if not node_index in node_index_list:
-                                            node_index_list.append(node_index)
-                                        node_weight = float(vert.groups[vert_index].weight)
-                                        node_set.append([node_index, node_weight])
-
-                            verts.append(ASSScene.Vertex(
-                                node_influence_count,
-                                node_set,
-                                scaled_translation,
-                                normal,
-                                uv_set,
-                                color
-                            ))
-
-                if not geo_class == 'BONE':
+                if not geo_class == 'BONE' and not 'SPOT_LGT' and not 'DIRECT_LGT' and not 'OMNI_LGT' and not 'AMBIENT_LGT':
                     original_geo.to_mesh_clear()
 
-                self.objects.append(ASSScene.Object(
-                    geo_class,
-                    xref_path,
-                    xref_name,
-                    material_index,
-                    radius,
-                    extents,
-                    height,
-                    verts,
-                    triangles,
-                    node_index_list,
-                    light_properties
-                ))
+                self.objects.append(ASSScene.Object(geo_class, xref_path, xref_name, material_index, radius, extents, height, verts, triangles, node_index_list, light_properties))
 
         for material in material_list:
-            material_strings = get_material_strings(material)
+            material_data = material[0]
+            material_lightmap = get_material_strings(material_data, version)
+            lod = mesh_processing.get_lod(material[1], game_version)
 
-            self.materials.append(ASSScene.Material(
-                material.name,
-                material.ass_jms.material_effect,
-                material_strings
-            ))
+            if len(material[2]) != 0:
+                region = material[2].replace(' ', '_').replace('\t', '_')
+
+            if len(material[3]) != 0:
+                permutation = material[3].replace(' ', '_').replace('\t', '_')
+
+            self.materials.append(ASSScene.Material(material_data.name, lod, permutation, region, material_data.ass_jms.material_effect, material_lightmap))
 
         for idx, obj in enumerate(object_list):
             property_value = object_properties[idx]
             obj.hide_set(property_value[0])
             obj.hide_viewport = property_value[1]
-
 
 def write_file(context,
                filepath,
@@ -642,7 +575,6 @@ def write_file(context,
                ass_version,
                ass_version_h2,
                ass_version_h3,
-               use_scene_properties,
                hidden_geo,
                folder_structure,
                apply_modifiers,
@@ -660,23 +592,12 @@ def write_file(context,
                ):
 
     custom_scale = global_functions.set_scale(scale_enum, scale_float)
-    version = global_functions.get_version(ass_version,
-                                           None,
-                                           ass_version_h2,
-                                           ass_version_h3,
-                                           game_version,
-                                           console)
+    version = global_functions.get_version(ass_version, None, ass_version_h2, ass_version_h3, game_version, console)
 
-    ass_scene = ASSScene(context, report, version, game_version, apply_modifiers, triangulate_faces, edge_split, use_edge_angle, use_edge_sharp, split_angle, clean_normalize_weights, hidden_geo, custom_scale)
+    ass_scene = ASSScene(context, version, game_version, apply_modifiers, triangulate_faces, edge_split, use_edge_angle, use_edge_sharp, split_angle, clean_normalize_weights, hidden_geo, custom_scale)
 
     filename = os.path.basename(filepath)
-
-    root_directory = global_functions.get_directory(game_version,
-                                                    "render",
-                                                    folder_structure,
-                                                    "0",
-                                                    False,
-                                                    filepath)
+    root_directory = global_functions.get_directory(game_version, "render", folder_structure, "0", False, filepath)
 
     file = open(root_directory + os.sep + filename, 'w', encoding=encoding)
 
@@ -697,14 +618,24 @@ def write_file(context,
     for idx, material in enumerate(ass_scene.materials):
         file.write(
             '\n;MATERIAL %s' % (idx) +
-            '\n"%s"' % (material.name) +
-            '\n"%s"\n' % (material.effect)
+            '\n"%s"' % (material.name)
         )
+        if version >= 8: #3
+            file.write(
+                '\n"%s %s"\n' % (material.permutation, material.region)
+            )
+
+        else:
+            file.write(
+
+                '\n"%s"\n' % (material.group)
+            )
+
         if version >= 4:
             file.write(
-                '%s\n' % (len(material.strings))
+                '%s\n' % (len(material.lightmap))
             )
-            for string in material.strings:
+            for string in material.lightmap:
                 file.write(
                     '"%s"\n' % (string)
                 )
@@ -835,6 +766,9 @@ def write_file(context,
                     )
 
             file.write('\n')
+
+        else:
+            print("Bad object")
 
     file.write(
         '\n;### INSTANCES ###' +

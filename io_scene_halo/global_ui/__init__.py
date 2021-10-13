@@ -837,9 +837,6 @@ class ASS_JMS_MeshProps(Panel):
         row.label(text='Bounding Radius:')
         row.prop(mesh_ass_jms, "bounding_radius", text='')
         row = col.row()
-        row.label(text='LOD:')
-        row.prop(mesh_ass_jms, "level_of_detail", text='')
-        row = col.row()
         row.label(text='Object Type:')
         row.prop(mesh_ass_jms, "Object_Type", text='')
         row = col.row()
@@ -851,19 +848,6 @@ class ASS_JMS_MeshPropertiesGroup(PropertyGroup):
         name ="Bounding Radius",
         description = "Sets object as a bounding radius",
         default = False,
-        )
-
-    level_of_detail: EnumProperty(
-        name="LOD:",
-        description="What LOD to use for the object",
-        items=[ ('0', "NONE", "No level of detail set"),
-                ('1', "L1", "Super Low"),
-                ('2', "L2", "Low"),
-                ('3', "L3", "Medium"),
-                ('4', "L4", "High"),
-                ('5', "L5", "Super High"),
-                ('6', "L6", "Hollywood"),
-               ]
         )
 
     Object_Type : EnumProperty(

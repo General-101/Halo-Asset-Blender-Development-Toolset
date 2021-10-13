@@ -24,16 +24,11 @@
 #
 # ##### END MIT LICENSE BLOCK #####
 
-import os
 import bpy
-import sys
-import math
 import bmesh
-import random
-import traceback
 
-from mathutils import Vector, Quaternion, Matrix, Euler
-from io_scene_halo.global_functions import global_functions
+from mathutils import Vector, Matrix
+from ..global_functions import mesh_processing, global_functions
 
 class JMSAsset(global_functions.HaloAsset):
     class Transform:
@@ -261,10 +256,13 @@ class JMSAsset(global_functions.HaloAsset):
     def next_transform(self):
         rotation = self.next_quaternion()
         translation = self.next_vector()
+
         return JMSAsset.Transform(translation, rotation, None)
 
     def __init__(self, filepath, game_version):
         super().__init__(filepath)
+        default_region = mesh_processing.get_default_region_permutation_name(game_version)
+        default_permutation = mesh_processing.get_default_region_permutation_name(game_version)
         extension = global_functions.get_true_extension(filepath, None, True)
         self.version = int(self.next())
         self.game_version = game_version
@@ -292,6 +290,7 @@ class JMSAsset(global_functions.HaloAsset):
 
         if not self.version in version_list:
             raise global_functions.AssetParseError("Importer does not support this " + extension + " version")
+
         if self.version < 8205:
             self.skip(1) # skip the node checksum
 
@@ -339,97 +338,14 @@ class JMSAsset(global_functions.HaloAsset):
             name = self.next()
             if self.version >= 8203 and self.version <= 8204:
                 texture_definition = self.next()
+
             material_definition = self.next()
             if self.game_version == 'haloce':
                 self.materials.append(JMSAsset.Material(name, material_definition, None, None, None, None))
 
             elif self.game_version == 'halo2' or self.game_version == 'halo3':
                 material_definition_items = material_definition.split()
-                lod_list = ['l1', 'l2', 'l3', 'l4', 'l5', 'l6']
-                slot_index = None
-                lod = None
-                region = None
-                permutation = None
-                if len(material_definition_items) == 1:
-                    item_0 = material_definition_items[0].lower()
-                    if item_0.startswith("(") and item_0.endswith(')'):
-                        slot_index = material_definition_items[0]
-
-                    elif item_0 in lod_list:
-                        lod = material_definition_items[0]
-
-                    else:
-                        permutation = material_definition_items[0]
-
-                if len(material_definition_items) == 2:
-                    item_0 = material_definition_items[0].lower()
-                    item_1 = material_definition_items[1].lower()
-                    if item_0.startswith("(") and item_0.endswith(')'):
-                        slot_index = material_definition_items[0]
-
-                    elif item_0 in lod_list:
-                        lod = material_definition_items[0]
-
-                    else:
-                        permutation = material_definition_items[0]
-
-                    if item_1.startswith("(") and item_1.endswith(')'):
-                        slot_index = material_definition_items[1]
-
-                    elif item_1 in lod_list:
-                        lod = material_definition_items[1]
-
-                    else:
-                        if permutation == None:
-                            permutation = material_definition_items[1]
-
-                        else:
-                            region = material_definition_items[1]
-
-                if len(material_definition_items) == 3:
-                    item_0 = material_definition_items[0].lower()
-                    item_1 = material_definition_items[1].lower()
-                    item_2 = material_definition_items[2].lower()
-                    if item_0.startswith("(") and item_0.endswith(')'):
-                        slot_index = material_definition_items[0]
-
-                    elif item_0 in lod_list:
-                        lod = material_definition_items[0]
-
-                    else:
-                        permutation = material_definition_items[0]
-
-                    if item_1.startswith("(") and item_1.endswith(')'):
-                        slot_index = material_definition_items[1]
-
-                    elif item_1 in lod_list:
-                        lod = material_definition_items[1]
-
-                    else:
-                        if permutation == None:
-                            permutation = material_definition_items[1]
-
-                        else:
-                            region = material_definition_items[1]
-
-                    if item_2.startswith("(") and item_2.endswith(')'):
-                        slot_index = material_definition_items[2]
-
-                    elif item_2 in lod_list:
-                        lod = material_definition_items[2]
-
-                    else:
-                        if permutation == None:
-                            permutation = material_definition_items[2]
-
-                        else:
-                            region = material_definition_items[2]
-
-                if len(material_definition_items) == 4:
-                    slot_index = material_definition_items[0]
-                    lod = material_definition_items[1]
-                    permutation = material_definition_items[2]
-                    region = material_definition_items[3]
+                slot_index, lod, permutation, region = global_functions.material_definition_parser(True, material_definition_items, default_region, default_permutation)
 
                 self.materials.append(JMSAsset.Material(name, None, slot_index, lod, permutation, region))
 
@@ -477,6 +393,7 @@ class JMSAsset(global_functions.HaloAsset):
                 name = self.next()
                 if name == "__unnamed":
                     name = "unnamed"
+
                 self.regions.append(JMSAsset.Region(name))
 
         vertex_count = int(self.next())
@@ -500,11 +417,13 @@ class JMSAsset(global_functions.HaloAsset):
                     tex_v_value   = self.next()
                     try:
                         tex_u = float(tex_u_value)
+
                     except ValueError:
                         tex_u = float(tex_u_value.rsplit('.', 1)[0])
 
                     try:
                         tex_v = float(tex_v_value)
+
                     except ValueError:
                         tex_v = float(tex_v_value.rsplit('.', 1)[0])
 
@@ -523,6 +442,7 @@ class JMSAsset(global_functions.HaloAsset):
                 node_0_index = int(self.next())
                 if self.version == 8204:
                     node_0_weight = float(self.next())
+
                 translation = self.next_vector()
                 normal = self.next_vector()
                 node_1_index = int(self.next())
@@ -537,6 +457,7 @@ class JMSAsset(global_functions.HaloAsset):
 
                 if self.version >= 8204:
                     node_set.append([node_0_index, node_0_weight])
+
                 else:
                     node_set.append([node_0_index, 1])
 
@@ -563,12 +484,14 @@ class JMSAsset(global_functions.HaloAsset):
                         tex_u_value   = self.next()
                         tex_v_value   = self.next()
                         try:
-                            tex_u = float(tex_u_value)                            
+                            tex_u = float(tex_u_value)
+
                         except ValueError:
                             tex_u = float(tex_u_value.rsplit('.', 1)[0])
 
                         try:
                             tex_v = float(tex_v_value)
+
                         except ValueError:
                             tex_v = float(tex_v_value.rsplit('.', 1)[0])
 
@@ -588,43 +511,51 @@ class JMSAsset(global_functions.HaloAsset):
                         tex_3_v_value = self.next()
 
                     try:
-                        tex_0_u = float(tex_0_u_value)                       
+                        tex_0_u = float(tex_0_u_value)
+
                     except ValueError:
                         tex_0_u = float(tex_0_u_value.rsplit('.', 1)[0])
 
                     try:
                         tex_0_v = float(tex_0_v_value)
+
                     except ValueError:
                         tex_0_v = float(tex_0_v_value.rsplit('.', 1)[0])
 
                     if self.version >= 8203:
                         try:
-                            tex_1_u = float(tex_1_u_value)                      
+                            tex_1_u = float(tex_1_u_value)
+
                         except ValueError:
                             tex_1_u = float(tex_1_u_value.rsplit('.', 1)[0])
 
                         try:
                             tex_1_v = float(tex_1_v_value)
+
                         except ValueError:
                             tex_1_v = float(tex_1_v_value.rsplit('.', 1)[0])
 
                         try:
-                            tex_2_u = float(tex_2_u_value)                     
+                            tex_2_u = float(tex_2_u_value)
+
                         except ValueError:
                             tex_2_u = float(tex_2_u_value.rsplit('.', 1)[0])
 
                         try:
                             tex_2_v = float(tex_2_v_value)
+
                         except ValueError:
                             tex_2_v = float(tex_2_v_value.rsplit('.', 1)[0])
 
                         try:
-                            tex_3_u = float(tex_3_u_value)                   
+                            tex_3_u = float(tex_3_u_value)
+
                         except ValueError:
                             tex_3_u = float(tex_3_u_value.rsplit('.', 1)[0])
 
                         try:
                             tex_3_v = float(tex_3_v_value)
+
                         except ValueError:
                             tex_3_v = float(tex_3_v_value.rsplit('.', 1)[0])
 
@@ -633,6 +564,7 @@ class JMSAsset(global_functions.HaloAsset):
                         uv_set.append([tex_1_u, tex_1_v])
                         uv_set.append([tex_2_u, tex_2_v])
                         uv_set.append([tex_3_u, tex_3_v])
+
                     else:
                         uv_set.append([tex_0_u, tex_0_v])
 
@@ -640,14 +572,7 @@ class JMSAsset(global_functions.HaloAsset):
                 if self.version >= 8199:
                     flags = self.skip(1) #Unused int or boolean value. Don't know which but definitely not a float
 
-            self.vertices.append(JMSAsset.Vertex(node_influence_count,
-                                                 node_set,
-                                                 region,
-                                                 translation,
-                                                 normal,
-                                                 color,
-                                                 uv_set
-                                                 ))
+            self.vertices.append(JMSAsset.Vertex(node_influence_count, node_set, region, translation, normal, color, uv_set))
 
         triangle_count = int(self.next())
         for triangle in range(triangle_count):
@@ -741,21 +666,7 @@ class JMSAsset(global_functions.HaloAsset):
                 if self.version >= 8213:
                     friction_limit = float(self.next())
 
-                self.ragdolls.append(JMSAsset.Ragdoll(name,
-                                                      attached_index,
-                                                      referenced_index,
-                                                      attached_rotation,
-                                                      attached_translation,
-                                                      referenced_rotation,
-                                                      referenced_translation,
-                                                      min_twist,
-                                                      max_twist,
-                                                      min_cone,
-                                                      max_cone,
-                                                      min_plane,
-                                                      max_plane,
-                                                      friction_limit
-                                                      ))
+                self.ragdolls.append(JMSAsset.Ragdoll(name, attached_index, referenced_index, attached_rotation, attached_translation, referenced_rotation, referenced_translation, min_twist, max_twist, min_cone, max_cone, min_plane, max_plane, friction_limit))
 
             hinge_count  = int(self.next())
             for hinge in range(hinge_count):
@@ -843,6 +754,7 @@ class JMSAsset(global_functions.HaloAsset):
                 solid_angle = float(self.next())
 
                 self.skylights.append(JMSAsset.Skylight(direction, radiant_intensity, solid_angle))
+
         if self.left() != 0: # is something wrong with the parser?
             raise RuntimeError("%s elements left after parse end" % self.left())
 
@@ -853,42 +765,52 @@ class JMSAsset(global_functions.HaloAsset):
                 node = self.nodes[node_idx]
                 if node.parent == -1:
                     continue # this is a root node, nothing to update
+
                 if node.parent >= len(self.nodes) or node.parent == node_idx:
                     raise global_functions.AssetParseError("Malformed node graph (bad parent index)")
+
                 parent_node = self.nodes[node.parent]
                 if parent_node.child:
                     node.sibling = parent_node.child
+
                 else:
                     node.sibling = -1
+
                 if node.sibling >= len(self.nodes):
                     raise global_functions.AssetParseError("Malformed node graph (sibling index out of range)")
+
                 parent_node.child = node_idx
         else:
             for node_idx in range(node_count):
                 node = self.nodes[node_idx]
                 if node.child == -1:
                     continue # no child nodes, nothing to update
+
                 if node.child >= len(self.nodes) or node.child == node_idx:
                     raise global_functions.AssetParseError("Malformed node graph (bad child index)")
+
                 child_node = self.nodes[node.child]
                 while child_node != None:
                     child_node.parent = node_idx
                     if child_node.visited:
                         raise global_functions.AssetParseError("Malformed node graph (circular reference)")
+
                     child_node.visited = True
                     if child_node.sibling >= len(self.nodes):
                         raise global_functions.AssetParseError("Malformed node graph (sibling index out of range)")
+
                     if child_node.sibling != -1:
                         child_node = self.nodes[child_node.sibling]
+
                     else:
                         child_node = None
 
 def load_file(context, filepath, report, game_version, reuse_armature, fix_parents):
     jms_file = JMSAsset(filepath, game_version)
 
-    collection = bpy.context.collection
-    scene = bpy.context.scene
-    view_layer = bpy.context.view_layer
+    collection = context.collection
+    scene = context.scene
+    view_layer = context.view_layer
     armature = None
     object_list = list(scene.objects)
     region_permutation_list = []
@@ -936,17 +858,21 @@ def load_file(context, filepath, report, game_version, reuse_armature, fix_paren
                 for idx, jms_node in enumerate(jms_file.nodes):
                     if 'pelvis' in jms_node.name:
                         pelvis = idx
+
                     if 'thigh' in jms_node.name:
                         if thigh0 == None:
                             thigh0 = idx
+
                         else:
                             thigh1 = idx
 
                     elif 'spine1' in jms_node.name:
                         spine1 = idx
+
                     elif 'clavicle' in jms_node.name:
                         if clavicle0 == None:
                             clavicle0 = idx
+
                         else:
                             clavicle1 = idx
 
@@ -960,6 +886,7 @@ def load_file(context, filepath, report, game_version, reuse_armature, fix_paren
                 parent = jms_file.nodes[parent_idx].name
                 if 'thigh' in jms_node.name and not pelvis == None and not thigh0 == None and not thigh1 == None:
                     parent = jms_file.nodes[pelvis].name
+
                 elif 'clavicle' in jms_node.name and not spine1 == None and not clavicle0 == None and not clavicle1 == None:
                     parent = jms_file.nodes[spine1].name
 
@@ -1077,13 +1004,11 @@ def load_file(context, filepath, report, game_version, reuse_armature, fix_paren
 
     #generate mesh object
     if not len(jms_file.vertices) == 0:
-        vert_normal_list = []
-        vertex_groups = []
-        active_region_permutations = []
         object_name = bpy.path.basename(filepath).rsplit('.', 1)[0]
         if game_version == 'haloce':
             if 'physics' in filepath or 'collision' in filepath:
                 object_name = '@%s' % object_name
+
         else:
             if 'collision' in filepath:
                 object_name = '@%s' % object_name
@@ -1091,158 +1016,13 @@ def load_file(context, filepath, report, game_version, reuse_armature, fix_paren
         mesh = bpy.data.meshes.new(object_name)
         object_mesh = bpy.data.objects.new(object_name, mesh)
         collection.objects.link(object_mesh)
-        bm = bmesh.new()
-        for idx, triangle in enumerate(jms_file.triangles):
-            triangle_material_index = triangle.material_index
-            if not triangle_material_index == -1:
-                mat = jms_file.materials[triangle_material_index]
-
-            if game_version == 'haloce':
-                if version >= 8198:
-                    region = triangle.region
-
-                    current_region_permutation = jms_file.regions[region].name
-                else:
-                    region = jms_file.vertices[triangle.v0].region
-                    current_region_permutation = jms_file.regions[region].name
-
-            elif game_version == 'halo2' or game_version == 'halo3':
-                if not triangle_material_index == -1:
-                    region = mat.region
-                    permutation = mat.permutation
-
-                else:
-                    region = None
-                    permutation = None
-
-                current_region_permutation = '%s %s' % (permutation, region)
-
-            if not current_region_permutation in active_region_permutations:
-                active_region_permutations.append(current_region_permutation)
-                object_mesh.face_maps.new(name=current_region_permutation)
-
-            p1 = jms_file.vertices[triangle.v0].translation
-            p2 = jms_file.vertices[triangle.v1].translation
-            p3 = jms_file.vertices[triangle.v2].translation
-            v1 = bm.verts.new((p1[0], p1[1], p1[2]))
-            v2 = bm.verts.new((p2[0], p2[1], p2[2]))
-            v3 = bm.verts.new((p3[0], p3[1], p3[2]))
-            bm.faces.new((v1, v2, v3))
-            vert_list = [triangle.v0, triangle.v1, triangle.v2]
-            for vert in vert_list:
-                vert_normals = []
-                jms_vert = jms_file.vertices[vert]
-                for normal in jms_vert.normal:
-                    vert_normals.append(normal)
-
-                vert_normal_list.append(vert_normals)
-                for node_values in jms_vert.node_set:
-                    node_index = node_values[0]
-                    if not node_index == -1 and not node_index in vertex_groups:
-                        vertex_groups.append(node_index)
-                        object_mesh.vertex_groups.new(name = jms_file.nodes[node_index].name)
-
-        bm.verts.ensure_lookup_table()
-        bm.faces.ensure_lookup_table()
-        vertex_groups_names = object_mesh.vertex_groups.keys()
-        for idx, triangle in enumerate(jms_file.triangles):
-            triangle_material_index = triangle.material_index
-            if not triangle_material_index == -1:
-                mat = jms_file.materials[triangle_material_index]
-
-            if game_version == 'haloce':
-                if version >= 8198:
-                    region = triangle.region
-
-                    current_region_permutation = jms_file.regions[region].name
-                else:
-                    region = jms_file.vertices[triangle.v0].region
-                    current_region_permutation = jms_file.regions[region].name
-
-            elif game_version == 'halo2' or game_version == 'halo3':
-                if not triangle_material_index == -1:
-                    region = mat.region
-                    permutation = mat.permutation
-
-                else:
-                    region = None
-                    permutation = None
-
-                current_region_permutation = '%s %s' % (permutation, region)
-
-            if not current_region_permutation in active_region_permutations:
-                active_region_permutations.append(current_region_permutation)
-                object_mesh.face_maps.new(name=current_region_permutation)
-
-            if not triangle_material_index == -1:
-                material_list = []
-                material_name = mat.name
-                mat = bpy.data.materials.get(material_name)
-                if mat is None:
-                    mat = bpy.data.materials.new(name=material_name)
-
-                for slot in object_mesh.material_slots:
-                    material_list.append(slot.material)
-
-                if not mat in material_list:
-                    material_list.append(mat)
-                    object_mesh.data.materials.append(mat)
-
-                mat.diffuse_color = random_color_gen.next()
-                material_index = material_list.index(bpy.data.materials[material_name])
-                bm.faces[idx].material_index = material_index
-
-            fm = bm.faces.layers.face_map.verify()
-            face_idx = bm.faces[idx]
-            face_idx[fm] = active_region_permutations.index(current_region_permutation)
-            vert_list = [triangle.v0, triangle.v1, triangle.v2]
-            for vert_idx, vert in enumerate(vert_list):
-                vertex_index = (3 * idx) + vert_idx
-                jms_vert = jms_file.vertices[vert]
-                bm.verts[vertex_index].normal = jms_vert.normal
-                if not jms_vert.color == None and game_version == 'halo3' and version >= 8211:
-                    color_r = jms_vert.color[0]
-                    color_g = jms_vert.color[1]
-                    color_b = jms_vert.color[2]
-                    color_a = 1
-
-                    layer_color = bm.loops.layers.color.get("color")
-                    if layer_color is None:
-                        layer_color = bm.loops.layers.color.new("color")
-
-                    loop = bm.faces[idx].loops[vert_idx]
-                    loop[layer_color] = (color_r, color_g, color_b, color_a)
-
-                for uv_idx, uv in enumerate(jms_vert.uv_set):
-                    uv_name = 'UVMap_%s' % uv_idx
-                    layer_uv = bm.loops.layers.uv.get(uv_name)
-                    if layer_uv is None:
-                        layer_uv = bm.loops.layers.uv.new(uv_name)
-
-                    loop = bm.faces[idx].loops[vert_idx]
-                    loop[layer_uv].uv = (uv[0], uv[1])
-
-                for node_values in jms_vert.node_set:
-                    layer_deform = bm.verts.layers.deform.verify()
-
-                    node_index = node_values[0]
-                    node_weight = node_values[1]
-                    if not node_index == -1:
-                        group_name = jms_file.nodes[node_index].name
-                        group_index = vertex_groups_names.index(group_name)
-                        vert_idx = bm.verts[vertex_index]
-                        vert_idx[layer_deform][group_index] = node_weight
-
+        bm, vert_normal_list = mesh_processing.process_mesh_import_data(game_version, jms_file, None, object_mesh, mesh, random_color_gen, 'JMS')
         bm.to_mesh(mesh)
         bm.free()
         object_mesh.data.normals_split_custom_set(vert_normal_list)
         object_mesh.data.use_auto_smooth = True
-        object_mesh.select_set(True)
-        armature.select_set(True)
-        view_layer.objects.active = armature
-        bpy.ops.object.parent_set(type='ARMATURE', keep_transform=True)
-        object_mesh.select_set(False)
-        armature.select_set(False)
+        object_mesh.parent = armature
+        
 
     for sphere in jms_file.spheres:
         parent_idx = sphere.parent_index
@@ -1285,7 +1065,7 @@ def load_file(context, filepath, report, game_version, reuse_armature, fix_paren
 
         if not material_index == -1:
             mat = jms_file.materials[material_index]
-            current_region_permutation = '%s %s' % (mat.permutation, mat.region)
+            current_region_permutation = global_functions.material_definition_helper(material_index, mat)
             object_mesh.face_maps.new(name=current_region_permutation)
             material_name = mat.name
             mat = bpy.data.materials.get(material_name)
@@ -1348,7 +1128,7 @@ def load_file(context, filepath, report, game_version, reuse_armature, fix_paren
 
         if not material_index == -1:
             mat = jms_file.materials[material_index]
-            current_region_permutation = '%s %s' % (mat.permutation, mat.region)
+            current_region_permutation = global_functions.material_definition_helper(material_index, mat)
             object_mesh.face_maps.new(name=current_region_permutation)
 
             material_name = mat.name
@@ -1383,8 +1163,8 @@ def load_file(context, filepath, report, game_version, reuse_armature, fix_paren
         collection.objects.link(object_mesh)
 
         bm = bmesh.new()
-        bmesh.ops.create_cone(bm, cap_ends=True, cap_tris=False, segments=12, diameter1=3, diameter2=3, depth=5)
-        bm.transform(Matrix.Translation((0, 0, 2.5)))
+        bmesh.ops.create_cone(bm, cap_ends=True, cap_tris=False, segments=12, diameter1=1, diameter2=1, depth=2)
+        bm.transform(Matrix.Translation((0, 0, 1)))
         bm.to_mesh(mesh)
         bm.free()
 
@@ -1410,7 +1190,7 @@ def load_file(context, filepath, report, game_version, reuse_armature, fix_paren
         object_mesh.matrix_world = transform_matrix
         if not material_index == -1:
             mat = jms_file.materials[material_index]
-            current_region_permutation = '%s %s' % (mat.permutation, mat.region)
+            current_region_permutation = global_functions.material_definition_helper(material_index, mat)
             object_mesh.face_maps.new(name=current_region_permutation)
 
             material_name = mat.name
@@ -1475,7 +1255,7 @@ def load_file(context, filepath, report, game_version, reuse_armature, fix_paren
         object_mesh.matrix_world = transform_matrix
         if not material_index == -1:
             mat = jms_file.materials[material_index]
-            current_region_permutation = '%s %s' % (mat.permutation, mat.region)
+            current_region_permutation = global_functions.material_definition_helper(material_index, mat)
             object_mesh.face_maps.new(name=current_region_permutation)
 
             material_name = mat.name

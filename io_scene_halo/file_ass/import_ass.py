@@ -24,38 +24,28 @@
 #
 # ##### END MIT LICENSE BLOCK #####
 
-import os
 import bpy
-import sys
-import math
 import bmesh
-import random
-import traceback
 
-from math import degrees, radians
-from mathutils import Vector, Quaternion, Matrix
-from io_scene_halo.global_functions import global_functions
+from math import radians
+from mathutils import Vector, Matrix
+from ..global_functions import mesh_processing, global_functions
 
 class ASSAsset(global_functions.HaloAsset):
     class Transform:
-        def __init__(self,
-                     rotation,
-                     vector,
-                     scale
-                     ):
-
+        def __init__(self, rotation, vector, scale):
             self.rotation = rotation
             self.vector = vector
             self.scale = scale
 
     class Material:
-        def __init__(self,
-                     name,
-                     material_effect,
-                     material_strings
-                     ):
-
+        def __init__(self, name="", texture_path=None, slot=None, lod=None, permutation=None, region=None, material_effect="", material_strings=[]):
             self.name = name
+            self.texture_path = texture_path
+            self.slot = slot
+            self.lod = lod
+            self.permutation = permutation
+            self.region = region
             self.material_effect = material_effect
             self.material_strings = material_strings
 
@@ -118,14 +108,7 @@ class ASSAsset(global_functions.HaloAsset):
             self.light_aspect_ratio = light_aspect_ratio
 
     class Vertex:
-        def __init__(self,
-                     node_influence_count=0,
-                     node_set=None,
-                     translation=None,
-                     normal=None,
-                     color=None,
-                     uv_set=None):
-
+        def __init__(self, node_influence_count=0, node_set=None, translation=None, normal=None, color=None, uv_set=None):
             self.node_influence_count = node_influence_count
             self.node_set = node_set
             self.translation = translation
@@ -134,29 +117,14 @@ class ASSAsset(global_functions.HaloAsset):
             self.uv_set = uv_set
 
     class Triangle:
-        def __init__(self,
-                     material_index=-1,
-                     v0=-1,
-                     v1=-1,
-                     v2=-1
-                     ):
-
+        def __init__(self, material_index=-1, v0=-1, v1=-1, v2=-1):
             self.material_index = material_index
             self.v0 = v0
             self.v1 = v1
             self.v2 = v2
 
     class Instance:
-        def __init__(self,
-                     name,
-                     object_index=-1,
-                     unique_id=-1,
-                     parent_id=-1,
-                     inheritance_flag=0,
-                     local_transform=None,
-                     pivot_transform=None
-                     ):
-
+        def __init__(self, name, object_index=-1, unique_id=-1, parent_id=-1, inheritance_flag=0, local_transform=None, pivot_transform=None):
             self.name = name
             self.object_index = object_index
             self.unique_id = unique_id
@@ -168,13 +136,18 @@ class ASSAsset(global_functions.HaloAsset):
     def are_quaternions_inverted(self):
         return self.version < 1
 
-    def next_transform(self, version):
+    def next_transform(self):
         rotation = self.next_quaternion()
         translation = self.next_vector()
-        if version >= 2:
-            scale = float(self.next())
-        else:
-            scale = self.next_vector()
+        scale = float(self.next())
+
+        return ASSAsset.Transform(rotation, translation, scale)
+
+    def next_transform_legacy(self):
+        rotation = self.next_quaternion()
+        translation = self.next_vector()
+        scale = self.next_vector()
+
         return ASSAsset.Transform(rotation, translation, scale)
 
     def __init__(self, filepath):
@@ -247,31 +220,32 @@ class ASSAsset(global_functions.HaloAsset):
 
                     uv_count = int(self.next())
                     for uv in range(uv_count):
-                        tex_u_value   = self.next()
-                        tex_v_value   = self.next()
-                        if 'NAN' in tex_u_value:
-                            tex_u = float(tex_u_value.rsplit('.', 1)[0])
-                        else:
-                            tex_u = float(tex_u_value)
-                        if 'NAN' in tex_v_value:
-                            tex_v = float(tex_v_value.rsplit('.', 1)[0])
-                        else:
-                            tex_v = float(tex_v_value)
+                        tex_u_value = self.next()
+                        tex_v_value = self.next()
+                        tex_w_value = None
                         tex_w = None
-                        if self.version >= 7:
-                            tex_w = float(self.next())
-                        uv_set.append([tex_u,
-                                       tex_v,
-                                       tex_w
-                                       ])
 
-                    vertices.append(ASSAsset.Vertex(node_influence_count,
-                                                    node_set,
-                                                    translation,
-                                                    normal,
-                                                    color,
-                                                    uv_set
-                                                    ))
+                        try:
+                            tex_u = float(tex_u_value)
+                        except ValueError:
+                            tex_u = float(tex_u_value.rsplit('.', 1)[0])
+
+                        try:
+                            tex_v = float(tex_v_value)
+                        except ValueError:
+                            tex_v = float(tex_v_value.rsplit('.', 1)[0])
+
+                        if self.version >= 7:
+                            tex_w_value = self.next()
+
+                            try:
+                                tex_w = float(tex_w_value)
+                            except ValueError:
+                                tex_w = float(tex_w_value.rsplit('.', 1)[0])
+
+                        uv_set.append([tex_u, tex_v, tex_w])
+
+                    vertices.append(ASSAsset.Vertex(node_influence_count, node_set, translation, normal, color, uv_set))
 
                 triangle_count = int(self.next())
                 for triangle in range(triangle_count):
@@ -298,6 +272,10 @@ class ASSAsset(global_functions.HaloAsset):
                 light_aspect_ratio = float(self.next())
 
                 light_properties = ASSAsset.Light(light_type, light_color, intensity, hotspot_size, hotspot_falloff_size, uses_near_attenuation, near_attenuation_start, near_attenuation_end, uses_far_attenuation, far_attenuation_start, far_attenuation_end, light_shape, light_aspect_ratio)
+
+            else:
+                print("Bad object")
+
             self.objects.append(ASSAsset.Object(geo_class,
                                                 xref_path,
                                                 xref_name,
@@ -323,14 +301,22 @@ class ASSAsset(global_functions.HaloAsset):
             name = self.next().strip('\"')
             if name in name_list:
                 true_name = '%s_%s' % (name, instance)
+
             else:
                 true_name = name
+
             name_list.append(name)
             unique_id = int(self.next())
             parent_id = int(self.next())
             inheritance_flag = int(self.next())
-            local_transform = self.next_transform(self.version)
-            pivot_transform = self.next_transform(self.version)
+            if self.version == 1:
+                local_transform = self.next_transform_legacy()
+                pivot_transform = self.next_transform_legacy()
+
+            else:
+                local_transform = self.next_transform()
+                pivot_transform = self.next_transform()
+
             if bone_influence_count > 0:
                 self.skip(bone_influence_count)
 
@@ -402,18 +388,21 @@ def set_ass_material_properties(ass_mat, mat):
             mat.ass_jms.frustum_falloff = float(lighting_frus_args[2])
             mat.ass_jms.frustum_cutoff = float(lighting_frus_args[3])
 
+
+def set_primitive_material(object_material_index, ass_file, mesh):
+    if not object_material_index == -1:
+        mat = ass_file.materials[object_material_index]
+        if mesh.materials:
+            mesh.materials[0] = bpy.data.materials[mat.name]
+
 def load_file(context, filepath, report):
     ass_file = ASSAsset(filepath)
 
-    collection = bpy.context.collection
-    view_layer = bpy.context.view_layer
+    collection = context.collection
     random_color_gen = global_functions.RandomColorGenerator() # generates a random sequence of colors
-    meshes = []
     mesh_vertex_groups = []
 
-    if view_layer.objects.active:
-        bpy.ops.object.mode_set(mode='OBJECT')
-        bpy.ops.object.select_all(action='DESELECT')
+    mesh_processing.deselect_objects(context)
 
     for idx, ass_mat in enumerate(ass_file.materials):
         material_name = ass_mat.name
@@ -424,133 +413,157 @@ def load_file(context, filepath, report):
         set_ass_material_properties(ass_mat, mat)
         mat.diffuse_color = random_color_gen.next()
 
-    for idx, object in enumerate(ass_file.objects):
-        mesh = bpy.data.meshes.new("%s" % idx)
-        object_element = ass_file.objects[idx]
-        geo_class = object_element.geo_class
-        object_material_index = object_element.material_index
-        vertex_groups = []
-        if not object_material_index == -1:
-            mat = ass_file.materials[object_material_index]
-            if mesh.materials:
-                mesh.materials[0] = bpy.data.materials[mat.name]
-
-        if geo_class == 'PILL':
-            bm = bmesh.new()
-            bmesh.ops.create_cone(bm, cap_ends=True, cap_tris=False, segments=12, diameter1=3, diameter2=3, depth=5)
-            bm.transform(Matrix.Translation((0, 0, 2.5)))
-            bm.to_mesh(mesh)
-            bm.free()
-
-        elif geo_class == 'SPHERE':
-            bm = bmesh.new()
-            bmesh.ops.create_uvsphere(bm, u_segments=32, v_segments=16, diameter=1)
-            bm.to_mesh(mesh)
-            bm.free()
-
-        elif geo_class == 'BOX':
-            bm = bmesh.new()
-            bmesh.ops.create_cube(bm, size=1.0)
-            bm.to_mesh(mesh)
-            bm.free()
-
-        elif geo_class == 'MESH':
-            bm = bmesh.new()
-            vert_normal_list = []
-            object_triangles = object_element.triangles
-            for triangle in object_triangles:
-                p1 = object_element.vertices[triangle.v0].translation
-                p2 = object_element.vertices[triangle.v1].translation
-                p3 = object_element.vertices[triangle.v2].translation
-
-                v1 = bm.verts.new((float(p1[0]), float(p1[1]), float(p1[2])))
-                v2 = bm.verts.new((float(p2[0]), float(p2[1]), float(p2[2])))
-                v3 = bm.verts.new((float(p3[0]), float(p3[1]), float(p3[2])))
-                bm.faces.new((v1, v2, v3))
-                vert_list = [triangle.v0, triangle.v1, triangle.v2]
-                for vert in vert_list:
-                    vert_normals = []
-                    ass_vert = object_element.vertices[vert]
-                    for normal in ass_vert.normal:
-                        vert_normals.append(normal)
-
-                    vert_normal_list.append(vert_normals)
-                    for node_values in ass_vert.node_set:
-                        node_index = node_values[0]
-                        if not node_index == -1 and not node_index in vertex_groups:
-                            vertex_groups.append(ass_file.instances[node_index].name)
-
-            bm.verts.ensure_lookup_table()
-            bm.faces.ensure_lookup_table()
-            for idx, triangle in enumerate(object_triangles):
-                triangle_material_index = triangle.material_index
-                if not triangle_material_index == -1:
-                    mat = ass_file.materials[triangle_material_index]
-                    material_list = mesh.materials.keys()
-                    if not mat.name in material_list:
-                        mesh.materials.append(bpy.data.materials[mat.name])
-                        material_list = mesh.materials.keys()
-
-                    bm.faces[idx].material_index = material_list.index(mat.name)
-
-                vert_list = [triangle.v0, triangle.v1, triangle.v2]
-                for vert_idx, vert in enumerate(vert_list):
-                    vertex_index = (3 * idx) + vert_idx
-                    ass_vert = object_element.vertices[vert]
-                    bm.verts[vertex_index].normal = ass_vert.normal
-
-                    if not ass_vert.color == None and ass_file.version >= 6:
-                        color_r = ass_vert.color[0]
-                        color_g = ass_vert.color[1]
-                        color_b = ass_vert.color[2]
-                        color_a = 1
-
-                        layer_color = bm.loops.layers.color.get("color")
-                        if layer_color is None:
-                            layer_color = bm.loops.layers.color.new("color")
-
-                        loop = bm.faces[idx].loops[vert_idx]
-                        loop[layer_color] = (color_r, color_g, color_b, color_a)
-
-                    for uv_idx, uv in enumerate(ass_vert.uv_set):
-                        uv_name = 'UVMap_%s' % uv_idx
-                        layer_uv = bm.loops.layers.uv.get(uv_name)
-                        if layer_uv is None:
-                            layer_uv = bm.loops.layers.uv.new(uv_name)
-
-                        loop = bm.faces[idx].loops[vert_idx]
-                        loop[layer_uv].uv = (uv[0], uv[1])
-
-                    for node_values in ass_vert.node_set:
-                        layer_deform = bm.verts.layers.deform.verify()
-
-                        node_index = node_values[0]
-                        node_weight = node_values[1]
-                        if not node_index == -1:
-                            group_name = ass_file.instances[node_index].name
-                            group_index = vertex_groups.index(group_name)
-                            vert_idx = bm.verts[vertex_index]
-                            vert_idx[layer_deform][group_index] = node_weight
-
-            bm.to_mesh(mesh)
-            bm.free()
-
-        meshes.append(mesh)
-        mesh_vertex_groups.append(vertex_groups)
-        if geo_class == 'MESH':
-            mesh.use_auto_smooth = True
-            mesh.normals_split_custom_set(vert_normal_list)
-
+    object_list = []
+    mesh_list = []
+    object_index_list = []
     for idx, instance in enumerate(ass_file.instances):
         object_index = instance.object_index
         unique_id = instance.unique_id
-        parent_id = instance.parent_id
+
         geo_class = 'EMPTY'
         object_radius = 2
         object_height = 1
         object_extents = [1.0, 1.0, 1.0]
+
+        if not unique_id == -1:
+            if not object_index in object_index_list:
+                if not object_index == -1:
+                    object_index_list.append(object_index)
+                    object_element = ass_file.objects[object_index]
+                    geo_class = object_element.geo_class
+                    object_radius = object_element.radius
+                    object_height = object_element.height
+                    object_extents = object_element.extents
+                    object_material_index = object_element.material_index
+
+                    light_type = "POINT"
+                    if geo_class == 'GENERIC_LIGHT':
+                        if object_element.light_properties.light_type == 'SPOT_LGT':
+                            light_type = "SPOT"
+
+                        elif object_element.light_properties.light_type == 'DIRECT_LGT':
+                            light_type = "AREA"
+
+                        elif object_element.light_properties.light_type == 'OMNI_LGT':
+                            light_type = "POINT"
+
+                        elif object_element.light_properties.light_type == 'AMBIENT_LGT':
+                            light_type = "SUN"
+
+                    if geo_class == 'GENERIC_LIGHT':
+                        object_data = bpy.data.lights.new(instance.name, light_type)
+                    else:
+                        object_data = bpy.data.meshes.new("%s" % idx)
+
+                    object_mesh = bpy.data.objects.new(instance.name, object_data)
+                    collection.objects.link(object_mesh)
+
+                    if geo_class == 'GENERIC_LIGHT':
+                        object_mesh.data.color = (object_element.light_properties.light_color)
+                        object_mesh.data.energy = (object_element.light_properties.intensity)
+                        if object_element.light_properties.light_type == 'SPOT_LGT':
+                                object_mesh.data.use_custom_distance = object_element.light_properties.uses_near_attenuation
+                                object_mesh.data.cutoff_distance = object_element.light_properties.near_attenuation_start
+                                object_mesh.data.spot_size = radians(object_element.light_properties.hotspot_size)
+                                object_mesh.data.spot_blend = object_element.light_properties.hotspot_falloff_size / object_element.light_properties.hotspot_size
+
+                        elif object_element.light_properties.light_type == 'DIRECT_LGT':
+                            object_mesh.data.use_custom_distance = object_element.light_properties.uses_near_attenuation
+                            object_mesh.data.cutoff_distance = object_element.light_properties.near_attenuation_start
+                            object_element.light_properties.light_shape = 0
+                            light_shape_type = "DISK"
+                            if object_element.light_properties.light_shape == 1:
+                                light_shape_type = "RECTANGLE"
+
+                            object_mesh.data.shape = light_shape_type
+                            object_mesh.data.size = object_element.light_properties.light_aspect_ratio
+
+                    elif geo_class == 'PILL':
+                        set_primitive_material(object_material_index, ass_file, object_data)
+
+                        bm = bmesh.new()
+                        bmesh.ops.create_cone(bm, cap_ends=True, cap_tris=False, segments=12, diameter1=1, diameter2=1, depth=2)
+                        bm.transform(Matrix.Translation((0, 0, 1)))
+                        bm.to_mesh(object_data)
+                        bm.free()
+
+                        object_mesh.data.ass_jms.Object_Type = 'CAPSULES'
+                        object_dimension = object_radius * 2
+                        object_mesh.dimensions = (object_dimension, object_dimension, (object_dimension + object_height))
+
+                        mesh_processing.select_object(context, object_mesh)
+                        bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
+                        mesh_processing.deselect_objects(context)
+
+                    elif geo_class == 'SPHERE':
+                        set_primitive_material(object_material_index, ass_file, object_data)
+
+                        bm = bmesh.new()
+                        bmesh.ops.create_uvsphere(bm, u_segments=32, v_segments=16, diameter=1)
+                        bm.to_mesh(object_data)
+                        bm.free()
+
+                        object_mesh.data.ass_jms.Object_Type = 'SPHERE'
+                        object_dimension = object_radius * 2
+                        object_mesh.dimensions = (object_dimension, object_dimension, object_dimension)
+
+                        mesh_processing.select_object(context, object_mesh)
+                        bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
+                        mesh_processing.deselect_objects(context)
+
+                    elif geo_class == 'BOX':
+                        set_primitive_material(object_material_index, ass_file, object_data)
+
+                        bm = bmesh.new()
+                        bmesh.ops.create_cube(bm, size=1.0)
+                        bm.to_mesh(object_data)
+                        bm.free()
+
+                        object_mesh.data.ass_jms.Object_Type = 'BOX'
+                        object_mesh.dimensions = ((object_extents[0] * 2), (object_extents[1] * 2), (object_extents[2] * 2))
+
+                        mesh_processing.select_object(context, object_mesh)
+                        bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
+                        mesh_processing.deselect_objects(context)
+
+                    elif geo_class == 'MESH':
+                        bm, vert_normal_list = mesh_processing.process_mesh_import_data('halo3', ass_file, object_element, object_mesh, object_data, random_color_gen, 'ASS')
+
+                        bm.to_mesh(object_data)
+                        bm.free()
+                        object_mesh.data.normals_split_custom_set(vert_normal_list)
+                        object_mesh.data.use_auto_smooth = True
+
+                        for vertex_groups in mesh_vertex_groups:
+                            for group in vertex_groups:
+                                if not group in object_mesh.vertex_groups:
+                                    object_mesh.vertex_groups.new(name = group)
+
+                    mesh_list.append(object_data)
+
+                else:
+                    object_mesh = bpy.data.objects.new(instance.name, None)
+                    collection.objects.link(object_mesh)
+
+            else:
+                object_mesh = bpy.data.objects.new(instance.name, mesh_list[object_index])
+                collection.objects.link(object_mesh)
+
+            object_list.append(object_mesh)
+
+        else:
+            if not None in object_list:
+                object_list.append(None)
+
+    for idx, instance in enumerate(ass_file.instances):
+        object_index = instance.object_index
+        unique_id = instance.unique_id
+
+        geo_class = 'EMPTY'
+
         local_transform = instance.local_transform
         pivot_transform = instance.pivot_transform
+
         local_scale = (local_transform.scale, local_transform.scale, local_transform.scale)
         pivot_scale = (pivot_transform.scale, pivot_transform.scale, pivot_transform.scale)
         if ass_file.version == 1:
@@ -561,116 +574,30 @@ def load_file(context, filepath, report):
             if not object_index == -1:
                 object_element = ass_file.objects[object_index]
                 geo_class = object_element.geo_class
-                object_radius = object_element.radius
-                object_height = object_element.height
-                object_extents = object_element.extents
-
-                if geo_class == 'GENERIC_LIGHT':
-                    light_type = "POINT"
-                    if object_element.light_properties.light_type == 'SPOT_LGT':
-                        light_type = "SPOT"
-
-                    elif object_element.light_properties.light_type == 'DIRECT_LGT':
-                        light_type = "AREA"
-
-                    elif object_element.light_properties.light_type == 'OMNI_LGT':
-                        light_type = "POINT"
-
-                    elif object_element.light_properties.light_type == 'AMBIENT_LGT':
-                        light_type = "SUN"
-
-                    light_data = bpy.data.lights.new(instance.name, light_type)
-                    object_mesh = bpy.data.objects.new(instance.name, light_data)
-                    object_mesh.data.color = (object_element.light_properties.light_color)
-                    object_mesh.data.energy = (object_element.light_properties.intensity)
-                    if object_element.light_properties.light_type == 'SPOT_LGT':
-                            object_mesh.data.use_custom_distance = object_element.light_properties.uses_near_attenuation
-                            object_mesh.data.cutoff_distance = object_element.light_properties.near_attenuation_start
-                            object_mesh.data.spot_size = radians(object_element.light_properties.hotspot_size)
-                            object_mesh.data.spot_blend = object_element.light_properties.hotspot_falloff_size / object_element.light_properties.hotspot_size
-
-                    elif object_element.light_properties.light_type == 'DIRECT_LGT':
-                        object_mesh.data.use_custom_distance = object_element.light_properties.uses_near_attenuation
-                        object_mesh.data.cutoff_distance = object_element.light_properties.near_attenuation_start
-                        object_element.light_properties.light_shape = 0
-                        light_shape_type = "DISK"
-                        if object_element.light_properties.light_shape == 1:
-                            light_shape_type = "RECTANGLE"
-                        object_mesh.data.shape = light_shape_type
-                        object_mesh.data.size = object_element.light_properties.light_aspect_ratio
-
-                else:
-                    object_mesh = bpy.data.objects.new(instance.name, meshes[object_index])
-
-                collection.objects.link(object_mesh)
-
-                parent_index = instance.parent_id
-                if not parent_index == -1:
-                    parent_instance = ass_file.instances[parent_index]
-                    parent_instance_name = parent_instance.name
-                    parent_unique_id = parent_instance.unique_id
-                    parent_parent_id = parent_instance.parent_id
-                    if not parent_unique_id == -1 and not parent_parent_id == -1:
-                        object_mesh.parent = bpy.data.objects[parent_instance_name]
 
                 output_rotation = local_transform.rotation @ pivot_transform.rotation
                 output_position = local_transform.rotation @ pivot_transform.vector * local_scale[0] + local_transform.vector
                 output_scale = local_scale[0] * pivot_scale[0]
 
-                object_mesh.location = output_position
-                object_mesh.rotation_euler =  output_rotation.to_euler()
-                object_mesh.scale = (output_scale, output_scale, output_scale)
+                object_list[idx].location = output_position
+                object_list[idx].rotation_euler =  output_rotation.to_euler()
+                if geo_class == 'MESH' or geo_class == 'GENERIC_LIGHT':
+                    object_list[idx].scale = (output_scale, output_scale, output_scale)
 
             else:
-                object_mesh = bpy.data.objects.new(instance.name, None)
-                collection.objects.link(object_mesh)
+                object_list[idx].location = local_transform.vector
+                object_list[idx].rotation_euler = local_transform.rotation.to_euler()
+                if geo_class == 'MESH' or geo_class == 'GENERIC_LIGHT':
+                    object_list[idx].scale = local_scale
 
-                parent_index = instance.parent_id
-                if not parent_index == -1:
-                    parent_instance = ass_file.instances[parent_index]
-                    parent_instance_name = parent_instance.name
-                    parent_unique_id = parent_instance.unique_id
-                    parent_parent_id = parent_instance.parent_id
-                    if not parent_unique_id == -1 and not parent_parent_id == -1:
-                        object_mesh.parent = bpy.data.objects[parent_instance_name]
+            parent_index = instance.parent_id
+            if not parent_index == -1:
+                parent_instance = ass_file.instances[parent_index]
+                parent_unique_id = parent_instance.unique_id
+                parent_parent_id = parent_instance.parent_id
+                if parent_unique_id >= -1 and parent_parent_id >= -1:
+                    object_list[idx].parent = object_list[parent_index]
 
-                object_mesh.location = local_transform.vector
-                object_mesh.rotation_euler = local_transform.rotation.to_euler()
-                object_mesh.scale = local_scale
-
-            for vertex_groups in mesh_vertex_groups:
-                for group in vertex_groups:
-                    if not group in object_mesh.vertex_groups:
-                        object_mesh.vertex_groups.new(name = group)
-
-            if geo_class == 'PILL':
-                object_mesh.data.ass_jms.Object_Type = 'CAPSULES'
-                object_dimension = object_radius * 2
-                object_mesh.dimensions = (object_dimension, object_dimension, (object_dimension + object_height))
-                object_mesh.select_set(True)
-                view_layer.objects.active = object_mesh
-                bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
-                object_mesh.select_set(False)
-                view_layer.objects.active = None
-
-            elif geo_class == 'SPHERE':
-                object_mesh.data.ass_jms.Object_Type = 'SPHERE'
-                object_dimension = object_radius * 2
-                object_mesh.dimensions = (object_dimension, object_dimension, object_dimension)
-                object_mesh.select_set(True)
-                view_layer.objects.active = object_mesh
-                bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
-                object_mesh.select_set(False)
-                view_layer.objects.active = None
-
-            elif geo_class == 'BOX':
-                object_mesh.data.ass_jms.Object_Type = 'BOX'
-                object_mesh.dimensions = ((object_extents[0] * 2), (object_extents[1] * 2), (object_extents[2] * 2))
-                object_mesh.select_set(True)
-                view_layer.objects.active = object_mesh
-                bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
-                object_mesh.select_set(False)
-                view_layer.objects.active = None
 
     report({'INFO'}, "Import completed successfully")
     return {'FINISHED'}

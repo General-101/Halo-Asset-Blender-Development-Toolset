@@ -33,7 +33,7 @@ def cull_materials():
         material = face.material_index
         if material not in used_materials:
             used_materials.append(material)
-     
+
     for idx, material_slot in enumerate(active_object.material_slots):
         if idx not in used_materials:
             material_slot.material = None

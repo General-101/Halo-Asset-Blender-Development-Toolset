@@ -119,6 +119,7 @@ def infer_error_type(binding_type, mtl_diffuse_colors):
             color_str = ",".join([color.x, color.y, color.z])
             color_name = color_names.get(color_str, color_str)
             found_colors.add(color_name)
+
         color_info = " (" + ", ".join(sorted(found_colors)) + ")"
 
         if binding_type == "PER_FACE":
@@ -177,7 +178,6 @@ def set_object_properties(object):
     bpy.ops.object.origin_set(type='ORIGIN_GEOMETRY', center='MEDIAN')
     object.select_set(False)
     view_layer.objects.active = None
-
 
 def get_material_name(diffuse, error_type):
     mat_name = error_type
@@ -524,61 +524,73 @@ def convert_wrl_to_blend(context, filepath, report):
     if coplanar_object_mesh:
         coplanar_bm.to_mesh(coplanar_mesh)
         set_object_properties(coplanar_object_mesh)
+
     coplanar_bm.free()
 
     if degenerate_object_mesh:
         degenerate_bm.to_mesh(degenerate_mesh)
         set_object_properties(degenerate_object_mesh)
+
     degenerate_bm.free()
 
     if portal_outside_object_mesh:
         portal_outside_bm.to_mesh(portal_outside_mesh)
         set_object_properties(portal_outside_object_mesh)
+
     portal_outside_bm.free()
 
     if bad_edge_object_mesh:
         bad_edge_bm.to_mesh(bad_edge_mesh)
         set_object_properties(bad_edge_object_mesh)
+
     bad_edge_bm.free()
 
     if unearthed_edge_object_mesh:
         unearthed_edge_bm.to_mesh(unearthed_edge_mesh)
         set_object_properties(unearthed_edge_object_mesh)
+
     unearthed_edge_bm.free()
 
     if surface_clipped_object_mesh:
         surface_clipped_bm.to_mesh(surface_clipped_mesh)
         set_object_properties(surface_clipped_object_mesh)
+
     surface_clipped_bm.free()
 
     if portal_undivide_object_mesh:
         portal_undivide_bm.to_mesh(portal_undivide_mesh)
         set_object_properties(portal_undivide_object_mesh)
+
     portal_undivide_bm.free()
 
     if portal_closed_object_mesh:
         portal_closed_bm.to_mesh(portal_closed_mesh)
         set_object_properties(portal_closed_object_mesh)
+
     portal_closed_bm.free()
 
     if duplicate_triangle_object_mesh:
         duplicate_triangle_bm.to_mesh(duplicate_triangle_mesh)
         set_object_properties(duplicate_triangle_object_mesh)
+
     duplicate_triangle_bm.free()
 
     if intersecting_fog_object_mesh:
         intersecting_fog_bm.to_mesh(intersecting_fog_mesh)
         set_object_properties(intersecting_fog_object_mesh)
+
     intersecting_fog_bm.free()
 
     if degenerate_uv_object_mesh:
         degenerate_uv_bm.to_mesh(degenerate_uv_mesh)
         set_object_properties(degenerate_uv_object_mesh)
+
     degenerate_uv_bm.free()
 
     if unknown_object_mesh:
         unknown_bm.to_mesh(unknown_mesh)
         set_object_properties(unknown_object_mesh)
+
     unknown_bm.free()
 
     return {'FINISHED'}
