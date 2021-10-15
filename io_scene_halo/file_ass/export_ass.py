@@ -185,16 +185,7 @@ class ASSScene(global_functions.HaloAsset):
             self.light_aspect_ratio = light_aspect_ratio
 
     class Vertex:
-        def __init__(self,
-                     node_influence_count=0,
-                     node_set=None,
-                     region=-1,
-                     translation=None,
-                     normal=None,
-                     color=None,
-                     uv_set=None
-                     ):
-
+        def __init__(self, node_influence_count=0, node_set=None, region=-1, translation=None, normal=None, color=None, uv_set=None):
             self.node_influence_count = node_influence_count
             self.node_set = node_set
             self.region = region
@@ -204,13 +195,7 @@ class ASSScene(global_functions.HaloAsset):
             self.uv_set = uv_set
 
     class Triangle:
-        def __init__(self,
-                     region=-1,
-                     material_index=-1,
-                     v0=-1,
-                     v1=-1,
-                     v2=-1):
-
+        def __init__(self, region=-1, material_index=-1, v0=-1, v1=-1, v2=-1):
             self.region = region
             self.material_index = material_index
             self.v0 = v0
@@ -218,16 +203,7 @@ class ASSScene(global_functions.HaloAsset):
             self.v2 = v2
 
     class Instance:
-        def __init__(self,
-                     name,
-                     object_index=-1,
-                     unique_id=-1,
-                     parent_id=-1,
-                     inheritance_flag=0,
-                     local_transform=None,
-                     pivot_transform=None
-                     ):
-
+        def __init__(self, name, object_index=-1, unique_id=-1, parent_id=-1, inheritance_flag=0, local_transform=None, pivot_transform=None):
             self.name = name
             self.object_index = object_index
             self.unique_id = unique_id
@@ -259,7 +235,7 @@ class ASSScene(global_functions.HaloAsset):
         geometry_list = []
         linked_object_list = []
         linked_instance_list = []
-        instance_list = []
+        instance_list = [None]
         object_properties = []
         object_count = 0
 
@@ -291,7 +267,7 @@ class ASSScene(global_functions.HaloAsset):
             elif obj.type == 'LIGHT' and version >= 3:
                 if mesh_processing.set_ignore(obj) == False or hidden_geo:
                     instance_list.append(obj)
-                    if not obj.data.name in linked_object_list:
+                    if not obj.name in linked_object_list:
                         linked_object_list.append(obj.name)
                         object_count += 1
 
@@ -362,6 +338,12 @@ class ASSScene(global_functions.HaloAsset):
             triangles = []
             node_index_list = []
 
+            region_index = -1
+            lod = None
+            region = default_region
+            permutation = default_permutation
+            face_set = (None, None, default_permutation, default_region)
+
             evaluted_mesh = geometry[0]
             original_geo = geometry[1]
             geo_class = geometry[2]
@@ -398,6 +380,7 @@ class ASSScene(global_functions.HaloAsset):
                 if original_geo.parent:
                     parent = original_geo.parent
                     if original_geo.parent.type == 'ARMATURE':
+                        armature = parent
                         if original_geo.parent_type == 'BONE':
                             parent = original_geo.parent.data.bones[original_geo.parent_bone]
 
@@ -462,8 +445,6 @@ class ASSScene(global_functions.HaloAsset):
                     if xref_path != "":
                         xref_name = original_geo.name
 
-                    region = default_region
-                    permutation = default_permutation
                     if original_geo.face_maps.active:
                         face_set = original_geo.face_maps[0].name.split()
                         slot_index, lod, permutation, region = global_functions.material_definition_parser(False, face_set, default_region, default_permutation)
@@ -486,9 +467,6 @@ class ASSScene(global_functions.HaloAsset):
                     if xref_path != "":
                         xref_name = original_geo.name
 
-                    lod = None
-                    region = default_region
-                    permutation = default_permutation
                     if original_geo.face_maps.active:
                         face_set = original_geo.face_maps[0].name.split()
                         slot_index, lod, permutation, region = global_functions.material_definition_parser(False, face_set, default_region, default_permutation)
@@ -511,9 +489,6 @@ class ASSScene(global_functions.HaloAsset):
                     if xref_path != "":
                         xref_name = original_geo.name
 
-                    lod = None
-                    region = default_region
-                    permutation = default_permutation
                     if original_geo.face_maps.active:
                         face_set = original_geo.face_maps[0].name.split()
                         slot_index, lod, permutation, region = global_functions.material_definition_parser(False, face_set, default_region, default_permutation)
@@ -537,17 +512,50 @@ class ASSScene(global_functions.HaloAsset):
                     if xref_path != "":
                         xref_name = original_geo.name
 
-                    geo_material_list, triangles, verts, geo_region_list, geo_permutation_list = mesh_processing.process_mesh_export_data(geometry, armature, instance_list, material_list, version, game_version, default_region, default_permutation, region_list, permutation_list, "ASS", ASSScene, 0)
+                    vertex_groups = original_geo.vertex_groups.keys()
+                    original_geo_matrix = global_functions.get_matrix(original_geo, original_geo, False, armature, instance_list, False, version, "ASS", 0)
+                    for idx, face in enumerate(evaluted_mesh.polygons):
+                        if evaluted_mesh.face_maps.active and len(original_geo.face_maps) > 0:
+                            face_map_idx = evaluted_mesh.face_maps.active.data[idx].value
+                            if not face_map_idx == -1:  
+                                face_set = mesh_processing.process_mesh_export_face_set(default_permutation, default_region, game_version, original_geo, face_map_idx)
+                                if not region in region_list:
+                                    region_list.append(region)
 
-                    material_list = geo_material_list
-                    region_list += geo_region_list
-                    permutation_list += geo_permutation_list
+                                region_index = region_list.index(region)
+                                if not game_version == 'haloce':
+                                    if not permutation in permutation_list:
+                                        permutation_list.append(permutation)
 
+                        permutation = face_set[2]
+                        region = face_set[3]
+
+                        material = global_functions.get_material(game_version, original_geo, face, evaluted_mesh, lod, region, permutation)
+                        material_index = -1
+                        if not material == -1:
+                            material_list = global_functions.gather_materials(game_version, material, material_list, "ASS")
+                            material_index = material_list.index(material)
+
+                        v0 = (idx * 3)
+                        v1 = (idx * 3) + 1
+                        v2 = (idx * 3) + 2
+
+                        triangles.append(ASSScene.Triangle(region_index, material_index, v0, v1, v2))
+                        for loop_index in face.loop_indices:
+                            vert = evaluted_mesh.vertices[evaluted_mesh.loops[loop_index].vertex_index]
+
+                            region = region_index
+                            scaled_translation, normal = mesh_processing.process_mesh_export_vert(vert, "ASS", original_geo_matrix, version, armature)
+                            uv_set = mesh_processing.process_mesh_export_uv(evaluted_mesh, "ASS", loop_index, version)
+                            color = mesh_processing.process_mesh_export_color(evaluted_mesh, loop_index)
+                            node_influence_count, node_set = mesh_processing.process_mesh_export_weights(vert, armature, original_geo, vertex_groups, instance_list, "ASS")
+
+                            verts.append(ASSScene.Vertex(node_influence_count, node_set, region, scaled_translation, normal, color, uv_set))
+
+                    original_geo.to_mesh_clear()
+                    
                 else:
                     print("Bad object")
-
-                if not geo_class == 'BONE' and not 'SPOT_LGT' and not 'DIRECT_LGT' and not 'OMNI_LGT' and not 'AMBIENT_LGT':
-                    original_geo.to_mesh_clear()
 
                 self.objects.append(ASSScene.Object(geo_class, xref_path, xref_name, material_index, radius, extents, height, verts, triangles, node_index_list, light_properties))
 
@@ -735,10 +743,16 @@ def write_file(context,
                 for node in vert.node_set:
                     node_index = node[0]
                     node_weight = node[1]
-                    file.write(
-                        '\n%s' % (node_index) +
-                        '\n%0.10f' % (node_weight)
-                    )
+                    if version >= 3:
+                        file.write(
+                            '\n%s\t%0.10f' % (node_index, node_weight)
+                        )
+
+                    else:
+                        file.write(
+                            '\n%s' % (node_index) +
+                            '\n%0.10f' % (node_weight)
+                        )
 
                 file.write('\n%s' % (len(vert.uv_set)))
                 for uv in vert.uv_set:

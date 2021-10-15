@@ -429,11 +429,54 @@ class JMSScene(global_functions.HaloAsset):
                 geometry_list = blend_scene.collision_geometry_list
 
             for idx, geometry in enumerate(geometry_list):
-                vert_count = len(self.vertices)
-                material_list, mesh_triangles, mesh_vertices, region_list, permutation_list = mesh_processing.process_mesh_export_data(geometry, blend_scene.armature, joined_list, material_list, version, game_version, default_region, default_permutation, region_list, permutation_list, "JMS", JMSScene, vert_count)
+                evaluted_mesh = geometry[0]
+                original_geo = geometry[1]
+                vertex_groups = original_geo.vertex_groups.keys()
+                original_geo_matrix = global_functions.get_matrix(original_geo, original_geo, False, blend_scene.armature, joined_list, False, version, "JMS", 0)
+                for idx, face in enumerate(evaluted_mesh.polygons):
+                    face_set = (None, None, default_permutation, default_region)
+                    lod = face_set[1]
+                    permutation = face_set[2]
+                    region = face_set[3]
+                    if evaluted_mesh.face_maps.active and len(original_geo.face_maps) > 0:
+                        face_map_idx = evaluted_mesh.face_maps.active.data[idx].value
+                        if not face_map_idx == -1:  
+                            face_set = mesh_processing.process_mesh_export_face_set(default_permutation, default_region, game_version, original_geo, face_map_idx)
+                            lod = face_set[1]
+                            permutation = face_set[2]
+                            region = face_set[3]
+                            if not region in region_list:
+                                region_list.append(region)
 
-                self.triangles += mesh_triangles
-                self.vertices += mesh_vertices
+                            region_index = region_list.index(region)
+                            if not game_version == 'haloce':
+                                if not permutation in permutation_list:
+                                    permutation_list.append(permutation)
+
+                    material = global_functions.get_material(game_version, original_geo, face, evaluted_mesh, lod, region, permutation)
+                    material_index = -1
+                    if not material == -1:
+                        material_list = global_functions.gather_materials(game_version, material, material_list, "JMS")
+                        material_index = material_list.index(material)
+
+                    vert_count = len(self.vertices)
+                    v0 = vert_count
+                    v1 = vert_count + 1
+                    v2 = vert_count + 2
+
+                    self.triangles.append(JMSScene.Triangle(region_index, material_index, v0, v1, v2))
+                    for loop_index in face.loop_indices:
+                        vert = evaluted_mesh.vertices[evaluted_mesh.loops[loop_index].vertex_index]
+
+                        region = region_index
+                        scaled_translation, normal = mesh_processing.process_mesh_export_vert(vert, "JMS", original_geo_matrix, version, joined_list)
+                        uv_set = mesh_processing.process_mesh_export_uv(evaluted_mesh, "JMS", loop_index, version)
+                        color = mesh_processing.process_mesh_export_color(evaluted_mesh, loop_index)
+                        node_influence_count, node_set = mesh_processing.process_mesh_export_weights(vert, blend_scene.armature, original_geo, vertex_groups, joined_list, "JMS")
+
+                        self.vertices.append(JMSScene.Vertex(node_influence_count, node_set, region, scaled_translation, normal, color, uv_set))
+
+                original_geo.to_mesh_clear()
 
         if model_type == "physics":
             for spheres in blend_scene.sphere_list:

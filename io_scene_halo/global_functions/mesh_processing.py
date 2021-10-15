@@ -391,7 +391,117 @@ def process_mesh_import_data(game_version, import_file, object_element, object_m
 
     return bm, vert_normal_list
 
-def process_mesh_export_data(geometry, armature, joined_list, material_list, version, game_version, default_region, default_permutation, region_list, permutation_list, file_type, FileScene, vert_count):
+def process_mesh_export_weights(vert, armature, original_geo, vertex_groups, joined_list, file_type):
+    if len(vert.groups) != 0:
+        object_vert_group_list = []
+        vertex_vert_group_list = []
+        for group_index in range(len(vert.groups)):
+            vert_group = vert.groups[group_index].group
+            object_vertex_group = vertex_groups[vert_group]
+            if armature:
+                if object_vertex_group in armature.data.bones:
+                    vertex_vert_group_list.append(group_index)
+                    if armature.data.bones[object_vertex_group] in joined_list:
+                        object_vert_group_list.append(vert_group)
+
+            else:
+                if object_vertex_group in bpy.data.objects:
+                    vertex_vert_group_list.append(group_index)
+                    if bpy.data.objects[object_vertex_group] in joined_list:
+                        object_vert_group_list.append(vert_group)
+
+        value = len(object_vert_group_list)
+        if value > 4:
+            value = 4
+
+        node_influence_count = int(value)
+        node_set = []
+        if len(object_vert_group_list) != 0:
+            for idx, group_index in enumerate(object_vert_group_list):
+                vert_index = int(vertex_vert_group_list[idx])
+                vert_group = vert.groups[vert_index].group
+                object_vertex_group = vertex_groups[vert_group]
+                if armature:
+                    node_obj = armature.data.bones[object_vertex_group]
+
+                else:
+                    node_obj = bpy.data.objects[object_vertex_group]
+
+                node_index = int(joined_list.index(node_obj))
+                node_weight = float(vert.groups[vert_index].weight)
+                node_set.append([node_index, node_weight])
+
+        else:
+            node_set = []
+            parent_index = global_functions.get_parent(armature, original_geo, joined_list, 0)
+            node_influence_count = int(1)
+            node_index = int(parent_index[0])
+            node_weight = float(1.0000000000)
+            node_set.append([node_index, node_weight])
+
+    else:
+        node_set = []
+        node_influence_count = int(0)
+        if file_type == 'JMS':
+            parent_index = global_functions.get_parent(armature, original_geo, joined_list, 0)
+            node_influence_count = int(1)
+            node_index = int(parent_index[0])
+            node_weight = float(1.0000000000)
+            node_set.append([node_index, node_weight])
+
+    return node_influence_count, node_set
+
+def process_mesh_export_color(evaluated_geo, loop_index):
+    color = (0.0, 0.0, 0.0)
+    if evaluated_geo.vertex_colors:
+        color_rgb = evaluated_geo.vertex_colors.active.data[loop_index].color
+        color = color_rgb
+
+    return color
+
+def process_mesh_export_uv(evaluated_geo, file_type, loop_index, version):
+    uv_set = []
+    for uv_index in range(len(evaluated_geo.uv_layers)):
+        evaluated_geo.uv_layers.active = evaluated_geo.uv_layers[uv_index]
+        uv = evaluated_geo.uv_layers.active.data[evaluated_geo.loops[loop_index].index].uv
+        uv_set.append(uv)
+
+    if file_type == 'JMS':
+        if not uv_set and version <= 8204:
+            uv_set = [(0.0, 0.0)]
+
+    return uv_set
+
+def process_mesh_export_vert(vert, file_type, original_geo_matrix, version, armature):
+    translation =  vert.co
+    if file_type == 'JMS':
+        translation = original_geo_matrix @ vert.co
+
+    mesh_dimensions = global_functions.get_dimensions(None, None, None, None, version, translation, True, False, armature, file_type)
+    scaled_translation = (mesh_dimensions.pos_x_a, mesh_dimensions.pos_y_a, mesh_dimensions.pos_z_a)
+
+    normal = (vert.normal).normalized()
+    if file_type == 'JMS':
+        normal = (original_geo_matrix @ (vert.co + vert.normal) - translation).normalized()
+
+    return scaled_translation, normal
+
+def process_mesh_export_face_set(default_permutation, default_region, game_version, original_geo, face_map_idx):
+    if game_version == 'haloce':
+        if not face_map_idx == -1:
+            region = original_geo.face_maps[face_map_idx].name
+            face_set = (None, None, None, region)
+
+    else:
+        if not face_map_idx == -1:
+            face_set = original_geo.face_maps[face_map_idx].name.split()
+
+        slot_index, lod, permutation, region = global_functions.material_definition_parser(False, face_set, default_region, default_permutation)
+        face_set = (slot_index, lod, permutation, region)
+
+    return face_set
+
+def process_mesh_export_data(geometry, armature, joined_list, material_list, version, game_version, default_region, default_permutation, region_list, permutation_list, file_type, vert_count):
     slot_index = None
     lod = None
     region = default_region
@@ -425,7 +535,7 @@ def process_mesh_export_data(geometry, armature, joined_list, material_list, ver
             if evaluated_geo.face_maps.active:
                 face_set = [default_permutation, default_region]
                 face_map_idx = evaluated_geo.face_maps.active.data[idx].value
-                if not face_map_idx == -1:
+                if not face_map_idx == -1 and len(original_geo.face_maps) > 0:
                     face_set = original_geo.face_maps[face_map_idx].name.split()
 
                 slot_index, lod, permutation, region = global_functions.material_definition_parser(False, face_set, default_region, default_permutation)
@@ -446,7 +556,7 @@ def process_mesh_export_data(geometry, armature, joined_list, material_list, ver
         v1 = vert_count + (idx * 3) + 1
         v2 = vert_count + (idx * 3) + 2
 
-        triangles.append(FileScene.Triangle(region_index, material_index, v0, v1, v2))
+        triangles.append((region_index, material_index, v0, v1, v2))
         for loop_index in face.loop_indices:
             vert = evaluated_geo.vertices[evaluated_geo.loops[loop_index].vertex_index]
 
@@ -535,7 +645,7 @@ def process_mesh_export_data(geometry, armature, joined_list, material_list, ver
                     node_weight = float(1.0000000000)
                     node_set.append([node_index, node_weight])
 
-            vertices.append(FileScene.Vertex(node_influence_count, node_set, region, scaled_translation, normal, color, uv_set))
+            vertices.append((node_influence_count, node_set, region, scaled_translation, normal, color, uv_set))
 
     original_geo.to_mesh_clear()
 
