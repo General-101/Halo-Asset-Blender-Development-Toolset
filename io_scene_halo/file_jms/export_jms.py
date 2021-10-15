@@ -435,6 +435,7 @@ class JMSScene(global_functions.HaloAsset):
                 original_geo_matrix = global_functions.get_matrix(original_geo, original_geo, False, blend_scene.armature, joined_list, False, version, "JMS", 0)
                 for idx, face in enumerate(evaluted_mesh.polygons):
                     face_set = (None, None, default_permutation, default_region)
+                    region_index = -1
                     lod = face_set[1]
                     permutation = face_set[2]
                     region = face_set[3]
