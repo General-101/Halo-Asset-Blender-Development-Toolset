@@ -28,6 +28,7 @@ import os
 import bpy
 import sys
 import colorsys
+import re
 
 from decimal import *
 from mathutils import Vector, Quaternion, Matrix
@@ -678,15 +679,23 @@ class SceneParseError(Exception):
 class HaloAsset:
     """Helper class for reading in JMS/JMA/ASS files"""
 
+    __comment_regex = re.compile("[^\"]*;(?!.*\")")
+
     def __init__(self, filepath):
         self._elements = []
         self._index = 0
         with open(filepath, "r", encoding=test_encoding(filepath)) as file:
             for line in file:
-                processed_line = line.split(";", 1)[0].strip()
-                for element in processed_line.split("\t"):
-                    if element != '': #Sternly written letters will be sent to the person or team who designed the split() function
-                        self._elements.append(element)
+                for element in line.strip().split("\t"):
+                    if element != '':
+                        comment_match = re.search(self.__comment_regex, element)
+                        if comment_match is None:
+                            self._elements.append(element)
+                        else:
+                            processed_element = element[: comment_match.end() - 1]
+                            if processed_element != '':
+                                self._elements.append(element)
+                            break # ignore the rest of the line if we found a comment
 
     def left(self):
         """Returns the number of elements left"""
@@ -1139,11 +1148,14 @@ def material_definition_parser(is_import, material_definition_items, default_reg
     return slot_index, lod, permutation, region
 
 def run_code(code_string):
+    from .. import config
     def toolset_exec(code):
-        from .. import config
         if config.ENABLE_PROFILING:
             import cProfile
             cProfile.runctx(code, globals(), caller_locals)
+        elif config.ENABLE_DEBUG:
+            import pdb
+            pdb.runctx(code, globals(), caller_locals)
         else:
             exec(code, globals(), caller_locals)
     import inspect
