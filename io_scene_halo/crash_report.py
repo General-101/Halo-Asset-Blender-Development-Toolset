@@ -32,6 +32,8 @@ Please create an issue at {config.URL} or email {config.EMAIL}""")
 def report_crash():
     info = sys.exc_info()
     traceback.print_exception(info[0], info[1], info[2])
+    if config.ENABLE_DEBUGGING:
+        pdb.post_mortem(info[2])
     if config.ENABLE_CRASH_REPORT:
         report = CrashReport()
         report.add_file("crash/traceback.txt", traceback.format_exc())
