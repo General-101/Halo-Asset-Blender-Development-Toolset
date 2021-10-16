@@ -473,7 +473,7 @@ class JMSScene(global_functions.HaloAsset):
                         scaled_translation, normal = mesh_processing.process_mesh_export_vert(vert, "JMS", original_geo_matrix, version, joined_list)
                         uv_set = mesh_processing.process_mesh_export_uv(evaluted_mesh, "JMS", loop_index, version)
                         color = mesh_processing.process_mesh_export_color(evaluted_mesh, loop_index)
-                        node_influence_count, node_set = mesh_processing.process_mesh_export_weights(vert, blend_scene.armature, original_geo, vertex_groups, joined_list, "JMS")
+                        node_influence_count, node_set, node_index_list = mesh_processing.process_mesh_export_weights(vert, blend_scene.armature, original_geo, vertex_groups, joined_list, "JMS")
 
                         self.vertices.append(JMSScene.Vertex(node_influence_count, node_set, region, scaled_translation, normal, color, uv_set))
 
@@ -1928,24 +1928,21 @@ def command_queue(context,
 
     blend_scene = global_functions.BlendScene(world_node_count, armature_count, mesh_frame_count, render_count, collision_count, physics_count, armature, node_list, render_marker_list, collision_marker_list, physics_marker_list, marker_list, instance_xref_paths, instance_markers, render_geometry_list, collision_geometry_list, sphere_list, box_list, capsule_list, convex_shape_list, ragdoll_list, hinge_list, car_wheel_list, point_to_point_list, prismatic_list, bounding_sphere_list, skylight_list)
 
-    global_functions.validate_halo_scene(game_version, version, blend_scene, object_list, jmi, False, None)
+    global_functions.validate_halo_jms_scene(game_version, version, blend_scene, object_list, jmi)
 
     if export_render and blend_scene.render_count > 0:
-        if not game_version == 'haloce' and len(blend_scene.node_list) == 0: #H2+ files can have JMS files without a node for physics.
-            raise global_functions.SceneParseError("No nodes in scene. Add an armature or object mesh named frame.")
-
         model_type = "render"
+
         write_file(filepath, report, version, game_version, encoding, generate_checksum, folder_structure, folder_type, permutation_ce, level_of_detail_ce, model_type, blend_scene, jmi)
 
     if export_collision and blend_scene.collision_count > 0:
-        if not game_version == 'haloce' and len(blend_scene.node_list) == 0: #H2+ files can have JMS files without a node for physics.
-            raise global_functions.SceneParseError("No nodes in scene. Add an armature or object mesh named frame.")
-
         model_type = "collision"
+
         write_file(filepath, report, version, game_version, encoding, generate_checksum, folder_structure, folder_type, permutation_ce, level_of_detail_ce, model_type, blend_scene, jmi)
 
     if export_physics and blend_scene.physics_count > 0:
         model_type = "physics"
+        
         write_file(filepath, report, version, game_version, encoding, generate_checksum, folder_structure, folder_type, permutation_ce, level_of_detail_ce, model_type, blend_scene, jmi)
 
     for idx, obj in enumerate(object_list):

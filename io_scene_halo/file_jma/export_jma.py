@@ -106,7 +106,7 @@ class JMAScene(global_functions.HaloAsset):
                                 None,
                                 None)
 
-        global_functions.validate_halo_scene(game_version, version, blend_scene, object_list, False, True, extension)
+        global_functions.validate_halo_jma_scene(game_version, version, blend_scene, object_list, extension)
 
         self.node_checksum = 0
         for node in joined_list:

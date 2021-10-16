@@ -938,61 +938,76 @@ def get_directory(game_version, model_type, folder_structure, asset_type, jmi, f
 
     return root_directory
 
-def validate_halo_scene(game_version, version, blend_scene, object_list, jmi, jma, extension):
+def validate_halo_jms_scene(game_version, version, blend_scene, object_list, jmi):
     raise_error = None
-    h2_extension_list = ['JRMX', 'JMH']
     node_count = len(blend_scene.node_list)
-    if jma:
-        if node_count == 0:
-            raise_error = SceneParseError("No nodes in scene. Add an armature or object mesh named frame.")
 
-    if count_root_nodes(blend_scene.node_list) >= 2 and not jmi:
-        raise_error = SceneParseError("More than one root node. Please remove or rename objects until you only have one root frame object.")
+    if len(object_list) == 0:
+        raise SceneParseError("No objects in scene.")
+
+    elif node_count == 0:
+        raise SceneParseError("No nodes in scene. Add an armature or object mesh named frame.")
+
+    elif count_root_nodes(blend_scene.node_list) >= 2 and not jmi:
+        raise SceneParseError("More than one root node. Please remove or rename objects until you only have one root frame object.")
 
     elif blend_scene.mesh_frame_count > 0 and blend_scene.armature_count > 0:
-        raise_error = SceneParseError("Using both armature and object mesh node setup. Choose one or the other.")
+        raise SceneParseError("Using both armature and object mesh node setup. Choose one or the other.")
 
-    elif len(object_list) == 0:
-        raise_error = SceneParseError("No objects in scene.")
+    elif game_version == 'haloce' and version >= 8201:
+        raise SceneParseError("This version is not supported for Halo CE. Choose from 8197-8200 if you wish to export for Halo CE.")
 
-    if game_version == 'haloce':
-        if jma:
-            if version >= 16393 and game_version == 'haloce':
-                raise_error = SceneParseError("This version is not supported for Halo CE. Choose from 16390-16392 if you wish to export for Halo CE.")
+    elif game_version == 'halo2' and version >= 8211:
+        raise SceneParseError("This version is not supported for Halo 2. Choose from 8197-8210 if you wish to export for Halo 2.")
 
-            elif extension in h2_extension_list and game_version == 'haloce':
-                raise_error = SceneParseError("This extension is not used in Halo CE.")
+    elif game_version == 'halo3' and version >= 8213:
+        raise SceneParseError("This version is not supported for Halo 3. Choose from 8197-8213 if you wish to export for Halo 3.")
 
-        else:
-            if version >= 8201:
-                raise_error = SceneParseError("This version is not supported for Halo CE. Choose from 8197-8200 if you wish to export for Halo CE.")
+    elif game_version == 'haloce' and len(blend_scene.render_geometry_list + blend_scene.collision_geometry_list + blend_scene.marker_list) == 0:
+        raise SceneParseError("No geometry in scene.")
 
-            elif len(blend_scene.render_geometry_list + blend_scene.collision_geometry_list + blend_scene.marker_list) == 0:
-                raise_error = SceneParseError("No geometry in scene.")
+    elif not game_version == 'haloce' and len(blend_scene.render_geometry_list + blend_scene.collision_geometry_list + blend_scene.marker_list + blend_scene.hinge_list + blend_scene.ragdoll_list + blend_scene.point_to_point_list + blend_scene.sphere_list + blend_scene.box_list + blend_scene.capsule_list + blend_scene.convex_shape_list + blend_scene.instance_xref_paths + blend_scene.car_wheel_list + blend_scene.prismatic_list + blend_scene.bounding_sphere_list + blend_scene.skylight_list) == 0:
+        raise SceneParseError("No geometry in scene.")
 
-        if node_count == 0:
-            raise_error = SceneParseError("No nodes in scene. Add an armature or object mesh named frame.")
+    elif game_version == 'haloce' and node_count > 64:
+        raise SceneParseError("This model has more nodes than Halo CE supports. Please limit your node count to 64 nodes")
 
-        elif node_count > 64:
-            raise_error = SceneParseError("This model has more nodes than Halo CE supports. Please limit your node count to 64 nodes")
+    elif game_version == 'halo2' and node_count > 255:
+        raise SceneParseError("This model has more nodes than Halo 2 supports. Please limit your node count to 255 nodes")
 
-    else:
-        if not jma:
-            if game_version == 'halo2'and version >= 8211:
-                raise_error = SceneParseError("This version is not supported for Halo 2. Choose from 8197-8210 if you wish to export for Halo 2.")
+    elif game_version == 'halo3' and node_count > 255:
+        raise SceneParseError("This model has more nodes than Halo 3 supports. Please limit your node count to 255 nodes")
 
-            elif len(blend_scene.render_geometry_list + blend_scene.collision_geometry_list + blend_scene.marker_list + blend_scene.hinge_list + blend_scene.ragdoll_list + blend_scene.point_to_point_list + blend_scene.sphere_list + blend_scene.box_list + blend_scene.capsule_list + blend_scene.convex_shape_list + blend_scene.instance_xref_paths + blend_scene.car_wheel_list + blend_scene.prismatic_list + blend_scene.bounding_sphere_list + blend_scene.skylight_list) == 0:
-                raise_error = SceneParseError("No geometry in scene.")
+def validate_halo_jma_scene(game_version, version, blend_scene, object_list, extension):
+    h2_extension_list = ['JRMX', 'JMH']
+    node_count = len(blend_scene.node_list)
 
-        if node_count > 255:
-            if game_version == 'halo2':
-                raise_error = SceneParseError("This model has more nodes than Halo 2 supports. Please limit your node count to 255 nodes")
+    if len(object_list) == 0:
+        raise SceneParseError("No objects in scene.")
 
-            else:
-                raise_error = SceneParseError("This model has more nodes than Halo 3 supports. Please limit your node count to 255 nodes")
+    elif node_count == 0:
+        raise SceneParseError("No nodes in scene. Add an armature.")
 
-    if raise_error:
-        raise raise_error
+    elif extension in h2_extension_list and game_version == 'haloce':
+        raise SceneParseError("This extension is not used in Halo CE.")
+
+    elif game_version == 'haloce' and version >= 16393:
+        raise SceneParseError("This version is not supported for Halo CE. Choose from 16390-16392 if you wish to export for Halo CE.")
+
+    elif game_version == 'halo2' and version >= 16396:
+        raise SceneParseError("This version is not supported for Halo 2. Choose from 16390-16395 if you wish to export for Halo 2.")
+
+    elif game_version == 'halo3' and version >= 16396:
+        raise SceneParseError("This version is not supported for Halo 3. Choose from 16390-16395 if you wish to export for Halo 3.")
+
+    elif game_version == 'haloce' and node_count > 64:
+        raise SceneParseError("This model has more nodes than Halo CE supports. Please limit your node count to 64 nodes")
+
+    elif game_version == 'halo2' and node_count > 255:
+        raise SceneParseError("This model has more nodes than Halo 2 supports. Please limit your node count to 255 nodes")
+
+    elif game_version == 'halo3' and node_count > 255:
+        raise SceneParseError("This model has more nodes than Halo 3 supports. Please limit your node count to 255 nodes")
 
 def string_empty_check(string):
     is_empty = False
