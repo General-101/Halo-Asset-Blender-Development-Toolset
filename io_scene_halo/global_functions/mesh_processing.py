@@ -392,6 +392,7 @@ def process_mesh_import_data(game_version, import_file, object_element, object_m
     return bm, vert_normal_list
 
 def process_mesh_export_weights(vert, armature, original_geo, vertex_groups, joined_list, file_type):
+    node_index_list = []
     if len(vert.groups) != 0:
         object_vert_group_list = []
         vertex_vert_group_list = []
@@ -428,16 +429,21 @@ def process_mesh_export_weights(vert, armature, original_geo, vertex_groups, joi
                     node_obj = bpy.data.objects[object_vertex_group]
 
                 node_index = int(joined_list.index(node_obj))
+                if not node_index in node_index_list:
+                    node_index_list.append(node_index)
+
                 node_weight = float(vert.groups[vert_index].weight)
                 node_set.append([node_index, node_weight])
 
         else:
             node_set = []
-            parent_index = global_functions.get_parent(armature, original_geo, joined_list, 0)
-            node_influence_count = int(1)
-            node_index = int(parent_index[0])
-            node_weight = float(1.0000000000)
-            node_set.append([node_index, node_weight])
+            node_influence_count = int(0)
+            if file_type == 'JMS':
+                parent_index = global_functions.get_parent(armature, original_geo, joined_list, 0)
+                node_influence_count = int(1)
+                node_index = int(parent_index[0])
+                node_weight = float(1.0000000000)
+                node_set.append([node_index, node_weight])
 
     else:
         node_set = []
@@ -449,7 +455,7 @@ def process_mesh_export_weights(vert, armature, original_geo, vertex_groups, joi
             node_weight = float(1.0000000000)
             node_set.append([node_index, node_weight])
 
-    return node_influence_count, node_set
+    return node_influence_count, node_set, node_index_list
 
 def process_mesh_export_color(evaluated_geo, loop_index):
     color = (0.0, 0.0, 0.0)

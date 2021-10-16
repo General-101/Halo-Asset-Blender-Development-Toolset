@@ -388,8 +388,7 @@ class ASSScene(global_functions.HaloAsset):
                             parent = original_geo.parent.data.bones[0]
 
             if not parent == None:
-                parent_index = instance_list.index(parent)
-                parent_id = parent_index + 1
+                parent_id = instance_list.index(parent)
 
             geo_matrix = global_functions.get_matrix(original_geo, original_geo, True, armature, instance_list, is_bone, version, 'ASS', 0)
             geo_dimensions = global_functions.get_dimensions(geo_matrix, original_geo, None, None, version, None, False, is_bone, armature, 'ASS')
@@ -548,7 +547,7 @@ class ASSScene(global_functions.HaloAsset):
                             scaled_translation, normal = mesh_processing.process_mesh_export_vert(vert, "ASS", original_geo_matrix, version, armature)
                             uv_set = mesh_processing.process_mesh_export_uv(evaluted_mesh, "ASS", loop_index, version)
                             color = mesh_processing.process_mesh_export_color(evaluted_mesh, loop_index)
-                            node_influence_count, node_set = mesh_processing.process_mesh_export_weights(vert, armature, original_geo, vertex_groups, instance_list, "ASS")
+                            node_influence_count, node_set, node_index_list = mesh_processing.process_mesh_export_weights(vert, armature, original_geo, vertex_groups, instance_list, "ASS")
 
                             verts.append(ASSScene.Vertex(node_influence_count, node_set, region, scaled_translation, normal, color, uv_set))
 
