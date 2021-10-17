@@ -39,7 +39,7 @@ class ASSAsset(global_functions.HaloAsset):
             self.scale = scale
 
     class Material:
-        def __init__(self, name="", texture_path=None, slot=None, lod=None, permutation=None, region=None, material_effect="", material_strings=[]):
+        def __init__(self, name=None, texture_path=None, slot=None, lod=None, permutation=None, region=None, material_effect=None, material_strings=None):
             self.name = name
             self.texture_path = texture_path
             self.slot = slot
@@ -171,7 +171,7 @@ class ASSAsset(global_functions.HaloAsset):
                 for string in range(material_string_count):
                     material_strings.append(self.next().strip('\"'))
 
-            self.materials.append(ASSAsset.Material(name, material_effect, material_strings))
+            self.materials.append(ASSAsset.Material(name, None, None, None, None, None, material_effect, material_strings))
 
         object_count = int(self.next())
         for object in range(object_count):
