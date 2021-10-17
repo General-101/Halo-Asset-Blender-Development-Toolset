@@ -393,7 +393,7 @@ def process_mesh_import_data(game_version, import_file, object_element, object_m
 
 def process_mesh_export_weights(vert, armature, original_geo, vertex_groups, joined_list, file_type):
     node_index_list = []
-    if len(vert.groups) != 0:
+    if len(vert.groups) != 0 and len(vert.groups) <= len(vertex_groups):
         object_vert_group_list = []
         vertex_vert_group_list = []
         for group_index in range(len(vert.groups)):

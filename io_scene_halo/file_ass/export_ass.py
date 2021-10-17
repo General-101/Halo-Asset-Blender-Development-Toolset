@@ -261,7 +261,7 @@ class ASSScene(global_functions.HaloAsset):
                         if not bone.name in linked_object_list:
                             linked_object_list.append(bone.name)
 
-                        geometry_list.append((bone, bone, 'BONE'))
+                        geometry_list.append((bone, bone, 'BONE', obj))
                         object_count += 1
 
             elif obj.type == 'LIGHT' and version >= 3:
@@ -373,8 +373,7 @@ class ASSScene(global_functions.HaloAsset):
             parent = None
             if geo_class == 'BONE':
                 is_bone = True
-                armature_name = original_geo.id_data.name
-                armature = bpy.data.objects[armature_name]
+                armature = geometry[3]
 
             else:
                 if original_geo.parent:
