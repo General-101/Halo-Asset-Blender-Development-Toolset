@@ -1058,11 +1058,8 @@ def material_definition_parser(is_import, material_definition_items, default_reg
     lod_list = ['l1', 'l2', 'l3', 'l4', 'l5', 'l6']
     slot_index = None
     lod = None
-    region = default_region
-    permutation = default_permutation
-    if is_import:
-        region = None
-        permutation = None
+    region = None
+    permutation = None
 
     if len(material_definition_items) == 1:
         item_0 = material_definition_items[0].lower()
@@ -1144,6 +1141,12 @@ def material_definition_parser(is_import, material_definition_items, default_reg
         lod = material_definition_items[1]
         permutation = material_definition_items[2]
         region = material_definition_items[3]
+
+    if not is_import:
+        if permutation == None:
+            permutation = default_permutation
+        if region == None:
+            region = default_region
 
     return slot_index, lod, permutation, region
 
