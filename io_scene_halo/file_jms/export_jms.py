@@ -601,8 +601,8 @@ class JMSScene(global_functions.HaloAsset):
                 lod = None
                 region = default_region
                 permutation = default_permutation
-                if evaluated_geo.face_maps.active:
-                    face_set = evaluated_geo.face_maps[0].name.split()
+                if original_geo.face_maps.active:
+                    face_set = original_geo.face_maps[0].name.split()
                     slot_index, lod, permutation, region = global_functions.material_definition_parser(False, face_set, default_region, default_permutation)
 
                     if not permutation in permutation_list:
