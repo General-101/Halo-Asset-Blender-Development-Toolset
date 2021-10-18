@@ -436,6 +436,9 @@ class JMSScene(global_functions.HaloAsset):
                 for idx, face in enumerate(evaluted_mesh.polygons):
                     face_set = (None, None, default_permutation, default_region)
                     region_index = -1
+                    if game_version == 'haloce':
+                        region_index = region_list.index(default_region)
+                        
                     lod = face_set[1]
                     permutation = face_set[2]
                     region = face_set[3]
