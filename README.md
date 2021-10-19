@@ -17,22 +17,22 @@ Script supports the following features:
 
 Feature                    | Halo Custom Edition/Halo Combat Evolved Anniversary MCC - Classic | Halo 2 Vista/Halo 2 Anniversary MCC - Classic  | Halo 3 MCC/ Halo 3 ODST MCC
 -------------------------- | ----------------------------------------------------------------- | ---------------------------------------------- | ------------------------------------------
-Levels(JMS/ASS)            | Full Support                                                      | Full Support                                   | Untested(See 1 and 2)
-GBXmodel/Render Model(JMS) | Full Support                                                      | Full Support                                   | Untested(See 1 and 2)
-Collision Geometry(JMS)    | Full Support                                                      | Full Support                                   | Untested(See 1 and 2)
-Physics Models(JMS)        | Full Support                                                      | Partial Support(See 3)                         | Untested(See 1 and 2)
-Animations(JMA)            | Full Support                                                      | Full Support                                   | Untested(See 1)
-JMI Exporting              | N/A                                                               | Full Support                                   | Full Support
-WRL Importing              | Full Support                                                      | No Support(See 4)                              | N/A
-JMS Importing              | Partial Support(See 5)                                            | Partial Support(See 3 and 5)                   | Partial Support(See 3 and 5)
+Levels(JMS/ASS)            | Full Support                                                      | Full Support                                   | Partial Support(See 5)     
+GBXmodel/Render Model(JMS) | Full Support                                                      | Full Support                                   | Full Support 
+Collision Geometry(JMS)    | Full Support                                                      | Full Support                                   | Full Support 
+Physics Models(JMS)        | Full Support                                                      | Partial Support(See 2)                         | Partial Support(See 2)
+Animations(JMA)            | Full Support                                                      | Full Support                                   | Full Support
+JMI Exporting              | Full Support                                                      | Full Support                                   | Full Support
+WRL Importing              | Full Support                                                      | No Support(See 3)                              | No Support(See 3)
+JMS Importing              | Partial Support(See 4)                                            | Partial Support(See 2 and 4)                   | Partial Support(See 2 and 4)
 JMA Importing              | Full Support                                                      | Full Support                                   | Full Support
-ASS Importing              | N/A                                                               | Partial Support(See 5)                         | Partial Support(See 5) 
+ASS Importing              | N/A                                                               | Partial Support(See 4)                         | Partial Support(See 4 and 5) 
 
- 1. Toolset has only seen Halo 3 legacy JMS/JMA/ASS files. While it would likely work as is with the original toolset, there is no guarantee that this won't change in the future.
- 2. Toolset is currently missing support for importing or exporting certain Halo 3 JMS features such as skylights and the W coordinate.
- 3. Physics constraints are not exported/imported properly from/to Blender. Work has to be done to see what is analogous between Blender's physics system and 3DS Max's Reactor physics simulation.
- 4. WRL 2.0 files are not supported by the WRL importing solution provided by the toolset. Blender has 2.0 support but it may be somewhat unstable. We may reconsider if this turns out to be an issue.
- 5. JMS/ASS files imported into Blender do not have their triangles connected properly. This means that imported models are improper due to the exporter using vertex normals instead of loop normals.
+ 1. Toolset is currently missing support for importing or exporting certain Halo 3 JMS features such as skylights and the W coordinate.
+ 2. Physics constraints are not exported/imported properly from/to Blender. Work has to be done to see what is analogous between Blender's physics system and 3DS Max's Reactor physics simulation.
+ 3. WRL 2.0 files are not supported by the WRL importing solution provided by the toolset. Blender has 2.0 support but it may be somewhat unstable. We may reconsider if this turns out to be an issue.
+ 4. JMS/ASS files imported into Blender do not have their triangles connected properly. This means that imported models are improper due to the exporter using vertex normals instead of loop normals.
+ 5. Some Halo 3 ASS features such as lights are not fully supported. This will change with future releases.
 
 ## Documentation
 See the following links for information on exporting or importing assets from these tools:
