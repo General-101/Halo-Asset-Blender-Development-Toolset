@@ -366,7 +366,8 @@ def set_ass_material_properties(ass_mat, mat):
             mat.ass_jms.override_lightmap_transparency = int(lmres_string_args[6])
             mat.ass_jms.additive_transparency = (float(lmres_string_args[7]), float(lmres_string_args[8]), float(lmres_string_args[9]))
             mat.ass_jms.use_shader_gel = int(lmres_string_args[10])
-            mat.ass_jms.ignore_default_res_scale = int(lmres_string_args[11])
+            if len(lmres_string_args) > 11:
+                mat.ass_jms.ignore_default_res_scale = int(lmres_string_args[11])
 
         elif string.startswith("BM_LIGHTING_BASIC"):
             lighting_basic_args = string.split()

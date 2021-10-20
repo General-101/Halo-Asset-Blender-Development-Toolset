@@ -220,13 +220,13 @@ def gather_modifers(obj):
 
     return modifier_list
 
-def add_modifier(context, obj, triangulate_faces, edge_split_class):
+def add_modifier(context, obj, triangulate_faces, edge_split_class, armature):
     modifier_list = gather_modifers(obj)
     if triangulate_faces:
         if not 'TRIANGULATE' in modifier_list:
             obj.modifiers.new("Triangulate", type='TRIANGULATE')
 
-    if edge_split_class.is_enabled:
+    if edge_split_class and edge_split_class.is_enabled:
         if not 'EDGE_SPLIT' in modifier_list:
             edge_split = obj.modifiers.new("EdgeSplit", type='EDGE_SPLIT')
             edge_split.use_edge_angle = edge_split_class.use_edge_angle
@@ -238,6 +238,15 @@ def add_modifier(context, obj, triangulate_faces, edge_split_class):
             obj.modifiers[modifier_idx].use_edge_angle = edge_split_class.use_edge_angle
             obj.modifiers[modifier_idx].split_angle = edge_split_class.split_angle
             obj.modifiers[modifier_idx].use_edge_sharp = edge_split_class.use_edge_sharp
+
+    if armature:
+        if not 'ARMATURE' in modifier_list:
+            armature_modifier = obj.modifiers.new("Armature", type='ARMATURE')
+            armature_modifier.object = armature
+
+        else:
+            modifier_idx = modifier_list.index('ARMATURE')
+            obj.modifiers[modifier_idx].object = armature
 
     context.view_layer.update()
 

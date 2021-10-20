@@ -245,7 +245,7 @@ class ASSScene(global_functions.HaloAsset):
                     mesh_processing.vertex_group_clean_normalize(context, obj, limit_value)
 
                 if apply_modifiers:
-                    mesh_processing.add_modifier(context, obj, triangulate_faces, edge_split)
+                    mesh_processing.add_modifier(context, obj, triangulate_faces, edge_split, None)
 
         depsgraph = context.evaluated_depsgraph_get()
         for obj in object_list:

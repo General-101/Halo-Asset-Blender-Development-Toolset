@@ -26,7 +26,7 @@
 
 import bpy
 
-def write_file(context, filepath, report):
+def write_file(filepath, report):
     mesh_list = list(bpy.data.meshes)
     mesh_count = len(mesh_list)
 

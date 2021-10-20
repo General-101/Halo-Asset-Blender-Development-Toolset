@@ -794,7 +794,7 @@ class Bulk_Lightmap_Images(Operator):
         from ..misc import lightmapper_prep
         scene = context.scene
         scene_halo_lightmapper = scene.halo_lightmapper
-        return global_functions.run_code("lightmapper_prep.lightmap_bulk(context, scene_halo_lightmapper.res_x, scene_halo_lightmapper.res_y)")
+        return global_functions.run_code("lightmapper_prep.lightmap_bulk(scene_halo_lightmapper.res_x, scene_halo_lightmapper.res_y)")
 
 class Bulk_Rename_Bones(Operator):
     """Rename all bones in the scene to swap from Blender .L/.R to Halo l/r bone naming scheme and vice versa"""
@@ -904,7 +904,7 @@ class ExportLightmap(Operator, ExportHelper):
     def execute(self, context):
         from ..misc import export_lightmap
 
-        return global_functions.run_code("export_lightmap.write_file(context, self.filepath, self.report)")
+        return global_functions.run_code("export_lightmap.write_file(self.filepath, self.report)")
 
 class FaceSet(Operator):
     """Create a facemap with a permutation and a region"""

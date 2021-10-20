@@ -1022,8 +1022,8 @@ def load_file(context, filepath, report, game_version, reuse_armature, fix_paren
         object_mesh.data.normals_split_custom_set(vert_normal_list)
         object_mesh.data.use_auto_smooth = True
         object_mesh.parent = armature
+        mesh_processing.add_modifier(context, object_mesh, False, None, armature)
         
-
     for sphere in jms_file.spheres:
         parent_idx = sphere.parent_index
         name = sphere.name

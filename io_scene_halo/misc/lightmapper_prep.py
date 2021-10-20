@@ -30,7 +30,7 @@ from math import radians
 from mathutils import Vector
 from ..global_functions import global_functions
 
-def lightmap_bulk(context, res_x, res_y):
+def lightmap_bulk(res_x, res_y):
     scene = bpy.context.scene
     object_list = list(scene.objects)
 
@@ -39,7 +39,7 @@ def lightmap_bulk(context, res_x, res_y):
         assigned_material_id = []
         if object.type == 'MESH':
             for polygon in object.data.polygons:
-                material_id = global_functions.get_face_material(None, object, polygon)
+                material_id = global_functions.get_face_material(object, polygon)
                 if not material_id in assigned_material_id:
                     assigned_material_id.append(material_id)
 

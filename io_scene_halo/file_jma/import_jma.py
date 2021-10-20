@@ -30,7 +30,16 @@ from os import path
 from enum import Flag, auto
 from mathutils import Matrix
 from ..file_jms import import_jms
-from ..global_functions import global_functions
+from ..global_functions import mesh_processing, global_functions
+
+class ParentIDFix():
+    def __init__(self, pelvis = None, thigh0 = None, thigh1 = None, spine1 = None, clavicle0 = None, clavicle1 = None):
+        self.pelvis = pelvis
+        self.thigh0 = thigh0
+        self.thigh1 = thigh1
+        self.spine1 = spine1
+        self.clavicle0 = clavicle0
+        self.clavicle1 = clavicle1
 
 class JMAAsset(global_functions.HaloAsset):
     """
@@ -218,9 +227,186 @@ class JMAAsset(global_functions.HaloAsset):
                     else:
                         child_node = None
 
+def generate_jms_skeleton(jms_a_transform, jms_a_nodes, jms_a_file, jms_b_transform, jms_b_nodes, jms_b_file, jma_file, armature):
+    created_bone_list = []
+    file_version = jma_file.version
+    r_hand_idx = None
+    file_type = "JMS"
+
+    bpy.ops.object.mode_set(mode = 'EDIT')
+    for idx, jma_node in enumerate(jma_file.nodes):
+        created_bone_list.append(jma_node.name)
+        current_bone = armature.data.edit_bones.new(jma_node.name)
+        if "r_hand" in jma_node.name.lower() or "r hand" in jma_node.name.lower():
+            r_hand_idx = idx
+
+        current_bone.tail[2] = 5
+
+        parent = None
+        parent_name = None
+        for a_idx, jms_a_node in enumerate(jms_a_nodes):
+            if jma_node.name.lower() in jms_a_node.lower():
+                file_version = jms_a_file.version
+                parent_idx = jms_a_file.nodes[a_idx].parent
+                parent_name = jms_a_file.nodes[parent_idx].name
+                rest_position = jms_a_file.transforms[0]
+                jms_node = rest_position[a_idx]
+
+        for b_idx, jms_b_node in enumerate(jms_b_nodes):
+            if jma_node.name.lower() in jms_b_node.lower():
+                file_version = jms_b_file.version
+                parent_idx = jms_b_file.nodes[b_idx].parent
+                parent_name = jms_b_file.nodes[parent_idx].name
+                rest_position = jms_b_file.transforms[0]
+                jms_node = rest_position[b_idx]
+
+        for bone_idx, bone in enumerate(created_bone_list):
+            if bone in parent_name:
+                parent = armature.data.edit_bones[bone_idx]
+
+        matrix_translate = Matrix.Translation(jms_node.vector)
+        matrix_rotation = jms_node.rotation.to_matrix().to_4x4()
+
+        if not parent == None:
+            current_bone.parent = parent
+
+        elif "gun" in jma_node.name:
+            current_bone.parent = armature.data.edit_bones[r_hand_idx]
+
+        transform_matrix = matrix_translate @ matrix_rotation
+
+        is_root = False
+        if jma_node.name.lower() in jms_a_file.nodes[0].name.lower():
+            is_root = True
+
+        if jma_node.name.lower() in jms_b_file.nodes[0].name.lower():
+            is_root = True
+
+        if file_version < global_functions.get_version_matrix_check(file_type) and current_bone.parent and not is_root:
+            transform_matrix = current_bone.parent.matrix @ transform_matrix
+
+        current_bone.matrix = transform_matrix
+
+def generate_jma_skeleton(jms_a_transform, jms_a_nodes, jms_a_file, jms_b_transform, jms_b_nodes, jms_b_file, jma_file, armature, parent_id_class):
+    file_version = jma_file.version
+    first_frame = jma_file.transforms[0]
+    file_type = "JMA"
+    if jms_a_transform:
+        file_type = "JMS"
+
+    bpy.ops.object.mode_set(mode = 'EDIT')
+    for idx, jma_node in enumerate(jma_file.nodes):
+        current_bone = armature.data.edit_bones.new(jma_node.name)
+        current_bone.tail[2] = 5
+        parent_idx = jma_node.parent
+
+        if not parent_idx == -1 and not parent_idx == None:
+            if 'thigh' in jma_node.name and not parent_id_class.pelvis == None and not parent_id_class.thigh0 == None and not parent_id_class.thigh1 == None:
+                parent_idx = parent_id_class.pelvis
+
+            elif 'clavicle' in jma_node.name and not parent_id_class.spine1 == None and not parent_id_class.clavicle0 == None and not parent_id_class.clavicle1 == None:
+                parent_idx = parent_id_class.spine1
+
+            parent = jma_file.nodes[parent_idx].name
+            current_bone.parent = armature.data.edit_bones[parent]
+
+        if jms_a_transform:
+            for a_idx, jms_a_node in enumerate(jms_a_nodes):
+                if jma_node.name.lower() in jms_a_node.lower():
+                    file_version = jms_a_file.version
+                    rest_position = jms_a_file.transforms[0]
+                    jms_node = rest_position[a_idx]
+
+            for b_idx, jms_b_node in enumerate(jms_b_nodes):
+                if jma_node.name.lower() in jms_b_node.lower():
+                    file_version = jms_b_file.version
+                    rest_position = jms_b_file.transforms[0]
+                    jms_node = rest_position[b_idx]
+
+            matrix_translate = Matrix.Translation(jms_node.vector)
+            matrix_rotation = jms_node.rotation.to_matrix().to_4x4()
+
+        else:
+            matrix_translate = Matrix.Translation(first_frame[idx].vector)
+            matrix_rotation = first_frame[idx].rotation.to_matrix().to_4x4()
+
+        is_root = False
+        if jms_a_transform:
+            if jma_node.name.lower() in jms_a_file.nodes[0].name.lower():
+                is_root = True
+
+        if jms_b_transform:
+            if jma_node.name.lower() in jms_b_file.nodes[0].name.lower():
+                is_root = True
+
+        transform_matrix = matrix_translate @ matrix_rotation
+        if file_version < global_functions.get_version_matrix_check(file_type) and current_bone.parent and not is_root:
+            transform_matrix = current_bone.parent.matrix @ transform_matrix
+
+        current_bone.matrix = transform_matrix
+
+    bpy.ops.object.mode_set(mode = 'OBJECT')
+
+def set_parent_id_class(jma_file, parent_id_class):
+    for idx, jma_node in enumerate(jma_file.nodes):
+        if 'pelvis' in jma_node.name:
+            parent_id_class.pelvis = idx
+
+        if 'thigh' in jma_node.name:
+            if parent_id_class.thigh0 == None:
+                parent_id_class.thigh0 = idx
+
+            else:
+                parent_id_class.thigh1 = idx
+
+        elif 'spine1' in jma_node.name:
+            parent_id_class.spine1 = idx
+
+        elif 'clavicle' in jma_node.name:
+            if parent_id_class.clavicle0 == None:
+                parent_id_class.clavicle0 = idx
+
+            else:
+                parent_id_class.clavicle1 = idx
+
+def jms_file_check(jms_a_transform, jms_b_transform, jms_a_file, jms_b_file, jma_nodes):
+    jms_a_nodes = []
+    jms_b_nodes = []
+    warning = "No valid armature detected. One will be created but expect issues with visuals in scene due to no proper rest position"
+    if jms_a_transform and not jms_b_transform:
+        for jms_node in jms_a_file.nodes:
+            jms_a_nodes.append(jms_node.name)
+
+        for jms_node_name in jms_a_nodes:
+            if not jms_node_name in jma_nodes:
+                jms_a_transform = False
+                warning = "Node '%s' from JMS skeleton not found in JMA skeleton." % jms_node_name
+
+        warning = "No valid armature detected. One will be created and the referenced JMS will be used for the rest position"
+
+    elif jms_a_transform and jms_b_transform:
+        for jms_node in jms_a_file.nodes:
+            jms_a_nodes.append(jms_node.name)
+
+        for jms_node in jms_b_file.nodes:
+            jms_b_nodes.append(jms_node.name)
+
+        jms_nodes = jms_a_nodes + jms_b_nodes
+
+        for jms_node_name in jms_nodes:
+            if not jms_node_name in jma_nodes:
+                jms_a_transform = False
+                warning = "Node '%s' from JMS skeleton not found in JMA skeleton." % jms_node_name
+
+        warning = "No valid armature detected. One will be created and the referenced JMS files will be used for the rest position"
+
+    return jms_a_nodes, jms_b_nodes, warning
+
 def load_file(context, filepath, report, fix_parents, game_version, jms_path_a, jms_path_b):
     jms_a_transform = False
+    jms_a_file = None
     jms_b_transform = False
+    jms_b_file = None
 
     jma_file = JMAAsset(filepath, game_version, report)
     if path.exists(bpy.path.abspath(jms_path_a)):
@@ -239,8 +425,6 @@ def load_file(context, filepath, report, fix_parents, game_version, jms_path_a, 
 
     scene_nodes = []
     jma_nodes = []
-    jms_a_nodes = []
-    jms_b_nodes = []
     for obj in object_list:
         if armature is None:
             if obj.type == 'ARMATURE':
@@ -263,7 +447,7 @@ def load_file(context, filepath, report, fix_parents, game_version, jms_path_a, 
 
                 if is_armature_good:
                     armature = obj
-                    view_layer.objects.active = armature
+                    mesh_processing.select_object(context, armature)
 
     for jma_node in jma_file.nodes:
         jma_nodes.append(jma_node.name)
@@ -274,137 +458,42 @@ def load_file(context, filepath, report, fix_parents, game_version, jms_path_a, 
                 report({'WARNING'}, "Node '%s' not found in an existing armature" % jma_node)
 
     if armature == None:
+        parent_id_class = ParentIDFix()
+        jms_a_nodes, jms_b_nodes, warning = jms_file_check(jms_a_transform, jms_b_transform, jms_a_file, jms_b_file, jma_nodes)
+        report({'WARNING'}, warning)
         if not jma_file.broken_skeleton:
             if jma_file.version >= 16392:
-                if jms_a_transform and not jms_b_transform:
-                    for jms_node in jms_a_file.nodes:
-                        jms_a_nodes.append(jms_node.name)
-
-                    for jms_node_name in jms_a_nodes:
-                        if not jms_node_name in jma_nodes:
-                            jms_a_transform = False
-                            report({'WARNING'}, "Node '%s' from JMS skeleton not found in JMA skeleton." % jms_node_name)
-
-                    report({'WARNING'}, "No valid armature detected. One will be created and the referenced JMS will be used for the rest position")
-
-                elif jms_a_transform and jms_b_transform:
-                    for jms_node in jms_a_file.nodes:
-                        jms_a_nodes.append(jms_node.name)
-
-                    for jms_node in jms_b_file.nodes:
-                        jms_b_nodes.append(jms_node.name)
-
-                    jms_nodes = jms_a_nodes + jms_b_nodes
-
-                    for jms_node_name in jms_nodes:
-                        if not jms_node_name in jma_nodes:
-                            jms_a_transform = False
-                            report({'WARNING'}, "Node '%s' from JMS skeleton not found in JMA skeleton." % jms_node_name)
-
-                    report({'WARNING'}, "No valid armature detected. One will be created and the referenced JMS files will be used for the rest position")
-
-                else:
-                    report({'WARNING'}, "No valid armature detected. One will be created but expect issues with visuals in scene due to no proper rest position")
-
-                pelvis = None
-                thigh0 = None
-                thigh1 = None
-                spine1 = None
-                clavicle0 = None
-                clavicle1 = None
-
                 armdata = bpy.data.armatures.new('Armature')
-                ob_new = bpy.data.objects.new('Armature', armdata)
-                collection.objects.link(ob_new)
-                armature = ob_new
-                view_layer.objects.active = armature
+                armature = bpy.data.objects.new('Armature', armdata)
+                collection.objects.link(armature)
+                mesh_processing.select_object(context, armature)
                 if fix_parents:
                     if game_version == 'halo2' or game_version == 'halo3':
-                        for idx, jma_node in enumerate(jma_file.nodes):
-                            if 'pelvis' in jma_node.name:
-                                pelvis = idx
+                        set_parent_id_class(jma_file, parent_id_class)
 
-                            if 'thigh' in jma_node.name:
-                                if thigh0 == None:
-                                    thigh0 = idx
-
-                                else:
-                                    thigh1 = idx
-
-                            elif 'spine1' in jma_node.name:
-                                spine1 = idx
-
-                            elif 'clavicle' in jma_node.name:
-                                if clavicle0 == None:
-                                    clavicle0 = idx
-
-                                else:
-                                    clavicle1 = idx
-
-                first_frame = jma_file.transforms[0]
-                for idx, jma_node in enumerate(jma_file.nodes):
-                    bpy.ops.object.mode_set(mode = 'EDIT')
-
-                    armature.data.edit_bones.new(jma_node.name)
-                    armature.data.edit_bones[jma_node.name].tail[2] = 5
-
-                    parent_idx = jma_node.parent
-
-                    if jms_a_transform:
-                        if jma_node.name in jms_a_nodes:
-                            node_idx = jms_a_nodes.index(jma_node.name)
-                            rest_position = jms_a_file.transforms[0]
-                            jms_node = rest_position[node_idx]
-
-                        elif jma_node.name in jms_b_nodes:
-                            node_idx = jms_b_nodes.index(jma_node.name)
-                            rest_position = jms_b_file.transforms[0]
-                            jms_node = rest_position[node_idx]
-
-                        matrix_translate = Matrix.Translation(jms_node.vector)
-                        matrix_scale = Matrix.Scale(1, 4, (1, 1, 1))
-                        matrix_rotation = jms_node.rotation.to_matrix().to_4x4()
-                    else:
-                        matrix_translate = Matrix.Translation(first_frame[idx].vector)
-                        matrix_scale = Matrix.Scale(1, 4, (1, 1, 1))
-                        matrix_rotation = first_frame[idx].rotation.to_matrix().to_4x4()
-
-                    if not parent_idx == -1 and not parent_idx == None:
-                        parent = jma_file.nodes[parent_idx].name
-                        if 'thigh' in jma_node.name and not pelvis == None and not thigh0 == None and not thigh1 == None:
-                            parent = jma_file.nodes[pelvis].name
-
-                        elif 'clavicle' in jma_node.name and not spine1 == None and not clavicle0 == None and not clavicle1 == None:
-                            parent = jma_file.nodes[spine1].name
-
-                        bpy.ops.object.mode_set(mode = 'EDIT')
-                        armature.data.edit_bones[jma_node.name].parent = armature.data.edit_bones[parent]
-
-                    bpy.ops.object.mode_set(mode = 'POSE')
-                    pose_bone = armature.pose.bones[jma_node.name]
-                    transform_matrix = matrix_translate @ matrix_rotation @ matrix_scale
-                    primary_rest_positions = None
-                    secondary_rest_positions = None
-                    if jms_a_transform:
-                        primary_rest_positions = jms_a_nodes[0]
-
-                    if jms_b_transform:
-                        secondary_rest_positions = jms_b_nodes[0]
-
-                    if jma_file.version < 16394 and pose_bone.parent and not jma_node.name == primary_rest_positions and not jma_node.name == secondary_rest_positions:
-                        transform_matrix = pose_bone.parent.matrix @ transform_matrix
-
-                    armature.pose.bones[jma_node.name].matrix = transform_matrix
-
-                bpy.ops.pose.armature_apply(selected=False)
+                generate_jma_skeleton(jms_a_transform, jms_a_nodes, jms_a_file, jms_b_transform, jms_b_nodes, jms_b_file, jma_file, armature, parent_id_class)
 
             else:
                 report({'ERROR'}, "No valid armature detected and not enough information to build valid skeleton due to version. Import will now be aborted")
                 return {'CANCELLED'}
 
         else:
-            report({'ERROR'}, "No valid armature detected and animation graph is invalid. Import will now be aborted")
-            return {'CANCELLED'}
+            if jms_a_transform:
+                if jma_file.version >= 16392:
+                    armdata = bpy.data.armatures.new('Armature')
+                    armature = bpy.data.objects.new('Armature', armdata)
+                    collection.objects.link(armature)
+                    mesh_processing.select_object(context, armature)
+
+                    generate_jms_skeleton(jms_a_transform, jms_a_nodes, jms_a_file, jms_b_transform, jms_b_nodes, jms_b_file, jma_file, armature)
+
+                else:
+                    report({'ERROR'}, "No valid armature detected and not enough information to build valid skeleton due to version. Import will now be aborted")
+                    return {'CANCELLED'}
+
+            else:
+                report({'ERROR'}, "No valid armature detected and animation graph is invalid. Import will now be aborted")
+                return {'CANCELLED'}
 
     scene.frame_end = jma_file.frame_count
     scene.render.fps = jma_file.frame_rate
