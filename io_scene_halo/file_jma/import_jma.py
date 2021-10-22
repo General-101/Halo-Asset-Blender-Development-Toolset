@@ -231,6 +231,7 @@ def generate_jms_skeleton(jms_a_transform, jms_a_nodes, jms_a_file, jms_b_transf
     created_bone_list = []
     file_version = jma_file.version
     r_hand_idx = None
+    is_fp_root_file_a = False 
     file_type = "JMS"
 
     bpy.ops.object.mode_set(mode = 'EDIT')
@@ -244,8 +245,14 @@ def generate_jms_skeleton(jms_a_transform, jms_a_nodes, jms_a_file, jms_b_transf
 
         parent = None
         parent_name = None
+        jms_node = None
         for a_idx, jms_a_node in enumerate(jms_a_nodes):
             if jma_node.name.lower() in jms_a_node.lower():
+                if jma_file.nodes[0].name.lower() in jms_a_nodes[0].lower():
+                    print(jma_node.name.lower())
+                    print(jms_a_nodes[0].lower())
+                    is_fp_root_file_a = True
+
                 file_version = jms_a_file.version
                 parent_idx = jms_a_file.nodes[a_idx].parent
                 parent_name = jms_a_file.nodes[parent_idx].name
@@ -261,8 +268,20 @@ def generate_jms_skeleton(jms_a_transform, jms_a_nodes, jms_a_file, jms_b_transf
                 jms_node = rest_position[b_idx]
 
         for bone_idx, bone in enumerate(created_bone_list):
-            if bone in parent_name:
-                parent = armature.data.edit_bones[bone_idx]
+            if not parent_name == None:
+                if bone in parent_name:
+                    parent = armature.data.edit_bones[bone_idx]
+                
+            else:
+                parent = armature.data.edit_bones[0]
+
+        if not jms_node:
+            if is_fp_root_file_a:
+                rest_position = jms_a_file.transforms[0]
+            else:
+                rest_position = jms_b_file.transforms[0]
+
+            jms_node = rest_position[0]
 
         matrix_translate = Matrix.Translation(jms_node.vector)
         matrix_rotation = jms_node.rotation.to_matrix().to_4x4()

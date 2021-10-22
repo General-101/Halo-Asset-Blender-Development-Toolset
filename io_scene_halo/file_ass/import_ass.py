@@ -28,7 +28,7 @@ import bpy
 import bmesh
 
 from math import radians
-from mathutils import Vector, Matrix
+from mathutils import Matrix
 from ..global_functions import mesh_processing, global_functions
 
 class ASSAsset(global_functions.HaloAsset):
