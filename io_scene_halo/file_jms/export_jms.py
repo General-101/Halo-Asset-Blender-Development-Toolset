@@ -347,8 +347,9 @@ class JMSScene(global_functions.HaloAsset):
             all_marker_list = blend_scene.marker_list + blend_scene.physics_marker_list
 
         for marker in all_marker_list:
-            untouched_name = marker.name.split('#', 1)[1] #remove marker symbol from name
-            name = untouched_name.rsplit('.', 1)[0] #remove name change from duplicating objects in Blender
+            marker_name = marker.name.split('#', 1)[1] #remove marker symbol from name
+            if not global_functions.string_empty_check(marker.marker.name_override):
+                marker_name = marker.marker.name_override
 
             region_idx = -1
 
@@ -382,7 +383,7 @@ class JMSScene(global_functions.HaloAsset):
 
                     region_idx = region_list.index(marker.marker.marker_region)
 
-            self.markers.append(JMSScene.Marker(name, region_idx, parent_idx[0], rotation, translation, scale))
+            self.markers.append(JMSScene.Marker(marker_name, region_idx, parent_idx[0], rotation, translation, scale))
 
         if model_type == "render":
             for xref_path in blend_scene.instance_xref_paths:

@@ -559,16 +559,16 @@ class ASSScene(global_functions.HaloAsset):
 
         for material in material_list:
             material_data = material[0]
+            material_name = mesh_processing.append_material_symbols(material_data, game_version)
             material_lightmap = get_material_strings(material_data, version)
             lod = mesh_processing.get_lod(material[1], game_version)
-
             if len(material[2]) != 0:
                 region = material[2].replace(' ', '_').replace('\t', '_')
 
             if len(material[3]) != 0:
                 permutation = material[3].replace(' ', '_').replace('\t', '_')
 
-            self.materials.append(ASSScene.Material(material_data.name, lod, permutation, region, material_data.ass_jms.material_effect, material_lightmap))
+            self.materials.append(ASSScene.Material(material_name, lod, permutation, region, material_data.ass_jms.material_effect, material_lightmap))
 
         for idx, obj in enumerate(object_list):
             property_value = object_properties[idx]
@@ -626,6 +626,7 @@ def write_file(context,
             '\n;MATERIAL %s' % (idx) +
             '\n"%s"' % (material.name)
         )
+
         if version >= 8: #3
             file.write(
                 '\n"%s %s"\n' % (material.permutation, material.region)

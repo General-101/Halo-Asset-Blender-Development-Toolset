@@ -46,8 +46,8 @@ class JMSAsset(global_functions.HaloAsset):
             self.visited = False
 
     class Material:
-        def __init__(self, name, texture_path=None, slot=None, lod=None, permutation=None, region=None):
-            self.name = name
+        def __init__(self, scene_name, texture_path=None, slot=None, lod=None, permutation=None, region=None):
+            self.scene_name = scene_name
             self.texture_path = texture_path
             self.slot = slot
             self.lod = lod
@@ -927,14 +927,20 @@ def load_file(context, filepath, report, game_version, reuse_armature, fix_paren
             if not [region, permutation] in region_permutation_list:
                 region_permutation_list.append([permutation, region])
 
-    for marker in jms_file.markers:
-        parent_idx = marker.parent
-        marker_region_index = marker.region
-        radius = marker.scale
-        object_name_prefix = '#%s' % marker.name
+    for marker_obj in jms_file.markers:
+        parent_idx = marker_obj.parent
+        marker_region_index = marker_obj.region
+        radius = marker_obj.scale
+        object_name_prefix = '#%s' % marker_obj.name
+        marker_name_override = ""
+        if bpy.context.scene.objects.get('#%s' % marker_obj.name):
+            marker_name_override = marker_obj.name
+
         mesh = bpy.data.meshes.new(object_name_prefix)
         object_mesh = bpy.data.objects.new(object_name_prefix, mesh)
         collection.objects.link(object_mesh)
+
+        object_mesh.marker.name_override = marker_name_override
 
         bm = bmesh.new()
         bmesh.ops.create_uvsphere(bm, u_segments=32, v_segments=16, diameter=1)
@@ -956,8 +962,8 @@ def load_file(context, filepath, report, game_version, reuse_armature, fix_paren
         else:
             bpy.ops.object.parent_set(type='ARMATURE', keep_transform=True)
 
-        matrix_translate = Matrix.Translation(marker.translation)
-        matrix_rotation = marker.rotation.to_matrix().to_4x4()
+        matrix_translate = Matrix.Translation(marker_obj.translation)
+        matrix_rotation = marker_obj.rotation.to_matrix().to_4x4()
 
         transform_matrix = matrix_translate @ matrix_rotation
         if not parent_idx == -1:

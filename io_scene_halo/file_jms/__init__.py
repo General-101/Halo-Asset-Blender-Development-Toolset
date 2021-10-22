@@ -50,6 +50,12 @@ from bpy.props import (
         )
 
 class JMS_MarkerPropertiesGroup(PropertyGroup):
+    name_override: StringProperty(
+        name = "Name Override",
+        description = "If filled then export will use the name set here instead of the object name",
+        default = "",
+        )
+        
     marker_mask_type: EnumProperty(
         name="Mask Type",
         description="Choose the mask type for the marker object",
@@ -63,7 +69,7 @@ class JMS_MarkerPropertiesGroup(PropertyGroup):
     marker_region: StringProperty(
         name="Region",
         description="Region for a marker object. If empty then the first assigned facemap will be used",
-        subtype="FILE_NAME"
+        default = "",
         )
 
 class JMS_MarkerProps(Panel):
@@ -92,6 +98,9 @@ class JMS_MarkerProps(Panel):
 
         box = layout
         col = box.column(align=True)
+        row = col.row()
+        row.label(text='Name Override:')
+        row.prop(mesh_marker, "name_override", text='')
         row = col.row()
         row.label(text='Mask Type:')
         row.prop(mesh_marker, "marker_mask_type", text='')

@@ -89,10 +89,13 @@ def gather_parameters(name):
     return (processed_name, processed_parameters)
 
 def append_material_symbols(material, game_version):
-    name = material.name
-    processed_symbol_name = name
+    material_name = material.name
+    if not global_functions.string_empty_check(material.ass_jms.name_override):
+        material_name = material.ass_jms.name_override
+
+    processed_symbol_name = material_name
     if material.ass_jms.is_bm and not game_version == 'halo3':
-        processed_lightmap_properties = gather_parameters(name)
+        processed_lightmap_properties = gather_parameters(material_name)
         processed_lightmap_name = processed_lightmap_properties[0]
         processed_parameters = processed_lightmap_properties[1]
 
@@ -341,7 +344,7 @@ def process_mesh_import_data(game_version, import_file, object_element, object_m
 
         if not triangle_material_index == -1:
             material_list = []
-            material_name = mat.name
+            material_name = mat.scene_name
             mat = bpy.data.materials.get(material_name)
             if mat is None:
                 mat = bpy.data.materials.new(name=material_name)

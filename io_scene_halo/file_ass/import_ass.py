@@ -39,8 +39,9 @@ class ASSAsset(global_functions.HaloAsset):
             self.scale = scale
 
     class Material:
-        def __init__(self, name=None, texture_path=None, slot=None, lod=None, permutation=None, region=None, material_effect=None, material_strings=None):
-            self.name = name
+        def __init__(self, scene_name=None, file_name=None, texture_path=None, slot=None, lod=None, permutation=None, region=None, material_effect=None, material_strings=None):
+            self.scene_name = scene_name
+            self.file_name = file_name
             self.texture_path = texture_path
             self.slot = slot
             self.lod = lod
@@ -162,8 +163,25 @@ class ASSAsset(global_functions.HaloAsset):
         self.objects = []
         self.instances = []
         material_count = int(self.next())
-        for material in range(material_count):
+        used_material_names = []
+        for idx, material in enumerate(range(material_count)):
             name = self.next().strip('\"')
+            scene_name = name
+            file_name = ""
+            if scene_name in used_material_names:
+                file_name = name
+                duplicate_name = None
+                loop_count = 1
+                while duplicate_name == None:
+                    while_name = name + "." + str(loop_count).zfill(3)
+                    if not while_name in used_material_names:
+                        duplicate_name = while_name
+
+                    loop_count += 1
+
+                scene_name = duplicate_name
+                
+            used_material_names.append(scene_name)
             material_effect = self.next().strip('\"')
             material_strings = []
             if self.version >= 4:
@@ -171,7 +189,7 @@ class ASSAsset(global_functions.HaloAsset):
                 for string in range(material_string_count):
                     material_strings.append(self.next().strip('\"'))
 
-            self.materials.append(ASSAsset.Material(name, None, None, None, None, None, material_effect, material_strings))
+            self.materials.append(ASSAsset.Material(scene_name, file_name, None, None, None, None, None, material_effect, material_strings))
 
         object_count = int(self.next())
         for object in range(object_count):
@@ -406,12 +424,14 @@ def load_file(context, filepath, report):
     mesh_processing.deselect_objects(context)
 
     for idx, ass_mat in enumerate(ass_file.materials):
-        material_name = ass_mat.name
+        material_name = ass_mat.scene_name
+
         mat = bpy.data.materials.get(material_name)
         if mat is None:
             mat = bpy.data.materials.new(name=material_name)
 
         set_ass_material_properties(ass_mat, mat)
+        mat.ass_jms.name_override = ass_mat.file_name
         mat.diffuse_color = random_color_gen.next()
 
     object_list = []

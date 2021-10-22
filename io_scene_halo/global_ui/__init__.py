@@ -73,6 +73,9 @@ class ASS_JMS_MaterialProps(Panel):
         if current_material is not None:
             material_ass_jms = current_material.ass_jms
             layout.enabled = material_ass_jms.is_bm
+            row = layout.row()
+            row.label(text="Name Override:")
+            row.prop(material_ass_jms, "name_override", text='')
             if scene_halo.game_version == 'halo2' or scene_halo.game_version == 'halo3':
                 row = layout.row()
                 row.label(text="Material Effect:")
@@ -446,6 +449,12 @@ class ASS_JMS_MaterialFrustumProps(Panel):
             row.prop(material_ass_jms, "frustum_cutoff", text='')
 
 class ASS_JMS_MaterialPropertiesGroup(PropertyGroup):
+    name_override: StringProperty(
+        name = "Name Override",
+        description = "If filled then export will use the name set here instead of the material name",
+        default = "",
+        )
+
     material_effect: StringProperty(
         name = "Material Effect",
         description = "Set material effect name",
