@@ -1073,7 +1073,7 @@ def load_file(context, filepath, report, game_version, reuse_armature, fix_paren
             mat = jms_file.materials[material_index]
             current_region_permutation = global_functions.material_definition_helper(material_index, mat)
             object_mesh.face_maps.new(name=current_region_permutation)
-            material_name = mat.name
+            material_name = mat.scene_name
             mat = bpy.data.materials.get(material_name)
             if mat is None:
                 mat = bpy.data.materials.new(name=material_name)
@@ -1137,7 +1137,7 @@ def load_file(context, filepath, report, game_version, reuse_armature, fix_paren
             current_region_permutation = global_functions.material_definition_helper(material_index, mat)
             object_mesh.face_maps.new(name=current_region_permutation)
 
-            material_name = mat.name
+            material_name = mat.scene_name
             mat = bpy.data.materials.get(material_name)
             if mat is None:
                 mat = bpy.data.materials.new(name=material_name)
@@ -1199,7 +1199,7 @@ def load_file(context, filepath, report, game_version, reuse_armature, fix_paren
             current_region_permutation = global_functions.material_definition_helper(material_index, mat)
             object_mesh.face_maps.new(name=current_region_permutation)
 
-            material_name = mat.name
+            material_name = mat.scene_name
             mat = bpy.data.materials.get(material_name)
             if mat is None:
                 mat = bpy.data.materials.new(name=material_name)
@@ -1264,7 +1264,7 @@ def load_file(context, filepath, report, game_version, reuse_armature, fix_paren
             current_region_permutation = global_functions.material_definition_helper(material_index, mat)
             object_mesh.face_maps.new(name=current_region_permutation)
 
-            material_name = mat.name
+            material_name = mat.scene_name
             mat = bpy.data.materials.get(material_name)
             if mat is None:
                 mat = bpy.data.materials.new(name=material_name)
