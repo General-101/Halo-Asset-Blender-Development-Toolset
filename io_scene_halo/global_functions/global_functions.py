@@ -1040,13 +1040,13 @@ def material_definition_helper(triangle_material_index, mat):
         if not lod == None:
             material_definition += mat.lod
 
-        if not region == None and not string_empty_check(permutation):
+        if not permutation == None and not string_empty_check(permutation):
             if not string_empty_check(material_definition):
                 material_definition += " "
 
             material_definition += permutation
 
-        if not permutation == None and not string_empty_check(region):
+        if not region == None and not string_empty_check(region):
             if not string_empty_check(material_definition):
                 material_definition += " "
 
