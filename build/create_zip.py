@@ -88,6 +88,6 @@ def build_release_zip(name: str, include_resources: bool):
     zip.printdir()
     zip.close()
 
-build_release_zip(name="halo-asset-blender-toolset", include_resources=True)
+build_release_zip(name="halo-asset-blender-toolset-full", include_resources=True)
 build_release_zip(name="halo-asset-blender-toolset-lite", include_resources=False)
 print("done!")
