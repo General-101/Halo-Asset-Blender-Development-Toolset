@@ -24,6 +24,7 @@
 #
 # ##### END MIT LICENSE BLOCK #####
 
+from io import TextIOWrapper
 import bpy
 import bmesh
 
@@ -263,7 +264,10 @@ class JMSAsset(global_functions.HaloAsset):
         super().__init__(filepath)
         default_region = mesh_processing.get_default_region_permutation_name(game_version)
         default_permutation = mesh_processing.get_default_region_permutation_name(game_version)
-        extension = global_functions.get_true_extension(filepath, None, True)
+        if not isinstance(filepath, TextIOWrapper):
+            extension = global_functions.get_true_extension(filepath, None, True)
+        else:
+            extension = "JMS"
         self.version = int(self.next())
         self.game_version = game_version
         if game_version == 'auto':

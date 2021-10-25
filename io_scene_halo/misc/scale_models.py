@@ -24,6 +24,8 @@
 #
 # ##### END MIT LICENSE BLOCK #####
 
+from io import BytesIO, TextIOWrapper
+import zipfile
 import bpy
 import bmesh
 
@@ -158,8 +160,9 @@ halo_three_array = (
 ("warthog", (199.299, 101.492, 76.7727)),
 ("wraith", (299.835, 303.158, 93.8022)))
 
-def generate_mesh(filepath, array_item, gane_version):
-    jms_file = import_jms.JMSAsset(filepath, gane_version)
+#  load a mesh from JMS and use it as a scale model
+def generate_mesh(file, array_item, gane_version):
+    jms_file = import_jms.JMSAsset(file, gane_version)
     item_name = array_item[0]
 
     mesh = bpy.data.meshes.new(item_name)
@@ -190,6 +193,7 @@ def generate_mesh(filepath, array_item, gane_version):
 
     return mesh
 
+# if the JMS file is not found fall back to a box scale model
 def generate_box(array_item):
     item_name = array_item[0]
 
@@ -202,19 +206,41 @@ def generate_box(array_item):
 
     return mesh
 
-def generate_object(context, filepath, array_item, game_version):
-    if path.exists(filepath):
-        mesh = generate_mesh(filepath, array_item, game_version)
-    else:
-        mesh = generate_box(array_item)
+def get_object_mesh(array_item, game_version):
+    # root folder for the plugin (bit of a hack)
+    script_folder_path = path.dirname(path.dirname(__file__))
+    # relative path of the JMS from the resources path
+    path_relative = game_version + "/" +  array_item[0] + ".jms"
+    # expected on disk path of the JMS 
+    filepath = path.join(script_folder_path, "resources", path_relative)
+    # resources zip file path (won't exist in dev builds)
+    path_resources_zip = path.join(script_folder_path, "resources.zip")
 
+    # first check the disk
+    if path.exists(filepath):
+        print(f"Loading {filepath} from disk")
+        return generate_mesh(filepath, array_item, game_version), False
+    elif path.exists(path_resources_zip):
+        print(f"Loading {path_relative} from {path_resources_zip}")
+        zip: zipfile.ZipFile = zipfile.ZipFile(path_resources_zip, mode = 'r')
+        jms_file_data = zip.read(path_relative)
+        stream: TextIOWrapper = TextIOWrapper(BytesIO(jms_file_data), encoding="utf-8")
+        return generate_mesh(stream, array_item, game_version), False
+
+    print(f"Couldn't find {array_item[0]}!")
+    # if all else fails we return a BOX
+    return generate_box(array_item), True
+
+def generate_object(context, array_item, game_version):
+
+    mesh, is_box = get_object_mesh(array_item, game_version)
     object_name = "scale_model_%s" % array_item[0]
     object_dimensions = array_item[1]
 
     object_mesh = bpy.data.objects.new(object_name, mesh)
     context.collection.objects.link(object_mesh)
 
-    if not path.exists(filepath):
+    if is_box:
         object_mesh.dimensions = object_dimensions
 
     mesh_processing.select_object(context, object_mesh)
@@ -231,11 +257,8 @@ def create_model(context, game_version, halo_1_unit_index, halo_2_unit_index, ha
     else:
         array_item = halo_three_array[int(halo_3_unit_index)]
 
-    script_folder_path = path.dirname(path.dirname(__file__))
-    filepath = path.join(script_folder_path, "resources", game_version, array_item[0]) + ".jms"
-
     mesh_processing.deselect_objects(context)
-    generate_object(context, filepath, array_item, game_version)
+    generate_object(context, array_item, game_version)
 
     return {'FINISHED'}
 

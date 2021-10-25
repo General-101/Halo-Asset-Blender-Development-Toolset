@@ -24,7 +24,9 @@
 #
 # ##### END MIT LICENSE BLOCK #####
 
+from io import TextIOWrapper
 import os
+from typing import Any
 import bpy
 import sys
 import colorsys
@@ -621,22 +623,27 @@ class HaloAsset:
 
     __comment_regex = re.compile("[^\"]*;(?!.*\")")
 
-    def __init__(self, filepath):
+    def __init__(self, file):
         self._elements = []
         self._index = 0
-        with open(filepath, "r", encoding=test_encoding(filepath)) as file:
-            for line in file:
-                for element in line.strip().split("\t"):
-                    if element != '':
-                        comment_match = re.search(self.__comment_regex, element)
-                        if comment_match is None:
-                            self._elements.append(element)
-                        else:
-                            processed_element = element[: comment_match.end() - 1]
-                            if processed_element != '':
-                                self._elements.append(element)
-                            break # ignore the rest of the line if we found a comment
+        if not isinstance(file, TextIOWrapper):
+            with open(file, "r", encoding=test_encoding(file)) as file:
+                self.__init_from_textio(file)
+        else:
+            self.__init_from_textio(file)
 
+    def __init_from_textio(self, io):
+        for line in io:
+            for element in line.strip().split("\t"):
+                if element != '':
+                    comment_match = re.search(self.__comment_regex, element)
+                    if comment_match is None:
+                        self._elements.append(element)
+                    else:
+                        processed_element = element[: comment_match.end() - 1]
+                        if processed_element != '':
+                            self._elements.append(element)
+                        break # ignore the rest of the line if we found a comment
     def left(self):
         """Returns the number of elements left"""
         if self._index < len(self._elements):
