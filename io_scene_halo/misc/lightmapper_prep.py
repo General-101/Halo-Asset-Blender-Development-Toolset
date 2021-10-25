@@ -26,13 +26,11 @@
 
 import bpy
 
-from math import radians
 from mathutils import Vector
 from ..global_functions import global_functions
 
-def lightmap_bulk(res_x, res_y):
-    scene = bpy.context.scene
-    object_list = list(scene.objects)
+def lightmap_bulk(context, res_x, res_y):
+    object_list = list(context.scene.objects)
 
     for object in object_list:
         node_spacing = 20.0

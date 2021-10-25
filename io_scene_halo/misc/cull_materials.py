@@ -26,9 +26,9 @@
 
 import bpy
 
-def cull_materials():
+def cull_materials(context):
     used_materials = []
-    active_object = bpy.context.view_layer.objects.active
+    active_object = context.view_layer.objects.active
     for face in active_object.data.polygons:
         material = face.material_index
         if material not in used_materials:

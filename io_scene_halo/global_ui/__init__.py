@@ -25,8 +25,6 @@
 # ##### END MIT LICENSE BLOCK #####
 
 import bpy
-import sys
-import argparse
 
 from bpy.types import (
         Panel,
@@ -42,8 +40,6 @@ from bpy.props import (
         PointerProperty,
         FloatVectorProperty
         )
-
-from ..global_functions import global_functions
 
 class ASS_JMS_MaterialProps(Panel):
     bl_label = "Halo Material Properties"

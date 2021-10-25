@@ -345,9 +345,9 @@ class JMSAsset(global_functions.HaloAsset):
 
             elif self.game_version == 'halo2' or self.game_version == 'halo3':
                 material_definition_items = material_definition.split()
-                slot_index, lod, permutation, region = global_functions.material_definition_parser(True, material_definition_items, default_region, default_permutation)
+                lod, permutation, region = global_functions.material_definition_parser(True, material_definition_items, default_region, default_permutation)
 
-                self.materials.append(JMSAsset.Material(name, None, slot_index, lod, permutation, region))
+                self.materials.append(JMSAsset.Material(name, None, material, lod, permutation, region))
 
         marker_count = int(self.next())
         for marker in range(marker_count):
@@ -819,9 +819,7 @@ def load_file(context, filepath, report, game_version, reuse_armature, fix_paren
     object_name = bpy.path.basename(filepath).rsplit('.', 1)[0]
     random_color_gen = global_functions.RandomColorGenerator() # generates a random sequence of colors
 
-    if view_layer.objects.active:
-        bpy.ops.object.mode_set(mode='OBJECT')
-        bpy.ops.object.select_all(action='DESELECT')
+    mesh_processing.deselect_objects(context)
 
     for obj in object_list:
         if armature is None:
@@ -851,8 +849,7 @@ def load_file(context, filepath, report, game_version, reuse_armature, fix_paren
         armature = ob_new
 
         first_frame = jms_file.transforms[0]
-        armature.select_set(True)
-        view_layer.objects.active = armature
+        mesh_processing.select_object(context, armature)
         if fix_parents:
             if game_version == 'halo2' or game_version == 'halo3':
                 for idx, jms_node in enumerate(jms_file.nodes):
@@ -933,7 +930,7 @@ def load_file(context, filepath, report, game_version, reuse_armature, fix_paren
         radius = marker_obj.scale
         object_name_prefix = '#%s' % marker_obj.name
         marker_name_override = ""
-        if bpy.context.scene.objects.get('#%s' % marker_obj.name):
+        if context.scene.objects.get('#%s' % marker_obj.name):
             marker_name_override = marker_obj.name
 
         mesh = bpy.data.meshes.new(object_name_prefix)
@@ -950,9 +947,8 @@ def load_file(context, filepath, report, game_version, reuse_armature, fix_paren
         if not marker_region_index == -1:
             object_mesh.face_maps.new(name=jms_file.regions[marker_region_index].name)
 
-        object_mesh.select_set(True)
-        armature.select_set(True)
-        view_layer.objects.active = armature
+        mesh_processing.select_object(context, object_mesh)
+        mesh_processing.select_object(context, armature)
         if not parent_idx == -1:
             bpy.ops.object.mode_set(mode='EDIT')
             armature.data.edit_bones.active = armature.data.edit_bones[jms_file.nodes[parent_idx].name]
@@ -995,8 +991,8 @@ def load_file(context, filepath, report, game_version, reuse_armature, fix_paren
             xref_path = jms_file.xref_paths[xref_idx].path
             object_mesh.data.ass_jms.XREF_path = xref_path
 
-        object_mesh.select_set(True)
-        armature.select_set(True)
+        mesh_processing.select_object(context, object_mesh)
+        mesh_processing.select_object(context, armature)
         bpy.ops.object.parent_set(type='ARMATURE', keep_transform=True)
 
         matrix_translate = Matrix.Translation(xref_marker.translation)
@@ -1022,7 +1018,7 @@ def load_file(context, filepath, report, game_version, reuse_armature, fix_paren
         mesh = bpy.data.meshes.new(object_name)
         object_mesh = bpy.data.objects.new(object_name, mesh)
         collection.objects.link(object_mesh)
-        bm, vert_normal_list = mesh_processing.process_mesh_import_data(game_version, jms_file, None, object_mesh, mesh, random_color_gen, 'JMS')
+        bm, vert_normal_list = mesh_processing.process_mesh_import_data(game_version, jms_file, None, object_mesh, random_color_gen, 'JMS')
         bm.to_mesh(mesh)
         bm.free()
         object_mesh.data.normals_split_custom_set(vert_normal_list)
@@ -1047,9 +1043,8 @@ def load_file(context, filepath, report, game_version, reuse_armature, fix_paren
         bm.to_mesh(mesh)
         bm.free()
 
-        object_mesh.select_set(True)
-        armature.select_set(True)
-        view_layer.objects.active = armature
+        mesh_processing.select_object(context, object_mesh)
+        mesh_processing.select_object(context, armature)
         if not parent_idx == -1:
             bpy.ops.object.mode_set(mode='EDIT')
             armature.data.edit_bones.active = armature.data.edit_bones[jms_file.nodes[parent_idx].name]
@@ -1111,8 +1106,8 @@ def load_file(context, filepath, report, game_version, reuse_armature, fix_paren
         bm.to_mesh(mesh)
         bm.free()
 
-        object_mesh.select_set(True)
-        armature.select_set(True)
+        mesh_processing.select_object(context, object_mesh)
+        mesh_processing.select_object(context, armature)
         if not parent_idx == -1:
             bpy.ops.object.mode_set(mode='EDIT')
             armature.data.edit_bones.active = armature.data.edit_bones[jms_file.nodes[parent_idx].name]
@@ -1174,8 +1169,8 @@ def load_file(context, filepath, report, game_version, reuse_armature, fix_paren
         bm.to_mesh(mesh)
         bm.free()
 
-        object_mesh.select_set(True)
-        armature.select_set(True)
+        mesh_processing.select_object(context, object_mesh)
+        mesh_processing.select_object(context, armature)
         if not parent_idx == -1:
             bpy.ops.object.mode_set(mode='EDIT')
             armature.data.edit_bones.active = armature.data.edit_bones[jms_file.nodes[parent_idx].name]
@@ -1238,9 +1233,8 @@ def load_file(context, filepath, report, game_version, reuse_armature, fix_paren
         bm.to_mesh(mesh)
         bm.free()
 
-        object_mesh.select_set(True)
-        armature.select_set(True)
-        view_layer.objects.active = armature
+        mesh_processing.select_object(context, object_mesh)
+        mesh_processing.select_object(context, armature)
         if not parent_idx == -1:
             bpy.ops.object.mode_set(mode='EDIT')
             armature.data.edit_bones.active = armature.data.edit_bones[jms_file.nodes[parent_idx].name]
@@ -1277,15 +1271,13 @@ def load_file(context, filepath, report, game_version, reuse_armature, fix_paren
 
             mat.diffuse_color = random_color_gen.next()
 
-        object_mesh.select_set(True)
-        view_layer.objects.active = object_mesh
+        mesh_processing.select_object(context, object_mesh)
         bpy.ops.object.mode_set(mode='EDIT')
         bpy.ops.mesh.select_all(action='SELECT')
         bpy.ops.mesh.convex_hull(delete_unused=True, use_existing_faces=True, join_triangles=True)
         bpy.ops.object.mode_set(mode='OBJECT')
         object_mesh.data.ass_jms.Object_Type = 'CONVEX SHAPES'
-        object_mesh.select_set(False)
-        armature.select_set(False)
+        mesh_processing.deselect_objects(context)
 
     for ragdoll in jms_file.ragdolls:
         name = ragdoll.name
@@ -1305,9 +1297,8 @@ def load_file(context, filepath, report, game_version, reuse_armature, fix_paren
         object_empty.empty_display_size = 2
         object_empty.empty_display_type = 'ARROWS'
 
-        object_empty.select_set(True)
-        armature.select_set(True)
-        view_layer.objects.active = armature
+        mesh_processing.select_object(context, object_empty)
+        mesh_processing.select_object(context, armature)
         bpy.ops.object.parent_set(type='ARMATURE', keep_transform=True)
         matrix_translate = Matrix.Translation(ragdoll.attached_translation)
         matrix_rotation = ragdoll.attached_rotation.to_matrix().to_4x4()
@@ -1339,9 +1330,8 @@ def load_file(context, filepath, report, game_version, reuse_armature, fix_paren
         object_empty.empty_display_size = 2
         object_empty.empty_display_type = 'ARROWS'
 
-        object_empty.select_set(True)
-        armature.select_set(True)
-        view_layer.objects.active = armature
+        mesh_processing.select_object(context, object_empty)
+        mesh_processing.select_object(context, armature)
         bpy.ops.object.parent_set(type='ARMATURE', keep_transform=True)
         matrix_translate = Matrix.Translation(hinge.body_a_translation)
         matrix_rotation = hinge.body_a_rotation.to_matrix().to_4x4()
@@ -1373,9 +1363,8 @@ def load_file(context, filepath, report, game_version, reuse_armature, fix_paren
         object_empty.empty_display_size = 2
         object_empty.empty_display_type = 'ARROWS'
 
-        object_empty.select_set(True)
-        armature.select_set(True)
-        view_layer.objects.active = armature
+        mesh_processing.select_object(context, object_empty)
+        mesh_processing.select_object(context, armature)
         bpy.ops.object.parent_set(type='ARMATURE', keep_transform=True)
         matrix_translate = Matrix.Translation(car_wheel.wheel_translation)
         matrix_rotation = car_wheel.wheel_rotation.to_matrix().to_4x4()
@@ -1407,9 +1396,8 @@ def load_file(context, filepath, report, game_version, reuse_armature, fix_paren
         object_empty.empty_display_size = 2
         object_empty.empty_display_type = 'ARROWS'
 
-        object_empty.select_set(True)
-        armature.select_set(True)
-        view_layer.objects.active = armature
+        mesh_processing.select_object(context, object_empty)
+        mesh_processing.select_object(context, armature)
         bpy.ops.object.parent_set(type='ARMATURE', keep_transform=True)
         matrix_translate = Matrix.Translation(point_to_point.body_a_translation)
         matrix_rotation = point_to_point.body_a_rotation.to_matrix().to_4x4()
@@ -1441,9 +1429,8 @@ def load_file(context, filepath, report, game_version, reuse_armature, fix_paren
         object_empty.empty_display_size = 2
         object_empty.empty_display_type = 'ARROWS'
 
-        object_empty.select_set(True)
-        armature.select_set(True)
-        view_layer.objects.active = armature
+        mesh_processing.select_object(context, object_empty)
+        mesh_processing.select_object(context, armature)
         bpy.ops.object.parent_set(type='ARMATURE', keep_transform=True)
         matrix_translate = Matrix.Translation(prismatic.body_a_translation)
         matrix_rotation = prismatic.body_a_rotation.to_matrix().to_4x4()
@@ -1470,9 +1457,8 @@ def load_file(context, filepath, report, game_version, reuse_armature, fix_paren
         bm.to_mesh(mesh)
         bm.free()
 
-        object_mesh.select_set(True)
-        armature.select_set(True)
-        view_layer.objects.active = armature
+        mesh_processing.select_object(context, object_mesh)
+        mesh_processing.select_object(context, armature)
         bpy.ops.object.parent_set(type='ARMATURE', keep_transform=True)
 
         matrix_translate = Matrix.Translation(bounding_sphere.translation)
@@ -1498,9 +1484,8 @@ def load_file(context, filepath, report, game_version, reuse_armature, fix_paren
         object_mesh.data.color = (skylight.radiant_intensity)
         object_mesh.data.energy = (skylight.solid_angle)
 
-        object_mesh.select_set(True)
-        armature.select_set(True)
-        view_layer.objects.active = armature
+        mesh_processing.select_object(context, object_mesh)
+        mesh_processing.select_object(context, armature)
         bpy.ops.object.parent_set(type='ARMATURE', keep_transform=True)
 
         object_mesh.select_set(False)

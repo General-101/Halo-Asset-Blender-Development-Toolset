@@ -548,7 +548,7 @@ def load_file(context, filepath, report):
                         mesh_processing.deselect_objects(context)
 
                     elif geo_class == 'MESH':
-                        bm, vert_normal_list = mesh_processing.process_mesh_import_data('halo3', ass_file, object_element, object_mesh, object_data, random_color_gen, 'ASS')
+                        bm, vert_normal_list = mesh_processing.process_mesh_import_data('halo3', ass_file, object_element, object_mesh, random_color_gen, 'ASS')
 
                         bm.to_mesh(object_data)
                         bm.free()
@@ -602,14 +602,12 @@ def load_file(context, filepath, report):
 
                 object_list[idx].location = output_position
                 object_list[idx].rotation_euler =  output_rotation.to_euler()
-                if geo_class == 'MESH' or geo_class == 'GENERIC_LIGHT':
-                    object_list[idx].scale = (output_scale, output_scale, output_scale)
+                object_list[idx].scale = (output_scale, output_scale, output_scale)
 
             else:
                 object_list[idx].location = local_transform.vector
                 object_list[idx].rotation_euler = local_transform.rotation.to_euler()
-                if geo_class == 'MESH' or geo_class == 'GENERIC_LIGHT':
-                    object_list[idx].scale = local_scale
+                object_list[idx].scale = local_scale
 
             parent_index = instance.parent_id
             if not parent_index == -1:

@@ -792,9 +792,8 @@ class Bulk_Lightmap_Images(Operator):
 
     def execute(self, context):
         from ..misc import lightmapper_prep
-        scene = context.scene
-        scene_halo_lightmapper = scene.halo_lightmapper
-        return global_functions.run_code("lightmapper_prep.lightmap_bulk(scene_halo_lightmapper.res_x, scene_halo_lightmapper.res_y)")
+        scene_halo_lightmapper = context.scene.halo_lightmapper
+        return global_functions.run_code("lightmapper_prep.lightmap_bulk(context, scene_halo_lightmapper.res_x, scene_halo_lightmapper.res_y)")
 
 class Bulk_Rename_Bones(Operator):
     """Rename all bones in the scene to swap from Blender .L/.R to Halo l/r bone naming scheme and vice versa"""
@@ -804,7 +803,7 @@ class Bulk_Rename_Bones(Operator):
 
     def execute(self, context):
         from ..misc import rename_bones
-        return global_functions.run_code("rename_bones.rename_bones()")
+        return global_functions.run_code("rename_bones.rename_bones(context)")
 
 class Bulk_Rename_Prefix(Operator):
     """Rename prefixes for selected objects in the scene"""
@@ -814,9 +813,8 @@ class Bulk_Rename_Prefix(Operator):
 
     def execute(self, context):
         from ..misc import rename_prefix
-        scene = context.scene
-        scene_halo_prefix = scene.halo_prefix
-        return global_functions.run_code("rename_prefix.rename_prefix(scene_halo_prefix.prefix_string)")
+        scene_halo_prefix = context.scene.halo_prefix
+        return global_functions.run_code("rename_prefix.rename_prefix(context, scene_halo_prefix.prefix_string)")
 
 class Bulk_Rotate_Bones(Operator):
     """Add -180 degrees for the roll of all selected bones in edit mode."""
@@ -826,7 +824,7 @@ class Bulk_Rotate_Bones(Operator):
 
     def execute(self, context):
         from ..misc import rotate_bones
-        return global_functions.run_code("rotate_bones.rotate_bones()")
+        return global_functions.run_code("rotate_bones.rotate_bones(context)")
 
 class Bulk_Reset_Bones(Operator):
     """Resets bone rotation of all selected bones in edit mode."""
@@ -836,7 +834,7 @@ class Bulk_Reset_Bones(Operator):
 
     def execute(self, context):
         from ..misc import rotate_bones
-        return global_functions.run_code("rotate_bones.reset_bones()")
+        return global_functions.run_code("rotate_bones.reset_bones(context)")
 
 class Cull_Materials(Operator):
     """Sets unused material slots to none for the selected object."""
@@ -846,7 +844,7 @@ class Cull_Materials(Operator):
 
     def execute(self, context):
         from ..misc import cull_materials
-        return global_functions.run_code("cull_materials.cull_materials()")
+        return global_functions.run_code("cull_materials.cull_materials(context)")
 
 class Scale_Model(Operator):
     """Creates a model that matches the ingame scale."""
@@ -891,9 +889,8 @@ class GenerateHemisphere(Operator):
 
     def execute(self, context):
         from ..misc import generate_hemisphere
-        scene = context.scene
-        scene_halo_sky = scene.halo_sky
-        return global_functions.run_code("generate_hemisphere.generate_hemisphere(self.report, scene_halo_sky.longitude_slices, scene_halo_sky.lattitude_slices, scene_halo_sky.dome_radius, scene_halo_sky.horizontal_fov, scene_halo_sky.vertical_fov, scene_halo_sky.sky_type, scene_halo_sky.cie_sky_number, scene_halo_sky.hdr_map, scene_halo_sky.haze_height, scene_halo_sky.luminance_only, scene_halo_sky.dome_intensity, scene_halo_sky.override_zenith_color, scene_halo_sky.zenith_color, scene_halo_sky.override_horizon_color, scene_halo_sky.horizon_color, scene_halo_sky.sun_altittude, scene_halo_sky.sun_heading, scene_halo_sky.sun_intensity, scene_halo_sky.sun_disc_size, scene_halo_sky.windowing, scene_halo_sky.override_sun_color, scene_halo_sky.sun_color, scene_halo_sky.air_cleaness, scene_halo_sky.exposure, scene_halo_sky.clamp_colors)")
+        scene_halo_sky = context.scene.halo_sky
+        return global_functions.run_code("generate_hemisphere.generate_hemisphere(context, self.report, scene_halo_sky.longitude_slices, scene_halo_sky.lattitude_slices, scene_halo_sky.dome_radius, scene_halo_sky.horizontal_fov, scene_halo_sky.vertical_fov, scene_halo_sky.sky_type, scene_halo_sky.cie_sky_number, scene_halo_sky.hdr_map, scene_halo_sky.haze_height, scene_halo_sky.luminance_only, scene_halo_sky.dome_intensity, scene_halo_sky.override_zenith_color, scene_halo_sky.zenith_color, scene_halo_sky.override_horizon_color, scene_halo_sky.horizon_color, scene_halo_sky.sun_altittude, scene_halo_sky.sun_heading, scene_halo_sky.sun_intensity, scene_halo_sky.sun_disc_size, scene_halo_sky.windowing, scene_halo_sky.override_sun_color, scene_halo_sky.sun_color, scene_halo_sky.air_cleaness, scene_halo_sky.exposure, scene_halo_sky.clamp_colors)")
 
 class ExportLightmap(Operator, ExportHelper):
     """Write a LUV file"""
@@ -913,11 +910,10 @@ class FaceSet(Operator):
     bl_options = {"REGISTER", "UNDO"}
 
     def execute(self, context):
-        scene = context.scene
-        scene_face_set = scene.halo_face_set
         from ..misc import face_set
+        scene_face_set = context.scene.halo_face_set
 
-        return global_functions.run_code("face_set.create_facemap(scene_face_set.level_of_detail, scene_face_set.permutation_string, scene_face_set.region_string)")
+        return global_functions.run_code("face_set.create_facemap(context, scene_face_set.level_of_detail, scene_face_set.permutation_string, scene_face_set.region_string)")
 
 def menu_func_export(self, context):
     self.layout.operator(ExportLightmap.bl_idname, text="Halo Lightmap UV (.luv)")

@@ -31,8 +31,7 @@ import socket
 from decimal import *
 from math import degrees
 from getpass import getuser
-from ..global_functions import mesh_processing
-from ..global_functions import global_functions
+from ..global_functions import mesh_processing, global_functions
 
 def get_material_strings(material, version):
     material_strings = []
@@ -213,7 +212,7 @@ class ASSScene(global_functions.HaloAsset):
             self.pivot_transform = pivot_transform
 
     def __init__(self, context, version, game_version, apply_modifiers, triangulate_faces, edge_split, use_edge_angle, use_edge_sharp, split_angle, clean_normalize_weights, hidden_geo, custom_scale):
-        global_functions.unhide_all_collections()
+        global_functions.unhide_all_collections(context)
 
         default_region = mesh_processing.get_default_region_permutation_name(game_version)
         default_permutation = mesh_processing.get_default_region_permutation_name(game_version)
@@ -223,7 +222,7 @@ class ASSScene(global_functions.HaloAsset):
         region_list = []
         permutation_list = []
 
-        object_list = list(bpy.context.scene.objects)
+        object_list = list(context.scene.objects)
 
         edge_split = global_functions.EdgeSplit(edge_split, use_edge_angle, split_angle, use_edge_sharp)
 
@@ -342,7 +341,7 @@ class ASSScene(global_functions.HaloAsset):
             lod = None
             region = default_region
             permutation = default_permutation
-            face_set = (None, None, default_permutation, default_region)
+            face_set = (None, default_permutation, default_region)
 
             evaluted_mesh = geometry[0]
             original_geo = geometry[1]
@@ -389,15 +388,11 @@ class ASSScene(global_functions.HaloAsset):
             if not parent == None:
                 parent_id = instance_list.index(parent)
 
-            geo_matrix = global_functions.get_matrix(original_geo, original_geo, True, armature, instance_list, is_bone, version, 'ASS', 0)
-            geo_dimensions = global_functions.get_dimensions(geo_matrix, original_geo, None, None, version, None, False, is_bone, armature, 'ASS')
-            rotation = (geo_dimensions.quat_i_a, geo_dimensions.quat_j_a, geo_dimensions.quat_k_a, geo_dimensions.quat_w_a)
-            translation = (geo_dimensions.pos_x_a, geo_dimensions.pos_y_a, geo_dimensions.pos_z_a)
-            if geo_class == 'BONE':
-                scale = armature.pose.bones[original_geo.name].scale
-
-            else:
-                scale = original_geo.scale
+            geo_matrix = global_functions.get_matrix(original_geo, original_geo, True, armature, instance_list, is_bone, version, 'ASS', False, custom_scale)
+            geo_dimensions = global_functions.get_dimensions(geo_matrix, original_geo, version, None, False, is_bone, 'ASS', custom_scale)
+            rotation = (geo_dimensions.quaternion[0], geo_dimensions.quaternion[1], geo_dimensions.quaternion[2], geo_dimensions.quaternion[3])
+            translation = (geo_dimensions.position[0], geo_dimensions.position[1], geo_dimensions.position[2])
+            scale = (geo_dimensions.scale[0], geo_dimensions.scale[1], geo_dimensions.scale[2])
 
             local_transform = ASSScene.Transform(rotation, translation, scale)
             self.instances.append(ASSScene.Instance(original_geo.name, object_index, idx, parent_id, inheritance_flag, local_transform, pivot_transform=ASSScene.Transform()))
@@ -445,7 +440,7 @@ class ASSScene(global_functions.HaloAsset):
 
                     if original_geo.face_maps.active:
                         face_set = original_geo.face_maps[0].name.split()
-                        slot_index, lod, permutation, region = global_functions.material_definition_parser(False, face_set, default_region, default_permutation)
+                        lod, permutation, region = global_functions.material_definition_parser(False, face_set, default_region, default_permutation)
 
                         if not permutation in permutation_list:
                             permutation_list.append(permutation)
@@ -453,7 +448,7 @@ class ASSScene(global_functions.HaloAsset):
                         if not region in region_list:
                             region_list.append(region)
 
-                    radius = geo_dimensions.radius_a
+                    radius = geo_dimensions.object_radius
                     face = original_geo.data.polygons[0]
                     material = global_functions.get_material(game_version, original_geo, face, evaluted_mesh, lod, region, permutation)
                     if not material == -1:
@@ -467,7 +462,7 @@ class ASSScene(global_functions.HaloAsset):
 
                     if original_geo.face_maps.active:
                         face_set = original_geo.face_maps[0].name.split()
-                        slot_index, lod, permutation, region = global_functions.material_definition_parser(False, face_set, default_region, default_permutation)
+                        lod, permutation, region = global_functions.material_definition_parser(False, face_set, default_region, default_permutation)
 
                         if not permutation in permutation_list:
                             permutation_list.append(permutation)
@@ -476,7 +471,7 @@ class ASSScene(global_functions.HaloAsset):
                             region_list.append(region)
 
                     face = original_geo.data.polygons[0]
-                    extents = [geo_dimensions.dimension_x_a, geo_dimensions.dimension_y_a, geo_dimensions.dimension_z_a]
+                    extents = [geo_dimensions.dimension[0], geo_dimensions.dimension[1], geo_dimensions.dimension[2]]
                     material = global_functions.get_material(game_version, original_geo, face, evaluted_mesh, lod, region, permutation)
                     if not material == -1:
                         material_list = global_functions.gather_materials(game_version, material, material_list, 'ASS')
@@ -489,7 +484,7 @@ class ASSScene(global_functions.HaloAsset):
 
                     if original_geo.face_maps.active:
                         face_set = original_geo.face_maps[0].name.split()
-                        slot_index, lod, permutation, region = global_functions.material_definition_parser(False, face_set, default_region, default_permutation)
+                        lod, permutation, region = global_functions.material_definition_parser(False, face_set, default_region, default_permutation)
 
                         if not permutation in permutation_list:
                             permutation_list.append(permutation)
@@ -498,8 +493,8 @@ class ASSScene(global_functions.HaloAsset):
                             region_list.append(region)
 
                     face = original_geo.data.polygons[0]
-                    height = (geo_dimensions.pill_z_a)
-                    radius = (geo_dimensions.radius_a)
+                    height = geo_dimensions.pill_height
+                    radius = geo_dimensions.object_radius
                     material = global_functions.get_material(game_version, original_geo, face, evaluted_mesh, lod, region, permutation)
                     if not material == -1:
                         material_list = global_functions.gather_materials(game_version, material, material_list, 'ASS')
@@ -511,7 +506,7 @@ class ASSScene(global_functions.HaloAsset):
                         xref_name = original_geo.name
 
                     vertex_groups = original_geo.vertex_groups.keys()
-                    original_geo_matrix = global_functions.get_matrix(original_geo, original_geo, False, armature, instance_list, False, version, "ASS", 0)
+                    original_geo_matrix = global_functions.get_matrix(original_geo, original_geo, False, armature, instance_list, False, version, "ASS", False, custom_scale)
                     for idx, face in enumerate(evaluted_mesh.polygons):
                         if evaluted_mesh.face_maps.active and len(original_geo.face_maps) > 0:
                             face_map_idx = evaluted_mesh.face_maps.active.data[idx].value
@@ -525,8 +520,8 @@ class ASSScene(global_functions.HaloAsset):
                                     if not permutation in permutation_list:
                                         permutation_list.append(permutation)
 
-                        permutation = face_set[2]
-                        region = face_set[3]
+                        permutation = face_set[1]
+                        region = face_set[2]
 
                         material = global_functions.get_material(game_version, original_geo, face, evaluted_mesh, lod, region, permutation)
                         material_index = -1
@@ -543,7 +538,7 @@ class ASSScene(global_functions.HaloAsset):
                             vert = evaluted_mesh.vertices[evaluted_mesh.loops[loop_index].vertex_index]
 
                             region = region_index
-                            scaled_translation, normal = mesh_processing.process_mesh_export_vert(vert, "ASS", original_geo_matrix, version, armature)
+                            scaled_translation, normal = mesh_processing.process_mesh_export_vert(vert, "ASS", original_geo_matrix, version, custom_scale)
                             uv_set = mesh_processing.process_mesh_export_uv(evaluted_mesh, "ASS", loop_index, version)
                             color = mesh_processing.process_mesh_export_color(evaluted_mesh, loop_index)
                             node_influence_count, node_set, node_index_list = mesh_processing.process_mesh_export_weights(vert, armature, original_geo, vertex_groups, instance_list, "ASS")
@@ -575,27 +570,7 @@ class ASSScene(global_functions.HaloAsset):
             obj.hide_set(property_value[0])
             obj.hide_viewport = property_value[1]
 
-def write_file(context,
-               filepath,
-               report,
-               ass_version,
-               ass_version_h2,
-               ass_version_h3,
-               hidden_geo,
-               folder_structure,
-               apply_modifiers,
-               triangulate_faces,
-               edge_split,
-               use_edge_angle,
-               use_edge_sharp,
-               split_angle,
-               clean_normalize_weights,
-               scale_enum,
-               scale_float,
-               console,
-               game_version,
-               encoding
-               ):
+def write_file(context, filepath, report, ass_version, ass_version_h2, ass_version_h3, hidden_geo, folder_structure, apply_modifiers, triangulate_faces, edge_split, use_edge_angle, use_edge_sharp, split_angle, clean_normalize_weights, scale_enum, scale_float, console, game_version):
 
     custom_scale = global_functions.set_scale(scale_enum, scale_float)
     version = global_functions.get_version(ass_version, None, ass_version_h2, ass_version_h3, game_version, console)
@@ -603,9 +578,9 @@ def write_file(context,
     ass_scene = ASSScene(context, version, game_version, apply_modifiers, triangulate_faces, edge_split, use_edge_angle, use_edge_sharp, split_angle, clean_normalize_weights, hidden_geo, custom_scale)
 
     filename = os.path.basename(filepath)
-    root_directory = global_functions.get_directory(game_version, "render", folder_structure, "0", False, filepath)
+    root_directory = global_functions.get_directory(context, game_version, "render", folder_structure, "0", False, filepath)
 
-    file = open(root_directory + os.sep + filename, 'w', encoding=encoding)
+    file = open(root_directory + os.sep + filename, 'w', encoding='utf_8')
 
     file.write(
         ';### HEADER ###' +

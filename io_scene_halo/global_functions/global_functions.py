@@ -34,30 +34,13 @@ from decimal import *
 from mathutils import Vector, Quaternion, Matrix
 
 class JmsDimensions:
-    quat_i_a = '0.0000000000'
-    quat_j_a = '0.0000000000'
-    quat_k_a = '0.0000000000'
-    quat_w_a = '0.0000000000'
-    pos_x_a = '0.0000000000'
-    pos_y_a = '0.0000000000'
-    pos_z_a = '0.0000000000'
-    scale_x_a = '0.0000000000'
-    scale_y_a = '0.0000000000'
-    scale_z_a = '0.0000000000'
-    radius_a = '0.0000000000'
-    pill_z_a = '0.0000000000'
-    quat_i_b = '0.0000000000'
-    quat_j_b = '0.0000000000'
-    quat_k_b = '0.0000000000'
-    quat_w_b = '0.0000000000'
-    pos_x_b = '0.0000000000'
-    pos_y_b = '0.0000000000'
-    pos_z_b = '0.0000000000'
-    scale_x_b = '0.0000000000'
-    scale_y_b = '0.0000000000'
-    scale_z_b = '0.0000000000'
-    radius_b = '0.0000000000'
-    pill_z_b = '0.0000000000'
+    def __init__(self, quaternion, position, scale, dimension, object_radius, pill_height):
+        self.quaternion = quaternion
+        self.position = position
+        self.scale = scale
+        self.dimension = dimension
+        self.object_radius = object_radius
+        self.pill_height = pill_height
 
 class BlendScene():
     def __init__(self,
@@ -123,8 +106,8 @@ class EdgeSplit():
         self.split_angle = split_angle
         self.use_edge_sharp = use_edge_sharp
 
-def unhide_all_collections():
-    for collection_viewport in bpy.context.view_layer.layer_collection.children:
+def unhide_all_collections(context):
+    for collection_viewport in context.view_layer.layer_collection.children:
         collection_viewport.exclude = False
 
     for collection_hide in bpy.data.collections:
@@ -162,9 +145,6 @@ def get_sibling(armature, bone, bone_list):
                 set_sibling = bpy.data.objects['%s' % sibling_list[next_sibling_node].name]
 
     return set_sibling
-
-def get_encoding(game_version):
-    return 'utf_8'
 
 def sort_by_layer(node_list, armature):
     layer_count = []
@@ -356,7 +336,7 @@ def get_true_extension(filepath, extension, is_import):
 
     return true_extension
 
-def get_matrix(obj_a, obj_b, is_local, armature, joined_list, is_node, version, file_type, constraint):
+def get_matrix(obj_a, obj_b, is_local, armature, joined_list, is_node, version, file_type, constraint, custom_scale):
     object_matrix = Matrix.Translation((0, 0, 0))
     if is_node:
         if armature:
@@ -408,31 +388,48 @@ def get_matrix(obj_a, obj_b, is_local, armature, joined_list, is_node, version, 
 
             object_matrix = matrix_loc @ matrix_rot @ (matrix_scale_x @ matrix_scale_y @ matrix_scale_z)
 
+    loc, rot, sca = object_matrix.decompose()
+    custom_loc = loc * custom_scale
+    translation = Matrix.Translation(custom_loc)
+    rotation = rot.to_matrix().to_4x4()
+    custom_sca = sca
+    if file_type == 'JMS':
+        custom_sca = sca * custom_scale
+    scale_x = Matrix.Scale(custom_sca[0], 4, (1, 0, 0))
+    scale_y = Matrix.Scale(custom_sca[1], 4, (0, 1, 0))
+    scale_z = Matrix.Scale(custom_sca[2], 4, (0, 0, 1))
+    scale_matrix = scale_x @ scale_y @ scale_z
+
+    object_matrix = translation @ rotation @ scale_matrix
+
     return object_matrix
 
-def get_dimensions(mesh_a_matrix, mesh_a, mesh_b_matrix, mesh_b, version, jms_vertex, is_vertex, is_bone, armature, filetype):
-    object_dimensions = JmsDimensions()
+def get_dimensions(mesh_matrix, original_geo, version, jms_vertex, is_vertex, is_bone, file_type, custom_scale):
+    quaternion = (0.0, 0.0, 0.0, 1.0)
+    position = (0.0, 0.0, 0.0)
+    scale = (0.0, 0.0, 0.0)
+    dimension = (0.0, 0.0, 0.0)
+    object_radius = 0.0
+    pill_height = 0.0
     if is_vertex:
-        JmsDimensions.pos_x_a = float(jms_vertex[0])
-        JmsDimensions.pos_y_a = float(jms_vertex[1])
-        JmsDimensions.pos_z_a = float(jms_vertex[2])
+        position = (float(jms_vertex[0]), float(jms_vertex[1]), float(jms_vertex[2]))
 
     else:
-        if mesh_a:
-            pos  = mesh_a_matrix.translation
-            quat = mesh_a_matrix.to_quaternion().inverted()
-            if version >= get_version_matrix_check(filetype):
-                quat = mesh_a_matrix.to_quaternion()
+        if original_geo:
+            pos, rot, scale = mesh_matrix.decompose()
+            quat = mesh_matrix.to_quaternion().inverted()
+            if version >= get_version_matrix_check(file_type):
+                quat = mesh_matrix.to_quaternion()
 
-            if is_bone:
-                pose_bone = armature.pose.bones[mesh_a.name]
-                scale = pose_bone.scale
-
-            else:
-                scale = mesh_a.scale
+            quaternion = (quat[1], quat[2], quat[3], quat[0])
+            position = (pos[0], pos[1], pos[2])
+            if file_type == 'ASS':
+                scale = ((scale[0] * custom_scale), (scale[1] * custom_scale), (scale[2] * custom_scale))   
 
             if not is_bone:
-                dimension = mesh_a.dimensions
+                dimension = ((original_geo.dimensions[0] / original_geo.scale[0]), (original_geo.dimensions[1] / original_geo.scale[1]), (original_geo.dimensions[2] / original_geo.scale[2]))
+                if file_type == 'JMS':
+                    dimension = ((original_geo.dimensions[0] * custom_scale), (original_geo.dimensions[1] * custom_scale), (original_geo.dimensions[2] * custom_scale))  
 
                 #The reason this code exists is to try to copy how capsules work in 3DS Max.
                 #To get original height for 3DS Max do (radius_jms * 2) + height_jms
@@ -442,65 +439,11 @@ def get_dimensions(mesh_a_matrix, mesh_a, mesh_b_matrix, mesh_b, version, jms_ve
                 if pill_height <= 0:
                     pill_height = 0
 
-            JmsDimensions.quat_i_a = float(quat[1])
-            JmsDimensions.quat_j_a = float(quat[2])
-            JmsDimensions.quat_k_a = float(quat[3])
-            JmsDimensions.quat_w_a = float(quat[0])
-            JmsDimensions.pos_x_a = float(pos[0])
-            JmsDimensions.pos_y_a = float(pos[1])
-            JmsDimensions.pos_z_a = float(pos[2])
-            JmsDimensions.scale_x_a = float(scale[0])
-            JmsDimensions.scale_y_a = float(scale[1])
-            JmsDimensions.scale_z_a = float(scale[2])
-            if not is_bone:
-                JmsDimensions.dimension_x_a = float(dimension[0])
-                JmsDimensions.dimension_y_a = float(dimension[1])
-                JmsDimensions.dimension_z_a = float(dimension[2])
-                JmsDimensions.radius_a = float(pill_radius)
-                JmsDimensions.pill_z_a = float(pill_height)
+                dimension = (dimension[0], dimension[1], dimension[2])
+                object_radius = pill_radius
+                pill_height = pill_height
 
-        if mesh_b:
-            pos  = mesh_b_matrix.translation
-            quat = mesh_b_matrix.to_quaternion().inverted()
-            if version >= get_version_matrix_check(filetype):
-                quat = mesh_a_matrix.to_quaternion()
-
-            if is_bone:
-                pose_bone = armature.pose.bones[mesh_b.name]
-                scale = pose_bone.scale
-
-            else:
-                scale = mesh_b.scale
-
-            if not is_bone:
-                dimension = mesh_b.dimensions
-
-                #The reason this code exists is to try to copy how capsules work in 3DS Max.
-                #To get original height for 3DS Max do (radius_jms * 2) + height_jms
-                #The maximum value of radius is height / 2
-                pill_radius = ((dimension[0] / 2))
-                pill_height = (dimension[2]) - (pill_radius * 2)
-                if pill_height <= 0:
-                    pill_height = 0
-
-            JmsDimensions.quat_i_b = float(quat[1])
-            JmsDimensions.quat_j_b = float(quat[2])
-            JmsDimensions.quat_k_b = float(quat[3])
-            JmsDimensions.quat_w_b = float(quat[0])
-            JmsDimensions.pos_x_b = float(pos[0])
-            JmsDimensions.pos_y_b = float(pos[1])
-            JmsDimensions.pos_z_b = float(pos[2])
-            JmsDimensions.scale_x_b = float(scale[0])
-            JmsDimensions.scale_y_b = float(scale[1])
-            JmsDimensions.scale_z_b = float(scale[2])
-            if not is_bone:
-                JmsDimensions.dimension_x_b = float(dimension[0])
-                JmsDimensions.dimension_y_b = float(dimension[1])
-                JmsDimensions.dimension_z_b = float(dimension[2])
-                JmsDimensions.radius_b = float(pill_radius)
-                JmsDimensions.pill_z_b = float(pill_height)
-
-    return object_dimensions
+    return JmsDimensions(quaternion, position, scale, dimension, object_radius, pill_height)
 
 def get_extension(extension_console, extension_ce, extension_h2, extension_h3, game_version, console):
 
@@ -591,15 +534,12 @@ def count_root_nodes(node_list):
     return root_node_count
 
 def get_version_matrix_check(filetype):
-    matrix_version = None
+    matrix_version = 0
     if filetype == 'JMA':
         matrix_version = 16394
 
     elif filetype == 'JMS':
         matrix_version = 8205
-
-    elif filetype == 'ASS':
-        matrix_version = 0
 
     return matrix_version
 
@@ -731,9 +671,9 @@ class HaloAsset:
         next_p1 = self.next()
         next_p2 = self.next()
         try:
-            p0 = float(next_p0)
-            p1 = float(next_p1)
-            p2 = float(next_p2)
+            p0 = float(next_p0.replace(",", "."))
+            p1 = float(next_p1.replace(",", "."))
+            p2 = float(next_p2.replace(",", "."))
 
         except ValueError:
             p0 = float(next_p0.rsplit('.', 1)[0])
@@ -748,10 +688,10 @@ class HaloAsset:
 
     def next_quaternion(self):
         """Return the next quaternion as mathutils.Quaternion, raises AssetParseError on error"""
-        x = float(self.next())
-        y = float(self.next())
-        z = float(self.next())
-        w = float(self.next())
+        x = float(self.next().replace(",", "."))
+        y = float(self.next().replace(",", "."))
+        z = float(self.next().replace(",", "."))
+        w = float(self.next().replace(",", "."))
         quat = Quaternion((w, x, y, z))
         if self.are_quaternions_inverted():
             quat.invert()
@@ -893,9 +833,9 @@ def get_filename(game_version, permutation_ce, level_of_detail_ce, folder_struct
 
     return filename
 
-def get_directory(game_version, model_type, folder_structure, asset_type, jmi, filepath):
+def get_directory(context, game_version, model_type, folder_structure, asset_type, jmi, filepath):
     directory = filepath.rsplit(os.sep, 1)[0]
-    blend_filename = bpy.path.basename(bpy.context.blend_data.filepath)
+    blend_filename = bpy.path.basename(context.blend_data.filepath)
 
     parent_folder = 'default'
     if len(blend_filename) > 0:
@@ -1148,7 +1088,7 @@ def material_definition_parser(is_import, material_definition_items, default_reg
         if region == None:
             region = default_region
 
-    return slot_index, lod, permutation, region
+    return lod, permutation, region
 
 def run_code(code_string):
     from .. import config

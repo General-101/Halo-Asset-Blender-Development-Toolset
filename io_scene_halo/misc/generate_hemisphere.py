@@ -212,33 +212,7 @@ def get_sun_color(sunsky):
 
     return (r * ((150000 * sunsky.sun_intensity) * sun_percentage), g * ((150000 * sunsky.sun_intensity) * sun_percentage), b * ((150000 * sunsky.sun_intensity) * sun_percentage))
 
-def generate_hemisphere(report,
-                        longitude_slices,
-                        lattitude_slices,
-                        dome_radius,
-                        horizontal_fov,
-                        vertical_fov,
-                        sky_type,
-                        cie_sky_number,
-                        hdr_map,
-                        haze_height,
-                        luminance_only,
-                        dome_intensity,
-                        override_zenith_color,
-                        zenith_color,
-                        override_horizon_color,
-                        horizon_color,
-                        sun_altittude,
-                        sun_heading,
-                        sun_intensity,
-                        sun_disc_size,
-                        windowing,
-                        override_sun_color,
-                        sun_color,
-                        air_cleaness,
-                        exposure,
-                        clamp_colors):
-
+def generate_hemisphere(context, report, longitude_slices, lattitude_slices, dome_radius, horizontal_fov, vertical_fov, sky_type, cie_sky_number, hdr_map, haze_height, luminance_only, dome_intensity, override_zenith_color, zenith_color, override_horizon_color, horizon_color, sun_altittude, sun_heading, sun_intensity, sun_disc_size, windowing, override_sun_color, sun_color, air_cleaness, exposure, clamp_colors):
     sunsky = SunSky
     sunsky.longitude_slices = longitude_slices
     sunsky.lattitude_slices = lattitude_slices
@@ -289,7 +263,7 @@ def generate_hemisphere(report,
             object_mesh = bpy.data.objects.get(name)
             if object_mesh is None:
                 object_mesh = bpy.data.objects.new(name, light_data)
-                bpy.context.collection.objects.link(object_mesh)
+                context.collection.objects.link(object_mesh)
 
             object_mesh.rotation_euler = rot_tuple
             if light_column == sun_column_id and light_row == sun_row_id:

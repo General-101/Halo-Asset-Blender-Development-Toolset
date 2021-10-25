@@ -2,6 +2,7 @@ import bpy
 import bmesh
 
 from . import tatsu
+from ..global_functions import mesh_processing
 
 # Author: Conscars <inbox@t3hz0r.com>, 2020-03-05
 VERSION_STR = "1.1.0"
@@ -165,19 +166,14 @@ def infer_error_type(binding_type, mtl_diffuse_colors):
             return "degenerate triangle or UVs" + color_info
     return "unknown" + color_info
 
-def set_object_properties(object):
-    view_layer = bpy.context.view_layer
-    if view_layer.objects.active:
-        bpy.ops.object.mode_set(mode='OBJECT')
-        bpy.ops.object.select_all(action='DESELECT')
+def set_object_properties(context, object):
+    mesh_processing.deselect_objects(context)
+    mesh_processing.select_object(context, object)
 
     object.show_name = True
-
-    object.select_set(True)
-    view_layer.objects.active = object
     bpy.ops.object.origin_set(type='ORIGIN_GEOMETRY', center='MEDIAN')
-    object.select_set(False)
-    view_layer.objects.active = None
+
+    mesh_processing.deselect_objects(context)
 
 def get_material_name(diffuse, error_type):
     mat_name = error_type
@@ -358,9 +354,7 @@ def convert_wrl_to_blend(context, filepath, report):
     unknown_object_mesh = None
     unknown_bm = bmesh.new()
 
-    if bpy.context.view_layer.objects.active:
-        bpy.ops.object.mode_set(mode='OBJECT')
-        bpy.ops.object.select_all(action='DESELECT')
+    mesh_processing.deselect_objects(context)
 
     for face_idx, face in enumerate(face_data):
         face_color = face_color_data[face_idx]
@@ -372,7 +366,7 @@ def convert_wrl_to_blend(context, filepath, report):
                 coplanar_mesh = bpy.data.meshes.new(coplanar_face_error_name)
             if coplanar_object_mesh is None:
                 coplanar_object_mesh = bpy.data.objects.new(coplanar_face_error_name, coplanar_mesh)
-                bpy.context.collection.objects.link(coplanar_object_mesh)
+                context.collection.objects.link(coplanar_object_mesh)
 
             generate_mesh_face(coplanar_face_error_name, coplanar_mesh, coplanar_object_mesh, coplanar_bm, vert_data, face, coplanar_face_id, face_color)
             coplanar_face_id += 1
@@ -384,7 +378,7 @@ def convert_wrl_to_blend(context, filepath, report):
                 degenerate_mesh = bpy.data.meshes.new(degenerate_face_error_name)
             if degenerate_object_mesh is None:
                 degenerate_object_mesh = bpy.data.objects.new(degenerate_face_error_name, degenerate_mesh)
-                bpy.context.collection.objects.link(degenerate_object_mesh)
+                context.collection.objects.link(degenerate_object_mesh)
 
             generate_mesh_face(degenerate_face_error_name, degenerate_mesh, degenerate_object_mesh, degenerate_bm, vert_data, face, degenerate_face_id, face_color)
             degenerate_face_id += 1
@@ -396,7 +390,7 @@ def convert_wrl_to_blend(context, filepath, report):
                 portal_outside_mesh = bpy.data.meshes.new(portal_outside_face_error_name)
             if portal_outside_object_mesh is None:
                 portal_outside_object_mesh = bpy.data.objects.new(portal_outside_face_error_name, portal_outside_mesh)
-                bpy.context.collection.objects.link(portal_outside_object_mesh)
+                context.collection.objects.link(portal_outside_object_mesh)
 
             generate_mesh_face(portal_outside_face_error_name, portal_outside_mesh, portal_outside_object_mesh, portal_outside_bm, vert_data, face, portal_outside_face_id, face_color)
             portal_outside_face_id += 1
@@ -408,7 +402,7 @@ def convert_wrl_to_blend(context, filepath, report):
                 surface_clipped_mesh = bpy.data.meshes.new(surface_clipped_face_error_name)
             if surface_clipped_object_mesh is None:
                 surface_clipped_object_mesh = bpy.data.objects.new(surface_clipped_face_error_name, surface_clipped_mesh)
-                bpy.context.collection.objects.link(surface_clipped_object_mesh)
+                context.collection.objects.link(surface_clipped_object_mesh)
 
             generate_mesh_face(surface_clipped_face_error_name, surface_clipped_mesh, surface_clipped_object_mesh, surface_clipped_bm, vert_data, face, surface_clipped_face_id, face_color)
             surface_clipped_face_id += 1
@@ -420,7 +414,7 @@ def convert_wrl_to_blend(context, filepath, report):
                 portal_undivide_mesh = bpy.data.meshes.new(portal_undivide_face_error_name)
             if portal_undivide_object_mesh is None:
                 portal_undivide_object_mesh = bpy.data.objects.new(portal_undivide_face_error_name, portal_undivide_mesh)
-                bpy.context.collection.objects.link(portal_undivide_object_mesh)
+                context.collection.objects.link(portal_undivide_object_mesh)
 
             generate_mesh_face(portal_undivide_face_error_name, portal_undivide_mesh, portal_undivide_object_mesh, portal_undivide_bm, vert_data, face, portal_undivide_face_id, face_color)
             portal_undivide_face_id += 1
@@ -432,7 +426,7 @@ def convert_wrl_to_blend(context, filepath, report):
                 portal_closed_mesh = bpy.data.meshes.new(portal_closed_face_error_name)
             if portal_closed_object_mesh is None:
                 portal_closed_object_mesh = bpy.data.objects.new(portal_closed_face_error_name, portal_closed_mesh)
-                bpy.context.collection.objects.link(portal_closed_object_mesh)
+                context.collection.objects.link(portal_closed_object_mesh)
 
             generate_mesh_face(portal_closed_face_error_name, portal_closed_mesh, portal_closed_object_mesh, portal_closed_bm, vert_data, face, portal_closed_face_id, face_color)
             portal_closed_face_id += 1
@@ -444,7 +438,7 @@ def convert_wrl_to_blend(context, filepath, report):
                 duplicate_triangle_mesh = bpy.data.meshes.new(duplicate_triangle_face_error_name)
             if duplicate_triangle_object_mesh is None:
                 duplicate_triangle_object_mesh = bpy.data.objects.new(duplicate_triangle_face_error_name, duplicate_triangle_mesh)
-                bpy.context.collection.objects.link(duplicate_triangle_object_mesh)
+                context.collection.objects.link(duplicate_triangle_object_mesh)
 
             generate_mesh_face(duplicate_triangle_face_error_name, duplicate_triangle_mesh, duplicate_triangle_object_mesh, duplicate_triangle_bm, vert_data, face, duplicate_triangle_face_id, face_color)
             duplicate_triangle_face_id += 1
@@ -456,7 +450,7 @@ def convert_wrl_to_blend(context, filepath, report):
                 intersecting_fog_mesh = bpy.data.meshes.new(intersecting_fog_face_error_name)
             if intersecting_fog_object_mesh is None:
                 intersecting_fog_object_mesh = bpy.data.objects.new(intersecting_fog_face_error_name, intersecting_fog_mesh)
-                bpy.context.collection.objects.link(intersecting_fog_object_mesh)
+                context.collection.objects.link(intersecting_fog_object_mesh)
 
             generate_mesh_face(intersecting_fog_face_error_name, intersecting_fog_mesh, intersecting_fog_object_mesh, intersecting_fog_bm, vert_data, face, intersecting_fog_face_id, face_color)
             intersecting_fog_face_id += 1
@@ -468,7 +462,7 @@ def convert_wrl_to_blend(context, filepath, report):
                 degenerate_uv_mesh = bpy.data.meshes.new(degenerate_uv_face_error_name)
             if degenerate_uv_object_mesh is None:
                 degenerate_uv_object_mesh = bpy.data.objects.new(degenerate_uv_face_error_name, degenerate_uv_mesh)
-                bpy.context.collection.objects.link(degenerate_uv_object_mesh)
+                context.collection.objects.link(degenerate_uv_object_mesh)
 
             generate_mesh_face(degenerate_uv_face_error_name, degenerate_uv_mesh, degenerate_uv_object_mesh, degenerate_uv_bm, vert_data, face, degenerate_uv_face_id, face_color)
             degenerate_uv_face_id += 1
@@ -480,7 +474,7 @@ def convert_wrl_to_blend(context, filepath, report):
                 unknown_mesh = bpy.data.meshes.new(unknown_error_name)
             if unknown_object_mesh is None:
                 unknown_object_mesh = bpy.data.objects.new(unknown_error_name, unknown_mesh)
-                bpy.context.collection.objects.link(unknown_object_mesh)
+                context.collection.objects.link(unknown_object_mesh)
 
             generate_mesh_face(unknown_error_name, unknown_mesh, unknown_object_mesh, unknown_bm, vert_data, face, unknown_face_id, face_color)
             unknown_face_id += 1
@@ -495,7 +489,7 @@ def convert_wrl_to_blend(context, filepath, report):
                 bad_edge_mesh = bpy.data.meshes.new(bad_edge_error_name)
             if bad_edge_object_mesh is None:
                 bad_edge_object_mesh = bpy.data.objects.new(bad_edge_error_name, bad_edge_mesh)
-                bpy.context.collection.objects.link(bad_edge_object_mesh)
+                context.collection.objects.link(bad_edge_object_mesh)
 
             generate_mesh_edge(bad_edge_error_name, bad_edge_mesh, bad_edge_object_mesh, bad_edge_bm, vert_data, edge, edge_color)
 
@@ -506,7 +500,7 @@ def convert_wrl_to_blend(context, filepath, report):
                 unearthed_edge_mesh = bpy.data.meshes.new(unearthed_edge_error_name)
             if unearthed_edge_object_mesh is None:
                 unearthed_edge_object_mesh = bpy.data.objects.new(unearthed_edge_error_name, unearthed_edge_mesh)
-                bpy.context.collection.objects.link(unearthed_edge_object_mesh)
+                context.collection.objects.link(unearthed_edge_object_mesh)
 
             generate_mesh_edge(unearthed_edge_error_name, unearthed_edge_mesh, unearthed_edge_object_mesh, unearthed_edge_bm, vert_data, edge, edge_color)
 
@@ -517,79 +511,79 @@ def convert_wrl_to_blend(context, filepath, report):
                 unknown_mesh = bpy.data.meshes.new(unknown_error_name)
             if unknown_object_mesh is None:
                 unknown_object_mesh = bpy.data.objects.new(unknown_error_name, unknown_mesh)
-                bpy.context.collection.objects.link(unknown_object_mesh)
+                context.collection.objects.link(unknown_object_mesh)
 
             generate_mesh_edge(unknown_error_name, unknown_mesh, unknown_object_mesh, unknown_bm, vert_data, edge, edge_color)
 
     if coplanar_object_mesh:
         coplanar_bm.to_mesh(coplanar_mesh)
-        set_object_properties(coplanar_object_mesh)
+        set_object_properties(context, coplanar_object_mesh)
 
     coplanar_bm.free()
 
     if degenerate_object_mesh:
         degenerate_bm.to_mesh(degenerate_mesh)
-        set_object_properties(degenerate_object_mesh)
+        set_object_properties(context, degenerate_object_mesh)
 
     degenerate_bm.free()
 
     if portal_outside_object_mesh:
         portal_outside_bm.to_mesh(portal_outside_mesh)
-        set_object_properties(portal_outside_object_mesh)
+        set_object_properties(context, portal_outside_object_mesh)
 
     portal_outside_bm.free()
 
     if bad_edge_object_mesh:
         bad_edge_bm.to_mesh(bad_edge_mesh)
-        set_object_properties(bad_edge_object_mesh)
+        set_object_properties(context, bad_edge_object_mesh)
 
     bad_edge_bm.free()
 
     if unearthed_edge_object_mesh:
         unearthed_edge_bm.to_mesh(unearthed_edge_mesh)
-        set_object_properties(unearthed_edge_object_mesh)
+        set_object_properties(context, unearthed_edge_object_mesh)
 
     unearthed_edge_bm.free()
 
     if surface_clipped_object_mesh:
         surface_clipped_bm.to_mesh(surface_clipped_mesh)
-        set_object_properties(surface_clipped_object_mesh)
+        set_object_properties(context, surface_clipped_object_mesh)
 
     surface_clipped_bm.free()
 
     if portal_undivide_object_mesh:
         portal_undivide_bm.to_mesh(portal_undivide_mesh)
-        set_object_properties(portal_undivide_object_mesh)
+        set_object_properties(context, portal_undivide_object_mesh)
 
     portal_undivide_bm.free()
 
     if portal_closed_object_mesh:
         portal_closed_bm.to_mesh(portal_closed_mesh)
-        set_object_properties(portal_closed_object_mesh)
+        set_object_properties(context, portal_closed_object_mesh)
 
     portal_closed_bm.free()
 
     if duplicate_triangle_object_mesh:
         duplicate_triangle_bm.to_mesh(duplicate_triangle_mesh)
-        set_object_properties(duplicate_triangle_object_mesh)
+        set_object_properties(context, duplicate_triangle_object_mesh)
 
     duplicate_triangle_bm.free()
 
     if intersecting_fog_object_mesh:
         intersecting_fog_bm.to_mesh(intersecting_fog_mesh)
-        set_object_properties(intersecting_fog_object_mesh)
+        set_object_properties(context, intersecting_fog_object_mesh)
 
     intersecting_fog_bm.free()
 
     if degenerate_uv_object_mesh:
         degenerate_uv_bm.to_mesh(degenerate_uv_mesh)
-        set_object_properties(degenerate_uv_object_mesh)
+        set_object_properties(context, degenerate_uv_object_mesh)
 
     degenerate_uv_bm.free()
 
     if unknown_object_mesh:
         unknown_bm.to_mesh(unknown_mesh)
-        set_object_properties(unknown_object_mesh)
+        set_object_properties(context, unknown_object_mesh)
 
     unknown_bm.free()
 

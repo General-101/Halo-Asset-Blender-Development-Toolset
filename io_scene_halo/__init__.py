@@ -43,6 +43,7 @@ from . import file_ass
 from . import file_jma
 from . import file_jmi
 from . import file_jms
+from . import file_qua
 from . import file_wrl
 from . import misc
 
@@ -52,6 +53,7 @@ modules = [
     file_jma,
     file_jmi,
     file_jms,
+    file_qua,
     file_wrl,
     misc
 ]

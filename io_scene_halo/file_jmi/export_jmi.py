@@ -35,7 +35,7 @@ class JMIScene(global_functions.HaloAsset):
         self.world_nodes = []
         self.children_sets = []
 
-        global_functions.unhide_all_collections()
+        global_functions.unhide_all_collections(context)
         scene = context.scene
         object_list = list(scene.objects)
 
@@ -47,16 +47,16 @@ class JMIScene(global_functions.HaloAsset):
         for node in self.world_nodes:
             self.children_sets.append(global_functions.get_children(node))
 
-def write_file(context, filepath, report, jmi_version, jmi_version_ce, jmi_version_h2, jmi_version_h3, apply_modifiers, triangulate_faces, folder_type, edge_split, use_edge_angle, use_edge_sharp, split_angle, clean_normalize_weights, scale_enum, scale_float, console, hidden_geo, export_render, export_collision, export_physics, game_version, encoding):
+def write_file(context, filepath, report, jmi_version, jmi_version_ce, jmi_version_h2, jmi_version_h3, apply_modifiers, triangulate_faces, folder_type, edge_split, use_edge_angle, use_edge_sharp, split_angle, clean_normalize_weights, scale_enum, scale_float, console, hidden_geo, export_render, export_collision, export_physics, game_version):
     version = global_functions.get_version(jmi_version, jmi_version_ce, jmi_version_h2, jmi_version_h3, game_version, console)
 
     jmi_scene = JMIScene(context)
 
     filename = global_functions.get_filename(None, None, None, None, None, True, filepath)
-    root_directory = global_functions.get_directory(None, None, None, folder_type, None, filepath)
+    root_directory = global_functions.get_directory(context, None, None, None, folder_type, None, filepath)
 
     if version >= 8207:
-        file = open(root_directory + os.sep + filename, 'w', encoding=encoding)
+        file = open(root_directory + os.sep + filename, 'w', encoding='utf_8')
 
         #write header
         version_bounds = '8207-8210'

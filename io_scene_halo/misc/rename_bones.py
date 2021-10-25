@@ -27,14 +27,12 @@
 import re
 import bpy
 
-from ..global_functions import global_functions
-
-def rename_bones():
+def rename_bones(context):
     node_prefix_tuple = ('b ', 'b_', 'bone ','bone_', 'frame ','frame_', 'bip01 ', 'bip01_')
     blender_style = (".l", ".r")
     halo_style = ("l ", "r ", "l_", "r_")
 
-    active_object = bpy.context.view_layer.objects.active
+    active_object = context.view_layer.objects.active
 
     if not active_object == None and active_object.type == 'ARMATURE':
         style_type = 1

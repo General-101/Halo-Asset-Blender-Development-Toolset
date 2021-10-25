@@ -45,25 +45,22 @@ class JMAScene(global_functions.HaloAsset):
             self.sibling = sibling
 
     def __init__(self, context, report, version, generate_checksum, game_version, extension, custom_scale, biped_controller):
-        global_functions.unhide_all_collections()
-        scene = context.scene
-        view_layer = context.view_layer
+        global_functions.unhide_all_collections(context)
         object_properties = []
-        object_list = list(scene.objects)
+        object_list = list(context.scene.objects)
         node_list = []
         armature = []
         armature_count = 0
-        first_frame = scene.frame_start
-        last_frame = scene.frame_end + 1
-        total_frame_count = scene.frame_end - first_frame + 1
+        first_frame = context.scene.frame_start
+        last_frame = context.scene.frame_end + 1
+        total_frame_count = context.scene.frame_end - first_frame + 1
         for obj in object_list:
             object_properties.append([obj.hide_get(), obj.hide_viewport])
             if obj.type == 'ARMATURE':
                 mesh_processing.unhide_object(obj)
                 armature_count += 1
                 armature = obj
-                view_layer.objects.active = obj
-                obj.select_set(True)
+                mesh_processing.select_object(context, obj)
                 node_list = list(obj.data.bones)
 
         self.transform_count = total_frame_count
@@ -78,34 +75,7 @@ class JMAScene(global_functions.HaloAsset):
         joined_list = sorted_list[0]
         reversed_joined_list = sorted_list[1]
 
-        blend_scene = global_functions.BlendScene(0,
-                                armature_count,
-                                0,
-                                0,
-                                0,
-                                0,
-                                armature,
-                                node_list,
-                                None,
-                                None,
-                                None,
-                                None,
-                                None,
-                                None,
-                                None,
-                                None,
-                                None,
-                                None,
-                                None,
-                                None,
-                                None,
-                                None,
-                                None,
-                                None,
-                                None,
-                                None,
-                                None)
-
+        blend_scene = global_functions.BlendScene(0, armature_count, 0, 0, 0, 0, armature, node_list, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None)
         global_functions.validate_halo_jma_scene(game_version, version, blend_scene, object_list, extension)
 
         self.node_checksum = 0
@@ -138,13 +108,13 @@ class JMAScene(global_functions.HaloAsset):
                 if armature:
                     is_bone = True
 
-                bone_matrix = global_functions.get_matrix(node, node, True, armature, joined_list, True, version, 'JMA', 0)
-                mesh_dimensions = global_functions.get_dimensions(bone_matrix, node, None, None, version, None, False, is_bone, armature, 'JMA')
-                vector = (mesh_dimensions.pos_x_a, mesh_dimensions.pos_y_a, mesh_dimensions.pos_z_a)
-                rotation = (mesh_dimensions.quat_i_a, mesh_dimensions.quat_j_a, mesh_dimensions.quat_k_a, mesh_dimensions.quat_w_a)
-                scale = (mesh_dimensions.scale_x_a)
+                bone_matrix = global_functions.get_matrix(node, node, True, armature, joined_list, True, version, 'JMA', False, custom_scale)
+                mesh_dimensions = global_functions.get_dimensions(bone_matrix, node, version, None, False, is_bone, 'JMA', custom_scale)
+                rotation = (mesh_dimensions.quaternion[0], mesh_dimensions.quaternion[1], mesh_dimensions.quaternion[2], mesh_dimensions.quaternion[3])
+                translation = (mesh_dimensions.position[0], mesh_dimensions.position[1], mesh_dimensions.position[2])
+                scale = (mesh_dimensions.scale[0])
 
-                transforms_for_frame.append(JMAScene.Transform(vector, rotation, scale))
+                transforms_for_frame.append(JMAScene.Transform(translation, rotation, scale))
 
             self.transforms.append(transforms_for_frame)
 
@@ -152,60 +122,24 @@ class JMAScene(global_functions.HaloAsset):
         if version > 16394 and biped_controller:
             for frame in range(self.transform_count):
                 context.scene.frame_set(frame)
-                armature_matrix = global_functions.get_matrix(armature, armature, True, None, joined_list, False, version, 'JMA', 0)
-                mesh_dimensions = global_functions.get_dimensions(armature_matrix, armature, None, None, version, None, False, False, armature, 'JMA')
+                armature_matrix = global_functions.get_matrix(armature, armature, True, None, joined_list, False, version, 'JMA', False, custom_scale)
+                mesh_dimensions = global_functions.get_dimensions(armature_matrix, armature, version, None, False, False, 'JMA', custom_scale)
 
-                vector = (mesh_dimensions.pos_x_a, mesh_dimensions.pos_y_a, mesh_dimensions.pos_z_a)
-                rotation = (mesh_dimensions.quat_i_a, mesh_dimensions.quat_j_a, mesh_dimensions.quat_k_a, mesh_dimensions.quat_w_a)
-                scale = (mesh_dimensions.scale_x_a)
+                rotation = (mesh_dimensions.quaternion[0], mesh_dimensions.quaternion[1], mesh_dimensions.quaternion[2], mesh_dimensions.quaternion[3])
+                translation = (mesh_dimensions.position[0], mesh_dimensions.position[1], mesh_dimensions.position[2])
+                scale = (mesh_dimensions.scale[0])
 
-                self.biped_controller_transforms.append(JMAScene.Transform(vector, rotation, scale))
+                self.biped_controller_transforms.append(JMAScene.Transform(translation, rotation, scale))
 
-        scene.frame_set(1)
+        context.scene.frame_set(1)
         for idx, obj in enumerate(object_list):
             property_value = object_properties[idx]
             obj.hide_set(property_value[0])
             obj.hide_viewport = property_value[1]
 
-def write_file(context,
-               filepath,
-               report,
-               extension,
-               extension_ce,
-               extension_h2,
-               extension_h3,
-               jma_version,
-               jma_version_ce,
-               jma_version_h2,
-               jma_version_h3,
-               generate_checksum,
-               custom_frame_rate,
-               frame_rate_float,
-               biped_controller,
-               folder_structure,
-               scale_enum,
-               scale_float,
-               console,
-               game_version,
-               encoding
-               ):
-
-    version = global_functions.get_version(jma_version,
-                                           jma_version_ce,
-                                           jma_version_h2,
-                                           jma_version_h3,
-                                           game_version,
-                                           console
-                                           )
-
-    extension = global_functions.get_extension(extension,
-                                               extension_ce,
-                                               extension_h2,
-                                               extension_h3,
-                                               game_version,
-                                               console
-                                               )
-
+def write_file(context, filepath, report, extension, extension_ce, extension_h2, extension_h3, jma_version, jma_version_ce, jma_version_h2, jma_version_h3, generate_checksum, custom_frame_rate, frame_rate_float, biped_controller, folder_structure, scale_enum, scale_float, console, game_version):
+    version = global_functions.get_version(jma_version, jma_version_ce, jma_version_h2, jma_version_h3, game_version, console)
+    extension = global_functions.get_extension(extension, extension_ce, extension_h2, extension_h3, game_version, console)
     custom_scale = global_functions.set_scale(scale_enum, scale_float)
     if custom_frame_rate == 'CUSTOM':
         frame_rate_value = frame_rate_float
@@ -230,9 +164,9 @@ def write_file(context,
 
     filename = os.path.basename(filepath)
 
-    root_directory = global_functions.get_directory(game_version, "animations", folder_structure, "0", False, filepath)
+    root_directory = global_functions.get_directory(context, game_version, "animations", folder_structure, "0", False, filepath)
 
-    file = open(root_directory + os.sep + filename + global_functions.get_true_extension(filepath, extension, False), 'w', encoding=encoding)
+    file = open(root_directory + os.sep + filename + global_functions.get_true_extension(filepath, extension, False), 'w', encoding='utf_8')
 
     #write header
     if version >= 16394:

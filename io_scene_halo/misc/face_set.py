@@ -28,8 +28,8 @@ import bpy
 
 from ..global_functions import global_functions
 
-def create_facemap(level_of_detail, permutation_string, region_string):
-    active_object = bpy.context.view_layer.objects.active
+def create_facemap(context, level_of_detail, permutation_string, region_string):
+    active_object = context.view_layer.objects.active
     facemap_name = ""
     #This doesn't matter for CE but for Halo 2/3 the region or permutation names can't have any whitespace.
     #Lets fix that here to make sure nothing goes wrong.

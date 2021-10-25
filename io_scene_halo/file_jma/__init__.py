@@ -602,7 +602,7 @@ class ExportJMA(Operator, ExportHelper):
             self.scale_float = args.scale_float
             self.console = args.console
 
-        return export_jma.write_file(*keywords, self.game_version, global_functions.get_encoding(self.game_version))
+        return export_jma.write_file(*keywords, self.game_version)
 
     def draw(self, context):
         fps_options = [23.98, 24, 25, 29.97, 30, 50, 59.94, 60]

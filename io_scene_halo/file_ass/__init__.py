@@ -475,7 +475,7 @@ class ExportASS(Operator, ExportHelper):
             self.scale_float = args.scale_float
             self.console = args.console
 
-        return global_functions.run_code("export_ass.write_file(*keywords, self.game_version, get_encoding(self.game_version))")
+        return global_functions.run_code("export_ass.write_file(*keywords, self.game_version)")
 
     def draw(self, context):
         scene = context.scene

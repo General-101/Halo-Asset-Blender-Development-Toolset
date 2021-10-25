@@ -249,8 +249,6 @@ def generate_jms_skeleton(jms_a_transform, jms_a_nodes, jms_a_file, jms_b_transf
         for a_idx, jms_a_node in enumerate(jms_a_nodes):
             if jma_node.name.lower() in jms_a_node.lower():
                 if jma_file.nodes[0].name.lower() in jms_a_nodes[0].lower():
-                    print(jma_node.name.lower())
-                    print(jms_a_nodes[0].lower())
                     is_fp_root_file_a = True
 
                 file_version = jms_a_file.version

@@ -50,12 +50,9 @@ class ImportWRL(Operator, ImportHelper):
             argv = sys.argv[sys.argv.index('--') + 1:]
             parser = argparse.ArgumentParser()
             parser.add_argument('-arg1', '--filepath', dest='filepath', metavar='FILE', required = True)
-            parser.add_argument('-arg2', '--fix_parents', dest='fix_parents', action='store_true')
             args = parser.parse_known_args(argv)[0]
             print('filepath: ', args.filepath)
-            print('fix_parents: ', args.fix_parents)
             self.filepath = args.filepath
-            self.fix_parents = args.fix_parents
 
         return global_functions.run_code("import_wrl.convert_wrl_to_blend(context, self.filepath, self.report)")
 

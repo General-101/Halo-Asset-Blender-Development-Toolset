@@ -24,15 +24,10 @@
 #
 # ##### END MIT LICENSE BLOCK #####
 
-import re
-import bpy
-
-from ..global_functions import global_functions
-
-def rename_prefix(prefix_string):
+def rename_prefix(context, prefix_string):
     node_prefix_tuple = ('b ', 'b_', 'bone ','bone_', 'frame ','frame_', 'bip01 ', 'bip01_')
 
-    selected_objects_list = bpy.context.selected_objects
+    selected_objects_list = context.selected_objects
 
     if not selected_objects_list == None:
         for object in selected_objects_list:
