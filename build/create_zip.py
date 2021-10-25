@@ -15,7 +15,7 @@ git_version = subprocess.check_output(["git", "describe", "--always"]).strip().d
 print(f"git version: {git_version}")
 
 # grab version from arguments if any
-CI_version = os.getenv('GITHUB_RUN_ID')
+CI_version = os.getenv('GITHUB_RUN_NUMBER')
 version_minor = 0
 if CI_version is None:
     print("Local build")
