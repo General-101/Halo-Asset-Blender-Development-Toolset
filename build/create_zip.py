@@ -30,9 +30,11 @@ def build_resources_zip() -> io.BytesIO:
     print("Done building resources")
     return data
 
-def build_release_zip():
+def build_release_zip(name: str, include_resources: bool):
+    print(f"Building release type name: {name}, include_resources={include_resources}")
 
-    resources = build_resources_zip()
+    if include_resources:
+        resources = build_resources_zip()
 
     # grab the version from git
     git_version = subprocess.check_output(["git", "describe", "--always"]).strip().decode()
@@ -54,7 +56,7 @@ def build_release_zip():
     Path("output").mkdir(exist_ok=True)
 
     # create zip name from git hash/version
-    zip_name = f"halo-asset-blender-toolset-{version_string}.zip"
+    zip_name = f"{name}-{version_string}.zip"
 
     print(f"zip name: {zip_name}")
 
@@ -71,7 +73,8 @@ def build_release_zip():
         if dir.startswith(os.path.join("io_scene_halo", "resources")):
             continue
         for file in files:
-            if file.endswith(".pyc") or (dir == 'io_scene_halo' and file == '__init__.py'):
+            main_dir_ignore = ['resources.zip', '__init__.py']
+            if file.endswith(".pyc") or (dir == 'io_scene_halo' and file in main_dir_ignore):
                 continue
             fs_path = os.path.join(dir, file)
             zip.write(fs_path)
@@ -80,9 +83,11 @@ def build_release_zip():
     init_file = init_file.replace("(117, 343, 65521)", f'(2, {version_minor}, 0)')
     init_file = init_file.replace('BUILD_VERSION_STR', version_string)
     zip.writestr('io_scene_halo/__init__.py', init_file)
-    zip.writestr('io_scene_halo/resources.zip', resources.getbuffer())
+    if include_resources:
+        zip.writestr('io_scene_halo/resources.zip', resources.getbuffer())
     zip.printdir()
     zip.close()
 
-build_release_zip()
+build_release_zip(name="halo-asset-blender-toolset", include_resources=True)
+build_release_zip(name="halo-asset-blender-toolset-lite", include_resources=False)
 print("done!")
