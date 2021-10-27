@@ -111,11 +111,16 @@ class QUAScene(global_functions.HaloAsset):
 
         first_frame = context.scene.frame_start
         last_frame = context.scene.frame_end + 1
-        total_frame_count = context.scene.frame_end - first_frame + 1
 
         ubercam = bpy.data.objects.get("ubercam")
 
-        for shot in range(1):
+        for action in bpy.data.actions:
+            ubercam.animation_data.action = action
+            first_frame = round(action.fcurves[0].keyframe_points[0].co[0])
+            last_frame = round(action.fcurves[0].keyframe_points[-1].co[0]) + 1
+            print(first_frame)
+            print(last_frame)
+                    
             transforms_for_frame = []
             for frame in range(first_frame, last_frame):
                 context.scene.frame_set(frame)

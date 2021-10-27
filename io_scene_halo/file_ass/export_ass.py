@@ -392,7 +392,11 @@ class ASSScene(global_functions.HaloAsset):
             geo_dimensions = global_functions.get_dimensions(geo_matrix, original_geo, version, None, False, is_bone, 'ASS', custom_scale)
             rotation = (geo_dimensions.quaternion[0], geo_dimensions.quaternion[1], geo_dimensions.quaternion[2], geo_dimensions.quaternion[3])
             translation = (geo_dimensions.position[0], geo_dimensions.position[1], geo_dimensions.position[2])
-            scale = (geo_dimensions.scale[0], geo_dimensions.scale[1], geo_dimensions.scale[2])
+            if geo_class == 'BONE':
+                scale = armature.pose.bones[original_geo.name].scale
+
+            else:
+                scale = original_geo.scale
 
             local_transform = ASSScene.Transform(rotation, translation, scale)
             self.instances.append(ASSScene.Instance(original_geo.name, object_index, idx, parent_id, inheritance_flag, local_transform, pivot_transform=ASSScene.Transform()))
