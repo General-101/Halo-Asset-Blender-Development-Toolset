@@ -196,9 +196,12 @@ def append_material_symbols(material, game_version):
     return processed_symbol_name
 
 def deselect_objects(context):
-    if context.view_layer.objects.active:
-        bpy.ops.object.mode_set(mode='OBJECT')
-        bpy.ops.object.select_all(action='DESELECT')
+    active_obj = context.view_layer.objects.active
+    if not active_obj == None:
+        if not active_obj.hide_get() and not active_obj.hide_viewport:
+            bpy.ops.object.mode_set(mode='OBJECT')
+            bpy.ops.object.select_all(action='DESELECT')
+
         context.view_layer.objects.active = None
 
 def select_object(context, obj):
