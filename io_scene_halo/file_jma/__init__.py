@@ -205,6 +205,12 @@ class JMA_ScenePropertiesGroup(PropertyGroup):
         options={'HIDDEN'},
         )
 
+    fix_rotations: BoolProperty(
+        name ="Fix Rotations",
+        description = "Rotates bones by 90 degrees on a local Z axis",
+        default = False,
+        )
+
     folder_structure: BoolProperty(
         name ="Generate Asset Subdirectories",
         description = "Generate folder subdirectories for exported assets",
@@ -306,6 +312,9 @@ class JMA_SceneProps(Panel):
                 row.label(text='Biped Controller:')
                 row.prop(scene_jma, "biped_controller", text='')
 
+        row = col.row()
+        row.label(text='Fix Rotation:')
+        row.prop(scene_jma, "fix_rotations", text='')
         row = col.row()
         row.label(text='Use As Default Export Settings:')
         row.prop(scene_jma, "use_scene_properties", text='')
@@ -487,6 +496,12 @@ class ExportJMA(Operator, ExportHelper):
         options={'HIDDEN'},
         )
 
+    fix_rotations: BoolProperty(
+        name ="Fix Rotations",
+        description = "Rotates bones by 90 degrees on a local Z axis",
+        default = False,
+        )
+
     folder_structure: BoolProperty(
         name ="Generate Asset Subdirectories",
         description = "Generate folder subdirectories for exported assets",
@@ -571,11 +586,12 @@ class ExportJMA(Operator, ExportHelper):
             parser.add_argument('-arg5', '--generate_checksum', dest='generate_checksum', action='store_true')
             parser.add_argument('-arg6', '--folder_structure', dest='folder_structure', action='store_true')
             parser.add_argument('-arg7', '--biped_controller', dest='biped_controller', action='store_true')
-            parser.add_argument('-arg8', '--custom_frame_rate', dest='custom_frame_rate', type=str, default="30")
-            parser.add_argument('-arg9', '--frame_rate_float', dest='frame_rate_float', type=str, default=30)
-            parser.add_argument('-arg10', '--scale_enum', dest='scale_enum', type=str, default="0")
-            parser.add_argument('-arg11', '--scale_float', dest='scale_float', type=float, default=1.0)
-            parser.add_argument('-arg12', '--console', dest='console', action='store_true', default=True)
+            parser.add_argument('-arg8', '--fix_rotations', dest='fix_rotations', action='store_true')
+            parser.add_argument('-arg9', '--custom_frame_rate', dest='custom_frame_rate', type=str, default="30")
+            parser.add_argument('-arg10', '--frame_rate_float', dest='frame_rate_float', type=str, default=30)
+            parser.add_argument('-arg11', '--scale_enum', dest='scale_enum', type=str, default="0")
+            parser.add_argument('-arg12', '--scale_float', dest='scale_float', type=float, default=1.0)
+            parser.add_argument('-arg13', '--console', dest='console', action='store_true', default=True)
             args = parser.parse_known_args(argv)[0]
             print('filepath: ', args.filepath)
             print('game_version: ', args.game_version)
@@ -584,6 +600,7 @@ class ExportJMA(Operator, ExportHelper):
             print('generate_checksum: ', args.generate_checksum)
             print('folder_structure: ', args.folder_structure)
             print('biped_controller: ', args.biped_controller)
+            print('fix_rotations: ', args.fix_rotations)
             print('custom_frame_rate: ', args.custom_frame_rate)
             print('frame_rate_float: ', args.frame_rate_float)
             print('scale_enum: ', args.scale_enum)
@@ -596,13 +613,14 @@ class ExportJMA(Operator, ExportHelper):
             self.generate_checksum = args.generate_checksum
             self.folder_structure = args.folder_structure
             self.biped_controller = args.biped_controller
+            self.fix_rotations = args.fix_rotations
             self.custom_frame_rate = args.custom_frame_rate
             self.frame_rate_float = args.frame_rate_float
             self.scale_enum = args.scale_enum
             self.scale_float = args.scale_float
             self.console = args.console
 
-        return export_jma.write_file(*keywords, self.game_version)
+        return export_jma.write_file(*keywords, self.game_version, self.fix_rotations)
 
     def draw(self, context):
         fps_options = [23.98, 24, 25, 29.97, 30, 50, 59.94, 60]
@@ -625,6 +643,7 @@ class ExportJMA(Operator, ExportHelper):
             self.extension_h3 = scene_jma.extension_h3
             self.generate_checksum = scene_jma.generate_checksum
             self.biped_controller = scene_jma.biped_controller
+            self.fix_rotations = scene_jma.fix_rotations
             self.folder_structure = scene_jma.folder_structure
             self.scale_enum = scene_jma.scale_enum
             self.scale_float = scene_jma.scale_float
@@ -688,6 +707,10 @@ class ExportJMA(Operator, ExportHelper):
                 row.prop(self, "biped_controller", text='')
 
         row = col.row()
+        row.enabled = is_enabled
+        row.label(text='Fix Rotation:')
+        row.prop(self, "fix_rotations", text='')
+        row = col.row()
         row.label(text='Use Scene Export Settings:')
         row.prop(scene_jma, "use_scene_properties", text='')
         if scene_halo.expert_mode:
@@ -734,6 +757,12 @@ class ImportJMA(Operator, ImportHelper):
         default = True,
         )
 
+    fix_rotations: BoolProperty(
+        name ="Fix Rotations",
+        description = "Set rotations to match what you would visually see in 3DS Max. Rotates bones by 90 degrees on a local Z axis to match how Blender handles rotations",
+        default = False,
+        )
+
     jms_path_a: StringProperty(
         name="Primary JMS",
         description="Select a path to a JMS containing the primary skeleton. Will be used for rest position",
@@ -757,21 +786,24 @@ class ImportJMA(Operator, ImportHelper):
             parser.add_argument('-arg1', '--filepath', dest='filepath', metavar='FILE', required = True)
             parser.add_argument('-arg2', '--game_version', dest='game_version', type=str, default="auto")
             parser.add_argument('-arg3', '--fix_parents', dest='fix_parents', action='store_true')
-            parser.add_argument('-arg4', '--jms_path_a', dest='jms_path_a', type=str, default="")
-            parser.add_argument('-arg5', '--jms_path_b', dest='jms_path_b', type=str, default="")
+            parser.add_argument('-arg4', '--fix_rotations', dest='fix_rotations', action='store_true')
+            parser.add_argument('-arg5', '--jms_path_a', dest='jms_path_a', type=str, default="")
+            parser.add_argument('-arg6', '--jms_path_b', dest='jms_path_b', type=str, default="")
             args = parser.parse_known_args(argv)[0]
             print('filepath: ', args.filepath)
             print('game_version: ', args.game_version)
             print('fix_parents: ', args.fix_parents)
+            print('fix_rotations: ', args.fix_rotations)
             print('jms_path_a: ', args.jms_path_a)
             print('jms_path_b: ', args.jms_path_b)
             self.filepath = args.filepath
             self.game_version = args.game_version
             self.fix_parents = args.fix_parents
+            self.fix_rotations = args.fix_rotations
             self.jms_path_a = args.jms_path_a
             self.jms_path_b = args.jms_path_b
 
-        return global_functions.run_code("import_jma.load_file(context, self.filepath, self.report, self.fix_parents, self.game_version, self.jms_path_a, self.jms_path_b)")
+        return global_functions.run_code("import_jma.load_file(context, self.filepath, self.report, self.fix_parents, self.game_version, self.jms_path_a, self.jms_path_b, self.fix_rotations)")
 
     def draw(self, context):
         scene = context.scene
@@ -792,6 +824,10 @@ class ImportJMA(Operator, ImportHelper):
             row = col.row()
             row.label(text='Force node parents:')
             row.prop(self, "fix_parents", text='')
+
+        row = col.row()
+        row.label(text='Fix Rotations:')
+        row.prop(self, "fix_rotations", text='')
 
         box = layout.box()
         box.label(text="Import:")

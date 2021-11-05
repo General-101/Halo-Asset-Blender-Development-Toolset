@@ -388,7 +388,7 @@ class ASSScene(global_functions.HaloAsset):
             if not parent == None:
                 parent_id = instance_list.index(parent)
 
-            geo_matrix = global_functions.get_matrix(original_geo, original_geo, True, armature, instance_list, is_bone, version, 'ASS', False, custom_scale)
+            geo_matrix = global_functions.get_matrix(original_geo, original_geo, True, armature, instance_list, is_bone, version, 'ASS', False, custom_scale, False)
             geo_dimensions = global_functions.get_dimensions(geo_matrix, original_geo, version, None, False, is_bone, 'ASS', custom_scale)
             rotation = (geo_dimensions.quaternion[0], geo_dimensions.quaternion[1], geo_dimensions.quaternion[2], geo_dimensions.quaternion[3])
             translation = (geo_dimensions.position[0], geo_dimensions.position[1], geo_dimensions.position[2])
@@ -510,11 +510,11 @@ class ASSScene(global_functions.HaloAsset):
                         xref_name = original_geo.name
 
                     vertex_groups = original_geo.vertex_groups.keys()
-                    original_geo_matrix = global_functions.get_matrix(original_geo, original_geo, False, armature, instance_list, False, version, "ASS", False, custom_scale)
+                    original_geo_matrix = global_functions.get_matrix(original_geo, original_geo, False, armature, instance_list, False, version, "ASS", False, custom_scale, False)
                     for idx, face in enumerate(evaluted_mesh.polygons):
                         if evaluted_mesh.face_maps.active and len(original_geo.face_maps) > 0:
                             face_map_idx = evaluted_mesh.face_maps.active.data[idx].value
-                            if not face_map_idx == -1:  
+                            if not face_map_idx == -1:
                                 face_set = mesh_processing.process_mesh_export_face_set(default_permutation, default_region, game_version, original_geo, face_map_idx)
                                 if not region in region_list:
                                     region_list.append(region)
@@ -550,7 +550,7 @@ class ASSScene(global_functions.HaloAsset):
                             verts.append(ASSScene.Vertex(node_influence_count, node_set, region, scaled_translation, normal, color, uv_set))
 
                     original_geo.to_mesh_clear()
-                    
+
                 else:
                     print("Bad object")
 

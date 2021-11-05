@@ -27,6 +27,7 @@
 import bpy
 import bmesh
 
+from mathutils import Vector
 from ..global_functions import global_functions
 
 def unhide_object(mesh):
@@ -79,12 +80,13 @@ def gather_parameters(name):
         if char == ":":
             value_length = count_steps(name, lm_idx, 1)
             parameter_length = count_steps(name, lm_idx, -1) * -1
-            for num in range(parameter_length + value_length):
-                parameter += processed_name[lm_idx - parameter_length + num]
-                index = lm_idx - parameter_length + num
-                processed_name = processed_name[:index] + " " + processed_name[index + 1:]
+            if parameter_length == 3:
+                for num in range(parameter_length + value_length):
+                    parameter += processed_name[lm_idx - parameter_length + num]
+                    index = lm_idx - parameter_length + num
+                    processed_name = processed_name[:index] + " " + processed_name[index + 1:]
 
-            processed_parameters.append(parameter)
+                processed_parameters.append(parameter)
 
     return (processed_name, processed_parameters)
 
@@ -499,10 +501,10 @@ def process_mesh_export_uv(evaluated_geo, file_type, loop_index, version):
 
 def process_mesh_export_vert(vert, file_type, original_geo_matrix, version, custom_scale):
     if file_type == 'JMS':
-        translation = original_geo_matrix @ vert.co 
+        translation = original_geo_matrix @ vert.co
 
     else:
-        translation = custom_scale * vert.co 
+        translation = custom_scale * vert.co
 
     mesh_dimensions = global_functions.get_dimensions(None, None, version, translation, True, False, file_type, custom_scale)
     scaled_translation = (mesh_dimensions.position[0], mesh_dimensions.position[1], mesh_dimensions.position[2])
@@ -562,3 +564,40 @@ def get_lod(lod_setting, game_version):
         LOD_name = lod_setting
 
     return LOD_name
+
+def get_child_nodes(import_file_main, import_file_a, import_file_b, parent_idx, file_type):
+    file_version = import_file_main.version
+    first_frame = import_file_main.transforms[0]
+    child_list = []
+    for child_idx, node in enumerate(import_file_main.nodes):
+        if node.parent == parent_idx:
+            child_distance = (Vector((0, 0, 0)) - first_frame[child_idx].vector).length
+            if file_version >= global_functions.get_version_matrix_check(file_type):
+                child_distance = (first_frame[parent_idx].vector - first_frame[child_idx].vector).length
+
+            child_list.append(child_distance)
+
+    return child_list
+
+def get_bone_distance(import_file_main, import_file_a, import_file_b, current_idx, file_type):
+    bone_distance = 0
+    file_version = import_file_main.version
+    first_frame = import_file_main.transforms[0]
+    child_list = get_child_nodes(import_file_main, import_file_a, import_file_b, current_idx, file_type)
+    import_file_main_nodes = import_file_main.nodes
+
+    if len(child_list) == 0 and import_file_main_nodes[current_idx].parent and not import_file_main_nodes[current_idx].parent == -1:
+        bone_distance = (Vector((0, 0, 0)) - first_frame[current_idx].vector).length
+        if file_version >= global_functions.get_version_matrix_check(file_type):
+            bone_distance = (first_frame[import_file_main_nodes[current_idx].parent].vector - first_frame[current_idx].vector).length
+
+    elif len(child_list) == 1:
+        bone_distance = child_list[0]
+
+    elif len(child_list) > 1:
+        bone_distance = sum(child_list) / len(child_list)
+
+    if bone_distance <= 0.0:
+        bone_distance = 5
+
+    return bone_distance

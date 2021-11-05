@@ -211,7 +211,7 @@ def get_object_mesh(array_item, game_version):
     script_folder_path = path.dirname(path.dirname(__file__))
     # relative path of the JMS from the resources path
     path_relative = game_version + "/" +  array_item[0] + ".jms"
-    # expected on disk path of the JMS 
+    # expected on disk path of the JMS
     filepath = path.join(script_folder_path, "resources", path_relative)
     # resources zip file path (won't exist in dev builds)
     path_resources_zip = path.join(script_folder_path, "resources.zip")

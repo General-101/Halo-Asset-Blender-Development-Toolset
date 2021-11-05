@@ -55,7 +55,7 @@ class JMS_MarkerPropertiesGroup(PropertyGroup):
         description = "If filled then export will use the name set here instead of the object name",
         default = "",
         )
-        
+
     marker_mask_type: EnumProperty(
         name="Mask Type",
         description="Choose the mask type for the marker object",
@@ -236,6 +236,9 @@ class JMS_SceneProps(Panel):
         row.label(text='Use Edge Split:')
         row.prop(scene_jms, "edge_split", text='')
         row = col.row()
+        row.label(text='Fix Rotations:')
+        row.prop(scene_jms, "fix_rotations", text='')
+        row = col.row()
         row.label(text='Use As Default Export Settings:')
         row.prop(scene_jms, "use_scene_properties", text='')
         if scene_jms.folder_structure == True and not scene_jms.game_version == 'haloce':
@@ -412,6 +415,12 @@ class JMS_ScenePropertiesGroup(PropertyGroup):
         name ="Clean and Normalize Weights",
         description = "Remove unused vertex groups and normalize weights before export. Permanently affects scene",
         default = True,
+        )
+
+    fix_rotations: BoolProperty(
+        name ="Fix Rotations",
+        description = "Rotates bones by 90 degrees on a local Z axis",
+        default = False,
         )
 
     use_scene_properties: BoolProperty(
@@ -639,6 +648,12 @@ class ExportJMS(Operator, ExportHelper):
         default = True,
         )
 
+    fix_rotations: BoolProperty(
+        name ="Fix Rotations",
+        description = "Rotates bones by 90 degrees on a local Z axis",
+        default = False,
+        )
+
     use_scene_properties: BoolProperty(
         name ="Use scene properties",
         description = "Use the options set in the scene or uncheck this to override",
@@ -743,14 +758,15 @@ class ExportJMS(Operator, ExportHelper):
             parser.add_argument('-arg12', '--apply_modifiers', dest='apply_modifiers', action='store_true')
             parser.add_argument('-arg13', '--triangulate_faces', dest='triangulate_faces', action='store_true')
             parser.add_argument('-arg14', '--clean_normalize_weights', dest='clean_normalize_weights', action='store_true')
-            parser.add_argument('-arg15', '--edge_split', dest='edge_split', action='store_true')
-            parser.add_argument('-arg16', '--folder_type', dest='folder_type', action='0')
-            parser.add_argument('-arg17', '--use_edge_angle', dest='use_edge_angle', action='store_true')
-            parser.add_argument('-arg18', '--split_angle', dest='split_angle', type=float, default=1.0)
-            parser.add_argument('-arg19', '--use_edge_sharp', dest='use_edge_sharp', action='store_true')
-            parser.add_argument('-arg20', '--scale_enum', dest='scale_enum', type=str, default="0")
-            parser.add_argument('-arg21', '--scale_float', dest='scale_float', type=float, default=1.0)
-            parser.add_argument('-arg22', '--console', dest='console', action='store_true', default=True)
+            parser.add_argument('-arg15', '--fix_rotations', dest='fix_rotations', action='store_true')
+            parser.add_argument('-arg16', '--edge_split', dest='edge_split', action='store_true')
+            parser.add_argument('-arg17', '--folder_type', dest='folder_type', action='0')
+            parser.add_argument('-arg18', '--use_edge_angle', dest='use_edge_angle', action='store_true')
+            parser.add_argument('-arg19', '--split_angle', dest='split_angle', type=float, default=1.0)
+            parser.add_argument('-arg20', '--use_edge_sharp', dest='use_edge_sharp', action='store_true')
+            parser.add_argument('-arg21', '--scale_enum', dest='scale_enum', type=str, default="0")
+            parser.add_argument('-arg22', '--scale_float', dest='scale_float', type=float, default=1.0)
+            parser.add_argument('-arg23', '--console', dest='console', action='store_true', default=True)
             args = parser.parse_known_args(argv)[0]
             print('filepath: ', args.filepath)
             print('game_version: ', args.game_version)
@@ -766,6 +782,7 @@ class ExportJMS(Operator, ExportHelper):
             print('apply_modifiers: ', args.apply_modifiers)
             print('triangulate_faces: ', args.triangulate_faces)
             print('clean_normalize_weights: ', args.clean_normalize_weights)
+            print('fix_rotations: ', args.fix_rotations)
             print('edge_split: ', args.edge_split)
             print('folder_type: ', args.folder_type)
             print('use_edge_angle: ', args.use_edge_angle)
@@ -788,6 +805,7 @@ class ExportJMS(Operator, ExportHelper):
             self.apply_modifiers = args.apply_modifiers
             self.triangulate_faces = args.triangulate_faces
             self.clean_normalize_weights = args.clean_normalize_weights
+            self.fix_rotations = args.fix_rotations
             self.edge_split = args.edge_split
             self.folder_type = args.folder_type
             self.use_edge_angle = args.use_edge_angle
@@ -797,7 +815,7 @@ class ExportJMS(Operator, ExportHelper):
             self.scale_float = args.scale_float
             self.console = args.console
 
-        return global_functions.run_code("export_jms.command_queue(context, self.filepath, self.report, self.jms_version, self.jms_version_ce, self.jms_version_h2, self.jms_version_h3, self.generate_checksum, self.folder_structure, self.folder_type, self.apply_modifiers, self.triangulate_faces, self.edge_split, self.use_edge_angle, self.use_edge_sharp, self.split_angle, self.clean_normalize_weights, self.scale_enum, self.scale_float, self.console, self.permutation_ce, self.level_of_detail_ce, self.hidden_geo, self.export_render, self.export_collision, self.export_physics, self.game_version, None)")
+        return global_functions.run_code("export_jms.command_queue(context, self.filepath, self.report, self.jms_version, self.jms_version_ce, self.jms_version_h2, self.jms_version_h3, self.generate_checksum, self.folder_structure, self.folder_type, self.apply_modifiers, self.triangulate_faces, self.fix_rotations, self.edge_split, self.use_edge_angle, self.use_edge_sharp, self.split_angle, self.clean_normalize_weights, self.scale_enum, self.scale_float, self.console, self.permutation_ce, self.level_of_detail_ce, self.hidden_geo, self.export_render, self.export_collision, self.export_physics, self.game_version, None)")
 
     def draw(self, context):
         scene = context.scene
@@ -827,6 +845,7 @@ class ExportJMS(Operator, ExportHelper):
             self.triangulate_faces = scene_jms.triangulate_faces
             self.clean_normalize_weights = scene_jms.clean_normalize_weights
             self.edge_split = scene_jms.edge_split
+            self.fix_rotations = scene_jms.fix_rotations
             self.folder_type = scene_jms.folder_type
             self.use_edge_angle = scene_jms.use_edge_angle
             self.split_angle = scene_jms.split_angle
@@ -911,6 +930,10 @@ class ExportJMS(Operator, ExportHelper):
         row.label(text='Use Edge Split:')
         row.prop(self, "edge_split", text='')
         row = col.row()
+        row.enabled = is_enabled
+        row.label(text='Fix Rotation:')
+        row.prop(self, "fix_rotations", text='')
+        row = col.row()
         row.label(text='Use Scene Export Settings:')
         row.prop(scene_jms, "use_scene_properties", text='')
         if self.folder_structure == True and not self.game_version == 'haloce':
@@ -975,6 +998,12 @@ class ImportJMS(Operator, ImportHelper):
         default = True,
         )
 
+    fix_rotations: BoolProperty(
+        name ="Fix Rotations",
+        description = "Set rotations to match what you would visually see in 3DS Max. Rotates bones by 90 degrees on a local Z axis to match how Blender handles rotations",
+        default = False,
+        )
+
     filter_glob: StringProperty(
         default="*.jms;*.jmp",
         options={'HIDDEN'},
@@ -989,17 +1018,20 @@ class ImportJMS(Operator, ImportHelper):
             parser.add_argument('-arg2', '--game_version', dest='game_version', type=str, default="halo2")
             parser.add_argument('-arg3', '--reuse_armature', dest='reuse_armature', action='store_true')
             parser.add_argument('-arg4', '--fix_parents', dest='fix_parents', action='store_true')
+            parser.add_argument('-arg5', '--fix_rotations', dest='fix_rotations', action='store_true')
             args = parser.parse_known_args(argv)[0]
             print('filepath: ', args.filepath)
             print('game_version: ', args.game_version)
             print('reuse_armature: ', args.reuse_armature)
             print('fix_parents: ', args.fix_parents)
+            print('fix_rotations: ', args.fix_rotations)
             self.filepath = args.filepath
             self.game_version = args.game_version
             self.reuse_armature = args.reuse_armature
             self.fix_parents = args.fix_parents
+            self.fix_rotations = args.fix_rotations
 
-        return global_functions.run_code("import_jms.load_file(context, self.filepath, self.report, self.game_version, self.reuse_armature, self.fix_parents)")
+        return global_functions.run_code("import_jms.load_file(context, self.filepath, self.report, self.game_version, self.reuse_armature, self.fix_parents, self.fix_rotations)")
 
     def draw(self, context):
         layout = self.layout
@@ -1020,6 +1052,10 @@ class ImportJMS(Operator, ImportHelper):
             row = col.row()
             row.label(text='Force node parents:')
             row.prop(self, "fix_parents", text='')
+
+        row = col.row()
+        row.label(text='Fix Rotations:')
+        row.prop(self, "fix_rotations", text='')
 
 def menu_func_export(self, context):
     self.layout.operator(ExportJMS.bl_idname, text="Halo Jointed Model Skeleton (.jms)")

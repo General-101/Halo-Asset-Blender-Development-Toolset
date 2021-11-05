@@ -27,19 +27,11 @@
 import bpy
 
 from os import path
+from math import radians
 from enum import Flag, auto
 from mathutils import Matrix
 from ..file_jms import import_jms
 from ..global_functions import mesh_processing, global_functions
-
-class ParentIDFix():
-    def __init__(self, pelvis = None, thigh0 = None, thigh1 = None, spine1 = None, clavicle0 = None, clavicle1 = None):
-        self.pelvis = pelvis
-        self.thigh0 = thigh0
-        self.thigh1 = thigh1
-        self.spine1 = spine1
-        self.clavicle0 = clavicle0
-        self.clavicle1 = clavicle1
 
 class JMAAsset(global_functions.HaloAsset):
     """
@@ -227,11 +219,11 @@ class JMAAsset(global_functions.HaloAsset):
                     else:
                         child_node = None
 
-def generate_jms_skeleton(jms_a_transform, jms_a_nodes, jms_a_file, jms_b_transform, jms_b_nodes, jms_b_file, jma_file, armature):
+def generate_jms_skeleton(jms_a_nodes, jms_a_file, jms_b_nodes, jms_b_file, jma_file, armature, fix_rotations):
     created_bone_list = []
     file_version = jma_file.version
     r_hand_idx = None
-    is_fp_root_file_a = False 
+    is_fp_root_file_a = False
     file_type = "JMS"
 
     bpy.ops.object.mode_set(mode = 'EDIT')
@@ -269,7 +261,7 @@ def generate_jms_skeleton(jms_a_transform, jms_a_nodes, jms_a_file, jms_b_transf
             if not parent_name == None:
                 if bone in parent_name:
                     parent = armature.data.edit_bones[bone_idx]
-                
+
             else:
                 parent = armature.data.edit_bones[0]
 
@@ -290,8 +282,6 @@ def generate_jms_skeleton(jms_a_transform, jms_a_nodes, jms_a_file, jms_b_transf
         elif "gun" in jma_node.name:
             current_bone.parent = armature.data.edit_bones[r_hand_idx]
 
-        transform_matrix = matrix_translate @ matrix_rotation
-
         is_root = False
         if jma_node.name.lower() in jms_a_file.nodes[0].name.lower():
             is_root = True
@@ -299,16 +289,24 @@ def generate_jms_skeleton(jms_a_transform, jms_a_nodes, jms_a_file, jms_b_transf
         if jma_node.name.lower() in jms_b_file.nodes[0].name.lower():
             is_root = True
 
-        if file_version < global_functions.get_version_matrix_check(file_type) and current_bone.parent and not is_root:
-            transform_matrix = current_bone.parent.matrix @ transform_matrix
+        transform_matrix = matrix_translate @ matrix_rotation
+        if fix_rotations:
+            if file_version < global_functions.get_version_matrix_check(file_type) and current_bone.parent and not is_root:
+                transform_matrix = (current_bone.parent.matrix @ Matrix.Rotation(radians(90.0), 4, 'Z')) @ transform_matrix
 
-        current_bone.matrix = transform_matrix
+            current_bone.matrix = transform_matrix @ Matrix.Rotation(radians(-90.0), 4, 'Z')
 
-def generate_jma_skeleton(jms_a_transform, jms_a_nodes, jms_a_file, jms_b_transform, jms_b_nodes, jms_b_file, jma_file, armature, parent_id_class):
+        else:
+            if file_version < global_functions.get_version_matrix_check(file_type) and current_bone.parent and not is_root:
+                transform_matrix = current_bone.parent.matrix @ transform_matrix
+
+            current_bone.matrix = transform_matrix
+
+def generate_jma_skeleton(jms_a_nodes, jms_a_file, jms_b_nodes, jms_b_file, jma_file, armature, parent_id_class, fix_rotations):
     file_version = jma_file.version
     first_frame = jma_file.transforms[0]
     file_type = "JMA"
-    if jms_a_transform:
+    if jms_a_file:
         file_type = "JMS"
 
     bpy.ops.object.mode_set(mode = 'EDIT')
@@ -327,7 +325,7 @@ def generate_jma_skeleton(jms_a_transform, jms_a_nodes, jms_a_file, jms_b_transf
             parent = jma_file.nodes[parent_idx].name
             current_bone.parent = armature.data.edit_bones[parent]
 
-        if jms_a_transform:
+        if jms_a_file:
             for a_idx, jms_a_node in enumerate(jms_a_nodes):
                 if jma_node.name.lower() in jms_a_node.lower():
                     file_version = jms_a_file.version
@@ -348,19 +346,26 @@ def generate_jma_skeleton(jms_a_transform, jms_a_nodes, jms_a_file, jms_b_transf
             matrix_rotation = first_frame[idx].rotation.to_matrix().to_4x4()
 
         is_root = False
-        if jms_a_transform:
+        if jms_a_file:
             if jma_node.name.lower() in jms_a_file.nodes[0].name.lower():
                 is_root = True
 
-        if jms_b_transform:
+        if jms_b_file:
             if jma_node.name.lower() in jms_b_file.nodes[0].name.lower():
                 is_root = True
 
         transform_matrix = matrix_translate @ matrix_rotation
-        if file_version < global_functions.get_version_matrix_check(file_type) and current_bone.parent and not is_root:
-            transform_matrix = current_bone.parent.matrix @ transform_matrix
+        if fix_rotations:
+            if file_version < global_functions.get_version_matrix_check(file_type) and current_bone.parent and not is_root:
+                transform_matrix = (current_bone.parent.matrix @ Matrix.Rotation(radians(90.0), 4, 'Z')) @ transform_matrix
 
-        current_bone.matrix = transform_matrix
+            current_bone.matrix = transform_matrix @ Matrix.Rotation(radians(-90.0), 4, 'Z')
+
+        else:
+            if file_version < global_functions.get_version_matrix_check(file_type) and current_bone.parent and not is_root:
+                transform_matrix = current_bone.parent.matrix @ transform_matrix
+
+            current_bone.matrix = transform_matrix
 
     bpy.ops.object.mode_set(mode = 'OBJECT')
 
@@ -386,11 +391,11 @@ def set_parent_id_class(jma_file, parent_id_class):
             else:
                 parent_id_class.clavicle1 = idx
 
-def jms_file_check(jms_a_transform, jms_b_transform, jms_a_file, jms_b_file, jma_nodes):
+def jms_file_check(jms_a_file, jms_b_file, jma_nodes):
     jms_a_nodes = []
     jms_b_nodes = []
     warning = "No valid armature detected. One will be created but expect issues with visuals in scene due to no proper rest position"
-    if jms_a_transform and not jms_b_transform:
+    if jms_a_file and not jms_b_file:
         for jms_node in jms_a_file.nodes:
             jms_a_nodes.append(jms_node.name)
 
@@ -401,7 +406,7 @@ def jms_file_check(jms_a_transform, jms_b_transform, jms_a_file, jms_b_file, jma
 
         warning = "No valid armature detected. One will be created and the referenced JMS will be used for the rest position"
 
-    elif jms_a_transform and jms_b_transform:
+    elif jms_a_file and jms_b_file:
         for jms_node in jms_a_file.nodes:
             jms_a_nodes.append(jms_node.name)
 
@@ -419,19 +424,15 @@ def jms_file_check(jms_a_transform, jms_b_transform, jms_a_file, jms_b_file, jma
 
     return jms_a_nodes, jms_b_nodes, warning
 
-def load_file(context, filepath, report, fix_parents, game_version, jms_path_a, jms_path_b):
-    jms_a_transform = False
+def load_file(context, filepath, report, fix_parents, game_version, jms_path_a, jms_path_b, fix_rotations):
     jms_a_file = None
-    jms_b_transform = False
     jms_b_file = None
 
     jma_file = JMAAsset(filepath, game_version, report)
     if path.exists(bpy.path.abspath(jms_path_a)):
-        jms_a_transform = True
         jms_a_file = import_jms.JMSAsset(bpy.path.abspath(jms_path_a), "auto")
 
     if path.exists(bpy.path.abspath(jms_path_a)) and path.exists(bpy.path.abspath(jms_path_b)):
-        jms_b_transform = True
         jms_b_file = import_jms.JMSAsset(bpy.path.abspath(jms_path_b), "auto")
 
     collection = context.collection
@@ -475,8 +476,8 @@ def load_file(context, filepath, report, fix_parents, game_version, jms_path_a, 
                 report({'WARNING'}, "Node '%s' not found in an existing armature" % jma_node)
 
     if armature == None:
-        parent_id_class = ParentIDFix()
-        jms_a_nodes, jms_b_nodes, warning = jms_file_check(jms_a_transform, jms_b_transform, jms_a_file, jms_b_file, jma_nodes)
+        parent_id_class = global_functions.ParentIDFix()
+        jms_a_nodes, jms_b_nodes, warning = jms_file_check(jms_a_file, jms_b_file, jma_nodes)
         report({'WARNING'}, warning)
         if not jma_file.broken_skeleton:
             if jma_file.version >= 16392:
@@ -488,21 +489,21 @@ def load_file(context, filepath, report, fix_parents, game_version, jms_path_a, 
                     if game_version == 'halo2' or game_version == 'halo3':
                         set_parent_id_class(jma_file, parent_id_class)
 
-                generate_jma_skeleton(jms_a_transform, jms_a_nodes, jms_a_file, jms_b_transform, jms_b_nodes, jms_b_file, jma_file, armature, parent_id_class)
+                generate_jma_skeleton(jms_a_nodes, jms_a_file, jms_b_nodes, jms_b_file, jma_file, armature, parent_id_class, fix_rotations)
 
             else:
                 report({'ERROR'}, "No valid armature detected and not enough information to build valid skeleton due to version. Import will now be aborted")
                 return {'CANCELLED'}
 
         else:
-            if jms_a_transform:
+            if jms_a_file:
                 if jma_file.version >= 16392:
                     armdata = bpy.data.armatures.new('Armature')
                     armature = bpy.data.objects.new('Armature', armdata)
                     collection.objects.link(armature)
                     mesh_processing.select_object(context, armature)
 
-                    generate_jms_skeleton(jms_a_transform, jms_a_nodes, jms_a_file, jms_b_transform, jms_b_nodes, jms_b_file, jma_file, armature)
+                    generate_jms_skeleton(jms_a_nodes, jms_a_file, jms_b_nodes, jms_b_file, jma_file, armature, fix_rotations)
 
                 else:
                     report({'ERROR'}, "No valid armature detected and not enough information to build valid skeleton due to version. Import will now be aborted")
@@ -549,10 +550,18 @@ def load_file(context, filepath, report, fix_parents, game_version, jms_path_a, 
             matrix_rotation = frame[idx].rotation.to_matrix().to_4x4()
             transform_matrix = Matrix.Translation(frame[idx].vector) @ matrix_rotation @ matrix_scale
 
-            if jma_file.version < 16394 and pose_bone.parent:
-                transform_matrix = pose_bone.parent.matrix @ transform_matrix
+            if fix_rotations:
+                if jma_file.version < 16394 and pose_bone.parent:
+                    transform_matrix = (pose_bone.parent.matrix @ Matrix.Rotation(radians(90.0), 4, 'Z')) @ transform_matrix
 
-            pose_bone.matrix = transform_matrix
+                pose_bone.matrix = transform_matrix @ Matrix.Rotation(radians(-90.0), 4, 'Z')
+
+            else:
+                if jma_file.version < 16394 and pose_bone.parent:
+                    transform_matrix = pose_bone.parent.matrix @ transform_matrix
+
+                pose_bone.matrix = transform_matrix
+
 
             view_layer.update()
 

@@ -577,6 +577,12 @@ class Halo_Tools_Helper(Panel):
         row = col.row()
         row.operator("halo_bulk.face_set", text="Generate Facemap")
 
+        box = layout.box()
+        box.label(text="Import Fixup:")
+        col = box.column(align=True)
+        row = col.row()
+        row.operator("halo_bulk.import_fixup", text="Import Fixup")
+
 class Halo_Sky_Tools_Helper(Panel):
     """Tools to help automate Halo workflow"""
     bl_label = "Halo Sky Tools Helper"
@@ -915,6 +921,17 @@ class FaceSet(Operator):
 
         return global_functions.run_code("face_set.create_facemap(context, scene_face_set.level_of_detail, scene_face_set.permutation_string, scene_face_set.region_string)")
 
+class ImportFixup(Operator):
+    """Attempt to automatically convert custom normals to sharp edges. Will probably need some manual cleanup afterwards"""
+    bl_idname = "halo_bulk.import_fixup"
+    bl_label = "Convert custom normals to sharp edges"
+    bl_options = {"REGISTER", "UNDO"}
+
+    def execute(self, context):
+        from ..misc import import_fixup
+
+        return global_functions.run_code("import_fixup.model_fixup(context)")
+
 def menu_func_export(self, context):
     self.layout.operator(ExportLightmap.bl_idname, text="Halo Lightmap UV (.luv)")
 
@@ -929,6 +946,7 @@ classeshalo = (
     Scale_Model,
     GenerateHemisphere,
     FaceSet,
+    ImportFixup,
     Halo_Tools_Helper,
     Halo_Sky_Tools_Helper,
     Halo_Sky_Dome,

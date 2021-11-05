@@ -30,7 +30,7 @@ import math
 from mathutils import Vector
 
 columm_rot = 13.84615384615385
-column_elements = 26
+column_elements = 25
 row_rot = 11.25
 row_elements = 8
 
@@ -118,7 +118,7 @@ def get_percentages(rotation, is_x_axis, color_loops):
 
     if color_loops:
         halved_elements = round(max_elements / 2)
-        for idx in range(halved_elements):
+        for idx in range(halved_elements + 1):
             percentage = 1 / halved_elements
             if idx > 0:
                 percentage = percentage * (idx + 1)
@@ -163,7 +163,7 @@ def get_percentages(rotation, is_x_axis, color_loops):
             for idx in range(halved_elements):
                 starting_point_list.append(postitive_space_list[idx])
 
-            for idx in range(max_elements - (halved_elements + sun_id)):
+            for idx in range(max_elements - (halved_elements)):
                 starting_point_list.append(negative_space_list[idx])
 
         percentage_list = starting_point_list
@@ -251,10 +251,12 @@ def generate_hemisphere(context, report, longitude_slices, lattitude_slices, dom
 
     color_list = interpolate_color(sunsky.zenith_color, sunsky.override_zenith_color, sunsky.horizon_color, sunsky.override_horizon_color, (row_elements - 2))
 
+    sun_transform = None
+    skylight_index = 0
     for light_column in range(column_elements):
         for light_row in range(row_elements):
             rot_tuple = (math.radians(90 + (row_rot * light_row)), 0, math.radians(columm_rot * light_column))
-            name = 'skylight_%s' % (light_row + (8 * light_column))
+            name = 'skylight_%s' % (skylight_index)
 
             light_data = bpy.data.lights.get(name)
             if light_data is None:
@@ -267,13 +269,29 @@ def generate_hemisphere(context, report, longitude_slices, lattitude_slices, dom
 
             object_mesh.rotation_euler = rot_tuple
             if light_column == sun_column_id and light_row == sun_row_id:
-                report({'INFO'}, "%s is the sun point." % name)
-                object_mesh.data.energy = k_sun_solid_angle * sunsky.windowing
-                object_mesh.data.color = get_sun_color(sunsky)
+                sun_transform = rot_tuple
 
             else:
+                skylight_index += 1
                 object_mesh.data.energy = k_dome_solid_angle
                 object_mesh.data.color = darken_color(color_list[light_row], light_column, light_row, percentage_list_y, percentage_list_x)
+
+    name = 'skylight_%s' % (skylight_index)
+
+    light_data = bpy.data.lights.get(name)
+    if light_data is None:
+        light_data = bpy.data.lights.new(name, "SUN")
+
+    object_mesh = bpy.data.objects.get(name)
+    if object_mesh is None:
+        object_mesh = bpy.data.objects.new(name, light_data)
+        context.collection.objects.link(object_mesh)
+
+    object_mesh.rotation_euler = sun_transform
+
+    report({'INFO'}, "%s is the sun point." % name)
+    object_mesh.data.energy = k_sun_solid_angle * sunsky.windowing
+    object_mesh.data.color = get_sun_color(sunsky)
 
     return {'FINISHED'}
 

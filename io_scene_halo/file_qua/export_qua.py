@@ -126,14 +126,14 @@ class QUAScene(global_functions.HaloAsset):
                     extra_cameras.append(obj)
 
         if ubercam:
-            for action in bpy.data.actions:    
+            for action in bpy.data.actions:
                 action_prefix = action.name.split(' ', 1)[0]
                 action_suffix = action.name.split(' ', 1)[1]
                 if action_prefix.startswith(ubercam.name.split('&', 1)[1]):
                     action_tranforms = []
                     sound_data = []
                     first_frame = round(action.fcurves[0].keyframe_points[0].co[0])
-                    last_frame = round(action.fcurves[0].keyframe_points[-1].co[0]) + 1         
+                    last_frame = round(action.fcurves[0].keyframe_points[-1].co[0]) + 1
                     ubercam.animation_data.action = action
                     for frame in range(first_frame, last_frame):
                         context.scene.frame_set(frame)
@@ -168,13 +168,13 @@ class QUAScene(global_functions.HaloAsset):
             for extra_camera_obj in extra_cameras:
                 extra_camera = None
                 extra_shots = []
-                for action in bpy.data.actions:         
+                for action in bpy.data.actions:
                     action_prefix = action.name.split(' ', 1)[0]
                     if action_prefix.startswith(extra_camera_obj.name.split('+', 1)[1]):
                         extra_camera = QUAScene.ExtraCamera(extra_camera_obj.name, "")
                         extra_action_tranforms = []
                         first_frame = round(action.fcurves[0].keyframe_points[0].co[0])
-                        last_frame = round(action.fcurves[0].keyframe_points[-1].co[0]) + 1      
+                        last_frame = round(action.fcurves[0].keyframe_points[-1].co[0]) + 1
                         extra_camera_obj.animation_data.action = action
                         for frame in range(first_frame, last_frame):
                             context.scene.frame_set(frame)

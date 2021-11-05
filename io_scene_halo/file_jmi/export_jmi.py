@@ -47,7 +47,7 @@ class JMIScene(global_functions.HaloAsset):
         for node in self.world_nodes:
             self.children_sets.append(global_functions.get_children(node))
 
-def write_file(context, filepath, report, jmi_version, jmi_version_ce, jmi_version_h2, jmi_version_h3, apply_modifiers, triangulate_faces, folder_type, edge_split, use_edge_angle, use_edge_sharp, split_angle, clean_normalize_weights, scale_enum, scale_float, console, hidden_geo, export_render, export_collision, export_physics, game_version):
+def write_file(context, filepath, report, jmi_version, jmi_version_ce, jmi_version_h2, jmi_version_h3, apply_modifiers, triangulate_faces, folder_type, edge_split, use_edge_angle, use_edge_sharp, split_angle, clean_normalize_weights, scale_enum, scale_float, console, hidden_geo, export_render, export_collision, export_physics, game_version, fix_rotations):
     version = global_functions.get_version(jmi_version, jmi_version_ce, jmi_version_h2, jmi_version_h3, game_version, console)
 
     jmi_scene = JMIScene(context)
@@ -93,7 +93,7 @@ def write_file(context, filepath, report, jmi_version, jmi_version_ce, jmi_versi
             os.makedirs(world_set)
 
         bulk_output = world_set + os.sep + world_name
-        export_jms.command_queue(context, bulk_output, report, jmi_version, jmi_version_ce, jmi_version_h2, jmi_version_h3, True, True, folder_type, apply_modifiers, triangulate_faces, edge_split, use_edge_angle, use_edge_sharp, split_angle, clean_normalize_weights, scale_enum, scale_float, console, permutation_name, lod_setting, hidden_geo, export_render, export_collision, export_physics, game_version, encoding, world_nodes)
+        export_jms.command_queue(context, bulk_output, report, jmi_version, jmi_version_ce, jmi_version_h2, jmi_version_h3, True, True, folder_type, apply_modifiers, triangulate_faces, fix_rotations, edge_split, use_edge_angle, use_edge_sharp, split_angle, clean_normalize_weights, scale_enum, scale_float, console, permutation_name, lod_setting, hidden_geo, export_render, export_collision, export_physics, game_version, world_nodes)
 
     report({'INFO'}, "Export completed successfully")
     return {'FINISHED'}

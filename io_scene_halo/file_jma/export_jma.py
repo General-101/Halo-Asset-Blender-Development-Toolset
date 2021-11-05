@@ -44,7 +44,7 @@ class JMAScene(global_functions.HaloAsset):
             self.child = child
             self.sibling = sibling
 
-    def __init__(self, context, report, version, generate_checksum, game_version, extension, custom_scale, biped_controller):
+    def __init__(self, context, report, version, generate_checksum, game_version, extension, custom_scale, biped_controller, fix_rotations):
         global_functions.unhide_all_collections(context)
         object_properties = []
         object_list = list(context.scene.objects)
@@ -108,7 +108,7 @@ class JMAScene(global_functions.HaloAsset):
                 if armature:
                     is_bone = True
 
-                bone_matrix = global_functions.get_matrix(node, node, True, armature, joined_list, True, version, 'JMA', False, custom_scale)
+                bone_matrix = global_functions.get_matrix(node, node, True, armature, joined_list, True, version, 'JMA', False, custom_scale, fix_rotations)
                 mesh_dimensions = global_functions.get_dimensions(bone_matrix, node, version, None, False, is_bone, 'JMA', custom_scale)
                 rotation = (mesh_dimensions.quaternion[0], mesh_dimensions.quaternion[1], mesh_dimensions.quaternion[2], mesh_dimensions.quaternion[3])
                 translation = (mesh_dimensions.position[0], mesh_dimensions.position[1], mesh_dimensions.position[2])
@@ -122,7 +122,7 @@ class JMAScene(global_functions.HaloAsset):
         if version > 16394 and biped_controller:
             for frame in range(self.transform_count):
                 context.scene.frame_set(frame)
-                armature_matrix = global_functions.get_matrix(armature, armature, True, None, joined_list, False, version, 'JMA', False, custom_scale)
+                armature_matrix = global_functions.get_matrix(armature, armature, True, None, joined_list, False, version, 'JMA', False, custom_scale, fix_rotations)
                 mesh_dimensions = global_functions.get_dimensions(armature_matrix, armature, version, None, False, False, 'JMA', custom_scale)
 
                 rotation = (mesh_dimensions.quaternion[0], mesh_dimensions.quaternion[1], mesh_dimensions.quaternion[2], mesh_dimensions.quaternion[3])
@@ -137,7 +137,7 @@ class JMAScene(global_functions.HaloAsset):
             obj.hide_set(property_value[0])
             obj.hide_viewport = property_value[1]
 
-def write_file(context, filepath, report, extension, extension_ce, extension_h2, extension_h3, jma_version, jma_version_ce, jma_version_h2, jma_version_h3, generate_checksum, custom_frame_rate, frame_rate_float, biped_controller, folder_structure, scale_enum, scale_float, console, game_version):
+def write_file(context, filepath, report, extension, extension_ce, extension_h2, extension_h3, jma_version, jma_version_ce, jma_version_h2, jma_version_h3, generate_checksum, custom_frame_rate, frame_rate_float, biped_controller, folder_structure, scale_enum, scale_float, console, game_version, fix_rotations):
     version = global_functions.get_version(jma_version, jma_version_ce, jma_version_h2, jma_version_h3, game_version, console)
     extension = global_functions.get_extension(extension, extension_ce, extension_h2, extension_h3, game_version, console)
     custom_scale = global_functions.set_scale(scale_enum, scale_float)
@@ -148,7 +148,7 @@ def write_file(context, filepath, report, extension, extension_ce, extension_h2,
         frame_rate_value = int(custom_frame_rate)
 
 
-    jma_scene = JMAScene(context, report, version, generate_checksum, game_version, extension, custom_scale, biped_controller)
+    jma_scene = JMAScene(context, report, version, generate_checksum, game_version, extension, custom_scale, biped_controller, fix_rotations)
 
     if version > 16394:
         decimal_1 = '\n%0.10f'

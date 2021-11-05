@@ -33,6 +33,7 @@ import colorsys
 import re
 
 from decimal import *
+from math import radians
 from mathutils import Vector, Quaternion, Matrix
 
 class JmsDimensions:
@@ -107,6 +108,15 @@ class EdgeSplit():
         self.use_edge_angle = use_edge_angle
         self.split_angle = split_angle
         self.use_edge_sharp = use_edge_sharp
+
+class ParentIDFix():
+    def __init__(self, pelvis = None, thigh0 = None, thigh1 = None, spine1 = None, clavicle0 = None, clavicle1 = None):
+        self.pelvis = pelvis
+        self.thigh0 = thigh0
+        self.thigh1 = thigh1
+        self.spine1 = spine1
+        self.clavicle0 = clavicle0
+        self.clavicle1 = clavicle1
 
 def unhide_all_collections(context):
     for collection_viewport in context.view_layer.layer_collection.children:
@@ -338,44 +348,83 @@ def get_true_extension(filepath, extension, is_import):
 
     return true_extension
 
-def get_matrix(obj_a, obj_b, is_local, armature, joined_list, is_node, version, file_type, constraint, custom_scale):
+def get_matrix(obj_a, obj_b, is_local, armature, joined_list, is_node, version, file_type, constraint, custom_scale, fix_rotation):
     object_matrix = Matrix.Translation((0, 0, 0))
-    if is_node:
-        if armature:
-            pose_bone = armature.pose.bones['%s' % (obj_a.name)]
-            object_matrix = pose_bone.matrix
-            if pose_bone.parent and not version >= get_version_matrix_check(file_type):
-                #Files at or above 8205 use absolute transform instead of local transform for nodes
-                object_matrix = pose_bone.parent.matrix.inverted() @ pose_bone.matrix
+    if fix_rotation:
+        if is_node:
+            if armature:
+                pose_bone = armature.pose.bones['%s' % (obj_a.name)]
+                object_matrix = pose_bone.matrix @ Matrix.Rotation(radians(90.0), 4, 'Z')
+                if pose_bone.parent and not version >= get_version_matrix_check(file_type):
+                    #Files at or above 8205 use absolute transform instead of local transform for nodes
+                    object_matrix = (pose_bone.parent.matrix @ Matrix.Rotation(radians(90.0), 4, 'Z')).inverted() @ pose_bone.matrix @ Matrix.Rotation(radians(90.0), 4, 'Z')
+
+            else:
+                object_matrix = obj_a.matrix_world @ Matrix.Rotation(radians(90.0), 4, 'Z')
+                if obj_a.parent and not version >= get_version_matrix_check(file_type):
+                    #Files at or above 8205 use absolute transform instead of local transform for nodes
+                    object_matrix = (obj_a.parent.matrix_world @ Matrix.Rotation(radians(90.0), 4, 'Z')).inverted() @ obj_a.matrix_world @ Matrix.Rotation(radians(90.0), 4, 'Z')
 
         else:
-            object_matrix = obj_a.matrix_world
-            if obj_a.parent and not version >= get_version_matrix_check(file_type):
-                #Files at or above 8205 use absolute transform instead of local transform for nodes
-                object_matrix = obj_a.parent.matrix_world.inverted() @ obj_a.matrix_world
+            if armature:
+                object_matrix = obj_a.matrix_world @ Matrix.Rotation(radians(90.0), 4, 'Z')
+                bone_test = armature.data.bones.get(obj_b.parent_bone)
+                if obj_b.parent_bone and is_local and bone_test:
+                    parent_object = get_parent(armature, obj_b, joined_list, -1)
+                    pose_bone = armature.pose.bones['%s' % (parent_object[1].name)]
+                    if constraint:
+                        object_matrix = (obj_a.matrix_world @ Matrix.Rotation(radians(90.0), 4, 'Z')).inverted() @ pose_bone.matrix @ Matrix.Rotation(radians(90.0), 4, 'Z')
+
+                    else:
+                        object_matrix = (pose_bone.matrix @ Matrix.Rotation(radians(90.0), 4, 'Z')).inverted() @ obj_a.matrix_world @ Matrix.Rotation(radians(90.0), 4, 'Z')
+
+            else:
+                object_matrix = obj_a.matrix_world @ Matrix.Rotation(radians(90.0), 4, 'Z')
+                if obj_b.parent and is_local:
+                    parent_object = get_parent(armature, obj_b, joined_list, -1)
+                    if constraint:
+                        object_matrix = (obj_a.matrix_world @ Matrix.Rotation(radians(90.0), 4, 'Z')).inverted() @ parent_object[1].matrix_world @ Matrix.Rotation(radians(90.0), 4, 'Z')
+
+                    else:
+                        object_matrix = (parent_object[1].matrix_world @ Matrix.Rotation(radians(90.0), 4, 'Z')).inverted() @ obj_a.matrix_world @ Matrix.Rotation(radians(90.0), 4, 'Z')
 
     else:
-        if armature:
-            object_matrix = obj_a.matrix_world
-            bone_test = armature.data.bones.get(obj_b.parent_bone)
-            if obj_b.parent_bone and is_local and bone_test:
-                parent_object = get_parent(armature, obj_b, joined_list, -1)
-                pose_bone = armature.pose.bones['%s' % (parent_object[1].name)]
-                if constraint:
-                    object_matrix = obj_a.matrix_world.inverted() @ pose_bone.matrix
+        if is_node:
+            if armature:
+                pose_bone = armature.pose.bones['%s' % (obj_a.name)]
+                object_matrix = pose_bone.matrix
+                if pose_bone.parent and not version >= get_version_matrix_check(file_type):
+                    #Files at or above 8205 use absolute transform instead of local transform for nodes
+                    object_matrix = pose_bone.parent.matrix.inverted() @ pose_bone.matrix
 
-                else:
-                    object_matrix = pose_bone.matrix.inverted() @ obj_a.matrix_world
+            else:
+                object_matrix = obj_a.matrix_world
+                if obj_a.parent and not version >= get_version_matrix_check(file_type):
+                    #Files at or above 8205 use absolute transform instead of local transform for nodes
+                    object_matrix = obj_a.parent.matrix_world.inverted() @ obj_a.matrix_world
 
         else:
-            object_matrix = obj_a.matrix_world
-            if obj_b.parent and is_local:
-                parent_object = get_parent(armature, obj_b, joined_list, -1)
-                if constraint:
-                    object_matrix = obj_a.matrix_world.inverted() @ parent_object[1].matrix_world
+            if armature:
+                object_matrix = obj_a.matrix_world
+                bone_test = armature.data.bones.get(obj_b.parent_bone)
+                if obj_b.parent_bone and is_local and bone_test:
+                    parent_object = get_parent(armature, obj_b, joined_list, -1)
+                    pose_bone = armature.pose.bones['%s' % (parent_object[1].name)]
+                    if constraint:
+                        object_matrix = obj_a.matrix_world.inverted() @ pose_bone.matrix
 
-                else:
-                    object_matrix = parent_object[1].matrix_world.inverted() @ obj_a.matrix_world
+                    else:
+                        object_matrix = pose_bone.matrix.inverted() @ obj_a.matrix_world
+
+            else:
+                object_matrix = obj_a.matrix_world
+                if obj_b.parent and is_local:
+                    parent_object = get_parent(armature, obj_b, joined_list, -1)
+                    if constraint:
+                        object_matrix = obj_a.matrix_world.inverted() @ parent_object[1].matrix_world
+
+                    else:
+                        object_matrix = parent_object[1].matrix_world.inverted() @ obj_a.matrix_world
 
         if object_matrix.determinant() < 0.0:
             loc, rot, sca = object_matrix.decompose()
@@ -426,7 +475,7 @@ def get_dimensions(mesh_matrix, original_geo, version, jms_vertex, is_vertex, is
             quaternion = (quat[1], quat[2], quat[3], quat[0])
             position = (pos[0], pos[1], pos[2])
             if file_type == 'ASS':
-                scale = ((scale[0] * custom_scale), (scale[1] * custom_scale), (scale[2] * custom_scale))   
+                scale = ((scale[0] * custom_scale), (scale[1] * custom_scale), (scale[2] * custom_scale))
 
             if not is_bone:
                 dimension_x = original_geo.dimensions[0]
@@ -441,7 +490,7 @@ def get_dimensions(mesh_matrix, original_geo, version, jms_vertex, is_vertex, is
 
                 dimension = (dimension_x, dimension_y, dimension_z)
                 if file_type == 'JMS':
-                    dimension = ((original_geo.dimensions[0] * custom_scale), (original_geo.dimensions[1] * custom_scale), (original_geo.dimensions[2] * custom_scale))  
+                    dimension = ((original_geo.dimensions[0] * custom_scale), (original_geo.dimensions[1] * custom_scale), (original_geo.dimensions[2] * custom_scale))
 
                 #The reason this code exists is to try to copy how capsules work in 3DS Max.
                 #To get original height for 3DS Max do (radius_jms * 2) + height_jms

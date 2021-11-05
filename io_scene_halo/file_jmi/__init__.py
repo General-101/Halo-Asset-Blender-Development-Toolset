@@ -513,6 +513,12 @@ class ExportJMI(Operator, ExportHelper):
         default = True,
         )
 
+    fix_rotations: BoolProperty(
+        name ="Fix Rotations",
+        description = "Rotates bones by 90 degrees on a local Z axis",
+        default = False,
+        )
+
     use_scene_properties: BoolProperty(
         name ="Use scene properties",
         description = "Use the options set in the scene or uncheck this to override",
@@ -614,6 +620,7 @@ class ExportJMI(Operator, ExportHelper):
             parser.add_argument('-arg8', '--apply_modifiers', dest='apply_modifiers', action='store_true')
             parser.add_argument('-arg9', '--triangulate_faces', dest='triangulate_faces', action='store_true')
             parser.add_argument('-arg10', '--clean_normalize_weights', dest='clean_normalize_weights', action='store_true')
+            parser.add_argument('-arg10', '--fix_rotations', dest='fix_rotations', action='store_true')
             parser.add_argument('-arg11', '--edge_split', dest='edge_split', action='store_true')
             parser.add_argument('-arg12', '--folder_type', dest='folder_type', action='store_true')
             parser.add_argument('-arg13', '--use_edge_angle', dest='use_edge_angle', action='store_true')
@@ -633,6 +640,7 @@ class ExportJMI(Operator, ExportHelper):
             print('apply_modifiers: ', args.apply_modifiers)
             print('triangulate_faces: ', args.triangulate_faces)
             print('clean_normalize_weights: ', args.clean_normalize_weights)
+            print('fix_rotations: ', args.fix_rotations)
             print('edge_split: ', args.edge_split)
             print('folder_type: ', args.folder_type)
             print('use_edge_angle: ', args.use_edge_angle)
@@ -651,6 +659,7 @@ class ExportJMI(Operator, ExportHelper):
             self.apply_modifiers = args.apply_modifiers
             self.triangulate_faces = args.triangulate_faces
             self.clean_normalize_weights = args.clean_normalize_weights
+            self.fix_rotations = args.fix_rotations
             self.edge_split = args.edge_split
             self.folder_type = args.folder_type
             self.use_edge_angle = args.use_edge_angle
@@ -660,7 +669,7 @@ class ExportJMI(Operator, ExportHelper):
             self.scale_float = args.scale_float
             self.console = args.console
 
-        return global_functions.run_code("export_jmi.write_file(context, self.filepath, self.report, self.jmi_version, self.jmi_version_ce, self.jmi_version_h2, self.jmi_version_h3, self.apply_modifiers, self.triangulate_faces, self.folder_type, self.edge_split, self.use_edge_angle, self.use_edge_sharp, self.split_angle, self.clean_normalize_weights, self.scale_enum, self.scale_float, self.console, self.hidden_geo, self.export_render, self.export_collision, self.export_physics, self.game_version)")
+        return global_functions.run_code("export_jmi.write_file(context, self.filepath, self.report, self.jmi_version, self.jmi_version_ce, self.jmi_version_h2, self.jmi_version_h3, self.apply_modifiers, self.triangulate_faces, self.folder_type, self.edge_split, self.use_edge_angle, self.use_edge_sharp, self.split_angle, self.clean_normalize_weights, self.scale_enum, self.scale_float, self.console, self.hidden_geo, self.export_render, self.export_collision, self.export_physics, self.game_version, self.fix_rotations)")
 
     def draw(self, context):
         scene = context.scene

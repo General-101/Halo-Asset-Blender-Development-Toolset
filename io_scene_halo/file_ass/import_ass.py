@@ -168,19 +168,20 @@ class ASSAsset(global_functions.HaloAsset):
             name = self.next().strip('\"')
             scene_name = name
             file_name = ""
-            if scene_name in used_material_names:
-                file_name = name
-                duplicate_name = None
-                loop_count = 1
-                while duplicate_name == None:
-                    while_name = name + "." + str(loop_count).zfill(3)
-                    if not while_name in used_material_names:
-                        duplicate_name = while_name
+            if self.version >= 3:
+                if scene_name in used_material_names:
+                    file_name = name
+                    duplicate_name = None
+                    loop_count = 1
+                    while duplicate_name == None:
+                        while_name = name + "." + str(loop_count).zfill(3)
+                        if not while_name in used_material_names:
+                            duplicate_name = while_name
 
-                    loop_count += 1
+                        loop_count += 1
 
-                scene_name = duplicate_name
-                
+                    scene_name = duplicate_name
+
             used_material_names.append(scene_name)
             material_effect = self.next().strip('\"')
             material_strings = []

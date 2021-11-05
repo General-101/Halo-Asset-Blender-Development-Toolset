@@ -252,7 +252,7 @@ class JMSScene(global_functions.HaloAsset):
             self.radiant_intensity = radiant_intensity
             self.solid_angle = solid_angle
 
-    def __init__(self, version, game_version, generate_checksum, model_type, blend_scene, custom_scale):
+    def __init__(self, version, game_version, generate_checksum, fix_rotations, model_type, blend_scene, custom_scale):
         default_region = mesh_processing.get_default_region_permutation_name(game_version)
         default_permutation = mesh_processing.get_default_region_permutation_name(game_version)
         region_list = ['unnamed']
@@ -304,7 +304,7 @@ class JMSScene(global_functions.HaloAsset):
             if not node.parent == None and not node.parent.name.startswith('!'):
                 parent_node = joined_list.index(node.parent)
 
-            bone_matrix = global_functions.get_matrix(node, node, True, blend_scene.armature, joined_list, True, version, 'JMS', False, custom_scale)
+            bone_matrix = global_functions.get_matrix(node, node, True, blend_scene.armature, joined_list, True, version, 'JMS', False, custom_scale, fix_rotations)
             mesh_dimensions = global_functions.get_dimensions(bone_matrix, node, version, None, False, is_bone, 'JMS', custom_scale)
 
             name = node.name
@@ -354,7 +354,7 @@ class JMSScene(global_functions.HaloAsset):
             region_idx = -1
 
             parent_idx = global_functions.get_parent(blend_scene.armature, marker, joined_list, 0)
-            marker_matrix = global_functions.get_matrix(marker, marker, True, blend_scene.armature, joined_list, False, version, 'JMS', False, custom_scale)
+            marker_matrix = global_functions.get_matrix(marker, marker, True, blend_scene.armature, joined_list, False, version, 'JMS', False, custom_scale, fix_rotations)
             mesh_dimensions = global_functions.get_dimensions(marker_matrix, marker, version, None, False, False, 'JMS', custom_scale)
 
             rotation = (mesh_dimensions.quaternion[0], mesh_dimensions.quaternion[1], mesh_dimensions.quaternion[2], mesh_dimensions.quaternion[3])
@@ -398,7 +398,7 @@ class JMSScene(global_functions.HaloAsset):
                 name = int_markers.name
                 unique_identifier = starting_ID - idx
                 index = blend_scene.instance_xref_paths.index(int_markers.data.ass_jms.XREF_path)
-                int_markers_matrix = global_functions.get_matrix(int_markers, int_markers, False, blend_scene.armature, joined_list, False, version, 'JMS', False, custom_scale)
+                int_markers_matrix = global_functions.get_matrix(int_markers, int_markers, False, blend_scene.armature, joined_list, False, version, 'JMS', False, custom_scale, fix_rotations)
                 mesh_dimensions = global_functions.get_dimensions(int_markers_matrix, int_markers, version, None, False, False, 'JMS', custom_scale)
 
                 rotation = (mesh_dimensions.quaternion[0], mesh_dimensions.quaternion[1], mesh_dimensions.quaternion[2], mesh_dimensions.quaternion[3])
@@ -407,7 +407,7 @@ class JMSScene(global_functions.HaloAsset):
                 self.xref_markers.append(JMSScene.XREF_Marker(name, unique_identifier, index, rotation, translation))
 
             for bound_sphere in blend_scene.bounding_sphere_list:
-                bound_sphere_matrix = global_functions.get_matrix(bound_sphere, bound_sphere, False, blend_scene.armature, joined_list, False, version, 'JMS', False, custom_scale)
+                bound_sphere_matrix = global_functions.get_matrix(bound_sphere, bound_sphere, False, blend_scene.armature, joined_list, False, version, 'JMS', False, custom_scale, fix_rotations)
                 mesh_dimensions = global_functions.get_dimensions(bound_sphere_matrix, bound_sphere, version, None, False, False, 'JMS', custom_scale)
                 translation = (mesh_dimensions.position[0], mesh_dimensions.position[1], mesh_dimensions.position[2])
                 scale = mesh_dimensions.object_radius
@@ -433,19 +433,19 @@ class JMSScene(global_functions.HaloAsset):
                 evaluted_mesh = geometry[0]
                 original_geo = geometry[1]
                 vertex_groups = original_geo.vertex_groups.keys()
-                original_geo_matrix = global_functions.get_matrix(original_geo, original_geo, False, blend_scene.armature, joined_list, False, version, "JMS", False, custom_scale)
+                original_geo_matrix = global_functions.get_matrix(original_geo, original_geo, False, blend_scene.armature, joined_list, False, version, "JMS", False, custom_scale, fix_rotations)
                 for idx, face in enumerate(evaluted_mesh.polygons):
                     face_set = (None, default_permutation, default_region)
                     region_index = -1
                     if game_version == 'haloce':
                         region_index = region_list.index(default_region)
-                        
+
                     lod = face_set[0]
                     permutation = face_set[1]
                     region = face_set[2]
                     if evaluted_mesh.face_maps.active and len(original_geo.face_maps) > 0:
                         face_map_idx = evaluted_mesh.face_maps.active.data[idx].value
-                        if not face_map_idx == -1:  
+                        if not face_map_idx == -1:
                             face_set = mesh_processing.process_mesh_export_face_set(default_permutation, default_region, game_version, original_geo, face_map_idx)
                             lod = face_set[0]
                             permutation = face_set[1]
@@ -508,7 +508,7 @@ class JMSScene(global_functions.HaloAsset):
                     material_index = material_list.index(material)
 
                 parent_index = global_functions.get_parent(blend_scene.armature, spheres, joined_list, -1)
-                sphere_matrix = global_functions.get_matrix(spheres, spheres, True, blend_scene.armature, joined_list, False, version, 'JMS', False, custom_scale)
+                sphere_matrix = global_functions.get_matrix(spheres, spheres, True, blend_scene.armature, joined_list, False, version, 'JMS', False, custom_scale, fix_rotations)
                 mesh_dimensions = global_functions.get_dimensions(sphere_matrix, spheres, version, None, False, False, 'JMS', custom_scale)
 
                 rotation = (mesh_dimensions.quaternion[0], mesh_dimensions.quaternion[1], mesh_dimensions.quaternion[2], mesh_dimensions.quaternion[3])
@@ -543,7 +543,7 @@ class JMSScene(global_functions.HaloAsset):
                     material_index = material_list.index(material)
 
                 parent_index = global_functions.get_parent(blend_scene.armature, boxes, joined_list, -1)
-                box_matrix = global_functions.get_matrix(boxes, boxes, True, blend_scene.armature, joined_list, False, version, 'JMS', False, custom_scale)
+                box_matrix = global_functions.get_matrix(boxes, boxes, True, blend_scene.armature, joined_list, False, version, 'JMS', False, custom_scale, fix_rotations)
                 mesh_dimensions = global_functions.get_dimensions(box_matrix, boxes, version, None, False, False, 'JMS', custom_scale)
 
                 rotation = (mesh_dimensions.quaternion[0], mesh_dimensions.quaternion[1], mesh_dimensions.quaternion[2], mesh_dimensions.quaternion[3])
@@ -580,7 +580,7 @@ class JMSScene(global_functions.HaloAsset):
                     material_index = material_list.index(material)
 
                 parent_index = global_functions.get_parent(blend_scene.armature, capsule, joined_list, -1)
-                capsule_matrix = global_functions.get_matrix(capsule, capsule, True, blend_scene.armature, joined_list, False, version, 'JMS', False, custom_scale)
+                capsule_matrix = global_functions.get_matrix(capsule, capsule, True, blend_scene.armature, joined_list, False, version, 'JMS', False, custom_scale, fix_rotations)
                 mesh_dimensions = global_functions.get_dimensions(capsule_matrix, capsule, version, None, False, False, 'JMS', custom_scale)
 
                 rotation = (mesh_dimensions.quaternion[0], mesh_dimensions.quaternion[1], mesh_dimensions.quaternion[2], mesh_dimensions.quaternion[3])
@@ -619,7 +619,7 @@ class JMSScene(global_functions.HaloAsset):
                     material_index = material_list.index(material)
 
                 parent_index = global_functions.get_parent(blend_scene.armature, original_geo, joined_list, -1)
-                convex_matrix = global_functions.get_matrix(original_geo, original_geo, True, blend_scene.armature, joined_list, False, version, 'JMS', False, custom_scale)
+                convex_matrix = global_functions.get_matrix(original_geo, original_geo, True, blend_scene.armature, joined_list, False, version, 'JMS', False, custom_scale, fix_rotations)
                 mesh_dimensions = global_functions.get_dimensions(convex_matrix, original_geo, version, None, False, False, 'JMS', custom_scale)
 
                 rotation = (mesh_dimensions.quaternion[0], mesh_dimensions.quaternion[1], mesh_dimensions.quaternion[2], mesh_dimensions.quaternion[3])
@@ -657,8 +657,8 @@ class JMSScene(global_functions.HaloAsset):
                 name = 'ragdoll:%s:%s' % (body_a_name, body_b_name)
                 attached_index = global_functions.get_parent(blend_scene.armature, body_a_obj, joined_list, -1)
                 referenced_index = global_functions.get_parent(blend_scene.armature, body_b_obj, joined_list, -1)
-                body_a_matrix = global_functions.get_matrix(ragdoll, body_a_obj, True, blend_scene.armature, joined_list, False, version, 'JMS', True, custom_scale)
-                body_b_matrix = global_functions.get_matrix(ragdoll, body_b_obj, True, blend_scene.armature, joined_list, False, version, 'JMS', True, custom_scale)
+                body_a_matrix = global_functions.get_matrix(ragdoll, body_a_obj, True, blend_scene.armature, joined_list, False, version, 'JMS', True, custom_scale, fix_rotations)
+                body_b_matrix = global_functions.get_matrix(ragdoll, body_b_obj, True, blend_scene.armature, joined_list, False, version, 'JMS', True, custom_scale, fix_rotations)
                 body_a_dimensions = global_functions.get_dimensions(body_a_matrix, body_a_obj, version, None, False, False, 'JMS', custom_scale)
                 body_b_dimensions = global_functions.get_dimensions(body_b_matrix, body_b_obj, version, None, False, False, 'JMS', custom_scale)
                 is_limited_x = int(ragdoll.rigid_body_constraint.use_limit_ang_x)
@@ -704,8 +704,8 @@ class JMSScene(global_functions.HaloAsset):
                 name = 'hinge:%s:%s' % (body_a_name, body_b_name)
                 body_a_index = global_functions.get_parent(blend_scene.armature, body_a_obj, joined_list, -1)
                 body_b_index = global_functions.get_parent(blend_scene.armature, body_b_obj, joined_list, -1)
-                body_a_matrix = global_functions.get_matrix(hinge, body_a_obj, True, blend_scene.armature, joined_list, False, version, 'JMS', True, custom_scale)
-                body_b_matrix = global_functions.get_matrix(hinge, body_b_obj, True, blend_scene.armature, joined_list, False, version, 'JMS', True, custom_scale)
+                body_a_matrix = global_functions.get_matrix(hinge, body_a_obj, True, blend_scene.armature, joined_list, False, version, 'JMS', True, custom_scale, fix_rotations)
+                body_b_matrix = global_functions.get_matrix(hinge, body_b_obj, True, blend_scene.armature, joined_list, False, version, 'JMS', True, custom_scale, fix_rotations)
                 body_a_dimensions = global_functions.get_dimensions(body_a_matrix, body_a_obj, version, None, False, False, 'JMS', custom_scale)
                 body_b_dimensions = global_functions.get_dimensions(body_b_matrix, body_b_obj, version, None, False, False, 'JMS', custom_scale)
                 friction_limit = 0
@@ -740,8 +740,8 @@ class JMSScene(global_functions.HaloAsset):
                 name = 'hinge:%s:%s' % (chassis_name, wheel_name)
                 chassis_index = global_functions.get_parent(blend_scene.armature, chassis_obj, joined_list, -1)
                 wheel_index = global_functions.get_parent(blend_scene.armature, wheel_obj, joined_list, -1)
-                chassis_matrix = global_functions.get_matrix(hinge, chassis_obj, True, blend_scene.armature, joined_list, False, version, 'JMS', True, custom_scale)
-                wheel_matrix = global_functions.get_matrix(hinge, wheel_obj, True, blend_scene.armature, joined_list, False, version, 'JMS', True, custom_scale)
+                chassis_matrix = global_functions.get_matrix(hinge, chassis_obj, True, blend_scene.armature, joined_list, False, version, 'JMS', True, custom_scale, fix_rotations)
+                wheel_matrix = global_functions.get_matrix(hinge, wheel_obj, True, blend_scene.armature, joined_list, False, version, 'JMS', True, custom_scale, fix_rotations)
                 chassis_dimensions = global_functions.get_dimensions(chassis_matrix, chassis_obj, version, None, False, False, 'JMS', custom_scale)
                 wheel_dimensions = global_functions.get_dimensions(wheel_matrix, wheel_obj, version, None, False, False, 'JMS', custom_scale)
                 suspension_min_limit = 0
@@ -772,11 +772,11 @@ class JMSScene(global_functions.HaloAsset):
                 body_b_matrix = Matrix.Translation((0, 0, 0))
                 if body_a_obj:
                     body_a_name = body_a_obj.name.split('$', 1)[1]
-                    body_a_matrix = global_functions.get_matrix(point_to_point, body_a_obj, True, blend_scene.armature, joined_list, False, version, 'JMS', True, custom_scale)
+                    body_a_matrix = global_functions.get_matrix(point_to_point, body_a_obj, True, blend_scene.armature, joined_list, False, version, 'JMS', True, custom_scale, fix_rotations)
 
                 if body_b_obj:
                     body_b_name = body_b_obj.name.split('$', 1)[1]
-                    body_b_matrix = global_functions.get_matrix(point_to_point, body_b_obj, True, blend_scene.armature, joined_list, False, version, 'JMS', True, custom_scale)
+                    body_b_matrix = global_functions.get_matrix(point_to_point, body_b_obj, True, blend_scene.armature, joined_list, False, version, 'JMS', True, custom_scale, fix_rotations)
 
                 name = 'point_to_point:%s:%s' % (body_a_name, body_b_name)
                 body_a_index = global_functions.get_parent(blend_scene.armature, body_a_obj, joined_list, -1)
@@ -827,8 +827,8 @@ class JMSScene(global_functions.HaloAsset):
                 name = 'hinge:%s:%s' % (body_a_name, body_b_name)
                 body_a_index = global_functions.get_parent(blend_scene.armature, body_a_obj, joined_list, -1)
                 body_b_index = global_functions.get_parent(blend_scene.armature, body_b_obj, joined_list, -1)
-                body_a_matrix = global_functions.get_matrix(prismatic, body_a_obj, True, blend_scene.armature, joined_list, False, version, 'JMS', True, custom_scale)
-                body_b_matrix = global_functions.get_matrix(prismatic, body_b_obj, True, blend_scene.armature, joined_list, False, version, 'JMS', True, custom_scale)
+                body_a_matrix = global_functions.get_matrix(prismatic, body_a_obj, True, blend_scene.armature, joined_list, False, version, 'JMS', True, custom_scale, fix_rotations)
+                body_b_matrix = global_functions.get_matrix(prismatic, body_b_obj, True, blend_scene.armature, joined_list, False, version, 'JMS', True, custom_scale, fix_rotations)
                 body_a_dimensions = global_functions.get_dimensions(body_a_matrix, body_a_obj, version, None, False, False, 'JMS', custom_scale)
                 body_b_dimensions = global_functions.get_dimensions(body_b_matrix, body_b_obj, version, None, False, False, 'JMS', custom_scale)
                 is_limited = 0
@@ -867,7 +867,7 @@ class JMSScene(global_functions.HaloAsset):
                         for node in material.node_tree.nodes:
                             if node.type == 'TEX_IMAGE':
                                 if not node.image == None:
-                                    if node.image.source == "FILE":
+                                    if node.image.source == "FILE" and not node.image.packed_file:
                                         image_filepath = bpy.path.abspath(node.image.filepath)
                                         image_path = image_filepath.rsplit('.', 1)[0]
                                         image_name = bpy.path.basename(image_path)
@@ -876,7 +876,7 @@ class JMSScene(global_functions.HaloAsset):
                                             tex = image_path
 
                                     else:
-                                        tex = node.image.name
+                                        tex = node.image.name.rsplit('.', 1)[0]
 
                                     texture_path = tex
                                     break
@@ -895,8 +895,8 @@ class JMSScene(global_functions.HaloAsset):
 
             self.materials.append(JMSScene.Material(name, texture_path, slot, lod, permutation, region))
 
-def write_file(context, filepath, report, version, game_version, generate_checksum, folder_structure, folder_type, permutation_ce, level_of_detail_ce, model_type, blend_scene, jmi, custom_scale):
-    jms_scene = JMSScene(version, game_version, generate_checksum, model_type, blend_scene, custom_scale)
+def write_file(context, filepath, report, version, game_version, generate_checksum, fix_rotations, folder_structure, folder_type, permutation_ce, level_of_detail_ce, model_type, blend_scene, jmi, custom_scale):
+    jms_scene = JMSScene(version, game_version, generate_checksum, fix_rotations, model_type, blend_scene, custom_scale)
 
     if version > 8209:
         decimal_1 = '\n%0.10f'
@@ -1712,7 +1712,7 @@ def write_file(context, filepath, report, version, game_version, generate_checks
     report({'INFO'}, "Export completed successfully")
     file.close()
 
-def command_queue(context, filepath, report, jms_version, jms_version_ce, jms_version_h2, jms_version_h3, generate_checksum, folder_structure, folder_type, apply_modifiers, triangulate_faces, edge_split, use_edge_angle, use_edge_sharp, split_angle, clean_normalize_weights, scale_enum, scale_float, console, permutation_ce, level_of_detail_ce, hidden_geo, export_render, export_collision, export_physics, game_version, world_nodes):
+def command_queue(context, filepath, report, jms_version, jms_version_ce, jms_version_h2, jms_version_h3, generate_checksum, folder_structure, folder_type, apply_modifiers, triangulate_faces, fix_rotations, edge_split, use_edge_angle, use_edge_sharp, split_angle, clean_normalize_weights, scale_enum, scale_float, console, permutation_ce, level_of_detail_ce, hidden_geo, export_render, export_collision, export_physics, game_version, world_nodes):
     object_properties = []
     node_prefix_tuple = ('b ', 'b_', 'bone', 'frame', 'bip01')
     limit_value = 0.001
@@ -1911,17 +1911,17 @@ def command_queue(context, filepath, report, jms_version, jms_version_ce, jms_ve
     if export_render and blend_scene.render_count > 0:
         model_type = "render"
 
-        write_file(context, filepath, report, version, game_version, generate_checksum, folder_structure, folder_type, permutation_ce, level_of_detail_ce, model_type, blend_scene, jmi, custom_scale)
+        write_file(context, filepath, report, version, game_version, generate_checksum, fix_rotations, folder_structure, folder_type, permutation_ce, level_of_detail_ce, model_type, blend_scene, jmi, custom_scale)
 
     if export_collision and blend_scene.collision_count > 0:
         model_type = "collision"
 
-        write_file(context, filepath, report, version, game_version, generate_checksum, folder_structure, folder_type, permutation_ce, level_of_detail_ce, model_type, blend_scene, jmi, custom_scale)
+        write_file(context, filepath, report, version, game_version, generate_checksum, fix_rotations, folder_structure, folder_type, permutation_ce, level_of_detail_ce, model_type, blend_scene, jmi, custom_scale)
 
     if export_physics and blend_scene.physics_count > 0:
         model_type = "physics"
-        
-        write_file(context, filepath, report, version, game_version, generate_checksum, folder_structure, folder_type, permutation_ce, level_of_detail_ce, model_type, blend_scene, jmi, custom_scale)
+
+        write_file(context, filepath, report, version, game_version, generate_checksum, fix_rotations, folder_structure, folder_type, permutation_ce, level_of_detail_ce, model_type, blend_scene, jmi, custom_scale)
 
     for idx, obj in enumerate(object_list):
         property_value = object_properties[idx]

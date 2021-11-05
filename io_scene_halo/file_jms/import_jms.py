@@ -28,6 +28,7 @@ from io import TextIOWrapper
 import bpy
 import bmesh
 
+from math import radians
 from mathutils import Vector, Matrix
 from ..global_functions import mesh_processing, global_functions
 
@@ -809,12 +810,70 @@ class JMSAsset(global_functions.HaloAsset):
                     else:
                         child_node = None
 
-def load_file(context, filepath, report, game_version, reuse_armature, fix_parents):
+def generate_jms_skeleton(jms_file, armature, parent_id_class, fix_rotations):
+    file_version = jms_file.version
+    first_frame = jms_file.transforms[0]
+
+    bpy.ops.object.mode_set(mode = 'EDIT')
+    for idx, jms_node in enumerate(jms_file.nodes):
+        current_bone = armature.data.edit_bones.new(jms_node.name)
+        current_bone.tail[2] = mesh_processing.get_bone_distance(jms_file, None, None, idx, "JMS")
+        parent_idx = jms_node.parent
+
+        if not parent_idx == -1 and not parent_idx == None:
+            if 'thigh' in jms_node.name and not parent_id_class.pelvis == None and not parent_id_class.thigh0 == None and not parent_id_class.thigh1 == None:
+                parent_idx = parent_id_class.pelvis
+
+            elif 'clavicle' in jms_node.name and not parent_id_class.spine1 == None and not parent_id_class.clavicle0 == None and not parent_id_class.clavicle1 == None:
+                parent_idx = parent_id_class.spine1
+
+            parent = jms_file.nodes[parent_idx].name
+            current_bone.parent = armature.data.edit_bones[parent]
+
+        matrix_translate = Matrix.Translation(first_frame[idx].vector)
+        matrix_rotation = first_frame[idx].rotation.to_matrix().to_4x4()
+
+        transform_matrix = matrix_translate @ matrix_rotation
+        if fix_rotations:
+            if file_version < 8205 and current_bone.parent:
+                transform_matrix = (current_bone.parent.matrix @ Matrix.Rotation(radians(90.0), 4, 'Z')) @ transform_matrix
+
+            current_bone.matrix = transform_matrix @ Matrix.Rotation(radians(-90.0), 4, 'Z')
+        else:
+            if file_version < 8205 and current_bone.parent:
+                transform_matrix = current_bone.parent.matrix @ transform_matrix
+
+            current_bone.matrix = transform_matrix
+
+    bpy.ops.object.mode_set(mode = 'OBJECT')
+
+def set_parent_id_class(jms_file, parent_id_class):
+    for idx, jms_node in enumerate(jms_file.nodes):
+        if 'pelvis' in jms_node.name:
+            parent_id_class.pelvis = idx
+
+        if 'thigh' in jms_node.name:
+            if parent_id_class.thigh0 == None:
+                parent_id_class.thigh0 = idx
+
+            else:
+                parent_id_class.thigh1 = idx
+
+        elif 'spine1' in jms_node.name:
+            parent_id_class.spine1 = idx
+
+        elif 'clavicle' in jms_node.name:
+            if parent_id_class.clavicle0 == None:
+                parent_id_class.clavicle0 = idx
+
+            else:
+                parent_id_class.clavicle1 = idx
+
+def load_file(context, filepath, report, game_version, reuse_armature, fix_parents, fix_rotations):
     jms_file = JMSAsset(filepath, game_version)
 
     collection = context.collection
     scene = context.scene
-    view_layer = context.view_layer
     armature = None
     object_list = list(scene.objects)
     region_permutation_list = []
@@ -840,73 +899,18 @@ def load_file(context, filepath, report, game_version, reuse_armature, fix_paren
                     armature = obj
 
     if armature == None or not reuse_armature:
-        pelvis = None
-        thigh0 = None
-        thigh1 = None
-        spine1 = None
-        clavicle0 = None
-        clavicle1 = None
+        parent_id_class = global_functions.ParentIDFix()
 
         armdata = bpy.data.armatures.new('Armature')
-        ob_new = bpy.data.objects.new('Armature', armdata)
-        collection.objects.link(ob_new)
-        armature = ob_new
+        armature = bpy.data.objects.new('Armature', armdata)
+        collection.objects.link(armature)
 
-        first_frame = jms_file.transforms[0]
         mesh_processing.select_object(context, armature)
         if fix_parents:
             if game_version == 'halo2' or game_version == 'halo3':
-                for idx, jms_node in enumerate(jms_file.nodes):
-                    if 'pelvis' in jms_node.name:
-                        pelvis = idx
+                set_parent_id_class(jms_file, parent_id_class)
 
-                    if 'thigh' in jms_node.name:
-                        if thigh0 == None:
-                            thigh0 = idx
-
-                        else:
-                            thigh1 = idx
-
-                    elif 'spine1' in jms_node.name:
-                        spine1 = idx
-
-                    elif 'clavicle' in jms_node.name:
-                        if clavicle0 == None:
-                            clavicle0 = idx
-
-                        else:
-                            clavicle1 = idx
-
-        for idx, jms_node in enumerate(jms_file.nodes):
-            bpy.ops.object.mode_set(mode='EDIT')
-            armature.data.edit_bones.new(jms_node.name)
-            armature.data.edit_bones[jms_node.name].tail[2] = 5
-
-            parent_idx = jms_node.parent
-            if not parent_idx == -1 and not parent_idx == None:
-                parent = jms_file.nodes[parent_idx].name
-                if 'thigh' in jms_node.name and not pelvis == None and not thigh0 == None and not thigh1 == None:
-                    parent = jms_file.nodes[pelvis].name
-
-                elif 'clavicle' in jms_node.name and not spine1 == None and not clavicle0 == None and not clavicle1 == None:
-                    parent = jms_file.nodes[spine1].name
-
-                armature.data.edit_bones[jms_node.name].parent = armature.data.edit_bones[parent]
-
-            matrix_translate = Matrix.Translation(first_frame[idx].vector)
-            matrix_rotation = first_frame[idx].rotation.to_matrix().to_4x4()
-
-            bpy.ops.object.mode_set(mode='POSE')
-            pose_bone = armature.pose.bones[jms_node.name]
-            transform_matrix = matrix_translate @ matrix_rotation
-            if jms_file.version < 8205 and pose_bone.parent:
-                transform_matrix = pose_bone.parent.matrix @ transform_matrix
-
-            armature.pose.bones[jms_node.name].matrix = transform_matrix
-
-        bpy.ops.pose.armature_apply(selected=False)
-        bpy.ops.object.mode_set(mode='OBJECT')
-        armature.select_set(False)
+        generate_jms_skeleton(jms_file, armature, parent_id_class, fix_rotations)
 
     for used_regions in jms_file.used_regions:
         name = jms_file.regions[used_regions].name
@@ -968,7 +972,10 @@ def load_file(context, filepath, report, game_version, reuse_armature, fix_paren
         transform_matrix = matrix_translate @ matrix_rotation
         if not parent_idx == -1:
             pose_bone = armature.pose.bones[jms_file.nodes[parent_idx].name]
-            transform_matrix = pose_bone.matrix @ transform_matrix
+            if fix_rotations:
+                transform_matrix = (pose_bone.matrix @ Matrix.Rotation(radians(90.0), 4, 'Z')) @ transform_matrix
+            else:
+                transform_matrix = pose_bone.matrix @ transform_matrix
 
         object_mesh.matrix_world = transform_matrix
         object_mesh.data.ass_jms.Object_Type = 'SPHERE'
@@ -1029,7 +1036,7 @@ def load_file(context, filepath, report, game_version, reuse_armature, fix_paren
         object_mesh.data.use_auto_smooth = True
         object_mesh.parent = armature
         mesh_processing.add_modifier(context, object_mesh, False, None, armature)
-        
+
     for sphere in jms_file.spheres:
         parent_idx = sphere.parent_index
         name = sphere.name
@@ -1064,7 +1071,10 @@ def load_file(context, filepath, report, game_version, reuse_armature, fix_paren
         transform_matrix = matrix_translate @ matrix_rotation
         if not parent_idx == -1:
             pose_bone = armature.pose.bones[jms_file.nodes[parent_idx].name]
-            transform_matrix = pose_bone.matrix @ transform_matrix
+            if fix_rotations:
+                transform_matrix = (pose_bone.matrix @ Matrix.Rotation(radians(90.0), 4, 'Z')) @ transform_matrix
+            else:
+                transform_matrix = pose_bone.matrix @ transform_matrix
 
         object_mesh.matrix_world = transform_matrix
 
@@ -1127,7 +1137,10 @@ def load_file(context, filepath, report, game_version, reuse_armature, fix_paren
         transform_matrix = matrix_translate @ matrix_rotation
         if not parent_idx == -1:
             pose_bone = armature.pose.bones[jms_file.nodes[parent_idx].name]
-            transform_matrix = pose_bone.matrix @ transform_matrix
+            if fix_rotations:
+                transform_matrix = (pose_bone.matrix @ Matrix.Rotation(radians(90.0), 4, 'Z')) @ transform_matrix
+            else:
+                transform_matrix = pose_bone.matrix @ transform_matrix
 
         object_mesh.matrix_world = transform_matrix
 
@@ -1190,7 +1203,10 @@ def load_file(context, filepath, report, game_version, reuse_armature, fix_paren
         transform_matrix = matrix_translate @ matrix_rotation
         if not parent_idx == -1:
             pose_bone = armature.pose.bones[jms_file.nodes[parent_idx].name]
-            transform_matrix = pose_bone.matrix @ transform_matrix
+            if fix_rotations:
+                transform_matrix = (pose_bone.matrix @ Matrix.Rotation(radians(90.0), 4, 'Z')) @ transform_matrix
+            else:
+                transform_matrix = pose_bone.matrix @ transform_matrix
 
         object_mesh.matrix_world = transform_matrix
         if not material_index == -1:
@@ -1254,7 +1270,10 @@ def load_file(context, filepath, report, game_version, reuse_armature, fix_paren
         transform_matrix = matrix_translate @ matrix_rotation
         if not parent_idx == -1:
             pose_bone = armature.pose.bones[jms_file.nodes[parent_idx].name]
-            transform_matrix = pose_bone.matrix @ transform_matrix
+            if fix_rotations:
+                transform_matrix = (pose_bone.matrix @ Matrix.Rotation(radians(90.0), 4, 'Z')) @ transform_matrix
+            else:
+                transform_matrix = pose_bone.matrix @ transform_matrix
 
         object_mesh.matrix_world = transform_matrix
         if not material_index == -1:
@@ -1310,7 +1329,10 @@ def load_file(context, filepath, report, game_version, reuse_armature, fix_paren
         transform_matrix = matrix_translate @ matrix_rotation
         if not ragdoll_attached_index == -1:
             pose_bone = armature.pose.bones[jms_file.nodes[parent_idx].name]
-            transform_matrix = pose_bone.matrix @ transform_matrix
+            if fix_rotations:
+                transform_matrix = (pose_bone.matrix @ Matrix.Rotation(radians(90.0), 4, 'Z')) @ transform_matrix
+            else:
+                transform_matrix = pose_bone.matrix @ transform_matrix
 
         object_empty.matrix_world = transform_matrix
         object_empty.select_set(False)
@@ -1343,7 +1365,10 @@ def load_file(context, filepath, report, game_version, reuse_armature, fix_paren
         transform_matrix = matrix_translate @ matrix_rotation
         if not hinge_body_a_index == -1:
             pose_bone = armature.pose.bones[jms_file.nodes[parent_idx].name]
-            transform_matrix = pose_bone.matrix @ transform_matrix
+            if fix_rotations:
+                transform_matrix = (pose_bone.matrix @ Matrix.Rotation(radians(90.0), 4, 'Z')) @ transform_matrix
+            else:
+                transform_matrix = pose_bone.matrix @ transform_matrix
 
         object_empty.matrix_world = transform_matrix
         object_empty.select_set(False)
@@ -1376,7 +1401,10 @@ def load_file(context, filepath, report, game_version, reuse_armature, fix_paren
         transform_matrix = matrix_translate @ matrix_rotation
         if not car_wheel_chassis_index == -1:
             pose_bone = armature.pose.bones[jms_file.nodes[car_wheel_chassis_index].name]
-            transform_matrix = pose_bone.matrix @ transform_matrix
+            if fix_rotations:
+                transform_matrix = (pose_bone.matrix @ Matrix.Rotation(radians(90.0), 4, 'Z')) @ transform_matrix
+            else:
+                transform_matrix = pose_bone.matrix @ transform_matrix
 
         object_empty.matrix_world = transform_matrix
         object_empty.select_set(False)
@@ -1409,7 +1437,10 @@ def load_file(context, filepath, report, game_version, reuse_armature, fix_paren
         transform_matrix = matrix_translate @ matrix_rotation
         if not point_to_point_body_a_index == -1:
             pose_bone = armature.pose.bones[jms_file.nodes[point_to_point_body_a_index].name]
-            transform_matrix = pose_bone.matrix @ transform_matrix
+            if fix_rotations:
+                transform_matrix = (pose_bone.matrix @ Matrix.Rotation(radians(90.0), 4, 'Z')) @ transform_matrix
+            else:
+                transform_matrix = pose_bone.matrix @ transform_matrix
 
         object_empty.matrix_world = transform_matrix
         object_empty.select_set(False)
@@ -1442,7 +1473,10 @@ def load_file(context, filepath, report, game_version, reuse_armature, fix_paren
         transform_matrix = matrix_translate @ matrix_rotation
         if not prismatic_body_a_index == -1:
             pose_bone = armature.pose.bones[jms_file.nodes[prismatic_body_a_index].name]
-            transform_matrix = pose_bone.matrix @ transform_matrix
+            if fix_rotations:
+                transform_matrix = (pose_bone.matrix @ Matrix.Rotation(radians(90.0), 4, 'Z')) @ transform_matrix
+            else:
+                transform_matrix = pose_bone.matrix @ transform_matrix
 
         object_empty.matrix_world = transform_matrix
         object_empty.select_set(False)
