@@ -39,6 +39,7 @@ def model_fixup(context):
     processed_mesh_name_list = []
     for obj in object_list:
         if obj.type== 'MESH' and not obj.data.name in processed_mesh_name_list:
+            print("I'm running on object %s" % obj.name)
             render_only_material_idx = []
             processed_mesh_name_list.append(obj.data.name)
             mesh_processing.select_object(context, obj)
@@ -48,24 +49,28 @@ def model_fixup(context):
             bpy.ops.mesh.merge_normals()
             context.view_layer.update()
             bpy.ops.mesh.select_all(action='DESELECT')
+            print("Just finished merging normals on object %s" % obj.name)
             for idx, slot in enumerate(obj.material_slots):
                 if not "!" in slot.material.name:
                     bpy.context.object.active_material_index = idx
                     bpy.ops.object.material_slot_select()
 
-                    bpy.ops.mesh.remove_doubles(threshold=0.01, use_sharp_edge_from_normals=True)
-                    bpy.ops.mesh.select_all(action='DESELECT')
-
                 else:
                     render_only_material_idx.append(idx)
 
+            context.view_layer.update()
+            bpy.ops.mesh.remove_doubles(threshold=0.01, use_sharp_edge_from_normals=True)
+            bpy.ops.mesh.select_all(action='DESELECT') 
+            print("Just finished merging not render only faces on object %s" % obj.name)
             for material_idx in render_only_material_idx:
                 bpy.context.object.active_material_index = material_idx
                 bpy.ops.object.material_slot_select()
 
-                bpy.ops.mesh.remove_doubles(threshold=0.01, use_sharp_edge_from_normals=True)
-                bpy.ops.mesh.select_all(action='DESELECT')
-
+            context.view_layer.update()
+            bpy.ops.mesh.remove_doubles(threshold=0.01, use_sharp_edge_from_normals=True)
+            bpy.ops.mesh.select_all(action='DESELECT')
+            print("Just finished merging render only faces on object %s" % obj.name)
+            print(" ")
             bpy.ops.mesh.customdata_custom_splitnormals_clear()
             bpy.ops.object.mode_set(mode = 'OBJECT')
             obj.data.use_auto_smooth = False
