@@ -44,27 +44,29 @@ def model_fixup(context):
             mesh_processing.select_object(context, obj)
             bpy.ops.object.mode_set(mode = 'EDIT')
 
+            bpy.ops.mesh.select_all(action='SELECT')
+            bpy.ops.mesh.merge_normals()
+            context.view_layer.update()
+            bpy.ops.mesh.select_all(action='DESELECT')
             for idx, slot in enumerate(obj.material_slots):
                 if not "!" in slot.material.name:
                     bpy.context.object.active_material_index = idx
                     bpy.ops.object.material_slot_select()
+
+                    bpy.ops.mesh.remove_doubles(threshold=0.01, use_sharp_edge_from_normals=True)
+                    bpy.ops.mesh.select_all(action='DESELECT')
+
                 else:
                     render_only_material_idx.append(idx)
-
-            bpy.ops.mesh.merge_normals()
-            bpy.ops.mesh.remove_doubles(threshold=0.01, use_sharp_edge_from_normals=True)
-            bpy.ops.mesh.customdata_custom_splitnormals_clear()
-            bpy.ops.mesh.select_all(action='DESELECT')
 
             for material_idx in render_only_material_idx:
                 bpy.context.object.active_material_index = material_idx
                 bpy.ops.object.material_slot_select()
 
-            bpy.ops.mesh.merge_normals()
-            bpy.ops.mesh.remove_doubles(threshold=0.01, use_sharp_edge_from_normals=True)
-            bpy.ops.mesh.customdata_custom_splitnormals_clear()
-            bpy.ops.mesh.select_all(action='DESELECT')
+                bpy.ops.mesh.remove_doubles(threshold=0.01, use_sharp_edge_from_normals=True)
+                bpy.ops.mesh.select_all(action='DESELECT')
 
+            bpy.ops.mesh.customdata_custom_splitnormals_clear()
             bpy.ops.object.mode_set(mode = 'OBJECT')
             obj.data.use_auto_smooth = False
             mesh_processing.deselect_objects(context)
