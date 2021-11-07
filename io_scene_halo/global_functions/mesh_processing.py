@@ -515,6 +515,16 @@ def process_mesh_export_vert(vert, file_type, original_geo_matrix, version, cust
     else:
         normal = (vert.normal).normalized()
 
+    if original_geo_matrix.determinant() < 0.0 and file_type == 'JMS':
+        invert_translation_x = scaled_translation[0] * -1
+        invert_translation_y = scaled_translation[1] * -1
+        invert_translation_z = scaled_translation[2] * -1
+        invert_normal_x = normal[0] * -1
+        invert_normal_y = normal[1] * -1
+        invert_normal_z = normal[2] * -1
+        scaled_translation = (invert_translation_x, invert_translation_y, invert_translation_z)
+        normal = (invert_normal_x, invert_normal_y, invert_normal_z)
+
     return scaled_translation, normal
 
 def process_mesh_export_face_set(default_permutation, default_region, game_version, original_geo, face_map_idx):

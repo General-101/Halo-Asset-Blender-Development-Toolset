@@ -29,14 +29,15 @@ import bpy
 def cull_materials(context):
     used_materials = []
     active_object = context.view_layer.objects.active
-    for face in active_object.data.polygons:
-        material = face.material_index
-        if material not in used_materials:
-            used_materials.append(material)
+    if active_object.type== 'MESH':
+        for face in active_object.data.polygons:
+            material = face.material_index
+            if material not in used_materials:
+                used_materials.append(material)
 
-    for idx, material_slot in enumerate(active_object.material_slots):
-        if idx not in used_materials:
-            material_slot.material = None
+        for idx, material_slot in enumerate(active_object.material_slots):
+            if idx not in used_materials:
+                material_slot.material = None
 
     return {'FINISHED'}
 

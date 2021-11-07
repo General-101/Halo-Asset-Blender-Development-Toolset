@@ -46,6 +46,15 @@ from bpy.props import (
 
 from ..global_functions import global_functions
 
+class Halo_ImportFixupPropertiesGroup(PropertyGroup):
+    threshold: FloatProperty(
+        name="Threshold",
+        description="Maximum distance between elements to merge",
+        default=0.0001,
+        min=0.000001,
+        max=50.0
+    )
+
 class Halo_LightmapperPropertiesGroup(PropertyGroup):
     res_x: IntProperty(
         name="Image Width",
@@ -478,6 +487,7 @@ class Halo_Tools_Helper(Panel):
 
     def draw(self, context):
         scene = context.scene
+        scene_halo_fixup = scene.halo_import_fixup
         scene_halo_lightmapper = scene.halo_lightmapper
         scene_halo_prefix = scene.halo_prefix
         scene_scale_model = scene.scale_model
@@ -580,6 +590,9 @@ class Halo_Tools_Helper(Panel):
         box = layout.box()
         box.label(text="Import Fixup:")
         col = box.column(align=True)
+        row = col.row()
+        row.label(text='Merge Distance:')
+        row.prop(scene_halo_fixup, "threshold", text='')
         row = col.row()
         row.operator("halo_bulk.import_fixup", text="Import Fixup")
 
@@ -929,8 +942,8 @@ class ImportFixup(Operator):
 
     def execute(self, context):
         from ..misc import import_fixup
-
-        return global_functions.run_code("import_fixup.model_fixup(context)")
+        scene_halo_fixup = context.scene.halo_import_fixup
+        return global_functions.run_code("import_fixup.model_fixup(context, scene_halo_fixup.threshold)")
 
 def menu_func_export(self, context):
     self.layout.operator(ExportLightmap.bl_idname, text="Halo Lightmap UV (.luv)")
@@ -956,6 +969,7 @@ classeshalo = (
     Halo_Sky_Sun_Light,
     Halo_Sky_Sun_Color,
     Halo_Sky_Misc_Settings,
+    Halo_ImportFixupPropertiesGroup,
     Halo_LightmapperPropertiesGroup,
     Scale_ModelPropertiesGroup,
     SkyPropertiesGroup,
@@ -968,6 +982,7 @@ def register():
         bpy.utils.register_class(clshalo)
 
     bpy.types.TOPBAR_MT_file_export.append(menu_func_export)
+    bpy.types.Scene.halo_import_fixup = PointerProperty(type=Halo_ImportFixupPropertiesGroup, name="Halo Import Helper", description="Set properties for the import fixup helper")
     bpy.types.Scene.halo_lightmapper = PointerProperty(type=Halo_LightmapperPropertiesGroup, name="Halo Lightmapper Helper", description="Set properties for the lightmapper")
     bpy.types.Scene.halo_prefix = PointerProperty(type=Halo_PrefixPropertiesGroup, name="Halo Prefix Helper", description="Set properties for node prefixes")
     bpy.types.Scene.scale_model = PointerProperty(type=Scale_ModelPropertiesGroup, name="Halo Scale Model Helper", description="Create meshes for scale")

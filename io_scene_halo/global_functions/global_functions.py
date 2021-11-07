@@ -426,19 +426,6 @@ def get_matrix(obj_a, obj_b, is_local, armature, joined_list, is_node, version, 
                     else:
                         object_matrix = parent_object[1].matrix_world.inverted() @ obj_a.matrix_world
 
-        if object_matrix.determinant() < 0.0:
-            loc, rot, sca = object_matrix.decompose()
-            matrix_loc = Matrix.Translation(loc)
-            matrix_rot = rot.to_matrix().to_4x4()
-            invert_scale_x = sca[0] * -1
-            invert_scale_y = sca[1] * -1
-            invert_scale_z = sca[2] * -1
-            matrix_scale_x = Matrix.Scale(invert_scale_x, 4, (1, 0, 0))
-            matrix_scale_y = Matrix.Scale(invert_scale_y, 4, (0, 1, 0))
-            matrix_scale_z = Matrix.Scale(invert_scale_z, 4, (0, 0, 1))
-
-            object_matrix = matrix_loc @ matrix_rot @ (matrix_scale_x @ matrix_scale_y @ matrix_scale_z)
-
     loc, rot, sca = object_matrix.decompose()
     custom_loc = loc * custom_scale
     translation = Matrix.Translation(custom_loc)

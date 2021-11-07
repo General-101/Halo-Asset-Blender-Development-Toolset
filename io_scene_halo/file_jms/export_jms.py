@@ -349,7 +349,7 @@ class JMSScene(global_functions.HaloAsset):
         for marker in all_marker_list:
             marker_name = marker.name.split('#', 1)[1] #remove marker symbol from name
             if not global_functions.string_empty_check(marker.marker.name_override):
-                marker_name = marker.marker.name_override
+                marker_name = marker.marker.name_override.split('#', 1)[1] #remove marker symbol from name in case someone thinks they still need it here.
 
             region_idx = -1
 
@@ -1827,11 +1827,11 @@ def command_queue(context, filepath, report, jms_version, jms_version_ce, jms_ve
                             if apply_modifiers:
                                 obj_for_convert = obj.evaluated_get(depsgraph)
                                 evaluted_mesh = obj_for_convert.to_mesh(preserve_all_data_layers=True, depsgraph=depsgraph)
-                                collision_geometry_list.append((evaluted_mesh, obj))
 
                             else:
                                 evaluted_mesh = obj.to_mesh(preserve_all_data_layers=True)
-                                collision_geometry_list.append((evaluted_mesh, obj))
+
+                            collision_geometry_list.append((evaluted_mesh, obj))
 
         elif name[0:1] == '$' and not game_version == "haloce" and version > 8205:
             if mesh_processing.set_ignore(obj) == False or hidden_geo:
@@ -1877,7 +1877,6 @@ def command_queue(context, filepath, report, jms_version, jms_version_ce, jms_ve
                     if not obj.data.ass_jms.XREF_path in instance_xref_paths:
                         instance_xref_paths.append(obj.data.ass_jms.XREF_path)
 
-
         elif obj.type== 'MESH' and obj.data.ass_jms.bounding_radius and version >= 8209:
             if mesh_processing.set_ignore(obj) == False or hidden_geo:
                 if export_render:
@@ -1898,11 +1897,11 @@ def command_queue(context, filepath, report, jms_version, jms_version_ce, jms_ve
                             if apply_modifiers:
                                 obj_for_convert = obj.evaluated_get(depsgraph)
                                 evaluted_mesh = obj_for_convert.to_mesh(preserve_all_data_layers=True, depsgraph=depsgraph)
-                                render_geometry_list.append((evaluted_mesh, obj))
 
                             else:
                                 evaluted_mesh = obj.to_mesh(preserve_all_data_layers=True)
-                                render_geometry_list.append((evaluted_mesh, obj))
+
+                            render_geometry_list.append((evaluted_mesh, obj))
 
     blend_scene = global_functions.BlendScene(world_node_count, armature_count, mesh_frame_count, render_count, collision_count, physics_count, armature, node_list, render_marker_list, collision_marker_list, physics_marker_list, marker_list, instance_xref_paths, instance_markers, render_geometry_list, collision_geometry_list, sphere_list, box_list, capsule_list, convex_shape_list, ragdoll_list, hinge_list, car_wheel_list, point_to_point_list, prismatic_list, bounding_sphere_list, skylight_list)
 

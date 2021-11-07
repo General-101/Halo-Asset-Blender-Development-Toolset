@@ -104,6 +104,18 @@ def get_material_strings(material, version):
 
     return material_strings
 
+def scale_is_uniform(obj):
+    is_uniform = True
+    scale_x = obj.scale[0]
+    scale_y = obj.scale[1]
+    scale_z = obj.scale[2]
+    if scale_y > (scale_x + 0.0000000001) or scale_y < (scale_x - 0.0000000001):
+        is_uniform = False
+    if scale_z > (scale_x + 0.0000000001) or scale_z < (scale_x - 0.0000000001):
+        is_uniform = False
+
+    return is_uniform
+
 class ASSScene(global_functions.HaloAsset):
     class Transform:
         def __init__(self,
@@ -211,7 +223,7 @@ class ASSScene(global_functions.HaloAsset):
             self.local_transform = local_transform
             self.pivot_transform = pivot_transform
 
-    def __init__(self, context, version, game_version, apply_modifiers, triangulate_faces, edge_split, use_edge_angle, use_edge_sharp, split_angle, clean_normalize_weights, hidden_geo, custom_scale):
+    def __init__(self, context, report, version, game_version, apply_modifiers, triangulate_faces, edge_split, use_edge_angle, use_edge_sharp, split_angle, clean_normalize_weights, hidden_geo, custom_scale):
         global_functions.unhide_all_collections(context)
 
         default_region = mesh_processing.get_default_region_permutation_name(game_version)
@@ -253,6 +265,9 @@ class ASSScene(global_functions.HaloAsset):
                 mesh_processing.unhide_object(obj)
 
         for obj in object_list:
+            if not scale_is_uniform(obj):
+                report({'WARNING'}, "Object %s has non uniform scale. Object will not look correct ingame. Apply transforms and export again." % (obj.name))
+
             if obj.type == 'ARMATURE':
                 if mesh_processing.set_ignore(obj) == False or hidden_geo:
                     for bone in obj.data.bones:
@@ -579,7 +594,7 @@ def write_file(context, filepath, report, ass_version, ass_version_h2, ass_versi
     custom_scale = global_functions.set_scale(scale_enum, scale_float)
     version = global_functions.get_version(ass_version, None, ass_version_h2, ass_version_h3, game_version, console)
 
-    ass_scene = ASSScene(context, version, game_version, apply_modifiers, triangulate_faces, edge_split, use_edge_angle, use_edge_sharp, split_angle, clean_normalize_weights, hidden_geo, custom_scale)
+    ass_scene = ASSScene(context, report, version, game_version, apply_modifiers, triangulate_faces, edge_split, use_edge_angle, use_edge_sharp, split_angle, clean_normalize_weights, hidden_geo, custom_scale)
 
     filename = os.path.basename(filepath)
     root_directory = global_functions.get_directory(context, game_version, "render", folder_structure, "0", False, filepath)

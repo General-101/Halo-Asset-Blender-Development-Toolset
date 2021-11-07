@@ -24,60 +24,72 @@
 #
 # ##### END MIT LICENSE BLOCK #####
 
-from io import BytesIO, TextIOWrapper
-import zipfile
 import bpy
-import bmesh
 
-from os import path
-from mathutils import Matrix
-from io_scene_halo.file_jms import import_jms
-from ..global_functions import mesh_processing
+from ..global_functions import global_functions, mesh_processing
 
-def model_fixup(context):
+def merge_normals():
+    bpy.ops.mesh.select_all(action='SELECT')
+    bpy.ops.mesh.merge_normals()
+    bpy.ops.mesh.select_all(action='DESELECT')
+
+def merge_verts(material_idx_list, threshold):
+    for material_idx in material_idx_list:
+        bpy.context.object.active_material_index = material_idx
+        bpy.ops.object.material_slot_select()
+
+    bpy.ops.mesh.remove_doubles(threshold=threshold, use_sharp_edge_from_normals=True)
+    bpy.ops.mesh.select_all(action='DESELECT')
+
+def model_fixup(context, threshold):
     object_list = list(context.scene.objects)
     processed_mesh_name_list = []
     for obj in object_list:
-        if obj.type== 'MESH' and not obj.data.name in processed_mesh_name_list:
-            print("I'm running on object %s" % obj.name)
-            render_only_material_idx = []
-            processed_mesh_name_list.append(obj.data.name)
-            mesh_processing.select_object(context, obj)
-            bpy.ops.object.mode_set(mode = 'EDIT')
+        if obj.type== 'MESH':
+            edge_split = global_functions.EdgeSplit(True, False, 0.523599, True)
+            mesh_processing.add_modifier(context, obj, False, edge_split, None)
+            if not obj.data.name in processed_mesh_name_list:
+                processed_mesh_name_list.append(obj.data.name)
+                mesh_processing.select_object(context, obj)
+                bpy.ops.object.mode_set(mode = 'EDIT')
+                merge_normals()
 
-            bpy.ops.mesh.select_all(action='SELECT')
-            bpy.ops.mesh.merge_normals()
-            context.view_layer.update()
-            bpy.ops.mesh.select_all(action='DESELECT')
-            print("Just finished merging normals on object %s" % obj.name)
-            for idx, slot in enumerate(obj.material_slots):
-                if not "!" in slot.material.name:
-                    bpy.context.object.active_material_index = idx
-                    bpy.ops.object.material_slot_select()
+                main_material_idx = []
+                render_only_material_idx = []
+                two_sided_material_idx = []
+                media_material_idx = []
+                portal_material_idx = []
 
-                else:
-                    render_only_material_idx.append(idx)
+                for idx, slot in enumerate(obj.material_slots):
+                    mat = slot.material
+                    if mat is not None:
+                        if "!" in mat.name or mat.ass_jms.render_only:
+                            render_only_material_idx.append(idx)
 
-            context.view_layer.update()
-            bpy.ops.mesh.remove_doubles(threshold=0.01, use_sharp_edge_from_normals=True)
-            bpy.ops.mesh.select_all(action='DESELECT') 
-            print("Just finished merging not render only faces on object %s" % obj.name)
-            for material_idx in render_only_material_idx:
-                bpy.context.object.active_material_index = material_idx
-                bpy.ops.object.material_slot_select()
+                        elif mat.name == "+portal" or mat.name == "+exactportal":
+                            portal_material_idx.append(idx)    
 
-            context.view_layer.update()
-            bpy.ops.mesh.remove_doubles(threshold=0.01, use_sharp_edge_from_normals=True)
-            bpy.ops.mesh.select_all(action='DESELECT')
-            print("Just finished merging render only faces on object %s" % obj.name)
-            print(" ")
-            bpy.ops.mesh.customdata_custom_splitnormals_clear()
-            bpy.ops.object.mode_set(mode = 'OBJECT')
-            obj.data.use_auto_smooth = False
-            mesh_processing.deselect_objects(context)
+                        elif "%" in mat.name or mat.ass_jms.two_sided or "?" in mat.name or mat.ass_jms.transparent_2_sided:
+                            two_sided_material_idx.append(idx)  
 
+                        elif mat.name == "+media" or mat.name == "+sound" or mat.name == "+unused" or mat.name == "+weatherpoly" or "$" in mat.name or mat.ass_jms.fog_plane:
+                            media_material_idx.append(idx) 
+
+                        else:
+                            main_material_idx.append(idx)
+
+                merge_verts(main_material_idx, threshold)
+                merge_verts(render_only_material_idx, threshold)
+                merge_verts(two_sided_material_idx, threshold)
+                merge_verts(media_material_idx, threshold)
+                merge_verts(portal_material_idx, threshold)
+
+                bpy.ops.mesh.customdata_custom_splitnormals_clear()
+                bpy.ops.object.mode_set(mode = 'OBJECT')
+                obj.data.use_auto_smooth = False
+                mesh_processing.deselect_objects(context)
 
     return {'FINISHED'}
 
 if __name__ == '__main__':
-    bpy.ops.halo_bulk.scale_model()
+    bpy.ops.halo_bulk.import_fixup()
