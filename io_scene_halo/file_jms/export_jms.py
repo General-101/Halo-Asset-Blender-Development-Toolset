@@ -347,9 +347,12 @@ class JMSScene(global_functions.HaloAsset):
             all_marker_list = blend_scene.marker_list + blend_scene.physics_marker_list
 
         for marker in all_marker_list:
-            marker_name = marker.name.split('#', 1)[1] #remove marker symbol from name
+            marker_name = marker.name
             if not global_functions.string_empty_check(marker.marker.name_override):
-                marker_name = marker.marker.name_override.split('#', 1)[1] #remove marker symbol from name in case someone thinks they still need it here.
+                marker_name = marker.marker.name_override
+                
+            if marker_name.startswith('#'):
+                marker_name = marker_name.split('#', 1)[1] #remove marker symbol from name in case someone thinks they still need it here.
 
             region_idx = -1
 
