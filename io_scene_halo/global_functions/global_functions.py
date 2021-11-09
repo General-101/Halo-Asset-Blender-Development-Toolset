@@ -455,9 +455,9 @@ def get_dimensions(mesh_matrix, original_geo, version, jms_vertex, is_vertex, is
     else:
         if original_geo:
             pos, rot, scale = mesh_matrix.decompose()
-            quat = mesh_matrix.to_quaternion().inverted()
+            quat = rot.inverted()
             if version >= get_version_matrix_check(file_type):
-                quat = mesh_matrix.to_quaternion()
+                quat = rot
 
             quaternion = (quat[1], quat[2], quat[3], quat[0])
             position = (pos[0], pos[1], pos[2])
