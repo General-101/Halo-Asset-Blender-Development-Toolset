@@ -93,6 +93,9 @@ class JMS_MarkerProps(Panel):
     def draw(self, context):
         layout = self.layout
 
+        scene = context.scene
+        scene_halo = scene.halo
+
         mesh = context.object
         mesh_marker = mesh.marker
 
@@ -104,9 +107,10 @@ class JMS_MarkerProps(Panel):
         row = col.row()
         row.label(text='Mask Type:')
         row.prop(mesh_marker, "marker_mask_type", text='')
-        row = col.row()
-        row.label(text='Region:')
-        row.prop(mesh_marker, "marker_region", text='')
+        if scene_halo.game_version == 'haloce':
+            row = col.row()
+            row.label(text='Region:')
+            row.prop(mesh_marker, "marker_region", text='')
 
 class JMS_PhysicsPropertiesGroup(PropertyGroup):
     jms_spring_type: EnumProperty(

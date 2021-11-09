@@ -483,22 +483,30 @@ def load_file(context, filepath, report):
                     if geo_class == 'GENERIC_LIGHT':
                         object_mesh.data.color = (object_element.light_properties.light_color)
                         object_mesh.data.energy = (object_element.light_properties.intensity)
-                        if object_element.light_properties.light_type == 'SPOT_LGT':
-                                object_mesh.data.use_custom_distance = object_element.light_properties.uses_near_attenuation
-                                object_mesh.data.cutoff_distance = object_element.light_properties.near_attenuation_start
+                        if object_element.light_properties.light_type == 'SPOT_LGT' or object_element.light_properties.light_type == 'DIRECT_LGT':
+                            if object_element.light_properties.light_type == 'DIRECT_LGT':
+                                light_shape_type = "DISK"
+                                if not object_element.light_properties.light_shape == 0:
+                                    light_shape_type = "RECTANGLE"
+
+                                object_mesh.data.shape = light_shape_type
+
+                            else:
                                 object_mesh.data.spot_size = radians(object_element.light_properties.hotspot_size)
                                 object_mesh.data.spot_blend = object_element.light_properties.hotspot_falloff_size / object_element.light_properties.hotspot_size
 
-                        elif object_element.light_properties.light_type == 'DIRECT_LGT':
-                            object_mesh.data.use_custom_distance = object_element.light_properties.uses_near_attenuation
-                            object_mesh.data.cutoff_distance = object_element.light_properties.near_attenuation_start
-                            object_element.light_properties.light_shape = 0
-                            light_shape_type = "DISK"
-                            if object_element.light_properties.light_shape == 1:
-                                light_shape_type = "RECTANGLE"
+                            object_mesh.data.halo_light.spot_size = radians(object_element.light_properties.hotspot_size)
+                            object_mesh.data.halo_light.spot_blend = object_element.light_properties.hotspot_falloff_size / object_element.light_properties.hotspot_size
 
-                            object_mesh.data.shape = light_shape_type
-                            object_mesh.data.size = object_element.light_properties.light_aspect_ratio
+                            object_mesh.data.halo_light.light_cone_shape = str(object_element.light_properties.light_shape)
+                            object_mesh.data.halo_light.light_aspect_ratio = object_element.light_properties.light_aspect_ratio
+
+                            object_mesh.data.halo_light.use_near_atten = bool(object_element.light_properties.uses_near_attenuation)
+                            object_mesh.data.halo_light.near_atten_start = object_element.light_properties.near_attenuation_start
+                            object_mesh.data.halo_light.near_atten_end = object_element.light_properties.near_attenuation_end
+                            object_mesh.data.halo_light.use_far_atten = bool(object_element.light_properties.uses_far_attenuation)
+                            object_mesh.data.halo_light.far_atten_start = object_element.light_properties.far_attenuation_start
+                            object_mesh.data.halo_light.far_atten_end = object_element.light_properties.far_attenuation_end
 
                     elif geo_class == 'PILL':
                         set_primitive_material(object_material_index, ass_file, object_data)

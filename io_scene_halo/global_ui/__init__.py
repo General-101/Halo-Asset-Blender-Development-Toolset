@@ -913,11 +913,210 @@ class Halo_ScenePropertiesGroup(PropertyGroup):
         default = False,
         )
 
+class ASS_LightPropertiesGroup(PropertyGroup):
+    use_near_atten: BoolProperty(
+        name = "Near Attenuation",
+        description = "No idea",
+        default = False,
+        )
+
+    near_atten_start: FloatProperty(
+        name = "Near Attenuation Start",
+        description = "No idea",
+        default = 0.0,
+        max = 999999.0,
+        min = 0.0,
+        )
+
+    near_atten_end: FloatProperty(
+        name = "Near Attenuation End",
+        description = "No idea",
+        default = 40.0,
+        max = 999999.0,
+        min = 0.0,
+        )
+
+    use_far_atten: BoolProperty(
+        name = "Near Attenuation",
+        description = "No idea",
+        default = False,
+        )
+
+    far_atten_start: FloatProperty(
+        name = "Far Attenuation Start",
+        description = "No idea",
+        default = 80.0,
+        max = 999999.0,
+        min = 0.0,
+        )
+
+    far_atten_end: FloatProperty(
+        name = "Far Attenuation End",
+        description = "No idea",
+        default = 200.0,
+        max = 999999.0,
+        min = 0.0,
+        )
+
+    light_cone_shape : EnumProperty(
+        name="Light Cone Shape",
+        description="What shape to use for the light cone",
+        default = "0",
+        items=[ ('0', "Circle", "Circle"),
+                ('1', "Rectangle", "Rectangle"),
+               ]
+        )
+
+    aspect_ratio: FloatProperty(
+        name = "Aspect Ratio",
+        description = "No idea. Only used if the light cone is a rectangle.",
+        default = 1.0,
+        max = 100.0,
+        min = 0.001,
+        )
+
+    spot_size: FloatProperty(
+        name="Spot Size",
+        description="Angle of the spotlight beam",
+        subtype='ANGLE',
+        default=0.785398,
+        min=0.017453,
+        max=3.141593,
+        )
+
+    spot_blend: FloatProperty(
+        name = "Spot Blend",
+        description = "The softness of the spotlight edge",
+        precision = 3,
+        default = 0.150,
+        max = 1.0,
+        min = 0.0,
+        )
+
+class ASS_LightProps(Panel):
+    bl_label = "ASS Light Properties"
+    bl_idname = "ASS_PT_LightPanel"
+    bl_space_type = 'PROPERTIES'
+    bl_region_type = 'WINDOW'
+    bl_context = "data"
+    bl_options = {'DEFAULT_CLOSED'}
+    bl_parent_id = "DATA_PT_EEVEE_light"
+    COMPAT_ENGINES = {'BLENDER_EEVEE'}
+
+    @classmethod
+    def poll(cls, context):
+        light = context.light
+        engine = context.engine
+
+        return (light and (light.type == 'SPOT' or light.type == 'AREA')) and (engine in cls.COMPAT_ENGINES)
+
+    def draw(self, context):
+        light = context.light
+        light_ass = light.halo_light
+
+        layout = self.layout
+
+        row = layout.row()
+        row.label(text='Light Cone Shape:')
+        row.prop(light_ass, "light_cone_shape", text='')
+        row = layout.row()
+        row.label(text='Aspect Ratio:')
+        row.prop(light_ass, "aspect_ratio", text='')
+
+class ASS_LightSpot(Panel):
+    bl_label = "Spot Shape"
+    bl_idname = "ASS_PT_SpotShapePanel"
+    bl_space_type = 'PROPERTIES'
+    bl_region_type = 'WINDOW'
+    bl_context = "data"
+    bl_options = {'DEFAULT_CLOSED'}
+    bl_parent_id = "ASS_PT_LightPanel"
+
+    def draw(self, context):
+        light = context.light
+        light_ass = light.halo_light
+
+        layout = self.layout
+
+        row = layout.row()
+        row.label(text='Size:')
+        row.prop(light_ass, "spot_size", text='')
+        row = layout.row()
+        row.label(text='Blend:')
+        row.prop(light_ass, "spot_blend", text='', slider=True)
+
+class ASS_LightNearAtten(Panel):
+    bl_label = "Near Attenuation"
+    bl_idname = "ASS_PT_NearAttenuationPanel"
+    bl_space_type = 'PROPERTIES'
+    bl_region_type = 'WINDOW'
+    bl_context = "data"
+    bl_options = {'DEFAULT_CLOSED'}
+    bl_parent_id = "ASS_PT_LightPanel"
+
+    def draw_header(self, context):
+        light = context.light
+        light_ass = light.halo_light
+
+        self.layout.prop(light_ass, "use_near_atten", text='')
+
+    def draw(self, context):
+        light = context.light
+        light_ass = light.halo_light
+
+        layout = self.layout
+
+        if not light_ass.use_near_atten:
+            layout.enabled = False
+
+        row = layout.row()
+        row.label(text='Start:')
+        row.prop(light_ass, "near_atten_start", text='')
+        row = layout.row()
+        row.label(text='End:')
+        row.prop(light_ass, "near_atten_end", text='')
+
+class ASS_LightFarAtten(Panel):
+    bl_label = "Far Attenuation"
+    bl_idname = "ASS_PT_FarAttenuationPanel"
+    bl_space_type = 'PROPERTIES'
+    bl_region_type = 'WINDOW'
+    bl_context = "data"
+    bl_options = {'DEFAULT_CLOSED'}
+    bl_parent_id = "ASS_PT_LightPanel"
+
+    def draw_header(self, context):
+        light = context.light
+        light_ass = light.halo_light
+
+        self.layout.prop(light_ass, "use_far_atten", text='')
+
+    def draw(self, context):
+        light = context.light
+        light_ass = light.halo_light
+
+        layout = self.layout
+
+        if not light_ass.use_far_atten:
+            layout.enabled = False
+
+        row = layout.row()
+        row.label(text='Start:')
+        row.prop(light_ass, "far_atten_start", text='')
+        row = layout.row()
+        row.label(text='End:')
+        row.prop(light_ass, "far_atten_end", text='')
+
 classeshalo = (
     ASS_JMS_MeshPropertiesGroup,
     ASS_JMS_MaterialPropertiesGroup,
     Halo_MeshProps,
     ASS_JMS_MeshProps,
+    ASS_LightPropertiesGroup,
+    ASS_LightProps,
+    ASS_LightSpot,
+    ASS_LightNearAtten,
+    ASS_LightFarAtten,
     ASS_JMS_MaterialProps,
     ASS_JMS_MaterialFlagsProps,
     ASS_JMS_MaterialLightmapProps,
@@ -932,11 +1131,13 @@ def register():
     for clshalo in classeshalo:
         bpy.utils.register_class(clshalo)
 
+    bpy.types.Light.halo_light = PointerProperty(type=ASS_LightPropertiesGroup, name="ASS Properties", description="Set properties for your light")
     bpy.types.Mesh.ass_jms = PointerProperty(type=ASS_JMS_MeshPropertiesGroup, name="ASS/JMS Properties", description="Set properties for your mesh")
     bpy.types.Material.ass_jms = PointerProperty(type=ASS_JMS_MaterialPropertiesGroup, name="ASS/JMS Properties", description="Set properties for your materials")
     bpy.types.Scene.halo = PointerProperty(type=Halo_ScenePropertiesGroup, name="Halo Scene Properties", description="Set properties for your scene")
 
 def unregister():
+    del bpy.types.Light.halo_light
     del bpy.types.Mesh.ass_jms
     del bpy.types.Material.ass_jms
     del bpy.types.Scene.halo

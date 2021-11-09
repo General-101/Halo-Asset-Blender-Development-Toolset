@@ -166,11 +166,11 @@ class ASSScene(global_functions.HaloAsset):
 
     class Light:
         def __init__(self,
-                     light_type,
+                     light_type=None,
                      light_color=None,
                      intensity=0.0,
-                     hotspot_size=0.0,
-                     hotspot_falloff_size=0.0,
+                     hotspot_size=-1.0,
+                     hotspot_falloff_size=-1.0,
                      uses_near_attenuation=0,
                      near_attenuation_start=0.0,
                      near_attenuation_end=0.0,
@@ -418,39 +418,24 @@ class ASSScene(global_functions.HaloAsset):
             if not evaluted_mesh_name in linked_instance_list and not object_index == -1:
                 linked_instance_list.append(evaluted_mesh_name)
                 if geo_class == 'SPOT_LGT' or geo_class == 'DIRECT_LGT' or geo_class == 'OMNI_LGT' or geo_class == 'AMBIENT_LGT':
-                    light_type = geo_class
-                    color_rgb = (original_geo.data.color[0], original_geo.data.color[1], original_geo.data.color[2])
-                    intensity = original_geo.data.energy
-                    hotspot_size = -1.0
-                    hotspot_falloff_size = -1.0
-                    uses_near_attenuation = 0
-                    near_attenuation_start = 0.0
-                    near_attenuation_end = 0.0
-                    uses_far_attenuation = 0
-                    far_attenuation_start = 0.0
-                    far_attenuation_end = 0.0
-                    light_shape = 0
-                    light_aspect_ratio = 0.0
-                    if geo_class == 'SPOT_LGT':
-                        hotspot_size = degrees(original_geo.data.spot_size)
-                        hotspot_falloff_size = original_geo.data.spot_blend * degrees(original_geo.data.spot_size)
+                    light_properties = ASSScene.Light()
+                    light_properties.light_type = geo_class
+                    light_properties.light_color = (original_geo.data.color[0], original_geo.data.color[1], original_geo.data.color[2])
+                    light_properties.intensity = original_geo.data.energy
 
-                    elif geo_class == 'DIRECT_LGT':
-                        light_shape_type = 0
-                        if original_geo.data.shape == "RECTANGLE" or original_geo.data.shape == "SQUARE":
-                            light_shape_type = 1
-                        light_shape = light_shape_type
-                        light_aspect_ratio = original_geo.data.size
+                    if geo_class == 'SPOT_LGT' or geo_class == 'DIRECT_LGT':
+                        light_properties.hotspot_size = degrees(original_geo.data.halo_light.spot_size)
+                        light_properties.hotspot_falloff_size = original_geo.data.halo_light.spot_blend * degrees(original_geo.data.halo_light.spot_size)
 
-                    elif geo_class == 'SPOT_LGT' or geo_class == 'DIRECT_LGT':
-                        uses_near_attenuation = int(original_geo.data.use_custom_distance)
-                        near_attenuation_start = original_geo.data.cutoff_distance
-                        near_attenuation_end = original_geo.data.cutoff_distance
-                        uses_far_attenuation = int(original_geo.data.use_custom_distance)
-                        far_attenuation_start = original_geo.data.cutoff_distance
-                        far_attenuation_end = original_geo.data.cutoff_distance
+                        light_properties.light_shape = int(original_geo.data.halo_light.light_cone_shape)
+                        light_properties.light_aspect_ratio = original_geo.data.halo_light.aspect_ratio
 
-                    light_properties = ASSScene.Light(light_type, color_rgb, intensity, hotspot_size, hotspot_falloff_size, uses_near_attenuation, near_attenuation_start, near_attenuation_end, uses_far_attenuation, far_attenuation_start, far_attenuation_end, light_shape, light_aspect_ratio)
+                        light_properties.uses_near_attenuation = int(original_geo.data.halo_light.use_near_atten)
+                        light_properties.near_attenuation_start = original_geo.data.halo_light.near_atten_start
+                        light_properties.near_attenuation_end = original_geo.data.halo_light.near_atten_end
+                        light_properties.uses_far_attenuation = int(original_geo.data.halo_light.use_far_atten)
+                        light_properties.far_attenuation_start = original_geo.data.halo_light.far_atten_start
+                        light_properties.far_attenuation_end = original_geo.data.halo_light.far_atten_end
 
                 elif geo_class == 'SPHERE':
                     xref_path = bpy.path.abspath(original_geo.data.ass_jms.XREF_path)
