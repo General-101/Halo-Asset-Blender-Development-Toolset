@@ -607,7 +607,8 @@ def get_bone_distance(import_file_main, import_file_a, import_file_b, current_id
     elif len(child_list) > 1:
         bone_distance = sum(child_list) / len(child_list)
 
-    if bone_distance <= 0.0:
-        bone_distance = 5
+    print(bone_distance)
+    if bone_distance < 1.0:
+        bone_distance = 1
 
     return bone_distance
