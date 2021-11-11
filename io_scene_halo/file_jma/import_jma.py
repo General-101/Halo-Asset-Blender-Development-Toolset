@@ -233,11 +233,10 @@ def generate_jms_skeleton(jms_a_nodes, jms_a_file, jms_b_nodes, jms_b_file, jma_
         if "r_hand" in jma_node.name.lower() or "r hand" in jma_node.name.lower():
             r_hand_idx = idx
 
-        current_bone.tail[2] = 5
-
         parent = None
         parent_name = None
         jms_node = None
+        bone_distance = mesh_processing.get_bone_distance(jma_file, None, None, idx, "JMA")
         for a_idx, jms_a_node in enumerate(jms_a_nodes):
             if jma_node.name.lower() in jms_a_node.lower():
                 if jma_file.nodes[0].name.lower() in jms_a_nodes[0].lower():
@@ -248,6 +247,7 @@ def generate_jms_skeleton(jms_a_nodes, jms_a_file, jms_b_nodes, jms_b_file, jma_
                 parent_name = jms_a_file.nodes[parent_idx].name
                 rest_position = jms_a_file.transforms[0]
                 jms_node = rest_position[a_idx]
+                bone_distance = mesh_processing.get_bone_distance(jms_a_file, None, None, a_idx, "JMS")
 
         for b_idx, jms_b_node in enumerate(jms_b_nodes):
             if jma_node.name.lower() in jms_b_node.lower():
@@ -256,6 +256,9 @@ def generate_jms_skeleton(jms_a_nodes, jms_a_file, jms_b_nodes, jms_b_file, jma_
                 parent_name = jms_b_file.nodes[parent_idx].name
                 rest_position = jms_b_file.transforms[0]
                 jms_node = rest_position[b_idx]
+                bone_distance = mesh_processing.get_bone_distance(jms_b_node, None, None, b_idx, "JMS")
+
+        current_bone.tail[2] = bone_distance
 
         for bone_idx, bone in enumerate(created_bone_list):
             if not parent_name == None:
@@ -312,7 +315,6 @@ def generate_jma_skeleton(jms_a_nodes, jms_a_file, jms_b_nodes, jms_b_file, jma_
     bpy.ops.object.mode_set(mode = 'EDIT')
     for idx, jma_node in enumerate(jma_file.nodes):
         current_bone = armature.data.edit_bones.new(jma_node.name)
-        current_bone.tail[2] = 5
         parent_idx = jma_node.parent
 
         if not parent_idx == -1 and not parent_idx == None:
@@ -325,18 +327,21 @@ def generate_jma_skeleton(jms_a_nodes, jms_a_file, jms_b_nodes, jms_b_file, jma_
             parent = jma_file.nodes[parent_idx].name
             current_bone.parent = armature.data.edit_bones[parent]
 
+        bone_distance = mesh_processing.get_bone_distance(jma_file, None, None, idx, "JMA")
         if jms_a_file:
             for a_idx, jms_a_node in enumerate(jms_a_nodes):
                 if jma_node.name.lower() in jms_a_node.lower():
                     file_version = jms_a_file.version
                     rest_position = jms_a_file.transforms[0]
                     jms_node = rest_position[a_idx]
+                    bone_distance = mesh_processing.get_bone_distance(jms_a_file, None, None, a_idx, "JMS")
 
             for b_idx, jms_b_node in enumerate(jms_b_nodes):
                 if jma_node.name.lower() in jms_b_node.lower():
                     file_version = jms_b_file.version
                     rest_position = jms_b_file.transforms[0]
                     jms_node = rest_position[b_idx]
+                    bone_distance = mesh_processing.get_bone_distance(jms_b_file, None, None, b_idx, "JMS")
 
             matrix_translate = Matrix.Translation(jms_node.vector)
             matrix_rotation = jms_node.rotation.to_matrix().to_4x4()
@@ -344,6 +349,8 @@ def generate_jma_skeleton(jms_a_nodes, jms_a_file, jms_b_nodes, jms_b_file, jma_
         else:
             matrix_translate = Matrix.Translation(first_frame[idx].vector)
             matrix_rotation = first_frame[idx].rotation.to_matrix().to_4x4()
+
+        current_bone.tail[2] = bone_distance
 
         is_root = False
         if jms_a_file:

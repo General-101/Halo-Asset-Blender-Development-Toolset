@@ -50,6 +50,62 @@ from bpy.props import (
         StringProperty
         )
 
+class JMS_RestPositionsADialog(Operator):
+    """Set rest positions from a JMS file"""
+    bl_idname = "import_scene.jms_rest_a"
+    bl_label = "Import JMS"
+    filename_ext = '.JMS'
+
+    filter_glob: StringProperty(
+        default="*.jms;*.jmp",
+        options={'HIDDEN'},
+        )
+
+    filepath: StringProperty(
+        name="JMS",
+        description="Select a path to a JMS containing a skeleton. Will be used for rest position",
+        subtype="FILE_PATH"
+    )
+
+    def execute(self, context):
+        scene = context.scene
+        scene_jma = scene.jma
+        scene_jma.jms_path_a = self.filepath
+        context.area.tag_redraw()
+        return {'FINISHED'}
+
+    def invoke(self, context, event):
+        context.window_manager.fileselect_add(self)
+        return {'RUNNING_MODAL'}
+
+class JMS_RestPositionsBDialog(Operator):
+    """Set rest positions from a JMS file"""
+    bl_idname = "import_scene.jms_rest_b"
+    bl_label = "Import JMS"
+    filename_ext = '.JMS'
+
+    filter_glob: StringProperty(
+        default="*.jms;*.jmp",
+        options={'HIDDEN'},
+        )
+
+    filepath: StringProperty(
+        name="JMS",
+        description="Select a path to a JMS containing a skeleton. Will be used for rest position",
+        subtype="FILE_PATH"
+    )
+
+    def execute(self, context):
+        scene = context.scene
+        scene_jma = scene.jma
+        scene_jma.jms_path_b = self.filepath
+        context.area.tag_redraw()
+        return {'FINISHED'}
+
+    def invoke(self, context, event):
+        context.window_manager.fileselect_add(self)
+        return {'RUNNING_MODAL'}
+
 class JMA_ScenePropertiesGroup(PropertyGroup):
     extension: EnumProperty(
         name="Extension:",
@@ -241,14 +297,12 @@ class JMA_ScenePropertiesGroup(PropertyGroup):
 
     jms_path_a: StringProperty(
         name="Primary JMS",
-        description="Select a path to a JMS containing the primary skeleton. Will be used for rest position",
-        subtype="FILE_PATH"
+        description="A path to a JMS containing the primary skeleton. Will be used for rest position",
         )
 
     jms_path_b: StringProperty(
         name="Secondary JMS",
-        description="Select a path to a JMS containing the secondary skeleton. Will be used for rest position",
-        subtype="FILE_PATH"
+        description="A path to a JMS containing the secondary skeleton. Will be used for rest position",
         )
 
 class JMA_SceneProps(Panel):
@@ -330,11 +384,11 @@ class JMA_SceneProps(Panel):
         box.label(text="Import:")
         col = box.column(align=True)
         row = col.row()
-        row.label(text='1st JMS Rest Positions:')
+        row.operator(JMS_RestPositionsADialog.bl_idname, text="JMS Rest Positions A")
         row.prop(scene_jma, "jms_path_a", text='')
         if ".jms" in scene_jma.jms_path_a.lower():
             row = col.row()
-            row.label(text='2nd JMS Rest Positions:')
+            row.operator(JMS_RestPositionsBDialog.bl_idname, text="JMS Rest Positions B")
             row.prop(scene_jma, "jms_path_b", text='')
 
 class ExportJMA(Operator, ExportHelper):
@@ -851,6 +905,8 @@ classeshalo = (
     JMA_SceneProps,
     ImportJMA,
     ExportJMA,
+    JMS_RestPositionsADialog,
+    JMS_RestPositionsBDialog,
 )
 
 def register():
