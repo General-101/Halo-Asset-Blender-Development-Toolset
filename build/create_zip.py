@@ -4,7 +4,7 @@ Helper script to create a zip file that can just be extracted to the blender add
 SPDX-License-Identifier: MIT
 """
 
-from zipfile import ZipFile, ZIP_DEFLATED
+from zipfile import ZipFile, ZIP_DEFLATED, ZIP_LZMA
 import io
 import os
 import subprocess
@@ -15,7 +15,7 @@ def build_resources_zip() -> io.BytesIO:
     print(f"Building resources zip (searching in {search_path})!")
 
     data = io.BytesIO()
-    zip: ZipFile = ZipFile(data, mode='w', compression=ZIP_DEFLATED, compresslevel=9)
+    zip: ZipFile = ZipFile(data, mode='w', compression=ZIP_LZMA, compresslevel=9)
 
     for dir, _, files in os.walk(search_path):
         relative_dir = os.path.relpath(dir, search_path)
