@@ -469,11 +469,13 @@ def get_dimensions(mesh_matrix, original_geo, version, jms_vertex, is_vertex, is
                 dimension_y = original_geo.dimensions[1]
                 dimension_z = original_geo.dimensions[2]
                 if not original_geo.dimensions[0] == 0.0:
-                    dimension_x = original_geo.dimensions[0] / original_geo.scale[0]
+                    dimension_x = original_geo.dimensions[0] / scale[0]
+                    
                 if not original_geo.dimensions[1] == 0.0:
-                    dimension_y = original_geo.dimensions[1] / original_geo.scale[1]
+                    dimension_y = original_geo.dimensions[1] / scale[1]
+                    
                 if not original_geo.dimensions[2] == 0.0:
-                    dimension_z = original_geo.dimensions[2] / original_geo.scale[2]
+                    dimension_z = original_geo.dimensions[2] / scale[2]
 
                 dimension = (dimension_x, dimension_y, dimension_z)
                 if file_type == 'JMS':

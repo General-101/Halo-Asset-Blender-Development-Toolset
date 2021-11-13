@@ -407,16 +407,14 @@ class ASSScene(global_functions.HaloAsset):
             geo_dimensions = global_functions.get_dimensions(geo_matrix, original_geo, version, None, False, is_bone, 'ASS', custom_scale)
             rotation = (geo_dimensions.quaternion[0], geo_dimensions.quaternion[1], geo_dimensions.quaternion[2], geo_dimensions.quaternion[3])
             translation = (geo_dimensions.position[0], geo_dimensions.position[1], geo_dimensions.position[2])
-            if geo_class == 'BONE':
-                scale = armature.pose.bones[original_geo.name].scale
-
-            else:
-                scale = original_geo.scale
+            scale = geo_dimensions.scale
 
             local_transform = ASSScene.Transform(rotation, translation, scale)
             self.instances.append(ASSScene.Instance(original_geo.name, object_index, idx, parent_id, inheritance_flag, local_transform, pivot_transform=ASSScene.Transform()))
             if not evaluted_mesh_name in linked_instance_list and not object_index == -1:
                 linked_instance_list.append(evaluted_mesh_name)
+                object_matrix = global_functions.get_matrix(original_geo, original_geo, False, armature, instance_list, False, version, 'ASS', False, custom_scale, False)
+                object_dimensions = global_functions.get_dimensions(object_matrix, original_geo, version, None, False, is_bone, 'ASS', custom_scale)
                 if geo_class == 'SPOT_LGT' or geo_class == 'DIRECT_LGT' or geo_class == 'OMNI_LGT' or geo_class == 'AMBIENT_LGT':
                     light_properties = ASSScene.Light()
                     light_properties.light_type = geo_class
@@ -452,7 +450,7 @@ class ASSScene(global_functions.HaloAsset):
                         if not region in region_list:
                             region_list.append(region)
 
-                    radius = geo_dimensions.object_radius
+                    radius = object_dimensions.object_radius
                     face = original_geo.data.polygons[0]
                     material = global_functions.get_material(game_version, original_geo, face, evaluted_mesh, lod, region, permutation)
                     if not material == -1:
@@ -475,7 +473,7 @@ class ASSScene(global_functions.HaloAsset):
                             region_list.append(region)
 
                     face = original_geo.data.polygons[0]
-                    extents = [geo_dimensions.dimension[0], geo_dimensions.dimension[1], geo_dimensions.dimension[2]]
+                    extents = [object_dimensions.dimension[0], object_dimensions.dimension[1], object_dimensions.dimension[2]]
                     material = global_functions.get_material(game_version, original_geo, face, evaluted_mesh, lod, region, permutation)
                     if not material == -1:
                         material_list = global_functions.gather_materials(game_version, material, material_list, 'ASS')
@@ -497,8 +495,8 @@ class ASSScene(global_functions.HaloAsset):
                             region_list.append(region)
 
                     face = original_geo.data.polygons[0]
-                    height = geo_dimensions.pill_height
-                    radius = geo_dimensions.object_radius
+                    height = object_dimensions.pill_height
+                    radius = object_dimensions.object_radius
                     material = global_functions.get_material(game_version, original_geo, face, evaluted_mesh, lod, region, permutation)
                     if not material == -1:
                         material_list = global_functions.gather_materials(game_version, material, material_list, 'ASS')
@@ -510,7 +508,6 @@ class ASSScene(global_functions.HaloAsset):
                         xref_name = original_geo.name
 
                     vertex_groups = original_geo.vertex_groups.keys()
-                    original_geo_matrix = global_functions.get_matrix(original_geo, original_geo, False, armature, instance_list, False, version, "ASS", False, custom_scale, False)
                     for idx, face in enumerate(evaluted_mesh.polygons):
                         if evaluted_mesh.face_maps.active and len(original_geo.face_maps) > 0:
                             face_map_idx = evaluted_mesh.face_maps.active.data[idx].value
@@ -542,7 +539,7 @@ class ASSScene(global_functions.HaloAsset):
                             vert = evaluted_mesh.vertices[evaluted_mesh.loops[loop_index].vertex_index]
 
                             region = region_index
-                            scaled_translation, normal = mesh_processing.process_mesh_export_vert(vert, "ASS", original_geo_matrix, version, custom_scale)
+                            scaled_translation, normal = mesh_processing.process_mesh_export_vert(vert, "ASS", object_matrix, version, custom_scale)
                             uv_set = mesh_processing.process_mesh_export_uv(evaluted_mesh, "ASS", loop_index, version)
                             color = mesh_processing.process_mesh_export_color(evaluted_mesh, loop_index)
                             node_influence_count, node_set, node_index_list = mesh_processing.process_mesh_export_weights(vert, armature, original_geo, vertex_groups, instance_list, "ASS")
