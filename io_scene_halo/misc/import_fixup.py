@@ -45,7 +45,7 @@ def model_fixup(context, threshold):
     object_list = list(context.scene.objects)
     processed_mesh_name_list = []
     for obj in object_list:
-        if obj.type== 'MESH':
+        if obj.type== 'MESH' and not mesh_processing.set_ignore(obj):
             edge_split = global_functions.EdgeSplit(True, False, 0.523599, True)
             mesh_processing.add_modifier(context, obj, False, edge_split, None)
             if not obj.data.name in processed_mesh_name_list:

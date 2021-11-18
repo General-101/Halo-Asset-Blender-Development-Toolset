@@ -916,8 +916,6 @@ def write_file(context, filepath, report, version, game_version, generate_checks
     filename = global_functions.get_filename(game_version, permutation_ce, level_of_detail_ce, folder_structure, model_type, False, filepath)
     root_directory = global_functions.get_directory(context, game_version, model_type, folder_structure, folder_type, jmi, filepath)
 
-    print(root_directory)
-    print(filename)
     file = open(root_directory + os.sep + filename, 'w', encoding='utf_8')
 
     if version >= 8205:
@@ -1750,8 +1748,6 @@ def command_queue(context, filepath, report, jms_version, jms_version_ce, jms_ve
 
     scene = context.scene
 
-    object_list = list(scene.objects)
-
     global_functions.unhide_all_collections(context)
 
     jmi = False
@@ -1759,6 +1755,9 @@ def command_queue(context, filepath, report, jms_version, jms_version_ce, jms_ve
         jmi = True
         object_list = world_nodes
 
+    else:
+        object_list = list(scene.objects)
+        
     edge_split = global_functions.EdgeSplit(edge_split, use_edge_angle, split_angle, use_edge_sharp)
 
     version = global_functions.get_version(jms_version, jms_version_ce, jms_version_h2, jms_version_h3, game_version, console)
@@ -1801,32 +1800,64 @@ def command_queue(context, filepath, report, jms_version, jms_version_ce, jms_ve
 
         elif name[0:1] == '#':
             if mesh_processing.set_ignore(obj) == False or hidden_geo:
-                if not obj.parent == None:
-                    if obj.parent.type == 'ARMATURE' or parent_name.startswith(node_prefix_tuple):
-                        if export_render and obj.marker.marker_mask_type =='0':
-                            render_marker_list.append(obj)
-                            render_count += 1
+                if obj.parent and (obj.parent.type == 'ARMATURE' or parent_name.startswith(node_prefix_tuple)):
+                    mask_type = obj.marker.marker_mask_type
+                    if export_render and mask_type =='0':
+                        render_marker_list.append(obj)
+                        render_count += 1
 
-                        elif export_collision and obj.marker.marker_mask_type =='1':
-                            collision_marker_list.append(obj)
-                            collision_count += 1
+                    elif export_collision and mask_type =='1':
+                        collision_marker_list.append(obj)
+                        collision_count += 1
 
-                        elif export_physics and obj.marker.marker_mask_type =='2':
-                            physics_marker_list.append(obj)
-                            physics_count += 1
+                    elif export_physics and mask_type =='2':
+                        physics_marker_list.append(obj)
+                        physics_count += 1
 
-                        elif obj.marker.marker_mask_type =='3':
-                            marker_list.append(obj)
-                            render_count += 1
-                            collision_count += 1
-                            physics_count += 1
+                    elif mask_type =='3':
+                        marker_list.append(obj)
+                        render_count += 1
+                        collision_count += 1
+                        physics_count += 1
 
         elif name[0:1] == '@' and len(obj.data.polygons) > 0:
-            if mesh_processing.set_ignore(obj) == False or hidden_geo:
-                if export_collision:
-                    if not obj.parent == None:
-                        if obj.parent.type == 'ARMATURE' or parent_name.startswith(node_prefix_tuple):
-                            collision_count += 1
+            if export_collision and (not mesh_processing.set_ignore(obj) or hidden_geo):
+                if obj.parent and (obj.parent.type == 'ARMATURE' or parent_name.startswith(node_prefix_tuple)):
+                    collision_count += 1
+                    if apply_modifiers:
+                        obj_for_convert = obj.evaluated_get(depsgraph)
+                        evaluted_mesh = obj_for_convert.to_mesh(preserve_all_data_layers=True, depsgraph=depsgraph)
+
+                    else:
+                        evaluted_mesh = obj.to_mesh(preserve_all_data_layers=True)
+
+                    collision_geometry_list.append((evaluted_mesh, obj))
+
+        elif name[0:1] == '$' and not game_version == "haloce" and version > 8205:
+            if export_physics and (not mesh_processing.set_ignore(obj) or hidden_geo):
+                physics_count += 1
+                if obj.rigid_body_constraint:
+                    if obj.rigid_body_constraint.type == 'HINGE':
+                        hinge_list.append(obj)
+
+                    elif obj.rigid_body_constraint.type == 'GENERIC':
+                        ragdoll_list.append(obj)
+
+                    elif obj.rigid_body_constraint.type == 'GENERIC_SPRING':
+                        point_to_point_list.append(obj)
+
+                else:
+                    if obj.type == 'MESH':
+                        if obj.data.ass_jms.Object_Type == 'SPHERE':
+                            sphere_list.append(obj)
+
+                        elif obj.data.ass_jms.Object_Type == 'BOX':
+                            box_list.append(obj)
+
+                        elif obj.data.ass_jms.Object_Type == 'CAPSULES':
+                            capsule_list.append(obj)
+
+                        elif obj.data.ass_jms.Object_Type == 'CONVEX SHAPES':
                             if apply_modifiers:
                                 obj_for_convert = obj.evaluated_get(depsgraph)
                                 evaluted_mesh = obj_for_convert.to_mesh(preserve_all_data_layers=True, depsgraph=depsgraph)
@@ -1834,77 +1865,37 @@ def command_queue(context, filepath, report, jms_version, jms_version_ce, jms_ve
                             else:
                                 evaluted_mesh = obj.to_mesh(preserve_all_data_layers=True)
 
-                            collision_geometry_list.append((evaluted_mesh, obj))
+                            convex_shape_list.append((evaluted_mesh, obj))
 
-        elif name[0:1] == '$' and not game_version == "haloce" and version > 8205:
-            if mesh_processing.set_ignore(obj) == False or hidden_geo:
-                if export_physics:
-                    physics_count += 1
-                    if not obj.rigid_body_constraint == None:
-                        if obj.rigid_body_constraint.type == 'HINGE':
-                            hinge_list.append(obj)
-
-                        elif obj.rigid_body_constraint.type == 'GENERIC':
-                            ragdoll_list.append(obj)
-
-                        elif obj.rigid_body_constraint.type == 'GENERIC_SPRING':
-                            point_to_point_list.append(obj)
-
-                    else:
-                        if obj.type == 'MESH':
-                            phy_material = global_functions.get_face_material(obj, obj.data.polygons[0])
-                            if not phy_material == -1:
-                                if obj.data.ass_jms.Object_Type == 'SPHERE':
-                                    sphere_list.append(obj)
-
-                                elif obj.data.ass_jms.Object_Type == 'BOX':
-                                    box_list.append(obj)
-
-                                elif obj.data.ass_jms.Object_Type == 'CAPSULES':
-                                    capsule_list.append(obj)
-
-                                elif obj.data.ass_jms.Object_Type == 'CONVEX SHAPES':
-                                    if apply_modifiers:
-                                        obj_for_convert = obj.evaluated_get(depsgraph)
-                                        evaluted_mesh = obj_for_convert.to_mesh(preserve_all_data_layers=True, depsgraph=depsgraph)
-                                        convex_shape_list.append((evaluted_mesh, obj))
-
-                                    else:
-                                        evaluted_mesh = obj.to_mesh(preserve_all_data_layers=True)
-                                        convex_shape_list.append((evaluted_mesh, obj))
-
-        elif obj.type== 'MESH' and not len(obj.data.ass_jms.XREF_path) == 0 and version > 8205:
+        elif obj.type == 'LIGHT' and obj.data.type == 'SUN' and version > 8212:
             if mesh_processing.set_ignore(obj) == False or hidden_geo:
                 if export_render:
+                    skylight_list.append(obj)
+
+        elif obj.type== 'MESH':
+            print('is mesh ', obj.name)
+            if export_render and (not mesh_processing.set_ignore(obj) or hidden_geo):
+                if not global_functions.string_empty_check(obj.data.ass_jms.XREF_path) and version > 8205:
                     instance_markers.append(obj)
                     if not obj.data.ass_jms.XREF_path in instance_xref_paths:
                         instance_xref_paths.append(obj.data.ass_jms.XREF_path)
 
-        elif obj.type== 'MESH' and obj.data.ass_jms.bounding_radius and version >= 8209:
-            if mesh_processing.set_ignore(obj) == False or hidden_geo:
-                if export_render:
+                elif obj.data.ass_jms.bounding_radius and version >= 8209:
                     bounding_sphere_list.append(obj)
 
-        elif obj.type == 'LIGHT' and version > 8212:
-            if mesh_processing.set_ignore(obj) == False or hidden_geo:
-                if obj.data.type == 'SUN':
-                    if export_render:
-                        skylight_list.append(obj)
+                elif len(obj.data.polygons) > 0:
+                    print('has polys ', obj.name)
+                    if obj.parent and (obj.parent.type == 'ARMATURE' or parent_name.startswith(node_prefix_tuple)):
+                        print('has halo parent ', obj.name)
+                        render_count += 1
+                        if apply_modifiers:
+                            obj_for_convert = obj.evaluated_get(depsgraph)
+                            evaluted_mesh = obj_for_convert.to_mesh(preserve_all_data_layers=True, depsgraph=depsgraph)
 
-        elif obj.type== 'MESH' and len(obj.data.polygons) > 0:
-            if mesh_processing.set_ignore(obj) == False or hidden_geo:
-                if export_render:
-                    if not obj.parent == None:
-                        if obj.parent.type == 'ARMATURE' or parent_name.startswith(node_prefix_tuple):
-                            render_count += 1
-                            if apply_modifiers:
-                                obj_for_convert = obj.evaluated_get(depsgraph)
-                                evaluted_mesh = obj_for_convert.to_mesh(preserve_all_data_layers=True, depsgraph=depsgraph)
+                        else:
+                            evaluted_mesh = obj.to_mesh(preserve_all_data_layers=True)
 
-                            else:
-                                evaluted_mesh = obj.to_mesh(preserve_all_data_layers=True)
-
-                            render_geometry_list.append((evaluted_mesh, obj))
+                        render_geometry_list.append((evaluted_mesh, obj))
 
     blend_scene = global_functions.BlendScene(world_node_count, armature_count, mesh_frame_count, render_count, collision_count, physics_count, armature, node_list, render_marker_list, collision_marker_list, physics_marker_list, marker_list, instance_xref_paths, instance_markers, render_geometry_list, collision_geometry_list, sphere_list, box_list, capsule_list, convex_shape_list, ragdoll_list, hinge_list, car_wheel_list, point_to_point_list, prismatic_list, bounding_sphere_list, skylight_list)
 

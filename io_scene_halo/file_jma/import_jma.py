@@ -568,11 +568,12 @@ def load_file(context, filepath, report, fix_parents, game_version, jms_path_a, 
                     transform_matrix = pose_bone.parent.matrix @ transform_matrix
 
                 pose_bone.matrix = transform_matrix
-
+                pose_bone.rotation_euler = transform_matrix.to_euler()
 
             view_layer.update()
 
             pose_bone.keyframe_insert('location')
+            pose_bone.keyframe_insert('rotation_euler')
             pose_bone.keyframe_insert('rotation_quaternion')
             pose_bone.keyframe_insert('scale')
 

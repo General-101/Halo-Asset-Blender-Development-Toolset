@@ -26,31 +26,40 @@
 
 import bpy
 
-from ..global_functions import global_functions
+from ..global_functions import mesh_processing, global_functions
 
 def create_facemap(context, level_of_detail, permutation_string, region_string):
     active_object = context.view_layer.objects.active
     facemap_name = ""
-    #This doesn't matter for CE but for Halo 2/3 the region or permutation names can't have any whitespace.
-    #Lets fix that here to make sure nothing goes wrong.
-    if not level_of_detail == "NONE":
-        if not global_functions.string_empty_check(level_of_detail):
-            facemap_name += level_of_detail
+    if active_object:
+        #This doesn't matter for CE but for Halo 2/3 the region or permutation names can't have any whitespace.
+        #Lets fix that here to make sure nothing goes wrong.
+        if not level_of_detail == "NONE":
+            if not global_functions.string_empty_check(level_of_detail):
+                facemap_name += level_of_detail
 
-    if not global_functions.string_empty_check(permutation_string):
+        if not global_functions.string_empty_check(permutation_string):
+            if not global_functions.string_empty_check(facemap_name):
+                facemap_name += " "
+
+            facemap_name += permutation_string.replace(' ', '_').replace('\t', '_')
+
+        if not global_functions.string_empty_check(region_string):
+            if not global_functions.string_empty_check(facemap_name):
+                facemap_name += " "
+
+            facemap_name += region_string.replace(' ', '_').replace('\t', '_')
+
         if not global_functions.string_empty_check(facemap_name):
-            facemap_name += " "
+            active_object.face_maps.new(name=facemap_name)
 
-        facemap_name += permutation_string.replace(' ', '_').replace('\t', '_')
-
-    if not global_functions.string_empty_check(region_string):
-        if not global_functions.string_empty_check(facemap_name):
-            facemap_name += " "
-
-        facemap_name += region_string.replace(' ', '_').replace('\t', '_')
-
-    if not global_functions.string_empty_check(facemap_name):
-        active_object.face_maps.new(name=facemap_name)
+        #mesh_processing.select_object(context, active_object)
+        #bpy.ops.object.mode_set(mode = 'EDIT')
+        #bpy.ops.mesh.select_all(action='SELECT')
+        #active_object.face_maps.active_index = active_object.face_maps.keys().index(facemap_name)
+        #bpy.ops.object.face_map_assign()
+        #bpy.ops.mesh.select_all(action='DESELECT')
+        #bpy.ops.object.mode_set(mode = 'OBJECT')
 
     return {'FINISHED'}
 

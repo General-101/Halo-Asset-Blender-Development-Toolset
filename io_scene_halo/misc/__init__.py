@@ -78,6 +78,12 @@ class Halo_PrefixPropertiesGroup(PropertyGroup):
         )
 
 class Face_SetPropertiesGroup(PropertyGroup):
+    set_facemap: BoolProperty(
+        name ="Set Face Map",
+        description = "Sets all faces in the active object to use the newly created face map.",
+        default = False,
+    )
+
     level_of_detail: EnumProperty(
         name="LOD:",
         description="What LOD to use for the object",
@@ -96,6 +102,7 @@ class Face_SetPropertiesGroup(PropertyGroup):
         default = "",
         description = "Set the permutation for your model"
         )
+
     region_string: StringProperty(
         name = "Region",
         default = "",
