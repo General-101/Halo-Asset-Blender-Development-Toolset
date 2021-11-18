@@ -561,7 +561,9 @@ def load_file(context, filepath, report, fix_parents, game_version, jms_path_a, 
                 if jma_file.version < 16394 and pose_bone.parent:
                     transform_matrix = (pose_bone.parent.matrix @ Matrix.Rotation(radians(90.0), 4, 'Z')) @ transform_matrix
 
-                pose_bone.matrix = transform_matrix @ Matrix.Rotation(radians(-90.0), 4, 'Z')
+                rotated_matrix = transform_matrix @ Matrix.Rotation(radians(-90.0), 4, 'Z')
+                pose_bone.matrix = rotated_matrix
+                pose_bone.rotation_euler = rotated_matrix.to_euler()
 
             else:
                 if jma_file.version < 16394 and pose_bone.parent:
