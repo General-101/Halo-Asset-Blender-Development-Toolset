@@ -350,7 +350,7 @@ class JMSScene(global_functions.HaloAsset):
             marker_name = marker.name
             if not global_functions.string_empty_check(marker.marker.name_override):
                 marker_name = marker.marker.name_override
-                
+
             if marker_name.startswith('#'):
                 marker_name = marker_name.split('#', 1)[1] #remove marker symbol from name in case someone thinks they still need it here.
 
@@ -1757,7 +1757,7 @@ def command_queue(context, filepath, report, jms_version, jms_version_ce, jms_ve
 
     else:
         object_list = list(scene.objects)
-        
+
     edge_split = global_functions.EdgeSplit(edge_split, use_edge_angle, split_angle, use_edge_sharp)
 
     version = global_functions.get_version(jms_version, jms_version_ce, jms_version_h2, jms_version_h3, game_version, console)

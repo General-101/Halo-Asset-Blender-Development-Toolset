@@ -592,6 +592,9 @@ class Halo_Tools_Helper(Panel):
         row.label(text='Region:')
         row.prop(scene_halo_face_set, "region_string", text='')
         row = col.row()
+        row.label(text='Apply to active object:')
+        row.prop(scene_halo_face_set, "set_facemap", text='')
+        row = col.row()
         row.operator("halo_bulk.face_set", text="Generate Facemap")
 
         box = layout.box()
@@ -602,6 +605,18 @@ class Halo_Tools_Helper(Panel):
         row.prop(scene_halo_fixup, "threshold", text='')
         row = col.row()
         row.operator("halo_bulk.import_fixup", text="Import Fixup")
+
+        box = layout.box()
+        box.label(text="IK Helper:")
+        col = box.column(align=True)
+        row = col.row()
+        row.operator("ik_prep.move_objects", text="IK prep")
+
+        box = layout.box()
+        box.label(text="Multi User Helper:")
+        col = box.column(align=True)
+        row = col.row()
+        row.operator("apply_instance_transform.set_transform", text="Set Transform")
 
 class Halo_Sky_Tools_Helper(Panel):
     """Tools to help automate Halo workflow"""
@@ -939,7 +954,7 @@ class FaceSet(Operator):
         from ..misc import face_set
         scene_face_set = context.scene.halo_face_set
 
-        return global_functions.run_code("face_set.create_facemap(context, scene_face_set.level_of_detail, scene_face_set.permutation_string, scene_face_set.region_string)")
+        return global_functions.run_code("face_set.create_facemap(context, scene_face_set.level_of_detail, scene_face_set.permutation_string, scene_face_set.region_string, scene_face_set.set_facemap)")
 
 class ImportFixup(Operator):
     """Attempt to automatically convert custom normals to sharp edges. Will probably need some manual cleanup afterwards"""
@@ -951,6 +966,26 @@ class ImportFixup(Operator):
         from ..misc import import_fixup
         scene_halo_fixup = context.scene.halo_import_fixup
         return global_functions.run_code("import_fixup.model_fixup(context, scene_halo_fixup.threshold)")
+
+class Bulk_IK_Prep(Operator):
+    """Moves selected objects to the head position of a bone with the same object name in a selected armature"""
+    bl_idname = 'ik_prep.move_objects'
+    bl_label = 'Bulk Halo IK Prep'
+    bl_options = {"REGISTER", "UNDO"}
+
+    def execute(self, context):
+        from ..misc import ik_prep
+        return global_functions.run_code("ik_prep.move_objects(context)")
+
+class Bulk_Set_Transform(Operator):
+    """Apply scale on multi user objects"""
+    bl_idname = 'apply_instance_transform.set_transform'
+    bl_label = 'Bulk Set Transform'
+    bl_options = {"REGISTER", "UNDO"}
+
+    def execute(self, context):
+        from ..misc import apply_instance_transform
+        return global_functions.run_code("apply_instance_transform.set_transform(context)")
 
 def menu_func_export(self, context):
     self.layout.operator(ExportLightmap.bl_idname, text="Halo Lightmap UV (.luv)")
@@ -967,6 +1002,8 @@ classeshalo = (
     GenerateHemisphere,
     FaceSet,
     ImportFixup,
+    Bulk_IK_Prep,
+    Bulk_Set_Transform,
     Halo_Tools_Helper,
     Halo_Sky_Tools_Helper,
     Halo_Sky_Dome,

@@ -28,7 +28,7 @@ import bpy
 
 from ..global_functions import mesh_processing, global_functions
 
-def create_facemap(context, level_of_detail, permutation_string, region_string):
+def create_facemap(context, level_of_detail, permutation_string, region_string, set_facemap):
     active_object = context.view_layer.objects.active
     facemap_name = ""
     if active_object:
@@ -53,13 +53,14 @@ def create_facemap(context, level_of_detail, permutation_string, region_string):
         if not global_functions.string_empty_check(facemap_name):
             active_object.face_maps.new(name=facemap_name)
 
-        #mesh_processing.select_object(context, active_object)
-        #bpy.ops.object.mode_set(mode = 'EDIT')
-        #bpy.ops.mesh.select_all(action='SELECT')
-        #active_object.face_maps.active_index = active_object.face_maps.keys().index(facemap_name)
-        #bpy.ops.object.face_map_assign()
-        #bpy.ops.mesh.select_all(action='DESELECT')
-        #bpy.ops.object.mode_set(mode = 'OBJECT')
+        if set_facemap:
+            mesh_processing.select_object(context, active_object)
+            bpy.ops.object.mode_set(mode = 'EDIT')
+            bpy.ops.mesh.select_all(action='SELECT')
+            active_object.face_maps.active_index = active_object.face_maps.keys().index(facemap_name)
+            bpy.ops.object.face_map_assign()
+            bpy.ops.mesh.select_all(action='DESELECT')
+            bpy.ops.object.mode_set(mode = 'OBJECT')
 
     return {'FINISHED'}
 
