@@ -492,6 +492,7 @@ class JMSScene(global_functions.HaloAsset):
                 mesh_sphere = spheres.to_mesh()
                 face = mesh_sphere.polygons[0]
 
+                lod = None
                 region = default_region
                 permutation = default_permutation
                 if spheres.face_maps.active:
