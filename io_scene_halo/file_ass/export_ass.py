@@ -109,9 +109,9 @@ def scale_is_uniform(obj):
     scale_x = obj.scale[0]
     scale_y = obj.scale[1]
     scale_z = obj.scale[2]
-    if scale_y > (scale_x + 0.0000000001) or scale_y < (scale_x - 0.0000000001):
+    if scale_y > (scale_x + 0.0000900000) or scale_y < (scale_x - 0.0000900000):
         is_uniform = False
-    if scale_z > (scale_x + 0.0000000001) or scale_z < (scale_x - 0.0000000001):
+    if scale_z > (scale_x + 0.0000900000) or scale_z < (scale_x - 0.0000900000):
         is_uniform = False
 
     return is_uniform
@@ -404,7 +404,7 @@ class ASSScene(global_functions.HaloAsset):
                 parent_id = instance_list.index(parent)
 
             geo_matrix = global_functions.get_matrix(original_geo, original_geo, True, armature, instance_list, is_bone, version, 'ASS', False, custom_scale, False)
-            geo_dimensions = global_functions.get_dimensions(geo_matrix, original_geo, version, None, False, is_bone, 'ASS', custom_scale)
+            geo_dimensions = global_functions.get_dimensions(geo_matrix, original_geo, version, is_bone, 'ASS', custom_scale)
             rotation = (geo_dimensions.quaternion[0], geo_dimensions.quaternion[1], geo_dimensions.quaternion[2], geo_dimensions.quaternion[3])
             translation = (geo_dimensions.position[0], geo_dimensions.position[1], geo_dimensions.position[2])
             scale = geo_dimensions.scale
@@ -414,7 +414,7 @@ class ASSScene(global_functions.HaloAsset):
             if not evaluted_mesh_name in linked_instance_list and not object_index == -1:
                 linked_instance_list.append(evaluted_mesh_name)
                 object_matrix = global_functions.get_matrix(original_geo, original_geo, False, armature, instance_list, False, version, 'ASS', False, custom_scale, False)
-                object_dimensions = global_functions.get_dimensions(object_matrix, original_geo, version, None, False, is_bone, 'ASS', custom_scale)
+                object_dimensions = global_functions.get_dimensions(object_matrix, original_geo, version, is_bone, 'ASS', custom_scale)
                 if geo_class == 'SPOT_LGT' or geo_class == 'DIRECT_LGT' or geo_class == 'OMNI_LGT' or geo_class == 'AMBIENT_LGT':
                     light_properties = ASSScene.Light()
                     light_properties.light_type = geo_class
@@ -539,7 +539,7 @@ class ASSScene(global_functions.HaloAsset):
                             vert = evaluted_mesh.vertices[evaluted_mesh.loops[loop_index].vertex_index]
 
                             region = region_index
-                            scaled_translation, normal = mesh_processing.process_mesh_export_vert(vert, "ASS", object_matrix, version, custom_scale)
+                            scaled_translation, normal = mesh_processing.process_mesh_export_vert(vert, "ASS", object_matrix, custom_scale)
                             uv_set = mesh_processing.process_mesh_export_uv(evaluted_mesh, "ASS", loop_index, version)
                             color = mesh_processing.process_mesh_export_color(evaluted_mesh, loop_index)
                             node_influence_count, node_set, node_index_list = mesh_processing.process_mesh_export_weights(vert, armature, original_geo, vertex_groups, instance_list, "ASS")

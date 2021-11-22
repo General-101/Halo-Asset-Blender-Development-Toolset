@@ -499,33 +499,31 @@ def process_mesh_export_uv(evaluated_geo, file_type, loop_index, version):
 
     return uv_set
 
-def process_mesh_export_vert(vert, file_type, original_geo_matrix, version, custom_scale):
+def process_mesh_export_vert(vert, file_type, original_geo_matrix, custom_scale):
     if file_type == 'JMS':
-        translation = original_geo_matrix @ vert.co
+        translation = vert.co
+        negative_matrix = original_geo_matrix.determinant() < 0.0
+        if negative_matrix and file_type == 'JMS':
+            invert_translation_x = vert.co[0] * -1
+            invert_translation_y = vert.co[1] * -1
+            invert_translation_z = vert.co[2] * -1
+            translation = Vector((invert_translation_x, invert_translation_y, invert_translation_z))
+
+        final_translation = original_geo_matrix @ translation
+
+        final_normal = (original_geo_matrix @ (translation + vert.normal) - final_translation).normalized()
+        if negative_matrix and original_geo_matrix.determinant() < 0.0 and file_type == 'JMS':
+            invert_normal_x = final_normal[0] * -1
+            invert_normal_y = final_normal[1] * -1
+            invert_normal_z = final_normal[2] * -1
+
+            final_normal = Vector((invert_normal_x, invert_normal_y, invert_normal_z))
 
     else:
-        translation = custom_scale * vert.co
+        final_translation = custom_scale * vert.co
+        final_normal = (vert.normal).normalized()
 
-    mesh_dimensions = global_functions.get_dimensions(None, None, version, translation, True, False, file_type, custom_scale)
-    scaled_translation = (mesh_dimensions.position[0], mesh_dimensions.position[1], mesh_dimensions.position[2])
-
-    if file_type == 'JMS':
-        normal = (original_geo_matrix @ (vert.co + vert.normal) - translation).normalized()
-
-    else:
-        normal = (vert.normal).normalized()
-
-    if original_geo_matrix.determinant() < 0.0 and file_type == 'JMS':
-        invert_translation_x = scaled_translation[0] * -1
-        invert_translation_y = scaled_translation[1] * -1
-        invert_translation_z = scaled_translation[2] * -1
-        invert_normal_x = normal[0] * -1
-        invert_normal_y = normal[1] * -1
-        invert_normal_z = normal[2] * -1
-        scaled_translation = (invert_translation_x, invert_translation_y, invert_translation_z)
-        normal = (invert_normal_x, invert_normal_y, invert_normal_z)
-
-    return scaled_translation, normal
+    return final_translation, final_normal
 
 def process_mesh_export_face_set(default_permutation, default_region, game_version, original_geo, face_map_idx):
     if game_version == 'haloce':

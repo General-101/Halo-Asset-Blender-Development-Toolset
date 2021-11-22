@@ -305,7 +305,7 @@ class JMSScene(global_functions.HaloAsset):
                 parent_node = joined_list.index(node.parent)
 
             bone_matrix = global_functions.get_matrix(node, node, True, blend_scene.armature, joined_list, True, version, 'JMS', False, custom_scale, fix_rotations)
-            mesh_dimensions = global_functions.get_dimensions(bone_matrix, node, version, None, False, is_bone, 'JMS', custom_scale)
+            mesh_dimensions = global_functions.get_dimensions(bone_matrix, node, version, is_bone, 'JMS', custom_scale)
 
             name = node.name
             child = first_child_node
@@ -358,7 +358,7 @@ class JMSScene(global_functions.HaloAsset):
 
             parent_idx = global_functions.get_parent(blend_scene.armature, marker, joined_list, 0)
             marker_matrix = global_functions.get_matrix(marker, marker, True, blend_scene.armature, joined_list, False, version, 'JMS', False, custom_scale, fix_rotations)
-            mesh_dimensions = global_functions.get_dimensions(marker_matrix, marker, version, None, False, False, 'JMS', custom_scale)
+            mesh_dimensions = global_functions.get_dimensions(marker_matrix, marker, version, False, 'JMS', custom_scale)
 
             rotation = (mesh_dimensions.quaternion[0], mesh_dimensions.quaternion[1], mesh_dimensions.quaternion[2], mesh_dimensions.quaternion[3])
             translation = (mesh_dimensions.position[0], mesh_dimensions.position[1], mesh_dimensions.position[2])
@@ -402,7 +402,7 @@ class JMSScene(global_functions.HaloAsset):
                 unique_identifier = starting_ID - idx
                 index = blend_scene.instance_xref_paths.index(int_markers.data.ass_jms.XREF_path)
                 int_markers_matrix = global_functions.get_matrix(int_markers, int_markers, False, blend_scene.armature, joined_list, False, version, 'JMS', False, custom_scale, fix_rotations)
-                mesh_dimensions = global_functions.get_dimensions(int_markers_matrix, int_markers, version, None, False, False, 'JMS', custom_scale)
+                mesh_dimensions = global_functions.get_dimensions(int_markers_matrix, int_markers, version, False, 'JMS', custom_scale)
 
                 rotation = (mesh_dimensions.quaternion[0], mesh_dimensions.quaternion[1], mesh_dimensions.quaternion[2], mesh_dimensions.quaternion[3])
                 translation = (mesh_dimensions.position[0], mesh_dimensions.position[1], mesh_dimensions.position[2])
@@ -411,7 +411,7 @@ class JMSScene(global_functions.HaloAsset):
 
             for bound_sphere in blend_scene.bounding_sphere_list:
                 bound_sphere_matrix = global_functions.get_matrix(bound_sphere, bound_sphere, False, blend_scene.armature, joined_list, False, version, 'JMS', False, custom_scale, fix_rotations)
-                mesh_dimensions = global_functions.get_dimensions(bound_sphere_matrix, bound_sphere, version, None, False, False, 'JMS', custom_scale)
+                mesh_dimensions = global_functions.get_dimensions(bound_sphere_matrix, bound_sphere, version, False, 'JMS', custom_scale)
                 translation = (mesh_dimensions.position[0], mesh_dimensions.position[1], mesh_dimensions.position[2])
                 scale = mesh_dimensions.object_radius
 
@@ -477,7 +477,7 @@ class JMSScene(global_functions.HaloAsset):
                         vert = evaluted_mesh.vertices[evaluted_mesh.loops[loop_index].vertex_index]
 
                         region = region_index
-                        scaled_translation, normal = mesh_processing.process_mesh_export_vert(vert, "JMS", original_geo_matrix, version, custom_scale)
+                        scaled_translation, normal = mesh_processing.process_mesh_export_vert(vert, "JMS", original_geo_matrix, custom_scale)
                         uv_set = mesh_processing.process_mesh_export_uv(evaluted_mesh, "JMS", loop_index, version)
                         color = mesh_processing.process_mesh_export_color(evaluted_mesh, loop_index)
                         node_influence_count, node_set, node_index_list = mesh_processing.process_mesh_export_weights(vert, blend_scene.armature, original_geo, vertex_groups, joined_list, "JMS")
@@ -512,7 +512,7 @@ class JMSScene(global_functions.HaloAsset):
 
                 parent_index = global_functions.get_parent(blend_scene.armature, spheres, joined_list, -1)
                 sphere_matrix = global_functions.get_matrix(spheres, spheres, True, blend_scene.armature, joined_list, False, version, 'JMS', False, custom_scale, fix_rotations)
-                mesh_dimensions = global_functions.get_dimensions(sphere_matrix, spheres, version, None, False, False, 'JMS', custom_scale)
+                mesh_dimensions = global_functions.get_dimensions(sphere_matrix, spheres, version, False, 'JMS', custom_scale)
 
                 rotation = (mesh_dimensions.quaternion[0], mesh_dimensions.quaternion[1], mesh_dimensions.quaternion[2], mesh_dimensions.quaternion[3])
                 translation = (mesh_dimensions.position[0], mesh_dimensions.position[1], mesh_dimensions.position[2])
@@ -547,7 +547,7 @@ class JMSScene(global_functions.HaloAsset):
 
                 parent_index = global_functions.get_parent(blend_scene.armature, boxes, joined_list, -1)
                 box_matrix = global_functions.get_matrix(boxes, boxes, True, blend_scene.armature, joined_list, False, version, 'JMS', False, custom_scale, fix_rotations)
-                mesh_dimensions = global_functions.get_dimensions(box_matrix, boxes, version, None, False, False, 'JMS', custom_scale)
+                mesh_dimensions = global_functions.get_dimensions(box_matrix, boxes, version, False, 'JMS', custom_scale)
 
                 rotation = (mesh_dimensions.quaternion[0], mesh_dimensions.quaternion[1], mesh_dimensions.quaternion[2], mesh_dimensions.quaternion[3])
                 translation = (mesh_dimensions.position[0], mesh_dimensions.position[1], mesh_dimensions.position[2])
@@ -584,7 +584,7 @@ class JMSScene(global_functions.HaloAsset):
 
                 parent_index = global_functions.get_parent(blend_scene.armature, capsule, joined_list, -1)
                 capsule_matrix = global_functions.get_matrix(capsule, capsule, True, blend_scene.armature, joined_list, False, version, 'JMS', False, custom_scale, fix_rotations)
-                mesh_dimensions = global_functions.get_dimensions(capsule_matrix, capsule, version, None, False, False, 'JMS', custom_scale)
+                mesh_dimensions = global_functions.get_dimensions(capsule_matrix, capsule, version, False, 'JMS', custom_scale)
 
                 rotation = (mesh_dimensions.quaternion[0], mesh_dimensions.quaternion[1], mesh_dimensions.quaternion[2], mesh_dimensions.quaternion[3])
                 translation = (mesh_dimensions.position[0], mesh_dimensions.position[1], mesh_dimensions.position[2])
@@ -623,7 +623,7 @@ class JMSScene(global_functions.HaloAsset):
 
                 parent_index = global_functions.get_parent(blend_scene.armature, original_geo, joined_list, -1)
                 convex_matrix = global_functions.get_matrix(original_geo, original_geo, True, blend_scene.armature, joined_list, False, version, 'JMS', False, custom_scale, fix_rotations)
-                mesh_dimensions = global_functions.get_dimensions(convex_matrix, original_geo, version, None, False, False, 'JMS', custom_scale)
+                mesh_dimensions = global_functions.get_dimensions(convex_matrix, original_geo, version, False, 'JMS', custom_scale)
 
                 rotation = (mesh_dimensions.quaternion[0], mesh_dimensions.quaternion[1], mesh_dimensions.quaternion[2], mesh_dimensions.quaternion[3])
                 translation = (mesh_dimensions.position[0], mesh_dimensions.position[1], mesh_dimensions.position[2])
@@ -638,8 +638,7 @@ class JMSScene(global_functions.HaloAsset):
 
                 for vertex in evaluated_geo.vertices:
                     pos  = scale_matrix @ vertex.co
-                    mesh_dimensions = global_functions.get_dimensions(None, None, version, pos, True, False, 'JMS', custom_scale)
-                    vert_translation = (mesh_dimensions.position[0], mesh_dimensions.position[1], mesh_dimensions.position[2])
+                    vert_translation = (pos[0], pos[1], pos[2])
 
                     verts.append(JMSScene.Vertex(None, None, None, vert_translation, None, None, None))
 
@@ -662,8 +661,8 @@ class JMSScene(global_functions.HaloAsset):
                 referenced_index = global_functions.get_parent(blend_scene.armature, body_b_obj, joined_list, -1)
                 body_a_matrix = global_functions.get_matrix(ragdoll, body_a_obj, True, blend_scene.armature, joined_list, False, version, 'JMS', True, custom_scale, fix_rotations)
                 body_b_matrix = global_functions.get_matrix(ragdoll, body_b_obj, True, blend_scene.armature, joined_list, False, version, 'JMS', True, custom_scale, fix_rotations)
-                body_a_dimensions = global_functions.get_dimensions(body_a_matrix, body_a_obj, version, None, False, False, 'JMS', custom_scale)
-                body_b_dimensions = global_functions.get_dimensions(body_b_matrix, body_b_obj, version, None, False, False, 'JMS', custom_scale)
+                body_a_dimensions = global_functions.get_dimensions(body_a_matrix, body_a_obj, version, False, 'JMS', custom_scale)
+                body_b_dimensions = global_functions.get_dimensions(body_b_matrix, body_b_obj, version, False, 'JMS', custom_scale)
                 is_limited_x = int(ragdoll.rigid_body_constraint.use_limit_ang_x)
                 is_limited_y = int(ragdoll.rigid_body_constraint.use_limit_ang_y)
                 is_limited_z = int(ragdoll.rigid_body_constraint.use_limit_ang_z)
@@ -709,8 +708,8 @@ class JMSScene(global_functions.HaloAsset):
                 body_b_index = global_functions.get_parent(blend_scene.armature, body_b_obj, joined_list, -1)
                 body_a_matrix = global_functions.get_matrix(hinge, body_a_obj, True, blend_scene.armature, joined_list, False, version, 'JMS', True, custom_scale, fix_rotations)
                 body_b_matrix = global_functions.get_matrix(hinge, body_b_obj, True, blend_scene.armature, joined_list, False, version, 'JMS', True, custom_scale, fix_rotations)
-                body_a_dimensions = global_functions.get_dimensions(body_a_matrix, body_a_obj, version, None, False, False, 'JMS', custom_scale)
-                body_b_dimensions = global_functions.get_dimensions(body_b_matrix, body_b_obj, version, None, False, False, 'JMS', custom_scale)
+                body_a_dimensions = global_functions.get_dimensions(body_a_matrix, body_a_obj, version, False, 'JMS', custom_scale)
+                body_b_dimensions = global_functions.get_dimensions(body_b_matrix, body_b_obj, version, False, 'JMS', custom_scale)
                 friction_limit = 0
                 if body_b_obj:
                     friction_limit = body_b_obj.rigid_body.angular_damping
@@ -745,8 +744,8 @@ class JMSScene(global_functions.HaloAsset):
                 wheel_index = global_functions.get_parent(blend_scene.armature, wheel_obj, joined_list, -1)
                 chassis_matrix = global_functions.get_matrix(hinge, chassis_obj, True, blend_scene.armature, joined_list, False, version, 'JMS', True, custom_scale, fix_rotations)
                 wheel_matrix = global_functions.get_matrix(hinge, wheel_obj, True, blend_scene.armature, joined_list, False, version, 'JMS', True, custom_scale, fix_rotations)
-                chassis_dimensions = global_functions.get_dimensions(chassis_matrix, chassis_obj, version, None, False, False, 'JMS', custom_scale)
-                wheel_dimensions = global_functions.get_dimensions(wheel_matrix, wheel_obj, version, None, False, False, 'JMS', custom_scale)
+                chassis_dimensions = global_functions.get_dimensions(chassis_matrix, chassis_obj, version, False, 'JMS', custom_scale)
+                wheel_dimensions = global_functions.get_dimensions(wheel_matrix, wheel_obj, version, False, 'JMS', custom_scale)
                 suspension_min_limit = 0
                 suspension_max_limit = 0
                 if wheel_obj:
@@ -784,8 +783,8 @@ class JMSScene(global_functions.HaloAsset):
                 name = 'point_to_point:%s:%s' % (body_a_name, body_b_name)
                 body_a_index = global_functions.get_parent(blend_scene.armature, body_a_obj, joined_list, -1)
                 body_b_index = global_functions.get_parent(blend_scene.armature, body_b_obj, joined_list, -1)
-                body_a_dimensions = global_functions.get_dimensions(body_a_matrix, point_to_point, version, None, False, False, 'JMS', custom_scale)
-                body_b_dimensions = global_functions.get_dimensions(body_b_matrix, point_to_point, version, None, False, False, 'JMS', custom_scale)
+                body_a_dimensions = global_functions.get_dimensions(body_a_matrix, point_to_point, version, False, 'JMS', custom_scale)
+                body_b_dimensions = global_functions.get_dimensions(body_b_matrix, point_to_point, version, False, 'JMS', custom_scale)
                 constraint_type = int(point_to_point.jms.jms_spring_type)
                 x_min_limit = degrees(-45.0)
                 x_max_limit = degrees(45.0)
@@ -832,8 +831,8 @@ class JMSScene(global_functions.HaloAsset):
                 body_b_index = global_functions.get_parent(blend_scene.armature, body_b_obj, joined_list, -1)
                 body_a_matrix = global_functions.get_matrix(prismatic, body_a_obj, True, blend_scene.armature, joined_list, False, version, 'JMS', True, custom_scale, fix_rotations)
                 body_b_matrix = global_functions.get_matrix(prismatic, body_b_obj, True, blend_scene.armature, joined_list, False, version, 'JMS', True, custom_scale, fix_rotations)
-                body_a_dimensions = global_functions.get_dimensions(body_a_matrix, body_a_obj, version, None, False, False, 'JMS', custom_scale)
-                body_b_dimensions = global_functions.get_dimensions(body_b_matrix, body_b_obj, version, None, False, False, 'JMS', custom_scale)
+                body_a_dimensions = global_functions.get_dimensions(body_a_matrix, body_a_obj, version, False, 'JMS', custom_scale)
+                body_b_dimensions = global_functions.get_dimensions(body_b_matrix, body_b_obj, version, False, 'JMS', custom_scale)
                 is_limited = 0
                 friction_limit = 0
                 min_limit = 0

@@ -139,7 +139,7 @@ class QUAScene(global_functions.HaloAsset):
                         context.scene.frame_set(frame)
 
                         camera_matrix = global_functions.get_matrix(ubercam, ubercam, False, None, None, False, version, 'QUA', False, 1)
-                        mesh_dimensions = global_functions.get_dimensions(camera_matrix, ubercam, version, None, False, False, 'QUA', 1)
+                        mesh_dimensions = global_functions.get_dimensions(camera_matrix, ubercam, version, False, 'QUA', 1)
                         position = (mesh_dimensions.position[0], mesh_dimensions.position[1], mesh_dimensions.position[2])
 
                         up_vector = camera_matrix.to_quaternion() @ Vector((0, 1, 0))
@@ -180,7 +180,7 @@ class QUAScene(global_functions.HaloAsset):
                             context.scene.frame_set(frame)
 
                             camera_matrix = global_functions.get_matrix(ubercam, ubercam, False, None, None, False, version, 'QUA', False, 1)
-                            mesh_dimensions = global_functions.get_dimensions(camera_matrix, ubercam, version, None, False, False, 'QUA', 1)
+                            mesh_dimensions = global_functions.get_dimensions(camera_matrix, ubercam, version, False, 'QUA', 1)
                             position = (mesh_dimensions.position[0], mesh_dimensions.position[1], mesh_dimensions.position[2])
 
                             up_vector = camera_matrix.to_quaternion() @ Vector((0, 1, 0))

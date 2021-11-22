@@ -31,7 +31,7 @@ import bmesh
 
 from os import path
 from mathutils import Matrix
-from io_scene_halo.file_jms import import_jms
+from ..file_jms import import_jms
 from ..global_functions import mesh_processing
 
 halo_one_array = (

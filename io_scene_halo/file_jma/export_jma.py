@@ -109,7 +109,7 @@ class JMAScene(global_functions.HaloAsset):
                     is_bone = True
 
                 bone_matrix = global_functions.get_matrix(node, node, True, armature, joined_list, True, version, 'JMA', False, custom_scale, fix_rotations)
-                mesh_dimensions = global_functions.get_dimensions(bone_matrix, node, version, None, False, is_bone, 'JMA', custom_scale)
+                mesh_dimensions = global_functions.get_dimensions(bone_matrix, node, version, is_bone, 'JMA', custom_scale)
                 rotation = (mesh_dimensions.quaternion[0], mesh_dimensions.quaternion[1], mesh_dimensions.quaternion[2], mesh_dimensions.quaternion[3])
                 translation = (mesh_dimensions.position[0], mesh_dimensions.position[1], mesh_dimensions.position[2])
                 scale = (mesh_dimensions.scale[0])
@@ -123,7 +123,7 @@ class JMAScene(global_functions.HaloAsset):
             for frame in range(self.transform_count):
                 context.scene.frame_set(frame)
                 armature_matrix = global_functions.get_matrix(armature, armature, True, None, joined_list, False, version, 'JMA', False, custom_scale, fix_rotations)
-                mesh_dimensions = global_functions.get_dimensions(armature_matrix, armature, version, None, False, False, 'JMA', custom_scale)
+                mesh_dimensions = global_functions.get_dimensions(armature_matrix, armature, version, False, 'JMA', custom_scale)
 
                 rotation = (mesh_dimensions.quaternion[0], mesh_dimensions.quaternion[1], mesh_dimensions.quaternion[2], mesh_dimensions.quaternion[3])
                 translation = (mesh_dimensions.position[0], mesh_dimensions.position[1], mesh_dimensions.position[2])

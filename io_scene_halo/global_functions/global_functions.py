@@ -403,61 +403,57 @@ def get_matrix(obj_a, obj_b, is_local, armature, joined_list, is_node, version, 
 
     return object_matrix
 
-def get_dimensions(mesh_matrix, original_geo, version, jms_vertex, is_vertex, is_bone, file_type, custom_scale):
+def get_dimensions(mesh_matrix, original_geo, version, is_bone, file_type, custom_scale):
     quaternion = (0.0, 0.0, 0.0, 1.0)
     position = (0.0, 0.0, 0.0)
     scale = (0.0, 0.0, 0.0)
     dimension = (0.0, 0.0, 0.0)
     object_radius = 0.0
     pill_height = 0.0
-    if is_vertex:
-        position = (float(jms_vertex[0]), float(jms_vertex[1]), float(jms_vertex[2]))
+    if original_geo:
+        pos, rot, scale = mesh_matrix.decompose()
+        quat = rot.inverted()
+        if version >= get_version_matrix_check(file_type):
+            quat = rot
 
-    else:
-        if original_geo:
-            pos, rot, scale = mesh_matrix.decompose()
-            quat = rot.inverted()
-            if version >= get_version_matrix_check(file_type):
-                quat = rot
+        quaternion = (quat[1], quat[2], quat[3], quat[0])
+        position = mesh_matrix.to_translation()
+        if file_type == 'JMS':
+            scale_x = Matrix.Scale(custom_scale, 4, (1, 0, 0))
+            scale_y = Matrix.Scale(custom_scale, 4, (0, 1, 0))
+            scale_z = Matrix.Scale(custom_scale, 4, (0, 0, 1))
+            scale_matrix = scale_x @ scale_y @ scale_z
 
-            quaternion = (quat[1], quat[2], quat[3], quat[0])
-            position = mesh_matrix.to_translation()
+            position = position @ scale_matrix
+
+        if not is_bone:
+            dimension_x = original_geo.dimensions[0]
+            dimension_y = original_geo.dimensions[1]
+            dimension_z = original_geo.dimensions[2]
+            if not original_geo.dimensions[0] == 0.0:
+                dimension_x = original_geo.dimensions[0] / scale[0]
+                
+            if not original_geo.dimensions[1] == 0.0:
+                dimension_y = original_geo.dimensions[1] / scale[1]
+                
+            if not original_geo.dimensions[2] == 0.0:
+                dimension_z = original_geo.dimensions[2] / scale[2]
+
+            dimension = (dimension_x, dimension_y, dimension_z)
             if file_type == 'JMS':
-                scale_x = Matrix.Scale(custom_scale, 4, (1, 0, 0))
-                scale_y = Matrix.Scale(custom_scale, 4, (0, 1, 0))
-                scale_z = Matrix.Scale(custom_scale, 4, (0, 0, 1))
-                scale_matrix = scale_x @ scale_y @ scale_z
+                dimension = ((original_geo.dimensions[0] * custom_scale), (original_geo.dimensions[1] * custom_scale), (original_geo.dimensions[2] * custom_scale))
 
-                position = position @ scale_matrix
+            #The reason this code exists is to try to copy how capsules work in 3DS Max.
+            #To get original height for 3DS Max do (radius_jms * 2) + height_jms
+            #The maximum value of radius is height / 2
+            pill_radius = ((dimension[0] / 2))
+            pill_height = (dimension[2]) - (pill_radius * 2)
+            if pill_height <= 0:
+                pill_height = 0
 
-            if not is_bone:
-                dimension_x = original_geo.dimensions[0]
-                dimension_y = original_geo.dimensions[1]
-                dimension_z = original_geo.dimensions[2]
-                if not original_geo.dimensions[0] == 0.0:
-                    dimension_x = original_geo.dimensions[0] / scale[0]
-
-                if not original_geo.dimensions[1] == 0.0:
-                    dimension_y = original_geo.dimensions[1] / scale[1]
-
-                if not original_geo.dimensions[2] == 0.0:
-                    dimension_z = original_geo.dimensions[2] / scale[2]
-
-                dimension = (dimension_x, dimension_y, dimension_z)
-                if file_type == 'JMS':
-                    dimension = ((original_geo.dimensions[0] * custom_scale), (original_geo.dimensions[1] * custom_scale), (original_geo.dimensions[2] * custom_scale))
-
-                #The reason this code exists is to try to copy how capsules work in 3DS Max.
-                #To get original height for 3DS Max do (radius_jms * 2) + height_jms
-                #The maximum value of radius is height / 2
-                pill_radius = ((dimension[0] / 2))
-                pill_height = (dimension[2]) - (pill_radius * 2)
-                if pill_height <= 0:
-                    pill_height = 0
-
-                dimension = (dimension[0], dimension[1], dimension[2])
-                object_radius = pill_radius
-                pill_height = pill_height
+            dimension = (dimension[0], dimension[1], dimension[2])
+            object_radius = pill_radius
+            pill_height = pill_height
 
     return JmsDimensions(quaternion, position, scale, dimension, object_radius, pill_height)
 
