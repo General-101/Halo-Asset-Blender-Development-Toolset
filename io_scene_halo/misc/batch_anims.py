@@ -116,86 +116,87 @@ def write_file(context, report, directory, jma_version, jma_version_ce, jma_vers
 
     for file_item in os.listdir(directory):
         if file_item.lower().endswith(extension_list):
-            imported_jma_file = import_jma.JMAAsset(os.path.join(directory, file_item), game_version, None)
-            exported_jma_file = JMAFile(context, version, game_version, imported_jma_file)
+            imported_jma_file = import_jma.JMAAsset(os.path.join(directory, file_item), game_version, report)
+            if not imported_jma_file.broken_skeleton:
+                exported_jma_file = JMAFile(context, version, game_version, imported_jma_file)
 
-            if version > 16394:
-                decimal_1 = '\n%0.10f'
-                decimal_2 = '\n%0.10f\t%0.10f'
-                decimal_3 = '\n%0.10f\t%0.10f\t%0.10f'
-                decimal_4 = '\n%0.10f\t%0.10f\t%0.10f\t%0.10f'
+                if version > 16394:
+                    decimal_1 = '\n%0.10f'
+                    decimal_2 = '\n%0.10f\t%0.10f'
+                    decimal_3 = '\n%0.10f\t%0.10f\t%0.10f'
+                    decimal_4 = '\n%0.10f\t%0.10f\t%0.10f\t%0.10f'
 
-            else:
-                decimal_1 = '\n%0.6f'
-                decimal_2 = '\n%0.6f\t%0.6f'
-                decimal_3 = '\n%0.6f\t%0.6f\t%0.6f'
-                decimal_4 = '\n%0.6f\t%0.6f\t%0.6f\t%0.6f'
+                else:
+                    decimal_1 = '\n%0.6f'
+                    decimal_2 = '\n%0.6f\t%0.6f'
+                    decimal_3 = '\n%0.6f\t%0.6f\t%0.6f'
+                    decimal_4 = '\n%0.6f\t%0.6f\t%0.6f\t%0.6f'
 
-            filename = os.path.basename(file_item)
+                filename = os.path.basename(file_item)
 
-            file = open(os.path.join(directory, file_item), 'w', encoding='utf_8')
+                file = open(os.path.join(directory, file_item), 'w', encoding='utf_8')
 
-            #write header
-            if version >= 16394:
-                file.write(
-                    '%s' % (version) +
-                    '\n%s' % (exported_jma_file.node_checksum) +
-                    '\n%s' % (imported_jma_file.frame_count) +
-                    '\n%s' % (int(imported_jma_file.frame_rate)) +
-                    '\n%s' % (1) +
-                    '\n%s' % (imported_jma_file.actor_name) +
-                    '\n%s' % (len(imported_jma_file.nodes))
-                    )
-
-            else:
-                file.write(
-                    '%s' % (version) +
-                    '\n%s' % (imported_jma_file.frame_count) +
-                    '\n%s' % (int(imported_jma_file.frame_rate)) +
-                    '\n%s' % (1) +
-                    '\n%s' % (imported_jma_file.actor_name) +
-                    '\n%s' % (len(imported_jma_file.nodes)) +
-                    '\n%s' % (exported_jma_file.node_checksum)
-                    )
-
-            if version >= 16391:
-                    for node in exported_jma_file.nodes:
-                        if version >= 16394:
-                            file.write(
-                                '\n%s' % (node.name) +
-                                '\n%s' % (node.parent)
-                                )
-
-                        else:
-                            file.write('\n%s' % (node.name))
-                            if version >= 16392:
-                                file.write(
-                                    '\n%s' % (node.child) +
-                                    '\n%s' % (node.sibling)
-                                    )
-
-            #write transforms
-            for node_transform in exported_jma_file.transforms:
-                for node in node_transform:
+                #write header
+                if version >= 16394:
                     file.write(
-                        decimal_3 % (node.vector[0], node.vector[1], node.vector[2]) +
-                        decimal_4 % (node.rotation[0], node.rotation[1], node.rotation[2], node.rotation[3]) +
-                        decimal_1 % (node.scale)
+                        '%s' % (version) +
+                        '\n%s' % (exported_jma_file.node_checksum) +
+                        '\n%s' % (imported_jma_file.frame_count) +
+                        '\n%s' % (int(imported_jma_file.frame_rate)) +
+                        '\n%s' % (1) +
+                        '\n%s' % (imported_jma_file.actor_name) +
+                        '\n%s' % (len(imported_jma_file.nodes))
                         )
 
-            #H2 specific biped controller data bool value.
-            if version > 16394:
-                file.write('\n%s' % (int(len(exported_jma_file.biped_controller_transforms) > 0)))
-                if len(exported_jma_file.biped_controller_transforms) > 0:
-                    for biped_transform in exported_jma_file.biped_controller_transforms:
+                else:
+                    file.write(
+                        '%s' % (version) +
+                        '\n%s' % (imported_jma_file.frame_count) +
+                        '\n%s' % (int(imported_jma_file.frame_rate)) +
+                        '\n%s' % (1) +
+                        '\n%s' % (imported_jma_file.actor_name) +
+                        '\n%s' % (len(imported_jma_file.nodes)) +
+                        '\n%s' % (exported_jma_file.node_checksum)
+                        )
+
+                if version >= 16391:
+                        for node in exported_jma_file.nodes:
+                            if version >= 16394:
+                                file.write(
+                                    '\n%s' % (node.name) +
+                                    '\n%s' % (node.parent)
+                                    )
+
+                            else:
+                                file.write('\n%s' % (node.name))
+                                if version >= 16392:
+                                    file.write(
+                                        '\n%s' % (node.child) +
+                                        '\n%s' % (node.sibling)
+                                        )
+
+                #write transforms
+                for node_transform in exported_jma_file.transforms:
+                    for node in node_transform:
                         file.write(
-                            decimal_3 % (biped_transform.vector[0], biped_transform.vector[1], biped_transform.vector[2]) +
-                            decimal_4 % (biped_transform.rotation[0], biped_transform.rotation[1], biped_transform.rotation[2], biped_transform.rotation[3]) +
-                            decimal_1 % (biped_transform.scale)
+                            decimal_3 % (node.vector[0], node.vector[1], node.vector[2]) +
+                            decimal_4 % (node.rotation[0], node.rotation[1], node.rotation[2], node.rotation[3]) +
+                            decimal_1 % (node.scale)
                             )
 
-            file.write('\n')
-            file.close()
+                #H2 specific biped controller data bool value.
+                if version > 16394:
+                    file.write('\n%s' % (int(len(exported_jma_file.biped_controller_transforms) > 0)))
+                    if len(exported_jma_file.biped_controller_transforms) > 0:
+                        for biped_transform in exported_jma_file.biped_controller_transforms:
+                            file.write(
+                                decimal_3 % (biped_transform.vector[0], biped_transform.vector[1], biped_transform.vector[2]) +
+                                decimal_4 % (biped_transform.rotation[0], biped_transform.rotation[1], biped_transform.rotation[2], biped_transform.rotation[3]) +
+                                decimal_1 % (biped_transform.scale)
+                                )
+
+                file.write('\n')
+                file.close()
 
     report({'INFO'}, "Conversion completed successfully")
     return {'FINISHED'}
