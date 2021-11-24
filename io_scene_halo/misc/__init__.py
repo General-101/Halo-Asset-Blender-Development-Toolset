@@ -46,6 +46,97 @@ from bpy.props import (
 
 from ..global_functions import global_functions
 
+class JMA_BatchDialog(Operator):
+    """Convert multiple animation source files for a specific game"""
+    bl_idname = "import_scene.jma_batch"
+    bl_label = "Convert JMA"
+
+    filter_glob: StringProperty(
+        default="*.jma;*.jmm;*.jmt;*.jmo;*.jmr;*.jmrx;*.jmh;*.jmz;*.jmw",
+        options={'HIDDEN'},
+        )
+
+    directory: StringProperty(
+        name="Directory",
+        description="A directory containing animation source files to convert",
+    )
+
+    def execute(self, context):
+        scene = context.scene
+        scene_halo_anim_batch = scene.halo_anim_batch
+        scene_halo_anim_batch.directory = self.directory
+        context.area.tag_redraw()
+        return {'FINISHED'}
+
+    def invoke(self, context, event):
+        context.window_manager.fileselect_add(self)
+        return {'RUNNING_MODAL'}
+
+class JMA_BatchPropertiesGroup(PropertyGroup):
+    jma_version: EnumProperty(
+        name="Version:",
+        description="What version to use for the animation file",
+        default="16392",
+        options={'HIDDEN'},
+        items=[ ('16390', "16390", "CE/H2/H3"),
+                ('16391', "16391", "CE/H2/H3"),
+                ('16392', "16392", "CE/H2/H3"),
+                ('16393', "16393", "H2/H3"),
+                ('16394', "16394", "H2/H3"),
+                ('16395', "16395", "H2/H3"),
+            ]
+        )
+
+    jma_version_ce: EnumProperty(
+        name="Version:",
+        description="What version to use for the animation file",
+        default="16392",
+        items=[ ('16390', "16390", "CE"),
+                ('16391', "16391", "CE"),
+                ('16392', "16392", "CE"),
+            ]
+        )
+
+    jma_version_h2: EnumProperty(
+        name="Version:",
+        description="What version to use for the animation file",
+        default="16395",
+        items=[ ('16390', "16390", "H2"),
+                ('16391', "16391", "H2"),
+                ('16392', "16392", "H2"),
+                ('16393', "16393", "H2"),
+                ('16394', "16394", "H2"),
+                ('16395', "16395", "H2"),
+            ]
+        )
+
+    jma_version_h3: EnumProperty(
+        name="Version:",
+        description="What version to use for the animation file",
+        default="16395",
+        items=[ ('16390', "16390", "H3"),
+                ('16391', "16391", "H3"),
+                ('16392', "16392", "H3"),
+                ('16393', "16393", "H3"),
+                ('16394', "16394", "H3"),
+                ('16395', "16395", "H3"),
+            ]
+        )
+
+    game_version: EnumProperty(
+        name="Game:",
+        description="What game will the model file be used for",
+        items=[ ('haloce', "Halo CE", "Export an animation intended for Halo Custom Edition or Halo 1 MCC"),
+                ('halo2', "Halo 2", "Export an animation intended for Halo 2 Vista or Halo 2 MCC"),
+                ('halo3mcc', "Halo 3 MCC", "Export an animation intended for Halo 3 MCC"),
+            ]
+        )
+
+    directory: StringProperty(
+        name="Directory",
+        description="A directory containing animation source files to convert",
+        )
+
 class Halo_ImportFixupPropertiesGroup(PropertyGroup):
     threshold: FloatProperty(
         name="Threshold",
@@ -494,11 +585,13 @@ class Halo_Tools_Helper(Panel):
 
     def draw(self, context):
         scene = context.scene
+        scene_halo = scene.halo
         scene_halo_fixup = scene.halo_import_fixup
         scene_halo_lightmapper = scene.halo_lightmapper
         scene_halo_prefix = scene.halo_prefix
         scene_scale_model = scene.scale_model
         scene_halo_face_set = scene.halo_face_set
+        scene_halo_anim_batch = scene.halo_anim_batch
 
         layout = self.layout
         row = layout.row()
@@ -617,6 +710,30 @@ class Halo_Tools_Helper(Panel):
         col = box.column(align=True)
         row = col.row()
         row.operator("apply_instance_transform.set_transform", text="Set Transform")
+
+        box = layout.box()
+        box.label(text="Batch Anim Converter:")
+        col = box.column(align=True)
+        row = col.row()
+        row.operator(JMA_BatchDialog.bl_idname, text="Select Directory")
+        row.prop(scene_halo_anim_batch, "directory", text='')
+        row = col.row()
+        row.label(text="Game Version:")
+        row.prop(scene_halo_anim_batch, "game_version", text='')
+        if scene_halo.expert_mode:
+            row = col.row()
+            row.label(text='JMA Version:')
+            if scene_halo_anim_batch.game_version == 'haloce':
+                row.prop(scene_halo_anim_batch, "jma_version_ce", text='')
+
+            elif scene_halo_anim_batch.game_version == 'halo2':
+                row.prop(scene_halo_anim_batch, "jma_version_h2", text='')
+
+            elif scene_halo_anim_batch.game_version == 'halo3mcc':
+                row.prop(scene_halo_anim_batch, "jma_version_h3", text='')
+
+        row = col.row()
+        row.operator("halo_bulk.anim_convert", text="Convert Directory")
 
 class Halo_Sky_Tools_Helper(Panel):
     """Tools to help automate Halo workflow"""
@@ -987,10 +1104,23 @@ class Bulk_Set_Transform(Operator):
         from ..misc import apply_instance_transform
         return global_functions.run_code("apply_instance_transform.set_transform(context)")
 
+class Bulk_Anim_Convert(Operator):
+    """Convert a whole directory of animation source files from one game to another."""
+    bl_idname = 'halo_bulk.anim_convert'
+    bl_label = 'Bulk Anim Convert'
+    bl_options = {"REGISTER", "UNDO"}
+
+    def execute(self, context):
+        from ..misc import batch_anims
+        scene_halo_anim_batch = context.scene.halo_anim_batch
+
+        return global_functions.run_code("batch_anims.write_file(context, self.report, scene_halo_anim_batch.directory, scene_halo_anim_batch.jma_version, scene_halo_anim_batch.jma_version_ce, scene_halo_anim_batch.jma_version_h2, scene_halo_anim_batch.jma_version_h3, scene_halo_anim_batch.game_version)")
+
 def menu_func_export(self, context):
     self.layout.operator(ExportLightmap.bl_idname, text="Halo Lightmap UV (.luv)")
 
 classeshalo = (
+    JMA_BatchDialog,
     ExportLightmap,
     Bulk_Lightmap_Images,
     Bulk_Rename_Bones,
@@ -1003,6 +1133,7 @@ classeshalo = (
     FaceSet,
     ImportFixup,
     Bulk_IK_Prep,
+    Bulk_Anim_Convert,
     Bulk_Set_Transform,
     Halo_Tools_Helper,
     Halo_Sky_Tools_Helper,
@@ -1013,6 +1144,7 @@ classeshalo = (
     Halo_Sky_Sun_Light,
     Halo_Sky_Sun_Color,
     Halo_Sky_Misc_Settings,
+    JMA_BatchPropertiesGroup,
     Halo_ImportFixupPropertiesGroup,
     Halo_LightmapperPropertiesGroup,
     Scale_ModelPropertiesGroup,
@@ -1032,14 +1164,17 @@ def register():
     bpy.types.Scene.scale_model = PointerProperty(type=Scale_ModelPropertiesGroup, name="Halo Scale Model Helper", description="Create meshes for scale")
     bpy.types.Scene.halo_sky = PointerProperty(type=SkyPropertiesGroup, name="Sky Helper", description="Generate a sky for Halo 3")
     bpy.types.Scene.halo_face_set = PointerProperty(type=Face_SetPropertiesGroup, name="Halo Face Set Helper", description="Creates a facemap with the exact name we need")
+    bpy.types.Scene.halo_anim_batch = PointerProperty(type=JMA_BatchPropertiesGroup, name="Halo Batch Anims", description="Converts all animations in a specific directory to a different version.")
 
 def unregister():
     bpy.types.TOPBAR_MT_file_export.remove(menu_func_export)
+    del bpy.types.Scene.halo_import_fixup
     del bpy.types.Scene.halo_lightmapper
     del bpy.types.Scene.halo_prefix
     del bpy.types.Scene.scale_model
     del bpy.types.Scene.halo_sky
     del bpy.types.Scene.halo_face_set
+    del bpy.types.Scene.halo_anim_batch
     for clshalo in classeshalo:
         bpy.utils.unregister_class(clshalo)
 

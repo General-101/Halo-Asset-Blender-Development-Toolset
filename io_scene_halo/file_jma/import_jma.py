@@ -112,6 +112,7 @@ class JMAAsset(global_functions.HaloAsset):
 
         self.nodes = []
         self.transforms = []
+        self.biped_controller_transforms = []
         if self.version >= 16394:
             for _ in range(node_count):
                 name = self.next()
@@ -142,7 +143,6 @@ class JMAAsset(global_functions.HaloAsset):
 
         self.biped_controller_frame_type = JMAAsset.BipedControllerFrameType.DISABLE
         if self.version == 16395:
-            self.biped_controller_transforms = []
             biped_controller_enabled = int(self.next())
             if biped_controller_enabled > 0:
                 # different animation file types use the data differently

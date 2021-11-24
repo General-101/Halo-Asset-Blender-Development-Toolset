@@ -31,6 +31,7 @@ import bpy
 import sys
 import colorsys
 import re
+import operator
 
 from decimal import *
 from math import radians
@@ -128,8 +129,9 @@ def unhide_all_collections(context):
 def get_child(bone, bone_list):
     set_node = None
     for node in bone_list:
-        if bone == node.parent and not set_node:
+        if bone == node.parent:
             set_node = node
+            break
 
     return set_node
 
@@ -259,6 +261,108 @@ def sort_list(node_list, armature, game_version, version, animation):
         else:
             if version <= 8204:
                 sorted_list = sort_by_layer(node_list, armature)
+
+            else:
+                sorted_list = sort_by_index(node_list)
+
+    return sorted_list
+
+def get_child_batch(bone, reversed_joined_list, node_list):
+    set_node = None
+    for node in reversed_joined_list:
+        if not node.parent == None and not node.parent == -1 and bone == node_list[node.parent]:
+            set_node = node
+            break
+
+    return set_node
+
+def get_sibling_batch(bone, bone_list):
+    sibling_list = []
+    set_sibling = None
+    for node in bone_list:
+        if bone.parent == node.parent:
+            sibling_list.append(node)
+
+    if len(sibling_list) <= 1:
+        set_sibling = None
+
+    else:
+        sibling_node = sibling_list.index(bone)
+        next_sibling_node = sibling_node + 1
+        if next_sibling_node >= len(sibling_list):
+            set_sibling = None
+
+        else:
+            set_sibling = sibling_list[next_sibling_node]
+
+    return set_sibling
+
+def sort_by_layer_batch(node_list):
+    layer_count = []
+    layer_root = []
+    root_list = []
+    children_list = []
+    reversed_children_list = []
+    joined_list = []
+    reversed_joined_list = []
+    sort_list = []
+    reversed_sort_list = []
+    for node in node_list:
+        if node.parent == None or node.parent == -1:
+            layer_count.append(None)
+            layer_root.append(node)
+
+        else:
+            if not node_list[node.parent] in layer_count:
+                layer_count.append(node_list[node.parent])
+
+    for layer in layer_count:
+        joined_list = root_list + children_list
+        reversed_joined_list = root_list + reversed_children_list
+        layer_index = layer_count.index(layer)
+        if layer_index == 0:
+            root_list.append(layer_root[0])
+
+        else:
+            for node in node_list:
+                if not node.parent == None and node.parent != -1:
+                    if node_list[node.parent] in joined_list and not node in children_list:
+                        sort_list.append(node)
+                        reversed_sort_list.append(node)
+
+            sort_list.sort(key=operator.attrgetter('name'))
+            reversed_sort_list.sort(key=operator.attrgetter('name'))
+            reversed_sort_list.reverse()
+            for sort in sort_list:
+                if not sort in children_list:
+                    children_list.append(sort)
+
+            for sort in reversed_sort_list:
+                if not sort in reversed_children_list:
+                    reversed_children_list.append(sort)
+
+        joined_list = root_list + children_list
+        reversed_joined_list = root_list + reversed_children_list
+
+    return (joined_list, reversed_joined_list)
+
+def sort_list_batch(node_list, game_version, version, animation):
+    version = int(version)
+    sorted_list = []
+    if game_version == 'haloce':
+        sorted_list = sort_by_layer_batch(node_list)
+
+    elif game_version == 'halo2' or game_version == 'halo3mcc':
+        if animation:
+            if version <= 16394:
+                sorted_list = sort_by_layer_batch(node_list)
+
+            else:
+                sorted_list = sort_by_index(node_list)
+
+        else:
+            if version <= 8204:
+                sorted_list = sort_by_layer_batch(node_list)
 
             else:
                 sorted_list = sort_by_index(node_list)
@@ -432,10 +536,10 @@ def get_dimensions(mesh_matrix, original_geo, version, is_bone, file_type, custo
             dimension_z = original_geo.dimensions[2]
             if not original_geo.dimensions[0] == 0.0:
                 dimension_x = original_geo.dimensions[0] / scale[0]
-                
+
             if not original_geo.dimensions[1] == 0.0:
                 dimension_y = original_geo.dimensions[1] / scale[1]
-                
+
             if not original_geo.dimensions[2] == 0.0:
                 dimension_z = original_geo.dimensions[2] / scale[2]
 
@@ -1106,6 +1210,53 @@ def material_definition_parser(is_import, material_definition_items, default_reg
             region = default_region
 
     return lod, permutation, region
+
+def get_import_matrix(transform):
+    translation = Matrix.Translation(transform.vector)
+    rotation = transform.rotation.to_matrix().to_4x4()
+    scale_x = Matrix.Scale(transform.scale, 4, (1, 0, 0))
+    scale_y = Matrix.Scale(transform.scale, 4, (0, 1, 0))
+    scale_z = Matrix.Scale(transform.scale, 4, (0, 0, 1))
+    scale = scale_x @ scale_y @ scale_z
+    transform_matrix = translation @ rotation @ scale
+
+    return transform_matrix
+
+def get_absolute_matrix(node_list, frame, transforms):
+    absolute_matrices = []
+    for node_idx, node in enumerate(node_list):
+        transform = transforms[frame][node_idx]
+        transform_matrix = get_import_matrix(transform)
+        if not node.parent == None and node.parent != -1:
+            parent_node_idx = node.parent
+            parent_transform_matrix = absolute_matrices[parent_node_idx]
+            transform_matrix = parent_transform_matrix @ transform_matrix
+
+        absolute_matrices.append(transform_matrix)
+
+    return absolute_matrices
+
+def get_transform(import_version, export_version, node, frame, node_list, transforms, absolute_matrix):
+    node_idx = node_list.index(node)
+    transform = transforms[frame][node_idx]
+
+    transform_matrix = get_import_matrix(transform)
+
+    if import_version >= 16394 and export_version < 16394:
+        if not node.parent == None and node.parent != -1:
+            parent_node_idx = node_list.index(node_list[node.parent])
+            parent_transform = transforms[frame][parent_node_idx]
+
+            parent_transform_matrix = get_import_matrix(parent_transform)
+            transform_matrix = parent_transform_matrix.inverted() @ transform_matrix
+
+    elif import_version < 16394 and export_version >= 16394:
+        if not node.parent == None and node.parent != -1:
+            parent_node_idx = node_list.index(node_list[node.parent])
+            parent_transform_matrix = absolute_matrix[parent_node_idx]
+            transform_matrix = parent_transform_matrix @ transform_matrix
+
+    return transform_matrix
 
 def run_code(code_string):
     from .. import config
