@@ -256,7 +256,7 @@ def generate_jms_skeleton(jms_a_nodes, jms_a_file, jms_b_nodes, jms_b_file, jma_
                 parent_name = jms_b_file.nodes[parent_idx].name
                 rest_position = jms_b_file.transforms[0]
                 jms_node = rest_position[b_idx]
-                bone_distance = mesh_processing.get_bone_distance(jms_b_node, None, None, b_idx, "JMS")
+                bone_distance = mesh_processing.get_bone_distance(jms_b_file, None, None, b_idx, "JMS")
 
         current_bone.tail[2] = bone_distance
 
