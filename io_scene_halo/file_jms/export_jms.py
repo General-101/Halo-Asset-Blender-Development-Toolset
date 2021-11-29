@@ -705,14 +705,18 @@ class JMSScene(global_functions.HaloAsset):
                     body_b_name = body_b_obj.name.split('$', 1)[1]
 
                 name = 'hinge:%s:%s' % (body_a_name, body_b_name)
-                body_a_index = global_functions.get_parent(blend_scene.armature, body_a_obj, joined_list, -1)
-                body_b_index = global_functions.get_parent(blend_scene.armature, body_b_obj, joined_list, -1)
+                body_a_parent = global_functions.get_parent(blend_scene.armature, body_a_obj, joined_list, -1)
+                body_b_parent = global_functions.get_parent(blend_scene.armature, body_b_obj, joined_list, -1)
+
+                body_a_parent_index = body_a_parent[0]
+                body_b_parent_index = body_b_parent[0]
+
                 body_a_matrix = global_functions.get_matrix(hinge, body_a_obj, True, blend_scene.armature, joined_list, False, version, 'JMS', True, custom_scale, fix_rotations)
                 body_b_matrix = global_functions.get_matrix(hinge, body_b_obj, True, blend_scene.armature, joined_list, False, version, 'JMS', True, custom_scale, fix_rotations)
                 body_a_dimensions = global_functions.get_dimensions(body_a_matrix, body_a_obj, version, False, 'JMS', custom_scale)
                 body_b_dimensions = global_functions.get_dimensions(body_b_matrix, body_b_obj, version, False, 'JMS', custom_scale)
                 friction_limit = 0
-                if body_b_obj:
+                if body_b_obj and body_b_obj.rigid_body:
                     friction_limit = body_b_obj.rigid_body.angular_damping
 
                 min_angle = 0
@@ -727,7 +731,7 @@ class JMSScene(global_functions.HaloAsset):
                 body_b_rotation = (body_b_dimensions.quaternion[0], body_b_dimensions.quaternion[1], body_b_dimensions.quaternion[2], body_b_dimensions.quaternion[3])
                 body_b_translation = (body_b_dimensions.position[0], body_b_dimensions.position[1], body_b_dimensions.position[2])
 
-                self.hinges.append(JMSScene.Hinge(name, body_a_index[0], body_b_index[0], body_a_rotation, body_a_translation, body_b_rotation, body_b_translation, is_limited, friction_limit, min_angle, max_angle))
+                self.hinges.append(JMSScene.Hinge(name, body_a_parent_index, body_b_parent_index, body_a_rotation, body_a_translation, body_b_rotation, body_b_translation, is_limited, friction_limit, min_angle, max_angle))
 
             for car_wheel in blend_scene.car_wheel_list:
                 chassis_obj = car_wheel.rigid_body_constraint.object1
