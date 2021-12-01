@@ -29,7 +29,7 @@ import bpy
 import bmesh
 
 from math import radians
-from mathutils import Vector, Matrix
+from mathutils import Vector, Matrix, Euler
 from ..global_functions import mesh_processing, global_functions
 
 class JMSAsset(global_functions.HaloAsset):
@@ -667,7 +667,7 @@ class JMSAsset(global_functions.HaloAsset):
                 max_cone = float(self.next())
                 min_plane = float(self.next())
                 max_plane = float(self.next())
-                friction_limit = None
+                friction_limit = 0.0
                 if self.version >= 8213:
                     friction_limit = float(self.next())
 
@@ -1037,6 +1037,8 @@ def load_file(context, filepath, report, game_version, reuse_armature, fix_paren
         object_mesh.parent = armature
         mesh_processing.add_modifier(context, object_mesh, False, None, armature)
 
+
+    primitive_shapes = []
     for sphere in jms_file.spheres:
         parent_idx = sphere.parent_index
         name = sphere.name
@@ -1077,6 +1079,7 @@ def load_file(context, filepath, report, game_version, reuse_armature, fix_paren
                 transform_matrix = pose_bone.matrix @ transform_matrix
 
         object_mesh.matrix_world = transform_matrix
+        primitive_shapes.append((object_mesh, sphere.parent_index))
 
         if not material_index == -1:
             mat = jms_file.materials[material_index]
@@ -1143,6 +1146,7 @@ def load_file(context, filepath, report, game_version, reuse_armature, fix_paren
                 transform_matrix = pose_bone.matrix @ transform_matrix
 
         object_mesh.matrix_world = transform_matrix
+        primitive_shapes.append((object_mesh, box.parent_index))
 
         if not material_index == -1:
             mat = jms_file.materials[material_index]
@@ -1209,6 +1213,8 @@ def load_file(context, filepath, report, game_version, reuse_armature, fix_paren
                 transform_matrix = pose_bone.matrix @ transform_matrix
 
         object_mesh.matrix_world = transform_matrix
+        primitive_shapes.append((object_mesh, capsule.parent_index))
+
         if not material_index == -1:
             mat = jms_file.materials[material_index]
             current_region_permutation = global_functions.material_definition_helper(material_index, mat)
@@ -1276,6 +1282,8 @@ def load_file(context, filepath, report, game_version, reuse_armature, fix_paren
                 transform_matrix = pose_bone.matrix @ transform_matrix
 
         object_mesh.matrix_world = transform_matrix
+        primitive_shapes.append((object_mesh, convex_shape.parent_index))
+
         if not material_index == -1:
             mat = jms_file.materials[material_index]
             current_region_permutation = global_functions.material_definition_helper(material_index, mat)
@@ -1306,11 +1314,36 @@ def load_file(context, filepath, report, game_version, reuse_armature, fix_paren
         name = ragdoll.name
         ragdoll_attached_index = ragdoll.attached_index
         ragdoll_referenced_index = ragdoll.referenced_index
+
+        ragdoll_attached_object = None
+        ragdoll_referenced_object = None
         if not ragdoll_attached_index == -1:
-            attached_index = jms_file.nodes[ragdoll_attached_index].name
+            for shape in primitive_shapes:
+                shape_object = shape[0]
+                shape_parent_index = shape[1]
+                if shape_parent_index == ragdoll_attached_index:
+                    ragdoll_attached_object = shape_object
+                    if not not shape_object.rigid_body:
+                        mesh_processing.select_object(context, shape_object)
+                        bpy.ops.rigidbody.object_add()
+                        mesh_processing.deselect_objects(context)
+                        shape_object.rigid_body.linear_damping = ragdoll.friction_limit
+
+                    break
 
         if not ragdoll_referenced_index == -1:
-            referenced_index = jms_file.nodes[ragdoll_referenced_index].name
+            for shape in primitive_shapes:
+                shape_object = shape[0]
+                shape_parent_index = shape[1]
+                if shape_parent_index == ragdoll_referenced_index:
+                    ragdoll_referenced_object = shape_object
+                    if not shape_object.rigid_body:
+                        mesh_processing.select_object(context, shape_object)
+                        bpy.ops.rigidbody.object_add()
+                        mesh_processing.deselect_objects(context)
+                        shape_object.rigid_body.linear_damping = ragdoll.friction_limit
+                    
+                    break
 
         object_name_prefix = '$%s' % name
 
@@ -1321,18 +1354,64 @@ def load_file(context, filepath, report, game_version, reuse_armature, fix_paren
         object_empty.empty_display_type = 'ARROWS'
 
         mesh_processing.select_object(context, object_empty)
+
+        bpy.ops.rigidbody.constraint_add()
+
+        object_empty.rigid_body_constraint.type = 'GENERIC'
+        object_empty.rigid_body_constraint.use_limit_ang_x = True
+        object_empty.rigid_body_constraint.use_limit_ang_y = True
+        object_empty.rigid_body_constraint.use_limit_ang_z = True
+
+        object_empty.rigid_body_constraint.use_limit_lin_x = True
+        object_empty.rigid_body_constraint.use_limit_lin_y = True
+        object_empty.rigid_body_constraint.use_limit_lin_z = True
+
+        object_empty.rigid_body_constraint.limit_ang_x_lower = radians(ragdoll.min_twist)
+        object_empty.rigid_body_constraint.limit_ang_x_upper = radians(ragdoll.max_twist)
+        object_empty.rigid_body_constraint.limit_ang_y_lower = radians(ragdoll.min_cone)
+        object_empty.rigid_body_constraint.limit_ang_y_upper = radians(ragdoll.max_cone)
+        object_empty.rigid_body_constraint.limit_ang_z_lower = radians(ragdoll.min_plane)
+        object_empty.rigid_body_constraint.limit_ang_z_upper = radians(ragdoll.max_plane)
+
+        object_empty.rigid_body_constraint.limit_lin_x_lower = 0
+        object_empty.rigid_body_constraint.limit_lin_x_upper = 0
+        object_empty.rigid_body_constraint.limit_lin_y_lower = 0
+        object_empty.rigid_body_constraint.limit_lin_y_upper = 0
+        object_empty.rigid_body_constraint.limit_lin_z_lower = 0
+        object_empty.rigid_body_constraint.limit_lin_z_upper = 0
+
+        object_empty.rigid_body_constraint.object1 = ragdoll_attached_object
+        object_empty.rigid_body_constraint.object2 = ragdoll_referenced_object
+
         mesh_processing.select_object(context, armature)
         bpy.ops.object.parent_set(type='ARMATURE', keep_transform=True)
-        matrix_translate = Matrix.Translation(ragdoll.attached_translation)
-        matrix_rotation = ragdoll.attached_rotation.to_matrix().to_4x4()
+        transform_matrix = Euler((0, 0, 0)).to_matrix().to_4x4()
 
-        transform_matrix = matrix_translate @ matrix_rotation
+        ragdoll_origin_index = None
+        ragdoll_origin_is_attached = False
         if not ragdoll_attached_index == -1:
-            pose_bone = armature.pose.bones[jms_file.nodes[parent_idx].name]
+            ragdoll_origin_is_attached = True
+            ragdoll_origin_index = ragdoll_attached_index
+        elif not ragdoll_referenced_index == -1 and ragdoll_origin_index == None:
+            ragdoll_origin_index = ragdoll_referenced_index
+
+        if not ragdoll_origin_index == None:
+            pose_bone = armature.pose.bones[ragdoll_origin_index]
+            ragdoll_rotation = ragdoll.attached_rotation
+            ragdoll_translation = ragdoll.attached_translation
+            if not ragdoll_origin_is_attached:
+                ragdoll_rotation = ragdoll.referenced_rotation
+                ragdoll_translation = ragdoll.referenced_translation
+
+            hinge_local_translate = Matrix.Translation(ragdoll_translation)
+            hinge_local_rotation = ragdoll_rotation.to_matrix().to_4x4()
+            hinge_local_matrix = hinge_local_translate @ hinge_local_rotation
+
             if fix_rotations:
-                transform_matrix = (pose_bone.matrix @ Matrix.Rotation(radians(90.0), 4, 'Z')) @ transform_matrix
+                transform_matrix = (pose_bone.matrix @ Matrix.Rotation(radians(90.0), 4, 'Z')) @ hinge_local_matrix
+
             else:
-                transform_matrix = pose_bone.matrix @ transform_matrix
+                transform_matrix = pose_bone.matrix @ hinge_local_matrix
 
         object_empty.matrix_world = transform_matrix
         object_empty.select_set(False)
@@ -1342,11 +1421,36 @@ def load_file(context, filepath, report, game_version, reuse_armature, fix_paren
         name = hinge.name
         hinge_body_a_index = hinge.body_a_index
         hinge_body_b_index = hinge.body_b_index
+
+        hinge_body_a_object = None
+        hinge_body_b_object = None
         if not hinge_body_a_index == -1:
-            body_a_index = jms_file.nodes[hinge_body_a_index].name
+            for shape in primitive_shapes:
+                shape_object = shape[0]
+                shape_parent_index = shape[1]
+                if shape_parent_index == hinge_body_a_index:
+                    hinge_body_a_object = shape_object
+                    if not shape_object.rigid_body:
+                        mesh_processing.select_object(context, shape_object)
+                        bpy.ops.rigidbody.object_add()
+                        mesh_processing.deselect_objects(context)
+                        shape_object.rigid_body.linear_damping = hinge.friction_limit
+
+                    break
 
         if not hinge_body_b_index == -1:
-            body_b_index = jms_file.nodes[hinge_body_b_index].name
+            for shape in primitive_shapes:
+                shape_object = shape[0]
+                shape_parent_index = shape[1]
+                if shape_parent_index == hinge_body_b_index:
+                    hinge_body_b_object = shape_object
+                    if not shape_object.rigid_body:
+                        mesh_processing.select_object(context, shape_object)
+                        bpy.ops.rigidbody.object_add()
+                        mesh_processing.deselect_objects(context)
+                        shape_object.rigid_body.linear_damping = hinge.friction_limit
+
+                    break
 
         object_name_prefix = '$%s' % name
 
@@ -1357,18 +1461,47 @@ def load_file(context, filepath, report, game_version, reuse_armature, fix_paren
         object_empty.empty_display_type = 'ARROWS'
 
         mesh_processing.select_object(context, object_empty)
+
+        bpy.ops.rigidbody.constraint_add()
+
+        object_empty.rigid_body_constraint.type = 'HINGE'
+        object_empty.rigid_body_constraint.use_limit_ang_z = True
+
+        object_empty.rigid_body_constraint.limit_ang_z_lower = radians(hinge.min_angle)
+        object_empty.rigid_body_constraint.limit_ang_z_upper = radians(hinge.max_angle)
+
+        object_empty.rigid_body_constraint.object1 = hinge_body_a_object
+        object_empty.rigid_body_constraint.object2 = hinge_body_b_object
+
         mesh_processing.select_object(context, armature)
         bpy.ops.object.parent_set(type='ARMATURE', keep_transform=True)
-        matrix_translate = Matrix.Translation(hinge.body_a_translation)
-        matrix_rotation = hinge.body_a_rotation.to_matrix().to_4x4()
+        transform_matrix = Euler((0, 0, 0)).to_matrix().to_4x4()
 
-        transform_matrix = matrix_translate @ matrix_rotation
+        hinge_origin_index = None
+        hinge_origin_is_attached = False
         if not hinge_body_a_index == -1:
-            pose_bone = armature.pose.bones[jms_file.nodes[parent_idx].name]
+            hinge_origin_is_attached = True
+            hinge_origin_index = hinge_body_a_index
+        elif not hinge_body_b_index == -1 and hinge_origin_index == None:
+            hinge_origin_index = hinge_body_b_index
+
+        if not hinge_origin_index == None:
+            pose_bone = armature.pose.bones[hinge_origin_index]
+            hinge_rotation = hinge.body_a_rotation
+            hinge_translation = hinge.body_a_translation
+            if not hinge_origin_is_attached:
+                hinge_rotation = hinge.body_b_rotation
+                hinge_translation = hinge.body_b_translation
+
+            hinge_local_translate = Matrix.Translation(hinge_translation)
+            hinge_local_rotation = hinge_rotation.to_matrix().to_4x4()
+            hinge_local_matrix = hinge_local_translate @ hinge_local_rotation
+
             if fix_rotations:
-                transform_matrix = (pose_bone.matrix @ Matrix.Rotation(radians(90.0), 4, 'Z')) @ transform_matrix
+                transform_matrix = (pose_bone.matrix @ Matrix.Rotation(radians(90.0), 4, 'Z')) @ hinge_local_matrix
+
             else:
-                transform_matrix = pose_bone.matrix @ transform_matrix
+                transform_matrix = pose_bone.matrix @ hinge_local_matrix
 
         object_empty.matrix_world = transform_matrix
         object_empty.select_set(False)
@@ -1378,11 +1511,36 @@ def load_file(context, filepath, report, game_version, reuse_armature, fix_paren
         name = car_wheel.name
         car_wheel_chassis_index = car_wheel.chassis_index
         car_wheel_wheel_index = car_wheel.wheel_index
+
+        car_wheel_chassis_object = None
+        car_wheel_wheel_object = None
         if not car_wheel_chassis_index == -1:
-            chassis_index = jms_file.nodes[car_wheel_chassis_index].name
+            for shape in primitive_shapes:
+                shape_object = shape[0]
+                shape_parent_index = shape[1]
+                if shape_parent_index == car_wheel_chassis_index:
+                    car_wheel_chassis_object = shape_object
+                    if not shape_object.rigid_body:
+                        mesh_processing.select_object(context, shape_object)
+                        bpy.ops.rigidbody.object_add()
+                        mesh_processing.deselect_objects(context)
+                        shape_object.rigid_body.linear_damping = hinge.friction_limit
+
+                    break
 
         if not car_wheel_wheel_index == -1:
-            wheel_index = jms_file.nodes[car_wheel_wheel_index].name
+            for shape in primitive_shapes:
+                shape_object = shape[0]
+                shape_parent_index = shape[1]
+                if shape_parent_index == car_wheel_wheel_index:
+                    car_wheel_wheel_object = shape_object
+                    if not shape_object.rigid_body:
+                        mesh_processing.select_object(context, shape_object)
+                        bpy.ops.rigidbody.object_add()
+                        mesh_processing.deselect_objects(context)
+                        shape_object.rigid_body.linear_damping = hinge.friction_limit
+
+                    break
 
         object_name_prefix = '$%s' % name
 
@@ -1395,16 +1553,33 @@ def load_file(context, filepath, report, game_version, reuse_armature, fix_paren
         mesh_processing.select_object(context, object_empty)
         mesh_processing.select_object(context, armature)
         bpy.ops.object.parent_set(type='ARMATURE', keep_transform=True)
-        matrix_translate = Matrix.Translation(car_wheel.wheel_translation)
-        matrix_rotation = car_wheel.wheel_rotation.to_matrix().to_4x4()
+        transform_matrix = Euler((0, 0, 0)).to_matrix().to_4x4()
 
-        transform_matrix = matrix_translate @ matrix_rotation
+        car_wheel_origin_index = None
+        car_wheel_origin_is_attached = False
         if not car_wheel_chassis_index == -1:
-            pose_bone = armature.pose.bones[jms_file.nodes[car_wheel_chassis_index].name]
+            car_wheel_origin_is_attached = True
+            car_wheel_origin_index = car_wheel_chassis_index
+        elif not car_wheel_wheel_index == -1 and car_wheel_origin_index == None:
+            car_wheel_origin_index = car_wheel_wheel_index
+
+        if not car_wheel_origin_index == None:
+            pose_bone = armature.pose.bones[car_wheel_origin_index]
+            car_wheel_rotation = car_wheel.wheel_rotation
+            car_wheel_translation = car_wheel.wheel_translation
+            if not car_wheel_origin_is_attached:
+                car_wheel_rotation = car_wheel.suspension_rotation
+                car_wheel_translation = car_wheel.suspension_translation
+
+            car_wheel_local_translate = Matrix.Translation(car_wheel_translation)
+            car_wheel_local_rotation = car_wheel_rotation.to_matrix().to_4x4()
+            car_wheel_local_matrix = car_wheel_local_translate @ car_wheel_local_rotation
+
             if fix_rotations:
-                transform_matrix = (pose_bone.matrix @ Matrix.Rotation(radians(90.0), 4, 'Z')) @ transform_matrix
+                transform_matrix = (pose_bone.matrix @ Matrix.Rotation(radians(90.0), 4, 'Z')) @ car_wheel_local_matrix
+
             else:
-                transform_matrix = pose_bone.matrix @ transform_matrix
+                transform_matrix = pose_bone.matrix @ car_wheel_local_matrix
 
         object_empty.matrix_world = transform_matrix
         object_empty.select_set(False)
@@ -1414,11 +1589,34 @@ def load_file(context, filepath, report, game_version, reuse_armature, fix_paren
         name = point_to_point.name
         point_to_point_body_a_index = point_to_point.body_a_index
         point_to_point_body_b_index = point_to_point.body_b_index
+
+        point_to_point_body_a_object = None
+        point_to_point_body_b_object = None
         if not point_to_point_body_a_index == -1:
-            body_a_index = jms_file.nodes[point_to_point_body_a_index].name
+            for shape in primitive_shapes:
+                shape_object = shape[0]
+                shape_parent_index = shape[1]
+                if shape_parent_index == point_to_point_body_a_index:
+                    point_to_point_body_a_object = shape_object
+                    if not shape_object.rigid_body:
+                        mesh_processing.select_object(context, shape_object)
+                        bpy.ops.rigidbody.object_add()
+                        mesh_processing.deselect_objects(context)
+
+                    break
 
         if not point_to_point_body_b_index == -1:
-            body_b_index = jms_file.nodes[point_to_point_body_b_index].name
+            for shape in primitive_shapes:
+                shape_object = shape[0]
+                shape_parent_index = shape[1]
+                if shape_parent_index == point_to_point_body_b_index:
+                    point_to_point_body_b_object = shape_object
+                    if not shape_object.rigid_body:
+                        mesh_processing.select_object(context, shape_object)
+                        bpy.ops.rigidbody.object_add()
+                        mesh_processing.deselect_objects(context)
+
+                    break
 
         object_name_prefix = '$%s' % name
 
@@ -1429,18 +1627,43 @@ def load_file(context, filepath, report, game_version, reuse_armature, fix_paren
         object_empty.empty_display_type = 'ARROWS'
 
         mesh_processing.select_object(context, object_empty)
+
+        bpy.ops.rigidbody.constraint_add()
+
+        object_empty.rigid_body_constraint.type = 'GENERIC_SPRING'
+
+        object_empty.rigid_body_constraint.object1 = point_to_point_body_a_object
+        object_empty.rigid_body_constraint.object2 = point_to_point_body_b_object
+
         mesh_processing.select_object(context, armature)
         bpy.ops.object.parent_set(type='ARMATURE', keep_transform=True)
-        matrix_translate = Matrix.Translation(point_to_point.body_a_translation)
-        matrix_rotation = point_to_point.body_a_rotation.to_matrix().to_4x4()
+        transform_matrix = Euler((0, 0, 0)).to_matrix().to_4x4()
 
-        transform_matrix = matrix_translate @ matrix_rotation
+        point_to_point_origin_index = None
+        point_to_point_origin_is_attached = False
         if not point_to_point_body_a_index == -1:
-            pose_bone = armature.pose.bones[jms_file.nodes[point_to_point_body_a_index].name]
+            point_to_point_origin_is_attached = True
+            point_to_point_origin_index = point_to_point_body_a_index
+        elif not point_to_point_body_b_index == -1 and point_to_point_origin_index == None:
+            point_to_point_origin_index = point_to_point_body_b_index
+
+        if not point_to_point_origin_index == None:
+            pose_bone = armature.pose.bones[point_to_point_origin_index]
+            point_to_point_rotation = point_to_point.body_a_rotation
+            point_to_point_translation = point_to_point.body_a_translation
+            if not point_to_point_origin_is_attached:
+                point_to_point_rotation = point_to_point.body_b_rotation
+                point_to_point_translation = point_to_point.body_b_translation
+
+            point_to_point_local_translate = Matrix.Translation(point_to_point_translation)
+            point_to_point_local_rotation = point_to_point_rotation.to_matrix().to_4x4()
+            point_to_point_local_matrix = point_to_point_local_translate @ point_to_point_local_rotation
+
             if fix_rotations:
-                transform_matrix = (pose_bone.matrix @ Matrix.Rotation(radians(90.0), 4, 'Z')) @ transform_matrix
+                transform_matrix = (pose_bone.matrix @ Matrix.Rotation(radians(90.0), 4, 'Z')) @ point_to_point_local_matrix
+
             else:
-                transform_matrix = pose_bone.matrix @ transform_matrix
+                transform_matrix = pose_bone.matrix @ point_to_point_local_matrix
 
         object_empty.matrix_world = transform_matrix
         object_empty.select_set(False)
