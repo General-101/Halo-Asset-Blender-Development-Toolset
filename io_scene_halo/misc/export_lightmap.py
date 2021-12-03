@@ -50,7 +50,10 @@ def write_file(filepath, report):
         for loop in mesh.loops:
             if loop.vertex_index not in vert_index_list:
                 vert_index_list.append(loop.vertex_index)
-                uv_list.append((mesh.uv_layers.active.data[mesh.loops[loop.index].index].uv, loop.vertex_index))
+                uv = (0.0, 0.0)
+                if mesh.uv_layers.active:
+                    uv = mesh.uv_layers.active.data[mesh.loops[loop.index].index].uv
+                uv_list.append((uv, loop.vertex_index))
 
         uv_list.sort(key=lambda x:x[1])
         for index in range(vert_count):

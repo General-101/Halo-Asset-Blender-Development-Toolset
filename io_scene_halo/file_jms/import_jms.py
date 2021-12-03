@@ -948,7 +948,7 @@ def load_file(context, filepath, report, game_version, reuse_armature, fix_paren
         object_mesh.marker.name_override = marker_name_override
 
         bm = bmesh.new()
-        bmesh.ops.create_uvsphere(bm, u_segments=32, v_segments=16, diameter=1)
+        bmesh.ops.create_uvsphere(bm, u_segments=32, v_segments=16, radius=1)
         bm.to_mesh(mesh)
         bm.free()
 
@@ -1052,7 +1052,7 @@ def load_file(context, filepath, report, game_version, reuse_armature, fix_paren
         collection.objects.link(object_mesh)
 
         bm = bmesh.new()
-        bmesh.ops.create_uvsphere(bm, u_segments=32, v_segments=16, diameter=1)
+        bmesh.ops.create_uvsphere(bm, u_segments=32, v_segments=16, radius=1)
         bm.to_mesh(mesh)
         bm.free()
 
@@ -1714,7 +1714,7 @@ def load_file(context, filepath, report, game_version, reuse_armature, fix_paren
         collection.objects.link(object_mesh)
 
         bm = bmesh.new()
-        bmesh.ops.create_uvsphere(bm, u_segments=32, v_segments=16, diameter=1)
+        bmesh.ops.create_uvsphere(bm, u_segments=32, v_segments=16, radius=1)
         bm.to_mesh(mesh)
         bm.free()
 

@@ -529,7 +529,7 @@ def load_file(context, filepath, report):
                         set_primitive_material(object_material_index, ass_file, object_data)
 
                         bm = bmesh.new()
-                        bmesh.ops.create_uvsphere(bm, u_segments=32, v_segments=16, diameter=1)
+                        bmesh.ops.create_uvsphere(bm, u_segments=32, v_segments=16, radius=1)
                         bm.to_mesh(object_data)
                         bm.free()
 
