@@ -41,10 +41,8 @@ def set_ignore(mesh):
         ignore = True
 
     for collection in collection_list:
-        if not collection.name == 'Master Collection':
-            access_collection = bpy.data.collections[collection.name]
-            if access_collection.hide_viewport:
-                ignore = True
+        if collection.hide_viewport:
+            ignore = True
 
     return ignore
 
