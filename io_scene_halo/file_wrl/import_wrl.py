@@ -145,6 +145,16 @@ WRL2_PARSER = tatsu.compile("""
     float = /-?\\d+\\.\\d+/ ;
 """)
 
+class MeshData():
+    def __init__(self, face_color_data = [], face_error_data = [], line_color_data = [], line_error_data = [], face_data = [], line_data = [], vert_data = []):
+        self.face_color_data = face_color_data
+        self.face_error_data = face_error_data
+        self.line_color_data = line_color_data
+        self.line_error_data = line_error_data
+        self.face_data = face_data
+        self.line_data = line_data
+        self.vert_data = vert_data
+
 def parse_wrl_to_ast(wrl_content):
     '''
     Given a string of the WRL content, returns its abstract syntax tree.
@@ -174,6 +184,7 @@ def infer_error_type(binding_type, mtl_diffuse_colors):
         # unconfirmed values:
         }
 
+    color_info = " (white)"
     if mtl_diffuse_colors:
         found_colors = set()
         for color in mtl_diffuse_colors:
@@ -288,20 +299,65 @@ def generate_mesh_edge(face_error_name, bm_mesh, bm_object, bm_error, vert_data,
         if error_mat not in  list(bm_object.data.materials):
             bm_object.data.materials.append(error_mat)
 
-def convert_wrl_to_blend(context, filepath, report):
+def convert_wrl2_to_blend(input_stream):
     '''
     Translates the WRL input stream to an OBJ output stream and imports into Blender.
     '''
-    input_stream = open(filepath, "r")
-
     vert_index = 1 # Vertex indexes start at 1 in OBJ
-    face_color_data = []
-    face_error_data = []
-    line_color_data = []
-    line_error_data = []
-    face_data = []
-    line_data = []
-    vert_data = []
+    mesh_data = MeshData()
+
+    for separator in parse_wrl2_to_ast(input_stream.read()):
+        error_name = infer_error_type(separator.mtl_binding, separator.colors)
+        # For lines and faces, convert the separator-relative indexes into
+        # global OBJ-relative ones, which we add to arrays to print later:
+        print(separator)
+        if separator.type == "IndexedFaceSet":
+            print("here")
+            for mat_idx, indexed_face in enumerate(separator.indices):
+                print(indexed_face)
+                vert_indices = [int(i) + vert_index for i in indexed_face]
+                f_v0 = int("{0}".format(*vert_indices)) - 1
+                f_v1 = int("{1}".format(*vert_indices)) - 1
+                f_v2 = int("{2}".format(*vert_indices)) - 1
+                mesh_data.face_data.append((f_v0, f_v1, f_v2))
+                mesh_data.face_error_data.append(error_name)
+
+                r = float("{x}".format(**separator.colors[mat_idx]))
+                g = float("{y}".format(**separator.colors[mat_idx]))
+                b = float("{z}".format(**separator.colors[mat_idx]))
+                a = 1.0
+                mesh_data.face_color_data.append((r, g, b, a))
+
+        if separator.type == "IndexedLineSet":
+            for mat_idx, indexed_line in enumerate(separator.indices):
+                vert_indices = [int(i) + vert_index for i in indexed_line]
+                e_v0 = int("{0}".format(*vert_indices)) - 1
+                e_v1 = int("{1}".format(*vert_indices)) - 1
+                mesh_data.line_data.append((e_v0, e_v1))
+                mesh_data.line_error_data.append(error_name)
+
+                r = float("{x}".format(**separator.colors[mat_idx]))
+                g = float("{y}".format(**separator.colors[mat_idx]))
+                b = float("{z}".format(**separator.colors[mat_idx]))
+                a = 1.0
+                mesh_data.line_color_data.append((r, g, b, a))
+
+        for coord in separator.coords:
+            # Put a list of all vertices at the start of the output
+            x_p = float("{x}".format(**coord))
+            y_p = float("{y}".format(**coord))
+            z_p = float("{z}".format(**coord))
+            mesh_data.vert_data.append((x_p, y_p, z_p))
+            vert_index += 1  
+
+    return mesh_data
+
+def convert_wrl_to_blend(input_stream):
+    '''
+    Translates the WRL input stream to an OBJ output stream and imports into Blender.
+    '''
+    vert_index = 1 # Vertex indexes start at 1 in OBJ
+    mesh_data = MeshData()
 
     for separator in parse_wrl_to_ast(input_stream.read()):
         error_name = infer_error_type(separator.mtl_binding, separator.mtl_diffuse_colors)
@@ -313,37 +369,48 @@ def convert_wrl_to_blend(context, filepath, report):
                 f_v0 = int("{0}".format(*vert_indices)) - 1
                 f_v1 = int("{1}".format(*vert_indices)) - 1
                 f_v2 = int("{2}".format(*vert_indices)) - 1
-                face_data.append((f_v0, f_v1, f_v2))
-                face_error_data.append(error_name)
+                mesh_data.face_data.append((f_v0, f_v1, f_v2))
+                mesh_data.face_error_data.append(error_name)
 
                 r = float("{x}".format(**separator.mtl_diffuse_colors[mat_idx]))
                 g = float("{y}".format(**separator.mtl_diffuse_colors[mat_idx]))
                 b = float("{z}".format(**separator.mtl_diffuse_colors[mat_idx]))
                 a = 1.0
-                face_color_data.append((r, g, b, a))
+                mesh_data.face_color_data.append((r, g, b, a))
 
         if separator.indexed_lines:
             for mat_idx, indexed_line in enumerate(separator.indexed_lines):
                 vert_indices = [int(i) + vert_index for i in indexed_line]
                 e_v0 = int("{0}".format(*vert_indices)) - 1
                 e_v1 = int("{1}".format(*vert_indices)) - 1
-                line_data.append((e_v0, e_v1))
-                line_error_data.append(error_name)
+                mesh_data.line_data.append((e_v0, e_v1))
+                mesh_data.line_error_data.append(error_name)
 
                 r = float("{x}".format(**separator.mtl_diffuse_colors[mat_idx]))
                 g = float("{y}".format(**separator.mtl_diffuse_colors[mat_idx]))
                 b = float("{z}".format(**separator.mtl_diffuse_colors[mat_idx]))
                 a = 1.0
-                line_color_data.append((r, g, b, a))
+                mesh_data.line_color_data.append((r, g, b, a))
 
         for coord in separator.coords:
             # Put a list of all vertices at the start of the output
             x_p = float("{x}".format(**coord))
             y_p = float("{y}".format(**coord))
             z_p = float("{z}".format(**coord))
-            vert_data.append((x_p, y_p, z_p))
+            mesh_data.vert_data.append((x_p, y_p, z_p))
             vert_index += 1
 
+    return mesh_data
+
+def generate_wrl(context, filepath, report):
+    input_stream = open(filepath, "r")
+    if "2.0" in input_stream.readline():
+        input_stream.seek(0)
+        mesh_data = convert_wrl2_to_blend(input_stream)
+    else:
+        input_stream.seek(0)
+        mesh_data = convert_wrl_to_blend(input_stream)
+        
     coplanar_face_id = 0
     coplanar_face_error_name = "nearly coplanar surfaces (green, red)"
     coplanar_mesh = None
@@ -416,9 +483,9 @@ def convert_wrl_to_blend(context, filepath, report):
 
     mesh_processing.deselect_objects(context)
 
-    for face_idx, face in enumerate(face_data):
-        face_color = face_color_data[face_idx]
-        face_error = face_error_data[face_idx]
+    for face_idx, face in enumerate(mesh_data.face_data):
+        face_color = mesh_data.face_color_data[face_idx]
+        face_error = mesh_data.face_error_data[face_idx]
         if face_error == coplanar_face_error_name:
             coplanar_mesh = bpy.data.meshes.get(coplanar_face_error_name)
             coplanar_object_mesh = bpy.data.objects.get(coplanar_face_error_name)
@@ -428,7 +495,7 @@ def convert_wrl_to_blend(context, filepath, report):
                 coplanar_object_mesh = bpy.data.objects.new(coplanar_face_error_name, coplanar_mesh)
                 context.collection.objects.link(coplanar_object_mesh)
 
-            generate_mesh_face(coplanar_face_error_name, coplanar_mesh, coplanar_object_mesh, coplanar_bm, vert_data, face, coplanar_face_id, face_color)
+            generate_mesh_face(coplanar_face_error_name, coplanar_mesh, coplanar_object_mesh, coplanar_bm, mesh_data.vert_data, face, coplanar_face_id, face_color)
             coplanar_face_id += 1
 
         elif face_error == degenerate_face_error_name:
@@ -440,7 +507,7 @@ def convert_wrl_to_blend(context, filepath, report):
                 degenerate_object_mesh = bpy.data.objects.new(degenerate_face_error_name, degenerate_mesh)
                 context.collection.objects.link(degenerate_object_mesh)
 
-            generate_mesh_face(degenerate_face_error_name, degenerate_mesh, degenerate_object_mesh, degenerate_bm, vert_data, face, degenerate_face_id, face_color)
+            generate_mesh_face(degenerate_face_error_name, degenerate_mesh, degenerate_object_mesh, degenerate_bm, mesh_data.vert_data, face, degenerate_face_id, face_color)
             degenerate_face_id += 1
 
         elif face_error == portal_outside_face_error_name:
@@ -452,7 +519,7 @@ def convert_wrl_to_blend(context, filepath, report):
                 portal_outside_object_mesh = bpy.data.objects.new(portal_outside_face_error_name, portal_outside_mesh)
                 context.collection.objects.link(portal_outside_object_mesh)
 
-            generate_mesh_face(portal_outside_face_error_name, portal_outside_mesh, portal_outside_object_mesh, portal_outside_bm, vert_data, face, portal_outside_face_id, face_color)
+            generate_mesh_face(portal_outside_face_error_name, portal_outside_mesh, portal_outside_object_mesh, portal_outside_bm, mesh_data.vert_data, face, portal_outside_face_id, face_color)
             portal_outside_face_id += 1
 
         elif face_error == surface_clipped_face_error_name:
@@ -464,7 +531,7 @@ def convert_wrl_to_blend(context, filepath, report):
                 surface_clipped_object_mesh = bpy.data.objects.new(surface_clipped_face_error_name, surface_clipped_mesh)
                 context.collection.objects.link(surface_clipped_object_mesh)
 
-            generate_mesh_face(surface_clipped_face_error_name, surface_clipped_mesh, surface_clipped_object_mesh, surface_clipped_bm, vert_data, face, surface_clipped_face_id, face_color)
+            generate_mesh_face(surface_clipped_face_error_name, surface_clipped_mesh, surface_clipped_object_mesh, surface_clipped_bm, mesh_data.vert_data, face, surface_clipped_face_id, face_color)
             surface_clipped_face_id += 1
 
         elif face_error == portal_undivide_face_error_name:
@@ -476,7 +543,7 @@ def convert_wrl_to_blend(context, filepath, report):
                 portal_undivide_object_mesh = bpy.data.objects.new(portal_undivide_face_error_name, portal_undivide_mesh)
                 context.collection.objects.link(portal_undivide_object_mesh)
 
-            generate_mesh_face(portal_undivide_face_error_name, portal_undivide_mesh, portal_undivide_object_mesh, portal_undivide_bm, vert_data, face, portal_undivide_face_id, face_color)
+            generate_mesh_face(portal_undivide_face_error_name, portal_undivide_mesh, portal_undivide_object_mesh, portal_undivide_bm, mesh_data.vert_data, face, portal_undivide_face_id, face_color)
             portal_undivide_face_id += 1
 
         elif face_error == portal_closed_face_error_name:
@@ -488,7 +555,7 @@ def convert_wrl_to_blend(context, filepath, report):
                 portal_closed_object_mesh = bpy.data.objects.new(portal_closed_face_error_name, portal_closed_mesh)
                 context.collection.objects.link(portal_closed_object_mesh)
 
-            generate_mesh_face(portal_closed_face_error_name, portal_closed_mesh, portal_closed_object_mesh, portal_closed_bm, vert_data, face, portal_closed_face_id, face_color)
+            generate_mesh_face(portal_closed_face_error_name, portal_closed_mesh, portal_closed_object_mesh, portal_closed_bm, mesh_data.vert_data, face, portal_closed_face_id, face_color)
             portal_closed_face_id += 1
 
         elif face_error == duplicate_triangle_face_error_name:
@@ -500,7 +567,7 @@ def convert_wrl_to_blend(context, filepath, report):
                 duplicate_triangle_object_mesh = bpy.data.objects.new(duplicate_triangle_face_error_name, duplicate_triangle_mesh)
                 context.collection.objects.link(duplicate_triangle_object_mesh)
 
-            generate_mesh_face(duplicate_triangle_face_error_name, duplicate_triangle_mesh, duplicate_triangle_object_mesh, duplicate_triangle_bm, vert_data, face, duplicate_triangle_face_id, face_color)
+            generate_mesh_face(duplicate_triangle_face_error_name, duplicate_triangle_mesh, duplicate_triangle_object_mesh, duplicate_triangle_bm, mesh_data.vert_data, face, duplicate_triangle_face_id, face_color)
             duplicate_triangle_face_id += 1
 
         elif face_error == intersecting_fog_face_error_name:
@@ -512,7 +579,7 @@ def convert_wrl_to_blend(context, filepath, report):
                 intersecting_fog_object_mesh = bpy.data.objects.new(intersecting_fog_face_error_name, intersecting_fog_mesh)
                 context.collection.objects.link(intersecting_fog_object_mesh)
 
-            generate_mesh_face(intersecting_fog_face_error_name, intersecting_fog_mesh, intersecting_fog_object_mesh, intersecting_fog_bm, vert_data, face, intersecting_fog_face_id, face_color)
+            generate_mesh_face(intersecting_fog_face_error_name, intersecting_fog_mesh, intersecting_fog_object_mesh, intersecting_fog_bm, mesh_data.vert_data, face, intersecting_fog_face_id, face_color)
             intersecting_fog_face_id += 1
 
         elif face_error == degenerate_uv_face_error_name:
@@ -524,7 +591,7 @@ def convert_wrl_to_blend(context, filepath, report):
                 degenerate_uv_object_mesh = bpy.data.objects.new(degenerate_uv_face_error_name, degenerate_uv_mesh)
                 context.collection.objects.link(degenerate_uv_object_mesh)
 
-            generate_mesh_face(degenerate_uv_face_error_name, degenerate_uv_mesh, degenerate_uv_object_mesh, degenerate_uv_bm, vert_data, face, degenerate_uv_face_id, face_color)
+            generate_mesh_face(degenerate_uv_face_error_name, degenerate_uv_mesh, degenerate_uv_object_mesh, degenerate_uv_bm, mesh_data.vert_data, face, degenerate_uv_face_id, face_color)
             degenerate_uv_face_id += 1
 
         else:
@@ -536,12 +603,12 @@ def convert_wrl_to_blend(context, filepath, report):
                 unknown_object_mesh = bpy.data.objects.new(unknown_error_name, unknown_mesh)
                 context.collection.objects.link(unknown_object_mesh)
 
-            generate_mesh_face(unknown_error_name, unknown_mesh, unknown_object_mesh, unknown_bm, vert_data, face, unknown_face_id, face_color)
+            generate_mesh_face(unknown_error_name, unknown_mesh, unknown_object_mesh, unknown_bm, mesh_data.vert_data, face, unknown_face_id, face_color)
             unknown_face_id += 1
 
-    for edge_idx, edge in enumerate(line_data):
-        edge_color = line_color_data[edge_idx]
-        edge_error = line_error_data[edge_idx]
+    for edge_idx, edge in enumerate(mesh_data.line_data):
+        edge_color = mesh_data.line_color_data[edge_idx]
+        edge_error = mesh_data.line_error_data[edge_idx]
         if edge_error == bad_edge_error_name:
             bad_edge_mesh = bpy.data.meshes.get(bad_edge_error_name)
             bad_edge_object_mesh = bpy.data.objects.get(bad_edge_error_name)
@@ -551,7 +618,7 @@ def convert_wrl_to_blend(context, filepath, report):
                 bad_edge_object_mesh = bpy.data.objects.new(bad_edge_error_name, bad_edge_mesh)
                 context.collection.objects.link(bad_edge_object_mesh)
 
-            generate_mesh_edge(bad_edge_error_name, bad_edge_mesh, bad_edge_object_mesh, bad_edge_bm, vert_data, edge, edge_color)
+            generate_mesh_edge(bad_edge_error_name, bad_edge_mesh, bad_edge_object_mesh, bad_edge_bm, mesh_data.vert_data, edge, edge_color)
 
         elif edge_error == unearthed_edge_error_name:
             unearthed_edge_mesh = bpy.data.meshes.get(unearthed_edge_error_name)
@@ -562,7 +629,7 @@ def convert_wrl_to_blend(context, filepath, report):
                 unearthed_edge_object_mesh = bpy.data.objects.new(unearthed_edge_error_name, unearthed_edge_mesh)
                 context.collection.objects.link(unearthed_edge_object_mesh)
 
-            generate_mesh_edge(unearthed_edge_error_name, unearthed_edge_mesh, unearthed_edge_object_mesh, unearthed_edge_bm, vert_data, edge, edge_color)
+            generate_mesh_edge(unearthed_edge_error_name, unearthed_edge_mesh, unearthed_edge_object_mesh, unearthed_edge_bm, mesh_data.vert_data, edge, edge_color)
 
         else:
             unknown_mesh = bpy.data.meshes.get(unknown_error_name)
@@ -573,7 +640,7 @@ def convert_wrl_to_blend(context, filepath, report):
                 unknown_object_mesh = bpy.data.objects.new(unknown_error_name, unknown_mesh)
                 context.collection.objects.link(unknown_object_mesh)
 
-            generate_mesh_edge(unknown_error_name, unknown_mesh, unknown_object_mesh, unknown_bm, vert_data, edge, edge_color)
+            generate_mesh_edge(unknown_error_name, unknown_mesh, unknown_object_mesh, unknown_bm, mesh_data.vert_data, edge, edge_color)
 
     if coplanar_object_mesh:
         coplanar_bm.to_mesh(coplanar_mesh)

@@ -54,7 +54,7 @@ class ImportWRL(Operator, ImportHelper):
             print('filepath: ', args.filepath)
             self.filepath = args.filepath
 
-        return global_functions.run_code("import_wrl.convert_wrl_to_blend(context, self.filepath, self.report)")
+        return global_functions.run_code("import_wrl.generate_wrl(context, self.filepath, self.report)")
 
 def menu_func_import(self, context):
     self.layout.operator(ImportWRL.bl_idname, text="Halo WRL Debug Geometry (.wrl)")
