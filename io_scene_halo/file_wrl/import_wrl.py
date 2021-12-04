@@ -91,11 +91,71 @@ WRL_PARSER = tatsu.compile("""
     float = /-?\\d+\\.\\d+/ ;
 """)
 
+WRL2_PARSER = tatsu.compile("""
+    @@grammar::VRML2
+    @@parseinfo::False
+
+    start = '#VRML V2.0 utf8' { @+:shape }* $ ;
+
+    shape =
+        'Shape'
+        '{'
+            'geometry DEF' description:string type:geometry_type
+            '{'
+                [ 'colorPerVertex' color_per_vert:bool ]
+                [
+                    'color' 'Color'
+                    '{'
+                        'color'
+                        '['
+                            colors:points
+                        ']'
+                    '}'
+                ]
+                [
+                    'coord' 'Coordinate'
+                    '{'
+                        'point'
+                        '['
+                            coords:points
+                        ']'
+                    '}'
+                ]
+                [
+                    'coordIndex'
+                    '['
+                        indices:index_groups
+                    ']'
+                ]
+            '}'
+        '}'
+        ;
+
+    geometry_type = 'IndexedLineSet' | 'IndexedFaceSet' ;
+
+    points = { @+:point ',' } [ @+:point ] ;
+    point = x:float y:float z:float ;
+
+    index_groups = { @+:index_group ',' } [ @+:index_group ] ;
+    index_group = { @+:index [ ',' ] }+ '-1' ;
+    index = /\\d+/ ;
+
+    string = '"' @:/[^"\n]+/ '"' ;
+    bool = 'FALSE' | 'TRUE' ;
+    float = /-?\\d+\\.\\d+/ ;
+""")
+
 def parse_wrl_to_ast(wrl_content):
     '''
     Given a string of the WRL content, returns its abstract syntax tree.
     '''
     return WRL_PARSER.parse(wrl_content)
+
+def parse_wrl2_to_ast(wrl2_content):
+    '''
+    Given a string of the WRL 2.0 content, returns its abstract syntax tree.
+    '''
+    return WRL2_PARSER.parse(wrl2_content)
 
 def infer_error_type(binding_type, mtl_diffuse_colors):
     '''
