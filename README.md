@@ -23,14 +23,14 @@ Collision Geometry(JMS)    | Full Support                                       
 Physics Models(JMS)        | Full Support                                                      | Partial Support(See 2)                         | Partial Support(See 2)
 Animations(JMA)            | Full Support                                                      | Full Support                                   | Full Support
 JMI Exporting              | Full Support                                                      | Full Support                                   | Full Support
-WRL Importing              | Full Support                                                      | No Support(See 3)                              | No Support(See 3)
+WRL Importing              | Full Support                                                      | Partial Support(See 3)                         | Partial Support(See 3)
 JMS Importing              | Partial Support(See 4)                                            | Partial Support(See 2 and 4)                   | Partial Support(See 2 and 4)
 JMA Importing              | Full Support                                                      | Full Support                                   | Full Support
 ASS Importing              | N/A                                                               | Partial Support(See 4)                         | Partial Support(See 4 and 1) 
 
  1. Toolset is currently missing support for importing or exporting certain Halo 3 JMS/ASS features such as the W coordinate.
  2. Car wheel and pristmatic constraints are not exported properly. WIP
- 3. WRL 2.0 files are not supported by the WRL importing solution provided by the toolset.
+ 3. WRL 2.0 are partially supported. The importer can generate the error geometrty but does not group the error geometry at this time.
  4. JMS/ASS files imported into Blender do not have their triangles connected properly. This means that imported models are improper due to the exporter using vertex normals instead of loop normals.
 
 ## Documentation
