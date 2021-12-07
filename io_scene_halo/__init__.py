@@ -40,6 +40,7 @@ bl_info = {
 
 from . import global_ui
 from . import file_ass
+from . import file_gr2
 from . import file_jma
 from . import file_jmi
 from . import file_jms
@@ -50,6 +51,7 @@ from . import misc
 modules = [
     global_ui,
     file_ass,
+    file_gr2,
     file_jma,
     file_jmi,
     file_jms,

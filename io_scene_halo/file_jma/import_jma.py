@@ -522,6 +522,15 @@ def load_file(context, filepath, report, fix_parents, game_version, jms_path_a, 
 
     scene.frame_end = jma_file.frame_count
     scene.render.fps = jma_file.frame_rate
+
+    animation_filename = bpy.path.basename(filepath).rsplit('.', 1)[0]
+    action = bpy.data.actions.get(animation_filename)
+    if action is None:
+        action = bpy.data.actions.new(name=animation_filename)
+
+    armature.animation_data_create()
+    armature.animation_data.action = action
+
     bpy.ops.object.mode_set(mode = 'POSE')
 
     nodes = jma_file.nodes

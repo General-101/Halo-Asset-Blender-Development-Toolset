@@ -56,7 +56,7 @@ class JMAScene(global_functions.HaloAsset):
         total_frame_count = context.scene.frame_end - first_frame + 1
         for obj in object_list:
             object_properties.append([obj.hide_get(), obj.hide_viewport])
-            if obj.type == 'ARMATURE':
+            if obj.type == 'ARMATURE' and mesh_processing.set_ignore(obj) == False:
                 mesh_processing.unhide_object(obj)
                 armature_count += 1
                 armature = obj

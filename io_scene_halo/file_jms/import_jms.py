@@ -945,6 +945,17 @@ def load_file(context, filepath, report, game_version, reuse_armature, fix_paren
         object_mesh = bpy.data.objects.new(object_name_prefix, mesh)
         collection.objects.link(object_mesh)
 
+        if game_version == 'haloce':
+            if 'physics' in filepath or 'collision' in filepath:
+                object_mesh.marker.marker_mask_type = '1'
+
+        else:
+            if 'collision' in filepath:
+                object_mesh.marker.marker_mask_type = '1'
+
+            elif 'collision' in filepath:
+                object_mesh.marker.marker_mask_type = '2'
+
         object_mesh.marker.name_override = marker_name_override
 
         bm = bmesh.new()
@@ -1342,7 +1353,7 @@ def load_file(context, filepath, report, game_version, reuse_armature, fix_paren
                         bpy.ops.rigidbody.object_add()
                         mesh_processing.deselect_objects(context)
                         shape_object.rigid_body.linear_damping = ragdoll.friction_limit
-                    
+
                     break
 
         object_name_prefix = '$%s' % name

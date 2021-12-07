@@ -348,7 +348,7 @@ def convert_wrl2_to_blend(input_stream):
             y_p = float("{y}".format(**coord))
             z_p = float("{z}".format(**coord))
             mesh_data.vert_data.append((x_p, y_p, z_p))
-            vert_index += 1  
+            vert_index += 1
 
     return mesh_data
 
@@ -410,7 +410,7 @@ def generate_wrl(context, filepath, report):
     else:
         input_stream.seek(0)
         mesh_data = convert_wrl_to_blend(input_stream)
-        
+
     coplanar_face_id = 0
     coplanar_face_error_name = "nearly coplanar surfaces (green, red)"
     coplanar_mesh = None

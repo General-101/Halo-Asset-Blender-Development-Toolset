@@ -2,7 +2,7 @@
 #
 # MIT License
 #
-# Copyright (c) 2021 Steven Garcia
+# Copyright (c) 2020 Steven Garcia
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -47,70 +47,58 @@ from bpy.props import (
         StringProperty
         )
 
-class ExportQUA(Operator, ExportHelper):
-    """Write a QUA file"""
-    bl_idname = 'export_scene.qua'
-    bl_label = 'Export QUA'
-    filename_ext = '.QUA'
-
-    qua_version: EnumProperty(
-        name="Version:",
-        description="What version to use for the Ubercam file",
-        default="5",
-        items=[ ('1', "1", "Non-functional"),
-                ('2', "2", "Non-functional"),
-                ('3', "3", "Non-functional"),
-                ('4', "4", "Non-functional"),
-                ('5', "5", "Non-functional"),
-            ]
-        )
+class ExportGR2(Operator, ExportHelper):
+    """Write a Granny file"""
+    bl_idname = "export_scene.gr2"
+    bl_label = "Export GR2"
+    filename_ext = '.GR2'
 
     filter_glob: StringProperty(
-        default="*.qua",
+        default="*.gr2",
         options={'HIDDEN'},
         )
 
     def execute(self, context):
-        from ..file_qua import export_qua
+        from ..file_gr2 import export_gr2
 
-        return global_functions.run_code("export_qua.write_file(context, self.filepath, self.report, self.qua_version)")
+        return global_functions.run_code("export_gr2.write_file(context, self.filepath, self.report)")
 
-class ImportQUA(Operator, ImportHelper):
-    """Import a QUA file"""
-    bl_idname = "import_scene.qua"
-    bl_label = "Import QUA"
-    filename_ext = '.QUA'
+class ImportGR2(Operator, ImportHelper):
+    """Import a Granny file"""
+    bl_idname = "import_scene.gr2"
+    bl_label = "Import GR2"
+    filename_ext = '.GR2'
 
     filter_glob: StringProperty(
-        default="*.qua",
+        default="*.gr2",
         options={'HIDDEN'},
         )
 
     def execute(self, context):
-        from ..file_qua import import_qua
+        from ..file_gr2 import import_gr2
 
-        return global_functions.run_code("import_qua.load_file(context, self.filepath, self.report)")
+        return global_functions.run_code("import_gr2.load_file(context, self.filepath, self.report)")
 
 def menu_func_export(self, context):
-    self.layout.operator(ExportQUA.bl_idname, text='Halo Ubercam Animation (.qua)')
+    self.layout.operator(ExportGR2.bl_idname, text="Halo Granny V2 (.GR2)")
 
 def menu_func_import(self, context):
-    self.layout.operator(ImportQUA.bl_idname, text="Halo Ubercam Animation (.qua)")
+    self.layout.operator(ImportGR2.bl_idname, text="Halo Granny V2 (.GR2)")
 
 classeshalo = (
-    ImportQUA,
-    ExportQUA,
+    ExportGR2,
+    ImportGR2,
 )
 
 def register():
     for clshalo in classeshalo:
         bpy.utils.register_class(clshalo)
 
-    bpy.types.TOPBAR_MT_file_export.append(menu_func_export)
+    #bpy.types.TOPBAR_MT_file_export.append(menu_func_export)
     #bpy.types.TOPBAR_MT_file_import.append(menu_func_import)
 
 def unregister():
-    bpy.types.TOPBAR_MT_file_export.remove(menu_func_export)
+    #bpy.types.TOPBAR_MT_file_export.remove(menu_func_export)
     #bpy.types.TOPBAR_MT_file_import.remove(menu_func_import)
     for clshalo in classeshalo:
         bpy.utils.unregister_class(clshalo)
