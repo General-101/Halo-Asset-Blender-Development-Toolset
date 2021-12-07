@@ -22,15 +22,17 @@ GBXmodel/Render Model(JMS) | Full Support                                       
 Collision Geometry(JMS)    | Full Support                                                      | Full Support                                   | Full Support 
 Physics Models(JMS)        | Full Support                                                      | Partial Support(See 2)                         | Partial Support(See 2)
 Animations(JMA)            | Full Support                                                      | Full Support                                   | Full Support
+Cinematics(QUA)            | N/A                                                               | N/A                                            | Partial Support(WIP)
 JMI Exporting              | Full Support                                                      | Full Support                                   | Full Support
 WRL Importing              | Full Support                                                      | Partial Support(See 3)                         | Partial Support(See 3)
 JMS Importing              | Partial Support(See 4)                                            | Partial Support(See 2 and 4)                   | Partial Support(See 2 and 4)
 JMA Importing              | Full Support                                                      | Full Support                                   | Full Support
 ASS Importing              | N/A                                                               | Partial Support(See 4)                         | Partial Support(See 4 and 1) 
+QUA Importing              | N/A                                                               | N/A                                            | No Support(WIP)
 
- 1. Toolset is currently missing support for importing or exporting certain Halo 3 JMS/ASS features such as the W coordinate.
- 2. Car wheel and pristmatic constraints are not exported properly. WIP
- 3. WRL 2.0 are partially supported. The importer can generate the error geometrty but does not group the error geometry at this time.
+ 1. Toolset is currently missing support for importing or exporting certain Halo 3 JMS/ASS features such as the W coordinate in UVW.
+ 2. Car wheel and pristmatic constraints are not exported or imported properly. WIP
+ 3. WRL 2.0 files are partially supported. The importer can generate the error geometrty but does not group the error geometry at this time.
  4. JMS/ASS files imported into Blender do not have their triangles connected properly. This means that imported models are improper due to the exporter using vertex normals instead of loop normals.
 
 ## Documentation
@@ -77,6 +79,10 @@ See the following links for information on exporting or importing assets from th
  * The contributors behind Tatsu
    * For providing their code for use in projects like this one.
    * [Tatsu](https://github.com/neogeny/TatSu)
+
+ * The contributors behind lslib
+   * For providing their code for use in projects like this one.
+   * [lslib](https://github.com/Norbyte/lslib)
 
  * Discord user General_101#9814
    * Getting the ball rolling I guess?
