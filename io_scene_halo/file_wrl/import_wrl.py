@@ -310,11 +310,8 @@ def convert_wrl2_to_blend(input_stream):
         error_name = infer_error_type(separator.mtl_binding, separator.colors)
         # For lines and faces, convert the separator-relative indexes into
         # global OBJ-relative ones, which we add to arrays to print later:
-        print(separator)
         if separator.type == "IndexedFaceSet":
-            print("here")
             for mat_idx, indexed_face in enumerate(separator.indices):
-                print(indexed_face)
                 vert_indices = [int(i) + vert_index for i in indexed_face]
                 f_v0 = int("{0}".format(*vert_indices)) - 1
                 f_v1 = int("{1}".format(*vert_indices)) - 1

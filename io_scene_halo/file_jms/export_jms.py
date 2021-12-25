@@ -894,10 +894,10 @@ class JMSScene(global_functions.HaloAsset):
                 lod = mesh_processing.get_lod(material[1], game_version)
                 #This doesn't matter for CE but for Halo 2/3 the region or permutation names can't have any whitespace.
                 #Lets fix that here to make sure nothing goes wrong.
-                if len(material[2]) != 0:
+                if len(material[2]) != 0 and not game_version == 'haloce':
                     region = material[2].replace(' ', '_').replace('\t', '_')
 
-                if len(material[3]) != 0:
+                if len(material[3]) != 0 and not game_version == 'haloce':
                     permutation = material[3].replace(' ', '_').replace('\t', '_')
 
             self.materials.append(JMSScene.Material(name, texture_path, slot, lod, permutation, region))
@@ -1877,7 +1877,6 @@ def command_queue(context, filepath, report, jms_version, jms_version_ce, jms_ve
                     skylight_list.append(obj)
 
         elif obj.type== 'MESH':
-            print('is mesh ', obj.name)
             if export_render and (not mesh_processing.set_ignore(obj) or hidden_geo):
                 if not global_functions.string_empty_check(obj.data.ass_jms.XREF_path) and version > 8205:
                     instance_markers.append(obj)
@@ -1888,9 +1887,7 @@ def command_queue(context, filepath, report, jms_version, jms_version_ce, jms_ve
                     bounding_sphere_list.append(obj)
 
                 elif len(obj.data.polygons) > 0:
-                    print('has polys ', obj.name)
                     if obj.parent and (obj.parent.type == 'ARMATURE' or parent_name.startswith(node_prefix_tuple)):
-                        print('has halo parent ', obj.name)
                         render_count += 1
                         if apply_modifiers:
                             obj_for_convert = obj.evaluated_get(depsgraph)

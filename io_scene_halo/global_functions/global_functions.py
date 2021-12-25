@@ -928,12 +928,18 @@ def get_filename(game_version, permutation_ce, level_of_detail_ce, folder_struct
     if game_version == 'haloce':
         if not permutation_ce == '' or not level_of_detail_ce == None:
             if not permutation_ce == '':
-                ce_settings += '%s ' % (permutation_ce.replace(' ', '_').replace('\t', '_'))
+                permutation_string = permutation_ce
+                if not game_version == 'haloce':
+                    permutation_string = permutation_ce.replace(' ', '_').replace('\t', '_')
+
+                ce_settings += '%s ' % (permutation_string)
+                
             else:
                 ce_settings += '%s ' % ('unnamed')
 
             if not level_of_detail_ce == None:
                 ce_settings += '%s' % (level_of_detail_ce)
+                
             else:
                 ce_settings += '%s' % ('superhigh')
 
@@ -992,13 +998,17 @@ def get_directory(context, game_version, model_type, folder_structure, asset_typ
     if folder_structure and not jmi:
         folder_subdirectories = ("models", "structure", "render", "collision", "physics", "animations")
         true_directory = directory
-        if not os.path.basename(directory) in folder_subdirectories:
-            for name in os.listdir(directory):
-                if os.path.isdir(os.path.join(directory, name)):
-                    if name in folder_subdirectories and os.path.basename(directory).lower() == parent_folder.lower():
-                        true_directory = os.path.dirname(directory)
-                        break
-        else:
+        if not os.path.basename(directory).lower() in folder_subdirectories: # Check if last folder in file path is not a valid source import folder
+            if os.path.basename(directory).lower() == parent_folder.lower(): # Check if last folder in file path matches the Blend filename
+                true_directory = os.path.dirname(directory)
+
+            # This bit is pointless since true_directory is already set to directory which is what this would have done anyways. Leaving it here in case I need it in the future.
+            #else: # Otherwise check if a folder in directory matches the Blend filename
+                #for name in os.listdir(directory):
+                    #if os.path.isdir(os.path.join(directory, name)) and name.lower() == parent_folder.lower():
+                        #break
+
+        else: # Otherwise check if the parent of the source import directory matches our Blend filename
             if os.path.basename(os.path.dirname(directory)).lower() == parent_folder.lower():
                 true_directory = os.path.dirname(os.path.dirname(directory))
 
