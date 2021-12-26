@@ -32,7 +32,7 @@ QUA Importing              | N/A                                                
 
  1. Toolset is currently missing support for importing or exporting certain Halo 3 JMS/ASS features such as the W coordinate in UVW.
  2. Car wheel and pristmatic constraints are not exported or imported properly. WIP
- 3. WRL 2.0 files are partially supported. The importer can generate the error geometrty but does not group the error geometry at this time.
+ 3. WRL 2.0 files are partially supported. The importer can generate the error geometry but does not group the error geometry at this time.
  4. JMS/ASS files imported into Blender do not have their triangles connected properly. This means that imported models are improper due to the exporter using vertex normals instead of loop normals.
 
 ## Documentation
