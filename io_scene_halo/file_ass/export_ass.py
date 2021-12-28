@@ -734,7 +734,7 @@ def write_file(context, filepath, report, ass_version, ass_version_h2, ass_versi
                     tex_u = uv[0]
                     tex_v = uv[1]
                     tex_w = 0
-                    if version >= 5:
+                    if version >= 6:
                         file.write('\n%0.10f\t%0.10f\t%0.10f\n' % (tex_u, tex_v, tex_w))
 
                     else:

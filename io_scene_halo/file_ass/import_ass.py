@@ -254,7 +254,7 @@ class ASSAsset(global_functions.HaloAsset):
                         except ValueError:
                             tex_v = float(tex_v_value.rsplit('.', 1)[0])
 
-                        if self.version >= 7:
+                        if self.version >= 6:
                             tex_w_value = self.next()
 
                             try:
