@@ -480,6 +480,8 @@ def load_file(context, filepath, report):
                     object_mesh = bpy.data.objects.new(instance.name, object_data)
                     collection.objects.link(object_mesh)
 
+                    object_mesh.data.ass_jms.XREF_path = object_element.xref_filepath
+
                     if geo_class == 'GENERIC_LIGHT':
                         object_mesh.data.color = (object_element.light_properties.light_color)
                         object_mesh.data.energy = (object_element.light_properties.intensity)
