@@ -500,7 +500,7 @@ def get_matrix(obj_a, obj_b, is_local, armature, joined_list, is_node, version, 
             if obj_b.parent and is_local:
                 parent_object = get_parent(armature, obj_b, joined_list, -1)
                 if constraint:
-                    object_matrix = (parent_object.matrix_world.inverted() @ obj_a.matrix_world) @ scale_matrix
+                    object_matrix = (parent_object[1].matrix_world.inverted() @ obj_a.matrix_world) @ scale_matrix
 
                 else:
                     object_matrix = (parent_object[1].matrix_world.inverted() @ obj_a.matrix_world) @ scale_matrix
