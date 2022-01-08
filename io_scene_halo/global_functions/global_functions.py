@@ -459,6 +459,7 @@ def get_matrix(obj_a, obj_b, is_local, armature, joined_list, is_node, version, 
         scale_matrix = Matrix.Scale(1, 4, (0, 0, 1))
 
     else:
+        rotation = 0.0
         if fix_rotation:
             rotation = 90.0
 
