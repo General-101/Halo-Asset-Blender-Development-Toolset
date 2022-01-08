@@ -413,7 +413,7 @@ class ASSScene(global_functions.HaloAsset):
             self.instances.append(ASSScene.Instance(original_geo.name, object_index, idx, parent_id, inheritance_flag, local_transform, pivot_transform=ASSScene.Transform()))
             if not evaluted_mesh_name in linked_instance_list and not object_index == -1:
                 linked_instance_list.append(evaluted_mesh_name)
-                object_matrix = global_functions.get_matrix(original_geo, original_geo, False, armature, instance_list, False, version, 'ASS', False, custom_scale, False)
+                object_matrix = global_functions.get_matrix(original_geo, original_geo, False, armature, instance_list, is_bone, version, 'ASS', False, custom_scale, False)
                 object_dimensions = global_functions.get_dimensions(object_matrix, original_geo, version, is_bone, 'ASS', custom_scale)
                 if geo_class == 'SPOT_LGT' or geo_class == 'DIRECT_LGT' or geo_class == 'OMNI_LGT' or geo_class == 'AMBIENT_LGT':
                     light_properties = ASSScene.Light()

@@ -454,7 +454,7 @@ def get_true_extension(filepath, extension, is_import):
 
 def get_matrix(obj_a, obj_b, is_local, armature, joined_list, is_node, version, file_type, constraint, custom_scale, fix_rotation):
     object_matrix = Matrix.Translation((0, 0, 0))
-    rotation = 0.0
+    rotation_matrix = Matrix.Rotation(0, 4, 'Z')
     if file_type == 'ASS':
         scale_matrix = Matrix.Scale(1, 4, (0, 0, 1))
 
