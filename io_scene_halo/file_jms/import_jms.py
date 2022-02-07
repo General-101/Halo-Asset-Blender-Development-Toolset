@@ -1196,7 +1196,7 @@ def load_file(context, filepath, report, game_version, reuse_armature, fix_paren
         collection.objects.link(object_mesh)
 
         bm = bmesh.new()
-        bmesh.ops.create_cone(bm, cap_ends=True, cap_tris=False, segments=12, diameter1=1, diameter2=1, depth=2)
+        bmesh.ops.create_cone(bm, cap_ends=True, cap_tris=False, segments=12, radius1=1, radius2=1, depth=2)
         bm.transform(Matrix.Translation((0, 0, 1)))
         bm.to_mesh(mesh)
         bm.free()

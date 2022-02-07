@@ -515,7 +515,7 @@ def load_file(context, filepath, report):
                         set_primitive_material(object_material_index, ass_file, object_data)
 
                         bm = bmesh.new()
-                        bmesh.ops.create_cone(bm, cap_ends=True, cap_tris=False, segments=12, diameter1=1, diameter2=1, depth=2)
+                        bmesh.ops.create_cone(bm, cap_ends=True, cap_tris=False, segments=12, radius1=1, radius2=1, depth=2)
                         bm.transform(Matrix.Translation((0, 0, 1)))
                         bm.to_mesh(object_data)
                         bm.free()
