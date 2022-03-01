@@ -2,7 +2,7 @@
 #
 # MIT License
 #
-# Copyright (c) 2020 Steven Garcia
+# Copyright (c) 2021 Steven Garcia
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -778,6 +778,13 @@ class HaloAsset:
         except:
             raise AssetParseError()
 
+    def get_first_line(self):
+        """Return the first line in the file, raises AssetParseError on error"""
+        try:
+            return self._elements[0]
+        except:
+            raise AssetParseError()
+
     def next_multiple(self, count):
         """Returns an array of the next n elements, raises AssetParseError on error"""
         try:
@@ -934,13 +941,11 @@ def get_filename(game_version, permutation_ce, level_of_detail_ce, folder_struct
                     permutation_string = permutation_ce.replace(' ', '_').replace('\t', '_')
 
                 ce_settings += '%s ' % (permutation_string)
-                
             else:
                 ce_settings += '%s ' % ('unnamed')
 
             if not level_of_detail_ce == None:
                 ce_settings += '%s' % (level_of_detail_ce)
-                
             else:
                 ce_settings += '%s' % ('superhigh')
 
@@ -1223,7 +1228,7 @@ def material_definition_parser(is_import, material_definition_items, default_reg
     return lod, permutation, region
 
 def get_import_matrix(transform):
-    translation = Matrix.Translation(transform.vector)
+    translation = Matrix.Translation(transform.translation)
     rotation = transform.rotation.to_matrix().to_4x4()
     scale_x = Matrix.Scale(transform.scale, 4, (1, 0, 0))
     scale_y = Matrix.Scale(transform.scale, 4, (0, 1, 0))

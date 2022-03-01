@@ -69,8 +69,9 @@ See the following links for information on exporting or importing assets from th
    * Thanks to Kornman for aiding the development of the toolset by answering questions and 343 Industries/Microsoft for allowing this to happen in the first place.
 
  * The Sigmmma crew
-   * For some tips on importing assets.
+   * For some tips on importing assets and for MEK defs along with some math used in the Halo 1 tag importing code.
    * [Blendkrieg](https://github.com/Sigmmma/Blendkrieg)
+   * [Reclaimer](https://github.com/Sigmmma/reclaimer)
 
  * The contributors behind PyPreprocessor
    * For providing their code for use in projects like this one.

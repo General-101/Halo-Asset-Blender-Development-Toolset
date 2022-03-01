@@ -165,7 +165,7 @@ class Halo_PrefixPropertiesGroup(PropertyGroup):
     prefix_string: StringProperty(
         name = "Prefix",
         default = "",
-        description = "Set the new prefix for selected objects. Undo if you mess up cause you won't be able to try again!"
+        description = "Set the new prefix for selected objects. Undo if you mess up cause you won't be able to try again"
         )
 
 class Face_SetPropertiesGroup(PropertyGroup):
@@ -584,22 +584,22 @@ class Halo_Tools_Helper(Panel):
     bl_category = "Halo Tools"
 
     def draw(self, context):
-        scene = context.scene
-        scene_halo = scene.halo
-        scene_halo_fixup = scene.halo_import_fixup
-        scene_halo_lightmapper = scene.halo_lightmapper
-        scene_halo_prefix = scene.halo_prefix
-        scene_scale_model = scene.scale_model
-        scene_halo_face_set = scene.halo_face_set
-        scene_halo_anim_batch = scene.halo_anim_batch
-
         layout = self.layout
-        row = layout.row()
 
-        box = layout.box()
-        box.label(text="Lightmap Helper:")
-        col = box.column(align=True)
+class Halo_Lightmapper(Panel):
+    bl_label = "Lightmap Helper"
+    bl_idname = "HALO_PT_Lightmapper"
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "UI"
+    bl_options = {'DEFAULT_CLOSED'}
+    bl_parent_id = "HALO_PT_AutoTools"
 
+    def draw(self, context):
+        layout = self.layout
+        scene = context.scene
+        scene_halo_lightmapper = scene.halo_lightmapper
+
+        col = layout.column(align=True)
         row = col.row()
         row.label(text='Image Width:')
         row.prop(scene_halo_lightmapper, "res_x", text='')
@@ -609,37 +609,87 @@ class Halo_Tools_Helper(Panel):
         row = col.row()
         row.operator("halo_bulk.lightmapper_images", text="Generate Lightmap Images")
 
-        box = layout.box()
-        box.label(text="Bone Name Helper:")
-        col = box.column(align=True)
+class Halo_BoneNameHelper(Panel):
+    bl_label = "Bone Name Helper"
+    bl_idname = "HALO_PT_BoneNameHelper"
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "UI"
+    bl_options = {'DEFAULT_CLOSED'}
+    bl_parent_id = "HALO_PT_AutoTools"
+
+    def draw(self, context):
+        layout = self.layout
+
+        col = layout.column(align=True)
         row = col.row()
         row.operator("halo_bulk.bulk_bone_names", text="Rename Bones Halo/Blender Style")
 
-        box = layout.box()
-        box.label(text="Node Prefix Helper:")
-        col = box.column(align=True)
+class Halo_NodePrefixHelper(Panel):
+    bl_label = "Node Prefix Helper"
+    bl_idname = "HALO_PT_NodePrefixHelper"
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "UI"
+    bl_options = {'DEFAULT_CLOSED'}
+    bl_parent_id = "HALO_PT_AutoTools"
+
+    def draw(self, context):
+        layout = self.layout
+        scene = context.scene
+        scene_halo_prefix = scene.halo_prefix
+
+        col = layout.column(align=True)
         row = col.row()
         row.label(text='Prefix:')
         row.prop(scene_halo_prefix, "prefix_string", text='')
         row = col.row()
         row.operator("halo_bulk.bulk_node_prefix", text="Set Halo Node Pefix")
 
-        box = layout.box()
-        box.label(text="Bone Rotation Helper:")
-        col = box.column(align=True)
+class Halo_BoneRotationHelper(Panel):
+    bl_label = "Bone Rotation Helper"
+    bl_idname = "HALO_PT_BoneRotationHelper"
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "UI"
+    bl_options = {'DEFAULT_CLOSED'}
+    bl_parent_id = "HALO_PT_AutoTools"
+
+    def draw(self, context):
+        layout = self.layout
+
+        col = layout.column(align=True)
         row = col.row()
         row.operator("halo_bulk.bulk_bone_rotation", text="Invert Bone Roll")
+        row = col.row()
         row.operator("halo_bulk.bulk_bone_reset", text="Reset Bone Rotation")
 
-        box = layout.box()
-        box.label(text="Cull Materials:")
-        col = box.column(align=True)
+class Halo_CullMaterials(Panel):
+    bl_label = "Cull Materials"
+    bl_idname = "HALO_PT_CullMaterials"
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "UI"
+    bl_options = {'DEFAULT_CLOSED'}
+    bl_parent_id = "HALO_PT_AutoTools"
+
+    def draw(self, context):
+        layout = self.layout
+
+        col = layout.column(align=True)
         row = col.row()
         row.operator("halo_bulk.cull_materials", text="Cull Materials")
 
-        box = layout.box()
-        box.label(text="Scale Model Helper:")
-        col = box.column(align=True)
+class Halo_ScaleModelHelper(Panel):
+    bl_label = "Scale Model Helper"
+    bl_idname = "HALO_PT_ScaleModelHelper"
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "UI"
+    bl_options = {'DEFAULT_CLOSED'}
+    bl_parent_id = "HALO_PT_AutoTools"
+
+    def draw(self, context):
+        layout = self.layout
+        scene = context.scene
+        scene_scale_model = scene.scale_model
+
+        col = layout.column(align=True)
         row = col.row()
         row.label(text='Game:')
         row.prop(scene_scale_model, "game_version", text="")
@@ -672,9 +722,20 @@ class Halo_Tools_Helper(Panel):
         row = col.row()
         row.operator("halo_bulk.scale_model", text="Generate Scale Model")
 
-        box = layout.box()
-        box.label(text="Material Definition Helper:")
-        col = box.column(align=True)
+class Halo_MaterialDefinitionHelper(Panel):
+    bl_label = "Material Definition Helper"
+    bl_idname = "HALO_PT_MaterialDefinitionHelper"
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "UI"
+    bl_options = {'DEFAULT_CLOSED'}
+    bl_parent_id = "HALO_PT_AutoTools"
+
+    def draw(self, context):
+        layout = self.layout
+        scene = context.scene
+        scene_halo_face_set = scene.halo_face_set
+
+        col = layout.column(align=True)
         row = col.row()
         row.label(text='LOD:')
         row.prop(scene_halo_face_set, "level_of_detail", text='')
@@ -690,30 +751,71 @@ class Halo_Tools_Helper(Panel):
         row = col.row()
         row.operator("halo_bulk.face_set", text="Generate Facemap")
 
-        box = layout.box()
-        box.label(text="Import Fixup:")
-        col = box.column(align=True)
+class Halo_ImportFixup(Panel):
+    bl_label = "Import Fixup"
+    bl_idname = "HALO_PT_ImportFixup"
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "UI"
+    bl_options = {'DEFAULT_CLOSED'}
+    bl_parent_id = "HALO_PT_AutoTools"
+
+    def draw(self, context):
+        layout = self.layout
+        scene = context.scene
+        scene_halo_fixup = scene.halo_import_fixup
+
+        col = layout.column(align=True)
         row = col.row()
         row.label(text='Merge Distance:')
         row.prop(scene_halo_fixup, "threshold", text='')
         row = col.row()
         row.operator("halo_bulk.import_fixup", text="Import Fixup")
 
-        box = layout.box()
-        box.label(text="IK Helper:")
-        col = box.column(align=True)
+class Halo_IKHelper(Panel):
+    bl_label = "IK Helper"
+    bl_idname = "HALO_PT_IKHelper"
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "UI"
+    bl_options = {'DEFAULT_CLOSED'}
+    bl_parent_id = "HALO_PT_AutoTools"
+
+    def draw(self, context):
+        layout = self.layout
+
+        col = layout.column(align=True)
         row = col.row()
         row.operator("ik_prep.move_objects", text="IK prep")
 
-        box = layout.box()
-        box.label(text="Multi User Helper:")
-        col = box.column(align=True)
+class Halo_MultiUserHelper(Panel):
+    bl_label = "Multi User Helper"
+    bl_idname = "HALO_PT_MultiUserHelper"
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "UI"
+    bl_options = {'DEFAULT_CLOSED'}
+    bl_parent_id = "HALO_PT_AutoTools"
+
+    def draw(self, context):
+        layout = self.layout
+
+        col = layout.column(align=True)
         row = col.row()
         row.operator("apply_instance_transform.set_transform", text="Set Transform")
 
-        box = layout.box()
-        box.label(text="Batch Anim Converter:")
-        col = box.column(align=True)
+class Halo_BatchAnimConverter(Panel):
+    bl_label = "Batch Anim Converter"
+    bl_idname = "HALO_PT_BatchAnimConverter"
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "UI"
+    bl_options = {'DEFAULT_CLOSED'}
+    bl_parent_id = "HALO_PT_AutoTools"
+
+    def draw(self, context):
+        layout = self.layout
+        scene = context.scene
+        scene_halo = scene.halo
+        scene_halo_anim_batch = scene.halo_anim_batch
+
+        col = layout.column(align=True)
         row = col.row()
         row.operator(JMA_BatchDialog.bl_idname, text="Select Directory")
         row.prop(scene_halo_anim_batch, "directory", text='')
@@ -745,7 +847,7 @@ class Halo_Sky_Tools_Helper(Panel):
 
     def draw(self, context):
         layout = self.layout
-        layout.operator("halo_bulk.generate_hemisphere", text="Generate Sky")
+        layout.operator("halo_bulk.generate_sky", text="Generate Sky")
 
 class Halo_Sky_Dome(Panel):
     bl_label = "Sky Dome"
@@ -975,7 +1077,7 @@ class Bulk_Rename_Prefix(Operator):
         return global_functions.run_code("rename_prefix.rename_prefix(context, scene_halo_prefix.prefix_string)")
 
 class Bulk_Rotate_Bones(Operator):
-    """Add -180 degrees for the roll of all selected bones in edit mode."""
+    """Add -180 degrees for the roll of all selected bones in edit mode"""
     bl_idname = 'halo_bulk.bulk_bone_rotation'
     bl_label = 'Bulk Halo Bones Rotate'
     bl_options = {"REGISTER", "UNDO"}
@@ -985,7 +1087,7 @@ class Bulk_Rotate_Bones(Operator):
         return global_functions.run_code("rotate_bones.rotate_bones(context)")
 
 class Bulk_Reset_Bones(Operator):
-    """Resets bone rotation of all selected bones in edit mode."""
+    """Resets bone rotation of all selected bones in edit mode"""
     bl_idname = 'halo_bulk.bulk_bone_reset'
     bl_label = 'Bulk Halo Bones Reset'
     bl_options = {"REGISTER", "UNDO"}
@@ -995,7 +1097,7 @@ class Bulk_Reset_Bones(Operator):
         return global_functions.run_code("rotate_bones.reset_bones(context)")
 
 class Cull_Materials(Operator):
-    """Sets unused material slots to none for the selected object."""
+    """Sets unused material slots to none for the selected object"""
     bl_idname = 'halo_bulk.cull_materials'
     bl_label = 'Cull Materials'
     bl_options = {"REGISTER", "UNDO"}
@@ -1005,7 +1107,7 @@ class Cull_Materials(Operator):
         return global_functions.run_code("cull_materials.cull_materials(context)")
 
 class Scale_Model(Operator):
-    """Creates a model that matches the ingame scale."""
+    """Creates a model that matches the ingame scale"""
     bl_idname = 'halo_bulk.scale_model'
     bl_label = 'Scale Model'
     bl_options = {"REGISTER", "UNDO"}
@@ -1039,16 +1141,16 @@ class Scale_Model(Operator):
 
         return global_functions.run_code("scale_models.create_model(context, scene_scale_model.game_version, halo_1_unit_index, halo_2_unit_index, halo_3_unit_index)")
 
-class GenerateHemisphere(Operator):
+class GenerateSky(Operator):
     """Generates a hemisphere shaped set of skylights for Halo 3 sky models"""
-    bl_idname = 'halo_bulk.generate_hemisphere'
-    bl_label = 'Sun Strength'
+    bl_idname = 'halo_bulk.generate_sky'
+    bl_label = 'Sky'
     bl_options = {"REGISTER", "UNDO"}
 
     def execute(self, context):
-        from ..misc import generate_hemisphere
+        from ..misc import generate_sky
         scene_halo_sky = context.scene.halo_sky
-        return global_functions.run_code("generate_hemisphere.generate_hemisphere(context, self.report, scene_halo_sky.longitude_slices, scene_halo_sky.lattitude_slices, scene_halo_sky.dome_radius, scene_halo_sky.horizontal_fov, scene_halo_sky.vertical_fov, scene_halo_sky.sky_type, scene_halo_sky.cie_sky_number, scene_halo_sky.hdr_map, scene_halo_sky.haze_height, scene_halo_sky.luminance_only, scene_halo_sky.dome_intensity, scene_halo_sky.override_zenith_color, scene_halo_sky.zenith_color, scene_halo_sky.override_horizon_color, scene_halo_sky.horizon_color, scene_halo_sky.sun_altittude, scene_halo_sky.sun_heading, scene_halo_sky.sun_intensity, scene_halo_sky.sun_disc_size, scene_halo_sky.windowing, scene_halo_sky.override_sun_color, scene_halo_sky.sun_color, scene_halo_sky.air_cleaness, scene_halo_sky.exposure, scene_halo_sky.clamp_colors)")
+        return global_functions.run_code("generate_sky.generate_sky(context, self.report, scene_halo_sky.longitude_slices, scene_halo_sky.lattitude_slices, scene_halo_sky.dome_radius, scene_halo_sky.horizontal_fov, scene_halo_sky.vertical_fov, scene_halo_sky.sky_type, scene_halo_sky.cie_sky_number, scene_halo_sky.hdr_map, scene_halo_sky.haze_height, scene_halo_sky.luminance_only, scene_halo_sky.dome_intensity, scene_halo_sky.override_zenith_color, scene_halo_sky.zenith_color, scene_halo_sky.override_horizon_color, scene_halo_sky.horizon_color, scene_halo_sky.sun_altittude, scene_halo_sky.sun_heading, scene_halo_sky.sun_intensity, scene_halo_sky.sun_disc_size, scene_halo_sky.windowing, scene_halo_sky.override_sun_color, scene_halo_sky.sun_color, scene_halo_sky.air_cleaness, scene_halo_sky.exposure, scene_halo_sky.clamp_colors)")
 
 class ExportLightmap(Operator, ExportHelper):
     """Write a LUV file"""
@@ -1105,7 +1207,7 @@ class Bulk_Set_Transform(Operator):
         return global_functions.run_code("apply_instance_transform.set_transform(context)")
 
 class Bulk_Anim_Convert(Operator):
-    """Convert a whole directory of animation source files from one game to another."""
+    """Convert a whole directory of animation source files from one game to another"""
     bl_idname = 'halo_bulk.anim_convert'
     bl_label = 'Bulk Anim Convert'
     bl_options = {"REGISTER", "UNDO"}
@@ -1129,13 +1231,24 @@ classeshalo = (
     Bulk_Reset_Bones,
     Cull_Materials,
     Scale_Model,
-    GenerateHemisphere,
+    GenerateSky,
     FaceSet,
     ImportFixup,
     Bulk_IK_Prep,
     Bulk_Anim_Convert,
     Bulk_Set_Transform,
     Halo_Tools_Helper,
+    Halo_Lightmapper,
+    Halo_BoneNameHelper,
+    Halo_NodePrefixHelper,
+    Halo_BoneRotationHelper,
+    Halo_CullMaterials,
+    Halo_ScaleModelHelper,
+    Halo_MaterialDefinitionHelper,
+    Halo_ImportFixup,
+    Halo_IKHelper,
+    Halo_MultiUserHelper,
+    Halo_BatchAnimConverter,
     Halo_Sky_Tools_Helper,
     Halo_Sky_Dome,
     Halo_Sky_Light,

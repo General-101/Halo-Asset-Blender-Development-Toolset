@@ -2,7 +2,7 @@
 #
 # MIT License
 #
-# Copyright (c) 2020 Steven Garcia
+# Copyright (c) 2021 Steven Garcia
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -32,7 +32,9 @@ import bmesh
 from os import path
 from mathutils import Matrix
 from ..file_jms import import_jms
+from ..file_jms.format import JMSAsset
 from ..global_functions import mesh_processing
+from ..file_jms.process_file_retail import process_file_retail
 
 halo_one_array = (
 ("captain", (12.3111, 42.2709, 63.7826)),
@@ -161,18 +163,24 @@ halo_three_array = (
 ("wraith", (299.835, 303.158, 93.8022)))
 
 #  load a mesh from JMS and use it as a scale model
-def generate_mesh(file, array_item, gane_version):
-    jms_file = import_jms.JMSAsset(file, gane_version)
+def generate_mesh(file, array_item, game_version):
+    default_region = mesh_processing.get_default_region_permutation_name(game_version)
+    default_permutation = mesh_processing.get_default_region_permutation_name(game_version)
+
+    retail_JMS_version_list = (8197, 8198, 8199, 8200, 8201, 8202, 8203, 8204, 8205, 8206, 8207, 8208, 8209, 8210, 8211, 8212, 8213)
+
+    JMS = JMSAsset(file)
+    JMS = process_file_retail(JMS, game_version, "JMS", retail_JMS_version_list, default_region, default_permutation)
     item_name = array_item[0]
 
     mesh = bpy.data.meshes.new(item_name)
-    if not len(jms_file.vertices) == 0:
+    if not len(JMS.vertices) == 0:
         vert_normal_list = []
         bm = bmesh.new()
-        for triangle in jms_file.triangles:
-            p1 = jms_file.vertices[triangle.v0].translation
-            p2 = jms_file.vertices[triangle.v1].translation
-            p3 = jms_file.vertices[triangle.v2].translation
+        for triangle in JMS.triangles:
+            p1 = JMS.vertices[triangle.v0].translation
+            p2 = JMS.vertices[triangle.v1].translation
+            p3 = JMS.vertices[triangle.v2].translation
             v1 = bm.verts.new((p1[0], p1[1], p1[2]))
             v2 = bm.verts.new((p2[0], p2[1], p2[2]))
             v3 = bm.verts.new((p3[0], p3[1], p3[2]))
@@ -180,7 +188,7 @@ def generate_mesh(file, array_item, gane_version):
             vert_list = [triangle.v0, triangle.v1, triangle.v2]
             for vert in vert_list:
                 vert_normals = []
-                jms_vert = jms_file.vertices[vert]
+                jms_vert = JMS.vertices[vert]
                 for normal in jms_vert.normal:
                     vert_normals.append(normal)
 

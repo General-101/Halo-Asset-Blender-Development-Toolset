@@ -2,7 +2,7 @@
 #
 # MIT License
 #
-# Copyright (c) 2020 Steven Garcia
+# Copyright (c) 2021 Steven Garcia
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -27,7 +27,8 @@
 import os
 import bpy
 
-from ..file_jma import import_jma
+from ..file_jma.format import JMAAsset
+from ..file_jma.process_file_retail import process_file_retail
 from ..global_functions import global_functions
 
 class JMAFile(global_functions.HaloAsset):
@@ -110,13 +111,17 @@ class JMAFile(global_functions.HaloAsset):
 def write_file(context, report, directory, jma_version, jma_version_ce, jma_version_h2, jma_version_h3, game_version):
     version = global_functions.get_version(jma_version, jma_version_ce, jma_version_h2, jma_version_h3, game_version, False)
     extension_list = ('.jma', '.jmm', '.jmt', '.jmo', '.jmr', '.jmrx', '.jmh', '.jmz', '.jmw')
+    retail_version_list = (16390,16391,16392,16393,16394,16395)
     if not os.path.exists(bpy.path.abspath(directory)):
         report({'ERROR'}, "Invalid directory path")
         return {'CANCELLED'}
 
     for file_item in os.listdir(directory):
         if file_item.lower().endswith(extension_list):
-            imported_jma_file = import_jma.JMAAsset(os.path.join(directory, file_item), game_version, report)
+            file_path = os.path.join(directory, file_item)
+            imported_jma_file = JMAAsset(file_path)
+            extension = global_functions.get_true_extension(file_path, None, True)
+            process_file_retail(imported_jma_file, extension, game_version, retail_version_list, report)
             if not imported_jma_file.broken_skeleton:
                 exported_jma_file = JMAFile(context, version, game_version, imported_jma_file)
 

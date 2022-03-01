@@ -2,7 +2,7 @@
 #
 # MIT License
 #
-# Copyright (c) 2020 Steven Garcia
+# Copyright (c) 2022 Steven Garcia
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -167,7 +167,7 @@ class JMS_SceneProps(Panel):
     bl_region_type = 'WINDOW'
     bl_context = "scene"
     bl_options = {'DEFAULT_CLOSED'}
-    bl_parent_id = "HALO_PT_GameVersionPanel"
+    bl_parent_id = "HALO_PT_ScenePropertiesPanel"
     def draw(self, context):
         scene = context.scene
         scene_jms = scene.jms
@@ -373,6 +373,7 @@ class JMS_ScenePropertiesGroup(PropertyGroup):
                 ('8213', "8213", "H3"),
             ]
         )
+
     game_version: EnumProperty(
         name="Game:",
         description="What game will the model file be used for",
@@ -744,7 +745,7 @@ class ExportJMS(Operator, ExportHelper):
         )
 
     def execute(self, context):
-        from io_scene_halo.file_jms import export_jms
+        from . import export_jms
         if '--' in sys.argv:
             argv = sys.argv[sys.argv.index('--') + 1:]
             parser = argparse.ArgumentParser()
@@ -1014,7 +1015,7 @@ class ImportJMS(Operator, ImportHelper):
         )
 
     def execute(self, context):
-        from io_scene_halo.file_jms import import_jms
+        from . import import_jms
         if '--' in sys.argv:
             argv = sys.argv[sys.argv.index('--') + 1:]
             parser = argparse.ArgumentParser()
@@ -1035,14 +1036,15 @@ class ImportJMS(Operator, ImportHelper):
             self.fix_parents = args.fix_parents
             self.fix_rotations = args.fix_rotations
 
-        return global_functions.run_code("import_jms.load_file(context, self.filepath, self.report, self.game_version, self.reuse_armature, self.fix_parents, self.fix_rotations)")
+        return global_functions.run_code("import_jms.load_file(context, self.filepath, self.game_version, self.reuse_armature, self.fix_parents, self.fix_rotations, self.report)")
 
     def draw(self, context):
         layout = self.layout
         box = layout.box()
-        box.label(text="Game Version:")
+        box.label(text="Version:")
         col = box.column(align=True)
         row = col.row()
+        box.label(text="Game Version:")
         row.prop(self, "game_version", text='')
 
         box = layout.box()

@@ -2,7 +2,7 @@
 #
 # MIT License
 #
-# Copyright (c) 2020 Steven Garcia
+# Copyright (c) 2021 Steven Garcia
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -45,7 +45,7 @@ class ImportWRL(Operator, ImportHelper):
         )
 
     def execute(self, context):
-        from io_scene_halo.file_wrl import import_wrl
+        from ..file_wrl import import_wrl
         if '--' in sys.argv:
             argv = sys.argv[sys.argv.index('--') + 1:]
             parser = argparse.ArgumentParser()

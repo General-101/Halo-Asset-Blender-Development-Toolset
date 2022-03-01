@@ -2,7 +2,7 @@
 #
 # MIT License
 #
-# Copyright (c) 2020 Steven Garcia
+# Copyright (c) 2021 Steven Garcia
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -188,7 +188,7 @@ class ASS_SceneProps(Panel):
     bl_region_type = 'WINDOW'
     bl_context = "scene"
     bl_options = {'DEFAULT_CLOSED'}
-    bl_parent_id = "HALO_PT_GameVersionPanel"
+    bl_parent_id = "HALO_PT_ScenePropertiesPanel"
     def draw(self, context):
         scene = context.scene
         scene_ass = scene.ass
@@ -406,24 +406,6 @@ class ExportASS(Operator, ExportHelper):
 
     def execute(self, context):
         from ..file_ass import export_ass
-        keywords = [context,
-                    self.filepath,
-                    self.report,
-                    self.ass_version,
-                    self.ass_version_h2,
-                    self.ass_version_h3,
-                    self.hidden_geo,
-                    self.folder_structure,
-                    self.apply_modifiers,
-                    self.triangulate_faces,
-                    self.edge_split,
-                    self.use_edge_angle,
-                    self.use_edge_sharp,
-                    self.split_angle,
-                    self.clean_normalize_weights,
-                    self.scale_enum,
-                    self.scale_float,
-                    self.console]
 
         if '--' in sys.argv:
             argv = sys.argv[sys.argv.index('--') + 1:]
@@ -475,7 +457,7 @@ class ExportASS(Operator, ExportHelper):
             self.scale_float = args.scale_float
             self.console = args.console
 
-        return global_functions.run_code("export_ass.write_file(*keywords, self.game_version)")
+        return global_functions.run_code("export_ass.write_file(context, self.filepath, self.ass_version, self.ass_version_h2, self.ass_version_h3, self.game_version, self.folder_structure, self.hidden_geo, self.apply_modifiers, self.triangulate_faces, self.edge_split, self.use_edge_angle, self.use_edge_sharp, self.split_angle, self.clean_normalize_weights, self.scale_enum, self.scale_float, self.console, self.report)")
 
     def draw(self, context):
         scene = context.scene

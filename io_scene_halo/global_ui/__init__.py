@@ -2,7 +2,7 @@
 #
 # MIT License
 #
-# Copyright (c) 2020 Steven Garcia
+# Copyright (c) 2021 Steven Garcia
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -265,8 +265,14 @@ class ASS_JMS_MaterialFlagsProps(Panel):
                 row.label(text='Decal Offset:')
                 row.prop(material_ass_jms, "decal_offset", text='')
                 row = col.row()
+                row.label(text='Water Surface:')
+                row.prop(material_ass_jms, "water_surface", text='')
+                row = col.row()
                 row.label(text='Slip Surface:')
                 row.prop(material_ass_jms, "slip_surface", text='')
+                row = col.row()
+                row.label(text='Group Transparents By Plane:')
+                row.prop(material_ass_jms, "group_transparents_by_plane", text='')
 
 class ASS_JMS_MaterialLightmapProps(Panel):
     bl_label = "Lightmap Resolution Properties"
@@ -595,21 +601,21 @@ class ASS_JMS_MaterialPropertiesGroup(PropertyGroup):
         default = False,
         )
 
-    slip_surface: BoolProperty(
-        name ="Blocks Sound",
-        description = "Offsets the faces that this material is applied to as it would normally for a decal",
-        default = False,
-        )
-
     water_surface: BoolProperty(
         name ="Water Surface",
         description = "This flag or shader symbol when applied to a material that is applied to a face or surface marks that surface as a water surface",
         default = False,
         )
 
+    slip_surface: BoolProperty(
+        name ="Blocks Sound",
+        description = "Offsets the faces that this material is applied to as it would normally for a decal",
+        default = False,
+        )
+
     group_transparents_by_plane: BoolProperty(
         name ="Group Transparents by Plane",
-        description = "Group the transparent geometry by fitted planes",
+        description = "This flag or shader symbol when applied to a material that is applied to a face or surface groups the transparent geometry by fitted planes",
         default = False,
         )
 
@@ -874,25 +880,33 @@ class ASS_JMS_MeshPropertiesGroup(PropertyGroup):
 
 class Halo_SceneProps(Panel):
     bl_label = "Halo Scene Properties"
-    bl_idname = "HALO_PT_GameVersionPanel"
+    bl_idname = "HALO_PT_ScenePropertiesPanel"
     bl_space_type = 'PROPERTIES'
     bl_region_type = 'WINDOW'
     bl_context = "scene"
     bl_options = {'DEFAULT_CLOSED'}
+
     def draw(self, context):
+        layout = self.layout
+
+class Halo_GlobalSettings(Panel):
+    bl_label = "Global Settings"
+    bl_idname = "HALO_PT_GlobalSettings"
+    bl_space_type = 'PROPERTIES'
+    bl_region_type = 'WINDOW'
+    bl_context = "scene"
+    bl_options = {'DEFAULT_CLOSED'}
+    bl_parent_id = "HALO_PT_ScenePropertiesPanel"
+
+    def draw(self, context):
+        layout = self.layout
         scene = context.scene
         scene_halo = scene.halo
 
-        layout = self.layout
-
-        box = layout.box()
-        box.label(text="Game Version:")
-        col = box.column(align=True)
+        col = layout.column(align=True)
         row = col.row()
+        row.label(text='Scene Version:')
         row.prop(scene_halo, "game_version", text='')
-        box = layout.box()
-        box.label(text="Export Settings:")
-        col = box.column(align=True)
         row = col.row()
         row.label(text='Expert Mode:')
         row.prop(scene_halo, "expert_mode", text='')
@@ -1125,6 +1139,7 @@ classeshalo = (
     ASS_JMS_MaterialFrustumProps,
     Halo_ScenePropertiesGroup,
     Halo_SceneProps,
+    Halo_GlobalSettings,
 )
 
 def register():

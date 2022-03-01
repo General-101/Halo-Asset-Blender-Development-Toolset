@@ -2,7 +2,7 @@
 #
 # MIT License
 #
-# Copyright (c) 2020 Steven Garcia
+# Copyright (c) 2021 Steven Garcia
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -23,6 +23,8 @@
 # SOFTWARE.
 #
 # ##### END MIT LICENSE BLOCK #####
+
+import bpy
 
 def rename_prefix(context, prefix_string):
     node_prefix_tuple = ('b ', 'b_', 'bone ','bone_', 'frame ','frame_', 'bip01 ', 'bip01_')

@@ -2,7 +2,7 @@
 #
 # MIT License
 #
-# Copyright (c) 2020 Steven Garcia
+# Copyright (c) 2021 Steven Garcia
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -72,10 +72,12 @@ class JMS_RestPositionsADialog(Operator):
         scene_jma = scene.jma
         scene_jma.jms_path_a = self.filepath
         context.area.tag_redraw()
+
         return {'FINISHED'}
 
     def invoke(self, context, event):
         context.window_manager.fileselect_add(self)
+
         return {'RUNNING_MODAL'}
 
 class JMS_RestPositionsBDialog(Operator):
@@ -100,10 +102,12 @@ class JMS_RestPositionsBDialog(Operator):
         scene_jma = scene.jma
         scene_jma.jms_path_b = self.filepath
         context.area.tag_redraw()
+
         return {'FINISHED'}
 
     def invoke(self, context, event):
         context.window_manager.fileselect_add(self)
+
         return {'RUNNING_MODAL'}
 
 class JMA_ScenePropertiesGroup(PropertyGroup):
@@ -312,7 +316,7 @@ class JMA_SceneProps(Panel):
     bl_region_type = 'WINDOW'
     bl_context = "scene"
     bl_options = {'DEFAULT_CLOSED'}
-    bl_parent_id = "HALO_PT_GameVersionPanel"
+    bl_parent_id = "HALO_PT_ScenePropertiesPanel"
     def draw(self, context):
         scene = context.scene
         scene_jma = scene.jma
@@ -584,18 +588,6 @@ class ExportJMA(Operator, ExportHelper):
         min=1.0,
         )
 
-    jms_path_a: StringProperty(
-        name="Primary JMS",
-        description="Select a path to a JMS containing the primary skeleton. Will be used for rest position",
-        subtype="FILE_PATH"
-        )
-
-    jms_path_b: StringProperty(
-        name="Secondary JMS",
-        description="Select a path to a JMS containing the secondary skeleton. Will be used for rest position",
-        subtype="FILE_PATH"
-        )
-
     filter_glob: StringProperty(
         default="*.jma;*.jmm;*.jmt;*.jmo;*.jmr;*.jmrx;*.jmh;*.jmz;*.jmw",
         options={'HIDDEN'},
@@ -857,7 +849,7 @@ class ImportJMA(Operator, ImportHelper):
             self.jms_path_a = args.jms_path_a
             self.jms_path_b = args.jms_path_b
 
-        return global_functions.run_code("import_jma.load_file(context, self.filepath, self.report, self.fix_parents, self.game_version, self.jms_path_a, self.jms_path_b, self.fix_rotations)")
+        return global_functions.run_code("import_jma.load_file(context, self.filepath, self.game_version, self.fix_parents, self.fix_rotations, self.jms_path_a, self.jms_path_b, self.report)")
 
     def draw(self, context):
         scene = context.scene
@@ -867,10 +859,12 @@ class ImportJMA(Operator, ImportHelper):
         layout = self.layout
 
         box = layout.box()
-        box.label(text="Game Version:")
+        box.label(text="Version:")
         col = box.column(align=True)
         row = col.row()
+        row.label(text='Game Version:')
         row.prop(self, "game_version", text='')
+
         if not self.game_version == 'haloce':
             box = layout.box()
             box.label(text="Import Options:")

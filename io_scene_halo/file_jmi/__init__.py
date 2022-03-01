@@ -2,7 +2,7 @@
 #
 # MIT License
 #
-# Copyright (c) 2020 Steven Garcia
+# Copyright (c) 2021 Steven Garcia
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -298,7 +298,7 @@ class JMI_SceneProps(Panel):
     bl_region_type = 'WINDOW'
     bl_context = "scene"
     bl_options = {'DEFAULT_CLOSED'}
-    bl_parent_id = "HALO_PT_GameVersionPanel"
+    bl_parent_id = "HALO_PT_ScenePropertiesPanel"
     def draw(self, context):
         scene = context.scene
         scene_jmi = scene.jmi
