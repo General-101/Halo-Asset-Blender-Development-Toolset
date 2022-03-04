@@ -1103,7 +1103,7 @@ def process_file_retail(input_stream, tag_format, report):
         for vertex_idx in range(cluster_portal.vertices_tag_block.count):
             vertex = LEVEL.Vertices()
             vertex_struct = struct.unpack('>fff', input_stream.read(12))
-            vertex.translation = Vector((vertex_struct[0], vertex_struct[1], vertex_struct[2]))
+            vertex.translation = Vector((vertex_struct[0], vertex_struct[1], vertex_struct[2])) * 100
 
             vertices.append(vertex)
 

@@ -24,7 +24,11 @@
 #
 # ##### END MIT LICENSE BLOCK #####
 
+from enum import Flag, auto
 from mathutils import Vector, Quaternion
+
+class ClusterPortalFlags(Flag):
+    AI_Cant_Hear_Through_This = auto()
 
 class LevelAsset():
     def __init__(self):

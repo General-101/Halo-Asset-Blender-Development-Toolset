@@ -30,6 +30,7 @@ import bmesh
 
 from math import radians
 from mathutils import Vector, Matrix
+from .h1.format import ClusterPortalFlags
 from .h2.format import SurfaceFlags
 from ..global_functions import mesh_processing, global_functions
 
@@ -208,3 +209,53 @@ def build_scene(context, LEVEL, fix_rotations, report):
             bpy.ops.object.parent_set(type='OBJECT', keep_transform=False)
             render_object.select_set(False)
             level_root.select_set(False)
+
+
+    if len(LEVEL.cluster_portals) > 0:
+        portal_bm = bmesh.new()
+        portal_mesh = bpy.data.meshes.new("level_portals")
+        portal_object = bpy.data.objects.new("level_portals", portal_mesh)
+        collection.objects.link(portal_object)
+        for cluster in LEVEL.clusters:
+            for portal in cluster.portals:
+                vert_indices = []
+                cluster_portal = LEVEL.cluster_portals[portal]
+                for vertex in cluster_portal.vertices:
+                    vert_indices.append(portal_bm.verts.new(vertex.translation))
+                
+                portal_bm.faces.new(vert_indices)
+
+            portal_bm.verts.ensure_lookup_table()
+            portal_bm.faces.ensure_lookup_table()
+
+            for portal_idx, portal in enumerate(cluster.portals):
+                cluster_portal = LEVEL.cluster_portals[portal]
+                material_list = []
+
+                material_name = "+portal"
+                if ClusterPortalFlags.AI_Cant_Hear_Through_This in ClusterPortalFlags(cluster_portal.flags):
+                    material_name = "+portal&"
+
+                mat = bpy.data.materials.get(material_name)
+                if mat is None:
+                    mat = bpy.data.materials.new(name=material_name)
+
+                for slot in portal_object.material_slots:
+                    material_list.append(slot.material)
+
+                if not mat in material_list:
+                    material_list.append(mat)
+                    portal_object.data.materials.append(mat)
+
+                mat.diffuse_color = random_color_gen.next()
+                material_index = material_list.index(mat)
+                portal_bm.faces[portal_idx].material_index = material_index
+
+        portal_bm.to_mesh(portal_mesh)
+        portal_bm.free()
+
+        mesh_processing.select_object(context, portal_object)
+        mesh_processing.select_object(context, level_root)
+        bpy.ops.object.parent_set(type='OBJECT', keep_transform=False)
+        portal_object.select_set(False)
+        level_root.select_set(False)
