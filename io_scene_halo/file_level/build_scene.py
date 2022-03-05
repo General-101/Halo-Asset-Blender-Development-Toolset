@@ -87,7 +87,7 @@ def build_scene(context, LEVEL, fix_rotations, report):
             if not is_h1 and H2SurfaceFlags.Invalid in H2SurfaceFlags(surface.flags):
                 is_invalid = True
 
-            if game_version == "retail" and not is_invalid:
+            if not is_invalid:
                 ngon_material_index = surface.material
                 if not ngon_material_index == -1:
                     mat = LEVEL.collision_materials[ngon_material_index]
