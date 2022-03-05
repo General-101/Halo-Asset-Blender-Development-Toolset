@@ -27,6 +27,12 @@
 from enum import Flag, auto
 from mathutils import Vector, Quaternion
 
+class SurfaceFlags(Flag):
+    Two_Sided = auto()
+    Invisible = auto()
+    Climbable = auto()
+    Breakable = auto()
+
 class ClusterPortalFlags(Flag):
     AI_Cant_Hear_Through_This = auto()
 

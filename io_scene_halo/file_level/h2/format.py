@@ -43,7 +43,6 @@ class LevelAsset():
         self.collision_materials = []
         self.collision_bsps = []
         self.surfaces = []
-        self.lightmaps = []
 
     class LevelBody:
         def __init__(self, import_info_tag_block=None, collision_materials_tag_block=None, collision_bsps_tag_block=None, vehicle_floor=0.0, vehicle_ceiling=0.0, 

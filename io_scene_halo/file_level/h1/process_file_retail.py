@@ -851,7 +851,7 @@ def process_file_retail(input_stream, tag_format, report):
     for lens_flare_marker_idx in range(LEVEL.level_body.lens_flare_markers_tag_block.count):
         lens_flare_marker_struct = struct.unpack('>fffbbbb', input_stream.read(16))
         lens_flare_marker = LEVEL.LensFlareMarker()
-        lens_flare_marker.position = Vector((lens_flare_marker_struct[0], lens_flare_marker_struct[1], lens_flare_marker_struct[2]))
+        lens_flare_marker.position = Vector((lens_flare_marker_struct[0], lens_flare_marker_struct[1], lens_flare_marker_struct[2])) * 100
         lens_flare_marker.direction_i_compenent = lens_flare_marker_struct[3]
         lens_flare_marker.direction_j_compenent = lens_flare_marker_struct[4]
         lens_flare_marker.direction_k_compenent = lens_flare_marker_struct[5]
@@ -1164,7 +1164,7 @@ def process_file_retail(input_stream, tag_format, report):
         for vertex_idx in range(fog_plane.vertices_tag_block.count):
             vertex = LEVEL.Vertices()
             vertex_struct = struct.unpack('>fff', input_stream.read(12))
-            vertex.translation = Vector((vertex_struct[0], vertex_struct[1], vertex_struct[2]))
+            vertex.translation = Vector((vertex_struct[0], vertex_struct[1], vertex_struct[2])) * 100
 
             vertices.append(vertex)
 

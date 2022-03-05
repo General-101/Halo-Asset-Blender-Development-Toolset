@@ -29,9 +29,9 @@ import bpy
 import bmesh
 
 from math import radians
-from mathutils import Vector, Matrix
-from .h1.format import ClusterPortalFlags
-from .h2.format import SurfaceFlags
+from mathutils import Vector, Matrix, Euler
+from .h1.format import ClusterPortalFlags, SurfaceFlags as H1SurfaceFlags
+from .h2.format import SurfaceFlags as H2SurfaceFlags
 from ..global_functions import mesh_processing, global_functions
 
 def build_scene(context, LEVEL, fix_rotations, report):
@@ -47,8 +47,12 @@ def build_scene(context, LEVEL, fix_rotations, report):
     bpy.ops.mesh.primitive_cube_add(size=2, enter_editmode=False, align='WORLD', location=(0, 0, 0), scale=(1, 1, 1))
     bpy.ops.object.mode_set(mode='OBJECT')
 
+    is_h1 = True
+    if LEVEL.header.tag_group == "psbs":
+        is_h1 = False
+
     for bsp_idx, bsp in enumerate(LEVEL.collision_bsps):
-        collision_name = "level_collision_%s" % bsp_idx
+        collision_name = "level_collision"
         collision_bm = bmesh.new()
 
         collision_mesh = bpy.data.meshes.new(collision_name)
@@ -69,12 +73,21 @@ def build_scene(context, LEVEL, fix_rotations, report):
                     vert_indices.append(collision_bm.verts.new(bsp.vertices[edge.end_vertex].translation))
                     edge_index = edge.reverse_edge
 
-            if not SurfaceFlags.Invalid in SurfaceFlags(surface.flags):
+            is_invalid = False
+            if not is_h1 and H2SurfaceFlags.Invalid in H2SurfaceFlags(surface.flags):
+                is_invalid = True
+
+            if not is_invalid:
                 collision_bm.faces.new(vert_indices)
+                
 
         collision_bm.faces.ensure_lookup_table()
         for surface_idx, surface in enumerate(bsp.surfaces):
-            if not SurfaceFlags.Invalid in SurfaceFlags(surface.flags):
+            is_invalid = False
+            if not is_h1 and H2SurfaceFlags.Invalid in H2SurfaceFlags(surface.flags):
+                is_invalid = True
+
+            if game_version == "retail" and not is_invalid:
                 ngon_material_index = surface.material
                 if not ngon_material_index == -1:
                     mat = LEVEL.collision_materials[ngon_material_index]
@@ -86,6 +99,34 @@ def build_scene(context, LEVEL, fix_rotations, report):
                         shader = mat.new_shader
 
                     material_name = os.path.basename(shader.name)
+                    if is_h1:
+                        if H1SurfaceFlags.Two_Sided in H1SurfaceFlags(surface.flags):
+                            material_name += "%"
+
+                        if H1SurfaceFlags.Invisible in H1SurfaceFlags(surface.flags):
+                            material_name += "*"
+
+                        if H1SurfaceFlags.Climbable in H1SurfaceFlags(surface.flags):
+                            material_name += "^"
+
+                        if H1SurfaceFlags.Breakable in H1SurfaceFlags(surface.flags):
+                            material_name += "-"
+
+                    else:
+                        if H2SurfaceFlags.Two_Sided in H2SurfaceFlags(surface.flags):
+                            material_name += "%"
+                            
+                        if H2SurfaceFlags.Invisible in H2SurfaceFlags(surface.flags):
+                            material_name += "*"
+
+                        if H2SurfaceFlags.Climbable in H2SurfaceFlags(surface.flags):
+                            material_name += "^"
+
+                        if H2SurfaceFlags.Breakable in H2SurfaceFlags(surface.flags):
+                            material_name += "-"
+
+                        if H2SurfaceFlags.Conveyor in H2SurfaceFlags(surface.flags):
+                            material_name += ">"
 
                 else:
                     material_name = "+sky"
@@ -115,17 +156,17 @@ def build_scene(context, LEVEL, fix_rotations, report):
         collision_object.select_set(False)
         level_root.select_set(False)
 
-    surfaces = LEVEL.surfaces
-    for lightmap_idx, lightmap in enumerate(LEVEL.lightmaps):
+    if is_h1 and len(LEVEL.lightmaps) > 0:
+        surfaces = LEVEL.surfaces
+        render_name = "level_render"
+        render_bm = bmesh.new()
+
+        render_mesh = bpy.data.meshes.new(render_name)
+        render_object = bpy.data.objects.new(render_name, render_mesh)
+        collection.objects.link(render_object)
         face_counter = 0
         vert_normal_list = []
-        if len(lightmap.materials) > 0:
-            render_name = "level_%s" % lightmap_idx
-            render_bm = bmesh.new()
-
-            render_mesh = bpy.data.meshes.new(render_name)
-            render_object = bpy.data.objects.new(render_name, render_mesh)
-            collection.objects.link(render_object)
+        for lightmap_idx, lightmap in enumerate(LEVEL.lightmaps):
             for material in lightmap.materials:
                 triangles = []
                 start_index = material.surfaces
@@ -198,20 +239,19 @@ def build_scene(context, LEVEL, fix_rotations, report):
 
                     face_counter += 1
 
-            render_bm.to_mesh(render_mesh)
-            render_bm.free()
+        render_bm.to_mesh(render_mesh)
+        render_bm.free()
 
-            render_object.data.normals_split_custom_set(vert_normal_list)
-            render_object.data.use_auto_smooth = True
+        render_object.data.normals_split_custom_set(vert_normal_list)
+        render_object.data.use_auto_smooth = True
 
-            mesh_processing.select_object(context, render_object)
-            mesh_processing.select_object(context, level_root)
-            bpy.ops.object.parent_set(type='OBJECT', keep_transform=False)
-            render_object.select_set(False)
-            level_root.select_set(False)
+        mesh_processing.select_object(context, render_object)
+        mesh_processing.select_object(context, level_root)
+        bpy.ops.object.parent_set(type='OBJECT', keep_transform=False)
+        render_object.select_set(False)
+        level_root.select_set(False)
 
-
-    if len(LEVEL.cluster_portals) > 0:
+    if is_h1 and len(LEVEL.cluster_portals) > 0:
         portal_bm = bmesh.new()
         portal_mesh = bpy.data.meshes.new("level_portals")
         portal_object = bpy.data.objects.new("level_portals", portal_mesh)
@@ -258,4 +298,117 @@ def build_scene(context, LEVEL, fix_rotations, report):
         mesh_processing.select_object(context, level_root)
         bpy.ops.object.parent_set(type='OBJECT', keep_transform=False)
         portal_object.select_set(False)
+        level_root.select_set(False)
+
+    if is_h1:
+        for marker in LEVEL.markers:
+            object_name_prefix = '#%s' % marker.name
+            marker_name_override = ""
+            if context.scene.objects.get('#%s' % marker.name):
+                marker_name_override = marker.name
+
+            mesh = bpy.data.meshes.new(object_name_prefix)
+            object_mesh = bpy.data.objects.new(object_name_prefix, mesh)
+            collection.objects.link(object_mesh)
+
+            object_mesh.marker.name_override = marker_name_override
+
+            bm = bmesh.new()
+            bmesh.ops.create_uvsphere(bm, u_segments=32, v_segments=16, radius=1)
+            bm.to_mesh(mesh)
+            bm.free()
+
+            mesh_processing.select_object(context, object_mesh)
+            mesh_processing.select_object(context, level_root)
+            bpy.ops.object.parent_set(type='OBJECT', keep_transform=False)
+
+            matrix_translate = Matrix.Translation(marker.translation)
+            matrix_rotation = marker.rotation.to_matrix().to_4x4()
+
+            transform_matrix = matrix_translate @ matrix_rotation
+            if fix_rotations:
+                transform_matrix = Matrix.Rotation(radians(90.0), 4, 'Z') @ transform_matrix
+
+            object_mesh.matrix_world = transform_matrix
+            object_mesh.data.ass_jms.Object_Type = 'SPHERE'
+            object_mesh.dimensions = (2, 2, 2)
+            object_mesh.select_set(False)
+            level_root.select_set(False)
+
+    if is_h1 and False: # MEK does this for some reason but lens flare markers are generated by settings in the shader. Enable if you need them for some reason.
+        for lens_flare_marker in LEVEL.lens_flare_markers:
+            lens_flare = LEVEL.lens_flares[lens_flare_marker.lens_flare_index]
+            lens_flare_name = os.path.basename(lens_flare.name)
+            object_name_prefix = '#%s' % lens_flare_name
+            marker_name_override = ""
+            if context.scene.objects.get('#%s' % lens_flare_name):
+                marker_name_override = lens_flare_name
+
+            mesh = bpy.data.meshes.new(object_name_prefix)
+            object_mesh = bpy.data.objects.new(object_name_prefix, mesh)
+            collection.objects.link(object_mesh)
+
+            object_mesh.marker.name_override = marker_name_override
+
+            bm = bmesh.new()
+            bmesh.ops.create_uvsphere(bm, u_segments=32, v_segments=16, radius=1)
+            bm.to_mesh(mesh)
+            bm.free()
+
+            mesh_processing.select_object(context, object_mesh)
+            mesh_processing.select_object(context, level_root)
+            bpy.ops.object.parent_set(type='OBJECT', keep_transform=False)
+
+            matrix_translate = Matrix.Translation(lens_flare_marker.position)
+            lens_flare_euler = Euler((lens_flare_marker.direction_i_compenent / 128, lens_flare_marker.direction_j_compenent / 128, lens_flare_marker.direction_k_compenent / 128))
+            matrix_rotation = lens_flare_euler.to_matrix().to_4x4()
+
+            transform_matrix = matrix_translate @ matrix_rotation
+            if fix_rotations:
+                transform_matrix = Matrix.Rotation(radians(90.0), 4, 'Z') @ transform_matrix
+
+            object_mesh.matrix_world = transform_matrix
+            object_mesh.data.ass_jms.Object_Type = 'SPHERE'
+            object_mesh.dimensions = (2, 2, 2)
+            object_mesh.select_set(False)
+            level_root.select_set(False)
+
+    if is_h1 and len(LEVEL.fog_planes) > 0:
+        fog_planes_bm = bmesh.new()
+        fog_planes_mesh = bpy.data.meshes.new("level_fog_planes")
+        fog_planes_object = bpy.data.objects.new("level_fog_planes", fog_planes_mesh)
+        collection.objects.link(fog_planes_object)
+        for fog_plane in LEVEL.fog_planes:
+            vert_indices = []
+            for vertex in fog_plane.vertices:
+                vert_indices.append(fog_planes_bm.verts.new(vertex.translation))
+            
+            fog_planes_bm.faces.new(vert_indices)
+
+        fog_planes_bm.verts.ensure_lookup_table()
+        fog_planes_bm.faces.ensure_lookup_table()
+
+        material_list = []
+
+        material_name = "+unused$"
+        mat = bpy.data.materials.get(material_name)
+        if mat is None:
+            mat = bpy.data.materials.new(name=material_name)
+
+        for slot in fog_planes_object.material_slots:
+            material_list.append(slot.material)
+
+        if not mat in material_list:
+            material_list.append(mat)
+            fog_planes_object.data.materials.append(mat)
+
+        mat.diffuse_color = random_color_gen.next()
+
+        fog_planes_bm.to_mesh(fog_planes_mesh)
+        fog_planes_bm.free()
+
+        mesh_processing.select_object(context, fog_planes_object)
+        mesh_processing.select_object(context, level_root)
+        bpy.ops.object.parent_set(type='OBJECT', keep_transform=False)
+        fog_planes_object.select_set(False)
         level_root.select_set(False)
