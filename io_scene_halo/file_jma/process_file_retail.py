@@ -40,7 +40,7 @@ def process_file_retail(JMA, extension, game_version, retail_version_list, repor
         JMA.node_checksum = int(JMA.next())
 
     transform_count = int(JMA.next())
-    JMA.frame_rate = float(JMA.next())
+    JMA.frame_rate = int(JMA.next())
     actor_count = int(JMA.next())
     JMA.actor_name = JMA.next()
     JMA.frame_count = transform_count
