@@ -602,25 +602,6 @@ class ExportJMA(Operator, ExportHelper):
 
     def execute(self, context):
         from ..file_jma import export_jma
-        keywords = [context,
-                    self.filepath,
-                    self.report,
-                    self.extension,
-                    self.extension_ce,
-                    self.extension_h2,
-                    self.extension_h3,
-                    self.jma_version,
-                    self.jma_version_ce,
-                    self.jma_version_h2,
-                    self.jma_version_h3,
-                    self.generate_checksum,
-                    self.custom_frame_rate,
-                    self.frame_rate_float,
-                    self.biped_controller,
-                    self.folder_structure,
-                    self.scale_enum,
-                    self.scale_float,
-                    self.console]
 
         if '--' in sys.argv:
             argv = sys.argv[sys.argv.index('--') + 1:]
@@ -666,7 +647,7 @@ class ExportJMA(Operator, ExportHelper):
             self.scale_float = args.scale_float
             self.console = args.console
 
-        return export_jma.write_file(*keywords, self.game_version, self.fix_rotations)
+        return global_functions.run_code("export_jma.write_file(context, self.filepath, self.report, self.extension, self.extension_ce, self.extension_h2, self.extension_h3, self.jma_version, self.jma_version_ce, self.jma_version_h2, self.jma_version_h3, self.generate_checksum, self.custom_frame_rate, self.frame_rate_float, self.biped_controller, self.folder_structure, self.scale_enum, self.scale_float, self.console, self.game_version, self.fix_rotations)")
 
     def draw(self, context):
         fps_options = [23.98, 24, 25, 29.97, 30, 50, 59.94, 60]

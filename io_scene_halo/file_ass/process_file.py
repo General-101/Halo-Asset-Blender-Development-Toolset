@@ -33,7 +33,7 @@ def process_file(filepath):
     ASS.version = int(ASS.next())
     version_list = [1, 2, 3, 4, 5, 6, 7]
     if not ASS.version in version_list:
-        raise global_functions.AssetParseError("Importer does not support this ASS version")
+        raise global_functions.ParseError("Importer does not support this ASS version")
 
     ASS.skip(4) # skip header
     material_count = int(ASS.next())

@@ -32,7 +32,7 @@ from ..global_functions import mesh_processing, global_functions
 def command_queue(context, filepath, report, jms_version, jms_version_ce, jms_version_h2, jms_version_h3, generate_checksum, folder_structure, folder_type, apply_modifiers, triangulate_faces, fix_rotations, edge_split, use_edge_angle, use_edge_sharp, split_angle, clean_normalize_weights, scale_enum, scale_float, console, permutation_ce, level_of_detail_ce, hidden_geo, export_render, export_collision, export_physics, game_version, world_nodes):
     object_properties = []
     node_prefix_tuple = ('b ', 'b_', 'bone', 'frame', 'bip01')
-    limit_value = 0.001
+    limit_value = 0.00000000009
 
     world_node_count = 0
     armature_count = 0

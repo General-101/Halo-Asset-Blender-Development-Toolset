@@ -34,7 +34,7 @@ def process_file_retail(JMS, game_version, extension, version_list, default_regi
         JMS.game_version = global_functions.get_game_version(JMS.version, 'JMS')
 
     if not JMS.version in version_list:
-        raise global_functions.AssetParseError("Importer does not support this " + extension + " version")
+        raise global_functions.ParseError("Importer does not support this " + extension + " version")
 
     if JMS.version < 8205:
         JMS.skip(1) # skip the node checksum
@@ -492,7 +492,7 @@ def process_file_retail(JMS, game_version, extension, version_list, default_regi
                 continue # this is a root node, nothing to update
 
             if node.parent >= len(JMS.nodes) or node.parent == node_idx:
-                raise global_functions.AssetParseError("Malformed node graph (bad parent index)")
+                raise global_functions.ParseError("Malformed node graph (bad parent index)")
 
             parent_node = JMS.nodes[node.parent]
             if parent_node.child:
@@ -502,7 +502,7 @@ def process_file_retail(JMS, game_version, extension, version_list, default_regi
                 node.sibling = -1
 
             if node.sibling >= len(JMS.nodes):
-                raise global_functions.AssetParseError("Malformed node graph (sibling index out of range)")
+                raise global_functions.ParseError("Malformed node graph (sibling index out of range)")
 
             parent_node.child = node_idx
     else:
@@ -512,17 +512,17 @@ def process_file_retail(JMS, game_version, extension, version_list, default_regi
                 continue # no child nodes, nothing to update
 
             if node.child >= len(JMS.nodes) or node.child == node_idx:
-                raise global_functions.AssetParseError("Malformed node graph (bad child index)")
+                raise global_functions.ParseError("Malformed node graph (bad child index)")
 
             child_node = JMS.nodes[node.child]
             while child_node != None:
                 child_node.parent = node_idx
                 if child_node.visited:
-                    raise global_functions.AssetParseError("Malformed node graph (circular reference)")
+                    raise global_functions.ParseError("Malformed node graph (circular reference)")
 
                 child_node.visited = True
                 if child_node.sibling >= len(JMS.nodes):
-                    raise global_functions.AssetParseError("Malformed node graph (sibling index out of range)")
+                    raise global_functions.ParseError("Malformed node graph (sibling index out of range)")
 
                 if child_node.sibling != -1:
                     child_node = JMS.nodes[child_node.sibling]

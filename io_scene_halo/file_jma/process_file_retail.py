@@ -30,7 +30,7 @@ from ..global_functions import global_functions
 def process_file_retail(JMA, extension, game_version, retail_version_list, report):
     JMA.version = int(JMA.next())
     if not JMA.version in retail_version_list:
-        raise global_functions.AssetParseError("Importer does not support this " + extension + " version")
+        raise global_functions.ParseError("Importer does not support this " + extension + " version")
 
     JMA.game_version = game_version
     if game_version == 'auto':
@@ -46,7 +46,7 @@ def process_file_retail(JMA, extension, game_version, retail_version_list, repor
     JMA.frame_count = transform_count
 
     if actor_count != 1:
-        raise global_functions.AssetParseError(extension + " actor count must be 1!")
+        raise global_functions.ParseError(extension + " actor count must be 1!")
 
     node_count = int(JMA.next())
     if JMA.version < 16394:

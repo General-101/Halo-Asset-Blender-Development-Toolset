@@ -727,10 +727,7 @@ def get_material(game_version, original_geo, face, geometry, lod, region, permut
 
     return assigned_material
 
-class AssetParseError(Exception):
-    pass
-
-class SceneParseError(Exception):
+class ParseError(Exception):
     pass
 
 class HaloAsset:
@@ -776,14 +773,14 @@ class HaloAsset:
             self._index += 1
             return self._elements[self._index - 1]
         except:
-            raise AssetParseError()
+            raise ParseError()
 
     def get_first_line(self):
         """Return the first line in the file, raises AssetParseError on error"""
         try:
             return self._elements[0]
         except:
-            raise AssetParseError()
+            raise ParseError()
 
     def next_multiple(self, count):
         """Returns an array of the next n elements, raises AssetParseError on error"""
@@ -792,7 +789,7 @@ class HaloAsset:
             self._index += count
             return list
         except:
-            raise AssetParseError()
+            raise ParseError()
 
     def next_vector(self):
         """Return the next vector as mathutils.Vector, raises AssetParseError on error"""
@@ -1029,71 +1026,71 @@ def validate_halo_jms_scene(game_version, version, blend_scene, object_list, jmi
     node_count = len(blend_scene.node_list)
 
     if len(object_list) == 0:
-        raise SceneParseError("No objects in scene.")
+        raise ParseError("No objects in scene.")
 
     elif node_count == 0:
-        raise SceneParseError("No nodes in scene. Add an armature or object mesh named frame.")
+        raise ParseError("No nodes in scene. Add an armature or object mesh named frame.")
 
     elif count_root_nodes(blend_scene.node_list) >= 2 and not jmi:
-        raise SceneParseError("More than one root node. Please remove or rename objects until you only have one root frame object.")
+        raise ParseError("More than one root node. Please remove or rename objects until you only have one root frame object.")
 
     elif blend_scene.mesh_frame_count > 0 and blend_scene.armature_count > 0:
-        raise SceneParseError("Using both armature and object mesh node setup. Choose one or the other.")
+        raise ParseError("Using both armature and object mesh node setup. Choose one or the other.")
 
     elif game_version == 'haloce' and version >= 8201:
-        raise SceneParseError("This version is not supported for Halo CE. Choose from 8197-8200 if you wish to export for Halo CE.")
+        raise ParseError("This version is not supported for Halo CE. Choose from 8197-8200 if you wish to export for Halo CE.")
 
     elif game_version == 'halo2' and version >= 8211:
-        raise SceneParseError("This version is not supported for Halo 2. Choose from 8197-8210 if you wish to export for Halo 2.")
+        raise ParseError("This version is not supported for Halo 2. Choose from 8197-8210 if you wish to export for Halo 2.")
 
     elif game_version == 'halo3' and version >= 8213:
-        raise SceneParseError("This version is not supported for Halo 3. Choose from 8197-8213 if you wish to export for Halo 3.")
+        raise ParseError("This version is not supported for Halo 3. Choose from 8197-8213 if you wish to export for Halo 3.")
 
     elif game_version == 'haloce' and len(blend_scene.render_geometry_list + blend_scene.collision_geometry_list + blend_scene.marker_list) == 0:
-        raise SceneParseError("No geometry in scene.")
+        raise ParseError("No geometry in scene.")
 
     elif not game_version == 'haloce' and len(blend_scene.render_geometry_list + blend_scene.collision_geometry_list + blend_scene.marker_list + blend_scene.hinge_list + blend_scene.ragdoll_list + blend_scene.point_to_point_list + blend_scene.sphere_list + blend_scene.box_list + blend_scene.capsule_list + blend_scene.convex_shape_list + blend_scene.instance_xref_paths + blend_scene.car_wheel_list + blend_scene.prismatic_list + blend_scene.bounding_sphere_list + blend_scene.skylight_list) == 0:
-        raise SceneParseError("No geometry in scene.")
+        raise ParseError("No geometry in scene.")
 
     elif game_version == 'haloce' and node_count > 64:
-        raise SceneParseError("This model has more nodes than Halo CE supports. Please limit your node count to 64 nodes")
+        raise ParseError("This model has more nodes than Halo CE supports. Please limit your node count to 64 nodes")
 
     elif game_version == 'halo2' and node_count > 255:
-        raise SceneParseError("This model has more nodes than Halo 2 supports. Please limit your node count to 255 nodes")
+        raise ParseError("This model has more nodes than Halo 2 supports. Please limit your node count to 255 nodes")
 
     elif game_version == 'halo3' and node_count > 255:
-        raise SceneParseError("This model has more nodes than Halo 3 supports. Please limit your node count to 255 nodes")
+        raise ParseError("This model has more nodes than Halo 3 supports. Please limit your node count to 255 nodes")
 
 def validate_halo_jma_scene(game_version, version, blend_scene, object_list, extension):
     h2_extension_list = ['JRMX', 'JMH']
     node_count = len(blend_scene.node_list)
 
     if len(object_list) == 0:
-        raise SceneParseError("No objects in scene.")
+        raise ParseError("No objects in scene.")
 
     elif node_count == 0:
-        raise SceneParseError("No nodes in scene. Add an armature.")
+        raise ParseError("No nodes in scene. Add an armature.")
 
     elif extension in h2_extension_list and game_version == 'haloce':
-        raise SceneParseError("This extension is not used in Halo CE.")
+        raise ParseError("This extension is not used in Halo CE.")
 
     elif game_version == 'haloce' and version >= 16393:
-        raise SceneParseError("This version is not supported for Halo CE. Choose from 16390-16392 if you wish to export for Halo CE.")
+        raise ParseError("This version is not supported for Halo CE. Choose from 16390-16392 if you wish to export for Halo CE.")
 
     elif game_version == 'halo2' and version >= 16396:
-        raise SceneParseError("This version is not supported for Halo 2. Choose from 16390-16395 if you wish to export for Halo 2.")
+        raise ParseError("This version is not supported for Halo 2. Choose from 16390-16395 if you wish to export for Halo 2.")
 
     elif game_version == 'halo3' and version >= 16396:
-        raise SceneParseError("This version is not supported for Halo 3. Choose from 16390-16395 if you wish to export for Halo 3.")
+        raise ParseError("This version is not supported for Halo 3. Choose from 16390-16395 if you wish to export for Halo 3.")
 
     elif game_version == 'haloce' and node_count > 64:
-        raise SceneParseError("This model has more nodes than Halo CE supports. Please limit your node count to 64 nodes")
+        raise ParseError("This model has more nodes than Halo CE supports. Please limit your node count to 64 nodes")
 
     elif game_version == 'halo2' and node_count > 255:
-        raise SceneParseError("This model has more nodes than Halo 2 supports. Please limit your node count to 255 nodes")
+        raise ParseError("This model has more nodes than Halo 2 supports. Please limit your node count to 255 nodes")
 
     elif game_version == 'halo3' and node_count > 255:
-        raise SceneParseError("This model has more nodes than Halo 3 supports. Please limit your node count to 255 nodes")
+        raise ParseError("This model has more nodes than Halo 3 supports. Please limit your node count to 255 nodes")
 
 def string_empty_check(string):
     is_empty = False
@@ -1298,11 +1295,11 @@ def run_code(code_string):
         caller_locals.pop('__this_is_a_horrible_hack', None)
         return result
 
-    except SceneParseError as parse_error:
+    except ParseError as parse_error:
         crash_report.report_crash()
         report({'ERROR'}, "Bad scene: {0}".format(parse_error))
         return {'CANCELLED'}
-    except AssetParseError as parse_error:
+    except ParseError as parse_error:
         crash_report.report_crash()
         report({'ERROR'}, "Bad file: {0}".format(parse_error))
         return {'CANCELLED'}

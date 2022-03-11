@@ -120,12 +120,12 @@ def generate_jms_skeleton(JMS_A_nodes, JMS_A, JMS_B_nodes, JMS_B, JMA, armature,
 
             current_bone.matrix = transform_matrix
 
-def generate_jma_skeleton(JMS_A_nodes, JMS_A, JMS_B_nodes, JMS_B, JMA, armature, parent_id_class, fix_rotations, game_version):
+def generate_jma_skeleton(JMS_A_nodes, JMS_A, JMS_A_invalid, JMS_B_nodes, JMS_B, JMS_B_invalid, JMA, armature, parent_id_class, fix_rotations, game_version):
     file_version = JMA.version
     first_frame = JMA.transforms[0]
 
     file_type = "JMA"
-    if JMS_A:
+    if JMS_A and not JMS_A_invalid:
         file_type = "JMS"
 
     bpy.ops.object.mode_set(mode = 'EDIT')
@@ -147,7 +147,7 @@ def generate_jma_skeleton(JMS_A_nodes, JMS_A, JMS_B_nodes, JMS_B, JMA, armature,
 
         matrix_translate = Matrix.Translation(first_frame[idx].translation)
         matrix_rotation = first_frame[idx].rotation.to_matrix().to_4x4()
-        if JMS_A:
+        if JMS_A and not JMS_A_invalid and not JMS_B_invalid:
             for a_idx, jms_a_node in enumerate(JMS_A_nodes):
                 if jma_node.name.lower() in jms_a_node.lower():
                     file_version = JMS_A.version
@@ -168,11 +168,11 @@ def generate_jma_skeleton(JMS_A_nodes, JMS_A, JMS_B_nodes, JMS_B, JMA, armature,
         current_bone.tail[2] = bone_distance
 
         is_root = False
-        if JMS_A:
+        if JMS_A and not JMS_A_invalid:
             if jma_node.name.lower() in JMS_A.nodes[0].name.lower():
                 is_root = True
 
-        if JMS_B:
+        if JMS_B and not JMS_B_invalid:
             if jma_node.name.lower() in JMS_B.nodes[0].name.lower():
                 is_root = True
 
@@ -215,13 +215,16 @@ def set_parent_id_class(JMA, parent_id_class):
 
 def jms_file_check(JMS_A, JMS_B, JMA_nodes, report):
     JMS_A_nodes = []
+    JMS_A_invalid = False
     JMS_B_nodes = []
+    JMS_B_invalid = False
     if JMS_A and not JMS_B:
         for jms_node in JMS_A.nodes:
             JMS_A_nodes.append(jms_node.name)
 
         for jms_node_name in JMS_A_nodes:
             if not jms_node_name in JMA_nodes:
+                JMS_A_invalid = True
                 report({'WARNING'}, "Node '%s' from JMS skeleton not found in JMA skeleton." % jms_node_name)
 
         report({'WARNING'}, "No valid armature detected. Attempting to created one and the referenced JMS will be used for the rest position")
@@ -237,11 +240,12 @@ def jms_file_check(JMS_A, JMS_B, JMA_nodes, report):
 
         for jms_node_name in jms_nodes:
             if not jms_node_name in JMA_nodes:
+                JMS_B_invalid = True
                 report({'WARNING'}, "Node '%s' from JMS skeleton not found in JMA skeleton." % jms_node_name)
 
         report({'WARNING'}, "No valid armature detected. Attempting to created one and the referenced JMS files will be used for the rest position")
 
-    return JMS_A_nodes, JMS_B_nodes
+    return JMS_A_nodes, JMS_B_nodes, JMS_A_invalid, JMS_B_invalid
 
 def build_scene(context, JMA, JMS_A, JMS_B, filepath, game_version, fix_parents, fix_rotations, report):
     collection = context.collection
@@ -286,7 +290,7 @@ def build_scene(context, JMA, JMS_A, JMS_B, filepath, game_version, fix_parents,
 
     if armature == None:
         parent_id_class = global_functions.ParentIDFix()
-        JMS_A_nodes, JMS_B_nodes = jms_file_check(JMS_A, JMS_B, jma_nodes, report)
+        JMS_A_nodes, JMS_B_nodes, JMS_A_invalid, JMS_B_invalid = jms_file_check(JMS_A, JMS_B, jma_nodes, report)
         if not JMA.broken_skeleton and JMA.version >= 16392:
             if JMA.version >= 16392:
                 armdata = bpy.data.armatures.new('Armature')
@@ -297,7 +301,7 @@ def build_scene(context, JMA, JMS_A, JMS_B, filepath, game_version, fix_parents,
                     if game_version == 'halo2' or game_version == 'halo3':
                         set_parent_id_class(JMA, parent_id_class)
 
-                generate_jma_skeleton(JMS_A_nodes, JMS_A, JMS_B_nodes, JMS_B, JMA, armature, parent_id_class, fix_rotations, game_version)
+                generate_jma_skeleton(JMS_A_nodes, JMS_A, JMS_A_invalid, JMS_B_nodes, JMS_B, JMS_B_invalid, JMA, armature, parent_id_class, fix_rotations, game_version)
 
             else:
                 report({'ERROR'}, "No valid armature detected and not enough information to build valid skeleton due to version. Import will now be aborted")

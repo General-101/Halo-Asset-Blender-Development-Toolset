@@ -206,7 +206,7 @@ class QUAScene(global_functions.HaloAsset):
                     self.extra_cameras.append(QUAScene.ExtraCameras(extra_camera, extra_shots))
 
         else:
-            raise global_functions.SceneParseError("No cameras in your scene. Create a camera and give it & as the prefix for the object name")
+            raise global_functions.ParseError("No cameras in your scene. Create a camera and give it & as the prefix for the object name")
 
 
 def write_file(context, filepath, report, version):
