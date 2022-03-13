@@ -2,7 +2,7 @@
 #
 # MIT License
 #
-# Copyright (c) 2021 Steven Garcia
+# Copyright (c) 2021 SamDamDing AKA MercyMoon
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
