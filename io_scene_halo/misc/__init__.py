@@ -72,6 +72,96 @@ class JMA_BatchDialog(Operator):
         context.window_manager.fileselect_add(self)
         return {'RUNNING_MODAL'}
 
+class H3EK_PathDialog(Operator):
+    """Set H3EK"""
+    bl_idname = "import_scene.h3ek_path"
+    bl_label = "Set H3EK Directory"
+
+    filter_glob: StringProperty(
+        default="*.exe",
+        options={'HIDDEN'},
+        )
+
+    directory: StringProperty(
+        name="Directory",
+        description="The H3EK Directory",
+    )
+
+    def execute(self, context):
+        scene = context.scene
+        scene_halo_h3ek_path = scene.halo_h3ek_path
+        scene_halo_h3ek_path.directory = self.directory
+        context.area.tag_redraw()
+        return {'FINISHED'}
+
+    def invoke(self, context, event):
+        context.window_manager.fileselect_add(self)
+        return {'RUNNING_MODAL'}
+
+class H3EK_DataPathDialog(Operator):
+    """Set H3EK"""
+    bl_idname = "import_scene.h3ek_data_path"
+    bl_label = "Set H3EK Data Directory"
+
+    filter_glob: StringProperty(
+        default="*.exe",
+        options={'HIDDEN'},
+        )
+
+    directory: StringProperty(
+        name="Directory",
+        description="The H3EK Data Directory",
+    )
+
+    def execute(self, context):
+        scene = context.scene
+        scene_halo_h3ek_data_path = scene.halo_h3ek_data_path
+        scene_halo_h3ek_data_path.directory = self.directory
+        context.area.tag_redraw()
+        return {'FINISHED'}
+
+    def invoke(self, context, event):
+        context.window_manager.fileselect_add(self)
+        return {'RUNNING_MODAL'}
+
+class Halo_MaterialPropertiesGroup(PropertyGroup):
+    set_mattype: BoolProperty(
+        name ="Set Material Type",
+        description = "Sets the material type of the materials in the selected object",
+        default = False,
+    )
+
+    mat_types: EnumProperty(
+        name="Material Types:",
+        description="What material type to use for the materials in the object",
+        items=[ ('two_sided', "Two Sided", "Two Sided"),
+                ('render_only', "Render Only", "Render Only"),
+                ('collision_only', "Collision Only", "Collision Only"),
+                ('sphere_collision_only', "Large Collideable", "Large Collideable"),
+                ('transparent_1_sided', "One-Sided Transparent", "One-Sided Transparent"),
+                ('transparent_2_sided', "Two-Sided Transparent", "Two-Sided Transparent"),
+                ('slip_surface', "Slip Surface", "Slip Surface"),
+                ('group_transparents_by_plane', "Group Transparents by Plane", "Group Transparents by Plane"),
+                ('fog_plane', "Fog Plane", "Fog Plane"),
+                ('water_surface', "Water Surface", "Water Surface"),
+                ('breakable', "Breakable", "Breakable"),
+                ('conveyor', "Conveyor", "Conveyor"),
+                ('ladder', "Ladder", "Ladder"),
+                ('decal_offset', "Decal Offset", "Decal Offset"),
+                ('ai_deafening', "AI Deafening", "AI Deafening"),
+                ('blocks_sound', "Blocks Sound", "Blocks Sound"),
+                ('no_shadow', "No Shadow", "No Shadow"),
+                ('shadow_only', "Shadow Only", "Shadow Only"),
+                ('lightmap_only', "Lightmap Only", "Lightmap Only"),
+                ('ignored_by_lightmaps', "Ignored by Lightmaps", "Ignored by Lightmaps"),
+                ('precise', "Precise", "Precise"),
+                ('portal_exact', "Portal Exact", "Portal Exact"),
+                ('portal_1_way', "One Way Portal", "One Way Portal"),
+                ('portal_door', "Portal Door", "Portal Door"),
+                ('portal_vis_blocker', "Portal Visibility Blocker", "Portal Visibility Blocker"),
+               ]
+        )
+
 class JMA_BatchPropertiesGroup(PropertyGroup):
     jma_version: EnumProperty(
         name="Version:",
@@ -135,6 +225,16 @@ class JMA_BatchPropertiesGroup(PropertyGroup):
     directory: StringProperty(
         name="Directory",
         description="A directory containing animation source files to convert",
+        )
+
+class Halo_H3EKPropertiesGroup(PropertyGroup):
+    directory: StringProperty(
+        name="Directory",
+        description="The H3EK Directory",
+        )
+    datadirectory: StringProperty(
+        name="Data Directory",
+        description="The H3EK Data Directory",
         )
 
 class Halo_ImportFixupPropertiesGroup(PropertyGroup):
@@ -837,6 +937,42 @@ class Halo_BatchAnimConverter(Panel):
         row = col.row()
         row.operator("halo_bulk.anim_convert", text="Convert Directory")
 
+class Halo_MatTools(Panel):
+    bl_label = "Halo Material Tools"
+    bl_idname = "HALO_PT_MatTools"
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "UI"
+    bl_options = {'DEFAULT_CLOSED'}
+    bl_parent_id = "HALO_PT_AutoTools"
+
+    def draw(self, context):
+        from ..misc import mattools
+        layout = self.layout
+        scene = context.scene
+        scene_halo = scene.halo
+        scene_halo_h3ek_path = scene.halo_h3ek_path
+        scene_halo_h3ek_data_path = scene.halo_h3ek_data_path
+        scene_halo_mattype = scene.halo_mattype
+        col = layout.column(align=True)
+        row = col.row()
+        row.operator(H3EK_PathDialog.bl_idname, text="Select H3EK Directory")
+        row.prop(scene_halo_h3ek_path, "directory", text='')
+        row = col.row()
+        row.operator(H3EK_DataPathDialog.bl_idname, text="Select Data Directory")
+        row.prop(scene_halo_h3ek_data_path, "directory", text='')
+        row = col.row()
+        row.operator(Export_Textures.bl_idname, text="Export Textures")
+        row = col.row()
+        row.operator(Make_Bitmaps.bl_idname, text="Make Bitmaps")
+        row = col.row()
+        row.label(text='Set Material Type')
+        row.prop(scene_halo_mattype, "mat_types", text='')
+        row = col.row()
+        row.operator(Set_Material_Type.bl_idname, text='Apply Material Type')
+        row = col.row()
+        row.operator(Enable_Material_Type.bl_idname, text='Toggle Usage of Material Types')
+
+
 class Halo_Sky_Tools_Helper(Panel):
     """Tools to help automate Halo workflow"""
     bl_label = "Halo Sky Tools Helper"
@@ -1215,14 +1351,67 @@ class Bulk_Anim_Convert(Operator):
     def execute(self, context):
         from ..misc import batch_anims
         scene_halo_anim_batch = context.scene.halo_anim_batch
-
+        
         return global_functions.run_code("batch_anims.write_file(context, self.report, scene_halo_anim_batch.directory, scene_halo_anim_batch.jma_version, scene_halo_anim_batch.jma_version_ce, scene_halo_anim_batch.jma_version_h2, scene_halo_anim_batch.jma_version_h3, scene_halo_anim_batch.game_version)")
 
 def menu_func_export(self, context):
     self.layout.operator(ExportLightmap.bl_idname, text="Halo Lightmap UV (.luv)")
 
+class Export_Textures(Operator):
+    """Exports Textures for the selected object"""
+    bl_idname = 'halo_mattools.export_texture'
+    bl_label = 'Export Textures'
+    bl_options = {"REGISTER", "UNDO"}
+    
+    def execute(self, context):
+        from ..misc import mattools
+        scene = context.scene
+        scene_halo_h3ek_data_path = scene.halo_h3ek_data_path
+
+        return global_functions.run_code("mattools.export_texture(context, scene_halo_h3ek_data_path.directory)")
+
+class Make_Bitmaps(Operator):
+    """Make Bitmaps out of Tifs in Working Data Directory"""
+    bl_idname = 'halo_mattools.make_bitmaps'
+    bl_label = 'Make Bitmaps'
+    bl_options = {"REGISTER", "UNDO"}
+    
+    def execute(self, context):
+        from ..misc import mattools
+        scene = context.scene
+        scene_halo_h3ek_data_path = scene.halo_h3ek_data_path
+        scene_halo_h3ek_path = context.scene.halo_h3ek_path
+
+        return global_functions.run_code("mattools.make_bitmaps(context, scene_halo_h3ek_path.directory, scene_halo_h3ek_data_path.directory)")
+
+class Set_Material_Type(Operator):
+    """Set Material Type"""
+    bl_idname = 'halo_mattools.set_material_type'
+    bl_label = 'Set Material Type'
+    bl_options = {"REGISTER", "UNDO"}
+    
+    def execute(self, context):
+        from ..misc import mattools
+        scene = context.scene
+        scene_halo_mattype = scene.halo_mattype
+        return global_functions.run_code("mattools.set_material_type(context, scene_halo_mattype.mat_types)")
+
+class Enable_Material_Type(Operator):
+    """Enables/Disables the usage of material types"""
+    bl_idname = 'halo_mattools.enable_material_type'
+    bl_label = 'Set Material Type'
+    bl_options = {"REGISTER", "UNDO"}
+    
+    def execute(self, context):
+        from ..misc import mattools
+        scene = context.scene
+        scene_halo_mattype = scene.halo_mattype
+        return global_functions.run_code("mattools.enable_material_type(context)")
 classeshalo = (
+    Halo_MaterialPropertiesGroup,
     JMA_BatchDialog,
+    H3EK_PathDialog,
+    H3EK_DataPathDialog,
     ExportLightmap,
     Bulk_Lightmap_Images,
     Bulk_Rename_Bones,
@@ -1249,6 +1438,11 @@ classeshalo = (
     Halo_IKHelper,
     Halo_MultiUserHelper,
     Halo_BatchAnimConverter,
+    Halo_MatTools,
+    Export_Textures,
+    Make_Bitmaps,
+    Set_Material_Type,
+    Enable_Material_Type,
     Halo_Sky_Tools_Helper,
     Halo_Sky_Dome,
     Halo_Sky_Light,
@@ -1258,6 +1452,7 @@ classeshalo = (
     Halo_Sky_Sun_Color,
     Halo_Sky_Misc_Settings,
     JMA_BatchPropertiesGroup,
+    Halo_H3EKPropertiesGroup,
     Halo_ImportFixupPropertiesGroup,
     Halo_LightmapperPropertiesGroup,
     Scale_ModelPropertiesGroup,
@@ -1278,7 +1473,9 @@ def register():
     bpy.types.Scene.halo_sky = PointerProperty(type=SkyPropertiesGroup, name="Sky Helper", description="Generate a sky for Halo 3")
     bpy.types.Scene.halo_face_set = PointerProperty(type=Face_SetPropertiesGroup, name="Halo Face Set Helper", description="Creates a facemap with the exact name we need")
     bpy.types.Scene.halo_anim_batch = PointerProperty(type=JMA_BatchPropertiesGroup, name="Halo Batch Anims", description="Converts all animations in a specific directory to a different version.")
-
+    bpy.types.Scene.halo_h3ek_path = PointerProperty(type=Halo_H3EKPropertiesGroup, name="H3EK Path", description="The H3EK Path")
+    bpy.types.Scene.halo_h3ek_data_path = PointerProperty(type=Halo_H3EKPropertiesGroup, name="H3EK Path", description="The H3EK Data Path")
+    bpy.types.Scene.halo_mattype = PointerProperty(type=Halo_MaterialPropertiesGroup, name ="Material Properties", description="Set the material properties of the active object")
 def unregister():
     bpy.types.TOPBAR_MT_file_export.remove(menu_func_export)
     del bpy.types.Scene.halo_import_fixup
@@ -1288,6 +1485,9 @@ def unregister():
     del bpy.types.Scene.halo_sky
     del bpy.types.Scene.halo_face_set
     del bpy.types.Scene.halo_anim_batch
+    del bpy.types.Scene.halo_h3ek_path
+    del bpy.types.Scene.halo_h3ek_data_path
+    del bpy.types.Scene.halo_mattype
     for clshalo in classeshalo:
         bpy.utils.unregister_class(clshalo)
 
