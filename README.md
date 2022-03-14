@@ -74,7 +74,7 @@ See the following links for information on exporting or importing assets from th
    * [WRL to OBJ](https://github.com/csauve/mek/blob/wrl-to-obj-colors/tools_misc/wrl_to_obj.py)
 
  * Discord user MercyMoon#3864
-   * For developing a Halo materials tool Helper scripts in the toolset.
+   * For developing the Halo materials tool Helper scripts in the toolset.
 
  * Discord user Fulsy#1228
    * For some modifications done to the WaltzStreet version the script was based on.
@@ -91,18 +91,6 @@ See the following links for information on exporting or importing assets from th
  * The Sigmmma crew
    * For some tips on importing assets and for MEK defs along with some math used in the Halo 1 tag importing code.
    * [Sigmmma](https://github.com/Sigmmma)
-
- * The contributors behind PyPreprocessor
-   * For providing their code for use in projects like this one.
-   * [PyPreprocessor](https://github.com/interpreters/pypreprocessor)
-
- * The contributors behind Tatsu
-   * For providing their code for use in projects like this one.
-   * [Tatsu](https://github.com/neogeny/TatSu)
-
- * The contributors behind lslib
-   * For providing their code for use in projects like this one.
-   * [lslib](https://github.com/Norbyte/lslib)
 
  * Discord user General_101#9814
    * Getting the ball rolling I guess?
