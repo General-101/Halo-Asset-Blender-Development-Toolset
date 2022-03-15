@@ -352,7 +352,15 @@ def process_file_mod2_retail(input_stream, report):
                 uncompressed_vertex.normal = Vector((uncompressed_vertex_struct[3], uncompressed_vertex_struct[4], uncompressed_vertex_struct[5]))
                 uncompressed_vertex.binormal = Vector((uncompressed_vertex_struct[6], uncompressed_vertex_struct[7], uncompressed_vertex_struct[8]))
                 uncompressed_vertex.tangent = Vector((uncompressed_vertex_struct[9], uncompressed_vertex_struct[10], uncompressed_vertex_struct[11]))
-                uncompressed_vertex.UV = (uncompressed_vertex_struct[12], uncompressed_vertex_struct[13])
+                U = uncompressed_vertex_struct[6]
+                if not MODEL.mod2_body.base_map_u_scale == 0.0:
+                    U = MODEL.mod2_body.base_map_u_scale * uncompressed_vertex_struct[12] 
+
+                V = uncompressed_vertex_struct[7]
+                if not MODEL.mod2_body.base_map_v_scale == 0.0:
+                    V =  MODEL.mod2_body.base_map_v_scale * uncompressed_vertex_struct[13]
+
+                uncompressed_vertex.UV = (U, V)
                 uncompressed_vertex.node_0_index = uncompressed_vertex_struct[14]
                 uncompressed_vertex.node_1_index = uncompressed_vertex_struct[15]
                 uncompressed_vertex.node_0_weight = uncompressed_vertex_struct[16]
