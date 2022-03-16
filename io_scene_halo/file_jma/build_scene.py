@@ -59,7 +59,7 @@ def generate_jms_skeleton(JMS_A_nodes, JMS_A, JMS_B_nodes, JMS_B, JMA, armature,
                 parent_name = JMS_A.nodes[parent_idx].name
                 rest_position = JMS_A.transforms[0]
                 jms_node = rest_position[a_idx]
-                bone_distance = mesh_processing.get_bone_distance(None, JMS_A, a_idx, "JMS")
+                bone_distance = mesh_processing.get_bone_distance(JMS_A, a_idx, "JMS")
 
         for b_idx, jms_b_node in enumerate(JMS_B_nodes):
             if jma_node.name.lower() in jms_b_node.lower():
@@ -68,7 +68,7 @@ def generate_jms_skeleton(JMS_A_nodes, JMS_A, JMS_B_nodes, JMS_B, JMA, armature,
                 parent_name = JMS_B.nodes[parent_idx].name
                 rest_position = JMS_B.transforms[0]
                 jms_node = rest_position[b_idx]
-                bone_distance = mesh_processing.get_bone_distance(None, JMS_B, b_idx, "JMS")
+                bone_distance = mesh_processing.get_bone_distance(JMS_B, b_idx, "JMS")
 
         if not jms_node:
             if is_fp_root_file_a:
@@ -153,14 +153,14 @@ def generate_jma_skeleton(JMS_A_nodes, JMS_A, JMS_A_invalid, JMS_B_nodes, JMS_B,
                     file_version = JMS_A.version
                     rest_position = JMS_A.transforms[0]
                     jms_node = rest_position[a_idx]
-                    bone_distance = mesh_processing.get_bone_distance(None, JMS_A, a_idx, "JMS")
+                    bone_distance = mesh_processing.get_bone_distance(JMS_A, a_idx, "JMS")
 
             for b_idx, jms_b_node in enumerate(JMS_B_nodes):
                 if jma_node.name.lower() in jms_b_node.lower():
                     file_version = JMS_B.version
                     rest_position = JMS_B.transforms[0]
                     jms_node = rest_position[b_idx]
-                    bone_distance = mesh_processing.get_bone_distance(None, JMS_B, b_idx, "JMS")
+                    bone_distance = mesh_processing.get_bone_distance(JMS_B, b_idx, "JMS")
 
             matrix_translate = Matrix.Translation(jms_node.translation)
             matrix_rotation = jms_node.rotation.to_matrix().to_4x4()
