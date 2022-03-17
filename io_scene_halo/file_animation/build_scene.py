@@ -95,26 +95,15 @@ def create_overlay_animation(scene, armature, animation, nodes, base_transforms,
             matrix_translation = Matrix.Translation(frame[node_idx].translation)
             transform_matrix = matrix_translation @ matrix_rotation @ matrix_scale
 
-            if base_transforms:
-                base_transform = base_transforms[node_idx]
-                base_translation = Matrix.Translation(base_transform.translation)
-                base_rotation = (base_transform.rotation).inverted().to_matrix().to_4x4()
-                base_scale = Matrix.Scale((base_transform.scale), 4, (1, 1, 1))
-                base_matrix = (base_translation @ base_rotation @ base_scale)
+            if fix_rotations:
                 if pose_bone.parent:
-                    parent_node_idx = nodes.index(node.parent)
-                    parent_base_matrix = absolute_matrices[parent_node_idx]
-                    base_matrix = parent_base_matrix @ base_matrix
+                    transform_matrix = (pose_bone.parent.matrix @ Matrix.Rotation(radians(90.0), 4, 'Z')) @ transform_matrix
 
-                absolute_matrices.append(base_matrix)
-
-                transform_matrix = absolute_matrices[node_idx] @ transform_matrix
+                transform_matrix = transform_matrix @ Matrix.Rotation(radians(-90.0), 4, 'Z')
 
             else:
-                transform_matrix = default_node_transforms[node_idx] @ transform_matrix
-
-            if fix_rotations:
-                transform_matrix = transform_matrix @ Matrix.Rotation(radians(-90.0), 4, 'Z')
+                if pose_bone.parent:
+                    transform_matrix = pose_bone.parent.matrix @ transform_matrix
 
             pose_bone.matrix = transform_matrix
             pose_bone.rotation_euler = transform_matrix.to_euler()
