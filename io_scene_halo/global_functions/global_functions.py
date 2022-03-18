@@ -707,7 +707,13 @@ def get_material(game_version, original_geo, face, geometry, lod, region, permut
         if len(original_geo.material_slots) != 0:
             if not face.material_index > object_materials:
                 if geometry.materials[face.material_index] is not None:
-                    assigned_material = original_geo.material_slots[face.material_index].material
+                    mat_slot = original_geo.material_slots[face.material_index]
+                    if mat_slot.link == 'OBJECT':
+                        mat = mat_slot.material
+                    else:
+                        mat = geometry.materials[face.material_index]
+
+                    assigned_material = mat
 
                 else:
                     assigned_material = None
@@ -723,7 +729,13 @@ def get_material(game_version, original_geo, face, geometry, lod, region, permut
         if len(original_geo.material_slots) != 0:
             if not face.material_index > object_materials:
                 if geometry.materials[face.material_index] is not None:
-                    assigned_material = [original_geo.material_slots[face.material_index].material, lod, region, permutation]
+                    mat_slot = original_geo.material_slots[face.material_index]
+                    if mat_slot.link == 'OBJECT':
+                        mat = mat_slot.material
+                    else:
+                        mat = geometry.materials[face.material_index]
+
+                    assigned_material = [mat, lod, region, permutation]
 
     return assigned_material
 
