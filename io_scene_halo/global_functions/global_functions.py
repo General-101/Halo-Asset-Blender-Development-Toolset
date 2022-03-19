@@ -701,41 +701,33 @@ def get_face_material(original_geo, face):
     return assigned_material
 
 def get_material(game_version, original_geo, face, geometry, lod, region, permutation):
-    object_materials = len(original_geo.material_slots) - 1
+    object_materials = len(original_geo.material_slots)
     assigned_material = None
+    face_material_index = face.material_index
     if game_version == 'haloce':
-        if len(original_geo.material_slots) != 0:
-            if not face.material_index > object_materials:
-                if geometry.materials[face.material_index] is not None:
-                    mat_slot = original_geo.material_slots[face.material_index]
-                    if mat_slot.link == 'OBJECT':
-                        mat = mat_slot.material
-                    else:
-                        mat = geometry.materials[face.material_index]
-
-                    assigned_material = mat
-
-                else:
-                    assigned_material = None
-
+        if not object_materials <= 0 and not face_material_index >= object_materials:
+            mat_slot = original_geo.material_slots[face_material_index]
+            if mat_slot.link == 'OBJECT':
+                if mat_slot is not None:
+                    mat = mat_slot.material
             else:
-                assigned_material = None
+                if geometry.materials[face_material_index] is not None:
+                    mat = geometry.materials[face_material_index]
 
-        else:
-            assigned_material = None
+            assigned_material = mat
 
     elif game_version == 'halo2' or game_version == 'halo3mcc':
         assigned_material = -1
-        if len(original_geo.material_slots) != 0:
-            if not face.material_index > object_materials:
-                if geometry.materials[face.material_index] is not None:
-                    mat_slot = original_geo.material_slots[face.material_index]
-                    if mat_slot.link == 'OBJECT':
-                        mat = mat_slot.material
-                    else:
-                        mat = geometry.materials[face.material_index]
+        if  not object_materials <= 0 and not face_material_index >= object_materials:
+            mat_slot = original_geo.material_slots[face_material_index]
+            if mat_slot.link == 'OBJECT':
+                if mat_slot is not None:
+                    mat = mat_slot.material
+            else:
+                if geometry.materials[face_material_index] is not None:
+                    mat = geometry.materials[face_material_index]
 
-                    assigned_material = [mat, lod, region, permutation]
+            assigned_material = [mat, lod, region, permutation]
 
     return assigned_material
 
