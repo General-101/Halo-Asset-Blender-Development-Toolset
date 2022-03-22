@@ -107,6 +107,12 @@ class ASS_ScenePropertiesGroup(PropertyGroup):
         default = True,
         )
 
+    exluded_collections: BoolProperty(
+        name ="Export top level excluded collections",
+        description = "Whether or not we ignore collections that are excluded from the view layer",
+        default = True,
+        )
+
     folder_structure: BoolProperty(
         name ="Generate Asset Subdirectories",
         description = "Generate folder subdirectories for exported assets",
@@ -223,6 +229,9 @@ class ASS_SceneProps(Panel):
         row = col.row()
         row.label(text='Export Hidden Geometry:')
         row.prop(scene_ass, "hidden_geo", text='')
+        row = col.row()
+        row.label(text='Export Excluded Top Level Collections:')
+        row.prop(scene_ass, "exluded_collections", text='')
 
         box = layout.box()
         box.label(text="Scene Options:")
@@ -325,6 +334,12 @@ class ExportASS(Operator, ExportHelper):
         default = True,
         )
 
+        exluded_collections: BoolProperty(
+        name ="Export excluded top level collections",
+        description = "Whether or not we ignore collections that are excluded from the view layer",
+        default = True,
+        )
+
     folder_structure: BoolProperty(
         name ="Generate Asset Subdirectories",
         description = "Generate folder subdirectories for exported assets",
@@ -415,6 +430,7 @@ class ExportASS(Operator, ExportHelper):
             parser.add_argument('-arg3', '--game_version', dest='game_version', type=str, default="halo2")
             parser.add_argument('-arg4', '--folder_structure', dest='folder_structure', action='store_true')
             parser.add_argument('-arg5', '--hidden_geo', dest='hidden_geo', action='store_true')
+            parser.add_argument('-arg5', '--exluded_collections', dest='exluded_collections', action='store_true')
             parser.add_argument('-arg6', '--apply_modifiers', dest='apply_modifiers', action='store_true')
             parser.add_argument('-arg7', '--triangulate_faces', dest='triangulate_faces', action='store_true')
             parser.add_argument('-arg8', '--clean_normalize_weights', dest='clean_normalize_weights', action='store_true')
@@ -431,6 +447,7 @@ class ExportASS(Operator, ExportHelper):
             print('game_version: ', args.game_version)
             print('folder_structure: ', args.folder_structure)
             print('hidden_geo: ', args.hidden_geo)
+            print('exluded_collections : ', args.exluded_collections)
             print('apply_modifiers: ', args.apply_modifiers)
             print('triangulate_faces: ', args.triangulate_faces)
             print('clean_normalize_weights: ', args.clean_normalize_weights)
@@ -446,6 +463,7 @@ class ExportASS(Operator, ExportHelper):
             self.game_version = args.game_version
             self.folder_structure = args.folder_structure
             self.hidden_geo = args.hidden_geo
+            self.exluded_collections = args.exluded_collections
             self.apply_modifiers = args.apply_modifiers
             self.triangulate_faces = args.triangulate_faces
             self.clean_normalize_weights = args.clean_normalize_weights
@@ -457,7 +475,7 @@ class ExportASS(Operator, ExportHelper):
             self.scale_float = args.scale_float
             self.console = args.console
 
-        return global_functions.run_code("export_ass.write_file(context, self.filepath, self.ass_version, self.ass_version_h2, self.ass_version_h3, self.game_version, self.folder_structure, self.hidden_geo, self.apply_modifiers, self.triangulate_faces, self.edge_split, self.use_edge_angle, self.use_edge_sharp, self.split_angle, self.clean_normalize_weights, self.scale_enum, self.scale_float, self.console, self.report)")
+        return global_functions.run_code("export_ass.write_file(context, self.filepath, self.ass_version, self.ass_version_h2, self.ass_version_h3, self.game_version, self.folder_structure, self.hidden_geo, exluded_collections, self.apply_modifiers, self.triangulate_faces, self.edge_split, self.use_edge_angle, self.use_edge_sharp, self.split_angle, self.clean_normalize_weights, self.scale_enum, self.scale_float, self.console, self.report)")
 
     def draw(self, context):
         scene = context.scene
@@ -474,7 +492,12 @@ class ExportASS(Operator, ExportHelper):
             self.ass_version_h2 = scene_ass.ass_version_h2
             self.ass_version_h3 = scene_ass.ass_version_h3
             self.folder_structure = scene_ass.folder_structure
-            self.hidden_geo = scene_ass.hidden_geo
+      
+row = col.row()
+        row.enabled = is_enabled
+        row.label(text='Export Top Level Excluded Collections:')
+        row.prop(self, "exluded_collections", text='')self.hidden_geo = scene_ass.hidden_geo
+            self.exluded_collections = scene_ass.exluded_collections
             self.apply_modifiers = scene_ass.apply_modifiers
             self.triangulate_faces = scene_ass.triangulate_faces
             self.clean_normalize_weights = scene_ass.clean_normalize_weights
@@ -515,6 +538,10 @@ class ExportASS(Operator, ExportHelper):
         row.enabled = is_enabled
         row.label(text='Export Hidden Geometry:')
         row.prop(self, "hidden_geo", text='')
+        row = col.row()
+        row.enabled = is_enabled
+        row.label(text='Export Top Level Excluded Collections:')
+        row.prop(self, "exluded_collections", text='')
 
         box = layout.box()
         box.label(text="Scene Options:")
