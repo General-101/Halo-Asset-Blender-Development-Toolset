@@ -334,7 +334,7 @@ class ExportASS(Operator, ExportHelper):
         default = True,
         )
 
-        exluded_collections: BoolProperty(
+    exluded_collections: BoolProperty(
         name ="Export excluded top level collections",
         description = "Whether or not we ignore collections that are excluded from the view layer",
         default = True,
