@@ -106,7 +106,7 @@ class ASS_ScenePropertiesGroup(PropertyGroup):
         description = "Whether or not we ignore geometry that has scene options that hides it from the viewport",
         default = True,
         )
-
+        
     exluded_collections: BoolProperty(
         name ="Export top level excluded collections",
         description = "Whether or not we ignore collections that are excluded from the view layer",
@@ -475,7 +475,7 @@ class ExportASS(Operator, ExportHelper):
             self.scale_float = args.scale_float
             self.console = args.console
 
-        return global_functions.run_code("export_ass.write_file(context, self.filepath, self.ass_version, self.ass_version_h2, self.ass_version_h3, self.game_version, self.folder_structure, self.hidden_geo, exluded_collections, self.apply_modifiers, self.triangulate_faces, self.edge_split, self.use_edge_angle, self.use_edge_sharp, self.split_angle, self.clean_normalize_weights, self.scale_enum, self.scale_float, self.console, self.report)")
+        return global_functions.run_code("export_ass.write_file(context, self.filepath, self.ass_version, self.ass_version_h2, self.ass_version_h3, self.game_version, self.folder_structure, self.hidden_geo, self.exluded_collections, self.apply_modifiers, self.triangulate_faces, self.edge_split, self.use_edge_angle, self.use_edge_sharp, self.split_angle, self.clean_normalize_weights, self.scale_enum, self.scale_float, self.console, self.report)")
 
     def draw(self, context):
         scene = context.scene
@@ -492,11 +492,7 @@ class ExportASS(Operator, ExportHelper):
             self.ass_version_h2 = scene_ass.ass_version_h2
             self.ass_version_h3 = scene_ass.ass_version_h3
             self.folder_structure = scene_ass.folder_structure
-      
-        row = col.row()
-        row.enabled = is_enabled
-        row.label(text='Export Top Level Excluded Collections:')
-        row.prop(self, "exluded_collections", text='')self.hidden_geo = scene_ass.hidden_geo
+            self.hidden_geo = scene_ass.hidden_geo
             self.exluded_collections = scene_ass.exluded_collections
             self.apply_modifiers = scene_ass.apply_modifiers
             self.triangulate_faces = scene_ass.triangulate_faces
@@ -542,6 +538,7 @@ class ExportASS(Operator, ExportHelper):
         row.enabled = is_enabled
         row.label(text='Export Top Level Excluded Collections:')
         row.prop(self, "exluded_collections", text='')
+
 
         box = layout.box()
         box.label(text="Scene Options:")
