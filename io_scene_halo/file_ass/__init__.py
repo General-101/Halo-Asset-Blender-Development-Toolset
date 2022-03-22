@@ -493,7 +493,7 @@ class ExportASS(Operator, ExportHelper):
             self.ass_version_h3 = scene_ass.ass_version_h3
             self.folder_structure = scene_ass.folder_structure
       
-row = col.row()
+        row = col.row()
         row.enabled = is_enabled
         row.label(text='Export Top Level Excluded Collections:')
         row.prop(self, "exluded_collections", text='')self.hidden_geo = scene_ass.hidden_geo
