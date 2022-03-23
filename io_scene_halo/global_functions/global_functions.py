@@ -120,8 +120,10 @@ class ParentIDFix():
         self.clavicle1 = clavicle1
 
 def unhide_all_collections(context):
-    for collection_viewport in context.view_layer.layer_collection.children:
-        collection_viewport.exclude = False
+    #Needs to re-exclude exlcuded collections if excluded collections are exported
+    if exluded_collections:
+        for collection_viewport in context.view_layer.layer_collection.children:
+            collection_viewport.exclude = False
 
     for collection_hide in bpy.data.collections:
         collection_hide.hide_viewport = False
