@@ -114,10 +114,13 @@ def scale_is_uniform(obj):
 
     return is_uniform
 
-def process_scene(context, version, game_version, hidden_geo, exluded_collections, apply_modifiers, triangulate_faces, edge_split, clean_normalize_weights, custom_scale, report):
+    def process_scene(context, version, game_version, hidden_geo, exluded_collections:, apply_modifiers, triangulate_faces, edge_split, clean_normalize_weights, custom_scale, report):
     ASS = ASSAsset()
-
-    global_functions.unhide_all_collections(context)
+    
+    if exluded_collections:
+        global_functions.unhide_all_collections(context)
+    elif not exluded_collections:
+        global_functions.only_unhide_all_collections(context)
 
     default_region = mesh_processing.get_default_region_permutation_name(game_version)
     default_permutation = mesh_processing.get_default_region_permutation_name(game_version)
