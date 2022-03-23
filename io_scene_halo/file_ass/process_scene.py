@@ -114,7 +114,7 @@ def scale_is_uniform(obj):
 
     return is_uniform
 
-    def process_scene(context, version, game_version, hidden_geo, exluded_collections, apply_modifiers, triangulate_faces, edge_split, clean_normalize_weights, custom_scale, report):
+def process_scene(context, version, game_version, hidden_geo, exluded_collections, apply_modifiers, triangulate_faces, edge_split, clean_normalize_weights, custom_scale, report):
     ASS = ASSAsset()
     
     if exluded_collections:
