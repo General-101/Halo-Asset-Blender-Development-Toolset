@@ -258,7 +258,7 @@ def build_scene(context, JMA, JMS_A, JMS_B, filepath, game_version, fix_parents,
     jma_nodes = []
     for obj in object_list:
         if armature is None:
-            if obj.type == 'ARMATURE':
+            if obj.type == 'ARMATURE' and mesh_processing.set_ignore(obj) == False:
                 is_armature_good = False
                 if JMA.version == 16390:
                     if len(obj.data.bones) == JMA.node_count:
