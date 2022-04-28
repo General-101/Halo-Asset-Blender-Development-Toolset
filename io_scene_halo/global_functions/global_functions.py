@@ -707,19 +707,23 @@ def get_face_material(original_geo, face):
 
 def get_material(game_version, original_geo, face, geometry, lod, region, permutation):
     object_materials = len(original_geo.material_slots)
+    mat = None
     assigned_material = None
     face_material_index = face.material_index
     if game_version == 'haloce':
         if not object_materials <= 0 and not face_material_index >= object_materials:
+
             mat_slot = original_geo.material_slots[face_material_index]
             if mat_slot.link == 'OBJECT':
                 if mat_slot is not None:
                     mat = mat_slot.material
+
             else:
                 if geometry.materials[face_material_index] is not None:
                     mat = geometry.materials[face_material_index]
 
-            assigned_material = mat
+            if mat:
+                assigned_material = mat
 
     elif game_version == 'halo2' or game_version == 'halo3mcc':
         assigned_material = -1
@@ -728,11 +732,12 @@ def get_material(game_version, original_geo, face, geometry, lod, region, permut
             if mat_slot.link == 'OBJECT':
                 if mat_slot is not None:
                     mat = mat_slot.material
+
             else:
                 if geometry.materials[face_material_index] is not None:
                     mat = geometry.materials[face_material_index]
-
-            assigned_material = [mat, lod, region, permutation]
+            if mat:
+                assigned_material = [mat, lod, region, permutation]
 
     return assigned_material
 
