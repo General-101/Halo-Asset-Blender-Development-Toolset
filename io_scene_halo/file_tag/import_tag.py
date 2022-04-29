@@ -38,7 +38,8 @@ from ..file_camera_track import build_scene as build_camera_track
 from ..file_model.process_file_mode_retail import process_file_mode_retail as process_mode
 from ..file_model.process_file_mod2_retail import process_file_mod2_retail as process_mod2
 
-from ..file_collision.process_file_retail import process_file_retail as process_collision_retail
+from ..file_collision.h1.process_file_retail import process_file_retail as process_collision_retail
+from ..file_collision.h2.process_file import process_file as process_h2_collision
 
 from ..file_physics.process_file_retail import process_file_retail as process_physics_retail
 
@@ -74,7 +75,11 @@ def load_file(context, file_path, fix_rotations, report):
 
     elif tag_group == "coll":
         build_scene = build_scene_collision
-        ASSET = process_collision_retail(input_stream, report)
+        ASSET = process_collision_retail(input_stream, tag_format, report)
+
+    elif tag_group == "lloc":
+        build_scene = build_scene_collision
+        ASSET = process_h2_collision(input_stream, tag_format, report)
 
     elif tag_group == "phys":
         build_scene = build_scene_physics

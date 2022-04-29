@@ -28,7 +28,6 @@ import struct
 
 from mathutils import Vector
 from .format_retail import CollisionAsset
-from ..global_functions.tag_format import TagAsset
 
 DEBUG_PARSER = False
 DEBUG_HEADER = True
@@ -48,8 +47,8 @@ DEBUG_SURFACES = True
 DEBUG_EDGES = True
 DEBUG_VERTICES = True
 
-def process_file_retail(input_stream, report):
-    TAG = TagAsset()
+def process_file_retail(input_stream, tag_format, report):
+    TAG = tag_format.TagAsset()
     COLLISION = CollisionAsset()
 
     header_struct = struct.unpack('>hbb32s4sIIIIHbb4s', input_stream.read(64))

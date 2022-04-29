@@ -24,9 +24,7 @@
 #
 # ##### END MIT LICENSE BLOCK #####
 
-from io import TextIOWrapper
 import os
-from typing import Any
 import bpy
 import sys
 import colorsys
@@ -34,7 +32,9 @@ import re
 import operator
 
 from decimal import *
+from typing import Any
 from math import radians
+from io import TextIOWrapper
 from mathutils import Vector, Quaternion, Matrix
 
 class JmsDimensions:
@@ -608,6 +608,7 @@ def get_parent(armature, mesh, joined_list, default_parent):
     if mesh:
         if armature:
             parent = mesh.parent_bone
+
         else:
             parent = mesh.parent
 
@@ -619,6 +620,7 @@ def get_parent(armature, mesh, joined_list, default_parent):
                     if mesh in joined_list:
                         parent_object = mesh
                         break
+
                 else:
                     break
 
@@ -695,13 +697,11 @@ def gather_materials(game_version, material, material_list, export_type):
     return material_list
 
 def get_face_material(original_geo, face):
-    object_materials = len(original_geo.material_slots) - 1
-    assigned_material = None
+    object_materials = len(original_geo.material_slots)
+    face_material_index = face.material_index
     assigned_material = -1
-    if len(original_geo.material_slots) != 0:
-        if not face.material_index > object_materials:
-            if face.material_index != -1:
-                assigned_material = face.material_index
+    if not object_materials <= 0 and not face_material_index <= -1 and not face_material_index >= object_materials:
+        assigned_material = face_material_index
 
     return assigned_material
 
@@ -712,7 +712,6 @@ def get_material(game_version, original_geo, face, geometry, lod, region, permut
     face_material_index = face.material_index
     if game_version == 'haloce':
         if not object_materials <= 0 and not face_material_index >= object_materials:
-
             mat_slot = original_geo.material_slots[face_material_index]
             if mat_slot.link == 'OBJECT':
                 if mat_slot is not None:
@@ -736,6 +735,7 @@ def get_material(game_version, original_geo, face, geometry, lod, region, permut
             else:
                 if geometry.materials[face_material_index] is not None:
                     mat = geometry.materials[face_material_index]
+
             if mat:
                 assigned_material = [mat, lod, region, permutation]
 
@@ -755,6 +755,7 @@ class HaloAsset:
         if not isinstance(file, TextIOWrapper):
             with open(file, "r", encoding=test_encoding(file)) as file:
                 self.__init_from_textio(file)
+
         else:
             self.__init_from_textio(file)
 
@@ -765,15 +766,19 @@ class HaloAsset:
                     comment_match = re.search(self.__comment_regex, element)
                     if comment_match is None:
                         self._elements.append(element)
+
                     else:
                         processed_element = element[: comment_match.end() - 1]
                         if processed_element != '':
                             self._elements.append(element)
+
                         break # ignore the rest of the line if we found a comment
+
     def left(self):
         """Returns the number of elements left"""
         if self._index < len(self._elements):
             return len(self._elements) - self._index
+
         else:
             return 0
 
@@ -786,6 +791,7 @@ class HaloAsset:
         try:
             self._index += 1
             return self._elements[self._index - 1]
+
         except:
             raise ParseError()
 
@@ -793,6 +799,7 @@ class HaloAsset:
         """Return the first line in the file, raises AssetParseError on error"""
         try:
             return self._elements[0]
+
         except:
             raise ParseError()
 
@@ -802,6 +809,7 @@ class HaloAsset:
             list = self._elements[self._index: self._index + count]
             self._index += count
             return list
+
         except:
             raise ParseError()
 
@@ -835,6 +843,7 @@ class HaloAsset:
         quat = Quaternion((w, x, y, z))
         if self.are_quaternions_inverted():
             quat.invert()
+
         return quat
 
 def get_game_version(version, filetype):
@@ -876,6 +885,7 @@ def halo_string_checksum(string):
     for byte in string.encode():
         checksum = rotl_32(checksum, 1)
         checksum += byte
+
     return lim32(checksum)
 
 # Ported from https://github.com/preshing/RandomSequence
@@ -886,17 +896,22 @@ class PreshingSequenceGenerator32:
         prime = 4294967291
         if x >= prime: # The 5 integers out of range are mapped to themselves.
             return x
+
         residue = lim32(x**2 % prime)
         if x <= (prime // 2):
             return residue
+            
         else:
             return lim32(prime - residue)
+
     def __init__(self, seed_base = None, seed_offset = None):
         import time
         if seed_base == None:
             seed_base = lim32(int(time.time() * 100000000)) ^ 0xac1fd838
+
         if seed_offset == None:
             seed_offset = lim32(int(time.time() * 100000000)) ^ 0x0b8dedd3
+
         self.__index = PreshingSequenceGenerator32.__permuteQPR(lim32(PreshingSequenceGenerator32.__permuteQPR(seed_base) + 0x682f0161))
         self.__intermediate_offset = PreshingSequenceGenerator32.__permuteQPR(lim32(PreshingSequenceGenerator32.__permuteQPR(seed_offset) + 0x46790905))
 
@@ -933,7 +948,6 @@ def node_hierarchy_checksum(nodes, node, checksum = 0):
     return rotr_32(checksum, 2)
 
 def get_filename(game_version, permutation_ce, level_of_detail_ce, folder_structure, model_type, jmi, filepath):
-
     ce_settings = ''
     extension = '.JMS'
     if jmi:
@@ -952,11 +966,13 @@ def get_filename(game_version, permutation_ce, level_of_detail_ce, folder_struct
                     permutation_string = permutation_ce.replace(' ', '_').replace('\t', '_')
 
                 ce_settings += '%s ' % (permutation_string)
+
             else:
                 ce_settings += '%s ' % ('unnamed')
 
             if not level_of_detail_ce == None:
                 ce_settings += '%s' % (level_of_detail_ce)
+
             else:
                 ce_settings += '%s' % ('superhigh')
 
@@ -987,15 +1003,18 @@ def get_directory(context, game_version, model_type, folder_structure, asset_typ
 
     if game_version == 'haloce':
         folder_type = "models"
+
     else:
         if asset_type == "0":
             folder_type = "structure"
+
         else:
             folder_type = "render"
 
     if model_type == "collision":
         if game_version == 'haloce':
             folder_type = "physics"
+
         else:
             folder_type = "collision"
 
@@ -1108,11 +1127,8 @@ def validate_halo_jma_scene(game_version, version, blend_scene, object_list, ext
 
 def string_empty_check(string):
     is_empty = False
-    if not string == None:
-        if len(string) == 0:
-            is_empty = True
-        elif string.isspace():
-            is_empty = True
+    if not string == None and (len(string) == 0 or string.isspace()):
+        is_empty = True
 
     return is_empty
 
@@ -1291,11 +1307,14 @@ def run_code(code_string):
         if config.ENABLE_PROFILING:
             import cProfile
             cProfile.runctx(code, globals(), caller_locals)
+
         elif config.ENABLE_DEBUG:
             import pdb
             pdb.runctx(code, globals(), caller_locals)
+
         else:
             exec(code, globals(), caller_locals)
+
     import inspect
     from .. import crash_report
     frame = inspect.currentframe()
@@ -1311,16 +1330,14 @@ def run_code(code_string):
 
     except ParseError as parse_error:
         crash_report.report_crash()
-        report({'ERROR'}, "Bad scene: {0}".format(parse_error))
+        report({'ERROR'}, "Bad data: {0}".format(parse_error))
         return {'CANCELLED'}
-    except ParseError as parse_error:
-        crash_report.report_crash()
-        report({'ERROR'}, "Bad file: {0}".format(parse_error))
-        return {'CANCELLED'}
+
     except:
         crash_report.report_crash()
         info = sys.exc_info()
         report({'ERROR'}, "Internal error: {1}({0})".format(info[1], info[0]))
         return {'CANCELLED'}
+
     finally:
         del frame
