@@ -314,7 +314,7 @@ def process_scene(context, version, game_version, hidden_geo, exluded_collection
                     else:
                         parent = original_geo.parent.data.bones[0]
 
-        if not parent == None:
+        if not parent == None and mesh_processing.set_ignore(collections, parent) == False:
             parent_id = instance_list.index(parent)
 
         geo_matrix = global_functions.get_matrix(original_geo, original_geo, True, armature, instance_list, is_bone, version, 'ASS', False, custom_scale, False)

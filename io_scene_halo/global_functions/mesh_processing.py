@@ -852,18 +852,19 @@ def process_mesh_export_weights(vert, armature, original_geo, vertex_groups, joi
         vertex_vert_group_list = []
         for group_index in range(len(vert.groups)):
             vert_group = vert.groups[group_index].group
-            object_vertex_group = vertex_groups[vert_group]
-            if armature:
-                if object_vertex_group in armature.data.bones:
-                    vertex_vert_group_list.append(group_index)
-                    if armature.data.bones[object_vertex_group] in joined_list:
-                        object_vert_group_list.append(vert_group)
+            if vert_group in vertex_groups:
+                object_vertex_group = vertex_groups[vert_group]
+                if armature:
+                    if object_vertex_group in armature.data.bones:
+                        vertex_vert_group_list.append(group_index)
+                        if armature.data.bones[object_vertex_group] in joined_list:
+                            object_vert_group_list.append(vert_group)
 
-            else:
-                if object_vertex_group in bpy.data.objects:
-                    vertex_vert_group_list.append(group_index)
-                    if bpy.data.objects[object_vertex_group] in joined_list:
-                        object_vert_group_list.append(vert_group)
+                else:
+                    if object_vertex_group in bpy.data.objects:
+                        vertex_vert_group_list.append(group_index)
+                        if bpy.data.objects[object_vertex_group] in joined_list:
+                            object_vert_group_list.append(vert_group)
 
         value = len(object_vert_group_list)
         if value > 4:
