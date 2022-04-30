@@ -29,9 +29,8 @@ import bmesh
 
 from math import radians
 from mathutils import Vector, Matrix
-from ..global_functions import mesh_processing
 
-def build_scene(context, PHYSICS, fix_rotations, report):
+def build_scene(context, PHYSICS, fix_rotations, report, mesh_processing, global_functions):
     collection = context.collection
 
     active_object = context.view_layer.objects.active

@@ -228,8 +228,8 @@ def build_scene_retail(context, JMS, filepath, game_version, reuse_armature, fix
 
         object_mesh.matrix_world = transform_matrix
         object_mesh.data.ass_jms.Object_Type = 'SPHERE'
-        object_dimension = radius * 2
-        object_mesh.dimensions = (object_dimension, object_dimension, object_dimension)
+        object_scale = radius
+        object_mesh.scale = (object_scale, object_scale, object_scale)
         object_mesh.select_set(False)
         armature.select_set(False)
 
@@ -349,8 +349,8 @@ def build_scene_retail(context, JMS, filepath, game_version, reuse_armature, fix
             mat.diffuse_color = random_color_gen.next()
 
         object_mesh.data.ass_jms.Object_Type = 'SPHERE'
-        object_dimension = radius * 2
-        object_mesh.dimensions = (object_dimension, object_dimension, object_dimension)
+        object_scale = radius
+        object_mesh.scale = (object_scale, object_scale, object_scale)
         object_mesh.select_set(False)
         armature.select_set(False)
 
@@ -418,7 +418,7 @@ def build_scene_retail(context, JMS, filepath, game_version, reuse_armature, fix
             mat.diffuse_color = random_color_gen.next()
 
         object_mesh.data.ass_jms.Object_Type = 'BOX'
-        object_mesh.dimensions = (width, length, height)
+        object_mesh.scale = ((width / 2), (length / 2), (height / 2))
         object_mesh.select_set(False)
         armature.select_set(False)
 
@@ -486,8 +486,8 @@ def build_scene_retail(context, JMS, filepath, game_version, reuse_armature, fix
             mat.diffuse_color = random_color_gen.next()
 
         object_mesh.data.ass_jms.Object_Type = 'CAPSULES'
-        object_dimension = radius * 2
-        object_mesh.dimensions = (object_dimension, object_dimension, (object_dimension + height))
+        object_scale = radius
+        object_mesh.scale = (object_scale, object_scale, (object_scale + (height / 2)))
         object_mesh.select_set(False)
         armature.select_set(False)
 
@@ -987,8 +987,8 @@ def build_scene_retail(context, JMS, filepath, game_version, reuse_armature, fix
 
         object_mesh.data.ass_jms.Object_Type = 'SPHERE'
         object_mesh.data.ass_jms.bounding_radius = True
-        object_dimension = radius * 2
-        object_mesh.dimensions = (object_dimension, object_dimension, object_dimension)
+        object_scale = radius
+        object_mesh.scale = (object_scale, object_scale, object_scale)
         object_mesh.select_set(False)
         armature.select_set(False)
 

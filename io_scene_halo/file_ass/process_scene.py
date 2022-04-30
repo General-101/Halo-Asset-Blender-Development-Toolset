@@ -118,7 +118,17 @@ def process_scene(context, version, game_version, hidden_geo, exluded_collection
     ASS = ASSAsset()
     
     if exluded_collections:
-        global_functions.unhide_all_collections(context)
+        collections = []
+        layer_collections = list(context.view_layer.layer_collection.children)
+
+        while len(layer_collections) > 0:
+            collection_batch = layer_collections
+            layer_collections = []
+            for collection in collection_batch:
+                collections.append(collection)
+                for collection_child in collection.children:
+                    layer_collections.append(collection_child)
+
     elif not exluded_collections:
         global_functions.only_unhide_all_collections(context)
 
@@ -165,7 +175,7 @@ def process_scene(context, version, game_version, hidden_geo, exluded_collection
     object_count = 0
 
     for obj in object_list:
-        if obj.type== 'MESH':
+        if obj.type== 'MESH' and mesh_processing.set_ignore(collections, obj) == False:
             if clean_normalize_weights:
                 mesh_processing.vertex_group_clean_normalize(context, obj, limit_value)
 
@@ -176,14 +186,14 @@ def process_scene(context, version, game_version, hidden_geo, exluded_collection
     for obj in object_list:
         object_properties.append([obj.hide_get(), obj.hide_viewport])
         if hidden_geo:
-            mesh_processing.unhide_object(obj)
+            mesh_processing.unhide_object(collections, obj)
 
     for obj in object_list:
         if not scale_is_uniform(obj):
             report({'WARNING'}, "Object %s has non uniform scale. Object will not look correct ingame. Apply transforms and export again." % (obj.name))
 
         if obj.type == 'ARMATURE':
-            if mesh_processing.set_ignore(obj) == False or hidden_geo:
+            if mesh_processing.set_ignore(collections, obj) == False or hidden_geo:
                 for bone in obj.data.bones:
                     instance_list.append(bone)
                     if not bone.name in linked_object_list:
@@ -193,7 +203,7 @@ def process_scene(context, version, game_version, hidden_geo, exluded_collection
                     object_count += 1
 
         elif obj.type == 'LIGHT' and version >= 3:
-            if mesh_processing.set_ignore(obj) == False or hidden_geo:
+            if mesh_processing.set_ignore(collections, obj) == False or hidden_geo:
                 instance_list.append(obj)
                 if not obj.name in linked_object_list:
                     linked_object_list.append(obj.name)
@@ -215,7 +225,7 @@ def process_scene(context, version, game_version, hidden_geo, exluded_collection
                     print("Bad light")
 
         elif obj.type== 'MESH' and len(obj.data.polygons) > 0:
-            if mesh_processing.set_ignore(obj) == False or hidden_geo:
+            if mesh_processing.set_ignore(collections, obj) == False or hidden_geo:
                 instance_list.append(obj)
                 if not obj.data.name in linked_object_list:
                     linked_object_list.append(obj.data.name)
@@ -247,7 +257,7 @@ def process_scene(context, version, game_version, hidden_geo, exluded_collection
                     print("Bad object")
 
         else:
-            if mesh_processing.set_ignore(obj) == False or hidden_geo:
+            if mesh_processing.set_ignore(collections, obj) == False or hidden_geo:
                 obj_data = None
                 obj_mesh_data = None
 

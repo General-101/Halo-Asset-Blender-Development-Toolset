@@ -24,32 +24,12 @@
 #
 # ##### END MIT LICENSE BLOCK #####
 
-from .format import JMIAsset
-from ..global_functions import mesh_processing, global_functions
+import os
+import bpy
+import bmesh
 
-def process_scene(context):
-    JMI = JMIAsset()
+from math import radians
+from mathutils import Vector, Matrix, Euler
 
-    collections = []
-    layer_collections = list(context.view_layer.layer_collection.children)
-
-    while len(layer_collections) > 0:
-        collection_batch = layer_collections
-        layer_collections = []
-        for collection in collection_batch:
-            collections.append(collection)
-            for collection_child in collection.children:
-                layer_collections.append(collection_child)
-
-    scene = context.scene
-    object_list = list(scene.objects)
-
-    for obj in object_list:
-        if obj.name[0:1].lower() == '!':
-            mesh_processing.unhide_object(collections, obj)
-            JMI.world_nodes.append(obj)
-
-    for node in JMI.world_nodes:
-        JMI.children_sets.append(global_functions.get_children(node))
-
-    return JMI
+def build_scene(context, LEVEL, game_version, file_version, fix_rotations, report, mesh_processing, global_functions):
+    return 0

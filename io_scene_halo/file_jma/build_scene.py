@@ -254,11 +254,22 @@ def build_scene(context, JMA, JMS_A, JMS_B, filepath, game_version, fix_parents,
     armature = None
     object_list = list(scene.objects)
 
+    collections = []
+    layer_collections = list(context.view_layer.layer_collection.children)
+
+    while len(layer_collections) > 0:
+        collection_batch = layer_collections
+        layer_collections = []
+        for collection in collection_batch:
+            collections.append(collection)
+            for collection_child in collection.children:
+                layer_collections.append(collection_child)
+
     scene_nodes = []
     jma_nodes = []
     for obj in object_list:
         if armature is None:
-            if obj.type == 'ARMATURE' and mesh_processing.set_ignore(obj) == False:
+            if obj.type == 'ARMATURE' and mesh_processing.set_ignore(collections, obj) == False:
                 is_armature_good = False
                 if JMA.version == 16390:
                     if len(obj.data.bones) == JMA.node_count:

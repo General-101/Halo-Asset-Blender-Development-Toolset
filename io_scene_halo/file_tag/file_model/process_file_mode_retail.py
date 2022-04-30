@@ -26,10 +26,8 @@
 
 import struct
 
-from enum import Flag, auto
 from .format_retail import ModelAsset
 from mathutils import Vector, Quaternion
-from ..global_functions.tag_format import TagAsset
 
 DEBUG_PARSER = False
 DEBUG_HEADER = True
@@ -47,13 +45,8 @@ DEBUG_COMPRESSED_VERTEX = True
 DEBUG_TRIANGLE = True
 DEBUG_SHADERS = True
 
-class ModelFlags(Flag):
-    Blend_Shared_Normals = auto()
-    Parts_Have_Local_Nodes = auto()
-    Ignore_Skinning = auto()
-
-def process_file_mod2_retail(input_stream, report):
-    TAG = TagAsset()
+def process_file_mode_retail(input_stream, tag_format, report):
+    TAG = tag_format.TagAsset()
     MODEL = ModelAsset()
 
     header_struct = struct.unpack('>hbb32s4sIIIIHbb4s', input_stream.read(64))
@@ -90,66 +83,66 @@ def process_file_mod2_retail(input_stream, report):
         print(" ")
 
     body_struct = struct.unpack('>IIfffffhhhhh10xff116xiIIiIIiIIiIIiII', input_stream.read(232))
-    MODEL.mod2_body = MODEL.ModelBody()
-    MODEL.mod2_body.flags = body_struct[0]
-    MODEL.mod2_body.node_list_checksum = body_struct[1]
-    MODEL.mod2_body.superhigh_detail_cutoff = body_struct[2]
-    MODEL.mod2_body.high_detail_cutoff = body_struct[3]
-    MODEL.mod2_body.medium_detail_cutoff = body_struct[4]
-    MODEL.mod2_body.low_detail_cutoff = body_struct[5]
-    MODEL.mod2_body.superlow_cutoff = body_struct[6]
-    MODEL.mod2_body.superhigh_detail_nodes = body_struct[7]
-    MODEL.mod2_body.high_detail_nodes = body_struct[8]
-    MODEL.mod2_body.medium_detail_nodes = body_struct[9]
-    MODEL.mod2_body.low_detail_nodes = body_struct[10]
-    MODEL.mod2_body.superlow_nodes = body_struct[11]
-    MODEL.mod2_body.base_map_u_scale = body_struct[12]
-    MODEL.mod2_body.base_map_v_scale = body_struct[13]
-    MODEL.mod2_body.markers_tag_block = TAG.TagBlock(body_struct[14], 256, body_struct[15], body_struct[16])
-    MODEL.mod2_body.nodes_tag_block = TAG.TagBlock(body_struct[17], 64, body_struct[18], body_struct[19])
-    MODEL.mod2_body.regions_tag_block = TAG.TagBlock(body_struct[20], 32, body_struct[21], body_struct[22])
-    MODEL.mod2_body.geometries_tag_block = TAG.TagBlock(body_struct[23], 256, body_struct[24], body_struct[25])
-    MODEL.mod2_body.shaders_tag_block = TAG.TagBlock(body_struct[26], 256, body_struct[27], body_struct[28])
+    MODEL.mode_body = MODEL.ModelBody()
+    MODEL.mode_body.flags = body_struct[0]
+    MODEL.mode_body.node_list_checksum = body_struct[1]
+    MODEL.mode_body.superhigh_detail_cutoff = body_struct[2]
+    MODEL.mode_body.high_detail_cutoff = body_struct[3]
+    MODEL.mode_body.medium_detail_cutoff = body_struct[4]
+    MODEL.mode_body.low_detail_cutoff = body_struct[5]
+    MODEL.mode_body.superlow_cutoff = body_struct[6]
+    MODEL.mode_body.superhigh_detail_nodes = body_struct[7]
+    MODEL.mode_body.high_detail_nodes = body_struct[8]
+    MODEL.mode_body.medium_detail_nodes = body_struct[9]
+    MODEL.mode_body.low_detail_nodes = body_struct[10]
+    MODEL.mode_body.superlow_nodes = body_struct[11]
+    MODEL.mode_body.base_map_u_scale = body_struct[12]
+    MODEL.mode_body.base_map_v_scale = body_struct[13]
+    MODEL.mode_body.markers_tag_block = TAG.TagBlock(body_struct[14], 256, body_struct[15], body_struct[16])
+    MODEL.mode_body.nodes_tag_block = TAG.TagBlock(body_struct[17], 64, body_struct[18], body_struct[19])
+    MODEL.mode_body.regions_tag_block = TAG.TagBlock(body_struct[20], 32, body_struct[21], body_struct[22])
+    MODEL.mode_body.geometries_tag_block = TAG.TagBlock(body_struct[23], 256, body_struct[24], body_struct[25])
+    MODEL.mode_body.shaders_tag_block = TAG.TagBlock(body_struct[26], 256, body_struct[27], body_struct[28])
 
     if DEBUG_PARSER and DEBUG_BODY:
-        print(" ===== Mod2 Body ===== ")
-        print("Flags: ", MODEL.mod2_body.flags)
-        print("Node List Checksum: ", MODEL.mod2_body.node_list_checksum)
-        print("SuperHigh Detail Cutoff: ", MODEL.mod2_body.superhigh_detail_cutoff)
-        print("High Detail Cutoff: ", MODEL.mod2_body.high_detail_cutoff)
-        print("Medium Detail Cutoff: ", MODEL.mod2_body.medium_detail_cutoff)
-        print("Low Detail Cutoff: ", MODEL.mod2_body.low_detail_cutoff)
-        print("SuperLow Cutoff: ", MODEL.mod2_body.superlow_cutoff)
-        print("SuperHigh Detail Nodes: ", MODEL.mod2_body.superhigh_detail_nodes)
-        print("High Detail Nodes: ", MODEL.mod2_body.high_detail_nodes)
-        print("Medium Detail Nodes: ", MODEL.mod2_body.medium_detail_nodes)
-        print("Low Detail Nodes: ", MODEL.mod2_body.low_detail_nodes)
-        print("SuperLow Nodes: ", MODEL.mod2_body.superlow_nodes)
-        print("Base Map U Scale: ", MODEL.mod2_body.base_map_u_scale)
-        print("Base Map V Scale: ", MODEL.mod2_body.base_map_v_scale)
-        print("Marker Tag Block Count: ", MODEL.mod2_body.markers_tag_block.count)
-        print("Marker Tag Block Maximum Count: ", MODEL.mod2_body.markers_tag_block.maximum_count)
-        print("Marker Tag Block Address: ", MODEL.mod2_body.markers_tag_block.address)
-        print("Marker Tag Block Definition: ", MODEL.mod2_body.markers_tag_block.definition)
-        print("Nodes Tag Block Count: ", MODEL.mod2_body.nodes_tag_block.count)
-        print("Nodes Tag Block Maximum Count: ", MODEL.mod2_body.nodes_tag_block.maximum_count)
-        print("Nodes Tag Block Address: ", MODEL.mod2_body.nodes_tag_block.address)
-        print("Nodes Tag Block Definition: ", MODEL.mod2_body.nodes_tag_block.definition)
-        print("Regions Tag Block Count: ", MODEL.mod2_body.regions_tag_block.count)
-        print("Regions Tag Block Maximum Count: ", MODEL.mod2_body.regions_tag_block.maximum_count)
-        print("Regions Tag Block Address: ", MODEL.mod2_body.regions_tag_block.address)
-        print("Regions Tag Block Definition: ", MODEL.mod2_body.regions_tag_block.definition)
-        print("Geometries Tag Block Count: ", MODEL.mod2_body.geometries_tag_block.count)
-        print("Geometries Tag Block Maximum Count: ", MODEL.mod2_body.geometries_tag_block.maximum_count)
-        print("Geometries Tag Block Address: ", MODEL.mod2_body.geometries_tag_block.address)
-        print("Geometries Tag Block Definition: ", MODEL.mod2_body.geometries_tag_block.definition)
-        print("Shaders Tag Block Count: ", MODEL.mod2_body.shaders_tag_block.count)
-        print("Shaders Tag Block Maximum Count: ", MODEL.mod2_body.shaders_tag_block.maximum_count)
-        print("Shaders Tag Block Address: ", MODEL.mod2_body.shaders_tag_block.address)
-        print("Shaders Tag Block Definition: ", MODEL.mod2_body.shaders_tag_block.definition)
+        print(" ===== Mode Body ===== ")
+        print("Flags: ", MODEL.mode_body.flags)
+        print("Node List Checksum: ", MODEL.mode_body.node_list_checksum)
+        print("SuperHigh Detail Cutoff: ", MODEL.mode_body.superhigh_detail_cutoff)
+        print("High Detail Cutoff: ", MODEL.mode_body.high_detail_cutoff)
+        print("Medium Detail Cutoff: ", MODEL.mode_body.medium_detail_cutoff)
+        print("Low Detail Cutoff: ", MODEL.mode_body.low_detail_cutoff)
+        print("SuperLow Cutoff: ", MODEL.mode_body.superlow_cutoff)
+        print("SuperHigh Detail Nodes: ", MODEL.mode_body.superhigh_detail_nodes)
+        print("High Detail Nodes: ", MODEL.mode_body.high_detail_nodes)
+        print("Medium Detail Nodes: ", MODEL.mode_body.medium_detail_nodes)
+        print("Low Detail Nodes: ", MODEL.mode_body.low_detail_nodes)
+        print("SuperLow Nodes: ", MODEL.mode_body.superlow_nodes)
+        print("Base Map U Scale: ", MODEL.mode_body.base_map_u_scale)
+        print("Base Map V Scale: ", MODEL.mode_body.base_map_v_scale)
+        print("Marker Tag Block Count: ", MODEL.mode_body.markers_tag_block.count)
+        print("Marker Tag Block Maximum Count: ", MODEL.mode_body.markers_tag_block.maximum_count)
+        print("Marker Tag Block Address: ", MODEL.mode_body.markers_tag_block.address)
+        print("Marker Tag Block Definition: ", MODEL.mode_body.markers_tag_block.definition)
+        print("Nodes Tag Block Count: ", MODEL.mode_body.nodes_tag_block.count)
+        print("Nodes Tag Block Maximum Count: ", MODEL.mode_body.nodes_tag_block.maximum_count)
+        print("Nodes Tag Block Address: ", MODEL.mode_body.nodes_tag_block.address)
+        print("Nodes Tag Block Definition: ", MODEL.mode_body.nodes_tag_block.definition)
+        print("Regions Tag Block Count: ", MODEL.mode_body.regions_tag_block.count)
+        print("Regions Tag Block Maximum Count: ", MODEL.mode_body.regions_tag_block.maximum_count)
+        print("Regions Tag Block Address: ", MODEL.mode_body.regions_tag_block.address)
+        print("Regions Tag Block Definition: ", MODEL.mode_body.regions_tag_block.definition)
+        print("Geometries Tag Block Count: ", MODEL.mode_body.geometries_tag_block.count)
+        print("Geometries Tag Block Maximum Count: ", MODEL.mode_body.geometries_tag_block.maximum_count)
+        print("Geometries Tag Block Address: ", MODEL.mode_body.geometries_tag_block.address)
+        print("Geometries Tag Block Definition: ", MODEL.mode_body.geometries_tag_block.definition)
+        print("Shaders Tag Block Count: ", MODEL.mode_body.shaders_tag_block.count)
+        print("Shaders Tag Block Maximum Count: ", MODEL.mode_body.shaders_tag_block.maximum_count)
+        print("Shaders Tag Block Address: ", MODEL.mode_body.shaders_tag_block.address)
+        print("Shaders Tag Block Definition: ", MODEL.mode_body.shaders_tag_block.definition)
         print(" ")
 
-    for marker_idx in range(MODEL.mod2_body.markers_tag_block.count):
+    for marker_idx in range(MODEL.mode_body.markers_tag_block.count):
         marker_struct = struct.unpack('>32sH18xiII', input_stream.read(64))
         marker = MODEL.Markers()
         marker.name = marker_struct[0].decode().rstrip('\x00')
@@ -195,7 +188,7 @@ def process_file_mod2_retail(input_stream, report):
                     print(" ")
 
     transforms = []
-    for nodes_idx in range(MODEL.mod2_body.nodes_tag_block.count):
+    for nodes_idx in range(MODEL.mode_body.nodes_tag_block.count):
         node_struct = struct.unpack('>32shhh2xffffffff84x', input_stream.read(156))
         node = MODEL.Nodes()
         transform = MODEL.Transform()
@@ -225,7 +218,7 @@ def process_file_mod2_retail(input_stream, report):
             print("Node Distance From Parent: ", node.distance_from_parent)
             print(" ")
 
-    for region_idx in range(MODEL.mod2_body.regions_tag_block.count):
+    for region_idx in range(MODEL.mode_body.regions_tag_block.count):
         region_struct = struct.unpack('>32s32xiII', input_stream.read(76))
         region = MODEL.Regions()
         region.name = region_struct[0].decode().rstrip('\x00')
@@ -302,7 +295,7 @@ def process_file_mod2_retail(input_stream, report):
                             print(" ")
 
 
-    for geometry_idx in range(MODEL.mod2_body.geometries_tag_block.count):
+    for geometry_idx in range(MODEL.mode_body.geometries_tag_block.count):
         geometry_struct = struct.unpack('>36xiII', input_stream.read(48))
         geometry = MODEL.Geometries()
         geometry.parts_tag_block = TAG.TagBlock(geometry_struct[0], 32, geometry_struct[1], geometry_struct[2])
@@ -312,7 +305,7 @@ def process_file_mod2_retail(input_stream, report):
     for geometry in MODEL.geometries:
         parts = []
         for part_idx in range(geometry.parts_tag_block.count):
-            part_struct = struct.unpack('>IhbbhhfffffiIIiIIiIIH2xIIIh2xI4xII3xb22b2x', input_stream.read(132))
+            part_struct = struct.unpack('>IhbbhhfffffiIIiIIiIIH2xIIIH2xI4xII', input_stream.read(104))
             part = MODEL.Parts()
             part.flags = part_struct[0]
             part.shader_index = part_struct[1]
@@ -328,16 +321,12 @@ def process_file_mod2_retail(input_stream, report):
             part.triangles_tag_block = TAG.TagBlock(part_struct[17], 32767, part_struct[18], part_struct[19])
             part.index_type = part_struct[20]
             part.index_count = part_struct[21]
-            part.indices_magic_offset = part_struct[22]
-            part.indices_offset = part_struct[23]
+            part.indices_offset = part_struct[22]
+            part.indices_magic_offset = part_struct[23]
             part.vertex_type = part_struct[24]
             part.vertex_count = part_struct[25]
-            part.vertices_magic_offset = part_struct[26]
-            part.vertices_offset = part_struct[27]
-            part.local_node_count = part_struct[28]
-            part.local_nodes = (part_struct[29], part_struct[30], part_struct[31], part_struct[32], part_struct[33], part_struct[34], part_struct[35], part_struct[36],
-                                part_struct[37], part_struct[38], part_struct[39], part_struct[40], part_struct[41], part_struct[42], part_struct[43], part_struct[44],
-                                part_struct[45], part_struct[46], part_struct[47], part_struct[48], part_struct[49], part_struct[50])
+            part.vertices_offset = part_struct[26]
+            part.vertices_magic_offset = part_struct[27]
 
             parts.append(part)
 
@@ -352,15 +341,7 @@ def process_file_mod2_retail(input_stream, report):
                 uncompressed_vertex.normal = Vector((uncompressed_vertex_struct[3], uncompressed_vertex_struct[4], uncompressed_vertex_struct[5]))
                 uncompressed_vertex.binormal = Vector((uncompressed_vertex_struct[6], uncompressed_vertex_struct[7], uncompressed_vertex_struct[8]))
                 uncompressed_vertex.tangent = Vector((uncompressed_vertex_struct[9], uncompressed_vertex_struct[10], uncompressed_vertex_struct[11]))
-                U = uncompressed_vertex_struct[12]
-                if not MODEL.mod2_body.base_map_u_scale == 0.0:
-                    U = MODEL.mod2_body.base_map_u_scale * uncompressed_vertex_struct[12] 
-
-                V = uncompressed_vertex_struct[13]
-                if not MODEL.mod2_body.base_map_v_scale == 0.0:
-                    V =  MODEL.mod2_body.base_map_v_scale * uncompressed_vertex_struct[13]
-
-                uncompressed_vertex.UV = (U, V)
+                uncompressed_vertex.UV = (uncompressed_vertex_struct[12], uncompressed_vertex_struct[13])
                 uncompressed_vertex.node_0_index = uncompressed_vertex_struct[14]
                 uncompressed_vertex.node_1_index = uncompressed_vertex_struct[15]
                 uncompressed_vertex.node_0_weight = uncompressed_vertex_struct[16]
@@ -477,7 +458,7 @@ def process_file_mod2_retail(input_stream, report):
                             print(" ")
 
     shaders = []
-    for shader_idx in range(MODEL.mod2_body.shaders_tag_block.count):
+    for shader_idx in range(MODEL.mode_body.shaders_tag_block.count):
         shader_struct = struct.unpack('>4siiIh14x', input_stream.read(32))
         shader = MODEL.Shaders()
         shader.tag_ref = TAG.TagRef(shader_struct[0].decode().rstrip('\x00'), "", shader_struct[2] + 1, shader_struct[1], shader_struct[3])

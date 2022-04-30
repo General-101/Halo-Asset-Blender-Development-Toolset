@@ -28,15 +28,14 @@ import struct
 
 from .format import CameraTrackAsset
 from mathutils import Vector, Quaternion
-from ..global_functions.tag_format import TagAsset
 
 DEBUG_PARSER = True
 DEBUG_HEADER = True
 DEBUG_BODY = True
 DEBUG_CONTROL_POINTS = True
 
-def process_file_retail(input_stream, report):
-    TAG = TagAsset()
+def process_file_retail(input_stream, tag_format, report):
+    TAG = tag_format.TagAsset()
     CAMERATRACK = CameraTrackAsset()
 
     header_struct = struct.unpack('>hbb32s4sIIIIHbb4s', input_stream.read(64))

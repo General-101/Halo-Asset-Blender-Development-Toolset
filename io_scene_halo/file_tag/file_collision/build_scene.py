@@ -29,9 +29,8 @@ import bmesh
 
 from math import radians
 from mathutils import Matrix, Vector
-from ..global_functions import mesh_processing, global_functions
 
-def build_pathfinding_spheres(context, armature, COLLISION, fix_rotations):
+def build_pathfinding_spheres(context, armature, COLLISION, fix_rotations, mesh_processing, global_functions):
     collection = context.collection
     for pathfinding_sphere_idx, pathfinding_sphere in enumerate(COLLISION.pathfinding_spheres):
         parent_idx = pathfinding_sphere.node
@@ -83,7 +82,7 @@ def build_pathfinding_spheres(context, armature, COLLISION, fix_rotations):
         object_mesh.select_set(False)
         armature.select_set(False)
 
-def build_h2_collision(context, armature, COLLISION):
+def build_h2_collision(context, armature, COLLISION, mesh_processing, global_functions):
     collection = context.collection
     random_color_gen = global_functions.RandomColorGenerator() # generates a random sequence of colors
     for region_idx, region in enumerate(COLLISION.regions):
@@ -173,8 +172,7 @@ def build_h2_collision(context, armature, COLLISION):
                 object_mesh.select_set(False)
                 armature.select_set(False)
 
-
-def build_collision(context, armature, COLLISION):
+def build_collision(context, armature, COLLISION, mesh_processing, global_functions):
     collection = context.collection
     random_color_gen = global_functions.RandomColorGenerator() # generates a random sequence of colors
     for node_idx, node in enumerate(COLLISION.nodes):
@@ -332,7 +330,7 @@ def build_collision(context, armature, COLLISION):
                 object_mesh.select_set(False)
                 armature.select_set(False)
 
-def build_scene(context, COLLISION, fix_rotations, report):
+def build_scene(context, COLLISION, fix_rotations, report, mesh_processing, global_functions):
     active_object = context.view_layer.objects.active
     armature = None
     if active_object and active_object.type == 'ARMATURE':
@@ -340,12 +338,12 @@ def build_scene(context, COLLISION, fix_rotations, report):
 
     if armature:
         if COLLISION.header.tag_group == "lloc":
-            build_h2_collision(context, armature, COLLISION)
+            build_h2_collision(context, armature, COLLISION, mesh_processing, global_functions)
             
         else:
-            build_collision(context, armature, COLLISION)
+            build_collision(context, armature, COLLISION, mesh_processing, global_functions)
 
-        build_pathfinding_spheres(context, armature, COLLISION, fix_rotations)
+        build_pathfinding_spheres(context, armature, COLLISION, fix_rotations, mesh_processing, global_functions)
 
     else:
         report({'ERROR'}, "No valid armature is active. Import will now be aborted")

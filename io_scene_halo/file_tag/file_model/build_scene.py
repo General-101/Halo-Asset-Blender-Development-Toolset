@@ -29,9 +29,8 @@ import bmesh
 
 from math import radians
 from mathutils import Matrix
-from ..global_functions import mesh_processing, global_functions
 
-def generate_jms_skeleton(MODEL, armature, fix_rotations):
+def generate_jms_skeleton(MODEL, armature, fix_rotations, mesh_processing, global_functions):
     first_frame = MODEL.transforms[0]
 
     bpy.ops.object.mode_set(mode = 'EDIT')
@@ -62,7 +61,7 @@ def generate_jms_skeleton(MODEL, armature, fix_rotations):
 
     bpy.ops.object.mode_set(mode = 'OBJECT')
 
-def generate_markers_layout_new(context, collection, MODEL, armature, fix_rotations):
+def generate_markers_layout_new(context, collection, MODEL, armature, fix_rotations, mesh_processing, global_functions):
     for region in MODEL.regions:
         for permutation in region.permutations:
             for local_marker in permutation.local_markers:
@@ -118,7 +117,7 @@ def generate_markers_layout_new(context, collection, MODEL, armature, fix_rotati
                 object_mesh.select_set(False)
                 armature.select_set(False)
 
-def build_scene(context, MODEL, fix_rotations, report):
+def build_scene(context, MODEL, fix_rotations, report, mesh_processing, global_functions):
     collection = context.collection
     random_color_gen = global_functions.RandomColorGenerator() # generates a random sequence of colors
 
@@ -128,9 +127,9 @@ def build_scene(context, MODEL, fix_rotations, report):
 
     mesh_processing.select_object(context, armature)
 
-    generate_jms_skeleton(MODEL, armature, fix_rotations)
+    generate_jms_skeleton(MODEL, armature, fix_rotations, mesh_processing, global_functions)
 
     mesh_processing.process_mesh_import_data("haloce", MODEL, None, None, random_color_gen, 'TAG', 0, context, collection, armature, fix_rotations)
 
-    generate_markers_layout_new(context, collection, MODEL, armature, fix_rotations)
+    generate_markers_layout_new(context, collection, MODEL, armature, fix_rotations, mesh_processing, global_functions)
 

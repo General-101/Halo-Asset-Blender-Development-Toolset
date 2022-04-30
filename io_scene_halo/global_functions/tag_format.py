@@ -36,7 +36,7 @@ def check_file_size(input_stream):
     return filesize
 
 def check_group(input_stream):
-    valid_group =  ["mode", "mod2", "coll", "lloc", "phys", "antr", "sbsp", "psbs", "trak"]
+    valid_group =  ["mode", "mod2", "coll", "lloc", "phys", "antr", "sbsp", "psbs", "rncs", "trak"]
     group_match = False
 
     input_stream.seek(36) # Position of tag group in all tags

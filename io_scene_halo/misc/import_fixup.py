@@ -42,10 +42,21 @@ def merge_verts(material_idx_list, threshold):
     bpy.ops.mesh.select_all(action='DESELECT')
 
 def model_fixup(context, threshold):
+    collections = []
+    layer_collections = list(context.view_layer.layer_collection.children)
+
+    while len(layer_collections) > 0:
+        collection_batch = layer_collections
+        layer_collections = []
+        for collection in collection_batch:
+            collections.append(collection)
+            for collection_child in collection.children:
+                layer_collections.append(collection_child)
+
     object_list = list(context.scene.objects)
     processed_mesh_name_list = []
     for obj in object_list:
-        if obj.type== 'MESH' and not mesh_processing.set_ignore(obj):
+        if obj.type== 'MESH' and not mesh_processing.set_ignore(collections, obj):
             edge_split = global_functions.EdgeSplit(True, False, 0.523599, True)
             mesh_processing.add_modifier(context, obj, False, edge_split, None)
             if not obj.data.name in processed_mesh_name_list:

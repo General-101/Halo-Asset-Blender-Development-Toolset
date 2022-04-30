@@ -30,7 +30,17 @@ from ..global_functions import mesh_processing, global_functions
 def process_scene(context, version, generate_checksum, game_version, extension, custom_scale, biped_controller, fix_rotations):
     JMA = JMAAsset()
 
-    global_functions.unhide_all_collections(context)
+    collections = []
+    layer_collections = list(context.view_layer.layer_collection.children)
+
+    while len(layer_collections) > 0:
+        collection_batch = layer_collections
+        layer_collections = []
+        for collection in collection_batch:
+            collections.append(collection)
+            for collection_child in collection.children:
+                layer_collections.append(collection_child)
+
     object_properties = []
     object_list = list(context.scene.objects)
     node_list = []
@@ -41,8 +51,8 @@ def process_scene(context, version, generate_checksum, game_version, extension, 
     total_frame_count = context.scene.frame_end - first_frame + 1
     for obj in object_list:
         object_properties.append([obj.hide_get(), obj.hide_viewport])
-        if obj.type == 'ARMATURE' and mesh_processing.set_ignore(obj) == False:
-            mesh_processing.unhide_object(obj)
+        if obj.type == 'ARMATURE' and mesh_processing.set_ignore(collections, obj) == False:
+            mesh_processing.unhide_object(collections, obj)
             armature_count += 1
             armature = obj
             mesh_processing.select_object(context, obj)

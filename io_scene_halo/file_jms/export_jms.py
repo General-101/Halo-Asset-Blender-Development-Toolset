@@ -64,7 +64,16 @@ def command_queue(context, filepath, report, jms_version, jms_version_ce, jms_ve
 
     scene = context.scene
 
-    global_functions.unhide_all_collections(context)
+    collections = []
+    layer_collections = list(context.view_layer.layer_collection.children)
+
+    while len(layer_collections) > 0:
+        collection_batch = layer_collections
+        layer_collections = []
+        for collection in collection_batch:
+            collections.append(collection)
+            for collection_child in collection.children:
+                layer_collections.append(collection_child)
 
     jmi = False
     if not world_nodes == None:
@@ -81,7 +90,7 @@ def command_queue(context, filepath, report, jms_version, jms_version_ce, jms_ve
     custom_scale = global_functions.set_scale(scale_enum, scale_float)
 
     for obj in object_list:
-        if obj.type== 'MESH':
+        if obj.type== 'MESH' and mesh_processing.set_ignore(collections, obj) == False:
             if clean_normalize_weights:
                 mesh_processing.vertex_group_clean_normalize(context, obj, limit_value)
 
@@ -92,7 +101,7 @@ def command_queue(context, filepath, report, jms_version, jms_version_ce, jms_ve
     for obj in object_list:
         object_properties.append((obj.hide_get(), obj.hide_viewport))
         if hidden_geo:
-            mesh_processing.unhide_object(obj)
+            mesh_processing.unhide_object(collections, obj)
 
         name = obj.name.lower()
         parent_name = None
@@ -103,19 +112,19 @@ def command_queue(context, filepath, report, jms_version, jms_version_ce, jms_ve
             world_node_count += 1
 
         elif obj.type == 'ARMATURE':
-            mesh_processing.unhide_object(obj)
+            mesh_processing.unhide_object(collections, obj)
             armature = obj
             armature_bones = obj.data.bones
             armature_count += 1
             node_list = list(armature_bones)
 
         elif name.startswith(node_prefix_tuple):
-            mesh_processing.unhide_object(obj)
+            mesh_processing.unhide_object(collections, obj)
             mesh_frame_count += 1
             node_list.append(obj)
 
         elif name[0:1] == '#':
-            if mesh_processing.set_ignore(obj) == False or hidden_geo:
+            if mesh_processing.set_ignore(collections, obj) == False or hidden_geo:
                 if obj.parent and (obj.parent.type == 'ARMATURE' or parent_name.startswith(node_prefix_tuple)):
                     mask_type = obj.marker.marker_mask_type
                     if export_render and mask_type =='0':
@@ -137,7 +146,7 @@ def command_queue(context, filepath, report, jms_version, jms_version_ce, jms_ve
                         physics_count += 1
 
         elif name[0:1] == '@' and len(obj.data.polygons) > 0:
-            if export_collision and (not mesh_processing.set_ignore(obj) or hidden_geo):
+            if export_collision and (not mesh_processing.set_ignore(collections, obj) or hidden_geo):
                 if obj.parent and (obj.parent.type == 'ARMATURE' or parent_name.startswith(node_prefix_tuple)):
                     collision_count += 1
                     if apply_modifiers:
@@ -150,7 +159,7 @@ def command_queue(context, filepath, report, jms_version, jms_version_ce, jms_ve
                     collision_geometry_list.append((evaluted_mesh, obj))
 
         elif name[0:1] == '$' and not game_version == "haloce" and version > 8205:
-            if export_physics and (not mesh_processing.set_ignore(obj) or hidden_geo):
+            if export_physics and (not mesh_processing.set_ignore(collections, obj) or hidden_geo):
                 physics_count += 1
                 if obj.rigid_body_constraint:
                     if obj.rigid_body_constraint.type == 'HINGE':
@@ -184,12 +193,12 @@ def command_queue(context, filepath, report, jms_version, jms_version_ce, jms_ve
                             convex_shape_list.append((evaluted_mesh, obj))
 
         elif obj.type == 'LIGHT' and obj.data.type == 'SUN' and version > 8212:
-            if mesh_processing.set_ignore(obj) == False or hidden_geo:
+            if mesh_processing.set_ignore(collections, obj) == False or hidden_geo:
                 if export_render:
                     skylight_list.append(obj)
 
         elif obj.type== 'MESH':
-            if export_render and (not mesh_processing.set_ignore(obj) or hidden_geo):
+            if export_render and (not mesh_processing.set_ignore(collections, obj) or hidden_geo):
                 if not global_functions.string_empty_check(obj.data.ass_jms.XREF_path) and version > 8205:
                     instance_markers.append(obj)
                     if not obj.data.ass_jms.XREF_path in instance_xref_paths:

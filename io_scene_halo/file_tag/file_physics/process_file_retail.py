@@ -28,7 +28,6 @@ import struct
 
 from mathutils import Vector
 from .format import PhysicsAsset
-from ..global_functions.tag_format import TagAsset
 
 DEBUG_PARSER = False
 DEBUG_HEADER = True
@@ -37,8 +36,8 @@ DEBUG_INERTIAL_MATRIX_AND_INVERSE = True
 DEBUG_POWERED_MASS_POINT = True
 DEBUG_MASS_POINT = True
 
-def process_file_retail(input_stream, report):
-    TAG = TagAsset()
+def process_file_retail(input_stream, tag_format, report):
+    TAG = tag_format.TagAsset()
     PHYSICS = PhysicsAsset()
 
     header_struct = struct.unpack('>hbb32s4sIIIIHbb4s', input_stream.read(64))

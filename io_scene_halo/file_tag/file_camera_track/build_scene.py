@@ -24,13 +24,9 @@
 #
 # ##### END MIT LICENSE BLOCK #####
 
-import os
 import bpy
-import bmesh
 
-from math import radians
 from mathutils import Vector, Matrix
-from ..global_functions import mesh_processing, global_functions
 
 def generate_camera_track_skeleton(armature):
 
@@ -42,7 +38,7 @@ def generate_camera_track_skeleton(armature):
 
     bpy.ops.object.mode_set(mode = 'OBJECT')
 
-def build_scene(context, CAMERATRACK, fix_rotations, report):
+def build_scene(context, CAMERATRACK, fix_rotations, report, mesh_processing, global_functions):
     scene = context.scene
     view_layer = context.view_layer
     collection = context.collection

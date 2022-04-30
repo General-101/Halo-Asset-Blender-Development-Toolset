@@ -28,7 +28,6 @@ import struct
 
 from math import degrees, sqrt
 from mathutils import Vector, Quaternion, Euler
-from ..global_functions.tag_format import TagAsset
 from .format_retail import AnimationAsset, AnimationFlags
 
 DEBUG_PARSER = False
@@ -258,8 +257,8 @@ def apply_root_node_info_to_states(anim, undo=False):
 
     anim.frame_info_applied = not undo
 
-def process_file_retail(input_stream, report):
-    TAG = TagAsset()
+def process_file_retail(input_stream, tag_format, report):
+    TAG = tag_format.TagAsset()
     ANIMATION = AnimationAsset()
 
     header_struct = struct.unpack('>hbb32s4sIIIIHbb4s', input_stream.read(64))

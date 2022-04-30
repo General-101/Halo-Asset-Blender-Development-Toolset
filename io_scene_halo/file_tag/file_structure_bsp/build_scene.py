@@ -32,9 +32,8 @@ from math import radians
 from mathutils import Vector, Matrix, Euler
 from .h1.format import ClusterPortalFlags, SurfaceFlags as H1SurfaceFlags
 from .h2.format import SurfaceFlags as H2SurfaceFlags
-from ..global_functions import mesh_processing, global_functions
 
-def build_scene(context, LEVEL, fix_rotations, report):
+def build_scene(context, LEVEL, fix_rotations, report, mesh_processing, global_functions):
     collection = context.collection
 
     random_color_gen = global_functions.RandomColorGenerator() # generates a random sequence of colors
