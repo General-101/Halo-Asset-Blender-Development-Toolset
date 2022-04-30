@@ -956,8 +956,8 @@ def process_mesh_export_vert(vert, loop, file_type, original_geo_matrix, custom_
         final_translation = original_geo_matrix @ translation
 
         if loop:
-            final_normal = (loop.normal).normalized()
-            
+            final_normal = (original_geo_matrix @ (translation + loop.normal) - final_translation).normalized()
+
         else:
             final_normal = (original_geo_matrix @ (translation + vert.normal) - final_translation).normalized()
 
