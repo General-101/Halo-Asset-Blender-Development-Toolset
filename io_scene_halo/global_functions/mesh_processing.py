@@ -66,7 +66,7 @@ def set_ignore(collections, mesh):
     for collection in collections:
         for mesh_collection in mesh_collection_list:
             if collection.name == mesh_collection.name:
-                if collection.hide_viewport or collection.visible_get() or collection.exclude:
+                if collection.hide_viewport or not collection.visible_get() or collection.exclude:
                     ignore = True
 
     if not ignore and (mesh.hide_viewport or mesh.hide_get()):

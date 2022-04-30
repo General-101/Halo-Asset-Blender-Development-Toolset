@@ -24,6 +24,7 @@
 #
 # ##### END MIT LICENSE BLOCK #####
 
+import os
 import bpy
 
 from math import degrees
@@ -362,7 +363,7 @@ def process_scene(context, version, game_version, hidden_geo, exluded_collection
             elif geo_class == 'SPHERE':
                 xref_path = bpy.path.abspath(original_geo.data.ass_jms.XREF_path)
                 if xref_path != "":
-                    xref_name = original_geo.name
+                    xref_name = os.path.basename(xref_path).rsplit('.', 1)[0]
 
                 if original_geo.face_maps.active:
                     face_set = original_geo.face_maps[0].name.split()
@@ -384,7 +385,7 @@ def process_scene(context, version, game_version, hidden_geo, exluded_collection
             elif geo_class == 'BOX':
                 xref_path = bpy.path.abspath(original_geo.data.ass_jms.XREF_path)
                 if xref_path != "":
-                    xref_name = original_geo.name
+                    xref_name = os.path.basename(xref_path).rsplit('.', 1)[0]
 
                 if original_geo.face_maps.active:
                     face_set = original_geo.face_maps[0].name.split()
@@ -406,7 +407,7 @@ def process_scene(context, version, game_version, hidden_geo, exluded_collection
             elif geo_class == 'PILL':
                 xref_path = bpy.path.abspath(original_geo.data.ass_jms.XREF_path)
                 if xref_path != "":
-                    xref_name = original_geo.name
+                    xref_name = os.path.basename(xref_path).rsplit('.', 1)[0]
 
                 if original_geo.face_maps.active:
                     face_set = original_geo.face_maps[0].name.split()
@@ -429,7 +430,7 @@ def process_scene(context, version, game_version, hidden_geo, exluded_collection
             elif geo_class == 'MESH':
                 xref_path = bpy.path.abspath(original_geo.data.ass_jms.XREF_path)
                 if xref_path != "":
-                    xref_name = original_geo.name
+                    xref_name = os.path.basename(xref_path).rsplit('.', 1)[0]
 
                 vertex_groups = original_geo.vertex_groups.keys()
                 for idx, face in enumerate(evaluted_mesh.polygons):
