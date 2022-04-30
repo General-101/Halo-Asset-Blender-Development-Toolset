@@ -433,6 +433,7 @@ def process_scene(context, version, game_version, hidden_geo, exluded_collection
                     xref_name = os.path.basename(xref_path).rsplit('.', 1)[0]
 
                 vertex_groups = original_geo.vertex_groups.keys()
+                evaluted_mesh.calc_normals_split()
                 for idx, face in enumerate(evaluted_mesh.polygons):
                     if evaluted_mesh.face_maps.active and len(original_geo.face_maps) > 0:
                         face_map_idx = evaluted_mesh.face_maps.active.data[idx].value
@@ -461,10 +462,11 @@ def process_scene(context, version, game_version, hidden_geo, exluded_collection
 
                     triangles.append(ASS.Triangle(region_index, material_index, v0, v1, v2))
                     for loop_index in face.loop_indices:
-                        vert = evaluted_mesh.vertices[evaluted_mesh.loops[loop_index].vertex_index]
+                        loop = evaluted_mesh.loops[loop_index]
+                        vert = evaluted_mesh.vertices[loop.vertex_index]
 
                         region = region_index
-                        scaled_translation, normal = mesh_processing.process_mesh_export_vert(vert, "ASS", object_matrix, custom_scale)
+                        scaled_translation, normal = mesh_processing.process_mesh_export_vert(vert, loop, "ASS", object_matrix, custom_scale)
                         uv_set = mesh_processing.process_mesh_export_uv(evaluted_mesh, "ASS", loop_index, version)
                         color = mesh_processing.process_mesh_export_color(evaluted_mesh, loop_index)
                         node_influence_count, node_set, node_index_list = mesh_processing.process_mesh_export_weights(vert, armature, original_geo, vertex_groups, instance_list, "ASS")

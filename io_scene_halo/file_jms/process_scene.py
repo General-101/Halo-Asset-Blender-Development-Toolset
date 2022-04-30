@@ -198,6 +198,7 @@ def process_scene(version, game_version, generate_checksum, fix_rotations, model
         for idx, geometry in enumerate(geometry_list):
             evaluted_mesh = geometry[0]
             original_geo = geometry[1]
+            evaluted_mesh.calc_normals_split()
             vertex_groups = original_geo.vertex_groups.keys()
             original_geo_matrix = global_functions.get_matrix(original_geo, original_geo, False, blend_scene.armature, joined_list, False, version, "JMS", False, custom_scale, fix_rotations)
             for idx, face in enumerate(evaluted_mesh.polygons):
@@ -237,10 +238,11 @@ def process_scene(version, game_version, generate_checksum, fix_rotations, model
 
                 JMS.triangles.append(JMSAsset.Triangle(region_index, material_index, v0, v1, v2))
                 for loop_index in face.loop_indices:
-                    vert = evaluted_mesh.vertices[evaluted_mesh.loops[loop_index].vertex_index]
+                    loop = evaluted_mesh.loops[loop_index]
+                    vert = evaluted_mesh.vertices[loop.vertex_index]
 
                     region = region_index
-                    scaled_translation, normal = mesh_processing.process_mesh_export_vert(vert, "JMS", original_geo_matrix, custom_scale)
+                    scaled_translation, normal = mesh_processing.process_mesh_export_vert(vert, loop, "JMS", original_geo_matrix, custom_scale)
                     uv_set = mesh_processing.process_mesh_export_uv(evaluted_mesh, "JMS", loop_index, version)
                     color = mesh_processing.process_mesh_export_color(evaluted_mesh, loop_index)
                     node_influence_count, node_set, node_index_list = mesh_processing.process_mesh_export_weights(vert, blend_scene.armature, original_geo, vertex_groups, joined_list, "JMS")
