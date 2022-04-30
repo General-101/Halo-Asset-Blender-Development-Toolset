@@ -862,7 +862,7 @@ def process_mesh_export_weights(vert, armature, original_geo, vertex_groups, joi
         vertex_vert_group_list = []
         for group_index in range(len(vert.groups)):
             vert_group = vert.groups[group_index].group
-            if vert_group in vertex_groups:
+            if not vert_group >= len(vertex_groups):
                 object_vertex_group = vertex_groups[vert_group]
                 if armature:
                     if object_vertex_group in armature.data.bones:
