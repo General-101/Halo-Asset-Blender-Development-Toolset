@@ -955,7 +955,12 @@ def process_mesh_export_vert(vert, loop, file_type, original_geo_matrix, custom_
 
         final_translation = original_geo_matrix @ translation
 
-        final_normal = (loop.normal).normalized()
+        if loop:
+            final_normal = (loop.normal).normalized()
+            
+        else:
+            final_normal = (original_geo_matrix @ (translation + vert.normal) - final_translation).normalized()
+
         if negative_matrix and original_geo_matrix.determinant() < 0.0 and file_type == 'JMS':
             invert_normal_x = final_normal[0] * -1
             invert_normal_y = final_normal[1] * -1
@@ -965,7 +970,12 @@ def process_mesh_export_vert(vert, loop, file_type, original_geo_matrix, custom_
 
     else:
         final_translation = custom_scale * vert.co
-        final_normal = (loop.normal).normalized()
+        if loop:
+            final_normal = (loop.normal).normalized()
+
+        else:
+            final_normal = (vert.normal).normalized()
+
 
     return final_translation, final_normal
 
