@@ -40,13 +40,27 @@ def build_asset(context, filepath, version, game_version, folder_structure, hidd
 
     file = open(root_directory + os.sep + filename, 'w', encoding='utf_8')
 
+    account_name = "missing string"
+    pc_name = "missing string"
+    try:
+        account_name = getuser()
+        
+    except:
+        report({'WARNING'}, "Something went wrong when we tried to retrieve the account name. Call a technician or a priest depending.")
+        
+    try:
+        pc_name = socket.gethostname().upper()
+        
+    except:
+        report({'WARNING'}, "Something went wrong when we tried to retrieve the PC name. Call a technician or a priest depending.")
+
     file.write(
         ';### HEADER ###' +
         '\n%s' % (version) +
         '\n"BLENDER"' +
         '\n"%s.%s"' % (bpy.app.version[0], bpy.app.version[1]) +
-        '\n"%s"' % (getuser()) +
-        '\n"%s"\n' % (socket.gethostname().upper())
+        '\n"%s"' % (account_name) +
+        '\n"%s"\n' % (pc_name)
     )
 
     file.write(
