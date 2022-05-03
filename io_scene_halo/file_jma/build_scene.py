@@ -260,9 +260,9 @@ def build_scene(context, JMA, JMS_A, JMS_B, filepath, game_version, fix_parents,
     while len(layer_collections) > 0:
         collection_batch = layer_collections
         layer_collections = []
-        for collection in collection_batch:
-            collections.append(collection)
-            for collection_child in collection.children:
+        for collection_root in collection_batch:
+            collections.append(collection_root)
+            for collection_child in collection_root.children:
                 layer_collections.append(collection_child)
 
     scene_nodes = []
