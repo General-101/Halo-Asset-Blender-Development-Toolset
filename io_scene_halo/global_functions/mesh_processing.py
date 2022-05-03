@@ -371,7 +371,8 @@ def add_modifier(context, obj, triangulate_faces, edge_split_class, armature):
     modifier_list = gather_modifers(obj)
     if triangulate_faces:
         if not 'TRIANGULATE' in modifier_list:
-            obj.modifiers.new("Triangulate", type='TRIANGULATE')
+            triangulate = obj.modifiers.new("Triangulate", type='TRIANGULATE')
+            triangulate.keep_custom_normals = True
 
     if edge_split_class and edge_split_class.is_enabled:
         if not 'EDGE_SPLIT' in modifier_list:
