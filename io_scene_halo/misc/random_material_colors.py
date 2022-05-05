@@ -31,8 +31,19 @@ from ..global_functions import  global_functions
 def random_material_colors(context):
     random_color_gen = global_functions.RandomColorGenerator() # generates a random sequence of colors
 
+    new_diffuse = random_color_gen.next()
+
     for material in bpy.data.materials:
-        material.diffuse_color = random_color_gen.next()
+        material.diffuse_color = new_diffuse
+        if material.use_nodes:
+            if not material.node_tree == None:
+                for node in material.node_tree.nodes:
+                    if node.type == 'OUTPUT_MATERIAL':
+                        surface_input = node.inputs["Surface"]
+                        if surface_input.is_linked:
+                            surface_node = surface_input.links[0].from_node
+                            diffuse_nodes = surface_node.inputs["Base Color"]
+                            diffuse_nodes.default_value = new_diffuse
 
     return {'FINISHED'}
 
