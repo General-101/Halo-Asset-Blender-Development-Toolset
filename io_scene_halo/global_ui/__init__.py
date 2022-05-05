@@ -976,8 +976,8 @@ class ASS_LightPropertiesGroup(PropertyGroup):
         name="Light Cone Shape",
         description="What shape to use for the light cone",
         default = "0",
-        items=[ ('0', "Circle", "Circle"),
-                ('1', "Rectangle", "Rectangle"),
+        items=[ ('0', "Rectangle", "Rectangle"),
+                ('1', "Circle", "Circle"),
                ]
         )
 
