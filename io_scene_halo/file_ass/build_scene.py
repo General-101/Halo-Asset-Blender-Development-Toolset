@@ -131,6 +131,14 @@ def build_scene(context, filepath, report):
         object_index = instance.object_index
         unique_id = instance.unique_id
 
+        pivot_transform = instance.pivot_transform
+
+        pivot_scale = (pivot_transform.scale, pivot_transform.scale, pivot_transform.scale)
+        if ASS.version == 1:
+            pivot_scale = pivot_transform.scale
+
+        pivot_transform = Matrix.LocRotScale(pivot_transform.translation, pivot_transform.rotation, pivot_scale)
+
         geo_class = 'EMPTY'
         object_radius = 2
         object_height = 1
@@ -206,6 +214,9 @@ def build_scene(context, filepath, report):
                         bm = bmesh.new()
                         bmesh.ops.create_cone(bm, cap_ends=True, cap_tris=False, segments=12, radius1=1, radius2=1, depth=2)
                         bm.transform(Matrix.Translation((0, 0, 1)))
+                        
+                        bmesh.ops.transform(bm, matrix=pivot_transform, verts=bm.verts)
+                        
                         bm.to_mesh(object_data)
                         bm.free()
 
@@ -222,6 +233,9 @@ def build_scene(context, filepath, report):
 
                         bm = bmesh.new()
                         bmesh.ops.create_uvsphere(bm, u_segments=32, v_segments=16, radius=1)
+                        
+                        bmesh.ops.transform(bm, matrix=pivot_transform, verts=bm.verts)
+                        
                         bm.to_mesh(object_data)
                         bm.free()
 
@@ -238,6 +252,9 @@ def build_scene(context, filepath, report):
 
                         bm = bmesh.new()
                         bmesh.ops.create_cube(bm, size=1.0)
+                        
+                        bmesh.ops.transform(bm, matrix=pivot_transform, verts=bm.verts)
+                        
                         bm.to_mesh(object_data)
                         bm.free()
 
@@ -250,6 +267,8 @@ def build_scene(context, filepath, report):
 
                     elif geo_class == 'MESH':
                         bm, vert_normal_list = mesh_processing.process_mesh_import_data('halo3', ASS, object_element, object_mesh, random_color_gen, 'ASS', 0, None, None, None, False)
+
+                        bmesh.ops.transform(bm, matrix=pivot_transform, verts=bm.verts)
 
                         bm.to_mesh(object_data)
                         bm.free()
@@ -284,31 +303,15 @@ def build_scene(context, filepath, report):
         geo_class = 'EMPTY'
 
         local_transform = instance.local_transform
-        pivot_transform = instance.pivot_transform
 
         local_scale = (local_transform.scale, local_transform.scale, local_transform.scale)
-        pivot_scale = (pivot_transform.scale, pivot_transform.scale, pivot_transform.scale)
         if ASS.version == 1:
             local_scale = local_transform.scale
-            pivot_scale = pivot_transform.scale
 
         if not unique_id == -1:
-            if not object_index == -1:
-                object_element = ASS.objects[object_index]
-                geo_class = object_element.geo_class
-
-                output_rotation = local_transform.rotation @ pivot_transform.rotation
-                output_position = local_transform.rotation @ pivot_transform.translation * local_scale[0] + local_transform.translation
-                output_scale = local_scale[0] * pivot_scale[0]
-
-                object_list[idx].location = output_position
-                object_list[idx].rotation_euler =  output_rotation.to_euler()
-                object_list[idx].scale = (output_scale, output_scale, output_scale)
-
-            else:
-                object_list[idx].location = local_transform.translation
-                object_list[idx].rotation_euler = local_transform.rotation.to_euler()
-                object_list[idx].scale = local_scale
+            object_list[idx].location = local_transform.translation
+            object_list[idx].rotation_euler = local_transform.rotation.to_euler()
+            object_list[idx].scale = local_scale
 
             parent_index = instance.parent_id
             if not parent_index == -1:

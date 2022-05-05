@@ -776,6 +776,21 @@ class Halo_CullMaterials(Panel):
         row = col.row()
         row.operator("halo_bulk.cull_materials", text="Cull Materials")
 
+class Halo_RandomMaterialColors(Panel):
+    bl_label = "Random Material Colors"
+    bl_idname = "HALO_PT_RandomMaterialColors"
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "UI"
+    bl_options = {'DEFAULT_CLOSED'}
+    bl_parent_id = "HALO_PT_AutoTools"
+
+    def draw(self, context):
+        layout = self.layout
+
+        col = layout.column(align=True)
+        row = col.row()
+        row.operator("halo_bulk.random_material_colors", text="Set Colors")
+
 class Halo_ScaleModelHelper(Panel):
     bl_label = "Scale Model Helper"
     bl_idname = "HALO_PT_ScaleModelHelper"
@@ -1242,6 +1257,16 @@ class Cull_Materials(Operator):
         from ..misc import cull_materials
         return global_functions.run_code("cull_materials.cull_materials(context)")
 
+class Random_Material_Colors(Operator):
+    """Sets materials to use a random diffuse"""
+    bl_idname = 'halo_bulk.random_material_colors'
+    bl_label = 'Random Material Colors'
+    bl_options = {"REGISTER", "UNDO"}
+
+    def execute(self, context):
+        from ..misc import random_material_colors
+        return global_functions.run_code("random_material_colors.random_material_colors(context)")
+
 class Scale_Model(Operator):
     """Creates a model that matches the ingame scale"""
     bl_idname = 'halo_bulk.scale_model'
@@ -1419,6 +1444,7 @@ classeshalo = (
     Bulk_Rotate_Bones,
     Bulk_Reset_Bones,
     Cull_Materials,
+    Random_Material_Colors,
     Scale_Model,
     GenerateSky,
     FaceSet,
@@ -1432,6 +1458,7 @@ classeshalo = (
     Halo_NodePrefixHelper,
     Halo_BoneRotationHelper,
     Halo_CullMaterials,
+    Halo_RandomMaterialColors,
     Halo_ScaleModelHelper,
     Halo_MaterialDefinitionHelper,
     Halo_ImportFixup,
