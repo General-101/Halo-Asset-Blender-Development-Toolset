@@ -109,8 +109,8 @@ def build_asset(context, filepath, version, game_version, folder_structure, hidd
                 '\n"%s"' % (geometry.geo_class) +
                 '\n%0.10f\t%0.10f\t%0.10f' % (geometry.light_properties.light_color[0], geometry.light_properties.light_color[1], geometry.light_properties.light_color[2]) +
                 '\n%0.10f' % (geometry.light_properties.intensity) +
-                '\n%0.10f' % (geometry.light_properties.hotspot_size) +
                 '\n%0.10f' % (geometry.light_properties.hotspot_falloff_size) +
+                '\n%0.10f' % (geometry.light_properties.hotspot_size) +
                 '\n%s' % (geometry.light_properties.uses_near_attenuation) +
                 '\n%0.10f' % (geometry.light_properties.near_attenuation_start) +
                 '\n%0.10f' % (geometry.light_properties.near_attenuation_end) +
