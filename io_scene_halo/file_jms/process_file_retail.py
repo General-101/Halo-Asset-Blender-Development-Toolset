@@ -61,7 +61,7 @@ def process_file_retail(JMS, game_version, extension, version_list, default_regi
     material_count = int(JMS.next())
     for material in range(material_count):
         name = JMS.next()
-        if JMS.version >= 8203 and JMS.version <= 8204:
+        if JMS.version >= 8202 and JMS.version <= 8204:
             texture_definition = JMS.next()
 
         material_definition = JMS.next()
@@ -227,7 +227,7 @@ def process_file_retail(JMS, game_version, extension, version_list, default_regi
             else:
                 tex_0_u_value = JMS.next()
                 tex_0_v_value = JMS.next()
-                if JMS.version >= 8203:
+                if JMS.version >= 8202:
                     tex_1_u_value = JMS.next()
                     tex_1_v_value = JMS.next()
                     tex_2_u_value = JMS.next()

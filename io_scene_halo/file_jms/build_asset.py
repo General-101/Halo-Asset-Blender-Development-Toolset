@@ -116,7 +116,7 @@ def build_asset(context, blend_scene, filepath, version, game_version, generate_
         )
 
     else:
-        if version >= 8203 and version <= 8204:
+        if version >= 8202 and version <= 8204:
             file.write(
                 '\n;' +
                 '\n;###Materials###'
@@ -153,7 +153,7 @@ def build_asset(context, blend_scene, filepath, version, game_version, generate_
 
             else:
                 file.write('\n%s' % (material.name))
-                if version >= 8203 and version <= 8204:
+                if version >= 8202 and version <= 8204:
                     file.write('\n%s' % (material.texture_path))
 
                 file.write('\n%s' % (material_definition))
@@ -464,7 +464,7 @@ def build_asset(context, blend_scene, filepath, version, game_version, generate_
                 )
 
             if version >= 8200:
-                if version >= 8203 and version <= 8204:
+                if version >= 8202 and version <= 8204:
                     file.write(
                         decimal_2 % (tex_u_0, tex_v_0) +
                         decimal_2 % (tex_u_1, tex_v_1) +
