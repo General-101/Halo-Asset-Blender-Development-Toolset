@@ -28,6 +28,7 @@ import os
 import bpy
 import socket
 
+from .. import config
 from getpass import getuser
 from .process_scene import process_scene
 from ..global_functions import global_functions
@@ -40,27 +41,28 @@ def build_asset(context, filepath, version, game_version, folder_structure, hidd
 
     file = open(root_directory + os.sep + filename, 'w', encoding='utf_8')
 
-    account_name = "missing string"
-    pc_name = "missing string"
-    try:
-        account_name = getuser()
-        
-    except:
-        report({'WARNING'}, "Something went wrong when we tried to retrieve the account name. Call a technician or a priest depending.")
-        
-    try:
-        pc_name = socket.gethostname().upper()
-        
-    except:
-        report({'WARNING'}, "Something went wrong when we tried to retrieve the PC name. Call a technician or a priest depending.")
+    username = config.USERNAME
+    device_name = config.DEVICE_NAME
+    if not config.OVERRIDE_USER_DETAILS:
+        try:
+            username = getuser()
+
+        except:
+            report({'WARNING'}, "Something went wrong when we tried to retrieve the account name. Call a technician or a priest depending.")
+
+        try:
+            device_name = socket.gethostname().upper()
+
+        except:
+            report({'WARNING'}, "Something went wrong when we tried to retrieve the PC name. Call a technician or a priest depending.")
 
     file.write(
         ';### HEADER ###' +
         '\n%s' % (version) +
         '\n"BLENDER"' +
         '\n"%s.%s"' % (bpy.app.version[0], bpy.app.version[1]) +
-        '\n"%s"' % (account_name) +
-        '\n"%s"\n' % (pc_name)
+        '\n"%s"' % (username) +
+        '\n"%s"\n' % (device_name)
     )
 
     file.write(
