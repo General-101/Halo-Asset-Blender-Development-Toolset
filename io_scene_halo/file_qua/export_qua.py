@@ -171,7 +171,7 @@ class QUAScene(global_functions.HaloAsset):
                 for action in bpy.data.actions:
                     action_prefix = action.name.split(' ', 1)[0]
                     if action_prefix.startswith(extra_camera_obj.name.split('+', 1)[1]):
-                        extra_camera = QUAScene.ExtraCamera(extra_camera_obj.name, "")
+                        extra_camera = QUAScene.ExtraCamera(extra_camera_obj.name, "texture")
                         extra_action_tranforms = []
                         first_frame = round(action.fcurves[0].keyframe_points[0].co[0])
                         last_frame = round(action.fcurves[0].keyframe_points[-1].co[0]) + 1
