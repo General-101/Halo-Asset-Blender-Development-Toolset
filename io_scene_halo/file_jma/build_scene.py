@@ -109,13 +109,13 @@ def generate_jms_skeleton(JMS_A_nodes, JMS_A, JMS_B_nodes, JMS_B, JMA, armature,
 
         transform_matrix = matrix_translate @ matrix_rotation
         if fix_rotations:
-            if file_version < global_functions.get_version_matrix_check(file_type, game_version) and current_bone.parent and not is_root:
+            if file_version < global_functions.get_version_matrix_check(file_type) and current_bone.parent and not is_root:
                 transform_matrix = (current_bone.parent.matrix @ Matrix.Rotation(radians(90.0), 4, 'Z')) @ transform_matrix
 
             current_bone.matrix = transform_matrix @ Matrix.Rotation(radians(-90.0), 4, 'Z')
 
         else:
-            if file_version < global_functions.get_version_matrix_check(file_type, game_version) and current_bone.parent and not is_root:
+            if file_version < global_functions.get_version_matrix_check(file_type) and current_bone.parent and not is_root:
                 transform_matrix = current_bone.parent.matrix @ transform_matrix
 
             current_bone.matrix = transform_matrix
