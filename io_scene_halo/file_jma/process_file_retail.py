@@ -104,7 +104,7 @@ def process_file_retail(JMA, extension, game_version, retail_version_list, repor
                 JMA.biped_controller_transforms.append(JMA.next_transform())
 
     if JMA.left() != 0: # is something wrong with the parser?
-        raise RuntimeError("%s elements left after parse end" % JMA.left())
+        report({'WARNING'}, "%s elements left after parse end" % JMA.left())
 
     # update node graph
     if JMA.version >= 16394:
