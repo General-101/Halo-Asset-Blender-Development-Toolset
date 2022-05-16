@@ -826,6 +826,10 @@ def process_mesh_import_data(game_version, import_file, object_element, object_m
                     color_g = file_vert.color[1]
                     color_b = file_vert.color[2]
                     color_a = 1
+                    if color_r < -1000 and color_g < -1000 and color_b < -1000:
+                        color_r = 0.0
+                        color_g = 0.01
+                        color_b = 0.0
 
                     layer_color = bm.loops.layers.color.get("color")
                     if layer_color is None:
@@ -926,8 +930,9 @@ def process_mesh_export_weights(vert, armature, original_geo, vertex_groups, joi
 def process_mesh_export_color(evaluated_geo, loop_index):
     color = (0.0, 0.0, 0.0)
     if evaluated_geo.vertex_colors:
-        color_rgb = evaluated_geo.vertex_colors.active.data[loop_index].color
-        color = color_rgb
+        color = evaluated_geo.vertex_colors.active.data[loop_index].color
+        if color[0] == 0.0 and "{:.2f}".format(color[1]) == "0.01" and color[2] == 0.0:
+            color = (-65536.0000000000, -65536.0000000000, -65536.0000000000, 1.0)
 
     return color
 
