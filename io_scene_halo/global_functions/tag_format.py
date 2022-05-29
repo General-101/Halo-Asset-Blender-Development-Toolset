@@ -48,6 +48,13 @@ def check_group(input_stream):
     return tag_group, group_match
 
 class TagAsset():
+    class TagBlockHeader:
+        def __init__(self, name="", version=0, count=0, size=0):
+            self.name = name
+            self.version = version
+            self.count = count
+            self.size = size
+
     class TagBlock:
         def __init__(self, count=0, maximum_count=0, address=0, definition=0):
             self.count = count
@@ -91,3 +98,9 @@ class TagAsset():
             self.destination = destination
             self.plugin_handle = plugin_handle
             self.engine_tag = engine_tag
+
+    def string_to_bytes(self, string, reverse):
+        if reverse:
+            string = string[::-1]
+            
+        return bytes(string, 'utf-8')

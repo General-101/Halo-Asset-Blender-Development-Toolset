@@ -24,14 +24,19 @@
 #
 # ##### END MIT LICENSE BLOCK #####
 
-from mathutils import Vector, Quaternion
-
 SALT_SIZE = 32
 
 class ScenarioAsset():
     def __init__(self):
         self.header = None
+        self.scenario_body_header = None
         self.scenario_body = None
+        self.object_name_header = None
+        self.object_names = None
+        self.scenery_header = None
+        self.scenery = None
+        self.scenery_palette_header = None
+        self.scenery_palette = None
 
     class ScenarioBody:
         def __init__(self, unused_tag_ref=None, skies_tag_block=None, scenario_type=0, scenario_flags=0, child_scenarios_tag_block=None, local_north=0.0, 
@@ -42,22 +47,22 @@ class ScenarioAsset():
                      control_palette_tag_block=None, light_fixtures_tag_block=None, light_fixtures_palette_tag_block=None, sound_scenery_tag_block=None, 
                      sound_scenery_palette_tag_block=None, light_volumes_tag_block=None, light_volume_palette_tag_block=None, player_starting_profile_tag_block=None, 
                      player_starting_locations_tag_block=None, trigger_volumes_tag_block=None, recorded_animations_tag_block=None, netgame_flags_tag_block=None, 
-                     netgame_equipment_tag_block=None, bsp_switch_trigger_volumes_tag_block=None, decals_tag_block=None, decal_palette_tag_block=None, 
-                     detail_object_collection_palette_tag_block=None, style_palette=None, squad_groups_tag_block=None, squads_tag_block=None, zones_tag_block=None, 
-                     mission_scenes_tag_block=None, character_palette_tag_block=None, ai_pathfinding_data_tag_block=None, ai_animation_references_tag_block=None, 
-                     ai_script_references_tag_block=None, ai_recording_references_tag_block=None, ai_conversations_tag_block=None, script_syntax_data_tag_data=None, 
-                     script_string_data_tag_data=None, scripts_tag_block=None, globals_tag_block=None, references_tag_block=None, 
+                     netgame_equipment_tag_block=None, starting_equipment_tag_block=None, bsp_switch_trigger_volumes_tag_block=None, decals_tag_block=None, 
+                     decal_palette_tag_block=None, detail_object_collection_palette_tag_block=None, style_palette_tag_block=None, squad_groups_tag_block=None, 
+                     squads_tag_block=None, zones_tag_block=None, mission_scenes_tag_block=None, character_palette_tag_block=None, ai_pathfinding_data_tag_block=None, 
+                     ai_animation_references_tag_block=None, ai_script_references_tag_block=None, ai_recording_references_tag_block=None, ai_conversations_tag_block=None, 
+                     script_syntax_data_tag_data=None, script_string_data_tag_data=None, scripts_tag_block=None, globals_tag_block=None, references_tag_block=None, 
                      source_files_tag_block=None, scripting_data_tag_block=None, cutscene_flags_tag_block=None, cutscene_camera_points_tag_block=None, 
                      cutscene_titles_tag_block=None, custom_object_names_tag_ref=None, chapter_title_text_tag_ref=None, hud_messages_tag_ref=None, 
                      structure_bsps_tag_block=None, scenario_resources_tag_block=None, old_structure_physics_tag_block=None, hs_unit_seats_tag_block=None, 
                      scenario_kill_triggers_tag_block=None, hs_syntax_datums_tag_block=None, orders_tag_block=None, triggers_tag_block=None, 
                      background_sound_palette_tag_block=None, sound_environment_palette_tag_block=None, weather_palette_tag_block=None, unused_0_tag_block=None, 
                      unused_1_tag_block=None, unused_2_tag_block=None, unused_3_tag_block=None, scavenger_hunt_objects_tag_block=None, scenario_cluster_data_tag_block=None, 
-                     salt_array=[], spawn_data_tag_block=None, sound_effect_collection_tag_ref=None, crates_tag_block=None, crate_palette_tag_block=None, 
+                     salt_array=None, spawn_data_tag_block=None, sound_effect_collection_tag_ref=None, crates_tag_block=None, crate_palette_tag_block=None, 
                      global_lighting_tag_ref=None, atmospheric_fog_palette_tag_block=None, planar_fog_palette_tag_block=None, flocks_tag_block=None, subtitles_tag_ref=None, 
-                     decorators_tag_block=None, creatures_tag_block=None, creature_palette_tag_block=None, decorator_palette_tag_block=None, bsp_transition_volumes=None, 
-                     structure_bsp_lighting_tag_block=None, editor_folders_tag_block=None, level_data_tag_block=None, game_engine_strings_tag_ref=None, 
-                     mission_dialogue_tag_block=None, objectives_tag_ref=None, interpolators_tag_block=None, shared_references_tag_block=None, 
+                     decorators_tag_block=None, creatures_tag_block=None, creature_palette_tag_block=None, decorator_palette_tag_block=None, 
+                     bsp_transition_volumes_tag_block=None, structure_bsp_lighting_tag_block=None, editor_folders_tag_block=None, level_data_tag_block=None, 
+                     game_engine_strings_tag_ref=None, mission_dialogue_tag_block=None, objectives_tag_ref=None, interpolators_tag_block=None, shared_references_tag_block=None, 
                      screen_effect_references_tag_block=None, simulation_definition_table_tag_block=None):
             self.unused_tag_ref = unused_tag_ref
             self.skies_tag_block = skies_tag_block
@@ -98,11 +103,12 @@ class ScenarioAsset():
             self.recorded_animations_tag_block = recorded_animations_tag_block
             self.netgame_flags_tag_block = netgame_flags_tag_block
             self.netgame_equipment_tag_block = netgame_equipment_tag_block
+            self.starting_equipment_tag_block = starting_equipment_tag_block
             self.bsp_switch_trigger_volumes_tag_block = bsp_switch_trigger_volumes_tag_block
             self.decals_tag_block = decals_tag_block
             self.decal_palette_tag_block = decal_palette_tag_block
             self.detail_object_collection_palette_tag_block = detail_object_collection_palette_tag_block
-            self.style_palette = style_palette
+            self.style_palette_tag_block = style_palette_tag_block
             self.squad_groups_tag_block = squad_groups_tag_block
             self.squads_tag_block = squads_tag_block
             self.zones_tag_block = zones_tag_block
@@ -147,7 +153,7 @@ class ScenarioAsset():
             self.spawn_data_tag_block = spawn_data_tag_block
             self.sound_effect_collection_tag_ref = sound_effect_collection_tag_ref
             self.crates_tag_block = crates_tag_block
-            self.crates_tag_block = crate_palette_tag_block
+            self.crate_palette_tag_block = crate_palette_tag_block
             self.global_lighting_tag_ref = global_lighting_tag_ref
             self.atmospheric_fog_palette_tag_block = atmospheric_fog_palette_tag_block
             self.planar_fog_palette_tag_block = planar_fog_palette_tag_block
@@ -157,7 +163,7 @@ class ScenarioAsset():
             self.creatures_tag_block = creatures_tag_block
             self.creature_palette_tag_block = creature_palette_tag_block
             self.decorator_palette_tag_block = decorator_palette_tag_block
-            self.bsp_transition_volumes = bsp_transition_volumes
+            self.bsp_transition_volumes_tag_block = bsp_transition_volumes_tag_block
             self.structure_bsp_lighting_tag_block = structure_bsp_lighting_tag_block
             self.editor_folders_tag_block = editor_folders_tag_block
             self.level_data_tag_block = level_data_tag_block
@@ -168,3 +174,15 @@ class ScenarioAsset():
             self.shared_references_tag_block = shared_references_tag_block
             self.screen_effect_references_tag_block = screen_effect_references_tag_block
             self.simulation_definition_table_tag_block = simulation_definition_table_tag_block
+
+    class ObjectName:
+        def __init__(self, name="", object_type=0, placement_index=0):
+            self.name = name
+            self.object_type = object_type
+            self.placement_index = placement_index
+
+    class Scenery:
+        def __init__(self, name="", object_type=0, placement_index=0):
+            self.name = name
+            self.object_type = object_type
+            self.placement_index = placement_index
