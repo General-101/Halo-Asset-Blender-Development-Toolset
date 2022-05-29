@@ -747,7 +747,7 @@ class ParseError(Exception):
 class HaloAsset:
     """Helper class for reading in JMS/JMA/ASS files"""
 
-    __comment_regex = re.compile("[^\"]*;(?!.*\")")
+    __comment_regex = re.compile("[^\"]*?;(?!.*\")")
 
     def __init__(self, file):
         self._elements = []
