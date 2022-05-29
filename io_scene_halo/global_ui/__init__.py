@@ -27,6 +27,7 @@
 import bpy
 
 from bpy.types import (
+        Operator,
         Panel,
         PropertyGroup
         )
@@ -40,6 +41,36 @@ from bpy.props import (
         PointerProperty,
         FloatVectorProperty
         )
+
+class Halo_XREFPath(Operator):
+    """Set the path for the XREF model file"""
+    bl_idname = "import_scene.xref_path"
+    bl_label = "Set XREF"
+    filename_ext = ''
+
+    filter_glob: StringProperty(
+        default="*.jms;*.jmi;*.blend;*.max",
+        options={'HIDDEN'},
+        )
+
+    filepath: StringProperty(
+        name="XREF",
+        description="Set path for the XREf file",
+        subtype="FILE_PATH"
+    )
+
+    def execute(self, context):
+        active_object = context.view_layer.objects.active
+        if active_object:
+            active_object.data.ass_jms.XREF_path = self.filepath
+            context.area.tag_redraw()
+
+        return {'FINISHED'}
+
+    def invoke(self, context, event):
+        context.window_manager.fileselect_add(self)
+
+        return {'RUNNING_MODAL'}
 
 class ASS_JMS_MaterialProps(Panel):
     bl_label = "Halo Material Properties"
@@ -851,8 +882,11 @@ class ASS_JMS_MeshProps(Panel):
         row.label(text='Object Type:')
         row.prop(mesh_ass_jms, "Object_Type", text='')
         row = col.row()
-        row.label(text='XREF Path:')
+        row.operator(Halo_XREFPath.bl_idname, text="XREF Path")
         row.prop(mesh_ass_jms, "XREF_path", text='')
+        row = col.row()
+        row.label(text='XREF Name:')
+        row.prop(mesh_ass_jms, "XREF_name", text='')
 
 class ASS_JMS_MeshPropertiesGroup(PropertyGroup):
     bounding_radius: BoolProperty(
@@ -875,7 +909,11 @@ class ASS_JMS_MeshPropertiesGroup(PropertyGroup):
     XREF_path: StringProperty(
         name="XREF Object",
         description="Select a path to a model file",
-        subtype="FILE_PATH"
+    )
+
+    XREF_name: StringProperty(
+        name="XREF Name",
+        description="Set the name of the XREF object. The model file should contain an object by this name",
     )
 
 class Halo_SceneProps(Panel):
@@ -1140,6 +1178,7 @@ classeshalo = (
     Halo_ScenePropertiesGroup,
     Halo_SceneProps,
     Halo_GlobalSettings,
+    Halo_XREFPath
 )
 
 def register():

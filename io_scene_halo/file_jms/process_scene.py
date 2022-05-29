@@ -152,18 +152,25 @@ def process_scene(version, game_version, generate_checksum, fix_rotations, model
         JMS.markers.append(JMSAsset.Marker(marker_name, region_idx, parent_idx[0], rotation, translation, scale))
 
     if model_type == "render":
-        for xref_path in blend_scene.instance_xref_paths:
-            path = bpy.path.abspath(xref_path)
-            name = os.path.basename(xref_path).rsplit('.', 1)[0]
+        for xref_instance in blend_scene.xref_instances:
+            xref_path = xref_instance[0]
+            xref_name = xref_instance[1]
 
-            JMS.xref_instances.append(JMSAsset.XREF(path, name))
+            JMS.xref_instances.append(JMSAsset.XREF(xref_path, xref_name))
 
         seed(1)
         starting_ID = -1 * (randint(0, 3000000000))
         for idx, int_markers in enumerate(blend_scene.instance_markers):
             name = int_markers.name
             unique_identifier = starting_ID - idx
-            index = blend_scene.instance_xref_paths.index(int_markers.data.ass_jms.XREF_path)
+            xref_path = int_markers.data.ass_jms.XREF_path
+            xref_name = int_markers.data.ass_jms.XREF_name
+            if global_functions.string_empty_check(xref_name):
+                xref_name = os.path.basename(xref_path).rsplit('.', 1)[0]
+
+            xref_tuple = (xref_path, xref_name)
+
+            index = blend_scene.xref_instances.index(xref_tuple)
             int_markers_matrix = global_functions.get_matrix(int_markers, int_markers, False, blend_scene.armature, joined_list, False, version, 'JMS', False, custom_scale, fix_rotations)
             mesh_dimensions = global_functions.get_dimensions(int_markers_matrix, int_markers, version, False, 'JMS', custom_scale)
 

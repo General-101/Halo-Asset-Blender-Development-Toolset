@@ -80,7 +80,7 @@ def model_fixup(context, threshold):
                         elif mat.name == "+portal" or mat.name == "+exactportal":
                             portal_material_idx.append(idx)
 
-                        elif "%" in mat.name or mat.ass_jms.two_sided or "?" in mat.name or mat.ass_jms.transparent_2_sided:
+                        elif "%" in mat.name or mat.ass_jms.two_sided or "?" in mat.name or mat.ass_jms.transparent_2_sided or "#" in mat.name or mat.ass_jms.transparent_1_sided:
                             two_sided_material_idx.append(idx)
 
                         elif mat.name == "+media" or mat.name == "+sound" or mat.name == "+unused" or mat.name == "+weatherpoly" or "$" in mat.name or mat.ass_jms.fog_plane:

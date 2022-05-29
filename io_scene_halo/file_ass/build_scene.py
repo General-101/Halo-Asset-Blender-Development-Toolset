@@ -179,6 +179,7 @@ def build_scene(context, filepath, report):
 
                     if not geo_class == 'GENERIC_LIGHT':
                         object_mesh.data.ass_jms.XREF_path = object_element.xref_filepath
+                        object_mesh.data.ass_jms.XREF_name = object_element.xref_objectname
 
                     if geo_class == 'GENERIC_LIGHT':
                         object_mesh.data.color = (object_element.light_properties.light_color)

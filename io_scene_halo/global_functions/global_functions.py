@@ -60,7 +60,7 @@ class BlendScene():
                  collision_marker_list,
                  physics_marker_list,
                  marker_list,
-                 instance_xref_paths,
+                 xref_instances,
                  instance_markers,
                  render_geometry_list,
                  collision_geometry_list,
@@ -87,7 +87,7 @@ class BlendScene():
         self.collision_marker_list = collision_marker_list
         self.physics_marker_list = physics_marker_list
         self.marker_list = marker_list
-        self.instance_xref_paths  = instance_xref_paths
+        self.xref_instances  = xref_instances
         self.instance_markers = instance_markers
         self.render_geometry_list = render_geometry_list
         self.collision_geometry_list = collision_geometry_list
@@ -1082,7 +1082,7 @@ def validate_halo_jms_scene(game_version, version, blend_scene, object_list, jmi
     elif game_version == 'haloce' and len(blend_scene.render_geometry_list + blend_scene.collision_geometry_list + blend_scene.marker_list) == 0:
         raise ParseError("No geometry in scene.")
 
-    elif not game_version == 'haloce' and len(blend_scene.render_geometry_list + blend_scene.collision_geometry_list + blend_scene.marker_list + blend_scene.hinge_list + blend_scene.ragdoll_list + blend_scene.point_to_point_list + blend_scene.sphere_list + blend_scene.box_list + blend_scene.capsule_list + blend_scene.convex_shape_list + blend_scene.instance_xref_paths + blend_scene.car_wheel_list + blend_scene.prismatic_list + blend_scene.bounding_sphere_list + blend_scene.skylight_list) == 0:
+    elif not game_version == 'haloce' and len(blend_scene.render_geometry_list + blend_scene.collision_geometry_list + blend_scene.marker_list + blend_scene.hinge_list + blend_scene.ragdoll_list + blend_scene.point_to_point_list + blend_scene.sphere_list + blend_scene.box_list + blend_scene.capsule_list + blend_scene.convex_shape_list + blend_scene.xref_instances + blend_scene.car_wheel_list + blend_scene.prismatic_list + blend_scene.bounding_sphere_list + blend_scene.skylight_list) == 0:
         raise ParseError("No geometry in scene.")
 
     elif game_version == 'haloce' and node_count > 64:

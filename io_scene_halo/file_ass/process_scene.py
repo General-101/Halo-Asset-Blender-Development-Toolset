@@ -361,8 +361,9 @@ def process_scene(context, version, game_version, hidden_geo, exluded_collection
                     light_properties.far_attenuation_end = original_geo.data.halo_light.far_atten_end
 
             elif geo_class == 'SPHERE':
-                xref_path = bpy.path.abspath(original_geo.data.ass_jms.XREF_path)
-                if xref_path != "":
+                xref_path = original_geo.data.ass_jms.XREF_path
+                xref_name = original_geo.data.ass_jms.XREF_name
+                if global_functions.string_empty_check(xref_name):
                     xref_name = os.path.basename(xref_path).rsplit('.', 1)[0]
 
                 if original_geo.face_maps.active:
@@ -383,8 +384,9 @@ def process_scene(context, version, game_version, hidden_geo, exluded_collection
                     material_index = material_list.index(material)
 
             elif geo_class == 'BOX':
-                xref_path = bpy.path.abspath(original_geo.data.ass_jms.XREF_path)
-                if xref_path != "":
+                xref_path = original_geo.data.ass_jms.XREF_path
+                xref_name = original_geo.data.ass_jms.XREF_name
+                if global_functions.string_empty_check(xref_name):
                     xref_name = os.path.basename(xref_path).rsplit('.', 1)[0]
 
                 if original_geo.face_maps.active:
@@ -405,8 +407,9 @@ def process_scene(context, version, game_version, hidden_geo, exluded_collection
                     material_index = material_list.index(material)
 
             elif geo_class == 'PILL':
-                xref_path = bpy.path.abspath(original_geo.data.ass_jms.XREF_path)
-                if xref_path != "":
+                xref_path = original_geo.data.ass_jms.XREF_path
+                xref_name = original_geo.data.ass_jms.XREF_name
+                if global_functions.string_empty_check(xref_name):
                     xref_name = os.path.basename(xref_path).rsplit('.', 1)[0]
 
                 if original_geo.face_maps.active:
@@ -428,8 +431,9 @@ def process_scene(context, version, game_version, hidden_geo, exluded_collection
                     material_index = material_list.index(material)
 
             elif geo_class == 'MESH':
-                xref_path = bpy.path.abspath(original_geo.data.ass_jms.XREF_path)
-                if xref_path != "":
+                xref_path = original_geo.data.ass_jms.XREF_path
+                xref_name = original_geo.data.ass_jms.XREF_name
+                if global_functions.string_empty_check(xref_name):
                     xref_name = os.path.basename(xref_path).rsplit('.', 1)[0]
 
                 vertex_groups = original_geo.vertex_groups.keys()

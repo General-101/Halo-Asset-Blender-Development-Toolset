@@ -24,6 +24,7 @@
 #
 # ##### END MIT LICENSE BLOCK #####
 
+import os
 import bpy
 
 from .build_asset import build_asset
@@ -46,7 +47,7 @@ def command_queue(context, filepath, report, jms_version, jms_version_ce, jms_ve
     collision_marker_list = []
     physics_marker_list = []
     marker_list = []
-    instance_xref_paths = []
+    xref_instances = []
     instance_markers = []
     render_geometry_list = []
     collision_geometry_list = []
@@ -201,8 +202,14 @@ def command_queue(context, filepath, report, jms_version, jms_version_ce, jms_ve
             if export_render and (not mesh_processing.set_ignore(collections, obj) or hidden_geo):
                 if not global_functions.string_empty_check(obj.data.ass_jms.XREF_path) and version > 8205:
                     instance_markers.append(obj)
-                    if not obj.data.ass_jms.XREF_path in instance_xref_paths:
-                        instance_xref_paths.append(obj.data.ass_jms.XREF_path)
+                    xref_path = obj.data.ass_jms.XREF_path
+                    xref_name = obj.data.ass_jms.XREF_name
+                    if global_functions.string_empty_check(xref_name):
+                        xref_name = os.path.basename(xref_path).rsplit('.', 1)[0]
+
+                    xref_tuple = (xref_path, xref_name)
+                    if not xref_tuple in xref_instances:
+                        xref_instances.append(xref_tuple)
 
                 elif obj.data.ass_jms.bounding_radius and version >= 8209:
                     bounding_sphere_list.append(obj)
@@ -219,7 +226,7 @@ def command_queue(context, filepath, report, jms_version, jms_version_ce, jms_ve
 
                         render_geometry_list.append((evaluted_mesh, obj))
 
-    blend_scene = global_functions.BlendScene(world_node_count, armature_count, mesh_frame_count, render_count, collision_count, physics_count, armature, node_list, render_marker_list, collision_marker_list, physics_marker_list, marker_list, instance_xref_paths, instance_markers, render_geometry_list, collision_geometry_list, sphere_list, box_list, capsule_list, convex_shape_list, ragdoll_list, hinge_list, car_wheel_list, point_to_point_list, prismatic_list, bounding_sphere_list, skylight_list)
+    blend_scene = global_functions.BlendScene(world_node_count, armature_count, mesh_frame_count, render_count, collision_count, physics_count, armature, node_list, render_marker_list, collision_marker_list, physics_marker_list, marker_list, xref_instances, instance_markers, render_geometry_list, collision_geometry_list, sphere_list, box_list, capsule_list, convex_shape_list, ragdoll_list, hinge_list, car_wheel_list, point_to_point_list, prismatic_list, bounding_sphere_list, skylight_list)
 
     global_functions.validate_halo_jms_scene(game_version, version, blend_scene, object_list, jmi)
 

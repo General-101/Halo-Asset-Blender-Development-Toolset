@@ -249,7 +249,9 @@ def build_scene_retail(context, JMS, filepath, game_version, reuse_armature, fix
         if version >= 8205:
             xref_idx = xref_marker.index
             xref_path = JMS.xref_instances[xref_idx].path
+            xref_path = JMS.xref_instances[xref_idx].name
             object_mesh.data.ass_jms.XREF_path = xref_path
+            object_mesh.data.ass_jms.XREF_name = xref_path
 
         mesh_processing.select_object(context, object_mesh)
         mesh_processing.select_object(context, armature)
