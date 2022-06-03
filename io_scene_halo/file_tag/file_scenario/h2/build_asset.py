@@ -259,12 +259,98 @@ def write_weapons(output_stream, SCENARIO):
             write_tag_block_header(output_stream, weapon_element.sper_header)
             write_tag_block_header(output_stream, weapon_element.swpt_header)
 
-def write_palette(output_stream, palette, palette_header):
+def write_trigger_volumes(output_stream, SCENARIO):
+    if len(SCENARIO.trigger_volumes) > 0:
+        write_tag_block_header(output_stream, SCENARIO.trigger_volumes_header)
+        for trigger_volume_element in SCENARIO.trigger_volumes:
+            output_stream.write(struct.pack('>i', trigger_volume_element.name_length))
+            output_stream.write(struct.pack('<i', trigger_volume_element.object_name_index))
+            output_stream.write(struct.pack('>i', trigger_volume_element.node_name_length))
+
+            output_stream.write(struct.pack('<fff', trigger_volume_element.forward[0], trigger_volume_element.forward[1], trigger_volume_element.forward[2]))
+            output_stream.write(struct.pack('<fff', trigger_volume_element.up[0], trigger_volume_element.up[1], trigger_volume_element.up[2]))
+            output_stream.write(struct.pack('<fff', trigger_volume_element.position[0], trigger_volume_element.position[1], trigger_volume_element.position[2]))
+            output_stream.write(struct.pack('<fff', trigger_volume_element.extents[0], trigger_volume_element.extents[1], trigger_volume_element.extents[2]))
+            output_stream.write(struct.pack('<4x'))
+            output_stream.write(struct.pack('<h', trigger_volume_element.kill_trigger_volume_index))
+            output_stream.write(struct.pack('<2x'))
+
+        for trigger_volume_element in SCENARIO.trigger_volumes:
+            output_stream.write(struct.pack('<%ss' % trigger_volume_element.name_length, trigger_volume_element.name))
+
+def write_decals(output_stream, SCENARIO):
+    if len(SCENARIO.decals) > 0:
+        write_tag_block_header(output_stream, SCENARIO.decals_header)
+        for decal_element in SCENARIO.decals:
+            output_stream.write(struct.pack('<h', decal_element.palette_index))
+            output_stream.write(struct.pack('<b', decal_element.yaw))
+            output_stream.write(struct.pack('<b', decal_element.pitch))
+            output_stream.write(struct.pack('<fff', decal_element.position[0], decal_element.position[1], decal_element.position[2]))
+
+def write_squad_groups(output_stream, SCENARIO):
+    if len(SCENARIO.squad_groups) > 0:
+        write_tag_block_header(output_stream, SCENARIO.squad_groups_header)
+        for squad_group_element in SCENARIO.squad_groups:
+            output_stream.write(struct.pack('<31sx', squad_group_element.name))
+            output_stream.write(struct.pack('<hh', squad_group_element.parent_index, squad_group_element.initial_order_index))
+
+def write_squads(output_stream, SCENARIO):
+    if len(SCENARIO.squads) > 0:
+        write_tag_block_header(output_stream, SCENARIO.squads_header)
+        for squad in SCENARIO.squads:
+            output_stream.write(struct.pack('<31sx', squad.name))
+            output_stream.write(struct.pack('<I', squad.flags))
+            output_stream.write(struct.pack('<h', squad.team))
+            output_stream.write(struct.pack('<h', squad.parent_squad_group_index))
+            output_stream.write(struct.pack('<f', squad.squad_delay_time))
+            output_stream.write(struct.pack('<h', squad.normal_difficulty_count))
+            output_stream.write(struct.pack('<h', squad.insane_difficulty_count))
+            output_stream.write(struct.pack('<i', squad.major_upgrade))
+            output_stream.write(struct.pack('<h', squad.vehicle_type_index))
+            output_stream.write(struct.pack('<h', squad.character_type_index))
+            output_stream.write(struct.pack('<h2x', squad.initial_zone_index))
+            output_stream.write(struct.pack('<h', squad.initial_weapon_index))
+            output_stream.write(struct.pack('<h', squad.initial_secondary_weapon_index))
+            output_stream.write(struct.pack('<h', squad.grenade_type))
+            output_stream.write(struct.pack('<h', squad.initial_order_index))
+            output_stream.write(struct.pack('>i', squad.vehicle_variant_length))
+            write_tag_block(output_stream, squad.starting_locations_tag_block)
+            output_stream.write(struct.pack('<31sx', squad.placement_script))
+            output_stream.write(struct.pack('<4x'))
+
+        for squad in SCENARIO.squads:
+            if len(squad.starting_locations) > 0:
+                write_tag_block_header(output_stream, squad.starting_locations_header)
+                for starting_location in squad.starting_locations:
+                    output_stream.write(struct.pack('>i', starting_location.name_length))
+                    output_stream.write(struct.pack('<fff', starting_location.position[0], starting_location.position[1], starting_location.position[2]))
+                    output_stream.write(struct.pack('<i', starting_location.reference_frame))
+                    output_stream.write(struct.pack('<ff', starting_location.facing_y, starting_location.facing_p))
+                    output_stream.write(struct.pack('<i', starting_location.flags))
+                    output_stream.write(struct.pack('<h', starting_location.character_type_index))
+                    output_stream.write(struct.pack('<h', starting_location.initial_weapon_index))
+                    output_stream.write(struct.pack('<h2x', starting_location.initial_secondary_weapon_index))
+                    output_stream.write(struct.pack('<h', starting_location.vehicle_type_index))
+                    output_stream.write(struct.pack('<h', starting_location.seat_type))
+                    output_stream.write(struct.pack('<h', starting_location.grenade_type))
+                    output_stream.write(struct.pack('<h', starting_location.swarm_count))
+                    output_stream.write(struct.pack('>i', starting_location.actor_variant_name_length))
+                    output_stream.write(struct.pack('>i', starting_location.vehicle_variant_name_length))
+                    output_stream.write(struct.pack('>f', starting_location.initial_movement_distance))
+                    output_stream.write(struct.pack('<h', starting_location.emitter_vehicle_index))
+                    output_stream.write(struct.pack('<h', starting_location.initial_movement_mode))
+                    output_stream.write(struct.pack('<31sx', starting_location.placement_script))
+                    output_stream.write(struct.pack('<4x'))
+
+                for starting_location in squad.starting_locations:
+                    output_stream.write(struct.pack('<%ss' % starting_location.name_length, starting_location.name))
+
+def write_palette(output_stream, palette, palette_header, size):
     if len(palette) > 0:
         write_tag_block_header(output_stream, palette_header)
         for palette_element in palette:
             write_tag_reference(output_stream, palette_element)
-            output_stream.write(struct.pack('<32x'))
+            output_stream.write(struct.pack('<%sx' % size))
 
         for palette_element in palette:
             output_stream.write(struct.pack('<%ssx' % palette_element.name_length, palette_element.name))
@@ -276,16 +362,29 @@ def build_asset(output_stream, SCENARIO, report):
     write_object_names(output_stream, SCENARIO)
 
     write_scenery(output_stream, SCENARIO)
-    write_palette(output_stream, SCENARIO.scenery_palette, SCENARIO.scenery_palette_header)
+    write_palette(output_stream, SCENARIO.scenery_palette, SCENARIO.scenery_palette_header, 32)
 
     write_units(output_stream, SCENARIO.bipeds, SCENARIO.bipeds_header)
-    write_palette(output_stream, SCENARIO.biped_palette, SCENARIO.biped_palette_header)
+    write_palette(output_stream, SCENARIO.biped_palette, SCENARIO.biped_palette_header, 32)
 
     write_units(output_stream, SCENARIO.vehicles, SCENARIO.vehicles_header)
-    write_palette(output_stream, SCENARIO.vehicle_palette, SCENARIO.vehicle_palette_header)
+    write_palette(output_stream, SCENARIO.vehicle_palette, SCENARIO.vehicle_palette_header, 32)
 
     write_equipment(output_stream, SCENARIO)
-    write_palette(output_stream, SCENARIO.equipment_palette, SCENARIO.equipment_palette_header)
+    write_palette(output_stream, SCENARIO.equipment_palette, SCENARIO.equipment_palette_header, 32)
 
     write_weapons(output_stream, SCENARIO)
-    write_palette(output_stream, SCENARIO.weapon_palette, SCENARIO.weapon_palette_header)
+    write_palette(output_stream, SCENARIO.weapon_palette, SCENARIO.weapon_palette_header, 32)
+
+    write_trigger_volumes(output_stream, SCENARIO)
+
+    write_decals(output_stream, SCENARIO)
+    write_palette(output_stream, SCENARIO.decal_palette, SCENARIO.decal_palette_header, 0)
+
+    write_palette(output_stream, SCENARIO.style_palette, SCENARIO.style_palette_header, 0)
+
+    write_squad_groups(output_stream, SCENARIO)
+
+    write_squads(output_stream, SCENARIO)
+
+    write_palette(output_stream, SCENARIO.character_palette, SCENARIO.character_palette_header, 0)

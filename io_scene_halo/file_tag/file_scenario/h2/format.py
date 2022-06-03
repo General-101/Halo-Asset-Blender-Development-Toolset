@@ -55,6 +55,20 @@ class ScenarioAsset():
         self.weapons = None
         self.weapon_palette_header = None
         self.weapon_palette = None
+        self.trigger_volumes_header = None
+        self.trigger_volumes = None
+        self.decals_header = None
+        self.decals = None
+        self.decal_palette_header = None
+        self.decal_palette = None
+        self.style_palette_header = None
+        self.style_palette = None
+        self.squad_groups_header = None
+        self.squad_groups = None
+        self.squads_header = None
+        self.squads = None
+        self.character_palette_header = None
+        self.character_palette = None
 
     class ScenarioBody:
         def __init__(self, unused_tag_ref=None, skies_tag_block=None, scenario_type=0, scenario_flags=0, child_scenarios_tag_block=None, local_north=0.0, 
@@ -263,9 +277,9 @@ class ScenarioAsset():
             self.flags = flags
 
     class Weapon(Object):
-        def __init__(self, sobj_header=None, obj0_header=None, sper_header=None, swpt_header=None,variant_name_length=0, active_change_colors=0, primary_color_BGRA=(0.0, 0.0, 0.0, 1.0), 
-                     secondary_color_BGRA=(0.0, 0.0, 0.0, 1.0), tertiary_color_BGRA=(0.0, 0.0, 0.0, 1.0), quaternary_color_BGRA=(0.0, 0.0, 0.0, 1.0), rounds_left=0, 
-                     rounds_loaded=0, flags=0):
+        def __init__(self, sobj_header=None, obj0_header=None, sper_header=None, swpt_header=None, variant_name_length=0, active_change_colors=0, 
+                     primary_color_BGRA=(0.0, 0.0, 0.0, 1.0), secondary_color_BGRA=(0.0, 0.0, 0.0, 1.0), tertiary_color_BGRA=(0.0, 0.0, 0.0, 1.0), 
+                     quaternary_color_BGRA=(0.0, 0.0, 0.0, 1.0), rounds_left=0, rounds_loaded=0, flags=0):
             super().__init__()
             self.sobj_header = sobj_header
             self.obj0_header = obj0_header
@@ -280,3 +294,81 @@ class ScenarioAsset():
             self.rounds_left = rounds_left
             self.rounds_loaded = rounds_loaded
             self.flags = flags
+
+    class TriggerVolume():
+        def __init__(self, name="", name_length=0, object_name_index=0, node_name="", node_name_length=0, forward=Vector(), up=Vector(), position=Vector(), extents=Vector(), 
+                     kill_trigger_volume_index=0):
+            self.name = name
+            self.name_length = name_length
+            self.object_name_index = object_name_index
+            self.node_name = node_name
+            self.node_name_length = node_name_length
+            self.forward = forward
+            self.up = up
+            self.position = position
+            self.extents = extents
+            self.kill_trigger_volume_index = kill_trigger_volume_index
+
+    class Decal():
+        def __init__(self, palette_index=0, yaw=0, pitch=0, position=Vector()):
+            self.palette_index = palette_index
+            self.yaw = yaw
+            self.pitch = pitch
+            self.position = position
+
+    class SquadGroups():
+        def __init__(self, name="", parent_index=0, initial_order_index=0):
+            self.name = name
+            self.parent_index = parent_index
+            self.initial_order_index = initial_order_index
+
+    class Squad():
+        def __init__(self, name="", flags=0, team=0, parent_squad_group_index=0, squad_delay_time=0.0, normal_difficulty_count=0, insane_difficulty_count=0, major_upgrade=0, 
+                     vehicle_type_index=0, character_type_index=0, initial_zone_index=0, initial_weapon_index=0, initial_secondary_weapon_index=0, grenade_type=0, 
+                     initial_order_index=0, vehicle_variant_length=0, starting_locations_tag_block=None, placement_script="", starting_locations_header=None, starting_locations=None):
+            self.name = name
+            self.flags = flags
+            self.team = team
+            self.parent_squad_group_index = parent_squad_group_index
+            self.squad_delay_time = squad_delay_time
+            self.normal_difficulty_count = normal_difficulty_count
+            self.insane_difficulty_count = insane_difficulty_count
+            self.major_upgrade = major_upgrade
+            self.vehicle_type_index = vehicle_type_index
+            self.character_type_index = character_type_index
+            self.initial_zone_index = initial_zone_index
+            self.initial_weapon_index = initial_weapon_index
+            self.initial_secondary_weapon_index = initial_secondary_weapon_index
+            self.grenade_type = grenade_type
+            self.initial_order_index = initial_order_index
+            self.vehicle_variant_length = vehicle_variant_length
+            self.starting_locations_tag_block = starting_locations_tag_block
+            self.placement_script = placement_script
+            self.starting_locations_header = starting_locations_header
+            self.starting_locations = starting_locations
+
+    class StartingLocation():
+        def __init__(self, name="", name_length=0, position=Vector(), reference_frame=0, facing_y=0.0, facing_p=0.0, flags=0, character_type_index=0, 
+                     initial_weapon_index=0, initial_secondary_weapon_index=0, vehicle_type_index=0, seat_type=0, grenade_type=0, swarm_count=0, 
+                     actor_variant_name_length=0, vehicle_variant_name_length=0, initial_movement_distance=0, emitter_vehicle_index=0, initial_movement_mode=0, 
+                     placement_script=""):
+            self.name = name
+            self.name_length = name_length
+            self.position = position
+            self.reference_frame = reference_frame
+            self.facing_y = facing_y
+            self.facing_p = facing_p
+            self.flags = flags
+            self.character_type_index = character_type_index
+            self.initial_weapon_index = initial_weapon_index
+            self.initial_secondary_weapon_index = initial_secondary_weapon_index
+            self.vehicle_type_index = vehicle_type_index
+            self.seat_type = seat_type
+            self.grenade_type = grenade_type
+            self.swarm_count = swarm_count
+            self.actor_variant_name_length = actor_variant_name_length
+            self.vehicle_variant_name_length = vehicle_variant_name_length
+            self.initial_movement_distance = initial_movement_distance
+            self.emitter_vehicle_index = emitter_vehicle_index
+            self.initial_movement_mode = initial_movement_mode
+            self.placement_script = placement_script

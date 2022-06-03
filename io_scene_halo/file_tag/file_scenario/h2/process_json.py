@@ -44,6 +44,15 @@ def tag_block_header(TAG, header_group, version, count, size):
 
     return TAGBLOCKHEADER
 
+def tag_block(TAG, count, maximum_count, address, definition):
+    TAGBLOCK = TAG.TagBlock()
+    TAGBLOCK.count = count
+    TAGBLOCK.maximum_count = maximum_count
+    TAGBLOCK.address = address
+    TAGBLOCK.definition = definition
+
+    return TAGBLOCK
+
 def get_object_names(dump_dic, TAG, SCENARIO):
     object_name_tag_block = dump_dic['Data']['Object Names']
     SCENARIO.object_names = []
@@ -224,7 +233,119 @@ def get_weapon(dump_dic, TAG, SCENARIO):
 
     SCENARIO.weapon_header = tag_block_header(TAG, "tbfd", 2, len(SCENARIO.weapons), 84)
 
-def get_palette(dump_dic, TAG, palette_element_keyword, palette_keyword):
+def get_trigger_volumes(dump_dic, TAG, SCENARIO):
+    trigger_volumes_tag_block = dump_dic['Data']['Kill Trigger Volumes']
+    SCENARIO.trigger_volumes = []
+    for trigger_volume_element in trigger_volumes_tag_block:
+        trigger_volume = SCENARIO.TriggerVolume()
+
+        trigger_volume.name = TAG.string_to_bytes(trigger_volume_element['Name'], False)
+        trigger_volume.name_length = len(trigger_volume_element['Name'])
+        trigger_volume.object_name_index = -1
+        trigger_volume.node_name = TAG.string_to_bytes("", False)
+        trigger_volume.forward = trigger_volume_element['Forward']
+        trigger_volume.up = trigger_volume_element['Up']
+        trigger_volume.position = trigger_volume_element['Position']
+        trigger_volume.extents = trigger_volume_element['Extents']
+        trigger_volume.kill_trigger_volume_index = -1
+
+        SCENARIO.trigger_volumes.append(trigger_volume)
+
+    SCENARIO.trigger_volumes_header = tag_block_header(TAG, "tbfd", 1, len(SCENARIO.trigger_volumes), 68)
+
+def get_decals(dump_dic, TAG, SCENARIO):
+    decals_tag_block = dump_dic['Data']['Decals']
+    SCENARIO.decals = []
+    for decal_element in decals_tag_block:
+        decal = SCENARIO.Decal()
+
+        decal.palette_index = decal_element['Palette Index']
+        decal.yaw = decal_element['Yaw']
+        decal.pitch = decal_element['Pitch']
+        decal.position = decal_element['Position']
+
+        SCENARIO.decals.append(decal)
+
+    SCENARIO.decals_header = tag_block_header(TAG, "tbfd", 0, len(SCENARIO.decals), 16)
+
+def get_squad_groups(dump_dic, TAG, SCENARIO):
+    squad_groups_tag_block = dump_dic['Data']['Squad Groups']
+    SCENARIO.squad_groups = []
+    for squad_group_element in squad_groups_tag_block:
+        squad_group = SCENARIO.SquadGroups()
+
+        squad_group.name = TAG.string_to_bytes(squad_group_element['Name'], False)
+        squad_group.parent_index = squad_group_element['Parent Index']
+        squad_group.initial_order_index = squad_group_element['Initial Order Index']
+
+        SCENARIO.squad_groups.append(squad_group)
+
+    SCENARIO.squad_groups_header = tag_block_header(TAG, "tbfd", 0, len(SCENARIO.squad_groups), 36)
+
+def get_squads(dump_dic, TAG, SCENARIO):
+    squads_tag_block = dump_dic['Data']['Squads']
+    SCENARIO.squads = []
+    for squad_element in squads_tag_block:
+        starting_locations_dic = squad_element['Starting Locations']
+        starting_location_count = len(starting_locations_dic)
+
+        squad = SCENARIO.Squad()
+
+        squad.name = TAG.string_to_bytes(squad_element['Name'], False)
+        squad.flags = squad_element['Flags']
+        squad.team = squad_element['Team']['Value']
+        squad.parent_squad_group_index = squad_element['Parent Squad Group Index']
+        squad.squad_delay_time = squad_element['Squad Delay Time']
+        squad.normal_difficulty_count = squad_element['Normal Difficulty Count']
+        squad.insane_difficulty_count = squad_element['Insane Difficulty Count']
+        squad.major_upgrade = squad_element['Major Upgrade']['Value']
+        squad.vehicle_type_index = squad_element['Vehicle Type Index']
+        squad.character_type_index = squad_element['Character Type Index']
+        squad.initial_zone_index = squad_element['Initial Zone Index']
+        squad.initial_weapon_index = squad_element['Initial Weapon Index']
+        squad.initial_secondary_weapon_index = -1
+        squad.grenade_type = squad_element['Grenade Type']['Value']
+        squad.initial_order_index = squad_element['Initial Order Index']
+        squad.vehicle_variant_length = 0
+        squad.starting_locations_tag_block = tag_block(TAG, starting_location_count, 0, 0, 0)
+        squad.placement_script = TAG.string_to_bytes("", False)
+
+        if starting_location_count > 0:
+            squad.starting_locations_header = tag_block_header(TAG, "tbfd", 6, starting_location_count, 100)
+            starting_locations = []
+            for starting_location_element in starting_locations_dic:
+                starting_location = SCENARIO.StartingLocation()
+
+                starting_location.name = TAG.string_to_bytes(starting_location_element['Name'], False)
+                starting_location.name_length = len(starting_location_element['Name'])
+                starting_location.position = starting_location_element['Position']
+                starting_location.reference_frame = -1
+                starting_location.facing_y = starting_location_element['Facing']
+                starting_location.facing_p = 0
+                starting_location.flags = 0
+                starting_location.character_type_index = starting_location_element['Character Type Index']
+                starting_location.initial_weapon_index = starting_location_element['Initial Weapon Index']
+                starting_location.initial_secondary_weapon_index = -1
+                starting_location.vehicle_type_index = starting_location_element['Vehicle Type Index']
+                starting_location.seat_type = starting_location_element['Seat Type']['Value']
+                starting_location.grenade_type = starting_location_element['Grenade Type']['Value']
+                starting_location.swarm_count = 0
+                starting_location.actor_variant_name_length = 0
+                starting_location.vehicle_variant_name_length = 0
+                starting_location.initial_movement_distance = 0
+                starting_location.emitter_vehicle_index = -1
+                starting_location.initial_movement_mode = 0
+                starting_location.placement_script = TAG.string_to_bytes("", False)
+
+                starting_locations.append(starting_location)
+
+            squad.starting_locations = starting_locations
+
+        SCENARIO.squads.append(squad)
+
+    SCENARIO.squads_header = tag_block_header(TAG, "tbfd", 2, len(SCENARIO.squads), 120)
+
+def get_palette(dump_dic, TAG, palette_element_keyword, palette_keyword, size):
     palette_tag_block = dump_dic['Data'][palette_keyword]
     palette_list = []
     for palette_element in palette_tag_block:
@@ -240,7 +361,7 @@ def get_palette(dump_dic, TAG, palette_element_keyword, palette_keyword):
 
         palette_list.append(tag_reference)
 
-    return tag_block_header(TAG, "tbfd", 0, len(palette_list), 48), palette_list
+    return tag_block_header(TAG, "tbfd", 0, len(palette_list), size), palette_list
 
 def process_json(input_stream, tag_format, report):
     dump_dic = json.load(input_stream)
@@ -266,19 +387,33 @@ def process_json(input_stream, tag_format, report):
     get_object_names(dump_dic, TAG, SCENARIO)
 
     get_scenery(dump_dic, TAG, SCENARIO)
-    SCENARIO.scenery_palette_header, SCENARIO.scenery_palette = get_palette(dump_dic, TAG, 'Scenery', 'Scenery Palette')
+    SCENARIO.scenery_palette_header, SCENARIO.scenery_palette = get_palette(dump_dic, TAG, 'Scenery', 'Scenery Palette', 48)
 
     SCENARIO.bipeds_header, SCENARIO.bipeds = get_unit(dump_dic, TAG, SCENARIO, 'Bipeds')
-    SCENARIO.biped_palette_header, SCENARIO.biped_palette = get_palette(dump_dic, TAG, 'Biped', 'Biped Palette')
+    SCENARIO.biped_palette_header, SCENARIO.biped_palette = get_palette(dump_dic, TAG, 'Biped', 'Biped Palette', 48)
 
     SCENARIO.vehicles_header, SCENARIO.vehicles = get_unit(dump_dic, TAG, SCENARIO, 'Vehicles')
-    SCENARIO.vehicle_palette_header, SCENARIO.vehicle_palette = get_palette(dump_dic, TAG, 'Vehicle', 'Vehicle Palette')
+    SCENARIO.vehicle_palette_header, SCENARIO.vehicle_palette = get_palette(dump_dic, TAG, 'Vehicle', 'Vehicle Palette', 48)
 
     get_equipment(dump_dic, TAG, SCENARIO)
-    SCENARIO.equipment_palette_header, SCENARIO.equipment_palette = get_palette(dump_dic, TAG, 'Equipment', 'Equipment Palette')
+    SCENARIO.equipment_palette_header, SCENARIO.equipment_palette = get_palette(dump_dic, TAG, 'Equipment', 'Equipment Palette', 48)
 
     get_weapon(dump_dic, TAG, SCENARIO)
-    SCENARIO.weapon_palette_header, SCENARIO.weapon_palette = get_palette(dump_dic, TAG, 'Weapon', 'Weapon Palette')
+    SCENARIO.weapon_palette_header, SCENARIO.weapon_palette = get_palette(dump_dic, TAG, 'Weapon', 'Weapon Palette', 48)
+
+    get_trigger_volumes(dump_dic, TAG, SCENARIO)
+
+    get_decals(dump_dic, TAG, SCENARIO)
+    SCENARIO.decal_palette_header, SCENARIO.decal_palette = get_palette(dump_dic, TAG, 'Decal', 'Decal Palette', 16)
+
+    SCENARIO.style_palette_header, SCENARIO.style_palette = get_palette(dump_dic, TAG, 'Style', 'Style Palette', 16)
+
+    get_squad_groups(dump_dic, TAG, SCENARIO)
+
+    get_squads(dump_dic, TAG, SCENARIO)
+
+    SCENARIO.character_palette_header, SCENARIO.character_palette = get_palette(dump_dic, TAG, 'Character', 'Character Palette', 16)
+
 
     SCENARIO.scenario_body_header = tag_block_header(TAG, "tbfd", 2, 1, 1476)
     SCENARIO.scenario_body = SCENARIO.ScenarioBody()
@@ -317,21 +452,21 @@ def process_json(input_stream, tag_format, report):
     SCENARIO.scenario_body.light_volume_palette_tag_block = TAG.TagBlock(0, 0, 0, 0)
     SCENARIO.scenario_body.player_starting_profile_tag_block = TAG.TagBlock(0, 0, 0, 0)
     SCENARIO.scenario_body.player_starting_locations_tag_block = TAG.TagBlock(0, 0, 0, 0)
-    SCENARIO.scenario_body.trigger_volumes_tag_block = TAG.TagBlock(0, 0, 0, 0)
+    SCENARIO.scenario_body.trigger_volumes_tag_block = TAG.TagBlock(len(SCENARIO.trigger_volumes), 0, 0, 0)
     SCENARIO.scenario_body.recorded_animations_tag_block = TAG.TagBlock(0, 0, 0, 0)
     SCENARIO.scenario_body.netgame_flags_tag_block = TAG.TagBlock(0, 0, 0, 0)
     SCENARIO.scenario_body.netgame_equipment_tag_block = TAG.TagBlock(0, 0, 0, 0)
     SCENARIO.scenario_body.starting_equipment_tag_block = TAG.TagBlock(0, 0, 0, 0)
     SCENARIO.scenario_body.bsp_switch_trigger_volumes_tag_block = TAG.TagBlock(0, 0, 0, 0)
-    SCENARIO.scenario_body.decals_tag_block = TAG.TagBlock(0, 0, 0, 0)
-    SCENARIO.scenario_body.decal_palette_tag_block = TAG.TagBlock(0, 0, 0, 0)
+    SCENARIO.scenario_body.decals_tag_block = TAG.TagBlock(len(SCENARIO.decals), 0, 0, 0)
+    SCENARIO.scenario_body.decal_palette_tag_block = TAG.TagBlock(len(SCENARIO.decal_palette), 0, 0, 0)
     SCENARIO.scenario_body.detail_object_collection_palette_tag_block = TAG.TagBlock(0, 0, 0, 0)
-    SCENARIO.scenario_body.style_palette_tag_block = TAG.TagBlock(0, 0, 0, 0)
-    SCENARIO.scenario_body.squad_groups_tag_block = TAG.TagBlock(0, 0, 0, 0)
-    SCENARIO.scenario_body.squads_tag_block = TAG.TagBlock(0, 0, 0, 0)
+    SCENARIO.scenario_body.style_palette_tag_block = TAG.TagBlock(len(SCENARIO.style_palette), 0, 0, 0)
+    SCENARIO.scenario_body.squad_groups_tag_block = TAG.TagBlock(len(SCENARIO.squad_groups), 0, 0, 0)
+    SCENARIO.scenario_body.squads_tag_block = TAG.TagBlock(len(SCENARIO.squads), 0, 0, 0)
     SCENARIO.scenario_body.zones_tag_block = TAG.TagBlock(0, 0, 0, 0)
     SCENARIO.scenario_body.mission_scenes_tag_block = TAG.TagBlock(0, 0, 0, 0)
-    SCENARIO.scenario_body.character_palette_tag_block = TAG.TagBlock(0, 0, 0, 0)
+    SCENARIO.scenario_body.character_palette_tag_block = TAG.TagBlock(len(SCENARIO.character_palette), 0, 0, 0)
     SCENARIO.scenario_body.ai_pathfinding_data_tag_block = TAG.TagBlock(0, 0, 0, 0)
     SCENARIO.scenario_body.ai_animation_references_tag_block = TAG.TagBlock(0, 0, 0, 0)
     SCENARIO.scenario_body.ai_script_references_tag_block = TAG.TagBlock(0, 0, 0, 0)
