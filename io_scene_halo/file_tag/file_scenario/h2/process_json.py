@@ -92,7 +92,7 @@ def get_scenery(dump_dic, TAG, SCENARIO):
             scenery.scale = scenery_element['Scale']
             scenery.transform_flags = scenery_element['Transform Flags']
             scenery.manual_bsp_flags = scenery_element['Manual BSP Flags']
-            scenery.unique_id = scenery_element['Unique ID']
+            scenery.unique_id = scenery_element['Unique ID']['FullInteger']
             scenery.origin_bsp_index = scenery_element['Origin BSP Index']
             scenery.object_type = scenery_element['Type']['Value']
             scenery.source = scenery_element['Source']['Value']
@@ -137,7 +137,7 @@ def get_unit(dump_dic, TAG, SCENARIO, unit):
         unit.scale = unit_element['Scale']
         unit.transform_flags = unit_element['Transform Flags']
         unit.manual_bsp_flags = unit_element['Manual BSP Flags']
-        unit.unique_id = unit_element['Unique ID']
+        unit.unique_id = unit_element['Unique ID']['FullInteger']
         unit.origin_bsp_index = unit_element['Origin BSP Index']
         unit.object_type = unit_element['Type']['Value']
         unit.source = unit_element['Source']['Value']
@@ -175,7 +175,7 @@ def get_equipment(dump_dic, TAG, SCENARIO):
         equipment.scale = equipment_element['Scale']
         equipment.transform_flags = equipment_element['Transform Flags']
         equipment.manual_bsp_flags = equipment_element['Manual BSP Flags']
-        equipment.unique_id = equipment_element['Unique ID']
+        equipment.unique_id = equipment_element['Unique ID']['FullInteger']
         equipment.origin_bsp_index = equipment_element['Origin BSP Index']
         equipment.object_type = equipment_element['Type']['Value']
         equipment.source = equipment_element['Source']['Value']
@@ -212,7 +212,7 @@ def get_weapon(dump_dic, TAG, SCENARIO):
         weapon.scale = weapon_element['Scale']
         weapon.transform_flags = weapon_element['Transform Flags']
         weapon.manual_bsp_flags = weapon_element['Manual BSP Flags']
-        weapon.unique_id = weapon_element['Unique ID']
+        weapon.unique_id = weapon_element['Unique ID']['FullInteger']
         weapon.origin_bsp_index = weapon_element['Origin BSP Index']
         weapon.object_type = weapon_element['Type']['Value']
         weapon.source = weapon_element['Source']['Value']
@@ -320,8 +320,14 @@ def get_squads(dump_dic, TAG, SCENARIO):
                 starting_location.name_length = len(starting_location_element['Name'])
                 starting_location.position = starting_location_element['Position']
                 starting_location.reference_frame = -1
-                starting_location.facing_y = starting_location_element['Facing']
-                starting_location.facing_p = 0
+                if type(starting_location_element['Facing']) == list:
+                    starting_location.facing_y = starting_location_element['Facing'][0]
+                    starting_location.facing_p = starting_location_element['Facing'][1]
+
+                else:
+                    starting_location.facing_y = starting_location_element['Facing']
+                    starting_location.facing_p = 0
+
                 starting_location.flags = 0
                 starting_location.character_type_index = starting_location_element['Character Type Index']
                 starting_location.initial_weapon_index = starting_location_element['Initial Weapon Index']
@@ -374,7 +380,14 @@ def get_zones(dump_dic, TAG, SCENARIO):
                 firing_position.flags = 0
                 firing_position.area_index = firing_position_element['Area Index']
                 firing_position.cluster_index = firing_position_element['Cluster Index']
-                firing_position.normal_y = firing_position_element['Normal']
+                if type(firing_position_element['Normal']) == list:
+                    firing_position.normal_y = firing_position_element['Normal'][0]
+                    firing_position.normal_p = firing_position_element['Normal'][1]
+                    
+                else:
+                    firing_position.normal_y = firing_position_element['Normal']
+                    firing_position.normal_p = 0
+
 
                 zone.firing_positions.append(firing_position)
 

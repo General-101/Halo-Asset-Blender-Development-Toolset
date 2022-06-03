@@ -72,6 +72,32 @@ class JMA_BatchDialog(Operator):
         context.window_manager.fileselect_add(self)
         return {'RUNNING_MODAL'}
 
+class JSON_Import_Dialog(Operator):
+    """Select a JSON to convert to a tag"""
+    bl_idname = "import_scene.convert_json"
+    bl_label = "Convert JSON"
+
+    filter_glob: StringProperty(
+        default="*.json",
+        options={'HIDDEN'},
+        )
+
+    filepath: StringProperty(
+        name="JSON Filepath",
+        description="The filepath to the JSON we wish to convert",
+    )
+
+    def execute(self, context):
+        scene = context.scene
+        scene_halo_json = scene.halo_json
+        scene_halo_json.input_file = self.filepath
+        context.area.tag_redraw()
+        return {'FINISHED'}
+
+    def invoke(self, context, event):
+        context.window_manager.fileselect_add(self)
+        return {'RUNNING_MODAL'}
+
 class H3EK_PathDialog(Operator):
     """Set H3EK"""
     bl_idname = "import_scene.h3ek_path"
@@ -225,6 +251,12 @@ class JMA_BatchPropertiesGroup(PropertyGroup):
     directory: StringProperty(
         name="Directory",
         description="A directory containing animation source files to convert",
+        )
+
+class JSON_PropertiesGroup(PropertyGroup):
+    input_file: StringProperty(
+        name="JSON",
+        description="A JSON file to load and convert to a tag",
         )
 
 class Halo_H3EKPropertiesGroup(PropertyGroup):
@@ -952,6 +984,28 @@ class Halo_BatchAnimConverter(Panel):
         row = col.row()
         row.operator("halo_bulk.anim_convert", text="Convert Directory")
 
+class Halo_ConvertJSON(Panel):
+    bl_label = "JSON Converter"
+    bl_idname = "HALO_PT_JSONConverter"
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "UI"
+    bl_options = {'DEFAULT_CLOSED'}
+    bl_parent_id = "HALO_PT_AutoTools"
+
+    def draw(self, context):
+        layout = self.layout
+        scene = context.scene
+        scene_halo = scene.halo
+        scene_halo_json = scene.halo_json
+
+        col = layout.column(align=True)
+        row = col.row()
+        row.operator(JSON_Import_Dialog.bl_idname, text="Select JSON")
+        row.prop(scene_halo_json, "input_file", text='')
+
+        row = col.row()
+        row.operator("halo_bulk.convert_json", text="Convert JSON")
+
 class Halo_MatTools(Panel):
     bl_label = "Halo Material Tools"
     bl_idname = "HALO_PT_MatTools"
@@ -1432,6 +1486,20 @@ class Enable_Material_Type(Operator):
         scene = context.scene
         scene_halo_mattype = scene.halo_mattype
         return global_functions.run_code("mattools.enable_material_type(context)")
+
+class ImportJSON(Operator):
+    """Import and convert a JSON to a Halo tag"""
+    bl_idname = 'halo_bulk.convert_json'
+    bl_label = 'Generate Tag from JSON'
+    bl_options = {"REGISTER", "UNDO"}
+
+    def execute(self, context):
+        from ..file_tag import export_tag
+
+        scene_halo_json = context.scene.halo_json
+
+        return global_functions.run_code("export_tag.write_file(context, scene_halo_json.input_file, self.report)")
+
 classeshalo = (
     Halo_MaterialPropertiesGroup,
     JMA_BatchDialog,
@@ -1485,7 +1553,11 @@ classeshalo = (
     Scale_ModelPropertiesGroup,
     SkyPropertiesGroup,
     Halo_PrefixPropertiesGroup,
-    Face_SetPropertiesGroup
+    Face_SetPropertiesGroup,
+    ImportJSON,
+    Halo_ConvertJSON,
+    JSON_PropertiesGroup,
+    JSON_Import_Dialog
 )
 
 def register():
@@ -1497,12 +1569,14 @@ def register():
     bpy.types.Scene.halo_lightmapper = PointerProperty(type=Halo_LightmapperPropertiesGroup, name="Halo Lightmapper Helper", description="Set properties for the lightmapper")
     bpy.types.Scene.halo_prefix = PointerProperty(type=Halo_PrefixPropertiesGroup, name="Halo Prefix Helper", description="Set properties for node prefixes")
     bpy.types.Scene.scale_model = PointerProperty(type=Scale_ModelPropertiesGroup, name="Halo Scale Model Helper", description="Create meshes for scale")
+    bpy.types.Scene.halo_json = PointerProperty(type=JSON_PropertiesGroup, name="Halo JSON Converter", description="Create tags from JSON")
     bpy.types.Scene.halo_sky = PointerProperty(type=SkyPropertiesGroup, name="Sky Helper", description="Generate a sky for Halo 3")
     bpy.types.Scene.halo_face_set = PointerProperty(type=Face_SetPropertiesGroup, name="Halo Face Set Helper", description="Creates a facemap with the exact name we need")
     bpy.types.Scene.halo_anim_batch = PointerProperty(type=JMA_BatchPropertiesGroup, name="Halo Batch Anims", description="Converts all animations in a specific directory to a different version.")
     bpy.types.Scene.halo_h3ek_path = PointerProperty(type=Halo_H3EKPropertiesGroup, name="H3EK Path", description="The H3EK Path")
     bpy.types.Scene.halo_h3ek_data_path = PointerProperty(type=Halo_H3EKPropertiesGroup, name="H3EK Path", description="The H3EK Data Path")
     bpy.types.Scene.halo_mattype = PointerProperty(type=Halo_MaterialPropertiesGroup, name ="Material Properties", description="Set the material properties of the active object")
+    
 def unregister():
     bpy.types.TOPBAR_MT_file_export.remove(menu_func_export)
     del bpy.types.Scene.halo_import_fixup

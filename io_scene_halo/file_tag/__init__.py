@@ -29,33 +29,12 @@ import bpy
 from bpy.types import Operator
 from bpy.props import (
         BoolProperty,
-        EnumProperty,
-        FloatProperty,
-        PointerProperty,
-        StringProperty
+        EnumProperty
         )
 
-from bpy_extras.io_utils import (
-        ImportHelper,
-        ExportHelper
-        )
+from bpy_extras.io_utils import ImportHelper
 
 from ..global_functions import global_functions
-
-class ImportJSON(Operator, ImportHelper):
-    """Import and convert a JSON to a Halo tag"""
-    bl_idname = "import_scene.json_tag"
-    bl_label = "Import JSON"
-
-    filter_glob: StringProperty(
-        default="*.json",
-        options={'HIDDEN'},
-        )
-
-    def execute(self, context):
-        from . import export_tag
-
-        return global_functions.run_code("export_tag.write_file(context, self.filepath, self.report)")
 
 class ImportTag(Operator, ImportHelper):
     """Import a tag for various Halo titles"""
@@ -85,24 +64,16 @@ class ImportTag(Operator, ImportHelper):
         row.prop(self, "fix_rotations", text='')
 
 def menu_func_import(self, context):
-    self.layout.operator(ImportJSON.bl_idname, text="Halo JSON (scnr)")
     self.layout.operator(ImportTag.bl_idname, text="Halo Tag (mode/mod2/coll/phys/antr/sbsp)")
 
-classeshalo = (
-    ImportJSON,
-    ImportTag
-)
-
 def register():
-    for clshalo in classeshalo:
-        bpy.utils.register_class(clshalo)
+    bpy.utils.register_class(ImportTag)
 
     bpy.types.TOPBAR_MT_file_import.append(menu_func_import)
 
 def unregister():
     bpy.types.TOPBAR_MT_file_import.remove(menu_func_import)
-    for clshalo in classeshalo:
-        bpy.utils.unregister_class(clshalo)
+    bpy.utils.unregister_class(ImportTag)
 
 if __name__ == '__main__':
     register()
