@@ -57,12 +57,179 @@ def get_object_names(dump_dic, TAG, SCENARIO):
 
     SCENARIO.object_name_header = tag_block_header(TAG, "tbfd", 0, len(SCENARIO.object_names), 36)
 
-def get_scenery_palette(dump_dic, TAG, SCENARIO):
-    scenery_palette_tag_block = dump_dic['Data']['Scenery Palette']
-    SCENARIO.scenery_palette = []
-    for scenery_palette_element in scenery_palette_tag_block:
-        tag_ref = scenery_palette_element['Scenery']
-        tag_group = TAG.string_to_bytes(tag_ref['GroupName'], False)
+def get_scenery(dump_dic, TAG, SCENARIO):
+    scenery_tag_block = dump_dic['Data']['Scenery']
+    SCENARIO.scenery = []
+    for scenery_element in scenery_tag_block:
+        source = scenery_element['Source']['Value']
+        if not source == 0:
+            primary = scenery_element['Primary Color']
+            secondary = scenery_element['Secondary Color']
+            tertiary = scenery_element['Tertiary Color']
+            quaternary = scenery_element['Quaternary Color']
+
+            scenery = SCENARIO.Scenery()
+
+            scenery.sobj_header = tag_block_header(TAG, "sobj", 1, 1, 48)
+            scenery.obj0_header = tag_block_header(TAG, "obj#", 0, 1, 8)
+            scenery.sper_header = tag_block_header(TAG, "sper", 0, 1, 24)
+            scenery.sct3_header = tag_block_header(TAG, "sct3", 0, 1, 20)
+
+            scenery.palette_index = scenery_element['Palette Index']
+            scenery.name_index = scenery_element['Name Index']
+            scenery.placement_flags = scenery_element['Placement Flags']
+            scenery.position = scenery_element['Position']
+            scenery.rotation = scenery_element['Rotation']
+            scenery.scale = scenery_element['Scale']
+            scenery.transform_flags = scenery_element['Transform Flags']
+            scenery.manual_bsp_flags = scenery_element['Manual BSP Flags']
+            scenery.unique_id = scenery_element['Unique ID']
+            scenery.origin_bsp_index = scenery_element['Origin BSP Index']
+            scenery.object_type = scenery_element['Type']['Value']
+            scenery.source = scenery_element['Source']['Value']
+            scenery.bsp_policy = 0
+            scenery.editor_folder_index = -1
+
+            scenery.variant_name_length = 0
+            scenery.active_change_colors = 0
+            scenery.primary_color_BGRA = (primary['B'], primary['G'], primary['R'], 1)
+            scenery.secondary_color_BGRA = (secondary['B'], secondary['G'], secondary['R'], 1)
+            scenery.tertiary_color_BGRA = (tertiary['B'], tertiary['G'], tertiary['R'], 1)
+            scenery.quaternary_color_BGRA = (quaternary['B'], quaternary['G'], quaternary['R'], 1)
+            scenery.pathfinding_policy = scenery_element['Pathfinding Policy']['Value']
+            scenery.lightmap_policy = scenery_element['Lightmapping Policy']['Value']
+            scenery.valid_multiplayer_games = 0
+
+            SCENARIO.scenery.append(scenery)
+
+    SCENARIO.scenery_header = tag_block_header(TAG, "tbfd", 4, len(SCENARIO.scenery), 96)
+
+def get_unit(dump_dic, TAG, SCENARIO, unit):
+    unit_tag_block = dump_dic['Data'][unit]
+    unit_list = []
+    for unit_element in unit_tag_block:
+        primary = unit_element['Primary Color']
+        secondary = unit_element['Secondary Color']
+        tertiary = unit_element['Tertiary Color']
+        quaternary = unit_element['Quaternary Color']
+
+        unit = SCENARIO.Unit()
+
+        unit.sobj_header = tag_block_header(TAG, "sobj", 1, 1, 48)
+        unit.obj0_header = tag_block_header(TAG, "obj#", 0, 1, 8)
+        unit.sper_header = tag_block_header(TAG, "sper", 0, 1, 24)
+        unit.sunt_header = tag_block_header(TAG, "sunt", 0, 1, 8)
+
+        unit.palette_index = unit_element['Palette Index']
+        unit.name_index = unit_element['Name Index']
+        unit.placement_flags = unit_element['Placement Flags']
+        unit.position = unit_element['Position']
+        unit.rotation = unit_element['Rotation']
+        unit.scale = unit_element['Scale']
+        unit.transform_flags = unit_element['Transform Flags']
+        unit.manual_bsp_flags = unit_element['Manual BSP Flags']
+        unit.unique_id = unit_element['Unique ID']
+        unit.origin_bsp_index = unit_element['Origin BSP Index']
+        unit.object_type = unit_element['Type']['Value']
+        unit.source = unit_element['Source']['Value']
+        unit.bsp_policy = 0
+        unit.editor_folder_index = -1
+
+        unit.variant_name_length = 0
+        unit.active_change_colors = 0
+        unit.primary_color_BGRA = (primary['B'], primary['G'], primary['R'], 1)
+        unit.secondary_color_BGRA = (secondary['B'], secondary['G'], secondary['R'], 1)
+        unit.tertiary_color_BGRA = (tertiary['B'], tertiary['G'], tertiary['R'], 1)
+        unit.quaternary_color_BGRA = (quaternary['B'], quaternary['G'], quaternary['R'], 1)
+        unit.body_vitality = 0
+        unit.flags = 0
+
+        unit_list.append(unit)
+
+    return tag_block_header(TAG, "tbfd", 2, len(unit_list), 84), unit_list
+
+def get_equipment(dump_dic, TAG, SCENARIO):
+    equipment_tag_block = dump_dic['Data']['Equipment']
+    SCENARIO.equipment = []
+    for equipment_element in equipment_tag_block:
+        equipment = SCENARIO.Equipment()
+
+        equipment.sobj_header = tag_block_header(TAG, "sobj", 1, 1, 48)
+        equipment.obj0_header = tag_block_header(TAG, "obj#", 0, 1, 8)
+        equipment.seqt_header = tag_block_header(TAG, "seqt", 0, 1, 4)
+
+        equipment.palette_index = equipment_element['Palette Index']
+        equipment.name_index = equipment_element['Name Index']
+        equipment.placement_flags = equipment_element['Placement Flags']
+        equipment.position = equipment_element['Position']
+        equipment.rotation = equipment_element['Rotation']
+        equipment.scale = equipment_element['Scale']
+        equipment.transform_flags = equipment_element['Transform Flags']
+        equipment.manual_bsp_flags = equipment_element['Manual BSP Flags']
+        equipment.unique_id = equipment_element['Unique ID']
+        equipment.origin_bsp_index = equipment_element['Origin BSP Index']
+        equipment.object_type = equipment_element['Type']['Value']
+        equipment.source = equipment_element['Source']['Value']
+        equipment.bsp_policy = 0
+        equipment.editor_folder_index = -1
+
+        equipment.flags = 0
+
+        SCENARIO.equipment.append(equipment)
+
+    SCENARIO.equipment_header = tag_block_header(TAG, "tbfd", 2, len(SCENARIO.equipment), 56)
+
+def get_weapon(dump_dic, TAG, SCENARIO):
+    weapon_tag_block = dump_dic['Data']['Weapons']
+    SCENARIO.weapons = []
+    for weapon_element in weapon_tag_block:
+        primary = weapon_element['Primary Color']
+        secondary = weapon_element['Secondary Color']
+        tertiary = weapon_element['Tertiary Color']
+        quaternary = weapon_element['Quaternary Color']
+
+        weapon = SCENARIO.Weapon()
+
+        weapon.sobj_header = tag_block_header(TAG, "sobj", 1, 1, 48)
+        weapon.obj0_header = tag_block_header(TAG, "obj#", 0, 1, 8)
+        weapon.sper_header = tag_block_header(TAG, "sper", 0, 1, 24)
+        weapon.swpt_header = tag_block_header(TAG, "swpt", 0, 1, 8)
+
+        weapon.palette_index = weapon_element['Palette Index']
+        weapon.name_index = weapon_element['Name Index']
+        weapon.placement_flags = weapon_element['Placement Flags']
+        weapon.position = weapon_element['Position']
+        weapon.rotation = weapon_element['Rotation']
+        weapon.scale = weapon_element['Scale']
+        weapon.transform_flags = weapon_element['Transform Flags']
+        weapon.manual_bsp_flags = weapon_element['Manual BSP Flags']
+        weapon.unique_id = weapon_element['Unique ID']
+        weapon.origin_bsp_index = weapon_element['Origin BSP Index']
+        weapon.object_type = weapon_element['Type']['Value']
+        weapon.source = weapon_element['Source']['Value']
+        weapon.bsp_policy = 0
+        weapon.editor_folder_index = -1
+
+        weapon.variant_name_length = 0
+        weapon.active_change_colors = 0
+        weapon.primary_color_BGRA = (primary['B'], primary['G'], primary['R'], 1)
+        weapon.secondary_color_BGRA = (secondary['B'], secondary['G'], secondary['R'], 1)
+        weapon.tertiary_color_BGRA = (tertiary['B'], tertiary['G'], tertiary['R'], 1)
+        weapon.quaternary_color_BGRA = (quaternary['B'], quaternary['G'], quaternary['R'], 1)
+        weapon.rounds_left = 0
+        weapon.rounds_loaded = 0
+        weapon.flags = 0
+
+        SCENARIO.weapons.append(weapon)
+
+    SCENARIO.weapon_header = tag_block_header(TAG, "tbfd", 2, len(SCENARIO.weapons), 84)
+
+def get_palette(dump_dic, TAG, palette_element_keyword, palette_keyword):
+    palette_tag_block = dump_dic['Data'][palette_keyword]
+    palette_list = []
+    for palette_element in palette_tag_block:
+        tag_ref = palette_element[palette_element_keyword]
+        tag_group = TAG.string_to_bytes(tag_ref['GroupName'], True)
         tag_path = TAG.string_to_bytes(os.path.normpath(tag_ref['Path']), False)
         tag_reference = TAG.TagRef()
         tag_reference.tag_group = tag_group
@@ -71,9 +238,9 @@ def get_scenery_palette(dump_dic, TAG, SCENARIO):
         tag_reference.salt = 0
         tag_reference.index = -1
 
-        SCENARIO.scenery_palette.append(tag_reference)
+        palette_list.append(tag_reference)
 
-    SCENARIO.scenery_palette_header = tag_block_header(TAG, "tbfd", 0, len(SCENARIO.scenery_palette), 48)
+    return tag_block_header(TAG, "tbfd", 0, len(palette_list), 48), palette_list
 
 def process_json(input_stream, tag_format, report):
     dump_dic = json.load(input_stream)
@@ -97,7 +264,21 @@ def process_json(input_stream, tag_format, report):
     SCENARIO.header.engine_tag = TAG.string_to_bytes("BLM!", True)
 
     get_object_names(dump_dic, TAG, SCENARIO)
-    get_scenery_palette(dump_dic, TAG, SCENARIO)
+
+    get_scenery(dump_dic, TAG, SCENARIO)
+    SCENARIO.scenery_palette_header, SCENARIO.scenery_palette = get_palette(dump_dic, TAG, 'Scenery', 'Scenery Palette')
+
+    SCENARIO.bipeds_header, SCENARIO.bipeds = get_unit(dump_dic, TAG, SCENARIO, 'Bipeds')
+    SCENARIO.biped_palette_header, SCENARIO.biped_palette = get_palette(dump_dic, TAG, 'Biped', 'Biped Palette')
+
+    SCENARIO.vehicles_header, SCENARIO.vehicles = get_unit(dump_dic, TAG, SCENARIO, 'Vehicles')
+    SCENARIO.vehicle_palette_header, SCENARIO.vehicle_palette = get_palette(dump_dic, TAG, 'Vehicle', 'Vehicle Palette')
+
+    get_equipment(dump_dic, TAG, SCENARIO)
+    SCENARIO.equipment_palette_header, SCENARIO.equipment_palette = get_palette(dump_dic, TAG, 'Equipment', 'Equipment Palette')
+
+    get_weapon(dump_dic, TAG, SCENARIO)
+    SCENARIO.weapon_palette_header, SCENARIO.weapon_palette = get_palette(dump_dic, TAG, 'Weapon', 'Weapon Palette')
 
     SCENARIO.scenario_body_header = tag_block_header(TAG, "tbfd", 2, 1, 1476)
     SCENARIO.scenario_body = SCENARIO.ScenarioBody()
@@ -113,16 +294,16 @@ def process_json(input_stream, tag_format, report):
     SCENARIO.scenario_body.comments_tag_block = TAG.TagBlock(0, 0, 0, 0)
     SCENARIO.scenario_body.environment_objects_tag_block = TAG.TagBlock(0, 0, 0, 0)
     SCENARIO.scenario_body.object_names_tag_block = TAG.TagBlock(len(SCENARIO.object_names), 0, 0, 0)
-    SCENARIO.scenario_body.scenery_tag_block = TAG.TagBlock(0, 0, 0, 0)
+    SCENARIO.scenario_body.scenery_tag_block = TAG.TagBlock(len(SCENARIO.scenery), 0, 0, 0)
     SCENARIO.scenario_body.scenery_palette_tag_block = TAG.TagBlock(len(SCENARIO.scenery_palette), 0, 0, 0)
-    SCENARIO.scenario_body.bipeds_tag_block = TAG.TagBlock(0, 0, 0, 0)
-    SCENARIO.scenario_body.biped_palette_tag_block = TAG.TagBlock(0, 0, 0, 0)
-    SCENARIO.scenario_body.vehicles_tag_block = TAG.TagBlock(0, 0, 0, 0)
-    SCENARIO.scenario_body.vehicle_palette_tag_block = TAG.TagBlock(0, 0, 0, 0)
-    SCENARIO.scenario_body.equipment_tag_block = TAG.TagBlock(0, 0, 0, 0)
-    SCENARIO.scenario_body.equipment_palette_tag_block = TAG.TagBlock(0, 0, 0, 0)
-    SCENARIO.scenario_body.weapons_tag_block = TAG.TagBlock(0, 0, 0, 0)
-    SCENARIO.scenario_body.weapon_palette_tag_block = TAG.TagBlock(0, 0, 0, 0)
+    SCENARIO.scenario_body.bipeds_tag_block = TAG.TagBlock(len(SCENARIO.bipeds), 0, 0, 0)
+    SCENARIO.scenario_body.biped_palette_tag_block = TAG.TagBlock(len(SCENARIO.biped_palette), 0, 0, 0)
+    SCENARIO.scenario_body.vehicles_tag_block = TAG.TagBlock(len(SCENARIO.vehicles), 0, 0, 0)
+    SCENARIO.scenario_body.vehicle_palette_tag_block = TAG.TagBlock(len(SCENARIO.vehicle_palette), 0, 0, 0)
+    SCENARIO.scenario_body.equipment_tag_block = TAG.TagBlock(len(SCENARIO.equipment), 0, 0, 0)
+    SCENARIO.scenario_body.equipment_palette_tag_block = TAG.TagBlock(len(SCENARIO.equipment_palette), 0, 0, 0)
+    SCENARIO.scenario_body.weapons_tag_block = TAG.TagBlock(len(SCENARIO.weapons), 0, 0, 0)
+    SCENARIO.scenario_body.weapon_palette_tag_block = TAG.TagBlock(len(SCENARIO.weapon_palette), 0, 0, 0)
     SCENARIO.scenario_body.device_groups_tag_block = TAG.TagBlock(0, 0, 0, 0)
     SCENARIO.scenario_body.machines_tag_block = TAG.TagBlock(0, 0, 0, 0)
     SCENARIO.scenario_body.machine_palette_tag_block = TAG.TagBlock(0, 0, 0, 0)

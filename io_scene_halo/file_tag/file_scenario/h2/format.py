@@ -24,6 +24,8 @@
 #
 # ##### END MIT LICENSE BLOCK #####
 
+from mathutils import Vector, Euler
+
 SALT_SIZE = 32
 
 class ScenarioAsset():
@@ -37,6 +39,22 @@ class ScenarioAsset():
         self.scenery = None
         self.scenery_palette_header = None
         self.scenery_palette = None
+        self.bipeds_header = None
+        self.bipeds = None
+        self.biped_palette_header = None
+        self.biped_palette = None
+        self.vehicles_header = None
+        self.vehicles = None
+        self.vehicle_palette_header = None
+        self.vehicle_palette = None
+        self.equipment_header = None
+        self.equipment = None
+        self.equipment_palette_header = None
+        self.equipment_palette = None
+        self.weapon_header = None
+        self.weapons = None
+        self.weapon_palette_header = None
+        self.weapon_palette = None
 
     class ScenarioBody:
         def __init__(self, unused_tag_ref=None, skies_tag_block=None, scenario_type=0, scenario_flags=0, child_scenarios_tag_block=None, local_north=0.0, 
@@ -181,8 +199,84 @@ class ScenarioAsset():
             self.object_type = object_type
             self.placement_index = placement_index
 
-    class Scenery:
-        def __init__(self, name="", object_type=0, placement_index=0):
-            self.name = name
+    class Object:
+        def __init__(self, palette_index=0, name_index=0, placement_flags=0, position=Vector(), rotation=Euler(), scale=0.0, transform_flags=0, manual_bsp_flags=0, unique_id=0, 
+                     origin_bsp_index=0, object_type=0, source=0, bsp_policy=0, editor_folder_index=0):
+            self.palette_index = palette_index
+            self.name_index = name_index
+            self.placement_flags = placement_flags
+            self.position = position
+            self.rotation = rotation
+            self.scale = scale
+            self.transform_flags = transform_flags
+            self.manual_bsp_flags = manual_bsp_flags
+            self.unique_id = unique_id
+            self.origin_bsp_index = origin_bsp_index
             self.object_type = object_type
-            self.placement_index = placement_index
+            self.source = source
+            self.bsp_policy = bsp_policy
+            self.editor_folder_index = editor_folder_index
+
+    class Scenery(Object):
+        def __init__(self, sobj_header=None, obj0_header=None, sper_header=None, sct3_header=None,variant_name_length=0, active_change_colors=0, primary_color_BGRA=(0.0, 0.0, 0.0, 1.0), 
+                     secondary_color_BGRA=(0.0, 0.0, 0.0, 1.0), tertiary_color_BGRA=(0.0, 0.0, 0.0, 1.0), quaternary_color_BGRA=(0.0, 0.0, 0.0, 1.0), pathfinding_policy=0, 
+                     lightmap_policy=0, valid_multiplayer_games=0):
+            super().__init__()
+            self.sobj_header = sobj_header
+            self.obj0_header = obj0_header
+            self.sper_header = sper_header
+            self.sct3_header = sct3_header
+            self.variant_name_length = variant_name_length
+            self.active_change_colors = active_change_colors
+            self.primary_color_BGRA = primary_color_BGRA
+            self.secondary_color_BGRA = secondary_color_BGRA
+            self.tertiary_color_BGRA = tertiary_color_BGRA
+            self.quaternary_color_BGRA = quaternary_color_BGRA
+            self.pathfinding_policy = pathfinding_policy
+            self.lightmap_policy = lightmap_policy
+            self.valid_multiplayer_games = valid_multiplayer_games
+
+    class Unit(Object):
+        def __init__(self, sobj_header=None, obj0_header=None, sper_header=None, sunt_header=None,variant_name_length=0, active_change_colors=0, primary_color_BGRA=(0.0, 0.0, 0.0, 1.0), 
+                     secondary_color_BGRA=(0.0, 0.0, 0.0, 1.0), tertiary_color_BGRA=(0.0, 0.0, 0.0, 1.0), quaternary_color_BGRA=(0.0, 0.0, 0.0, 1.0), body_vitality=0.0, 
+                     flags=0):
+            super().__init__()
+            self.sobj_header = sobj_header
+            self.obj0_header = obj0_header
+            self.sper_header = sper_header
+            self.sunt_header = sunt_header
+            self.variant_name_length = variant_name_length
+            self.active_change_colors = active_change_colors
+            self.primary_color_BGRA = primary_color_BGRA
+            self.secondary_color_BGRA = secondary_color_BGRA
+            self.tertiary_color_BGRA = tertiary_color_BGRA
+            self.quaternary_color_BGRA = quaternary_color_BGRA
+            self.body_vitality = body_vitality
+            self.flags = flags
+
+    class Equipment(Object):
+        def __init__(self, sobj_header=None, obj0_header=None, seqt_header=None, flags=0):
+            super().__init__()
+            self.sobj_header = sobj_header
+            self.obj0_header = obj0_header
+            self.seqt_header = seqt_header
+            self.flags = flags
+
+    class Weapon(Object):
+        def __init__(self, sobj_header=None, obj0_header=None, sper_header=None, swpt_header=None,variant_name_length=0, active_change_colors=0, primary_color_BGRA=(0.0, 0.0, 0.0, 1.0), 
+                     secondary_color_BGRA=(0.0, 0.0, 0.0, 1.0), tertiary_color_BGRA=(0.0, 0.0, 0.0, 1.0), quaternary_color_BGRA=(0.0, 0.0, 0.0, 1.0), rounds_left=0, 
+                     rounds_loaded=0, flags=0):
+            super().__init__()
+            self.sobj_header = sobj_header
+            self.obj0_header = obj0_header
+            self.sper_header = sper_header
+            self.swpt_header = swpt_header
+            self.variant_name_length = variant_name_length
+            self.active_change_colors = active_change_colors
+            self.primary_color_BGRA = primary_color_BGRA
+            self.secondary_color_BGRA = secondary_color_BGRA
+            self.tertiary_color_BGRA = tertiary_color_BGRA
+            self.quaternary_color_BGRA = quaternary_color_BGRA
+            self.rounds_left = rounds_left
+            self.rounds_loaded = rounds_loaded
+            self.flags = flags

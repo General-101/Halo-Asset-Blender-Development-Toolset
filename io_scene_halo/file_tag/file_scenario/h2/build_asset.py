@@ -26,8 +26,6 @@
 
 import struct
 
-from .format import SALT_SIZE
-
 def write_tag_header(output_stream, SCENARIO):
     output_stream.write(struct.pack('<h', SCENARIO.header.unk1))
     output_stream.write(struct.pack('<b', SCENARIO.header.flags))
@@ -176,18 +174,118 @@ def write_object_names(output_stream, SCENARIO):
         for object_name_element in SCENARIO.object_names:
             output_stream.write(struct.pack('<31sxhh', object_name_element.name, object_name_element.object_type, object_name_element.placement_index))
 
-def write_scenery_palette(output_stream, SCENARIO):
-    if len(SCENARIO.scenery_palette) > 0:
-        write_tag_block_header(output_stream, SCENARIO.scenery_palette_header)
-        for scenery_palette_element in SCENARIO.scenery_palette:
-            write_tag_reference(output_stream, scenery_palette_element)
+def write_object(output_stream, scenery_element):
+    output_stream.write(struct.pack('<h', scenery_element.palette_index))
+    output_stream.write(struct.pack('<h', scenery_element.name_index))
+    output_stream.write(struct.pack('<I', scenery_element.placement_flags))
+    output_stream.write(struct.pack('<fff', scenery_element.position[0], scenery_element.position[1], scenery_element.position[2]))
+    output_stream.write(struct.pack('<fff', scenery_element.rotation[0], scenery_element.rotation[1], scenery_element.rotation[2]))
+    output_stream.write(struct.pack('<f', scenery_element.scale))
+    output_stream.write(struct.pack('<H', scenery_element.transform_flags))
+    output_stream.write(struct.pack('<H', scenery_element.manual_bsp_flags))
+    output_stream.write(struct.pack('<i', scenery_element.unique_id))
+    output_stream.write(struct.pack('<h', scenery_element.origin_bsp_index))
+    output_stream.write(struct.pack('<bbbx', scenery_element.object_type, scenery_element.source, scenery_element.bsp_policy))
+    output_stream.write(struct.pack('<h', scenery_element.editor_folder_index))
+
+def write_color_change(output_stream, scenery_element):
+    output_stream.write(struct.pack('>I', scenery_element.active_change_colors))
+    output_stream.write(struct.pack('<bbbx', scenery_element.primary_color_BGRA[0], scenery_element.primary_color_BGRA[1], scenery_element.primary_color_BGRA[2]))
+    output_stream.write(struct.pack('<bbbx', scenery_element.secondary_color_BGRA[0], scenery_element.secondary_color_BGRA[1], scenery_element.secondary_color_BGRA[2]))
+    output_stream.write(struct.pack('<bbbx', scenery_element.tertiary_color_BGRA[0], scenery_element.tertiary_color_BGRA[1], scenery_element.tertiary_color_BGRA[2]))
+    output_stream.write(struct.pack('<bbbx', scenery_element.quaternary_color_BGRA[0], scenery_element.quaternary_color_BGRA[1], scenery_element.quaternary_color_BGRA[2]))
+
+
+def write_scenery(output_stream, SCENARIO):
+    if len(SCENARIO.scenery) > 0:
+        write_tag_block_header(output_stream, SCENARIO.scenery_header)
+        for scenery_element in SCENARIO.scenery:
+            write_object(output_stream, scenery_element)
+            output_stream.write(struct.pack('>I', scenery_element.variant_name_length))
+            write_color_change(output_stream, scenery_element)
+            output_stream.write(struct.pack('<h', scenery_element.pathfinding_policy))
+            output_stream.write(struct.pack('<h', scenery_element.lightmap_policy))
+            output_stream.write(struct.pack('<14x'))
+            output_stream.write(struct.pack('<h', scenery_element.valid_multiplayer_games))
+
+        for scenery_element in SCENARIO.scenery:
+            write_tag_block_header(output_stream, scenery_element.sobj_header)
+            write_tag_block_header(output_stream, scenery_element.obj0_header)
+            write_tag_block_header(output_stream, scenery_element.sper_header)
+            write_tag_block_header(output_stream, scenery_element.sct3_header)
+
+def write_units(output_stream, unit_list, unit_header):
+    if len(unit_list) > 0:
+        write_tag_block_header(output_stream, unit_header)
+        for unit_element in unit_list:
+            write_object(output_stream, unit_element)
+            output_stream.write(struct.pack('>I', unit_element.variant_name_length))
+            write_color_change(output_stream, unit_element)
+            output_stream.write(struct.pack('<f', unit_element.body_vitality))
+            output_stream.write(struct.pack('<I', unit_element.flags))
+
+        for unit_element in unit_list:
+            write_tag_block_header(output_stream, unit_element.sobj_header)
+            write_tag_block_header(output_stream, unit_element.obj0_header)
+            write_tag_block_header(output_stream, unit_element.sper_header)
+            write_tag_block_header(output_stream, unit_element.sunt_header)
+
+def write_equipment(output_stream, SCENARIO):
+    if len(SCENARIO.equipment) > 0:
+        write_tag_block_header(output_stream, SCENARIO.equipment_header)
+        for equipment_element in SCENARIO.equipment:
+            write_object(output_stream, equipment_element)
+            output_stream.write(struct.pack('<I', equipment_element.flags))
+
+        for equipment_element in SCENARIO.equipment:
+            write_tag_block_header(output_stream, equipment_element.sobj_header)
+            write_tag_block_header(output_stream, equipment_element.obj0_header)
+            write_tag_block_header(output_stream, equipment_element.seqt_header)
+
+def write_weapons(output_stream, SCENARIO):
+    if len(SCENARIO.weapons) > 0:
+        write_tag_block_header(output_stream, SCENARIO.weapon_header)
+        for weapon_element in SCENARIO.weapons:
+            write_object(output_stream, weapon_element)
+            output_stream.write(struct.pack('>I', weapon_element.variant_name_length))
+            write_color_change(output_stream, weapon_element)
+            output_stream.write(struct.pack('<h', weapon_element.rounds_left))
+            output_stream.write(struct.pack('<h', weapon_element.rounds_loaded))
+            output_stream.write(struct.pack('<I', weapon_element.flags))
+
+        for weapon_element in SCENARIO.weapons:
+            write_tag_block_header(output_stream, weapon_element.sobj_header)
+            write_tag_block_header(output_stream, weapon_element.obj0_header)
+            write_tag_block_header(output_stream, weapon_element.sper_header)
+            write_tag_block_header(output_stream, weapon_element.swpt_header)
+
+def write_palette(output_stream, palette, palette_header):
+    if len(palette) > 0:
+        write_tag_block_header(output_stream, palette_header)
+        for palette_element in palette:
+            write_tag_reference(output_stream, palette_element)
             output_stream.write(struct.pack('<32x'))
 
-        for scenery_palette_element in SCENARIO.scenery_palette:
-            output_stream.write(struct.pack('<%ssx' % scenery_palette_element.name_length, scenery_palette_element.name))
+        for palette_element in palette:
+            output_stream.write(struct.pack('<%ssx' % palette_element.name_length, palette_element.name))
 
 def build_asset(output_stream, SCENARIO, report):
     write_tag_header(output_stream, SCENARIO)
     write_body(output_stream, SCENARIO)
+
     write_object_names(output_stream, SCENARIO)
-    write_scenery_palette(output_stream, SCENARIO)
+
+    write_scenery(output_stream, SCENARIO)
+    write_palette(output_stream, SCENARIO.scenery_palette, SCENARIO.scenery_palette_header)
+
+    write_units(output_stream, SCENARIO.bipeds, SCENARIO.bipeds_header)
+    write_palette(output_stream, SCENARIO.biped_palette, SCENARIO.biped_palette_header)
+
+    write_units(output_stream, SCENARIO.vehicles, SCENARIO.vehicles_header)
+    write_palette(output_stream, SCENARIO.vehicle_palette, SCENARIO.vehicle_palette_header)
+
+    write_equipment(output_stream, SCENARIO)
+    write_palette(output_stream, SCENARIO.equipment_palette, SCENARIO.equipment_palette_header)
+
+    write_weapons(output_stream, SCENARIO)
+    write_palette(output_stream, SCENARIO.weapon_palette, SCENARIO.weapon_palette_header)
