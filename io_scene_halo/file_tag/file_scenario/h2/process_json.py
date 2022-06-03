@@ -71,7 +71,7 @@ def get_scenery(dump_dic, TAG, SCENARIO):
     SCENARIO.scenery = []
     for scenery_element in scenery_tag_block:
         source = scenery_element['Source']['Value']
-        if not source == 0:
+        if not source == 0: # We're doing this to exclude scenery pieces added as XREFs.
             primary = scenery_element['Primary Color']
             secondary = scenery_element['Secondary Color']
             tertiary = scenery_element['Tertiary Color']
@@ -345,6 +345,253 @@ def get_squads(dump_dic, TAG, SCENARIO):
 
     SCENARIO.squads_header = tag_block_header(TAG, "tbfd", 2, len(SCENARIO.squads), 120)
 
+def get_zones(dump_dic, TAG, SCENARIO):
+    zones_tag_block = dump_dic['Data']['Zones']
+    SCENARIO.zones = []
+    for zone_element in zones_tag_block:
+        firing_positions_dic = zone_element['Firing Positions']
+        firing_positions_count = len(firing_positions_dic)
+
+        areas_dic = zone_element['Areas']
+        areas_count = len(areas_dic)
+
+        zone = SCENARIO.Zone()
+
+        zone.name = TAG.string_to_bytes(zone_element['Name'], False)
+        zone.flags = zone_element['Flags']
+        zone.manual_bsp_index = zone_element['Manual BSP Index']
+        zone.firing_positions_tag_block = tag_block(TAG, firing_positions_count, 0, 0, 0)
+        zone.areas_tag_block = tag_block(TAG, areas_count, 0, 0, 0)
+        zone.firing_positions = []
+        zone.areas = []
+        if firing_positions_count > 0:
+            zone.firing_positions_header = tag_block_header(TAG, "tbfd", 3, firing_positions_count, 32)
+            for firing_position_element in firing_positions_dic:
+                firing_position = SCENARIO.FiringPosition()
+
+                firing_position.position = firing_position_element['Position']
+                firing_position.reference_frame = -1
+                firing_position.flags = 0
+                firing_position.area_index = firing_position_element['Area Index']
+                firing_position.cluster_index = firing_position_element['Cluster Index']
+                firing_position.normal_y = firing_position_element['Normal']
+
+                zone.firing_positions.append(firing_position)
+
+        if areas_count > 0:
+            zone.areas_header = tag_block_header(TAG, "tbfd", 1, areas_count, 140)
+
+            for areas_element in areas_dic:
+                area = SCENARIO.Area()
+
+                area.name = TAG.string_to_bytes(areas_element['Name'], False)
+                area.flags = 0
+                area.runtime_starting_index = 0
+                area.runtime_count = 0
+                area.manual_reference_frame = areas_element['Manual Reference Frame']
+                area.flight_hints_tag_block = tag_block(TAG, 0, 0, 0, 0)
+
+                zone.areas.append(area)
+
+        SCENARIO.zones.append(zone)
+
+    SCENARIO.zones_header = tag_block_header(TAG, "tbfd", 1, len(SCENARIO.zones), 64)
+
+def get_scripting_data(dump_dic, TAG, SCENARIO):
+    scripting_data_tag_block = dump_dic['Data']['Scripting Data']
+    SCENARIO.scripting_data = []
+    for scripting_data_element in scripting_data_tag_block:
+        point_sets_dic = scripting_data_element['Point Sets']
+        point_sets_count = len(point_sets_dic)
+
+        scripting_data = SCENARIO.ScriptingData()
+
+        scripting_data.point_sets_tag_block = tag_block(TAG, point_sets_count, 0, 0, 0)
+        scripting_data.point_sets = []
+
+        if point_sets_count > 0:
+            scripting_data.point_sets_header = tag_block_header(TAG, "tbfd", 1, point_sets_count, 52)
+            for point_set_element in point_sets_dic:
+                points_dic = point_set_element['Points']
+                points_count = len(points_dic)
+
+                point_set = SCENARIO.PointSet()
+
+                point_set.name = TAG.string_to_bytes(point_set_element['Name'], False)
+                point_set.points_tag_block = tag_block(TAG, points_count, 0, 0, 0)
+                point_set.bsp_index = point_set_element['BSP Index']
+                point_set.manual_reference_frame = point_set_element['Manual Reference Frame']
+                point_set.flags = point_set_element['Flags']
+                point_set.points = []
+
+                if points_count > 0:
+                    point_set.points_header = tag_block_header(TAG, "tbfd", 1, points_count, 60)
+                    for point_element in points_dic:
+                        point = SCENARIO.Point()
+
+                        point.name = TAG.string_to_bytes(point_element['Name'], False)
+                        point.position = point_element['Position']
+                        point.reference_frame = -1
+                        point.surface_index = -1
+                        point.facing_direction_y = 0.0
+                        point.facing_direction_p = 0.0
+
+                        point_set.points.append(point)
+
+                scripting_data.point_sets.append(point_set)
+
+        SCENARIO.scripting_data.append(scripting_data)
+
+    SCENARIO.scripting_data_header = tag_block_header(TAG, "tbfd", 0, len(SCENARIO.scripting_data), 132)
+
+def get_cutscene_flags(dump_dic, TAG, SCENARIO):
+    cutscene_flags_tag_block = dump_dic['Data']['Cutscene Flags']
+    SCENARIO.cutscene_flags = []
+    for cutscene_flag_element in cutscene_flags_tag_block:
+        cutscene_flags = SCENARIO.CutsceneFlags()
+
+        cutscene_flags.name = TAG.string_to_bytes(cutscene_flag_element['Name'], False)
+        cutscene_flags.position = cutscene_flag_element['Position']
+        cutscene_flags.facing_y = cutscene_flag_element['Facing'][0]
+        cutscene_flags.facing_p = cutscene_flag_element['Facing'][1]
+
+        SCENARIO.cutscene_flags.append(cutscene_flags)
+
+    SCENARIO.cutscene_flags_header = tag_block_header(TAG, "tbfd", 0, len(SCENARIO.cutscene_flags), 56)
+
+def get_cutscene_camera_points(dump_dic, TAG, SCENARIO):
+    cutscene_camera_points_tag_block = dump_dic['Data']['Cutscene Camera Points']
+    SCENARIO.cutscene_camera_points = []
+    for cutscene_camera_point_element in cutscene_camera_points_tag_block:
+        cutscene_camera_point = SCENARIO.CutsceneCameraPoints()
+
+        cutscene_camera_point.flags = cutscene_camera_point_element['Flags']
+        cutscene_camera_point.camera_type = cutscene_camera_point_element['Type']['Value']
+        cutscene_camera_point.name = TAG.string_to_bytes(cutscene_camera_point_element['Name'], False)
+        cutscene_camera_point.position = cutscene_camera_point_element['Position']
+        cutscene_camera_point.orientation = cutscene_camera_point_element['Orientation']
+
+        SCENARIO.cutscene_camera_points.append(cutscene_camera_point)
+
+    SCENARIO.cutscene_camera_points_header = tag_block_header(TAG, "tbfd", 0, len(SCENARIO.cutscene_camera_points), 64)
+
+def get_orders(dump_dic, TAG, SCENARIO):
+    orders_tag_block = dump_dic['Data']['Orders']
+    SCENARIO.orders = []
+    for order_element in orders_tag_block:
+        primary_area_set_dic = order_element['Primary Area Set']
+        primary_area_set_count = len(primary_area_set_dic)
+
+        #secondary_area_set_dic = order_element['Secondary Area Set']
+        #secondary_area_set_count = len(secondary_area_set_dic)
+
+        #secondary_set_trigger_dic = order_element['Secondary Set Trigger']
+        #secondary_set_trigger_count = len(secondary_set_trigger_dic)
+
+        #special_movement_dic = order_element['Special Movement']
+        #special_movement_count = len(special_movement_dic)
+
+        order_endings_dic = order_element['Order Endings']
+        order_endings_count = len(order_endings_dic)
+
+        order = SCENARIO.Order()
+
+        order.name = TAG.string_to_bytes(order_element['Name'], False)
+        order.style_index = order_element['Style Index']
+        order.flags = order_element['Flags']
+        order.force_combat_status = order_element['Force Combat Status']['Value']
+        order.entry_script = TAG.string_to_bytes(order_element['Entry Script'], False)
+        order.follow_squad = order_element['Follow Squad Index']
+        order.follow_radius = order_element['Follow Radius']
+        order.primary_area_set_tag_block = tag_block(TAG, primary_area_set_count, 0, 0, 0)
+        order.secondary_area_set_tag_block = tag_block(TAG, 0, 0, 0, 0)
+        order.secondary_set_trigger_tag_block = tag_block(TAG, 0, 0, 0, 0)
+        order.special_movement_tag_block = tag_block(TAG, 0, 0, 0, 0)
+        order.order_endings_tag_block = tag_block(TAG, order_endings_count, 0, 0, 0)
+
+        order.primary_area_set = []
+        order.order_endings = []
+
+        if primary_area_set_count > 0:
+            order.primary_area_set_header = tag_block_header(TAG, "tbfd", 1, primary_area_set_count, 8)
+            for primary_area_set_element in primary_area_set_dic:
+                primary_area_set = SCENARIO.PrimaryAreaSet()
+
+                primary_area_set.area_type = primary_area_set_element['Area Type']['Value']
+                primary_area_set.zone_index = primary_area_set_element['Zone Index']
+                primary_area_set.area_index = primary_area_set_element['Area Index']
+
+                order.primary_area_set.append(primary_area_set)
+
+        if order_endings_count > 0:
+            order.order_endings_header = tag_block_header(TAG, "tbfd", 0, order_endings_count, 24)
+            for order_ending_element in order_endings_dic:
+                triggers_dic = order_ending_element['Triggers']
+                triggers_count = len(triggers_dic)
+
+                order_ending = SCENARIO.OrderEnding()
+
+                order_ending.next_order_index = order_ending_element['Next Order Index']
+                order_ending.combination_rule = order_ending_element['Combination Rule']['Value']
+                order_ending.delay_time = order_ending_element['Delay Time']
+                order_ending.dialogue_type = order_ending_element['Dialogue Type']['Value']
+                order_ending.triggers_tag_block = tag_block(TAG, triggers_count, 0, 0, 0)
+
+                order_ending.triggers = []
+
+                if len(triggers_dic) > 0:
+                    order_ending.triggers_header = tag_block_header(TAG, "tbfd", 0, triggers_count, 8)
+                    for trigger_element in triggers_dic:
+                        trigger = SCENARIO.Trigger()
+
+                        trigger.trigger_flags = trigger_element['Trigger Flags']
+                        trigger.trigger_index = trigger_element['Trigger Index']
+
+                        order_ending.triggers.append(trigger)
+
+                order.order_endings.append(order_ending)
+
+        SCENARIO.orders.append(order)
+
+    SCENARIO.orders_header = tag_block_header(TAG, "tbfd", 2, len(SCENARIO.orders), 144)
+
+def get_triggers(dump_dic, TAG, SCENARIO):
+    triggers_tag_block = dump_dic['Data']['AI Triggers']
+    SCENARIO.triggers = []
+    for trigger_element in triggers_tag_block:
+        conditions_dic = trigger_element['Conditions']
+        conditions_count = len(conditions_dic)
+
+        trigger = SCENARIO.AITrigger()
+
+        trigger.name = TAG.string_to_bytes(trigger_element['Name'], False)
+        trigger.trigger_flags = trigger_element['Trigger Flags']
+        trigger.combination_rule = trigger_element['Combination Rule']['Value']
+        trigger.conditions_tag_block = tag_block(TAG, conditions_count, 0, 0, 0)
+
+        trigger.conditions = []
+
+        if conditions_count > 0:
+            trigger.conditions_header = tag_block_header(TAG, "tbfd", 0, conditions_count, 56)
+            for condition_element in conditions_dic:
+                condition = SCENARIO.Condition()
+
+                condition.rule_type = condition_element['Rule Type']['Value']
+                condition.squad_index = condition_element['Squad Index']
+                condition.squad_group_index = condition_element['Squad Group Index']
+                condition.a = condition_element['A']
+                condition.x = condition_element['X']
+                condition.trigger_volume_index = condition_element['Trigger Volume Index']
+                condition.exit_condition_script = TAG.string_to_bytes(condition_element['Exit Condition Script'], False)
+                condition.exit_condition_script_index = condition_element['Exit Condition Script Index']
+                condition.flags = condition_element['Flags']
+
+                trigger.conditions.append(condition)
+
+        SCENARIO.triggers.append(trigger)
+
+    SCENARIO.triggers_header = tag_block_header(TAG, "tbfd", 0, len(SCENARIO.triggers), 52)
+
 def get_palette(dump_dic, TAG, palette_element_keyword, palette_keyword, size):
     palette_tag_block = dump_dic['Data'][palette_keyword]
     palette_list = []
@@ -412,8 +659,19 @@ def process_json(input_stream, tag_format, report):
 
     get_squads(dump_dic, TAG, SCENARIO)
 
+    get_zones(dump_dic, TAG, SCENARIO)
+
     SCENARIO.character_palette_header, SCENARIO.character_palette = get_palette(dump_dic, TAG, 'Character', 'Character Palette', 16)
 
+    get_scripting_data(dump_dic, TAG, SCENARIO)
+
+    get_cutscene_flags(dump_dic, TAG, SCENARIO)
+
+    get_cutscene_camera_points(dump_dic, TAG, SCENARIO)
+
+    get_orders(dump_dic, TAG, SCENARIO)
+
+    get_triggers(dump_dic, TAG, SCENARIO)
 
     SCENARIO.scenario_body_header = tag_block_header(TAG, "tbfd", 2, 1, 1476)
     SCENARIO.scenario_body = SCENARIO.ScenarioBody()
@@ -464,7 +722,7 @@ def process_json(input_stream, tag_format, report):
     SCENARIO.scenario_body.style_palette_tag_block = TAG.TagBlock(len(SCENARIO.style_palette), 0, 0, 0)
     SCENARIO.scenario_body.squad_groups_tag_block = TAG.TagBlock(len(SCENARIO.squad_groups), 0, 0, 0)
     SCENARIO.scenario_body.squads_tag_block = TAG.TagBlock(len(SCENARIO.squads), 0, 0, 0)
-    SCENARIO.scenario_body.zones_tag_block = TAG.TagBlock(0, 0, 0, 0)
+    SCENARIO.scenario_body.zones_tag_block = TAG.TagBlock(len(SCENARIO.zones), 0, 0, 0)
     SCENARIO.scenario_body.mission_scenes_tag_block = TAG.TagBlock(0, 0, 0, 0)
     SCENARIO.scenario_body.character_palette_tag_block = TAG.TagBlock(len(SCENARIO.character_palette), 0, 0, 0)
     SCENARIO.scenario_body.ai_pathfinding_data_tag_block = TAG.TagBlock(0, 0, 0, 0)
@@ -478,9 +736,9 @@ def process_json(input_stream, tag_format, report):
     SCENARIO.scenario_body.globals_tag_block = TAG.TagBlock(0, 0, 0, 0)
     SCENARIO.scenario_body.references_tag_block = TAG.TagBlock(0, 0, 0, 0)
     SCENARIO.scenario_body.source_files_tag_block = TAG.TagBlock(0, 0, 0, 0)
-    SCENARIO.scenario_body.scripting_data_tag_block = TAG.TagBlock(0, 0, 0, 0)
-    SCENARIO.scenario_body.cutscene_flags_tag_block = TAG.TagBlock(0, 0, 0, 0)
-    SCENARIO.scenario_body.cutscene_camera_points_tag_block = TAG.TagBlock(0, 0, 0, 0)
+    SCENARIO.scenario_body.scripting_data_tag_block = TAG.TagBlock(len(SCENARIO.scripting_data), 0, 0, 0)
+    SCENARIO.scenario_body.cutscene_flags_tag_block = TAG.TagBlock(len(SCENARIO.cutscene_flags), 0, 0, 0)
+    SCENARIO.scenario_body.cutscene_camera_points_tag_block = TAG.TagBlock(len(SCENARIO.cutscene_camera_points), 0, 0, 0)
     SCENARIO.scenario_body.cutscene_titles_tag_block = TAG.TagBlock(0, 0, 0, 0)
     SCENARIO.scenario_body.custom_object_names_tag_ref = TAG.TagRef(TAG.string_to_bytes("unic", True), "", 0, 0, -1)
     SCENARIO.scenario_body.chapter_title_text_tag_ref = TAG.TagRef(TAG.string_to_bytes("unic", True), "", 0, 0, -1)
@@ -491,8 +749,8 @@ def process_json(input_stream, tag_format, report):
     SCENARIO.scenario_body.hs_unit_seats_tag_block =TAG.TagBlock(0, 0, 0, 0)
     SCENARIO.scenario_body.scenario_kill_triggers_tag_block = TAG.TagBlock(0, 0, 0, 0)
     SCENARIO.scenario_body.hs_syntax_datums_tag_block = TAG.TagBlock(0, 0, 0, 0)
-    SCENARIO.scenario_body.orders_tag_block = TAG.TagBlock(0, 0, 0, 0)
-    SCENARIO.scenario_body.triggers_tag_block = TAG.TagBlock(0, 0, 0, 0)
+    SCENARIO.scenario_body.orders_tag_block = TAG.TagBlock(len(SCENARIO.orders), 0, 0, 0)
+    SCENARIO.scenario_body.triggers_tag_block = TAG.TagBlock(len(SCENARIO.triggers), 0, 0, 0)
     SCENARIO.scenario_body.background_sound_palette_tag_block = TAG.TagBlock(0, 0, 0, 0)
     SCENARIO.scenario_body.sound_environment_palette_tag_block = TAG.TagBlock(0, 0, 0, 0)
     SCENARIO.scenario_body.weather_palette_tag_block = TAG.TagBlock(0, 0, 0, 0)

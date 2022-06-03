@@ -67,8 +67,20 @@ class ScenarioAsset():
         self.squad_groups = None
         self.squads_header = None
         self.squads = None
+        self.zones_header = None
+        self.zones = None
         self.character_palette_header = None
         self.character_palette = None
+        self.scripting_data_header = None
+        self.scripting_data = None
+        self.cutscene_flags_header = None
+        self.cutscene_flags = None
+        self.cutscene_camera_points_header = None
+        self.cutscene_camera_points = None
+        self.orders_header = None
+        self.orders = None
+        self.triggers_header = None
+        self.triggers = None
 
     class ScenarioBody:
         def __init__(self, unused_tag_ref=None, skies_tag_block=None, scenario_type=0, scenario_flags=0, child_scenarios_tag_block=None, local_north=0.0, 
@@ -372,3 +384,149 @@ class ScenarioAsset():
             self.emitter_vehicle_index = emitter_vehicle_index
             self.initial_movement_mode = initial_movement_mode
             self.placement_script = placement_script
+
+    class Zone():
+        def __init__(self, name="", flags=0, manual_bsp_index=0, firing_positions_tag_block=None, areas_tag_block=None, firing_positions_header=None, areas_header=None, 
+                     firing_positions=None, areas=None):
+            self.name = name
+            self.flags = flags
+            self.manual_bsp_index = manual_bsp_index
+            self.firing_positions_tag_block = firing_positions_tag_block
+            self.areas_tag_block = areas_tag_block
+            self.firing_positions_header = firing_positions_header
+            self.areas_header = areas_header
+            self.firing_positions = firing_positions
+            self.areas = areas
+
+    class FiringPosition():
+        def __init__(self, position=Vector(), reference_frame=0, flags=0, area_index=0, cluster_index=0, normal_y=0.0, normal_p=0.0):
+            self.position = position
+            self.reference_frame = reference_frame
+            self.flags = flags
+            self.area_index = area_index
+            self.cluster_index = cluster_index
+            self.normal_y = normal_y
+            self.normal_p = normal_p
+
+    class Area():
+        def __init__(self, name="", flags=0, runtime_starting_index=0, runtime_count=0, manual_reference_frame=0, flight_hints_tag_block=None, flight_hints_header=None, 
+                     flight_hints=None):
+            self.name = name
+            self.flags = flags
+            self.runtime_starting_index = runtime_starting_index
+            self.runtime_count = runtime_count
+            self.manual_reference_frame = manual_reference_frame
+            self.flight_hints_tag_block = flight_hints_tag_block
+            self.flight_hints_header = flight_hints_header
+            self.flight_hints = flight_hints
+
+    class ScriptingData():
+        def __init__(self, point_sets_tag_block=None, point_sets_header=None, point_sets=None):
+            self.point_sets_tag_block = point_sets_tag_block
+            self.point_sets_header = point_sets_header
+            self.point_sets = point_sets
+
+    class PointSet():
+        def __init__(self, name="", points_tag_block=None, bsp_index=0, manual_reference_frame=0, flags=0, points_header=None, points=None):
+            self.name = name
+            self.points_tag_block = points_tag_block
+            self.bsp_index = bsp_index
+            self.manual_reference_frame = manual_reference_frame
+            self.flags = flags
+            self.points_header = points_header
+            self.points = points
+
+    class Point():
+        def __init__(self, name="", position=Vector(), reference_frame=0, surface_index=0, facing_direction_y=0.0, facing_direction_p=0.0):
+            self.name = name
+            self.position = position
+            self.reference_frame = reference_frame
+            self.surface_index = surface_index
+            self.facing_direction_y = facing_direction_y
+            self.facing_direction_p = facing_direction_p
+
+    class CutsceneFlags():
+        def __init__(self, name="", position=Vector(), facing_y=0.0, facing_p=0.0):
+            self.name = name
+            self.position = position
+            self.facing_y = facing_y
+            self.facing_p = facing_p
+
+    class CutsceneCameraPoints():
+        def __init__(self, flags=0, camera_type=0, name="", position=Vector(), orientation=Vector()):
+            self.flags = flags
+            self.camera_type = camera_type
+            self.name = name
+            self.position = position
+            self.orientation = orientation
+
+    class Order():
+        def __init__(self, name="", style_index=0, flags=0, force_combat_status=0, entry_script="", follow_squad=0, follow_radius=0.0, primary_area_set_tag_block=None, 
+                     secondary_area_set_tag_block=None, secondary_set_trigger_tag_block=None, special_movement_tag_block=None, order_endings_tag_block=None, 
+                     primary_area_set_header=None, secondary_area_set_header=None, secondary_set_trigger_header=None, special_movement_header=None, order_endings_header=None, 
+                     primary_area_set=None, secondary_area_set=None, secondary_set_trigger=None, special_movement=None, order_endings=None):
+            self.name = name
+            self.style_index = style_index
+            self.flags = flags
+            self.force_combat_status = force_combat_status
+            self.entry_script = entry_script
+            self.follow_squad = follow_squad
+            self.follow_radius = follow_radius
+            self.primary_area_set_tag_block = primary_area_set_tag_block
+            self.secondary_area_set_tag_block = secondary_area_set_tag_block
+            self.secondary_set_trigger_tag_block = secondary_set_trigger_tag_block
+            self.special_movement_tag_block = special_movement_tag_block
+            self.order_endings_tag_block = order_endings_tag_block
+            self.primary_area_set_header = primary_area_set_header
+            self.secondary_area_set_header = secondary_area_set_header
+            self.secondary_set_trigger_header = secondary_set_trigger_header
+            self.special_movement_header = special_movement_header
+            self.order_endings_header = order_endings_header
+            self.primary_area_set = primary_area_set
+            self.secondary_area_set = secondary_area_set
+            self.secondary_set_trigger = secondary_set_trigger
+            self.special_movement = special_movement
+            self.order_endings = order_endings
+
+    class PrimaryAreaSet():
+        def __init__(self, area_type=0, zone_index=0, area_index=0):
+            self.area_type = area_type
+            self.zone_index = zone_index
+            self.area_index = area_index
+
+    class OrderEnding():
+        def __init__(self, next_order_index=0, combination_rule=0, delay_time=0.0, dialogue_type=0, triggers_tag_block=None, triggers_header=None, triggers=None):
+            self.next_order_index = next_order_index
+            self.combination_rule = combination_rule
+            self.delay_time = delay_time
+            self.dialogue_type = dialogue_type
+            self.triggers_tag_block = triggers_tag_block
+            self.triggers_header = triggers_header
+            self.triggers = triggers
+
+    class Trigger():
+        def __init__(self, trigger_flags=0, trigger_index=0):
+            self.trigger_flags = trigger_flags
+            self.trigger_index = trigger_index
+
+    class AITrigger():
+        def __init__(self, name="", trigger_flags=0, combination_rule=0, conditions_tag_block=None, conditions_header=None, conditions=None):
+            self.name = name
+            self.trigger_flags = trigger_flags
+            self.combination_rule = combination_rule
+            self.conditions_tag_block = conditions_tag_block
+            self.conditions_header = conditions_header
+            self.conditions = conditions
+
+    class Condition():
+        def __init__(self, rule_type=0, squad_index=0, squad_group_index=0, a=0, x=0.0, trigger_volume_index=0, exit_condition_script="", exit_condition_script_index=0, 
+                     flags=0):
+            self.rule_type = rule_type
+            self.squad_index = squad_index
+            self.squad_group_index = squad_group_index
+            self.a = a
+            self.x = x
+            self.trigger_volume_index = trigger_volume_index
+            self.exit_condition_script = exit_condition_script
+            self.exit_condition_script_index = exit_condition_script_index
+            self.flags = flags

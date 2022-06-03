@@ -345,6 +345,150 @@ def write_squads(output_stream, SCENARIO):
                 for starting_location in squad.starting_locations:
                     output_stream.write(struct.pack('<%ss' % starting_location.name_length, starting_location.name))
 
+def write_zones(output_stream, SCENARIO):
+    if len(SCENARIO.zones) > 0:
+        write_tag_block_header(output_stream, SCENARIO.zones_header)
+        for zone in SCENARIO.zones:
+            output_stream.write(struct.pack('<31sx', zone.name))
+            output_stream.write(struct.pack('<I', zone.flags))
+            output_stream.write(struct.pack('<h2x', zone.manual_bsp_index))
+            write_tag_block(output_stream, zone.firing_positions_tag_block)
+            write_tag_block(output_stream, zone.areas_tag_block)
+
+        for zone in SCENARIO.zones:
+            if len(zone.firing_positions) > 0:
+                write_tag_block_header(output_stream, zone.firing_positions_header)
+                for firing_position in zone.firing_positions:
+                    output_stream.write(struct.pack('<fff', firing_position.position[0], firing_position.position[1], firing_position.position[2]))
+                    output_stream.write(struct.pack('<h', firing_position.reference_frame))
+                    output_stream.write(struct.pack('<H', firing_position.flags))
+                    output_stream.write(struct.pack('<h', firing_position.area_index))
+                    output_stream.write(struct.pack('<h', firing_position.cluster_index))
+                    output_stream.write(struct.pack('<4x'))
+                    output_stream.write(struct.pack('<ff', firing_position.normal_y, 0.0))
+
+            if len(zone.areas) > 0:
+                write_tag_block_header(output_stream, zone.areas_header)
+                for area in zone.areas:
+                    output_stream.write(struct.pack('<31sx', area.name))
+                    output_stream.write(struct.pack('<I', area.flags))
+                    output_stream.write(struct.pack('<20x'))
+                    output_stream.write(struct.pack('<h', area.runtime_starting_index))
+                    output_stream.write(struct.pack('<h', area.runtime_count))
+                    output_stream.write(struct.pack('<64x'))
+                    output_stream.write(struct.pack('<h', area.manual_reference_frame))
+                    output_stream.write(struct.pack('<2x'))
+                    write_tag_block(output_stream, area.flight_hints_tag_block)
+
+def write_scripting_data(output_stream, SCENARIO):
+    if len(SCENARIO.scripting_data) > 0:
+        write_tag_block_header(output_stream, SCENARIO.scripting_data_header)
+        for scripting_data in SCENARIO.scripting_data:
+            write_tag_block(output_stream, scripting_data.point_sets_tag_block)
+            output_stream.write(struct.pack('>120x'))
+            if len(scripting_data.point_sets) > 0:
+                write_tag_block_header(output_stream, scripting_data.point_sets_header)
+                for point_set in scripting_data.point_sets:
+                    output_stream.write(struct.pack('>31sx', point_set.name))
+                    write_tag_block(output_stream, point_set.points_tag_block)
+                    output_stream.write(struct.pack('<h', point_set.bsp_index))
+                    output_stream.write(struct.pack('<h', point_set.manual_reference_frame))
+                    output_stream.write(struct.pack('<I', point_set.flags))
+
+                for point_set in scripting_data.point_sets:
+                    if len(point_set.points) > 0:
+                        write_tag_block_header(output_stream, point_set.points_header)
+                        for point in point_set.points:
+                            output_stream.write(struct.pack('>31sx', point.name))
+                            output_stream.write(struct.pack('<fff', point.position[0], point.position[1], point.position[2]))
+                            output_stream.write(struct.pack('<i', point.reference_frame))
+                            output_stream.write(struct.pack('<i', point.surface_index))
+                            output_stream.write(struct.pack('<ff', point.facing_direction_y, point.facing_direction_p))
+
+def write_cutscene_flags(output_stream, SCENARIO):
+    if len(SCENARIO.cutscene_flags) > 0:
+        write_tag_block_header(output_stream, SCENARIO.cutscene_flags_header)
+        for cutscene_flag in SCENARIO.cutscene_flags:
+            output_stream.write(struct.pack('<4x'))
+            output_stream.write(struct.pack('>31sx', cutscene_flag.name))
+            output_stream.write(struct.pack('<fff', cutscene_flag.position[0], cutscene_flag.position[1], cutscene_flag.position[2]))
+            output_stream.write(struct.pack('<ff', cutscene_flag.facing_y, cutscene_flag.facing_p))
+
+def write_cutscene_camera_points(output_stream, SCENARIO):
+    if len(SCENARIO.cutscene_camera_points) > 0:
+        write_tag_block_header(output_stream, SCENARIO.cutscene_camera_points_header)
+        for cutscene_camera_point in SCENARIO.cutscene_camera_points:
+            output_stream.write(struct.pack('<h', cutscene_camera_point.flags))
+            output_stream.write(struct.pack('<h', cutscene_camera_point.camera_type))
+            output_stream.write(struct.pack('<31sx', cutscene_camera_point.name))
+            output_stream.write(struct.pack('<4x'))
+            output_stream.write(struct.pack('<fff', cutscene_camera_point.position[0], cutscene_camera_point.position[1], cutscene_camera_point.position[2]))
+            output_stream.write(struct.pack('<fff', cutscene_camera_point.orientation[0], cutscene_camera_point.orientation[1], cutscene_camera_point.orientation[2]))
+
+def write_orders(output_stream, SCENARIO):
+    if len(SCENARIO.orders) > 0:
+        write_tag_block_header(output_stream, SCENARIO.orders_header)
+        for order in SCENARIO.orders:
+            output_stream.write(struct.pack('<31sx', order.name))
+            output_stream.write(struct.pack('<h2x', order.style_index))
+            output_stream.write(struct.pack('<I', order.flags))
+            output_stream.write(struct.pack('<i', order.force_combat_status))
+            output_stream.write(struct.pack('<31sx', order.entry_script))
+            output_stream.write(struct.pack('<2xh', order.follow_squad))
+            output_stream.write(struct.pack('<f', order.follow_radius))
+            write_tag_block(output_stream, order.primary_area_set_tag_block)
+            write_tag_block(output_stream, order.secondary_area_set_tag_block)
+            write_tag_block(output_stream, order.secondary_set_trigger_tag_block)
+            write_tag_block(output_stream, order.special_movement_tag_block)
+            write_tag_block(output_stream, order.order_endings_tag_block)
+
+        for order in SCENARIO.orders:
+            if len(order.primary_area_set) > 0:
+                write_tag_block_header(output_stream, order.primary_area_set_header)
+                for primary_area_set in order.primary_area_set:
+                    output_stream.write(struct.pack('<i', primary_area_set.area_type))
+                    output_stream.write(struct.pack('<h', primary_area_set.zone_index))
+                    output_stream.write(struct.pack('<h', primary_area_set.area_index))
+
+            if len(order.order_endings) > 0:
+                write_tag_block_header(output_stream, order.order_endings_header)
+                for order_ending in order.order_endings:
+                    output_stream.write(struct.pack('<h', order_ending.next_order_index))
+                    output_stream.write(struct.pack('<h', order_ending.combination_rule))
+                    output_stream.write(struct.pack('<f', order_ending.delay_time))
+                    output_stream.write(struct.pack('<i', order_ending.dialogue_type))
+                    write_tag_block(output_stream, order_ending.triggers_tag_block)
+
+                for order_ending in order.order_endings:
+                    if len(order_ending.triggers) > 0:
+                        write_tag_block_header(output_stream, order_ending.triggers_header)
+                        for trigger in order_ending.triggers:
+                            output_stream.write(struct.pack('<i', trigger.trigger_flags))
+                            output_stream.write(struct.pack('<h2x', trigger.trigger_index))
+
+def write_triggers(output_stream, SCENARIO):
+    if len(SCENARIO.triggers) > 0:
+        write_tag_block_header(output_stream, SCENARIO.triggers_header)
+        for trigger in SCENARIO.triggers:
+            output_stream.write(struct.pack('<30s2x', trigger.name))
+            output_stream.write(struct.pack('<I', trigger.trigger_flags))
+            output_stream.write(struct.pack('<I', trigger.combination_rule))
+            write_tag_block(output_stream, trigger.conditions_tag_block)
+
+        for trigger in SCENARIO.triggers:
+            if len(trigger.conditions) > 0:
+                write_tag_block_header(output_stream, trigger.conditions_header)
+                for condition in trigger.conditions:
+                    output_stream.write(struct.pack('<h', condition.rule_type))
+                    output_stream.write(struct.pack('<h', condition.squad_index))
+                    output_stream.write(struct.pack('<h', condition.squad_group_index))
+                    output_stream.write(struct.pack('<h', condition.a))
+                    output_stream.write(struct.pack('<f', condition.x))
+                    output_stream.write(struct.pack('<i', condition.trigger_volume_index))
+                    output_stream.write(struct.pack('<30s2x', condition.exit_condition_script))
+                    output_stream.write(struct.pack('<4x'))
+                    output_stream.write(struct.pack('<I', condition.flags))
+
 def write_palette(output_stream, palette, palette_header, size):
     if len(palette) > 0:
         write_tag_block_header(output_stream, palette_header)
@@ -387,4 +531,16 @@ def build_asset(output_stream, SCENARIO, report):
 
     write_squads(output_stream, SCENARIO)
 
+    write_zones(output_stream, SCENARIO)
+
     write_palette(output_stream, SCENARIO.character_palette, SCENARIO.character_palette_header, 0)
+
+    write_scripting_data(output_stream, SCENARIO)
+
+    write_cutscene_flags(output_stream, SCENARIO)
+
+    write_cutscene_camera_points(output_stream, SCENARIO)
+
+    write_orders(output_stream, SCENARIO)
+
+    write_triggers(output_stream, SCENARIO)
