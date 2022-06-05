@@ -115,23 +115,19 @@ def scale_is_uniform(obj):
 
     return is_uniform
 
-def process_scene(context, version, game_version, hidden_geo, exluded_collections, apply_modifiers, triangulate_faces, edge_split, clean_normalize_weights, custom_scale, report):
+def process_scene(context, version, game_version, hidden_geo, apply_modifiers, triangulate_faces, edge_split, clean_normalize_weights, custom_scale, report):
     ASS = ASSAsset()
     
-    if exluded_collections:
-        collections = []
-        layer_collections = list(context.view_layer.layer_collection.children)
+    collections = []
+    layer_collections = list(context.view_layer.layer_collection.children)
 
-        while len(layer_collections) > 0:
-            collection_batch = layer_collections
-            layer_collections = []
-            for collection in collection_batch:
-                collections.append(collection)
-                for collection_child in collection.children:
-                    layer_collections.append(collection_child)
-
-    elif not exluded_collections:
-        global_functions.only_unhide_all_collections(context)
+    while len(layer_collections) > 0:
+        collection_batch = layer_collections
+        layer_collections = []
+        for collection in collection_batch:
+            collections.append(collection)
+            for collection_child in collection.children:
+                layer_collections.append(collection_child)
 
     default_region = mesh_processing.get_default_region_permutation_name(game_version)
     default_permutation = mesh_processing.get_default_region_permutation_name(game_version)
@@ -141,27 +137,7 @@ def process_scene(context, version, game_version, hidden_geo, exluded_collection
     region_list = []
     permutation_list = []
 
-    object_list = []
-    
-    #Ignore excluded top level collections if the option is disabled in Mask Options
-    #Causes error if any child object is in an enabled layer, and its parent object is in a disabled layer
-    if not exluded_collections:
-        export_collection_list = []
-        scene_collection = bpy.context.view_layer.layer_collection
-        top_collections = scene_collection.children
-        for collection in top_collections:
-            if not collection.exclude:
-                export_collection_list.append(collection)
-        
-        for obj in scene_collection.collection.objects:
-                object_list.append(obj)
-        
-        for collection in export_collection_list:
-            for obj in collection.collection.all_objects:
-                object_list.append(obj)
-    #Include all objects if the exclude top level collections option is eneabled in Mask Options
-    else:
-        object_list = list(context.scene.objects)
+    object_list = list(context.scene.objects)
 
     ASS.materials = []
     ASS.objects = []

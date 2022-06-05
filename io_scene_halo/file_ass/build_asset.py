@@ -33,8 +33,8 @@ from getpass import getuser
 from .process_scene import process_scene
 from ..global_functions import global_functions
 
-def build_asset(context, filepath, version, game_version, folder_structure, hidden_geo, exluded_collections, apply_modifiers, triangulate_faces, edge_split, clean_normalize_weights, custom_scale, report):
-    ASS = process_scene(context, version, game_version, hidden_geo, exluded_collections, apply_modifiers, triangulate_faces, edge_split, clean_normalize_weights, custom_scale, report)
+def build_asset(context, filepath, version, game_version, folder_structure, hidden_geo, apply_modifiers, triangulate_faces, edge_split, clean_normalize_weights, custom_scale, report):
+    ASS = process_scene(context, version, game_version, hidden_geo, apply_modifiers, triangulate_faces, edge_split, clean_normalize_weights, custom_scale, report)
 
     filename = os.path.basename(filepath)
     root_directory = global_functions.get_directory(context, game_version, "render", folder_structure, "0", False, filepath)

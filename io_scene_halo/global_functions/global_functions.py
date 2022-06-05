@@ -126,11 +126,6 @@ def unhide_all_collections(context):
     for collection_hide in bpy.data.collections:
         collection_hide.hide_viewport = False
 
-#Only unhides all collections
-def only_unhide_all_collections(context):
-    for collection_hide in bpy.data.collections:
-        collection_hide.hide_viewport = False
-
 def get_child(bone, bone_list):
     set_node = None
     for node in bone_list:
