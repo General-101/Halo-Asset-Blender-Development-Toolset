@@ -24,12 +24,24 @@
 #
 # ##### END MIT LICENSE BLOCK #####
 
+import re
 import bpy
 
 from math import radians
 from .format import JMAAsset
 from mathutils import Matrix
 from ..global_functions import mesh_processing, global_functions
+
+def remove_node_prefix(string):
+    node_prefix_tuple = ('b ', 'b_', 'bone ', 'bone_', 'frame ', 'frame_', 'bip01 ', 'bip01_')
+    name = string
+
+    for node_prefix in node_prefix_tuple:
+        if name.lower().startswith(node_prefix):
+            name = re.split(node_prefix, name, maxsplit=1, flags=re.IGNORECASE)[1]
+            break
+
+    return name
 
 def generate_jms_skeleton(JMS_A_nodes, JMS_A, JMS_B_nodes, JMS_B, JMA, armature, fix_rotations, game_version):
     created_bone_list = []
@@ -42,16 +54,17 @@ def generate_jms_skeleton(JMS_A_nodes, JMS_A, JMS_B_nodes, JMS_B, JMA, armature,
     for idx, jma_node in enumerate(JMA.nodes):
         created_bone_list.append(jma_node.name)
         current_bone = armature.data.edit_bones.new(jma_node.name)
-        if "r_hand" in jma_node.name.lower() or "r hand" in jma_node.name.lower():
+        if "r_hand" == remove_node_prefix(jma_node.name).lower() or "r hand" == remove_node_prefix(jma_node.name).lower():
             r_hand_idx = idx
 
         parent = None
         parent_name = None
         jms_node = None
         bone_distance = 5
+
         for a_idx, jms_a_node in enumerate(JMS_A_nodes):
-            if jma_node.name.lower() in jms_a_node.lower():
-                if JMA.nodes[0].name.lower() in JMS_A_nodes[0].lower():
+            if remove_node_prefix(jma_node.name).lower() == remove_node_prefix(jms_a_node).lower():
+                if remove_node_prefix(JMA.nodes[0].name).lower() == remove_node_prefix(JMS_A_nodes[0]).lower():
                     is_fp_root_file_a = True
 
                 file_version = JMS_A.version
@@ -60,15 +73,17 @@ def generate_jms_skeleton(JMS_A_nodes, JMS_A, JMS_B_nodes, JMS_B, JMA, armature,
                 rest_position = JMS_A.transforms[0]
                 jms_node = rest_position[a_idx]
                 bone_distance = mesh_processing.get_bone_distance(JMS_A, a_idx, "JMS")
+                break
 
         for b_idx, jms_b_node in enumerate(JMS_B_nodes):
-            if jma_node.name.lower() in jms_b_node.lower():
+            if remove_node_prefix(jma_node.name).lower() == remove_node_prefix(jms_b_node).lower():
                 file_version = JMS_B.version
                 parent_idx = JMS_B.nodes[b_idx].parent
                 parent_name = JMS_B.nodes[parent_idx].name
                 rest_position = JMS_B.transforms[0]
                 jms_node = rest_position[b_idx]
                 bone_distance = mesh_processing.get_bone_distance(JMS_B, b_idx, "JMS")
+                break
 
         if not jms_node:
             if is_fp_root_file_a:
@@ -83,28 +98,29 @@ def generate_jms_skeleton(JMS_A_nodes, JMS_A, JMS_B_nodes, JMS_B, JMA, armature,
 
         for bone_idx, bone in enumerate(created_bone_list):
             if not parent_name == None:
-                if bone in parent_name:
+                if remove_node_prefix(bone).lower == remove_node_prefix(parent_name).lower:
                     parent = armature.data.edit_bones[bone_idx]
 
             else:
                 parent = armature.data.edit_bones[0]
 
         matrix_translate = Matrix.Translation(jms_node.translation)
+        print(jms_node.name)
         matrix_rotation = jms_node.rotation.to_matrix().to_4x4()
 
         if not parent == None:
             current_bone.parent = parent
 
-        elif "gun" in jma_node.name:
+        elif "gun" in remove_node_prefix(jma_node.name).lower():
             current_bone.parent = armature.data.edit_bones[r_hand_idx]
 
         is_root = False
         if JMS_A:
-            if jma_node.name.lower() in JMS_A.nodes[0].name.lower():
+            if remove_node_prefix(jma_node.name).lower() == remove_node_prefix(JMS_A.nodes[0].name).lower():
                 is_root = True
 
         if JMS_B:
-            if jma_node.name.lower() in JMS_B.nodes[0].name.lower():
+            if remove_node_prefix(jma_node.name).lower() == remove_node_prefix(JMS_B.nodes[0].name).lower():
                 is_root = True
 
         transform_matrix = matrix_translate @ matrix_rotation
@@ -149,18 +165,20 @@ def generate_jma_skeleton(JMS_A_nodes, JMS_A, JMS_A_invalid, JMS_B_nodes, JMS_B,
         matrix_rotation = first_frame[idx].rotation.to_matrix().to_4x4()
         if JMS_A and not JMS_A_invalid and not JMS_B_invalid:
             for a_idx, jms_a_node in enumerate(JMS_A_nodes):
-                if jma_node.name.lower() in jms_a_node.lower():
+                if remove_node_prefix(jma_node.name).lower() == remove_node_prefix(jms_a_node).lower():
                     file_version = JMS_A.version
                     rest_position = JMS_A.transforms[0]
                     jms_node = rest_position[a_idx]
                     bone_distance = mesh_processing.get_bone_distance(JMS_A, a_idx, "JMS")
+                    break
 
             for b_idx, jms_b_node in enumerate(JMS_B_nodes):
-                if jma_node.name.lower() in jms_b_node.lower():
+                if remove_node_prefix(jma_node.name).lower() == remove_node_prefix(jms_b_node).lower():
                     file_version = JMS_B.version
                     rest_position = JMS_B.transforms[0]
                     jms_node = rest_position[b_idx]
                     bone_distance = mesh_processing.get_bone_distance(JMS_B, b_idx, "JMS")
+                    break
 
             matrix_translate = Matrix.Translation(jms_node.translation)
             matrix_rotation = jms_node.rotation.to_matrix().to_4x4()
@@ -169,11 +187,11 @@ def generate_jma_skeleton(JMS_A_nodes, JMS_A, JMS_A_invalid, JMS_B_nodes, JMS_B,
 
         is_root = False
         if JMS_A and not JMS_A_invalid:
-            if jma_node.name.lower() in JMS_A.nodes[0].name.lower():
+            if remove_node_prefix(jma_node.name).lower() == remove_node_prefix(JMS_A.nodes[0].name).lower():
                 is_root = True
 
         if JMS_B and not JMS_B_invalid:
-            if jma_node.name.lower() in JMS_B.nodes[0].name.lower():
+            if remove_node_prefix(jma_node.name).lower() == remove_node_prefix(JMS_B.nodes[0].name).lower():
                 is_root = True
 
         transform_matrix = matrix_translate @ matrix_rotation
