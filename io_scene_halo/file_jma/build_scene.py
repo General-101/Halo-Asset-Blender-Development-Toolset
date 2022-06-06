@@ -105,7 +105,6 @@ def generate_jms_skeleton(JMS_A_nodes, JMS_A, JMS_B_nodes, JMS_B, JMA, armature,
                 parent = armature.data.edit_bones[0]
 
         matrix_translate = Matrix.Translation(jms_node.translation)
-        print(jms_node.name)
         matrix_rotation = jms_node.rotation.to_matrix().to_4x4()
 
         if not parent == None:
