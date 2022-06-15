@@ -65,6 +65,10 @@ class ScenarioAsset():
         self.light_volumes = None
         self.light_volume_palette_header = None
         self.light_volume_palette = None
+        self.player_starting_profile_header = None
+        self.player_starting_profiles = None
+        self.player_starting_location_header = None
+        self.player_starting_locations = None
         self.trigger_volumes_header = None
         self.trigger_volumes = None
         self.decals_header = None
@@ -362,6 +366,47 @@ class ScenarioAsset():
             self.field_of_view = field_of_view
             self.falloff_distance = falloff_distance
             self.cutoff_distance = cutoff_distance
+
+    class PlayerStartingProfile():
+        def __init__(self, name="", starting_health_damage=0.0, starting_shield_damage=0.0, primary_weapon_tag_ref=None, primary_rounds_loaded=0, primary_rounds_total=0, 
+                     secondary_weapon_tag_ref=None, secondary_rounds_loaded=0, secondary_rounds_total=0, starting_fragmentation_grenades_count=0, 
+                     starting_plasma_grenade_count=0, starting_custom_2_grenade_count=0, starting_custom_3_grenade_count=0):
+            super().__init__()
+            self.name = name
+            self.starting_health_damage = starting_health_damage
+            self.starting_shield_damage = starting_shield_damage
+            self.primary_weapon_tag_ref = primary_weapon_tag_ref
+            self.primary_rounds_loaded = primary_rounds_loaded
+            self.primary_rounds_total = primary_rounds_total
+            self.secondary_weapon_tag_ref = secondary_weapon_tag_ref
+            self.secondary_rounds_loaded = secondary_rounds_loaded
+            self.secondary_rounds_total = secondary_rounds_total
+            self.starting_fragmentation_grenades_count = starting_fragmentation_grenades_count
+            self.starting_plasma_grenade_count = starting_plasma_grenade_count
+            self.starting_custom_2_grenade_count = starting_custom_2_grenade_count
+            self.starting_custom_3_grenade_count = starting_custom_3_grenade_count
+
+    class PlayerStartingLocation():
+        def __init__(self, position=Vector(), facing=0.0, team_designator=0, bsp_index=0, type_0=0, type_1=0, type_2=0, type_3=0, spawn_type_0=0, spawn_type_1=0, 
+                     spawn_type_2=0, spawn_type_3=0, unk_0="", unk_0_length=0, unk_1="", unk_1_length=0, campaign_player_type=0):
+            super().__init__()
+            self.position = position
+            self.facing = facing
+            self.team_designator = team_designator
+            self.bsp_index = bsp_index
+            self.type_0 = type_0
+            self.type_1 = type_1
+            self.type_2 = type_2
+            self.type_3 = type_3
+            self.spawn_type_0 = spawn_type_0
+            self.spawn_type_1 = spawn_type_1
+            self.spawn_type_2 = spawn_type_2
+            self.spawn_type_3 = spawn_type_3
+            self.unk_0 = unk_0
+            self.unk_0_length = unk_0_length
+            self.unk_1 = unk_1
+            self.unk_1_length = unk_1_length
+            self.campaign_player_type = campaign_player_type
 
     class TriggerVolume():
         def __init__(self, name="", name_length=0, object_name_index=0, node_name="", node_name_length=0, forward=Vector(), up=Vector(), position=Vector(), extents=Vector(), 

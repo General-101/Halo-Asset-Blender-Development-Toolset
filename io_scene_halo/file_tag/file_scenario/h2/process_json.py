@@ -62,6 +62,16 @@ def tag_block(TAG, count, maximum_count, address, definition):
 
     return TAGBLOCK
 
+def tag_reference(TAG, tag_group, tag_path):
+    TAGREFERENCE = TAG.TagRef()
+    TAGREFERENCE.tag_group = tag_group
+    TAGREFERENCE.name = tag_path
+    TAGREFERENCE.name_length = len(tag_path)
+    TAGREFERENCE.salt = 0
+    TAGREFERENCE.index = -1
+
+    return TAGREFERENCE
+
 def get_object_names(dump_dic, TAG, SCENARIO):
     object_name_tag_block = dump_dic['Data']['Object Names']
     SCENARIO.object_names = []
@@ -99,7 +109,7 @@ def get_scenery(dump_dic, TAG, SCENARIO):
             scenery.palette_index = scenery_element['Palette Index']
             scenery.name_index = scenery_element['Name Index']
             scenery.placement_flags = scenery_element['Placement Flags']
-            scenery.position = scenery_element['Position']
+            scenery.position = (radians(scenery_element['Rotation'][0]), radians(scenery_element['Rotation'][1]), radians(scenery_element['Rotation'][2]))
             scenery.rotation = scenery_element['Rotation']
             scenery.scale = scenery_element['Scale']
             scenery.transform_flags = scenery_element['Transform Flags']
@@ -159,7 +169,7 @@ def get_unit(dump_dic, TAG, SCENARIO, unit_type):
         unit.name_index = unit_element['Name Index']
         unit.placement_flags = unit_element['Placement Flags']
         unit.position = unit_element['Position']
-        unit.rotation = unit_element['Rotation']
+        unit.rotation = (radians(unit_element['Rotation'][0]), radians(unit_element['Rotation'][1]), radians(unit_element['Rotation'][2]))
         unit.scale = unit_element['Scale']
         unit.transform_flags = unit_element['Transform Flags']
         unit.manual_bsp_flags = unit_element['Manual BSP Flags']
@@ -215,7 +225,7 @@ def get_equipment(dump_dic, TAG, SCENARIO):
         equipment.name_index = equipment_element['Name Index']
         equipment.placement_flags = equipment_element['Placement Flags']
         equipment.position = equipment_element['Position']
-        equipment.rotation = equipment_element['Rotation']
+        equipment.rotation = (radians(equipment_element['Rotation'][0]), radians(equipment_element['Rotation'][1]), radians(equipment_element['Rotation'][2]))
         equipment.scale = equipment_element['Scale']
         equipment.transform_flags = equipment_element['Transform Flags']
         equipment.manual_bsp_flags = equipment_element['Manual BSP Flags']
@@ -264,7 +274,7 @@ def get_weapon(dump_dic, TAG, SCENARIO):
         weapon.name_index = weapon_element['Name Index']
         weapon.placement_flags = weapon_element['Placement Flags']
         weapon.position = weapon_element['Position']
-        weapon.rotation = weapon_element['Rotation']
+        weapon.rotation = (radians(weapon_element['Rotation'][0]), radians(weapon_element['Rotation'][1]), radians(weapon_element['Rotation'][2]))
         weapon.scale = weapon_element['Scale']
         weapon.transform_flags = weapon_element['Transform Flags']
         weapon.manual_bsp_flags = weapon_element['Manual BSP Flags']
@@ -322,7 +332,7 @@ def get_device_machines(dump_dic, TAG, SCENARIO):
             device_machine.name_index = machine_element['Name Index']
             device_machine.placement_flags = machine_element['Placement Flags']
             device_machine.position = machine_element['Position']
-            device_machine.rotation = machine_element['Rotation']
+            device_machine.rotation = (radians(machine_element['Rotation'][0]), radians(machine_element['Rotation'][1]), radians(machine_element['Rotation'][2]))
             device_machine.scale = machine_element['Scale']
             device_machine.transform_flags = machine_element['Transform Flags']
             device_machine.manual_bsp_flags = machine_element['Manual BSP Flags']
@@ -370,7 +380,7 @@ def get_light_volumes(dump_dic, TAG, SCENARIO):
         light_volume.name_index = light_volume_element['Name Index']
         light_volume.placement_flags = light_volume_element['Placement Flags']
         light_volume.position = light_volume_element['Position']
-        light_volume.rotation = light_volume_element['Rotation']
+        light_volume.rotation = (radians(light_volume_element['Rotation'][0]), radians(light_volume_element['Rotation'][1]), radians(light_volume_element['Rotation'][2]))
         light_volume.scale = light_volume_element['Scale']
         light_volume.transform_flags = light_volume_element['Transform Flags']
         light_volume.manual_bsp_flags = light_volume_element['Manual BSP Flags']
@@ -412,6 +422,66 @@ def get_light_volumes(dump_dic, TAG, SCENARIO):
         SCENARIO.light_volumes.append(light_volume)
 
     SCENARIO.light_volume_header = tag_block_header(TAG, "tbfd", 2, len(SCENARIO.light_volumes), 108)
+
+def get_player_starting_profiles(dump_dic, TAG, SCENARIO):
+    player_starting_profiles_tag_block = dump_dic['Data']['Player Starting Profile']
+    SCENARIO.player_starting_profiles = []
+    for player_starting_profile_element in player_starting_profiles_tag_block:
+        player_starting_profile = SCENARIO.PlayerStartingProfile()
+
+        player_starting_profile.name = TAG.string_to_bytes(player_starting_profile_element['Name'], False)
+        player_starting_profile.starting_health_damage = player_starting_profile_element['Starting Health Damage']
+        player_starting_profile.starting_shield_damage = player_starting_profile_element['Starting Shield Damage']
+
+        primary_tag_group = TAG.string_to_bytes(player_starting_profile_element['Primary Weapon']['GroupName'], True)
+        primary_tag_path = TAG.string_to_bytes(os.path.normpath(player_starting_profile_element['Primary Weapon']['Path']), False)
+        player_starting_profile.primary_weapon_tag_ref = tag_reference(TAG, primary_tag_group, primary_tag_path)
+
+        player_starting_profile.primary_rounds_loaded = player_starting_profile_element['Primary Rounds Loaded']
+        player_starting_profile.primary_rounds_total = player_starting_profile_element['Primary Rounds Total']
+
+        secondary_tag_group = TAG.string_to_bytes(player_starting_profile_element['Secondary Weapon']['GroupName'], True)
+        secondary_tag_path = TAG.string_to_bytes(os.path.normpath(player_starting_profile_element['Secondary Weapon']['Path']), False)
+        player_starting_profile.secondary_weapon_tag_ref = tag_reference(TAG, secondary_tag_group, secondary_tag_path)
+
+        player_starting_profile.secondary_rounds_loaded = player_starting_profile_element['Secondary Rounds Loaded']
+        player_starting_profile.secondary_rounds_total = player_starting_profile_element['Secondary Rounds Total']
+        player_starting_profile.starting_fragmentation_grenades_count = player_starting_profile_element['Starting Frag Grenade Count']
+        player_starting_profile.starting_plasma_grenade_count = player_starting_profile_element['Starting Plasma Grenade Count']
+        player_starting_profile.starting_custom_2_grenade_count = player_starting_profile_element['Starting Grenade 3 Count']
+        player_starting_profile.starting_custom_3_grenade_count = player_starting_profile_element['Starting Grenade 4 Count']
+
+        SCENARIO.player_starting_profiles.append(player_starting_profile)
+
+    SCENARIO.player_starting_profile_header = tag_block_header(TAG, "tbfd", 0, len(SCENARIO.player_starting_profiles), 84)
+
+def get_player_starting_locations(dump_dic, TAG, SCENARIO):
+    player_starting_locations_tag_block = dump_dic['Data']['Player Starting Locations']
+    SCENARIO.player_starting_locations = []
+    for player_starting_location_element in player_starting_locations_tag_block:
+        player_starting_location = SCENARIO.PlayerStartingLocation()
+
+        player_starting_location.position = player_starting_location_element['Position']
+        player_starting_location.facing = radians(player_starting_location_element['Facing'])
+        player_starting_location.team_designator = player_starting_location_element['Team Designator']['Value']
+        player_starting_location.bsp_index = player_starting_location_element['BSP Index']
+        player_starting_location.type_0 = player_starting_location_element['Game Type 1']['Value']
+        player_starting_location.type_1 = player_starting_location_element['Game Type 2']['Value']
+        player_starting_location.type_2 = player_starting_location_element['Game Type 3']['Value']
+        player_starting_location.type_3 = player_starting_location_element['Game Type 4']['Value']
+        player_starting_location.spawn_type_0 = player_starting_location_element['Spawn Type 1']['Value']
+        player_starting_location.spawn_type_1 = player_starting_location_element['Spawn Type 2']['Value']
+        player_starting_location.spawn_type_2 = player_starting_location_element['Spawn Type 3']['Value']
+        player_starting_location.spawn_type_3 = player_starting_location_element['Spawn Type 4']['Value']
+        player_starting_location.unk_0 = TAG.string_to_bytes(player_starting_location_element['Unknown 0'], False)
+        player_starting_location.unk_0_length = len(player_starting_location_element['Unknown 0'])
+        player_starting_location.unk_1 = TAG.string_to_bytes(player_starting_location_element['Unknown 1'], False)
+        player_starting_location.unk_1_length = len(player_starting_location_element['Unknown 1'])
+        player_starting_location.campaign_player_type = player_starting_location_element['Campaign Player Type']['Value']
+
+        SCENARIO.player_starting_locations.append(player_starting_location)
+
+    SCENARIO.player_starting_location_header = tag_block_header(TAG, "tbfd", 0, len(SCENARIO.player_starting_locations), 52)
 
 def get_trigger_volumes(dump_dic, TAG, SCENARIO):
     trigger_volumes_tag_block = dump_dic['Data']['Kill Trigger Volumes']
@@ -501,11 +571,11 @@ def get_squads(dump_dic, TAG, SCENARIO):
                 starting_location.position = starting_location_element['Position']
                 starting_location.reference_frame = -1
                 if type(starting_location_element['Facing']) == list:
-                    starting_location.facing_y = starting_location_element['Facing'][0]
-                    starting_location.facing_p = starting_location_element['Facing'][1]
+                    starting_location.facing_y = radians(starting_location_element['Facing'][0])
+                    starting_location.facing_p = radians(starting_location_element['Facing'][1])
 
                 else:
-                    starting_location.facing_y = starting_location_element['Facing']
+                    starting_location.facing_y = radians(starting_location_element['Facing'])
                     starting_location.facing_p = 0
 
                 starting_location.flags = 0
@@ -560,11 +630,11 @@ def get_zones(dump_dic, TAG, SCENARIO):
                 firing_position.cluster_index = firing_position_element['Cluster Index']
                 if 'Normal' in firing_position_element:
                     if type(firing_position_element['Normal']) == list:
-                        firing_position.normal_y = firing_position_element['Normal'][0]
-                        firing_position.normal_p = firing_position_element['Normal'][1]
+                        firing_position.normal_y = radians(firing_position_element['Normal'][0])
+                        firing_position.normal_p = radians(firing_position_element['Normal'][1])
                         
                     else:
-                        firing_position.normal_y = firing_position_element['Normal']
+                        firing_position.normal_y = radians(firing_position_element['Normal'])
                         firing_position.normal_p = 0
 
                 zone.firing_positions.append(firing_position)
@@ -643,8 +713,8 @@ def get_cutscene_flags(dump_dic, TAG, SCENARIO):
 
         cutscene_flags.name = TAG.string_to_bytes(cutscene_flag_element['Name'], False)
         cutscene_flags.position = cutscene_flag_element['Position']
-        cutscene_flags.facing_y = cutscene_flag_element['Facing'][0]
-        cutscene_flags.facing_p = cutscene_flag_element['Facing'][1]
+        cutscene_flags.facing_y = radians(cutscene_flag_element['Facing'][0])
+        cutscene_flags.facing_p = radians(cutscene_flag_element['Facing'][1])
 
         SCENARIO.cutscene_flags.append(cutscene_flags)
 
@@ -660,7 +730,7 @@ def get_cutscene_camera_points(dump_dic, TAG, SCENARIO):
         cutscene_camera_point.camera_type = cutscene_camera_point_element['Type']['Value']
         cutscene_camera_point.name = TAG.string_to_bytes(cutscene_camera_point_element['Name'], False)
         cutscene_camera_point.position = cutscene_camera_point_element['Position']
-        cutscene_camera_point.orientation = cutscene_camera_point_element['Orientation']
+        cutscene_camera_point.orientation = (radians(cutscene_camera_point_element['Orientation'][0]), radians(cutscene_camera_point_element['Orientation'][1]), radians(cutscene_camera_point_element['Orientation'][2]))
 
         SCENARIO.cutscene_camera_points.append(cutscene_camera_point)
 
@@ -790,14 +860,8 @@ def get_palette(dump_dic, TAG, palette_element_keyword, palette_keyword, size):
         tag_ref = palette_element[palette_element_keyword]
         tag_group = TAG.string_to_bytes(tag_ref['GroupName'], True)
         tag_path = TAG.string_to_bytes(os.path.normpath(tag_ref['Path']), False)
-        tag_reference = TAG.TagRef()
-        tag_reference.tag_group = tag_group
-        tag_reference.name = tag_path
-        tag_reference.name_length = len(tag_path)
-        tag_reference.salt = 0
-        tag_reference.index = -1
-
-        palette_list.append(tag_reference)
+        
+        palette_list.append(tag_reference(TAG, tag_group, tag_path))
 
     return tag_block_header(TAG, "tbfd", 0, len(palette_list), size), palette_list
 
@@ -846,6 +910,10 @@ def process_json(input_stream, tag_format, report):
 
     get_light_volumes(dump_dic, TAG, SCENARIO)
     SCENARIO.light_volume_palette_header, SCENARIO.light_volume_palette = get_palette(dump_dic, TAG, 'Light Volume', 'Light Volume Palette', 48)
+
+    get_player_starting_profiles(dump_dic, TAG, SCENARIO)
+
+    get_player_starting_locations(dump_dic, TAG, SCENARIO)
 
     get_trigger_volumes(dump_dic, TAG, SCENARIO)
 
@@ -907,8 +975,8 @@ def process_json(input_stream, tag_format, report):
     SCENARIO.scenario_body.sound_scenery_palette_tag_block = TAG.TagBlock(0, 0, 0, 0)
     SCENARIO.scenario_body.light_volumes_tag_block = TAG.TagBlock(len(SCENARIO.light_volumes), 0, 0, 0)
     SCENARIO.scenario_body.light_volume_palette_tag_block = TAG.TagBlock(len(SCENARIO.light_volume_palette), 0, 0, 0)
-    SCENARIO.scenario_body.player_starting_profile_tag_block = TAG.TagBlock(0, 0, 0, 0)
-    SCENARIO.scenario_body.player_starting_locations_tag_block = TAG.TagBlock(0, 0, 0, 0)
+    SCENARIO.scenario_body.player_starting_profile_tag_block = TAG.TagBlock(len(SCENARIO.player_starting_profiles), 0, 0, 0)
+    SCENARIO.scenario_body.player_starting_locations_tag_block = TAG.TagBlock(len(SCENARIO.player_starting_locations), 0, 0, 0)
     SCENARIO.scenario_body.trigger_volumes_tag_block = TAG.TagBlock(len(SCENARIO.trigger_volumes), 0, 0, 0)
     SCENARIO.scenario_body.recorded_animations_tag_block = TAG.TagBlock(0, 0, 0, 0)
     SCENARIO.scenario_body.netgame_flags_tag_block = TAG.TagBlock(0, 0, 0, 0)

@@ -306,6 +306,52 @@ def write_light_volumes(output_stream, SCENARIO):
             write_tag_block_header(output_stream, light_volume_element.sdvt_header)
             write_tag_block_header(output_stream, light_volume_element.slit_header)
 
+def write_player_starting_profiles(output_stream, SCENARIO):
+    if len(SCENARIO.player_starting_profiles) > 0:
+        write_tag_block_header(output_stream, SCENARIO.player_starting_profile_header)
+        for player_starting_profile_element in SCENARIO.player_starting_profiles:
+            output_stream.write(struct.pack('<31sx', player_starting_profile_element.name))
+            output_stream.write(struct.pack('<f', player_starting_profile_element.starting_health_damage))
+            output_stream.write(struct.pack('<f', player_starting_profile_element.starting_shield_damage))
+            write_tag_reference(output_stream, player_starting_profile_element.primary_weapon_tag_ref)
+            output_stream.write(struct.pack('<h', player_starting_profile_element.primary_rounds_loaded))
+            output_stream.write(struct.pack('<h', player_starting_profile_element.primary_rounds_total))
+            write_tag_reference(output_stream, player_starting_profile_element.secondary_weapon_tag_ref)
+            output_stream.write(struct.pack('<h', player_starting_profile_element.secondary_rounds_loaded))
+            output_stream.write(struct.pack('<h', player_starting_profile_element.secondary_rounds_total))
+            output_stream.write(struct.pack('<b', player_starting_profile_element.starting_fragmentation_grenades_count))
+            output_stream.write(struct.pack('<b', player_starting_profile_element.starting_plasma_grenade_count))
+            output_stream.write(struct.pack('<b', player_starting_profile_element.starting_custom_2_grenade_count))
+            output_stream.write(struct.pack('<b', player_starting_profile_element.starting_custom_3_grenade_count))
+
+        for player_starting_profile_element in SCENARIO.player_starting_profiles:
+            output_stream.write(struct.pack('<%ssx' % player_starting_profile_element.primary_weapon_tag_ref.name_length, player_starting_profile_element.primary_weapon_tag_ref.name))
+            output_stream.write(struct.pack('<%ssx' % player_starting_profile_element.secondary_weapon_tag_ref.name_length, player_starting_profile_element.secondary_weapon_tag_ref.name))
+
+def write_player_starting_locations(output_stream, SCENARIO):
+    if len(SCENARIO.player_starting_locations) > 0:
+        write_tag_block_header(output_stream, SCENARIO.player_starting_location_header)
+        for player_starting_location_element in SCENARIO.player_starting_locations:
+            output_stream.write(struct.pack('<fff', player_starting_location_element.position[0], player_starting_location_element.position[1], player_starting_location_element.position[2]))
+            output_stream.write(struct.pack('<f', player_starting_location_element.facing))
+            output_stream.write(struct.pack('<h', player_starting_location_element.team_designator))
+            output_stream.write(struct.pack('<h', player_starting_location_element.bsp_index))
+            output_stream.write(struct.pack('<h', player_starting_location_element.type_0))
+            output_stream.write(struct.pack('<h', player_starting_location_element.type_1))
+            output_stream.write(struct.pack('<h', player_starting_location_element.type_2))
+            output_stream.write(struct.pack('<h', player_starting_location_element.type_3))
+            output_stream.write(struct.pack('<h', player_starting_location_element.spawn_type_0))
+            output_stream.write(struct.pack('<h', player_starting_location_element.spawn_type_1))
+            output_stream.write(struct.pack('<h', player_starting_location_element.spawn_type_2))
+            output_stream.write(struct.pack('<h', player_starting_location_element.spawn_type_3))
+            output_stream.write(struct.pack('>I', player_starting_location_element.unk_0_length))
+            output_stream.write(struct.pack('>I', player_starting_location_element.unk_1_length))
+            output_stream.write(struct.pack('<h6x', player_starting_location_element.campaign_player_type))
+
+        for player_starting_location_element in SCENARIO.player_starting_locations:
+            output_stream.write(struct.pack('<%ss' % player_starting_location_element.unk_0_length, player_starting_location_element.unk_0))
+            output_stream.write(struct.pack('<%ss' % player_starting_location_element.unk_1_length, player_starting_location_element.unk_1))
+
 def write_trigger_volumes(output_stream, SCENARIO):
     if len(SCENARIO.trigger_volumes) > 0:
         write_tag_block_header(output_stream, SCENARIO.trigger_volumes_header)
@@ -574,6 +620,10 @@ def build_asset(output_stream, SCENARIO, report):
 
     write_light_volumes(output_stream, SCENARIO)
     write_palette(output_stream, SCENARIO.light_volume_palette, SCENARIO.light_volume_palette_header, 32)
+
+    write_player_starting_profiles(output_stream, SCENARIO)
+
+    write_player_starting_locations(output_stream, SCENARIO)
 
     write_trigger_volumes(output_stream, SCENARIO)
 
