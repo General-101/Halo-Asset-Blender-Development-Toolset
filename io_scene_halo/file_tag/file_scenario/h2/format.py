@@ -33,6 +33,8 @@ class ScenarioAsset():
         self.header = None
         self.scenario_body_header = None
         self.scenario_body = None
+        self.skies_header = None
+        self.skies = None
         self.object_name_header = None
         self.object_names = None
         self.scenery_header = None
@@ -55,6 +57,14 @@ class ScenarioAsset():
         self.weapons = None
         self.weapon_palette_header = None
         self.weapon_palette = None
+        self.device_machine_header = None
+        self.device_machines = None
+        self.device_machine_palette_header = None
+        self.device_machine_palette = None
+        self.light_volume_header = None
+        self.light_volumes = None
+        self.light_volume_palette_header = None
+        self.light_volume_palette = None
         self.trigger_volumes_header = None
         self.trigger_volumes = None
         self.decals_header = None
@@ -244,15 +254,17 @@ class ScenarioAsset():
             self.editor_folder_index = editor_folder_index
 
     class Scenery(Object):
-        def __init__(self, sobj_header=None, obj0_header=None, sper_header=None, sct3_header=None,variant_name_length=0, active_change_colors=0, primary_color_BGRA=(0.0, 0.0, 0.0, 1.0), 
-                     secondary_color_BGRA=(0.0, 0.0, 0.0, 1.0), tertiary_color_BGRA=(0.0, 0.0, 0.0, 1.0), quaternary_color_BGRA=(0.0, 0.0, 0.0, 1.0), pathfinding_policy=0, 
-                     lightmap_policy=0, valid_multiplayer_games=0):
+        def __init__(self, sobj_header=None, obj0_header=None, sper_header=None, sct3_header=None, variant_name_length=0, variant_name="", active_change_colors=0, 
+                     primary_color_BGRA=(0.0, 0.0, 0.0, 1.0), secondary_color_BGRA=(0.0, 0.0, 0.0, 1.0), tertiary_color_BGRA=(0.0, 0.0, 0.0, 1.0), 
+                     quaternary_color_BGRA=(0.0, 0.0, 0.0, 1.0), pathfinding_policy=0, lightmap_policy=0, pathfinding_references_header=None, pathfinding_references=None, 
+                     valid_multiplayer_games=0):
             super().__init__()
             self.sobj_header = sobj_header
             self.obj0_header = obj0_header
             self.sper_header = sper_header
             self.sct3_header = sct3_header
             self.variant_name_length = variant_name_length
+            self.variant_name = variant_name
             self.active_change_colors = active_change_colors
             self.primary_color_BGRA = primary_color_BGRA
             self.secondary_color_BGRA = secondary_color_BGRA
@@ -260,18 +272,21 @@ class ScenarioAsset():
             self.quaternary_color_BGRA = quaternary_color_BGRA
             self.pathfinding_policy = pathfinding_policy
             self.lightmap_policy = lightmap_policy
+            self.pathfinding_references_header = pathfinding_references_header
+            self.pathfinding_references = pathfinding_references
             self.valid_multiplayer_games = valid_multiplayer_games
 
     class Unit(Object):
-        def __init__(self, sobj_header=None, obj0_header=None, sper_header=None, sunt_header=None,variant_name_length=0, active_change_colors=0, primary_color_BGRA=(0.0, 0.0, 0.0, 1.0), 
-                     secondary_color_BGRA=(0.0, 0.0, 0.0, 1.0), tertiary_color_BGRA=(0.0, 0.0, 0.0, 1.0), quaternary_color_BGRA=(0.0, 0.0, 0.0, 1.0), body_vitality=0.0, 
-                     flags=0):
+        def __init__(self, sobj_header=None, obj0_header=None, sper_header=None, sunt_header=None,variant_name_length=0, variant_name="", active_change_colors=0, 
+                     primary_color_BGRA=(0.0, 0.0, 0.0, 1.0), secondary_color_BGRA=(0.0, 0.0, 0.0, 1.0), tertiary_color_BGRA=(0.0, 0.0, 0.0, 1.0), 
+                     quaternary_color_BGRA=(0.0, 0.0, 0.0, 1.0), body_vitality=0.0, flags=0):
             super().__init__()
             self.sobj_header = sobj_header
             self.obj0_header = obj0_header
             self.sper_header = sper_header
             self.sunt_header = sunt_header
             self.variant_name_length = variant_name_length
+            self.variant_name = variant_name
             self.active_change_colors = active_change_colors
             self.primary_color_BGRA = primary_color_BGRA
             self.secondary_color_BGRA = secondary_color_BGRA
@@ -289,7 +304,7 @@ class ScenarioAsset():
             self.flags = flags
 
     class Weapon(Object):
-        def __init__(self, sobj_header=None, obj0_header=None, sper_header=None, swpt_header=None, variant_name_length=0, active_change_colors=0, 
+        def __init__(self, sobj_header=None, obj0_header=None, sper_header=None, swpt_header=None, variant_name_length=0, variant_name="", active_change_colors=0, 
                      primary_color_BGRA=(0.0, 0.0, 0.0, 1.0), secondary_color_BGRA=(0.0, 0.0, 0.0, 1.0), tertiary_color_BGRA=(0.0, 0.0, 0.0, 1.0), 
                      quaternary_color_BGRA=(0.0, 0.0, 0.0, 1.0), rounds_left=0, rounds_loaded=0, flags=0):
             super().__init__()
@@ -298,6 +313,7 @@ class ScenarioAsset():
             self.sper_header = sper_header
             self.swpt_header = swpt_header
             self.variant_name_length = variant_name_length
+            self.variant_name = variant_name
             self.active_change_colors = active_change_colors
             self.primary_color_BGRA = primary_color_BGRA
             self.secondary_color_BGRA = secondary_color_BGRA
@@ -306,6 +322,46 @@ class ScenarioAsset():
             self.rounds_left = rounds_left
             self.rounds_loaded = rounds_loaded
             self.flags = flags
+
+    class DeviceMachine(Object):
+        def __init__(self, sobj_header=None, obj0_header=None, sdvt_header=None, smht_header=None, power_group_index=0, position_group_index=0, flags_0=0, 
+                     flags_1=0, pathfinding_references_header=None, pathfinding_references=None):
+            super().__init__()
+            self.sobj_header = sobj_header
+            self.obj0_header = obj0_header
+            self.sdvt_header = sdvt_header
+            self.smht_header = smht_header
+            self.power_group_index = power_group_index
+            self.position_group_index = position_group_index
+            self.flags_0 = flags_0
+            self.flags_1 = flags_1
+            self.pathfinding_references_header = pathfinding_references_header
+            self.pathfinding_references = pathfinding_references
+
+    class LightVolume(Object):
+        def __init__(self, sobj_header=None, obj0_header=None, sdvt_header=None, slit_header=None, power_group_index=0, position_group_index=0, flags_0=0, 
+                     shape_type=0, flags_1=0, lightmap_type=0, lightmap_flags=0, lightmap_half_life=0.0, lightmap_light_scale=0.0, target_point=Vector(), width=0.0, 
+                     height_scale=0.0, field_of_view=0.0, falloff_distance=0.0, cutoff_distance=0.0):
+            super().__init__()
+            self.sobj_header = sobj_header
+            self.obj0_header = obj0_header
+            self.sdvt_header = sdvt_header
+            self.slit_header = slit_header
+            self.power_group_index = power_group_index
+            self.position_group_index = position_group_index
+            self.flags_0 = flags_0
+            self.shape_type = shape_type
+            self.flags_1 = flags_1
+            self.lightmap_type = lightmap_type
+            self.lightmap_flags = lightmap_flags
+            self.lightmap_half_life = lightmap_half_life
+            self.lightmap_light_scale = lightmap_light_scale
+            self.target_point = target_point
+            self.width = width
+            self.height_scale = height_scale
+            self.field_of_view = field_of_view
+            self.falloff_distance = falloff_distance
+            self.cutoff_distance = cutoff_distance
 
     class TriggerVolume():
         def __init__(self, name="", name_length=0, object_name_index=0, node_name="", node_name_length=0, forward=Vector(), up=Vector(), position=Vector(), extents=Vector(), 

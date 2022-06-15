@@ -195,7 +195,6 @@ def write_color_change(output_stream, scenery_element):
     output_stream.write(struct.pack('<bbbx', scenery_element.tertiary_color_BGRA[0], scenery_element.tertiary_color_BGRA[1], scenery_element.tertiary_color_BGRA[2]))
     output_stream.write(struct.pack('<bbbx', scenery_element.quaternary_color_BGRA[0], scenery_element.quaternary_color_BGRA[1], scenery_element.quaternary_color_BGRA[2]))
 
-
 def write_scenery(output_stream, SCENARIO):
     if len(SCENARIO.scenery) > 0:
         write_tag_block_header(output_stream, SCENARIO.scenery_header)
@@ -205,13 +204,15 @@ def write_scenery(output_stream, SCENARIO):
             write_color_change(output_stream, scenery_element)
             output_stream.write(struct.pack('<h', scenery_element.pathfinding_policy))
             output_stream.write(struct.pack('<h', scenery_element.lightmap_policy))
-            output_stream.write(struct.pack('<14x'))
+            write_tag_block(output_stream, scenery_element.pathfinding_references)
+            output_stream.write(struct.pack('<2x'))
             output_stream.write(struct.pack('<h', scenery_element.valid_multiplayer_games))
 
         for scenery_element in SCENARIO.scenery:
             write_tag_block_header(output_stream, scenery_element.sobj_header)
             write_tag_block_header(output_stream, scenery_element.obj0_header)
             write_tag_block_header(output_stream, scenery_element.sper_header)
+            output_stream.write(struct.pack('<%ss' % scenery_element.variant_name_length, scenery_element.variant_name))
             write_tag_block_header(output_stream, scenery_element.sct3_header)
 
 def write_units(output_stream, unit_list, unit_header):
@@ -228,6 +229,7 @@ def write_units(output_stream, unit_list, unit_header):
             write_tag_block_header(output_stream, unit_element.sobj_header)
             write_tag_block_header(output_stream, unit_element.obj0_header)
             write_tag_block_header(output_stream, unit_element.sper_header)
+            output_stream.write(struct.pack('<%ss' % unit_element.variant_name_length, unit_element.variant_name))
             write_tag_block_header(output_stream, unit_element.sunt_header)
 
 def write_equipment(output_stream, SCENARIO):
@@ -257,7 +259,52 @@ def write_weapons(output_stream, SCENARIO):
             write_tag_block_header(output_stream, weapon_element.sobj_header)
             write_tag_block_header(output_stream, weapon_element.obj0_header)
             write_tag_block_header(output_stream, weapon_element.sper_header)
+            output_stream.write(struct.pack('<%ss' % weapon_element.variant_name_length, weapon_element.variant_name))
             write_tag_block_header(output_stream, weapon_element.swpt_header)
+
+def write_machines(output_stream, SCENARIO):
+    if len(SCENARIO.device_machines) > 0:
+        write_tag_block_header(output_stream, SCENARIO.device_machine_header)
+        for device_machines_element in SCENARIO.device_machines:
+            write_object(output_stream, device_machines_element)
+            output_stream.write(struct.pack('>h', device_machines_element.power_group_index))
+            output_stream.write(struct.pack('<h', device_machines_element.position_group_index))
+            output_stream.write(struct.pack('<I', device_machines_element.flags_0))
+            output_stream.write(struct.pack('<I', device_machines_element.flags_1))
+            write_tag_block(output_stream, device_machines_element.pathfinding_references)
+
+        for device_machines_element in SCENARIO.device_machines:
+            write_tag_block_header(output_stream, device_machines_element.sobj_header)
+            write_tag_block_header(output_stream, device_machines_element.obj0_header)
+            write_tag_block_header(output_stream, device_machines_element.sdvt_header)
+            write_tag_block_header(output_stream, device_machines_element.smht_header)
+
+def write_light_volumes(output_stream, SCENARIO):
+    if len(SCENARIO.light_volumes) > 0:
+        write_tag_block_header(output_stream, SCENARIO.light_volume_header)
+        for light_volume_element in SCENARIO.light_volumes:
+            write_object(output_stream, light_volume_element)
+            output_stream.write(struct.pack('>h', light_volume_element.power_group_index))
+            output_stream.write(struct.pack('<h', light_volume_element.position_group_index))
+            output_stream.write(struct.pack('<I', light_volume_element.flags_0))
+            output_stream.write(struct.pack('<h', light_volume_element.shape_type))
+            output_stream.write(struct.pack('<h', light_volume_element.flags_1))
+            output_stream.write(struct.pack('<h', light_volume_element.lightmap_type))
+            output_stream.write(struct.pack('<h', light_volume_element.lightmap_flags))
+            output_stream.write(struct.pack('<f', light_volume_element.lightmap_half_life))
+            output_stream.write(struct.pack('<f', light_volume_element.lightmap_light_scale))
+            output_stream.write(struct.pack('<fff', light_volume_element.target_point[0], light_volume_element.target_point[1], light_volume_element.target_point[2]))
+            output_stream.write(struct.pack('<f', light_volume_element.width))
+            output_stream.write(struct.pack('<f', light_volume_element.height_scale))
+            output_stream.write(struct.pack('<f', light_volume_element.field_of_view))
+            output_stream.write(struct.pack('<f', light_volume_element.falloff_distance))
+            output_stream.write(struct.pack('<f', light_volume_element.cutoff_distance))
+
+        for light_volume_element in SCENARIO.light_volumes:
+            write_tag_block_header(output_stream, light_volume_element.sobj_header)
+            write_tag_block_header(output_stream, light_volume_element.obj0_header)
+            write_tag_block_header(output_stream, light_volume_element.sdvt_header)
+            write_tag_block_header(output_stream, light_volume_element.slit_header)
 
 def write_trigger_volumes(output_stream, SCENARIO):
     if len(SCENARIO.trigger_volumes) > 0:
@@ -503,6 +550,8 @@ def build_asset(output_stream, SCENARIO, report):
     write_tag_header(output_stream, SCENARIO)
     write_body(output_stream, SCENARIO)
 
+    write_palette(output_stream, SCENARIO.skies, SCENARIO.skies_header, 0)
+
     write_object_names(output_stream, SCENARIO)
 
     write_scenery(output_stream, SCENARIO)
@@ -519,6 +568,12 @@ def build_asset(output_stream, SCENARIO, report):
 
     write_weapons(output_stream, SCENARIO)
     write_palette(output_stream, SCENARIO.weapon_palette, SCENARIO.weapon_palette_header, 32)
+
+    write_machines(output_stream, SCENARIO)
+    write_palette(output_stream, SCENARIO.device_machine_palette, SCENARIO.device_machine_palette_header, 32)
+
+    write_light_volumes(output_stream, SCENARIO)
+    write_palette(output_stream, SCENARIO.light_volume_palette, SCENARIO.light_volume_palette_header, 32)
 
     write_trigger_volumes(output_stream, SCENARIO)
 

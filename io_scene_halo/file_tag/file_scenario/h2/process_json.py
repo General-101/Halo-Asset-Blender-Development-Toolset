@@ -122,8 +122,9 @@ def get_scenery(dump_dic, TAG, SCENARIO):
 
             scenery.bsp_policy = 0
             scenery.editor_folder_index = -1
-
-            scenery.variant_name_length = 0
+            
+            scenery.variant_name_length = len(scenery_element['Variant Name'])
+            scenery.variant_name = TAG.string_to_bytes(scenery_element['Variant Name'], False)
             scenery.active_change_colors = 0
             scenery.primary_color_BGRA = (primary['B'], primary['G'], primary['R'], 1)
             scenery.secondary_color_BGRA = (secondary['B'], secondary['G'], secondary['R'], 1)
@@ -131,14 +132,15 @@ def get_scenery(dump_dic, TAG, SCENARIO):
             scenery.quaternary_color_BGRA = (quaternary['B'], quaternary['G'], quaternary['R'], 1)
             scenery.pathfinding_policy = scenery_element['Pathfinding Policy']['Value']
             scenery.lightmap_policy = scenery_element['Lightmapping Policy']['Value']
+            scenery.pathfinding_references = tag_block(TAG, 0, 0, 0, 0)
             scenery.valid_multiplayer_games = 0
 
             SCENARIO.scenery.append(scenery)
 
     SCENARIO.scenery_header = tag_block_header(TAG, "tbfd", 4, len(SCENARIO.scenery), 96)
 
-def get_unit(dump_dic, TAG, SCENARIO, unit):
-    unit_tag_block = dump_dic['Data'][unit]
+def get_unit(dump_dic, TAG, SCENARIO, unit_type):
+    unit_tag_block = dump_dic['Data'][unit_type]
     unit_list = []
     for unit_element in unit_tag_block:
         primary = unit_element['Primary Color']
@@ -173,7 +175,7 @@ def get_unit(dump_dic, TAG, SCENARIO, unit):
             unit.object_type = unit_element['Type']['Value']
 
         else:
-            if unit == 'Bipeds':
+            if unit_type == 'Bipeds':
                 unit.object_type = 0
             else:
                 unit.object_type = 1
@@ -185,7 +187,8 @@ def get_unit(dump_dic, TAG, SCENARIO, unit):
         unit.bsp_policy = 0
         unit.editor_folder_index = -1
 
-        unit.variant_name_length = 0
+        unit.variant_name_length = len(unit_element['Variant Name'])
+        unit.variant_name = TAG.string_to_bytes(unit_element['Variant Name'], False)
         unit.active_change_colors = 0
         unit.primary_color_BGRA = (primary['B'], primary['G'], primary['R'], 1)
         unit.secondary_color_BGRA = (secondary['B'], secondary['G'], secondary['R'], 1)
@@ -284,7 +287,8 @@ def get_weapon(dump_dic, TAG, SCENARIO):
         weapon.bsp_policy = 0
         weapon.editor_folder_index = -1
 
-        weapon.variant_name_length = 0
+        weapon.variant_name_length = len(weapon_element['Variant Name'])
+        weapon.variant_name = TAG.string_to_bytes(weapon_element['Variant Name'], False)
         weapon.active_change_colors = 0
         weapon.primary_color_BGRA = (primary['B'], primary['G'], primary['R'], 1)
         weapon.secondary_color_BGRA = (secondary['B'], secondary['G'], secondary['R'], 1)
@@ -297,6 +301,117 @@ def get_weapon(dump_dic, TAG, SCENARIO):
         SCENARIO.weapons.append(weapon)
 
     SCENARIO.weapon_header = tag_block_header(TAG, "tbfd", 2, len(SCENARIO.weapons), 84)
+
+def get_device_machines(dump_dic, TAG, SCENARIO):
+    machine_tag_block = dump_dic['Data']['Machines']
+    SCENARIO.device_machines = []
+    for machine_element in machine_tag_block:
+        exclude_machine = False
+        if 'Source' in machine_element and machine_element['Source']['Value'] == 0:
+            exclude_machine = True
+
+        if not exclude_machine: # We're doing this to exclude machine pieces added as XREFs.
+            device_machine = SCENARIO.DeviceMachine()
+
+            device_machine.sobj_header = tag_block_header(TAG, "sobj", 1, 1, 48)
+            device_machine.obj0_header = tag_block_header(TAG, "obj#", 0, 1, 8)
+            device_machine.sdvt_header = tag_block_header(TAG, "sdvt", 0, 1, 8)
+            device_machine.smht_header = tag_block_header(TAG, "smht", 0, 1, 16)
+
+            device_machine.palette_index = machine_element['Palette Index']
+            device_machine.name_index = machine_element['Name Index']
+            device_machine.placement_flags = machine_element['Placement Flags']
+            device_machine.position = machine_element['Position']
+            device_machine.rotation = machine_element['Rotation']
+            device_machine.scale = machine_element['Scale']
+            device_machine.transform_flags = machine_element['Transform Flags']
+            device_machine.manual_bsp_flags = machine_element['Manual BSP Flags']
+            device_machine.unique_id = get_id()
+            if 'Unique ID' in machine_element:
+                device_machine.unique_id = machine_element['Unique ID']['FullInteger']
+
+            device_machine.origin_bsp_index = -1
+            if 'Origin BSP Index' in machine_element:
+                device_machine.origin_bsp_index = machine_element['Origin BSP Index']
+
+            device_machine.object_type = 7
+            if 'Type' in machine_element:
+                device_machine.object_type = machine_element['Type']['Value']
+
+            device_machine.source = 1
+            if 'Source' in machine_element:
+                device_machine.source = machine_element['Source']['Value']
+
+            device_machine.bsp_policy = 0
+            device_machine.editor_folder_index = -1
+
+            device_machine.power_group_index = machine_element['Power Group']
+            device_machine.position_group_index = machine_element['Position Group']
+            device_machine.flags_0 = machine_element['Flags 0']
+            device_machine.flags_1 = machine_element['Flags 1']
+            device_machine.pathfinding_references = tag_block(TAG, 0, 0, 0, 0)
+
+            SCENARIO.device_machines.append(device_machine)
+
+    SCENARIO.device_machine_header = tag_block_header(TAG, "tbfd", 3, len(SCENARIO.device_machines), 76)
+
+def get_light_volumes(dump_dic, TAG, SCENARIO):
+    light_volume_tag_block = dump_dic['Data']['Light Volumes']
+    SCENARIO.light_volumes = []
+    for light_volume_element in light_volume_tag_block:
+        light_volume = SCENARIO.LightVolume()
+
+        light_volume.sobj_header = tag_block_header(TAG, "sobj", 1, 1, 48)
+        light_volume.obj0_header = tag_block_header(TAG, "obj#", 0, 1, 8)
+        light_volume.sdvt_header = tag_block_header(TAG, "sdvt", 0, 1, 8)
+        light_volume.slit_header = tag_block_header(TAG, "slit", 0, 1, 48)
+
+        light_volume.palette_index = light_volume_element['Palette Index']
+        light_volume.name_index = light_volume_element['Name Index']
+        light_volume.placement_flags = light_volume_element['Placement Flags']
+        light_volume.position = light_volume_element['Position']
+        light_volume.rotation = light_volume_element['Rotation']
+        light_volume.scale = light_volume_element['Scale']
+        light_volume.transform_flags = light_volume_element['Transform Flags']
+        light_volume.manual_bsp_flags = light_volume_element['Manual BSP Flags']
+        light_volume.unique_id = get_id()
+        if 'Unique ID' in light_volume_element:
+            light_volume.unique_id = light_volume_element['Unique ID']['FullInteger']
+
+        light_volume.origin_bsp_index = -1
+        if 'Origin BSP Index' in light_volume_element:
+            light_volume.origin_bsp_index = light_volume_element['Origin BSP Index']
+
+        light_volume.object_type = 2
+        if 'Type' in light_volume_element:
+            light_volume.object_type = light_volume_element['Type']['Value']
+
+        light_volume.source = 1
+        if 'Source' in light_volume_element:
+            light_volume.source = light_volume_element['Source']['Value']
+
+        light_volume.bsp_policy = 0
+        light_volume.editor_folder_index = -1
+
+        light_volume.power_group_index = light_volume_element['Power Group']
+        light_volume.position_group_index = light_volume_element['Position Group']
+        light_volume.flags_0 = light_volume_element['Flags 0']
+        light_volume.shape_type = light_volume_element['Type']['Value']
+        light_volume.flags_1 = light_volume_element['Flags 1']
+        light_volume.lightmap_type = light_volume_element['Lightmap Type']['Value']
+        light_volume.lightmap_flags = light_volume_element['Lightmap Flags']
+        light_volume.lightmap_half_life = light_volume_element['Lightmap Half Life']
+        light_volume.lightmap_light_scale = light_volume_element['Lightmap Light Scale']
+        light_volume.target_point = light_volume_element['Target Point']
+        light_volume.width = light_volume_element['Width']
+        light_volume.height_scale = light_volume_element['Height Scale']
+        light_volume.field_of_view = radians(light_volume_element['Field Of View']) # Value in radians
+        light_volume.falloff_distance = light_volume_element['Falloff Distance']
+        light_volume.cutoff_distance = light_volume_element['Cutoff Distance']
+
+        SCENARIO.light_volumes.append(light_volume)
+
+    SCENARIO.light_volume_header = tag_block_header(TAG, "tbfd", 2, len(SCENARIO.light_volumes), 108)
 
 def get_trigger_volumes(dump_dic, TAG, SCENARIO):
     trigger_volumes_tag_block = dump_dic['Data']['Kill Trigger Volumes']
@@ -443,14 +558,14 @@ def get_zones(dump_dic, TAG, SCENARIO):
                 firing_position.flags = 0
                 firing_position.area_index = firing_position_element['Area Index']
                 firing_position.cluster_index = firing_position_element['Cluster Index']
-                if type(firing_position_element['Normal']) == list:
-                    firing_position.normal_y = firing_position_element['Normal'][0]
-                    firing_position.normal_p = firing_position_element['Normal'][1]
-
-                else:
-                    firing_position.normal_y = firing_position_element['Normal']
-                    firing_position.normal_p = 0
-
+                if 'Normal' in firing_position_element:
+                    if type(firing_position_element['Normal']) == list:
+                        firing_position.normal_y = firing_position_element['Normal'][0]
+                        firing_position.normal_p = firing_position_element['Normal'][1]
+                        
+                    else:
+                        firing_position.normal_y = firing_position_element['Normal']
+                        firing_position.normal_p = 0
 
                 zone.firing_positions.append(firing_position)
 
@@ -707,6 +822,8 @@ def process_json(input_stream, tag_format, report):
     SCENARIO.header.plugin_handle = -1
     SCENARIO.header.engine_tag = TAG.string_to_bytes("BLM!", True)
 
+    SCENARIO.skies_header, SCENARIO.skies = get_palette(dump_dic, TAG, 'Sky', 'Skies', 16)
+
     get_object_names(dump_dic, TAG, SCENARIO)
 
     get_scenery(dump_dic, TAG, SCENARIO)
@@ -723,6 +840,12 @@ def process_json(input_stream, tag_format, report):
 
     get_weapon(dump_dic, TAG, SCENARIO)
     SCENARIO.weapon_palette_header, SCENARIO.weapon_palette = get_palette(dump_dic, TAG, 'Weapon', 'Weapon Palette', 48)
+
+    get_device_machines(dump_dic, TAG, SCENARIO)
+    SCENARIO.device_machine_palette_header, SCENARIO.device_machine_palette = get_palette(dump_dic, TAG, 'Machine', 'Machine Palette', 48)
+
+    get_light_volumes(dump_dic, TAG, SCENARIO)
+    SCENARIO.light_volume_palette_header, SCENARIO.light_volume_palette = get_palette(dump_dic, TAG, 'Light Volume', 'Light Volume Palette', 48)
 
     get_trigger_volumes(dump_dic, TAG, SCENARIO)
 
@@ -752,11 +875,11 @@ def process_json(input_stream, tag_format, report):
     SCENARIO.scenario_body_header = tag_block_header(TAG, "tbfd", 2, 1, 1476)
     SCENARIO.scenario_body = SCENARIO.ScenarioBody()
     SCENARIO.scenario_body.unused_tag_ref = TAG.TagRef(TAG.string_to_bytes("sbsp", True), "", 0, 0, -1)
-    SCENARIO.scenario_body.skies_tag_block = TAG.TagBlock(0, 0, 0, 0)
-    SCENARIO.scenario_body.scenario_type = 0
-    SCENARIO.scenario_body.scenario_flags = 0
+    SCENARIO.scenario_body.skies_tag_block = TAG.TagBlock(len(SCENARIO.skies), 0, 0, 0)
+    SCENARIO.scenario_body.scenario_type = dump_dic['Data']['Map Type']['Value']
+    SCENARIO.scenario_body.scenario_flags = dump_dic['Data']['Flags']
     SCENARIO.scenario_body.child_scenarios_tag_block = TAG.TagBlock(0, 0, 0, 0)
-    SCENARIO.scenario_body.local_north = radians(0)
+    SCENARIO.scenario_body.local_north = radians(dump_dic['Data']['Local North']) # Value in radians
     SCENARIO.scenario_body.predicted_resources_tag_block = TAG.TagBlock(0, 0, 0, 0)
     SCENARIO.scenario_body.functions_tag_block = TAG.TagBlock(0, 0, 0, 0)
     SCENARIO.scenario_body.editor_scenario_data = TAG.RawData(0, 0, 0, 0, 0)
@@ -774,16 +897,16 @@ def process_json(input_stream, tag_format, report):
     SCENARIO.scenario_body.weapons_tag_block = TAG.TagBlock(len(SCENARIO.weapons), 0, 0, 0)
     SCENARIO.scenario_body.weapon_palette_tag_block = TAG.TagBlock(len(SCENARIO.weapon_palette), 0, 0, 0)
     SCENARIO.scenario_body.device_groups_tag_block = TAG.TagBlock(0, 0, 0, 0)
-    SCENARIO.scenario_body.machines_tag_block = TAG.TagBlock(0, 0, 0, 0)
-    SCENARIO.scenario_body.machine_palette_tag_block = TAG.TagBlock(0, 0, 0, 0)
+    SCENARIO.scenario_body.machines_tag_block = TAG.TagBlock(len(SCENARIO.device_machines), 0, 0, 0)
+    SCENARIO.scenario_body.machine_palette_tag_block = TAG.TagBlock(len(SCENARIO.device_machine_palette), 0, 0, 0)
     SCENARIO.scenario_body.controls_tag_block = TAG.TagBlock(0, 0, 0, 0)
     SCENARIO.scenario_body.control_palette_tag_block = TAG.TagBlock(0, 0, 0, 0)
     SCENARIO.scenario_body.light_fixtures_tag_block = TAG.TagBlock(0, 0, 0, 0)
     SCENARIO.scenario_body.light_fixtures_palette_tag_block = TAG.TagBlock(0, 0, 0, 0)
     SCENARIO.scenario_body.sound_scenery_tag_block = TAG.TagBlock(0, 0, 0, 0)
     SCENARIO.scenario_body.sound_scenery_palette_tag_block = TAG.TagBlock(0, 0, 0, 0)
-    SCENARIO.scenario_body.light_volumes_tag_block = TAG.TagBlock(0, 0, 0, 0)
-    SCENARIO.scenario_body.light_volume_palette_tag_block = TAG.TagBlock(0, 0, 0, 0)
+    SCENARIO.scenario_body.light_volumes_tag_block = TAG.TagBlock(len(SCENARIO.light_volumes), 0, 0, 0)
+    SCENARIO.scenario_body.light_volume_palette_tag_block = TAG.TagBlock(len(SCENARIO.light_volume_palette), 0, 0, 0)
     SCENARIO.scenario_body.player_starting_profile_tag_block = TAG.TagBlock(0, 0, 0, 0)
     SCENARIO.scenario_body.player_starting_locations_tag_block = TAG.TagBlock(0, 0, 0, 0)
     SCENARIO.scenario_body.trigger_volumes_tag_block = TAG.TagBlock(len(SCENARIO.trigger_volumes), 0, 0, 0)
