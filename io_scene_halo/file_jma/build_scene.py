@@ -237,10 +237,10 @@ def jms_file_check(JMS_A, JMS_B, JMA_nodes, report):
     JMS_B_invalid = False
     if JMS_A and not JMS_B:
         for jms_node in JMS_A.nodes:
-            JMS_A_nodes.append(jms_node.name)
+            JMS_A_nodes.append(remove_node_prefix(jms_node.name))
 
         for jms_node_name in JMS_A_nodes:
-            if not jms_node_name in JMA_nodes:
+            if not remove_node_prefix(jms_node_name) in JMA_nodes:
                 JMS_A_invalid = True
                 report({'WARNING'}, "Node '%s' from JMS skeleton not found in JMA skeleton." % jms_node_name)
 
@@ -248,15 +248,15 @@ def jms_file_check(JMS_A, JMS_B, JMA_nodes, report):
 
     elif JMS_A and JMS_B:
         for jms_node in JMS_A.nodes:
-            JMS_A_nodes.append(jms_node.name)
+            JMS_A_nodes.append(remove_node_prefix(jms_node.name))
 
         for jms_node in JMS_B.nodes:
-            JMS_B_nodes.append(jms_node.name)
+            JMS_B_nodes.append(remove_node_prefix(jms_node.name))
 
         jms_nodes = JMS_A_nodes + JMS_B_nodes
 
         for jms_node_name in jms_nodes:
-            if not jms_node_name in JMA_nodes:
+            if not remove_node_prefix(jms_node_name) in JMA_nodes:
                 JMS_B_invalid = True
                 report({'WARNING'}, "Node '%s' from JMS skeleton not found in JMA skeleton." % jms_node_name)
 
