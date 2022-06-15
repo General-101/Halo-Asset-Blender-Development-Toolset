@@ -382,11 +382,11 @@ def get_light_volumes(dump_dic, TAG, SCENARIO):
         if 'Origin BSP Index' in light_volume_element:
             light_volume.origin_bsp_index = light_volume_element['Origin BSP Index']
 
-        light_volume.object_type = 2
+        light_volume.object_type = 0
         if 'Type' in light_volume_element:
             light_volume.object_type = light_volume_element['Type']['Value']
 
-        light_volume.source = 1
+        light_volume.source = 0
         if 'Source' in light_volume_element:
             light_volume.source = light_volume_element['Source']['Value']
 
