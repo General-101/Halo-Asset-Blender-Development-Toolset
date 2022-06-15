@@ -27,6 +27,7 @@
 import os
 import json
 import struct
+import random
 
 from math import degrees, radians
 from .format import ScenarioAsset, SALT_SIZE
@@ -34,6 +35,8 @@ from .format import ScenarioAsset, SALT_SIZE
 DEBUG_PARSER = True
 DEBUG_HEADER = True
 DEBUG_BODY = True
+
+UNIQUE_ID = random.randint(0, 100000)
 
 def tag_block_header(TAG, header_group, version, count, size):
     TAGBLOCKHEADER = TAG.TagBlockHeader()
@@ -70,8 +73,11 @@ def get_scenery(dump_dic, TAG, SCENARIO):
     scenery_tag_block = dump_dic['Data']['Scenery']
     SCENARIO.scenery = []
     for scenery_element in scenery_tag_block:
-        source = scenery_element['Source']['Value']
-        if not source == 0: # We're doing this to exclude scenery pieces added as XREFs.
+        exclude_scenery = False
+        if 'Source' in scenery_element and scenery_element['Source']['Value'] == 0:
+            exclude_scenery = True
+
+        if not exclude_scenery: # We're doing this to exclude scenery pieces added as XREFs.
             primary = scenery_element['Primary Color']
             secondary = scenery_element['Secondary Color']
             tertiary = scenery_element['Tertiary Color']
@@ -92,10 +98,22 @@ def get_scenery(dump_dic, TAG, SCENARIO):
             scenery.scale = scenery_element['Scale']
             scenery.transform_flags = scenery_element['Transform Flags']
             scenery.manual_bsp_flags = scenery_element['Manual BSP Flags']
-            scenery.unique_id = scenery_element['Unique ID']['FullInteger']
-            scenery.origin_bsp_index = scenery_element['Origin BSP Index']
-            scenery.object_type = scenery_element['Type']['Value']
-            scenery.source = scenery_element['Source']['Value']
+            scenery.unique_id = UNIQUE_ID
+            if 'Unique ID' in scenery_element:
+                scenery.unique_id = scenery_element['Unique ID']['FullInteger']
+
+            scenery.origin_bsp_index = -1
+            if 'Origin BSP Index' in scenery_element:
+                scenery.origin_bsp_index = scenery_element['Origin BSP Index']
+
+            scenery.object_type = 6
+            if 'Type' in scenery_element:
+                scenery.object_type = scenery_element['Type']['Value']
+
+            scenery.source = 1
+            if 'Source' in scenery_element:
+                scenery.source = scenery_element['Source']['Value']
+
             scenery.bsp_policy = 0
             scenery.editor_folder_index = -1
 
@@ -137,10 +155,27 @@ def get_unit(dump_dic, TAG, SCENARIO, unit):
         unit.scale = unit_element['Scale']
         unit.transform_flags = unit_element['Transform Flags']
         unit.manual_bsp_flags = unit_element['Manual BSP Flags']
-        unit.unique_id = unit_element['Unique ID']['FullInteger']
-        unit.origin_bsp_index = unit_element['Origin BSP Index']
-        unit.object_type = unit_element['Type']['Value']
-        unit.source = unit_element['Source']['Value']
+        unit.unique_id = UNIQUE_ID
+        if 'Unique ID' in unit_element:
+            unit.unique_id = unit_element['Unique ID']['FullInteger']
+
+        unit.origin_bsp_index = -1
+        if 'Origin BSP Index' in unit_element:
+            unit.origin_bsp_index = unit_element['Origin BSP Index']
+
+        if 'Type' in unit_element:
+            unit.object_type = unit_element['Type']['Value']
+
+        else:
+            if unit == 'Bipeds':
+                unit.object_type = 0
+            else:
+                unit.object_type = 1
+
+        unit.source = 1
+        if 'Source' in unit_element:
+            unit.source = unit_element['Source']['Value']
+
         unit.bsp_policy = 0
         unit.editor_folder_index = -1
 
@@ -175,10 +210,22 @@ def get_equipment(dump_dic, TAG, SCENARIO):
         equipment.scale = equipment_element['Scale']
         equipment.transform_flags = equipment_element['Transform Flags']
         equipment.manual_bsp_flags = equipment_element['Manual BSP Flags']
-        equipment.unique_id = equipment_element['Unique ID']['FullInteger']
-        equipment.origin_bsp_index = equipment_element['Origin BSP Index']
-        equipment.object_type = equipment_element['Type']['Value']
-        equipment.source = equipment_element['Source']['Value']
+        equipment.unique_id = UNIQUE_ID
+        if 'Unique ID' in equipment_element:
+            equipment.unique_id = equipment_element['Unique ID']['FullInteger']
+
+        equipment.origin_bsp_index = -1
+        if 'Origin BSP Index' in equipment_element:
+            equipment.origin_bsp_index = equipment_element['Origin BSP Index']
+
+        equipment.object_type = 3
+        if 'Type' in equipment_element:
+            equipment.object_type = equipment_element['Type']['Value']
+
+        equipment.source = 1
+        if 'Source' in equipment_element:
+            equipment.source = equipment_element['Source']['Value']
+
         equipment.bsp_policy = 0
         equipment.editor_folder_index = -1
 
@@ -212,10 +259,22 @@ def get_weapon(dump_dic, TAG, SCENARIO):
         weapon.scale = weapon_element['Scale']
         weapon.transform_flags = weapon_element['Transform Flags']
         weapon.manual_bsp_flags = weapon_element['Manual BSP Flags']
-        weapon.unique_id = weapon_element['Unique ID']['FullInteger']
-        weapon.origin_bsp_index = weapon_element['Origin BSP Index']
-        weapon.object_type = weapon_element['Type']['Value']
-        weapon.source = weapon_element['Source']['Value']
+        weapon.unique_id = UNIQUE_ID
+        if 'Unique ID' in weapon_element:
+            weapon.unique_id = weapon_element['Unique ID']['FullInteger']
+
+        weapon.origin_bsp_index = -1
+        if 'Origin BSP Index' in weapon_element:
+            weapon.origin_bsp_index = weapon_element['Origin BSP Index']
+
+        weapon.object_type = 2
+        if 'Type' in weapon_element:
+            weapon.object_type = weapon_element['Type']['Value']
+
+        weapon.source = 1
+        if 'Source' in weapon_element:
+            weapon.source = weapon_element['Source']['Value']
+
         weapon.bsp_policy = 0
         weapon.editor_folder_index = -1
 
@@ -309,10 +368,10 @@ def get_squads(dump_dic, TAG, SCENARIO):
         squad.vehicle_variant_length = 0
         squad.starting_locations_tag_block = tag_block(TAG, starting_location_count, 0, 0, 0)
         squad.placement_script = TAG.string_to_bytes("", False)
+        squad.starting_locations = []
 
         if starting_location_count > 0:
             squad.starting_locations_header = tag_block_header(TAG, "tbfd", 6, starting_location_count, 100)
-            starting_locations = []
             for starting_location_element in starting_locations_dic:
                 starting_location = SCENARIO.StartingLocation()
 
@@ -343,9 +402,7 @@ def get_squads(dump_dic, TAG, SCENARIO):
                 starting_location.initial_movement_mode = 0
                 starting_location.placement_script = TAG.string_to_bytes("", False)
 
-                starting_locations.append(starting_location)
-
-            squad.starting_locations = starting_locations
+                squad.starting_locations.append(starting_location)
 
         SCENARIO.squads.append(squad)
 
@@ -383,7 +440,7 @@ def get_zones(dump_dic, TAG, SCENARIO):
                 if type(firing_position_element['Normal']) == list:
                     firing_position.normal_y = firing_position_element['Normal'][0]
                     firing_position.normal_p = firing_position_element['Normal'][1]
-                    
+
                 else:
                     firing_position.normal_y = firing_position_element['Normal']
                     firing_position.normal_p = 0

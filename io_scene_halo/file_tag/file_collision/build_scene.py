@@ -175,6 +175,9 @@ def build_h2_collision(context, armature, COLLISION, mesh_processing, global_fun
 def build_collision(context, armature, COLLISION, mesh_processing, global_functions):
     collection = context.collection
     random_color_gen = global_functions.RandomColorGenerator() # generates a random sequence of colors
+
+    bone_list = armature.data.bones.keys()
+
     for node_idx, node in enumerate(COLLISION.nodes):
         parent_name = node.name
         for bsp_idx, bsp in enumerate(node.bsps):
@@ -256,7 +259,11 @@ def build_collision(context, armature, COLLISION, mesh_processing, global_functi
                 mesh_processing.select_object(context, object_mesh)
                 mesh_processing.select_object(context, armature)
                 bpy.ops.object.mode_set(mode='EDIT')
-                armature.data.edit_bones.active = armature.data.edit_bones[parent_name]
+                for bone_idx, armature_bone in enumerate(bone_list):
+                    if parent_name.lower() == armature_bone.lower():
+                        parent_name = armature_bone
+                        armature.data.edit_bones.active = armature.data.edit_bones[bone_idx]
+
                 bpy.ops.object.mode_set(mode='OBJECT')
                 bpy.ops.object.parent_set(type='BONE', keep_transform=True)
                 object_mesh.matrix_world = armature.pose.bones[parent_name].matrix
@@ -323,7 +330,11 @@ def build_collision(context, armature, COLLISION, mesh_processing, global_functi
                 mesh_processing.select_object(context, object_mesh)
                 mesh_processing.select_object(context, armature)
                 bpy.ops.object.mode_set(mode='EDIT')
-                armature.data.edit_bones.active = armature.data.edit_bones[parent_name]
+                for bone_idx, armature_bone in enumerate(bone_list):
+                    if parent_name.lower() == armature_bone.lower():
+                        parent_name = armature_bone
+                        armature.data.edit_bones.active = armature.data.edit_bones[bone_idx]
+
                 bpy.ops.object.mode_set(mode='OBJECT')
                 bpy.ops.object.parent_set(type='BONE', keep_transform=True)
                 object_mesh.matrix_world = armature.pose.bones[parent_name].matrix
@@ -339,7 +350,7 @@ def build_scene(context, COLLISION, fix_rotations, report, mesh_processing, glob
     if armature:
         if COLLISION.header.tag_group == "lloc":
             build_h2_collision(context, armature, COLLISION, mesh_processing, global_functions)
-            
+
         else:
             build_collision(context, armature, COLLISION, mesh_processing, global_functions)
 
