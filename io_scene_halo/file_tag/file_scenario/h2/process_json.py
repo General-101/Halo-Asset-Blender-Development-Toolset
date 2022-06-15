@@ -38,6 +38,12 @@ DEBUG_BODY = True
 
 UNIQUE_ID = random.randint(0, 100000)
 
+def get_id():
+    global UNIQUE_ID 
+    UNIQUE_ID += 1
+
+    return UNIQUE_ID
+
 def tag_block_header(TAG, header_group, version, count, size):
     TAGBLOCKHEADER = TAG.TagBlockHeader()
     TAGBLOCKHEADER.name = TAG.string_to_bytes(header_group, True)
@@ -98,7 +104,7 @@ def get_scenery(dump_dic, TAG, SCENARIO):
             scenery.scale = scenery_element['Scale']
             scenery.transform_flags = scenery_element['Transform Flags']
             scenery.manual_bsp_flags = scenery_element['Manual BSP Flags']
-            scenery.unique_id = UNIQUE_ID
+            scenery.unique_id = get_id()
             if 'Unique ID' in scenery_element:
                 scenery.unique_id = scenery_element['Unique ID']['FullInteger']
 
@@ -155,7 +161,7 @@ def get_unit(dump_dic, TAG, SCENARIO, unit):
         unit.scale = unit_element['Scale']
         unit.transform_flags = unit_element['Transform Flags']
         unit.manual_bsp_flags = unit_element['Manual BSP Flags']
-        unit.unique_id = UNIQUE_ID
+        unit.unique_id = get_id()
         if 'Unique ID' in unit_element:
             unit.unique_id = unit_element['Unique ID']['FullInteger']
 
@@ -210,7 +216,7 @@ def get_equipment(dump_dic, TAG, SCENARIO):
         equipment.scale = equipment_element['Scale']
         equipment.transform_flags = equipment_element['Transform Flags']
         equipment.manual_bsp_flags = equipment_element['Manual BSP Flags']
-        equipment.unique_id = UNIQUE_ID
+        equipment.unique_id = get_id()
         if 'Unique ID' in equipment_element:
             equipment.unique_id = equipment_element['Unique ID']['FullInteger']
 
@@ -259,7 +265,7 @@ def get_weapon(dump_dic, TAG, SCENARIO):
         weapon.scale = weapon_element['Scale']
         weapon.transform_flags = weapon_element['Transform Flags']
         weapon.manual_bsp_flags = weapon_element['Manual BSP Flags']
-        weapon.unique_id = UNIQUE_ID
+        weapon.unique_id = get_id()
         if 'Unique ID' in weapon_element:
             weapon.unique_id = weapon_element['Unique ID']['FullInteger']
 
