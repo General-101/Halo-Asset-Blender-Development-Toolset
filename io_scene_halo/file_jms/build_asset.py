@@ -29,8 +29,8 @@ import os
 from .process_scene import process_scene
 from ..global_functions import global_functions
 
-def build_asset(context, blend_scene, filepath, version, game_version, generate_checksum, fix_rotations, folder_structure, folder_type, model_type, jmi, permutation_ce, level_of_detail_ce, custom_scale, report):
-    JMS = process_scene(version, game_version, generate_checksum, fix_rotations, model_type, blend_scene, custom_scale)
+def build_asset(context, blend_scene, filepath, version, game_version, generate_checksum, fix_rotations, folder_structure, folder_type, model_type, jmi, permutation_ce, level_of_detail_ce, custom_scale, loop_normals, write_textures, report):
+    JMS = process_scene(version, game_version, generate_checksum, fix_rotations, model_type, blend_scene, custom_scale, loop_normals, write_textures)
 
     if version > 8209:
         decimal_1 = '\n%0.10f'

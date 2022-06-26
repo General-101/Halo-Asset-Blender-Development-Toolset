@@ -30,7 +30,7 @@ import bpy
 from .build_asset import build_asset
 from ..global_functions import mesh_processing, global_functions
 
-def command_queue(context, filepath, report, jms_version, jms_version_ce, jms_version_h2, jms_version_h3, generate_checksum, folder_structure, folder_type, apply_modifiers, triangulate_faces, fix_rotations, edge_split, use_edge_angle, use_edge_sharp, split_angle, clean_normalize_weights, scale_enum, scale_float, console, permutation_ce, level_of_detail_ce, hidden_geo, export_render, export_collision, export_physics, game_version, world_nodes):
+def command_queue(context, filepath, report, jms_version, jms_version_ce, jms_version_h2, jms_version_h3, generate_checksum, folder_structure, folder_type, apply_modifiers, triangulate_faces, loop_normals, fix_rotations, edge_split, use_edge_angle, use_edge_sharp, split_angle, clean_normalize_weights, scale_enum, scale_float, console, permutation_ce, level_of_detail_ce, hidden_geo, export_render, export_collision, export_physics, write_textures, game_version, world_nodes):
     object_properties = []
     node_prefix_tuple = ('b ', 'b_', 'bone', 'frame', 'bip01')
     limit_value = 0.00000000009
@@ -233,17 +233,17 @@ def command_queue(context, filepath, report, jms_version, jms_version_ce, jms_ve
     if export_render and blend_scene.render_count > 0:
         model_type = "render"
 
-        build_asset(context, blend_scene, filepath, version, game_version, generate_checksum, fix_rotations, folder_structure, folder_type, model_type, jmi, permutation_ce, level_of_detail_ce, custom_scale, report)
+        build_asset(context, blend_scene, filepath, version, game_version, generate_checksum, fix_rotations, folder_structure, folder_type, model_type, jmi, permutation_ce, level_of_detail_ce, custom_scale, loop_normals, write_textures, report)
 
     if export_collision and blend_scene.collision_count > 0:
         model_type = "collision"
 
-        build_asset(context, blend_scene, filepath, version, game_version, generate_checksum, fix_rotations, folder_structure, folder_type, model_type, jmi, permutation_ce, level_of_detail_ce, custom_scale, report)
+        build_asset(context, blend_scene, filepath, version, game_version, generate_checksum, fix_rotations, folder_structure, folder_type, model_type, jmi, permutation_ce, level_of_detail_ce, custom_scale, loop_normals, write_textures, report)
 
     if export_physics and blend_scene.physics_count > 0:
         model_type = "physics"
 
-        build_asset(context, blend_scene, filepath, version, game_version, generate_checksum, fix_rotations, folder_structure, folder_type, model_type, jmi, permutation_ce, level_of_detail_ce, custom_scale, report)
+        build_asset(context, blend_scene, filepath, version, game_version, generate_checksum, fix_rotations, folder_structure, folder_type, model_type, jmi, permutation_ce, level_of_detail_ce, custom_scale, loop_normals, write_textures, report)
 
     for idx, obj in enumerate(object_list):
         property_value = object_properties[idx]

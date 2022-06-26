@@ -115,7 +115,7 @@ def scale_is_uniform(obj):
 
     return is_uniform
 
-def process_scene(context, version, game_version, hidden_geo, apply_modifiers, triangulate_faces, edge_split, clean_normalize_weights, custom_scale, report):
+def process_scene(context, version, game_version, hidden_geo, apply_modifiers, triangulate_faces, loop_normals, edge_split, clean_normalize_weights, custom_scale, report):
     ASS = ASSAsset()
     
     collections = []
@@ -445,8 +445,12 @@ def process_scene(context, version, game_version, hidden_geo, apply_modifiers, t
                         loop = evaluted_mesh.loops[loop_index]
                         vert = evaluted_mesh.vertices[loop.vertex_index]
 
+                        use_loop = None
+                        if loop_normals:
+                            use_loop = loop
+
                         region = region_index
-                        scaled_translation, normal = mesh_processing.process_mesh_export_vert(vert, loop, "ASS", object_matrix, custom_scale)
+                        scaled_translation, normal = mesh_processing.process_mesh_export_vert(vert, use_loop, "ASS", object_matrix, custom_scale)
                         uv_set = mesh_processing.process_mesh_export_uv(evaluted_mesh, "ASS", loop_index, version)
                         color = mesh_processing.process_mesh_export_color(evaluted_mesh, loop_index)
                         node_influence_count, node_set, node_index_list = mesh_processing.process_mesh_export_weights(vert, armature, original_geo, vertex_groups, instance_list, "ASS")

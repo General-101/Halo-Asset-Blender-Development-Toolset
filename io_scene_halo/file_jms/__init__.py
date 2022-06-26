@@ -209,6 +209,9 @@ class JMS_SceneProps(Panel):
         row = col.row()
         row.label(text='Generate Asset Subdirectories:')
         row.prop(scene_jms, "folder_structure", text='')
+        row = col.row()
+        row.label(text='Write Texture Paths:')
+        row.prop(scene_jms, "write_textures", text='')
         box = layout.box()
         box.label(text="Mask Options:")
         col = box.column(align=True)
@@ -233,6 +236,9 @@ class JMS_SceneProps(Panel):
         row = col.row()
         row.label(text='Triangulate:')
         row.prop(scene_jms, "triangulate_faces", text='')
+        row = col.row()
+        row.label(text='Use Loop Normals:')
+        row.prop(scene_jms, "loop_normals", text='')
         row = col.row()
         row.label(text='Clean and Normalize Weights:')
         row.prop(scene_jms, "clean_normalize_weights", text='')
@@ -416,6 +422,12 @@ class JMS_ScenePropertiesGroup(PropertyGroup):
         default = True,
         )
 
+    loop_normals: BoolProperty(
+        name ="Use Loop Normals",
+        description = "Use loop data for normals instead of vertex. May not match original 3DS Max output at the moment.",
+        default = True,
+        )
+
     clean_normalize_weights: BoolProperty(
         name ="Clean and Normalize Weights",
         description = "Remove unused vertex groups and normalize weights before export. Permanently affects scene",
@@ -455,6 +467,12 @@ class JMS_ScenePropertiesGroup(PropertyGroup):
     export_physics: BoolProperty(
         name ="Export physics geometry",
         description = "Whether or not we ignore geometry that is marked as physics",
+        default = True,
+        )
+
+    write_textures: BoolProperty(
+        name ="Write textures",
+        description = "Whether or not we write texture paths for materials",
         default = True,
         )
 
@@ -646,6 +664,12 @@ class ExportJMS(Operator, ExportHelper):
         description = "Automatically triangulate all faces. Does not permanently affect scene",
         default = True,
         )
+        
+    loop_normals: BoolProperty(
+        name ="Use Loop Normals",
+        description = "Use loop data for normals instead of vertex. May not match original 3DS Max output at the moment.",
+        default = True,
+        )
 
     clean_normalize_weights: BoolProperty(
         name ="Clean and Normalize Weights",
@@ -686,6 +710,12 @@ class ExportJMS(Operator, ExportHelper):
     export_physics: BoolProperty(
         name ="Export physics geometry",
         description = "Whether or not we ignore geometry that is marked as physics",
+        default = True,
+        )
+
+    write_textures: BoolProperty(
+        name ="Write textures",
+        description = "Whether or not we write texture paths for materials",
         default = True,
         )
 
@@ -760,18 +790,20 @@ class ExportJMS(Operator, ExportHelper):
             parser.add_argument('-arg9', '--export_render', dest='export_render', action='store_true')
             parser.add_argument('-arg10', '--export_collision', dest='export_collision', action='store_true')
             parser.add_argument('-arg11', '--export_physics', dest='export_physics', action='store_true')
-            parser.add_argument('-arg12', '--apply_modifiers', dest='apply_modifiers', action='store_true')
-            parser.add_argument('-arg13', '--triangulate_faces', dest='triangulate_faces', action='store_true')
-            parser.add_argument('-arg14', '--clean_normalize_weights', dest='clean_normalize_weights', action='store_true')
-            parser.add_argument('-arg15', '--fix_rotations', dest='fix_rotations', action='store_true')
-            parser.add_argument('-arg16', '--edge_split', dest='edge_split', action='store_true')
-            parser.add_argument('-arg17', '--folder_type', dest='folder_type', action='0')
-            parser.add_argument('-arg18', '--use_edge_angle', dest='use_edge_angle', action='store_true')
-            parser.add_argument('-arg19', '--split_angle', dest='split_angle', type=float, default=1.0)
-            parser.add_argument('-arg20', '--use_edge_sharp', dest='use_edge_sharp', action='store_true')
-            parser.add_argument('-arg21', '--scale_enum', dest='scale_enum', type=str, default="0")
-            parser.add_argument('-arg22', '--scale_float', dest='scale_float', type=float, default=1.0)
-            parser.add_argument('-arg23', '--console', dest='console', action='store_true', default=True)
+            parser.add_argument('-arg12', '--write_textures', dest='write_textures', action='store_true')
+            parser.add_argument('-arg13', '--apply_modifiers', dest='apply_modifiers', action='store_true')
+            parser.add_argument('-arg14', '--triangulate_faces', dest='triangulate_faces', action='store_true')
+            parser.add_argument('-arg15', '--loop_normals', dest='loop_normals', action='store_true')
+            parser.add_argument('-arg16', '--clean_normalize_weights', dest='clean_normalize_weights', action='store_true')
+            parser.add_argument('-arg17', '--fix_rotations', dest='fix_rotations', action='store_true')
+            parser.add_argument('-arg18', '--edge_split', dest='edge_split', action='store_true')
+            parser.add_argument('-arg19', '--folder_type', dest='folder_type', action='0')
+            parser.add_argument('-arg20', '--use_edge_angle', dest='use_edge_angle', action='store_true')
+            parser.add_argument('-arg21', '--split_angle', dest='split_angle', type=float, default=1.0)
+            parser.add_argument('-arg22', '--use_edge_sharp', dest='use_edge_sharp', action='store_true')
+            parser.add_argument('-arg23', '--scale_enum', dest='scale_enum', type=str, default="0")
+            parser.add_argument('-arg24', '--scale_float', dest='scale_float', type=float, default=1.0)
+            parser.add_argument('-arg25', '--console', dest='console', action='store_true', default=True)
             args = parser.parse_known_args(argv)[0]
             print('filepath: ', args.filepath)
             print('game_version: ', args.game_version)
@@ -784,8 +816,10 @@ class ExportJMS(Operator, ExportHelper):
             print('export_render: ', args.export_render)
             print('export_collision: ', args.export_collision)
             print('export_physics: ', args.export_physics)
+            print('write_textures: ', args.write_textures)
             print('apply_modifiers: ', args.apply_modifiers)
             print('triangulate_faces: ', args.triangulate_faces)
+            print('loop_normals: ', args.loop_normals)
             print('clean_normalize_weights: ', args.clean_normalize_weights)
             print('fix_rotations: ', args.fix_rotations)
             print('edge_split: ', args.edge_split)
@@ -807,8 +841,10 @@ class ExportJMS(Operator, ExportHelper):
             self.export_render = args.export_render
             self.export_collision = args.export_collision
             self.export_physics = args.export_physics
+            self.write_textures = args.write_textures
             self.apply_modifiers = args.apply_modifiers
             self.triangulate_faces = args.triangulate_faces
+            self.loop_normals = args.loop_normals
             self.clean_normalize_weights = args.clean_normalize_weights
             self.fix_rotations = args.fix_rotations
             self.edge_split = args.edge_split
@@ -820,7 +856,7 @@ class ExportJMS(Operator, ExportHelper):
             self.scale_float = args.scale_float
             self.console = args.console
 
-        return global_functions.run_code("export_jms.command_queue(context, self.filepath, self.report, self.jms_version, self.jms_version_ce, self.jms_version_h2, self.jms_version_h3, self.generate_checksum, self.folder_structure, self.folder_type, self.apply_modifiers, self.triangulate_faces, self.fix_rotations, self.edge_split, self.use_edge_angle, self.use_edge_sharp, self.split_angle, self.clean_normalize_weights, self.scale_enum, self.scale_float, self.console, self.permutation_ce, self.level_of_detail_ce, self.hidden_geo, self.export_render, self.export_collision, self.export_physics, self.game_version, None)")
+        return global_functions.run_code("export_jms.command_queue(context, self.filepath, self.report, self.jms_version, self.jms_version_ce, self.jms_version_h2, self.jms_version_h3, self.generate_checksum, self.folder_structure, self.folder_type, self.apply_modifiers, self.triangulate_faces, self.loop_normals, self.fix_rotations, self.edge_split, self.use_edge_angle, self.use_edge_sharp, self.split_angle, self.clean_normalize_weights, self.scale_enum, self.scale_float, self.console, self.permutation_ce, self.level_of_detail_ce, self.hidden_geo, self.export_render, self.export_collision, self.export_physics, self.write_textures, self.game_version, None)")
 
     def draw(self, context):
         scene = context.scene
@@ -846,8 +882,10 @@ class ExportJMS(Operator, ExportHelper):
             self.export_render = scene_jms.export_render
             self.export_collision = scene_jms.export_collision
             self.export_physics = scene_jms.export_physics
+            self.write_textures = scene_jms.write_textures
             self.apply_modifiers = scene_jms.apply_modifiers
             self.triangulate_faces = scene_jms.triangulate_faces
+            self.loop_normals = scene_jms.loop_normals
             self.clean_normalize_weights = scene_jms.clean_normalize_weights
             self.edge_split = scene_jms.edge_split
             self.fix_rotations = scene_jms.fix_rotations
@@ -896,6 +934,10 @@ class ExportJMS(Operator, ExportHelper):
         row.enabled = is_enabled
         row.label(text='Generate Asset Subdirectories:')
         row.prop(self, "folder_structure", text='')
+        row = col.row()
+        row.enabled = is_enabled
+        row.label(text='Write Texture Paths:')
+        row.prop(self, "write_textures", text='')
         box = layout.box()
         box.label(text="Mask Options:")
         col = box.column(align=True)
@@ -926,6 +968,10 @@ class ExportJMS(Operator, ExportHelper):
         row.enabled = is_enabled
         row.label(text='Triangulate:')
         row.prop(self, "triangulate_faces", text='')
+        row = col.row()
+        row.enabled = is_enabled
+        row.label(text='Use Loop Normals:')
+        row.prop(self, "loop_normals", text='')
         row = col.row()
         row.enabled = is_enabled
         row.label(text='Clean and Normalize Weights:')

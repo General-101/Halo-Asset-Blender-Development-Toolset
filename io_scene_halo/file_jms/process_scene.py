@@ -33,7 +33,7 @@ from random import seed, randint
 from mathutils import Vector, Matrix
 from ..global_functions import mesh_processing, global_functions
 
-def process_scene(version, game_version, generate_checksum, fix_rotations, model_type, blend_scene, custom_scale):
+def process_scene(version, game_version, generate_checksum, fix_rotations, model_type, blend_scene, custom_scale, loop_normals, write_textures):
     default_region = mesh_processing.get_default_region_permutation_name(game_version)
     default_permutation = mesh_processing.get_default_region_permutation_name(game_version)
     region_list = ['unnamed']
@@ -248,8 +248,12 @@ def process_scene(version, game_version, generate_checksum, fix_rotations, model
                     loop = evaluted_mesh.loops[loop_index]
                     vert = evaluted_mesh.vertices[loop.vertex_index]
 
+                    use_loop = None
+                    if loop_normals:
+                        use_loop = loop
+
                     region = region_index
-                    scaled_translation, normal = mesh_processing.process_mesh_export_vert(vert, loop, "JMS", original_geo_matrix, custom_scale)
+                    scaled_translation, normal = mesh_processing.process_mesh_export_vert(vert, use_loop, "JMS", original_geo_matrix, custom_scale)
                     uv_set = mesh_processing.process_mesh_export_uv(evaluted_mesh, "JMS", loop_index, version)
                     color = mesh_processing.process_mesh_export_color(evaluted_mesh, loop_index)
                     node_influence_count, node_set, node_index_list = mesh_processing.process_mesh_export_weights(vert, blend_scene.armature, original_geo, vertex_groups, joined_list, "JMS")
@@ -641,7 +645,7 @@ def process_scene(version, game_version, generate_checksum, fix_rotations, model
             texture_path = '<none>'
             if not material == None:
                 name = mesh_processing.append_material_symbols(material, game_version, False)
-                if not material.node_tree == None:
+                if not material.node_tree == None and write_textures:
                     for node in material.node_tree.nodes:
                         if node.type == 'TEX_IMAGE':
                             if not node.image == None:

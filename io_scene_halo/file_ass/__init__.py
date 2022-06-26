@@ -125,6 +125,12 @@ class ASS_ScenePropertiesGroup(PropertyGroup):
         default = True,
         )
 
+    loop_normals: BoolProperty(
+        name ="Use Loop Normals",
+        description = "Use loop data for normals instead of vertex. May not match original 3DS Max output at the moment.",
+        default = True,
+        )
+
     clean_normalize_weights: BoolProperty(
         name ="Clean and Normalize Weights",
         description = "Remove unused vertex groups and normalize weights before export. Permanently affects scene",
@@ -233,6 +239,9 @@ class ASS_SceneProps(Panel):
         row = col.row()
         row.label(text='Triangulate:')
         row.prop(scene_ass, "triangulate_faces", text='')
+        row = col.row()
+        row.label(text='Use Loop Normals:')
+        row.prop(scene_ass, "loop_normals", text='')
         row = col.row()
         row.label(text='Clean and Normalize Weights:')
         row.prop(scene_ass, "clean_normalize_weights", text='')
@@ -343,6 +352,12 @@ class ExportASS(Operator, ExportHelper):
         default = True,
         )
 
+    loop_normals: BoolProperty(
+        name ="Use Loop Normals",
+        description = "Use loop data for normals instead of vertex. May not match original 3DS Max output at the moment.",
+        default = True,
+        )
+
     clean_normalize_weights: BoolProperty(
         name ="Clean and Normalize Weights",
         description = "Remove unused vertex groups and normalize weights before export. Permanently affects scene",
@@ -417,14 +432,15 @@ class ExportASS(Operator, ExportHelper):
             parser.add_argument('-arg5', '--hidden_geo', dest='hidden_geo', action='store_true')
             parser.add_argument('-arg6', '--apply_modifiers', dest='apply_modifiers', action='store_true')
             parser.add_argument('-arg7', '--triangulate_faces', dest='triangulate_faces', action='store_true')
-            parser.add_argument('-arg8', '--clean_normalize_weights', dest='clean_normalize_weights', action='store_true')
-            parser.add_argument('-arg9', '--edge_split', dest='edge_split', action='store_true')
-            parser.add_argument('-arg10', '--use_edge_angle', dest='use_edge_angle', action='store_true')
-            parser.add_argument('-arg11', '--split_angle', dest='split_angle', type=float, default=1.0)
-            parser.add_argument('-arg12', '--use_edge_sharp', dest='use_edge_sharp', action='store_true')
-            parser.add_argument('-arg13', '--scale_enum', dest='scale_enum', type=str, default="0")
-            parser.add_argument('-arg14', '--scale_float', dest='scale_float', type=float, default=1.0)
-            parser.add_argument('-arg15', '--console', dest='console', action='store_true', default=True)
+            parser.add_argument('-arg8', '--loop_normals', dest='loop_normals', action='store_true')
+            parser.add_argument('-arg9', '--clean_normalize_weights', dest='clean_normalize_weights', action='store_true')
+            parser.add_argument('-arg10', '--edge_split', dest='edge_split', action='store_true')
+            parser.add_argument('-arg11', '--use_edge_angle', dest='use_edge_angle', action='store_true')
+            parser.add_argument('-arg12', '--split_angle', dest='split_angle', type=float, default=1.0)
+            parser.add_argument('-arg13', '--use_edge_sharp', dest='use_edge_sharp', action='store_true')
+            parser.add_argument('-arg14', '--scale_enum', dest='scale_enum', type=str, default="0")
+            parser.add_argument('-arg15', '--scale_float', dest='scale_float', type=float, default=1.0)
+            parser.add_argument('-arg16', '--console', dest='console', action='store_true', default=True)
             args = parser.parse_known_args(argv)[0]
             print('filepath: ', args.filepath)
             print('ass_version: ', args.ass_version)
@@ -433,6 +449,7 @@ class ExportASS(Operator, ExportHelper):
             print('hidden_geo: ', args.hidden_geo)
             print('apply_modifiers: ', args.apply_modifiers)
             print('triangulate_faces: ', args.triangulate_faces)
+            print('loop_normals: ', args.loop_normals)
             print('clean_normalize_weights: ', args.clean_normalize_weights)
             print('edge_split: ', args.edge_split)
             print('use_edge_angle: ', args.use_edge_angle)
@@ -448,6 +465,7 @@ class ExportASS(Operator, ExportHelper):
             self.hidden_geo = args.hidden_geo
             self.apply_modifiers = args.apply_modifiers
             self.triangulate_faces = args.triangulate_faces
+            self.loop_normals = args.loop_normals
             self.clean_normalize_weights = args.clean_normalize_weights
             self.edge_split = args.edge_split
             self.use_edge_angle = args.use_edge_angle
@@ -457,7 +475,7 @@ class ExportASS(Operator, ExportHelper):
             self.scale_float = args.scale_float
             self.console = args.console
 
-        return global_functions.run_code("export_ass.write_file(context, self.filepath, self.ass_version, self.ass_version_h2, self.ass_version_h3, self.game_version, self.folder_structure, self.hidden_geo, self.apply_modifiers, self.triangulate_faces, self.edge_split, self.use_edge_angle, self.use_edge_sharp, self.split_angle, self.clean_normalize_weights, self.scale_enum, self.scale_float, self.console, self.report)")
+        return global_functions.run_code("export_ass.write_file(context, self.filepath, self.ass_version, self.ass_version_h2, self.ass_version_h3, self.game_version, self.folder_structure, self.hidden_geo, self.apply_modifiers, self.triangulate_faces, self.loop_normals, self.edge_split, self.use_edge_angle, self.use_edge_sharp, self.split_angle, self.clean_normalize_weights, self.scale_enum, self.scale_float, self.console, self.report)")
 
     def draw(self, context):
         scene = context.scene
@@ -477,6 +495,7 @@ class ExportASS(Operator, ExportHelper):
             self.hidden_geo = scene_ass.hidden_geo
             self.apply_modifiers = scene_ass.apply_modifiers
             self.triangulate_faces = scene_ass.triangulate_faces
+            self.loop_normals = scene_ass.loop_normals
             self.clean_normalize_weights = scene_ass.clean_normalize_weights
             self.edge_split = scene_ass.edge_split
             self.use_edge_angle = scene_ass.use_edge_angle
@@ -527,6 +546,10 @@ class ExportASS(Operator, ExportHelper):
         row.enabled = is_enabled
         row.label(text='Triangulate:')
         row.prop(self, "triangulate_faces", text='')
+        row = col.row()
+        row.enabled = is_enabled
+        row.label(text='Use Loop Normals:')
+        row.prop(self, "loop_normals", text='')
         row = col.row()
         row.enabled = is_enabled
         row.label(text='Clean and Normalize Weights:')
