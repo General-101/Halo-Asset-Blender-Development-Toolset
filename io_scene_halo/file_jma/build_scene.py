@@ -237,10 +237,10 @@ def jms_file_check(JMS_A, JMS_B, JMA_nodes, report):
     JMS_B_invalid = False
     if JMS_A and not JMS_B:
         for jms_node in JMS_A.nodes:
-            JMS_A_nodes.append(remove_node_prefix(jms_node.name))
+            JMS_A_nodes.append(remove_node_prefix(jms_node.name).lower())
 
         for jms_node_name in JMS_A_nodes:
-            if not remove_node_prefix(jms_node_name) in JMA_nodes:
+            if not jms_node_name in JMA_nodes:
                 JMS_A_invalid = True
                 report({'WARNING'}, "Node '%s' from JMS skeleton not found in JMA skeleton." % jms_node_name)
 
@@ -248,15 +248,15 @@ def jms_file_check(JMS_A, JMS_B, JMA_nodes, report):
 
     elif JMS_A and JMS_B:
         for jms_node in JMS_A.nodes:
-            JMS_A_nodes.append(remove_node_prefix(jms_node.name))
+            JMS_A_nodes.append(remove_node_prefix(jms_node.name).lower())
 
         for jms_node in JMS_B.nodes:
-            JMS_B_nodes.append(remove_node_prefix(jms_node.name))
+            JMS_B_nodes.append(remove_node_prefix(jms_node.name).lower())
 
         jms_nodes = JMS_A_nodes + JMS_B_nodes
 
         for jms_node_name in jms_nodes:
-            if not remove_node_prefix(jms_node_name) in JMA_nodes:
+            if not jms_node_name in JMA_nodes:
                 JMS_B_invalid = True
                 report({'WARNING'}, "Node '%s' from JMS skeleton not found in JMA skeleton." % jms_node_name)
 
@@ -298,7 +298,7 @@ def build_scene(context, JMA, JMS_A, JMS_B, filepath, game_version, fix_parents,
                     for node in armature_bone_list:
                         for jma_node in JMA.nodes:
                             if node.name == jma_node.name:
-                                scene_nodes.append(node.name)
+                                scene_nodes.append(remove_node_prefix(node.name).lower())
                                 exist_count += 1
 
                     if exist_count == len(JMA.nodes):
@@ -309,7 +309,7 @@ def build_scene(context, JMA, JMS_A, JMS_B, filepath, game_version, fix_parents,
                     mesh_processing.select_object(context, armature)
 
     for jma_node in JMA.nodes:
-        jma_nodes.append(jma_node.name)
+        jma_nodes.append(remove_node_prefix(jma_node.name).lower())
 
     if len(scene_nodes) > 0:
         for jma_node in jma_nodes:
