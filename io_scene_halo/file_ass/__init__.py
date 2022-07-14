@@ -107,6 +107,12 @@ class ASS_ScenePropertiesGroup(PropertyGroup):
         default = True,
         )
 
+    nonrender_geo: BoolProperty(
+        name ="Export non-render geometry",
+        description = "Whether or not we ignore geometry that has scene options that hides it from the render output",
+        default = True,
+        )
+
     folder_structure: BoolProperty(
         name ="Generate Asset Subdirectories",
         description = "Generate folder subdirectories for exported assets",
@@ -229,6 +235,9 @@ class ASS_SceneProps(Panel):
         row = col.row()
         row.label(text='Export Hidden Geometry:')
         row.prop(scene_ass, "hidden_geo", text='')
+        row = col.row()
+        row.label(text='Export Non-render Geometry:')
+        row.prop(scene_ass, "nonrender_geo", text='')
 
         box = layout.box()
         box.label(text="Scene Options:")
@@ -334,6 +343,12 @@ class ExportASS(Operator, ExportHelper):
         default = True,
         )
 
+    nonrender_geo: BoolProperty(
+        name ="Export non-render geometry",
+        description = "Whether or not we ignore geometry that has scene options that hides it from the render output",
+        default = True,
+        )
+
     folder_structure: BoolProperty(
         name ="Generate Asset Subdirectories",
         description = "Generate folder subdirectories for exported assets",
@@ -430,6 +445,7 @@ class ExportASS(Operator, ExportHelper):
             parser.add_argument('-arg3', '--game_version', dest='game_version', type=str, default="halo2")
             parser.add_argument('-arg4', '--folder_structure', dest='folder_structure', action='store_true')
             parser.add_argument('-arg5', '--hidden_geo', dest='hidden_geo', action='store_true')
+            parser.add_argument('-arg5', '--nonrender_geo', dest='nonrender_geo', action='store_true')
             parser.add_argument('-arg6', '--apply_modifiers', dest='apply_modifiers', action='store_true')
             parser.add_argument('-arg7', '--triangulate_faces', dest='triangulate_faces', action='store_true')
             parser.add_argument('-arg8', '--loop_normals', dest='loop_normals', action='store_true')
@@ -447,6 +463,7 @@ class ExportASS(Operator, ExportHelper):
             print('game_version: ', args.game_version)
             print('folder_structure: ', args.folder_structure)
             print('hidden_geo: ', args.hidden_geo)
+            print('nonrender_geo: ', args.nonrender_geo)
             print('apply_modifiers: ', args.apply_modifiers)
             print('triangulate_faces: ', args.triangulate_faces)
             print('loop_normals: ', args.loop_normals)
@@ -463,6 +480,7 @@ class ExportASS(Operator, ExportHelper):
             self.game_version = args.game_version
             self.folder_structure = args.folder_structure
             self.hidden_geo = args.hidden_geo
+            self.nonrender_geo = args.nonrender_geo
             self.apply_modifiers = args.apply_modifiers
             self.triangulate_faces = args.triangulate_faces
             self.loop_normals = args.loop_normals
@@ -493,6 +511,7 @@ class ExportASS(Operator, ExportHelper):
             self.ass_version_h3 = scene_ass.ass_version_h3
             self.folder_structure = scene_ass.folder_structure
             self.hidden_geo = scene_ass.hidden_geo
+            self.nonrender_geo = scene_ass.nonrender_geo
             self.apply_modifiers = scene_ass.apply_modifiers
             self.triangulate_faces = scene_ass.triangulate_faces
             self.loop_normals = scene_ass.loop_normals
@@ -534,6 +553,10 @@ class ExportASS(Operator, ExportHelper):
         row.enabled = is_enabled
         row.label(text='Export Hidden Geometry:')
         row.prop(self, "hidden_geo", text='')
+        row = col.row()
+        row.enabled = is_enabled
+        row.label(text='Export Non-render Geometry:')
+        row.prop(self, "nonrender_geo", text='')
 
         box = layout.box()
         box.label(text="Scene Options:")
