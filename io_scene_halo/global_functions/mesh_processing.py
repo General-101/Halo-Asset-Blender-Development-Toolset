@@ -74,6 +74,35 @@ def set_ignore(collections, mesh):
 
     return ignore
 
+def gather_collection_resources(layer_collection, layer_collection_set, object_set, hidden_geo, nonrender_geo):
+    # Don't include anything from collection if exclude
+    if layer_collection.exclude:
+        return
+
+    # Don't include anything from collection if hidden in an undesired way
+    if not hidden_geo and layer_collection.collection.hide_viewport:
+        return
+
+    if not nonrender_geo and layer_collection.collection.hide_render:
+        return
+
+    # Add collection to set of all included collections
+    layer_collection_set.add(layer_collection)
+
+    # Add all of collection's objects when not hidden in an undesired way
+    for obj in layer_collection.collection.objects:
+        if not hidden_geo and obj.hide_viewport:
+            continue
+
+        if not nonrender_geo and obj.hide_render:
+            continue
+
+        object_set.add(obj)
+
+    # Recursively gather resources for child collections
+    for collection in layer_collection.children:
+        gather_collection_resources(collection, layer_collection_set, object_set, hidden_geo, nonrender_geo)
+
 def count_steps(name, start, val):
     real_pos = start
     steps = 0

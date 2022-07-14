@@ -115,19 +115,13 @@ def scale_is_uniform(obj):
 
     return is_uniform
 
-def process_scene(context, version, game_version, hidden_geo, apply_modifiers, triangulate_faces, loop_normals, edge_split, clean_normalize_weights, custom_scale, report):
+def process_scene(context, version, game_version, hidden_geo, nonrender_geo, apply_modifiers, triangulate_faces, loop_normals, edge_split, clean_normalize_weights, custom_scale, report):
     ASS = ASSAsset()
-    
-    collections = []
-    layer_collections = list(context.view_layer.layer_collection.children)
 
-    while len(layer_collections) > 0:
-        collection_batch = layer_collections
-        layer_collections = []
-        for collection in collection_batch:
-            collections.append(collection)
-            for collection_child in collection.children:
-                layer_collections.append(collection_child)
+    layer_collection_list = set()
+    object_list = set()
+
+    mesh_processing.gather_collection_resources(context.view_layer.layer_collection, layer_collection_list, object_list, hidden_geo, nonrender_geo)
 
     default_region = mesh_processing.get_default_region_permutation_name(game_version)
     default_permutation = mesh_processing.get_default_region_permutation_name(game_version)
@@ -136,8 +130,6 @@ def process_scene(context, version, game_version, hidden_geo, apply_modifiers, t
 
     region_list = []
     permutation_list = []
-
-    object_list = list(context.scene.objects)
 
     ASS.materials = []
     ASS.objects = []
@@ -152,7 +144,7 @@ def process_scene(context, version, game_version, hidden_geo, apply_modifiers, t
     object_count = 0
 
     for obj in object_list:
-        if obj.type== 'MESH' and mesh_processing.set_ignore(collections, obj) == False:
+        if obj.type== 'MESH':
             if clean_normalize_weights:
                 mesh_processing.vertex_group_clean_normalize(context, obj, limit_value)
 
@@ -163,89 +155,85 @@ def process_scene(context, version, game_version, hidden_geo, apply_modifiers, t
     for obj in object_list:
         object_properties.append([obj.hide_get(), obj.hide_viewport])
         if hidden_geo:
-            mesh_processing.unhide_object(collections, obj)
+            mesh_processing.unhide_object(layer_collection_list, obj)
 
     for obj in object_list:
         if not scale_is_uniform(obj):
             report({'WARNING'}, "Object %s has non uniform scale. Object will not look correct ingame. Apply transforms and export again." % (obj.name))
 
         if obj.type == 'ARMATURE':
-            if mesh_processing.set_ignore(collections, obj) == False or hidden_geo:
-                for bone in obj.data.bones:
-                    instance_list.append(bone)
-                    if not bone.name in linked_object_list:
-                        linked_object_list.append(bone.name)
+            for bone in obj.data.bones:
+                instance_list.append(bone)
+                if not bone.name in linked_object_list:
+                    linked_object_list.append(bone.name)
 
-                    geometry_list.append((bone, bone, 'BONE', obj))
-                    object_count += 1
+                geometry_list.append((bone, bone, 'BONE', obj))
+                object_count += 1
 
         elif obj.type == 'LIGHT' and version >= 3:
-            if mesh_processing.set_ignore(collections, obj) == False or hidden_geo:
-                instance_list.append(obj)
-                if not obj.name in linked_object_list:
-                    linked_object_list.append(obj.name)
-                    object_count += 1
+            instance_list.append(obj)
+            if not obj.name in linked_object_list:
+                linked_object_list.append(obj.name)
+                object_count += 1
 
-                if obj.data.type == 'SPOT':
-                    geometry_list.append((obj, obj, 'SPOT_LGT'))
+            if obj.data.type == 'SPOT':
+                geometry_list.append((obj, obj, 'SPOT_LGT'))
 
-                elif obj.data.type == 'AREA':
-                    geometry_list.append((obj, obj, 'DIRECT_LGT'))
+            elif obj.data.type == 'AREA':
+                geometry_list.append((obj, obj, 'DIRECT_LGT'))
 
-                elif obj.data.type == 'POINT':
-                    geometry_list.append((obj, obj,'OMNI_LGT'))
+            elif obj.data.type == 'POINT':
+                geometry_list.append((obj, obj,'OMNI_LGT'))
 
-                elif obj.data.type == 'SUN':
-                    geometry_list.append((obj, obj, 'AMBIENT_LGT'))
+            elif obj.data.type == 'SUN':
+                geometry_list.append((obj, obj, 'AMBIENT_LGT'))
 
-                else:
-                    print("Bad light")
+            else:
+                print("Bad light")
 
         elif obj.type== 'MESH' and len(obj.data.polygons) > 0:
-            if mesh_processing.set_ignore(collections, obj) == False or hidden_geo:
-                instance_list.append(obj)
-                if not obj.data.name in linked_object_list:
-                    linked_object_list.append(obj.data.name)
-                    object_count += 1
+            instance_list.append(obj)
+            if not obj.data.name in linked_object_list:
+                linked_object_list.append(obj.data.name)
+                object_count += 1
 
-                if obj.data.ass_jms.Object_Type == 'SPHERE':
-                    evaluted_mesh = obj.to_mesh(preserve_all_data_layers=True)
-                    geometry_list.append((evaluted_mesh, obj, 'SPHERE'))
+            if obj.data.ass_jms.Object_Type == 'SPHERE':
+                evaluted_mesh = obj.to_mesh(preserve_all_data_layers=True)
+                geometry_list.append((evaluted_mesh, obj, 'SPHERE'))
 
-                elif obj.data.ass_jms.Object_Type == 'BOX':
-                    evaluted_mesh = obj.to_mesh(preserve_all_data_layers=True)
-                    geometry_list.append((evaluted_mesh, obj, 'BOX'))
+            elif obj.data.ass_jms.Object_Type == 'BOX':
+                evaluted_mesh = obj.to_mesh(preserve_all_data_layers=True)
+                geometry_list.append((evaluted_mesh, obj, 'BOX'))
 
-                elif obj.data.ass_jms.Object_Type == 'CAPSULES':
-                    evaluted_mesh = obj.to_mesh(preserve_all_data_layers=True)
-                    geometry_list.append((evaluted_mesh, obj, 'PILL'))
+            elif obj.data.ass_jms.Object_Type == 'CAPSULES':
+                evaluted_mesh = obj.to_mesh(preserve_all_data_layers=True)
+                geometry_list.append((evaluted_mesh, obj, 'PILL'))
 
-                elif obj.data.ass_jms.Object_Type == 'CONVEX SHAPES':
-                    if apply_modifiers:
-                        obj_for_convert = obj.evaluated_get(depsgraph)
-                        evaluted_mesh = obj_for_convert.to_mesh(preserve_all_data_layers=True, depsgraph=depsgraph)
-                        geometry_list.append((evaluted_mesh, obj, 'MESH'))
-
-                    else:
-                        evaluted_mesh = obj.to_mesh(preserve_all_data_layers=True)
-                        geometry_list.append((evaluted_mesh, obj, 'MESH'))
+            elif obj.data.ass_jms.Object_Type == 'CONVEX SHAPES':
+                if apply_modifiers:
+                    obj_for_convert = obj.evaluated_get(depsgraph)
+                    evaluted_mesh = obj_for_convert.to_mesh(preserve_all_data_layers=True, depsgraph=depsgraph)
+                    geometry_list.append((evaluted_mesh, obj, 'MESH'))
 
                 else:
-                    print("Bad object")
+                    evaluted_mesh = obj.to_mesh(preserve_all_data_layers=True)
+                    geometry_list.append((evaluted_mesh, obj, 'MESH'))
+
+            else:
+                print("Bad object")
 
         else:
-            if mesh_processing.set_ignore(collections, obj) == False or hidden_geo:
-                obj_data = None
-                obj_mesh_data = None
+            obj_data = None
+            obj_mesh_data = None
 
-                if obj:
-                    obj_data = obj
+            if obj:
+                obj_data = obj
 
-                if obj.data:
-                    obj_mesh_data = obj.data
+            if obj.data:
+                obj_mesh_data = obj.data
 
-                geometry_list.append((obj_mesh_data, obj_data, 'EMPTY'))
-                instance_list.append(obj_data)
+            geometry_list.append((obj_mesh_data, obj_data, 'EMPTY'))
+            instance_list.append(obj_data)
 
     ASS.instances.append(ASS.Instance(name='Scene Root', local_transform=ASS.Transform(), pivot_transform=ASS.Transform()))
     for idx, geometry in enumerate(geometry_list):
@@ -301,7 +289,7 @@ def process_scene(context, version, game_version, hidden_geo, apply_modifiers, t
                     else:
                         parent = original_geo.parent.data.bones[0]
 
-        if not parent == None and mesh_processing.set_ignore(collections, parent) == False:
+        if not parent == None and parent in object_list:
             parent_id = instance_list.index(parent)
 
         geo_matrix = global_functions.get_matrix(original_geo, original_geo, True, armature, instance_list, is_bone, version, 'ASS', False, custom_scale, False)
