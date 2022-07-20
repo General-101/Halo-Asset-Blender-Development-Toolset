@@ -29,7 +29,7 @@ import bpy
 
 from math import degrees
 from .format import ASSAsset
-from ..global_functions import mesh_processing, global_functions
+from ..global_functions import mesh_processing, global_functions, state_storage
 
 def get_material_strings(material, version):
     material_strings = []
@@ -122,6 +122,9 @@ def process_scene(context, version, game_version, hidden_geo, nonrender_geo, app
     object_list = set()
 
     mesh_processing.gather_collection_resources(context.view_layer.layer_collection, layer_collection_list, object_list, hidden_geo, nonrender_geo)
+
+    stored_collection_visibility = state_storage.store_collection_visibility(layer_collection_list)
+    stored_object_visibility = state_storage.store_object_visibility(object_list)
 
     default_region = mesh_processing.get_default_region_permutation_name(game_version)
     default_permutation = mesh_processing.get_default_region_permutation_name(game_version)
@@ -473,9 +476,7 @@ def process_scene(context, version, game_version, hidden_geo, nonrender_geo, app
 
         ASS.materials.append(ASS.Material(material_name, material_name, texture_path, slot_index, lod, permutation, region, material_data.ass_jms.material_effect, material_lightmap))
 
-    for idx, obj in enumerate(object_list):
-        property_value = object_properties[idx]
-        obj.hide_set(property_value[0])
-        obj.hide_viewport = property_value[1]
+    state_storage.restore_collection_visibility(stored_collection_visibility)
+    state_storage.restore_object_visibility(stored_object_visibility)
 
     return ASS
