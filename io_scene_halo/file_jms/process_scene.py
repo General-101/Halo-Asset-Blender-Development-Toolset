@@ -34,8 +34,12 @@ from mathutils import Vector, Matrix
 from ..global_functions import mesh_processing, global_functions
 
 def process_scene(version, game_version, generate_checksum, fix_rotations, model_type, blend_scene, custom_scale, loop_normals, write_textures):
+    JMS = JMSAsset()
+    JMS.node_checksum = 0
+
     default_region = mesh_processing.get_default_region_permutation_name(game_version)
     default_permutation = mesh_processing.get_default_region_permutation_name(game_version)
+
     region_list = ['unnamed']
     permutation_list = []
     material_list = []
@@ -44,9 +48,6 @@ def process_scene(version, game_version, generate_checksum, fix_rotations, model
     joined_list = sorted_list[0]
     reversed_joined_list = sorted_list[1]
 
-    JMS = JMSAsset()
-
-    JMS.node_checksum = 0
     for node in joined_list:
         is_bone = False
         if blend_scene.armature:
