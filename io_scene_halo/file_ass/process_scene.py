@@ -29,7 +29,7 @@ import bpy
 
 from math import degrees
 from .format import ASSAsset
-from ..global_functions import mesh_processing, global_functions, state_storage
+from ..global_functions import mesh_processing, global_functions, resource_management
 
 def get_material_strings(material, version):
     material_strings = []
@@ -118,13 +118,15 @@ def scale_is_uniform(obj):
 def process_scene(context, version, game_version, hidden_geo, nonrender_geo, apply_modifiers, triangulate_faces, loop_normals, edge_split, clean_normalize_weights, custom_scale, report):
     ASS = ASSAsset()
 
-    layer_collection_list = set()
-    object_list = set()
+    layer_collection_set = set()
+    object_set = set()
 
-    mesh_processing.gather_collection_resources(context.view_layer.layer_collection, layer_collection_list, object_list, hidden_geo, nonrender_geo)
+    resource_management.gather_collection_resources(context.view_layer.layer_collection, layer_collection_set, object_set, hidden_geo, nonrender_geo)
 
-    stored_collection_visibility = state_storage.store_collection_visibility(layer_collection_list)
-    stored_object_visibility = state_storage.store_object_visibility(object_list)
+    stored_collection_visibility = resource_management.store_collection_visibility(layer_collection_set)
+    stored_object_visibility = resource_management.store_object_visibility(object_set)
+
+    resource_management.unhide_relevant_resources(layer_collection_set, object_set)
 
     default_region = mesh_processing.get_default_region_permutation_name(game_version)
     default_permutation = mesh_processing.get_default_region_permutation_name(game_version)
@@ -143,10 +145,9 @@ def process_scene(context, version, game_version, hidden_geo, nonrender_geo, app
     linked_object_list = []
     linked_instance_list = []
     instance_list = [None]
-    object_properties = []
     object_count = 0
 
-    for obj in object_list:
+    for obj in object_set:
         if obj.type== 'MESH':
             if clean_normalize_weights:
                 mesh_processing.vertex_group_clean_normalize(context, obj, limit_value)
@@ -155,12 +156,8 @@ def process_scene(context, version, game_version, hidden_geo, nonrender_geo, app
                 mesh_processing.add_modifier(context, obj, triangulate_faces, edge_split, None)
 
     depsgraph = context.evaluated_depsgraph_get()
-    for obj in object_list:
-        object_properties.append([obj.hide_get(), obj.hide_viewport])
-        if hidden_geo:
-            mesh_processing.unhide_object(layer_collection_list, obj)
 
-    for obj in object_list:
+    for obj in object_set:
         if not scale_is_uniform(obj):
             report({'WARNING'}, "Object %s has non uniform scale. Object will not look correct ingame. Apply transforms and export again." % (obj.name))
 
@@ -292,7 +289,7 @@ def process_scene(context, version, game_version, hidden_geo, nonrender_geo, app
                     else:
                         parent = original_geo.parent.data.bones[0]
 
-        if not parent == None and parent in object_list:
+        if not parent == None and parent in object_set:
             parent_id = instance_list.index(parent)
 
         geo_matrix = global_functions.get_matrix(original_geo, original_geo, True, armature, instance_list, is_bone, version, 'ASS', False, custom_scale, False)
@@ -476,7 +473,7 @@ def process_scene(context, version, game_version, hidden_geo, nonrender_geo, app
 
         ASS.materials.append(ASS.Material(material_name, material_name, texture_path, slot_index, lod, permutation, region, material_data.ass_jms.material_effect, material_lightmap))
 
-    state_storage.restore_collection_visibility(stored_collection_visibility)
-    state_storage.restore_object_visibility(stored_object_visibility)
+    resource_management.restore_collection_visibility(stored_collection_visibility)
+    resource_management.restore_object_visibility(stored_object_visibility)
 
     return ASS

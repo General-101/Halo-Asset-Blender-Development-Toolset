@@ -119,13 +119,6 @@ class ParentIDFix():
         self.clavicle0 = clavicle0
         self.clavicle1 = clavicle1
 
-def unhide_all_collections(context):
-    for collection_viewport in context.view_layer.layer_collection.children:
-        collection_viewport.exclude = False
-
-    for collection_hide in bpy.data.collections:
-        collection_hide.hide_viewport = False
-
 def get_child(bone, bone_list):
     set_node = None
     for node in bone_list:
@@ -895,7 +888,7 @@ class PreshingSequenceGenerator32:
         residue = lim32(x**2 % prime)
         if x <= (prime // 2):
             return residue
-            
+
         else:
             return lim32(prime - residue)
 
