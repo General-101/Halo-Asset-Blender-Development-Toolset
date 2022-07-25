@@ -41,8 +41,9 @@ def store_collection_visibility(layer_collection_list):
         collection_visibility_list.append({
             'layer_collection': layer_collection,
             'exclude': layer_collection.exclude,
-            'hide_render': layer_collection.collection.hide_render,
-            'hide_viewport': layer_collection.collection.hide_viewport,
+            'hide_viewport': layer_collection.hide_viewport,
+            'collection_hide_render': layer_collection.collection.hide_render,
+            'collection_hide_viewport': layer_collection.collection.hide_viewport,
         })
 
     return collection_visibility_list
@@ -52,8 +53,9 @@ def restore_collection_visibility(collection_visibility_list):
         layer_collection = state['layer_collection']
 
         layer_collection.exclude = state['exclude']
-        layer_collection.collection.hide_render = state['hide_render']
-        layer_collection.collection.hide_viewport = state['hide_viewport']
+        layer_collection.hide_viewport = state['hide_viewport']
+        layer_collection.collection.hide_render = state['collection_hide_render']
+        layer_collection.collection.hide_viewport = state['collection_hide_viewport']
 
 def store_object_visibility(object_list):
     object_visibility_list = list()
