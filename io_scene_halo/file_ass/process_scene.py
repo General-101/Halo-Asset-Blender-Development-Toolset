@@ -121,11 +121,14 @@ def process_scene(context, version, game_version, hidden_geo, nonrender_geo, app
     layer_collection_set = set()
     object_set = set()
 
+    # Gather all scene resources that fit export criteria
     resource_management.gather_collection_resources(context.view_layer.layer_collection, layer_collection_set, object_set, hidden_geo, nonrender_geo)
 
+    # Store visibility for all relevant resources
     stored_collection_visibility = resource_management.store_collection_visibility(layer_collection_set)
     stored_object_visibility = resource_management.store_object_visibility(object_set)
 
+    # Unhide all relevant resources for exporting
     resource_management.unhide_relevant_resources(layer_collection_set, object_set)
 
     default_region = mesh_processing.get_default_region_permutation_name(game_version)
@@ -473,6 +476,7 @@ def process_scene(context, version, game_version, hidden_geo, nonrender_geo, app
 
         ASS.materials.append(ASS.Material(material_name, material_name, texture_path, slot_index, lod, permutation, region, material_data.ass_jms.material_effect, material_lightmap))
 
+    # Restore visibility status for all resources
     resource_management.restore_collection_visibility(stored_collection_visibility)
     resource_management.restore_object_visibility(stored_object_visibility)
 
