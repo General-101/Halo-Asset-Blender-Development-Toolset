@@ -34,6 +34,40 @@ def gather_collection_resources(layer_collection, layer_collection_set, object_s
     for collection in layer_collection.children:
         gather_collection_resources(collection, layer_collection_set, object_set, hidden_geo, nonrender_geo, True)
 
+def filter_root_nodes(node_list, is_jmi = False):
+    ''' Takes a set of objects and returns all that are root nodes '''
+
+    root_nodes = set()
+
+    for node in node_list:
+        # Is a root node if has no parent
+        if node.parent == None:
+            root_nodes.add(node)
+
+        # If exporting JMI root nodes will have a parent with a name starting with `!`
+        elif is_jmi and node.parent.name[0:1] == '!':
+            root_nodes.add(node)
+
+    return root_nodes
+
+def filter_objects_from_root_object(object_set, root_object, include_root: bool = False):
+    ''' Takes a set of objects and returns all that descend from the provided root object '''
+
+    filtered_children = list()
+
+    if include_root:
+        filtered_children.append(root_object)
+
+    # Get a list of all root object descendants
+    all_children = root_object.children_recursive
+
+    for child in all_children:
+        # Add child to filtered output only if it exists in the object set
+        if child in object_set:
+            filtered_children.append(child)
+
+    return filtered_children
+
 def store_collection_visibility(layer_collection_list):
     collection_visibility_list = list()
 
