@@ -212,6 +212,12 @@ class JMI_ScenePropertiesGroup(PropertyGroup):
         default = True,
         )
 
+    loop_normals: BoolProperty(
+        name ="Use Loop Normals",
+        description = "Use loop data for normals instead of vertex. May not match original 3DS Max output at the moment.",
+        default = True,
+        )
+
     clean_normalize_weights: BoolProperty(
         name ="Clean and Normalize Weights",
         description = "Remove unused vertex groups and normalize weights before export. Permanently affects scene",
@@ -230,6 +236,12 @@ class JMI_ScenePropertiesGroup(PropertyGroup):
         default = True,
         )
 
+    nonrender_geo: BoolProperty(
+        name ="Export non-render geometry",
+        description = "Whether or not we ignore geometry that has scene options that hides it from the render output",
+        default = True,
+        )
+
     export_render: BoolProperty(
         name ="Export render geometry",
         description = "Whether or not we ignore geometry that is marked as render",
@@ -245,6 +257,12 @@ class JMI_ScenePropertiesGroup(PropertyGroup):
     export_physics: BoolProperty(
         name ="Export physics geometry",
         description = "Whether or not we ignore geometry that is marked as physics",
+        default = True,
+        )
+
+    write_textures: BoolProperty(
+        name ="Write textures",
+        description = "Whether or not we write texture paths for materials",
         default = True,
         )
 
@@ -311,10 +329,10 @@ class JMI_SceneProps(Panel):
         col = box.column(align=True)
         row = col.row()
         row.prop(scene_jmi, "game_version", text='')
+        box = layout.box()
+        box.label(text="File Details:")
+        col = box.column(align=True)
         if scene_halo.expert_mode:
-            box = layout.box()
-            box.label(text="File Details:")
-            col = box.column(align=True)
             row = col.row()
             row.label(text='JMI Version:')
             if scene_jmi.game_version == 'haloce':
@@ -326,12 +344,20 @@ class JMI_SceneProps(Panel):
             elif scene_jmi.game_version == 'halo3mcc':
                 row.prop(scene_jmi, "jmi_version_h3", text='')
 
+        row = col.row()
+        row.label(text='Write Texture Paths:')
+        row.prop(scene_jmi, "write_textures", text='')
+
         box = layout.box()
         box.label(text="Mask Options:")
         col = box.column(align=True)
         row = col.row()
         row.label(text='Export Hidden Geometry:')
         row.prop(scene_jmi, "hidden_geo", text='')
+        row = col.row()
+        row.label(text='Export Non-render Geometry:')
+        row.prop(scene_jmi, "nonrender_geo", text='')
+
         row = col.row()
         row.label(text='Export Render Geometry:')
         row.prop(scene_jmi, "export_render", text='')
@@ -351,6 +377,9 @@ class JMI_SceneProps(Panel):
         row = col.row()
         row.label(text='Triangulate:')
         row.prop(scene_jmi, "triangulate_faces", text='')
+        row = col.row()
+        row.label(text='Use Loop Normals:')
+        row.prop(scene_jmi, "loop_normals", text='')
         row = col.row()
         row.label(text='Clean and Normalize Weights:')
         row.prop(scene_jmi, "clean_normalize_weights", text='')
@@ -507,6 +536,12 @@ class ExportJMI(Operator, ExportHelper):
         default = True,
         )
 
+    loop_normals: BoolProperty(
+        name ="Use Loop Normals",
+        description = "Use loop data for normals instead of vertex. May not match original 3DS Max output at the moment.",
+        default = True,
+        )
+
     clean_normalize_weights: BoolProperty(
         name ="Clean and Normalize Weights",
         description = "Remove unused vertex groups and normalize weights before export. Permanently affects scene",
@@ -531,6 +566,12 @@ class ExportJMI(Operator, ExportHelper):
         default = True,
         )
 
+    nonrender_geo: BoolProperty(
+        name ="Export non-render geometry",
+        description = "Whether or not we ignore geometry that has scene options that hides it from the render output",
+        default = True,
+        )
+
     export_render: BoolProperty(
         name ="Export render geometry",
         description = "Whether or not we ignore geometry that is marked as render",
@@ -546,6 +587,12 @@ class ExportJMI(Operator, ExportHelper):
     export_physics: BoolProperty(
         name ="Export physics geometry",
         description = "Whether or not we ignore geometry that is marked as physics",
+        default = True,
+        )
+
+    write_textures: BoolProperty(
+        name ="Write textures",
+        description = "Whether or not we write texture paths for materials",
         default = True,
         )
 
@@ -614,31 +661,37 @@ class ExportJMI(Operator, ExportHelper):
             parser.add_argument('-arg2', '--game_version', dest='game_version', type=str, default="halo2")
             parser.add_argument('-arg3', '--jmi_version', dest='jmi_version', type=str, default="8210")
             parser.add_argument('-arg4', '--hidden_geo', dest='hidden_geo', action='store_true')
-            parser.add_argument('-arg5', '--export_render', dest='export_render', action='store_true')
-            parser.add_argument('-arg6', '--export_collision', dest='export_collision', action='store_true')
-            parser.add_argument('-arg7', '--export_physics', dest='export_physics', action='store_true')
-            parser.add_argument('-arg8', '--apply_modifiers', dest='apply_modifiers', action='store_true')
-            parser.add_argument('-arg9', '--triangulate_faces', dest='triangulate_faces', action='store_true')
-            parser.add_argument('-arg10', '--clean_normalize_weights', dest='clean_normalize_weights', action='store_true')
-            parser.add_argument('-arg10', '--fix_rotations', dest='fix_rotations', action='store_true')
-            parser.add_argument('-arg11', '--edge_split', dest='edge_split', action='store_true')
-            parser.add_argument('-arg12', '--folder_type', dest='folder_type', action='store_true')
-            parser.add_argument('-arg13', '--use_edge_angle', dest='use_edge_angle', action='store_true')
-            parser.add_argument('-arg14', '--split_angle', dest='split_angle', type=float, default=1.0)
-            parser.add_argument('-arg15', '--use_edge_sharp', dest='use_edge_sharp', action='store_true')
-            parser.add_argument('-arg16', '--scale_enum', dest='scale_enum', type=str, default="0")
-            parser.add_argument('-arg17', '--scale_float', dest='scale_float', type=float, default=1.0)
-            parser.add_argument('-arg18', '--console', dest='console', action='store_true', default=True)
+            parser.add_argument('-arg5', '--nonrender_geo', dest='nonrender_geo', action='store_true')
+            parser.add_argument('-arg6', '--export_render', dest='export_render', action='store_true')
+            parser.add_argument('-arg7', '--export_collision', dest='export_collision', action='store_true')
+            parser.add_argument('-arg8', '--export_physics', dest='export_physics', action='store_true')
+            parser.add_argument('-arg9', '--write_textures', dest='write_textures', action='store_true')
+            parser.add_argument('-arg10', '--apply_modifiers', dest='apply_modifiers', action='store_true')
+            parser.add_argument('-arg11', '--triangulate_faces', dest='triangulate_faces', action='store_true')
+            parser.add_argument('-arg12', '--loop_normals', dest='loop_normals', action='store_true')
+            parser.add_argument('-arg13', '--clean_normalize_weights', dest='clean_normalize_weights', action='store_true')
+            parser.add_argument('-arg14', '--fix_rotations', dest='fix_rotations', action='store_true')
+            parser.add_argument('-arg15', '--edge_split', dest='edge_split', action='store_true')
+            parser.add_argument('-arg16', '--folder_type', dest='folder_type', action='store_true')
+            parser.add_argument('-arg17', '--use_edge_angle', dest='use_edge_angle', action='store_true')
+            parser.add_argument('-arg18', '--split_angle', dest='split_angle', type=float, default=1.0)
+            parser.add_argument('-arg19', '--use_edge_sharp', dest='use_edge_sharp', action='store_true')
+            parser.add_argument('-arg20', '--scale_enum', dest='scale_enum', type=str, default="0")
+            parser.add_argument('-arg21', '--scale_float', dest='scale_float', type=float, default=1.0)
+            parser.add_argument('-arg22', '--console', dest='console', action='store_true', default=True)
             args = parser.parse_known_args(argv)[0]
             print('filepath: ', args.filepath)
             print('game_version: ', args.game_version)
             print('jmi_version: ', args.jmi_version)
             print('hidden_geo: ', args.hidden_geo)
+            print('nonrender_geo: ', args.nonrender_geo)
             print('export_render: ', args.export_render)
             print('export_collision: ', args.export_collision)
             print('export_physics: ', args.export_physics)
+            print('write_textures: ', args.write_textures)
             print('apply_modifiers: ', args.apply_modifiers)
             print('triangulate_faces: ', args.triangulate_faces)
+            print('loop_normals: ', args.loop_normals)
             print('clean_normalize_weights: ', args.clean_normalize_weights)
             print('fix_rotations: ', args.fix_rotations)
             print('edge_split: ', args.edge_split)
@@ -653,11 +706,14 @@ class ExportJMI(Operator, ExportHelper):
             self.game_version = args.game_version
             self.jmi_version = args.jmi_version
             self.hidden_geo = args.hidden_geo
+            self.nonrender_geo = args.nonrender_geo
             self.export_render = args.export_render
             self.export_collision = args.export_collision
             self.export_physics = args.export_physics
+            self.write_textures = args.write_textures
             self.apply_modifiers = args.apply_modifiers
             self.triangulate_faces = args.triangulate_faces
+            self.loop_normals = args.loop_normals
             self.clean_normalize_weights = args.clean_normalize_weights
             self.fix_rotations = args.fix_rotations
             self.edge_split = args.edge_split
@@ -669,7 +725,7 @@ class ExportJMI(Operator, ExportHelper):
             self.scale_float = args.scale_float
             self.console = args.console
 
-        return global_functions.run_code("export_jmi.write_file(context, self.filepath, self.report, self.jmi_version, self.jmi_version_ce, self.jmi_version_h2, self.jmi_version_h3, self.apply_modifiers, self.triangulate_faces, self.folder_type, self.edge_split, self.use_edge_angle, self.use_edge_sharp, self.split_angle, self.clean_normalize_weights, self.scale_enum, self.scale_float, self.console, self.hidden_geo, self.export_render, self.export_collision, self.export_physics, self.game_version, self.fix_rotations)")
+        return global_functions.run_code("export_jmi.write_file(context, self.filepath, self.report, self.jmi_version, self.jmi_version_ce, self.jmi_version_h2, self.jmi_version_h3, self.apply_modifiers, self.triangulate_faces, self.loop_normals, self.folder_type, self.edge_split, self.use_edge_angle, self.use_edge_sharp, self.split_angle, self.clean_normalize_weights, self.scale_enum, self.scale_float, self.console, self.hidden_geo, self.nonrender_geo, self.export_render, self.export_collision, self.export_physics, self.write_textures, self.game_version, self.fix_rotations)")
 
     def draw(self, context):
         scene = context.scene
@@ -688,11 +744,14 @@ class ExportJMI(Operator, ExportHelper):
             self.jmi_version_h2 = scene_jmi.jmi_version_h2
             self.jmi_version_h3 = scene_jmi.jmi_version_h3
             self.hidden_geo = scene_jmi.hidden_geo
+            self.nonrender_geo = scene_jmi.nonrender_geo
             self.export_render = scene_jmi.export_render
             self.export_collision = scene_jmi.export_collision
             self.export_physics = scene_jmi.export_physics
+            self.write_textures = scene_jmi.write_textures
             self.apply_modifiers = scene_jmi.apply_modifiers
             self.triangulate_faces = scene_jmi.triangulate_faces
+            self.loop_normals = scene_jmi.loop_normals
             self.clean_normalize_weights = scene_jmi.clean_normalize_weights
             self.edge_split = scene_jmi.edge_split
             self.folder_type = scene_jmi.folder_type
@@ -708,10 +767,10 @@ class ExportJMI(Operator, ExportHelper):
         row = col.row()
         row.enabled = is_enabled
         row.prop(self, "game_version", text='')
+        box = layout.box()
+        box.label(text="File Details:")
+        col = box.column(align=True)
         if scene_halo.expert_mode:
-            box = layout.box()
-            box.label(text="File Details:")
-            col = box.column(align=True)
             row = col.row()
             row.enabled = is_enabled
             row.label(text='JMI Version:')
@@ -724,6 +783,11 @@ class ExportJMI(Operator, ExportHelper):
             elif self.game_version == 'halo3mcc':
                 row.prop(scene_jmi, "jmi_version_h3", text='')
 
+        row = col.row()
+        row.enabled = is_enabled
+        row.label(text='Write Texture Paths:')
+        row.prop(self, "write_textures", text='')
+
         box = layout.box()
         box.label(text="Mask Options:")
         col = box.column(align=True)
@@ -731,6 +795,11 @@ class ExportJMI(Operator, ExportHelper):
         row.enabled = is_enabled
         row.label(text='Export Hidden Geometry:')
         row.prop(self, "hidden_geo", text='')
+        row = col.row()
+        row.enabled = is_enabled
+        row.label(text='Export Non-render Geometry:')
+        row.prop(self, "nonrender_geo", text='')
+
         row = col.row()
         row.enabled = is_enabled
         row.label(text='Export Render Geometry:')
@@ -755,6 +824,10 @@ class ExportJMI(Operator, ExportHelper):
         row.enabled = is_enabled
         row.label(text='Triangulate:')
         row.prop(self, "triangulate_faces", text='')
+        row = col.row()
+        row.enabled = is_enabled
+        row.label(text='Use Loop Normals:')
+        row.prop(self, "loop_normals", text='')
         row = col.row()
         row.enabled = is_enabled
         row.label(text='Clean and Normalize Weights:')

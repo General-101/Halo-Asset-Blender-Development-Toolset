@@ -212,6 +212,7 @@ class JMS_SceneProps(Panel):
         row = col.row()
         row.label(text='Write Texture Paths:')
         row.prop(scene_jms, "write_textures", text='')
+
         box = layout.box()
         box.label(text="Mask Options:")
         col = box.column(align=True)
