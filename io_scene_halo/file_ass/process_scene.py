@@ -127,6 +127,7 @@ def process_scene(context, version, game_version, hidden_geo, nonrender_geo, app
     # Store visibility for all relevant resources
     stored_collection_visibility = resource_management.store_collection_visibility(layer_collection_set)
     stored_object_visibility = resource_management.store_object_visibility(object_set)
+    stored_modifier_visibility = resource_management.store_modifier_visibility(object_set)
 
     # Unhide all relevant resources for exporting
     resource_management.unhide_relevant_resources(layer_collection_set, object_set)
@@ -479,5 +480,6 @@ def process_scene(context, version, game_version, hidden_geo, nonrender_geo, app
     # Restore visibility status for all resources
     resource_management.restore_collection_visibility(stored_collection_visibility)
     resource_management.restore_object_visibility(stored_object_visibility)
+    resource_management.restore_modifier_visibility(stored_modifier_visibility)
 
     return ASS
