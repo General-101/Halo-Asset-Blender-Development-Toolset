@@ -111,6 +111,27 @@ def restore_object_visibility(object_visibility_list):
         obj.hide_render = state['hide_render']
         obj.hide_viewport = state['hide_viewport']
 
+def store_modifier_visibility(object_list):
+    modifier_visibility_list = list()
+
+    for obj in object_list:
+        for modifier in obj.modifiers:
+            modifier_visibility_list.append({
+                'modifier': modifier,
+                'show_render': modifier.show_render,
+                'show_viewport': modifier.show_viewport,
+                'show_in_editmode': modifier.show_in_editmode,
+            })
+
+    return modifier_visibility_list
+
+def restore_modifier_visibility(modifier_visibility_list):
+    for state in modifier_visibility_list:
+        modifier = state['modifier']
+        modifier.show_render = state['show_render']
+        modifier.show_viewport = state['show_viewport']
+        modifier.show_in_editmode = state['show_in_editmode']
+
 def unhide_relevant_resources(layer_collection_set, object_set):
     for layer_collection in layer_collection_set:
         layer_collection.exclude = False
