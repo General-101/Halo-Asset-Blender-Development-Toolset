@@ -25,34 +25,46 @@
 # ##### END MIT LICENSE BLOCK #####
 
 from .format import JMAAsset
-from ..global_functions import mesh_processing, global_functions
+from ..global_functions import mesh_processing, global_functions, resource_management, scene_validation
 
-def process_scene(context, version, generate_checksum, game_version, extension, custom_scale, biped_controller, fix_rotations):
+def process_scene(
+    context,
+    version,
+    generate_checksum,
+    game_version,
+    extension,
+    custom_scale,
+    biped_controller,
+    fix_rotations,
+):
     JMA = JMAAsset()
 
-    collections = []
-    layer_collections = list(context.view_layer.layer_collection.children)
+    hidden_geo = False
+    nonrender_geo = True
 
-    while len(layer_collections) > 0:
-        collection_batch = layer_collections
-        layer_collections = []
-        for collection in collection_batch:
-            collections.append(collection)
-            for collection_child in collection.children:
-                layer_collections.append(collection_child)
+    layer_collection_set = set()
+    object_set = set()
 
-    object_properties = []
-    object_list = list(context.scene.objects)
+    # Gather all scene resources that fit export criteria
+    resource_management.gather_collection_resources(context.view_layer.layer_collection, layer_collection_set, object_set, hidden_geo, nonrender_geo)
+
+    # Store visibility for all relevant resources
+    stored_collection_visibility = resource_management.store_collection_visibility(layer_collection_set)
+    stored_object_visibility = resource_management.store_object_visibility(object_set)
+    stored_modifier_visibility = resource_management.store_modifier_visibility(object_set)
+
+    # Unhide all relevant resources for exporting
+    resource_management.unhide_relevant_resources(layer_collection_set, object_set)
+
     node_list = []
     armature = []
     armature_count = 0
     first_frame = context.scene.frame_start
     last_frame = context.scene.frame_end + 1
     total_frame_count = context.scene.frame_end - first_frame + 1
-    for obj in object_list:
-        object_properties.append([obj.hide_get(), obj.hide_viewport])
-        if obj.type == 'ARMATURE' and mesh_processing.set_ignore(collections, obj) == False:
-            mesh_processing.unhide_object(collections, obj)
+
+    for obj in object_set:
+        if obj.type == 'ARMATURE':
             armature_count += 1
             armature = obj
             mesh_processing.select_object(context, obj)
@@ -66,7 +78,7 @@ def process_scene(context, version, generate_checksum, game_version, extension, 
     reversed_joined_list = sorted_list[1]
 
     blend_scene = global_functions.BlendScene(0, armature_count, 0, 0, 0, 0, armature, node_list, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None)
-    global_functions.validate_halo_jma_scene(game_version, version, blend_scene, object_list, extension)
+    scene_validation.validate_halo_jma_scene(game_version, version, blend_scene, object_set, extension)
 
     JMA.node_checksum = 0
     for node in joined_list:
@@ -121,9 +133,10 @@ def process_scene(context, version, generate_checksum, game_version, extension, 
             JMA.biped_controller_transforms.append(JMA.Transform(translation, rotation, scale))
 
     context.scene.frame_set(1)
-    for idx, obj in enumerate(object_list):
-        property_value = object_properties[idx]
-        obj.hide_set(property_value[0])
-        obj.hide_viewport = property_value[1]
+
+    # Restore visibility status for all resources
+    resource_management.restore_collection_visibility(stored_collection_visibility)
+    resource_management.restore_object_visibility(stored_object_visibility)
+    resource_management.restore_modifier_visibility(stored_modifier_visibility)
 
     return JMA

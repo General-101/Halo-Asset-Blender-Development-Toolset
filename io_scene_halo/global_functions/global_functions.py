@@ -1030,37 +1030,6 @@ def get_directory(context, game_version, model_type, folder_structure, asset_typ
 
     return root_directory
 
-def validate_halo_jma_scene(game_version, version, blend_scene, object_list, extension):
-    h2_extension_list = ['JRMX', 'JMH']
-    node_count = len(blend_scene.node_list)
-
-    if len(object_list) == 0:
-        raise ParseError("No objects in scene.")
-
-    elif node_count == 0:
-        raise ParseError("No nodes in scene. Add an armature.")
-
-    elif extension in h2_extension_list and game_version == 'haloce':
-        raise ParseError("This extension is not used in Halo CE.")
-
-    elif game_version == 'haloce' and version >= 16393:
-        raise ParseError("This version is not supported for Halo CE. Choose from 16390-16392 if you wish to export for Halo CE.")
-
-    elif game_version == 'halo2' and version >= 16396:
-        raise ParseError("This version is not supported for Halo 2. Choose from 16390-16395 if you wish to export for Halo 2.")
-
-    elif game_version == 'halo3' and version >= 16396:
-        raise ParseError("This version is not supported for Halo 3. Choose from 16390-16395 if you wish to export for Halo 3.")
-
-    elif game_version == 'haloce' and node_count > 64:
-        raise ParseError("This model has more nodes than Halo CE supports. Please limit your node count to 64 nodes")
-
-    elif game_version == 'halo2' and node_count > 255:
-        raise ParseError("This model has more nodes than Halo 2 supports. Please limit your node count to 255 nodes")
-
-    elif game_version == 'halo3' and node_count > 255:
-        raise ParseError("This model has more nodes than Halo 3 supports. Please limit your node count to 255 nodes")
-
 def string_empty_check(string):
     is_empty = False
     if not string == None and (len(string) == 0 or string.isspace()):

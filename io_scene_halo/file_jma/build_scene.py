@@ -30,7 +30,7 @@ import bpy
 from math import radians
 from .format import JMAAsset
 from mathutils import Matrix
-from ..global_functions import mesh_processing, global_functions
+from ..global_functions import mesh_processing, global_functions, resource_management
 
 def remove_node_prefix(string):
     node_prefix_tuple = ('b ', 'b_', 'bone ', 'bone_', 'frame ', 'frame_', 'bip01 ', 'bip01_')
@@ -269,24 +269,21 @@ def build_scene(context, JMA, JMS_A, JMS_B, filepath, game_version, fix_parents,
     scene = context.scene
     view_layer = context.view_layer
     armature = None
-    object_list = list(scene.objects)
 
-    collections = []
-    layer_collections = list(context.view_layer.layer_collection.children)
+    hidden_geo = False
+    nonrender_geo = True
 
-    while len(layer_collections) > 0:
-        collection_batch = layer_collections
-        layer_collections = []
-        for collection_root in collection_batch:
-            collections.append(collection_root)
-            for collection_child in collection_root.children:
-                layer_collections.append(collection_child)
+    layer_collection_set = set()
+    object_set = set()
+
+    # Gather all scene resources that fit export criteria
+    resource_management.gather_collection_resources(context.view_layer.layer_collection, layer_collection_set, object_set, hidden_geo, nonrender_geo)
 
     scene_nodes = []
     jma_nodes = []
-    for obj in object_list:
+    for obj in object_set:
         if armature is None:
-            if obj.type == 'ARMATURE' and mesh_processing.set_ignore(collections, obj) == False:
+            if obj.type == 'ARMATURE':
                 is_armature_good = False
                 if JMA.version == 16390:
                     if len(obj.data.bones) == JMA.node_count:
