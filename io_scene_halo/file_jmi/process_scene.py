@@ -25,31 +25,17 @@
 # ##### END MIT LICENSE BLOCK #####
 
 from .format import JMIAsset
-from ..global_functions import mesh_processing, global_functions
+from ..global_functions import resource_management
 
-def process_scene(context):
+def process_scene(object_set):
     JMI = JMIAsset()
 
-    collections = []
-    layer_collections = list(context.view_layer.layer_collection.children)
-
-    while len(layer_collections) > 0:
-        collection_batch = layer_collections
-        layer_collections = []
-        for collection in collection_batch:
-            collections.append(collection)
-            for collection_child in collection.children:
-                layer_collections.append(collection_child)
-
-    scene = context.scene
-    object_list = list(scene.objects)
-
-    for obj in object_list:
+    for obj in object_set:
         if obj.name[0:1].lower() == '!':
-            mesh_processing.unhide_object(collections, obj)
             JMI.world_nodes.append(obj)
 
     for node in JMI.world_nodes:
-        JMI.children_sets.append(global_functions.get_children(node))
+        children = resource_management.filter_objects_from_root_object(object_set, node, True)
+        JMI.children_sets.append(list(children))
 
     return JMI

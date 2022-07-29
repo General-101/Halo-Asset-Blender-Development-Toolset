@@ -29,13 +29,13 @@ import bpy
 from .build_asset import build_asset
 from ..global_functions import global_functions
 
-def write_file(context, filepath, ass_version, ass_version_h2, ass_version_h3, game_version, folder_structure, hidden_geo, apply_modifiers, triangulate_faces, loop_normals, edge_split, use_edge_angle, use_edge_sharp, split_angle, clean_normalize_weights, scale_enum, scale_float, console, report):
+def write_file(context, filepath, ass_version, ass_version_h2, ass_version_h3, game_version, folder_structure, hidden_geo, nonrender_geo, apply_modifiers, triangulate_faces, loop_normals, edge_split, use_edge_angle, use_edge_sharp, split_angle, clean_normalize_weights, scale_enum, scale_float, console, report):
     custom_scale = global_functions.set_scale(scale_enum, scale_float)
     version = global_functions.get_version(ass_version, None, ass_version_h2, ass_version_h3, game_version, console)
 
     edge_split = global_functions.EdgeSplit(edge_split, use_edge_angle, split_angle, use_edge_sharp)
 
-    build_asset(context, filepath, version, game_version, folder_structure, hidden_geo, apply_modifiers, triangulate_faces, loop_normals, edge_split, clean_normalize_weights, custom_scale, report)
+    build_asset(context, filepath, version, game_version, folder_structure, hidden_geo, nonrender_geo, apply_modifiers, triangulate_faces, loop_normals, edge_split, clean_normalize_weights, custom_scale, report)
 
     report({'INFO'}, "Export completed successfully")
     return {'FINISHED'}

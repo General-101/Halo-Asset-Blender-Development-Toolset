@@ -212,12 +212,17 @@ class JMS_SceneProps(Panel):
         row = col.row()
         row.label(text='Write Texture Paths:')
         row.prop(scene_jms, "write_textures", text='')
+
         box = layout.box()
         box.label(text="Mask Options:")
         col = box.column(align=True)
         row = col.row()
         row.label(text='Export Hidden Geometry:')
         row.prop(scene_jms, "hidden_geo", text='')
+        row = col.row()
+        row.label(text='Export Non-render Geometry:')
+        row.prop(scene_jms, "nonrender_geo", text='')
+
         row = col.row()
         row.label(text='Export Render Geometry:')
         row.prop(scene_jms, "export_render", text='')
@@ -452,6 +457,12 @@ class JMS_ScenePropertiesGroup(PropertyGroup):
         default = True,
         )
 
+    nonrender_geo: BoolProperty(
+        name ="Export non-render geometry",
+        description = "Whether or not we ignore geometry that has scene options that hides it from the render output",
+        default = True,
+        )
+
     export_render: BoolProperty(
         name ="Export render geometry",
         description = "Whether or not we ignore geometry that is marked as render",
@@ -664,7 +675,7 @@ class ExportJMS(Operator, ExportHelper):
         description = "Automatically triangulate all faces. Does not permanently affect scene",
         default = True,
         )
-        
+
     loop_normals: BoolProperty(
         name ="Use Loop Normals",
         description = "Use loop data for normals instead of vertex. May not match original 3DS Max output at the moment.",
@@ -692,6 +703,12 @@ class ExportJMS(Operator, ExportHelper):
     hidden_geo: BoolProperty(
         name ="Export hidden geometry",
         description = "Whether or not we ignore geometry that has scene options that hides it from the viewport",
+        default = True,
+        )
+
+    nonrender_geo: BoolProperty(
+        name ="Export non-render geometry",
+        description = "Whether or not we ignore geometry that has scene options that hides it from the render output",
         default = True,
         )
 
@@ -787,23 +804,24 @@ class ExportJMS(Operator, ExportHelper):
             parser.add_argument('-arg6', '--generate_checksum', dest='generate_checksum', action='store_true')
             parser.add_argument('-arg7', '--folder_structure', dest='folder_structure', action='store_true')
             parser.add_argument('-arg8', '--hidden_geo', dest='hidden_geo', action='store_true')
-            parser.add_argument('-arg9', '--export_render', dest='export_render', action='store_true')
-            parser.add_argument('-arg10', '--export_collision', dest='export_collision', action='store_true')
-            parser.add_argument('-arg11', '--export_physics', dest='export_physics', action='store_true')
-            parser.add_argument('-arg12', '--write_textures', dest='write_textures', action='store_true')
-            parser.add_argument('-arg13', '--apply_modifiers', dest='apply_modifiers', action='store_true')
-            parser.add_argument('-arg14', '--triangulate_faces', dest='triangulate_faces', action='store_true')
-            parser.add_argument('-arg15', '--loop_normals', dest='loop_normals', action='store_true')
-            parser.add_argument('-arg16', '--clean_normalize_weights', dest='clean_normalize_weights', action='store_true')
-            parser.add_argument('-arg17', '--fix_rotations', dest='fix_rotations', action='store_true')
-            parser.add_argument('-arg18', '--edge_split', dest='edge_split', action='store_true')
-            parser.add_argument('-arg19', '--folder_type', dest='folder_type', action='0')
-            parser.add_argument('-arg20', '--use_edge_angle', dest='use_edge_angle', action='store_true')
-            parser.add_argument('-arg21', '--split_angle', dest='split_angle', type=float, default=1.0)
-            parser.add_argument('-arg22', '--use_edge_sharp', dest='use_edge_sharp', action='store_true')
-            parser.add_argument('-arg23', '--scale_enum', dest='scale_enum', type=str, default="0")
-            parser.add_argument('-arg24', '--scale_float', dest='scale_float', type=float, default=1.0)
-            parser.add_argument('-arg25', '--console', dest='console', action='store_true', default=True)
+            parser.add_argument('-arg9', '--nonrender_geo', dest='nonrender_geo', action='store_true')
+            parser.add_argument('-arg10', '--export_render', dest='export_render', action='store_true')
+            parser.add_argument('-arg11', '--export_collision', dest='export_collision', action='store_true')
+            parser.add_argument('-arg12', '--export_physics', dest='export_physics', action='store_true')
+            parser.add_argument('-arg13', '--write_textures', dest='write_textures', action='store_true')
+            parser.add_argument('-arg14', '--apply_modifiers', dest='apply_modifiers', action='store_true')
+            parser.add_argument('-arg15', '--triangulate_faces', dest='triangulate_faces', action='store_true')
+            parser.add_argument('-arg16', '--loop_normals', dest='loop_normals', action='store_true')
+            parser.add_argument('-arg17', '--clean_normalize_weights', dest='clean_normalize_weights', action='store_true')
+            parser.add_argument('-arg18', '--fix_rotations', dest='fix_rotations', action='store_true')
+            parser.add_argument('-arg19', '--edge_split', dest='edge_split', action='store_true')
+            parser.add_argument('-arg20', '--folder_type', dest='folder_type', action='0')
+            parser.add_argument('-arg21', '--use_edge_angle', dest='use_edge_angle', action='store_true')
+            parser.add_argument('-arg22', '--split_angle', dest='split_angle', type=float, default=1.0)
+            parser.add_argument('-arg23', '--use_edge_sharp', dest='use_edge_sharp', action='store_true')
+            parser.add_argument('-arg24', '--scale_enum', dest='scale_enum', type=str, default="0")
+            parser.add_argument('-arg25', '--scale_float', dest='scale_float', type=float, default=1.0)
+            parser.add_argument('-arg26', '--console', dest='console', action='store_true', default=True)
             args = parser.parse_known_args(argv)[0]
             print('filepath: ', args.filepath)
             print('game_version: ', args.game_version)
@@ -813,6 +831,7 @@ class ExportJMS(Operator, ExportHelper):
             print('generate_checksum: ', args.generate_checksum)
             print('folder_structure: ', args.folder_structure)
             print('hidden_geo: ', args.hidden_geo)
+            print('nonrender_geo: ', args.nonrender_geo)
             print('export_render: ', args.export_render)
             print('export_collision: ', args.export_collision)
             print('export_physics: ', args.export_physics)
@@ -838,6 +857,7 @@ class ExportJMS(Operator, ExportHelper):
             self.generate_checksum = args.generate_checksum
             self.folder_structure = args.folder_structure
             self.hidden_geo = args.hidden_geo
+            self.nonrender_geo = args.nonrender_geo
             self.export_render = args.export_render
             self.export_collision = args.export_collision
             self.export_physics = args.export_physics
@@ -856,7 +876,7 @@ class ExportJMS(Operator, ExportHelper):
             self.scale_float = args.scale_float
             self.console = args.console
 
-        return global_functions.run_code("export_jms.command_queue(context, self.filepath, self.report, self.jms_version, self.jms_version_ce, self.jms_version_h2, self.jms_version_h3, self.generate_checksum, self.folder_structure, self.folder_type, self.apply_modifiers, self.triangulate_faces, self.loop_normals, self.fix_rotations, self.edge_split, self.use_edge_angle, self.use_edge_sharp, self.split_angle, self.clean_normalize_weights, self.scale_enum, self.scale_float, self.console, self.permutation_ce, self.level_of_detail_ce, self.hidden_geo, self.export_render, self.export_collision, self.export_physics, self.write_textures, self.game_version, None)")
+        return global_functions.run_code("export_jms.write_file(context, self.filepath, self.report, self.jms_version, self.jms_version_ce, self.jms_version_h2, self.jms_version_h3, self.generate_checksum, self.folder_structure, self.folder_type, self.apply_modifiers, self.triangulate_faces, self.loop_normals, self.fix_rotations, self.edge_split, self.use_edge_angle, self.use_edge_sharp, self.split_angle, self.clean_normalize_weights, self.scale_enum, self.scale_float, self.console, self.permutation_ce, self.level_of_detail_ce, self.hidden_geo, self.nonrender_geo, self.export_render, self.export_collision, self.export_physics, self.write_textures, self.game_version)")
 
     def draw(self, context):
         scene = context.scene
@@ -879,6 +899,7 @@ class ExportJMS(Operator, ExportHelper):
             self.generate_checksum = scene_jms.generate_checksum
             self.folder_structure = scene_jms.folder_structure
             self.hidden_geo = scene_jms.hidden_geo
+            self.nonrender_geo = scene_jms.nonrender_geo
             self.export_render = scene_jms.export_render
             self.export_collision = scene_jms.export_collision
             self.export_physics = scene_jms.export_physics
@@ -938,6 +959,7 @@ class ExportJMS(Operator, ExportHelper):
         row.enabled = is_enabled
         row.label(text='Write Texture Paths:')
         row.prop(self, "write_textures", text='')
+
         box = layout.box()
         box.label(text="Mask Options:")
         col = box.column(align=True)
@@ -945,6 +967,11 @@ class ExportJMS(Operator, ExportHelper):
         row.enabled = is_enabled
         row.label(text='Export Hidden Geometry:')
         row.prop(self, "hidden_geo", text='')
+        row = col.row()
+        row.enabled = is_enabled
+        row.label(text='Export Non-render Geometry:')
+        row.prop(self, "nonrender_geo", text='')
+
         row = col.row()
         row.enabled = is_enabled
         row.label(text='Export Render Geometry:')

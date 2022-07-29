@@ -28,9 +28,45 @@ import os
 
 from ..file_jms import export_jms
 from .process_scene import process_scene
+from ..global_functions import resource_management
 
-def build_asset(context, JMS_args, version, game_version, root_directory, filename, report):
-    JMI = process_scene(context)
+from .format import JMIAsset
+
+def build_asset(
+    context,
+
+    JMS_args: JMIAsset.JMSArgs,
+    version,
+    game_version,
+    write_textures,
+    root_directory,
+    filename,
+    report,
+):
+    layer_collection_set = set()
+    object_set = set()
+
+    # Gather all scene resources that fit export criteria
+    resource_management.gather_collection_resources(
+        context.view_layer.layer_collection,
+
+        layer_collection_set,
+        object_set,
+
+        JMS_args.hidden_geo,
+        JMS_args.nonrender_geo,
+    )
+
+    # Store visibility for all relevant resources
+    stored_collection_visibility = resource_management.store_collection_visibility(layer_collection_set)
+    stored_object_visibility = resource_management.store_object_visibility(object_set)
+    stored_modifier_visibility = resource_management.store_modifier_visibility(object_set)
+
+    # Unhide all relevant resources for exporting
+    resource_management.unhide_relevant_resources(layer_collection_set, object_set)
+
+    JMI = process_scene(object_set)
+
     if version >= 8207:
         file = open(root_directory + os.sep + filename, 'w', encoding='utf_8')
 
@@ -68,6 +104,49 @@ def build_asset(context, JMS_args, version, game_version, root_directory, filena
             os.makedirs(world_set)
 
         bulk_output = world_set + os.sep + world_name
-        export_jms.command_queue(context, bulk_output, report, JMS_args.jmi_version, JMS_args.jmi_version_ce, JMS_args.jmi_version_h2, JMS_args.jmi_version_h3, True, True, JMS_args.folder_type, JMS_args.apply_modifiers, JMS_args.triangulate_faces, JMS_args.fix_rotations, JMS_args.edge_split, JMS_args.use_edge_angle, JMS_args.use_edge_sharp, JMS_args.split_angle, JMS_args.clean_normalize_weights, JMS_args.scale_enum, JMS_args.scale_float, JMS_args.console, permutation_name, lod_setting, JMS_args.hidden_geo, JMS_args.export_render, JMS_args.export_collision, JMS_args.export_physics, game_version, world_nodes)
+
+        export_jms.command_queue(
+            context,
+            True,
+            bulk_output,
+            report,
+
+            JMS_args.jmi_version,
+            JMS_args.jmi_version_ce,
+            JMS_args.jmi_version_h2,
+            JMS_args.jmi_version_h3,
+
+            True,
+            True,
+            JMS_args.folder_type,
+
+            JMS_args.apply_modifiers,
+            JMS_args.triangulate_faces,
+            JMS_args.loop_normals,
+            JMS_args.fix_rotations,
+            JMS_args.edge_split,
+            JMS_args.use_edge_angle,
+            JMS_args.use_edge_sharp,
+            JMS_args.split_angle,
+            JMS_args.clean_normalize_weights,
+            JMS_args.scale_enum,
+            JMS_args.scale_float,
+            JMS_args.console,
+            permutation_name,
+            lod_setting,
+
+            JMS_args.export_render,
+            JMS_args.export_collision,
+            JMS_args.export_physics,
+
+            write_textures,
+            game_version,
+            world_nodes,
+        )
+
+    # Restore visibility status for all resources
+    resource_management.restore_collection_visibility(stored_collection_visibility)
+    resource_management.restore_object_visibility(stored_object_visibility)
+    resource_management.restore_modifier_visibility(stored_modifier_visibility)
 
     report({'INFO'}, "Export completed successfully")

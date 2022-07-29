@@ -48,32 +48,6 @@ class Vertex:
         self.UV = UV
         self.node_index = node_index
 
-def unhide_object(collections, mesh):
-    mesh_collection_list = mesh.users_collection
-    for collection in collections:
-        for mesh_collection in mesh_collection_list:
-            if collection.name == mesh_collection.name:
-                collection.hide_viewport = False
-                mesh_collection.hide_viewport = False
-                collection.exclude= False
-
-    mesh.hide_set(False)
-    mesh.hide_viewport = False
-
-def set_ignore(collections, mesh):
-    ignore = False
-    mesh_collection_list = mesh.users_collection
-    for collection in collections:
-        for mesh_collection in mesh_collection_list:
-            if collection.name == mesh_collection.name:
-                if collection.hide_viewport or not collection.visible_get() or collection.exclude:
-                    ignore = True
-
-    if not ignore and (mesh.hide_viewport or mesh.hide_get()):
-        ignore = True
-
-    return ignore
-
 def count_steps(name, start, val):
     real_pos = start
     steps = 0
