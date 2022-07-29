@@ -25,6 +25,9 @@ def gather_collection_resources(layer_collection, layer_collection_set, object_s
         if not hidden_geo and obj.hide_viewport:
             continue
 
+        if not hidden_geo and obj.hide_get():
+            continue
+
         if not nonrender_geo and obj.hide_render:
             continue
 
