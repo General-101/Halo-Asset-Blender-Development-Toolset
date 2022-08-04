@@ -250,8 +250,6 @@ def append_material_symbols(material, game_version, is_ass):
 
             if material.ass_jms.water_surface or "'" in used_symbol_list:
                 processed_symbol_name += "'"
-            if material.ass_jms.slip_surface or "0" in used_symbol_list:
-                processed_symbol_name += "0"
             if material.ass_jms.group_transparents_by_plane or "]" in used_symbol_list:
                 processed_symbol_name += "]"
 
