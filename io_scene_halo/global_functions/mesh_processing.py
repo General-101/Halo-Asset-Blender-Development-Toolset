@@ -64,7 +64,7 @@ def gather_symbols(used_symbols_list, processed_symbol_name, game_version):
         symbol_list = ("%", "#", "?", "!", "@", "*", "$", "^", "-", "&", "=", ".", ";", ")", ">", "<", "|", "~", "(", "{", "}", "[")
 
     elif game_version == "halo3mcc":
-        symbol_list = ("%", "#", "?", "!", "@", "*", "$", "^", "-", "&", "=", ".", ";", ")", ">", "<", "|", "~", "(", "{", "}", "[", "'", "0", "]")
+        symbol_list = ("%", "#", "?", "!", "@", "*", "$", "^", "-", "&", "=", ".", ";", ")", ">", "<", "|", "~", "(", "{", "}", "[", "'", "]")
 
     for idx, char in enumerate(symbol_name): # loop through the characters in the name
         if char in symbol_list: # Check if the character exists in the symbols list
@@ -98,7 +98,7 @@ def gather_parameters(name):
 
 def append_material_symbols(material, game_version, is_ass):
     material_name = material.name
-    if not global_functions.string_empty_check(material.ass_jms.name_override):
+    if material.ass_jms.is_bm and not global_functions.string_empty_check(material.ass_jms.name_override):
         material_name = material.ass_jms.name_override
 
     processed_symbol_name = material_name

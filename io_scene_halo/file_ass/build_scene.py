@@ -131,14 +131,6 @@ def build_scene(context, filepath, report):
         object_index = instance.object_index
         unique_id = instance.unique_id
 
-        pivot_transform = instance.pivot_transform
-
-        pivot_scale = (pivot_transform.scale, pivot_transform.scale, pivot_transform.scale)
-        if ASS.version == 1:
-            pivot_scale = pivot_transform.scale
-
-        pivot_transform = Matrix.LocRotScale(pivot_transform.translation, pivot_transform.rotation, pivot_scale)
-
         geo_class = 'EMPTY'
         object_radius = 2
         object_height = 1
@@ -215,9 +207,7 @@ def build_scene(context, filepath, report):
                         bm = bmesh.new()
                         bmesh.ops.create_cone(bm, cap_ends=True, cap_tris=False, segments=12, radius1=1, radius2=1, depth=2)
                         bm.transform(Matrix.Translation((0, 0, 1)))
-                        
-                        bmesh.ops.transform(bm, matrix=pivot_transform, verts=bm.verts)
-                        
+
                         bm.to_mesh(object_data)
                         bm.free()
 
@@ -225,18 +215,12 @@ def build_scene(context, filepath, report):
                         object_dimension = object_radius * 2
                         object_mesh.dimensions = (object_dimension, object_dimension, (object_dimension + object_height))
 
-                        mesh_processing.select_object(context, object_mesh)
-                        bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
-                        mesh_processing.deselect_objects(context)
-
                     elif geo_class == 'SPHERE':
                         set_primitive_material(object_material_index, ASS, object_data)
 
                         bm = bmesh.new()
                         bmesh.ops.create_uvsphere(bm, u_segments=32, v_segments=16, radius=1)
-                        
-                        bmesh.ops.transform(bm, matrix=pivot_transform, verts=bm.verts)
-                        
+
                         bm.to_mesh(object_data)
                         bm.free()
 
@@ -244,32 +228,20 @@ def build_scene(context, filepath, report):
                         object_dimension = object_radius * 2
                         object_mesh.dimensions = (object_dimension, object_dimension, object_dimension)
 
-                        mesh_processing.select_object(context, object_mesh)
-                        bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
-                        mesh_processing.deselect_objects(context)
-
                     elif geo_class == 'BOX':
                         set_primitive_material(object_material_index, ASS, object_data)
 
                         bm = bmesh.new()
                         bmesh.ops.create_cube(bm, size=1.0)
-                        
-                        bmesh.ops.transform(bm, matrix=pivot_transform, verts=bm.verts)
-                        
+
                         bm.to_mesh(object_data)
                         bm.free()
 
                         object_mesh.data.ass_jms.Object_Type = 'BOX'
                         object_mesh.dimensions = ((object_extents[0] * 2), (object_extents[1] * 2), (object_extents[2] * 2))
 
-                        mesh_processing.select_object(context, object_mesh)
-                        bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
-                        mesh_processing.deselect_objects(context)
-
                     elif geo_class == 'MESH':
-                        bm, vert_normal_list = mesh_processing.process_mesh_import_data('halo3', ASS, object_element, object_mesh, random_color_gen, 'ASS', 0, None, None, None, False)
-
-                        bmesh.ops.transform(bm, matrix=pivot_transform, verts=bm.verts)
+                        bm, vert_normal_list = mesh_processing.process_mesh_import_data('halo3', None, ASS, object_element, object_mesh, random_color_gen, 'ASS', 0, None, None, None, False)
 
                         bm.to_mesh(object_data)
                         bm.free()
@@ -300,19 +272,27 @@ def build_scene(context, filepath, report):
     for idx, instance in enumerate(ASS.instances):
         object_index = instance.object_index
         unique_id = instance.unique_id
+        object_scene = object_list[idx]
 
         geo_class = 'EMPTY'
 
         local_transform = instance.local_transform
-
+        pivot_transform = instance.pivot_transform
         local_scale = (local_transform.scale, local_transform.scale, local_transform.scale)
+        pivot_scale = (pivot_transform.scale, pivot_transform.scale, pivot_transform.scale)
         if ASS.version == 1:
             local_scale = local_transform.scale
+            pivot_scale = pivot_transform.scale
+
+        local_matrix = Matrix.LocRotScale(local_transform.translation, local_transform.rotation, local_scale)
+        pivot_matrix = Matrix.LocRotScale(pivot_transform.translation, pivot_transform.rotation, pivot_scale)
+        full_matrix = local_matrix
 
         if not unique_id == -1:
-            object_list[idx].location = local_transform.translation
-            object_list[idx].rotation_euler = local_transform.rotation.to_euler()
-            object_list[idx].scale = local_scale
+            if not object_index == -1:
+                full_matrix = local_matrix @ pivot_matrix
+
+            object_scene.matrix_world = full_matrix
 
             parent_index = instance.parent_id
             if not parent_index == -1:
@@ -320,7 +300,7 @@ def build_scene(context, filepath, report):
                 parent_unique_id = parent_instance.unique_id
                 parent_parent_id = parent_instance.parent_id
                 if parent_unique_id >= -1 and parent_parent_id >= -1:
-                    object_list[idx].parent = object_list[parent_index]
+                    object_scene.parent = object_list[parent_index]
 
     report({'INFO'}, "Import completed successfully")
     return {'FINISHED'}
