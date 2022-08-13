@@ -241,7 +241,7 @@ def build_scene(context, filepath, report):
                         object_mesh.dimensions = ((object_extents[0] * 2), (object_extents[1] * 2), (object_extents[2] * 2))
 
                     elif geo_class == 'MESH':
-                        bm, vert_normal_list = mesh_processing.process_mesh_import_data('halo3', None, ASS, object_element, object_mesh, random_color_gen, 'ASS', 0, None, None, None, False)
+                        bm, vert_normal_list = mesh_processing.process_mesh_import_data('halo3', ASS, object_element, object_mesh, random_color_gen, 'ASS', 0, None, None, None, False)
 
                         bm.to_mesh(object_data)
                         bm.free()
