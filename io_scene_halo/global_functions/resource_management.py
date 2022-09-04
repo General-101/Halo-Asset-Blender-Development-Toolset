@@ -102,7 +102,6 @@ def store_collection_visibility(layer_collection_list):
     for layer_collection in layer_collection_list:
         collection_visibility_list.append({
             'layer_collection': layer_collection,
-            'exclude': layer_collection.exclude,
             'hide_viewport': layer_collection.hide_viewport,
             'collection_hide_render': layer_collection.collection.hide_render,
             'collection_hide_viewport': layer_collection.collection.hide_viewport,
@@ -114,7 +113,6 @@ def restore_collection_visibility(collection_visibility_list):
     for state in collection_visibility_list:
         layer_collection = state['layer_collection']
 
-        layer_collection.exclude = state['exclude']
         layer_collection.hide_viewport = state['hide_viewport']
         layer_collection.collection.hide_render = state['collection_hide_render']
         layer_collection.collection.hide_viewport = state['collection_hide_viewport']
@@ -162,7 +160,6 @@ def restore_modifier_visibility(modifier_visibility_list):
 
 def unhide_relevant_resources(layer_collection_set, object_set):
     for layer_collection in layer_collection_set:
-        layer_collection.exclude = False
         layer_collection.hide_viewport = False
         layer_collection.collection.hide_viewport = False
 
