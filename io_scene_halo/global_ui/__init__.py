@@ -854,6 +854,65 @@ class ASS_JMS_MaterialPropertiesGroup(PropertyGroup):
         min = 0.0,
         )
 
+class Halo_ObjectProps(Panel):
+    bl_label = "Halo Object Properties"
+    bl_idname = "JSON_PT_ObjectDetailsPanel"
+    bl_space_type = "PROPERTIES"
+    bl_region_type = "WINDOW"
+    bl_context = "data"
+    bl_options = {"DEFAULT_CLOSED"}
+
+    @classmethod
+    def poll(cls, context):
+        scene = context.scene
+        scene_halo = scene.halo
+
+        if scene_halo.game_version == 'reach':
+            return True
+
+    def draw(self, context):
+        layout = self.layout
+
+class Halo_ObjectMeshProps(Panel):
+    bl_label = "Halo Mesh Properties"
+    bl_idname = "JSON_PT_MeshDetailsPanel"
+    bl_space_type = "PROPERTIES"
+    bl_region_type = "WINDOW"
+    bl_context = "data"
+    bl_options = {"DEFAULT_CLOSED"}
+    bl_parent_id = "JSON_PT_ObjectDetailsPanel"
+
+    def draw(self, context):
+        layout = self.layout
+
+        mesh = context.object.data
+        mesh_ass_jms = mesh.ass_jms
+
+        col = layout.column(align=True)
+        row = col.row()
+        row.label(text='Mesh Type Override')
+        row.prop(mesh_ass_jms, "ObjectMesh_Type", text='')
+
+class Halo_ObjectMarkerProps(Panel):
+    bl_label = "Halo Marker Properties"
+    bl_idname = "JSON_PT_MarkerDetailsPanel"
+    bl_space_type = "PROPERTIES"
+    bl_region_type = "WINDOW"
+    bl_context = "data"
+    bl_options = {"DEFAULT_CLOSED"}
+    bl_parent_id = "JSON_PT_ObjectDetailsPanel"
+
+    def draw(self, context):
+        layout = self.layout
+
+        mesh = context.object.data
+        mesh_ass_jms = mesh.ass_jms
+
+        col = layout.column(align=True)
+        row = col.row()
+        row.label(text='Marker Type')
+        row.prop(mesh_ass_jms, "ObjectMarker_Type", text='')
+
 class Halo_MeshProps(Panel):
     bl_label = "Halo Mesh Properties"
     bl_idname = "HALO_PT_MeshDetailsPanel"
@@ -871,10 +930,11 @@ class Halo_MeshProps(Panel):
         mesh = obj.data
 
         show_panel = None
-        if hasattr(obj, 'marker') and obj.name[0:1].lower() == '#' or hasattr(mesh, 'ass_jms') and not scene_halo.game_version == 'haloce' or hasattr(obj, 'jmi') and obj.name[0:1].lower() == '!' and scene_halo.game_version == 'haloce':
-            show_panel = True
+        if scene_halo.game_version == 'haloce' or scene_halo.game_version == 'halo2' or scene_halo.game_version == 'halo3':
+            if hasattr(obj, 'marker') and obj.name[0:1].lower() == '#' or hasattr(mesh, 'ass_jms') and not scene_halo.game_version == 'haloce' or hasattr(obj, 'jmi') and obj.name[0:1].lower() == '!' and scene_halo.game_version == 'haloce':
+                show_panel = True
 
-        return show_panel
+            return show_panel
 
     def draw(self, context):
         layout = self.layout
@@ -948,6 +1008,49 @@ class ASS_JMS_MeshPropertiesGroup(PropertyGroup):
         name="XREF Name",
         description="Set the name of the XREF object. The model file should contain an object by this name",
     )
+    
+    ObjectMesh_Type : EnumProperty(
+        name="Mesh Type Override",
+        description="Select the override for a mesh type. If set to anything other than none, the object prefix will be ignored in preference for this override",
+        default = "NONE",
+        items=[ ('NONE', "None", "None"),
+                ('COLLISION', "Collision", "Collision"),
+                ('INSTANCED GEOMETRY', "Instanced Geometry", "Instanced Geometry"),
+                ('INSTANCED GEOMETRY COLLISION', "Instanced Geometry Collision", "Instanced Geometry Collision"),
+                ('INSTANCED GEOMETRY PHYSICS', "Instanced Geometry Physics", "Instanced Geometry Physics"),
+                ('INSTANCED GEOMETRY MARKER', "Instanced Geometry Marker", "Instanced Geometry Marker"),
+                ('INSTANCED GEOMETRY RAIN BLOCKER', "Instanced Geometry Rain Blocker", "Instanced Geometry Rain Blocker"),
+                ('INSTANCED GEOMETRY VERTICAL RAIN SHEET', "Instanced Geometry Vertical Rain Sheet", "Instanced Geometry Vertical Rain Sheet"),
+                ('DECORATOR', "Decorator", "Decorator"),
+                ('OBJECT INSTANCE', "Object Instance", "Object Instance"),
+                ('PHYSICS', "Physics", "Physics"),
+                ('PORTAL', "Portal", "Portal"),
+                ('SEAM', "Seam", "Seam"),
+                ('PLANAR FOG VOLUME', "Planar Fog Volume", "Planar Fog Volume"),
+                ('WATER PHYSICS VOLUME', "Water Physics Volume", "Water Physics Volume"),
+                ('WATER SURFACE', "Water Surface", "Water Surface"),
+                ('LIGHTMAP REGION', "Lightmap Region", "Lightmap Region"),
+                ('COOKIE CUTTER', "Cookie Cutter", "Cookie Cutter"),
+               ]
+        )
+    
+    ObjectMarker_Type : EnumProperty(
+        name="Marker Type",
+        description="Select the marker type",
+        default = "MODEL",
+        items=[ ('NONE', "None", "None"),
+                ('MODEL', "Model", "Model"),
+                ('GAME INSTANCE', "Game Instance", "Game Instance"),
+                ('PATHFINDING SPHERE', "Pathfinding Sphere", "Pathfinding Sphere"),
+                ('WATER VOLUME FLOW', "Water Volume Flow", "Water Volume Flow"),
+                ('PHYSICS HINGE CONTRAINT', "Physics Hinge Constraint", "Physics Hinge Constraint"),
+                ('PHYSICS SOCKET CONTRAINT', "Physics Socket Constraint", "Physics Socket Constraint"),
+                ('TARGET', "Target", "Target"),
+                ('GARBAGE', "Garbage", "Garbage"),
+                ('EFFECTS', "Effects", "Effects"),
+                ('HINT', "Hint", "Hint"),
+               ]
+        )    
 
 class Halo_SceneProps(Panel):
     bl_label = "Halo Scene Properties"
@@ -1197,6 +1300,9 @@ classeshalo = (
     ASS_JMS_MeshPropertiesGroup,
     ASS_JMS_MaterialPropertiesGroup,
     Halo_MeshProps,
+    Halo_ObjectProps,
+    Halo_ObjectMeshProps,
+    Halo_ObjectMarkerProps,
     ASS_JMS_MeshProps,
     ASS_LightPropertiesGroup,
     ASS_LightProps,
