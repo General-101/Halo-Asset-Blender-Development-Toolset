@@ -46,6 +46,7 @@ from . import file_jms
 from . import file_qua
 from . import file_tag
 from . import file_wrl
+from . import file_fbx
 from . import misc
 
 modules = [
@@ -57,6 +58,7 @@ modules = [
     file_qua,
     file_tag,
     file_wrl,
+    file_fbx,
     misc
 ]
 
