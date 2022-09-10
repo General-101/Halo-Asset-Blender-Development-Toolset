@@ -101,8 +101,17 @@ class ASS_JMS_MaterialProps(Panel):
             material_ass_jms = current_material.ass_jms
             layout.enabled = material_ass_jms.is_bm
             row = layout.row()
-            row.label(text="Name Override:")
-            row.prop(material_ass_jms, "name_override", text='')
+            if scene_halo.game_version == 'halo2' or scene_halo.game_version == 'halo3':
+                row.label(text="Name Override:")
+                row.prop(material_ass_jms, "name_override", text='')
+            if scene_halo.game_version == 'reach': # added if here to more accruately identify what is needed for Reach. Incorporated into jms_ass class, but maybe this needs a name change so clearer that it includes json exports
+                col = layout.column(align=True)
+                row.label(text="Shader Path:")
+                row.prop(material_ass_jms, "shader_path", text='')
+                row = col.row()
+                row.label(text="Material Override")
+                row.prop(material_ass_jms, "material_override", text='')
+                row = col.row()
             if scene_halo.game_version == 'halo2' or scene_halo.game_version == 'halo3':
                 row = layout.row()
                 row.label(text="Material Effect:")
@@ -116,6 +125,13 @@ class ASS_JMS_MaterialFlagsProps(Panel):
     bl_context = "material"
     bl_options = {'DEFAULT_CLOSED'}
     bl_parent_id = "ASS_JMS_PT_MaterialPanel"
+
+    @classmethod
+    def poll(self, context):  # Added poll here to that flags aren't drawn for Reach exports
+        scene = context.scene
+        scene_halo = scene.halo
+        if scene_halo.game_version == 'haloce' or scene_halo.game_version == 'halo2' or scene_halo.game_version == 'halo3':
+            return True
 
     def draw(self, context):
         layout = self.layout
@@ -486,6 +502,23 @@ class ASS_JMS_MaterialPropertiesGroup(PropertyGroup):
         name = "Name Override",
         description = "If filled then export will use the name set here instead of the material name",
         default = "",
+        )
+        
+    shader_path: StringProperty(
+        name = "Shader Path",
+        description = "Define the relative path to a shader, including the file extension",
+        default = "",
+        )
+
+    material_override: EnumProperty(
+        name = "Material Override",
+        description = "Select to override the shader path with a special material type e.g. sky / seamsealer",
+        default = "NONE",
+        items=[ ('NONE', "None", "None"),
+                ('SKY', "Sky", "Sky"),
+                ('SEAMSEALER', "Seamsealer", "Seamsealer"),
+                ('PORTAL', "Portal", "Portal"),
+               ]
         )
 
     material_effect: StringProperty(
@@ -956,6 +989,7 @@ class Halo_ScenePropertiesGroup(PropertyGroup):
         items=[ ('haloce', "Halo CE", "Show properties for Halo Custom Edition Or Halo CE MCC"),
                 ('halo2', "Halo 2", "Show properties for Halo 2 Vista or Halo 2 MCC"),
                 ('halo3', "Halo 3", "Show properties for Halo 3 MCC"),
+                ('reach', "Halo Reach", "Show properties for Halo Reach MCC"),
                ]
         )
 
