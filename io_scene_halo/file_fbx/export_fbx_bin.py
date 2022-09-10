@@ -2982,6 +2982,24 @@ def fbx_takes_elements(root, scene_data):
 
 # ##### "Main" functions. #####
 
+import json
+
+def save_json(filepath=""):
+    temp = ({'test' : 117})
+    haloJSON = json.dumps(temp, indent=4)
+    pathList = filepath.split(".")
+    
+    jsonPath = ""
+
+    for x in range(len(pathList)-1):
+        jsonPath += pathList[x]
+    jsonPath += ".json"
+
+    jsonFile = open(jsonPath, "w")
+    print('\nJSON export starting... %r' % jsonPath)
+    jsonFile.write(haloJSON)
+    jsonFile.close()
+
 # This func can be called with just the filepath
 def save_single(operator, scene, depsgraph, filepath="",
                 global_matrix=Matrix(),
@@ -3211,6 +3229,7 @@ def save(operator, context,
 
         depsgraph = context.evaluated_depsgraph_get()
         ret = save_single(operator, context.scene, depsgraph, filepath, **kwargs_mod)
+        save_json(filepath)
     else:
         # XXX We need a way to generate a depsgraph for inactive view_layers first...
         # XXX Also, what to do in case of batch-exporting scenes, when there is more than one view layer?
