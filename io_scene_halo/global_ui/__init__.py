@@ -39,7 +39,8 @@ from bpy.props import (
         FloatProperty,
         StringProperty,
         PointerProperty,
-        FloatVectorProperty
+        FloatVectorProperty,
+        IntVectorProperty,
         )
 
 class Halo_XREFPath(Operator):
@@ -873,6 +874,17 @@ class Halo_ObjectProps(Panel):
     def draw(self, context):
         layout = self.layout
 
+        mesh = context.object.data
+        mesh_ass_jms = mesh.ass_jms
+
+        col = layout.column(align=True)
+        row = col.row()
+        row.label(text='Object Type Override')
+        row.prop(mesh_ass_jms, "Object_Type_Override", text='')
+        row = col.row()
+        row.label(text='Region')
+        row.prop(mesh_ass_jms, "region_name", text='')
+
 class Halo_ObjectMeshProps(Panel):
     bl_label = "Halo Mesh Properties"
     bl_idname = "JSON_PT_MeshDetailsPanel"
@@ -912,6 +924,97 @@ class Halo_ObjectMarkerProps(Panel):
         row = col.row()
         row.label(text='Marker Type')
         row.prop(mesh_ass_jms, "ObjectMarker_Type", text='')
+        row = col.row()
+        row.label(text='Marker Group')
+        row.prop(mesh_ass_jms, "Marker_Group_Name", text='')
+        row = col.row()
+        row.label(text='Marker Velocity')
+        row.prop(mesh_ass_jms, "Marker_Velocity", text='')
+
+class Halo_ObjectMarkerInstanceProps(Panel):
+    bl_label = "Halo Marker Instance Properties"
+    bl_idname = "JSON_PT_MarkerInstanceDetailsPanel"
+    bl_space_type = "PROPERTIES"
+    bl_region_type = "WINDOW"
+    bl_context = "data"
+    bl_options = {"DEFAULT_CLOSED"}
+    bl_parent_id = "JSON_PT_MarkerDetailsPanel"
+
+    def draw(self, context):
+        layout = self.layout
+
+        mesh = context.object.data
+        mesh_ass_jms = mesh.ass_jms
+
+        if not mesh_ass_jms.ObjectMarker_Type == 'GAME INSTANCE':
+            layout.enabled = False
+
+        col = layout.column(align=True)
+        row = col.row()
+        row.label(text='Marker Game Instance Tag')
+        row.prop(mesh_ass_jms, "Marker_Game_Instance_Tag_Name", text='')
+        row = col.row()
+        row.label(text='Marker Game Instance Tag Variant')
+        row.prop(mesh_ass_jms, "Marker_Game_Instance_Tag_Variant_Name", text='')
+
+class Halo_ObjectMarkerPathfindingProps(Panel):
+    bl_label = "Halo Marker Pathfinding Properties"
+    bl_idname = "JSON_PT_MarkerPathfindingDetailsPanel"
+    bl_space_type = "PROPERTIES"
+    bl_region_type = "WINDOW"
+    bl_context = "data"
+    bl_options = {"DEFAULT_CLOSED"}
+    bl_parent_id = "JSON_PT_MarkerDetailsPanel"
+
+    def draw(self, context):
+        layout = self.layout
+
+        mesh = context.object.data
+        mesh_ass_jms = mesh.ass_jms
+
+        if not mesh_ass_jms.ObjectMarker_Type == 'PATHFINDING SPHERE':
+            layout.enabled = False
+
+        col = layout.column(align=True)
+        row = col.row()
+        row.label(text='Vehicle Only Pathfinding Sphere')
+        row.prop(mesh_ass_jms, "Marker_Pathfinding_Sphere_Vehicle", text='')
+        row = col.row()
+        row.label(text='Pathfinding Sphere Remains When Open')
+        row.prop(mesh_ass_jms, "Pathfinding_Sphere_Remains_When_Open", text='')
+        row = col.row()
+        row.label(text='Pathfinding Sphere With Sectors')
+        row.prop(mesh_ass_jms, "Pathfinding_Sphere_With_Sectors", text='')
+
+class Halo_ObjectMarkerPhysicsProps(Panel):
+    bl_label = "Halo Marker Physics Constraints Properties"
+    bl_idname = "JSON_PT_MarkerPhysicsDetailsPanel"
+    bl_space_type = "PROPERTIES"
+    bl_region_type = "WINDOW"
+    bl_context = "data"
+    bl_options = {"DEFAULT_CLOSED"}
+    bl_parent_id = "JSON_PT_MarkerDetailsPanel"
+
+    def draw(self, context):
+        layout = self.layout
+
+        mesh = context.object.data
+        mesh_ass_jms = mesh.ass_jms
+
+        if not (mesh_ass_jms.ObjectMarker_Type == 'PHYSICS HINGE CONTRAINT' or mesh_ass_jms.ObjectMarker_Type == 'PHYSICS SOCKET CONTRAINT'):
+            layout.enabled = False
+
+        col = layout.column(align=True)
+        row = col.row()
+        row.label(text='Physics Constraint Parent')
+        row.prop(mesh_ass_jms, "Physics_Constraint_Parent", text='')
+        row = col.row()
+        row.label(text='Physics Constraint Child')
+        row.prop(mesh_ass_jms, "Physics_Constraint_Child", text='')
+        row = col.row()
+        row.label(text='Physics Constraint Uses Limits')
+        row.prop(mesh_ass_jms, "Physics_Constraint_Uses_Limits", text='')
+
 
 class Halo_MeshProps(Panel):
     bl_label = "Halo Mesh Properties"
@@ -1008,6 +1111,22 @@ class ASS_JMS_MeshPropertiesGroup(PropertyGroup):
         name="XREF Name",
         description="Set the name of the XREF object. The model file should contain an object by this name",
     )
+
+    Object_Type_Override : EnumProperty(
+        name="Object Type",
+        description="Select the override for a object type. If set to anything other than none, the object prefix will be ignored in preference for this override",
+        default = "NONE",
+        items=[ ('NONE', "None", "None"),
+                ('MESH', "Mesh", "Mesh"),
+                ('MARKER', "Marker", "Marker"),
+                ('FRAME', "Frame", "Frame"),
+               ]
+        )
+
+    region_name: StringProperty(
+        name="Region",
+        description="Define the name of the region this object should be associated with",
+    )
     
     ObjectMesh_Type : EnumProperty(
         name="Mesh Type Override",
@@ -1050,7 +1169,58 @@ class ASS_JMS_MeshPropertiesGroup(PropertyGroup):
                 ('EFFECTS', "Effects", "Effects"),
                 ('HINT', "Hint", "Hint"),
                ]
-        )    
+        )
+
+    Marker_Group_Name: StringProperty(
+        name="Marker Group",
+        description="Define the name of the marker group",
+    )
+
+    Marker_Game_Instance_Tag_Name: StringProperty(
+        name="Marker Game Instance Tag",
+        description="Define the name of the marker game instance tag",
+    )
+
+    Marker_Game_Instance_Tag_Variant_Name: StringProperty(
+        name="Marker Game Instance Tag Variant",
+        description="Define the name of the marker game instance tag",
+    ) 
+
+    Marker_Velocity: IntVectorProperty(
+        name="Marker Velocity",
+        description="Define the name of the velocity of a marker",
+        default = (0, 0, 0,)
+    )
+
+    Marker_Pathfinding_Sphere_Vehicle: BoolProperty(
+        name="Vehicle Only Pathfinding Sphere",
+        description="This pathfinding sphere only affects vehicles",
+    )
+
+    Pathfinding_Sphere_Remains_When_Open: BoolProperty(
+        name="Pathfinding Sphere Remains When Open",
+        description="Pathfinding sphere remains even when a machine is open",
+    )
+
+    Pathfinding_Sphere_With_Sectors: BoolProperty(
+        name="Pathfinding Sphere With Sectors",
+        description="Not sure",
+    )
+
+    Physics_Constraint_Parent: StringProperty( #need to make this into an object picker at some point
+        name="Physics Constraint Parent",
+        description="Enter the name of the object that is this marker's parent",
+    )
+
+    Physics_Constraint_Child: StringProperty( #need to make this into an object picker at some point
+        name="Physics Constraint Child",
+        description="Enter the name of the object that is this marker's child",
+    )
+
+    Physics_Constraint_Uses_Limits: BoolProperty(
+        name="Physics Constraint Uses Limits",
+        description="Set whether the limits of this physics constraint should be contrained or not",
+    )
 
 class Halo_SceneProps(Panel):
     bl_label = "Halo Scene Properties"
@@ -1303,6 +1473,9 @@ classeshalo = (
     Halo_ObjectProps,
     Halo_ObjectMeshProps,
     Halo_ObjectMarkerProps,
+    Halo_ObjectMarkerInstanceProps,
+    Halo_ObjectMarkerPathfindingProps,
+    Halo_ObjectMarkerPhysicsProps,
     ASS_JMS_MeshProps,
     ASS_LightPropertiesGroup,
     ASS_LightProps,
