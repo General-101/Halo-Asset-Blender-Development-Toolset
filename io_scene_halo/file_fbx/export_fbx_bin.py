@@ -2983,8 +2983,15 @@ def fbx_takes_elements(root, scene_data):
 # ##### "Main" functions. #####
 
 import json
+import string
 
 def save_json(filepath=""):
+    for ob in bpy.data.objects:
+        for mat_slot in ob.material_slots:
+            print('\nShader Path = %r' % mat_slot.material.ass_jms.shader_path)
+
+    #for material in bpy.data.materials:
+        #print('\nShader Path =' % material.name)
     temp = ({'test' : 117})
     haloJSON = json.dumps(temp, indent=4)
     pathList = filepath.split(".")
