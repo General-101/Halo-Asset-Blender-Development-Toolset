@@ -905,15 +905,24 @@ class Halo_ObjectMeshProps(Panel):
         row = col.row()
         row.label(text='Mesh Type Override')
         row.prop(mesh_ass_jms, "ObjectMesh_Type", text='')
+        row = col.row()
+        row.label(text='Mesh Primitive Type')
+        row.prop(mesh_ass_jms, "Mesh_Primitive_Type", text='')
+        row = col.row()
+        row.label(text='Mesh Tesselation Density')
+        row.prop(mesh_ass_jms, "Mesh_Tesselation_Density", text='')
+        row = col.row()
+        row.label(text='Mesh Compression')
+        row.prop(mesh_ass_jms, "Mesh_Compression", text='')
 
-class Halo_ObjectMeshFaceTypeProps(Panel):
-    bl_label = "Mesh Properties"
-    bl_idname = "JSON_PT_MeshDetailsPanel"
+class Halo_ObjectMeshFaceProps(Panel):
+    bl_label = "Face Properties"
+    bl_idname = "JSON_PT_MeshFaceDetailsPanel"
     bl_space_type = "PROPERTIES"
     bl_region_type = "WINDOW"
     bl_context = "data"
     bl_options = {"DEFAULT_CLOSED"}
-    bl_parent_id = "JSON_PT_ObjectDetailsPanel"
+    bl_parent_id = "JSON_PT_MeshDetailsPanel"
 
     def draw(self, context):
         layout = self.layout
@@ -923,8 +932,113 @@ class Halo_ObjectMeshFaceTypeProps(Panel):
 
         col = layout.column(align=True)
         row = col.row()
-        row.label(text='Mesh Type Override')
-        row.prop(mesh_ass_jms, "ObjectMesh_Type", text='')
+        row.label(text='Face Type')
+        row.prop(mesh_ass_jms, "Face_Type", text='')
+        row = col.row()
+        row.label(text='Face Mode')
+        row.prop(mesh_ass_jms, "Face_Mode", text='')
+        row = col.row()
+        row.label(text='Face Sides')
+        row.prop(mesh_ass_jms, "Face_Sides", text='')
+        row = col.row()
+        row.label(text='Face Draw Distance')
+        row.prop(mesh_ass_jms, "Face_Draw_Distance", text='')
+        row = col.row()
+        row.label(text='Face Global Material')
+        row.prop(mesh_ass_jms, "Face_Global_Material", text='')
+
+class Halo_ObjectMeshFaceFlagsProps(Panel):
+    bl_label = "Flags"
+    bl_idname = "JSON_PT_MeshFaceFlagsPanel"
+    bl_space_type = "PROPERTIES"
+    bl_region_type = "WINDOW"
+    bl_context = "data"
+    bl_options = {"DEFAULT_CLOSED"}
+    bl_parent_id = "JSON_PT_MeshFaceDetailsPanel"
+
+    def draw(self, context):
+        layout = self.layout
+
+        mesh = context.object.data
+        mesh_ass_jms = mesh.ass_jms
+
+        col = layout.column(align=True)
+        row = col.row()
+        row.label(text='Conveyor')
+        row.prop(mesh_ass_jms, "Conveyor", text='')
+        row = col.row()
+        row.label(text='Ladder')
+        row.prop(mesh_ass_jms, "Ladder", text='')
+        row = col.row()
+        row.label(text='Slip Surface')
+        row.prop(mesh_ass_jms, "Slip_Surface", text='')
+        row = col.row()
+        row.label(text='Decal Offset')
+        row.prop(mesh_ass_jms, "Decal_Offset", text='')
+        row = col.row()
+        row.label(text='Group Transparents By Plane')
+        row.prop(mesh_ass_jms, "Group_Transparents_By_Plane", text='')
+        row = col.row()
+        row.label(text='No Shadow')
+        row.prop(mesh_ass_jms, "No_Shadow", text='')
+        row = col.row()
+        row.label(text='Precise Position')
+        row.prop(mesh_ass_jms, "Precise_Position", text='')
+
+class Halo_ObjectMeshPrimitiveProps(Panel):
+    bl_label = "Primitive Properties"
+    bl_idname = "JSON_PT_MeshPrimitiveDetailsPanel"
+    bl_space_type = "PROPERTIES"
+    bl_region_type = "WINDOW"
+    bl_context = "data"
+    bl_options = {"DEFAULT_CLOSED"}
+    bl_parent_id = "JSON_PT_MeshDetailsPanel"
+
+    def draw(self, context):
+        layout = self.layout
+
+        mesh = context.object.data
+        mesh_ass_jms = mesh.ass_jms
+
+        col = layout.column(align=True)
+        col.label(text='Box Length/Width/Height')
+        row = col.row()
+        row.prop(mesh_ass_jms, "Box_Length", text='')
+        row.prop(mesh_ass_jms, "Box_Width", text='')
+        row.prop(mesh_ass_jms, "Box_Height", text='')
+        col.label(text='Pill Radius/Height')
+        row = col.row()
+        row.prop(mesh_ass_jms, "Pill_Radius", text='')
+        row.prop(mesh_ass_jms, "Pill_Height", text='')
+        col.label(text='Sphere Radius')
+        row = col.row()
+        row.prop(mesh_ass_jms, "Sphere_Radius", text='')
+
+class Halo_ObjectMeshBoundaryProps(Panel):
+    bl_label = "Boundary Surface Properties"
+    bl_idname = "JSON_PT_MeshBoundaryDetailsPanel"
+    bl_space_type = "PROPERTIES"
+    bl_region_type = "WINDOW"
+    bl_context = "data"
+    bl_options = {"DEFAULT_CLOSED"}
+    bl_parent_id = "JSON_PT_MeshDetailsPanel"
+
+    def draw(self, context):
+        layout = self.layout
+
+        mesh = context.object.data
+        mesh_ass_jms = mesh.ass_jms
+
+        if not mesh_ass_jms.ObjectMesh_Type == 'BOUNDARY SURFACE':
+            layout.enabled = False
+
+        col = layout.column(align=True)
+        row = col.row()
+        row.label(text='Boundary Surface Name')
+        row.prop(mesh_ass_jms, "Boundary_Surface_Name", text='')
+        row = col.row()
+        row.label(text='Boundary Surface Type')
+        row.prop(mesh_ass_jms, "Boundary_Surface_Type", text='')
 
 # MARKER PROPERTIES
 class Halo_ObjectMarkerProps(Panel):
@@ -1211,6 +1325,7 @@ class ASS_JMS_MeshPropertiesGroup(PropertyGroup):
         description="Select the override for a mesh type. If set to anything other than none, the object prefix will be ignored in preference for this override",
         default = "NONE",
         items=[ ('NONE', "None", "None"),
+                ('BOUNDARY SURFACE', "Boundary Surface", "Boundary Surface, used in structure_design tags for soft_kill, soft_ceiling, and slip_sufaces (ONLY USE FOR FILES YOU INTEND TO EXPORT TO STRUCTURE DESIGN TAGS)"),
                 ('COLLISION', "Collision", "Collision"),
                 ('INSTANCED GEOMETRY', "Instanced Geometry", "Instanced Geometry"),
                 ('INSTANCED GEOMETRY COLLISION', "Instanced Geometry Collision", "Instanced Geometry Collision"),
@@ -1230,7 +1345,181 @@ class ASS_JMS_MeshPropertiesGroup(PropertyGroup):
                 ('COOKIE CUTTER', "Cookie Cutter", "Cookie Cutter"),
                ]
         )
+
+    Mesh_Primitive_Type : EnumProperty(
+        name="Mesh Primitive Type",
+        description="Select the primtive type of this mesh",
+        default = "NONE",
+        items=[ ('NONE', "None", "None"),
+                ('BOX', "Box", "Box"),
+                ('PILL', "Pill", "Pill"),
+                ('SPHERE', "Sphere", "Sphere"),
+               ]
+        )
+
+    Mesh_Tesselation_Density : EnumProperty(
+        name="Mesh Tesselation Density",
+        description="Select the tesselation density you want applied to this mesh",
+        default = "NONE",
+        items=[ ('NONE', "None", "None"),
+                ('4X', "4x", "4 times"),
+                ('9X', "9x", "9 times"),
+                ('36X', "36x", "36 times"),
+               ]
+        )
+    Mesh_Compression : EnumProperty(
+        name="Mesh Compression",
+        description="Select if you want additional compression forced on/off to this mesh",
+        default = "DEFAULT",
+        items=[ ('DEFAULT', "Default", "Default"),
+                ('FORCE ON', "Force On", "Force On"),
+                ('FORCE OFF', "Force Off", "Force Off"),
+               ]
+        )
+
+    Face_Type : EnumProperty(
+        name="Face Type",
+        description="Select the face type for this mesh. Note that any override shaders will override the face type selected here for relevant materials",
+        default = "NORMAL",
+        items=[ ('NONE', "None", "None"),
+                ('NORMAL', "Normal", "Normal"),
+                ('SEAM SEALER', "Seam Sealer", "Set mesh faces to have the special seam sealer property"),
+                ('SKY', "Sky", "Set mesh faces to render the sky"),
+                ('WEATHER POLYHEDRA', "Weather Polyhedra", "Weather Polyhedra"),
+               ]
+        )
+
+    Face_Mode : EnumProperty(
+        name="Face Mode",
+        description="Select the face mode for this mesh",
+        default = "NORMAL",
+        items=[ ('NONE', "None", "None"),
+                ('NORMAL', "Normal", "Normal"),
+                ('RENDER ONLY', "Render Only", "Set mesh faces to be render only"),
+                ('COLLISION ONLY', "Collision Only", "Set mesh faces to be collision only"),
+                ('SPHERE COLLISION ONLY', "Sphere Collision Only", "Set mesh faces to be sphere collision only. Only objects with physics models can collide with these faces"),
+                ('SHADOW ONLY', "Shadow Only", "Set mesh faces to only cast shadows"),
+                ('LIGHTMAP ONLY', "Lightmap Only", "Set mesh faces to only be used during lightmapping. They will otherwise have no render / collision"),
+                ('BREAKABLE', "Breakable", "Set mesh faces to be breakable. Time to smash some windows"),
+               ]
+        )
+
+    Face_Sides : EnumProperty(
+        name="Face Sides",
+        description="Select the face sides for this mesh",
+        default = "ONE SIDED",
+        items=[ ('NONE', "None", "None"),
+                ('ONE SIDED', "One Sided", "Set mesh faces to only render on one side (the normal direction)"),
+                ('ONE SIDED TRANSPARENT', "One Sided Transparent", "Set mesh faces to only render on one side (the normal direction), but also render geometry behind it"),
+                ('TWO SIDED', "Two Sided", "Set mesh faces to  render on both sides"),
+                ('TWO SIDED TRANSPARENT', "Two Sided Transparent", "Set mesh faces to render on both sides, but also render geometry through it"),
+               ]
+        )
+
+    Face_Draw_Distance : EnumProperty(
+        name="Face Draw Distance",
+        description="Select the draw distance for faces on this mesh",
+        default = "NORMAL",
+        items=[ ('NONE', "None", "None"),
+                ('NORMAL', "Normal", "Normal"),
+                ('MID', "Mid", "Render face details at medium range"),
+                ('CLOSE', "Close", "Render face details at close range"),
+               ]
+        )
+
+    Face_Global_Material: StringProperty(
+        name="Global Material",
+        description="Set the global material of the faces of this mesh. For struture geometry leave blank to use the global material of the shader. The global material name should match a valid material defined in tags\globals\globals.globals",
+    )
+
+    Conveyor: BoolProperty(
+        name ="Conveyor",
+        description = "Enable to give mesh faces the conveyor property",
+        default = False,
+        )
+
+    Ladder: BoolProperty(
+        name ="Ladder",
+        description = "Enable to make mesh faces climbable",
+        default = False,
+    )
+
+    Slip_Surface: BoolProperty(
+        name ="Slip Surface",
+        description = "Enable to make mesh faces slippery for units",
+        default = False,
+    )
+
+    Decal_Offset: BoolProperty(
+        name ="Decal Offset",
+        description = "Enable to offset these faces so that they appear to be layered on top of another face",
+        default = False,
+    )
+
+    Group_Transparents_By_Plane: BoolProperty(
+        name ="Group Transparents By Plane",
+        description = "Enable to group transparent geometry by fitted planes",
+        default = False,
+    )
+
+    No_Shadow: BoolProperty(
+        name ="No Shadow",
+        description = "Enable to prevent mesh faces from casting shadows",
+        default = False,
+    )
+
+    Precise_Position: BoolProperty(
+        name ="Precise Position",
+        description = "Enable to prevent faces from being altered during the import process",
+        default = False,
+    )
     
+    Box_Length: FloatProperty(
+        name="Box Length",
+        description="Set length of the primitive box",
+    )
+
+    Box_Width: FloatProperty(
+        name="Box Width",
+        description="Set width of the primitive box",
+    )
+
+    Box_Height: FloatProperty(
+        name="Box Height",
+        description="Set height of the primitive box",
+    )
+
+    Pill_Radius: FloatProperty(
+        name="Pill Radius",
+        description="Set radius of the primitive pill",
+    )
+
+    Pill_Height: FloatProperty(
+        name="Pill Height",
+        description="Set height of the primitive pill",
+    )
+
+    Sphere_Radius: FloatProperty(
+        name="Sphere Radius",
+        description="Set radius of the primitive sphere",
+    )
+
+    Boundary_Surface_Name: StringProperty(
+        name="Boundary Surface Name",
+        description="Define the name of the boundary surface. This will be referenced in the structure_design tag.",
+    )
+
+    Boundary_Surface_Type : EnumProperty(
+        name="Boundary Surface Name",
+        description="Select the override for a mesh type. If set to anything other than none, the object prefix will be ignored in preference for this override",
+        default = "NONE",
+        items=[ ('NONE', "None", "None"),
+                ('SOFT CEILING', "Soft Ceiling", "Defines this mesh as soft ceiling"),
+                ('SOFT KILL', "Soft Kill", "Defines this mesh as soft kill barrier"),
+                ('SLIP SURFACE', "Slip Surface", "Defines this mesh as a slip surface"),
+               ]
+        )
+
     
     #MARKER PROPERTIES
     ObjectMarker_Type : EnumProperty(
@@ -1609,6 +1898,10 @@ classeshalo = (
     Halo_MeshProps,
     Halo_ObjectProps,
     Halo_ObjectMeshProps,
+    Halo_ObjectMeshFaceProps,
+    Halo_ObjectMeshFaceFlagsProps,
+    Halo_ObjectMeshPrimitiveProps,
+    Halo_ObjectMeshBoundaryProps,
     Halo_ObjectMarkerProps,
     Halo_ObjectMarkerInstanceProps,
     Halo_ObjectMarkerPathfindingProps,
