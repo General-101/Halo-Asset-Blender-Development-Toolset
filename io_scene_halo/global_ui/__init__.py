@@ -40,7 +40,6 @@ from bpy.props import (
         StringProperty,
         PointerProperty,
         FloatVectorProperty,
-        IntVectorProperty,
         )
 
 class Halo_XREFPath(Operator):
@@ -1166,6 +1165,119 @@ class Halo_ObjectMeshPortalProps(Panel):
         row.label(text='Is Door')
         row.prop(mesh_ass_jms, "Portal_Is_Door", text='')
 
+class Halo_ObjectMeshDecoratorProps(Panel):
+    bl_label = "Decorator Properties"
+    bl_idname = "JSON_PT_MeshDecoratorDetailsPanel"
+    bl_space_type = "PROPERTIES"
+    bl_region_type = "WINDOW"
+    bl_context = "data"
+    bl_options = {"DEFAULT_CLOSED"}
+    bl_parent_id = "JSON_PT_MeshDetailsPanel"
+
+    def draw(self, context):
+        layout = self.layout
+
+        mesh = context.object.data
+        mesh_ass_jms = mesh.ass_jms
+
+        if not (mesh_ass_jms.Object_Type_Override == 'NONE' or mesh_ass_jms.Object_Type_Override == 'MESH'):
+            layout.enabled = False
+
+        col = layout.column(align=True)
+        row = col.row()
+        row.label(text='Decorator Name')
+        row.prop(mesh_ass_jms, "Decorator_Name", text='')
+        row = col.row()
+        row.label(text='Decorator Level of Detail')
+        row.prop(mesh_ass_jms, "Decorator_LOD", text='')
+
+class Halo_ObjectMeshSeamProps(Panel):
+    bl_label = "Seam Properties"
+    bl_idname = "JSON_PT_MeshSeamDetailsPanel"
+    bl_space_type = "PROPERTIES"
+    bl_region_type = "WINDOW"
+    bl_context = "data"
+    bl_options = {"DEFAULT_CLOSED"}
+    bl_parent_id = "JSON_PT_MeshDetailsPanel"
+
+    def draw(self, context):
+        layout = self.layout
+
+        mesh = context.object.data
+        mesh_ass_jms = mesh.ass_jms
+
+        if not (mesh_ass_jms.ObjectMesh_Type == 'SEAM' and (mesh_ass_jms.Object_Type_Override == 'NONE' or mesh_ass_jms.Object_Type_Override == 'MESH')):
+            layout.enabled = False
+
+        col = layout.column(align=True)
+        row = col.row()
+        row.label(text='Seam BSP Name')
+        row.prop(mesh_ass_jms, "Seam_Name", text='')
+
+class Halo_ObjectMeshWaterVolumeProps(Panel):
+    bl_label = "Water Physics Volume Properties"
+    bl_idname = "JSON_PT_MeshWaterVolumeDetailsPanel"
+    bl_space_type = "PROPERTIES"
+    bl_region_type = "WINDOW"
+    bl_context = "data"
+    bl_options = {"DEFAULT_CLOSED"}
+    bl_parent_id = "JSON_PT_MeshDetailsPanel"
+
+    def draw(self, context):
+        layout = self.layout
+
+        mesh = context.object.data
+        mesh_ass_jms = mesh.ass_jms
+
+        if not (mesh_ass_jms.ObjectMesh_Type == 'WATER PHYSICS VOLUME' and (mesh_ass_jms.Object_Type_Override == 'NONE' or mesh_ass_jms.Object_Type_Override == 'MESH')):
+            layout.enabled = False
+
+        col = layout.column(align=True)
+        row = col.row()
+        row.label(text='Water Volume Depth')
+        row.prop(mesh_ass_jms, "Water_Volume_Depth", text='')
+        row = col.row()
+        row.label(text='Water Volume Flow Direction')
+        row.prop(mesh_ass_jms, "Water_Volume_Flow_Direction", text='')
+        row = col.row()
+        row.label(text='Water Volume Flow Velocity')
+        row.prop(mesh_ass_jms, "Water_Volume_Flow_Velocity", text='')
+        row = col.row()
+        row.label(text='Water Volume Fog Color')
+        row.prop(mesh_ass_jms, "Water_Volume_Fog_Color", text='')
+        row = col.row()
+        row.label(text='Water Volume Fog Murkiness')
+        row.prop(mesh_ass_jms, "Water_Volume_Fog_Murkiness", text='')
+
+class Halo_ObjectMeshFogVolumeProps(Panel):
+    bl_label = "Planar Fog Volume Properties"
+    bl_idname = "JSON_PT_MeshFogVolumeDetailsPanel"
+    bl_space_type = "PROPERTIES"
+    bl_region_type = "WINDOW"
+    bl_context = "data"
+    bl_options = {"DEFAULT_CLOSED"}
+    bl_parent_id = "JSON_PT_MeshDetailsPanel"
+
+    def draw(self, context):
+        layout = self.layout
+
+        mesh = context.object.data
+        mesh_ass_jms = mesh.ass_jms
+
+        if not (mesh_ass_jms.ObjectMesh_Type == 'PLANAR FOG VOLUME' and (mesh_ass_jms.Object_Type_Override == 'NONE' or mesh_ass_jms.Object_Type_Override == 'MESH')):
+            layout.enabled = False
+
+        col = layout.column(align=True)
+        row = col.row()
+        row.label(text='Fog Name')
+        row.prop(mesh_ass_jms, "Fog_Name", text='')
+        row = col.row()
+        row.label(text='Fog Appearance Tag')
+        row.prop(mesh_ass_jms, "Fog_Appearance_Tag", text='')
+        row = col.row()
+        row.label(text='Fog Volume Depth')
+        row.prop(mesh_ass_jms, "Fog_Volume_Depth", text='')
+
 # MARKER PROPERTIES
 class Halo_ObjectMarkerProps(Panel):
     bl_label = "Marker Properties"
@@ -1431,7 +1543,8 @@ class ASS_JMS_MeshPropertiesGroup(PropertyGroup):
         name="XREF Name",
         description="Set the name of the XREF object. The model file should contain an object by this name",
     )
-
+    
+    #OBJECT PROPERTIES
     Object_Type_Override : EnumProperty(
         name="Object Type",
         description="Select the override for a object type. If set to anything other than none, the object prefix will be ignored in preference for this override",
@@ -1505,7 +1618,6 @@ class ASS_JMS_MeshPropertiesGroup(PropertyGroup):
                 ('FORCE OFF', "Force Off", "Force Off"),
                ]
         )
-
 
     #FACE PROPERTIES
     Face_Type : EnumProperty(
@@ -1786,6 +1898,78 @@ class ASS_JMS_MeshPropertiesGroup(PropertyGroup):
         default = False,
     )
 
+    #DECORATOR PROPERTIES
+    Decorator_Name: StringProperty(
+        name="Decorator Name",
+        description="Name of your decorator",
+        maxlen=32,
+    )
+
+    Decorator_LOD: IntProperty(
+        name="Decorator Level of Detail",
+        description="Level of detail objects to create expressed in an integer range of 1-4",
+        default=1,
+        min=1,
+        max=4,
+    )
+
+    #SEAM PROPERTIES
+    Seam_Name: StringProperty(
+        name="Seam BSP Name",
+        description="Name of the bsp associated with this seam",
+        maxlen=32,
+    )
+
+    #WATER VOLUME PROPERTIES
+    Water_Volume_Depth: FloatProperty( # this something which can probably be automated?
+        name="Water Volume Depth",
+        description="Set the depth of this water volume mesh",
+        default=20,
+    )
+    Water_Volume_Flow_Direction: FloatProperty( # this something which can probably be automated?
+        name="Water Volume Flow Direction",
+        description="Set the flow direction of this water volume mesh",
+        min=-180,
+        max=180,
+    )
+
+    Water_Volume_Flow_Velocity: FloatProperty(
+        name="Water Volume Flow Velocity",
+        description="Set the flow velocity of this water volume mesh",
+        default=20,
+    )
+
+    Water_Volume_Fog_Color: FloatVectorProperty(
+        name="Water Volume Fog Color",
+        description="Set the fog color of this water volume mesh",
+        default=(0, 0, 0),
+        subtype='COLOR',
+    )
+
+    Water_Volume_Fog_Murkiness: FloatProperty(
+        name="Water Volume Fog Murkiness",
+        description="Set the fog murkiness of this water volume mesh",
+    )
+
+    #FOG PROPERTIES
+    Fog_Name: StringProperty(
+        name="Fog Name",
+        description="Name of this fog volume",
+        maxlen=32,
+    )
+
+    Fog_Appearance_Tag: StringProperty(
+        name="Fog Appearance Tag",
+        description="Name of the tag defining the fog volumes appearance",
+        maxlen=32,
+    )
+
+    Fog_Volume_Depth: FloatProperty(
+        name="Fog Volume Depth",
+        description="Set the depth of the fog volume",
+        default=20,
+    )
+    
     #MARKER PROPERTIES
     ObjectMarker_Type : EnumProperty(
         name="Marker Type",
@@ -1820,10 +2004,10 @@ class ASS_JMS_MeshPropertiesGroup(PropertyGroup):
         description="Define the name of the marker game instance tag",
     ) 
 
-    Marker_Velocity: IntVectorProperty(
+    Marker_Velocity: FloatVectorProperty(
         name="Marker Velocity",
         description="Define the name of the velocity of a marker",
-        default = (0, 0, 0,)
+        subtype='VELOCITY'
     )
 
     Marker_Pathfinding_Sphere_Vehicle: BoolProperty(
@@ -2170,6 +2354,10 @@ classeshalo = (
     Halo_ObjectMeshPoopsProps,
     Halo_ObjectMeshPoopsFlagsProps,
     Halo_ObjectMeshPortalProps,
+    Halo_ObjectMeshDecoratorProps,
+    Halo_ObjectMeshSeamProps,
+    Halo_ObjectMeshWaterVolumeProps,
+    Halo_ObjectMeshFogVolumeProps,
     Halo_ObjectMarkerProps,
     Halo_ObjectMarkerInstanceProps,
     Halo_ObjectMarkerPathfindingProps,
