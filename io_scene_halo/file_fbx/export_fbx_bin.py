@@ -2985,12 +2985,39 @@ def fbx_takes_elements(root, scene_data):
 import json
 
 def save_json(filepath=""):
+    matList = {}
+
     for ob in bpy.data.objects:
         for mat_slot in ob.material_slots:
+            shaderType = ""
+            if mat_slot.material.ass_jms.material_override == "NONE" and mat_slot.material.ass_jms.shader_path == "":
+                mat_slot.material.ass_jms.shader_path = "shaders\invalid"
+                shaderType = "shader"
+            elif mat_slot.material.ass_jms.material_override == "NONE":
+                sPath = mat_slot.material.ass_jms.shader_path.split(".")
+                if len(sPath) > 1:
+                    temp = ""
+                    for x in range(len(sPath)-1):
+                        temp += sPath[x]
+                    mat_slot.material.ass_jms.shader_path = temp
+                    shaderType = sPath[-1]
+                else:
+                    shaderType = "shader"
+            elif mat_slot.material.ass_jms.material_override == "SKY":
+                mat_slot.material.ass_jms.shader_path = "bungie_face_type=_connected_geometry_face_type_sky"
+                shaderType = "override"
+            elif mat_slot.material.ass_jms.material_override == "SEAMSEALER":
+                mat_slot.material.ass_jms.shader_path = "bungie_face_type=_connected_geometry_face_type_seam_sealer"
+                shaderType = "override"
+            elif mat_slot.material.ass_jms.material_override == "PORTAL":
+                mat_slot.material.ass_jms.shader_path = "bungie_mesh_type=_connected_geometry_mesh_type_portal"
+                shaderType = "override"
+            matList.update({mat_slot.material.name : {"bungie_shader_path" : mat_slot.material.ass_jms.shader_path, "bungie_shader_type" : shaderType}})
             print('\nShader Path = %r' % mat_slot.material.ass_jms.shader_path)
-    
-    temp = ({'test' : 117})
+
+    temp = ({'material_properties' : matList})
     haloJSON = json.dumps(temp, indent=4)
+
     pathList = filepath.split(".")
     
     jsonPath = ""
