@@ -901,6 +901,9 @@ class Halo_ObjectMeshProps(Panel):
         mesh = context.object.data
         mesh_ass_jms = mesh.ass_jms
 
+        if not (mesh_ass_jms.Object_Type_Override == 'NONE' or mesh_ass_jms.Object_Type_Override == 'MESH'):
+            layout.enabled = False
+
         col = layout.column(align=True)
         row = col.row()
         row.label(text='Mesh Type Override')
@@ -929,6 +932,9 @@ class Halo_ObjectMeshFaceProps(Panel):
 
         mesh = context.object.data
         mesh_ass_jms = mesh.ass_jms
+
+        if not (mesh_ass_jms.Object_Type_Override == 'NONE' or mesh_ass_jms.Object_Type_Override == 'MESH'):
+            layout.enabled = False
 
         col = layout.column(align=True)
         row = col.row()
@@ -961,6 +967,9 @@ class Halo_ObjectMeshFaceFlagsProps(Panel):
 
         mesh = context.object.data
         mesh_ass_jms = mesh.ass_jms
+
+        if not (mesh_ass_jms.Object_Type_Override == 'NONE' or mesh_ass_jms.Object_Type_Override == 'MESH'):
+            layout.enabled = False
 
         col = layout.column(align=True)
         row = col.row()
@@ -1000,6 +1009,9 @@ class Halo_ObjectMeshPrimitiveProps(Panel):
         mesh = context.object.data
         mesh_ass_jms = mesh.ass_jms
 
+        if not (mesh_ass_jms.Object_Type_Override == 'NONE' or mesh_ass_jms.Object_Type_Override == 'MESH'):
+            layout.enabled = False
+
         col = layout.column(align=True)
         col.label(text='Box Length/Width/Height')
         row = col.row()
@@ -1029,7 +1041,7 @@ class Halo_ObjectMeshBoundaryProps(Panel):
         mesh = context.object.data
         mesh_ass_jms = mesh.ass_jms
 
-        if not mesh_ass_jms.ObjectMesh_Type == 'BOUNDARY SURFACE':
+        if not (mesh_ass_jms.ObjectMesh_Type == 'BOUNDARY SURFACE' and (mesh_ass_jms.Object_Type_Override == 'NONE' or mesh_ass_jms.Object_Type_Override == 'MESH')):
             layout.enabled = False
 
         col = layout.column(align=True)
@@ -1039,6 +1051,120 @@ class Halo_ObjectMeshBoundaryProps(Panel):
         row = col.row()
         row.label(text='Boundary Surface Type')
         row.prop(mesh_ass_jms, "Boundary_Surface_Type", text='')
+
+class Halo_ObjectMeshPoopsProps(Panel):
+    bl_label = "Instanced Geometry Properties"
+    bl_idname = "JSON_PT_MeshPoopsDetailsPanel"
+    bl_space_type = "PROPERTIES"
+    bl_region_type = "WINDOW"
+    bl_context = "data"
+    bl_options = {"DEFAULT_CLOSED"}
+    bl_parent_id = "JSON_PT_MeshDetailsPanel"
+
+    def draw(self, context):
+        layout = self.layout
+
+        mesh = context.object.data
+        mesh_ass_jms = mesh.ass_jms
+
+        if not ((mesh_ass_jms.ObjectMesh_Type == 'NONE' or mesh_ass_jms.ObjectMesh_Type == 'INSTANCED GEOMETRY') and (mesh_ass_jms.Object_Type_Override == 'NONE' or mesh_ass_jms.Object_Type_Override == 'MESH')):
+            layout.enabled = False
+
+        col = layout.column(align=True)
+        row = col.row()
+        row.label(text='Lighting Override')
+        row.prop(mesh_ass_jms, "Poop_Lighting_Override", text='')
+        row = col.row()
+        row.label(text='Pathfinding Override')
+        row.prop(mesh_ass_jms, "Poop_Pathfinding_Override", text='')
+        row = col.row()
+        row.label(text='Imposter Policy')
+        row.prop(mesh_ass_jms, "Poop_Imposter_Policy", text='')
+        row = col.row()
+        row.label(text='Imposter Transition Distance')
+        row.prop(mesh_ass_jms, "Poop_Imposter_Transition_Distance", text='')
+        row = col.row()
+        row.label(text='Fade Range Start')
+        row.prop(mesh_ass_jms, "Poop_Imposter_Fade_Range_Start", text='')
+        row = col.row()
+        row.label(text='Fade Range End')
+        row.prop(mesh_ass_jms, "Poop_Imposter_Fade_Range_End", text='')
+        row = col.row()
+        row.label(text='Decomposition Hulls')
+        row.prop(mesh_ass_jms, "Poop_Decomposition_Hulls", text='')
+        row = col.row()
+        row.label(text='Predominant Shader Name')
+        row.prop(mesh_ass_jms, "Poop_Predominant_Shader_Name", text='')
+
+class Halo_ObjectMeshPoopsFlagsProps(Panel):
+    bl_label = "Flags"
+    bl_idname = "JSON_PT_MeshPoopsFlagsPanel"
+    bl_space_type = "PROPERTIES"
+    bl_region_type = "WINDOW"
+    bl_context = "data"
+    bl_options = {"DEFAULT_CLOSED"}
+    bl_parent_id = "JSON_PT_MeshPoopsDetailsPanel"
+
+    def draw(self, context):
+        layout = self.layout
+
+        mesh = context.object.data
+        mesh_ass_jms = mesh.ass_jms
+
+        if not ((mesh_ass_jms.ObjectMesh_Type == 'NONE' or mesh_ass_jms.ObjectMesh_Type == 'INSTANCED GEOMETRY') and (mesh_ass_jms.Object_Type_Override == 'NONE' or mesh_ass_jms.Object_Type_Override == 'MESH')):
+            layout.enabled = False
+
+        col = layout.column(align=True)
+        row = col.row()
+        row.label(text='Render Only')
+        row.prop(mesh_ass_jms, "Poop_Render_Only", text='')
+        row = col.row()
+        row.label(text='Chops Portals')
+        row.prop(mesh_ass_jms, "Poop_Chops_Portals", text='')
+        row = col.row()
+        row.label(text='Does Not Block AOE')
+        row.prop(mesh_ass_jms, "Poop_Does_Not_Block_AOE", text='')
+        row = col.row()
+        row.label(text='Excluded From Lightprobe')
+        row.prop(mesh_ass_jms, "Poop_Excluded_From_Lightprobe", text='')
+        row = col.row()
+        row.label(text='Decal Spacing')
+        row.prop(mesh_ass_jms, "Poop_Decal_Spacing", text='')
+        row = col.row()
+        row.label(text='Precise Geometry')
+        row.prop(mesh_ass_jms, "Poop_Precise_Geometry", text='')
+
+class Halo_ObjectMeshPortalProps(Panel):
+    bl_label = "Portal Properties"
+    bl_idname = "JSON_PT_MeshPortalDetailsPanel"
+    bl_space_type = "PROPERTIES"
+    bl_region_type = "WINDOW"
+    bl_context = "data"
+    bl_options = {"DEFAULT_CLOSED"}
+    bl_parent_id = "JSON_PT_MeshDetailsPanel"
+
+    def draw(self, context):
+        layout = self.layout
+
+        mesh = context.object.data
+        mesh_ass_jms = mesh.ass_jms
+
+        if not (mesh_ass_jms.ObjectMesh_Type == 'PORTAL' and (mesh_ass_jms.Object_Type_Override == 'NONE' or mesh_ass_jms.Object_Type_Override == 'MESH')):
+            layout.enabled = False
+
+        col = layout.column(align=True)
+        row = col.row()
+        row.label(text='Portal Type')
+        row.prop(mesh_ass_jms, "Portal_Type", text='')
+        row = col.row()
+        row.label(text='AI Deafening')
+        row.prop(mesh_ass_jms, "Portal_AI_Deafening", text='')
+        row = col.row()
+        row.label(text='Blocks Sounds')
+        row.prop(mesh_ass_jms, "Portal_Blocks_Sounds", text='')
+        row = col.row()
+        row.label(text='Is Door')
+        row.prop(mesh_ass_jms, "Portal_Is_Door", text='')
 
 # MARKER PROPERTIES
 class Halo_ObjectMarkerProps(Panel):
@@ -1055,6 +1181,9 @@ class Halo_ObjectMarkerProps(Panel):
 
         mesh = context.object.data
         mesh_ass_jms = mesh.ass_jms
+
+        if not (mesh_ass_jms.Object_Type_Override == 'NONE' or mesh_ass_jms.Object_Type_Override == 'MARKER'):
+            layout.enabled = False
 
         col = layout.column(align=True)
         row = col.row()
@@ -1322,17 +1451,17 @@ class ASS_JMS_MeshPropertiesGroup(PropertyGroup):
     #MESH PROPERTIES
     ObjectMesh_Type : EnumProperty(
         name="Mesh Type Override",
-        description="Select the override for a mesh type. If set to anything other than none, the object prefix will be ignored in preference for this override",
+        description="Sets the type for this mesh. If set to none, the exporter will defer to the object name prefix for the mesh type",
         default = "NONE",
         items=[ ('NONE', "None", "None"),
                 ('BOUNDARY SURFACE', "Boundary Surface", "Boundary Surface, used in structure_design tags for soft_kill, soft_ceiling, and slip_sufaces (ONLY USE FOR FILES YOU INTEND TO EXPORT TO STRUCTURE DESIGN TAGS)"),
-                ('COLLISION', "Collision", "Collision"),
-                ('INSTANCED GEOMETRY', "Instanced Geometry", "Instanced Geometry"),
-                ('INSTANCED GEOMETRY COLLISION', "Instanced Geometry Collision", "Instanced Geometry Collision"),
-                ('INSTANCED GEOMETRY PHYSICS', "Instanced Geometry Physics", "Instanced Geometry Physics"),
-                ('INSTANCED GEOMETRY MARKER', "Instanced Geometry Marker", "Instanced Geometry Marker"),
-                ('INSTANCED GEOMETRY RAIN BLOCKER', "Instanced Geometry Rain Blocker", "Instanced Geometry Rain Blocker"),
-                ('INSTANCED GEOMETRY VERTICAL RAIN SHEET', "Instanced Geometry Vertical Rain Sheet", "Instanced Geometry Vertical Rain Sheet"),
+                ('COLLISION', "Collision", "Sets this mesh to have collision geometry only. PREFIX: @"),
+                ('INSTANCED GEOMETRY', "Instanced Geometry", "Sets this mesh to be processed as instanced geometry. PREFIX: %"),
+                ('INSTANCED GEOMETRY COLLISION', "Instanced Geometry Collision", "Sets this mesh to be processed as instanced Geometry collision. Must be the child of an instanced geometry mesh. PREFIX: @"),
+                ('INSTANCED GEOMETRY PHYSICS', "Instanced Geometry Physics", "Sets this mesh to be processed as instanced Geometry physics. Must be the child of an instanced geometry mesh. PREFIX: $"),
+                ('INSTANCED GEOMETRY MARKER', "Instanced Geometry Marker", "Sets this mesh to be processed as instanced Geometry marker. Must be the child of an instanced geometry mesh. PREFIX: #"),
+                ('INSTANCED GEOMETRY RAIN BLOCKER', "Instanced Geometry Rain Blocker", "Sets this mesh to be processed as instanced Geometry rain blocker. Must be the child of an instanced geometry mesh."),
+                ('INSTANCED GEOMETRY VERTICAL RAIN SHEET', "Instanced Geometry Vertical Rain Sheet", "Sets this mesh to be processed as instanced Geometry vertical rain sheet. Must be the child of an instanced geometry mesh."),
                 ('DECORATOR', "Decorator", "Decorator"),
                 ('OBJECT INSTANCE', "Object Instance", "Object Instance"),
                 ('PHYSICS', "Physics", "Physics"),
@@ -1377,6 +1506,8 @@ class ASS_JMS_MeshPropertiesGroup(PropertyGroup):
                ]
         )
 
+
+    #FACE PROPERTIES
     Face_Type : EnumProperty(
         name="Face Type",
         description="Select the face type for this mesh. Note that any override shaders will override the face type selected here for relevant materials",
@@ -1474,6 +1605,7 @@ class ASS_JMS_MeshPropertiesGroup(PropertyGroup):
         default = False,
     )
     
+    #PRIMITIVE PROPERTIES
     Box_Length: FloatProperty(
         name="Box Length",
         description="Set length of the primitive box",
@@ -1503,10 +1635,12 @@ class ASS_JMS_MeshPropertiesGroup(PropertyGroup):
         name="Sphere Radius",
         description="Set radius of the primitive sphere",
     )
-
+    
+    #BOUNDARY SURFACE PROPERTIES
     Boundary_Surface_Name: StringProperty(
         name="Boundary Surface Name",
         description="Define the name of the boundary surface. This will be referenced in the structure_design tag.",
+        maxlen=32,
     )
 
     Boundary_Surface_Type : EnumProperty(
@@ -1519,8 +1653,139 @@ class ASS_JMS_MeshPropertiesGroup(PropertyGroup):
                 ('SLIP SURFACE', "Slip Surface", "Defines this mesh as a slip surface"),
                ]
         )
-
     
+    #POOP PROPERTIES
+    Poop_Lighting_Override : EnumProperty(
+        name="Instanced Geometry Lighting Override",
+        description="Sets the lighting policy for this instanced geometry. If set to none, the exporter will defer to the object name prefix for the lighting policy",
+        default = "NONE",
+        items=[ ('NONE', "None", "None"),
+                ('SINGLE PROBE', "Single Probe", "Sets the lighting policy to single probe."),
+                ('PER PIXEL', "Per Pixel", "Sets the lighting policy to per pixel. PREFIX: ?"),
+                ('PER VERTEX', "Per Vertex", "Sets the lighting policy to per vertex. PREFX: !"),
+               ]
+        )
+
+    Poop_Pathfinding_Override : EnumProperty(
+        name="Instanced Geometry Pathfinding Override",
+        description="Sets the pathfinding policy for this instanced geometry. If set to none, the exporter will defer to the object name prefix for the pathfinding policy",
+        default = "NONE",
+        items=[ ('NONE', "None", "Defers to the object prefix for the policy. No prefix = Cutout"),
+                ('IGNORED', "Ignored", "Sets the pathfinding policy to none. This mesh will be ignored during pathfinding generation. PREFIX: -"),
+                ('CUTOUT', "Cutout", "Sets the pathfinding policy to cutout. AI will be able to pathfind around this mesh, but not on it."),
+                ('STATIC', "Static", "Sets the pathfinding policy to static. AI will be able to pathfind around and on this mesh. PREFIX: +"),
+               ]
+        )
+
+    Poop_Imposter_Policy : EnumProperty(
+        name="Instanced Geometry Imposter Policy",
+        description="Sets the imposter policy for this instanced geometry.",
+        default = "POLYGON DEFAULT",
+        items=[ ('POLYGON DEFAULT', "Polygon Default", ""),
+                ('POLYGON HIGH', "Polygon High", ""),
+                ('CARD DEFAULT', "Card Default", ""),
+                ('CARD HIGH', "Card High", ""),
+                ('NONE', "None", ""),
+                ('NEVER', "Never", ""),
+               ]
+        )
+
+    Poop_Imposter_Transition_Distance: FloatProperty(
+        name="Instanced Geometry Imposter Transition Distance",
+        description="The distance at which the instanced geometry transitions to its imposter variant.",
+        default=-1.0,
+    )
+
+    Poop_Imposter_Fade_Range_Start: FloatProperty(
+        name="Instanced Geometry Fade Range Start",
+        description="The distance at which the instanced geometry starts to fade in.",
+        default=36,
+    )
+
+    Poop_Imposter_Fade_Range_End: FloatProperty(
+        name="Instanced Geometry Fade Range End",
+        description="The distance at which the instanced geometry fades in.",
+        default=30,
+    )
+
+    Poop_Decomposition_Hulls: IntProperty(
+        name="Instanced Geometry Decomposition Hulls",
+        description="",
+        default=-1,
+    )
+    
+    Poop_Predominant_Shader_Name: StringProperty(
+        name="Instanced Geometry Predominant Shader Name",
+        description="I have no idea what this does, but we'll write whatever you put here into the json file.",
+        maxlen=1024,
+    )
+
+    Poop_Render_Only: BoolProperty(
+        name ="Render Only",
+        description = "Sets this instanced geometry to only have render geometry",
+        default = False,
+    )
+
+    Poop_Chops_Portals: BoolProperty(
+        name ="Chops Portals",
+        description = "Sets this instanced geometry to chop portals. Hiya!",
+        default = False,
+    )
+
+    Poop_Does_Not_Block_AOE: BoolProperty(
+        name ="Does Not Block AOE",
+        description = "Sets this instanced geometry to not block area of effect forces",
+        default = False,
+    )
+
+    Poop_Excluded_From_Lightprobe: BoolProperty(
+        name ="Excluded From Lightprobe",
+        description = "Sets this instanced geometry to be exlcuded from any lightprobes",
+        default = False,
+    )
+
+    Poop_Decal_Spacing: BoolProperty(
+        name ="Decal Spacing",
+        description = "Sets this instanced geometry have decal spacing (like decal_offset)",
+        default = False,
+    )
+
+    Poop_Precise_Geometry: BoolProperty(
+        name ="Precise Geometry",
+        description = "Sets this instanced geometry not have its geometry altered in the BSP pass.",
+        default = False,
+    )
+
+    #PORTAL PROPERTIES
+    Portal_Type : EnumProperty(
+        name="Portal Type",
+        description="Sets the type of portal this mesh should be.",
+        default = "TWO WAY",
+        items=[ ('NONE', "None", ""),
+                ('NO WAY', "No Way", "Sets the portal to block all visibility"),
+                ('ONE WAY', "One Way", "Sets the portal to block visibility from one direction"),
+                ('TWO WAY', "Two Way", "Sets the portal to have visiblity from both sides"),
+               ]
+        )
+
+    Portal_AI_Deafening: BoolProperty(
+        name ="AI Deafening",
+        description = "Stops AI hearing through this portal",
+        default = False,
+    )
+
+    Portal_Blocks_Sounds: BoolProperty(
+        name ="Blocks Sounds",
+        description = "Stops sound from travelling past this portal",
+        default = False,
+    )
+
+    Portal_Is_Door: BoolProperty(
+        name ="Is Door",
+        description = "Portal visibility is attached to a device machine state",
+        default = False,
+    )
+
     #MARKER PROPERTIES
     ObjectMarker_Type : EnumProperty(
         name="Marker Type",
@@ -1902,6 +2167,9 @@ classeshalo = (
     Halo_ObjectMeshFaceFlagsProps,
     Halo_ObjectMeshPrimitiveProps,
     Halo_ObjectMeshBoundaryProps,
+    Halo_ObjectMeshPoopsProps,
+    Halo_ObjectMeshPoopsFlagsProps,
+    Halo_ObjectMeshPortalProps,
     Halo_ObjectMarkerProps,
     Halo_ObjectMarkerInstanceProps,
     Halo_ObjectMarkerPathfindingProps,
