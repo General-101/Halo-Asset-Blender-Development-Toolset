@@ -885,8 +885,9 @@ class Halo_ObjectProps(Panel):
         row.label(text='Region')
         row.prop(mesh_ass_jms, "region_name", text='')
 
+#MESH PROPERTIES
 class Halo_ObjectMeshProps(Panel):
-    bl_label = "Halo Mesh Properties"
+    bl_label = "Mesh Properties"
     bl_idname = "JSON_PT_MeshDetailsPanel"
     bl_space_type = "PROPERTIES"
     bl_region_type = "WINDOW"
@@ -905,8 +906,29 @@ class Halo_ObjectMeshProps(Panel):
         row.label(text='Mesh Type Override')
         row.prop(mesh_ass_jms, "ObjectMesh_Type", text='')
 
+class Halo_ObjectMeshFaceTypeProps(Panel):
+    bl_label = "Mesh Properties"
+    bl_idname = "JSON_PT_MeshDetailsPanel"
+    bl_space_type = "PROPERTIES"
+    bl_region_type = "WINDOW"
+    bl_context = "data"
+    bl_options = {"DEFAULT_CLOSED"}
+    bl_parent_id = "JSON_PT_ObjectDetailsPanel"
+
+    def draw(self, context):
+        layout = self.layout
+
+        mesh = context.object.data
+        mesh_ass_jms = mesh.ass_jms
+
+        col = layout.column(align=True)
+        row = col.row()
+        row.label(text='Mesh Type Override')
+        row.prop(mesh_ass_jms, "ObjectMesh_Type", text='')
+
+# MARKER PROPERTIES
 class Halo_ObjectMarkerProps(Panel):
-    bl_label = "Halo Marker Properties"
+    bl_label = "Marker Properties"
     bl_idname = "JSON_PT_MarkerDetailsPanel"
     bl_space_type = "PROPERTIES"
     bl_region_type = "WINDOW"
@@ -932,7 +954,7 @@ class Halo_ObjectMarkerProps(Panel):
         row.prop(mesh_ass_jms, "Marker_Velocity", text='')
 
 class Halo_ObjectMarkerInstanceProps(Panel):
-    bl_label = "Halo Marker Instance Properties"
+    bl_label = "Marker Instance Properties"
     bl_idname = "JSON_PT_MarkerInstanceDetailsPanel"
     bl_space_type = "PROPERTIES"
     bl_region_type = "WINDOW"
@@ -958,7 +980,7 @@ class Halo_ObjectMarkerInstanceProps(Panel):
         row.prop(mesh_ass_jms, "Marker_Game_Instance_Tag_Variant_Name", text='')
 
 class Halo_ObjectMarkerPathfindingProps(Panel):
-    bl_label = "Halo Marker Pathfinding Properties"
+    bl_label = "Marker Pathfinding Properties"
     bl_idname = "JSON_PT_MarkerPathfindingDetailsPanel"
     bl_space_type = "PROPERTIES"
     bl_region_type = "WINDOW"
@@ -987,7 +1009,7 @@ class Halo_ObjectMarkerPathfindingProps(Panel):
         row.prop(mesh_ass_jms, "Pathfinding_Sphere_With_Sectors", text='')
 
 class Halo_ObjectMarkerPhysicsProps(Panel):
-    bl_label = "Halo Marker Physics Constraints Properties"
+    bl_label = "Marker Physics Constraints Properties"
     bl_idname = "JSON_PT_MarkerPhysicsDetailsPanel"
     bl_space_type = "PROPERTIES"
     bl_region_type = "WINDOW"
@@ -1001,7 +1023,7 @@ class Halo_ObjectMarkerPhysicsProps(Panel):
         mesh = context.object.data
         mesh_ass_jms = mesh.ass_jms
 
-        if not (mesh_ass_jms.ObjectMarker_Type == 'PHYSICS HINGE CONTRAINT' or mesh_ass_jms.ObjectMarker_Type == 'PHYSICS SOCKET CONTRAINT'):
+        if not (mesh_ass_jms.ObjectMarker_Type == 'PHYSICS HINGE CONSTRAINT' or mesh_ass_jms.ObjectMarker_Type == 'PHYSICS SOCKET CONSTRAINT'):
             layout.enabled = False
 
         col = layout.column(align=True)
@@ -1014,6 +1036,61 @@ class Halo_ObjectMarkerPhysicsProps(Panel):
         row = col.row()
         row.label(text='Physics Constraint Uses Limits')
         row.prop(mesh_ass_jms, "Physics_Constraint_Uses_Limits", text='')
+
+class Halo_ObjectMarkerPhysicsHingeProps(Panel):
+    bl_label = "Hinge Constraints Properties"
+    bl_idname = "JSON_PT_MarkerPhysicsHingeDetailsPanel"
+    bl_space_type = "PROPERTIES"
+    bl_region_type = "WINDOW"
+    bl_context = "data"
+    bl_options = {"DEFAULT_CLOSED"}
+    bl_parent_id = "JSON_PT_MarkerPhysicsDetailsPanel"
+
+    def draw(self, context):
+        layout = self.layout
+
+        mesh = context.object.data
+        mesh_ass_jms = mesh.ass_jms
+
+        if not (mesh_ass_jms.ObjectMarker_Type == 'PHYSICS HINGE CONSTRAINT' and mesh_ass_jms.Physics_Constraint_Uses_Limits):
+            layout.enabled = False
+
+        col = layout.column(align=True)
+        col.label(text="Hinge Constraint Min/Max")
+        row = col.row()
+        row.prop(mesh_ass_jms, "Hinge_Constraint_Minimum", text='')
+        row.prop(mesh_ass_jms, "Hinge_Constraint_Maximum", text='')
+
+class Halo_ObjectMarkerPhysicsSocketProps(Panel):
+    bl_label = "Socket Constraints Properties"
+    bl_idname = "JSON_PT_MarkerPhysicsSocketDetailsPanel"
+    bl_space_type = "PROPERTIES"
+    bl_region_type = "WINDOW"
+    bl_context = "data"
+    bl_options = {"DEFAULT_CLOSED"}
+    bl_parent_id = "JSON_PT_MarkerPhysicsDetailsPanel"
+
+    def draw(self, context):
+        layout = self.layout
+
+        mesh = context.object.data
+        mesh_ass_jms = mesh.ass_jms
+
+        if not (mesh_ass_jms.ObjectMarker_Type == 'PHYSICS SOCKET CONSTRAINT' and mesh_ass_jms.Physics_Constraint_Uses_Limits):
+            layout.enabled = False
+        
+        col = layout.column(align=True)
+        col.label(text="Cone Angle")
+        row = col.row()
+        row.prop(mesh_ass_jms, "Cone_Angle", text='')
+        col.label(text="Plane Constraint Min/Max")
+        row = col.row()
+        row.prop(mesh_ass_jms, "Plane_Constraint_Minimum", text='')
+        row.prop(mesh_ass_jms, "Plane_Constraint_Maximum", text='')
+        col.label(text="Twist Constraint Start/End")
+        row = col.row()
+        row.prop(mesh_ass_jms, "Twist_Constraint_Start", text='')
+        row.prop(mesh_ass_jms, "Twist_Constraint_End", text='')
 
 
 class Halo_MeshProps(Panel):
@@ -1125,9 +1202,10 @@ class ASS_JMS_MeshPropertiesGroup(PropertyGroup):
 
     region_name: StringProperty(
         name="Region",
-        description="Define the name of the region this object should be associated with",
+        description="Define the name of the region this object should be associated with. If the object is a marker and this field is blank, the marker will be associated with all regions.",
     )
     
+    #MESH PROPERTIES
     ObjectMesh_Type : EnumProperty(
         name="Mesh Type Override",
         description="Select the override for a mesh type. If set to anything other than none, the object prefix will be ignored in preference for this override",
@@ -1153,6 +1231,8 @@ class ASS_JMS_MeshPropertiesGroup(PropertyGroup):
                ]
         )
     
+    
+    #MARKER PROPERTIES
     ObjectMarker_Type : EnumProperty(
         name="Marker Type",
         description="Select the marker type",
@@ -1162,8 +1242,8 @@ class ASS_JMS_MeshPropertiesGroup(PropertyGroup):
                 ('GAME INSTANCE', "Game Instance", "Game Instance"),
                 ('PATHFINDING SPHERE', "Pathfinding Sphere", "Pathfinding Sphere"),
                 ('WATER VOLUME FLOW', "Water Volume Flow", "Water Volume Flow"),
-                ('PHYSICS HINGE CONTRAINT', "Physics Hinge Constraint", "Physics Hinge Constraint"),
-                ('PHYSICS SOCKET CONTRAINT', "Physics Socket Constraint", "Physics Socket Constraint"),
+                ('PHYSICS HINGE CONSTRAINT', "Physics Hinge Constraint", "Physics Hinge Constraint"),
+                ('PHYSICS SOCKET CONSTRAINT', "Physics Socket Constraint", "Physics Socket Constraint"),
                 ('TARGET', "Target", "Target"),
                 ('GARBAGE', "Garbage", "Garbage"),
                 ('EFFECTS', "Effects", "Effects"),
@@ -1219,8 +1299,65 @@ class ASS_JMS_MeshPropertiesGroup(PropertyGroup):
 
     Physics_Constraint_Uses_Limits: BoolProperty(
         name="Physics Constraint Uses Limits",
-        description="Set whether the limits of this physics constraint should be contrained or not",
+        description="Set whether the limits of this physics constraint should be constrained or not",
     )
+
+    Hinge_Constraint_Minimum: FloatProperty(
+        name="Hinge Constraint Minimum",
+        description="Set the minimum rotation of a physics hinge",
+        default=-180,
+        min=-180,
+        max=180,
+    )
+
+    Hinge_Constraint_Maximum: FloatProperty(
+        name="Hinge Constraint Maximum",
+        description="Set the maximum rotation of a physics hinge",
+        default=180,
+        min=-180,
+        max=180,
+    )
+
+    Cone_Angle: FloatProperty(
+        name="Cone Angle",
+        description="Set the cone angle",
+        default=90,
+        min=-180,
+        max=180,
+    )
+
+    Plane_Constraint_Minimum: FloatProperty(
+        name="Plane Constraint Minimum",
+        description="Set the minimum rotation of a physics plane",
+        default=-90,
+        min=-180,
+        max=180,
+    )
+
+    Plane_Constraint_Maximum: FloatProperty(
+        name="Plane Constraint Maximum",
+        description="Set the maximum rotation of a physics plane",
+        default=90,
+        min=-180,
+        max=180,
+    )
+
+    Twist_Constraint_Start: FloatProperty(
+        name="Twist Constraint Minimum",
+        description="Set the starting angle of a twist constraint",
+        default=-180,
+        min=-180,
+        max=180,
+    )
+
+    Twist_Constraint_End: FloatProperty(
+        name="Twist Constraint Maximum",
+        description="Set the ending angle of a twist constraint",
+        default=180,
+        min=-180,
+        max=180,
+    )
+
 
 class Halo_SceneProps(Panel):
     bl_label = "Halo Scene Properties"
@@ -1476,6 +1613,8 @@ classeshalo = (
     Halo_ObjectMarkerInstanceProps,
     Halo_ObjectMarkerPathfindingProps,
     Halo_ObjectMarkerPhysicsProps,
+    Halo_ObjectMarkerPhysicsHingeProps,
+    Halo_ObjectMarkerPhysicsSocketProps,
     ASS_JMS_MeshProps,
     ASS_LightPropertiesGroup,
     ASS_LightProps,
