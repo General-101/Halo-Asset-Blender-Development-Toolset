@@ -951,6 +951,9 @@ class Halo_ObjectMeshFaceProps(Panel):
         row = col.row()
         row.label(text='Face Global Material')
         row.prop(mesh_ass_jms, "Face_Global_Material", text='')
+        row = col.row()
+        row.label(text='Sky Permutation Index')
+        row.prop(mesh_ass_jms, "Sky_Permutation_Index", text='')
 
 class Halo_ObjectMeshFaceFlagsProps(Panel):
     bl_label = "Flags"
@@ -1673,6 +1676,12 @@ class ASS_JMS_MeshPropertiesGroup(PropertyGroup):
     Face_Global_Material: StringProperty(
         name="Global Material",
         description="Set the global material of the faces of this mesh. For struture geometry leave blank to use the global material of the shader. The global material name should match a valid material defined in tags\globals\globals.globals",
+    )
+
+    Sky_Permutation_Index: IntProperty(
+        name="Sky Permutation Index",
+        description="Set the sky permuation index of the mesh faces. Only valid if the face type is sky (or you are using the sky material override).",
+        min=0,
     )
 
     Conveyor: BoolProperty(
