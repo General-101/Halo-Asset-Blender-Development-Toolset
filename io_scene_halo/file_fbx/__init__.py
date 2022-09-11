@@ -34,8 +34,6 @@ bl_info = {
 
 if "bpy" in locals():
     import importlib
-    if "import_fbx" in locals():
-        importlib.reload(import_fbx)
     if "export_fbx_bin" in locals():
         importlib.reload(export_fbx_bin)
     if "export_fbx" in locals():
@@ -58,10 +56,10 @@ from bpy_extras.io_utils import (
         )
 
 @orientation_helper(axis_forward='-Z', axis_up='Y')
-class ExportFBX(bpy.types.Operator, ExportHelper):
+class ExportHaloFBX(bpy.types.Operator, ExportHelper):
     """Write a Halo FBX & JSON file"""
-    bl_idname = "export_scene.fbx"
-    bl_label = "Export FBX & JSON"
+    bl_idname = "export.fbx"
+    bl_label = "Export FBX w/ JSON"
     bl_options = {'UNDO', 'PRESET'}
 
     filename_ext = ".fbx"
@@ -325,7 +323,7 @@ class ExportFBX(bpy.types.Operator, ExportHelper):
         return export_fbx_bin.save(self, context, **keywords)
 
 
-class FBX_PT_export_main(bpy.types.Panel):
+class FBX_PT_export_main_Halo(bpy.types.Panel):
     bl_space_type = 'FILE_BROWSER'
     bl_region_type = 'TOOL_PROPS'
     bl_label = ""
@@ -337,7 +335,7 @@ class FBX_PT_export_main(bpy.types.Panel):
         sfile = context.space_data
         operator = sfile.active_operator
 
-        return operator.bl_idname == "EXPORT_SCENE_OT_fbx"
+        return operator.bl_idname == "EXPORT_OT_fbx"
 
     def draw(self, context):
         layout = self.layout
@@ -358,36 +356,7 @@ class FBX_PT_export_main(bpy.types.Panel):
         sub.prop(operator, "use_batch_own_dir", text="", icon='NEWFOLDER')
 
 
-class FBX_PT_export_json_settings(bpy.types.Panel):
-    bl_space_type = 'FILE_BROWSER'
-    bl_region_type = 'TOOL_PROPS'
-    bl_label = "JSON Settings"
-    bl_parent_id = "FILE_PT_operator"
-
-    @classmethod
-    def poll(cls, context):
-        sfile = context.space_data
-        operator = sfile.active_operator
-
-        return operator.bl_idname == "EXPORT_SCENE_OT_fbx"
-
-    def draw(self, context):
-        layout = self.layout
-        layout.use_property_split = True
-        layout.use_property_decorate = False  # No animation.
-
-        sfile = context.space_data
-        operator = sfile.active_operator
-
-        sublayout = layout.column(heading="Limit to")
-        sublayout.enabled = (operator.batch_mode == 'OFF')
-        sublayout.prop(operator, "use_selection")
-        sublayout.prop(operator, "use_active_collection")
-
-        layout.column().prop(operator, "object_types")
-        layout.prop(operator, "use_custom_props")
-
-class FBX_PT_export_include(bpy.types.Panel):
+class FBX_PT_export_include_Halo(bpy.types.Panel):
     bl_space_type = 'FILE_BROWSER'
     bl_region_type = 'TOOL_PROPS'
     bl_label = "Include"
@@ -398,7 +367,7 @@ class FBX_PT_export_include(bpy.types.Panel):
         sfile = context.space_data
         operator = sfile.active_operator
 
-        return operator.bl_idname == "EXPORT_SCENE_OT_fbx"
+        return operator.bl_idname == "EXPORT_OT_fbx"
 
     def draw(self, context):
         layout = self.layout
@@ -417,7 +386,7 @@ class FBX_PT_export_include(bpy.types.Panel):
         layout.prop(operator, "use_custom_props")
 
 
-class FBX_PT_export_transform(bpy.types.Panel):
+class FBX_PT_export_transform_Halo(bpy.types.Panel):
     bl_space_type = 'FILE_BROWSER'
     bl_region_type = 'TOOL_PROPS'
     bl_label = "Transform"
@@ -428,7 +397,7 @@ class FBX_PT_export_transform(bpy.types.Panel):
         sfile = context.space_data
         operator = sfile.active_operator
 
-        return operator.bl_idname == "EXPORT_SCENE_OT_fbx"
+        return operator.bl_idname == "EXPORT_OT_fbx"
 
     def draw(self, context):
         layout = self.layout
@@ -451,7 +420,7 @@ class FBX_PT_export_transform(bpy.types.Panel):
         row.label(text="", icon='ERROR')
 
 
-class FBX_PT_export_geometry(bpy.types.Panel):
+class FBX_PT_export_geometry_Halo(bpy.types.Panel):
     bl_space_type = 'FILE_BROWSER'
     bl_region_type = 'TOOL_PROPS'
     bl_label = "Geometry"
@@ -463,7 +432,7 @@ class FBX_PT_export_geometry(bpy.types.Panel):
         sfile = context.space_data
         operator = sfile.active_operator
 
-        return operator.bl_idname == "EXPORT_SCENE_OT_fbx"
+        return operator.bl_idname == "EXPORT_OT_fbx"
 
     def draw(self, context):
         layout = self.layout
@@ -485,7 +454,7 @@ class FBX_PT_export_geometry(bpy.types.Panel):
         sub.prop(operator, "use_tspace")
 
 
-class FBX_PT_export_armature(bpy.types.Panel):
+class FBX_PT_export_armature_Halo(bpy.types.Panel):
     bl_space_type = 'FILE_BROWSER'
     bl_region_type = 'TOOL_PROPS'
     bl_label = "Armature"
@@ -497,7 +466,7 @@ class FBX_PT_export_armature(bpy.types.Panel):
         sfile = context.space_data
         operator = sfile.active_operator
 
-        return operator.bl_idname == "EXPORT_SCENE_OT_fbx"
+        return operator.bl_idname == "EXPORT_OT_fbx"
 
     def draw(self, context):
         layout = self.layout
@@ -514,7 +483,7 @@ class FBX_PT_export_armature(bpy.types.Panel):
         layout.prop(operator, "add_leaf_bones")
 
 
-class FBX_PT_export_bake_animation(bpy.types.Panel):
+class FBX_PT_export_bake_animation_Halo(bpy.types.Panel):
     bl_space_type = 'FILE_BROWSER'
     bl_region_type = 'TOOL_PROPS'
     bl_label = "Bake Animation"
@@ -526,7 +495,7 @@ class FBX_PT_export_bake_animation(bpy.types.Panel):
         sfile = context.space_data
         operator = sfile.active_operator
 
-        return operator.bl_idname == "EXPORT_SCENE_OT_fbx"
+        return operator.bl_idname == "EXPORT_OT_fbx"
 
     def draw_header(self, context):
         sfile = context.space_data
@@ -551,18 +520,17 @@ class FBX_PT_export_bake_animation(bpy.types.Panel):
         layout.prop(operator, "bake_anim_simplify_factor")
 
 def menu_func_export(self, context):
-    self.layout.operator(ExportFBX.bl_idname, text="Halo FBX w/ JSON (.fbx, .json)")
+    self.layout.operator(ExportHaloFBX.bl_idname, text="Halo FBX w/ JSON (.fbx, .json)")
 
 
 classes = (
-    ExportFBX,
-    FBX_PT_export_main,
-    FBX_PT_export_json_settings,
-    FBX_PT_export_include,
-    FBX_PT_export_transform,
-    FBX_PT_export_geometry,
-    FBX_PT_export_armature,
-    FBX_PT_export_bake_animation,
+    ExportHaloFBX,
+    FBX_PT_export_main_Halo,
+    FBX_PT_export_include_Halo,
+    FBX_PT_export_transform_Halo,
+    FBX_PT_export_geometry_Halo,
+    FBX_PT_export_armature_Halo,
+    FBX_PT_export_bake_animation_Halo,
 )
 
 
