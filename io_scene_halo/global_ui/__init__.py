@@ -1281,6 +1281,102 @@ class Halo_ObjectMeshFogVolumeProps(Panel):
         row.label(text='Fog Volume Depth')
         row.prop(mesh_ass_jms, "Fog_Volume_Depth", text='')
 
+class Halo_ObjectMeshLightmapProps(Panel):
+    bl_label = "Lightmap Properties"
+    bl_idname = "JSON_PT_MeshLightmapDetailsPanel"
+    bl_space_type = "PROPERTIES"
+    bl_region_type = "WINDOW"
+    bl_context = "data"
+    bl_options = {"DEFAULT_CLOSED"}
+    bl_parent_id = "JSON_PT_MeshDetailsPanel"
+
+    def draw(self, context):
+        layout = self.layout
+
+        mesh = context.object.data
+        mesh_ass_jms = mesh.ass_jms
+
+        if not (mesh_ass_jms.Object_Type_Override == 'NONE' or mesh_ass_jms.Object_Type_Override == 'MESH'):
+            layout.enabled = False
+
+        col = layout.column(align=True)
+        row = col.row()
+        row.label(text='Additive Transparency')
+        row.prop(mesh_ass_jms, "Lightmap_Additive_Transparency", text='')
+        row = col.row()
+        row.label(text='Resolution Scale Override')
+        row.prop(mesh_ass_jms, "Lightmap_Ignore_Default_Resolution_Scale", text='')
+        row.label(text='Resolution Scale')
+        row.prop(mesh_ass_jms, "Lightmap_Resolution_Scale", text='')
+        row = col.row()
+        row.label(text='Chart Group')
+        row.prop(mesh_ass_jms, "Lightmap_Chart_Group", text='')
+        row = col.row()
+        row.label(text='Lightmap Type')
+        row.prop(mesh_ass_jms, "Lightmap_Type", text='')
+        row = col.row()
+        row.label(text='Transparency Override')
+        row.prop(mesh_ass_jms, "Lightmap_Transparency_Override", text='')
+        row = col.row()
+        row.label(text='Analytical Bounce Modifier')
+        row.prop(mesh_ass_jms, "Lightmap_Analytical_Bounce_Modifier", text='')
+        row = col.row()
+        row.label(text='General Bounce Modifier')
+        row.prop(mesh_ass_jms, "Lightmap_General_Bounce_Modifier", text='')
+        row = col.row()
+        row.label(text='Translucency Tint Color')
+        row.prop(mesh_ass_jms, "Lightmap_Translucency_Tint_Color", text='')
+        row = col.row()
+        row.label(text='Lighting From Both Sides')
+        row.prop(mesh_ass_jms, "Lightmap_Lighting_From_Both_Sides", text='')
+
+class Halo_ObjectMeshMaterialLightingProps(Panel):
+    bl_label = "Material Lighting Properties"
+    bl_idname = "JSON_PT_MeshMaterialLightingDetailsPanel"
+    bl_space_type = "PROPERTIES"
+    bl_region_type = "WINDOW"
+    bl_context = "data"
+    bl_options = {"DEFAULT_CLOSED"}
+    bl_parent_id = "JSON_PT_MeshDetailsPanel"
+
+    def draw(self, context):
+        layout = self.layout
+
+        mesh = context.object.data
+        mesh_ass_jms = mesh.ass_jms
+
+        if not (mesh_ass_jms.Object_Type_Override == 'NONE' or mesh_ass_jms.Object_Type_Override == 'MESH'):
+            layout.enabled = False
+
+        col = layout.column(align=True)
+        row = col.row()
+        row.label(text='Attenuation Cutoff')
+        row.prop(mesh_ass_jms, "Material_Lighting_Attenuation_Cutoff", text='')
+        row = col.row()
+        row.label(text='Attenuation Falloff')
+        row.prop(mesh_ass_jms, "Material_Lighting_Attenuation_Falloff", text='')
+        row = col.row()
+        row.label(text='Emissive Focus')
+        row.prop(mesh_ass_jms, "Material_Lighting_Emissive_Focus", text='')
+        row = col.row()
+        row.label(text='Emissive Color')
+        row.prop(mesh_ass_jms, "Material_Lighting_Emissive_Color", text='')
+        row = col.row()
+        row.label(text='Emissive Per Unit')
+        row.prop(mesh_ass_jms, "Material_Lighting_Emissive_Per_Unit", text='')
+        row = col.row()
+        row.label(text='Emissive Power')
+        row.prop(mesh_ass_jms, "Material_Lighting_Emissive_Power", text='')
+        row = col.row()
+        row.label(text='Emissive Quality')
+        row.prop(mesh_ass_jms, "Material_Lighting_Emissive_Quality", text='')
+        row = col.row()
+        row.label(text='Use Shader Gel')
+        row.prop(mesh_ass_jms, "Material_Lighting_Use_Shader_Gel", text='')
+        row = col.row()
+        row.label(text='Bounce Ratio')
+        row.prop(mesh_ass_jms, "Material_Lighting_Bounce_Ratio", text='')
+
 # MARKER PROPERTIES
 class Halo_ObjectMarkerProps(Panel):
     bl_label = "Marker Properties"
@@ -1979,6 +2075,126 @@ class ASS_JMS_MeshPropertiesGroup(PropertyGroup):
         default=20,
     )
     
+    #LIGHTMAP PROPERTIES
+    Lightmap_Additive_Transparency: FloatVectorProperty(
+        name="lightmap Additive Transparency",
+        description="",
+        default=(0, 0, 0),
+        subtype='COLOR',
+    )
+
+    Lightmap_Ignore_Default_Resolution_Scale: BoolProperty(
+        name ="Lightmap Resolution Scale",
+        description = "",
+        default = False,
+    )
+
+    Lightmap_Resolution_Scale: IntProperty(
+        name="Lightmap Resolution Scale",
+        description="",
+        default=3,
+        min=1,
+    )
+
+    Lightmap_Chart_Group: IntProperty(
+        name="Lightmap Chart Group",
+        description="",
+        default=3,
+        min=1,
+    )
+
+    Lightmap_Type : EnumProperty(
+        name="Lightmap Type",
+        description="Sets how this should be lit while lightmapping",
+        default = "PER PIXEL",
+        items=[ ('PER PIXEL', "Per Pixel", ""),
+                ('PER VERTEX', "Per Vetex", ""),
+               ]
+        )
+
+    Lightmap_Transparency_Override: BoolProperty(
+        name ="Lightmap Transparency Override",
+        description = "",
+        default = False,
+    )
+
+    Lightmap_Analytical_Bounce_Modifier: FloatProperty(
+        name="Lightmap Analytical Bounce Modifier",
+        description="",
+        default=9999,
+    )
+    
+    Lightmap_General_Bounce_Modifier: FloatProperty(
+        name="Lightmap General Bounce Modifier",
+        description="",
+        default=9999,
+    )
+
+    Lightmap_Translucency_Tint_Color: FloatVectorProperty(
+        name="Water Volume Fog Color",
+        description="Lightmap Translucency Tint Color",
+        default=(0, 0, 0),
+        subtype='COLOR',
+    )
+
+    Lightmap_Lighting_From_Both_Sides: BoolProperty(
+        name ="Lightmap Lighting From Both Sides",
+        description = "",
+        default = False,
+    )
+
+    #MATERIAL LIGHTING PROPERTIES
+    Material_Lighting_Attenuation_Cutoff: FloatProperty(
+        name="Material Lighting Attenuation Cutoff",
+        description="",
+    )
+
+    Material_Lighting_Attenuation_Falloff: FloatProperty(
+        name="Material Lighting Attenuation Falloff",
+        description="",
+    )
+
+    Material_Lighting_Emissive_Focus: FloatProperty(
+        name="Material Lighting Emissive Focus",
+        description="",
+    )
+
+    Material_Lighting_Emissive_Color: FloatVectorProperty(
+        name="Material Lighting Emissive Color",
+        description="",
+        default=(0, 0, 0),
+        subtype='COLOR',
+    )
+
+    Material_Lighting_Emissive_Per_Unit: BoolProperty(
+        name ="Material Lighting Emissive Per Unit",
+        description = "",
+        default = False,
+    )
+
+    Material_Lighting_Emissive_Power: FloatProperty(
+        name="Material Lighting Emissive Quality",
+        description="",
+    )
+
+    Material_Lighting_Emissive_Quality: FloatProperty(
+        name="Material Lighting Emissive Quality",
+        description="",
+        default=1,
+    )
+
+    Material_Lighting_Use_Shader_Gel: BoolProperty(
+        name ="Material Lighting Use Shader Gel",
+        description = "",
+        default = False,
+    )
+
+    Material_Lighting_Bounce_Ratio: FloatProperty(
+        name="Material Lighting Bounce Ratio",
+        description="",
+        default=1,
+    )
+
     #MARKER PROPERTIES
     ObjectMarker_Type : EnumProperty(
         name="Marker Type",
@@ -2367,6 +2583,8 @@ classeshalo = (
     Halo_ObjectMeshSeamProps,
     Halo_ObjectMeshWaterVolumeProps,
     Halo_ObjectMeshFogVolumeProps,
+    Halo_ObjectMeshLightmapProps,
+    Halo_ObjectMeshMaterialLightingProps,
     Halo_ObjectMarkerProps,
     Halo_ObjectMarkerInstanceProps,
     Halo_ObjectMarkerPathfindingProps,
