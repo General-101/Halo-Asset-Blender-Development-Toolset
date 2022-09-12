@@ -503,23 +503,6 @@ class ASS_JMS_MaterialPropertiesGroup(PropertyGroup):
         description = "If filled then export will use the name set here instead of the material name",
         default = "",
         )
-        
-    shader_path: StringProperty(
-        name = "Shader Path",
-        description = "Define the relative path to a shader, including the file extension",
-        default = "",
-        )
-
-    material_override: EnumProperty(
-        name = "Material Override",
-        description = "Select to override the shader path with a special material type e.g. sky / seamsealer",
-        default = "NONE",
-        items=[ ('NONE', "None", "None"),
-                ('SKY', "Sky", "Sky"),
-                ('SEAMSEALER', "Seamsealer", "Seamsealer"),
-                ('PORTAL', "Portal", "Portal"),
-               ]
-        )
 
     material_effect: StringProperty(
         name = "Material Effect",
@@ -1546,6 +1529,36 @@ class Halo_ObjectMarkerPhysicsSocketProps(Panel):
         row.prop(mesh_halo_json, "Twist_Constraint_Start", text='')
         row.prop(mesh_halo_json, "Twist_Constraint_End", text='')
 
+class Halo_MaterialProps(Panel):
+    bl_label = "Halo Material Properties"
+    bl_idname = "JSON_PT_MaterialPanel"
+    bl_space_type = 'PROPERTIES'
+    bl_region_type = 'WINDOW'
+    bl_context = "material"
+    bl_options = {'DEFAULT_CLOSED'}
+
+    @classmethod
+    def poll(self, context):
+        mat = context.material
+
+        return mat
+
+    def draw(self, context):
+        layout = self.layout
+        scene = context.scene
+        scene_halo = scene.halo
+        current_material = context.object.active_material
+        if current_material is not None:
+            material_halo_json = current_material.halo_json
+            row = layout.row()
+            if scene_halo.game_version == 'reach': # added if here to more accruately identify what is needed for Reach. Incorporated into jms_ass class, but maybe this needs a name change so clearer that it includes json exports
+                col = layout.column(align=True)
+                row.label(text="Shader Path:")
+                row.prop(material_halo_json, "shader_path", text='')
+                row = col.row()
+                row.label(text="Material Override")
+                row.prop(material_halo_json, "material_override", text='')
+                row = col.row()
 
 class Halo_MeshProps(Panel):
     bl_label = "Halo Mesh Properties"
@@ -2322,6 +2335,24 @@ class Halo_JSON_MeshPropertiesGroup(PropertyGroup):
         max=180,
     )
 
+class Halo_JSON_MaterialPropertiesGroup(PropertyGroup):
+    shader_path: StringProperty(
+        name = "Shader Path",
+        description = "Define the relative path to a shader, including the file extension",
+        default = "",
+        )
+
+    material_override: EnumProperty(
+        name = "Material Override",
+        description = "Select to override the shader path with a special material type e.g. sky / seamsealer",
+        default = "NONE",
+        items=[ ('NONE', "None", "None"),
+                ('SKY', "Sky", "Sky"),
+                ('SEAMSEALER', "Seamsealer", "Seamsealer"),
+                ('PORTAL', "Portal", "Portal"),
+               ]
+        )
+
 class Halo_SceneProps(Panel):
     bl_label = "Halo Scene Properties"
     bl_idname = "HALO_PT_ScenePropertiesPanel"
@@ -2570,6 +2601,7 @@ classeshalo = (
     ASS_JMS_MeshPropertiesGroup,
     ASS_JMS_MaterialPropertiesGroup,
     Halo_JSON_MeshPropertiesGroup,
+    Halo_JSON_MaterialPropertiesGroup,
     Halo_MeshProps,
     Halo_ObjectProps,
     Halo_ObjectMeshProps,
@@ -2619,6 +2651,7 @@ def register():
     bpy.types.Material.ass_jms = PointerProperty(type=ASS_JMS_MaterialPropertiesGroup, name="ASS/JMS Properties", description="Set properties for your materials")
     bpy.types.Scene.halo = PointerProperty(type=Halo_ScenePropertiesGroup, name="Halo Scene Properties", description="Set properties for your scene")
     bpy.types.Mesh.halo_json = PointerProperty(type=Halo_JSON_MeshPropertiesGroup, name="Halo JSON Properties", description="Set Halo Object Properties")
+    bpy.types.Material.halo_json = PointerProperty(type=Halo_JSON_MaterialPropertiesGroup, name="Halo JSON Properties", description="Set Halo Material Properties")
 
 def unregister():
     del bpy.types.Light.halo_light

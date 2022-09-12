@@ -3011,8 +3011,8 @@ def getMaterials():
                     case "PORTAL" | "+portal":
                         shaderPath = "bungie_mesh_type=_connected_geometry_mesh_type_portal"
 
-            matList.update({mat_slot.material.name : {"bungie_shader_path" : mat_slot.material.ass_jms.shader_path, "bungie_shader_type" : shaderType}})
-            print('\nShader Path = %r' % mat_slot.material.ass_jms.shader_path)
+            matList.update({halo_material_name : {"bungie_shader_path" : shaderPath, "bungie_shader_type" : shaderType}})
+            #print('\nShader Path = %r' % mat_slot.material.ass_jms.shader_path)
 
     temp = ({'material_properties' : matList})
 
