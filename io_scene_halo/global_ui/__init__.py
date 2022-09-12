@@ -874,15 +874,15 @@ class Halo_ObjectProps(Panel):
         layout = self.layout
 
         mesh = context.object.data
-        mesh_ass_jms = mesh.ass_jms
+        mesh_halo_json = mesh.halo_json
 
         col = layout.column(align=True)
         row = col.row()
         row.label(text='Object Type Override')
-        row.prop(mesh_ass_jms, "Object_Type_Override", text='')
+        row.prop(mesh_halo_json, "Object_Type_Override", text='')
         row = col.row()
         row.label(text='Region')
-        row.prop(mesh_ass_jms, "region_name", text='')
+        row.prop(mesh_halo_json, "region_name", text='')
 
 #MESH PROPERTIES
 class Halo_ObjectMeshProps(Panel):
@@ -898,24 +898,24 @@ class Halo_ObjectMeshProps(Panel):
         layout = self.layout
 
         mesh = context.object.data
-        mesh_ass_jms = mesh.ass_jms
+        mesh_halo_json = mesh.halo_json
 
-        if not (mesh_ass_jms.Object_Type_Override == 'NONE' or mesh_ass_jms.Object_Type_Override == 'MESH'):
+        if not (mesh_halo_json.Object_Type_Override == 'NONE' or mesh_halo_json.Object_Type_Override == 'MESH'):
             layout.enabled = False
 
         col = layout.column(align=True)
         row = col.row()
         row.label(text='Mesh Type Override')
-        row.prop(mesh_ass_jms, "ObjectMesh_Type", text='')
+        row.prop(mesh_halo_json, "ObjectMesh_Type", text='')
         row = col.row()
         row.label(text='Mesh Primitive Type')
-        row.prop(mesh_ass_jms, "Mesh_Primitive_Type", text='')
+        row.prop(mesh_halo_json, "Mesh_Primitive_Type", text='')
         row = col.row()
         row.label(text='Mesh Tesselation Density')
-        row.prop(mesh_ass_jms, "Mesh_Tesselation_Density", text='')
+        row.prop(mesh_halo_json, "Mesh_Tesselation_Density", text='')
         row = col.row()
         row.label(text='Mesh Compression')
-        row.prop(mesh_ass_jms, "Mesh_Compression", text='')
+        row.prop(mesh_halo_json, "Mesh_Compression", text='')
 
 class Halo_ObjectMeshFaceProps(Panel):
     bl_label = "Face Properties"
@@ -930,30 +930,30 @@ class Halo_ObjectMeshFaceProps(Panel):
         layout = self.layout
 
         mesh = context.object.data
-        mesh_ass_jms = mesh.ass_jms
+        mesh_halo_json = mesh.halo_json
 
-        if not (mesh_ass_jms.Object_Type_Override == 'NONE' or mesh_ass_jms.Object_Type_Override == 'MESH'):
+        if not (mesh_halo_json.Object_Type_Override == 'NONE' or mesh_halo_json.Object_Type_Override == 'MESH'):
             layout.enabled = False
 
         col = layout.column(align=True)
         row = col.row()
         row.label(text='Face Type')
-        row.prop(mesh_ass_jms, "Face_Type", text='')
+        row.prop(mesh_halo_json, "Face_Type", text='')
         row = col.row()
         row.label(text='Face Mode')
-        row.prop(mesh_ass_jms, "Face_Mode", text='')
+        row.prop(mesh_halo_json, "Face_Mode", text='')
         row = col.row()
         row.label(text='Face Sides')
-        row.prop(mesh_ass_jms, "Face_Sides", text='')
+        row.prop(mesh_halo_json, "Face_Sides", text='')
         row = col.row()
         row.label(text='Face Draw Distance')
-        row.prop(mesh_ass_jms, "Face_Draw_Distance", text='')
+        row.prop(mesh_halo_json, "Face_Draw_Distance", text='')
         row = col.row()
         row.label(text='Face Global Material')
-        row.prop(mesh_ass_jms, "Face_Global_Material", text='')
+        row.prop(mesh_halo_json, "Face_Global_Material", text='')
         row = col.row()
         row.label(text='Sky Permutation Index')
-        row.prop(mesh_ass_jms, "Sky_Permutation_Index", text='')
+        row.prop(mesh_halo_json, "Sky_Permutation_Index", text='')
 
 class Halo_ObjectMeshFaceFlagsProps(Panel):
     bl_label = "Flags"
@@ -968,33 +968,33 @@ class Halo_ObjectMeshFaceFlagsProps(Panel):
         layout = self.layout
 
         mesh = context.object.data
-        mesh_ass_jms = mesh.ass_jms
+        mesh_halo_json = mesh.halo_json
 
-        if not (mesh_ass_jms.Object_Type_Override == 'NONE' or mesh_ass_jms.Object_Type_Override == 'MESH'):
+        if not (mesh_halo_json.Object_Type_Override == 'NONE' or mesh_halo_json.Object_Type_Override == 'MESH'):
             layout.enabled = False
 
         col = layout.column(align=True)
         row = col.row()
         row.label(text='Conveyor')
-        row.prop(mesh_ass_jms, "Conveyor", text='')
+        row.prop(mesh_halo_json, "Conveyor", text='')
         row = col.row()
         row.label(text='Ladder')
-        row.prop(mesh_ass_jms, "Ladder", text='')
+        row.prop(mesh_halo_json, "Ladder", text='')
         row = col.row()
         row.label(text='Slip Surface')
-        row.prop(mesh_ass_jms, "Slip_Surface", text='')
+        row.prop(mesh_halo_json, "Slip_Surface", text='')
         row = col.row()
         row.label(text='Decal Offset')
-        row.prop(mesh_ass_jms, "Decal_Offset", text='')
+        row.prop(mesh_halo_json, "Decal_Offset", text='')
         row = col.row()
         row.label(text='Group Transparents By Plane')
-        row.prop(mesh_ass_jms, "Group_Transparents_By_Plane", text='')
+        row.prop(mesh_halo_json, "Group_Transparents_By_Plane", text='')
         row = col.row()
         row.label(text='No Shadow')
-        row.prop(mesh_ass_jms, "No_Shadow", text='')
+        row.prop(mesh_halo_json, "No_Shadow", text='')
         row = col.row()
         row.label(text='Precise Position')
-        row.prop(mesh_ass_jms, "Precise_Position", text='')
+        row.prop(mesh_halo_json, "Precise_Position", text='')
 
 class Halo_ObjectMeshPrimitiveProps(Panel):
     bl_label = "Primitive Properties"
@@ -1009,24 +1009,24 @@ class Halo_ObjectMeshPrimitiveProps(Panel):
         layout = self.layout
 
         mesh = context.object.data
-        mesh_ass_jms = mesh.ass_jms
+        mesh_halo_json = mesh.halo_json
 
-        if not (mesh_ass_jms.Object_Type_Override == 'NONE' or mesh_ass_jms.Object_Type_Override == 'MESH'):
+        if not (mesh_halo_json.Object_Type_Override == 'NONE' or mesh_halo_json.Object_Type_Override == 'MESH'):
             layout.enabled = False
 
         col = layout.column(align=True)
         col.label(text='Box Length/Width/Height')
         row = col.row()
-        row.prop(mesh_ass_jms, "Box_Length", text='')
-        row.prop(mesh_ass_jms, "Box_Width", text='')
-        row.prop(mesh_ass_jms, "Box_Height", text='')
+        row.prop(mesh_halo_json, "Box_Length", text='')
+        row.prop(mesh_halo_json, "Box_Width", text='')
+        row.prop(mesh_halo_json, "Box_Height", text='')
         col.label(text='Pill Radius/Height')
         row = col.row()
-        row.prop(mesh_ass_jms, "Pill_Radius", text='')
-        row.prop(mesh_ass_jms, "Pill_Height", text='')
+        row.prop(mesh_halo_json, "Pill_Radius", text='')
+        row.prop(mesh_halo_json, "Pill_Height", text='')
         col.label(text='Sphere Radius')
         row = col.row()
-        row.prop(mesh_ass_jms, "Sphere_Radius", text='')
+        row.prop(mesh_halo_json, "Sphere_Radius", text='')
 
 class Halo_ObjectMeshBoundaryProps(Panel):
     bl_label = "Boundary Surface Properties"
@@ -1041,18 +1041,18 @@ class Halo_ObjectMeshBoundaryProps(Panel):
         layout = self.layout
 
         mesh = context.object.data
-        mesh_ass_jms = mesh.ass_jms
+        mesh_halo_json = mesh.halo_json
 
-        if not (mesh_ass_jms.ObjectMesh_Type == 'BOUNDARY SURFACE' and (mesh_ass_jms.Object_Type_Override == 'NONE' or mesh_ass_jms.Object_Type_Override == 'MESH')):
+        if not (mesh_halo_json.ObjectMesh_Type == 'BOUNDARY SURFACE' and (mesh_halo_json.Object_Type_Override == 'NONE' or mesh_halo_json.Object_Type_Override == 'MESH')):
             layout.enabled = False
 
         col = layout.column(align=True)
         row = col.row()
         row.label(text='Boundary Surface Name')
-        row.prop(mesh_ass_jms, "Boundary_Surface_Name", text='')
+        row.prop(mesh_halo_json, "Boundary_Surface_Name", text='')
         row = col.row()
         row.label(text='Boundary Surface Type')
-        row.prop(mesh_ass_jms, "Boundary_Surface_Type", text='')
+        row.prop(mesh_halo_json, "Boundary_Surface_Type", text='')
 
 class Halo_ObjectMeshPoopsProps(Panel):
     bl_label = "Instanced Geometry Properties"
@@ -1067,36 +1067,36 @@ class Halo_ObjectMeshPoopsProps(Panel):
         layout = self.layout
 
         mesh = context.object.data
-        mesh_ass_jms = mesh.ass_jms
+        mesh_halo_json = mesh.halo_json
 
-        if not ((mesh_ass_jms.ObjectMesh_Type == 'NONE' or mesh_ass_jms.ObjectMesh_Type == 'INSTANCED GEOMETRY') and (mesh_ass_jms.Object_Type_Override == 'NONE' or mesh_ass_jms.Object_Type_Override == 'MESH')):
+        if not ((mesh_halo_json.ObjectMesh_Type == 'NONE' or mesh_halo_json.ObjectMesh_Type == 'INSTANCED GEOMETRY') and (mesh_halo_json.Object_Type_Override == 'NONE' or mesh_halo_json.Object_Type_Override == 'MESH')):
             layout.enabled = False
 
         col = layout.column(align=True)
         row = col.row()
         row.label(text='Lighting Override')
-        row.prop(mesh_ass_jms, "Poop_Lighting_Override", text='')
+        row.prop(mesh_halo_json, "Poop_Lighting_Override", text='')
         row = col.row()
         row.label(text='Pathfinding Override')
-        row.prop(mesh_ass_jms, "Poop_Pathfinding_Override", text='')
+        row.prop(mesh_halo_json, "Poop_Pathfinding_Override", text='')
         row = col.row()
         row.label(text='Imposter Policy')
-        row.prop(mesh_ass_jms, "Poop_Imposter_Policy", text='')
+        row.prop(mesh_halo_json, "Poop_Imposter_Policy", text='')
         row = col.row()
         row.label(text='Imposter Transition Distance')
-        row.prop(mesh_ass_jms, "Poop_Imposter_Transition_Distance", text='')
+        row.prop(mesh_halo_json, "Poop_Imposter_Transition_Distance", text='')
         row = col.row()
         row.label(text='Fade Range Start')
-        row.prop(mesh_ass_jms, "Poop_Imposter_Fade_Range_Start", text='')
+        row.prop(mesh_halo_json, "Poop_Imposter_Fade_Range_Start", text='')
         row = col.row()
         row.label(text='Fade Range End')
-        row.prop(mesh_ass_jms, "Poop_Imposter_Fade_Range_End", text='')
+        row.prop(mesh_halo_json, "Poop_Imposter_Fade_Range_End", text='')
         row = col.row()
         row.label(text='Decomposition Hulls')
-        row.prop(mesh_ass_jms, "Poop_Decomposition_Hulls", text='')
+        row.prop(mesh_halo_json, "Poop_Decomposition_Hulls", text='')
         row = col.row()
         row.label(text='Predominant Shader Name')
-        row.prop(mesh_ass_jms, "Poop_Predominant_Shader_Name", text='')
+        row.prop(mesh_halo_json, "Poop_Predominant_Shader_Name", text='')
 
 class Halo_ObjectMeshPoopsFlagsProps(Panel):
     bl_label = "Flags"
@@ -1111,30 +1111,30 @@ class Halo_ObjectMeshPoopsFlagsProps(Panel):
         layout = self.layout
 
         mesh = context.object.data
-        mesh_ass_jms = mesh.ass_jms
+        mesh_halo_json = mesh.halo_json
 
-        if not ((mesh_ass_jms.ObjectMesh_Type == 'NONE' or mesh_ass_jms.ObjectMesh_Type == 'INSTANCED GEOMETRY') and (mesh_ass_jms.Object_Type_Override == 'NONE' or mesh_ass_jms.Object_Type_Override == 'MESH')):
+        if not ((mesh_halo_json.ObjectMesh_Type == 'NONE' or mesh_halo_json.ObjectMesh_Type == 'INSTANCED GEOMETRY') and (mesh_halo_json.Object_Type_Override == 'NONE' or mesh_halo_json.Object_Type_Override == 'MESH')):
             layout.enabled = False
 
         col = layout.column(align=True)
         row = col.row()
         row.label(text='Render Only')
-        row.prop(mesh_ass_jms, "Poop_Render_Only", text='')
+        row.prop(mesh_halo_json, "Poop_Render_Only", text='')
         row = col.row()
         row.label(text='Chops Portals')
-        row.prop(mesh_ass_jms, "Poop_Chops_Portals", text='')
+        row.prop(mesh_halo_json, "Poop_Chops_Portals", text='')
         row = col.row()
         row.label(text='Does Not Block AOE')
-        row.prop(mesh_ass_jms, "Poop_Does_Not_Block_AOE", text='')
+        row.prop(mesh_halo_json, "Poop_Does_Not_Block_AOE", text='')
         row = col.row()
         row.label(text='Excluded From Lightprobe')
-        row.prop(mesh_ass_jms, "Poop_Excluded_From_Lightprobe", text='')
+        row.prop(mesh_halo_json, "Poop_Excluded_From_Lightprobe", text='')
         row = col.row()
         row.label(text='Decal Spacing')
-        row.prop(mesh_ass_jms, "Poop_Decal_Spacing", text='')
+        row.prop(mesh_halo_json, "Poop_Decal_Spacing", text='')
         row = col.row()
         row.label(text='Precise Geometry')
-        row.prop(mesh_ass_jms, "Poop_Precise_Geometry", text='')
+        row.prop(mesh_halo_json, "Poop_Precise_Geometry", text='')
 
 class Halo_ObjectMeshPortalProps(Panel):
     bl_label = "Portal Properties"
@@ -1149,24 +1149,24 @@ class Halo_ObjectMeshPortalProps(Panel):
         layout = self.layout
 
         mesh = context.object.data
-        mesh_ass_jms = mesh.ass_jms
+        mesh_halo_json = mesh.halo_json
 
-        if not (mesh_ass_jms.ObjectMesh_Type == 'PORTAL' and (mesh_ass_jms.Object_Type_Override == 'NONE' or mesh_ass_jms.Object_Type_Override == 'MESH')):
+        if not (mesh_halo_json.ObjectMesh_Type == 'PORTAL' and (mesh_halo_json.Object_Type_Override == 'NONE' or mesh_halo_json.Object_Type_Override == 'MESH')):
             layout.enabled = False
 
         col = layout.column(align=True)
         row = col.row()
         row.label(text='Portal Type')
-        row.prop(mesh_ass_jms, "Portal_Type", text='')
+        row.prop(mesh_halo_json, "Portal_Type", text='')
         row = col.row()
         row.label(text='AI Deafening')
-        row.prop(mesh_ass_jms, "Portal_AI_Deafening", text='')
+        row.prop(mesh_halo_json, "Portal_AI_Deafening", text='')
         row = col.row()
         row.label(text='Blocks Sounds')
-        row.prop(mesh_ass_jms, "Portal_Blocks_Sounds", text='')
+        row.prop(mesh_halo_json, "Portal_Blocks_Sounds", text='')
         row = col.row()
         row.label(text='Is Door')
-        row.prop(mesh_ass_jms, "Portal_Is_Door", text='')
+        row.prop(mesh_halo_json, "Portal_Is_Door", text='')
 
 class Halo_ObjectMeshDecoratorProps(Panel):
     bl_label = "Decorator Properties"
@@ -1181,18 +1181,18 @@ class Halo_ObjectMeshDecoratorProps(Panel):
         layout = self.layout
 
         mesh = context.object.data
-        mesh_ass_jms = mesh.ass_jms
+        mesh_halo_json = mesh.halo_json
 
-        if not (mesh_ass_jms.Object_Type_Override == 'NONE' or mesh_ass_jms.Object_Type_Override == 'MESH'):
+        if not (mesh_halo_json.Object_Type_Override == 'NONE' or mesh_halo_json.Object_Type_Override == 'MESH'):
             layout.enabled = False
 
         col = layout.column(align=True)
         row = col.row()
         row.label(text='Decorator Name')
-        row.prop(mesh_ass_jms, "Decorator_Name", text='')
+        row.prop(mesh_halo_json, "Decorator_Name", text='')
         row = col.row()
         row.label(text='Decorator Level of Detail')
-        row.prop(mesh_ass_jms, "Decorator_LOD", text='')
+        row.prop(mesh_halo_json, "Decorator_LOD", text='')
 
 class Halo_ObjectMeshSeamProps(Panel):
     bl_label = "Seam Properties"
@@ -1207,15 +1207,15 @@ class Halo_ObjectMeshSeamProps(Panel):
         layout = self.layout
 
         mesh = context.object.data
-        mesh_ass_jms = mesh.ass_jms
+        mesh_halo_json = mesh.halo_json
 
-        if not (mesh_ass_jms.ObjectMesh_Type == 'SEAM' and (mesh_ass_jms.Object_Type_Override == 'NONE' or mesh_ass_jms.Object_Type_Override == 'MESH')):
+        if not (mesh_halo_json.ObjectMesh_Type == 'SEAM' and (mesh_halo_json.Object_Type_Override == 'NONE' or mesh_halo_json.Object_Type_Override == 'MESH')):
             layout.enabled = False
 
         col = layout.column(align=True)
         row = col.row()
         row.label(text='Seam BSP Name')
-        row.prop(mesh_ass_jms, "Seam_Name", text='')
+        row.prop(mesh_halo_json, "Seam_Name", text='')
 
 class Halo_ObjectMeshWaterVolumeProps(Panel):
     bl_label = "Water Physics Volume Properties"
@@ -1230,27 +1230,27 @@ class Halo_ObjectMeshWaterVolumeProps(Panel):
         layout = self.layout
 
         mesh = context.object.data
-        mesh_ass_jms = mesh.ass_jms
+        mesh_halo_json = mesh.halo_json
 
-        if not (mesh_ass_jms.ObjectMesh_Type == 'WATER PHYSICS VOLUME' and (mesh_ass_jms.Object_Type_Override == 'NONE' or mesh_ass_jms.Object_Type_Override == 'MESH')):
+        if not (mesh_halo_json.ObjectMesh_Type == 'WATER PHYSICS VOLUME' and (mesh_halo_json.Object_Type_Override == 'NONE' or mesh_halo_json.Object_Type_Override == 'MESH')):
             layout.enabled = False
 
         col = layout.column(align=True)
         row = col.row()
         row.label(text='Water Volume Depth')
-        row.prop(mesh_ass_jms, "Water_Volume_Depth", text='')
+        row.prop(mesh_halo_json, "Water_Volume_Depth", text='')
         row = col.row()
         row.label(text='Water Volume Flow Direction')
-        row.prop(mesh_ass_jms, "Water_Volume_Flow_Direction", text='')
+        row.prop(mesh_halo_json, "Water_Volume_Flow_Direction", text='')
         row = col.row()
         row.label(text='Water Volume Flow Velocity')
-        row.prop(mesh_ass_jms, "Water_Volume_Flow_Velocity", text='')
+        row.prop(mesh_halo_json, "Water_Volume_Flow_Velocity", text='')
         row = col.row()
         row.label(text='Water Volume Fog Color')
-        row.prop(mesh_ass_jms, "Water_Volume_Fog_Color", text='')
+        row.prop(mesh_halo_json, "Water_Volume_Fog_Color", text='')
         row = col.row()
         row.label(text='Water Volume Fog Murkiness')
-        row.prop(mesh_ass_jms, "Water_Volume_Fog_Murkiness", text='')
+        row.prop(mesh_halo_json, "Water_Volume_Fog_Murkiness", text='')
 
 class Halo_ObjectMeshFogVolumeProps(Panel):
     bl_label = "Planar Fog Volume Properties"
@@ -1265,21 +1265,21 @@ class Halo_ObjectMeshFogVolumeProps(Panel):
         layout = self.layout
 
         mesh = context.object.data
-        mesh_ass_jms = mesh.ass_jms
+        mesh_halo_json = mesh.halo_json
 
-        if not (mesh_ass_jms.ObjectMesh_Type == 'PLANAR FOG VOLUME' and (mesh_ass_jms.Object_Type_Override == 'NONE' or mesh_ass_jms.Object_Type_Override == 'MESH')):
+        if not (mesh_halo_json.ObjectMesh_Type == 'PLANAR FOG VOLUME' and (mesh_halo_json.Object_Type_Override == 'NONE' or mesh_halo_json.Object_Type_Override == 'MESH')):
             layout.enabled = False
 
         col = layout.column(align=True)
         row = col.row()
         row.label(text='Fog Name')
-        row.prop(mesh_ass_jms, "Fog_Name", text='')
+        row.prop(mesh_halo_json, "Fog_Name", text='')
         row = col.row()
         row.label(text='Fog Appearance Tag')
-        row.prop(mesh_ass_jms, "Fog_Appearance_Tag", text='')
+        row.prop(mesh_halo_json, "Fog_Appearance_Tag", text='')
         row = col.row()
         row.label(text='Fog Volume Depth')
-        row.prop(mesh_ass_jms, "Fog_Volume_Depth", text='')
+        row.prop(mesh_halo_json, "Fog_Volume_Depth", text='')
 
 class Halo_ObjectMeshLightmapProps(Panel):
     bl_label = "Lightmap Properties"
@@ -1294,41 +1294,41 @@ class Halo_ObjectMeshLightmapProps(Panel):
         layout = self.layout
 
         mesh = context.object.data
-        mesh_ass_jms = mesh.ass_jms
+        mesh_halo_json = mesh.halo_json
 
-        if not (mesh_ass_jms.Object_Type_Override == 'NONE' or mesh_ass_jms.Object_Type_Override == 'MESH'):
+        if not (mesh_halo_json.Object_Type_Override == 'NONE' or mesh_halo_json.Object_Type_Override == 'MESH'):
             layout.enabled = False
 
         col = layout.column(align=True)
         row = col.row()
         row.label(text='Additive Transparency')
-        row.prop(mesh_ass_jms, "Lightmap_Additive_Transparency", text='')
+        row.prop(mesh_halo_json, "Lightmap_Additive_Transparency", text='')
         row = col.row()
         row.label(text='Resolution Scale Override')
-        row.prop(mesh_ass_jms, "Lightmap_Ignore_Default_Resolution_Scale", text='')
+        row.prop(mesh_halo_json, "Lightmap_Ignore_Default_Resolution_Scale", text='')
         row.label(text='Resolution Scale')
-        row.prop(mesh_ass_jms, "Lightmap_Resolution_Scale", text='')
+        row.prop(mesh_halo_json, "Lightmap_Resolution_Scale", text='')
         row = col.row()
         row.label(text='Chart Group')
-        row.prop(mesh_ass_jms, "Lightmap_Chart_Group", text='')
+        row.prop(mesh_halo_json, "Lightmap_Chart_Group", text='')
         row = col.row()
         row.label(text='Lightmap Type')
-        row.prop(mesh_ass_jms, "Lightmap_Type", text='')
+        row.prop(mesh_halo_json, "Lightmap_Type", text='')
         row = col.row()
         row.label(text='Transparency Override')
-        row.prop(mesh_ass_jms, "Lightmap_Transparency_Override", text='')
+        row.prop(mesh_halo_json, "Lightmap_Transparency_Override", text='')
         row = col.row()
         row.label(text='Analytical Bounce Modifier')
-        row.prop(mesh_ass_jms, "Lightmap_Analytical_Bounce_Modifier", text='')
+        row.prop(mesh_halo_json, "Lightmap_Analytical_Bounce_Modifier", text='')
         row = col.row()
         row.label(text='General Bounce Modifier')
-        row.prop(mesh_ass_jms, "Lightmap_General_Bounce_Modifier", text='')
+        row.prop(mesh_halo_json, "Lightmap_General_Bounce_Modifier", text='')
         row = col.row()
         row.label(text='Translucency Tint Color')
-        row.prop(mesh_ass_jms, "Lightmap_Translucency_Tint_Color", text='')
+        row.prop(mesh_halo_json, "Lightmap_Translucency_Tint_Color", text='')
         row = col.row()
         row.label(text='Lighting From Both Sides')
-        row.prop(mesh_ass_jms, "Lightmap_Lighting_From_Both_Sides", text='')
+        row.prop(mesh_halo_json, "Lightmap_Lighting_From_Both_Sides", text='')
 
 class Halo_ObjectMeshMaterialLightingProps(Panel):
     bl_label = "Material Lighting Properties"
@@ -1343,39 +1343,39 @@ class Halo_ObjectMeshMaterialLightingProps(Panel):
         layout = self.layout
 
         mesh = context.object.data
-        mesh_ass_jms = mesh.ass_jms
+        mesh_halo_json = mesh.halo_json
 
-        if not (mesh_ass_jms.Object_Type_Override == 'NONE' or mesh_ass_jms.Object_Type_Override == 'MESH'):
+        if not (mesh_halo_json.Object_Type_Override == 'NONE' or mesh_halo_json.Object_Type_Override == 'MESH'):
             layout.enabled = False
 
         col = layout.column(align=True)
         row = col.row()
         row.label(text='Attenuation Cutoff')
-        row.prop(mesh_ass_jms, "Material_Lighting_Attenuation_Cutoff", text='')
+        row.prop(mesh_halo_json, "Material_Lighting_Attenuation_Cutoff", text='')
         row = col.row()
         row.label(text='Attenuation Falloff')
-        row.prop(mesh_ass_jms, "Material_Lighting_Attenuation_Falloff", text='')
+        row.prop(mesh_halo_json, "Material_Lighting_Attenuation_Falloff", text='')
         row = col.row()
         row.label(text='Emissive Focus')
-        row.prop(mesh_ass_jms, "Material_Lighting_Emissive_Focus", text='')
+        row.prop(mesh_halo_json, "Material_Lighting_Emissive_Focus", text='')
         row = col.row()
         row.label(text='Emissive Color')
-        row.prop(mesh_ass_jms, "Material_Lighting_Emissive_Color", text='')
+        row.prop(mesh_halo_json, "Material_Lighting_Emissive_Color", text='')
         row = col.row()
         row.label(text='Emissive Per Unit')
-        row.prop(mesh_ass_jms, "Material_Lighting_Emissive_Per_Unit", text='')
+        row.prop(mesh_halo_json, "Material_Lighting_Emissive_Per_Unit", text='')
         row = col.row()
         row.label(text='Emissive Power')
-        row.prop(mesh_ass_jms, "Material_Lighting_Emissive_Power", text='')
+        row.prop(mesh_halo_json, "Material_Lighting_Emissive_Power", text='')
         row = col.row()
         row.label(text='Emissive Quality')
-        row.prop(mesh_ass_jms, "Material_Lighting_Emissive_Quality", text='')
+        row.prop(mesh_halo_json, "Material_Lighting_Emissive_Quality", text='')
         row = col.row()
         row.label(text='Use Shader Gel')
-        row.prop(mesh_ass_jms, "Material_Lighting_Use_Shader_Gel", text='')
+        row.prop(mesh_halo_json, "Material_Lighting_Use_Shader_Gel", text='')
         row = col.row()
         row.label(text='Bounce Ratio')
-        row.prop(mesh_ass_jms, "Material_Lighting_Bounce_Ratio", text='')
+        row.prop(mesh_halo_json, "Material_Lighting_Bounce_Ratio", text='')
 
 # MARKER PROPERTIES
 class Halo_ObjectMarkerProps(Panel):
@@ -1391,21 +1391,21 @@ class Halo_ObjectMarkerProps(Panel):
         layout = self.layout
 
         mesh = context.object.data
-        mesh_ass_jms = mesh.ass_jms
+        mesh_halo_json = mesh.halo_json
 
-        if not (mesh_ass_jms.Object_Type_Override == 'NONE' or mesh_ass_jms.Object_Type_Override == 'MARKER'):
+        if not (mesh_halo_json.Object_Type_Override == 'NONE' or mesh_halo_json.Object_Type_Override == 'MARKER'):
             layout.enabled = False
 
         col = layout.column(align=True)
         row = col.row()
         row.label(text='Marker Type')
-        row.prop(mesh_ass_jms, "ObjectMarker_Type", text='')
+        row.prop(mesh_halo_json, "ObjectMarker_Type", text='')
         row = col.row()
         row.label(text='Marker Group')
-        row.prop(mesh_ass_jms, "Marker_Group_Name", text='')
+        row.prop(mesh_halo_json, "Marker_Group_Name", text='')
         row = col.row()
         row.label(text='Marker Velocity')
-        row.prop(mesh_ass_jms, "Marker_Velocity", text='')
+        row.prop(mesh_halo_json, "Marker_Velocity", text='')
 
 class Halo_ObjectMarkerInstanceProps(Panel):
     bl_label = "Marker Instance Properties"
@@ -1420,18 +1420,18 @@ class Halo_ObjectMarkerInstanceProps(Panel):
         layout = self.layout
 
         mesh = context.object.data
-        mesh_ass_jms = mesh.ass_jms
+        mesh_halo_json = mesh.halo_json
 
-        if not mesh_ass_jms.ObjectMarker_Type == 'GAME INSTANCE':
+        if not mesh_halo_json.ObjectMarker_Type == 'GAME INSTANCE':
             layout.enabled = False
 
         col = layout.column(align=True)
         row = col.row()
         row.label(text='Marker Game Instance Tag')
-        row.prop(mesh_ass_jms, "Marker_Game_Instance_Tag_Name", text='')
+        row.prop(mesh_halo_json, "Marker_Game_Instance_Tag_Name", text='')
         row = col.row()
         row.label(text='Marker Game Instance Tag Variant')
-        row.prop(mesh_ass_jms, "Marker_Game_Instance_Tag_Variant_Name", text='')
+        row.prop(mesh_halo_json, "Marker_Game_Instance_Tag_Variant_Name", text='')
 
 class Halo_ObjectMarkerPathfindingProps(Panel):
     bl_label = "Marker Pathfinding Properties"
@@ -1446,21 +1446,21 @@ class Halo_ObjectMarkerPathfindingProps(Panel):
         layout = self.layout
 
         mesh = context.object.data
-        mesh_ass_jms = mesh.ass_jms
+        mesh_halo_json = mesh.halo_json
 
-        if not mesh_ass_jms.ObjectMarker_Type == 'PATHFINDING SPHERE':
+        if not mesh_halo_json.ObjectMarker_Type == 'PATHFINDING SPHERE':
             layout.enabled = False
 
         col = layout.column(align=True)
         row = col.row()
         row.label(text='Vehicle Only Pathfinding Sphere')
-        row.prop(mesh_ass_jms, "Marker_Pathfinding_Sphere_Vehicle", text='')
+        row.prop(mesh_halo_json, "Marker_Pathfinding_Sphere_Vehicle", text='')
         row = col.row()
         row.label(text='Pathfinding Sphere Remains When Open')
-        row.prop(mesh_ass_jms, "Pathfinding_Sphere_Remains_When_Open", text='')
+        row.prop(mesh_halo_json, "Pathfinding_Sphere_Remains_When_Open", text='')
         row = col.row()
         row.label(text='Pathfinding Sphere With Sectors')
-        row.prop(mesh_ass_jms, "Pathfinding_Sphere_With_Sectors", text='')
+        row.prop(mesh_halo_json, "Pathfinding_Sphere_With_Sectors", text='')
 
 class Halo_ObjectMarkerPhysicsProps(Panel):
     bl_label = "Marker Physics Constraints Properties"
@@ -1475,21 +1475,21 @@ class Halo_ObjectMarkerPhysicsProps(Panel):
         layout = self.layout
 
         mesh = context.object.data
-        mesh_ass_jms = mesh.ass_jms
+        mesh_halo_json = mesh.halo_json
 
-        if not (mesh_ass_jms.ObjectMarker_Type == 'PHYSICS HINGE CONSTRAINT' or mesh_ass_jms.ObjectMarker_Type == 'PHYSICS SOCKET CONSTRAINT'):
+        if not (mesh_halo_json.ObjectMarker_Type == 'PHYSICS HINGE CONSTRAINT' or mesh_halo_json.ObjectMarker_Type == 'PHYSICS SOCKET CONSTRAINT'):
             layout.enabled = False
 
         col = layout.column(align=True)
         row = col.row()
         row.label(text='Physics Constraint Parent')
-        row.prop(mesh_ass_jms, "Physics_Constraint_Parent", text='')
+        row.prop(mesh_halo_json, "Physics_Constraint_Parent", text='')
         row = col.row()
         row.label(text='Physics Constraint Child')
-        row.prop(mesh_ass_jms, "Physics_Constraint_Child", text='')
+        row.prop(mesh_halo_json, "Physics_Constraint_Child", text='')
         row = col.row()
         row.label(text='Physics Constraint Uses Limits')
-        row.prop(mesh_ass_jms, "Physics_Constraint_Uses_Limits", text='')
+        row.prop(mesh_halo_json, "Physics_Constraint_Uses_Limits", text='')
 
 class Halo_ObjectMarkerPhysicsHingeProps(Panel):
     bl_label = "Hinge Constraints Properties"
@@ -1504,16 +1504,16 @@ class Halo_ObjectMarkerPhysicsHingeProps(Panel):
         layout = self.layout
 
         mesh = context.object.data
-        mesh_ass_jms = mesh.ass_jms
+        mesh_halo_json = mesh.halo_json
 
-        if not (mesh_ass_jms.ObjectMarker_Type == 'PHYSICS HINGE CONSTRAINT' and mesh_ass_jms.Physics_Constraint_Uses_Limits):
+        if not (mesh_halo_json.ObjectMarker_Type == 'PHYSICS HINGE CONSTRAINT' and mesh_halo_json.Physics_Constraint_Uses_Limits):
             layout.enabled = False
 
         col = layout.column(align=True)
         col.label(text="Hinge Constraint Min/Max")
         row = col.row()
-        row.prop(mesh_ass_jms, "Hinge_Constraint_Minimum", text='')
-        row.prop(mesh_ass_jms, "Hinge_Constraint_Maximum", text='')
+        row.prop(mesh_halo_json, "Hinge_Constraint_Minimum", text='')
+        row.prop(mesh_halo_json, "Hinge_Constraint_Maximum", text='')
 
 class Halo_ObjectMarkerPhysicsSocketProps(Panel):
     bl_label = "Socket Constraints Properties"
@@ -1528,23 +1528,23 @@ class Halo_ObjectMarkerPhysicsSocketProps(Panel):
         layout = self.layout
 
         mesh = context.object.data
-        mesh_ass_jms = mesh.ass_jms
+        mesh_halo_json = mesh.halo_json
 
-        if not (mesh_ass_jms.ObjectMarker_Type == 'PHYSICS SOCKET CONSTRAINT' and mesh_ass_jms.Physics_Constraint_Uses_Limits):
+        if not (mesh_halo_json.ObjectMarker_Type == 'PHYSICS SOCKET CONSTRAINT' and mesh_halo_json.Physics_Constraint_Uses_Limits):
             layout.enabled = False
         
         col = layout.column(align=True)
         col.label(text="Cone Angle")
         row = col.row()
-        row.prop(mesh_ass_jms, "Cone_Angle", text='')
+        row.prop(mesh_halo_json, "Cone_Angle", text='')
         col.label(text="Plane Constraint Min/Max")
         row = col.row()
-        row.prop(mesh_ass_jms, "Plane_Constraint_Minimum", text='')
-        row.prop(mesh_ass_jms, "Plane_Constraint_Maximum", text='')
+        row.prop(mesh_halo_json, "Plane_Constraint_Minimum", text='')
+        row.prop(mesh_halo_json, "Plane_Constraint_Maximum", text='')
         col.label(text="Twist Constraint Start/End")
         row = col.row()
-        row.prop(mesh_ass_jms, "Twist_Constraint_Start", text='')
-        row.prop(mesh_ass_jms, "Twist_Constraint_End", text='')
+        row.prop(mesh_halo_json, "Twist_Constraint_Start", text='')
+        row.prop(mesh_halo_json, "Twist_Constraint_End", text='')
 
 
 class Halo_MeshProps(Panel):
@@ -1642,7 +1642,8 @@ class ASS_JMS_MeshPropertiesGroup(PropertyGroup):
         name="XREF Name",
         description="Set the name of the XREF object. The model file should contain an object by this name",
     )
-    
+
+class Halo_JSON_MeshPropertiesGroup(PropertyGroup):
     #OBJECT PROPERTIES
     Object_Type_Override : EnumProperty(
         name="Object Type",
@@ -2321,7 +2322,6 @@ class ASS_JMS_MeshPropertiesGroup(PropertyGroup):
         max=180,
     )
 
-
 class Halo_SceneProps(Panel):
     bl_label = "Halo Scene Properties"
     bl_idname = "HALO_PT_ScenePropertiesPanel"
@@ -2569,6 +2569,7 @@ class ASS_LightFarAtten(Panel):
 classeshalo = (
     ASS_JMS_MeshPropertiesGroup,
     ASS_JMS_MaterialPropertiesGroup,
+    Halo_JSON_MeshPropertiesGroup,
     Halo_MeshProps,
     Halo_ObjectProps,
     Halo_ObjectMeshProps,
@@ -2617,12 +2618,14 @@ def register():
     bpy.types.Mesh.ass_jms = PointerProperty(type=ASS_JMS_MeshPropertiesGroup, name="ASS/JMS Properties", description="Set properties for your mesh")
     bpy.types.Material.ass_jms = PointerProperty(type=ASS_JMS_MaterialPropertiesGroup, name="ASS/JMS Properties", description="Set properties for your materials")
     bpy.types.Scene.halo = PointerProperty(type=Halo_ScenePropertiesGroup, name="Halo Scene Properties", description="Set properties for your scene")
+    bpy.types.Mesh.halo_json = PointerProperty(type=Halo_JSON_MeshPropertiesGroup, name="Halo JSON Properties", description="Set Halo Object Properties")
 
 def unregister():
     del bpy.types.Light.halo_light
-    del bpy.types.Mesh.ass_jms
+    del bpy.types.mesh.ass_jms
     del bpy.types.Material.ass_jms
     del bpy.types.Scene.halo
+    del bpy.types.Mesh.halo_json
     for clshalo in classeshalo:
         bpy.utils.unregister_class(clshalo)
 
