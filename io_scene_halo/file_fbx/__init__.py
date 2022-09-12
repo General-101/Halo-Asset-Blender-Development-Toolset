@@ -58,7 +58,7 @@ from bpy_extras.io_utils import (
 @orientation_helper(axis_forward='-Z', axis_up='Y')
 class ExportHaloFBX(bpy.types.Operator, ExportHelper):
     """Write a Halo FBX & JSON file"""
-    bl_idname = "export.fbx"
+    bl_idname = "export_halo_scene.fbx"
     bl_label = "Export FBX w/ JSON"
     bl_options = {'UNDO', 'PRESET'}
 
@@ -335,7 +335,7 @@ class FBX_PT_export_main_Halo(bpy.types.Panel):
         sfile = context.space_data
         operator = sfile.active_operator
 
-        return operator.bl_idname == "EXPORT_OT_fbx"
+        return operator.bl_idname == "EXPORT_HALO_SCENE_OT_fbx"
 
     def draw(self, context):
         layout = self.layout
@@ -367,7 +367,7 @@ class FBX_PT_export_include_Halo(bpy.types.Panel):
         sfile = context.space_data
         operator = sfile.active_operator
 
-        return operator.bl_idname == "EXPORT_OT_fbx"
+        return operator.bl_idname == "EXPORT_HALO_SCENE_OT_fbx"
 
     def draw(self, context):
         layout = self.layout
@@ -397,7 +397,7 @@ class FBX_PT_export_transform_Halo(bpy.types.Panel):
         sfile = context.space_data
         operator = sfile.active_operator
 
-        return operator.bl_idname == "EXPORT_OT_fbx"
+        return operator.bl_idname == "EXPORT_HALO_SCENE_OT_fbx"
 
     def draw(self, context):
         layout = self.layout
@@ -432,7 +432,7 @@ class FBX_PT_export_geometry_Halo(bpy.types.Panel):
         sfile = context.space_data
         operator = sfile.active_operator
 
-        return operator.bl_idname == "EXPORT_OT_fbx"
+        return operator.bl_idname == "EXPORT_HALO_SCENE_OT_fbx"
 
     def draw(self, context):
         layout = self.layout
@@ -466,7 +466,7 @@ class FBX_PT_export_armature_Halo(bpy.types.Panel):
         sfile = context.space_data
         operator = sfile.active_operator
 
-        return operator.bl_idname == "EXPORT_OT_fbx"
+        return operator.bl_idname == "EXPORT_HALO_SCENE_OT_fbx"
 
     def draw(self, context):
         layout = self.layout
@@ -495,7 +495,7 @@ class FBX_PT_export_bake_animation_Halo(bpy.types.Panel):
         sfile = context.space_data
         operator = sfile.active_operator
 
-        return operator.bl_idname == "EXPORT_OT_fbx"
+        return operator.bl_idname == "EXPORT_HALO_SCENE_OT_fbx"
 
     def draw_header(self, context):
         sfile = context.space_data
