@@ -82,8 +82,12 @@ class ASS_JMS_MaterialProps(Panel):
 
     @classmethod
     def poll(self, context):
-        mat = context.material
-
+        scene = context.scene
+        scene_halo = scene.halo
+        if scene_halo.game_version == 'haloce' or scene_halo.game_version == 'halo2' or scene_halo.game_version == 'halo3':
+            mat = context.material
+        else:
+            mat = False
         return mat
 
     def draw_header(self, context):
@@ -94,9 +98,9 @@ class ASS_JMS_MaterialProps(Panel):
 
     def draw(self, context):
         layout = self.layout
+        current_material = context.object.active_material
         scene = context.scene
         scene_halo = scene.halo
-        current_material = context.object.active_material
         if current_material is not None:
             material_ass_jms = current_material.ass_jms
             layout.enabled = material_ass_jms.is_bm
@@ -104,14 +108,7 @@ class ASS_JMS_MaterialProps(Panel):
             if scene_halo.game_version == 'halo2' or scene_halo.game_version == 'halo3':
                 row.label(text="Name Override:")
                 row.prop(material_ass_jms, "name_override", text='')
-            if scene_halo.game_version == 'reach': # added if here to more accruately identify what is needed for Reach. Incorporated into jms_ass class, but maybe this needs a name change so clearer that it includes json exports
-                col = layout.column(align=True)
-                row.label(text="Shader Path:")
-                row.prop(material_ass_jms, "shader_path", text='')
-                row = col.row()
-                row.label(text="Material Override")
-                row.prop(material_ass_jms, "material_override", text='')
-                row = col.row()
+
             if scene_halo.game_version == 'halo2' or scene_halo.game_version == 'halo3':
                 row = layout.row()
                 row.label(text="Material Effect:")
@@ -1538,27 +1535,27 @@ class Halo_MaterialProps(Panel):
     bl_options = {'DEFAULT_CLOSED'}
 
     @classmethod
-    def poll(self, context):
-        mat = context.material
+    def poll(cls, context):
+        scene = context.scene
+        scene_halo = scene.halo
 
-        return mat
+        if scene_halo.game_version == 'reach':
+            return True
 
     def draw(self, context):
         layout = self.layout
-        scene = context.scene
-        scene_halo = scene.halo
         current_material = context.object.active_material
+        scene = context.scene
         if current_material is not None:
             material_halo_json = current_material.halo_json
             row = layout.row()
-            if scene_halo.game_version == 'reach': # added if here to more accruately identify what is needed for Reach. Incorporated into jms_ass class, but maybe this needs a name change so clearer that it includes json exports
-                col = layout.column(align=True)
-                row.label(text="Shader Path:")
-                row.prop(material_halo_json, "shader_path", text='')
-                row = col.row()
-                row.label(text="Material Override")
-                row.prop(material_halo_json, "material_override", text='')
-                row = col.row()
+            col = layout.column(align=True)
+            row.label(text="Shader Path:")
+            row.prop(material_halo_json, "shader_path", text='')
+            row = col.row()
+            row.label(text="Material Override")
+            row.prop(material_halo_json, "material_override", text='')
+            row = col.row()
 
 class Halo_MeshProps(Panel):
     bl_label = "Halo Mesh Properties"
@@ -2624,6 +2621,7 @@ classeshalo = (
     Halo_ObjectMarkerPhysicsProps,
     Halo_ObjectMarkerPhysicsHingeProps,
     Halo_ObjectMarkerPhysicsSocketProps,
+    Halo_MaterialProps,
     ASS_JMS_MeshProps,
     ASS_LightPropertiesGroup,
     ASS_LightProps,
@@ -2659,6 +2657,7 @@ def unregister():
     del bpy.types.Material.ass_jms
     del bpy.types.Scene.halo
     del bpy.types.Mesh.halo_json
+    del bpy.types.Material.halo_json
     for clshalo in classeshalo:
         bpy.utils.unregister_class(clshalo)
 
