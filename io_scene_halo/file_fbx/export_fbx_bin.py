@@ -2989,29 +2989,28 @@ def getMaterials():
 
     for ob in bpy.data.objects:
         for mat_slot in ob.material_slots:
-            shaderType = ""
-            if (mat_slot.material.ass_jms.material_override == "SKY" or mat_slot.material.name == "+sky"):
-                mat_slot.material.ass_jms.shader_path = "bungie_face_type=_connected_geometry_face_type_sky"
-                shaderType = "override"
-            elif mat_slot.material.ass_jms.material_override == "SEAMSEALER":
-                mat_slot.material.ass_jms.shader_path = "bungie_face_type=_connected_geometry_face_type_seam_sealer"
-                shaderType = "override"
-            elif mat_slot.material.ass_jms.material_override == "PORTAL":
-                mat_slot.material.ass_jms.shader_path = "bungie_mesh_type=_connected_geometry_mesh_type_portal"
-                shaderType = "override"
-            elif mat_slot.material.ass_jms.material_override == "NONE" and mat_slot.material.ass_jms.shader_path == "":
-                mat_slot.material.ass_jms.shader_path = "shaders\invalid"
+            halo_material = mat_slot.material.halo_json
+            halo_material_name = mat_slot.material.name
+            halo_special_materials = ["+sky", "+seamsealer", "+portal"] # some special material names to match legacy
+            shaderType = halo_material.shader_path.rpartition('.')[2]
+            shaderPath = halo_material.shader_path.rpartition('.')[0]
+
+            if shaderType == "":
                 shaderType = "shader"
-            elif mat_slot.material.ass_jms.material_override == "NONE":
-                sPath = mat_slot.material.ass_jms.shader_path.split(".")
-                if len(sPath) > 1:
-                    temp = ""
-                    for x in range(len(sPath)-1):
-                        temp += sPath[x]
-                    mat_slot.material.ass_jms.shader_path = temp
-                    shaderType = sPath[-1]
-                else:
-                    shaderType = "shader"
+            
+            if shaderPath == "":
+                shaderPath = "shaders\invalid"
+
+            if (halo_material.material_override != "NONE" or halo_material_name == halo_special_materials):
+                shaderType = "override"
+                match halo_material.material_override | halo_material_name:
+                    case "SKY" | "+sky":
+                        shaderPath = "bungie_face_type=_connected_geometry_face_type_sky"
+                    case "SEAMSEALER" | "+seamsealer":
+                        shaderPath = "bungie_face_type=_connected_geometry_face_type_seam_sealer"
+                    case "PORTAL" | "+portal":
+                        shaderPath = "bungie_mesh_type=_connected_geometry_mesh_type_portal"
+
             matList.update({mat_slot.material.name : {"bungie_shader_path" : mat_slot.material.ass_jms.shader_path, "bungie_shader_type" : shaderType}})
             print('\nShader Path = %r' % mat_slot.material.ass_jms.shader_path)
 
