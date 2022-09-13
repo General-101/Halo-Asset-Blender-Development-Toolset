@@ -834,729 +834,6 @@ class ASS_JMS_MaterialPropertiesGroup(PropertyGroup):
         min = 0.0,
         )
 
-class Halo_ObjectProps(Panel):
-    bl_label = "Halo Object Properties"
-    bl_idname = "JSON_PT_ObjectDetailsPanel"
-    bl_space_type = "PROPERTIES"
-    bl_region_type = "WINDOW"
-    bl_context = "data"
-    bl_options = {"DEFAULT_CLOSED"}
-
-    @classmethod
-    def poll(cls, context):
-        scene = context.scene
-        scene_halo = scene.halo
-
-        if scene_halo.game_version == 'reach':
-            return True
-
-    def draw(self, context):
-        layout = self.layout
-
-        mesh = context.object.data
-        mesh_halo_json = mesh.halo_json
-
-        col = layout.column(align=True)
-        row = col.row()
-        row.label(text='Object Type Override')
-        row.prop(mesh_halo_json, "Object_Type_Override", text='')
-        row = col.row()
-        row.label(text='Region')
-        row.prop(mesh_halo_json, "region_name", text='')
-
-#MESH PROPERTIES
-class Halo_ObjectMeshProps(Panel):
-    bl_label = "Mesh Properties"
-    bl_idname = "JSON_PT_MeshDetailsPanel"
-    bl_space_type = "PROPERTIES"
-    bl_region_type = "WINDOW"
-    bl_context = "data"
-    bl_options = {"DEFAULT_CLOSED"}
-    bl_parent_id = "JSON_PT_ObjectDetailsPanel"
-
-    def draw(self, context):
-        layout = self.layout
-
-        mesh = context.object.data
-        mesh_halo_json = mesh.halo_json
-
-        if not (mesh_halo_json.Object_Type_Override == 'NONE' or mesh_halo_json.Object_Type_Override == 'MESH'):
-            layout.enabled = False
-
-        col = layout.column(align=True)
-        row = col.row()
-        row.label(text='Mesh Type Override')
-        row.prop(mesh_halo_json, "ObjectMesh_Type", text='')
-        row = col.row()
-        row.label(text='Mesh Primitive Type')
-        row.prop(mesh_halo_json, "Mesh_Primitive_Type", text='')
-        row = col.row()
-        row.label(text='Mesh Tesselation Density')
-        row.prop(mesh_halo_json, "Mesh_Tesselation_Density", text='')
-        row = col.row()
-        row.label(text='Mesh Compression')
-        row.prop(mesh_halo_json, "Mesh_Compression", text='')
-
-class Halo_ObjectMeshFaceProps(Panel):
-    bl_label = "Face Properties"
-    bl_idname = "JSON_PT_MeshFaceDetailsPanel"
-    bl_space_type = "PROPERTIES"
-    bl_region_type = "WINDOW"
-    bl_context = "data"
-    bl_options = {"DEFAULT_CLOSED"}
-    bl_parent_id = "JSON_PT_MeshDetailsPanel"
-
-    def draw(self, context):
-        layout = self.layout
-
-        mesh = context.object.data
-        mesh_halo_json = mesh.halo_json
-
-        if not (mesh_halo_json.Object_Type_Override == 'NONE' or mesh_halo_json.Object_Type_Override == 'MESH'):
-            layout.enabled = False
-
-        col = layout.column(align=True)
-        row = col.row()
-        row.label(text='Face Type')
-        row.prop(mesh_halo_json, "Face_Type", text='')
-        row = col.row()
-        row.label(text='Face Mode')
-        row.prop(mesh_halo_json, "Face_Mode", text='')
-        row = col.row()
-        row.label(text='Face Sides')
-        row.prop(mesh_halo_json, "Face_Sides", text='')
-        row = col.row()
-        row.label(text='Face Draw Distance')
-        row.prop(mesh_halo_json, "Face_Draw_Distance", text='')
-        row = col.row()
-        row.label(text='Face Global Material')
-        row.prop(mesh_halo_json, "Face_Global_Material", text='')
-        row = col.row()
-        row.label(text='Sky Permutation Index')
-        row.prop(mesh_halo_json, "Sky_Permutation_Index", text='')
-
-class Halo_ObjectMeshFaceFlagsProps(Panel):
-    bl_label = "Flags"
-    bl_idname = "JSON_PT_MeshFaceFlagsPanel"
-    bl_space_type = "PROPERTIES"
-    bl_region_type = "WINDOW"
-    bl_context = "data"
-    bl_options = {"DEFAULT_CLOSED"}
-    bl_parent_id = "JSON_PT_MeshFaceDetailsPanel"
-
-    def draw(self, context):
-        layout = self.layout
-
-        mesh = context.object.data
-        mesh_halo_json = mesh.halo_json
-
-        if not (mesh_halo_json.Object_Type_Override == 'NONE' or mesh_halo_json.Object_Type_Override == 'MESH'):
-            layout.enabled = False
-
-        col = layout.column(align=True)
-        row = col.row()
-        row.label(text='Conveyor')
-        row.prop(mesh_halo_json, "Conveyor", text='')
-        row = col.row()
-        row.label(text='Ladder')
-        row.prop(mesh_halo_json, "Ladder", text='')
-        row = col.row()
-        row.label(text='Slip Surface')
-        row.prop(mesh_halo_json, "Slip_Surface", text='')
-        row = col.row()
-        row.label(text='Decal Offset')
-        row.prop(mesh_halo_json, "Decal_Offset", text='')
-        row = col.row()
-        row.label(text='Group Transparents By Plane')
-        row.prop(mesh_halo_json, "Group_Transparents_By_Plane", text='')
-        row = col.row()
-        row.label(text='No Shadow')
-        row.prop(mesh_halo_json, "No_Shadow", text='')
-        row = col.row()
-        row.label(text='Precise Position')
-        row.prop(mesh_halo_json, "Precise_Position", text='')
-
-class Halo_ObjectMeshPrimitiveProps(Panel):
-    bl_label = "Primitive Properties"
-    bl_idname = "JSON_PT_MeshPrimitiveDetailsPanel"
-    bl_space_type = "PROPERTIES"
-    bl_region_type = "WINDOW"
-    bl_context = "data"
-    bl_options = {"DEFAULT_CLOSED"}
-    bl_parent_id = "JSON_PT_MeshDetailsPanel"
-
-    def draw(self, context):
-        layout = self.layout
-
-        mesh = context.object.data
-        mesh_halo_json = mesh.halo_json
-
-        if not (mesh_halo_json.Object_Type_Override == 'NONE' or mesh_halo_json.Object_Type_Override == 'MESH'):
-            layout.enabled = False
-
-        col = layout.column(align=True)
-        col.label(text='Box Length/Width/Height')
-        row = col.row()
-        row.prop(mesh_halo_json, "Box_Length", text='')
-        row.prop(mesh_halo_json, "Box_Width", text='')
-        row.prop(mesh_halo_json, "Box_Height", text='')
-        col.label(text='Pill Radius/Height')
-        row = col.row()
-        row.prop(mesh_halo_json, "Pill_Radius", text='')
-        row.prop(mesh_halo_json, "Pill_Height", text='')
-        col.label(text='Sphere Radius')
-        row = col.row()
-        row.prop(mesh_halo_json, "Sphere_Radius", text='')
-
-class Halo_ObjectMeshBoundaryProps(Panel):
-    bl_label = "Boundary Surface Properties"
-    bl_idname = "JSON_PT_MeshBoundaryDetailsPanel"
-    bl_space_type = "PROPERTIES"
-    bl_region_type = "WINDOW"
-    bl_context = "data"
-    bl_options = {"DEFAULT_CLOSED"}
-    bl_parent_id = "JSON_PT_MeshDetailsPanel"
-
-    def draw(self, context):
-        layout = self.layout
-
-        mesh = context.object.data
-        mesh_halo_json = mesh.halo_json
-
-        if not (mesh_halo_json.ObjectMesh_Type == 'BOUNDARY SURFACE' and (mesh_halo_json.Object_Type_Override == 'NONE' or mesh_halo_json.Object_Type_Override == 'MESH')):
-            layout.enabled = False
-
-        col = layout.column(align=True)
-        row = col.row()
-        row.label(text='Boundary Surface Name')
-        row.prop(mesh_halo_json, "Boundary_Surface_Name", text='')
-        row = col.row()
-        row.label(text='Boundary Surface Type')
-        row.prop(mesh_halo_json, "Boundary_Surface_Type", text='')
-
-class Halo_ObjectMeshPoopsProps(Panel):
-    bl_label = "Instanced Geometry Properties"
-    bl_idname = "JSON_PT_MeshPoopsDetailsPanel"
-    bl_space_type = "PROPERTIES"
-    bl_region_type = "WINDOW"
-    bl_context = "data"
-    bl_options = {"DEFAULT_CLOSED"}
-    bl_parent_id = "JSON_PT_MeshDetailsPanel"
-
-    def draw(self, context):
-        layout = self.layout
-
-        mesh = context.object.data
-        mesh_halo_json = mesh.halo_json
-
-        if not ((mesh_halo_json.ObjectMesh_Type == 'NONE' or mesh_halo_json.ObjectMesh_Type == 'INSTANCED GEOMETRY') and (mesh_halo_json.Object_Type_Override == 'NONE' or mesh_halo_json.Object_Type_Override == 'MESH')):
-            layout.enabled = False
-
-        col = layout.column(align=True)
-        row = col.row()
-        row.label(text='Lighting Override')
-        row.prop(mesh_halo_json, "Poop_Lighting_Override", text='')
-        row = col.row()
-        row.label(text='Pathfinding Override')
-        row.prop(mesh_halo_json, "Poop_Pathfinding_Override", text='')
-        row = col.row()
-        row.label(text='Imposter Policy')
-        row.prop(mesh_halo_json, "Poop_Imposter_Policy", text='')
-        row = col.row()
-        row.label(text='Imposter Transition Distance')
-        row.prop(mesh_halo_json, "Poop_Imposter_Transition_Distance", text='')
-        row = col.row()
-        row.label(text='Fade Range Start')
-        row.prop(mesh_halo_json, "Poop_Imposter_Fade_Range_Start", text='')
-        row = col.row()
-        row.label(text='Fade Range End')
-        row.prop(mesh_halo_json, "Poop_Imposter_Fade_Range_End", text='')
-        row = col.row()
-        row.label(text='Decomposition Hulls')
-        row.prop(mesh_halo_json, "Poop_Decomposition_Hulls", text='')
-        row = col.row()
-        row.label(text='Predominant Shader Name')
-        row.prop(mesh_halo_json, "Poop_Predominant_Shader_Name", text='')
-
-class Halo_ObjectMeshPoopsFlagsProps(Panel):
-    bl_label = "Flags"
-    bl_idname = "JSON_PT_MeshPoopsFlagsPanel"
-    bl_space_type = "PROPERTIES"
-    bl_region_type = "WINDOW"
-    bl_context = "data"
-    bl_options = {"DEFAULT_CLOSED"}
-    bl_parent_id = "JSON_PT_MeshPoopsDetailsPanel"
-
-    def draw(self, context):
-        layout = self.layout
-
-        mesh = context.object.data
-        mesh_halo_json = mesh.halo_json
-
-        if not ((mesh_halo_json.ObjectMesh_Type == 'NONE' or mesh_halo_json.ObjectMesh_Type == 'INSTANCED GEOMETRY') and (mesh_halo_json.Object_Type_Override == 'NONE' or mesh_halo_json.Object_Type_Override == 'MESH')):
-            layout.enabled = False
-
-        col = layout.column(align=True)
-        row = col.row()
-        row.label(text='Render Only')
-        row.prop(mesh_halo_json, "Poop_Render_Only", text='')
-        row = col.row()
-        row.label(text='Chops Portals')
-        row.prop(mesh_halo_json, "Poop_Chops_Portals", text='')
-        row = col.row()
-        row.label(text='Does Not Block AOE')
-        row.prop(mesh_halo_json, "Poop_Does_Not_Block_AOE", text='')
-        row = col.row()
-        row.label(text='Excluded From Lightprobe')
-        row.prop(mesh_halo_json, "Poop_Excluded_From_Lightprobe", text='')
-        row = col.row()
-        row.label(text='Decal Spacing')
-        row.prop(mesh_halo_json, "Poop_Decal_Spacing", text='')
-        row = col.row()
-        row.label(text='Precise Geometry')
-        row.prop(mesh_halo_json, "Poop_Precise_Geometry", text='')
-
-class Halo_ObjectMeshPortalProps(Panel):
-    bl_label = "Portal Properties"
-    bl_idname = "JSON_PT_MeshPortalDetailsPanel"
-    bl_space_type = "PROPERTIES"
-    bl_region_type = "WINDOW"
-    bl_context = "data"
-    bl_options = {"DEFAULT_CLOSED"}
-    bl_parent_id = "JSON_PT_MeshDetailsPanel"
-
-    def draw(self, context):
-        layout = self.layout
-
-        mesh = context.object.data
-        mesh_halo_json = mesh.halo_json
-
-        if not (mesh_halo_json.ObjectMesh_Type == 'PORTAL' and (mesh_halo_json.Object_Type_Override == 'NONE' or mesh_halo_json.Object_Type_Override == 'MESH')):
-            layout.enabled = False
-
-        col = layout.column(align=True)
-        row = col.row()
-        row.label(text='Portal Type')
-        row.prop(mesh_halo_json, "Portal_Type", text='')
-        row = col.row()
-        row.label(text='AI Deafening')
-        row.prop(mesh_halo_json, "Portal_AI_Deafening", text='')
-        row = col.row()
-        row.label(text='Blocks Sounds')
-        row.prop(mesh_halo_json, "Portal_Blocks_Sounds", text='')
-        row = col.row()
-        row.label(text='Is Door')
-        row.prop(mesh_halo_json, "Portal_Is_Door", text='')
-
-class Halo_ObjectMeshDecoratorProps(Panel):
-    bl_label = "Decorator Properties"
-    bl_idname = "JSON_PT_MeshDecoratorDetailsPanel"
-    bl_space_type = "PROPERTIES"
-    bl_region_type = "WINDOW"
-    bl_context = "data"
-    bl_options = {"DEFAULT_CLOSED"}
-    bl_parent_id = "JSON_PT_MeshDetailsPanel"
-
-    def draw(self, context):
-        layout = self.layout
-
-        mesh = context.object.data
-        mesh_halo_json = mesh.halo_json
-
-        if not (mesh_halo_json.Object_Type_Override == 'NONE' or mesh_halo_json.Object_Type_Override == 'MESH'):
-            layout.enabled = False
-
-        col = layout.column(align=True)
-        row = col.row()
-        row.label(text='Decorator Name')
-        row.prop(mesh_halo_json, "Decorator_Name", text='')
-        row = col.row()
-        row.label(text='Decorator Level of Detail')
-        row.prop(mesh_halo_json, "Decorator_LOD", text='')
-
-class Halo_ObjectMeshSeamProps(Panel):
-    bl_label = "Seam Properties"
-    bl_idname = "JSON_PT_MeshSeamDetailsPanel"
-    bl_space_type = "PROPERTIES"
-    bl_region_type = "WINDOW"
-    bl_context = "data"
-    bl_options = {"DEFAULT_CLOSED"}
-    bl_parent_id = "JSON_PT_MeshDetailsPanel"
-
-    def draw(self, context):
-        layout = self.layout
-
-        mesh = context.object.data
-        mesh_halo_json = mesh.halo_json
-
-        if not (mesh_halo_json.ObjectMesh_Type == 'SEAM' and (mesh_halo_json.Object_Type_Override == 'NONE' or mesh_halo_json.Object_Type_Override == 'MESH')):
-            layout.enabled = False
-
-        col = layout.column(align=True)
-        row = col.row()
-        row.label(text='Seam BSP Name')
-        row.prop(mesh_halo_json, "Seam_Name", text='')
-
-class Halo_ObjectMeshWaterVolumeProps(Panel):
-    bl_label = "Water Physics Volume Properties"
-    bl_idname = "JSON_PT_MeshWaterVolumeDetailsPanel"
-    bl_space_type = "PROPERTIES"
-    bl_region_type = "WINDOW"
-    bl_context = "data"
-    bl_options = {"DEFAULT_CLOSED"}
-    bl_parent_id = "JSON_PT_MeshDetailsPanel"
-
-    def draw(self, context):
-        layout = self.layout
-
-        mesh = context.object.data
-        mesh_halo_json = mesh.halo_json
-
-        if not (mesh_halo_json.ObjectMesh_Type == 'WATER PHYSICS VOLUME' and (mesh_halo_json.Object_Type_Override == 'NONE' or mesh_halo_json.Object_Type_Override == 'MESH')):
-            layout.enabled = False
-
-        col = layout.column(align=True)
-        row = col.row()
-        row.label(text='Water Volume Depth')
-        row.prop(mesh_halo_json, "Water_Volume_Depth", text='')
-        row = col.row()
-        row.label(text='Water Volume Flow Direction')
-        row.prop(mesh_halo_json, "Water_Volume_Flow_Direction", text='')
-        row = col.row()
-        row.label(text='Water Volume Flow Velocity')
-        row.prop(mesh_halo_json, "Water_Volume_Flow_Velocity", text='')
-        row = col.row()
-        row.label(text='Water Volume Fog Color')
-        row.prop(mesh_halo_json, "Water_Volume_Fog_Color", text='')
-        row = col.row()
-        row.label(text='Water Volume Fog Murkiness')
-        row.prop(mesh_halo_json, "Water_Volume_Fog_Murkiness", text='')
-
-class Halo_ObjectMeshFogVolumeProps(Panel):
-    bl_label = "Planar Fog Volume Properties"
-    bl_idname = "JSON_PT_MeshFogVolumeDetailsPanel"
-    bl_space_type = "PROPERTIES"
-    bl_region_type = "WINDOW"
-    bl_context = "data"
-    bl_options = {"DEFAULT_CLOSED"}
-    bl_parent_id = "JSON_PT_MeshDetailsPanel"
-
-    def draw(self, context):
-        layout = self.layout
-
-        mesh = context.object.data
-        mesh_halo_json = mesh.halo_json
-
-        if not (mesh_halo_json.ObjectMesh_Type == 'PLANAR FOG VOLUME' and (mesh_halo_json.Object_Type_Override == 'NONE' or mesh_halo_json.Object_Type_Override == 'MESH')):
-            layout.enabled = False
-
-        col = layout.column(align=True)
-        row = col.row()
-        row.label(text='Fog Name')
-        row.prop(mesh_halo_json, "Fog_Name", text='')
-        row = col.row()
-        row.label(text='Fog Appearance Tag')
-        row.prop(mesh_halo_json, "Fog_Appearance_Tag", text='')
-        row = col.row()
-        row.label(text='Fog Volume Depth')
-        row.prop(mesh_halo_json, "Fog_Volume_Depth", text='')
-
-class Halo_ObjectMeshLightmapProps(Panel):
-    bl_label = "Lightmap Properties"
-    bl_idname = "JSON_PT_MeshLightmapDetailsPanel"
-    bl_space_type = "PROPERTIES"
-    bl_region_type = "WINDOW"
-    bl_context = "data"
-    bl_options = {"DEFAULT_CLOSED"}
-    bl_parent_id = "JSON_PT_MeshDetailsPanel"
-
-    def draw(self, context):
-        layout = self.layout
-
-        mesh = context.object.data
-        mesh_halo_json = mesh.halo_json
-
-        if not (mesh_halo_json.Object_Type_Override == 'NONE' or mesh_halo_json.Object_Type_Override == 'MESH'):
-            layout.enabled = False
-
-        col = layout.column(align=True)
-        row = col.row()
-        row.label(text='Additive Transparency')
-        row.prop(mesh_halo_json, "Lightmap_Additive_Transparency", text='')
-        row = col.row()
-        row.label(text='Resolution Scale Override')
-        row.prop(mesh_halo_json, "Lightmap_Ignore_Default_Resolution_Scale", text='')
-        row.label(text='Resolution Scale')
-        row.prop(mesh_halo_json, "Lightmap_Resolution_Scale", text='')
-        row = col.row()
-        row.label(text='Chart Group')
-        row.prop(mesh_halo_json, "Lightmap_Chart_Group", text='')
-        row = col.row()
-        row.label(text='Lightmap Type')
-        row.prop(mesh_halo_json, "Lightmap_Type", text='')
-        row = col.row()
-        row.label(text='Transparency Override')
-        row.prop(mesh_halo_json, "Lightmap_Transparency_Override", text='')
-        row = col.row()
-        row.label(text='Analytical Bounce Modifier')
-        row.prop(mesh_halo_json, "Lightmap_Analytical_Bounce_Modifier", text='')
-        row = col.row()
-        row.label(text='General Bounce Modifier')
-        row.prop(mesh_halo_json, "Lightmap_General_Bounce_Modifier", text='')
-        row = col.row()
-        row.label(text='Translucency Tint Color')
-        row.prop(mesh_halo_json, "Lightmap_Translucency_Tint_Color", text='')
-        row = col.row()
-        row.label(text='Lighting From Both Sides')
-        row.prop(mesh_halo_json, "Lightmap_Lighting_From_Both_Sides", text='')
-
-class Halo_ObjectMeshMaterialLightingProps(Panel):
-    bl_label = "Material Lighting Properties"
-    bl_idname = "JSON_PT_MeshMaterialLightingDetailsPanel"
-    bl_space_type = "PROPERTIES"
-    bl_region_type = "WINDOW"
-    bl_context = "data"
-    bl_options = {"DEFAULT_CLOSED"}
-    bl_parent_id = "JSON_PT_MeshDetailsPanel"
-
-    def draw(self, context):
-        layout = self.layout
-
-        mesh = context.object.data
-        mesh_halo_json = mesh.halo_json
-
-        if not (mesh_halo_json.Object_Type_Override == 'NONE' or mesh_halo_json.Object_Type_Override == 'MESH'):
-            layout.enabled = False
-
-        col = layout.column(align=True)
-        row = col.row()
-        row.label(text='Attenuation Cutoff')
-        row.prop(mesh_halo_json, "Material_Lighting_Attenuation_Cutoff", text='')
-        row = col.row()
-        row.label(text='Attenuation Falloff')
-        row.prop(mesh_halo_json, "Material_Lighting_Attenuation_Falloff", text='')
-        row = col.row()
-        row.label(text='Emissive Focus')
-        row.prop(mesh_halo_json, "Material_Lighting_Emissive_Focus", text='')
-        row = col.row()
-        row.label(text='Emissive Color')
-        row.prop(mesh_halo_json, "Material_Lighting_Emissive_Color", text='')
-        row = col.row()
-        row.label(text='Emissive Per Unit')
-        row.prop(mesh_halo_json, "Material_Lighting_Emissive_Per_Unit", text='')
-        row = col.row()
-        row.label(text='Emissive Power')
-        row.prop(mesh_halo_json, "Material_Lighting_Emissive_Power", text='')
-        row = col.row()
-        row.label(text='Emissive Quality')
-        row.prop(mesh_halo_json, "Material_Lighting_Emissive_Quality", text='')
-        row = col.row()
-        row.label(text='Use Shader Gel')
-        row.prop(mesh_halo_json, "Material_Lighting_Use_Shader_Gel", text='')
-        row = col.row()
-        row.label(text='Bounce Ratio')
-        row.prop(mesh_halo_json, "Material_Lighting_Bounce_Ratio", text='')
-
-# MARKER PROPERTIES
-class Halo_ObjectMarkerProps(Panel):
-    bl_label = "Marker Properties"
-    bl_idname = "JSON_PT_MarkerDetailsPanel"
-    bl_space_type = "PROPERTIES"
-    bl_region_type = "WINDOW"
-    bl_context = "data"
-    bl_options = {"DEFAULT_CLOSED"}
-    bl_parent_id = "JSON_PT_ObjectDetailsPanel"
-
-    def draw(self, context):
-        layout = self.layout
-
-        mesh = context.object.data
-        mesh_halo_json = mesh.halo_json
-
-        if not (mesh_halo_json.Object_Type_Override == 'NONE' or mesh_halo_json.Object_Type_Override == 'MARKER'):
-            layout.enabled = False
-
-        col = layout.column(align=True)
-        row = col.row()
-        row.label(text='Marker Type')
-        row.prop(mesh_halo_json, "ObjectMarker_Type", text='')
-        row = col.row()
-        row.label(text='Marker Group')
-        row.prop(mesh_halo_json, "Marker_Group_Name", text='')
-        row = col.row()
-        row.label(text='Marker Velocity')
-        row.prop(mesh_halo_json, "Marker_Velocity", text='')
-
-class Halo_ObjectMarkerInstanceProps(Panel):
-    bl_label = "Marker Instance Properties"
-    bl_idname = "JSON_PT_MarkerInstanceDetailsPanel"
-    bl_space_type = "PROPERTIES"
-    bl_region_type = "WINDOW"
-    bl_context = "data"
-    bl_options = {"DEFAULT_CLOSED"}
-    bl_parent_id = "JSON_PT_MarkerDetailsPanel"
-
-    def draw(self, context):
-        layout = self.layout
-
-        mesh = context.object.data
-        mesh_halo_json = mesh.halo_json
-
-        if not mesh_halo_json.ObjectMarker_Type == 'GAME INSTANCE':
-            layout.enabled = False
-
-        col = layout.column(align=True)
-        row = col.row()
-        row.label(text='Marker Game Instance Tag')
-        row.prop(mesh_halo_json, "Marker_Game_Instance_Tag_Name", text='')
-        row = col.row()
-        row.label(text='Marker Game Instance Tag Variant')
-        row.prop(mesh_halo_json, "Marker_Game_Instance_Tag_Variant_Name", text='')
-
-class Halo_ObjectMarkerPathfindingProps(Panel):
-    bl_label = "Marker Pathfinding Properties"
-    bl_idname = "JSON_PT_MarkerPathfindingDetailsPanel"
-    bl_space_type = "PROPERTIES"
-    bl_region_type = "WINDOW"
-    bl_context = "data"
-    bl_options = {"DEFAULT_CLOSED"}
-    bl_parent_id = "JSON_PT_MarkerDetailsPanel"
-
-    def draw(self, context):
-        layout = self.layout
-
-        mesh = context.object.data
-        mesh_halo_json = mesh.halo_json
-
-        if not mesh_halo_json.ObjectMarker_Type == 'PATHFINDING SPHERE':
-            layout.enabled = False
-
-        col = layout.column(align=True)
-        row = col.row()
-        row.label(text='Vehicle Only Pathfinding Sphere')
-        row.prop(mesh_halo_json, "Marker_Pathfinding_Sphere_Vehicle", text='')
-        row = col.row()
-        row.label(text='Pathfinding Sphere Remains When Open')
-        row.prop(mesh_halo_json, "Pathfinding_Sphere_Remains_When_Open", text='')
-        row = col.row()
-        row.label(text='Pathfinding Sphere With Sectors')
-        row.prop(mesh_halo_json, "Pathfinding_Sphere_With_Sectors", text='')
-
-class Halo_ObjectMarkerPhysicsProps(Panel):
-    bl_label = "Marker Physics Constraints Properties"
-    bl_idname = "JSON_PT_MarkerPhysicsDetailsPanel"
-    bl_space_type = "PROPERTIES"
-    bl_region_type = "WINDOW"
-    bl_context = "data"
-    bl_options = {"DEFAULT_CLOSED"}
-    bl_parent_id = "JSON_PT_MarkerDetailsPanel"
-
-    def draw(self, context):
-        layout = self.layout
-
-        mesh = context.object.data
-        mesh_halo_json = mesh.halo_json
-
-        if not (mesh_halo_json.ObjectMarker_Type == 'PHYSICS HINGE CONSTRAINT' or mesh_halo_json.ObjectMarker_Type == 'PHYSICS SOCKET CONSTRAINT'):
-            layout.enabled = False
-
-        col = layout.column(align=True)
-        row = col.row()
-        row.label(text='Physics Constraint Parent')
-        row.prop(mesh_halo_json, "Physics_Constraint_Parent", text='')
-        row = col.row()
-        row.label(text='Physics Constraint Child')
-        row.prop(mesh_halo_json, "Physics_Constraint_Child", text='')
-        row = col.row()
-        row.label(text='Physics Constraint Uses Limits')
-        row.prop(mesh_halo_json, "Physics_Constraint_Uses_Limits", text='')
-
-class Halo_ObjectMarkerPhysicsHingeProps(Panel):
-    bl_label = "Hinge Constraints Properties"
-    bl_idname = "JSON_PT_MarkerPhysicsHingeDetailsPanel"
-    bl_space_type = "PROPERTIES"
-    bl_region_type = "WINDOW"
-    bl_context = "data"
-    bl_options = {"DEFAULT_CLOSED"}
-    bl_parent_id = "JSON_PT_MarkerPhysicsDetailsPanel"
-
-    def draw(self, context):
-        layout = self.layout
-
-        mesh = context.object.data
-        mesh_halo_json = mesh.halo_json
-
-        if not (mesh_halo_json.ObjectMarker_Type == 'PHYSICS HINGE CONSTRAINT' and mesh_halo_json.Physics_Constraint_Uses_Limits):
-            layout.enabled = False
-
-        col = layout.column(align=True)
-        col.label(text="Hinge Constraint Min/Max")
-        row = col.row()
-        row.prop(mesh_halo_json, "Hinge_Constraint_Minimum", text='')
-        row.prop(mesh_halo_json, "Hinge_Constraint_Maximum", text='')
-
-class Halo_ObjectMarkerPhysicsSocketProps(Panel):
-    bl_label = "Socket Constraints Properties"
-    bl_idname = "JSON_PT_MarkerPhysicsSocketDetailsPanel"
-    bl_space_type = "PROPERTIES"
-    bl_region_type = "WINDOW"
-    bl_context = "data"
-    bl_options = {"DEFAULT_CLOSED"}
-    bl_parent_id = "JSON_PT_MarkerPhysicsDetailsPanel"
-
-    def draw(self, context):
-        layout = self.layout
-
-        mesh = context.object.data
-        mesh_halo_json = mesh.halo_json
-
-        if not (mesh_halo_json.ObjectMarker_Type == 'PHYSICS SOCKET CONSTRAINT' and mesh_halo_json.Physics_Constraint_Uses_Limits):
-            layout.enabled = False
-        
-        col = layout.column(align=True)
-        col.label(text="Cone Angle")
-        row = col.row()
-        row.prop(mesh_halo_json, "Cone_Angle", text='')
-        col.label(text="Plane Constraint Min/Max")
-        row = col.row()
-        row.prop(mesh_halo_json, "Plane_Constraint_Minimum", text='')
-        row.prop(mesh_halo_json, "Plane_Constraint_Maximum", text='')
-        col.label(text="Twist Constraint Start/End")
-        row = col.row()
-        row.prop(mesh_halo_json, "Twist_Constraint_Start", text='')
-        row.prop(mesh_halo_json, "Twist_Constraint_End", text='')
-
-class Halo_MaterialProps(Panel):
-    bl_label = "Halo Material Properties"
-    bl_idname = "JSON_PT_MaterialPanel"
-    bl_space_type = 'PROPERTIES'
-    bl_region_type = 'WINDOW'
-    bl_context = "material"
-    bl_options = {'DEFAULT_CLOSED'}
-
-    @classmethod
-    def poll(cls, context):
-        scene = context.scene
-        scene_halo = scene.halo
-
-        if scene_halo.game_version == 'reach':
-            return True
-
-    def draw(self, context):
-        layout = self.layout
-        current_material = context.object.active_material
-        scene = context.scene
-        if current_material is not None:
-            material_halo_json = current_material.halo_json
-            row = layout.row()
-            col = layout.column(align=True)
-            row.label(text="Shader Path:")
-            row.prop(material_halo_json, "shader_path", text='')
-            row = col.row()
-            row.label(text="Material Override")
-            row.prop(material_halo_json, "material_override", text='')
-            row = col.row()
-
 class Halo_MeshProps(Panel):
     bl_label = "Halo Mesh Properties"
     bl_idname = "HALO_PT_MeshDetailsPanel"
@@ -1653,7 +930,1010 @@ class ASS_JMS_MeshPropertiesGroup(PropertyGroup):
         description="Set the name of the XREF object. The model file should contain an object by this name",
     )
 
-class Halo_JSON_MeshPropertiesGroup(PropertyGroup):
+class Halo_SceneProps(Panel):
+    bl_label = "Halo Scene Properties"
+    bl_idname = "HALO_PT_ScenePropertiesPanel"
+    bl_space_type = 'PROPERTIES'
+    bl_region_type = 'WINDOW'
+    bl_context = "scene"
+    bl_options = {'DEFAULT_CLOSED'}
+
+    def draw(self, context):
+        layout = self.layout
+
+class Halo_GlobalSettings(Panel):
+    bl_label = "Global Settings"
+    bl_idname = "HALO_PT_GlobalSettings"
+    bl_space_type = 'PROPERTIES'
+    bl_region_type = 'WINDOW'
+    bl_context = "scene"
+    bl_options = {'DEFAULT_CLOSED'}
+    bl_parent_id = "HALO_PT_ScenePropertiesPanel"
+
+    def draw(self, context):
+        layout = self.layout
+        scene = context.scene
+        scene_halo = scene.halo
+
+        col = layout.column(align=True)
+        row = col.row()
+        row.label(text='Scene Version:')
+        row.prop(scene_halo, "game_version", text='')
+        row = col.row()
+        row.label(text='Expert Mode:')
+        row.prop(scene_halo, "expert_mode", text='')
+
+class Halo_ScenePropertiesGroup(PropertyGroup):
+    game_version: EnumProperty(
+        name="Game:",
+        description="What game will you be exporting for",
+        items=[ ('haloce', "Halo CE", "Show properties for Halo Custom Edition Or Halo CE MCC"),
+                ('halo2', "Halo 2", "Show properties for Halo 2 Vista or Halo 2 MCC"),
+                ('halo3', "Halo 3", "Show properties for Halo 3 MCC"),
+                ('reach', "Halo Reach", "Show properties for Halo Reach MCC"),
+               ]
+        )
+
+    expert_mode: BoolProperty(
+        name ="Expert Mode",
+        description = "Reveal hidden options. If you're not a developer or know what you're doing then you probably shouldn't be messing with this.",
+        default = False,
+        )
+
+class ASS_LightPropertiesGroup(PropertyGroup):
+    use_near_atten: BoolProperty(
+        name = "Near Attenuation",
+        description = "No idea",
+        default = False,
+        )
+
+    near_atten_start: FloatProperty(
+        name = "Near Attenuation Start",
+        description = "No idea",
+        default = 0.0,
+        max = 999999.0,
+        min = 0.0,
+        )
+
+    near_atten_end: FloatProperty(
+        name = "Near Attenuation End",
+        description = "No idea",
+        default = 40.0,
+        max = 999999.0,
+        min = 0.0,
+        )
+
+    use_far_atten: BoolProperty(
+        name = "Near Attenuation",
+        description = "No idea",
+        default = False,
+        )
+
+    far_atten_start: FloatProperty(
+        name = "Far Attenuation Start",
+        description = "No idea",
+        default = 80.0,
+        max = 999999.0,
+        min = 0.0,
+        )
+
+    far_atten_end: FloatProperty(
+        name = "Far Attenuation End",
+        description = "No idea",
+        default = 200.0,
+        max = 999999.0,
+        min = 0.0,
+        )
+
+    light_cone_shape : EnumProperty(
+        name="Light Cone Shape",
+        description="What shape to use for the light cone",
+        default = "0",
+        items=[ ('0', "Rectangle", "Rectangle"),
+                ('1', "Circle", "Circle"),
+               ]
+        )
+
+    aspect_ratio: FloatProperty(
+        name = "Aspect Ratio",
+        description = "No idea. Only used if the light cone is a rectangle.",
+        default = 1.0,
+        max = 100.0,
+        min = 0.001,
+        )
+
+    spot_size: FloatProperty(
+        name="Spot Size",
+        description="Angle of the spotlight beam",
+        subtype='ANGLE',
+        default=0.785398,
+        min=0.017453,
+        max=3.141593,
+        )
+
+    spot_blend: FloatProperty(
+        name = "Spot Blend",
+        description = "The softness of the spotlight edge",
+        precision = 3,
+        default = 0.150,
+        max = 1.0,
+        min = 0.0,
+        )
+
+class ASS_LightProps(Panel):
+    bl_label = "ASS Light Properties"
+    bl_idname = "ASS_PT_LightPanel"
+    bl_space_type = 'PROPERTIES'
+    bl_region_type = 'WINDOW'
+    bl_context = "data"
+    bl_options = {'DEFAULT_CLOSED'}
+    bl_parent_id = "DATA_PT_EEVEE_light"
+    COMPAT_ENGINES = {'BLENDER_EEVEE'}
+
+    @classmethod
+    def poll(cls, context):
+        light = context.light
+        engine = context.engine
+
+        return (light and (light.type == 'SPOT' or light.type == 'AREA')) and (engine in cls.COMPAT_ENGINES)
+
+    def draw(self, context):
+        light = context.light
+        light_ass = light.halo_light
+
+        layout = self.layout
+
+        row = layout.row()
+        row.label(text='Light Cone Shape:')
+        row.prop(light_ass, "light_cone_shape", text='')
+        row = layout.row()
+        row.label(text='Aspect Ratio:')
+        row.prop(light_ass, "aspect_ratio", text='')
+
+class ASS_LightSpot(Panel):
+    bl_label = "Spot Shape"
+    bl_idname = "ASS_PT_SpotShapePanel"
+    bl_space_type = 'PROPERTIES'
+    bl_region_type = 'WINDOW'
+    bl_context = "data"
+    bl_options = {'DEFAULT_CLOSED'}
+    bl_parent_id = "ASS_PT_LightPanel"
+
+    def draw(self, context):
+        light = context.light
+        light_ass = light.halo_light
+
+        layout = self.layout
+
+        row = layout.row()
+        row.label(text='Size:')
+        row.prop(light_ass, "spot_size", text='')
+        row = layout.row()
+        row.label(text='Blend:')
+        row.prop(light_ass, "spot_blend", text='', slider=True)
+
+class ASS_LightNearAtten(Panel):
+    bl_label = "Near Attenuation"
+    bl_idname = "ASS_PT_NearAttenuationPanel"
+    bl_space_type = 'PROPERTIES'
+    bl_region_type = 'WINDOW'
+    bl_context = "data"
+    bl_options = {'DEFAULT_CLOSED'}
+    bl_parent_id = "ASS_PT_LightPanel"
+
+    def draw_header(self, context):
+        light = context.light
+        light_ass = light.halo_light
+
+        self.layout.prop(light_ass, "use_near_atten", text='')
+
+    def draw(self, context):
+        light = context.light
+        light_ass = light.halo_light
+
+        layout = self.layout
+
+        if not light_ass.use_near_atten:
+            layout.enabled = False
+
+        row = layout.row()
+        row.label(text='Start:')
+        row.prop(light_ass, "near_atten_start", text='')
+        row = layout.row()
+        row.label(text='End:')
+        row.prop(light_ass, "near_atten_end", text='')
+
+class ASS_LightFarAtten(Panel):
+    bl_label = "Far Attenuation"
+    bl_idname = "ASS_PT_FarAttenuationPanel"
+    bl_space_type = 'PROPERTIES'
+    bl_region_type = 'WINDOW'
+    bl_context = "data"
+    bl_options = {'DEFAULT_CLOSED'}
+    bl_parent_id = "ASS_PT_LightPanel"
+
+    def draw_header(self, context):
+        light = context.light
+        light_ass = light.halo_light
+
+        self.layout.prop(light_ass, "use_far_atten", text='')
+
+    def draw(self, context):
+        light = context.light
+        light_ass = light.halo_light
+
+        layout = self.layout
+
+        if not light_ass.use_far_atten:
+            layout.enabled = False
+
+        row = layout.row()
+        row.label(text='Start:')
+        row.prop(light_ass, "far_atten_start", text='')
+        row = layout.row()
+        row.label(text='End:')
+        row.prop(light_ass, "far_atten_end", text='')
+###################
+# JSON PROPERTIES
+###################
+# OBJECT PROPERTIES
+class JSON_ObjectProps(Panel):
+    bl_label = "Halo Object Properties"
+    bl_idname = "JSON_PT_ObjectDetailsPanel"
+    bl_space_type = "PROPERTIES"
+    bl_region_type = "WINDOW"
+    bl_context = "data"
+    bl_options = {"DEFAULT_CLOSED"}
+
+    @classmethod
+    def poll(cls, context):
+        scene = context.scene
+        scene_halo = scene.halo
+
+        if scene_halo.game_version == 'reach':
+            return True
+
+    def draw(self, context):
+        layout = self.layout
+
+        mesh = context.object.data
+        mesh_halo_json = mesh.halo_json
+
+        col = layout.column(align=True)
+        row = col.row()
+        row.label(text='Object Type Override')
+        row.prop(mesh_halo_json, "Object_Type_Override", text='')
+        row = col.row()
+        row.label(text='Region')
+        row.prop(mesh_halo_json, "region_name", text='')
+
+#MESH PROPERTIES
+class JSON_ObjectMeshProps(Panel):
+    bl_label = "Mesh Properties"
+    bl_idname = "JSON_PT_MeshDetailsPanel"
+    bl_space_type = "PROPERTIES"
+    bl_region_type = "WINDOW"
+    bl_context = "data"
+    bl_options = {"DEFAULT_CLOSED"}
+    bl_parent_id = "JSON_PT_ObjectDetailsPanel"
+
+    def draw(self, context):
+        layout = self.layout
+
+        mesh = context.object.data
+        mesh_halo_json = mesh.halo_json
+
+        if not (mesh_halo_json.Object_Type_Override == 'NONE' or mesh_halo_json.Object_Type_Override == 'MESH'):
+            layout.enabled = False
+
+        col = layout.column(align=True)
+        row = col.row()
+        row.label(text='Mesh Type Override')
+        row.prop(mesh_halo_json, "ObjectMesh_Type", text='')
+        row = col.row()
+        row.label(text='Mesh Primitive Type')
+        row.prop(mesh_halo_json, "Mesh_Primitive_Type", text='')
+        row = col.row()
+        row.label(text='Mesh Tesselation Density')
+        row.prop(mesh_halo_json, "Mesh_Tesselation_Density", text='')
+        row = col.row()
+        row.label(text='Mesh Compression')
+        row.prop(mesh_halo_json, "Mesh_Compression", text='')
+
+class JSON_ObjectMeshFaceProps(Panel):
+    bl_label = "Face Properties"
+    bl_idname = "JSON_PT_MeshFaceDetailsPanel"
+    bl_space_type = "PROPERTIES"
+    bl_region_type = "WINDOW"
+    bl_context = "data"
+    bl_options = {"DEFAULT_CLOSED"}
+    bl_parent_id = "JSON_PT_MeshDetailsPanel"
+
+    def draw(self, context):
+        layout = self.layout
+
+        mesh = context.object.data
+        mesh_halo_json = mesh.halo_json
+
+        if not (mesh_halo_json.Object_Type_Override == 'NONE' or mesh_halo_json.Object_Type_Override == 'MESH'):
+            layout.enabled = False
+
+        col = layout.column(align=True)
+        row = col.row()
+        row.label(text='Face Type')
+        row.prop(mesh_halo_json, "Face_Type", text='')
+        row = col.row()
+        row.label(text='Face Mode')
+        row.prop(mesh_halo_json, "Face_Mode", text='')
+        row = col.row()
+        row.label(text='Face Sides')
+        row.prop(mesh_halo_json, "Face_Sides", text='')
+        row = col.row()
+        row.label(text='Face Draw Distance')
+        row.prop(mesh_halo_json, "Face_Draw_Distance", text='')
+        row = col.row()
+        row.label(text='Face Global Material')
+        row.prop(mesh_halo_json, "Face_Global_Material", text='')
+        row = col.row()
+        row.label(text='Sky Permutation Index')
+        row.prop(mesh_halo_json, "Sky_Permutation_Index", text='')
+
+class JSON_ObjectMeshFaceFlagsProps(Panel):
+    bl_label = "Flags"
+    bl_idname = "JSON_PT_MeshFaceFlagsPanel"
+    bl_space_type = "PROPERTIES"
+    bl_region_type = "WINDOW"
+    bl_context = "data"
+    bl_options = {"DEFAULT_CLOSED"}
+    bl_parent_id = "JSON_PT_MeshFaceDetailsPanel"
+
+    def draw(self, context):
+        layout = self.layout
+
+        mesh = context.object.data
+        mesh_halo_json = mesh.halo_json
+
+        if not (mesh_halo_json.Object_Type_Override == 'NONE' or mesh_halo_json.Object_Type_Override == 'MESH'):
+            layout.enabled = False
+
+        col = layout.column(align=True)
+        row = col.row()
+        row.label(text='Conveyor')
+        row.prop(mesh_halo_json, "Conveyor", text='')
+        row = col.row()
+        row.label(text='Ladder')
+        row.prop(mesh_halo_json, "Ladder", text='')
+        row = col.row()
+        row.label(text='Slip Surface')
+        row.prop(mesh_halo_json, "Slip_Surface", text='')
+        row = col.row()
+        row.label(text='Decal Offset')
+        row.prop(mesh_halo_json, "Decal_Offset", text='')
+        row = col.row()
+        row.label(text='Group Transparents By Plane')
+        row.prop(mesh_halo_json, "Group_Transparents_By_Plane", text='')
+        row = col.row()
+        row.label(text='No Shadow')
+        row.prop(mesh_halo_json, "No_Shadow", text='')
+        row = col.row()
+        row.label(text='Precise Position')
+        row.prop(mesh_halo_json, "Precise_Position", text='')
+
+class JSON_ObjectMeshPrimitiveProps(Panel):
+    bl_label = "Primitive Properties"
+    bl_idname = "JSON_PT_MeshPrimitiveDetailsPanel"
+    bl_space_type = "PROPERTIES"
+    bl_region_type = "WINDOW"
+    bl_context = "data"
+    bl_options = {"DEFAULT_CLOSED"}
+    bl_parent_id = "JSON_PT_MeshDetailsPanel"
+
+    def draw(self, context):
+        layout = self.layout
+
+        mesh = context.object.data
+        mesh_halo_json = mesh.halo_json
+
+        if not (mesh_halo_json.Object_Type_Override == 'NONE' or mesh_halo_json.Object_Type_Override == 'MESH'):
+            layout.enabled = False
+
+        col = layout.column(align=True)
+        col.label(text='Box Length/Width/Height')
+        row = col.row()
+        row.prop(mesh_halo_json, "Box_Length", text='')
+        row.prop(mesh_halo_json, "Box_Width", text='')
+        row.prop(mesh_halo_json, "Box_Height", text='')
+        col.label(text='Pill Radius/Height')
+        row = col.row()
+        row.prop(mesh_halo_json, "Pill_Radius", text='')
+        row.prop(mesh_halo_json, "Pill_Height", text='')
+        col.label(text='Sphere Radius')
+        row = col.row()
+        row.prop(mesh_halo_json, "Sphere_Radius", text='')
+
+class JSON_ObjectMeshBoundaryProps(Panel):
+    bl_label = "Boundary Surface Properties"
+    bl_idname = "JSON_PT_MeshBoundaryDetailsPanel"
+    bl_space_type = "PROPERTIES"
+    bl_region_type = "WINDOW"
+    bl_context = "data"
+    bl_options = {"DEFAULT_CLOSED"}
+    bl_parent_id = "JSON_PT_MeshDetailsPanel"
+
+    def draw(self, context):
+        layout = self.layout
+
+        mesh = context.object.data
+        mesh_halo_json = mesh.halo_json
+
+        if not (mesh_halo_json.ObjectMesh_Type == 'BOUNDARY SURFACE' and (mesh_halo_json.Object_Type_Override == 'NONE' or mesh_halo_json.Object_Type_Override == 'MESH')):
+            layout.enabled = False
+
+        col = layout.column(align=True)
+        row = col.row()
+        row.label(text='Boundary Surface Name')
+        row.prop(mesh_halo_json, "Boundary_Surface_Name", text='')
+        row = col.row()
+        row.label(text='Boundary Surface Type')
+        row.prop(mesh_halo_json, "Boundary_Surface_Type", text='')
+
+class JSON_ObjectMeshPoopsProps(Panel):
+    bl_label = "Instanced Geometry Properties"
+    bl_idname = "JSON_PT_MeshPoopsDetailsPanel"
+    bl_space_type = "PROPERTIES"
+    bl_region_type = "WINDOW"
+    bl_context = "data"
+    bl_options = {"DEFAULT_CLOSED"}
+    bl_parent_id = "JSON_PT_MeshDetailsPanel"
+
+    def draw(self, context):
+        layout = self.layout
+
+        mesh = context.object.data
+        mesh_halo_json = mesh.halo_json
+
+        if not ((mesh_halo_json.ObjectMesh_Type == 'NONE' or mesh_halo_json.ObjectMesh_Type == 'INSTANCED GEOMETRY') and (mesh_halo_json.Object_Type_Override == 'NONE' or mesh_halo_json.Object_Type_Override == 'MESH')):
+            layout.enabled = False
+
+        col = layout.column(align=True)
+        row = col.row()
+        row.label(text='Lighting Override')
+        row.prop(mesh_halo_json, "Poop_Lighting_Override", text='')
+        row = col.row()
+        row.label(text='Pathfinding Override')
+        row.prop(mesh_halo_json, "Poop_Pathfinding_Override", text='')
+        row = col.row()
+        row.label(text='Imposter Policy')
+        row.prop(mesh_halo_json, "Poop_Imposter_Policy", text='')
+        row = col.row()
+        row.label(text='Imposter Transition Distance')
+        row.prop(mesh_halo_json, "Poop_Imposter_Transition_Distance", text='')
+        row = col.row()
+        row.label(text='Fade Range Start')
+        row.prop(mesh_halo_json, "Poop_Imposter_Fade_Range_Start", text='')
+        row = col.row()
+        row.label(text='Fade Range End')
+        row.prop(mesh_halo_json, "Poop_Imposter_Fade_Range_End", text='')
+        row = col.row()
+        row.label(text='Decomposition Hulls')
+        row.prop(mesh_halo_json, "Poop_Decomposition_Hulls", text='')
+        row = col.row()
+        row.label(text='Predominant Shader Name')
+        row.prop(mesh_halo_json, "Poop_Predominant_Shader_Name", text='')
+
+class JSON_ObjectMeshPoopsFlagsProps(Panel):
+    bl_label = "Flags"
+    bl_idname = "JSON_PT_MeshPoopsFlagsPanel"
+    bl_space_type = "PROPERTIES"
+    bl_region_type = "WINDOW"
+    bl_context = "data"
+    bl_options = {"DEFAULT_CLOSED"}
+    bl_parent_id = "JSON_PT_MeshPoopsDetailsPanel"
+
+    def draw(self, context):
+        layout = self.layout
+
+        mesh = context.object.data
+        mesh_halo_json = mesh.halo_json
+
+        if not ((mesh_halo_json.ObjectMesh_Type == 'NONE' or mesh_halo_json.ObjectMesh_Type == 'INSTANCED GEOMETRY') and (mesh_halo_json.Object_Type_Override == 'NONE' or mesh_halo_json.Object_Type_Override == 'MESH')):
+            layout.enabled = False
+
+        col = layout.column(align=True)
+        row = col.row()
+        row.label(text='Render Only')
+        row.prop(mesh_halo_json, "Poop_Render_Only", text='')
+        row = col.row()
+        row.label(text='Chops Portals')
+        row.prop(mesh_halo_json, "Poop_Chops_Portals", text='')
+        row = col.row()
+        row.label(text='Does Not Block AOE')
+        row.prop(mesh_halo_json, "Poop_Does_Not_Block_AOE", text='')
+        row = col.row()
+        row.label(text='Excluded From Lightprobe')
+        row.prop(mesh_halo_json, "Poop_Excluded_From_Lightprobe", text='')
+        row = col.row()
+        row.label(text='Decal Spacing')
+        row.prop(mesh_halo_json, "Poop_Decal_Spacing", text='')
+        row = col.row()
+        row.label(text='Precise Geometry')
+        row.prop(mesh_halo_json, "Poop_Precise_Geometry", text='')
+
+class JSON_ObjectMeshPortalProps(Panel):
+    bl_label = "Portal Properties"
+    bl_idname = "JSON_PT_MeshPortalDetailsPanel"
+    bl_space_type = "PROPERTIES"
+    bl_region_type = "WINDOW"
+    bl_context = "data"
+    bl_options = {"DEFAULT_CLOSED"}
+    bl_parent_id = "JSON_PT_MeshDetailsPanel"
+
+    def draw(self, context):
+        layout = self.layout
+
+        mesh = context.object.data
+        mesh_halo_json = mesh.halo_json
+
+        if not (mesh_halo_json.ObjectMesh_Type == 'PORTAL' and (mesh_halo_json.Object_Type_Override == 'NONE' or mesh_halo_json.Object_Type_Override == 'MESH')):
+            layout.enabled = False
+
+        col = layout.column(align=True)
+        row = col.row()
+        row.label(text='Portal Type')
+        row.prop(mesh_halo_json, "Portal_Type", text='')
+        row = col.row()
+        row.label(text='AI Deafening')
+        row.prop(mesh_halo_json, "Portal_AI_Deafening", text='')
+        row = col.row()
+        row.label(text='Blocks Sounds')
+        row.prop(mesh_halo_json, "Portal_Blocks_Sounds", text='')
+        row = col.row()
+        row.label(text='Is Door')
+        row.prop(mesh_halo_json, "Portal_Is_Door", text='')
+
+class JSON_ObjectMeshDecoratorProps(Panel):
+    bl_label = "Decorator Properties"
+    bl_idname = "JSON_PT_MeshDecoratorDetailsPanel"
+    bl_space_type = "PROPERTIES"
+    bl_region_type = "WINDOW"
+    bl_context = "data"
+    bl_options = {"DEFAULT_CLOSED"}
+    bl_parent_id = "JSON_PT_MeshDetailsPanel"
+
+    def draw(self, context):
+        layout = self.layout
+
+        mesh = context.object.data
+        mesh_halo_json = mesh.halo_json
+
+        if not (mesh_halo_json.Object_Type_Override == 'NONE' or mesh_halo_json.Object_Type_Override == 'MESH'):
+            layout.enabled = False
+
+        col = layout.column(align=True)
+        row = col.row()
+        row.label(text='Decorator Name')
+        row.prop(mesh_halo_json, "Decorator_Name", text='')
+        row = col.row()
+        row.label(text='Decorator Level of Detail')
+        row.prop(mesh_halo_json, "Decorator_LOD", text='')
+
+class JSON_ObjectMeshSeamProps(Panel):
+    bl_label = "Seam Properties"
+    bl_idname = "JSON_PT_MeshSeamDetailsPanel"
+    bl_space_type = "PROPERTIES"
+    bl_region_type = "WINDOW"
+    bl_context = "data"
+    bl_options = {"DEFAULT_CLOSED"}
+    bl_parent_id = "JSON_PT_MeshDetailsPanel"
+
+    def draw(self, context):
+        layout = self.layout
+
+        mesh = context.object.data
+        mesh_halo_json = mesh.halo_json
+
+        if not (mesh_halo_json.ObjectMesh_Type == 'SEAM' and (mesh_halo_json.Object_Type_Override == 'NONE' or mesh_halo_json.Object_Type_Override == 'MESH')):
+            layout.enabled = False
+
+        col = layout.column(align=True)
+        row = col.row()
+        row.label(text='Seam BSP Name')
+        row.prop(mesh_halo_json, "Seam_Name", text='')
+
+class JSON_ObjectMeshWaterVolumeProps(Panel):
+    bl_label = "Water Physics Volume Properties"
+    bl_idname = "JSON_PT_MeshWaterVolumeDetailsPanel"
+    bl_space_type = "PROPERTIES"
+    bl_region_type = "WINDOW"
+    bl_context = "data"
+    bl_options = {"DEFAULT_CLOSED"}
+    bl_parent_id = "JSON_PT_MeshDetailsPanel"
+
+    def draw(self, context):
+        layout = self.layout
+
+        mesh = context.object.data
+        mesh_halo_json = mesh.halo_json
+
+        if not (mesh_halo_json.ObjectMesh_Type == 'WATER PHYSICS VOLUME' and (mesh_halo_json.Object_Type_Override == 'NONE' or mesh_halo_json.Object_Type_Override == 'MESH')):
+            layout.enabled = False
+
+        col = layout.column(align=True)
+        row = col.row()
+        row.label(text='Water Volume Depth')
+        row.prop(mesh_halo_json, "Water_Volume_Depth", text='')
+        row = col.row()
+        row.label(text='Water Volume Flow Direction')
+        row.prop(mesh_halo_json, "Water_Volume_Flow_Direction", text='')
+        row = col.row()
+        row.label(text='Water Volume Flow Velocity')
+        row.prop(mesh_halo_json, "Water_Volume_Flow_Velocity", text='')
+        row = col.row()
+        row.label(text='Water Volume Fog Color')
+        row.prop(mesh_halo_json, "Water_Volume_Fog_Color", text='')
+        row = col.row()
+        row.label(text='Water Volume Fog Murkiness')
+        row.prop(mesh_halo_json, "Water_Volume_Fog_Murkiness", text='')
+
+class JSON_ObjectMeshFogVolumeProps(Panel):
+    bl_label = "Planar Fog Volume Properties"
+    bl_idname = "JSON_PT_MeshFogVolumeDetailsPanel"
+    bl_space_type = "PROPERTIES"
+    bl_region_type = "WINDOW"
+    bl_context = "data"
+    bl_options = {"DEFAULT_CLOSED"}
+    bl_parent_id = "JSON_PT_MeshDetailsPanel"
+
+    def draw(self, context):
+        layout = self.layout
+
+        mesh = context.object.data
+        mesh_halo_json = mesh.halo_json
+
+        if not (mesh_halo_json.ObjectMesh_Type == 'PLANAR FOG VOLUME' and (mesh_halo_json.Object_Type_Override == 'NONE' or mesh_halo_json.Object_Type_Override == 'MESH')):
+            layout.enabled = False
+
+        col = layout.column(align=True)
+        row = col.row()
+        row.label(text='Fog Name')
+        row.prop(mesh_halo_json, "Fog_Name", text='')
+        row = col.row()
+        row.label(text='Fog Appearance Tag')
+        row.prop(mesh_halo_json, "Fog_Appearance_Tag", text='')
+        row = col.row()
+        row.label(text='Fog Volume Depth')
+        row.prop(mesh_halo_json, "Fog_Volume_Depth", text='')
+
+class JSON_ObjectMeshLightmapProps(Panel):
+    bl_label = "Lightmap Properties"
+    bl_idname = "JSON_PT_MeshLightmapDetailsPanel"
+    bl_space_type = "PROPERTIES"
+    bl_region_type = "WINDOW"
+    bl_context = "data"
+    bl_options = {"DEFAULT_CLOSED"}
+    bl_parent_id = "JSON_PT_MeshDetailsPanel"
+
+    def draw(self, context):
+        layout = self.layout
+
+        mesh = context.object.data
+        mesh_halo_json = mesh.halo_json
+
+        if not (mesh_halo_json.Object_Type_Override == 'NONE' or mesh_halo_json.Object_Type_Override == 'MESH'):
+            layout.enabled = False
+
+        col = layout.column(align=True)
+        row = col.row()
+        row.label(text='Additive Transparency')
+        row.prop(mesh_halo_json, "Lightmap_Additive_Transparency", text='')
+        row = col.row()
+        row.label(text='Resolution Scale Override')
+        row.prop(mesh_halo_json, "Lightmap_Ignore_Default_Resolution_Scale", text='')
+        row.label(text='Resolution Scale')
+        row.prop(mesh_halo_json, "Lightmap_Resolution_Scale", text='')
+        row = col.row()
+        row.label(text='Chart Group')
+        row.prop(mesh_halo_json, "Lightmap_Chart_Group", text='')
+        row = col.row()
+        row.label(text='Lightmap Type')
+        row.prop(mesh_halo_json, "Lightmap_Type", text='')
+        row = col.row()
+        row.label(text='Transparency Override')
+        row.prop(mesh_halo_json, "Lightmap_Transparency_Override", text='')
+        row = col.row()
+        row.label(text='Analytical Bounce Modifier')
+        row.prop(mesh_halo_json, "Lightmap_Analytical_Bounce_Modifier", text='')
+        row = col.row()
+        row.label(text='General Bounce Modifier')
+        row.prop(mesh_halo_json, "Lightmap_General_Bounce_Modifier", text='')
+        row = col.row()
+        row.label(text='Translucency Tint Color')
+        row.prop(mesh_halo_json, "Lightmap_Translucency_Tint_Color", text='')
+        row = col.row()
+        row.label(text='Lighting From Both Sides')
+        row.prop(mesh_halo_json, "Lightmap_Lighting_From_Both_Sides", text='')
+
+class JSON_ObjectMeshMaterialLightingProps(Panel):
+    bl_label = "Material Lighting Properties"
+    bl_idname = "JSON_PT_MeshMaterialLightingDetailsPanel"
+    bl_space_type = "PROPERTIES"
+    bl_region_type = "WINDOW"
+    bl_context = "data"
+    bl_options = {"DEFAULT_CLOSED"}
+    bl_parent_id = "JSON_PT_MeshDetailsPanel"
+
+    def draw(self, context):
+        layout = self.layout
+
+        mesh = context.object.data
+        mesh_halo_json = mesh.halo_json
+
+        if not (mesh_halo_json.Object_Type_Override == 'NONE' or mesh_halo_json.Object_Type_Override == 'MESH'):
+            layout.enabled = False
+
+        col = layout.column(align=True)
+        row = col.row()
+        row.label(text='Attenuation Cutoff')
+        row.prop(mesh_halo_json, "Material_Lighting_Attenuation_Cutoff", text='')
+        row = col.row()
+        row.label(text='Attenuation Falloff')
+        row.prop(mesh_halo_json, "Material_Lighting_Attenuation_Falloff", text='')
+        row = col.row()
+        row.label(text='Emissive Focus')
+        row.prop(mesh_halo_json, "Material_Lighting_Emissive_Focus", text='')
+        row = col.row()
+        row.label(text='Emissive Color')
+        row.prop(mesh_halo_json, "Material_Lighting_Emissive_Color", text='')
+        row = col.row()
+        row.label(text='Emissive Per Unit')
+        row.prop(mesh_halo_json, "Material_Lighting_Emissive_Per_Unit", text='')
+        row = col.row()
+        row.label(text='Emissive Power')
+        row.prop(mesh_halo_json, "Material_Lighting_Emissive_Power", text='')
+        row = col.row()
+        row.label(text='Emissive Quality')
+        row.prop(mesh_halo_json, "Material_Lighting_Emissive_Quality", text='')
+        row = col.row()
+        row.label(text='Use Shader Gel')
+        row.prop(mesh_halo_json, "Material_Lighting_Use_Shader_Gel", text='')
+        row = col.row()
+        row.label(text='Bounce Ratio')
+        row.prop(mesh_halo_json, "Material_Lighting_Bounce_Ratio", text='')
+
+# MARKER PROPERTIES
+class JSON_ObjectMarkerProps(Panel):
+    bl_label = "Marker Properties"
+    bl_idname = "JSON_PT_MarkerDetailsPanel"
+    bl_space_type = "PROPERTIES"
+    bl_region_type = "WINDOW"
+    bl_context = "data"
+    bl_options = {"DEFAULT_CLOSED"}
+    bl_parent_id = "JSON_PT_ObjectDetailsPanel"
+
+    def draw(self, context):
+        layout = self.layout
+
+        mesh = context.object.data
+        mesh_halo_json = mesh.halo_json
+
+        if not (mesh_halo_json.Object_Type_Override == 'NONE' or mesh_halo_json.Object_Type_Override == 'MARKER'):
+            layout.enabled = False
+
+        col = layout.column(align=True)
+        row = col.row()
+        row.label(text='Marker Type')
+        row.prop(mesh_halo_json, "ObjectMarker_Type", text='')
+        row = col.row()
+        row.label(text='Marker Group')
+        row.prop(mesh_halo_json, "Marker_Group_Name", text='')
+        row = col.row()
+        row.label(text='Marker Velocity')
+        row.prop(mesh_halo_json, "Marker_Velocity", text='')
+
+class JSON_ObjectMarkerInstanceProps(Panel):
+    bl_label = "Marker Instance Properties"
+    bl_idname = "JSON_PT_MarkerInstanceDetailsPanel"
+    bl_space_type = "PROPERTIES"
+    bl_region_type = "WINDOW"
+    bl_context = "data"
+    bl_options = {"DEFAULT_CLOSED"}
+    bl_parent_id = "JSON_PT_MarkerDetailsPanel"
+
+    def draw(self, context):
+        layout = self.layout
+
+        mesh = context.object.data
+        mesh_halo_json = mesh.halo_json
+
+        if not mesh_halo_json.ObjectMarker_Type == 'GAME INSTANCE':
+            layout.enabled = False
+
+        col = layout.column(align=True)
+        row = col.row()
+        row.label(text='Marker Game Instance Tag')
+        row.prop(mesh_halo_json, "Marker_Game_Instance_Tag_Name", text='')
+        row = col.row()
+        row.label(text='Marker Game Instance Tag Variant')
+        row.prop(mesh_halo_json, "Marker_Game_Instance_Tag_Variant_Name", text='')
+
+class JSON_ObjectMarkerPathfindingProps(Panel):
+    bl_label = "Marker Pathfinding Properties"
+    bl_idname = "JSON_PT_MarkerPathfindingDetailsPanel"
+    bl_space_type = "PROPERTIES"
+    bl_region_type = "WINDOW"
+    bl_context = "data"
+    bl_options = {"DEFAULT_CLOSED"}
+    bl_parent_id = "JSON_PT_MarkerDetailsPanel"
+
+    def draw(self, context):
+        layout = self.layout
+
+        mesh = context.object.data
+        mesh_halo_json = mesh.halo_json
+
+        if not mesh_halo_json.ObjectMarker_Type == 'PATHFINDING SPHERE':
+            layout.enabled = False
+
+        col = layout.column(align=True)
+        row = col.row()
+        row.label(text='Vehicle Only Pathfinding Sphere')
+        row.prop(mesh_halo_json, "Marker_Pathfinding_Sphere_Vehicle", text='')
+        row = col.row()
+        row.label(text='Pathfinding Sphere Remains When Open')
+        row.prop(mesh_halo_json, "Pathfinding_Sphere_Remains_When_Open", text='')
+        row = col.row()
+        row.label(text='Pathfinding Sphere With Sectors')
+        row.prop(mesh_halo_json, "Pathfinding_Sphere_With_Sectors", text='')
+
+class JSON_ObjectMarkerPhysicsProps(Panel):
+    bl_label = "Marker Physics Constraints Properties"
+    bl_idname = "JSON_PT_MarkerPhysicsDetailsPanel"
+    bl_space_type = "PROPERTIES"
+    bl_region_type = "WINDOW"
+    bl_context = "data"
+    bl_options = {"DEFAULT_CLOSED"}
+    bl_parent_id = "JSON_PT_MarkerDetailsPanel"
+
+    def draw(self, context):
+        layout = self.layout
+
+        mesh = context.object.data
+        mesh_halo_json = mesh.halo_json
+
+        if not (mesh_halo_json.ObjectMarker_Type == 'PHYSICS HINGE CONSTRAINT' or mesh_halo_json.ObjectMarker_Type == 'PHYSICS SOCKET CONSTRAINT'):
+            layout.enabled = False
+
+        col = layout.column(align=True)
+        row = col.row()
+        row.label(text='Physics Constraint Parent')
+        row.prop(mesh_halo_json, "Physics_Constraint_Parent", text='')
+        row = col.row()
+        row.label(text='Physics Constraint Child')
+        row.prop(mesh_halo_json, "Physics_Constraint_Child", text='')
+        row = col.row()
+        row.label(text='Physics Constraint Uses Limits')
+        row.prop(mesh_halo_json, "Physics_Constraint_Uses_Limits", text='')
+
+class JSON_ObjectMarkerPhysicsHingeProps(Panel):
+    bl_label = "Hinge Constraints Properties"
+    bl_idname = "JSON_PT_MarkerPhysicsHingeDetailsPanel"
+    bl_space_type = "PROPERTIES"
+    bl_region_type = "WINDOW"
+    bl_context = "data"
+    bl_options = {"DEFAULT_CLOSED"}
+    bl_parent_id = "JSON_PT_MarkerPhysicsDetailsPanel"
+
+    def draw(self, context):
+        layout = self.layout
+
+        mesh = context.object.data
+        mesh_halo_json = mesh.halo_json
+
+        if not (mesh_halo_json.ObjectMarker_Type == 'PHYSICS HINGE CONSTRAINT' and mesh_halo_json.Physics_Constraint_Uses_Limits):
+            layout.enabled = False
+
+        col = layout.column(align=True)
+        col.label(text="Hinge Constraint Min/Max")
+        row = col.row()
+        row.prop(mesh_halo_json, "Hinge_Constraint_Minimum", text='')
+        row.prop(mesh_halo_json, "Hinge_Constraint_Maximum", text='')
+
+class JSON_ObjectMarkerPhysicsSocketProps(Panel):
+    bl_label = "Socket Constraints Properties"
+    bl_idname = "JSON_PT_MarkerPhysicsSocketDetailsPanel"
+    bl_space_type = "PROPERTIES"
+    bl_region_type = "WINDOW"
+    bl_context = "data"
+    bl_options = {"DEFAULT_CLOSED"}
+    bl_parent_id = "JSON_PT_MarkerPhysicsDetailsPanel"
+
+    def draw(self, context):
+        layout = self.layout
+
+        mesh = context.object.data
+        mesh_halo_json = mesh.halo_json
+
+        if not (mesh_halo_json.ObjectMarker_Type == 'PHYSICS SOCKET CONSTRAINT' and mesh_halo_json.Physics_Constraint_Uses_Limits):
+            layout.enabled = False
+        
+        col = layout.column(align=True)
+        col.label(text="Cone Angle")
+        row = col.row()
+        row.prop(mesh_halo_json, "Cone_Angle", text='')
+        col.label(text="Plane Constraint Min/Max")
+        row = col.row()
+        row.prop(mesh_halo_json, "Plane_Constraint_Minimum", text='')
+        row.prop(mesh_halo_json, "Plane_Constraint_Maximum", text='')
+        col.label(text="Twist Constraint Start/End")
+        row = col.row()
+        row.prop(mesh_halo_json, "Twist_Constraint_Start", text='')
+        row.prop(mesh_halo_json, "Twist_Constraint_End", text='')
+
+# MATERIAL PROPERTIES
+class JSON_MaterialProps(Panel):
+    bl_label = "Halo Material Properties"
+    bl_idname = "JSON_PT_MaterialPanel"
+    bl_space_type = 'PROPERTIES'
+    bl_region_type = 'WINDOW'
+    bl_context = "material"
+    bl_options = {'DEFAULT_CLOSED'}
+
+    @classmethod
+    def poll(cls, context):
+        scene = context.scene
+        scene_halo = scene.halo
+
+        if scene_halo.game_version == 'reach':
+            return True
+
+    def draw(self, context):
+        layout = self.layout
+        current_material = context.object.active_material
+        scene = context.scene
+        if current_material is not None:
+            material_halo_json = current_material.halo_json
+            row = layout.row()
+            col = layout.column(align=True)
+            row.label(text="Shader Path:")
+            row.prop(material_halo_json, "shader_path", text='')
+            row = col.row()
+            row.label(text="Material Override")
+            row.prop(material_halo_json, "material_override", text='')
+            row = col.row()
+
+# LIGHT PROPERTIES
+class Halo_LightProps(Panel):
+    bl_label = "Halo Material Properties"
+    bl_idname = "JSON_PT_MaterialPanel"
+    bl_space_type = 'PROPERTIES'
+    bl_region_type = 'WINDOW'
+    bl_context = "material"
+    bl_options = {'DEFAULT_CLOSED'}
+
+    @classmethod
+    def poll(cls, context):
+        scene = context.scene
+        scene_halo = scene.halo
+
+        if scene_halo.game_version == 'reach':
+            return True
+
+    def draw(self, context):
+        layout = self.layout
+        current_material = context.object.active_material
+        scene = context.scene
+        if current_material is not None:
+            material_halo_json = current_material.halo_json
+            row = layout.row()
+            col = layout.column(align=True)
+            row.label(text="Shader Path:")
+            row.prop(material_halo_json, "shader_path", text='')
+            row = col.row()
+            row.label(text="Material Override")
+            row.prop(material_halo_json, "material_override", text='')
+            row = col.row()
+# JSON PROPERTY GROUPS
+class JSON_MeshPropertiesGroup(PropertyGroup):
     #OBJECT PROPERTIES
     Object_Type_Override : EnumProperty(
         name="Object Type",
@@ -2332,7 +2612,7 @@ class Halo_JSON_MeshPropertiesGroup(PropertyGroup):
         max=180,
     )
 
-class Halo_JSON_MaterialPropertiesGroup(PropertyGroup):
+class JSON_MaterialPropertiesGroup(PropertyGroup):
     shader_path: StringProperty(
         name = "Shader Path",
         description = "Define the relative path to a shader, including the file extension",
@@ -2350,278 +2630,10 @@ class Halo_JSON_MaterialPropertiesGroup(PropertyGroup):
                ]
         )
 
-class Halo_SceneProps(Panel):
-    bl_label = "Halo Scene Properties"
-    bl_idname = "HALO_PT_ScenePropertiesPanel"
-    bl_space_type = 'PROPERTIES'
-    bl_region_type = 'WINDOW'
-    bl_context = "scene"
-    bl_options = {'DEFAULT_CLOSED'}
-
-    def draw(self, context):
-        layout = self.layout
-
-class Halo_GlobalSettings(Panel):
-    bl_label = "Global Settings"
-    bl_idname = "HALO_PT_GlobalSettings"
-    bl_space_type = 'PROPERTIES'
-    bl_region_type = 'WINDOW'
-    bl_context = "scene"
-    bl_options = {'DEFAULT_CLOSED'}
-    bl_parent_id = "HALO_PT_ScenePropertiesPanel"
-
-    def draw(self, context):
-        layout = self.layout
-        scene = context.scene
-        scene_halo = scene.halo
-
-        col = layout.column(align=True)
-        row = col.row()
-        row.label(text='Scene Version:')
-        row.prop(scene_halo, "game_version", text='')
-        row = col.row()
-        row.label(text='Expert Mode:')
-        row.prop(scene_halo, "expert_mode", text='')
-
-class Halo_ScenePropertiesGroup(PropertyGroup):
-    game_version: EnumProperty(
-        name="Game:",
-        description="What game will you be exporting for",
-        items=[ ('haloce', "Halo CE", "Show properties for Halo Custom Edition Or Halo CE MCC"),
-                ('halo2', "Halo 2", "Show properties for Halo 2 Vista or Halo 2 MCC"),
-                ('halo3', "Halo 3", "Show properties for Halo 3 MCC"),
-                ('reach', "Halo Reach", "Show properties for Halo Reach MCC"),
-               ]
-        )
-
-    expert_mode: BoolProperty(
-        name ="Expert Mode",
-        description = "Reveal hidden options. If you're not a developer or know what you're doing then you probably shouldn't be messing with this.",
-        default = False,
-        )
-
-class ASS_LightPropertiesGroup(PropertyGroup):
-    use_near_atten: BoolProperty(
-        name = "Near Attenuation",
-        description = "No idea",
-        default = False,
-        )
-
-    near_atten_start: FloatProperty(
-        name = "Near Attenuation Start",
-        description = "No idea",
-        default = 0.0,
-        max = 999999.0,
-        min = 0.0,
-        )
-
-    near_atten_end: FloatProperty(
-        name = "Near Attenuation End",
-        description = "No idea",
-        default = 40.0,
-        max = 999999.0,
-        min = 0.0,
-        )
-
-    use_far_atten: BoolProperty(
-        name = "Near Attenuation",
-        description = "No idea",
-        default = False,
-        )
-
-    far_atten_start: FloatProperty(
-        name = "Far Attenuation Start",
-        description = "No idea",
-        default = 80.0,
-        max = 999999.0,
-        min = 0.0,
-        )
-
-    far_atten_end: FloatProperty(
-        name = "Far Attenuation End",
-        description = "No idea",
-        default = 200.0,
-        max = 999999.0,
-        min = 0.0,
-        )
-
-    light_cone_shape : EnumProperty(
-        name="Light Cone Shape",
-        description="What shape to use for the light cone",
-        default = "0",
-        items=[ ('0', "Rectangle", "Rectangle"),
-                ('1', "Circle", "Circle"),
-               ]
-        )
-
-    aspect_ratio: FloatProperty(
-        name = "Aspect Ratio",
-        description = "No idea. Only used if the light cone is a rectangle.",
-        default = 1.0,
-        max = 100.0,
-        min = 0.001,
-        )
-
-    spot_size: FloatProperty(
-        name="Spot Size",
-        description="Angle of the spotlight beam",
-        subtype='ANGLE',
-        default=0.785398,
-        min=0.017453,
-        max=3.141593,
-        )
-
-    spot_blend: FloatProperty(
-        name = "Spot Blend",
-        description = "The softness of the spotlight edge",
-        precision = 3,
-        default = 0.150,
-        max = 1.0,
-        min = 0.0,
-        )
-
-class ASS_LightProps(Panel):
-    bl_label = "ASS Light Properties"
-    bl_idname = "ASS_PT_LightPanel"
-    bl_space_type = 'PROPERTIES'
-    bl_region_type = 'WINDOW'
-    bl_context = "data"
-    bl_options = {'DEFAULT_CLOSED'}
-    bl_parent_id = "DATA_PT_EEVEE_light"
-    COMPAT_ENGINES = {'BLENDER_EEVEE'}
-
-    @classmethod
-    def poll(cls, context):
-        light = context.light
-        engine = context.engine
-
-        return (light and (light.type == 'SPOT' or light.type == 'AREA')) and (engine in cls.COMPAT_ENGINES)
-
-    def draw(self, context):
-        light = context.light
-        light_ass = light.halo_light
-
-        layout = self.layout
-
-        row = layout.row()
-        row.label(text='Light Cone Shape:')
-        row.prop(light_ass, "light_cone_shape", text='')
-        row = layout.row()
-        row.label(text='Aspect Ratio:')
-        row.prop(light_ass, "aspect_ratio", text='')
-
-class ASS_LightSpot(Panel):
-    bl_label = "Spot Shape"
-    bl_idname = "ASS_PT_SpotShapePanel"
-    bl_space_type = 'PROPERTIES'
-    bl_region_type = 'WINDOW'
-    bl_context = "data"
-    bl_options = {'DEFAULT_CLOSED'}
-    bl_parent_id = "ASS_PT_LightPanel"
-
-    def draw(self, context):
-        light = context.light
-        light_ass = light.halo_light
-
-        layout = self.layout
-
-        row = layout.row()
-        row.label(text='Size:')
-        row.prop(light_ass, "spot_size", text='')
-        row = layout.row()
-        row.label(text='Blend:')
-        row.prop(light_ass, "spot_blend", text='', slider=True)
-
-class ASS_LightNearAtten(Panel):
-    bl_label = "Near Attenuation"
-    bl_idname = "ASS_PT_NearAttenuationPanel"
-    bl_space_type = 'PROPERTIES'
-    bl_region_type = 'WINDOW'
-    bl_context = "data"
-    bl_options = {'DEFAULT_CLOSED'}
-    bl_parent_id = "ASS_PT_LightPanel"
-
-    def draw_header(self, context):
-        light = context.light
-        light_ass = light.halo_light
-
-        self.layout.prop(light_ass, "use_near_atten", text='')
-
-    def draw(self, context):
-        light = context.light
-        light_ass = light.halo_light
-
-        layout = self.layout
-
-        if not light_ass.use_near_atten:
-            layout.enabled = False
-
-        row = layout.row()
-        row.label(text='Start:')
-        row.prop(light_ass, "near_atten_start", text='')
-        row = layout.row()
-        row.label(text='End:')
-        row.prop(light_ass, "near_atten_end", text='')
-
-class ASS_LightFarAtten(Panel):
-    bl_label = "Far Attenuation"
-    bl_idname = "ASS_PT_FarAttenuationPanel"
-    bl_space_type = 'PROPERTIES'
-    bl_region_type = 'WINDOW'
-    bl_context = "data"
-    bl_options = {'DEFAULT_CLOSED'}
-    bl_parent_id = "ASS_PT_LightPanel"
-
-    def draw_header(self, context):
-        light = context.light
-        light_ass = light.halo_light
-
-        self.layout.prop(light_ass, "use_far_atten", text='')
-
-    def draw(self, context):
-        light = context.light
-        light_ass = light.halo_light
-
-        layout = self.layout
-
-        if not light_ass.use_far_atten:
-            layout.enabled = False
-
-        row = layout.row()
-        row.label(text='Start:')
-        row.prop(light_ass, "far_atten_start", text='')
-        row = layout.row()
-        row.label(text='End:')
-        row.prop(light_ass, "far_atten_end", text='')
-
 classeshalo = (
     ASS_JMS_MeshPropertiesGroup,
     ASS_JMS_MaterialPropertiesGroup,
-    Halo_JSON_MeshPropertiesGroup,
-    Halo_JSON_MaterialPropertiesGroup,
     Halo_MeshProps,
-    Halo_ObjectProps,
-    Halo_ObjectMeshProps,
-    Halo_ObjectMeshFaceProps,
-    Halo_ObjectMeshFaceFlagsProps,
-    Halo_ObjectMeshPrimitiveProps,
-    Halo_ObjectMeshBoundaryProps,
-    Halo_ObjectMeshPoopsProps,
-    Halo_ObjectMeshPoopsFlagsProps,
-    Halo_ObjectMeshPortalProps,
-    Halo_ObjectMeshDecoratorProps,
-    Halo_ObjectMeshSeamProps,
-    Halo_ObjectMeshWaterVolumeProps,
-    Halo_ObjectMeshFogVolumeProps,
-    Halo_ObjectMeshLightmapProps,
-    Halo_ObjectMeshMaterialLightingProps,
-    Halo_ObjectMarkerProps,
-    Halo_ObjectMarkerInstanceProps,
-    Halo_ObjectMarkerPathfindingProps,
-    Halo_ObjectMarkerPhysicsProps,
-    Halo_ObjectMarkerPhysicsHingeProps,
-    Halo_ObjectMarkerPhysicsSocketProps,
-    Halo_MaterialProps,
     ASS_JMS_MeshProps,
     ASS_LightPropertiesGroup,
     ASS_LightProps,
@@ -2637,7 +2649,31 @@ classeshalo = (
     Halo_ScenePropertiesGroup,
     Halo_SceneProps,
     Halo_GlobalSettings,
-    Halo_XREFPath
+    Halo_XREFPath,
+    JSON_ObjectProps,
+    JSON_ObjectMeshProps,
+    JSON_ObjectMeshFaceProps,
+    JSON_ObjectMeshFaceFlagsProps,
+    JSON_ObjectMeshPrimitiveProps,
+    JSON_ObjectMeshBoundaryProps,
+    JSON_ObjectMeshPoopsProps,
+    JSON_ObjectMeshPoopsFlagsProps,
+    JSON_ObjectMeshPortalProps,
+    JSON_ObjectMeshDecoratorProps,
+    JSON_ObjectMeshSeamProps,
+    JSON_ObjectMeshWaterVolumeProps,
+    JSON_ObjectMeshFogVolumeProps,
+    JSON_ObjectMeshLightmapProps,
+    JSON_ObjectMeshMaterialLightingProps,
+    JSON_ObjectMarkerProps,
+    JSON_ObjectMarkerInstanceProps,
+    JSON_ObjectMarkerPathfindingProps,
+    JSON_ObjectMarkerPhysicsProps,
+    JSON_ObjectMarkerPhysicsHingeProps,
+    JSON_ObjectMarkerPhysicsSocketProps,
+    JSON_MaterialProps,
+    JSON_MeshPropertiesGroup,
+    JSON_MaterialPropertiesGroup
 )
 
 def register():
@@ -2648,8 +2684,8 @@ def register():
     bpy.types.Mesh.ass_jms = PointerProperty(type=ASS_JMS_MeshPropertiesGroup, name="ASS/JMS Properties", description="Set properties for your mesh")
     bpy.types.Material.ass_jms = PointerProperty(type=ASS_JMS_MaterialPropertiesGroup, name="ASS/JMS Properties", description="Set properties for your materials")
     bpy.types.Scene.halo = PointerProperty(type=Halo_ScenePropertiesGroup, name="Halo Scene Properties", description="Set properties for your scene")
-    bpy.types.Mesh.halo_json = PointerProperty(type=Halo_JSON_MeshPropertiesGroup, name="Halo JSON Properties", description="Set Halo Object Properties")
-    bpy.types.Material.halo_json = PointerProperty(type=Halo_JSON_MaterialPropertiesGroup, name="Halo JSON Properties", description="Set Halo Material Properties")
+    bpy.types.Mesh.halo_json = PointerProperty(type=JSON_MeshPropertiesGroup, name="Halo JSON Properties", description="Set Halo Object Properties")
+    bpy.types.Material.halo_json = PointerProperty(type=JSON_MaterialPropertiesGroup, name="Halo JSON Properties", description="Set Halo Material Properties")
 
 def unregister():
     del bpy.types.Light.halo_light

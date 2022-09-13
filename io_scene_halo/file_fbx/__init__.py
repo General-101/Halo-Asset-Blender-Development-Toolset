@@ -40,6 +40,7 @@ if "bpy" in locals():
         importlib.reload(export_fbx)
 
 
+from pickle import FALSE
 import bpy
 from bpy.props import (
         StringProperty,
@@ -57,7 +58,7 @@ from bpy_extras.io_utils import (
 
 @orientation_helper(axis_forward='-Z', axis_up='Y')
 class ExportHaloFBX(bpy.types.Operator, ExportHelper):
-    """Write a Halo FBX & JSON file"""
+    """Write a Halo FBX & JSON File. Optionally generate a GR2 file using your Halo Editing Kit"""
     bl_idname = "export_halo_scene.fbx"
     bl_label = "Export FBX w/ JSON"
     bl_options = {'UNDO', 'PRESET'}
@@ -70,12 +71,17 @@ class ExportHaloFBX(bpy.types.Operator, ExportHelper):
 
     export_gr2: BoolProperty(
             name="Export To GR2",
-            description="Automatically convert your FBX w/JSON to a GR2 File",
+            description="Uses the exported FBX and JSON files to generate a GR2 File",
+            default=True,
+            )
+    delete_fbx: BoolProperty(
+            name="FBX",
+            description="Delete the source FBX file after GR2 conversion",
             default=False,
             )
-    delete_files: BoolProperty(
-            name="Delete FBX And JSON Files",
-            description="Delete your FBX & JSON files after GR2 conversion is done",
+    delete_json: BoolProperty(
+            name="JSON",
+            description="Delete the source JSON file after GR2 conversion",
             default=False,
             )
     use_selection: BoolProperty(
@@ -368,7 +374,7 @@ class FBX_PT_export_main_Halo(bpy.types.Panel):
 class FBX_PT_export_GR2_Halo(bpy.types.Panel):
     bl_space_type = 'FILE_BROWSER'
     bl_region_type = 'TOOL_PROPS'
-    bl_label = "GR2 Settings"
+    bl_label = "Generate GR2 File"
     bl_parent_id = "FILE_PT_operator"
 
     @classmethod
@@ -378,18 +384,25 @@ class FBX_PT_export_GR2_Halo(bpy.types.Panel):
 
         return operator.bl_idname == "EXPORT_HALO_SCENE_OT_fbx"
 
+    def draw_header(self, context):
+        sfile = context.space_data
+        operator = sfile.active_operator
+
+        self.layout.prop(operator, "export_gr2", text='')
+
     def draw(self, context):
         layout = self.layout
         layout.use_property_split = True
-        layout.use_property_decorate = False  # No animation.
+        layout.use_property_decorate = False
 
         sfile = context.space_data
         operator = sfile.active_operator
 
-        sublayout = layout.column(heading="Options")
-        sublayout.prop(operator, "export_gr2")
-        #sublayout.enabled = (operator.export_gr2 == True)
-        sublayout.prop(operator, "delete_files")
+        layout.enabled = operator.export_gr2
+
+        sublayout = layout.column(heading="Clean Up Files")
+        sublayout.prop(operator, "delete_fbx")
+        sublayout.prop(operator, "delete_json")
 
 class FBX_PT_export_include_Halo(bpy.types.Panel):
     bl_space_type = 'FILE_BROWSER'
@@ -555,8 +568,7 @@ class FBX_PT_export_bake_animation_Halo(bpy.types.Panel):
         layout.prop(operator, "bake_anim_simplify_factor")
 
 def menu_func_export(self, context):
-    self.layout.operator(ExportHaloFBX.bl_idname, text="Halo FBX w/ JSON (.fbx, .json)")
-
+    self.layout.operator(ExportHaloFBX.bl_idname, text="Halo Asset Export (.fbx, .json, .gr2)")
 
 classes = (
     ExportHaloFBX,

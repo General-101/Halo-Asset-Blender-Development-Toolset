@@ -3033,7 +3033,7 @@ import ctypes
 from subprocess import Popen
 from pathlib import Path
 
-def save_json(report, filepath="", export_gr2=False, delete_files=False):
+def save_json(report, filepath="", export_gr2=False, delete_fbx=False, delete_json=False):
 
     start_time = time.process_time()
 
@@ -3083,12 +3083,14 @@ def save_json(report, filepath="", export_gr2=False, delete_files=False):
                 p = Popen(toolCommand)
                 p.wait()
 
-                if delete_files:
-                    print('\nDeleting temp files...')
+                if delete_fbx:
+                    print('\nDeleting FBX file...')
                     os.remove(filepath)
+                if delete_json:
+                    print('\nDeleting JSON file...')
                     os.remove(jsonPath)
 
-                report({'INFO'},"GR2 conversion successfu!")
+                report({'INFO'},"GR2 conversion successful!")
 
         except:
             ctypes.windll.user32.MessageBoxW(0, "GR2 Not Exported. Please check your HREK editing kit path in add-on preferences and try again.", "Invalid HREK Path", 0)
@@ -3291,7 +3293,8 @@ def save(operator, context, report,
          batch_mode='OFF',
          use_batch_own_dir=False,
          export_gr2=False,
-         delete_files=False,
+         delete_fbx=False,
+         delete_json=False,
          **kwargs
          ):
     """
@@ -3326,7 +3329,7 @@ def save(operator, context, report,
 
         depsgraph = context.evaluated_depsgraph_get()
         ret = save_single(operator, context.scene, depsgraph, filepath, **kwargs_mod)
-        save_json(report, filepath, export_gr2, delete_files)
+        save_json(report, filepath, export_gr2, delete_fbx, delete_json)
     else:
         # XXX We need a way to generate a depsgraph for inactive view_layers first...
         # XXX Also, what to do in case of batch-exporting scenes, when there is more than one view layer?
