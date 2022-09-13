@@ -2992,14 +2992,16 @@ def getMaterials():
             halo_material = mat_slot.material.halo_json
             halo_material_name = mat_slot.material.name
             halo_special_materials = ["+sky", "+seamsealer", "+portal"] # some special material names to match legacy
-            shaderType = halo_material.shader_path.rpartition('.')[2]
-            shaderPath = halo_material.shader_path.rpartition('.')[0]
-
-            if shaderType == "":
+            if halo_material.shader_path != halo_material.shader_path.rpartition('.')[2]: # check to fix issue where partition returns full string if no '.' present
+                shaderType = halo_material.shader_path.rpartition('.')[2]  
+                shaderPath = halo_material.shader_path.rpartition('.')[0]
+            else:
                 shaderType = "shader"
+                shaderPath = halo_material.shader_path
             
             if shaderPath == "":
                 shaderPath = "shaders\invalid"
+                
             if (halo_material.material_override != "NONE" or halo_material_name in halo_special_materials):
                 shaderType = "override"
                 match halo_material_name:
