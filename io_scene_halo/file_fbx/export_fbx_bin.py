@@ -3028,6 +3028,7 @@ def getMaterials():
 
 import os
 from subprocess import Popen
+from pathlib import Path  
 
 def save_json(filepath=""):
     jsonTemp = {}
@@ -3052,12 +3053,25 @@ def save_json(filepath=""):
     for x in range(len(pathList)-1):
         gr2Path += pathList[x]
     gr2Path += ".gr2"
+    
+    #addon_name = os.path.basename(os.path.dirname(__name__))
+    #addon = bpy.context.preferences.addons.get(addon_name)
+    #prefs = bpy.context.preferences.addons[__name__].preferences
+    #prefs = bpy.context.preferences.addons
+    #addonPreferences  = prefs.addons[__name__].preferences
+    #toolPath = addon.hrek_path
+    #toolPath = getToolPath(None, bpy.context)
+    #toolPath = bpy.context.preferences.addons[__name__].preferences.hrek_path
+    #toolPath = bpy.types.AddonPreferences.hrek_path
+    toolPath = bpy.types.AddonPreferences.toolpath
+    print('\nTool Path... %r' % toolPath)
 
-    toolCommand = "\"E:\GameLaunchers\Steam\steamapps\common\HREK\\tool_fast.exe\" fbx-to-gr2 \"" + filepath + "\" \"" + jsonPath + "\" \"" + gr2Path + "\""
+    toolCommand = str(toolPath) + "\\tool.exe" + " fbx-to-gr2 " + filepath + " " + jsonPath + " " + gr2Path
+
+    #toolCommand = "\"E:\GameLaunchers\Steam\steamapps\common\HREK\\tool_fast.exe\" fbx-to-gr2 \"" + filepath + "\" \"" + jsonPath + "\" \"" + gr2Path + "\""
     
     print('\nRunning Tool command... %r' % toolCommand)
     Popen(toolCommand)
-
 
 # This func can be called with just the filepath
 def save_single(operator, scene, depsgraph, filepath="",
