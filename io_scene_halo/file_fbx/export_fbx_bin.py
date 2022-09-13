@@ -3061,7 +3061,8 @@ def save_json(filepath="", export_gr2=False, delete_files=False):
 
             toolCommand = str(toolkitPath) + "\\tool_fast.exe" + " fbx-to-gr2 " + filepath + " " + jsonPath + " " + gr2Path
             print('\nRunning Tool command... %r' % toolCommand)
-            Popen(toolCommand)
+            p = Popen(toolCommand)
+            p.wait()
 
             if delete_files:
                 print('\nDeleting temp files...')
