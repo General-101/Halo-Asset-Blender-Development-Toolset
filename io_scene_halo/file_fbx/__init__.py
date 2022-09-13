@@ -68,6 +68,16 @@ class ExportHaloFBX(bpy.types.Operator, ExportHelper):
     # List of operator properties, the attributes will be assigned
     # to the class instance from the operator settings before calling.
 
+    export_gr2: BoolProperty(
+            name="Export To GR2",
+            description="Automatically convert your FBX w/JSON to a GR2 File",
+            default=False,
+            )
+    delete_files: BoolProperty(
+            name="Delete FBX And JSON Files",
+            description="Delete your FBX & JSON files after GR2 conversion is done",
+            default=False,
+            )
     use_selection: BoolProperty(
             name="Selected Objects",
             description="Export selected and visible objects only",
@@ -355,6 +365,31 @@ class FBX_PT_export_main_Halo(bpy.types.Panel):
         sub = row.row(align=True)
         sub.prop(operator, "use_batch_own_dir", text="", icon='NEWFOLDER')
 
+class FBX_PT_export_GR2_Halo(bpy.types.Panel):
+    bl_space_type = 'FILE_BROWSER'
+    bl_region_type = 'TOOL_PROPS'
+    bl_label = "GR2 Settings"
+    bl_parent_id = "FILE_PT_operator"
+
+    @classmethod
+    def poll(cls, context):
+        sfile = context.space_data
+        operator = sfile.active_operator
+
+        return operator.bl_idname == "EXPORT_HALO_SCENE_OT_fbx"
+
+    def draw(self, context):
+        layout = self.layout
+        layout.use_property_split = True
+        layout.use_property_decorate = False  # No animation.
+
+        sfile = context.space_data
+        operator = sfile.active_operator
+
+        sublayout = layout.column(heading="Options")
+        sublayout.prop(operator, "export_gr2")
+        #sublayout.enabled = (operator.export_gr2 == True)
+        sublayout.prop(operator, "delete_files")
 
 class FBX_PT_export_include_Halo(bpy.types.Panel):
     bl_space_type = 'FILE_BROWSER'
@@ -526,6 +561,7 @@ def menu_func_export(self, context):
 classes = (
     ExportHaloFBX,
     FBX_PT_export_main_Halo,
+    FBX_PT_export_GR2_Halo,
     FBX_PT_export_include_Halo,
     FBX_PT_export_transform_Halo,
     FBX_PT_export_geometry_Halo,

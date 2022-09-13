@@ -3030,7 +3030,7 @@ import os
 from subprocess import Popen
 from pathlib import Path  
 
-def save_json(filepath=""):
+def save_json(filepath="", export_gr2=False, delete_files=False):
     jsonTemp = {}
     jsonTemp.update(getMaterials())
 
@@ -3049,21 +3049,27 @@ def save_json(filepath=""):
     jsonFile.write(haloJSON)
     jsonFile.close()
 
-    try:
-        gr2Path = ""
-        for x in range(len(pathList)-1):
-            gr2Path += pathList[x]
-            gr2Path += ".gr2"
+    if export_gr2:
+        try:
+            gr2Path = ""
+            for x in range(len(pathList)-1):
+                gr2Path += pathList[x]
+                gr2Path += ".gr2"
 
-        toolkitPath = bpy.context.preferences.addons['io_scene_halo'].preferences.hrek_path
-        print('\nTool Path... %r' % toolkitPath)
+            toolkitPath = bpy.context.preferences.addons['io_scene_halo'].preferences.hrek_path
+            print('\nTool Path... %r' % toolkitPath)
 
-        toolCommand = str(toolkitPath) + "\\tool_fast.exe" + " fbx-to-gr2 " + filepath + " " + jsonPath + " " + gr2Path
-        print('\nRunning Tool command... %r' % toolCommand)
-        Popen(toolCommand)
-    except:
-        import ctypes
-        ctypes.windll.user32.MessageBoxW(0, "GR2 Not Exported. Please check your HREK editing kit path in plugin preferences and try again.", "Invalid HREK Path", 1)
+            toolCommand = str(toolkitPath) + "\\tool_fast.exe" + " fbx-to-gr2 " + filepath + " " + jsonPath + " " + gr2Path
+            print('\nRunning Tool command... %r' % toolCommand)
+            Popen(toolCommand)
+
+            if delete_files:
+                print('\nDeleting temp files...')
+                os.remove(filepath)
+                os.remove(jsonPath)
+        except:
+            import ctypes
+            ctypes.windll.user32.MessageBoxW(0, "GR2 Not Exported. Please check your HREK editing kit path in plugin preferences and try again.", "Invalid HREK Path", 1)
 
 # This func can be called with just the filepath
 def save_single(operator, scene, depsgraph, filepath="",
@@ -3165,7 +3171,7 @@ def save_single(operator, scene, depsgraph, filepath="",
         add_leaf_bones, bone_correction_matrix, bone_correction_matrix_inv,
         bake_anim, bake_anim_use_all_bones, bake_anim_use_nla_strips, bake_anim_use_all_actions,
         bake_anim_step, bake_anim_simplify_factor, bake_anim_force_startend_keying,
-        False, media_settings, use_custom_props,
+        False, media_settings, use_custom_props
     )
 
     import bpy_extras.io_utils
@@ -3260,6 +3266,8 @@ def save(operator, context,
          use_active_collection=False,
          batch_mode='OFF',
          use_batch_own_dir=False,
+         export_gr2=False,
+         delete_files=False,
          **kwargs
          ):
     """
@@ -3294,7 +3302,7 @@ def save(operator, context,
 
         depsgraph = context.evaluated_depsgraph_get()
         ret = save_single(operator, context.scene, depsgraph, filepath, **kwargs_mod)
-        save_json(filepath)
+        save_json(filepath, export_gr2, delete_files)
     else:
         # XXX We need a way to generate a depsgraph for inactive view_layers first...
         # XXX Also, what to do in case of batch-exporting scenes, when there is more than one view layer?
