@@ -3030,8 +3030,9 @@ def getMaterials():
 import os
 from subprocess import Popen
 from pathlib import Path
+import logging
 
-def save_json(filepath="", export_gr2=False, delete_files=False):
+def save_json(report, filepath="", export_gr2=False, delete_files=False):
 
     start_time = time.process_time()
 
@@ -3055,7 +3056,7 @@ def save_json(filepath="", export_gr2=False, delete_files=False):
 
     print('export finished in %.4f sec.' % (time.process_time() - start_time))
 
-    #({'INFO'},"JSON export completed successful")
+    report({'INFO'},"JSON exported successfully!")
 
     if export_gr2:
         try:
@@ -3084,11 +3085,11 @@ def save_json(filepath="", export_gr2=False, delete_files=False):
                 os.remove(filepath)
                 os.remove(jsonPath)
 
-            #({'INFO'},"GR2 conversion successful")
+            report({'INFO'},"GR2 conversion successfu!")
 
         except:
             import ctypes
-            ctypes.windll.user32.MessageBoxW(0, "GR2 Not Exported. Please check your HREK editing kit path in plugin preferences and try again.", "Invalid HREK Path", 1)
+            ctypes.windll.user32.MessageBoxW(0, "GR2 Not Exported. Please check your HREK editing kit path in add-on preferences and try again.", "Invalid HREK Path", 1)
         return {'FINISHED'}
 
 
@@ -3281,7 +3282,7 @@ def defaults_unity3d():
     }
 
 
-def save(operator, context,
+def save(operator, context, report,
          filepath="",
          use_selection=False,
          use_active_collection=False,
@@ -3323,7 +3324,7 @@ def save(operator, context,
 
         depsgraph = context.evaluated_depsgraph_get()
         ret = save_single(operator, context.scene, depsgraph, filepath, **kwargs_mod)
-        save_json(filepath, export_gr2, delete_files)
+        save_json(report, filepath, export_gr2, delete_files)
     else:
         # XXX We need a way to generate a depsgraph for inactive view_layers first...
         # XXX Also, what to do in case of batch-exporting scenes, when there is more than one view layer?

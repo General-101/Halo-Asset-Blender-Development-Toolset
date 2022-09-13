@@ -330,7 +330,7 @@ class ExportHaloFBX(bpy.types.Operator, ExportHelper):
         keywords["global_matrix"] = global_matrix
 
         from . import export_fbx_bin
-        return export_fbx_bin.save(self, context, **keywords)
+        return export_fbx_bin.save(self, context, self.report, **keywords)
 
 
 class FBX_PT_export_main_Halo(bpy.types.Panel):
