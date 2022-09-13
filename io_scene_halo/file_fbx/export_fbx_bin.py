@@ -2993,6 +2993,7 @@ def getMaterials():
             halo_material = mat_slot.material.halo_json
             halo_material_name = mat_slot.material.name
             halo_special_materials = ["+sky", "+seamsealer", "+portal"] # some special material names to match legacy
+            halo_valid_shader_types = ["shader","shader_cortana","shader_custom","shader_decal","shader_foliage","shader_fur","shader_fur_stencil","shader_glass","shader_halogram","shader_mux","shader_mux_material","shader_screen","shader_skin","shader_terrain","shader_water"]
             if halo_material.shader_path != halo_material.shader_path.rpartition('.')[2]: # check to fix issue where partition returns full string if no '.' present
                 shaderType = halo_material.shader_path.rpartition('.')[2]  
                 shaderPath = halo_material.shader_path.rpartition('.')[0]
@@ -3000,6 +3001,9 @@ def getMaterials():
                 shaderType = "shader"
                 shaderPath = halo_material.shader_path
             
+            if shaderType not in halo_valid_shader_types:
+                shaderType = "shader"
+
             if shaderPath == "":
                 shaderPath = "shaders\invalid"
                 
