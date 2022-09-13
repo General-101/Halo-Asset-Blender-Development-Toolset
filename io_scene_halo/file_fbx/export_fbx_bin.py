@@ -27,6 +27,7 @@ import math
 import os
 import time
 
+
 from itertools import zip_longest, chain
 
 if "bpy" in locals():
@@ -3028,9 +3029,12 @@ def getMaterials():
 
 import os
 from subprocess import Popen
-from pathlib import Path  
+from pathlib import Path
 
 def save_json(filepath="", export_gr2=False, delete_files=False):
+
+    start_time = time.process_time()
+
     jsonTemp = {}
     jsonTemp.update(getMaterials())
 
@@ -3049,6 +3053,10 @@ def save_json(filepath="", export_gr2=False, delete_files=False):
     jsonFile.write(haloJSON)
     jsonFile.close()
 
+    print('export finished in %.4f sec.' % (time.process_time() - start_time))
+
+    #({'INFO'},"JSON export completed successful")
+
     if export_gr2:
         try:
             gr2Path = ""
@@ -3057,9 +3065,16 @@ def save_json(filepath="", export_gr2=False, delete_files=False):
                 gr2Path += ".gr2"
 
             toolkitPath = bpy.context.preferences.addons['io_scene_halo'].preferences.hrek_path
-            print('\nTool Path... %r' % toolkitPath)
+            toolkitPath = toolkitPath.replace('"','')
+            print('\nToolkit Path... %r' % toolkitPath)
 
-            toolCommand = str(toolkitPath) + "\\tool_fast.exe" + " fbx-to-gr2 " + filepath + " " + jsonPath + " " + gr2Path
+            tool = 'tool_fast.exe'
+
+            toolPath = toolkitPath + "\\" + tool
+
+            print('\nTool Path... %r' % toolPath)
+
+            toolCommand = '"{}" fbx-to-gr2 "{}" "{}" "{}"'.format(toolPath, filepath, jsonPath, gr2Path)
             print('\nRunning Tool command... %r' % toolCommand)
             p = Popen(toolCommand)
             p.wait()
@@ -3068,9 +3083,14 @@ def save_json(filepath="", export_gr2=False, delete_files=False):
                 print('\nDeleting temp files...')
                 os.remove(filepath)
                 os.remove(jsonPath)
+
+            #({'INFO'},"GR2 conversion successful")
+
         except:
             import ctypes
             ctypes.windll.user32.MessageBoxW(0, "GR2 Not Exported. Please check your HREK editing kit path in plugin preferences and try again.", "Invalid HREK Path", 1)
+        return {'FINISHED'}
+
 
 # This func can be called with just the filepath
 def save_single(operator, scene, depsgraph, filepath="",
