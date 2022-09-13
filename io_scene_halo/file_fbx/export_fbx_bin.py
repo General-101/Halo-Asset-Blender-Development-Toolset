@@ -3028,9 +3028,10 @@ def getMaterials():
     return temp
 
 import os
+import glob
+import ctypes
 from subprocess import Popen
 from pathlib import Path
-import logging
 
 def save_json(report, filepath="", export_gr2=False, delete_files=False):
 
@@ -3074,22 +3075,23 @@ def save_json(report, filepath="", export_gr2=False, delete_files=False):
             toolPath = toolkitPath + "\\" + tool
 
             print('\nTool Path... %r' % toolPath)
+            if not os.access(filepath, os.R_OK):
+                ctypes.windll.user32.MessageBoxW(0, "GR2 Not Exported. Output Folder Is Read-Only! Try running Blender as an Administrator.", "ACCESS VIOLATION", 0)
+            else:
+                toolCommand = '"{}" fbx-to-gr2 "{}" "{}" "{}"'.format(toolPath, filepath, jsonPath, gr2Path)
+                print('\nRunning Tool command... %r' % toolCommand)
+                p = Popen(toolCommand)
+                p.wait()
 
-            toolCommand = '"{}" fbx-to-gr2 "{}" "{}" "{}"'.format(toolPath, filepath, jsonPath, gr2Path)
-            print('\nRunning Tool command... %r' % toolCommand)
-            p = Popen(toolCommand)
-            p.wait()
+                if delete_files:
+                    print('\nDeleting temp files...')
+                    os.remove(filepath)
+                    os.remove(jsonPath)
 
-            if delete_files:
-                print('\nDeleting temp files...')
-                os.remove(filepath)
-                os.remove(jsonPath)
-
-            report({'INFO'},"GR2 conversion successfu!")
+                report({'INFO'},"GR2 conversion successfu!")
 
         except:
-            import ctypes
-            ctypes.windll.user32.MessageBoxW(0, "GR2 Not Exported. Please check your HREK editing kit path in add-on preferences and try again.", "Invalid HREK Path", 1)
+            ctypes.windll.user32.MessageBoxW(0, "GR2 Not Exported. Please check your HREK editing kit path in add-on preferences and try again.", "Invalid HREK Path", 0)
         return {'FINISHED'}
 
 
