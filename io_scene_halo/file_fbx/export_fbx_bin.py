@@ -3024,6 +3024,9 @@ def getMaterials():
 
     return temp
 
+import os
+import subprocess
+
 def save_json(filepath=""):
     jsonTemp = {}
     jsonTemp.update(getMaterials())
@@ -3042,6 +3045,23 @@ def save_json(filepath=""):
     print('\nJSON export starting... %r' % jsonPath)
     jsonFile.write(haloJSON)
     jsonFile.close()
+
+    gr2Path = ""
+    for x in range(len(pathList)-1):
+        gr2Path += pathList[x]
+    gr2Path += ".gr2"
+
+    toolCommand = "D:\\Games\\steamapps\\common\\HREK\\tool.exe fbx-to-gr2 " + filepath + " " + jsonPath + " " + gr2Path
+    
+    print('\nRunning Tool command... %r' % toolCommand)
+    toolArgs = "fbx-to-gr2 " + filepath + " " + jsonPath + " " + gr2Path
+    #subprocess.run(["D:\\Games\\steamapps\\common\\HREK\\tool.exe", toolArgs])
+    #subprocess.call(toolCommand, shell=True)
+    os.system(toolCommand)
+
+    #os.system('"D:\\Games\\steamapps\\common\\HREK\\tool.exe fbx-gr2 "')
+    #subprocess.Popen("D:\Games\steamapps\common\HREK\tool.exe fbx-gr2", shell=True, stdout=subprocess.PIPE).stdout.read()
+    #subprocess.call(["D:\\Games\\steamapps\\common\\HREK\\tool.exe fbx-gr2"])
 
 # This func can be called with just the filepath
 def save_single(operator, scene, depsgraph, filepath="",
