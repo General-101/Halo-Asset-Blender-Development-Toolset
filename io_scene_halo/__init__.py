@@ -65,41 +65,13 @@ modules = [
     file_fbx,
     misc
 ]
-
-class HREKLocation(bpy.types.Operator):
-    bl_idname = 'hrek.path'
-    bl_label = 'HREK Path'
-    bl_options = {"REGISTER", "UNDO"}
  
-    def execute(self, context):
-        preferences = context.preferences
-        addon_prefs = preferences.addons[__name__].preferences
-
-        info = ("Path: %s" %
-                (addon_prefs.hrek_path))
-
-        self.report({'INFO'}, info)
-        print(info)
-        return {"FINISHED"}
- 
- 
-class HREKLocationPanel(bpy.types.Panel):
-    bl_idname = 'toolpref.panel'
-    bl_label = 'TOOL_LOCATION'
-    bl_space_type = 'VIEW_3D'
-    bl_region_type = 'UI'
-    bl_category = 'TEST'
- 
-    def draw(self, context):
-        self.layout.operator("hrek.path", icon=None, text="Specify HREK Path")
- 
- 
-class HREKLocationPreferences(bpy.types.AddonPreferences):
+class ToolkitLocationPreferences(AddonPreferences):
     bl_idname = __package__
     
     hrek_path: bpy.props.StringProperty(
         name="HREK Path",
-        description="Specify path to your HREK tools",
+        description="Specify the path to your Halo Reach Editing Kit folder containing tool / tool_fast",
         default="",
     )
 
@@ -109,17 +81,12 @@ class HREKLocationPreferences(bpy.types.AddonPreferences):
         row.prop(self, 'hrek_path', expand=True)
 
 def register():
-    bpy.utils.register_class(HREKLocation)
-    bpy.utils.register_class(HREKLocationPanel)
-    bpy.utils.register_class(HREKLocationPreferences)
-    bpy.types.AddonPreferences.toolpath = StringProperty(type=HREKLocationPreferences, name="HREK Path", description="Set path of Halo Reach mod tools folder")
+    bpy.utils.register_class(ToolkitLocationPreferences)
     for module in modules:
         module.register()
 
 def unregister():
-    bpy.utils.unregister_class(HREKLocationPreferences)
-    bpy.utils.unregister_class(HREKLocationPanel)
-    bpy.utils.unregister_class(HREKLocation)
+    bpy.utils.unregister_class(ToolkitLocationPreferences)
     for module in reversed(modules):
         module.unregister()
 

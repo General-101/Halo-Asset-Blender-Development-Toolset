@@ -3048,18 +3048,6 @@ def save_json(filepath=""):
     print('\nJSON export starting... %r' % jsonPath)
     jsonFile.write(haloJSON)
     jsonFile.close()
-    
-    #addon_name = os.path.basename(os.path.dirname(__name__))
-    #addon = bpy.context.preferences.addons.get(addon_name)
-    #prefs = bpy.context.preferences.addons[__name__].preferences
-    #prefs = bpy.context.preferences.addons
-    #addonPreferences  = prefs.addons[__name__].preferences
-    #toolPath = addon.hrek_path
-    #toolPath = getToolPath(None, bpy.context)
-    #toolPath = bpy.context.preferences.addons[__name__].preferences.hrek_path
-    #toolPath = bpy.types.AddonPreferences.hrek_path
-
-    #toolCommand = "\"E:\GameLaunchers\Steam\steamapps\common\HREK\\tool_fast.exe\" fbx-to-gr2 \"" + filepath + "\" \"" + jsonPath + "\" \"" + gr2Path + "\""
 
     try:
         gr2Path = ""
@@ -3067,15 +3055,15 @@ def save_json(filepath=""):
             gr2Path += pathList[x]
             gr2Path += ".gr2"
 
-        toolPath = bpy.types.AddonPreferences.toolpath
-        print('\nTool Path... %r' % toolPath)
+        toolkitPath = bpy.context.preferences.addons['io_scene_halo'].preferences.hrek_path
+        print('\nTool Path... %r' % toolkitPath)
 
-        toolCommand = str(toolPath) + "\\tool.exe" + " fbx-to-gr2 " + filepath + " " + jsonPath + " " + gr2Path
+        toolCommand = str(toolkitPath) + "\\tool_fast.exe" + " fbx-to-gr2 " + filepath + " " + jsonPath + " " + gr2Path
         print('\nRunning Tool command... %r' % toolCommand)
         Popen(toolCommand)
     except:
         import ctypes
-        ctypes.windll.user32.MessageBoxW(0, "GR2 Not Exported. Please check your HREK path in add-on settings and try again.", "Invalid HREK Path", 1)
+        ctypes.windll.user32.MessageBoxW(0, "GR2 Not Exported. Please check your HREK editing kit path in plugin preferences and try again.", "Invalid HREK Path", 1)
 
 # This func can be called with just the filepath
 def save_single(operator, scene, depsgraph, filepath="",
