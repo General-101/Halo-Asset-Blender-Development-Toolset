@@ -691,6 +691,9 @@ def fbx_data_camera_elements(root, cam_obj, scene_data):
     # No need to convert to inches here...
     elem_props_template_set(tmpl, props, "p_double", b"FocalLength", cam_data.lens)
     elem_props_template_set(tmpl, props, "p_double", b"SafeAreaAspectRatio", aspect)
+    # Depth of field and Focus distance.
+    elem_props_template_set(tmpl, props, "p_bool", b"UseDepthOfField", cam_data.dof.use_dof)
+    elem_props_template_set(tmpl, props, "p_double", b"FocusDistance", cam_data.dof.focus_distance * 1000 * gscale)
     # Default to perspective camera.
     elem_props_template_set(tmpl, props, "p_enum", b"CameraProjectionType", 1 if cam_data.type == 'ORTHO' else 0)
     elem_props_template_set(tmpl, props, "p_double", b"OrthoZoom", cam_data.ortho_scale)
@@ -881,9 +884,9 @@ def fbx_data_mesh_elements(root, me_obj, scene_data, done_meshes):
         if last_subsurf:
             elem_data_single_int32(geom, b"Smoothness", 2) # Display control mesh and smoothed
             if last_subsurf.boundary_smooth == "PRESERVE_CORNERS":
-                elem_data_single_int32(geom, b"BoundaryRule", 2) # CreaseAll
+                elem_data_single_int32(geom, b"BoundaryRule", 1) # CreaseAll
             else:
-                elem_data_single_int32(geom, b"BoundaryRule", 1) # CreaseEdge
+                elem_data_single_int32(geom, b"BoundaryRule", 2) # CreaseEdge
             elem_data_single_int32(geom, b"PreviewDivisionLevels", last_subsurf.levels)
             elem_data_single_int32(geom, b"RenderDivisionLevels", last_subsurf.render_levels)
 
@@ -1875,7 +1878,7 @@ def fbx_skeleton_from_armature(scene, settings, arm_obj, objects, data_meshes,
             if mod.type not in {'ARMATURE'} or not mod.object:
                 continue
             # We only support vertex groups binding method, not bone envelopes one!
-            if mod.object in {arm_obj.bdata, arm_obj.bdata.proxy} and mod.use_vertex_groups:
+            if mod.object == arm_obj.bdata and mod.use_vertex_groups:
                 found = True
                 break
 
@@ -1940,6 +1943,7 @@ def fbx_animations_do(scene_data, ref_id, f_start, f_end, start_zero, objects=No
     depsgraph = scene_data.depsgraph
     force_keying = scene_data.settings.bake_anim_use_all_bones
     force_sek = scene_data.settings.bake_anim_force_startend_keying
+    gscale = scene_data.settings.global_scale
 
     if objects is not None:
         # Add bones and duplis!
@@ -1986,8 +1990,10 @@ def fbx_animations_do(scene_data, ref_id, f_start, f_end, start_zero, objects=No
     animdata_cameras = {}
     for cam_obj, cam_key in scene_data.data_cameras.items():
         cam = cam_obj.bdata.data
-        acnode = AnimationCurveNodeWrapper(cam_key, 'CAMERA_FOCAL', force_key, force_sek, (cam.lens,))
-        animdata_cameras[cam_key] = (acnode, cam)
+        acnode_lens = AnimationCurveNodeWrapper(cam_key, 'CAMERA_FOCAL', force_key, force_sek, (cam.lens,))
+        acnode_focus_distance = AnimationCurveNodeWrapper(cam_key, 'CAMERA_FOCUS_DISTANCE', force_key,
+                                                          force_sek, (cam.dof.focus_distance,))
+        animdata_cameras[cam_key] = (acnode_lens, acnode_focus_distance, cam)
 
     currframe = f_start
     while currframe <= f_end:
@@ -2006,8 +2012,9 @@ def fbx_animations_do(scene_data, ref_id, f_start, f_end, start_zero, objects=No
             anim_scale.add_keyframe(real_currframe, scale)
         for anim_shape, me, shape in animdata_shapes.values():
             anim_shape.add_keyframe(real_currframe, (shape.value * 100.0,))
-        for anim_camera, camera in animdata_cameras.values():
-            anim_camera.add_keyframe(real_currframe, (camera.lens,))
+        for anim_camera_lens, anim_camera_focus_distance, camera in animdata_cameras.values():
+            anim_camera_lens.add_keyframe(real_currframe, (camera.lens,))
+            anim_camera_focus_distance.add_keyframe(real_currframe, (camera.dof.focus_distance * 1000 * gscale,))
         currframe += bake_step
 
     scene.frame_set(back_currframe, subframe=0.0)
@@ -2035,15 +2042,21 @@ def fbx_animations_do(scene_data, ref_id, f_start, f_end, start_zero, objects=No
             anim_data = animations.setdefault(elem_key, ("dummy_unused_key", {}))
             anim_data[1][fbx_group] = (group_key, group, fbx_gname)
 
-    # And cameras' lens keys.
-    for cam_key, (anim_camera, camera) in animdata_cameras.items():
+    # And cameras' lens and focus distance keys.
+    for cam_key, (anim_camera_lens, anim_camera_focus_distance, camera) in animdata_cameras.items():
         final_keys = {}
-        anim_camera.simplify(simplify_fac, bake_step, force_keep)
-        if not anim_camera:
-            continue
-        for elem_key, group_key, group, fbx_group, fbx_gname in anim_camera.get_final_data(scene, ref_id, force_keep):
-            anim_data = animations.setdefault(elem_key, ("dummy_unused_key", {}))
-            anim_data[1][fbx_group] = (group_key, group, fbx_gname)
+        anim_camera_lens.simplify(simplify_fac, bake_step, force_keep)
+        anim_camera_focus_distance.simplify(simplify_fac, bake_step, force_keep)
+        if anim_camera_lens:
+            for elem_key, group_key, group, fbx_group, fbx_gname in \
+                    anim_camera_lens.get_final_data(scene, ref_id, force_keep):
+                anim_data = animations.setdefault(elem_key, ("dummy_unused_key", {}))
+                anim_data[1][fbx_group] = (group_key, group, fbx_gname)
+        if anim_camera_focus_distance:
+            for elem_key, group_key, group, fbx_group, fbx_gname in \
+                    anim_camera_focus_distance.get_final_data(scene, ref_id, force_keep):
+                anim_data = animations.setdefault(elem_key, ("dummy_unused_key", {}))
+                anim_data[1][fbx_group] = (group_key, group, fbx_gname)
 
     astack_key = get_blender_anim_stack_key(scene, ref_id)
     alayer_key = get_blender_anim_layer_key(scene, ref_id)
@@ -2270,12 +2283,14 @@ def fbx_data_from_scene(scene, depsgraph, settings):
 
         is_ob_material = any(ms.link == 'OBJECT' for ms in ob.material_slots)
 
-        if settings.use_mesh_modifiers or ob.type in BLENDER_OTHER_OBJECT_TYPES or is_ob_material:
+        if settings.use_mesh_modifiers or settings.use_triangles or ob.type in BLENDER_OTHER_OBJECT_TYPES or is_ob_material:
             # We cannot use default mesh in that case, or material would not be the right ones...
             use_org_data = not (is_ob_material or ob.type in BLENDER_OTHER_OBJECT_TYPES)
             backup_pose_positions = []
             tmp_mods = []
             if use_org_data and ob.type == 'MESH':
+                if settings.use_triangles:
+                    use_org_data = False
                 # No need to create a new mesh in this case, if no modifier is active!
                 last_subsurf = None
                 for mod in ob.modifiers:
@@ -2320,6 +2335,14 @@ def fbx_data_from_scene(scene, depsgraph, settings):
                 # free them afterwards. Not ideal but ensures correct ownerwhip.
                 tmp_me = bpy.data.meshes.new_from_object(
                             ob_to_convert, preserve_all_data_layers=True, depsgraph=depsgraph)
+                # Triangulate the mesh if requested
+                if settings.use_triangles:
+                    import bmesh
+                    bm = bmesh.new()
+                    bm.from_mesh(tmp_me)
+                    bmesh.ops.triangulate(bm, faces=bm.faces)
+                    bm.to_mesh(tmp_me)
+                    bm.free()
                 data_meshes[ob_obj] = (get_blenderID_key(tmp_me), tmp_me, True)
             # Change armatures back.
             for armature, pose_position in backup_pose_positions:
@@ -3130,6 +3153,7 @@ def save_single(operator, scene, depsgraph, filepath="",
                 path_mode='AUTO',
                 use_mesh_edges=True,
                 use_tspace=True,
+                use_triangles=False,
                 embed_textures=False,
                 use_custom_props=False,
                 bake_space_transform=False,
@@ -3196,12 +3220,12 @@ def save_single(operator, scene, depsgraph, filepath="",
         operator.report, (axis_up, axis_forward), global_matrix, global_scale, apply_unit_scale, unit_scale,
         bake_space_transform, global_matrix_inv, global_matrix_inv_transposed,
         context_objects, object_types, use_mesh_modifiers, use_mesh_modifiers_render,
-        mesh_smooth_type, use_subsurf, use_mesh_edges, use_tspace,
+        mesh_smooth_type, use_subsurf, use_mesh_edges, use_tspace, use_triangles,
         armature_nodetype, use_armature_deform_only,
         add_leaf_bones, bone_correction_matrix, bone_correction_matrix_inv,
         bake_anim, bake_anim_use_all_bones, bake_anim_use_nla_strips, bake_anim_use_all_actions,
         bake_anim_step, bake_anim_simplify_factor, bake_anim_force_startend_keying,
-        False, media_settings, use_custom_props
+        False, media_settings, use_custom_props,
     )
 
     import bpy_extras.io_utils
@@ -3270,6 +3294,7 @@ def defaults_unity3d():
         "mesh_smooth_type": 'FACE',
         "use_subsurf": False,
         "use_tspace": False,  # XXX Why? Unity is expected to support tspace import...
+        "use_triangles": False,
 
         "use_armature_deform_only": True,
 
@@ -3293,6 +3318,7 @@ def defaults_unity3d():
 def save(operator, context, report,
          filepath="",
          use_selection=False,
+         use_visible=False,
          use_active_collection=False,
          batch_mode='OFF',
          use_batch_own_dir=False,
@@ -3329,6 +3355,8 @@ def save(operator, context, report,
                 ctx_objects = context.selected_objects
             else:
                 ctx_objects = context.view_layer.objects
+        if use_visible:
+            ctx_objects = tuple(obj for obj in ctx_objects if obj.visible_get())
         kwargs_mod["context_objects"] = ctx_objects
 
         depsgraph = context.evaluated_depsgraph_get()

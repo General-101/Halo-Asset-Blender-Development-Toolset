@@ -16,13 +16,13 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
-# <pep8 compliant>
+# SPDX-License-Identifier: GPL-2.0-or-later
 
 bl_info = {
     "name": "Halo FBX format",
     "author": "Campbell Barton, Bastien Montagne, Jens Restemeier, Generalkidd, Crisp",
-    "version": (4, 29, 1),
-    "blender": (2, 90, 0),
+    "version": (4, 36, 3),
+    "blender": (3, 2, 0),
     "location": "File > Import-Export",
     "description": "FBX File & Halo JSON File for use with importing into the HREK",
     "warning": "",
@@ -40,7 +40,6 @@ if "bpy" in locals():
         importlib.reload(export_fbx)
 
 
-from pickle import FALSE
 import bpy
 from bpy.props import (
         StringProperty,
@@ -88,6 +87,11 @@ class ExportHaloFBX(bpy.types.Operator, ExportHelper):
             name="Selected Objects",
             description="Export selected and visible objects only",
             default=False,
+            )
+    use_visible: BoolProperty(
+            name='Visible Objects',
+            description='Export visible objects only',
+            default=False
             )
     use_active_collection: BoolProperty(
             name="Active Collection",
@@ -186,6 +190,11 @@ class ExportHaloFBX(bpy.types.Operator, ExportHelper):
             name="Tangent Space",
             description="Add binormal and tangent vectors, together with normal they form the tangent space "
                         "(will only work correctly with tris/quads only meshes!)",
+            default=False,
+            )
+    use_triangles: BoolProperty(
+            name="Triangulate Faces",
+            description="Convert all faces to triangles",
             default=False,
             )
     use_custom_props: BoolProperty(
@@ -497,6 +506,7 @@ class FBX_PT_export_geometry_Halo(bpy.types.Panel):
         #sub.enabled = operator.use_mesh_modifiers and False  # disabled in 2.8...
         #sub.prop(operator, "use_mesh_modifiers_render")
         layout.prop(operator, "use_mesh_edges")
+        layout.prop(operator, "use_triangles")
         sub = layout.row()
         #~ sub.enabled = operator.mesh_smooth_type in {'OFF'}
         sub.prop(operator, "use_tspace")
