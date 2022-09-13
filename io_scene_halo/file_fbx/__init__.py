@@ -55,7 +55,7 @@ from bpy_extras.io_utils import (
         axis_conversion,
         )
 
-@orientation_helper(axis_forward='-Z', axis_up='Y')
+@orientation_helper(axis_forward='X', axis_up='Z')
 class ExportHaloFBX(bpy.types.Operator, ExportHelper):
     """Write a Halo FBX & JSON File. Optionally generate a GR2 file using your Halo Editing Kit"""
     bl_idname = "export_halo_scene.fbx"
@@ -111,6 +111,7 @@ class ExportHaloFBX(bpy.types.Operator, ExportHelper):
             default=True,
             )
     apply_scale_options: EnumProperty(
+                default='FBX_SCALE_UNITS',
             items=(('FBX_SCALE_NONE', "All Local",
                     "Apply custom scaling and units scaling to each object transformation, FBX scale remains at 1.0"),
                    ('FBX_SCALE_UNITS', "FBX Units Scale",
@@ -206,7 +207,7 @@ class ExportHaloFBX(bpy.types.Operator, ExportHelper):
             name="Add Leaf Bones",
             description="Append a final bone to the end of each chain to specify last bone length "
                         "(use this when you intend to edit the armature from exported data)",
-            default=True # False for commit!
+            default=False # False for commit!
             )
     primary_bone_axis: EnumProperty(
             name="Primary Bone Axis",
@@ -437,6 +438,7 @@ class FBX_PT_export_include_Halo(bpy.types.Panel):
         sublayout = layout.column(heading="Limit to")
         sublayout.enabled = (operator.batch_mode == 'OFF')
         sublayout.prop(operator, "use_selection")
+        sublayout.prop(operator, "use_visible")
         sublayout.prop(operator, "use_active_collection")
 
         layout.column().prop(operator, "object_types")
