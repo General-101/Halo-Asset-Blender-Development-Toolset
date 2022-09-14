@@ -3028,7 +3028,7 @@ def getNodes():
 
     for node in bpy.data.objects:
         if node.name.startswith(halo_node_prefixes):
-            nodesList.update({node.name: {getNodesProperties}})
+            nodesList.update({node.name: getNodesProperties()})
 
     temp = ({'nodes_properties': nodesList})
 
@@ -3054,7 +3054,7 @@ def getMeshes():
 
     for mesh in bpy.data.meshes:
         if (not mesh.name.startswith(halo_node_prefixes)): # if the name of a mesh starts with this, don't process it.
-            meshesList.update({mesh.name: {getMeshProperties}})
+            meshesList.update({mesh.name: getMeshProperties()})
 
     temp = ({'meshes_properties': meshesList})
 
@@ -3066,9 +3066,9 @@ def getMeshProperties():
     mesh_props = {
         # OBJECT PROPERTIES
         "bungie_object_type": "_connected_geometry_object_type_mesh",
-        "bungie_region_name": getRegionName,
+        "bungie_region_name": getRegionName(),
         # FACE PROPERTIES
-        "bungie_face_type": getFaceType
+        "bungie_face_type": getFaceType()
 
     }
 
