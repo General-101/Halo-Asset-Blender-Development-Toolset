@@ -3110,14 +3110,18 @@ def save_json(report, filepath="", export_gr2=False, delete_fbx=False, delete_js
                 p = Popen(toolCommand)
                 p.wait()
 
-                if delete_fbx:
-                    print('\nDeleting FBX file...')
+                if delete_fbx and delete_json:
                     os.remove(filepath)
-                if delete_json:
-                    print('\nDeleting JSON file...')
                     os.remove(jsonPath)
+                    report({'INFO'},"Temporary files cleaned up successfully!")
+                elif delete_fbx:
+                    os.remove(filepath)
+                    report({'INFO'},"FBX file cleaned up successfully!")
+                elif delete_json:
+                    os.remove(jsonPath)
+                    report({'INFO'},"JSON file cleaned up successfully!")
 
-                report({'INFO'},"GR2 conversion successful!")
+                report({'INFO'},"GR2 conversion finished!")
 
         except:
             ctypes.windll.user32.MessageBoxW(0, "GR2 Not Exported. Please check your HREK editing kit path in add-on preferences and try again.", "Invalid HREK Path", 0)
