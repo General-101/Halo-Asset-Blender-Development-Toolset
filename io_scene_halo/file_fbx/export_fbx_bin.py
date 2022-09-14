@@ -3107,7 +3107,7 @@ def getMaterials():
             if shaderPath == "":
                 shaderPath = "shaders\invalid"
                 
-            if (halo_material.material_override != "NONE" or halo_material_name in halo_special_materials):
+            if (halo_material_name in halo_special_materials):
                 shaderType = "override"
                 match halo_material_name:
                     case '+portal':
@@ -3117,15 +3117,6 @@ def getMaterials():
                     case '+sky':
                         shaderPath = "bungie_face_type=_connected_geometry_face_type_sky"
                     case '+weatherpoly':
-                        shaderPath = "bungie_face_type=_connected_geometry_face_type_weather_polyhedra"
-                match halo_material.material_override: # override goes second because it should always override a special name if set
-                    case "PORTAL":
-                        shaderPath = "bungie_mesh_type=_connected_geometry_mesh_type_portal"
-                    case "SEAMSEALER":
-                        shaderPath = "bungie_face_type=_connected_geometry_face_type_seam_sealer"
-                    case "SKY":
-                        shaderPath = "bungie_face_type=_connected_geometry_face_type_sky"
-                    case "WEATHERPOLY":
                         shaderPath = "bungie_face_type=_connected_geometry_face_type_weather_polyhedra"
 
             matList.update({halo_material_name : {"bungie_shader_path": shaderPath, "bungie_shader_type": shaderType}})
