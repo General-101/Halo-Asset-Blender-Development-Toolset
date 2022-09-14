@@ -2624,9 +2624,11 @@ class JSON_MaterialPropertiesGroup(PropertyGroup):
         description = "Select to override the shader path with a special material type e.g. sky / seamsealer",
         default = "NONE",
         items=[ ('NONE', "None", "None"),
-                ('SKY', "Sky", "Sky"),
-                ('SEAMSEALER', "Seamsealer", "Seamsealer"),
-                ('PORTAL', "Portal", "Portal"),
+                ('PORTAL', "Portal", "Force all faces with this material to be portals"),
+                ('SEAMSEALER', "Seamsealer", "Force all faces with this material to be seamsealer"),
+                ('SKY', "Sky", "Force all faces with this material to be sky"),
+                ('WEATHERPOLY', "Weather Polyhedra", "Force all faces with this material to be weather polyhedra"),
+
                ]
         )
 

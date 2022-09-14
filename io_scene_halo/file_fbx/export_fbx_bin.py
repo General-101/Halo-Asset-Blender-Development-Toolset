@@ -3007,16 +3007,93 @@ def fbx_takes_elements(root, scene_data):
 # ##### "Main" functions. #####
 
 import json
+##############################
+####### STRING TABLE #########
+##############################
+def getStrings():
+    stringsList = {}
+
+    temp = ({'string_table' : stringsList})
+
+    return temp
+
+##############################
+##### NODES PROPERTIES #######
+##############################
+
+def getNodes():
+    nodesList = {}
+
+    halo_node_prefixes = ('#','b_','b ','frame_','frame ') # these prefixes indicate a mesh should not be written to meshes_properties
+
+    for node in bpy.data.objects:
+        if node.name.startswith(halo_node_prefixes):
+            nodesList.update({node.name: {getNodesProperties}})
+
+    temp = ({'nodes_properties': nodesList})
+
+    return temp
+
+def getNodesProperties():
+    node_props = {
+        # OBJECT PROPERTIES
+        "bungie_object_type": "_connected_geometry_object_type_frame"
+
+    }
+
+    return node_props
+
+##############################
+##### MESHES PROPERTIES ######
+##############################
+
+def getMeshes():
+    meshesList = {}
+
+    halo_node_prefixes = ('#','b_','b ','frame_','frame ') # these prefixes indicate a mesh should not be written to meshes_properties
+
+    for mesh in bpy.data.meshes:
+        if (not mesh.name.startswith(halo_node_prefixes)): # if the name of a mesh starts with this, don't process it.
+            meshesList.update({mesh.name: {getMeshProperties}})
+
+    temp = ({'meshes_properties': meshesList})
+
+    return temp
+
+def getMeshProperties():
+    print("here we go")
+
+    mesh_props = {
+        # OBJECT PROPERTIES
+        "bungie_object_type": "_connected_geometry_object_type_mesh",
+        "bungie_region_name": getRegionName,
+        # FACE PROPERTIES
+        "bungie_face_type": getFaceType
+
+    }
+
+    return mesh_props
+
+def getRegionName():
+    return 'region'
+
+def getFaceType():
+    return 'eyo'
+
+##############################
+#### MATERIAL PROPERTIES #####
+##############################
 
 def getMaterials():
     matList = {}
+
+    halo_special_materials = ("+portal","+seamsealer","+sky","+weatherpoly") # some special material names to match legacy
+    halo_valid_shader_types =("shader","shader_cortana","shader_custom","shader_decal","shader_foliage","shader_fur","shader_fur_stencil","shader_glass","shader_halogram","shader_mux","shader_mux_material","shader_screen","shader_skin","shader_terrain","shader_water")
 
     for ob in bpy.data.objects:
         for mat_slot in ob.material_slots:
             halo_material = mat_slot.material.halo_json
             halo_material_name = mat_slot.material.name
-            halo_special_materials = ["+sky", "+seamsealer", "+portal"] # some special material names to match legacy
-            halo_valid_shader_types = ["shader","shader_cortana","shader_custom","shader_decal","shader_foliage","shader_fur","shader_fur_stencil","shader_glass","shader_halogram","shader_mux","shader_mux_material","shader_screen","shader_skin","shader_terrain","shader_water"]
             if halo_material.shader_path != halo_material.shader_path.rpartition('.')[2]: # check to fix issue where partition returns full string if no '.' present
                 shaderType = halo_material.shader_path.rpartition('.')[2]  
                 shaderPath = halo_material.shader_path.rpartition('.')[0]
@@ -3033,24 +3110,28 @@ def getMaterials():
             if (halo_material.material_override != "NONE" or halo_material_name in halo_special_materials):
                 shaderType = "override"
                 match halo_material_name:
-                    case '+sky':
-                        shaderPath = "bungie_face_type=_connected_geometry_face_type_sky"
-                    case '+seamsealer':
-                        shaderPath = "bungie_face_type=_connected_geometry_face_type_seam_sealer"
                     case '+portal':
                         shaderPath = "bungie_mesh_type=_connected_geometry_mesh_type_portal"
-                match halo_material.material_override: # override goes second because it should always override a special name if set
-                    case "SKY":
-                        shaderPath = "bungie_face_type=_connected_geometry_face_type_sky"
-                    case "SEAMSEALER":
+                    case '+seamsealer':
                         shaderPath = "bungie_face_type=_connected_geometry_face_type_seam_sealer"
+                    case '+sky':
+                        shaderPath = "bungie_face_type=_connected_geometry_face_type_sky"
+                    case '+weatherpoly':
+                        shaderPath = "bungie_face_type=_connected_geometry_face_type_weather_polyhedra"
+                match halo_material.material_override: # override goes second because it should always override a special name if set
                     case "PORTAL":
                         shaderPath = "bungie_mesh_type=_connected_geometry_mesh_type_portal"
+                    case "SEAMSEALER":
+                        shaderPath = "bungie_face_type=_connected_geometry_face_type_seam_sealer"
+                    case "SKY":
+                        shaderPath = "bungie_face_type=_connected_geometry_face_type_sky"
+                    case "WEATHERPOLY":
+                        shaderPath = "bungie_face_type=_connected_geometry_face_type_weather_polyhedra"
 
-            matList.update({halo_material_name : {"bungie_shader_path" : shaderPath, "bungie_shader_type" : shaderType}})
+            matList.update({halo_material_name : {"bungie_shader_path": shaderPath, "bungie_shader_type": shaderType}})
             #print('\nShader Path = %r' % mat_slot.material.ass_jms.shader_path)
 
-    temp = ({'material_properties' : matList})
+    temp = ({'material_properties': matList})
 
     return temp
 
@@ -3065,8 +3146,11 @@ def save_json(report, filepath="", export_gr2=False, delete_fbx=False, delete_js
     start_time = time.process_time()
 
     jsonTemp = {}
+    jsonTemp.update(getStrings())
+    jsonTemp.update(getNodes())
+    jsonTemp.update(getMeshes())
     jsonTemp.update(getMaterials())
-
+    
     haloJSON = json.dumps(jsonTemp, indent=4)
 
     pathList = filepath.split(".")
