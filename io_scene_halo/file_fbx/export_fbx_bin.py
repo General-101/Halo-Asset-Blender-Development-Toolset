@@ -3132,76 +3132,67 @@ import ctypes
 from subprocess import Popen
 from pathlib import Path
 
-def save_json(report, filepath="", export_gr2=False, delete_fbx=False, delete_json=False):
+def export_asset(report, filePath="", export_gr2=False, delete_fbx=False, delete_json=False):
+    pathList = filePath.split(".")
+    jsonPath = ""
+    for x in range(len(pathList)-1):
+        jsonPath += pathList[x]
+    jsonPath += ".json"
 
-    start_time = time.process_time()
+    build_json(jsonPath)
+    report({'INFO'},"JSON exported successfully!")
 
+    if export_gr2:
+        gr2Path = ""
+        for x in range(len(pathList)-1):
+            gr2Path += pathList[x]
+            gr2Path += ".gr2"
+
+        toolPath = bpy.context.preferences.addons['io_scene_halo'].preferences.hrek_path
+        toolPath = toolPath.replace('"','')
+        toolPath += "\\tool_fast.exe"
+
+        print('\nTool Path... %r' % toolPath)
+
+        build_gr2(toolPath, filePath, jsonPath, gr2Path)
+        report({'INFO'},"GR2 conversion finished!")
+        
+        if delete_fbx and delete_json:
+            os.remove(filePath)
+            os.remove(jsonPath)
+            report({'INFO'},"Temporary files cleaned up successfully!")
+        elif delete_fbx:
+            os.remove(filePath)
+            report({'INFO'},"FBX file cleaned up successfully!")
+        elif delete_json:
+            os.remove(jsonPath)
+            report({'INFO'},"JSON file cleaned up successfully!")
+    return {'FINISHED'}
+
+def build_json(jsonPath):
     jsonTemp = {}
     jsonTemp.update(getStrings())
     jsonTemp.update(getNodes())
     jsonTemp.update(getMeshes())
     jsonTemp.update(getMaterials())
-    
+
     haloJSON = json.dumps(jsonTemp, indent=4)
 
-    pathList = filepath.split(".")
-    
-    jsonPath = ""
-
-    for x in range(len(pathList)-1):
-        jsonPath += pathList[x]
-    jsonPath += ".json"
-
     jsonFile = open(jsonPath, "w")
-    print('\nJSON export starting... %r' % jsonPath)
     jsonFile.write(haloJSON)
     jsonFile.close()
 
-    print('export finished in %.4f sec.' % (time.process_time() - start_time))
-
-    report({'INFO'},"JSON exported successfully!")
-
-    if export_gr2:
-        try:
-            gr2Path = ""
-            for x in range(len(pathList)-1):
-                gr2Path += pathList[x]
-                gr2Path += ".gr2"
-
-            toolkitPath = bpy.context.preferences.addons['io_scene_halo'].preferences.hrek_path
-            toolkitPath = toolkitPath.replace('"','')
-            print('\nToolkit Path... %r' % toolkitPath)
-
-            tool = 'tool_fast.exe'
-
-            toolPath = toolkitPath + "\\" + tool
-
-            print('\nTool Path... %r' % toolPath)
-            if not os.access(filepath, os.R_OK):
-                ctypes.windll.user32.MessageBoxW(0, "GR2 Not Exported. Output Folder Is Read-Only! Try running Blender as an Administrator.", "ACCESS VIOLATION", 0)
-            else:
-                toolCommand = '"{}" fbx-to-gr2 "{}" "{}" "{}"'.format(toolPath, filepath, jsonPath, gr2Path)
-                print('\nRunning Tool command... %r' % toolCommand)
-                p = Popen(toolCommand)
-                p.wait()
-
-                if delete_fbx and delete_json:
-                    os.remove(filepath)
-                    os.remove(jsonPath)
-                    report({'INFO'},"Temporary files cleaned up successfully!")
-                elif delete_fbx:
-                    os.remove(filepath)
-                    report({'INFO'},"FBX file cleaned up successfully!")
-                elif delete_json:
-                    os.remove(jsonPath)
-                    report({'INFO'},"JSON file cleaned up successfully!")
-
-                report({'INFO'},"GR2 conversion finished!")
-
-        except:
-            ctypes.windll.user32.MessageBoxW(0, "GR2 Not Exported. Please check your HREK editing kit path in add-on preferences and try again.", "Invalid HREK Path", 0)
-        return {'FINISHED'}
-
+def build_gr2(toolPath, filePath, jsonPath, gr2Path):
+    try:            
+        if not os.access(filePath, os.R_OK):
+            ctypes.windll.user32.MessageBoxW(0, "GR2 Not Exported. Output Folder Is Read-Only! Try running Blender as an Administrator.", "ACCESS VIOLATION", 0)
+        else:
+            toolCommand = '"{}" fbx-to-gr2 "{}" "{}" "{}"'.format(toolPath, filePath, jsonPath, gr2Path)
+            print('\nRunning Tool command... %r' % toolCommand)
+            p = Popen(toolCommand)
+            p.wait()
+    except:
+        ctypes.windll.user32.MessageBoxW(0, "GR2 Not Exported. Please check your HREK editing kit path in add-on preferences and try again.", "Invalid HREK Path", 0)
 
 # This func can be called with just the filepath
 def save_single(operator, scene, depsgraph, filepath="",
@@ -3440,7 +3431,7 @@ def save(operator, context, report,
 
         depsgraph = context.evaluated_depsgraph_get()
         ret = save_single(operator, context.scene, depsgraph, filepath, **kwargs_mod)
-        save_json(report, filepath, export_gr2, delete_fbx, delete_json)
+        export_asset(report, filepath, export_gr2, delete_fbx, delete_json)
     else:
         # XXX We need a way to generate a depsgraph for inactive view_layers first...
         # XXX Also, what to do in case of batch-exporting scenes, when there is more than one view layer?
