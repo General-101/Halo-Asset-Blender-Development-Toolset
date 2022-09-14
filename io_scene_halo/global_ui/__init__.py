@@ -107,12 +107,12 @@ class ASS_JMS_MaterialProps(Panel):
             row = layout.row()
             if scene_halo.game_version == 'halo2' or scene_halo.game_version == 'halo3':
                 row.label(text="Name Override:")
-                row.prop(material_ass_jms, "name_override", text='')
+                col.prop(material_ass_jms, "name_override", text='')
 
             if scene_halo.game_version == 'halo2' or scene_halo.game_version == 'halo3':
                 row = layout.row()
                 row.label(text="Material Effect:")
-                row.prop(material_ass_jms, "material_effect", text='')
+                col.prop(material_ass_jms, "material_effect", text='')
 
 class ASS_JMS_MaterialFlagsProps(Panel):
     bl_label = "Flags"
@@ -145,178 +145,178 @@ class ASS_JMS_MaterialFlagsProps(Panel):
             if scene_halo.game_version == 'haloce':
                 row = col.row()
                 row.label(text='Two-sided:')
-                row.prop(material_ass_jms, "two_sided", text='')
+                col.prop(material_ass_jms, "two_sided", text='')
                 row = col.row()
                 row.label(text='Transparent:')
-                row.prop(material_ass_jms, "transparent_1_sided", text='')
+                col.prop(material_ass_jms, "transparent_1_sided", text='')
                 row = col.row()
                 row.label(text='Render Only:')
-                row.prop(material_ass_jms, "render_only", text='')
+                col.prop(material_ass_jms, "render_only", text='')
                 row = col.row()
                 row.label(text='Large Collideable:')
-                row.prop(material_ass_jms, "sphere_collision_only", text='')
+                col.prop(material_ass_jms, "sphere_collision_only", text='')
                 row = col.row()
                 row.label(text='Fog Plane:')
-                row.prop(material_ass_jms, "fog_plane", text='')
+                col.prop(material_ass_jms, "fog_plane", text='')
                 row = col.row()
                 row.label(text='Ladder:')
-                row.prop(material_ass_jms, "ladder", text='')
+                col.prop(material_ass_jms, "ladder", text='')
                 row = col.row()
                 row.label(text='Breakable:')
-                row.prop(material_ass_jms, "breakable", text='')
+                col.prop(material_ass_jms, "breakable", text='')
                 row = col.row()
                 row.label(text='AI Deafening:')
-                row.prop(material_ass_jms, "ai_deafening", text='')
+                col.prop(material_ass_jms, "ai_deafening", text='')
                 row = col.row()
                 row.label(text='Collision Only:')
-                row.prop(material_ass_jms, "collision_only", text='')
+                col.prop(material_ass_jms, "collision_only", text='')
                 row = col.row()
                 row.label(text='Exact Portal:')
-                row.prop(material_ass_jms, "portal_exact", text='')
+                col.prop(material_ass_jms, "portal_exact", text='')
 
             if scene_halo.game_version == 'halo2':
                 row = col.row()
                 row.label(text='Two-sided:')
-                row.prop(material_ass_jms, "two_sided", text='')
+                col.prop(material_ass_jms, "two_sided", text='')
                 row = col.row()
                 row.label(text='One-sided Transparent:')
-                row.prop(material_ass_jms, "transparent_1_sided", text='')
+                col.prop(material_ass_jms, "transparent_1_sided", text='')
                 row = col.row()
                 row.label(text='Two-sided Transparent:')
-                row.prop(material_ass_jms, "transparent_2_sided", text='')
+                col.prop(material_ass_jms, "transparent_2_sided", text='')
                 row = col.row()
                 row.label(text='Render Only:')
-                row.prop(material_ass_jms, "render_only", text='')
+                col.prop(material_ass_jms, "render_only", text='')
                 row = col.row()
                 row.label(text='Collision Only:')
-                row.prop(material_ass_jms, "collision_only", text='')
+                col.prop(material_ass_jms, "collision_only", text='')
                 row = col.row()
                 row.label(text='Sphere Collision Only:')
-                row.prop(material_ass_jms, "sphere_collision_only", text='')
+                col.prop(material_ass_jms, "sphere_collision_only", text='')
                 row = col.row()
                 row.label(text='Fog Plane:')
-                row.prop(material_ass_jms, "fog_plane", text='')
+                col.prop(material_ass_jms, "fog_plane", text='')
                 row = col.row()
                 row.label(text='Ladder:')
-                row.prop(material_ass_jms, "ladder", text='')
+                col.prop(material_ass_jms, "ladder", text='')
                 row = col.row()
                 row.label(text='Breakable:')
-                row.prop(material_ass_jms, "breakable", text='')
+                col.prop(material_ass_jms, "breakable", text='')
                 row = col.row()
                 row.label(text='AI Deafening:')
-                row.prop(material_ass_jms, "ai_deafening", text='')
+                col.prop(material_ass_jms, "ai_deafening", text='')
                 row = col.row()
                 row.label(text='No Shadow:')
-                row.prop(material_ass_jms, "no_shadow", text='')
+                col.prop(material_ass_jms, "no_shadow", text='')
                 row = col.row()
                 row.label(text='Shadow Only:')
-                row.prop(material_ass_jms, "shadow_only", text='')
+                col.prop(material_ass_jms, "shadow_only", text='')
                 col = box.column()
                 row = col.row()
                 row.label(text='Lightmap Only:')
-                row.prop(material_ass_jms, "lightmap_only", text='')
+                col.prop(material_ass_jms, "lightmap_only", text='')
                 row = col.row()
                 row.label(text='Precise:')
-                row.prop(material_ass_jms, "precise", text='')
+                col.prop(material_ass_jms, "precise", text='')
                 row = col.row()
                 row.label(text='Conveyor:')
-                row.prop(material_ass_jms, "conveyor", text='')
+                col.prop(material_ass_jms, "conveyor", text='')
                 row = col.row()
                 row.label(text='Portal (One-Way):')
-                row.prop(material_ass_jms, "portal_1_way", text='')
+                col.prop(material_ass_jms, "portal_1_way", text='')
                 row = col.row()
                 row.label(text='Portal (Door):')
-                row.prop(material_ass_jms, "portal_door", text='')
+                col.prop(material_ass_jms, "portal_door", text='')
                 row = col.row()
                 row.label(text='Portal (Vis Blocker):')
-                row.prop(material_ass_jms, "portal_vis_blocker", text='')
+                col.prop(material_ass_jms, "portal_vis_blocker", text='')
                 row = col.row()
                 row.label(text='Dislikes Photons:')
-                row.prop(material_ass_jms, "dislike_photons", text='')
+                col.prop(material_ass_jms, "dislike_photons", text='')
                 row = col.row()
                 row.label(text='Ignored by Lightmapper:')
-                row.prop(material_ass_jms, "ignored_by_lightmaps", text='')
+                col.prop(material_ass_jms, "ignored_by_lightmaps", text='')
                 row = col.row()
                 row.label(text='Portal (Sound Blocker):')
-                row.prop(material_ass_jms, "blocks_sound", text='')
+                col.prop(material_ass_jms, "blocks_sound", text='')
                 row = col.row()
                 row.label(text='Decal Offset:')
-                row.prop(material_ass_jms, "decal_offset", text='')
+                col.prop(material_ass_jms, "decal_offset", text='')
 
             if scene_halo.game_version == 'halo3':
                 row = col.row()
                 row.label(text='Two-sided:')
-                row.prop(material_ass_jms, "two_sided", text='')
+                col.prop(material_ass_jms, "two_sided", text='')
                 row = col.row()
                 row.label(text='One-sided Transparent:')
-                row.prop(material_ass_jms, "transparent_1_sided", text='')
+                col.prop(material_ass_jms, "transparent_1_sided", text='')
                 row = col.row()
                 row.label(text='Two-sided Transparent:')
-                row.prop(material_ass_jms, "transparent_2_sided", text='')
+                col.prop(material_ass_jms, "transparent_2_sided", text='')
                 row = col.row()
                 row.label(text='Render Only:')
-                row.prop(material_ass_jms, "render_only", text='')
+                col.prop(material_ass_jms, "render_only", text='')
                 row = col.row()
                 row.label(text='Collision Only:')
-                row.prop(material_ass_jms, "collision_only", text='')
+                col.prop(material_ass_jms, "collision_only", text='')
                 row = col.row()
                 row.label(text='Sphere Collision Only:')
-                row.prop(material_ass_jms, "sphere_collision_only", text='')
+                col.prop(material_ass_jms, "sphere_collision_only", text='')
                 row = col.row()
                 row.label(text='Fog Plane:')
-                row.prop(material_ass_jms, "fog_plane", text='')
+                col.prop(material_ass_jms, "fog_plane", text='')
                 row = col.row()
                 row.label(text='Ladder:')
-                row.prop(material_ass_jms, "ladder", text='')
+                col.prop(material_ass_jms, "ladder", text='')
                 row = col.row()
                 row.label(text='Breakable:')
-                row.prop(material_ass_jms, "breakable", text='')
+                col.prop(material_ass_jms, "breakable", text='')
                 row = col.row()
                 row.label(text='AI Deafening:')
-                row.prop(material_ass_jms, "ai_deafening", text='')
+                col.prop(material_ass_jms, "ai_deafening", text='')
                 row = col.row()
                 row.label(text='No Shadow:')
-                row.prop(material_ass_jms, "no_shadow", text='')
+                col.prop(material_ass_jms, "no_shadow", text='')
                 row = col.row()
                 row.label(text='Shadow Only:')
-                row.prop(material_ass_jms, "shadow_only", text='')
+                col.prop(material_ass_jms, "shadow_only", text='')
                 col = box.column()
                 row = col.row()
                 row.label(text='Lightmap Only:')
-                row.prop(material_ass_jms, "lightmap_only", text='')
+                col.prop(material_ass_jms, "lightmap_only", text='')
                 row = col.row()
                 row.label(text='Precise:')
-                row.prop(material_ass_jms, "precise", text='')
+                col.prop(material_ass_jms, "precise", text='')
                 row = col.row()
                 row.label(text='Conveyor:')
-                row.prop(material_ass_jms, "conveyor", text='')
+                col.prop(material_ass_jms, "conveyor", text='')
                 row = col.row()
                 row.label(text='Portal (One-Way):')
-                row.prop(material_ass_jms, "portal_1_way", text='')
+                col.prop(material_ass_jms, "portal_1_way", text='')
                 row = col.row()
                 row.label(text='Portal (Door):')
-                row.prop(material_ass_jms, "portal_door", text='')
+                col.prop(material_ass_jms, "portal_door", text='')
                 row = col.row()
                 row.label(text='Portal (Vis Blocker):')
-                row.prop(material_ass_jms, "portal_vis_blocker", text='')
+                col.prop(material_ass_jms, "portal_vis_blocker", text='')
                 row = col.row()
                 row.label(text='Ignored by Lightmapper:')
-                row.prop(material_ass_jms, "ignored_by_lightmaps", text='')
+                col.prop(material_ass_jms, "ignored_by_lightmaps", text='')
                 row = col.row()
                 row.label(text='Portal (Sound Blocker):')
-                row.prop(material_ass_jms, "blocks_sound", text='')
+                col.prop(material_ass_jms, "blocks_sound", text='')
                 row = col.row()
                 row.label(text='Decal Offset:')
-                row.prop(material_ass_jms, "decal_offset", text='')
+                col.prop(material_ass_jms, "decal_offset", text='')
                 row = col.row()
                 row.label(text='Water Surface:')
-                row.prop(material_ass_jms, "water_surface", text='')
+                col.prop(material_ass_jms, "water_surface", text='')
                 row = col.row()
                 row.label(text='Slip Surface:')
-                row.prop(material_ass_jms, "slip_surface", text='')
+                col.prop(material_ass_jms, "slip_surface", text='')
                 row = col.row()
                 row.label(text='Group Transparents By Plane:')
-                row.prop(material_ass_jms, "group_transparents_by_plane", text='')
+                col.prop(material_ass_jms, "group_transparents_by_plane", text='')
 
 class ASS_JMS_MaterialLightmapProps(Panel):
     bl_label = "Lightmap Resolution Properties"
@@ -346,16 +346,16 @@ class ASS_JMS_MaterialLightmapProps(Panel):
                 col = layout.column(align=True)
                 row = col.row()
                 row.label(text='Lightmap Resolution Scale:')
-                row.prop(material_ass_jms, "lightmap_resolution_scale", text='')
+                col.prop(material_ass_jms, "lightmap_resolution_scale", text='')
                 row = col.row()
                 row.label(text='Lightmap Power Scale:')
-                row.prop(material_ass_jms, "lightmap_power_scale", text='')
+                col.prop(material_ass_jms, "lightmap_power_scale", text='')
                 row = col.row()
                 row.label(text='Lightmap Half-Life Scale:')
-                row.prop(material_ass_jms, "lightmap_half_life", text='')
+                col.prop(material_ass_jms, "lightmap_half_life", text='')
                 row = col.row()
                 row.label(text='Lightmap Diffuse Scale:')
-                row.prop(material_ass_jms, "lightmap_diffuse_scale", text='')
+                col.prop(material_ass_jms, "lightmap_diffuse_scale", text='')
 
             else:
                 col_split = layout.column(align=True).split()
@@ -364,25 +364,25 @@ class ASS_JMS_MaterialLightmapProps(Panel):
                 col_b = layout.column(align=True)
                 row = col_split.row()
                 row.label(text='Override Lightmap Transparency:')
-                row.prop(material_ass_jms, "override_lightmap_transparency", text='')
+                col.prop(material_ass_jms, "override_lightmap_transparency", text='')
                 row = col_split.row()
                 row.label(text='Ignore Default Resolution Scale:')
-                row.prop(material_ass_jms, "ignore_default_res_scale", text='')
+                col.prop(material_ass_jms, "ignore_default_res_scale", text='')
                 row = col.row()
                 row.label(text='Two-sided Transparent Tint:')
-                row.prop(material_ass_jms, "two_sided_transparent_tint", text='')
+                col.prop(material_ass_jms, "two_sided_transparent_tint", text='')
                 row = col.row()
                 row.label(text='Additive Transparency:')
-                row.prop(material_ass_jms, "additive_transparency", text='')
+                col.prop(material_ass_jms, "additive_transparency", text='')
                 row = col_split_b.row()
                 row.label(text='Lightmap Resolution:')
-                row.prop(material_ass_jms, "lightmap_res", text='')
+                col.prop(material_ass_jms, "lightmap_res", text='')
                 row = col_split_b.row()
                 row.label(text='Photon Fidelity:')
-                row.prop(material_ass_jms, "photon_fidelity", text='')
+                col.prop(material_ass_jms, "photon_fidelity", text='')
                 row = col_b.row()
                 row.label(text='Use Shader Gel:')
-                row.prop(material_ass_jms, "use_shader_gel", text='')
+                col.prop(material_ass_jms, "use_shader_gel", text='')
 
 class ASS_JMS_MaterialBasicProps(Panel):
     bl_label = "Lightmap Properties"
@@ -413,23 +413,23 @@ class ASS_JMS_MaterialBasicProps(Panel):
             col = layout.column(align=True)
             row = col.row()
             row.label(text='Power:')
-            row.prop(material_ass_jms, "power", text='')
+            col.prop(material_ass_jms, "power", text='')
             row = col.row()
             row.enabled = is_enabled
             row.label(text='Color:')
-            row.prop(material_ass_jms, "color", text='')
+            col.prop(material_ass_jms, "color", text='')
             row = col.row()
             row.enabled = is_enabled
             row.label(text='Quality:')
-            row.prop(material_ass_jms, "quality", text='')
+            col.prop(material_ass_jms, "quality", text='')
             row = col.row()
             row.enabled = is_enabled
             row.label(text='Power Per Unit Area:')
-            row.prop(material_ass_jms, "power_per_unit_area", text='')
+            col.prop(material_ass_jms, "power_per_unit_area", text='')
             row = col.row()
             row.enabled = is_enabled
             row.label(text='Emissive Focus:')
-            row.prop(material_ass_jms, "emissive_focus", text='')
+            col.prop(material_ass_jms, "emissive_focus", text='')
 
 class ASS_JMS_MaterialAttenuationProps(Panel):
     bl_label = "Attenuation"
@@ -460,10 +460,10 @@ class ASS_JMS_MaterialAttenuationProps(Panel):
             col = layout.column(align=True)
             row = col.row()
             row.label(text='Falloff Distance:')
-            row.prop(material_ass_jms, "falloff_distance", text='')
+            col.prop(material_ass_jms, "falloff_distance", text='')
             row = col.row()
             row.label(text='Cutoff Distance:')
-            row.prop(material_ass_jms, "cutoff_distance", text='')
+            col.prop(material_ass_jms, "cutoff_distance", text='')
 
 class ASS_JMS_MaterialFrustumProps(Panel):
     bl_label = "Frustum"
@@ -486,13 +486,13 @@ class ASS_JMS_MaterialFrustumProps(Panel):
             col = layout.column(align=True)
             row = col.row()
             row.label(text='Blend:')
-            row.prop(material_ass_jms, "frustum_blend", text='')
+            col.prop(material_ass_jms, "frustum_blend", text='')
             row = col.row()
             row.label(text='Falloff:')
-            row.prop(material_ass_jms, "frustum_falloff", text='')
+            col.prop(material_ass_jms, "frustum_falloff", text='')
             row = col.row()
             row.label(text='Cutoff:')
-            row.prop(material_ass_jms, "frustum_cutoff", text='')
+            col.prop(material_ass_jms, "frustum_cutoff", text='')
 
 class ASS_JMS_MaterialPropertiesGroup(PropertyGroup):
     name_override: StringProperty(
@@ -891,16 +891,16 @@ class ASS_JMS_MeshProps(Panel):
         col = layout.column(align=True)
         row = col.row()
         row.label(text='Bounding Radius:')
-        row.prop(mesh_ass_jms, "bounding_radius", text='')
+        col.prop(mesh_ass_jms, "bounding_radius", text='')
         row = col.row()
         row.label(text='Object Type:')
-        row.prop(mesh_ass_jms, "Object_Type", text='')
+        col.prop(mesh_ass_jms, "Object_Type", text='')
         row = col.row()
         row.operator(Halo_XREFPath.bl_idname, text="XREF Path")
-        row.prop(mesh_ass_jms, "XREF_path", text='')
+        col.prop(mesh_ass_jms, "XREF_path", text='')
         row = col.row()
         row.label(text='XREF Name:')
-        row.prop(mesh_ass_jms, "XREF_name", text='')
+        col.prop(mesh_ass_jms, "XREF_name", text='')
 
 class ASS_JMS_MeshPropertiesGroup(PropertyGroup):
     bounding_radius: BoolProperty(
@@ -958,10 +958,10 @@ class Halo_GlobalSettings(Panel):
         col = layout.column(align=True)
         row = col.row()
         row.label(text='Scene Version:')
-        row.prop(scene_halo, "game_version", text='')
+        col.prop(scene_halo, "game_version", text='')
         row = col.row()
         row.label(text='Expert Mode:')
-        row.prop(scene_halo, "expert_mode", text='')
+        col.prop(scene_halo, "expert_mode", text='')
 
 class Halo_ScenePropertiesGroup(PropertyGroup):
     game_version: EnumProperty(
@@ -1085,10 +1085,10 @@ class ASS_LightProps(Panel):
 
         row = layout.row()
         row.label(text='Light Cone Shape:')
-        row.prop(light_ass, "light_cone_shape", text='')
+        col.prop(light_ass, "light_cone_shape", text='')
         row = layout.row()
         row.label(text='Aspect Ratio:')
-        row.prop(light_ass, "aspect_ratio", text='')
+        col.prop(light_ass, "aspect_ratio", text='')
 
 class ASS_LightSpot(Panel):
     bl_label = "Spot Shape"
@@ -1107,10 +1107,10 @@ class ASS_LightSpot(Panel):
 
         row = layout.row()
         row.label(text='Size:')
-        row.prop(light_ass, "spot_size", text='')
+        col.prop(light_ass, "spot_size", text='')
         row = layout.row()
         row.label(text='Blend:')
-        row.prop(light_ass, "spot_blend", text='', slider=True)
+        col.prop(light_ass, "spot_blend", text='', slider=True)
 
 class ASS_LightNearAtten(Panel):
     bl_label = "Near Attenuation"
@@ -1138,10 +1138,10 @@ class ASS_LightNearAtten(Panel):
 
         row = layout.row()
         row.label(text='Start:')
-        row.prop(light_ass, "near_atten_start", text='')
+        col.prop(light_ass, "near_atten_start", text='')
         row = layout.row()
         row.label(text='End:')
-        row.prop(light_ass, "near_atten_end", text='')
+        col.prop(light_ass, "near_atten_end", text='')
 
 class ASS_LightFarAtten(Panel):
     bl_label = "Far Attenuation"
@@ -1169,10 +1169,10 @@ class ASS_LightFarAtten(Panel):
 
         row = layout.row()
         row.label(text='Start:')
-        row.prop(light_ass, "far_atten_start", text='')
+        col.prop(light_ass, "far_atten_start", text='')
         row = layout.row()
         row.label(text='End:')
-        row.prop(light_ass, "far_atten_end", text='')
+        col.prop(light_ass, "far_atten_end", text='')
 ###################
 # JSON PROPERTIES
 ###################
@@ -1192,17 +1192,15 @@ class JSON_ObjectProps(Panel):
 
         if scene_halo.game_version == 'reach':
             return (context.mesh or context.object.type == 'EMPTY')
-
+    
     def draw(self, context):
         layout = self.layout
-
+        layout.use_property_split = True
         ob = context.object
         ob_halo_json = ob.halo_json
 
         col = layout.column(align=True)
-        row = col.row()
-        row.label(text='Region')
-        row.prop(ob_halo_json, "region_name", text='')
+        col.prop(ob_halo_json, "region_name", text='Region')
 
 #MESH PROPERTIES
 class JSON_ObjectMeshProps(Panel):
@@ -1219,23 +1217,64 @@ class JSON_ObjectMeshProps(Panel):
 
     def draw(self, context):
         layout = self.layout
+        layout.use_property_split = True
+        flow = layout.grid_flow(row_major=True, columns=0, even_columns=True, even_rows=False, align=False)
 
         ob = context.object
         ob_halo_json = ob.halo_json
 
-        col = layout.column(align=True)
-        row = col.row()
-        row.label(text='Mesh Type Override')
-        row.prop(ob_halo_json, "ObjectMesh_Type", text='')
-        row = col.row()
-        row.label(text='Mesh Primitive Type')
-        row.prop(ob_halo_json, "Mesh_Primitive_Type", text='')
-        row = col.row()
-        row.label(text='Mesh Tesselation Density')
-        row.prop(ob_halo_json, "Mesh_Tesselation_Density", text='')
-        row = col.row()
-        row.label(text='Mesh Compression')
-        row.prop(ob_halo_json, "Mesh_Compression", text='')
+        col = flow.column()
+        col.prop(ob_halo_json, "ObjectMesh_Type", text='Mesh Type')
+        special_mesh_types = ('BOUNDARY SURFACE','DECORATOR','INSTANCED GEOMETRY','PLANAR FOG VOLUME','PORTAL','SEAM','WATER PHYSICS VOLUME',)
+
+        if ob_halo_json.ObjectMesh_Type in special_mesh_types:
+            match ob_halo_json.ObjectMesh_Type:
+                case 'BOUNDARY SURFACE':
+                    col.prop(ob_halo_json, "Boundary_Surface_Name", text='Boundary Surface Name')
+                    col.prop(ob_halo_json, "Boundary_Surface_Type", text='Boundary Surface Type')
+                case 'DECORATOR':
+                    col.prop(ob_halo_json, "Decorator_Name", text='Decorator Name')
+                    col.prop(ob_halo_json, "Decorator_LOD", text='Decorator Level of Detail')
+                case 'INSTANCED GEOMETRY':
+                    col.prop(ob_halo_json, "Poop_Lighting_Override", text='Instanced Geo Lighting')
+                    col.prop(ob_halo_json, "Poop_Pathfinding_Override", text='Instanced Geo Pathfinding')
+                    col.prop(ob_halo_json, "Poop_Imposter_Policy", text='Imposter Policy')
+                    col.prop(ob_halo_json, "Poop_Imposter_Transition_Distance", text='Imposter Transition Distance')
+                    col.prop(ob_halo_json, "Poop_Imposter_Fade_Range_Start", text='Fade In Range Start')
+                    col.prop(ob_halo_json, "Poop_Imposter_Fade_Range_End", text='Fade In Range End')
+                    col.prop(ob_halo_json, "Poop_Decomposition_Hulls", text='Decomposition Hulls')
+                    col.prop(ob_halo_json, "Poop_Predominant_Shader_Name", text='Predominant Shader Name')
+                    col.separator()
+
+                    col = layout.column(heading="Flags")
+                    sub = col.column(align=True)
+                    sub.prop(ob_halo_json, "Poop_Render_Only", text='Render Only')
+                    sub.prop(ob_halo_json, "Poop_Chops_Portals", text='Chops Portals')
+                    sub.prop(ob_halo_json, "Poop_Does_Not_Block_AOE", text='Does Not Block AOE')
+                    sub.prop(ob_halo_json, "Poop_Excluded_From_Lightprobe", text='Excluded From Lightprobe')
+                    sub.prop(ob_halo_json, "Poop_Decal_Spacing", text='Decal Spacing')
+                    sub.prop(ob_halo_json, "Poop_Precise_Geometry", text='Precise Geometry')
+                    
+            col.separator()
+
+        # PRIM PROPS
+        col.prop(ob_halo_json, "Mesh_Primitive_Type", text='Primitive Type')
+        if ob_halo_json.Mesh_Primitive_Type != 'NONE':
+            sub = col.column(align=True)
+            match ob_halo_json.Mesh_Primitive_Type:
+                case 'BOX':
+                    sub.prop(ob_halo_json, "Box_Length", text='Length')
+                    sub.prop(ob_halo_json, "Box_Width", text='Width')
+                    sub.prop(ob_halo_json, "Box_Height", text='Height')
+                case 'PILL':
+                    sub.prop(ob_halo_json, "Pill_Radius", text='Radius')
+                    sub.prop(ob_halo_json, "Pill_Height", text='Height')
+                case 'SPHERE':
+                    sub.prop(ob_halo_json, "Sphere_Radius", text='Radius')
+            col.separator()
+
+        col.prop(ob_halo_json, "Mesh_Tesselation_Density", text='Tesselation Density')
+        col.prop(ob_halo_json, "Mesh_Compression", text='Compression')
 
 class JSON_ObjectMeshFaceProps(Panel):
     bl_label = "Face Properties"
@@ -1243,209 +1282,42 @@ class JSON_ObjectMeshFaceProps(Panel):
     bl_space_type = "PROPERTIES"
     bl_region_type = "WINDOW"
     bl_context = "data"
-    bl_options = {"DEFAULT_CLOSED"}
     bl_parent_id = "JSON_PT_MeshDetailsPanel"
 
     def draw(self, context):
         layout = self.layout
+        layout.use_property_split = True
+        flow = layout.grid_flow(row_major=True, columns=0, even_columns=True, even_rows=False, align=False)
 
         ob = context.object
         ob_halo_json = ob.halo_json
 
-        col = layout.column(align=True)
-        row = col.row()
-        row.label(text='Face Type')
-        row.prop(ob_halo_json, "Face_Type", text='')
-        row = col.row()
-        row.label(text='Face Mode')
-        row.prop(ob_halo_json, "Face_Mode", text='')
-        row = col.row()
-        row.label(text='Face Sides')
-        row.prop(ob_halo_json, "Face_Sides", text='')
-        row = col.row()
-        row.label(text='Face Draw Distance')
-        row.prop(ob_halo_json, "Face_Draw_Distance", text='')
-        row = col.row()
-        row.label(text='Face Global Material')
-        row.prop(ob_halo_json, "Face_Global_Material", text='')
-        row = col.row()
-        row.label(text='Sky Permutation Index')
-        row.prop(ob_halo_json, "Sky_Permutation_Index", text='')
+        col = flow.column()
+        col.prop(ob_halo_json, "Face_Type", text='Face Type')
+        if ob_halo_json.Face_Type == 'SKY':
+            sub = col.column(align=True)
+            sub.prop(ob_halo_json, "Sky_Permutation_Index", text='Sky Permutation Index')
+            col.separator()
 
-class JSON_ObjectMeshFaceFlagsProps(Panel):
-    bl_label = "Flags"
-    bl_idname = "JSON_PT_MeshFaceFlagsPanel"
-    bl_space_type = "PROPERTIES"
-    bl_region_type = "WINDOW"
-    bl_context = "data"
-    bl_options = {"DEFAULT_CLOSED"}
-    bl_parent_id = "JSON_PT_MeshFaceDetailsPanel"
+        col.prop(ob_halo_json, "Face_Mode", text='Face Mode')
+        col.prop(ob_halo_json, "Face_Sides", text='Face Sides')
+        col.prop(ob_halo_json, "Face_Draw_Distance", text='Draw Distance')
 
-    def draw(self, context):
-        layout = self.layout
+        col.separator()
 
-        ob = context.object
-        ob_halo_json = ob.halo_json
+        col.prop(ob_halo_json, "Face_Global_Material", text='Global Material')
 
-        col = layout.column(align=True)
-        row = col.row()
-        row.label(text='Conveyor')
-        row.prop(ob_halo_json, "Conveyor", text='')
-        row = col.row()
-        row.label(text='Ladder')
-        row.prop(ob_halo_json, "Ladder", text='')
-        row = col.row()
-        row.label(text='Slip Surface')
-        row.prop(ob_halo_json, "Slip_Surface", text='')
-        row = col.row()
-        row.label(text='Decal Offset')
-        row.prop(ob_halo_json, "Decal_Offset", text='')
-        row = col.row()
-        row.label(text='Group Transparents By Plane')
-        row.prop(ob_halo_json, "Group_Transparents_By_Plane", text='')
-        row = col.row()
-        row.label(text='No Shadow')
-        row.prop(ob_halo_json, "No_Shadow", text='')
-        row = col.row()
-        row.label(text='Precise Position')
-        row.prop(ob_halo_json, "Precise_Position", text='')
+        col.separator()
 
-class JSON_ObjectMeshPrimitiveProps(Panel):
-    bl_label = "Primitive Properties"
-    bl_idname = "JSON_PT_MeshPrimitiveDetailsPanel"
-    bl_space_type = "PROPERTIES"
-    bl_region_type = "WINDOW"
-    bl_context = "data"
-    bl_options = {"DEFAULT_CLOSED"}
-    bl_parent_id = "JSON_PT_MeshDetailsPanel"
-
-    def draw(self, context):
-        layout = self.layout
-
-        ob = context.object
-        ob_halo_json = ob.halo_json
-
-        col = layout.column(align=True)
-        col.label(text='Box Length/Width/Height')
-        row = col.row()
-        row.prop(ob_halo_json, "Box_Length", text='')
-        row.prop(ob_halo_json, "Box_Width", text='')
-        row.prop(ob_halo_json, "Box_Height", text='')
-        col.label(text='Pill Radius/Height')
-        row = col.row()
-        row.prop(ob_halo_json, "Pill_Radius", text='')
-        row.prop(ob_halo_json, "Pill_Height", text='')
-        col.label(text='Sphere Radius')
-        row = col.row()
-        row.prop(ob_halo_json, "Sphere_Radius", text='')
-
-class JSON_ObjectMeshBoundaryProps(Panel):
-    bl_label = "Boundary Surface Properties"
-    bl_idname = "JSON_PT_MeshBoundaryDetailsPanel"
-    bl_space_type = "PROPERTIES"
-    bl_region_type = "WINDOW"
-    bl_context = "data"
-    bl_options = {"DEFAULT_CLOSED"}
-    bl_parent_id = "JSON_PT_MeshDetailsPanel"
-
-    def draw(self, context):
-        layout = self.layout
-
-        ob = context.object
-        ob_halo_json = ob.halo_json
-
-        if not ob_halo_json.ObjectMesh_Type == 'BOUNDARY SURFACE':
-            layout.enabled = False
-
-        col = layout.column(align=True)
-        row = col.row()
-        row.label(text='Boundary Surface Name')
-        row.prop(ob_halo_json, "Boundary_Surface_Name", text='')
-        row = col.row()
-        row.label(text='Boundary Surface Type')
-        row.prop(ob_halo_json, "Boundary_Surface_Type", text='')
-
-class JSON_ObjectMeshPoopsProps(Panel):
-    bl_label = "Instanced Geometry Properties"
-    bl_idname = "JSON_PT_MeshPoopsDetailsPanel"
-    bl_space_type = "PROPERTIES"
-    bl_region_type = "WINDOW"
-    bl_context = "data"
-    bl_options = {"DEFAULT_CLOSED"}
-    bl_parent_id = "JSON_PT_MeshDetailsPanel"
-
-    def draw(self, context):
-        layout = self.layout
-
-        ob = context.object
-        ob_halo_json = ob.halo_json
-
-        if not (ob_halo_json.ObjectMesh_Type == 'NONE' or ob_halo_json.ObjectMesh_Type == 'INSTANCED GEOMETRY'):
-            layout.enabled = False
-
-        col = layout.column(align=True)
-        row = col.row()
-        row.label(text='Lighting Override')
-        row.prop(ob_halo_json, "Poop_Lighting_Override", text='')
-        row = col.row()
-        row.label(text='Pathfinding Override')
-        row.prop(ob_halo_json, "Poop_Pathfinding_Override", text='')
-        row = col.row()
-        row.label(text='Imposter Policy')
-        row.prop(ob_halo_json, "Poop_Imposter_Policy", text='')
-        row = col.row()
-        row.label(text='Imposter Transition Distance')
-        row.prop(ob_halo_json, "Poop_Imposter_Transition_Distance", text='')
-        row = col.row()
-        row.label(text='Fade Range Start')
-        row.prop(ob_halo_json, "Poop_Imposter_Fade_Range_Start", text='')
-        row = col.row()
-        row.label(text='Fade Range End')
-        row.prop(ob_halo_json, "Poop_Imposter_Fade_Range_End", text='')
-        row = col.row()
-        row.label(text='Decomposition Hulls')
-        row.prop(ob_halo_json, "Poop_Decomposition_Hulls", text='')
-        row = col.row()
-        row.label(text='Predominant Shader Name')
-        row.prop(ob_halo_json, "Poop_Predominant_Shader_Name", text='')
-
-class JSON_ObjectMeshPoopsFlagsProps(Panel):
-    bl_label = "Flags"
-    bl_idname = "JSON_PT_MeshPoopsFlagsPanel"
-    bl_space_type = "PROPERTIES"
-    bl_region_type = "WINDOW"
-    bl_context = "data"
-    bl_options = {"DEFAULT_CLOSED"}
-    bl_parent_id = "JSON_PT_MeshPoopsDetailsPanel"
-
-    def draw(self, context):
-        layout = self.layout
-
-        ob = context.object
-        ob_halo_json = ob.halo_json
-
-        if not (ob_halo_json.ObjectMesh_Type == 'NONE' or ob_halo_json.ObjectMesh_Type == 'INSTANCED GEOMETRY'):
-            layout.enabled = False
-
-        col = layout.column(align=True)
-        row = col.row()
-        row.label(text='Render Only')
-        row.prop(ob_halo_json, "Poop_Render_Only", text='')
-        row = col.row()
-        row.label(text='Chops Portals')
-        row.prop(ob_halo_json, "Poop_Chops_Portals", text='')
-        row = col.row()
-        row.label(text='Does Not Block AOE')
-        row.prop(ob_halo_json, "Poop_Does_Not_Block_AOE", text='')
-        row = col.row()
-        row.label(text='Excluded From Lightprobe')
-        row.prop(ob_halo_json, "Poop_Excluded_From_Lightprobe", text='')
-        row = col.row()
-        row.label(text='Decal Spacing')
-        row.prop(ob_halo_json, "Poop_Decal_Spacing", text='')
-        row = col.row()
-        row.label(text='Precise Geometry')
-        row.prop(ob_halo_json, "Poop_Precise_Geometry", text='')
+        col = layout.column(heading="Flags")
+        sub = col.column(align=True)
+        sub.prop(ob_halo_json, "Conveyor", text='Conveyor')
+        sub.prop(ob_halo_json, "Ladder", text='Ladder')
+        sub.prop(ob_halo_json, "Slip_Surface", text='Slip Surface')
+        sub.prop(ob_halo_json, "Decal_Offset", text='Decal Offset')
+        sub.prop(ob_halo_json, "Group_Transparents_By_Plane", text='Group Transparents By Plane')
+        sub.prop(ob_halo_json, "No_Shadow", text='No Shadow')
+        sub.prop(ob_halo_json, "Precise_Position", text='Precise Position')
 
 class JSON_ObjectMeshPortalProps(Panel):
     bl_label = "Portal Properties"
@@ -1468,39 +1340,16 @@ class JSON_ObjectMeshPortalProps(Panel):
         col = layout.column(align=True)
         row = col.row()
         row.label(text='Portal Type')
-        row.prop(ob_halo_json, "Portal_Type", text='')
+        col.prop(ob_halo_json, "Portal_Type", text='')
         row = col.row()
         row.label(text='AI Deafening')
-        row.prop(ob_halo_json, "Portal_AI_Deafening", text='')
+        col.prop(ob_halo_json, "Portal_AI_Deafening", text='')
         row = col.row()
         row.label(text='Blocks Sounds')
-        row.prop(ob_halo_json, "Portal_Blocks_Sounds", text='')
+        col.prop(ob_halo_json, "Portal_Blocks_Sounds", text='')
         row = col.row()
         row.label(text='Is Door')
-        row.prop(ob_halo_json, "Portal_Is_Door", text='')
-
-class JSON_ObjectMeshDecoratorProps(Panel):
-    bl_label = "Decorator Properties"
-    bl_idname = "JSON_PT_MeshDecoratorDetailsPanel"
-    bl_space_type = "PROPERTIES"
-    bl_region_type = "WINDOW"
-    bl_context = "data"
-    bl_options = {"DEFAULT_CLOSED"}
-    bl_parent_id = "JSON_PT_MeshDetailsPanel"
-
-    def draw(self, context):
-        layout = self.layout
-
-        ob = context.object
-        ob_halo_json = ob.halo_json
-
-        col = layout.column(align=True)
-        row = col.row()
-        row.label(text='Decorator Name')
-        row.prop(ob_halo_json, "Decorator_Name", text='')
-        row = col.row()
-        row.label(text='Decorator Level of Detail')
-        row.prop(ob_halo_json, "Decorator_LOD", text='')
+        col.prop(ob_halo_json, "Portal_Is_Door", text='')
 
 class JSON_ObjectMeshSeamProps(Panel):
     bl_label = "Seam Properties"
@@ -1523,7 +1372,7 @@ class JSON_ObjectMeshSeamProps(Panel):
         col = layout.column(align=True)
         row = col.row()
         row.label(text='Seam BSP Name')
-        row.prop(ob_halo_json, "Seam_Name", text='')
+        col.prop(ob_halo_json, "Seam_Name", text='')
 
 class JSON_ObjectMeshWaterVolumeProps(Panel):
     bl_label = "Water Physics Volume Properties"
@@ -1546,19 +1395,19 @@ class JSON_ObjectMeshWaterVolumeProps(Panel):
         col = layout.column(align=True)
         row = col.row()
         row.label(text='Water Volume Depth')
-        row.prop(ob_halo_json, "Water_Volume_Depth", text='')
+        col.prop(ob_halo_json, "Water_Volume_Depth", text='')
         row = col.row()
         row.label(text='Water Volume Flow Direction')
-        row.prop(ob_halo_json, "Water_Volume_Flow_Direction", text='')
+        col.prop(ob_halo_json, "Water_Volume_Flow_Direction", text='')
         row = col.row()
         row.label(text='Water Volume Flow Velocity')
-        row.prop(ob_halo_json, "Water_Volume_Flow_Velocity", text='')
+        col.prop(ob_halo_json, "Water_Volume_Flow_Velocity", text='')
         row = col.row()
         row.label(text='Water Volume Fog Color')
-        row.prop(ob_halo_json, "Water_Volume_Fog_Color", text='')
+        col.prop(ob_halo_json, "Water_Volume_Fog_Color", text='')
         row = col.row()
         row.label(text='Water Volume Fog Murkiness')
-        row.prop(ob_halo_json, "Water_Volume_Fog_Murkiness", text='')
+        col.prop(ob_halo_json, "Water_Volume_Fog_Murkiness", text='')
 
 class JSON_ObjectMeshFogVolumeProps(Panel):
     bl_label = "Planar Fog Volume Properties"
@@ -1581,13 +1430,13 @@ class JSON_ObjectMeshFogVolumeProps(Panel):
         col = layout.column(align=True)
         row = col.row()
         row.label(text='Fog Name')
-        row.prop(ob_halo_json, "Fog_Name", text='')
+        col.prop(ob_halo_json, "Fog_Name", text='')
         row = col.row()
         row.label(text='Fog Appearance Tag')
-        row.prop(ob_halo_json, "Fog_Appearance_Tag", text='')
+        col.prop(ob_halo_json, "Fog_Appearance_Tag", text='')
         row = col.row()
         row.label(text='Fog Volume Depth')
-        row.prop(ob_halo_json, "Fog_Volume_Depth", text='')
+        col.prop(ob_halo_json, "Fog_Volume_Depth", text='')
 
 class JSON_ObjectMeshLightmapProps(Panel):
     bl_label = "Lightmap Properties"
@@ -1607,33 +1456,33 @@ class JSON_ObjectMeshLightmapProps(Panel):
         col = layout.column(align=True)
         row = col.row()
         row.label(text='Additive Transparency')
-        row.prop(ob_halo_json, "Lightmap_Additive_Transparency", text='')
+        col.prop(ob_halo_json, "Lightmap_Additive_Transparency", text='')
         row = col.row()
         row.label(text='Resolution Scale Override')
-        row.prop(ob_halo_json, "Lightmap_Ignore_Default_Resolution_Scale", text='')
+        col.prop(ob_halo_json, "Lightmap_Ignore_Default_Resolution_Scale", text='')
         row.label(text='Resolution Scale')
-        row.prop(ob_halo_json, "Lightmap_Resolution_Scale", text='')
+        col.prop(ob_halo_json, "Lightmap_Resolution_Scale", text='')
         row = col.row()
         row.label(text='Chart Group')
-        row.prop(ob_halo_json, "Lightmap_Chart_Group", text='')
+        col.prop(ob_halo_json, "Lightmap_Chart_Group", text='')
         row = col.row()
         row.label(text='Lightmap Type')
-        row.prop(ob_halo_json, "Lightmap_Type", text='')
+        col.prop(ob_halo_json, "Lightmap_Type", text='')
         row = col.row()
         row.label(text='Transparency Override')
-        row.prop(ob_halo_json, "Lightmap_Transparency_Override", text='')
+        col.prop(ob_halo_json, "Lightmap_Transparency_Override", text='')
         row = col.row()
         row.label(text='Analytical Bounce Modifier')
-        row.prop(ob_halo_json, "Lightmap_Analytical_Bounce_Modifier", text='')
+        col.prop(ob_halo_json, "Lightmap_Analytical_Bounce_Modifier", text='')
         row = col.row()
         row.label(text='General Bounce Modifier')
-        row.prop(ob_halo_json, "Lightmap_General_Bounce_Modifier", text='')
+        col.prop(ob_halo_json, "Lightmap_General_Bounce_Modifier", text='')
         row = col.row()
         row.label(text='Translucency Tint Color')
-        row.prop(ob_halo_json, "Lightmap_Translucency_Tint_Color", text='')
+        col.prop(ob_halo_json, "Lightmap_Translucency_Tint_Color", text='')
         row = col.row()
         row.label(text='Lighting From Both Sides')
-        row.prop(ob_halo_json, "Lightmap_Lighting_From_Both_Sides", text='')
+        col.prop(ob_halo_json, "Lightmap_Lighting_From_Both_Sides", text='')
 
 class JSON_ObjectMeshMaterialLightingProps(Panel):
     bl_label = "Material Lighting Properties"
@@ -1653,31 +1502,31 @@ class JSON_ObjectMeshMaterialLightingProps(Panel):
         col = layout.column(align=True)
         row = col.row()
         row.label(text='Attenuation Cutoff')
-        row.prop(ob_halo_json, "Material_Lighting_Attenuation_Cutoff", text='')
+        col.prop(ob_halo_json, "Material_Lighting_Attenuation_Cutoff", text='')
         row = col.row()
         row.label(text='Attenuation Falloff')
-        row.prop(ob_halo_json, "Material_Lighting_Attenuation_Falloff", text='')
+        col.prop(ob_halo_json, "Material_Lighting_Attenuation_Falloff", text='')
         row = col.row()
         row.label(text='Emissive Focus')
-        row.prop(ob_halo_json, "Material_Lighting_Emissive_Focus", text='')
+        col.prop(ob_halo_json, "Material_Lighting_Emissive_Focus", text='')
         row = col.row()
         row.label(text='Emissive Color')
-        row.prop(ob_halo_json, "Material_Lighting_Emissive_Color", text='')
+        col.prop(ob_halo_json, "Material_Lighting_Emissive_Color", text='')
         row = col.row()
         row.label(text='Emissive Per Unit')
-        row.prop(ob_halo_json, "Material_Lighting_Emissive_Per_Unit", text='')
+        col.prop(ob_halo_json, "Material_Lighting_Emissive_Per_Unit", text='')
         row = col.row()
         row.label(text='Emissive Power')
-        row.prop(ob_halo_json, "Material_Lighting_Emissive_Power", text='')
+        col.prop(ob_halo_json, "Material_Lighting_Emissive_Power", text='')
         row = col.row()
         row.label(text='Emissive Quality')
-        row.prop(ob_halo_json, "Material_Lighting_Emissive_Quality", text='')
+        col.prop(ob_halo_json, "Material_Lighting_Emissive_Quality", text='')
         row = col.row()
         row.label(text='Use Shader Gel')
-        row.prop(ob_halo_json, "Material_Lighting_Use_Shader_Gel", text='')
+        col.prop(ob_halo_json, "Material_Lighting_Use_Shader_Gel", text='')
         row = col.row()
         row.label(text='Bounce Ratio')
-        row.prop(ob_halo_json, "Material_Lighting_Bounce_Ratio", text='')
+        col.prop(ob_halo_json, "Material_Lighting_Bounce_Ratio", text='')
 
 # MARKER PROPERTIES
 class JSON_ObjectMarkerProps(Panel):
@@ -1702,13 +1551,13 @@ class JSON_ObjectMarkerProps(Panel):
         col = layout.column(align=True)
         row = col.row()
         row.label(text='Marker Type')
-        row.prop(ob_halo_json, "ObjectMarker_Type", text='')
+        col.prop(ob_halo_json, "ObjectMarker_Type", text='')
         row = col.row()
         row.label(text='Marker Group')
-        row.prop(ob_halo_json, "Marker_Group_Name", text='')
+        col.prop(ob_halo_json, "Marker_Group_Name", text='')
         row = col.row()
         row.label(text='Marker Velocity')
-        row.prop(ob_halo_json, "Marker_Velocity", text='')
+        col.prop(ob_halo_json, "Marker_Velocity", text='')
 
 class JSON_ObjectMarkerInstanceProps(Panel):
     bl_label = "Marker Instance Properties"
@@ -1731,10 +1580,10 @@ class JSON_ObjectMarkerInstanceProps(Panel):
         col = layout.column(align=True)
         row = col.row()
         row.label(text='Marker Game Instance Tag')
-        row.prop(ob_halo_json, "Marker_Game_Instance_Tag_Name", text='')
+        col.prop(ob_halo_json, "Marker_Game_Instance_Tag_Name", text='')
         row = col.row()
         row.label(text='Marker Game Instance Tag Variant')
-        row.prop(ob_halo_json, "Marker_Game_Instance_Tag_Variant_Name", text='')
+        col.prop(ob_halo_json, "Marker_Game_Instance_Tag_Variant_Name", text='')
 
 class JSON_ObjectMarkerPathfindingProps(Panel):
     bl_label = "Marker Pathfinding Properties"
@@ -1757,13 +1606,13 @@ class JSON_ObjectMarkerPathfindingProps(Panel):
         col = layout.column(align=True)
         row = col.row()
         row.label(text='Vehicle Only Pathfinding Sphere')
-        row.prop(ob_halo_json, "Marker_Pathfinding_Sphere_Vehicle", text='')
+        col.prop(ob_halo_json, "Marker_Pathfinding_Sphere_Vehicle", text='')
         row = col.row()
         row.label(text='Pathfinding Sphere Remains When Open')
-        row.prop(ob_halo_json, "Pathfinding_Sphere_Remains_When_Open", text='')
+        col.prop(ob_halo_json, "Pathfinding_Sphere_Remains_When_Open", text='')
         row = col.row()
         row.label(text='Pathfinding Sphere With Sectors')
-        row.prop(ob_halo_json, "Pathfinding_Sphere_With_Sectors", text='')
+        col.prop(ob_halo_json, "Pathfinding_Sphere_With_Sectors", text='')
 
 class JSON_ObjectMarkerPhysicsProps(Panel):
     bl_label = "Marker Physics Constraints Properties"
@@ -1786,13 +1635,13 @@ class JSON_ObjectMarkerPhysicsProps(Panel):
         col = layout.column(align=True)
         row = col.row()
         row.label(text='Physics Constraint Parent')
-        row.prop(ob_halo_json, "Physics_Constraint_Parent", text='')
+        col.prop(ob_halo_json, "Physics_Constraint_Parent", text='')
         row = col.row()
         row.label(text='Physics Constraint Child')
-        row.prop(ob_halo_json, "Physics_Constraint_Child", text='')
+        col.prop(ob_halo_json, "Physics_Constraint_Child", text='')
         row = col.row()
         row.label(text='Physics Constraint Uses Limits')
-        row.prop(ob_halo_json, "Physics_Constraint_Uses_Limits", text='')
+        col.prop(ob_halo_json, "Physics_Constraint_Uses_Limits", text='')
 
 class JSON_ObjectMarkerPhysicsHingeProps(Panel):
     bl_label = "Hinge Constraints Properties"
@@ -1815,8 +1664,8 @@ class JSON_ObjectMarkerPhysicsHingeProps(Panel):
         col = layout.column(align=True)
         col.label(text="Hinge Constraint Min/Max")
         row = col.row()
-        row.prop(ob_halo_json, "Hinge_Constraint_Minimum", text='')
-        row.prop(ob_halo_json, "Hinge_Constraint_Maximum", text='')
+        col.prop(ob_halo_json, "Hinge_Constraint_Minimum", text='')
+        col.prop(ob_halo_json, "Hinge_Constraint_Maximum", text='')
 
 class JSON_ObjectMarkerPhysicsSocketProps(Panel):
     bl_label = "Socket Constraints Properties"
@@ -1839,15 +1688,15 @@ class JSON_ObjectMarkerPhysicsSocketProps(Panel):
         col = layout.column(align=True)
         col.label(text="Cone Angle")
         row = col.row()
-        row.prop(ob_halo_json, "Cone_Angle", text='')
+        col.prop(ob_halo_json, "Cone_Angle", text='')
         col.label(text="Plane Constraint Min/Max")
         row = col.row()
-        row.prop(ob_halo_json, "Plane_Constraint_Minimum", text='')
-        row.prop(ob_halo_json, "Plane_Constraint_Maximum", text='')
+        col.prop(ob_halo_json, "Plane_Constraint_Minimum", text='')
+        col.prop(ob_halo_json, "Plane_Constraint_Maximum", text='')
         col.label(text="Twist Constraint Start/End")
         row = col.row()
-        row.prop(ob_halo_json, "Twist_Constraint_Start", text='')
-        row.prop(ob_halo_json, "Twist_Constraint_End", text='')
+        col.prop(ob_halo_json, "Twist_Constraint_Start", text='')
+        col.prop(ob_halo_json, "Twist_Constraint_End", text='')
 
 # MATERIAL PROPERTIES
 class JSON_MaterialProps(Panel):
@@ -1875,10 +1724,10 @@ class JSON_MaterialProps(Panel):
             row = layout.row()
             col = layout.column(align=True)
             row.label(text="Shader Path:")
-            row.prop(material_halo_json, "shader_path", text='')
+            col.prop(material_halo_json, "shader_path", text='')
             row = col.row()
             row.label(text="Material Override")
-            row.prop(material_halo_json, "material_override", text='')
+            col.prop(material_halo_json, "material_override", text='')
             row = col.row()
 
 # LIGHT PROPERTIES
@@ -1908,7 +1757,7 @@ class JSON_LightProps(Panel):
         col = layout.column(align=True)
         row = col.row()
         row.label(text="Light Type Override")
-        row.prop(light_halo_json, "light_type_override", text='')
+        col.prop(light_halo_json, "light_type_override", text='')
 
 # JSON PROPERTY GROUPS
 class JSON_ObjectPropertiesGroup(PropertyGroup):
@@ -1921,32 +1770,34 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
     #MESH PROPERTIES
     ObjectMesh_Type : EnumProperty(
         name="Mesh Type Override",
-        description="Sets the type for this mesh. If set to none, the exporter will defer to the object name prefix for the mesh type",
-        default = "NONE",
-        items=[ ('NONE', "None", "None"),
-                ('BOUNDARY SURFACE', "Boundary Surface", "Boundary Surface, used in structure_design tags for soft_kill, soft_ceiling, and slip_sufaces (ONLY USE FOR FILES YOU INTEND TO EXPORT TO STRUCTURE DESIGN TAGS)"),
+        options=set(),
+        description="Sets the type of Halo mesh you want to create. This value is overridden by certain object prefixes: $, @, %",
+        default = 'DEFAULT',
+        items=[ ('BOUNDARY SURFACE', "Boundary Surface", "Boundary Surface, used in structure_design tags for soft_kill, soft_ceiling, and slip_sufaces (ONLY USE FOR FILES YOU INTEND TO EXPORT TO STRUCTURE DESIGN TAGS)"),
                 ('COLLISION', "Collision", "Sets this mesh to have collision geometry only. PREFIX: @"),
+                ('COOKIE CUTTER', "Cookie Cutter", "Cookie Cutter"),
+                ('DECORATOR', "Decorator", "Decorator"),
+                ('DEFAULT', "Default", ""),
                 ('INSTANCED GEOMETRY', "Instanced Geometry", "Sets this mesh to be processed as instanced geometry. PREFIX: %"),
                 ('INSTANCED GEOMETRY COLLISION', "Instanced Geometry Collision", "Sets this mesh to be processed as instanced Geometry collision. Must be the child of an instanced geometry mesh. PREFIX: @"),
-                ('INSTANCED GEOMETRY PHYSICS', "Instanced Geometry Physics", "Sets this mesh to be processed as instanced Geometry physics. Must be the child of an instanced geometry mesh. PREFIX: $"),
                 ('INSTANCED GEOMETRY MARKER', "Instanced Geometry Marker", "Sets this mesh to be processed as instanced Geometry marker. Must be the child of an instanced geometry mesh. PREFIX: #"),
+                ('INSTANCED GEOMETRY PHYSICS', "Instanced Geometry Physics", "Sets this mesh to be processed as instanced Geometry physics. Must be the child of an instanced geometry mesh. PREFIX: $"),
                 ('INSTANCED GEOMETRY RAIN BLOCKER', "Instanced Geometry Rain Blocker", "Sets this mesh to be processed as instanced Geometry rain blocker. Must be the child of an instanced geometry mesh."),
                 ('INSTANCED GEOMETRY VERTICAL RAIN SHEET', "Instanced Geometry Vertical Rain Sheet", "Sets this mesh to be processed as instanced Geometry vertical rain sheet. Must be the child of an instanced geometry mesh."),
-                ('DECORATOR', "Decorator", "Decorator"),
+                ('LIGHTMAP REGION', "Lightmap Region", "Lightmap Region"),
                 ('OBJECT INSTANCE', "Object Instance", "Object Instance"),
                 ('PHYSICS', "Physics", "Physics"),
+                ('PLANAR FOG VOLUME', "Planar Fog Volume", "Planar Fog Volume"),
                 ('PORTAL', "Portal", "Portal"),
                 ('SEAM', "Seam", "Seam"),
-                ('PLANAR FOG VOLUME', "Planar Fog Volume", "Planar Fog Volume"),
                 ('WATER PHYSICS VOLUME', "Water Physics Volume", "Water Physics Volume"),
                 ('WATER SURFACE', "Water Surface", "Water Surface"),
-                ('LIGHTMAP REGION', "Lightmap Region", "Lightmap Region"),
-                ('COOKIE CUTTER', "Cookie Cutter", "Cookie Cutter"),
                ]
         )
 
     Mesh_Primitive_Type : EnumProperty(
         name="Mesh Primitive Type",
+        options=set(),
         description="Select the primtive type of this mesh",
         default = "NONE",
         items=[ ('NONE', "None", "None"),
@@ -1958,6 +1809,7 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
 
     Mesh_Tesselation_Density : EnumProperty(
         name="Mesh Tesselation Density",
+        options=set(),
         description="Select the tesselation density you want applied to this mesh",
         default = "NONE",
         items=[ ('NONE', "None", "None"),
@@ -1968,17 +1820,19 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
         )
     Mesh_Compression : EnumProperty(
         name="Mesh Compression",
+        options=set(),
         description="Select if you want additional compression forced on/off to this mesh",
         default = "DEFAULT",
         items=[ ('DEFAULT', "Default", "Default"),
-                ('FORCE ON', "Force On", "Force On"),
                 ('FORCE OFF', "Force Off", "Force Off"),
+                ('FORCE ON', "Force On", "Force On"),
                ]
         )
 
     #FACE PROPERTIES
     Face_Type : EnumProperty(
         name="Face Type",
+        options=set(),
         description="Select the face type for this mesh. Note that any override shaders will override the face type selected here for relevant materials",
         default = "NORMAL",
         items=[ ('NONE', "None", "None"),
@@ -1991,6 +1845,7 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
 
     Face_Mode : EnumProperty(
         name="Face Mode",
+        options=set(),
         description="Select the face mode for this mesh",
         default = "NORMAL",
         items=[ ('NONE', "None", "None"),
@@ -2006,6 +1861,7 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
 
     Face_Sides : EnumProperty(
         name="Face Sides",
+        options=set(),
         description="Select the face sides for this mesh",
         default = "ONE SIDED",
         items=[ ('NONE', "None", "None"),
@@ -2018,6 +1874,7 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
 
     Face_Draw_Distance : EnumProperty(
         name="Face Draw Distance",
+        options=set(),
         description="Select the draw distance for faces on this mesh",
         default = "NORMAL",
         items=[ ('NONE', "None", "None"),
@@ -2133,21 +1990,20 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
     Poop_Lighting_Override : EnumProperty(
         name="Instanced Geometry Lighting Override",
         description="Sets the lighting policy for this instanced geometry. If set to none, the exporter will defer to the object name prefix for the lighting policy",
-        default = "NONE",
+        default = "PER VERTEX",
         items=[ ('NONE', "None", "None"),
-                ('SINGLE PROBE', "Single Probe", "Sets the lighting policy to single probe."),
                 ('PER PIXEL', "Per Pixel", "Sets the lighting policy to per pixel. PREFIX: ?"),
                 ('PER VERTEX', "Per Vertex", "Sets the lighting policy to per vertex. PREFX: !"),
+                ('SINGLE PROBE', "Single Probe", "Sets the lighting policy to single probe."),
                ]
         )
 
     Poop_Pathfinding_Override : EnumProperty(
         name="Instanced Geometry Pathfinding Override",
         description="Sets the pathfinding policy for this instanced geometry. If set to none, the exporter will defer to the object name prefix for the pathfinding policy",
-        default = "NONE",
-        items=[ ('NONE', "None", "Defers to the object prefix for the policy. No prefix = Cutout"),
-                ('IGNORED', "Ignored", "Sets the pathfinding policy to none. This mesh will be ignored during pathfinding generation. PREFIX: -"),
-                ('CUTOUT', "Cutout", "Sets the pathfinding policy to cutout. AI will be able to pathfind around this mesh, but not on it."),
+        default = 'CUTOUT',
+        items=[ ('CUTOUT', "Cutout", "Sets the pathfinding policy to cutout. AI will be able to pathfind around this mesh, but not on it."),
+                ('NONE', "None", "Sets the pathfinding policy to none. This mesh will be ignored during pathfinding generation. PREFIX: -"),
                 ('STATIC', "Static", "Sets the pathfinding policy to static. AI will be able to pathfind around and on this mesh. PREFIX: +"),
                ]
         )
@@ -2635,13 +2491,7 @@ classeshalo = (
     JSON_ObjectProps,
     JSON_ObjectMeshProps,
     JSON_ObjectMeshFaceProps,
-    JSON_ObjectMeshFaceFlagsProps,
-    JSON_ObjectMeshPrimitiveProps,
-    JSON_ObjectMeshBoundaryProps,
-    JSON_ObjectMeshPoopsProps,
-    JSON_ObjectMeshPoopsFlagsProps,
     JSON_ObjectMeshPortalProps,
-    JSON_ObjectMeshDecoratorProps,
     JSON_ObjectMeshSeamProps,
     JSON_ObjectMeshWaterVolumeProps,
     JSON_ObjectMeshFogVolumeProps,
