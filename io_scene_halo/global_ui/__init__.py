@@ -1196,11 +1196,27 @@ class JSON_ObjectProps(Panel):
     def draw(self, context):
         layout = self.layout
         layout.use_property_split = True
+        flow = layout.grid_flow(row_major=True, columns=0, even_columns=True, even_rows=False, align=False)
+        
         ob = context.object
         ob_halo_json = ob.halo_json
 
-        col = layout.column(align=True)
-        col.prop(ob_halo_json, "region_name", text='Region')
+        special_prefixes = ('b ','b_','frame ','frame_','#')
+
+        has_special_prefix = context.active_object.name.startswith(special_prefixes)
+
+        col = flow.column()
+
+        if has_special_prefix:
+            if context.active_object.type == 'EMPTY':
+                col.prop(ob_halo_json, "Object_Type_No_Mesh_Locked", text='Object Type')
+            else:
+                col.prop(ob_halo_json, "Object_Type_All_Locked", text='Object Type')
+        else:
+            if context.active_object.type == 'EMPTY':
+                col.prop(ob_halo_json, "Object_Type_No_Mesh", text='Object Type')
+            else:
+                col.prop(ob_halo_json, "Object_Type_All", text='Object Type')
 
 #MESH PROPERTIES
 class JSON_ObjectMeshProps(Panel):
@@ -1213,7 +1229,10 @@ class JSON_ObjectMeshProps(Panel):
 
     @classmethod
     def poll(cls, context):
-        return not context.object.name.startswith('#')
+        ob = context.object
+        ob_halo_json = ob.halo_json
+
+        return (ob_halo_json.Object_Type_All == 'MESH' and ob_halo_json.Object_Type_All_Locked == 'MESH' and context.active_object.type != 'EMPTY')
 
 
     def draw(self, context):
@@ -1229,6 +1248,7 @@ class JSON_ObjectMeshProps(Panel):
 
         has_special_prefix = context.active_object.name.startswith(special_prefixes)
 
+
         col = flow.column()
          
         if has_special_prefix:
@@ -1237,10 +1257,13 @@ class JSON_ObjectMeshProps(Panel):
             col.prop(ob_halo_json, "ObjectMesh_Type", text='Mesh Type')
 
         if (ob_halo_json.ObjectMesh_Type in special_mesh_types or ob_halo_json.ObjectMesh_Type_Locked in special_mesh_types):
-            if (ob_halo_json.ObjectMesh_Type == 'BOUNDARY SURFACE' and ob_halo_json.ObjectMesh_Type_Locked == 'DEFAULT'):
+
+            type_no_special_prefix = ob_halo_json.ObjectMesh_Type_Locked == 'DEFAULT'
+
+            if (ob_halo_json.ObjectMesh_Type == 'BOUNDARY SURFACE' and type_no_special_prefix):
                 col.prop(ob_halo_json, "Boundary_Surface_Name", text='Boundary Surface Name')
                 col.prop(ob_halo_json, "Boundary_Surface_Type", text='Boundary Surface Type')
-            elif (ob_halo_json.ObjectMesh_Type == 'DECORATOR' and ob_halo_json.ObjectMesh_Type_Locked == 'DEFAULT'):
+            elif (ob_halo_json.ObjectMesh_Type == 'DECORATOR' and type_no_special_prefix):
                 col.prop(ob_halo_json, "Decorator_Name", text='Decorator Name')
                 col.prop(ob_halo_json, "Decorator_LOD", text='Decorator Level of Detail')
             elif (ob_halo_json.ObjectMesh_Type == 'INSTANCED GEOMETRY' or ob_halo_json.ObjectMesh_Type_Locked == 'INSTANCED GEOMETRY'):
@@ -1266,7 +1289,7 @@ class JSON_ObjectMeshProps(Panel):
                 sub.prop(ob_halo_json, "Poop_Excluded_From_Lightprobe", text='Excluded From Lightprobe')
                 sub.prop(ob_halo_json, "Poop_Decal_Spacing", text='Decal Spacing')
                 sub.prop(ob_halo_json, "Poop_Precise_Geometry", text='Precise Geometry')
-            elif (ob_halo_json.ObjectMesh_Type == 'PORTAL' and ob_halo_json.ObjectMesh_Type_Locked == 'DEFAULT'):
+            elif (ob_halo_json.ObjectMesh_Type == 'PORTAL' and type_no_special_prefix):
                 col.prop(ob_halo_json, "Portal_Type", text='Portal Type')
 
                 col.separator()
@@ -1277,6 +1300,18 @@ class JSON_ObjectMeshProps(Panel):
                 sub.prop(ob_halo_json, "Portal_AI_Deafening", text='AI Deafening')
                 sub.prop(ob_halo_json, "Portal_Blocks_Sounds", text='Blocks Sounds')
                 sub.prop(ob_halo_json, "Portal_Is_Door", text='Is Door')
+            elif (ob_halo_json.ObjectMesh_Type == 'SEAM' and type_no_special_prefix):
+                col.prop(ob_halo_json, "Seam_Name", text='Seam BSP Name')
+            elif (ob_halo_json.ObjectMesh_Type == 'WATER PHYSICS VOLUME' and type_no_special_prefix):
+                col.prop(ob_halo_json, "Water_Volume_Depth", text='Water Volume Depth')
+                col.prop(ob_halo_json, "Water_Volume_Flow_Direction", text='Flow Direction')
+                col.prop(ob_halo_json, "Water_Volume_Flow_Velocity", text='Flow Velocity')
+                col.prop(ob_halo_json, "Water_Volume_Fog_Color", text='Underwater Fog Color')
+                col.prop(ob_halo_json, "Water_Volume_Fog_Murkiness", text='Underwater Fog Murkiness')
+            elif (ob_halo_json.ObjectMesh_Type == 'PLANAR FOG VOLUME' and type_no_special_prefix):
+                col.prop(ob_halo_json, "Fog_Name", text='Fog Name')
+                col.prop(ob_halo_json, "Fog_Appearance_Tag", text='Fog Appearance Tag')
+                col.prop(ob_halo_json, "Fog_Volume_Depth", text='Fog Volume Depth')
 
 class JSON_ObjectMeshFaceProps(Panel):
     bl_label = "Face Properties"
@@ -1285,6 +1320,15 @@ class JSON_ObjectMeshFaceProps(Panel):
     bl_region_type = "WINDOW"
     bl_context = "data"
     bl_parent_id = "JSON_PT_MeshDetailsPanel"
+
+    @classmethod
+    def poll(cls, context):
+        ob = context.object
+        ob_halo_json = ob.halo_json
+
+        invalid_mesh_types = ('BOUNDARY SURFACE', 'COOKIE CUTTER', 'INSTANCED GEOMETRY MARKER', 'INSTANCED GEOMETRY RAIN BLOCKER', 'INSTANCED GEOMETRY VERTICAL RAIN SHEET', 'LIGHTMAP REGION', 'PLANAR FOG VOLUME', 'PORTAL', 'SEAM', 'WATER PHYSICS VOLUME')
+
+        return (ob_halo_json.ObjectMesh_Type not in invalid_mesh_types)
 
     def draw(self, context):
         layout = self.layout
@@ -1307,6 +1351,7 @@ class JSON_ObjectMeshFaceProps(Panel):
 
         col.separator()
 
+        col.prop(ob_halo_json, "Region_Name", text='Face Region')
         col.prop(ob_halo_json, "Face_Global_Material", text='Global Material')
 
         col.separator()
@@ -1321,6 +1366,90 @@ class JSON_ObjectMeshFaceProps(Panel):
         sub.prop(ob_halo_json, "No_Shadow", text='No Shadow')
         sub.prop(ob_halo_json, "Precise_Position", text='Precise Position')
 
+class JSON_ObjectMeshMaterialLightingProps(Panel):
+    bl_label = "Lighting Properties"
+    bl_idname = "JSON_PT_MeshMaterialLightingDetailsPanel"
+    bl_space_type = "PROPERTIES"
+    bl_region_type = "WINDOW"
+    bl_context = "data"
+    bl_options = {"DEFAULT_CLOSED"}
+    bl_parent_id = "JSON_PT_MeshDetailsPanel"
+
+    @classmethod
+    def poll(cls, context):
+        ob = context.object
+        ob_halo_json = ob.halo_json
+
+        invalid_mesh_types = ('BOUNDARY SURFACE', 'COOKIE CUTTER', 'INSTANCED GEOMETRY MARKER', 'INSTANCED GEOMETRY RAIN BLOCKER', 'INSTANCED GEOMETRY VERTICAL RAIN SHEET', 'LIGHTMAP REGION', 'PLANAR FOG VOLUME', 'PORTAL', 'SEAM', 'WATER PHYSICS VOLUME')
+
+        return (ob_halo_json.ObjectMesh_Type not in invalid_mesh_types)
+
+    def draw(self, context):
+        layout = self.layout
+        layout.use_property_split = True
+        flow = layout.grid_flow(row_major=True, columns=0, even_columns=True, even_rows=False, align=False)
+
+        ob = context.object
+        ob_halo_json = ob.halo_json
+
+        col = flow.column()
+        col.prop(ob_halo_json, "Material_Lighting_Attenuation_Cutoff", text='Attenuation Cutoff')
+        col.prop(ob_halo_json, "Material_Lighting_Attenuation_Falloff", text='Attenuation Falloff')
+        col.prop(ob_halo_json, "Material_Lighting_Emissive_Focus", text='Emissive Focus')
+        col.prop(ob_halo_json, "Material_Lighting_Emissive_Color", text='Emissive Color')
+        col.prop(ob_halo_json, "Material_Lighting_Emissive_Power", text='Emissive Power')
+        col.prop(ob_halo_json, "Material_Lighting_Emissive_Quality", text='Emissive Quality')
+        col.prop(ob_halo_json, "Material_Lighting_Bounce_Ratio", text='Bounce Ratio')
+        
+        col.separator()
+
+        col = layout.column(heading="Flags")
+        sub = col.column(align=True)
+        sub.prop(ob_halo_json, "Material_Lighting_Emissive_Per_Unit", text='Emissive Per Unit')
+        sub.prop(ob_halo_json, "Material_Lighting_Use_Shader_Gel", text='Use Shader Gel')
+
+class JSON_ObjectMeshLightmapProps(Panel):
+    bl_label = "Lightmap Properties"
+    bl_idname = "JSON_PT_MeshLightmapDetailsPanel"
+    bl_space_type = "PROPERTIES"
+    bl_region_type = "WINDOW"
+    bl_context = "data"
+    bl_options = {"DEFAULT_CLOSED"}
+    bl_parent_id = "JSON_PT_MeshDetailsPanel"
+
+    @classmethod
+    def poll(cls, context):
+        ob = context.object
+        ob_halo_json = ob.halo_json
+
+        invalid_mesh_types = ('BOUNDARY SURFACE', 'COOKIE CUTTER', 'INSTANCED GEOMETRY MARKER', 'INSTANCED GEOMETRY RAIN BLOCKER', 'INSTANCED GEOMETRY VERTICAL RAIN SHEET', 'LIGHTMAP REGION', 'PLANAR FOG VOLUME', 'PORTAL', 'SEAM', 'WATER PHYSICS VOLUME')
+
+        return (ob_halo_json.ObjectMesh_Type not in invalid_mesh_types)
+
+    def draw(self, context):
+        layout = self.layout
+        layout.use_property_split = True
+        flow = layout.grid_flow(row_major=True, columns=0, even_columns=True, even_rows=False, align=False)
+
+        ob = context.object
+        ob_halo_json = ob.halo_json
+
+        col = flow.column()
+        col.prop(ob_halo_json, "Lightmap_Type", text='Lightmap Type')
+        col.prop(ob_halo_json, "Lightmap_Additive_Transparency", text='Additive Transparency')
+        col.prop(ob_halo_json, "Lightmap_Translucency_Tint_Color", text='Translucency Tint Color')
+        col.prop(ob_halo_json, "Lightmap_Resolution_Scale", text='Resolution Scale')
+        col.prop(ob_halo_json, "Lightmap_Chart_Group", text='Chart Group')
+        col.prop(ob_halo_json, "Lightmap_Analytical_Bounce_Modifier", text='Analytical Bounce Modifier')
+        col.prop(ob_halo_json, "Lightmap_General_Bounce_Modifier", text='General Bounce Modifier')
+        
+        col.separator()
+
+        col = layout.column(heading="Flags")
+        sub = col.column(align=True)
+        sub.prop(ob_halo_json, "Lightmap_Lighting_From_Both_Sides", text='Lighting From Both Sides')
+        sub.prop(ob_halo_json, "Lightmap_Transparency_Override", text='Transparency Override')
+
 class JSON_ObjectMeshExtraProps(Panel):
     bl_label = "Other Mesh Properties"
     bl_idname = "JSON_PT_MeshExtraDetailsPanel"
@@ -1329,6 +1458,15 @@ class JSON_ObjectMeshExtraProps(Panel):
     bl_context = "data"
     bl_parent_id = "JSON_PT_MeshDetailsPanel"
     bl_options = {"DEFAULT_CLOSED"}
+
+    @classmethod
+    def poll(cls, context):
+        ob = context.object
+        ob_halo_json = ob.halo_json
+
+        invalid_mesh_types = ('BOUNDARY SURFACE', 'COOKIE CUTTER', 'INSTANCED GEOMETRY MARKER', 'INSTANCED GEOMETRY RAIN BLOCKER', 'INSTANCED GEOMETRY VERTICAL RAIN SHEET', 'LIGHTMAP REGION', 'PLANAR FOG VOLUME', 'PORTAL', 'SEAM', 'WATER PHYSICS VOLUME')
+
+        return (ob_halo_json.ObjectMesh_Type not in invalid_mesh_types)
 
     def draw(self, context):
         layout = self.layout
@@ -1355,185 +1493,6 @@ class JSON_ObjectMeshExtraProps(Panel):
                 case 'SPHERE':
                     sub.prop(ob_halo_json, "Sphere_Radius", text='Radius')
 
-
-
-class JSON_ObjectMeshSeamProps(Panel):
-    bl_label = "Seam Properties"
-    bl_idname = "JSON_PT_MeshSeamDetailsPanel"
-    bl_space_type = "PROPERTIES"
-    bl_region_type = "WINDOW"
-    bl_context = "data"
-    bl_options = {"DEFAULT_CLOSED"}
-    bl_parent_id = "JSON_PT_MeshDetailsPanel"
-
-    def draw(self, context):
-        layout = self.layout
-
-        ob = context.object
-        ob_halo_json = ob.halo_json
-
-        if not ob_halo_json.ObjectMesh_Type == 'SEAM':
-            layout.enabled = False
-
-        col = layout.column(align=True)
-        row = col.row()
-        row.label(text='Seam BSP Name')
-        col.prop(ob_halo_json, "Seam_Name", text='')
-
-class JSON_ObjectMeshWaterVolumeProps(Panel):
-    bl_label = "Water Physics Volume Properties"
-    bl_idname = "JSON_PT_MeshWaterVolumeDetailsPanel"
-    bl_space_type = "PROPERTIES"
-    bl_region_type = "WINDOW"
-    bl_context = "data"
-    bl_options = {"DEFAULT_CLOSED"}
-    bl_parent_id = "JSON_PT_MeshDetailsPanel"
-
-    def draw(self, context):
-        layout = self.layout
-
-        ob = context.object
-        ob_halo_json = ob.halo_json
-
-        if not ob_halo_json.ObjectMesh_Type == 'WATER PHYSICS VOLUME':
-            layout.enabled = False
-
-        col = layout.column(align=True)
-        row = col.row()
-        row.label(text='Water Volume Depth')
-        col.prop(ob_halo_json, "Water_Volume_Depth", text='')
-        row = col.row()
-        row.label(text='Water Volume Flow Direction')
-        col.prop(ob_halo_json, "Water_Volume_Flow_Direction", text='')
-        row = col.row()
-        row.label(text='Water Volume Flow Velocity')
-        col.prop(ob_halo_json, "Water_Volume_Flow_Velocity", text='')
-        row = col.row()
-        row.label(text='Water Volume Fog Color')
-        col.prop(ob_halo_json, "Water_Volume_Fog_Color", text='')
-        row = col.row()
-        row.label(text='Water Volume Fog Murkiness')
-        col.prop(ob_halo_json, "Water_Volume_Fog_Murkiness", text='')
-
-class JSON_ObjectMeshFogVolumeProps(Panel):
-    bl_label = "Planar Fog Volume Properties"
-    bl_idname = "JSON_PT_MeshFogVolumeDetailsPanel"
-    bl_space_type = "PROPERTIES"
-    bl_region_type = "WINDOW"
-    bl_context = "data"
-    bl_options = {"DEFAULT_CLOSED"}
-    bl_parent_id = "JSON_PT_MeshDetailsPanel"
-
-    def draw(self, context):
-        layout = self.layout
-
-        ob = context.object
-        ob_halo_json = ob.halo_json
-
-        if not ob_halo_json.ObjectMesh_Type == 'PLANAR FOG VOLUME':
-            layout.enabled = False
-
-        col = layout.column(align=True)
-        row = col.row()
-        row.label(text='Fog Name')
-        col.prop(ob_halo_json, "Fog_Name", text='')
-        row = col.row()
-        row.label(text='Fog Appearance Tag')
-        col.prop(ob_halo_json, "Fog_Appearance_Tag", text='')
-        row = col.row()
-        row.label(text='Fog Volume Depth')
-        col.prop(ob_halo_json, "Fog_Volume_Depth", text='')
-
-class JSON_ObjectMeshLightmapProps(Panel):
-    bl_label = "Lightmap Properties"
-    bl_idname = "JSON_PT_MeshLightmapDetailsPanel"
-    bl_space_type = "PROPERTIES"
-    bl_region_type = "WINDOW"
-    bl_context = "data"
-    bl_options = {"DEFAULT_CLOSED"}
-    bl_parent_id = "JSON_PT_MeshDetailsPanel"
-
-    def draw(self, context):
-        layout = self.layout
-
-        ob = context.object
-        ob_halo_json = ob.halo_json
-
-        col = layout.column(align=True)
-        row = col.row()
-        row.label(text='Additive Transparency')
-        col.prop(ob_halo_json, "Lightmap_Additive_Transparency", text='')
-        row = col.row()
-        row.label(text='Resolution Scale Override')
-        col.prop(ob_halo_json, "Lightmap_Ignore_Default_Resolution_Scale", text='')
-        row.label(text='Resolution Scale')
-        col.prop(ob_halo_json, "Lightmap_Resolution_Scale", text='')
-        row = col.row()
-        row.label(text='Chart Group')
-        col.prop(ob_halo_json, "Lightmap_Chart_Group", text='')
-        row = col.row()
-        row.label(text='Lightmap Type')
-        col.prop(ob_halo_json, "Lightmap_Type", text='')
-        row = col.row()
-        row.label(text='Transparency Override')
-        col.prop(ob_halo_json, "Lightmap_Transparency_Override", text='')
-        row = col.row()
-        row.label(text='Analytical Bounce Modifier')
-        col.prop(ob_halo_json, "Lightmap_Analytical_Bounce_Modifier", text='')
-        row = col.row()
-        row.label(text='General Bounce Modifier')
-        col.prop(ob_halo_json, "Lightmap_General_Bounce_Modifier", text='')
-        row = col.row()
-        row.label(text='Translucency Tint Color')
-        col.prop(ob_halo_json, "Lightmap_Translucency_Tint_Color", text='')
-        row = col.row()
-        row.label(text='Lighting From Both Sides')
-        col.prop(ob_halo_json, "Lightmap_Lighting_From_Both_Sides", text='')
-
-class JSON_ObjectMeshMaterialLightingProps(Panel):
-    bl_label = "Material Lighting Properties"
-    bl_idname = "JSON_PT_MeshMaterialLightingDetailsPanel"
-    bl_space_type = "PROPERTIES"
-    bl_region_type = "WINDOW"
-    bl_context = "data"
-    bl_options = {"DEFAULT_CLOSED"}
-    bl_parent_id = "JSON_PT_MeshDetailsPanel"
-
-    def draw(self, context):
-        layout = self.layout
-
-        ob = context.object
-        ob_halo_json = ob.halo_json
-
-        col = layout.column(align=True)
-        row = col.row()
-        row.label(text='Attenuation Cutoff')
-        col.prop(ob_halo_json, "Material_Lighting_Attenuation_Cutoff", text='')
-        row = col.row()
-        row.label(text='Attenuation Falloff')
-        col.prop(ob_halo_json, "Material_Lighting_Attenuation_Falloff", text='')
-        row = col.row()
-        row.label(text='Emissive Focus')
-        col.prop(ob_halo_json, "Material_Lighting_Emissive_Focus", text='')
-        row = col.row()
-        row.label(text='Emissive Color')
-        col.prop(ob_halo_json, "Material_Lighting_Emissive_Color", text='')
-        row = col.row()
-        row.label(text='Emissive Per Unit')
-        col.prop(ob_halo_json, "Material_Lighting_Emissive_Per_Unit", text='')
-        row = col.row()
-        row.label(text='Emissive Power')
-        col.prop(ob_halo_json, "Material_Lighting_Emissive_Power", text='')
-        row = col.row()
-        row.label(text='Emissive Quality')
-        col.prop(ob_halo_json, "Material_Lighting_Emissive_Quality", text='')
-        row = col.row()
-        row.label(text='Use Shader Gel')
-        col.prop(ob_halo_json, "Material_Lighting_Use_Shader_Gel", text='')
-        row = col.row()
-        row.label(text='Bounce Ratio')
-        col.prop(ob_halo_json, "Material_Lighting_Bounce_Ratio", text='')
-
 # MARKER PROPERTIES
 class JSON_ObjectMarkerProps(Panel):
     bl_label = "Marker Properties"
@@ -1541,168 +1500,69 @@ class JSON_ObjectMarkerProps(Panel):
     bl_space_type = "PROPERTIES"
     bl_region_type = "WINDOW"
     bl_context = "data"
-    bl_options = {"DEFAULT_CLOSED"}
     bl_parent_id = "JSON_PT_ObjectDetailsPanel"
 
     @classmethod
     def poll(cls, context):
-        return context.object.name.startswith('#')
+        ob = context.object
+        ob_halo_json = ob.halo_json
+
+        return ((ob_halo_json.Object_Type_All == 'MARKER' or  ob_halo_json.Object_Type_All_Locked == 'MARKER') or (context.active_object.type == 'EMPTY' and (ob_halo_json.Object_Type_No_Mesh == 'MARKER' or ob_halo_json.Object_Type_No_Mesh_Locked == 'MARKER')))
 
     def draw(self, context):
         layout = self.layout
+        layout.use_property_split = True
+        flow = layout.grid_flow(row_major=True, columns=0, even_columns=True, even_rows=False, align=False)
 
         ob = context.object
         ob_halo_json = ob.halo_json
 
-        col = layout.column(align=True)
-        row = col.row()
-        row.label(text='Marker Type')
-        col.prop(ob_halo_json, "ObjectMarker_Type", text='')
-        row = col.row()
-        row.label(text='Marker Group')
-        col.prop(ob_halo_json, "Marker_Group_Name", text='')
-        row = col.row()
-        row.label(text='Marker Velocity')
-        col.prop(ob_halo_json, "Marker_Velocity", text='')
+        col = flow.column()
 
-class JSON_ObjectMarkerInstanceProps(Panel):
-    bl_label = "Marker Instance Properties"
-    bl_idname = "JSON_PT_MarkerInstanceDetailsPanel"
-    bl_space_type = "PROPERTIES"
-    bl_region_type = "WINDOW"
-    bl_context = "data"
-    bl_options = {"DEFAULT_CLOSED"}
-    bl_parent_id = "JSON_PT_MarkerDetailsPanel"
-
-    def draw(self, context):
-        layout = self.layout
-
-        ob = context.object
-        ob_halo_json = ob.halo_json
-
-        if not ob_halo_json.ObjectMarker_Type == 'GAME INSTANCE':
-            layout.enabled = False
-
-        col = layout.column(align=True)
-        row = col.row()
-        row.label(text='Marker Game Instance Tag')
-        col.prop(ob_halo_json, "Marker_Game_Instance_Tag_Name", text='')
-        row = col.row()
-        row.label(text='Marker Game Instance Tag Variant')
-        col.prop(ob_halo_json, "Marker_Game_Instance_Tag_Variant_Name", text='')
-
-class JSON_ObjectMarkerPathfindingProps(Panel):
-    bl_label = "Marker Pathfinding Properties"
-    bl_idname = "JSON_PT_MarkerPathfindingDetailsPanel"
-    bl_space_type = "PROPERTIES"
-    bl_region_type = "WINDOW"
-    bl_context = "data"
-    bl_options = {"DEFAULT_CLOSED"}
-    bl_parent_id = "JSON_PT_MarkerDetailsPanel"
-
-    def draw(self, context):
-        layout = self.layout
-
-        ob = context.object
-        ob_halo_json = ob.halo_json
-
-        if not ob_halo_json.ObjectMarker_Type == 'PATHFINDING SPHERE':
-            layout.enabled = False
-
-        col = layout.column(align=True)
-        row = col.row()
-        row.label(text='Vehicle Only Pathfinding Sphere')
-        col.prop(ob_halo_json, "Marker_Pathfinding_Sphere_Vehicle", text='')
-        row = col.row()
-        row.label(text='Pathfinding Sphere Remains When Open')
-        col.prop(ob_halo_json, "Pathfinding_Sphere_Remains_When_Open", text='')
-        row = col.row()
-        row.label(text='Pathfinding Sphere With Sectors')
-        col.prop(ob_halo_json, "Pathfinding_Sphere_With_Sectors", text='')
-
-class JSON_ObjectMarkerPhysicsProps(Panel):
-    bl_label = "Marker Physics Constraints Properties"
-    bl_idname = "JSON_PT_MarkerPhysicsDetailsPanel"
-    bl_space_type = "PROPERTIES"
-    bl_region_type = "WINDOW"
-    bl_context = "data"
-    bl_options = {"DEFAULT_CLOSED"}
-    bl_parent_id = "JSON_PT_MarkerDetailsPanel"
-
-    def draw(self, context):
-        layout = self.layout
-
-        ob = context.object
-        ob_halo_json = ob.halo_json
-
-        if not (ob_halo_json.ObjectMarker_Type == 'PHYSICS HINGE CONSTRAINT' or ob_halo_json.ObjectMarker_Type == 'PHYSICS SOCKET CONSTRAINT'):
-            layout.enabled = False
-
-        col = layout.column(align=True)
-        row = col.row()
-        row.label(text='Physics Constraint Parent')
-        col.prop(ob_halo_json, "Physics_Constraint_Parent", text='')
-        row = col.row()
-        row.label(text='Physics Constraint Child')
-        col.prop(ob_halo_json, "Physics_Constraint_Child", text='')
-        row = col.row()
-        row.label(text='Physics Constraint Uses Limits')
-        col.prop(ob_halo_json, "Physics_Constraint_Uses_Limits", text='')
-
-class JSON_ObjectMarkerPhysicsHingeProps(Panel):
-    bl_label = "Hinge Constraints Properties"
-    bl_idname = "JSON_PT_MarkerPhysicsHingeDetailsPanel"
-    bl_space_type = "PROPERTIES"
-    bl_region_type = "WINDOW"
-    bl_context = "data"
-    bl_options = {"DEFAULT_CLOSED"}
-    bl_parent_id = "JSON_PT_MarkerPhysicsDetailsPanel"
-
-    def draw(self, context):
-        layout = self.layout
-
-        ob = context.object
-        ob_halo_json = ob.halo_json
-
-        if not (ob_halo_json.ObjectMarker_Type == 'PHYSICS HINGE CONSTRAINT' and ob_halo_json.Physics_Constraint_Uses_Limits):
-            layout.enabled = False
-
-        col = layout.column(align=True)
-        col.label(text="Hinge Constraint Min/Max")
-        row = col.row()
-        col.prop(ob_halo_json, "Hinge_Constraint_Minimum", text='')
-        col.prop(ob_halo_json, "Hinge_Constraint_Maximum", text='')
-
-class JSON_ObjectMarkerPhysicsSocketProps(Panel):
-    bl_label = "Socket Constraints Properties"
-    bl_idname = "JSON_PT_MarkerPhysicsSocketDetailsPanel"
-    bl_space_type = "PROPERTIES"
-    bl_region_type = "WINDOW"
-    bl_context = "data"
-    bl_options = {"DEFAULT_CLOSED"}
-    bl_parent_id = "JSON_PT_MarkerPhysicsDetailsPanel"
-
-    def draw(self, context):
-        layout = self.layout
-
-        ob = context.object
-        ob_halo_json = ob.halo_json
-
-        if not (ob_halo_json.ObjectMarker_Type == 'PHYSICS SOCKET CONSTRAINT' and ob_halo_json.Physics_Constraint_Uses_Limits):
-            layout.enabled = False
+        col.prop(ob_halo_json, "ObjectMarker_Type", text='Marker Type')
         
-        col = layout.column(align=True)
-        col.label(text="Cone Angle")
-        row = col.row()
-        col.prop(ob_halo_json, "Cone_Angle", text='')
-        col.label(text="Plane Constraint Min/Max")
-        row = col.row()
-        col.prop(ob_halo_json, "Plane_Constraint_Minimum", text='')
-        col.prop(ob_halo_json, "Plane_Constraint_Maximum", text='')
-        col.label(text="Twist Constraint Start/End")
-        row = col.row()
-        col.prop(ob_halo_json, "Twist_Constraint_Start", text='')
-        col.prop(ob_halo_json, "Twist_Constraint_End", text='')
+        group_marker_types = ('MODEL', 'HINT', 'TARGET')
+
+        col.prop(ob_halo_json, "Marker_Region", text='Marker Region')
+
+        if ob_halo_json.ObjectMarker_Type in group_marker_types:
+            col.prop(ob_halo_json, "Marker_Group_Name", text='Marker Group')
+
+        if ob_halo_json.ObjectMarker_Type == 'MODEL':
+            col.separator()
+            col.prop(ob_halo_json, "Marker_Velocity", text='Marker Velocity')
+
+        if ob_halo_json.ObjectMarker_Type == 'GAME INSTANCE':
+            col.separator()
+            col.prop(ob_halo_json, "Marker_Game_Instance_Tag_Name", text='Game Instance Tag')
+            col.prop(ob_halo_json, "Marker_Game_Instance_Tag_Variant_Name", text='Game Instance Tag Variant')
+
+        if ob_halo_json.ObjectMarker_Type == 'PATHFINDING SPHERE':
+            col.separator()
+            col = layout.column(heading="Flags")
+            sub = col.column(align=True)
+            sub.prop(ob_halo_json, "Marker_Pathfinding_Sphere_Vehicle", text='Vehicle Only')
+            sub.prop(ob_halo_json, "Pathfinding_Sphere_Remains_When_Open", text='Remains When Open')
+            sub.prop(ob_halo_json, "Pathfinding_Sphere_With_Sectors", text='With Sectors')
+
+        if ob_halo_json.ObjectMarker_Type == 'PHYSICS CONSTRAINT':
+            col.separator()
+            col.prop(ob_halo_json, "Physics_Constraint_Parent", text='Physics Constraint Parent')
+            col.prop(ob_halo_json, "Physics_Constraint_Child", text='Physics Constraint Child')
+            col.prop(ob_halo_json, "Physics_Constraint_Type", text='Physics Constraint Type')
+
+            if ob_halo_json.Physics_Constraint_Type == 'HINGE':
+                col.prop(ob_halo_json, "Hinge_Constraint_Minimum", text='Minimum')
+                col.prop(ob_halo_json, "Hinge_Constraint_Maximum", text='Maximum')
+
+            elif ob_halo_json.Physics_Constraint_Type == 'SOCKET':
+                col.prop(ob_halo_json, "Cone_Angle", text='Cone Angle')
+
+                col.prop(ob_halo_json, "Plane_Constraint_Minimum", text='Plane Minimum')
+                col.prop(ob_halo_json, "Plane_Constraint_Maximum", text='Plane Maximum')
+                
+                col.prop(ob_halo_json, "Twist_Constraint_Start", text='Twist Start')
+                col.prop(ob_halo_json, "Twist_Constraint_End", text='Twist End')
 
 # MATERIAL PROPERTIES
 class JSON_MaterialProps(Panel):
@@ -1767,9 +1627,56 @@ class JSON_LightProps(Panel):
 # JSON PROPERTY GROUPS
 class JSON_ObjectPropertiesGroup(PropertyGroup):
     #OBJECT PROPERTIES
-    region_name: StringProperty(
+
+    def get_objecttype_enum(self):
+        if bpy.context.active_object.name.startswith(('b ', 'b_', 'frame ', 'frame_')): #
+            return 0
+        elif bpy.context.active_object.name.startswith('#'):
+            return 1
+
+    object_type_items_all = [
+        ('FRAME', "Frame", "Frame",),
+        ('MARKER', "Marker", "Marker"),
+        ('MESH', "Mesh", "Mesh"),
+    ]
+
+    object_type_items_no_mesh = [
+        ('FRAME', "Frame", "Frame"),
+        ('MARKER', "Marker", "Marker"),
+    ]
+
+    Object_Type_All: EnumProperty(
         name="Region",
-        description="Define the name of the region this object should be associated with. If the object is a marker and this field is blank, the marker will be associated with all regions.",
+        options=set(),
+        description="Sets the object type",
+        default = 'MESH',
+        items=object_type_items_all,
+    )
+
+    Object_Type_No_Mesh: EnumProperty(
+        name="Region",
+        options=set(),
+        description="Sets the object type",
+        default = 'MARKER',
+        items=object_type_items_no_mesh,
+    )
+
+    Object_Type_All_Locked: EnumProperty(
+        name="Region",
+        options=set(),
+        get=get_objecttype_enum,
+        description="Sets the object type",
+        default = 'MESH',
+        items=object_type_items_all,
+    )
+
+    Object_Type_No_Mesh_Locked: EnumProperty(
+        name="Region",
+        options=set(),
+        get=get_objecttype_enum,
+        description="Sets the object type",
+        default = 'MARKER',
+        items=object_type_items_no_mesh,
     )
 
     def get_meshtype_enum(self):
@@ -1780,32 +1687,35 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
         elif bpy.context.active_object.name.startswith('$'):
             return 13
 
+    mesh_type_items = [
+        ('BOUNDARY SURFACE', "Boundary Surface", "Boundary Surface, used in structure_design tags for soft_kill, soft_ceiling, and slip_sufaces (ONLY USE FOR FILES YOU INTEND TO EXPORT TO STRUCTURE DESIGN TAGS)"),
+        ('COLLISION', "Collision", "Sets this mesh to have collision geometry only. PREFIX: @"),
+        ('COOKIE CUTTER', "Cookie Cutter", "Cookie Cutter"),
+        ('DECORATOR', "Decorator", "Decorator"),
+        ('DEFAULT', "Default", ""),
+        ('INSTANCED GEOMETRY', "Instanced Geometry", "Sets this mesh to be processed as instanced geometry. PREFIX: %"),
+        ('INSTANCED GEOMETRY COLLISION', "Instanced Geometry Collision", "Sets this mesh to be processed as instanced Geometry collision. Must be the child of an instanced geometry mesh. PREFIX: @"),
+        ('INSTANCED GEOMETRY MARKER', "Instanced Geometry Marker", "Sets this mesh to be processed as instanced Geometry marker. Must be the child of an instanced geometry mesh. PREFIX: #"),
+        ('INSTANCED GEOMETRY PHYSICS', "Instanced Geometry Physics", "Sets this mesh to be processed as instanced Geometry physics. Must be the child of an instanced geometry mesh. PREFIX: $"),
+        ('INSTANCED GEOMETRY RAIN BLOCKER', "Instanced Geometry Rain Blocker", "Sets this mesh to be processed as instanced Geometry rain blocker. Must be the child of an instanced geometry mesh."),
+        ('INSTANCED GEOMETRY VERTICAL RAIN SHEET', "Instanced Geometry Vertical Rain Sheet", "Sets this mesh to be processed as instanced Geometry vertical rain sheet. Must be the child of an instanced geometry mesh."),
+        ('LIGHTMAP REGION', "Lightmap Region", "Lightmap Region"),
+        ('OBJECT INSTANCE', "Object Instance", "Object Instance"),
+        ('PHYSICS', "Physics", "Physics"),
+        ('PLANAR FOG VOLUME', "Planar Fog Volume", "Planar Fog Volume"),
+        ('PORTAL', "Portal", "Portal"),
+        ('SEAM', "Seam", "Seam"),
+        ('WATER PHYSICS VOLUME', "Water Physics Volume", "Water Physics Volume"),
+        ('WATER SURFACE', "Water Surface", "Water Surface"),
+    ]
+
     #MESH PROPERTIES
     ObjectMesh_Type : EnumProperty(
         name="Mesh Type",
         options=set(),
         description="Sets the type of Halo mesh you want to create. This value is overridden by certain object prefixes: $, @, %",
         default = 'DEFAULT',
-        items=[ ('BOUNDARY SURFACE', "Boundary Surface", "Boundary Surface, used in structure_design tags for soft_kill, soft_ceiling, and slip_sufaces (ONLY USE FOR FILES YOU INTEND TO EXPORT TO STRUCTURE DESIGN TAGS)"),
-                ('COLLISION', "Collision", "Sets this mesh to have collision geometry only. PREFIX: @"),
-                ('COOKIE CUTTER', "Cookie Cutter", "Cookie Cutter"),
-                ('DECORATOR', "Decorator", "Decorator"),
-                ('DEFAULT', "Default", ""),
-                ('INSTANCED GEOMETRY', "Instanced Geometry", "Sets this mesh to be processed as instanced geometry. PREFIX: %"),
-                ('INSTANCED GEOMETRY COLLISION', "Instanced Geometry Collision", "Sets this mesh to be processed as instanced Geometry collision. Must be the child of an instanced geometry mesh. PREFIX: @"),
-                ('INSTANCED GEOMETRY MARKER', "Instanced Geometry Marker", "Sets this mesh to be processed as instanced Geometry marker. Must be the child of an instanced geometry mesh. PREFIX: #"),
-                ('INSTANCED GEOMETRY PHYSICS', "Instanced Geometry Physics", "Sets this mesh to be processed as instanced Geometry physics. Must be the child of an instanced geometry mesh. PREFIX: $"),
-                ('INSTANCED GEOMETRY RAIN BLOCKER', "Instanced Geometry Rain Blocker", "Sets this mesh to be processed as instanced Geometry rain blocker. Must be the child of an instanced geometry mesh."),
-                ('INSTANCED GEOMETRY VERTICAL RAIN SHEET', "Instanced Geometry Vertical Rain Sheet", "Sets this mesh to be processed as instanced Geometry vertical rain sheet. Must be the child of an instanced geometry mesh."),
-                ('LIGHTMAP REGION', "Lightmap Region", "Lightmap Region"),
-                ('OBJECT INSTANCE', "Object Instance", "Object Instance"),
-                ('PHYSICS', "Physics", "Physics"),
-                ('PLANAR FOG VOLUME', "Planar Fog Volume", "Planar Fog Volume"),
-                ('PORTAL', "Portal", "Portal"),
-                ('SEAM', "Seam", "Seam"),
-                ('WATER PHYSICS VOLUME', "Water Physics Volume", "Water Physics Volume"),
-                ('WATER SURFACE', "Water Surface", "Water Surface"),
-               ]
+        items=mesh_type_items,
         )
 
     ObjectMesh_Type_Locked : EnumProperty(
@@ -1814,26 +1724,7 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
         get=get_meshtype_enum,
         description="Sets the type of Halo mesh you want to create. This value is overridden by certain object prefixes: $, @, %",
         default = 'DEFAULT',
-        items=[ ('BOUNDARY SURFACE', "Boundary Surface", "Boundary Surface, used in structure_design tags for soft_kill, soft_ceiling, and slip_sufaces (ONLY USE FOR FILES YOU INTEND TO EXPORT TO STRUCTURE DESIGN TAGS)"),
-                ('COLLISION', "Collision", "Sets this mesh to have collision geometry only. PREFIX: @"),
-                ('COOKIE CUTTER', "Cookie Cutter", "Cookie Cutter"),
-                ('DECORATOR', "Decorator", "Decorator"),
-                ('DEFAULT', "Default", ""),
-                ('INSTANCED GEOMETRY', "Instanced Geometry", "Sets this mesh to be processed as instanced geometry. PREFIX: %"),
-                ('INSTANCED GEOMETRY COLLISION', "Instanced Geometry Collision", "Sets this mesh to be processed as instanced Geometry collision. Must be the child of an instanced geometry mesh. PREFIX: @"),
-                ('INSTANCED GEOMETRY MARKER', "Instanced Geometry Marker", "Sets this mesh to be processed as instanced Geometry marker. Must be the child of an instanced geometry mesh. PREFIX: #"),
-                ('INSTANCED GEOMETRY PHYSICS', "Instanced Geometry Physics", "Sets this mesh to be processed as instanced Geometry physics. Must be the child of an instanced geometry mesh. PREFIX: $"),
-                ('INSTANCED GEOMETRY RAIN BLOCKER', "Instanced Geometry Rain Blocker", "Sets this mesh to be processed as instanced Geometry rain blocker. Must be the child of an instanced geometry mesh."),
-                ('INSTANCED GEOMETRY VERTICAL RAIN SHEET', "Instanced Geometry Vertical Rain Sheet", "Sets this mesh to be processed as instanced Geometry vertical rain sheet. Must be the child of an instanced geometry mesh."),
-                ('LIGHTMAP REGION', "Lightmap Region", "Lightmap Region"),
-                ('OBJECT INSTANCE', "Object Instance", "Object Instance"),
-                ('PHYSICS', "Physics", "Physics"),
-                ('PLANAR FOG VOLUME', "Planar Fog Volume", "Planar Fog Volume"),
-                ('PORTAL', "Portal", "Portal"),
-                ('SEAM', "Seam", "Seam"),
-                ('WATER PHYSICS VOLUME', "Water Physics Volume", "Water Physics Volume"),
-                ('WATER SURFACE', "Water Surface", "Water Surface"),
-               ]
+        items=mesh_type_items,
         )
 
     Mesh_Primitive_Type : EnumProperty(
@@ -1924,6 +1815,11 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
                 ('CLOSE', "Close", "Render face details at close range"),
                ]
         )
+
+    Region_Name: StringProperty(
+        name="Face Region",
+        description="Define the name of the region these faces should be associated with.",
+    )
 
     Face_Global_Material: StringProperty(
         name="Global Material",
@@ -2360,18 +2256,31 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
                 ('GAME INSTANCE', "Game Instance", "Game Instance"),
                 ('PATHFINDING SPHERE', "Pathfinding Sphere", "Pathfinding Sphere"),
                 ('WATER VOLUME FLOW', "Water Volume Flow", "Water Volume Flow"),
-                ('PHYSICS HINGE CONSTRAINT', "Physics Hinge Constraint", "Physics Hinge Constraint"),
-                ('PHYSICS SOCKET CONSTRAINT', "Physics Socket Constraint", "Physics Socket Constraint"),
+                ('PHYSICS CONSTRAINT', "Physics Constraint", "Physics Constraint"),
                 ('TARGET', "Target", "Target"),
                 ('GARBAGE', "Garbage", "Garbage"),
                 ('EFFECTS', "Effects", "Effects"),
                 ('HINT', "Hint", "Hint"),
                ]
         )
+    
+    def get_marker_group_name(self):
+        group_name = bpy.context.active_object.name
+        group_name = group_name.removeprefix('#')
+        if group_name.rpartition('.')[0] != '':
+            group_name = group_name.rpartition('.')[0]
+
+        return group_name
 
     Marker_Group_Name: StringProperty(
         name="Marker Group",
         description="Define the name of the marker group",
+        get=get_marker_group_name,
+    )
+
+    Marker_Region: StringProperty(
+        name="Marker Group",
+        description="Define the name of marker region. This should match a face region name",
     )
 
     Marker_Game_Instance_Tag_Name: StringProperty(
@@ -2414,6 +2323,15 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
         name="Physics Constraint Child",
         description="Enter the name of the object that is this marker's child",
     )
+
+    Physics_Constraint_Type : EnumProperty(
+        name="Constraint Type",
+        description="Select the physics constraint type",
+        default = "HINGE",
+        items=[ ('HINGE', "Hinge", ""),
+                ('SOCKET', "Socket", ""),
+               ]
+        )
 
     Physics_Constraint_Uses_Limits: BoolProperty(
         name="Physics Constraint Uses Limits",
@@ -2532,18 +2450,10 @@ classeshalo = (
     JSON_ObjectProps,
     JSON_ObjectMeshProps,
     JSON_ObjectMeshFaceProps,
-    JSON_ObjectMeshExtraProps,
-    JSON_ObjectMeshSeamProps,
-    JSON_ObjectMeshWaterVolumeProps,
-    JSON_ObjectMeshFogVolumeProps,
-    JSON_ObjectMeshLightmapProps,
     JSON_ObjectMeshMaterialLightingProps,
+    JSON_ObjectMeshLightmapProps,
+    JSON_ObjectMeshExtraProps,
     JSON_ObjectMarkerProps,
-    JSON_ObjectMarkerInstanceProps,
-    JSON_ObjectMarkerPathfindingProps,
-    JSON_ObjectMarkerPhysicsProps,
-    JSON_ObjectMarkerPhysicsHingeProps,
-    JSON_ObjectMarkerPhysicsSocketProps,
     JSON_MaterialProps,
     JSON_ObjectPropertiesGroup,
     JSON_MaterialPropertiesGroup,
