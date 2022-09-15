@@ -1215,6 +1215,7 @@ class JSON_ObjectMeshProps(Panel):
     def poll(cls, context):
         return not context.object.name.startswith('#')
 
+
     def draw(self, context):
         layout = self.layout
         layout.use_property_split = True
@@ -1223,38 +1224,49 @@ class JSON_ObjectMeshProps(Panel):
         ob = context.object
         ob_halo_json = ob.halo_json
 
-        col = flow.column()
-        col.prop(ob_halo_json, "ObjectMesh_Type", text='Mesh Type')
         special_mesh_types = ('BOUNDARY SURFACE','DECORATOR','INSTANCED GEOMETRY','PLANAR FOG VOLUME','PORTAL','SEAM','WATER PHYSICS VOLUME',)
+        special_prefixes = ('%')
 
-        if ob_halo_json.ObjectMesh_Type in special_mesh_types:
-            match ob_halo_json.ObjectMesh_Type:
-                case 'BOUNDARY SURFACE':
-                    col.prop(ob_halo_json, "Boundary_Surface_Name", text='Boundary Surface Name')
-                    col.prop(ob_halo_json, "Boundary_Surface_Type", text='Boundary Surface Type')
-                case 'DECORATOR':
-                    col.prop(ob_halo_json, "Decorator_Name", text='Decorator Name')
-                    col.prop(ob_halo_json, "Decorator_LOD", text='Decorator Level of Detail')
-                case 'INSTANCED GEOMETRY':
-                    col.prop(ob_halo_json, "Poop_Lighting_Override", text='Instanced Geo Lighting')
-                    col.prop(ob_halo_json, "Poop_Pathfinding_Override", text='Instanced Geo Pathfinding')
-                    col.prop(ob_halo_json, "Poop_Imposter_Policy", text='Imposter Policy')
-                    col.prop(ob_halo_json, "Poop_Imposter_Transition_Distance", text='Imposter Transition Distance')
-                    col.prop(ob_halo_json, "Poop_Imposter_Fade_Range_Start", text='Fade In Range Start')
-                    col.prop(ob_halo_json, "Poop_Imposter_Fade_Range_End", text='Fade In Range End')
-                    col.prop(ob_halo_json, "Poop_Decomposition_Hulls", text='Decomposition Hulls')
-                    col.prop(ob_halo_json, "Poop_Predominant_Shader_Name", text='Predominant Shader Name')
-                    col.separator()
+        has_special_prefix = context.active_object.name.startswith(special_prefixes)
 
-                    col = layout.column(heading="Flags")
-                    sub = col.column(align=True)
-                    sub.prop(ob_halo_json, "Poop_Render_Only", text='Render Only')
-                    sub.prop(ob_halo_json, "Poop_Chops_Portals", text='Chops Portals')
-                    sub.prop(ob_halo_json, "Poop_Does_Not_Block_AOE", text='Does Not Block AOE')
-                    sub.prop(ob_halo_json, "Poop_Excluded_From_Lightprobe", text='Excluded From Lightprobe')
-                    sub.prop(ob_halo_json, "Poop_Decal_Spacing", text='Decal Spacing')
-                    sub.prop(ob_halo_json, "Poop_Precise_Geometry", text='Precise Geometry')
-                    
+        row = flow.column()
+        col = flow.column()
+         
+        row.enabled = not has_special_prefix
+
+        row.prop(ob_halo_json, "ObjectMesh_Type", text='Mesh Type')
+
+        if (ob_halo_json.ObjectMesh_Type in special_mesh_types or has_special_prefix):
+            if (ob_halo_json.ObjectMesh_Type == 'BOUNDARY SURFACE' and not has_special_prefix):
+                col.prop(ob_halo_json, "Boundary_Surface_Name", text='Boundary Surface Name')
+                col.prop(ob_halo_json, "Boundary_Surface_Type", text='Boundary Surface Type')
+            elif (ob_halo_json.ObjectMesh_Type == 'DECORATOR' and not has_special_prefix):
+                col.prop(ob_halo_json, "Decorator_Name", text='Decorator Name')
+                col.prop(ob_halo_json, "Decorator_LOD", text='Decorator Level of Detail')
+            elif (ob_halo_json.ObjectMesh_Type == 'INSTANCED GEOMETRY' or has_special_prefix):
+                col.prop(ob_halo_json, "Poop_Lighting_Override", text='Instanced Geo Lighting')
+                col.prop(ob_halo_json, "Poop_Pathfinding_Override", text='Instanced Geo Pathfinding')
+                col.prop(ob_halo_json, "Poop_Imposter_Policy", text='Imposter Policy')
+                col.prop(ob_halo_json, "Poop_Imposter_Transition_Distance", text='Imposter Transition Dist')
+                col.prop(ob_halo_json, "Poop_Imposter_Fade_Range_Start", text='Fade In Range Start')
+                col.prop(ob_halo_json, "Poop_Imposter_Fade_Range_End", text='Fade In Range End')
+                col.prop(ob_halo_json, "Poop_Decomposition_Hulls", text='Decomposition Hulls')
+
+                col.separator()
+
+                col.prop(ob_halo_json, "Poop_Predominant_Shader_Name", text='Predominant Shader Name')
+
+                col.separator()
+
+                col = layout.column(heading="Flags")
+                sub = col.column(align=True)
+                sub.prop(ob_halo_json, "Poop_Render_Only", text='Render Only')
+                sub.prop(ob_halo_json, "Poop_Chops_Portals", text='Chops Portals')
+                sub.prop(ob_halo_json, "Poop_Does_Not_Block_AOE", text='Does Not Block AOE')
+                sub.prop(ob_halo_json, "Poop_Excluded_From_Lightprobe", text='Excluded From Lightprobe')
+                sub.prop(ob_halo_json, "Poop_Decal_Spacing", text='Decal Spacing')
+                sub.prop(ob_halo_json, "Poop_Precise_Geometry", text='Precise Geometry')
+                
             col.separator()
 
         # PRIM PROPS
@@ -1705,7 +1717,6 @@ class JSON_MaterialProps(Panel):
     bl_space_type = 'PROPERTIES'
     bl_region_type = 'WINDOW'
     bl_context = "material"
-    bl_options = {'DEFAULT_CLOSED'}
 
     @classmethod
     def poll(cls, context):
@@ -1723,13 +1734,13 @@ class JSON_MaterialProps(Panel):
             material_halo_json = current_material.halo_json
             row = layout.row()
             col = layout.column(align=True)
-            row.label(text="Shader Path:")
+            row.label(text="Shader Path")
             col.prop(material_halo_json, "shader_path", text='')
             row = col.row()
             row.label(text="Material Override")
             col.prop(material_halo_json, "material_override", text='')
             row = col.row()
-
+            
 # LIGHT PROPERTIES
 class JSON_LightProps(Panel):
     bl_label = "Halo Light Properties"
@@ -1766,7 +1777,7 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
         name="Region",
         description="Define the name of the region this object should be associated with. If the object is a marker and this field is blank, the marker will be associated with all regions.",
     )
-    
+
     #MESH PROPERTIES
     ObjectMesh_Type : EnumProperty(
         name="Mesh Type Override",
