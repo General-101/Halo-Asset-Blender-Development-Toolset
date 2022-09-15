@@ -1183,6 +1183,8 @@ marker_prefixes = '#'
 mesh_prefixes = ('+', '@','-', '%','!', '$','<', '~','&','>', '\'')
 special_prefixes = ('b ', 'b_', 'frame ', 'frame_','#','+', '@','-', '%','!', '$','<', '~','&','>', '\'')
 
+special_materials = ('+portal','+seamsealer','+sky','+weatherpoly')
+
 
 class JSON_ObjectProps(Panel):
     bl_label = "Halo Object Properties"
@@ -1614,9 +1616,16 @@ class JSON_MaterialProps(Panel):
             row.label(text="Shader Path")
             col.prop(material_halo_json, "shader_path", text='')
             row = col.row()
-            row.label(text="Material Override")
-            col.prop(material_halo_json, "material_override", text='')
-            row = col.row()
+            layout.use_property_split = True
+            flow = layout.grid_flow(row_major=True, columns=0, even_columns=True, even_rows=False, align=False)
+            col = flow.column()
+            # row.label(text="Shader Type")
+            # row.prop(material_halo_json, "Shader_Type_Locked", text='')
+            # row = col.row()
+            if context.object.active_material.name in special_materials:
+                col.prop(material_halo_json, "material_override_locked", text='Material Override')
+            else:
+                col.prop(material_halo_json, "material_override", text='Material Override')
             
 # LIGHT PROPERTIES
 class JSON_LightProps(Panel):
@@ -1754,7 +1763,7 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
     ObjectMesh_Type : EnumProperty(
         name="Mesh Type",
         options=set(),
-        description="Sets the type of Halo mesh you want to create. This value is overridden by certain object prefixes: $, @, %",
+        description="Sets the type of Halo mesh you want to create. This value is overridden by certain object prefixes",
         default = 'DEFAULT',
         items=mesh_type_items,
         )
@@ -1869,48 +1878,56 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
 
     Sky_Permutation_Index: IntProperty(
         name="Sky Permutation Index",
+        options=set(),
         description="Set the sky permuation index of the mesh faces. Only valid if the face type is sky (or you are using the sky material override).",
         min=0,
     )
 
     Conveyor: BoolProperty(
         name ="Conveyor",
+        options=set(),
         description = "Enable to give mesh faces the conveyor property",
         default = False,
         )
 
     Ladder: BoolProperty(
         name ="Ladder",
+        options=set(),
         description = "Enable to make mesh faces climbable",
         default = False,
     )
 
     Slip_Surface: BoolProperty(
         name ="Slip Surface",
+        options=set(),
         description = "Enable to make mesh faces slippery for units",
         default = False,
     )
 
     Decal_Offset: BoolProperty(
         name ="Decal Offset",
+        options=set(),
         description = "Enable to offset these faces so that they appear to be layered on top of another face",
         default = False,
     )
 
     Group_Transparents_By_Plane: BoolProperty(
         name ="Group Transparents By Plane",
+        options=set(),
         description = "Enable to group transparent geometry by fitted planes",
         default = False,
     )
 
     No_Shadow: BoolProperty(
         name ="No Shadow",
+        options=set(),
         description = "Enable to prevent mesh faces from casting shadows",
         default = False,
     )
 
     Precise_Position: BoolProperty(
         name ="Precise Position",
+        options=set(),
         description = "Enable to prevent faces from being altered during the import process",
         default = False,
     )
@@ -1918,31 +1935,37 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
     #PRIMITIVE PROPERTIES
     Box_Length: FloatProperty(
         name="Box Length",
+        options=set(),
         description="Set length of the primitive box",
     )
 
     Box_Width: FloatProperty(
         name="Box Width",
+        options=set(),
         description="Set width of the primitive box",
     )
 
     Box_Height: FloatProperty(
         name="Box Height",
+        options=set(),
         description="Set height of the primitive box",
     )
 
     Pill_Radius: FloatProperty(
         name="Pill Radius",
+        options=set(),
         description="Set radius of the primitive pill",
     )
 
     Pill_Height: FloatProperty(
         name="Pill Height",
+        options=set(),
         description="Set height of the primitive pill",
     )
 
     Sphere_Radius: FloatProperty(
         name="Sphere Radius",
+        options=set(),
         description="Set radius of the primitive sphere",
     )
     
@@ -1955,6 +1978,7 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
 
     Boundary_Surface_Type : EnumProperty(
         name="Boundary Surface Name",
+        options=set(),
         description="Set the type of boundary surface you want to create. You should only import files with this mesh type as struture_design tags",
         default = "SOFT CEILING",
         items=[ ('SOFT CEILING', "Soft Ceiling", "Defines this mesh as soft ceiling"),
@@ -1966,6 +1990,7 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
     #POOP PROPERTIES
     Poop_Lighting_Override : EnumProperty(
         name="Instanced Geometry Lighting Override",
+        options=set(),
         description="Sets the lighting policy for this instanced geometry. If set to none, the exporter will defer to the object name prefix for the lighting policy",
         default = "PER VERTEX",
         items=[ ('NONE', "None", "None"),
@@ -1977,6 +2002,7 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
 
     Poop_Pathfinding_Override : EnumProperty(
         name="Instanced Geometry Pathfinding Override",
+        options=set(),
         description="Sets the pathfinding policy for this instanced geometry. If set to none, the exporter will defer to the object name prefix for the pathfinding policy",
         default = 'CUTOUT',
         items=[ ('CUTOUT', "Cutout", "Sets the pathfinding policy to cutout. AI will be able to pathfind around this mesh, but not on it."),
@@ -1987,6 +2013,7 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
 
     Poop_Imposter_Policy : EnumProperty(
         name="Instanced Geometry Imposter Policy",
+        options=set(),
         description="Sets the imposter policy for this instanced geometry.",
         default = "POLYGON DEFAULT",
         items=[ ('POLYGON DEFAULT', "Polygon Default", ""),
@@ -2000,24 +2027,28 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
 
     Poop_Imposter_Transition_Distance: FloatProperty(
         name="Instanced Geometry Imposter Transition Distance",
+        options=set(),
         description="The distance at which the instanced geometry transitions to its imposter variant.",
         default=-1.0,
     )
 
     Poop_Imposter_Fade_Range_Start: FloatProperty(
         name="Instanced Geometry Fade Range Start",
+        options=set(),
         description="The distance at which the instanced geometry starts to fade in.",
         default=36,
     )
 
     Poop_Imposter_Fade_Range_End: FloatProperty(
         name="Instanced Geometry Fade Range End",
+        options=set(),
         description="The distance at which the instanced geometry fades in.",
         default=30,
     )
 
     Poop_Decomposition_Hulls: IntProperty(
         name="Instanced Geometry Decomposition Hulls",
+        options=set(),
         description="",
         default=-1,
     )
@@ -2030,36 +2061,42 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
 
     Poop_Render_Only: BoolProperty(
         name ="Render Only",
+        options=set(),
         description = "Sets this instanced geometry to only have render geometry",
         default = False,
     )
 
     Poop_Chops_Portals: BoolProperty(
         name ="Chops Portals",
+        options=set(),
         description = "Sets this instanced geometry to chop portals. Hiya!",
         default = False,
     )
 
     Poop_Does_Not_Block_AOE: BoolProperty(
         name ="Does Not Block AOE",
+        options=set(),
         description = "Sets this instanced geometry to not block area of effect forces",
         default = False,
     )
 
     Poop_Excluded_From_Lightprobe: BoolProperty(
         name ="Excluded From Lightprobe",
+        options=set(),
         description = "Sets this instanced geometry to be exlcuded from any lightprobes",
         default = False,
     )
 
     Poop_Decal_Spacing: BoolProperty(
         name ="Decal Spacing",
+        options=set(),
         description = "Sets this instanced geometry have decal spacing (like decal_offset)",
         default = False,
     )
 
     Poop_Precise_Geometry: BoolProperty(
         name ="Precise Geometry",
+        options=set(),
         description = "Sets this instanced geometry not have its geometry altered in the BSP pass.",
         default = False,
     )
@@ -2067,6 +2104,7 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
     #PORTAL PROPERTIES
     Portal_Type : EnumProperty(
         name="Portal Type",
+        options=set(),
         description="Sets the type of portal this mesh should be.",
         default = "TWO WAY",
         items=[ ('NONE', "None", ""),
@@ -2078,18 +2116,21 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
 
     Portal_AI_Deafening: BoolProperty(
         name ="AI Deafening",
+        options=set(),
         description = "Stops AI hearing through this portal",
         default = False,
     )
 
     Portal_Blocks_Sounds: BoolProperty(
         name ="Blocks Sounds",
+        options=set(),
         description = "Stops sound from travelling past this portal",
         default = False,
     )
 
     Portal_Is_Door: BoolProperty(
         name ="Is Door",
+        options=set(),
         description = "Portal visibility is attached to a device machine state",
         default = False,
     )
@@ -2103,6 +2144,7 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
 
     Decorator_LOD: IntProperty(
         name="Decorator Level of Detail",
+        options=set(),
         description="Level of detail objects to create expressed in an integer range of 1-4",
         default=1,
         min=1,
@@ -2119,11 +2161,13 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
     #WATER VOLUME PROPERTIES
     Water_Volume_Depth: FloatProperty( # this something which can probably be automated?
         name="Water Volume Depth",
+        options=set(),
         description="Set the depth of this water volume mesh",
         default=20,
     )
     Water_Volume_Flow_Direction: FloatProperty( # this something which can probably be automated?
         name="Water Volume Flow Direction",
+        options=set(),
         description="Set the flow direction of this water volume mesh",
         min=-180,
         max=180,
@@ -2131,12 +2175,14 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
 
     Water_Volume_Flow_Velocity: FloatProperty(
         name="Water Volume Flow Velocity",
+        options=set(),
         description="Set the flow velocity of this water volume mesh",
         default=20,
     )
 
     Water_Volume_Fog_Color: FloatVectorProperty(
         name="Water Volume Fog Color",
+        options=set(),
         description="Set the fog color of this water volume mesh",
         default=(0, 0, 0),
         subtype='COLOR',
@@ -2144,6 +2190,7 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
 
     Water_Volume_Fog_Murkiness: FloatProperty(
         name="Water Volume Fog Murkiness",
+        options=set(),
         description="Set the fog murkiness of this water volume mesh",
     )
 
@@ -2162,6 +2209,7 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
 
     Fog_Volume_Depth: FloatProperty(
         name="Fog Volume Depth",
+        options=set(),
         description="Set the depth of the fog volume",
         default=20,
     )
@@ -2169,6 +2217,7 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
     #LIGHTMAP PROPERTIES
     Lightmap_Additive_Transparency: FloatVectorProperty(
         name="lightmap Additive Transparency",
+        options=set(),
         description="",
         default=(0, 0, 0),
         subtype='COLOR',
@@ -2176,12 +2225,14 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
 
     Lightmap_Ignore_Default_Resolution_Scale: BoolProperty(
         name ="Lightmap Resolution Scale",
+        options=set(),
         description = "",
         default = False,
     )
 
     Lightmap_Resolution_Scale: IntProperty(
         name="Lightmap Resolution Scale",
+        options=set(),
         description="",
         default=3,
         min=1,
@@ -2189,6 +2240,7 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
 
     Lightmap_Chart_Group: IntProperty(
         name="Lightmap Chart Group",
+        options=set(),
         description="",
         default=3,
         min=1,
@@ -2196,6 +2248,7 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
 
     Lightmap_Type : EnumProperty(
         name="Lightmap Type",
+        options=set(),
         description="Sets how this should be lit while lightmapping",
         default = "PER PIXEL",
         items=[ ('PER PIXEL', "Per Pixel", ""),
@@ -2205,24 +2258,28 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
 
     Lightmap_Transparency_Override: BoolProperty(
         name ="Lightmap Transparency Override",
+        options=set(),
         description = "",
         default = False,
     )
 
     Lightmap_Analytical_Bounce_Modifier: FloatProperty(
         name="Lightmap Analytical Bounce Modifier",
+        options=set(),
         description="",
         default=9999,
     )
     
     Lightmap_General_Bounce_Modifier: FloatProperty(
         name="Lightmap General Bounce Modifier",
+        options=set(),
         description="",
         default=9999,
     )
 
     Lightmap_Translucency_Tint_Color: FloatVectorProperty(
         name="Water Volume Fog Color",
+        options=set(),
         description="Lightmap Translucency Tint Color",
         default=(0, 0, 0),
         subtype='COLOR',
@@ -2230,6 +2287,7 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
 
     Lightmap_Lighting_From_Both_Sides: BoolProperty(
         name ="Lightmap Lighting From Both Sides",
+        options=set(),
         description = "",
         default = False,
     )
@@ -2237,21 +2295,25 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
     #MATERIAL LIGHTING PROPERTIES
     Material_Lighting_Attenuation_Cutoff: FloatProperty(
         name="Material Lighting Attenuation Cutoff",
+        options=set(),
         description="",
     )
 
     Material_Lighting_Attenuation_Falloff: FloatProperty(
         name="Material Lighting Attenuation Falloff",
+        options=set(),
         description="",
     )
 
     Material_Lighting_Emissive_Focus: FloatProperty(
         name="Material Lighting Emissive Focus",
+        options=set(),
         description="",
     )
 
     Material_Lighting_Emissive_Color: FloatVectorProperty(
         name="Material Lighting Emissive Color",
+        options=set(),
         description="",
         default=(0, 0, 0),
         subtype='COLOR',
@@ -2259,29 +2321,34 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
 
     Material_Lighting_Emissive_Per_Unit: BoolProperty(
         name ="Material Lighting Emissive Per Unit",
+        options=set(),
         description = "",
         default = False,
     )
 
     Material_Lighting_Emissive_Power: FloatProperty(
         name="Material Lighting Emissive Quality",
+        options=set(),
         description="",
     )
 
     Material_Lighting_Emissive_Quality: FloatProperty(
         name="Material Lighting Emissive Quality",
+        options=set(),
         description="",
         default=1,
     )
 
     Material_Lighting_Use_Shader_Gel: BoolProperty(
         name ="Material Lighting Use Shader Gel",
+        options=set(),
         description = "",
         default = False,
     )
 
     Material_Lighting_Bounce_Ratio: FloatProperty(
         name="Material Lighting Bounce Ratio",
+        options=set(),
         description="",
         default=1,
     )
@@ -2289,6 +2356,7 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
     #MARKER PROPERTIES
     ObjectMarker_Type : EnumProperty(
         name="Marker Type",
+        options=set(),
         description="Select the marker type",
         default = "MODEL",
         items=[ ('NONE', "None", "None"),
@@ -2335,22 +2403,26 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
 
     Marker_Velocity: FloatVectorProperty(
         name="Marker Velocity",
+        options=set(),
         description="Define the name of the velocity of a marker",
         subtype='VELOCITY'
     )
 
     Marker_Pathfinding_Sphere_Vehicle: BoolProperty(
         name="Vehicle Only Pathfinding Sphere",
+        options=set(),
         description="This pathfinding sphere only affects vehicles",
     )
 
     Pathfinding_Sphere_Remains_When_Open: BoolProperty(
         name="Pathfinding Sphere Remains When Open",
+        options=set(),
         description="Pathfinding sphere remains even when a machine is open",
     )
 
     Pathfinding_Sphere_With_Sectors: BoolProperty(
         name="Pathfinding Sphere With Sectors",
+        options=set(),
         description="Not sure",
     )
 
@@ -2366,6 +2438,7 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
 
     Physics_Constraint_Type : EnumProperty(
         name="Constraint Type",
+        options=set(),
         description="Select the physics constraint type",
         default = "HINGE",
         items=[ ('HINGE', "Hinge", ""),
@@ -2375,11 +2448,13 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
 
     Physics_Constraint_Uses_Limits: BoolProperty(
         name="Physics Constraint Uses Limits",
+        options=set(),
         description="Set whether the limits of this physics constraint should be constrained or not",
     )
 
     Hinge_Constraint_Minimum: FloatProperty(
         name="Hinge Constraint Minimum",
+        options=set(),
         description="Set the minimum rotation of a physics hinge",
         default=-180,
         min=-180,
@@ -2388,6 +2463,7 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
 
     Hinge_Constraint_Maximum: FloatProperty(
         name="Hinge Constraint Maximum",
+        options=set(),
         description="Set the maximum rotation of a physics hinge",
         default=180,
         min=-180,
@@ -2396,6 +2472,7 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
 
     Cone_Angle: FloatProperty(
         name="Cone Angle",
+        options=set(),
         description="Set the cone angle",
         default=90,
         min=-180,
@@ -2404,6 +2481,7 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
 
     Plane_Constraint_Minimum: FloatProperty(
         name="Plane Constraint Minimum",
+        options=set(),
         description="Set the minimum rotation of a physics plane",
         default=-90,
         min=-180,
@@ -2412,6 +2490,7 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
 
     Plane_Constraint_Maximum: FloatProperty(
         name="Plane Constraint Maximum",
+        options=set(),
         description="Set the maximum rotation of a physics plane",
         default=90,
         min=-180,
@@ -2420,6 +2499,7 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
 
     Twist_Constraint_Start: FloatProperty(
         name="Twist Constraint Minimum",
+        options=set(),
         description="Set the starting angle of a twist constraint",
         default=-180,
         min=-180,
@@ -2428,6 +2508,7 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
 
     Twist_Constraint_End: FloatProperty(
         name="Twist Constraint Maximum",
+        options=set(),
         description="Set the ending angle of a twist constraint",
         default=180,
         min=-180,
@@ -2441,8 +2522,94 @@ class JSON_MaterialPropertiesGroup(PropertyGroup):
         default = "",
         )
 
+    # shader_types = [ ('SHADER', "Shader", ""),
+    #             ('SHADER CORTANA', "Shader Cortana", ""),
+    #             ('SHADER CUSTOM', "Shader Custom", ""),
+    #             ('SHADER DECAL', "Shader Decal", ""),
+    #             ('SHADER FOLIAGE', "Shader Foliage", ""),
+    #             ('SHADER FUR', "Shader Fur", ""),
+    #             ('SHADER FUR STENCIL', "Shader Fur Stencil", ""),
+    #             ('SHADER GLASS', "Shader Glass", ""),
+    #             ('SHADER HALOGRAM', "Shader Halogram", ""),
+    #             ('SHADER MUX', "Shader Mux", ""),
+    #             ('SHADER MUX MATERIAL', "Shader Mux Material", ""),
+    #             ('SHADER SCREEN', "Shader Screen", ""),
+    #             ('SHADER SKIN', "Shader Skin", ""),
+    #             ('SHADER TERRAIN', "Shader Terrain", ""),
+    #             ('SHADER WATER', "Shader Water", ""),
+    #            ]
+
+    # def shader_type_enum(self):
+    #     print (bpy.types.Material.halo_json.shader_path.rpartition('.')[2])
+    #     match bpy.types.Material.halo_json.shader_path.rpartition('.')[2]:
+    #         case 'shader_cortana':
+    #             return 1
+    #         case 'shader_custom':
+    #             return 2
+    #         case 'shader_decal':
+    #             return 3
+    #         case 'shader_foliage':
+    #             return 4
+    #         case 'shader_fur':
+    #             return 5
+    #         case 'shader_fur_stencil':
+    #             return 6
+    #         case 'shader_glass':
+    #             return 7
+    #         case 'shader_mux':
+    #             return 8
+    #         case 'shader_mux_material':
+    #             return 9
+    #         case 'shader_screen':
+    #             return 10
+    #         case 'shader_skin':
+    #             return 11
+    #         case 'shader_terrain':
+    #             return 12
+    #         case 'shader_water':
+    #             return 13
+    #         case _:
+    #             return 0
+
+    # Shader_Type_Locked: EnumProperty(
+    #     name = "Shader Type",
+    #     options=set(),
+    #     description = "",
+    #     default = "SHADER",
+    #     get=shader_type_enum,
+    #     items=shader_types,
+    #     )
+
     material_override: EnumProperty(
         name = "Material Override",
+        options=set(),
+        description = "Select to override the shader path with a special material type e.g. sky / seamsealer",
+        default = "NONE",
+        items=[ ('NONE', "None", "None"),
+                ('PORTAL', "Portal", "Force all faces with this material to be portals"),
+                ('SEAMSEALER', "Seamsealer", "Force all faces with this material to be seamsealer"),
+                ('SKY', "Sky", "Force all faces with this material to be sky"),
+                ('WEATHERPOLY', "Weather Polyhedra", "Force all faces with this material to be weather polyhedra"),
+
+               ]
+        )
+
+    def material_name_is_special(self):
+        match bpy.context.object.active_material.name:
+            case '+portal':
+                return 1
+            case '+seamsealer':
+                return 2
+            case '+sky':
+                return 3
+            case '+weatherpoly':
+                return 4
+
+
+    material_override_locked: EnumProperty(
+        name = "Material Override",
+        options=set(),
+        get=material_name_is_special,
         description = "Select to override the shader path with a special material type e.g. sky / seamsealer",
         default = "NONE",
         items=[ ('NONE', "None", "None"),
@@ -2457,6 +2624,7 @@ class JSON_MaterialPropertiesGroup(PropertyGroup):
 class JSON_LightPropertiesGroup(PropertyGroup):
     light_type_override: EnumProperty(
         name = "Light Type Override",
+        options=set(),
         description = "Select to override the light type",
         default = "NONE",
         items=[ ('NONE', "None", "None"),
