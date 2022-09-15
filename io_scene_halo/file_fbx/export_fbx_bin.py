@@ -3128,6 +3128,7 @@ def getMaterials():
 
 import os
 import glob
+import tempfile
 import ctypes
 from subprocess import Popen
 from pathlib import Path
@@ -3139,7 +3140,7 @@ def export_asset(report, filePath="", export_gr2=False, delete_fbx=False, delete
         jsonPath += pathList[x]
     jsonPath += ".json"
 
-    build_json(jsonPath)
+    build_json(jsonPath, delete_json)
     report({'INFO'},"JSON exported successfully!")
 
     if export_gr2:
@@ -3157,30 +3158,30 @@ def export_asset(report, filePath="", export_gr2=False, delete_fbx=False, delete
         build_gr2(toolPath, filePath, jsonPath, gr2Path)
         report({'INFO'},"GR2 conversion finished!")
         
-        if delete_fbx and delete_json:
+        if delete_fbx:
             os.remove(filePath)
-            os.remove(jsonPath)
-            report({'INFO'},"Temporary files cleaned up successfully!")
-        elif delete_fbx:
-            os.remove(filePath)
-            report({'INFO'},"FBX file cleaned up successfully!")
-        elif delete_json:
-            os.remove(jsonPath)
-            report({'INFO'},"JSON file cleaned up successfully!")
     return {'FINISHED'}
 
-def build_json(jsonPath):
+def build_json(jsonPath, delete_json):
     jsonTemp = {}
     jsonTemp.update(getStrings())
     jsonTemp.update(getNodes())
     jsonTemp.update(getMeshes())
     jsonTemp.update(getMaterials())
 
-    haloJSON = json.dumps(jsonTemp, indent=4)
+    if(delete_json):
+        temp = tempfile.NamedTemporaryFile(delete=False, mode="w+", suffix=".json")
+        json.dump(jsonTemp, temp)
+        temp.flush()
+        #print(temp.name)
+        return temp.name
+    else:
+        haloJSON = json.dumps(jsonTemp, indent=4)
 
-    jsonFile = open(jsonPath, "w")
-    jsonFile.write(haloJSON)
-    jsonFile.close()
+        jsonFile = open(jsonPath, "w")
+        jsonFile.write(haloJSON)
+        jsonFile.close()
+        return ""
 
 def build_gr2(toolPath, filePath, jsonPath, gr2Path):
     try:            
