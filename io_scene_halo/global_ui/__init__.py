@@ -1233,17 +1233,19 @@ class JSON_ObjectMeshProps(Panel):
         col = flow.column()
          
         row.enabled = not has_special_prefix
+        if has_special_prefix:
+            row.prop(ob_halo_json, "ObjectMesh_Type_Locked", text='Mesh Type')
+        else:
+            row.prop(ob_halo_json, "ObjectMesh_Type", text='Mesh Type')
 
-        row.prop(ob_halo_json, "ObjectMesh_Type", text='Mesh Type')
-
-        if (ob_halo_json.ObjectMesh_Type in special_mesh_types or has_special_prefix):
-            if (ob_halo_json.ObjectMesh_Type == 'BOUNDARY SURFACE' and not has_special_prefix):
+        if (ob_halo_json.ObjectMesh_Type in special_mesh_types or ob_halo_json.ObjectMesh_Type_Locked in special_mesh_types):
+            if (ob_halo_json.ObjectMesh_Type == 'BOUNDARY SURFACE' and ob_halo_json.ObjectMesh_Type_Locked == 'DEFAULT'):
                 col.prop(ob_halo_json, "Boundary_Surface_Name", text='Boundary Surface Name')
                 col.prop(ob_halo_json, "Boundary_Surface_Type", text='Boundary Surface Type')
-            elif (ob_halo_json.ObjectMesh_Type == 'DECORATOR' and not has_special_prefix):
+            elif (ob_halo_json.ObjectMesh_Type == 'DECORATOR' and ob_halo_json.ObjectMesh_Type_Locked == 'DEFAULT'):
                 col.prop(ob_halo_json, "Decorator_Name", text='Decorator Name')
                 col.prop(ob_halo_json, "Decorator_LOD", text='Decorator Level of Detail')
-            elif (ob_halo_json.ObjectMesh_Type == 'INSTANCED GEOMETRY' or has_special_prefix):
+            elif (ob_halo_json.ObjectMesh_Type == 'INSTANCED GEOMETRY' or ob_halo_json.ObjectMesh_Type_Locked == 'INSTANCED GEOMETRY'):
                 col.prop(ob_halo_json, "Poop_Lighting_Override", text='Instanced Geo Lighting')
                 col.prop(ob_halo_json, "Poop_Pathfinding_Override", text='Instanced Geo Pathfinding')
                 col.prop(ob_halo_json, "Poop_Imposter_Policy", text='Imposter Policy')
@@ -1778,10 +1780,46 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
         description="Define the name of the region this object should be associated with. If the object is a marker and this field is blank, the marker will be associated with all regions.",
     )
 
+    def get_meshtype_enum(self):
+        if bpy.context.active_object.name.startswith('%'):
+            return 5
+
+    def set_meshtype_enum(self, value):
+        self = value
+
     #MESH PROPERTIES
     ObjectMesh_Type : EnumProperty(
-        name="Mesh Type Override",
+        name="Mesh Type",
         options=set(),
+        description="Sets the type of Halo mesh you want to create. This value is overridden by certain object prefixes: $, @, %",
+        default = 'DEFAULT',
+        items=[ ('BOUNDARY SURFACE', "Boundary Surface", "Boundary Surface, used in structure_design tags for soft_kill, soft_ceiling, and slip_sufaces (ONLY USE FOR FILES YOU INTEND TO EXPORT TO STRUCTURE DESIGN TAGS)"),
+                ('COLLISION', "Collision", "Sets this mesh to have collision geometry only. PREFIX: @"),
+                ('COOKIE CUTTER', "Cookie Cutter", "Cookie Cutter"),
+                ('DECORATOR', "Decorator", "Decorator"),
+                ('DEFAULT', "Default", ""),
+                ('INSTANCED GEOMETRY', "Instanced Geometry", "Sets this mesh to be processed as instanced geometry. PREFIX: %"),
+                ('INSTANCED GEOMETRY COLLISION', "Instanced Geometry Collision", "Sets this mesh to be processed as instanced Geometry collision. Must be the child of an instanced geometry mesh. PREFIX: @"),
+                ('INSTANCED GEOMETRY MARKER', "Instanced Geometry Marker", "Sets this mesh to be processed as instanced Geometry marker. Must be the child of an instanced geometry mesh. PREFIX: #"),
+                ('INSTANCED GEOMETRY PHYSICS', "Instanced Geometry Physics", "Sets this mesh to be processed as instanced Geometry physics. Must be the child of an instanced geometry mesh. PREFIX: $"),
+                ('INSTANCED GEOMETRY RAIN BLOCKER', "Instanced Geometry Rain Blocker", "Sets this mesh to be processed as instanced Geometry rain blocker. Must be the child of an instanced geometry mesh."),
+                ('INSTANCED GEOMETRY VERTICAL RAIN SHEET', "Instanced Geometry Vertical Rain Sheet", "Sets this mesh to be processed as instanced Geometry vertical rain sheet. Must be the child of an instanced geometry mesh."),
+                ('LIGHTMAP REGION', "Lightmap Region", "Lightmap Region"),
+                ('OBJECT INSTANCE', "Object Instance", "Object Instance"),
+                ('PHYSICS', "Physics", "Physics"),
+                ('PLANAR FOG VOLUME', "Planar Fog Volume", "Planar Fog Volume"),
+                ('PORTAL', "Portal", "Portal"),
+                ('SEAM', "Seam", "Seam"),
+                ('WATER PHYSICS VOLUME', "Water Physics Volume", "Water Physics Volume"),
+                ('WATER SURFACE', "Water Surface", "Water Surface"),
+               ]
+        )
+
+    ObjectMesh_Type_Locked : EnumProperty(
+        name="Mesh Type",
+        options=set(),
+        get=get_meshtype_enum,
+        set=set_meshtype_enum,
         description="Sets the type of Halo mesh you want to create. This value is overridden by certain object prefixes: $, @, %",
         default = 'DEFAULT',
         items=[ ('BOUNDARY SURFACE', "Boundary Surface", "Boundary Surface, used in structure_design tags for soft_kill, soft_ceiling, and slip_sufaces (ONLY USE FOR FILES YOU INTEND TO EXPORT TO STRUCTURE DESIGN TAGS)"),
