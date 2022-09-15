@@ -1225,18 +1225,16 @@ class JSON_ObjectMeshProps(Panel):
         ob_halo_json = ob.halo_json
 
         special_mesh_types = ('BOUNDARY SURFACE','DECORATOR','INSTANCED GEOMETRY','PLANAR FOG VOLUME','PORTAL','SEAM','WATER PHYSICS VOLUME',)
-        special_prefixes = ('%')
+        special_prefixes = ('%','@','$')
 
         has_special_prefix = context.active_object.name.startswith(special_prefixes)
 
-        row = flow.column()
         col = flow.column()
          
-        row.enabled = not has_special_prefix
         if has_special_prefix:
-            row.prop(ob_halo_json, "ObjectMesh_Type_Locked", text='Mesh Type')
+            col.prop(ob_halo_json, "ObjectMesh_Type_Locked", text='Mesh Type')
         else:
-            row.prop(ob_halo_json, "ObjectMesh_Type", text='Mesh Type')
+            col.prop(ob_halo_json, "ObjectMesh_Type", text='Mesh Type')
 
         if (ob_halo_json.ObjectMesh_Type in special_mesh_types or ob_halo_json.ObjectMesh_Type_Locked in special_mesh_types):
             if (ob_halo_json.ObjectMesh_Type == 'BOUNDARY SURFACE' and ob_halo_json.ObjectMesh_Type_Locked == 'DEFAULT'):
@@ -1268,27 +1266,17 @@ class JSON_ObjectMeshProps(Panel):
                 sub.prop(ob_halo_json, "Poop_Excluded_From_Lightprobe", text='Excluded From Lightprobe')
                 sub.prop(ob_halo_json, "Poop_Decal_Spacing", text='Decal Spacing')
                 sub.prop(ob_halo_json, "Poop_Precise_Geometry", text='Precise Geometry')
-                
-            col.separator()
+            elif (ob_halo_json.ObjectMesh_Type == 'PORTAL' and ob_halo_json.ObjectMesh_Type_Locked == 'DEFAULT'):
+                col.prop(ob_halo_json, "Portal_Type", text='Portal Type')
 
-        # PRIM PROPS
-        col.prop(ob_halo_json, "Mesh_Primitive_Type", text='Primitive Type')
-        if ob_halo_json.Mesh_Primitive_Type != 'NONE':
-            sub = col.column(align=True)
-            match ob_halo_json.Mesh_Primitive_Type:
-                case 'BOX':
-                    sub.prop(ob_halo_json, "Box_Length", text='Length')
-                    sub.prop(ob_halo_json, "Box_Width", text='Width')
-                    sub.prop(ob_halo_json, "Box_Height", text='Height')
-                case 'PILL':
-                    sub.prop(ob_halo_json, "Pill_Radius", text='Radius')
-                    sub.prop(ob_halo_json, "Pill_Height", text='Height')
-                case 'SPHERE':
-                    sub.prop(ob_halo_json, "Sphere_Radius", text='Radius')
-            col.separator()
+                col.separator()
 
-        col.prop(ob_halo_json, "Mesh_Tesselation_Density", text='Tesselation Density')
-        col.prop(ob_halo_json, "Mesh_Compression", text='Compression')
+                col = layout.column(heading="Flags")
+                sub = col.column(align=True)
+
+                sub.prop(ob_halo_json, "Portal_AI_Deafening", text='AI Deafening')
+                sub.prop(ob_halo_json, "Portal_Blocks_Sounds", text='Blocks Sounds')
+                sub.prop(ob_halo_json, "Portal_Is_Door", text='Is Door')
 
 class JSON_ObjectMeshFaceProps(Panel):
     bl_label = "Face Properties"
@@ -1333,37 +1321,41 @@ class JSON_ObjectMeshFaceProps(Panel):
         sub.prop(ob_halo_json, "No_Shadow", text='No Shadow')
         sub.prop(ob_halo_json, "Precise_Position", text='Precise Position')
 
-class JSON_ObjectMeshPortalProps(Panel):
-    bl_label = "Portal Properties"
-    bl_idname = "JSON_PT_MeshPortalDetailsPanel"
+class JSON_ObjectMeshExtraProps(Panel):
+    bl_label = "Other Mesh Properties"
+    bl_idname = "JSON_PT_MeshExtraDetailsPanel"
     bl_space_type = "PROPERTIES"
     bl_region_type = "WINDOW"
     bl_context = "data"
-    bl_options = {"DEFAULT_CLOSED"}
     bl_parent_id = "JSON_PT_MeshDetailsPanel"
+    bl_options = {"DEFAULT_CLOSED"}
 
     def draw(self, context):
         layout = self.layout
+        layout.use_property_split = True
+        flow = layout.grid_flow(row_major=True, columns=0, even_columns=True, even_rows=False, align=False)
 
         ob = context.object
         ob_halo_json = ob.halo_json
 
-        if not ob_halo_json.ObjectMesh_Type == 'PORTAL':
-            layout.enabled = False
+        col = flow.column()
+        col.prop(ob_halo_json, "Mesh_Tesselation_Density", text='Tesselation Density')
+        col.prop(ob_halo_json, "Mesh_Compression", text='Compression')
+        col.prop(ob_halo_json, "Mesh_Primitive_Type", text='Primitive Type')
+        if ob_halo_json.Mesh_Primitive_Type != 'NONE':
+            sub = col.column(align=True)
+            match ob_halo_json.Mesh_Primitive_Type:
+                case 'BOX':
+                    sub.prop(ob_halo_json, "Box_Length", text='Length')
+                    sub.prop(ob_halo_json, "Box_Width", text='Width')
+                    sub.prop(ob_halo_json, "Box_Height", text='Height')
+                case 'PILL':
+                    sub.prop(ob_halo_json, "Pill_Radius", text='Radius')
+                    sub.prop(ob_halo_json, "Pill_Height", text='Height')
+                case 'SPHERE':
+                    sub.prop(ob_halo_json, "Sphere_Radius", text='Radius')
 
-        col = layout.column(align=True)
-        row = col.row()
-        row.label(text='Portal Type')
-        col.prop(ob_halo_json, "Portal_Type", text='')
-        row = col.row()
-        row.label(text='AI Deafening')
-        col.prop(ob_halo_json, "Portal_AI_Deafening", text='')
-        row = col.row()
-        row.label(text='Blocks Sounds')
-        col.prop(ob_halo_json, "Portal_Blocks_Sounds", text='')
-        row = col.row()
-        row.label(text='Is Door')
-        col.prop(ob_halo_json, "Portal_Is_Door", text='')
+
 
 class JSON_ObjectMeshSeamProps(Panel):
     bl_label = "Seam Properties"
@@ -1781,11 +1773,12 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
     )
 
     def get_meshtype_enum(self):
-        if bpy.context.active_object.name.startswith('%'):
+        if bpy.context.active_object.name.startswith('@'):
+            return 1
+        elif bpy.context.active_object.name.startswith('%'):
             return 5
-
-    def set_meshtype_enum(self, value):
-        self = value
+        elif bpy.context.active_object.name.startswith('$'):
+            return 13
 
     #MESH PROPERTIES
     ObjectMesh_Type : EnumProperty(
@@ -1819,7 +1812,6 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
         name="Mesh Type",
         options=set(),
         get=get_meshtype_enum,
-        set=set_meshtype_enum,
         description="Sets the type of Halo mesh you want to create. This value is overridden by certain object prefixes: $, @, %",
         default = 'DEFAULT',
         items=[ ('BOUNDARY SURFACE', "Boundary Surface", "Boundary Surface, used in structure_design tags for soft_kill, soft_ceiling, and slip_sufaces (ONLY USE FOR FILES YOU INTEND TO EXPORT TO STRUCTURE DESIGN TAGS)"),
@@ -2540,7 +2532,7 @@ classeshalo = (
     JSON_ObjectProps,
     JSON_ObjectMeshProps,
     JSON_ObjectMeshFaceProps,
-    JSON_ObjectMeshPortalProps,
+    JSON_ObjectMeshExtraProps,
     JSON_ObjectMeshSeamProps,
     JSON_ObjectMeshWaterVolumeProps,
     JSON_ObjectMeshFogVolumeProps,
