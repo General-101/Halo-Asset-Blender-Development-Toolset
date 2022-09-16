@@ -1608,20 +1608,24 @@ class JSON_MaterialProps(Panel):
     def draw(self, context):
         layout = self.layout
         current_material = context.object.active_material
-        scene = context.scene
         if current_material is not None:
             material_halo_json = current_material.halo_json
             row = layout.row()
             col = layout.column(align=True)
-            row.label(text="Shader Path")
-            col.prop(material_halo_json, "shader_path", text='')
+            if material_halo_json.material_override == 'NONE' and material_halo_json.material_override_locked == 'NONE':
+                row.label(text="Shader Path")
+                col.prop(material_halo_json, "shader_path", text='')
+
             row = col.row()
             layout.use_property_split = True
             flow = layout.grid_flow(row_major=True, columns=0, even_columns=True, even_rows=False, align=False)
             col = flow.column()
-            # row.label(text="Shader Type")
-            # row.prop(material_halo_json, "Shader_Type_Locked", text='')
-            # row = col.row()
+
+            if material_halo_json.material_override != 'NONE' or material_halo_json.material_override_locked != 'NONE':
+                col.prop(material_halo_json, "Shader_Type_Override", text='Shader Type')
+            else:
+                col.prop(material_halo_json, "Shader_Type", text='Shader Type')
+
             if context.object.active_material.name in special_materials:
                 col.prop(material_halo_json, "material_override_locked", text='Material Override')
             else:
@@ -2516,69 +2520,85 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
     )
 
 class JSON_MaterialPropertiesGroup(PropertyGroup):
+    
+    def update_shader_type(self, context):
+        material_path = context.object.active_material.halo_json.shader_path.replace('"','')
+
+        match material_path.rpartition('.')[2]:
+            case 'shader_cortana':
+                context.object.active_material.halo_json.Shader_Type = 'SHADER CORTANA'
+            case 'shader_custom':
+                context.object.active_material.halo_json.Shader_Type = 'SHADER CUSTOM'
+            case 'shader_decal':
+                context.object.active_material.halo_json.Shader_Type = 'SHADER DECAL'
+            case 'shader_foliage':
+                context.object.active_material.halo_json.Shader_Type = 'SHADER FOLIAGE'
+            case 'shader_fur':
+                context.object.active_material.halo_json.Shader_Type = 'SHADER FUR'
+            case 'shader_fur_stencil':
+                context.object.active_material.halo_json.Shader_Type = 'SHADER FUR STENCIL'
+            case 'shader_glass':
+                context.object.active_material.halo_json.Shader_Type = 'SHADER GLASS'
+            case 'shader_halogram':
+                context.object.active_material.halo_json.Shader_Type = 'SHADER HALOGRAM'
+            case 'shader_mux':
+                context.object.active_material.halo_json.Shader_Type = 'SHADER MUX'
+            case 'shader_mux_material':
+                context.object.active_material.halo_json.Shader_Type = 'SHADER MUX MATERIAL'
+            case 'shader_screen':
+                context.object.active_material.halo_json.Shader_Type = 'SHADER SCREEN'
+            case 'shader_skin':
+                context.object.active_material.halo_json.Shader_Type = 'SHADER SKIN'
+            case 'shader_terrain':
+                context.object.active_material.halo_json.Shader_Type = 'SHADER TERRAIN'
+            case 'shader_water':
+                context.object.active_material.halo_json.Shader_Type = 'SHADER WATER'
+            case _:
+                context.object.active_material.halo_json.Shader_Type = 'SHADER'
+
     shader_path: StringProperty(
         name = "Shader Path",
-        description = "Define the relative path to a shader, including the file extension",
+        description = "Define the path to a shader. This can either be a relative path, or if you have added your Editing Kit Path to add on preferences, the full path. Including the file extension will automatically update the shader type",
         default = "",
+        update=update_shader_type,
         )
 
-    # shader_types = [ ('SHADER', "Shader", ""),
-    #             ('SHADER CORTANA', "Shader Cortana", ""),
-    #             ('SHADER CUSTOM', "Shader Custom", ""),
-    #             ('SHADER DECAL', "Shader Decal", ""),
-    #             ('SHADER FOLIAGE', "Shader Foliage", ""),
-    #             ('SHADER FUR', "Shader Fur", ""),
-    #             ('SHADER FUR STENCIL', "Shader Fur Stencil", ""),
-    #             ('SHADER GLASS', "Shader Glass", ""),
-    #             ('SHADER HALOGRAM', "Shader Halogram", ""),
-    #             ('SHADER MUX', "Shader Mux", ""),
-    #             ('SHADER MUX MATERIAL', "Shader Mux Material", ""),
-    #             ('SHADER SCREEN', "Shader Screen", ""),
-    #             ('SHADER SKIN', "Shader Skin", ""),
-    #             ('SHADER TERRAIN', "Shader Terrain", ""),
-    #             ('SHADER WATER', "Shader Water", ""),
-    #            ]
+    shader_types = [ ('SHADER', "Shader", ""),
+                ('SHADER CORTANA', "Shader Cortana", ""),
+                ('SHADER CUSTOM', "Shader Custom", ""),
+                ('SHADER DECAL', "Shader Decal", ""),
+                ('SHADER FOLIAGE', "Shader Foliage", ""),
+                ('SHADER FUR', "Shader Fur", ""),
+                ('SHADER FUR STENCIL', "Shader Fur Stencil", ""),
+                ('SHADER GLASS', "Shader Glass", ""),
+                ('SHADER HALOGRAM', "Shader Halogram", ""),
+                ('SHADER MUX', "Shader Mux", ""),
+                ('SHADER MUX MATERIAL', "Shader Mux Material", ""),
+                ('SHADER SCREEN', "Shader Screen", ""),
+                ('SHADER SKIN', "Shader Skin", ""),
+                ('SHADER TERRAIN', "Shader Terrain", ""),
+                ('SHADER WATER', "Shader Water", ""),
+               ]
 
-    # def shader_type_enum(self):
-    #     print (bpy.types.Material.halo_json.shader_path.rpartition('.')[2])
-    #     match bpy.types.Material.halo_json.shader_path.rpartition('.')[2]:
-    #         case 'shader_cortana':
-    #             return 1
-    #         case 'shader_custom':
-    #             return 2
-    #         case 'shader_decal':
-    #             return 3
-    #         case 'shader_foliage':
-    #             return 4
-    #         case 'shader_fur':
-    #             return 5
-    #         case 'shader_fur_stencil':
-    #             return 6
-    #         case 'shader_glass':
-    #             return 7
-    #         case 'shader_mux':
-    #             return 8
-    #         case 'shader_mux_material':
-    #             return 9
-    #         case 'shader_screen':
-    #             return 10
-    #         case 'shader_skin':
-    #             return 11
-    #         case 'shader_terrain':
-    #             return 12
-    #         case 'shader_water':
-    #             return 13
-    #         case _:
-    #             return 0
+    Shader_Type: EnumProperty(
+        name = "Shader Type",
+        options=set(),
+        description = "Set by the extension of the shader path. Alternatively this field can be updated manually",
+        default = "SHADER",
+        items=shader_types,
+        )
 
-    # Shader_Type_Locked: EnumProperty(
-    #     name = "Shader Type",
-    #     options=set(),
-    #     description = "",
-    #     default = "SHADER",
-    #     get=shader_type_enum,
-    #     items=shader_types,
-    #     )
+    def lock_to_override(self):
+        return 0
+
+    Shader_Type_Override: EnumProperty(
+        name = "Shader Type",
+        options=set(),
+        get=lock_to_override,
+        description = "",
+        default = "OVERRIDE",
+        items=[('OVERRIDE', 'Override', '')],
+        )
 
     material_override: EnumProperty(
         name = "Material Override",
