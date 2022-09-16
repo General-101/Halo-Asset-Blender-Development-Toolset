@@ -17,6 +17,8 @@
 # ##### END GPL LICENSE BLOCK #####
 
 # SPDX-License-Identifier: GPL-2.0-or-later
+# Original Authors: Campbell Barton, Bastien Montagne, Jens Restemeier
+# Halo Asset Modifications: Generalkidd, Crisp
 
 bl_info = {
     "name": "Halo FBX format",
@@ -46,7 +48,6 @@ from bpy.props import (
         BoolProperty,
         FloatProperty,
         EnumProperty,
-        CollectionProperty,
         )
 from bpy_extras.io_utils import (
         ExportHelper,
@@ -580,7 +581,7 @@ class FBX_PT_export_bake_animation_Halo(bpy.types.Panel):
         layout.prop(operator, "bake_anim_simplify_factor")
 
 def menu_func_export(self, context):
-    self.layout.operator(ExportHaloFBX.bl_idname, text="Halo Asset Export (.fbx, .json, .gr2)")
+    self.layout.operator(ExportHaloFBX.bl_idname, text="Halo Reach Asset Export (.fbx, .json, .gr2)")
 
 classes = (
     ExportHaloFBX,

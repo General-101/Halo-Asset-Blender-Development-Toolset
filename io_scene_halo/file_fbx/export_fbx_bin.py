@@ -3120,18 +3120,15 @@ def getMaterials():
                         shaderPath = "bungie_face_type=_connected_geometry_face_type_weather_polyhedra"
 
             matList.update({halo_material_name : {"bungie_shader_path": shaderPath, "bungie_shader_type": shaderType}})
-            #print('\nShader Path = %r' % mat_slot.material.ass_jms.shader_path)
 
     temp = ({'material_properties': matList})
 
     return temp
 
 import os
-import glob
 import tempfile
 import ctypes
 from subprocess import Popen
-from pathlib import Path
 
 def export_asset(report, filePath="", export_gr2=False, delete_fbx=False, delete_json=False):
     pathList = filePath.split(".")
@@ -3173,7 +3170,6 @@ def build_json(jsonPath, delete_json):
         temp = tempfile.NamedTemporaryFile(delete=False, mode="w+", suffix=".json")
         json.dump(jsonTemp, temp)
         temp.flush()
-        #print(temp.name)
         return temp.name
     else:
         haloJSON = json.dumps(jsonTemp, indent=4)
@@ -3194,6 +3190,8 @@ def build_gr2(toolPath, filePath, jsonPath, gr2Path):
             p.wait()
     except:
         ctypes.windll.user32.MessageBoxW(0, "GR2 Not Exported. Please check your HREK editing kit path in add-on preferences and try again.", "Invalid HREK Path", 0)
+    finally:
+        return {'FINISHED'}
 
 # This func can be called with just the filepath
 def save_single(operator, scene, depsgraph, filepath="",
