@@ -2,3 +2,4 @@
 *.patch
 output/
 /io_scene_halo/resources.zip
+copy to add-ons.bat

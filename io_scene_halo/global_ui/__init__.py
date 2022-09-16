@@ -1546,7 +1546,7 @@ class JSON_ObjectMarkerProps(Panel):
 
         col.prop(ob_halo_json, "ObjectMarker_Type", text='Marker Type')
         
-        group_marker_types = ('MODEL', 'HINT', 'TARGET')
+        group_marker_types = ('DEFAULT', 'HINT', 'TARGET')
 
         col.prop(ob_halo_json, "Marker_Region", text='Marker Region')
 
@@ -2364,17 +2364,16 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
         name="Marker Type",
         options=set(),
         description="Select the marker type",
-        default = "MODEL",
-        items=[ ('NONE', "None", "None"),
-                ('MODEL', "Model", "Model"),
-                ('GAME INSTANCE', "Game Instance", "Game Instance"),
-                ('PATHFINDING SPHERE', "Pathfinding Sphere", "Pathfinding Sphere"),
-                ('WATER VOLUME FLOW', "Water Volume Flow", "Water Volume Flow"),
-                ('PHYSICS CONSTRAINT', "Physics Constraint", "Physics Constraint"),
-                ('TARGET', "Target", "Target"),
-                ('GARBAGE', "Garbage", "Garbage"),
-                ('EFFECTS', "Effects", "Effects"),
-                ('HINT', "Hint", "Hint"),
+        default = "DEFAULT",
+        items=[ ('DEFAULT', "Default", "Default marker type. Defines render_model markers for models, and structure markers for bsps"),
+                ('EFFECTS', "Effects", "Marker for effects only."),
+                ('GAME INSTANCE', "Game Instance", "Game Instance marker"),
+                ('GARBAGE', "Garbage", "marker to define position that garbage pieces should be created"),
+                ('HINT', "Hint", "Used for ai hints"),
+                ('PATHFINDING SPHERE', "Pathfinding Sphere", "Used to create ai pathfinding spheres"),
+                ('PHYSICS CONSTRAINT', "Physics Constraint", "Used to define various types of physics contraints"),
+                ('TARGET', "Target", "Defines the markers used in a model's targets'"),
+                ('WATER VOLUME FLOW', "Water Volume Flow", "Used to define water flow for water physics volumes. For structure_design tags only"),
                ]
         )
     
@@ -2388,13 +2387,13 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
 
     Marker_Group_Name: StringProperty(
         name="Marker Group",
-        description="Define the name of the marker group",
+        description="Displays the name of the marker group. Marker groups equal the object name minus the '#' prefix and text after the last '.', allowing for multiple markers to share the same group",
         get=get_marker_group_name,
     )
 
     Marker_Region: StringProperty(
         name="Marker Group",
-        description="Define the name of marker region. This should match a face region name",
+        description="Define the name of marker region. This should match a face region name. Leave blank to associate this marker with all regions",
     )
 
     Marker_Game_Instance_Tag_Name: StringProperty(
@@ -2404,13 +2403,13 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
 
     Marker_Game_Instance_Tag_Variant_Name: StringProperty(
         name="Marker Game Instance Tag Variant",
-        description="Define the name of the marker game instance tag",
+        description="Define the name of the marker game instance tag variant",
     ) 
 
     Marker_Velocity: FloatVectorProperty(
         name="Marker Velocity",
         options=set(),
-        description="Define the name of the velocity of a marker",
+        description="",
         subtype='VELOCITY'
     )
 
