@@ -1278,7 +1278,7 @@ class JSON_ObjectMeshProps(Panel):
                 col.prop(ob_halo_json, "Poop_Imposter_Transition_Distance", text='Imposter Transition Dist')
                 col.prop(ob_halo_json, "Poop_Imposter_Fade_Range_Start", text='Fade In Range Start')
                 col.prop(ob_halo_json, "Poop_Imposter_Fade_Range_End", text='Fade In Range End')
-                col.prop(ob_halo_json, "Poop_Decomposition_Hulls", text='Decomposition Hulls')
+                #col.prop(ob_halo_json, "Poop_Decomposition_Hulls", text='Decomposition Hulls') commented out so it can be set automatically. 
 
                 col.separator()
 
@@ -1821,42 +1821,39 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
     Face_Type : EnumProperty(
         name="Face Type",
         options=set(),
-        description="Select the face type for this mesh. Note that any override shaders will override the face type selected here for relevant materials",
-        default = "NORMAL",
-        items=[ ('NONE', "None", "None"),
-                ('NORMAL', "Normal", "Normal"),
-                ('SEAM SEALER', "Seam Sealer", "Set mesh faces to have the special seam sealer property"),
+        description="Sets the face type for this mesh. Note that any override shaders will override the face type selected here for relevant materials",
+        default = 'NORMAL',
+        items=[ ('NORMAL', "Normal", "This face type has no special properties"),
+                ('SEAM SEALER', "Seam Sealer", "Set mesh faces to have the special seam sealer property. Collsion only geometry"),
                 ('SKY', "Sky", "Set mesh faces to render the sky"),
-                ('WEATHER POLYHEDRA', "Weather Polyhedra", "Weather Polyhedra"),
+                ('WEATHER POLYHEDRA', "Weather Polyhedra", "Generates weather polyhedra on the faces of convex shapes"),
                ]
         )
 
     Face_Mode : EnumProperty(
         name="Face Mode",
         options=set(),
-        description="Select the face mode for this mesh",
-        default = "NORMAL",
-        items=[ ('NONE', "None", "None"),
-                ('NORMAL', "Normal", "Normal"),
-                ('RENDER ONLY', "Render Only", "Set mesh faces to be render only"),
-                ('COLLISION ONLY', "Collision Only", "Set mesh faces to be collision only"),
-                ('SPHERE COLLISION ONLY', "Sphere Collision Only", "Set mesh faces to be sphere collision only. Only objects with physics models can collide with these faces"),
-                ('SHADOW ONLY', "Shadow Only", "Set mesh faces to only cast shadows"),
-                ('LIGHTMAP ONLY', "Lightmap Only", "Set mesh faces to only be used during lightmapping. They will otherwise have no render / collision"),
-                ('BREAKABLE', "Breakable", "Set mesh faces to be breakable. Time to smash some windows"),
+        description="Sets face mode for this mesh",
+        default = 'NORMAL',
+        items=[ ('NORMAL', "Normal", "This face mode has no special properties"),
+                ('RENDER ONLY', "Render Only", "Faces set to render only"),
+                ('COLLISION ONLY', "Collision Only", "Faces set to collision only"),
+                ('SPHERE COLLISION ONLY', "Sphere Collision Only", "Faces set to sphere collision only. Only objects with physics models can collide with these faces"),
+                ('SHADOW ONLY', "Shadow Only", "Faces set to only cast shadows"),
+                ('LIGHTMAP ONLY', "Lightmap Only", "Faces set to only be used during lightmapping. They will otherwise have no render / collision geometry"),
+                ('BREAKABLE', "Breakable", "Faces set to be breakable"),
                ]
         )
 
     Face_Sides : EnumProperty(
         name="Face Sides",
         options=set(),
-        description="Select the face sides for this mesh",
-        default = "ONE SIDED",
-        items=[ ('NONE', "None", "None"),
-                ('ONE SIDED', "One Sided", "Set mesh faces to only render on one side (the normal direction)"),
-                ('ONE SIDED TRANSPARENT', "One Sided Transparent", "Set mesh faces to only render on one side (the normal direction), but also render geometry behind it"),
-                ('TWO SIDED', "Two Sided", "Set mesh faces to  render on both sides"),
-                ('TWO SIDED TRANSPARENT', "Two Sided Transparent", "Set mesh faces to render on both sides, but also render geometry through it"),
+        description="Sets the face sides for this mesh",
+        default = 'ONE SIDED',
+        items=[ ('ONE SIDED', "One Sided", "Faces set to only render on one side (the direction of face normals)"),
+                ('ONE SIDED TRANSPARENT', "One Sided Transparent", "Faces set to only render on one side (the direction of face normals), but also render geometry behind them"),
+                ('TWO SIDED', "Two Sided", "Faces set to render on both sides"),
+                ('TWO SIDED TRANSPARENT', "Two Sided Transparent", "Faces set to render on both sides, but also render geometry through them"),
                ]
         )
 
@@ -1865,16 +1862,15 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
         options=set(),
         description="Select the draw distance for faces on this mesh",
         default = "NORMAL",
-        items=[ ('NONE', "None", "None"),
-                ('NORMAL', "Normal", "Normal"),
-                ('MID', "Mid", "Render face details at medium range"),
-                ('CLOSE', "Close", "Render face details at close range"),
+        items=[ ('NORMAL', "Normal", ""),
+                ('MID', "Mid", ""),
+                ('CLOSE', "Close", ""),
                ]
         )
 
     Region_Name: StringProperty(
         name="Face Region",
-        description="Define the name of the region these faces should be associated with.",
+        description="Define the name of the region these faces should be associated with",
     )
 
     Face_Global_Material: StringProperty(
@@ -1885,28 +1881,28 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
     Sky_Permutation_Index: IntProperty(
         name="Sky Permutation Index",
         options=set(),
-        description="Set the sky permuation index of the mesh faces. Only valid if the face type is sky (or you are using the sky material override).",
+        description="Set the sky permuation index of the faces. Only valid if the face type is sky",
         min=0,
     )
 
     Conveyor: BoolProperty(
         name ="Conveyor",
         options=set(),
-        description = "Enable to give mesh faces the conveyor property",
+        description = "Enables the conveyor property",
         default = False,
         )
 
     Ladder: BoolProperty(
         name ="Ladder",
         options=set(),
-        description = "Enable to make mesh faces climbable",
+        description = "Makes faces climbable",
         default = False,
     )
 
     Slip_Surface: BoolProperty(
         name ="Slip Surface",
         options=set(),
-        description = "Enable to make mesh faces slippery for units",
+        description = "Makes faces slippery for units",
         default = False,
     )
 
@@ -1927,7 +1923,7 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
     No_Shadow: BoolProperty(
         name ="No Shadow",
         options=set(),
-        description = "Enable to prevent mesh faces from casting shadows",
+        description = "Enable to prevent faces from casting shadows",
         default = False,
     )
 
@@ -1942,37 +1938,37 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
     Box_Length: FloatProperty(
         name="Box Length",
         options=set(),
-        description="Set length of the primitive box",
+        description="Set the length of the primitive box",
     )
 
     Box_Width: FloatProperty(
         name="Box Width",
         options=set(),
-        description="Set width of the primitive box",
+        description="Set the width of the primitive box",
     )
 
     Box_Height: FloatProperty(
         name="Box Height",
         options=set(),
-        description="Set height of the primitive box",
+        description="Set the height of the primitive box",
     )
 
     Pill_Radius: FloatProperty(
         name="Pill Radius",
         options=set(),
-        description="Set radius of the primitive pill",
+        description="Set the radius of the primitive pill",
     )
 
     Pill_Height: FloatProperty(
         name="Pill Height",
         options=set(),
-        description="Set height of the primitive pill",
+        description="Set the height of the primitive pill",
     )
 
     Sphere_Radius: FloatProperty(
         name="Sphere Radius",
         options=set(),
-        description="Set radius of the primitive sphere",
+        description="Set the radius of the primitive sphere",
     )
     
     #BOUNDARY SURFACE PROPERTIES
@@ -1983,10 +1979,10 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
     )
 
     Boundary_Surface_Type : EnumProperty(
-        name="Boundary Surface Name",
+        name="Boundary Surface Type",
         options=set(),
         description="Set the type of boundary surface you want to create. You should only import files with this mesh type as struture_design tags",
-        default = "SOFT CEILING",
+        default = 'SOFT CEILING',
         items=[ ('SOFT CEILING', "Soft Ceiling", "Defines this mesh as soft ceiling"),
                 ('SOFT KILL', "Soft Kill", "Defines this mesh as soft kill barrier"),
                 ('SLIP SURFACE', "Slip Surface", "Defines this mesh as a slip surface"),
@@ -1995,33 +1991,32 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
     
     #POOP PROPERTIES
     Poop_Lighting_Override : EnumProperty(
-        name="Instanced Geometry Lighting Override",
+        name="Lighting Policy",
         options=set(),
-        description="Sets the lighting policy for this instanced geometry. If set to none, the exporter will defer to the object name prefix for the lighting policy",
-        default = "PER VERTEX",
-        items=[ ('NONE', "None", "None"),
-                ('PER PIXEL', "Per Pixel", "Sets the lighting policy to per pixel. PREFIX: ?"),
-                ('PER VERTEX', "Per Vertex", "Sets the lighting policy to per vertex. PREFX: !"),
-                ('SINGLE PROBE', "Single Probe", "Sets the lighting policy to single probe."),
+        description="Sets the lighting policy for this instanced geometry",
+        default = 'PER VERTEX',
+        items=[ ('PER PIXEL', "Per Pixel", "Sets the lighting policy to per pixel. Can be forced on with the prefix: '%?'"),
+                ('PER VERTEX', "Per Vertex", "Sets the lighting policy to per vertex. Can be forced on with the prefix: '%!'"),
+                ('SINGLE PROBE', "Sing0le Probe", "Sets the lighting policy to single probe."),
                ]
         )
 
     Poop_Pathfinding_Override : EnumProperty(
         name="Instanced Geometry Pathfinding Override",
         options=set(),
-        description="Sets the pathfinding policy for this instanced geometry. If set to none, the exporter will defer to the object name prefix for the pathfinding policy",
+        description="Sets the pathfinding policy for this instanced geometry",
         default = 'CUTOUT',
         items=[ ('CUTOUT', "Cutout", "Sets the pathfinding policy to cutout. AI will be able to pathfind around this mesh, but not on it."),
-                ('NONE', "None", "Sets the pathfinding policy to none. This mesh will be ignored during pathfinding generation. PREFIX: -"),
-                ('STATIC', "Static", "Sets the pathfinding policy to static. AI will be able to pathfind around and on this mesh. PREFIX: +"),
+                ('NONE', "None", "Sets the pathfinding policy to none. This mesh will be ignored during pathfinding generation. Can be forced on with the prefix: '%-'"),
+                ('STATIC', "Static", "Sets the pathfinding policy to static. AI will be able to pathfind around and on this mesh. Can be forced on with the prefix: '%+'"),
                ]
         )
 
     Poop_Imposter_Policy : EnumProperty(
         name="Instanced Geometry Imposter Policy",
         options=set(),
-        description="Sets the imposter policy for this instanced geometry.",
-        default = "POLYGON DEFAULT",
+        description="Sets the imposter policy for this instanced geometry",
+        default = "NONE",
         items=[ ('POLYGON DEFAULT', "Polygon Default", ""),
                 ('POLYGON HIGH', "Polygon High", ""),
                 ('CARD DEFAULT', "Card Default", ""),
@@ -2034,55 +2029,55 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
     Poop_Imposter_Transition_Distance: FloatProperty(
         name="Instanced Geometry Imposter Transition Distance",
         options=set(),
-        description="The distance at which the instanced geometry transitions to its imposter variant.",
+        description="The distance at which the instanced geometry transitions to its imposter variant",
         default=-1.0,
     )
 
     Poop_Imposter_Fade_Range_Start: FloatProperty(
         name="Instanced Geometry Fade Range Start",
         options=set(),
-        description="The distance at which the instanced geometry starts to fade in.",
+        description="The distance at which the instanced geometry starts to fade in",
         default=36,
     )
 
     Poop_Imposter_Fade_Range_End: FloatProperty(
         name="Instanced Geometry Fade Range End",
         options=set(),
-        description="The distance at which the instanced geometry fades in.",
+        description="The distance at which the instanced geometry fades in",
         default=30,
     )
 
-    Poop_Decomposition_Hulls: IntProperty(
+    Poop_Decomposition_Hulls: FloatProperty(
         name="Instanced Geometry Decomposition Hulls",
         options=set(),
         description="",
-        default=-1,
+        default= 4294967295,
     )
     
     Poop_Predominant_Shader_Name: StringProperty(
         name="Instanced Geometry Predominant Shader Name",
-        description="I have no idea what this does, but we'll write whatever you put here into the json file.",
+        description="I have no idea what this does, but we'll write whatever you put here into the json file. The path should be relative and contain the shader extension (e.g. shader_relative_path\shader_name.shader)",
         maxlen=1024,
     )
 
     Poop_Render_Only: BoolProperty(
         name ="Render Only",
         options=set(),
-        description = "Sets this instanced geometry to only have render geometry",
+        description = "Instanced geometry set to render only",
         default = False,
     )
 
     Poop_Chops_Portals: BoolProperty(
         name ="Chops Portals",
         options=set(),
-        description = "Sets this instanced geometry to chop portals. Hiya!",
+        description = "Instanced geometry set to chop portals",
         default = False,
     )
 
     Poop_Does_Not_Block_AOE: BoolProperty(
         name ="Does Not Block AOE",
         options=set(),
-        description = "Sets this instanced geometry to not block area of effect forces",
+        description = "Instanced geometry set to not block area of effect forces",
         default = False,
     )
 
@@ -2096,14 +2091,14 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
     Poop_Decal_Spacing: BoolProperty(
         name ="Decal Spacing",
         options=set(),
-        description = "Sets this instanced geometry have decal spacing (like decal_offset)",
+        description = "Instanced geometry set to have decal spacing (like decal_offset)",
         default = False,
     )
 
     Poop_Precise_Geometry: BoolProperty(
         name ="Precise Geometry",
         options=set(),
-        description = "Sets this instanced geometry not have its geometry altered in the BSP pass.",
+        description = "Instanced geometry set to not have its geometry altered in the BSP pass",
         default = False,
     )
 
@@ -2111,10 +2106,9 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
     Portal_Type : EnumProperty(
         name="Portal Type",
         options=set(),
-        description="Sets the type of portal this mesh should be.",
+        description="Sets the type of portal this mesh should be",
         default = "TWO WAY",
-        items=[ ('NONE', "None", ""),
-                ('NO WAY', "No Way", "Sets the portal to block all visibility"),
+        items=[ ('NO WAY', "No Way", "Sets the portal to block all visibility"),
                 ('ONE WAY', "One Way", "Sets the portal to block visibility from one direction"),
                 ('TWO WAY', "Two Way", "Sets the portal to have visiblity from both sides"),
                ]
@@ -2410,7 +2404,7 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
         name="Marker Velocity",
         options=set(),
         description="",
-        subtype='VELOCITY'
+        subtype='VELOCITY',
     )
 
     Marker_Pathfinding_Sphere_Vehicle: BoolProperty(
