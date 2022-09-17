@@ -57,6 +57,7 @@ class ExportHaloFBX(bpy.types.Operator, ExportHelper):
     """Writes a Halo Reach GR2 File using your Halo Editing Kit"""
     bl_idname = "export_halo_scene.fbx"
     bl_label = "Export To GR2"
+    bl_options = {'UNDO', 'PRESET'}
 
     filename_ext = ".fbx"
     filter_glob: StringProperty(default="*.fbx", options={'HIDDEN'})
