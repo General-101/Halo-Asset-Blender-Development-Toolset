@@ -3126,6 +3126,7 @@ def getMaterials():
     return temp
 
 import os
+from os.path import exists as file_exists
 import tempfile
 import ctypes
 from subprocess import Popen
@@ -3153,7 +3154,10 @@ def export_asset(report, filePath="", export_gr2=False, delete_fbx=False, delete
         print('\nTool Path... %r' % toolPath)
 
         build_gr2(toolPath, filePath, jsonPath, gr2Path)
-        report({'INFO'},"GR2 conversion finished!")
+        if(file_exists(gr2Path)):
+            report({'INFO'},"GR2 conversion finished!")
+        else:
+            ctypes.windll.user32.MessageBoxW(0, "GR2 Export Failed! Check your project settings or try running Blender as an Administrator.", "EXPORT FAILED", 0)
         
         if delete_fbx:
             os.remove(filePath)
