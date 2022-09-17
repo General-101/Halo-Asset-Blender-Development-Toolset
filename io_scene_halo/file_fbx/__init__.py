@@ -61,7 +61,6 @@ class ExportHaloFBX(bpy.types.Operator, ExportHelper):
     """Write a Halo FBX & JSON File. Optionally generate a GR2 file using your Halo Editing Kit"""
     bl_idname = "export_halo_scene.fbx"
     bl_label = "Export FBX w/ JSON"
-    bl_options = {'UNDO', 'PRESET'}
 
     filename_ext = ".fbx"
     filter_glob: StringProperty(default="*.fbx", options={'HIDDEN'})
@@ -349,39 +348,6 @@ class ExportHaloFBX(bpy.types.Operator, ExportHelper):
         from . import export_fbx_bin
         return export_fbx_bin.save(self, context, self.report, **keywords)
 
-
-class FBX_PT_export_main_Halo(bpy.types.Panel):
-    bl_space_type = 'FILE_BROWSER'
-    bl_region_type = 'TOOL_PROPS'
-    bl_label = ""
-    bl_parent_id = "FILE_PT_operator"
-    bl_options = {'HIDE_HEADER'}
-
-    @classmethod
-    def poll(cls, context):
-        sfile = context.space_data
-        operator = sfile.active_operator
-
-        return operator.bl_idname == "EXPORT_HALO_SCENE_OT_fbx"
-
-    def draw(self, context):
-        layout = self.layout
-        layout.use_property_split = True
-        layout.use_property_decorate = False  # No animation.
-
-        sfile = context.space_data
-        operator = sfile.active_operator
-
-        row = layout.row(align=True)
-        row.prop(operator, "path_mode")
-        sub = row.row(align=True)
-        sub.enabled = (operator.path_mode == 'COPY')
-        sub.prop(operator, "embed_textures", text="", icon='PACKAGE' if operator.embed_textures else 'UGLYPACKAGE')
-        row = layout.row(align=True)
-        row.prop(operator, "batch_mode")
-        sub = row.row(align=True)
-        sub.prop(operator, "use_batch_own_dir", text="", icon='NEWFOLDER')
-
 class FBX_PT_export_GR2_Halo(bpy.types.Panel):
     bl_space_type = 'FILE_BROWSER'
     bl_region_type = 'TOOL_PROPS'
@@ -415,183 +381,12 @@ class FBX_PT_export_GR2_Halo(bpy.types.Panel):
         sublayout.prop(operator, "delete_fbx")
         sublayout.prop(operator, "delete_json")
 
-class FBX_PT_export_include_Halo(bpy.types.Panel):
-    bl_space_type = 'FILE_BROWSER'
-    bl_region_type = 'TOOL_PROPS'
-    bl_label = "Include"
-    bl_parent_id = "FILE_PT_operator"
-
-    @classmethod
-    def poll(cls, context):
-        sfile = context.space_data
-        operator = sfile.active_operator
-
-        return operator.bl_idname == "EXPORT_HALO_SCENE_OT_fbx"
-
-    def draw(self, context):
-        layout = self.layout
-        layout.use_property_split = True
-        layout.use_property_decorate = False  # No animation.
-
-        sfile = context.space_data
-        operator = sfile.active_operator
-
-        sublayout = layout.column(heading="Limit to")
-        sublayout.enabled = (operator.batch_mode == 'OFF')
-        sublayout.prop(operator, "use_selection")
-        sublayout.prop(operator, "use_visible")
-        sublayout.prop(operator, "use_active_collection")
-
-        layout.column().prop(operator, "object_types")
-        layout.prop(operator, "use_custom_props")
-
-
-class FBX_PT_export_transform_Halo(bpy.types.Panel):
-    bl_space_type = 'FILE_BROWSER'
-    bl_region_type = 'TOOL_PROPS'
-    bl_label = "Transform"
-    bl_parent_id = "FILE_PT_operator"
-
-    @classmethod
-    def poll(cls, context):
-        sfile = context.space_data
-        operator = sfile.active_operator
-
-        return operator.bl_idname == "EXPORT_HALO_SCENE_OT_fbx"
-
-    def draw(self, context):
-        layout = self.layout
-        layout.use_property_split = True
-        layout.use_property_decorate = False  # No animation.
-
-        sfile = context.space_data
-        operator = sfile.active_operator
-
-        layout.prop(operator, "global_scale")
-        layout.prop(operator, "apply_scale_options")
-
-        layout.prop(operator, "axis_forward")
-        layout.prop(operator, "axis_up")
-
-        layout.prop(operator, "apply_unit_scale")
-        layout.prop(operator, "use_space_transform")
-        row = layout.row()
-        row.prop(operator, "bake_space_transform")
-        row.label(text="", icon='ERROR')
-
-
-class FBX_PT_export_geometry_Halo(bpy.types.Panel):
-    bl_space_type = 'FILE_BROWSER'
-    bl_region_type = 'TOOL_PROPS'
-    bl_label = "Geometry"
-    bl_parent_id = "FILE_PT_operator"
-    bl_options = {'DEFAULT_CLOSED'}
-
-    @classmethod
-    def poll(cls, context):
-        sfile = context.space_data
-        operator = sfile.active_operator
-
-        return operator.bl_idname == "EXPORT_HALO_SCENE_OT_fbx"
-
-    def draw(self, context):
-        layout = self.layout
-        layout.use_property_split = True
-        layout.use_property_decorate = False  # No animation.
-
-        sfile = context.space_data
-        operator = sfile.active_operator
-
-        layout.prop(operator, "mesh_smooth_type")
-        layout.prop(operator, "use_subsurf")
-        layout.prop(operator, "use_mesh_modifiers")
-        #sub = layout.row()
-        #sub.enabled = operator.use_mesh_modifiers and False  # disabled in 2.8...
-        #sub.prop(operator, "use_mesh_modifiers_render")
-        layout.prop(operator, "use_mesh_edges")
-        layout.prop(operator, "use_triangles")
-        sub = layout.row()
-        #~ sub.enabled = operator.mesh_smooth_type in {'OFF'}
-        sub.prop(operator, "use_tspace")
-
-
-class FBX_PT_export_armature_Halo(bpy.types.Panel):
-    bl_space_type = 'FILE_BROWSER'
-    bl_region_type = 'TOOL_PROPS'
-    bl_label = "Armature"
-    bl_parent_id = "FILE_PT_operator"
-    bl_options = {'DEFAULT_CLOSED'}
-
-    @classmethod
-    def poll(cls, context):
-        sfile = context.space_data
-        operator = sfile.active_operator
-
-        return operator.bl_idname == "EXPORT_HALO_SCENE_OT_fbx"
-
-    def draw(self, context):
-        layout = self.layout
-        layout.use_property_split = True
-        layout.use_property_decorate = False  # No animation.
-
-        sfile = context.space_data
-        operator = sfile.active_operator
-
-        layout.prop(operator, "primary_bone_axis")
-        layout.prop(operator, "secondary_bone_axis")
-        layout.prop(operator, "armature_nodetype")
-        layout.prop(operator, "use_armature_deform_only")
-        layout.prop(operator, "add_leaf_bones")
-
-
-class FBX_PT_export_bake_animation_Halo(bpy.types.Panel):
-    bl_space_type = 'FILE_BROWSER'
-    bl_region_type = 'TOOL_PROPS'
-    bl_label = "Bake Animation"
-    bl_parent_id = "FILE_PT_operator"
-    bl_options = {'DEFAULT_CLOSED'}
-
-    @classmethod
-    def poll(cls, context):
-        sfile = context.space_data
-        operator = sfile.active_operator
-
-        return operator.bl_idname == "EXPORT_HALO_SCENE_OT_fbx"
-
-    def draw_header(self, context):
-        sfile = context.space_data
-        operator = sfile.active_operator
-
-        self.layout.prop(operator, "bake_anim", text="")
-
-    def draw(self, context):
-        layout = self.layout
-        layout.use_property_split = True
-        layout.use_property_decorate = False  # No animation.
-
-        sfile = context.space_data
-        operator = sfile.active_operator
-
-        layout.enabled = operator.bake_anim
-        layout.prop(operator, "bake_anim_use_all_bones")
-        layout.prop(operator, "bake_anim_use_nla_strips")
-        layout.prop(operator, "bake_anim_use_all_actions")
-        layout.prop(operator, "bake_anim_force_startend_keying")
-        layout.prop(operator, "bake_anim_step")
-        layout.prop(operator, "bake_anim_simplify_factor")
-
 def menu_func_export(self, context):
     self.layout.operator(ExportHaloFBX.bl_idname, text="Halo Reach Asset Export (.fbx, .json, .gr2)")
 
 classes = (
     ExportHaloFBX,
-    FBX_PT_export_main_Halo,
     FBX_PT_export_GR2_Halo,
-    FBX_PT_export_include_Halo,
-    FBX_PT_export_transform_Halo,
-    FBX_PT_export_geometry_Halo,
-    FBX_PT_export_armature_Halo,
-    FBX_PT_export_bake_animation_Halo,
 )
 
 
