@@ -37,8 +37,6 @@ if "bpy" in locals():
     import importlib
     if "export_fbx_bin" in locals():
         importlib.reload(export_fbx_bin)
-    if "export_fbx" in locals():
-        importlib.reload(export_fbx)
 
 import bpy
 from bpy.props import (

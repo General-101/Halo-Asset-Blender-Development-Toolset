@@ -3139,7 +3139,6 @@ def export_asset(report, filePath="", export_gr2=False, delete_fbx=False, delete
     jsonPath += ".json"
 
     build_json(jsonPath, delete_json)
-    report({'INFO'},"JSON exported successfully!")
 
     if export_gr2:
         gr2Path = ""
@@ -3157,7 +3156,8 @@ def export_asset(report, filePath="", export_gr2=False, delete_fbx=False, delete
         if(file_exists(gr2Path)):
             report({'INFO'},"GR2 conversion finished!")
         else:
-            ctypes.windll.user32.MessageBoxW(0, "GR2 Export Failed! Check your project settings or try running Blender as an Administrator.", "EXPORT FAILED", 0)
+            report({'INFO'},"GR2 conversion failed!")
+            ctypes.windll.user32.MessageBoxW(0, "Tool.exe failed to export your GR2 file. Blender may need to be run as an Administrator or there may be an issue with your project settings.", "GR2 EXPORT FAILED", 0)
         
         if delete_fbx:
             os.remove(filePath)
