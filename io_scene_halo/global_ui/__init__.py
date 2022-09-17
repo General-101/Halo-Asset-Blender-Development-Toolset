@@ -42,6 +42,8 @@ from bpy.props import (
         FloatVectorProperty,
         )
 
+from math import radians
+
 class Halo_XREFPath(Operator):
     """Set the path for the XREF model file"""
     bl_idname = "import_scene.xref_path"
@@ -1183,6 +1185,9 @@ marker_prefixes = '#'
 mesh_prefixes = ('+', '@','-', '%','!', '$','<', '~','&','>', '\'')
 special_prefixes = ('b ', 'b_', 'frame ', 'frame_','#','+', '@','-', '%','!', '$','<', '~','&','>', '\'')
 
+poop_lighting_prefixes = ('%!','%?','%>','%-!','%-?','%->','%+!','%+?','%+>')
+poop_pathfinding_prefixes = ('%-','%+','%!-','%?-','%>-','%!+','%?+','%>+')
+
 special_materials = ('+portal','+seamsealer','+sky','+weatherpoly')
 
 
@@ -1272,12 +1277,20 @@ class JSON_ObjectMeshProps(Panel):
                 col.prop(ob_halo_json, "Decorator_Name", text='Decorator Name')
                 col.prop(ob_halo_json, "Decorator_LOD", text='Decorator Level of Detail')
             elif (ob_halo_json.ObjectMesh_Type == 'INSTANCED GEOMETRY' or ob_halo_json.ObjectMesh_Type_Locked == 'INSTANCED GEOMETRY'):
-                col.prop(ob_halo_json, "Poop_Lighting_Override", text='Instanced Geo Lighting')
-                col.prop(ob_halo_json, "Poop_Pathfinding_Override", text='Instanced Geo Pathfinding')
+                if context.active_object.name.startswith(poop_lighting_prefixes):
+                    col.prop(ob_halo_json, "Poop_Lighting_Override_Locked", text='Lighting Policy')
+                else:
+                    col.prop(ob_halo_json, "Poop_Lighting_Override", text='Lighting Policy')
+
+                if context.active_object.name.startswith(poop_pathfinding_prefixes):
+                    col.prop(ob_halo_json, "Poop_Pathfinding_Override_Locked", text='Pathfinding Policy')
+                else:
+                    col.prop(ob_halo_json, "Poop_Pathfinding_Override", text='Pathfinding Policy')
+
                 col.prop(ob_halo_json, "Poop_Imposter_Policy", text='Imposter Policy')
                 col.prop(ob_halo_json, "Poop_Imposter_Transition_Distance", text='Imposter Transition Dist')
-                col.prop(ob_halo_json, "Poop_Imposter_Fade_Range_Start", text='Fade In Range Start')
-                col.prop(ob_halo_json, "Poop_Imposter_Fade_Range_End", text='Fade In Range End')
+                col.prop(ob_halo_json, "Poop_Imposter_Fade_Range_Start", text='Fade In Start')
+                col.prop(ob_halo_json, "Poop_Imposter_Fade_Range_End", text='Fade In End')
                 #col.prop(ob_halo_json, "Poop_Decomposition_Hulls", text='Decomposition Hulls') commented out so it can be set automatically. 
 
                 col.separator()
@@ -1989,27 +2002,69 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
                ]
         )
     
+
+    poop_lighting_items = [ ('PER PIXEL', "Per Pixel", "Sets the lighting policy to per pixel. Can be forced on with the prefix: '%?'"),
+                            ('PER VERTEX', "Per Vertex", "Sets the lighting policy to per vertex. Can be forced on with the prefix: '%!'"),
+                            ('SINGLE PROBE', "Single Probe", "Sets the lighting policy to single probe."),
+                            ]
+
+
     #POOP PROPERTIES
     Poop_Lighting_Override : EnumProperty(
         name="Lighting Policy",
         options=set(),
         description="Sets the lighting policy for this instanced geometry",
         default = 'PER VERTEX',
-        items=[ ('PER PIXEL', "Per Pixel", "Sets the lighting policy to per pixel. Can be forced on with the prefix: '%?'"),
-                ('PER VERTEX', "Per Vertex", "Sets the lighting policy to per vertex. Can be forced on with the prefix: '%!'"),
-                ('SINGLE PROBE', "Sing0le Probe", "Sets the lighting policy to single probe."),
-               ]
+        items=poop_lighting_items,
         )
+
+    def get_poop_lighting_policy(self):
+        if bpy.context.active_object.name.startswith(('%!','%-!','%+!')):
+            return 0
+        elif bpy.context.active_object.name.startswith(('%?','%-?','%+?')):
+            return 1
+        elif bpy.context.active_object.name.startswith(('%>','%->','%+>')):
+            return 2
+        else:
+            return 0 # else won't ever be hit, but adding it stops errors
+
+    Poop_Lighting_Override_Locked : EnumProperty(
+        name="Lighting Policy",
+        options=set(),
+        get=get_poop_lighting_policy,
+        description="Sets the lighting policy for this instanced geometry",
+        default = 'PER VERTEX',
+        items=poop_lighting_items,
+        )
+
+    poop_pathfinding_items = [  ('CUTOUT', "Cutout", "Sets the pathfinding policy to cutout. AI will be able to pathfind around this mesh, but not on it."),
+                                ('NONE', "None", "Sets the pathfinding policy to none. This mesh will be ignored during pathfinding generation. Can be forced on with the prefix: '%-'"),
+                                ('STATIC', "Static", "Sets the pathfinding policy to static. AI will be able to pathfind around and on this mesh. Can be forced on with the prefix: '%+'"),
+                                ]
 
     Poop_Pathfinding_Override : EnumProperty(
         name="Instanced Geometry Pathfinding Override",
         options=set(),
         description="Sets the pathfinding policy for this instanced geometry",
         default = 'CUTOUT',
-        items=[ ('CUTOUT', "Cutout", "Sets the pathfinding policy to cutout. AI will be able to pathfind around this mesh, but not on it."),
-                ('NONE', "None", "Sets the pathfinding policy to none. This mesh will be ignored during pathfinding generation. Can be forced on with the prefix: '%-'"),
-                ('STATIC', "Static", "Sets the pathfinding policy to static. AI will be able to pathfind around and on this mesh. Can be forced on with the prefix: '%+'"),
-               ]
+        items=poop_pathfinding_items,
+        )
+
+    def get_poop_pathfinding_policy(self):
+        if bpy.context.active_object.name.startswith(('%-','%?-','%!-','%>-')):
+            return 1
+        elif bpy.context.active_object.name.startswith(('%+','%?+','%!+','%>+')):
+            return 2
+        else:
+            return 0 # else won't ever be hit, but adding it stops errors
+
+    Poop_Pathfinding_Override_Locked : EnumProperty(
+        name="Instanced Geometry Pathfinding Override",
+        options=set(),
+        get=get_poop_pathfinding_policy,
+        description="Sets the pathfinding policy for this instanced geometry",
+        default = 'CUTOUT',
+        items=poop_pathfinding_items,
         )
 
     Poop_Imposter_Policy : EnumProperty(
@@ -2033,26 +2088,28 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
         default=-1.0,
     )
 
-    Poop_Imposter_Fade_Range_Start: FloatProperty(
-        name="Instanced Geometry Fade Range Start",
+    Poop_Imposter_Fade_Range_Start: IntProperty(
+        name="Instanced Geometry Fade Start",
         options=set(),
-        description="The distance at which the instanced geometry starts to fade in",
+        description="Start to fade in this instanced geometry when its bounding sphere is more than or equal to X pixels on the screen",
         default=36,
+        subtype='PIXEL',
     )
 
-    Poop_Imposter_Fade_Range_End: FloatProperty(
-        name="Instanced Geometry Fade Range End",
+    Poop_Imposter_Fade_Range_End: IntProperty(
+        name="Instanced Geometry Fade End",
         options=set(),
-        description="The distance at which the instanced geometry fades in",
+        description="Renders this instanced geometry fully when its bounding sphere is more than or equal to X pixels on the screen",
         default=30,
+        subtype='PIXEL',
     )
 
-    Poop_Decomposition_Hulls: FloatProperty(
-        name="Instanced Geometry Decomposition Hulls",
-        options=set(),
-        description="",
-        default= 4294967295,
-    )
+    # Poop_Decomposition_Hulls: FloatProperty(
+    #     name="Instanced Geometry Decomposition Hulls",
+    #     options=set(),
+    #     description="",
+    #     default= 4294967295,
+    # )
     
     Poop_Predominant_Shader_Name: StringProperty(
         name="Instanced Geometry Predominant Shader Name",
@@ -2184,8 +2241,11 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
         name="Water Volume Fog Color",
         options=set(),
         description="Set the fog color of this water volume mesh",
-        default=(0, 0, 0),
+        default=(1.0, 1.0, 1.0, 1.0),
         subtype='COLOR',
+        size=4,
+        min=0.0,
+        max=1.0
     )
 
     Water_Volume_Fog_Murkiness: FloatProperty(
@@ -2215,12 +2275,14 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
     )
     
     #LIGHTMAP PROPERTIES
-    Lightmap_Additive_Transparency: FloatVectorProperty(
+    Lightmap_Additive_Transparency: FloatProperty(
         name="lightmap Additive Transparency",
         options=set(),
         description="",
-        default=(0, 0, 0),
-        subtype='COLOR',
+        default=0.0,
+        subtype='FACTOR',
+        min=0.0,
+        max=1.0
     )
 
     Lightmap_Ignore_Default_Resolution_Scale: BoolProperty(
@@ -2278,11 +2340,14 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
     )
 
     Lightmap_Translucency_Tint_Color: FloatVectorProperty(
-        name="Water Volume Fog Color",
+        name="Lightmap Translucency Tint Color",
         options=set(),
-        description="Lightmap Translucency Tint Color",
-        default=(0, 0, 0),
+        description="",
+        default=(1.0, 1.0, 1.0, 1.0),
         subtype='COLOR',
+        size=4,
+        min=0.0,
+        max=1.0
     )
 
     Lightmap_Lighting_From_Both_Sides: BoolProperty(
@@ -2315,8 +2380,11 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
         name="Material Lighting Emissive Color",
         options=set(),
         description="",
-        default=(0, 0, 0),
+        default=(1.0, 1.0, 1.0, 1.0),
         subtype='COLOR',
+        size=4,
+        min=0.0,
+        max=1.0,
     )
 
     Material_Lighting_Emissive_Per_Unit: BoolProperty(
@@ -2365,7 +2433,7 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
                 ('GARBAGE', "Garbage", "marker to define position that garbage pieces should be created"),
                 ('HINT', "Hint", "Used for ai hints"),
                 ('PATHFINDING SPHERE', "Pathfinding Sphere", "Used to create ai pathfinding spheres"),
-                ('PHYSICS CONSTRAINT', "Physics Constraint", "Used to define various types of physics contraints"),
+                ('PHYSICS CONSTRAINT', "Physics Constraint", "Used to define various types of physics constraints"),
                 ('TARGET', "Target", "Defines the markers used in a model's targets'"),
                 ('WATER VOLUME FLOW', "Water Volume Flow", "Used to define water flow for water physics volumes. For structure_design tags only"),
                ]
@@ -2455,63 +2523,60 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
         name="Hinge Constraint Minimum",
         options=set(),
         description="Set the minimum rotation of a physics hinge",
-        default=-180,
+        default=radians(0),
         min=-180,
         max=180,
+        subtype='ANGLE',
     )
 
     Hinge_Constraint_Maximum: FloatProperty(
         name="Hinge Constraint Maximum",
         options=set(),
         description="Set the maximum rotation of a physics hinge",
-        default=180,
-        min=-180,
-        max=180,
+        default=radians(360),
+        subtype='ANGLE',
     )
 
     Cone_Angle: FloatProperty(
         name="Cone Angle",
         options=set(),
         description="Set the cone angle",
-        default=90,
-        min=-180,
-        max=180,
+        default=radians(180),
+        subtype='ANGLE',
     )
 
     Plane_Constraint_Minimum: FloatProperty(
         name="Plane Constraint Minimum",
         options=set(),
         description="Set the minimum rotation of a physics plane",
-        default=-90,
+        default=radians(0),
         min=-180,
         max=180,
+        subtype='ANGLE',
     )
 
     Plane_Constraint_Maximum: FloatProperty(
         name="Plane Constraint Maximum",
         options=set(),
         description="Set the maximum rotation of a physics plane",
-        default=90,
-        min=-180,
-        max=180,
+        default=radians(180),
+        subtype='ANGLE',
     )
 
     Twist_Constraint_Start: FloatProperty(
         name="Twist Constraint Minimum",
         options=set(),
         description="Set the starting angle of a twist constraint",
-        default=-180,
-        min=-180,
-        max=180,
+        default=radians(0),
+        subtype='ANGLE',
     )
 
     Twist_Constraint_End: FloatProperty(
         name="Twist Constraint Maximum",
         options=set(),
         description="Set the ending angle of a twist constraint",
-        default=180,
-        min=-180,
-        max=180,
+        default=radians(360),
+        subtype='ANGLE',
     )
 
 class JSON_MaterialPropertiesGroup(PropertyGroup):
@@ -2619,6 +2684,8 @@ class JSON_MaterialPropertiesGroup(PropertyGroup):
                 return 3
             case '+weatherpoly':
                 return 4
+            case _:
+                return 0
 
 
     material_override_locked: EnumProperty(
