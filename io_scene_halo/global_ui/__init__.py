@@ -1180,13 +1180,15 @@ class ASS_LightFarAtten(Panel):
 ###################
 # OBJECT PROPERTIES
 
-frame_prefixes = ('b ', 'b_', 'frame ', 'frame_')
+frame_prefixes = ('b ', 'b_', 'frame ', 'frame_','bip ','bip_','bone ','bone_')
 marker_prefixes = '#'
 mesh_prefixes = ('+', '@','-', '%','!', '$','<', '~','&','>', '\'')
-special_prefixes = ('b ', 'b_', 'frame ', 'frame_','#','+', '@','-', '%','!', '$','<', '~','&','>', '\'')
+special_prefixes = ('b ', 'b_', 'frame ', 'frame_','bip ','bip_','bone ','bone_','#','+', '@','-', '%','!', '$','<', '~','&','>', '\'')
 
-poop_lighting_prefixes = ('%!','%?','%>','%-!','%-?','%->','%+!','%+?','%+>')
-poop_pathfinding_prefixes = ('%-','%+','%!-','%?-','%>-','%!+','%?+','%>+')
+
+poop_lighting_prefixes = ('%!',     '%-!','%+!','%*!',     '%-*!','%+*!',     '%*-!','%*+!',          '%?',     '%-?','%+?','%*?',     '%-*?','%+*?',     '%*-?','%*+?'          '%>',     '%->','%+>','%*>',     '%-*>','%+*>',     '%*->','%*+>')
+poop_pathfinding_prefixes = ('%+',     '%!+','%?+','%>+','%*+',     '%!*+','%?*+','%>*+',     '%*!+','%*?+','%*>+',          '%-',     '%!-','%?-','%>-','%*-',     '%!*-','%?*-','%>*-',     '%*!-','%*?-','%*>-')
+poop_render_only_prefixes = ('%*',     '%!*','%?*','%>*','%-*','%+*',     '%!-*','%!+*','%?-*','%?+*','%>-*','%>+*')
 
 special_materials = ('+portal','+seamsealer','+sky','+weatherpoly')
 
@@ -1301,7 +1303,12 @@ class JSON_ObjectMeshProps(Panel):
 
                 col = layout.column(heading="Flags")
                 sub = col.column(align=True)
-                sub.prop(ob_halo_json, "Poop_Render_Only", text='Render Only')
+
+                if context.active_object.name.startswith(poop_render_only_prefixes):
+                    sub.prop(ob_halo_json, "Poop_Render_Only_Locked", text='Render Only')
+                else:
+                    sub.prop(ob_halo_json, "Poop_Render_Only", text='Render Only')
+
                 sub.prop(ob_halo_json, "Poop_Chops_Portals", text='Chops Portals')
                 sub.prop(ob_halo_json, "Poop_Does_Not_Block_AOE", text='Does Not Block AOE')
                 sub.prop(ob_halo_json, "Poop_Excluded_From_Lightprobe", text='Excluded From Lightprobe')
@@ -2019,11 +2026,11 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
         )
 
     def get_poop_lighting_policy(self):
-        if bpy.context.active_object.name.startswith(('%!','%-!','%+!')):
+        if bpy.context.active_object.name.startswith(('%!',     '%-!','%+!','%*!',     '%-*!','%+*!',     '%*-!','%*+!')):
             return 0
-        elif bpy.context.active_object.name.startswith(('%?','%-?','%+?')):
+        elif bpy.context.active_object.name.startswith(('%?',     '%-?','%+?','%*?',     '%-*?','%+*?',     '%*-?','%*+?')):
             return 1
-        elif bpy.context.active_object.name.startswith(('%>','%->','%+>')):
+        elif bpy.context.active_object.name.startswith(('%>',     '%->','%+>','%*>',     '%-*>','%+*>',     '%*->','%*+>')):
             return 2
         else:
             return 0 # else won't ever be hit, but adding it stops errors
@@ -2051,9 +2058,9 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
         )
 
     def get_poop_pathfinding_policy(self):
-        if bpy.context.active_object.name.startswith(('%-','%?-','%!-','%>-')):
+        if bpy.context.active_object.name.startswith(('%-',     '%!-','%?-','%>-','%*-',     '%!*-','%?*-','%>*-',     '%*!-','%*?-','%*>-')):
             return 1
-        elif bpy.context.active_object.name.startswith(('%+','%?+','%!+','%>+')):
+        elif bpy.context.active_object.name.startswith(('%+',     '%!+','%?+','%>+','%*+',     '%!*+','%?*+','%>*+',     '%*!+','%*?+','%*>+')):
             return 2
         else:
             return 0 # else won't ever be hit, but adding it stops errors
@@ -2120,6 +2127,20 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
     Poop_Render_Only: BoolProperty(
         name ="Render Only",
         options=set(),
+        description = "Instanced geometry set to render only",
+        default = False,
+    )
+
+    def get_poop_render_only(self):
+        if bpy.context.active_object.name.startswith(poop_render_only_prefixes):
+            return True
+        else:
+            return False
+
+    Poop_Render_Only_Locked: BoolProperty(
+        name ="Render Only",
+        options=set(),
+        get=get_poop_render_only,
         description = "Instanced geometry set to render only",
         default = False,
     )
