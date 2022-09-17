@@ -3395,6 +3395,86 @@ def save(operator, context, report,
         depsgraph = context.evaluated_depsgraph_get()
         ret = save_single(operator, context.scene, depsgraph, filepath, **kwargs_mod)
         export_asset(report, filepath, export_gr2, delete_fbx, delete_json)
+    else:
+        # XXX We need a way to generate a depsgraph for inactive view_layers first...
+        # XXX Also, what to do in case of batch-exporting scenes, when there is more than one view layer?
+        #     Scenes have no concept of 'active' view layer, that's on window level...
+        fbxpath = filepath
+
+        prefix = os.path.basename(fbxpath)
+        if prefix:
+            fbxpath = os.path.dirname(fbxpath)
+
+        if batch_mode == 'COLLECTION':
+            data_seq = tuple((coll, coll.name, 'objects') for coll in bpy.data.collections if coll.objects)
+        elif batch_mode in {'SCENE_COLLECTION', 'ACTIVE_SCENE_COLLECTION'}:
+            scenes = [context.scene] if batch_mode == 'ACTIVE_SCENE_COLLECTION' else bpy.data.scenes
+            data_seq = []
+            for scene in scenes:
+                if not scene.objects:
+                    continue
+                # Needed to avoid having tens of 'Scene Collection' entries.
+                todo_collections = [(scene.collection, "_".join((scene.name, scene.collection.name)))]
+                while todo_collections:
+                    coll, coll_name = todo_collections.pop()
+                    todo_collections.extend(((c, c.name) for c in coll.children if c.all_objects))
+                    data_seq.append((coll, coll_name, 'all_objects'))
+        else:
+            data_seq = tuple((scene, scene.name, 'objects') for scene in bpy.data.scenes if scene.objects)
+
+        # call this function within a loop with BATCH_ENABLE == False
+
+        new_fbxpath = fbxpath  # own dir option modifies, we need to keep an original
+        for data, data_name, data_obj_propname in data_seq:  # scene or collection
+            newname = "_".join((prefix, bpy.path.clean_name(data_name))) if prefix else bpy.path.clean_name(data_name)
+
+            if use_batch_own_dir:
+                new_fbxpath = os.path.join(fbxpath, newname)
+                # path may already exist... and be a file.
+                while os.path.isfile(new_fbxpath):
+                    new_fbxpath = "_".join((new_fbxpath, "dir"))
+                if not os.path.exists(new_fbxpath):
+                    os.makedirs(new_fbxpath)
+
+            filepath = os.path.join(new_fbxpath, newname + '.fbx')
+
+            print('\nBatch exporting %s as...\n\t%r' % (data, filepath))
+
+            if batch_mode in {'COLLECTION', 'SCENE_COLLECTION', 'ACTIVE_SCENE_COLLECTION'}:
+                # Collection, so that objects update properly, add a dummy scene.
+                scene = bpy.data.scenes.new(name="FBX_Temp")
+                src_scenes = {}  # Count how much each 'source' scenes are used.
+                for obj in getattr(data, data_obj_propname):
+                    for src_sce in obj.users_scene:
+                        src_scenes[src_sce] = src_scenes.setdefault(src_sce, 0) + 1
+                    scene.collection.objects.link(obj)
+
+                # Find the 'most used' source scene, and use its unit settings. This is somewhat weak, but should work
+                # fine in most cases, and avoids stupid issues like T41931.
+                best_src_scene = None
+                best_src_scene_users = -1
+                for sce, nbr_users in src_scenes.items():
+                    if (nbr_users) > best_src_scene_users:
+                        best_src_scene_users = nbr_users
+                        best_src_scene = sce
+                scene.unit_settings.system = best_src_scene.unit_settings.system
+                scene.unit_settings.system_rotation = best_src_scene.unit_settings.system_rotation
+                scene.unit_settings.scale_length = best_src_scene.unit_settings.scale_length
+
+                # new scene [only one viewlayer to update]
+                scene.view_layers[0].update()
+                # TODO - BUMMER! Armatures not in the group wont animate the mesh
+            else:
+                scene = data
+
+            kwargs_batch = kwargs.copy()
+            kwargs_batch["context_objects"] = getattr(data, data_obj_propname)
+
+            save_single(operator, scene, scene.view_layers[0].depsgraph, filepath, **kwargs_batch)
+
+            if batch_mode in {'COLLECTION', 'SCENE_COLLECTION', 'ACTIVE_SCENE_COLLECTION'}:
+                # Remove temp collection scene.
+                bpy.data.scenes.remove(scene)
 
     if active_object and org_mode:
         context.view_layer.objects.active = active_object
