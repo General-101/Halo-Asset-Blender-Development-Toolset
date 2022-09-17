@@ -379,12 +379,40 @@ class FBX_PT_export_GR2_Halo(bpy.types.Panel):
         sublayout.prop(operator, "delete_fbx")
         sublayout.prop(operator, "delete_json")
 
+class FBX_PT_export_include_Halo(bpy.types.Panel):
+    bl_space_type = 'FILE_BROWSER'
+    bl_region_type = 'TOOL_PROPS'
+    bl_label = "Include"
+    bl_parent_id = "FILE_PT_operator"
+
+    @classmethod
+    def poll(cls, context):
+        sfile = context.space_data
+        operator = sfile.active_operator
+
+        return operator.bl_idname == "EXPORT_HALO_SCENE_OT_fbx"
+
+    def draw(self, context):
+        layout = self.layout
+        layout.use_property_split = True
+        layout.use_property_decorate = False  # No animation.
+
+        sfile = context.space_data
+        operator = sfile.active_operator
+
+        sublayout = layout.column(heading="Limit to")
+        sublayout.enabled = (operator.batch_mode == 'OFF')
+        sublayout.prop(operator, "use_selection")
+        sublayout.prop(operator, "use_visible")
+        sublayout.prop(operator, "use_active_collection")
+
 def menu_func_export(self, context):
     self.layout.operator(ExportHaloFBX.bl_idname, text="Halo Granny File (.gr2)")
 
 classes = (
     ExportHaloFBX,
     FBX_PT_export_GR2_Halo,
+    FBX_PT_export_include_Halo,
 )
 
 def register():
@@ -399,6 +427,6 @@ def unregister():
 
     for cls in classes:
         bpy.utils.unregister_class(cls)
-        
+
 if __name__ == "__main__":
     register()
