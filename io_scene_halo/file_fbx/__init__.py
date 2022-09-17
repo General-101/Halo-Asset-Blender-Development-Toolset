@@ -26,13 +26,12 @@ bl_info = {
     "version": (4, 36, 3),
     "blender": (3, 2, 0),
     "location": "File > Import-Export",
-    "description": "FBX File & Halo JSON File for use with importing into the HREK",
+    "description": "Halo Granny File for use with importing into the HREK",
     "warning": "",
     "doc_url": "{BLENDER_MANUAL_URL}/addons/import_export/scene_fbx.html",
     "support": 'OFFICIAL',
     "category": "Import-Export",
 }
-
 
 if "bpy" in locals():
     import importlib
@@ -40,7 +39,6 @@ if "bpy" in locals():
         importlib.reload(export_fbx_bin)
     if "export_fbx" in locals():
         importlib.reload(export_fbx)
-
 
 import bpy
 from bpy.props import (
@@ -58,9 +56,9 @@ from bpy_extras.io_utils import (
 
 @orientation_helper(axis_forward='X', axis_up='Z')
 class ExportHaloFBX(bpy.types.Operator, ExportHelper):
-    """Write a Halo FBX & JSON File. Optionally generate a GR2 file using your Halo Editing Kit"""
+    """Writes a Halo Reach GR2 File using your Halo Editing Kit"""
     bl_idname = "export_halo_scene.fbx"
-    bl_label = "Export FBX w/ JSON"
+    bl_label = "Export To GR2"
 
     filename_ext = ".fbx"
     filter_glob: StringProperty(default="*.fbx", options={'HIDDEN'})
@@ -382,13 +380,12 @@ class FBX_PT_export_GR2_Halo(bpy.types.Panel):
         sublayout.prop(operator, "delete_json")
 
 def menu_func_export(self, context):
-    self.layout.operator(ExportHaloFBX.bl_idname, text="Halo Reach Asset Export (.fbx, .json, .gr2)")
+    self.layout.operator(ExportHaloFBX.bl_idname, text="Halo Granny File (.gr2)")
 
 classes = (
     ExportHaloFBX,
     FBX_PT_export_GR2_Halo,
 )
-
 
 def register():
     for cls in classes:
@@ -402,7 +399,6 @@ def unregister():
 
     for cls in classes:
         bpy.utils.unregister_class(cls)
-
-
+        
 if __name__ == "__main__":
     register()

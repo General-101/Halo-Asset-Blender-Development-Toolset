@@ -3190,6 +3190,8 @@ def build_gr2(toolPath, filePath, jsonPath, gr2Path):
             p.wait()
     except:
         ctypes.windll.user32.MessageBoxW(0, "GR2 Not Exported. Please check your HREK editing kit path in add-on preferences and try again.", "Invalid HREK Path", 0)
+        os.remove(filePath)
+        os.remove(jsonPath)
     finally:
         return {'FINISHED'}
 
