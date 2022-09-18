@@ -1074,10 +1074,14 @@ class ASS_LightProps(Panel):
 
     @classmethod
     def poll(cls, context):
+        scene = context.scene
+        scene_halo = scene.halo
         light = context.light
         engine = context.engine
-
-        return (light and (light.type == 'SPOT' or light.type == 'AREA')) and (engine in cls.COMPAT_ENGINES)
+        if scene_halo.game_version == 'haloce' or scene_halo.game_version == 'halo2' or scene_halo.game_version == 'halo3':
+            return (light and (light.type == 'SPOT' or light.type == 'AREA')) and (engine in cls.COMPAT_ENGINES)
+        else:
+            return False
 
     def draw(self, context):
         light = context.light
@@ -1678,7 +1682,6 @@ class JSON_LightProps(Panel):
     bl_space_type = 'PROPERTIES'
     bl_region_type = 'WINDOW'
     bl_context = "data"
-    bl_options = {'DEFAULT_CLOSED'}
 
     @classmethod
     def poll(cls, context):
@@ -1697,7 +1700,152 @@ class JSON_LightProps(Panel):
         light_halo_json = light.halo_json
 
         col = flow.column()
-        col.prop(light_halo_json, "light_type_override", text='Light Type')
+        if context.active_object.data.type == 'POINT' or context.active_object.data.type == 'SUN':
+            col.prop(light_halo_json, "light_type_override_locked", text='Type')
+        else:
+            col.prop(light_halo_json, "light_type_override", text='Type')
+        
+        col.prop(light_halo_json, 'Light_Game_Type', text='Game Type')
+        col.prop(light_halo_json, 'Light_Shape', text='Shape')
+        col.prop(light_halo_json, 'Light_Color', text='Color') 
+        col.prop(light_halo_json, 'Light_Intensity', text='Intensity')
+
+        col.separator()
+
+        col.prop(light_halo_json, 'Light_Fade_Start_Distance', text='Fade Out Start Distance')
+        col.prop(light_halo_json, 'Light_Fade_End_Distance', text='Fade Out End Distance')
+
+        col.separator()
+
+        col.prop(light_halo_json, 'Light_Hotspot_Size', text='Hotspot Size')
+        col.prop(light_halo_json, 'Light_Hotspot_Falloff', text='Hotspot Falloff')
+        col.prop(light_halo_json, 'Light_Falloff_Shape', text='Falloff Shape')
+        col.prop(light_halo_json, 'Light_Aspect', text='Light Aspect')
+
+        col.separator()
+
+        col.prop(light_halo_json, 'Light_Frustum_Width', text='Frustum Width')
+        col.prop(light_halo_json, 'Light_Frustum_Height', text='Frustum Height')
+
+        col.separator()
+
+        col.prop(light_halo_json, 'Light_Volume_Distance', text='Light Volume Distance')
+        col.prop(light_halo_json, 'Light_Volume_Intensity', text='Light Volume Intensity')
+
+        col.separator()
+
+        col.prop(light_halo_json, 'Light_Tag_Override', text='Light Tag Override')
+        col.prop(light_halo_json, 'Light_Shader_Reference', text='Shader Tag Reference')
+        col.prop(light_halo_json, 'Light_Gel_Reference', text='Gel Tag Reference')
+        col.prop(light_halo_json, 'Light_Lens_Flare_Reference', text='Lens Flare Tag Reference')
+
+        col.separator()
+
+        col.prop(light_halo_json, 'Light_Bounce_Ratio', text='Light Bounce Ratio')
+
+        col = layout.column(heading="Flags")
+        sub = col.column(align=True)
+
+        sub.prop(light_halo_json, 'Light_Ignore_BSP_Visibility', text='Ignore BSP Visibility') 
+        sub.prop(light_halo_json, 'Light_Dynamic_Has_Bounce', text='Light Has Dynamic Bounce')
+        sub.prop(light_halo_json, 'Light_Screenspace_Has_Specular', text='Screenspace Light Has Specular')
+
+class JSON_LightNearAttenuationProps(Panel):
+    bl_label = "Light Uses Near Attenuation"
+    bl_idname = "JSON_PT_LightNearAttenuationPanel"
+    bl_space_type = "PROPERTIES"
+    bl_region_type = "WINDOW"
+    bl_context = "data"
+    bl_parent_id = "JSON_PT_LightPanel"
+    bl_options = {'DEFAULT_CLOSED'}
+
+
+    def draw_header(self, context):
+        light = context.object.data
+        light_halo_json = light.halo_json
+        self.layout.prop(light_halo_json, "Light_Near_Attenuation", text='')
+
+    def draw(self, context):
+        layout = self.layout
+        layout.use_property_split = True
+
+        flow = layout.grid_flow(row_major=True, columns=0, even_columns=True, even_rows=False, align=False)
+
+        light = context.object.data
+        light_halo_json = light.halo_json
+
+        layout.enabled = light_halo_json.Light_Near_Attenuation
+
+        col = flow.column()
+
+        col.prop(light_halo_json, 'Light_Near_Attenuation_Start', text='Near Attenuation Start')
+        col.prop(light_halo_json, 'Light_Near_Attenuation_End', text='Near Attenuation End')
+
+class JSON_LightFarAttenuationProps(Panel):
+    bl_label = "Light Uses Far Attenuation"
+    bl_idname = "JSON_PT_LightFarAttenuationPanel"
+    bl_space_type = "PROPERTIES"
+    bl_region_type = "WINDOW"
+    bl_context = "data"
+    bl_parent_id = "JSON_PT_LightPanel"
+    bl_options = {'DEFAULT_CLOSED'}
+
+
+    def draw_header(self, context):
+        light = context.object.data
+        light_halo_json = light.halo_json
+        self.layout.prop(light_halo_json, "Light_Far_Attenuation", text='')
+
+    def draw(self, context):
+        layout = self.layout
+        layout.use_property_split = True
+
+        flow = layout.grid_flow(row_major=True, columns=0, even_columns=True, even_rows=False, align=False)
+
+        light = context.object.data
+        light_halo_json = light.halo_json
+
+        layout.enabled = light_halo_json.Light_Far_Attenuation
+
+        col = flow.column()
+
+        col.prop(light_halo_json, 'Light_Far_Attenuation_Start', text='Far Attenuation Start')
+        col.prop(light_halo_json, 'Light_Far_Attenuation_End', text='Far Attenuation End')
+
+class JSON_LightClippingProps(Panel):
+    bl_label = "Light Uses Clipping"
+    bl_idname = "JSON_PT_LightClippingPanel"
+    bl_space_type = "PROPERTIES"
+    bl_region_type = "WINDOW"
+    bl_context = "data"
+    bl_parent_id = "JSON_PT_LightPanel"
+    bl_options = {'DEFAULT_CLOSED'}
+
+
+    def draw_header(self, context):
+        light = context.object.data
+        light_halo_json = light.halo_json
+        self.layout.prop(light_halo_json, "Light_Use_Clipping", text='')
+
+    def draw(self, context):
+        layout = self.layout
+        layout.use_property_split = True
+
+        flow = layout.grid_flow(row_major=True, columns=0, even_columns=True, even_rows=False, align=False)
+
+        light = context.object.data
+        light_halo_json = light.halo_json
+
+        layout.enabled = light_halo_json.Light_Use_Clipping
+
+        col = flow.column()
+
+        col.prop(light_halo_json, 'Light_Clipping_Size_X_Pos', text='Clipping Size X Forward')
+        col.prop(light_halo_json, 'Light_Clipping_Size_Y_Pos', text='Clipping Size Y Forward')
+        col.prop(light_halo_json, 'Light_Clipping_Size_Z_Pos', text='Clipping Size Z Forward')
+        col.prop(light_halo_json, 'Light_Clipping_Size_X_Neg', text='Clipping Size X Backward')
+        col.prop(light_halo_json, 'Light_Clipping_Size_Y_Neg', text='Clipping Size Y Backward')
+        col.prop(light_halo_json, 'Light_Clipping_Size_Z_Neg', text='Clipping Size Z Backward')
 
 # JSON PROPERTY GROUPS
 class JSON_ObjectPropertiesGroup(PropertyGroup):
@@ -2348,6 +2496,10 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
         name="Water Volume Fog Murkiness",
         options=set(),
         description="Set the fog murkiness of this water volume mesh",
+        default=0.5,
+        subtype='FACTOR',
+        min=0.0,
+        max=1.0
     )
 
     #FOG PROPERTIES
@@ -2802,27 +2954,297 @@ class JSON_MaterialPropertiesGroup(PropertyGroup):
 
 class JSON_LightPropertiesGroup(PropertyGroup):
     
-    def get_light_type(self):
-        if bpy.context.active_object.data.type == 'POINT' or bpy.context.active_object.data.type == 'SUN':
-            return 0
-        elif bpy.context.active_object.data.type == 'SPOT':
-            return 1
-        elif bpy.context.active_object.data.type == 'AREA':
-            return 2
-        else:
-            return 0
-    
     light_type_override: EnumProperty(
+        name = "Light Type",
+        options=set(),
+        description = "Displays the light type. Use the blender light types to change the value of this field",
+        default = "SPOT",
+        items=[ ('SPOT', "Spot", ""),
+                ('DIRECTIONAL', "Directional", ""),
+               ]
+        )
+    
+    def get_light_type(self):
+        return 0
+    
+    light_type_override_locked: EnumProperty(
         name = "Light Type",
         options=set(),
         description = "Displays the light type. Use the blender light types to change the value of this field",
         default = "OMNI",
         get=get_light_type,
         items=[ ('OMNI', "Omni", ""),
-                ('SPOT', "Spot", ""),
-                ('DIRECTIONAL', "Directional", ""),
                ]
         )
+
+    Light_Game_Type: EnumProperty(
+        name = "Light Game Type",
+        options=set(),
+        description = "",
+        default = "DEFAULT",
+        items=[ ('DEFAULT', "Default", ""),
+                ('INLINED', "Inlined", ""),
+                ('RERENDER', "Rerender", ""),
+                ('SCREEN SPACE', "Screen Space", ""),
+                ('UBER', "Uber", ""),
+               ]
+        )
+
+    Light_Shape: EnumProperty(
+        name = "Light Shape",
+        options=set(),
+        description = "",
+        default = "CIRCLE",
+        items=[ ('CIRCLE', "Circle", ""),
+                ('RECTANGLE', "Rectangle", ""),
+               ]
+        )
+
+    Light_Near_Attenuation: BoolProperty(
+        name="Light Uses Near Attenuation",
+        options=set(),
+        description="",
+        default=False,
+    )
+
+    Light_Far_Attenuation: BoolProperty(
+        name="Light Uses Far Attenuation",
+        options=set(),
+        description="",
+        default=False,
+    )
+
+    Light_Near_Attenuation_Start: FloatProperty(
+        name="Light Near Attenuation Start Distance",
+        options=set(),
+        description="",
+    )
+
+    Light_Near_Attenuation_End: FloatProperty(
+        name="Light Near Attenuation Start Distance",
+        options=set(),
+        description="",
+    )
+
+    Light_Far_Attenuation_Start: FloatProperty(
+        name="Light Near Attenuation Start Distance",
+        options=set(),
+        description="",
+    )
+
+    Light_Far_Attenuation_End: FloatProperty(
+        name="Light Near Attenuation Start Distance",
+        options=set(),
+        description="",
+    )
+
+    Light_Volume_Distance: FloatProperty(
+        name="Light Volume Distance",
+        options=set(),
+        description="",
+    )
+
+    Light_Volume_Intensity: FloatProperty(
+        name="Light Volume Intensity",
+        options=set(),
+        description="",
+        default=1.0,
+        min=0.0,
+        max=1.0,
+        subtype='FACTOR',
+    )
+
+    Light_Fade_Start_Distance: FloatProperty(
+        name="Light Fade Out Start",
+        options=set(),
+        description="The light starts to fade out when the camera is x world units away",
+        default=100.0,
+    )
+
+    Light_Fade_End_Distance: FloatProperty(
+        name="Light Fade Out End",
+        options=set(),
+        description="The light completely fades out when the camera is x world units away",
+        default=150.0,
+    )
+
+    Light_Ignore_BSP_Visibility: BoolProperty(
+        name="Light Ignore BSP Visibility",
+        options=set(),
+        description="",
+        default=False,
+    )
+
+    Light_Color: FloatVectorProperty(
+        name="Light Color",
+        options=set(),
+        description="",
+        default=(1.0, 1.0, 1.0),
+        subtype='COLOR',
+        min=0.0,
+        max=1.0,
+    )
+
+    Light_Intensity: FloatProperty(
+        name="Light Intensity",
+        options=set(),
+        description="",
+        default=0.5,
+        min=0.0,
+        max=1.0,
+        subtype='FACTOR',
+    )
+
+    Light_Use_Clipping: BoolProperty(
+        name="Light Uses Clipping",
+        options=set(),
+        description="",
+        default=False,
+    )
+
+    Light_Clipping_Size_X_Pos: FloatProperty(
+        name="Light Clipping Size X Forward",
+        options=set(),
+        description="",
+        default=100,
+    )
+
+    Light_Clipping_Size_Y_Pos: FloatProperty(
+        name="Light Clipping Size Y Forward",
+        options=set(),
+        description="",
+        default=100,
+    )
+
+    Light_Clipping_Size_Z_Pos: FloatProperty(
+        name="Light Clipping Size Z Forward",
+        options=set(),
+        description="",
+        default=100,
+    )
+
+    Light_Clipping_Size_X_Neg: FloatProperty(
+        name="Light Clipping Size X Backward",
+        options=set(),
+        description="",
+        default=-100,
+    )
+
+    Light_Clipping_Size_Y_Neg: FloatProperty(
+        name="Light Clipping Size Y Backward",
+        options=set(),
+        description="",
+        default=-100,
+    )
+
+    Light_Clipping_Size_Z_Neg: FloatProperty(
+        name="Light Clipping Size Z Backward",
+        options=set(),
+        description="",
+        default=-100,
+    )
+
+    Light_Hotspot_Size: FloatProperty(
+        name="Light Hotspot Size",
+        options=set(),
+        description="",
+        default=30,
+    )
+
+    Light_Hotspot_Falloff: FloatProperty(
+        name="Light Hotspot Size",
+        options=set(),
+        description="",
+        default=45,
+    )
+
+    Light_Falloff_Shape: FloatProperty(
+        name="Light Falloff Shape",
+        options=set(),
+        description="",
+        default=1,
+        min=0.0,
+        max=1.0,
+        subtype='FACTOR',
+    )
+
+    Light_Aspect: FloatProperty(
+        name="Light Aspect",
+        options=set(),
+        description="",
+        default=1,
+        min=0.0,
+        max=1.0,
+        subtype='FACTOR',
+    )
+
+    Light_Frustum_Width: FloatProperty(
+        name="Light Hotspot Size",
+        options=set(),
+        description="",
+        default=1.0,
+    )
+
+    Light_Frustum_Height: FloatProperty(
+        name="Light Hotspot Size",
+        options=set(),
+        description="",
+        default=1.0,
+    )
+
+    Light_Bounce_Ratio: FloatProperty(
+        name="Light Falloff Shape",
+        options=set(),
+        description="",
+        default=1,
+        min=0.0,
+        max=1.0,
+        subtype='FACTOR',
+    )
+
+    Light_Dynamic_Has_Bounce: BoolProperty(
+        name="Light Has Dynamic Bounce",
+        options=set(),
+        description="",
+        default=False,
+    )
+
+    Light_Screenspace_Has_Specular: BoolProperty(
+        name="Screenspace Light Has Specular",
+        options=set(),
+        description="",
+        default=False,
+    )
+
+    Light_Tag_Override: StringProperty(
+        name="Light Tag Override",
+        options=set(),
+        description="",
+        maxlen=128,
+    )
+
+    Light_Shader_Reference: StringProperty(
+        name="Light Shader Reference",
+        options=set(),
+        description="",
+        maxlen=128,
+    )
+
+    Light_Gel_Reference: StringProperty(
+        name="Light Gel Reference",
+        options=set(),
+        description="",
+        maxlen=128,
+    )
+
+    Light_Lens_Flare_Reference: StringProperty(
+        name="Light Lens Flare Reference",
+        options=set(),
+        description="",
+        maxlen=128,
+    )
+    
+
 
 
 classeshalo = (
@@ -2856,6 +3278,9 @@ classeshalo = (
     JSON_ObjectPropertiesGroup,
     JSON_MaterialPropertiesGroup,
     JSON_LightProps,
+    JSON_LightNearAttenuationProps,
+    JSON_LightFarAttenuationProps,
+    JSON_LightClippingProps,
     JSON_LightPropertiesGroup
 )
 

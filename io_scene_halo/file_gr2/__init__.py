@@ -52,7 +52,7 @@ t = os.getcwd()
 t += "\\scripts\\addons\\io_scene_fbx"
 print(t)
 
-@orientation_helper(axis_forward='X', axis_up='Z')
+@orientation_helper(axis_forward='Y', axis_up='Z')
 class ExportHaloFBX(bpy.types.Operator, ExportHelper):
     """Writes a Halo Reach GR2 File using your Halo Editing Kit"""
     bl_idname = "export_halo_scene.fbx"
