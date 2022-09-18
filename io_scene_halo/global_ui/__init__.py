@@ -1738,27 +1738,34 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
     )
 
     def get_meshtype_enum(self):
-        if bpy.context.active_object.name.startswith('+'):
+        a_ob = bpy.context.active_object
+        if a_ob.name.startswith('+'):
             return 0
-        elif bpy.context.active_object.name.startswith('@'):
-            return 1
-        elif bpy.context.active_object.name.startswith('-'):
+        elif a_ob.name.startswith('@'):
+            if a_ob.parent and ((a_ob.parent.halo_json.ObjectMesh_Type == 'INSTANCED GEOMETRY' and not a_ob.parent.name.startswith(mesh_prefixes)) or a_ob.parent.name.startswith('%')):
+                return 6
+            else:
+                return 1
+        elif a_ob.name.startswith('-'):
             return 2
-        elif bpy.context.active_object.name.startswith('%'):
+        elif a_ob.name.startswith('%'):
             return 5
-        elif bpy.context.active_object.name.startswith('!'):
+        elif a_ob.name.startswith('!'):
             return 12
-        elif bpy.context.active_object.name.startswith('$'):
-            return 13
-        elif bpy.context.active_object.name.startswith('<'):
+        elif a_ob.name.startswith('$'):
+            if a_ob.parent and ((a_ob.parent.halo_json.ObjectMesh_Type == 'INSTANCED GEOMETRY' and not a_ob.parent.name.startswith(mesh_prefixes)) or a_ob.parent.name.startswith('%')):
+                return 8
+            else:
+                return 13
+        elif a_ob.name.startswith('<'):
             return 14
-        elif bpy.context.active_object.name.startswith('~'):
+        elif a_ob.name.startswith('~'):
             return 15
-        elif bpy.context.active_object.name.startswith('&'):
+        elif a_ob.name.startswith('&'):
             return 16
-        elif bpy.context.active_object.name.startswith('>'):
+        elif a_ob.name.startswith('>'):
             return 17
-        elif bpy.context.active_object.name.startswith('\''):
+        elif a_ob.name.startswith('\''):
             return 18
         else:
             return 4
