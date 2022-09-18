@@ -35,8 +35,9 @@ bl_info = {
 
 if "bpy" in locals():
     import importlib
-    if "export_fbx_bin" in locals():
-        importlib.reload(export_fbx_bin)
+    import sys
+    if "export_gr2" in locals():
+        importlib.reload(export_gr2)
 
 import bpy
 from bpy.props import (
@@ -51,6 +52,11 @@ from bpy_extras.io_utils import (
         path_reference_mode,
         axis_conversion,
         )
+
+import os
+t = os.getcwd()
+t += "\\scripts\\addons\\io_scene_fbx"
+print(t)
 
 @orientation_helper(axis_forward='X', axis_up='Z')
 class ExportHaloFBX(bpy.types.Operator, ExportHelper):
@@ -342,8 +348,17 @@ class ExportHaloFBX(bpy.types.Operator, ExportHelper):
 
         keywords["global_matrix"] = global_matrix
 
-        from . import export_fbx_bin
-        return export_fbx_bin.save(self, context, self.report, **keywords)
+        import sys
+        import importlib
+        
+        sys.path.insert(0,t)
+        print(sys.path)
+        from io_scene_fbx import export_fbx_bin
+        importlib.reload(export_fbx_bin)
+        from . import export_gr2
+        export_fbx_bin.save(self, context, **keywords)
+        return export_gr2.save(self, context, self.report, **keywords)
+        #return export_fbx_bin.save(self, context, **keywords)
 
 class FBX_PT_export_main_Halo(bpy.types.Panel):
     bl_space_type = 'FILE_BROWSER'
