@@ -389,9 +389,10 @@ def build_scene(context, JMA, JMS_A, JMS_B, filepath, game_version, fix_parents,
         for idx, node in enumerate(nodes):
             pose_bone = armature.pose.bones[node.name]
 
-            matrix_scale = Matrix.Scale(frame[idx].scale, 4, (1, 1, 1))
+            matrix_scale = Matrix.Scale(frame[idx].scale, 4)
             matrix_rotation = frame[idx].rotation.to_matrix().to_4x4()
-            transform_matrix = Matrix.Translation(frame[idx].translation) @ matrix_rotation @ matrix_scale
+            matrix_translation = Matrix.Translation(frame[idx].translation)
+            transform_matrix = matrix_translation @ matrix_rotation @ matrix_scale
 
             if fix_rotations:
                 if (JMA.version > 16390 or JMA.version < 16394) and pose_bone.parent:
