@@ -1181,16 +1181,24 @@ class ASS_LightFarAtten(Panel):
 # OBJECT PROPERTIES
 
 frame_prefixes = ('b ', 'b_', 'frame ', 'frame_','bip ','bip_','bone ','bone_')
-marker_prefixes = '#'
-mesh_prefixes = ('+', '@','-', '%','!', '$','<', '~','&','>', '\'')
-special_prefixes = ('b ', 'b_', 'frame ', 'frame_','bip ','bip_','bone ','bone_','#','+', '@','-', '%','!', '$','<', '~','&','>', '\'')
+marker_prefixes = ('#')
+mesh_prefixes = ('+soft_ceiling','+soft_kill','+slip_surface', '@','+cookie','+decorator','+flair', '%', '$','+fog','+portal', '+seam','+water', '\'')
+special_prefixes = ('b ', 'b_', 'frame ', 'frame_','bip ','bip_','bone ','bone_','#','+soft_ceiling','+soft_kill','+slip_surface', '@','+cookie','+decorator','+flair', '%', '$','+fog','+portal', '+seam','+water', '\'')
 
+boundary_surface_prefixes = ('+soft_ceiling','+soft_kill','+slip_surface') # boundary surface prefixes can take a name with +prefix:name e.g. +soft_ceiling:camera_ceiling_01
+cookie_cutter_prefixes = ('+cookie')
+decorator_prefixes = ('+decorator') # decorators can take a name with +decorator:name (not implemented)
+fog_volume_prefixes = ('+fog') # fog volumes can take a name with +fog:name (not implemented)
+object_instance_prefixes = ('+flair') # self-reminder: Flairs need to have marker_regions written to them in the json, this should match the face region
+portal_prefixes = ('+portal') # portals can have properties automatically through the object name (once I get around to adding it)
+seam_prefixes = ('+seam') # seams can take a name with +seam:name
+water_volume_prefixes = ('+water')
 
 poop_lighting_prefixes = ('%!',     '%-!','%+!','%*!',     '%-*!','%+*!',     '%*-!','%*+!',          '%?',     '%-?','%+?','%*?',     '%-*?','%+*?',     '%*-?','%*+?'          '%>',     '%->','%+>','%*>',     '%-*>','%+*>',     '%*->','%*+>')
 poop_pathfinding_prefixes = ('%+',     '%!+','%?+','%>+','%*+',     '%!*+','%?*+','%>*+',     '%*!+','%*?+','%*>+',          '%-',     '%!-','%?-','%>-','%*-',     '%!*-','%?*-','%>*-',     '%*!-','%*?-','%*>-')
 poop_render_only_prefixes = ('%*',     '%!*','%?*','%>*','%-*','%+*',     '%!-*','%!+*','%?-*','%?+*','%>-*','%>+*')
 
-special_materials = ('+portal','+seamsealer','+sky','+weatherpoly')
+special_materials = ('+collision', '+physics', '+portal','+seamsealer','+sky','+weatherpoly')
 
 
 class JSON_ObjectProps(Panel):
@@ -1273,8 +1281,16 @@ class JSON_ObjectMeshProps(Panel):
             type_no_special_prefix = ob_halo_json.ObjectMesh_Type_Locked == 'DEFAULT'
 
             if (ob_halo_json.ObjectMesh_Type == 'BOUNDARY SURFACE' or ob_halo_json.ObjectMesh_Type_Locked == 'BOUNDARY SURFACE'):
-                col.prop(ob_halo_json, "Boundary_Surface_Name", text='Name')
-                col.prop(ob_halo_json, "Boundary_Surface_Type", text='Type')
+                if context.active_object.name.startswith(('+soft_ceiling:','+soft_kill:','+slip_surface:')) and context.active_object.name.rpartition(':')[2] != context.active_object.name:
+                    col.prop(ob_halo_json, "Boundary_Surface_Name_Locked", text='Name')
+                else:
+                    col.prop(ob_halo_json, "Boundary_Surface_Name", text='Name')
+
+                if context.active_object.name.startswith(boundary_surface_prefixes):
+                    col.prop(ob_halo_json, "Boundary_Surface_Type_Locked", text='Type')
+                else:
+                     col.prop(ob_halo_json, "Boundary_Surface_Type", text='Type')
+
             elif (ob_halo_json.ObjectMesh_Type == 'DECORATOR' and type_no_special_prefix):
                 col.prop(ob_halo_json, "Decorator_Name", text='Decorator Name')
                 col.prop(ob_halo_json, "Decorator_LOD", text='Decorator Level of Detail')
@@ -1326,7 +1342,11 @@ class JSON_ObjectMeshProps(Panel):
                 sub.prop(ob_halo_json, "Portal_Blocks_Sounds", text='Blocks Sounds')
                 sub.prop(ob_halo_json, "Portal_Is_Door", text='Is Door')
             elif (ob_halo_json.ObjectMesh_Type == 'SEAM' or ob_halo_json.ObjectMesh_Type_Locked == 'SEAM'):
-                col.prop(ob_halo_json, "Seam_Name", text='Seam BSP Name')
+                if context.active_object.name.startswith('+seam:') and context.active_object.name.rpartition(':')[2] != context.active_object.name:
+                    col.prop(ob_halo_json, "Seam_Name_Locked", text='Seam BSP Name')
+                else:
+                    col.prop(ob_halo_json, "Seam_Name", text='Seam BSP Name')
+
             elif (ob_halo_json.ObjectMesh_Type == 'WATER PHYSICS VOLUME' or ob_halo_json.ObjectMesh_Type_Locked == 'WATER PHYSICS VOLUME'):
                 col.prop(ob_halo_json, "Water_Volume_Depth", text='Water Volume Depth')
                 col.prop(ob_halo_json, "Water_Volume_Flow_Direction", text='Flow Direction')
@@ -1646,7 +1666,7 @@ class JSON_MaterialProps(Panel):
             else:
                 col.prop(material_halo_json, "Shader_Type", text='Shader Type')
 
-            if context.object.active_material.name in special_materials:
+            if context.object.active_material.name.startswith(special_materials):
                 col.prop(material_halo_json, "material_override_locked", text='Material Override')
             else:
                 col.prop(material_halo_json, "material_override", text='Material Override')
@@ -1670,15 +1690,14 @@ class JSON_LightProps(Panel):
 
     def draw(self, context):
         layout = self.layout
+        layout.use_property_split = True
+        flow = layout.grid_flow(row_major=True, columns=0, even_columns=True, even_rows=False, align=False)
 
         light = context.object.data
         light_halo_json = light.halo_json
 
-        row = layout.row()
-        col = layout.column(align=True)
-        row = col.row()
-        row.label(text="Light Type Override")
-        col.prop(light_halo_json, "light_type_override", text='')
+        col = flow.column()
+        col.prop(light_halo_json, "light_type_override", text='Light Type')
 
 # JSON PROPERTY GROUPS
 class JSON_ObjectPropertiesGroup(PropertyGroup):
@@ -1739,31 +1758,31 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
 
     def get_meshtype_enum(self):
         a_ob = bpy.context.active_object
-        if a_ob.name.startswith('+'):
+        if a_ob.name.startswith(('+soft_ceiling','+soft_kill','+slip_surface')):
             return 0
         elif a_ob.name.startswith('@'):
             if a_ob.parent and ((a_ob.parent.halo_json.ObjectMesh_Type == 'INSTANCED GEOMETRY' and not a_ob.parent.name.startswith(mesh_prefixes)) or a_ob.parent.name.startswith('%')):
                 return 6
             else:
                 return 1
-        elif a_ob.name.startswith('-'):
+        elif a_ob.name.startswith('+cookie'):
             return 2
         elif a_ob.name.startswith('%'):
             return 5
-        elif a_ob.name.startswith('!'):
+        elif a_ob.name.startswith('+flair'):
             return 12
         elif a_ob.name.startswith('$'):
             if a_ob.parent and ((a_ob.parent.halo_json.ObjectMesh_Type == 'INSTANCED GEOMETRY' and not a_ob.parent.name.startswith(mesh_prefixes)) or a_ob.parent.name.startswith('%')):
                 return 8
             else:
                 return 13
-        elif a_ob.name.startswith('<'):
+        elif a_ob.name.startswith('+fog'):
             return 14
-        elif a_ob.name.startswith('~'):
+        elif a_ob.name.startswith('+portal'):
             return 15
-        elif a_ob.name.startswith('&'):
+        elif a_ob.name.startswith('+seam'):
             return 16
-        elif a_ob.name.startswith('>'):
+        elif a_ob.name.startswith('+water'):
             return 17
         elif a_ob.name.startswith('\''):
             return 18
@@ -1771,25 +1790,25 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
             return 4
 
     mesh_type_items = [
-        ('BOUNDARY SURFACE', "Boundary Surface", "Used in structure_design tags for soft_kill, soft_ceiling, and slip_sufaces. Only use when importing to a structure_design tag. Can be forced on with the prefix: '+'"),
-        ('COLLISION', "Collision", "Sets this mesh to have collision geometry only. Can be forced on with the prefix: '@'"),
-        ('COOKIE CUTTER', "Cookie Cutter", "Defines an area which ai will pathfind around. Can be forced on with the prefix: '-'"),
-        ('DECORATOR', "Decorator", "Use this when making a decorator. Allows for different LOD levels to be set"),
-        ('DEFAULT', "Default", "By default this mesh type will be treated as render only geometry in models, and render + bsp collision geometry in structures"),
-        ('INSTANCED GEOMETRY', "Instanced Geometry", "Writes this mesh a json file as instanced geometry. Can be forced on with the prefix: '%'"),
-        ('INSTANCED GEOMETRY COLLISION', "Instanced Geometry Collision", "This mesh will act as the collision geometry of its parent instanced geometry mesh. Can be forced on if this mesh is the child of an instanced geometry object and has the prefix: '@'"),
-        ('INSTANCED GEOMETRY MARKER', "Instanced Geometry Marker", "This mesh will act a marker of its parent instanced geometry mesh. Can be forced on if this mesh is the child of an instanced geometry object and has the prefix: '#'"),
-        ('INSTANCED GEOMETRY PHYSICS', "Instanced Geometry Physics", "This mesh will act as the physics geometry of its parent instanced geometry mesh. Can be forced on if this mesh is the child of an instanced geometry object and has the prefix: '$'"),
-        ('INSTANCED GEOMETRY RAIN BLOCKER', "Instanced Geometry Rain Blocker", "This mesh will act as a rain blocker for its parent instanced geometry mesh"),
-        ('INSTANCED GEOMETRY VERTICAL RAIN SHEET', "Instanced Geometry Vertical Rain Sheet", "This mesh will act as a verticle rain sheet for its parent instanced geometry mesh"),
-        ('LIGHTMAP REGION', "Lightmap Region", "Defines an area of a structure which should be lightmapped. Can be referenced when lightmapping"),
-        ('OBJECT INSTANCE', "Object Instance", "Writes this mesh to the json as an instanced object. Can be forced on with the prefix: '!'"),
-        ('PHYSICS', "Physics", "Sets this mesh to have physics geometry only. Can be forced on with the prefix: '$'"),
-        ('PLANAR FOG VOLUME', "Planar Fog Volume", "Defines an area for a fog volume. The same logic as used for portals should be applied to these.  Can be forced on with the prefix: '<'"),
-        ('PORTAL', "Portal", "Cuts up a bsp and defines clusters. Can be forced on with the prefix '~'"),
-        ('SEAM', "Seam", "Defines where two bsps meet. Its name should match the name of the bsp its in. Can be forced on with the prefix '&'"),
-        ('WATER PHYSICS VOLUME', "Water Physics Volume", "Defines an area where water physics should apply. Only use when importing to a structure_design tag. Can be forced on with the prefix: '>'"),
-        ('WATER SURFACE', "Water Surface", "Defines a mesh as a water surface. Can be forced on with the prefix: '"),
+        ('BOUNDARY SURFACE', "Boundary Surface", "Used in structure_design tags for soft_kill, soft_ceiling, and slip_sufaces. Only use when importing to a structure_design tag. Can be forced on with the prefix: '+'"), # 0
+        ('COLLISION', "Collision", "Sets this mesh to have collision geometry only. Can be forced on with the prefix: '@'"), #1
+        ('COOKIE CUTTER', "Cookie Cutter", "Defines an area which ai will pathfind around. Can be forced on with the prefix: '-'"), # 2
+        ('DECORATOR', "Decorator", "Use this when making a decorator. Allows for different LOD levels to be set"), # 3
+        ('DEFAULT', "Default", "By default this mesh type will be treated as render only geometry in models, and render + bsp collision geometry in structures"), #4
+        ('INSTANCED GEOMETRY', "Instanced Geometry", "Writes this mesh a json file as instanced geometry. Can be forced on with the prefix: '%'"), # 5
+        ('INSTANCED GEOMETRY COLLISION', "IG Collision", "This mesh will act as the collision geometry of its parent instanced geometry mesh. Can be forced on if this mesh is the child of an instanced geometry object and has the prefix: '@'"), # 6
+        ('INSTANCED GEOMETRY MARKER', "IG Marker", ""), # 7
+        ('INSTANCED GEOMETRY PHYSICS', "IG Physics", "This mesh will act as the physics geometry of its parent instanced geometry mesh. Can be forced on if this mesh is the child of an instanced geometry object and has the prefix: '$'"), # 8
+        ('INSTANCED GEOMETRY RAIN BLOCKER', "IG Rain Blocker",''), # 9
+        ('IG VERTICAL RAIN SHEET', "IG Vertical Rain Sheet", ''), # 10
+        ('LIGHTMAP REGION', "Lightmap Region", "Defines an area of a structure which should be lightmapped. Can be referenced when lightmapping"), # 11
+        ('OBJECT INSTANCE', "Object Instance", "Writes this mesh to the json as an instanced object. Can be forced on with the prefix: '+flair'"), # 12
+        ('PHYSICS', "Physics", "Sets this mesh to have physics geometry only. Can be forced on with the prefix: '$'"), # 13
+        ('PLANAR FOG VOLUME', "Planar Fog Volume", "Defines an area for a fog volume. The same logic as used for portals should be applied to these.  Can be forced on with the prefix: '+fog'"), # 14
+        ('PORTAL', "Portal", "Cuts up a bsp and defines clusters. Can be forced on with the prefix '+portal'"), # 15
+        ('SEAM', "Seam", "Defines where two bsps meet. Its name should match the name of the bsp its in. Can be forced on with the prefix '+seam'"), # 16
+        ('WATER PHYSICS VOLUME', "Water Physics Volume", "Defines an area where water physics should apply. Only use when importing to a structure_design tag. Can be forced on with the prefix: '+water'"), # 17
+        ('WATER SURFACE', "Water Surface", "Defines a mesh as a water surface. Can be forced on with the prefix: '"), # 18
     ]
 
     #MESH PROPERTIES
@@ -2005,15 +2024,51 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
         maxlen=32,
     )
 
+    def get_boundary_surface_name(self):
+        a_ob = bpy.context.active_object
+        
+        var =  a_ob.name.rpartition(':')[2]
+        return var[0:31]
+
+    Boundary_Surface_Name_Locked: StringProperty(
+        name="Boundary Surface Name",
+        description="Define the name of the boundary surface. This will be referenced in the structure_design tag.",
+        get=get_boundary_surface_name,
+        maxlen=32,
+    )
+
+    boundary_surface_items = [  ('SOFT CEILING', "Soft Ceiling", "Defines this mesh as soft ceiling"),
+                                ('SOFT KILL', "Soft Kill", "Defines this mesh as soft kill barrier"),
+                                ('SLIP SURFACE', "Slip Surface", "Defines this mesh as a slip surface"),
+                                ]
+
     Boundary_Surface_Type : EnumProperty(
         name="Boundary Surface Type",
         options=set(),
         description="Set the type of boundary surface you want to create. You should only import files with this mesh type as struture_design tags",
         default = 'SOFT CEILING',
-        items=[ ('SOFT CEILING', "Soft Ceiling", "Defines this mesh as soft ceiling"),
-                ('SOFT KILL', "Soft Kill", "Defines this mesh as soft kill barrier"),
-                ('SLIP SURFACE', "Slip Surface", "Defines this mesh as a slip surface"),
-               ]
+        items=boundary_surface_items,
+        )
+
+    def get_boundary_surface(self):
+        a_ob = bpy.context.active_object
+
+        if a_ob.name.startswith('+soft_ceiling'):
+            return 0
+        elif a_ob.name.startswith('+soft_kill'):
+            return 1
+        elif a_ob.name.startswith('+slip_surface'):
+            return 2
+        else:
+            return 0
+
+    Boundary_Surface_Type_Locked : EnumProperty(
+        name="Boundary Surface Type",
+        options=set(),
+        get=get_boundary_surface,
+        description="Set the type of boundary surface you want to create. You should only import files with this mesh type as struture_design tags",
+        default = 'SOFT CEILING',
+        items=boundary_surface_items,
         )
     
 
@@ -2240,6 +2295,19 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
     Seam_Name: StringProperty(
         name="Seam BSP Name",
         description="Name of the bsp associated with this seam",
+        maxlen=32,
+    )
+
+    def get_seam_name(self):
+        a_ob = bpy.context.active_object
+        
+        var =  a_ob.name.rpartition(':')[2]
+        return var[0:31]
+
+    Seam_Name_Locked: StringProperty(
+        name="Seam BSP Name",
+        description="Name of the bsp associated with this seam",
+        get=get_seam_name,
         maxlen=32,
     )
 
@@ -2688,32 +2756,39 @@ class JSON_MaterialPropertiesGroup(PropertyGroup):
         items=[('OVERRIDE', 'Override', '')],
         )
 
+
+    material_items = [  ('NONE', "None", "None"),
+                        ('COLLISION', "Collision", ""),
+                        ('PHYSICS', "Physics", ""),
+                        ('PORTAL', "Portal", "Force all faces with this material to be portals"),
+                        ('SEAMSEALER', "Seamsealer", "Force all faces with this material to be seamsealer"),
+                        ('SKY', "Sky", "Force all faces with this material to be sky"),
+                        ('WEATHERPOLY', "Weather Polyhedra", "Force all faces with this material to be weather polyhedra"),
+                        ]
+
     material_override: EnumProperty(
         name = "Material Override",
         options=set(),
         description = "Select to override the shader path with a special material type e.g. sky / seamsealer",
         default = "NONE",
-        items=[ ('NONE', "None", "None"),
-                ('PORTAL', "Portal", "Force all faces with this material to be portals"),
-                ('SEAMSEALER', "Seamsealer", "Force all faces with this material to be seamsealer"),
-                ('SKY', "Sky", "Force all faces with this material to be sky"),
-                ('WEATHERPOLY', "Weather Polyhedra", "Force all faces with this material to be weather polyhedra"),
-
-               ]
+        items=material_items,
         )
 
     def material_name_is_special(self):
-        match bpy.context.object.active_material.name:
-            case '+portal':
-                return 1
-            case '+seamsealer':
-                return 2
-            case '+sky':
-                return 3
-            case '+weatherpoly':
-                return 4
-            case _:
-                return 0
+        if bpy.context.object.active_material.name.startswith('+collision'):
+            return 1
+        elif bpy.context.object.active_material.name.startswith('+physics'):
+            return 2
+        elif bpy.context.object.active_material.name.startswith('+portal'):
+            return 3
+        elif bpy.context.object.active_material.name.startswith('+seamsealer'):
+            return 4
+        elif bpy.context.object.active_material.name.startswith('+sky'):
+            return 5
+        elif bpy.context.object.active_material.name.startswith('+weatherpoly'):
+            return 6
+        else:
+            return 0
 
 
     material_override_locked: EnumProperty(
@@ -2722,23 +2797,28 @@ class JSON_MaterialPropertiesGroup(PropertyGroup):
         get=material_name_is_special,
         description = "Select to override the shader path with a special material type e.g. sky / seamsealer",
         default = "NONE",
-        items=[ ('NONE', "None", "None"),
-                ('PORTAL', "Portal", "Force all faces with this material to be portals"),
-                ('SEAMSEALER', "Seamsealer", "Force all faces with this material to be seamsealer"),
-                ('SKY', "Sky", "Force all faces with this material to be sky"),
-                ('WEATHERPOLY', "Weather Polyhedra", "Force all faces with this material to be weather polyhedra"),
-
-               ]
+        items=material_items,
         )
 
 class JSON_LightPropertiesGroup(PropertyGroup):
+    
+    def get_light_type(self):
+        if bpy.context.active_object.data.type == 'POINT' or bpy.context.active_object.data.type == 'SUN':
+            return 0
+        elif bpy.context.active_object.data.type == 'SPOT':
+            return 1
+        elif bpy.context.active_object.data.type == 'AREA':
+            return 2
+        else:
+            return 0
+    
     light_type_override: EnumProperty(
-        name = "Light Type Override",
+        name = "Light Type",
         options=set(),
-        description = "Select to override the light type",
-        default = "NONE",
-        items=[ ('NONE', "None", "None"),
-                ('OMNI', "Omni", ""),
+        description = "Displays the light type. Use the blender light types to change the value of this field",
+        default = "OMNI",
+        get=get_light_type,
+        items=[ ('OMNI', "Omni", ""),
                 ('SPOT', "Spot", ""),
                 ('DIRECTIONAL', "Directional", ""),
                ]
@@ -2793,7 +2873,7 @@ def register():
 
 def unregister():
     del bpy.types.Light.halo_light
-    del bpy.types.mesh.ass_jms
+    del bpy.types.Mesh.ass_jms
     del bpy.types.Material.ass_jms
     del bpy.types.Scene.halo
     del bpy.types.Object.halo_json
