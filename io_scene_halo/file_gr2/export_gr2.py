@@ -59,6 +59,9 @@ poop_render_only_prefixes = ('%*',     '%!*','%?*','%>*','%-*','%+*',     '%!-*'
 
 special_materials = ('+collision', '+physics', '+portal','+seamsealer','+sky','+weatherpoly')
 
+special_mesh_types = ('BOUNDARY SURFACE','DECORATOR','INSTANCED GEOMETRY','PLANAR FOG VOLUME','PORTAL','SEAM','WATER PHYSICS VOLUME',)
+invalid_mesh_types = ('BOUNDARY SURFACE', 'COOKIE CUTTER', 'INSTANCED GEOMETRY MARKER', 'INSTANCED GEOMETRY RAIN BLOCKER', 'INSTANCED GEOMETRY VERTICAL RAIN SHEET', 'LIGHTMAP REGION', 'PLANAR FOG VOLUME', 'PORTAL', 'SEAM', 'WATER PHYSICS VOLUME')
+
 ##############################
 ####### STRING TABLE #########
 ##############################
@@ -200,35 +203,48 @@ def getMeshProperties(mesh, name, ob):
         mesh_props.update({"bungie_mesh_water_volume_fog_murkiness": str(round(mesh.Water_Volume_Fog_Murkiness, 6))})
     ###################
     # FACE PROPERTIES
-    if mesh.Face_Type != 'NORMAL':
-        mesh_props.update({"bungie_face_type": getFaceType(mesh.Face_Type)})
-    if mesh.Face_Mode != 'NORMAL':
-        mesh_props.update({"bungie_face_mode": getFaceMode(mesh.Face_Mode)})
-    if mesh.Face_Sides != 'ONE SIDED':
-        mesh_props.update({"bungie_face_sides": getFaceSides(mesh.Face_Sides)})
-    if mesh.Face_Draw_Distance != 'NORMAL':
-        mesh_props.update({"bungie_face_draw_distance": getFaceDrawDistance(mesh.Face_Draw_Distance)})
-    mesh_props.update({"bungie_face_region": getRegionName(mesh.Region_Name)})
-    mesh_props.update({"bungie_face_global_material": getGlobalMaterialName(mesh.Face_Global_Material)})
-    if '_connected_geometry_face_type_sky' in mesh_props.values():
-        mesh_props.update({"bungie_sky_permutation_index": str(mesh.Sky_Permutation_Index)})
-    if mesh.Conveyor:
-        mesh_props.update({"bungie_conveyor": "1"})
-    if mesh.Ladder:
-        mesh_props.update({"bungie_ladder": "1"})
-    if mesh.Slip_Surface:
-        mesh_props.update({"bungie_slip_surface": "1"})
-    if mesh.Decal_Offset:
-        mesh_props.update({"bungie_decal_offset": "1"})
-    if mesh.Group_Transparents_By_Plane:
-        mesh_props.update({"bungie_group_transparents_by_plane": "1"})
-    if mesh.No_Shadow:
-        mesh_props.update({"bungie_no_shadow": "1"})
-    if mesh.Precise_Position:
-        mesh_props.update({"bungie_precise_position": "1"})
+    if mesh.ObjectMesh_Type not in invalid_mesh_types:
+        if mesh.Face_Type != 'NORMAL':
+            mesh_props.update({"bungie_face_type": getFaceType(mesh.Face_Type)})
+        if mesh.Face_Mode != 'NORMAL':
+            mesh_props.update({"bungie_face_mode": getFaceMode(mesh.Face_Mode)})
+        if mesh.Face_Sides != 'ONE SIDED':
+            mesh_props.update({"bungie_face_sides": getFaceSides(mesh.Face_Sides)})
+        if mesh.Face_Draw_Distance != 'NORMAL':
+            mesh_props.update({"bungie_face_draw_distance": getFaceDrawDistance(mesh.Face_Draw_Distance)})
+        mesh_props.update({"bungie_face_region": getRegionName(mesh.Region_Name)})
+        mesh_props.update({"bungie_face_global_material": getGlobalMaterialName(mesh.Face_Global_Material)})
+        if '_connected_geometry_face_type_sky' in mesh_props.values():
+            mesh_props.update({"bungie_sky_permutation_index": str(mesh.Sky_Permutation_Index)})
+        if mesh.Conveyor:
+            mesh_props.update({"bungie_conveyor": "1"})
+        if mesh.Ladder:
+            mesh_props.update({"bungie_ladder": "1"})
+        if mesh.Slip_Surface:
+            mesh_props.update({"bungie_slip_surface": "1"})
+        if mesh.Decal_Offset:
+            mesh_props.update({"bungie_decal_offset": "1"})
+        if mesh.Group_Transparents_By_Plane:
+            mesh_props.update({"bungie_group_transparents_by_plane": "1"})
+        if mesh.No_Shadow:
+            mesh_props.update({"bungie_no_shadow": "1"})
+        if mesh.Precise_Position:
+            mesh_props.update({"bungie_precise_position": "1"})
     ###################
     # MATERIAL LIGHTING PROPERTIES
-
+    if mesh.Material_Lighting_Enabled:
+        mesh_props.update({"bungie_lighting_attenuation_cutoff": str(round(mesh.Material_Lighting_Attenuation_Cutoff, 6))})
+        mesh_props.update({"bungie_lighting_attenuation_falloff": str(round(mesh.Material_Lighting_Attenuation_Falloff, 6))})
+        mesh_props.update({"bungie_lighting_emissive_focus": str(round(mesh.Material_Lighting_Emissive_Focus, 6))})
+        mesh_props.update({"bungie_lighting_emissive_color": getEmissiveColor(mesh.Material_Lighting_Emissive_Color.r, mesh.Material_Lighting_Emissive_Color.g, mesh.Material_Lighting_Emissive_Color.b)})
+        mesh_props.update({"bungie_lighting_emissive_power": str(round(mesh.Material_Lighting_Emissive_Power, 6))})
+        mesh_props.update({"bungie_lighting_emissive_quality": str(round(mesh.Material_Lighting_Emissive_Quality, 6))})
+        mesh_props.update({"bungie_lighting_bounce_ratio": str(round(mesh.Material_Lighting_Bounce_Ratio, 6))})
+        if mesh.Material_Lighting_Emissive_Per_Unit:
+            mesh_props.update({"bungie_lighting_emissive_per_unit": "1"})
+        if mesh.Material_Lighting_Use_Shader_Gel:
+            mesh_props.update({"bungie_lighting_use_shader_gel": "1"})
+        
     ###################
     # LIGHTMAP PROPERTIES
     if mesh.Lightmap_Settings_Enabled:
@@ -481,6 +497,11 @@ def getLightmapType(type):
             return '_connected_material_lightmap_type_per_vertex'
 
 def getLightmapColor(red, green, blue):
+    color = str(round(red, 6)) + ' ' + str(round(green, 6)) + ' ' + str(round(blue, 6))
+
+    return color 
+
+def getEmissiveColor(red, green, blue):
     color = str(round(red, 6)) + ' ' + str(round(green, 6)) + ' ' + str(round(blue, 6))
 
     return color
