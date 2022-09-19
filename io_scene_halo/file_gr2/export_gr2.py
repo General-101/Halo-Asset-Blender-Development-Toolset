@@ -107,37 +107,36 @@ def getFaceType():
 def getMaterials():
     matList = {}
 
-    halo_special_materials = ("+portal","+seamsealer","+sky","+weatherpoly") # some special material names to match legacy
-    halo_valid_shader_types =("shader","shader_cortana","shader_custom","shader_decal","shader_foliage","shader_fur","shader_fur_stencil","shader_glass","shader_halogram","shader_mux","shader_mux_material","shader_screen","shader_skin","shader_terrain","shader_water")
-
+    halo_special_materials = ('+collision','+physics',"+portal","+seamsealer","+sky","+weatherpoly") # some special material names to match legacy
+    
     for ob in bpy.data.objects:
         for mat_slot in ob.material_slots:
             halo_material = mat_slot.material.halo_json
             halo_material_name = mat_slot.material.name
-            if halo_material.shader_path != halo_material.shader_path.rpartition('.')[2]: # check to fix issue where partition returns full string if no '.' present
-                shaderType = halo_material.shader_path.rpartition('.')[2]  
-                shaderPath = halo_material.shader_path.rpartition('.')[0]
-            else:
-                shaderType = "shader"
-                shaderPath = halo_material.shader_path
-            
-            if shaderType not in halo_valid_shader_types:
-                shaderType = "shader"
 
-            if shaderPath == "":
-                shaderPath = "shaders\invalid"
-                
-            if (halo_material_name in halo_special_materials):
-                shaderType = "override"
-                match halo_material_name:
-                    case '+portal':
-                        shaderPath = "bungie_mesh_type=_connected_geometry_mesh_type_portal"
-                    case '+seamsealer':
-                        shaderPath = "bungie_face_type=_connected_geometry_face_type_seam_sealer"
-                    case '+sky':
-                        shaderPath = "bungie_face_type=_connected_geometry_face_type_sky"
-                    case '+weatherpoly':
-                        shaderPath = "bungie_face_type=_connected_geometry_face_type_weather_polyhedra"
+            shaderPath = ''
+            shaderType = ''
+
+            if halo_material_name.startswith(halo_special_materials):
+                shaderType = 'override'
+                if halo_material_name.startswith('+collision'):
+                    shaderPath = 'collision'
+                elif halo_material_name.startswith('+physics'):
+                    shaderPath = 'physics'
+                elif halo_material_name.startswith('+portal'):
+                    shaderPath = 'bungie_mesh_type=_connected_geometry_mesh_type_portal'
+                elif halo_material_name.startswith('+seamsealer'):
+                    shaderPath = 'bungie_face_type=_connected_geometry_face_type_seam_sealer'
+                elif halo_material_name.startswith('+sky'):
+                    shaderPath = 'bungie_face_type=_connected_geometry_face_type_sky'
+                elif halo_material_name.startswith('+weatherpoly'):
+                    shaderPath = 'bungie_face_type=_connected_geometry_face_type_weather_polyhedra'
+            else:
+                shaderType = halo_material.Shader_Type
+                if halo_material.shader_path.rpartition('.')[0] == '':
+                    shaderPath = 'shaders\invalid'
+                else:
+                    shaderPath = halo_material.shader_path.rpartition('.')[0]
 
             matList.update({halo_material_name : {"bungie_shader_path": shaderPath, "bungie_shader_type": shaderType}})
 
