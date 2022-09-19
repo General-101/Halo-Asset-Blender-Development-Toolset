@@ -39,6 +39,26 @@ toolPath = EKPath + '\\tool_fast.exe'
 #get tags path
 tagsPath = EKPath + '\\tags\\'
 
+frame_prefixes = ('b ', 'b_', 'frame ', 'frame_','bip ','bip_','bone ','bone_')
+marker_prefixes = ('#')
+mesh_prefixes = ('+soft_ceiling','+soft_kill','+slip_surface', '@','+cookie','+decorator','+flair', '%', '$','+fog','+portal', '+seam','+water', '\'')
+special_prefixes = ('b ', 'b_', 'frame ', 'frame_','bip ','bip_','bone ','bone_','#','+soft_ceiling','+soft_kill','+slip_surface', '@','+cookie','+decorator','+flair', '%', '$','+fog','+portal', '+seam','+water', '\'')
+
+boundary_surface_prefixes = ('+soft_ceiling','+soft_kill','+slip_surface') # boundary surface prefixes can take a name with +prefix:name e.g. +soft_ceiling:camera_ceiling_01
+cookie_cutter_prefixes = ('+cookie')
+decorator_prefixes = ('+decorator') # decorators can take a name with +decorator:name (not implemented)
+fog_volume_prefixes = ('+fog') # fog volumes can take a name with +fog:name (not implemented)
+object_instance_prefixes = ('+flair') # self-reminder: Flairs need to have marker_regions written to them in the json, this should match the face region
+portal_prefixes = ('+portal') # portals can have properties automatically through the object name (once I get around to adding it)
+seam_prefixes = ('+seam') # seams can take a name with +seam:name
+water_volume_prefixes = ('+water')
+
+poop_lighting_prefixes = ('%!',     '%-!','%+!','%*!',     '%-*!','%+*!',     '%*-!','%*+!',          '%?',     '%-?','%+?','%*?',     '%-*?','%+*?',     '%*-?','%*+?'          '%>',     '%->','%+>','%*>',     '%-*>','%+*>',     '%*->','%*+>')
+poop_pathfinding_prefixes = ('%+',     '%!+','%?+','%>+','%*+',     '%!*+','%?*+','%>*+',     '%*!+','%*?+','%*>+',          '%-',     '%!-','%?-','%>-','%*-',     '%!*-','%?*-','%>*-',     '%*!-','%*?-','%*>-')
+poop_render_only_prefixes = ('%*',     '%!*','%?*','%>*','%-*','%+*',     '%!-*','%!+*','%?-*','%?+*','%>-*','%>+*')
+
+special_materials = ('+collision', '+physics', '+portal','+seamsealer','+sky','+weatherpoly')
+
 ##############################
 ####### STRING TABLE #########
 ##############################
@@ -82,35 +102,231 @@ def getNodesProperties():
 def getMeshes():
     meshesList = {}
 
-    halo_node_prefixes = ('#','b_','b ','frame_','frame ') # these prefixes indicate a mesh should not be written to meshes_properties
+    halo_node_prefixes = ('b ', 'b_', 'frame ', 'frame_','bip ','bip_','bone ','bone_','#') # these prefixes indicate a mesh should not be written to meshes_properties
 
-    for mesh in bpy.data.meshes:
-        if (not mesh.name.startswith(halo_node_prefixes)): # if the name of a mesh starts with this, don't process it.
-            meshesList.update({mesh.name: getMeshProperties()})
+
+
+    for ob in bpy.data.objects:
+        halo_mesh = ob.halo_json
+        halo_mesh_name = ob.name
+        if ob.type == 'MESH' and (not halo_mesh_name.startswith(halo_node_prefixes) or halo_mesh.Object_Type_All != 'MESH'): # if the name of a mesh starts with this, don't process it.
+            meshesList.update({ob.name: getMeshProperties(halo_mesh, halo_mesh_name, ob)})
 
     temp = ({'meshes_properties': meshesList})
 
     return temp
 
-def getMeshProperties():
+def getMeshProperties(mesh, name, ob):
     print("here we go")
 
-    mesh_props = {
-        # OBJECT PROPERTIES
-        "bungie_object_type": "_connected_geometry_object_type_mesh",
-        "bungie_region_name": getRegionName(),
-        # FACE PROPERTIES
-        "bungie_face_type": getFaceType()
+    mesh_props = {}
+    
+    ###################
+    # OBJECT PROPERTIES
+    mesh_props.update({"bungie_object_type": "_connected_geometry_object_type_mesh"}),
+    ###################
+    # MESH PROPERTIES
+    mesh_props.update({"bungie_mesh_type": getMeshType(mesh.ObjectMesh_Type, name, ob)}),
+    # Boundary Surface
+    if '_connected_geometry_mesh_type_boundary_surface' in mesh_props.values():
+        mesh_props.update({"bungie_mesh_boundary_surface_name": getBoundarySurfaceName(mesh.Boundary_Surface_Name, name)}),
+        mesh_props.update({"bungie_mesh_boundary_surface_type": getBoundarySurfaceType(mesh.Boundary_Surface_Type, name)})
+    # Decorator
+    if '_connected_geometry_mesh_type_decorator' in mesh_props.values():
+        mesh_props.update({"bungie_mesh_decorator_name": getDecoratorName(mesh.Decorator_Name)})
+        mesh_props.update({"bungie_mesh_decorator_lod": getDecoratorLOD(mesh.Decorator_LOD)})
+    # Poops
+    if '_connected_geometry_mesh_type_poop' in mesh_props.values():
+        mesh_props.update({"bungie_mesh_poop_lighting": getPoopLighting(mesh.Poop_Lighting_Override, name)})
+        mesh_props.update({"bungie_mesh_poop_pathfinding": getPoopPathfinding(mesh.Poop_Pathfinding_Override, name)})
+        mesh_props.update({"bungie_mesh_poop_imposter_policy": getPoopImposter(mesh.Poop_Imposter_Policy)})
+        if mesh.Poop_Imposter_Transition_Distance != -1:
+            mesh_props.update({"bungie_mesh_poop_imposter_transition_distance": str(mesh.Poop_Imposter_Transition_Distance)})
+        if mesh.Poop_Imposter_Fade_Range_Start != 36:
+            mesh_props.update({"bungie_mesh_poop_fade_range_start": str(mesh.Poop_Imposter_Fade_Range_Start)})
+        if mesh.Poop_Imposter_Fade_Range_Start != 30:
+            mesh_props.update({"bungie_mesh_poop_fade_range_end": str(mesh.Poop_Imposter_Fade_Range_End)})
+        if mesh.Poop_Predominant_Shader_Name != '':
+            mesh_props.update({"bungie_mesh_poop_poop_predominant_shader_name":mesh.Poop_Imposter_Fade_Range_End[0:1023]})
+        mesh_props.update({"bungie_mesh_poop_decomposition_hulls": "4294967295"})
+        if mesh.Poop_Render_Only == True or name.startswith(poop_render_only_prefixes):
+            mesh_props.update({"bungie_mesh_poop_is_render_only": "1"})
+        if mesh.Poop_Chops_Portals == True:
+            mesh_props.update({"bungie_mesh_poop_chops_portals": "1"})
+        if mesh.Poop_Does_Not_Block_AOE == True:
+            mesh_props.update({"bungie_mesh_poop_does_not_block_aoe": "1"})
+        if mesh.Poop_Excluded_From_Lightprobe == True:
+            mesh_props.update({"bungie_mesh_poop_excluded_from_lightprobe": "1"})
+        if mesh.Poop_Decal_Spacing == True:
+            mesh_props.update({"bungie_mesh_poop_decal_spacing": "1"})
+        if mesh.Poop_Precise_Geometry == True:
+            mesh_props.update({"bungie_mesh_poop_precise_geometry": "1"})
+    ###################
+    # MESH BOUNDARY SUR
+    # FACE PROPERTIES
+    #mesh_props["bungie_region_name"] = getRegionName(mesh.Region_Name),
+    #"bungie_face_type": getFaceType()
 
-    }
+    
 
     return mesh_props
 
-def getRegionName():
-    return 'region'
+def getMeshType(type, name, ob):
+    if name.startswith(('+soft_ceiling','+soft_kill','+slip_surface')):
+        return '_connected_geometry_mesh_type_boundary_surface'
+    elif name.startswith('@'):
+        if ob.parent and ((ob.parent.halo_json.ObjectMesh_Type == 'INSTANCED GEOMETRY' and not ob.parent.name.startswith(mesh_prefixes)) or ob.parent.name.startswith('%')):
+            return '_connected_geometry_mesh_type_poop_collision'
+        else:
+            return '_connected_geometry_mesh_type_collision'
+    elif name.startswith('+cookie'):
+        return '_connected_geometry_mesh_type_cookie_cutter'
+    elif name.startswith('%'):
+        return '_connected_geometry_mesh_type_poop'
+    elif name.startswith('+flair'):
+        return '_connected_geometry_mesh_type_object_instance'
+    elif name.startswith('$'):
+        if ob.parent and ((ob.parent.halo_json.ObjectMesh_Type == 'INSTANCED GEOMETRY' and not ob.parent.name.startswith(mesh_prefixes)) or ob.parent.name.startswith('%')):
+            return '_connected_geometry_mesh_type_poop_physics'
+        else:
+            return '_connected_geometry_mesh_type_physics'
+    elif name.startswith('+fog'):
+        return '_connected_geometry_mesh_type_planar_fog_volume'
+    elif name.startswith('+portal'):
+        return '_connected_geometry_mesh_type_portal'
+    elif name.startswith('+seam'):
+        return '_connected_geometry_mesh_type_seam'
+    elif name.startswith('+water'):
+        return '_connected_geometry_mesh_type_water_physics_volume'
+    elif name.startswith('\''):
+        return '_connected_geometry_mesh_type_water_surface'
+    else:
+        match type:
+            case 'BOUNDARY SURFACE':
+                return '_connected_geometry_mesh_type_boundary_surface'
+            case 'COLLISION':
+                return '_connected_geometry_mesh_type_collision'
+            case 'COOKIE CUTTER':
+                return '_connected_geometry_mesh_type_cookie_cutter'
+            case 'DECORATOR':
+                return '_connected_geometry_mesh_type_decorator'
+            case 'DEFAULT':
+                return '_connected_geometry_mesh_type_default'
+            case 'INSTANCED GEOMETRY':
+                return '_connected_geometry_mesh_type_poop'
+            case 'INSTANCED GEOMETRY COLLISION':
+                return '_connected_geometry_mesh_type_poop_collision'
+            case 'INSTANCED GEOMETRY MARKER':
+                return '_connected_geometry_mesh_type_poop_physics'
+            case 'INSTANCED GEOMETRY PHYSICS':
+                return '_connected_geometry_mesh_type_poop_marker'
+            case 'INSTANCED GEOMETRY RAIN BLOCKER':
+                return '_connected_geometry_mesh_type_poop_rain_blocker'
+            case 'INSTANCED GEOMETRY VERTICAL RAIN SHEET':
+                return '_connected_geometry_mesh_type_poop_vertical_rain_sheet'
+            case 'LIGHTMAP REGION':
+                return '_connected_geometry_mesh_type_lightmap_region'
+            case 'OBJECT INSTANCE':
+                return '_connected_geometry_mesh_type_object_instance'
+            case 'PHYSICS':
+                return '_connected_geometry_mesh_type_physics'
+            case 'PLANAR FOG VOLUME':
+                return '_connected_geometry_mesh_type_planar_fog_volume'
+            case 'PORTAL':
+                return '_connected_geometry_mesh_type_portal'
+            case 'SEAM':
+                return '_connected_geometry_mesh_type_seam'
+            case 'WATER PHYSICS VOLUME':
+                return '_connected_geometry_mesh_type_water_physics_volume'
+            case 'WATER SURFACE':
+                return '_connected_geometry_mesh_type_water_surface'
+
+def getBoundarySurfaceName(bs_name, name):
+    var = ''
+    print(name.startswith(('+soft_ceiling:','+soft_kill:','+slip_surface:')))
+    if name.startswith(('+soft_ceiling:','+soft_kill:','+slip_surface:')) and name.rpartition(':')[2] != name:
+        var = name.rpartition(':')[2]
+    else:
+        var = bs_name
+
+    return var[0:31]
+
+def getBoundarySurfaceType(type, name):
+    if name.startswith('+soft_ceiling'):
+        return '_connected_geometry_boundary_surface_type_soft_ceiling'
+    elif name.startswith('+soft_kill'):
+        return '_connected_geometry_boundary_surface_type_soft_kill'
+    elif name.startswith('+slip_surface'):
+        return '_connected_geometry_boundary_surface_type_slip_surface'
+    else:
+        match type:
+            case 'SOFT CEILING':
+                return '_connected_geometry_boundary_surface_type_soft_ceiling'
+            case 'SOFT KILL':
+                return '_connected_geometry_boundary_surface_type_soft_kill'
+            case 'SLIP SURFACE':
+                return '_connected_geometry_boundary_surface_type_slip_surface'
+
+def getDecoratorName(dec_name):
+    return dec_name[0:31]
+
+def getDecoratorLOD(LOD):
+    return str(LOD)
+
+def getPoopLighting(policy, name):
+    if name.startswith(('%!',     '%-!','%+!','%*!',     '%-*!','%+*!',     '%*-!','%*+!')):
+        return '_connected_geometry_poop_lighting_per_pixel'
+    elif name.startswith(('%?',     '%-?','%+?','%*?',     '%-*?','%+*?',     '%*-?','%*+?')):
+        return '_connected_geometry_poop_lighting_per_vertex'
+    elif name.startswith(('%>',     '%->','%+>','%*>',     '%-*>','%+*>',     '%*->','%*+>')):
+        return '_connected_geometry_poop_lighting_single_probe'
+    else:
+        match policy:
+            case 'PER PIXEL':
+                return '_connected_geometry_poop_lighting_per_pixel'
+            case 'PER VERTEX':
+                return '_connected_geometry_poop_lighting_per_vertex'
+            case 'SINGLE PROBE':
+                return '_connected_geometry_poop_lighting_single_probe'
+
+def getPoopPathfinding(policy, name):
+    if name.startswith(('%-',     '%!-','%?-','%>-','%*-',     '%!*-','%?*-','%>*-',     '%*!-','%*?-','%*>-')):
+        return '_connected_poop_instance_pathfinding_policy_none'
+    elif name.startswith(('%+',     '%!+','%?+','%>+','%*+',     '%!*+','%?*+','%>*+',     '%*!+','%*?+','%*>+')):
+        return '_connected_poop_instance_pathfinding_policy_static'
+    else:
+        match policy:
+            case 'CUTOUT':
+                return '_connected_poop_instance_pathfinding_policy_cutout'
+            case 'NONE':
+                return '_connected_poop_instance_pathfinding_policy_none'
+            case 'STATIC':
+                return '_connected_poop_instance_pathfinding_policy_static'
+
+def getPoopImposter(policy):
+    match policy:
+        case 'POLYGON DEFAULT':
+            return '_connected_poop_instance_imposter_policy_polygon_default'
+        case 'POLYGON HIGH':
+            return '_connected_poop_instance_imposter_policy_polygon_high'
+        case 'CARD DEFAULT':
+            return '_connected_poop_instance_imposter_policy_card_default'
+        case 'CARD HIGH':
+            return '_connected_poop_instance_imposter_policy_card_high'
+        case 'NONE':
+            return '_connected_poop_instance_imposter_policy_none'
+        case 'NEVER':
+            return '_connected_poop_instance_imposter_policy_never'
+
+def getRegionName(region):
+    if region == '':
+        return 'default'
+    else:
+        return region
 
 def getFaceType():
     return 'eyo'
+
 
 ##############################
 #### MATERIAL PROPERTIES #####
