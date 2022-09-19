@@ -1948,7 +1948,7 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
         ('INSTANCED GEOMETRY MARKER', "IG Marker", ""), # 7
         ('INSTANCED GEOMETRY PHYSICS', "IG Physics", "This mesh will act as the physics geometry of its parent instanced geometry mesh. Can be forced on if this mesh is the child of an instanced geometry object and has the prefix: '$'"), # 8
         ('INSTANCED GEOMETRY RAIN BLOCKER', "IG Rain Blocker",''), # 9
-        ('IG VERTICAL RAIN SHEET', "IG Vertical Rain Sheet", ''), # 10
+        ('INSTANCED GEOMETRY VERTICAL RAIN SHEET', "IG Vertical Rain Sheet", ''), # 10
         ('LIGHTMAP REGION', "Lightmap Region", "Defines an area of a structure which should be lightmapped. Can be referenced when lightmapping"), # 11
         ('OBJECT INSTANCE', "Object Instance", "Writes this mesh to the json as an instanced object. Can be forced on with the prefix: '+flair'"), # 12
         ('PHYSICS', "Physics", "Sets this mesh to have physics geometry only. Can be forced on with the prefix: '$'"), # 13
@@ -2485,9 +2485,8 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
         name="Water Volume Fog Color",
         options=set(),
         description="Set the fog color of this water volume mesh",
-        default=(1.0, 1.0, 1.0, 1.0),
+        default=(1.0, 1.0, 1.0),
         subtype='COLOR',
-        size=4,
         min=0.0,
         max=1.0
     )

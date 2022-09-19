@@ -129,11 +129,13 @@ def getMeshProperties(mesh, name, ob):
     mesh_props.update({"bungie_mesh_type": getMeshType(mesh.ObjectMesh_Type, name, ob)}),
     # Boundary Surface
     if '_connected_geometry_mesh_type_boundary_surface' in mesh_props.values():
-        mesh_props.update({"bungie_mesh_boundary_surface_name": getBoundarySurfaceName(mesh.Boundary_Surface_Name, name)}),
+        if mesh.Boundary_Surface_Name != '' or name.startswith(('+soft_ceiling:','+soft_kill:','+slip_surface:')):
+            mesh_props.update({"bungie_mesh_boundary_surface_name": getBoundarySurfaceName(mesh.Boundary_Surface_Name, name)}),
         mesh_props.update({"bungie_mesh_boundary_surface_type": getBoundarySurfaceType(mesh.Boundary_Surface_Type, name)})
     # Decorator
     if '_connected_geometry_mesh_type_decorator' in mesh_props.values():
-        mesh_props.update({"bungie_mesh_decorator_name": getDecoratorName(mesh.Decorator_Name)})
+        if mesh.Decorator_Name != '':
+            mesh_props.update({"bungie_mesh_decorator_name": getDecoratorName(mesh.Decorator_Name)})
         mesh_props.update({"bungie_mesh_decorator_lod": getDecoratorLOD(mesh.Decorator_LOD)})
     # Poops
     if '_connected_geometry_mesh_type_poop' in mesh_props.values():
@@ -141,33 +143,59 @@ def getMeshProperties(mesh, name, ob):
         mesh_props.update({"bungie_mesh_poop_pathfinding": getPoopPathfinding(mesh.Poop_Pathfinding_Override, name)})
         mesh_props.update({"bungie_mesh_poop_imposter_policy": getPoopImposter(mesh.Poop_Imposter_Policy)})
         if mesh.Poop_Imposter_Transition_Distance != -1:
-            mesh_props.update({"bungie_mesh_poop_imposter_transition_distance": str(mesh.Poop_Imposter_Transition_Distance)})
+            mesh_props.update({"bungie_mesh_poop_imposter_transition_distance": str(round(mesh.Poop_Imposter_Transition_Distance, 6))})
         if mesh.Poop_Imposter_Fade_Range_Start != 36:
             mesh_props.update({"bungie_mesh_poop_fade_range_start": str(mesh.Poop_Imposter_Fade_Range_Start)})
-        if mesh.Poop_Imposter_Fade_Range_Start != 30:
+        if mesh.Poop_Imposter_Fade_Range_End != 30:
             mesh_props.update({"bungie_mesh_poop_fade_range_end": str(mesh.Poop_Imposter_Fade_Range_End)})
         if mesh.Poop_Predominant_Shader_Name != '':
             mesh_props.update({"bungie_mesh_poop_poop_predominant_shader_name":mesh.Poop_Imposter_Fade_Range_End[0:1023]})
         mesh_props.update({"bungie_mesh_poop_decomposition_hulls": "4294967295"})
-        if mesh.Poop_Render_Only == True or name.startswith(poop_render_only_prefixes):
+        if mesh.Poop_Render_Only or name.startswith(poop_render_only_prefixes):
             mesh_props.update({"bungie_mesh_poop_is_render_only": "1"})
-        if mesh.Poop_Chops_Portals == True:
+        if mesh.Poop_Chops_Portals:
             mesh_props.update({"bungie_mesh_poop_chops_portals": "1"})
-        if mesh.Poop_Does_Not_Block_AOE == True:
+        if mesh.Poop_Does_Not_Block_AOE:
             mesh_props.update({"bungie_mesh_poop_does_not_block_aoe": "1"})
-        if mesh.Poop_Excluded_From_Lightprobe == True:
+        if mesh.Poop_Excluded_From_Lightprobe:
             mesh_props.update({"bungie_mesh_poop_excluded_from_lightprobe": "1"})
-        if mesh.Poop_Decal_Spacing == True:
+        if mesh.Poop_Decal_Spacing:
             mesh_props.update({"bungie_mesh_poop_decal_spacing": "1"})
-        if mesh.Poop_Precise_Geometry == True:
+        if mesh.Poop_Precise_Geometry:
             mesh_props.update({"bungie_mesh_poop_precise_geometry": "1"})
+    # Fog Volume
+    if '_connected_geometry_mesh_type_planar_fog_volume' in mesh_props.values():
+        if mesh.Fog_Name != '':
+            mesh_props.update({"bungie_mesh_fog_name": mesh.Fog_Name[0:31]})
+        if mesh.Fog_Appearance_Tag != '':
+            mesh_props.update({"bungie_mesh_fog_appearance_tag": mesh.Fog_Appearance_Tag[0:31]})
+        mesh_props.update({"bungie_mesh_fog_volume_depth": str(round(mesh.Fog_Volume_Depth, 6))})
+    # Portal
+    if '_connected_geometry_mesh_type_portal' in mesh_props.values():
+        mesh_props.update({"bungie_mesh_portal_type": getPortalType(mesh.Portal_Type)})
+        if mesh.Portal_AI_Deafening:
+            mesh_props.update({"bungie_mesh_portal_ai_deafening": "1"})
+        if mesh.Portal_Blocks_Sounds:
+            mesh_props.update({"bungie_mesh_portal_blocks_sound": "1"})
+        if mesh.Portal_Is_Door:
+            mesh_props.update({"bungie_mesh_portal_is_door": "1"})
+    # Seam
+    if '_connected_geometry_mesh_type_seam' in mesh_props.values():
+        if mesh.Seam_Name != '' or name.startswith('+seam:'):
+            mesh_props.update({"bungie_mesh_seam_associated_bsp": getSeamName(mesh.Seam_Name, name)}),
+    # Water Physics Volume
+    if '_connected_geometry_mesh_type_water_physics_volume' in mesh_props.values():
+        mesh_props.update({"bungie_mesh_water_volume_depth": str(round(mesh.Water_Volume_Depth, 6))})
+        mesh_props.update({"bungie_mesh_water_volume_flow_direction": str(round(mesh.Water_Volume_Flow_Direction, 6))})
+        mesh_props.update({"bungie_mesh_water_volume_flow_velocity": str(round(mesh.Water_Volume_Flow_Velocity, 6))})
+        mesh_props.update({"bungie_mesh_water_volume_fog_color": getWaterFogColor(mesh.Water_Volume_Fog_Color.r, mesh.Water_Volume_Fog_Color.g, mesh.Water_Volume_Fog_Color.b)})
+        mesh_props.update({"bungie_mesh_water_volume_fog_murkiness": str(round(mesh.Water_Volume_Fog_Murkiness, 6))})
+
     ###################
     # MESH BOUNDARY SUR
     # FACE PROPERTIES
     #mesh_props["bungie_region_name"] = getRegionName(mesh.Region_Name),
     #"bungie_face_type": getFaceType()
-
-    
 
     return mesh_props
 
@@ -243,7 +271,6 @@ def getMeshType(type, name, ob):
 
 def getBoundarySurfaceName(bs_name, name):
     var = ''
-    print(name.startswith(('+soft_ceiling:','+soft_kill:','+slip_surface:')))
     if name.startswith(('+soft_ceiling:','+soft_kill:','+slip_surface:')) and name.rpartition(':')[2] != name:
         var = name.rpartition(':')[2]
     else:
@@ -317,6 +344,29 @@ def getPoopImposter(policy):
             return '_connected_poop_instance_imposter_policy_none'
         case 'NEVER':
             return '_connected_poop_instance_imposter_policy_never'
+
+def getPortalType(type):
+    match type:
+        case 'NO WAY':
+            return '_connected_geometry_portal_type_no_way'
+        case 'ONE WAY':
+            return '_connected_geometry_portal_type_one_way'
+        case 'TWO WAY':
+            return '_connected_geometry_portal_type_two_way'
+
+def getSeamName(seam_name, name):
+    var = ''
+    if name.startswith(('+seam:')) and name.rpartition(':')[2] != name:
+        var = name.rpartition(':')[2]
+    else:
+        var = seam_name
+
+    return var[0:31]
+
+def getWaterFogColor(red, green, blue):
+    color = str(round(red, 6)) + ' ' + str(round(green, 6)) + ' ' + str(round(blue, 6))
+
+    return color
 
 def getRegionName(region):
     if region == '':
