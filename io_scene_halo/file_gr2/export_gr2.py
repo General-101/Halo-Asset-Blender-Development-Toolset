@@ -132,9 +132,9 @@ def getMaterials():
             if halo_material_name.startswith(halo_special_materials) or halo_material.material_override != 'NONE':
                 shaderType = 'override'
                 if halo_material_name.startswith('+collision') or halo_material.material_override == 'COLLISION':
-                    shaderPath = 'collision'
+                    shaderPath = 'collisionVolume'
                 elif halo_material_name.startswith('+physics') or halo_material.material_override == 'PHYSICS':
-                    shaderPath = 'physics'
+                    shaderPath = 'physicsVolume'
                 elif halo_material_name.startswith('+portal') or halo_material.material_override == 'PORTAL':
                     shaderPath = 'bungie_mesh_type=_connected_geometry_mesh_type_portal'
                 elif halo_material_name.startswith('+seamsealer') or halo_material.material_override == 'SEAM SEALER':
