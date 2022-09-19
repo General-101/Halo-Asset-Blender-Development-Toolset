@@ -226,6 +226,29 @@ def getMeshProperties(mesh, name, ob):
         mesh_props.update({"bungie_no_shadow": "1"})
     if mesh.Precise_Position:
         mesh_props.update({"bungie_precise_position": "1"})
+    ###################
+    # MATERIAL LIGHTING PROPERTIES
+
+    ###################
+    # LIGHTMAP PROPERTIES
+    if mesh.Lightmap_Settings_Enabled:
+        mesh_props.update({"bungie_lightmap_additive_transparency": str(round(mesh.Lightmap_Additive_Transparency, 6))})
+        if mesh.Lightmap_Resolution_Scale != 3:
+            mesh_props.update({"bungie_lightmap_ignore_default_resolution_scale": "1"})
+            mesh_props.update({"bungie_lightmap_resolution_scale": str(mesh.Lightmap_Resolution_Scale)})
+        mesh_props.update({"bungie_lightmap_chart_group": str(mesh.Lightmap_Chart_Group)})
+        mesh_props.update({"bungie_lightmap_type": getLightmapType(mesh.Lightmap_Type)})
+        if mesh.Lightmap_Transparency_Override:
+            mesh_props.update({"bungie_lightmap_transparency_override": "1"})
+        mesh_props.update({"bungie_lightmap_analytical_bounce_modifier": str(round(mesh.Lightmap_Analytical_Bounce_Modifier, 6))})
+        mesh_props.update({"bungie_lightmap_general_bounce_modifier": str(round(mesh.Lightmap_General_Bounce_Modifier, 6))})
+        mesh_props.update({"bungie_lightmap_translucency_tint_color": getLightmapColor(mesh.Lightmap_Translucency_Tint_Color.r, mesh.Lightmap_Translucency_Tint_Color.g, mesh.Lightmap_Translucency_Tint_Color.b)})
+        if mesh.Lightmap_Lighting_From_Both_Sides:
+            mesh_props.update({"bungie_lightmap_lighting_from_both_sides": "1"})
+    ###################
+
+
+        
     
     return mesh_props
 
@@ -450,7 +473,17 @@ def getGlobalMaterialName(mat):
     else:
         return mat
 
+def getLightmapType(type):
+    match type:
+        case 'PER PIXEL':
+            return '_connected_material_lightmap_type_per_pixel'
+        case 'PER VERTEX':
+            return '_connected_material_lightmap_type_per_vertex'
 
+def getLightmapColor(red, green, blue):
+    color = str(round(red, 6)) + ' ' + str(round(green, 6)) + ' ' + str(round(blue, 6))
+
+    return color
 
 ##############################
 #### MATERIAL PROPERTIES #####

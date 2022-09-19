@@ -1443,6 +1443,11 @@ class JSON_ObjectMeshMaterialLightingProps(Panel):
         else:
             return ob_halo_json.ObjectMesh_Type not in invalid_mesh_types
 
+    def draw_header(self, context):
+        ob = context.object
+        ob_halo_json = ob.halo_json
+        self.layout.prop(ob_halo_json, "Material_Lighting_Enabled", text='')
+
     def draw(self, context):
         layout = self.layout
         layout.use_property_split = True
@@ -1452,12 +1457,21 @@ class JSON_ObjectMeshMaterialLightingProps(Panel):
         ob_halo_json = ob.halo_json
 
         col = flow.column()
-        col.prop(ob_halo_json, "Material_Lighting_Attenuation_Cutoff", text='Attenuation Cutoff')
-        col.prop(ob_halo_json, "Material_Lighting_Attenuation_Falloff", text='Attenuation Falloff')
-        col.prop(ob_halo_json, "Material_Lighting_Emissive_Focus", text='Emissive Focus')
+
+        layout.enabled = ob_halo_json.Material_Lighting_Enabled
+        
         col.prop(ob_halo_json, "Material_Lighting_Emissive_Color", text='Emissive Color')
         col.prop(ob_halo_json, "Material_Lighting_Emissive_Power", text='Emissive Power')
+        col.prop(ob_halo_json, "Material_Lighting_Emissive_Focus", text='Emissive Focus')
         col.prop(ob_halo_json, "Material_Lighting_Emissive_Quality", text='Emissive Quality')
+
+        col.separator()
+
+        col.prop(ob_halo_json, "Material_Lighting_Attenuation_Cutoff", text='Attenuation Cutoff')
+        col.prop(ob_halo_json, "Material_Lighting_Attenuation_Falloff", text='Attenuation Falloff')
+
+        col.separator()
+
         col.prop(ob_halo_json, "Material_Lighting_Bounce_Ratio", text='Bounce Ratio')
         
         col.separator()
@@ -1490,6 +1504,11 @@ class JSON_ObjectMeshLightmapProps(Panel):
         else:
             return ob_halo_json.ObjectMesh_Type not in invalid_mesh_types
 
+    def draw_header(self, context):
+        ob = context.object
+        ob_halo_json = ob.halo_json
+        self.layout.prop(ob_halo_json, "Lightmap_Settings_Enabled", text='')
+
     def draw(self, context):
         layout = self.layout
         layout.use_property_split = True
@@ -1499,11 +1518,23 @@ class JSON_ObjectMeshLightmapProps(Panel):
         ob_halo_json = ob.halo_json
 
         col = flow.column()
+
+        layout.enabled = ob_halo_json.Lightmap_Settings_Enabled
+
         col.prop(ob_halo_json, "Lightmap_Type", text='Lightmap Type')
-        col.prop(ob_halo_json, "Lightmap_Additive_Transparency", text='Additive Transparency')
+
+        col.separator()
+
         col.prop(ob_halo_json, "Lightmap_Translucency_Tint_Color", text='Translucency Tint Color')
+        col.prop(ob_halo_json, "Lightmap_Additive_Transparency", text='Additive Transparency')
+        
+        col.separator()
+
         col.prop(ob_halo_json, "Lightmap_Resolution_Scale", text='Resolution Scale')
         col.prop(ob_halo_json, "Lightmap_Chart_Group", text='Chart Group')
+
+        col.separator()
+
         col.prop(ob_halo_json, "Lightmap_Analytical_Bounce_Modifier", text='Analytical Bounce Modifier')
         col.prop(ob_halo_json, "Lightmap_General_Bounce_Modifier", text='General Bounce Modifier')
         
@@ -1993,8 +2024,8 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
         name="Mesh Tesselation Density",
         options=set(),
         description="Select the tesselation density you want applied to this mesh",
-        default = "NONE",
-        items=[ ('NONE', "None", "None"),
+        default = "DEFAULT",
+        items=[ ('DEFAULT', "Default", ""),
                 ('4X', "4x", "4 times"),
                 ('9X', "9x", "9 times"),
                 ('36X', "36x", "36 times"),
@@ -2522,6 +2553,13 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
     )
     
     #LIGHTMAP PROPERTIES
+    Lightmap_Settings_Enabled: BoolProperty(
+        name ="Enable to use lightmap settings",
+        options=set(),
+        description = "",
+        default = False,
+    )
+
     Lightmap_Additive_Transparency: FloatProperty(
         name="lightmap Additive Transparency",
         options=set(),
@@ -2590,9 +2628,8 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
         name="Lightmap Translucency Tint Color",
         options=set(),
         description="",
-        default=(1.0, 1.0, 1.0, 1.0),
+        default=(1.0, 1.0, 1.0),
         subtype='COLOR',
-        size=4,
         min=0.0,
         max=1.0
     )
@@ -2605,6 +2642,13 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
     )
 
     #MATERIAL LIGHTING PROPERTIES
+    Material_Lighting_Enabled: BoolProperty(
+        name="Toggle whether to use material lighting settings",
+        options=set(),
+        description="",
+        default=False,
+    )
+
     Material_Lighting_Attenuation_Cutoff: FloatProperty(
         name="Material Lighting Attenuation Cutoff",
         options=set(),
@@ -2627,9 +2671,8 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
         name="Material Lighting Emissive Color",
         options=set(),
         description="",
-        default=(1.0, 1.0, 1.0, 1.0),
+        default=(1.0, 1.0, 1.0),
         subtype='COLOR',
-        size=4,
         min=0.0,
         max=1.0,
     )
