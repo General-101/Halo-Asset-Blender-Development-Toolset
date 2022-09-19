@@ -86,13 +86,13 @@ def getNodes(use_selection=False, use_visible=False, use_active_collection=False
         halo_node_name = ob.name
 
         if use_selection:
-            if (ob.type == 'LIGHT' or ob.type == 'EMPTY' or halo_node_name.startswith(halo_node_prefixes) or halo_node.Object_Type_All != 'MESH') and ob.select_get(): # if the name of a mesh starts with this, don't process it.
+            if (ob.type != 'MESH' or halo_node_name.startswith(halo_node_prefixes) or halo_node.Object_Type_All != 'MESH') and ob.select_get(): # if the name of a mesh starts with this, don't process it.
                 nodesList.update({ob.name: getNodeProperties(halo_node, halo_node_name, ob)})
         if use_visible:
-            if (ob.type == 'LIGHT' or ob.type == 'EMPTY' or halo_node_name.startswith(halo_node_prefixes) or halo_node.Object_Type_All != 'MESH') and ob.visible_get(): # if the name of a mesh starts with this, don't process it.
+            if (ob.type != 'MESH' or halo_node_name.startswith(halo_node_prefixes) or halo_node.Object_Type_All != 'MESH') and ob.visible_get(): # if the name of a mesh starts with this, don't process it.
                 nodesList.update({ob.name: getNodeProperties(halo_node, halo_node_name, ob)})
         if not use_selection and not use_visible and not use_active_collection:
-            if ob.type == 'LIGHT' or ob.type == 'EMPTY' or halo_node_name.startswith(halo_node_prefixes) or halo_node.Object_Type_All != 'MESH': # if the name of a mesh starts with this, don't process it.
+            if ob.type != 'MESH' or halo_node_name.startswith(halo_node_prefixes) or halo_node.Object_Type_All != 'MESH': # if the name of a mesh starts with this, don't process it.
                 nodesList.update({ob.name: getNodeProperties(halo_node, halo_node_name, ob)})
 
     temp = ({'nodes_properties': nodesList})
@@ -145,13 +145,13 @@ def getMeshes(use_selection=False, use_visible=False, use_active_collection=Fals
         halo_mesh_name = ob.name
         
         if use_selection:
-            if ob.type == 'MESH' and (not halo_mesh_name.startswith(halo_node_prefixes) or halo_mesh.Object_Type_All != 'MESH') and ob.select_get(): # if the name of a mesh starts with this, don't process it.
+            if ob.type == 'MESH' and (not halo_mesh_name.startswith(halo_node_prefixes) and halo_mesh.Object_Type_All == 'MESH') and ob.select_get(): # if the name of a mesh starts with this, don't process it.
                 meshesList.update({ob.name: getMeshProperties(halo_mesh, halo_mesh_name, ob)})
         if use_visible:
-            if ob.type == 'MESH' and (not halo_mesh_name.startswith(halo_node_prefixes) or halo_mesh.Object_Type_All != 'MESH') and ob.visible_get(): # if the name of a mesh starts with this, don't process it.
+            if ob.type == 'MESH' and (not halo_mesh_name.startswith(halo_node_prefixes) and halo_mesh.Object_Type_All == 'MESH') and ob.visible_get(): # if the name of a mesh starts with this, don't process it.
                 meshesList.update({ob.name: getMeshProperties(halo_mesh, halo_mesh_name, ob)})
         if not use_selection and not use_visible and not use_active_collection:
-            if ob.type == 'MESH' and (not halo_mesh_name.startswith(halo_node_prefixes) or halo_mesh.Object_Type_All != 'MESH'): # if the name of a mesh starts with this, don't process it.
+            if ob.type == 'MESH' and (not halo_mesh_name.startswith(halo_node_prefixes) and halo_mesh.Object_Type_All == 'MESH'): # if the name of a mesh starts with this, don't process it.
                 meshesList.update({ob.name: getMeshProperties(halo_mesh, halo_mesh_name, ob)})
 
     temp = ({'meshes_properties': meshesList})
