@@ -27,6 +27,18 @@
 import bpy
 import json
 
+EKPath = bpy.context.preferences.addons['io_scene_halo'].preferences.hrek_path
+
+#clean editing kit path
+EKPath = EKPath.replace('"','')
+EKPath = EKPath.strip('\\')
+
+#get tool path
+toolPath = EKPath + '\\tool_fast.exe'
+
+#get tags path
+tagsPath = EKPath + '\\tags\\'
+
 ##############################
 ####### STRING TABLE #########
 ##############################
@@ -117,26 +129,66 @@ def getMaterials():
             shaderPath = ''
             shaderType = ''
 
-            if halo_material_name.startswith(halo_special_materials):
+            if halo_material_name.startswith(halo_special_materials) or halo_material.material_override != 'NONE':
                 shaderType = 'override'
-                if halo_material_name.startswith('+collision'):
+                if halo_material_name.startswith('+collision') or halo_material.material_override == 'COLLISION':
                     shaderPath = 'collision'
-                elif halo_material_name.startswith('+physics'):
+                elif halo_material_name.startswith('+physics') or halo_material.material_override == 'PHYSICS':
                     shaderPath = 'physics'
-                elif halo_material_name.startswith('+portal'):
+                elif halo_material_name.startswith('+portal') or halo_material.material_override == 'PORTAL':
                     shaderPath = 'bungie_mesh_type=_connected_geometry_mesh_type_portal'
-                elif halo_material_name.startswith('+seamsealer'):
+                elif halo_material_name.startswith('+seamsealer') or halo_material.material_override == 'SEAM SEALER':
                     shaderPath = 'bungie_face_type=_connected_geometry_face_type_seam_sealer'
-                elif halo_material_name.startswith('+sky'):
+                elif halo_material_name.startswith('+sky') or halo_material.material_override == 'SKY':
                     shaderPath = 'bungie_face_type=_connected_geometry_face_type_sky'
-                elif halo_material_name.startswith('+weatherpoly'):
+                elif halo_material_name.startswith('+weatherpoly') or halo_material.material_override == 'WEATHERPOLY':
                     shaderPath = 'bungie_face_type=_connected_geometry_face_type_weather_polyhedra'
+
             else:
-                shaderType = halo_material.Shader_Type
-                if halo_material.shader_path.rpartition('.')[0] == '':
-                    shaderPath = 'shaders\invalid'
-                else:
+                if '.' in halo_material.shader_path:
                     shaderPath = halo_material.shader_path.rpartition('.')[0]
+                else:
+                    shaderPath = halo_material.shader_path
+
+                #clean shader path
+                shaderPath = shaderPath.replace('"','')
+                shaderPath = shaderPath.strip('\\')
+                shaderPath = shaderPath.replace(tagsPath,'')
+
+                if shaderPath == '':
+                    shaderPath = 'shaders\invalid'
+                
+                match halo_material.Shader_Type:
+                    case 'SHADER':
+                        shaderType = 'shader'
+                    case 'SHADER CORTANA':
+                        shaderType = 'shader_cortana'
+                    case 'SHADER CUSTOM':
+                        shaderType = 'shader_custom'
+                    case 'SHADER DECAL':
+                        shaderType = 'shader_decal'
+                    case 'SHADER FOLIAGE':
+                        shaderType = 'shader_foliage'
+                    case 'SHADER FUR':
+                        shaderType = 'shader_fur'
+                    case 'SHADER FUR STENCIL':
+                        shaderType = 'shader_fur_stencil'
+                    case 'SHADER GLASS':
+                        shaderType = 'shader_glass'
+                    case 'SHADER HALOGRAM':
+                        shaderType = 'shader_halogram'
+                    case 'SHADER  MUX':
+                        shaderType = 'shader_mux'
+                    case 'SHADER MUX MATERIAL':
+                        shaderType = 'shader_mux_material'
+                    case 'SHADER SCREEN':
+                        shaderType = 'shader_screen'
+                    case 'SHADER SKIN':
+                        shaderType = 'shader_skin'
+                    case 'SHADER TERRAIN':
+                        shaderType = 'shader_terrain'
+                    case 'SHADER WATER':
+                        shaderType = 'shader_water'
 
             matList.update({halo_material_name : {"bungie_shader_path": shaderPath, "bungie_shader_type": shaderType}})
 
@@ -164,10 +216,6 @@ def export_asset(report, filePath="", export_gr2=False, delete_fbx=False, delete
         for x in range(len(pathList)-1):
             gr2Path += pathList[x]
             gr2Path += ".gr2"
-
-        toolPath = bpy.context.preferences.addons['io_scene_halo'].preferences.hrek_path
-        toolPath = toolPath.replace('"','')
-        toolPath += "\\tool_fast.exe"
 
         print('\nTool Path... %r' % toolPath)
 
