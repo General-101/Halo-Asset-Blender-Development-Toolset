@@ -244,7 +244,6 @@ def getMeshProperties(mesh, name, ob):
             mesh_props.update({"bungie_lighting_emissive_per_unit": "1"})
         if mesh.Material_Lighting_Use_Shader_Gel:
             mesh_props.update({"bungie_lighting_use_shader_gel": "1"})
-        
     ###################
     # LIGHTMAP PROPERTIES
     if mesh.Lightmap_Settings_Enabled:
@@ -262,10 +261,24 @@ def getMeshProperties(mesh, name, ob):
         if mesh.Lightmap_Lighting_From_Both_Sides:
             mesh_props.update({"bungie_lightmap_lighting_from_both_sides": "1"})
     ###################
+    # OTHER MESH PROPERTIES
+    if mesh.ObjectMesh_Type not in invalid_mesh_types:
+        if mesh.Mesh_Tesselation_Density != 'DEFAULT':
+            mesh_props.update({"bungie_mesh_tessellation_density": getTesselationDensity(mesh.Mesh_Tesselation_Density)})
+        if mesh.Mesh_Compression != 'DEFAULT':
+            mesh_props.update({"bungie_mesh_additional_compression": getMeshCompression(mesh.Mesh_Compression)})
+        if mesh.Mesh_Primitive_Type != 'NONE':
+            mesh_props.update({"bungie_mesh_primitive_type": getPrimitiveType(mesh.Mesh_Primitive_Type)})
+            if mesh.Mesh_Primitive_Type == 'BOX':
+                mesh_props.update({"bungie_mesh_primitive_box_length": str(round(mesh.Box_Length, 6))})
+                mesh_props.update({"bungie_mesh_primitive_box_width": str(round(mesh.Box_Width, 6))})
+                mesh_props.update({"bungie_mesh_primitive_box_height": str(round(mesh.Box_Height, 6))})
+            elif mesh.Mesh_Primitive_Type == 'PILL':
+                mesh_props.update({"bungie_mesh_primitive_pill_radius": str(round(mesh.Pill_Radius, 6))})
+                mesh_props.update({"bungie_mesh_primitive_pill_height": str(round(mesh.Pill_Height, 6))})
+            elif mesh.Mesh_Primitive_Type == 'SPHERE':
+                mesh_props.update({"bungie_mesh_primitive_sphere_radius": str(round(mesh.Sphere_Radius, 6))})
 
-
-        
-    
     return mesh_props
 
 def getMeshType(type, name, ob):
@@ -505,6 +518,31 @@ def getEmissiveColor(red, green, blue):
     color = str(round(red, 6)) + ' ' + str(round(green, 6)) + ' ' + str(round(blue, 6))
 
     return color
+
+def getTesselationDensity(density):
+    match density:
+        case '4X':
+            return '_connected_geometry_mesh_tessellation_density_4x'
+        case '9X':
+            return '_connected_geometry_mesh_tessellation_density_9x'
+        case '36X':
+            return '_connected_geometry_mesh_tessellation_density_36x'
+
+def getMeshCompression(compression):
+    match compression:
+        case 'FORCE OFF':
+            return '_connected_geometry_mesh_additional_compression_force_off'
+        case 'FORCE ON':
+            return '_connected_geometry_mesh_additional_compression_force_on'
+
+def getPrimitiveType(type):
+    match type:
+        case 'BOX':
+            return '_connected_geometry_primitive_type_box'
+        case 'PILL':
+            return '_connected_geometry_primitive_type_pill'
+        case 'SPHERE':
+            return '_connected_geometry_primitive_type_sphere'
 
 ##############################
 #### MATERIAL PROPERTIES #####
