@@ -198,13 +198,35 @@ def getMeshProperties(mesh, name, ob):
         mesh_props.update({"bungie_mesh_water_volume_flow_velocity": str(round(mesh.Water_Volume_Flow_Velocity, 6))})
         mesh_props.update({"bungie_mesh_water_volume_fog_color": getWaterFogColor(mesh.Water_Volume_Fog_Color.r, mesh.Water_Volume_Fog_Color.g, mesh.Water_Volume_Fog_Color.b)})
         mesh_props.update({"bungie_mesh_water_volume_fog_murkiness": str(round(mesh.Water_Volume_Fog_Murkiness, 6))})
-
     ###################
-    # MESH BOUNDARY SUR
     # FACE PROPERTIES
-    #mesh_props["bungie_region_name"] = getRegionName(mesh.Region_Name),
-    #"bungie_face_type": getFaceType()
-
+    if mesh.Face_Type != 'NORMAL':
+        mesh_props.update({"bungie_face_type": getFaceType(mesh.Face_Type)})
+    if mesh.Face_Mode != 'NORMAL':
+        mesh_props.update({"bungie_face_mode": getFaceMode(mesh.Face_Mode)})
+    if mesh.Face_Sides != 'ONE SIDED':
+        mesh_props.update({"bungie_face_sides": getFaceSides(mesh.Face_Sides)})
+    if mesh.Face_Draw_Distance != 'NORMAL':
+        mesh_props.update({"bungie_face_draw_distance": getFaceDrawDistance(mesh.Face_Draw_Distance)})
+    mesh_props.update({"bungie_face_region": getRegionName(mesh.Region_Name)})
+    mesh_props.update({"bungie_face_global_material": getGlobalMaterialName(mesh.Face_Global_Material)})
+    if '_connected_geometry_face_type_sky' in mesh_props.values():
+        mesh_props.update({"bungie_sky_permutation_index": str(mesh.Sky_Permutation_Index)})
+    if mesh.Conveyor:
+        mesh_props.update({"bungie_conveyor": "1"})
+    if mesh.Ladder:
+        mesh_props.update({"bungie_ladder": "1"})
+    if mesh.Slip_Surface:
+        mesh_props.update({"bungie_slip_surface": "1"})
+    if mesh.Decal_Offset:
+        mesh_props.update({"bungie_decal_offset": "1"})
+    if mesh.Group_Transparents_By_Plane:
+        mesh_props.update({"bungie_group_transparents_by_plane": "1"})
+    if mesh.No_Shadow:
+        mesh_props.update({"bungie_no_shadow": "1"})
+    if mesh.Precise_Position:
+        mesh_props.update({"bungie_precise_position": "1"})
+    
     return mesh_props
 
 def getMeshType(type, name, ob):
@@ -376,14 +398,58 @@ def getWaterFogColor(red, green, blue):
 
     return color
 
+def getFaceType(type):
+    match type:
+        case 'SEAM SEALER':
+            return '_connected_geometry_face_type_seam_sealer'
+        case 'SKY':
+            return '_connected_geometry_face_type_sky'
+        case 'WEATHER POLYHEDRA':
+            return '_connected_geometry_face_type_weather_polyhedra'
+
+def getFaceMode(mode):
+    match mode:
+        case 'RENDER ONLY':
+            return '_connected_geometry_face_mode_render_only'
+        case 'COLLISION ONLY':
+            return '_connected_geometry_face_mode_collision_only'
+        case 'SPHERE COLLISION ONLY':
+            return '_connected_geometry_face_mode_sphere_collision_only'
+        case 'SHADOW ONLY':
+            return '_connected_geometry_face_mode_shadow_only'
+        case 'LIGHTMAP ONLY':
+            return '_connected_geometry_face_mode_lightmap_only'
+        case 'BREAKABLE':
+            return '_connected_geometry_face_mode_breakable'
+
+def getFaceSides(sides):
+    match sides:
+        case 'ONE SIDED TRANSPARENT':
+            return '_connected_geometry_face_mode_render_only'
+        case 'TWO SIDED':
+            return '_connected_geometry_face_mode_collision_only'
+        case 'TWO SIDED TRANSPARENT':
+            return '_connected_geometry_face_mode_sphere_collision_only' 
+
+def getFaceDrawDistance(distance):
+    match distance:
+        case 'MID':
+            return '_connected_geometry_face_mode_render_only'
+        case 'CLOSE':
+            return '_connected_geometry_face_mode_collision_only'
+
 def getRegionName(region):
     if region == '':
         return 'default'
     else:
         return region
 
-def getFaceType():
-    return 'eyo'
+def getGlobalMaterialName(mat):
+    if mat == '':
+        return 'default'
+    else:
+        return mat
+
 
 
 ##############################
