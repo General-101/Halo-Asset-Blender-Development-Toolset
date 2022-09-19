@@ -99,7 +99,7 @@ def getNodesProperties():
 ##### MESHES PROPERTIES ######
 ##############################
 
-def getMeshes():
+def getMeshes(use_selection=False, use_visible=False, use_active_collection=False):
     meshesList = {}
 
     halo_node_prefixes = ('b ', 'b_', 'frame ', 'frame_','bip ','bip_','bone ','bone_','#') # these prefixes indicate a mesh should not be written to meshes_properties
@@ -109,8 +109,16 @@ def getMeshes():
     for ob in bpy.data.objects:
         halo_mesh = ob.halo_json
         halo_mesh_name = ob.name
-        if ob.type == 'MESH' and (not halo_mesh_name.startswith(halo_node_prefixes) or halo_mesh.Object_Type_All != 'MESH'): # if the name of a mesh starts with this, don't process it.
-            meshesList.update({ob.name: getMeshProperties(halo_mesh, halo_mesh_name, ob)})
+        
+        if use_selection:
+            if ob.type == 'MESH' and (not halo_mesh_name.startswith(halo_node_prefixes) or halo_mesh.Object_Type_All != 'MESH') and ob.select_get(): # if the name of a mesh starts with this, don't process it.
+                meshesList.update({ob.name: getMeshProperties(halo_mesh, halo_mesh_name, ob)})
+        if use_visible:
+            if ob.type == 'MESH' and (not halo_mesh_name.startswith(halo_node_prefixes) or halo_mesh.Object_Type_All != 'MESH') and ob.visible_get(): # if the name of a mesh starts with this, don't process it.
+                meshesList.update({ob.name: getMeshProperties(halo_mesh, halo_mesh_name, ob)})
+        if not use_selection and not use_visible and not use_active_collection:
+            if ob.type == 'MESH' and (not halo_mesh_name.startswith(halo_node_prefixes) or halo_mesh.Object_Type_All != 'MESH'): # if the name of a mesh starts with this, don't process it.
+                meshesList.update({ob.name: getMeshProperties(halo_mesh, halo_mesh_name, ob)})
 
     temp = ({'meshes_properties': meshesList})
 
@@ -418,7 +426,7 @@ import tempfile
 import ctypes
 from subprocess import Popen
 
-def export_asset(report, filePath="", export_gr2=False, delete_fbx=False, delete_json=False):
+def export_asset(report, filePath="", export_gr2=False, delete_fbx=False, delete_json=False, use_selection=False, use_visible=False, use_active_collection=False):
     pathList = filePath.split(".")
     jsonPath = ""
     for x in range(len(pathList)-1):
@@ -446,11 +454,11 @@ def export_asset(report, filePath="", export_gr2=False, delete_fbx=False, delete
             os.remove(filePath)
     return {'FINISHED'}
 
-def build_json(jsonPath, delete_json):
+def build_json(jsonPath, delete_json, use_selection=False, use_visible=False, use_active_collection=False):
     jsonTemp = {}
     jsonTemp.update(getStrings())
     jsonTemp.update(getNodes())
-    jsonTemp.update(getMeshes())
+    jsonTemp.update(getMeshes(use_selection, use_visible, use_active_collection))
     jsonTemp.update(getMaterials())
 
     if(delete_json):
@@ -494,6 +502,6 @@ def save(operator, context, report,
         delete_json=False,
         **kwargs
         ):
-    export_asset(report, filepath, export_gr2, delete_fbx, delete_json)
+    export_asset(report, filepath, export_gr2, delete_fbx, delete_json, use_selection, use_visible, use_active_collection)
     return {'FINISHED'}
 
