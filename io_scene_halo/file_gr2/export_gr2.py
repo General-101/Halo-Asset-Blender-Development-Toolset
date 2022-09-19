@@ -44,6 +44,8 @@ marker_prefixes = ('#')
 mesh_prefixes = ('+soft_ceiling','+soft_kill','+slip_surface', '@','+cookie','+decorator','+flair', '%', '$','+fog','+portal', '+seam','+water', '\'')
 special_prefixes = ('b ', 'b_', 'frame ', 'frame_','bip ','bip_','bone ','bone_','#','+soft_ceiling','+soft_kill','+slip_surface', '@','+cookie','+decorator','+flair', '%', '$','+fog','+portal', '+seam','+water', '\'')
 
+halo_node_prefixes = ('b ', 'b_', 'frame ', 'frame_','bip ','bip_','bone ','bone_','#') # these prefixes indicate a mesh should not be written to meshes_properties
+
 boundary_surface_prefixes = ('+soft_ceiling','+soft_kill','+slip_surface') # boundary surface prefixes can take a name with +prefix:name e.g. +soft_ceiling:camera_ceiling_01
 cookie_cutter_prefixes = ('+cookie')
 decorator_prefixes = ('+decorator') # decorators can take a name with +decorator:name (not implemented)
@@ -76,27 +78,59 @@ def getStrings():
 ##### NODES PROPERTIES #######
 ##############################
 
-def getNodes():
+def getNodes(use_selection=False, use_visible=False, use_active_collection=False):
     nodesList = {}
 
-    halo_node_prefixes = ('#','b_','b ','frame_','frame ') # these prefixes indicate a mesh should not be written to meshes_properties
+    for ob in bpy.data.objects:
+        halo_node = ob.halo_json
+        halo_node_name = ob.name
 
-    for node in bpy.data.objects:
-        if node.name.startswith(halo_node_prefixes):
-            nodesList.update({node.name: getNodesProperties()})
+        if use_selection:
+            if (ob.type == 'LIGHT' or ob.type == 'EMPTY' or halo_node_name.startswith(halo_node_prefixes) or halo_node.Object_Type_All != 'MESH') and ob.select_get(): # if the name of a mesh starts with this, don't process it.
+                nodesList.update({ob.name: getNodeProperties(halo_node, halo_node_name, ob)})
+        if use_visible:
+            if (ob.type == 'LIGHT' or ob.type == 'EMPTY' or halo_node_name.startswith(halo_node_prefixes) or halo_node.Object_Type_All != 'MESH') and ob.visible_get(): # if the name of a mesh starts with this, don't process it.
+                nodesList.update({ob.name: getNodeProperties(halo_node, halo_node_name, ob)})
+        if not use_selection and not use_visible and not use_active_collection:
+            if ob.type == 'LIGHT' or ob.type == 'EMPTY' or halo_node_name.startswith(halo_node_prefixes) or halo_node.Object_Type_All != 'MESH': # if the name of a mesh starts with this, don't process it.
+                nodesList.update({ob.name: getNodeProperties(halo_node, halo_node_name, ob)})
 
     temp = ({'nodes_properties': nodesList})
 
     return temp
 
-def getNodesProperties():
-    node_props = {
-        # OBJECT PROPERTIES
-        "bungie_object_type": "_connected_geometry_object_type_frame"
+def getNodeProperties(node, name, ob):
+    node_props = {}
+    ###################
+    # OBJECT PROPERTIES
+    node_props.update({"bungie_object_type": getNodeType(node, name, ob)}),
+    ###################
 
-    }
 
     return node_props
+
+def getNodeType(node, name, ob):
+    if name.startswith(frame_prefixes):
+        return '_connected_geometry_object_type_frame'
+    elif name.startswith(marker_prefixes):
+        return '_connected_geometry_object_type_marker'
+    elif ob.type == 'LIGHT':
+        return '_connected_geometry_object_type_light'
+    else:
+        if ob.type == 'MESH':
+            match node.Object_Type_All:
+                case 'FRAME':
+                    return '_connected_geometry_object_type_frame'
+                case 'MARKER':
+                    return '_connected_geometry_object_type_marker'
+        else:
+            match node.Object_Type_No_Mesh:
+                case 'FRAME':
+                    return '_connected_geometry_object_type_frame'
+                case 'MARKER':
+                    return '_connected_geometry_object_type_marker'
+
+
 
 ##############################
 ##### MESHES PROPERTIES ######
@@ -104,9 +138,6 @@ def getNodesProperties():
 
 def getMeshes(use_selection=False, use_visible=False, use_active_collection=False):
     meshesList = {}
-
-    halo_node_prefixes = ('b ', 'b_', 'frame ', 'frame_','bip ','bip_','bone ','bone_','#') # these prefixes indicate a mesh should not be written to meshes_properties
-
 
 
     for ob in bpy.data.objects:
@@ -665,7 +696,7 @@ def export_asset(report, filePath="", export_gr2=False, delete_fbx=False, delete
 def build_json(jsonPath, delete_json, use_selection=False, use_visible=False, use_active_collection=False):
     jsonTemp = {}
     jsonTemp.update(getStrings())
-    jsonTemp.update(getNodes())
+    jsonTemp.update(getNodes(use_selection, use_visible, use_active_collection))
     jsonTemp.update(getMeshes(use_selection, use_visible, use_active_collection))
     jsonTemp.update(getMaterials())
 
