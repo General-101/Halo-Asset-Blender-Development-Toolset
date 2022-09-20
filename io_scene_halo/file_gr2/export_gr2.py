@@ -215,7 +215,7 @@ def getLightShape(shape):
         return '_connected_geometry_light_shape_rectangle'
 
 def getLightColor(red, green, blue):
-    color = str(round(red, 6)) + ' ' + str(round(green, 6)) + ' ' + str(round(blue, 6))
+    color = str(1) + ' ' + str(round(red, 6)) + ' ' + str(round(green, 6)) + ' ' + str(round(blue, 6))
 
     return color
 
@@ -686,7 +686,7 @@ def getSeamName(seam_name, name):
     return var[0:31]
 
 def getWaterFogColor(red, green, blue):
-    color = str(round(red, 6)) + ' ' + str(round(green, 6)) + ' ' + str(round(blue, 6))
+    color = str(1) + ' ' + str(round(red, 6)) + ' ' + str(round(green, 6)) + ' ' + str(round(blue, 6))
 
     return color
 
@@ -750,12 +750,12 @@ def getLightmapType(type):
             return '_connected_material_lightmap_type_per_vertex'
 
 def getLightmapColor(red, green, blue):
-    color = str(round(red, 6)) + ' ' + str(round(green, 6)) + ' ' + str(round(blue, 6))
+    color = str(1) + ' ' + str(round(red, 6)) + ' ' + str(round(green, 6)) + ' ' + str(round(blue, 6))
 
     return color 
 
 def getEmissiveColor(red, green, blue):
-    color = str(round(red, 6)) + ' ' + str(round(green, 6)) + ' ' + str(round(blue, 6))
+    color = str(1) + ' ' + str(round(red, 6)) + ' ' + str(round(green, 6)) + ' ' + str(round(blue, 6))
 
     return color
 
