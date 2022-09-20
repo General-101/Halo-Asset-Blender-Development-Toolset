@@ -85,18 +85,22 @@ def getNodes(use_selection=False, use_visible=False, use_active_collection=False
         for bone in arm.bones:
             nodesList.update({bone.name: getBoneProperties()})
 
+    for light in bpy.data.lights:
+        halo_light = light.halo_json
+        nodesList.update({light.name: getLightProperties(halo_light, light)})
+
     for ob in bpy.data.objects:
         halo_node = ob.halo_json
         halo_node_name = ob.name
 
         if use_selection:
-            if (ob.type != 'MESH' or halo_node_name.startswith(halo_node_prefixes) or halo_node.Object_Type_All != 'MESH') and ob.select_get(): # if the name of a mesh starts with this, don't process it.
+            if ((ob.type == 'MESH' and halo_node.Object_Type_All != 'MESH') or ob.type == 'EMPTY' or (halo_node_name.startswith(halo_node_prefixes) and ob.type != 'LIGHT')) and ob.select_get(): # if the name of a mesh starts with this, don't process it.
                 nodesList.update({ob.name: getNodeProperties(halo_node, halo_node_name, ob)})
         if use_visible:
-            if (ob.type != 'MESH' or halo_node_name.startswith(halo_node_prefixes) or halo_node.Object_Type_All != 'MESH') and ob.visible_get(): # if the name of a mesh starts with this, don't process it.
+            if ((ob.type == 'MESH' and halo_node.Object_Type_All != 'MESH') or ob.type == 'EMPTY' or (halo_node_name.startswith(halo_node_prefixes) and ob.type != 'LIGHT')) and ob.visible_get(): # if the name of a mesh starts with this, don't process it.
                 nodesList.update({ob.name: getNodeProperties(halo_node, halo_node_name, ob)})
         if not use_selection and not use_visible and not use_active_collection:
-            if ob.type != 'MESH' or halo_node_name.startswith(halo_node_prefixes) or halo_node.Object_Type_All != 'MESH': # if the name of a mesh starts with this, don't process it.
+            if (ob.type == 'MESH' and halo_node.Object_Type_All != 'MESH') or ob.type == 'EMPTY' or (halo_node_name.startswith(halo_node_prefixes) and ob.type != 'LIGHT'): # if the name of a mesh starts with this, don't process it.
                 nodesList.update({ob.name: getNodeProperties(halo_node, halo_node_name, ob)})
 
     temp = ({'nodes_properties': nodesList})
@@ -127,6 +131,94 @@ def getFrameID2():
 
     return str(ID2)
 
+def getLightProperties(node, light):
+    node_props = {}
+    ###################
+    # LIGHT PROPERTIES
+    node_props.update({"bungie_object_type": "_connected_geometry_object_type_light"})
+    node_props.update({"bungie_light_type_version": "1"})
+    node_props.update({"bungie_light_type": getLightType(node.light_type_override, light.type)})
+    node_props.update({"bungie_light_game_type": getLightGameType(node.Light_Game_Type)})
+    node_props.update({"bungie_light_shape": getLightShape(node.Light_Shape)})
+    node_props.update({"bungie_light_volume_distance": str(round(node.Light_Volume_Distance, 6))})
+    node_props.update({"bungie_light_volume_intensity_scalar": str(round(node.Light_Volume_Intensity, 6))})
+    node_props.update({"bungie_light_fade_start_distance": str(round(node.Light_Fade_Start_Distance, 6))})
+    node_props.update({"bungie_light_fade_out_distance": str(round(node.Light_Fade_End_Distance, 6))})
+    node_props.update({"bungie_light_color": getLightColor(node.Light_Color.r, node.Light_Color.g, node.Light_Color.b)})
+    node_props.update({"bungie_light_intensity": str(round(node.Light_Intensity, 6))})
+    node_props.update({"bungie_light_hotspot_size": str(round(node.Light_Hotspot_Size, 6))})
+    node_props.update({"bungie_light_hotspot_falloff": str(round(node.Light_Hotspot_Falloff, 6))})
+    node_props.update({"bungie_light_falloff_shape": str(round(node.Light_Falloff_Shape, 6))})
+    node_props.update({"bungie_light_aspect": str(round(node.Light_Aspect, 6))})
+    node_props.update({"bungie_light_frustum_width": str(round(node.Light_Frustum_Width, 6))})
+    node_props.update({"bungie_light_frustum_height": str(round(node.Light_Frustum_Height, 6))})
+    node_props.update({"bungie_light_bounce_light_ratio": str(round(node.Light_Bounce_Ratio, 6))})
+    if node.Light_Tag_Override != '':
+        node_props.update({"bungie_light_light_tag_override": node.Light_Tag_Override[0:127]})
+    if node.Light_Shader_Reference != '':
+        node_props.update({"bungie_light_shader_reference": node.Light_Shader_Reference[0:127]})
+    if node.Light_Gel_Reference != '':
+        node_props.update({"bungie_light_gel_reference": node.Light_Gel_Reference[0:127]})
+    if node.Light_Lens_Flare_Reference != '':
+        node_props.update({"bungie_light_lens_flare_reference": node.Light_Lens_Flare_Reference[0:127]})
+    if node.Light_Ignore_BSP_Visibility:
+        node_props.update({"bungie_light_ignore_bsp_visibility": "1"})
+    if node.Light_Dynamic_Has_Bounce:
+        node_props.update({"bungie_light_dynamic_light_has_bounce": "1"})
+    if node.Light_Screenspace_Has_Specular:
+        node_props.update({"bungie_light_screenspace_light_has_specular": "1"})
+    if node.Light_Use_Clipping:
+        node_props.update({"bungie_light_use_clipping": "1"})
+        node_props.update({"bungie_light_clipping_size_x_pos": str(round(node.Light_Clipping_Size_X_Pos, 6))})
+        node_props.update({"bungie_light_clipping_size_y_pos": str(round(node.Light_Clipping_Size_Y_Pos, 6))})
+        node_props.update({"bungie_light_clipping_size_z_pos": str(round(node.Light_Clipping_Size_Z_Pos, 6))})
+        node_props.update({"bungie_light_clipping_size_x_neg": str(round(node.Light_Clipping_Size_X_Neg, 6))})
+        node_props.update({"bungie_light_clipping_size_y_neg": str(round(node.Light_Clipping_Size_Y_Neg, 6))})
+        node_props.update({"bungie_light_clipping_size_z_neg": str(round(node.Light_Clipping_Size_Z_Neg, 6))})
+    if node.Light_Near_Attenuation:
+        node_props.update({"bungie_light_use_near_attenuation": "1"})
+        node_props.update({"bungie_light_near_attenuation_start": str(round(node.Light_Near_Attenuation_Start, 6))})
+        node_props.update({"bungie_light_near_attenuation_end": str(round(node.Light_Near_Attenuation_End, 6))})
+    if node.Light_Far_Attenuation:
+        node_props.update({"bungie_light_use_far_attenuation": "1"})
+        node_props.update({"bungie_light_far_attenuation_start": str(round(node.Light_Far_Attenuation_Start, 6))})
+        node_props.update({"bungie_light_far_attenuation_end": str(round(node.Light_Far_Attenuation_End, 6))})
+
+    return node_props
+
+def getLightType(halo_type, light_type):
+    if light_type == 'POINT' or light_type == 'SUN':
+        return '_connected_geometry_light_type_omni'
+    else:
+        if halo_type == 'SPOT':
+            return '_connected_geometry_light_type_spot'
+        else:
+            return '_connected_geometry_light_type_directional'
+
+def getLightGameType(type):
+    match type:
+        case 'DEFAULT':
+            return '_connected_geometry_bungie_light_type_default'
+        case 'INLINED':
+            return '_connected_geometry_bungie_light_type_inlined'
+        case 'RERENDER':
+            return '_connected_geometry_bungie_light_type_rerender'
+        case 'SCREEN SPACE':
+            return '_connected_geometry_bungie_light_type_screen_space'
+        case 'UBER':
+            return '_connected_geometry_bungie_light_type_uber'
+
+def getLightShape(shape):
+    if shape == 'CIRCLE':
+        return '_connected_geometry_light_shape_circle'
+    else:
+        return '_connected_geometry_light_shape_rectangle'
+
+def getLightColor(red, green, blue):
+    color = str(round(red, 6)) + ' ' + str(round(green, 6)) + ' ' + str(round(blue, 6))
+
+    return color
+
 def getNodeProperties(node, name, ob):
     node_props = {}
     ###################
@@ -136,6 +228,10 @@ def getNodeProperties(node, name, ob):
     # MARKER PROPERTIES
     if '_connected_geometry_object_type_marker' in node_props.values():
         node_props.update({"bungie_marker_type": getMarkerType(node.ObjectMarker_Type, node.Physics_Constraint_Type)})
+        if node.Marker_All_Regions:
+            node_props.update({"bungie_marker_all_regions": "1"})
+        else:
+            node_props.update({"bungie_marker_region": getMarkerRegion(node.Marker_Region)})
         if '_connected_geometry_mesh_type_object_instance' in node_props.values():
             if node.Marker_Region == '':
                 node_props.update({"bungie_marker_all_regions": "1"})
@@ -144,10 +240,11 @@ def getNodeProperties(node, name, ob):
         if '_connected_geometry_marker_type_game_instance' in node_props.values():
             node_props.update({"bungie_marker_game_instance_tag_name": node.Marker_Game_Instance_Tag_Name[0:63]})
             node_props.update({"bungie_marker_game_instance_variant_name": node.Marker_Game_Instance_Tag_Name[0:63]})
-        if ('_connected_geometry_marker_type_model', '_connected_geometry_marker_type_hint', '_connected_geometry_marker_type_target') in node_props.values():
+        if '_connected_geometry_marker_type_model' in node_props.values() or '_connected_geometry_marker_type_hint' in node_props.values() or '_connected_geometry_marker_type_target' in node_props.values():
             node_props.update({"bungie_marker_model_group": getMarkerGroup(name)})
         if '_connected_geometry_marker_type_model' in node_props.values():
-            node_props.update({"bungie_marker_velocity": getMarkerVelocity(node.Marker_Velocity.x, node.Marker_Velocity.y, node.Marker_Velocity.z)})
+            if node.Marker_Velocity.x != 0 or node.Marker_Velocity.y != 0 or node.Marker_Velocity.z != 0:
+                node_props.update({"bungie_marker_velocity": getMarkerVelocity(node.Marker_Velocity.x, node.Marker_Velocity.y, node.Marker_Velocity.z)})
         if '_connected_geometry_marker_type_pathfinding_sphere' in node_props.values():
             if node.Marker_Pathfinding_Sphere_Vehicle:
                 node_props.update({"bungie_marker_pathfinding_sphere_vehicle_only": "1"})
@@ -155,39 +252,21 @@ def getNodeProperties(node, name, ob):
                 node_props.update({"bungie_marker_pathfinding_sphere_remains_when_open": "1"})
             if node.Pathfinding_Sphere_With_Sectors:
                 node_props.update({"bungie_marker_pathfinding_sphere_with_sectors": "1"})
-        if ('_connected_geometry_marker_type_physics_hinge_constraint', '_connected_geometry_marker_type_physics_socket_constraint') in node_props.values():
+        if '_connected_geometry_marker_type_physics_hinge_constraint' in node_props.values() or '_connected_geometry_marker_type_physics_socket_constraint' in node_props.values():
             node_props.update({"bungie_physics_constraint_parent": node.Physics_Constraint_Parent})
             node_props.update({"bungie_physics_constraint_child": node.Physics_Constraint_Child})
+            if node.Physics_Constraint_Uses_Limits:
+                node_props.update({"bungie_physics_constraint_use_limits": "1"})
+                if '_connected_geometry_marker_type_physics_hinge_constraint' in node_props.values():
+                    node_props.update({"bungie_physics_constraint_hinge_min": str(round(node.Hinge_Constraint_Minimum, 6))})
+                    node_props.update({"bungie_physics_constraint_hinge_max": str(round(node.Hinge_Constraint_Maximum, 6))})
+                else:
+                    node_props.update({"bungie_physics_constraint_cone_angle": str(round(node.Cone_Angle, 6))})
+                    node_props.update({"bungie_physics_constraint_plane_min": str(round(node.Plane_Constraint_Minimum, 6))})
+                    node_props.update({"bungie_physics_constraint_plane_max": str(round(node.Plane_Constraint_Maximum, 6))})
+                    node_props.update({"bungie_physics_constraint_twist_start": str(round(node.Twist_Constraint_Start, 6))})
+                    node_props.update({"bungie_physics_constraint_twist_end": str(round(node.Twist_Constraint_End, 6))})
     ###################
-    # LIGHT PROPERTIES
-    elif '_connected_geometry_object_type_light' in node_props.values():
-        node_props.update({"bungie_light_type_version": "1"})
-        node_props.update({"bungie_light_type": getLightType(node.light_type_override, ob.lights.type)})
-        node_props.update({"bungie_light_game_type": getLightGameType(node)})
-        node_props.update({"bungie_light_shape": getLightShape(node)})
-        node_props.update({"bungie_light_volume_distance": str(round(node.Light_Volume_Distance, 6))})
-        node_props.update({"bungie_light_volume_intensity_scalar": str(round(node.Light_Volume_Intensity, 6))})
-        node_props.update({"bungie_light_fade_start_distance": str(round(node.Light_Fade_Start_Distance, 6))})
-        node_props.update({"bungie_light_fade_out_distance": str(round(node.Light_Fade_End_Distance, 6))})
-        if node.Light_Ignore_BSP_Visibility:
-            node_props.update({"bungie_light_ignore_bsp_visibility": "1"})
-        node_props.update({"bungie_light_color": getLightColor(node.Light_Color.r, node.Light_Color.g, node.Light_Color.b)})
-        node_props.update({"bungie_light_intensity": str(round(node.Light_Intensity, 6))})
-        node_props.update({"bungie_light_hotspot_size": str(round(node.Light_Hotspot_Size, 6))})
-        node_props.update({"bungie_light_hotspot_falloff": str(round(node.Light_Hotspot_Falloff, 6))})
-        node_props.update({"bungie_light_falloff_shape": str(round(node.Light_Falloff_Shape, 6))})
-        node_props.update({"bungie_light_aspect": str(round(node.Light_Aspect, 6))})
-        node_props.update({"bungie_light_frustum_width": str(round(node.Light_Frustum_Width, 6))})
-        node_props.update({"bungie_light_frustum_height": str(round(node.Light_Frustum_Height, 6))})
-        node_props.update({"bungie_light_bounce_light_ratio": str(round(node.Light_Bounce_Ratio, 6))})
-        node_props.update({"bungie_light_light_tag_override": node.Light_Tag_Override[0:127]})
-        node_props.update({"bungie_light_shader_reference": node.Light_Shader_Reference[0:127]})
-        node_props.update({"bungie_light_gel_reference": node.Light_Gel_Reference[0:127]})
-
-
-
-    ###################
-
 
     return node_props
 
@@ -240,6 +319,12 @@ def getMarkerType(type, physics):
         case 'WATER VOLUME FLOW':
             return '_connected_geometry_marker_type_water_volume_flow'
 
+def getMarkerRegion(region):
+    if region == '':
+        return 'default'
+    else:
+        return region
+
 def getMarkerGroup(name):
     group_name = name
     group_name = group_name.removeprefix('#')
@@ -255,40 +340,6 @@ def getMarkerVelocity(x, y, z):
     velocity = str(round(x, 6)) + ' ' + str(round(y, 6)) + ' ' + str(round(z, 6))
 
     return velocity
-
-def getLightType(halo_type, light_type):
-    if light_type == 'POINT' or light_type == 'SUN':
-        return '_connected_geometry_light_type_omni'
-    else:
-        if halo_type == 'SPOT':
-            return '_connected_geometry_light_type_spot'
-        else:
-            return '_connected_geometry_light_type_directional'
-
-def getLightGameType(type):
-    match type:
-        case 'DEFAULT':
-            return '_connected_geometry_bungie_light_type_default'
-        case 'INLINED':
-            return '_connected_geometry_bungie_light_type_inlined'
-        case 'RERENDER':
-            return '_connected_geometry_bungie_light_type_rerender'
-        case 'SCREEN SPACE':
-            return '_connected_geometry_bungie_light_type_screen_space'
-        case 'UBER':
-            return '_connected_geometry_bungie_light_type_uber'
-
-def getLightShape(shape):
-    if shape == 'CIRCLE':
-        return '_connected_geometry_light_shape_circle'
-    else:
-        return '_connected_geometry_light_shape_rectangle'
-
-def getLightColor(red, green, blue):
-    color = str(round(red, 6)) + ' ' + str(round(green, 6)) + ' ' + str(round(blue, 6))
-
-    return color
-
 
 ##############################
 ##### MESHES PROPERTIES ######

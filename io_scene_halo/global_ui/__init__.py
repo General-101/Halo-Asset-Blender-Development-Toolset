@@ -42,8 +42,6 @@ from bpy.props import (
         FloatVectorProperty,
         )
 
-from math import radians
-
 class Halo_XREFPath(Operator):
     """Set the path for the XREF model file"""
     bl_idname = "import_scene.xref_path"
@@ -1623,12 +1621,15 @@ class JSON_ObjectMarkerProps(Panel):
         
         group_marker_types = ('DEFAULT', 'HINT', 'TARGET')
 
-        col.prop(ob_halo_json, "Marker_Region", text='Marker Region')
+        sub = col.row(align=True)
+        if not ob_halo_json.Marker_All_Regions:
+            sub.prop(ob_halo_json, "Marker_Region", text='Marker Region')
+        sub.prop(ob_halo_json, 'Marker_All_Regions', text='All Regions')
 
         if ob_halo_json.ObjectMarker_Type in group_marker_types:
             col.prop(ob_halo_json, "Marker_Group_Name", text='Marker Group')
 
-        if ob_halo_json.ObjectMarker_Type == 'MODEL':
+        if ob_halo_json.ObjectMarker_Type == 'DEFAULT':
             col.separator()
             col.prop(ob_halo_json, "Marker_Velocity", text='Marker Velocity')
 
@@ -1649,20 +1650,25 @@ class JSON_ObjectMarkerProps(Panel):
             col.separator()
             col.prop(ob_halo_json, "Physics_Constraint_Parent", text='Physics Constraint Parent')
             col.prop(ob_halo_json, "Physics_Constraint_Child", text='Physics Constraint Child')
-            col.prop(ob_halo_json, "Physics_Constraint_Type", text='Physics Constraint Type')
 
-            if ob_halo_json.Physics_Constraint_Type == 'HINGE':
-                col.prop(ob_halo_json, "Hinge_Constraint_Minimum", text='Minimum')
-                col.prop(ob_halo_json, "Hinge_Constraint_Maximum", text='Maximum')
+            sus = col.row(align=True)
 
-            elif ob_halo_json.Physics_Constraint_Type == 'SOCKET':
-                col.prop(ob_halo_json, "Cone_Angle", text='Cone Angle')
+            sus.prop(ob_halo_json, "Physics_Constraint_Type", text='Physics Constraint Type')
+            sus.prop(ob_halo_json, 'Physics_Constraint_Uses_Limits', text='Uses Limits')
 
-                col.prop(ob_halo_json, "Plane_Constraint_Minimum", text='Plane Minimum')
-                col.prop(ob_halo_json, "Plane_Constraint_Maximum", text='Plane Maximum')
-                
-                col.prop(ob_halo_json, "Twist_Constraint_Start", text='Twist Start')
-                col.prop(ob_halo_json, "Twist_Constraint_End", text='Twist End')
+            if ob_halo_json.Physics_Constraint_Uses_Limits:
+                if ob_halo_json.Physics_Constraint_Type == 'HINGE':
+                    col.prop(ob_halo_json, "Hinge_Constraint_Minimum", text='Minimum')
+                    col.prop(ob_halo_json, "Hinge_Constraint_Maximum", text='Maximum')
+
+                elif ob_halo_json.Physics_Constraint_Type == 'SOCKET':
+                    col.prop(ob_halo_json, "Cone_Angle", text='Cone Angle')
+
+                    col.prop(ob_halo_json, "Plane_Constraint_Minimum", text='Plane Minimum')
+                    col.prop(ob_halo_json, "Plane_Constraint_Maximum", text='Plane Maximum')
+                    
+                    col.prop(ob_halo_json, "Twist_Constraint_Start", text='Twist Start')
+                    col.prop(ob_halo_json, "Twist_Constraint_End", text='Twist End')
 
 # MATERIAL PROPERTIES
 class JSON_MaterialProps(Panel):
@@ -2745,7 +2751,13 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
 
     Marker_Region: StringProperty(
         name="Marker Group",
-        description="Define the name of marker region. This should match a face region name. Leave blank to associate this marker with all regions",
+        description="Define the name of marker region. This should match a face region name. Leave blank for the 'default' region",
+    )
+
+    Marker_All_Regions: BoolProperty(
+        name="Marker All Regions",
+        options=set(),
+        description="Associate this marker with all regions rather than a specific one",
     )
 
     Marker_Game_Instance_Tag_Name: StringProperty(
@@ -2813,60 +2825,65 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
         name="Hinge Constraint Minimum",
         options=set(),
         description="Set the minimum rotation of a physics hinge",
-        default=radians(0),
+        default=-180,
         min=-180,
         max=180,
-        subtype='ANGLE',
     )
 
     Hinge_Constraint_Maximum: FloatProperty(
         name="Hinge Constraint Maximum",
         options=set(),
         description="Set the maximum rotation of a physics hinge",
-        default=radians(360),
-        subtype='ANGLE',
+        default=180,
+        min=-180,
+        max=180,
     )
 
     Cone_Angle: FloatProperty(
         name="Cone Angle",
         options=set(),
         description="Set the cone angle",
-        default=radians(180),
-        subtype='ANGLE',
+        default=90,
+        min=0,
+        max=180,
     )
 
     Plane_Constraint_Minimum: FloatProperty(
         name="Plane Constraint Minimum",
         options=set(),
         description="Set the minimum rotation of a physics plane",
-        default=radians(0),
-        min=-180,
-        max=180,
-        subtype='ANGLE',
+        default=-90,
+        min=-90,
+        max=0,
     )
 
     Plane_Constraint_Maximum: FloatProperty(
         name="Plane Constraint Maximum",
         options=set(),
         description="Set the maximum rotation of a physics plane",
-        default=radians(180),
-        subtype='ANGLE',
+        default=90,
+        min=-0,
+        max=90,
+
     )
 
     Twist_Constraint_Start: FloatProperty(
         name="Twist Constraint Minimum",
         options=set(),
         description="Set the starting angle of a twist constraint",
-        default=radians(0),
-        subtype='ANGLE',
+        default=-180,
+        min=-180,
+        max=180,
     )
 
     Twist_Constraint_End: FloatProperty(
         name="Twist Constraint Maximum",
         options=set(),
         description="Set the ending angle of a twist constraint",
-        default=radians(360),
-        subtype='ANGLE',
+        default=180,
+        min=-180,
+        max=180,
+
     )
 
 class JSON_MaterialPropertiesGroup(PropertyGroup):
