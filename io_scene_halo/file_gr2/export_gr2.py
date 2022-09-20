@@ -133,6 +133,60 @@ def getNodeProperties(node, name, ob):
     # OBJECT PROPERTIES
     node_props.update({"bungie_object_type": getNodeType(node, name, ob)}),
     ###################
+    # MARKER PROPERTIES
+    if '_connected_geometry_object_type_marker' in node_props.values():
+        node_props.update({"bungie_marker_type": getMarkerType(node.ObjectMarker_Type, node.Physics_Constraint_Type)})
+        if '_connected_geometry_mesh_type_object_instance' in node_props.values():
+            if node.Marker_Region == '':
+                node_props.update({"bungie_marker_all_regions": "1"})
+            else:
+                node_props.update({"bungie_marker_region": node.Marker_Region})
+        if '_connected_geometry_marker_type_game_instance' in node_props.values():
+            node_props.update({"bungie_marker_game_instance_tag_name": node.Marker_Game_Instance_Tag_Name[0:63]})
+            node_props.update({"bungie_marker_game_instance_variant_name": node.Marker_Game_Instance_Tag_Name[0:63]})
+        if ('_connected_geometry_marker_type_model', '_connected_geometry_marker_type_hint', '_connected_geometry_marker_type_target') in node_props.values():
+            node_props.update({"bungie_marker_model_group": getMarkerGroup(name)})
+        if '_connected_geometry_marker_type_model' in node_props.values():
+            node_props.update({"bungie_marker_velocity": getMarkerVelocity(node.Marker_Velocity.x, node.Marker_Velocity.y, node.Marker_Velocity.z)})
+        if '_connected_geometry_marker_type_pathfinding_sphere' in node_props.values():
+            if node.Marker_Pathfinding_Sphere_Vehicle:
+                node_props.update({"bungie_marker_pathfinding_sphere_vehicle_only": "1"})
+            if node.Pathfinding_Sphere_Remains_When_Open:
+                node_props.update({"bungie_marker_pathfinding_sphere_remains_when_open": "1"})
+            if node.Pathfinding_Sphere_With_Sectors:
+                node_props.update({"bungie_marker_pathfinding_sphere_with_sectors": "1"})
+        if ('_connected_geometry_marker_type_physics_hinge_constraint', '_connected_geometry_marker_type_physics_socket_constraint') in node_props.values():
+            node_props.update({"bungie_physics_constraint_parent": node.Physics_Constraint_Parent})
+            node_props.update({"bungie_physics_constraint_child": node.Physics_Constraint_Child})
+    ###################
+    # LIGHT PROPERTIES
+    elif '_connected_geometry_object_type_light' in node_props.values():
+        node_props.update({"bungie_light_type_version": "1"})
+        node_props.update({"bungie_light_type": getLightType(node.light_type_override, ob.lights.type)})
+        node_props.update({"bungie_light_game_type": getLightGameType(node)})
+        node_props.update({"bungie_light_shape": getLightShape(node)})
+        node_props.update({"bungie_light_volume_distance": str(round(node.Light_Volume_Distance, 6))})
+        node_props.update({"bungie_light_volume_intensity_scalar": str(round(node.Light_Volume_Intensity, 6))})
+        node_props.update({"bungie_light_fade_start_distance": str(round(node.Light_Fade_Start_Distance, 6))})
+        node_props.update({"bungie_light_fade_out_distance": str(round(node.Light_Fade_End_Distance, 6))})
+        if node.Light_Ignore_BSP_Visibility:
+            node_props.update({"bungie_light_ignore_bsp_visibility": "1"})
+        node_props.update({"bungie_light_color": getLightColor(node.Light_Color.r, node.Light_Color.g, node.Light_Color.b)})
+        node_props.update({"bungie_light_intensity": str(round(node.Light_Intensity, 6))})
+        node_props.update({"bungie_light_hotspot_size": str(round(node.Light_Hotspot_Size, 6))})
+        node_props.update({"bungie_light_hotspot_falloff": str(round(node.Light_Hotspot_Falloff, 6))})
+        node_props.update({"bungie_light_falloff_shape": str(round(node.Light_Falloff_Shape, 6))})
+        node_props.update({"bungie_light_aspect": str(round(node.Light_Aspect, 6))})
+        node_props.update({"bungie_light_frustum_width": str(round(node.Light_Frustum_Width, 6))})
+        node_props.update({"bungie_light_frustum_height": str(round(node.Light_Frustum_Height, 6))})
+        node_props.update({"bungie_light_bounce_light_ratio": str(round(node.Light_Bounce_Ratio, 6))})
+        node_props.update({"bungie_light_light_tag_override": node.Light_Tag_Override[0:127]})
+        node_props.update({"bungie_light_shader_reference": node.Light_Shader_Reference[0:127]})
+        node_props.update({"bungie_light_gel_reference": node.Light_Gel_Reference[0:127]})
+
+
+
+    ###################
 
 
     return node_props
@@ -162,6 +216,78 @@ def getNodeType(node, name, ob):
                 case 'MARKER':
                     return '_connected_geometry_object_type_marker'
 
+def getMarkerType(type, physics):
+    match type:
+        case 'DEFAULT':
+            return '_connected_geometry_marker_type_model'
+        case 'EFFECTS':
+            return '_connected_geometry_marker_type_effects'
+        case 'GAME INSTANCE':
+            return '_connected_geometry_marker_type_game_instance'
+        case 'GARBAGE':
+            return '_connected_geometry_marker_type_garbage'
+        case 'HINT':
+            return '_connected_geometry_marker_type_hint'
+        case 'PATHFINDING SPHERE':
+            return '_connected_geometry_marker_type_pathfinding_sphere'
+        case 'PHYSICS CONSTRAINT':
+            if physics == 'HINGE':
+                return '_connected_geometry_marker_type_physics_hinge_constraint'
+            else:
+                return '_connected_geometry_marker_type_physics_socket_constraint'
+        case 'TARGET':
+            return '_connected_geometry_marker_type_target'
+        case 'WATER VOLUME FLOW':
+            return '_connected_geometry_marker_type_water_volume_flow'
+
+def getMarkerGroup(name):
+    group_name = name
+    group_name = group_name.removeprefix('#')
+    if group_name.rpartition('.')[0] != '':
+        group_name = group_name.rpartition('.')[0]
+    
+    if group_name == '':
+        group_name = 'null'
+
+    return group_name
+
+def getMarkerVelocity(x, y, z):
+    velocity = str(round(x, 6)) + ' ' + str(round(y, 6)) + ' ' + str(round(z, 6))
+
+    return velocity
+
+def getLightType(halo_type, light_type):
+    if light_type == 'POINT' or light_type == 'SUN':
+        return '_connected_geometry_light_type_omni'
+    else:
+        if halo_type == 'SPOT':
+            return '_connected_geometry_light_type_spot'
+        else:
+            return '_connected_geometry_light_type_directional'
+
+def getLightGameType(type):
+    match type:
+        case 'DEFAULT':
+            return '_connected_geometry_bungie_light_type_default'
+        case 'INLINED':
+            return '_connected_geometry_bungie_light_type_inlined'
+        case 'RERENDER':
+            return '_connected_geometry_bungie_light_type_rerender'
+        case 'SCREEN SPACE':
+            return '_connected_geometry_bungie_light_type_screen_space'
+        case 'UBER':
+            return '_connected_geometry_bungie_light_type_uber'
+
+def getLightShape(shape):
+    if shape == 'CIRCLE':
+        return '_connected_geometry_light_shape_circle'
+    else:
+        return '_connected_geometry_light_shape_rectangle'
+
+def getLightColor(red, green, blue):
+    color = str(round(red, 6)) + ' ' + str(round(green, 6)) + ' ' + str(round(blue, 6))
+
+    return color
 
 
 ##############################
@@ -207,12 +333,12 @@ def getMeshProperties(mesh, name, ob):
             mesh_props.update({"bungie_mesh_boundary_surface_name": getBoundarySurfaceName(mesh.Boundary_Surface_Name, name)}),
         mesh_props.update({"bungie_mesh_boundary_surface_type": getBoundarySurfaceType(mesh.Boundary_Surface_Type, name)})
     # Decorator
-    if '_connected_geometry_mesh_type_decorator' in mesh_props.values():
+    elif '_connected_geometry_mesh_type_decorator' in mesh_props.values():
         if mesh.Decorator_Name != '':
             mesh_props.update({"bungie_mesh_decorator_name": getDecoratorName(mesh.Decorator_Name)})
         mesh_props.update({"bungie_mesh_decorator_lod": getDecoratorLOD(mesh.Decorator_LOD)})
     # Poops
-    if '_connected_geometry_mesh_type_poop' in mesh_props.values():
+    elif '_connected_geometry_mesh_type_poop' in mesh_props.values():
         mesh_props.update({"bungie_mesh_poop_lighting": getPoopLighting(mesh.Poop_Lighting_Override, name)})
         mesh_props.update({"bungie_mesh_poop_pathfinding": getPoopPathfinding(mesh.Poop_Pathfinding_Override, name)})
         mesh_props.update({"bungie_mesh_poop_imposter_policy": getPoopImposter(mesh.Poop_Imposter_Policy)})
@@ -238,14 +364,14 @@ def getMeshProperties(mesh, name, ob):
         if mesh.Poop_Precise_Geometry:
             mesh_props.update({"bungie_mesh_poop_precise_geometry": "1"})
     # Fog Volume
-    if '_connected_geometry_mesh_type_planar_fog_volume' in mesh_props.values():
+    elif '_connected_geometry_mesh_type_planar_fog_volume' in mesh_props.values():
         if mesh.Fog_Name != '':
             mesh_props.update({"bungie_mesh_fog_name": mesh.Fog_Name[0:31]})
         if mesh.Fog_Appearance_Tag != '':
             mesh_props.update({"bungie_mesh_fog_appearance_tag": mesh.Fog_Appearance_Tag[0:31]})
         mesh_props.update({"bungie_mesh_fog_volume_depth": str(round(mesh.Fog_Volume_Depth, 6))})
     # Portal
-    if '_connected_geometry_mesh_type_portal' in mesh_props.values():
+    elif '_connected_geometry_mesh_type_portal' in mesh_props.values():
         mesh_props.update({"bungie_mesh_portal_type": getPortalType(mesh.Portal_Type)})
         if mesh.Portal_AI_Deafening:
             mesh_props.update({"bungie_mesh_portal_ai_deafening": "1"})
@@ -254,11 +380,11 @@ def getMeshProperties(mesh, name, ob):
         if mesh.Portal_Is_Door:
             mesh_props.update({"bungie_mesh_portal_is_door": "1"})
     # Seam
-    if '_connected_geometry_mesh_type_seam' in mesh_props.values():
+    elif '_connected_geometry_mesh_type_seam' in mesh_props.values():
         if mesh.Seam_Name != '' or name.startswith('+seam:'):
             mesh_props.update({"bungie_mesh_seam_associated_bsp": getSeamName(mesh.Seam_Name, name)}),
     # Water Physics Volume
-    if '_connected_geometry_mesh_type_water_physics_volume' in mesh_props.values():
+    elif '_connected_geometry_mesh_type_water_physics_volume' in mesh_props.values():
         mesh_props.update({"bungie_mesh_water_volume_depth": str(round(mesh.Water_Volume_Depth, 6))})
         mesh_props.update({"bungie_mesh_water_volume_flow_direction": str(round(mesh.Water_Volume_Flow_Direction, 6))})
         mesh_props.update({"bungie_mesh_water_volume_flow_velocity": str(round(mesh.Water_Volume_Flow_Velocity, 6))})
