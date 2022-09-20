@@ -81,6 +81,10 @@ def getStrings():
 def getNodes(use_selection=False, use_visible=False, use_active_collection=False):
     nodesList = {}
 
+    for arm in bpy.data.armatures:
+        for bone in arm.bones:
+            nodesList.update({bone.name: getBoneProperties()})
+
     for ob in bpy.data.objects:
         halo_node = ob.halo_json
         halo_node_name = ob.name
@@ -99,6 +103,30 @@ def getNodes(use_selection=False, use_visible=False, use_active_collection=False
 
     return temp
 
+ID1 = 0
+ID2 = 1000
+
+def getBoneProperties():
+    node_props = {}
+
+    node_props.update({"bungie_object_type": "_connected_geometry_object_type_frame"}),
+    node_props.update({"bungie_frame_ID1": getFrameID1()}),
+    node_props.update({"bungie_frame_ID2": getFrameID2()}),
+
+    return node_props
+
+def getFrameID1():
+    global ID1
+    ID1 = ID1 + 1
+
+    return str(ID1)
+
+def getFrameID2():
+    global ID2
+    ID2 = ID2 + 1
+
+    return str(ID2)
+
 def getNodeProperties(node, name, ob):
     node_props = {}
     ###################
@@ -110,12 +138,16 @@ def getNodeProperties(node, name, ob):
     return node_props
 
 def getNodeType(node, name, ob):
-    if name.startswith(frame_prefixes):
+    if ob.type == 'LIGHT':
+        return '_connected_geometry_object_type_light'
+    elif ob.type == 'ARMATURE':
+        return '_connected_geometry_object_type_frame' 
+    elif ob.type == 'CAMERA':
+        return '_connected_geometry_object_type_animation_camera'
+    elif name.startswith(frame_prefixes):
         return '_connected_geometry_object_type_frame'
     elif name.startswith(marker_prefixes):
         return '_connected_geometry_object_type_marker'
-    elif ob.type == 'LIGHT':
-        return '_connected_geometry_object_type_light'
     else:
         if ob.type == 'MESH':
             match node.Object_Type_All:
