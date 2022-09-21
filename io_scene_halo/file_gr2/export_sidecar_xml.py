@@ -2,25 +2,26 @@ from datetime import datetime
 import bpy
 import os
 from os.path import exists as file_exists
-import xml.etree.ElementTree as xml
-from xml.dom import minidom
+import xml.etree.cElementTree as ET
+#from xml.dom import minidom
+import xml.dom.minidom
 
 def WriteHeader():
-    header = xml.Element("Header")
+    header = ET.Element("Header")
     
-    MainRev = xml.SubElement(header, "MainRev")
+    MainRev = ET.SubElement(header, "MainRev")
     MainRev.text = "0"
-    PointRev = xml.SubElement(header, "PointRev")
+    PointRev = ET.SubElement(header, "PointRev")
     PointRev.text = "6"
-    Description = xml.SubElement(header, "Description")
+    Description = ET.SubElement(header, "Description")
     Description.text = "Description", "Created By Osoyoos SideCar Gen v1.0"
-    Created = xml.SubElement(header, "Created")
+    Created = ET.SubElement(header, "Created")
     Created.text = datetime.now()
-    By = xml.SubElement(header, "By")
+    By = ET.SubElement(header, "By")
     By.text = os.getlogin()
-    DirectoryType = xml.SubElement(header, "DirectoryType")
+    DirectoryType = ET.SubElement(header, "DirectoryType")
     DirectoryType.text = "TAE.Shared.NWOAssetDirectory"
-    SchemaText = xml.SubElement(header, "Schema")
+    SchemaText = ET.SubElement(header, "Schema")
     SchemaText.text = "1"
 
     return header
@@ -157,32 +158,76 @@ def export_xml(report, filePath=""):
     GenerateModelSidecar("")
 
 def GenerateModelSidecar(assetName=""):
-    root = minidom.Document()
+    #root = minidom.Document()
 
-    xml = root.createElement("Metadata")
-    root.appendChild(xml)
+    #xml = root.createElement("Metadata")
+    #root.appendChild(xml)
 
-    xml.appendChild(WriteHeader())
+    m_encoding = 'UTF-8'
 
-    asset = root.createElement("Asset")
-    asset.setAttribute("Name", assetName)
-    asset.setAttribute("Type", "model")
-    asset.appendChild(GetObjectOutputTypes())
-    xml.appendChild(asset)
+    root = ET.Element("Metadata")
+    #root.append(WriteHeader())
+    ET.SubElement(root, WriteHeader())
 
-    xml.appendChild(WriteFolders())
-    xml.appendChild(WriteFaceCollections(True, True))
+    dom = xml.dom.minidom.parseString(ET.tostring(root))
+    xml_string = dom.toprettyxml()
+    part1, part2 = xml_string.split('?>')
 
-    content = root.createElement("Contents")
-    content.appendChild(GetModelContentObjects())
-    xml.appendChild(content)
+    with open("C:\\Users\\plasm\\Documents\\Temp\\gfg.xml", 'w') as xfile:
+        xfile.write(part1 + 'encoding=\"{}\"?>\n'.format(m_encoding) + part2)
+        xfile.close()
 
-    xml_str = root.toprettyxml(indent ="\t") 
+    #tree = xml.ElementTree(root)
+    #dir_path = "C:\Users\plasm\Documents\Temp\gfg.xml"
+    #tree.write(f'{}/test_new_2.xml', xml_declaration=True)
+    #with open (dir_path, "wb") as files :
+    #    tree.write(str(files))
 
-    save_path_file = "sidecar.xml"
+    #tree.write(open(r'C:\\Users\\plasm\\Documents\\Temp\\gfg.xml', 'w', encoding='utf-8'))
+
+    #header = root.createElement(WriteHeader())
+    #xml.appendChild(header)
+
+    # asset = root.createElement("Asset")
+    # asset.setAttribute("Name", assetName)
+    # asset.setAttribute("Type", "model")
+    # objectTypes = root.createElement(GetObjectOutputTypes())
+    # asset.appendChild(objectTypes)
+    # xml.appendChild(asset)
+
+    # writeFolders = root.createElement(WriteFolders())
+    # xml.appendChild(writeFolders)
+    #faceCollections = root.createElement(WriteFaceCollections(True,True))
+    #xml.appendChild(faceCollections)
+
+    #contentObjects = root.createElement(GetModelContentObjects())
+    #content = root.createElement("Contents")
+    #content.appendChild(contentObjects)
+    #xml.appendChild(content)
+
+    # xmlstr = minidom.parseString(root).toprettyxml(indent="   ")
+
+    # save_path_file = "sidecar.xml"
   
-    with open(save_path_file, "w") as f:
-        f.write(xml_str) 
+    # with open(save_path_file, "w") as f:
+    #     f.write(xmlstr) 
+
+    # root2 = minidom.Document()
+  
+    # xml2 = root2.createElement('root') 
+    # root2.appendChild(xml2)
+    
+    # productChild = root2.createElement('product')
+    # productChild.setAttribute('name', 'Geeks for Geeks')
+    
+    # xml2.appendChild(productChild)
+    
+    # xml_str = root.toprettyxml(indent ="\t") 
+    
+    # save_path_file = "C:\\Users\\plasm\\Documents\\Temp\\gfg.xml"
+    
+    # with open(save_path_file, "w") as f:
+    #     f.write(xml_str) 
 
 def GetModelContentObjects():
     temp = []
