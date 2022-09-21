@@ -90,8 +90,9 @@ def IntermediateFileExists(folderName):
 
 def export_xml(report, filePath=""):
     print("temp")
+    GenerateModelSidecar("")
 
-def GenerateModelSider(assetName=""):
+def GenerateModelSidecar(assetName=""):
     root = minidom.Document()
 
     xml = root.createElement("Metadata")
@@ -122,11 +123,76 @@ def GenerateModelSider(assetName=""):
 def GetModelContentObjects():
     temp = []
 
-    
+    if(IntermediateFileExists("render")):
+        temp.append(CreateContentObject("render"))
+
+    if(IntermediateFileExists("physics")):
+        temp.append(CreateContentObject("physics"))
+
+    if(IntermediateFileExists("collision")):
+        temp.append(CreateContentObject("collision"))
+
+    if(IntermediateFileExists("markers")):
+        temp.append(CreateContentObject("markers"))
+
+    if(IntermediateFileExists("skeleton")):
+        temp.append(CreateContentObject("skeleton"))
+
+    if(IntermediateFileExists("animations\\JMM") or IntermediateFileExists("animations\\JMA") or IntermediateFileExists("animations\\JMT") or IntermediateFileExists("animations\\JMZ") or IntermediateFileExists("animations\\JMV")
+        or IntermediateFileExists("animations\\JMO (Keyframe)") or IntermediateFileExists("animations\\JMO (Pose)") or IntermediateFileExists("animations\\JMR (Object)") or IntermediateFileExists("animations\\JMR (Local)")):
+        animations = xml.Element("ContentObject")
+        animations.set("Name", "")
+        animations.set("Type" "model_animation_graph")
+
+        if(IntermediateFileExists("animations\\JMM")):
+            animations.append(CreateContentObject("animations\\JMM", "Base", "ModelAnimationMovementData", "None", "", ""))
+
+        if(IntermediateFileExists("animations\\JMA")):
+            animations.append(CreateContentObject("animations\\JMA", "Base", "ModelAnimationMovementData", "XY", "", ""))
+
+        if(IntermediateFileExists("animations\\JMT")):
+            animations.append(CreateContentObject("animations\\JMT", "Base", "ModelAnimationMovementData", "XYYaw", "", ""))
+
+        if(IntermediateFileExists("animations\\JMZ")):
+            animations.append(CreateContentObject("animations\\JMZ", "Base", "ModelAnimationMovementData", "XYZYaw", "", ""))
+
+        if(IntermediateFileExists("animations\\JMV")):
+            animations.append(CreateContentObject("animations\\JMV", "Base", "ModelAnimationMovementData", "XYZFullRotation", "", ""))
+
+        if(IntermediateFileExists("animations\\JMO (Keyframe)")):
+            animations.append(CreateContentObject("animations\\JMO (Keyframe)", "Overlay", "ModelAnimationOverlayType", "Keyframe", "ModelAnimationOverlayBlending", "Additive"))
+
+        if(IntermediateFileExists("animations\\JMO (Pose)")):
+            animations.append(CreateContentObject("animations\\JMO (Pose)", "Overlay", "ModelAnimationOverlayType", "Pose", "ModelAnimationOverlayBlending", "Additive"))
+
+        if(IntermediateFileExists("animations\\JMR (Local)")):
+            animations.append(CreateContentObject("animations\\JMR (Local)", "Overlay", "ModelAnimationOverlayType", "keyframe", "ModelAnimationOverlayBlending", "ReplacementLocalSpace"))
+
+        if(IntermediateFileExists("animations\\JMR (Object)")):
+            animations.append(CreateContentObject("animations\\JMR (Object)", "Overlay", "ModelAnimationOverlayType", "keyframe", "ModelAnimationOverlayBlending", "ReplacementObjectSpace"))
+
+        r2 = xml.Element("OutputTagCollection")
+        outputTag1 = xml.SubElement(r2, "OutputTag")
+        outputTag1.set("Type", "frame_event_list")
+        outputTag1.text = "dataPath" + "\\" + "assetName"
+        outputTag2 = xml.SubElement(r2, "OutputTag")
+        outputTag2.set("Type", "model_animation_graph")
+        outputTag2.text = "dataPath" + "\\" + "assetName"
+
+        animations.append(r2)
+        temp.append(animations)
+
     ContentObjects = xml.Element("Content")
+    ContentObjects.set("Name", "assetName")
+    ContentObjects.set("Type", "model")
+
+    for e in temp:
+        ContentObjects.append(e)
 
     return ContentObjects
 
+def CreateContentObject(type):
+    print("")
 
 
 def save(operator, context, report,
