@@ -80,6 +80,25 @@ class ExportHaloFBX(bpy.types.Operator, ExportHelper):
             description="Delete the source JSON file after GR2 conversion",
             default=False,
             )
+    export_sidecar: BoolProperty(
+            name="Export Sidecar",
+            description="",
+            default=True,
+            )
+    sidecar_type: EnumProperty(
+            name='Asset Type',
+            description='',
+            default='MODEL',
+            items=[ ('MODEL', "Model", ""),
+                ('SCENARIO', "Scenario", ""),
+                ('DECORATOR', "Decorator", ""),
+                ('PARTICLE MODEL', "Particle Model", ""),
+               ]
+        )
+    asset_path: StringProperty(
+            name="Asset Folder Path",
+            description="",
+            )
     use_selection: BoolProperty(
             name="Selected Objects",
             description="Export selected and visible objects only",
@@ -417,6 +436,41 @@ class FBX_PT_export_GR2_Halo(bpy.types.Panel):
         sublayout.prop(operator, "delete_fbx")
         sublayout.prop(operator, "delete_json")
 
+class FBX_PT_export_Sidecar_Halo(bpy.types.Panel):
+    bl_space_type = 'FILE_BROWSER'
+    bl_region_type = 'TOOL_PROPS'
+    bl_label = "Generate Sidecar"
+    bl_parent_id = "FILE_PT_operator"
+
+    @classmethod
+    def poll(cls, context):
+        sfile = context.space_data
+        operator = sfile.active_operator
+
+        return operator.bl_idname == "EXPORT_HALO_SCENE_OT_fbx"
+
+    def draw_header(self, context):
+        sfile = context.space_data
+        operator = sfile.active_operator
+
+        self.layout.prop(operator, "export_sidecar", text='')
+
+    def draw(self, context):
+        layout = self.layout
+        layout.use_property_split = True
+        layout.use_property_decorate = False
+
+        sfile = context.space_data
+        operator = sfile.active_operator
+
+        layout.enabled = operator.export_sidecar
+
+        flow = layout.grid_flow(row_major=True, columns=0, even_columns=True, even_rows=False, align=False)
+        col = flow.column()
+
+        col.prop(operator, "sidecar_type", text='Asset Type')
+        col.prop(operator, 'asset_path', text='Asset Folder')
+
 class FBX_PT_export_include_Halo(bpy.types.Panel):
     bl_space_type = 'FILE_BROWSER'
     bl_region_type = 'TOOL_PROPS'
@@ -586,6 +640,7 @@ classes = (
     ExportHaloFBX,
     FBX_PT_export_main_Halo,
     FBX_PT_export_GR2_Halo,
+    FBX_PT_export_Sidecar_Halo,
     FBX_PT_export_include_Halo,
     FBX_PT_export_transform_Halo,
     FBX_PT_export_geometry_Halo,
