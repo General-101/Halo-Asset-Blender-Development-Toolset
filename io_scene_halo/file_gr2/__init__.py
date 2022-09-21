@@ -343,12 +343,13 @@ class ExportHaloFBX(bpy.types.Operator, ExportHelper):
         keywords["global_matrix"] = global_matrix
 
         import sys
-        
         sys.path.insert(0,t)
+
         from io_scene_fbx import export_fbx_bin
-        from . import export_gr2
+        from . import export_gr2, export_sidecar_xml
         export_fbx_bin.save(self, context, **keywords)
-        return export_gr2.save(self, context, self.report, **keywords)
+        export_gr2.save(self, context, self.report, **keywords)
+        return export_sidecar_xml.save(self, context, self.report, **keywords)
 
 class FBX_PT_export_main_Halo(bpy.types.Panel):
     bl_space_type = 'FILE_BROWSER'

@@ -1,0 +1,106 @@
+from datetime import datetime
+import bpy
+import os
+from os.path import exists as file_exists
+import xml.etree.ElementTree as xml
+from xml.dom import minidom
+
+def WriteHeader():
+    header = xml.Element("Header")
+    
+    MainRev = xml.SubElement(header, "MainRev")
+    MainRev.text = "0"
+    PointRev = xml.SubElement(header, "PointRev")
+    PointRev.text = "6"
+    Description = xml.SubElement(header, "Description")
+    Description.text = "Description", "Created By Osoyoos SideCar Gen v1.0"
+    Created = xml.SubElement(header, "Created")
+    Created.text = datetime.now()
+    By = xml.SubElement(header, "By")
+    By.text = os.getlogin()
+    DirectoryType = xml.SubElement(header, "DirectoryType")
+    DirectoryType.text = "TAE.Shared.NWOAssetDirectory"
+    SchemaText = xml.SubElement(header, "Schema")
+    SchemaText.text = "1"
+
+    return header
+
+def GetObjectOutputTypes():
+    OutputTagCollection = xml.Element("OutputTagCollection")
+    return OutputTagCollection
+
+def WriteFolders():
+    folders = xml.Element("Folders")
+
+    Reference = xml.SubElement(folders, "Reference")
+    Reference.text = "\\reference"
+    Temp = xml.SubElement(folders, "Temp")
+    Temp.text = "\\temp"
+    SourceModels = xml.SubElement(folders, "SourceModels")
+    SourceModels.text = "\\work"
+    GameModels = xml.SubElement(folders, "GameModels")
+    GameModels.text = "\\render"
+    GamePhysicsModels = xml.SubElement(folders, "GamePhysicsModels")
+    GamePhysicsModels.text = "\\physics"
+    GameCollisionModels = xml.SubElement(folders, "GameCollisionModels")
+    GameCollisionModels.text = "\\collision"
+    ExportModels = xml.SubElement(folders, "ExportModels")
+    ExportModels.text = "\\render"
+    ExportPhysicsModels = xml.SubElement(folders, "ExportPhysicsModles")
+    ExportPhysicsModels.text = "\\physics"
+    ExportCollisionModels = xml.SubElement(folders, "ExportCollisionModels")
+    ExportCollisionModels.text = "\\collision"
+    SourceAnimations = xml.SubElement(folders, "SourceAnimations")
+    SourceAnimations.text = "\\animations\\work"
+    AnimationRigs = xml.SubElement(folders, "AnimationRigs")
+    AnimationRigs.text = "\\animations\\rigs"
+    GameAnimations = xml.SubElement(folders, "GameAnimations")
+    GameAnimations.text = "\\animations"
+    ExportAnimations = xml.SubElement(folders, "ExportAnimations")
+    ExportAnimations.text = "\\animations"
+    SourceBitmaps = xml.SubElement(folders, "SourceBitmaps")
+    SourceBitmaps.text = "\\bitmaps"
+    GameBitmaps = xml.SubElement(folders, "GameBitmaps")
+    GameBitmaps.text = "\\bitmaps"
+    CinemaSource = xml.SubElement(folders, "CinemaSource")
+    CinemaSource.text = "\\cinematics"
+    CinemaExport = xml.SubElement(folders, "CinemaExport")
+    CinemaExport.text = "\\cinematics"
+    ExportBSPs = xml.SubElement(folders, "ExportBSPs")
+    ExportBSPs.text = "\\"
+    SourceBSPs = xml.SubElement(folders, "SourceBSPs")
+    SourceBSPs.text = "\\"
+    Scripts = xml.SubElement(folders, "Scripts")
+    Scripts.text = "\\scripts"
+
+    return folders
+
+def export_xml(report, filePath=""):
+    print("temp")
+
+def GenerateModelSider(assetName=""):
+    root = minidom.Document()
+
+    xml = root.createElement("Metadata")
+    root.appendChild(xml)
+    root.appendChild(WriteHeader())
+
+    asset = root.createElement("Asset")
+    asset.setAttribute("Name", assetName)
+    asset.setAttribute("Type", "model")
+    asset.appendChild(GetObjectOutputTypes())
+    asset.appendChild(WriteFolders())
+    
+
+
+def save(operator, context, report,
+        filepath="",
+        use_selection=False,
+        use_visible=False,
+        use_active_collection=False,
+        batch_mode='OFF',
+        use_batch_own_dir=False,
+        **kwargs
+        ):
+    export_xml(report, filepath)
+    return {'FINISHED'}
