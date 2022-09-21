@@ -75,6 +75,19 @@ def WriteFolders():
 
     return folders
 
+def WriteFaceCollections(regions=False, materials=False):
+    faceCollections = xml.Element("FaceCollections")
+    return faceCollections
+
+def IntermediateFileExists(folderName):
+    filePath = "fullPath" + "\\" + folderName
+
+    for fname in os.listdir(filePath):
+        if fname.endswith('.gr2'):
+            return True
+        else:
+            return False
+
 def export_xml(report, filePath=""):
     print("temp")
 
@@ -83,14 +96,37 @@ def GenerateModelSider(assetName=""):
 
     xml = root.createElement("Metadata")
     root.appendChild(xml)
-    root.appendChild(WriteHeader())
+
+    xml.appendChild(WriteHeader())
 
     asset = root.createElement("Asset")
     asset.setAttribute("Name", assetName)
     asset.setAttribute("Type", "model")
     asset.appendChild(GetObjectOutputTypes())
-    asset.appendChild(WriteFolders())
+    xml.appendChild(asset)
+
+    xml.appendChild(WriteFolders())
+    xml.appendChild(WriteFaceCollections(True, True))
+
+    content = root.createElement("Contents")
+    content.appendChild(GetModelContentObjects())
+    xml.appendChild(content)
+
+    xml_str = root.toprettyxml(indent ="\t") 
+
+    save_path_file = "sidecar.xml"
+  
+    with open(save_path_file, "w") as f:
+        f.write(xml_str) 
+
+def GetModelContentObjects():
+    temp = []
+
     
+    ContentObjects = xml.Element("Content")
+
+    return ContentObjects
+
 
 
 def save(operator, context, report,
