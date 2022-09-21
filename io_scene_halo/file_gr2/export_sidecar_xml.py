@@ -1,4 +1,3 @@
-from asyncio.windows_events import NULL
 from datetime import datetime
 import bpy
 import os
@@ -81,12 +80,14 @@ def WriteFaceCollections(regions=False, materials=False):
         faceCollections = xml.Element("FaceCollections")
 
         if(regions):
+            temp = ["default"]
             f1 = xml.Element
             f1.set("Name", "regions")
             f1.set("StringTable", "connected_geometry_regions_table")
             f1.set("Description", "Model regions")
 
             FaceCollectionsEntries = xml.Element("FaceCollectionEntries")
+
             FaceCollectionEntry = xml.Element("FaceCollectionEntry")
             FaceCollectionEntry.set("Index", "0")
             FaceCollectionEntry.set("Name", "default") 
@@ -94,7 +95,22 @@ def WriteFaceCollections(regions=False, materials=False):
             FaceCollectionsEntries.append(FaceCollectionEntry)
             f1.append(FaceCollectionsEntries)
             faceCollections.append(f1)
+
+            count = 1
+            for name in temp:
+                if(not bpy.types.Object.halo_json.Region_Name == name):
+                    for i in bpy.types.Object.halo_json.Region_Name:
+                        FaceCollectionEntry = xml.Element("FaceCollectionEntry")
+                        FaceCollectionEntry.set("Index", count)
+                        FaceCollectionEntry.set("Name", i) 
+                        FaceCollectionEntry.set("Active", "true")
+                        FaceCollectionsEntries.append(FaceCollectionEntry)
+                        f1.append(FaceCollectionsEntries)
+                        faceCollections.append(f1)
+                        temp.add(i)
+                        count += 1
         if(materials):
+            temp = ["default"]
             f2 = xml.Element
             f2.set("Name", "global materials override")
             f2.set("StringTable", "connected_geometry_global_material_table")
@@ -109,9 +125,23 @@ def WriteFaceCollections(regions=False, materials=False):
             f2.append(FaceCollectionsEntries2)
             faceCollections.append(f2)
 
+            count = 1
+            for name in temp:
+                if(not bpy.types.Object.halo_json.Region_Name == name):
+                    for i in bpy.types.Object.halo_json.Face_Global_Material:
+                        FaceCollectionEntry = xml.Element("FaceCollectionEntry")
+                        FaceCollectionEntry.set("Index", count)
+                        FaceCollectionEntry.set("Name", i) 
+                        FaceCollectionEntry.set("Active", "true")
+                        FaceCollectionsEntries.append(FaceCollectionEntry)
+                        f1.append(FaceCollectionsEntries)
+                        faceCollections.append(f1)
+                        temp.add(i)
+                        count += 1
+
             return faceCollections
         else:
-            return NULL
+            return None
 
 def IntermediateFileExists(folderName):
     filePath = "fullPath" + "\\" + folderName
