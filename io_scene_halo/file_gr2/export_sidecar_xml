@@ -27,8 +27,8 @@ def WriteHeader():
     return header
 
 def GetObjectOutputTypes():
-    OutputTagCollection = xml.Element("OutputTagCollection")
-    return OutputTagCollection
+    OutputTags = xml.Element("OutputTagCollection")
+    return OutputTags
 
 def WriteFolders():
     folders = xml.Element("Folders")
@@ -226,6 +226,9 @@ def GetModelContentObjects():
     return ContentObjects
 
 def CreateContentObject(type):
+    print("")
+
+def CreateContentObject(type1, type2, type3, type4, type5, type6):
     print("")
 
 
