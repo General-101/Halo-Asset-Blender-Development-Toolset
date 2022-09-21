@@ -81,9 +81,9 @@ def getStrings():
 def getNodes(use_selection=False, use_visible=False, use_active_collection=False):
     nodesList = {}
 
-    for arm in bpy.data.armatures:
-        for bone in arm.bones:
-            nodesList.update({bone.name: getBoneProperties()})
+    # for arm in bpy.data.armatures:
+    #     for bone in arm.bones:
+    #         nodesList.update({bone.name: getBoneProperties()})
 
     for light in bpy.data.lights:
         halo_light = light.halo_json
@@ -107,8 +107,8 @@ def getNodes(use_selection=False, use_visible=False, use_active_collection=False
 
     return temp
 
-ID1 = 0
-ID2 = 1000
+#ID1 = 0
+#ID2 = 1000
 
 def getBoneProperties():
     node_props = {}
