@@ -1,3 +1,4 @@
+from asyncio.windows_events import NULL
 from datetime import datetime
 import bpy
 import os
@@ -76,8 +77,41 @@ def WriteFolders():
     return folders
 
 def WriteFaceCollections(regions=False, materials=False):
-    faceCollections = xml.Element("FaceCollections")
-    return faceCollections
+    if(regions or materials):
+        faceCollections = xml.Element("FaceCollections")
+
+        if(regions):
+            f1 = xml.Element
+            f1.set("Name", "regions")
+            f1.set("StringTable", "connected_geometry_regions_table")
+            f1.set("Description", "Model regions")
+
+            FaceCollectionsEntries = xml.Element("FaceCollectionEntries")
+            FaceCollectionEntry = xml.Element("FaceCollectionEntry")
+            FaceCollectionEntry.set("Index", "0")
+            FaceCollectionEntry.set("Name", "default") 
+            FaceCollectionEntry.set("Active", "true")
+            FaceCollectionsEntries.append(FaceCollectionEntry)
+            f1.append(FaceCollectionsEntries)
+            faceCollections.append(f1)
+        if(materials):
+            f2 = xml.Element
+            f2.set("Name", "global materials override")
+            f2.set("StringTable", "connected_geometry_global_material_table")
+            f2.set("Description", "Global material overrides")
+
+            FaceCollectionsEntries2 = xml.Element("FaceCollectionEntries")
+            FaceCollectionEntry2 = xml.Element("FaceCollectionEntry")
+            FaceCollectionEntry2.set("Index", "0")
+            FaceCollectionEntry2.set("Name", "default") 
+            FaceCollectionEntry2.set("Active", "true")
+            FaceCollectionsEntries2.append(FaceCollectionEntry2)
+            f2.append(FaceCollectionsEntries2)
+            faceCollections.append(f2)
+
+            return faceCollections
+        else:
+            return NULL
 
 def IntermediateFileExists(folderName):
     filePath = "fullPath" + "\\" + folderName
