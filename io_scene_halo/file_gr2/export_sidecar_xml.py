@@ -1,4 +1,6 @@
+from curses import meta
 from datetime import datetime
+from inspect import getfile
 import bpy
 import os
 from os.path import exists as file_exists
@@ -145,23 +147,45 @@ def IntermediateFileExists(folderName):
         else:
             return False
 
-def GetModelContentObjects():
+def GetModelContentObjects(metadata):
     temp = []
+    ContentObjects = ET.SubElement(metadata, "Content", Name="assetName", Type="model")
+    
+
+    # r2 = ET.SubElement(metadata, "")
+
+    #         r2 = xml.Element("OutputTagCollection")
+    #     outputTag1 = xml.SubElement(r2, "OutputTag")
+    #     outputTag1.set("Type", "frame_event_list")
+    #     outputTag1.text = "dataPath" + "\\" + "assetName"
+    #     outputTag2 = xml.SubElement(r2, "OutputTag")
+    #     outputTag2.set("Type", "model_animation_graph")
+    #     outputTag2.text = "dataPath" + "\\" + "assetName"
+
+    #     animations.append(r2)
+    #     temp.append(animations)
+
+    # ContentObjects = xml.Element("Content")
+    # ContentObjects.set("Name", "assetName")
+    # ContentObjects.set("Type", "model")
+
+    # for e in temp:
+    #     ContentObjects.append(e)
 
     if(IntermediateFileExists("render")):
-        temp.append(CreateContentObject("render"))
+        CreateContentObject(ContentObjects, "render")
 
     if(IntermediateFileExists("physics")):
-        temp.append(CreateContentObject("physics"))
+        CreateContentObject(ContentObjects, "physics")
 
     if(IntermediateFileExists("collision")):
-        temp.append(CreateContentObject("collision"))
+        CreateContentObject(ContentObjects, "collision")
 
     if(IntermediateFileExists("markers")):
-        temp.append(CreateContentObject("markers"))
+        CreateContentObject(ContentObjects, "markers")
 
     if(IntermediateFileExists("skeleton")):
-        temp.append(CreateContentObject("skeleton"))
+        CreateContentObject(ContentObjects, "skeleton")
 
     if(IntermediateFileExists("animations\\JMM") or IntermediateFileExists("animations\\JMA") or IntermediateFileExists("animations\\JMT") or IntermediateFileExists("animations\\JMZ") or IntermediateFileExists("animations\\JMV")
         or IntermediateFileExists("animations\\JMO (Keyframe)") or IntermediateFileExists("animations\\JMO (Pose)") or IntermediateFileExists("animations\\JMR (Object)") or IntermediateFileExists("animations\\JMR (Local)")):
@@ -216,11 +240,36 @@ def GetModelContentObjects():
 
     return ContentObjects
 
-def CreateContentObject(type):
-    print("")
+def CreateContentObject(ContentObjects, type):
+    files = []
+    path = "fullPath" + "\\" + type
+    
+    for (root, dirs, file) in os.walk(path):
+        for fi in file:
+            if '.gr2' in fi:
+                files.add(fi)
+    
+    if(type == "markers" or type == "skeleton"):
+        ET.SubElement(ContentObjects, "ContentObject", Name="", Type=type)
+    else:
+        ET.SubElement(ContentObjects, "ContentObject", Name="", Type=str(type + "_model"))
+
+    for f in files:
+        r1 = ET.SubElement(ContentObjects, "ContentNetwork", Name=getFileNames(f), Type="")
+        ET.SubElement(r1, "InputFile").text = "dataPath" + "\\" + type + "\\" + getFileNames(f) + "inputFileType"
+        ET.SubElement(r1, "IntermediateFile").text = "dataPath" + "\\" + type + "\\" + getFileNames(f)
+    
+    if(type == "markers" or type == "skeleton"):
+        ET.SubElement(ContentObjects, "OutputTagCollection")
+    else:
+        r2 = ET.SubElement(ContentObjects, "OutputTagCollection")
+        ET.SubElement(r2, "OutputTag", Type=str(type + "_model")).text = "dataPath" + "\\" + "assetName"
 
 def CreateContentObject(type1, type2, type3, type4, type5, type6):
     print("")
+
+def getFileNames(file):
+    return ""
 
 
 def save(operator, context, report,
