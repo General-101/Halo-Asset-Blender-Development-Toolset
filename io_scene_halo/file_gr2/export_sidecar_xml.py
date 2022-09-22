@@ -40,6 +40,8 @@ EKPath = bpy.context.preferences.addons['io_scene_halo'].preferences.hrek_path
 EKPath = EKPath.replace('"','')
 EKPath = EKPath.strip('\\')
 
+valid_animation_types = ('JMM', 'JMA', 'JMT', 'JMZ', 'JMV', 'JMO', 'JMOK', 'JMR', 'JMRX')
+
 
 def export_xml(report, filePath="", export_sidecar=False, sidecar_type='MODEL', asset_path=''):
     print('asset path = ' + asset_path)
@@ -210,6 +212,11 @@ def WriteModelContents(metadata, asset_path, asset_name):
     content = ET.SubElement(contents, "Content", Name=asset_name, Type='model')
     object = ET.SubElement(content, 'ContentObject', Name='', Type="render_model")
 
+    if 1>len(bpy.data.collections):
+        network = ET.SubElement(object, 'ContentNetwork' ,Name='default', Type="")
+        ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, 'render', 'default')
+        ET.SubElement(network, 'IntermediateFile').text = Name=GetIntermediateFilePath(asset_path, asset_name, 'render', 'default')
+
     for perm in bpy.data.collections:
         if perm.name == 'Collection':
             perm = 'default'
@@ -217,8 +224,8 @@ def WriteModelContents(metadata, asset_path, asset_name):
             perm = perm.name
 
         network = ET.SubElement(object, 'ContentNetwork' ,Name=perm, Type="")
-        ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, perm, 'render')
-        ET.SubElement(network, 'IntermediateFile').text = Name=GetIntermediateFilePath(asset_path, asset_name, perm, 'render')
+        ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, 'render', perm)
+        ET.SubElement(network, 'IntermediateFile').text = Name=GetIntermediateFilePath(asset_path, asset_name, 'render', perm)
 
     output = ET.SubElement(content, 'OutputTagCollection')
     ET.SubElement(output, 'OutputTag', Type='render_model').text = asset_path + '\\' + asset_name
@@ -227,6 +234,11 @@ def WriteModelContents(metadata, asset_path, asset_name):
     if SceneHasPhysicsObject():
         object = ET.SubElement(content, 'ContentObject', Name='', Type="physics_model")
 
+        if 1>len(bpy.data.collections):
+            network = ET.SubElement(object, 'ContentNetwork' ,Name='default', Type="")
+            ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, 'physics', 'default')
+            ET.SubElement(network, 'IntermediateFile').text = Name=GetIntermediateFilePath(asset_path, asset_name, 'physics', 'default')
+
         for perm in bpy.data.collections:
             if perm.name == 'Collection':
                 perm = 'default'
@@ -234,8 +246,8 @@ def WriteModelContents(metadata, asset_path, asset_name):
                 perm = perm.name
 
             network = ET.SubElement(object, 'ContentNetwork' ,Name=perm, Type="")
-            ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, perm, 'physics')
-            ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePath(asset_path, asset_name, perm, 'physics')
+            ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, 'physics',  perm)
+            ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePath(asset_path, asset_name, 'physics', perm)
 
     output = ET.SubElement(content, 'OutputTagCollection')
     ET.SubElement(output, 'OutputTag', Type='physics_model').text = asset_path + '\\' + asset_name
@@ -244,57 +256,199 @@ def WriteModelContents(metadata, asset_path, asset_name):
     if SceneHasCollisionObject():
         object = ET.SubElement(content, 'ContentObject', Name='', Type="collision_model")
 
+        if 1>len(bpy.data.collections):
+            network = ET.SubElement(object, 'ContentNetwork' ,Name='default', Type="")
+            ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, 'collision', 'default')
+            ET.SubElement(network, 'IntermediateFile').text = Name=GetIntermediateFilePath(asset_path, asset_name, 'collision', 'default')
+
         for perm in bpy.data.collections:
             if perm.name == 'Collection':
                 perm = 'default'
             else:
                 perm = perm.name
 
-            network = ET.SubElement(object, 'ContentNetwork' ,Name=perm, Type="")
-            ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, perm, 'collision')
-            ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePath(asset_path, asset_name, perm, 'collision')
+            network = ET.SubElement(object, 'ContentNetwork'  ,Name=perm, Type="")
+            ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, 'collision', perm)
+            ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePath(asset_path, asset_name, 'collision', perm)
 
     output = ET.SubElement(content, 'OutputTagCollection')
     ET.SubElement(output, 'OutputTag', Type='collision_model').text = asset_path + '\\' + asset_name
 
     ##### SKELETON #####
     object = ET.SubElement(content, 'ContentObject', Name='', Type="skeleton")
-    network = ET.SubElement(object, 'ContentNetwork' ,Name='default', Type="")
-    ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, perm, 'skeleton')
-    ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePath(asset_path, asset_name, perm, 'skeleton')
+    network = ET.SubElement(object, 'ContentNetwork' , Name='default', Type="")
+    ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, 'skeleton')
+    ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePath(asset_path, asset_name, 'skeleton')
     output = ET.SubElement(content, 'OutputTagCollection')
     
     ##### MARKERS #####
     if SceneHasMarkers():
         object = ET.SubElement(content, 'ContentObject', Name='', Type="markers")
-
-        for perm in bpy.data.collections:
-            if perm.name == 'Collection':
-                perm = 'default'
-            else:
-                perm = perm.name
-
-            network = ET.SubElement(object, 'ContentNetwork' ,Name='default', Type="")
-            ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, perm, 'markers')
-            ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePath(asset_path, asset_name, perm, 'markers')
+        network = ET.SubElement(object, 'ContentNetwork' , Name='default', Type="")
+        ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, 'markers')
+        ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePath(asset_path, asset_name, 'markers')
         
         output = ET.SubElement(content, 'OutputTagCollection')
 
-def GetInputFilePath(asset_path, asset_name, perm, type):
-    path = asset_path + '\\models\\' + asset_name
-    if type != 'skeleton' and type != 'markers':
+    ##### ANIMATIONS #####
+    if 1<=len(bpy.data.actions):
+        object = ET.SubElement(content, 'ContentObject', Name='', Type="model_animation_graph")
+
+        for anim in bpy.data.actions:
+            if anim.name.rpartition('.')[0] != '':
+                anim_name = anim.name.rpartition('.')[0]
+            else:
+                anim_name = anim.name
+
+            network = ET.SubElement(object, 'ContentNetwork' , Name=anim_name, Type=GetAnimType(anim.name), ModelAnimationMovementData=GetAnimMovement(anim.name), ModelAnimationOverlayType=GetAnimOverlay(anim.name), ModelAnimationOverlayBlending=GetAnimBlending(anim.name))
+            ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, anim_name, 'model_animation_graph')
+            ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePath(asset_path, anim_name, 'model_animation_graph')
+
+def GetAnimType(anim):
+    type = 'JMM'
+    if not '.' in anim:
+        print(anim + ' has no animation type specified, defaulting to JMM.')
+    else:
+        type = anim.rpartition('.')[2]
+        type = type.upper()
+    if type in valid_animation_types:
+        match type:
+            case 'JMM':
+                return 'Base'
+            case 'JMA':
+                return 'Base'
+            case 'JMT':
+                return 'Base'
+            case 'JMZ':
+                return 'Base'
+            case 'JMV':
+                return 'Base'
+            case 'JMO':
+                return 'Overlay'
+            case 'JMOK':
+                return 'Overlay'
+            case 'JMR':
+                return 'Overlay'
+            case 'JMRX':
+                return 'Overlay'
+    else:
+        print(anim + ' has invalid animation type specified, defaulting to JMM.')
+        return 'Base'
+
+def GetAnimMovement(anim):
+    type = 'JMM'
+    if '.' in anim:
+        type = anim.rpartition('.')[2]
+        type = type.upper()
+    if type in valid_animation_types:
+        match type:
+            case 'JMM':
+                return 'None'
+            case 'JMA':
+                return 'XY'
+            case 'JMT':
+                return 'XYYaw'
+            case 'JMZ':
+                return 'XYZYaw'
+            case 'JMV':
+                return 'XYZFullRotation'
+            case 'JMO':
+                return ''
+            case 'JMOK':
+                return ''
+            case 'JMR':
+                return ''
+            case 'JMRX':
+                return ''
+    else:
+        print(anim + ' has invalid animation type specified, defaulting to JMM.')
+        return 'None'
+
+def GetAnimOverlay(anim):
+    type = 'JMM'
+    if '.' in anim:
+        type = anim.rpartition('.')[2]
+        type = type.upper()
+    if type in valid_animation_types:
+        match type:
+            case 'JMM':
+                return ''
+            case 'JMA':
+                return ''
+            case 'JMT':
+                return ''
+            case 'JMZ':
+                return ''
+            case 'JMV':
+                return ''
+            case 'JMO':
+                return 'Pose'
+            case 'JMOK':
+                return 'Keyframe'
+            case 'JMR':
+                return 'Keyframe'
+            case 'JMRX':
+                return 'Keyframe'
+    else:
+        print(anim + ' has invalid animation type specified, defaulting to JMM.')
+        return ''
+
+def GetAnimBlending(anim):
+    type = 'JMM'
+    if '.' in anim:
+        type = anim.rpartition('.')[2]
+        type = type.upper()
+    if type in valid_animation_types:
+        match type:
+            case 'JMM':
+                return ''
+            case 'JMA':
+                return ''
+            case 'JMT':
+                return ''
+            case 'JMZ':
+                return ''
+            case 'JMV':
+                return ''
+            case 'JMO':
+                return ''
+            case 'JMOK':
+                return ''
+            case 'JMR':
+                return 'ReplacementObjectSpace'
+            case 'JMRX':
+                return 'ReplacementLocalSpace'
+    else:
+        print(anim + ' has invalid animation type specified, defaulting to JMM.')
+        return ''
+
+def GetInputFilePath(asset_path, asset_name, type, perm=''):
+    if type == 'model_animation_graph':
+        path = asset_path + '\\animations\\' + asset_name
+    else:
+        path = asset_path + '\\models\\' + asset_name
+    if type != 'skeleton' and type != 'markers' and type != 'model_animation_graph':
         if perm != 'default':
             path = path + '_' + perm
-    path = path + '_' + type + '.fbx'
+    if type == 'model_animation_graph':
+        path = path + '.fbx'
+    else:
+        path = path + '_' + type + '.fbx'
 
     return path
 
-def GetIntermediateFilePath(asset_path, asset_name, perm, type):
-    path = asset_path + '\\export\\models\\' + asset_name
-    if type != 'skeleton' and type != 'markers':
+def GetIntermediateFilePath(asset_path, asset_name, type, perm=''):
+    if type == 'model_animation_graph':
+        path = asset_path + '\\export\\animations\\' + asset_name
+    else:
+        path = asset_path + '\\export\\models\\' + asset_name
+    if type != 'skeleton' and type != 'markers' and type != 'model_animation_graph':
         if perm != 'default':
             path = path + '_' + perm
-    path = path + '_' + type + '.gr2'
+    if type == 'model_animation_graph':
+        path = path + '.gr2'
+    else:
+        path = path + '_' + type + '.gr2'
 
     return path
 

@@ -794,79 +794,81 @@ def getMaterials():
     halo_special_materials = ('+collision','+physics',"+portal","+seamsealer","+sky","+weatherpoly") # some special material names to match legacy
     
     for ob in bpy.data.objects:
-        for mat_slot in ob.material_slots:
-            halo_material = mat_slot.material.halo_json
-            halo_material_name = mat_slot.material.name
+        if 1<=len(ob.material_slots):
+            for mat_slot in ob.material_slots:
+                if mat_slot is not None:
+                    halo_material = mat_slot.material.halo_json
+                    halo_material_name = mat_slot.material.name
 
-            shaderPath = ''
-            shaderType = ''
+                    shaderPath = ''
+                    shaderType = ''
 
-            if halo_material_name.startswith(halo_special_materials) or halo_material.material_override != 'NONE':
-                shaderType = 'override'
-                if halo_material_name.startswith('+collision') or halo_material.material_override == 'COLLISION':
-                    shaderPath = 'collisionVolume'
-                elif halo_material_name.startswith('+physics') or halo_material.material_override == 'PHYSICS':
-                    shaderPath = 'physicsVolume'
-                elif halo_material_name.startswith('+portal') or halo_material.material_override == 'PORTAL':
-                    shaderPath = 'bungie_mesh_type=_connected_geometry_mesh_type_portal'
-                elif halo_material_name.startswith('+seamsealer') or halo_material.material_override == 'SEAM SEALER':
-                    shaderPath = 'bungie_face_type=_connected_geometry_face_type_seam_sealer'
-                elif halo_material_name.startswith('+sky') or halo_material.material_override == 'SKY':
-                    shaderPath = 'bungie_face_type=_connected_geometry_face_type_sky'
-                elif halo_material_name.startswith('+weatherpoly') or halo_material.material_override == 'WEATHERPOLY':
-                    shaderPath = 'bungie_face_type=_connected_geometry_face_type_weather_polyhedra'
+                    if halo_material_name.startswith(halo_special_materials) or halo_material.material_override != 'NONE':
+                        shaderType = 'override'
+                        if halo_material_name.startswith('+collision') or halo_material.material_override == 'COLLISION':
+                            shaderPath = 'collisionVolume'
+                        elif halo_material_name.startswith('+physics') or halo_material.material_override == 'PHYSICS':
+                            shaderPath = 'physicsVolume'
+                        elif halo_material_name.startswith('+portal') or halo_material.material_override == 'PORTAL':
+                            shaderPath = 'bungie_mesh_type=_connected_geometry_mesh_type_portal'
+                        elif halo_material_name.startswith('+seamsealer') or halo_material.material_override == 'SEAM SEALER':
+                            shaderPath = 'bungie_face_type=_connected_geometry_face_type_seam_sealer'
+                        elif halo_material_name.startswith('+sky') or halo_material.material_override == 'SKY':
+                            shaderPath = 'bungie_face_type=_connected_geometry_face_type_sky'
+                        elif halo_material_name.startswith('+weatherpoly') or halo_material.material_override == 'WEATHERPOLY':
+                            shaderPath = 'bungie_face_type=_connected_geometry_face_type_weather_polyhedra'
 
-            else:
-                if '.' in halo_material.shader_path:
-                    shaderPath = halo_material.shader_path.rpartition('.')[0]
-                else:
-                    shaderPath = halo_material.shader_path
+                    else:
+                        if '.' in halo_material.shader_path:
+                            shaderPath = halo_material.shader_path.rpartition('.')[0]
+                        else:
+                            shaderPath = halo_material.shader_path
 
-                #clean shader path
-                shaderPath = shaderPath.replace('"','')
-                shaderPath = shaderPath.strip('\\')
-                shaderPath = shaderPath.replace(tagsPath,'')
+                        #clean shader path
+                        shaderPath = shaderPath.replace('"','')
+                        shaderPath = shaderPath.strip('\\')
+                        shaderPath = shaderPath.replace(tagsPath,'')
 
-                if shaderPath == '':
-                    shaderPath = 'shaders\invalid'
-                
-                match halo_material.Shader_Type:
-                    case 'SHADER':
-                        shaderType = 'shader'
-                    case 'SHADER CORTANA':
-                        shaderType = 'shader_cortana'
-                    case 'SHADER CUSTOM':
-                        shaderType = 'shader_custom'
-                    case 'SHADER DECAL':
-                        shaderType = 'shader_decal'
-                    case 'SHADER FOLIAGE':
-                        shaderType = 'shader_foliage'
-                    case 'SHADER FUR':
-                        shaderType = 'shader_fur'
-                    case 'SHADER FUR STENCIL':
-                        shaderType = 'shader_fur_stencil'
-                    case 'SHADER GLASS':
-                        shaderType = 'shader_glass'
-                    case 'SHADER HALOGRAM':
-                        shaderType = 'shader_halogram'
-                    case 'SHADER  MUX':
-                        shaderType = 'shader_mux'
-                    case 'SHADER MUX MATERIAL':
-                        shaderType = 'shader_mux_material'
-                    case 'SHADER SCREEN':
-                        shaderType = 'shader_screen'
-                    case 'SHADER SKIN':
-                        shaderType = 'shader_skin'
-                    case 'SHADER TERRAIN':
-                        shaderType = 'shader_terrain'
-                    case 'SHADER WATER':
-                        shaderType = 'shader_water'
+                        if shaderPath == '':
+                            shaderPath = 'shaders\invalid'
+                        
+                        match halo_material.Shader_Type:
+                            case 'SHADER':
+                                shaderType = 'shader'
+                            case 'SHADER CORTANA':
+                                shaderType = 'shader_cortana'
+                            case 'SHADER CUSTOM':
+                                shaderType = 'shader_custom'
+                            case 'SHADER DECAL':
+                                shaderType = 'shader_decal'
+                            case 'SHADER FOLIAGE':
+                                shaderType = 'shader_foliage'
+                            case 'SHADER FUR':
+                                shaderType = 'shader_fur'
+                            case 'SHADER FUR STENCIL':
+                                shaderType = 'shader_fur_stencil'
+                            case 'SHADER GLASS':
+                                shaderType = 'shader_glass'
+                            case 'SHADER HALOGRAM':
+                                shaderType = 'shader_halogram'
+                            case 'SHADER  MUX':
+                                shaderType = 'shader_mux'
+                            case 'SHADER MUX MATERIAL':
+                                shaderType = 'shader_mux_material'
+                            case 'SHADER SCREEN':
+                                shaderType = 'shader_screen'
+                            case 'SHADER SKIN':
+                                shaderType = 'shader_skin'
+                            case 'SHADER TERRAIN':
+                                shaderType = 'shader_terrain'
+                            case 'SHADER WATER':
+                                shaderType = 'shader_water'
 
-            matList.update({halo_material_name : {"bungie_shader_path": shaderPath, "bungie_shader_type": shaderType}})
+                    matList.update({halo_material_name : {"bungie_shader_path": shaderPath, "bungie_shader_type": shaderType}})
 
-    temp = ({'material_properties': matList})
+            temp = ({'material_properties': matList})
 
-    return temp
+            return temp
 
 import os
 from os.path import exists as file_exists
