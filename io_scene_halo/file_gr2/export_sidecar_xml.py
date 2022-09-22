@@ -43,36 +43,37 @@ EKPath = EKPath.strip('\\')
 
 def export_xml(report, filePath="", export_sidecar=False, sidecar_type='MODEL', asset_path=''):
     print('asset path = ' + asset_path)
-
+    full_path = asset_path
     asset_path = CleanAssetPath(asset_path)
     asset_name = asset_path.rpartition('\\')[2]
 
     if export_sidecar and asset_path != '':
         if sidecar_type == 'MODEL':
-            GenerateModelSidecar(asset_path)
+            GenerateModelSidecar(asset_path, asset_name, full_path)
 
 def CleanAssetPath(path):
     path = path.replace('"','')
     path = path.strip('\\')
-    path - path.replace(EKPath,'')
+    path = path.replace(EKPath + '\\data\\','')
 
     return path
 
-def GenerateModelSidecar(asset_path):
+def GenerateModelSidecar(asset_path, asset_name, full_path):
     m_encoding = 'UTF-8'
 
     print("beep boop I'm writing a model sidecar")
 
     metadata = ET.Element("Metadata")
     WriteHeader(metadata)
-
-    GetObjectOutputTypes(metadata, "model", asset_path, GetModelTags())
+    GetObjectOutputTypes(metadata, "model", asset_path, asset_name, GetModelTags())
+    WriteFolders(metadata)
+    WriteFaceCollections(metadata, True, True)
 
     dom = xml.dom.minidom.parseString(ET.tostring(metadata))
     xml_string = dom.toprettyxml()
     part1, part2 = xml_string.split('?>')
 
-    with open(asset_path + 'temp.sidecar.xml', 'w') as xfile:
+    with open(full_path + '\\' + asset_name + '.sidecar.xml', 'w') as xfile:
         xfile.write(part1 + 'encoding=\"{}\"?>\n'.format(m_encoding) + part2)
         xfile.close()
 
@@ -116,7 +117,7 @@ def GetModelTags():
     if True:
         tags.append('crate')
     if True:
-        tags.append('Creature')
+        tags.append('creature')
     if True:
         tags.append('device_control')
     if True:
@@ -138,12 +139,12 @@ def GetModelTags():
 
     return tags
 
-def GetObjectOutputTypes(metadata, type, asset_path, output_tags):
-    asset = ET.SubElement(metadata, "Asset", Name="example_asset", Type=type)
+def GetObjectOutputTypes(metadata, type, asset_path, asset_name, output_tags):
+    asset = ET.SubElement(metadata, "Asset", Name=asset_name, Type=type)
     tagcollection = ET.SubElement(asset, "OutputTagCollection")
 
     for tag in output_tags:
-        ET.SubElement(tagcollection, "OutputTag", Type=tag).text = asset_path
+        ET.SubElement(tagcollection, "OutputTag", Type=tag).text = asset_path + '\\' + asset_name
 
 def WriteFolders(metadata):
     folders = ET.SubElement(metadata, "Folders")
@@ -174,32 +175,32 @@ def WriteFaceCollections(metadata, regions=False, materials=False):
         faceCollections = ET.SubElement(metadata, "FaceCollections")
 
         if(regions):
-            temp = ["default"]
+            region_list = ["default",""]
             f1 = ET.SubElement(faceCollections, "FaceCollection", Name="regions", StringTable="connected_geometry_regions_table", Description="model regions")
 
             FaceCollectionsEntries = ET.SubElement(f1, "FaceCollectionEntries")
             ET.SubElement(FaceCollectionsEntries, "FaceCollectionEntry", Index="0", Name="default", Active="true")
 
             count = 1
-            for name in temp:
-                if(not bpy.types.Object.halo_json.Region_Name == name):
-                    for i in bpy.types.Object.halo_json.Region_Name:
-                        ET.SubElement(FaceCollectionsEntries, "FaceCollectionEntry", Index=str(count), Name=i, Active="true")
-                        temp.add(i)
-                        count += 1
+            for ob in bpy.data.objects:
+                region = ob.halo_json.Region_Name
+                if region not in region_list:
+                    ET.SubElement(FaceCollectionsEntries, "FaceCollectionEntry", Index=str(count), Name=region, Active="true")
+                    region_list.append(region)
+                    count += 1
         if(materials):
-            temp = ["default"]
+            mat_list = ["default",""]
             f2 = ET.SubElement(faceCollections, "FaceCollection", Name="global materials overrides", StringTable="connected_geometry_global_material_table", Description="Global material overrides")
 
             FaceCollectionsEntries2 = ET.SubElement(f2, "FaceCollectionEntries")
             ET.SubElement(FaceCollectionsEntries2, "FaceCollectionEntry", Index="0", Name="default", Active="true")
 
             count = 1
-            for name in temp:
-                if(not bpy.types.Object.halo_json.Region_Name == name):
-                    for i in bpy.types.Object.halo_json.Face_Global_Material:
-                        ET.SubElement(FaceCollectionsEntries2, "FaceCollectionEntry", Index=str(count), Name=i, Active="true")
-                        temp.add(i)
+            for ob in bpy.data.objects:
+                material = ob.halo_json.Face_Global_Material
+                if material not in mat_list:
+                        ET.SubElement(FaceCollectionsEntries2, "FaceCollectionEntry", Index=str(count), Name=material, Active="true")
+                        mat_list.append(material)
                         count += 1
 
 def IntermediateFileExists(folderName):
