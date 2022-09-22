@@ -68,6 +68,7 @@ def GenerateModelSidecar(asset_path, asset_name, full_path):
     GetObjectOutputTypes(metadata, "model", asset_path, asset_name, GetModelTags())
     WriteFolders(metadata)
     WriteFaceCollections(metadata, True, True)
+    WriteModelContents(metadata, asset_path, asset_name)
 
     dom = xml.dom.minidom.parseString(ET.tostring(metadata))
     xml_string = dom.toprettyxml()
@@ -102,7 +103,7 @@ def WriteHeader(metadata):
     header = ET.SubElement(metadata, "Header")
     ET.SubElement(header, "MainRev").text = "0"
     ET.SubElement(header, "PointRev").text = "6"
-    ET.SubElement(header, "Description").text = "Created By using the Halo Blender Toolset"
+    ET.SubElement(header, "Description").text = "Created using the Halo Blender Toolset"
     ET.SubElement(header, "Created").text = str(datetime.today().strftime('%Y-%m-%d'))
     ET.SubElement(header, "By").text = getpass.getuser()
     ET.SubElement(header, "DirectoryType").text = "TAE.Shared.NWOAssetDirectory"
@@ -151,23 +152,23 @@ def WriteFolders(metadata):
 
     ET.SubElement(folders, "Reference").text = "\\reference"
     ET.SubElement(folders, "Temp").text = "\\temp"
-    ET.SubElement(folders, "SourceModels").text = "\\work"
-    ET.SubElement(folders, "GameModels").text = "\\render"
-    ET.SubElement(folders, "GamePhysicsModels").text = "\\physics"
-    ET.SubElement(folders, "GameCollisionModels").text = "\\collision"
-    ET.SubElement(folders, "ExportModels").text = "\\render"
-    ET.SubElement(folders, "ExportPhysicsModels").text = "\\physics"
-    ET.SubElement(folders, "ExportCollisionModels").text = "\\collision"
+    ET.SubElement(folders, "SourceModels").text = "\\models\\work"
+    ET.SubElement(folders, "GameModels").text = "\\models"
+    ET.SubElement(folders, "GamePhysicsModels").text = "\\models"
+    ET.SubElement(folders, "GameCollisionModels").text = "\\models"
+    ET.SubElement(folders, "ExportModels").text = "\\export\\models"
+    ET.SubElement(folders, "ExportPhysicsModels").text = "\\export\\models"
+    ET.SubElement(folders, "ExportCollisionModels").text = "\\export\\models"
     ET.SubElement(folders, "SourceAnimations").text = "\\animations\\work"
     ET.SubElement(folders, "AnimationsRigs").text = "\\animations\\rigs"
     ET.SubElement(folders, "GameAnimations").text = "\\animations"
-    ET.SubElement(folders, "ExportAnimations").text = "\\animations"
+    ET.SubElement(folders, "ExportAnimations").text = "\\export\\animations"
     ET.SubElement(folders, "SourceBitmaps").text = "\\bitmaps"
     ET.SubElement(folders, "GameBitmaps").text = "\\bitmaps"
     ET.SubElement(folders, "CinemaSource").text = "\\cinematics"
-    ET.SubElement(folders, "CinemaExport").text = "\\cinematics"
-    ET.SubElement(folders, "ExportBSPs").text = "\\"
-    ET.SubElement(folders, "SourceBSPs").text = "\\"
+    ET.SubElement(folders, "CinemaExport").text = "\\export\\cinematics"
+    ET.SubElement(folders, "ExportBSPs").text = "\\models"
+    ET.SubElement(folders, "SourceBSPs").text = "\\models"
     ET.SubElement(folders, "Scripts").text = "\\scripts"
 
 def WriteFaceCollections(metadata, regions=False, materials=False):
@@ -203,116 +204,237 @@ def WriteFaceCollections(metadata, regions=False, materials=False):
                         mat_list.append(material)
                         count += 1
 
-def IntermediateFileExists(folderName):
-    filePath = "fullPath" + "\\" + folderName
+def WriteModelContents(metadata, asset_path, asset_name):
+    ##### RENDER #####
+    contents = ET.SubElement(metadata, "Contents")
+    content = ET.SubElement(contents, "Content", Name=asset_name, Type='model')
+    object = ET.SubElement(content, 'ContentObject', Name='', Type="render_model")
 
-    for fname in os.listdir(filePath):
-        if fname.endswith('.gr2'):
-            return True
+    for perm in bpy.data.collections:
+        if perm.name == 'Collection':
+            perm = 'default'
         else:
-            return False
+            perm = perm.name
 
-def GetModelContentObjects(metadata):
-    temp = []
-    ContentObjects = ET.SubElement(metadata, "Content", Name="assetName", Type="model")
+        network = ET.SubElement(object, 'ContentNetwork' ,Name=perm, Type="")
+        ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, perm, 'render')
+        ET.SubElement(network, 'IntermediateFile').text = Name=GetIntermediateFilePath(asset_path, asset_name, perm, 'render')
 
-    if(IntermediateFileExists("render")):
-        CreateContentObject(ContentObjects, "render")
+    output = ET.SubElement(content, 'OutputTagCollection')
+    ET.SubElement(output, 'OutputTag', Type='render_model').text = asset_path + '\\' + asset_name
 
-    if(IntermediateFileExists("physics")):
-        CreateContentObject(ContentObjects, "physics")
+    ##### PHYSICS #####
+    if SceneHasPhysicsObject():
+        object = ET.SubElement(content, 'ContentObject', Name='', Type="physics_model")
 
-    if(IntermediateFileExists("collision")):
-        CreateContentObject(ContentObjects, "collision")
+        for perm in bpy.data.collections:
+            if perm.name == 'Collection':
+                perm = 'default'
+            else:
+                perm = perm.name
 
-    if(IntermediateFileExists("markers")):
-        CreateContentObject(ContentObjects, "markers")
+            network = ET.SubElement(object, 'ContentNetwork' ,Name=perm, Type="")
+            ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, perm, 'physics')
+            ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePath(asset_path, asset_name, perm, 'physics')
 
-    if(IntermediateFileExists("skeleton")):
-        CreateContentObject(ContentObjects, "skeleton")
+    output = ET.SubElement(content, 'OutputTagCollection')
+    ET.SubElement(output, 'OutputTag', Type='physics_model').text = asset_path + '\\' + asset_name
 
-    if(IntermediateFileExists("animations\\JMM") or IntermediateFileExists("animations\\JMA") or IntermediateFileExists("animations\\JMT") or IntermediateFileExists("animations\\JMZ") or IntermediateFileExists("animations\\JMV")
-        or IntermediateFileExists("animations\\JMO (Keyframe)") or IntermediateFileExists("animations\\JMO (Pose)") or IntermediateFileExists("animations\\JMR (Object)") or IntermediateFileExists("animations\\JMR (Local)")):
-        animations = ET.SubElement(ContentObjects, "ContentObject", Name="", Type="model_animation_graph")
+    ##### COLLISION #####    
+    if SceneHasCollisionObject():
+        object = ET.SubElement(content, 'ContentObject', Name='', Type="collision_model")
 
-        if(IntermediateFileExists("animations\\JMM")):
-            CreateContentObject(animations, "animations\\JMM", "Base", "ModelAnimationMovementData", "None", "", "")
+        for perm in bpy.data.collections:
+            if perm.name == 'Collection':
+                perm = 'default'
+            else:
+                perm = perm.name
 
-        if(IntermediateFileExists("animations\\JMA")):
-            CreateContentObject(animations, "animations\\JMA", "Base", "ModelAnimationMovementData", "XY", "", "")
+            network = ET.SubElement(object, 'ContentNetwork' ,Name=perm, Type="")
+            ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, perm, 'collision')
+            ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePath(asset_path, asset_name, perm, 'collision')
 
-        if(IntermediateFileExists("animations\\JMT")):
-            CreateContentObject(animations, "animations\\JMT", "Base", "ModelAnimationMovementData", "XYYaw", "", "")
+    output = ET.SubElement(content, 'OutputTagCollection')
+    ET.SubElement(output, 'OutputTag', Type='collision_model').text = asset_path + '\\' + asset_name
 
-        if(IntermediateFileExists("animations\\JMZ")):
-            CreateContentObject(animations, "animations\\JMZ", "Base", "ModelAnimationMovementData", "XYZYaw", "", "")
-
-        if(IntermediateFileExists("animations\\JMV")):
-            CreateContentObject(animations, "animations\\JMV", "Base", "ModelAnimationMovementData", "XYZFullRotation", "", "")
-
-        if(IntermediateFileExists("animations\\JMO (Keyframe)")):
-            CreateContentObject(animations, "animations\\JMO (Keyframe)", "Overlay", "ModelAnimationOverlayType", "Keyframe", "ModelAnimationOverlayBlending", "Additive")
-
-        if(IntermediateFileExists("animations\\JMO (Pose)")):
-            CreateContentObject(animations, "animations\\JMO (Pose)", "Overlay", "ModelAnimationOverlayType", "Pose", "ModelAnimationOverlayBlending", "Additive")
-
-        if(IntermediateFileExists("animations\\JMR (Local)")):
-            CreateContentObject(animations, "animations\\JMR (Local)", "Overlay", "ModelAnimationOverlayType", "keyframe", "ModelAnimationOverlayBlending", "ReplacementLocalSpace")
-
-        if(IntermediateFileExists("animations\\JMR (Object)")):
-            CreateContentObject(animations, "animations\\JMR (Object)", "Overlay", "ModelAnimationOverlayType", "keyframe", "ModelAnimationOverlayBlending", "ReplacementObjectSpace")
-
-        r2 = ET.SubElement(animations, "OutputTagCollection")
-        ET.SubElement(r2, "OutputTag", Type="frame_event_list").text = "dataPath" + "\\" + "assetName"
-        ET.SubElement(r2, "OutputTag", Type="model_animation_graph").text = "dataPath" + "\\" + "assetName"
-
-def CreateContentObject(ContentObjects, type):
-    files = []
-    path = "fullPath" + "\\" + type
+    ##### SKELETON #####
+    object = ET.SubElement(content, 'ContentObject', Name='', Type="skeleton")
+    network = ET.SubElement(object, 'ContentNetwork' ,Name='default', Type="")
+    ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, perm, 'skeleton')
+    ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePath(asset_path, asset_name, perm, 'skeleton')
+    output = ET.SubElement(content, 'OutputTagCollection')
     
-    for (root, dirs, file) in os.walk(path):
-        for fi in file:
-            if '.gr2' in fi:
-                files.add(fi)
-    
-    if(type == "markers" or type == "skeleton"):
-        ET.SubElement(ContentObjects, "ContentObject", Name="", Type=type)
-    else:
-        ET.SubElement(ContentObjects, "ContentObject", Name="", Type=str(type + "_model"))
+    ##### MARKERS #####
+    if SceneHasMarkers():
+        object = ET.SubElement(content, 'ContentObject', Name='', Type="markers")
 
-    for f in files:
-        r1 = ET.SubElement(ContentObjects, "ContentNetwork", Name=getFileNames(f), Type="")
-        ET.SubElement(r1, "InputFile").text = "dataPath" + "\\" + type + "\\" + getFileNames(f) + "inputFileType"
-        ET.SubElement(r1, "IntermediateFile").text = "dataPath" + "\\" + type + "\\" + getFileNames(f)
-    
-    if(type == "markers" or type == "skeleton"):
-        ET.SubElement(ContentObjects, "OutputTagCollection")
-    else:
-        r2 = ET.SubElement(ContentObjects, "OutputTagCollection")
-        ET.SubElement(r2, "OutputTag", Type=str(type + "_model")).text = "dataPath" + "\\" + "assetName"
+        for perm in bpy.data.collections:
+            if perm.name == 'Collection':
+                perm = 'default'
+            else:
+                perm = perm.name
 
-def CreateContentObject(animations, type1, type2, type3, type4, type5, type6):
-    files = []
-    path = "fullPath" + "\\" + type
-    
-    for (root, dirs, file) in os.walk(path):
-        for fi in file:
-            if '.gr2' in fi:
-                files.add(fi)
-    
-    for f in files:
-        if(type5 == "" or type6 == ""):
-            r1 = ET.SubElement(animations, "ContentNetwork", Name=getFileNames(f), Type=type2, type3=type4)
-            ET.SubElement(r1, "InputFile").text = "dataPath" + "\\" + type1 + "\\" + getFileNames(f) + "inputFileType"
-            ET.SubElement(r1, "IntermediateFile").text = "dataPath" + "\\" + type1 + "\\" + getFileNames(f)
-        else:
-            r1 = ET.SubElement(animations, "ContentNetwork", Name=getFileNames(f), Type=type2, type3=type4, type5=type6)
-            ET.SubElement(r1, "InputFile").text = "dataPath" + "\\" + type1 + "\\" + getFileNames(f) + "inputFileType"
-            ET.SubElement(r1, "IntermediateFile").text = "dataPath" + "\\" + type1 + "\\" + getFileNames(f)
+            network = ET.SubElement(object, 'ContentNetwork' ,Name='default', Type="")
+            ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, perm, 'markers')
+            ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePath(asset_path, asset_name, perm, 'markers')
+        
+        output = ET.SubElement(content, 'OutputTagCollection')
 
-def getFileNames(file):
-    t = []
-    return ""
+def GetInputFilePath(asset_path, asset_name, perm, type):
+    path = asset_path + '\\models\\' + asset_name
+    if type != 'skeleton' and type != 'markers':
+        if perm != 'default':
+            path = path + '_' + perm
+    path = path + '_' + type + '.fbx'
+
+    return path
+
+def GetIntermediateFilePath(asset_path, asset_name, perm, type):
+    path = asset_path + '\\export\\models\\' + asset_name
+    if type != 'skeleton' and type != 'markers':
+        if perm != 'default':
+            path = path + '_' + perm
+    path = path + '_' + type + '.gr2'
+
+    return path
+
+def SceneHasCollisionObject():
+    boolean = False
+
+    for ob in bpy.data.objects:
+        if ob.name.startswith('@') or ob.halo_json.ObjectMesh_Type == 'COLLISION':
+            boolean = True
+    
+    return boolean
+
+def SceneHasPhysicsObject():
+    boolean = False
+
+    for ob in bpy.data.objects:
+        if ob.name.startswith('$') or ob.halo_json.ObjectMesh_Type == 'PHYSICS':
+            boolean = True
+    
+    return boolean
+
+def SceneHasMarkers():
+    boolean = False
+
+    for ob in bpy.data.objects:
+        if ob.name.startswith('#') or ob.halo_json.Object_Type_All == 'MARKER' or ob.halo_json.Object_Type_No_Mesh == 'MARKER':
+            boolean = True
+    
+    return boolean
+
+# def IntermediateFileExists(folderName):
+#     filePath = "fullPath" + "\\" + folderName
+
+#     for fname in os.listdir(filePath):
+#         if fname.endswith('.gr2'):
+#             return True
+#         else:
+#             return False
+
+# def GetModelContentObjects(metadata):
+#     temp = []
+#     ContentObjects = ET.SubElement(metadata, "Content", Name="assetName", Type="model")
+
+#     if(IntermediateFileExists("render")):
+#         CreateContentObject(ContentObjects, "render")
+
+#     if(IntermediateFileExists("physics")):
+#         CreateContentObject(ContentObjects, "physics")
+
+#     if(IntermediateFileExists("collision")):
+#         CreateContentObject(ContentObjects, "collision")
+
+#     if(IntermediateFileExists("markers")):
+#         CreateContentObject(ContentObjects, "markers")
+
+#     if(IntermediateFileExists("skeleton")):
+#         CreateContentObject(ContentObjects, "skeleton")
+
+#     if(IntermediateFileExists("animations\\JMM") or IntermediateFileExists("animations\\JMA") or IntermediateFileExists("animations\\JMT") or IntermediateFileExists("animations\\JMZ") or IntermediateFileExists("animations\\JMV")
+#         or IntermediateFileExists("animations\\JMO (Keyframe)") or IntermediateFileExists("animations\\JMO (Pose)") or IntermediateFileExists("animations\\JMR (Object)") or IntermediateFileExists("animations\\JMR (Local)")):
+#         animations = ET.SubElement(ContentObjects, "ContentObject", Name="", Type="model_animation_graph")
+
+#         if(IntermediateFileExists("animations\\JMM")):
+#             CreateContentObject(animations, "animations\\JMM", "Base", "ModelAnimationMovementData", "None", "", "")
+
+#         if(IntermediateFileExists("animations\\JMA")):
+#             CreateContentObject(animations, "animations\\JMA", "Base", "ModelAnimationMovementData", "XY", "", "")
+
+#         if(IntermediateFileExists("animations\\JMT")):
+#             CreateContentObject(animations, "animations\\JMT", "Base", "ModelAnimationMovementData", "XYYaw", "", "")
+
+#         if(IntermediateFileExists("animations\\JMZ")):
+#             CreateContentObject(animations, "animations\\JMZ", "Base", "ModelAnimationMovementData", "XYZYaw", "", "")
+
+#         if(IntermediateFileExists("animations\\JMV")):
+#             CreateContentObject(animations, "animations\\JMV", "Base", "ModelAnimationMovementData", "XYZFullRotation", "", "")
+
+#         if(IntermediateFileExists("animations\\JMO (Keyframe)")):
+#             CreateContentObject(animations, "animations\\JMO (Keyframe)", "Overlay", "ModelAnimationOverlayType", "Keyframe", "ModelAnimationOverlayBlending", "Additive")
+
+#         if(IntermediateFileExists("animations\\JMO (Pose)")):
+#             CreateContentObject(animations, "animations\\JMO (Pose)", "Overlay", "ModelAnimationOverlayType", "Pose", "ModelAnimationOverlayBlending", "Additive")
+
+#         if(IntermediateFileExists("animations\\JMR (Local)")):
+#             CreateContentObject(animations, "animations\\JMR (Local)", "Overlay", "ModelAnimationOverlayType", "keyframe", "ModelAnimationOverlayBlending", "ReplacementLocalSpace")
+
+#         if(IntermediateFileExists("animations\\JMR (Object)")):
+#             CreateContentObject(animations, "animations\\JMR (Object)", "Overlay", "ModelAnimationOverlayType", "keyframe", "ModelAnimationOverlayBlending", "ReplacementObjectSpace")
+
+#         r2 = ET.SubElement(animations, "OutputTagCollection")
+#         ET.SubElement(r2, "OutputTag", Type="frame_event_list").text = "dataPath" + "\\" + "assetName"
+#         ET.SubElement(r2, "OutputTag", Type="model_animation_graph").text = "dataPath" + "\\" + "assetName"
+
+# def CreateContentObject(ContentObjects, type):
+#     files = []
+#     path = "fullPath" + "\\" + type
+    
+#     for (root, dirs, file) in os.walk(path):
+#         for fi in file:
+#             if '.gr2' in fi:
+#                 files.add(fi)
+    
+#     if(type == "markers" or type == "skeleton"):
+#         ET.SubElement(ContentObjects, "ContentObject", Name="", Type=type)
+#     else:
+#         ET.SubElement(ContentObjects, "ContentObject", Name="", Type=str(type + "_model"))
+
+#     for f in files:
+#         r1 = ET.SubElement(ContentObjects, "ContentNetwork", Name=getFileNames(f), Type="")
+#         ET.SubElement(r1, "InputFile").text = "dataPath" + "\\" + type + "\\" + getFileNames(f) + "inputFileType"
+#         ET.SubElement(r1, "IntermediateFile").text = "dataPath" + "\\" + type + "\\" + getFileNames(f)
+    
+#     if(type == "markers" or type == "skeleton"):
+#         ET.SubElement(ContentObjects, "OutputTagCollection")
+#     else:
+#         r2 = ET.SubElement(ContentObjects, "OutputTagCollection")
+#         ET.SubElement(r2, "OutputTag", Type=str(type + "_model")).text = "dataPath" + "\\" + "assetName"
+
+# def CreateContentObject(animations, type1, type2, type3, type4, type5, type6):
+#     files = []
+#     path = "fullPath" + "\\" + type
+    
+#     for (root, dirs, file) in os.walk(path):
+#         for fi in file:
+#             if '.gr2' in fi:
+#                 files.add(fi)
+    
+#     for f in files:
+#         if(type5 == "" or type6 == ""):
+#             r1 = ET.SubElement(animations, "ContentNetwork", Name=getFileNames(f), Type=type2, type3=type4)
+#             ET.SubElement(r1, "InputFile").text = "dataPath" + "\\" + type1 + "\\" + getFileNames(f) + "inputFileType"
+#             ET.SubElement(r1, "IntermediateFile").text = "dataPath" + "\\" + type1 + "\\" + getFileNames(f)
+#         else:
+#             r1 = ET.SubElement(animations, "ContentNetwork", Name=getFileNames(f), Type=type2, type3=type4, type5=type6)
+#             ET.SubElement(r1, "InputFile").text = "dataPath" + "\\" + type1 + "\\" + getFileNames(f) + "inputFileType"
+#             ET.SubElement(r1, "IntermediateFile").text = "dataPath" + "\\" + type1 + "\\" + getFileNames(f)
+
+# def getFileNames(file):
+#     t = []
+#     return ""
 
 
 def save(operator, context, report,
