@@ -34,11 +34,29 @@ import getpass
 import xml.etree.cElementTree as ET
 import xml.dom.minidom
 
+EKPath = bpy.context.preferences.addons['io_scene_halo'].preferences.hrek_path
+
+#clean editing kit path
+EKPath = EKPath.replace('"','')
+EKPath = EKPath.strip('\\')
+
+
 def export_xml(report, filePath="", export_sidecar=False, sidecar_type='MODEL', asset_path=''):
     print('asset path = ' + asset_path)
+
+    asset_path = CleanAssetPath(asset_path)
+    asset_name = asset_path.rpartition('\\')[2]
+
     if export_sidecar and asset_path != '':
         if sidecar_type == 'MODEL':
             GenerateModelSidecar(asset_path)
+
+def CleanAssetPath(path):
+    path = path.replace('"','')
+    path = path.strip('\\')
+    path - path.replace(EKPath,'')
+
+    return path
 
 def GenerateModelSidecar(asset_path):
     m_encoding = 'UTF-8'
