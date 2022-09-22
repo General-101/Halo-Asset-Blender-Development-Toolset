@@ -1,6 +1,30 @@
-from curses import meta
+# ##### BEGIN MIT LICENSE BLOCK #####
+#
+# MIT License
+#
+# Copyright (c) 2022 Generalkidd & Crisp
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+#
+# ##### END MIT LICENSE BLOCK #####
+
 from datetime import datetime
-from inspect import getfile
 from xml.etree.ElementTree import SubElement
 import bpy
 import os
@@ -33,6 +57,27 @@ def GenerateModelSidecar(asset_path):
     with open(asset_path + 'temp.sidecar.xml', 'w') as xfile:
         xfile.write(part1 + 'encoding=\"{}\"?>\n'.format(m_encoding) + part2)
         xfile.close()
+
+def GenerateStructureSidecar(asset_path):
+    print(asset_path)
+    m_encoding = 'UTF-8'
+
+    metadata = ET.Element("Metadata")
+    WriteHeader(metadata)
+
+    dom = xml.dom.minidom.parseString(ET.tostring(metadata))
+    xml_string = dom.toprettyxml()
+    part1, part2 = xml_string.split('?>')
+
+    with open(asset_path + 'temp.sidecar.xml', 'w') as xfile:
+        xfile.write(part1 + 'encoding=\"{}\"?>\n'.format(m_encoding) + part2)
+        xfile.close()
+
+def GenerateDecoratorSidecar(asset_path):
+    print(asset_path)
+
+def GenerateParticleSidecar(asset_path):
+    print(asset_path)
 
 def WriteHeader(metadata):
     header = ET.SubElement(metadata, "Header")
@@ -247,6 +292,7 @@ def CreateContentObject(animations, type1, type2, type3, type4, type5, type6):
             ET.SubElement(r1, "IntermediateFile").text = "dataPath" + "\\" + type1 + "\\" + getFileNames(f)
 
 def getFileNames(file):
+    t = []
     return ""
 
 
