@@ -11,17 +11,17 @@ def export_xml(report, filePath="", export_sidecar=False, sidecar_type='MODEL', 
     print('asset path = ' + asset_path)
     if export_sidecar and asset_path != '':
         if sidecar_type == 'MODEL':
-            writeSidecar_Model(asset_path)
+            WriteSidecar_Model(asset_path)
 
-def writeSidecar_Model(asset_path):
+def WriteSidecar_Model(asset_path):
     m_encoding = 'UTF-8'
 
     print("beep boop I'm writing a model sidecar")
 
     metadata = ET.Element("Metadata")
-    writeHeader(metadata)
+    WriteHeader(metadata)
 
-    writeAsset(metadata, "model", asset_path, getModelTags())
+    GetObjectOutputTypes(metadata, "model", asset_path, getModelTags())
 
     dom = xml.dom.minidom.parseString(ET.tostring(metadata))
     xml_string = dom.toprettyxml()
@@ -31,7 +31,7 @@ def writeSidecar_Model(asset_path):
         xfile.write(part1 + 'encoding=\"{}\"?>\n'.format(m_encoding) + part2)
         xfile.close()
 
-def writeHeader(metadata):
+def WriteHeader(metadata):
     header = ET.SubElement(metadata, "Header")
     ET.SubElement(header, "MainRev").text = "0"
     ET.SubElement(header, "PointRev").text = "6"
@@ -72,7 +72,7 @@ def getModelTags():
 
     return tags
 
-def writeAsset(metadata, type, asset_path, output_tags):
+def GetObjectOutputTypes(metadata, type, asset_path, output_tags):
     asset = ET.SubElement(metadata, "Asset", Name="example_asset", Type=type)
     tagcollection = ET.SubElement(asset, "OutputTagCollection")
 
@@ -103,51 +103,29 @@ def writeAsset(metadata, type, asset_path, output_tags):
 #     OutputTags = xml.Element("OutputTagCollection")
 #     return OutputTags
 
-# def WriteFolders():
-#     folders = xml.Element("Folders")
+def WriteFolders(metadata):
+    folders = ET.SubElement(metadata, "Folders")
 
-#     Reference = xml.SubElement(folders, "Reference")
-#     Reference.text = "\\reference"
-#     Temp = xml.SubElement(folders, "Temp")
-#     Temp.text = "\\temp"
-#     SourceModels = xml.SubElement(folders, "SourceModels")
-#     SourceModels.text = "\\work"
-#     GameModels = xml.SubElement(folders, "GameModels")
-#     GameModels.text = "\\render"
-#     GamePhysicsModels = xml.SubElement(folders, "GamePhysicsModels")
-#     GamePhysicsModels.text = "\\physics"
-#     GameCollisionModels = xml.SubElement(folders, "GameCollisionModels")
-#     GameCollisionModels.text = "\\collision"
-#     ExportModels = xml.SubElement(folders, "ExportModels")
-#     ExportModels.text = "\\render"
-#     ExportPhysicsModels = xml.SubElement(folders, "ExportPhysicsModles")
-#     ExportPhysicsModels.text = "\\physics"
-#     ExportCollisionModels = xml.SubElement(folders, "ExportCollisionModels")
-#     ExportCollisionModels.text = "\\collision"
-#     SourceAnimations = xml.SubElement(folders, "SourceAnimations")
-#     SourceAnimations.text = "\\animations\\work"
-#     AnimationRigs = xml.SubElement(folders, "AnimationRigs")
-#     AnimationRigs.text = "\\animations\\rigs"
-#     GameAnimations = xml.SubElement(folders, "GameAnimations")
-#     GameAnimations.text = "\\animations"
-#     ExportAnimations = xml.SubElement(folders, "ExportAnimations")
-#     ExportAnimations.text = "\\animations"
-#     SourceBitmaps = xml.SubElement(folders, "SourceBitmaps")
-#     SourceBitmaps.text = "\\bitmaps"
-#     GameBitmaps = xml.SubElement(folders, "GameBitmaps")
-#     GameBitmaps.text = "\\bitmaps"
-#     CinemaSource = xml.SubElement(folders, "CinemaSource")
-#     CinemaSource.text = "\\cinematics"
-#     CinemaExport = xml.SubElement(folders, "CinemaExport")
-#     CinemaExport.text = "\\cinematics"
-#     ExportBSPs = xml.SubElement(folders, "ExportBSPs")
-#     ExportBSPs.text = "\\"
-#     SourceBSPs = xml.SubElement(folders, "SourceBSPs")
-#     SourceBSPs.text = "\\"
-#     Scripts = xml.SubElement(folders, "Scripts")
-#     Scripts.text = "\\scripts"
-
-#     return folders
+    ET.SubElement(folders, "Reference").text = "\\reference"
+    ET.SubElement(folders, "Temp").text = "\\temp"
+    ET.SubElement(folders, "SourceModels").text = "\\work"
+    ET.SubElement(folders, "GameModels").text = "\\render"
+    ET.SubElement(folders, "GamePhysicsModels").text = "\\physics"
+    ET.SubElement(folders, "GameCollisionModels").text = "\\collision"
+    ET.SubElement(folders, "ExportModels").text = "\\render"
+    ET.SubElement(folders, "ExportPhysicsModels").text = "\\physics"
+    ET.SubElement(folders, "ExportCollisionModels").text = "\\collision"
+    ET.SubElement(folders, "SourceAnimations").text = "\\animations\\work"
+    ET.SubElement(folders, "AnimationsRigs").text = "\\animations\\rigs"
+    ET.SubElement(folders, "GameAnimations").text = "\\animations"
+    ET.SubElement(folders, "ExportAnimations").text = "\\animations"
+    ET.SubElement(folders, "SourceBitmaps").text = "\\bitmaps"
+    ET.SubElement(folders, "GameBitmaps").text = "\\bitmaps"
+    ET.SubElement(folders, "CinemaSource").text = "\\cinematics"
+    ET.SubElement(folders, "CinemaExport").text = "\\cinematics"
+    ET.SubElement(folders, "ExportBSPs").text = "\\"
+    ET.SubElement(folders, "SourceBSPs").text = "\\"
+    ET.SubElement(folders, "Scripts").text = "\\scripts"
 
 # def WriteFaceCollections(regions=False, materials=False):
 #     if(regions or materials):
