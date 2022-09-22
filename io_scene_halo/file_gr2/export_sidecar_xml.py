@@ -9,7 +9,7 @@ import xml.dom.minidom
 
 def export_xml(report, filePath="", export_sidecar=False, sidecar_type='MODEL', asset_path=''):
     print('asset path = ' + asset_path)
-    if export_sidecar:
+    if export_sidecar and asset_path != '':
         if sidecar_type == 'MODEL':
             writeSidecar_Model(asset_path)
 
