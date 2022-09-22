@@ -1,6 +1,7 @@
 from curses import meta
 from datetime import datetime
 from inspect import getfile
+from xml.etree.ElementTree import SubElement
 import bpy
 import os
 from os.path import exists as file_exists
@@ -150,27 +151,6 @@ def IntermediateFileExists(folderName):
 def GetModelContentObjects(metadata):
     temp = []
     ContentObjects = ET.SubElement(metadata, "Content", Name="assetName", Type="model")
-    
-
-    # r2 = ET.SubElement(metadata, "")
-
-    #         r2 = xml.Element("OutputTagCollection")
-    #     outputTag1 = xml.SubElement(r2, "OutputTag")
-    #     outputTag1.set("Type", "frame_event_list")
-    #     outputTag1.text = "dataPath" + "\\" + "assetName"
-    #     outputTag2 = xml.SubElement(r2, "OutputTag")
-    #     outputTag2.set("Type", "model_animation_graph")
-    #     outputTag2.text = "dataPath" + "\\" + "assetName"
-
-    #     animations.append(r2)
-    #     temp.append(animations)
-
-    # ContentObjects = xml.Element("Content")
-    # ContentObjects.set("Name", "assetName")
-    # ContentObjects.set("Type", "model")
-
-    # for e in temp:
-    #     ContentObjects.append(e)
 
     if(IntermediateFileExists("render")):
         CreateContentObject(ContentObjects, "render")
@@ -189,56 +169,38 @@ def GetModelContentObjects(metadata):
 
     if(IntermediateFileExists("animations\\JMM") or IntermediateFileExists("animations\\JMA") or IntermediateFileExists("animations\\JMT") or IntermediateFileExists("animations\\JMZ") or IntermediateFileExists("animations\\JMV")
         or IntermediateFileExists("animations\\JMO (Keyframe)") or IntermediateFileExists("animations\\JMO (Pose)") or IntermediateFileExists("animations\\JMR (Object)") or IntermediateFileExists("animations\\JMR (Local)")):
-        animations = xml.Element("ContentObject")
-        animations.set("Name", "")
-        animations.set("Type" "model_animation_graph")
+        animations = ET.SubElement(ContentObjects, "ContentObject", Name="", Type="model_animation_graph")
 
         if(IntermediateFileExists("animations\\JMM")):
-            animations.append(CreateContentObject("animations\\JMM", "Base", "ModelAnimationMovementData", "None", "", ""))
+            CreateContentObject(animations, "animations\\JMM", "Base", "ModelAnimationMovementData", "None", "", "")
 
         if(IntermediateFileExists("animations\\JMA")):
-            animations.append(CreateContentObject("animations\\JMA", "Base", "ModelAnimationMovementData", "XY", "", ""))
+            CreateContentObject(animations, "animations\\JMA", "Base", "ModelAnimationMovementData", "XY", "", "")
 
         if(IntermediateFileExists("animations\\JMT")):
-            animations.append(CreateContentObject("animations\\JMT", "Base", "ModelAnimationMovementData", "XYYaw", "", ""))
+            CreateContentObject(animations, "animations\\JMT", "Base", "ModelAnimationMovementData", "XYYaw", "", "")
 
         if(IntermediateFileExists("animations\\JMZ")):
-            animations.append(CreateContentObject("animations\\JMZ", "Base", "ModelAnimationMovementData", "XYZYaw", "", ""))
+            CreateContentObject(animations, "animations\\JMZ", "Base", "ModelAnimationMovementData", "XYZYaw", "", "")
 
         if(IntermediateFileExists("animations\\JMV")):
-            animations.append(CreateContentObject("animations\\JMV", "Base", "ModelAnimationMovementData", "XYZFullRotation", "", ""))
+            CreateContentObject(animations, "animations\\JMV", "Base", "ModelAnimationMovementData", "XYZFullRotation", "", "")
 
         if(IntermediateFileExists("animations\\JMO (Keyframe)")):
-            animations.append(CreateContentObject("animations\\JMO (Keyframe)", "Overlay", "ModelAnimationOverlayType", "Keyframe", "ModelAnimationOverlayBlending", "Additive"))
+            CreateContentObject(animations, "animations\\JMO (Keyframe)", "Overlay", "ModelAnimationOverlayType", "Keyframe", "ModelAnimationOverlayBlending", "Additive")
 
         if(IntermediateFileExists("animations\\JMO (Pose)")):
-            animations.append(CreateContentObject("animations\\JMO (Pose)", "Overlay", "ModelAnimationOverlayType", "Pose", "ModelAnimationOverlayBlending", "Additive"))
+            CreateContentObject(animations, "animations\\JMO (Pose)", "Overlay", "ModelAnimationOverlayType", "Pose", "ModelAnimationOverlayBlending", "Additive")
 
         if(IntermediateFileExists("animations\\JMR (Local)")):
-            animations.append(CreateContentObject("animations\\JMR (Local)", "Overlay", "ModelAnimationOverlayType", "keyframe", "ModelAnimationOverlayBlending", "ReplacementLocalSpace"))
+            CreateContentObject(animations, "animations\\JMR (Local)", "Overlay", "ModelAnimationOverlayType", "keyframe", "ModelAnimationOverlayBlending", "ReplacementLocalSpace")
 
         if(IntermediateFileExists("animations\\JMR (Object)")):
-            animations.append(CreateContentObject("animations\\JMR (Object)", "Overlay", "ModelAnimationOverlayType", "keyframe", "ModelAnimationOverlayBlending", "ReplacementObjectSpace"))
+            CreateContentObject(animations, "animations\\JMR (Object)", "Overlay", "ModelAnimationOverlayType", "keyframe", "ModelAnimationOverlayBlending", "ReplacementObjectSpace")
 
-        r2 = xml.Element("OutputTagCollection")
-        outputTag1 = xml.SubElement(r2, "OutputTag")
-        outputTag1.set("Type", "frame_event_list")
-        outputTag1.text = "dataPath" + "\\" + "assetName"
-        outputTag2 = xml.SubElement(r2, "OutputTag")
-        outputTag2.set("Type", "model_animation_graph")
-        outputTag2.text = "dataPath" + "\\" + "assetName"
-
-        animations.append(r2)
-        temp.append(animations)
-
-    ContentObjects = xml.Element("Content")
-    ContentObjects.set("Name", "assetName")
-    ContentObjects.set("Type", "model")
-
-    for e in temp:
-        ContentObjects.append(e)
-
-    return ContentObjects
+        r2 = ET.SubElement(animations, "OutputTagCollection")
+        ET.SubElement(r2, "OutputTag", Type="frame_event_list").text = "dataPath" + "\\" + "assetName"
+        ET.SubElement(r2, "OutputTag", Type="model_animation_graph").text = "dataPath" + "\\" + "assetName"
 
 def CreateContentObject(ContentObjects, type):
     files = []
@@ -265,8 +227,24 @@ def CreateContentObject(ContentObjects, type):
         r2 = ET.SubElement(ContentObjects, "OutputTagCollection")
         ET.SubElement(r2, "OutputTag", Type=str(type + "_model")).text = "dataPath" + "\\" + "assetName"
 
-def CreateContentObject(type1, type2, type3, type4, type5, type6):
-    print("")
+def CreateContentObject(animations, type1, type2, type3, type4, type5, type6):
+    files = []
+    path = "fullPath" + "\\" + type
+    
+    for (root, dirs, file) in os.walk(path):
+        for fi in file:
+            if '.gr2' in fi:
+                files.add(fi)
+    
+    for f in files:
+        if(type5 == "" or type6 == ""):
+            r1 = ET.SubElement(animations, "ContentNetwork", Name=getFileNames(f), Type=type2, type3=type4)
+            ET.SubElement(r1, "InputFile").text = "dataPath" + "\\" + type1 + "\\" + getFileNames(f) + "inputFileType"
+            ET.SubElement(r1, "IntermediateFile").text = "dataPath" + "\\" + type1 + "\\" + getFileNames(f)
+        else:
+            r1 = ET.SubElement(animations, "ContentNetwork", Name=getFileNames(f), Type=type2, type3=type4, type5=type6)
+            ET.SubElement(r1, "InputFile").text = "dataPath" + "\\" + type1 + "\\" + getFileNames(f) + "inputFileType"
+            ET.SubElement(r1, "IntermediateFile").text = "dataPath" + "\\" + type1 + "\\" + getFileNames(f)
 
 def getFileNames(file):
     return ""
