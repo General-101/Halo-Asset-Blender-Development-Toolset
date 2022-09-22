@@ -11,9 +11,9 @@ def export_xml(report, filePath="", export_sidecar=False, sidecar_type='MODEL', 
     print('asset path = ' + asset_path)
     if export_sidecar and asset_path != '':
         if sidecar_type == 'MODEL':
-            WriteSidecar_Model(asset_path)
+            GenerateModelSidecar(asset_path)
 
-def WriteSidecar_Model(asset_path):
+def GenerateModelSidecar(asset_path):
     m_encoding = 'UTF-8'
 
     print("beep boop I'm writing a model sidecar")
@@ -21,7 +21,7 @@ def WriteSidecar_Model(asset_path):
     metadata = ET.Element("Metadata")
     WriteHeader(metadata)
 
-    GetObjectOutputTypes(metadata, "model", asset_path, getModelTags())
+    GetObjectOutputTypes(metadata, "model", asset_path, GetModelTags())
 
     dom = xml.dom.minidom.parseString(ET.tostring(metadata))
     xml_string = dom.toprettyxml()
@@ -41,7 +41,7 @@ def WriteHeader(metadata):
     ET.SubElement(header, "DirectoryType").text = "TAE.Shared.NWOAssetDirectory"
     ET.SubElement(header, "Schema").text = "1"
 
-def getModelTags():
+def GetModelTags():
     # PLACEHOLDER
     tags = ['model']
 
@@ -79,30 +79,6 @@ def GetObjectOutputTypes(metadata, type, asset_path, output_tags):
     for tag in output_tags:
         ET.SubElement(tagcollection, "OutputTag", Type=tag).text = asset_path
 
-# def WriteHeader():
-#     header = ET.Element("Header")
-    
-#     MainRev = ET.SubElement(header, "MainRev")
-#     MainRev.text = "0"
-#     PointRev = ET.SubElement(header, "PointRev")
-#     PointRev.text = "6"
-#     Description = ET.SubElement(header, "Description")
-#     Description.text = "Description", "Created By Osoyoos SideCar Gen v1.0"
-#     Created = ET.SubElement(header, "Created")
-#     Created.text = datetime.now()
-#     By = ET.SubElement(header, "By")
-#     By.text = os.getlogin()
-#     DirectoryType = ET.SubElement(header, "DirectoryType")
-#     DirectoryType.text = "TAE.Shared.NWOAssetDirectory"
-#     SchemaText = ET.SubElement(header, "Schema")
-#     SchemaText.text = "1"
-
-#     return header
-
-# def GetObjectOutputTypes():
-#     OutputTags = xml.Element("OutputTagCollection")
-#     return OutputTags
-
 def WriteFolders(metadata):
     folders = ET.SubElement(metadata, "Folders")
 
@@ -127,231 +103,124 @@ def WriteFolders(metadata):
     ET.SubElement(folders, "SourceBSPs").text = "\\"
     ET.SubElement(folders, "Scripts").text = "\\scripts"
 
-# def WriteFaceCollections(regions=False, materials=False):
-#     if(regions or materials):
-#         faceCollections = xml.Element("FaceCollections")
+def WriteFaceCollections(metadata, regions=False, materials=False):
+    if(regions or materials):
+        faceCollections = ET.SubElement(metadata, "FaceCollections")
 
-#         if(regions):
-#             temp = ["default"]
-#             f1 = xml.Element
-#             f1.set("Name", "regions")
-#             f1.set("StringTable", "connected_geometry_regions_table")
-#             f1.set("Description", "Model regions")
+        if(regions):
+            temp = ["default"]
+            f1 = ET.SubElement(faceCollections, "FaceCollection", Name="regions", StringTable="connected_geometry_regions_table", Description="model regions")
 
-#             FaceCollectionsEntries = xml.Element("FaceCollectionEntries")
+            FaceCollectionsEntries = ET.SubElement(f1, "FaceCollectionEntries")
+            ET.SubElement(FaceCollectionsEntries, "FaceCollectionEntry", Index="0", Name="default", Active="true")
 
-#             FaceCollectionEntry = xml.Element("FaceCollectionEntry")
-#             FaceCollectionEntry.set("Index", "0")
-#             FaceCollectionEntry.set("Name", "default") 
-#             FaceCollectionEntry.set("Active", "true")
-#             FaceCollectionsEntries.append(FaceCollectionEntry)
-#             f1.append(FaceCollectionsEntries)
-#             faceCollections.append(f1)
+            count = 1
+            for name in temp:
+                if(not bpy.types.Object.halo_json.Region_Name == name):
+                    for i in bpy.types.Object.halo_json.Region_Name:
+                        ET.SubElement(FaceCollectionsEntries, "FaceCollectionEntry", Index=str(count), Name=i, Active="true")
+                        temp.add(i)
+                        count += 1
+        if(materials):
+            temp = ["default"]
+            f2 = ET.SubElement(faceCollections, "FaceCollection", Name="global materials overrides", StringTable="connected_geometry_global_material_table", Description="Global material overrides")
 
-#             count = 1
-#             for name in temp:
-#                 if(not bpy.types.Object.halo_json.Region_Name == name):
-#                     for i in bpy.types.Object.halo_json.Region_Name:
-#                         FaceCollectionEntry = xml.Element("FaceCollectionEntry")
-#                         FaceCollectionEntry.set("Index", count)
-#                         FaceCollectionEntry.set("Name", i) 
-#                         FaceCollectionEntry.set("Active", "true")
-#                         FaceCollectionsEntries.append(FaceCollectionEntry)
-#                         f1.append(FaceCollectionsEntries)
-#                         faceCollections.append(f1)
-#                         temp.add(i)
-#                         count += 1
-#         if(materials):
-#             temp = ["default"]
-#             f2 = xml.Element
-#             f2.set("Name", "global materials override")
-#             f2.set("StringTable", "connected_geometry_global_material_table")
-#             f2.set("Description", "Global material overrides")
+            FaceCollectionsEntries2 = ET.SubElement(f2, "FaceCollectionEntries")
+            ET.SubElement(FaceCollectionsEntries2, "FaceCollectionEntry", Index="0", Name="default", Active="true")
 
-#             FaceCollectionsEntries2 = xml.Element("FaceCollectionEntries")
-#             FaceCollectionEntry2 = xml.Element("FaceCollectionEntry")
-#             FaceCollectionEntry2.set("Index", "0")
-#             FaceCollectionEntry2.set("Name", "default") 
-#             FaceCollectionEntry2.set("Active", "true")
-#             FaceCollectionsEntries2.append(FaceCollectionEntry2)
-#             f2.append(FaceCollectionsEntries2)
-#             faceCollections.append(f2)
+            count = 1
+            for name in temp:
+                if(not bpy.types.Object.halo_json.Region_Name == name):
+                    for i in bpy.types.Object.halo_json.Face_Global_Material:
+                        ET.SubElement(FaceCollectionsEntries2, "FaceCollectionEntry", Index=str(count), Name=i, Active="true")
+                        temp.add(i)
+                        count += 1
 
-#             count = 1
-#             for name in temp:
-#                 if(not bpy.types.Object.halo_json.Region_Name == name):
-#                     for i in bpy.types.Object.halo_json.Face_Global_Material:
-#                         FaceCollectionEntry = xml.Element("FaceCollectionEntry")
-#                         FaceCollectionEntry.set("Index", count)
-#                         FaceCollectionEntry.set("Name", i) 
-#                         FaceCollectionEntry.set("Active", "true")
-#                         FaceCollectionsEntries.append(FaceCollectionEntry)
-#                         f1.append(FaceCollectionsEntries)
-#                         faceCollections.append(f1)
-#                         temp.add(i)
-#                         count += 1
+def IntermediateFileExists(folderName):
+    filePath = "fullPath" + "\\" + folderName
 
-#             return faceCollections
-#         else:
-#             return None
+    for fname in os.listdir(filePath):
+        if fname.endswith('.gr2'):
+            return True
+        else:
+            return False
 
-# def IntermediateFileExists(folderName):
-#     filePath = "fullPath" + "\\" + folderName
+def GetModelContentObjects():
+    temp = []
 
-#     for fname in os.listdir(filePath):
-#         if fname.endswith('.gr2'):
-#             return True
-#         else:
-#             return False
+    if(IntermediateFileExists("render")):
+        temp.append(CreateContentObject("render"))
 
-# def GenerateModelSidecar(assetName=""):
-#     #root = minidom.Document()
+    if(IntermediateFileExists("physics")):
+        temp.append(CreateContentObject("physics"))
 
-#     #xml = root.createElement("Metadata")
-#     #root.appendChild(xml)
+    if(IntermediateFileExists("collision")):
+        temp.append(CreateContentObject("collision"))
 
-#     m_encoding = 'UTF-8'
+    if(IntermediateFileExists("markers")):
+        temp.append(CreateContentObject("markers"))
 
-#     root = ET.Element("Metadata")
-#     #root.append(WriteHeader())
-#     ET.SubElement(root, WriteHeader())
+    if(IntermediateFileExists("skeleton")):
+        temp.append(CreateContentObject("skeleton"))
 
-#     dom = xml.dom.minidom.parseString(ET.tostring(root))
-#     xml_string = dom.toprettyxml()
-#     part1, part2 = xml_string.split('?>')
+    if(IntermediateFileExists("animations\\JMM") or IntermediateFileExists("animations\\JMA") or IntermediateFileExists("animations\\JMT") or IntermediateFileExists("animations\\JMZ") or IntermediateFileExists("animations\\JMV")
+        or IntermediateFileExists("animations\\JMO (Keyframe)") or IntermediateFileExists("animations\\JMO (Pose)") or IntermediateFileExists("animations\\JMR (Object)") or IntermediateFileExists("animations\\JMR (Local)")):
+        animations = xml.Element("ContentObject")
+        animations.set("Name", "")
+        animations.set("Type" "model_animation_graph")
 
-#     with open("C:\\Users\\plasm\\Documents\\Temp\\gfg.xml", 'w') as xfile:
-#         xfile.write(part1 + 'encoding=\"{}\"?>\n'.format(m_encoding) + part2)
-#         xfile.close()
+        if(IntermediateFileExists("animations\\JMM")):
+            animations.append(CreateContentObject("animations\\JMM", "Base", "ModelAnimationMovementData", "None", "", ""))
 
-#     #tree = xml.ElementTree(root)
-#     #dir_path = "C:\Users\plasm\Documents\Temp\gfg.xml"
-#     #tree.write(f'{}/test_new_2.xml', xml_declaration=True)
-#     #with open (dir_path, "wb") as files :
-#     #    tree.write(str(files))
+        if(IntermediateFileExists("animations\\JMA")):
+            animations.append(CreateContentObject("animations\\JMA", "Base", "ModelAnimationMovementData", "XY", "", ""))
 
-#     #tree.write(open(r'C:\\Users\\plasm\\Documents\\Temp\\gfg.xml', 'w', encoding='utf-8'))
+        if(IntermediateFileExists("animations\\JMT")):
+            animations.append(CreateContentObject("animations\\JMT", "Base", "ModelAnimationMovementData", "XYYaw", "", ""))
 
-#     #header = root.createElement(WriteHeader())
-#     #xml.appendChild(header)
+        if(IntermediateFileExists("animations\\JMZ")):
+            animations.append(CreateContentObject("animations\\JMZ", "Base", "ModelAnimationMovementData", "XYZYaw", "", ""))
 
-#     # asset = root.createElement("Asset")
-#     # asset.setAttribute("Name", assetName)
-#     # asset.setAttribute("Type", "model")
-#     # objectTypes = root.createElement(GetObjectOutputTypes())
-#     # asset.appendChild(objectTypes)
-#     # xml.appendChild(asset)
+        if(IntermediateFileExists("animations\\JMV")):
+            animations.append(CreateContentObject("animations\\JMV", "Base", "ModelAnimationMovementData", "XYZFullRotation", "", ""))
 
-#     # writeFolders = root.createElement(WriteFolders())
-#     # xml.appendChild(writeFolders)
-#     #faceCollections = root.createElement(WriteFaceCollections(True,True))
-#     #xml.appendChild(faceCollections)
+        if(IntermediateFileExists("animations\\JMO (Keyframe)")):
+            animations.append(CreateContentObject("animations\\JMO (Keyframe)", "Overlay", "ModelAnimationOverlayType", "Keyframe", "ModelAnimationOverlayBlending", "Additive"))
 
-#     #contentObjects = root.createElement(GetModelContentObjects())
-#     #content = root.createElement("Contents")
-#     #content.appendChild(contentObjects)
-#     #xml.appendChild(content)
+        if(IntermediateFileExists("animations\\JMO (Pose)")):
+            animations.append(CreateContentObject("animations\\JMO (Pose)", "Overlay", "ModelAnimationOverlayType", "Pose", "ModelAnimationOverlayBlending", "Additive"))
 
-#     # xmlstr = minidom.parseString(root).toprettyxml(indent="   ")
+        if(IntermediateFileExists("animations\\JMR (Local)")):
+            animations.append(CreateContentObject("animations\\JMR (Local)", "Overlay", "ModelAnimationOverlayType", "keyframe", "ModelAnimationOverlayBlending", "ReplacementLocalSpace"))
 
-#     # save_path_file = "sidecar.xml"
-  
-#     # with open(save_path_file, "w") as f:
-#     #     f.write(xmlstr) 
+        if(IntermediateFileExists("animations\\JMR (Object)")):
+            animations.append(CreateContentObject("animations\\JMR (Object)", "Overlay", "ModelAnimationOverlayType", "keyframe", "ModelAnimationOverlayBlending", "ReplacementObjectSpace"))
 
-#     # root2 = minidom.Document()
-  
-#     # xml2 = root2.createElement('root') 
-#     # root2.appendChild(xml2)
-    
-#     # productChild = root2.createElement('product')
-#     # productChild.setAttribute('name', 'Geeks for Geeks')
-    
-#     # xml2.appendChild(productChild)
-    
-#     # xml_str = root.toprettyxml(indent ="\t") 
-    
-#     # save_path_file = "C:\\Users\\plasm\\Documents\\Temp\\gfg.xml"
-    
-#     # with open(save_path_file, "w") as f:
-#     #     f.write(xml_str) 
+        r2 = xml.Element("OutputTagCollection")
+        outputTag1 = xml.SubElement(r2, "OutputTag")
+        outputTag1.set("Type", "frame_event_list")
+        outputTag1.text = "dataPath" + "\\" + "assetName"
+        outputTag2 = xml.SubElement(r2, "OutputTag")
+        outputTag2.set("Type", "model_animation_graph")
+        outputTag2.text = "dataPath" + "\\" + "assetName"
 
-# def GetModelContentObjects():
-#     temp = []
+        animations.append(r2)
+        temp.append(animations)
 
-#     if(IntermediateFileExists("render")):
-#         temp.append(CreateContentObject("render"))
+    ContentObjects = xml.Element("Content")
+    ContentObjects.set("Name", "assetName")
+    ContentObjects.set("Type", "model")
 
-#     if(IntermediateFileExists("physics")):
-#         temp.append(CreateContentObject("physics"))
+    for e in temp:
+        ContentObjects.append(e)
 
-#     if(IntermediateFileExists("collision")):
-#         temp.append(CreateContentObject("collision"))
+    return ContentObjects
 
-#     if(IntermediateFileExists("markers")):
-#         temp.append(CreateContentObject("markers"))
+def CreateContentObject(type):
+    print("")
 
-#     if(IntermediateFileExists("skeleton")):
-#         temp.append(CreateContentObject("skeleton"))
-
-#     if(IntermediateFileExists("animations\\JMM") or IntermediateFileExists("animations\\JMA") or IntermediateFileExists("animations\\JMT") or IntermediateFileExists("animations\\JMZ") or IntermediateFileExists("animations\\JMV")
-#         or IntermediateFileExists("animations\\JMO (Keyframe)") or IntermediateFileExists("animations\\JMO (Pose)") or IntermediateFileExists("animations\\JMR (Object)") or IntermediateFileExists("animations\\JMR (Local)")):
-#         animations = xml.Element("ContentObject")
-#         animations.set("Name", "")
-#         animations.set("Type" "model_animation_graph")
-
-#         if(IntermediateFileExists("animations\\JMM")):
-#             animations.append(CreateContentObject("animations\\JMM", "Base", "ModelAnimationMovementData", "None", "", ""))
-
-#         if(IntermediateFileExists("animations\\JMA")):
-#             animations.append(CreateContentObject("animations\\JMA", "Base", "ModelAnimationMovementData", "XY", "", ""))
-
-#         if(IntermediateFileExists("animations\\JMT")):
-#             animations.append(CreateContentObject("animations\\JMT", "Base", "ModelAnimationMovementData", "XYYaw", "", ""))
-
-#         if(IntermediateFileExists("animations\\JMZ")):
-#             animations.append(CreateContentObject("animations\\JMZ", "Base", "ModelAnimationMovementData", "XYZYaw", "", ""))
-
-#         if(IntermediateFileExists("animations\\JMV")):
-#             animations.append(CreateContentObject("animations\\JMV", "Base", "ModelAnimationMovementData", "XYZFullRotation", "", ""))
-
-#         if(IntermediateFileExists("animations\\JMO (Keyframe)")):
-#             animations.append(CreateContentObject("animations\\JMO (Keyframe)", "Overlay", "ModelAnimationOverlayType", "Keyframe", "ModelAnimationOverlayBlending", "Additive"))
-
-#         if(IntermediateFileExists("animations\\JMO (Pose)")):
-#             animations.append(CreateContentObject("animations\\JMO (Pose)", "Overlay", "ModelAnimationOverlayType", "Pose", "ModelAnimationOverlayBlending", "Additive"))
-
-#         if(IntermediateFileExists("animations\\JMR (Local)")):
-#             animations.append(CreateContentObject("animations\\JMR (Local)", "Overlay", "ModelAnimationOverlayType", "keyframe", "ModelAnimationOverlayBlending", "ReplacementLocalSpace"))
-
-#         if(IntermediateFileExists("animations\\JMR (Object)")):
-#             animations.append(CreateContentObject("animations\\JMR (Object)", "Overlay", "ModelAnimationOverlayType", "keyframe", "ModelAnimationOverlayBlending", "ReplacementObjectSpace"))
-
-#         r2 = xml.Element("OutputTagCollection")
-#         outputTag1 = xml.SubElement(r2, "OutputTag")
-#         outputTag1.set("Type", "frame_event_list")
-#         outputTag1.text = "dataPath" + "\\" + "assetName"
-#         outputTag2 = xml.SubElement(r2, "OutputTag")
-#         outputTag2.set("Type", "model_animation_graph")
-#         outputTag2.text = "dataPath" + "\\" + "assetName"
-
-#         animations.append(r2)
-#         temp.append(animations)
-
-#     ContentObjects = xml.Element("Content")
-#     ContentObjects.set("Name", "assetName")
-#     ContentObjects.set("Type", "model")
-
-#     for e in temp:
-#         ContentObjects.append(e)
-
-#     return ContentObjects
-
-# def CreateContentObject(type):
-#     print("")
-
-# def CreateContentObject(type1, type2, type3, type4, type5, type6):
-#     print("")
+def CreateContentObject(type1, type2, type3, type4, type5, type6):
+    print("")
 
 
 def save(operator, context, report,
