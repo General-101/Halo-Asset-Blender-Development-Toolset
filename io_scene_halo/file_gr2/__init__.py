@@ -103,9 +103,17 @@ class Export_Halo_GR2(Operator, ExportHelper):
                 ('PARTICLE MODEL', "Particle Model", ""),
                ]
         )
+    
+    def UpdateSelected(self, context):
+        if self.export_method == 'SELECTED':
+            self.use_selection = True
+        else:
+            self.use_selection = False
+    
     export_method: EnumProperty(
             name="Export Method",
             description="",
+            update=UpdateSelected,
             items=[('BATCH', "Batch", ""), ('SELECTED', "Selected", "")]
             )
     export_animations: BoolProperty(
@@ -263,8 +271,26 @@ class Export_Halo_GR2(Operator, ExportHelper):
             items=[('FBX_SCALE_UNITS', "FBX Units Scale",""),]
             )
     use_selection: BoolProperty(
-            name="Selected Objects",
-            description="Export selected and visible objects only",
+            name="selection",
+            description="",
+            default=False,
+            )
+
+    def UpdateVisible(self, context):
+        if self.export_hidden == True:
+            self.use_visible = False
+        else:
+            self.use_visible = True
+
+    export_hidden: BoolProperty(
+            name="Hidden",
+            update=UpdateVisible,
+            description="Export visible objects only",
+            default=True,
+    )
+    use_visible: BoolProperty(
+            name="",
+            description="",
             default=False,
             )
 
@@ -298,6 +324,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
         box = layout.box()
         box.label(text="Export Categories")
         sub = box.column(heading="Export")
+        sub.prop(self, "export_hidden")
         if self.sidecar_type == 'MODEL':
             sub.prop(self, "export_animations")
             sub.prop(self, "export_render")
@@ -348,7 +375,6 @@ class Export_Halo_GR2(Operator, ExportHelper):
             else:
                 sub.prop(self, "import_draft")
                 
-
 def menu_func_export(self, context):
     self.layout.operator(Export_Halo_GR2.bl_idname, text="Halo Granny File (.gr2)")
 
