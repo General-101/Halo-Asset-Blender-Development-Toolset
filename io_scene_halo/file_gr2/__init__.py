@@ -43,6 +43,12 @@ import os
 t = os.getcwd()
 t += "\\scripts\\addons\\io_scene_fbx"
 print(t)
+import sys
+path = sys.modules[bpy.types.IMPORT_SCENE_OT_fbx.__module__].__file__
+from subprocess import run
+run('python ' + path)
+print("HERE!!!")
+#bpy.ops.IMPORT_SCENE_OT_fbx.FBX_PT_import_transform(bpy.types.Panel)
 
 class Export_Halo_GR2(Operator, ExportHelper):
     """Writes a Halo Reach GR2 File using your Halo Editing Kit"""
@@ -179,7 +185,8 @@ classes = (
     Export_Halo_GR2,
     Halo_GR2_Settings,
     Halo_Sidecar_Settings,
-    
+    #bpy.ops.IMPORT_SCENE_OT_fbx.FBX_PT_import_transform,
+    #bpy.ops.IMPORT_SCENE_OT_fbx.FBX_PT_import_include,
 )
 
 def register():
@@ -187,7 +194,6 @@ def register():
         bpy.utils.register_class(cls)
 
     bpy.types.TOPBAR_MT_file_export.append(menu_func_export)
-
 
 def unregister():
     bpy.types.TOPBAR_MT_file_export.remove(menu_func_export)
