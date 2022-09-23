@@ -24,6 +24,7 @@
 #
 # ##### END MIT LICENSE BLOCK #####
 
+import shutil
 import bpy
 import json
 
@@ -876,7 +877,7 @@ import tempfile
 import ctypes
 from subprocess import Popen
 
-def export_asset(report, filePath="", export_gr2=False, delete_fbx=False, delete_json=False, use_selection=False, use_visible=False, use_active_collection=False):
+def export_asset(report, filePath="", export_gr2=False, delete_fbx=False, delete_json=False, asset_path=""):
     pathList = filePath.split(".")
     jsonPath = ""
     for x in range(len(pathList)-1):
@@ -902,7 +903,15 @@ def export_asset(report, filePath="", export_gr2=False, delete_fbx=False, delete
         
         if delete_fbx:
             os.remove(filePath)
+    
+    move_assets(filePath, jsonPath, gr2Path, asset_path)
     return {'FINISHED'}
+
+def move_assets(filePath, jsonPath, gr2Path, asset_path):
+    print("temp")
+    shutil.move(filePath, asset_path + "\\models")
+    shutil.move(jsonPath, asset_path + "\\export\models")
+    shutil.move(gr2Path, asset_path + "\\export\models")
 
 def build_json(jsonPath, delete_json, use_selection=False, use_visible=False, use_active_collection=False):
     jsonTemp = {}
@@ -950,8 +959,9 @@ def save(operator, context, report,
         export_gr2=False,
         delete_fbx=False,
         delete_json=False,
+        asset_path='',
         **kwargs
         ):
-    export_asset(report, filepath, export_gr2, delete_fbx, delete_json, use_selection, use_visible, use_active_collection)
+    export_asset(report, filepath, export_gr2, delete_fbx, delete_json, asset_path)
     return {'FINISHED'}
 
