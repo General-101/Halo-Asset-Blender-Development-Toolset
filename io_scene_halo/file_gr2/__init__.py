@@ -33,6 +33,7 @@ bl_info = {
     "category": "Export",
     "description": "Halo Granny File and Sidecar exporter",
 }
+from mimetypes import init
 import bpy
 from bpy_extras.io_utils import ExportHelper
 from bpy.props import StringProperty, BoolProperty, EnumProperty
@@ -44,9 +45,12 @@ t = os.getcwd()
 t += "\\scripts\\addons\\io_scene_fbx"
 print(t)
 import sys
-path = sys.modules[bpy.types.IMPORT_SCENE_OT_fbx.__module__].__file__
+sys.modules[bpy.types.IMPORT_SCENE_OT_fbx.__module__].__file__
 from subprocess import run
-run('python ' + path)
+#run('python ' + "\"" + str(sys.modules[bpy.types.IMPORT_SCENE_OT_fbx.__module__].__file__) + "\"")
+import sys
+sys.path.insert(0,t)
+from io_scene_fbx import export_fbx_bin, __init__
 print("HERE!!!")
 #bpy.ops.IMPORT_SCENE_OT_fbx.FBX_PT_import_transform(bpy.types.Panel)
 
@@ -98,10 +102,6 @@ class Export_Halo_GR2(Operator, ExportHelper):
             )
 
     def execute(self, context):
-        import sys
-        sys.path.insert(0,t)
-
-        from io_scene_fbx import export_fbx_bin
         from . import export_gr2, export_sidecar_xml
         export_fbx_bin.save(self, context, **keywords)
         export_gr2.save(self, context, self.report, **keywords)
@@ -131,6 +131,13 @@ class Halo_GR2_Settings(bpy.types.Panel):
         operator = sfile.active_operator
 
         self.layout.prop(operator, "export_gr2", text='')
+        import sys
+        sys.path.insert(0,t)
+        from io_scene_fbx import ExportFBX, FBX_PT_export_main, FBX_PT_export_include, FBX_PT_export_transform, FBX_PT_export_geometry, FBX_PT_export_armature, FBX_PT_export_bake_animation
+        ExportFBX(self)
+        FBX_PT_export_main(self)
+        FBX_PT_export_include(self)
+        FBX_PT_export_transform(self)
 
     def draw(self, context):
         layout = self.layout
@@ -192,7 +199,7 @@ classes = (
 def register():
     for cls in classes:
         bpy.utils.register_class(cls)
-
+    
     bpy.types.TOPBAR_MT_file_export.append(menu_func_export)
 
 def unregister():
