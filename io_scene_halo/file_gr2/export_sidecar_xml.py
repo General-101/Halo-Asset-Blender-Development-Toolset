@@ -40,18 +40,30 @@ EKPath = bpy.context.preferences.addons['io_scene_halo'].preferences.hrek_path
 EKPath = EKPath.replace('"','')
 EKPath = EKPath.strip('\\')
 
-valid_animation_types = ('JMM', 'JMA', 'JMT', 'JMZ', 'JMV', 'JMO', 'JMOK', 'JMR', 'JMRX')
+valid_animation_types = ('JMM', 'JMA', 'JMT', 'JMZ', 'JMV', 'JMO', 'JMOX', 'JMR', 'JMRX')
 
 
-def export_xml(report, filePath="", export_sidecar=False, sidecar_type='MODEL', asset_path=''):
-    print('asset path = ' + asset_path)
-    full_path = asset_path
-    asset_path = CleanAssetPath(asset_path)
+def export_xml(report, filePath="", export_sidecar=False, sidecar_type='MODEL', asset_path='',        
+                output_biped=False,
+                output_crate=False,
+                output_creature=False,
+                output_device_control=False,
+                output_device_machine=False,
+                output_device_terminal=False,
+                output_effect_scenery=False,
+                output_equipment=False,
+                output_giant=False,
+                output_scenery=False,
+                output_vehicle=False,
+                output_weapon=False):
+    full_path = filePath.rpartition('\\')[0]
+    print('full path = ' + filePath)
+    asset_path = CleanAssetPath(full_path)
     asset_name = asset_path.rpartition('\\')[2]
 
     if export_sidecar and asset_path != '':
         if sidecar_type == 'MODEL':
-            GenerateModelSidecar(asset_path, asset_name, full_path)
+            GenerateModelSidecar(asset_path, asset_name, full_path,output_biped,output_crate,output_creature,output_device_control,output_device_machine,output_device_terminal,output_effect_scenery,output_equipment,output_giant,output_scenery,output_vehicle,output_weapon)
 
 def CleanAssetPath(path):
     path = path.replace('"','')
@@ -60,14 +72,27 @@ def CleanAssetPath(path):
 
     return path
 
-def GenerateModelSidecar(asset_path, asset_name, full_path):
+def GenerateModelSidecar(asset_path, asset_name, full_path,                
+                        output_biped=False,
+                        output_crate=False,
+                        output_creature=False,
+                        output_device_control=False,
+                        output_device_machine=False,
+                        output_device_terminal=False,
+                        output_effect_scenery=False,
+                        output_equipment=False,
+                        output_giant=False,
+                        output_scenery=False,
+                        output_vehicle=False,
+                        output_weapon=False):
+
     m_encoding = 'UTF-8'
 
     print("beep boop I'm writing a model sidecar")
 
     metadata = ET.Element("Metadata")
     WriteHeader(metadata)
-    GetObjectOutputTypes(metadata, "model", asset_path, asset_name, GetModelTags())
+    GetObjectOutputTypes(metadata, "model", asset_path, asset_name, GetModelTags(output_biped,output_crate,output_creature,output_device_control,output_device_machine,output_device_terminal,output_effect_scenery,output_equipment,output_giant,output_scenery,output_vehicle,output_weapon))
     WriteFolders(metadata)
     WriteFaceCollections(metadata, True, True)
     WriteModelContents(metadata, asset_path, asset_name)
@@ -111,33 +136,44 @@ def WriteHeader(metadata):
     ET.SubElement(header, "DirectoryType").text = "TAE.Shared.NWOAssetDirectory"
     ET.SubElement(header, "Schema").text = "1"
 
-def GetModelTags():
+def GetModelTags(       output_biped=False,
+                        output_crate=False,
+                        output_creature=False,
+                        output_device_control=False,
+                        output_device_machine=False,
+                        output_device_terminal=False,
+                        output_effect_scenery=False,
+                        output_equipment=False,
+                        output_giant=False,
+                        output_scenery=False,
+                        output_vehicle=False,
+                        output_weapon=False):
     # PLACEHOLDER
     tags = ['model']
 
-    if True: 
+    if output_biped: 
         tags.append('biped')
-    if True:
+    if output_crate:
         tags.append('crate')
-    if True:
+    if output_creature:
         tags.append('creature')
-    if True:
+    if output_device_control:
         tags.append('device_control')
-    if True:
+    if output_device_machine:
         tags.append('device_machine')
-    if True:
-        tags.append('device_terminal')
-    if True:
+    if output_device_terminal:
+        output_effect_scenery.append('device_terminal')
+    if output_effect_scenery:
         tags.append('effect_scenery')
-    if True:
+    if output_equipment:
         tags.append('equipment')
-    if True:
+    if output_giant:
         tags.append('giant')
-    if True:
+    if output_scenery:
         tags.append('scenery')
-    if True:
+    if output_vehicle:
         tags.append('vehicle')
-    if True:
+    if output_weapon:
         tags.append('weapon')
 
     return tags
@@ -325,7 +361,7 @@ def GetAnimType(anim):
                 return 'Base'
             case 'JMO':
                 return 'Overlay'
-            case 'JMOK':
+            case 'JMOX':
                 return 'Overlay'
             case 'JMR':
                 return 'Overlay'
@@ -354,7 +390,7 @@ def GetAnimMovement(anim):
                 return 'XYZFullRotation'
             case 'JMO':
                 return ''
-            case 'JMOK':
+            case 'JMOX':
                 return ''
             case 'JMR':
                 return ''
@@ -383,7 +419,7 @@ def GetAnimOverlay(anim):
                 return ''
             case 'JMO':
                 return 'Pose'
-            case 'JMOK':
+            case 'JMOX':
                 return 'Keyframe'
             case 'JMR':
                 return 'Keyframe'
@@ -412,7 +448,7 @@ def GetAnimBlending(anim):
                 return ''
             case 'JMO':
                 return ''
-            case 'JMOK':
+            case 'JMOX':
                 return ''
             case 'JMR':
                 return 'ReplacementObjectSpace'
@@ -601,7 +637,19 @@ def save(operator, context, report,
         export_sidecar=False,
         sidecar_type='MODEL',
         asset_path='',
+        output_biped=False,
+        output_crate=False,
+        output_creature=False,
+        output_device_control=False,
+        output_device_machine=False,
+        output_device_terminal=False,
+        output_effect_scenery=False,
+        output_equipment=False,
+        output_giant=False,
+        output_scenery=False,
+        output_vehicle=False,
+        output_weapon=False,
         **kwargs
         ):
-    export_xml(report, filepath, export_sidecar, sidecar_type, asset_path)
+    export_xml(report, filepath, export_sidecar, sidecar_type, asset_path,output_biped,output_crate,output_creature,output_device_control,output_device_machine,output_device_terminal,output_effect_scenery,output_equipment,output_giant,output_scenery,output_vehicle,output_weapon)
     return {'FINISHED'}
