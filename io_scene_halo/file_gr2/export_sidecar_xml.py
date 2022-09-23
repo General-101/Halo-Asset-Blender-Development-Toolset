@@ -64,6 +64,12 @@ def export_xml(report, filePath="", export_sidecar=False, sidecar_type='MODEL', 
     if export_sidecar and asset_path != '':
         if sidecar_type == 'MODEL':
             GenerateModelSidecar(asset_path, asset_name, full_path,output_biped,output_crate,output_creature,output_device_control,output_device_machine,output_device_terminal,output_effect_scenery,output_equipment,output_giant,output_scenery,output_vehicle,output_weapon)
+        elif sidecar_type == 'SCENARIO':
+            GenerateStructureSidecar(asset_path, asset_name, full_path)
+        elif sidecar_type == 'SCENARIO':
+            GenerateDecoratorSidecar(asset_path, asset_name, full_path)
+        else:
+            GenerateParticleSidecar(asset_path, asset_name, full_path)
 
 def CleanAssetPath(path):
     path = path.replace('"','')
@@ -105,12 +111,16 @@ def GenerateModelSidecar(asset_path, asset_name, full_path,
         xfile.write(part1 + 'encoding=\"{}\"?>\n'.format(m_encoding) + part2)
         xfile.close()
 
-def GenerateStructureSidecar(asset_path):
+def GenerateStructureSidecar(asset_path, asset_name, full_path):
     print(asset_path)
     m_encoding = 'UTF-8'
 
     metadata = ET.Element("Metadata")
     WriteHeader(metadata)
+    GetObjectOutputTypes(metadata, "scenario", asset_path, asset_name, ['scenario_lightmap','structure_seams','scenario'])
+    WriteFolders(metadata)
+    WriteFaceCollections(metadata, False, True)
+    WriteStructureContents(metadata, asset_path, asset_name)
 
     dom = xml.dom.minidom.parseString(ET.tostring(metadata))
     xml_string = dom.toprettyxml()
@@ -120,10 +130,10 @@ def GenerateStructureSidecar(asset_path):
         xfile.write(part1 + 'encoding=\"{}\"?>\n'.format(m_encoding) + part2)
         xfile.close()
 
-def GenerateDecoratorSidecar(asset_path):
+def GenerateDecoratorSidecar(asset_path, asset_name, full_path):
     print(asset_path)
 
-def GenerateParticleSidecar(asset_path):
+def GenerateParticleSidecar(asset_path, asset_name, full_path):
     print(asset_path)
 
 def WriteHeader(metadata):
@@ -514,6 +524,10 @@ def SceneHasMarkers():
             boolean = True
     
     return boolean
+
+
+def WriteStructureContents(metadata, asset_path, asset_name):
+    print ('null')
 
 # def IntermediateFileExists(folderName):
 #     filePath = "fullPath" + "\\" + folderName
