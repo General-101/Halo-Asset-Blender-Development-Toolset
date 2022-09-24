@@ -33,7 +33,7 @@ bl_info = {
     "category": "Export",
     "description": "Halo Granny File and Sidecar exporter",
 }
-from mimetypes import init
+
 import bpy
 from bpy_extras.io_utils import ExportHelper
 from bpy.props import StringProperty, BoolProperty, EnumProperty
@@ -41,19 +41,15 @@ from bpy.types import Operator, Panel
 from bpy_extras.io_utils import ExportHelper, orientation_helper
 
 import os
+import sys
 t = os.getcwd()
 t += "\\scripts\\addons\\io_scene_fbx"
-print(t)
-import sys
 sys.modules[bpy.types.IMPORT_SCENE_OT_fbx.__module__].__file__
-from subprocess import run
-import sys
 sys.path.insert(0,t)
-from io_scene_fbx import export_fbx_bin, __init__
-print("HERE!!!")
+from io_scene_fbx import export_fbx_bin
+from . import export_gr2, export_sidecar_xml, import_sidecar
 
 @orientation_helper(axis_forward='Y', axis_up='Z')
-
 class Export_Halo_GR2(Operator, ExportHelper):
     """Writes a Halo Reach GR2 File using your Halo Editing Kit"""
     bl_idname = "export_halo.gr2"
@@ -256,7 +252,6 @@ class Export_Halo_GR2(Operator, ExportHelper):
             description="Do not write errors to vrml files",
             default=False,
     )
-
     asset_path: StringProperty(
             name="Asset Folder Path",
             description="",
@@ -295,10 +290,8 @@ class Export_Halo_GR2(Operator, ExportHelper):
             )
 
     def execute(self, context):
-
         keywords = self.as_keywords()
 
-        from . import export_gr2, export_sidecar_xml, import_sidecar
         export_fbx_bin.save(self, context, **keywords)
         export_gr2.save(self, context, self.report, **keywords)
         export_sidecar_xml.save(self, context, self.report, **keywords)
@@ -378,21 +371,13 @@ class Export_Halo_GR2(Operator, ExportHelper):
 def menu_func_export(self, context):
     self.layout.operator(Export_Halo_GR2.bl_idname, text="Halo Granny File (.gr2)")
 
-classes = (
-    Export_Halo_GR2,
-)
-
 def register():
-    for cls in classes:
-        bpy.utils.register_class(cls)
-    
+    bpy.utils.register_class(Export_Halo_GR2)
     bpy.types.TOPBAR_MT_file_export.append(menu_func_export)
 
 def unregister():
     bpy.types.TOPBAR_MT_file_export.remove(menu_func_export)
-
-    for cls in classes:
-        bpy.utils.unregister_class(cls)
+    bpy.utils.unregister_class(Export_Halo_GR2)
 
 if __name__ == "__main__":
     register()
