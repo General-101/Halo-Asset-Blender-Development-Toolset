@@ -24,8 +24,43 @@
 #
 # ##### END MIT LICENSE BLOCK #####
 
-def import_sidecar(report, filepath='', sidecar_path='', import_to_game=False, import_check=False, import_force=False, import_verbose=False, import_draft=False,import_seam_debug=False,import_skip_instances=False,import_decompose_instances=False,import_surpress_errors=False):
+import bpy
+from subprocess import Popen
+
+EKPath = bpy.context.preferences.addons['io_scene_halo'].preferences.hrek_path
+
+#clean editing kit path
+EKPath = EKPath.replace('"','')
+EKPath = EKPath.strip('\\')
+
+#get tool path
+toolPath = EKPath + '\\tool_fast.exe'
+
+def import_sidecar(report, fbxPath='', sidecar_path='', import_to_game=False, import_check=False, import_force=False, import_verbose=False, import_draft=False,import_seam_debug=False,import_skip_instances=False,import_decompose_instances=False,import_surpress_errors=False):
     print ('import sidecar tbd')
+    if(import_to_game):
+        toolCommand = '"{}" import "{}" "{}" "{}"'.format(toolPath, fbxPath, getJSONPath(fbxPath), getGR2Path(fbxPath))
+        print('\nRunning Tool command... %r' % toolCommand)
+        p = Popen(toolCommand)
+        p.wait()
+    else:
+        return {'FINISHED'}
+
+def getJSONPath(filePath):
+    pathList = filePath.split(".")
+    jsonPath = ""
+    for x in range(len(pathList)-1):
+        jsonPath += pathList[x]
+    jsonPath += ".json"
+    return jsonPath
+
+def getGR2Path(filePath):
+    pathList = filePath.split(".")
+    gr2Path = ""
+    for x in range(len(pathList)-1):
+        gr2Path += pathList[x]
+        gr2Path += ".gr2"
+    return gr2Path
 
 def save(operator, context, report,
         filepath="",

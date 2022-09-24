@@ -301,8 +301,8 @@ class Export_Halo_GR2(Operator, ExportHelper):
         from . import export_gr2, export_sidecar_xml, import_sidecar
         export_fbx_bin.save(self, context, **keywords)
         export_gr2.save(self, context, self.report, **keywords)
-        return export_sidecar_xml.save(self, context, self.report, **keywords)
-        #return import_sidecar.save(self, context, self.report, **keywords)
+        export_sidecar_xml.save(self, context, self.report, **keywords)
+        return import_sidecar.save(self, context, self.report, **keywords)
 
     def draw(self, context):
         scene = context.scene
