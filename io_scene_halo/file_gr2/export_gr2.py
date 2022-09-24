@@ -79,7 +79,7 @@ def getStrings():
 ##### NODES PROPERTIES #######
 ##############################
 
-def getNodes(use_selection=False, use_visible=False, use_active_collection=False):
+def getNodes():
     nodesList = {}
 
     # for arm in bpy.data.armatures:
@@ -94,15 +94,8 @@ def getNodes(use_selection=False, use_visible=False, use_active_collection=False
         halo_node = ob.halo_json
         halo_node_name = ob.name
 
-        if use_selection:
-            if ((ob.type == 'MESH' and halo_node.Object_Type_All != 'MESH') or ob.type == 'EMPTY' or (halo_node_name.startswith(halo_node_prefixes) and ob.type != 'LIGHT')) and ob.select_get(): # if the name of a mesh starts with this, don't process it.
-                nodesList.update({ob.name: getNodeProperties(halo_node, halo_node_name, ob)})
-        if use_visible:
-            if ((ob.type == 'MESH' and halo_node.Object_Type_All != 'MESH') or ob.type == 'EMPTY' or (halo_node_name.startswith(halo_node_prefixes) and ob.type != 'LIGHT')) and ob.visible_get(): # if the name of a mesh starts with this, don't process it.
-                nodesList.update({ob.name: getNodeProperties(halo_node, halo_node_name, ob)})
-        if not use_selection and not use_visible and not use_active_collection:
-            if (ob.type == 'MESH' and halo_node.Object_Type_All != 'MESH') or ob.type == 'EMPTY' or (halo_node_name.startswith(halo_node_prefixes) and ob.type != 'LIGHT'): # if the name of a mesh starts with this, don't process it.
-                nodesList.update({ob.name: getNodeProperties(halo_node, halo_node_name, ob)})
+        if ((ob.type == 'MESH' and halo_node.Object_Type_All != 'MESH') or ob.type == 'EMPTY' or (halo_node_name.startswith(halo_node_prefixes) and ob.type != 'LIGHT')) and ob.select_get(): # if the name of a mesh starts with this, don't process it.
+            nodesList.update({ob.name: getNodeProperties(halo_node, halo_node_name, ob)})
 
     temp = ({'nodes_properties': nodesList})
 
@@ -346,23 +339,15 @@ def getMarkerVelocity(x, y, z):
 ##### MESHES PROPERTIES ######
 ##############################
 
-def getMeshes(use_selection=False, use_visible=False, use_active_collection=False):
+def getMeshes():
     meshesList = {}
-
 
     for ob in bpy.data.objects:
         halo_mesh = ob.halo_json
         halo_mesh_name = ob.name
         
-        if use_selection:
-            if ob.type == 'MESH' and (not halo_mesh_name.startswith(halo_node_prefixes) and halo_mesh.Object_Type_All == 'MESH') and ob.select_get(): # if the name of a mesh starts with this, don't process it.
-                meshesList.update({ob.name: getMeshProperties(halo_mesh, halo_mesh_name, ob)})
-        if use_visible:
-            if ob.type == 'MESH' and (not halo_mesh_name.startswith(halo_node_prefixes) and halo_mesh.Object_Type_All == 'MESH') and ob.visible_get(): # if the name of a mesh starts with this, don't process it.
-                meshesList.update({ob.name: getMeshProperties(halo_mesh, halo_mesh_name, ob)})
-        if not use_selection and not use_visible and not use_active_collection:
-            if ob.type == 'MESH' and (not halo_mesh_name.startswith(halo_node_prefixes) and halo_mesh.Object_Type_All == 'MESH'): # if the name of a mesh starts with this, don't process it.
-                meshesList.update({ob.name: getMeshProperties(halo_mesh, halo_mesh_name, ob)})
+        if ob.type == 'MESH' and (not halo_mesh_name.startswith(halo_node_prefixes) and halo_mesh.Object_Type_All == 'MESH') and ob.select_get(): # if the name of a mesh starts with this, don't process it.
+            meshesList.update({ob.name: getMeshProperties(halo_mesh, halo_mesh_name, ob)})
 
     temp = ({'meshes_properties': meshesList})
 
@@ -912,11 +897,11 @@ def move_assets(filePath, jsonPath, gr2Path, asset_path):
     shutil.move(jsonPath, asset_path + "\\export\\models")
     shutil.move(gr2Path, asset_path + "\\export\\models")
 
-def build_json(jsonPath, use_selection=False, use_visible=False, use_active_collection=False):
+def build_json(jsonPath):
     jsonTemp = {}
     jsonTemp.update(getStrings())
-    jsonTemp.update(getNodes(use_selection, use_visible, use_active_collection))
-    jsonTemp.update(getMeshes(use_selection, use_visible, use_active_collection))
+    jsonTemp.update(getNodes())
+    jsonTemp.update(getMeshes())
     jsonTemp.update(getMaterials())
 
     haloJSON = json.dumps(jsonTemp, indent=4)
@@ -943,17 +928,17 @@ def build_gr2(toolPath, filePath, jsonPath, gr2Path):
 
 def save(operator, context, report,
         filepath="",
-        use_selection=False,
-        use_visible=False,
-        use_active_collection=False,
         batch_mode='OFF',
         use_batch_own_dir=False,
-        export_gr2=False,
         keep_fbx=False,
         keep_json=False,
         asset_path='',
         **kwargs
         ):
-    export_asset(report, filepath, keep_fbx, keep_json, asset_path)
+
+    if batch_mode == 'OFF':
+        export_asset(report, filepath, keep_fbx, keep_json, asset_path)
+    else:
+        print("loop logic for export_asset batch mode")
     return {'FINISHED'}
 
