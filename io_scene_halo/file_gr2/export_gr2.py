@@ -908,10 +908,9 @@ def export_asset(report, filePath="", export_gr2=False, delete_fbx=False, delete
     return {'FINISHED'}
 
 def move_assets(filePath, jsonPath, gr2Path, asset_path):
-    print("temp")
     shutil.move(filePath, asset_path + "\\models")
-    shutil.move(jsonPath, asset_path + "\\export\models")
-    shutil.move(gr2Path, asset_path + "\\export\models")
+    shutil.move(jsonPath, asset_path + "\\export\\models")
+    shutil.move(gr2Path, asset_path + "\\export\\models")
 
 def build_json(jsonPath, delete_json, use_selection=False, use_visible=False, use_active_collection=False):
     jsonTemp = {}
