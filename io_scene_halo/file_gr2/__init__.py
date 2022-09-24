@@ -47,7 +47,6 @@ t += "\\scripts\\addons\\io_scene_fbx"
 sys.modules[bpy.types.IMPORT_SCENE_OT_fbx.__module__].__file__
 sys.path.insert(0,t)
 from io_scene_fbx import export_fbx_bin
-from . import export_gr2, export_sidecar_xml, import_sidecar
 
 @orientation_helper(axis_forward='Y', axis_up='Z')
 class Export_Halo_GR2(Operator, ExportHelper):
@@ -284,6 +283,8 @@ class Export_Halo_GR2(Operator, ExportHelper):
 
     def execute(self, context):
         keywords = self.as_keywords()
+        
+        from . import export_gr2, export_sidecar_xml, import_sidecar
 
         export_fbx_bin.save(self, context, **keywords)
         export_gr2.save(self, context, self.report, **keywords)
