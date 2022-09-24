@@ -60,20 +60,13 @@ class Export_Halo_GR2(Operator, ExportHelper):
         default="*.fbx",
         options={'HIDDEN'},
         maxlen=1024,
-    )
-
+        )
     game_version:EnumProperty(
         name="Game Version",
         description="The game to export this asset for",
         items=[ ('REACH', "Halo Reach", "Export an asset intended for Halo Reach"),
             ]
         )
-
-    export_gr2: BoolProperty(
-            name="Export To GR2",
-            description="Uses the exported FBX and JSON files to generate a GR2 File",
-            default=True,
-            )
     keep_fbx: BoolProperty(
             name="FBX",
             description="Keep the source FBX file after GR2 conversion",

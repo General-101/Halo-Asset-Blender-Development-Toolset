@@ -873,37 +873,37 @@ def getMaterials():
 
 import os
 from os.path import exists as file_exists
-import tempfile
 import ctypes
 from subprocess import Popen
 
-def export_asset(report, filePath="", export_gr2=False, delete_fbx=False, delete_json=False, asset_path=""):
+def export_asset(report, filePath="", keep_fbx=False, keep_json=False, asset_path=""):
     pathList = filePath.split(".")
     jsonPath = ""
     for x in range(len(pathList)-1):
         jsonPath += pathList[x]
     jsonPath += ".json"
 
-    build_json(jsonPath, delete_json)
+    build_json(jsonPath)
 
-    if export_gr2:
-        gr2Path = ""
-        for x in range(len(pathList)-1):
-            gr2Path += pathList[x]
-            gr2Path += ".gr2"
+    gr2Path = ""
+    for x in range(len(pathList)-1):
+        gr2Path += pathList[x]
+        gr2Path += ".gr2"
 
-        print('\nTool Path... %r' % toolPath)
+    print('\nTool Path... %r' % toolPath)
 
-        build_gr2(toolPath, filePath, jsonPath, gr2Path)
-        if(file_exists(gr2Path)):
-            report({'INFO'},"GR2 conversion finished!")
-        else:
-            report({'INFO'},"GR2 conversion failed!")
-            ctypes.windll.user32.MessageBoxW(0, "Tool.exe failed to export your GR2 file. Blender may need to be run as an Administrator or there may be an issue with your project settings.", "GR2 EXPORT FAILED", 0)
-        
-        if delete_fbx:
-            os.remove(filePath)
+    build_gr2(toolPath, filePath, jsonPath, gr2Path)
+    if(file_exists(gr2Path)):
+        report({'INFO'},"GR2 conversion finished!")
+    else:
+        report({'INFO'},"GR2 conversion failed!")
+        ctypes.windll.user32.MessageBoxW(0, "Tool.exe failed to export your GR2 file. Blender may need to be run as an Administrator or there may be an issue with your project settings.", "GR2 EXPORT FAILED", 0)
     
+    if not keep_fbx:
+        os.remove(filePath)
+    if not keep_json:
+        os.remove(jsonPath)
+        
     move_assets(filePath, jsonPath, gr2Path, asset_path)
     return {'FINISHED'}
 
@@ -912,25 +912,18 @@ def move_assets(filePath, jsonPath, gr2Path, asset_path):
     shutil.move(jsonPath, asset_path + "\\export\\models")
     shutil.move(gr2Path, asset_path + "\\export\\models")
 
-def build_json(jsonPath, delete_json, use_selection=False, use_visible=False, use_active_collection=False):
+def build_json(jsonPath, use_selection=False, use_visible=False, use_active_collection=False):
     jsonTemp = {}
     jsonTemp.update(getStrings())
     jsonTemp.update(getNodes(use_selection, use_visible, use_active_collection))
     jsonTemp.update(getMeshes(use_selection, use_visible, use_active_collection))
     jsonTemp.update(getMaterials())
 
-    if(delete_json):
-        temp = tempfile.NamedTemporaryFile(delete=False, mode="w+", suffix=".json")
-        json.dump(jsonTemp, temp)
-        temp.flush()
-        return temp.name
-    else:
-        haloJSON = json.dumps(jsonTemp, indent=4)
+    haloJSON = json.dumps(jsonTemp, indent=4)
 
-        jsonFile = open(jsonPath, "w")
-        jsonFile.write(haloJSON)
-        jsonFile.close()
-        return ""
+    jsonFile = open(jsonPath, "w")
+    jsonFile.write(haloJSON)
+    jsonFile.close()
 
 def build_gr2(toolPath, filePath, jsonPath, gr2Path):
     try:            
@@ -956,11 +949,11 @@ def save(operator, context, report,
         batch_mode='OFF',
         use_batch_own_dir=False,
         export_gr2=False,
-        delete_fbx=False,
-        delete_json=False,
+        keep_fbx=False,
+        keep_json=False,
         asset_path='',
         **kwargs
         ):
-    export_asset(report, filepath, export_gr2, delete_fbx, delete_json, asset_path)
+    export_asset(report, filepath, keep_fbx, keep_json, asset_path)
     return {'FINISHED'}
 
