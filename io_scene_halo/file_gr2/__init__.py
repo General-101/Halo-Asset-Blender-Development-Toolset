@@ -36,7 +36,7 @@ bl_info = {
 
 import bpy
 from bpy_extras.io_utils import ExportHelper
-from bpy.props import StringProperty, BoolProperty, EnumProperty
+from bpy.props import StringProperty, BoolProperty, EnumProperty, FloatProperty
 from bpy.types import Operator
 from bpy_extras.io_utils import ExportHelper, orientation_helper
 from time import sleep
@@ -128,6 +128,26 @@ class Export_Halo_GR2(Operator, ExportHelper):
         name='Structure Design',
         description='',
         default=True,
+    )
+    export_poops: BoolProperty(
+        name='Instanced Geometry',
+        description='',
+        default=True,
+    )
+    export_lights: BoolProperty(
+        name='Lights',
+        description='',
+        default=True,
+    )
+    export_all_perms: BoolProperty(
+        name='All Permutations',
+        description='',
+        default=True,
+    )
+    export_specific_perm: StringProperty(
+        name='Permutation',
+        description='',
+        default='',
     )
     output_biped: BoolProperty(
         name='Biped',
@@ -278,6 +298,21 @@ class Export_Halo_GR2(Operator, ExportHelper):
         description='',
         default=False
     )
+    use_mesh_modifiers: BoolProperty(
+        name='Apply Modifiers',
+        description='',
+        default=True,
+    )
+    use_triangles: BoolProperty(
+        name='Triangulate',
+        description='',
+        default=True,
+    )
+    global_scale: FloatProperty(
+        name='Scale',
+        description='',
+        default=1.0
+    )
 
     def UpdateVisible(self, context):
         if self.export_hidden == True:
@@ -323,6 +358,11 @@ class Export_Halo_GR2(Operator, ExportHelper):
         from . import export_gr2, export_sidecar_xml, import_sidecar
 
         if self.sidecar_type == 'MODEL':
+
+            SelectModelSkeleton()
+            for ob in bpy.data.objects:
+                bpy.context.view_layer.objects.active = ob
+                ob.animation_data.action = None
 
             if self.export_render:
                 perm_list = []
@@ -465,6 +505,13 @@ class Export_Halo_GR2(Operator, ExportHelper):
                 sub.prop(self, "import_decompose_instances")
             else:
                 sub.prop(self, "import_draft")
+        # SCENE SETTINGS #
+        box = layout.box()
+        box.label(text="Scene Settings")
+        col = box.column()
+        col.prop(self, "use_mesh_modifiers")
+        col.prop(self, "use_triangles")
+        col.prop(self, "global_scale")
 
 def SelectModelRender(perm):
     bpy.ops.object.select_all(action='DESELECT')

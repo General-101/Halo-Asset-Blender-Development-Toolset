@@ -27,8 +27,8 @@
 # Don't edit the version or build version here or it will break CI
 # Need to do this because of Blender parsing the plugin init code instead of actually executing it when getting bl_info
 import bpy
-from bpy.types import Operator, AddonPreferences, PropertyGroup
-from bpy.props import StringProperty, IntProperty, BoolProperty, PointerProperty
+from bpy.types import AddonPreferences
+from bpy.props import StringProperty
 
 bl_info = {
     "name": "Halo Asset Blender Development Toolset",
@@ -69,7 +69,7 @@ modules = [
 class ToolkitLocationPreferences(AddonPreferences):
     bl_idname = __package__
     
-    hrek_path: bpy.props.StringProperty(
+    hrek_path: StringProperty(
         name="HREK Path",
         description="Specify the path to your Halo Reach Editing Kit folder containing tool / tool_fast",
         default="",
