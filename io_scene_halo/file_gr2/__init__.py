@@ -250,7 +250,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
     )
 
     def UpdateVisible(self, context):
-        if self.export_hiddem == True:
+        if self.export_hidden == True:
             self.use_visible = False
         else:
             self.use_visible = True
