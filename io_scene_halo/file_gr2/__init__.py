@@ -359,11 +359,6 @@ class Export_Halo_GR2(Operator, ExportHelper):
 
         if self.sidecar_type == 'MODEL':
 
-            SelectModelSkeleton()
-            for ob in bpy.data.objects:
-                bpy.context.view_layer.objects.active = ob
-                ob.animation_data.action = None
-
             if self.export_render:
                 perm_list = []
                 for ob in bpy.data.objects:
