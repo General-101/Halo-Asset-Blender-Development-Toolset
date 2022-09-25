@@ -692,19 +692,23 @@ def getFaceMode(mode):
 
 def getFaceSides(sides):
     match sides:
+        case 'ONE SIDED':
+            return '_connected_geometry_face_sides_one_sided'
         case 'ONE SIDED TRANSPARENT':
-            return '_connected_geometry_face_mode_render_only'
+            return '_connected_geometry_face_sides_one_sided_transparent'
         case 'TWO SIDED':
-            return '_connected_geometry_face_mode_collision_only'
+            return '_connected_geometry_face_sides_two_sided'
         case 'TWO SIDED TRANSPARENT':
-            return '_connected_geometry_face_mode_sphere_collision_only' 
+            return '_connected_geometry_face_sides_two_sided_transparent' 
 
 def getFaceDrawDistance(distance):
     match distance:
+        case 'NORMAL':
+            return '_connected_geometry_face_draw_distance_normal'    
         case 'MID':
-            return '_connected_geometry_face_mode_render_only'
+            return '_connected_geometry_face_draw_distance_detail_mid'
         case 'CLOSE':
-            return '_connected_geometry_face_mode_collision_only'
+            return '_connected_geometry_face_draw_distance_detail_close'
 
 def getRegionName(region):
     if region == '':
