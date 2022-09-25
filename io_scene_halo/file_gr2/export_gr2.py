@@ -345,7 +345,6 @@ def getMeshes():
     return temp
 
 def getMeshProperties(mesh, name, ob):
-    print("here we go")
 
     mesh_props = {}
     
@@ -890,35 +889,47 @@ def export_asset(report, filePath="", keep_fbx=False, keep_json=False, asset_pat
         os.remove(jsonPath)
         json_binned = True
      
-    move_assets(fileName, jsonPath, gr2Path, asset_path, fbx_crushed, json_binned)
+    move_assets(fileName, jsonPath, gr2Path, asset_path, fbx_crushed, json_binned, tag_type)
 
     return {'FINISHED'}
 
 def rename_file(filePath, asset_name, tag_type, perm='', fileName=''):
-    print('FILEPATH IS ' + filePath)
-    print('FILENAME IS ' + fileName)
     os.replace(filePath, fileName)
 
 def GetFileName(filePath, asset_name, tag_type, perm='', asset_path=''):
-    if perm != '' and perm != 'default':
-        name = asset_path + '\\' + asset_name + '_' + perm
-        name = name + '_' + tag_type + '.fbx'
+    if tag_type == 'animations':
+        name = bpy.context.active_object.animation_data.action.name
+        name = name.rpartition('.')[0]
+        name = asset_path + '\\' + name + '.fbx'
     else:
-        name = asset_path + '\\' + asset_name + '_' + tag_type + '.fbx'
+        if perm != '' and perm != 'default':
+            name = asset_path + '\\' + asset_name + '_' + perm
+            name = name + '_' + tag_type + '.fbx'
+        else:
+            name = asset_path + '\\' + asset_name + '_' + tag_type + '.fbx'
     return name
 
-def move_assets(fileName, jsonPath, gr2Path, asset_path, fbx_crushed, json_binned):
-    print('asset path = ' + asset_path)
-
-    if not file_exists(asset_path + "\\models"):
-        os.makedirs(asset_path + "\\models")
-    if not file_exists(asset_path + "\\export\\models"):
-        os.makedirs(asset_path + "\\export\\models")
-    if not fbx_crushed:
-        shutil.copy(fileName, asset_path + "\\models")
-    if not json_binned:
-        shutil.copy(jsonPath, asset_path + "\\export\\models")
-    shutil.copy(gr2Path, asset_path + "\\export\\models")
+def move_assets(fileName, jsonPath, gr2Path, asset_path, fbx_crushed, json_binned, tag_type):
+    if tag_type == 'animations':
+        if not file_exists(asset_path + "\\animations"):
+            os.makedirs(asset_path + "\\animations")
+        if not file_exists(asset_path + "\\export\\animations"):
+            os.makedirs(asset_path + "\\export\\animations")
+        if not fbx_crushed:
+            shutil.copy(fileName, asset_path + "\\animations")
+        if not json_binned:
+            shutil.copy(jsonPath, asset_path + "\\export\\animations")
+        shutil.copy(gr2Path, asset_path + "\\export\\animations")
+    else: 
+        if not file_exists(asset_path + "\\models"):
+            os.makedirs(asset_path + "\\models")
+        if not file_exists(asset_path + "\\export\\models"):
+            os.makedirs(asset_path + "\\export\\models")
+        if not fbx_crushed:
+            shutil.copy(fileName, asset_path + "\\models")
+        if not json_binned:
+            shutil.copy(jsonPath, asset_path + "\\export\\models")
+        shutil.copy(gr2Path, asset_path + "\\export\\models")
 
     os.remove(fileName)
     os.remove(jsonPath)
@@ -962,9 +973,6 @@ def save(operator, context, report, tag_type,
         asset_name='',
         **kwargs
         ):
-
-    print('ASSET PATH IS ' + asset_path)
-    print('ASSET name IS ' + asset_name)
 
     export_asset(report, filepath, keep_fbx, keep_json, asset_path, asset_name, tag_type, perm)
 

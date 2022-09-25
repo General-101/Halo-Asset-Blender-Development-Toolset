@@ -42,6 +42,7 @@ EKPath = EKPath.strip('\\')
 
 valid_animation_types = ('JMM', 'JMA', 'JMT', 'JMZ', 'JMV', 'JMO', 'JMOX', 'JMR', 'JMRX')
 
+special_prefixes = ('b ', 'b_', 'frame ', 'frame_','bip ','bip_','bone ','bone_','#','+soft_ceiling','+soft_kill','+slip_surface', '@','+cookie','+decorator','+flair', '%', '$','+fog','+portal', '+seam','+water', '\'')
 
 def export_xml(report, filePath="", export_sidecar=False, sidecar_type='MODEL', asset_path='',        
                 output_biped=False,
@@ -92,7 +93,8 @@ def GenerateModelSidecar(asset_path, asset_name, full_path,
                         output_vehicle=False,
                         output_weapon=False):
 
-    m_encoding = 'UTF-8'
+    m_encoding = 'utf-8'
+    m_standalone = 'yes'
 
     print("beep boop I'm writing a model sidecar")
 
@@ -104,11 +106,11 @@ def GenerateModelSidecar(asset_path, asset_name, full_path,
     WriteModelContents(metadata, asset_path, asset_name)
 
     dom = xml.dom.minidom.parseString(ET.tostring(metadata))
-    xml_string = dom.toprettyxml()
+    xml_string = dom.toprettyxml(indent='  ') # indent='\t', encoding='utf-8', standalone='yes'
     part1, part2 = xml_string.split('?>')
 
     with open(full_path + '\\' + asset_name + '.sidecar.xml', 'w') as xfile:
-        xfile.write(part1 + 'encoding=\"{}\"?>\n'.format(m_encoding) + part2)
+        xfile.write(part1 + 'encoding=\"{}\" standalone=\"{}\"?>'.format(m_encoding, m_standalone) + part2)
         xfile.close()
 
 def GenerateStructureSidecar(asset_path, asset_name, full_path):
@@ -123,7 +125,7 @@ def GenerateStructureSidecar(asset_path, asset_name, full_path):
     WriteStructureContents(metadata, asset_path, asset_name)
 
     dom = xml.dom.minidom.parseString(ET.tostring(metadata))
-    xml_string = dom.toprettyxml()
+    xml_string = dom.toprettyxml(indent='\t', encoding='utf-8', standalone='yes')
     part1, part2 = xml_string.split('?>')
 
     with open(asset_path + 'temp.sidecar.xml', 'w') as xfile:
@@ -158,7 +160,7 @@ def GetModelTags(       output_biped=False,
                         output_scenery=False,
                         output_vehicle=False,
                         output_weapon=False):
-    # PLACEHOLDER
+    
     tags = ['model']
 
     if output_biped: 
@@ -172,7 +174,7 @@ def GetModelTags(       output_biped=False,
     if output_device_machine:
         tags.append('device_machine')
     if output_device_terminal:
-        output_effect_scenery.append('device_terminal')
+        tags.append('device_terminal')
     if output_effect_scenery:
         tags.append('effect_scenery')
     if output_equipment:
@@ -225,7 +227,7 @@ def WriteFaceCollections(metadata, regions=False, materials=False):
 
         if(regions):
             region_list = ["default",""]
-            f1 = ET.SubElement(faceCollections, "FaceCollection", Name="regions", StringTable="connected_geometry_regions_table", Description="model regions")
+            f1 = ET.SubElement(faceCollections, "FaceCollection", Name="regions", StringTable="connected_geometry_regions_table", Description="Model regions")
 
             FaceCollectionsEntries = ET.SubElement(f1, "FaceCollectionEntries")
             ET.SubElement(FaceCollectionsEntries, "FaceCollectionEntry", Index="0", Name="default", Active="true")
@@ -239,7 +241,7 @@ def WriteFaceCollections(metadata, regions=False, materials=False):
                     count += 1
         if(materials):
             mat_list = ["default",""]
-            f2 = ET.SubElement(faceCollections, "FaceCollection", Name="global materials overrides", StringTable="connected_geometry_global_material_table", Description="Global material overrides")
+            f2 = ET.SubElement(faceCollections, "FaceCollection", Name="global materials override", StringTable="connected_geometry_global_material_table", Description="Global material overrides")
 
             FaceCollectionsEntries2 = ET.SubElement(f2, "FaceCollectionEntries")
             ET.SubElement(FaceCollectionsEntries2, "FaceCollectionEntry", Index="0", Name="default", Active="true")
@@ -258,74 +260,66 @@ def WriteModelContents(metadata, asset_path, asset_name):
     content = ET.SubElement(contents, "Content", Name=asset_name, Type='model')
     object = ET.SubElement(content, 'ContentObject', Name='', Type="render_model")
 
-    if 1>len(bpy.data.collections):
-        network = ET.SubElement(object, 'ContentNetwork' ,Name='default', Type="")
-        ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, 'render', 'default')
-        ET.SubElement(network, 'IntermediateFile').text = Name=GetIntermediateFilePath(asset_path, asset_name, 'render', 'default')
-
-    for perm in bpy.data.collections:
-        if perm.name == 'Collection':
+    perm_list = []
+    for ob in bpy.data.objects:
+        if ob.halo_json.Permutation_Name == '':
             perm = 'default'
         else:
-            perm = perm.name
+            perm = ob.halo_json.Permutation_Name
+        if (perm not in perm_list) and RenderPermExists(perm):
+            perm_list.append(perm)
+            network = ET.SubElement(object, 'ContentNetwork' ,Name=perm, Type="")
+            ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, 'render', perm)
+            ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePath(asset_path, asset_name, 'render', perm)
 
-        network = ET.SubElement(object, 'ContentNetwork' ,Name=perm, Type="")
-        ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, 'render', perm)
-        ET.SubElement(network, 'IntermediateFile').text = Name=GetIntermediateFilePath(asset_path, asset_name, 'render', perm)
-
-    output = ET.SubElement(content, 'OutputTagCollection')
+    output = ET.SubElement(object, 'OutputTagCollection')
     ET.SubElement(output, 'OutputTag', Type='render_model').text = asset_path + '\\' + asset_name
 
     ##### PHYSICS #####
     if SceneHasPhysicsObject():
         object = ET.SubElement(content, 'ContentObject', Name='', Type="physics_model")
 
-        if 1>len(bpy.data.collections):
-            network = ET.SubElement(object, 'ContentNetwork' ,Name='default', Type="")
-            ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, 'physics', 'default')
-            ET.SubElement(network, 'IntermediateFile').text = Name=GetIntermediateFilePath(asset_path, asset_name, 'physics', 'default')
-
-        for perm in bpy.data.collections:
-            if perm.name == 'Collection':
+        perm_list = []
+        for ob in bpy.data.objects:
+            if ob.halo_json.Permutation_Name == '':
                 perm = 'default'
             else:
-                perm = perm.name
+                perm = ob.halo_json.Permutation_Name
+            if (perm not in perm_list) and PhysicsPermExists(perm):
+                perm_list.append(perm)
+                network = ET.SubElement(object, 'ContentNetwork' ,Name=perm, Type="")
+                ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, 'physics', perm)
+                ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePath(asset_path, asset_name, 'physics', perm)
 
-            network = ET.SubElement(object, 'ContentNetwork' ,Name=perm, Type="")
-            ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, 'physics',  perm)
-            ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePath(asset_path, asset_name, 'physics', perm)
-
-    output = ET.SubElement(content, 'OutputTagCollection')
-    ET.SubElement(output, 'OutputTag', Type='physics_model').text = asset_path + '\\' + asset_name
+        output = ET.SubElement(object, 'OutputTagCollection')
+        ET.SubElement(output, 'OutputTag', Type='physics_model').text = asset_path + '\\' + asset_name
 
     ##### COLLISION #####    
     if SceneHasCollisionObject():
         object = ET.SubElement(content, 'ContentObject', Name='', Type="collision_model")
 
-        if 1>len(bpy.data.collections):
-            network = ET.SubElement(object, 'ContentNetwork' ,Name='default', Type="")
-            ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, 'collision', 'default')
-            ET.SubElement(network, 'IntermediateFile').text = Name=GetIntermediateFilePath(asset_path, asset_name, 'collision', 'default')
-
-        for perm in bpy.data.collections:
-            if perm.name == 'Collection':
+        perm_list = []
+        for ob in bpy.data.objects:
+            if ob.halo_json.Permutation_Name == '':
                 perm = 'default'
             else:
-                perm = perm.name
+                perm = ob.halo_json.Permutation_Name
+            if (perm not in perm_list) and CollisionPermExists(perm):
+                perm_list.append(perm)
+                network = ET.SubElement(object, 'ContentNetwork' ,Name=perm, Type="")
+                ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, 'collision', perm)
+                ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePath(asset_path, asset_name, 'collision', perm)
 
-            network = ET.SubElement(object, 'ContentNetwork'  ,Name=perm, Type="")
-            ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, 'collision', perm)
-            ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePath(asset_path, asset_name, 'collision', perm)
-
-    output = ET.SubElement(content, 'OutputTagCollection')
-    ET.SubElement(output, 'OutputTag', Type='collision_model').text = asset_path + '\\' + asset_name
+        output = ET.SubElement(object, 'OutputTagCollection')
+        ET.SubElement(output, 'OutputTag', Type='collision_model').text = asset_path + '\\' + asset_name
 
     ##### SKELETON #####
     object = ET.SubElement(content, 'ContentObject', Name='', Type="skeleton")
     network = ET.SubElement(object, 'ContentNetwork' , Name='default', Type="")
     ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, 'skeleton')
     ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePath(asset_path, asset_name, 'skeleton')
-    output = ET.SubElement(content, 'OutputTagCollection')
+
+    output = ET.SubElement(object, 'OutputTagCollection')
     
     ##### MARKERS #####
     if SceneHasMarkers():
@@ -334,7 +328,7 @@ def WriteModelContents(metadata, asset_path, asset_name):
         ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, 'markers')
         ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePath(asset_path, asset_name, 'markers')
         
-        output = ET.SubElement(content, 'OutputTagCollection')
+        output = ET.SubElement(object, 'OutputTagCollection')
 
     ##### ANIMATIONS #####
     if 1<=len(bpy.data.actions):
@@ -343,130 +337,41 @@ def WriteModelContents(metadata, asset_path, asset_name):
         for anim in bpy.data.actions:
             if anim.name.rpartition('.')[0] != '':
                 anim_name = anim.name.rpartition('.')[0]
+                anim_type = anim.name.rpartition('.')[2]
+                anim_type = anim_type.upper()
             else:
                 anim_name = anim.name
+                anim_type = 'JMM'
+            
+            if anim_type not in valid_animation_types:
+                anim_type = 'JMM'
+            
+            match anim_type:
+                case 'JMM':
+                    network = ET.SubElement(object, 'ContentNetwork' , Name=anim_name, Type='Base', ModelAnimationMovementData='None')
+                case 'JMA':
+                    network = ET.SubElement(object, 'ContentNetwork' , Name=anim_name, Type='Base', ModelAnimationMovementData='XY')
+                case 'JMT':
+                    network = ET.SubElement(object, 'ContentNetwork' , Name=anim_name, Type='Base', ModelAnimationMovementData='XYYaw')
+                case 'JMZ':
+                    network = ET.SubElement(object, 'ContentNetwork' , Name=anim_name, Type='Base', ModelAnimationMovementData='XYZYaw')
+                case 'JMV':
+                    network = ET.SubElement(object, 'ContentNetwork' , Name=anim_name, Type='Base', ModelAnimationMovementData='XYZFullRotation')
+                case 'JMO':
+                    network = ET.SubElement(object, 'ContentNetwork' , Name=anim_name, Type='Overlay', ModelAnimationOverlayType='Keyframe', ModelAnimationOverlayBlending='Additive')
+                case 'JMOX':
+                    network = ET.SubElement(object, 'ContentNetwork' , Name=anim_name, Type='Overlay', ModelAnimationOverlayType='Pose', ModelAnimationOverlayBlending='Additive')
+                case 'JMR':
+                    network = ET.SubElement(object, 'ContentNetwork' , Name=anim_name, Type='Overlay', ModelAnimationOverlayType='Keyframe', ModelAnimationOverlayBlending='ReplacementObjectSpace')
+                case 'JMR':
+                    network = ET.SubElement(object, 'ContentNetwork' , Name=anim_name, Type='Overlay', ModelAnimationOverlayType='Keyframe', ModelAnimationOverlayBlending='ReplacementLocalSpace')
 
-            network = ET.SubElement(object, 'ContentNetwork' , Name=anim_name, Type=GetAnimType(anim.name), ModelAnimationMovementData=GetAnimMovement(anim.name), ModelAnimationOverlayType=GetAnimOverlay(anim.name), ModelAnimationOverlayBlending=GetAnimBlending(anim.name))
             ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, anim_name, 'model_animation_graph')
             ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePath(asset_path, anim_name, 'model_animation_graph')
 
-def GetAnimType(anim):
-    type = 'JMM'
-    if not '.' in anim:
-        print(anim + ' has no animation type specified, defaulting to JMM.')
-    else:
-        type = anim.rpartition('.')[2]
-        type = type.upper()
-    if type in valid_animation_types:
-        match type:
-            case 'JMM':
-                return 'Base'
-            case 'JMA':
-                return 'Base'
-            case 'JMT':
-                return 'Base'
-            case 'JMZ':
-                return 'Base'
-            case 'JMV':
-                return 'Base'
-            case 'JMO':
-                return 'Overlay'
-            case 'JMOX':
-                return 'Overlay'
-            case 'JMR':
-                return 'Overlay'
-            case 'JMRX':
-                return 'Overlay'
-    else:
-        print(anim + ' has invalid animation type specified, defaulting to JMM.')
-        return 'Base'
-
-def GetAnimMovement(anim):
-    type = 'JMM'
-    if '.' in anim:
-        type = anim.rpartition('.')[2]
-        type = type.upper()
-    if type in valid_animation_types:
-        match type:
-            case 'JMM':
-                return 'None'
-            case 'JMA':
-                return 'XY'
-            case 'JMT':
-                return 'XYYaw'
-            case 'JMZ':
-                return 'XYZYaw'
-            case 'JMV':
-                return 'XYZFullRotation'
-            case 'JMO':
-                return ''
-            case 'JMOX':
-                return ''
-            case 'JMR':
-                return ''
-            case 'JMRX':
-                return ''
-    else:
-        print(anim + ' has invalid animation type specified, defaulting to JMM.')
-        return 'None'
-
-def GetAnimOverlay(anim):
-    type = 'JMM'
-    if '.' in anim:
-        type = anim.rpartition('.')[2]
-        type = type.upper()
-    if type in valid_animation_types:
-        match type:
-            case 'JMM':
-                return ''
-            case 'JMA':
-                return ''
-            case 'JMT':
-                return ''
-            case 'JMZ':
-                return ''
-            case 'JMV':
-                return ''
-            case 'JMO':
-                return 'Pose'
-            case 'JMOX':
-                return 'Keyframe'
-            case 'JMR':
-                return 'Keyframe'
-            case 'JMRX':
-                return 'Keyframe'
-    else:
-        print(anim + ' has invalid animation type specified, defaulting to JMM.')
-        return ''
-
-def GetAnimBlending(anim):
-    type = 'JMM'
-    if '.' in anim:
-        type = anim.rpartition('.')[2]
-        type = type.upper()
-    if type in valid_animation_types:
-        match type:
-            case 'JMM':
-                return ''
-            case 'JMA':
-                return ''
-            case 'JMT':
-                return ''
-            case 'JMZ':
-                return ''
-            case 'JMV':
-                return ''
-            case 'JMO':
-                return ''
-            case 'JMOX':
-                return ''
-            case 'JMR':
-                return 'ReplacementObjectSpace'
-            case 'JMRX':
-                return 'ReplacementLocalSpace'
-    else:
-        print(anim + ' has invalid animation type specified, defaulting to JMM.')
-        return ''
+        output = ET.SubElement(object, 'OutputTagCollection')
+        ET.SubElement(output, 'OutputTag', Type='frame_event_list').text = asset_path + '\\' + asset_name
+        ET.SubElement(output, 'OutputTag', Type='model_animation_graph').text = asset_path + '\\' + asset_name
 
 def GetInputFilePath(asset_path, asset_name, type, perm=''):
     if type == 'model_animation_graph':
@@ -528,6 +433,39 @@ def SceneHasMarkers():
 
 def WriteStructureContents(metadata, asset_path, asset_name):
     print ('null')
+
+def RenderPermExists(perm):
+    exists = False
+    for ob in bpy.data.objects:
+        halo_mesh = ob.halo_json
+        halo_mesh_name = ob.name
+        if halo_mesh.Permutation_Name != perm and perm == 'default':
+            perm = ''
+        if (ob.type == 'MESH' and (not halo_mesh_name.startswith(special_prefixes)) and halo_mesh.Object_Type_All == 'MESH' and halo_mesh.ObjectMesh_Type == 'DEFAULT' and halo_mesh.Permutation_Name == perm):
+            exists = True
+    return exists
+
+def PhysicsPermExists(perm):
+    exists = False
+    for ob in bpy.data.objects:
+        halo_mesh = ob.halo_json
+        halo_mesh_name = ob.name
+        if halo_mesh.Permutation_Name != perm and perm == 'default':
+            perm = ''
+        if (ob.type == 'MESH' and (not halo_mesh_name.startswith(special_prefixes) or halo_mesh_name.startswith('$')) and (halo_mesh.ObjectMesh_Type == 'PHYSICS' or halo_mesh_name.startswith('$')) and halo_mesh.Object_Type_All == 'MESH' and halo_mesh.Permutation_Name == perm):
+            exists = True
+    return exists
+
+def CollisionPermExists(perm):
+    exists = False
+    for ob in bpy.data.objects:
+        halo_mesh = ob.halo_json
+        halo_mesh_name = ob.name
+        if halo_mesh.Permutation_Name != perm and perm == 'default':
+            perm = ''
+        if (ob.type == 'MESH' and (not halo_mesh_name.startswith(special_prefixes) or halo_mesh_name.startswith('@')) and (halo_mesh.ObjectMesh_Type == 'COLLISION' or halo_mesh_name.startswith('@')) and halo_mesh.Object_Type_All == 'MESH' and halo_mesh.Permutation_Name == perm):
+            exists = True
+    return exists
 
 # def IntermediateFileExists(folderName):
 #     filePath = "fullPath" + "\\" + folderName
