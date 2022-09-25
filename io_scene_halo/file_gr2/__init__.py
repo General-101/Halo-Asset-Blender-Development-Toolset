@@ -39,7 +39,7 @@ from bpy_extras.io_utils import ExportHelper
 from bpy.props import StringProperty, BoolProperty, EnumProperty
 from bpy.types import Operator
 from bpy_extras.io_utils import ExportHelper, orientation_helper
-
+from time import sleep
 special_prefixes = ('b ', 'b_', 'frame ', 'frame_','bip ','bip_','bone ','bone_','#','+soft_ceiling','+soft_kill','+slip_surface', '@','+cookie','+decorator','+flair', '%', '$','+fog','+portal', '+seam','+water', '\'')
 
 import os
@@ -303,6 +303,8 @@ class Export_Halo_GR2(Operator, ExportHelper):
                 if perm not in perm_list:
                     perm_list.append(perm)
                     SelectModelRender(perm)
+                    for select in bpy.context.selected_objects:
+                        print (select.name)
                     export_fbx_bin.save(self, context, **keywords)
                     export_gr2.save(self, context, self.report, 'render', perm, **keywords)
 
@@ -347,8 +349,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
         elif self.sidecar_type == 'PARTICLE MODEL':
             print('not implemented')
 
-        return {'FINISHED'}
-        #export_sidecar_xml.save(self, context, self.report, **keywords)
+        return export_sidecar_xml.save(self, context, self.report, **keywords)
         #return import_sidecar.save(self, context, self.report, **keywords)
 
     def draw(self, context):
@@ -427,6 +428,8 @@ def SelectModelRender(perm):
     for ob in bpy.data.objects:
         halo_mesh = ob.halo_json
         halo_mesh_name = ob.name
+        if halo_mesh.Permutation_Name != perm and perm == 'default':
+            perm = ''
         if (ob.type == 'MESH' and (not halo_mesh_name.startswith(special_prefixes)) and halo_mesh.Object_Type_All == 'MESH' and halo_mesh.ObjectMesh_Type == 'DEFAULT' and halo_mesh.Permutation_Name == perm) or ob.type == 'ARMATURE':
             ob.select_set(True)
 
@@ -435,6 +438,8 @@ def SelectModelCollision(perm):
     for ob in bpy.data.objects:
         halo_mesh = ob.halo_json
         halo_mesh_name = ob.name
+        if halo_mesh.Permutation_Name != perm and perm == 'default':
+            perm = ''
         if (ob.type == 'MESH' and (not halo_mesh_name.startswith(special_prefixes) or halo_mesh_name.startswith('@')) and (halo_mesh.ObjectMesh_Type == 'COLLISION' or halo_mesh_name.startswith('@')) and halo_mesh.Object_Type_All == 'MESH' and halo_mesh.Permutation_Name == perm) or ob.type == 'ARMATURE':
             ob.select_set(True)
 
@@ -443,6 +448,8 @@ def SelectModelPhysics(perm):
     for ob in bpy.data.objects:
         halo_mesh = ob.halo_json
         halo_mesh_name = ob.name
+        if halo_mesh.Permutation_Name != perm and perm == 'default':
+            perm = ''
         if (ob.type == 'MESH' and (not halo_mesh_name.startswith(special_prefixes) or halo_mesh_name.startswith('$')) and (halo_mesh.ObjectMesh_Type == 'PHYSICS' or halo_mesh_name.startswith('$')) and halo_mesh.Object_Type_All == 'MESH' and halo_mesh.Permutation_Name == perm) or ob.type == 'ARMATURE':
             ob.select_set(True)
 
