@@ -459,12 +459,12 @@ class Export_Halo_GR2(Operator, ExportHelper):
             sub.prop(self, "import_force")
             sub.prop(self, "import_verbose")
             sub.prop(self, "import_surpress_errors")
-        if self.sidecar_type == 'SCENARIO':
-            sub.prop(self, "import_seam_debug")
-            sub.prop(self, "import_skip_instances")
-            sub.prop(self, "import_decompose_instances")
-        else:
-            sub.prop(self, "import_draft")
+            if self.sidecar_type == 'SCENARIO':
+                sub.prop(self, "import_seam_debug")
+                sub.prop(self, "import_skip_instances")
+                sub.prop(self, "import_decompose_instances")
+            else:
+                sub.prop(self, "import_draft")
 
 def SelectModelRender(perm):
     bpy.ops.object.select_all(action='DESELECT')

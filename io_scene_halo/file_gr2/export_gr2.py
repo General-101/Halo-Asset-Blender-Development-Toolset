@@ -846,9 +846,9 @@ def getMaterials():
 
                     matList.update({halo_material_name : {"bungie_shader_path": shaderPath, "bungie_shader_type": shaderType}})
 
-            temp = ({'material_properties': matList})
+    temp = ({'material_properties': matList})
 
-            return temp
+    return temp
 
 import os
 from os.path import exists as file_exists
