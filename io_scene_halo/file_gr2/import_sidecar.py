@@ -77,3 +77,5 @@ def save(operator, context, report,
         **kwargs
         ):
         import_sidecar(report, filepath, sidecar_path, import_to_game, import_check, import_force, import_verbose, import_draft,import_seam_debug,import_skip_instances,import_decompose_instances,import_surpress_errors)
+
+        return {'FINISHED'}

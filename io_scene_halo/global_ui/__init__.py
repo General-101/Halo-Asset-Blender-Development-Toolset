@@ -1240,6 +1240,8 @@ class JSON_ObjectProps(Panel):
                 col.prop(ob_halo_json, "Object_Type_No_Mesh", text='Object Type')
             else:
                 col.prop(ob_halo_json, "Object_Type_All", text='Object Type')
+        
+        col.prop(ob_halo_json, 'Permutation_Name', text='Permutation')
 
 #MESH PROPERTIES
 class JSON_ObjectMeshProps(Panel):
@@ -1941,6 +1943,11 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
         items=object_type_items_no_mesh,
     )
 
+    Permutation_Name: StringProperty(
+        name="Permutation",
+        description="Define the permutation of this object. Leave blank for default",
+    )
+
     def get_meshtype_enum(self):
         a_ob = bpy.context.active_object
         if a_ob.name.startswith(('+soft_ceiling','+soft_kill','+slip_surface')):
@@ -2112,7 +2119,7 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
     Sky_Permutation_Index: IntProperty(
         name="Sky Permutation Index",
         options=set(),
-        description="Set the sky permuation index of the faces. Only valid if the face type is sky",
+        description="Set the sky permutation index of the faces. Only valid if the face type is sky",
         min=0,
     )
 

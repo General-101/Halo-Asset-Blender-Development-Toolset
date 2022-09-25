@@ -27,6 +27,7 @@
 import shutil
 import bpy
 import json
+from bpy import ops
 
 EKPath = bpy.context.preferences.addons['io_scene_halo'].preferences.hrek_path
 
@@ -64,16 +65,6 @@ special_materials = ('+collision', '+physics', '+portal','+seamsealer','+sky','+
 
 special_mesh_types = ('BOUNDARY SURFACE','DECORATOR','INSTANCED GEOMETRY','PLANAR FOG VOLUME','PORTAL','SEAM','WATER PHYSICS VOLUME',)
 invalid_mesh_types = ('BOUNDARY SURFACE', 'COOKIE CUTTER', 'INSTANCED GEOMETRY MARKER', 'INSTANCED GEOMETRY RAIN BLOCKER', 'INSTANCED GEOMETRY VERTICAL RAIN SHEET', 'LIGHTMAP REGION', 'PLANAR FOG VOLUME', 'PORTAL', 'SEAM', 'WATER PHYSICS VOLUME')
-
-##############################
-####### STRING TABLE #########
-##############################
-def getStrings():
-    stringsList = {}
-
-    temp = ({'string_table' : stringsList})
-
-    return temp
 
 ##############################
 ##### NODES PROPERTIES #######
@@ -861,8 +852,13 @@ from os.path import exists as file_exists
 import ctypes
 from subprocess import Popen
 
-def export_asset(report, filePath="", keep_fbx=False, keep_json=False, asset_path=""):
-    pathList = filePath.split(".")
+def export_asset(report, filePath="", keep_fbx=False, keep_json=False, asset_path="", asset_name="", tag_type='', perm=''):
+
+    fileName = GetFileName(filePath, asset_name, tag_type, perm, asset_path)
+    
+    rename_file(filePath, asset_name, tag_type, perm, fileName)
+
+    pathList = fileName.split(".")
     jsonPath = ""
     for x in range(len(pathList)-1):
         jsonPath += pathList[x]
@@ -877,29 +873,59 @@ def export_asset(report, filePath="", keep_fbx=False, keep_json=False, asset_pat
 
     print('\nTool Path... %r' % toolPath)
 
-    build_gr2(toolPath, filePath, jsonPath, gr2Path)
+    build_gr2(toolPath, fileName, jsonPath, gr2Path)
     if(file_exists(gr2Path)):
         report({'INFO'},"GR2 conversion finished!")
     else:
         report({'INFO'},"GR2 conversion failed!")
         ctypes.windll.user32.MessageBoxW(0, "Tool.exe failed to export your GR2 file. Blender may need to be run as an Administrator or there may be an issue with your project settings.", "GR2 EXPORT FAILED", 0)
-    
+
+    fbx_crushed = False
+    json_binned = False
+
     if not keep_fbx:
         os.remove(filePath)
+        fbx_crushed = True
     if not keep_json:
         os.remove(jsonPath)
-        
-    move_assets(filePath, jsonPath, gr2Path, asset_path)
+        json_binned = True
+     
+    move_assets(fileName, jsonPath, gr2Path, asset_path, fbx_crushed, json_binned)
+
     return {'FINISHED'}
 
-def move_assets(filePath, jsonPath, gr2Path, asset_path):
-    shutil.move(filePath, asset_path + "\\models")
-    shutil.move(jsonPath, asset_path + "\\export\\models")
-    shutil.move(gr2Path, asset_path + "\\export\\models")
+def rename_file(filePath, asset_name, tag_type, perm='', fileName=''):
+    print('FILEPATH IS ' + filePath)
+    print('FILENAME IS ' + fileName)
+    os.replace(filePath, fileName)
+
+def GetFileName(filePath, asset_name, tag_type, perm='', asset_path=''):
+    if perm != '' and perm != 'default':
+        name = asset_path + '\\' + asset_name + '_' + perm
+        name = name + '_' + tag_type + '.fbx'
+    else:
+        name = asset_path + '\\' + asset_name + '_' + tag_type + '.fbx'
+    return name
+
+def move_assets(fileName, jsonPath, gr2Path, asset_path, fbx_crushed, json_binned):
+    print('asset path = ' + asset_path)
+
+    if not file_exists(asset_path + "\\models"):
+        os.makedirs(asset_path + "\\models")
+    if not file_exists(asset_path + "\\export\\models"):
+        os.makedirs(asset_path + "\\export\\models")
+    if not fbx_crushed:
+        shutil.copy(fileName, asset_path + "\\models")
+    if not json_binned:
+        shutil.copy(jsonPath, asset_path + "\\export\\models")
+    shutil.copy(gr2Path, asset_path + "\\export\\models")
+
+    os.remove(fileName)
+    os.remove(jsonPath)
+    os.remove(gr2Path)
 
 def build_json(jsonPath):
     jsonTemp = {}
-    jsonTemp.update(getStrings())
     jsonTemp.update(getNodes())
     jsonTemp.update(getMeshes())
     jsonTemp.update(getMaterials())
@@ -926,19 +952,21 @@ def build_gr2(toolPath, filePath, jsonPath, gr2Path):
     finally:
         return {'FINISHED'}
 
-def save(operator, context, report,
+def save(operator, context, report, tag_type,
+        perm='',
         filepath="",
-        batch_mode='OFF',
-        use_batch_own_dir=False,
+        export_method='SELECTED',
         keep_fbx=False,
         keep_json=False,
         asset_path='',
+        asset_name='',
         **kwargs
         ):
 
-    if batch_mode == 'OFF':
-        export_asset(report, filepath, keep_fbx, keep_json, asset_path)
-    else:
-        print("loop logic for export_asset batch mode")
+    print('ASSET PATH IS ' + asset_path)
+    print('ASSET name IS ' + asset_name)
+
+    export_asset(report, filepath, keep_fbx, keep_json, asset_path, asset_name, tag_type, perm)
+
     return {'FINISHED'}
 
