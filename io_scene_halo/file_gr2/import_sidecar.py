@@ -26,7 +26,7 @@
 
 import bpy
 from subprocess import Popen
-from time import sleep
+import os
 
 EKPath = bpy.context.preferences.addons['io_scene_halo'].preferences.hrek_path
 
@@ -73,6 +73,7 @@ def import_sidecar(report, filePath='', import_to_game=False, import_check=False
     if(import_to_game):
         toolCommand = '"{}" import "{}" "{}" "{}" "{}" "{}" "{}" "{}" "{}" "{}" '.format(toolPath, asset_path + '\\' + asset_name + '.sidecar.xml', flag_import_check, flag_import_force, flag_import_verbose, flag_import_draft, flag_import_seam_debug, flag_import_skip_instances, flag_import_decompose_instances, flag_import_surpress_errors)
         print('\nRunning Tool command... %r' % toolCommand)
+        os.chdir(EKPath)
         p = Popen(toolCommand)
         p.wait()
     else:
