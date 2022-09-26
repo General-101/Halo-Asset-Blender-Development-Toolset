@@ -1242,6 +1242,10 @@ class JSON_ObjectProps(Panel):
                 col.prop(ob_halo_json, "Object_Type_All", text='Object Type')
         
         col.prop(ob_halo_json, 'Permutation_Name', text='Permutation')
+        sub = col.row()
+        if not ob_halo_json.bsp_shared:
+            sub.prop(ob_halo_json, 'bsp_index', text='BSP Index')
+        sub.prop(ob_halo_json, 'bsp_shared', text='Shared')
 
 #MESH PROPERTIES
 class JSON_ObjectMeshProps(Panel):
@@ -1743,7 +1747,11 @@ class JSON_LightProps(Panel):
             col.prop(light_halo_json, "light_type_override_locked", text='Type')
         else:
             col.prop(light_halo_json, "light_type_override", text='Type')
-        
+        sub = col.row()
+        if not light_halo_json.bsp_shared:
+            sub.prop(light_halo_json, 'bsp_index', text='BSP Index')
+        sub.prop(light_halo_json, 'bsp_shared', text='Shared')
+
         col.prop(light_halo_json, 'Light_Game_Type', text='Game Type')
         col.prop(light_halo_json, 'Light_Shape', text='Shape')
         col.prop(light_halo_json, 'Light_Color', text='Color') 
@@ -1946,6 +1954,22 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
     Permutation_Name: StringProperty(
         name="Permutation",
         description="Define the permutation of this object. Leave blank for default",
+    )
+
+    bsp_index: IntProperty(
+        name="BSP Index",
+        options=set(),
+        default=0,
+        min=0,
+        max=99,
+        step=5,
+        description="Set bsp index for this object. Only valid for scenario exports",
+    )
+
+    bsp_shared: BoolProperty(
+        name="Shared",
+        options=set(),
+        default=False,
     )
 
     def get_meshtype_enum(self):
@@ -3043,6 +3067,22 @@ class JSON_LightPropertiesGroup(PropertyGroup):
                ]
         )
 
+    bsp_index: IntProperty(
+        name="BSP Index",
+        options=set(),
+        default=0,
+        min=0,
+        max=99,
+        step=5,
+        description="Set bsp index for this object. Only valid for scenario exports",
+    )
+
+    bsp_shared: BoolProperty(
+        name="Shared",
+        options=set(),
+        default=False,
+    )
+
     Light_Game_Type: EnumProperty(
         name = "Light Game Type",
         options=set(),
@@ -3310,9 +3350,6 @@ class JSON_LightPropertiesGroup(PropertyGroup):
         maxlen=128,
     )
     
-
-
-
 classeshalo = (
     ASS_JMS_MeshPropertiesGroup,
     ASS_JMS_MaterialPropertiesGroup,

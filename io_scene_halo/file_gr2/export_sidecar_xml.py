@@ -24,6 +24,7 @@
 #
 # ##### END MIT LICENSE BLOCK #####
 
+from ast import And
 from datetime import datetime
 from xml.etree.ElementTree import SubElement
 import bpy
@@ -61,20 +62,12 @@ def export_xml(report, filePath="", export_sidecar=False, sidecar_type='MODEL', 
     asset_path = CleanAssetPath(full_path)
     asset_name = asset_path.rpartition('\\')[2]
 
-    if export_sidecar and asset_path != '':
-        if sidecar_type == 'MODEL':
-            GenerateModelSidecar(asset_path, asset_name, full_path,output_biped,output_crate,output_creature,output_device_control,output_device_machine,output_device_terminal,output_effect_scenery,output_equipment,output_giant,output_scenery,output_vehicle,output_weapon)
-        elif sidecar_type == 'SCENARIO':
-            GenerateStructureSidecar(asset_path, asset_name, full_path)
-        elif sidecar_type == 'SCENARIO':
-            GenerateDecoratorSidecar(asset_path, asset_name, full_path)
-        else:
-            GenerateParticleSidecar(asset_path, asset_name, full_path)
+    BuildSidecar(asset_path, asset_name, full_path, sidecar_type, output_biped,output_crate,output_creature,output_device_control,output_device_machine,output_device_terminal,output_effect_scenery,output_equipment,output_giant,output_scenery,output_vehicle,output_weapon)
 
     if(file_exists(asset_path + '\\' + asset_name + '.sidecar.xml')):
         report({'INFO'},"Sidecar built")
     else:
-        report({'INFO'},"Sidecar build failed")
+        report({'ERROR'},"Sidecar build failed")
 
 def CleanAssetPath(path):
     path = path.replace('"','')
@@ -83,7 +76,7 @@ def CleanAssetPath(path):
 
     return path
 
-def GenerateModelSidecar(asset_path, asset_name, full_path,                
+def BuildSidecar(asset_path, asset_name, full_path, sidecar_type,               
                         output_biped=False,
                         output_crate=False,
                         output_creature=False,
@@ -95,19 +88,31 @@ def GenerateModelSidecar(asset_path, asset_name, full_path,
                         output_giant=False,
                         output_scenery=False,
                         output_vehicle=False,
-                        output_weapon=False):
+                        output_weapon=False, ):
 
     m_encoding = 'utf-8'
     m_standalone = 'yes'
 
-    print("beep boop I'm writing a model sidecar")
-
     metadata = ET.Element("Metadata")
     WriteHeader(metadata)
-    GetObjectOutputTypes(metadata, "model", asset_path, asset_name, GetModelTags(output_biped,output_crate,output_creature,output_device_control,output_device_machine,output_device_terminal,output_effect_scenery,output_equipment,output_giant,output_scenery,output_vehicle,output_weapon))
+    if sidecar_type == 'MODEL':
+        GetObjectOutputTypes(metadata, "model", asset_path, asset_name, GetModelTags(output_biped,output_crate,output_creature,output_device_control,output_device_machine,output_device_terminal,output_effect_scenery,output_equipment,output_giant,output_scenery,output_vehicle,output_weapon))
+    elif sidecar_type == 'SCENARIO':
+        GetObjectOutputTypes(metadata, 'scenario', asset_path, asset_name, 'scenario_lightmap', 'structure_seams', 'scenario')
+    elif sidecar_type == 'DECORATOR SET':
+        GetObjectOutputTypes(metadata, 'decorator set', asset_path, asset_name, 'model')
+    elif sidecar_type == 'PARTICLE MODEL':
+        GetObjectOutputTypes(metadata, 'particle model', asset_path, asset_name, 'model')
     WriteFolders(metadata)
-    WriteFaceCollections(metadata, True, True)
-    WriteModelContents(metadata, asset_path, asset_name)
+    WriteFaceCollections(metadata, sidecar_type)
+    if sidecar_type == 'MODEL':
+        WriteModelContents(metadata, asset_path, asset_name)
+    # if sidecar_type == 'SCENARIO':
+    #     WriteScenarioContents(metadata, asset_path, asset_name)
+    # if sidecar_type == 'DECORATOR SET':
+    #     WriteDecoratorContents(metadata, asset_path, asset_name)
+    # if sidecar_type == 'PARTICLE MODEL':
+    #     WriteParticleContents(metadata, asset_path, asset_name)
 
     dom = xml.dom.minidom.parseString(ET.tostring(metadata))
     xml_string = dom.toprettyxml(indent='  ') # indent='\t', encoding='utf-8', standalone='yes'
@@ -117,37 +122,12 @@ def GenerateModelSidecar(asset_path, asset_name, full_path,
         xfile.write(part1 + 'encoding=\"{}\" standalone=\"{}\"?>'.format(m_encoding, m_standalone) + part2)
         xfile.close()
 
-def GenerateStructureSidecar(asset_path, asset_name, full_path):
-    print(asset_path)
-    m_encoding = 'UTF-8'
-
-    metadata = ET.Element("Metadata")
-    WriteHeader(metadata)
-    GetObjectOutputTypes(metadata, "scenario", asset_path, asset_name, ['scenario_lightmap','structure_seams','scenario'])
-    WriteFolders(metadata)
-    WriteFaceCollections(metadata, False, True)
-    WriteStructureContents(metadata, asset_path, asset_name)
-
-    dom = xml.dom.minidom.parseString(ET.tostring(metadata))
-    xml_string = dom.toprettyxml(indent='\t', encoding='utf-8', standalone='yes')
-    part1, part2 = xml_string.split('?>')
-
-    with open(asset_path + 'temp.sidecar.xml', 'w') as xfile:
-        xfile.write(part1 + 'encoding=\"{}\"?>\n'.format(m_encoding) + part2)
-        xfile.close()
-
-def GenerateDecoratorSidecar(asset_path, asset_name, full_path):
-    print(asset_path)
-
-def GenerateParticleSidecar(asset_path, asset_name, full_path):
-    print(asset_path)
-
 def WriteHeader(metadata):
     header = ET.SubElement(metadata, "Header")
     ET.SubElement(header, "MainRev").text = "0"
     ET.SubElement(header, "PointRev").text = "6"
     ET.SubElement(header, "Description").text = "Created using the Halo Blender Toolset"
-    ET.SubElement(header, "Created").text = str(datetime.today().strftime('%Y-%m-%d'))
+    ET.SubElement(header, "Created").text = str(datetime.today().strftime('%Y-%m-%d %H:%M:%S'))
     ET.SubElement(header, "By").text = getpass.getuser()
     ET.SubElement(header, "DirectoryType").text = "TAE.Shared.NWOAssetDirectory"
     ET.SubElement(header, "Schema").text = "1"
@@ -225,11 +205,10 @@ def WriteFolders(metadata):
     ET.SubElement(folders, "SourceBSPs").text = "\\models"
     ET.SubElement(folders, "Scripts").text = "\\scripts"
 
-def WriteFaceCollections(metadata, regions=False, materials=False):
-    if(regions or materials):
+def WriteFaceCollections(metadata, sidecar_type):
         faceCollections = ET.SubElement(metadata, "FaceCollections")
 
-        if(regions):
+        if(sidecar_type == 'MODEL'):
             region_list = ["default",""]
             f1 = ET.SubElement(faceCollections, "FaceCollection", Name="regions", StringTable="connected_geometry_regions_table", Description="Model regions")
 
@@ -243,7 +222,7 @@ def WriteFaceCollections(metadata, regions=False, materials=False):
                     ET.SubElement(FaceCollectionsEntries, "FaceCollectionEntry", Index=str(count), Name=region, Active="true")
                     region_list.append(region)
                     count += 1
-        if(materials):
+        if(sidecar_type == 'MODEL' or sidecar_type == 'SCENARIO'):
             mat_list = ["default",""]
             f2 = ET.SubElement(faceCollections, "FaceCollection", Name="global materials override", StringTable="connected_geometry_global_material_table", Description="Global material overrides")
 
@@ -377,6 +356,196 @@ def WriteModelContents(metadata, asset_path, asset_name):
         ET.SubElement(output, 'OutputTag', Type='frame_event_list').text = asset_path + '\\' + asset_name
         ET.SubElement(output, 'OutputTag', Type='model_animation_graph').text = asset_path + '\\' + asset_name
 
+# def WriteScenarioContents(metadata, asset_path, asset_name):
+#     contents = ET.SubElement(metadata, "Contents")
+#     ##### STRUCTURE #####
+#     if SceneHasBSP():
+#         bsp_list = []
+#         for ob in bpy.data.objects:
+#             for bsp in ob.halo_json.bsp_index:
+#                 if (bsp not in bsp_list):
+#                     bsp_list.append(bsp)
+#                     content = ET.SubElement(contents, "Content", Name=asset_name + '_' + "{0:03}".format(bsp), Type='bsp', BspErrorPolicy='auto_generated_physics')
+#                     object = ET.SubElement(content, 'ContentObject', Name='', Type="scenario_structure_bsp")
+
+#                     for obj in bpy.data.objects:
+#                         if IsStructure(obj) and obj.halo_json.bsp_index == bsp and (not obj.halo_json.bsp_shared):
+#                             perm_list = []
+#                             if ob.halo_json.Permutation_Name == '':
+#                                 perm = 'default'
+#                             else:
+#                                 perm = ob.halo_json.Permutation_Name
+#                             if (perm not in perm_list):
+#                                 perm_list.append(perm)
+#                                 network = ET.SubElement(object, 'ContentNetwork' ,Name=asset_name + '_' + "{0:03}".format(bsp) + perm, Type="")
+#                                 ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, 'structure', perm)
+#                                 ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePath(asset_path, asset_name, 'structure', perm)
+#                         elif IsPoop(obj) and obj.halo_json.bsp_index == bsp and (not obj.halo_json.bsp_shared):
+#                             perm_list = []
+#                             if ob.halo_json.Permutation_Name == '':
+#                                 perm = 'default'
+#                             else:
+#                                 perm = ob.halo_json.Permutation_Name
+#                             if (perm not in perm_list):
+#                                 perm_list.append(perm)
+#                                 network = ET.SubElement(object, 'ContentNetwork' ,Name=asset_name + '_' + "{0:03}".format(bsp) + perm, Type="")
+#                                 ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, 'structure', perm)
+#                                 ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePath(asset_path, asset_name, 'structure', perm)
+#                         elif IsMarker(obj) and obj.halo_json.bsp_index == bsp and (not obj.halo_json.bsp_shared):
+#                             perm_list = []
+#                             if ob.halo_json.Permutation_Name == '':
+#                                 perm = 'default'
+#                             else:
+#                                 perm = ob.halo_json.Permutation_Name
+#                             if (perm not in perm_list):
+#                                 perm_list.append(perm)
+#                                 network = ET.SubElement(object, 'ContentNetwork' ,Name=asset_name + '_' + "{0:03}".format(bsp) + perm, Type="")
+#                                 ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, 'structure', perm)
+#                                 ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePath(asset_path, asset_name, 'structure', perm)
+#                         elif IsLight(obj) and obj.halo_json.bsp_index == bsp and (not obj.halo_json.bsp_shared):
+#                             network = ET.SubElement(object, 'ContentNetwork' ,Name=asset_name + '_' + "{0:03}".format(bsp) + perm, Type="")
+#                             ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, 'structure', perm)
+#                             ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePath(asset_path, asset_name, 'structure', perm)
+#                         elif obj.halo_json.bsp_shared:
+#                             if IsStructure(obj) and obj.halo_json.bsp_shared:
+#                                 perm_list = []
+#                                 if ob.halo_json.Permutation_Name == '':
+#                                     perm = 'default'
+#                                 else:
+#                                     perm = ob.halo_json.Permutation_Name
+#                                 if (perm not in perm_list):
+#                                     perm_list.append(perm)
+#                                     network = ET.SubElement(object, 'ContentNetwork' ,Name=asset_name + '_' + "{0:03}".format(bsp) + perm, Type="")
+#                                     ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, 'structure', perm)
+#                                     ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePath(asset_path, asset_name, 'structure', perm)
+#                             elif IsPoop(obj) and obj.halo_json.bsp_shared:
+#                                 perm_list = []
+#                                 if ob.halo_json.Permutation_Name == '':
+#                                     perm = 'default'
+#                                 else:
+#                                     perm = ob.halo_json.Permutation_Name
+#                                 if (perm not in perm_list):
+#                                     perm_list.append(perm)
+#                                     network = ET.SubElement(object, 'ContentNetwork' ,Name=asset_name + '_' + "{0:03}".format(bsp) + perm, Type="")
+#                                     ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, 'structure', perm)
+#                                     ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePath(asset_path, asset_name, 'structure', perm)
+#                             elif IsMarker(obj) and obj.halo_json.bsp_shared:
+#                                 perm_list = []
+#                                 if ob.halo_json.Permutation_Name == '':
+#                                     perm = 'default'
+#                                 else:
+#                                     perm = ob.halo_json.Permutation_Name
+#                                 if (perm not in perm_list):
+#                                     perm_list.append(perm)
+#                                     network = ET.SubElement(object, 'ContentNetwork' ,Name=asset_name + '_' + "{0:03}".format(bsp) + perm, Type="")
+#                                     ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, 'structure', perm)
+#                                     ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePath(asset_path, asset_name, 'structure', perm)
+#                             elif IsLight(obj) and obj.halo_json.bsp_shared:
+#                                 network = ET.SubElement(object, 'ContentNetwork' ,Name=asset_name + '_' + "{0:03}".format(bsp) + perm, Type="")
+#                                 ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, 'structure', perm)
+#                                 ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePath(asset_path, asset_name, 'structure', perm)
+
+#         output = ET.SubElement(object, 'OutputTagCollection')
+#         ET.SubElement(output, 'OutputTag', Type='scenario_structure_bsp').text = asset_path + '\\' + asset_name + '_' + "{0:03}".format(bsp)
+        
+
+
+#     ##### STRUCTURE DESIGN #####
+#     if SceneHasDesign():
+#         bsp_list = []
+#         for ob in bpy.data.objects:
+#             for bsp in ob.halo_json.bsp_index:
+#                 if (bsp not in bsp_list):
+#                     bsp_list.append(bsp)
+#                     content = ET.SubElement(contents, "Content", Name=asset_name + '_' + "{0:03}".format(bsp) + '_structure_design', Type='design')
+#                     object = ET.SubElement(content, 'ContentObject', Name='', Type="structure_design")
+
+#                     for obj in bpy.data.objects:
+#                         if IsBoundary(obj) and obj.halo_json.bsp_index == bsp and (not obj.halo_json.bsp_shared):
+#                             perm_list = []
+#                             if ob.halo_json.Permutation_Name == '':
+#                                 perm = 'default'
+#                             else:
+#                                 perm = ob.halo_json.Permutation_Name
+#                             if (perm not in perm_list):
+#                                 perm_list.append(perm)
+#                                 network = ET.SubElement(object, 'ContentNetwork' ,Name=asset_name + '_' + "{0:03}".format(bsp) + perm, Type="")
+#                                 ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, 'structure_design', perm)
+#                                 ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePath(asset_path, asset_name, 'structure_design', perm)
+#                         elif IsWaterPhysics(obj) and obj.halo_json.bsp_index == bsp and (not obj.halo_json.bsp_shared):
+#                             perm_list = []
+#                             if ob.halo_json.Permutation_Name == '':
+#                                 perm = 'default'
+#                             else:
+#                                 perm = ob.halo_json.Permutation_Name
+#                             if (perm not in perm_list):
+#                                 perm_list.append(perm)
+#                                 network = ET.SubElement(object, 'ContentNetwork' ,Name=asset_name + '_' + "{0:03}".format(bsp) + perm, Type="")
+#                                 ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, 'structure_design', perm)
+#                                 ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePath(asset_path, asset_name, 'structure_design', perm)
+#                         elif IsPoopRain(obj) and obj.halo_json.bsp_index == bsp and (not obj.halo_json.bsp_shared):
+#                             perm_list = []
+#                             if ob.halo_json.Permutation_Name == '':
+#                                 perm = 'default'
+#                             else:
+#                                 perm = ob.halo_json.Permutation_Name
+#                             if (perm not in perm_list):
+#                                 perm_list.append(perm)
+#                                 network = ET.SubElement(object, 'ContentNetwork' ,Name=asset_name + '_' + "{0:03}".format(bsp) + perm, Type="")
+#                                 ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, 'structure_design', perm)
+#                                 ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePath(asset_path, asset_name, 'structure_design', perm)
+#                         elif obj.halo_json.bsp_shared:
+#                             if IsBoundary(obj) and obj.halo_json.bsp_shared:
+#                                 perm_list = []
+#                                 if ob.halo_json.Permutation_Name == '':
+#                                     perm = 'default'
+#                                 else:
+#                                     perm = ob.halo_json.Permutation_Name
+#                                 if (perm not in perm_list):
+#                                     perm_list.append(perm)
+#                                     network = ET.SubElement(object, 'ContentNetwork' ,Name=asset_name + '_' + "{0:03}".format(bsp) + perm, Type="")
+#                                     ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, 'structure_design', perm)
+#                                     ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePath(asset_path, asset_name, 'structure_design', perm)
+#                             elif IsWaterPhysics(obj) and obj.halo_json.bsp_shared:
+#                                 perm_list = []
+#                                 if ob.halo_json.Permutation_Name == '':
+#                                     perm = 'default'
+#                                 else:
+#                                     perm = ob.halo_json.Permutation_Name
+#                                 if (perm not in perm_list):
+#                                     perm_list.append(perm)
+#                                     network = ET.SubElement(object, 'ContentNetwork' ,Name=asset_name + '_' + "{0:03}".format(bsp) + perm, Type="")
+#                                     ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, 'structure_design', perm)
+#                                     ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePath(asset_path, asset_name, 'structure_design', perm)
+#                             elif IsPoopRain(obj) and obj.halo_json.bsp_shared:
+#                                 perm_list = []
+#                                 if ob.halo_json.Permutation_Name == '':
+#                                     perm = 'default'
+#                                 else:
+#                                     perm = ob.halo_json.Permutation_Name
+#                                 if (perm not in perm_list):
+#                                     perm_list.append(perm)
+#                                     network = ET.SubElement(object, 'ContentNetwork' ,Name=asset_name + '_' + "{0:03}".format(bsp) + perm, Type="")
+#                                     ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, 'structure_design', perm)
+#                                     ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePath(asset_path, asset_name, 'structure_design', perm)
+
+
+#         output = ET.SubElement(object, 'OutputTagCollection')
+#         ET.SubElement(output, 'OutputTag', Type='structure_design').text = asset_path + '\\' + asset_name + '_' + "{0:03}".format(bsp) + '_structure_design'
+
+
+# def SceneHasBSP():
+
+# def IsPoop():
+
+# def IsMarker():
+
+# def IsLight():
+
+# def IsBoundarySurface():
+
+# def IsWaterPhysics():
+
 def GetInputFilePath(asset_path, asset_name, type, perm=''):
     if type == 'model_animation_graph':
         path = asset_path + '\\animations\\' + asset_name
@@ -471,117 +640,6 @@ def CollisionPermExists(perm):
             exists = True
     return exists
 
-# def IntermediateFileExists(folderName):
-#     filePath = "fullPath" + "\\" + folderName
-
-#     for fname in os.listdir(filePath):
-#         if fname.endswith('.gr2'):
-#             return True
-#         else:
-#             return False
-
-# def GetModelContentObjects(metadata):
-#     temp = []
-#     ContentObjects = ET.SubElement(metadata, "Content", Name="assetName", Type="model")
-
-#     if(IntermediateFileExists("render")):
-#         CreateContentObject(ContentObjects, "render")
-
-#     if(IntermediateFileExists("physics")):
-#         CreateContentObject(ContentObjects, "physics")
-
-#     if(IntermediateFileExists("collision")):
-#         CreateContentObject(ContentObjects, "collision")
-
-#     if(IntermediateFileExists("markers")):
-#         CreateContentObject(ContentObjects, "markers")
-
-#     if(IntermediateFileExists("skeleton")):
-#         CreateContentObject(ContentObjects, "skeleton")
-
-#     if(IntermediateFileExists("animations\\JMM") or IntermediateFileExists("animations\\JMA") or IntermediateFileExists("animations\\JMT") or IntermediateFileExists("animations\\JMZ") or IntermediateFileExists("animations\\JMV")
-#         or IntermediateFileExists("animations\\JMO (Keyframe)") or IntermediateFileExists("animations\\JMO (Pose)") or IntermediateFileExists("animations\\JMR (Object)") or IntermediateFileExists("animations\\JMR (Local)")):
-#         animations = ET.SubElement(ContentObjects, "ContentObject", Name="", Type="model_animation_graph")
-
-#         if(IntermediateFileExists("animations\\JMM")):
-#             CreateContentObject(animations, "animations\\JMM", "Base", "ModelAnimationMovementData", "None", "", "")
-
-#         if(IntermediateFileExists("animations\\JMA")):
-#             CreateContentObject(animations, "animations\\JMA", "Base", "ModelAnimationMovementData", "XY", "", "")
-
-#         if(IntermediateFileExists("animations\\JMT")):
-#             CreateContentObject(animations, "animations\\JMT", "Base", "ModelAnimationMovementData", "XYYaw", "", "")
-
-#         if(IntermediateFileExists("animations\\JMZ")):
-#             CreateContentObject(animations, "animations\\JMZ", "Base", "ModelAnimationMovementData", "XYZYaw", "", "")
-
-#         if(IntermediateFileExists("animations\\JMV")):
-#             CreateContentObject(animations, "animations\\JMV", "Base", "ModelAnimationMovementData", "XYZFullRotation", "", "")
-
-#         if(IntermediateFileExists("animations\\JMO (Keyframe)")):
-#             CreateContentObject(animations, "animations\\JMO (Keyframe)", "Overlay", "ModelAnimationOverlayType", "Keyframe", "ModelAnimationOverlayBlending", "Additive")
-
-#         if(IntermediateFileExists("animations\\JMO (Pose)")):
-#             CreateContentObject(animations, "animations\\JMO (Pose)", "Overlay", "ModelAnimationOverlayType", "Pose", "ModelAnimationOverlayBlending", "Additive")
-
-#         if(IntermediateFileExists("animations\\JMR (Local)")):
-#             CreateContentObject(animations, "animations\\JMR (Local)", "Overlay", "ModelAnimationOverlayType", "keyframe", "ModelAnimationOverlayBlending", "ReplacementLocalSpace")
-
-#         if(IntermediateFileExists("animations\\JMR (Object)")):
-#             CreateContentObject(animations, "animations\\JMR (Object)", "Overlay", "ModelAnimationOverlayType", "keyframe", "ModelAnimationOverlayBlending", "ReplacementObjectSpace")
-
-#         r2 = ET.SubElement(animations, "OutputTagCollection")
-#         ET.SubElement(r2, "OutputTag", Type="frame_event_list").text = "dataPath" + "\\" + "assetName"
-#         ET.SubElement(r2, "OutputTag", Type="model_animation_graph").text = "dataPath" + "\\" + "assetName"
-
-# def CreateContentObject(ContentObjects, type):
-#     files = []
-#     path = "fullPath" + "\\" + type
-    
-#     for (root, dirs, file) in os.walk(path):
-#         for fi in file:
-#             if '.gr2' in fi:
-#                 files.add(fi)
-    
-#     if(type == "markers" or type == "skeleton"):
-#         ET.SubElement(ContentObjects, "ContentObject", Name="", Type=type)
-#     else:
-#         ET.SubElement(ContentObjects, "ContentObject", Name="", Type=str(type + "_model"))
-
-#     for f in files:
-#         r1 = ET.SubElement(ContentObjects, "ContentNetwork", Name=getFileNames(f), Type="")
-#         ET.SubElement(r1, "InputFile").text = "dataPath" + "\\" + type + "\\" + getFileNames(f) + "inputFileType"
-#         ET.SubElement(r1, "IntermediateFile").text = "dataPath" + "\\" + type + "\\" + getFileNames(f)
-    
-#     if(type == "markers" or type == "skeleton"):
-#         ET.SubElement(ContentObjects, "OutputTagCollection")
-#     else:
-#         r2 = ET.SubElement(ContentObjects, "OutputTagCollection")
-#         ET.SubElement(r2, "OutputTag", Type=str(type + "_model")).text = "dataPath" + "\\" + "assetName"
-
-# def CreateContentObject(animations, type1, type2, type3, type4, type5, type6):
-#     files = []
-#     path = "fullPath" + "\\" + type
-    
-#     for (root, dirs, file) in os.walk(path):
-#         for fi in file:
-#             if '.gr2' in fi:
-#                 files.add(fi)
-    
-#     for f in files:
-#         if(type5 == "" or type6 == ""):
-#             r1 = ET.SubElement(animations, "ContentNetwork", Name=getFileNames(f), Type=type2, type3=type4)
-#             ET.SubElement(r1, "InputFile").text = "dataPath" + "\\" + type1 + "\\" + getFileNames(f) + "inputFileType"
-#             ET.SubElement(r1, "IntermediateFile").text = "dataPath" + "\\" + type1 + "\\" + getFileNames(f)
-#         else:
-#             r1 = ET.SubElement(animations, "ContentNetwork", Name=getFileNames(f), Type=type2, type3=type4, type5=type6)
-#             ET.SubElement(r1, "InputFile").text = "dataPath" + "\\" + type1 + "\\" + getFileNames(f) + "inputFileType"
-#             ET.SubElement(r1, "IntermediateFile").text = "dataPath" + "\\" + type1 + "\\" + getFileNames(f)
-
-# def getFileNames(file):
-#     t = []
-#     return ""
-
 def save(operator, context, report,
         filepath="",
         export_sidecar=False,
@@ -601,5 +659,6 @@ def save(operator, context, report,
         output_weapon=False,
         **kwargs
         ):
-    export_xml(report, filepath, export_sidecar, sidecar_type, asset_path,output_biped,output_crate,output_creature,output_device_control,output_device_machine,output_device_terminal,output_effect_scenery,output_equipment,output_giant,output_scenery,output_vehicle,output_weapon)
+    if export_sidecar and asset_path != '':
+        export_xml(report, filepath, export_sidecar, sidecar_type, asset_path,output_biped,output_crate,output_creature,output_device_control,output_device_machine,output_device_terminal,output_effect_scenery,output_equipment,output_giant,output_scenery,output_vehicle,output_weapon)
     return {'FINISHED'}

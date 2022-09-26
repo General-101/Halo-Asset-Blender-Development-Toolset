@@ -485,6 +485,9 @@ class Export_Halo_GR2(Operator, ExportHelper):
         elif self.sidecar_type == 'SCENARIO':
             sub.prop(self, "export_structure")
             sub.prop(self, "export_structure_design")
+            sub.prop(self, 'export_poops')
+            sub.prop(self, 'export_lights')
+            sub.prop(self, "export_markers")
         else:
             sub.prop(self, "export_render")
 
