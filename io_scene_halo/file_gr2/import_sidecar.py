@@ -37,7 +37,6 @@ EKPath = EKPath.strip('\\')
 #get tool path
 toolPath = EKPath + '\\tool_fast.exe'
 
-
 def import_sidecar(report, filePath='', import_to_game=False, import_check=False, import_force=False, import_verbose=False, import_draft=False,import_seam_debug=False,import_skip_instances=False,import_decompose_instances=False,import_surpress_errors=False):
     full_path = filePath.rpartition('\\')[0]
     print('full path = ' + filePath)
@@ -88,7 +87,6 @@ def CleanAssetPath(path):
 
 def save(operator, context, report,
         filepath="",
-        sidecar_path='',
         import_to_game=False,
         import_check=False,
         import_force=False,

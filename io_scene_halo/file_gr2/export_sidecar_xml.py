@@ -27,8 +27,6 @@
 from datetime import datetime
 from xml.etree.ElementTree import SubElement
 import bpy
-import os
-from os.path import exists as file_exists
 import getpass
 
 import xml.etree.cElementTree as ET
@@ -581,11 +579,6 @@ def CollisionPermExists(perm):
 
 def save(operator, context, report,
         filepath="",
-        use_selection=False,
-        use_visible=False,
-        use_active_collection=False,
-        batch_mode='OFF',
-        use_batch_own_dir=False,
         export_sidecar=False,
         sidecar_type='MODEL',
         asset_path='',

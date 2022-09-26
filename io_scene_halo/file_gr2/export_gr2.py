@@ -27,7 +27,6 @@
 import shutil
 import bpy
 import json
-from bpy import ops
 
 EKPath = bpy.context.preferences.addons['io_scene_halo'].preferences.hrek_path
 
@@ -970,7 +969,6 @@ def build_gr2(toolPath, filePath, jsonPath, gr2Path):
 def save(operator, context, report, tag_type,
         perm='',
         filepath="",
-        export_method='SELECTED',
         keep_fbx=False,
         keep_json=False,
         asset_path='',
