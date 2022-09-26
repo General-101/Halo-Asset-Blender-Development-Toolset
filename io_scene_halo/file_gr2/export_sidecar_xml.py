@@ -31,6 +31,7 @@ import getpass
 
 import xml.etree.cElementTree as ET
 import xml.dom.minidom
+from os.path import exists as file_exists
 
 EKPath = bpy.context.preferences.addons['io_scene_halo'].preferences.hrek_path
 
@@ -69,6 +70,11 @@ def export_xml(report, filePath="", export_sidecar=False, sidecar_type='MODEL', 
             GenerateDecoratorSidecar(asset_path, asset_name, full_path)
         else:
             GenerateParticleSidecar(asset_path, asset_name, full_path)
+
+    if(file_exists(asset_path + '\\' + asset_name + '.sidecar.xml')):
+        report({'INFO'},"Sidecar built")
+    else:
+        report({'INFO'},"Sidecar build failed")
 
 def CleanAssetPath(path):
     path = path.replace('"','')
@@ -575,7 +581,6 @@ def CollisionPermExists(perm):
 # def getFileNames(file):
 #     t = []
 #     return ""
-
 
 def save(operator, context, report,
         filepath="",

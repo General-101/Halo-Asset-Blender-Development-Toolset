@@ -855,10 +855,11 @@ import ctypes
 from subprocess import Popen
 
 def export_asset(report, filePath="", keep_fbx=False, keep_json=False, asset_path="", asset_name="", tag_type='', perm=''):
-
-    fileName = GetFileName(filePath, asset_name, tag_type, perm, asset_path)
-    
-    rename_file(filePath, asset_name, tag_type, perm, fileName)
+    if tag_type != 'selected':
+        fileName = GetFileName(filePath, asset_name, tag_type, perm, asset_path)
+        rename_file(filePath, asset_name, tag_type, perm, fileName)
+    else:
+        fileName = filePath
 
     pathList = fileName.split(".")
     jsonPath = ""
@@ -892,7 +893,8 @@ def export_asset(report, filePath="", keep_fbx=False, keep_json=False, asset_pat
         os.remove(jsonPath)
         json_binned = True
      
-    move_assets(fileName, jsonPath, gr2Path, asset_path, fbx_crushed, json_binned, tag_type)
+    if tag_type != 'selected':
+        move_assets(fileName, jsonPath, gr2Path, asset_path, fbx_crushed, json_binned, tag_type)
 
     return {'FINISHED'}
 

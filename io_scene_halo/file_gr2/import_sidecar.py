@@ -27,6 +27,7 @@
 import bpy
 from subprocess import Popen
 import os
+from os.path import exists as file_exists
 
 EKPath = bpy.context.preferences.addons['io_scene_halo'].preferences.hrek_path
 
@@ -69,14 +70,13 @@ def import_sidecar(report, filePath='', import_to_game=False, import_check=False
     if import_surpress_errors:
         flag_import_surpress_errors = 'suppress_errors_to_vrml'
 
-    if(import_to_game):
-        toolCommand = '"{}" import "{}" "{}" "{}" "{}" "{}" "{}" "{}" "{}" "{}" '.format(toolPath, asset_path + '\\' + asset_name + '.sidecar.xml', flag_import_check, flag_import_force, flag_import_verbose, flag_import_draft, flag_import_seam_debug, flag_import_skip_instances, flag_import_decompose_instances, flag_import_surpress_errors)
-        print('\nRunning Tool command... %r' % toolCommand)
-        os.chdir(EKPath)
-        p = Popen(toolCommand)
-        p.wait()
-    else:
-        return {'FINISHED'}
+    toolCommand = '"{}" import "{}" "{}" "{}" "{}" "{}" "{}" "{}" "{}" "{}" '.format(toolPath, asset_path + '\\' + asset_name + '.sidecar.xml', flag_import_check, flag_import_force, flag_import_verbose, flag_import_draft, flag_import_seam_debug, flag_import_skip_instances, flag_import_decompose_instances, flag_import_surpress_errors)
+    print('\nRunning Tool command... %r' % toolCommand)
+    os.chdir(EKPath)
+    p = Popen(toolCommand)
+    p.wait()
+
+    report({'INFO'},"Import process complete")
 
 def CleanAssetPath(path):
     path = path.replace('"','')
@@ -98,6 +98,7 @@ def save(operator, context, report,
         import_surpress_errors=False,
         **kwargs
         ):
-        import_sidecar(report, filepath, import_to_game, import_check, import_force, import_verbose, import_draft,import_seam_debug,import_skip_instances,import_decompose_instances,import_surpress_errors)
+        if import_to_game:
+            import_sidecar(report, filepath, import_to_game, import_check, import_force, import_verbose, import_draft,import_seam_debug,import_skip_instances,import_decompose_instances,import_surpress_errors)
 
         return {'FINISHED'}
