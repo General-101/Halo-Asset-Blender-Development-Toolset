@@ -34,6 +34,7 @@ bl_info = {
     'description': 'Halo Gen4 Asset Exporter'
     }
 
+import ctypes
 import bpy
 from bpy_extras.io_utils import ExportHelper
 from bpy.props import StringProperty, BoolProperty, EnumProperty, FloatProperty
@@ -359,105 +360,110 @@ class Export_Halo_GR2(Operator, ExportHelper):
         keywords = self.as_keywords()
         from . import export_gr2, export_sidecar_xml, import_sidecar
 
-        if self.sidecar_type != 'MODEL' or (self.sidecar_type == 'MODEL' and(
-            self.output_biped or
-            self.output_crate or
-            self.output_creature or
-            self.output_device_control or
-            self.output_device_machine or
-            self.output_device_terminal or
-            self.output_effect_scenery or
-            self.output_equipment or
-            self.output_giant or
-            self.output_scenery or
-            self.output_vehicle or
-            self.output_weapon)):
-        
-            if self.export_method == 'BATCH':
-
-                if self.sidecar_type == 'MODEL':
-
-                    if self.export_render:
-                        perm_list = []
-                        for ob in bpy.data.objects:
-                            if ob.halo_json.Permutation_Name == '':
-                                perm = 'default'
-                            else:
-                                perm = ob.halo_json.Permutation_Name
-                            if perm not in perm_list:
-                                perm_list.append(perm)
-                                SelectModelRender(perm)
-                                for select in bpy.context.selected_objects:
-                                    print (select.name)
-                                export_fbx_bin.save(self, context, **keywords)
-                                export_gr2.save(self, context, self.report, IsWindows(), 'render', perm, **keywords)
-
-                    if self.export_collision:
-                        perm_list = []
-                        for ob in bpy.data.objects:
-                            if ob.halo_json.Permutation_Name == '':
-                                perm = 'default'
-                            else:
-                                perm = ob.halo_json.Permutation_Name
-                            if perm not in perm_list:
-                                perm_list.append(perm)
-                                SelectModelCollision(perm)
-                                export_fbx_bin.save(self, context, **keywords)
-                                export_gr2.save(self, context, self.report, IsWindows(), 'collision', perm, **keywords)
-
-                    if self.export_physics:
-                        perm_list = []
-                        for ob in bpy.data.objects:
-                            if ob.halo_json.Permutation_Name == '':
-                                perm = 'default'
-                            else:
-                                perm = ob.halo_json.Permutation_Name
-                            if perm not in perm_list:
-                                perm_list.append(perm)
-                                SelectModelPhysics(perm)
-                                export_fbx_bin.save(self, context, **keywords)
-                                export_gr2.save(self, context, self.report, IsWindows(), 'physics', perm, **keywords)
-
-                    if self.export_markers:
-                        SelectModelMarkers()
-                        export_fbx_bin.save(self, context, **keywords)
-                        export_gr2.save(self, context, self.report, IsWindows(), 'markers', **keywords)
-
-                    SelectModelSkeleton()
-                    export_fbx_bin.save(self, context, **keywords)
-                    export_gr2.save(self, context, self.report, IsWindows(), 'skeleton', **keywords)
-
-                    if self.export_animations and 0<=len(bpy.data.actions):
-                        SelectModelSkeleton()
-                        for ob in bpy.context.selected_objects:
-                            bpy.context.view_layer.objects.active = ob
-                            for anim in bpy.data.actions:
-                                ob.animation_data.action = anim
-                                export_fbx_bin.save(self, context, **keywords)
-                                export_gr2.save(self, context, self.report, IsWindows(), 'animations', **keywords)
-                            
-                elif self.sidecar_type == 'SCENARIO':
-                    print('not implemented')
-
-                elif self.sidecar_type == 'DECORATOR':
-                    print('not implemented')
-
-                elif self.sidecar_type == 'PARTICLE MODEL':
-                    print('not implemented')
+        if(CheckPath(self.filepath)):
+            if self.sidecar_type != 'MODEL' or (self.sidecar_type == 'MODEL' and(
+                self.output_biped or
+                self.output_crate or
+                self.output_creature or
+                self.output_device_control or
+                self.output_device_machine or
+                self.output_device_terminal or
+                self.output_effect_scenery or
+                self.output_equipment or
+                self.output_giant or
+                self.output_scenery or
+                self.output_vehicle or
+                self.output_weapon)):
             
-            else:
-                export_fbx_bin.save(self, context, **keywords)
-                export_gr2.save(self, context, self.report, IsWindows(), 'selected', **keywords)
+                if self.export_method == 'BATCH':
 
-            if(IsWindows()):
-                if self.export_sidecar:
-                    export_sidecar_xml.save(self, context, self.report, **keywords)
-                import_sidecar.save(self, context, self.report, **keywords)
+                    if self.sidecar_type == 'MODEL':
+
+                        if self.export_render:
+                            perm_list = []
+                            for ob in bpy.data.objects:
+                                if ob.halo_json.Permutation_Name == '':
+                                    perm = 'default'
+                                else:
+                                    perm = ob.halo_json.Permutation_Name
+                                if perm not in perm_list:
+                                    perm_list.append(perm)
+                                    SelectModelRender(perm)
+                                    for select in bpy.context.selected_objects:
+                                        print (select.name)
+                                    export_fbx_bin.save(self, context, **keywords)
+                                    export_gr2.save(self, context, self.report, IsWindows(), 'render', perm, **keywords)
+
+                        if self.export_collision:
+                            perm_list = []
+                            for ob in bpy.data.objects:
+                                if ob.halo_json.Permutation_Name == '':
+                                    perm = 'default'
+                                else:
+                                    perm = ob.halo_json.Permutation_Name
+                                if perm not in perm_list:
+                                    perm_list.append(perm)
+                                    SelectModelCollision(perm)
+                                    export_fbx_bin.save(self, context, **keywords)
+                                    export_gr2.save(self, context, self.report, IsWindows(), 'collision', perm, **keywords)
+
+                        if self.export_physics:
+                            perm_list = []
+                            for ob in bpy.data.objects:
+                                if ob.halo_json.Permutation_Name == '':
+                                    perm = 'default'
+                                else:
+                                    perm = ob.halo_json.Permutation_Name
+                                if perm not in perm_list:
+                                    perm_list.append(perm)
+                                    SelectModelPhysics(perm)
+                                    export_fbx_bin.save(self, context, **keywords)
+                                    export_gr2.save(self, context, self.report, IsWindows(), 'physics', perm, **keywords)
+
+                        if self.export_markers:
+                            SelectModelMarkers()
+                            export_fbx_bin.save(self, context, **keywords)
+                            export_gr2.save(self, context, self.report, IsWindows(), 'markers', **keywords)
+
+                        SelectModelSkeleton()
+                        export_fbx_bin.save(self, context, **keywords)
+                        export_gr2.save(self, context, self.report, IsWindows(), 'skeleton', **keywords)
+
+                        if self.export_animations and 0<=len(bpy.data.actions):
+                            SelectModelSkeleton()
+                            for ob in bpy.context.selected_objects:
+                                bpy.context.view_layer.objects.active = ob
+                                for anim in bpy.data.actions:
+                                    ob.animation_data.action = anim
+                                    export_fbx_bin.save(self, context, **keywords)
+                                    export_gr2.save(self, context, self.report, IsWindows(), 'animations', **keywords)
+                                
+                    elif self.sidecar_type == 'SCENARIO':
+                        print('not implemented')
+
+                    elif self.sidecar_type == 'DECORATOR':
+                        print('not implemented')
+
+                    elif self.sidecar_type == 'PARTICLE MODEL':
+                        print('not implemented')
+                
+                else:
+                    export_fbx_bin.save(self, context, **keywords)
+                    export_gr2.save(self, context, self.report, IsWindows(), 'selected', **keywords)
+
+                if(IsWindows()):
+                    if self.export_sidecar:
+                        export_sidecar_xml.save(self, context, self.report, **keywords)
+                    import_sidecar.save(self, context, self.report, **keywords)
+
+            else:
+                self.report({'ERROR'},"No sidecar output tags selected")
+
+            return {'FINISHED'}
 
         else:
-            self.report({'ERROR'},"No sidecar output tags selected")
-
-        return {'FINISHED'}
+            ctypes.windll.user32.MessageBoxW(0, "The selected export folder is invalid, please select one within the data folder of your HEK tools.", "Invalid Export Path", 0)
+            return {'FINISHED'}
 
     def draw(self, context):
         layout = self.layout
@@ -549,6 +555,18 @@ def IsWindows():
     if(platform.system() == 'Windows'):
         return True
     else:
+        return False
+
+def CheckPath(filePath):
+    EKPath = bpy.context.preferences.addons['io_scene_halo'].preferences.hrek_path
+    EKPath = EKPath.replace('"','')
+    EKPath = EKPath.strip('\\')
+
+    if(filePath.startswith(os.path.abspath(EKPath + "\\data")+os.sep)):
+        print("Is Valid")
+        return True
+    else:
+        print("Not Valid!")
         return False
 
 def SelectModelRender(perm):
