@@ -43,6 +43,7 @@ EKPath = EKPath.strip('\\')
 valid_animation_types = ('JMM', 'JMA', 'JMT', 'JMZ', 'JMV', 'JMO', 'JMOX', 'JMR', 'JMRX')
 
 special_prefixes = ('b ', 'b_', 'frame ', 'frame_','bip ','bip_','bone ','bone_','#','+soft_ceiling','+soft_kill','+slip_surface', '@','+cookie','+decorator','+flair', '%', '$','+fog','+portal', '+seam','+water', '\'')
+bsp_prefixes = ('@', '+cookie', '\'')
 
 def export_xml(report, filePath="", export_sidecar=False, sidecar_type='MODEL', asset_path='',        
                 output_biped=False,
@@ -389,29 +390,31 @@ def WriteModelContents(metadata, asset_path, asset_name):
 #                                 ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, 'structure', perm)
 #                                 ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePath(asset_path, asset_name, 'structure', perm)
 #                         elif IsMarker(obj) and obj.halo_json.bsp_index == bsp and (not obj.halo_json.bsp_shared):
-#                             perm_list = []
-#                             if ob.halo_json.Permutation_Name == '':
-#                                 perm = 'default'
-#                             else:
-#                                 perm = ob.halo_json.Permutation_Name
-#                             if (perm not in perm_list):
-#                                 perm_list.append(perm)
-#                                 network = ET.SubElement(object, 'ContentNetwork' ,Name=asset_name + '_' + "{0:03}".format(bsp) + perm, Type="")
-#                                 ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, 'structure', perm)
-#                                 ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePath(asset_path, asset_name, 'structure', perm)
+#                             network = ET.SubElement(object, 'ContentNetwork' ,Name=asset_name + '_' + "{0:03}".format(bsp) + '_' + 'markers', Type="")
+#                             ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, 'structure', perm)
+#                             ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePath(asset_path, asset_name, 'structure', perm)
 #                         elif IsLight(obj) and obj.halo_json.bsp_index == bsp and (not obj.halo_json.bsp_shared):
+#                             network = ET.SubElement(object, 'ContentNetwork' ,Name=asset_name + '_' + "{0:03}".format(bsp) + '_' + 'lights', Type="")
+#                             ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, 'structure', perm)
+#                             ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePath(asset_path, asset_name, 'structure', perm)
+#                         elif IsPortal(obj) and obj.halo_json.bsp_index == bsp and (not obj.halo_json.bsp_shared):
+#                             network = ET.SubElement(object, 'ContentNetwork' ,Name=asset_name + '_' + "{0:03}".format(bsp) + '_' + 'portals', Type="")
+#                             ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, 'structure', perm)
+#                             ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePath(asset_path, asset_name, 'structure', perm)
+#                         elif IsSeam(obj) and obj.halo_json.bsp_index == bsp and (not obj.halo_json.bsp_shared):
+#                             network = ET.SubElement(object, 'ContentNetwork' ,Name=asset_name + '_' + "{0:03}".format(bsp) + '_' + 'seams', Type="")
+#                             ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, 'structure', perm)
+#                             ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePath(asset_path, asset_name, 'structure', perm)
+#                         elif IsWaterSurface(obj) and obj.halo_json.bsp_index == bsp and (not obj.halo_json.bsp_shared):
+#                             network = ET.SubElement(object, 'ContentNetwork' ,Name=asset_name + '_' + "{0:03}".format(bsp) + '_' + 'water', Type="")
+#                             ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, 'structure', perm)
+#                             ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePath(asset_path, asset_name, 'structure', perm)
+#                         elif IsLightMapRegion(obj) and obj.halo_json.bsp_index == bsp and (not obj.halo_json.bsp_shared):
 #                             network = ET.SubElement(object, 'ContentNetwork' ,Name=asset_name + '_' + "{0:03}".format(bsp) + perm, Type="")
 #                             ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, 'structure', perm)
 #                             ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePath(asset_path, asset_name, 'structure', perm)
 #                         elif obj.halo_json.bsp_shared:
 #                             if IsStructure(obj) and obj.halo_json.bsp_shared:
-#                                 perm_list = []
-#                                 if ob.halo_json.Permutation_Name == '':
-#                                     perm = 'default'
-#                                 else:
-#                                     perm = ob.halo_json.Permutation_Name
-#                                 if (perm not in perm_list):
-#                                     perm_list.append(perm)
 #                                     network = ET.SubElement(object, 'ContentNetwork' ,Name=asset_name + '_' + "{0:03}".format(bsp) + perm, Type="")
 #                                     ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, 'structure', perm)
 #                                     ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePath(asset_path, asset_name, 'structure', perm)
@@ -423,21 +426,30 @@ def WriteModelContents(metadata, asset_path, asset_name):
 #                                     perm = ob.halo_json.Permutation_Name
 #                                 if (perm not in perm_list):
 #                                     perm_list.append(perm)
-#                                     network = ET.SubElement(object, 'ContentNetwork' ,Name=asset_name + '_' + "{0:03}".format(bsp) + perm, Type="")
+#                                     network = ET.SubElement(object, 'ContentNetwork' ,Name=asset_name + '_' + "{0:03}".format(bsp) + perm + '_' + 'poops', Type="")
 #                                     ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, 'structure', perm)
 #                                     ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePath(asset_path, asset_name, 'structure', perm)
 #                             elif IsMarker(obj) and obj.halo_json.bsp_shared:
-#                                 perm_list = []
-#                                 if ob.halo_json.Permutation_Name == '':
-#                                     perm = 'default'
-#                                 else:
-#                                     perm = ob.halo_json.Permutation_Name
-#                                 if (perm not in perm_list):
-#                                     perm_list.append(perm)
-#                                     network = ET.SubElement(object, 'ContentNetwork' ,Name=asset_name + '_' + "{0:03}".format(bsp) + perm, Type="")
-#                                     ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, 'structure', perm)
-#                                     ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePath(asset_path, asset_name, 'structure', perm)
+#                                 network = ET.SubElement(object, 'ContentNetwork' ,Name=asset_name + '_' + "{0:03}".format(bsp) + '_' + 'markers', Type="")
+#                                 ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, 'structure', perm)
+#                                 ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePath(asset_path, asset_name, 'structure', perm)
 #                             elif IsLight(obj) and obj.halo_json.bsp_shared:
+#                                 network = ET.SubElement(object, 'ContentNetwork' ,Name=asset_name + '_' + "{0:03}".format(bsp) + '_' + 'lights', Type="")
+#                                 ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, 'structure', perm)
+#                                 ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePath(asset_path, asset_name, 'structure', perm)
+#                             elif IsPortal(obj) and obj.halo_json.bsp_shared:
+#                                 network = ET.SubElement(object, 'ContentNetwork' ,Name=asset_name + '_' + "{0:03}".format(bsp) + '_' + 'portals', Type="")
+#                                 ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, 'structure', perm)
+#                                 ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePath(asset_path, asset_name, 'structure', perm)
+#                             elif IsSeam(obj) and obj.halo_json.bsp_shared:
+#                                 network = ET.SubElement(object, 'ContentNetwork' ,Name=asset_name + '_' + "{0:03}".format(bsp) + '_' + 'seams', Type="")
+#                                 ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, 'structure', perm)
+#                                 ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePath(asset_path, asset_name, 'structure', perm)
+#                             elif IsWaterSurface(obj) and obj.halo_json.bsp_shared:
+#                                 network = ET.SubElement(object, 'ContentNetwork' ,Name=asset_name + '_' + "{0:03}".format(bsp) + '_' + 'water', Type="")
+#                                 ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, 'structure', perm)
+#                                 ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePath(asset_path, asset_name, 'structure', perm)
+#                             elif IsLightMapRegion(obj) and obj.halo_json.bsp_shared:
 #                                 network = ET.SubElement(object, 'ContentNetwork' ,Name=asset_name + '_' + "{0:03}".format(bsp) + perm, Type="")
 #                                 ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, 'structure', perm)
 #                                 ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePath(asset_path, asset_name, 'structure', perm)
@@ -459,89 +471,70 @@ def WriteModelContents(metadata, asset_path, asset_name):
 
 #                     for obj in bpy.data.objects:
 #                         if IsBoundary(obj) and obj.halo_json.bsp_index == bsp and (not obj.halo_json.bsp_shared):
-#                             perm_list = []
-#                             if ob.halo_json.Permutation_Name == '':
-#                                 perm = 'default'
-#                             else:
-#                                 perm = ob.halo_json.Permutation_Name
-#                             if (perm not in perm_list):
-#                                 perm_list.append(perm)
-#                                 network = ET.SubElement(object, 'ContentNetwork' ,Name=asset_name + '_' + "{0:03}".format(bsp) + perm, Type="")
-#                                 ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, 'structure_design', perm)
-#                                 ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePath(asset_path, asset_name, 'structure_design', perm)
+#                             network = ET.SubElement(object, 'ContentNetwork' ,Name=asset_name + '_' + "{0:03}".format(bsp) + perm, Type="")
+#                             ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, 'structure_design', perm)
+#                             ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePath(asset_path, asset_name, 'structure_design', perm)
 #                         elif IsWaterPhysics(obj) and obj.halo_json.bsp_index == bsp and (not obj.halo_json.bsp_shared):
-#                             perm_list = []
-#                             if ob.halo_json.Permutation_Name == '':
-#                                 perm = 'default'
-#                             else:
-#                                 perm = ob.halo_json.Permutation_Name
-#                             if (perm not in perm_list):
-#                                 perm_list.append(perm)
-#                                 network = ET.SubElement(object, 'ContentNetwork' ,Name=asset_name + '_' + "{0:03}".format(bsp) + perm, Type="")
-#                                 ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, 'structure_design', perm)
-#                                 ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePath(asset_path, asset_name, 'structure_design', perm)
+#                             network = ET.SubElement(object, 'ContentNetwork' ,Name=asset_name + '_' + "{0:03}".format(bsp) + perm, Type="")
+#                             ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, 'structure_design', perm)
+#                             ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePath(asset_path, asset_name, 'structure_design', perm)
 #                         elif IsPoopRain(obj) and obj.halo_json.bsp_index == bsp and (not obj.halo_json.bsp_shared):
-#                             perm_list = []
-#                             if ob.halo_json.Permutation_Name == '':
-#                                 perm = 'default'
-#                             else:
-#                                 perm = ob.halo_json.Permutation_Name
-#                             if (perm not in perm_list):
-#                                 perm_list.append(perm)
-#                                 network = ET.SubElement(object, 'ContentNetwork' ,Name=asset_name + '_' + "{0:03}".format(bsp) + perm, Type="")
-#                                 ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, 'structure_design', perm)
-#                                 ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePath(asset_path, asset_name, 'structure_design', perm)
+#                             network = ET.SubElement(object, 'ContentNetwork' ,Name=asset_name + '_' + "{0:03}".format(bsp) + perm, Type="")
+#                             ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, 'structure_design', perm)
+#                             ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePath(asset_path, asset_name, 'structure_design', perm)
 #                         elif obj.halo_json.bsp_shared:
 #                             if IsBoundary(obj) and obj.halo_json.bsp_shared:
-#                                 perm_list = []
-#                                 if ob.halo_json.Permutation_Name == '':
-#                                     perm = 'default'
-#                                 else:
-#                                     perm = ob.halo_json.Permutation_Name
-#                                 if (perm not in perm_list):
-#                                     perm_list.append(perm)
-#                                     network = ET.SubElement(object, 'ContentNetwork' ,Name=asset_name + '_' + "{0:03}".format(bsp) + perm, Type="")
-#                                     ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, 'structure_design', perm)
-#                                     ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePath(asset_path, asset_name, 'structure_design', perm)
+#                                 network = ET.SubElement(object, 'ContentNetwork' ,Name=asset_name + '_' + "{0:03}".format(bsp) + perm, Type="")
+#                                 ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, 'structure_design', perm)
+#                                 ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePath(asset_path, asset_name, 'structure_design', perm)
 #                             elif IsWaterPhysics(obj) and obj.halo_json.bsp_shared:
-#                                 perm_list = []
-#                                 if ob.halo_json.Permutation_Name == '':
-#                                     perm = 'default'
-#                                 else:
-#                                     perm = ob.halo_json.Permutation_Name
-#                                 if (perm not in perm_list):
-#                                     perm_list.append(perm)
-#                                     network = ET.SubElement(object, 'ContentNetwork' ,Name=asset_name + '_' + "{0:03}".format(bsp) + perm, Type="")
-#                                     ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, 'structure_design', perm)
-#                                     ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePath(asset_path, asset_name, 'structure_design', perm)
+#                                 network = ET.SubElement(object, 'ContentNetwork' ,Name=asset_name + '_' + "{0:03}".format(bsp) + perm, Type="")
+#                                 ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, 'structure_design', perm)
+#                                 ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePath(asset_path, asset_name, 'structure_design', perm)
 #                             elif IsPoopRain(obj) and obj.halo_json.bsp_shared:
-#                                 perm_list = []
-#                                 if ob.halo_json.Permutation_Name == '':
-#                                     perm = 'default'
-#                                 else:
-#                                     perm = ob.halo_json.Permutation_Name
-#                                 if (perm not in perm_list):
-#                                     perm_list.append(perm)
-#                                     network = ET.SubElement(object, 'ContentNetwork' ,Name=asset_name + '_' + "{0:03}".format(bsp) + perm, Type="")
-#                                     ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, 'structure_design', perm)
-#                                     ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePath(asset_path, asset_name, 'structure_design', perm)
+#                                 network = ET.SubElement(object, 'ContentNetwork' ,Name=asset_name + '_' + "{0:03}".format(bsp) + perm, Type="")
+#                                 ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, 'structure_design', perm)
+#                                 ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePath(asset_path, asset_name, 'structure_design', perm)
 
 
 #         output = ET.SubElement(object, 'OutputTagCollection')
 #         ET.SubElement(output, 'OutputTag', Type='structure_design').text = asset_path + '\\' + asset_name + '_' + "{0:03}".format(bsp) + '_structure_design'
 
-
 # def SceneHasBSP():
+#     for ob in bpy.data.objects:
+#         IsStructure(ob)
 
-# def IsPoop():
+# def IsStructure(ob):
+#     return (ob.name.startswith('@') and not ob.parent.name.startswith('%')) or ob.halo_json.ObjectMesh_Type == 'COLLISION' or ob.halo_json.ObjectMesh_Type == 'DEFAULT' or ob.halo_json.ObjectMesh_Type == 'LIGHTMAP REGION' or 
 
-# def IsMarker():
+# def IsPoop(ob):
+#     return ob.name.startswith('%') or (ob.name.startswith('@') and ob.parent.name.startswith('%')) or (ob.name.startswith('$') and ob.parent.name.startswith('%')) or ob.halo_json.ObjectMesh_Type == 'INSTANCED GEOMETRY' or ob.halo_json.ObjectMesh_Type == 'INSTANCED GEOMETRY COLLISION' or ob.halo_json.ObjectMesh_Type == 'INSTANCED GEOMETRY MARKER' or ob.halo_json.ObjectMesh_Type == 'INSTANCED GEOMETRY PHYSICS' or ob.halo_json.ObjectMesh_Type == 'COOKIE CUTTER'
 
-# def IsLight():
+# def IsMarker(ob):
+#     return ob.name.startswith('#') or ob.halo_json.Object_Type_All == 'MARKER' or (ob.halo_json.Object_Type_No_Mesh == 'MARKER' and ob.type == 'EMPTY')
 
-# def IsBoundarySurface():
+# def IsLight(ob):
+#     return ob.type == 'LIGHT'
 
-# def IsWaterPhysics():
+# def IsPortal(ob):
+#     return ob.name.startswith('+portal') or ob.halo_json.ObjectMesh_Type == 'PORTAL'
+
+# def IsSeam(ob):
+#     return ob.name.startswith('+seam') or ob.halo_json.ObjectMesh_Type == 'SEAM'
+
+# def IsSeam(ob):
+
+# def IsWaterSurface(ob):
+
+# def IsLightMapRegion(ob):
+
+# def SceneHasDesign():
+#     for ob in bpy.data.objects:
+#         IsBoundary(ob)
+#         IsWaterPhysics(ob)
+#         IsPoopRain(ob)
+
+# def IsWaterPhysics(ob):
 
 def GetInputFilePath(asset_path, asset_name, type, perm=''):
     if type == 'model_animation_graph':

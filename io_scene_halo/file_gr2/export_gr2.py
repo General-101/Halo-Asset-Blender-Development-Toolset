@@ -948,7 +948,7 @@ def move_assets(fileName, jsonPath, gr2Path, asset_path, fbx_crushed, json_binne
             shutil.copy(fileName, asset_path + "\\models")
         if not json_binned:
             shutil.copy(jsonPath, asset_path + "\\models")
-        shutil.copy(gr2Path, asset_path + "\\models")
+        shutil.copy(gr2Path, asset_path + "\\export\\models")
 
     os.remove(fileName)
     os.remove(jsonPath)

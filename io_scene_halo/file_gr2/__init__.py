@@ -359,7 +359,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
         keywords = self.as_keywords()
         from . import export_gr2, export_sidecar_xml, import_sidecar
 
-        if self.sidecar_type != 'MODEL' or (self.sidecar_type == 'MODEL' and self.export_sidecar and(
+        if self.sidecar_type != 'MODEL' or (self.sidecar_type == 'MODEL' and(
             self.output_biped or
             self.output_crate or
             self.output_creature or
@@ -450,7 +450,8 @@ class Export_Halo_GR2(Operator, ExportHelper):
                 export_gr2.save(self, context, self.report, IsWindows(), 'selected', **keywords)
 
             if(IsWindows()):
-                export_sidecar_xml.save(self, context, self.report, **keywords)
+                if self.export_sidecar:
+                    export_sidecar_xml.save(self, context, self.report, **keywords)
                 import_sidecar.save(self, context, self.report, **keywords)
 
         else:
@@ -502,21 +503,22 @@ class Export_Halo_GR2(Operator, ExportHelper):
         box.label(text="Sidecar Settings")
         col = box.column()
         col.prop(self, "export_sidecar")
-        if self.sidecar_type == 'MODEL' and self.export_sidecar:
-            sub = box.column(heading="Output Tags")
-        if self.sidecar_type == 'MODEL':
-            sub.prop(self, "output_biped")
-            sub.prop(self, "output_crate")
-            sub.prop(self, "output_creature")
-            sub.prop(self, "output_device_control")
-            sub.prop(self, "output_device_machine")
-            sub.prop(self, "output_device_terminal")
-            sub.prop(self, "output_effect_scenery")
-            sub.prop(self, "output_equipment")
-            sub.prop(self, "output_giant")
-            sub.prop(self, "output_scenery")
-            sub.prop(self, "output_vehicle")
-            sub.prop(self, "output_weapon")
+        if self.export_sidecar:
+            if self.sidecar_type == 'MODEL' and self.export_sidecar:
+                sub = box.column(heading="Output Tags")
+            if self.sidecar_type == 'MODEL':
+                sub.prop(self, "output_biped")
+                sub.prop(self, "output_crate")
+                sub.prop(self, "output_creature")
+                sub.prop(self, "output_device_control")
+                sub.prop(self, "output_device_machine")
+                sub.prop(self, "output_device_terminal")
+                sub.prop(self, "output_effect_scenery")
+                sub.prop(self, "output_equipment")
+                sub.prop(self, "output_giant")
+                sub.prop(self, "output_scenery")
+                sub.prop(self, "output_vehicle")
+                sub.prop(self, "output_weapon")
 
         # IMPORT SETTINGS #
         box = layout.box()
