@@ -888,19 +888,26 @@ def export_asset(report, filePath="", keep_fbx=False, keep_json=False, asset_pat
         json_binned = False
 
         if not keep_fbx:
-            os.remove(filePath)
             fbx_crushed = True
         if not keep_json:
-            os.remove(jsonPath)
             json_binned = True
         
         if tag_type != 'selected':
             move_assets(fileName, jsonPath, gr2Path, asset_path, fbx_crushed, json_binned, tag_type)
+        else:
+            CleanFiles(filePath, jsonPath, gr2Path, fbx_crushed, json_binned)
 
         return {'FINISHED'}
     else:
         ctypes.windll.user32.MessageBoxW(0, "GR2 Not Created! Your current OS is not supported. The Halo tools only support Windows. FBX & JSON saved succesfully.", "Unsuported OS", 0)
         return {'FINISHED'}
+
+def CleanFiles(filePath, jsonPath, gr2Path, fbx_crushed, json_binned):
+    if(fbx_crushed):
+        os.remove(filePath)
+    if(json_binned):
+        os.remove(jsonPath)
+    os.remove(gr2Path)
 
 def rename_file(filePath, asset_name, tag_type, perm='', fileName=''):
     os.replace(filePath, fileName)
