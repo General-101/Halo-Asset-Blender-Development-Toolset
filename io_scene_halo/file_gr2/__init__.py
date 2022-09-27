@@ -44,6 +44,7 @@ special_prefixes = ('b ', 'b_', 'frame ', 'frame_','bip ','bip_','bone ','bone_'
 
 import os
 import sys
+import platform
 t = os.getcwd()
 t += '\\scripts\\addons\\io_scene_fbx'
 sys.modules[bpy.types.IMPORT_SCENE_OT_fbx.__module__].__file__
@@ -371,7 +372,6 @@ class Export_Halo_GR2(Operator, ExportHelper):
             self.output_vehicle or
             self.output_weapon)):
         
-
             if self.export_method == 'BATCH':
 
                 if self.sidecar_type == 'MODEL':
@@ -389,7 +389,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                 for select in bpy.context.selected_objects:
                                     print (select.name)
                                 export_fbx_bin.save(self, context, **keywords)
-                                export_gr2.save(self, context, self.report, 'render', perm, **keywords)
+                                export_gr2.save(self, context, self.report, IsWindows(), 'render', perm, **keywords)
 
                     if self.export_collision:
                         perm_list = []
@@ -402,7 +402,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                 perm_list.append(perm)
                                 SelectModelCollision(perm)
                                 export_fbx_bin.save(self, context, **keywords)
-                                export_gr2.save(self, context, self.report, 'collision', perm, **keywords)
+                                export_gr2.save(self, context, self.report, IsWindows(), 'collision', perm, **keywords)
 
                     if self.export_physics:
                         perm_list = []
@@ -415,16 +415,16 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                 perm_list.append(perm)
                                 SelectModelPhysics(perm)
                                 export_fbx_bin.save(self, context, **keywords)
-                                export_gr2.save(self, context, self.report, 'physics', perm, **keywords)
+                                export_gr2.save(self, context, self.report, IsWindows(), 'physics', perm, **keywords)
 
                     if self.export_markers:
                         SelectModelMarkers()
                         export_fbx_bin.save(self, context, **keywords)
-                        export_gr2.save(self, context, self.report, 'markers', **keywords)
+                        export_gr2.save(self, context, self.report, IsWindows(), 'markers', **keywords)
 
                     SelectModelSkeleton()
                     export_fbx_bin.save(self, context, **keywords)
-                    export_gr2.save(self, context, self.report, 'skeleton', **keywords)
+                    export_gr2.save(self, context, self.report, IsWindows(), 'skeleton', **keywords)
 
                     if self.export_animations and 0<=len(bpy.data.actions):
                         SelectModelSkeleton()
@@ -433,7 +433,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                             for anim in bpy.data.actions:
                                 ob.animation_data.action = anim
                                 export_fbx_bin.save(self, context, **keywords)
-                                export_gr2.save(self, context, self.report, 'animations', **keywords)
+                                export_gr2.save(self, context, self.report, IsWindows(), 'animations', **keywords)
                             
                 elif self.sidecar_type == 'SCENARIO':
                     print('not implemented')
@@ -446,10 +446,11 @@ class Export_Halo_GR2(Operator, ExportHelper):
             
             else:
                 export_fbx_bin.save(self, context, **keywords)
-                export_gr2.save(self, context, self.report, 'selected', **keywords)
+                export_gr2.save(self, context, self.report, IsWindows(), 'selected', **keywords)
 
-            export_sidecar_xml.save(self, context, self.report, **keywords)
-            import_sidecar.save(self, context, self.report, **keywords)
+            if(IsWindows()):
+                export_sidecar_xml.save(self, context, self.report, **keywords)
+                import_sidecar.save(self, context, self.report, **keywords)
 
         else:
             self.report({'ERROR'},"No sidecar output tags selected")
@@ -540,6 +541,12 @@ class Export_Halo_GR2(Operator, ExportHelper):
         col.prop(self, "use_mesh_modifiers")
         col.prop(self, "use_triangles")
         col.prop(self, "global_scale")
+
+def IsWindows():
+    if(platform.system() == 'Windows'):
+        return True
+    else:
+        return False
 
 def SelectModelRender(perm):
     bpy.ops.object.select_all(action='DESELECT')

@@ -854,7 +854,7 @@ from os.path import exists as file_exists
 import ctypes
 from subprocess import Popen
 
-def export_asset(report, filePath="", keep_fbx=False, keep_json=False, asset_path="", asset_name="", tag_type='', perm=''):
+def export_asset(report, filePath="", keep_fbx=False, keep_json=False, asset_path="", asset_name="", tag_type='', perm='', is_windows=False):
     if tag_type != 'selected':
         fileName = GetFileName(filePath, asset_name, tag_type, perm, asset_path)
         rename_file(filePath, asset_name, tag_type, perm, fileName)
@@ -869,34 +869,38 @@ def export_asset(report, filePath="", keep_fbx=False, keep_json=False, asset_pat
 
     build_json(jsonPath)
 
-    gr2Path = ""
-    for x in range(len(pathList)-1):
-        gr2Path += pathList[x]
-        gr2Path += ".gr2"
+    if(is_windows):
+        gr2Path = ""
+        for x in range(len(pathList)-1):
+            gr2Path += pathList[x]
+            gr2Path += ".gr2"
 
-    print('\nTool Path... %r' % toolPath)
+        print('\nTool Path... %r' % toolPath)
 
-    build_gr2(toolPath, fileName, jsonPath, gr2Path)
-    if(file_exists(gr2Path)):
-        report({'INFO'},"GR2 conversion finished!")
+        build_gr2(toolPath, fileName, jsonPath, gr2Path)
+        if(file_exists(gr2Path)):
+            report({'INFO'},"GR2 conversion finished!")
+        else:
+            report({'INFO'},"GR2 conversion failed!")
+            ctypes.windll.user32.MessageBoxW(0, "Tool.exe failed to export your GR2 file. Blender may need to be run as an Administrator or there may be an issue with your project settings.", "GR2 EXPORT FAILED", 0)
+
+        fbx_crushed = False
+        json_binned = False
+
+        if not keep_fbx:
+            os.remove(filePath)
+            fbx_crushed = True
+        if not keep_json:
+            os.remove(jsonPath)
+            json_binned = True
+        
+        if tag_type != 'selected':
+            move_assets(fileName, jsonPath, gr2Path, asset_path, fbx_crushed, json_binned, tag_type)
+
+        return {'FINISHED'}
     else:
-        report({'INFO'},"GR2 conversion failed!")
-        ctypes.windll.user32.MessageBoxW(0, "Tool.exe failed to export your GR2 file. Blender may need to be run as an Administrator or there may be an issue with your project settings.", "GR2 EXPORT FAILED", 0)
-
-    fbx_crushed = False
-    json_binned = False
-
-    if not keep_fbx:
-        os.remove(filePath)
-        fbx_crushed = True
-    if not keep_json:
-        os.remove(jsonPath)
-        json_binned = True
-     
-    if tag_type != 'selected':
-        move_assets(fileName, jsonPath, gr2Path, asset_path, fbx_crushed, json_binned, tag_type)
-
-    return {'FINISHED'}
+        ctypes.windll.user32.MessageBoxW(0, "GR2 Not Created! Your current OS is not supported. The Halo tools only support Windows. FBX & JSON saved succesfully.", "Unsuported OS", 0)
+        return {'FINISHED'}
 
 def rename_file(filePath, asset_name, tag_type, perm='', fileName=''):
     os.replace(filePath, fileName)
@@ -968,7 +972,7 @@ def build_gr2(toolPath, filePath, jsonPath, gr2Path):
     finally:
         return {'FINISHED'}
 
-def save(operator, context, report, tag_type,
+def save(operator, context, report, is_windows, tag_type,
         perm='',
         filepath="",
         keep_fbx=False,
@@ -978,7 +982,7 @@ def save(operator, context, report, tag_type,
         **kwargs
         ):
 
-    export_asset(report, filepath, keep_fbx, keep_json, asset_path, asset_name, tag_type, perm)
+    export_asset(report, filepath, keep_fbx, keep_json, asset_path, asset_name, tag_type, perm, is_windows)
 
     return {'FINISHED'}
 
