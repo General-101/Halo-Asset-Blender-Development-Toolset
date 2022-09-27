@@ -39,7 +39,6 @@ from bpy_extras.io_utils import ExportHelper
 from bpy.props import StringProperty, BoolProperty, EnumProperty, FloatProperty
 from bpy.types import Operator
 from bpy_extras.io_utils import ExportHelper, orientation_helper
-
 special_prefixes = ('b ', 'b_', 'frame ', 'frame_','bip ','bip_','bone ','bone_','#','+soft_ceiling','+soft_kill','+slip_surface', '@','+cookie','+decorator','+flair', '%', '$','+fog','+portal', '+seam','+water', '\'')
 
 import os
@@ -335,6 +334,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
 
     def GetAssetPath(self):
         asset = self.filepath.rpartition('\\')[0]
+        print(asset)
         return asset
 
     asset_path: StringProperty(
@@ -345,7 +345,8 @@ class Export_Halo_GR2(Operator, ExportHelper):
 
     def GetAssetName(self):
         asset = self.asset_path.rpartition('\\')[2]
-        asset = asset.strip('.fbx')
+        asset = asset.replace('.fbx', '')
+        print(asset)
         return asset
 
     asset_name: StringProperty(
@@ -555,7 +556,7 @@ def SelectModelRender(perm):
         halo_mesh_name = ob.name
         if halo_mesh.Permutation_Name != perm and perm == 'default':
             perm = ''
-        if (ob.type == 'MESH' and (not halo_mesh_name.startswith(special_prefixes)) and halo_mesh.Object_Type_All == 'MESH' and halo_mesh.ObjectMesh_Type == 'DEFAULT' and halo_mesh.Permutation_Name == perm) or ob.type == 'ARMATURE':
+        if (ob.type == 'MESH' and (not halo_mesh_name.startswith(special_prefixes)) and halo_mesh.Object_Type_All == 'MESH' and halo_mesh.ObjectMesh_Type == 'DEFAULT' and (halo_mesh.Permutation_Name == perm or halo_mesh.Permutation_Name == 'default')) or ob.type == 'ARMATURE':
             ob.select_set(True)
 
 def SelectModelCollision(perm):
@@ -565,7 +566,7 @@ def SelectModelCollision(perm):
         halo_mesh_name = ob.name
         if halo_mesh.Permutation_Name != perm and perm == 'default':
             perm = ''
-        if (ob.type == 'MESH' and (not halo_mesh_name.startswith(special_prefixes) or halo_mesh_name.startswith('@')) and (halo_mesh.ObjectMesh_Type == 'COLLISION' or halo_mesh_name.startswith('@')) and halo_mesh.Object_Type_All == 'MESH' and halo_mesh.Permutation_Name == perm) or ob.type == 'ARMATURE':
+        if (ob.type == 'MESH' and (not halo_mesh_name.startswith(special_prefixes) or halo_mesh_name.startswith('@')) and (halo_mesh.ObjectMesh_Type == 'COLLISION' or halo_mesh_name.startswith('@')) and halo_mesh.Object_Type_All == 'MESH' and (halo_mesh.Permutation_Name == perm or halo_mesh.Permutation_Name == 'default')) or ob.type == 'ARMATURE':
             ob.select_set(True)
 
 def SelectModelPhysics(perm):
@@ -575,7 +576,7 @@ def SelectModelPhysics(perm):
         halo_mesh_name = ob.name
         if halo_mesh.Permutation_Name != perm and perm == 'default':
             perm = ''
-        if (ob.type == 'MESH' and (not halo_mesh_name.startswith(special_prefixes) or halo_mesh_name.startswith('$')) and (halo_mesh.ObjectMesh_Type == 'PHYSICS' or halo_mesh_name.startswith('$')) and halo_mesh.Object_Type_All == 'MESH' and halo_mesh.Permutation_Name == perm) or ob.type == 'ARMATURE':
+        if (ob.type == 'MESH' and (not halo_mesh_name.startswith(special_prefixes) or halo_mesh_name.startswith('$')) and (halo_mesh.ObjectMesh_Type == 'PHYSICS' or halo_mesh_name.startswith('$')) and halo_mesh.Object_Type_All == 'MESH' and (halo_mesh.Permutation_Name == perm or halo_mesh.Permutation_Name == 'default')) or ob.type == 'ARMATURE':
             ob.select_set(True)
 
 def SelectModelMarkers():

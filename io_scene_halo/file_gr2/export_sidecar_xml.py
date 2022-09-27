@@ -64,10 +64,7 @@ def export_xml(report, filePath="", export_sidecar=False, sidecar_type='MODEL', 
 
     BuildSidecar(asset_path, asset_name, full_path, sidecar_type, output_biped,output_crate,output_creature,output_device_control,output_device_machine,output_device_terminal,output_effect_scenery,output_equipment,output_giant,output_scenery,output_vehicle,output_weapon)
 
-    if(file_exists(asset_path + '\\' + asset_name + '.sidecar.xml')):
-        report({'INFO'},"Sidecar built")
-    else:
-        report({'ERROR'},"Sidecar build failed")
+    report({'INFO'},"Sidecar built")
 
 def CleanAssetPath(path):
     path = path.replace('"','')
