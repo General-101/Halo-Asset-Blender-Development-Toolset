@@ -500,41 +500,41 @@ def WriteModelContents(metadata, asset_path, asset_name):
 #         output = ET.SubElement(object, 'OutputTagCollection')
 #         ET.SubElement(output, 'OutputTag', Type='structure_design').text = asset_path + '\\' + asset_name + '_' + "{0:03}".format(bsp) + '_structure_design'
 
-# def SceneHasBSP():
-#     for ob in bpy.data.objects:
-#         IsStructure(ob)
+def SceneHasBSP():
+    for ob in bpy.data.objects:
+        IsStructure(ob)
 
-# def IsStructure(ob):
-#     return (ob.name.startswith('@') and not ob.parent.name.startswith('%')) or ob.halo_json.ObjectMesh_Type == 'COLLISION' or ob.halo_json.ObjectMesh_Type == 'DEFAULT' or ob.halo_json.ObjectMesh_Type == 'LIGHTMAP REGION' or 
+def IsStructure(ob):
+    return (ob.name.startswith('@') and not ob.parent.name.startswith('%')) or (not ob.name.startswith(special_prefixes) and (ob.halo_json.ObjectMesh_Type == 'COLLISION' or ob.halo_json.ObjectMesh_Type == 'DEFAULT' or ob.halo_json.ObjectMesh_Type == 'LIGHTMAP REGION'))
 
-# def IsPoop(ob):
-#     return ob.name.startswith('%') or (ob.name.startswith('@') and ob.parent.name.startswith('%')) or (ob.name.startswith('$') and ob.parent.name.startswith('%')) or ob.halo_json.ObjectMesh_Type == 'INSTANCED GEOMETRY' or ob.halo_json.ObjectMesh_Type == 'INSTANCED GEOMETRY COLLISION' or ob.halo_json.ObjectMesh_Type == 'INSTANCED GEOMETRY MARKER' or ob.halo_json.ObjectMesh_Type == 'INSTANCED GEOMETRY PHYSICS' or ob.halo_json.ObjectMesh_Type == 'COOKIE CUTTER'
+def IsPoop(ob):
+    return ob.name.startswith('%') or (ob.name.startswith('@') and ob.parent.name.startswith('%')) or (ob.name.startswith('$') and ob.parent.name.startswith('%')) or (not ob.name.startswith(special_prefixes) and (ob.halo_json.ObjectMesh_Type == 'INSTANCED GEOMETRY' or ob.halo_json.ObjectMesh_Type == 'INSTANCED GEOMETRY COLLISION' or ob.halo_json.ObjectMesh_Type == 'INSTANCED GEOMETRY MARKER' or ob.halo_json.ObjectMesh_Type == 'INSTANCED GEOMETRY PHYSICS' or ob.halo_json.ObjectMesh_Type == 'COOKIE CUTTER'))
 
-# def IsMarker(ob):
-#     return ob.name.startswith('#') or ob.halo_json.Object_Type_All == 'MARKER' or (ob.halo_json.Object_Type_No_Mesh == 'MARKER' and ob.type == 'EMPTY')
+def IsMarker(ob):
+    return ob.name.startswith('#') or ob.halo_json.Object_Type_All == 'MARKER' or (ob.halo_json.Object_Type_No_Mesh == 'MARKER' and ob.type == 'EMPTY')
 
-# def IsLight(ob):
-#     return ob.type == 'LIGHT'
+def IsLight(ob):
+    return ob.type == 'LIGHT'
 
-# def IsPortal(ob):
-#     return ob.name.startswith('+portal') or ob.halo_json.ObjectMesh_Type == 'PORTAL'
+def IsPortal(ob):
+    return ob.name.startswith('+portal') or (not ob.name.startswith(special_prefixes) and ob.halo_json.ObjectMesh_Type == 'PORTAL')
 
-# def IsSeam(ob):
-#     return ob.name.startswith('+seam') or ob.halo_json.ObjectMesh_Type == 'SEAM'
+def IsSeam(ob):
+    return ob.name.startswith('+seam') or (not ob.name.startswith(special_prefixes) and ob.halo_json.ObjectMesh_Type == 'SEAM')
 
-# def IsSeam(ob):
+def IsWaterSurface(ob):
+    return ob.name.startswith('\'') or (not ob.name.startswith(special_prefixes) and ob.halo_json.ObjectMesh_Type == 'WATER SURFACE')
 
-# def IsWaterSurface(ob):
+def IsLightMapRegion(ob):
+    return (not ob.name.startswith(special_prefixes) and ob.halo_json.ObjectMesh_Type == 'LIGHTMAP REGION')
 
-# def IsLightMapRegion(ob):
+def SceneHasDesign():
+    for ob in bpy.data.objects:
+        IsBoundary(ob)
+        IsWaterPhysics(ob)
+        IsPoopRain(ob)
 
-# def SceneHasDesign():
-#     for ob in bpy.data.objects:
-#         IsBoundary(ob)
-#         IsWaterPhysics(ob)
-#         IsPoopRain(ob)
-
-# def IsWaterPhysics(ob):
+def IsWaterPhysics(ob):
 
 def GetInputFilePath(asset_path, asset_name, type, perm=''):
     if type == 'model_animation_graph':
