@@ -27,6 +27,10 @@
 import shutil
 import bpy
 import json
+import os
+from os.path import exists as file_exists
+import ctypes
+from subprocess import Popen
 
 EKPath = bpy.context.preferences.addons['io_scene_halo'].preferences.hrek_path
 
@@ -849,11 +853,6 @@ def getMaterials():
 
     return temp
 
-import os
-from os.path import exists as file_exists
-import ctypes
-from subprocess import Popen
-
 def export_asset(report, filePath="", keep_fbx=False, keep_json=False, asset_path="", asset_name="", tag_type='', perm='', is_windows=False):
     if tag_type != 'selected':
         fileName = GetFileName(filePath, asset_name, tag_type, perm, asset_path)
@@ -881,7 +880,7 @@ def export_asset(report, filePath="", keep_fbx=False, keep_json=False, asset_pat
         if(file_exists(gr2Path)):
             report({'INFO'},"GR2 conversion finished!")
         else:
-            report({'INFO'},"GR2 conversion failed!")
+            report({'WARNING'},"GR2 conversion failed!")
             ctypes.windll.user32.MessageBoxW(0, "Tool.exe failed to export your GR2 file. Blender may need to be run as an Administrator or there may be an issue with your project settings.", "GR2 EXPORT FAILED", 0)
 
         fbx_crushed = False
