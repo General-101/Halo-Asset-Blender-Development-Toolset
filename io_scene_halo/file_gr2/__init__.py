@@ -37,7 +37,7 @@ bl_info = {
 import ctypes
 import bpy
 from bpy_extras.io_utils import ExportHelper
-from bpy.props import StringProperty, BoolProperty, EnumProperty, FloatProperty
+from bpy.props import StringProperty, BoolProperty, EnumProperty, FloatProperty, IntProperty
 from bpy.types import Operator
 from bpy_extras.io_utils import ExportHelper, orientation_helper
 special_prefixes = ('b ', 'b_', 'frame ', 'frame_','bip ','bip_','bone ','bone_','#','+soft_ceiling','+soft_kill','+slip_surface', '@','+cookie','+decorator','+flair', '%', '$','+fog','+portal', '+seam','+water', '\'')
@@ -135,10 +135,48 @@ class Export_Halo_GR2(Operator, ExportHelper):
         description='',
         default=True,
     )
+    export_markers: BoolProperty(
+        name='Markers',
+        description='',
+        default=True,
+    )
     export_lights: BoolProperty(
         name='Lights',
         description='',
         default=True,
+    )
+    export_portals: BoolProperty(
+        name='Portals',
+        description='',
+        default=True,
+    )
+    export_seams: BoolProperty(
+        name='Seams',
+        description='',
+        default=True,
+    )
+    export_water_surfaces: BoolProperty(
+        name='Water Surfaces',
+        description='',
+        default=True,
+    )
+    export_shared: BoolProperty(
+        name='Shared',
+        description='Export geometry which is shared across all BSPs',
+        default=True,
+    )
+    export_all_bsps: BoolProperty(
+        name='All BSPs',
+        description='',
+        default=True,
+    )
+    export_specific_bsp: IntProperty(
+        name='BSP',
+        description='',
+        default=0,
+        min=0,
+        max=99,
+        step=5,
     )
     export_all_perms: BoolProperty(
         name='All Permutations',
@@ -388,11 +426,9 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                     perm = ob.halo_json.Permutation_Name
                                 if perm not in perm_list:
                                     perm_list.append(perm)
-                                    SelectModelRender(perm)
-                                    for select in bpy.context.selected_objects:
-                                        print (select.name)
-                                    export_fbx_bin.save(self, context, **keywords)
-                                    export_gr2.save(self, context, self.report, IsWindows(), 'render', perm, **keywords)
+                                    if SelectModelRender(perm):
+                                        export_fbx_bin.save(self, context, **keywords)
+                                        export_gr2.save(self, context, self.report, IsWindows(), 'render', '', perm, **keywords)
 
                         if self.export_collision:
                             perm_list = []
@@ -403,9 +439,9 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                     perm = ob.halo_json.Permutation_Name
                                 if perm not in perm_list:
                                     perm_list.append(perm)
-                                    SelectModelCollision(perm)
-                                    export_fbx_bin.save(self, context, **keywords)
-                                    export_gr2.save(self, context, self.report, IsWindows(), 'collision', perm, **keywords)
+                                    if SelectModelCollision(perm):
+                                        export_fbx_bin.save(self, context, **keywords)
+                                        export_gr2.save(self, context, self.report, IsWindows(), 'collision', '', perm, **keywords)
 
                         if self.export_physics:
                             perm_list = []
@@ -416,30 +452,171 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                     perm = ob.halo_json.Permutation_Name
                                 if perm not in perm_list:
                                     perm_list.append(perm)
-                                    SelectModelPhysics(perm)
-                                    export_fbx_bin.save(self, context, **keywords)
-                                    export_gr2.save(self, context, self.report, IsWindows(), 'physics', perm, **keywords)
+                                    if SelectModelPhysics(perm):
+                                        export_fbx_bin.save(self, context, **keywords)
+                                        export_gr2.save(self, context, self.report, IsWindows(), 'physics', '', perm, **keywords)
 
                         if self.export_markers:
-                            SelectModelMarkers()
-                            export_fbx_bin.save(self, context, **keywords)
-                            export_gr2.save(self, context, self.report, IsWindows(), 'markers', **keywords)
+                            if SelectModelMarkers():
+                                export_fbx_bin.save(self, context, **keywords)
+                                export_gr2.save(self, context, self.report, IsWindows(), 'markers', '', '', **keywords)
 
-                        SelectModelSkeleton()
-                        export_fbx_bin.save(self, context, **keywords)
-                        export_gr2.save(self, context, self.report, IsWindows(), 'skeleton', **keywords)
+                        if SelectModelSkeleton():
+                            export_fbx_bin.save(self, context, **keywords)
+                            export_gr2.save(self, context, self.report, IsWindows(), 'skeleton', '', '', **keywords)
 
                         if self.export_animations and 0<=len(bpy.data.actions):
-                            SelectModelSkeleton()
-                            for ob in bpy.context.selected_objects:
-                                bpy.context.view_layer.objects.active = ob
-                                for anim in bpy.data.actions:
-                                    ob.animation_data.action = anim
-                                    export_fbx_bin.save(self, context, **keywords)
-                                    export_gr2.save(self, context, self.report, IsWindows(), 'animations', **keywords)
+                            if SelectModelSkeleton():
+                                for ob in bpy.context.selected_objects:
+                                    bpy.context.view_layer.objects.active = ob
+                                    for anim in bpy.data.actions:
+                                        ob.animation_data.action = anim
+                                        export_fbx_bin.save(self, context, **keywords)
+                                        export_gr2.save(self, context, self.report, IsWindows(), 'animations', '', '', **keywords)
                                 
                     elif self.sidecar_type == 'SCENARIO':
-                        print('not implemented')
+                        
+                        bsp_list = []
+                        shared_bsp_exists = False
+
+                        for ob in bpy.data.objects:
+                            if not ob.halo_json.bsp_shared and (ob.halo_json.bsp_index not in bsp_list):
+                                bsp_list.append(ob.halo_json.bsp_index)
+
+                        for ob in bpy.data.objects:
+                            if ob.halo_json.bsp_shared:
+                                shared_bsp_exists = True
+                                break
+
+                        for bsp in bsp_list:
+                            if self.export_structure:
+                                if SelectStructure(bsp):
+                                    export_fbx_bin.save(self, context, **keywords)
+                                    export_gr2.save(self, context, self.report, IsWindows(), 'bsp', "{0:03}".format(bsp), '', **keywords)
+
+                                if SelectLightMapRegions(bsp):
+                                    for select in bpy.context.selected_objects:
+                                        print (select.name)
+                                    export_fbx_bin.save(self, context, **keywords)
+                                    export_gr2.save(self, context, self.report, IsWindows(), 'lightmap_region', "{0:03}".format(bsp), '', **keywords)
+
+                            if self.export_poops:
+                                perm_list = []
+                                for ob in bpy.data.objects:
+                                    if ob.halo_json.Permutation_Name == '':
+                                        perm = 'default'
+                                    else:
+                                        perm = ob.halo_json.Permutation_Name
+                                    if perm not in perm_list:
+                                        perm_list.append(perm)
+                                        if SelectPoops(bsp, perm):
+                                            export_fbx_bin.save(self, context, **keywords)
+                                            export_gr2.save(self, context, self.report, IsWindows(), 'poops', "{0:03}".format(bsp), perm, **keywords)
+
+                            if self.export_markers:
+                                if SelectMarkers(bsp):
+                                    export_fbx_bin.save(self, context, **keywords)
+                                    export_gr2.save(self, context, self.report, IsWindows(), 'markers', "{0:03}".format(bsp), '', **keywords)
+
+                            if self.export_lights:
+                                if SelectLights(bsp):
+                                    export_fbx_bin.save(self, context, **keywords)
+                                    export_gr2.save(self, context, self.report, IsWindows(), 'lights', "{0:03}".format(bsp), '', **keywords)
+
+                            if self.export_portals:
+                                if SelectPortals(bsp):
+                                    export_fbx_bin.save(self, context, **keywords)
+                                    export_gr2.save(self, context, self.report, IsWindows(), 'portals', "{0:03}".format(bsp), '', **keywords)
+
+                            if self.export_seams:
+                                if SelectSeams(bsp):
+                                    export_fbx_bin.save(self, context, **keywords)
+                                    export_gr2.save(self, context, self.report, IsWindows(), 'seams', "{0:03}".format(bsp), '', **keywords)
+
+                            if self.export_water_surfaces:
+                                if SelectWaterSurfaces(bsp):
+                                    export_fbx_bin.save(self, context, **keywords)
+                                    export_gr2.save(self, context, self.report, IsWindows(), 'water', "{0:03}".format(bsp), '', **keywords)
+
+                            if self.export_structure_design:
+                                if SelectBoundarys(bsp):
+                                    export_fbx_bin.save(self, context, **keywords)
+                                    export_gr2.save(self, context, self.report, IsWindows(), 'design', "{0:03}".format(bsp), '', **keywords)
+
+                                if SelectWaterPhysics(bsp):
+                                    export_fbx_bin.save(self, context, **keywords)
+                                    export_gr2.save(self, context, self.report, IsWindows(), 'water_physics', "{0:03}".format(bsp), '', **keywords)
+
+                                if SelectPoopRains(bsp):
+                                    export_fbx_bin.save(self, context, **keywords)
+                                    export_gr2.save(self, context, self.report, IsWindows(), 'rain_blockers', "{0:03}".format(bsp), '', **keywords)
+
+
+
+                        ############################
+                        ##### SHARED STRUCTURE #####
+                        ############################
+
+                        if shared_bsp_exists:
+                            if self.export_structure:
+                                if SelectStructure(-1):
+                                    export_fbx_bin.save(self, context, **keywords)
+                                    export_gr2.save(self, context, self.report, IsWindows(), 'bsp', 'shared', **keywords)
+
+                                SelectLightMapRegions(-1)
+                                export_fbx_bin.save(self, context, **keywords)
+                                export_gr2.save(self, context, self.report, IsWindows(), 'lightmap_region', 'shared', **keywords)
+
+                            if self.export_poops:
+                                perm_list = []
+                                for ob in bpy.data.objects:
+                                    if ob.halo_json.Permutation_Name == '':
+                                        perm = 'default'
+                                    else:
+                                        perm = ob.halo_json.Permutation_Name
+                                    if perm not in perm_list:
+                                        perm_list.append(perm)
+                                        SelectPoops(bsp, perm)
+                                        export_fbx_bin.save(self, context, **keywords)
+                                        export_gr2.save(self, context, self.report, IsWindows(), 'poops', 'shared', perm, **keywords)
+
+                            if self.export_markers:
+                                if SelectMarkers(-1):
+                                    export_fbx_bin.save(self, context, **keywords)
+                                    export_gr2.save(self, context, self.report, IsWindows(), 'markers', 'shared', **keywords)
+
+                            if self.export_lights:
+                                if SelectLights(-1):
+                                    export_fbx_bin.save(self, context, **keywords)
+                                    export_gr2.save(self, context, self.report, IsWindows(), 'lights', 'shared', **keywords)
+
+                            if self.export_portals:
+                                if SelectPortals(-1):
+                                    export_fbx_bin.save(self, context, **keywords)
+                                    export_gr2.save(self, context, self.report, IsWindows(), 'portals', 'shared', **keywords)
+
+                            if self.export_seams:
+                                if SelectSeams(-1):
+                                    export_fbx_bin.save(self, context, **keywords)
+                                    export_gr2.save(self, context, self.report, IsWindows(), 'seams', 'shared', **keywords)
+
+                            if self.export_water_surfaces:
+                                if SelectWaterSurfaces(-1):
+                                    export_fbx_bin.save(self, context, **keywords)
+                                    export_gr2.save(self, context, self.report, IsWindows(), 'water', 'shared', **keywords)
+
+                            if self.export_structure_design:
+                                if SelectBoundarys(-1):
+                                    export_fbx_bin.save(self, context, **keywords)
+                                    export_gr2.save(self, context, self.report, IsWindows(), 'design', 'shared', **keywords)
+
+                                if SelectWaterPhysics(-1):
+                                    export_fbx_bin.save(self, context, **keywords)
+                                    export_gr2.save(self, context, self.report, IsWindows(), 'water_physics', 'shared', **keywords)
+
+                                if SelectPoopRains(-1):
+                                    export_fbx_bin.save(self, context, **keywords)
+                                    export_gr2.save(self, context, self.report, IsWindows(), 'rain_blockers', 'shared', **keywords)
 
                     elif self.sidecar_type == 'DECORATOR':
                         print('not implemented')
@@ -495,13 +672,20 @@ class Export_Halo_GR2(Operator, ExportHelper):
             sub.prop(self, "export_structure")
             sub.prop(self, "export_structure_design")
             sub.prop(self, 'export_poops')
+            sub.prop(self, 'export_markers')
             sub.prop(self, 'export_lights')
-            sub.prop(self, "export_markers")
+            sub.prop(self, 'export_portals')
+            sub.prop(self, 'export_seams')
+            sub.prop(self, 'export_water_surfaces')
+            sub.prop(self, 'export_shared')
+            if not self.export_all_bsps:
+                sub.prop(self, 'export_specific_bsp')
+            sub.prop(self, 'export_all_bsps')
         else:
             sub.prop(self, "export_render")
 
         if not self.export_all_perms:
-            sub.prop(self, 'export_specific_perm', text='Single')
+            sub.prop(self, 'export_specific_perm', text='Permutation')
         sub.prop(self, 'export_all_perms', text='All Permutations')
 
         # SIDECAR SETTINGS #
@@ -571,6 +755,7 @@ def CheckPath(filePath):
 
 def SelectModelRender(perm):
     bpy.ops.object.select_all(action='DESELECT')
+    boolean = False
     for ob in bpy.data.objects:
         halo_mesh = ob.halo_json
         halo_mesh_name = ob.name
@@ -578,9 +763,14 @@ def SelectModelRender(perm):
             perm = ''
         if (ob.type == 'MESH' and (not halo_mesh_name.startswith(special_prefixes)) and halo_mesh.Object_Type_All == 'MESH' and halo_mesh.ObjectMesh_Type == 'DEFAULT' and (halo_mesh.Permutation_Name == perm or halo_mesh.Permutation_Name == 'default')) or ob.type == 'ARMATURE':
             ob.select_set(True)
+            if ob.type != 'ARMATURE':
+                boolean = True
+    
+    return boolean
 
 def SelectModelCollision(perm):
     bpy.ops.object.select_all(action='DESELECT')
+    boolean = False
     for ob in bpy.data.objects:
         halo_mesh = ob.halo_json
         halo_mesh_name = ob.name
@@ -588,9 +778,14 @@ def SelectModelCollision(perm):
             perm = ''
         if (ob.type == 'MESH' and (not halo_mesh_name.startswith(special_prefixes) or halo_mesh_name.startswith('@')) and (halo_mesh.ObjectMesh_Type == 'COLLISION' or halo_mesh_name.startswith('@')) and halo_mesh.Object_Type_All == 'MESH' and (halo_mesh.Permutation_Name == perm or halo_mesh.Permutation_Name == 'default')) or ob.type == 'ARMATURE':
             ob.select_set(True)
+            if ob.type != 'ARMATURE':
+                boolean = True
+    
+    return boolean
 
 def SelectModelPhysics(perm):
     bpy.ops.object.select_all(action='DESELECT')
+    boolean = False
     for ob in bpy.data.objects:
         halo_mesh = ob.halo_json
         halo_mesh_name = ob.name
@@ -598,20 +793,201 @@ def SelectModelPhysics(perm):
             perm = ''
         if (ob.type == 'MESH' and (not halo_mesh_name.startswith(special_prefixes) or halo_mesh_name.startswith('$')) and (halo_mesh.ObjectMesh_Type == 'PHYSICS' or halo_mesh_name.startswith('$')) and halo_mesh.Object_Type_All == 'MESH' and (halo_mesh.Permutation_Name == perm or halo_mesh.Permutation_Name == 'default')) or ob.type == 'ARMATURE':
             ob.select_set(True)
+            if ob.type != 'ARMATURE':
+                boolean = True
+    
+    return boolean
 
 def SelectModelMarkers():
     bpy.ops.object.select_all(action='DESELECT')
+    boolean = False
     for ob in bpy.data.objects:
         halo_node = ob.halo_json
         halo_node_name = ob.name
         if (ob.type == 'MESH' and (halo_node.Object_Type_All == 'MARKER' or halo_node_name.startswith('#'))) or ob.type == 'EMPTY' and (halo_node.Object_Type_No_Mesh == 'MARKER' or halo_node_name.startswith('#')) or ob.type == 'ARMATURE':
             ob.select_set(True)
+            if ob.type != 'ARMATURE':
+                boolean = True
+    
+    return boolean
 
 def SelectModelSkeleton():
     bpy.ops.object.select_all(action='DESELECT')
+    boolean = False
     for ob in bpy.data.objects:
         if ob.type == 'ARMATURE':
             ob.select_set(True)
+            boolean = True
+
+    return boolean
+
+def SelectStructure(index):
+    bpy.ops.object.select_all(action='DESELECT')
+    boolean = False
+    for ob in bpy.data.objects:
+        if ob.halo_json.bsp_index == index:
+            if (ob.name.startswith('@') and not ob.parent.name.startswith('%')) or (not ob.name.startswith(special_prefixes) and (ob.halo_json.ObjectMesh_Type == 'COLLISION' or ob.halo_json.ObjectMesh_Type == 'DEFAULT' or ob.halo_json.ObjectMesh_Type == 'LIGHTMAP REGION' )):
+                ob.select_set(True)
+                boolean = True
+        elif ob.halo_json.bsp_shared:
+            if (ob.name.startswith('@') and not ob.parent.name.startswith('%')) or (not ob.name.startswith(special_prefixes) and (ob.halo_json.ObjectMesh_Type == 'COLLISION' or ob.halo_json.ObjectMesh_Type == 'DEFAULT' or ob.halo_json.ObjectMesh_Type == 'LIGHTMAP REGION' )):
+                ob.select_set(True)
+                boolean = True
+
+    return boolean
+
+def SelectPoops(index, perm):
+    bpy.ops.object.select_all(action='DESELECT')
+    boolean = False
+    for ob in bpy.data.objects:
+        if ob.halo_json.bsp_index == index:
+            halo_mesh = ob.halo_json
+            if halo_mesh.Permutation_Name != perm and perm == 'default':
+                perm = ''
+            if (ob.name.startswith('@') and not ob.parent.name.startswith('%')) or (not ob.name.startswith(special_prefixes) and (ob.halo_json.ObjectMesh_Type == 'COLLISION' or ob.halo_json.ObjectMesh_Type == 'DEFAULT' or ob.halo_json.ObjectMesh_Type == 'LIGHTMAP REGION' )) and (halo_mesh.Permutation_Name == perm or halo_mesh.Permutation_Name == 'default'):
+                ob.select_set(True)
+                boolean = True
+        elif ob.halo_json.bsp_shared:
+            if (ob.name.startswith('@') and not ob.parent.name.startswith('%')) or (not ob.name.startswith(special_prefixes) and (ob.halo_json.ObjectMesh_Type == 'COLLISION' or ob.halo_json.ObjectMesh_Type == 'DEFAULT' or ob.halo_json.ObjectMesh_Type == 'LIGHTMAP REGION' )) and (halo_mesh.Permutation_Name == perm or halo_mesh.Permutation_Name == 'default'):
+                ob.select_set(True)
+                boolean = True
+
+    return boolean
+
+def SelectMarkers(index):
+    bpy.ops.object.select_all(action='DESELECT')
+    boolean = False
+    for ob in bpy.data.objects:
+        if ob.halo_json.bsp_index == index:
+            if ob.name.startswith('#') or ob.halo_json.Object_Type_All == 'MARKER' or (ob.halo_json.Object_Type_No_Mesh == 'MARKER' and ob.type == 'EMPTY'):
+                ob.select_set(True)
+                boolean = True
+        elif ob.halo_json.bsp_shared:
+            if ob.name.startswith('#') or ob.halo_json.Object_Type_All == 'MARKER' or (ob.halo_json.Object_Type_No_Mesh == 'MARKER' and ob.type == 'EMPTY'):
+                ob.select_set(True)
+                boolean = True
+
+    return boolean
+
+def SelectLights(index):
+    bpy.ops.object.select_all(action='DESELECT')
+    boolean = False
+    for ob in bpy.data.objects:
+        if ob.halo_json.bsp_index == index:
+            if ob.type == 'LIGHT':
+                ob.select_set(True)
+                boolean = True
+        elif ob.halo_json.bsp_shared:
+            if ob.type == 'LIGHT':
+                ob.select_set(True)
+                boolean = True
+
+    return boolean
+
+def SelectPortals(index):
+    bpy.ops.object.select_all(action='DESELECT')
+    boolean = False
+    for ob in bpy.data.objects:
+        if ob.halo_json.bsp_index == index:
+            if ob.name.startswith('+portal') or (not ob.name.startswith(special_prefixes) and ob.halo_json.ObjectMesh_Type == 'PORTAL'):
+                ob.select_set(True)
+                boolean = True
+        elif ob.halo_json.bsp_shared:
+            if ob.name.startswith('+portal') or (not ob.name.startswith(special_prefixes) and ob.halo_json.ObjectMesh_Type == 'PORTAL'):
+                ob.select_set(True)
+                boolean = True
+
+    return boolean
+
+def SelectSeams(index):
+    bpy.ops.object.select_all(action='DESELECT')
+    boolean = False
+    for ob in bpy.data.objects:
+        if ob.halo_json.bsp_index == index:
+            if ob.name.startswith('+seam') or (not ob.name.startswith(special_prefixes) and ob.halo_json.ObjectMesh_Type == 'SEAM'):
+                ob.select_set(True)
+                boolean = True
+        elif ob.halo_json.bsp_shared:
+            if ob.name.startswith('+seam') or (not ob.name.startswith(special_prefixes) and ob.halo_json.ObjectMesh_Type == 'SEAM'):
+                ob.select_set(True)
+                boolean = True
+
+    return boolean
+
+def SelectWaterSurfaces(index):
+    bpy.ops.object.select_all(action='DESELECT')
+    boolean = False
+    for ob in bpy.data.objects:
+        if ob.halo_json.bsp_index == index:
+            if ob.name.startswith('\'') or (not ob.name.startswith(special_prefixes) and ob.halo_json.ObjectMesh_Type == 'WATER SURFACE'):
+                ob.select_set(True)
+                boolean = True
+        elif ob.halo_json.bsp_shared:
+            if ob.name.startswith('\'') or (not ob.name.startswith(special_prefixes) and ob.halo_json.ObjectMesh_Type == 'WATER SURFACE'):
+                ob.select_set(True)
+                boolean = True
+
+    return boolean
+
+def SelectLightMapRegions(index):
+    bpy.ops.object.select_all(action='DESELECT')
+    boolean = False
+    for ob in bpy.data.objects:
+        if ob.halo_json.bsp_index == index:
+            if (not ob.name.startswith(special_prefixes) and ob.halo_json.ObjectMesh_Type == 'LIGHTMAP REGION'):
+                ob.select_set(True)
+                boolean = True
+        elif ob.halo_json.bsp_shared:
+            if (not ob.name.startswith(special_prefixes) and ob.halo_json.ObjectMesh_Type == 'LIGHTMAP REGION'):
+                ob.select_set(True)
+                boolean = True
+
+    return boolean
+
+def SelectBoundarys(index):
+    bpy.ops.object.select_all(action='DESELECT')
+    boolean = False
+    for ob in bpy.data.objects:
+        if ob.halo_json.bsp_index == index:
+            if ob.name.startswith(('+soft_kill', '+soft_ceiling', '+slip_surface')) or (not ob.name.startswith(special_prefixes) and ob.halo_json.ObjectMesh_Type == 'BOUNDARY SURFACE'):
+                ob.select_set(True)
+                boolean = True
+        elif ob.halo_json.bsp_shared:
+            if ob.name.startswith(('+soft_kill', '+soft_ceiling', '+slip_surface')) or (not ob.name.startswith(special_prefixes) and ob.halo_json.ObjectMesh_Type == 'BOUNDARY SURFACE'):
+                ob.select_set(True)
+                boolean = True
+
+    return boolean
+
+def SelectWaterPhysics(index):
+    bpy.ops.object.select_all(action='DESELECT')
+    boolean = False
+    for ob in bpy.data.objects:
+        if ob.halo_json.bsp_index == index:
+            if ob.name.startswith('+water') or (not ob.name.startswith(special_prefixes) and ob.halo_json.ObjectMesh_Type == 'WATER PHYSICS VOLUME'):
+                ob.select_set(True)
+                boolean = True
+        elif ob.halo_json.bsp_shared:
+            if ob.name.startswith('+water') or (not ob.name.startswith(special_prefixes) and ob.halo_json.ObjectMesh_Type == 'WATER PHYSICS VOLUME'):
+                ob.select_set(True)
+                boolean = True
+
+    return boolean
+
+def SelectPoopRains(index):
+    bpy.ops.object.select_all(action='DESELECT')
+    boolean = False
+    for ob in bpy.data.objects:
+        if ob.halo_json.bsp_index == index:
+            if not ob.name.startswith(special_prefixes) and (ob.halo_json.ObjectMesh_Type == 'INSTANCED GEOMETRY RAIN BLOCKER' or ob.halo_json.ObjectMesh_Type == 'INSTANCED GEOMETRY VERTICAL RAIN SHEET'):
+                ob.select_set(True)
+                boolean = True
+        elif ob.halo_json.bsp_shared:
+            if not ob.name.startswith(special_prefixes) and (ob.halo_json.ObjectMesh_Type == 'INSTANCED GEOMETRY RAIN BLOCKER' or ob.halo_json.ObjectMesh_Type == 'INSTANCED GEOMETRY VERTICAL RAIN SHEET'):
+                ob.select_set(True)
+                boolean = True
+
+    return boolean
 
 def menu_func_export(self, context):
     self.layout.operator(Export_Halo_GR2.bl_idname, text="Halo Gen4 Asset Export (.fbx .json .gr2. .xml)")

@@ -853,9 +853,9 @@ def getMaterials():
 
     return temp
 
-def export_asset(report, filePath="", keep_fbx=False, keep_json=False, asset_path="", asset_name="", tag_type='', perm='', is_windows=False):
+def export_asset(report, filePath="", keep_fbx=False, keep_json=False, asset_path="", asset_name="", tag_type='', perm='', is_windows=False, bsp=''):
     if tag_type != 'selected':
-        fileName = GetFileName(filePath, asset_name, tag_type, perm, asset_path)
+        fileName = GetFileName(filePath, asset_name, tag_type, perm, asset_path, bsp)
         rename_file(filePath, asset_name, tag_type, perm, fileName)
     else:
         fileName = filePath
@@ -911,20 +911,26 @@ def CleanFiles(filePath, jsonPath, gr2Path, fbx_crushed, json_binned):
 def rename_file(filePath, asset_name, tag_type, perm='', fileName=''):
     os.replace(filePath, fileName)
 
-def GetFileName(filePath, asset_name, tag_type, perm='', asset_path=''):
+def GetFileName(filePath, asset_name, tag_type, perm='', asset_path='', bsp=''):
     if tag_type == 'animations':
         name = bpy.context.active_object.animation_data.action.name
         if name.rpartition('.')[0] != '':
             name = name.rpartition('.')[0]
         name = asset_path + '\\' + name + '.fbx'
-    else:
+    elif bsp == '':
         if perm != '' and perm != 'default':
             name = asset_path + '\\' + asset_name + '_' + perm
             name = name + '_' + tag_type + '.fbx'
         else:
             name = asset_path + '\\' + asset_name + '_' + tag_type + '.fbx'
-            print('FILENAME for ' + asset_name + ' is ' + name)
+    else:
+        if perm != '' and perm != 'default':
+            name = asset_name + '_' + bsp + '_' + tag_type + '_' + perm + '.fbx'
+        else:
+            name = asset_path + '\\' + asset_name + '_' + bsp + '_' + tag_type + '.fbx'
+    
     print('FILENAME for ' + asset_name + ' is ' + name)
+
     return name
 
 def move_assets(fileName, jsonPath, gr2Path, asset_path, fbx_crushed, json_binned, tag_type):
@@ -982,6 +988,7 @@ def build_gr2(toolPath, filePath, jsonPath, gr2Path):
         return {'FINISHED'}
 
 def save(operator, context, report, is_windows, tag_type,
+        bsp='',
         perm='',
         filepath="",
         keep_fbx=False,
@@ -991,7 +998,7 @@ def save(operator, context, report, is_windows, tag_type,
         **kwargs
         ):
 
-    export_asset(report, filepath, keep_fbx, keep_json, asset_path, asset_name, tag_type, perm, is_windows)
+    export_asset(report, filepath, keep_fbx, keep_json, asset_path, asset_name, tag_type, perm, is_windows, bsp)
 
     return {'FINISHED'}
 
