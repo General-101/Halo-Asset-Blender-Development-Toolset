@@ -467,10 +467,15 @@ class Export_Halo_GR2(Operator, ExportHelper):
 
                         if self.export_animations and 0<=len(bpy.data.actions):
                             if SelectModelSkeleton():
-                                for ob in bpy.context.selected_objects:
-                                    bpy.context.view_layer.objects.active = ob
+                                scene = bpy.context.scene
+                                for arm in bpy.context.selected_objects:
+                                    bpy.context.view_layer.objects.active = arm
                                     for anim in bpy.data.actions:
                                         ob.animation_data.action = anim
+                                        for track in arm.animation_data.nla_tracks:
+                                            if track.strips[anim].name == anim:
+                                                scene.frame_start = track.strips[anim].frame_start
+                                                scene.frame_end = track.strips[anim].frame_start
                                         export_fbx_bin.save(self, context, **keywords)
                                         export_gr2.save(self, context, self.report, IsWindows(), 'animations', '', '', **keywords)
                                 
