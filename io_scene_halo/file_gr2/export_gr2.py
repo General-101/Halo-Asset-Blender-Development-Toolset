@@ -80,9 +80,10 @@ def getNodes():
     #     for bone in arm.bones:
     #         nodesList.update({bone.name: getBoneProperties()})
 
-    for light in bpy.data.lights:
-        halo_light = light.halo_json
-        nodesList.update({light.name: getLightProperties(halo_light, light)})
+    for light in bpy.data.objects:
+        if light.type == 'LIGHT':
+            halo_light = light.halo_json
+            nodesList.update({light.name: getLightProperties(halo_light, light)})
 
     for ob in bpy.data.objects:
         halo_node = ob.halo_json
@@ -925,7 +926,7 @@ def GetFileName(filePath, asset_name, tag_type, perm='', asset_path='', bsp=''):
             name = asset_path + '\\' + asset_name + '_' + tag_type + '.fbx'
     else:
         if perm != '' and perm != 'default':
-            name = asset_name + '_' + bsp + '_' + tag_type + '_' + perm + '.fbx'
+            name = asset_path + '\\' + asset_name + '_' + bsp + '_' + tag_type + '_' + perm + '.fbx'
         else:
             name = asset_path + '\\' + asset_name + '_' + bsp + '_' + tag_type + '.fbx'
     
@@ -981,7 +982,7 @@ def build_gr2(toolPath, filePath, jsonPath, gr2Path):
             p = Popen(toolCommand)
             p.wait()
     except:
-        ctypes.windll.user32.MessageBoxW(0, "GR2 Not Exported. Please check your HREK editing kit path in add-on preferences and try again.", "Invalid HREK Path", 0)
+        ctypes.windll.user32.MessageBoxW(0, "GR2 Not Exported. Please check your editing kit path in add-on preferences and try again.", "Invalid EK Path", 0)
         os.remove(filePath)
         os.remove(jsonPath)
     finally:

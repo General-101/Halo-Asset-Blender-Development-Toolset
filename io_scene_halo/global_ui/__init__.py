@@ -1202,21 +1202,22 @@ poop_render_only_prefixes = ('%*',     '%!*','%?*','%>*','%-*','%+*',     '%!-*'
 
 special_materials = ('+collision', '+physics', '+portal','+seamsealer','+sky','+weatherpoly')
 
+no_perm_prefixes = (frame_prefixes, marker_prefixes, boundary_surface_prefixes, decorator_prefixes, fog_volume_prefixes, portal_prefixes, seam_prefixes, water_volume_prefixes, cookie_cutter_prefixes, '+water', '\'')
+
 
 class JSON_ObjectProps(Panel):
     bl_label = "Halo Object Properties"
     bl_idname = "JSON_PT_ObjectDetailsPanel"
     bl_space_type = "PROPERTIES"
     bl_region_type = "WINDOW"
-    bl_context = "data"
+    bl_context = "object"
 
     @classmethod
     def poll(cls, context):
         scene = context.scene
         scene_halo = scene.halo
 
-        if scene_halo.game_version == 'reach':
-            return (context.mesh or context.object.type == 'EMPTY')
+        return scene_halo.game_version == 'reach'
     
     def draw(self, context):
         layout = self.layout
@@ -1230,7 +1231,9 @@ class JSON_ObjectProps(Panel):
 
         col = flow.column()
 
-        if has_special_prefix:
+        if ob.type == 'LIGHT':
+            col.prop(ob_halo_json, "Object_Type_Light", text='Object Type')
+        elif has_special_prefix:
             if context.active_object.type == 'EMPTY':
                 col.prop(ob_halo_json, "Object_Type_No_Mesh_Locked", text='Object Type')
             else:
@@ -1240,8 +1243,7 @@ class JSON_ObjectProps(Panel):
                 col.prop(ob_halo_json, "Object_Type_No_Mesh", text='Object Type')
             else:
                 col.prop(ob_halo_json, "Object_Type_All", text='Object Type')
-        
-        col.prop(ob_halo_json, 'Permutation_Name', text='Permutation')
+
         sub = col.row()
         if not ob_halo_json.bsp_shared:
             sub.prop(ob_halo_json, 'bsp_index', text='BSP Index')
@@ -1253,7 +1255,6 @@ class JSON_ObjectMeshProps(Panel):
     bl_idname = "JSON_PT_MeshDetailsPanel"
     bl_space_type = "PROPERTIES"
     bl_region_type = "WINDOW"
-    bl_context = "data"
     bl_parent_id = "JSON_PT_ObjectDetailsPanel"
 
     @classmethod
@@ -1261,7 +1262,7 @@ class JSON_ObjectMeshProps(Panel):
         ob = context.object
         ob_halo_json = ob.halo_json
 
-        return (ob_halo_json.Object_Type_All == 'MESH' and ob_halo_json.Object_Type_All_Locked == 'MESH' and context.active_object.type != 'EMPTY')
+        return (ob_halo_json.Object_Type_All == 'MESH' and ob_halo_json.Object_Type_All_Locked == 'MESH' and context.active_object.type != 'EMPTY' and context.active_object.type != 'LIGHT')
 
 
     def draw(self, context):
@@ -1371,7 +1372,6 @@ class JSON_ObjectMeshFaceProps(Panel):
     bl_idname = "JSON_PT_MeshFaceDetailsPanel"
     bl_space_type = "PROPERTIES"
     bl_region_type = "WINDOW"
-    bl_context = "data"
     bl_parent_id = "JSON_PT_MeshDetailsPanel"
 
     @classmethod
@@ -1409,7 +1409,8 @@ class JSON_ObjectMeshFaceProps(Panel):
 
         col.separator()
 
-        col.prop(ob_halo_json, "Region_Name", text='Face Region')
+        col.prop(ob_halo_json, "Region_Name", text='Region')
+        col.prop(ob_halo_json, 'Permutation_Name', text='Permutation')
         col.prop(ob_halo_json, "Face_Global_Material", text='Global Material')
 
         col.separator()
@@ -1429,7 +1430,6 @@ class JSON_ObjectMeshMaterialLightingProps(Panel):
     bl_idname = "JSON_PT_MeshMaterialLightingDetailsPanel"
     bl_space_type = "PROPERTIES"
     bl_region_type = "WINDOW"
-    bl_context = "data"
     bl_options = {"DEFAULT_CLOSED"}
     bl_parent_id = "JSON_PT_MeshDetailsPanel"
 
@@ -1490,7 +1490,6 @@ class JSON_ObjectMeshLightmapProps(Panel):
     bl_idname = "JSON_PT_MeshLightmapDetailsPanel"
     bl_space_type = "PROPERTIES"
     bl_region_type = "WINDOW"
-    bl_context = "data"
     bl_options = {"DEFAULT_CLOSED"}
     bl_parent_id = "JSON_PT_MeshDetailsPanel"
 
@@ -1554,7 +1553,6 @@ class JSON_ObjectMeshExtraProps(Panel):
     bl_idname = "JSON_PT_MeshExtraDetailsPanel"
     bl_space_type = "PROPERTIES"
     bl_region_type = "WINDOW"
-    bl_context = "data"
     bl_parent_id = "JSON_PT_MeshDetailsPanel"
     bl_options = {"DEFAULT_CLOSED"}
 
@@ -1603,7 +1601,6 @@ class JSON_ObjectMarkerProps(Panel):
     bl_idname = "JSON_PT_MarkerDetailsPanel"
     bl_space_type = "PROPERTIES"
     bl_region_type = "WINDOW"
-    bl_context = "data"
     bl_parent_id = "JSON_PT_ObjectDetailsPanel"
 
     @classmethod
@@ -1690,7 +1687,7 @@ class JSON_MaterialProps(Panel):
         scene_halo = scene.halo
 
         if scene_halo.game_version == 'reach':
-            return True
+            return context.material
 
     def draw(self, context):
         layout = self.layout
@@ -1720,11 +1717,11 @@ class JSON_MaterialProps(Panel):
             
 # LIGHT PROPERTIES
 class JSON_LightProps(Panel):
-    bl_label = "Halo Light Properties"
+    bl_label = "Light Properties"
     bl_idname = "JSON_PT_LightPanel"
     bl_space_type = 'PROPERTIES'
     bl_region_type = 'WINDOW'
-    bl_context = "data"
+    bl_parent_id = "JSON_PT_ObjectDetailsPanel"
 
     @classmethod
     def poll(cls, context):
@@ -1732,85 +1729,80 @@ class JSON_LightProps(Panel):
         scene_halo = scene.halo
 
         if scene_halo.game_version == 'reach':
-            return context.light
+            return context.object.type == 'LIGHT'
 
     def draw(self, context):
         layout = self.layout
         layout.use_property_split = True
         flow = layout.grid_flow(row_major=True, columns=0, even_columns=True, even_rows=False, align=False)
 
-        light = context.object.data
-        light_halo_json = light.halo_json
+        ob = context.object
+        ob_halo_json = ob.halo_json
 
         col = flow.column()
         if context.active_object.data.type == 'POINT' or context.active_object.data.type == 'SUN':
-            col.prop(light_halo_json, "light_type_override_locked", text='Type')
+            col.prop(ob_halo_json, "light_type_override_locked", text='Type')
         else:
-            col.prop(light_halo_json, "light_type_override", text='Type')
-        sub = col.row()
-        if not light_halo_json.bsp_shared:
-            sub.prop(light_halo_json, 'bsp_index', text='BSP Index')
-        sub.prop(light_halo_json, 'bsp_shared', text='Shared')
+            col.prop(ob_halo_json, "light_type_override", text='Type')
 
-        col.prop(light_halo_json, 'Light_Game_Type', text='Game Type')
-        col.prop(light_halo_json, 'Light_Shape', text='Shape')
-        col.prop(light_halo_json, 'Light_Color', text='Color') 
-        col.prop(light_halo_json, 'Light_Intensity', text='Intensity')
+        col.prop(ob_halo_json, 'Light_Game_Type', text='Game Type')
+        col.prop(ob_halo_json, 'Light_Shape', text='Shape')
+        col.prop(ob_halo_json, 'Light_Color', text='Color') 
+        col.prop(ob_halo_json, 'Light_Intensity', text='Intensity')
 
         col.separator()
 
-        col.prop(light_halo_json, 'Light_Fade_Start_Distance', text='Fade Out Start Distance')
-        col.prop(light_halo_json, 'Light_Fade_End_Distance', text='Fade Out End Distance')
+        col.prop(ob_halo_json, 'Light_Fade_Start_Distance', text='Fade Out Start Distance')
+        col.prop(ob_halo_json, 'Light_Fade_End_Distance', text='Fade Out End Distance')
 
         col.separator()
 
-        col.prop(light_halo_json, 'Light_Hotspot_Size', text='Hotspot Size')
-        col.prop(light_halo_json, 'Light_Hotspot_Falloff', text='Hotspot Falloff')
-        col.prop(light_halo_json, 'Light_Falloff_Shape', text='Falloff Shape')
-        col.prop(light_halo_json, 'Light_Aspect', text='Light Aspect')
+        col.prop(ob_halo_json, 'Light_Hotspot_Size', text='Hotspot Size')
+        col.prop(ob_halo_json, 'Light_Hotspot_Falloff', text='Hotspot Falloff')
+        col.prop(ob_halo_json, 'Light_Falloff_Shape', text='Falloff Shape')
+        col.prop(ob_halo_json, 'Light_Aspect', text='Light Aspect')
 
         col.separator()
 
-        col.prop(light_halo_json, 'Light_Frustum_Width', text='Frustum Width')
-        col.prop(light_halo_json, 'Light_Frustum_Height', text='Frustum Height')
+        col.prop(ob_halo_json, 'Light_Frustum_Width', text='Frustum Width')
+        col.prop(ob_halo_json, 'Light_Frustum_Height', text='Frustum Height')
 
         col.separator()
 
-        col.prop(light_halo_json, 'Light_Volume_Distance', text='Light Volume Distance')
-        col.prop(light_halo_json, 'Light_Volume_Intensity', text='Light Volume Intensity')
+        col.prop(ob_halo_json, 'Light_Volume_Distance', text='Light Volume Distance')
+        col.prop(ob_halo_json, 'Light_Volume_Intensity', text='Light Volume Intensity')
 
         col.separator()
 
-        col.prop(light_halo_json, 'Light_Tag_Override', text='Light Tag Override')
-        col.prop(light_halo_json, 'Light_Shader_Reference', text='Shader Tag Reference')
-        col.prop(light_halo_json, 'Light_Gel_Reference', text='Gel Tag Reference')
-        col.prop(light_halo_json, 'Light_Lens_Flare_Reference', text='Lens Flare Tag Reference')
+        col.prop(ob_halo_json, 'Light_Tag_Override', text='Light Tag Override')
+        col.prop(ob_halo_json, 'Light_Shader_Reference', text='Shader Tag Reference')
+        col.prop(ob_halo_json, 'Light_Gel_Reference', text='Gel Tag Reference')
+        col.prop(ob_halo_json, 'Light_Lens_Flare_Reference', text='Lens Flare Tag Reference')
 
         col.separator()
 
-        col.prop(light_halo_json, 'Light_Bounce_Ratio', text='Light Bounce Ratio')
+        col.prop(ob_halo_json, 'Light_Bounce_Ratio', text='Light Bounce Ratio')
 
         col = layout.column(heading="Flags")
         sub = col.column(align=True)
 
-        sub.prop(light_halo_json, 'Light_Ignore_BSP_Visibility', text='Ignore BSP Visibility') 
-        sub.prop(light_halo_json, 'Light_Dynamic_Has_Bounce', text='Light Has Dynamic Bounce')
-        sub.prop(light_halo_json, 'Light_Screenspace_Has_Specular', text='Screenspace Light Has Specular')
+        sub.prop(ob_halo_json, 'Light_Ignore_BSP_Visibility', text='Ignore BSP Visibility') 
+        sub.prop(ob_halo_json, 'Light_Dynamic_Has_Bounce', text='Light Has Dynamic Bounce')
+        sub.prop(ob_halo_json, 'Light_Screenspace_Has_Specular', text='Screenspace Light Has Specular')
 
 class JSON_LightNearAttenuationProps(Panel):
     bl_label = "Light Uses Near Attenuation"
     bl_idname = "JSON_PT_LightNearAttenuationPanel"
     bl_space_type = "PROPERTIES"
     bl_region_type = "WINDOW"
-    bl_context = "data"
     bl_parent_id = "JSON_PT_LightPanel"
     bl_options = {'DEFAULT_CLOSED'}
 
 
     def draw_header(self, context):
-        light = context.object.data
-        light_halo_json = light.halo_json
-        self.layout.prop(light_halo_json, "Light_Near_Attenuation", text='')
+        ob = context.object
+        ob_halo_json = ob.halo_json
+        self.layout.prop(ob_halo_json, "Light_Near_Attenuation", text='')
 
     def draw(self, context):
         layout = self.layout
@@ -1818,30 +1810,29 @@ class JSON_LightNearAttenuationProps(Panel):
 
         flow = layout.grid_flow(row_major=True, columns=0, even_columns=True, even_rows=False, align=False)
 
-        light = context.object.data
-        light_halo_json = light.halo_json
+        ob = context.object
+        ob_halo_json = ob.halo_json
 
-        layout.enabled = light_halo_json.Light_Near_Attenuation
+        layout.enabled = ob_halo_json.Light_Near_Attenuation
 
         col = flow.column()
 
-        col.prop(light_halo_json, 'Light_Near_Attenuation_Start', text='Near Attenuation Start')
-        col.prop(light_halo_json, 'Light_Near_Attenuation_End', text='Near Attenuation End')
+        col.prop(ob_halo_json, 'Light_Near_Attenuation_Start', text='Near Attenuation Start')
+        col.prop(ob_halo_json, 'Light_Near_Attenuation_End', text='Near Attenuation End')
 
 class JSON_LightFarAttenuationProps(Panel):
     bl_label = "Light Uses Far Attenuation"
     bl_idname = "JSON_PT_LightFarAttenuationPanel"
     bl_space_type = "PROPERTIES"
     bl_region_type = "WINDOW"
-    bl_context = "data"
     bl_parent_id = "JSON_PT_LightPanel"
     bl_options = {'DEFAULT_CLOSED'}
 
 
     def draw_header(self, context):
-        light = context.object.data
-        light_halo_json = light.halo_json
-        self.layout.prop(light_halo_json, "Light_Far_Attenuation", text='')
+        ob = context.object
+        ob_halo_json = ob.halo_json
+        self.layout.prop(ob_halo_json, "Light_Far_Attenuation", text='')
 
     def draw(self, context):
         layout = self.layout
@@ -1850,29 +1841,28 @@ class JSON_LightFarAttenuationProps(Panel):
         flow = layout.grid_flow(row_major=True, columns=0, even_columns=True, even_rows=False, align=False)
 
         light = context.object.data
-        light_halo_json = light.halo_json
+        ob_halo_json = light.halo_json
 
-        layout.enabled = light_halo_json.Light_Far_Attenuation
+        layout.enabled = ob_halo_json.Light_Far_Attenuation
 
         col = flow.column()
 
-        col.prop(light_halo_json, 'Light_Far_Attenuation_Start', text='Far Attenuation Start')
-        col.prop(light_halo_json, 'Light_Far_Attenuation_End', text='Far Attenuation End')
+        col.prop(ob_halo_json, 'Light_Far_Attenuation_Start', text='Far Attenuation Start')
+        col.prop(ob_halo_json, 'Light_Far_Attenuation_End', text='Far Attenuation End')
 
 class JSON_LightClippingProps(Panel):
     bl_label = "Light Uses Clipping"
     bl_idname = "JSON_PT_LightClippingPanel"
     bl_space_type = "PROPERTIES"
     bl_region_type = "WINDOW"
-    bl_context = "data"
     bl_parent_id = "JSON_PT_LightPanel"
     bl_options = {'DEFAULT_CLOSED'}
 
 
     def draw_header(self, context):
-        light = context.object.data
-        light_halo_json = light.halo_json
-        self.layout.prop(light_halo_json, "Light_Use_Clipping", text='')
+        ob = context.object
+        ob_halo_json = ob.halo_json
+        self.layout.prop(ob_halo_json, "Light_Use_Clipping", text='')
 
     def draw(self, context):
         layout = self.layout
@@ -1880,19 +1870,19 @@ class JSON_LightClippingProps(Panel):
 
         flow = layout.grid_flow(row_major=True, columns=0, even_columns=True, even_rows=False, align=False)
 
-        light = context.object.data
-        light_halo_json = light.halo_json
+        ob = context.object
+        ob_halo_json = ob.halo_json
 
-        layout.enabled = light_halo_json.Light_Use_Clipping
+        layout.enabled = ob_halo_json.Light_Use_Clipping
 
         col = flow.column()
 
-        col.prop(light_halo_json, 'Light_Clipping_Size_X_Pos', text='Clipping Size X Forward')
-        col.prop(light_halo_json, 'Light_Clipping_Size_Y_Pos', text='Clipping Size Y Forward')
-        col.prop(light_halo_json, 'Light_Clipping_Size_Z_Pos', text='Clipping Size Z Forward')
-        col.prop(light_halo_json, 'Light_Clipping_Size_X_Neg', text='Clipping Size X Backward')
-        col.prop(light_halo_json, 'Light_Clipping_Size_Y_Neg', text='Clipping Size Y Backward')
-        col.prop(light_halo_json, 'Light_Clipping_Size_Z_Neg', text='Clipping Size Z Backward')
+        col.prop(ob_halo_json, 'Light_Clipping_Size_X_Pos', text='Clipping Size X Forward')
+        col.prop(ob_halo_json, 'Light_Clipping_Size_Y_Pos', text='Clipping Size Y Forward')
+        col.prop(ob_halo_json, 'Light_Clipping_Size_Z_Pos', text='Clipping Size Z Forward')
+        col.prop(ob_halo_json, 'Light_Clipping_Size_X_Neg', text='Clipping Size X Backward')
+        col.prop(ob_halo_json, 'Light_Clipping_Size_Y_Neg', text='Clipping Size Y Backward')
+        col.prop(ob_halo_json, 'Light_Clipping_Size_Z_Neg', text='Clipping Size Z Backward')
 
 # JSON PROPERTY GROUPS
 class JSON_ObjectPropertiesGroup(PropertyGroup):
@@ -1949,6 +1939,18 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
         description="Sets the object type",
         default = 'MARKER',
         items=object_type_items_no_mesh,
+    )
+
+    def LockLight(self):
+        return 'LIGHT'
+
+    Object_Type_Light: EnumProperty(
+        name="Object Type",
+        options=set(),
+        get=LockLight,
+        description="Sets the object type",
+        default = 'LIGHT',
+        items=[('LIGHT', 'Light', '')],
     )
 
     Permutation_Name: StringProperty(
@@ -2917,133 +2919,9 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
 
     )
 
-class JSON_MaterialPropertiesGroup(PropertyGroup):
-    
-    def update_shader_type(self, context):
-        material_path = context.object.active_material.halo_json.shader_path.replace('"','')
-        if material_path != material_path.rpartition('.')[2]:
-            match material_path.rpartition('.')[2]:
-                case 'shader_cortana':
-                    context.object.active_material.halo_json.Shader_Type = 'SHADER CORTANA'
-                case 'shader_custom':
-                    context.object.active_material.halo_json.Shader_Type = 'SHADER CUSTOM'
-                case 'shader_decal':
-                    context.object.active_material.halo_json.Shader_Type = 'SHADER DECAL'
-                case 'shader_foliage':
-                    context.object.active_material.halo_json.Shader_Type = 'SHADER FOLIAGE'
-                case 'shader_fur':
-                    context.object.active_material.halo_json.Shader_Type = 'SHADER FUR'
-                case 'shader_fur_stencil':
-                    context.object.active_material.halo_json.Shader_Type = 'SHADER FUR STENCIL'
-                case 'shader_glass':
-                    context.object.active_material.halo_json.Shader_Type = 'SHADER GLASS'
-                case 'shader_halogram':
-                    context.object.active_material.halo_json.Shader_Type = 'SHADER HALOGRAM'
-                case 'shader_mux':
-                    context.object.active_material.halo_json.Shader_Type = 'SHADER MUX'
-                case 'shader_mux_material':
-                    context.object.active_material.halo_json.Shader_Type = 'SHADER MUX MATERIAL'
-                case 'shader_screen':
-                    context.object.active_material.halo_json.Shader_Type = 'SHADER SCREEN'
-                case 'shader_skin':
-                    context.object.active_material.halo_json.Shader_Type = 'SHADER SKIN'
-                case 'shader_terrain':
-                    context.object.active_material.halo_json.Shader_Type = 'SHADER TERRAIN'
-                case 'shader_water':
-                    context.object.active_material.halo_json.Shader_Type = 'SHADER WATER'
-                case _:
-                    context.object.active_material.halo_json.Shader_Type = 'SHADER'
-
-    shader_path: StringProperty(
-        name = "Shader Path",
-        description = "Define the path to a shader. This can either be a relative path, or if you have added your Editing Kit Path to add on preferences, the full path. Including the file extension will automatically update the shader type",
-        default = "",
-        update=update_shader_type,
-        )
-
-    shader_types = [ ('SHADER', "Shader", ""),
-                ('SHADER CORTANA', "Shader Cortana", ""),
-                ('SHADER CUSTOM', "Shader Custom", ""),
-                ('SHADER DECAL', "Shader Decal", ""),
-                ('SHADER FOLIAGE', "Shader Foliage", ""),
-                ('SHADER FUR', "Shader Fur", ""),
-                ('SHADER FUR STENCIL', "Shader Fur Stencil", ""),
-                ('SHADER GLASS', "Shader Glass", ""),
-                ('SHADER HALOGRAM', "Shader Halogram", ""),
-                ('SHADER MUX', "Shader Mux", ""),
-                ('SHADER MUX MATERIAL', "Shader Mux Material", ""),
-                ('SHADER SCREEN', "Shader Screen", ""),
-                ('SHADER SKIN', "Shader Skin", ""),
-                ('SHADER TERRAIN', "Shader Terrain", ""),
-                ('SHADER WATER', "Shader Water", ""),
-               ]
-
-    Shader_Type: EnumProperty(
-        name = "Shader Type",
-        options=set(),
-        description = "Set by the extension of the shader path. Alternatively this field can be updated manually",
-        default = "SHADER",
-        items=shader_types,
-        )
-
-    def lock_to_override(self):
-        return 0
-
-    Shader_Type_Override: EnumProperty(
-        name = "Shader Type",
-        options=set(),
-        get=lock_to_override,
-        description = "",
-        default = "OVERRIDE",
-        items=[('OVERRIDE', 'Override', '')],
-        )
+# LIGHTS #
 
 
-    material_items = [  ('NONE', "None", "None"),
-                        ('COLLISION', "Collision", ""),
-                        ('PHYSICS', "Physics", ""),
-                        ('PORTAL', "Portal", "Force all faces with this material to be portals"),
-                        ('SEAMSEALER', "Seamsealer", "Force all faces with this material to be seamsealer"),
-                        ('SKY', "Sky", "Force all faces with this material to be sky"),
-                        ('WEATHERPOLY', "Weather Polyhedra", "Force all faces with this material to be weather polyhedra"),
-                        ]
-
-    material_override: EnumProperty(
-        name = "Material Override",
-        options=set(),
-        description = "Select to override the shader path with a special material type e.g. sky / seamsealer",
-        default = "NONE",
-        items=material_items,
-        )
-
-    def material_name_is_special(self):
-        if bpy.context.object.active_material.name.startswith('+collision'):
-            return 1
-        elif bpy.context.object.active_material.name.startswith('+physics'):
-            return 2
-        elif bpy.context.object.active_material.name.startswith('+portal'):
-            return 3
-        elif bpy.context.object.active_material.name.startswith('+seamsealer'):
-            return 4
-        elif bpy.context.object.active_material.name.startswith('+sky'):
-            return 5
-        elif bpy.context.object.active_material.name.startswith('+weatherpoly'):
-            return 6
-        else:
-            return 0
-
-
-    material_override_locked: EnumProperty(
-        name = "Material Override",
-        options=set(),
-        get=material_name_is_special,
-        description = "Select to override the shader path with a special material type e.g. sky / seamsealer",
-        default = "NONE",
-        items=material_items,
-        )
-
-class JSON_LightPropertiesGroup(PropertyGroup):
-    
     light_type_override: EnumProperty(
         name = "Light Type",
         options=set(),
@@ -3066,22 +2944,6 @@ class JSON_LightPropertiesGroup(PropertyGroup):
         items=[ ('OMNI', "Omni", ""),
                ]
         )
-
-    bsp_index: IntProperty(
-        name="BSP Index",
-        options=set(),
-        default=0,
-        min=0,
-        max=99,
-        step=5,
-        description="Set bsp index for this object. Only valid for scenario exports",
-    )
-
-    bsp_shared: BoolProperty(
-        name="Shared",
-        options=set(),
-        default=False,
-    )
 
     Light_Game_Type: EnumProperty(
         name = "Light Game Type",
@@ -3349,7 +3211,132 @@ class JSON_LightPropertiesGroup(PropertyGroup):
         description="",
         maxlen=128,
     )
+
+class JSON_MaterialPropertiesGroup(PropertyGroup):
     
+    def update_shader_type(self, context):
+        material_path = context.object.active_material.halo_json.shader_path.replace('"','')
+        if material_path != material_path.rpartition('.')[2]:
+            match material_path.rpartition('.')[2]:
+                case 'shader_cortana':
+                    context.object.active_material.halo_json.Shader_Type = 'SHADER CORTANA'
+                case 'shader_custom':
+                    context.object.active_material.halo_json.Shader_Type = 'SHADER CUSTOM'
+                case 'shader_decal':
+                    context.object.active_material.halo_json.Shader_Type = 'SHADER DECAL'
+                case 'shader_foliage':
+                    context.object.active_material.halo_json.Shader_Type = 'SHADER FOLIAGE'
+                case 'shader_fur':
+                    context.object.active_material.halo_json.Shader_Type = 'SHADER FUR'
+                case 'shader_fur_stencil':
+                    context.object.active_material.halo_json.Shader_Type = 'SHADER FUR STENCIL'
+                case 'shader_glass':
+                    context.object.active_material.halo_json.Shader_Type = 'SHADER GLASS'
+                case 'shader_halogram':
+                    context.object.active_material.halo_json.Shader_Type = 'SHADER HALOGRAM'
+                case 'shader_mux':
+                    context.object.active_material.halo_json.Shader_Type = 'SHADER MUX'
+                case 'shader_mux_material':
+                    context.object.active_material.halo_json.Shader_Type = 'SHADER MUX MATERIAL'
+                case 'shader_screen':
+                    context.object.active_material.halo_json.Shader_Type = 'SHADER SCREEN'
+                case 'shader_skin':
+                    context.object.active_material.halo_json.Shader_Type = 'SHADER SKIN'
+                case 'shader_terrain':
+                    context.object.active_material.halo_json.Shader_Type = 'SHADER TERRAIN'
+                case 'shader_water':
+                    context.object.active_material.halo_json.Shader_Type = 'SHADER WATER'
+                case _:
+                    context.object.active_material.halo_json.Shader_Type = 'SHADER'
+
+    shader_path: StringProperty(
+        name = "Shader Path",
+        description = "Define the path to a shader. This can either be a relative path, or if you have added your Editing Kit Path to add on preferences, the full path. Including the file extension will automatically update the shader type",
+        default = "",
+        update=update_shader_type,
+        )
+
+    shader_types = [ ('SHADER', "Shader", ""),
+                ('SHADER CORTANA', "Shader Cortana", ""),
+                ('SHADER CUSTOM', "Shader Custom", ""),
+                ('SHADER DECAL', "Shader Decal", ""),
+                ('SHADER FOLIAGE', "Shader Foliage", ""),
+                ('SHADER FUR', "Shader Fur", ""),
+                ('SHADER FUR STENCIL', "Shader Fur Stencil", ""),
+                ('SHADER GLASS', "Shader Glass", ""),
+                ('SHADER HALOGRAM', "Shader Halogram", ""),
+                ('SHADER MUX', "Shader Mux", ""),
+                ('SHADER MUX MATERIAL', "Shader Mux Material", ""),
+                ('SHADER SCREEN', "Shader Screen", ""),
+                ('SHADER SKIN', "Shader Skin", ""),
+                ('SHADER TERRAIN', "Shader Terrain", ""),
+                ('SHADER WATER', "Shader Water", ""),
+               ]
+
+    Shader_Type: EnumProperty(
+        name = "Shader Type",
+        options=set(),
+        description = "Set by the extension of the shader path. Alternatively this field can be updated manually",
+        default = "SHADER",
+        items=shader_types,
+        )
+
+    def lock_to_override(self):
+        return 0
+
+    Shader_Type_Override: EnumProperty(
+        name = "Shader Type",
+        options=set(),
+        get=lock_to_override,
+        description = "",
+        default = "OVERRIDE",
+        items=[('OVERRIDE', 'Override', '')],
+        )
+
+
+    material_items = [  ('NONE', "None", "None"),
+                        ('COLLISION', "Collision", ""),
+                        ('PHYSICS', "Physics", ""),
+                        ('PORTAL', "Portal", "Force all faces with this material to be portals"),
+                        ('SEAMSEALER', "Seamsealer", "Force all faces with this material to be seamsealer"),
+                        ('SKY', "Sky", "Force all faces with this material to be sky"),
+                        ('WEATHERPOLY', "Weather Polyhedra", "Force all faces with this material to be weather polyhedra"),
+                        ]
+
+    material_override: EnumProperty(
+        name = "Material Override",
+        options=set(),
+        description = "Select to override the shader path with a special material type e.g. sky / seamsealer",
+        default = "NONE",
+        items=material_items,
+        )
+
+    def material_name_is_special(self):
+        if bpy.context.object.active_material.name.startswith('+collision'):
+            return 1
+        elif bpy.context.object.active_material.name.startswith('+physics'):
+            return 2
+        elif bpy.context.object.active_material.name.startswith('+portal'):
+            return 3
+        elif bpy.context.object.active_material.name.startswith('+seamsealer'):
+            return 4
+        elif bpy.context.object.active_material.name.startswith('+sky'):
+            return 5
+        elif bpy.context.object.active_material.name.startswith('+weatherpoly'):
+            return 6
+        else:
+            return 0
+
+
+    material_override_locked: EnumProperty(
+        name = "Material Override",
+        options=set(),
+        get=material_name_is_special,
+        description = "Select to override the shader path with a special material type e.g. sky / seamsealer",
+        default = "NONE",
+        items=material_items,
+        )
+
 classeshalo = (
     ASS_JMS_MeshPropertiesGroup,
     ASS_JMS_MaterialPropertiesGroup,
@@ -3384,7 +3371,6 @@ classeshalo = (
     JSON_LightNearAttenuationProps,
     JSON_LightFarAttenuationProps,
     JSON_LightClippingProps,
-    JSON_LightPropertiesGroup
 )
 
 def register():
@@ -3397,7 +3383,6 @@ def register():
     bpy.types.Scene.halo = PointerProperty(type=Halo_ScenePropertiesGroup, name="Halo Scene Properties", description="Set properties for your scene")
     bpy.types.Object.halo_json = PointerProperty(type=JSON_ObjectPropertiesGroup, name="Halo JSON Properties", description="Set Halo Object Properties")
     bpy.types.Material.halo_json = PointerProperty(type=JSON_MaterialPropertiesGroup, name="Halo JSON Properties", description="Set Halo Material Properties")
-    bpy.types.Light.halo_json = PointerProperty(type=JSON_LightPropertiesGroup, name="Halo JSON Properties", description="Set Halo Light Properties")
 
 def unregister():
     del bpy.types.Light.halo_light

@@ -639,7 +639,10 @@ class Export_Halo_GR2(Operator, ExportHelper):
             return {'FINISHED'}
 
         else:
-            ctypes.windll.user32.MessageBoxW(0, "The selected export folder is invalid, please select one within the data folder of your HEK tools.", "Invalid Export Path", 0)
+            if not CheckPath(self.filepath):
+                ctypes.windll.user32.MessageBoxW(0, "Invalid Editing Kit path. Please check your editing kit path in add-on preferences and try again.", "Invalid EK Path", 0)
+            else:
+                ctypes.windll.user32.MessageBoxW(0, "The selected export folder is invalid, please select one within the data folder of your HEK tools.", "Invalid Export Path", 0)
             return {'FINISHED'}
 
     def draw(self, context):
@@ -844,11 +847,11 @@ def SelectPoops(index, perm):
             halo_mesh = ob.halo_json
             if halo_mesh.Permutation_Name != perm and perm == 'default':
                 perm = ''
-            if (ob.name.startswith('@') and not ob.parent.name.startswith('%')) or (not ob.name.startswith(special_prefixes) and (ob.halo_json.ObjectMesh_Type == 'COLLISION' or ob.halo_json.ObjectMesh_Type == 'DEFAULT' or ob.halo_json.ObjectMesh_Type == 'LIGHTMAP REGION' )) and (halo_mesh.Permutation_Name == perm or halo_mesh.Permutation_Name == 'default'):
+            if ob.name.startswith('%') or (ob.name.startswith('@') and ob.parent.name.startswith('%')) or (ob.name.startswith('$') and ob.parent.name.startswith('%')) or (not ob.name.startswith(special_prefixes) and (ob.halo_json.ObjectMesh_Type == 'INSTANCED GEOMETRY' or ob.halo_json.ObjectMesh_Type == 'INSTANCED GEOMETRY COLLISION' or ob.halo_json.ObjectMesh_Type == 'INSTANCED GEOMETRY PHYSICS' or ob.halo_json.ObjectMesh_Type == 'INSTANCED GEOMETRY MARKER')) and (halo_mesh.Permutation_Name == perm or halo_mesh.Permutation_Name == 'default'):
                 ob.select_set(True)
                 boolean = True
         elif ob.halo_json.bsp_shared:
-            if (ob.name.startswith('@') and not ob.parent.name.startswith('%')) or (not ob.name.startswith(special_prefixes) and (ob.halo_json.ObjectMesh_Type == 'COLLISION' or ob.halo_json.ObjectMesh_Type == 'DEFAULT' or ob.halo_json.ObjectMesh_Type == 'LIGHTMAP REGION' )) and (halo_mesh.Permutation_Name == perm or halo_mesh.Permutation_Name == 'default'):
+            if ob.name.startswith('%') or (ob.name.startswith('@') and ob.parent.name.startswith('%')) or (ob.name.startswith('$') and ob.parent.name.startswith('%')) or (not ob.name.startswith(special_prefixes) and (ob.halo_json.ObjectMesh_Type == 'INSTANCED GEOMETRY' or ob.halo_json.ObjectMesh_Type == 'INSTANCED GEOMETRY COLLISION' or ob.halo_json.ObjectMesh_Type == 'INSTANCED GEOMETRY PHYSICS' or ob.halo_json.ObjectMesh_Type == 'INSTANCED GEOMETRY MARKER')) and (halo_mesh.Permutation_Name == perm or halo_mesh.Permutation_Name == 'default'):
                 ob.select_set(True)
                 boolean = True
 
