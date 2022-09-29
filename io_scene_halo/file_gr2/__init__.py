@@ -407,27 +407,33 @@ class Export_Halo_GR2(Operator, ExportHelper):
     def execute(self, context):
         keywords = self.as_keywords()
         from . import export_gr2, export_sidecar_xml, import_sidecar
-        
-        model_armature = None
-        for ob in bpy.data.objects:
-            if ob.type == 'ARMATURE':
-                model_armature = ob
-                break
 
-        for ob in bpy.data.objects:
-                if ob.parent == model_armature:
-                    if ob.parent_type == 'OBJECT':
-                        if not any(m != ' ARMATURE' for m in ob.modifiers):
-                            bpy.ops.object.select_all(action='DESELECT')
-                            ob.select_set(True)
-                            bpy.context.view_layer.objects.active = model_armature
-                            if (ob.type == 'MESH' and (not ob.name.startswith(special_prefixes) or ob.name.startswith('$')) and (ob.halo_json.ObjectMesh_Type == 'PHYSICS' or ob.name.startswith('$')) and ob.halo_json.Object_Type_All == 'MESH') or (ob.type == 'MESH' and (ob.halo_json.Object_Type_All == 'MARKER' or ob.name.startswith('#'))) or ob.type == 'EMPTY' and (ob.halo_json.Object_Type_No_Mesh == 'MARKER' or ob.name.startswith('#')):
-                                bpy.ops.object.parent_set(type='BONE', keep_transform=True)
-                            else:
-                                bpy.ops.object.parent_set(type='ARMATURE', keep_transform=True)
-                            # mod = ob.modifiers.new(name='Armature', type='ARMATURE')
-                            # mod.object = model_armature
-                
+        if self.sidecar_type == 'MODEL':
+            
+            model_armature = None
+            for ob in bpy.data.objects:
+                if ob.type == 'ARMATURE':
+                    model_armature = ob
+                    break
+
+            if model_armature != None:
+
+                for ob in bpy.data.objects:
+                        if ob.parent == model_armature:
+                            if ob.parent_type == 'OBJECT':
+                                if not any(m != ' ARMATURE' for m in ob.modifiers):
+                                    bpy.ops.object.select_all(action='DESELECT')
+                                    ob.select_set(True)
+                                    bpy.context.view_layer.objects.active = model_armature
+                                    if (ob.type == 'MESH' and (not ob.name.startswith(special_prefixes) or ob.name.startswith('$')) and (ob.halo_json.ObjectMesh_Type == 'PHYSICS' or ob.name.startswith('$')) and ob.halo_json.Object_Type_All == 'MESH') or (ob.type == 'MESH' and (ob.halo_json.Object_Type_All == 'MARKER' or ob.name.startswith('#'))) or ob.type == 'EMPTY' and (ob.halo_json.Object_Type_No_Mesh == 'MARKER' or ob.name.startswith('#')):
+                                        bpy.ops.object.parent_set(type='BONE', keep_transform=True)
+                                    else:
+                                        bpy.ops.object.parent_set(type='ARMATURE', keep_transform=True)
+            else:
+                self.report({'ERROR'},"Model export selected but no armature in scene")
+                return {'FINISHED'}
+
+                    
         if self.show_output:
             bpy.ops.wm.console_toggle()
 
@@ -537,67 +543,68 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                 break
 
                         for bsp in bsp_list:
-                            if self.export_structure:
-                                if SelectStructure(bsp):
-                                    export_fbx_bin.save(self, context, **keywords)
-                                    export_gr2.save(self, context, self.report, IsWindows(), 'bsp', "{0:03}".format(bsp), '', **keywords)
+                            if not ob.halo_json.bsp_shared:
+                                if self.export_structure:
+                                    if SelectStructure(bsp):
+                                        export_fbx_bin.save(self, context, **keywords)
+                                        export_gr2.save(self, context, self.report, IsWindows(), 'bsp', "{0:03}".format(bsp), '', **keywords)
 
-                                if SelectLightMapRegions(bsp):
-                                    for select in bpy.context.selected_objects:
-                                        print (select.name)
-                                    export_fbx_bin.save(self, context, **keywords)
-                                    export_gr2.save(self, context, self.report, IsWindows(), 'lightmap_region', "{0:03}".format(bsp), '', **keywords)
+                                    if SelectLightMapRegions(bsp):
+                                        for select in bpy.context.selected_objects:
+                                            print (select.name)
+                                        export_fbx_bin.save(self, context, **keywords)
+                                        export_gr2.save(self, context, self.report, IsWindows(), 'lightmap_region', "{0:03}".format(bsp), '', **keywords)
 
-                            if self.export_poops:
-                                perm_list = []
-                                for ob in bpy.data.objects:
-                                    if ob.halo_json.Permutation_Name == '':
-                                        perm = 'default'
-                                    else:
-                                        perm = ob.halo_json.Permutation_Name
-                                    if perm not in perm_list:
-                                        perm_list.append(perm)
-                                        if SelectPoops(bsp, perm):
-                                            export_fbx_bin.save(self, context, **keywords)
-                                            export_gr2.save(self, context, self.report, IsWindows(), 'poops', "{0:03}".format(bsp), perm, **keywords)
+                                if self.export_poops:
+                                    perm_list = []
+                                    for ob in bpy.data.objects:
+                                        if ob.halo_json.Permutation_Name == '':
+                                            perm = 'default'
+                                        else:
+                                            perm = ob.halo_json.Permutation_Name
+                                        if perm not in perm_list:
+                                            perm_list.append(perm)
+                                            if SelectPoops(bsp, perm):
+                                                export_fbx_bin.save(self, context, **keywords)
+                                                export_gr2.save(self, context, self.report, IsWindows(), 'poops', "{0:03}".format(bsp), perm, **keywords)
 
-                            if self.export_markers:
-                                if SelectMarkers(bsp):
-                                    export_fbx_bin.save(self, context, **keywords)
-                                    export_gr2.save(self, context, self.report, IsWindows(), 'markers', "{0:03}".format(bsp), '', **keywords)
+                                if self.export_markers:
+                                    if SelectMarkers(bsp):
+                                        export_fbx_bin.save(self, context, **keywords)
+                                        export_gr2.save(self, context, self.report, IsWindows(), 'markers', "{0:03}".format(bsp), '', **keywords)
 
-                            if self.export_lights:
-                                if SelectLights(bsp):
-                                    export_fbx_bin.save(self, context, **keywords)
-                                    export_gr2.save(self, context, self.report, IsWindows(), 'lights', "{0:03}".format(bsp), '', **keywords)
+                                if self.export_lights:
+                                    if SelectLights(bsp):
+                                        export_fbx_bin.save(self, context, **keywords)
+                                        export_gr2.save(self, context, self.report, IsWindows(), 'lights', "{0:03}".format(bsp), '', **keywords)
 
-                            if self.export_portals:
-                                if SelectPortals(bsp):
-                                    export_fbx_bin.save(self, context, **keywords)
-                                    export_gr2.save(self, context, self.report, IsWindows(), 'portals', "{0:03}".format(bsp), '', **keywords)
+                                if self.export_portals:
+                                    if SelectPortals(bsp):
+                                        export_fbx_bin.save(self, context, **keywords)
+                                        export_gr2.save(self, context, self.report, IsWindows(), 'portals', "{0:03}".format(bsp), '', **keywords)
 
-                            if self.export_seams:
-                                if SelectSeams(bsp):
-                                    export_fbx_bin.save(self, context, **keywords)
-                                    export_gr2.save(self, context, self.report, IsWindows(), 'seams', "{0:03}".format(bsp), '', **keywords)
+                                if self.export_seams:
+                                    if SelectSeams(bsp):
+                                        export_fbx_bin.save(self, context, **keywords)
+                                        export_gr2.save(self, context, self.report, IsWindows(), 'seams', "{0:03}".format(bsp), '', **keywords)
 
-                            if self.export_water_surfaces:
-                                if SelectWaterSurfaces(bsp):
-                                    export_fbx_bin.save(self, context, **keywords)
-                                    export_gr2.save(self, context, self.report, IsWindows(), 'water', "{0:03}".format(bsp), '', **keywords)
+                                if self.export_water_surfaces:
+                                    if SelectWaterSurfaces(bsp):
+                                        export_fbx_bin.save(self, context, **keywords)
+                                        export_gr2.save(self, context, self.report, IsWindows(), 'water', "{0:03}".format(bsp), '', **keywords)
 
-                            if self.export_structure_design:
-                                if SelectBoundarys(bsp):
-                                    export_fbx_bin.save(self, context, **keywords)
-                                    export_gr2.save(self, context, self.report, IsWindows(), 'design', "{0:03}".format(bsp), '', **keywords)
+                                if self.export_structure_design:
+                                    if SelectBoundarys(bsp):
+                                        export_fbx_bin.save(self, context, **keywords)
+                                        export_gr2.save(self, context, self.report, IsWindows(), 'design', "{0:03}".format(bsp), '', **keywords)
 
-                                if SelectWaterPhysics(bsp):
-                                    export_fbx_bin.save(self, context, **keywords)
-                                    export_gr2.save(self, context, self.report, IsWindows(), 'water_physics', "{0:03}".format(bsp), '', **keywords)
+                                    if SelectWaterPhysics(bsp):
+                                        export_fbx_bin.save(self, context, **keywords)
+                                        export_gr2.save(self, context, self.report, IsWindows(), 'water_physics', "{0:03}".format(bsp), '', **keywords)
 
-                                if SelectPoopRains(bsp):
-                                    export_fbx_bin.save(self, context, **keywords)
-                                    export_gr2.save(self, context, self.report, IsWindows(), 'rain_blockers', "{0:03}".format(bsp), '', **keywords)
+                                    if SelectPoopRains(bsp):
+                                        export_fbx_bin.save(self, context, **keywords)
+                                        export_gr2.save(self, context, self.report, IsWindows(), 'rain_blockers', "{0:03}".format(bsp), '', **keywords)
 
 
 
@@ -609,11 +616,11 @@ class Export_Halo_GR2(Operator, ExportHelper):
                             if self.export_structure:
                                 if SelectStructure(-1):
                                     export_fbx_bin.save(self, context, **keywords)
-                                    export_gr2.save(self, context, self.report, IsWindows(), 'bsp', 'shared', **keywords)
+                                    export_gr2.save(self, context, self.report, IsWindows(), 'bsp', 'shared', '', **keywords)
 
-                                SelectLightMapRegions(-1)
-                                export_fbx_bin.save(self, context, **keywords)
-                                export_gr2.save(self, context, self.report, IsWindows(), 'lightmap_region', 'shared', **keywords)
+                                if SelectLightMapRegions(-1):
+                                    export_fbx_bin.save(self, context, **keywords)
+                                    export_gr2.save(self, context, self.report, IsWindows(), 'lightmap_region', 'shared', '', **keywords)
 
                             if self.export_poops:
                                 perm_list = []
@@ -631,40 +638,40 @@ class Export_Halo_GR2(Operator, ExportHelper):
                             if self.export_markers:
                                 if SelectMarkers(-1):
                                     export_fbx_bin.save(self, context, **keywords)
-                                    export_gr2.save(self, context, self.report, IsWindows(), 'markers', 'shared', **keywords)
+                                    export_gr2.save(self, context, self.report, IsWindows(), 'markers', 'shared', '', **keywords)
 
                             if self.export_lights:
                                 if SelectLights(-1):
                                     export_fbx_bin.save(self, context, **keywords)
-                                    export_gr2.save(self, context, self.report, IsWindows(), 'lights', 'shared', **keywords)
+                                    export_gr2.save(self, context, self.report, IsWindows(), 'lights', 'shared', '', **keywords)
 
                             if self.export_portals:
                                 if SelectPortals(-1):
                                     export_fbx_bin.save(self, context, **keywords)
-                                    export_gr2.save(self, context, self.report, IsWindows(), 'portals', 'shared', **keywords)
+                                    export_gr2.save(self, context, self.report, IsWindows(), 'portals', 'shared', '', **keywords)
 
                             if self.export_seams:
                                 if SelectSeams(-1):
                                     export_fbx_bin.save(self, context, **keywords)
-                                    export_gr2.save(self, context, self.report, IsWindows(), 'seams', 'shared', **keywords)
+                                    export_gr2.save(self, context, self.report, IsWindows(), 'seams', 'shared', '', **keywords)
 
                             if self.export_water_surfaces:
                                 if SelectWaterSurfaces(-1):
                                     export_fbx_bin.save(self, context, **keywords)
-                                    export_gr2.save(self, context, self.report, IsWindows(), 'water', 'shared', **keywords)
+                                    export_gr2.save(self, context, self.report, IsWindows(), 'water', 'shared', '', **keywords)
 
                             if self.export_structure_design:
                                 if SelectBoundarys(-1):
                                     export_fbx_bin.save(self, context, **keywords)
-                                    export_gr2.save(self, context, self.report, IsWindows(), 'design', 'shared', **keywords)
+                                    export_gr2.save(self, context, self.report, IsWindows(), 'design', 'shared', '', **keywords)
 
                                 if SelectWaterPhysics(-1):
                                     export_fbx_bin.save(self, context, **keywords)
-                                    export_gr2.save(self, context, self.report, IsWindows(), 'water_physics', 'shared', **keywords)
+                                    export_gr2.save(self, context, self.report, IsWindows(), 'water_physics', 'shared', '', **keywords)
 
                                 if SelectPoopRains(-1):
                                     export_fbx_bin.save(self, context, **keywords)
-                                    export_gr2.save(self, context, self.report, IsWindows(), 'rain_blockers', 'shared', **keywords)
+                                    export_gr2.save(self, context, self.report, IsWindows(), 'rain_blockers', 'shared', '', **keywords)
 
                     elif self.sidecar_type == 'DECORATOR':
                         print('not implemented')
