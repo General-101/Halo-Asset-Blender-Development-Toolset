@@ -1953,11 +1953,6 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
         items=[('LIGHT', 'Light', '')],
     )
 
-    Permutation_Name: StringProperty(
-        name="Permutation",
-        description="Define the permutation of this object. Leave blank for default",
-    )
-
     bsp_index: IntProperty(
         name="BSP Index",
         options=set(),
@@ -2132,14 +2127,34 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
                ]
         )
 
+    def disallow_default_as_string_region(self, context):
+        if self.Region_Name == 'default':
+            self.Region_Name = ''
+
     Region_Name: StringProperty(
         name="Face Region",
         description="Define the name of the region these faces should be associated with",
+        update=disallow_default_as_string_region,
     )
+
+    def disallow_default_as_string_perm(self, context):
+        if self.Permutation_Name.lower() == 'default':
+            self.Permutation_Name = ''
+
+    Permutation_Name: StringProperty(
+        name="Permutation",
+        description="Define the permutation of this object. Leave blank for default",
+        update=disallow_default_as_string_perm,
+    )
+
+    def disallow_default_as_string_material(self, context):
+        if self.Face_Global_Material.lower() == 'default':
+            self.Face_Global_Material = ''
 
     Face_Global_Material: StringProperty(
         name="Global Material",
         description="Set the global material of the faces of this mesh. For struture geometry leave blank to use the global material of the shader. The global material name should match a valid material defined in tags\globals\globals.globals",
+        update=disallow_default_as_string_material,
     )
 
     Sky_Permutation_Index: IntProperty(

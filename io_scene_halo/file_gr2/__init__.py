@@ -253,9 +253,14 @@ class Export_Halo_GR2(Operator, ExportHelper):
         description='',
         default=False,
     )
-    hide_output: BoolProperty(
-        name='Hide Output',
+    show_output: BoolProperty(
+        name='Show Output',
         description='',
+        default=False
+    )
+    run_tagwatcher: BoolProperty(
+        name='Run Tagwatcher',
+        description='Runs tag watcher after asset has been imported',
         default=False
     )
     import_check: BoolProperty(
@@ -402,8 +407,28 @@ class Export_Halo_GR2(Operator, ExportHelper):
     def execute(self, context):
         keywords = self.as_keywords()
         from . import export_gr2, export_sidecar_xml, import_sidecar
+        
+        model_armature = None
+        for ob in bpy.data.objects:
+            if ob.type == 'ARMATURE':
+                model_armature = ob
+                break
 
-        if not self.hide_output:
+        for ob in bpy.data.objects:
+                if ob.parent == model_armature:
+                    if ob.parent_type == 'OBJECT':
+                        if not any(m != ' ARMATURE' for m in ob.modifiers):
+                            bpy.ops.object.select_all(action='DESELECT')
+                            ob.select_set(True)
+                            bpy.context.view_layer.objects.active = model_armature
+                            if (ob.type == 'MESH' and (not ob.name.startswith(special_prefixes) or ob.name.startswith('$')) and (ob.halo_json.ObjectMesh_Type == 'PHYSICS' or ob.name.startswith('$')) and ob.halo_json.Object_Type_All == 'MESH') or (ob.type == 'MESH' and (ob.halo_json.Object_Type_All == 'MARKER' or ob.name.startswith('#'))) or ob.type == 'EMPTY' and (ob.halo_json.Object_Type_No_Mesh == 'MARKER' or ob.name.startswith('#')):
+                                bpy.ops.object.parent_set(type='BONE', keep_transform=True)
+                            else:
+                                bpy.ops.object.parent_set(type='ARMATURE', keep_transform=True)
+                            # mod = ob.modifiers.new(name='Armature', type='ARMATURE')
+                            # mod.object = model_armature
+                
+        if self.show_output:
             bpy.ops.wm.console_toggle()
 
         if(CheckPath(self.filepath)):
@@ -437,66 +462,65 @@ class Export_Halo_GR2(Operator, ExportHelper):
 
                         if self.export_render:
                             perm_list = []
+                            default_perm_registered = False
                             for ob in bpy.data.objects:
-                                if ob.halo_json.Permutation_Name == '':
-                                    perm = 'default'
-                                else:
-                                    perm = ob.halo_json.Permutation_Name
-                                if perm not in perm_list:
+                                perm = ob.halo_json.Permutation_Name
+                                if perm not in perm_list or (perm == '' and default_perm_registered == False):
+                                    if perm == '':
+                                        default_perm_registered = True
                                     perm_list.append(perm)
-                                    if SelectModelRender(perm):
+                                    if SelectModelRender(perm, model_armature):
                                         export_fbx_bin.save(self, context, **keywords)
                                         export_gr2.save(self, context, self.report, IsWindows(), 'render', '', perm, **keywords)
 
                         if self.export_collision:
                             perm_list = []
+                            default_perm_registered = False
                             for ob in bpy.data.objects:
-                                if ob.halo_json.Permutation_Name == '':
-                                    perm = 'default'
-                                else:
-                                    perm = ob.halo_json.Permutation_Name
-                                if perm not in perm_list:
+                                perm = ob.halo_json.Permutation_Name
+                                if perm not in perm_list or (perm == '' and default_perm_registered == False):
+                                    if perm == '':
+                                        default_perm_registered = True
                                     perm_list.append(perm)
-                                    if SelectModelCollision(perm):
+                                    if SelectModelCollision(perm, model_armature):
                                         export_fbx_bin.save(self, context, **keywords)
                                         export_gr2.save(self, context, self.report, IsWindows(), 'collision', '', perm, **keywords)
 
                         if self.export_physics:
                             perm_list = []
+                            default_perm_registered = False
                             for ob in bpy.data.objects:
-                                if ob.halo_json.Permutation_Name == '':
-                                    perm = 'default'
-                                else:
-                                    perm = ob.halo_json.Permutation_Name
-                                if perm not in perm_list:
+                                perm = ob.halo_json.Permutation_Name
+                                if perm not in perm_list or (perm == '' and default_perm_registered == False):
+                                    if perm == '':
+                                        default_perm_registered = True
                                     perm_list.append(perm)
-                                    if SelectModelPhysics(perm):
+                                    if SelectModelPhysics(perm, model_armature):
                                         export_fbx_bin.save(self, context, **keywords)
                                         export_gr2.save(self, context, self.report, IsWindows(), 'physics', '', perm, **keywords)
 
                         if self.export_markers:
-                            if SelectModelMarkers():
+                            if SelectModelMarkers(model_armature):
                                 export_fbx_bin.save(self, context, **keywords)
                                 export_gr2.save(self, context, self.report, IsWindows(), 'markers', '', '', **keywords)
 
-                        if SelectModelSkeleton():
+                        if SelectModelSkeleton(model_armature):
                             export_fbx_bin.save(self, context, **keywords)
                             export_gr2.save(self, context, self.report, IsWindows(), 'skeleton', '', '', **keywords)
 
                         if self.export_animations and 1<=len(bpy.data.actions):
-                            if SelectModelSkeleton():
-                                for arm in bpy.context.selected_objects:
-                                    bpy.context.view_layer.objects.active = arm
-                                    for action in bpy.data.actions:
-                                        arm.animation_data.action = action
-                                        if action.use_frame_range:
-                                            scene.frame_start = int(action.frame_start)
-                                            scene.frame_end = int(action.frame_end)
-                                        else:
-                                            scene.frame_start = f_start
-                                            scene.frame_end = f_end
-                                        export_fbx_bin.save(self, context, **keywords)
-                                        export_gr2.save(self, context, self.report, IsWindows(), 'animations', '', '', **keywords)
+                            if SelectModelSkeleton(model_armature):
+                                bpy.context.view_layer.objects.active = model_armature
+                                for action in bpy.data.actions:
+                                    model_armature.animation_data.action = action
+                                    if action.use_frame_range:
+                                        scene.frame_start = int(action.frame_start)
+                                        scene.frame_end = int(action.frame_end)
+                                    else:
+                                        scene.frame_start = f_start
+                                        scene.frame_end = f_end
+                                    export_fbx_bin.save(self, context, **keywords)
+                                    export_gr2.save(self, context, self.report, IsWindows(), 'animations', '', '', **keywords)
                                 
                     elif self.sidecar_type == 'SCENARIO':
                         
@@ -675,7 +699,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                 ctypes.windll.user32.MessageBoxW(0, "The selected export folder is invalid, please select one within the data folder of your HEK tools.", "Invalid Export Path", 0)
         
 
-        if not self.hide_output:
+        if self.show_output:
             bpy.ops.wm.console_toggle()
 
         return {'FINISHED'}
@@ -691,7 +715,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
         col.prop(self, "game_version", text='Game Version')
         col.prop(self, "export_method", text='Export Method')
         col.prop(self, "sidecar_type", text='Asset Type')
-        col.prop(self, "hide_output", text='Hide Output')
+        col.prop(self, "show_output", text='Show Output')
 
         sub = box.column(heading="Keep")
         sub.prop(self, "keep_fbx")
@@ -755,6 +779,8 @@ class Export_Halo_GR2(Operator, ExportHelper):
         col = box.column()
         col.prop(self, "import_to_game")
         if self.import_to_game:
+            col.prop(self, "run_tagwatcher")
+        if self.import_to_game:
             sub = box.column(heading="Import Flags")
             sub.prop(self, "import_check")
             sub.prop(self, "import_force")
@@ -793,73 +819,70 @@ def CheckPath(filePath):
         print("Not Valid!")
         return False
 
-def SelectModelRender(perm):
+def SelectModelRender(perm, arm):
     bpy.ops.object.select_all(action='DESELECT')
     boolean = False
     for ob in bpy.data.objects:
         halo_mesh = ob.halo_json
         halo_mesh_name = ob.name
-        if halo_mesh.Permutation_Name != perm and perm == 'default':
-            perm = ''
-        if (ob.type == 'MESH' and (not halo_mesh_name.startswith(special_prefixes)) and halo_mesh.Object_Type_All == 'MESH' and halo_mesh.ObjectMesh_Type == 'DEFAULT' and (halo_mesh.Permutation_Name == perm or halo_mesh.Permutation_Name == 'default')) or ob.type == 'ARMATURE':
-            ob.select_set(True)
-            if ob.type != 'ARMATURE':
-                boolean = True
+        if halo_mesh.Permutation_Name == perm:
+            if (ob.type == 'MESH' and (not halo_mesh_name.startswith(special_prefixes)) and halo_mesh.Object_Type_All == 'MESH' and halo_mesh.ObjectMesh_Type == 'DEFAULT' and (halo_mesh.Permutation_Name == perm or halo_mesh.Permutation_Name == 'default')):
+                ob.select_set(True)
+                arm.select_set(True)
+                if ob.type != 'ARMATURE':
+                    boolean = True
     
     return boolean
 
-def SelectModelCollision(perm):
+def SelectModelCollision(perm, arm):
     bpy.ops.object.select_all(action='DESELECT')
     boolean = False
     for ob in bpy.data.objects:
         halo_mesh = ob.halo_json
         halo_mesh_name = ob.name
-        if halo_mesh.Permutation_Name != perm and perm == 'default':
-            perm = ''
-        if (ob.type == 'MESH' and (not halo_mesh_name.startswith(special_prefixes) or halo_mesh_name.startswith('@')) and (halo_mesh.ObjectMesh_Type == 'COLLISION' or halo_mesh_name.startswith('@')) and halo_mesh.Object_Type_All == 'MESH' and (halo_mesh.Permutation_Name == perm or halo_mesh.Permutation_Name == 'default')) or ob.type == 'ARMATURE':
-            ob.select_set(True)
-            if ob.type != 'ARMATURE':
-                boolean = True
+        if halo_mesh.Permutation_Name == perm:
+            if (ob.type == 'MESH' and (not halo_mesh_name.startswith(special_prefixes) or halo_mesh_name.startswith('@')) and (halo_mesh.ObjectMesh_Type == 'COLLISION' or halo_mesh_name.startswith('@')) and halo_mesh.Object_Type_All == 'MESH' and (halo_mesh.Permutation_Name == perm or halo_mesh.Permutation_Name == 'default')):
+                ob.select_set(True)
+                arm.select_set(True)
+                if ob.type != 'ARMATURE':
+                    boolean = True
     
     return boolean
 
-def SelectModelPhysics(perm):
+def SelectModelPhysics(perm, arm):
     bpy.ops.object.select_all(action='DESELECT')
     boolean = False
     for ob in bpy.data.objects:
         halo_mesh = ob.halo_json
         halo_mesh_name = ob.name
-        if halo_mesh.Permutation_Name != perm and perm == 'default':
-            perm = ''
-        if (ob.type == 'MESH' and (not halo_mesh_name.startswith(special_prefixes) or halo_mesh_name.startswith('$')) and (halo_mesh.ObjectMesh_Type == 'PHYSICS' or halo_mesh_name.startswith('$')) and halo_mesh.Object_Type_All == 'MESH' and (halo_mesh.Permutation_Name == perm or halo_mesh.Permutation_Name == 'default')) or ob.type == 'ARMATURE':
-            ob.select_set(True)
-            if ob.type != 'ARMATURE':
-                boolean = True
+        if halo_mesh.Permutation_Name == perm:
+            if (ob.type == 'MESH' and (not halo_mesh_name.startswith(special_prefixes) or halo_mesh_name.startswith('$')) and (halo_mesh.ObjectMesh_Type == 'PHYSICS' or halo_mesh_name.startswith('$')) and halo_mesh.Object_Type_All == 'MESH' and (halo_mesh.Permutation_Name == perm or halo_mesh.Permutation_Name == 'default')):
+                ob.select_set(True)
+                arm.select_set(True)
+                if ob.type != 'ARMATURE':
+                    boolean = True
     
     return boolean
 
-def SelectModelMarkers():
+def SelectModelMarkers(arm):
     bpy.ops.object.select_all(action='DESELECT')
     boolean = False
     for ob in bpy.data.objects:
         halo_node = ob.halo_json
         halo_node_name = ob.name
-        if (ob.type == 'MESH' and (halo_node.Object_Type_All == 'MARKER' or halo_node_name.startswith('#'))) or ob.type == 'EMPTY' and (halo_node.Object_Type_No_Mesh == 'MARKER' or halo_node_name.startswith('#')) or ob.type == 'ARMATURE':
+        if (ob.type == 'MESH' and (halo_node.Object_Type_All == 'MARKER' or halo_node_name.startswith('#'))) or ob.type == 'EMPTY' and (halo_node.Object_Type_No_Mesh == 'MARKER' or halo_node_name.startswith('#')):
             ob.select_set(True)
+            arm.select_set(True)
             if ob.type != 'ARMATURE':
                 boolean = True
     
     return boolean
 
-def SelectModelSkeleton():
+def SelectModelSkeleton(arm):
     bpy.ops.object.select_all(action='DESELECT')
-    boolean = False
-    for ob in bpy.data.objects:
-        if ob.type == 'ARMATURE':
-            ob.select_set(True)
-            boolean = True
+    arm.select_set(True)
 
-    return boolean
+    return True
 
 def SelectStructure(index):
     bpy.ops.object.select_all(action='DESELECT')

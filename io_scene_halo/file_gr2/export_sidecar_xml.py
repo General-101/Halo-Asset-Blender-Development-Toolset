@@ -257,8 +257,8 @@ def WriteModelContents(metadata, asset_path, asset_name):
         if (perm not in perm_list) and RenderPermExists():
             perm_list.append(perm)
             network = ET.SubElement(object, 'ContentNetwork' ,Name=perm, Type="")
-            ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, 'render', perm)
-            ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePath(asset_path, asset_name, 'render', perm)
+            ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, 'render', ob.halo_json.Permutation_Name)
+            ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePath(asset_path, asset_name, 'render', ob.halo_json.Permutation_Name)
 
     output = ET.SubElement(object, 'OutputTagCollection')
     ET.SubElement(output, 'OutputTag', Type='render_model').text = asset_path + '\\' + asset_name
@@ -276,8 +276,8 @@ def WriteModelContents(metadata, asset_path, asset_name):
             if (perm not in perm_list) and PhysicsPermExists():
                 perm_list.append(perm)
                 network = ET.SubElement(object, 'ContentNetwork' ,Name=perm, Type="")
-                ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, 'physics', perm)
-                ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePath(asset_path, asset_name, 'physics', perm)
+                ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, 'physics', ob.halo_json.Permutation_Name)
+                ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePath(asset_path, asset_name, 'physics', ob.halo_json.Permutation_Name)
 
         output = ET.SubElement(object, 'OutputTagCollection')
         ET.SubElement(output, 'OutputTag', Type='physics_model').text = asset_path + '\\' + asset_name
@@ -295,8 +295,8 @@ def WriteModelContents(metadata, asset_path, asset_name):
             if (perm not in perm_list) and CollisionPermExists():
                 perm_list.append(perm)
                 network = ET.SubElement(object, 'ContentNetwork' ,Name=perm, Type="")
-                ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, 'collision', perm)
-                ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePath(asset_path, asset_name, 'collision', perm)
+                ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, 'collision', ob.halo_json.Permutation_Name)
+                ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePath(asset_path, asset_name, 'collision', ob.halo_json.Permutation_Name)
 
         output = ET.SubElement(object, 'OutputTagCollection')
         ET.SubElement(output, 'OutputTag', Type='collision_model').text = asset_path + '\\' + asset_name
@@ -672,7 +672,7 @@ def GetInputFilePath(asset_path, asset_name, type, perm=''):
     if type == 'model_animation_graph':
         path = asset_path + '\\animations\\' + asset_name + '.fbx'
     else:
-        if perm == '' or perm == 'default':
+        if perm == '':
             path = asset_path + '\\models\\' + asset_name  + '_' + type + '.fbx'
         else:
             path = asset_path + '\\models\\' + asset_name + '_'  + perm  + '_' + type + '.fbx'
@@ -683,7 +683,7 @@ def GetIntermediateFilePath(asset_path, asset_name, type, perm=''):
     if type == 'model_animation_graph':
         path = asset_path + '\\export\\animations\\' + asset_name + '.gr2'
     else:
-        if perm == '' or perm == 'default':
+        if perm == '':
             path = asset_path + '\\export\\models\\' + asset_name + '_' + type + '.gr2'
         else:
             path = asset_path + '\\export\\models\\' + asset_name + '_'  + perm  + '_' + type + '.gr2'
@@ -712,11 +712,10 @@ def SceneHasMarkers():
     boolean = False
 
     for ob in bpy.data.objects:
-        if ob.name.startswith('#') or ob.halo_json.Object_Type_All == 'MARKER' or ob.halo_json.Object_Type_No_Mesh == 'MARKER':
+        if ob.name.startswith('#') or (ob.type == 'MESH' and ob.halo_json.Object_Type_All == 'MARKER') or (ob.halo_json.Object_Type_No_Mesh == 'MARKER' and ob.type == 'EMPTY'):
             boolean = True
     
     return boolean
-
 
 def WriteStructureContents(metadata, asset_path, asset_name):
     print ('null')
