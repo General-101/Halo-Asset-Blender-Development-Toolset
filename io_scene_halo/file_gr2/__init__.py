@@ -415,6 +415,13 @@ class Export_Halo_GR2(Operator, ExportHelper):
             
                 if self.export_method == 'BATCH':
 
+                    scene = bpy.context.scene
+                    f_start = scene.frame_start
+                    f_end = scene.frame_end
+
+                    scene.frame_start = 0
+                    scene.frame_end = 0
+
                     if self.sidecar_type == 'MODEL':
 
                         if self.export_render:
@@ -467,7 +474,6 @@ class Export_Halo_GR2(Operator, ExportHelper):
 
                         if self.export_animations and 0<=len(bpy.data.actions):
                             if SelectModelSkeleton():
-                                scene = bpy.context.scene
                                 for arm in bpy.context.selected_objects:
                                     bpy.context.view_layer.objects.active = arm
                                     for anim in bpy.data.actions:
@@ -628,6 +634,9 @@ class Export_Halo_GR2(Operator, ExportHelper):
 
                     elif self.sidecar_type == 'PARTICLE MODEL':
                         print('not implemented')
+
+                    scene.frame_start = f_start
+                    scene.frame_end = f_end
                 
                 else:
                     export_fbx_bin.save(self, context, **keywords)
