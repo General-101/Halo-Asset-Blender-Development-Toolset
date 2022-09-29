@@ -38,7 +38,7 @@ EKPath = EKPath.strip('\\')
 #get tool path
 toolPath = EKPath + '\\tool_fast.exe'
 
-def import_sidecar(report, filePath='', import_to_game=False, import_check=False, import_force=False, import_verbose=False, import_draft=False,import_seam_debug=False,import_skip_instances=False,import_decompose_instances=False,import_surpress_errors=False):
+def import_sidecar(report, filePath='', import_to_game=False, import_check=False, import_force=False, import_verbose=False, import_draft=False,import_seam_debug=False,import_skip_instances=False,import_decompose_instances=False,import_surpress_errors=False, show_output=False):
     full_path = filePath.rpartition('\\')[0]
     print('full path = ' + filePath)
     asset_path = CleanAssetPath(full_path)
@@ -70,11 +70,22 @@ def import_sidecar(report, filePath='', import_to_game=False, import_check=False
     if import_surpress_errors:
         flag_import_surpress_errors = 'suppress_errors_to_vrml'
 
-    toolCommand = '"{}" import "{}" "{}" "{}" "{}" "{}" "{}" "{}" "{}" "{}" '.format(toolPath, asset_path + '\\' + asset_name + '.sidecar.xml', flag_import_check, flag_import_force, flag_import_verbose, flag_import_draft, flag_import_seam_debug, flag_import_skip_instances, flag_import_decompose_instances, flag_import_surpress_errors)
-    print('\nRunning Tool command... %r' % toolCommand)
-    os.chdir(EKPath)
-    p = Popen(toolCommand)
-    p.wait()
+    try:
+        if(show_output):
+            print(show_output)
+            print("Showing output toggle")
+            bpy.ops.wm.console_toggle()
+
+        toolCommand = '"{}" import "{}" "{}" "{}" "{}" "{}" "{}" "{}" "{}" "{}" '.format(toolPath, asset_path + '\\' + asset_name + '.sidecar.xml', flag_import_check, flag_import_force, flag_import_verbose, flag_import_draft, flag_import_seam_debug, flag_import_skip_instances, flag_import_decompose_instances, flag_import_surpress_errors)
+        print('\nRunning Tool command... %r' % toolCommand)
+        os.chdir(EKPath)
+        p = Popen(toolCommand)
+        p.wait()
+    except:
+        report({'WARNING'},"Import Failed!")
+    finally:
+        if(show_output):
+            bpy.ops.wm.console_toggle()
 
     report({'INFO'},"Import process complete")
 
@@ -96,9 +107,10 @@ def save(operator, context, report,
         import_skip_instances=False,
         import_decompose_instances=False,
         import_surpress_errors=False,
+        show_output=False,
         **kwargs
         ):
         if import_to_game:
-            import_sidecar(report, filepath, import_to_game, import_check, import_force, import_verbose, import_draft,import_seam_debug,import_skip_instances,import_decompose_instances,import_surpress_errors)
+            import_sidecar(report, filepath, import_to_game, import_check, import_force, import_verbose, import_draft,import_seam_debug,import_skip_instances,import_decompose_instances,import_surpress_errors, show_output)
 
         return {'FINISHED'}

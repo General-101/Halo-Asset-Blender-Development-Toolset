@@ -253,6 +253,11 @@ class Export_Halo_GR2(Operator, ExportHelper):
         description='',
         default=False,
     )
+    show_output: BoolProperty(
+        name='Show Output',
+        description='',
+        default=False
+    )
     import_check: BoolProperty(
         name='Check',
         description='Run the import process but produce no output files',
@@ -744,6 +749,13 @@ class Export_Halo_GR2(Operator, ExportHelper):
                 sub.prop(self, "import_decompose_instances")
             else:
                 sub.prop(self, "import_draft")
+
+        # OUTPUT SETTINGS #
+        box = layout.box()
+        box.label(text="Output Settings")
+        col = box.column()
+        col.prop(self, "show_output")
+
         # SCENE SETTINGS #
         box = layout.box()
         box.label(text="Scene Settings")

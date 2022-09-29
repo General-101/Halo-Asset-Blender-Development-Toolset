@@ -854,7 +854,7 @@ def getMaterials():
 
     return temp
 
-def export_asset(report, filePath="", keep_fbx=False, keep_json=False, asset_path="", asset_name="", tag_type='', perm='', is_windows=False, bsp=''):
+def export_asset(report, filePath="", keep_fbx=False, keep_json=False, asset_path="", asset_name="", tag_type='', perm='', is_windows=False, show_output=False, bsp=''):
     if tag_type != 'selected':
         fileName = GetFileName(filePath, asset_name, tag_type, perm, asset_path, bsp)
         rename_file(filePath, asset_name, tag_type, perm, fileName)
@@ -877,7 +877,7 @@ def export_asset(report, filePath="", keep_fbx=False, keep_json=False, asset_pat
 
         print('\nTool Path... %r' % toolPath)
 
-        build_gr2(toolPath, fileName, jsonPath, gr2Path)
+        build_gr2(toolPath, fileName, jsonPath, gr2Path, show_output)
         if(file_exists(gr2Path)):
             report({'INFO'},"GR2 conversion finished!")
         else:
@@ -972,11 +972,16 @@ def build_json(jsonPath):
     jsonFile.write(haloJSON)
     jsonFile.close()
 
-def build_gr2(toolPath, filePath, jsonPath, gr2Path):
+def build_gr2(toolPath, filePath, jsonPath, gr2Path, show_output):
     try:            
         if not os.access(filePath, os.R_OK):
             ctypes.windll.user32.MessageBoxW(0, "GR2 Not Exported. Output Folder Is Read-Only! Try running Blender as an Administrator.", "ACCESS VIOLATION", 0)
         else:
+            if(show_output):
+                print(show_output)
+                print("Showing output toggle")
+                bpy.ops.wm.console_toggle()
+
             toolCommand = '"{}" fbx-to-gr2 "{}" "{}" "{}"'.format(toolPath, filePath, jsonPath, gr2Path)
             print('\nRunning Tool command... %r' % toolCommand)
             p = Popen(toolCommand)
@@ -986,6 +991,8 @@ def build_gr2(toolPath, filePath, jsonPath, gr2Path):
         os.remove(filePath)
         os.remove(jsonPath)
     finally:
+        if(show_output):
+            bpy.ops.wm.console_toggle()
         return {'FINISHED'}
 
 def save(operator, context, report, is_windows, tag_type,
@@ -996,10 +1003,11 @@ def save(operator, context, report, is_windows, tag_type,
         keep_json=False,
         asset_path='',
         asset_name='',
+        show_output=False,
         **kwargs
         ):
 
-    export_asset(report, filepath, keep_fbx, keep_json, asset_path, asset_name, tag_type, perm, is_windows, bsp)
+    export_asset(report, filepath, keep_fbx, keep_json, asset_path, asset_name, tag_type, perm, is_windows, show_output, bsp)
 
     return {'FINISHED'}
 
