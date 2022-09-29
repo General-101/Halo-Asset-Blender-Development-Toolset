@@ -1942,7 +1942,7 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
     )
 
     def LockLight(self):
-        return 'LIGHT'
+        return 0
 
     Object_Type_Light: EnumProperty(
         name="Object Type",
