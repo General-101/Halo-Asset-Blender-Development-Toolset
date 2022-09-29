@@ -253,8 +253,8 @@ class Export_Halo_GR2(Operator, ExportHelper):
         description='',
         default=False,
     )
-    show_output: BoolProperty(
-        name='Show Output',
+    hide_output: BoolProperty(
+        name='Hide Output',
         description='',
         default=False
     )
@@ -754,7 +754,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
         box = layout.box()
         box.label(text="Output Settings")
         col = box.column()
-        col.prop(self, "show_output")
+        col.prop(self, "hide_output")
 
         # SCENE SETTINGS #
         box = layout.box()

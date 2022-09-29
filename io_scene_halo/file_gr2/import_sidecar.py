@@ -38,7 +38,7 @@ EKPath = EKPath.strip('\\')
 #get tool path
 toolPath = EKPath + '\\tool_fast.exe'
 
-def import_sidecar(report, filePath='', import_to_game=False, import_check=False, import_force=False, import_verbose=False, import_draft=False,import_seam_debug=False,import_skip_instances=False,import_decompose_instances=False,import_surpress_errors=False, show_output=False):
+def import_sidecar(report, filePath='', import_to_game=False, import_check=False, import_force=False, import_verbose=False, import_draft=False,import_seam_debug=False,import_skip_instances=False,import_decompose_instances=False,import_surpress_errors=False, hide_output=False):
     full_path = filePath.rpartition('\\')[0]
     print('full path = ' + filePath)
     asset_path = CleanAssetPath(full_path)
@@ -71,8 +71,8 @@ def import_sidecar(report, filePath='', import_to_game=False, import_check=False
         flag_import_surpress_errors = 'suppress_errors_to_vrml'
 
     try:
-        if(show_output):
-            print(show_output)
+        if(not hide_output):
+            print(hide_output)
             print("Showing output toggle")
             bpy.ops.wm.console_toggle()
 
@@ -84,7 +84,7 @@ def import_sidecar(report, filePath='', import_to_game=False, import_check=False
     except:
         report({'WARNING'},"Import Failed!")
     finally:
-        if(show_output):
+        if(not hide_output):
             bpy.ops.wm.console_toggle()
 
     report({'INFO'},"Import process complete")
@@ -107,10 +107,10 @@ def save(operator, context, report,
         import_skip_instances=False,
         import_decompose_instances=False,
         import_surpress_errors=False,
-        show_output=False,
+        hide_output=False,
         **kwargs
         ):
         if import_to_game:
-            import_sidecar(report, filepath, import_to_game, import_check, import_force, import_verbose, import_draft,import_seam_debug,import_skip_instances,import_decompose_instances,import_surpress_errors, show_output)
+            import_sidecar(report, filepath, import_to_game, import_check, import_force, import_verbose, import_draft,import_seam_debug,import_skip_instances,import_decompose_instances,import_surpress_errors, hide_output)
 
         return {'FINISHED'}
