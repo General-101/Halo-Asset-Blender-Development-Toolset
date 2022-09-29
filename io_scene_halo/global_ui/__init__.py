@@ -1217,7 +1217,7 @@ class JSON_ObjectProps(Panel):
         scene = context.scene
         scene_halo = scene.halo
 
-        return scene_halo.game_version == 'reach'
+        return scene_halo.game_version == 'reach' and context.object.type != 'ARMATURE'
     
     def draw(self, context):
         layout = self.layout
