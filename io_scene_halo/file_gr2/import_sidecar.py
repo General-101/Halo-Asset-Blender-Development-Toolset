@@ -71,21 +71,15 @@ def import_sidecar(report, filePath='', import_to_game=False, import_check=False
         flag_import_surpress_errors = 'suppress_errors_to_vrml'
 
     try:
-        if(not hide_output):
-            print(hide_output)
-            print("Showing output toggle")
-            bpy.ops.wm.console_toggle()
 
         toolCommand = '"{}" import "{}" "{}" "{}" "{}" "{}" "{}" "{}" "{}" "{}" '.format(toolPath, asset_path + '\\' + asset_name + '.sidecar.xml', flag_import_check, flag_import_force, flag_import_verbose, flag_import_draft, flag_import_seam_debug, flag_import_skip_instances, flag_import_decompose_instances, flag_import_surpress_errors)
         print('\nRunning Tool command... %r' % toolCommand)
         os.chdir(EKPath)
         p = Popen(toolCommand)
         p.wait()
+        
     except:
         report({'WARNING'},"Import Failed!")
-    finally:
-        if(not hide_output):
-            bpy.ops.wm.console_toggle()
 
     report({'INFO'},"Import process complete")
 

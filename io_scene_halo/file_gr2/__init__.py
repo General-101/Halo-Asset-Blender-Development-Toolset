@@ -403,6 +403,9 @@ class Export_Halo_GR2(Operator, ExportHelper):
         keywords = self.as_keywords()
         from . import export_gr2, export_sidecar_xml, import_sidecar
 
+        if not self.hide_output:
+            bpy.ops.wm.console_toggle()
+
         if(CheckPath(self.filepath)):
             if self.sidecar_type != 'MODEL' or (self.sidecar_type == 'MODEL' and(
                 self.output_biped or
@@ -426,6 +429,9 @@ class Export_Halo_GR2(Operator, ExportHelper):
 
                     scene.frame_start = 0
                     scene.frame_end = 0
+
+                    selection = bpy.context.selected_objects
+                    active_ob = bpy.context.active_object
 
                     if self.sidecar_type == 'MODEL':
 
@@ -477,14 +483,18 @@ class Export_Halo_GR2(Operator, ExportHelper):
                             export_fbx_bin.save(self, context, **keywords)
                             export_gr2.save(self, context, self.report, IsWindows(), 'skeleton', '', '', **keywords)
 
-                        if self.export_animations and 0<=len(bpy.data.actions):
+                        if self.export_animations and 1<=len(bpy.data.actions):
                             if SelectModelSkeleton():
                                 for arm in bpy.context.selected_objects:
                                     bpy.context.view_layer.objects.active = arm
                                     for action in bpy.data.actions:
                                         arm.animation_data.action = action
-                                        scene.frame_start = int(action.frame_start)
-                                        scene.frame_end = int(action.frame_end)
+                                        if action.use_frame_range:
+                                            scene.frame_start = int(action.frame_start)
+                                            scene.frame_end = int(action.frame_end)
+                                        else:
+                                            scene.frame_start = f_start
+                                            scene.frame_end = f_end
                                         export_fbx_bin.save(self, context, **keywords)
                                         export_gr2.save(self, context, self.report, IsWindows(), 'animations', '', '', **keywords)
                                 
@@ -640,6 +650,10 @@ class Export_Halo_GR2(Operator, ExportHelper):
 
                     scene.frame_start = f_start
                     scene.frame_end = f_end
+
+                    for ob in selection:
+                        ob.select_set(True)
+                    bpy.context.view_layer.objects.active = active_ob
                 
                 else:
                     export_fbx_bin.save(self, context, **keywords)
@@ -653,14 +667,18 @@ class Export_Halo_GR2(Operator, ExportHelper):
             else:
                 self.report({'ERROR'},"No sidecar output tags selected")
 
-            return {'FINISHED'}
 
         else:
             if not CheckPath(self.filepath):
                 ctypes.windll.user32.MessageBoxW(0, "Invalid Editing Kit path. Please check your editing kit path in add-on preferences and try again.", "Invalid EK Path", 0)
             else:
                 ctypes.windll.user32.MessageBoxW(0, "The selected export folder is invalid, please select one within the data folder of your HEK tools.", "Invalid Export Path", 0)
-            return {'FINISHED'}
+        
+
+        if not self.hide_output:
+            bpy.ops.wm.console_toggle()
+
+        return {'FINISHED'}
 
     def draw(self, context):
         layout = self.layout
@@ -673,6 +691,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
         col.prop(self, "game_version", text='Game Version')
         col.prop(self, "export_method", text='Export Method')
         col.prop(self, "sidecar_type", text='Asset Type')
+        col.prop(self, "hide_output", text='Hide Output')
 
         sub = box.column(heading="Keep")
         sub.prop(self, "keep_fbx")
@@ -747,12 +766,6 @@ class Export_Halo_GR2(Operator, ExportHelper):
                 sub.prop(self, "import_decompose_instances")
             else:
                 sub.prop(self, "import_draft")
-
-        # OUTPUT SETTINGS #
-        box = layout.box()
-        box.label(text="Output Settings")
-        col = box.column()
-        col.prop(self, "hide_output")
 
         # SCENE SETTINGS #
         box = layout.box()

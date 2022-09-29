@@ -65,7 +65,7 @@ def export_xml(report, filePath="", export_sidecar=False, sidecar_type='MODEL', 
 
     BuildSidecar(asset_path, asset_name, full_path, sidecar_type, output_biped,output_crate,output_creature,output_device_control,output_device_machine,output_device_terminal,output_effect_scenery,output_equipment,output_giant,output_scenery,output_vehicle,output_weapon)
 
-    report({'INFO'},"Sidecar build successful")
+    report({'INFO'},"Sidecar build complete")
 
 def CleanAssetPath(path):
     path = path.replace('"','')
@@ -254,7 +254,7 @@ def WriteModelContents(metadata, asset_path, asset_name):
             perm = 'default'
         else:
             perm = ob.halo_json.Permutation_Name
-        if (perm not in perm_list) and RenderPermExists(perm):
+        if (perm not in perm_list) and RenderPermExists():
             perm_list.append(perm)
             network = ET.SubElement(object, 'ContentNetwork' ,Name=perm, Type="")
             ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, 'render', perm)
@@ -273,7 +273,7 @@ def WriteModelContents(metadata, asset_path, asset_name):
                 perm = 'default'
             else:
                 perm = ob.halo_json.Permutation_Name
-            if (perm not in perm_list) and PhysicsPermExists(perm):
+            if (perm not in perm_list) and PhysicsPermExists():
                 perm_list.append(perm)
                 network = ET.SubElement(object, 'ContentNetwork' ,Name=perm, Type="")
                 ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, 'physics', perm)
@@ -292,7 +292,7 @@ def WriteModelContents(metadata, asset_path, asset_name):
                 perm = 'default'
             else:
                 perm = ob.halo_json.Permutation_Name
-            if (perm not in perm_list) and CollisionPermExists(perm):
+            if (perm not in perm_list) and CollisionPermExists():
                 perm_list.append(perm)
                 network = ET.SubElement(object, 'ContentNetwork' ,Name=perm, Type="")
                 ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, 'collision', perm)
@@ -351,7 +351,7 @@ def WriteModelContents(metadata, asset_path, asset_name):
                     network = ET.SubElement(object, 'ContentNetwork' , Name=anim_name, Type='Overlay', ModelAnimationOverlayType='Pose', ModelAnimationOverlayBlending='Additive')
                 case 'JMR':
                     network = ET.SubElement(object, 'ContentNetwork' , Name=anim_name, Type='Overlay', ModelAnimationOverlayType='Keyframe', ModelAnimationOverlayBlending='ReplacementObjectSpace')
-                case 'JMR':
+                case _:
                     network = ET.SubElement(object, 'ContentNetwork' , Name=anim_name, Type='Overlay', ModelAnimationOverlayType='Keyframe', ModelAnimationOverlayBlending='ReplacementLocalSpace')
 
             ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, anim_name, 'model_animation_graph')
@@ -670,23 +670,23 @@ def IsPoopRain(ob):
 
 def GetInputFilePath(asset_path, asset_name, type, perm=''):
     if type == 'model_animation_graph':
-        path = asset_path + '\\animations\\' + asset_name
+        path = asset_path + '\\animations\\' + asset_name + '.fbx'
     else:
         if perm == '' or perm == 'default':
             path = asset_path + '\\models\\' + asset_name  + '_' + type + '.fbx'
         else:
-            path = asset_path + '\\models\\' + asset_name + '_' + type + '_' + perm + '.fbx'
+            path = asset_path + '\\models\\' + asset_name + '_'  + perm  + '_' + type + '.fbx'
 
     return path
 
 def GetIntermediateFilePath(asset_path, asset_name, type, perm=''):
     if type == 'model_animation_graph':
-        path = asset_path + '\\export\\animations\\' + asset_name
+        path = asset_path + '\\export\\animations\\' + asset_name + '.gr2'
     else:
         if perm == '' or perm == 'default':
             path = asset_path + '\\export\\models\\' + asset_name + '_' + type + '.gr2'
         else:
-            path = asset_path + '\\export\\models\\' + asset_name + '_' + type + '_' + perm + '.gr2'
+            path = asset_path + '\\export\\models\\' + asset_name + '_'  + perm  + '_' + type + '.gr2'
 
     return path
 
@@ -721,36 +721,30 @@ def SceneHasMarkers():
 def WriteStructureContents(metadata, asset_path, asset_name):
     print ('null')
 
-def RenderPermExists(perm):
+def RenderPermExists():
     exists = False
     for ob in bpy.data.objects:
         halo_mesh = ob.halo_json
         halo_mesh_name = ob.name
-        if halo_mesh.Permutation_Name != perm and perm == 'default':
-            perm = ''
-        if (ob.type == 'MESH' and (not halo_mesh_name.startswith(special_prefixes)) and halo_mesh.Object_Type_All == 'MESH' and halo_mesh.ObjectMesh_Type == 'DEFAULT' and halo_mesh.Permutation_Name == perm):
+        if (ob.type == 'MESH' and (not halo_mesh_name.startswith(special_prefixes)) and halo_mesh.Object_Type_All == 'MESH' and halo_mesh.ObjectMesh_Type == 'DEFAULT'):
             exists = True
     return exists
 
-def PhysicsPermExists(perm):
+def PhysicsPermExists():
     exists = False
     for ob in bpy.data.objects:
         halo_mesh = ob.halo_json
         halo_mesh_name = ob.name
-        if halo_mesh.Permutation_Name != perm and perm == 'default':
-            perm = ''
-        if (ob.type == 'MESH' and (not halo_mesh_name.startswith(special_prefixes) or halo_mesh_name.startswith('$')) and (halo_mesh.ObjectMesh_Type == 'PHYSICS' or halo_mesh_name.startswith('$')) and halo_mesh.Object_Type_All == 'MESH' and halo_mesh.Permutation_Name == perm):
+        if (ob.type == 'MESH' and (not halo_mesh_name.startswith(special_prefixes) or halo_mesh_name.startswith('$')) and (halo_mesh.ObjectMesh_Type == 'PHYSICS' or halo_mesh_name.startswith('$')) and halo_mesh.Object_Type_All == 'MESH'):
             exists = True
     return exists
 
-def CollisionPermExists(perm):
+def CollisionPermExists():
     exists = False
     for ob in bpy.data.objects:
         halo_mesh = ob.halo_json
         halo_mesh_name = ob.name
-        if halo_mesh.Permutation_Name != perm and perm == 'default':
-            perm = ''
-        if (ob.type == 'MESH' and (not halo_mesh_name.startswith(special_prefixes) or halo_mesh_name.startswith('@')) and (halo_mesh.ObjectMesh_Type == 'COLLISION' or halo_mesh_name.startswith('@')) and halo_mesh.Object_Type_All == 'MESH' and halo_mesh.Permutation_Name == perm):
+        if (ob.type == 'MESH' and (not halo_mesh_name.startswith(special_prefixes) or halo_mesh_name.startswith('@')) and (halo_mesh.ObjectMesh_Type == 'COLLISION' or halo_mesh_name.startswith('@')) and halo_mesh.Object_Type_All == 'MESH'):
             exists = True
     return exists
 

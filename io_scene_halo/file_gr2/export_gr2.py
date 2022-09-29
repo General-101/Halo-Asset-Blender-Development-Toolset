@@ -977,11 +977,6 @@ def build_gr2(toolPath, filePath, jsonPath, gr2Path, hide_output):
         if not os.access(filePath, os.R_OK):
             ctypes.windll.user32.MessageBoxW(0, "GR2 Not Exported. Output Folder Is Read-Only! Try running Blender as an Administrator.", "ACCESS VIOLATION", 0)
         else:
-            if(not hide_output):
-                print(hide_output)
-                print("Showing output toggle")
-                bpy.ops.wm.console_toggle()
-
             toolCommand = '"{}" fbx-to-gr2 "{}" "{}" "{}"'.format(toolPath, filePath, jsonPath, gr2Path)
             print('\nRunning Tool command... %r' % toolCommand)
             p = Popen(toolCommand)
@@ -990,10 +985,6 @@ def build_gr2(toolPath, filePath, jsonPath, gr2Path, hide_output):
         ctypes.windll.user32.MessageBoxW(0, "GR2 Not Exported. Please check your editing kit path in add-on preferences and try again.", "Invalid EK Path", 0)
         os.remove(filePath)
         os.remove(jsonPath)
-    finally:
-        if(not hide_output):
-            bpy.ops.wm.console_toggle()
-        return {'FINISHED'}
 
 def save(operator, context, report, is_windows, tag_type,
         bsp='',
