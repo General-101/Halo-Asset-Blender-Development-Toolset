@@ -408,6 +408,10 @@ class Export_Halo_GR2(Operator, ExportHelper):
         keywords = self.as_keywords()
         from . import export_gr2, export_sidecar_xml, import_sidecar
 
+        mode = bpy.context.object.mode
+
+        bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
+
         if self.sidecar_type == 'MODEL':
             
             model_armature = None
@@ -708,6 +712,8 @@ class Export_Halo_GR2(Operator, ExportHelper):
 
         if self.show_output:
             bpy.ops.wm.console_toggle()
+
+        bpy.ops.object.mode_set(mode=mode, toggle=False)
 
         return {'FINISHED'}
 
