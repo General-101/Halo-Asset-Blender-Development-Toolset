@@ -396,7 +396,7 @@ def getMeshProperties(mesh, name, ob):
             mesh_props.update({"bungie_mesh_poop_fade_range_end": str(mesh.Poop_Imposter_Fade_Range_End)})
         if mesh.Poop_Predominant_Shader_Name != '':
             mesh_props.update({"bungie_mesh_poop_poop_predominant_shader_name":mesh.Poop_Imposter_Fade_Range_End[0:1023]})
-        mesh_props.update({"bungie_mesh_poop_decomposition_hulls": "4294967295"})
+        mesh_props.update({"bungie_mesh_poop_decomposition_hulls": "-1"})
         if mesh.Poop_Render_Only or name.startswith(poop_render_only_prefixes):
             mesh_props.update({"bungie_mesh_poop_is_render_only": "1"})
         if mesh.Poop_Chops_Portals:
