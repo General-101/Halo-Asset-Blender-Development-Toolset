@@ -27,8 +27,10 @@
 import shutil
 import bpy
 import json
+import csv
 import os
 from os.path import exists as file_exists
+from os import path
 import ctypes
 from subprocess import Popen
 
@@ -68,6 +70,19 @@ special_materials = ('+collision', '+physics', '+portal','+seamsealer','+sky','+
 
 special_mesh_types = ('BOUNDARY SURFACE','DECORATOR','INSTANCED GEOMETRY','PLANAR FOG VOLUME','PORTAL','SEAM','WATER PHYSICS VOLUME',)
 invalid_mesh_types = ('BOUNDARY SURFACE', 'COOKIE CUTTER', 'INSTANCED GEOMETRY MARKER', 'INSTANCED GEOMETRY RAIN BLOCKER', 'INSTANCED GEOMETRY VERTICAL RAIN SHEET', 'LIGHTMAP REGION', 'PLANAR FOG VOLUME', 'PORTAL', 'SEAM', 'WATER PHYSICS VOLUME')
+
+def openCSV():
+    script_folder_path = path.dirname(path.dirname(__file__))
+    filepath = path.join(script_folder_path, "file_gr2", "frameidlist.csv")
+
+    frameIDList = {}
+    with open(filepath) as csv_file:
+        csv_reader = csv.reader(csv_file, delimiter=',')
+        for row in csv_reader:
+            print(row[0] + "," + row[1])
+            frameIDList.update({row[0]: row[1]})
+
+    return frameIDList
 
 ##############################
 ##### NODES PROPERTIES #######
@@ -860,6 +875,8 @@ def export_asset(report, filePath="", keep_fbx=False, keep_json=False, asset_pat
         rename_file(filePath, asset_name, tag_type, perm, fileName)
     else:
         fileName = filePath
+
+    frameIDs = openCSV() #sample function call to get FrameIDs CSV values as dictionary
 
     pathList = fileName.split(".")
     jsonPath = ""
