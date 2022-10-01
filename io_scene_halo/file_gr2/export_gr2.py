@@ -88,12 +88,22 @@ def openCSV():
 ##### NODES PROPERTIES #######
 ##############################
 
-def getNodes():
+def getNodes(model_armature):
     nodesList = {}
 
-    # for arm in bpy.data.armatures:
-    #     for bone in arm.bones:
-    #         nodesList.update({bone.name: getBoneProperties()})
+    if model_armature != '':
+        arm = model_armature.name
+        nodesList.update({arm: getArmatureProperties()})
+        bones = model_armature.data.bones
+        index = 0
+        frameIDs = openCSV() #sample function call to get FrameIDs CSV values as dictionary
+        frameIDs1 = frameIDs.keys()
+        frameIDs2 = frameIDs.values()
+        for bone in bones:
+            FrameID1 = list(frameIDs1)[index]
+            FrameID2 = list(frameIDs2)[index]
+            index +=1
+            nodesList.update({bone.name: getBoneProperties(FrameID1, FrameID2)})
 
     for light in bpy.data.objects:
         if light.type == 'LIGHT':
@@ -111,15 +121,21 @@ def getNodes():
 
     return temp
 
-#ID1 = 0
-#ID2 = 1000
-
-def getBoneProperties():
+def getArmatureProperties():
     node_props = {}
 
     node_props.update({"bungie_object_type": "_connected_geometry_object_type_frame"}),
-    node_props.update({"bungie_frame_ID1": getFrameID1()}),
-    node_props.update({"bungie_frame_ID2": getFrameID2()}),
+    node_props.update({"bungie_frame_ID1": "8078"}),
+    node_props.update({"bungie_frame_ID2": "378163771"}),
+
+    return node_props
+
+def getBoneProperties(FrameID1, FrameID2):
+    node_props = {}
+
+    node_props.update({"bungie_object_type": "_connected_geometry_object_type_frame"}),
+    node_props.update({"bungie_frame_ID1": FrameID1}),
+    node_props.update({"bungie_frame_ID2": FrameID2}),
 
     return node_props
 
@@ -869,14 +885,12 @@ def getMaterials():
 
     return temp
 
-def export_asset(report, filePath="", keep_fbx=False, keep_json=False, asset_path="", asset_name="", tag_type='', perm='', is_windows=False, bsp=''):
+def export_asset(report, filePath="", keep_fbx=False, keep_json=False, asset_path="", asset_name="", tag_type='', perm='', is_windows=False, bsp='', model_armature=''):
     if tag_type != 'selected':
         fileName = GetFileName(filePath, asset_name, tag_type, perm, asset_path, bsp)
         rename_file(filePath, asset_name, tag_type, perm, fileName)
     else:
         fileName = filePath
-
-    frameIDs = openCSV() #sample function call to get FrameIDs CSV values as dictionary
 
     pathList = fileName.split(".")
     jsonPath = ""
@@ -884,7 +898,7 @@ def export_asset(report, filePath="", keep_fbx=False, keep_json=False, asset_pat
         jsonPath += pathList[x]
     jsonPath += ".json"
 
-    build_json(jsonPath)
+    build_json(jsonPath, model_armature)
 
     if(is_windows):
         gr2Path = ""
@@ -977,9 +991,9 @@ def move_assets(fileName, jsonPath, gr2Path, asset_path, fbx_crushed, json_binne
     os.remove(jsonPath)
     os.remove(gr2Path)
 
-def build_json(jsonPath):
+def build_json(jsonPath, model_armature):
     jsonTemp = {}
-    jsonTemp.update(getNodes())
+    jsonTemp.update(getNodes(model_armature))
     jsonTemp.update(getMeshes())
     jsonTemp.update(getMaterials())
 
@@ -1006,16 +1020,16 @@ def build_gr2(toolPath, filePath, jsonPath, gr2Path):
 def save(operator, context, report, is_windows, tag_type,
         bsp='',
         perm='',
+        model_armature='',
         filepath="",
         keep_fbx=False,
         keep_json=False,
         asset_path='',
         asset_name='',
-        hide_output=False,
         **kwargs
         ):
 
-    export_asset(report, filepath, keep_fbx, keep_json, asset_path, asset_name, tag_type, perm, is_windows, bsp)
+    export_asset(report, filepath, keep_fbx, keep_json, asset_path, asset_name, tag_type, perm, is_windows, bsp, model_armature)
 
     return {'FINISHED'}
 

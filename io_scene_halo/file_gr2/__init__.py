@@ -422,14 +422,12 @@ class Export_Halo_GR2(Operator, ExportHelper):
     import_in_background: BoolProperty(
         name='Run In Backround',
         description="If enabled does not pause use of blender during the import process",
-        default='False'
+        default=False
     )
 
     def execute(self, context):
         keywords = self.as_keywords()
         from . import export_gr2, export_sidecar_xml, import_sidecar
-
-        keywords["global_matrix"] = axis_conversion(to_forward=self.axis_forward, to_up=self.axis_up).to_4x4()
 
         mode = bpy.context.object.mode
 
@@ -504,7 +502,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                     perm_list.append(perm)
                                     if SelectModelRender(perm, model_armature):
                                         export_fbx_bin.save(self, context, **keywords)
-                                        export_gr2.save(self, context, self.report, IsWindows(), 'render', '', perm, **keywords)
+                                        export_gr2.save(self, context, self.report, IsWindows(), 'render', '', perm, model_armature, **keywords)
 
                         if self.export_collision:
                             perm_list = []
@@ -517,7 +515,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                     perm_list.append(perm)
                                     if SelectModelCollision(perm, model_armature):
                                         export_fbx_bin.save(self, context, **keywords)
-                                        export_gr2.save(self, context, self.report, IsWindows(), 'collision', '', perm, **keywords)
+                                        export_gr2.save(self, context, self.report, IsWindows(), 'collision', '', perm, model_armature, **keywords)
 
                         if self.export_physics:
                             perm_list = []
@@ -530,16 +528,16 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                     perm_list.append(perm)
                                     if SelectModelPhysics(perm, model_armature):
                                         export_fbx_bin.save(self, context, **keywords)
-                                        export_gr2.save(self, context, self.report, IsWindows(), 'physics', '', perm, **keywords)
+                                        export_gr2.save(self, context, self.report, IsWindows(), 'physics', '', perm, model_armature, **keywords)
 
                         if self.export_markers:
                             if SelectModelMarkers(model_armature):
                                 export_fbx_bin.save(self, context, **keywords)
-                                export_gr2.save(self, context, self.report, IsWindows(), 'markers', '', '', **keywords)
+                                export_gr2.save(self, context, self.report, IsWindows(), 'markers', '', '', model_armature, **keywords)
 
                         if SelectModelSkeleton(model_armature):
                             export_fbx_bin.save(self, context, **keywords)
-                            export_gr2.save(self, context, self.report, IsWindows(), 'skeleton', '', '', **keywords)
+                            export_gr2.save(self, context, self.report, IsWindows(), 'skeleton', '', '', model_armature, **keywords)
 
                         if self.export_animations and 1<=len(bpy.data.actions):
                             if SelectModelSkeleton(model_armature):
