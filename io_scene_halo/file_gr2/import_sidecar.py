@@ -38,7 +38,7 @@ EKPath = EKPath.strip('\\')
 #get tool path
 toolPath = EKPath + '\\tool_fast.exe'
 
-def import_sidecar(report, filePath='', import_to_game=False, import_check=False, import_force=False, import_verbose=False, import_draft=False,import_seam_debug=False,import_skip_instances=False,import_decompose_instances=False,import_surpress_errors=False, run_tagwatcher=False,):
+def import_sidecar(report, filePath='', import_to_game=False, import_check=False, import_force=False, import_verbose=False, import_draft=False,import_seam_debug=False,import_skip_instances=False,import_decompose_instances=False,import_surpress_errors=False, run_tagwatcher=False, import_in_background=False):
     full_path = filePath.rpartition('\\')[0]
     print('full path = ' + filePath)
     asset_path = CleanAssetPath(full_path)
@@ -50,7 +50,8 @@ def import_sidecar(report, filePath='', import_to_game=False, import_check=False
         print('\nRunning Tool command... %r' % toolCommand)
         os.chdir(EKPath)
         p = Popen(toolCommand)
-        p.wait()
+        if not import_in_background:
+            p.wait()
 
     except:
         report({'WARNING'},"Import Failed!")
@@ -102,9 +103,10 @@ def save(operator, context, report,
         import_decompose_instances=False,
         import_surpress_errors=False,
         run_tagwatcher=False,
+        import_in_background=False,
         **kwargs
         ):
         if import_to_game:
-            import_sidecar(report, filepath, import_to_game, import_check, import_force, import_verbose, import_draft,import_seam_debug,import_skip_instances,import_decompose_instances,import_surpress_errors, run_tagwatcher)
+            import_sidecar(report, filepath, import_to_game, import_check, import_force, import_verbose, import_draft,import_seam_debug,import_skip_instances,import_decompose_instances,import_surpress_errors, run_tagwatcher, import_in_background)
 
         return {'FINISHED'}
