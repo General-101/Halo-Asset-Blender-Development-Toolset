@@ -79,7 +79,6 @@ def openCSV():
     with open(filepath) as csv_file:
         csv_reader = csv.reader(csv_file, delimiter=',')
         for row in csv_reader:
-            print(row[0] + "," + row[1])
             frameIDList.update({row[0]: row[1]})
 
     return frameIDList
@@ -97,11 +96,11 @@ def getNodes(model_armature):
         bones = model_armature.data.bones
         index = 0
         frameIDs = openCSV() #sample function call to get FrameIDs CSV values as dictionary
-        frameIDs1 = frameIDs.keys()
-        frameIDs2 = frameIDs.values()
+        f1 = frameIDs.keys()
+        f2 = frameIDs.values()
         for bone in bones:
-            FrameID1 = list(frameIDs1)[index]
-            FrameID2 = list(frameIDs2)[index]
+            FrameID1 = list(f1)[index]
+            FrameID2 = list(f2)[index]
             index +=1
             nodesList.update({bone.name: getBoneProperties(FrameID1, FrameID2)})
 
