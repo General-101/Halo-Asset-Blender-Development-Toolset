@@ -27,6 +27,7 @@
 import bpy
 from subprocess import Popen
 import os
+from os.path import exists as file_exists
 
 EKPath = bpy.context.preferences.addons['io_scene_halo'].preferences.hrek_path
 

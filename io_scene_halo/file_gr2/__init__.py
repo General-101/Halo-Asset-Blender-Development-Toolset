@@ -930,9 +930,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                     if self.export_sidecar:
                         export_sidecar_xml.save(self, context, self.report, **keywords)
                     import_sidecar.save(self, context, self.report, **keywords)
-            elif(not self.export_sidecar):
-                export_fbx_bin.save(self, context, **keywords)
-                export_gr2.save(self, context, self.report, IsWindows(), 'selected', **keywords)
+
             else:
                 self.report({'ERROR'},"No sidecar output tags selected")
 
