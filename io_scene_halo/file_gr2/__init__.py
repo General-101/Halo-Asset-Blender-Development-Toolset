@@ -125,11 +125,6 @@ class Export_Halo_GR2(Operator, ExportHelper):
         description='',
         default=True,
     )
-    export_structure_design: BoolProperty(
-        name='Structure Design',
-        description='',
-        default=True,
-    )
     export_poops: BoolProperty(
         name='Instanced Geometry',
         description='',
@@ -172,6 +167,21 @@ class Export_Halo_GR2(Operator, ExportHelper):
     )
     export_lightmap_regions: BoolProperty(
         name='Lightmap Regions',
+        description='',
+        default=True,
+    )
+    export_boundary_surfaces: BoolProperty(
+        name='Boundary Surfaces',
+        description='',
+        default=True,
+    )
+    export_water_physics: BoolProperty(
+        name='Water Physics',
+        description='',
+        default=True,
+    )
+    export_rain_occluders: BoolProperty(
+        name='Rain Occluders',
         description='',
         default=True,
     )
@@ -660,7 +670,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                                 export_fbx_bin.save(self, context, **keywords)
                                                 export_gr2.save(self, context, self.report, IsWindows(), 'water', "{0:03}".format(bsp), perm, **keywords)
 
-                                if self.export_fog:
+                                if self.export_fog_planes:
                                     perm_list = []
                                     for ob in bpy.data.objects:
                                         if ob.halo_json.Permutation_Name == '':
