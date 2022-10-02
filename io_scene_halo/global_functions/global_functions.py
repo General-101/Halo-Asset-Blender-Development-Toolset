@@ -153,6 +153,33 @@ def get_sibling(armature, bone, bone_list):
 
     return set_sibling
 
+def get_prev_sibling(armature, bone, bone_list):
+    sibling_list = []
+    set_sibling = None
+    for node in bone_list:
+        if bone.parent == node.parent:
+            sibling_list.append(node)
+
+    if len(sibling_list) <= 1:
+        set_sibling = None
+        print('first none hit')
+
+    else:
+        sibling_node = sibling_list.index(bone)
+        next_sibling_node = sibling_node - 1
+        if next_sibling_node >= len(sibling_list):
+            set_sibling = None
+            print('second none hit')
+
+        else:
+            if armature:
+                set_sibling = armature.data.bones['%s' % sibling_list[next_sibling_node].name]
+
+            else:
+                set_sibling = bpy.data.objects['%s' % sibling_list[next_sibling_node].name]
+
+    return set_sibling
+
 def sort_by_layer(node_list, armature):
     layer_count = []
     layer_root = []

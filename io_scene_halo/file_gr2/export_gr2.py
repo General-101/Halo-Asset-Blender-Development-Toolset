@@ -98,11 +98,14 @@ def getNodes(model_armature):
         frameIDs = openCSV() #sample function call to get FrameIDs CSV values as dictionary
         f1 = frameIDs.keys()
         f2 = frameIDs.values()
-        for bone in bones:
+        #list_bones = SortList(model_armature)
+        #bones = SortBones(list_bones)
+        #print(bones)
+        for b in bones:
             FrameID1 = list(f1)[index]
             FrameID2 = list(f2)[index]
             index +=1
-            nodesList.update({bone.name: getBoneProperties(FrameID1, FrameID2)})
+            nodesList.update({b[0]: getBoneProperties(FrameID1, FrameID2)})
 
     for light in bpy.data.objects:
         if light.type == 'LIGHT':
@@ -119,6 +122,113 @@ def getNodes(model_armature):
     temp = ({'nodes_properties': nodesList})
 
     return temp
+
+def SortBones(bones_list): # 0 = name 1 = children 2 = child 3 = sibling 4 = parent 5 = prev sibling
+    master_list = []
+    next_list = 0
+    reverse = False
+    counter = 50
+    child_num = 0
+    while counter > 0:
+        counter -= 1
+        for l in bones_list:
+            #print (l)
+            if bones_list.index(l) == next_list:
+                print ('if hit')
+                if l[0] not in master_list:
+                    master_list.append(l[0])
+
+                if l[2] != -1:
+                    if reverse:
+                        for child in l[1]:
+                            if l[1].index(child) == child_num:
+                                master_list.append(bones_list[child][0])
+                        if l[5] != None:
+                            next_list = l[5]
+                        elif child_num <= len(l[1]):
+                            child_num +=1
+                            next_list = temp_list
+                        else:
+                            reverse = False
+                            child_num = 0
+                    for child in l[1]:
+                        master_list.append(bones_list[child][0])
+                    if l[5] == None:
+                        next_list = bones_list[l[4]][5]
+                        reverse = True
+                    next_list = bones_list.index(bones_list[l[1][-1]])
+                    temp_list = next_list
+                    print(next_list)     
+                else:
+                    next_list = l[5]
+
+    return master_list
+
+def SortList(model_armature):
+    from ..global_functions import global_functions
+
+    sorted_list = global_functions.sort_list(model_armature.data.bones, model_armature, 'halo3mcc', 69420, False)
+    joined_list = sorted_list[0]
+    reversed_joined_list = sorted_list[1]
+    node_list = []
+    for node in joined_list:
+        is_bone = False
+        if model_armature:
+            is_bone = True
+
+        find_child_node = global_functions.get_child(node, reversed_joined_list)
+        find_sibling_node = global_functions.get_sibling(model_armature, node, reversed_joined_list)
+        find_prev_sibling_node = global_functions.get_prev_sibling(model_armature, node, reversed_joined_list)
+
+        first_child_node = -1
+        first_sibling_node = -1
+        parent_node = -1
+
+        if not find_child_node == None:
+            first_child_node = joined_list.index(find_child_node)
+
+        if not find_sibling_node == None:
+            first_sibling_node = joined_list.index(find_sibling_node)
+
+        if not node.parent == None and not node.parent.name.startswith('!'):
+            parent_node = joined_list.index(node.parent)
+
+        if not find_prev_sibling_node == None:
+            find_prev_sibling_node = joined_list.index(find_prev_sibling_node)
+            if find_prev_sibling_node >= len(node_list):
+                find_prev_sibling_node = -1
+
+        name = node.name
+        child = first_child_node
+        sibling = first_sibling_node
+        parent = parent_node
+        prev_sibling = find_prev_sibling_node
+
+
+        current_node_children = []
+        children = []
+        for child_node in node.children:
+            if child_node in joined_list:
+                current_node_children.append(child_node.name)
+
+        #current_node_children.sort()
+
+        for child_node in current_node_children:
+            children.append(joined_list.index(model_armature.data.bones[child_node]))
+
+
+        temp_list = []
+        temp_list.append(name)
+        temp_list.append(children)
+        temp_list.append(child)
+        temp_list.append(sibling)
+        temp_list.append(parent)
+        temp_list.append(prev_sibling)
+
+        node_list.append(temp_list)
+
+    return node_list
+
 
 def getArmatureProperties():
     node_props = {}
