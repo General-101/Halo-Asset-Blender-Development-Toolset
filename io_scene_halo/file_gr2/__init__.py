@@ -51,7 +51,7 @@ sys.modules[bpy.types.IMPORT_SCENE_OT_fbx.__module__].__file__
 sys.path.insert(0,t)
 from io_scene_fbx import export_fbx_bin
 
-@orientation_helper(axis_forward='Y', axis_up='Z')
+#@orientation_helper(axis_forward='Y', axis_up='Z')
 class Export_Halo_GR2(Operator, ExportHelper):
     """Exports a Halo GEN4 Asset using your Halo Editing Kit"""
     bl_idname = 'export_halo.gr2'
@@ -125,11 +125,6 @@ class Export_Halo_GR2(Operator, ExportHelper):
         description='',
         default=True,
     )
-    export_structure_design: BoolProperty(
-        name='Structure Design',
-        description='',
-        default=True,
-    )
     export_poops: BoolProperty(
         name='Instanced Geometry',
         description='',
@@ -172,6 +167,21 @@ class Export_Halo_GR2(Operator, ExportHelper):
     )
     export_lightmap_regions: BoolProperty(
         name='Lightmap Regions',
+        description='',
+        default=True,
+    )
+    export_boundary_surfaces: BoolProperty(
+        name='Boundary Surfaces',
+        description='',
+        default=True,
+    )
+    export_water_physics: BoolProperty(
+        name='Water Physics',
+        description='',
+        default=True,
+    )
+    export_rain_occluders: BoolProperty(
+        name='Rain Occcluders',
         description='',
         default=True,
     )
@@ -424,6 +434,16 @@ class Export_Halo_GR2(Operator, ExportHelper):
         description="If enabled does not pause use of blender during the import process",
         default=False
     )
+    use_space_transform: BoolProperty(
+        name='',
+        description='',
+        default=False,
+    )
+    use_armature_deform_only: BoolProperty(
+        name='Export Deform Bones Only',
+        description='',
+        default=True,
+    )
 
     def execute(self, context):
         keywords = self.as_keywords()
@@ -454,6 +474,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                         bpy.ops.object.parent_set(type='BONE', keep_transform=True)
                                     else:
                                         bpy.ops.object.parent_set(type='ARMATURE', keep_transform=True)
+
             else:
                 self.report({'ERROR'},"Model export selected but no armature in scene")
                 return {'FINISHED'}
@@ -660,7 +681,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                                 export_fbx_bin.save(self, context, **keywords)
                                                 export_gr2.save(self, context, self.report, IsWindows(), 'water', "{0:03}".format(bsp), perm, **keywords)
 
-                                if self.export_fog:
+                                if self.export_fog_planes:
                                     perm_list = []
                                     for ob in bpy.data.objects:
                                         if ob.halo_json.Permutation_Name == '':
@@ -1030,9 +1051,6 @@ class Export_Halo_GR2(Operator, ExportHelper):
         col = box.column()
         col.prop(self, "use_mesh_modifiers")
         col.prop(self, "use_triangles")
-        col.separator()
-        col.prop(self, "axis_forward")
-        col.prop(self, "axis_up")
         col.separator()
         col.prop(self, "global_scale")
 
