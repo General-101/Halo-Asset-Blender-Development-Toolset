@@ -94,23 +94,16 @@ def getNodes(model_armature):
     if model_armature != '':
         arm = model_armature.name
         nodesList.update({arm: getArmatureProperties()})
+        bones = model_armature.data.bones
         index = 0
-        frameIDs = openCSV()
+        frameIDs = openCSV() #sample function call to get FrameIDs CSV values as dictionary
         frameIDs1 = frameIDs.keys()
         frameIDs2 = frameIDs.values()
-
-        # sorted_list = SortList(model_armature.data.bones)
-        # joined_list = sorted_list[0]
-        # reversed_joined_list = sorted_list[1]
-       # bones = SortBones(sorted_list, joined_list, reversed_joined_list, model_armature)
-
-        #bones = SortBones(sorted_list, joined_list, reversed_joined_list, model_armature)
-
         for bone in bones:
             FrameID1 = list(frameIDs1)[index]
             FrameID2 = list(frameIDs2)[index]
             index +=1
-            nodesList.update({bone: getBoneProperties(FrameID1, FrameID2)})
+            nodesList.update({bone.name: getBoneProperties(FrameID1, FrameID2)})
 
     for light in bpy.data.objects:
         if light.type == 'LIGHT':
@@ -127,28 +120,6 @@ def getNodes(model_armature):
     temp = ({'nodes_properties': nodesList})
 
     return temp
-
-# def SortBones(bones):
-#     root_bone = ''
-#     child_bones = []
-
-#     for bone in bones:
-#         if bone.parent == None:
-#             root_bone = bone
-#             break
-
-#     for bone in bones:
-#         if bone != root_bone:
-#             if bone.parent == root_bone:
-#                 child_bones.append(bone)
-
-#     index_count = len(child_bones) - 1
-#     for bone in bones:
-#         if bone != root_bone and (bone not in child_bones):
-#             for index in reversed(index_count):
-#                 if bone.parent == child_bones[index]:
-#                     child_bones.append(bone)
-#                     break
 
 def getArmatureProperties():
     node_props = {}
