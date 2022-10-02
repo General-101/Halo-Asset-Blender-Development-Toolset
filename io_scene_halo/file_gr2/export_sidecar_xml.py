@@ -24,15 +24,11 @@
 #
 # ##### END MIT LICENSE BLOCK #####
 
-from ast import And
 from datetime import datetime
-from xml.etree.ElementTree import SubElement
 import bpy
 import getpass
-
 import xml.etree.cElementTree as ET
 import xml.dom.minidom
-from os.path import exists as file_exists
 
 EKPath = bpy.context.preferences.addons['io_scene_halo'].preferences.hrek_path
 
