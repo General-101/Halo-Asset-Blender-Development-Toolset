@@ -39,7 +39,7 @@ import bpy
 from bpy_extras.io_utils import ExportHelper
 from bpy.props import StringProperty, BoolProperty, EnumProperty, FloatProperty, IntProperty
 from bpy.types import Operator
-from bpy_extras.io_utils import ExportHelper, orientation_helper, axis_conversion
+from bpy_extras.io_utils import ExportHelper
 
 from ..gr2_utils import (
     special_prefixes,
@@ -60,7 +60,6 @@ sys.modules[bpy.types.IMPORT_SCENE_OT_fbx.__module__].__file__
 sys.path.insert(0,t)
 from io_scene_fbx import export_fbx_bin
 
-@orientation_helper(axis_forward='Y', axis_up='Z')
 class Export_Halo_GR2(Operator, ExportHelper):
     """Exports a Halo GEN4 Asset using your Halo Editing Kit"""
     bl_idname = 'export_halo.gr2'
@@ -97,7 +96,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
         name='Asset Type',
         description='',
         default='MODEL',
-        items=[ ('MODEL', "Model", ""), ('SCENARIO', "Scenario", ""), ('DECORATOR', "Decorator", ""), ('PARTICLE MODEL', "Particle Model", "")]
+        items=[ ('MODEL', "Model", ""), ('SCENARIO', "Scenario", "")]#, ('DECORATOR', "Decorator", ""), ('PARTICLE MODEL', "Particle Model", "") excluding these until they have been fully implemented
     )
     export_method: EnumProperty(
         name="Export Method",
@@ -290,7 +289,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
     show_output: BoolProperty(
         name='Show Output',
         description='',
-        default=False
+        default=True
     )
     run_tagwatcher: BoolProperty(
         name='Run Tagwatcher',
@@ -415,7 +414,6 @@ class Export_Halo_GR2(Operator, ExportHelper):
         default=False,
     )
 
-
     def GetAssetPath(self):
         asset = self.filepath.rpartition('\\')[0]
         print(asset)
@@ -447,10 +445,23 @@ class Export_Halo_GR2(Operator, ExportHelper):
     def execute(self, context):
         keywords = self.as_keywords()
         from . import export_gr2, export_sidecar_xml, import_sidecar
-
-        mode = bpy.context.object.mode
+        mode = ''
+        mode_not_set = False
+        if len(bpy.context.selected_objects) > 0:
+            mode = bpy.context.object.mode
+        else:
+            mode_not_set = True
 
         bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
+
+        if self.export_hidden:
+            hidden_list = []
+            for ob in tuple(bpy.data.scenes[0].view_layers[0].objects):
+                if not ob.visible_get():
+                    hidden_list.append(ob)
+            
+            for ob in hidden_list:
+                ob.hide_set(False)
 
         if self.sidecar_type == 'MODEL':
             
@@ -837,6 +848,10 @@ class Export_Halo_GR2(Operator, ExportHelper):
                     scene.frame_start = f_start
                     scene.frame_end = f_end
 
+                    if self.export_hidden:
+                        for ob in hidden_list:
+                            ob.hide_set(True)
+
                     for ob in selection:
                         ob.select_set(True)
                     bpy.context.view_layer.objects.active = active_ob
@@ -866,8 +881,8 @@ class Export_Halo_GR2(Operator, ExportHelper):
 
         if self.show_output:
             bpy.ops.wm.console_toggle()
-
-        bpy.ops.object.mode_set(mode=mode, toggle=False)
+        if not mode_not_set:
+            bpy.ops.object.mode_set(mode=mode, toggle=False)
 
         return {'FINISHED'}
 
@@ -883,7 +898,6 @@ class Export_Halo_GR2(Operator, ExportHelper):
         col.prop(self, "export_method", text='Export Method')
         col.prop(self, "sidecar_type", text='Asset Type')
         col.prop(self, "show_output", text='Show Output')
-
         sub = box.column(heading="Keep")
         sub.prop(self, "keep_fbx")
         sub.prop(self, "keep_json")
@@ -973,9 +987,6 @@ class Export_Halo_GR2(Operator, ExportHelper):
         col = box.column()
         col.prop(self, "use_mesh_modifiers")
         col.prop(self, "use_triangles")
-        col.separator()
-        col.prop(self, "axis_forward")
-        col.prop(self, "axis_up")
         col.separator()
         col.prop(self, "global_scale")
 

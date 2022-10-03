@@ -1699,7 +1699,7 @@ class JSON_MaterialProps(Panel):
             else:
                 col.prop(material_halo_json, "Shader_Type", text='Shader Type')
 
-            if context.object.active_material.name.startswith(special_materials):
+            if context.object.active_material.name.lower().startswith(special_materials):
                 col.prop(material_halo_json, "material_override_locked", text='Material Override')
             else:
                 col.prop(material_halo_json, "material_override", text='Material Override')
@@ -3316,17 +3316,17 @@ class JSON_MaterialPropertiesGroup(PropertyGroup):
         )
 
     def material_name_is_special(self):
-        if bpy.context.object.active_material.name.startswith('+collision'):
+        if bpy.context.object.active_material.name.lower().startswith('+collision'):
             return 1
-        elif bpy.context.object.active_material.name.startswith('+physics'):
+        elif bpy.context.object.active_material.name.lower().startswith('+physics'):
             return 2
-        elif bpy.context.object.active_material.name.startswith('+portal'):
+        elif bpy.context.object.active_material.name.lower().startswith('+portal'):
             return 3
-        elif bpy.context.object.active_material.name.startswith('+seamsealer'):
+        elif bpy.context.object.active_material.name.lower().startswith('+seamsealer'):
             return 4
-        elif bpy.context.object.active_material.name.startswith('+sky'):
+        elif bpy.context.object.active_material.name.lower().startswith('+sky'):
             return 5
-        elif bpy.context.object.active_material.name.startswith('+weatherpoly'):
+        elif bpy.context.object.active_material.name.lower().startswith('+weatherpoly'):
             return 6
         else:
             return 0

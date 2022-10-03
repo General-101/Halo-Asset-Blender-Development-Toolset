@@ -901,19 +901,19 @@ def getMaterials():
                     shaderPath = ''
                     shaderType = ''
 
-                    if halo_material_name.startswith(halo_special_materials) or halo_material.material_override != 'NONE':
+                    if halo_material_name.lower().startswith(halo_special_materials) or halo_material.material_override != 'NONE':
                         shaderType = 'override'
-                        if halo_material_name.startswith('+collision') or halo_material.material_override == 'COLLISION':
+                        if halo_material_name.lower().startswith('+collision') or halo_material.material_override == 'COLLISION':
                             shaderPath = 'collisionVolume'
-                        elif halo_material_name.startswith('+physics') or halo_material.material_override == 'PHYSICS':
+                        elif halo_material_name.lower().startswith('+physics') or halo_material.material_override == 'PHYSICS':
                             shaderPath = 'physicsVolume'
-                        elif halo_material_name.startswith('+portal') or halo_material.material_override == 'PORTAL':
+                        elif halo_material_name.lower().startswith('+portal') or halo_material.material_override == 'PORTAL':
                             shaderPath = 'bungie_mesh_type=_connected_geometry_mesh_type_portal'
-                        elif halo_material_name.startswith('+seamsealer') or halo_material.material_override == 'SEAM SEALER':
+                        elif halo_material_name.lower().startswith('+seamsealer') or halo_material.material_override == 'SEAM SEALER':
                             shaderPath = 'bungie_face_type=_connected_geometry_face_type_seam_sealer'
-                        elif halo_material_name.startswith('+sky') or halo_material.material_override == 'SKY':
+                        elif halo_material_name.lower().startswith('+sky') or halo_material.material_override == 'SKY':
                             shaderPath = 'bungie_face_type=_connected_geometry_face_type_sky'
-                        elif halo_material_name.startswith('+weatherpoly') or halo_material.material_override == 'WEATHERPOLY':
+                        elif halo_material_name.lower().startswith('+weatherpoly') or halo_material.material_override == 'WEATHERPOLY':
                             shaderPath = 'bungie_face_type=_connected_geometry_face_type_weather_polyhedra'
 
                     else:
