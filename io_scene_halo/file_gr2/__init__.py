@@ -48,7 +48,8 @@ from ..gr2_utils import (
     CheckPath,
     ObjectValid,
     ExportPerm,
-    ExportBSP
+    ExportBSP,
+    ResetPerm
 )
 
 import os
@@ -575,7 +576,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                             if ob.halo_json.bsp_shared:
                                 shared_bsp_exists = True
                                 break
-
+                        print('processing bsp objects')
                         for bsp in bsp_list:
                             if not ob.halo_json.bsp_shared:
                                 if self.export_structure:
@@ -584,9 +585,11 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                         perm = GetPerm(ob)
                                         if perm not in perm_list:
                                             perm_list.append(perm)
+                                            print('perm appended')
                                             if SelectStructure(bsp, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp):
+                                                print('structure selected')
                                                 export_fbx_bin.save(self, context, **keywords)
-                                                export_gr2.save(self, context, self.report, IsWindows(), 'structure', "{0:03}".format(bsp), perm, **keywords)
+                                                export_gr2.save(self, context, self.report, IsWindows(), 'bsp', "{0:03}".format(bsp), perm, **keywords)
 
                                 if self.export_poops:
                                     perm_list = []
@@ -978,6 +981,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
 
 def SelectModelRender(perm, arm, export_hidden, export_all_perms, export_specific_perm):
     bpy.ops.object.select_all(action='DESELECT')
+    perm = ResetPerm(perm)
     boolean = False
     for ob in bpy.data.objects:
         halo_mesh = ob.halo_json
@@ -993,6 +997,7 @@ def SelectModelRender(perm, arm, export_hidden, export_all_perms, export_specifi
 
 def SelectModelCollision(perm, arm, export_hidden, export_all_perms, export_specific_perm):
     bpy.ops.object.select_all(action='DESELECT')
+    perm = ResetPerm(perm)
     boolean = False
     for ob in bpy.data.objects:
         halo_mesh = ob.halo_json
@@ -1008,6 +1013,7 @@ def SelectModelCollision(perm, arm, export_hidden, export_all_perms, export_spec
 
 def SelectModelPhysics(perm, arm, export_hidden, export_all_perms, export_specific_perm):
     bpy.ops.object.select_all(action='DESELECT')
+    perm = ResetPerm(perm)
     boolean = False
     for ob in bpy.data.objects:
         halo_mesh = ob.halo_json
@@ -1044,6 +1050,7 @@ def SelectModelSkeleton(arm):
 
 def SelectStructure(index, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
     bpy.ops.object.select_all(action='DESELECT')
+    perm = ResetPerm(perm)
     boolean = False
     for ob in bpy.data.objects:
         halo_mesh = ob.halo_json
@@ -1060,6 +1067,7 @@ def SelectStructure(index, perm, export_hidden, export_all_perms, export_specifi
 
 def SelectPoops(index, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
     bpy.ops.object.select_all(action='DESELECT')
+    perm = ResetPerm(perm)
     boolean = False
     for ob in bpy.data.objects:
         halo_mesh = ob.halo_json
@@ -1076,6 +1084,7 @@ def SelectPoops(index, perm, export_hidden, export_all_perms, export_specific_pe
 
 def SelectMarkers(index, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
     bpy.ops.object.select_all(action='DESELECT')
+    perm = ResetPerm(perm)
     boolean = False
     for ob in bpy.data.objects:
         halo_mesh = ob.halo_json
@@ -1092,6 +1101,7 @@ def SelectMarkers(index, perm, export_hidden, export_all_perms, export_specific_
 
 def SelectLights(index, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
     bpy.ops.object.select_all(action='DESELECT')
+    perm = ResetPerm(perm)
     boolean = False
     for ob in bpy.data.objects:
         halo_mesh = ob.halo_json
@@ -1108,6 +1118,7 @@ def SelectLights(index, perm, export_hidden, export_all_perms, export_specific_p
 
 def SelectPortals(index, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
     bpy.ops.object.select_all(action='DESELECT')
+    perm = ResetPerm(perm)
     boolean = False
     for ob in bpy.data.objects:
         halo_mesh = ob.halo_json
@@ -1124,6 +1135,7 @@ def SelectPortals(index, perm, export_hidden, export_all_perms, export_specific_
 
 def SelectSeams(index, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
     bpy.ops.object.select_all(action='DESELECT')
+    perm = ResetPerm(perm)
     boolean = False
     for ob in bpy.data.objects:
         halo_mesh = ob.halo_json
@@ -1140,6 +1152,7 @@ def SelectSeams(index, perm, export_hidden, export_all_perms, export_specific_pe
 
 def SelectWaterSurfaces(index, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
     bpy.ops.object.select_all(action='DESELECT')
+    perm = ResetPerm(perm)
     boolean = False
     for ob in bpy.data.objects:
         halo_mesh = ob.halo_json
@@ -1156,6 +1169,7 @@ def SelectWaterSurfaces(index, perm, export_hidden, export_all_perms, export_spe
 
 def SelectLightMapRegions(index, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
     bpy.ops.object.select_all(action='DESELECT')
+    perm = ResetPerm(perm)
     boolean = False
     for ob in bpy.data.objects:
         halo_mesh = ob.halo_json
@@ -1172,6 +1186,7 @@ def SelectLightMapRegions(index, perm, export_hidden, export_all_perms, export_s
 
 def SelectFog(index, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
     bpy.ops.object.select_all(action='DESELECT')
+    perm = ResetPerm(perm)
     boolean = False
     for ob in bpy.data.objects:
         halo_mesh = ob.halo_json
@@ -1188,6 +1203,7 @@ def SelectFog(index, perm, export_hidden, export_all_perms, export_specific_perm
 
 def SelectCookie(index, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
     bpy.ops.object.select_all(action='DESELECT')
+    perm = ResetPerm(perm)
     boolean = False
     for ob in bpy.data.objects:
         halo_mesh = ob.halo_json
@@ -1204,6 +1220,7 @@ def SelectCookie(index, perm, export_hidden, export_all_perms, export_specific_p
 
 def SelectBoundarys(index, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
     bpy.ops.object.select_all(action='DESELECT')
+    perm = ResetPerm(perm)
     boolean = False
     for ob in bpy.data.objects:
         halo_mesh = ob.halo_json
@@ -1220,6 +1237,7 @@ def SelectBoundarys(index, perm, export_hidden, export_all_perms, export_specifi
 
 def SelectWaterPhysics(index, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
     bpy.ops.object.select_all(action='DESELECT')
+    perm = ResetPerm(perm)
     boolean = False
     for ob in bpy.data.objects:
         halo_mesh = ob.halo_json
@@ -1236,6 +1254,7 @@ def SelectWaterPhysics(index, perm, export_hidden, export_all_perms, export_spec
 
 def SelectPoopRains(index, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
     bpy.ops.object.select_all(action='DESELECT')
+    perm = ResetPerm(perm)
     boolean = False
     for ob in bpy.data.objects:
         halo_mesh = ob.halo_json

@@ -124,6 +124,12 @@ def ExportPerm(perm, export_all_perms, export_specific_perm):
 def ExportBSP(bsp, export_all_bsps, export_specific_bsp):
     return export_all_bsps or bsp == export_specific_bsp
 
+def ResetPerm(perm): # resets a permutation to '' if it had been set to default
+    if perm == 'default':
+        perm = ''
+    
+    return perm
+
 #################################
 
 # import example #
@@ -157,4 +163,5 @@ def ExportBSP(bsp, export_all_bsps, export_specific_bsp):
 #     ObjectValid,
 #     ExportPerm,
 #     ExportBSP,
+#     ResetPerm,
 # )
