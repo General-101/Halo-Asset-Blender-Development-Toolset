@@ -537,7 +537,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                 perm = GetPerm(ob)
                                 if perm not in perm_list:
                                     perm_list.append(perm)
-                                    if SelectModelCollision(perm, model_armature, self.export_hidden):
+                                    if SelectModelCollision(perm, model_armature, self.export_hidden, self.export_all_perms, self.export_specific_perm):
                                         export_fbx_bin.save(self, context, **keywords)
                                         export_gr2.save(self, context, self.report, IsWindows(), 'collision', '', perm, model_armature, **keywords)
 
@@ -547,7 +547,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                 perm = GetPerm(ob)
                                 if perm not in perm_list:
                                     perm_list.append(perm)
-                                    if SelectModelPhysics(perm, model_armature, self.export_hidden):
+                                    if SelectModelPhysics(perm, model_armature, self.export_hidden, self.export_all_perms, self.export_specific_perm):
                                         export_fbx_bin.save(self, context, **keywords)
                                         export_gr2.save(self, context, self.report, IsWindows(), 'physics', '', perm, model_armature, **keywords)
 
