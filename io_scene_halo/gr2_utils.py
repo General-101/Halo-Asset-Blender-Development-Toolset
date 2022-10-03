@@ -130,6 +130,17 @@ def ResetPerm(perm): # resets a permutation to '' if it had been set to default
     
     return perm
 
+#############
+##CHECK TYPES##
+#############
+
+def ObStructure(ob):
+    return (
+        (not ob.name.startswith(special_prefixes) or (ob.name.startswith('@') and not ob.parent.name.startswith('%'))) 
+        or
+        (not ob.name.startswith(special_prefixes) and (ob.halo_json.ObjectMesh_Type in ('DEFAULT', 'COLLISION')))
+    )
+
 #################################
 
 # import example #

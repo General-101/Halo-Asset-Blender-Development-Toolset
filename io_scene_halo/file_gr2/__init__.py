@@ -1066,11 +1066,11 @@ def SelectStructure(index, perm, export_hidden, export_all_perms, export_specifi
     for ob in bpy.data.objects:
         halo_mesh = ob.halo_json
         if ob.halo_json.bsp_index == index and ObjectValid(ob, export_hidden, perm, halo_mesh.Permutation_Name) and ExportPerm(perm, export_all_perms, export_specific_perm) and ExportBSP(index, export_all_bsps, export_specific_bsp):
-            if (ob.name.startswith('@') and not ob.parent.name.startswith('%')) or (not ob.name.startswith(special_prefixes) and (ob.halo_json.ObjectMesh_Type == 'COLLISION' or ob.halo_json.ObjectMesh_Type == 'DEFAULT' or ob.halo_json.ObjectMesh_Type == 'LIGHTMAP REGION' )) and (halo_mesh.Permutation_Name == perm):
+            if not ob.parent.name.startswith('%') and (ob.name.startswith('@') and not ob.parent.name.startswith('%')) or (not ob.name.startswith(special_prefixes) and (ob.halo_json.ObjectMesh_Type == 'COLLISION' or ob.halo_json.ObjectMesh_Type == 'DEFAULT' or ob.halo_json.ObjectMesh_Type == 'LIGHTMAP REGION' )) and (halo_mesh.Permutation_Name == perm):
                 ob.select_set(True)
                 boolean = True
         elif ob.halo_json.bsp_shared and ObjectValid(ob, export_hidden, perm, halo_mesh.Permutation_Name):
-            if (ob.name.startswith('@') and not ob.parent.name.startswith('%')) or (not ob.name.startswith(special_prefixes) and (ob.halo_json.ObjectMesh_Type == 'COLLISION' or ob.halo_json.ObjectMesh_Type == 'DEFAULT' or ob.halo_json.ObjectMesh_Type == 'LIGHTMAP REGION' )) and (halo_mesh.Permutation_Name == perm):
+            if not ob.parent.name.startswith('%') and (ob.name.startswith('@') and not ob.parent.name.startswith('%')) or (not ob.name.startswith(special_prefixes) and (ob.halo_json.ObjectMesh_Type == 'COLLISION' or ob.halo_json.ObjectMesh_Type == 'DEFAULT' or ob.halo_json.ObjectMesh_Type == 'LIGHTMAP REGION' )) and (halo_mesh.Permutation_Name == perm):
                 ob.select_set(True)
                 boolean = True
 

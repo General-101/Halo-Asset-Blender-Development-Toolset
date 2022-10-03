@@ -556,7 +556,7 @@ def WriteScenarioContents(metadata, asset_path, asset_name):
                         cookie_perm.append(perm)
 
             for perm in structure_perm:
-                network = ET.SubElement(object, 'ContentNetwork' ,Name=asset_name + '_' + "{0:03}".format(bsp) + perm + '_' + 'bsp', Type="")
+                network = ET.SubElement(object, 'ContentNetwork' ,Name=asset_name + '_' + "{0:03}".format(bsp) + '_' + perm + '_' + 'bsp', Type="")
                 ET.SubElement(network, 'InputFile').text = GetInputFilePathBSP(asset_path, asset_name, "{0:03}".format(bsp), 'bsp', perm)
                 ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePathBSP(asset_path, asset_name, "{0:03}".format(bsp), 'bsp', perm)
             for perm in poop_perm:
