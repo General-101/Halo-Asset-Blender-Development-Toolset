@@ -30,16 +30,11 @@ import getpass
 import xml.etree.cElementTree as ET
 import xml.dom.minidom
 
-EKPath = bpy.context.preferences.addons['io_scene_halo'].preferences.hrek_path
-
-#clean editing kit path
-EKPath = EKPath.replace('"','')
-EKPath = EKPath.strip('\\')
-
-valid_animation_types = ('JMM', 'JMA', 'JMT', 'JMZ', 'JMV', 'JMO', 'JMOX', 'JMR', 'JMRX')
-
-special_prefixes = ('b ', 'b_', 'frame ', 'frame_','bip ','bip_','bone ','bone_','#','+soft_ceiling','+soft_kill','+slip_surface', '@','+cookie','+decorator','+flair', '%', '$','+fog','+portal', '+seam','+water', '\'')
-bsp_prefixes = ('@', '+cookie', '\'')
+from ..gr2_utils import (
+    special_prefixes,
+    valid_animation_types,
+    GetDataPath,
+)
 
 def export_xml(report, filePath="", export_sidecar=False, sidecar_type='MODEL', asset_path='',        
                 output_biped=False,
@@ -66,7 +61,7 @@ def export_xml(report, filePath="", export_sidecar=False, sidecar_type='MODEL', 
 def CleanAssetPath(path):
     path = path.replace('"','')
     path = path.strip('\\')
-    path = path.replace(EKPath + '\\data\\','')
+    path = path.replace(GetDataPath(),'')
 
     return path
 

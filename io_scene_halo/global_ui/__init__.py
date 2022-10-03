@@ -1182,28 +1182,17 @@ class ASS_LightFarAtten(Panel):
 ###################
 # OBJECT PROPERTIES
 
-frame_prefixes = ('b ', 'b_', 'frame ', 'frame_','bip ','bip_','bone ','bone_')
-marker_prefixes = ('#')
-mesh_prefixes = ('+soft_ceiling','+soft_kill','+slip_surface', '@','+cookie','+decorator','+flair', '%', '$','+fog','+portal', '+seam','+water', '\'')
-special_prefixes = ('b ', 'b_', 'frame ', 'frame_','bip ','bip_','bone ','bone_','#','+soft_ceiling','+soft_kill','+slip_surface', '@','+cookie','+decorator','+flair', '%', '$','+fog','+portal', '+seam','+water', '\'')
-
-boundary_surface_prefixes = ('+soft_ceiling','+soft_kill','+slip_surface') # boundary surface prefixes can take a name with +prefix:name e.g. +soft_ceiling:camera_ceiling_01
-cookie_cutter_prefixes = ('+cookie')
-decorator_prefixes = ('+decorator') # decorators can take a name with +decorator:name (not implemented)
-fog_volume_prefixes = ('+fog') # fog volumes can take a name with +fog:name (not implemented)
-object_instance_prefixes = ('+flair') # self-reminder: Flairs need to have marker_regions written to them in the json, this should match the face region
-portal_prefixes = ('+portal') # portals can have properties automatically through the object name (once I get around to adding it)
-seam_prefixes = ('+seam') # seams can take a name with +seam:name
-water_volume_prefixes = ('+water')
-
-poop_lighting_prefixes = ('%!',     '%-!','%+!','%*!',     '%-*!','%+*!',     '%*-!','%*+!',          '%?',     '%-?','%+?','%*?',     '%-*?','%+*?',     '%*-?','%*+?'          '%>',     '%->','%+>','%*>',     '%-*>','%+*>',     '%*->','%*+>')
-poop_pathfinding_prefixes = ('%+',     '%!+','%?+','%>+','%*+',     '%!*+','%?*+','%>*+',     '%*!+','%*?+','%*>+',          '%-',     '%!-','%?-','%>-','%*-',     '%!*-','%?*-','%>*-',     '%*!-','%*?-','%*>-')
-poop_render_only_prefixes = ('%*',     '%!*','%?*','%>*','%-*','%+*',     '%!-*','%!+*','%?-*','%?+*','%>-*','%>+*')
-
-special_materials = ('+collision', '+physics', '+portal','+seamsealer','+sky','+weatherpoly')
-
-no_perm_prefixes = (frame_prefixes, marker_prefixes, boundary_surface_prefixes, decorator_prefixes, fog_volume_prefixes, portal_prefixes, seam_prefixes, water_volume_prefixes, cookie_cutter_prefixes, '+water', '\'')
-
+from ..gr2_utils import (
+    frame_prefixes,
+    marker_prefixes,
+    mesh_prefixes,
+    special_prefixes,
+    boundary_surface_prefixes,
+    poop_lighting_prefixes,
+    poop_pathfinding_prefixes,
+    poop_render_only_prefixes,
+    special_materials,
+)
 
 class JSON_ObjectProps(Panel):
     bl_label = "Halo Object Properties"
@@ -3406,7 +3395,6 @@ def unregister():
     del bpy.types.Scene.halo
     del bpy.types.Object.halo_json
     del bpy.types.Material.halo_json
-    del bpy.types.Light.halo_json
     for clshalo in classeshalo:
         bpy.utils.unregister_class(clshalo)
 

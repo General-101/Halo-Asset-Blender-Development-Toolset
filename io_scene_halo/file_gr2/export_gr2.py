@@ -34,42 +34,16 @@ from os import path
 import ctypes
 from subprocess import Popen
 
-EKPath = bpy.context.preferences.addons['io_scene_halo'].preferences.hrek_path
+from ..gr2_utils import (
+    frame_prefixes,
+    marker_prefixes,
+    mesh_prefixes,
 
-#clean editing kit path
-EKPath = EKPath.replace('"','')
-EKPath = EKPath.strip('\\')
-
-#get tool path
-toolPath = EKPath + '\\tool_fast.exe'
-
-#get tags path
-tagsPath = EKPath + '\\tags\\'
-
-frame_prefixes = ('b ', 'b_', 'frame ', 'frame_','bip ','bip_','bone ','bone_')
-marker_prefixes = ('#')
-mesh_prefixes = ('+soft_ceiling','+soft_kill','+slip_surface', '@','+cookie','+decorator','+flair', '%', '$','+fog','+portal', '+seam','+water', '\'')
-special_prefixes = ('b ', 'b_', 'frame ', 'frame_','bip ','bip_','bone ','bone_','#','+soft_ceiling','+soft_kill','+slip_surface', '@','+cookie','+decorator','+flair', '%', '$','+fog','+portal', '+seam','+water', '\'')
-
-halo_node_prefixes = ('b ', 'b_', 'frame ', 'frame_','bip ','bip_','bone ','bone_','#') # these prefixes indicate a mesh should not be written to meshes_properties
-
-boundary_surface_prefixes = ('+soft_ceiling','+soft_kill','+slip_surface') # boundary surface prefixes can take a name with +prefix:name e.g. +soft_ceiling:camera_ceiling_01
-cookie_cutter_prefixes = ('+cookie')
-decorator_prefixes = ('+decorator') # decorators can take a name with +decorator:name (not implemented)
-fog_volume_prefixes = ('+fog') # fog volumes can take a name with +fog:name (not implemented)
-object_instance_prefixes = ('+flair') # self-reminder: Flairs need to have marker_regions written to them in the json, this should match the face region
-portal_prefixes = ('+portal') # portals can have properties automatically through the object name (once I get around to adding it)
-seam_prefixes = ('+seam') # seams can take a name with +seam:name
-water_volume_prefixes = ('+water')
-
-poop_lighting_prefixes = ('%!',     '%-!','%+!','%*!',     '%-*!','%+*!',     '%*-!','%*+!',          '%?',     '%-?','%+?','%*?',     '%-*?','%+*?',     '%*-?','%*+?'          '%>',     '%->','%+>','%*>',     '%-*>','%+*>',     '%*->','%*+>')
-poop_pathfinding_prefixes = ('%+',     '%!+','%?+','%>+','%*+',     '%!*+','%?*+','%>*+',     '%*!+','%*?+','%*>+',          '%-',     '%!-','%?-','%>-','%*-',     '%!*-','%?*-','%>*-',     '%*!-','%*?-','%*>-')
-poop_render_only_prefixes = ('%*',     '%!*','%?*','%>*','%-*','%+*',     '%!-*','%!+*','%?-*','%?+*','%>-*','%>+*')
-
-special_materials = ('+collision', '+physics', '+portal','+seamsealer','+sky','+weatherpoly')
-
-special_mesh_types = ('BOUNDARY SURFACE','DECORATOR','INSTANCED GEOMETRY','PLANAR FOG VOLUME','PORTAL','SEAM','WATER PHYSICS VOLUME',)
-invalid_mesh_types = ('BOUNDARY SURFACE', 'COOKIE CUTTER', 'INSTANCED GEOMETRY MARKER', 'INSTANCED GEOMETRY RAIN BLOCKER', 'INSTANCED GEOMETRY VERTICAL RAIN SHEET', 'LIGHTMAP REGION', 'PLANAR FOG VOLUME', 'PORTAL', 'SEAM', 'WATER PHYSICS VOLUME')
+    poop_render_only_prefixes,
+    invalid_mesh_types,
+    GetToolPath,
+    GetTagsPath,
+)
 
 def openCSV():
     script_folder_path = path.dirname(path.dirname(__file__))
@@ -105,7 +79,7 @@ def getNodes(model_armature):
             FrameID1 = list(f1)[index]
             FrameID2 = list(f2)[index]
             index +=1
-            nodesList.update({b[0]: getBoneProperties(FrameID1, FrameID2)})
+            nodesList.update({b.name: getBoneProperties(FrameID1, FrameID2)})
 
     for light in bpy.data.objects:
         if light.type == 'LIGHT':
@@ -116,7 +90,7 @@ def getNodes(model_armature):
         halo_node = ob.halo_json
         halo_node_name = ob.name
 
-        if ((ob.type == 'MESH' and halo_node.Object_Type_All != 'MESH') or ob.type == 'EMPTY' or (halo_node_name.startswith(halo_node_prefixes) and ob.type != 'LIGHT')) and ob.select_get(): # if the name of a mesh starts with this, don't process it.
+        if ((ob.type == 'MESH' and halo_node.Object_Type_All != 'MESH') or ob.type == 'EMPTY' or (halo_node_name.startswith(frame_prefixes) and ob.type != 'LIGHT')) and ob.select_get(): # if the name of a mesh starts with this, don't process it.
             nodesList.update({ob.name: getNodeProperties(halo_node, halo_node_name, ob)})
 
     temp = ({'nodes_properties': nodesList})
@@ -481,7 +455,7 @@ def getMeshes():
         halo_mesh = ob.halo_json
         halo_mesh_name = ob.name
         
-        if ob.type == 'MESH' and (not halo_mesh_name.startswith(halo_node_prefixes) and halo_mesh.Object_Type_All == 'MESH') and ob.select_get(): # if the name of a mesh starts with this, don't process it.
+        if ob.type == 'MESH' and (not halo_mesh_name.startswith(frame_prefixes) and halo_mesh.Object_Type_All == 'MESH') and ob.select_get(): # if the name of a mesh starts with this, don't process it.
             meshesList.update({ob.name: getMeshProperties(halo_mesh, halo_mesh_name, ob)})
 
     temp = ({'meshes_properties': meshesList})
@@ -951,7 +925,7 @@ def getMaterials():
                         #clean shader path
                         shaderPath = shaderPath.replace('"','')
                         shaderPath = shaderPath.strip('\\')
-                        shaderPath = shaderPath.replace(tagsPath,'')
+                        shaderPath = shaderPath.replace(GetTagsPath(),'')
 
                         if shaderPath == '':
                             shaderPath = 'shaders\invalid'
@@ -1015,9 +989,9 @@ def export_asset(report, filePath="", keep_fbx=False, keep_json=False, asset_pat
             gr2Path += pathList[x]
             gr2Path += ".gr2"
 
-        print('\nTool Path... %r' % toolPath)
+        print('\nTool Path... %r' % GetToolPath())
 
-        build_gr2(toolPath, fileName, jsonPath, gr2Path)
+        build_gr2(GetToolPath(), fileName, jsonPath, gr2Path)
         if(file_exists(gr2Path)):
             report({'INFO'},"GR2 conversion finished!")
         else:

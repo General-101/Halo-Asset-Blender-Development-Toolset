@@ -28,14 +28,10 @@ import bpy
 from subprocess import Popen
 import os
 
-EKPath = bpy.context.preferences.addons['io_scene_halo'].preferences.hrek_path
-
-#clean editing kit path
-EKPath = EKPath.replace('"','')
-EKPath = EKPath.strip('\\')
-
-#get tool path
-toolPath = EKPath + '\\tool_fast.exe'
+from ..gr2_utils import (
+    GetEKPath,
+    GetToolPath,
+)
 
 def import_sidecar(report, filePath='', import_to_game=False, import_check=False, import_force=False, import_verbose=False, import_draft=False,import_seam_debug=False,import_skip_instances=False,import_decompose_instances=False,import_surpress_errors=False, run_tagwatcher=False, import_in_background=False):
     full_path = filePath.rpartition('\\')[0]
@@ -45,9 +41,9 @@ def import_sidecar(report, filePath='', import_to_game=False, import_check=False
 
     try:
 
-        toolCommand = '"{}" import "{}" {}'.format(toolPath, asset_path + '\\' + asset_name + '.sidecar.xml', GetImportFlags(import_check, import_force, import_verbose, import_draft, import_seam_debug, import_skip_instances, import_decompose_instances, import_surpress_errors))
+        toolCommand = '"{}" import "{}" {}'.format(GetToolPath(), asset_path + '\\' + asset_name + '.sidecar.xml', GetImportFlags(import_check, import_force, import_verbose, import_draft, import_seam_debug, import_skip_instances, import_decompose_instances, import_surpress_errors))
         print('\nRunning Tool command... %r' % toolCommand)
-        os.chdir(EKPath)
+        os.chdir(GetEKPath())
         p = Popen(toolCommand)
         if not import_in_background:
             p.wait()
@@ -56,7 +52,7 @@ def import_sidecar(report, filePath='', import_to_game=False, import_check=False
         report({'WARNING'},"Import Failed!")
 
     if run_tagwatcher:
-        tagwatcher = EKPath + '\\bin\\tools\\bonobo\\TagWatcher.exe'
+        tagwatcher = GetEKPath() + '\\bin\\tools\\bonobo\\TagWatcher.exe'
         Popen(tagwatcher)
 
     report({'INFO'},"Import process complete")
@@ -64,7 +60,7 @@ def import_sidecar(report, filePath='', import_to_game=False, import_check=False
 def CleanAssetPath(path):
     path = path.replace('"','')
     path = path.strip('\\')
-    path = path.replace(EKPath + '\\data\\','')
+    path = path.replace(GetEKPath() + '\\data\\','')
 
     return path
 

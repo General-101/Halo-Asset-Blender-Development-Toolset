@@ -40,11 +40,16 @@ from bpy_extras.io_utils import ExportHelper
 from bpy.props import StringProperty, BoolProperty, EnumProperty, FloatProperty, IntProperty
 from bpy.types import Operator
 from bpy_extras.io_utils import ExportHelper, orientation_helper, axis_conversion
-special_prefixes = ('b ', 'b_', 'frame ', 'frame_','bip ','bip_','bone ','bone_','#','+soft_ceiling','+soft_kill','+slip_surface', '@','+cookie','+decorator','+flair', '%', '$','+fog','+portal', '+seam','+water', '\'')
+
+from ..gr2_utils import (
+    special_prefixes,
+    GetPerm,
+    IsWindows,
+    CheckPath,
+)
 
 import os
 import sys
-import platform
 t = os.getcwd()
 t += '\\scripts\\addons\\io_scene_fbx'
 sys.modules[bpy.types.IMPORT_SCENE_OT_fbx.__module__].__file__
@@ -503,12 +508,9 @@ class Export_Halo_GR2(Operator, ExportHelper):
 
                         if self.export_render:
                             perm_list = []
-                            default_perm_registered = False
                             for ob in bpy.data.objects:
-                                perm = ob.halo_json.Permutation_Name
-                                if perm not in perm_list or (perm == '' and default_perm_registered == False):
-                                    if perm == '':
-                                        default_perm_registered = True
+                                perm = GetPerm(ob)
+                                if perm not in perm_list:
                                     perm_list.append(perm)
                                     if SelectModelRender(perm, model_armature):
                                         export_fbx_bin.save(self, context, **keywords)
@@ -516,12 +518,9 @@ class Export_Halo_GR2(Operator, ExportHelper):
 
                         if self.export_collision:
                             perm_list = []
-                            default_perm_registered = False
                             for ob in bpy.data.objects:
-                                perm = ob.halo_json.Permutation_Name
-                                if perm not in perm_list or (perm == '' and default_perm_registered == False):
-                                    if perm == '':
-                                        default_perm_registered = True
+                                perm = GetPerm(ob)
+                                if perm not in perm_list:
                                     perm_list.append(perm)
                                     if SelectModelCollision(perm, model_armature):
                                         export_fbx_bin.save(self, context, **keywords)
@@ -529,12 +528,9 @@ class Export_Halo_GR2(Operator, ExportHelper):
 
                         if self.export_physics:
                             perm_list = []
-                            default_perm_registered = False
                             for ob in bpy.data.objects:
-                                perm = ob.halo_json.Permutation_Name
-                                if perm not in perm_list or (perm == '' and default_perm_registered == False):
-                                    if perm == '':
-                                        default_perm_registered = True
+                                perm = GetPerm(ob)
+                                if perm not in perm_list:
                                     perm_list.append(perm)
                                     if SelectModelPhysics(perm, model_armature):
                                         export_fbx_bin.save(self, context, **keywords)
@@ -582,10 +578,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                 if self.export_structure:
                                     perm_list = []
                                     for ob in bpy.data.objects:
-                                        if ob.halo_json.Permutation_Name == '':
-                                            perm = 'default'
-                                        else:
-                                            perm = ob.halo_json.Permutation_Name
+                                        perm = GetPerm(ob)
                                         if perm not in perm_list:
                                             perm_list.append(perm)
                                             if SelectStructure(bsp, perm):
@@ -595,10 +588,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                 if self.export_poops:
                                     perm_list = []
                                     for ob in bpy.data.objects:
-                                        if ob.halo_json.Permutation_Name == '':
-                                            perm = 'default'
-                                        else:
-                                            perm = ob.halo_json.Permutation_Name
+                                        perm = GetPerm(ob)
                                         if perm not in perm_list:
                                             perm_list.append(perm)
                                             if SelectPoops(bsp, perm):
@@ -608,10 +598,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                 if self.export_markers:
                                     perm_list = []
                                     for ob in bpy.data.objects:
-                                        if ob.halo_json.Permutation_Name == '':
-                                            perm = 'default'
-                                        else:
-                                            perm = ob.halo_json.Permutation_Name
+                                        perm = GetPerm(ob)
                                         if perm not in perm_list:
                                             perm_list.append(perm)
                                             if SelectMarkers(bsp, perm):
@@ -621,10 +608,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                 if self.export_lights:
                                     perm_list = []
                                     for ob in bpy.data.objects:
-                                        if ob.halo_json.Permutation_Name == '':
-                                            perm = 'default'
-                                        else:
-                                            perm = ob.halo_json.Permutation_Name
+                                        perm = GetPerm(ob)
                                         if perm not in perm_list:
                                             perm_list.append(perm)
                                             if SelectLights(bsp, perm):
@@ -634,10 +618,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                 if self.export_portals:
                                     perm_list = []
                                     for ob in bpy.data.objects:
-                                        if ob.halo_json.Permutation_Name == '':
-                                            perm = 'default'
-                                        else:
-                                            perm = ob.halo_json.Permutation_Name
+                                        perm = GetPerm(ob)
                                         if perm not in perm_list:
                                             perm_list.append(perm)
                                             if SelectPortals(bsp, perm):
@@ -647,10 +628,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                 if self.export_seams:
                                     perm_list = []
                                     for ob in bpy.data.objects:
-                                        if ob.halo_json.Permutation_Name == '':
-                                            perm = 'default'
-                                        else:
-                                            perm = ob.halo_json.Permutation_Name
+                                        perm = GetPerm(ob)
                                         if perm not in perm_list:
                                             perm_list.append(perm)
                                             if SelectSeams(bsp, perm):
@@ -660,10 +638,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                 if self.export_water_surfaces:
                                     perm_list = []
                                     for ob in bpy.data.objects:
-                                        if ob.halo_json.Permutation_Name == '':
-                                            perm = 'default'
-                                        else:
-                                            perm = ob.halo_json.Permutation_Name
+                                        perm = GetPerm(ob)
                                         if perm not in perm_list:
                                             perm_list.append(perm)
                                             if SelectWaterSurfaces(bsp, perm):
@@ -673,10 +648,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                 if self.export_fog_planes:
                                     perm_list = []
                                     for ob in bpy.data.objects:
-                                        if ob.halo_json.Permutation_Name == '':
-                                            perm = 'default'
-                                        else:
-                                            perm = ob.halo_json.Permutation_Name
+                                        perm = GetPerm(ob)
                                         if perm not in perm_list:
                                             perm_list.append(perm)
                                             if SelectFog(bsp, perm):
@@ -686,10 +658,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                 if self.export_cookie_cutters:
                                     perm_list = []
                                     for ob in bpy.data.objects:
-                                        if ob.halo_json.Permutation_Name == '':
-                                            perm = 'default'
-                                        else:
-                                            perm = ob.halo_json.Permutation_Name
+                                        perm = GetPerm(ob)
                                         if perm not in perm_list:
                                             perm_list.append(perm)
                                             if SelectCookie(bsp, perm):
@@ -699,10 +668,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                 if self.export_lightmap_regions:
                                     perm_list = []
                                     for ob in bpy.data.objects:
-                                        if ob.halo_json.Permutation_Name == '':
-                                            perm = 'default'
-                                        else:
-                                            perm = ob.halo_json.Permutation_Name
+                                        perm = GetPerm(ob)
                                         if perm not in perm_list:
                                             perm_list.append(perm)
                                             if SelectLightMapRegions(bsp, perm):
@@ -712,10 +678,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                 if self.export_boundary_surfaces:
                                     perm_list = []
                                     for ob in bpy.data.objects:
-                                        if ob.halo_json.Permutation_Name == '':
-                                            perm = 'default'
-                                        else:
-                                            perm = ob.halo_json.Permutation_Name
+                                        perm = GetPerm(ob)
                                         if perm not in perm_list:
                                             perm_list.append(perm)
                                             if SelectBoundarys(bsp, perm):
@@ -725,10 +688,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                 if self.export_water_physics:
                                     perm_list = []
                                     for ob in bpy.data.objects:
-                                        if ob.halo_json.Permutation_Name == '':
-                                            perm = 'default'
-                                        else:
-                                            perm = ob.halo_json.Permutation_Name
+                                        perm = GetPerm(ob)
                                         if perm not in perm_list:
                                             perm_list.append(perm)
                                             if SelectWaterPhysics(bsp, perm):
@@ -738,10 +698,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                 if self.export_rain_occluders:
                                     perm_list = []
                                     for ob in bpy.data.objects:
-                                        if ob.halo_json.Permutation_Name == '':
-                                            perm = 'default'
-                                        else:
-                                            perm = ob.halo_json.Permutation_Name
+                                        perm = GetPerm(ob)
                                         if perm not in perm_list:
                                             perm_list.append(perm)
                                             if SelectPoopRains(bsp, perm):
@@ -758,10 +715,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                             if self.export_structure:
                                 perm_list = []
                                 for ob in bpy.data.objects:
-                                    if ob.halo_json.Permutation_Name == '':
-                                        perm = 'default'
-                                    else:
-                                        perm = ob.halo_json.Permutation_Name
+                                    perm = GetPerm(ob)
                                     if perm not in perm_list:
                                         perm_list.append(perm)
                                         SelectStructure(bsp, perm)
@@ -771,10 +725,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                             if self.export_poops:
                                 perm_list = []
                                 for ob in bpy.data.objects:
-                                    if ob.halo_json.Permutation_Name == '':
-                                        perm = 'default'
-                                    else:
-                                        perm = ob.halo_json.Permutation_Name
+                                    perm = GetPerm(ob)
                                     if perm not in perm_list:
                                         perm_list.append(perm)
                                         SelectPoops(bsp, perm)
@@ -784,10 +735,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                             if self.export_markers:
                                 perm_list = []
                                 for ob in bpy.data.objects:
-                                    if ob.halo_json.Permutation_Name == '':
-                                        perm = 'default'
-                                    else:
-                                        perm = ob.halo_json.Permutation_Name
+                                    perm = GetPerm(ob)
                                     if perm not in perm_list:
                                         perm_list.append(perm)
                                         SelectMarkers(bsp, perm)
@@ -797,10 +745,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                             if self.export_lights:
                                 perm_list = []
                                 for ob in bpy.data.objects:
-                                    if ob.halo_json.Permutation_Name == '':
-                                        perm = 'default'
-                                    else:
-                                        perm = ob.halo_json.Permutation_Name
+                                    perm = GetPerm(ob)
                                     if perm not in perm_list:
                                         perm_list.append(perm)
                                         SelectLights(bsp, perm)
@@ -810,10 +755,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                             if self.export_portals:
                                 perm_list = []
                                 for ob in bpy.data.objects:
-                                    if ob.halo_json.Permutation_Name == '':
-                                        perm = 'default'
-                                    else:
-                                        perm = ob.halo_json.Permutation_Name
+                                    perm = GetPerm(ob)
                                     if perm not in perm_list:
                                         perm_list.append(perm)
                                         SelectPortals(bsp, perm)
@@ -823,10 +765,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                             if self.export_seams:
                                 perm_list = []
                                 for ob in bpy.data.objects:
-                                    if ob.halo_json.Permutation_Name == '':
-                                        perm = 'default'
-                                    else:
-                                        perm = ob.halo_json.Permutation_Name
+                                    perm = GetPerm(ob)
                                     if perm not in perm_list:
                                         perm_list.append(perm)
                                         SelectSeams(bsp, perm)
@@ -836,10 +775,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                             if self.export_water_surfaces:
                                 perm_list = []
                                 for ob in bpy.data.objects:
-                                    if ob.halo_json.Permutation_Name == '':
-                                        perm = 'default'
-                                    else:
-                                        perm = ob.halo_json.Permutation_Name
+                                    perm = GetPerm(ob)
                                     if perm not in perm_list:
                                         perm_list.append(perm)
                                         SelectWaterSurfaces(bsp, perm)
@@ -849,10 +785,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                             if self.export_lightmap_regions:
                                 perm_list = []
                                 for ob in bpy.data.objects:
-                                    if ob.halo_json.Permutation_Name == '':
-                                        perm = 'default'
-                                    else:
-                                        perm = ob.halo_json.Permutation_Name
+                                    perm = GetPerm(ob)
                                     if perm not in perm_list:
                                         perm_list.append(perm)
                                         SelectLightMapRegions(bsp, perm)
@@ -862,10 +795,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                             if self.export_boundary_surfaces:
                                 perm_list = []
                                 for ob in bpy.data.objects:
-                                    if ob.halo_json.Permutation_Name == '':
-                                        perm = 'default'
-                                    else:
-                                        perm = ob.halo_json.Permutation_Name
+                                    perm = GetPerm(ob)
                                     if perm not in perm_list:
                                         perm_list.append(perm)
                                         SelectBoundarys(bsp, perm)
@@ -875,10 +805,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                             if self.export_water_physics:
                                 perm_list = []
                                 for ob in bpy.data.objects:
-                                    if ob.halo_json.Permutation_Name == '':
-                                        perm = 'default'
-                                    else:
-                                        perm = ob.halo_json.Permutation_Name
+                                    perm = GetPerm(ob)
                                     if perm not in perm_list:
                                         perm_list.append(perm)
                                         SelectWaterPhysics(bsp, perm)
@@ -888,10 +815,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                             if self.export_rain_occluders:
                                 perm_list = []
                                 for ob in bpy.data.objects:
-                                    if ob.halo_json.Permutation_Name == '':
-                                        perm = 'default'
-                                    else:
-                                        perm = ob.halo_json.Permutation_Name
+                                    perm = GetPerm(ob)
                                     if perm not in perm_list:
                                         perm_list.append(perm)
                                         SelectPoopRains(bsp, perm)
@@ -1048,24 +972,6 @@ class Export_Halo_GR2(Operator, ExportHelper):
         col.prop(self, "axis_up")
         col.separator()
         col.prop(self, "global_scale")
-
-def IsWindows():
-    if(platform.system() == 'Windows'):
-        return True
-    else:
-        return False
-
-def CheckPath(filePath):
-    EKPath = bpy.context.preferences.addons['io_scene_halo'].preferences.hrek_path
-    EKPath = EKPath.replace('"','')
-    EKPath = EKPath.strip('\\')
-
-    if(filePath.startswith(os.path.abspath(EKPath + "\\data")+os.sep)):
-        print("Is Valid")
-        return True
-    else:
-        print("Not Valid!")
-        return False
 
 def SelectModelRender(perm, arm):
     bpy.ops.object.select_all(action='DESELECT')
