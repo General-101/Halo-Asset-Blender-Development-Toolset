@@ -115,6 +115,15 @@ def CheckPath(filePath):
         print("Not Valid!")
         return False
 
+def ObjectValid(ob, export_hidden, valid_perm='', evaluated_perm=''):
+    return ob in tuple(bpy.data.scenes[0].view_layers[0].objects) and (ob.visible_get() or export_hidden) and valid_perm == evaluated_perm
+
+def ExportPerm(perm, export_all_perms, export_specific_perm):
+    return export_all_perms or perm == export_specific_perm
+
+def ExportBSP(bsp, export_all_bsps, export_specific_bsp):
+    return export_all_bsps or bsp == export_specific_bsp
+
 #################################
 
 # import example #
@@ -138,10 +147,14 @@ def CheckPath(filePath):
 #     special_materials,
 #     special_mesh_types,
 #     invalid_mesh_types,
-#     EKPath,
-#     toolPath,
-#     tagsPath,
+#     GetEKPath,
+#     GetToolPath,
+#     GetTagsPath,
+#     GetDataPath,
 #     GetPerm,
 #     IsWindows,
 #     CheckPath,
+#     ObjectValid,
+#     ExportPerm,
+#     ExportBSP,
 # )

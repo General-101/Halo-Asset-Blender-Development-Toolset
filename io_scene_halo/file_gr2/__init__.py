@@ -46,6 +46,9 @@ from ..gr2_utils import (
     GetPerm,
     IsWindows,
     CheckPath,
+    ObjectValid,
+    ExportPerm,
+    ExportBSP
 )
 
 import os
@@ -512,7 +515,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                 perm = GetPerm(ob)
                                 if perm not in perm_list:
                                     perm_list.append(perm)
-                                    if SelectModelRender(perm, model_armature):
+                                    if SelectModelRender(perm, model_armature, self.export_hidden, self.export_all_perms, self.export_specific_perm):
                                         export_fbx_bin.save(self, context, **keywords)
                                         export_gr2.save(self, context, self.report, IsWindows(), 'render', '', perm, model_armature, **keywords)
 
@@ -522,7 +525,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                 perm = GetPerm(ob)
                                 if perm not in perm_list:
                                     perm_list.append(perm)
-                                    if SelectModelCollision(perm, model_armature):
+                                    if SelectModelCollision(perm, model_armature, self.export_hidden):
                                         export_fbx_bin.save(self, context, **keywords)
                                         export_gr2.save(self, context, self.report, IsWindows(), 'collision', '', perm, model_armature, **keywords)
 
@@ -532,12 +535,12 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                 perm = GetPerm(ob)
                                 if perm not in perm_list:
                                     perm_list.append(perm)
-                                    if SelectModelPhysics(perm, model_armature):
+                                    if SelectModelPhysics(perm, model_armature, self.export_hidden):
                                         export_fbx_bin.save(self, context, **keywords)
                                         export_gr2.save(self, context, self.report, IsWindows(), 'physics', '', perm, model_armature, **keywords)
 
                         if self.export_markers:
-                            if SelectModelMarkers(model_armature):
+                            if SelectModelMarkers(model_armature, self.export_hidden):
                                 export_fbx_bin.save(self, context, **keywords)
                                 export_gr2.save(self, context, self.report, IsWindows(), 'markers', '', '', model_armature, **keywords)
 
@@ -581,7 +584,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                         perm = GetPerm(ob)
                                         if perm not in perm_list:
                                             perm_list.append(perm)
-                                            if SelectStructure(bsp, perm):
+                                            if SelectStructure(bsp, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp):
                                                 export_fbx_bin.save(self, context, **keywords)
                                                 export_gr2.save(self, context, self.report, IsWindows(), 'structure', "{0:03}".format(bsp), perm, **keywords)
 
@@ -591,7 +594,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                         perm = GetPerm(ob)
                                         if perm not in perm_list:
                                             perm_list.append(perm)
-                                            if SelectPoops(bsp, perm):
+                                            if SelectPoops(bsp, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp):
                                                 export_fbx_bin.save(self, context, **keywords)
                                                 export_gr2.save(self, context, self.report, IsWindows(), 'poops', "{0:03}".format(bsp), perm, **keywords)
 
@@ -601,7 +604,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                         perm = GetPerm(ob)
                                         if perm not in perm_list:
                                             perm_list.append(perm)
-                                            if SelectMarkers(bsp, perm):
+                                            if SelectMarkers(bsp, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp):
                                                 export_fbx_bin.save(self, context, **keywords)
                                                 export_gr2.save(self, context, self.report, IsWindows(), 'markers', "{0:03}".format(bsp), perm, **keywords)
 
@@ -611,7 +614,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                         perm = GetPerm(ob)
                                         if perm not in perm_list:
                                             perm_list.append(perm)
-                                            if SelectLights(bsp, perm):
+                                            if SelectLights(bsp, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp):
                                                 export_fbx_bin.save(self, context, **keywords)
                                                 export_gr2.save(self, context, self.report, IsWindows(), 'lights', "{0:03}".format(bsp), perm, **keywords)
 
@@ -621,7 +624,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                         perm = GetPerm(ob)
                                         if perm not in perm_list:
                                             perm_list.append(perm)
-                                            if SelectPortals(bsp, perm):
+                                            if SelectPortals(bsp, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp):
                                                 export_fbx_bin.save(self, context, **keywords)
                                                 export_gr2.save(self, context, self.report, IsWindows(), 'portals', "{0:03}".format(bsp), perm, **keywords)
 
@@ -631,7 +634,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                         perm = GetPerm(ob)
                                         if perm not in perm_list:
                                             perm_list.append(perm)
-                                            if SelectSeams(bsp, perm):
+                                            if SelectSeams(bsp, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp):
                                                 export_fbx_bin.save(self, context, **keywords)
                                                 export_gr2.save(self, context, self.report, IsWindows(), 'seams', "{0:03}".format(bsp), perm, **keywords)
 
@@ -641,7 +644,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                         perm = GetPerm(ob)
                                         if perm not in perm_list:
                                             perm_list.append(perm)
-                                            if SelectWaterSurfaces(bsp, perm):
+                                            if SelectWaterSurfaces(bsp, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp):
                                                 export_fbx_bin.save(self, context, **keywords)
                                                 export_gr2.save(self, context, self.report, IsWindows(), 'water', "{0:03}".format(bsp), perm, **keywords)
 
@@ -651,7 +654,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                         perm = GetPerm(ob)
                                         if perm not in perm_list:
                                             perm_list.append(perm)
-                                            if SelectFog(bsp, perm):
+                                            if SelectFog(bsp, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp):
                                                 export_fbx_bin.save(self, context, **keywords)
                                                 export_gr2.save(self, context, self.report, IsWindows(), 'fog', "{0:03}".format(bsp), perm, **keywords)
 
@@ -661,7 +664,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                         perm = GetPerm(ob)
                                         if perm not in perm_list:
                                             perm_list.append(perm)
-                                            if SelectCookie(bsp, perm):
+                                            if SelectCookie(bsp, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp):
                                                 export_fbx_bin.save(self, context, **keywords)
                                                 export_gr2.save(self, context, self.report, IsWindows(), 'cookie_cutters', "{0:03}".format(bsp), perm, **keywords)
 
@@ -671,7 +674,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                         perm = GetPerm(ob)
                                         if perm not in perm_list:
                                             perm_list.append(perm)
-                                            if SelectLightMapRegions(bsp, perm):
+                                            if SelectLightMapRegions(bsp, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp):
                                                 export_fbx_bin.save(self, context, **keywords)
                                                 export_gr2.save(self, context, self.report, IsWindows(), 'lightmap_region', "{0:03}".format(bsp), perm, **keywords)
 
@@ -681,7 +684,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                         perm = GetPerm(ob)
                                         if perm not in perm_list:
                                             perm_list.append(perm)
-                                            if SelectBoundarys(bsp, perm):
+                                            if SelectBoundarys(bsp, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp):
                                                 export_fbx_bin.save(self, context, **keywords)
                                                 export_gr2.save(self, context, self.report, IsWindows(), 'design', "{0:03}".format(bsp), perm, **keywords)
 
@@ -691,7 +694,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                         perm = GetPerm(ob)
                                         if perm not in perm_list:
                                             perm_list.append(perm)
-                                            if SelectWaterPhysics(bsp, perm):
+                                            if SelectWaterPhysics(bsp, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp):
                                                 export_fbx_bin.save(self, context, **keywords)
                                                 export_gr2.save(self, context, self.report, IsWindows(), 'water_physics', "{0:03}".format(bsp), perm, **keywords)
 
@@ -701,7 +704,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                         perm = GetPerm(ob)
                                         if perm not in perm_list:
                                             perm_list.append(perm)
-                                            if SelectPoopRains(bsp, perm):
+                                            if SelectPoopRains(bsp, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp):
                                                 export_fbx_bin.save(self, context, **keywords)
                                                 export_gr2.save(self, context, self.report, IsWindows(), 'rain_blockers', "{0:03}".format(bsp), perm, **keywords)
 
@@ -718,7 +721,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                     perm = GetPerm(ob)
                                     if perm not in perm_list:
                                         perm_list.append(perm)
-                                        SelectStructure(bsp, perm)
+                                        SelectStructure(bsp, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp)
                                         export_fbx_bin.save(self, context, **keywords)
                                         export_gr2.save(self, context, self.report, IsWindows(), 'bsp', 'shared', perm, **keywords)
 
@@ -728,7 +731,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                     perm = GetPerm(ob)
                                     if perm not in perm_list:
                                         perm_list.append(perm)
-                                        SelectPoops(bsp, perm)
+                                        SelectPoops(bsp, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp)
                                         export_fbx_bin.save(self, context, **keywords)
                                         export_gr2.save(self, context, self.report, IsWindows(), 'poops', 'shared', perm, **keywords)
 
@@ -738,7 +741,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                     perm = GetPerm(ob)
                                     if perm not in perm_list:
                                         perm_list.append(perm)
-                                        SelectMarkers(bsp, perm)
+                                        SelectMarkers(bsp, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp)
                                         export_fbx_bin.save(self, context, **keywords)
                                         export_gr2.save(self, context, self.report, IsWindows(), 'markers', 'shared', perm, **keywords)
 
@@ -748,7 +751,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                     perm = GetPerm(ob)
                                     if perm not in perm_list:
                                         perm_list.append(perm)
-                                        SelectLights(bsp, perm)
+                                        SelectLights(bsp, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp)
                                         export_fbx_bin.save(self, context, **keywords)
                                         export_gr2.save(self, context, self.report, IsWindows(), 'lights', 'shared', perm, **keywords)
 
@@ -758,7 +761,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                     perm = GetPerm(ob)
                                     if perm not in perm_list:
                                         perm_list.append(perm)
-                                        SelectPortals(bsp, perm)
+                                        SelectPortals(bsp, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp)
                                         export_fbx_bin.save(self, context, **keywords)
                                         export_gr2.save(self, context, self.report, IsWindows(), 'portals', 'shared', perm, **keywords)
 
@@ -768,7 +771,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                     perm = GetPerm(ob)
                                     if perm not in perm_list:
                                         perm_list.append(perm)
-                                        SelectSeams(bsp, perm)
+                                        SelectSeams(bsp, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp)
                                         export_fbx_bin.save(self, context, **keywords)
                                         export_gr2.save(self, context, self.report, IsWindows(), 'seams', 'shared', perm, **keywords)
 
@@ -778,7 +781,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                     perm = GetPerm(ob)
                                     if perm not in perm_list:
                                         perm_list.append(perm)
-                                        SelectWaterSurfaces(bsp, perm)
+                                        SelectWaterSurfaces(bsp, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp)
                                         export_fbx_bin.save(self, context, **keywords)
                                         export_gr2.save(self, context, self.report, IsWindows(), 'water', 'shared', perm, **keywords)
 
@@ -788,7 +791,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                     perm = GetPerm(ob)
                                     if perm not in perm_list:
                                         perm_list.append(perm)
-                                        SelectLightMapRegions(bsp, perm)
+                                        SelectLightMapRegions(bsp, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp)
                                         export_fbx_bin.save(self, context, **keywords)
                                         export_gr2.save(self, context, self.report, IsWindows(), 'lightmap_region', 'shared', perm, **keywords)
 
@@ -798,7 +801,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                     perm = GetPerm(ob)
                                     if perm not in perm_list:
                                         perm_list.append(perm)
-                                        SelectBoundarys(bsp, perm)
+                                        SelectBoundarys(bsp, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp)
                                         export_fbx_bin.save(self, context, **keywords)
                                         export_gr2.save(self, context, self.report, IsWindows(), 'design', 'shared', perm, **keywords)
 
@@ -808,7 +811,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                     perm = GetPerm(ob)
                                     if perm not in perm_list:
                                         perm_list.append(perm)
-                                        SelectWaterPhysics(bsp, perm)
+                                        SelectWaterPhysics(bsp, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp)
                                         export_fbx_bin.save(self, context, **keywords)
                                         export_gr2.save(self, context, self.report, IsWindows(), 'water_physics', 'shared', perm, **keywords)
 
@@ -818,7 +821,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                     perm = GetPerm(ob)
                                     if perm not in perm_list:
                                         perm_list.append(perm)
-                                        SelectPoopRains(bsp, perm)
+                                        SelectPoopRains(bsp, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp)
                                         export_fbx_bin.save(self, context, **keywords)
                                         export_gr2.save(self, context, self.report, IsWindows(), 'rain_blockers', 'shared', perm, **keywords)
 
@@ -973,14 +976,14 @@ class Export_Halo_GR2(Operator, ExportHelper):
         col.separator()
         col.prop(self, "global_scale")
 
-def SelectModelRender(perm, arm):
+def SelectModelRender(perm, arm, export_hidden, export_all_perms, export_specific_perm):
     bpy.ops.object.select_all(action='DESELECT')
     boolean = False
     for ob in bpy.data.objects:
         halo_mesh = ob.halo_json
         halo_mesh_name = ob.name
-        if halo_mesh.Permutation_Name == perm:
-            if (ob.type == 'MESH' and (not halo_mesh_name.startswith(special_prefixes)) and halo_mesh.Object_Type_All == 'MESH' and halo_mesh.ObjectMesh_Type == 'DEFAULT' and (halo_mesh.Permutation_Name == perm or halo_mesh.Permutation_Name == 'default')):
+        if ObjectValid(ob, export_hidden, perm, halo_mesh.Permutation_Name) and ExportPerm(perm, export_all_perms, export_specific_perm):
+            if (ob.type == 'MESH' and (not halo_mesh_name.startswith(special_prefixes)) and halo_mesh.Object_Type_All == 'MESH' and halo_mesh.ObjectMesh_Type == 'DEFAULT' and (halo_mesh.Permutation_Name == perm)):
                 ob.select_set(True)
                 arm.select_set(True)
                 if ob.type != 'ARMATURE':
@@ -988,14 +991,14 @@ def SelectModelRender(perm, arm):
     
     return boolean
 
-def SelectModelCollision(perm, arm):
+def SelectModelCollision(perm, arm, export_hidden, export_all_perms, export_specific_perm):
     bpy.ops.object.select_all(action='DESELECT')
     boolean = False
     for ob in bpy.data.objects:
         halo_mesh = ob.halo_json
         halo_mesh_name = ob.name
-        if halo_mesh.Permutation_Name == perm:
-            if (ob.type == 'MESH' and (not halo_mesh_name.startswith(special_prefixes) or halo_mesh_name.startswith('@')) and (halo_mesh.ObjectMesh_Type == 'COLLISION' or halo_mesh_name.startswith('@')) and halo_mesh.Object_Type_All == 'MESH' and (halo_mesh.Permutation_Name == perm or halo_mesh.Permutation_Name == 'default')):
+        if ObjectValid(ob, export_hidden, perm, halo_mesh.Permutation_Name) and ExportPerm(perm, export_all_perms, export_specific_perm):
+            if (ob.type == 'MESH' and (not halo_mesh_name.startswith(special_prefixes) or halo_mesh_name.startswith('@')) and (halo_mesh.ObjectMesh_Type == 'COLLISION' or halo_mesh_name.startswith('@')) and halo_mesh.Object_Type_All == 'MESH' and (halo_mesh.Permutation_Name == perm)):
                 ob.select_set(True)
                 arm.select_set(True)
                 if ob.type != 'ARMATURE':
@@ -1003,14 +1006,14 @@ def SelectModelCollision(perm, arm):
     
     return boolean
 
-def SelectModelPhysics(perm, arm):
+def SelectModelPhysics(perm, arm, export_hidden, export_all_perms, export_specific_perm):
     bpy.ops.object.select_all(action='DESELECT')
     boolean = False
     for ob in bpy.data.objects:
         halo_mesh = ob.halo_json
         halo_mesh_name = ob.name
-        if halo_mesh.Permutation_Name == perm:
-            if (ob.type == 'MESH' and (not halo_mesh_name.startswith(special_prefixes) or halo_mesh_name.startswith('$')) and (halo_mesh.ObjectMesh_Type == 'PHYSICS' or halo_mesh_name.startswith('$')) and halo_mesh.Object_Type_All == 'MESH' and (halo_mesh.Permutation_Name == perm or halo_mesh.Permutation_Name == 'default')):
+        if ObjectValid(ob, export_hidden, perm, halo_mesh.Permutation_Name) and ExportPerm(perm, export_all_perms, export_specific_perm):
+            if (ob.type == 'MESH' and (not halo_mesh_name.startswith(special_prefixes) or halo_mesh_name.startswith('$')) and (halo_mesh.ObjectMesh_Type == 'PHYSICS' or halo_mesh_name.startswith('$')) and halo_mesh.Object_Type_All == 'MESH' and (halo_mesh.Permutation_Name == perm)):
                 ob.select_set(True)
                 arm.select_set(True)
                 if ob.type != 'ARMATURE':
@@ -1018,17 +1021,18 @@ def SelectModelPhysics(perm, arm):
     
     return boolean
 
-def SelectModelMarkers(arm):
+def SelectModelMarkers(arm, export_hidden):
     bpy.ops.object.select_all(action='DESELECT')
     boolean = False
     for ob in bpy.data.objects:
         halo_node = ob.halo_json
         halo_node_name = ob.name
-        if (ob.type == 'MESH' and (halo_node.Object_Type_All == 'MARKER' or halo_node_name.startswith('#'))) or ob.type == 'EMPTY' and (halo_node.Object_Type_No_Mesh == 'MARKER' or halo_node_name.startswith('#')):
-            ob.select_set(True)
-            arm.select_set(True)
-            if ob.type != 'ARMATURE':
-                boolean = True
+        if ObjectValid(ob, export_hidden):
+            if (ob.type == 'MESH' and (halo_node.Object_Type_All == 'MARKER' or halo_node_name.startswith('#'))) or ob.type == 'EMPTY' and (halo_node.Object_Type_No_Mesh == 'MARKER' or halo_node_name.startswith('#')):
+                ob.select_set(True)
+                arm.select_set(True)
+                if ob.type != 'ARMATURE':
+                    boolean = True
     
     return boolean
 
@@ -1038,234 +1042,208 @@ def SelectModelSkeleton(arm):
 
     return True
 
-def SelectStructure(index, perm):
+def SelectStructure(index, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
     bpy.ops.object.select_all(action='DESELECT')
     boolean = False
     for ob in bpy.data.objects:
-        if ob.halo_json.bsp_index == index:
-            halo_mesh = ob.halo_json
-            if halo_mesh.Permutation_Name != perm and perm == 'default':
-                perm = ''
+        halo_mesh = ob.halo_json
+        if ob.halo_json.bsp_index == index and ObjectValid(ob, export_hidden, perm, halo_mesh.Permutation_Name) and ExportPerm(perm, export_all_perms, export_specific_perm) and ExportBSP(index, export_all_bsps, export_specific_bsp):
             if (ob.name.startswith('@') and not ob.parent.name.startswith('%')) or (not ob.name.startswith(special_prefixes) and (ob.halo_json.ObjectMesh_Type == 'COLLISION' or ob.halo_json.ObjectMesh_Type == 'DEFAULT' or ob.halo_json.ObjectMesh_Type == 'LIGHTMAP REGION' )) and (halo_mesh.Permutation_Name == perm):
                 ob.select_set(True)
                 boolean = True
-        elif ob.halo_json.bsp_shared:
+        elif ob.halo_json.bsp_shared and ObjectValid(ob, export_hidden, perm, halo_mesh.Permutation_Name):
             if (ob.name.startswith('@') and not ob.parent.name.startswith('%')) or (not ob.name.startswith(special_prefixes) and (ob.halo_json.ObjectMesh_Type == 'COLLISION' or ob.halo_json.ObjectMesh_Type == 'DEFAULT' or ob.halo_json.ObjectMesh_Type == 'LIGHTMAP REGION' )) and (halo_mesh.Permutation_Name == perm):
                 ob.select_set(True)
                 boolean = True
 
     return boolean
 
-def SelectPoops(index, perm):
+def SelectPoops(index, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
     bpy.ops.object.select_all(action='DESELECT')
     boolean = False
     for ob in bpy.data.objects:
-        if ob.halo_json.bsp_index == index:
-            halo_mesh = ob.halo_json
-            if halo_mesh.Permutation_Name != perm and perm == 'default':
-                perm = ''
+        halo_mesh = ob.halo_json
+        if ob.halo_json.bsp_index == index and ObjectValid(ob, export_hidden, perm, halo_mesh.Permutation_Name) and ExportPerm(perm, export_all_perms, export_specific_perm) and ExportBSP(index, export_all_bsps, export_specific_bsp):
             if (ob.name.startswith('%') or (ob.name.startswith('@') and ob.parent.name.startswith('%')) or (ob.name.startswith('$') and ob.parent.name.startswith('%')) or (not ob.name.startswith(special_prefixes) and (ob.halo_json.ObjectMesh_Type == 'INSTANCED GEOMETRY' or ob.halo_json.ObjectMesh_Type == 'INSTANCED GEOMETRY COLLISION' or ob.halo_json.ObjectMesh_Type == 'INSTANCED GEOMETRY PHYSICS' or ob.halo_json.ObjectMesh_Type == 'INSTANCED GEOMETRY MARKER'))) and (halo_mesh.Permutation_Name == perm):
                 ob.select_set(True)
                 boolean = True
-        elif ob.halo_json.bsp_shared:
+        elif ob.halo_json.bsp_shared and ObjectValid(ob, export_hidden, perm, halo_mesh.Permutation_Name) and ExportPerm(perm, export_all_perms, export_specific_perm) and ExportBSP(index, export_all_bsps, export_specific_bsp):
             if (ob.name.startswith('%') or (ob.name.startswith('@') and ob.parent.name.startswith('%')) or (ob.name.startswith('$') and ob.parent.name.startswith('%')) or (not ob.name.startswith(special_prefixes) and (ob.halo_json.ObjectMesh_Type == 'INSTANCED GEOMETRY' or ob.halo_json.ObjectMesh_Type == 'INSTANCED GEOMETRY COLLISION' or ob.halo_json.ObjectMesh_Type == 'INSTANCED GEOMETRY PHYSICS' or ob.halo_json.ObjectMesh_Type == 'INSTANCED GEOMETRY MARKER'))) and (halo_mesh.Permutation_Name == perm):
                 ob.select_set(True)
                 boolean = True
 
     return boolean
 
-def SelectMarkers(index, perm):
+def SelectMarkers(index, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
     bpy.ops.object.select_all(action='DESELECT')
     boolean = False
     for ob in bpy.data.objects:
-        if ob.halo_json.bsp_index == index:
-            halo_mesh = ob.halo_json
-            if halo_mesh.Permutation_Name != perm and perm == 'default':
-                perm = ''
+        halo_mesh = ob.halo_json
+        if ob.halo_json.bsp_index == index and ObjectValid(ob, export_hidden, perm, halo_mesh.Permutation_Name) and ExportPerm(perm, export_all_perms, export_specific_perm) and ExportBSP(index, export_all_bsps, export_specific_bsp):
             if (ob.name.startswith('#') or ob.halo_json.Object_Type_All == 'MARKER' or (ob.halo_json.Object_Type_No_Mesh == 'MARKER' and ob.type == 'EMPTY')) and (halo_mesh.Permutation_Name == perm):
                 ob.select_set(True)
                 boolean = True
-        elif ob.halo_json.bsp_shared:
+        elif ob.halo_json.bsp_shared and ObjectValid(ob, export_hidden, perm, halo_mesh.Permutation_Name) and ExportPerm(perm, export_all_perms, export_specific_perm) and ExportBSP(index, export_all_bsps, export_specific_bsp):
             if (ob.name.startswith('#') or ob.halo_json.Object_Type_All == 'MARKER' or (ob.halo_json.Object_Type_No_Mesh == 'MARKER' and ob.type == 'EMPTY')) and (halo_mesh.Permutation_Name == perm):
                 ob.select_set(True)
                 boolean = True
 
     return boolean
 
-def SelectLights(index, perm):
+def SelectLights(index, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
     bpy.ops.object.select_all(action='DESELECT')
     boolean = False
     for ob in bpy.data.objects:
-        if ob.halo_json.bsp_index == index:
-            halo_mesh = ob.halo_json
-            if halo_mesh.Permutation_Name != perm and perm == 'default':
-                perm = ''
+        halo_mesh = ob.halo_json
+        if ob.halo_json.bsp_index == index and ObjectValid(ob, export_hidden, perm, halo_mesh.Permutation_Name) and ExportPerm(perm, export_all_perms, export_specific_perm) and ExportBSP(index, export_all_bsps, export_specific_bsp):
             if (ob.type == 'LIGHT') and (halo_mesh.Permutation_Name == perm):
                 ob.select_set(True)
                 boolean = True
-        elif ob.halo_json.bsp_shared:
+        elif ob.halo_json.bsp_shared and ObjectValid(ob, export_hidden, perm, halo_mesh.Permutation_Name) and ExportPerm(perm, export_all_perms, export_specific_perm) and ExportBSP(index, export_all_bsps, export_specific_bsp):
             if (ob.type == 'LIGHT') and (halo_mesh.Permutation_Name == perm):
                 ob.select_set(True)
                 boolean = True
 
     return boolean
 
-def SelectPortals(index, perm):
+def SelectPortals(index, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
     bpy.ops.object.select_all(action='DESELECT')
     boolean = False
     for ob in bpy.data.objects:
-        if ob.halo_json.bsp_index == index:
-            halo_mesh = ob.halo_json
-            if halo_mesh.Permutation_Name != perm and perm == 'default':
-                perm = ''
+        halo_mesh = ob.halo_json
+        if ob.halo_json.bsp_index == index and ObjectValid(ob, export_hidden, perm, halo_mesh.Permutation_Name) and ExportPerm(perm, export_all_perms, export_specific_perm) and ExportBSP(index, export_all_bsps, export_specific_bsp):
             if (ob.name.startswith('+portal') or (not ob.name.startswith(special_prefixes) and ob.halo_json.ObjectMesh_Type == 'PORTAL')) and (halo_mesh.Permutation_Name == perm):
                 ob.select_set(True)
                 boolean = True
-        elif ob.halo_json.bsp_shared:
+        elif ob.halo_json.bsp_shared and ObjectValid(ob, export_hidden, perm, halo_mesh.Permutation_Name) and ExportPerm(perm, export_all_perms, export_specific_perm) and ExportBSP(index, export_all_bsps, export_specific_bsp):
             if (ob.name.startswith('+portal') or (not ob.name.startswith(special_prefixes) and ob.halo_json.ObjectMesh_Type == 'PORTAL')) and (halo_mesh.Permutation_Name == perm):
                 ob.select_set(True)
                 boolean = True
 
     return boolean
 
-def SelectSeams(index, perm):
+def SelectSeams(index, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
     bpy.ops.object.select_all(action='DESELECT')
     boolean = False
     for ob in bpy.data.objects:
-        if ob.halo_json.bsp_index == index:
-            halo_mesh = ob.halo_json
-            if halo_mesh.Permutation_Name != perm and perm == 'default':
-                perm = ''
+        halo_mesh = ob.halo_json
+        if ob.halo_json.bsp_index == index and ObjectValid(ob, export_hidden, perm, halo_mesh.Permutation_Name) and ExportPerm(perm, export_all_perms, export_specific_perm) and ExportBSP(index, export_all_bsps, export_specific_bsp):
             if (ob.name.startswith('+seam') or (not ob.name.startswith(special_prefixes) and ob.halo_json.ObjectMesh_Type == 'SEAM')) and (halo_mesh.Permutation_Name == perm):
                 ob.select_set(True)
                 boolean = True
-        elif ob.halo_json.bsp_shared:
+        elif ob.halo_json.bsp_shared and ObjectValid(ob, export_hidden, perm, halo_mesh.Permutation_Name) and ExportPerm(perm, export_all_perms, export_specific_perm) and ExportBSP(index, export_all_bsps, export_specific_bsp):
             if (ob.name.startswith('+seam') or (not ob.name.startswith(special_prefixes) and ob.halo_json.ObjectMesh_Type == 'SEAM')) and (halo_mesh.Permutation_Name == perm):
                 ob.select_set(True)
                 boolean = True
 
     return boolean
 
-def SelectWaterSurfaces(index, perm):
+def SelectWaterSurfaces(index, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
     bpy.ops.object.select_all(action='DESELECT')
     boolean = False
     for ob in bpy.data.objects:
-        if ob.halo_json.bsp_index == index:
-            halo_mesh = ob.halo_json
-            if halo_mesh.Permutation_Name != perm and perm == 'default':
-                perm = ''
+        halo_mesh = ob.halo_json
+        if ob.halo_json.bsp_index == index and ObjectValid(ob, export_hidden, perm, halo_mesh.Permutation_Name) and ExportPerm(perm, export_all_perms, export_specific_perm) and ExportBSP(index, export_all_bsps, export_specific_bsp):
             if (ob.name.startswith('\'') or (not ob.name.startswith(special_prefixes) and ob.halo_json.ObjectMesh_Type == 'WATER SURFACE')) and (halo_mesh.Permutation_Name == perm):
                 ob.select_set(True)
                 boolean = True
-        elif ob.halo_json.bsp_shared:
+        elif ob.halo_json.bsp_shared and ObjectValid(ob, export_hidden, perm, halo_mesh.Permutation_Name) and ExportPerm(perm, export_all_perms, export_specific_perm) and ExportBSP(index, export_all_bsps, export_specific_bsp):
             if (ob.name.startswith('\'') or (not ob.name.startswith(special_prefixes) and ob.halo_json.ObjectMesh_Type == 'WATER SURFACE')) and (halo_mesh.Permutation_Name == perm):
                 ob.select_set(True)
                 boolean = True
 
     return boolean
 
-def SelectLightMapRegions(index, perm):
+def SelectLightMapRegions(index, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
     bpy.ops.object.select_all(action='DESELECT')
     boolean = False
     for ob in bpy.data.objects:
-        if ob.halo_json.bsp_index == index:
-            halo_mesh = ob.halo_json
-            if halo_mesh.Permutation_Name != perm and perm == 'default':
-                perm = ''
+        halo_mesh = ob.halo_json
+        if ob.halo_json.bsp_index == index and ObjectValid(ob, export_hidden, perm, halo_mesh.Permutation_Name) and ExportPerm(perm, export_all_perms, export_specific_perm) and ExportBSP(index, export_all_bsps, export_specific_bsp):
             if ((not ob.name.startswith(special_prefixes) and ob.halo_json.ObjectMesh_Type == 'LIGHTMAP REGION')) and (halo_mesh.Permutation_Name == perm):
                 ob.select_set(True)
                 boolean = True
-        elif ob.halo_json.bsp_shared:
+        elif ob.halo_json.bsp_shared and ObjectValid(ob, export_hidden, perm, halo_mesh.Permutation_Name) and ExportPerm(perm, export_all_perms, export_specific_perm) and ExportBSP(index, export_all_bsps, export_specific_bsp):
             if ((not ob.name.startswith(special_prefixes) and ob.halo_json.ObjectMesh_Type == 'LIGHTMAP REGION')) and (halo_mesh.Permutation_Name == perm):
                 ob.select_set(True)
                 boolean = True
 
     return boolean
 
-def SelectFog(index, perm):
+def SelectFog(index, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
     bpy.ops.object.select_all(action='DESELECT')
     boolean = False
     for ob in bpy.data.objects:
-        if ob.halo_json.bsp_index == index:
-            halo_mesh = ob.halo_json
-            if halo_mesh.Permutation_Name != perm and perm == 'default':
-                perm = ''
+        halo_mesh = ob.halo_json
+        if ob.halo_json.bsp_index == index and ObjectValid(ob, export_hidden, perm, halo_mesh.Permutation_Name) and ExportPerm(perm, export_all_perms, export_specific_perm) and ExportBSP(index, export_all_bsps, export_specific_bsp):
             if (ob.name.startswith('+fog') or (not ob.name.startswith(special_prefixes) and ob.halo_json.ObjectMesh_Type == 'FOG')) and (halo_mesh.Permutation_Name == perm):
                 ob.select_set(True)
                 boolean = True
-        elif ob.halo_json.bsp_shared:
+        elif ob.halo_json.bsp_shared and ObjectValid(ob, export_hidden, perm, halo_mesh.Permutation_Name) and ExportPerm(perm, export_all_perms, export_specific_perm) and ExportBSP(index, export_all_bsps, export_specific_bsp):
             if (ob.name.startswith('+fog') or (not ob.name.startswith(special_prefixes) and ob.halo_json.ObjectMesh_Type == 'FOG')) and (halo_mesh.Permutation_Name == perm):
                 ob.select_set(True)
                 boolean = True
 
     return boolean
 
-def SelectCookie(index, perm):
+def SelectCookie(index, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
     bpy.ops.object.select_all(action='DESELECT')
     boolean = False
     for ob in bpy.data.objects:
-        if ob.halo_json.bsp_index == index:
-            halo_mesh = ob.halo_json
-            if halo_mesh.Permutation_Name != perm and perm == 'default':
-                perm = ''
+        halo_mesh = ob.halo_json
+        if ob.halo_json.bsp_index == index and ObjectValid(ob, export_hidden, perm, halo_mesh.Permutation_Name) and ExportPerm(perm, export_all_perms, export_specific_perm) and ExportBSP(index, export_all_bsps, export_specific_bsp):
             if (ob.name.startswith('+cookie') or (not ob.name.startswith(special_prefixes) and ob.halo_json.ObjectMesh_Type == 'COOKIE CUTTER')) and (halo_mesh.Permutation_Name == perm):
                 ob.select_set(True)
                 boolean = True
-        elif ob.halo_json.bsp_shared:
+        elif ob.halo_json.bsp_shared and ObjectValid(ob, export_hidden, perm, halo_mesh.Permutation_Name) and ExportPerm(perm, export_all_perms, export_specific_perm) and ExportBSP(index, export_all_bsps, export_specific_bsp):
             if (ob.name.startswith('+cookie') or (not ob.name.startswith(special_prefixes) and ob.halo_json.ObjectMesh_Type == 'COOKIE CUTTER')) and (halo_mesh.Permutation_Name == perm):
                 ob.select_set(True)
                 boolean = True
 
     return boolean
 
-def SelectBoundarys(index, perm):
+def SelectBoundarys(index, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
     bpy.ops.object.select_all(action='DESELECT')
     boolean = False
     for ob in bpy.data.objects:
-        if ob.halo_json.bsp_index == index:
-            halo_mesh = ob.halo_json
-            if halo_mesh.Permutation_Name != perm and perm == 'default':
-                perm = ''
+        halo_mesh = ob.halo_json
+        if ob.halo_json.bsp_index == index and ObjectValid(ob, export_hidden, perm, halo_mesh.Permutation_Name) and ExportPerm(perm, export_all_perms, export_specific_perm) and ExportBSP(index, export_all_bsps, export_specific_bsp):
             if (ob.name.startswith(('+soft_kill', '+soft_ceiling', '+slip_surface')) or (not ob.name.startswith(special_prefixes) and ob.halo_json.ObjectMesh_Type == 'BOUNDARY SURFACE')) and (halo_mesh.Permutation_Name == perm):
                 ob.select_set(True)
                 boolean = True
-        elif ob.halo_json.bsp_shared:
+        elif ob.halo_json.bsp_shared and ObjectValid(ob, export_hidden, perm, halo_mesh.Permutation_Name) and ExportPerm(perm, export_all_perms, export_specific_perm) and ExportBSP(index, export_all_bsps, export_specific_bsp):
             if (ob.name.startswith(('+soft_kill', '+soft_ceiling', '+slip_surface')) or (not ob.name.startswith(special_prefixes) and ob.halo_json.ObjectMesh_Type == 'BOUNDARY SURFACE')) and (halo_mesh.Permutation_Name == perm):
                 ob.select_set(True)
                 boolean = True
 
     return boolean
 
-def SelectWaterPhysics(index, perm):
+def SelectWaterPhysics(index, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
     bpy.ops.object.select_all(action='DESELECT')
     boolean = False
     for ob in bpy.data.objects:
-        if ob.halo_json.bsp_index == index:
-            halo_mesh = ob.halo_json
-            if halo_mesh.Permutation_Name != perm and perm == 'default':
-                perm = ''
+        halo_mesh = ob.halo_json
+        if ob.halo_json.bsp_index == index and ObjectValid(ob, export_hidden, perm, halo_mesh.Permutation_Name) and ExportPerm(perm, export_all_perms, export_specific_perm) and ExportBSP(index, export_all_bsps, export_specific_bsp):
             if (ob.name.startswith('+water') or (not ob.name.startswith(special_prefixes) and ob.halo_json.ObjectMesh_Type == 'WATER PHYSICS VOLUME')) and (halo_mesh.Permutation_Name == perm):
                 ob.select_set(True)
                 boolean = True
-        elif ob.halo_json.bsp_shared:
+        elif ob.halo_json.bsp_shared and ObjectValid(ob, export_hidden, perm, halo_mesh.Permutation_Name) and ExportPerm(perm, export_all_perms, export_specific_perm) and ExportBSP(index, export_all_bsps, export_specific_bsp):
             if (ob.name.startswith('+water') or (not ob.name.startswith(special_prefixes) and ob.halo_json.ObjectMesh_Type == 'WATER PHYSICS VOLUME')) and (halo_mesh.Permutation_Name == perm):
                 ob.select_set(True)
                 boolean = True
 
     return boolean
 
-def SelectPoopRains(index, perm):
+def SelectPoopRains(index, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
     bpy.ops.object.select_all(action='DESELECT')
     boolean = False
     for ob in bpy.data.objects:
-        if ob.halo_json.bsp_index == index:
-            halo_mesh = ob.halo_json
-            if halo_mesh.Permutation_Name != perm and perm == 'default':
-                perm = ''
+        halo_mesh = ob.halo_json
+        if ob.halo_json.bsp_index == index and ObjectValid(ob, export_hidden, perm, halo_mesh.Permutation_Name) and ExportPerm(perm, export_all_perms, export_specific_perm) and ExportBSP(index, export_all_bsps, export_specific_bsp):
             if (not ob.name.startswith(special_prefixes) and (ob.halo_json.ObjectMesh_Type == 'INSTANCED GEOMETRY RAIN BLOCKER' or ob.halo_json.ObjectMesh_Type == 'INSTANCED GEOMETRY VERTICAL RAIN SHEET')) and (halo_mesh.Permutation_Name == perm):
                 ob.select_set(True)
                 boolean = True
-        elif ob.halo_json.bsp_shared:
+        elif ob.halo_json.bsp_shared and ObjectValid(ob, export_hidden, perm, halo_mesh.Permutation_Name) and ExportPerm(perm, export_all_perms, export_specific_perm) and ExportBSP(index, export_all_bsps, export_specific_bsp):
             if (not ob.name.startswith(special_prefixes) and (ob.halo_json.ObjectMesh_Type == 'INSTANCED GEOMETRY RAIN BLOCKER' or ob.halo_json.ObjectMesh_Type == 'INSTANCED GEOMETRY VERTICAL RAIN SHEET')) and (halo_mesh.Permutation_Name == perm):
                 ob.select_set(True)
                 boolean = True
