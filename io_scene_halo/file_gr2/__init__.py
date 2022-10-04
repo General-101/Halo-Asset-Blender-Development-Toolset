@@ -572,7 +572,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                         scene.frame_start = f_start
                                         scene.frame_end = f_end
                                     export_fbx_bin.save(self, context, **keywords)
-                                    export_gr2.save(self, context, self.report, IsWindows(), 'animations', '', '', **keywords)
+                                    export_gr2.save(self, context, self.report, IsWindows(), 'animations', '', '', model_armature, **keywords)
                                 
                     elif self.sidecar_type == 'SCENARIO':
                         

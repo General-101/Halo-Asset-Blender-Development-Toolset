@@ -68,19 +68,17 @@ def getNodes(model_armature):
     if model_armature != '':
         arm = model_armature.name
         nodesList.update({arm: getArmatureProperties()})
-        bones = model_armature.data.bones
         index = 0
         frameIDs = openCSV() #sample function call to get FrameIDs CSV values as dictionary
         f1 = frameIDs.keys()
         f2 = frameIDs.values()
         bone_list = SortList(model_armature)
-        bones = bone_sort_by_layer(bone_list, model_armature)
-        print(bones)
-        for b in bones:
+        print(bone_list)
+        for b in bone_list:
             FrameID1 = list(f1)[index]
             FrameID2 = list(f2)[index]
             index +=1
-            nodesList.update({b.name: getBoneProperties(FrameID1, FrameID2)})
+            nodesList.update({b: getBoneProperties(FrameID1, FrameID2)})
 
     for light in bpy.data.objects:
         if light.type == 'LIGHT':
@@ -95,7 +93,7 @@ def getNodes(model_armature):
             nodesList.update({ob.name: getNodeProperties(halo_node, halo_node_name, ob)})
 
     temp = ({'nodes_properties': nodesList})
-
+    print (temp)
     return temp
 
 class Halo_Bones(global_functions.HaloAsset):
@@ -111,11 +109,15 @@ class Halo_Bones(global_functions.HaloAsset):
             self.parent = parent
             self.visited = False
 
+    def __iter__(self):
+        return self
+
+
 def SortList(model_armature):
 
-    halo_bones = Halo_Bones()
+    halo_bones = []
 
-    sorted_list = global_functions.sort_list(model_armature.data.bones, model_armature, 'halo3mcc', 69420, False)
+    sorted_list = bone_sort_by_layer(model_armature.data.bones, model_armature)
     joined_list = sorted_list[0]
     reversed_joined_list = sorted_list[1]
     node_list = []
@@ -159,9 +161,9 @@ def SortList(model_armature):
             for child_node in current_node_children:
                 children.append(joined_list.index(bpy.data.objects[child_node]))
         
-        halo_bones.nodes.append(halo_bones.Node(name, children, child, sibling, parent))
+        halo_bones.append(name)
 
-    return halo_bones.nodes
+    return halo_bones
 
 def get_sorted_child(bone, bone_list):
     set_node = None
