@@ -1202,6 +1202,7 @@ def build_gr2(toolPath, filePath, jsonPath, gr2Path):
         else:
             toolCommand = '"{}" fbx-to-gr2 "{}" "{}" "{}"'.format(toolPath, filePath, jsonPath, gr2Path)
             print('\nRunning Tool command... %r' % toolCommand)
+            os.chdir(GetEKPath())
             p = Popen(toolCommand)
             p.wait()
     except:
