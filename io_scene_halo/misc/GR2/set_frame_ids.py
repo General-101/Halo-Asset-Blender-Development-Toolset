@@ -44,6 +44,8 @@ def reset_frame_ids():
         b.halo_json.frame_id1 = ''
         b.halo_json.frame_id2 = ''
     
+    return {'FINISHED'}
+    
 def set_frame_ids():
     model_armature = GetSceneArmature()
     framelist = ImportTagXML(GetToolPath(), '')
