@@ -37,6 +37,13 @@ from ...gr2_utils import (
     GetPrefix,
 )
 
+def reset_frame_ids():
+    model_armature = GetSceneArmature()
+    blend_bones = model_armature.data.bones
+    for b in blend_bones:
+        b.halo_json.frame_id1 = ''
+        b.halo_json.frame_id2 = ''
+    
 def set_frame_ids():
     model_armature = GetSceneArmature()
     framelist = ImportTagXML(GetToolPath(), '')
@@ -98,14 +105,28 @@ def CleanBoneName(bone):
 
 def ImportTagXML(toolPath, assetPath):
     xmlPath = GetTagsPath() + "temp.xml"
-    tagPath = "D:\\Games\\steamapps\\common\\HREK\\tags\\objects\\characters\\spartans\\spartans.model_animation_graph"
+    tagPath = GetGraphPath()
     toolCommand = '"{}" export-tag-to-xml "{}" "{}"'.format(toolPath, tagPath, xmlPath)
     print('\nRunning Tool command... %r' % toolCommand)
     os.chdir(GetEKPath())
     p = Popen(toolCommand)
     p.wait()
     bonelist = ParseXML(xmlPath)
+    os.remove(xmlPath)
     return bonelist
+
+def GetGraphPath():
+    path = bpy.data.scenes[0].gr2_frame_ids.anim_tag_path
+    # path cleaning
+    path = path.strip('\\')
+    path = path.replace(GetEKPath(), '')
+    if not '.model_animation_graph' in path:
+        if path.rpartition('.')[0] == '':
+            path = path.append('.model_animation_graph')
+        else:
+            path = path.rpartition('.')[0] + '.model_animation_graph'
+
+    return path
 
 def ParseXML(xmlPath):
     parent = []

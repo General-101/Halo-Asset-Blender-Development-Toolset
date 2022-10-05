@@ -70,12 +70,16 @@ class GR2_SetFrameIDs(Panel):
         scene = context.scene
         scene_gr2_frame_ids = scene.gr2_frame_ids
 
-        col = layout.column(align=True)
-        row = col.row()
-        row.label(text='Animation Tag Path')
-        row.prop(scene_gr2_frame_ids, "anim_tag_path", text='')
-        row = col.row()
-        row.operator("halo_gr2.set_frame_ids", text="Set Frame IDs")
+        layout.use_property_split = True
+        flow = layout.grid_flow(row_major=True, columns=0, even_columns=True, even_rows=False, align=False)
+        col = flow.column()
+        col = layout.column(heading="Animation Graph Path")
+        sub = col.column(align=True)
+        sub.prop(scene_gr2_frame_ids, "anim_tag_path", text='')
+        sub.separator()
+        sub.operator("halo_gr2.set_frame_ids", text="Set Frame IDs")
+        sub.separator()
+        sub.operator("halo_gr2.reset_frame_ids", text="Reset Frame IDs")
 
 class GR2_SetFrameIDsOp(Operator):
     bl_idname = 'halo_gr2.set_frame_ids'
@@ -85,6 +89,15 @@ class GR2_SetFrameIDsOp(Operator):
     def execute(self, context):
         from .set_frame_ids import set_frame_ids
         return set_frame_ids()
+
+class GR2_ResetFrameIDsOp(Operator):
+    bl_idname = 'halo_gr2.reset_frame_ids'
+    bl_label = 'Reset Frame IDs'
+    bl_options = {"REGISTER", "UNDO"}
+
+    def execute(self, context):
+        from .set_frame_ids import reset_frame_ids
+        return reset_frame_ids()
 
 class GR2_SetFrameIDsPropertiesGroup(PropertyGroup):
     anim_tag_path: StringProperty(
@@ -97,6 +110,7 @@ classeshalo = (
     GR2_Tools_Helper,
     GR2_SetFrameIDs,
     GR2_SetFrameIDsOp,
+    GR2_ResetFrameIDsOp,
     GR2_SetFrameIDsPropertiesGroup,
 )
 
