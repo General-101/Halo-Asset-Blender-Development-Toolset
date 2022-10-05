@@ -1873,6 +1873,38 @@ class JSON_LightClippingProps(Panel):
         col.prop(ob_halo_json, 'Light_Clipping_Size_Y_Neg', text='Clipping Size Y Backward')
         col.prop(ob_halo_json, 'Light_Clipping_Size_Z_Neg', text='Clipping Size Z Backward')
 
+# BONE PROPERTIES
+class JSON_BoneProps(Panel):
+    bl_label = "Halo Bone Properties"
+    bl_idname = "JSON_PT_BoneDetailsPanel"
+    bl_space_type = "PROPERTIES"
+    bl_region_type = "WINDOW"
+    bl_context = "bone"
+
+    @classmethod
+    def poll(cls, context):
+        scene = context.scene
+        scene_halo = scene.halo
+        return scene_halo.game_version == 'reach'
+    
+    def draw(self, context):
+        layout = self.layout
+        layout.use_property_split = True
+        flow = layout.grid_flow(row_major=True, columns=0, even_columns=True, even_rows=False, align=False)
+        
+        bone = context.bone
+        bone_halo_json = bone.halo_json
+        scene = context.scene
+        scene_halo = scene.halo
+
+        layout.enabled = scene_halo.expert_mode
+        
+        col = flow.column()
+        col.prop(bone_halo_json, "frame_id1", text='Frame ID 1')
+        col.prop(bone_halo_json, "frame_id2", text='Frame ID 2')
+
+
+
 # JSON PROPERTY GROUPS
 class JSON_ObjectPropertiesGroup(PropertyGroup):
     #OBJECT PROPERTIES
@@ -3341,6 +3373,19 @@ class JSON_MaterialPropertiesGroup(PropertyGroup):
         items=material_items,
         )
 
+class JSON_BonePropertiesGroup(PropertyGroup):
+
+    frame_id1: StringProperty(
+        name = "Frame ID 1",
+        description = "The Frame ID 1 for this bone. Leave blank for automatic assignment of a Frame ID. Can be manually edited when using expert mode, but don't do this unless you know what you're doing",
+        default = "",
+        )
+    frame_id2: StringProperty(
+        name = "Frame ID 2",
+        description = "The Frame ID 1 for this bone. Leave blank for automatic assignment of a Frame ID. Can be manually edited when using expert mode, but don't do this unless you know what you're doing",
+        default = "",
+        )
+
 classeshalo = (
     ASS_JMS_MeshPropertiesGroup,
     ASS_JMS_MaterialPropertiesGroup,
@@ -3375,6 +3420,8 @@ classeshalo = (
     JSON_LightNearAttenuationProps,
     JSON_LightFarAttenuationProps,
     JSON_LightClippingProps,
+    JSON_BoneProps,
+    JSON_BonePropertiesGroup,
 )
 
 def register():
@@ -3386,7 +3433,8 @@ def register():
     bpy.types.Material.ass_jms = PointerProperty(type=ASS_JMS_MaterialPropertiesGroup, name="ASS/JMS Properties", description="Set properties for your materials")
     bpy.types.Scene.halo = PointerProperty(type=Halo_ScenePropertiesGroup, name="Halo Scene Properties", description="Set properties for your scene")
     bpy.types.Object.halo_json = PointerProperty(type=JSON_ObjectPropertiesGroup, name="Halo JSON Properties", description="Set Halo Object Properties")
-    bpy.types.Material.halo_json = PointerProperty(type=JSON_MaterialPropertiesGroup, name="Halo JSON Properties", description="Set Halo Material Properties")
+    bpy.types.Material.halo_json = PointerProperty(type=JSON_MaterialPropertiesGroup, name="Halo JSON Properties", description="Set Halo Material Properties") 
+    bpy.types.Bone.halo_json = PointerProperty(type=JSON_BonePropertiesGroup, name="Halo JSON Properties", description="Set Halo Bone Properties")
 
 def unregister():
     del bpy.types.Light.halo_light
@@ -3395,6 +3443,7 @@ def unregister():
     del bpy.types.Scene.halo
     del bpy.types.Object.halo_json
     del bpy.types.Material.halo_json
+    del bpy.types.Bone.halo_json
     for clshalo in classeshalo:
         bpy.utils.unregister_class(clshalo)
 

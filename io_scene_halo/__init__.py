@@ -52,6 +52,7 @@ from . import file_tag
 from . import file_wrl
 from . import file_gr2
 from . import misc
+from .misc import GR2
 
 modules = [
     global_ui,
@@ -63,7 +64,8 @@ modules = [
     file_tag,
     file_wrl,
     file_gr2,
-    misc
+    misc,
+    GR2
 ]
  
 class ToolkitLocationPreferences(AddonPreferences):

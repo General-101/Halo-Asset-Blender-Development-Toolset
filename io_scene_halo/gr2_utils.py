@@ -26,6 +26,11 @@
 import bpy
 import platform
 import os
+from os.path import exists as file_exists
+from os import path
+import csv
+from subprocess import Popen
+from .global_functions import global_functions
 #from . import HREKPath
 ###########
 ##GLOBALS##
@@ -130,6 +135,24 @@ def ResetPerm(perm): # resets a permutation to '' if it had been set to default
     
     return perm
 
+def GetSceneArmature():
+    model_armature = None
+    for ob in bpy.data.objects:
+        if ob.type == 'ARMATURE':
+            model_armature = ob
+            break
+    return model_armature
+
+def GetPrefix(string, prefix_list): # gets a prefix from a list of prefixes
+    prefix = ''
+    for p in prefix_list:
+        if string.startswith(p):
+            prefix = p
+            break
+    
+    return prefix
+
+
 #############
 ##CHECK TYPES##
 #############
@@ -140,6 +163,258 @@ def ObStructure(ob):
         or
         (not ob.name.startswith(special_prefixes) and (ob.halo_json.ObjectMesh_Type in ('DEFAULT', 'COLLISION')))
     )
+
+#############
+#BONE SORTING#
+#############
+
+
+def GetBoneList(model_armature, deform_only):
+    boneslist = {}
+    arm = model_armature.name
+    boneslist.update({arm: getArmatureProperties()})
+    index = 0
+    frameIDs = openCSV() #sample function call to get FrameIDs CSV values as dictionary
+    f1 = frameIDs.keys()
+    f2 = frameIDs.values()
+    bone_list = model_armature.data.bones
+    #bone_list = 
+    #bone_list = SortList(model_armature)
+    if deform_only:
+        bone_list = GetDeformBonesOnly(bone_list)
+    for b in bone_list:
+        if b.halo_json.frame_id1 == '':
+            FrameID1 = list(f1)[index]
+        else:
+            FrameID1 = b.halo_json.frame_id1
+        if b.halo_json.frame_id2 == '':
+            FrameID2 = list(f2)[index]
+        else:
+            FrameID2 = b.halo_json.frame_id2
+        index +=1
+        boneslist.update({b.name: getBoneProperties(FrameID1, FrameID2)})
+
+    return boneslist
+
+def GetDeformBonesOnly(bone_list):
+    deform_list = []
+    for b in bone_list:
+        if b.use_deform:
+            deform_list.append(b)
+    
+    return deform_list
+        
+
+def getArmatureProperties():
+    node_props = {}
+
+    node_props.update({"bungie_object_type": "_connected_geometry_object_type_frame"}),
+    node_props.update({"bungie_frame_ID1": "8078"}),
+    node_props.update({"bungie_frame_ID2": "378163771"}),
+
+    return node_props
+
+def getBoneProperties(FrameID1, FrameID2):
+    node_props = {}
+
+    node_props.update({"bungie_object_type": "_connected_geometry_object_type_frame"}),
+    node_props.update({"bungie_frame_ID1": FrameID1}),
+    node_props.update({"bungie_frame_ID2": FrameID2}),
+
+    return node_props
+
+def openCSV():
+    script_folder_path = path.dirname(path.dirname(__file__))
+    filepath = path.join(script_folder_path, "io_scene_halo", "frameidlist.csv")
+
+    frameIDList = {}
+    with open(filepath) as csv_file:
+        csv_reader = csv.reader(csv_file, delimiter=',')
+        for row in csv_reader:
+            frameIDList.update({row[0]: row[1]})
+
+    return frameIDList
+
+
+class Halo_Bones():
+    def __init__(self):
+        self.nodes = []
+
+    class Node:
+        def __init__(self, name, children=None, child=-1, sibling=-1, parent=-1):
+            self.name = name
+            self.children = children
+            self.child = child
+            self.sibling = sibling
+            self.parent = parent
+            self.visited = False
+
+    def __iter__(self):
+        return self
+
+
+def SortList(model_armature):
+
+    halo_bones = []
+
+    sorted_list = bone_sort_by_layer(model_armature.data.bones, model_armature)
+    joined_list = sorted_list[0]
+    reversed_joined_list = sorted_list[1]
+    node_list = []
+    for node in joined_list:
+        is_bone = False
+        if model_armature:
+            is_bone = True
+
+        find_child_node = get_sorted_child(node, reversed_joined_list)
+        find_sibling_node = get_sorted_sibling(model_armature, node, reversed_joined_list)
+
+        first_child_node = -1
+        first_sibling_node = -1
+        parent_node = -1
+
+        if not find_child_node == None:
+            first_child_node = joined_list.index(find_child_node)
+        if not find_sibling_node == None:
+            first_sibling_node = joined_list.index(find_sibling_node)
+        if not node.parent == None and not node.parent.name.startswith('!'):
+            parent_node = joined_list.index(node.parent)
+
+        name = node.name
+        child = first_child_node
+        sibling = first_sibling_node
+        parent = parent_node
+
+        current_node_children = []
+        children = []
+        for child_node in node.children:
+            if child_node in joined_list:
+                current_node_children.append(child_node.name)
+
+        current_node_children.sort()
+
+        if is_bone:
+            for child_node in current_node_children:
+                children.append(joined_list.index(model_armature.data.bones[child_node]))
+
+        else:
+            for child_node in current_node_children:
+                children.append(joined_list.index(bpy.data.objects[child_node]))
+        
+        halo_bones.append(name)
+
+    return halo_bones
+
+def get_sorted_child(bone, bone_list):
+    set_node = None
+    child_nodes = []
+    for node in bone_list:
+        if bone == node.parent:
+            child_nodes.append(node)
+
+    child_nodes = sorted(child_nodes, key=lambda x: x.name)
+    if len(child_nodes) > 0:
+        set_node = child_nodes[0]
+
+    return set_node
+
+def get_sorted_sibling(armature, bone, bone_list):
+    sibling_list = []
+    set_sibling = None
+    for node in bone_list:
+        if bone.parent == node.parent:
+            sibling_list.append(node)
+
+    sibling_list = sorted(sibling_list, key=lambda x: x.name)
+    if len(sibling_list) > 1:
+        sibling_node = sibling_list.index(bone)
+        next_sibling_node = sibling_node + 1
+        if next_sibling_node >= len(sibling_list):
+            set_sibling = None
+
+        else:
+            if armature:
+                set_sibling = armature.data.bones['%s' % sibling_list[next_sibling_node].name]
+
+            else:
+                set_sibling = bpy.data.objects['%s' % sibling_list[next_sibling_node].name]
+
+    return set_sibling
+
+def bone_sort_by_layer(node_list, armature):
+    layer_count = []
+    layer_root = []
+    root_list = []
+    children_list = []
+    reversed_children_list = []
+    joined_list = []
+    reversed_joined_list = []
+    sort_list = []
+    reversed_sort_list = []
+    for node in node_list:
+        print(node)
+        if node.parent == None and not node.name[0:1] == '!' or node.parent.name[0:1] == '!' and node.parent.parent == None:
+            layer_count.append(None)
+            layer_root.append(node)
+
+        else:
+            if not node.parent in layer_count:
+                layer_count.append(node.parent)
+
+    for layer in layer_count:
+        joined_list = root_list + children_list
+        reversed_joined_list = root_list + reversed_children_list
+        layer_index = layer_count.index(layer)
+        if layer_index == 0:
+            if armature:
+                root_list.append(armature.data.bones[0])
+
+            else:
+                root_list.append(layer_root[0])
+
+        else:
+            for node in node_list:
+                if armature:
+                    if node.parent != None:
+                        if armature.data.bones['%s' % node.parent.name] in joined_list and not node in children_list:
+                            sort_list.append(node.name)
+                            reversed_sort_list.append(node.name)
+
+                else:
+                    if node.parent != None:
+                        if node.parent in joined_list and not node in children_list:
+                            sort_list.append(node.name)
+                            reversed_sort_list.append(node.name)
+
+            sort_list.sort()
+            reversed_sort_list.sort()
+            # reversed_sort_list.reverse()
+            for sort in sort_list:
+                if armature:
+                    if not armature.data.bones['%s' % sort] in children_list:
+                        children_list.append(armature.data.bones['%s' % sort])
+
+                else:
+                    if not bpy.data.objects[sort] in children_list:
+                        children_list.append(bpy.data.objects[sort])
+
+            for sort in reversed_sort_list:
+                if armature:
+                    if not armature.data.bones['%s' % sort] in reversed_children_list:
+                        reversed_children_list.append(armature.data.bones['%s' % sort])
+
+                else:
+                    if not bpy.data.objects[sort] in reversed_children_list:
+                        reversed_children_list.append(bpy.data.objects[sort])
+
+        joined_list = root_list + children_list
+        reversed_joined_list = root_list + reversed_children_list
+
+    return (joined_list, reversed_joined_list)
+
+def SetBoneJSONValues(bones):
+    print('tbd')
+
 
 #################################
 

@@ -49,7 +49,9 @@ from ..gr2_utils import (
     ObjectValid,
     ExportPerm,
     ExportBSP,
-    ResetPerm
+    ResetPerm,
+    GetBoneList,
+    GetSceneArmature,
 )
 
 import os
@@ -395,6 +397,11 @@ class Export_Halo_GR2(Operator, ExportHelper):
         description='',
         default=1.0
     )
+    use_armature_deform_only: BoolProperty(
+        name='Deform Bones Only',
+        description='Only export bones with the deform property ticked',
+        default=True,
+    )
 
     def UpdateVisible(self, context):
         if self.export_hidden == True:
@@ -465,13 +472,12 @@ class Export_Halo_GR2(Operator, ExportHelper):
 
         if self.sidecar_type == 'MODEL':
             
-            model_armature = None
-            for ob in bpy.data.objects:
-                if ob.type == 'ARMATURE':
-                    model_armature = ob
-                    break
+            model_armature = GetSceneArmature()
+
 
             if model_armature != None:
+
+                boneslist = GetBoneList(model_armature, self.use_armature_deform_only)
 
                 for ob in bpy.data.objects:
                         if ob.parent == model_armature:
@@ -529,7 +535,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                     perm_list.append(perm)
                                     if SelectModelRender(perm, model_armature, self.export_hidden, self.export_all_perms, self.export_specific_perm):
                                         export_fbx_bin.save(self, context, **keywords)
-                                        export_gr2.save(self, context, self.report, IsWindows(), 'render', '', perm, model_armature, **keywords)
+                                        export_gr2.save(self, context, self.report, IsWindows(), 'render', '', perm, model_armature, boneslist, **keywords)
 
                         if self.export_collision:
                             perm_list = []
@@ -539,7 +545,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                     perm_list.append(perm)
                                     if SelectModelCollision(perm, model_armature, self.export_hidden, self.export_all_perms, self.export_specific_perm):
                                         export_fbx_bin.save(self, context, **keywords)
-                                        export_gr2.save(self, context, self.report, IsWindows(), 'collision', '', perm, model_armature, **keywords)
+                                        export_gr2.save(self, context, self.report, IsWindows(), 'collision', '', perm, model_armature, boneslist, **keywords)
 
                         if self.export_physics:
                             perm_list = []
@@ -549,16 +555,16 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                     perm_list.append(perm)
                                     if SelectModelPhysics(perm, model_armature, self.export_hidden, self.export_all_perms, self.export_specific_perm):
                                         export_fbx_bin.save(self, context, **keywords)
-                                        export_gr2.save(self, context, self.report, IsWindows(), 'physics', '', perm, model_armature, **keywords)
+                                        export_gr2.save(self, context, self.report, IsWindows(), 'physics', '', perm, model_armature, boneslist, **keywords)
 
                         if self.export_markers:
                             if SelectModelMarkers(model_armature, self.export_hidden):
                                 export_fbx_bin.save(self, context, **keywords)
-                                export_gr2.save(self, context, self.report, IsWindows(), 'markers', '', '', model_armature, **keywords)
+                                export_gr2.save(self, context, self.report, IsWindows(), 'markers', '', '', model_armature, boneslist, **keywords)
 
                         if SelectModelSkeleton(model_armature):
                             export_fbx_bin.save(self, context, **keywords)
-                            export_gr2.save(self, context, self.report, IsWindows(), 'skeleton', '', '', model_armature, **keywords)
+                            export_gr2.save(self, context, self.report, IsWindows(), 'skeleton', '', '', model_armature, boneslist, **keywords)
 
                         if self.export_animations and 1<=len(bpy.data.actions):
                             if SelectModelSkeleton(model_armature):
@@ -572,7 +578,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                         scene.frame_start = f_start
                                         scene.frame_end = f_end
                                     export_fbx_bin.save(self, context, **keywords)
-                                    export_gr2.save(self, context, self.report, IsWindows(), 'animations', '', '', model_armature, **keywords)
+                                    export_gr2.save(self, context, self.report, IsWindows(), 'animations', '', '', model_armature, boneslist, **keywords)
                                 
                     elif self.sidecar_type == 'SCENARIO':
                         
@@ -987,6 +993,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
         col = box.column()
         col.prop(self, "use_mesh_modifiers")
         col.prop(self, "use_triangles")
+        col.prop(self, 'use_armature_deform_only')
         col.separator()
         col.prop(self, "global_scale")
 

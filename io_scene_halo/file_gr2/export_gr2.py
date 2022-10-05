@@ -47,71 +47,12 @@ from ..gr2_utils import (
     GetEKPath,
 )
 
-def ImportTagXML(toolPath, assetPath):
-    xmlPath = GetTagsPath() + "temp.xml"
-    tagPath = "D:\\Games\\steamapps\\common\\HREK\\tags\\objects\\characters\\spartans\\spartans.model_animation_graph"
-    toolCommand = '"{}" export-tag-to-xml "{}" "{}"'.format(toolPath, tagPath, xmlPath)
-    print('\nRunning Tool command... %r' % toolCommand)
-    os.chdir(GetEKPath())
-    p = Popen(toolCommand)
-    p.wait()
-    bonelist = ParseXML(xmlPath)
-    print(bonelist)
-    return bonelist
-
-def ParseXML(xmlPath):
-    parent = []
-    names = []
-    frameIDS1 = []
-    frameIDS2 = []
-    import xml.etree.ElementTree as ET
-    tree = ET.parse(xmlPath)
-    root = tree.getroot()
-    for e in root.findall('element'):
-        for f in e.findall('field'):
-            attributes = f.attrib
-            if(attributes.get('name') == 'frame_ID1'):
-                names.append(e.get('name'))
-                frameIDS1.append(attributes.get('value'))
-            elif(attributes.get('name') == 'frame_ID2'):
-                frameIDS2.append(attributes.get('value'))
-    temp = [names, frameIDS1, frameIDS2]
-    parent.append(temp)
-    return parent
-
-def openCSV():
-    script_folder_path = path.dirname(path.dirname(__file__))
-    filepath = path.join(script_folder_path, "file_gr2", "frameidlist.csv")
-
-    frameIDList = {}
-    with open(filepath) as csv_file:
-        csv_reader = csv.reader(csv_file, delimiter=',')
-        for row in csv_reader:
-            frameIDList.update({row[0]: row[1]})
-
-    return frameIDList
-
 ##############################
 ##### NODES PROPERTIES #######
 ##############################
 
-def getNodes(model_armature):
-    nodesList = {}
-
-    if model_armature != '':
-        arm = model_armature.name
-        nodesList.update({arm: getArmatureProperties()})
-        index = 0
-        frameIDs = openCSV() #sample function call to get FrameIDs CSV values as dictionary
-        f1 = frameIDs.keys()
-        f2 = frameIDs.values()
-        bone_list = SortList(model_armature)
-        print(bone_list)
-        for b in bone_list:
-            FrameID1 = list(f1)[index]
-            FrameID2 = list(f2)[index]
-            index +=1
-            nodesList.update({b: getBoneProperties(FrameID1, FrameID2)})
+def getNodes(model_armature, boneslist):
+    nodesList = boneslist
 
     for light in bpy.data.objects:
         if light.type == 'LIGHT':
@@ -128,212 +69,6 @@ def getNodes(model_armature):
     temp = ({'nodes_properties': nodesList})
     print (temp)
     return temp
-
-class Halo_Bones(global_functions.HaloAsset):
-    def __init__(self):
-        self.nodes = []
-
-    class Node:
-        def __init__(self, name, children=None, child=-1, sibling=-1, parent=-1):
-            self.name = name
-            self.children = children
-            self.child = child
-            self.sibling = sibling
-            self.parent = parent
-            self.visited = False
-
-    def __iter__(self):
-        return self
-
-
-def SortList(model_armature):
-
-    halo_bones = []
-
-    sorted_list = bone_sort_by_layer(model_armature.data.bones, model_armature)
-    joined_list = sorted_list[0]
-    reversed_joined_list = sorted_list[1]
-    node_list = []
-    for node in joined_list:
-        is_bone = False
-        if model_armature:
-            is_bone = True
-
-        find_child_node = get_sorted_child(node, reversed_joined_list)
-        find_sibling_node = get_sorted_sibling(model_armature, node, reversed_joined_list)
-
-        first_child_node = -1
-        first_sibling_node = -1
-        parent_node = -1
-
-        if not find_child_node == None:
-            first_child_node = joined_list.index(find_child_node)
-        if not find_sibling_node == None:
-            first_sibling_node = joined_list.index(find_sibling_node)
-        if not node.parent == None and not node.parent.name.startswith('!'):
-            parent_node = joined_list.index(node.parent)
-
-        name = node.name
-        child = first_child_node
-        sibling = first_sibling_node
-        parent = parent_node
-
-        current_node_children = []
-        children = []
-        for child_node in node.children:
-            if child_node in joined_list:
-                current_node_children.append(child_node.name)
-
-        current_node_children.sort()
-
-        if is_bone:
-            for child_node in current_node_children:
-                children.append(joined_list.index(model_armature.data.bones[child_node]))
-
-        else:
-            for child_node in current_node_children:
-                children.append(joined_list.index(bpy.data.objects[child_node]))
-        
-        halo_bones.append(name)
-
-    return halo_bones
-
-def get_sorted_child(bone, bone_list):
-    set_node = None
-    child_nodes = []
-    for node in bone_list:
-        if bone == node.parent:
-            child_nodes.append(node)
-
-    child_nodes = sorted(child_nodes, key=lambda x: x.name)
-    if len(child_nodes) > 0:
-        set_node = child_nodes[0]
-
-    return set_node
-
-def get_sorted_sibling(armature, bone, bone_list):
-    sibling_list = []
-    set_sibling = None
-    for node in bone_list:
-        if bone.parent == node.parent:
-            sibling_list.append(node)
-
-    sibling_list = sorted(sibling_list, key=lambda x: x.name)
-    if len(sibling_list) > 1:
-        sibling_node = sibling_list.index(bone)
-        next_sibling_node = sibling_node + 1
-        if next_sibling_node >= len(sibling_list):
-            set_sibling = None
-
-        else:
-            if armature:
-                set_sibling = armature.data.bones['%s' % sibling_list[next_sibling_node].name]
-
-            else:
-                set_sibling = bpy.data.objects['%s' % sibling_list[next_sibling_node].name]
-
-    return set_sibling
-
-def bone_sort_by_layer(node_list, armature):
-    layer_count = []
-    layer_root = []
-    root_list = []
-    children_list = []
-    reversed_children_list = []
-    joined_list = []
-    reversed_joined_list = []
-    sort_list = []
-    reversed_sort_list = []
-    for node in node_list:
-        print(node)
-        if node.parent == None and not node.name[0:1] == '!' or node.parent.name[0:1] == '!' and node.parent.parent == None:
-            layer_count.append(None)
-            layer_root.append(node)
-
-        else:
-            if not node.parent in layer_count:
-                layer_count.append(node.parent)
-
-    for layer in layer_count:
-        joined_list = root_list + children_list
-        reversed_joined_list = root_list + reversed_children_list
-        layer_index = layer_count.index(layer)
-        if layer_index == 0:
-            if armature:
-                root_list.append(armature.data.bones[0])
-
-            else:
-                root_list.append(layer_root[0])
-
-        else:
-            for node in node_list:
-                if armature:
-                    if node.parent != None:
-                        if armature.data.bones['%s' % node.parent.name] in joined_list and not node in children_list:
-                            sort_list.append(node.name)
-                            reversed_sort_list.append(node.name)
-
-                else:
-                    if node.parent != None:
-                        if node.parent in joined_list and not node in children_list:
-                            sort_list.append(node.name)
-                            reversed_sort_list.append(node.name)
-
-            sort_list.sort()
-            reversed_sort_list.sort()
-            # reversed_sort_list.reverse()
-            for sort in sort_list:
-                if armature:
-                    if not armature.data.bones['%s' % sort] in children_list:
-                        children_list.append(armature.data.bones['%s' % sort])
-
-                else:
-                    if not bpy.data.objects[sort] in children_list:
-                        children_list.append(bpy.data.objects[sort])
-
-            for sort in reversed_sort_list:
-                if armature:
-                    if not armature.data.bones['%s' % sort] in reversed_children_list:
-                        reversed_children_list.append(armature.data.bones['%s' % sort])
-
-                else:
-                    if not bpy.data.objects[sort] in reversed_children_list:
-                        reversed_children_list.append(bpy.data.objects[sort])
-
-        joined_list = root_list + children_list
-        reversed_joined_list = root_list + reversed_children_list
-
-    return (joined_list, reversed_joined_list)
-
-def getArmatureProperties():
-    node_props = {}
-
-    node_props.update({"bungie_object_type": "_connected_geometry_object_type_frame"}),
-    node_props.update({"bungie_frame_ID1": "8078"}),
-    node_props.update({"bungie_frame_ID2": "378163771"}),
-
-    return node_props
-
-def getBoneProperties(FrameID1, FrameID2):
-    node_props = {}
-
-    node_props.update({"bungie_object_type": "_connected_geometry_object_type_frame"}),
-    node_props.update({"bungie_frame_ID1": FrameID1}),
-    node_props.update({"bungie_frame_ID2": FrameID2}),
-
-    return node_props
-
-def getFrameID1():
-    global ID1
-    ID1 = ID1 + 1
-
-    return str(ID1)
-
-def getFrameID2():
-    global ID2
-    ID2 = ID2 + 1
-
-    return str(ID2)
 
 def getLightProperties(node, light):
     node_props = {}
@@ -1069,20 +804,12 @@ def getMaterials():
 
     return temp
 
-def export_asset(report, filePath="", keep_fbx=False, keep_json=False, asset_path="", asset_name="", tag_type='', perm='', is_windows=False, bsp='', model_armature=''):
+def export_asset(report, filePath="", keep_fbx=False, keep_json=False, asset_path="", asset_name="", tag_type='', perm='', is_windows=False, bsp='', model_armature='', boneslist={}):
     if tag_type != 'selected':
         fileName = GetFileName(filePath, asset_name, tag_type, perm, asset_path, bsp)
         rename_file(filePath, asset_name, tag_type, perm, fileName)
     else:
         fileName = filePath
-
-    boneslist = ImportTagXML(GetToolPath(), filePath)
-    count = 0
-    while(count < len(boneslist)):
-        print(boneslist[count][0])
-        print(boneslist[count][1])
-        print(boneslist[count][2])
-        count += 1
 
     pathList = fileName.split(".")
     jsonPath = ""
@@ -1090,7 +817,7 @@ def export_asset(report, filePath="", keep_fbx=False, keep_json=False, asset_pat
         jsonPath += pathList[x]
     jsonPath += ".json"
 
-    build_json(jsonPath, model_armature)
+    build_json(jsonPath, model_armature, boneslist)
 
     if(is_windows):
         gr2Path = ""
@@ -1183,9 +910,9 @@ def move_assets(fileName, jsonPath, gr2Path, asset_path, fbx_crushed, json_binne
     os.remove(jsonPath)
     os.remove(gr2Path)
 
-def build_json(jsonPath, model_armature):
+def build_json(jsonPath, model_armature, boneslist):
     jsonTemp = {}
-    jsonTemp.update(getNodes(model_armature))
+    jsonTemp.update(getNodes(model_armature, boneslist))
     jsonTemp.update(getMeshes())
     jsonTemp.update(getMaterials())
 
@@ -1214,6 +941,7 @@ def save(operator, context, report, is_windows, tag_type,
         bsp='',
         perm='',
         model_armature='',
+        boneslist=[],
         filepath="",
         keep_fbx=False,
         keep_json=False,
@@ -1222,7 +950,7 @@ def save(operator, context, report, is_windows, tag_type,
         **kwargs
         ):
 
-    export_asset(report, filepath, keep_fbx, keep_json, asset_path, asset_name, tag_type, perm, is_windows, bsp, model_armature)
+    export_asset(report, filepath, keep_fbx, keep_json, asset_path, asset_name, tag_type, perm, is_windows, bsp, model_armature, boneslist)
 
     return {'FINISHED'}
 
