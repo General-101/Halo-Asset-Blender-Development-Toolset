@@ -71,10 +71,9 @@ def ParseXML(xmlPath):
         for f in e.findall('field'):
             attributes = f.attrib
             if(attributes.get('name') == 'frame_ID1'):
-                names.append(f.get('name'))
+                names.append(e.get('name'))
                 frameIDS1.append(attributes.get('value'))
             elif(attributes.get('name') == 'frame_ID2'):
-                names.append(f.get('name'))
                 frameIDS2.append(attributes.get('value'))
     temp = [names, frameIDS1, frameIDS2]
     parent.append(temp)
@@ -1080,7 +1079,9 @@ def export_asset(report, filePath="", keep_fbx=False, keep_json=False, asset_pat
     boneslist = ImportTagXML(GetToolPath(), filePath)
     count = 0
     while(count < len(boneslist)):
-        print(boneslist[count][0] + "," + boneslist[count][1] + "," + boneslist[count][2])
+        print(boneslist[count][0])
+        print(boneslist[count][1])
+        print(boneslist[count][2])
         count += 1
 
     pathList = fileName.split(".")
