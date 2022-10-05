@@ -24,7 +24,6 @@
 #
 # ##### END MIT LICENSE BLOCK #####
 
-from json import tool
 import shutil
 import bpy
 import json
@@ -56,6 +55,7 @@ def ImportTagXML(toolPath, assetPath):
     p.wait()
     bonelist = ParseXML(xmlPath)
     print(bonelist)
+    return bonelist
 
 def ParseXML(xmlPath):
     parent = []
@@ -1075,7 +1075,11 @@ def export_asset(report, filePath="", keep_fbx=False, keep_json=False, asset_pat
     else:
         fileName = filePath
 
-    ImportTagXML(GetToolPath(), filePath)
+    boneslist = ImportTagXML(GetToolPath(), filePath)
+    count = 0
+    while(count < len(boneslist)):
+        print(boneslist[count][0] + "," + boneslist[count][1] + "," + boneslist[count][2])
+        count += 1
 
     pathList = fileName.split(".")
     jsonPath = ""
