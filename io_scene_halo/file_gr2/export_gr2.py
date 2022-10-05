@@ -24,6 +24,7 @@
 #
 # ##### END MIT LICENSE BLOCK #####
 
+from json import tool
 import shutil
 import bpy
 import json
@@ -45,6 +46,36 @@ from ..gr2_utils import (
     GetToolPath,
     GetTagsPath,
 )
+
+def ImportTagXML(toolPath, assetPath):
+    xmlPath = GetTagsPath() + "temp.xml"
+    tagPath = "D:\\Games\\steamapps\\common\\HREK\\tags\\objects\\characters\\spartans\\spartans.model_animation_graph"
+    toolCommand = '"{}" export-tag-to-xml "{}" "{}"'.format(toolPath, tagPath, xmlPath)
+    print('\nRunning Tool command... %r' % toolCommand)
+    p = Popen(toolCommand)
+    p.wait()
+    bonelist = ParseXML(xmlPath)
+    print(bonelist)
+
+def ParseXML(xmlPath):
+    parent = []
+    names = []
+    frameIDS1 = []
+    frameIDS2 = []
+    import xml.etree.ElementTree as ET
+    tree = ET.parse(xmlPath)
+    root = tree.getroot()
+    for e in root.findall('element'):
+        fields = e.findall('field')
+        for f in fields:
+            attributes = f.attrib
+            if(not attributes.get('frame_ID1') == None and not attributes.get('frame_ID2') == None):
+                names.append(e.get('name'))
+                frameIDS1.append(attributes.get('frame_ID1'))
+                frameIDS2.append(attributes.get('frame_ID2'))
+                temp = [names, frameIDS1, frameIDS2]
+                parent.add(temp)
+    return parent
 
 def openCSV():
     script_folder_path = path.dirname(path.dirname(__file__))
@@ -1042,6 +1073,8 @@ def export_asset(report, filePath="", keep_fbx=False, keep_json=False, asset_pat
         rename_file(filePath, asset_name, tag_type, perm, fileName)
     else:
         fileName = filePath
+
+    ImportTagXML(GetToolPath(), filePath)
 
     pathList = fileName.split(".")
     jsonPath = ""
