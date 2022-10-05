@@ -44,6 +44,7 @@ from ..gr2_utils import (
     invalid_mesh_types,
     GetToolPath,
     GetTagsPath,
+    GetEKPath,
 )
 
 def ImportTagXML(toolPath, assetPath):
@@ -51,6 +52,7 @@ def ImportTagXML(toolPath, assetPath):
     tagPath = "D:\\Games\\steamapps\\common\\HREK\\tags\\objects\\characters\\spartans\\spartans.model_animation_graph"
     toolCommand = '"{}" export-tag-to-xml "{}" "{}"'.format(toolPath, tagPath, xmlPath)
     print('\nRunning Tool command... %r' % toolCommand)
+    os.chdir(GetEKPath())
     p = Popen(toolCommand)
     p.wait()
     bonelist = ParseXML(xmlPath)
