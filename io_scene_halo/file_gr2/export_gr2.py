@@ -66,15 +66,16 @@ def ParseXML(xmlPath):
     tree = ET.parse(xmlPath)
     root = tree.getroot()
     for e in root.findall('element'):
-        fields = e.findall('field')
-        for f in fields:
+        for f in e.findall('field'):
             attributes = f.attrib
-            if(not attributes.get('frame_ID1') == None and not attributes.get('frame_ID2') == None):
-                names.append(e.get('name'))
-                frameIDS1.append(attributes.get('frame_ID1'))
-                frameIDS2.append(attributes.get('frame_ID2'))
-                temp = [names, frameIDS1, frameIDS2]
-                parent.add(temp)
+            if(attributes.get('name') == 'frame_ID1'):
+                names.append(f.get('name'))
+                frameIDS1.append(attributes.get('value'))
+            elif(attributes.get('name') == 'frame_ID2'):
+                names.append(f.get('name'))
+                frameIDS2.append(attributes.get('value'))
+    temp = [names, frameIDS1, frameIDS2]
+    parent.append(temp)
     return parent
 
 def openCSV():
