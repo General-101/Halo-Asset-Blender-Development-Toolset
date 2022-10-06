@@ -26,6 +26,7 @@
 
 import bpy
 import os
+import xml.etree.ElementTree as ET
 from subprocess import Popen
 
 from ...gr2_utils import (
@@ -131,7 +132,6 @@ def GetGraphPath():
 
 def ParseXML(xmlPath):
     parent = []
-    import xml.etree.ElementTree as ET
     tree = ET.parse(xmlPath)
     root = tree.getroot()
     for e in root.findall('element'):
@@ -143,7 +143,7 @@ def ParseXML(xmlPath):
             if(attributes.get('name') == 'frame_ID1'):
                 name = (e.get('name'))
                 frameID1 = (attributes.get('value'))
-            if(attributes.get('name') == 'frame_ID2'):
+            elif(attributes.get('name') == 'frame_ID2'):
                 frameID2 = (attributes.get('value'))
         if not name == '':
             temp = [name, frameID1, frameID2]
