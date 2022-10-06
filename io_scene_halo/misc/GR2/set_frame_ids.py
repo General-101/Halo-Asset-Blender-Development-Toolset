@@ -72,7 +72,6 @@ def GetID(ID, name, framelist):
         b_name = CleanBoneName(x[0])
         if b_name == name:
             frame = x[ID]
-    print ('frame is ' + frame)
     return frame
 
 def CleanBoneNames(bones):
@@ -105,7 +104,7 @@ def CleanBoneName(bone):
 
     return cleaned_bone
 
-def ImportTagXML(toolPath, assetPath):
+def ImportTagXML(toolPath):
     xmlPath = GetTagsPath() + "temp.xml"
     tagPath = GetGraphPath()
     toolCommand = '"{}" export-tag-to-xml "{}" "{}"'.format(toolPath, tagPath, xmlPath)
@@ -145,10 +144,8 @@ def ParseXML(xmlPath):
                 name = (e.get('name'))
                 frameID1 = (attributes.get('value'))
             if(attributes.get('name') == 'frame_ID2'):
-                print('HIT!')
                 frameID2 = (attributes.get('value'))
         if not name == '':
             temp = [name, frameID1, frameID2]
-            print(temp)
             parent.append(temp)
     return parent

@@ -26,8 +26,6 @@
 
 import bpy
 
-from bpy_extras.io_utils import ExportHelper
-
 from bpy.types import (
         Panel,
         Operator,
@@ -35,16 +33,9 @@ from bpy.types import (
         )
 
 from bpy.props import (
-        IntProperty,
-        BoolProperty,
-        EnumProperty,
-        FloatProperty,
         StringProperty,
-        PointerProperty,
-        FloatVectorProperty
+        PointerProperty
         )
-
-from ...global_functions import global_functions
 
 class GR2_Tools_Helper(Panel):
     """Tools to help automate Halo GR2 workflow"""

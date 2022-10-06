@@ -27,13 +27,10 @@
 import shutil
 import bpy
 import json
-import csv
 import os
 from os.path import exists as file_exists
-from os import path
 import ctypes
 from subprocess import Popen
-from ..global_functions import global_functions
 
 from ..gr2_utils import (
     frame_prefixes,

@@ -26,11 +26,8 @@
 import bpy
 import platform
 import os
-from os.path import exists as file_exists
 from os import path
 import csv
-from subprocess import Popen
-from .global_functions import global_functions
 #from . import HREKPath
 ###########
 ##GLOBALS##
