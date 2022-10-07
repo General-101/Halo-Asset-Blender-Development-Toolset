@@ -121,13 +121,16 @@ def GetGraphPath():
     path = bpy.data.scenes[0].gr2_frame_ids.anim_tag_path
     # path cleaning
     path = path.strip('\\')
-    path = path.replace(GetEKPath(), '')
+    path = path.replace(GetTagsPath(), '')
+    path = path.replace(',jmad','')
+    path = '\\tags\\' + path
     if not '.model_animation_graph' in path:
         if path.rpartition('.')[0] == '':
             path = path + '.model_animation_graph'
         else:
             path = path.rpartition('.')[0] + '.model_animation_graph'
 
+    print(path)
     return path
 
 def ParseXML(xmlPath):
