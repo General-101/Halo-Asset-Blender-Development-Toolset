@@ -52,6 +52,10 @@ from ..gr2_utils import (
     ResetPerm,
     GetBoneList,
     GetSceneArmature,
+    SelectModelObject,
+    SelectModelObjectNoPerm,
+    SelectBSPObject,
+    DeselectAllObjects,
 )
 
 import os
@@ -998,294 +1002,61 @@ class Export_Halo_GR2(Operator, ExportHelper):
         col.prop(self, "global_scale")
 
 def SelectModelRender(perm, arm, export_hidden, export_all_perms, export_specific_perm):
-    bpy.ops.object.select_all(action='DESELECT')
-    perm = ResetPerm(perm)
-    boolean = False
-    for ob in bpy.data.objects:
-        halo_mesh = ob.halo_json
-        halo_mesh_name = ob.name
-        if ObjectValid(ob, export_hidden, perm, halo_mesh.Permutation_Name) and ExportPerm(perm, export_all_perms, export_specific_perm):
-            if (ob.type == 'MESH' and (not halo_mesh_name.startswith(special_prefixes)) and halo_mesh.Object_Type_All == 'MESH' and halo_mesh.ObjectMesh_Type == 'DEFAULT' and (halo_mesh.Permutation_Name == perm)):
-                ob.select_set(True)
-                arm.select_set(True)
-                if ob.type != 'ARMATURE':
-                    boolean = True
-    
-    return boolean
+    return SelectModelObject(perm, arm, export_hidden, export_all_perms, export_specific_perm, 'ObRender')
 
 def SelectModelCollision(perm, arm, export_hidden, export_all_perms, export_specific_perm):
-    bpy.ops.object.select_all(action='DESELECT')
-    perm = ResetPerm(perm)
-    boolean = False
-    for ob in bpy.data.objects:
-        halo_mesh = ob.halo_json
-        halo_mesh_name = ob.name
-        if ObjectValid(ob, export_hidden, perm, halo_mesh.Permutation_Name) and ExportPerm(perm, export_all_perms, export_specific_perm):
-            if (ob.type == 'MESH' and (not halo_mesh_name.startswith(special_prefixes) or halo_mesh_name.startswith('@')) and (halo_mesh.ObjectMesh_Type == 'COLLISION' or halo_mesh_name.startswith('@')) and halo_mesh.Object_Type_All == 'MESH' and (halo_mesh.Permutation_Name == perm)):
-                ob.select_set(True)
-                arm.select_set(True)
-                if ob.type != 'ARMATURE':
-                    boolean = True
-    
-    return boolean
+    return SelectModelObject(perm, arm, export_hidden, export_all_perms, export_specific_perm, 'ObCollision')
 
 def SelectModelPhysics(perm, arm, export_hidden, export_all_perms, export_specific_perm):
-    bpy.ops.object.select_all(action='DESELECT')
-    perm = ResetPerm(perm)
-    boolean = False
-    for ob in bpy.data.objects:
-        halo_mesh = ob.halo_json
-        halo_mesh_name = ob.name
-        if ObjectValid(ob, export_hidden, perm, halo_mesh.Permutation_Name) and ExportPerm(perm, export_all_perms, export_specific_perm):
-            if (ob.type == 'MESH' and (not halo_mesh_name.startswith(special_prefixes) or halo_mesh_name.startswith('$')) and (halo_mesh.ObjectMesh_Type == 'PHYSICS' or halo_mesh_name.startswith('$')) and halo_mesh.Object_Type_All == 'MESH' and (halo_mesh.Permutation_Name == perm)):
-                ob.select_set(True)
-                arm.select_set(True)
-                if ob.type != 'ARMATURE':
-                    boolean = True
-    
-    return boolean
+    return SelectModelObject(perm, arm, export_hidden, export_all_perms, export_specific_perm, 'ObPhysics')
 
 def SelectModelMarkers(arm, export_hidden):
-    bpy.ops.object.select_all(action='DESELECT')
-    boolean = False
-    for ob in bpy.data.objects:
-        halo_node = ob.halo_json
-        halo_node_name = ob.name
-        if ObjectValid(ob, export_hidden):
-            if (ob.type == 'MESH' and (halo_node.Object_Type_All == 'MARKER' or halo_node_name.startswith('#'))) or ob.type == 'EMPTY' and (halo_node.Object_Type_No_Mesh == 'MARKER' or halo_node_name.startswith('#')):
-                ob.select_set(True)
-                arm.select_set(True)
-                if ob.type != 'ARMATURE':
-                    boolean = True
-    
-    return boolean
+    return SelectModelObject(arm, export_hidden, 'ObMarker')
 
 def SelectModelSkeleton(arm):
-    bpy.ops.object.select_all(action='DESELECT')
+    DeselectAllObjects()
     arm.select_set(True)
 
     return True
 
 def SelectStructure(index, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
-    bpy.ops.object.select_all(action='DESELECT')
-    perm = ResetPerm(perm)
-    boolean = False
-    for ob in bpy.data.objects:
-        halo_mesh = ob.halo_json
-        if ob.halo_json.bsp_index == index and ObjectValid(ob, export_hidden, perm, halo_mesh.Permutation_Name) and ExportPerm(perm, export_all_perms, export_specific_perm) and ExportBSP(index, export_all_bsps, export_specific_bsp):
-            if not ob.parent.name.startswith('%') and (ob.name.startswith('@') and not ob.parent.name.startswith('%')) or (not ob.name.startswith(special_prefixes) and (ob.halo_json.ObjectMesh_Type == 'COLLISION' or ob.halo_json.ObjectMesh_Type == 'DEFAULT' or ob.halo_json.ObjectMesh_Type == 'LIGHTMAP REGION' )) and (halo_mesh.Permutation_Name == perm):
-                ob.select_set(True)
-                boolean = True
-        elif ob.halo_json.bsp_shared and ObjectValid(ob, export_hidden, perm, halo_mesh.Permutation_Name):
-            if not ob.parent.name.startswith('%') and (ob.name.startswith('@') and not ob.parent.name.startswith('%')) or (not ob.name.startswith(special_prefixes) and (ob.halo_json.ObjectMesh_Type == 'COLLISION' or ob.halo_json.ObjectMesh_Type == 'DEFAULT' or ob.halo_json.ObjectMesh_Type == 'LIGHTMAP REGION' )) and (halo_mesh.Permutation_Name == perm):
-                ob.select_set(True)
-                boolean = True
-
-    return boolean
+    return SelectBSPObject(index, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp, 'ObStructure')
 
 def SelectPoops(index, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
-    bpy.ops.object.select_all(action='DESELECT')
-    perm = ResetPerm(perm)
-    boolean = False
-    for ob in bpy.data.objects:
-        halo_mesh = ob.halo_json
-        if ob.halo_json.bsp_index == index and ObjectValid(ob, export_hidden, perm, halo_mesh.Permutation_Name) and ExportPerm(perm, export_all_perms, export_specific_perm) and ExportBSP(index, export_all_bsps, export_specific_bsp):
-            if (ob.name.startswith('%') or (ob.name.startswith('@') and ob.parent.name.startswith('%')) or (ob.name.startswith('$') and ob.parent.name.startswith('%')) or (not ob.name.startswith(special_prefixes) and (ob.halo_json.ObjectMesh_Type == 'INSTANCED GEOMETRY' or ob.halo_json.ObjectMesh_Type == 'INSTANCED GEOMETRY COLLISION' or ob.halo_json.ObjectMesh_Type == 'INSTANCED GEOMETRY PHYSICS' or ob.halo_json.ObjectMesh_Type == 'INSTANCED GEOMETRY MARKER'))) and (halo_mesh.Permutation_Name == perm):
-                ob.select_set(True)
-                boolean = True
-        elif ob.halo_json.bsp_shared and ObjectValid(ob, export_hidden, perm, halo_mesh.Permutation_Name) and ExportPerm(perm, export_all_perms, export_specific_perm) and ExportBSP(index, export_all_bsps, export_specific_bsp):
-            if (ob.name.startswith('%') or (ob.name.startswith('@') and ob.parent.name.startswith('%')) or (ob.name.startswith('$') and ob.parent.name.startswith('%')) or (not ob.name.startswith(special_prefixes) and (ob.halo_json.ObjectMesh_Type == 'INSTANCED GEOMETRY' or ob.halo_json.ObjectMesh_Type == 'INSTANCED GEOMETRY COLLISION' or ob.halo_json.ObjectMesh_Type == 'INSTANCED GEOMETRY PHYSICS' or ob.halo_json.ObjectMesh_Type == 'INSTANCED GEOMETRY MARKER'))) and (halo_mesh.Permutation_Name == perm):
-                ob.select_set(True)
-                boolean = True
-
-    return boolean
+    return SelectBSPObject(index, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp, 'ObPoops')
 
 def SelectMarkers(index, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
-    bpy.ops.object.select_all(action='DESELECT')
-    perm = ResetPerm(perm)
-    boolean = False
-    for ob in bpy.data.objects:
-        halo_mesh = ob.halo_json
-        if ob.halo_json.bsp_index == index and ObjectValid(ob, export_hidden, perm, halo_mesh.Permutation_Name) and ExportPerm(perm, export_all_perms, export_specific_perm) and ExportBSP(index, export_all_bsps, export_specific_bsp):
-            if (ob.name.startswith('#') or ob.halo_json.Object_Type_All == 'MARKER' or (ob.halo_json.Object_Type_No_Mesh == 'MARKER' and ob.type == 'EMPTY')) and (halo_mesh.Permutation_Name == perm):
-                ob.select_set(True)
-                boolean = True
-        elif ob.halo_json.bsp_shared and ObjectValid(ob, export_hidden, perm, halo_mesh.Permutation_Name) and ExportPerm(perm, export_all_perms, export_specific_perm) and ExportBSP(index, export_all_bsps, export_specific_bsp):
-            if (ob.name.startswith('#') or ob.halo_json.Object_Type_All == 'MARKER' or (ob.halo_json.Object_Type_No_Mesh == 'MARKER' and ob.type == 'EMPTY')) and (halo_mesh.Permutation_Name == perm):
-                ob.select_set(True)
-                boolean = True
-
-    return boolean
+    return SelectBSPObject(index, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp, 'ObMarkers')
 
 def SelectLights(index, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
-    bpy.ops.object.select_all(action='DESELECT')
-    perm = ResetPerm(perm)
-    boolean = False
-    for ob in bpy.data.objects:
-        halo_mesh = ob.halo_json
-        if ob.halo_json.bsp_index == index and ObjectValid(ob, export_hidden, perm, halo_mesh.Permutation_Name) and ExportPerm(perm, export_all_perms, export_specific_perm) and ExportBSP(index, export_all_bsps, export_specific_bsp):
-            if (ob.type == 'LIGHT') and (halo_mesh.Permutation_Name == perm):
-                ob.select_set(True)
-                boolean = True
-        elif ob.halo_json.bsp_shared and ObjectValid(ob, export_hidden, perm, halo_mesh.Permutation_Name) and ExportPerm(perm, export_all_perms, export_specific_perm) and ExportBSP(index, export_all_bsps, export_specific_bsp):
-            if (ob.type == 'LIGHT') and (halo_mesh.Permutation_Name == perm):
-                ob.select_set(True)
-                boolean = True
-
-    return boolean
+    return SelectBSPObject(index, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp, 'ObLights')
 
 def SelectPortals(index, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
-    bpy.ops.object.select_all(action='DESELECT')
-    perm = ResetPerm(perm)
-    boolean = False
-    for ob in bpy.data.objects:
-        halo_mesh = ob.halo_json
-        if ob.halo_json.bsp_index == index and ObjectValid(ob, export_hidden, perm, halo_mesh.Permutation_Name) and ExportPerm(perm, export_all_perms, export_specific_perm) and ExportBSP(index, export_all_bsps, export_specific_bsp):
-            if (ob.name.startswith('+portal') or (not ob.name.startswith(special_prefixes) and ob.halo_json.ObjectMesh_Type == 'PORTAL')) and (halo_mesh.Permutation_Name == perm):
-                ob.select_set(True)
-                boolean = True
-        elif ob.halo_json.bsp_shared and ObjectValid(ob, export_hidden, perm, halo_mesh.Permutation_Name) and ExportPerm(perm, export_all_perms, export_specific_perm) and ExportBSP(index, export_all_bsps, export_specific_bsp):
-            if (ob.name.startswith('+portal') or (not ob.name.startswith(special_prefixes) and ob.halo_json.ObjectMesh_Type == 'PORTAL')) and (halo_mesh.Permutation_Name == perm):
-                ob.select_set(True)
-                boolean = True
-
-    return boolean
+    return SelectBSPObject(index, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp, 'ObPortals')
 
 def SelectSeams(index, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
-    bpy.ops.object.select_all(action='DESELECT')
-    perm = ResetPerm(perm)
-    boolean = False
-    for ob in bpy.data.objects:
-        halo_mesh = ob.halo_json
-        if ob.halo_json.bsp_index == index and ObjectValid(ob, export_hidden, perm, halo_mesh.Permutation_Name) and ExportPerm(perm, export_all_perms, export_specific_perm) and ExportBSP(index, export_all_bsps, export_specific_bsp):
-            if (ob.name.startswith('+seam') or (not ob.name.startswith(special_prefixes) and ob.halo_json.ObjectMesh_Type == 'SEAM')) and (halo_mesh.Permutation_Name == perm):
-                ob.select_set(True)
-                boolean = True
-        elif ob.halo_json.bsp_shared and ObjectValid(ob, export_hidden, perm, halo_mesh.Permutation_Name) and ExportPerm(perm, export_all_perms, export_specific_perm) and ExportBSP(index, export_all_bsps, export_specific_bsp):
-            if (ob.name.startswith('+seam') or (not ob.name.startswith(special_prefixes) and ob.halo_json.ObjectMesh_Type == 'SEAM')) and (halo_mesh.Permutation_Name == perm):
-                ob.select_set(True)
-                boolean = True
-
-    return boolean
+    return SelectBSPObject(index, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp, 'ObSeams')
 
 def SelectWaterSurfaces(index, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
-    bpy.ops.object.select_all(action='DESELECT')
-    perm = ResetPerm(perm)
-    boolean = False
-    for ob in bpy.data.objects:
-        halo_mesh = ob.halo_json
-        if ob.halo_json.bsp_index == index and ObjectValid(ob, export_hidden, perm, halo_mesh.Permutation_Name) and ExportPerm(perm, export_all_perms, export_specific_perm) and ExportBSP(index, export_all_bsps, export_specific_bsp):
-            if (ob.name.startswith('\'') or (not ob.name.startswith(special_prefixes) and ob.halo_json.ObjectMesh_Type == 'WATER SURFACE')) and (halo_mesh.Permutation_Name == perm):
-                ob.select_set(True)
-                boolean = True
-        elif ob.halo_json.bsp_shared and ObjectValid(ob, export_hidden, perm, halo_mesh.Permutation_Name) and ExportPerm(perm, export_all_perms, export_specific_perm) and ExportBSP(index, export_all_bsps, export_specific_bsp):
-            if (ob.name.startswith('\'') or (not ob.name.startswith(special_prefixes) and ob.halo_json.ObjectMesh_Type == 'WATER SURFACE')) and (halo_mesh.Permutation_Name == perm):
-                ob.select_set(True)
-                boolean = True
-
-    return boolean
+    return SelectBSPObject(index, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp, 'ObWaterSurfaces')
 
 def SelectLightMapRegions(index, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
-    bpy.ops.object.select_all(action='DESELECT')
-    perm = ResetPerm(perm)
-    boolean = False
-    for ob in bpy.data.objects:
-        halo_mesh = ob.halo_json
-        if ob.halo_json.bsp_index == index and ObjectValid(ob, export_hidden, perm, halo_mesh.Permutation_Name) and ExportPerm(perm, export_all_perms, export_specific_perm) and ExportBSP(index, export_all_bsps, export_specific_bsp):
-            if ((not ob.name.startswith(special_prefixes) and ob.halo_json.ObjectMesh_Type == 'LIGHTMAP REGION')) and (halo_mesh.Permutation_Name == perm):
-                ob.select_set(True)
-                boolean = True
-        elif ob.halo_json.bsp_shared and ObjectValid(ob, export_hidden, perm, halo_mesh.Permutation_Name) and ExportPerm(perm, export_all_perms, export_specific_perm) and ExportBSP(index, export_all_bsps, export_specific_bsp):
-            if ((not ob.name.startswith(special_prefixes) and ob.halo_json.ObjectMesh_Type == 'LIGHTMAP REGION')) and (halo_mesh.Permutation_Name == perm):
-                ob.select_set(True)
-                boolean = True
-
-    return boolean
+    return SelectBSPObject(index, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp, 'ObLightMapRegions')
 
 def SelectFog(index, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
-    bpy.ops.object.select_all(action='DESELECT')
-    perm = ResetPerm(perm)
-    boolean = False
-    for ob in bpy.data.objects:
-        halo_mesh = ob.halo_json
-        if ob.halo_json.bsp_index == index and ObjectValid(ob, export_hidden, perm, halo_mesh.Permutation_Name) and ExportPerm(perm, export_all_perms, export_specific_perm) and ExportBSP(index, export_all_bsps, export_specific_bsp):
-            if (ob.name.startswith('+fog') or (not ob.name.startswith(special_prefixes) and ob.halo_json.ObjectMesh_Type == 'FOG')) and (halo_mesh.Permutation_Name == perm):
-                ob.select_set(True)
-                boolean = True
-        elif ob.halo_json.bsp_shared and ObjectValid(ob, export_hidden, perm, halo_mesh.Permutation_Name) and ExportPerm(perm, export_all_perms, export_specific_perm) and ExportBSP(index, export_all_bsps, export_specific_bsp):
-            if (ob.name.startswith('+fog') or (not ob.name.startswith(special_prefixes) and ob.halo_json.ObjectMesh_Type == 'FOG')) and (halo_mesh.Permutation_Name == perm):
-                ob.select_set(True)
-                boolean = True
-
-    return boolean
+    return SelectBSPObject(index, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp, 'ObFog')
 
 def SelectCookie(index, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
-    bpy.ops.object.select_all(action='DESELECT')
-    perm = ResetPerm(perm)
-    boolean = False
-    for ob in bpy.data.objects:
-        halo_mesh = ob.halo_json
-        if ob.halo_json.bsp_index == index and ObjectValid(ob, export_hidden, perm, halo_mesh.Permutation_Name) and ExportPerm(perm, export_all_perms, export_specific_perm) and ExportBSP(index, export_all_bsps, export_specific_bsp):
-            if (ob.name.startswith('+cookie') or (not ob.name.startswith(special_prefixes) and ob.halo_json.ObjectMesh_Type == 'COOKIE CUTTER')) and (halo_mesh.Permutation_Name == perm):
-                ob.select_set(True)
-                boolean = True
-        elif ob.halo_json.bsp_shared and ObjectValid(ob, export_hidden, perm, halo_mesh.Permutation_Name) and ExportPerm(perm, export_all_perms, export_specific_perm) and ExportBSP(index, export_all_bsps, export_specific_bsp):
-            if (ob.name.startswith('+cookie') or (not ob.name.startswith(special_prefixes) and ob.halo_json.ObjectMesh_Type == 'COOKIE CUTTER')) and (halo_mesh.Permutation_Name == perm):
-                ob.select_set(True)
-                boolean = True
-
-    return boolean
+    return SelectBSPObject(index, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp, 'ObCookie')
 
 def SelectBoundarys(index, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
-    bpy.ops.object.select_all(action='DESELECT')
-    perm = ResetPerm(perm)
-    boolean = False
-    for ob in bpy.data.objects:
-        halo_mesh = ob.halo_json
-        if ob.halo_json.bsp_index == index and ObjectValid(ob, export_hidden, perm, halo_mesh.Permutation_Name) and ExportPerm(perm, export_all_perms, export_specific_perm) and ExportBSP(index, export_all_bsps, export_specific_bsp):
-            if (ob.name.startswith(('+soft_kill', '+soft_ceiling', '+slip_surface')) or (not ob.name.startswith(special_prefixes) and ob.halo_json.ObjectMesh_Type == 'BOUNDARY SURFACE')) and (halo_mesh.Permutation_Name == perm):
-                ob.select_set(True)
-                boolean = True
-        elif ob.halo_json.bsp_shared and ObjectValid(ob, export_hidden, perm, halo_mesh.Permutation_Name) and ExportPerm(perm, export_all_perms, export_specific_perm) and ExportBSP(index, export_all_bsps, export_specific_bsp):
-            if (ob.name.startswith(('+soft_kill', '+soft_ceiling', '+slip_surface')) or (not ob.name.startswith(special_prefixes) and ob.halo_json.ObjectMesh_Type == 'BOUNDARY SURFACE')) and (halo_mesh.Permutation_Name == perm):
-                ob.select_set(True)
-                boolean = True
-
-    return boolean
+    return SelectBSPObject(index, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp, 'ObBoundarys')
 
 def SelectWaterPhysics(index, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
-    bpy.ops.object.select_all(action='DESELECT')
-    perm = ResetPerm(perm)
-    boolean = False
-    for ob in bpy.data.objects:
-        halo_mesh = ob.halo_json
-        if ob.halo_json.bsp_index == index and ObjectValid(ob, export_hidden, perm, halo_mesh.Permutation_Name) and ExportPerm(perm, export_all_perms, export_specific_perm) and ExportBSP(index, export_all_bsps, export_specific_bsp):
-            if (ob.name.startswith('+water') or (not ob.name.startswith(special_prefixes) and ob.halo_json.ObjectMesh_Type == 'WATER PHYSICS VOLUME')) and (halo_mesh.Permutation_Name == perm):
-                ob.select_set(True)
-                boolean = True
-        elif ob.halo_json.bsp_shared and ObjectValid(ob, export_hidden, perm, halo_mesh.Permutation_Name) and ExportPerm(perm, export_all_perms, export_specific_perm) and ExportBSP(index, export_all_bsps, export_specific_bsp):
-            if (ob.name.startswith('+water') or (not ob.name.startswith(special_prefixes) and ob.halo_json.ObjectMesh_Type == 'WATER PHYSICS VOLUME')) and (halo_mesh.Permutation_Name == perm):
-                ob.select_set(True)
-                boolean = True
-
-    return boolean
+    return SelectBSPObject(index, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp, 'ObWaterPhysics')
 
 def SelectPoopRains(index, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
-    bpy.ops.object.select_all(action='DESELECT')
-    perm = ResetPerm(perm)
-    boolean = False
-    for ob in bpy.data.objects:
-        halo_mesh = ob.halo_json
-        if ob.halo_json.bsp_index == index and ObjectValid(ob, export_hidden, perm, halo_mesh.Permutation_Name) and ExportPerm(perm, export_all_perms, export_specific_perm) and ExportBSP(index, export_all_bsps, export_specific_bsp):
-            if (not ob.name.startswith(special_prefixes) and (ob.halo_json.ObjectMesh_Type == 'INSTANCED GEOMETRY RAIN BLOCKER' or ob.halo_json.ObjectMesh_Type == 'INSTANCED GEOMETRY VERTICAL RAIN SHEET')) and (halo_mesh.Permutation_Name == perm):
-                ob.select_set(True)
-                boolean = True
-        elif ob.halo_json.bsp_shared and ObjectValid(ob, export_hidden, perm, halo_mesh.Permutation_Name) and ExportPerm(perm, export_all_perms, export_specific_perm) and ExportBSP(index, export_all_bsps, export_specific_bsp):
-            if (not ob.name.startswith(special_prefixes) and (ob.halo_json.ObjectMesh_Type == 'INSTANCED GEOMETRY RAIN BLOCKER' or ob.halo_json.ObjectMesh_Type == 'INSTANCED GEOMETRY VERTICAL RAIN SHEET')) and (halo_mesh.Permutation_Name == perm):
-                ob.select_set(True)
-                boolean = True
-
-    return boolean
+    return SelectBSPObject(index, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp, 'ObPoopRains')
 
 def menu_func_export(self, context):
     self.layout.operator(Export_Halo_GR2.bl_idname, text="Halo Gen4 Asset Export (.fbx .json .gr2. .xml)")

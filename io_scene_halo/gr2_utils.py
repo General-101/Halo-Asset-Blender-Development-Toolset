@@ -150,16 +150,125 @@ def GetPrefix(string, prefix_list): # gets a prefix from a list of prefixes
     return prefix
 
 
+def SelectModelObject(perm, arm, export_hidden, export_all_perms, export_specific_perm, select_func):
+    DeselectAllObjects()
+    perm = ResetPerm(perm)
+    boolean = False
+    select_func = getattr(select_func)
+    arm.select_set(True)
+    for ob in bpy.data.objects:
+        halo = ob.halo_json
+        if ObjectValid(ob, export_hidden, perm, halo.Permutation_Name) and select_func(ob) and ExportPerm(perm, export_all_perms, export_specific_perm):
+            ob.select_set(True)
+            boolean = True
+    
+    return boolean
+
+def SelectModelObjectNoPerm(arm, export_hidden, select_func):
+    DeselectAllObjects()
+    boolean = False
+    select_func = getattr(select_func)
+    arm.select_set(True)
+    for ob in bpy.data.objects:
+        halo = ob.halo_json
+        if ObjectValid(ob, export_hidden) and select_func(ob):
+            ob.select_set(True)
+            boolean = True
+
+    return boolean
+
+def SelectBSPObject(index, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp, select_func):
+    DeselectAllObjects()
+    perm = ResetPerm(perm)
+    boolean = False
+    select_func = getattr(select_func)
+    for ob in bpy.data.objects:
+        halo = ob.halo_json
+        if halo.bsp_index == index:
+            if ObjectValid(ob, export_hidden, perm, halo.Permutation_Name) and select_func(ob) and ExportPerm(perm, export_all_perms, export_specific_perm) and ExportBSP(index, export_all_bsps, export_specific_bsp):
+                ob.select_set(True)
+                boolean = True
+
+    return boolean
+
+
+def DeselectAllObjects():
+    bpy.ops.object.select_all(action='DESELECT')
+
+
 #############
 ##CHECK TYPES##
 #############
 
+def IsMesh(ob):
+    return ob.type == 'MESH'
+
+def MeshType(ob, types, valid_prefixes=()):
+    return IsMesh(ob) and ((ob.halo_json.ObjectMesh_Type in types and not ObjectPrefix(ob, special_prefixes)) or ObjectPrefix(ob, valid_prefixes))
+
+def ObjectType(ob, types=(), valid_prefixes=()):
+    if ob.type == 'MESH':
+        return ob.halo_json.Object_Type_All in types and not ObjectPrefix(ob, ((frame_prefixes, marker_prefixes)))
+    elif ob.type == 'EMPTY':
+        return ob.halo_json.Object_Type_No_Mesh in types or ObjectPrefix(ob, (valid_prefixes))
+    elif ob.type == 'LIGHT':
+        return True
+    else:
+        return False
+
+def ObjectPrefix(ob, prefixes):
+    return ob.name.startswith(prefixes)
+
+def NotParentedToPoop(ob):
+    return (not MeshType(ob.parent, 'INSTANCED GEOMETRY') or (ObjectPrefix(ob.parent, special_prefixes) and not ObjectPrefix(ob.parent, '%')))
+
+def ObRender(ob):
+    return MeshType(ob, ('DEFAULT'))
+
+def ObCollision(ob):
+    return MeshType(ob, ('COLLISION'), ('@'))
+
+def ObPhysics(ob):
+    return MeshType(ob, ('PHYSICS'), ('$'))
+
+def ObMarkers(ob):
+    return MeshType(ob, ('MARKER'), ('#')) and NotParentedToPoop(ob)
+
 def ObStructure(ob):
-    return (
-        (not ob.name.startswith(special_prefixes) or (ob.name.startswith('@') and not ob.parent.name.startswith('%'))) 
-        or
-        (not ob.name.startswith(special_prefixes) and (ob.halo_json.ObjectMesh_Type in ('DEFAULT', 'COLLISION')))
-    )
+    return MeshType(ob, ('DEFAULT')) and NotParentedToPoop(ob)
+
+def ObPoops(ob):
+    return MeshType(ob, ('INSTANCED GEOEMETRY', 'INSTANCED GEOMETRY COLLISION', 'INSTANCED GEOMETRY PHYSICS', 'INSTANCED GEOMETRY MARKER'), ('%', '@', '$'))
+
+def ObLights(ob):
+    return ObjectType(ob)
+
+def ObPortals(ob):
+    return MeshType(ob, ('PORTAL'), ('+portal')) and NotParentedToPoop(ob)
+
+def ObSeams(ob):
+    return MeshType(ob, ('SEAM'), ('+seam')) and NotParentedToPoop(ob)
+
+def ObSObWaterSurfaceseams(ob):
+    return MeshType(ob, ('WATER SURFACE'), ('\'')) and NotParentedToPoop(ob)
+
+def ObLightMapRegions(ob):
+    return MeshType(ob, ('LIGHTMAP REGION')) and NotParentedToPoop(ob)
+
+def ObFog(ob):
+    return MeshType(ob, ('PLANAR FOG VOLUME'), ('+fog')) and NotParentedToPoop(ob)
+
+def ObCookie(ob):
+    return MeshType(ob, ('COOKIE CUTTER'), ('+cookie'))
+
+def ObBoundarys(ob):
+    return MeshType(ob, ('BOUNDARY SURFACE'), ('+soft_kill', '+soft_ceiling', '+slip_surface')) and NotParentedToPoop(ob)
+
+def ObWaterPhysics(ob):
+    return MeshType(ob, ('WATER PHYSICS VOLUME'), ('+water')) and NotParentedToPoop(ob)
+
+def ObPoopRains(ob):
+    return MeshType(ob, ('INSTANCED GEOMETRY RAIN BLOCKER', 'INSTANCED GEOMETRY VERTICAL RAIN SHEET'))
 
 #############
 #BONE SORTING#
@@ -222,7 +331,7 @@ def getBoneProperties(FrameID1, FrameID2):
 
 def openCSV():
     script_folder_path = path.dirname(path.dirname(__file__))
-    filepath = path.join(script_folder_path, "io_scene_halo", "frameidlist.csv")
+    filepath = path.join(script_folder_path, "io_scene_halo\\file_gr2", "frameidlist.csv")
 
     frameIDList = {}
     with open(filepath) as csv_file:
