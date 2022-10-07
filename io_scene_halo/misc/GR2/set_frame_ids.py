@@ -49,7 +49,7 @@ def reset_frame_ids():
     
 def set_frame_ids():
     model_armature = GetSceneArmature()
-    framelist = ImportTagXML(GetToolPath(), '')
+    framelist = ImportTagXML(GetToolPath())
     tag_bone_names = CleanBoneNames(framelist)
     blend_bone_names = CleanBones(model_armature.data.bones)
     blend_bones = model_armature.data.bones
@@ -124,7 +124,7 @@ def GetGraphPath():
     path = path.replace(GetEKPath(), '')
     if not '.model_animation_graph' in path:
         if path.rpartition('.')[0] == '':
-            path = path.append('.model_animation_graph')
+            path = path + '.model_animation_graph'
         else:
             path = path.rpartition('.')[0] + '.model_animation_graph'
 
