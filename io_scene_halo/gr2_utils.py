@@ -154,7 +154,7 @@ def SelectModelObject(perm, arm, export_hidden, export_all_perms, export_specifi
     DeselectAllObjects()
     perm = ResetPerm(perm)
     boolean = False
-    select_func = getattr(select_func)
+    select_func = getattr(sel_logic, select_func)
     arm.select_set(True)
     for ob in bpy.data.objects:
         halo = ob.halo_json
@@ -167,10 +167,9 @@ def SelectModelObject(perm, arm, export_hidden, export_all_perms, export_specifi
 def SelectModelObjectNoPerm(arm, export_hidden, select_func):
     DeselectAllObjects()
     boolean = False
-    select_func = getattr(select_func)
+    select_func = getattr(sel_logic, select_func)
     arm.select_set(True)
     for ob in bpy.data.objects:
-        halo = ob.halo_json
         if ObjectValid(ob, export_hidden) and select_func(ob):
             ob.select_set(True)
             boolean = True
@@ -181,7 +180,7 @@ def SelectBSPObject(index, perm, export_hidden, export_all_perms, export_specifi
     DeselectAllObjects()
     perm = ResetPerm(perm)
     boolean = False
-    select_func = getattr(select_func)
+    select_func = getattr(sel_logic, select_func)
     for ob in bpy.data.objects:
         halo = ob.halo_json
         if halo.bsp_index == index:
@@ -222,53 +221,54 @@ def ObjectPrefix(ob, prefixes):
 def NotParentedToPoop(ob):
     return (not MeshType(ob.parent, 'INSTANCED GEOMETRY') or (ObjectPrefix(ob.parent, special_prefixes) and not ObjectPrefix(ob.parent, '%')))
 
-def ObRender(ob):
-    return MeshType(ob, ('DEFAULT'))
+class sel_logic():
+    def ObRender(ob):
+        return MeshType(ob, ('DEFAULT'))
 
-def ObCollision(ob):
-    return MeshType(ob, ('COLLISION'), ('@'))
+    def ObCollision(ob):
+        return MeshType(ob, ('COLLISION'), ('@'))
 
-def ObPhysics(ob):
-    return MeshType(ob, ('PHYSICS'), ('$'))
+    def ObPhysics(ob):
+        return MeshType(ob, ('PHYSICS'), ('$'))
 
-def ObMarkers(ob):
-    return MeshType(ob, ('MARKER'), ('#')) and NotParentedToPoop(ob)
+    def ObMarkers(ob):
+        return MeshType(ob, ('MARKER'), ('#')) and NotParentedToPoop(ob)
 
-def ObStructure(ob):
-    return MeshType(ob, ('DEFAULT')) and NotParentedToPoop(ob)
+    def ObStructure(ob):
+        return MeshType(ob, ('DEFAULT')) and NotParentedToPoop(ob)
 
-def ObPoops(ob):
-    return MeshType(ob, ('INSTANCED GEOEMETRY', 'INSTANCED GEOMETRY COLLISION', 'INSTANCED GEOMETRY PHYSICS', 'INSTANCED GEOMETRY MARKER'), ('%', '@', '$'))
+    def ObPoops(ob):
+        return MeshType(ob, ('INSTANCED GEOEMETRY', 'INSTANCED GEOMETRY COLLISION', 'INSTANCED GEOMETRY PHYSICS', 'INSTANCED GEOMETRY MARKER'), ('%', '@', '$'))
 
-def ObLights(ob):
-    return ObjectType(ob)
+    def ObLights(ob):
+        return ObjectType(ob)
 
-def ObPortals(ob):
-    return MeshType(ob, ('PORTAL'), ('+portal')) and NotParentedToPoop(ob)
+    def ObPortals(ob):
+        return MeshType(ob, ('PORTAL'), ('+portal')) and NotParentedToPoop(ob)
 
-def ObSeams(ob):
-    return MeshType(ob, ('SEAM'), ('+seam')) and NotParentedToPoop(ob)
+    def ObSeams(ob):
+        return MeshType(ob, ('SEAM'), ('+seam')) and NotParentedToPoop(ob)
 
-def ObSObWaterSurfaceseams(ob):
-    return MeshType(ob, ('WATER SURFACE'), ('\'')) and NotParentedToPoop(ob)
+    def ObWaterSurfaces(ob):
+        return MeshType(ob, ('WATER SURFACE'), ('\'')) and NotParentedToPoop(ob)
 
-def ObLightMapRegions(ob):
-    return MeshType(ob, ('LIGHTMAP REGION')) and NotParentedToPoop(ob)
+    def ObLightMapRegions(ob):
+        return MeshType(ob, ('LIGHTMAP REGION')) and NotParentedToPoop(ob)
 
-def ObFog(ob):
-    return MeshType(ob, ('PLANAR FOG VOLUME'), ('+fog')) and NotParentedToPoop(ob)
+    def ObFog(ob):
+        return MeshType(ob, ('PLANAR FOG VOLUME'), ('+fog')) and NotParentedToPoop(ob)
 
-def ObCookie(ob):
-    return MeshType(ob, ('COOKIE CUTTER'), ('+cookie'))
+    def ObCookie(ob):
+        return MeshType(ob, ('COOKIE CUTTER'), ('+cookie'))
 
-def ObBoundarys(ob):
-    return MeshType(ob, ('BOUNDARY SURFACE'), ('+soft_kill', '+soft_ceiling', '+slip_surface')) and NotParentedToPoop(ob)
+    def ObBoundarys(ob):
+        return MeshType(ob, ('BOUNDARY SURFACE'), ('+soft_kill', '+soft_ceiling', '+slip_surface')) and NotParentedToPoop(ob)
 
-def ObWaterPhysics(ob):
-    return MeshType(ob, ('WATER PHYSICS VOLUME'), ('+water')) and NotParentedToPoop(ob)
+    def ObWaterPhysics(ob):
+        return MeshType(ob, ('WATER PHYSICS VOLUME'), ('+water')) and NotParentedToPoop(ob)
 
-def ObPoopRains(ob):
-    return MeshType(ob, ('INSTANCED GEOMETRY RAIN BLOCKER', 'INSTANCED GEOMETRY VERTICAL RAIN SHEET'))
+    def ObPoopRains(ob):
+        return MeshType(ob, ('INSTANCED GEOMETRY RAIN BLOCKER', 'INSTANCED GEOMETRY VERTICAL RAIN SHEET'))
 
 #############
 #BONE SORTING#

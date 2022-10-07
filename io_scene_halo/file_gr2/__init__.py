@@ -46,10 +46,6 @@ from ..gr2_utils import (
     GetPerm,
     IsWindows,
     CheckPath,
-    ObjectValid,
-    ExportPerm,
-    ExportBSP,
-    ResetPerm,
     GetBoneList,
     GetSceneArmature,
     SelectModelObject,
@@ -455,7 +451,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
 
     def execute(self, context):
         keywords = self.as_keywords()
-        from . import export_gr2, export_sidecar_xml, import_sidecar
+        from . import export_gr2, export_sidecar, import_sidecar
         mode = ''
         mode_not_set = False
         if len(bpy.context.selected_objects) > 0:
@@ -872,7 +868,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
 
                 if(IsWindows()):
                     if self.export_sidecar:
-                        export_sidecar_xml.save(self, context, self.report, **keywords)
+                        export_sidecar.save(self, context, self.report, **keywords)
                     import_sidecar.save(self, context, self.report, **keywords)
                     
             elif(not self.export_sidecar):
@@ -1011,7 +1007,7 @@ def SelectModelPhysics(perm, arm, export_hidden, export_all_perms, export_specif
     return SelectModelObject(perm, arm, export_hidden, export_all_perms, export_specific_perm, 'ObPhysics')
 
 def SelectModelMarkers(arm, export_hidden):
-    return SelectModelObject(arm, export_hidden, 'ObMarker')
+    return SelectModelObjectNoPerm(arm, export_hidden, 'ObMarkers')
 
 def SelectModelSkeleton(arm):
     DeselectAllObjects()
