@@ -34,6 +34,23 @@ from ..gr2_utils import (
     special_prefixes,
     valid_animation_types,
     GetDataPath,
+    ObRender,
+    ObCollision,
+    ObPhysics,
+    ObMarkers,
+    ObStructure,
+    ObPoops,
+    ObLights,
+    ObPortals,
+    ObSeams,
+    ObWaterSurfaces,
+    ObLightMapRegions,
+    ObFog,
+    ObCookie,
+    ObBoundarys,
+    ObWaterPhysics,
+    ObPoopRains,
+    GetPerm,
 )
 
 def export_xml(report, filePath="", export_sidecar=False, sidecar_type='MODEL', asset_path='',        
@@ -241,11 +258,8 @@ def WriteModelContents(metadata, asset_path, asset_name):
 
     perm_list = []
     for ob in bpy.data.objects:
-        if ob.halo_json.Permutation_Name == '':
-            perm = 'default'
-        else:
-            perm = ob.halo_json.Permutation_Name
-        if (perm not in perm_list) and RenderPermExists():
+        perm = GetPerm(ob)
+        if (perm not in perm_list) and ObRender(ob):
             perm_list.append(perm)
             network = ET.SubElement(object, 'ContentNetwork' ,Name=perm, Type="")
             ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, 'render', ob.halo_json.Permutation_Name)
@@ -260,11 +274,8 @@ def WriteModelContents(metadata, asset_path, asset_name):
 
         perm_list = []
         for ob in bpy.data.objects:
-            if ob.halo_json.Permutation_Name == '':
-                perm = 'default'
-            else:
-                perm = ob.halo_json.Permutation_Name
-            if (perm not in perm_list) and PhysicsPermExists():
+            perm = GetPerm(ob)
+            if (perm not in perm_list) and ObPhysics(ob):
                 perm_list.append(perm)
                 network = ET.SubElement(object, 'ContentNetwork' ,Name=perm, Type="")
                 ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, 'physics', ob.halo_json.Permutation_Name)
@@ -279,11 +290,8 @@ def WriteModelContents(metadata, asset_path, asset_name):
 
         perm_list = []
         for ob in bpy.data.objects:
-            if ob.halo_json.Permutation_Name == '':
-                perm = 'default'
-            else:
-                perm = ob.halo_json.Permutation_Name
-            if (perm not in perm_list) and CollisionPermExists():
+            perm = GetPerm(ob)
+            if (perm not in perm_list) and ObCollision(ob):
                 perm_list.append(perm)
                 network = ET.SubElement(object, 'ContentNetwork' ,Name=perm, Type="")
                 ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, 'collision', ob.halo_json.Permutation_Name)
@@ -326,8 +334,6 @@ def WriteModelContents(metadata, asset_path, asset_name):
                 anim_type = 'JMM'
             
             match anim_type:
-                case 'JMM':
-                    network = ET.SubElement(object, 'ContentNetwork' , Name=anim_name, Type='Base', ModelAnimationMovementData='None')
                 case 'JMA':
                     network = ET.SubElement(object, 'ContentNetwork' , Name=anim_name, Type='Base', ModelAnimationMovementData='XY')
                 case 'JMT':
@@ -342,8 +348,10 @@ def WriteModelContents(metadata, asset_path, asset_name):
                     network = ET.SubElement(object, 'ContentNetwork' , Name=anim_name, Type='Overlay', ModelAnimationOverlayType='Pose', ModelAnimationOverlayBlending='Additive')
                 case 'JMR':
                     network = ET.SubElement(object, 'ContentNetwork' , Name=anim_name, Type='Overlay', ModelAnimationOverlayType='Keyframe', ModelAnimationOverlayBlending='ReplacementObjectSpace')
-                case _:
+                case 'JMRX':
                     network = ET.SubElement(object, 'ContentNetwork' , Name=anim_name, Type='Overlay', ModelAnimationOverlayType='Keyframe', ModelAnimationOverlayBlending='ReplacementLocalSpace')
+                case _:
+                    network = ET.SubElement(object, 'ContentNetwork' , Name=anim_name, Type='Base', ModelAnimationMovementData='None')
 
             ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, anim_name, 'model_animation_graph')
             ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePath(asset_path, anim_name, 'model_animation_graph')
@@ -381,83 +389,53 @@ def WriteScenarioContents(metadata, asset_path, asset_name):
 
         if shared_bsp_exists:
             for ob in bpy.data.objects:
-                if IsStructure(ob) and ob.halo_json.bsp_shared:
-                    if ob.halo_json.Permutation_Name == '':
-                        perm = 'default'
-                    else:
-                        perm = ob.halo_json.Permutation_Name
+                if ObStructure(ob) and ob.halo_json.bsp_shared:
+                    perm = GetPerm(ob)
                     if (perm not in shared_structure_perm):
                         shared_structure_perm.append(perm)
 
-                elif IsPoop(ob) and ob.halo_json.bsp_shared:
-                    if ob.halo_json.Permutation_Name == '':
-                        perm = 'default'
-                    else:
-                        perm = ob.halo_json.Permutation_Name
+                elif ObPoops(ob) and ob.halo_json.bsp_shared:
+                    perm = GetPerm(ob)
                     if (perm not in shared_poop_perm):
                         shared_poop_perm.append(perm)
 
-                elif IsMarker(ob) and ob.halo_json.bsp_shared:
-                    if ob.halo_json.Permutation_Name == '':
-                        perm = 'default'
-                    else:
-                        perm = ob.halo_json.Permutation_Name
+                elif ObMarkers(ob) and ob.halo_json.bsp_shared:
+                    perm = GetPerm(ob)
                     if (perm not in shared_marker_perm):
                         shared_marker_perm.append(perm)
 
-                elif IsLight(ob) and ob.halo_json.bsp_shared:
-                    if ob.halo_json.Permutation_Name == '':
-                        perm = 'default'
-                    else:
-                        perm = ob.halo_json.Permutation_Name
+                elif ObLights(ob) and ob.halo_json.bsp_shared:
+                    perm = GetPerm(ob)
                     if (perm not in shared_light_perm):
                         shared_light_perm.append(perm)
 
-                elif IsPortal(ob) and ob.halo_json.bsp_shared:
-                    if ob.halo_json.Permutation_Name == '':
-                        perm = 'default'
-                    else:
-                        perm = ob.halo_json.Permutation_Name
+                elif ObPortals(ob) and ob.halo_json.bsp_shared:
+                    perm = GetPerm(ob)
                     if (perm not in shared_portal_perm):
                         shared_portal_perm.append(perm)
 
-                elif IsSeam(ob) and ob.halo_json.bsp_shared:
-                    if ob.halo_json.Permutation_Name == '':
-                        perm = 'default'
-                    else:
-                        perm = ob.halo_json.Permutation_Name
+                elif ObSeams(ob) and ob.halo_json.bsp_shared:
+                    perm = GetPerm(ob)
                     if (perm not in shared_seam_perm):
                         shared_seam_perm.append(perm)
 
-                elif IsWaterSurface(ob) and ob.halo_json.bsp_shared:
-                    if ob.halo_json.Permutation_Name == '':
-                        perm = 'default'
-                    else:
-                        perm = ob.halo_json.Permutation_Name
+                elif ObWaterSurfaces(ob) and ob.halo_json.bsp_shared:
+                    perm = GetPerm(ob)
                     if (perm not in shared_water_perm):
                         shared_water_perm.append(perm)
 
-                elif IsLightMapRegion(ob) and ob.halo_json.bsp_shared:
-                    if ob.halo_json.Permutation_Name == '':
-                        perm = 'default'
-                    else:
-                        perm = ob.halo_json.Permutation_Name
+                elif ObLightMapRegions(ob) and ob.halo_json.bsp_shared:
+                    perm = GetPerm(ob)
                     if (perm not in shared_lightmap_perm):
                         shared_lightmap_perm.append(perm)
 
-                elif IsFog(ob) and ob.halo_json.bsp_shared:
-                    if ob.halo_json.Permutation_Name == '':
-                        perm = 'default'
-                    else:
-                        perm = ob.halo_json.Permutation_Name
+                elif ObFog(ob) and ob.halo_json.bsp_shared:
+                    perm = GetPerm(ob)
                     if (perm not in shared_fog_perm):
                         shared_fog_perm.append(perm)
 
-                elif IsCookie(ob) and ob.halo_json.bsp_shared:
-                    if ob.halo_json.Permutation_Name == '':
-                        perm = 'default'
-                    else:
-                        perm = ob.halo_json.Permutation_Name
+                elif ObCookie(ob) and ob.halo_json.bsp_shared:
+                    perm = GetPerm(ob)
                     if (perm not in shared_cookie_perm):
                         shared_cookie_perm.append(perm)
 
@@ -475,83 +453,53 @@ def WriteScenarioContents(metadata, asset_path, asset_name):
             fog_perm = []
             cookie_perm = []
             for ob in bpy.data.objects:
-                if IsStructure(ob) and ob.halo_json.bsp_index == bsp:
-                    if ob.halo_json.Permutation_Name == '':
-                        perm = 'default'
-                    else:
-                        perm = ob.halo_json.Permutation_Name
+                if ObStructure(ob) and ob.halo_json.bsp_index == bsp:
+                    perm = GetPerm(ob)
                     if (perm not in structure_perm):
                         structure_perm.append(perm)
 
-                elif IsPoop(ob) and ob.halo_json.bsp_index == bsp:
-                    if ob.halo_json.Permutation_Name == '':
-                        perm = 'default'
-                    else:
-                        perm = ob.halo_json.Permutation_Name
+                elif ObPoops(ob) and ob.halo_json.bsp_index == bsp:
+                    perm = GetPerm(ob)
                     if (perm not in poop_perm):
                         poop_perm.append(perm)
 
-                elif IsMarker(ob) and ob.halo_json.bsp_index == bsp:
-                    if ob.halo_json.Permutation_Name == '':
-                        perm = 'default'
-                    else:
-                        perm = ob.halo_json.Permutation_Name
+                elif ObMarkers(ob) and ob.halo_json.bsp_index == bsp:
+                    perm = GetPerm(ob)
                     if (perm not in marker_perm):
                         marker_perm.append(perm)
 
-                elif IsLight(ob) and ob.halo_json.bsp_index == bsp:
-                    if ob.halo_json.Permutation_Name == '':
-                        perm = 'default'
-                    else:
-                        perm = ob.halo_json.Permutation_Name
+                elif ObLights(ob) and ob.halo_json.bsp_index == bsp:
+                    perm = GetPerm(ob)
                     if (perm not in light_perm):
                         light_perm.append(perm)
 
-                elif IsPortal(ob) and ob.halo_json.bsp_index == bsp:
-                    if ob.halo_json.Permutation_Name == '':
-                        perm = 'default'
-                    else:
-                        perm = ob.halo_json.Permutation_Name
+                elif ObPortals(ob) and ob.halo_json.bsp_index == bsp:
+                    perm = GetPerm(ob)
                     if (perm not in portal_perm):
                         portal_perm.append(perm)
 
-                elif IsSeam(ob) and ob.halo_json.bsp_index == bsp:
-                    if ob.halo_json.Permutation_Name == '':
-                        perm = 'default'
-                    else:
-                        perm = ob.halo_json.Permutation_Name
+                elif ObSeams(ob) and ob.halo_json.bsp_index == bsp:
+                    perm = GetPerm(ob)
                     if (perm not in seam_perm):
                         seam_perm.append(perm)
 
-                elif IsWaterSurface(ob) and ob.halo_json.bsp_index == bsp:
-                    if ob.halo_json.Permutation_Name == '':
-                        perm = 'default'
-                    else:
-                        perm = ob.halo_json.Permutation_Name
+                elif ObWaterSurfaces(ob) and ob.halo_json.bsp_index == bsp:
+                    perm = GetPerm(ob)
                     if (perm not in water_perm):
                         water_perm.append(perm)
 
-                elif IsLightMapRegion(ob) and ob.halo_json.bsp_index == bsp:
-                    if ob.halo_json.Permutation_Name == '':
-                        perm = 'default'
-                    else:
-                        perm = ob.halo_json.Permutation_Name
+                elif ObLightMapRegions(ob) and ob.halo_json.bsp_index == bsp:
+                    perm = GetPerm(ob)
                     if (perm not in lightmap_perm):
                         lightmap_perm.append(perm)
 
-                elif IsFog(ob) and ob.halo_json.bsp_index == bsp:
-                    if ob.halo_json.Permutation_Name == '':
-                        perm = 'default'
-                    else:
-                        perm = ob.halo_json.Permutation_Name
+                elif ObFog(ob) and ob.halo_json.bsp_index == bsp:
+                    perm = GetPerm(ob)
                     if (perm not in fog_perm):
                         fog_perm.append(perm)
 
-                elif IsCookie(ob) and ob.halo_json.bsp_index == bsp:
-                    if ob.halo_json.Permutation_Name == '':
-                        perm = 'default'
-                    else:
-                        perm = ob.halo_json.Permutation_Name
+                elif ObCookie(ob) and ob.halo_json.bsp_index == bsp:
+                    perm = GetPerm(ob)
                     if (perm not in cookie_perm):
                         cookie_perm.append(perm)
 
@@ -647,70 +595,85 @@ def WriteScenarioContents(metadata, asset_path, asset_name):
         shared_bsp_exists = False
 
         for ob in bpy.data.objects:
-            if not ob.halo_json.bsp_shared and (ob.halo_json.bsp_index not in bsp_list) and (IsBoundary(ob) or IsWaterPhysics(ob) or IsPoopRain(ob)):
+            if not ob.halo_json.bsp_shared and (ob.halo_json.bsp_index not in bsp_list) and (ObBoundarys(ob) or ObWaterPhysics(ob) or ObPoopRains(ob)):
                 bsp_list.append(ob.halo_json.bsp_index)
 
         for ob in bpy.data.objects:
             if ob.halo_json.bsp_shared:
                 shared_bsp_exists = True
                 break
-        
-        shared_boundary_exists = False
-        shared_water_physics_exists = False
-        shared_rain_exists = False
+
+        shared_boundary_perm = []
+        shared_water_physics_perm = []
+        shared_rain_perm = []
 
         if shared_bsp_exists:
             for ob in bpy.data.objects:
-                if IsBoundary(ob) and ob.halo_json.bsp_shared:
-                    shared_boundary_exists = True
+                if ObBoundarys(ob) and ob.halo_json.bsp_shared:
+                    perm = GetPerm(ob)
+                    if (perm not in shared_boundary_perm):
+                        shared_boundary_perm.append(perm)
 
-                elif IsWaterPhysics(ob) and ob.halo_json.bsp_shared:
-                    shared_water_physics_exists = True
+                elif ObWaterPhysics(ob) and ob.halo_json.bsp_shared:
+                    perm = GetPerm(ob)
+                    if (perm not in shared_water_physics_perm):
+                        shared_water_physics_perm.append(perm)
 
-                elif IsPoopRain(ob) and ob.halo_json.bsp_shared:
-                    shared_rain_exists = True
+                elif ObPoopRains(ob) and ob.halo_json.bsp_shared:
+                    perm = GetPerm(ob)
+                    if (perm not in shared_rain_perm):
+                        shared_rain_perm.append(perm)
         
         for bsp in bsp_list:
             content = ET.SubElement(contents, "Content", Name=asset_name + '_' + "{0:03}".format(bsp) + '_structure_design', Type='design')
             object = ET.SubElement(content, 'ContentObject', Name='', Type="structure_design")
-            boundary_exists = False
-            water_physics_exists = False
-            rain_exists = False
-            for ob in bpy.data.objects:
-                if IsBoundary(ob) and ob.halo_json.bsp_index == bsp:
-                    boundary_exists = True
-                elif IsWaterPhysics(ob) and ob.halo_json.bsp_index == bsp:
-                    water_physics_exists = True
-                
-                elif IsPoopRain(ob) and ob.halo_json.bsp_index == bsp:
-                    rain_exists = True
 
-            if boundary_exists:
+            boundary_perm = []
+            water_physics_perm = []
+            rain_perm = []
+
+            for ob in bpy.data.objects:
+                if ObBoundarys(ob) and ob.halo_json.bsp_index == bsp:
+                    perm = GetPerm(ob)
+                    if (perm not in boundary_perm):
+                        boundary_perm.append(perm)
+
+                elif ObWaterPhysics(ob) and ob.halo_json.bsp_index == bsp:
+                    perm = GetPerm(ob)
+                    if (perm not in water_physics_perm):
+                        water_physics_perm.append(perm)
+
+                elif ObPoopRains(ob) and ob.halo_json.bsp_index == bsp:
+                    perm = GetPerm(ob)
+                    if (perm not in rain_perm):
+                        rain_perm.append(perm)
+
+            for perm in boundary_perm:
                 network = ET.SubElement(object, 'ContentNetwork' ,Name=asset_name + '_' + "{0:03}".format(bsp) + '_' + 'design', Type="")
                 ET.SubElement(network, 'InputFile').text = GetInputFilePathBSP(asset_path, asset_name, "{0:03}".format(bsp), 'design')
                 ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePathBSP(asset_path, asset_name, "{0:03}".format(bsp), 'design')
             
-            if water_physics_exists:
+            for perm in water_physics_perm:
                 network = ET.SubElement(object, 'ContentNetwork' ,Name=asset_name + '_' + "{0:03}".format(bsp) + '_' + 'water_physics', Type="")
                 ET.SubElement(network, 'InputFile').text = GetInputFilePathBSP(asset_path, asset_name, "{0:03}".format(bsp), 'water_physics')
                 ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePathBSP(asset_path, asset_name, "{0:03}".format(bsp), 'water_physics')
 
-            if rain_exists:
+            for perm in rain_perm:
                 network = ET.SubElement(object, 'ContentNetwork' ,Name=asset_name + '_' + "{0:03}".format(bsp) + '_' + 'rain_blockers', Type="")
                 ET.SubElement(network, 'InputFile').text = GetInputFilePathBSP(asset_path, asset_name, "{0:03}".format(bsp), 'rain_blockers')
                 ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePathBSP(asset_path, asset_name, "{0:03}".format(bsp), 'rain_blockers')
 
-            if shared_boundary_exists:
+            for perm in shared_boundary_perm:
                 network = ET.SubElement(object, 'ContentNetwork' ,Name=asset_name + '_' + "{0:03}".format(bsp) + '_' + 'design', Type="")
                 ET.SubElement(network, 'InputFile').text = GetInputFilePathBSP(asset_path, asset_name, 'shared', 'design')
                 ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePathBSP(asset_path, asset_name, 'shared', 'design')
 
-            if shared_water_physics_exists:
+            for perm in shared_water_physics_perm:
                 network = ET.SubElement(object, 'ContentNetwork' ,Name=asset_name + '_' + "{0:03}".format(bsp) + '_' + 'water_physics', Type="")
                 ET.SubElement(network, 'InputFile').text = GetInputFilePathBSP(asset_path, asset_name, 'shared', 'water_physics')
                 ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePathBSP(asset_path, asset_name, 'shared', 'water_physics')
 
-            if shared_rain_exists:
+            for perm in rain_perm:
                 network = ET.SubElement(object, 'ContentNetwork' ,Name=asset_name + '_' + "{0:03}".format(bsp) + '_' + 'rain_blockers', Type="")
                 ET.SubElement(network, 'InputFile').text = GetInputFilePathBSP(asset_path, asset_name, 'shared', 'rain_blockers')
                 ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePathBSP(asset_path, asset_name, 'shared', 'rain_blockers')
@@ -735,57 +698,22 @@ def GetIntermediateFilePathBSP(asset_path, asset_name, bsp, type, perm=''):
     return path
 
 def SceneHasBSP():
+    boolean = False
     for ob in bpy.data.objects:
-        if IsStructure(ob):
-            return True
+        if ObStructure(ob):
+            boolean = True
+            break
 
-    return False
-
-def IsStructure(ob):
-    return (ob.name.startswith('@') and not ob.parent.name.startswith('%')) or (not ob.name.startswith(special_prefixes) and (ob.halo_json.ObjectMesh_Type == 'COLLISION' or ob.halo_json.ObjectMesh_Type == 'DEFAULT' or ob.halo_json.ObjectMesh_Type == 'LIGHTMAP REGION' ))
-
-def IsPoop(ob):
-    return ob.name.startswith('%') or (ob.name.startswith('@') and ob.parent.name.startswith('%')) or (ob.name.startswith('$') and ob.parent.name.startswith('%')) or (not ob.name.startswith(special_prefixes) and (ob.halo_json.ObjectMesh_Type == 'INSTANCED GEOMETRY' or ob.halo_json.ObjectMesh_Type == 'INSTANCED GEOMETRY COLLISION' or ob.halo_json.ObjectMesh_Type == 'INSTANCED GEOMETRY MARKER' or ob.halo_json.ObjectMesh_Type == 'INSTANCED GEOMETRY PHYSICS' or ob.halo_json.ObjectMesh_Type == 'COOKIE CUTTER'))
-
-def IsMarker(ob):
-    return ob.name.startswith('#') or ob.halo_json.Object_Type_All == 'MARKER' or (ob.halo_json.Object_Type_No_Mesh == 'MARKER' and ob.type == 'EMPTY')
-
-def IsLight(ob):
-    return ob.type == 'LIGHT'
-
-def IsPortal(ob):
-    return ob.name.startswith('+portal') or (not ob.name.startswith(special_prefixes) and ob.halo_json.ObjectMesh_Type == 'PORTAL')
-
-def IsSeam(ob):
-    return ob.name.startswith('+seam') or (not ob.name.startswith(special_prefixes) and ob.halo_json.ObjectMesh_Type == 'SEAM')
-
-def IsWaterSurface(ob):
-    return ob.name.startswith('\'') or (not ob.name.startswith(special_prefixes) and ob.halo_json.ObjectMesh_Type == 'WATER SURFACE')
-
-def IsLightMapRegion(ob):
-    return (not ob.name.startswith(special_prefixes) and ob.halo_json.ObjectMesh_Type == 'LIGHTMAP REGION')
-
-def IsFog(ob):
-    return ob.name.startswith('+fog') or (not ob.name.startswith(special_prefixes) and (ob.halo_json.ObjectMesh_Type == 'PLANAR FOG VOLUME'))
-
-def IsCookie(ob):
-    return ob.name.startswith('+cookie') or (not ob.name.startswith(special_prefixes) and (ob.halo_json.ObjectMesh_Type == 'COOKIE CUTTER'))
+    return boolean
 
 def SceneHasDesign():
+    boolean = False
     for ob in bpy.data.objects:
-        if IsBoundary(ob) or IsWaterPhysics(ob) or IsPoopRain(ob):
-            return True
+        if ObBoundarys(ob) or ObWaterPhysics(ob) or ObPoopRains(ob):
+            boolean = True
+            break
     
-    return False
-
-def IsBoundary(ob):
-    return ob.name.startswith(('+soft_kill', '+soft_ceiling', '+slip_surface')) or (not ob.name.startswith(special_prefixes) and ob.halo_json.ObjectMesh_Type == 'BOUNDARY SURFACE')
-
-def IsWaterPhysics(ob):
-    return ob.name.startswith('+water') or (not ob.name.startswith(special_prefixes) and ob.halo_json.ObjectMesh_Type == 'WATER PHYSICS VOLUME')
-
-def IsPoopRain(ob):
-    return not ob.name.startswith(special_prefixes) and (ob.halo_json.ObjectMesh_Type == 'INSTANCED GEOMETRY RAIN BLOCKER' or ob.halo_json.ObjectMesh_Type == 'INSTANCED GEOMETRY VERTICAL RAIN SHEET')
+    return boolean
 
 def GetInputFilePath(asset_path, asset_name, type, perm=''):
     if type == 'model_animation_graph':
@@ -813,8 +741,9 @@ def SceneHasCollisionObject():
     boolean = False
 
     for ob in bpy.data.objects:
-        if ob.name.startswith('@') or ob.halo_json.ObjectMesh_Type == 'COLLISION':
+        if ObCollision(ob):
             boolean = True
+            break
     
     return boolean
 
@@ -822,8 +751,9 @@ def SceneHasPhysicsObject():
     boolean = False
 
     for ob in bpy.data.objects:
-        if ob.name.startswith('$') or ob.halo_json.ObjectMesh_Type == 'PHYSICS':
+        if ObPhysics(ob):
             boolean = True
+            break
     
     return boolean
 
@@ -831,40 +761,11 @@ def SceneHasMarkers():
     boolean = False
 
     for ob in bpy.data.objects:
-        if ob.name.startswith('#') or (ob.type == 'MESH' and ob.halo_json.Object_Type_All == 'MARKER') or (ob.halo_json.Object_Type_No_Mesh == 'MARKER' and ob.type == 'EMPTY'):
+        if ObMarkers(ob):
             boolean = True
+            break
     
     return boolean
-
-def WriteStructureContents(metadata, asset_path, asset_name):
-    print ('null')
-
-def RenderPermExists():
-    exists = False
-    for ob in bpy.data.objects:
-        halo_mesh = ob.halo_json
-        halo_mesh_name = ob.name
-        if (ob.type == 'MESH' and (not halo_mesh_name.startswith(special_prefixes)) and halo_mesh.Object_Type_All == 'MESH' and halo_mesh.ObjectMesh_Type == 'DEFAULT'):
-            exists = True
-    return exists
-
-def PhysicsPermExists():
-    exists = False
-    for ob in bpy.data.objects:
-        halo_mesh = ob.halo_json
-        halo_mesh_name = ob.name
-        if (ob.type == 'MESH' and (not halo_mesh_name.startswith(special_prefixes) or halo_mesh_name.startswith('$')) and (halo_mesh.ObjectMesh_Type == 'PHYSICS' or halo_mesh_name.startswith('$')) and halo_mesh.Object_Type_All == 'MESH'):
-            exists = True
-    return exists
-
-def CollisionPermExists():
-    exists = False
-    for ob in bpy.data.objects:
-        halo_mesh = ob.halo_json
-        halo_mesh_name = ob.name
-        if (ob.type == 'MESH' and (not halo_mesh_name.startswith(special_prefixes) or halo_mesh_name.startswith('@')) and (halo_mesh.ObjectMesh_Type == 'COLLISION' or halo_mesh_name.startswith('@')) and halo_mesh.Object_Type_All == 'MESH'):
-            exists = True
-    return exists
 
 def save(operator, context, report,
         filepath="",
