@@ -111,10 +111,8 @@ def IsWindows():
 
 def CheckPath(filePath):
     if(filePath.startswith(os.path.abspath(GetEKPath() + "\\data")+os.sep)):
-        print("Is Valid")
         return True
     else:
-        print("Not Valid!")
         return False
 
 def ObjectValid(ob, export_hidden, valid_perm='', evaluated_perm=''):
@@ -458,7 +456,6 @@ def bone_sort_by_layer(node_list, armature):
     sort_list = []
     reversed_sort_list = []
     for node in node_list:
-        print(node)
         if node.parent == None and not node.name[0:1] == '!' or node.parent.name[0:1] == '!' and node.parent.parent == None:
             layer_count.append(None)
             layer_root.append(node)

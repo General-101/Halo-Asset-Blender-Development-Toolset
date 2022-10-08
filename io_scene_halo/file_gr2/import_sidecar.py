@@ -35,13 +35,11 @@ from ..gr2_utils import (
 
 def import_sidecar(report, filePath='', import_to_game=False, import_check=False, import_force=False, import_verbose=False, import_draft=False,import_seam_debug=False,import_skip_instances=False,import_decompose_instances=False,import_surpress_errors=False, run_tagwatcher=False, import_in_background=False):
     full_path = filePath.rpartition('\\')[0]
-    print('full path = ' + filePath)
     asset_path = CleanAssetPath(full_path)
     asset_name = asset_path.rpartition('\\')[2]
 
     try:
         toolCommand = '"{}" import "{}" {}'.format(GetToolPath(), asset_path + '\\' + asset_name + '.sidecar.xml', GetImportFlags(import_check, import_force, import_verbose, import_draft, import_seam_debug, import_skip_instances, import_decompose_instances, import_surpress_errors))
-        print('\nRunning Tool command... %r' % toolCommand)
         os.chdir(GetEKPath())
         p = Popen(toolCommand)
         if not import_in_background:

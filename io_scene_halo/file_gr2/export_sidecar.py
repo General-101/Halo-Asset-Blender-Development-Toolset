@@ -35,10 +35,11 @@ from ..gr2_utils import (
     GetDataPath,
     GetPerm,
     sel_logic,
+    GetSceneArmature,
 )
 
 
-def export_xml(report, filePath="", export_sidecar=False, sidecar_type='MODEL', asset_path='',        
+def export_xml(report, model_armature=None, filePath="", export_sidecar=False, sidecar_type='MODEL', asset_path='',        
                 output_biped=False,
                 output_crate=False,
                 output_creature=False,
@@ -52,11 +53,10 @@ def export_xml(report, filePath="", export_sidecar=False, sidecar_type='MODEL', 
                 output_vehicle=False,
                 output_weapon=False):
     full_path = filePath.rpartition('\\')[0]
-    print('full path = ' + filePath)
     asset_path = CleanAssetPath(full_path)
     asset_name = asset_path.rpartition('\\')[2]
 
-    BuildSidecar(asset_path, asset_name, full_path, sidecar_type, output_biped,output_crate,output_creature,output_device_control,output_device_machine,output_device_terminal,output_effect_scenery,output_equipment,output_giant,output_scenery,output_vehicle,output_weapon)
+    BuildSidecar(model_armature, asset_path, asset_name, full_path, sidecar_type, output_biped,output_crate,output_creature,output_device_control,output_device_machine,output_device_terminal,output_effect_scenery,output_equipment,output_giant,output_scenery,output_vehicle,output_weapon)
 
     report({'INFO'},"Sidecar build complete")
 
@@ -67,7 +67,7 @@ def CleanAssetPath(path):
 
     return path
 
-def BuildSidecar(asset_path, asset_name, full_path, sidecar_type,               
+def BuildSidecar(model_armature, asset_path, asset_name, full_path, sidecar_type,               
                         output_biped=False,
                         output_crate=False,
                         output_creature=False,
@@ -97,7 +97,7 @@ def BuildSidecar(asset_path, asset_name, full_path, sidecar_type,
     WriteFolders(metadata)
     WriteFaceCollections(metadata, sidecar_type)
     if sidecar_type == 'MODEL':
-        WriteModelContents(metadata, asset_path, asset_name)
+        WriteModelContents(model_armature, metadata, asset_path, asset_name)
     if sidecar_type == 'SCENARIO':
         WriteScenarioContents(metadata, asset_path, asset_name)
     # if sidecar_type == 'DECORATOR SET':
@@ -235,7 +235,7 @@ def WriteFaceCollections(metadata, sidecar_type):
                         mat_list.append(material)
                         count += 1
 
-def WriteModelContents(metadata, asset_path, asset_name):
+def WriteModelContents(model_armature, metadata, asset_path, asset_name):
     ##### RENDER #####
     contents = ET.SubElement(metadata, "Contents")
     content = ET.SubElement(contents, "Content", Name=asset_name, Type='model')
@@ -307,43 +307,47 @@ def WriteModelContents(metadata, asset_path, asset_name):
         object = ET.SubElement(content, 'ContentObject', Name='', Type="model_animation_graph")
 
         for anim in bpy.data.actions:
-            if anim.name.rpartition('.')[0] != '':
-                anim_name = anim.name.rpartition('.')[0]
-                anim_type = anim.name.rpartition('.')[2]
-                anim_type = anim_type.upper()
-            else:
-                anim_name = anim.name
-                anim_type = 'JMM'
-            
-            if anim_type not in valid_animation_types:
-                anim_type = 'JMM'
-            
-            match anim_type:
-                case 'JMA':
-                    network = ET.SubElement(object, 'ContentNetwork' , Name=anim_name, Type='Base', ModelAnimationMovementData='XY')
-                case 'JMT':
-                    network = ET.SubElement(object, 'ContentNetwork' , Name=anim_name, Type='Base', ModelAnimationMovementData='XYYaw')
-                case 'JMZ':
-                    network = ET.SubElement(object, 'ContentNetwork' , Name=anim_name, Type='Base', ModelAnimationMovementData='XYZYaw')
-                case 'JMV':
-                    network = ET.SubElement(object, 'ContentNetwork' , Name=anim_name, Type='Base', ModelAnimationMovementData='XYZFullRotation')
-                case 'JMO':
-                    network = ET.SubElement(object, 'ContentNetwork' , Name=anim_name, Type='Overlay', ModelAnimationOverlayType='Keyframe', ModelAnimationOverlayBlending='Additive')
-                case 'JMOX':
-                    network = ET.SubElement(object, 'ContentNetwork' , Name=anim_name, Type='Overlay', ModelAnimationOverlayType='Pose', ModelAnimationOverlayBlending='Additive')
-                case 'JMR':
-                    network = ET.SubElement(object, 'ContentNetwork' , Name=anim_name, Type='Overlay', ModelAnimationOverlayType='Keyframe', ModelAnimationOverlayBlending='ReplacementObjectSpace')
-                case 'JMRX':
-                    network = ET.SubElement(object, 'ContentNetwork' , Name=anim_name, Type='Overlay', ModelAnimationOverlayType='Keyframe', ModelAnimationOverlayBlending='ReplacementLocalSpace')
-                case _:
-                    network = ET.SubElement(object, 'ContentNetwork' , Name=anim_name, Type='Base', ModelAnimationMovementData='None')
+            try:
+                model_armature.animation_data.action == anim # causes an assert if action is not in armature
+                if anim.name.rpartition('.')[0] != '':
+                    anim_name = anim.name.rpartition('.')[0]
+                    anim_type = anim.name.rpartition('.')[2]
+                    anim_type = anim_type.upper()
+                else:
+                    anim_name = anim.name
+                    anim_type = 'JMM'
+                
+                if anim_type not in valid_animation_types:
+                    anim_type = 'JMM'
+                
+                match anim_type:
+                    case 'JMA':
+                        network = ET.SubElement(object, 'ContentNetwork' , Name=anim_name, Type='Base', ModelAnimationMovementData='XY')
+                    case 'JMT':
+                        network = ET.SubElement(object, 'ContentNetwork' , Name=anim_name, Type='Base', ModelAnimationMovementData='XYYaw')
+                    case 'JMZ':
+                        network = ET.SubElement(object, 'ContentNetwork' , Name=anim_name, Type='Base', ModelAnimationMovementData='XYZYaw')
+                    case 'JMV':
+                        network = ET.SubElement(object, 'ContentNetwork' , Name=anim_name, Type='Base', ModelAnimationMovementData='XYZFullRotation')
+                    case 'JMO':
+                        network = ET.SubElement(object, 'ContentNetwork' , Name=anim_name, Type='Overlay', ModelAnimationOverlayType='Keyframe', ModelAnimationOverlayBlending='Additive')
+                    case 'JMOX':
+                        network = ET.SubElement(object, 'ContentNetwork' , Name=anim_name, Type='Overlay', ModelAnimationOverlayType='Pose', ModelAnimationOverlayBlending='Additive')
+                    case 'JMR':
+                        network = ET.SubElement(object, 'ContentNetwork' , Name=anim_name, Type='Overlay', ModelAnimationOverlayType='Keyframe', ModelAnimationOverlayBlending='ReplacementObjectSpace')
+                    case 'JMRX':
+                        network = ET.SubElement(object, 'ContentNetwork' , Name=anim_name, Type='Overlay', ModelAnimationOverlayType='Keyframe', ModelAnimationOverlayBlending='ReplacementLocalSpace')
+                    case _:
+                        network = ET.SubElement(object, 'ContentNetwork' , Name=anim_name, Type='Base', ModelAnimationMovementData='None')
 
-            ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, anim_name, 'model_animation_graph')
-            ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePath(asset_path, anim_name, 'model_animation_graph')
+                ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, anim_name, 'model_animation_graph')
+                ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePath(asset_path, anim_name, 'model_animation_graph')
+            except:
+                print('Animation ' + anim.name + ' not written to sidecar because it does not exist in the armature')
 
-        output = ET.SubElement(object, 'OutputTagCollection')
-        ET.SubElement(output, 'OutputTag', Type='frame_event_list').text = asset_path + '\\' + asset_name
-        ET.SubElement(output, 'OutputTag', Type='model_animation_graph').text = asset_path + '\\' + asset_name
+            output = ET.SubElement(object, 'OutputTagCollection')
+            ET.SubElement(output, 'OutputTag', Type='frame_event_list').text = asset_path + '\\' + asset_name
+            ET.SubElement(output, 'OutputTag', Type='model_animation_graph').text = asset_path + '\\' + asset_name
 
 def WriteScenarioContents(metadata, asset_path, asset_name):
     contents = ET.SubElement(metadata, "Contents")
@@ -752,7 +756,7 @@ def SceneHasMarkers():
     
     return boolean
 
-def save(operator, context, report,
+def save(operator, context, report, model_armature=None,
         filepath="",
         export_sidecar=False,
         sidecar_type='MODEL',
@@ -772,5 +776,5 @@ def save(operator, context, report,
         **kwargs
         ):
     if export_sidecar and asset_path != '':
-        export_xml(report, filepath, export_sidecar, sidecar_type, asset_path,output_biped,output_crate,output_creature,output_device_control,output_device_machine,output_device_terminal,output_effect_scenery,output_equipment,output_giant,output_scenery,output_vehicle,output_weapon)
+        export_xml(report, model_armature, filepath, export_sidecar, sidecar_type, asset_path,output_biped,output_crate,output_creature,output_device_control,output_device_machine,output_device_terminal,output_effect_scenery,output_equipment,output_giant,output_scenery,output_vehicle,output_weapon)
     return {'FINISHED'}

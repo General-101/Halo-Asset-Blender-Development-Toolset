@@ -64,7 +64,6 @@ def getNodes(model_armature, boneslist):
             nodesList.update({ob.name: getNodeProperties(halo_node, halo_node_name, ob)})
 
     temp = ({'nodes_properties': nodesList})
-    print (temp)
     return temp
 
 def getLightProperties(node, light):
@@ -822,8 +821,6 @@ def export_asset(report, filePath="", keep_fbx=False, keep_json=False, asset_pat
             gr2Path += pathList[x]
             gr2Path += ".gr2"
 
-        print('\nTool Path... %r' % GetToolPath())
-
         build_gr2(GetToolPath(), fileName, jsonPath, gr2Path)
         if(file_exists(gr2Path)):
             report({'INFO'},"GR2 conversion finished!")
@@ -876,8 +873,6 @@ def GetFileName(filePath, asset_name, tag_type, perm='', asset_path='', bsp=''):
             name = asset_path + '\\' + asset_name + '_' + bsp + '_' + tag_type + '_' + perm + '.fbx'
         else:
             name = asset_path + '\\' + asset_name + '_' + bsp + '_' + tag_type + '.fbx'
-    
-    print('FILENAME for ' + asset_name + ' is ' + name)
 
     return name
 
@@ -925,7 +920,6 @@ def build_gr2(toolPath, filePath, jsonPath, gr2Path):
             ctypes.windll.user32.MessageBoxW(0, "GR2 Not Exported. Output Folder Is Read-Only! Try running Blender as an Administrator.", "ACCESS VIOLATION", 0)
         else:
             toolCommand = '"{}" fbx-to-gr2 "{}" "{}" "{}"'.format(toolPath, filePath, jsonPath, gr2Path)
-            print('\nRunning Tool command... %r' % toolCommand)
             os.chdir(GetEKPath())
             p = Popen(toolCommand)
             p.wait()

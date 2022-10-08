@@ -109,7 +109,6 @@ def ImportTagXML(toolPath):
     xmlPath = GetTagsPath() + "temp.xml"
     tagPath = GetGraphPath()
     toolCommand = '"{}" export-tag-to-xml "{}" "{}"'.format(toolPath, tagPath, xmlPath)
-    print('\nRunning Tool command... %r' % toolCommand)
     os.chdir(GetEKPath())
     p = Popen(toolCommand)
     p.wait()
@@ -130,7 +129,6 @@ def GetGraphPath():
         else:
             path = path.rpartition('.')[0] + '.model_animation_graph'
 
-    print(path)
     return path
 
 def ParseXML(xmlPath):

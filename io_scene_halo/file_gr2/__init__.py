@@ -423,7 +423,6 @@ class Export_Halo_GR2(Operator, ExportHelper):
 
     def GetAssetPath(self):
         asset = self.filepath.rpartition('\\')[0]
-        print(asset)
         return asset
 
     asset_path: StringProperty(
@@ -435,7 +434,6 @@ class Export_Halo_GR2(Operator, ExportHelper):
     def GetAssetName(self):
         asset = self.asset_path.rpartition('\\')[2]
         asset = asset.replace('.fbx', '')
-        print(asset)
         return asset
 
     asset_name: StringProperty(
@@ -568,17 +566,19 @@ class Export_Halo_GR2(Operator, ExportHelper):
 
                         if self.export_animations and 1<=len(bpy.data.actions):
                             if SelectModelSkeleton(model_armature):
-                                bpy.context.view_layer.objects.active = model_armature
                                 for action in bpy.data.actions:
-                                    model_armature.animation_data.action = action
-                                    if action.use_frame_range:
-                                        scene.frame_start = int(action.frame_start)
-                                        scene.frame_end = int(action.frame_end)
-                                    else:
-                                        scene.frame_start = f_start
-                                        scene.frame_end = f_end
-                                    export_fbx_bin.save(self, context, **keywords)
-                                    export_gr2.save(self, context, self.report, IsWindows(), 'animations', '', '', model_armature, boneslist, **keywords)
+                                    try:
+                                        model_armature.animation_data.action = action
+                                        if action.use_frame_range:
+                                            scene.frame_start = int(action.frame_start)
+                                            scene.frame_end = int(action.frame_end)
+                                        else:
+                                            scene.frame_start = f_start
+                                            scene.frame_end = f_end
+                                        export_fbx_bin.save(self, context, **keywords)
+                                        export_gr2.save(self, context, self.report, IsWindows(), 'animations', '', '', model_armature, boneslist, **keywords)
+                                    except:
+                                        print('Encountered animation not in armature, skipping export of animation: ' + action.name)
                                 
                     elif self.sidecar_type == 'SCENARIO':
                         
@@ -593,7 +593,6 @@ class Export_Halo_GR2(Operator, ExportHelper):
                             if ob.halo_json.bsp_shared:
                                 shared_bsp_exists = True
                                 break
-                        print('processing bsp objects')
                         for bsp in bsp_list:
                             if not ob.halo_json.bsp_shared:
                                 if self.export_structure:
@@ -602,9 +601,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                         perm = GetPerm(ob)
                                         if perm not in perm_list:
                                             perm_list.append(perm)
-                                            print('perm appended')
                                             if SelectStructure(bsp, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp):
-                                                print('structure selected')
                                                 export_fbx_bin.save(self, context, **keywords)
                                                 export_gr2.save(self, context, self.report, IsWindows(), 'bsp', "{0:03}".format(bsp), perm, **keywords)
 
@@ -868,7 +865,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
 
                 if(IsWindows()):
                     if self.export_sidecar:
-                        export_sidecar.save(self, context, self.report, **keywords)
+                        export_sidecar.save(self, context, self.report, model_armature, **keywords)
                     import_sidecar.save(self, context, self.report, **keywords)
                     
             elif(not self.export_sidecar):
