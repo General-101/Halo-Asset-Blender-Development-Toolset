@@ -52,6 +52,8 @@ from ..gr2_utils import (
     SelectModelObjectNoPerm,
     SelectBSPObject,
     DeselectAllObjects,
+    FixMarkersRotation,
+    RestoreMarkersRotation,
 )
 
 import os
@@ -446,6 +448,16 @@ class Export_Halo_GR2(Operator, ExportHelper):
         description="If enabled does not pause use of blender during the import process",
         default=False
     )
+    primary_bone_axis: EnumProperty(
+            name="",
+            items=(('Y', "", ""),),
+            default='Y',
+            )
+    secondary_bone_axis: EnumProperty(
+            name="",
+            items=(('Z', "", ""),),
+            default='Z',
+            )
 
     def execute(self, context):
         keywords = self.as_keywords()
@@ -556,9 +568,15 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                         export_gr2.save(self, context, self.report, IsWindows(), 'physics', '', perm, model_armature, boneslist, **keywords)
 
                         if self.export_markers:
+                            markers_list = FixMarkersRotation() 
+
                             if SelectModelMarkers(model_armature, self.export_hidden):
+                                
                                 export_fbx_bin.save(self, context, **keywords)
                                 export_gr2.save(self, context, self.report, IsWindows(), 'markers', '', '', model_armature, boneslist, **keywords)
+
+                            if len(markers_list) > 0:
+                                RestoreMarkersRotation(markers_list)
 
                         if SelectModelSkeleton(model_armature):
                             export_fbx_bin.save(self, context, **keywords)

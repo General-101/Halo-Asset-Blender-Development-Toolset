@@ -28,6 +28,7 @@ import platform
 import os
 from os import path
 import csv
+from math import radians
 #from . import HREKPath
 ###########
 ##GLOBALS##
@@ -219,6 +220,24 @@ def ObjectPrefix(ob, prefixes):
 def NotParentedToPoop(ob):
     return (not MeshType(ob.parent, 'INSTANCED GEOMETRY') or (ObjectPrefix(ob.parent, special_prefixes) and not ObjectPrefix(ob.parent, '%')))
 
+def FixMarkersRotation():
+    DeselectAllObjects()
+    markers_list = []
+    for ob in bpy.data.objects:
+        if sel_logic.ObMarkers(ob):
+            ob.select_set(True)
+            markers_list.append(ob)
+    if len(markers_list) > 0:
+        bpy.ops.transform.rotate(value=radians(-90), orient_axis='Z', orient_type='GLOBAL', orient_matrix=((1, 0, 0), (0, 1, 0), (0, 0, 1)), orient_matrix_type='GLOBAL', constraint_axis=(False, False, True), mirror=False, use_proportional_edit=False, proportional_edit_falloff='SMOOTH', proportional_size=1, use_proportional_connected=False, use_proportional_projected=False)
+
+    return markers_list
+
+def RestoreMarkersRotation(markers_list):
+    DeselectAllObjects()
+    for ob in markers_list:
+        ob.select_set(True)
+    bpy.ops.transform.rotate(value=radians(90), orient_axis='Z', orient_type='GLOBAL', orient_matrix=((1, 0, 0), (0, 1, 0), (0, 0, 1)), orient_matrix_type='GLOBAL', constraint_axis=(False, False, True), mirror=False, use_proportional_edit=False, proportional_edit_falloff='SMOOTH', proportional_size=1, use_proportional_connected=False, use_proportional_projected=False)
+
 class sel_logic():
     def ObRender(ob):
         return MeshType(ob, ('DEFAULT'))
@@ -230,13 +249,13 @@ class sel_logic():
         return MeshType(ob, ('PHYSICS'), ('$'))
 
     def ObMarkers(ob):
-        return ObjectType(ob, ('MARKER'), ('#')) and NotParentedToPoop(ob)
+        return (ObjectType(ob, ('MARKER'), ('#')) or MeshType(ob, ('MARKER'), ('#'))) and NotParentedToPoop(ob)
 
     def ObStructure(ob):
         return MeshType(ob, ('DEFAULT')) and NotParentedToPoop(ob)
 
     def ObPoops(ob):
-        return MeshType(ob, ('INSTANCED GEOEMETRY', 'INSTANCED GEOMETRY COLLISION', 'INSTANCED GEOMETRY PHYSICS', 'INSTANCED GEOMETRY MARKER'), ('%', '@', '$'))
+        return MeshType(ob, ('INSTANCED GEOMETRY', 'INSTANCED GEOMETRY COLLISION', 'INSTANCED GEOMETRY PHYSICS', 'INSTANCED GEOMETRY MARKER'), ('%', '@', '$'))
 
     def ObLights(ob):
         return ObjectType(ob)
