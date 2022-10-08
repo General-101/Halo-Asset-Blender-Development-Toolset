@@ -230,7 +230,7 @@ class sel_logic():
         return MeshType(ob, ('PHYSICS'), ('$'))
 
     def ObMarkers(ob):
-        return MeshType(ob, ('MARKER'), ('#')) and NotParentedToPoop(ob)
+        return ObjectType(ob, ('MARKER'), ('#')) and NotParentedToPoop(ob)
 
     def ObStructure(ob):
         return MeshType(ob, ('DEFAULT')) and NotParentedToPoop(ob)
