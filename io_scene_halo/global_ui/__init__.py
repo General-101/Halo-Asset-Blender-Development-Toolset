@@ -1192,6 +1192,9 @@ from ..gr2_utils import (
     poop_pathfinding_prefixes,
     poop_render_only_prefixes,
     special_materials,
+    ObjectPrefix,
+    special_mesh_types,
+    invalid_mesh_types,
 )
 
 class JSON_ObjectProps(Panel):
@@ -1216,13 +1219,11 @@ class JSON_ObjectProps(Panel):
         ob = context.object
         ob_halo_json = ob.halo_json
 
-        has_special_prefix = context.active_object.name.startswith(special_prefixes)
-
         col = flow.column()
 
         if ob.type == 'LIGHT':
             col.prop(ob_halo_json, "Object_Type_Light", text='Object Type')
-        elif has_special_prefix:
+        elif ObjectPrefix(context.active_object, special_prefixes):
             if context.active_object.type == 'EMPTY':
                 col.prop(ob_halo_json, "Object_Type_No_Mesh_Locked", text='Object Type')
             else:
@@ -1262,14 +1263,9 @@ class JSON_ObjectMeshProps(Panel):
         ob = context.object
         ob_halo_json = ob.halo_json
 
-        special_mesh_types = ('BOUNDARY SURFACE','DECORATOR','INSTANCED GEOMETRY','PLANAR FOG VOLUME','PORTAL','SEAM','WATER PHYSICS VOLUME',)
-
-        has_special_prefix = context.active_object.name.startswith(special_prefixes)
-
-
         col = flow.column()
          
-        if has_special_prefix:
+        if ObjectPrefix(context.active_object, special_prefixes):
             col.prop(ob_halo_json, "ObjectMesh_Type_Locked", text='Mesh Type')
         else:
             col.prop(ob_halo_json, "ObjectMesh_Type", text='Mesh Type')
@@ -1368,11 +1364,7 @@ class JSON_ObjectMeshFaceProps(Panel):
         ob = context.object
         ob_halo_json = ob.halo_json
 
-        invalid_mesh_types = ('BOUNDARY SURFACE', 'COOKIE CUTTER', 'INSTANCED GEOMETRY MARKER', 'INSTANCED GEOMETRY RAIN BLOCKER', 'INSTANCED GEOMETRY VERTICAL RAIN SHEET', 'LIGHTMAP REGION', 'PLANAR FOG VOLUME', 'PORTAL', 'SEAM', 'WATER PHYSICS VOLUME')
-
-        override_active = context.active_object.name.startswith(special_prefixes)
-
-        if override_active:
+        if ObjectPrefix(context.active_object, special_prefixes):
             return ob_halo_json.ObjectMesh_Type_Locked not in invalid_mesh_types
         else:
             return ob_halo_json.ObjectMesh_Type not in invalid_mesh_types
@@ -1427,11 +1419,7 @@ class JSON_ObjectMeshMaterialLightingProps(Panel):
         ob = context.object
         ob_halo_json = ob.halo_json
 
-        invalid_mesh_types = ('BOUNDARY SURFACE', 'COOKIE CUTTER', 'INSTANCED GEOMETRY MARKER', 'INSTANCED GEOMETRY RAIN BLOCKER', 'INSTANCED GEOMETRY VERTICAL RAIN SHEET', 'LIGHTMAP REGION', 'PLANAR FOG VOLUME', 'PORTAL', 'SEAM', 'WATER PHYSICS VOLUME')
-
-        override_active = context.active_object.name.startswith(special_prefixes)
-
-        if override_active:
+        if ObjectPrefix(context.active_object, special_prefixes):
             return ob_halo_json.ObjectMesh_Type_Locked not in invalid_mesh_types
         else:
             return ob_halo_json.ObjectMesh_Type not in invalid_mesh_types
@@ -1487,11 +1475,7 @@ class JSON_ObjectMeshLightmapProps(Panel):
         ob = context.object
         ob_halo_json = ob.halo_json
 
-        invalid_mesh_types = ('BOUNDARY SURFACE', 'COOKIE CUTTER', 'INSTANCED GEOMETRY MARKER', 'INSTANCED GEOMETRY RAIN BLOCKER', 'INSTANCED GEOMETRY VERTICAL RAIN SHEET', 'LIGHTMAP REGION', 'PLANAR FOG VOLUME', 'PORTAL', 'SEAM', 'WATER PHYSICS VOLUME')
-
-        override_active = context.active_object.name.startswith(special_prefixes)
-
-        if override_active:
+        if ObjectPrefix(context.active_object, special_prefixes):
             return ob_halo_json.ObjectMesh_Type_Locked not in invalid_mesh_types
         else:
             return ob_halo_json.ObjectMesh_Type not in invalid_mesh_types
@@ -1550,11 +1534,7 @@ class JSON_ObjectMeshExtraProps(Panel):
         ob = context.object
         ob_halo_json = ob.halo_json
 
-        invalid_mesh_types = ('BOUNDARY SURFACE', 'COOKIE CUTTER', 'INSTANCED GEOMETRY MARKER', 'INSTANCED GEOMETRY RAIN BLOCKER', 'INSTANCED GEOMETRY VERTICAL RAIN SHEET', 'LIGHTMAP REGION', 'PLANAR FOG VOLUME', 'PORTAL', 'SEAM', 'WATER PHYSICS VOLUME')
-
-        override_active = context.active_object.name.startswith(special_prefixes)
-
-        if override_active:
+        if ObjectPrefix(context.active_object, special_prefixes):
             return ob_halo_json.ObjectMesh_Type_Locked not in invalid_mesh_types
         else:
             return ob_halo_json.ObjectMesh_Type not in invalid_mesh_types
