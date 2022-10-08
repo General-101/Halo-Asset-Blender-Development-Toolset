@@ -487,7 +487,7 @@ def WriteScenarioContents(metadata, asset_path, asset_name):
                     if (perm not in fog_perm):
                         fog_perm.append(perm)
 
-                elif ObCookie(ob) and ob.halo_json.bsp_index == bsp:
+                elif sel_logic.ObCookie(ob) and ob.halo_json.bsp_index == bsp:
                     perm = GetPerm(ob)
                     if (perm not in cookie_perm):
                         cookie_perm.append(perm)
@@ -584,7 +584,7 @@ def WriteScenarioContents(metadata, asset_path, asset_name):
         shared_bsp_exists = False
 
         for ob in bpy.data.objects:
-            if not ob.halo_json.bsp_shared and (ob.halo_json.bsp_index not in bsp_list) and (ObBoundarys(ob) or ObWaterPhysics(ob) or ObPoopRains(ob)):
+            if not ob.halo_json.bsp_shared and (ob.halo_json.bsp_index not in bsp_list) and (sel_logic.ObBoundarys(ob) or sel_logic.ObWaterPhysics(ob) or sel_logic.ObPoopRains(ob)):
                 bsp_list.append(ob.halo_json.bsp_index)
 
         for ob in bpy.data.objects:

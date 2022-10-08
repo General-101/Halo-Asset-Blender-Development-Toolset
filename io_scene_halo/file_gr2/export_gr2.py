@@ -49,7 +49,9 @@ from ..gr2_utils import (
 ##############################
 
 def getNodes(model_armature, boneslist):
-    nodesList = boneslist
+    nodesList = {}
+    if model_armature != None:
+        nodesList.update(boneslist)
 
     for light in bpy.data.objects:
         if light.type == 'LIGHT':
