@@ -29,6 +29,7 @@ import os
 from os import path
 import csv
 from math import radians
+from mathutils import Matrix
 #from . import HREKPath
 ###########
 ##GLOBALS##
@@ -57,7 +58,7 @@ poop_lighting_prefixes = ('%!',     '%-!','%+!','%*!',     '%-*!','%+*!',     '%
 poop_pathfinding_prefixes = ('%+',     '%!+','%?+','%>+','%*+',     '%!*+','%?*+','%>*+',     '%*!+','%*?+','%*>+',          '%-',     '%!-','%?-','%>-','%*-',     '%!*-','%?*-','%>*-',     '%*!-','%*?-','%*>-')
 poop_render_only_prefixes = ('%*',     '%!*','%?*','%>*','%-*','%+*',     '%!-*','%!+*','%?-*','%?+*','%>-*','%>+*')
 # Material Prefixes #
-special_materials = ('+collision', '+physics', '+portal','+seamsealer','+sky','+weatherpoly')
+special_materials = ('+collision', '+physics', '+portal', '+seamsealer','+sky', '+slip_surface', '+soft_ceiling', '+soft_kill', '+weatherpoly')
 # Enums #
 special_mesh_types = ('BOUNDARY SURFACE','DECORATOR','INSTANCED GEOMETRY','PLANAR FOG VOLUME','PORTAL','SEAM','WATER PHYSICS VOLUME',)
 invalid_mesh_types = ('BOUNDARY SURFACE', 'COOKIE CUTTER', 'INSTANCED GEOMETRY MARKER', 'INSTANCED GEOMETRY RAIN BLOCKER', 'INSTANCED GEOMETRY VERTICAL RAIN SHEET', 'LIGHTMAP REGION', 'PLANAR FOG VOLUME', 'PORTAL', 'SEAM', 'WATER PHYSICS VOLUME')
@@ -274,23 +275,35 @@ def ObjectPrefix(ob, prefixes):
 def NotParentedToPoop(ob):
     return (not MeshType(ob.parent, 'INSTANCED GEOMETRY') or (ObjectPrefix(ob.parent, special_prefixes) and not ObjectPrefix(ob.parent, '%')))
 
-def FixMarkersRotation():
+def FixMarkersRotation(pivot):
     DeselectAllObjects()
+    angle = radians(-90)
+    axis = (0, 0, 1)
     markers_list = []
     for ob in bpy.data.objects:
         if sel_logic.ObMarkers(ob):
-            ob.select_set(True)
+            M = (
+                Matrix.Translation(pivot) @
+                Matrix.Rotation(angle, 4, axis) @       
+                Matrix.Translation(-pivot)
+                )
+            ob.matrix_world = M @ ob.matrix_world
             markers_list.append(ob)
-    if len(markers_list) > 0:
-        bpy.ops.transform.rotate(value=radians(-90), orient_axis='Z', orient_type='GLOBAL', orient_matrix=((1, 0, 0), (0, 1, 0), (0, 0, 1)), orient_matrix_type='GLOBAL', constraint_axis=(False, False, True), mirror=False, use_proportional_edit=False, proportional_edit_falloff='SMOOTH', proportional_size=1, use_proportional_connected=False, use_proportional_projected=False)
 
     return markers_list
 
-def RestoreMarkersRotation(markers_list):
+
+def RestoreMarkersRotation(pivot, markers_list):
     DeselectAllObjects()
+    angle = radians(90)
+    axis = (0, 0, 1)
     for ob in markers_list:
-        ob.select_set(True)
-    bpy.ops.transform.rotate(value=radians(90), orient_axis='Z', orient_type='GLOBAL', orient_matrix=((1, 0, 0), (0, 1, 0), (0, 0, 1)), orient_matrix_type='GLOBAL', constraint_axis=(False, False, True), mirror=False, use_proportional_edit=False, proportional_edit_falloff='SMOOTH', proportional_size=1, use_proportional_connected=False, use_proportional_projected=False)
+        M = (
+            Matrix.Translation(pivot) @
+            Matrix.Rotation(angle, 4, axis) @       
+            Matrix.Translation(-pivot)
+            )
+        ob.matrix_world = M @ ob.matrix_world
 
 #############
 #BONE SORTING#

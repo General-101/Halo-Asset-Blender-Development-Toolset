@@ -482,7 +482,7 @@ def WriteScenarioContents(metadata, asset_path, asset_name):
                     if (perm not in lightmap_perm):
                         lightmap_perm.append(perm)
 
-                elif sel_logic.ObFog(ob) and ob.halo_json.bsp_index == bsp:
+                elif sel_logic.ObFog(ob) and ob.halo_json.bsp_index == bsp: # NEEDS TO BE MOVED TO STRUCTURE DESIGN!
                     perm = GetPerm(ob)
                     if (perm not in fog_perm):
                         fog_perm.append(perm)

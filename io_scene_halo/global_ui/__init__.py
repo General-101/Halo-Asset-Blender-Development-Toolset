@@ -3316,6 +3316,9 @@ class JSON_MaterialPropertiesGroup(PropertyGroup):
                         ('PORTAL', "Portal", "Force all faces with this material to be portals"),
                         ('SEAMSEALER', "Seamsealer", "Force all faces with this material to be seamsealer"),
                         ('SKY', "Sky", "Force all faces with this material to be sky"),
+                        ('SLIP SURFACE', "Slip Surface", ""),
+                        ('SOFT CEILING', "Soft Ceiling", ""),
+                        ('SOFT KILL', "Soft Kill", ""),
                         ('WEATHERPOLY', "Weather Polyhedra", "Force all faces with this material to be weather polyhedra"),
                         ]
 
@@ -3338,8 +3341,14 @@ class JSON_MaterialPropertiesGroup(PropertyGroup):
             return 4
         elif bpy.context.object.active_material.name.lower().startswith('+sky'):
             return 5
-        elif bpy.context.object.active_material.name.lower().startswith('+weatherpoly'):
+        elif bpy.context.object.active_material.name.lower().startswith('+slip_surface'):
             return 6
+        elif bpy.context.object.active_material.name.lower().startswith('+soft_ceiling'):
+            return 7
+        elif bpy.context.object.active_material.name.lower().startswith('+soft_kill'):
+            return 8
+        elif bpy.context.object.active_material.name.lower().startswith('+weatherpoly'):
+            return 9
         else:
             return 0
 

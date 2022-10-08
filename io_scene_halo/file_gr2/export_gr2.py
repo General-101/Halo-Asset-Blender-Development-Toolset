@@ -36,6 +36,7 @@ from ..gr2_utils import (
     frame_prefixes,
     marker_prefixes,
     mesh_prefixes,
+    special_materials,
 
     poop_render_only_prefixes,
     invalid_mesh_types,
@@ -722,8 +723,6 @@ def getPrimitiveType(type):
 
 def getMaterials():
     matList = {}
-
-    halo_special_materials = ('+collision','+physics',"+portal","+seamsealer","+sky","+weatherpoly") # some special material names to match legacy
     
     for ob in bpy.data.objects:
         if 1<=len(ob.material_slots):
@@ -735,7 +734,7 @@ def getMaterials():
                     shaderPath = ''
                     shaderType = ''
 
-                    if halo_material_name.lower().startswith(halo_special_materials) or halo_material.material_override != 'NONE':
+                    if halo_material_name.lower().startswith(special_materials) or halo_material.material_override != 'NONE':
                         shaderType = 'override'
                         if halo_material_name.lower().startswith('+collision') or halo_material.material_override == 'COLLISION':
                             shaderPath = 'collisionVolume'
@@ -747,6 +746,12 @@ def getMaterials():
                             shaderPath = 'bungie_face_type=_connected_geometry_face_type_seam_sealer'
                         elif halo_material_name.lower().startswith('+sky') or halo_material.material_override == 'SKY':
                             shaderPath = 'bungie_face_type=_connected_geometry_face_type_sky'
+                        elif halo_material_name.lower().startswith('+slip_surface') or halo_material.material_override == 'SLIP SURFACE':
+                            shaderPath = 'slipSurface'
+                        elif halo_material_name.lower().startswith('+soft_ceiling') or halo_material.material_override == 'SOFT CEILING':
+                            shaderPath = 'softCeiling'
+                        elif halo_material_name.lower().startswith('+soft_kill') or halo_material.material_override == 'SOFT KILL':
+                            shaderPath = 'softKill'
                         elif halo_material_name.lower().startswith('+weatherpoly') or halo_material.material_override == 'WEATHERPOLY':
                             shaderPath = 'bungie_face_type=_connected_geometry_face_type_weather_polyhedra'
 
