@@ -198,45 +198,6 @@ def DeselectAllObjects():
 ##CHECK TYPES##
 #############
 
-def IsMesh(ob):
-    return ob.type == 'MESH'
-
-def MeshType(ob, types, valid_prefixes=()):
-    return IsMesh(ob) and ((ob.halo_json.ObjectMesh_Type in types and not ObjectPrefix(ob, special_prefixes)) or ObjectPrefix(ob, valid_prefixes))
-
-def ObjectType(ob, types=(), valid_prefixes=()):
-    if ob.type == 'MESH':
-        return ob.halo_json.Object_Type_All in types and not ObjectPrefix(ob, ((frame_prefixes, marker_prefixes)))
-    elif ob.type == 'EMPTY':
-        return ob.halo_json.Object_Type_No_Mesh in types or ObjectPrefix(ob, (valid_prefixes))
-    elif ob.type == 'LIGHT':
-        return True
-    else:
-        return False
-
-def ObjectPrefix(ob, prefixes):
-    return ob.name.startswith(prefixes)
-
-def NotParentedToPoop(ob):
-    return (not MeshType(ob.parent, 'INSTANCED GEOMETRY') or (ObjectPrefix(ob.parent, special_prefixes) and not ObjectPrefix(ob.parent, '%')))
-
-def FixMarkersRotation():
-    DeselectAllObjects()
-    markers_list = []
-    for ob in bpy.data.objects:
-        if sel_logic.ObMarkers(ob):
-            ob.select_set(True)
-            markers_list.append(ob)
-    if len(markers_list) > 0:
-        bpy.ops.transform.rotate(value=radians(-90), orient_axis='Z', orient_type='GLOBAL', orient_matrix=((1, 0, 0), (0, 1, 0), (0, 0, 1)), orient_matrix_type='GLOBAL', constraint_axis=(False, False, True), mirror=False, use_proportional_edit=False, proportional_edit_falloff='SMOOTH', proportional_size=1, use_proportional_connected=False, use_proportional_projected=False)
-
-    return markers_list
-
-def RestoreMarkersRotation(markers_list):
-    DeselectAllObjects()
-    for ob in markers_list:
-        ob.select_set(True)
-    bpy.ops.transform.rotate(value=radians(90), orient_axis='Z', orient_type='GLOBAL', orient_matrix=((1, 0, 0), (0, 1, 0), (0, 0, 1)), orient_matrix_type='GLOBAL', constraint_axis=(False, False, True), mirror=False, use_proportional_edit=False, proportional_edit_falloff='SMOOTH', proportional_size=1, use_proportional_connected=False, use_proportional_projected=False)
 
 class sel_logic():
     def ObRender(ob):
@@ -286,6 +247,50 @@ class sel_logic():
 
     def ObPoopRains(ob):
         return MeshType(ob, ('INSTANCED GEOMETRY RAIN BLOCKER', 'INSTANCED GEOMETRY VERTICAL RAIN SHEET'))
+
+
+
+def IsMesh(ob):
+    return ob.type == 'MESH'
+
+def MeshType(ob, types, valid_prefixes=()):
+    if ob != None: # temp work around for 'ob' not being passed between functions correctly, and resolving to a NoneType
+        return IsMesh(ob) and ((ob.halo_json.ObjectMesh_Type in types and not ObjectPrefix(ob, special_prefixes)) or ObjectPrefix(ob, valid_prefixes))
+
+def ObjectType(ob, types=(), valid_prefixes=()):
+    if ob != None: # temp work around for 'ob' not being passed between functions correctly, and resolving to a NoneType
+        if ob.type == 'MESH':
+            return ob.halo_json.Object_Type_All in types and not ObjectPrefix(ob, ((frame_prefixes, marker_prefixes)))
+        elif ob.type == 'EMPTY':
+            return ob.halo_json.Object_Type_No_Mesh in types or ObjectPrefix(ob, (valid_prefixes))
+        elif ob.type == 'LIGHT':
+            return True
+        else:
+            return False
+
+def ObjectPrefix(ob, prefixes):
+    return ob.name.startswith(prefixes)
+
+def NotParentedToPoop(ob):
+    return (not MeshType(ob.parent, 'INSTANCED GEOMETRY') or (ObjectPrefix(ob.parent, special_prefixes) and not ObjectPrefix(ob.parent, '%')))
+
+def FixMarkersRotation():
+    DeselectAllObjects()
+    markers_list = []
+    for ob in bpy.data.objects:
+        if sel_logic.ObMarkers(ob):
+            ob.select_set(True)
+            markers_list.append(ob)
+    if len(markers_list) > 0:
+        bpy.ops.transform.rotate(value=radians(-90), orient_axis='Z', orient_type='GLOBAL', orient_matrix=((1, 0, 0), (0, 1, 0), (0, 0, 1)), orient_matrix_type='GLOBAL', constraint_axis=(False, False, True), mirror=False, use_proportional_edit=False, proportional_edit_falloff='SMOOTH', proportional_size=1, use_proportional_connected=False, use_proportional_projected=False)
+
+    return markers_list
+
+def RestoreMarkersRotation(markers_list):
+    DeselectAllObjects()
+    for ob in markers_list:
+        ob.select_set(True)
+    bpy.ops.transform.rotate(value=radians(90), orient_axis='Z', orient_type='GLOBAL', orient_matrix=((1, 0, 0), (0, 1, 0), (0, 0, 1)), orient_matrix_type='GLOBAL', constraint_axis=(False, False, True), mirror=False, use_proportional_edit=False, proportional_edit_falloff='SMOOTH', proportional_size=1, use_proportional_connected=False, use_proportional_projected=False)
 
 #############
 #BONE SORTING#

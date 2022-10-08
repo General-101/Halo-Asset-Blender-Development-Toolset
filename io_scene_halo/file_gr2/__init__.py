@@ -464,6 +464,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
         from . import export_gr2, export_sidecar, import_sidecar
         mode = ''
         mode_not_set = False
+        model_armature = None
         if len(bpy.context.selected_objects) > 0:
             mode = bpy.context.object.mode
         else:
