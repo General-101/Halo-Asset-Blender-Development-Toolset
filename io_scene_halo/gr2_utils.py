@@ -275,13 +275,18 @@ def ObjectPrefix(ob, prefixes):
 def NotParentedToPoop(ob):
     return (not MeshType(ob.parent, 'INSTANCED GEOMETRY') or (ObjectPrefix(ob.parent, special_prefixes) and not ObjectPrefix(ob.parent, '%')))
 
-def FixMarkersRotation(pivot):
+def FixMarkersRotation(model_armature, is_model, pivot):
     DeselectAllObjects()
     angle = radians(-90)
     axis = (0, 0, 1)
     markers_list = []
+    pivot_reset = pivot
     for ob in bpy.data.objects:
         if sel_logic.ObMarkers(ob):
+            if is_model:
+                if ob.parent_type == 'BONE' and ob.parent_bone != '':
+                    bone_name = ob.parent_bone
+                    pivot = model_armature.data.bones[bone_name].vector
             M = (
                 Matrix.Translation(pivot) @
                 Matrix.Rotation(angle, 4, axis) @       
@@ -289,21 +294,28 @@ def FixMarkersRotation(pivot):
                 )
             ob.matrix_world = M @ ob.matrix_world
             markers_list.append(ob)
+            pivot = pivot_reset
 
     return markers_list
 
 
-def RestoreMarkersRotation(pivot, markers_list):
+def RestoreMarkersRotation(model_armature, is_model, pivot, markers_list):
     DeselectAllObjects()
     angle = radians(90)
     axis = (0, 0, 1)
+    pivot_reset = pivot
     for ob in markers_list:
+        if is_model:
+            if ob.parent_type == 'BONE' and ob.parent_bone != '':
+                bone_name = ob.parent_bone
+                pivot = model_armature.data.bones[bone_name].vector
         M = (
             Matrix.Translation(pivot) @
             Matrix.Rotation(angle, 4, axis) @       
             Matrix.Translation(-pivot)
             )
         ob.matrix_world = M @ ob.matrix_world
+        pivot = pivot_reset
 
 #############
 #BONE SORTING#

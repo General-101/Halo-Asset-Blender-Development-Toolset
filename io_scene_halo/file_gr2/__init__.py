@@ -289,7 +289,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
     import_to_game: BoolProperty(
         name='Import to Game',
         description='',
-        default=False,
+        default=True,
     )
     show_output: BoolProperty(
         name='Show Output',
@@ -451,12 +451,12 @@ class Export_Halo_GR2(Operator, ExportHelper):
     )
     primary_bone_axis: EnumProperty(
             name="",
-            items=(('Y', "", ""),),
+            items=(('Y', "", "")),
             default='Y',
             )
     secondary_bone_axis: EnumProperty(
             name="",
-            items=(('Z', "", ""),),
+            items=(('Z', "", "")),
             default='Z',
             )
 
@@ -572,7 +572,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                         export_gr2.save(self, context, self.report, IsWindows(), 'physics', '', perm, model_armature, boneslist, **keywords)
 
                         if self.export_markers:
-                            markers_list = FixMarkersRotation(pivot) 
+                            markers_list = FixMarkersRotation(model_armature, True, pivot) 
 
                             if SelectModelMarkers(model_armature, self.export_hidden):
                                 
@@ -580,7 +580,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                 export_gr2.save(self, context, self.report, IsWindows(), 'markers', '', '', model_armature, boneslist, **keywords)
 
                             if len(markers_list) > 0:
-                                RestoreMarkersRotation(pivot, markers_list)
+                                RestoreMarkersRotation(model_armature, True, pivot, markers_list)
 
                         if SelectModelSkeleton(model_armature):
                             export_fbx_bin.save(self, context, **keywords)
@@ -643,12 +643,12 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                         perm = GetPerm(ob)
                                         if perm not in perm_list:
                                             perm_list.append(perm)
-                                            markers_list = FixMarkersRotation(pivot) 
+                                            markers_list = FixMarkersRotation(model_armature, False, pivot) 
                                             if SelectMarkers(bsp, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp):
                                                 export_fbx_bin.save(self, context, **keywords)
                                                 export_gr2.save(self, context, self.report, IsWindows(), 'markers', "{0:03}".format(bsp), perm, **keywords)
                                             if len(markers_list) > 0:
-                                                RestoreMarkersRotation(pivot, markers_list)
+                                                RestoreMarkersRotation(model_armature, False, pivot, markers_list)
 
                                 if self.export_lights:
                                     perm_list = []
@@ -783,12 +783,12 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                     perm = GetPerm(ob)
                                     if perm not in perm_list:
                                         perm_list.append(perm)
-                                        markers_list = FixMarkersRotation(pivot) 
+                                        markers_list = FixMarkersRotation(model_armature, False, pivot) 
                                         SelectMarkers(bsp, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp)
                                         export_fbx_bin.save(self, context, **keywords)
                                         export_gr2.save(self, context, self.report, IsWindows(), 'markers', 'shared', perm, **keywords)
                                         if len(markers_list) > 0:
-                                            RestoreMarkersRotation(pivot, markers_list)
+                                            RestoreMarkersRotation(model_armature, False, pivot, markers_list)
 
                             if self.export_lights:
                                 perm_list = []
