@@ -626,7 +626,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                         perm = GetPerm(ob)
                                         if perm not in perm_list:
                                             perm_list.append(perm)
-                                            if SelectStructure(bsp, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp):
+                                            if SelectStructure(bsp, False, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp):
                                                 print('exporting structure ' + perm)
                                                 export_fbx_bin.save(self, context, **keywords)
                                                 export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'bsp', "{0:03}".format(bsp), perm, **keywords)
@@ -637,7 +637,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                         perm = GetPerm(ob)
                                         if perm not in perm_list:
                                             perm_list.append(perm)
-                                            if SelectPoops(bsp, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp):
+                                            if SelectPoops(bsp, False, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp):
                                                 print('exporting poops ' + perm)
                                                 export_fbx_bin.save(self, context, **keywords)
                                                 export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'poops', "{0:03}".format(bsp), perm, **keywords)
@@ -649,7 +649,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                         if perm not in perm_list:
                                             perm_list.append(perm)
                                             markers_list = FixMarkersRotation(model_armature, False, pivot) 
-                                            if SelectMarkers(bsp, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp):
+                                            if SelectMarkers(bsp, False, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp):
                                                 export_fbx_bin.save(self, context, **keywords)
                                                 export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'markers', "{0:03}".format(bsp), perm, **keywords)
                                             if len(markers_list) > 0:
@@ -661,7 +661,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                         perm = GetPerm(ob)
                                         if perm not in perm_list:
                                             perm_list.append(perm)
-                                            if SelectLights(bsp, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp):
+                                            if SelectLights(bsp, False, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp):
                                                 export_fbx_bin.save(self, context, **keywords)
                                                 export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'lights', "{0:03}".format(bsp), perm, **keywords)
 
@@ -671,7 +671,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                         perm = GetPerm(ob)
                                         if perm not in perm_list:
                                             perm_list.append(perm)
-                                            if SelectPortals(bsp, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp):
+                                            if SelectPortals(bsp, False, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp):
                                                 print('exporting portals ' + perm)
                                                 export_fbx_bin.save(self, context, **keywords)
                                                 export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'portals', "{0:03}".format(bsp), perm, **keywords)
@@ -682,7 +682,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                         perm = GetPerm(ob)
                                         if perm not in perm_list:
                                             perm_list.append(perm)
-                                            if SelectSeams(bsp, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp):
+                                            if SelectSeams(bsp, False, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp):
                                                 export_fbx_bin.save(self, context, **keywords)
                                                 export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'seams', "{0:03}".format(bsp), perm, **keywords)
 
@@ -692,7 +692,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                         perm = GetPerm(ob)
                                         if perm not in perm_list:
                                             perm_list.append(perm)
-                                            if SelectWaterSurfaces(bsp, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp):
+                                            if SelectWaterSurfaces(bsp, False, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp):
                                                 export_fbx_bin.save(self, context, **keywords)
                                                 export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'water', "{0:03}".format(bsp), perm, **keywords)
 
@@ -702,7 +702,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                         perm = GetPerm(ob)
                                         if perm not in perm_list:
                                             perm_list.append(perm)
-                                            if SelectFog(bsp, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp):
+                                            if SelectFog(bsp, False, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp):
                                                 export_fbx_bin.save(self, context, **keywords)
                                                 export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'fog', "{0:03}".format(bsp), perm, **keywords)
 
@@ -712,7 +712,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                         perm = GetPerm(ob)
                                         if perm not in perm_list:
                                             perm_list.append(perm)
-                                            if SelectCookie(bsp, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp):
+                                            if SelectCookie(bsp, False, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp):
                                                 export_fbx_bin.save(self, context, **keywords)
                                                 export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'cookie_cutters', "{0:03}".format(bsp), perm, **keywords)
 
@@ -722,7 +722,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                         perm = GetPerm(ob)
                                         if perm not in perm_list:
                                             perm_list.append(perm)
-                                            if SelectLightMapRegions(bsp, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp):
+                                            if SelectLightMapRegions(bsp, False, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp):
                                                 export_fbx_bin.save(self, context, **keywords)
                                                 export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'lightmap_region', "{0:03}".format(bsp), perm, **keywords)
 
@@ -732,7 +732,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                         perm = GetPerm(ob)
                                         if perm not in perm_list:
                                             perm_list.append(perm)
-                                            if SelectBoundarys(bsp, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp):
+                                            if SelectBoundarys(bsp, False, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp):
                                                 export_fbx_bin.save(self, context, **keywords)
                                                 export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'design', "{0:03}".format(bsp), perm, **keywords)
 
@@ -742,7 +742,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                         perm = GetPerm(ob)
                                         if perm not in perm_list:
                                             perm_list.append(perm)
-                                            if SelectWaterPhysics(bsp, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp):
+                                            if SelectWaterPhysics(bsp, False, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp):
                                                 export_fbx_bin.save(self, context, **keywords)
                                                 export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'water_physics', "{0:03}".format(bsp), perm, **keywords)
 
@@ -752,7 +752,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                         perm = GetPerm(ob)
                                         if perm not in perm_list:
                                             perm_list.append(perm)
-                                            if SelectPoopRains(bsp, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp):
+                                            if SelectPoopRains(bsp, False, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp):
                                                 export_fbx_bin.save(self, context, **keywords)
                                                 export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'rain_blockers', "{0:03}".format(bsp), perm, **keywords)
 
@@ -769,7 +769,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                     perm = GetPerm(ob)
                                     if perm not in perm_list:
                                         perm_list.append(perm)
-                                        SelectStructure(bsp, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp)
+                                        SelectStructure(bsp, True, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp)
                                         export_fbx_bin.save(self, context, **keywords)
                                         export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'bsp', 'shared', perm, **keywords)
 
@@ -779,7 +779,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                     perm = GetPerm(ob)
                                     if perm not in perm_list:
                                         perm_list.append(perm)
-                                        SelectPoops(bsp, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp)
+                                        SelectPoops(bsp, True, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp)
                                         export_fbx_bin.save(self, context, **keywords)
                                         export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'poops', 'shared', perm, **keywords)
 
@@ -790,7 +790,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                     if perm not in perm_list:
                                         perm_list.append(perm)
                                         markers_list = FixMarkersRotation(model_armature, False, pivot) 
-                                        SelectMarkers(bsp, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp)
+                                        SelectMarkers(bsp, True, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp)
                                         export_fbx_bin.save(self, context, **keywords)
                                         export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'markers', 'shared', perm, **keywords)
                                         if len(markers_list) > 0:
@@ -802,7 +802,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                     perm = GetPerm(ob)
                                     if perm not in perm_list:
                                         perm_list.append(perm)
-                                        SelectLights(bsp, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp)
+                                        SelectLights(bsp, True, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp)
                                         export_fbx_bin.save(self, context, **keywords)
                                         export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'lights', 'shared', perm, **keywords)
 
@@ -812,7 +812,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                     perm = GetPerm(ob)
                                     if perm not in perm_list:
                                         perm_list.append(perm)
-                                        SelectPortals(bsp, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp)
+                                        SelectPortals(bsp, True, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp)
                                         export_fbx_bin.save(self, context, **keywords)
                                         export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'portals', 'shared', perm, **keywords)
 
@@ -822,7 +822,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                     perm = GetPerm(ob)
                                     if perm not in perm_list:
                                         perm_list.append(perm)
-                                        SelectSeams(bsp, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp)
+                                        SelectSeams(bsp, True, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp)
                                         export_fbx_bin.save(self, context, **keywords)
                                         export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'seams', 'shared', perm, **keywords)
 
@@ -832,7 +832,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                     perm = GetPerm(ob)
                                     if perm not in perm_list:
                                         perm_list.append(perm)
-                                        SelectWaterSurfaces(bsp, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp)
+                                        SelectWaterSurfaces(bsp, True, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp)
                                         export_fbx_bin.save(self, context, **keywords)
                                         export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'water', 'shared', perm, **keywords)
 
@@ -842,7 +842,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                     perm = GetPerm(ob)
                                     if perm not in perm_list:
                                         perm_list.append(perm)
-                                        SelectLightMapRegions(bsp, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp)
+                                        SelectLightMapRegions(bsp, True, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp)
                                         export_fbx_bin.save(self, context, **keywords)
                                         export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'lightmap_region', 'shared', perm, **keywords)
 
@@ -852,7 +852,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                     perm = GetPerm(ob)
                                     if perm not in perm_list:
                                         perm_list.append(perm)
-                                        SelectBoundarys(bsp, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp)
+                                        SelectBoundarys(bsp, True, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp)
                                         export_fbx_bin.save(self, context, **keywords)
                                         export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'design', 'shared', perm, **keywords)
 
@@ -862,7 +862,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                     perm = GetPerm(ob)
                                     if perm not in perm_list:
                                         perm_list.append(perm)
-                                        SelectWaterPhysics(bsp, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp)
+                                        SelectWaterPhysics(bsp, True, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp)
                                         export_fbx_bin.save(self, context, **keywords)
                                         export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'water_physics', 'shared', perm, **keywords)
 
@@ -872,7 +872,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                     perm = GetPerm(ob)
                                     if perm not in perm_list:
                                         perm_list.append(perm)
-                                        SelectPoopRains(bsp, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp)
+                                        SelectPoopRains(bsp, True, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp)
                                         export_fbx_bin.save(self, context, **keywords)
                                         export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'rain_blockers', 'shared', perm, **keywords)
 
@@ -1048,44 +1048,44 @@ def SelectModelSkeleton(arm):
 
     return True
 
-def SelectStructure(index, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
-    return SelectBSPObject(index, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp, 'ObStructure')
+def SelectStructure(index, shared, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
+    return SelectBSPObject(index, shared, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp, 'ObStructure')
 
-def SelectPoops(index, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
-    return SelectBSPObject(index, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp, 'ObPoops')
+def SelectPoops(index, shared, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
+    return SelectBSPObject(index, shared, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp, 'ObPoops')
 
-def SelectMarkers(index, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
-    return SelectBSPObject(index, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp, 'ObMarkers')
+def SelectMarkers(index, shared, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
+    return SelectBSPObject(index, shared, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp, 'ObMarkers')
 
-def SelectLights(index, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
-    return SelectBSPObject(index, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp, 'ObLights')
+def SelectLights(index, shared, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
+    return SelectBSPObject(index, shared, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp, 'ObLights')
 
-def SelectPortals(index, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
-    return SelectBSPObject(index, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp, 'ObPortals')
+def SelectPortals(index, shared, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
+    return SelectBSPObject(index, shared, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp, 'ObPortals')
 
-def SelectSeams(index, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
-    return SelectBSPObject(index, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp, 'ObSeams')
+def SelectSeams(index, shared, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
+    return SelectBSPObject(index, shared, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp, 'ObSeams')
 
-def SelectWaterSurfaces(index, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
-    return SelectBSPObject(index, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp, 'ObWaterSurfaces')
+def SelectWaterSurfaces(index, shared, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
+    return SelectBSPObject(index, shared, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp, 'ObWaterSurfaces')
 
-def SelectLightMapRegions(index, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
-    return SelectBSPObject(index, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp, 'ObLightMapRegions')
+def SelectLightMapRegions(index, shared, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
+    return SelectBSPObject(index, shared, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp, 'ObLightMapRegions')
 
-def SelectFog(index, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
-    return SelectBSPObject(index, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp, 'ObFog')
+def SelectFog(index, shared, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
+    return SelectBSPObject(index, shared, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp, 'ObFog')
 
-def SelectCookie(index, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
-    return SelectBSPObject(index, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp, 'ObCookie')
+def SelectCookie(index, shared, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
+    return SelectBSPObject(index, shared, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp, 'ObCookie')
 
-def SelectBoundarys(index, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
-    return SelectBSPObject(index, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp, 'ObBoundarys')
+def SelectBoundarys(index, shared, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
+    return SelectBSPObject(index, shared, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp, 'ObBoundarys')
 
-def SelectWaterPhysics(index, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
-    return SelectBSPObject(index, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp, 'ObWaterPhysics')
+def SelectWaterPhysics(index, shared, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
+    return SelectBSPObject(index, shared, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp, 'ObWaterPhysics')
 
-def SelectPoopRains(index, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
-    return SelectBSPObject(index, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp, 'ObPoopRains')
+def SelectPoopRains(index, shared, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
+    return SelectBSPObject(index, shared, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp, 'ObPoopRains')
 
 def menu_func_export(self, context):
     self.layout.operator(Export_Halo_GR2.bl_idname, text="Halo Gen4 Asset Export (.fbx .json .gr2. .xml)")

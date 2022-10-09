@@ -176,14 +176,14 @@ def SelectModelObjectNoPerm(arm, export_hidden, select_func):
 
     return boolean
 
-def SelectBSPObject(index, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp, select_func):
+def SelectBSPObject(index, shared, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp, select_func):
     DeselectAllObjects()
     perm = ResetPerm(perm)
     boolean = False
     select_func = getattr(sel_logic, select_func)
     for ob in bpy.data.objects:
         halo = ob.halo_json
-        if halo.bsp_index == index:
+        if halo.bsp_index == index or shared:
             if ObjectValid(ob, export_hidden, perm, halo.Permutation_Name) and select_func(ob) and ExportPerm(perm, export_all_perms, export_specific_perm) and ExportBSP(index, export_all_bsps, export_specific_bsp):
                 ob.select_set(True)
                 boolean = True
