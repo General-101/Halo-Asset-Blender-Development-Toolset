@@ -38,7 +38,7 @@ import ctypes
 import bpy
 from bpy_extras.io_utils import ExportHelper
 from bpy.props import StringProperty, BoolProperty, EnumProperty, FloatProperty, IntProperty
-from bpy.types import Operator, Panel
+from bpy.types import Operator, Panel, PointerProperty, PropertyGroup
 from bpy_extras.io_utils import ExportHelper
 from mathutils import Vector
 
@@ -481,6 +481,8 @@ class Export_Halo_GR2(Operator, ExportHelper):
         asset = asset_path.rpartition('\\')[2]
         asset = asset.replace('.fbx', '')
 
+        # UpdateSettings(**keywords)
+
         if self.sidecar_type == 'MODEL':
             
             model_armature = GetSceneArmature()
@@ -545,6 +547,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                 if perm not in perm_list:
                                     perm_list.append(perm)
                                     if SelectModelRender(perm, model_armature, self.export_hidden, self.export_all_perms, self.export_specific_perm):
+                                        print('exporting render ' + perm)
                                         export_fbx_bin.save(self, context, **keywords)
                                         export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'render', '', perm, model_armature, boneslist, **keywords)
 
@@ -555,6 +558,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                 if perm not in perm_list:
                                     perm_list.append(perm)
                                     if SelectModelCollision(perm, model_armature, self.export_hidden, self.export_all_perms, self.export_specific_perm):
+                                        print('exporting collision ' + perm)
                                         export_fbx_bin.save(self, context, **keywords)
                                         export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'collision', '', perm, model_armature, boneslist, **keywords)
 
@@ -565,6 +569,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                 if perm not in perm_list:
                                     perm_list.append(perm)
                                     if SelectModelPhysics(perm, model_armature, self.export_hidden, self.export_all_perms, self.export_specific_perm):
+                                        print('exporting physics ' + perm)
                                         export_fbx_bin.save(self, context, **keywords)
                                         export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'physics', '', perm, model_armature, boneslist, **keywords)
 
@@ -572,6 +577,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                             markers_list = FixMarkersRotation(model_armature, True, pivot) 
 
                             if SelectModelMarkers(model_armature, self.export_hidden):
+                                print('exporting markers ')
                                 
                                 export_fbx_bin.save(self, context, **keywords)
                                 export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'markers', '', '', model_armature, boneslist, **keywords)
@@ -621,6 +627,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                         if perm not in perm_list:
                                             perm_list.append(perm)
                                             if SelectStructure(bsp, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp):
+                                                print('exporting structure ' + perm)
                                                 export_fbx_bin.save(self, context, **keywords)
                                                 export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'bsp', "{0:03}".format(bsp), perm, **keywords)
 
@@ -631,6 +638,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                         if perm not in perm_list:
                                             perm_list.append(perm)
                                             if SelectPoops(bsp, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp):
+                                                print('exporting poops ' + perm)
                                                 export_fbx_bin.save(self, context, **keywords)
                                                 export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'poops', "{0:03}".format(bsp), perm, **keywords)
 
@@ -664,6 +672,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                         if perm not in perm_list:
                                             perm_list.append(perm)
                                             if SelectPortals(bsp, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp):
+                                                print('exporting portals ' + perm)
                                                 export_fbx_bin.save(self, context, **keywords)
                                                 export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'portals', "{0:03}".format(bsp), perm, **keywords)
 
@@ -890,7 +899,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
 
                 if(IsWindows()):
                     if self.export_sidecar:
-                        export_sidecar.save(self, context, self.report, model_armature, **keywords)
+                        export_sidecar.save(self, context, self.report, asset_path, model_armature, **keywords)
                     import_sidecar.save(self, context, self.report, **keywords)
                     
             elif(not self.export_sidecar):
@@ -1080,6 +1089,35 @@ def SelectPoopRains(index, perm, export_hidden, export_all_perms, export_specifi
 
 def menu_func_export(self, context):
     self.layout.operator(Export_Halo_GR2.bl_idname, text="Halo Gen4 Asset Export (.fbx .json .gr2. .xml)")
+
+# def UpdateSettings(
+#     keep_fbx,
+#     keep_json,
+#     export_sidecar,
+#     sidecar_type,
+#     export_method,
+#     export_animations,
+#     export_render,
+#     export_collision,
+#     export_physics,
+#     export_markers,
+#     export_structure,
+#     export_poops,
+#     export_lights,
+#     export_portals,
+#     export_seams,
+#     export_water_surfaces,
+#     export_fog_planes,
+#     export_cookie_cutters,
+#     export_lightmap_regions,
+#     export_boundary_surfaces,
+#     export_water_physics,
+#     export_rain_occluders,
+#     export_shared,
+
+# ):
+    # halo_gr2 = bpy.context.Scene.halo_gr2
+
 
 def register():
     bpy.utils.register_class(Export_Halo_GR2)

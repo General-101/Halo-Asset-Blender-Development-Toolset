@@ -767,11 +767,10 @@ def SceneHasMarkers():
     
     return boolean
 
-def save(operator, context, report, model_armature=None,
+def save(operator, context, report, asset_path, model_armature=None,
         filepath="",
         export_sidecar=False,
         sidecar_type='MODEL',
-        asset_path='',
         output_biped=False,
         output_crate=False,
         output_creature=False,
