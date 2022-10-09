@@ -450,13 +450,25 @@ class Export_Halo_GR2(Operator, ExportHelper):
         default=False
     )
     primary_bone_axis: EnumProperty(
-            name="",
-            items=(('Y', "", "")),
+            name="Primary Bone Axis",
+            items=(('X', "X Axis", ""),
+                   ('Y', "Y Axis", ""),
+                   ('Z', "Z Axis", ""),
+                   ('-X', "-X Axis", ""),
+                   ('-Y', "-Y Axis", ""),
+                   ('-Z', "-Z Axis", ""),
+                   ),
             default='Y',
             )
     secondary_bone_axis: EnumProperty(
-            name="",
-            items=(('Z', "", "")),
+            name="Secondary Bone Axis",
+            items=(('X', "X Axis", ""),
+                   ('Y', "Y Axis", ""),
+                   ('Z', "Z Axis", ""),
+                   ('-X', "-X Axis", ""),
+                   ('-Y', "-Y Axis", ""),
+                   ('-Z', "-Z Axis", ""),
+                   ),
             default='Z',
             )
 
