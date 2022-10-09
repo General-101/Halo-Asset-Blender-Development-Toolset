@@ -943,7 +943,7 @@ def build_gr2(toolPath, filePath, jsonPath, gr2Path):
         os.remove(filePath)
         os.remove(jsonPath)
 
-def save(operator, context, report, is_windows, tag_type,
+def save(operator, context, report, asset_path, asset_name, is_windows, tag_type,
         bsp='',
         perm='',
         model_armature='',
@@ -951,8 +951,6 @@ def save(operator, context, report, is_windows, tag_type,
         filepath="",
         keep_fbx=False,
         keep_json=False,
-        asset_path='',
-        asset_name='',
         **kwargs
         ):
 

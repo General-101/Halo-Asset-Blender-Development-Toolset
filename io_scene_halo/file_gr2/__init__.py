@@ -38,7 +38,7 @@ import ctypes
 import bpy
 from bpy_extras.io_utils import ExportHelper
 from bpy.props import StringProperty, BoolProperty, EnumProperty, FloatProperty, IntProperty
-from bpy.types import Operator
+from bpy.types import Operator, Panel
 from bpy_extras.io_utils import ExportHelper
 from mathutils import Vector
 
@@ -69,6 +69,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
     """Exports a Halo GEN4 Asset using your Halo Editing Kit"""
     bl_idname = 'export_halo.gr2'
     bl_label = 'Export Asset'
+    bl_options = {'UNDO', 'PRESET'}
 
     filename_ext = ".fbx"
 
@@ -423,27 +424,6 @@ class Export_Halo_GR2(Operator, ExportHelper):
         description="",
         default=False,
     )
-
-    def GetAssetPath(self):
-        asset = self.filepath.rpartition('\\')[0]
-        return asset
-
-    asset_path: StringProperty(
-        name='',
-        description="",
-        get=GetAssetPath,
-    )
-
-    def GetAssetName(self):
-        asset = self.asset_path.rpartition('\\')[2]
-        asset = asset.replace('.fbx', '')
-        return asset
-
-    asset_name: StringProperty(
-        name='',
-        description="",
-        get=GetAssetName,
-    )
     import_in_background: BoolProperty(
         name='Run In Backround',
         description="If enabled does not pause use of blender during the import process",
@@ -474,6 +454,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
 
     def execute(self, context):
         keywords = self.as_keywords()
+        print(self)
         from . import export_gr2, export_sidecar, import_sidecar
         mode = ''
         mode_not_set = False
@@ -495,6 +476,10 @@ class Export_Halo_GR2(Operator, ExportHelper):
                 ob.hide_set(False)
 
         pivot = Vector((0.0, 0.0, 0.0))
+
+        asset_path = self.filepath.rpartition('\\')[0]
+        asset = asset_path.rpartition('\\')[2]
+        asset = asset.replace('.fbx', '')
 
         if self.sidecar_type == 'MODEL':
             
@@ -561,7 +546,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                     perm_list.append(perm)
                                     if SelectModelRender(perm, model_armature, self.export_hidden, self.export_all_perms, self.export_specific_perm):
                                         export_fbx_bin.save(self, context, **keywords)
-                                        export_gr2.save(self, context, self.report, IsWindows(), 'render', '', perm, model_armature, boneslist, **keywords)
+                                        export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'render', '', perm, model_armature, boneslist, **keywords)
 
                         if self.export_collision:
                             perm_list = []
@@ -571,7 +556,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                     perm_list.append(perm)
                                     if SelectModelCollision(perm, model_armature, self.export_hidden, self.export_all_perms, self.export_specific_perm):
                                         export_fbx_bin.save(self, context, **keywords)
-                                        export_gr2.save(self, context, self.report, IsWindows(), 'collision', '', perm, model_armature, boneslist, **keywords)
+                                        export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'collision', '', perm, model_armature, boneslist, **keywords)
 
                         if self.export_physics:
                             perm_list = []
@@ -581,7 +566,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                     perm_list.append(perm)
                                     if SelectModelPhysics(perm, model_armature, self.export_hidden, self.export_all_perms, self.export_specific_perm):
                                         export_fbx_bin.save(self, context, **keywords)
-                                        export_gr2.save(self, context, self.report, IsWindows(), 'physics', '', perm, model_armature, boneslist, **keywords)
+                                        export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'physics', '', perm, model_armature, boneslist, **keywords)
 
                         if self.export_markers:
                             markers_list = FixMarkersRotation(model_armature, True, pivot) 
@@ -589,14 +574,14 @@ class Export_Halo_GR2(Operator, ExportHelper):
                             if SelectModelMarkers(model_armature, self.export_hidden):
                                 
                                 export_fbx_bin.save(self, context, **keywords)
-                                export_gr2.save(self, context, self.report, IsWindows(), 'markers', '', '', model_armature, boneslist, **keywords)
+                                export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'markers', '', '', model_armature, boneslist, **keywords)
 
                             if len(markers_list) > 0:
                                 RestoreMarkersRotation(model_armature, True, pivot, markers_list)
 
                         if SelectModelSkeleton(model_armature):
                             export_fbx_bin.save(self, context, **keywords)
-                            export_gr2.save(self, context, self.report, IsWindows(), 'skeleton', '', '', model_armature, boneslist, **keywords)
+                            export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'skeleton', '', '', model_armature, boneslist, **keywords)
 
                         if self.export_animations and 1<=len(bpy.data.actions):
                             if SelectModelSkeleton(model_armature):
@@ -610,7 +595,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                             scene.frame_start = f_start
                                             scene.frame_end = f_end
                                         export_fbx_bin.save(self, context, **keywords)
-                                        export_gr2.save(self, context, self.report, IsWindows(), 'animations', '', '', model_armature, boneslist, **keywords)
+                                        export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'animations', '', '', model_armature, boneslist, **keywords)
                                     except:
                                         print('Encountered animation not in armature, skipping export of animation: ' + action.name)
                                 
@@ -637,7 +622,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                             perm_list.append(perm)
                                             if SelectStructure(bsp, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp):
                                                 export_fbx_bin.save(self, context, **keywords)
-                                                export_gr2.save(self, context, self.report, IsWindows(), 'bsp', "{0:03}".format(bsp), perm, **keywords)
+                                                export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'bsp', "{0:03}".format(bsp), perm, **keywords)
 
                                 if self.export_poops:
                                     perm_list = []
@@ -647,7 +632,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                             perm_list.append(perm)
                                             if SelectPoops(bsp, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp):
                                                 export_fbx_bin.save(self, context, **keywords)
-                                                export_gr2.save(self, context, self.report, IsWindows(), 'poops', "{0:03}".format(bsp), perm, **keywords)
+                                                export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'poops', "{0:03}".format(bsp), perm, **keywords)
 
                                 if self.export_markers:
                                     perm_list = []
@@ -658,7 +643,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                             markers_list = FixMarkersRotation(model_armature, False, pivot) 
                                             if SelectMarkers(bsp, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp):
                                                 export_fbx_bin.save(self, context, **keywords)
-                                                export_gr2.save(self, context, self.report, IsWindows(), 'markers', "{0:03}".format(bsp), perm, **keywords)
+                                                export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'markers', "{0:03}".format(bsp), perm, **keywords)
                                             if len(markers_list) > 0:
                                                 RestoreMarkersRotation(model_armature, False, pivot, markers_list)
 
@@ -670,7 +655,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                             perm_list.append(perm)
                                             if SelectLights(bsp, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp):
                                                 export_fbx_bin.save(self, context, **keywords)
-                                                export_gr2.save(self, context, self.report, IsWindows(), 'lights', "{0:03}".format(bsp), perm, **keywords)
+                                                export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'lights', "{0:03}".format(bsp), perm, **keywords)
 
                                 if self.export_portals:
                                     perm_list = []
@@ -680,7 +665,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                             perm_list.append(perm)
                                             if SelectPortals(bsp, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp):
                                                 export_fbx_bin.save(self, context, **keywords)
-                                                export_gr2.save(self, context, self.report, IsWindows(), 'portals', "{0:03}".format(bsp), perm, **keywords)
+                                                export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'portals', "{0:03}".format(bsp), perm, **keywords)
 
                                 if self.export_seams:
                                     perm_list = []
@@ -690,7 +675,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                             perm_list.append(perm)
                                             if SelectSeams(bsp, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp):
                                                 export_fbx_bin.save(self, context, **keywords)
-                                                export_gr2.save(self, context, self.report, IsWindows(), 'seams', "{0:03}".format(bsp), perm, **keywords)
+                                                export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'seams', "{0:03}".format(bsp), perm, **keywords)
 
                                 if self.export_water_surfaces:
                                     perm_list = []
@@ -700,7 +685,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                             perm_list.append(perm)
                                             if SelectWaterSurfaces(bsp, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp):
                                                 export_fbx_bin.save(self, context, **keywords)
-                                                export_gr2.save(self, context, self.report, IsWindows(), 'water', "{0:03}".format(bsp), perm, **keywords)
+                                                export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'water', "{0:03}".format(bsp), perm, **keywords)
 
                                 if self.export_fog_planes:
                                     perm_list = []
@@ -710,7 +695,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                             perm_list.append(perm)
                                             if SelectFog(bsp, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp):
                                                 export_fbx_bin.save(self, context, **keywords)
-                                                export_gr2.save(self, context, self.report, IsWindows(), 'fog', "{0:03}".format(bsp), perm, **keywords)
+                                                export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'fog', "{0:03}".format(bsp), perm, **keywords)
 
                                 if self.export_cookie_cutters:
                                     perm_list = []
@@ -720,7 +705,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                             perm_list.append(perm)
                                             if SelectCookie(bsp, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp):
                                                 export_fbx_bin.save(self, context, **keywords)
-                                                export_gr2.save(self, context, self.report, IsWindows(), 'cookie_cutters', "{0:03}".format(bsp), perm, **keywords)
+                                                export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'cookie_cutters', "{0:03}".format(bsp), perm, **keywords)
 
                                 if self.export_lightmap_regions:
                                     perm_list = []
@@ -730,7 +715,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                             perm_list.append(perm)
                                             if SelectLightMapRegions(bsp, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp):
                                                 export_fbx_bin.save(self, context, **keywords)
-                                                export_gr2.save(self, context, self.report, IsWindows(), 'lightmap_region', "{0:03}".format(bsp), perm, **keywords)
+                                                export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'lightmap_region', "{0:03}".format(bsp), perm, **keywords)
 
                                 if self.export_boundary_surfaces:
                                     perm_list = []
@@ -740,7 +725,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                             perm_list.append(perm)
                                             if SelectBoundarys(bsp, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp):
                                                 export_fbx_bin.save(self, context, **keywords)
-                                                export_gr2.save(self, context, self.report, IsWindows(), 'design', "{0:03}".format(bsp), perm, **keywords)
+                                                export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'design', "{0:03}".format(bsp), perm, **keywords)
 
                                 if self.export_water_physics:
                                     perm_list = []
@@ -750,7 +735,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                             perm_list.append(perm)
                                             if SelectWaterPhysics(bsp, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp):
                                                 export_fbx_bin.save(self, context, **keywords)
-                                                export_gr2.save(self, context, self.report, IsWindows(), 'water_physics', "{0:03}".format(bsp), perm, **keywords)
+                                                export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'water_physics', "{0:03}".format(bsp), perm, **keywords)
 
                                 if self.export_rain_occluders:
                                     perm_list = []
@@ -760,7 +745,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                             perm_list.append(perm)
                                             if SelectPoopRains(bsp, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp):
                                                 export_fbx_bin.save(self, context, **keywords)
-                                                export_gr2.save(self, context, self.report, IsWindows(), 'rain_blockers', "{0:03}".format(bsp), perm, **keywords)
+                                                export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'rain_blockers', "{0:03}".format(bsp), perm, **keywords)
 
 
 
@@ -777,7 +762,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                         perm_list.append(perm)
                                         SelectStructure(bsp, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp)
                                         export_fbx_bin.save(self, context, **keywords)
-                                        export_gr2.save(self, context, self.report, IsWindows(), 'bsp', 'shared', perm, **keywords)
+                                        export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'bsp', 'shared', perm, **keywords)
 
                             if self.export_poops:
                                 perm_list = []
@@ -787,7 +772,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                         perm_list.append(perm)
                                         SelectPoops(bsp, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp)
                                         export_fbx_bin.save(self, context, **keywords)
-                                        export_gr2.save(self, context, self.report, IsWindows(), 'poops', 'shared', perm, **keywords)
+                                        export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'poops', 'shared', perm, **keywords)
 
                             if self.export_markers:
                                 perm_list = []
@@ -798,7 +783,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                         markers_list = FixMarkersRotation(model_armature, False, pivot) 
                                         SelectMarkers(bsp, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp)
                                         export_fbx_bin.save(self, context, **keywords)
-                                        export_gr2.save(self, context, self.report, IsWindows(), 'markers', 'shared', perm, **keywords)
+                                        export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'markers', 'shared', perm, **keywords)
                                         if len(markers_list) > 0:
                                             RestoreMarkersRotation(model_armature, False, pivot, markers_list)
 
@@ -810,7 +795,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                         perm_list.append(perm)
                                         SelectLights(bsp, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp)
                                         export_fbx_bin.save(self, context, **keywords)
-                                        export_gr2.save(self, context, self.report, IsWindows(), 'lights', 'shared', perm, **keywords)
+                                        export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'lights', 'shared', perm, **keywords)
 
                             if self.export_portals:
                                 perm_list = []
@@ -820,7 +805,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                         perm_list.append(perm)
                                         SelectPortals(bsp, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp)
                                         export_fbx_bin.save(self, context, **keywords)
-                                        export_gr2.save(self, context, self.report, IsWindows(), 'portals', 'shared', perm, **keywords)
+                                        export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'portals', 'shared', perm, **keywords)
 
                             if self.export_seams:
                                 perm_list = []
@@ -830,7 +815,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                         perm_list.append(perm)
                                         SelectSeams(bsp, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp)
                                         export_fbx_bin.save(self, context, **keywords)
-                                        export_gr2.save(self, context, self.report, IsWindows(), 'seams', 'shared', perm, **keywords)
+                                        export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'seams', 'shared', perm, **keywords)
 
                             if self.export_water_surfaces:
                                 perm_list = []
@@ -840,7 +825,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                         perm_list.append(perm)
                                         SelectWaterSurfaces(bsp, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp)
                                         export_fbx_bin.save(self, context, **keywords)
-                                        export_gr2.save(self, context, self.report, IsWindows(), 'water', 'shared', perm, **keywords)
+                                        export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'water', 'shared', perm, **keywords)
 
                             if self.export_lightmap_regions:
                                 perm_list = []
@@ -850,7 +835,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                         perm_list.append(perm)
                                         SelectLightMapRegions(bsp, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp)
                                         export_fbx_bin.save(self, context, **keywords)
-                                        export_gr2.save(self, context, self.report, IsWindows(), 'lightmap_region', 'shared', perm, **keywords)
+                                        export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'lightmap_region', 'shared', perm, **keywords)
 
                             if self.export_boundary_surfaces:
                                 perm_list = []
@@ -860,7 +845,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                         perm_list.append(perm)
                                         SelectBoundarys(bsp, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp)
                                         export_fbx_bin.save(self, context, **keywords)
-                                        export_gr2.save(self, context, self.report, IsWindows(), 'design', 'shared', perm, **keywords)
+                                        export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'design', 'shared', perm, **keywords)
 
                             if self.export_water_physics:
                                 perm_list = []
@@ -870,7 +855,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                         perm_list.append(perm)
                                         SelectWaterPhysics(bsp, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp)
                                         export_fbx_bin.save(self, context, **keywords)
-                                        export_gr2.save(self, context, self.report, IsWindows(), 'water_physics', 'shared', perm, **keywords)
+                                        export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'water_physics', 'shared', perm, **keywords)
 
                             if self.export_rain_occluders:
                                 perm_list = []
@@ -880,7 +865,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                         perm_list.append(perm)
                                         SelectPoopRains(bsp, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp)
                                         export_fbx_bin.save(self, context, **keywords)
-                                        export_gr2.save(self, context, self.report, IsWindows(), 'rain_blockers', 'shared', perm, **keywords)
+                                        export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'rain_blockers', 'shared', perm, **keywords)
 
                     elif self.sidecar_type == 'DECORATOR':
                         print('not implemented')
@@ -901,7 +886,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                 
                 else:
                     export_fbx_bin.save(self, context, **keywords)
-                    export_gr2.save(self, context, self.report, IsWindows(), 'selected', **keywords)
+                    export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'selected', **keywords)
 
                 if(IsWindows()):
                     if self.export_sidecar:
@@ -910,7 +895,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                     
             elif(not self.export_sidecar):
                 export_fbx_bin.save(self, context, **keywords)
-                export_gr2.save(self, context, self.report, IsWindows(), 'selected', **keywords)
+                export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'selected', **keywords)
             else:
                 self.report({'ERROR'},"No sidecar output tags selected")
 
@@ -1031,6 +1016,8 @@ class Export_Halo_GR2(Operator, ExportHelper):
         col.prop(self, "use_mesh_modifiers")
         col.prop(self, "use_triangles")
         col.prop(self, 'use_armature_deform_only')
+        col.prop(self, 'primary_bone_axis')
+        col.prop(self, 'secondary_bone_axis')
         col.separator()
         col.prop(self, "global_scale")
 
