@@ -49,8 +49,11 @@ def import_sidecar(report, filePath='', import_to_game=False, import_check=False
         report({'WARNING'},"Import Failed!")
 
     if run_tagwatcher:
-        tagwatcher = GetEKPath() + '\\bin\\tools\\bonobo\\TagWatcher.exe'
-        Popen(tagwatcher)
+        try:
+            tagwatcher = GetEKPath() + '\\bin\\tools\\bonobo\\TagWatcher.exe'
+            Popen(tagwatcher)
+        except:
+            report({'WARNING'},"TagWatcher Failed To Run!")
 
     report({'INFO'},"Import process complete")
 

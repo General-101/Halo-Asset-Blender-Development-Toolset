@@ -50,16 +50,19 @@ def reset_frame_ids():
 def set_frame_ids():
     model_armature = GetSceneArmature()
     framelist = ImportTagXML(GetToolPath())
-    tag_bone_names = CleanBoneNames(framelist)
-    blend_bone_names = CleanBones(model_armature.data.bones)
-    blend_bones = model_armature.data.bones
-    
-    for blend_bone in blend_bone_names:
-        for tag_bone in tag_bone_names:
-            if blend_bone == tag_bone:
-                ApplyFrameIDs(blend_bone, blend_bones, framelist)
+    if(not framelist == None):
+        tag_bone_names = CleanBoneNames(framelist)
+        blend_bone_names = CleanBones(model_armature.data.bones)
+        blend_bones = model_armature.data.bones
+        
+        for blend_bone in blend_bone_names:
+            for tag_bone in tag_bone_names:
+                if blend_bone == tag_bone:
+                    ApplyFrameIDs(blend_bone, blend_bones, framelist)
 
-    return {'FINISHED'}
+        return {'FINISHED'}
+    else:
+        return {'FINISHED'}
 
 def ApplyFrameIDs(bone_name, bone_names_list, framelist):
     for b in bone_names_list:
@@ -106,15 +109,19 @@ def CleanBoneName(bone):
     return cleaned_bone
 
 def ImportTagXML(toolPath):
-    xmlPath = GetTagsPath() + "temp.xml"
-    tagPath = GetGraphPath()
-    toolCommand = '"{}" export-tag-to-xml "{}" "{}"'.format(toolPath, tagPath, xmlPath)
-    os.chdir(GetEKPath())
-    p = Popen(toolCommand)
-    p.wait()
-    bonelist = ParseXML(xmlPath)
-    os.remove(xmlPath)
-    return bonelist
+    try:
+        xmlPath = GetTagsPath() + "temp.xml"
+        tagPath = GetGraphPath()
+        toolCommand = '"{}" export-tag-to-xml "{}" "{}"'.format(toolPath, tagPath, xmlPath)
+        os.chdir(GetEKPath())
+        p = Popen(toolCommand)
+        p.wait()
+        bonelist = ParseXML(xmlPath)
+        os.remove(xmlPath)
+        return bonelist
+    except:
+        ctypes.windll.user32.MessageBoxW(0, "Tool.exe failed to get tag XML for FrameIDs. Please check the path to your .model_animation_graph tag.", "Get FrameIDs Failed", 0)
+        return None
 
 def GetGraphPath():
     path = bpy.data.scenes[0].gr2_frame_ids.anim_tag_path
