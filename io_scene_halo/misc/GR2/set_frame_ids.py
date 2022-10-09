@@ -26,6 +26,7 @@
 
 import bpy
 import os
+import ctypes
 import xml.etree.ElementTree as ET
 from subprocess import Popen
 
