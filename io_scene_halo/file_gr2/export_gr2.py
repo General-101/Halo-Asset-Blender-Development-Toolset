@@ -43,6 +43,7 @@ from ..gr2_utils import (
     GetToolPath,
     GetTagsPath,
     GetEKPath,
+    sel_logic,
 )
 
 ##############################
@@ -55,7 +56,7 @@ def getNodes(model_armature, boneslist):
         nodesList.update(boneslist)
 
     for light in bpy.data.objects:
-        if light.type == 'LIGHT':
+        if sel_logic.ObLights(light):
             halo_light = light.halo_json
             nodesList.update({light.name: getLightProperties(halo_light, light)})
 
@@ -63,7 +64,7 @@ def getNodes(model_armature, boneslist):
         halo_node = ob.halo_json
         halo_node_name = ob.name
 
-        if ((ob.type == 'MESH' and halo_node.Object_Type_All != 'MESH') or ob.type == 'EMPTY' or (halo_node_name.startswith(frame_prefixes) and ob.type != 'LIGHT')) and ob.select_get(): # if the name of a mesh starts with this, don't process it.
+        if sel_logic.ObMarkers(ob) and ob.select_get():
             nodesList.update({ob.name: getNodeProperties(halo_node, halo_node_name, ob)})
 
     temp = ({'nodes_properties': nodesList})
@@ -290,12 +291,19 @@ def getMeshes():
         halo_mesh = ob.halo_json
         halo_mesh_name = ob.name
         
-        if ob.type == 'MESH' and (not halo_mesh_name.startswith(frame_prefixes) and halo_mesh.Object_Type_All == 'MESH') and ob.select_get(): # if the name of a mesh starts with this, don't process it.
+        if IsValidForMeshProps(ob) and ob.select_get(): # if the name of a mesh starts with this, don't process it.
             meshesList.update({ob.name: getMeshProperties(halo_mesh, halo_mesh_name, ob)})
 
     temp = ({'meshes_properties': meshesList})
 
     return temp
+
+def IsValidForMeshProps(ob):
+    return (
+        not sel_logic.ObMarkers(ob) and
+        not sel_logic.ObLights(ob) and
+        not sel_logic.ObFrames(ob)
+    )
 
 def getMeshProperties(mesh, name, ob):
 

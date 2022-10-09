@@ -249,6 +249,9 @@ class sel_logic():
     def ObPoopRains(ob):
         return MeshType(ob, ('INSTANCED GEOMETRY RAIN BLOCKER', 'INSTANCED GEOMETRY VERTICAL RAIN SHEET'))
 
+    def ObFrames(ob):
+        return ObjectType(ob, ('FRAME'), (frame_prefixes)) and NotParentedToPoop(ob)
+
 
 
 def IsMesh(ob):
@@ -265,6 +268,8 @@ def ObjectType(ob, types=(), valid_prefixes=()):
         elif ob.type == 'EMPTY':
             return ob.halo_json.Object_Type_No_Mesh in types or ObjectPrefix(ob, (valid_prefixes))
         elif ob.type == 'LIGHT':
+            return True
+        elif ob.halo_json.Object_Type_All in types or ObjectPrefix(ob, (valid_prefixes)):
             return True
         else:
             return False
