@@ -76,7 +76,7 @@ def getLightProperties(node, light):
     # LIGHT PROPERTIES
     node_props.update({"bungie_object_type": "_connected_geometry_object_type_light"})
     node_props.update({"bungie_light_type_version": "1"})
-    node_props.update({"bungie_light_type": getLightType(node.light_type_override, light.type)})
+    node_props.update({"bungie_light_type": getLightType(node.light_type_override, light.data.type)})
     node_props.update({"bungie_light_game_type": getLightGameType(node.Light_Game_Type)})
     node_props.update({"bungie_light_shape": getLightShape(node.Light_Shape)})
     node_props.update({"bungie_light_volume_distance": str(round(node.Light_Volume_Distance, 6))})

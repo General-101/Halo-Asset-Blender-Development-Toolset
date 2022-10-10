@@ -2988,38 +2988,46 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
         name="Light Uses Near Attenuation",
         options=set(),
         description="",
-        default=False,
+        default=True,
     )
 
     Light_Far_Attenuation: BoolProperty(
         name="Light Uses Far Attenuation",
         options=set(),
         description="",
-        default=False,
+        default=True,
     )
 
     Light_Near_Attenuation_Start: FloatProperty(
         name="Light Near Attenuation Start Distance",
         options=set(),
         description="",
+        default=250,
+        min=0,
     )
 
     Light_Near_Attenuation_End: FloatProperty(
         name="Light Near Attenuation Start Distance",
         options=set(),
         description="",
+        default=500,
+        min=0,
     )
 
     Light_Far_Attenuation_Start: FloatProperty(
         name="Light Near Attenuation Start Distance",
         options=set(),
         description="",
+        default=500,
+        min=0,
     )
 
     Light_Far_Attenuation_End: FloatProperty(
         name="Light Near Attenuation Start Distance",
         options=set(),
         description="",
+        default=1000,
+        min=0,
     )
 
     Light_Volume_Distance: FloatProperty(
@@ -3034,7 +3042,7 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
         description="",
         default=1.0,
         min=0.0,
-        max=1.0,
+        soft_max=10.0,
         subtype='FACTOR',
     )
 
@@ -3073,9 +3081,9 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
         name="Light Intensity",
         options=set(),
         description="",
-        default=0.5,
+        default=1,
         min=0.0,
-        max=1.0,
+        soft_max=10.0,
         subtype='FACTOR',
     )
 
@@ -3132,14 +3140,14 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
         name="Light Hotspot Size",
         options=set(),
         description="",
-        default=30,
+        default=25,
     )
 
     Light_Hotspot_Falloff: FloatProperty(
         name="Light Hotspot Size",
         options=set(),
         description="",
-        default=45,
+        default=80,
     )
 
     Light_Falloff_Shape: FloatProperty(
@@ -3148,7 +3156,7 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
         description="",
         default=1,
         min=0.0,
-        max=1.0,
+        soft_max=10.0,
         subtype='FACTOR',
     )
 
@@ -3166,14 +3174,14 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
         name="Light Hotspot Size",
         options=set(),
         description="",
-        default=1.0,
+        default=20.0,
     )
 
     Light_Frustum_Height: FloatProperty(
         name="Light Hotspot Size",
         options=set(),
         description="",
-        default=1.0,
+        default=15.0,
     )
 
     Light_Bounce_Ratio: FloatProperty(
