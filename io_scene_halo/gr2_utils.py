@@ -323,47 +323,44 @@ def ObjectPrefix(ob, prefixes):
 def NotParentedToPoop(ob):
     return (not MeshType(ob.parent, 'INSTANCED GEOMETRY') or (ObjectPrefix(ob.parent, special_prefixes) and not ObjectPrefix(ob.parent, '%')))
 
-def FixMarkersRotation(model_armature, is_model, pivot):
+def FixLightsRotations():
     DeselectAllObjects()
-    angle = radians(-90)
-    axis = (0, 0, 1)
-    markers_list = []
-    pivot_reset = pivot
+    angle_x = radians(-90)
+    angle_z = radians(-180)
+    axis_x = (1, 0, 0)
+    axis_z = (0, 0, 1)
+    lights_list = []
     for ob in bpy.data.objects:
-        if sel_logic.ObMarkers(ob):
-            if is_model:
-                bone_name = ob.parent_bone
-                if bone_name != '':
-                    pivot = model_armature.location + model_armature.data.bones[bone_name].head_local
+        if sel_logic.ObLights(ob):
+            pivot = ob.location
             M = (
                 Matrix.Translation(pivot) @
-                Matrix.Rotation(angle, 4, axis) @       
+                Matrix.Rotation(angle_x, 4, axis_x) @
+                Matrix.Rotation(angle_z, 4, axis_z) @       
                 Matrix.Translation(-pivot)
                 )
             ob.matrix_world = M @ ob.matrix_world
-            markers_list.append(ob)
-            pivot = pivot_reset
+            lights_list.append(ob)
 
-    return markers_list
+    return lights_list
 
 
-def RestoreMarkersRotation(model_armature, is_model, pivot, markers_list):
+def RestoreLightsRotations(lights_list):
     DeselectAllObjects()
-    angle = radians(90)
-    axis = (0, 0, 1)
-    pivot_reset = pivot
-    for ob in markers_list:
-        if is_model:
-            bone_name = ob.parent_bone
-            if bone_name != '':
-                pivot = model_armature.location + model_armature.data.bones[bone_name].head_local
+    angle_x = radians(90)
+    angle_z = radians(180)
+    axis_x = (1, 0, 0)
+    axis_z = (0, 0, 1)
+    for ob in lights_list:
+        pivot = ob.location
+        print('restoring light ' + ob.name)
         M = (
             Matrix.Translation(pivot) @
-            Matrix.Rotation(angle, 4, axis) @       
+            Matrix.Rotation(angle_z, 4, axis_z) @  
+            Matrix.Rotation(angle_x, 4, axis_x) @
             Matrix.Translation(-pivot)
             )
         ob.matrix_world = M @ ob.matrix_world
-        pivot = pivot_reset
 
 #############
 #BONE SORTING#

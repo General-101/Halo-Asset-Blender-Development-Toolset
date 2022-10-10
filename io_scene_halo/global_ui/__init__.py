@@ -3174,14 +3174,14 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
         name="Light Hotspot Size",
         options=set(),
         description="",
-        default=20.0,
+        default=1.0,
     )
 
     Light_Frustum_Height: FloatProperty(
         name="Light Hotspot Size",
         options=set(),
         description="",
-        default=15.0,
+        default=1.0,
     )
 
     Light_Bounce_Ratio: FloatProperty(

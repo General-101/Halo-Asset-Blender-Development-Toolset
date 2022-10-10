@@ -19,6 +19,8 @@ def lightmapper(report, filepath, lightmap_quality='DIRECT', lightmap_all_bsps='
     except:
         print('error attempting lightmapping')
 
+    report({'INFO'},"Lightmapping process complete")
+
 def GetBSPToLightmap(lightmap_all_bsps, lightmap_specific_bsp, asset_name):
     bsp = 'all'
     if not lightmap_all_bsps:

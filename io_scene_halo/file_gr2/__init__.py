@@ -53,6 +53,8 @@ from ..gr2_utils import (
     SelectBSPObject,
     DeselectAllObjects,
     DelTempArmature,
+    FixLightsRotations,
+    RestoreLightsRotations,
 )
 
 import os
@@ -598,6 +600,9 @@ class Export_Halo_GR2(Operator, ExportHelper):
                             if ob.halo_json.bsp_shared:
                                 shared_bsp_exists = True
                                 break
+
+                        lights_list = FixLightsRotations()
+
                         for bsp in bsp_list:
                             if not ob.halo_json.bsp_shared:
                                 if self.export_structure:
@@ -849,6 +854,8 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                         SelectPoopRains(bsp, model_armature, True, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp)
                                         export_fbx_bin.save(self, context, **keywords)
                                         export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'rain_blockers', 'shared', perm, **keywords)
+
+                        RestoreLightsRotations(lights_list)
 
                     elif self.sidecar_type == 'DECORATOR':
                         print('not implemented')
