@@ -43,6 +43,7 @@ from bpy_extras.io_utils import ExportHelper
 from mathutils import Vector
 
 from ..gr2_utils import (
+    ParentToArmature,
     special_prefixes,
     GetPerm,
     IsWindows,
@@ -53,8 +54,7 @@ from ..gr2_utils import (
     SelectModelObjectNoPerm,
     SelectBSPObject,
     DeselectAllObjects,
-    FixMarkersRotation,
-    RestoreMarkersRotation,
+    DelTempArmature,
 )
 
 import os
@@ -459,12 +459,15 @@ class Export_Halo_GR2(Operator, ExportHelper):
         mode = ''
         mode_not_set = False
         model_armature = None
-        if len(bpy.context.selected_objects) > 0:
-            mode = bpy.context.object.mode
-        else:
-            mode_not_set = True
+        try:
+            if len(bpy.context.selected_objects) > 0:
+                mode = bpy.context.object.mode
+            else:
+                mode_not_set = True
 
-        bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
+            bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
+        except:
+            print('unable to test set mode. No / hidden object was selected')
 
         if self.export_hidden:
             hidden_list = []
@@ -475,7 +478,9 @@ class Export_Halo_GR2(Operator, ExportHelper):
             for ob in hidden_list:
                 ob.hide_set(False)
 
-        pivot = Vector((0.0, 0.0, 0.0))
+        model_armature, temp_armature = GetSceneArmature()
+
+        ParentToArmature(model_armature)
 
         asset_path = self.filepath.rpartition('\\')[0]
         asset = asset_path.rpartition('\\')[2]
@@ -484,29 +489,8 @@ class Export_Halo_GR2(Operator, ExportHelper):
         # UpdateSettings(**keywords)
 
         if self.sidecar_type == 'MODEL':
-            
-            model_armature = GetSceneArmature()
 
-
-            if model_armature != None:
-
-                boneslist = GetBoneList(model_armature, self.use_armature_deform_only)
-
-                for ob in bpy.data.objects:
-                        if ob.parent == model_armature:
-                            if ob.parent_type == 'OBJECT':
-                                if not any(m != ' ARMATURE' for m in ob.modifiers):
-                                    bpy.ops.object.select_all(action='DESELECT')
-                                    ob.select_set(True)
-                                    bpy.context.view_layer.objects.active = model_armature
-                                    if (ob.type == 'MESH' and (not ob.name.startswith(special_prefixes) or ob.name.startswith('$')) and (ob.halo_json.ObjectMesh_Type == 'PHYSICS' or ob.name.startswith('$')) and ob.halo_json.Object_Type_All == 'MESH') or (ob.type == 'MESH' and (ob.halo_json.Object_Type_All == 'MARKER' or ob.name.startswith('#'))) or ob.type == 'EMPTY' and (ob.halo_json.Object_Type_No_Mesh == 'MARKER' or ob.name.startswith('#')):
-                                        bpy.ops.object.parent_set(type='BONE', keep_transform=True)
-                                    else:
-                                        bpy.ops.object.parent_set(type='ARMATURE', keep_transform=True)
-            else:
-                self.report({'ERROR'},"Model export selected but no armature in scene")
-                return {'FINISHED'}
-
+            boneslist = GetBoneList(model_armature, self.use_armature_deform_only)
                     
         if self.show_output:
             bpy.ops.wm.console_toggle()
@@ -574,16 +558,10 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                         export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'physics', '', perm, model_armature, boneslist, **keywords)
 
                         if self.export_markers:
-                            #markers_list = FixMarkersRotation(model_armature, True, pivot) 
-
                             if SelectModelMarkers(model_armature, self.export_hidden):
                                 print('exporting markers ')
-                                
                                 export_fbx_bin.save(self, context, **keywords)
                                 export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'markers', '', '', model_armature, boneslist, **keywords)
-
-                            #if len(markers_list) > 0:
-                               # RestoreMarkersRotation(model_armature, True, pivot, markers_list)
 
                         if SelectModelSkeleton(model_armature):
                             export_fbx_bin.save(self, context, **keywords)
@@ -648,12 +626,9 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                         perm = GetPerm(ob)
                                         if perm not in perm_list:
                                             perm_list.append(perm)
-                                            markers_list = FixMarkersRotation(model_armature, False, pivot) 
                                             if SelectMarkers(bsp, False, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp):
                                                 export_fbx_bin.save(self, context, **keywords)
                                                 export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'markers', "{0:03}".format(bsp), perm, **keywords)
-                                            if len(markers_list) > 0:
-                                                RestoreMarkersRotation(model_armature, False, pivot, markers_list)
 
                                 if self.export_lights:
                                     perm_list = []
@@ -789,13 +764,10 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                     perm = GetPerm(ob)
                                     if perm not in perm_list:
                                         perm_list.append(perm)
-                                        markers_list = FixMarkersRotation(model_armature, False, pivot) 
                                         SelectMarkers(bsp, True, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp)
                                         export_fbx_bin.save(self, context, **keywords)
                                         export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'markers', 'shared', perm, **keywords)
-                                        if len(markers_list) > 0:
-                                            RestoreMarkersRotation(model_armature, False, pivot, markers_list)
-
+                                        
                             if self.export_lights:
                                 perm_list = []
                                 for ob in bpy.data.objects:
@@ -897,6 +869,9 @@ class Export_Halo_GR2(Operator, ExportHelper):
                     export_fbx_bin.save(self, context, **keywords)
                     export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'selected', **keywords)
 
+                if temp_armature:
+                    DelTempArmature(model_armature)
+
                 if(IsWindows()):
                     if self.export_sidecar:
                         export_sidecar.save(self, context, self.report, asset_path, model_armature, **keywords)
@@ -918,8 +893,11 @@ class Export_Halo_GR2(Operator, ExportHelper):
 
         if self.show_output:
             bpy.ops.wm.console_toggle()
-        if not mode_not_set:
-            bpy.ops.object.mode_set(mode=mode, toggle=False)
+        try: # try this but don't assert if it fails
+            if not mode_not_set:
+                bpy.ops.object.mode_set(mode=mode, toggle=False)
+        except:
+            print('error occured when trying to replace mode')
 
         return {'FINISHED'}
 

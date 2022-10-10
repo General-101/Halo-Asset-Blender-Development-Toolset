@@ -134,11 +134,53 @@ def ResetPerm(perm): # resets a permutation to '' if it had been set to default
 
 def GetSceneArmature():
     model_armature = None
+    temp_armature = False
     for ob in bpy.data.objects:
         if ob.type == 'ARMATURE':
             model_armature = ob
             break
+    if model_armature == None:
+        model_armature = AddTempArmature()
+        temp_armature = True
+
+    return model_armature, temp_armature
+
+def AddTempArmature():
+    ops = bpy.ops
+    ops.object.armature_add(enter_editmode=False, align='WORLD', location=(0, 0, 0), scale=(1, 1, 1))
+    model_armature = bpy.context.view_layer.objects.active
+    model_armature.data.bones[0].name = 'implied_root_node'
+    for ob in bpy.data.objects:
+        ob.select_set(True)
+    model_armature.select_set(True)
+    ops.object.parent_set(type='OBJECT')
+
     return model_armature
+
+def ParentToArmature(model_armature):
+    for ob in bpy.data.objects:
+            if ob.parent == model_armature:
+                if ob.parent_type == 'OBJECT':
+                    if not any(m != ' ARMATURE' for m in ob.modifiers):
+                        bpy.ops.object.select_all(action='DESELECT')
+                        ob.select_set(True)
+                        bpy.context.view_layer.objects.active = model_armature
+                        if (ob.type == 'MESH' and (not ob.name.startswith(special_prefixes) or ob.name.startswith('$')) and (ob.halo_json.ObjectMesh_Type == 'PHYSICS' or ob.name.startswith('$')) and ob.halo_json.Object_Type_All == 'MESH') or (ob.type == 'MESH' and (ob.halo_json.Object_Type_All == 'MARKER' or ob.name.startswith('#'))) or ob.type == 'EMPTY' and (ob.halo_json.Object_Type_No_Mesh == 'MARKER' or ob.name.startswith('#')):
+                            bpy.ops.object.parent_set(type='BONE', keep_transform=True)
+                        else:
+                            bpy.ops.object.parent_set(type='ARMATURE', keep_transform=True)
+
+def DelTempArmature(model_armature):
+    ops = bpy.ops
+    DeselectAllObjects()
+    model_armature.select_set(True)
+    ops.object.delete(use_global=False, confirm=False)
+    for ob in bpy.data.objects:
+        bpy.context.view_layer.objects.active = ob
+        ops.object.modifier_remove(modifier="Armature")
+    DeselectAllObjects()
+
+
 
 def GetPrefix(string, prefix_list): # gets a prefix from a list of prefixes
     prefix = ''
