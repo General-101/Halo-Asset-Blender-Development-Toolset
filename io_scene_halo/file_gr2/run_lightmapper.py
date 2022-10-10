@@ -1,6 +1,7 @@
 from subprocess import Popen
 import os
 import ctypes
+import platform
 from io_scene_halo.gr2_utils import GetEKPath
 
 def lightmapper(report, filepath, lightmap_quality='DIRECT', lightmap_all_bsps='TRUE', lightmap_specific_bsp='0'):
@@ -10,16 +11,21 @@ def lightmapper(report, filepath, lightmap_quality='DIRECT', lightmap_all_bsps='
     bsp = GetBSPToLightmap(lightmap_all_bsps, lightmap_specific_bsp, asset_name)
     quality = GetQuality(lightmap_quality)
 
-    try:
-        response = ctypes.windll.user32.MessageBoxW(0, 'Lightmapping can take a long time & cause Blender to be unresponsive during the process. Do you want to continue?', 'WARNING', 4)
-        if response == 6:
-            lightmapCommand = 'python calc_lm_farm_local.py "{}" "{}" {}'.format(asset_path + '\\' + asset_name, bsp, quality)
-            os.chdir(GetEKPath())
-            p = Popen(lightmapCommand)
-            p.wait()
-            report({'INFO'},"Lightmapping process complete")
+    pyCheck = platform.python_version().split('.')
+    if int(pyCheck[0]) >= 3 or not platform.python_version() == None:
+        try:
+            response = ctypes.windll.user32.MessageBoxW(0, 'Lightmapping can take a long time & cause Blender to be unresponsive during the process. Do you want to continue?', 'WARNING', 4)
+            if response == 6:
+                lightmapCommand = 'python calc_lm_farm_local.py "{}" "{}" {}'.format(asset_path + '\\' + asset_name, bsp, quality)
+                os.chdir(GetEKPath())
+                p = Popen(lightmapCommand)
+                p.wait()
+                report({'INFO'},"Lightmapping process complete")
 
-    except:
+        except:
+            report({'WARNING'},"Lightmapping process failed")
+    else:
+        ctypes.windll.user32.MessageBoxW(0, 'Python could not be found on this PC! Make sure it is installed in order to continue lightmapping!', 'Python Not Found', 0)
         report({'WARNING'},"Lightmapping process failed")
 
 def GetBSPToLightmap(lightmap_all_bsps, lightmap_specific_bsp, asset_name):
