@@ -455,6 +455,16 @@ class Export_Halo_GR2(Operator, ExportHelper):
         max=99,
         step=5,
     )
+    mesh_smooth_type: EnumProperty(
+            name="Smoothing",
+            items=(('OFF', "Normals Only", "Export only normals instead of writing edge or face smoothing data"),
+                   ('FACE', "Face", "Write face smoothing"),
+                   ('EDGE', "Edge", "Write edge smoothing"),
+                   ),
+            description="Export smoothing information "
+                        "(prefer 'Normals Only' option if your target importer understand split normals)",
+            default='OFF',
+            )
 
     def execute(self, context):
         keywords = self.as_keywords()
@@ -1026,6 +1036,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
         col.prop(self, "use_mesh_modifiers")
         col.prop(self, "use_triangles")
         col.prop(self, 'use_armature_deform_only')
+        col.prop(self, 'mesh_smooth_type')
         col.separator()
         col.prop(self, "global_scale")
 
