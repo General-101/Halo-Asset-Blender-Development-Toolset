@@ -449,7 +449,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                    ('-Y', "-Y Axis", ""),
                    ('-Z', "-Z Axis", ""),
                    ),
-            default='Z',
+            default='X',
             )
 
     def execute(self, context):
@@ -574,7 +574,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                         export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'physics', '', perm, model_armature, boneslist, **keywords)
 
                         if self.export_markers:
-                            markers_list = FixMarkersRotation(model_armature, True, pivot) 
+                            #markers_list = FixMarkersRotation(model_armature, True, pivot) 
 
                             if SelectModelMarkers(model_armature, self.export_hidden):
                                 print('exporting markers ')
@@ -582,8 +582,8 @@ class Export_Halo_GR2(Operator, ExportHelper):
                                 export_fbx_bin.save(self, context, **keywords)
                                 export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'markers', '', '', model_armature, boneslist, **keywords)
 
-                            if len(markers_list) > 0:
-                                RestoreMarkersRotation(model_armature, True, pivot, markers_list)
+                            #if len(markers_list) > 0:
+                               # RestoreMarkersRotation(model_armature, True, pivot, markers_list)
 
                         if SelectModelSkeleton(model_armature):
                             export_fbx_bin.save(self, context, **keywords)

@@ -292,7 +292,6 @@ def FixMarkersRotation(model_armature, is_model, pivot):
                 bone_name = ob.parent_bone
                 if bone_name != '':
                     pivot = model_armature.location + model_armature.data.bones[bone_name].head_local
-                    print('vector is ' + str(pivot.x) + ' ' + str(pivot.y) + ' ' + str(pivot.z))
             M = (
                 Matrix.Translation(pivot) @
                 Matrix.Rotation(angle, 4, axis) @       
