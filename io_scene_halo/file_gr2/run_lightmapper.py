@@ -1,6 +1,6 @@
 from subprocess import Popen
 import os
-
+import ctypes
 from io_scene_halo.gr2_utils import GetEKPath
 
 def lightmapper(report, filepath, lightmap_quality='DIRECT', lightmap_all_bsps='TRUE', lightmap_specific_bsp='0'):
@@ -11,15 +11,16 @@ def lightmapper(report, filepath, lightmap_quality='DIRECT', lightmap_all_bsps='
     quality = GetQuality(lightmap_quality)
 
     try:
-        lightmapCommand = 'python calc_lm_farm_local.py "{}" "{}" {}'.format(asset_path + '\\' + asset_name, bsp, quality)
-        os.chdir(GetEKPath())
-        p = Popen(lightmapCommand)
-        p.wait()
+        response = ctypes.windll.user32.MessageBoxW(0, 'Lightmapping can take a long time & cause Blender to be unresponsive during the process. Do you want to continue?', 'WARNING', 4)
+        if response == 6:
+            lightmapCommand = 'python calc_lm_farm_local.py "{}" "{}" {}'.format(asset_path + '\\' + asset_name, bsp, quality)
+            os.chdir(GetEKPath())
+            p = Popen(lightmapCommand)
+            p.wait()
+            report({'INFO'},"Lightmapping process complete")
 
     except:
-        print('error attempting lightmapping')
-
-    report({'INFO'},"Lightmapping process complete")
+        report({'WARNING'},"Lightmapping process failed")
 
 def GetBSPToLightmap(lightmap_all_bsps, lightmap_specific_bsp, asset_name):
     bsp = 'all'
