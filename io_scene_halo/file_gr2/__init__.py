@@ -42,6 +42,7 @@ from bpy.types import Operator
 from bpy_extras.io_utils import ExportHelper
 
 from ..gr2_utils import (
+    GetEKPath,
     ParentToArmature,
     GetPerm,
     IsWindows,
@@ -906,11 +907,10 @@ class Export_Halo_GR2(Operator, ExportHelper):
 
 
         else:
-            if not CheckPath(self.filepath):
+            if GetEKPath() == None or GetEKPath() == '':
                 ctypes.windll.user32.MessageBoxW(0, "Invalid Editing Kit path. Please check your editing kit path in add-on preferences and try again.", "Invalid EK Path", 0)
             else:
                 ctypes.windll.user32.MessageBoxW(0, "The selected export folder is invalid, please select one within the data folder of your HEK tools.", "Invalid Export Path", 0)
-        
 
         if self.show_output:
             bpy.ops.wm.console_toggle()
