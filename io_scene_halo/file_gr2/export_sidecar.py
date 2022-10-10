@@ -350,7 +350,7 @@ def WriteModelContents(model_armature, metadata, asset_path, asset_name):
         ET.SubElement(output, 'OutputTag', Type='model_animation_graph').text = asset_path + '\\' + asset_name
 
 def WriteScenarioContents(metadata, asset_path, asset_name):
-    contents = ET.SubElement(metadata, "Contents")
+    contents = ET.SubElement(metadata, "Contents", BuiltByImportFarm="True")
     ##### STRUCTURE #####
     if SceneHasBSP():
         bsp_list = []
