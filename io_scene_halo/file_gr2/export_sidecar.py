@@ -451,9 +451,11 @@ def WriteScenarioContents(metadata, asset_path, asset_name):
                         marker_perm.append(perm)
 
                 elif sel_logic.ObLights(ob) and ob.halo_json.bsp_index == bsp:
+                    print('we found a light!')
                     perm = GetPerm(ob)
                     if (perm not in light_perm):
                         light_perm.append(perm)
+                        print('we appended the light as a perm!')
 
                 elif sel_logic.ObPortals(ob) and ob.halo_json.bsp_index == bsp:
                     perm = GetPerm(ob)

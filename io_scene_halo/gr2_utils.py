@@ -267,7 +267,7 @@ def ObjectType(ob, types=(), valid_prefixes=()):
             return ob.halo_json.Object_Type_All in types and not ObjectPrefix(ob, ((frame_prefixes, marker_prefixes)))
         elif ob.type == 'EMPTY':
             return ob.halo_json.Object_Type_No_Mesh in types or ObjectPrefix(ob, (valid_prefixes))
-        elif ob.type == 'LIGHT':
+        elif ob.type == 'LIGHT' and (types != 'MARKER' and '#' not in valid_prefixes):
             return True
         elif ob.halo_json.Object_Type_All in types or ObjectPrefix(ob, (valid_prefixes)):
             return True

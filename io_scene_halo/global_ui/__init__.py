@@ -1809,7 +1809,7 @@ class JSON_LightFarAttenuationProps(Panel):
 
         flow = layout.grid_flow(row_major=True, columns=0, even_columns=True, even_rows=False, align=False)
 
-        light = context.object.data
+        light = context.object
         ob_halo_json = light.halo_json
 
         layout.enabled = ob_halo_json.Light_Far_Attenuation
