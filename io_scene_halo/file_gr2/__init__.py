@@ -38,13 +38,11 @@ import ctypes
 import bpy
 from bpy_extras.io_utils import ExportHelper
 from bpy.props import StringProperty, BoolProperty, EnumProperty, FloatProperty, IntProperty
-from bpy.types import Operator, Panel, PointerProperty, PropertyGroup
+from bpy.types import Operator
 from bpy_extras.io_utils import ExportHelper
-from mathutils import Vector
 
 from ..gr2_utils import (
     ParentToArmature,
-    special_prefixes,
     GetPerm,
     IsWindows,
     CheckPath,
@@ -425,37 +423,41 @@ class Export_Halo_GR2(Operator, ExportHelper):
         default=False,
     )
     import_in_background: BoolProperty(
-        name='Run In Backround',
+        name='Run In Background',
         description="If enabled does not pause use of blender during the import process",
         default=False
     )
-    primary_bone_axis: EnumProperty(
-            name="Primary Bone Axis",
-            items=(('X', "X Axis", ""),
-                   ('Y', "Y Axis", ""),
-                   ('Z', "Z Axis", ""),
-                   ('-X', "-X Axis", ""),
-                   ('-Y', "-Y Axis", ""),
-                   ('-Z', "-Z Axis", ""),
-                   ),
-            default='Y',
-            )
-    secondary_bone_axis: EnumProperty(
-            name="Secondary Bone Axis",
-            items=(('X', "X Axis", ""),
-                   ('Y', "Y Axis", ""),
-                   ('Z', "Z Axis", ""),
-                   ('-X', "-X Axis", ""),
-                   ('-Y', "-Y Axis", ""),
-                   ('-Z', "-Z Axis", ""),
-                   ),
-            default='X',
-            )
+    lightmap_structure: BoolProperty(
+        name='Run Lightmapper',
+        default=False,
+    )
+    lightmap_quality: EnumProperty(
+        name='Quality',
+        items=(('DIRECT', "Direct", ""),
+                ('DRAFT', "Draft", ""),
+                ('LOW', "Low", ""),
+                ('MEDIUM', "Medium", ""),
+                ('HIGH', "High", ""),
+                ('SUPER', "Super (very slow)", ""),
+                ),
+        default='DIRECT',
+    )
+    lightmap_all_bsps: BoolProperty(
+        name='Lightmap All',
+        default=True,
+    )
+    lightmap_specific_bsp: IntProperty(
+        name='Specific BSP',
+        default=0,
+        min=0,
+        max=99,
+        step=5,
+    )
 
     def execute(self, context):
         keywords = self.as_keywords()
         print(self)
-        from . import export_gr2, export_sidecar, import_sidecar
+        from . import export_gr2, export_sidecar, import_sidecar, run_lightmapper
         mode = ''
         mode_not_set = False
         model_armature = None
@@ -876,6 +878,8 @@ class Export_Halo_GR2(Operator, ExportHelper):
                     if self.export_sidecar:
                         export_sidecar.save(self, context, self.report, asset_path, model_armature, **keywords)
                     import_sidecar.save(self, context, self.report, **keywords)
+                    if self.lightmap_structure:
+                        run_lightmapper.save(self, context, self.report, **keywords)
                     
             elif(not self.export_sidecar):
                 export_fbx_bin.save(self, context, **keywords)
@@ -982,7 +986,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
         col.prop(self, "import_to_game")
         if self.import_to_game:
             col.prop(self, "run_tagwatcher")
-            col.prop(self, 'import_in_background')
+            #col.prop(self, 'import_in_background') removed for now as risk of causing issues
         if self.import_to_game:
             sub = box.column(heading="Import Flags")
             sub.prop(self, "import_check")
@@ -996,6 +1000,18 @@ class Export_Halo_GR2(Operator, ExportHelper):
             else:
                 sub.prop(self, "import_draft")
 
+        # LIGHTMAP SETTINGS #
+        if self.sidecar_type == 'SCENARIO':
+            box = layout.box()
+            box.label(text="Lightmap Settings")
+            col = box.column()
+            col.prop(self, "lightmap_structure")
+            if self.lightmap_structure:
+                col.prop(self, "lightmap_quality")
+                if not self.lightmap_all_bsps:
+                    col.prop(self, 'lightmap_specific_bsp')
+                col.prop(self, 'lightmap_all_bsps')
+
         # SCENE SETTINGS #
         box = layout.box()
         box.label(text="Scene Settings")
@@ -1003,8 +1019,6 @@ class Export_Halo_GR2(Operator, ExportHelper):
         col.prop(self, "use_mesh_modifiers")
         col.prop(self, "use_triangles")
         col.prop(self, 'use_armature_deform_only')
-        col.prop(self, 'primary_bone_axis')
-        col.prop(self, 'secondary_bone_axis')
         col.separator()
         col.prop(self, "global_scale")
 
