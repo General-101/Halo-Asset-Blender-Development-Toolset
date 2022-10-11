@@ -30,6 +30,8 @@ import getpass
 import xml.etree.cElementTree as ET
 import xml.dom.minidom
 
+from io_scene_halo.file_gr2.prepare_scene import halo_objects
+
 from ..gr2_utils import (
     valid_animation_types,
     GetDataPath,
@@ -38,7 +40,7 @@ from ..gr2_utils import (
 )
 
 
-def export_xml(report, model_armature=None, filePath="", export_sidecar_xml=False, sidecar_type='MODEL', asset_path='',        
+def export_xml(report, halo_objects, model_armature=None, filePath="", export_sidecar_xml=False, sidecar_type='MODEL', asset_path='',        
                 output_biped=False,
                 output_crate=False,
                 output_creature=False,
@@ -55,7 +57,7 @@ def export_xml(report, model_armature=None, filePath="", export_sidecar_xml=Fals
     asset_path = CleanAssetPath(full_path)
     asset_name = asset_path.rpartition('\\')[2]
 
-    BuildSidecar(model_armature, asset_path, asset_name, full_path, sidecar_type, output_biped,output_crate,output_creature,output_device_control,output_device_machine,output_device_terminal,output_effect_scenery,output_equipment,output_giant,output_scenery,output_vehicle,output_weapon)
+    BuildSidecar(halo_objects, model_armature, asset_path, asset_name, full_path, sidecar_type, output_biped,output_crate,output_creature,output_device_control,output_device_machine,output_device_terminal,output_effect_scenery,output_equipment,output_giant,output_scenery,output_vehicle,output_weapon)
 
     report({'INFO'},"Sidecar build complete")
 
@@ -66,7 +68,7 @@ def CleanAssetPath(path):
 
     return path
 
-def BuildSidecar(model_armature, asset_path, asset_name, full_path, sidecar_type,               
+def BuildSidecar(halo_objects, model_armature, asset_path, asset_name, full_path, sidecar_type,               
                         output_biped=False,
                         output_crate=False,
                         output_creature=False,
@@ -89,6 +91,8 @@ def BuildSidecar(model_armature, asset_path, asset_name, full_path, sidecar_type
         GetObjectOutputTypes(metadata, "model", asset_path, asset_name, GetModelTags(output_biped,output_crate,output_creature,output_device_control,output_device_machine,output_device_terminal,output_effect_scenery,output_equipment,output_giant,output_scenery,output_vehicle,output_weapon))
     elif sidecar_type == 'SCENARIO':
         GetObjectOutputTypes(metadata, 'scenario', asset_path, asset_name)
+    elif sidecar_type == 'SKY':
+        GetObjectOutputTypes(metadata, 'sky', asset_path, asset_name)
     elif sidecar_type == 'DECORATOR SET':
         GetObjectOutputTypes(metadata, 'decorator set', asset_path, asset_name, 'model')
     elif sidecar_type == 'PARTICLE MODEL':
@@ -96,9 +100,11 @@ def BuildSidecar(model_armature, asset_path, asset_name, full_path, sidecar_type
     WriteFolders(metadata)
     WriteFaceCollections(metadata, sidecar_type)
     if sidecar_type == 'MODEL':
-        WriteModelContents(model_armature, metadata, asset_path, asset_name)
+        WriteModelContents(halo_objects, model_armature, metadata, asset_path, asset_name)
     if sidecar_type == 'SCENARIO':
-        WriteScenarioContents(metadata, asset_path, asset_name)
+        WriteScenarioContents(halo_objects, metadata, asset_path, asset_name)
+    if sidecar_type == 'SKY':
+        WriteSkyContents(halo_objects, metadata, asset_path, asset_name)
     # if sidecar_type == 'DECORATOR SET':
     #     WriteDecoratorContents(metadata, asset_path, asset_name)
     # if sidecar_type == 'PARTICLE MODEL':
@@ -178,6 +184,10 @@ def GetObjectOutputTypes(metadata, type, asset_path, asset_name, output_tags=[])
         ET.SubElement(tagcollection, "OutputTag", Type='structure_seams').text = asset_path + '\\' + asset_name
         ET.SubElement(tagcollection, "OutputTag", Type='scenario').text = asset_path + '\\' + asset_name
 
+    elif type == 'sky':
+        ET.SubElement(tagcollection, "OutputTag", Type='model').text = asset_path + '\\' + asset_name
+        ET.SubElement(tagcollection, "OutputTag", Type='scenery').text = asset_path + '\\' + asset_name
+
 def WriteFolders(metadata):
     folders = ET.SubElement(metadata, "Folders")
 
@@ -205,7 +215,7 @@ def WriteFolders(metadata):
 def WriteFaceCollections(metadata, sidecar_type):
         faceCollections = ET.SubElement(metadata, "FaceCollections")
 
-        if(sidecar_type == 'MODEL'):
+        if(sidecar_type == 'MODEL' or sidecar_type == 'SKY'):
             region_list = ["default",""]
             f1 = ET.SubElement(faceCollections, "FaceCollection", Name="regions", StringTable="connected_geometry_regions_table", Description="Model regions")
 
@@ -234,16 +244,16 @@ def WriteFaceCollections(metadata, sidecar_type):
                         mat_list.append(material)
                         count += 1
 
-def WriteModelContents(model_armature, metadata, asset_path, asset_name):
+def WriteModelContents(halo_objects, model_armature, metadata, asset_path, asset_name):
     ##### RENDER #####
     contents = ET.SubElement(metadata, "Contents")
     content = ET.SubElement(contents, "Content", Name=asset_name, Type='model')
     object = ET.SubElement(content, 'ContentObject', Name='', Type="render_model")
 
     perm_list = []
-    for ob in bpy.data.objects:
+    for ob in halo_objects.render:
         perm = GetPerm(ob)
-        if (perm not in perm_list) and sel_logic.ObRender(ob):
+        if (perm not in perm_list):
             perm_list.append(perm)
             network = ET.SubElement(object, 'ContentNetwork' ,Name=perm, Type="")
             ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, 'render', ob.halo_json.Permutation_Name)
@@ -257,9 +267,9 @@ def WriteModelContents(model_armature, metadata, asset_path, asset_name):
         object = ET.SubElement(content, 'ContentObject', Name='', Type="physics_model")
 
         perm_list = []
-        for ob in bpy.data.objects:
+        for ob in halo_objects.physics:
             perm = GetPerm(ob)
-            if (perm not in perm_list) and sel_logic.ObPhysics(ob):
+            if (perm not in perm_list):
                 perm_list.append(perm)
                 network = ET.SubElement(object, 'ContentNetwork' ,Name=perm, Type="")
                 ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, 'physics', ob.halo_json.Permutation_Name)
@@ -273,9 +283,9 @@ def WriteModelContents(model_armature, metadata, asset_path, asset_name):
         object = ET.SubElement(content, 'ContentObject', Name='', Type="collision_model")
 
         perm_list = []
-        for ob in bpy.data.objects:
+        for ob in halo_objects.collision:
             perm = GetPerm(ob)
-            if (perm not in perm_list) and sel_logic.ObCollision(ob):
+            if (perm not in perm_list):
                 perm_list.append(perm)
                 network = ET.SubElement(object, 'ContentNetwork' ,Name=perm, Type="")
                 ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, 'collision', ob.halo_json.Permutation_Name)
@@ -348,10 +358,10 @@ def WriteModelContents(model_armature, metadata, asset_path, asset_name):
         ET.SubElement(output, 'OutputTag', Type='frame_event_list').text = asset_path + '\\' + asset_name
         ET.SubElement(output, 'OutputTag', Type='model_animation_graph').text = asset_path + '\\' + asset_name
 
-def WriteScenarioContents(metadata, asset_path, asset_name):
+def WriteScenarioContents(halo_objects, metadata, asset_path, asset_name):
     contents = ET.SubElement(metadata, "Contents", BuiltByImportFarm="True")
     ##### STRUCTURE #####
-    if SceneHasBSP():
+    if SceneHasBSP(halo_objects):
         bsp_list = []
         shared_bsp_exists = False
 
@@ -375,48 +385,55 @@ def WriteScenarioContents(metadata, asset_path, asset_name):
         shared_cookie_perm = []
 
         if shared_bsp_exists:
-            for ob in bpy.data.objects:
-                if sel_logic.ObStructure(ob) and ob.halo_json.bsp_shared:
+            for ob in halo_objects.structure:
+                if ob.halo_json.bsp_shared:
                     perm = GetPerm(ob)
                     if (perm not in shared_structure_perm):
                         shared_structure_perm.append(perm)
-
-                elif sel_logic.ObPoops(ob) and ob.halo_json.bsp_shared:
+            for ob in halo_objects.poops:
+                if ob.halo_json.bsp_shared:
                     perm = GetPerm(ob)
                     if (perm not in shared_poop_perm):
                         shared_poop_perm.append(perm)
 
-                elif sel_logic.ObMarkers(ob) and ob.halo_json.bsp_shared:
+            for ob in halo_objects.markers:
+                if ob.halo_json.bsp_shared:
                     perm = GetPerm(ob)
                     if (perm not in shared_marker_perm):
                         shared_marker_perm.append(perm)
 
-                elif sel_logic.ObLights(ob) and ob.halo_json.bsp_shared:
+            for ob in halo_objects.lights:
+                if ob.halo_json.bsp_shared:
                     perm = GetPerm(ob)
                     if (perm not in shared_light_perm):
                         shared_light_perm.append(perm)
 
-                elif sel_logic.ObPortals(ob) and ob.halo_json.bsp_shared:
+            for ob in halo_objects.portals:
+                if ob.halo_json.bsp_shared:
                     perm = GetPerm(ob)
                     if (perm not in shared_portal_perm):
                         shared_portal_perm.append(perm)
 
-                elif sel_logic.ObSeams(ob) and ob.halo_json.bsp_shared:
+            for ob in halo_objects.seams:
+                if ob.halo_json.bsp_shared:
                     perm = GetPerm(ob)
                     if (perm not in shared_seam_perm):
                         shared_seam_perm.append(perm)
 
-                elif sel_logic.ObWaterSurfaces(ob) and ob.halo_json.bsp_shared:
+            for ob in halo_objects.water_surfaces:
+                if ob.halo_json.bsp_shared:
                     perm = GetPerm(ob)
                     if (perm not in shared_water_perm):
                         shared_water_perm.append(perm)
 
-                elif sel_logic.ObLightMapRegions(ob) and ob.halo_json.bsp_shared:
+            for ob in halo_objects.lightmap_regions:
+                if ob.halo_json.bsp_shared:
                     perm = GetPerm(ob)
                     if (perm not in shared_lightmap_perm):
                         shared_lightmap_perm.append(perm)
 
-                elif sel_logic.ObCookie(ob) and ob.halo_json.bsp_shared:
+            for ob in halo_objects.cookie_cutters:
+                if ob.halo_json.bsp_shared:
                     perm = GetPerm(ob)
                     if (perm not in shared_cookie_perm):
                         shared_cookie_perm.append(perm)
@@ -433,50 +450,58 @@ def WriteScenarioContents(metadata, asset_path, asset_name):
             water_perm = []
             lightmap_perm = []
             cookie_perm = []
-            for ob in bpy.data.objects:
-                if sel_logic.ObStructure(ob) and ob.halo_json.bsp_index == bsp:
+            for ob in halo_objects.structure:
+                if ob.halo_json.bsp_index == bsp:
                     perm = GetPerm(ob)
                     if (perm not in structure_perm):
                         structure_perm.append(perm)
 
-                elif sel_logic.ObPoops(ob) and ob.halo_json.bsp_index == bsp:
+            for ob in halo_objects.poops:
+                if ob.halo_json.bsp_index == bsp:
                     perm = GetPerm(ob)
                     if (perm not in poop_perm):
                         poop_perm.append(perm)
 
-                elif sel_logic.ObMarkers(ob) and ob.halo_json.bsp_index == bsp:
+            for ob in halo_objects.markers:
+                if ob.halo_json.bsp_index == bsp:
                     perm = GetPerm(ob)
                     if (perm not in marker_perm):
                         marker_perm.append(perm)
 
-                elif sel_logic.ObLights(ob) and ob.halo_json.bsp_index == bsp:
+            for ob in halo_objects.lights:
+                if ob.halo_json.bsp_index == bsp:
                     print('we found a light!')
                     perm = GetPerm(ob)
                     if (perm not in light_perm):
                         light_perm.append(perm)
                         print('we appended the light as a perm!')
 
-                elif sel_logic.ObPortals(ob) and ob.halo_json.bsp_index == bsp:
+            for ob in halo_objects.portals:
+                if ob.halo_json.bsp_index == bsp:
                     perm = GetPerm(ob)
                     if (perm not in portal_perm):
                         portal_perm.append(perm)
 
-                elif sel_logic.ObSeams(ob) and ob.halo_json.bsp_index == bsp:
+            for ob in halo_objects.seams:
+                if ob.halo_json.bsp_index == bsp:
                     perm = GetPerm(ob)
                     if (perm not in seam_perm):
                         seam_perm.append(perm)
 
-                elif sel_logic.ObWaterSurfaces(ob) and ob.halo_json.bsp_index == bsp:
+            for ob in halo_objects.water_surfaces:
+                if ob.halo_json.bsp_index == bsp:
                     perm = GetPerm(ob)
                     if (perm not in water_perm):
                         water_perm.append(perm)
 
-                elif sel_logic.ObLightMapRegions(ob) and ob.halo_json.bsp_index == bsp:
+            for ob in halo_objects.lightmap_regions:
+                if ob.halo_json.bsp_index == bsp:
                     perm = GetPerm(ob)
                     if (perm not in lightmap_perm):
                         lightmap_perm.append(perm)
 
-                elif sel_logic.ObCookie(ob) and ob.halo_json.bsp_index == bsp:
+            for ob in halo_objects.cookie_cutters:
+                if ob.halo_json.bsp_index == bsp:
                     perm = GetPerm(ob)
                     if (perm not in cookie_perm):
                         cookie_perm.append(perm)
@@ -560,7 +585,7 @@ def WriteScenarioContents(metadata, asset_path, asset_name):
             ET.SubElement(output, 'OutputTag', Type='scenario_structure_lighting_info').text = asset_path + '\\' + asset_name + '_' + "{0:03}".format(bsp)
         
     ##### STRUCTURE DESIGN #####
-    if SceneHasDesign():
+    if SceneHasDesign(halo_objects):
         bsp_list = []
         shared_bsp_exists = False
 
@@ -579,23 +604,26 @@ def WriteScenarioContents(metadata, asset_path, asset_name):
         shared_fog_perm = []
 
         if shared_bsp_exists:
-            for ob in bpy.data.objects:
-                if sel_logic.ObBoundarys(ob) and ob.halo_json.bsp_shared:
+            for ob in halo_objects.boundary_surfaces:
+                if ob.halo_json.bsp_shared:
                     perm = GetPerm(ob)
                     if (perm not in shared_boundary_perm):
                         shared_boundary_perm.append(perm)
 
-                elif sel_logic.ObWaterPhysics(ob) and ob.halo_json.bsp_shared:
+            for ob in halo_objects.water_physics:
+                if ob.halo_json.bsp_shared:
                     perm = GetPerm(ob)
                     if (perm not in shared_water_physics_perm):
                         shared_water_physics_perm.append(perm)
-
-                elif sel_logic.ObPoopRains(ob) and ob.halo_json.bsp_shared:
+       
+            for ob in halo_objects.rain_occluders:
+                if ob.halo_json.bsp_shared:
                     perm = GetPerm(ob)
                     if (perm not in shared_rain_perm):
                         shared_rain_perm.append(perm)
 
-                elif sel_logic.ObFog(ob) and ob.halo_json.bsp_shared:
+            for ob in halo_objects.fog:
+                if ob.halo_json.bsp_shared:
                     perm = GetPerm(ob)
                     if (perm not in shared_fog_perm):
                         shared_fog_perm.append(perm)
@@ -609,23 +637,26 @@ def WriteScenarioContents(metadata, asset_path, asset_name):
             rain_perm = []
             fog_perm = []
 
-            for ob in bpy.data.objects:
-                if sel_logic.ObBoundarys(ob) and ob.halo_json.bsp_index == bsp:
+            for ob in halo_objects.boundary_surfaces:
+                if ob.halo_json.bsp_index == bsp:
                     perm = GetPerm(ob)
                     if (perm not in boundary_perm):
                         boundary_perm.append(perm)
 
-                elif sel_logic.ObWaterPhysics(ob) and ob.halo_json.bsp_index == bsp:
+            for ob in halo_objects.water_physics:
+                if ob.halo_json.bsp_index == bsp:
                     perm = GetPerm(ob)
                     if (perm not in water_physics_perm):
                         water_physics_perm.append(perm)
 
-                elif sel_logic.ObPoopRains(ob) and ob.halo_json.bsp_index == bsp:
+            for ob in halo_objects.rain_occluders:
+                if ob.halo_json.bsp_index == bsp:
                     perm = GetPerm(ob)
                     if (perm not in rain_perm):
                         rain_perm.append(perm)
 
-                elif sel_logic.ObFog(ob) and ob.halo_json.bsp_index == bsp:
+            for ob in halo_objects.fog:
+                if ob.halo_json.bsp_index == bsp:
                     perm = GetPerm(ob)
                     if (perm not in fog_perm):
                         fog_perm.append(perm)
@@ -673,6 +704,31 @@ def WriteScenarioContents(metadata, asset_path, asset_name):
             output = ET.SubElement(object, 'OutputTagCollection')
             ET.SubElement(output, 'OutputTag', Type='structure_design').text = asset_path + '\\' + asset_name + '_' + "{0:03}".format(bsp) + '_structure_design'
 
+def WriteSkyContents(halo_objects, metadata, asset_path, asset_name):
+    contents = ET.SubElement(metadata, "Contents")
+    content = ET.SubElement(contents, "Content", Name=asset_name, Type='model')
+    object = ET.SubElement(content, 'ContentObject', Name='', Type="render_model")
+
+    perm_list = []
+    for ob in halo_objects.render:
+        perm = GetPerm(ob)
+        if (perm not in perm_list):
+            perm_list.append(perm)
+            network = ET.SubElement(object, 'ContentNetwork' ,Name=perm, Type="")
+            ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, 'render', ob.halo_json.Permutation_Name)
+            ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePath(asset_path, asset_name, 'render', ob.halo_json.Permutation_Name)
+
+    perm_list = []
+    for ob in halo_objects.lights:
+        perm = GetPerm(ob)
+        if (perm not in perm_list):
+            perm_list.append(perm)
+            network = ET.SubElement(object, 'ContentNetwork' ,Name=perm, Type="")
+            ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, 'lights', ob.halo_json.Permutation_Name)
+            ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePath(asset_path, asset_name, 'lights', ob.halo_json.Permutation_Name)
+
+    output = ET.SubElement(object, 'OutputTagCollection')
+    ET.SubElement(output, 'OutputTag', Type='render_model').text = asset_path + '\\' + asset_name
 
 def GetAssetPathBSP(asset_path, asset_name, bsp, type, perm=''):
     if perm == '' or perm == 'default':
@@ -698,23 +754,13 @@ def GetIntermediateFilePathBSP(asset_path, asset_name, bsp, type, perm=''):
 
     return path
 
-def SceneHasBSP():
-    boolean = False
-    for ob in bpy.data.objects:
-        if sel_logic.ObStructure(ob):
-            boolean = True
-            break
+def SceneHasBSP(halo_objects):
+    bsp_objects = halo_objects.structure
+    return len(bsp_objects) > 0
 
-    return boolean
-
-def SceneHasDesign():
-    boolean = False
-    for ob in bpy.data.objects:
-        if sel_logic.ObBoundarys(ob) or sel_logic.ObWaterPhysics(ob) or sel_logic.ObPoopRains(ob) or sel_logic.ObFog(ob) or sel_logic.ObFog(ob):
-            boolean = True
-            break
-    
-    return boolean
+def SceneHasDesign(halo_objects):
+    design_objects = halo_objects.boundary_surfaces + halo_objects.water_physics + halo_objects.rain_occluders + halo_objects.fog
+    return len(design_objects) > 0
 
 def GetInputFilePath(asset_path, asset_name, type, perm=''):
     if type == 'model_animation_graph':
@@ -768,7 +814,7 @@ def SceneHasMarkers():
     
     return boolean
 
-def export_sidecar(operator, context, report, asset_path, model_armature=None,
+def export_sidecar(operator, context, report, asset_path, halo_objects, model_armature=None,
         filepath="",
         export_sidecar_xml=False,
         sidecar_type='MODEL',
@@ -788,5 +834,5 @@ def export_sidecar(operator, context, report, asset_path, model_armature=None,
         ):
     if export_sidecar_xml and asset_path != '':
         print('we SHOULD BE building a sidecar...')
-        export_xml(report, model_armature, filepath, export_sidecar_xml, sidecar_type, asset_path,output_biped,output_crate,output_creature,output_device_control,output_device_machine,output_device_terminal,output_effect_scenery,output_equipment,output_giant,output_scenery,output_vehicle,output_weapon)
+        export_xml(report, halo_objects, model_armature, filepath, export_sidecar_xml, sidecar_type, asset_path,output_biped,output_crate,output_creature,output_device_control,output_device_machine,output_device_terminal,output_effect_scenery,output_equipment,output_giant,output_scenery,output_vehicle,output_weapon)
     return {'FINISHED'}

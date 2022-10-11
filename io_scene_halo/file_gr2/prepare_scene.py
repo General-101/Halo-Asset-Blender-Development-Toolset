@@ -44,14 +44,13 @@ def prepare_scene(context, report, sidecar_type, export_hidden, filepath, use_ar
     objects_selection, active_object = GetCurrentActiveObjectSelection(context)
     hidden_objects = UnhideObjects(export_hidden)                               # If the user has opted to export hidden objects, list all hidden objects and unhide them, return the list for later use
     mode = GetSceneMode(context)                                                      # get the current selected mode, save the mode for later, and then switch to object mode
-    model_armature, temp_armature = GetSceneArmature(context)                          # return the main armature in the scene, and create a temp one if a model armature does not exist
-    ParentToArmature(model_armature, temp_armature)                             # ensure all objects are parented to an armature on export. Render and collision mesh is parented with armature deform, the rest uses bone parenting
+    model_armature, temp_armature, no_parent_objects = GetSceneArmature(context)                          # return the main armature in the scene, and create a temp one if a model armature does not exist
+    ParentToArmature(model_armature, temp_armature, no_parent_objects)                             # ensure all objects are parented to an armature on export. Render and collision mesh is parented with armature deform, the rest uses bone parenting
     asset_path, asset = GetAssetInfo(filepath)                                  # get the asset name and path to the asset folder
     skeleton_bones = GetBoneList(model_armature, use_armature_deform_only)      # return a list of bones attached to the model armature, ignoring control / non-deform bones
     h_objects = halo_objects(sidecar_type)
     FixLightsRotations(h_objects.lights)                                         # adjust light rotations to match in game rotation, and return a list of lights for later use in repair_scene
-    timeline_start, timeline_end = SetTimelineRange(context)
-    print('Scene prepared')                                          
+    timeline_start, timeline_end = SetTimelineRange(context)                              
     return objects_selection, active_object, hidden_objects, mode, model_armature, temp_armature, asset_path, asset, skeleton_bones, h_objects, timeline_start, timeline_end
 
 #####################################################################################
@@ -60,10 +59,7 @@ def prepare_scene(context, report, sidecar_type, export_hidden, filepath, use_ar
 
 class halo_objects():
     def __init__(self, asset_type):
-        print('initialising halo objects')
-        print(asset_type)
         self.render = SelectHaloObject('ObRender', asset_type, ('MODEL', 'SKY', 'CINEMATIC', 'DECORATOR', 'PARTICLE'))
-        print(self.render)
         self.collision = SelectHaloObject('ObCollision', asset_type, ('MODEL', 'SKY', 'CINEMATIC', 'DECORATOR', 'PARTICLE'))
         self.physics = SelectHaloObject('ObPhysics', asset_type, ('MODEL', 'SKY', 'CINEMATIC', 'DECORATOR', 'PARTICLE'))
         self.markers = SelectHaloObject('ObMarkers', asset_type, ('MODEL', 'SCENARIO', 'SKY', 'CINEMATIC', 'DECORATOR', 'PARTICLE'))
@@ -155,28 +151,31 @@ def GetSceneArmature(context):
             model_armature = ob
             break
     if model_armature == None:
-        model_armature = AddTempArmature(context)
+        model_armature, no_parent_objects = AddTempArmature(context)
         temp_armature = True
 
-    return model_armature, temp_armature
+    return model_armature, temp_armature, no_parent_objects
 
 def AddTempArmature(context):
     ops = bpy.ops
     ops.object.armature_add(enter_editmode=False, align='WORLD', location=(0, 0, 0), scale=(1, 1, 1))
     model_armature = context.view_layer.objects.active
     model_armature.data.bones[0].name = 'implied_root_node'
+    no_parent_objects = []
     for ob in bpy.data.objects:
         if ob.parent == None:
             ob.select_set(True)
+            no_parent_objects.append(ob)
 
     SetActiveObject(model_armature)
     ops.object.parent_set(type='OBJECT')
 
-    return model_armature
+    return model_armature, no_parent_objects
 
-def ParentToArmature(model_armature, temp_armature):
+def ParentToArmature(model_armature, temp_armature, no_parent_objects):
     if temp_armature:
-        SelectAllObjects()
+        for ob in no_parent_objects:
+            ob.select_set(True)
         SetActiveObject(model_armature)
         bpy.ops.object.parent_set(type='BONE', keep_transform=True)
     else:

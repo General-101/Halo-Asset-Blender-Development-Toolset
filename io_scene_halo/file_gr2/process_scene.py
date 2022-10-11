@@ -117,7 +117,6 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                             if perm not in perm_list:
                                 perm_list.append(perm)
                                 if SelectModelObject(halo_objects.render, perm, model_armature, export_hidden, export_all_perms, export_specific_perm):
-                                    print('exporting render ' + perm)
                                     export_fbx(self, context, **keywords)
                                     export_gr2(self, context, report, asset_path, asset, IsWindows(), 'render', '', perm, model_armature, skeleton_bones, **keywords)
 
@@ -128,7 +127,6 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                             if perm not in perm_list:
                                 perm_list.append(perm)
                                 if SelectModelObject(halo_objects.collision, perm, model_armature, export_hidden, export_all_perms, export_specific_perm):
-                                    print('exporting collision ' + perm)
                                     export_fbx(self, context, **keywords)
                                     export_gr2(self, context, report, asset_path, asset, IsWindows(), 'collision', '', perm, model_armature, skeleton_bones, **keywords)
 
@@ -139,13 +137,11 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                             if perm not in perm_list:
                                 perm_list.append(perm)
                                 if SelectModelObject(halo_objects.physics, perm, model_armature, export_hidden, export_all_perms, export_specific_perm):
-                                    print('exporting physics ' + perm)
                                     export_fbx(self, context, **keywords)
                                     export_gr2(self, context, report, asset_path, asset, IsWindows(), 'physics', '', perm, model_armature, skeleton_bones, **keywords)
 
                     if export_markers:
                         if SelectModelObjectNoPerm(halo_objects.markers, model_armature, export_hidden):
-                            print('exporting markers ')
                             export_fbx(self, context, **keywords)
                             export_gr2(self, context, report, asset_path, asset, IsWindows(), 'markers', '', '', model_armature, skeleton_bones, **keywords)
 
@@ -193,7 +189,6 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                     if perm not in perm_list:
                                         perm_list.append(perm)
                                         if SelectBSPObject(halo_objects.structure, bsp, model_armature, False, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
-                                            print('exporting structure ' + perm)
                                             export_fbx(self, context, **keywords)
                                             export_gr2(self, context, report, asset_path, asset, IsWindows(), 'bsp', "{0:03}".format(bsp), perm, **keywords)
 
@@ -204,7 +199,6 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                     if perm not in perm_list:
                                         perm_list.append(perm)
                                         if SelectBSPObject(halo_objects.poops, bsp, model_armature, False, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
-                                            print('exporting poops ' + perm)
                                             export_fbx(self, context, **keywords)
                                             export_gr2(self, context, report, asset_path, asset, IsWindows(), 'poops', "{0:03}".format(bsp), perm, **keywords)
 
@@ -235,7 +229,6 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                     if perm not in perm_list:
                                         perm_list.append(perm)
                                         if SelectBSPObject(halo_objects.portals, bsp, model_armature, False, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
-                                            print('exporting portals ' + perm)
                                             export_fbx(self, context, **keywords)
                                             export_gr2(self, context, report, asset_path, asset, IsWindows(), 'portals', "{0:03}".format(bsp), perm, **keywords)
 
@@ -456,6 +449,17 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                     export_fbx(self, context, **keywords)
                                     export_gr2(self, context, report, asset_path, asset, IsWindows(), 'rain_blockers', 'shared', perm, **keywords)
 
+                elif sidecar_type == 'SKY':
+                    if export_render:
+                        perm_list = []
+                        for ob in halo_objects.render:
+                            perm = GetPerm(ob)
+                            if perm not in perm_list:
+                                perm_list.append(perm)
+                                if SelectModelObject(halo_objects.render + halo_objects.lights, perm, model_armature, export_hidden, export_all_perms, export_specific_perm):
+                                    export_fbx(self, context, **keywords)
+                                    export_gr2(self, context, report, asset_path, asset, IsWindows(), 'render', '', perm, model_armature, skeleton_bones, **keywords)
+
                 elif sidecar_type == 'DECORATOR':
                     print('not implemented')
 
@@ -470,9 +474,8 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
             if(IsWindows()):
                 if export_sidecar_xml:
                     from .export_sidecar import export_sidecar
-                    export_sidecar(self, context, report, asset_path, model_armature, **keywords)
+                    export_sidecar(self, context, report, asset_path, halo_objects, model_armature, **keywords)
                 from .import_sidecar import import_sidecar
-                print('1')
                 import_sidecar(self, context, report, **keywords)
                 if lightmap_structure:
                     from .run_lightmapper import run_lightmapper

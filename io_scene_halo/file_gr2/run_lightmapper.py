@@ -10,12 +10,15 @@ def lightmapper(report, filepath, lightmap_quality='DIRECT', lightmap_all_bsps='
     asset_name = asset_path.rpartition('\\')[2]
     bsp = GetBSPToLightmap(lightmap_all_bsps, lightmap_specific_bsp, asset_name)
     quality = GetQuality(lightmap_quality)
+    high_quality_settings = ('medium', 'high', 'super_slow')
 
     pyCheck = platform.python_version().split('.')
     if int(pyCheck[0]) >= 3 or not platform.python_version() == None:
         try:
-            response = ctypes.windll.user32.MessageBoxW(0, 'Lightmapping can take a long time & cause Blender to be unresponsive during the process. Do you want to continue?', 'WARNING', 4)
-            if response == 6:
+            response = 0
+            if quality in high_quality_settings:
+                response = ctypes.windll.user32.MessageBoxW(0, 'Lightmapping on this setting can take a long time &  Blender will be unresponsive during the process. Do you want to continue?', 'WARNING', 4)
+            if response == 6 or quality not in high_quality_settings:
                 lightmapCommand = 'python calc_lm_farm_local.py "{}" "{}" {}'.format(asset_path + '\\' + asset_name, bsp, quality)
                 os.chdir(GetEKPath())
                 p = Popen(lightmapCommand)
