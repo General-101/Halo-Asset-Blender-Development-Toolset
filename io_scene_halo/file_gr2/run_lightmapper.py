@@ -58,7 +58,7 @@ def GetQuality(lightmap_quality):
             return 'super_slow'
 
 
-def save(operator, context, report,
+def run_lightmapper(operator, context, report,
         filepath="",
         lightmap_quality='DIRECT',
         lightmap_all_bsps='TRUE',

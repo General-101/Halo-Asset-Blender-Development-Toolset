@@ -35,11 +35,10 @@ from ..gr2_utils import (
     GetDataPath,
     GetPerm,
     sel_logic,
-    GetSceneArmature,
 )
 
 
-def export_xml(report, model_armature=None, filePath="", export_sidecar=False, sidecar_type='MODEL', asset_path='',        
+def export_xml(report, model_armature=None, filePath="", export_sidecar_xml=False, sidecar_type='MODEL', asset_path='',        
                 output_biped=False,
                 output_crate=False,
                 output_creature=False,
@@ -769,9 +768,9 @@ def SceneHasMarkers():
     
     return boolean
 
-def save(operator, context, report, asset_path, model_armature=None,
+def export_sidecar(operator, context, report, asset_path, model_armature=None,
         filepath="",
-        export_sidecar=False,
+        export_sidecar_xml=False,
         sidecar_type='MODEL',
         output_biped=False,
         output_crate=False,
@@ -787,6 +786,7 @@ def save(operator, context, report, asset_path, model_armature=None,
         output_weapon=False,
         **kwargs
         ):
-    if export_sidecar and asset_path != '':
-        export_xml(report, model_armature, filepath, export_sidecar, sidecar_type, asset_path,output_biped,output_crate,output_creature,output_device_control,output_device_machine,output_device_terminal,output_effect_scenery,output_equipment,output_giant,output_scenery,output_vehicle,output_weapon)
+    if export_sidecar_xml and asset_path != '':
+        print('we SHOULD BE building a sidecar...')
+        export_xml(report, model_armature, filepath, export_sidecar_xml, sidecar_type, asset_path,output_biped,output_crate,output_creature,output_device_control,output_device_machine,output_device_terminal,output_effect_scenery,output_equipment,output_giant,output_scenery,output_vehicle,output_weapon)
     return {'FINISHED'}

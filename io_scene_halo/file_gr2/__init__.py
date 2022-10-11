@@ -34,31 +34,11 @@ bl_info = {
     'description': 'Halo Gen4 Asset Exporter'
     }
 
-import ctypes
-from os.path import exists
 import bpy
 from bpy_extras.io_utils import ExportHelper
 from bpy.props import StringProperty, BoolProperty, EnumProperty, FloatProperty, IntProperty
 from bpy.types import Operator
 from bpy_extras.io_utils import ExportHelper
-
-from ..gr2_utils import (
-    GetEKPath,
-    GetToolPath,
-    ParentToArmature,
-    GetPerm,
-    IsWindows,
-    CheckPath,
-    GetBoneList,
-    GetSceneArmature,
-    SelectModelObject,
-    SelectModelObjectNoPerm,
-    SelectBSPObject,
-    DeselectAllObjects,
-    DelTempArmature,
-    FixLightsRotations,
-    RestoreLightsRotations,
-)
 
 import os
 import sys
@@ -96,7 +76,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
         description="Keep the source JSON file after GR2 conversion",
         default=True,
     )
-    export_sidecar: BoolProperty(
+    export_sidecar_xml: BoolProperty(
         name="Export Sidecar",
         description="",
         default=True,
@@ -485,459 +465,32 @@ class Export_Halo_GR2(Operator, ExportHelper):
 
     def execute(self, context):
         keywords = self.as_keywords()
-        print(self)
-        from . import export_gr2, export_sidecar, import_sidecar, run_lightmapper, import_bitmap
-        mode = ''
-        mode_not_set = False
-        model_armature = None
-        try:
-            if len(bpy.context.selected_objects) > 0:
-                mode = bpy.context.object.mode
-            else:
-                mode_not_set = True
-
-            bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
-        except:
-            print('unable to test set mode. No / hidden object was selected')
-
-        if self.export_hidden:
-            hidden_list = []
-            for ob in tuple(bpy.data.scenes[0].view_layers[0].objects):
-                if not ob.visible_get():
-                    hidden_list.append(ob)
-            
-            for ob in hidden_list:
-                ob.hide_set(False)
-
-        model_armature, temp_armature = GetSceneArmature()
-
-        ParentToArmature(model_armature)
-
-        asset_path = self.filepath.rpartition('\\')[0]
-        asset = asset_path.rpartition('\\')[2]
-        asset = asset.replace('.fbx', '')
-
-        # UpdateSettings(**keywords)
-
-        if self.sidecar_type == 'MODEL':
-
-            boneslist = GetBoneList(model_armature, self.use_armature_deform_only)
-                    
-        if self.show_output:
-            bpy.ops.wm.console_toggle()
-
-        if(CheckPath(self.filepath)):
-            if self.sidecar_type != 'MODEL' or (self.sidecar_type == 'MODEL' and(
-                self.output_biped or
-                self.output_crate or
-                self.output_creature or
-                self.output_device_control or
-                self.output_device_machine or
-                self.output_device_terminal or
-                self.output_effect_scenery or
-                self.output_equipment or
-                self.output_giant or
-                self.output_scenery or
-                self.output_vehicle or
-                self.output_weapon)):
-            
-                if self.export_method == 'BATCH':
-
-                    scene = bpy.context.scene
-                    f_start = scene.frame_start
-                    f_end = scene.frame_end
-
-                    scene.frame_start = 0
-                    scene.frame_end = 0
-
-                    selection = bpy.context.selected_objects
-                    active_ob = bpy.context.active_object
-
-                    if self.sidecar_type == 'MODEL':
-
-                        if self.export_render:
-                            perm_list = []
-                            for ob in bpy.data.objects:
-                                perm = GetPerm(ob)
-                                if perm not in perm_list:
-                                    perm_list.append(perm)
-                                    if SelectModelRender(perm, model_armature, self.export_hidden, self.export_all_perms, self.export_specific_perm):
-                                        print('exporting render ' + perm)
-                                        export_fbx_bin.save(self, context, **keywords)
-                                        export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'render', '', perm, model_armature, boneslist, **keywords)
-
-                        if self.export_collision:
-                            perm_list = []
-                            for ob in bpy.data.objects:
-                                perm = GetPerm(ob)
-                                if perm not in perm_list:
-                                    perm_list.append(perm)
-                                    if SelectModelCollision(perm, model_armature, self.export_hidden, self.export_all_perms, self.export_specific_perm):
-                                        print('exporting collision ' + perm)
-                                        export_fbx_bin.save(self, context, **keywords)
-                                        export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'collision', '', perm, model_armature, boneslist, **keywords)
-
-                        if self.export_physics:
-                            perm_list = []
-                            for ob in bpy.data.objects:
-                                perm = GetPerm(ob)
-                                if perm not in perm_list:
-                                    perm_list.append(perm)
-                                    if SelectModelPhysics(perm, model_armature, self.export_hidden, self.export_all_perms, self.export_specific_perm):
-                                        print('exporting physics ' + perm)
-                                        export_fbx_bin.save(self, context, **keywords)
-                                        export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'physics', '', perm, model_armature, boneslist, **keywords)
-
-                        if self.export_markers:
-                            if SelectModelMarkers(model_armature, self.export_hidden):
-                                print('exporting markers ')
-                                export_fbx_bin.save(self, context, **keywords)
-                                export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'markers', '', '', model_armature, boneslist, **keywords)
-
-                        if SelectModelSkeleton(model_armature):
-                            export_fbx_bin.save(self, context, **keywords)
-                            export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'skeleton', '', '', model_armature, boneslist, **keywords)
-
-                        if self.export_animations and 1<=len(bpy.data.actions):
-                            if SelectModelSkeleton(model_armature):
-                                for action in bpy.data.actions:
-                                    try:
-                                        model_armature.animation_data.action = action
-                                        if action.use_frame_range:
-                                            scene.frame_start = int(action.frame_start)
-                                            scene.frame_end = int(action.frame_end)
-                                        else:
-                                            scene.frame_start = f_start
-                                            scene.frame_end = f_end
-                                        export_fbx_bin.save(self, context, **keywords)
-                                        export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'animations', '', '', model_armature, boneslist, **keywords)
-                                    except:
-                                        print('Encountered animation not in armature, skipping export of animation: ' + action.name)
-                                
-                    elif self.sidecar_type == 'SCENARIO':
-                        
-                        bsp_list = []
-                        shared_bsp_exists = False
-
-                        for ob in bpy.data.objects:
-                            if not ob.halo_json.bsp_shared and (ob.halo_json.bsp_index not in bsp_list):
-                                bsp_list.append(ob.halo_json.bsp_index)
-
-                        for ob in bpy.data.objects:
-                            if ob.halo_json.bsp_shared:
-                                shared_bsp_exists = True
-                                break
-
-                        lights_list = FixLightsRotations()
-
-                        for bsp in bsp_list:
-                            if not ob.halo_json.bsp_shared:
-                                if self.export_structure:
-                                    perm_list = []
-                                    for ob in bpy.data.objects:
-                                        perm = GetPerm(ob)
-                                        if perm not in perm_list:
-                                            perm_list.append(perm)
-                                            if SelectStructure(bsp, model_armature, False, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp):
-                                                print('exporting structure ' + perm)
-                                                export_fbx_bin.save(self, context, **keywords)
-                                                export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'bsp', "{0:03}".format(bsp), perm, **keywords)
-
-                                if self.export_poops:
-                                    perm_list = []
-                                    for ob in bpy.data.objects:
-                                        perm = GetPerm(ob)
-                                        if perm not in perm_list:
-                                            perm_list.append(perm)
-                                            if SelectPoops(bsp, model_armature, False, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp):
-                                                print('exporting poops ' + perm)
-                                                export_fbx_bin.save(self, context, **keywords)
-                                                export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'poops', "{0:03}".format(bsp), perm, **keywords)
-
-                                if self.export_markers:
-                                    perm_list = []
-                                    for ob in bpy.data.objects:
-                                        perm = GetPerm(ob)
-                                        if perm not in perm_list:
-                                            perm_list.append(perm)
-                                            if SelectMarkers(bsp, model_armature, False, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp):
-                                                export_fbx_bin.save(self, context, **keywords)
-                                                export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'markers', "{0:03}".format(bsp), perm, **keywords)
-
-                                if self.export_lights:
-                                    perm_list = []
-                                    for ob in bpy.data.objects:
-                                        perm = GetPerm(ob)
-                                        if perm not in perm_list:
-                                            perm_list.append(perm)
-                                            if SelectLights(bsp, model_armature, False, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp):
-                                                export_fbx_bin.save(self, context, **keywords)
-                                                export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'lights', "{0:03}".format(bsp), perm, **keywords)
-
-                                if self.export_portals:
-                                    perm_list = []
-                                    for ob in bpy.data.objects:
-                                        perm = GetPerm(ob)
-                                        if perm not in perm_list:
-                                            perm_list.append(perm)
-                                            if SelectPortals(bsp, model_armature, False, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp):
-                                                print('exporting portals ' + perm)
-                                                export_fbx_bin.save(self, context, **keywords)
-                                                export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'portals', "{0:03}".format(bsp), perm, **keywords)
-
-                                if self.export_seams:
-                                    perm_list = []
-                                    for ob in bpy.data.objects:
-                                        perm = GetPerm(ob)
-                                        if perm not in perm_list:
-                                            perm_list.append(perm)
-                                            if SelectSeams(bsp, model_armature, False, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp):
-                                                export_fbx_bin.save(self, context, **keywords)
-                                                export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'seams', "{0:03}".format(bsp), perm, **keywords)
-
-                                if self.export_water_surfaces:
-                                    perm_list = []
-                                    for ob in bpy.data.objects:
-                                        perm = GetPerm(ob)
-                                        if perm not in perm_list:
-                                            perm_list.append(perm)
-                                            if SelectWaterSurfaces(bsp, model_armature, False, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp):
-                                                export_fbx_bin.save(self, context, **keywords)
-                                                export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'water', "{0:03}".format(bsp), perm, **keywords)
-
-                                if self.export_fog_planes:
-                                    perm_list = []
-                                    for ob in bpy.data.objects:
-                                        perm = GetPerm(ob)
-                                        if perm not in perm_list:
-                                            perm_list.append(perm)
-                                            if SelectFog(bsp, model_armature, False, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp):
-                                                export_fbx_bin.save(self, context, **keywords)
-                                                export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'fog', "{0:03}".format(bsp), perm, **keywords)
-
-                                if self.export_cookie_cutters:
-                                    perm_list = []
-                                    for ob in bpy.data.objects:
-                                        perm = GetPerm(ob)
-                                        if perm not in perm_list:
-                                            perm_list.append(perm)
-                                            if SelectCookie(bsp, model_armature, False, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp):
-                                                export_fbx_bin.save(self, context, **keywords)
-                                                export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'cookie_cutters', "{0:03}".format(bsp), perm, **keywords)
-
-                                if self.export_lightmap_regions:
-                                    perm_list = []
-                                    for ob in bpy.data.objects:
-                                        perm = GetPerm(ob)
-                                        if perm not in perm_list:
-                                            perm_list.append(perm)
-                                            if SelectLightMapRegions(bsp, model_armature, False, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp):
-                                                export_fbx_bin.save(self, context, **keywords)
-                                                export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'lightmap_region', "{0:03}".format(bsp), perm, **keywords)
-
-                                if self.export_boundary_surfaces:
-                                    perm_list = []
-                                    for ob in bpy.data.objects:
-                                        perm = GetPerm(ob)
-                                        if perm not in perm_list:
-                                            perm_list.append(perm)
-                                            if SelectBoundarys(bsp, model_armature, False, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp):
-                                                export_fbx_bin.save(self, context, **keywords)
-                                                export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'design', "{0:03}".format(bsp), perm, **keywords)
-
-                                if self.export_water_physics:
-                                    perm_list = []
-                                    for ob in bpy.data.objects:
-                                        perm = GetPerm(ob)
-                                        if perm not in perm_list:
-                                            perm_list.append(perm)
-                                            if SelectWaterPhysics(bsp, model_armature, False, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp):
-                                                export_fbx_bin.save(self, context, **keywords)
-                                                export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'water_physics', "{0:03}".format(bsp), perm, **keywords)
-
-                                if self.export_rain_occluders:
-                                    perm_list = []
-                                    for ob in bpy.data.objects:
-                                        perm = GetPerm(ob)
-                                        if perm not in perm_list:
-                                            perm_list.append(perm)
-                                            if SelectPoopRains(bsp, model_armature, False, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp):
-                                                export_fbx_bin.save(self, context, **keywords)
-                                                export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'rain_blockers', "{0:03}".format(bsp), perm, **keywords)
-
-
-
-                        ############################
-                        ##### SHARED STRUCTURE #####
-                        ############################
-
-                        if shared_bsp_exists:
-                            if self.export_structure:
-                                perm_list = []
-                                for ob in bpy.data.objects:
-                                    perm = GetPerm(ob)
-                                    if perm not in perm_list:
-                                        perm_list.append(perm)
-                                        SelectStructure(bsp, model_armature, True, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp)
-                                        export_fbx_bin.save(self, context, **keywords)
-                                        export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'bsp', 'shared', perm, **keywords)
-
-                            if self.export_poops:
-                                perm_list = []
-                                for ob in bpy.data.objects:
-                                    perm = GetPerm(ob)
-                                    if perm not in perm_list:
-                                        perm_list.append(perm)
-                                        SelectPoops(bsp, model_armature, True, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp)
-                                        export_fbx_bin.save(self, context, **keywords)
-                                        export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'poops', 'shared', perm, **keywords)
-
-                            if self.export_markers:
-                                perm_list = []
-                                for ob in bpy.data.objects:
-                                    perm = GetPerm(ob)
-                                    if perm not in perm_list:
-                                        perm_list.append(perm)
-                                        SelectMarkers(bsp, model_armature, True, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp)
-                                        export_fbx_bin.save(self, context, **keywords)
-                                        export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'markers', 'shared', perm, **keywords)
-                                        
-                            if self.export_lights:
-                                perm_list = []
-                                for ob in bpy.data.objects:
-                                    perm = GetPerm(ob)
-                                    if perm not in perm_list:
-                                        perm_list.append(perm)
-                                        SelectLights(bsp, model_armature, True, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp)
-                                        export_fbx_bin.save(self, context, **keywords)
-                                        export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'lights', 'shared', perm, **keywords)
-
-                            if self.export_portals:
-                                perm_list = []
-                                for ob in bpy.data.objects:
-                                    perm = GetPerm(ob)
-                                    if perm not in perm_list:
-                                        perm_list.append(perm)
-                                        SelectPortals(bsp, model_armature, True, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp)
-                                        export_fbx_bin.save(self, context, **keywords)
-                                        export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'portals', 'shared', perm, **keywords)
-
-                            if self.export_seams:
-                                perm_list = []
-                                for ob in bpy.data.objects:
-                                    perm = GetPerm(ob)
-                                    if perm not in perm_list:
-                                        perm_list.append(perm)
-                                        SelectSeams(bsp, model_armature, True, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp)
-                                        export_fbx_bin.save(self, context, **keywords)
-                                        export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'seams', 'shared', perm, **keywords)
-
-                            if self.export_water_surfaces:
-                                perm_list = []
-                                for ob in bpy.data.objects:
-                                    perm = GetPerm(ob)
-                                    if perm not in perm_list:
-                                        perm_list.append(perm)
-                                        SelectWaterSurfaces(bsp, model_armature, True, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp)
-                                        export_fbx_bin.save(self, context, **keywords)
-                                        export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'water', 'shared', perm, **keywords)
-
-                            if self.export_lightmap_regions:
-                                perm_list = []
-                                for ob in bpy.data.objects:
-                                    perm = GetPerm(ob)
-                                    if perm not in perm_list:
-                                        perm_list.append(perm)
-                                        SelectLightMapRegions(bsp, model_armature, True, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp)
-                                        export_fbx_bin.save(self, context, **keywords)
-                                        export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'lightmap_region', 'shared', perm, **keywords)
-
-                            if self.export_boundary_surfaces:
-                                perm_list = []
-                                for ob in bpy.data.objects:
-                                    perm = GetPerm(ob)
-                                    if perm not in perm_list:
-                                        perm_list.append(perm)
-                                        SelectBoundarys(bsp, model_armature, True, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp)
-                                        export_fbx_bin.save(self, context, **keywords)
-                                        export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'design', 'shared', perm, **keywords)
-
-                            if self.export_water_physics:
-                                perm_list = []
-                                for ob in bpy.data.objects:
-                                    perm = GetPerm(ob)
-                                    if perm not in perm_list:
-                                        perm_list.append(perm)
-                                        SelectWaterPhysics(bsp, model_armature, True, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp)
-                                        export_fbx_bin.save(self, context, **keywords)
-                                        export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'water_physics', 'shared', perm, **keywords)
-
-                            if self.export_rain_occluders:
-                                perm_list = []
-                                for ob in bpy.data.objects:
-                                    perm = GetPerm(ob)
-                                    if perm not in perm_list:
-                                        perm_list.append(perm)
-                                        SelectPoopRains(bsp, model_armature, True, perm, self.export_hidden, self.export_all_perms, self.export_specific_perm, self.export_all_bsps, self.export_specific_bsp)
-                                        export_fbx_bin.save(self, context, **keywords)
-                                        export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'rain_blockers', 'shared', perm, **keywords)
-
-                        RestoreLightsRotations(lights_list)
-
-                    elif self.sidecar_type == 'DECORATOR':
-                        print('not implemented')
-
-                    elif self.sidecar_type == 'PARTICLE MODEL':
-                        print('not implemented')
-
-                    scene.frame_start = f_start
-                    scene.frame_end = f_end
-
-                    if self.export_hidden:
-                        for ob in hidden_list:
-                            ob.hide_set(True)
-
-                    for ob in selection:
-                        ob.select_set(True)
-                    bpy.context.view_layer.objects.active = active_ob
-                
-                else:
-                    export_fbx_bin.save(self, context, **keywords)
-                    export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'selected', **keywords)
-
-                if temp_armature:
-                    DelTempArmature(model_armature)
-
-                if(IsWindows()):
-                    if self.export_sidecar:
-                        export_sidecar.save(self, context, self.report, asset_path, model_armature, **keywords)
-                    import_sidecar.save(self, context, self.report, **keywords)
-                    if self.lightmap_structure:
-                        run_lightmapper.save(self, context, self.report, **keywords)
-                    if self.import_bitmaps:
-                        print("Temporary implementation, remove this later!")
-                        #import_bitmap.save(self, context, self.report, **keywords)
-                    
-            elif(not self.export_sidecar):
-                export_fbx_bin.save(self, context, **keywords)
-                export_gr2.save(self, context, self.report, asset_path, asset, IsWindows(), 'selected', **keywords)
-            else:
-                self.report({'ERROR'},"No sidecar output tags selected")
-
-
-        else:
-            if GetEKPath() == None or GetEKPath() == '' or not exists(GetToolPath()):
-                ctypes.windll.user32.MessageBoxW(0, "Invalid Editing Kit path. Please check your editing kit path in add-on preferences and try again.", "Invalid EK Path", 0)
-            else:
-                ctypes.windll.user32.MessageBoxW(0, "The selected export folder is invalid, please select one within the data folder of your HEK tools.", "Invalid Export Path", 0)
+        console = bpy.ops.wm
 
         if self.show_output:
-            bpy.ops.wm.console_toggle()
-        try: # try this but don't assert if it fails
-            if not mode_not_set:
-                bpy.ops.object.mode_set(mode=mode, toggle=False)
-        except:
-            print('error occured when trying to replace mode')
+            console.console_toggle() # toggle the console so users can see progress of export
+
+        from .prepare_scene import prepare_scene
+        (objects_selection, active_object, hidden_objects, mode, model_armature, temp_armature, asset_path, asset, skeleton_bones, halo_objects, timeline_start, timeline_end
+        ) = prepare_scene(context, self.report, **keywords) # prepares the scene for processing and returns information about the scene
+
+        lights = halo_objects.lights
+
+        for i in lights:
+            print(i)
+
+        # try:
+        from .process_scene import process_scene
+        process_scene(self, context, keywords, self.report, model_armature, asset_path, asset, skeleton_bones, halo_objects, timeline_start, timeline_end, **keywords)
+        # except:
+        #     print('ASSERT: Scene processing failed')
+        #     self.report({'WARNING'},'ASSERT: Scene processing failed')
+
+        from .repair_scene import repair_scene
+        repair_scene(context, self.report, objects_selection, active_object, hidden_objects, mode, temp_armature, timeline_start, timeline_end, model_armature, lights, **keywords)
+
+        if self.show_output:
+            console.console_toggle()
 
         return {'FINISHED'}
 
@@ -997,9 +550,9 @@ class Export_Halo_GR2(Operator, ExportHelper):
         box = layout.box()
         box.label(text="Sidecar Settings")
         col = box.column()
-        col.prop(self, "export_sidecar")
-        if self.export_sidecar:
-            if self.sidecar_type == 'MODEL' and self.export_sidecar:
+        col.prop(self, "export_sidecar_xml")
+        if self.export_sidecar_xml:
+            if self.sidecar_type == 'MODEL' and self.export_sidecar_xml:
                 sub = box.column(heading="Output Tags")
             if self.sidecar_type == 'MODEL':
                 sub.prop(self, "output_biped")
@@ -1048,13 +601,13 @@ class Export_Halo_GR2(Operator, ExportHelper):
                     col.prop(self, 'lightmap_specific_bsp')
                 col.prop(self, 'lightmap_all_bsps')
 
-        # BITMAP SETTINGS #
-        box = layout.box()
-        box.label(text="Bitmap Settings")
-        col = box.column()
-        col.prop(self, "import_bitmaps")
-        if self.import_bitmaps:
-            col.prop(self, "bitmap_type")
+        # # BITMAP SETTINGS #
+        # box = layout.box()
+        # box.label(text="Bitmap Settings")
+        # col = box.column()
+        # col.prop(self, "import_bitmaps")
+        # if self.import_bitmaps:
+        #     col.prop(self, "bitmap_type")
 
         # SCENE SETTINGS #
         box = layout.box()
@@ -1066,64 +619,6 @@ class Export_Halo_GR2(Operator, ExportHelper):
         col.prop(self, 'mesh_smooth_type')
         col.separator()
         col.prop(self, "global_scale")
-
-def SelectModelRender(perm, arm, export_hidden, export_all_perms, export_specific_perm):
-    return SelectModelObject(perm, arm, export_hidden, export_all_perms, export_specific_perm, 'ObRender')
-
-def SelectModelCollision(perm, arm, export_hidden, export_all_perms, export_specific_perm):
-    return SelectModelObject(perm, arm, export_hidden, export_all_perms, export_specific_perm, 'ObCollision')
-
-def SelectModelPhysics(perm, arm, export_hidden, export_all_perms, export_specific_perm):
-    return SelectModelObject(perm, arm, export_hidden, export_all_perms, export_specific_perm, 'ObPhysics')
-
-def SelectModelMarkers(arm, export_hidden):
-    return SelectModelObjectNoPerm(arm, export_hidden, 'ObMarkers')
-
-def SelectModelSkeleton(arm):
-    DeselectAllObjects()
-    arm.select_set(True)
-
-    return True
-
-def SelectStructure(index, arm, shared, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
-    return SelectBSPObject(index, arm, shared, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp, 'ObStructure')
-
-def SelectPoops(index, arm, shared, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
-    return SelectBSPObject(index, arm, shared, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp, 'ObPoops')
-
-def SelectMarkers(index, arm, shared, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
-    return SelectBSPObject(index, arm, shared, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp, 'ObMarkers')
-
-def SelectLights(index, arm, shared, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
-    return SelectBSPObject(index, arm, shared, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp, 'ObLights')
-
-def SelectPortals(index, arm, shared, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
-    return SelectBSPObject(index, arm, shared, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp, 'ObPortals')
-
-def SelectSeams(index, arm, shared, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
-    return SelectBSPObject(index, arm, shared, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp, 'ObSeams')
-
-def SelectWaterSurfaces(index, arm, shared, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
-    return SelectBSPObject(index, arm, shared, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp, 'ObWaterSurfaces')
-
-def SelectLightMapRegions(index, arm, shared, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
-    return SelectBSPObject(index, arm, shared, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp, 'ObLightMapRegions')
-
-def SelectFog(index, arm, shared, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
-    return SelectBSPObject(index, arm, shared, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp, 'ObFog')
-
-def SelectCookie(index, arm, shared, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
-    return SelectBSPObject(index, arm, shared, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp, 'ObCookie')
-
-def SelectBoundarys(index, arm, shared, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
-    return SelectBSPObject(index, arm, shared, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp, 'ObBoundarys')
-
-def SelectWaterPhysics(index, arm, shared, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
-    return SelectBSPObject(index, arm, shared, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp, 'ObWaterPhysics')
-
-def SelectPoopRains(index, arm, shared, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
-    return SelectBSPObject(index, arm, shared, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp, 'ObPoopRains')
-
 def menu_func_export(self, context):
     self.layout.operator(Export_Halo_GR2.bl_idname, text="Halo Gen4 Asset Export (.fbx .json .gr2. .xml)")
 

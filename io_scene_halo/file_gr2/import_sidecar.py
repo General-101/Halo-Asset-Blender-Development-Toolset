@@ -32,11 +32,11 @@ from ..gr2_utils import (
     GetToolPath,
 )
 
-def import_sidecar(report, filePath='', import_to_game=False, import_check=False, import_force=False, import_verbose=False, import_draft=False,import_seam_debug=False,import_skip_instances=False,import_decompose_instances=False,import_surpress_errors=False, run_tagwatcher=False, import_in_background=False):
+def import_now(report, filePath='', import_check=False, import_force=False, import_verbose=False, import_draft=False,import_seam_debug=False,import_skip_instances=False,import_decompose_instances=False,import_surpress_errors=False, run_tagwatcher=False, import_in_background=False):
     full_path = filePath.rpartition('\\')[0]
     asset_path = CleanAssetPath(full_path)
     asset_name = asset_path.rpartition('\\')[2]
-
+    print('so close...')
     try:
         toolCommand = '"{}" import "{}" {}'.format(GetToolPath(), asset_path + '\\' + asset_name + '.sidecar.xml', GetImportFlags(import_check, import_force, import_verbose, import_draft, import_seam_debug, import_skip_instances, import_decompose_instances, import_surpress_errors))
         os.chdir(GetEKPath())
@@ -46,6 +46,7 @@ def import_sidecar(report, filePath='', import_to_game=False, import_check=False
 
     except:
         report({'WARNING'},"Import Failed!")
+        print('Exception!')
 
     if run_tagwatcher:
         try:
@@ -85,7 +86,7 @@ def GetImportFlags(flag_import_check, flag_import_force, flag_import_verbose, fl
     return ' '.join(flags)
 
 
-def save(operator, context, report,
+def import_sidecar(operator, context, report,
         filepath="",
         import_to_game=False,
         import_check=False,
@@ -101,6 +102,7 @@ def save(operator, context, report,
         **kwargs
         ):
         if import_to_game:
-            import_sidecar(report, filepath, import_to_game, import_check, import_force, import_verbose, import_draft,import_seam_debug,import_skip_instances,import_decompose_instances,import_surpress_errors, run_tagwatcher, import_in_background)
+            print('okay we should be importing now')
+            import_now(report, filepath, import_check, import_force, import_verbose, import_draft,import_seam_debug,import_skip_instances,import_decompose_instances,import_surpress_errors, run_tagwatcher, import_in_background)
 
         return {'FINISHED'}

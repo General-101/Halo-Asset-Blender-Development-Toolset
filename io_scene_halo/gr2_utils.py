@@ -111,12 +111,6 @@ def IsWindows():
     else:
         return False
 
-def CheckPath(filePath):
-    if(filePath.startswith(os.path.abspath(GetEKPath() + "\\data")+os.sep)):
-        return True
-    else:
-        return False
-
 def ObjectValid(ob, export_hidden, valid_perm='', evaluated_perm=''):
     return ob in tuple(bpy.data.scenes[0].view_layers[0].objects) and (ob.visible_get() or export_hidden) and valid_perm == evaluated_perm
 
@@ -132,56 +126,6 @@ def ResetPerm(perm): # resets a permutation to '' if it had been set to default
     
     return perm
 
-def GetSceneArmature():
-    model_armature = None
-    temp_armature = False
-    for ob in bpy.data.objects:
-        if ob.type == 'ARMATURE':
-            model_armature = ob
-            break
-    if model_armature == None:
-        model_armature = AddTempArmature()
-        temp_armature = True
-
-    return model_armature, temp_armature
-
-def AddTempArmature():
-    ops = bpy.ops
-    ops.object.armature_add(enter_editmode=False, align='WORLD', location=(0, 0, 0), scale=(1, 1, 1))
-    model_armature = bpy.context.view_layer.objects.active
-    model_armature.data.bones[0].name = 'implied_root_node'
-    for ob in bpy.data.objects:
-        ob.select_set(True)
-    model_armature.select_set(True)
-    ops.object.parent_set(type='OBJECT')
-
-    return model_armature
-
-def ParentToArmature(model_armature):
-    for ob in bpy.data.objects:
-            if ob.parent == model_armature:
-                if ob.parent_type == 'OBJECT':
-                    if not any(m != ' ARMATURE' for m in ob.modifiers):
-                        bpy.ops.object.select_all(action='DESELECT')
-                        ob.select_set(True)
-                        bpy.context.view_layer.objects.active = model_armature
-                        if (ob.type == 'MESH' and (not ob.name.startswith(special_prefixes) or ob.name.startswith('$')) and (ob.halo_json.ObjectMesh_Type == 'PHYSICS' or ob.name.startswith('$')) and ob.halo_json.Object_Type_All == 'MESH') or (ob.type == 'MESH' and (ob.halo_json.Object_Type_All == 'MARKER' or ob.name.startswith('#'))) or ob.type == 'EMPTY' and (ob.halo_json.Object_Type_No_Mesh == 'MARKER' or ob.name.startswith('#')):
-                            bpy.ops.object.parent_set(type='BONE', keep_transform=True)
-                        else:
-                            bpy.ops.object.parent_set(type='ARMATURE', keep_transform=True)
-
-def DelTempArmature(model_armature):
-    ops = bpy.ops
-    DeselectAllObjects()
-    model_armature.select_set(True)
-    ops.object.delete(use_global=False, confirm=False)
-    for ob in bpy.data.objects:
-        bpy.context.view_layer.objects.active = ob
-        ops.object.modifier_remove(modifier="Armature")
-    DeselectAllObjects()
-
-
-
 def GetPrefix(string, prefix_list): # gets a prefix from a list of prefixes
     prefix = ''
     for p in prefix_list:
@@ -191,43 +135,51 @@ def GetPrefix(string, prefix_list): # gets a prefix from a list of prefixes
     
     return prefix
 
+def SelectHaloObject(select_func, selected_asset_type, valid_asset_types):
+    DeselectAllObjects()
+    select_func = getattr(sel_logic, select_func)
+    halo_objects = []
+    if selected_asset_type in valid_asset_types:
+        for ob in bpy.data.objects:
+            if select_func(ob):
+                halo_objects.append(ob) 
+    
+    return halo_objects
 
-def SelectModelObject(perm, arm, export_hidden, export_all_perms, export_specific_perm, select_func):
+
+def SelectModelObject(halo_objects, perm, arm, export_hidden, export_all_perms, export_specific_perm):
     DeselectAllObjects()
     perm = ResetPerm(perm)
     boolean = False
-    select_func = getattr(sel_logic, select_func)
     arm.select_set(True)
-    for ob in bpy.data.objects:
+    for ob in halo_objects:
         halo = ob.halo_json
-        if ObjectValid(ob, export_hidden, perm, halo.Permutation_Name) and select_func(ob) and ExportPerm(perm, export_all_perms, export_specific_perm):
+        if ObjectValid(ob, export_hidden, perm, halo.Permutation_Name) and ExportPerm(perm, export_all_perms, export_specific_perm):
             ob.select_set(True)
             boolean = True
     
     return boolean
 
-def SelectModelObjectNoPerm(arm, export_hidden, select_func):
+def SelectModelObjectNoPerm(halo_objects, arm, export_hidden):
     DeselectAllObjects()
     boolean = False
-    select_func = getattr(sel_logic, select_func)
     arm.select_set(True)
-    for ob in bpy.data.objects:
-        if ObjectValid(ob, export_hidden) and select_func(ob):
+    for ob in halo_objects:
+        if ObjectValid(ob, export_hidden):
             ob.select_set(True)
             boolean = True
 
     return boolean
 
-def SelectBSPObject(index, arm, shared, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp, select_func):
+def SelectBSPObject(halo_objects, index, arm, shared, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
     DeselectAllObjects()
     perm = ResetPerm(perm)
     boolean = False
-    select_func = getattr(sel_logic, select_func)
     arm.select_set(True)
-    for ob in bpy.data.objects:
+    for ob in halo_objects:
         halo = ob.halo_json
         if halo.bsp_index == index or shared:
-            if ObjectValid(ob, export_hidden, perm, halo.Permutation_Name) and select_func(ob) and ExportPerm(perm, export_all_perms, export_specific_perm) and ExportBSP(index, export_all_bsps, export_specific_bsp):
+            if ObjectValid(ob, export_hidden, perm, halo.Permutation_Name) and ExportPerm(perm, export_all_perms, export_specific_perm) and ExportBSP(index, export_all_bsps, export_specific_bsp):
                 ob.select_set(True)
                 boolean = True
 
@@ -237,6 +189,18 @@ def SelectBSPObject(index, arm, shared, perm, export_hidden, export_all_perms, e
 def DeselectAllObjects():
     bpy.ops.object.select_all(action='DESELECT')
 
+def SelectAllObjects():
+    bpy.ops.object.select_all(action='SELECT')
+
+def SetActiveObject(ob):
+    bpy.context.view_layer.objects.active = ob
+
+def GetAssetInfo(filepath):
+    asset_path = filepath.rpartition('\\')[0]
+    asset = asset_path.rpartition('\\')[2]
+    asset = asset.replace('.fbx', '')
+
+    return asset_path, asset
 
 #############
 ##CHECK TYPES##
@@ -323,115 +287,12 @@ def ObjectPrefix(ob, prefixes):
 def NotParentedToPoop(ob):
     return (not MeshType(ob.parent, 'INSTANCED GEOMETRY') or (ObjectPrefix(ob.parent, special_prefixes) and not ObjectPrefix(ob.parent, '%')))
 
-def FixLightsRotations():
-    DeselectAllObjects()
-    angle_x = radians(-90)
-    angle_z = radians(-180)
-    axis_x = (1, 0, 0)
-    axis_z = (0, 0, 1)
-    lights_list = []
-    for ob in bpy.data.objects:
-        if sel_logic.ObLights(ob):
-            pivot = ob.location
-            M = (
-                Matrix.Translation(pivot) @
-                Matrix.Rotation(angle_x, 4, axis_x) @
-                Matrix.Rotation(angle_z, 4, axis_z) @       
-                Matrix.Translation(-pivot)
-                )
-            ob.matrix_world = M @ ob.matrix_world
-            lights_list.append(ob)
-
-    return lights_list
-
-
-def RestoreLightsRotations(lights_list):
-    DeselectAllObjects()
-    angle_x = radians(90)
-    angle_z = radians(180)
-    axis_x = (1, 0, 0)
-    axis_z = (0, 0, 1)
-    for ob in lights_list:
-        pivot = ob.location
-        print('restoring light ' + ob.name)
-        M = (
-            Matrix.Translation(pivot) @
-            Matrix.Rotation(angle_z, 4, axis_z) @  
-            Matrix.Rotation(angle_x, 4, axis_x) @
-            Matrix.Translation(-pivot)
-            )
-        ob.matrix_world = M @ ob.matrix_world
-
 #############
 #BONE SORTING#
 #############
 
 
-def GetBoneList(model_armature, deform_only):
-    boneslist = {}
-    arm = model_armature.name
-    boneslist.update({arm: getArmatureProperties()})
-    index = 0
-    frameIDs = openCSV() #sample function call to get FrameIDs CSV values as dictionary
-    f1 = frameIDs.keys()
-    f2 = frameIDs.values()
-    bone_list = model_armature.data.bones
-    #bone_list = 
-    #bone_list = SortList(model_armature)
-    if deform_only:
-        bone_list = GetDeformBonesOnly(bone_list)
-    for b in bone_list:
-        if b.halo_json.frame_id1 == '':
-            FrameID1 = list(f1)[index]
-        else:
-            FrameID1 = b.halo_json.frame_id1
-        if b.halo_json.frame_id2 == '':
-            FrameID2 = list(f2)[index]
-        else:
-            FrameID2 = b.halo_json.frame_id2
-        index +=1
-        boneslist.update({b.name: getBoneProperties(FrameID1, FrameID2)})
 
-    return boneslist
-
-def GetDeformBonesOnly(bone_list):
-    deform_list = []
-    for b in bone_list:
-        if b.use_deform:
-            deform_list.append(b)
-    
-    return deform_list
-        
-
-def getArmatureProperties():
-    node_props = {}
-
-    node_props.update({"bungie_object_type": "_connected_geometry_object_type_frame"}),
-    node_props.update({"bungie_frame_ID1": "8078"}),
-    node_props.update({"bungie_frame_ID2": "378163771"}),
-
-    return node_props
-
-def getBoneProperties(FrameID1, FrameID2):
-    node_props = {}
-
-    node_props.update({"bungie_object_type": "_connected_geometry_object_type_frame"}),
-    node_props.update({"bungie_frame_ID1": FrameID1}),
-    node_props.update({"bungie_frame_ID2": FrameID2}),
-
-    return node_props
-
-def openCSV():
-    script_folder_path = path.dirname(path.dirname(__file__))
-    filepath = path.join(script_folder_path, "io_scene_halo\\file_gr2", "frameidlist.csv")
-
-    frameIDList = {}
-    with open(filepath) as csv_file:
-        csv_reader = csv.reader(csv_file, delimiter=',')
-        for row in csv_reader:
-            frameIDList.update({row[0]: row[1]})
-
-    return frameIDList
 
 
 class Halo_Bones():
