@@ -480,7 +480,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
                 ('sprites', "Sprites", ""),
                 ('interface', "Interface", ""),
                 ),
-        default='DIRECT',
+        default='2dtextures',
     )
 
     def execute(self, context):
