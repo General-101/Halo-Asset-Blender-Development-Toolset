@@ -87,7 +87,6 @@ def RestoreLightsRotations(lights_list):
     axis_z = (0, 0, 1)
     for ob in lights_list:
         pivot = ob.location
-        print('restoring light ' + ob.name)
         M = (
             Matrix.Translation(pivot) @
             Matrix.Rotation(angle_z, 4, axis_z) @  
