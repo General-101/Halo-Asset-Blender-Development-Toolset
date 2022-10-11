@@ -37,7 +37,7 @@ def import_bitmap(report, filePath='', import_to_game=False, bitmap_type=""):
     full_path = filePath.rpartition('\\')[0]
     asset_path = CleanAssetPath(full_path)
 
-    if not bitmap_type == "2d":
+    if not bitmap_type == "2dtexture":
         try:
             toolCommand = '"{}" bitmaps-with-type "{}" {}'.format(GetToolPath(), asset_path, bitmap_type)
             os.chdir(GetEKPath())

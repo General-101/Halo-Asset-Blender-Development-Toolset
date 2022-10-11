@@ -468,6 +468,20 @@ class Export_Halo_GR2(Operator, ExportHelper):
                         "(prefer 'Normals Only' option if your target importer understand split normals)",
             default='OFF',
             )
+    import_bitmaps: BoolProperty(
+        name='Import Bitmaps',
+        default=False,
+    )
+    bitmap_type: EnumProperty(
+        name='Bitmap Type',
+        items=(('2dtextures', "2D Textures", ""),
+                ('3dtextures', "3D Textures", ""),
+                ('cubemaps', "Cubemaps", ""),
+                ('sprites', "Sprites", ""),
+                ('interface', "Interface", ""),
+                ),
+        default='DIRECT',
+    )
 
     def execute(self, context):
         keywords = self.as_keywords()
@@ -1030,6 +1044,14 @@ class Export_Halo_GR2(Operator, ExportHelper):
                 if not self.lightmap_all_bsps:
                     col.prop(self, 'lightmap_specific_bsp')
                 col.prop(self, 'lightmap_all_bsps')
+
+        # BITMAP SETTINGS #
+        box = layout.box()
+        box.label(text="Bitmap Settings")
+        col = box.column()
+        col.prop(self, "import_bitmaps")
+        if self.import_bitmaps:
+            col.prop(self, "bitmap_type")
 
         # SCENE SETTINGS #
         box = layout.box()
