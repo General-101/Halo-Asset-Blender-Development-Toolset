@@ -33,7 +33,7 @@ from ..gr2_utils import (
     GetToolPath,
 )
 
-def import_bitmap(report, filePath='', import_to_game=False, bitmap_type=""):
+def import_bitmap(report, filePath='', bitmap_type=""):
     full_path = filePath.rpartition('\\')[0]
     asset_path = CleanAssetPath(full_path)
 
@@ -67,11 +67,10 @@ def CleanAssetPath(path):
 
 def save(operator, context, report,
         filepath="",
-        import_to_game=False,
         bitmap_type="",
         **kwargs
         ):
-        if import_to_game:
-            import_bitmap(report, filepath, import_to_game, bitmap_type)
+
+        import_bitmap(report, filepath, bitmap_type)
 
         return {'FINISHED'}

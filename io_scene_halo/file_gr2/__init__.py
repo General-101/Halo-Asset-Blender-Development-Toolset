@@ -486,7 +486,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
     def execute(self, context):
         keywords = self.as_keywords()
         print(self)
-        from . import export_gr2, export_sidecar, import_sidecar, run_lightmapper
+        from . import export_gr2, export_sidecar, import_sidecar, run_lightmapper, import_bitmap
         mode = ''
         mode_not_set = False
         model_armature = None
@@ -914,6 +914,9 @@ class Export_Halo_GR2(Operator, ExportHelper):
                     import_sidecar.save(self, context, self.report, **keywords)
                     if self.lightmap_structure:
                         run_lightmapper.save(self, context, self.report, **keywords)
+                    if self.import_bitmaps:
+                        print("Temporary implementation, remove this later!")
+                        #import_bitmap.save(self, context, self.report, **keywords)
                     
             elif(not self.export_sidecar):
                 export_fbx_bin.save(self, context, **keywords)
