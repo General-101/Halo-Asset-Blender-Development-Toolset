@@ -35,6 +35,7 @@ bl_info = {
     }
 
 import ctypes
+from os.path import exists
 import bpy
 from bpy_extras.io_utils import ExportHelper
 from bpy.props import StringProperty, BoolProperty, EnumProperty, FloatProperty, IntProperty
@@ -43,6 +44,7 @@ from bpy_extras.io_utils import ExportHelper
 
 from ..gr2_utils import (
     GetEKPath,
+    GetToolPath,
     ParentToArmature,
     GetPerm,
     IsWindows,
@@ -907,7 +909,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
 
 
         else:
-            if GetEKPath() == None or GetEKPath() == '':
+            if GetEKPath() == None or GetEKPath() == '' or not exists(GetToolPath()):
                 ctypes.windll.user32.MessageBoxW(0, "Invalid Editing Kit path. Please check your editing kit path in add-on preferences and try again.", "Invalid EK Path", 0)
             else:
                 ctypes.windll.user32.MessageBoxW(0, "The selected export folder is invalid, please select one within the data folder of your HEK tools.", "Invalid Export Path", 0)

@@ -24,7 +24,6 @@
 #
 # ##### END MIT LICENSE BLOCK #####
 
-import bpy
 from subprocess import Popen
 import os
 
