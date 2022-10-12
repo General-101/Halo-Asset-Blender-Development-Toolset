@@ -259,6 +259,9 @@ class sel_logic():
     def ObFrames(ob):
         return ObjectType(ob, ('FRAME'), (frame_prefixes)) and NotParentedToPoop(ob)
 
+    def ObDecorator(ob):
+        return MeshType(ob, ('DECORATOR'), (decorator_prefixes))
+
 
 
 def IsMesh(ob):

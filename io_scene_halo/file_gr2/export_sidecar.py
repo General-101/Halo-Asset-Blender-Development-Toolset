@@ -40,7 +40,7 @@ from ..gr2_utils import (
 )
 
 
-def export_xml(report, halo_objects, model_armature=None, filePath="", export_sidecar_xml=False, sidecar_type='MODEL', asset_path='',        
+def export_xml(report, halo_objects, model_armature=None, lod_count=0, filePath="", export_sidecar_xml=False, sidecar_type='MODEL', asset_path='',        
                 output_biped=False,
                 output_crate=False,
                 output_creature=False,
@@ -57,7 +57,7 @@ def export_xml(report, halo_objects, model_armature=None, filePath="", export_si
     asset_path = CleanAssetPath(full_path)
     asset_name = asset_path.rpartition('\\')[2]
 
-    BuildSidecar(halo_objects, model_armature, asset_path, asset_name, full_path, sidecar_type, output_biped,output_crate,output_creature,output_device_control,output_device_machine,output_device_terminal,output_effect_scenery,output_equipment,output_giant,output_scenery,output_vehicle,output_weapon)
+    BuildSidecar(halo_objects, model_armature, lod_count, asset_path, asset_name, full_path, sidecar_type, output_biped,output_crate,output_creature,output_device_control,output_device_machine,output_device_terminal,output_effect_scenery,output_equipment,output_giant,output_scenery,output_vehicle,output_weapon)
 
     report({'INFO'},"Sidecar build complete")
 
@@ -68,7 +68,7 @@ def CleanAssetPath(path):
 
     return path
 
-def BuildSidecar(halo_objects, model_armature, asset_path, asset_name, full_path, sidecar_type,               
+def BuildSidecar(halo_objects, model_armature, lod_count, asset_path, asset_name, full_path, sidecar_type,               
                         output_biped=False,
                         output_crate=False,
                         output_creature=False,
@@ -105,10 +105,10 @@ def BuildSidecar(halo_objects, model_armature, asset_path, asset_name, full_path
         WriteScenarioContents(halo_objects, metadata, asset_path, asset_name)
     if sidecar_type == 'SKY':
         WriteSkyContents(halo_objects, metadata, asset_path, asset_name)
-    # if sidecar_type == 'DECORATOR SET':
-    #     WriteDecoratorContents(metadata, asset_path, asset_name)
-    # if sidecar_type == 'PARTICLE MODEL':
-    #     WriteParticleContents(metadata, asset_path, asset_name)
+    if sidecar_type == 'DECORATOR SET':
+        WriteDecoratorContents(metadata, asset_path, asset_name, lod_count)
+    if sidecar_type == 'PARTICLE MODEL':
+        WriteParticleContents(metadata, asset_path, asset_name)
 
     dom = xml.dom.minidom.parseString(ET.tostring(metadata))
     xml_string = dom.toprettyxml(indent='  ')
@@ -171,14 +171,13 @@ def GetModelTags(       output_biped=False,
     return tags
 
 def GetObjectOutputTypes(metadata, type, asset_path, asset_name, output_tags=[]):
-    
     asset = ET.SubElement(metadata, "Asset", Name=asset_name, Type=type)
     tagcollection = ET.SubElement(asset, "OutputTagCollection")
 
     if type == 'model':
-        for tag in output_tags:
+        for tag in output_tags: # for each output tag that that user as opted to export, add this to the sidecar
             ET.SubElement(tagcollection, "OutputTag", Type=tag).text = asset_path + '\\' + asset_name
-
+    # models are the only sidecar type with optional high level tags exports, all others are fixed
     elif type == 'scenario':
         ET.SubElement(tagcollection, "OutputTag", Type='scenario_lightmap').text = asset_path + '\\' + asset_name + '_faux_lightmaps'
         ET.SubElement(tagcollection, "OutputTag", Type='structure_seams').text = asset_path + '\\' + asset_name
@@ -188,7 +187,16 @@ def GetObjectOutputTypes(metadata, type, asset_path, asset_name, output_tags=[])
         ET.SubElement(tagcollection, "OutputTag", Type='model').text = asset_path + '\\' + asset_name
         ET.SubElement(tagcollection, "OutputTag", Type='scenery').text = asset_path + '\\' + asset_name
 
-def WriteFolders(metadata):
+    elif type == 'decorator':
+        ET.SubElement(tagcollection, "OutputTag", Type='decorator').text = asset_path + '\\' + asset_name
+
+    elif type == 'particle_model':
+        ET.SubElement(tagcollection, "OutputTag", Type='particle_model').text = asset_path + '\\' + asset_name
+    
+    else:
+        ET.SubElement(tagcollection, "OutputTag", Type='cinematic').text = asset_path + '\\' + asset_name
+
+def WriteFolders(metadata): # Write folders to tell foundation where to look for assets. Used by Librarian
     folders = ET.SubElement(metadata, "Folders")
 
     ET.SubElement(folders, "Reference").text = "\\reference"
@@ -212,10 +220,10 @@ def WriteFolders(metadata):
     ET.SubElement(folders, "SourceBSPs").text = "\\models"
     ET.SubElement(folders, "Scripts").text = "\\scripts"
 
-def WriteFaceCollections(metadata, sidecar_type):
+def WriteFaceCollections(metadata, sidecar_type): # FaceCollections is where regions and global materials are defined in the sidecar. 
         faceCollections = ET.SubElement(metadata, "FaceCollections")
 
-        if(sidecar_type == 'MODEL' or sidecar_type == 'SKY'):
+        if(sidecar_type in ('MODEL', 'SKY')):
             region_list = ["default",""]
             f1 = ET.SubElement(faceCollections, "FaceCollection", Name="regions", StringTable="connected_geometry_regions_table", Description="Model regions")
 
@@ -229,7 +237,7 @@ def WriteFaceCollections(metadata, sidecar_type):
                     ET.SubElement(FaceCollectionsEntries, "FaceCollectionEntry", Index=str(count), Name=region, Active="true")
                     region_list.append(region)
                     count += 1
-        if(sidecar_type == 'MODEL' or sidecar_type == 'SCENARIO'):
+        if(sidecar_type in ('MODEL', 'SCENARIO', 'SKY')):
             mat_list = ["default",""]
             f2 = ET.SubElement(faceCollections, "FaceCollection", Name="global materials override", StringTable="connected_geometry_global_material_table", Description="Global material overrides")
 
@@ -730,6 +738,34 @@ def WriteSkyContents(halo_objects, metadata, asset_path, asset_name):
     output = ET.SubElement(object, 'OutputTagCollection')
     ET.SubElement(output, 'OutputTag', Type='render_model').text = asset_path + '\\' + asset_name
 
+def WriteDecoratorContents(halo_objects, metadata, asset_path, asset_name, lod_count):
+    contents = ET.SubElement(metadata, "Contents")
+    content = ET.SubElement(contents, "Content", Name=asset_name, Type='decorator_set')
+    if len(halo_objects.decorator) > 0:
+        count = 0
+        while lod_count > count: # count is treated as an index here, wheras lod_count is a range of 1-4. So for a lod_count of 4 the count will be 3 while make its final loop
+            object = ET.SubElement(content, 'ContentObject', Name=str(count), Type="render_model", LOD=str(count))
+            network = ET.SubElement(object, 'ContentNetwork' ,Name='default', Type="")
+            ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, 'render')
+            ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePath(asset_path, asset_name, 'render')
+
+            output = ET.SubElement(object, 'OutputTagCollection')
+            ET.SubElement(output, 'OutputTag', Type='render_model').text = asset_path + '\\' + asset_name + '_lod' + str(count + 1) # we add 1 here by convention. This results in a tag name that matches the lod value, rather than index
+            count += 1
+
+def WriteParticleContents(halo_objects, metadata, asset_path, asset_name):
+    contents = ET.SubElement(metadata, "Contents")
+    content = ET.SubElement(contents, "Content", Name=asset_name, Type='particle_model')
+    object = ET.SubElement(content, 'ContentObject', Name='', Type="particle_model")
+
+    if len(halo_objects.render) > 0:
+        network = ET.SubElement(object, 'ContentNetwork' ,Name=asset_name, Type="")
+        ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, 'particle_model')
+        ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePath(asset_path, asset_name, 'particle_model')
+
+    output = ET.SubElement(object, 'OutputTagCollection')
+    ET.SubElement(output, 'OutputTag', Type='render_model').text = asset_path + '\\' + asset_name
+
 def GetAssetPathBSP(asset_path, asset_name, bsp, type, perm=''):
     if perm == '' or perm == 'default':
         name = asset_name + '_' + bsp + '_' + type
@@ -765,6 +801,8 @@ def SceneHasDesign(halo_objects):
 def GetInputFilePath(asset_path, asset_name, type, perm=''):
     if type == 'model_animation_graph':
         path = asset_path + '\\animations\\' + asset_name + '.fbx'
+    elif type == 'particle_model':
+        path = asset_path + '\\models\\' + asset_name + '.fbx'
     else:
         if perm == '':
             path = asset_path + '\\models\\' + asset_name  + '_' + type + '.fbx'
@@ -776,6 +814,8 @@ def GetInputFilePath(asset_path, asset_name, type, perm=''):
 def GetIntermediateFilePath(asset_path, asset_name, type, perm=''):
     if type == 'model_animation_graph':
         path = asset_path + '\\export\\animations\\' + asset_name + '.gr2'
+    elif type == 'particle_model':
+        path = asset_path + '\\export\\models\\' + asset_name + '.gr2'
     else:
         if perm == '':
             path = asset_path + '\\export\\models\\' + asset_name + '_' + type + '.gr2'
@@ -814,7 +854,7 @@ def SceneHasMarkers():
     
     return boolean
 
-def export_sidecar(operator, context, report, asset_path, halo_objects, model_armature=None,
+def export_sidecar(operator, context, report, asset_path, halo_objects, model_armature=None, lod_count=0,
         filepath="",
         export_sidecar_xml=False,
         sidecar_type='MODEL',
@@ -832,7 +872,6 @@ def export_sidecar(operator, context, report, asset_path, halo_objects, model_ar
         output_weapon=False,
         **kwargs
         ):
-    if export_sidecar_xml and asset_path != '':
-        print('we SHOULD BE building a sidecar...')
-        export_xml(report, halo_objects, model_armature, filepath, export_sidecar_xml, sidecar_type, asset_path,output_biped,output_crate,output_creature,output_device_control,output_device_machine,output_device_terminal,output_effect_scenery,output_equipment,output_giant,output_scenery,output_vehicle,output_weapon)
+    if export_sidecar_xml and asset_path != '': # if the user has opted to export a sidecar and a valid asset path exists, proceed
+        export_xml(report, halo_objects, model_armature, lod_count, filepath, export_sidecar_xml, sidecar_type, asset_path,output_biped,output_crate,output_creature,output_device_control,output_device_machine,output_device_terminal,output_effect_scenery,output_equipment,output_giant,output_scenery,output_vehicle,output_weapon)
     return {'FINISHED'}

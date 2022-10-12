@@ -85,7 +85,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
         name='Asset Type',
         description='',
         default='MODEL',
-        items=[ ('MODEL', "Model", ""), ('SCENARIO', "Scenario", ""), ('SKY', 'Sky', '')]#, ('DECORATOR', "Decorator", ""), ('PARTICLE MODEL', "Particle Model", "") excluding these until they have been fully implemented
+        items=[ ('MODEL', "Model", ""), ('SCENARIO', "Scenario", ""), ('SKY', 'Sky', ''), ('DECORATOR SET', 'Decorator Set', ''), ('PARTICLE MODEL', 'Particle Model', '')]
     )
     export_method: EnumProperty(
         name="Export Method",
@@ -471,17 +471,11 @@ class Export_Halo_GR2(Operator, ExportHelper):
             console.console_toggle() # toggle the console so users can see progress of export
 
         from .prepare_scene import prepare_scene
-        (objects_selection, active_object, hidden_objects, mode, model_armature, temp_armature, asset_path, asset, skeleton_bones, halo_objects, timeline_start, timeline_end
+        (objects_selection, active_object, hidden_objects, mode, model_armature, temp_armature, asset_path, asset, skeleton_bones, halo_objects, timeline_start, timeline_end, lod_count
         ) = prepare_scene(context, self.report, **keywords) # prepares the scene for processing and returns information about the scene
-
-        lights = halo_objects.lights
-
-        for i in lights:
-            print(i)
-
         try:
             from .process_scene import process_scene
-            process_scene(self, context, keywords, self.report, model_armature, asset_path, asset, skeleton_bones, halo_objects, timeline_start, timeline_end, **keywords)
+            process_scene(self, context, keywords, self.report, model_armature, asset_path, asset, skeleton_bones, halo_objects, timeline_start, timeline_end, lod_count, **keywords)
         except:
             print('ASSERT: Scene processing failed')
             self.report({'WARNING'},'ASSERT: Scene processing failed')

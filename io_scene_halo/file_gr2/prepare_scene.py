@@ -35,7 +35,8 @@ from ..gr2_utils import(
     SetActiveObject,
     sel_logic,
     GetAssetInfo,
-    SelectHaloObject
+    SelectHaloObject,
+    ObDecorator
 )
 #####################################################################################
 #####################################################################################
@@ -50,8 +51,9 @@ def prepare_scene(context, report, sidecar_type, export_hidden, filepath, use_ar
     skeleton_bones = GetBoneList(model_armature, use_armature_deform_only)      # return a list of bones attached to the model armature, ignoring control / non-deform bones
     h_objects = halo_objects(sidecar_type)
     FixLightsRotations(h_objects.lights)                                         # adjust light rotations to match in game rotation, and return a list of lights for later use in repair_scene
-    timeline_start, timeline_end = SetTimelineRange(context)                              
-    return objects_selection, active_object, hidden_objects, mode, model_armature, temp_armature, asset_path, asset, skeleton_bones, h_objects, timeline_start, timeline_end
+    timeline_start, timeline_end = SetTimelineRange(context)
+    lod_count = GetDecoratorLODCount(h_objects, sidecar_type == 'DECORATOR SET')                              
+    return objects_selection, active_object, hidden_objects, mode, model_armature, temp_armature, asset_path, asset, skeleton_bones, h_objects, timeline_start, timeline_end, lod_count
 
 #####################################################################################
 #####################################################################################
@@ -75,19 +77,20 @@ class halo_objects():
         self.boundary_surfaces = SelectHaloObject('ObBoundarys', asset_type, ('SCENARIO', 'CINEMATIC'))
         self.water_physics = SelectHaloObject('ObWaterPhysics', asset_type, ('SCENARIO', 'CINEMATIC'))
         self.rain_occluders = SelectHaloObject('ObPoopRains', asset_type, ('SCENARIO', 'CINEMATIC'))
+        self.decorator = SelectHaloObject('ObDecorator', asset_type, ('DECORATOR SET'))
 
 #####################################################################################
 #####################################################################################
 # VARIOUS FUNCTIONS
 def GetSceneMode(context):
     mode = None
-    # try: # wrapped this in a try as the user can encounter an assert if no object is selected. No reason for this to crash the export
-    if len(context.selected_objects) > 0:
-        mode = context.object.mode
+    try: # wrapped this in a try as the user can encounter an assert if no object is selected. No reason for this to crash the export
+        if len(context.selected_objects) > 0:
+            mode = context.object.mode
 
-    bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
-    # except:
-    #     print('WARNING: Unable to test mode')
+        bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
+    except:
+        print('WARNING: Unable to test mode')
 
     return mode
 
@@ -139,6 +142,16 @@ def FixLightsRotations(lights_list):
             Matrix.Translation(-pivot)
             )
         ob.matrix_world = M @ ob.matrix_world
+
+def GetDecoratorLODCount(halo_objects, asset_is_decorator):
+    lod_count = 0
+    if asset_is_decorator:
+        for ob in halo_objects.decorator:
+            ob_lod = ob.halo_json.Decorator_LOD
+            if ob_lod > lod_count:
+                lod_count =  ob_lod
+    
+    return lod_count
 
 #####################################################################################
 #####################################################################################
