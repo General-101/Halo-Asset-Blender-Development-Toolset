@@ -31,12 +31,10 @@ from math import radians
 from mathutils import Matrix
 from ..gr2_utils import(
     DeselectAllObjects,
-    SelectAllObjects,
     SetActiveObject,
     sel_logic,
     GetAssetInfo,
     SelectHaloObject,
-    ObDecorator
 )
 #####################################################################################
 #####################################################################################
@@ -78,6 +76,7 @@ class halo_objects():
         self.water_physics = SelectHaloObject('ObWaterPhysics', asset_type, ('SCENARIO', 'CINEMATIC'))
         self.rain_occluders = SelectHaloObject('ObPoopRains', asset_type, ('SCENARIO', 'CINEMATIC'))
         self.decorator = SelectHaloObject('ObDecorator', asset_type, ('DECORATOR SET'))
+        self.particle = SelectHaloObject('ObRender', asset_type, ('PARTICLE MODEL'))
 
 #####################################################################################
 #####################################################################################

@@ -456,15 +456,23 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                             perm = GetPerm(ob)
                             if perm not in perm_list:
                                 perm_list.append(perm)
-                                if SelectModelObject(halo_objects.render + halo_objects.lights, perm, model_armature, export_hidden, export_all_perms, export_specific_perm):
+                                if SelectModelObject(halo_objects.render + halo_objects.lights + halo_objects.markers, perm, model_armature, export_hidden, export_all_perms, export_specific_perm):
                                     export_fbx(self, context, **keywords)
                                     export_gr2(self, context, report, asset_path, asset, IsWindows(), 'render', '', perm, model_armature, skeleton_bones, **keywords)
 
-                elif sidecar_type == 'DECORATOR':
-                    print('not implemented')
+                elif sidecar_type == 'DECORATOR SET': 
+                    if export_render:
+                        if SelectModelObjectNoPerm(halo_objects.decorator, model_armature, export_hidden):
+                            print('found a decorator mesh')
+                            export_fbx(self, context, **keywords)
+                            export_gr2(self, context, report, asset_path, asset, IsWindows(), 'render', '', 'default', model_armature, skeleton_bones, **keywords)
 
-                elif sidecar_type == 'PARTICLE MODEL':
-                    print('not implemented')
+                else: # for particles
+                    if export_render:
+                        if SelectModelObjectNoPerm(halo_objects.particle, model_armature, export_hidden):
+                            print('found a decorator mesh')
+                            export_fbx(self, context, **keywords)
+                            export_gr2(self, context, report, asset_path, asset, IsWindows(), 'particle_model', '', 'default', model_armature, skeleton_bones, **keywords)
 
             else:
                 export_fbx(self, context, **keywords)
@@ -474,7 +482,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
             if(IsWindows()):
                 if export_sidecar_xml:
                     from .export_sidecar import export_sidecar
-                    export_sidecar(self, context, report, asset_path, halo_objects, model_armature, lod_count **keywords)
+                    export_sidecar(self, context, report, asset_path, halo_objects, model_armature, lod_count, **keywords)
                 from .import_sidecar import import_sidecar
                 import_sidecar(self, context, report, **keywords)
                 if lightmap_structure:

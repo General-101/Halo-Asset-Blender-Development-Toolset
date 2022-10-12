@@ -36,7 +36,6 @@ def import_now(report, filePath='', import_check=False, import_force=False, impo
     full_path = filePath.rpartition('\\')[0]
     asset_path = CleanAssetPath(full_path)
     asset_name = asset_path.rpartition('\\')[2]
-    print('so close...')
     try:
         toolCommand = '"{}" import "{}" {}'.format(GetToolPath(), asset_path + '\\' + asset_name + '.sidecar.xml', GetImportFlags(import_check, import_force, import_verbose, import_draft, import_seam_debug, import_skip_instances, import_decompose_instances, import_surpress_errors))
         os.chdir(GetEKPath())
@@ -102,7 +101,6 @@ def import_sidecar(operator, context, report,
         **kwargs
         ):
         if import_to_game:
-            print('okay we should be importing now')
             import_now(report, filepath, import_check, import_force, import_verbose, import_draft,import_seam_debug,import_skip_instances,import_decompose_instances,import_surpress_errors, run_tagwatcher, import_in_background)
 
         return {'FINISHED'}

@@ -52,11 +52,11 @@ def repair_scene(context, report, objects_selection, active_object, hidden_objec
 
     RestoreLightsRotations(lights)
 
-    # try: # try this but don't assert if it fails
-    #     if mode != '':
-    #         bpy.ops.object.mode_set(mode=mode, toggle=False)
-    # except:
-    #     print('error occured when trying to replace mode')
+    try: # try this but don't assert if it fails
+        if mode != None:
+            bpy.ops.object.mode_set(mode=mode, toggle=False)
+    except:
+        print('error occured when trying to replace mode')
 
     if temp_armature:
         DelTempArmature(context, model_armature)

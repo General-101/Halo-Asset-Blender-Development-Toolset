@@ -94,9 +94,9 @@ def BuildSidecar(halo_objects, model_armature, lod_count, asset_path, asset_name
     elif sidecar_type == 'SKY':
         GetObjectOutputTypes(metadata, 'sky', asset_path, asset_name)
     elif sidecar_type == 'DECORATOR SET':
-        GetObjectOutputTypes(metadata, 'decorator set', asset_path, asset_name, 'model')
+        GetObjectOutputTypes(metadata, 'decorator_set', asset_path, asset_name, 'decorator_set')
     elif sidecar_type == 'PARTICLE MODEL':
-        GetObjectOutputTypes(metadata, 'particle model', asset_path, asset_name, 'model')
+        GetObjectOutputTypes(metadata, 'particle_model', asset_path, asset_name, 'particle_model')
     WriteFolders(metadata)
     WriteFaceCollections(metadata, sidecar_type)
     if sidecar_type == 'MODEL':
@@ -106,9 +106,9 @@ def BuildSidecar(halo_objects, model_armature, lod_count, asset_path, asset_name
     if sidecar_type == 'SKY':
         WriteSkyContents(halo_objects, metadata, asset_path, asset_name)
     if sidecar_type == 'DECORATOR SET':
-        WriteDecoratorContents(metadata, asset_path, asset_name, lod_count)
+        WriteDecoratorContents(halo_objects, metadata, asset_path, asset_name, lod_count)
     if sidecar_type == 'PARTICLE MODEL':
-        WriteParticleContents(metadata, asset_path, asset_name)
+        WriteParticleContents(halo_objects, metadata, asset_path, asset_name)
 
     dom = xml.dom.minidom.parseString(ET.tostring(metadata))
     xml_string = dom.toprettyxml(indent='  ')
@@ -187,8 +187,8 @@ def GetObjectOutputTypes(metadata, type, asset_path, asset_name, output_tags=[])
         ET.SubElement(tagcollection, "OutputTag", Type='model').text = asset_path + '\\' + asset_name
         ET.SubElement(tagcollection, "OutputTag", Type='scenery').text = asset_path + '\\' + asset_name
 
-    elif type == 'decorator':
-        ET.SubElement(tagcollection, "OutputTag", Type='decorator').text = asset_path + '\\' + asset_name
+    elif type == 'decorator_set':
+        ET.SubElement(tagcollection, "OutputTag", Type='decorator_set').text = asset_path + '\\' + asset_name
 
     elif type == 'particle_model':
         ET.SubElement(tagcollection, "OutputTag", Type='particle_model').text = asset_path + '\\' + asset_name
@@ -758,13 +758,12 @@ def WriteParticleContents(halo_objects, metadata, asset_path, asset_name):
     content = ET.SubElement(contents, "Content", Name=asset_name, Type='particle_model')
     object = ET.SubElement(content, 'ContentObject', Name='', Type="particle_model")
 
-    if len(halo_objects.render) > 0:
+    if len(halo_objects.particle) > 0:
         network = ET.SubElement(object, 'ContentNetwork' ,Name=asset_name, Type="")
         ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, 'particle_model')
         ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePath(asset_path, asset_name, 'particle_model')
 
-    output = ET.SubElement(object, 'OutputTagCollection')
-    ET.SubElement(output, 'OutputTag', Type='render_model').text = asset_path + '\\' + asset_name
+    ET.SubElement(object, 'OutputTagCollection')
 
 def GetAssetPathBSP(asset_path, asset_name, bsp, type, perm=''):
     if perm == '' or perm == 'default':

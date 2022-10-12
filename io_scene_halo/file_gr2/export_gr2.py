@@ -877,6 +877,8 @@ def GetFileName(filePath, asset_name, tag_type, perm='', asset_path='', bsp=''):
         if name.rpartition('.')[0] != '':
             name = name.rpartition('.')[0]
         name = asset_path + '\\' + name + '.fbx'
+    elif tag_type == 'particle_model':
+        name = asset_path + '\\' + asset_name + '.fbx'
     elif bsp == '':
         if perm != '' and perm != 'default':
             name = asset_path + '\\' + asset_name + '_' + perm
