@@ -158,6 +158,7 @@ def GetDecoratorLODCount(halo_objects, asset_is_decorator):
 def GetSceneArmature(context):
     model_armature = None
     temp_armature = False
+    no_parent_objects = []
     for ob in bpy.data.objects:
         if ob.type == 'ARMATURE' and not ob.name.startswith('+'): # added a check for a '+' prefix in armature name, to support special animation control armatures in the future
             model_armature = ob
