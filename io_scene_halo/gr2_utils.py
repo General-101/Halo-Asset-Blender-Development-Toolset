@@ -111,7 +111,7 @@ def IsWindows():
     else:
         return False
 
-def IsWindows(systemos = '', architecture = ''):
+def IsWindowsArc(systemos = '', architecture = ''):
     if systemos == 'Windows':
         if architecture.endswith('x64'):
             return 'x64'

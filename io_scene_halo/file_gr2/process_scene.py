@@ -28,6 +28,10 @@ import bpy
 from os.path import exists
 import os
 import ctypes
+import uuid
+import platform
+from subprocess import Popen
+from subprocess import run
 from ..gr2_utils import(
     GetPerm,
     IsWindows,
@@ -36,7 +40,8 @@ from ..gr2_utils import(
     SelectBSPObject,
     GetEKPath,
     GetToolPath,
-    DeselectAllObjects
+    DeselectAllObjects,
+    IsWindows,
 )
 
 #####################################################################################
@@ -87,7 +92,16 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                   **kwargs
     ):
 
-    from io_scene_fbx.export_fbx_bin import save as export_fbx # import fbx exporter code
+    using_better_fbx = False
+
+    try:
+        from better_fbx.exporter import write_some_data as SetFBXData
+        using_better_fbx = True
+        print('Found Better FBX exporter')
+    except:
+        from io_scene_fbx.export_fbx_bin import save as export_fbx
+        print("Could not find Better FBX exporter. Using Blender's native fbx exporter")
+
     from .export_gr2 import export_gr2
 
     if(CheckPath(filepath)): # check the user is saving the file to a location in their editing kit data directory
@@ -117,7 +131,10 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                             if perm not in perm_list:
                                 perm_list.append(perm)
                                 if SelectModelObject(halo_objects.render, perm, model_armature, export_hidden, export_all_perms, export_specific_perm):
-                                    export_fbx(self, context, **keywords)
+                                    if using_better_fbx:
+                                        export_better_fbx(context, False, **keywords)
+                                    else:
+                                        export_fbx(self, context, **keywords)
                                     export_gr2(self, context, report, asset_path, asset, IsWindows(), 'render', '', perm, model_armature, skeleton_bones, **keywords)
 
                     if export_collision:
@@ -127,7 +144,10 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                             if perm not in perm_list:
                                 perm_list.append(perm)
                                 if SelectModelObject(halo_objects.collision, perm, model_armature, export_hidden, export_all_perms, export_specific_perm):
-                                    export_fbx(self, context, **keywords)
+                                    if using_better_fbx:
+                                        export_better_fbx(context, False, **keywords)
+                                    else:
+                                        export_fbx(self, context, **keywords)
                                     export_gr2(self, context, report, asset_path, asset, IsWindows(), 'collision', '', perm, model_armature, skeleton_bones, **keywords)
 
                     if export_physics:
@@ -137,16 +157,25 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                             if perm not in perm_list:
                                 perm_list.append(perm)
                                 if SelectModelObject(halo_objects.physics, perm, model_armature, export_hidden, export_all_perms, export_specific_perm):
-                                    export_fbx(self, context, **keywords)
+                                    if using_better_fbx:
+                                        export_better_fbx(context, False, **keywords)
+                                    else:
+                                        export_fbx(self, context, **keywords)
                                     export_gr2(self, context, report, asset_path, asset, IsWindows(), 'physics', '', perm, model_armature, skeleton_bones, **keywords)
 
                     if export_markers:
                         if SelectModelObjectNoPerm(halo_objects.markers, model_armature, export_hidden):
-                            export_fbx(self, context, **keywords)
+                            if using_better_fbx:
+                                export_better_fbx(context, False, **keywords)
+                            else:
+                                export_fbx(self, context, **keywords)
                             export_gr2(self, context, report, asset_path, asset, IsWindows(), 'markers', '', '', model_armature, skeleton_bones, **keywords)
 
                     if SelectModelSkeleton(model_armature):
-                        export_fbx(self, context, **keywords)
+                        if using_better_fbx:
+                            export_better_fbx(context, False, **keywords)
+                        else:
+                            export_fbx(self, context, **keywords)
                         export_gr2(self, context, report, asset_path, asset, IsWindows(), 'skeleton', '', '', model_armature, skeleton_bones, **keywords)
 
                     if export_animations and 1<=len(bpy.data.actions):
@@ -161,7 +190,10 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                     else:
                                         timeline.frame_start = timeline_start
                                         timeline.frame_end = timeline_end
-                                    export_fbx(self, context, **keywords)
+                                    if using_better_fbx:
+                                        export_better_fbx(context, True, **keywords)
+                                    else:
+                                        export_fbx(self, context, **keywords)
                                     export_gr2(self, context, report, asset_path, asset, IsWindows(), 'animations', '', '', model_armature, skeleton_bones, **keywords)
                                 except:
                                     print('Encountered animation not in armature, skipping export of animation: ' + action.name)
@@ -189,7 +221,10 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                     if perm not in perm_list:
                                         perm_list.append(perm)
                                         if SelectBSPObject(halo_objects.structure, bsp, model_armature, False, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
-                                            export_fbx(self, context, **keywords)
+                                            if using_better_fbx:
+                                                export_better_fbx(context, False, **keywords)
+                                            else:
+                                                export_fbx(self, context, **keywords)
                                             export_gr2(self, context, report, asset_path, asset, IsWindows(), 'bsp', "{0:03}".format(bsp), perm, **keywords)
 
                             if export_poops:
@@ -199,7 +234,10 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                     if perm not in perm_list:
                                         perm_list.append(perm)
                                         if SelectBSPObject(halo_objects.poops, bsp, model_armature, False, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
-                                            export_fbx(self, context, **keywords)
+                                            if using_better_fbx:
+                                                export_better_fbx(context, False, **keywords)
+                                            else:
+                                                export_fbx(self, context, **keywords)
                                             export_gr2(self, context, report, asset_path, asset, IsWindows(), 'poops', "{0:03}".format(bsp), perm, **keywords)
 
                             if export_markers:
@@ -209,7 +247,10 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                     if perm not in perm_list:
                                         perm_list.append(perm)
                                         if SelectBSPObject(halo_objects.markers, bsp, model_armature, False, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
-                                            export_fbx(self, context, **keywords)
+                                            if using_better_fbx:
+                                                export_better_fbx(context, False, **keywords)
+                                            else:
+                                                export_fbx(self, context, **keywords)
                                             export_gr2(self, context, report, asset_path, asset, IsWindows(), 'markers', "{0:03}".format(bsp), perm, **keywords)
 
                             if export_lights:
@@ -219,7 +260,10 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                     if perm not in perm_list:
                                         perm_list.append(perm)
                                         if SelectBSPObject(halo_objects.lights, bsp, model_armature, False, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
-                                            export_fbx(self, context, **keywords)
+                                            if using_better_fbx:
+                                                export_better_fbx(context, False, **keywords)
+                                            else:
+                                                export_fbx(self, context, **keywords)
                                             export_gr2(self, context, report, asset_path, asset, IsWindows(), 'lights', "{0:03}".format(bsp), perm, **keywords)
 
                             if export_portals:
@@ -229,7 +273,10 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                     if perm not in perm_list:
                                         perm_list.append(perm)
                                         if SelectBSPObject(halo_objects.portals, bsp, model_armature, False, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
-                                            export_fbx(self, context, **keywords)
+                                            if using_better_fbx:
+                                                export_better_fbx(context, False, **keywords)
+                                            else:
+                                                export_fbx(self, context, **keywords)
                                             export_gr2(self, context, report, asset_path, asset, IsWindows(), 'portals', "{0:03}".format(bsp), perm, **keywords)
 
                             if export_seams:
@@ -239,7 +286,10 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                     if perm not in perm_list:
                                         perm_list.append(perm)
                                         if SelectBSPObject(halo_objects.seams, bsp, model_armature, False, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
-                                            export_fbx(self, context, **keywords)
+                                            if using_better_fbx:
+                                                export_better_fbx(context, False, **keywords)
+                                            else:
+                                                export_fbx(self, context, **keywords)
                                             export_gr2(self, context, report, asset_path, asset, IsWindows(), 'seams', "{0:03}".format(bsp), perm, **keywords)
 
                             if export_water_surfaces:
@@ -249,7 +299,10 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                     if perm not in perm_list:
                                         perm_list.append(perm)
                                         if SelectBSPObject(halo_objects.water_surfaces, bsp, model_armature, False, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
-                                            export_fbx(self, context, **keywords)
+                                            if using_better_fbx:
+                                                export_better_fbx(context, False, **keywords)
+                                            else:
+                                                export_fbx(self, context, **keywords)
                                             export_gr2(self, context, report, asset_path, asset, IsWindows(), 'water', "{0:03}".format(bsp), perm, **keywords)
 
                             if export_fog_planes:
@@ -259,7 +312,10 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                     if perm not in perm_list:
                                         perm_list.append(perm)
                                         if SelectBSPObject(halo_objects.fog, bsp, model_armature, False, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
-                                            export_fbx(self, context, **keywords)
+                                            if using_better_fbx:
+                                                export_better_fbx(context, False, **keywords)
+                                            else:
+                                                export_fbx(self, context, **keywords)
                                             export_gr2(self, context, report, asset_path, asset, IsWindows(), 'fog', "{0:03}".format(bsp), perm, **keywords)
 
                             if export_cookie_cutters:
@@ -269,7 +325,10 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                     if perm not in perm_list:
                                         perm_list.append(perm)
                                         if SelectBSPObject(halo_objects.cookie_cutters, bsp, model_armature, False, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
-                                            export_fbx(self, context, **keywords)
+                                            if using_better_fbx:
+                                                export_better_fbx(context, False, **keywords)
+                                            else:
+                                                export_fbx(self, context, **keywords)
                                             export_gr2(self, context, report, asset_path, asset, IsWindows(), 'cookie_cutters', "{0:03}".format(bsp), perm, **keywords)
 
                             if export_lightmap_regions:
@@ -279,7 +338,10 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                     if perm not in perm_list:
                                         perm_list.append(perm)
                                         if SelectBSPObject(halo_objects.lightmap_regions, bsp, model_armature, False, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
-                                            export_fbx(self, context, **keywords)
+                                            if using_better_fbx:
+                                                export_better_fbx(context, False, **keywords)
+                                            else:
+                                                export_fbx(self, context, **keywords)
                                             export_gr2(self, context, report, asset_path, asset, IsWindows(), 'lightmap_region', "{0:03}".format(bsp), perm, **keywords)
 
                             if export_boundary_surfaces:
@@ -289,7 +351,10 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                     if perm not in perm_list:
                                         perm_list.append(perm)
                                         if SelectBSPObject(halo_objects.boundary_surfaces, bsp, model_armature, False, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
-                                            export_fbx(self, context, **keywords)
+                                            if using_better_fbx:
+                                                export_better_fbx(context, False, **keywords)
+                                            else:
+                                                export_fbx(self, context, **keywords)
                                             export_gr2(self, context, report, asset_path, asset, IsWindows(), 'design', "{0:03}".format(bsp), perm, **keywords)
 
                             if export_water_physics:
@@ -299,7 +364,10 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                     if perm not in perm_list:
                                         perm_list.append(perm)
                                         if SelectBSPObject(halo_objects.water_physics, bsp, model_armature, False, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
-                                            export_fbx(self, context, **keywords)
+                                            if using_better_fbx:
+                                                export_better_fbx(context, False, **keywords)
+                                            else:
+                                                export_fbx(self, context, **keywords)
                                             export_gr2(self, context, report, asset_path, asset, IsWindows(), 'water_physics', "{0:03}".format(bsp), perm, **keywords)
 
                             if export_rain_occluders:
@@ -309,7 +377,10 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                     if perm not in perm_list:
                                         perm_list.append(perm)
                                         if SelectBSPObject(halo_objects.rain_occluders, bsp, model_armature, False, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
-                                            export_fbx(self, context, **keywords)
+                                            if using_better_fbx:
+                                                export_better_fbx(context, False, **keywords)
+                                            else:
+                                                export_fbx(self, context, **keywords)
                                             export_gr2(self, context, report, asset_path, asset, IsWindows(), 'rain_blockers', "{0:03}".format(bsp), perm, **keywords)
 
 
@@ -325,9 +396,12 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                 perm = GetPerm(ob)
                                 if perm not in perm_list:
                                     perm_list.append(perm)
-                                    SelectBSPObject(halo_objects.structure, bsp, model_armature, True, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp)
-                                    export_fbx(self, context, **keywords)
-                                    export_gr2(self, context, report, asset_path, asset, IsWindows(), 'bsp', 'shared', perm, **keywords)
+                                    if SelectBSPObject(halo_objects.structure, bsp, model_armature, True, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
+                                        if using_better_fbx:
+                                            export_better_fbx(context, False, **keywords)
+                                        else:
+                                            export_fbx(self, context, **keywords)
+                                        export_gr2(self, context, report, asset_path, asset, IsWindows(), 'bsp', 'shared', perm, **keywords)
 
                         if export_poops:
                             perm_list = []
@@ -335,9 +409,12 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                 perm = GetPerm(ob)
                                 if perm not in perm_list:
                                     perm_list.append(perm)
-                                    SelectBSPObject(halo_objects.poops, bsp, model_armature, True, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp)
-                                    export_fbx(self, context, **keywords)
-                                    export_gr2(self, context, report, asset_path, asset, IsWindows(), 'poops', 'shared', perm, **keywords)
+                                    if SelectBSPObject(halo_objects.poops, bsp, model_armature, True, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
+                                        if using_better_fbx:
+                                            export_better_fbx(context, False, **keywords)
+                                        else:
+                                            export_fbx(self, context, **keywords)
+                                        export_gr2(self, context, report, asset_path, asset, IsWindows(), 'poops', 'shared', perm, **keywords)
 
                         if export_markers:
                             perm_list = []
@@ -345,9 +422,12 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                 perm = GetPerm(ob)
                                 if perm not in perm_list:
                                     perm_list.append(perm)
-                                    SelectBSPObject(halo_objects.markers, bsp, model_armature, True, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp)
-                                    export_fbx(self, context, **keywords)
-                                    export_gr2(self, context, report, asset_path, asset, IsWindows(), 'markers', 'shared', perm, **keywords)
+                                    if SelectBSPObject(halo_objects.markers, bsp, model_armature, True, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
+                                        if using_better_fbx:
+                                            export_better_fbx(context, False, **keywords)
+                                        else:
+                                            export_fbx(self, context, **keywords)
+                                        export_gr2(self, context, report, asset_path, asset, IsWindows(), 'markers', 'shared', perm, **keywords)
                                     
                         if export_lights:
                             perm_list = []
@@ -355,9 +435,12 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                 perm = GetPerm(ob)
                                 if perm not in perm_list:
                                     perm_list.append(perm)
-                                    SelectBSPObject(halo_objects.lights, bsp, model_armature, True, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp)
-                                    export_fbx(self, context, **keywords)
-                                    export_gr2(self, context, report, asset_path, asset, IsWindows(), 'lights', 'shared', perm, **keywords)
+                                    if SelectBSPObject(halo_objects.lights, bsp, model_armature, True, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
+                                        if using_better_fbx:
+                                            export_better_fbx(context, False, **keywords)
+                                        else:
+                                            export_fbx(self, context, **keywords)
+                                        export_gr2(self, context, report, asset_path, asset, IsWindows(), 'lights', 'shared', perm, **keywords)
 
                         if export_portals:
                             perm_list = []
@@ -365,9 +448,12 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                 perm = GetPerm(ob)
                                 if perm not in perm_list:
                                     perm_list.append(perm)
-                                    SelectBSPObject(halo_objects.portals, bsp, model_armature, True, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp)
-                                    export_fbx(self, context, **keywords)
-                                    export_gr2(self, context, report, asset_path, asset, IsWindows(), 'portals', 'shared', perm, **keywords)
+                                    if SelectBSPObject(halo_objects.portals, bsp, model_armature, True, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
+                                        if using_better_fbx:
+                                            export_better_fbx(context, False, **keywords)
+                                        else:
+                                            export_fbx(self, context, **keywords)
+                                        export_gr2(self, context, report, asset_path, asset, IsWindows(), 'portals', 'shared', perm, **keywords)
 
                         if export_seams:
                             perm_list = []
@@ -375,9 +461,12 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                 perm = GetPerm(ob)
                                 if perm not in perm_list:
                                     perm_list.append(perm)
-                                    SelectBSPObject(halo_objects.seams, bsp, model_armature, True, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp)
-                                    export_fbx(self, context, **keywords)
-                                    export_gr2(self, context, report, asset_path, asset, IsWindows(), 'seams', 'shared', perm, **keywords)
+                                    if SelectBSPObject(halo_objects.seams, bsp, model_armature, True, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
+                                        if using_better_fbx:
+                                            export_better_fbx(context, False, **keywords)
+                                        else:
+                                            export_fbx(self, context, **keywords)
+                                        export_gr2(self, context, report, asset_path, asset, IsWindows(), 'seams', 'shared', perm, **keywords)
 
                         if export_water_surfaces:
                             perm_list = []
@@ -385,9 +474,12 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                 perm = GetPerm(ob)
                                 if perm not in perm_list:
                                     perm_list.append(perm)
-                                    SelectBSPObject(halo_objects.water_surfaces, bsp, model_armature, True, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp)
-                                    export_fbx(self, context, **keywords)
-                                    export_gr2(self, context, report, asset_path, asset, IsWindows(), 'water', 'shared', perm, **keywords)
+                                    if SelectBSPObject(halo_objects.water_surfaces, bsp, model_armature, True, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
+                                        if using_better_fbx:
+                                            export_better_fbx(context, False, **keywords)
+                                        else:
+                                            export_fbx(self, context, **keywords)
+                                        export_gr2(self, context, report, asset_path, asset, IsWindows(), 'water', 'shared', perm, **keywords)
 
                         if export_lightmap_regions:
                             perm_list = []
@@ -395,9 +487,12 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                 perm = GetPerm(ob)
                                 if perm not in perm_list:
                                     perm_list.append(perm)
-                                    SelectBSPObject(halo_objects.lightmap_regions, bsp, model_armature, True, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp)
-                                    export_fbx(self, context, **keywords)
-                                    export_gr2(self, context, report, asset_path, asset, IsWindows(), 'lightmap_region', 'shared', perm, **keywords)
+                                    if SelectBSPObject(halo_objects.lightmap_regions, bsp, model_armature, True, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
+                                        if using_better_fbx:
+                                            export_better_fbx(context, False, **keywords)
+                                        else:
+                                            export_fbx(self, context, **keywords)
+                                        export_gr2(self, context, report, asset_path, asset, IsWindows(), 'lightmap_region', 'shared', perm, **keywords)
 
                             if export_fog_planes:
                                 perm_list = []
@@ -406,7 +501,10 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                     if perm not in perm_list:
                                         perm_list.append(perm)
                                         if SelectBSPObject(halo_objects.fog, bsp, model_armature, True, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
-                                            export_fbx(self, context, **keywords)
+                                            if using_better_fbx:
+                                                export_better_fbx(context, False, **keywords)
+                                            else:
+                                                export_fbx(self, context, **keywords)
                                             export_gr2(self, context, report, asset_path, asset, IsWindows(), 'fog', 'shared', perm, **keywords)
 
                             if export_cookie_cutters:
@@ -416,7 +514,10 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                     if perm not in perm_list:
                                         perm_list.append(perm)
                                         if SelectBSPObject(halo_objects.cookie_cutters, bsp, model_armature, True, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
-                                            export_fbx(self, context, **keywords)
+                                            if using_better_fbx:
+                                                export_better_fbx(context, False, **keywords)
+                                            else:
+                                                export_fbx(self, context, **keywords)
                                             export_gr2(self, context, report, asset_path, asset, IsWindows(), 'cookie_cutters', 'shared', perm, **keywords)
 
                         if export_boundary_surfaces:
@@ -425,9 +526,12 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                 perm = GetPerm(ob)
                                 if perm not in perm_list:
                                     perm_list.append(perm)
-                                    SelectBSPObject(halo_objects.boundary_surfaces, bsp, model_armature, True, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp)
-                                    export_fbx(self, context, **keywords)
-                                    export_gr2(self, context, report, asset_path, asset, IsWindows(), 'design', 'shared', perm, **keywords)
+                                    if SelectBSPObject(halo_objects.boundary_surfaces, bsp, model_armature, True, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
+                                        if using_better_fbx:
+                                            export_better_fbx(context, False, **keywords)
+                                        else:
+                                            export_fbx(self, context, **keywords)
+                                        export_gr2(self, context, report, asset_path, asset, IsWindows(), 'design', 'shared', perm, **keywords)
 
                         if export_water_physics:
                             perm_list = []
@@ -435,9 +539,12 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                 perm = GetPerm(ob)
                                 if perm not in perm_list:
                                     perm_list.append(perm)
-                                    SelectBSPObject(halo_objects.water_physics, bsp, model_armature, True, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp)
-                                    export_fbx(self, context, **keywords)
-                                    export_gr2(self, context, report, asset_path, asset, IsWindows(), 'water_physics', 'shared', perm, **keywords)
+                                    if SelectBSPObject(halo_objects.water_physics, bsp, model_armature, True, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
+                                        if using_better_fbx:
+                                            export_better_fbx(context, False, **keywords)
+                                        else:
+                                            export_fbx(self, context, **keywords)
+                                        export_gr2(self, context, report, asset_path, asset, IsWindows(), 'water_physics', 'shared', perm, **keywords)
 
                         if export_rain_occluders:
                             perm_list = []
@@ -445,9 +552,12 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                 perm = GetPerm(ob)
                                 if perm not in perm_list:
                                     perm_list.append(perm)
-                                    SelectBSPObject(halo_objects.rain_occluders, bsp, model_armature, True, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp)
-                                    export_fbx(self, context, **keywords)
-                                    export_gr2(self, context, report, asset_path, asset, IsWindows(), 'rain_blockers', 'shared', perm, **keywords)
+                                    if SelectBSPObject(halo_objects.rain_occluders, bsp, model_armature, True, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
+                                        if using_better_fbx:
+                                            export_better_fbx(context, False, **keywords)
+                                        else:
+                                            export_fbx(self, context, **keywords)
+                                        export_gr2(self, context, report, asset_path, asset, IsWindows(), 'rain_blockers', 'shared', perm, **keywords)
 
                 elif sidecar_type == 'SKY':
                     if export_render:
@@ -457,25 +567,37 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                             if perm not in perm_list:
                                 perm_list.append(perm)
                                 if SelectModelObject(halo_objects.render + halo_objects.lights + halo_objects.markers, perm, model_armature, export_hidden, export_all_perms, export_specific_perm):
-                                    export_fbx(self, context, **keywords)
+                                    if using_better_fbx:
+                                        export_better_fbx(context, False, **keywords)
+                                    else:
+                                        export_fbx(self, context, **keywords)
                                     export_gr2(self, context, report, asset_path, asset, IsWindows(), 'render', '', perm, model_armature, skeleton_bones, **keywords)
 
                 elif sidecar_type == 'DECORATOR SET': 
                     if export_render:
                         if SelectModelObjectNoPerm(halo_objects.decorator, model_armature, export_hidden):
                             print('found a decorator mesh')
-                            export_fbx(self, context, **keywords)
+                            if using_better_fbx:
+                                export_better_fbx(context, False, **keywords)
+                            else:
+                                export_fbx(self, context, **keywords)
                             export_gr2(self, context, report, asset_path, asset, IsWindows(), 'render', '', 'default', model_armature, skeleton_bones, **keywords)
 
                 else: # for particles
                     if export_render:
                         if SelectModelObjectNoPerm(halo_objects.particle, model_armature, export_hidden):
                             print('found a decorator mesh')
-                            export_fbx(self, context, **keywords)
+                            if using_better_fbx:
+                                export_better_fbx(context, False, **keywords)
+                            else:
+                                export_fbx(self, context, **keywords)
                             export_gr2(self, context, report, asset_path, asset, IsWindows(), 'particle_model', '', 'default', model_armature, skeleton_bones, **keywords)
 
             else:
-                export_fbx(self, context, **keywords)
+                if using_better_fbx:
+                    export_better_fbx(context, False, **keywords)
+                else:
+                    export_fbx(self, context, **keywords)
                 export_gr2(self, context, report, asset_path, asset, IsWindows(), 'selected', **keywords)
 
             
@@ -524,3 +646,60 @@ def CheckPath(filePath):
         return True
     else:
         return False
+
+#####################################################################################
+#####################################################################################
+# BETTER FBX INTEGRATION
+
+def export_better_fbx(context, export_animation, filepath, use_armature_deform_only, mesh_smooth_type, use_mesh_modifiers, use_triangles, global_scale, **kwargs):
+    print('start export_better_fbx')
+    print(filepath)
+    if IsWindows():
+        scripts_folder = bpy.utils.user_resource('SCRIPTS')
+        # if IsWindowsArc(platform.system, platform.machine) == 'x64':
+        exe = os.path.join(scripts_folder, 'addons', 'better_fbx', 'bin', 'Windows', 'x64', 'fbx-utility')
+        print('using x64 windows')
+        print(exe)
+        # else:
+        #     exe = os.path.dirname('better_fbx') + '\\bin\\windows\\x86\\fbx-utility'
+
+        output = os.path.join(scripts_folder, 'addons', 'better_fbx', 'data', uuid.uuid4().hex + '.txt')
+        # args for SetFBXData: context, output, ob, export animation, animation offset, animation type, deform bones only, use rigify armature, use rigify root bone, use only selected deform bones, max bone influences, use vertex animation, vertex format, vertex space, vertex frame start, vertex frame end, use edge crease, edge crease scale, edge smoothing type, apply modifiers, armature deform meshes, concat animations, embed media, copy textures, texture subdir name, texture filenames
+        from better_fbx.exporter import write_some_data as SetFBXData
+        SetFBXData(context, output, context.selected_objects, export_animation, '0', 'active', use_armature_deform_only, False, True, False, 4, False, 'mcx', 'world', 1, 10, True, 1.0, mesh_smooth_type, use_mesh_modifiers, False, False, False, False, '', [])
+        print('set FBX data')
+        fbx_command = GetExeArgs(exe, output, filepath, global_scale, use_triangles, mesh_smooth_type)
+        for i in fbx_command:
+            print(i)
+        result = run(fbx_command)
+        print('running process')
+        #p.wait()
+        print('Finished waiting')
+
+    return {'FINISHED'}
+
+def GetExeArgs(exe, output, filepath, global_scale, use_triangles, mesh_smooth_type):
+    args = []
+    args.append(exe) 
+    args.append(output) 
+    args.append(filepath) 
+    args.append(str(global_scale * 100)) # fbx scale. x100 because better fbx uses a scale value of 100 = 1 4
+    args.append('binary')  # fbx format 5
+    args.append('FBX202000') # fbx version 6
+    args.append('MayaZUp') # bones axis 7
+    args.append('None') 
+    args.append('None')
+    args.append('True') 
+    args.append('True') # use game engine friendly orientations 11
+    args.append('True') 
+    args.append('None') # Ignore Armature 13
+    args.append('False') # Reset mesh origin to 0,0,0 14
+    args.append('None') 
+    args.append('FBXSDK') 
+    args.append('False') # triangulate 17
+    args.append('0') 
+    args.append('1') # edge smoothing type 19
+    args.append('Blender') # embed media to fbx file. pointless for us! 20
+    args.append('False') # triangulate 17
+
+    return args
