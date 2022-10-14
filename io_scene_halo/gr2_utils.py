@@ -112,10 +112,10 @@ def IsWindows():
         return False
 
 def IsWindows(systemos = '', architecture = ''):
-    if(systemos == 'Windows'):
-        if(architecture.endswith('x64')):
+    if systemos == 'Windows':
+        if architecture.endswith('x64'):
             return 'x64'
-        elif(architecture.endswith('x86')):
+        elif architecture.endswith('x86'):
             return 'x86'
     else:
         return None
