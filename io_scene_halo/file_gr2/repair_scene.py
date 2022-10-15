@@ -39,18 +39,13 @@ def repair_scene(context, report, objects_selection, active_object, hidden_objec
  
     RepairTimeline(scene, timeline_start, timeline_end)
 
+    DeletePoopProxies(proxies)
+
+    RestoreLightsRotations(lights)
+
     if export_hidden:
         for ob in hidden_objects:
             ob.hide_set(True)
-
-    if objects_selection != None:
-        for ob in objects_selection:
-            ob.select_set(True)
-    if active_object != None:
-        bpy.context.view_layer.objects.active = active_object
-
-
-    RestoreLightsRotations(lights)
 
     try: # try this but don't assert if it fails
         if mode != None:
@@ -60,6 +55,13 @@ def repair_scene(context, report, objects_selection, active_object, hidden_objec
 
     if temp_armature:
         DelTempArmature(context, model_armature)
+
+    # restore selection
+    if objects_selection != None:
+        for ob in objects_selection:
+            ob.select_set(True)
+    if active_object != None:
+        bpy.context.view_layer.objects.active = active_object
 
 #####################################################################################
 #####################################################################################
@@ -94,3 +96,9 @@ def RestoreLightsRotations(lights_list):
             Matrix.Translation(-pivot)
             )
         ob.matrix_world = M @ ob.matrix_world
+
+def DeletePoopProxies(proxies):
+    DeselectAllObjects()
+    for p in proxies:
+        p.select_set(True)
+    bpy.ops.object.delete(use_global=False, confirm=False)
