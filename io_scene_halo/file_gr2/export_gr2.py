@@ -43,7 +43,6 @@ from ..gr2_utils import (
     GetToolPath,
     GetTagsPath,
     GetEKPath,
-    sel_logic,
 )
 
 ##############################
@@ -927,8 +926,8 @@ def build_gr2(toolPath, filePath, jsonPath, gr2Path):
         if not os.access(filePath, os.R_OK):
             ctypes.windll.user32.MessageBoxW(0, "GR2 Not Exported. Output Folder Is Read-Only! Try running Blender as an Administrator.", "ACCESS VIOLATION", 0)
         else:
-            toolCommand = '"{}" fbx-to-gr2 "{}" "{}" "{}"'.format(toolPath, filePath, jsonPath, gr2Path)
-            os.chdir(GetEKPath())
+            toolCommand = '{} fbx-to-gr2 "{}" "{}" "{}"'.format(toolPath, filePath, jsonPath, gr2Path)
+            print(toolCommand)
             p = Popen(toolCommand)
             p.wait()
     except:
@@ -946,6 +945,7 @@ def export_gr2(operator, context, report, asset_path, asset_name, is_windows, ta
         keep_json=False,
         **kwargs
         ):
+    #os.chdir(GetEKPath())
     export_asset(report, filepath, keep_fbx, keep_json, asset_path, asset_name, tag_type, perm, is_windows, bsp, model_armature, boneslist, halo_objects)
 
     return {'FINISHED'}

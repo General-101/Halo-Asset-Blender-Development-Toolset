@@ -31,7 +31,6 @@ import ctypes
 import uuid
 import platform
 from subprocess import Popen
-from subprocess import run
 from ..gr2_utils import(
     GetPerm,
     IsWindows,
@@ -195,7 +194,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
 
                     if export_animations and 1<=len(bpy.data.actions):
                         if SelectModelSkeleton(model_armature):
-                            timeline = bpy.data.scene
+                            timeline = context.scene
                             for action in bpy.data.actions:
                                 try:
                                     model_armature.animation_data.action = action
@@ -761,25 +760,15 @@ def export_better_fbx(context, export_animation, filepath, use_armature_deform_o
     print(filepath)
     if IsWindows():
         scripts_folder = bpy.utils.user_resource('SCRIPTS')
-        # if IsWindowsArc(platform.system, platform.machine) == 'x64':
         exe = os.path.join(scripts_folder, 'addons', 'better_fbx', 'bin', 'Windows', 'x64', 'fbx-utility')
         print('using x64 windows')
         print(exe)
-        # else:
-        #     exe = os.path.dirname('better_fbx') + '\\bin\\windows\\x86\\fbx-utility'
-
         output = os.path.join(scripts_folder, 'addons', 'better_fbx', 'data', uuid.uuid4().hex + '.txt')
-        # args for SetFBXData: context, output, ob, export animation, animation offset, animation type, deform bones only, use rigify armature, use rigify root bone, use only selected deform bones, max bone influences, use vertex animation, vertex format, vertex space, vertex frame start, vertex frame end, use edge crease, edge crease scale, edge smoothing type, apply modifiers, armature deform meshes, concat animations, embed media, copy textures, texture subdir name, texture filenames
         from better_fbx.exporter import write_some_data as SetFBXData
         SetFBXData(context, output, context.selected_objects, export_animation, '0', 'active', use_armature_deform_only, False, True, False, 4, False, 'mcx', 'world', 1, 10, True, 1.0, mesh_smooth_type, use_mesh_modifiers, False, False, False, False, '', [])
-        print('set FBX data')
         fbx_command = GetExeArgs(exe, output, filepath, global_scale, use_triangles, mesh_smooth_type)
-        for i in fbx_command:
-            print(i)
-        result = run(fbx_command)
-        print('running process')
-        #p.wait()
-        print('Finished waiting')
+        p = Popen(fbx_command)
+        p.wait()
 
     return {'FINISHED'}
 
