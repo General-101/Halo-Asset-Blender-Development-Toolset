@@ -39,6 +39,7 @@ from bpy_extras.io_utils import ExportHelper
 from bpy.props import StringProperty, BoolProperty, EnumProperty, FloatProperty, IntProperty
 from bpy.types import Operator
 from bpy_extras.io_utils import ExportHelper
+from addon_utils import check
 
 import os
 import sys
@@ -47,6 +48,7 @@ t += '\\scripts\\addons\\io_scene_fbx'
 sys.modules[bpy.types.IMPORT_SCENE_OT_fbx.__module__].__file__
 sys.path.insert(0,t)
 from io_scene_fbx import export_fbx_bin
+
 
 class Export_Halo_GR2(Operator, ExportHelper):
     """Exports a Halo GEN4 Asset using your Halo Editing Kit"""
@@ -438,6 +440,15 @@ class Export_Halo_GR2(Operator, ExportHelper):
         max=99,
         step=5,
     )
+    mesh_smooth_type_better: EnumProperty(
+            name="Smoothing",
+            items=(('None', "None", "Do not generate smoothing groups"),
+                   ('Blender', "By Hard edges", ""),
+                   ('FBXSDK', "By FBX SDK", ""),
+                   ),
+            description="Determine how smoothing groups should be generated",
+            default='FBXSDK',
+            )
     mesh_smooth_type: EnumProperty(
             name="Smoothing",
             items=(('OFF', "Normals Only", "Export only normals instead of writing edge or face smoothing data"),
@@ -475,7 +486,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
         ) = prepare_scene(context, self.report, **keywords) # prepares the scene for processing and returns information about the scene
         # try:
         from .process_scene import process_scene
-        process_scene(self, context, keywords, self.report, model_armature, asset_path, asset, skeleton_bones, halo_objects, timeline_start, timeline_end, lod_count, **keywords)
+        process_scene(self, context, keywords, self.report, model_armature, asset_path, asset, skeleton_bones, halo_objects, timeline_start, timeline_end, lod_count, UsingBetterFBX(), **keywords)
         # except:
         #     print('ASSERT: Scene processing failed')
         #     self.report({'WARNING'},'ASSERT: Scene processing failed')
@@ -611,7 +622,10 @@ class Export_Halo_GR2(Operator, ExportHelper):
         col.prop(self, "use_mesh_modifiers")
         col.prop(self, "use_triangles")
         col.prop(self, 'use_armature_deform_only')
-        col.prop(self, 'mesh_smooth_type')
+        if UsingBetterFBX():
+            col.prop(self, 'mesh_smooth_type_better')
+        else:
+            col.prop(self, 'mesh_smooth_type')
         col.separator()
         col.prop(self, "global_scale")
 def menu_func_export(self, context):
@@ -645,6 +659,15 @@ def menu_func_export(self, context):
 # ):
     # halo_gr2 = bpy.context.Scene.halo_gr2
 
+def UsingBetterFBX():
+    using_better_fbx = False
+    addon_default, addon_state = check('better_fbx')
+
+    if addon_default or addon_state:
+        using_better_fbx = True
+        print('Found Better FBX exporter')
+
+    return using_better_fbx
 
 def register():
     bpy.utils.register_class(Export_Halo_GR2)

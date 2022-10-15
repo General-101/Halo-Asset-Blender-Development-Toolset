@@ -31,6 +31,7 @@ import ctypes
 import uuid
 import platform
 from subprocess import Popen
+from addon_utils import modules
 from ..gr2_utils import(
     GetPerm,
     IsWindows,
@@ -47,7 +48,7 @@ from ..gr2_utils import(
 #####################################################################################
 # MAIN FUNCTION
 
-def process_scene(self, context, keywords, report, model_armature, asset_path, asset, skeleton_bones, halo_objects, timeline_start, timeline_end, lod_count,
+def process_scene(self, context, keywords, report, model_armature, asset_path, asset, skeleton_bones, halo_objects, timeline_start, timeline_end, lod_count, using_better_fbx,
                   filepath,
                   sidecar_type,
                   output_biped,
@@ -91,15 +92,11 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                   **kwargs
     ):
 
-    using_better_fbx = False
-
-    try:
-        from better_fbx.exporter import write_some_data as SetFBXData
-        using_better_fbx = True
+    if using_better_fbx:
         print('Found Better FBX exporter')
-    except:
+    else:
         from io_scene_fbx.export_fbx_bin import save as export_fbx
-        print("Could not find Better FBX exporter. Using Blender's native fbx exporter")
+        print("Could not find Better FBX exporter (or it is not enabled). Using Blender's native fbx exporter")
 
     from .export_gr2 import export_gr2
 
@@ -755,22 +752,67 @@ def CheckPath(filePath):
 #####################################################################################
 # BETTER FBX INTEGRATION
 
-def export_better_fbx(context, export_animation, filepath, use_armature_deform_only, mesh_smooth_type, use_mesh_modifiers, use_triangles, global_scale, **kwargs):
+def export_better_fbx(context, export_animation, filepath, use_armature_deform_only, mesh_smooth_type_better, use_mesh_modifiers, use_triangles, global_scale, **kwargs):
     print('start export_better_fbx')
     print(filepath)
     if IsWindows():
-        scripts_folder = bpy.utils.user_resource('SCRIPTS')
-        exe = os.path.join(scripts_folder, 'addons', 'better_fbx', 'bin', 'Windows', 'x64', 'fbx-utility')
-        print('using x64 windows')
+        better_fbx_folder = GetBetterFBXFolder()
+        if platform.machine().endswith('64'):
+            exe = os.path.join(better_fbx_folder, 'bin', 'Windows', 'x64', 'fbx-utility')
+        else:
+            exe = os.path.join(better_fbx_folder, 'bin', 'Windows', 'x86', 'fbx-utility')
         print(exe)
-        output = os.path.join(scripts_folder, 'addons', 'better_fbx', 'data', uuid.uuid4().hex + '.txt')
+        output = os.path.join(better_fbx_folder, 'data', uuid.uuid4().hex + '.txt')
         from better_fbx.exporter import write_some_data as SetFBXData
-        SetFBXData(context, output, context.selected_objects, export_animation, '0', 'active', use_armature_deform_only, False, True, False, 4, False, 'mcx', 'world', 1, 10, True, 1.0, mesh_smooth_type, use_mesh_modifiers, False, False, False, False, '', [])
-        fbx_command = GetExeArgs(exe, output, filepath, global_scale, use_triangles, mesh_smooth_type)
+        data_args = GetDataArgs(context, output, export_animation, use_armature_deform_only, mesh_smooth_type_better, use_mesh_modifiers)
+        SetFBXData(*data_args)
+        fbx_command = GetExeArgs(exe, output, filepath, global_scale, use_triangles, mesh_smooth_type_better)
         p = Popen(fbx_command)
         p.wait()
+        os.remove(output)
 
     return {'FINISHED'}
+
+def GetBetterFBXFolder():
+    path = ''
+    for mod in modules():
+        if mod.bl_info['name'] == 'Better FBX Importer & Exporter':
+            path = mod.__file__
+            break
+    path = path.rpartition('\\')[0]
+
+    return path
+
+def GetDataArgs(context, output, export_animation, use_armature_deform_only, mesh_smooth_type, use_mesh_modifiers):
+    args = []
+    args.append(context)
+    args.append(output)
+    args.append(context.selected_objects)
+    args.append(export_animation)
+    args.append('0') # animation offset
+    args.append('active') # animation type
+    args.append(use_armature_deform_only)
+    args.append(False) # rigify armature
+    args.append(True) # keep root bone
+    args.append(False) # use only selected deform bones
+    args.append('Unlimited') # number of bones that can be influenced per vertex
+    args.append(False) # export vertex animation
+    args.append('mcx') # vertex format
+    args.append('world') # vertex space
+    args.append(1) # vertex frame start
+    args.append(10) # vertex frame end
+    args.append(True) # export edge crease
+    args.append(1.0) # scale of edge crease weights
+    args.append(mesh_smooth_type)
+    args.append(use_mesh_modifiers)
+    args.append(False) # apply armature deform modifier on export
+    args.append(False) # concat animations
+    args.append(False) # embed media in fbx file
+    args.append(False) # copy textures to user specified directory
+    args.append('') # user directory name
+    args.append([]) # texture file names
+
+    return args
 
 def GetExeArgs(exe, output, filepath, global_scale, use_triangles, mesh_smooth_type):
     args = []
