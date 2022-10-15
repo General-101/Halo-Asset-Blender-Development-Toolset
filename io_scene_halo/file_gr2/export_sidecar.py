@@ -390,7 +390,6 @@ def WriteScenarioContents(halo_objects, metadata, asset_path, asset_name):
         shared_seam_perm = []
         shared_water_perm = []
         shared_lightmap_perm = []
-        shared_cookie_perm = []
 
         if shared_bsp_exists:
             for ob in halo_objects.structure:
@@ -440,12 +439,6 @@ def WriteScenarioContents(halo_objects, metadata, asset_path, asset_name):
                     if (perm not in shared_lightmap_perm):
                         shared_lightmap_perm.append(perm)
 
-            for ob in halo_objects.cookie_cutters:
-                if ob.halo_json.bsp_shared:
-                    perm = GetPerm(ob)
-                    if (perm not in shared_cookie_perm):
-                        shared_cookie_perm.append(perm)
-
         for bsp in bsp_list:
             content = ET.SubElement(contents, "Content", Name=asset_name + '_' + "{0:03}".format(bsp), Type='bsp', BspErrorPolicy='auto_generated_physics')
             object = ET.SubElement(content, 'ContentObject', Name='', Type="scenario_structure_bsp")
@@ -457,7 +450,6 @@ def WriteScenarioContents(halo_objects, metadata, asset_path, asset_name):
             seam_perm = []
             water_perm = []
             lightmap_perm = []
-            cookie_perm = []
             for ob in halo_objects.structure:
                 if ob.halo_json.bsp_index == bsp:
                     perm = GetPerm(ob)
@@ -508,12 +500,6 @@ def WriteScenarioContents(halo_objects, metadata, asset_path, asset_name):
                     if (perm not in lightmap_perm):
                         lightmap_perm.append(perm)
 
-            for ob in halo_objects.cookie_cutters:
-                if ob.halo_json.bsp_index == bsp:
-                    perm = GetPerm(ob)
-                    if (perm not in cookie_perm):
-                        cookie_perm.append(perm)
-
             for perm in structure_perm:
                 network = ET.SubElement(object, 'ContentNetwork' ,Name=GetAssetPathBSP(asset_path, asset_name, "{0:03}".format(bsp), 'bsp', perm), Type="")
                 ET.SubElement(network, 'InputFile').text = GetInputFilePathBSP(asset_path, asset_name, "{0:03}".format(bsp), 'bsp', perm)
@@ -546,10 +532,6 @@ def WriteScenarioContents(halo_objects, metadata, asset_path, asset_name):
                 network = ET.SubElement(object, 'ContentNetwork' ,Name=GetAssetPathBSP(asset_path, asset_name, "{0:03}".format(bsp), 'lightmap_region', perm), Type="")
                 ET.SubElement(network, 'InputFile').text = GetInputFilePathBSP(asset_path, asset_name, "{0:03}".format(bsp), 'lightmap_region', perm)
                 ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePathBSP(asset_path, asset_name, "{0:03}".format(bsp), 'lightmap_region', perm)
-            for perm in cookie_perm:
-                network = ET.SubElement(object, 'ContentNetwork' ,Name=GetAssetPathBSP(asset_path, asset_name, "{0:03}".format(bsp), 'cookie_cutters', perm), Type="")
-                ET.SubElement(network, 'InputFile').text = GetInputFilePathBSP(asset_path, asset_name, "{0:03}".format(bsp), 'cookie_cutters', perm)
-                ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePathBSP(asset_path, asset_name, "{0:03}".format(bsp), 'cookie_cutters', perm)
 
             for perm in shared_structure_perm:
                 network = ET.SubElement(object, 'ContentNetwork' ,Name=GetAssetPathBSP(asset_path, asset_name, 'shared', 'bsp', perm), Type="")
@@ -583,10 +565,6 @@ def WriteScenarioContents(halo_objects, metadata, asset_path, asset_name):
                 network = ET.SubElement(object, 'ContentNetwork' ,Name=GetAssetPathBSP(asset_path, asset_name, 'shared', 'lightmap_region', perm), Type="")
                 ET.SubElement(network, 'InputFile').text = GetInputFilePathBSP(asset_path, asset_name, 'shared', 'lightmap_region', perm)
                 ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePathBSP(asset_path, asset_name, 'shared', 'lightmap_region', perm)
-            for perm in shared_cookie_perm:
-                network = ET.SubElement(object, 'ContentNetwork' ,Name=GetAssetPathBSP(asset_path, asset_name, 'shared', 'cookie_cutters', perm), Type="")
-                ET.SubElement(network, 'InputFile').text = GetInputFilePathBSP(asset_path, asset_name, 'shared', 'cookie_cutters', perm)
-                ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePathBSP(asset_path, asset_name, 'shared', 'cookie_cutters', perm)
 
             output = ET.SubElement(object, 'OutputTagCollection')
             ET.SubElement(output, 'OutputTag', Type='scenario_structure_bsp').text = asset_path + '\\' + asset_name + '_' + "{0:03}".format(bsp)

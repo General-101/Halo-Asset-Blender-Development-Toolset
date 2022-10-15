@@ -43,15 +43,17 @@ def prepare_scene(context, report, sidecar_type, export_hidden, filepath, use_ar
     objects_selection, active_object = GetCurrentActiveObjectSelection(context)
     hidden_objects = UnhideObjects(export_hidden)                               # If the user has opted to export hidden objects, list all hidden objects and unhide them, return the list for later use
     mode = GetSceneMode(context)                                                      # get the current selected mode, save the mode for later, and then switch to object mode
+    h_objects = halo_objects(sidecar_type)
+    proxies = SetPoopProxies(context, h_objects.poops)                                               # create and parent identical poop child objects to matching instances (collision, physics, cookie cutters). Keep them in a list so we can delete them later
+    for p in proxies:
+        h_objects.poops.append(p)
     model_armature, temp_armature, no_parent_objects = GetSceneArmature(context)                          # return the main armature in the scene, and create a temp one if a model armature does not exist
     ParentToArmature(model_armature, temp_armature, no_parent_objects)                             # ensure all objects are parented to an armature on export. Render and collision mesh is parented with armature deform, the rest uses bone parenting
     asset_path, asset = GetAssetInfo(filepath)                                  # get the asset name and path to the asset folder
     skeleton_bones = GetBoneList(model_armature, use_armature_deform_only)      # return a list of bones attached to the model armature, ignoring control / non-deform bones
-    h_objects = halo_objects(sidecar_type)
     FixLightsRotations(h_objects.lights)                                         # adjust light rotations to match in game rotation, and return a list of lights for later use in repair_scene
     timeline_start, timeline_end = SetTimelineRange(context)                      # set the timeline range so we can restore it later
     lod_count = GetDecoratorLODCount(h_objects, sidecar_type == 'DECORATOR SET') # get the max LOD count in the scene if we're exporting a decorator
-    proxies = SetPoopProxies(context, h_objects)                                               # create and parent identical poop child objects to matching instances (collision, physics, cookie cutters). Keep them in a list so we can delete them later
 
     return objects_selection, active_object, hidden_objects, mode, model_armature, temp_armature, asset_path, asset, skeleton_bones, h_objects, timeline_start, timeline_end, lod_count, proxies
 
@@ -62,8 +64,8 @@ def prepare_scene(context, report, sidecar_type, export_hidden, filepath, use_ar
 class halo_objects():
     def __init__(self, asset_type):
         self.render = SelectHaloObject('ObRender', asset_type, ('MODEL', 'SKY', 'CINEMATIC', 'DECORATOR', 'PARTICLE'))
-        self.collision = SelectHaloObject('ObCollision', asset_type, ('MODEL', 'SKY', 'CINEMATIC', 'DECORATOR', 'PARTICLE', 'SCENARIO'))
-        self.physics = SelectHaloObject('ObPhysics', asset_type, ('MODEL', 'SKY', 'CINEMATIC', 'DECORATOR', 'PARTICLE', 'SCENARIO'))
+        self.collision = SelectHaloObject('ObCollision', asset_type, ('MODEL', 'SKY', 'CINEMATIC', 'DECORATOR', 'PARTICLE'))
+        self.physics = SelectHaloObject('ObPhysics', asset_type, ('MODEL', 'SKY', 'CINEMATIC', 'DECORATOR', 'PARTICLE'))
         self.markers = SelectHaloObject('ObMarkers', asset_type, ('MODEL', 'SCENARIO', 'SKY', 'CINEMATIC', 'DECORATOR', 'PARTICLE'))
         self.structure = SelectHaloObject('ObStructure', asset_type, ('SCENARIO', 'CINEMATIC'))
         self.poops = SelectHaloObject('ObPoops', asset_type, ('SCENARIO', 'CINEMATIC'))
@@ -73,7 +75,6 @@ class halo_objects():
         self.water_surfaces = SelectHaloObject('ObWaterSurfaces', asset_type, ('SCENARIO', 'CINEMATIC'))
         self.lightmap_regions = SelectHaloObject('ObLightMapRegions', asset_type, ('SCENARIO', 'CINEMATIC'))
         self.fog = SelectHaloObject('ObFog', asset_type, ('SCENARIO', 'CINEMATIC'))
-        self.cookie_cutters = SelectHaloObject('ObCookie', asset_type, ('SCENARIO', 'CINEMATIC'))
         self.boundary_surfaces = SelectHaloObject('ObBoundarys', asset_type, ('SCENARIO', 'CINEMATIC'))
         self.water_physics = SelectHaloObject('ObWaterPhysics', asset_type, ('SCENARIO', 'CINEMATIC'))
         self.rain_occluders = SelectHaloObject('ObPoopRains', asset_type, ('SCENARIO', 'CINEMATIC'))
@@ -274,41 +275,40 @@ def openCSV():
 
     return frameIDList
 
-def SetPoopProxies(context, halo_objects):
+def SetPoopProxies(context, poops):
     proxies = []
     mesh_data = []
     proxy_collision = None
     proxy_physics = None
     proxy_cookie_cutter = None
-    poop_master = None
     DeselectAllObjects()
-    for ob in halo_objects.poops:
+    for ob in poops:
         if ob.data.name not in mesh_data:
             mesh_data.append(ob.data.name)
-            for obj in halo_objects.poops:
+            for obj in poops:
                 if (obj.data.name == ob.data.name) and (len(obj.children) > 0):
-                    poop_master = obj
-                    print(poop_master.name + ' is poop master')
-                    proxy_collision = GetPoopProxyCollision(obj, halo_objects)
-                    proxy_physics = GetPoopProxyPhysics(obj, halo_objects)
-                    proxy_cookie_cutter = GetPoopProxyCookie(obj, halo_objects)
+                    proxy_collision, collision_offset = GetPoopProxyCollision(obj, poops)
+                    proxy_physics, physics_offset = GetPoopProxyPhysics(obj, poops)
+                    proxy_cookie_cutter, cookie_cutter_offset = GetPoopProxyCookie(obj, poops)
                     obj.select_set(True)
                     break
 
-            for obj in halo_objects.poops:
-                if obj.data.name == ob.data.name and len(obj.children) <= 0:
+            for obj in poops:
+                if sel_logic.ObPoopsOnly(obj) and obj.data.name == ob.data.name and len(obj.children) <= 0:
+                    print(obj.name)
                     DeselectAllObjects()
                     obj.select_set(True)
                     bpy.ops.view3d.snap_cursor_to_selected()
-                    proxies.append(AttachPoopProxies(obj, proxy_collision, proxy_physics, proxy_cookie_cutter))
+                    poop_proxies = AttachPoopProxies(obj, proxy_collision, proxy_physics, proxy_cookie_cutter, collision_offset, physics_offset, cookie_cutter_offset)
+                    for p in poop_proxies:
+                        proxies.append(p)
 
     return proxies
 
-def AttachPoopProxies(obj, proxy_collision, proxy_physics, proxy_cookie_cutter):
+def AttachPoopProxies(obj, proxy_collision, proxy_physics, proxy_cookie_cutter, collision_offset, physics_offset, cookie_cutter_offset):
     ops = bpy.ops
     context = bpy.context
-    proxies = []
-    print(proxy_collision.name)
+    proxy = []
     DeselectAllObjects()
     if proxy_collision != None:
         proxy_collision.select_set(True)
@@ -326,7 +326,7 @@ def AttachPoopProxies(obj, proxy_collision, proxy_physics, proxy_cookie_cutter):
     if proxy_cookie_cutter != None:
         proxy_cookie_cutter.select_set(False)
 
-    proxies = [prox for prox in context.selected_objects]
+    proxy = [prox for prox in context.selected_objects]
 
     ops.view3d.snap_selected_to_cursor(use_offset=False)
 
@@ -334,36 +334,47 @@ def AttachPoopProxies(obj, proxy_collision, proxy_physics, proxy_cookie_cutter):
 
     ops.object.parent_set(type='OBJECT', keep_transform=False)
 
-    return proxies
+    for ob in proxy:
+        if sel_logic.ObCollision(ob):
+            ob.matrix_local = collision_offset
+        elif sel_logic.ObPhysics(ob):
+            ob.matrix_local = physics_offset
+        else:
+            ob.matrix_local = cookie_cutter_offset
+
+    return proxy
 
 
-def GetPoopProxyCollision(obj, halo_objects):
+def GetPoopProxyCollision(obj, poops):
     collision = None
+    collision_offset = Matrix()
     for child in obj.children:
-        print(child.name)
-        if child in halo_objects.collision:
-            print('child in collision')
+        if child in poops and sel_logic.ObPoopCollision(child):
             collision = child
+            collision_offset = collision.matrix_local
             break
+    
 
-    return collision
+    return collision, collision_offset
 
-def GetPoopProxyPhysics(obj, halo_objects):
+def GetPoopProxyPhysics(obj, poops):
     physics = None
+    physics_offset = Matrix()
     for child in obj.children:
-        if child in halo_objects.physics:
+        if child in poops and sel_logic.ObPoopPhysics(child):
             physics = child
+            physics_offset = physics.matrix_local
             break
 
-    return physics
+    return physics, physics_offset
 
-def GetPoopProxyCookie(obj, halo_objects):
+def GetPoopProxyCookie(obj, poops):
     cookie = None
+    cookie_offset = Matrix()
     for child in obj.children:
-        if child in halo_objects.cookie_cutters:
+        if child in poops and sel_logic.ObCookie(child):
             cookie = child
+            cookie_offset = cookie.matrix_local
             break
 
-    return cookie
-
-
+    return cookie, cookie_offset

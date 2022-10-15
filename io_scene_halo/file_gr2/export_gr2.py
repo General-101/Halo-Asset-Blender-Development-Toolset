@@ -284,7 +284,7 @@ def getMarkerVelocity(x, y, z):
 
 def getMeshes(halo_objects):
     meshesList = {}
-    halo_mesh_objects = halo_objects.render + halo_objects.collision + halo_objects.physics + halo_objects.structure + halo_objects.poops + halo_objects.portals + halo_objects.seams + halo_objects.water_surfaces + halo_objects.lightmap_regions + halo_objects.fog + halo_objects.cookie_cutters + halo_objects.boundary_surfaces + halo_objects.water_physics + halo_objects.rain_occluders + halo_objects.decorator + halo_objects.particle
+    halo_mesh_objects = halo_objects.render + halo_objects.collision + halo_objects.physics + halo_objects.structure + halo_objects.poops + halo_objects.portals + halo_objects.seams + halo_objects.water_surfaces + halo_objects.lightmap_regions + halo_objects.fog + halo_objects.boundary_surfaces + halo_objects.water_physics + halo_objects.rain_occluders + halo_objects.decorator + halo_objects.particle
     for ob in halo_mesh_objects:
         halo_mesh = ob.halo_json
         halo_mesh_name = ob.name
