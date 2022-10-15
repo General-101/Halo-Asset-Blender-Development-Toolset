@@ -665,7 +665,6 @@ def UsingBetterFBX():
 
     if addon_default or addon_state:
         using_better_fbx = True
-        print('Found Better FBX exporter')
 
     return using_better_fbx
 
