@@ -50,7 +50,7 @@ def prepare_scene(context, report, sidecar_type, export_hidden, filepath, use_ar
     h_objects = halo_objects(sidecar_type)
     FixLightsRotations(h_objects.lights)                                         # adjust light rotations to match in game rotation, and return a list of lights for later use in repair_scene
     timeline_start, timeline_end = SetTimelineRange(context)
-    lod_count = GetDecoratorLODCount(h_objects, sidecar_type == 'DECORATOR SET')                              
+    lod_count = GetDecoratorLODCount(h_objects, sidecar_type == 'DECORATOR SET')
     return objects_selection, active_object, hidden_objects, mode, model_armature, temp_armature, asset_path, asset, skeleton_bones, h_objects, timeline_start, timeline_end, lod_count
 
 #####################################################################################

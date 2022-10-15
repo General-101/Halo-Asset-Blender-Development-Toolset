@@ -106,19 +106,7 @@ def GetPerm(ob): # get the permutation of an object, return default if the perm 
     return perm
 
 def IsWindows():
-    if(platform.system() == 'Windows'):
-        return True
-    else:
-        return False
-
-def IsWindowsArc(systemos = '', architecture = ''):
-    if systemos == 'Windows':
-        if architecture.endswith('x64'):
-            return 'x64'
-        elif architecture.endswith('x86'):
-            return 'x86'
-    else:
-        return None
+    return platform.system() == 'Windows'
 
 def ObjectValid(ob, export_hidden, valid_perm='', evaluated_perm=''):
     return ob in tuple(bpy.data.scenes[0].view_layers[0].objects) and (ob.visible_get() or export_hidden) and valid_perm == evaluated_perm

@@ -50,21 +50,20 @@ from ..gr2_utils import (
 ##### NODES PROPERTIES #######
 ##############################
 
-def getNodes(model_armature, boneslist):
+def getNodes(model_armature, boneslist, halo_objects):
     nodesList = {}
     if model_armature != None:
         nodesList.update(boneslist)
 
-    for light in bpy.data.objects:
-        if sel_logic.ObLights(light):
-            halo_light = light.halo_json
-            nodesList.update({light.name: getLightProperties(halo_light, light)})
+    for ob in halo_objects.lights:
+        halo_light = ob.halo_json
+        if ob.select_get():
+            nodesList.update({ob.name: getLightProperties(halo_light, ob)})
 
-    for ob in bpy.data.objects:
+    for ob in halo_objects.markers:
         halo_node = ob.halo_json
         halo_node_name = ob.name
-
-        if sel_logic.ObMarkers(ob) and ob.select_get():
+        if ob.select_get():
             nodesList.update({ob.name: getNodeProperties(halo_node, halo_node_name, ob)})
 
     temp = ({'nodes_properties': nodesList})
@@ -284,26 +283,19 @@ def getMarkerVelocity(x, y, z):
 ##### MESHES PROPERTIES ######
 ##############################
 
-def getMeshes():
+def getMeshes(halo_objects):
     meshesList = {}
-
-    for ob in bpy.data.objects:
+    halo_mesh_objects = halo_objects.render + halo_objects.collision + halo_objects.physics + halo_objects.structure + halo_objects.poops + halo_objects.portals + halo_objects.seams + halo_objects.water_surfaces + halo_objects.lightmap_regions + halo_objects.fog + halo_objects.cookie_cutters + halo_objects.boundary_surfaces + halo_objects.water_physics + halo_objects.rain_occluders + halo_objects.decorator + halo_objects.particle
+    for ob in halo_mesh_objects:
         halo_mesh = ob.halo_json
         halo_mesh_name = ob.name
         
-        if IsValidForMeshProps(ob) and ob.select_get(): # if the name of a mesh starts with this, don't process it.
+        if ob.select_get(): # if the name of a mesh starts with this, don't process it.
             meshesList.update({ob.name: getMeshProperties(halo_mesh, halo_mesh_name, ob)})
 
     temp = ({'meshes_properties': meshesList})
 
     return temp
-
-def IsValidForMeshProps(ob):
-    return (
-        not sel_logic.ObMarkers(ob) and
-        not sel_logic.ObLights(ob) and
-        not sel_logic.ObFrames(ob)
-    )
 
 def getMeshProperties(mesh, name, ob):
 
@@ -815,20 +807,19 @@ def getMaterials():
 
     return temp
 
-def export_asset(report, filePath="", keep_fbx=False, keep_json=False, asset_path="", asset_name="", tag_type='', perm='', is_windows=False, bsp='', model_armature='', boneslist={}):
+def export_asset(report, filePath="", keep_fbx=False, keep_json=False, asset_path="", asset_name="", tag_type='', perm='', is_windows=False, bsp='', model_armature='', boneslist={}, halo_objects=None):
     if tag_type != 'selected':
         fileName = GetFileName(filePath, asset_name, tag_type, perm, asset_path, bsp)
         rename_file(filePath, asset_name, tag_type, perm, fileName)
     else:
         fileName = filePath
-
     pathList = fileName.split(".")
     jsonPath = ""
     for x in range(len(pathList)-1):
         jsonPath += pathList[x]
     jsonPath += ".json"
 
-    build_json(jsonPath, model_armature, boneslist)
+    build_json(jsonPath, model_armature, boneslist, halo_objects)
 
     if(is_windows):
         gr2Path = ""
@@ -919,10 +910,10 @@ def move_assets(fileName, jsonPath, gr2Path, asset_path, fbx_crushed, json_binne
     os.remove(jsonPath)
     os.remove(gr2Path)
 
-def build_json(jsonPath, model_armature, boneslist):
+def build_json(jsonPath, model_armature, boneslist, halo_objects):
     jsonTemp = {}
-    jsonTemp.update(getNodes(model_armature, boneslist))
-    jsonTemp.update(getMeshes())
+    jsonTemp.update(getNodes(model_armature, boneslist, halo_objects))
+    jsonTemp.update(getMeshes(halo_objects))
     jsonTemp.update(getMaterials())
 
     haloJSON = json.dumps(jsonTemp, indent=4)
@@ -945,7 +936,7 @@ def build_gr2(toolPath, filePath, jsonPath, gr2Path):
         os.remove(filePath)
         os.remove(jsonPath)
 
-def export_gr2(operator, context, report, asset_path, asset_name, is_windows, tag_type,
+def export_gr2(operator, context, report, asset_path, asset_name, is_windows, tag_type, halo_objects,
         bsp='',
         perm='',
         model_armature='',
@@ -955,8 +946,7 @@ def export_gr2(operator, context, report, asset_path, asset_name, is_windows, ta
         keep_json=False,
         **kwargs
         ):
-
-    export_asset(report, filepath, keep_fbx, keep_json, asset_path, asset_name, tag_type, perm, is_windows, bsp, model_armature, boneslist)
+    export_asset(report, filepath, keep_fbx, keep_json, asset_path, asset_name, tag_type, perm, is_windows, bsp, model_armature, boneslist, halo_objects)
 
     return {'FINISHED'}
 
