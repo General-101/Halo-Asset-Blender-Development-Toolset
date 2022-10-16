@@ -40,6 +40,9 @@ from bpy.props import StringProperty, BoolProperty, EnumProperty, FloatProperty,
 from bpy.types import Operator
 from bpy_extras.io_utils import ExportHelper
 from addon_utils import check
+import ctypes
+
+lightmapper_run_once = False
 
 class Export_Halo_GR2(Operator, ExportHelper):
     """Exports a Halo GEN4 Asset using your Halo Editing Kit"""
@@ -466,6 +469,15 @@ class Export_Halo_GR2(Operator, ExportHelper):
     # )
 
     def execute(self, context):
+        #lightmap warning
+        skip_lightmapper = False
+        global lightmapper_run_once
+        if self.lightmap_structure and not lightmapper_run_once:
+            response = ctypes.windll.user32.MessageBoxW(0, 'Lightmapping can take a long time & Blender will be unresponsive during the process. Do you want to continue?', 'WARNING', 4)
+            lightmapper_run_once = True
+            if response != 6:
+                skip_lightmapper = True
+
         keywords = self.as_keywords()
         console = bpy.ops.wm
 
@@ -477,7 +489,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
         ) = prepare_scene(context, self.report, **keywords) # prepares the scene for processing and returns information about the scene
         # try:
         from .process_scene import process_scene
-        process_scene(self, context, keywords, self.report, model_armature, asset_path, asset, skeleton_bones, halo_objects, timeline_start, timeline_end, lod_count, UsingBetterFBX(), **keywords)
+        process_scene(self, context, keywords, self.report, model_armature, asset_path, asset, skeleton_bones, halo_objects, timeline_start, timeline_end, lod_count, UsingBetterFBX(), skip_lightmapper, **keywords)
         # except:
         #     print('ASSERT: Scene processing failed')
         #     self.report({'WARNING'},'ASSERT: Scene processing failed')
@@ -619,6 +631,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
             col.prop(self, 'mesh_smooth_type')
         col.separator()
         col.prop(self, "global_scale")
+
 def menu_func_export(self, context):
     self.layout.operator(Export_Halo_GR2.bl_idname, text="Halo Gen4 Asset Export (.fbx .json .gr2. .xml)")
 

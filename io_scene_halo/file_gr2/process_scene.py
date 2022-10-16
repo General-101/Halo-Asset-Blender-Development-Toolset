@@ -48,7 +48,7 @@ from ..gr2_utils import(
 #####################################################################################
 # MAIN FUNCTION
 
-def process_scene(self, context, keywords, report, model_armature, asset_path, asset, skeleton_bones, halo_objects, timeline_start, timeline_end, lod_count, using_better_fbx,
+def process_scene(self, context, keywords, report, model_armature, asset_path, asset, skeleton_bones, halo_objects, timeline_start, timeline_end, lod_count, using_better_fbx, skip_lightmapper,
                   filepath,
                   sidecar_type,
                   output_biped,
@@ -694,7 +694,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                     export_sidecar(self, context, report, asset_path, halo_objects, model_armature, lod_count, **keywords)
                 from .import_sidecar import import_sidecar
                 import_sidecar(self, context, report, **keywords)
-                if lightmap_structure:
+                if lightmap_structure and not skip_lightmapper:
                     from .run_lightmapper import run_lightmapper
                     run_lightmapper(self, context, report, **keywords)
                 if import_bitmaps:

@@ -41,20 +41,16 @@ def lightmapper(report, filepath, lightmap_quality='DIRECT', lightmap_all_bsps='
     pyCheck = platform.python_version().split('.')
     if int(pyCheck[0]) >= 3 or not platform.python_version() == None:
         try:
-            response = 0
-            if quality in high_quality_settings:
-                response = ctypes.windll.user32.MessageBoxW(0, 'Lightmapping on this setting can take a long time &  Blender will be unresponsive during the process. Do you want to continue?', 'WARNING', 4)
-            if response == 6 or quality not in high_quality_settings:
-                lightmapCommand = 'python calc_lm_farm_local.py "{}" "{}" {}'.format(asset_path + '\\' + asset_name, bsp, quality)
-                os.chdir(GetEKPath())
-                p = Popen(lightmapCommand)
-                p.wait()
-                report({'INFO'},"Lightmapping process complete")
+            lightmapCommand = 'python calc_lm_farm_local.py "{}" "{}" {}'.format(asset_path + '\\' + asset_name, bsp, quality)
+            os.chdir(GetEKPath())
+            p = Popen(lightmapCommand)
+            p.wait()
+            report({'INFO'},"Lightmapping process complete")
 
         except:
             report({'WARNING'},"Lightmapping process failed")
     else:
-        ctypes.windll.user32.MessageBoxW(0, 'Python could not be found on this PC! Make sure it is installed in order to continue lightmapping!', 'Python Not Found', 0)
+        ctypes.windll.user32.MessageBoxW(0, 'Python could not be found on this PC! Make sure it is installed in order to continue lightmapping', 'Python Not Found', 0)
         report({'WARNING'},"Lightmapping process failed")
 
 def GetBSPToLightmap(lightmap_all_bsps, lightmap_specific_bsp, asset_name):
