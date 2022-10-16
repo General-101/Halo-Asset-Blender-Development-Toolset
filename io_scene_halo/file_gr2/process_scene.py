@@ -711,9 +711,9 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
 
     else:
         if GetEKPath() == None or GetEKPath() == '' or not exists(GetToolPath()):
-            ctypes.windll.user32.MessageBoxW(0, "Invalid Editing Kit path. Please check your editing kit path in add-on preferences and try again.", "Invalid EK Path", 0)
+            ctypes.windll.user32.MessageBoxW(0, "Invalid Editing Kit path. Please check your editing kit path in add-on preferences and try again.", "INVALID EK PATH", 0)
         else:
-            ctypes.windll.user32.MessageBoxW(0, "The selected export folder is invalid, please select one within the data folder of your HEK tools.", "Invalid Export Path", 0)
+            ctypes.windll.user32.MessageBoxW(0, "The selected export folder is invalid, please select one within the data folder of your HEK tools.", "INVALID EXPORT PATH", 0)
 
 #####################################################################################
 #####################################################################################
@@ -757,7 +757,6 @@ def export_better_fbx(context, export_animation, filepath, use_armature_deform_o
         fbx_command = GetExeArgs(exe, output, filepath, global_scale, use_triangles, mesh_smooth_type_better)
         p = Popen(fbx_command)
         p.wait()
-        os.remove(output)
         return {'FINISHED'}
     else:
         ctypes.windll.user32.MessageBoxW(0, "BetterFBX option is not supported on your OS. Please use the standard FBX option.", "OS NOT SUPPORTED", 0)

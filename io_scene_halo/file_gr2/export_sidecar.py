@@ -30,8 +30,6 @@ import getpass
 import xml.etree.cElementTree as ET
 import xml.dom.minidom
 
-from io_scene_halo.file_gr2.prepare_scene import halo_objects
-
 from ..gr2_utils import (
     valid_animation_types,
     GetDataPath,

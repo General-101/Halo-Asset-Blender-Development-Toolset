@@ -832,19 +832,11 @@ def export_asset(report, filePath="", keep_fbx=False, keep_json=False, asset_pat
         else:
             report({'WARNING'},"GR2 conversion failed!")
             ctypes.windll.user32.MessageBoxW(0, "Tool.exe failed to export your GR2 file. Blender may need to be run as an Administrator or there may be an issue with your project settings.", "GR2 EXPORT FAILED", 0)
-
-        fbx_crushed = False
-        json_binned = False
-
-        if not keep_fbx:
-            fbx_crushed = True
-        if not keep_json:
-            json_binned = True
         
         if tag_type != 'selected':
-            move_assets(fileName, jsonPath, gr2Path, asset_path, fbx_crushed, json_binned, tag_type)
+            move_assets(fileName, jsonPath, gr2Path, asset_path, "True" if not keep_fbx else "False", "True" if not keep_json else "False", tag_type)
         else:
-            CleanFiles(filePath, jsonPath, gr2Path, fbx_crushed, json_binned)
+            CleanFiles(filePath, jsonPath, gr2Path, "True" if not keep_fbx else "False", "True" if not keep_json else "False",)
 
         return {'FINISHED'}
     else:
