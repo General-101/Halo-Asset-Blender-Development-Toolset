@@ -773,7 +773,7 @@ def GetDataArgs(context, output, export_animation, use_armature_deform_only, mes
     args.append(output)
     args.append(context.selected_objects)
     args.append(export_animation)
-    args.append('0') # animation offset
+    args.append(0) # animation offset
     args.append('active') # animation type
     args.append(use_armature_deform_only)
     args.append(False) # rigify armature
