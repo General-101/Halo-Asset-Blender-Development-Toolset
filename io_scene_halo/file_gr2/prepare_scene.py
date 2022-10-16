@@ -31,6 +31,7 @@ from math import radians
 from mathutils import Matrix
 from ..gr2_utils import(
     DeselectAllObjects,
+    IsMesh,
     SetActiveObject,
     sel_logic,
     GetAssetInfo,
@@ -44,6 +45,7 @@ def prepare_scene(context, report, sidecar_type, export_hidden, filepath, use_ar
     hidden_objects = UnhideObjects(export_hidden)                               # If the user has opted to export hidden objects, list all hidden objects and unhide them, return the list for later use
     mode = GetSceneMode(context)                                                      # get the current selected mode, save the mode for later, and then switch to object mode
     h_objects = halo_objects(sidecar_type)
+    FixMissingMaterials(context, h_objects)
     proxies = SetPoopProxies(context, h_objects.poops)                                               # create and parent identical poop child objects to matching instances (collision, physics, cookie cutters). Keep them in a list so we can delete them later
     for p in proxies:
         h_objects.poops.append(p)
@@ -377,3 +379,53 @@ def GetPoopProxyCookie(obj, poops):
             break
 
     return cookie, cookie_offset
+
+def FixMissingMaterials(context, halo_objects):
+    # set some locals
+    ops = bpy.ops
+    materials_list = bpy.data.materials
+    mat_collision = '+collision'
+    mat_physics = '+physics'
+    mat_portal = '+portal'
+    mat_sky = '+sky'
+    mat_seamsealer = '+seamsealer'
+    mat_invalid = 'invalid'
+    mat_override = '+override'
+    mat = ''
+    # loop through each object in the scene
+    for ob in bpy.data.objects:
+        DeselectAllObjects()
+        ob.select_set(True)
+        if IsMesh(ob): # check if we're processing a mesh
+            # remove empty material slots
+            for index, slot in enumerate(ob.material_slots.items()):
+                if slot[0] == '':
+                    context.object.active_material_index = index
+                    ops.object.material_slot_remove()
+
+            if len(ob.material_slots) <= 0: # if no material slots...
+                # determine what kind of mesh this is
+                if ob in halo_objects.collision:
+                    mat = mat_collision
+                elif ob in halo_objects.physics:
+                    mat = mat_physics
+                elif ob in halo_objects.portals:
+                    mat = mat_portal
+                elif ob.halo_json.Face_Type == 'SKY':
+                    mat = mat_sky
+                elif ob.halo_json.Face_Type == 'SEAM SEALER':
+                    mat = mat_seamsealer
+                elif sel_logic.ObRender(ob) or sel_logic.ObStructure(ob) or sel_logic.ObPoopsOnly(ob) or sel_logic.ObDecorator(ob):
+                    mat = mat_invalid
+                else:
+                    mat = mat_override
+                
+                # if this special material isn't already in the users scene, add it
+                if mat not in materials_list:
+                    materials_list.new(mat)
+
+                # convert mat to a material object
+                mat = materials_list.get(mat)
+                # finally, append the new material to the object
+                ob.data.materials.append(mat)
+
