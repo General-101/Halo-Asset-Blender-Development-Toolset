@@ -334,9 +334,6 @@ def AttachPoopProxies(obj, proxy_collision, proxy_physics, proxy_cookie_cutter, 
 
     proxy = [prox for prox in context.selected_objects]
 
-    for ob in proxy:
-        ob.matrix_world = poop_offset
-
     context.view_layer.objects.active = obj
 
     ops.object.parent_set(type='OBJECT', keep_transform=False)
