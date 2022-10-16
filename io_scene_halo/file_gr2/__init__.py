@@ -41,15 +41,6 @@ from bpy.types import Operator
 from bpy_extras.io_utils import ExportHelper
 from addon_utils import check
 
-import os
-import sys
-t = os.getcwd()
-t += '\\scripts\\addons\\io_scene_fbx'
-sys.modules[bpy.types.IMPORT_SCENE_OT_fbx.__module__].__file__
-sys.path.insert(0,t)
-from io_scene_fbx import export_fbx_bin
-
-
 class Export_Halo_GR2(Operator, ExportHelper):
     """Exports a Halo GEN4 Asset using your Halo Editing Kit"""
     bl_idname = 'export_halo.gr2'

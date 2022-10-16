@@ -121,7 +121,7 @@ def ImportTagXML(toolPath):
         os.remove(xmlPath)
         return bonelist
     except:
-        ctypes.windll.user32.MessageBoxW(0, "Tool.exe failed to get tag XML for FrameIDs. Please check the path to your .model_animation_graph tag.", "Get FrameIDs Failed", 0)
+        ctypes.windll.user32.MessageBoxW(0, "Tool.exe failed to get tag XML for FrameIDs. Please check the path to your .model_animation_graph tag.", "GET FRAMEIDS FAILED", 0)
         return None
 
 def GetGraphPath():
