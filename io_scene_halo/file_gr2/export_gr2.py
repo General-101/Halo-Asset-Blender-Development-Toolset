@@ -836,7 +836,7 @@ def export_asset(report, filePath="", keep_fbx=False, keep_json=False, asset_pat
         if tag_type != 'selected':
             move_assets(fileName, jsonPath, gr2Path, asset_path, "True" if not keep_fbx else "False", "True" if not keep_json else "False", tag_type)
         else:
-            CleanFiles(filePath, jsonPath, gr2Path, "True" if not keep_fbx else "False", "True" if not keep_json else "False",)
+            CleanFiles(filePath, jsonPath, gr2Path, "True" if not keep_fbx else "False", "True" if not keep_json else "False")
 
         return {'FINISHED'}
     else:
@@ -897,9 +897,7 @@ def move_assets(fileName, jsonPath, gr2Path, asset_path, fbx_crushed, json_binne
             shutil.copy(jsonPath, asset_path + "\\models")
         shutil.copy(gr2Path, asset_path + "\\export\\models")
 
-    os.remove(fileName)
-    os.remove(jsonPath)
-    os.remove(gr2Path)
+    CleanFiles(fileName, jsonPath, gr2Path, True, True)
 
 def build_json(jsonPath, model_armature, boneslist, halo_objects):
     jsonTemp = {}
