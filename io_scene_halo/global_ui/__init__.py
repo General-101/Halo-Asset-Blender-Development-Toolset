@@ -3239,39 +3239,39 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
 class JSON_MaterialPropertiesGroup(PropertyGroup):
     
     def update_shader_type(self, context):
-        material_path = context.object.active_material.halo_json.shader_path.replace('"','')
+        material_path = self.shader_path.replace('"','')
         if material_path != material_path.rpartition('.')[2]:
             match material_path.rpartition('.')[2]:
                 case 'shader_cortana':
-                    context.object.active_material.halo_json.Shader_Type = 'SHADER CORTANA'
+                    self.Shader_Type = 'SHADER CORTANA'
                 case 'shader_custom':
-                    context.object.active_material.halo_json.Shader_Type = 'SHADER CUSTOM'
+                    self.Shader_Type = 'SHADER CUSTOM'
                 case 'shader_decal':
-                    context.object.active_material.halo_json.Shader_Type = 'SHADER DECAL'
+                    self.Shader_Type = 'SHADER DECAL'
                 case 'shader_foliage':
-                    context.object.active_material.halo_json.Shader_Type = 'SHADER FOLIAGE'
+                    self.Shader_Type = 'SHADER FOLIAGE'
                 case 'shader_fur':
-                    context.object.active_material.halo_json.Shader_Type = 'SHADER FUR'
+                    self.Shader_Type = 'SHADER FUR'
                 case 'shader_fur_stencil':
-                    context.object.active_material.halo_json.Shader_Type = 'SHADER FUR STENCIL'
+                    self.Shader_Type = 'SHADER FUR STENCIL'
                 case 'shader_glass':
-                    context.object.active_material.halo_json.Shader_Type = 'SHADER GLASS'
+                    self.Shader_Type = 'SHADER GLASS'
                 case 'shader_halogram':
-                    context.object.active_material.halo_json.Shader_Type = 'SHADER HALOGRAM'
+                    self.Shader_Type = 'SHADER HALOGRAM'
                 case 'shader_mux':
-                    context.object.active_material.halo_json.Shader_Type = 'SHADER MUX'
+                    self.Shader_Type = 'SHADER MUX'
                 case 'shader_mux_material':
-                    context.object.active_material.halo_json.Shader_Type = 'SHADER MUX MATERIAL'
+                    self.Shader_Type = 'SHADER MUX MATERIAL'
                 case 'shader_screen':
-                    context.object.active_material.halo_json.Shader_Type = 'SHADER SCREEN'
+                    self.Shader_Type = 'SHADER SCREEN'
                 case 'shader_skin':
-                    context.object.active_material.halo_json.Shader_Type = 'SHADER SKIN'
+                    self.Shader_Type = 'SHADER SKIN'
                 case 'shader_terrain':
-                    context.object.active_material.halo_json.Shader_Type = 'SHADER TERRAIN'
+                    self.Shader_Type = 'SHADER TERRAIN'
                 case 'shader_water':
-                    context.object.active_material.halo_json.Shader_Type = 'SHADER WATER'
+                    self.Shader_Type = 'SHADER WATER'
                 case _:
-                    context.object.active_material.halo_json.Shader_Type = 'SHADER'
+                    self.Shader_Type = 'SHADER'
 
     shader_path: StringProperty(
         name = "Shader Path",

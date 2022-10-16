@@ -105,7 +105,7 @@ class GR2_SetFrameIDsPropertiesGroup(PropertyGroup):
 
 class GR2_HaloLauncher(Panel):
     bl_label = "Halo Launcher"
-    bl_idname = "HALO_PT_GR2_Manager"
+    bl_idname = "HALO_PT_GR2_HaloLauncher"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     bl_options = {'DEFAULT_CLOSED'}
@@ -183,6 +183,46 @@ class GR2_HaloLauncherPropertiesGroup(PropertyGroup):
         default='',
     )
 
+class GR2_ShaderFinder(Panel):
+    bl_label = "Update Materials by Shader"
+    bl_idname = "HALO_PT_GR2_ShaderFinder"
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "UI"
+    bl_options = {'DEFAULT_CLOSED'}
+    bl_parent_id = "HALO_PT_GR2_AutoTools"
+
+    def draw(self, context):
+        layout = self.layout
+        scene = context.scene
+        scene_gr2_shader_finder = scene.gr2_shader_finder
+
+        layout.use_property_split = True
+        flow = layout.grid_flow(row_major=True, columns=0, even_columns=True, even_rows=False, align=False)
+        col = flow.column()
+        col = layout.column(heading="Shaders Directory")
+        col.prop(scene_gr2_shader_finder, 'shaders_dir', text='')
+        col = col.row()
+        col.scale_y = 1.5
+        col.operator('halo_gr2.shader_finder')
+
+class GR2_ShaderFinder_Find(Operator):
+    bl_idname = 'halo_gr2.shader_finder'
+    bl_label = 'Update Shader Paths'
+    bl_options = {"REGISTER", "UNDO"}
+
+    def execute(self, context):
+        scene = context.scene
+        scene_gr2_shader_finder = scene.gr2_shader_finder
+        from .shader_finder import FindShaders
+        return FindShaders(context, scene_gr2_shader_finder.shaders_dir, self.report)
+
+class GR2_HaloShaderFinderPropertiesGroup(PropertyGroup):
+    shaders_dir: StringProperty(
+        name="Shaders Directory",
+        description="Leave blank to search the entire tags folder for shaders or input a directory path to specify the folder (and sub-folders) to search for shaders",
+        default='',
+    )
+
 classeshalo = (
     GR2_Tools_Helper,
     GR2_HaloLauncher,
@@ -191,6 +231,9 @@ classeshalo = (
     GR2_HaloLauncher_Tags,
     GR2_HaloLauncher_Source,
     GR2_HaloLauncherPropertiesGroup,
+    GR2_ShaderFinder,
+    GR2_ShaderFinder_Find,
+    GR2_HaloShaderFinderPropertiesGroup,
     GR2_SetFrameIDs,
     GR2_SetFrameIDsOp,
     GR2_ResetFrameIDsOp,
@@ -203,6 +246,7 @@ def register():
 
     bpy.types.Scene.gr2_frame_ids = PointerProperty(type=GR2_SetFrameIDsPropertiesGroup, name="Halo Frame ID Getter", description="Gets Frame IDs")
     bpy.types.Scene.gr2_halo_launcher = PointerProperty(type=GR2_HaloLauncherPropertiesGroup, name="Halo Launcher", description="Launches stuff")
+    bpy.types.Scene.gr2_shader_finder = PointerProperty(type=GR2_HaloShaderFinderPropertiesGroup, name="Shader Finder", description="Find Shaders")
 
     
 def unregister():
