@@ -29,6 +29,7 @@ import bpy
 import getpass
 import xml.etree.cElementTree as ET
 import xml.dom.minidom
+from os import path
 
 from ..gr2_utils import (
     valid_animation_types,
@@ -110,8 +111,11 @@ def BuildSidecar(halo_objects, model_armature, lod_count, asset_path, asset_name
     dom = xml.dom.minidom.parseString(ET.tostring(metadata))
     xml_string = dom.toprettyxml(indent='  ')
     part1, part2 = xml_string.split('?>')
+    sidecar_path = path.join(full_path, asset_name + '.sidecar.xml')
+    # update sidecar path in halo launcher
+    bpy.context.scene.gr2_halo_launcher.sidecar_path = sidecar_path
 
-    with open(full_path + '\\' + asset_name + '.sidecar.xml', 'w') as xfile:
+    with open(sidecar_path, 'w') as xfile:
         xfile.write(part1 + 'encoding=\"{}\" standalone=\"{}\"?>'.format(m_encoding, m_standalone) + part2)
         xfile.close()
 

@@ -2,7 +2,7 @@
 #
 # MIT License
 #
-# Copyright (c) 2020 Generalkidd & Crisp
+# Copyright (c) 2022 Generalkidd & Crisp
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -48,6 +48,9 @@ class GR2_Tools_Helper(Panel):
     def draw(self, context):
         layout = self.layout
 
+
+#######################################
+# FRAME IDS TOOL
 class GR2_SetFrameIDs(Panel):
     bl_label = "Set Frame IDs"
     bl_idname = "HALO_PT_GR2_SetFrameIDs"
@@ -97,8 +100,97 @@ class GR2_SetFrameIDsPropertiesGroup(PropertyGroup):
         default='',
     )
 
+#######################################
+# HALO MANAGER TOOL
+
+class GR2_HaloLauncher(Panel):
+    bl_label = "Halo Launcher"
+    bl_idname = "HALO_PT_GR2_Manager"
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "UI"
+    bl_options = {'DEFAULT_CLOSED'}
+    bl_parent_id = "HALO_PT_GR2_AutoTools"
+
+    def draw(self, context):
+        layout = self.layout
+        scene = context.scene
+        scene_gr2_halo_launcher = scene.gr2_halo_launcher
+
+        layout.use_property_split = True
+        flow = layout.grid_flow(row_major=True, columns=0, even_columns=True, even_rows=False, align=False)
+        col = flow.column()
+        col.scale_y = 1.5
+        col.operator('halo_gr2.launch_foundation')
+        col.separator()
+        split = layout.split()
+        col = split.column()
+        col.operator('halo_gr2.launch_data')
+        col = split.column(align=True)
+        col.operator('halo_gr2.launch_tags')
+        if scene_gr2_halo_launcher.sidecar_path != '':
+            flow = layout.grid_flow(row_major=True, columns=0, even_columns=True, even_rows=False, align=False)
+            col = flow.column()
+            col.separator()
+            col.operator('halo_gr2.launch_source')
+
+class GR2_HaloLauncher_Foundation(Operator):
+    bl_idname = 'halo_gr2.launch_foundation'
+    bl_label = 'Launch Foundation'
+    bl_options = {"REGISTER", "UNDO"}
+
+    def execute(self, context):
+        from .halo_launcher import LaunchFoundation
+        return LaunchFoundation()
+
+class GR2_HaloLauncher_Data(Operator):
+    bl_idname = 'halo_gr2.launch_data'
+    bl_label = 'Data Folder'
+    bl_options = {"REGISTER", "UNDO"}
+
+    def execute(self, context):
+        from .halo_launcher import LaunchData
+        return LaunchData()
+
+class GR2_HaloLauncher_Tags(Operator):
+    bl_idname = 'halo_gr2.launch_tags'
+    bl_label = 'Tags Folder'
+    bl_options = {"REGISTER", "UNDO"}
+
+    def execute(self, context):
+        from .halo_launcher import LaunchTags
+        return LaunchTags()
+
+class GR2_HaloLauncher_Source(Operator):
+    bl_idname = 'halo_gr2.launch_source'
+    bl_label = 'Source Files'
+    bl_options = {"REGISTER", "UNDO"}
+
+    def execute(self, context):
+        scene = context.scene
+        scene_gr2_halo_launcher = scene.gr2_halo_launcher
+        from .halo_launcher import LaunchSource
+        return LaunchSource(scene_gr2_halo_launcher.sidecar_path)
+
+class GR2_HaloLauncherPropertiesGroup(PropertyGroup):
+    sidecar_path: StringProperty(
+        name="",
+        description="",
+        default='',
+    )
+    asset_name: StringProperty(
+        name="",
+        description="",
+        default='',
+    )
+
 classeshalo = (
     GR2_Tools_Helper,
+    GR2_HaloLauncher,
+    GR2_HaloLauncher_Foundation,
+    GR2_HaloLauncher_Data,
+    GR2_HaloLauncher_Tags,
+    GR2_HaloLauncher_Source,
+    GR2_HaloLauncherPropertiesGroup,
     GR2_SetFrameIDs,
     GR2_SetFrameIDsOp,
     GR2_ResetFrameIDsOp,
@@ -109,7 +201,8 @@ def register():
     for clshalo in classeshalo:
         bpy.utils.register_class(clshalo)
 
-    bpy.types.Scene.gr2_frame_ids = PointerProperty(type=GR2_SetFrameIDsPropertiesGroup, name="Halo Frame ID Getter", description="Gets Frame IDs from the")
+    bpy.types.Scene.gr2_frame_ids = PointerProperty(type=GR2_SetFrameIDsPropertiesGroup, name="Halo Frame ID Getter", description="Gets Frame IDs")
+    bpy.types.Scene.gr2_halo_launcher = PointerProperty(type=GR2_HaloLauncherPropertiesGroup, name="Halo Launcher", description="Launches stuff")
 
     
 def unregister():
