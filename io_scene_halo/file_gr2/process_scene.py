@@ -757,6 +757,7 @@ def export_better_fbx(context, export_animation, filepath, use_armature_deform_o
         fbx_command = GetExeArgs(exe, output, filepath, global_scale, use_triangles, mesh_smooth_type_better)
         p = Popen(fbx_command)
         p.wait()
+        os.remove(output)
         return {'FINISHED'}
     else:
         ctypes.windll.user32.MessageBoxW(0, "BetterFBX option is not supported on your OS. Please use the standard FBX option.", "OS NOT SUPPORTED", 0)
