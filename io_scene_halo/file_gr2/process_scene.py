@@ -659,7 +659,6 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                 elif sidecar_type == 'DECORATOR SET': 
                     if export_render:
                         if SelectModelObjectNoPerm(halo_objects.decorator, model_armature, export_hidden):
-                            print('found a decorator mesh')
                             if using_better_fbx:
                                 obj_selection = [obj for obj in context.selected_objects]
                                 export_better_fbx(context, False, **keywords)
@@ -672,7 +671,6 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                 else: # for particles
                     if export_render:
                         if SelectModelObjectNoPerm(halo_objects.particle, model_armature, export_hidden):
-                            print('found a decorator mesh')
                             if using_better_fbx:
                                 obj_selection = [obj for obj in context.selected_objects]
                                 export_better_fbx(context, False, **keywords)
@@ -741,15 +739,12 @@ def CheckPath(filePath):
 # BETTER FBX INTEGRATION
 
 def export_better_fbx(context, export_animation, filepath, use_armature_deform_only, mesh_smooth_type_better, use_mesh_modifiers, use_triangles, global_scale, **kwargs):
-    print('start export_better_fbx')
-    print(filepath)
     if IsWindows():
         better_fbx_folder = GetBetterFBXFolder()
         if platform.machine().endswith('64'):
             exe = os.path.join(better_fbx_folder, 'bin', 'Windows', 'x64', 'fbx-utility')
         else:
             exe = os.path.join(better_fbx_folder, 'bin', 'Windows', 'x86', 'fbx-utility')
-        print(exe)
         output = os.path.join(better_fbx_folder, 'data', uuid.uuid4().hex + '.txt')
         from better_fbx.exporter import write_some_data as SetFBXData
         data_args = GetDataArgs(context, output, export_animation, use_armature_deform_only, mesh_smooth_type_better, use_mesh_modifiers)

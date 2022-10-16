@@ -295,7 +295,6 @@ def SetPoopProxies(context, poops):
 
             for obj in poops:
                 if sel_logic.ObPoopsOnly(obj) and obj.data.name == ob.data.name and len(obj.children) <= 0:
-                    print(obj.name)
                     DeselectAllObjects()
                     obj.select_set(True)
                     bpy.ops.view3d.snap_cursor_to_selected()
