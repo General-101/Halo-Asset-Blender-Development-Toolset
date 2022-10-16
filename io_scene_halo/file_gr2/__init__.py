@@ -463,16 +463,16 @@ class Export_Halo_GR2(Operator, ExportHelper):
         name='Import Bitmaps',
         default=False,
     )
-    bitmap_type: EnumProperty(
-        name='Bitmap Type',
-        items=(('2dtextures', "2D Textures", ""),
-                ('3dtextures', "3D Textures", ""),
-                ('cubemaps', "Cubemaps", ""),
-                ('sprites', "Sprites", ""),
-                ('interface', "Interface", ""),
-                ),
-        default='2dtextures',
-    )
+    # bitmap_type: EnumProperty(
+    #     name='Bitmap Type',
+    #     items=(('2dtextures', "2D Textures", ""),
+    #             ('3dtextures', "3D Textures", ""),
+    #             ('cubemaps', "Cubemaps", ""),
+    #             ('sprites', "Sprites", ""),
+    #             ('interface', "Interface", ""),
+    #             ),
+    #     default='2dtextures',
+    # )
 
     def execute(self, context):
         keywords = self.as_keywords()
