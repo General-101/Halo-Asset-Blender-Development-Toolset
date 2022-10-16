@@ -394,8 +394,6 @@ def FixMissingMaterials(context, halo_objects):
     mat = ''
     # loop through each object in the scene
     for ob in bpy.data.objects:
-        DeselectAllObjects()
-        ob.select_set(True)
         if IsMesh(ob): # check if we're processing a mesh
             # remove empty material slots
             for index, slot in enumerate(ob.material_slots.items()):

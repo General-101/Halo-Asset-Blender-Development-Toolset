@@ -82,7 +82,6 @@ def BuildSidecar(halo_objects, model_armature, lod_count, asset_path, asset_name
 
     m_encoding = 'utf-8'
     m_standalone = 'yes'
-
     metadata = ET.Element("Metadata")
     WriteHeader(metadata)
     if sidecar_type == 'MODEL':
@@ -123,6 +122,7 @@ def WriteHeader(metadata):
     ET.SubElement(header, "Description").text = "Created using the Halo Blender Toolset"
     ET.SubElement(header, "Created").text = str(datetime.today().strftime('%Y-%m-%d %H:%M:%S'))
     ET.SubElement(header, "By").text = getpass.getuser()
+    ET.SubElement(header, 'SourceFile').text = bpy.data.filepath
     ET.SubElement(header, "DirectoryType").text = "TAE.Shared.NWOAssetDirectory"
     ET.SubElement(header, "Schema").text = "1"
 
