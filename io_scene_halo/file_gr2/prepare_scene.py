@@ -89,9 +89,10 @@ class halo_objects():
 def GetSceneMode(context):
     mode = None
     try: # wrapped this in a try as the user can encounter an assert if no object is selected. No reason for this to crash the export
-        if len(context.selected_objects) > 0:
-            mode = context.object.mode
+        if context.view_layer.objects.active == None: 
+            context.view_layer.objects.active = context.scene.objects[0]
 
+        mode = context.object.mode
         bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
     except:
         print('WARNING: Unable to test mode')
@@ -283,12 +284,16 @@ def SetPoopProxies(context, poops):
     proxy_collision = None
     proxy_physics = None
     proxy_cookie_cutter = None
+    collision_offset = 0
+    physics_offset = 0
+    cookie_cutter_offset = 0
+    poop_offset = 0
     DeselectAllObjects()
     for ob in poops:
         if ob.data.name not in mesh_data:
             mesh_data.append(ob.data.name)
             for obj in poops:
-                if (obj.data.name == ob.data.name) and (len(obj.children) > 0):
+                if (obj.data.name == ob.data.name) and (len(obj.children) > 0) and sel_logic.ObPoopsOnly(obj):
                     proxy_collision, collision_offset = GetPoopProxyCollision(obj, poops)
                     proxy_physics, physics_offset = GetPoopProxyPhysics(obj, poops)
                     proxy_cookie_cutter, cookie_cutter_offset = GetPoopProxyCookie(obj, poops)
@@ -299,14 +304,14 @@ def SetPoopProxies(context, poops):
                 if sel_logic.ObPoopsOnly(obj) and obj.data.name == ob.data.name and len(obj.children) <= 0:
                     DeselectAllObjects()
                     obj.select_set(True)
-                    bpy.ops.view3d.snap_cursor_to_selected()
-                    poop_proxies = AttachPoopProxies(obj, proxy_collision, proxy_physics, proxy_cookie_cutter, collision_offset, physics_offset, cookie_cutter_offset)
+                    poop_offset = obj.matrix_world
+                    poop_proxies = AttachPoopProxies(obj, proxy_collision, proxy_physics, proxy_cookie_cutter, collision_offset, physics_offset, cookie_cutter_offset, poop_offset)
                     for p in poop_proxies:
                         proxies.append(p)
 
     return proxies
 
-def AttachPoopProxies(obj, proxy_collision, proxy_physics, proxy_cookie_cutter, collision_offset, physics_offset, cookie_cutter_offset):
+def AttachPoopProxies(obj, proxy_collision, proxy_physics, proxy_cookie_cutter, collision_offset, physics_offset, cookie_cutter_offset, poop_offset):
     ops = bpy.ops
     context = bpy.context
     proxy = []
@@ -329,7 +334,8 @@ def AttachPoopProxies(obj, proxy_collision, proxy_physics, proxy_cookie_cutter, 
 
     proxy = [prox for prox in context.selected_objects]
 
-    ops.view3d.snap_selected_to_cursor(use_offset=False)
+    for ob in proxy:
+        ob.matrix_world = poop_offset
 
     context.view_layer.objects.active = obj
 
@@ -348,7 +354,7 @@ def AttachPoopProxies(obj, proxy_collision, proxy_physics, proxy_cookie_cutter, 
 
 def GetPoopProxyCollision(obj, poops):
     collision = None
-    collision_offset = Matrix()
+    collision_offset = 0
     for child in obj.children:
         if child in poops and sel_logic.ObPoopCollision(child):
             collision = child
@@ -360,7 +366,7 @@ def GetPoopProxyCollision(obj, poops):
 
 def GetPoopProxyPhysics(obj, poops):
     physics = None
-    physics_offset = Matrix()
+    physics_offset = 0
     for child in obj.children:
         if child in poops and sel_logic.ObPoopPhysics(child):
             physics = child
@@ -371,7 +377,7 @@ def GetPoopProxyPhysics(obj, poops):
 
 def GetPoopProxyCookie(obj, poops):
     cookie = None
-    cookie_offset = Matrix()
+    cookie_offset = 0
     for child in obj.children:
         if child in poops and sel_logic.ObCookie(child):
             cookie = child

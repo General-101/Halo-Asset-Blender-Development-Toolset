@@ -47,14 +47,14 @@ def repair_scene(context, report, objects_selection, active_object, hidden_objec
         for ob in hidden_objects:
             ob.hide_set(True)
 
+    if temp_armature:
+        DelTempArmature(context, model_armature)
+
     try: # try this but don't assert if it fails
         if mode != None:
             bpy.ops.object.mode_set(mode=mode, toggle=False)
     except:
         print('error occured when trying to replace mode')
-
-    if temp_armature:
-        DelTempArmature(context, model_armature)
 
     # restore selection
     if objects_selection != None:
