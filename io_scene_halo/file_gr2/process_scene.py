@@ -91,6 +91,10 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                   import_bitmaps,
                   **kwargs
     ):
+    
+    if not IsWindows():
+        using_better_fbx = False
+        ctypes.windll.user32.MessageBoxW(0, "BetterFBX option is not supported on your OS. FBX output will use the standard FBX module instead.", "OS NOT SUPPORTED", 0)
 
     if using_better_fbx:
         print('Found Better FBX exporter')

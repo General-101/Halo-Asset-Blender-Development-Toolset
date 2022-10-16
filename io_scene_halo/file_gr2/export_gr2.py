@@ -848,7 +848,7 @@ def export_asset(report, filePath="", keep_fbx=False, keep_json=False, asset_pat
 
         return {'FINISHED'}
     else:
-        ctypes.windll.user32.MessageBoxW(0, "GR2 Not Created! Your current OS is not supported. The Halo tools only support Windows. FBX & JSON saved succesfully.", "Unsuported OS", 0)
+        ctypes.windll.user32.MessageBoxW(0, "GR2 Not Created! Your current OS is not supported. The Halo tools only support Windows. FBX & JSON saved succesfully.", "OS NOT SUPPORTED", 0)
         return {'FINISHED'}
 
 def CleanFiles(filePath, jsonPath, gr2Path, fbx_crushed, json_binned):
@@ -931,7 +931,7 @@ def build_gr2(toolPath, filePath, jsonPath, gr2Path):
             p = Popen(toolCommand)
             p.wait()
     except:
-        ctypes.windll.user32.MessageBoxW(0, "GR2 Not Exported. Please check your editing kit path in add-on preferences and try again.", "Invalid EK Path", 0)
+        ctypes.windll.user32.MessageBoxW(0, "GR2 Not Exported. Please check your editing kit path in add-on preferences and try again.", "INVALID EK PATH", 0)
         os.remove(filePath)
         os.remove(jsonPath)
 
