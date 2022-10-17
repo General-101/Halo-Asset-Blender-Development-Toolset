@@ -35,35 +35,40 @@ from ...gr2_utils import (
     GetEKPath,
     GetToolPath,
     frame_prefixes,
-    GetSceneArmature,
     GetPrefix,
 )
 
-def reset_frame_ids():
-    model_armature = GetSceneArmature()
-    blend_bones = model_armature.data.bones
-    for b in blend_bones:
-        b.halo_json.frame_id1 = ''
-        b.halo_json.frame_id2 = ''
+def reset_frame_ids(context, report):
+    model_armature = GetArmature(context, report)
+    if model_armature != None:
+        blend_bones = model_armature.data.bones
+        for b in blend_bones:
+            b.halo_json.frame_id1 = ''
+            b.halo_json.frame_id2 = ''
+        
+        report({'INFO'},"Frame IDs Reset")
     
     return {'FINISHED'}
     
-def set_frame_ids():
-    model_armature = GetSceneArmature()
-    framelist = ImportTagXML(GetToolPath())
-    if(not framelist == None):
-        tag_bone_names = CleanBoneNames(framelist)
-        blend_bone_names = CleanBones(model_armature.data.bones)
-        blend_bones = model_armature.data.bones
-        
-        for blend_bone in blend_bone_names:
-            for tag_bone in tag_bone_names:
-                if blend_bone == tag_bone:
-                    ApplyFrameIDs(blend_bone, blend_bones, framelist)
+def set_frame_ids(context, report):
+    model_armature = GetArmature(context, report)
+    frame_count = 0
+    if model_armature != None:
+        framelist = ImportTagXML(GetToolPath())
+        if(not framelist == None):
+            tag_bone_names = CleanBoneNames(framelist)
+            blend_bone_names = CleanBones(model_armature.data.bones)
+            blend_bones = model_armature.data.bones
+            
+            for blend_bone in blend_bone_names:
+                for tag_bone in tag_bone_names:
+                    if blend_bone == tag_bone:
+                        ApplyFrameIDs(blend_bone, blend_bones, framelist)
+                        frame_count += 1
 
-        return {'FINISHED'}
-    else:
-        return {'FINISHED'}
+            report({'INFO'},"Updated Frame IDs for " + str(frame_count) + ' bones')
+
+    return {'FINISHED'}
 
 def ApplyFrameIDs(bone_name, bone_names_list, framelist):
     for b in bone_names_list:
@@ -158,3 +163,14 @@ def ParseXML(xmlPath):
             temp = [name, frameID1, frameID2]
             parent.append(temp)
     return parent
+
+def GetArmature(context, report):
+    model_armature = None
+    for ob in context.scene.objects:
+        if ob.type == 'ARMATURE' and not ob.name.startswith('+'): # added a check for a '+' prefix in armature name, to support special animation control armatures in the future
+            model_armature = ob
+            break
+    if model_armature == None:
+        report({'WARNING'},"Could not find any valid armature in the scene. Frame ID operation aborted")
+
+    return model_armature

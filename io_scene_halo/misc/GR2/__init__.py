@@ -82,7 +82,7 @@ class GR2_SetFrameIDsOp(Operator):
 
     def execute(self, context):
         from .set_frame_ids import set_frame_ids
-        return set_frame_ids()
+        return set_frame_ids(context, self.report)
 
 class GR2_ResetFrameIDsOp(Operator):
     bl_idname = 'halo_gr2.reset_frame_ids'
@@ -91,7 +91,7 @@ class GR2_ResetFrameIDsOp(Operator):
 
     def execute(self, context):
         from .set_frame_ids import reset_frame_ids
-        return reset_frame_ids()
+        return reset_frame_ids(context, self.report)
 
 class GR2_SetFrameIDsPropertiesGroup(PropertyGroup):
     anim_tag_path: StringProperty(
