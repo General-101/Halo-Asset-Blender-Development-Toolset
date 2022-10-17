@@ -478,6 +478,8 @@ class Export_Halo_GR2(Operator, ExportHelper):
             if response != 6:
                 skip_lightmapper = True
 
+        print('starting export...')
+
         keywords = self.as_keywords()
         console = bpy.ops.wm
 

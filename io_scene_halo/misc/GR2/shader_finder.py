@@ -62,16 +62,15 @@ def FindShaders(context, shaders_dir, report):
 
 def FindShaderMatch(mat, shaders, tags_path):
     material_name = mat.name
+    material_parts = material_name.split(' ')
     # clean material name
-    # ignore shader lightmap suffix
-    if material_name.rpartition(' ')[0] != '':
-        material_name = material_name.rpartition(' ')[0]
+    if len(material_parts) > 1:
+        material_name = material_parts[1]
+    else:
+        material_name = material_parts[0]
     # ignore if duplicate name
     if material_name.rpartition('.')[0] != '':
         material_name = material_name.rpartition('.')[0]
-    # ignore shader prefix
-    if material_name.rpartition(' ')[2] != '':
-        material_name = material_name.rpartition(' ')[2]
     # ignore material suffixes
     material_name = material_name.strip("%#?!@*$^-&=.;)><|~({]}['0")
     for s in shaders:
