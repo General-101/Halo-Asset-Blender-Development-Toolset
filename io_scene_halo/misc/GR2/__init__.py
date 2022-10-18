@@ -240,33 +240,35 @@ class GR2_HaloShaderFinderPropertiesGroup(PropertyGroup):
 #     def draw(self, context):
 #         layout = self.layout
 #         scene = context.scene
-#         scene_gr2_halo_export = scene.gr2_halo_export
+#         scene_gr2_halo_launcher = scene.gr2_halo_launcher
 
 #         layout.use_property_split = True
 #         flow = layout.grid_flow(row_major=True, columns=0, even_columns=True, even_rows=False, align=False)
 #         col = flow.column()
 #         col.scale_y = 1.5
 #         col.operator('halo_gr2.export')
-#         col.separator()
-#         split = layout.split()
-#         col = split.column()
-#         col.operator('halo_gr2.launch_data')
-#         col = split.column(align=True)
-#         col.operator('halo_gr2.launch_tags')
-#         if scene_gr2_halo_export.sidecar_path != '':
-#             flow = layout.grid_flow(row_major=True, columns=0, even_columns=True, even_rows=False, align=False)
-#             col = flow.column()
-#             col.separator()
-#             col.operator('halo_gr2.launch_source')
+#         if scene_gr2_halo_launcher.sidecar_path != '':
+#             col.operator('halo_gr2.export_quick')
 
-# class GR2_HaloLauncher_Foundation(Operator):
+# class GR2_HaloExport_Export(Operator):
 #     bl_idname = 'halo_gr2.export'
 #     bl_label = 'Export'
 #     bl_options = {"REGISTER", "UNDO"}
 
 #     def execute(self, context):
-#         from .halo_launcher import LaunchFoundation
-#         return LaunchFoundation()
+#         from .halo_export import Export
+#         ops = bpy.ops
+#         return Export(ops.export_halo.gr2)
+
+# class GR2_HaloExport_ExportQuick(Operator):
+#     bl_idname = 'halo_gr2.export_quick'
+#     bl_label = 'Quick Export'
+#     bl_options = {"REGISTER", "UNDO"}
+
+#     def execute(self, context):
+#         from .halo_export import ExportQuick
+#         ops = bpy.ops
+#         return ExportQuick(ops.export_halo.gr2, ops.file.execute)
 
 classeshalo = (
     GR2_Tools_Helper,
