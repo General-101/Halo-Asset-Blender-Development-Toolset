@@ -183,6 +183,9 @@ class GR2_HaloLauncherPropertiesGroup(PropertyGroup):
         default='',
     )
 
+#######################################
+# SHADER FINDER TOOL
+
 class GR2_ShaderFinder(Panel):
     bl_label = "Update Materials by Shader"
     bl_idname = "HALO_PT_GR2_ShaderFinder"
@@ -222,6 +225,48 @@ class GR2_HaloShaderFinderPropertiesGroup(PropertyGroup):
         description="Leave blank to search the entire tags folder for shaders or input a directory path to specify the folder (and sub-folders) to search for shaders",
         default='',
     )
+
+#######################################
+# HALO EXPORT TOOL
+
+# class GR2_HaloExport(Panel):
+#     bl_label = "Halo Export"
+#     bl_idname = "HALO_PT_GR2_HaloExport"
+#     bl_space_type = "VIEW_3D"
+#     bl_region_type = "UI"
+#     bl_options = {'DEFAULT_CLOSED'}
+#     bl_parent_id = "HALO_PT_GR2_AutoTools"
+
+#     def draw(self, context):
+#         layout = self.layout
+#         scene = context.scene
+#         scene_gr2_halo_export = scene.gr2_halo_export
+
+#         layout.use_property_split = True
+#         flow = layout.grid_flow(row_major=True, columns=0, even_columns=True, even_rows=False, align=False)
+#         col = flow.column()
+#         col.scale_y = 1.5
+#         col.operator('halo_gr2.export')
+#         col.separator()
+#         split = layout.split()
+#         col = split.column()
+#         col.operator('halo_gr2.launch_data')
+#         col = split.column(align=True)
+#         col.operator('halo_gr2.launch_tags')
+#         if scene_gr2_halo_export.sidecar_path != '':
+#             flow = layout.grid_flow(row_major=True, columns=0, even_columns=True, even_rows=False, align=False)
+#             col = flow.column()
+#             col.separator()
+#             col.operator('halo_gr2.launch_source')
+
+# class GR2_HaloLauncher_Foundation(Operator):
+#     bl_idname = 'halo_gr2.export'
+#     bl_label = 'Export'
+#     bl_options = {"REGISTER", "UNDO"}
+
+#     def execute(self, context):
+#         from .halo_launcher import LaunchFoundation
+#         return LaunchFoundation()
 
 classeshalo = (
     GR2_Tools_Helper,

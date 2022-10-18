@@ -40,12 +40,14 @@ from bpy.props import StringProperty, BoolProperty, EnumProperty, FloatProperty,
 from bpy.types import Operator
 from bpy_extras.io_utils import ExportHelper
 from addon_utils import check
+from os.path import exists as file_exists
 import ctypes
 
 lightmapper_run_once = False
+sidecar_read = False
 
 class Export_Halo_GR2(Operator, ExportHelper):
-    """Exports a Halo GEN4 Asset using your Halo Editing Kit"""
+    """Exports a Halo Granny Asset using your Halo Editing Kit"""
     bl_idname = 'export_halo.gr2'
     bl_label = 'Export Asset'
     bl_options = {'UNDO', 'PRESET'}
@@ -468,6 +470,54 @@ class Export_Halo_GR2(Operator, ExportHelper):
     #     default='2dtextures',
     # )
 
+    def __init__(self):
+        # SETUP #
+        scene = bpy.context.scene
+        sidecar_filepath = scene.gr2_halo_launcher.sidecar_path
+        export_settings = []
+        if sidecar_filepath != '' and file_exists(sidecar_filepath):
+            export_settings = ExportSettingsFromSidecar(sidecar_filepath)
+            # now apply settings
+            match export_settings[0]:
+                case 'model':
+                    self.sidecar_type = 'MODEL'
+                case 'scenario':
+                    self.sidecar_type = 'SCENARIO'
+                case 'sky':
+                    self.sidecar_type = 'SKY'
+                case 'decorator_set':
+                    self.sidecar_type = 'DECORATOR SET'
+                case 'particle_model':
+                    self.sidecar_type = 'PARTICLE MODEL'
+            
+            if len(export_settings) > 1: # checks if we should also set output tags
+                for tag in export_settings[1]:
+                    match tag:
+                        case 'biped':
+                            self.output_biped = True
+                        case 'crate':
+                            self.output_crate = True
+                        case 'creature':
+                            self.output_creature = True
+                        case 'device_control':
+                            self.output_device_control = True
+                        case 'device_machine':
+                            self.output_device_machine = True
+                        case 'device_terminal':
+                            self.output_device_terminal = True
+                        case 'effect_scenery':
+                            self.output_effect_scenery = True
+                        case 'equipment':
+                            self.output_equipment = True
+                        case 'giant':
+                            self.output_giant = True
+                        case 'scenery':
+                            self.output_scenery = True
+                        case 'vehicle':
+                            self.output_vehicle = True
+                        case 'weapon':
+                            self.output_weapon = True
+
     def execute(self, context):
         #lightmap warning
         skip_lightmapper = False
@@ -635,7 +685,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
         col.prop(self, "global_scale")
 
 def menu_func_export(self, context):
-    self.layout.operator(Export_Halo_GR2.bl_idname, text="Halo Gen4 Asset Export (.fbx .json .gr2. .xml)")
+    self.layout.operator(Export_Halo_GR2.bl_idname, text="Halo GR2 Exporter (.gr2)")
 
 # def UpdateSettings(
 #     keep_fbx,
@@ -673,6 +723,29 @@ def UsingBetterFBX():
         using_better_fbx = True
 
     return using_better_fbx
+
+def ExportSettingsFromSidecar(sidecar_filepath):
+    settings = []
+    import xml.etree.ElementTree as ET
+    tree = ET.parse(sidecar_filepath)
+    metadata = tree.getroot()
+    # get the type of sidecar this is
+    asset = metadata.find('Asset')
+    asset_type = asset.get('Type')
+    # append the type to the settings list
+    settings.append(asset_type)
+    # if asset type is a model, we need to grab some additional info
+    output_tags = []
+    if settings[0] == 'model':
+        output_collection = asset.find('OutputTagCollection')
+        for tag in output_collection.findall('OutputTag'):
+            if tag.get('Type') != 'model': # don't collect the model output_tag, we don't need this
+                output_tags.append(tag.get('Type'))
+
+        settings.append(output_tags)
+
+
+    return settings
 
 def register():
     bpy.utils.register_class(Export_Halo_GR2)
