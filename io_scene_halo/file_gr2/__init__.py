@@ -38,7 +38,6 @@ import bpy
 from bpy_extras.io_utils import ExportHelper
 from bpy.props import StringProperty, BoolProperty, EnumProperty, FloatProperty, IntProperty
 from bpy.types import Operator
-from bpy_extras.io_utils import ExportHelper
 from addon_utils import check
 from os.path import exists as file_exists
 import ctypes
@@ -46,9 +45,9 @@ import ctypes
 lightmapper_run_once = False
 sidecar_read = False
 
-class Export_Halo_GR2(Operator, ExportHelper):
+class Export_Scene_GR2(Operator, ExportHelper):
     """Exports a Halo Granny Asset using your Halo Editing Kit"""
-    bl_idname = 'export_halo.gr2'
+    bl_idname = 'export_scene.gr2'
     bl_label = 'Export Asset'
     bl_options = {'UNDO', 'PRESET'}
 
@@ -75,7 +74,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
         default=True,
     )
     export_sidecar_xml: BoolProperty(
-        name="Export Sidecar",
+        name="Build Sidecar",
         description="",
         default=True,
     )
@@ -455,10 +454,14 @@ class Export_Halo_GR2(Operator, ExportHelper):
                         "(prefer 'Normals Only' option if your target importer understand split normals)",
             default='OFF',
             )
-    import_bitmaps: BoolProperty(
-        name='Import Bitmaps',
+    quick_export: BoolProperty(
+        name='',
         default=False,
     )
+    # import_bitmaps: BoolProperty(
+    #     name='Import Bitmaps',
+    #     default=False,
+    # )
     # bitmap_type: EnumProperty(
     #     name='Bitmap Type',
     #     items=(('2dtextures', "2D Textures", ""),
@@ -477,6 +480,8 @@ class Export_Halo_GR2(Operator, ExportHelper):
         export_settings = []
         if sidecar_filepath != '' and file_exists(sidecar_filepath):
             export_settings = ExportSettingsFromSidecar(sidecar_filepath)
+            self.filepath = sidecar_filepath.rpartition('\\')[0] + '\\' + 'untitled.fbx'
+            print(self.filepath)
             # now apply settings
             match export_settings[0]:
                 case 'model':
@@ -539,12 +544,12 @@ class Export_Halo_GR2(Operator, ExportHelper):
         from .prepare_scene import prepare_scene
         (objects_selection, active_object, hidden_objects, mode, model_armature, temp_armature, asset_path, asset, skeleton_bones, halo_objects, timeline_start, timeline_end, lod_count, proxies
         ) = prepare_scene(context, self.report, **keywords) # prepares the scene for processing and returns information about the scene
-        try:
-            from .process_scene import process_scene
-            process_scene(self, context, keywords, self.report, model_armature, asset_path, asset, skeleton_bones, halo_objects, timeline_start, timeline_end, lod_count, UsingBetterFBX(), skip_lightmapper, **keywords)
-        except:
-            print('ASSERT: Scene processing failed')
-            self.report({'WARNING'},'ASSERT: Scene processing failed')
+        # try:
+        from .process_scene import process_scene
+        process_scene(self, context, keywords, self.report, model_armature, asset_path, asset, skeleton_bones, halo_objects, timeline_start, timeline_end, lod_count, UsingBetterFBX(), skip_lightmapper, **keywords)
+        # except:
+        #     print('ASSERT: Scene processing failed')
+        #     self.report({'WARNING'},'ASSERT: Scene processing failed')
 
         from .repair_scene import repair_scene
         repair_scene(context, self.report, objects_selection, active_object, hidden_objects, mode, temp_armature, timeline_start, timeline_end, model_armature, halo_objects.lights, proxies, **keywords)
@@ -558,6 +563,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
         layout = self.layout
         layout.use_property_split = True
         box = layout.box()
+
         # SETTINGS #
         box.label(text="Settings")
 
@@ -685,7 +691,7 @@ class Export_Halo_GR2(Operator, ExportHelper):
         col.prop(self, "global_scale")
 
 def menu_func_export(self, context):
-    self.layout.operator(Export_Halo_GR2.bl_idname, text="Halo GR2 Exporter (.gr2)")
+    self.layout.operator(Export_Scene_GR2.bl_idname, text="Halo GR2 Exporter (.gr2)")
 
 # def UpdateSettings(
 #     keep_fbx,
@@ -748,12 +754,12 @@ def ExportSettingsFromSidecar(sidecar_filepath):
     return settings
 
 def register():
-    bpy.utils.register_class(Export_Halo_GR2)
+    bpy.utils.register_class(Export_Scene_GR2)
     bpy.types.TOPBAR_MT_file_export.append(menu_func_export)
 
 def unregister():
     bpy.types.TOPBAR_MT_file_export.remove(menu_func_export)
-    bpy.utils.unregister_class(Export_Halo_GR2)
+    bpy.utils.unregister_class(Export_Scene_GR2)
 
 if __name__ == "__main__":
     register()

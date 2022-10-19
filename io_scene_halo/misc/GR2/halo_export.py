@@ -24,12 +24,15 @@
 #
 # ##### END MIT LICENSE BLOCK #####
 
-def Export(open_exporter):
-    open_exporter
+import bpy
+from os.path import exists as file_exists
+
+def Export(export):
+    export('INVOKE_DEFAULT')
     return {'FINISHED'}
 
-def ExportQuick(open_exporter, export):
-    open_exporter
-    export
+def ExportQuick(export, report, context):
+    export(quick_export=True)
+    report({'INFO'}, context.scene.gr2_export.final_report)
     return {'FINISHED'}
 

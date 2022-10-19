@@ -89,7 +89,9 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                   export_specific_bsp,
                   export_sidecar_xml,
                   lightmap_structure,
-                  import_bitmaps,
+                  lightmap_quality,
+                  quick_export,
+                  #import_bitmaps,
                   **kwargs
     ):
     
@@ -730,20 +732,17 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                 if export_sidecar_xml:
                     from .export_sidecar import export_sidecar
                     export_sidecar(self, context, report, asset_path, halo_objects, model_armature, lod_count, **keywords)
-                    # TODO return sidecar type for info reporting
-                    reports.append('Built ' + sidecar_type + ' Sidecar')
+                    reports.append('Built ' + str.title(sidecar_type) + ' Sidecar')
                 from .import_sidecar import import_sidecar
                 import_sidecar(self, context, report, **keywords)
-                # TODO we can't tell if a new file is created or not. remove check for this in function. Just report that import was processed
-                reports.append('Tag Import Processed')
+                reports.append('Tag Export Processed')
                 if lightmap_structure and not skip_lightmapper:
                     from .run_lightmapper import run_lightmapper
                     run_lightmapper(self, context, report, **keywords)
-                    # TODO report quality of lightmap processed
-                    reports.append('Processed a Lightmap on ' + lightmap_quality + ' Quality')
-                if import_bitmaps:
-                    print("Temporary implementation, remove this later!")
-                    #import_bitmap.save(self, context, report, **keywords)
+                    reports.append('Processed a Lightmap on ' + str.title(lightmap_quality) + ' Quality')
+                # if import_bitmaps:
+                #     print("Temporary implementation, remove this later!")
+                #     #import_bitmap.save(self, context, report, **keywords)
 
         elif(not export_sidecar_xml):
             export_fbx(self, context, **keywords)
@@ -763,7 +762,11 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
         if idx + 1 < len(reports):
             final_report = final_report + ' | '
 
-    report({'INFO'},final_report)
+    if quick_export:
+        context.scene.gr2_export.final_report = final_report
+    else:
+        report({'INFO'}, final_report)
+
 
 #####################################################################################
 #####################################################################################

@@ -24,14 +24,10 @@
 #
 # ##### END MIT LICENSE BLOCK #####
 
-import bpy
 import os
 from subprocess import Popen
 from ...gr2_utils import (
     GetEKPath,
-    GetToolPath,
-    GetTagsPath,
-    GetDataPath,
 )
 
 def LaunchFoundation():

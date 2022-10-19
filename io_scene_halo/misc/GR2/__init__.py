@@ -108,7 +108,6 @@ class GR2_HaloLauncher(Panel):
     bl_idname = "HALO_PT_GR2_HaloLauncher"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
-    bl_options = {'DEFAULT_CLOSED'}
     bl_parent_id = "HALO_PT_GR2_AutoTools"
 
     def draw(self, context):
@@ -229,49 +228,59 @@ class GR2_HaloShaderFinderPropertiesGroup(PropertyGroup):
 #######################################
 # HALO EXPORT TOOL
 
-# class GR2_HaloExport(Panel):
-#     bl_label = "Halo Export"
-#     bl_idname = "HALO_PT_GR2_HaloExport"
-#     bl_space_type = "VIEW_3D"
-#     bl_region_type = "UI"
-#     bl_options = {'DEFAULT_CLOSED'}
-#     bl_parent_id = "HALO_PT_GR2_AutoTools"
+class GR2_HaloExport(Panel):
+    bl_label = "Halo Export"
+    bl_idname = "HALO_PT_GR2_HaloExport"
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "UI"
+    bl_icon = 'EXPORT'
+    bl_parent_id = "HALO_PT_GR2_AutoTools"
 
-#     def draw(self, context):
-#         layout = self.layout
-#         scene = context.scene
-#         scene_gr2_halo_launcher = scene.gr2_halo_launcher
+    def draw(self, context):
+        layout = self.layout
+        scene = context.scene
+        scene_gr2_halo_launcher = scene.gr2_halo_launcher
 
-#         layout.use_property_split = True
-#         flow = layout.grid_flow(row_major=True, columns=0, even_columns=True, even_rows=False, align=False)
-#         col = flow.column()
-#         col.scale_y = 1.5
-#         col.operator('halo_gr2.export')
-#         if scene_gr2_halo_launcher.sidecar_path != '':
-#             col.operator('halo_gr2.export_quick')
+        layout.use_property_split = True
+        flow = layout.grid_flow(row_major=True, columns=0, even_columns=True, even_rows=False, align=False)
+        col = flow.column()
+        col.scale_y = 1.5
+        col.operator('halo_gr2.export', text='Export', icon='EXPORT')
+        if scene_gr2_halo_launcher.sidecar_path != '':
+            col.separator()
+            col.operator('halo_gr2.export_quick', text='Quick Export', icon='EMPTY_SINGLE_ARROW')
 
-# class GR2_HaloExport_Export(Operator):
-#     bl_idname = 'halo_gr2.export'
-#     bl_label = 'Export'
-#     bl_options = {"REGISTER", "UNDO"}
+class GR2_HaloExport_Export(Operator):
+    bl_idname = 'halo_gr2.export'
+    bl_label = 'Export'
+    bl_options = {"REGISTER", "UNDO"}
 
-#     def execute(self, context):
-#         from .halo_export import Export
-#         ops = bpy.ops
-#         return Export(ops.export_halo.gr2)
+    def execute(self, context):
+        from .halo_export import Export
+        return Export(bpy.ops.export_scene.gr2)
 
-# class GR2_HaloExport_ExportQuick(Operator):
-#     bl_idname = 'halo_gr2.export_quick'
-#     bl_label = 'Quick Export'
-#     bl_options = {"REGISTER", "UNDO"}
+class GR2_HaloExport_ExportQuick(Operator):
+    bl_idname = 'halo_gr2.export_quick'
+    bl_label = 'Quick Export'
+    bl_options = {"REGISTER", "UNDO"}
 
-#     def execute(self, context):
-#         from .halo_export import ExportQuick
-#         ops = bpy.ops
-#         return ExportQuick(ops.export_halo.gr2, ops.file.execute)
+    def execute(self, context):
+        from .halo_export import ExportQuick
+        return ExportQuick(bpy.ops.export_scene.gr2, self.report, context)
+
+class GR2_HaloExportFinderPropertiesGroup(PropertyGroup):
+    final_report: StringProperty(
+        name="",
+        description="",
+        default='',
+    )
 
 classeshalo = (
     GR2_Tools_Helper,
+    GR2_HaloExport,
+    GR2_HaloExport_Export,
+    GR2_HaloExport_ExportQuick,
+    GR2_HaloExportFinderPropertiesGroup,
     GR2_HaloLauncher,
     GR2_HaloLauncher_Foundation,
     GR2_HaloLauncher_Data,
@@ -294,6 +303,7 @@ def register():
     bpy.types.Scene.gr2_frame_ids = PointerProperty(type=GR2_SetFrameIDsPropertiesGroup, name="Halo Frame ID Getter", description="Gets Frame IDs")
     bpy.types.Scene.gr2_halo_launcher = PointerProperty(type=GR2_HaloLauncherPropertiesGroup, name="Halo Launcher", description="Launches stuff")
     bpy.types.Scene.gr2_shader_finder = PointerProperty(type=GR2_HaloShaderFinderPropertiesGroup, name="Shader Finder", description="Find Shaders")
+    bpy.types.Scene.gr2_export = PointerProperty(type=GR2_HaloExportFinderPropertiesGroup, name="Halo Export", description="")
 
     
 def unregister():
@@ -303,3 +313,4 @@ def unregister():
 
 if __name__ == '__main__':
     register()
+    

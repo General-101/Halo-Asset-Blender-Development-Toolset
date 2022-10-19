@@ -33,6 +33,7 @@ import ctypes
 from subprocess import Popen
 
 from ..gr2_utils import (
+    GetDataPath,
     frame_prefixes,
     marker_prefixes,
     mesh_prefixes,
@@ -873,7 +874,7 @@ def GetFileName(filePath, asset_name, tag_type, perm='', asset_path='', bsp=''):
         else:
             name = asset_path + '\\' + asset_name + '_' + bsp + '_' + tag_type + '.fbx'
 
-    return name
+    return name.replace(GetDataPath(), '')
 
 def move_assets(fileName, jsonPath, gr2Path, asset_path, fbx_crushed, json_binned, tag_type):
     if tag_type == 'animations':
@@ -916,9 +917,11 @@ def build_gr2(toolPath, filePath, jsonPath, gr2Path):
         if not os.access(filePath, os.R_OK):
             ctypes.windll.user32.MessageBoxW(0, "GR2 Not Exported. Output Folder Is Read-Only! Try running Blender as an Administrator.", "ACCESS VIOLATION", 0)
         else:
-            toolCommand = '{} fbx-to-gr2 "{}" "{}" "{}"'.format(toolPath, filePath, jsonPath, gr2Path)
+            toolCommand = '{} fbx-to-gr2 "{}" "{}" "{}"'.format('tool_fast', filePath, jsonPath, gr2Path)
+            os.chdir(GetEKPath())
             p = Popen(toolCommand)
             p.wait()
+            os.chdir(GetDataPath())
     except:
         ctypes.windll.user32.MessageBoxW(0, "GR2 Not Exported. Please check your editing kit path in add-on preferences and try again.", "INVALID EK PATH", 0)
         os.remove(filePath)
@@ -934,7 +937,8 @@ def export_gr2(operator, context, report, asset_path, asset_name, is_windows, ta
         keep_json=False,
         **kwargs
         ):
-    os.chdir(GetEKPath())
+    os.chdir(GetDataPath())
+    filepath = filepath.replace(GetDataPath(), '')
     export_asset(report, filepath, keep_fbx, keep_json, asset_path, asset_name, tag_type, perm, is_windows, bsp, model_armature, boneslist, halo_objects)
 
     return {'FINISHED'}
