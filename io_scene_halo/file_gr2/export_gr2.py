@@ -723,7 +723,7 @@ def getPrimitiveType(type):
 def getMaterials():
     matList = {}
     
-    for ob in bpy.data.objects:
+    for ob in bpy.context.scene.objects:
         if 1<=len(ob.material_slots):
             for mat_slot in ob.material_slots:
                 if mat_slot is not None:

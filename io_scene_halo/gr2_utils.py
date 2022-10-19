@@ -113,7 +113,7 @@ def IsWindows():
     return platform.system() == 'Windows'
 
 def ObjectValid(ob, export_hidden, valid_perm='', evaluated_perm=''):
-    return ob in tuple(bpy.data.scenes[0].view_layers[0].objects) and (ob.visible_get() or export_hidden) and valid_perm == evaluated_perm
+    return ob in tuple(bpy.context.scene.view_layers[0].objects) and (ob.visible_get() or export_hidden) and valid_perm == evaluated_perm
 
 def ExportPerm(perm, export_all_perms, export_specific_perm):
     return export_all_perms or perm == export_specific_perm
@@ -141,7 +141,7 @@ def SelectHaloObject(select_func, selected_asset_type, valid_asset_types):
     select_func = getattr(sel_logic, select_func)
     halo_objects = []
     if selected_asset_type in valid_asset_types:
-        for ob in bpy.data.objects:
+        for ob in bpy.context.scene.objects:
             if select_func(ob):
                 halo_objects.append(ob) 
     
@@ -308,180 +308,180 @@ def NotParentedToPoop(ob):
 
 
 
-class Halo_Bones():
-    def __init__(self):
-        self.nodes = []
+# class Halo_Bones():
+#     def __init__(self):
+#         self.nodes = []
 
-    class Node:
-        def __init__(self, name, children=None, child=-1, sibling=-1, parent=-1):
-            self.name = name
-            self.children = children
-            self.child = child
-            self.sibling = sibling
-            self.parent = parent
-            self.visited = False
+#     class Node:
+#         def __init__(self, name, children=None, child=-1, sibling=-1, parent=-1):
+#             self.name = name
+#             self.children = children
+#             self.child = child
+#             self.sibling = sibling
+#             self.parent = parent
+#             self.visited = False
 
-    def __iter__(self):
-        return self
+#     def __iter__(self):
+#         return self
 
 
-def SortList(model_armature):
+# def SortList(model_armature):
 
-    halo_bones = []
+#     halo_bones = []
 
-    sorted_list = bone_sort_by_layer(model_armature.data.bones, model_armature)
-    joined_list = sorted_list[0]
-    reversed_joined_list = sorted_list[1]
-    node_list = []
-    for node in joined_list:
-        is_bone = False
-        if model_armature:
-            is_bone = True
+#     sorted_list = bone_sort_by_layer(model_armature.data.bones, model_armature)
+#     joined_list = sorted_list[0]
+#     reversed_joined_list = sorted_list[1]
+#     node_list = []
+#     for node in joined_list:
+#         is_bone = False
+#         if model_armature:
+#             is_bone = True
 
-        find_child_node = get_sorted_child(node, reversed_joined_list)
-        find_sibling_node = get_sorted_sibling(model_armature, node, reversed_joined_list)
+#         find_child_node = get_sorted_child(node, reversed_joined_list)
+#         find_sibling_node = get_sorted_sibling(model_armature, node, reversed_joined_list)
 
-        first_child_node = -1
-        first_sibling_node = -1
-        parent_node = -1
+#         first_child_node = -1
+#         first_sibling_node = -1
+#         parent_node = -1
 
-        if not find_child_node == None:
-            first_child_node = joined_list.index(find_child_node)
-        if not find_sibling_node == None:
-            first_sibling_node = joined_list.index(find_sibling_node)
-        if not node.parent == None and not node.parent.name.startswith('!'):
-            parent_node = joined_list.index(node.parent)
+#         if not find_child_node == None:
+#             first_child_node = joined_list.index(find_child_node)
+#         if not find_sibling_node == None:
+#             first_sibling_node = joined_list.index(find_sibling_node)
+#         if not node.parent == None and not node.parent.name.startswith('!'):
+#             parent_node = joined_list.index(node.parent)
 
-        name = node.name
-        child = first_child_node
-        sibling = first_sibling_node
-        parent = parent_node
+#         name = node.name
+#         child = first_child_node
+#         sibling = first_sibling_node
+#         parent = parent_node
 
-        current_node_children = []
-        children = []
-        for child_node in node.children:
-            if child_node in joined_list:
-                current_node_children.append(child_node.name)
+#         current_node_children = []
+#         children = []
+#         for child_node in node.children:
+#             if child_node in joined_list:
+#                 current_node_children.append(child_node.name)
 
-        current_node_children.sort()
+#         current_node_children.sort()
 
-        if is_bone:
-            for child_node in current_node_children:
-                children.append(joined_list.index(model_armature.data.bones[child_node]))
+#         if is_bone:
+#             for child_node in current_node_children:
+#                 children.append(joined_list.index(model_armature.data.bones[child_node]))
 
-        else:
-            for child_node in current_node_children:
-                children.append(joined_list.index(bpy.data.objects[child_node]))
+#         else:
+#             for child_node in current_node_children:
+#                 children.append(joined_list.index(bpy.data.objects[child_node]))
         
-        halo_bones.append(name)
+#         halo_bones.append(name)
 
-    return halo_bones
+#     return halo_bones
 
-def get_sorted_child(bone, bone_list):
-    set_node = None
-    child_nodes = []
-    for node in bone_list:
-        if bone == node.parent:
-            child_nodes.append(node)
+# def get_sorted_child(bone, bone_list):
+#     set_node = None
+#     child_nodes = []
+#     for node in bone_list:
+#         if bone == node.parent:
+#             child_nodes.append(node)
 
-    child_nodes = sorted(child_nodes, key=lambda x: x.name)
-    if len(child_nodes) > 0:
-        set_node = child_nodes[0]
+#     child_nodes = sorted(child_nodes, key=lambda x: x.name)
+#     if len(child_nodes) > 0:
+#         set_node = child_nodes[0]
 
-    return set_node
+#     return set_node
 
-def get_sorted_sibling(armature, bone, bone_list):
-    sibling_list = []
-    set_sibling = None
-    for node in bone_list:
-        if bone.parent == node.parent:
-            sibling_list.append(node)
+# def get_sorted_sibling(armature, bone, bone_list):
+#     sibling_list = []
+#     set_sibling = None
+#     for node in bone_list:
+#         if bone.parent == node.parent:
+#             sibling_list.append(node)
 
-    sibling_list = sorted(sibling_list, key=lambda x: x.name)
-    if len(sibling_list) > 1:
-        sibling_node = sibling_list.index(bone)
-        next_sibling_node = sibling_node + 1
-        if next_sibling_node >= len(sibling_list):
-            set_sibling = None
+#     sibling_list = sorted(sibling_list, key=lambda x: x.name)
+#     if len(sibling_list) > 1:
+#         sibling_node = sibling_list.index(bone)
+#         next_sibling_node = sibling_node + 1
+#         if next_sibling_node >= len(sibling_list):
+#             set_sibling = None
 
-        else:
-            if armature:
-                set_sibling = armature.data.bones['%s' % sibling_list[next_sibling_node].name]
+#         else:
+#             if armature:
+#                 set_sibling = armature.data.bones['%s' % sibling_list[next_sibling_node].name]
 
-            else:
-                set_sibling = bpy.data.objects['%s' % sibling_list[next_sibling_node].name]
+#             else:
+#                 set_sibling = bpy.data.objects['%s' % sibling_list[next_sibling_node].name]
 
-    return set_sibling
+#     return set_sibling
 
-def bone_sort_by_layer(node_list, armature):
-    layer_count = []
-    layer_root = []
-    root_list = []
-    children_list = []
-    reversed_children_list = []
-    joined_list = []
-    reversed_joined_list = []
-    sort_list = []
-    reversed_sort_list = []
-    for node in node_list:
-        if node.parent == None and not node.name[0:1] == '!' or node.parent.name[0:1] == '!' and node.parent.parent == None:
-            layer_count.append(None)
-            layer_root.append(node)
+# def bone_sort_by_layer(node_list, armature):
+#     layer_count = []
+#     layer_root = []
+#     root_list = []
+#     children_list = []
+#     reversed_children_list = []
+#     joined_list = []
+#     reversed_joined_list = []
+#     sort_list = []
+#     reversed_sort_list = []
+#     for node in node_list:
+#         if node.parent == None and not node.name[0:1] == '!' or node.parent.name[0:1] == '!' and node.parent.parent == None:
+#             layer_count.append(None)
+#             layer_root.append(node)
 
-        else:
-            if not node.parent in layer_count:
-                layer_count.append(node.parent)
+#         else:
+#             if not node.parent in layer_count:
+#                 layer_count.append(node.parent)
 
-    for layer in layer_count:
-        joined_list = root_list + children_list
-        reversed_joined_list = root_list + reversed_children_list
-        layer_index = layer_count.index(layer)
-        if layer_index == 0:
-            if armature:
-                root_list.append(armature.data.bones[0])
+#     for layer in layer_count:
+#         joined_list = root_list + children_list
+#         reversed_joined_list = root_list + reversed_children_list
+#         layer_index = layer_count.index(layer)
+#         if layer_index == 0:
+#             if armature:
+#                 root_list.append(armature.data.bones[0])
 
-            else:
-                root_list.append(layer_root[0])
+#             else:
+#                 root_list.append(layer_root[0])
 
-        else:
-            for node in node_list:
-                if armature:
-                    if node.parent != None:
-                        if armature.data.bones['%s' % node.parent.name] in joined_list and not node in children_list:
-                            sort_list.append(node.name)
-                            reversed_sort_list.append(node.name)
+#         else:
+#             for node in node_list:
+#                 if armature:
+#                     if node.parent != None:
+#                         if armature.data.bones['%s' % node.parent.name] in joined_list and not node in children_list:
+#                             sort_list.append(node.name)
+#                             reversed_sort_list.append(node.name)
 
-                else:
-                    if node.parent != None:
-                        if node.parent in joined_list and not node in children_list:
-                            sort_list.append(node.name)
-                            reversed_sort_list.append(node.name)
+#                 else:
+#                     if node.parent != None:
+#                         if node.parent in joined_list and not node in children_list:
+#                             sort_list.append(node.name)
+#                             reversed_sort_list.append(node.name)
 
-            sort_list.sort()
-            reversed_sort_list.sort()
-            # reversed_sort_list.reverse()
-            for sort in sort_list:
-                if armature:
-                    if not armature.data.bones['%s' % sort] in children_list:
-                        children_list.append(armature.data.bones['%s' % sort])
+#             sort_list.sort()
+#             reversed_sort_list.sort()
+#             # reversed_sort_list.reverse()
+#             for sort in sort_list:
+#                 if armature:
+#                     if not armature.data.bones['%s' % sort] in children_list:
+#                         children_list.append(armature.data.bones['%s' % sort])
 
-                else:
-                    if not bpy.data.objects[sort] in children_list:
-                        children_list.append(bpy.data.objects[sort])
+#                 else:
+#                     if not bpy.data.objects[sort] in children_list:
+#                         children_list.append(bpy.data.objects[sort])
 
-            for sort in reversed_sort_list:
-                if armature:
-                    if not armature.data.bones['%s' % sort] in reversed_children_list:
-                        reversed_children_list.append(armature.data.bones['%s' % sort])
+#             for sort in reversed_sort_list:
+#                 if armature:
+#                     if not armature.data.bones['%s' % sort] in reversed_children_list:
+#                         reversed_children_list.append(armature.data.bones['%s' % sort])
 
-                else:
-                    if not bpy.data.objects[sort] in reversed_children_list:
-                        reversed_children_list.append(bpy.data.objects[sort])
+#                 else:
+#                     if not bpy.data.objects[sort] in reversed_children_list:
+#                         reversed_children_list.append(bpy.data.objects[sort])
 
-        joined_list = root_list + children_list
-        reversed_joined_list = root_list + reversed_children_list
+#         joined_list = root_list + children_list
+#         reversed_joined_list = root_list + reversed_children_list
 
-    return (joined_list, reversed_joined_list)
+#     return (joined_list, reversed_joined_list)
 
 def SetBoneJSONValues(bones):
     print('tbd')

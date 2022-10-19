@@ -24,6 +24,7 @@
 #
 # ##### END MIT LICENSE BLOCK #####
 
+from typing import final
 import bpy
 from os.path import exists
 import os
@@ -104,6 +105,9 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
 
     from .export_gr2 import export_gr2
 
+    reports = []
+    gr2_count = 0
+
     if(CheckPath(filepath)): # check the user is saving the file to a location in their editing kit data directory
         if sidecar_type != 'MODEL' or (sidecar_type == 'MODEL' and(
                                                                     output_biped or
@@ -139,6 +143,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                     else:
                                         export_fbx(self, context, **keywords)
                                     export_gr2(self, context, report, asset_path, asset, IsWindows(), 'render', halo_objects, '', perm, model_armature, skeleton_bones, **keywords)
+                                    gr2_count += 1
 
                     if export_collision:
                         perm_list = []
@@ -155,6 +160,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                     else:
                                         export_fbx(self, context, **keywords)
                                     export_gr2(self, context, report, asset_path, asset, IsWindows(), 'collision', halo_objects, '', perm, model_armature, skeleton_bones, **keywords)
+                                    gr2_count += 1
 
                     if export_physics:
                         perm_list = []
@@ -171,6 +177,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                     else:
                                         export_fbx(self, context, **keywords)
                                     export_gr2(self, context, report, asset_path, asset, IsWindows(), 'physics', halo_objects, '', perm, model_armature, skeleton_bones, **keywords)
+                                    gr2_count += 1
 
                     if export_markers:
                         if SelectModelObjectNoPerm(halo_objects.markers, model_armature, export_hidden):
@@ -182,6 +189,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                             else:
                                 export_fbx(self, context, **keywords)
                             export_gr2(self, context, report, asset_path, asset, IsWindows(), 'markers', halo_objects, '', '', model_armature, skeleton_bones, **keywords)
+                            gr2_count += 1
 
                     if SelectModelSkeleton(model_armature):
                         if using_better_fbx:
@@ -192,6 +200,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                         else:
                             export_fbx(self, context, **keywords)
                         export_gr2(self, context, report, asset_path, asset, IsWindows(), 'skeleton', halo_objects, '', '', model_armature, skeleton_bones, **keywords)
+                        gr2_count += 1
 
                     if export_animations and 1<=len(bpy.data.actions):
                         if SelectModelSkeleton(model_armature):
@@ -213,6 +222,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                     else:
                                         export_fbx(self, context, **keywords)
                                     export_gr2(self, context, report, asset_path, asset, IsWindows(), 'animations', halo_objects, '', '', model_armature, skeleton_bones, **keywords)
+                                    gr2_count += 1
                                 except:
                                     print('Encountered animation not in armature, skipping export of animation: ' + action.name)
                             
@@ -221,11 +231,11 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                     bsp_list = []
                     shared_bsp_exists = False
 
-                    for ob in bpy.data.objects:
+                    for ob in context.scene.objects:
                         if not ob.halo_json.bsp_shared and (ob.halo_json.bsp_index not in bsp_list):
                             bsp_list.append(ob.halo_json.bsp_index)
 
-                    for ob in bpy.data.objects:
+                    for ob in context.scene.objects:
                         if ob.halo_json.bsp_shared:
                             shared_bsp_exists = True
                             break
@@ -247,6 +257,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                             else:
                                                 export_fbx(self, context, **keywords)
                                             export_gr2(self, context, report, asset_path, asset, IsWindows(), 'bsp', halo_objects, "{0:03}".format(bsp), perm, **keywords)
+                                            gr2_count += 1
 
                             if export_poops:
                                 perm_list = []
@@ -263,6 +274,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                             else:
                                                 export_fbx(self, context, **keywords)
                                             export_gr2(self, context, report, asset_path, asset, IsWindows(), 'poops', halo_objects, "{0:03}".format(bsp), perm, **keywords)
+                                            gr2_count += 1
 
                             if export_markers:
                                 perm_list = []
@@ -279,6 +291,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                             else:
                                                 export_fbx(self, context, **keywords)
                                             export_gr2(self, context, report, asset_path, asset, IsWindows(), 'markers', halo_objects, "{0:03}".format(bsp), perm, **keywords)
+                                            gr2_count += 1
 
                             if export_lights:
                                 perm_list = []
@@ -295,6 +308,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                             else:
                                                 export_fbx(self, context, **keywords)
                                             export_gr2(self, context, report, asset_path, asset, IsWindows(), 'lights', halo_objects, "{0:03}".format(bsp), perm, **keywords)
+                                            gr2_count += 1
 
                             if export_portals:
                                 perm_list = []
@@ -311,6 +325,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                             else:
                                                 export_fbx(self, context, **keywords)
                                             export_gr2(self, context, report, asset_path, asset, IsWindows(), 'portals', halo_objects, "{0:03}".format(bsp), perm, **keywords)
+                                            gr2_count += 1
 
                             if export_seams:
                                 perm_list = []
@@ -327,6 +342,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                             else:
                                                 export_fbx(self, context, **keywords)
                                             export_gr2(self, context, report, asset_path, asset, IsWindows(), 'seams', halo_objects, "{0:03}".format(bsp), perm, **keywords)
+                                            gr2_count += 1
 
                             if export_water_surfaces:
                                 perm_list = []
@@ -343,6 +359,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                             else:
                                                 export_fbx(self, context, **keywords)
                                             export_gr2(self, context, report, asset_path, asset, IsWindows(), 'water', halo_objects, "{0:03}".format(bsp), perm, **keywords)
+                                            gr2_count += 1
 
                             if export_fog_planes:
                                 perm_list = []
@@ -359,6 +376,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                             else:
                                                 export_fbx(self, context, **keywords)
                                             export_gr2(self, context, report, asset_path, asset, IsWindows(), 'fog', halo_objects, "{0:03}".format(bsp), perm, **keywords)
+                                            gr2_count += 1
 
                             if export_lightmap_regions:
                                 perm_list = []
@@ -375,6 +393,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                             else:
                                                 export_fbx(self, context, **keywords)
                                             export_gr2(self, context, report, asset_path, asset, IsWindows(), 'lightmap_region', halo_objects, "{0:03}".format(bsp), perm, **keywords)
+                                            gr2_count += 1
 
                             if export_boundary_surfaces:
                                 perm_list = []
@@ -391,6 +410,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                             else:
                                                 export_fbx(self, context, **keywords)
                                             export_gr2(self, context, report, asset_path, asset, IsWindows(), 'design', halo_objects, "{0:03}".format(bsp), perm, **keywords)
+                                            gr2_count += 1
 
                             if export_water_physics:
                                 perm_list = []
@@ -407,6 +427,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                             else:
                                                 export_fbx(self, context, **keywords)
                                             export_gr2(self, context, report, asset_path, asset, IsWindows(), 'water_physics', halo_objects, "{0:03}".format(bsp), perm, **keywords)
+                                            gr2_count += 1
 
                             if export_rain_occluders:
                                 perm_list = []
@@ -423,6 +444,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                             else:
                                                 export_fbx(self, context, **keywords)
                                             export_gr2(self, context, report, asset_path, asset, IsWindows(), 'rain_blockers', halo_objects, "{0:03}".format(bsp), perm, **keywords)
+                                            gr2_count += 1
 
 
 
@@ -446,6 +468,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                         else:
                                             export_fbx(self, context, **keywords)
                                         export_gr2(self, context, report, asset_path, asset, IsWindows(), 'bsp', halo_objects, 'shared', perm, **keywords)
+                                        gr2_count += 1
 
                         if export_poops:
                             perm_list = []
@@ -462,6 +485,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                         else:
                                             export_fbx(self, context, **keywords)
                                         export_gr2(self, context, report, asset_path, asset, IsWindows(), 'poops', halo_objects, 'shared', perm, **keywords)
+                                        gr2_count += 1
 
                         if export_markers:
                             perm_list = []
@@ -478,6 +502,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                         else:
                                             export_fbx(self, context, **keywords)
                                         export_gr2(self, context, report, asset_path, asset, IsWindows(), 'markers', halo_objects, 'shared', perm, **keywords)
+                                        gr2_count += 1
                                     
                         if export_lights:
                             perm_list = []
@@ -494,6 +519,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                         else:
                                             export_fbx(self, context, **keywords)
                                         export_gr2(self, context, report, asset_path, asset, IsWindows(), 'lights', halo_objects, 'shared', perm, **keywords)
+                                        gr2_count += 1
 
                         if export_portals:
                             perm_list = []
@@ -510,6 +536,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                         else:
                                             export_fbx(self, context, **keywords)
                                         export_gr2(self, context, report, asset_path, asset, IsWindows(), 'portals', halo_objects, 'shared', perm, **keywords)
+                                        gr2_count += 1
 
                         if export_seams:
                             perm_list = []
@@ -526,6 +553,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                         else:
                                             export_fbx(self, context, **keywords)
                                         export_gr2(self, context, report, asset_path, asset, IsWindows(), 'seams', halo_objects, 'shared', perm, **keywords)
+                                        gr2_count += 1
 
                         if export_water_surfaces:
                             perm_list = []
@@ -542,6 +570,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                         else:
                                             export_fbx(self, context, **keywords)
                                         export_gr2(self, context, report, asset_path, asset, IsWindows(), 'water', halo_objects, 'shared', perm, **keywords)
+                                        gr2_count += 1
 
                         if export_lightmap_regions:
                             perm_list = []
@@ -558,6 +587,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                         else:
                                             export_fbx(self, context, **keywords)
                                         export_gr2(self, context, report, asset_path, asset, IsWindows(), 'lightmap_region', halo_objects, 'shared', perm, **keywords)
+                                        gr2_count += 1
 
                             if export_fog_planes:
                                 perm_list = []
@@ -574,6 +604,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                             else:
                                                 export_fbx(self, context, **keywords)
                                             export_gr2(self, context, report, asset_path, asset, IsWindows(), 'fog', halo_objects, 'shared', perm, **keywords)
+                                            gr2_count += 1
 
                             if export_cookie_cutters:
                                 perm_list = []
@@ -590,6 +621,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                             else:
                                                 export_fbx(self, context, **keywords)
                                             export_gr2(self, context, report, asset_path, asset, IsWindows(), 'cookie_cutters', halo_objects, 'shared', perm, **keywords)
+                                            gr2_count += 1
 
                         if export_boundary_surfaces:
                             perm_list = []
@@ -606,6 +638,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                         else:
                                             export_fbx(self, context, **keywords)
                                         export_gr2(self, context, report, asset_path, asset, IsWindows(), 'design', halo_objects, 'shared', perm, **keywords)
+                                        gr2_count += 1
 
                         if export_water_physics:
                             perm_list = []
@@ -622,6 +655,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                         else:
                                             export_fbx(self, context, **keywords)
                                         export_gr2(self, context, report, asset_path, asset, IsWindows(), 'water_physics', halo_objects, 'shared', perm, **keywords)
+                                        gr2_count += 1
 
                         if export_rain_occluders:
                             perm_list = []
@@ -638,6 +672,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                         else:
                                             export_fbx(self, context, **keywords)
                                         export_gr2(self, context, report, asset_path, asset, IsWindows(), 'rain_blockers', halo_objects, 'shared', perm, **keywords)
+                                        gr2_count += 1
 
                 elif sidecar_type == 'SKY':
                     if export_render:
@@ -655,6 +690,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                     else:
                                         export_fbx(self, context, **keywords)
                                     export_gr2(self, context, report, asset_path, asset, IsWindows(), 'render', halo_objects, '', perm, model_armature, skeleton_bones, **keywords)
+                                    gr2_count += 1
 
                 elif sidecar_type == 'DECORATOR SET': 
                     if export_render:
@@ -667,6 +703,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                             else:
                                 export_fbx(self, context, **keywords)
                             export_gr2(self, context, report, asset_path, asset, IsWindows(), 'render', halo_objects, '', 'default', model_armature, skeleton_bones, **keywords)
+                            gr2_count += 1
 
                 else: # for particles
                     if export_render:
@@ -679,7 +716,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                             else:
                                 export_fbx(self, context, **keywords)
                             export_gr2(self, context, report, asset_path, asset, IsWindows(), 'particle_model', halo_objects, '', 'default', model_armature, skeleton_bones, **keywords)
-
+                            gr2_count += 1
             else:
                 if using_better_fbx:
                     export_better_fbx(context, False, **keywords)
@@ -688,15 +725,22 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                 export_gr2(self, context, report, asset_path, asset, IsWindows(), 'selected', **keywords)
 
             
+            reports.append('Exported ' + str(gr2_count) + ' GR2 Files')
             if(IsWindows()):
                 if export_sidecar_xml:
                     from .export_sidecar import export_sidecar
                     export_sidecar(self, context, report, asset_path, halo_objects, model_armature, lod_count, **keywords)
+                    # TODO return sidecar type for info reporting
+                    reports.append('Built ' + sidecar_type + ' Sidecar')
                 from .import_sidecar import import_sidecar
                 import_sidecar(self, context, report, **keywords)
+                # TODO we can't tell if a new file is created or not. remove check for this in function. Just report that import was processed
+                reports.append('Tag Import Processed')
                 if lightmap_structure and not skip_lightmapper:
                     from .run_lightmapper import run_lightmapper
                     run_lightmapper(self, context, report, **keywords)
+                    # TODO report quality of lightmap processed
+                    reports.append('Processed a Lightmap on ' + lightmap_quality + ' Quality')
                 if import_bitmaps:
                     print("Temporary implementation, remove this later!")
                     #import_bitmap.save(self, context, report, **keywords)
@@ -712,6 +756,14 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
             ctypes.windll.user32.MessageBoxW(0, "Invalid Editing Kit path. Please check your editing kit path in add-on preferences and try again.", "INVALID EK PATH", 0)
         else:
             ctypes.windll.user32.MessageBoxW(0, "The selected export folder is invalid, please select one within the data folder of your HEK tools.", "INVALID EXPORT PATH", 0)
+    
+    final_report = ''
+    for idx, r in enumerate(reports):
+        final_report = final_report + r
+        if idx + 1 < len(reports):
+            final_report = final_report + ' | '
+
+    report({'INFO'},final_report)
 
 #####################################################################################
 #####################################################################################

@@ -233,7 +233,7 @@ def WriteFaceCollections(metadata, sidecar_type): # FaceCollections is where reg
             ET.SubElement(FaceCollectionsEntries, "FaceCollectionEntry", Index="0", Name="default", Active="true")
 
             count = 1
-            for ob in bpy.data.objects:
+            for ob in bpy.context.scene.objects:
                 region = ob.halo_json.Region_Name
                 if region not in region_list:
                     ET.SubElement(FaceCollectionsEntries, "FaceCollectionEntry", Index=str(count), Name=region, Active="true")
@@ -247,7 +247,7 @@ def WriteFaceCollections(metadata, sidecar_type): # FaceCollections is where reg
             ET.SubElement(FaceCollectionsEntries2, "FaceCollectionEntry", Index="0", Name="default", Active="true")
 
             count = 1
-            for ob in bpy.data.objects:
+            for ob in bpy.context.scene.objects:
                 material = ob.halo_json.Face_Global_Material
                 if material not in mat_list:
                         ET.SubElement(FaceCollectionsEntries2, "FaceCollectionEntry", Index=str(count), Name=material, Active="true")
@@ -375,11 +375,11 @@ def WriteScenarioContents(halo_objects, metadata, asset_path, asset_name):
         bsp_list = []
         shared_bsp_exists = False
 
-        for ob in bpy.data.objects:
+        for ob in bpy.context.scene.objects:
             if not ob.halo_json.bsp_shared and (ob.halo_json.bsp_index not in bsp_list):
                 bsp_list.append(ob.halo_json.bsp_index)
 
-        for ob in bpy.data.objects:
+        for ob in bpy.context.scene.objects:
             if ob.halo_json.bsp_shared:
                 shared_bsp_exists = True
                 break
@@ -575,11 +575,11 @@ def WriteScenarioContents(halo_objects, metadata, asset_path, asset_name):
         bsp_list = []
         shared_bsp_exists = False
 
-        for ob in bpy.data.objects:
+        for ob in bpy.context.scene.objects:
             if not ob.halo_json.bsp_shared and (ob.halo_json.bsp_index not in bsp_list) and (sel_logic.ObBoundarys(ob) or sel_logic.ObWaterPhysics(ob) or sel_logic.ObPoopRains(ob) or sel_logic.ObFog(ob)):
                 bsp_list.append(ob.halo_json.bsp_index)
 
-        for ob in bpy.data.objects:
+        for ob in bpy.context.scene.objects:
             if ob.halo_json.bsp_shared:
                 shared_bsp_exists = True
                 break
@@ -704,15 +704,6 @@ def WriteSkyContents(halo_objects, metadata, asset_path, asset_name):
             ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, 'render', ob.halo_json.Permutation_Name)
             ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePath(asset_path, asset_name, 'render', ob.halo_json.Permutation_Name)
 
-    perm_list = []
-    for ob in halo_objects.lights:
-        perm = GetPerm(ob)
-        if (perm not in perm_list):
-            perm_list.append(perm)
-            network = ET.SubElement(object, 'ContentNetwork' ,Name=perm, Type="")
-            ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, 'lights', ob.halo_json.Permutation_Name)
-            ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePath(asset_path, asset_name, 'lights', ob.halo_json.Permutation_Name)
-
     output = ET.SubElement(object, 'OutputTagCollection')
     ET.SubElement(output, 'OutputTag', Type='render_model').text = asset_path + '\\' + asset_name
 
@@ -804,7 +795,7 @@ def GetIntermediateFilePath(asset_path, asset_name, type, perm=''):
 def SceneHasCollisionObject():
     boolean = False
 
-    for ob in bpy.data.objects:
+    for ob in bpy.context.scene.objects:
         if sel_logic.ObCollision(ob):
             boolean = True
             break
@@ -814,7 +805,7 @@ def SceneHasCollisionObject():
 def SceneHasPhysicsObject():
     boolean = False
 
-    for ob in bpy.data.objects:
+    for ob in bpy.context.scene.objects:
         if sel_logic.ObPhysics(ob):
             boolean = True
             break
@@ -824,7 +815,7 @@ def SceneHasPhysicsObject():
 def SceneHasMarkers():
     boolean = False
 
-    for ob in bpy.data.objects:
+    for ob in bpy.context.scene.objects:
         if sel_logic.ObMarkers(ob):
             boolean = True
             break

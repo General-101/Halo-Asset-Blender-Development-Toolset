@@ -102,7 +102,7 @@ def GetSceneMode(context):
 def UnhideObjects(export_hidden):
     hidden_objects = []
     if export_hidden:
-        for ob in tuple(bpy.data.scenes[0].view_layers[0].objects):
+        for ob in tuple(bpy.context.scene.view_layers[0].objects):
             if not ob.visible_get():
                 hidden_objects.append(ob)
         
@@ -165,7 +165,7 @@ def GetSceneArmature(context):
     model_armature = None
     temp_armature = False
     no_parent_objects = []
-    for ob in bpy.data.objects:
+    for ob in context.scene.objects:
         if ob.type == 'ARMATURE' and not ob.name.startswith('+'): # added a check for a '+' prefix in armature name, to support special animation control armatures in the future
             model_armature = ob
             break
@@ -181,7 +181,7 @@ def AddTempArmature(context):
     model_armature = context.view_layer.objects.active
     model_armature.data.bones[0].name = 'implied_root_node'
     no_parent_objects = []
-    for ob in bpy.data.objects:
+    for ob in context.scene.objects:
         if ob.parent == None:
             ob.select_set(True)
             no_parent_objects.append(ob)
@@ -198,7 +198,7 @@ def ParentToArmature(model_armature, temp_armature, no_parent_objects):
         SetActiveObject(model_armature)
         bpy.ops.object.parent_set(type='BONE', keep_transform=True)
     else:
-        for ob in bpy.data.objects:
+        for ob in bpy.context.scene.objects:
             if (ob.parent == model_armature and ob.parent_type == 'OBJECT') and not any(m != ' ARMATURE' for m in ob.modifiers):
                 DeselectAllObjects()
                 ob.select_set(True)
@@ -396,7 +396,7 @@ def FixMissingMaterials(context, halo_objects):
     mat_override = '+override'
     mat = ''
     # loop through each object in the scene
-    for ob in bpy.data.objects:
+    for ob in context.scene.objects:
         if IsMesh(ob): # check if we're processing a mesh
             # remove empty material slots
             for index, slot in enumerate(ob.material_slots.items()):

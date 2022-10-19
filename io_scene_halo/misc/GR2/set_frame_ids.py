@@ -54,7 +54,7 @@ def set_frame_ids(context, report):
     model_armature = GetArmature(context, report)
     frame_count = 0
     if model_armature != None:
-        framelist = ImportTagXML(GetToolPath())
+        framelist = ImportTagXML(GetToolPath(), context)
         if(not framelist == None):
             tag_bone_names = CleanBoneNames(framelist)
             blend_bone_names = CleanBones(model_armature.data.bones)
@@ -114,10 +114,10 @@ def CleanBoneName(bone):
 
     return cleaned_bone
 
-def ImportTagXML(toolPath):
+def ImportTagXML(toolPath, context):
     try:
         xmlPath = GetTagsPath() + "temp.xml"
-        tagPath = GetGraphPath()
+        tagPath = GetGraphPath(context)
         toolCommand = '"{}" export-tag-to-xml "{}" "{}"'.format(toolPath, tagPath, xmlPath)
         os.chdir(GetEKPath())
         p = Popen(toolCommand)
@@ -129,8 +129,8 @@ def ImportTagXML(toolPath):
         ctypes.windll.user32.MessageBoxW(0, "Tool.exe failed to get tag XML for FrameIDs. Please check the path to your .model_animation_graph tag.", "GET FRAMEIDS FAILED", 0)
         return None
 
-def GetGraphPath():
-    path = bpy.data.scenes[0].gr2_frame_ids.anim_tag_path
+def GetGraphPath(context):
+    path = context.scene.gr2_frame_ids.anim_tag_path
     # path cleaning
     path = path.strip('\\')
     path = path.replace(GetTagsPath(), '')
