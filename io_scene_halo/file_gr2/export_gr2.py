@@ -835,20 +835,18 @@ def export_asset(report, filePath="", keep_fbx=False, keep_json=False, asset_pat
             ctypes.windll.user32.MessageBoxW(0, "Tool.exe failed to export your GR2 file. Blender may need to be run as an Administrator or there may be an issue with your project settings.", "GR2 EXPORT FAILED", 0)
         
         if tag_type != 'selected':
-            move_assets(fileName, jsonPath, gr2Path, asset_path, "True" if not keep_fbx else "False", "True" if not keep_json else "False", tag_type)
+            move_assets(fileName, jsonPath, gr2Path, asset_path, keep_fbx, keep_json, tag_type)
         else:
-            CleanFiles(filePath, jsonPath, gr2Path, "True" if not keep_fbx else "False", "True" if not keep_json else "False")
+            CleanFiles(filePath, jsonPath, gr2Path)
 
         return {'FINISHED'}
     else:
         ctypes.windll.user32.MessageBoxW(0, "GR2 Not Created! Your current OS is not supported. The Halo tools only support Windows. FBX & JSON saved succesfully.", "OS NOT SUPPORTED", 0)
         return {'FINISHED'}
 
-def CleanFiles(filePath, jsonPath, gr2Path, fbx_crushed, json_binned):
-    if(fbx_crushed):
-        os.remove(filePath)
-    if(json_binned):
-        os.remove(jsonPath)
+def CleanFiles(filePath, jsonPath, gr2Path):
+    os.remove(filePath)
+    os.remove(jsonPath)
     os.remove(gr2Path)
 
 def rename_file(filePath, asset_name, tag_type, perm='', fileName=''):
@@ -876,29 +874,29 @@ def GetFileName(filePath, asset_name, tag_type, perm='', asset_path='', bsp=''):
 
     return name.replace(GetDataPath(), '')
 
-def move_assets(fileName, jsonPath, gr2Path, asset_path, fbx_crushed, json_binned, tag_type):
+def move_assets(fileName, jsonPath, gr2Path, asset_path, keep_fbx, keep_json, tag_type):
     if tag_type == 'animations':
-        if not file_exists(asset_path + "\\animations") and (not fbx_crushed or not json_binned):
+        if not file_exists(asset_path + "\\animations") and (keep_fbx or keep_json):
             os.makedirs(asset_path + "\\animations")
         if not file_exists(asset_path + "\\export\\animations"):
             os.makedirs(asset_path + "\\export\\animations")
-        if not fbx_crushed:
+        if keep_fbx:
             shutil.copy(fileName, asset_path + "\\animations")
-        if not json_binned:
+        if keep_json:
             shutil.copy(jsonPath, asset_path + "\\animations")
         shutil.copy(gr2Path, asset_path + "\\export\\animations")
     else: 
-        if not file_exists(asset_path + "\\models") and (not fbx_crushed or not json_binned):
+        if not file_exists(asset_path + "\\models") and (keep_fbx or keep_json):
             os.makedirs(asset_path + "\\models")
         if not file_exists(asset_path + "\\export\\models"):
             os.makedirs(asset_path + "\\export\\models")
-        if not fbx_crushed:
+        if keep_fbx:
             shutil.copy(fileName, asset_path + "\\models")
-        if not json_binned:
+        if keep_json:
             shutil.copy(jsonPath, asset_path + "\\models")
         shutil.copy(gr2Path, asset_path + "\\export\\models")
 
-    CleanFiles(fileName, jsonPath, gr2Path, True, True)
+    CleanFiles(fileName, jsonPath, gr2Path)
 
 def build_json(jsonPath, model_armature, boneslist, halo_objects):
     jsonTemp = {}
