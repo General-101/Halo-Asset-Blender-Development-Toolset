@@ -1448,8 +1448,8 @@ class JSON_ObjectMeshMaterialLightingProps(Panel):
 
         col.separator()
 
-        col.prop(ob_halo_json, "Material_Lighting_Attenuation_Cutoff", text='Attenuation Cutoff')
         col.prop(ob_halo_json, "Material_Lighting_Attenuation_Falloff", text='Attenuation Falloff')
+        col.prop(ob_halo_json, "Material_Lighting_Attenuation_Cutoff", text='Attenuation Cutoff')
 
         col.separator()
 
@@ -2707,13 +2707,17 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
     Material_Lighting_Attenuation_Cutoff: FloatProperty(
         name="Material Lighting Attenuation Cutoff",
         options=set(),
-        description="",
+        description="Determines how far light travels before it stops",
+        min=0,
+        default=200,
     )
 
     Material_Lighting_Attenuation_Falloff: FloatProperty(
         name="Material Lighting Attenuation Falloff",
         options=set(),
-        description="",
+        description="Determines how far light travels before its power begins to falloff",
+        min=0,
+        default=100,
     )
 
     Material_Lighting_Emissive_Focus: FloatProperty(
@@ -2743,6 +2747,8 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
         name="Material Lighting Emissive Quality",
         options=set(),
         description="",
+        min=0,
+        default=100,
     )
 
     Material_Lighting_Emissive_Quality: FloatProperty(
@@ -2750,6 +2756,7 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
         options=set(),
         description="",
         default=1,
+        min=0,
     )
 
     Material_Lighting_Use_Shader_Gel: BoolProperty(
@@ -2764,6 +2771,7 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
         options=set(),
         description="",
         default=1,
+        min=0,
     )
 
     #MARKER PROPERTIES

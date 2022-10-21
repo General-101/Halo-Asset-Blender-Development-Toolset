@@ -205,8 +205,9 @@ class GR2_ShaderFinder(Panel):
         col = flow.column()
         col = layout.column(heading="Shaders Directory")
         col.prop(scene_gr2_shader_finder, 'shaders_dir', text='')
+        col = layout.column(heading="Overwrite")
         sub = col.column(align=True)
-        sub.prop(scene_gr2_shader_finder, "overwrite_existing")
+        sub.prop(scene_gr2_shader_finder, "overwrite_existing", text='Paths')
         col = col.row()
         col.scale_y = 1.5
         col.operator('halo_gr2.shader_finder')
@@ -230,6 +231,7 @@ class GR2_HaloShaderFinderPropertiesGroup(PropertyGroup):
     )
     overwrite_existing: BoolProperty(
         name='Overwrite Shader Paths',
+        options=set(),
         description="Overwrite material shader paths even if they're not blank",
         default=False,
     )
@@ -254,10 +256,10 @@ class GR2_HaloExport(Panel):
         flow = layout.grid_flow(row_major=True, columns=0, even_columns=True, even_rows=False, align=False)
         col = flow.column()
         col.scale_y = 1.5
-        col.operator('halo_gr2.export', text='Export', icon='EXPORT')
+        col.operator('halo_gr2.export', text='Export', icon='SETTINGS') 
         if scene_gr2_halo_launcher.sidecar_path != '':
             col.separator()
-            col.operator('halo_gr2.export_quick', text='Quick Export', icon='EMPTY_SINGLE_ARROW')
+            col.operator('halo_gr2.export_quick', text='Quick Export', icon='EXPORT')
 
 class GR2_HaloExport_Export(Operator):
     bl_idname = 'halo_gr2.export'

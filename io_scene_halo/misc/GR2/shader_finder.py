@@ -53,11 +53,11 @@ def FindShaders(context, shaders_dir, report, overwrite):
         # loop through mats, find a matching shader, and apply it if the shader path field is empty
         for mat in materials:
             shader_path = FindShaderMatch(mat, shaders, GetTagsPath())
-            mat_path = mat.halo_json.shader_path
             # if we've found a shader path, and either overwrite shader path was set in the settings or the shader path field is empty, write the shader path.
-            if shader_path != '' and (overwrite or mat_path == ''):
-                mat_path = shader_path
-                update_count +=1
+            if shader_path != '':
+                if overwrite or mat.halo_json.shader_path == '':
+                    mat.halo_json.shader_path = shader_path
+                    update_count +=1
 
     report({'INFO'},"Updated " + str(update_count) + ' shader paths')
     return {'FINISHED'}

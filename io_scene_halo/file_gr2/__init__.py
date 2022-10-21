@@ -40,6 +40,7 @@ from bpy.props import StringProperty, BoolProperty, EnumProperty, FloatProperty,
 from bpy.types import Operator
 from addon_utils import check
 from os.path import exists as file_exists
+from os import path
 import ctypes
 
 lightmapper_run_once = False
@@ -458,6 +459,10 @@ class Export_Scene_GR2(Operator, ExportHelper):
         name='',
         default=False,
     )
+    export_gr2: BoolProperty(
+        name='Export GR2 Files',
+        default=True,
+    )
     # import_bitmaps: BoolProperty(
     #     name='Import Bitmaps',
     #     default=False,
@@ -480,7 +485,7 @@ class Export_Scene_GR2(Operator, ExportHelper):
         export_settings = []
         if sidecar_filepath != '' and file_exists(sidecar_filepath):
             export_settings = ExportSettingsFromSidecar(sidecar_filepath)
-            self.filepath = sidecar_filepath.rpartition('\\')[0] + '\\' + 'untitled.fbx'
+            self.filepath = path.join(sidecar_filepath.rpartition('\\')[0], 'untitled.fbx')
             print(self.filepath)
             # now apply settings
             match export_settings[0]:
@@ -544,12 +549,12 @@ class Export_Scene_GR2(Operator, ExportHelper):
         from .prepare_scene import prepare_scene
         (objects_selection, active_object, hidden_objects, mode, model_armature, temp_armature, asset_path, asset, skeleton_bones, halo_objects, timeline_start, timeline_end, lod_count, proxies
         ) = prepare_scene(context, self.report, **keywords) # prepares the scene for processing and returns information about the scene
-        # try:
-        from .process_scene import process_scene
-        process_scene(self, context, keywords, self.report, model_armature, asset_path, asset, skeleton_bones, halo_objects, timeline_start, timeline_end, lod_count, UsingBetterFBX(), skip_lightmapper, **keywords)
-        # except:
-        #     print('ASSERT: Scene processing failed')
-        #     self.report({'WARNING'},'ASSERT: Scene processing failed')
+        try:
+            from .process_scene import process_scene
+            process_scene(self, context, keywords, self.report, model_armature, asset_path, asset, skeleton_bones, halo_objects, timeline_start, timeline_end, lod_count, UsingBetterFBX(), skip_lightmapper, **keywords)
+        except Exception as error:
+            print('ASSERT: Scene processing failed')
+            self.report({'ERROR'}, error)
 
         from .repair_scene import repair_scene
         repair_scene(context, self.report, objects_selection, active_object, hidden_objects, mode, temp_armature, timeline_start, timeline_end, model_armature, halo_objects.lights, proxies, **keywords)
@@ -569,50 +574,53 @@ class Export_Scene_GR2(Operator, ExportHelper):
 
         col = box.column()
         col.prop(self, "game_version", text='Game Version')
-        col.prop(self, "export_method", text='Export Method')
+        #col.prop(self, "export_method", text='Export Method') # commented out 21.10.2022 - Selected mode is unsupported
         col.prop(self, "sidecar_type", text='Asset Type')
         col.prop(self, "show_output", text='Show Output')
-        sub = box.column(heading="Keep")
-        sub.prop(self, "keep_fbx")
-        sub.prop(self, "keep_json")
-        # EXPORT CATEGORIES #
+        # GR2 SETTINGS #
         box = layout.box()
-        box.label(text="Export Categories")
-        sub = box.column(heading="Export")
-        sub.prop(self, "export_hidden")
-        if self.sidecar_type == 'MODEL':
-            sub.prop(self, "export_animations")
-            sub.prop(self, "export_render")
-            sub.prop(self, "export_collision")
-            sub.prop(self, "export_physics")
-            sub.prop(self, "export_markers")
-        elif self.sidecar_type == 'SCENARIO':
-            sub.prop(self, "export_structure")
-            sub.prop(self, 'export_poops')
-            sub.prop(self, 'export_markers')
-            sub.prop(self, 'export_lights')
-            sub.prop(self, 'export_portals')
-            sub.prop(self, 'export_seams')
-            sub.prop(self, 'export_water_surfaces')
-            sub.prop(self, 'export_fog_planes')
-            sub.prop(self, 'export_cookie_cutters')
+        box.label(text="GR2 Settings")
+        col = box.column()
+        col.prop(self, "export_gr2", text='Export GR2 Files')
+        if self.export_gr2:
             col.separator()
-            sub.prop(self, "export_boundary_surfaces")
-            sub.prop(self, "export_water_physics")
-            sub.prop(self, "export_rain_occluders")
-            col.separator()
-            sub.prop(self, 'export_shared')
-            if not self.export_all_bsps:
-                sub.prop(self, 'export_specific_bsp')
-            sub.prop(self, 'export_all_bsps')
-        else:
-            sub.prop(self, "export_render")
-        if (self.sidecar_type not in ('DECORATOR SET', 'PARTICLE MODEL')):
-            col.separator()
-            if not self.export_all_perms:
-                sub.prop(self, 'export_specific_perm', text='Permutation')
-            sub.prop(self, 'export_all_perms', text='All Permutations')
-
+            sub = col.column(heading="Keep")
+            sub.prop(self, "keep_fbx")
+            sub.prop(self, "keep_json")
+            sub = col.column(heading="Export")
+            sub.prop(self, "export_hidden")
+            if self.sidecar_type == 'MODEL':
+                sub.prop(self, "export_animations")
+                sub.prop(self, "export_render")
+                sub.prop(self, "export_collision")
+                sub.prop(self, "export_physics")
+                sub.prop(self, "export_markers")
+            elif self.sidecar_type == 'SCENARIO':
+                sub.prop(self, "export_structure")
+                sub.prop(self, 'export_poops')
+                sub.prop(self, 'export_markers')
+                sub.prop(self, 'export_lights')
+                sub.prop(self, 'export_portals')
+                sub.prop(self, 'export_seams')
+                sub.prop(self, 'export_water_surfaces')
+                sub.prop(self, 'export_fog_planes')
+                sub.prop(self, 'export_cookie_cutters')
+                col.separator()
+                sub.prop(self, "export_boundary_surfaces")
+                sub.prop(self, "export_water_physics")
+                sub.prop(self, "export_rain_occluders")
+                col.separator()
+                sub.prop(self, 'export_shared')
+                if not self.export_all_bsps:
+                    sub.prop(self, 'export_specific_bsp')
+                sub.prop(self, 'export_all_bsps')
+            else:
+                sub.prop(self, "export_render")
+            if (self.sidecar_type not in ('DECORATOR SET', 'PARTICLE MODEL')):
+                col.separator()
+                if not self.export_all_perms:
+                    sub.prop(self, 'export_specific_perm', text='Permutation')
+                sub.prop(self, 'export_all_perms', text='All Permutations')
         # SIDECAR SETTINGS #
         box = layout.box()
         box.label(text="Sidecar Settings")

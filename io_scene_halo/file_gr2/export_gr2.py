@@ -28,6 +28,7 @@ import shutil
 import bpy
 import json
 import os
+from os import path
 from os.path import exists as file_exists
 import ctypes
 from subprocess import Popen
@@ -153,7 +154,7 @@ def getLightShape(shape):
         return '_connected_geometry_light_shape_rectangle'
 
 def getLightColor(red, green, blue):
-    color = str(1) + ' ' + str(round(red, 6)) + ' ' + str(round(green, 6)) + ' ' + str(round(blue, 6))
+    color = f'{str(1)} {str(round(red, 6))} {str(round(green, 6))} {str(round(blue, 6))}'
 
     return color
 
@@ -275,7 +276,7 @@ def getMarkerGroup(name):
     return group_name
 
 def getMarkerVelocity(x, y, z):
-    velocity = str(round(x, 6)) + ' ' + str(round(y, 6)) + ' ' + str(round(z, 6))
+    velocity = f'{str(round(x, 6))} {str(round(y, 6))} {str(round(z, 6))}'
 
     return velocity
 
@@ -615,7 +616,7 @@ def getSeamName(seam_name, name):
     return var[0:31]
 
 def getWaterFogColor(red, green, blue):
-    color = str(1) + ' ' + str(round(red, 6)) + ' ' + str(round(green, 6)) + ' ' + str(round(blue, 6))
+    color = f'{str(1)} {str(round(red, 6))} {str(round(green, 6))} {str(round(blue, 6))}'
 
     return color
 
@@ -809,8 +810,8 @@ def getMaterials():
 
 def export_asset(report, filePath="", keep_fbx=False, keep_json=False, asset_path="", asset_name="", tag_type='', perm='', is_windows=False, bsp='', model_armature='', boneslist={}, halo_objects=None):
     if tag_type != 'selected':
-        fileName = GetFileName(filePath, asset_name, tag_type, perm, asset_path, bsp)
-        rename_file(filePath, asset_name, tag_type, perm, fileName)
+        fileName = GetFileName(asset_name, tag_type, perm, asset_path, bsp)
+        rename_file(filePath, fileName)
     else:
         fileName = filePath
     pathList = fileName.split(".")
@@ -849,52 +850,54 @@ def CleanFiles(filePath, jsonPath, gr2Path):
     os.remove(jsonPath)
     os.remove(gr2Path)
 
-def rename_file(filePath, asset_name, tag_type, perm='', fileName=''):
+def rename_file(filePath, fileName=''):
     os.replace(filePath, fileName)
 
-def GetFileName(filePath, asset_name, tag_type, perm='', asset_path='', bsp=''):
+def GetFileName(asset_name, tag_type, perm='', asset_path='', bsp=''):
+    # use information about the file to determine its name
     if tag_type == 'animations':
         name = bpy.context.active_object.animation_data.action.name
         if name.rpartition('.')[0] != '':
             name = name.rpartition('.')[0]
-        name = asset_path + '\\' + name + '.fbx'
+        name = path.join(asset_path, name)
     elif tag_type == 'particle_model':
-        name = asset_path + '\\' + asset_name + '.fbx'
+        name = path.join(asset_path, asset_name)
     elif bsp == '':
         if perm != '' and perm != 'default':
-            name = asset_path + '\\' + asset_name + '_' + perm
-            name = name + '_' + tag_type + '.fbx'
+            name = f"{path.join(asset_path, asset_name, f'_{perm}')}_{tag_type}"
         else:
-            name = asset_path + '\\' + asset_name + '_' + tag_type + '.fbx'
+            name = f'{path.join(asset_path, asset_name)}_{tag_type}'
     else:
         if perm != '' and perm != 'default':
-            name = asset_path + '\\' + asset_name + '_' + bsp + '_' + tag_type + '_' + perm + '.fbx'
+            name = f'{path.join(asset_path, asset_name)}_{bsp}_{tag_type}_{perm}'
         else:
-            name = asset_path + '\\' + asset_name + '_' + bsp + '_' + tag_type + '.fbx'
-
-    return name.replace(GetDataPath(), '')
+            name = f'{path.join(asset_path, asset_name)}_{bsp}_{tag_type}'
+    # remove data path from name
+    name = name.replace(GetDataPath(), '')
+    # return the name with the fbx extension
+    return f'{name}.fbx'
 
 def move_assets(fileName, jsonPath, gr2Path, asset_path, keep_fbx, keep_json, tag_type):
     if tag_type == 'animations':
-        if not file_exists(asset_path + "\\animations") and (keep_fbx or keep_json):
-            os.makedirs(asset_path + "\\animations")
-        if not file_exists(asset_path + "\\export\\animations"):
-            os.makedirs(asset_path + "\\export\\animations")
+        if not file_exists(path.join(asset_path, 'animations')) and (keep_fbx or keep_json):
+            os.makedirs(path.join(asset_path, 'animations'))
+        if not file_exists(path.join(asset_path, 'export', 'animations')):
+            os.makedirs(path.join(asset_path, 'export', 'animations'))
         if keep_fbx:
-            shutil.copy(fileName, asset_path + "\\animations")
+            shutil.copy(fileName, path.join(asset_path, 'animations'))
         if keep_json:
-            shutil.copy(jsonPath, asset_path + "\\animations")
-        shutil.copy(gr2Path, asset_path + "\\export\\animations")
+            shutil.copy(jsonPath, path.join(asset_path, 'animations'))
+        shutil.copy(gr2Path, path.join(asset_path, 'export', 'animations'))
     else: 
-        if not file_exists(asset_path + "\\models") and (keep_fbx or keep_json):
-            os.makedirs(asset_path + "\\models")
-        if not file_exists(asset_path + "\\export\\models"):
-            os.makedirs(asset_path + "\\export\\models")
+        if not file_exists(path.join(asset_path, 'models')) and (keep_fbx or keep_json):
+            os.makedirs(path.join(asset_path, 'models'))
+        if not file_exists(path.join(asset_path, 'export', 'models')):
+            os.makedirs(path.join(asset_path, 'export', 'models'))
         if keep_fbx:
-            shutil.copy(fileName, asset_path + "\\models")
+            shutil.copy(fileName, path.join(asset_path, 'models'))
         if keep_json:
-            shutil.copy(jsonPath, asset_path + "\\models")
-        shutil.copy(gr2Path, asset_path + "\\export\\models")
+            shutil.copy(jsonPath, path.join(asset_path, 'models'))
+        shutil.copy(gr2Path, path.join(asset_path, 'export', 'models'))
 
     CleanFiles(fileName, jsonPath, gr2Path)
 
@@ -906,9 +909,8 @@ def build_json(jsonPath, model_armature, boneslist, halo_objects):
 
     haloJSON = json.dumps(jsonTemp, indent=4)
 
-    jsonFile = open(jsonPath, "w")
-    jsonFile.write(haloJSON)
-    jsonFile.close()
+    with open(jsonPath, 'w') as j:
+        j.write(haloJSON)
 
 def build_gr2(toolPath, filePath, jsonPath, gr2Path):
     try:            
