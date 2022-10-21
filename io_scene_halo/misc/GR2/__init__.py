@@ -34,6 +34,8 @@ from bpy.types import (
 
 from bpy.props import (
         StringProperty,
+        BoolProperty,
+        IntProperty,
         PointerProperty
         )
 
@@ -203,6 +205,8 @@ class GR2_ShaderFinder(Panel):
         col = flow.column()
         col = layout.column(heading="Shaders Directory")
         col.prop(scene_gr2_shader_finder, 'shaders_dir', text='')
+        sub = col.column(align=True)
+        sub.prop(scene_gr2_shader_finder, "overwrite_existing")
         col = col.row()
         col.scale_y = 1.5
         col.operator('halo_gr2.shader_finder')
@@ -216,13 +220,18 @@ class GR2_ShaderFinder_Find(Operator):
         scene = context.scene
         scene_gr2_shader_finder = scene.gr2_shader_finder
         from .shader_finder import FindShaders
-        return FindShaders(context, scene_gr2_shader_finder.shaders_dir, self.report)
+        return FindShaders(context, scene_gr2_shader_finder.shaders_dir, self.report, scene_gr2_shader_finder.overwrite_existing)
 
 class GR2_HaloShaderFinderPropertiesGroup(PropertyGroup):
     shaders_dir: StringProperty(
         name="Shaders Directory",
         description="Leave blank to search the entire tags folder for shaders or input a directory path to specify the folder (and sub-folders) to search for shaders",
         default='',
+    )
+    overwrite_existing: BoolProperty(
+        name='Overwrite Shader Paths',
+        description="Overwrite material shader paths even if they're not blank",
+        default=False,
     )
 
 #######################################
@@ -273,6 +282,149 @@ class GR2_HaloExportFinderPropertiesGroup(PropertyGroup):
         name="",
         description="",
         default='',
+    )
+    keep_fbx: BoolProperty( # not exposed for quick export
+        name="FBX",
+        description="Keep the source FBX file after GR2 conversion",
+        default=False,
+    )
+    keep_json: BoolProperty( # not exposed for quick export
+        name="JSON",
+        description="Keep the source JSON file after GR2 conversion",
+        default=False,
+    )
+    export_sidecar_xml: BoolProperty(
+        name="Build Sidecar",
+        description="",
+        default=True,
+    )
+    export_animations: BoolProperty(
+        name='Animations',
+        description='',
+        default=True,
+    )
+    export_render: BoolProperty(
+        name='Render Models',
+        description='',
+        default=True,
+    )
+    export_collision: BoolProperty(
+        name='Collision Models',
+        description='',
+        default=True,
+    )
+    export_physics: BoolProperty(
+        name='Physics Models',
+        description='',
+        default=True,
+    )
+    export_markers: BoolProperty(
+        name='Markers',
+        description='',
+        default=True,
+    )
+    export_structure: BoolProperty(
+        name='Structure',
+        description='',
+        default=True,
+    )
+    export_poops: BoolProperty(
+        name='Instanced Geometry',
+        description='',
+        default=True,
+    )
+    export_markers: BoolProperty(
+        name='Markers',
+        description='',
+        default=True,
+    )
+    export_lights: BoolProperty(
+        name='Lights',
+        description='',
+        default=True,
+    )
+    export_portals: BoolProperty(
+        name='Portals',
+        description='',
+        default=True,
+    )
+    export_seams: BoolProperty(
+        name='Seams',
+        description='',
+        default=True,
+    )
+    export_water_surfaces: BoolProperty(
+        name='Water Surfaces',
+        description='',
+        default=True,
+    )
+    export_fog_planes: BoolProperty(
+        name='Fog Planes',
+        description='',
+        default=True,
+    )
+    export_cookie_cutters: BoolProperty(
+        name='Cookie Cutters',
+        description='',
+        default=True,
+    )
+    export_lightmap_regions: BoolProperty(
+        name='Lightmap Regions',
+        description='',
+        default=True,
+    )
+    export_boundary_surfaces: BoolProperty(
+        name='Boundary Surfaces',
+        description='',
+        default=True,
+    )
+    export_water_physics: BoolProperty(
+        name='Water Physics',
+        description='',
+        default=True,
+    )
+    export_rain_occluders: BoolProperty(
+        name='Rain Occluders',
+        description='',
+        default=True,
+    )
+    export_shared: BoolProperty(
+        name='Shared',
+        description='Export geometry which is shared across all BSPs',
+        default=True,
+    )
+    export_all_bsps: BoolProperty(
+        name='All BSPs',
+        description='',
+        default=True,
+    )
+    export_specific_bsp: IntProperty(
+        name='BSP',
+        description='',
+        default=0,
+        min=0,
+        max=99,
+        step=5,
+    )
+    export_all_perms: BoolProperty(
+        name='All Permutations',
+        description='',
+        default=True,
+    )
+    export_specific_perm: StringProperty(
+        name='Permutation',
+        description='Limited exporting to the named permutation only. Must match case',
+        default='',
+    )
+    import_to_game: BoolProperty(
+        name='Import to Game',
+        description='',
+        default=True,
+    )
+    import_draft: BoolProperty(
+        name='Draft',
+        description="Skip generating PRT data. Faster speed, lower quality",
+        default=False,
     )
 
 classeshalo = (
