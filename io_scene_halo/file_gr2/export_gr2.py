@@ -864,7 +864,7 @@ def GetFileName(asset_name, tag_type, perm='', asset_path='', bsp=''):
         name = path.join(asset_path, asset_name)
     elif bsp == '':
         if perm != '' and perm != 'default':
-            name = f"{path.join(asset_path, asset_name, f'_{perm}')}_{tag_type}"
+            name = f"{path.join(asset_path, asset_name)}_{perm}_{tag_type}"
         else:
             name = f'{path.join(asset_path, asset_name)}_{tag_type}'
     else:
