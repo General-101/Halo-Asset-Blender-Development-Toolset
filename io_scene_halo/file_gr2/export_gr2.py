@@ -755,6 +755,8 @@ def getMaterials():
                             shaderPath = 'softKill'
                         elif halo_material_name.lower().startswith('+weatherpoly') or halo_material.material_override == 'WEATHERPOLY':
                             shaderPath = 'bungie_face_type=_connected_geometry_face_type_weather_polyhedra'
+                        else:
+                            shaderPath = 'Volume'
 
                     else:
                         if '.' in halo_material.shader_path:

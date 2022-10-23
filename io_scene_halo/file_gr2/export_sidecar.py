@@ -375,7 +375,7 @@ def WriteModelContents(halo_objects, model_armature, metadata, asset_path, asset
         ET.SubElement(output, 'OutputTag', Type='model_animation_graph').text = asset_path + '\\' + asset_name
 
 def WriteScenarioContents(halo_objects, metadata, asset_path, asset_name):
-    contents = ET.SubElement(metadata, "Contents", BuiltByImportFarm="True")
+    contents = ET.SubElement(metadata, "Contents")
     ##### STRUCTURE #####
     if SceneHasBSP(halo_objects):
         bsp_list = []
@@ -447,7 +447,7 @@ def WriteScenarioContents(halo_objects, metadata, asset_path, asset_name):
                     if (perm not in shared_lightmap_perm):
                         shared_lightmap_perm.append(perm)
 
-        for bsp in bsp_list:
+        for bsp in reversed(bsp_list):
             content = ET.SubElement(contents, "Content", Name=asset_name + '_' + "{0:03}".format(bsp), Type='bsp', BspErrorPolicy='auto_generated_physics')
             object = ET.SubElement(content, 'ContentObject', Name='', Type="scenario_structure_bsp")
             structure_perm = []
@@ -459,49 +459,49 @@ def WriteScenarioContents(halo_objects, metadata, asset_path, asset_name):
             water_perm = []
             lightmap_perm = []
             for ob in halo_objects.structure:
-                if ob.halo_json.bsp_index == bsp:
+                if ob.halo_json.bsp_index == bsp and not ob.halo_json.bsp_shared:
                     perm = GetPerm(ob)
                     if (perm not in structure_perm):
                         structure_perm.append(perm)
 
             for ob in halo_objects.poops:
-                if ob.halo_json.bsp_index == bsp:
+                if ob.halo_json.bsp_index == bsp and not ob.halo_json.bsp_shared:
                     perm = GetPerm(ob)
                     if (perm not in poop_perm):
                         poop_perm.append(perm)
 
             for ob in halo_objects.markers:
-                if ob.halo_json.bsp_index == bsp:
+                if ob.halo_json.bsp_index == bsp and not ob.halo_json.bsp_shared:
                     perm = GetPerm(ob)
                     if (perm not in marker_perm):
                         marker_perm.append(perm)
 
             for ob in halo_objects.lights:
-                if ob.halo_json.bsp_index == bsp:
+                if ob.halo_json.bsp_index == bsp and not ob.halo_json.bsp_shared:
                     perm = GetPerm(ob)
                     if (perm not in light_perm):
                         light_perm.append(perm)
 
             for ob in halo_objects.portals:
-                if ob.halo_json.bsp_index == bsp:
+                if ob.halo_json.bsp_index == bsp and not ob.halo_json.bsp_shared:
                     perm = GetPerm(ob)
                     if (perm not in portal_perm):
                         portal_perm.append(perm)
 
             for ob in halo_objects.seams:
-                if ob.halo_json.bsp_index == bsp:
+                if ob.halo_json.bsp_index == bsp and not ob.halo_json.bsp_shared:
                     perm = GetPerm(ob)
                     if (perm not in seam_perm):
                         seam_perm.append(perm)
 
             for ob in halo_objects.water_surfaces:
-                if ob.halo_json.bsp_index == bsp:
+                if ob.halo_json.bsp_index == bsp and not ob.halo_json.bsp_shared:
                     perm = GetPerm(ob)
                     if (perm not in water_perm):
                         water_perm.append(perm)
 
             for ob in halo_objects.lightmap_regions:
-                if ob.halo_json.bsp_index == bsp:
+                if ob.halo_json.bsp_index == bsp and not ob.halo_json.bsp_shared:
                     perm = GetPerm(ob)
                     if (perm not in lightmap_perm):
                         lightmap_perm.append(perm)
@@ -630,25 +630,25 @@ def WriteScenarioContents(halo_objects, metadata, asset_path, asset_name):
             fog_perm = []
 
             for ob in halo_objects.boundary_surfaces:
-                if ob.halo_json.bsp_index == bsp:
+                if ob.halo_json.bsp_index == bsp and not ob.halo_json.bsp_shared:
                     perm = GetPerm(ob)
                     if (perm not in boundary_perm):
                         boundary_perm.append(perm)
 
             for ob in halo_objects.water_physics:
-                if ob.halo_json.bsp_index == bsp:
+                if ob.halo_json.bsp_index == bsp and not ob.halo_json.bsp_shared:
                     perm = GetPerm(ob)
                     if (perm not in water_physics_perm):
                         water_physics_perm.append(perm)
 
             for ob in halo_objects.rain_occluders:
-                if ob.halo_json.bsp_index == bsp:
+                if ob.halo_json.bsp_index == bsp and not ob.halo_json.bsp_shared:
                     perm = GetPerm(ob)
                     if (perm not in rain_perm):
                         rain_perm.append(perm)
 
             for ob in halo_objects.fog:
-                if ob.halo_json.bsp_index == bsp:
+                if ob.halo_json.bsp_index == bsp and not ob.halo_json.bsp_shared:
                     perm = GetPerm(ob)
                     if (perm not in fog_perm):
                         fog_perm.append(perm)

@@ -56,7 +56,7 @@ def lightmapper(report, filepath, lightmap_quality='DIRECT', lightmap_all_bsps='
 def GetBSPToLightmap(lightmap_all_bsps, lightmap_specific_bsp, asset_name):
     bsp = 'all'
     if not lightmap_all_bsps:
-        bsp = asset_name + '_' + "{0:03}".format(bsp)
+        bsp = asset_name + '_' + "{0:03}".format(lightmap_specific_bsp)
 
     return bsp
 

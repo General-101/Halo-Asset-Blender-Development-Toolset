@@ -1665,7 +1665,7 @@ class JSON_MaterialProps(Panel):
             material_halo_json = current_material.halo_json
             row = layout.row()
             col = layout.column(align=True)
-            if material_halo_json.material_override == 'NONE' and material_halo_json.material_override_locked == 'NONE':
+            if material_halo_json.material_override == 'NONE' and material_halo_json.material_override_locked == 'NONE' and not context.object.active_material.name.lower().startswith('+override'):
                 row.label(text="Shader Path")
                 col.prop(material_halo_json, "shader_path", text='')
 
@@ -1674,7 +1674,7 @@ class JSON_MaterialProps(Panel):
             flow = layout.grid_flow(row_major=True, columns=0, even_columns=True, even_rows=False, align=False)
             col = flow.column()
 
-            if material_halo_json.material_override != 'NONE' or material_halo_json.material_override_locked != 'NONE':
+            if material_halo_json.material_override != 'NONE' or material_halo_json.material_override_locked != 'NONE' or context.object.active_material.name.lower().startswith('+override'):
                 col.prop(material_halo_json, "Shader_Type_Override", text='Shader Type')
             else:
                 col.prop(material_halo_json, "Shader_Type", text='Shader Type')
