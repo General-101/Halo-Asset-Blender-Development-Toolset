@@ -48,7 +48,7 @@ def lightmapper(report, filepath, lightmap_quality='DIRECT', lightmap_all_bsps='
             report({'INFO'},"Lightmapping process complete")
 
         except:
-            report({'WARNING'},"Lightmapping process failed")
+            report({'WARNING'},"Lightmapping process failed. You may need to add python to your PATH")
     else:
         ctypes.windll.user32.MessageBoxW(0, 'Python could not be found on this PC! Make sure it is installed in order to continue lightmapping', 'Python Not Found', 0)
         report({'WARNING'},"Lightmapping process failed")

@@ -522,3 +522,9 @@ def SetBoneJSONValues(bones):
 #     ExportBSP,
 #     ResetPerm,
 # )
+
+
+######################################
+# MANAGER STUFF
+######################################
+

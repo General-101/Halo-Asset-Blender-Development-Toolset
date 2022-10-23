@@ -608,23 +608,6 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                             export_gr2(self, context, report, asset_path, asset, IsWindows(), 'fog', halo_objects, 'shared', perm, **keywords)
                                             gr2_count += 1
 
-                            if export_cookie_cutters:
-                                perm_list = []
-                                for ob in halo_objects.cookie_cutters:
-                                    perm = GetPerm(ob)
-                                    if perm not in perm_list:
-                                        perm_list.append(perm)
-                                        if SelectBSPObject(halo_objects.cookie_cutters, bsp, model_armature, True, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
-                                            if using_better_fbx:
-                                                obj_selection = [obj for obj in context.selected_objects]
-                                                export_better_fbx(context, False, **keywords)
-                                                for obj in obj_selection:
-                                                    obj.select_set(True)
-                                            else:
-                                                export_fbx(self, context, **keywords)
-                                            export_gr2(self, context, report, asset_path, asset, IsWindows(), 'cookie_cutters', halo_objects, 'shared', perm, **keywords)
-                                            gr2_count += 1
-
                         if export_boundary_surfaces:
                             perm_list = []
                             for ob in halo_objects.boundary_surfaces:

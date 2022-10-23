@@ -2128,14 +2128,17 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
                ]
         )
 
-    def disallow_default_as_string_region(self, context):
+    def disallow_default_and_update(self, context):
         if self.Region_Name == 'default':
             self.Region_Name = ''
+        scene = context.scene
+        scene_gr2 = scene.gr2
+        scene_gr2.region.add(self)
 
     Region_Name: StringProperty(
         name="Face Region",
         description="Define the name of the region these faces should be associated with",
-        update=disallow_default_as_string_region,
+        update=disallow_default_and_update,
     )
 
     def disallow_default_as_string_perm(self, context):

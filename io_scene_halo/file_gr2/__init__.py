@@ -43,6 +43,7 @@ from os.path import exists as file_exists
 from os import path
 import ctypes
 
+
 from io_scene_halo.gr2_utils import GetDataPath
 
 lightmapper_run_once = False
@@ -734,8 +735,9 @@ def ExportSettingsFromSidecar(sidecar_filepath):
 
 
     return settings
-
+##############################################
 # GR2 Scene Settings
+##############################################
 class GR2_SceneProps(Panel):
     bl_label = "GR2 Scene Properties"
     bl_idname = "GR2_PT_GameVersionPanel"
@@ -748,7 +750,7 @@ class GR2_SceneProps(Panel):
     def draw(self, context):
         layout = self.layout
 
-class GR2_UL_SceneProps_SharedAssets(UIList):
+class GR2_UL_SceneProps_RegionManager(UIList):
     use_name_reverse: bpy.props.BoolProperty(
         name="Reverse Name",
         default=False,
@@ -756,8 +758,6 @@ class GR2_UL_SceneProps_SharedAssets(UIList):
         description="Reverse name sort order",
     )
 
-    # This properties tells whether to sort the list according to
-    # the alphabetical order of the names.
     use_order_name: bpy.props.BoolProperty(
         name="Name",
         default=False,
@@ -765,14 +765,12 @@ class GR2_UL_SceneProps_SharedAssets(UIList):
         description="Sort groups by their name (case-insensitive)",
     )
 
-    # This property is the value for a simple name filter.
     filter_string: bpy.props.StringProperty(
         name="filter_string",
         default = "",
         description="Filter string for name"
     )
 
-    # This property tells whether to invert the simple name filter
     filter_invert: bpy.props.BoolProperty(
         name="Invert",
         default = False,
@@ -780,20 +778,10 @@ class GR2_UL_SceneProps_SharedAssets(UIList):
         description="Invert Filter"
     )
 
-    #-------------------------------------------------------------------------
-    # This function does two things, and as a result returns two arrays:
-    # flt_flags - this is the filtering array returned by the filter
-    #             part of the function. It has one element per item in the
-    #             list and is set or cleared based on whether the item
-    #             should be displayed.
-    # flt_neworder - this is the sorting array returned by the sorting
-    #             part of the function. It has one element per item
-    #             the item is the new position in order for the
-    #             item.
-    # The arrays must be the same length as the list of items or empty
+
     def filter_items(self, context,
-                    data, # Data from which to take Collection property
-                    property # Identifier of property in data, for the collection
+                    data, 
+                    property 
         ):
 
 
@@ -801,8 +789,6 @@ class GR2_UL_SceneProps_SharedAssets(UIList):
         if not len(items):
             return [], []
 
-        # https://docs.blender.org/api/current/bpy.types.UI_UL_list.html
-        # helper functions for handling UIList objects.
         if self.filter_string:
             flt_flags = bpy.types.UI_UL_list.filter_items_by_name(
                     self.filter_string,
@@ -813,8 +799,6 @@ class GR2_UL_SceneProps_SharedAssets(UIList):
         else:
             flt_flags = [self.bitflag_filter_item] * len(items)
 
-        # https://docs.blender.org/api/current/bpy.types.UI_UL_list.html
-        # helper functions for handling UIList objects.
         if self.use_order_name:
             flt_neworder = bpy.types.UI_UL_list.sort_items_by_name(items, "name")
             if self.use_name_reverse:
@@ -826,7 +810,222 @@ class GR2_UL_SceneProps_SharedAssets(UIList):
         return flt_flags, flt_neworder        
 
     def draw_filter(self, context,
-                    layout # Layout to draw the item
+                    layout
+        ):
+
+        row = layout.row(align=True)
+        row.prop(self, "filter_string", text="Filter", icon="VIEWZOOM")
+        row.prop(self, "filter_invert", text="", icon="ARROW_LEFTRIGHT")
+
+
+        row = layout.row(align=True)
+        row.label(text="Order by:")
+        row.prop(self, "use_order_name", toggle=True)
+
+        icon = 'TRIA_UP' if self.use_name_reverse else 'TRIA_DOWN'
+        row.prop(self, "use_name_reverse", text="", icon=icon)
+
+    def draw_item(self, context, layout, data, item, icon, active_data, active_propname):
+        scene = context.scene
+        scene_gr2 = scene.gr2
+        if self.layout_type in {'DEFAULT', 'COMPACT'}:
+            if scene:
+                layout.label(text=item.region_name, icon='BOOKMARKS')
+            else:
+                layout.label(text='')
+        elif self.layout_type == 'GRID':
+            layout.alignment = 'CENTER'
+            layout.label(text="", icon_value=icon)
+
+class GR2_List_Assign_Region(Operator):
+    """ Add an Item to the UIList"""
+    bl_idname = "gr2_region.assign"
+    bl_label = "Add"
+    bl_description = "Add a new shared asset (sidecar) to the list."
+    filename_ext = ''
+
+    filter_glob: StringProperty(
+        default="*.xml",
+        options={'HIDDEN'},
+        )
+
+    filepath: StringProperty(
+        name="Sidecar",
+        description="Set path for the Sidecar file",
+        subtype="FILE_PATH"
+    )
+
+    @classmethod
+    def poll(cls, context):
+        return context.scene
+    
+    def execute(self, context):
+        scene = context.scene
+        scene_gr2 = scene.gr2
+        scene_gr2.shared_assets.add()
+        
+        path = self.filepath
+        path = path.replace(GetDataPath(), '')
+        scene_gr2.shared_assets[-1].shared_asset_path = path
+        scene_gr2.shared_assets_index = len(scene_gr2.shared_assets) - 1
+        context.area.tag_redraw()
+        return {'FINISHED'}
+
+    def invoke(self, context, event):
+        context.window_manager.fileselect_add(self)
+
+        return {'RUNNING_MODAL'}
+
+class GR2_List_Remove_Region(Operator):
+    """ Remove an Item from the UIList"""
+    bl_idname = "gr2_shared_asset.list_remove"
+    bl_label = "Remove"
+    bl_description = "Remove a region from the list."
+
+    @classmethod
+    def poll(cls, context):
+        scene = context.scene
+        scene_gr2 = scene.gr2
+        return context.scene and len(scene_gr2.shared_assets) > 0
+    
+    def execute(self, context):
+        scene = context.scene
+        scene_gr2 = scene.gr2
+        index = scene_gr2.shared_assets_index
+        scene_gr2.shared_assets.remove(index)
+        return {'FINISHED'}
+
+class GR2_List_Select_Region(Operator):
+    """ Remove an Item from the UIList"""
+    bl_idname = "gr2_shared_asset.list_remove"
+    bl_label = "Remove"
+    bl_description = "Remove a region from the list."
+
+    @classmethod
+    def poll(cls, context):
+        scene = context.scene
+        scene_gr2 = scene.gr2
+        return context.scene and len(scene_gr2.shared_assets) > 0
+    
+    def execute(self, context):
+        scene = context.scene
+        scene_gr2 = scene.gr2
+        index = scene_gr2.shared_assets_index
+        scene_gr2.shared_assets.remove(index)
+        return {'FINISHED'}
+
+class GR2_List_Deselect_Region(Operator):
+    """ Remove an Item from the UIList"""
+    bl_idname = "gr2_shared_asset.list_remove"
+    bl_label = "Remove"
+    bl_description = "Remove a region from the list."
+
+    @classmethod
+    def poll(cls, context):
+        scene = context.scene
+        scene_gr2 = scene.gr2
+        return context.scene and len(scene_gr2.shared_assets) > 0
+    
+    def execute(self, context):
+        scene = context.scene
+        scene_gr2 = scene.gr2
+        index = scene_gr2.shared_assets_index
+        scene_gr2.shared_assets.remove(index)
+        return {'FINISHED'}
+
+class GR2_List_CreateAssign_Region(Operator):
+    """ Remove an Item from the UIList"""
+    bl_idname = "gr2_shared_asset.list_remove"
+    bl_label = "Remove"
+    bl_description = "Remove a region from the list."
+
+    @classmethod
+    def poll(cls, context):
+        scene = context.scene
+        scene_gr2 = scene.gr2
+        return context.scene and len(scene_gr2.shared_assets) > 0
+    
+    def execute(self, context):
+        scene = context.scene
+        scene_gr2 = scene.gr2
+        index = scene_gr2.shared_assets_index
+        scene_gr2.shared_assets.remove(index)
+        return {'FINISHED'}
+
+class GR2_Region_ListItems(PropertyGroup):
+
+    def GetRegionName(self):
+        name = self.shared_asset_path
+        name = name.rpartition('\\')[2]
+        name = name.rpartition('.sidecar.xml')[0]
+
+        return name
+
+    region_name: StringProperty(
+        get=GetRegionName,
+    )
+
+class GR2_UL_SceneProps_SharedAssets(UIList):
+    use_name_reverse: bpy.props.BoolProperty(
+        name="Reverse Name",
+        default=False,
+        options=set(),
+        description="Reverse name sort order",
+    )
+
+    use_order_name: bpy.props.BoolProperty(
+        name="Name",
+        default=False,
+        options=set(),
+        description="Sort groups by their name (case-insensitive)",
+    )
+
+    filter_string: bpy.props.StringProperty(
+        name="filter_string",
+        default = "",
+        description="Filter string for name"
+    )
+
+    filter_invert: bpy.props.BoolProperty(
+        name="Invert",
+        default = False,
+        options=set(),
+        description="Invert Filter"
+    )
+
+
+    def filter_items(self, context,
+                    data, 
+                    property 
+        ):
+
+
+        items = getattr(data, property)
+        if not len(items):
+            return [], []
+
+        if self.filter_string:
+            flt_flags = bpy.types.UI_UL_list.filter_items_by_name(
+                    self.filter_string,
+                    self.bitflag_filter_item,
+                    items, 
+                    propname="name",
+                    reverse=self.filter_invert)
+        else:
+            flt_flags = [self.bitflag_filter_item] * len(items)
+
+        if self.use_order_name:
+            flt_neworder = bpy.types.UI_UL_list.sort_items_by_name(items, "name")
+            if self.use_name_reverse:
+                flt_neworder.reverse()
+        else:
+            flt_neworder = []    
+
+
+        return flt_flags, flt_neworder        
+
+    def draw_filter(self, context,
+                    layout
         ):
 
         row = layout.row(align=True)
@@ -853,7 +1052,6 @@ class GR2_UL_SceneProps_SharedAssets(UIList):
             layout.alignment = 'CENTER'
             layout.label(text="", icon_value=icon)    
             
-
 class GR2_SceneProps_SharedAssets(Panel):
     bl_label = "Shared Assets"
     bl_idname = "GR2_PT_GameVersionPanel_SharedAssets"
@@ -883,7 +1081,6 @@ class GR2_SceneProps_SharedAssets(Panel):
             row.prop(item, "shared_asset_path", text='Path')
             row = layout.row()
             row.prop(item, "shared_asset_type", text='Type')
-
 
 class GR2_List_Add_Shared_Asset(Operator):
     """ Add an Item to the UIList"""
@@ -943,7 +1140,7 @@ class GR2_List_Remove_Shared_Asset(Operator):
         scene_gr2.shared_assets.remove(index)
         return {'FINISHED'}
 
-class GR2_ListItems(PropertyGroup):
+class GR2_Asset_ListItems(PropertyGroup):
 
     def GetSharedAssetName(self):
         name = self.shared_asset_path
@@ -985,7 +1182,7 @@ class GR2_ListItems(PropertyGroup):
 
 class GR2_ScenePropertiesGroup(PropertyGroup):
     shared_assets: CollectionProperty(
-        type=GR2_ListItems,
+        type=GR2_Asset_ListItems,
     )
 
     shared_assets_index: IntProperty(
@@ -993,11 +1190,26 @@ class GR2_ScenePropertiesGroup(PropertyGroup):
         default=0,
         min=0,
     )
+    region: CollectionProperty(
+        type=GR2_Region_ListItems,
+    )
+
+    region_index: IntProperty(
+        name='Index for Region',
+        default=0,
+        min=0,
+    )
 
 
 classeshalo = (
     Export_Scene_GR2,
-    GR2_ListItems,
+    GR2_UL_SceneProps_RegionManager,
+    GR2_List_Assign_Region,
+    GR2_List_Remove_Region,
+    GR2_List_Select_Region,
+    GR2_List_Deselect_Region,
+    GR2_Region_ListItems,
+    GR2_Asset_ListItems,
     GR2_List_Add_Shared_Asset,
     GR2_List_Remove_Shared_Asset,
     GR2_ScenePropertiesGroup,
@@ -1011,8 +1223,6 @@ def register():
         bpy.utils.register_class(clshalo)
     bpy.types.TOPBAR_MT_file_export.append(menu_func_export)
     bpy.types.Scene.gr2 = PointerProperty(type=GR2_ScenePropertiesGroup, name="GR2 Scene Properties", description="Set properties for your scene")
-    # bpy.types.Scene.demo_list = CollectionProperty(type = ListItem)
-    # bpy.types.Scene.list_index = IntProperty(name = "Index for demo_list", default = 0)
 
 def unregister():
     bpy.types.TOPBAR_MT_file_export.remove(menu_func_export)
