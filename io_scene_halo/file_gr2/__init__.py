@@ -36,12 +36,14 @@ bl_info = {
 
 import bpy
 from bpy_extras.io_utils import ExportHelper
-from bpy.props import StringProperty, BoolProperty, EnumProperty, FloatProperty, IntProperty
-from bpy.types import Operator
+from bpy.props import StringProperty, BoolProperty, EnumProperty, FloatProperty, IntProperty, PointerProperty, CollectionProperty
+from bpy.types import Operator, Panel, PropertyGroup, UIList
 from addon_utils import check
 from os.path import exists as file_exists
 from os import path
 import ctypes
+
+from io_scene_halo.gr2_utils import GetDataPath
 
 lightmapper_run_once = False
 sidecar_read = False
@@ -701,34 +703,6 @@ class Export_Scene_GR2(Operator, ExportHelper):
 def menu_func_export(self, context):
     self.layout.operator(Export_Scene_GR2.bl_idname, text="Halo GR2 Exporter (.gr2)")
 
-# def UpdateSettings(
-#     keep_fbx,
-#     keep_json,
-#     export_sidecar,
-#     sidecar_type,
-#     export_method,
-#     export_animations,
-#     export_render,
-#     export_collision,
-#     export_physics,
-#     export_markers,
-#     export_structure,
-#     export_poops,
-#     export_lights,
-#     export_portals,
-#     export_seams,
-#     export_water_surfaces,
-#     export_fog_planes,
-#     export_cookie_cutters,
-#     export_lightmap_regions,
-#     export_boundary_surfaces,
-#     export_water_physics,
-#     export_rain_occluders,
-#     export_shared,
-
-# ):
-    # halo_gr2 = bpy.context.Scene.halo_gr2
-
 def UsingBetterFBX():
     using_better_fbx = False
     addon_default, addon_state = check('better_fbx')
@@ -761,13 +735,290 @@ def ExportSettingsFromSidecar(sidecar_filepath):
 
     return settings
 
+# GR2 Scene Settings
+class GR2_SceneProps(Panel):
+    bl_label = "GR2 Scene Properties"
+    bl_idname = "GR2_PT_GameVersionPanel"
+    bl_space_type = 'PROPERTIES'
+    bl_region_type = 'WINDOW'
+    bl_context = "scene"
+    bl_options = {'DEFAULT_CLOSED'}
+    bl_parent_id = "HALO_PT_ScenePropertiesPanel"
+
+    def draw(self, context):
+        layout = self.layout
+
+class GR2_UL_SceneProps_SharedAssets(UIList):
+    use_name_reverse: bpy.props.BoolProperty(
+        name="Reverse Name",
+        default=False,
+        options=set(),
+        description="Reverse name sort order",
+    )
+
+    # This properties tells whether to sort the list according to
+    # the alphabetical order of the names.
+    use_order_name: bpy.props.BoolProperty(
+        name="Name",
+        default=False,
+        options=set(),
+        description="Sort groups by their name (case-insensitive)",
+    )
+
+    # This property is the value for a simple name filter.
+    filter_string: bpy.props.StringProperty(
+        name="filter_string",
+        default = "",
+        description="Filter string for name"
+    )
+
+    # This property tells whether to invert the simple name filter
+    filter_invert: bpy.props.BoolProperty(
+        name="Invert",
+        default = False,
+        options=set(),
+        description="Invert Filter"
+    )
+
+    #-------------------------------------------------------------------------
+    # This function does two things, and as a result returns two arrays:
+    # flt_flags - this is the filtering array returned by the filter
+    #             part of the function. It has one element per item in the
+    #             list and is set or cleared based on whether the item
+    #             should be displayed.
+    # flt_neworder - this is the sorting array returned by the sorting
+    #             part of the function. It has one element per item
+    #             the item is the new position in order for the
+    #             item.
+    # The arrays must be the same length as the list of items or empty
+    def filter_items(self, context,
+                    data, # Data from which to take Collection property
+                    property # Identifier of property in data, for the collection
+        ):
+
+
+        items = getattr(data, property)
+        if not len(items):
+            return [], []
+
+        # https://docs.blender.org/api/current/bpy.types.UI_UL_list.html
+        # helper functions for handling UIList objects.
+        if self.filter_string:
+            flt_flags = bpy.types.UI_UL_list.filter_items_by_name(
+                    self.filter_string,
+                    self.bitflag_filter_item,
+                    items, 
+                    propname="name",
+                    reverse=self.filter_invert)
+        else:
+            flt_flags = [self.bitflag_filter_item] * len(items)
+
+        # https://docs.blender.org/api/current/bpy.types.UI_UL_list.html
+        # helper functions for handling UIList objects.
+        if self.use_order_name:
+            flt_neworder = bpy.types.UI_UL_list.sort_items_by_name(items, "name")
+            if self.use_name_reverse:
+                flt_neworder.reverse()
+        else:
+            flt_neworder = []    
+
+
+        return flt_flags, flt_neworder        
+
+    def draw_filter(self, context,
+                    layout # Layout to draw the item
+        ):
+
+        row = layout.row(align=True)
+        row.prop(self, "filter_string", text="Filter", icon="VIEWZOOM")
+        row.prop(self, "filter_invert", text="", icon="ARROW_LEFTRIGHT")
+
+
+        row = layout.row(align=True)
+        row.label(text="Order by:")
+        row.prop(self, "use_order_name", toggle=True)
+
+        icon = 'TRIA_UP' if self.use_name_reverse else 'TRIA_DOWN'
+        row.prop(self, "use_name_reverse", text="", icon=icon)
+
+    def draw_item(self, context, layout, data, item, icon, active_data, active_propname):
+        scene = context.scene
+        scene_gr2 = scene.gr2
+        if self.layout_type in {'DEFAULT', 'COMPACT'}:
+            if scene:
+                layout.label(text=item.shared_asset_name, icon='BOOKMARKS')
+            else:
+                layout.label(text='')
+        elif self.layout_type == 'GRID':
+            layout.alignment = 'CENTER'
+            layout.label(text="", icon_value=icon)    
+            
+
+class GR2_SceneProps_SharedAssets(Panel):
+    bl_label = "Shared Assets"
+    bl_idname = "GR2_PT_GameVersionPanel_SharedAssets"
+    bl_space_type = 'PROPERTIES'
+    bl_region_type = 'WINDOW'
+    bl_context = "scene"
+    bl_parent_id = "GR2_PT_GameVersionPanel"
+
+    def draw(self, context):
+        scene = context.scene
+        scene_gr2 = scene.gr2
+        layout = self.layout
+
+        layout.template_list("GR2_UL_SceneProps_SharedAssets", "", scene_gr2, "shared_assets", scene_gr2, 'shared_assets_index')
+        # layout.template_list("GR2_UL_SceneProps_SharedAssets", "compact", scene_gr2, "shared_assets", scene_gr2, "shared_assets_index", type='COMPACT') # not needed
+
+        row = layout.row()
+        col = row.column(align=True)
+        col.operator("gr2_shared_asset.list_add", text="Add")
+        col = row.column(align=True)
+        col.operator("gr2_shared_asset.list_remove", text="Remove")
+        
+        if len(scene_gr2.shared_assets) > 0:
+            item = scene_gr2.shared_assets[scene_gr2.shared_assets_index]
+            row = layout.row()
+            # row.prop(item, "shared_asset_name", text='Asset Name') # debug only
+            row.prop(item, "shared_asset_path", text='Path')
+            row = layout.row()
+            row.prop(item, "shared_asset_type", text='Type')
+
+
+class GR2_List_Add_Shared_Asset(Operator):
+    """ Add an Item to the UIList"""
+    bl_idname = "gr2_shared_asset.list_add"
+    bl_label = "Add"
+    bl_description = "Add a new shared asset (sidecar) to the list."
+    filename_ext = ''
+
+    filter_glob: StringProperty(
+        default="*.xml",
+        options={'HIDDEN'},
+        )
+
+    filepath: StringProperty(
+        name="Sidecar",
+        description="Set path for the Sidecar file",
+        subtype="FILE_PATH"
+    )
+
+    @classmethod
+    def poll(cls, context):
+        return context.scene
+    
+    def execute(self, context):
+        scene = context.scene
+        scene_gr2 = scene.gr2
+        scene_gr2.shared_assets.add()
+        
+        path = self.filepath
+        path = path.replace(GetDataPath(), '')
+        scene_gr2.shared_assets[-1].shared_asset_path = path
+        scene_gr2.shared_assets_index = len(scene_gr2.shared_assets) - 1
+        context.area.tag_redraw()
+        return {'FINISHED'}
+
+    def invoke(self, context, event):
+        context.window_manager.fileselect_add(self)
+
+        return {'RUNNING_MODAL'}
+
+class GR2_List_Remove_Shared_Asset(Operator):
+    """ Remove an Item from the UIList"""
+    bl_idname = "gr2_shared_asset.list_remove"
+    bl_label = "Remove"
+    bl_description = "Remove a shared asset (sidecar) from the list."
+
+    @classmethod
+    def poll(cls, context):
+        scene = context.scene
+        scene_gr2 = scene.gr2
+        return context.scene and len(scene_gr2.shared_assets) > 0
+    
+    def execute(self, context):
+        scene = context.scene
+        scene_gr2 = scene.gr2
+        index = scene_gr2.shared_assets_index
+        scene_gr2.shared_assets.remove(index)
+        return {'FINISHED'}
+
+class GR2_ListItems(PropertyGroup):
+
+    def GetSharedAssetName(self):
+        name = self.shared_asset_path
+        name = name.rpartition('\\')[2]
+        name = name.rpartition('.sidecar.xml')[0]
+
+        return name
+
+    shared_asset_name: StringProperty(
+        get=GetSharedAssetName,
+    )
+
+    shared_asset_path: StringProperty()
+
+    shared_asset_types = [
+            ('BipedAsset', 'Biped', ''),
+            ('CrateAsset', 'Crate', ''),
+            ('CreatureAsset', 'Creature', ''),
+            ('Device_ControlAsset', 'Device Control', ''),
+            ('Device_MachineAsset', 'Device Machine', ''),
+            ('Device_TerminalAsset', 'Device Terminal', ''),
+            ('Effect_SceneryAsset', 'Effect Scenery', ''),
+            ('EquipmentAsset', 'Equipment', ''),
+            ('GiantAsset', 'Giant', ''),
+            ('SceneryAsset', 'Scenery', ''),
+            ('VehicleAsset', 'Vehicle', ''),
+            ('WeaponAsset', 'Weapon', ''),
+            ('ScenarioAsset', 'Scenario', ''),
+            ('Decorator_SetAsset', 'Decorator Set', ''),
+            ('Particle_ModelAsset', 'Particle Model', ''),
+        ]
+
+    shared_asset_type: EnumProperty(
+        name='Type',
+        default='BipedAsset',
+        options=set(),
+        items=shared_asset_types
+    )
+
+class GR2_ScenePropertiesGroup(PropertyGroup):
+    shared_assets: CollectionProperty(
+        type=GR2_ListItems,
+    )
+
+    shared_assets_index: IntProperty(
+        name='Index for Shared Asset',
+        default=0,
+        min=0,
+    )
+
+
+classeshalo = (
+    Export_Scene_GR2,
+    GR2_ListItems,
+    GR2_List_Add_Shared_Asset,
+    GR2_List_Remove_Shared_Asset,
+    GR2_ScenePropertiesGroup,
+    GR2_SceneProps,
+    GR2_UL_SceneProps_SharedAssets,
+    GR2_SceneProps_SharedAssets,
+)
+
 def register():
-    bpy.utils.register_class(Export_Scene_GR2)
+    for clshalo in classeshalo:
+        bpy.utils.register_class(clshalo)
     bpy.types.TOPBAR_MT_file_export.append(menu_func_export)
+    bpy.types.Scene.gr2 = PointerProperty(type=GR2_ScenePropertiesGroup, name="GR2 Scene Properties", description="Set properties for your scene")
+    # bpy.types.Scene.demo_list = CollectionProperty(type = ListItem)
+    # bpy.types.Scene.list_index = IntProperty(name = "Index for demo_list", default = 0)
 
 def unregister():
     bpy.types.TOPBAR_MT_file_export.remove(menu_func_export)
-    bpy.utils.unregister_class(Export_Scene_GR2)
+    del bpy.types.Scene.gr2
+    for clshalo in classeshalo:
+        bpy.utils.unregister_class(clshalo)
 
 if __name__ == "__main__":
     register()
