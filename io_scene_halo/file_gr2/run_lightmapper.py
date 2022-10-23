@@ -94,3 +94,32 @@ def run_lightmapper(operator, context, report,
         lightmapper(report, filepath, lightmap_quality, lightmap_all_bsps, lightmap_specific_bsp)
 
         return {'FINISHED'}
+
+# from subprocess import Popen
+# import os
+# import ctypes
+# import platform
+# from io_scene_halo.gr2_utils import GetEKPath
+# import sys
+
+# def lightmapper(report, filepath, lightmap_quality='DIRECT', lightmap_all_bsps='TRUE', lightmap_specific_bsp='0'):
+#     full_path = filepath.rpartition('\\')[0]
+#     asset_path = CleanAssetPath(full_path)
+#     asset_name = asset_path.rpartition('\\')[2]
+#     bsp = GetBSPToLightmap(lightmap_all_bsps, lightmap_specific_bsp, asset_name)
+#     quality = GetQuality(lightmap_quality)
+#     high_quality_settings = ('medium', 'high', 'super_slow')
+
+#     try:
+#         sys.path.insert(1, GetEKPath())
+#         sys.argv = ['calc_lm_farm_local.py', os.path.join(asset_path, asset_name), bsp, quality]
+#         print(sys.argv)
+#         import calc_lm_farm_local
+#         # lightmapCommand = 'python calc_lm_farm_local.py "{}" "{}" {}'.format(asset_path + '\\' + asset_name, bsp, quality)
+#         # os.chdir(GetEKPath())
+#         # p = Popen(lightmapCommand)
+#         # p.wait()
+#         # report({'INFO'},"Lightmapping process complete")
+
+#     except:
+#         report({'WARNING'},"Lightmapping process failed")
