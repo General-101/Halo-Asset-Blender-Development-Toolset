@@ -47,6 +47,7 @@ from addon_utils import check
 from os.path import exists as file_exists
 from os import path
 import ctypes
+import traceback
 
 
 from io_scene_halo.gr2_utils import GetDataPath
@@ -560,8 +561,9 @@ class Export_Scene_GR2(Operator, ExportHelper):
         try:
             from .process_scene import process_scene
             process_scene(self, context, keywords, self.report, model_armature, asset_path, asset, skeleton_bones, halo_objects, timeline_start, timeline_end, lod_count, UsingBetterFBX(), skip_lightmapper, **keywords)
-        except Exception as error:
+        except:
             print('ASSERT: Scene processing failed')
+            error = traceback.format_exc()
             self.report({'ERROR'}, error)
 
         from .repair_scene import repair_scene
