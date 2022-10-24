@@ -24,6 +24,11 @@
 #
 # ##### END MIT LICENSE BLOCK #####
 
+
+####################
+# TODO NEED TO CHANGE STRUCTURE DESIGN. SHOULD NOT FOLLOW BSP INDEX RULE. SHOULD NOT CONTAIN SHARED
+
+
 bl_info = {
     'name': 'Halo GR2 Export',
     'author': 'Generalkidd, Crisp',
