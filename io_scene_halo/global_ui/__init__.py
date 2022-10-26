@@ -24,6 +24,7 @@
 #
 # ##### END MIT LICENSE BLOCK #####
 
+from itertools import permutations
 import bpy
 
 from bpy.types import (
@@ -1195,6 +1196,7 @@ from ..gr2_utils import (
     ObjectPrefix,
     special_mesh_types,
     invalid_mesh_types,
+    get_prop_from_collection,
 )
 
 class JSON_ObjectProps(Panel):
@@ -1390,8 +1392,14 @@ class JSON_ObjectMeshFaceProps(Panel):
 
         col.separator()
 
-        col.prop(ob_halo_json, "Region_Name", text='Region')
-        col.prop(ob_halo_json, 'Permutation_Name', text='Permutation')
+        if ob_halo_json.Region_Name_Locked != '':
+            col.prop(ob_halo_json, 'Region_Name_Locked', text='Region')
+        else:
+            col.prop(ob_halo_json, "Region_Name", text='Region')
+        if ob_halo_json.Permutation_Name_Locked != '':
+            col.prop(ob_halo_json, 'Permutation_Name_Locked', text='Permutation')
+        else:
+            col.prop(ob_halo_json, 'Permutation_Name', text='Permutation')
         col.prop(ob_halo_json, "Face_Global_Material", text='Global Material')
 
         col.separator()
@@ -2141,6 +2149,16 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
         update=disallow_default_and_update,
     )
 
+    def get_region_from_collection(self):
+        region = get_prop_from_collection(self.id_data, '+region:')
+        return region
+
+    Region_Name_Locked: StringProperty(
+        name="Face Region",
+        description="Define the name of the region these faces should be associated with",
+        get=get_region_from_collection,
+    )
+
     def disallow_default_as_string_perm(self, context):
         if self.Permutation_Name.lower() == 'default':
             self.Permutation_Name = ''
@@ -2149,6 +2167,16 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
         name="Permutation",
         description="Define the permutation of this object. Leave blank for default",
         update=disallow_default_as_string_perm,
+    )
+
+    def get_permutation_from_collection(self):
+        permutation = get_prop_from_collection(self.id_data, '+perm:')
+        return permutation
+
+    Permutation_Name_Locked: StringProperty(
+        name="Permutation",
+        description="Define the permutation of this object. Leave blank for default",
+        get=get_permutation_from_collection,
     )
 
     def disallow_default_as_string_material(self, context):

@@ -528,3 +528,43 @@ def SetBoneJSONValues(bones):
 # MANAGER STUFF
 ######################################
 
+def get_collection_parents(current_coll, all_collections):
+    coll_list = [current_coll.name]
+    keep_looping = True
+    
+    while keep_looping:
+        for coll in all_collections:
+            keep_looping = True
+            if current_coll in tuple(coll.children):
+                coll_list.append(coll.name)
+                current_coll = coll
+                break
+            else:
+                keep_looping = False
+
+    return coll_list
+
+def get_prop_from_collection(ob, prefix):
+    collection = None
+    prop = ''
+    all_collections = bpy.data.collections
+    # get direct parent collection
+    for c in all_collections:
+        if ob in tuple(c.objects):
+            collection = c
+            break
+    # get collection parent tree
+    collection_list = get_collection_parents(collection, all_collections)
+
+    # test object collection parent tree
+    for c in collection_list:
+        if c.startswith(prefix):
+            prop = c.rpartition(prefix)[2]
+            prop = prop.strip(' ')
+            prop = prop.replace(' ', '_')
+            prop = prop.lower()
+            if prop == 'default':
+                prop = ''
+            break
+
+    return prop
