@@ -1238,7 +1238,10 @@ class JSON_ObjectProps(Panel):
 
         sub = col.row()
         if not ob_halo_json.bsp_shared:
-            sub.prop(ob_halo_json, 'bsp_index', text='BSP Index')
+            if ob_halo_json.bsp_name != '':
+                sub.prop(ob_halo_json, 'bsp_name_locked', text='BSP')
+            else:
+                sub.prop(ob_halo_json, 'bsp_name', text='BSP')
         sub.prop(ob_halo_json, 'bsp_shared', text='Shared')
 
 #MESH PROPERTIES
@@ -1962,14 +1965,21 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
         items=[('LIGHT', 'Light', '')],
     )
 
-    bsp_index: IntProperty(
-        name="BSP Index",
-        options=set(),
-        default=0,
-        min=0,
-        max=99,
-        step=5,
-        description="Set bsp index for this object. Only valid for scenario exports",
+    bsp_name: StringProperty(
+        name="BSP Name",
+        default='000',
+        description="Set bsp name for this object. Only valid for scenario exports",
+    )
+
+    def get_bsp_from_collection(self):
+        bsp = get_prop_from_collection(self.id_data, '+bsp:')
+        return bsp
+
+    bsp_name_locked: StringProperty(
+        name="BSP Name",
+        default='000',
+        description="Set bsp name for this object. Only valid for scenario exports",
+        get=get_bsp_from_collection,
     )
 
     bsp_shared: BoolProperty(

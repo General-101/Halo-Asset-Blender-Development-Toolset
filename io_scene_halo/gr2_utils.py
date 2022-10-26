@@ -548,6 +548,9 @@ def get_prop_from_collection(ob, prefix):
     collection = None
     prop = ''
     all_collections = bpy.data.collections
+    protected_word = 'default'
+    if prefix == '+bsp:':
+        protected_word = 'shared'
     # get direct parent collection
     for c in all_collections:
         if ob in tuple(c.objects):
@@ -558,12 +561,12 @@ def get_prop_from_collection(ob, prefix):
 
     # test object collection parent tree
     for c in collection_list:
-        if c.startswith(prefix):
+        if c.lower().startswith(prefix):
             prop = c.rpartition(prefix)[2]
             prop = prop.strip(' ')
             prop = prop.replace(' ', '_')
             prop = prop.lower()
-            if prop == 'default':
+            if prop == protected_word:
                 prop = ''
             break
 
