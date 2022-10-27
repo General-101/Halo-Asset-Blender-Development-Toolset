@@ -36,6 +36,7 @@ from bpy.props import (
         StringProperty,
         BoolProperty,
         IntProperty,
+        EnumProperty,
         PointerProperty
         )
 
@@ -432,9 +433,9 @@ class GR2_HaloExportFinderPropertiesGroup(PropertyGroup):
 #######################################
 # COLLECTION MANAGER TOOL
 
-class GR2_ShaderFinder(Panel):
-    bl_label = "Update Materials by Shader"
-    bl_idname = "HALO_PT_GR2_ShaderFinder"
+class GR2_CollectionManager(Panel):
+    bl_label = "Assign & Update Halo Collections"
+    bl_idname = "HALO_PT_GR2_CollectionManager"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     bl_options = {'DEFAULT_CLOSED'}
@@ -443,41 +444,53 @@ class GR2_ShaderFinder(Panel):
     def draw(self, context):
         layout = self.layout
         scene = context.scene
-        scene_gr2_shader_finder = scene.gr2_shader_finder
+        scene_gr2_collection_manager = scene.gr2_collection_manager
 
         layout.use_property_split = True
         flow = layout.grid_flow(row_major=True, columns=0, even_columns=True, even_rows=False, align=False)
         col = flow.column()
-        col = layout.column(heading="Shaders Directory")
-        col.prop(scene_gr2_shader_finder, 'shaders_dir', text='')
-        col = layout.column(heading="Overwrite")
-        sub = col.column(align=True)
-        sub.prop(scene_gr2_shader_finder, "overwrite_existing", text='Paths')
+        col.prop(scene_gr2_collection_manager, 'collection_name')
+        col.prop(scene_gr2_collection_manager, 'collection_type')
         col = col.row()
         col.scale_y = 1.5
-        col.operator('halo_gr2.shader_finder')
+        col.operator('halo_gr2.collection_create')
 
-class GR2_ShaderFinder_Find(Operator):
-    bl_idname = 'halo_gr2.shader_finder'
-    bl_label = 'Update Shader Paths'
+class GR2_CollectionManager_Create(Operator):
+    bl_idname = 'halo_gr2.collection_create'
+    bl_label = 'Create New Collection'
     bl_options = {"REGISTER", "UNDO"}
+
+    @classmethod
+    def poll(cls, context):
+        scene = context.scene
+        scene_gr2_collection_manager = scene.gr2_collection_manager
+        return scene_gr2_collection_manager.collection_name != '' and not scene_gr2_collection_manager.collection_name.isspace()
 
     def execute(self, context):
         scene = context.scene
-        scene_gr2_shader_finder = scene.gr2_shader_finder
-        from .shader_finder import FindShaders
-        return FindShaders(context, scene_gr2_shader_finder.shaders_dir, self.report, scene_gr2_shader_finder.overwrite_existing)
+        scene_gr2_collection_manager = scene.gr2_collection_manager
+        from .collection_manager import CreateCollections
+        return CreateCollections(bpy.ops, bpy.data, scene_gr2_collection_manager.collection_type, scene_gr2_collection_manager.collection_name)
 
-class GR2_HaloShaderFinderPropertiesGroup(PropertyGroup):
-    shaders_dir: StringProperty(
-        name="Shaders Directory",
-        description="Leave blank to search the entire tags folder for shaders or input a directory path to specify the folder (and sub-folders) to search for shaders",
+class GR2_HaloCollectionManagerPropertiesGroup(PropertyGroup):
+    collection_type: EnumProperty(
+        name="Collection Type",
+        description="Select the collection property you wish to apply to the selected objects",
+        default='PERMUTATION',
+        items=[
+            ('BSP', 'BSP / Design', ''),
+            ('REGION', 'Region', ''),
+            ('PERMUTATION', 'Permutation', ''),
+        ]
+    )
+    collection_name: StringProperty(
+        name="Collection Name",
+        description="Select the collection name you wish to apply to the selected objects",
         default='',
     )
-    overwrite_existing: BoolProperty(
-        name='Overwrite Shader Paths',
-        options=set(),
-        description="Overwrite material shader paths even if they're not blank",
+    collection_special: BoolProperty(
+        name="",
+        description="Enable this property",
         default=False,
     )
 
@@ -493,6 +506,9 @@ classeshalo = (
     GR2_HaloLauncher_Tags,
     GR2_HaloLauncher_Source,
     GR2_HaloLauncherPropertiesGroup,
+    GR2_CollectionManager,
+    GR2_CollectionManager_Create,
+    GR2_HaloCollectionManagerPropertiesGroup,
     GR2_ShaderFinder,
     GR2_ShaderFinder_Find,
     GR2_HaloShaderFinderPropertiesGroup,
@@ -510,6 +526,7 @@ def register():
     bpy.types.Scene.gr2_halo_launcher = PointerProperty(type=GR2_HaloLauncherPropertiesGroup, name="Halo Launcher", description="Launches stuff")
     bpy.types.Scene.gr2_shader_finder = PointerProperty(type=GR2_HaloShaderFinderPropertiesGroup, name="Shader Finder", description="Find Shaders")
     bpy.types.Scene.gr2_export = PointerProperty(type=GR2_HaloExportFinderPropertiesGroup, name="Halo Export", description="")
+    bpy.types.Scene.gr2_collection_manager = PointerProperty(type=GR2_HaloCollectionManagerPropertiesGroup, name="Halo Export", description="")
 
     
 def unregister():
