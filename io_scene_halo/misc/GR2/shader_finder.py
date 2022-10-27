@@ -24,7 +24,6 @@
 #
 # ##### END MIT LICENSE BLOCK #####
 
-from re import S
 import bpy
 import os
 from ...gr2_utils import (

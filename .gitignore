@@ -4,3 +4,4 @@ output/
 /io_scene_halo/resources.zip
 copy to add-ons.bat
 .DS_Store
+io_scene_halo/.vscode/settings.json

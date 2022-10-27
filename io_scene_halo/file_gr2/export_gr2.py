@@ -42,7 +42,6 @@ from ..gr2_utils import (
 
     poop_render_only_prefixes,
     invalid_mesh_types,
-    GetToolPath,
     GetTagsPath,
     GetEKPath,
 )
@@ -832,7 +831,7 @@ def export_asset(report, filePath="", keep_fbx=False, keep_json=False, asset_pat
             gr2Path += pathList[x]
             gr2Path += ".gr2"
 
-        build_gr2(GetToolPath(), fileName, jsonPath, gr2Path)
+        build_gr2(fileName, jsonPath, gr2Path)
         if(file_exists(gr2Path)):
             report({'INFO'},"GR2 conversion finished!")
         else:
@@ -916,7 +915,7 @@ def build_json(jsonPath, model_armature, boneslist, halo_objects):
     with open(jsonPath, 'w') as j:
         j.write(haloJSON)
 
-def build_gr2(toolPath, filePath, jsonPath, gr2Path):
+def build_gr2(filePath, jsonPath, gr2Path):
     try:            
         if not os.access(filePath, os.R_OK):
             ctypes.windll.user32.MessageBoxW(0, "GR2 Not Exported. Output Folder Is Read-Only! Try running Blender as an Administrator.", "ACCESS VIOLATION", 0)

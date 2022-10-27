@@ -24,9 +24,6 @@
 #
 # ##### END MIT LICENSE BLOCK #####
 
-import bpy
-from os.path import exists as file_exists
-
 def Export(export):
     export('INVOKE_DEFAULT')
     return {'FINISHED'}

@@ -25,12 +25,7 @@
 # ##### END MIT LICENSE BLOCK #####
 import bpy
 import platform
-import os
-from os import path
-import csv
-from math import radians
-from mathutils import Matrix
-#from . import HREKPath
+
 ###########
 ##GLOBALS##
 ###########
