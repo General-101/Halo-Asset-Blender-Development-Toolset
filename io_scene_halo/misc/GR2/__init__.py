@@ -434,7 +434,7 @@ class GR2_HaloExportFinderPropertiesGroup(PropertyGroup):
 # COLLECTION MANAGER TOOL
 
 class GR2_CollectionManager(Panel):
-    bl_label = "Assign & Update Halo Collections"
+    bl_label = "Collection Manager"
     bl_idname = "HALO_PT_GR2_CollectionManager"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
@@ -449,8 +449,8 @@ class GR2_CollectionManager(Panel):
         layout.use_property_split = True
         flow = layout.grid_flow(row_major=True, columns=0, even_columns=True, even_rows=False, align=False)
         col = flow.column()
-        col.prop(scene_gr2_collection_manager, 'collection_name')
-        col.prop(scene_gr2_collection_manager, 'collection_type')
+        col.prop(scene_gr2_collection_manager, 'collection_name', text='Name')
+        col.prop(scene_gr2_collection_manager, 'collection_type', text='Type')
         col = col.row()
         col.scale_y = 1.5
         col.operator('halo_gr2.collection_create')
@@ -470,11 +470,12 @@ class GR2_CollectionManager_Create(Operator):
         scene = context.scene
         scene_gr2_collection_manager = scene.gr2_collection_manager
         from .collection_manager import CreateCollections
-        return CreateCollections(bpy.ops, bpy.data, scene_gr2_collection_manager.collection_type, scene_gr2_collection_manager.collection_name)
+        return CreateCollections(context, bpy.ops, bpy.data, scene_gr2_collection_manager.collection_type, scene_gr2_collection_manager.collection_name)
 
 class GR2_HaloCollectionManagerPropertiesGroup(PropertyGroup):
     collection_type: EnumProperty(
         name="Collection Type",
+        options=set(),
         description="Select the collection property you wish to apply to the selected objects",
         default='PERMUTATION',
         items=[

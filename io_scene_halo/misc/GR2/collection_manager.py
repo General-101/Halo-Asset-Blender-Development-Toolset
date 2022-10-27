@@ -25,16 +25,19 @@
 # ##### END MIT LICENSE BLOCK #####
 import bpy
 
-def CreateCollections(ops, data, coll_type, coll_name):
+def CreateCollections(context, ops, data, coll_type, coll_name):
     # iterates through the selected objects and applies the chosen collection type
     full_name = GetFullName(coll_type, coll_name)
     print(full_name)
     collection_index = GetCollIfExists(data, full_name)
     print(collection_index)
     if collection_index == -1:
-        ops.collection.create(name=full_name)
+        ops.object.move_to_collection(collection_index=0, is_new=True, new_collection_name=full_name)
     else:
-        ops.object.move_to_collection(collection_index=collection_index)
+        for ob in context.selected_objects:
+            for coll in ob.users_collection:
+                coll.objects.unlink(ob)
+            data.collections[collection_index].objects.link(ob)
 
     return {'FINISHED'}
 
@@ -59,6 +62,6 @@ def GetFullName(coll_type, coll_name):
         case _:
             prefix = '+perm:'
     
-    full_name = f'{prefix} coll_name'
+    full_name = f'{prefix} {coll_name}'
 
     return full_name
