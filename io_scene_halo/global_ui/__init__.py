@@ -1197,6 +1197,7 @@ from ..gr2_utils import (
     special_mesh_types,
     invalid_mesh_types,
     get_prop_from_collection,
+    IsDesign,
 )
 
 class JSON_ObjectProps(Panel):
@@ -1237,12 +1238,23 @@ class JSON_ObjectProps(Panel):
                 col.prop(ob_halo_json, "Object_Type_All", text='Object Type')
 
         sub = col.row()
-        if not ob_halo_json.bsp_shared:
-            if ob_halo_json.bsp_name != '':
-                sub.prop(ob_halo_json, 'bsp_name_locked', text='BSP')
+        if IsDesign(ob):
+            if ob_halo_json.bsp_name_locked != '':
+                sub.prop(ob_halo_json, 'bsp_name_locked', text='Design Group')
             else:
-                sub.prop(ob_halo_json, 'bsp_name', text='BSP')
-        sub.prop(ob_halo_json, 'bsp_shared', text='Shared')
+                sub.prop(ob_halo_json, 'bsp_name', text='Design Group')
+        else:
+            if not ob_halo_json.bsp_shared:
+                if ob_halo_json.bsp_name_locked != '':
+                    sub.prop(ob_halo_json, 'bsp_name_locked', text='BSP')
+                else:
+                    sub.prop(ob_halo_json, 'bsp_name', text='BSP')
+            sub.prop(ob_halo_json, 'bsp_shared', text='Shared')
+
+        if ob_halo_json.Permutation_Name_Locked != '':
+            col.prop(ob_halo_json, 'Permutation_Name_Locked', text='Permutation')
+        else:
+            col.prop(ob_halo_json, 'Permutation_Name', text='Permutation')
 
 #MESH PROPERTIES
 class JSON_ObjectMeshProps(Panel):
@@ -1399,10 +1411,6 @@ class JSON_ObjectMeshFaceProps(Panel):
             col.prop(ob_halo_json, 'Region_Name_Locked', text='Region')
         else:
             col.prop(ob_halo_json, "Region_Name", text='Region')
-        if ob_halo_json.Permutation_Name_Locked != '':
-            col.prop(ob_halo_json, 'Permutation_Name_Locked', text='Permutation')
-        else:
-            col.prop(ob_halo_json, 'Permutation_Name', text='Permutation')
         col.prop(ob_halo_json, "Face_Global_Material", text='Global Material')
 
         col.separator()
@@ -1972,7 +1980,7 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
     )
 
     def get_bsp_from_collection(self):
-        bsp = get_prop_from_collection(self.id_data, '+bsp:')
+        bsp = get_prop_from_collection(self.id_data, ('+bsp:', '+design:'))
         return bsp
 
     bsp_name_locked: StringProperty(
@@ -2025,14 +2033,14 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
         ('BOUNDARY SURFACE', "Boundary Surface", "Used in structure_design tags for soft_kill, soft_ceiling, and slip_sufaces. Only use when importing to a structure_design tag. Can be forced on with the prefix: '+'"), # 0
         ('COLLISION', "Collision", "Sets this mesh to have collision geometry only. Can be forced on with the prefix: '@'"), #1
         ('COOKIE CUTTER', "Cookie Cutter", "Defines an area which ai will pathfind around. Can be forced on with the prefix: '+cookie'"), # 2
-        ('DECORATOR', "Decorator", "Use this when making a decorator. Allows for different LOD levels to be set"), # 3
+        ('DECORATOR', "Decorator", "Use this when making a decorator. Allows for different LOD levels to be set. Can be forced on with the prefix: '+dec'"), # 3
         ('DEFAULT', "Default", "By default this mesh type will be treated as render only geometry in models, and render + bsp collision geometry in structures"), #4
         ('INSTANCED GEOMETRY', "Instanced Geometry", "Writes this mesh a json file as instanced geometry. Can be forced on with the prefix: '%'"), # 5
-        ('INSTANCED GEOMETRY COLLISION', "IG Collision", "This mesh will act as the collision geometry of its parent instanced geometry mesh. Can be forced on if this mesh is the child of an instanced geometry object and has the prefix: '@'"), # 6
-        ('INSTANCED GEOMETRY MARKER', "IG Marker", ""), # 7
-        ('INSTANCED GEOMETRY PHYSICS', "IG Physics", "This mesh will act as the physics geometry of its parent instanced geometry mesh. Can be forced on if this mesh is the child of an instanced geometry object and has the prefix: '$'"), # 8
-        ('INSTANCED GEOMETRY RAIN BLOCKER', "IG Rain Blocker",''), # 9
-        ('INSTANCED GEOMETRY VERTICAL RAIN SHEET', "IG Vertical Rain Sheet", ''), # 10
+        ('INSTANCED GEOMETRY COLLISION', "Instanced Collision", "This mesh will act as the collision geometry of its parent instanced geometry mesh. Can be forced on if this mesh is the child of an instanced geometry object and has the prefix: '@'"), # 6
+        ('INSTANCED GEOMETRY MARKER', "Instanced Marker", ""), # 7
+        ('INSTANCED GEOMETRY PHYSICS', "Instanced Physics", "This mesh will act as the physics geometry of its parent instanced geometry mesh. Can be forced on if this mesh is the child of an instanced geometry object and has the prefix: '$'"), # 8
+        ('INSTANCED GEOMETRY RAIN BLOCKER', "Rain Occluder",'Rain is not rendered in the the volume this mesh occupies. Can be forced on with the prefix: ''+rain'), # 9
+        ('INSTANCED GEOMETRY VERTICAL RAIN SHEET', "Vertical Rain Sheet", ''), # 10
         ('LIGHTMAP REGION', "Lightmap Region", "Defines an area of a structure which should be lightmapped. Can be referenced when lightmapping"), # 11
         ('OBJECT INSTANCE', "Object Instance", "Writes this mesh to the json as an instanced object. Can be forced on with the prefix: '+flair'"), # 12
         ('PHYSICS', "Physics", "Sets this mesh to have physics geometry only. Can be forced on with the prefix: '$'"), # 13
@@ -2149,10 +2157,7 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
     def disallow_default_and_update(self, context):
         if self.Region_Name == 'default':
             self.Region_Name = ''
-        scene = context.scene
-        scene_gr2 = scene.gr2
-        scene_gr2.region.add(self)
-
+            
     Region_Name: StringProperty(
         name="Face Region",
         description="Define the name of the region these faces should be associated with",
@@ -2160,7 +2165,7 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
     )
 
     def get_region_from_collection(self):
-        region = get_prop_from_collection(self.id_data, '+region:')
+        region = get_prop_from_collection(self.id_data, ('+region:', '+reg:'))
         return region
 
     Region_Name_Locked: StringProperty(
@@ -2180,7 +2185,7 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
     )
 
     def get_permutation_from_collection(self):
-        permutation = get_prop_from_collection(self.id_data, '+perm:')
+        permutation = get_prop_from_collection(self.id_data, ('+perm:', '+permuation:'))
         return permutation
 
     Permutation_Name_Locked: StringProperty(

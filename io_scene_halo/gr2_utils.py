@@ -102,18 +102,23 @@ def GetDataPath():
     return dataPath
 
 def GetPerm(ob): # get the permutation of an object, return default if the perm is empty
-    if ob.halo_json.Permutation_Name == '':
-        perm = 'default'
-    else:
-        perm = ob.halo_json.Permutation_Name
+    perm = 'default'
+    if ob.halo_json.Permutation_Name_Locked != '':
+        perm = ob.halo_json.Permutation_Name_Locked
 
+    elif ob.halo_json.Permutation_Name != '':
+            perm = ob.halo_json.Permutation_Name
+        
     return perm
 
 def IsWindows():
     return platform.system() == 'Windows'
 
-def ObjectValid(ob, export_hidden, valid_perm='', evaluated_perm=''):
-    return ob in tuple(bpy.context.scene.view_layers[0].objects) and (ob.visible_get() or export_hidden) and valid_perm == evaluated_perm
+def ObjectValid(ob, export_hidden, valid_perm='', evaluated_perm='', evalued_perm_locked = ''):
+    if evalued_perm_locked != '':
+        return ob in tuple(bpy.context.scene.view_layers[0].objects) and (ob.visible_get() or export_hidden) and valid_perm == evalued_perm_locked
+    else:
+        return ob in tuple(bpy.context.scene.view_layers[0].objects) and (ob.visible_get() or export_hidden) and valid_perm == evaluated_perm
 
 def ExportPerm(perm, export_all_perms, export_specific_perm):
     return export_all_perms or perm == export_specific_perm
@@ -155,7 +160,7 @@ def SelectModelObject(halo_objects, perm, arm, export_hidden, export_all_perms, 
     arm.select_set(True)
     for ob in halo_objects:
         halo = ob.halo_json
-        if ObjectValid(ob, export_hidden, perm, halo.Permutation_Name) and ExportPerm(perm, export_all_perms, export_specific_perm):
+        if ObjectValid(ob, export_hidden, perm, halo.Permutation_Name, halo.Permutation_Name_Locked) and ExportPerm(perm, export_all_perms, export_specific_perm):
             ob.select_set(True)
             boolean = True
     
@@ -172,15 +177,19 @@ def SelectModelObjectNoPerm(halo_objects, arm, export_hidden):
 
     return boolean
 
-def SelectBSPObject(halo_objects, index, arm, shared, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
+def SelectBSPObject(halo_objects, bsp, arm, shared, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
     DeselectAllObjects()
     perm = ResetPerm(perm)
     boolean = False
     arm.select_set(True)
     for ob in halo_objects:
         halo = ob.halo_json
-        if halo.bsp_index == index or shared:
-            if ObjectValid(ob, export_hidden, perm, halo.Permutation_Name) and ExportPerm(perm, export_all_perms, export_specific_perm) and ExportBSP(index, export_all_bsps, export_specific_bsp):
+        if halo.bsp_name_locked != '':
+            bsp_value = halo.bsp_name_locked
+        else:
+            bsp_value = halo.bsp_name
+        if bsp_value == bsp or shared:
+            if ObjectValid(ob, export_hidden, perm, halo.Permutation_Name, halo.Permutation_Name_Locked) and ExportPerm(perm, export_all_perms, export_specific_perm) and ExportBSP(bsp, export_all_bsps, export_specific_bsp):
                 ob.select_set(True)
                 boolean = True
 
@@ -299,6 +308,9 @@ def ObjectPrefix(ob, prefixes):
 
 def NotParentedToPoop(ob):
     return (not MeshType(ob.parent, 'INSTANCED GEOMETRY') or (ObjectPrefix(ob.parent, special_prefixes) and not ObjectPrefix(ob.parent, '%')))
+
+def IsDesign(ob):
+    return sel_logic.ObFog(ob) or sel_logic.ObBoundarys(ob) or sel_logic.ObWaterPhysics(ob) or sel_logic.ObPoopRains(ob)
 
 #############
 #BONE SORTING#
@@ -544,30 +556,32 @@ def get_collection_parents(current_coll, all_collections):
 
     return coll_list
 
-def get_prop_from_collection(ob, prefix):
-    collection = None
+def get_prop_from_collection(ob, prefixes):
     prop = ''
-    all_collections = bpy.data.collections
-    protected_word = 'default'
-    if prefix == '+bsp:':
-        protected_word = 'shared'
-    # get direct parent collection
-    for c in all_collections:
-        if ob in tuple(c.objects):
-            collection = c
-            break
-    # get collection parent tree
-    collection_list = get_collection_parents(collection, all_collections)
+    if len(bpy.data.collections) > 0:
+        collection = None
+        all_collections = bpy.data.collections
+        protected_word = 'default'
+        if any(x in prefixes for x in ('+bsp:', '+design:')):
+            protected_word = 'shared'
+        # get direct parent collection
+        for c in all_collections:
+            if ob in tuple(c.objects):
+                collection = c
+                break
+        # get collection parent tree
+        if collection != None:
+            collection_list = get_collection_parents(collection, all_collections)
 
-    # test object collection parent tree
-    for c in collection_list:
-        if c.lower().startswith(prefix):
-            prop = c.rpartition(prefix)[2]
-            prop = prop.strip(' ')
-            prop = prop.replace(' ', '_')
-            prop = prop.lower()
-            if prop == protected_word:
-                prop = ''
-            break
+            # test object collection parent tree
+            for c in collection_list:
+                if c.lower().startswith(prefixes[0]) or c.lower().startswith(prefixes[1]):
+                    prop = c.rpartition(':')[2]
+                    prop = prop.strip(' ')
+                    prop = prop.replace(' ', '_')
+                    prop = prop.lower()
+                    if prop == protected_word:
+                        prop = ''
+                    break
 
     return prop

@@ -382,7 +382,7 @@ def getMeshProperties(mesh, name, ob):
             mesh_props.update({"bungie_face_sides": getFaceSides(mesh.Face_Sides)})
         if mesh.Face_Draw_Distance != 'NORMAL':
             mesh_props.update({"bungie_face_draw_distance": getFaceDrawDistance(mesh.Face_Draw_Distance)})
-        mesh_props.update({"bungie_face_region": getRegionName(mesh.Region_Name)})
+        mesh_props.update({"bungie_face_region": getRegionName(mesh.Region_Name, mesh.Region_Name_Locked)})
         mesh_props.update({"bungie_face_global_material": getGlobalMaterialName(mesh.Face_Global_Material)})
         if '_connected_geometry_face_type_sky' in mesh_props.values():
             mesh_props.update({"bungie_sky_permutation_index": str(mesh.Sky_Permutation_Index)})
@@ -664,8 +664,10 @@ def getFaceDrawDistance(distance):
         case 'CLOSE':
             return '_connected_geometry_face_draw_distance_detail_close'
 
-def getRegionName(region):
-    if region == '':
+def getRegionName(region, region_locked):
+    if region_locked != '':
+        return region_locked
+    elif region == '':
         return 'default'
     else:
         return region

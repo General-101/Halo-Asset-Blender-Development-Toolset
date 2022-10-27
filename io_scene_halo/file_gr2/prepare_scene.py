@@ -44,6 +44,11 @@ def prepare_scene(context, report, sidecar_type, export_hidden, filepath, use_ar
     objects_selection, active_object = GetCurrentActiveObjectSelection(context)
     hidden_objects = UnhideObjects(export_hidden)                               # If the user has opted to export hidden objects, list all hidden objects and unhide them, return the list for later use
     mode = GetSceneMode(context)                                                      # get the current selected mode, save the mode for later, and then switch to object mode
+    # update bsp names in case any are null
+    for ob in context.scene.objects:
+        if ob.halo_json.bsp_name == '':
+            ob.halo_json.bsp_name = '000'
+
     h_objects = halo_objects(sidecar_type)
     FixMissingMaterials(context, h_objects)
     proxies = SetPoopProxies(context, h_objects.poops)                                               # create and parent identical poop child objects to matching instances (collision, physics, cookie cutters). Keep them in a list so we can delete them later
