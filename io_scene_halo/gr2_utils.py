@@ -141,7 +141,7 @@ def SelectHaloObject(select_func, selected_asset_type, valid_asset_types):
     select_func = getattr(sel_logic, select_func)
     halo_objects = []
     if selected_asset_type in valid_asset_types:
-        for ob in bpy.context.scene.objects:
+        for ob in bpy.context.view_layer.objects:
             if select_func(ob):
                 halo_objects.append(ob) 
     

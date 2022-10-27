@@ -240,7 +240,7 @@ def WriteFaceCollections(metadata, sidecar_type): # FaceCollections is where reg
             ET.SubElement(FaceCollectionsEntries, "FaceCollectionEntry", Index="0", Name="default", Active="true")
 
             count = 1
-            for ob in bpy.context.scene.objects:
+            for ob in bpy.context.view_layer.objects:
                 region = ob.halo_json.Region_Name
                 if region not in region_list:
                     ET.SubElement(FaceCollectionsEntries, "FaceCollectionEntry", Index=str(count), Name=region, Active="true")
@@ -254,7 +254,7 @@ def WriteFaceCollections(metadata, sidecar_type): # FaceCollections is where reg
             ET.SubElement(FaceCollectionsEntries2, "FaceCollectionEntry", Index="0", Name="default", Active="true")
 
             count = 1
-            for ob in bpy.context.scene.objects:
+            for ob in bpy.context.view_layer.objects:
                 material = ob.halo_json.Face_Global_Material
                 if material not in mat_list:
                         ET.SubElement(FaceCollectionsEntries2, "FaceCollectionEntry", Index=str(count), Name=material, Active="true")
@@ -383,7 +383,7 @@ def WriteScenarioContents(halo_objects, metadata, asset_path, asset_name):
         bsp_list = []
         shared_bsp_exists = False
 
-        for ob in bpy.context.scene.objects:
+        for ob in bpy.context.view_layer.objects:
             if ob.halo_json.bsp_name_locked != '':
                 if not ob.halo_json.bsp_shared and (ob.halo_json.bsp_name_locked not in bsp_list) and not IsDesign(ob):
                     bsp_list.append(ob.halo_json.bsp_name_locked)
@@ -391,12 +391,10 @@ def WriteScenarioContents(halo_objects, metadata, asset_path, asset_name):
                 if not ob.halo_json.bsp_shared and (ob.halo_json.bsp_name not in bsp_list) and not IsDesign(ob):
                     bsp_list.append(ob.halo_json.bsp_name)
 
-        
-        
         # # sort bsp list alphanumerically
-        # bsp_list = bsp_list.sort()
+        bsp_list.sort()
 
-        for ob in bpy.context.scene.objects:
+        for ob in bpy.context.view_layer.objects:
             if ob.halo_json.bsp_shared:
                 shared_bsp_exists = True
                 break
@@ -598,7 +596,7 @@ def WriteScenarioContents(halo_objects, metadata, asset_path, asset_name):
     if SceneHasDesign(halo_objects):
         bsp_list = []
 
-        for ob in bpy.context.scene.objects:
+        for ob in bpy.context.view_layer.objects:
             if ob.halo_json.bsp_name_locked != '':
                 if not ob.halo_json.bsp_shared and (ob.halo_json.bsp_name_locked not in bsp_list) and IsDesign(ob):
                     bsp_list.append(ob.halo_json.bsp_name_locked)
@@ -607,7 +605,7 @@ def WriteScenarioContents(halo_objects, metadata, asset_path, asset_name):
                     bsp_list.append(ob.halo_json.bsp_name)
 
         # sort bsp list alphanumerically
-        # bsp_list = bsp_list.sort()
+        bsp_list.sort()
         
         for bsp in bsp_list:
             content = ET.SubElement(contents, "Content", Name=f'{asset_name}_{bsp}_structure_design', Type='design')
@@ -770,7 +768,7 @@ def GetIntermediateFilePath(asset_path, asset_name, type, perm=''):
 def SceneHasCollisionObject():
     boolean = False
 
-    for ob in bpy.context.scene.objects:
+    for ob in bpy.context.view_layer.objects:
         if sel_logic.ObCollision(ob):
             boolean = True
             break
@@ -780,7 +778,7 @@ def SceneHasCollisionObject():
 def SceneHasPhysicsObject():
     boolean = False
 
-    for ob in bpy.context.scene.objects:
+    for ob in bpy.context.view_layer.objects:
         if sel_logic.ObPhysics(ob):
             boolean = True
             break
@@ -790,7 +788,7 @@ def SceneHasPhysicsObject():
 def SceneHasMarkers():
     boolean = False
 
-    for ob in bpy.context.scene.objects:
+    for ob in bpy.context.view_layer.objects:
         if sel_logic.ObMarkers(ob):
             boolean = True
             break

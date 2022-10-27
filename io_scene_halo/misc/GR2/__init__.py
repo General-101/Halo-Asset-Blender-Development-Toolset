@@ -429,6 +429,58 @@ class GR2_HaloExportFinderPropertiesGroup(PropertyGroup):
         default=False,
     )
 
+#######################################
+# COLLECTION MANAGER TOOL
+
+class GR2_ShaderFinder(Panel):
+    bl_label = "Update Materials by Shader"
+    bl_idname = "HALO_PT_GR2_ShaderFinder"
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "UI"
+    bl_options = {'DEFAULT_CLOSED'}
+    bl_parent_id = "HALO_PT_GR2_AutoTools"
+
+    def draw(self, context):
+        layout = self.layout
+        scene = context.scene
+        scene_gr2_shader_finder = scene.gr2_shader_finder
+
+        layout.use_property_split = True
+        flow = layout.grid_flow(row_major=True, columns=0, even_columns=True, even_rows=False, align=False)
+        col = flow.column()
+        col = layout.column(heading="Shaders Directory")
+        col.prop(scene_gr2_shader_finder, 'shaders_dir', text='')
+        col = layout.column(heading="Overwrite")
+        sub = col.column(align=True)
+        sub.prop(scene_gr2_shader_finder, "overwrite_existing", text='Paths')
+        col = col.row()
+        col.scale_y = 1.5
+        col.operator('halo_gr2.shader_finder')
+
+class GR2_ShaderFinder_Find(Operator):
+    bl_idname = 'halo_gr2.shader_finder'
+    bl_label = 'Update Shader Paths'
+    bl_options = {"REGISTER", "UNDO"}
+
+    def execute(self, context):
+        scene = context.scene
+        scene_gr2_shader_finder = scene.gr2_shader_finder
+        from .shader_finder import FindShaders
+        return FindShaders(context, scene_gr2_shader_finder.shaders_dir, self.report, scene_gr2_shader_finder.overwrite_existing)
+
+class GR2_HaloShaderFinderPropertiesGroup(PropertyGroup):
+    shaders_dir: StringProperty(
+        name="Shaders Directory",
+        description="Leave blank to search the entire tags folder for shaders or input a directory path to specify the folder (and sub-folders) to search for shaders",
+        default='',
+    )
+    overwrite_existing: BoolProperty(
+        name='Overwrite Shader Paths',
+        options=set(),
+        description="Overwrite material shader paths even if they're not blank",
+        default=False,
+    )
+
 classeshalo = (
     GR2_Tools_Helper,
     GR2_HaloExport,

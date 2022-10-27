@@ -597,6 +597,7 @@ class Export_Scene_GR2(Operator, ExportHelper):
             sub = col.column(heading="Keep")
             sub.prop(self, "keep_fbx")
             sub.prop(self, "keep_json")
+            col.separator()
             sub = col.column(heading="Export")
             sub.prop(self, "export_hidden")
             if self.sidecar_type == 'MODEL':

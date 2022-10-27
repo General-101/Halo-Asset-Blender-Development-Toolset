@@ -42,7 +42,7 @@ from ..gr2_utils import(
 # MAIN FUNCTION
 def prepare_scene(context, report, sidecar_type, export_hidden, filepath, use_armature_deform_only, **kwargs):
     objects_selection, active_object = GetCurrentActiveObjectSelection(context)
-    hidden_objects = UnhideObjects(export_hidden)                               # If the user has opted to export hidden objects, list all hidden objects and unhide them, return the list for later use
+    hidden_objects = UnhideObjects(export_hidden, context)                               # If the user has opted to export hidden objects, list all hidden objects and unhide them, return the list for later use
     mode = GetSceneMode(context)                                                      # get the current selected mode, save the mode for later, and then switch to object mode
     # update bsp names in case any are null
     for ob in context.scene.objects:
@@ -55,7 +55,7 @@ def prepare_scene(context, report, sidecar_type, export_hidden, filepath, use_ar
     for p in proxies:
         h_objects.poops.append(p)
     model_armature, temp_armature, no_parent_objects = GetSceneArmature(context)                          # return the main armature in the scene, and create a temp one if a model armature does not exist
-    ParentToArmature(model_armature, temp_armature, no_parent_objects)                             # ensure all objects are parented to an armature on export. Render and collision mesh is parented with armature deform, the rest uses bone parenting
+    ParentToArmature(model_armature, temp_armature, no_parent_objects, context)                             # ensure all objects are parented to an armature on export. Render and collision mesh is parented with armature deform, the rest uses bone parenting
     asset_path, asset = GetAssetInfo(filepath)                                  # get the asset name and path to the asset folder
     skeleton_bones = GetBoneList(model_armature, use_armature_deform_only)      # return a list of bones attached to the model armature, ignoring control / non-deform bones
     FixLightsRotations(h_objects.lights)                                         # adjust light rotations to match in game rotation, and return a list of lights for later use in repair_scene
@@ -95,7 +95,7 @@ def GetSceneMode(context):
     mode = None
     try: # wrapped this in a try as the user can encounter an assert if no object is selected. No reason for this to crash the export
         if context.view_layer.objects.active == None: 
-            context.view_layer.objects.active = context.scene.objects[0]
+            context.view_layer.objects.active = context.view_layer.objects[0]
 
         mode = context.object.mode
         bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
@@ -104,10 +104,10 @@ def GetSceneMode(context):
 
     return mode
 
-def UnhideObjects(export_hidden):
+def UnhideObjects(export_hidden, context):
     hidden_objects = []
     if export_hidden:
-        for ob in tuple(bpy.context.scene.view_layers[0].objects):
+        for ob in tuple(context.view_layer.objects):
             if not ob.visible_get():
                 hidden_objects.append(ob)
         
@@ -170,7 +170,7 @@ def GetSceneArmature(context):
     model_armature = None
     temp_armature = False
     no_parent_objects = []
-    for ob in context.scene.objects:
+    for ob in context.view_layer.objects:
         if ob.type == 'ARMATURE' and not ob.name.startswith('+'): # added a check for a '+' prefix in armature name, to support special animation control armatures in the future
             model_armature = ob
             break
@@ -186,7 +186,7 @@ def AddTempArmature(context):
     model_armature = context.view_layer.objects.active
     model_armature.data.bones[0].name = 'implied_root_node'
     no_parent_objects = []
-    for ob in context.scene.objects:
+    for ob in context.view_layer.objects:
         if ob.parent == None:
             ob.select_set(True)
             no_parent_objects.append(ob)
@@ -196,14 +196,14 @@ def AddTempArmature(context):
 
     return model_armature, no_parent_objects
 
-def ParentToArmature(model_armature, temp_armature, no_parent_objects):
+def ParentToArmature(model_armature, temp_armature, no_parent_objects, context):
     if temp_armature:
         for ob in no_parent_objects:
             ob.select_set(True)
         SetActiveObject(model_armature)
         bpy.ops.object.parent_set(type='BONE', keep_transform=True)
     else:
-        for ob in bpy.context.scene.objects:
+        for ob in context.view_layer.objects:
             if (ob.parent == model_armature and ob.parent_type == 'OBJECT') and not any(m != ' ARMATURE' for m in ob.modifiers):
                 DeselectAllObjects()
                 ob.select_set(True)

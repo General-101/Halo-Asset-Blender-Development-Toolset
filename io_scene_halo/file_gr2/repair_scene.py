@@ -76,7 +76,7 @@ def DelTempArmature(context, model_armature):
     DeselectAllObjects()
     model_armature.select_set(True)
     ops.object.delete(use_global=False, confirm=False)
-    for ob in context.scene.objects:
+    for ob in context.view_layer.objects:
         context.view_layer.objects.active = ob
         ops.object.modifier_remove(modifier="Armature")
     DeselectAllObjects()
