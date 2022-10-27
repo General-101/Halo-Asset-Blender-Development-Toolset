@@ -24,7 +24,6 @@
 #
 # ##### END MIT LICENSE BLOCK #####
 
-from typing import final
 import bpy
 from os.path import exists
 import os
