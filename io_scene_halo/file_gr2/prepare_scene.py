@@ -344,9 +344,9 @@ def AttachPoopProxies(obj, proxy_collision, proxy_physics, proxy_cookie_cutter, 
     ops.object.parent_set(type='OBJECT', keep_transform=False)
 
     for ob in proxy:
-        if sel_logic.ObCollision(ob):
+        if sel_logic.ObPoopCollision(ob):
             ob.matrix_local = collision_offset
-        elif sel_logic.ObPhysics(ob):
+        elif sel_logic.ObPoopPhysics(ob):
             ob.matrix_local = physics_offset
         else:
             ob.matrix_local = cookie_cutter_offset
