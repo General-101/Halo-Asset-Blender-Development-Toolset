@@ -78,7 +78,7 @@ def FindShaderMatch(mat, shaders, tags_path):
         # get just the shader name
         shader_name = s.rpartition('\\')[2]
         shader_name = shader_name.rpartition('.')[0]
-        if material_name == shader_name:
+        if material_name.lower() == shader_name.lower():
             return s.replace(tags_path, '')
     
     return ''

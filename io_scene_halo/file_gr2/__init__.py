@@ -556,7 +556,7 @@ class Export_Scene_GR2(Operator, ExportHelper):
             console.console_toggle() # toggle the console so users can see progress of export
 
         from .prepare_scene import prepare_scene
-        (objects_selection, active_object, hidden_objects, mode, model_armature, temp_armature, asset_path, asset, skeleton_bones, halo_objects, timeline_start, timeline_end, lod_count, proxies
+        (objects_selection, active_object, hidden_objects, mode, model_armature, temp_armature, asset_path, asset, skeleton_bones, halo_objects, timeline_start, timeline_end, lod_count, proxies, unselectable_objects
         ) = prepare_scene(context, self.report, **keywords) # prepares the scene for processing and returns information about the scene
         try:
             from .process_scene import process_scene
@@ -567,7 +567,7 @@ class Export_Scene_GR2(Operator, ExportHelper):
             self.report({'ERROR'}, error)
 
         from .repair_scene import repair_scene
-        repair_scene(context, self.report, objects_selection, active_object, hidden_objects, mode, temp_armature, timeline_start, timeline_end, model_armature, halo_objects.lights, proxies, **keywords)
+        repair_scene(context, self.report, objects_selection, active_object, hidden_objects, mode, temp_armature, timeline_start, timeline_end, model_armature, halo_objects.lights, proxies, unselectable_objects, **keywords)
 
         if self.show_output:
             console.console_toggle()
@@ -758,220 +758,220 @@ class GR2_SceneProps(Panel):
     def draw(self, context):
         layout = self.layout
 
-class GR2_UL_SceneProps_RegionManager(UIList):
-    use_name_reverse: bpy.props.BoolProperty(
-        name="Reverse Name",
-        default=False,
-        options=set(),
-        description="Reverse name sort order",
-    )
+# class GR2_UL_SceneProps_RegionManager(UIList):
+#     use_name_reverse: bpy.props.BoolProperty(
+#         name="Reverse Name",
+#         default=False,
+#         options=set(),
+#         description="Reverse name sort order",
+#     )
 
-    use_order_name: bpy.props.BoolProperty(
-        name="Name",
-        default=False,
-        options=set(),
-        description="Sort groups by their name (case-insensitive)",
-    )
+#     use_order_name: bpy.props.BoolProperty(
+#         name="Name",
+#         default=False,
+#         options=set(),
+#         description="Sort groups by their name (case-insensitive)",
+#     )
 
-    filter_string: bpy.props.StringProperty(
-        name="filter_string",
-        default = "",
-        description="Filter string for name"
-    )
+#     filter_string: bpy.props.StringProperty(
+#         name="filter_string",
+#         default = "",
+#         description="Filter string for name"
+#     )
 
-    filter_invert: bpy.props.BoolProperty(
-        name="Invert",
-        default = False,
-        options=set(),
-        description="Invert Filter"
-    )
-
-
-    def filter_items(self, context,
-                    data, 
-                    property 
-        ):
+#     filter_invert: bpy.props.BoolProperty(
+#         name="Invert",
+#         default = False,
+#         options=set(),
+#         description="Invert Filter"
+#     )
 
 
-        items = getattr(data, property)
-        if not len(items):
-            return [], []
-
-        if self.filter_string:
-            flt_flags = bpy.types.UI_UL_list.filter_items_by_name(
-                    self.filter_string,
-                    self.bitflag_filter_item,
-                    items, 
-                    propname="name",
-                    reverse=self.filter_invert)
-        else:
-            flt_flags = [self.bitflag_filter_item] * len(items)
-
-        if self.use_order_name:
-            flt_neworder = bpy.types.UI_UL_list.sort_items_by_name(items, "name")
-            if self.use_name_reverse:
-                flt_neworder.reverse()
-        else:
-            flt_neworder = []    
+#     def filter_items(self, context,
+#                     data, 
+#                     property 
+#         ):
 
 
-        return flt_flags, flt_neworder        
+#         items = getattr(data, property)
+#         if not len(items):
+#             return [], []
 
-    def draw_filter(self, context,
-                    layout
-        ):
+#         if self.filter_string:
+#             flt_flags = bpy.types.UI_UL_list.filter_items_by_name(
+#                     self.filter_string,
+#                     self.bitflag_filter_item,
+#                     items, 
+#                     propname="name",
+#                     reverse=self.filter_invert)
+#         else:
+#             flt_flags = [self.bitflag_filter_item] * len(items)
 
-        row = layout.row(align=True)
-        row.prop(self, "filter_string", text="Filter", icon="VIEWZOOM")
-        row.prop(self, "filter_invert", text="", icon="ARROW_LEFTRIGHT")
+#         if self.use_order_name:
+#             flt_neworder = bpy.types.UI_UL_list.sort_items_by_name(items, "name")
+#             if self.use_name_reverse:
+#                 flt_neworder.reverse()
+#         else:
+#             flt_neworder = []    
 
 
-        row = layout.row(align=True)
-        row.label(text="Order by:")
-        row.prop(self, "use_order_name", toggle=True)
+#         return flt_flags, flt_neworder        
 
-        icon = 'TRIA_UP' if self.use_name_reverse else 'TRIA_DOWN'
-        row.prop(self, "use_name_reverse", text="", icon=icon)
+#     def draw_filter(self, context,
+#                     layout
+#         ):
 
-    def draw_item(self, context, layout, data, item, icon, active_data, active_propname):
-        scene = context.scene
-        scene_gr2 = scene.gr2
-        if self.layout_type in {'DEFAULT', 'COMPACT'}:
-            if scene:
-                layout.label(text=item.region_name, icon='BOOKMARKS')
-            else:
-                layout.label(text='')
-        elif self.layout_type == 'GRID':
-            layout.alignment = 'CENTER'
-            layout.label(text="", icon_value=icon)
+#         row = layout.row(align=True)
+#         row.prop(self, "filter_string", text="Filter", icon="VIEWZOOM")
+#         row.prop(self, "filter_invert", text="", icon="ARROW_LEFTRIGHT")
 
-class GR2_List_Assign_Region(Operator):
-    """ Add an Item to the UIList"""
-    bl_idname = "gr2_region.assign"
-    bl_label = "Add"
-    bl_description = "Add a new shared asset (sidecar) to the list."
-    filename_ext = ''
 
-    filter_glob: StringProperty(
-        default="*.xml",
-        options={'HIDDEN'},
-        )
+#         row = layout.row(align=True)
+#         row.label(text="Order by:")
+#         row.prop(self, "use_order_name", toggle=True)
 
-    filepath: StringProperty(
-        name="Sidecar",
-        description="Set path for the Sidecar file",
-        subtype="FILE_PATH"
-    )
+#         icon = 'TRIA_UP' if self.use_name_reverse else 'TRIA_DOWN'
+#         row.prop(self, "use_name_reverse", text="", icon=icon)
 
-    @classmethod
-    def poll(cls, context):
-        return context.scene
+#     def draw_item(self, context, layout, data, item, icon, active_data, active_propname):
+#         scene = context.scene
+#         scene_gr2 = scene.gr2
+#         if self.layout_type in {'DEFAULT', 'COMPACT'}:
+#             if scene:
+#                 layout.label(text=item.region_name, icon='BOOKMARKS')
+#             else:
+#                 layout.label(text='')
+#         elif self.layout_type == 'GRID':
+#             layout.alignment = 'CENTER'
+#             layout.label(text="", icon_value=icon)
+
+# class GR2_List_Assign_Region(Operator):
+#     """ Add an Item to the UIList"""
+#     bl_idname = "gr2_region.assign"
+#     bl_label = "Add"
+#     bl_description = "Add a new shared asset (sidecar) to the list."
+#     filename_ext = ''
+
+#     filter_glob: StringProperty(
+#         default="*.xml",
+#         options={'HIDDEN'},
+#         )
+
+#     filepath: StringProperty(
+#         name="Sidecar",
+#         description="Set path for the Sidecar file",
+#         subtype="FILE_PATH"
+#     )
+
+#     @classmethod
+#     def poll(cls, context):
+#         return context.scene
     
-    def execute(self, context):
-        scene = context.scene
-        scene_gr2 = scene.gr2
-        scene_gr2.shared_assets.add()
+#     def execute(self, context):
+#         scene = context.scene
+#         scene_gr2 = scene.gr2
+#         scene_gr2.shared_assets.add()
         
-        path = self.filepath
-        path = path.replace(GetDataPath(), '')
-        scene_gr2.shared_assets[-1].shared_asset_path = path
-        scene_gr2.shared_assets_index = len(scene_gr2.shared_assets) - 1
-        context.area.tag_redraw()
-        return {'FINISHED'}
+#         path = self.filepath
+#         path = path.replace(GetDataPath(), '')
+#         scene_gr2.shared_assets[-1].shared_asset_path = path
+#         scene_gr2.shared_assets_index = len(scene_gr2.shared_assets) - 1
+#         context.area.tag_redraw()
+#         return {'FINISHED'}
 
-    def invoke(self, context, event):
-        context.window_manager.fileselect_add(self)
+#     def invoke(self, context, event):
+#         context.window_manager.fileselect_add(self)
 
-        return {'RUNNING_MODAL'}
+#         return {'RUNNING_MODAL'}
 
-class GR2_List_Remove_Region(Operator):
-    """ Remove an Item from the UIList"""
-    bl_idname = "gr2_shared_asset.list_remove"
-    bl_label = "Remove"
-    bl_description = "Remove a region from the list."
+# class GR2_List_Remove_Region(Operator):
+#     """ Remove an Item from the UIList"""
+#     bl_idname = "gr2_shared_asset.list_remove"
+#     bl_label = "Remove"
+#     bl_description = "Remove a region from the list."
 
-    @classmethod
-    def poll(cls, context):
-        scene = context.scene
-        scene_gr2 = scene.gr2
-        return context.scene and len(scene_gr2.shared_assets) > 0
+#     @classmethod
+#     def poll(cls, context):
+#         scene = context.scene
+#         scene_gr2 = scene.gr2
+#         return context.scene and len(scene_gr2.shared_assets) > 0
     
-    def execute(self, context):
-        scene = context.scene
-        scene_gr2 = scene.gr2
-        index = scene_gr2.shared_assets_index
-        scene_gr2.shared_assets.remove(index)
-        return {'FINISHED'}
+#     def execute(self, context):
+#         scene = context.scene
+#         scene_gr2 = scene.gr2
+#         index = scene_gr2.shared_assets_index
+#         scene_gr2.shared_assets.remove(index)
+#         return {'FINISHED'}
 
-class GR2_List_Select_Region(Operator):
-    """ Remove an Item from the UIList"""
-    bl_idname = "gr2_shared_asset.list_remove"
-    bl_label = "Remove"
-    bl_description = "Remove a region from the list."
+# class GR2_List_Select_Region(Operator):
+#     """ Remove an Item from the UIList"""
+#     bl_idname = "gr2_shared_asset.list_remove"
+#     bl_label = "Remove"
+#     bl_description = "Remove a region from the list."
 
-    @classmethod
-    def poll(cls, context):
-        scene = context.scene
-        scene_gr2 = scene.gr2
-        return context.scene and len(scene_gr2.shared_assets) > 0
+#     @classmethod
+#     def poll(cls, context):
+#         scene = context.scene
+#         scene_gr2 = scene.gr2
+#         return context.scene and len(scene_gr2.shared_assets) > 0
     
-    def execute(self, context):
-        scene = context.scene
-        scene_gr2 = scene.gr2
-        index = scene_gr2.shared_assets_index
-        scene_gr2.shared_assets.remove(index)
-        return {'FINISHED'}
+#     def execute(self, context):
+#         scene = context.scene
+#         scene_gr2 = scene.gr2
+#         index = scene_gr2.shared_assets_index
+#         scene_gr2.shared_assets.remove(index)
+#         return {'FINISHED'}
 
-class GR2_List_Deselect_Region(Operator):
-    """ Remove an Item from the UIList"""
-    bl_idname = "gr2_shared_asset.list_remove"
-    bl_label = "Remove"
-    bl_description = "Remove a region from the list."
+# class GR2_List_Deselect_Region(Operator):
+#     """ Remove an Item from the UIList"""
+#     bl_idname = "gr2_shared_asset.list_remove"
+#     bl_label = "Remove"
+#     bl_description = "Remove a region from the list."
 
-    @classmethod
-    def poll(cls, context):
-        scene = context.scene
-        scene_gr2 = scene.gr2
-        return context.scene and len(scene_gr2.shared_assets) > 0
+#     @classmethod
+#     def poll(cls, context):
+#         scene = context.scene
+#         scene_gr2 = scene.gr2
+#         return context.scene and len(scene_gr2.shared_assets) > 0
     
-    def execute(self, context):
-        scene = context.scene
-        scene_gr2 = scene.gr2
-        index = scene_gr2.shared_assets_index
-        scene_gr2.shared_assets.remove(index)
-        return {'FINISHED'}
+#     def execute(self, context):
+#         scene = context.scene
+#         scene_gr2 = scene.gr2
+#         index = scene_gr2.shared_assets_index
+#         scene_gr2.shared_assets.remove(index)
+#         return {'FINISHED'}
 
-class GR2_List_CreateAssign_Region(Operator):
-    """ Remove an Item from the UIList"""
-    bl_idname = "gr2_shared_asset.list_remove"
-    bl_label = "Remove"
-    bl_description = "Remove a region from the list."
+# class GR2_List_CreateAssign_Region(Operator):
+#     """ Remove an Item from the UIList"""
+#     bl_idname = "gr2_shared_asset.list_remove"
+#     bl_label = "Remove"
+#     bl_description = "Remove a region from the list."
 
-    @classmethod
-    def poll(cls, context):
-        scene = context.scene
-        scene_gr2 = scene.gr2
-        return context.scene and len(scene_gr2.shared_assets) > 0
+#     @classmethod
+#     def poll(cls, context):
+#         scene = context.scene
+#         scene_gr2 = scene.gr2
+#         return context.scene and len(scene_gr2.shared_assets) > 0
     
-    def execute(self, context):
-        scene = context.scene
-        scene_gr2 = scene.gr2
-        index = scene_gr2.shared_assets_index
-        scene_gr2.shared_assets.remove(index)
-        return {'FINISHED'}
+#     def execute(self, context):
+#         scene = context.scene
+#         scene_gr2 = scene.gr2
+#         index = scene_gr2.shared_assets_index
+#         scene_gr2.shared_assets.remove(index)
+#         return {'FINISHED'}
 
-class GR2_Region_ListItems(PropertyGroup):
+# class GR2_Region_ListItems(PropertyGroup):
 
-    def GetRegionName(self):
-        name = self.shared_asset_path
-        name = name.rpartition('\\')[2]
-        name = name.rpartition('.sidecar.xml')[0]
+#     def GetRegionName(self):
+#         name = self.shared_asset_path
+#         name = name.rpartition('\\')[2]
+#         name = name.rpartition('.sidecar.xml')[0]
 
-        return name
+#         return name
 
-    region_name: StringProperty(
-        get=GetRegionName,
-    )
+#     region_name: StringProperty(
+#         get=GetRegionName,
+#     )
 
 class GR2_UL_SceneProps_SharedAssets(UIList):
     use_name_reverse: bpy.props.BoolProperty(
@@ -1198,25 +1198,19 @@ class GR2_ScenePropertiesGroup(PropertyGroup):
         default=0,
         min=0,
     )
-    region: CollectionProperty(
-        type=GR2_Region_ListItems,
-    )
+    # region: CollectionProperty(
+    #     type=GR2_Region_ListItems,
+    # )
 
-    region_index: IntProperty(
-        name='Index for Region',
-        default=0,
-        min=0,
-    )
+    # region_index: IntProperty(
+    #     name='Index for Region',
+    #     default=0,
+    #     min=0,
+    # )
 
 
 classeshalo = (
     Export_Scene_GR2,
-    GR2_UL_SceneProps_RegionManager,
-    GR2_List_Assign_Region,
-    GR2_List_Remove_Region,
-    GR2_List_Select_Region,
-    GR2_List_Deselect_Region,
-    GR2_Region_ListItems,
     GR2_Asset_ListItems,
     GR2_List_Add_Shared_Asset,
     GR2_List_Remove_Shared_Asset,

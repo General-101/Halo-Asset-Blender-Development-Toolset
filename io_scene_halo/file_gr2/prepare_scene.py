@@ -36,6 +36,7 @@ from ..gr2_utils import(
     sel_logic,
     GetAssetInfo,
     SelectHaloObject,
+    SelectAllObjects,
 )
 #####################################################################################
 #####################################################################################
@@ -43,6 +44,7 @@ from ..gr2_utils import(
 def prepare_scene(context, report, sidecar_type, export_hidden, filepath, use_armature_deform_only, **kwargs):
     objects_selection, active_object = GetCurrentActiveObjectSelection(context)
     hidden_objects = UnhideObjects(export_hidden, context)                               # If the user has opted to export hidden objects, list all hidden objects and unhide them, return the list for later use
+    unselectable_objects = MakeSelectable(context)
     mode = GetSceneMode(context)                                                      # get the current selected mode, save the mode for later, and then switch to object mode
     # update bsp names in case any are null
     for ob in context.scene.objects:
@@ -62,7 +64,7 @@ def prepare_scene(context, report, sidecar_type, export_hidden, filepath, use_ar
     timeline_start, timeline_end = SetTimelineRange(context)                      # set the timeline range so we can restore it later
     lod_count = GetDecoratorLODCount(h_objects, sidecar_type == 'DECORATOR SET') # get the max LOD count in the scene if we're exporting a decorator
 
-    return objects_selection, active_object, hidden_objects, mode, model_armature, temp_armature, asset_path, asset, skeleton_bones, h_objects, timeline_start, timeline_end, lod_count, proxies
+    return objects_selection, active_object, hidden_objects, mode, model_armature, temp_armature, asset_path, asset, skeleton_bones, h_objects, timeline_start, timeline_end, lod_count, proxies, unselectable_objects
 
 #####################################################################################
 #####################################################################################
@@ -387,6 +389,21 @@ def GetPoopProxyCookie(obj, poops):
             break
 
     return cookie, cookie_offset
+
+def MakeSelectable(context):
+    unselectable_objects = []
+    SelectAllObjects()
+    for ob in context.view_layer.objects:
+        if ob not in context.selected_objects:
+            unselectable_objects.append(ob)
+    
+    for ob in unselectable_objects:
+        ob.hide_select = False
+    
+    DeselectAllObjects()
+
+    return unselectable_objects
+
 
 def FixMissingMaterials(context, halo_objects):
     # set some locals

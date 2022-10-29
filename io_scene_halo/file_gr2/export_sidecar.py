@@ -692,7 +692,7 @@ def WriteDecoratorContents(halo_objects, metadata, asset_path, asset_name, lod_c
             ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePath(asset_path, asset_name, 'render')
 
             output = ET.SubElement(object, 'OutputTagCollection')
-            ET.SubElement(output, 'OutputTag', Type='render_model').text = f'path.join(asset_path, asset_name)_lod{str(count + 1)}' # we add 1 here by convention. This results in a tag name that matches the lod value, rather than index
+            ET.SubElement(output, 'OutputTag', Type='render_model').text = f'{path.join(asset_path, asset_name)}_lod{str(count + 1)}' # we add 1 here by convention. This results in a tag name that matches the lod value, rather than index
             count += 1
 
 def WriteParticleContents(halo_objects, metadata, asset_path, asset_name):

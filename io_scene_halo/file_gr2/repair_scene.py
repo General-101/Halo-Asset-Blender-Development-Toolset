@@ -34,7 +34,7 @@ from mathutils import Matrix
 #####################################################################################
 # MAIN FUNCTION     
 
-def repair_scene(context, report, objects_selection, active_object, hidden_objects, mode, temp_armature, timeline_start, timeline_end, model_armature, lights, proxies, export_hidden, **kwargs):
+def repair_scene(context, report, objects_selection, active_object, hidden_objects, mode, temp_armature, timeline_start, timeline_end, model_armature, lights, proxies, unselectable_objects, export_hidden, **kwargs):
     scene = context.scene
  
     RepairTimeline(scene, timeline_start, timeline_end)
@@ -42,6 +42,9 @@ def repair_scene(context, report, objects_selection, active_object, hidden_objec
     DeletePoopProxies(proxies)
 
     RestoreLightsRotations(lights)
+
+    for ob in unselectable_objects:
+        ob.hide_select = True
 
     if export_hidden:
         for ob in hidden_objects:
