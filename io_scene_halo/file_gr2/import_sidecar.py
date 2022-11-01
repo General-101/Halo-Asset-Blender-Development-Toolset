@@ -46,15 +46,15 @@ def import_now(report, filePath='', import_check=False, import_force=False, impo
     except:
         report({'WARNING'},"Import Failed!")
         print('Exception!')
+    else:
+        if run_tagwatcher:
+            try:
+                tagwatcher = GetEKPath() + '\\bin\\tools\\bonobo\\TagWatcher.exe'
+                Popen(tagwatcher)
+            except:
+                report({'WARNING'},"TagWatcher Failed To Run!")
 
-    if run_tagwatcher:
-        try:
-            tagwatcher = GetEKPath() + '\\bin\\tools\\bonobo\\TagWatcher.exe'
-            Popen(tagwatcher)
-        except:
-            report({'WARNING'},"TagWatcher Failed To Run!")
-
-    report({'INFO'},"Import process complete")
+        report({'INFO'},"Import process complete")
 
 def CleanAssetPath(path):
     path = path.replace('"','')

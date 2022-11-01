@@ -5,3 +5,9 @@ output/
 copy to add-ons.bat
 .DS_Store
 io_scene_halo/.vscode/settings.json
+*.vsidx
+io_scene_halo/.vs/io_scene_halo/FileContentIndex/read.lock
+io_scene_halo/.vs/io_scene_halo/v17/.suo
+io_scene_halo/.vs/ProjectSettings.json
+io_scene_halo/.vs/slnx.sqlite
+io_scene_halo/.vs/VSWorkspaceState.json
