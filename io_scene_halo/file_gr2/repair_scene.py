@@ -44,7 +44,7 @@ def repair_scene(context, report, objects_selection, active_object, hidden_objec
 
     RestoreLightsRotations(lights)
 
-    HaloDeboner(model_armature.data.edit_bones, model_armature, context)
+    # HaloDeboner(model_armature.data.edit_bones, model_armature, context)
 
     for ob in unselectable_objects:
         ob.hide_select = True
