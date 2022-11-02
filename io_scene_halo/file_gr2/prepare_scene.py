@@ -68,6 +68,39 @@ def prepare_scene(context, report, sidecar_type, export_hidden, filepath, use_ar
 
     return objects_selection, active_object, hidden_objects, mode, model_armature, temp_armature, asset_path, asset, skeleton_bones, h_objects, timeline_start, timeline_end, lod_count, proxies, unselectable_objects
 
+# def HaloBoner(bones, model_armature, context):
+#     # objects_in_scope = context.view_layer.objects
+#     # ob_matrix = CreateObMatrixDict(objects_in_scope)
+#     model_armature.select_set(True)
+#     for b in bones:
+#         pivot = b.head
+#         angle_x = radians(-90)
+#         angle_z = radians(-180)
+#         axis_x = (1, 0, 0)
+#         axis_z = (0, 0, 1)
+#         M = (
+#             Matrix.Translation(pivot) @
+#             Matrix.Rotation(angle_x, 4, axis_x) @
+#             Matrix.Rotation(angle_z, 4, axis_z) @
+#             Matrix.Translation(-pivot)
+#             )
+#         b.matrix = M @ b.matrix
+    
+# #     for ob in objects_in_scope:
+# #         for key, value in ob_matrix.items():
+# #             if key == ob:
+# #                 ob.matrix_world = value
+# #                 break
+
+# #     return ob_matrix
+
+# # def CreateObMatrixDict(objects_in_scope):
+# #     ob_matrix = {}
+# #     for ob in objects_in_scope:
+# #         ob_matrix.update({ob: ob.matrix_world})
+
+# #     return ob_matrix
+
 #####################################################################################
 #####################################################################################
 # HALO CLASS

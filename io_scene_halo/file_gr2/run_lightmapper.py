@@ -26,37 +26,29 @@
 
 from subprocess import Popen
 import os
-import ctypes
-import platform
 from io_scene_halo.gr2_utils import GetEKPath
 
-def lightmapper(report, filepath, lightmap_quality='DIRECT', lightmap_all_bsps='TRUE', lightmap_specific_bsp='0'):
+def lightmapper(report, filepath, lightmap_quality='DIRECT', lightmap_all_bsps='TRUE', lightmap_specific_bsp='0', lightmap_region):
     full_path = filepath.rpartition('\\')[0]
     asset_path = CleanAssetPath(full_path)
     asset_name = asset_path.rpartition('\\')[2]
     bsp = GetBSPToLightmap(lightmap_all_bsps, lightmap_specific_bsp, asset_name)
     quality = GetQuality(lightmap_quality)
-    high_quality_settings = ('medium', 'high', 'super_slow')
 
-    pyCheck = platform.python_version().split('.')
-    if int(pyCheck[0]) >= 3 or not platform.python_version() == None:
-        try:
-            lightmapCommand = 'python calc_lm_farm_local.py "{}" "{}" {}'.format(asset_path + '\\' + asset_name, bsp, quality)
-            os.chdir(GetEKPath())
-            p = Popen(lightmapCommand)
-            p.wait()
-            report({'INFO'},"Lightmapping process complete")
+    try:
+        lightmapCommand = f'python calc_lm_farm_local.py {os.path.join(asset_path, asset_name)} {bsp} {quality} {lightmap_region})'
+        os.chdir(GetEKPath())
+        p = Popen(lightmapCommand)
+        p.wait()
+        report({'INFO'},"Lightmapping process complete")
 
-        except:
-            report({'WARNING'},"Lightmapping process failed. You may need to add python to your PATH")
-    else:
-        ctypes.windll.user32.MessageBoxW(0, 'Python could not be found on this PC! Make sure it is installed in order to continue lightmapping', 'Python Not Found', 0)
-        report({'WARNING'},"Lightmapping process failed")
+    except:
+        report({'WARNING'},"Lightmapping process failed. You may need to add python to your PATH")
 
 def GetBSPToLightmap(lightmap_all_bsps, lightmap_specific_bsp, asset_name):
     bsp = 'all'
     if not lightmap_all_bsps:
-        bsp = asset_name + '_' + "{0:03}".format(lightmap_specific_bsp)
+        bsp = f'{asset_name}_{lightmap_specific_bsp}'
 
     return bsp
 
@@ -88,38 +80,10 @@ def run_lightmapper(operator, context, report,
         lightmap_quality='DIRECT',
         lightmap_all_bsps='TRUE',
         lightmap_specific_bsp='0',
+        lightmap_region='',
         asset_path='',
         **kwargs
         ):
-        lightmapper(report, filepath, lightmap_quality, lightmap_all_bsps, lightmap_specific_bsp)
+        lightmapper(report, filepath, lightmap_quality, lightmap_all_bsps, lightmap_specific_bsp, lightmap_region)
 
         return {'FINISHED'}
-
-# from subprocess import Popen
-# import os
-# import ctypes
-# import platform
-# from io_scene_halo.gr2_utils import GetEKPath
-# import sys
-
-# def lightmapper(report, filepath, lightmap_quality='DIRECT', lightmap_all_bsps='TRUE', lightmap_specific_bsp='0'):
-#     full_path = filepath.rpartition('\\')[0]
-#     asset_path = CleanAssetPath(full_path)
-#     asset_name = asset_path.rpartition('\\')[2]
-#     bsp = GetBSPToLightmap(lightmap_all_bsps, lightmap_specific_bsp, asset_name)
-#     quality = GetQuality(lightmap_quality)
-#     high_quality_settings = ('medium', 'high', 'super_slow')
-
-#     try:
-#         sys.path.insert(1, GetEKPath())
-#         sys.argv = ['calc_lm_farm_local.py', os.path.join(asset_path, asset_name), bsp, quality]
-#         print(sys.argv)
-#         import calc_lm_farm_local
-#         # lightmapCommand = 'python calc_lm_farm_local.py "{}" "{}" {}'.format(asset_path + '\\' + asset_name, bsp, quality)
-#         # os.chdir(GetEKPath())
-#         # p = Popen(lightmapCommand)
-#         # p.wait()
-#         # report({'INFO'},"Lightmapping process complete")
-
-#     except:
-#         report({'WARNING'},"Lightmapping process failed")

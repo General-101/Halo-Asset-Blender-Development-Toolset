@@ -25,6 +25,8 @@
 # ##### END MIT LICENSE BLOCK #####
 import bpy
 import platform
+from math import radians
+from mathutils import Matrix
 
 ###########
 ##GLOBALS##
@@ -493,6 +495,43 @@ def IsDesign(ob):
 def SetBoneJSONValues(bones):
     print('tbd')
 
+def HaloBoner(bones, model_armature):
+    SetActiveObject(model_armature)
+    bpy.ops.object.mode_set(mode='EDIT', toggle=False)
+    for b in bones:
+        pivot = b.head
+        angle_x = radians(-90)
+        angle_z = radians(-180)
+        axis_x = (1, 0, 0)
+        axis_z = (0, 0, 1)
+        M = (
+            Matrix.Translation(pivot) @
+            Matrix.Rotation(angle_x, 4, axis_x) @
+            Matrix.Rotation(angle_z, 4, axis_z) @
+            Matrix.Translation(-pivot)
+            )
+        b.matrix = M @ b.matrix
+
+    bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
+
+def HaloDeboner(bones, model_armature):
+    SetActiveObject(model_armature)
+    bpy.ops.object.mode_set(mode='EDIT', toggle=False)
+    for b in bones:
+        pivot = b.head
+        angle_x = radians(90)
+        angle_z = radians(180)
+        axis_x = (1, 0, 0)
+        axis_z = (0, 0, 1)
+        M = (
+            Matrix.Translation(pivot) @
+            Matrix.Rotation(angle_x, 4, axis_x) @
+            Matrix.Rotation(angle_z, 4, axis_z) @
+            Matrix.Translation(-pivot)
+            )
+        b.matrix = M @ b.matrix
+
+    bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
 
 #################################
 
