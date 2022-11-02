@@ -26,6 +26,7 @@
 import bpy
 from ..gr2_utils import(
     DeselectAllObjects,
+    HaloDeboner,
 )
 from math import radians
 from mathutils import Matrix
@@ -42,6 +43,8 @@ def repair_scene(context, report, objects_selection, active_object, hidden_objec
     DeletePoopProxies(proxies)
 
     RestoreLightsRotations(lights)
+
+    HaloDeboner(model_armature.data.edit_bones, model_armature, context)
 
     for ob in unselectable_objects:
         ob.hide_select = True

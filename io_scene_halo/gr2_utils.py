@@ -495,7 +495,9 @@ def IsDesign(ob):
 def SetBoneJSONValues(bones):
     print('tbd')
 
-def HaloBoner(bones, model_armature):
+def HaloBoner(bones, model_armature, context):
+    objects_in_scope = context.view_layer.objects
+    ob_matrix = CreateObMatrixDict(objects_in_scope)
     SetActiveObject(model_armature)
     bpy.ops.object.mode_set(mode='EDIT', toggle=False)
     for b in bones:
@@ -511,7 +513,15 @@ def HaloBoner(bones, model_armature):
 
     bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
 
-def HaloDeboner(bones, model_armature):
+    for ob in objects_in_scope:
+        for key, value in ob_matrix.items():
+            if key == ob:
+                ob.matrix_world = value
+                break
+
+def HaloDeboner(bones, model_armature, context):
+    objects_in_scope = context.view_layer.objects
+    ob_matrix = CreateObMatrixDict(objects_in_scope)
     SetActiveObject(model_armature)
     bpy.ops.object.mode_set(mode='EDIT', toggle=False)
     for b in bones:
@@ -526,6 +536,12 @@ def HaloDeboner(bones, model_armature):
         b.matrix = M @ b.matrix
 
     bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
+
+    for ob in objects_in_scope:
+        for key, value in ob_matrix.items():
+            if key == ob:
+                ob.matrix_world = value
+                break
 
 def HaloNoder(nodes, model_armature):
     SetActiveObject(model_armature)
@@ -558,6 +574,14 @@ def HaloDenoder(nodes, model_armature):
             Matrix.Translation(-pivot)
             )
         n.matrix_world = M @ n.matrix_world
+
+def CreateObMatrixDict(objects_in_scope):
+    ob_matrix = {}
+    for ob in objects_in_scope:
+        mtrx = Matrix(ob.matrix_world)
+        ob_matrix.update({ob: mtrx})
+
+    return ob_matrix
 
 #################################
 
