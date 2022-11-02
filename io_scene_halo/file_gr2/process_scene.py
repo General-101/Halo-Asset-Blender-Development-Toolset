@@ -45,7 +45,9 @@ from ..gr2_utils import(
     IsDesign,
     sel_logic,
     HaloBoner,
-    HaloDeboner
+    HaloDeboner,
+    HaloNoder,
+    HaloDenoder
 )
 
 #####################################################################################
@@ -197,7 +199,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                             gr2_count += 1
 
                     if SelectModelSkeleton(model_armature):
-                        HaloBoner(model_armature.data.bones, model_armature)
+                        #HaloBoner(model_armature.data.edit_bones, model_armature)
                         if using_better_fbx:
                             obj_selection = [obj for obj in context.selected_objects]
                             export_better_fbx(context, False, **keywords)
@@ -206,7 +208,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                         else:
                             export_fbx(self, context, **keywords)
                         export_gr2(self, context, report, asset_path, asset, IsWindows(), 'skeleton', halo_objects, '', '', model_armature, skeleton_bones, **keywords)
-                        HaloDeboner(model_armature.data.bones, model_armature)
+                        #HaloDeboner(model_armature.data.edit_bones, model_armature)
                         gr2_count += 1
 
                     if export_animations and 1<=len(bpy.data.actions):

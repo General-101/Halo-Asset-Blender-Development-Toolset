@@ -501,13 +501,10 @@ def HaloBoner(bones, model_armature):
     for b in bones:
         pivot = b.head
         angle_x = radians(-90)
-        angle_z = radians(-180)
         axis_x = (1, 0, 0)
-        axis_z = (0, 0, 1)
         M = (
             Matrix.Translation(pivot) @
             Matrix.Rotation(angle_x, 4, axis_x) @
-            Matrix.Rotation(angle_z, 4, axis_z) @
             Matrix.Translation(-pivot)
             )
         b.matrix = M @ b.matrix
@@ -520,18 +517,47 @@ def HaloDeboner(bones, model_armature):
     for b in bones:
         pivot = b.head
         angle_x = radians(90)
-        angle_z = radians(180)
         axis_x = (1, 0, 0)
-        axis_z = (0, 0, 1)
         M = (
             Matrix.Translation(pivot) @
             Matrix.Rotation(angle_x, 4, axis_x) @
-            Matrix.Rotation(angle_z, 4, axis_z) @
             Matrix.Translation(-pivot)
             )
         b.matrix = M @ b.matrix
 
     bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
+
+def HaloNoder(nodes, model_armature):
+    SetActiveObject(model_armature)
+    for n in nodes:
+        pivot = model_armature.location
+        angle_x = radians(-90)
+        angle_z = radians(-180)
+        axis_x = (1, 0, 0)
+        axis_z = (0, 0, 1)
+        M = (
+            Matrix.Translation(pivot) @
+            Matrix.Rotation(angle_x, 4, axis_x) @
+            Matrix.Rotation(angle_z, 4, axis_z) @ 
+            Matrix.Translation(-pivot)
+            )
+        n.matrix_world = M @ n.matrix_world
+
+def HaloDenoder(nodes, model_armature):
+    SetActiveObject(model_armature)
+    for n in nodes:
+        pivot = model_armature.location
+        angle_x = radians(90)
+        angle_z = radians(180)
+        axis_x = (1, 0, 0)
+        axis_z = (0, 0, 1)
+        M = (
+            Matrix.Translation(pivot) @
+            Matrix.Rotation(angle_z, 4, axis_z) @ 
+            Matrix.Rotation(angle_x, 4, axis_x) @
+            Matrix.Translation(-pivot)
+            )
+        n.matrix_world = M @ n.matrix_world
 
 #################################
 
