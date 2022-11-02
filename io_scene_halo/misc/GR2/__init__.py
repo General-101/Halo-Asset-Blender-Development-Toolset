@@ -482,6 +482,7 @@ class GR2_HaloCollectionManagerPropertiesGroup(PropertyGroup):
             ('BSP', 'BSP / Design', ''),
             ('REGION', 'Region', ''),
             ('PERMUTATION', 'Permutation', ''),
+            ('EXCLUDE', 'Exclude', ''),
         ]
     )
     collection_name: StringProperty(

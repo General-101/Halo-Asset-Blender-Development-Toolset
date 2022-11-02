@@ -322,14 +322,14 @@ def getMeshProperties(mesh, name, ob):
         mesh_props.update({"bungie_mesh_poop_lighting": getPoopLighting(mesh.Poop_Lighting_Override, name)})
         mesh_props.update({"bungie_mesh_poop_pathfinding": getPoopPathfinding(mesh.Poop_Pathfinding_Override, name)})
         mesh_props.update({"bungie_mesh_poop_imposter_policy": getPoopImposter(mesh.Poop_Imposter_Policy)})
-        if mesh.Poop_Imposter_Transition_Distance != -1:
+        if not mesh.Poop_Imposter_Transition_Distance_Auto:
             mesh_props.update({"bungie_mesh_poop_imposter_transition_distance": str(round(mesh.Poop_Imposter_Transition_Distance, 6))})
-        if mesh.Poop_Imposter_Fade_Range_Start != 36:
-            mesh_props.update({"bungie_mesh_poop_fade_range_start": str(mesh.Poop_Imposter_Fade_Range_Start)})
-        if mesh.Poop_Imposter_Fade_Range_End != 30:
-            mesh_props.update({"bungie_mesh_poop_fade_range_end": str(mesh.Poop_Imposter_Fade_Range_End)})
+        # if mesh.Poop_Imposter_Fade_Range_Start != 36: # commented out 2022-11-01. Reason: appears to go unused, however this should be reinstated if there does appear to be some use
+        #     mesh_props.update({"bungie_mesh_poop_fade_range_start": str(mesh.Poop_Imposter_Fade_Range_Start)})
+        # if mesh.Poop_Imposter_Fade_Range_End != 30:
+        #     mesh_props.update({"bungie_mesh_poop_fade_range_end": str(mesh.Poop_Imposter_Fade_Range_End)})
         if mesh.Poop_Predominant_Shader_Name != '':
-            mesh_props.update({"bungie_mesh_poop_poop_predominant_shader_name":mesh.Poop_Imposter_Fade_Range_End[0:1023]})
+            mesh_props.update({"bungie_mesh_poop_poop_predominant_shader_name":mesh.Poop_Predominant_Shader_Name[0:1023]})
         mesh_props.update({"bungie_mesh_poop_decomposition_hulls": "-1"})
         if mesh.Poop_Render_Only or name.startswith(poop_render_only_prefixes):
             mesh_props.update({"bungie_mesh_poop_is_render_only": "1"})
@@ -773,37 +773,7 @@ def getMaterials():
                         if shaderPath == '':
                             shaderPath = 'shaders\invalid'
                         
-                        match halo_material.Shader_Type:
-                            case 'SHADER':
-                                shaderType = 'shader'
-                            case 'SHADER CORTANA':
-                                shaderType = 'shader_cortana'
-                            case 'SHADER CUSTOM':
-                                shaderType = 'shader_custom'
-                            case 'SHADER DECAL':
-                                shaderType = 'shader_decal'
-                            case 'SHADER FOLIAGE':
-                                shaderType = 'shader_foliage'
-                            case 'SHADER FUR':
-                                shaderType = 'shader_fur'
-                            case 'SHADER FUR STENCIL':
-                                shaderType = 'shader_fur_stencil'
-                            case 'SHADER GLASS':
-                                shaderType = 'shader_glass'
-                            case 'SHADER HALOGRAM':
-                                shaderType = 'shader_halogram'
-                            case 'SHADER  MUX':
-                                shaderType = 'shader_mux'
-                            case 'SHADER MUX MATERIAL':
-                                shaderType = 'shader_mux_material'
-                            case 'SHADER SCREEN':
-                                shaderType = 'shader_screen'
-                            case 'SHADER SKIN':
-                                shaderType = 'shader_skin'
-                            case 'SHADER TERRAIN':
-                                shaderType = 'shader_terrain'
-                            case 'SHADER WATER':
-                                shaderType = 'shader_water'
+                        shaderType = halo_material.Shader_Type
 
                     matList.update({halo_material_name : {"bungie_shader_path": shaderPath, "bungie_shader_type": shaderType}})
 

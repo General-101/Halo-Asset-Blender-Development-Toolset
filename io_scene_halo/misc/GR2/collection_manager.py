@@ -55,6 +55,8 @@ def GetCollIfExists(data, full_name):
 def GetFullName(coll_type, coll_name):
     prefix = ''
     match coll_type:
+        case 'EXCLUDE':
+            prefix = '+exclude:'
         case 'BSP':
             prefix = '+bsp:'
         case 'REGION':

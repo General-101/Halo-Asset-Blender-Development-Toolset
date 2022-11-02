@@ -37,6 +37,7 @@ from ..gr2_utils import(
     GetAssetInfo,
     SelectHaloObject,
     SelectAllObjects,
+    IsShader,
 )
 #####################################################################################
 #####################################################################################
@@ -44,8 +45,8 @@ from ..gr2_utils import(
 def prepare_scene(context, report, sidecar_type, export_hidden, filepath, use_armature_deform_only, **kwargs):
     objects_selection, active_object = GetCurrentActiveObjectSelection(context)
     hidden_objects = UnhideObjects(export_hidden, context)                               # If the user has opted to export hidden objects, list all hidden objects and unhide them, return the list for later use
-    unselectable_objects = MakeSelectable(context)
     mode = GetSceneMode(context)                                                      # get the current selected mode, save the mode for later, and then switch to object mode
+    unselectable_objects = MakeSelectable(context)
     # update bsp names in case any are null
     for ob in context.scene.objects:
         if ob.halo_json.bsp_name == '':
@@ -63,6 +64,7 @@ def prepare_scene(context, report, sidecar_type, export_hidden, filepath, use_ar
     FixLightsRotations(h_objects.lights)                                         # adjust light rotations to match in game rotation, and return a list of lights for later use in repair_scene
     timeline_start, timeline_end = SetTimelineRange(context)                      # set the timeline range so we can restore it later
     lod_count = GetDecoratorLODCount(h_objects, sidecar_type == 'DECORATOR SET') # get the max LOD count in the scene if we're exporting a decorator
+    ApplyPredominantShaderNames(h_objects.poops)
 
     return objects_selection, active_object, hidden_objects, mode, model_armature, temp_armature, asset_path, asset, skeleton_bones, h_objects, timeline_start, timeline_end, lod_count, proxies, unselectable_objects
 
@@ -284,6 +286,25 @@ def openCSV():
             frameIDList.update({row[0]: row[1]})
 
     return frameIDList
+
+def ApplyPredominantShaderNames(poops):
+    for ob in poops:
+        ob.halo_json.Poop_Predominant_Shader_Name = GetProminantShaderName(ob)
+
+def GetProminantShaderName(ob):
+    predominant_shader = ''
+    slots = ob.material_slots
+    for s in slots:
+        material = s.material
+        if IsShader(material):
+            shader_path = material.halo_json.shader_path
+            if shader_path.rpartition('.')[0] != '':
+                shader_path = shader_path.rpartition('.')[0]
+            shader_type = material.halo_json.Shader_Type
+            predominant_shader = f'{shader_path}.{shader_type}'
+            break
+
+    return predominant_shader
 
 def SetPoopProxies(context, poops):
     proxies = []

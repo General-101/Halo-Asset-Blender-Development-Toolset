@@ -1317,14 +1317,18 @@ class JSON_ObjectMeshProps(Panel):
                     col.prop(ob_halo_json, "Poop_Pathfinding_Override", text='Pathfinding Policy')
 
                 col.prop(ob_halo_json, "Poop_Imposter_Policy", text='Imposter Policy')
-                col.prop(ob_halo_json, "Poop_Imposter_Transition_Distance", text='Imposter Transition Dist')
-                col.prop(ob_halo_json, "Poop_Imposter_Fade_Range_Start", text='Fade In Start')
-                col.prop(ob_halo_json, "Poop_Imposter_Fade_Range_End", text='Fade In End')
+                if ob_halo_json.Poop_Imposter_Policy != 'NEVER':
+                    sub = col.row(heading="Imposter Transition")
+                    sub.prop(ob_halo_json, 'Poop_Imposter_Transition_Distance_Auto', text='Automatic')
+                    if not ob_halo_json.Poop_Imposter_Transition_Distance_Auto:
+                        sub.prop(ob_halo_json, 'Poop_Imposter_Transition_Distance', text='Distance')
+                    # col.prop(ob_halo_json, "Poop_Imposter_Fade_Range_Start", text='Fade In Start')
+                    # col.prop(ob_halo_json, "Poop_Imposter_Fade_Range_End", text='Fade In End')
                 #col.prop(ob_halo_json, "Poop_Decomposition_Hulls", text='Decomposition Hulls') commented out so it can be set automatically. 
 
-                col.separator()
+                # col.separator()
 
-                col.prop(ob_halo_json, "Poop_Predominant_Shader_Name", text='Predominant Shader Name')
+                # col.prop(ob_halo_json, "Poop_Predominant_Shader_Name", text='Predominant Shader Name')
 
                 col.separator()
 
@@ -2420,7 +2424,7 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
         name="Instanced Geometry Imposter Policy",
         options=set(),
         description="Sets the imposter policy for this instanced geometry",
-        default = "NONE",
+        default = "NEVER",
         items=[ ('POLYGON DEFAULT', "Polygon Default", ""),
                 ('POLYGON HIGH', "Polygon High", ""),
                 ('CARD DEFAULT', "Card Default", ""),
@@ -2434,24 +2438,31 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
         name="Instanced Geometry Imposter Transition Distance",
         options=set(),
         description="The distance at which the instanced geometry transitions to its imposter variant",
-        default=-1.0,
+        default=50,
     )
 
-    Poop_Imposter_Fade_Range_Start: IntProperty(
-        name="Instanced Geometry Fade Start",
+    Poop_Imposter_Transition_Distance_Auto: BoolProperty(
+        name="Instanced Geometry Imposter Transition Automatic",
         options=set(),
-        description="Start to fade in this instanced geometry when its bounding sphere is more than or equal to X pixels on the screen",
-        default=36,
-        subtype='PIXEL',
+        description="Enable to let the engine set the imposter transition distance by object size",
+        default=True,
     )
 
-    Poop_Imposter_Fade_Range_End: IntProperty(
-        name="Instanced Geometry Fade End",
-        options=set(),
-        description="Renders this instanced geometry fully when its bounding sphere is more than or equal to X pixels on the screen",
-        default=30,
-        subtype='PIXEL',
-    )
+    # Poop_Imposter_Fade_Range_Start: IntProperty(
+    #     name="Instanced Geometry Fade Start",
+    #     options=set(),
+    #     description="Start to fade in this instanced geometry when its bounding sphere is more than or equal to X pixels on the screen",
+    #     default=36,
+    #     subtype='PIXEL',
+    # )
+
+    # Poop_Imposter_Fade_Range_End: IntProperty(
+    #     name="Instanced Geometry Fade End",
+    #     options=set(),
+    #     description="Renders this instanced geometry fully when its bounding sphere is more than or equal to X pixels on the screen",
+    #     default=30,
+    #     subtype='PIXEL',
+    # )
 
     # Poop_Decomposition_Hulls: FloatProperty(
     #     name="Instanced Geometry Decomposition Hulls",
@@ -3295,37 +3306,7 @@ class JSON_MaterialPropertiesGroup(PropertyGroup):
     def update_shader_type(self, context):
         material_path = self.shader_path.replace('"','')
         if material_path != material_path.rpartition('.')[2]:
-            match material_path.rpartition('.')[2]:
-                case 'shader_cortana':
-                    self.Shader_Type = 'SHADER CORTANA'
-                case 'shader_custom':
-                    self.Shader_Type = 'SHADER CUSTOM'
-                case 'shader_decal':
-                    self.Shader_Type = 'SHADER DECAL'
-                case 'shader_foliage':
-                    self.Shader_Type = 'SHADER FOLIAGE'
-                case 'shader_fur':
-                    self.Shader_Type = 'SHADER FUR'
-                case 'shader_fur_stencil':
-                    self.Shader_Type = 'SHADER FUR STENCIL'
-                case 'shader_glass':
-                    self.Shader_Type = 'SHADER GLASS'
-                case 'shader_halogram':
-                    self.Shader_Type = 'SHADER HALOGRAM'
-                case 'shader_mux':
-                    self.Shader_Type = 'SHADER MUX'
-                case 'shader_mux_material':
-                    self.Shader_Type = 'SHADER MUX MATERIAL'
-                case 'shader_screen':
-                    self.Shader_Type = 'SHADER SCREEN'
-                case 'shader_skin':
-                    self.Shader_Type = 'SHADER SKIN'
-                case 'shader_terrain':
-                    self.Shader_Type = 'SHADER TERRAIN'
-                case 'shader_water':
-                    self.Shader_Type = 'SHADER WATER'
-                case _:
-                    self.Shader_Type = 'SHADER'
+            self.Shader_Type = material_path.rpartition('.')[2]
 
     shader_path: StringProperty(
         name = "Shader Path",
@@ -3334,28 +3315,28 @@ class JSON_MaterialPropertiesGroup(PropertyGroup):
         update=update_shader_type,
         )
 
-    shader_types = [ ('SHADER', "Shader", ""),
-                ('SHADER CORTANA', "Shader Cortana", ""),
-                ('SHADER CUSTOM', "Shader Custom", ""),
-                ('SHADER DECAL', "Shader Decal", ""),
-                ('SHADER FOLIAGE', "Shader Foliage", ""),
-                ('SHADER FUR', "Shader Fur", ""),
-                ('SHADER FUR STENCIL', "Shader Fur Stencil", ""),
-                ('SHADER GLASS', "Shader Glass", ""),
-                ('SHADER HALOGRAM', "Shader Halogram", ""),
-                ('SHADER MUX', "Shader Mux", ""),
-                ('SHADER MUX MATERIAL', "Shader Mux Material", ""),
-                ('SHADER SCREEN', "Shader Screen", ""),
-                ('SHADER SKIN', "Shader Skin", ""),
-                ('SHADER TERRAIN', "Shader Terrain", ""),
-                ('SHADER WATER', "Shader Water", ""),
+    shader_types = [ ('shader', "Shader", ""),
+                ('shader_cortana', "Shader Cortana", ""),
+                ('shader_custom', "Shader Custom", ""),
+                ('shader_decal', "Shader Decal", ""),
+                ('shader_foliage', "Shader Foliage", ""),
+                ('shader_fur', "Shader Fur", ""),
+                ('shader_fur_stencil', "Shader Fur Stencil", ""),
+                ('shader_glass', "Shader Glass", ""),
+                ('shader_halogram', "Shader Halogram", ""),
+                ('shader_mux', "Shader Mux", ""),
+                ('shader_mux_material', "Shader Mux Material", ""),
+                ('shader_screen', "Shader Screen", ""),
+                ('shader_skin', "Shader Skin", ""),
+                ('shader_terrain', "Shader Terrain", ""),
+                ('shader_water', "Shader Water", ""),
                ]
 
     Shader_Type: EnumProperty(
         name = "Shader Type",
         options=set(),
         description = "Set by the extension of the shader path. Alternatively this field can be updated manually",
-        default = "SHADER",
+        default = "shader",
         items=shader_types,
         )
 

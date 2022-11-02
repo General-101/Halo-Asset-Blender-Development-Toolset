@@ -580,3 +580,13 @@ def get_prop_from_collection(ob, prefixes):
                     break
 
     return prop
+
+
+# returns true if this material is a halo shader
+def IsShader(mat):
+    halo_mat = mat.halo_json
+    shader_path_not_empty = True if halo_mat.shader_path != '' else False
+    no_material_override = True if halo_mat.material_override == 'NONE' else False
+    no_special_material_name = True if not mat.name.lower().startswith(special_materials) else False
+
+    return shader_path_not_empty and no_material_override and no_special_material_name

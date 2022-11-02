@@ -199,13 +199,10 @@ class Export_Scene_GR2(Operator, ExportHelper):
         description='',
         default=True,
     )
-    export_specific_bsp: IntProperty(
+    export_specific_bsp: StringProperty(
         name='BSP',
         description='',
-        default=0,
-        min=0,
-        max=99,
-        step=5,
+        default='',
     )
     export_all_perms: BoolProperty(
         name='All Permutations',
