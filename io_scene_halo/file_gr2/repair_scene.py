@@ -29,13 +29,16 @@ from ..gr2_utils import(
     HaloDeboner,
 )
 from math import radians
-from mathutils import Matrix
+from mathutils import Matrix, Vector
 
 #####################################################################################
 #####################################################################################
 # MAIN FUNCTION     
 
-def repair_scene(context, report, objects_selection, active_object, hidden_objects, mode, temp_armature, timeline_start, timeline_end, model_armature, lights, proxies, unselectable_objects, enabled_exclude_collections, export_hidden, **kwargs):
+def repair_scene(context, report, objects_selection, active_object, hidden_objects, mode, temp_armature, timeline_start, timeline_end, model_armature, lights, proxies, unselectable_objects, enabled_exclude_collections, export_hidden, sidecar_type, **kwargs):
+    if sidecar_type == 'SCENARIO':
+        FixSceneRotatation(context.view_layer.objects)
+        
     scene = context.scene
  
     RepairTimeline(scene, timeline_start, timeline_end)
@@ -78,6 +81,19 @@ def repair_scene(context, report, objects_selection, active_object, hidden_objec
 def RepairTimeline(scene, timeline_start, timeline_end):
     scene.frame_start = timeline_start
     scene.frame_end = timeline_end
+
+def FixSceneRotatation(scene_obs):
+    DeselectAllObjects()
+    angle_z = radians(-90)
+    axis_z = (0, 0, 1)
+    pivot = Vector((0.0, 0.0, 0.0))
+    for ob in scene_obs:
+        M = (
+            Matrix.Translation(pivot) @
+            Matrix.Rotation(angle_z, 4, axis_z) @       
+            Matrix.Translation(-pivot)
+            )
+        ob.matrix_world = M @ ob.matrix_world
 
 def DelTempArmature(context, model_armature):
     ops = bpy.ops

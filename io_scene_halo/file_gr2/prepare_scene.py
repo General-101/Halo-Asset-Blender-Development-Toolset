@@ -28,7 +28,7 @@ import bpy
 from os import path
 import csv
 from math import radians
-from mathutils import Matrix
+from mathutils import Matrix, Vector
 from ..gr2_utils import(
     DeselectAllObjects,
     IsMesh,
@@ -59,15 +59,19 @@ def prepare_scene(context, report, sidecar_type, export_hidden, filepath, use_ar
     proxies = SetPoopProxies(context, h_objects.poops)                                               # create and parent identical poop child objects to matching instances (collision, physics, cookie cutters). Keep them in a list so we can delete them later
     for p in proxies:
         h_objects.poops.append(p)
-    model_armature, temp_armature, no_parent_objects = GetSceneArmature(context)                          # return the main armature in the scene, and create a temp one if a model armature does not exist
-    ParentToArmature(model_armature, temp_armature, no_parent_objects, context)                             # ensure all objects are parented to an armature on export. Render and collision mesh is parented with armature deform, the rest uses bone parenting
+    model_armature, temp_armature, no_parent_objects = GetSceneArmature(context, sidecar_type)                          # return the main armature in the scene, and create a temp one if a model armature does not exist
+    skeleton_bones = {}
+    if model_armature is not None:
+        ParentToArmature(model_armature, temp_armature, no_parent_objects, context)                             # ensure all objects are parented to an armature on export. Render and collision mesh is parented with armature deform, the rest uses bone parenting
+        skeleton_bones = GetBoneList(model_armature, use_armature_deform_only)      # return a list of bones attached to the model armature, ignoring control / non-deform bones
     asset_path, asset = GetAssetInfo(filepath)                                  # get the asset name and path to the asset folder
-    skeleton_bones = GetBoneList(model_armature, use_armature_deform_only)      # return a list of bones attached to the model armature, ignoring control / non-deform bones
     # HaloBoner(model_armature.data.edit_bones, model_armature, context)
     FixLightsRotations(h_objects.lights)                                         # adjust light rotations to match in game rotation, and return a list of lights for later use in repair_scene
     timeline_start, timeline_end = SetTimelineRange(context)                      # set the timeline range so we can restore it later
     lod_count = GetDecoratorLODCount(h_objects, sidecar_type == 'DECORATOR SET') # get the max LOD count in the scene if we're exporting a decorator
     ApplyPredominantShaderNames(h_objects.poops)
+    if sidecar_type == 'SCENARIO':
+        RotateScene(context.view_layer.objects)
 
     return objects_selection, active_object, hidden_objects, mode, model_armature, temp_armature, asset_path, asset, skeleton_bones, h_objects, timeline_start, timeline_end, lod_count, proxies, unselectable_objects, enabled_exclude_collections
 
@@ -111,6 +115,19 @@ def GetSceneMode(context):
         print('WARNING: Unable to test mode')
 
     return mode
+
+def RotateScene(scene_obs):
+    DeselectAllObjects()
+    angle_z = radians(90)
+    axis_z = (0, 0, 1)
+    pivot = Vector((0.0, 0.0, 0.0))
+    for ob in scene_obs:
+        M = (
+            Matrix.Translation(pivot) @
+            Matrix.Rotation(angle_z, 4, axis_z) @       
+            Matrix.Translation(-pivot)
+            )
+        ob.matrix_world = M @ ob.matrix_world
 
 def UnhideObjects(export_hidden, context):
     hidden_objects = []
@@ -185,7 +202,7 @@ def HideExcludedCollections(context):
 #####################################################################################
 #####################################################################################
 # ARMATURE FUNCTIONS
-def GetSceneArmature(context):
+def GetSceneArmature(context, sidecar_type):
     model_armature = None
     temp_armature = False
     no_parent_objects = []
@@ -193,7 +210,7 @@ def GetSceneArmature(context):
         if ob.type == 'ARMATURE' and not ob.name.startswith('+'): # added a check for a '+' prefix in armature name, to support special animation control armatures in the future
             model_armature = ob
             break
-    if model_armature == None:
+    if model_armature == None and sidecar_type == 'MODEL':
         model_armature, no_parent_objects = AddTempArmature(context)
         temp_armature = True
 

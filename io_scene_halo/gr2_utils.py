@@ -178,7 +178,8 @@ def SelectBSPObject(halo_objects, bsp, arm, shared, perm, export_hidden, export_
     DeselectAllObjects()
     perm = ResetPerm(perm)
     boolean = False
-    arm.select_set(True)
+    if arm is not None:
+        arm.select_set(True)
     for ob in halo_objects:
         halo = ob.halo_json
         if halo.bsp_name_locked != '':
