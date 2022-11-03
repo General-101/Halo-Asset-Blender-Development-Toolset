@@ -162,6 +162,52 @@ halo_three_array = (
 ("warthog", (199.299, 101.492, 76.7727)),
 ("wraith", (299.835, 303.158, 93.8022)))
 
+
+halo_reach_array = (
+("brute", (57.1543, 66.2881, 94.6532)),
+("bugger", (44.0028, 102.07, 74.1832)),
+("cortana", (8.7529, 47.1229, 59.1449)),
+("elite", (38.6283, 39.3896, 79.7273)),
+("flood_carrier", (43.2805, 39.6819, 72.2342)),
+("flood_combat_brute", (45.6046, 79.447, 85.7513)),
+("flood_combat_elite", (42.786, 66.2445, 84.376)),
+("flood_combat_human", (35.6591, 57.1697, 65.4288)),
+("flood_infection", (43.2821, 21.9043, 43.0903)),
+("flood_ranged", (74.2284, 65.1949, 90.8217)),
+("flood_stalker", (76.2962, 67.6971, 108.162)),
+("flood_tank", (76.3723, 76.9674, 119.754)),
+("grunt", (40.9928, 63.4244, 58.3307)),
+("hunter", (48.5997, 100.363, 124.973)),
+("jackal", (42.5687, 60.035, 73.3182)),
+("lord_hood", (12.6568, 42.7395, 64.2509)),
+("spartan", (31.7239, 37.2393, 70.2989)),
+("marine", (18.3755, 43.0221, 71.9175)),
+("marine_odst", (14.2101, 42.5174, 63.847)),
+("miranda", (14.0764, 37.8095, 60.3959)),
+("monitor", (20.3919, 17.4932, 18.9802)),
+("prophet_truth", (40.353, 68.6003, 74.7206)),
+("sentinel_aggressor", (97.3894, 77.8163, 54.1884)),
+("sentinel_constructor", (13.7275, 9.72803, 20.1384)),
+("worker", (11.7373, 42.6598, 64.5513)),
+("banshee", (195.855, 225.765, 128.05)),
+("chopper", (221.621, 97.7097, 98.4085)),
+("cov_capital_ship", (28522.5, 11277.1, 3981.02)),
+("cov_cruiser", (24224.6, 11468.3, 3663.55)),
+("cov_cruiser_flood", (24224.6, 11468.3, 3663.55)),
+("ghost", (138.574, 118.218, 61.7782)),
+("gravity_throne", (58.353, 51.4155, 97.4521)),
+("hornet", (314.269, 291.202, 148.801)),
+("insertion_pod", (56.8505, 62.5648, 171.582)),
+("longsword", (1094, 1100, 170)),
+("prowler", (236.183, 137.775, 87.0731)),
+("mongoose", (101.933, 60.0935, 50.7133)),
+("pelican", (1009.16, 768.444, 321.431)),
+("phantom", (1095.29, 668.449, 454.621)),
+("scorpion", (338.856, 253.761, 92.27)),
+("shade", (135.771, 119.026, 135.203)),
+("warthog", (199.299, 101.492, 76.7727)),
+("wraith", (299.835, 303.158, 93.8022)))
+
 #  load a mesh from JMS and use it as a scale model
 def generate_mesh(file, array_item, game_version):
     default_region = mesh_processing.get_default_region_permutation_name(game_version)
@@ -255,15 +301,18 @@ def generate_object(context, array_item, game_version):
 
     object_mesh.location = context.scene.cursor.location
 
-def create_model(context, game_version, halo_1_unit_index, halo_2_unit_index, halo_3_unit_index):
+def create_model(context, game_version, halo_1_unit_index, halo_2_unit_index, halo_3_unit_index, halo_reach_unit_index):
     if game_version == "haloce":
         array_item = halo_one_array[int(halo_1_unit_index)]
 
     elif game_version == "halo2":
         array_item = halo_two_array[int(halo_2_unit_index)]
 
-    else:
+    elif game_version == "halo3":
         array_item = halo_three_array[int(halo_3_unit_index)]
+
+    else:
+        array_item = halo_reach_array[int(halo_reach_unit_index)]
 
     mesh_processing.deselect_objects(context)
     generate_object(context, array_item, game_version)

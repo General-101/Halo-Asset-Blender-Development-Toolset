@@ -339,6 +339,7 @@ class Scale_ModelPropertiesGroup(PropertyGroup):
         items=[ ('haloce', "Halo CE", "Models from CE only"),
                 ('halo2', "Halo 2", "Models from Halo 2 only"),
                 ('halo3', "Halo 3", "Models from Halo 3 only"),
+                ('haloreach', "Halo Reach", "Models from Halo Reach only"),
                ]
         )
 
@@ -489,6 +490,58 @@ class Scale_ModelPropertiesGroup(PropertyGroup):
 
     halo_three_scale_model_vehi: EnumProperty(
         name="Halo 3 Vehicle Models:",
+        description="What model to create",
+        items=[
+                ('26', "Banshee", "Banshee Model"),
+                ('27', "Chopper", "Chopper Model"),
+                ('28', "Covenant Capital Ship", "Covenant Capital Ship Model"),
+                ('29', "Covenant Cruiser", "Covenant Cruiser Model"),
+                ('30', "Flood Cruiser", "Flood Cruiser Model"),
+                ('31', "Ghost", "Ghost Model"),
+                ('32', "Gravity Throne", "Gravity Throne Model"),
+                ('33', "Hornet", "Hornet Model"),
+                ('34', "Insertion Pod", "Insertion Pod Model"),
+                ('35', "Longsword", "Longsword Model"),
+                ('36', "Prowler", "Prowler Model"),
+                ('37', "Mongoose", "Mongoose Model"),
+                ('38', "Pelican", "Pelican Model"),
+                ('39', "Phantom", "Phantom Model"),
+                ('40', "Scorpion", "Scorpion Model"),
+                ('41', "Shade", "Shade Model"),
+                ('42', "Warthog", "Warthog Model"),
+                ('43', "Wraith", "Wraith Model"),
+               ]
+        )
+
+    halo_reach_scale_model_char: EnumProperty(
+        name="Halo Reach Character Models:",
+        description="What model to create",
+        items=[
+                ('0', "Brute", "Brute Model"),
+                ('1', "Bugger", "Bugger Model"),
+                ('2', "Civilian Female", "Civilian Female Model"),
+                ('3', "Civilian Male", "Civilian Male Model"),
+                ('4', "Cortana", "Cortana Model"),
+                ('5', "Engineer", "Engineer Model"),
+                ('6', "Elite", "Elite Model"),
+                ('7', "Grunt", "Grunt Model"),
+                ('8', "Halsey", "Halsey Model"),
+                ('9', "Hunter", "Hunter Model"),
+                ('10', "Jackal", "Jackal Model"),
+                ('11', "Keyes", "Keyes Model"),
+                ('12', "Marine", "Marine Model"),
+                ('13', "Marine Female", "Marine Female Model"),
+                ('14', "Marine ODST", "Marine ODST Model"),
+                ('15', "Moa", "Moa Model"),
+                ('16', "Monitor", "Monitor Model"),
+                ('17', "Rat", "Rat Model"),
+                ('18', "Skirmisher", "Skirmisher Model"),
+                ('19', "Spartan", "Spartan Model"),
+               ]
+        )
+
+    halo_reach_scale_model_vehi: EnumProperty(
+        name="Halo Reach Vehicle Models:",
         description="What model to create",
         items=[
                 ('26', "Banshee", "Banshee Model"),
@@ -859,12 +912,19 @@ class Halo_ScaleModelHelper(Panel):
             else:
                 row.prop(scene_scale_model, "halo_two_scale_model_vehi", text="")
 
-        else:
+        elif scene_scale_model.game_version == "halo3":
             if scene_scale_model.unit_type == "character":
                 row.prop(scene_scale_model, "halo_three_scale_model_char", text="")
 
             else:
                 row.prop(scene_scale_model, "halo_three_scale_model_vehi", text="")
+
+        else:
+            if scene_scale_model.unit_type == "character":
+                row.prop(scene_scale_model, "halo_reach_scale_model_char", text="")
+
+            else:
+                row.prop(scene_scale_model, "halo_reach_scale_model_vehi", text="")
 
         row = col.row()
         row.operator("halo_bulk.scale_model", text="Generate Scale Model")
@@ -1334,6 +1394,7 @@ class Scale_Model(Operator):
         halo_1_unit_index = 0
         halo_2_unit_index = 0
         halo_3_unit_index = 0
+        halo_reach_unit_index = 0
 
         if scene_scale_model.game_version == "haloce":
             if scene_scale_model.unit_type == "character":
@@ -1353,8 +1414,14 @@ class Scale_Model(Operator):
                 halo_3_unit_index = scene_scale_model.halo_three_scale_model_char
             else:
                 halo_3_unit_index = scene_scale_model.halo_three_scale_model_vehi
+        
+        elif scene_scale_model.game_version == "haloreach":
+            if scene_scale_model.unit_type == "character":
+                halo_reach_unit_index = scene_scale_model.halo_reach_scale_model_char
+            else:
+                halo_reach_unit_index = scene_scale_model.halo_reach_scale_model_vehi
 
-        return global_functions.run_code("scale_models.create_model(context, scene_scale_model.game_version, halo_1_unit_index, halo_2_unit_index, halo_3_unit_index)")
+        return global_functions.run_code("scale_models.create_model(context, scene_scale_model.game_version, halo_1_unit_index, halo_2_unit_index, halo_3_unit_index, halo_reach_unit_index)")
 
 class GenerateSky(Operator):
     """Generates a hemisphere shaped set of skylights for Halo 3 sky models"""
