@@ -301,10 +301,10 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                                     export_better_fbx(context, False, **keywords)
                                                     for obj in obj_selection:
                                                         obj.select_set(True)
-                                            else:
-                                                export_fbx(self, context, **keywords)
-                                            export_gr2(self, context, report, asset_path, asset, IsWindows(), 'markers', halo_objects, bsp, perm, **keywords)
-                                            gr2_count += 1
+                                                else:
+                                                    export_fbx(self, context, **keywords)
+                                                export_gr2(self, context, report, asset_path, asset, IsWindows(), 'markers', halo_objects, bsp, perm, **keywords)
+                                                gr2_count += 1
 
                             if export_lights:
                                 perm_list = []
