@@ -23,7 +23,7 @@
 # SOFTWARE.
 #
 # ##### END MIT LICENSE BLOCK #####
-from os import path
+from os import path, remove, chdir, rmdir
 from io import BytesIO, TextIOWrapper
 import zipfile
 import bpy
@@ -88,25 +88,33 @@ def ArmatureCreate(context, armature_type, use_custom_bone_shapes):
 def ShapesCreate():
     successful = True
     script_folder_path = path.dirname(path.dirname(path.dirname(__file__)))
-    path_relative = path.join('haloreach', 'bone_shapes.fbx')
+    path_relative = f'haloreach/bone_shapes.fbx'
     filepath = path.join(script_folder_path, "resources", path_relative)
     path_resources_zip = path.join(script_folder_path, "resources.zip")
 
     if path.exists(filepath):
         print(f"Loading {filepath} from disk")
-        generate_shapes(filepath), False
+        generate_shapes(filepath, False)
     elif path.exists(path_resources_zip):
         print(f"Loading {path_relative} from {path_resources_zip}")
-        zip: zipfile.ZipFile = zipfile.ZipFile(path_resources_zip, mode = 'r')
-        fbx_file_data = zip.read(path_relative)
-        stream: TextIOWrapper = TextIOWrapper(BytesIO(fbx_file_data), encoding="utf-8")
-        generate_shapes(stream), False
+        generate_shapes(path_resources_zip, True, path_relative)
     else:
         print('path_not_found')
         successful = False
-
     return successful
 
-def generate_shapes(file):
-    bpy.ops.import_scene.fbx(filepath= file)
+def generate_shapes(file, is_zip, path_relative=''):
+    extracted_file = ''
+    if is_zip:
+        chdir(path.dirname(__file__))
+        with zipfile.ZipFile(file, "r") as zip:
+            extracted_file = zip.extract(path_relative)
+            print(extracted_file)
+            bpy.ops.import_scene.fbx(filepath=extracted_file)
+
+        remove(extracted_file)
+        rmdir(path.dirname(extracted_file))
+
+    else:
+        bpy.ops.import_scene.fbx(filepath=file)
 
