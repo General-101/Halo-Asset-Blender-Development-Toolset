@@ -28,7 +28,7 @@ from subprocess import Popen
 import os
 from io_scene_halo.gr2_utils import GetEKPath
 
-def lightmapper(report, filepath, lightmap_quality='DIRECT', lightmap_all_bsps='TRUE', lightmap_specific_bsp='0', lightmap_region):
+def lightmapper(report, filepath, lightmap_quality='DIRECT', lightmap_all_bsps='TRUE', lightmap_specific_bsp='0'):
     full_path = filepath.rpartition('\\')[0]
     asset_path = CleanAssetPath(full_path)
     asset_name = asset_path.rpartition('\\')[2]
@@ -36,7 +36,7 @@ def lightmapper(report, filepath, lightmap_quality='DIRECT', lightmap_all_bsps='
     quality = GetQuality(lightmap_quality)
 
     try:
-        lightmapCommand = f'python calc_lm_farm_local.py {os.path.join(asset_path, asset_name)} {bsp} {quality} {lightmap_region})'
+        lightmapCommand = f'python calc_lm_farm_local.py {os.path.join(asset_path, asset_name)} {bsp} {quality}'
         os.chdir(GetEKPath())
         p = Popen(lightmapCommand)
         p.wait()
@@ -80,10 +80,9 @@ def run_lightmapper(operator, context, report,
         lightmap_quality='DIRECT',
         lightmap_all_bsps='TRUE',
         lightmap_specific_bsp='0',
-        lightmap_region='',
         asset_path='',
         **kwargs
         ):
-        lightmapper(report, filepath, lightmap_quality, lightmap_all_bsps, lightmap_specific_bsp, lightmap_region)
+        lightmapper(report, filepath, lightmap_quality, lightmap_all_bsps, lightmap_specific_bsp)
 
         return {'FINISHED'}
