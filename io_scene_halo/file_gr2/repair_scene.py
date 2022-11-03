@@ -35,7 +35,7 @@ from mathutils import Matrix
 #####################################################################################
 # MAIN FUNCTION     
 
-def repair_scene(context, report, objects_selection, active_object, hidden_objects, mode, temp_armature, timeline_start, timeline_end, model_armature, lights, proxies, unselectable_objects, export_hidden, **kwargs):
+def repair_scene(context, report, objects_selection, active_object, hidden_objects, mode, temp_armature, timeline_start, timeline_end, model_armature, lights, proxies, unselectable_objects, enabled_exclude_collections, export_hidden, **kwargs):
     scene = context.scene
  
     RepairTimeline(scene, timeline_start, timeline_end)
@@ -68,6 +68,8 @@ def repair_scene(context, report, objects_selection, active_object, hidden_objec
             ob.select_set(True)
     if active_object != None:
         bpy.context.view_layer.objects.active = active_object
+
+    ShowExcludedCollections(enabled_exclude_collections)
 
 #####################################################################################
 #####################################################################################
@@ -108,3 +110,7 @@ def DeletePoopProxies(proxies):
     for p in proxies:
         p.select_set(True)
     bpy.ops.object.delete(use_global=False, confirm=False)
+
+def ShowExcludedCollections(enabled_exclude_collections):
+    for coll in enabled_exclude_collections:
+        coll.exclude = False

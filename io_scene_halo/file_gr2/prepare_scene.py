@@ -44,6 +44,7 @@ from ..gr2_utils import(
 #####################################################################################
 # MAIN FUNCTION
 def prepare_scene(context, report, sidecar_type, export_hidden, filepath, use_armature_deform_only, **kwargs):
+    enabled_exclude_collections = HideExcludedCollections(context)
     objects_selection, active_object = GetCurrentActiveObjectSelection(context)
     hidden_objects = UnhideObjects(export_hidden, context)                               # If the user has opted to export hidden objects, list all hidden objects and unhide them, return the list for later use
     mode = GetSceneMode(context)                                                      # get the current selected mode, save the mode for later, and then switch to object mode
@@ -68,7 +69,7 @@ def prepare_scene(context, report, sidecar_type, export_hidden, filepath, use_ar
     lod_count = GetDecoratorLODCount(h_objects, sidecar_type == 'DECORATOR SET') # get the max LOD count in the scene if we're exporting a decorator
     ApplyPredominantShaderNames(h_objects.poops)
 
-    return objects_selection, active_object, hidden_objects, mode, model_armature, temp_armature, asset_path, asset, skeleton_bones, h_objects, timeline_start, timeline_end, lod_count, proxies, unselectable_objects
+    return objects_selection, active_object, hidden_objects, mode, model_armature, temp_armature, asset_path, asset, skeleton_bones, h_objects, timeline_start, timeline_end, lod_count, proxies, unselectable_objects, enabled_exclude_collections
 
 
 #####################################################################################
@@ -169,6 +170,17 @@ def GetDecoratorLODCount(halo_objects, asset_is_decorator):
                 lod_count =  ob_lod
     
     return lod_count
+
+def HideExcludedCollections(context):
+    enabled_exclude_collections = []
+    for layer in context.view_layer.layer_collection.children:
+        if layer.collection.name.startswith('+exclude') and layer.is_visible:
+            enabled_exclude_collections.append(layer)
+        if layer.collection.name.startswith('+exclude'):
+            layer.exclude = True
+
+    return enabled_exclude_collections
+
 
 #####################################################################################
 #####################################################################################

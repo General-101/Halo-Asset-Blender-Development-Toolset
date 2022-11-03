@@ -553,7 +553,7 @@ class Export_Scene_GR2(Operator, ExportHelper):
             console.console_toggle() # toggle the console so users can see progress of export
 
         from .prepare_scene import prepare_scene
-        (objects_selection, active_object, hidden_objects, mode, model_armature, temp_armature, asset_path, asset, skeleton_bones, halo_objects, timeline_start, timeline_end, lod_count, proxies, unselectable_objects
+        (objects_selection, active_object, hidden_objects, mode, model_armature, temp_armature, asset_path, asset, skeleton_bones, halo_objects, timeline_start, timeline_end, lod_count, proxies, unselectable_objects, enabled_exclude_collections
         ) = prepare_scene(context, self.report, **keywords) # prepares the scene for processing and returns information about the scene
         try:
             from .process_scene import process_scene
@@ -564,7 +564,7 @@ class Export_Scene_GR2(Operator, ExportHelper):
             self.report({'ERROR'}, error)
 
         from .repair_scene import repair_scene
-        repair_scene(context, self.report, objects_selection, active_object, hidden_objects, mode, temp_armature, timeline_start, timeline_end, model_armature, halo_objects.lights, proxies, unselectable_objects, **keywords)
+        repair_scene(context, self.report, objects_selection, active_object, hidden_objects, mode, temp_armature, timeline_start, timeline_end, model_armature, halo_objects.lights, proxies, unselectable_objects, enabled_exclude_collections, **keywords)
 
         if self.show_output:
             console.console_toggle()
