@@ -201,9 +201,12 @@ def GetSceneArmature(context):
 
 def AddTempArmature(context):
     ops = bpy.ops
-    ops.object.armature_add(enter_editmode=False, align='WORLD', location=(0, 0, 0), scale=(1, 1, 1))
+    ops.object.armature_add(enter_editmode=True, align='WORLD', location=(0, 0, 0), scale=(1, 1, 1))
     model_armature = context.view_layer.objects.active
-    model_armature.data.bones[0].name = 'implied_root_node'
+    model_armature.data.edit_bones[0].name = 'implied_root_node'
+    model_armature.data.edit_bones[0].tail[1] = 1
+    model_armature.data.edit_bones[0].tail[2] = 0
+    bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
     no_parent_objects = []
     for ob in context.view_layer.objects:
         if ob.parent == None:

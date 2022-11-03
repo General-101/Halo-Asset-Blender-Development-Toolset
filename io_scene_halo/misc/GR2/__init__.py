@@ -133,6 +133,7 @@ class GR2_HaloLauncher(Panel):
             flow = layout.grid_flow(row_major=True, columns=0, even_columns=True, even_rows=False, align=False)
             col = flow.column()
             col.separator()
+            col.scale_y = 1.5
             col.operator('halo_gr2.launch_source')
 
 class GR2_HaloLauncher_Foundation(Operator):
