@@ -73,7 +73,7 @@ def FindShaderMatch(mat, shaders, tags_path):
     if material_name.rpartition('.')[0] != '':
         material_name = material_name.rpartition('.')[0]
     # ignore material suffixes
-    material_name = material_name.strip("%#?!@*$^-&=.;)><|~({]}['0")
+    material_name = material_name.rstrip("%#?!@*$^-&=.;)><|~({]}['0")
     for s in shaders:
         # get just the shader name
         shader_name = s.rpartition('\\')[2]

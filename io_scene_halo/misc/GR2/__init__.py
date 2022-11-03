@@ -190,7 +190,7 @@ class GR2_HaloLauncherPropertiesGroup(PropertyGroup):
 # SHADER FINDER TOOL
 
 class GR2_ShaderFinder(Panel):
-    bl_label = "Update Materials by Shader"
+    bl_label = "Shader Finder"
     bl_idname = "HALO_PT_GR2_ShaderFinder"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
