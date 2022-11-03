@@ -162,6 +162,7 @@ def getNodeProperties(node, name, ob):
     ###################
     # OBJECT PROPERTIES
     node_props.update({"bungie_object_type": getNodeType(node, name, ob)}),
+    node_props.update({"bungie_object_id": node.object_id}),
     ###################
     # MARKER PROPERTIES
     if '_connected_geometry_object_type_marker' in node_props.values():
@@ -176,8 +177,8 @@ def getNodeProperties(node, name, ob):
             else:
                 node_props.update({"bungie_marker_region": node.Marker_Region})
         if '_connected_geometry_marker_type_game_instance' in node_props.values():
-            node_props.update({"bungie_marker_game_instance_tag_name": node.Marker_Game_Instance_Tag_Name[0:63]})
-            node_props.update({"bungie_marker_game_instance_variant_name": node.Marker_Game_Instance_Tag_Name[0:63]})
+            node_props.update({"bungie_marker_game_instance_tag_name": node.Marker_Game_Instance_Tag_Name})
+            node_props.update({"bungie_marker_game_instance_variant_name": node.Marker_Game_Instance_Tag_Variant_Name})
         if '_connected_geometry_marker_type_model' in node_props.values() or '_connected_geometry_marker_type_hint' in node_props.values() or '_connected_geometry_marker_type_target' in node_props.values():
             node_props.update({"bungie_marker_model_group": getMarkerGroup(name)})
         if '_connected_geometry_marker_type_model' in node_props.values():
@@ -304,6 +305,7 @@ def getMeshProperties(mesh, name, ob):
     ###################
     # OBJECT PROPERTIES
     mesh_props.update({"bungie_object_type": "_connected_geometry_object_type_mesh"}),
+    mesh_props.update({"bungie_object_id": mesh.object_id}),
     ###################
     # MESH PROPERTIES
     mesh_props.update({"bungie_mesh_type": getMeshType(mesh.ObjectMesh_Type, name, ob)}),

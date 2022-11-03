@@ -1906,11 +1906,13 @@ class JSON_BoneProps(Panel):
         col.prop(bone_halo_json, "frame_id1", text='Frame ID 1')
         col.prop(bone_halo_json, "frame_id2", text='Frame ID 2')
 
-
-
 # JSON PROPERTY GROUPS
 class JSON_ObjectPropertiesGroup(PropertyGroup):
     #OBJECT PROPERTIES
+
+    object_id: StringProperty(
+        name="Object ID",
+    )
 
     def get_objecttype_enum(self):
         if bpy.context.active_object.name.startswith(frame_prefixes):

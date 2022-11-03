@@ -29,6 +29,7 @@ from os import path
 import csv
 from math import radians
 from mathutils import Matrix, Vector
+from uuid import uuid4
 from ..gr2_utils import(
     DeselectAllObjects,
     IsMesh,
@@ -72,6 +73,7 @@ def prepare_scene(context, report, sidecar_type, export_hidden, filepath, use_ar
     ApplyPredominantShaderNames(h_objects.poops)
     if sidecar_type == 'SCENARIO':
         RotateScene(context.view_layer.objects)
+    ApplyObjectIDs(context.view_layer.objects)
 
     return objects_selection, active_object, hidden_objects, mode, model_armature, temp_armature, asset_path, asset, skeleton_bones, h_objects, timeline_start, timeline_end, lod_count, proxies, unselectable_objects, enabled_exclude_collections
 
@@ -115,6 +117,12 @@ def GetSceneMode(context):
         print('WARNING: Unable to test mode')
 
     return mode
+
+def ApplyObjectIDs(scene_obs):
+    for ob in scene_obs:
+        ob.halo_json.object_id
+        if ob.halo_json.object_id == '':
+            ob.halo_json.object_id = str(uuid4())
 
 def RotateScene(scene_obs):
     DeselectAllObjects()
