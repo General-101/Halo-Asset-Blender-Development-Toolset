@@ -1356,11 +1356,11 @@ class JSON_ObjectMeshProps(Panel):
                 sub.prop(ob_halo_json, "Portal_AI_Deafening", text='AI Deafening')
                 sub.prop(ob_halo_json, "Portal_Blocks_Sounds", text='Blocks Sounds')
                 sub.prop(ob_halo_json, "Portal_Is_Door", text='Is Door')
-            elif (ob_halo_json.ObjectMesh_Type == 'SEAM' or ob_halo_json.ObjectMesh_Type_Locked == 'SEAM'):
-                if context.active_object.name.startswith('+seam:') and context.active_object.name.rpartition(':')[2] != context.active_object.name:
-                    col.prop(ob_halo_json, "Seam_Name_Locked", text='Seam BSP Name')
-                else:
-                    col.prop(ob_halo_json, "Seam_Name", text='Seam BSP Name')
+            # elif (ob_halo_json.ObjectMesh_Type == 'SEAM' or ob_halo_json.ObjectMesh_Type_Locked == 'SEAM'):
+            #     if context.active_object.name.startswith('+seam:') and context.active_object.name.rpartition(':')[2] != context.active_object.name:
+            #         col.prop(ob_halo_json, "Seam_Name_Locked", text='Seam BSP Name')
+            #     else:
+            #         col.prop(ob_halo_json, "Seam_Name", text='Seam BSP Name')
 
             elif (ob_halo_json.ObjectMesh_Type == 'WATER PHYSICS VOLUME' or ob_halo_json.ObjectMesh_Type_Locked == 'WATER PHYSICS VOLUME'):
                 col.prop(ob_halo_json, "Water_Volume_Depth", text='Water Volume Depth')
@@ -2584,25 +2584,25 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
         max=4,
     )
 
-    #SEAM PROPERTIES
-    Seam_Name: StringProperty(
-        name="Seam BSP Name",
-        description="Name of the bsp associated with this seam",
-        maxlen=32,
-    )
+    #SEAM PROPERTIES # commented out 03-11-2022 as seam name is something that can be infered at export
+    # Seam_Name: StringProperty(
+    #     name="Seam BSP Name",
+    #     description="Name of the bsp associated with this seam", 
+    #     maxlen=32,
+    # )
 
-    def get_seam_name(self):
-        a_ob = bpy.context.active_object
+    # def get_seam_name(self):
+    #     a_ob = bpy.context.active_object
         
-        var =  a_ob.name.rpartition(':')[2]
-        return var[0:31]
+    #     var =  a_ob.name.rpartition(':')[2]
+    #     return var[0:31]
 
-    Seam_Name_Locked: StringProperty(
-        name="Seam BSP Name",
-        description="Name of the bsp associated with this seam",
-        get=get_seam_name,
-        maxlen=32,
-    )
+    # Seam_Name_Locked: StringProperty(
+    #     name="Seam BSP Name",
+    #     description="Name of the bsp associated with this seam",
+    #     get=get_seam_name,
+    #     maxlen=32,
+    # )
 
     #WATER VOLUME PROPERTIES
     Water_Volume_Depth: FloatProperty( # this something which can probably be automated?

@@ -284,7 +284,7 @@ def getMarkerVelocity(x, y, z):
 ##### MESHES PROPERTIES ######
 ##############################
 
-def getMeshes(halo_objects):
+def getMeshes(halo_objects, asset_name):
     meshesList = {}
     halo_mesh_objects = halo_objects.render + halo_objects.collision + halo_objects.physics + halo_objects.structure + halo_objects.poops + halo_objects.portals + halo_objects.seams + halo_objects.water_surfaces + halo_objects.lightmap_regions + halo_objects.fog + halo_objects.boundary_surfaces + halo_objects.water_physics + halo_objects.rain_occluders + halo_objects.decorator + halo_objects.particle
     for ob in halo_mesh_objects:
@@ -292,13 +292,13 @@ def getMeshes(halo_objects):
         halo_mesh_name = ob.name
         
         if ob.select_get(): # if the name of a mesh starts with this, don't process it.
-            meshesList.update({ob.name: getMeshProperties(halo_mesh, halo_mesh_name, ob)})
+            meshesList.update({ob.name: getMeshProperties(halo_mesh, halo_mesh_name, ob, asset_name)})
 
     temp = ({'meshes_properties': meshesList})
 
     return temp
 
-def getMeshProperties(mesh, name, ob):
+def getMeshProperties(mesh, name, ob, asset_name):
 
     mesh_props = {}
     
@@ -363,8 +363,7 @@ def getMeshProperties(mesh, name, ob):
             mesh_props.update({"bungie_mesh_portal_is_door": "1"})
     # Seam
     elif '_connected_geometry_mesh_type_seam' in mesh_props.values():
-        if mesh.Seam_Name != '' or name.startswith('+seam:'):
-            mesh_props.update({"bungie_mesh_seam_associated_bsp": getSeamName(mesh.Seam_Name, name)}),
+        mesh_props.update({"bungie_mesh_seam_associated_bsp": getSeamName(mesh, asset_name)}),
     # Water Physics Volume
     elif '_connected_geometry_mesh_type_water_physics_volume' in mesh_props.values():
         mesh_props.update({"bungie_mesh_water_volume_depth": str(round(mesh.Water_Volume_Depth, 6))})
@@ -607,14 +606,14 @@ def getPortalType(type):
         case 'TWO WAY':
             return '_connected_geometry_portal_type_two_way'
 
-def getSeamName(seam_name, name):
-    var = ''
-    if name.startswith(('+seam:')) and name.rpartition(':')[2] != name:
-        var = name.rpartition(':')[2]
+def getSeamName(mesh, asset_name):
+    bsp = ''
+    if mesh.bsp_name_locked !='':
+        bsp = mesh.bsp_name_locked
     else:
-        var = seam_name
+        bsp = mesh.bsp_name
 
-    return var[0:31]
+    return f'{asset_name}_{bsp}'
 
 def getWaterFogColor(red, green, blue):
     color = f'{str(1)} {str(round(red, 6))} {str(round(green, 6))} {str(round(blue, 6))}'
@@ -795,7 +794,7 @@ def export_asset(report, filePath="", keep_fbx=False, keep_json=False, asset_pat
         jsonPath += pathList[x]
     jsonPath += ".json"
 
-    build_json(jsonPath, model_armature, boneslist, halo_objects)
+    build_json(jsonPath, model_armature, boneslist, halo_objects, asset_name)
 
     if(is_windows):
         gr2Path = ""
@@ -876,10 +875,10 @@ def move_assets(fileName, jsonPath, gr2Path, asset_path, keep_fbx, keep_json, ta
 
     CleanFiles(fileName, jsonPath, gr2Path)
 
-def build_json(jsonPath, model_armature, boneslist, halo_objects):
+def build_json(jsonPath, model_armature, boneslist, halo_objects, asset_name):
     jsonTemp = {}
     jsonTemp.update(getNodes(model_armature, boneslist, halo_objects))
-    jsonTemp.update(getMeshes(halo_objects))
+    jsonTemp.update(getMeshes(halo_objects, asset_name))
     jsonTemp.update(getMaterials())
 
     haloJSON = json.dumps(jsonTemp, indent=4)
