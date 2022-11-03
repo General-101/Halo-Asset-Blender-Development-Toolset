@@ -496,6 +496,59 @@ class GR2_HaloCollectionManagerPropertiesGroup(PropertyGroup):
         default=False,
     )
 
+class GR2_ArmatureCreator(Panel):
+    bl_label = "Halo Armature Creator"
+    bl_idname = "HALO_PT_GR2_ArmatureCreator"
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "UI"
+    bl_options = {'DEFAULT_CLOSED'}
+    bl_parent_id = "HALO_PT_GR2_AutoTools"
+
+    def draw(self, context):
+        layout = self.layout
+        scene = context.scene
+        scene_gr2_armature_creator = scene.gr2_armature_creator
+
+        layout.use_property_split = True
+        flow = layout.grid_flow(row_major=True, columns=0, even_columns=True, even_rows=False, align=False)
+        col = flow.column()
+        col.prop(scene_gr2_armature_creator, 'armature_type', text='Type')
+        col = layout.column(heading="Custom")
+        sub = col.column(align=True)
+        sub.prop(scene_gr2_armature_creator, 'use_custom_bone_shapes', text='Bone Shapes')
+        col = col.row()
+        col.scale_y = 1.5
+        col.operator('halo_gr2.armature_create')
+
+class GR2_ArmatureCreator_Create(Operator):
+    bl_idname = 'halo_gr2.armature_create'
+    bl_label = 'Create Armature'
+    bl_options = {"REGISTER", "UNDO"}
+
+    def execute(self, context):
+        scene = context.scene
+        scene_gr2_armature_creator = scene.gr2_armature_creator
+        from .armature_creator import ArmatureCreate
+        return ArmatureCreate(context, scene_gr2_armature_creator.armature_type, scene_gr2_armature_creator.use_custom_bone_shapes)
+
+class GR2_ArmatureCreatorPropertiesGroup(PropertyGroup):
+    armature_type: EnumProperty(
+        name="Armature Type",
+        options=set(),
+        description="",
+        default='PEDESTAL',
+        items=[
+            ('PEDESTAL', 'Pedestal', ''),
+            ('UNIT', 'Unit', ''),
+        ]
+    )
+    use_custom_bone_shapes: BoolProperty(
+        name="Use Custom Bone Shapes",
+        description="Enable this property",
+        default=True,
+        options=set()
+    )
+
 classeshalo = (
     GR2_Tools_Helper,
     GR2_HaloExport,
@@ -518,6 +571,9 @@ classeshalo = (
     GR2_SetFrameIDsOp,
     GR2_ResetFrameIDsOp,
     GR2_SetFrameIDsPropertiesGroup,
+    GR2_ArmatureCreator,
+    GR2_ArmatureCreator_Create,
+    GR2_ArmatureCreatorPropertiesGroup,
 )
 
 def register():
@@ -528,7 +584,8 @@ def register():
     bpy.types.Scene.gr2_halo_launcher = PointerProperty(type=GR2_HaloLauncherPropertiesGroup, name="Halo Launcher", description="Launches stuff")
     bpy.types.Scene.gr2_shader_finder = PointerProperty(type=GR2_HaloShaderFinderPropertiesGroup, name="Shader Finder", description="Find Shaders")
     bpy.types.Scene.gr2_export = PointerProperty(type=GR2_HaloExportFinderPropertiesGroup, name="Halo Export", description="")
-    bpy.types.Scene.gr2_collection_manager = PointerProperty(type=GR2_HaloCollectionManagerPropertiesGroup, name="Halo Export", description="")
+    bpy.types.Scene.gr2_collection_manager = PointerProperty(type=GR2_HaloCollectionManagerPropertiesGroup, name="Collection Manager", description="")
+    bpy.types.Scene.gr2_armature_creator = PointerProperty(type=GR2_ArmatureCreatorPropertiesGroup, name="Halo Armature", description="")
 
     
 def unregister():

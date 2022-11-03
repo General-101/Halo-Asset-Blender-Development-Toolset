@@ -202,6 +202,9 @@ def SelectAllObjects():
 def SetActiveObject(ob):
     bpy.context.view_layer.objects.active = ob
 
+def GetActiveObject():
+    return bpy.context.view_layer.objects.active
+
 def GetAssetInfo(filepath):
     asset_path = filepath.rpartition('\\')[0]
     asset = asset_path.rpartition('\\')[2]
