@@ -440,14 +440,14 @@ def getMeshProperties(mesh, name, ob, asset_name):
         if mesh.Mesh_Primitive_Type != 'NONE':
             mesh_props.update({"bungie_mesh_primitive_type": getPrimitiveType(mesh.Mesh_Primitive_Type)})
             if mesh.Mesh_Primitive_Type == 'BOX':
-                mesh_props.update({"bungie_mesh_primitive_box_length": str(round(mesh.Box_Length, 6))})
-                mesh_props.update({"bungie_mesh_primitive_box_width": str(round(mesh.Box_Width, 6))})
-                mesh_props.update({"bungie_mesh_primitive_box_height": str(round(mesh.Box_Height, 6))})
+                mesh_props.update({"bungie_mesh_primitive_box_length": str(round(ob.dimensions.x, 6))})
+                mesh_props.update({"bungie_mesh_primitive_box_width": str(round(ob.dimensions.y, 6))})
+                mesh_props.update({"bungie_mesh_primitive_box_height": str(round(ob.dimensions.z, 6))})
             elif mesh.Mesh_Primitive_Type == 'PILL':
-                mesh_props.update({"bungie_mesh_primitive_pill_radius": str(round(mesh.Pill_Radius, 6))})
-                mesh_props.update({"bungie_mesh_primitive_pill_height": str(round(mesh.Pill_Height, 6))})
+                mesh_props.update({"bungie_mesh_primitive_pill_radius": str(round(GetRadius(ob, False), 6))})
+                mesh_props.update({"bungie_mesh_primitive_pill_height": str(round(ob.dimensions.z, 6))})
             elif mesh.Mesh_Primitive_Type == 'SPHERE':
-                mesh_props.update({"bungie_mesh_primitive_sphere_radius": str(round(mesh.Sphere_Radius, 6))})
+                mesh_props.update({"bungie_mesh_primitive_sphere_radius": str(round(GetRadius(ob, True), 6))})
 
     return mesh_props
 
@@ -719,6 +719,14 @@ def getPrimitiveType(type):
             return '_connected_geometry_primitive_type_pill'
         case 'SPHERE':
             return '_connected_geometry_primitive_type_sphere'
+
+def GetRadius(ob, sphere):
+    if sphere:
+        diameter = max(ob.dimensions)
+    else:
+        diameter = max(ob.dimensions.x, ob.dimensions.y)
+    radius = diameter / 2.0
+    return radius
 
 ##############################
 #### MATERIAL PROPERTIES #####

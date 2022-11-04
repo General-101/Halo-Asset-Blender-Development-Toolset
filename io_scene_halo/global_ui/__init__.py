@@ -1574,18 +1574,18 @@ class JSON_ObjectMeshExtraProps(Panel):
         col.prop(ob_halo_json, "Mesh_Tesselation_Density", text='Tesselation Density')
         col.prop(ob_halo_json, "Mesh_Compression", text='Compression')
         col.prop(ob_halo_json, "Mesh_Primitive_Type", text='Primitive Type')
-        if ob_halo_json.Mesh_Primitive_Type != 'NONE':
-            sub = col.column(align=True)
-            match ob_halo_json.Mesh_Primitive_Type:
-                case 'BOX':
-                    sub.prop(ob_halo_json, "Box_Length", text='Length')
-                    sub.prop(ob_halo_json, "Box_Width", text='Width')
-                    sub.prop(ob_halo_json, "Box_Height", text='Height')
-                case 'PILL':
-                    sub.prop(ob_halo_json, "Pill_Radius", text='Radius')
-                    sub.prop(ob_halo_json, "Pill_Height", text='Height')
-                case 'SPHERE':
-                    sub.prop(ob_halo_json, "Sphere_Radius", text='Radius')
+        # if ob_halo_json.Mesh_Primitive_Type != 'NONE': # commented out 04-11-2022. Primitive dimensions are assigned to the json automatically
+        #     sub = col.column(align=True)
+        #     match ob_halo_json.Mesh_Primitive_Type:
+        #         case 'BOX':
+        #             sub.prop(ob_halo_json, "Box_Length", text='Length')
+        #             sub.prop(ob_halo_json, "Box_Width", text='Width')
+        #             sub.prop(ob_halo_json, "Box_Height", text='Height')
+        #         case 'PILL':
+        #             sub.prop(ob_halo_json, "Pill_Radius", text='Radius')
+        #             sub.prop(ob_halo_json, "Pill_Height", text='Height')
+        #         case 'SPHERE':
+        #             sub.prop(ob_halo_json, "Sphere_Radius", text='Radius')
 
 # MARKER PROPERTIES
 class JSON_ObjectMarkerProps(Panel):
@@ -2267,41 +2267,41 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
     )
     
     #PRIMITIVE PROPERTIES
-    Box_Length: FloatProperty(
-        name="Box Length",
-        options=set(),
-        description="Set the length of the primitive box",
-    )
+    # Box_Length: FloatProperty(
+    #     name="Box Length",
+    #     options=set(),
+    #     description="Set the length of the primitive box",
+    # )
 
-    Box_Width: FloatProperty(
-        name="Box Width",
-        options=set(),
-        description="Set the width of the primitive box",
-    )
+    # Box_Width: FloatProperty(
+    #     name="Box Width",
+    #     options=set(),
+    #     description="Set the width of the primitive box",
+    # )
 
-    Box_Height: FloatProperty(
-        name="Box Height",
-        options=set(),
-        description="Set the height of the primitive box",
-    )
+    # Box_Height: FloatProperty(
+    #     name="Box Height",
+    #     options=set(),
+    #     description="Set the height of the primitive box",
+    # )
 
-    Pill_Radius: FloatProperty(
-        name="Pill Radius",
-        options=set(),
-        description="Set the radius of the primitive pill",
-    )
+    # Pill_Radius: FloatProperty(
+    #     name="Pill Radius",
+    #     options=set(),
+    #     description="Set the radius of the primitive pill",
+    # )
 
-    Pill_Height: FloatProperty(
-        name="Pill Height",
-        options=set(),
-        description="Set the height of the primitive pill",
-    )
+    # Pill_Height: FloatProperty(
+    #     name="Pill Height",
+    #     options=set(),
+    #     description="Set the height of the primitive pill",
+    # )
 
-    Sphere_Radius: FloatProperty(
-        name="Sphere Radius",
-        options=set(),
-        description="Set the radius of the primitive sphere",
-    )
+    # Sphere_Radius: FloatProperty(
+    #     name="Sphere Radius",
+    #     options=set(),
+    #     description="Set the radius of the primitive sphere",
+    # )
     
     #BOUNDARY SURFACE PROPERTIES
     Boundary_Surface_Name: StringProperty(
