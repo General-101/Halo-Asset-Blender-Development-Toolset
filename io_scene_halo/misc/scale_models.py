@@ -24,7 +24,7 @@
 #
 # ##### END MIT LICENSE BLOCK #####
 
-from os import path, remove, rmdir
+from os import path, remove, rmdir, chdir
 from io import BytesIO, TextIOWrapper
 import zipfile
 import bpy
@@ -254,6 +254,8 @@ def generate_object_from_fbx(context, array_item, game_version):
     script_folder_path = path.dirname(path.dirname(__file__))
     # relative path of the FBX from the resources path
     path_relative = game_version + "\\" +  array_item[0] + ".fbx"
+    # relative path of the FBX for zip files
+    zip_path_relative = game_version + "/" + array_item[0] + ".fbx"
     # expected on disk path of the FBX
     fbxpath = path.join(script_folder_path, "resources", path_relative)
     # resources zip file path (won't exist in dev builds)
@@ -264,10 +266,11 @@ def generate_object_from_fbx(context, array_item, game_version):
         print(f"Loading {fbxpath} from disk")
         bpy.ops.import_scene.fbx(filepath=fbxpath)
     elif path.exists(path_resources_zip):
-        print(f"Loading {path_relative} from {path_resources_zip}")
+        print(f"Loading {zip_path_relative} from {path_resources_zip}")
         extracted_file = ''
+        chdir(path.dirname(__file__))
         with zipfile.ZipFile(path_resources_zip, "r") as zip:
-            extracted_file = zip.extract(path_relative)
+            extracted_file = zip.extract(zip_path_relative)
             bpy.ops.import_scene.fbx(filepath=extracted_file)
 
         remove(extracted_file)
