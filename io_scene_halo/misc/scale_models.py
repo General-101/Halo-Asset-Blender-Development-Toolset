@@ -165,9 +165,9 @@ halo_three_array = (
 
 
 halo_reach_array = (
-("brute", (57.1543, 66.2881, 94.6532)),
-("bugger", (44.0028, 102.07, 74.1832)),
-("civilian_female", (8.7529, 47.1229, 59.1449)),
+("brute", (37.6968, 65.7462, 88.5103)),
+("bugger", (44.7384, 103.817, 74.1189)),
+("civilian_female", (13.0412, 33.3191, 60.2647)),
 ("civilian_male", (38.6283, 39.3896, 79.7273)),
 ("cortana", (43.2805, 39.6819, 72.2342)),
 ("elite", (45.6046, 79.447, 85.7513)),
@@ -272,6 +272,9 @@ def generate_object_from_fbx(context, array_item, game_version):
 
         remove(extracted_file)
         rmdir(path.dirname(extracted_file))
+    else:
+        print("Model File Not Found! Generating Scale Box Instead!")
+        generate_box(array_item)
 
 # if the JMS file is not found fall back to a box scale model
 def generate_box(array_item):
