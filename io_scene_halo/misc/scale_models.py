@@ -187,22 +187,28 @@ halo_reach_array = (
 ("spartans", (14.0764, 37.8095, 60.3959)),
 ("worker", (11.7373, 42.6598, 64.5513)),
 ("banshee", (195.855, 225.765, 128.05)),
-("chopper", (221.621, 97.7097, 98.4085)),
-("cov_capital_ship", (28522.5, 11277.1, 3981.02)),
-("cov_cruiser", (24224.6, 11468.3, 3663.55)),
-("cov_cruiser_flood", (24224.6, 11468.3, 3663.55)),
-("ghost", (138.574, 118.218, 61.7782)),
-("gravity_throne", (58.353, 51.4155, 97.4521)),
-("hornet", (314.269, 291.202, 148.801)),
-("insertion_pod", (56.8505, 62.5648, 171.582)),
-("longsword", (1094, 1100, 170)),
-("prowler", (236.183, 137.775, 87.0731)),
-("mongoose", (101.933, 60.0935, 50.7133)),
-("pelican", (1009.16, 768.444, 321.431)),
-("phantom", (1095.29, 668.449, 454.621)),
-("scorpion", (338.856, 253.761, 92.27)),
-("shade", (135.771, 119.026, 135.203)),
-("warthog", (199.299, 101.492, 76.7727)),
+("cart_electric", (221.621, 97.7097, 98.4085)),
+("corvette", (28522.5, 11277.1, 3981.02)),
+("cruiser", (24224.6, 11468.3, 3663.55)),
+("falcon", (24224.6, 11468.3, 3663.55)),
+("forklift", (138.574, 118.218, 61.7782)),
+("ghost", (58.353, 51.4155, 97.4521)),
+("lnos", (314.269, 291.202, 148.801)),
+("mongoose", (56.8505, 62.5648, 171.582)),
+("oni_van", (1094, 1100, 170)),
+("pelican", (236.183, 137.775, 87.0731)),
+("phantom", (101.933, 60.0935, 50.7133)),
+("pickup", (1009.16, 768.444, 321.431)),
+("revenant", (1095.29, 668.449, 454.621)),
+("sabre", (338.856, 253.761, 92.27)),
+("scarab", (135.771, 119.026, 135.203)),
+("scorpion", (199.299, 101.492, 76.7727)),
+("seraph", (299.835, 303.158, 93.8022)),
+("super_carrier", (299.835, 303.158, 93.8022)),
+("tuning_fork", (299.835, 303.158, 93.8022)),
+("unsc_halcyon_class_cruiser_poa", (299.835, 303.158, 93.8022)),
+("unsc_stalwart_class_frigate", (299.835, 303.158, 93.8022)),
+("warthog", (299.835, 303.158, 93.8022)),
 ("wraith", (299.835, 303.158, 93.8022)))
 
 #  load a mesh from JMS and use it as a scale model
@@ -263,7 +269,6 @@ def generate_object_from_fbx(context, array_item, game_version):
         extracted_file = ''
         with zipfile.ZipFile(path_resources_zip, "r") as zip:
             extracted_file = zip.extract(path_relative)
-            print(extracted_file)
             bpy.ops.import_scene.fbx(filepath=extracted_file)
 
         remove(extracted_file)
