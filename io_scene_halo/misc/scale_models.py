@@ -24,6 +24,7 @@
 #
 # ##### END MIT LICENSE BLOCK #####
 
+from os import path, remove, rmdir
 from io import BytesIO, TextIOWrapper
 import zipfile
 import bpy
@@ -243,6 +244,31 @@ def generate_mesh(file, array_item, game_version):
 
     return mesh
 
+def generate_object_from_fbx(context, array_item, game_version):
+    # root folder for the plugin (bit of a hack)
+    script_folder_path = path.dirname(path.dirname(__file__))
+    # relative path of the FBX from the resources path
+    path_relative = game_version + "\\" +  array_item[0] + ".fbx"
+    # expected on disk path of the FBX
+    fbxpath = path.join(script_folder_path, "resources", path_relative)
+    # resources zip file path (won't exist in dev builds)
+    path_resources_zip = path.join(script_folder_path, "resources.zip")
+
+    # first check the disk
+    if path.exists(fbxpath):
+        print(f"Loading {fbxpath} from disk")
+        bpy.ops.import_scene.fbx(filepath=fbxpath)
+    elif path.exists(path_resources_zip):
+        print(f"Loading {path_relative} from {path_resources_zip}")
+        extracted_file = ''
+        with zipfile.ZipFile(path_resources_zip, "r") as zip:
+            extracted_file = zip.extract(path_relative)
+            print(extracted_file)
+            bpy.ops.import_scene.fbx(filepath=extracted_file)
+
+        remove(extracted_file)
+        rmdir(path.dirname(extracted_file))
+
 # if the JMS file is not found fall back to a box scale model
 def generate_box(array_item):
     item_name = array_item[0]
@@ -311,7 +337,11 @@ def create_model(context, game_version, halo_1_unit_index, halo_2_unit_index, ha
         array_item = halo_reach_array[int(halo_reach_unit_index)]
 
     mesh_processing.deselect_objects(context)
-    generate_object(context, array_item, game_version)
+
+    if game_version == "haloreach":
+        generate_object_from_fbx(context, array_item, game_version)
+    else:
+        generate_object(context, array_item, game_version)
 
     return {'FINISHED'}
 

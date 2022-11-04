@@ -24,7 +24,6 @@
 #
 # ##### END MIT LICENSE BLOCK #####
 from os import path, remove, chdir, rmdir
-from io import BytesIO, TextIOWrapper
 import zipfile
 import bpy
 
