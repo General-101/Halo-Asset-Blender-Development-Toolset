@@ -777,7 +777,7 @@ def getMaterials():
                         #clean shader path
                         shaderPath = shaderPath.replace('"','')
                         shaderPath = shaderPath.strip('\\')
-                        shaderPath = shaderPath.replace(GetTagsPath(),'')
+                        shaderPath = shaderPath.lower().replace(GetTagsPath().lower(),'')
 
                         if shaderPath == '':
                             shaderPath = 'shaders\invalid'
