@@ -29,7 +29,6 @@ import os
 
 from ..gr2_utils import (
     GetEKPath,
-    GetToolPath,
 )
 
 def import_now(report, filePath='', import_check=False, import_force=False, import_verbose=False, import_draft=False,import_seam_debug=False,import_skip_instances=False,import_decompose_instances=False,import_surpress_errors=False, run_tagwatcher=False, import_in_background=False):
