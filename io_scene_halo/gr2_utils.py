@@ -240,6 +240,9 @@ class sel_logic():
     def ObPoopsOnly(ob):
         return MeshType(ob, ('INSTANCED GEOMETRY'), ('%'))
 
+    def ObPoopsCollPhys(ob):
+        return MeshType(ob, ('INSTANCED GEOMETRY COLLISION', 'INSTANCED GEOMETRY PHYSICS'), ('@', '$'))
+
     def ObLights(ob):
         return ObjectType(ob)
 

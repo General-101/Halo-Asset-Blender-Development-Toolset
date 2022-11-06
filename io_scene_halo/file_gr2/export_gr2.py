@@ -44,6 +44,7 @@ from ..gr2_utils import (
     invalid_mesh_types,
     GetTagsPath,
     GetEKPath,
+    sel_logic,
 )
 
 ##############################
@@ -376,8 +377,14 @@ def getMeshProperties(mesh, name, ob, asset_name):
     if mesh.ObjectMesh_Type not in invalid_mesh_types:
         if mesh.Face_Type != 'NORMAL':
             mesh_props.update({"bungie_face_type": getFaceType(mesh.Face_Type)})
-        if mesh.Face_Mode != 'NORMAL':
-            mesh_props.update({"bungie_face_mode": getFaceMode(mesh.Face_Mode)})
+        if len(ob.children) > 0 and sel_logic.ObPoopsOnly(ob):
+            for child in ob.children:
+                if sel_logic.ObPoopsCollPhys(child):
+                    mesh_props.update({"bungie_face_mode": '_connected_geometry_face_mode_render_only'})
+                    break
+        else:
+            if mesh.Face_Mode != 'NORMAL':
+                mesh_props.update({"bungie_face_mode": getFaceMode(mesh.Face_Mode)})
         if mesh.Face_Sides != 'ONE SIDED':
             mesh_props.update({"bungie_face_sides": getFaceSides(mesh.Face_Sides)})
         if mesh.Face_Draw_Distance != 'NORMAL':
