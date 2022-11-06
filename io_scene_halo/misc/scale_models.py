@@ -2,7 +2,7 @@
 #
 # MIT License
 #
-# Copyright (c) 2021 Steven Garcia
+# Copyright (c) 2021 Steven Garcia, Generalkidd, Crisp
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -262,21 +262,25 @@ def generate_object_from_fbx(context, array_item, game_version):
     path_resources_zip = path.join(script_folder_path, "resources.zip")
 
     # first check the disk
-    if path.exists(fbxpath):
-        print(f"Loading {fbxpath} from disk")
-        bpy.ops.import_scene.fbx(filepath=fbxpath)
-    elif path.exists(path_resources_zip):
-        print(f"Loading {zip_path_relative} from {path_resources_zip}")
-        extracted_file = ''
-        chdir(path.dirname(__file__))
-        with zipfile.ZipFile(path_resources_zip, "r") as zip:
-            extracted_file = zip.extract(zip_path_relative)
-            bpy.ops.import_scene.fbx(filepath=extracted_file)
+    try:
+        if path.exists(fbxpath):
+            print(f"Loading {fbxpath} from disk")
+            bpy.ops.import_scene.fbx(filepath=fbxpath)
+        elif path.exists(path_resources_zip):
+            print(f"Loading {zip_path_relative} from {path_resources_zip}")
+            extracted_file = ''
+            chdir(path.dirname(__file__))
+            with zipfile.ZipFile(path_resources_zip, "r") as zip:
+                extracted_file = zip.extract(zip_path_relative)
+                bpy.ops.import_scene.fbx(filepath=extracted_file)
 
-        remove(extracted_file)
-        rmdir(path.dirname(extracted_file))
-    else:
-        print("Model File Not Found! Generating Scale Box Instead!")
+            remove(extracted_file)
+            rmdir(path.dirname(extracted_file))
+        else:
+            print("Model File Not Found! Generating Scale Box Instead!")
+            generate_box(array_item)
+    except:
+        print("Failed To Create Scale Model! Generating Scale Box Instead!")
         generate_box(array_item)
 
 # if the JMS file is not found fall back to a box scale model
