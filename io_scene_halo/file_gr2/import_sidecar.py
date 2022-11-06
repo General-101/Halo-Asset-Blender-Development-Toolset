@@ -37,7 +37,7 @@ def import_now(report, filePath='', import_check=False, import_force=False, impo
     asset_path = CleanAssetPath(full_path)
     asset_name = asset_path.rpartition('\\')[2]
     try:
-        toolCommand = '"{}" import "{}" {}'.format(GetToolPath(), asset_path + '\\' + asset_name + '.sidecar.xml', GetImportFlags(import_check, import_force, import_verbose, import_draft, import_seam_debug, import_skip_instances, import_decompose_instances, import_surpress_errors))
+        toolCommand = f'tool_fast import {os.path.join(asset_path, asset_name)}.sidecar.xml {GetImportFlags(import_check, import_force, import_verbose, import_draft, import_seam_debug, import_skip_instances, import_decompose_instances, import_surpress_errors)}'
         os.chdir(GetEKPath())
         p = Popen(toolCommand)
         if not import_in_background:
@@ -49,7 +49,7 @@ def import_now(report, filePath='', import_check=False, import_force=False, impo
     else:
         if run_tagwatcher:
             try:
-                tagwatcher = GetEKPath() + '\\bin\\tools\\bonobo\\TagWatcher.exe'
+                tagwatcher = os.path.join(GetEKPath(), 'bin', 'tools', 'bonobo', 'TagWatcher.exe')
                 Popen(tagwatcher)
             except:
                 report({'WARNING'},"TagWatcher Failed To Run!")
@@ -59,7 +59,7 @@ def import_now(report, filePath='', import_check=False, import_force=False, impo
 def CleanAssetPath(path):
     path = path.replace('"','')
     path = path.strip('\\')
-    path = path.replace(GetEKPath() + '\\data\\','')
+    path = path.replace(os.path.join(GetEKPath(), 'data', ''), '')
 
     return path
 
