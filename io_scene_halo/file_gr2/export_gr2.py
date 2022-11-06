@@ -377,12 +377,14 @@ def getMeshProperties(mesh, name, ob, asset_name):
     if mesh.ObjectMesh_Type not in invalid_mesh_types:
         if mesh.Face_Type != 'NORMAL':
             mesh_props.update({"bungie_face_type": getFaceType(mesh.Face_Type)})
+        render_only_set = False
         if len(ob.children) > 0 and sel_logic.ObPoopsOnly(ob):
             for child in ob.children:
                 if sel_logic.ObPoopsCollPhys(child):
                     mesh_props.update({"bungie_face_mode": '_connected_geometry_face_mode_render_only'})
+                    render_only_set = True
                     break
-        else:
+        if not render_only_set:
             if mesh.Face_Mode != 'NORMAL':
                 mesh_props.update({"bungie_face_mode": getFaceMode(mesh.Face_Mode)})
         if mesh.Face_Sides != 'ONE SIDED':
