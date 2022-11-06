@@ -564,8 +564,8 @@ class Scale_ModelPropertiesGroup(PropertyGroup):
                 ('37', "Seraph", "Seraph Model"),
                 ('38', "Covenant Super Carrier", "Covenant Super Carrier Model"),
                 ('39', "Spirit", "Spirit Model"),
-                ('40', "UNSC Frigate", "UNSC Frigate Model"),
-                ('41', "UNSC Pillar Of Autumn", "UNSC POA Model"),
+                ('40', "UNSC Pillar Of Autumn", "UNSC POA Model"),
+                ('41', "UNSC Frigate", "UNSC Frigate Model"),
                 ('42', "Warthog", "Warthog Model"),
                 ('43', "Wraith", "Wraith Model"),
                ]
