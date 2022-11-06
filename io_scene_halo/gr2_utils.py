@@ -34,7 +34,7 @@ from mathutils import Matrix
 
 # Main Prefixes #
 frame_prefixes = ('b ', 'b_', 'frame ', 'frame_','bip ','bip_','bone ','bone_')
-marker_prefixes = ('#')
+marker_prefixes = ('#', '+tag')
 mesh_prefixes = ('+soft_ceiling','+soft_kill','+slip_surface', '@','+cookie','+decorator','+flair', '%', '$','+fog','+portal', '+seam','+water', '\'')
 special_prefixes = ('b ', 'b_', 'frame ', 'frame_','bip ','bip_','bone ','bone_','#','+soft_ceiling','+soft_kill','+slip_surface', '@','+cookie','+decorator','+flair', '%', '$','+fog','+portal', '+seam','+water', '\'')
 
@@ -297,7 +297,7 @@ def MeshType(ob, types, valid_prefixes=()):
 def ObjectType(ob, types=(), valid_prefixes=()):
     if ob != None: # temp work around for 'ob' not being passed between functions correctly, and resolving to a NoneType
         if ob.type == 'MESH':
-            return ob.halo_json.Object_Type_All in types and not ObjectPrefix(ob, ((frame_prefixes, marker_prefixes)))
+            return ob.halo_json.Object_Type_All in types and not ObjectPrefix(ob, ((frame_prefixes + marker_prefixes)))
         elif ob.type == 'EMPTY':
             return ob.halo_json.Object_Type_No_Mesh in types or ObjectPrefix(ob, (valid_prefixes))
         elif ob.type == 'LIGHT' and (types != 'MARKER' and '#' not in valid_prefixes):
