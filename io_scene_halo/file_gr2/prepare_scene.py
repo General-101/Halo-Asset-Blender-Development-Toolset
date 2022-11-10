@@ -173,14 +173,17 @@ def GetCurrentActiveObjectSelection(context):
 def FixLightsRotations(lights_list):
     DeselectAllObjects()
     angle_x = radians(-90)
-    angle_z = radians(-180)
+    angle_y = radians(90)
+    angle_z = radians(-90)
     axis_x = (1, 0, 0)
+    axis_y = (0, 1, 0)
     axis_z = (0, 0, 1)
     for ob in lights_list:
         pivot = ob.location
         M = (
             Matrix.Translation(pivot) @
             Matrix.Rotation(angle_x, 4, axis_x) @
+            #Matrix.Rotation(angle_y, 4, axis_y) @
             Matrix.Rotation(angle_z, 4, axis_z) @       
             Matrix.Translation(-pivot)
             )

@@ -81,8 +81,8 @@ def getLightProperties(node, light):
     node_props.update({"bungie_light_shape": getLightShape(node.Light_Shape)})
     node_props.update({"bungie_light_volume_distance": str(round(node.Light_Volume_Distance, 6))})
     node_props.update({"bungie_light_volume_intensity_scalar": str(round(node.Light_Volume_Intensity, 6))})
-    node_props.update({"bungie_light_fade_start_distance": str(round(node.Light_Fade_Start_Distance, 6))})
-    node_props.update({"bungie_light_fade_out_distance": str(round(node.Light_Fade_End_Distance, 6))})
+    # node_props.update({"bungie_light_fade_start_distance": str(round(node.Light_Fade_Start_Distance, 6))})
+    # node_props.update({"bungie_light_fade_out_distance": str(round(node.Light_Fade_End_Distance, 6))})
     node_props.update({"bungie_light_color": getLightColor(node.Light_Color.r, node.Light_Color.g, node.Light_Color.b)})
     node_props.update({"bungie_light_intensity": str(round(node.Light_Intensity, 6))})
     node_props.update({"bungie_light_hotspot_size": str(round(node.Light_Hotspot_Size, 6))})
@@ -106,21 +106,21 @@ def getLightProperties(node, light):
         node_props.update({"bungie_light_dynamic_light_has_bounce": "1"})
     if node.Light_Screenspace_Has_Specular:
         node_props.update({"bungie_light_screenspace_light_has_specular": "1"})
-    if node.Light_Use_Clipping:
-        node_props.update({"bungie_light_use_clipping": "1"})
-        node_props.update({"bungie_light_clipping_size_x_pos": str(round(node.Light_Clipping_Size_X_Pos, 6))})
-        node_props.update({"bungie_light_clipping_size_y_pos": str(round(node.Light_Clipping_Size_Y_Pos, 6))})
-        node_props.update({"bungie_light_clipping_size_z_pos": str(round(node.Light_Clipping_Size_Z_Pos, 6))})
-        node_props.update({"bungie_light_clipping_size_x_neg": str(round(node.Light_Clipping_Size_X_Neg, 6))})
-        node_props.update({"bungie_light_clipping_size_y_neg": str(round(node.Light_Clipping_Size_Y_Neg, 6))})
-        node_props.update({"bungie_light_clipping_size_z_neg": str(round(node.Light_Clipping_Size_Z_Neg, 6))})
-    if node.Light_Near_Attenuation:
-        node_props.update({"bungie_light_use_near_attenuation": "1"})
+    # node_props.update({"bungie_light_clipping_size_x_pos": str(round(node.Light_Clipping_Size_X_Pos, 6))})
+    # node_props.update({"bungie_light_clipping_size_y_pos": str(round(node.Light_Clipping_Size_Y_Pos, 6))})
+    # node_props.update({"bungie_light_clipping_size_z_pos": str(round(node.Light_Clipping_Size_Z_Pos, 6))})
+    # node_props.update({"bungie_light_clipping_size_x_neg": str(round(node.Light_Clipping_Size_X_Neg, 6))})
+    # node_props.update({"bungie_light_clipping_size_y_neg": str(round(node.Light_Clipping_Size_Y_Neg, 6))})
+    # node_props.update({"bungie_light_clipping_size_z_neg": str(round(node.Light_Clipping_Size_Z_Neg, 6))})
+    if node.Light_Near_Attenuation_Start != 0:
         node_props.update({"bungie_light_near_attenuation_start": str(round(node.Light_Near_Attenuation_Start, 6))})
+    elif node.Light_Game_Type == 'RERENDER': # added to prevent a sapien crash that occurs when light is rerender and no near attenuation start is set
+        node_props.update({"bungie_light_near_attenuation_start": "1.000000"})
+    if node.Light_Near_Attenuation_End != 0:
         node_props.update({"bungie_light_near_attenuation_end": str(round(node.Light_Near_Attenuation_End, 6))})
-    if node.Light_Far_Attenuation:
-        node_props.update({"bungie_light_use_far_attenuation": "1"})
+    if node.Light_Far_Attenuation_Start != 0:
         node_props.update({"bungie_light_far_attenuation_start": str(round(node.Light_Far_Attenuation_Start, 6))})
+    if node.Light_Far_Attenuation_End != 0:
         node_props.update({"bungie_light_far_attenuation_end": str(round(node.Light_Far_Attenuation_End, 6))})
 
     return node_props

@@ -1742,10 +1742,10 @@ class JSON_LightProps(Panel):
         col.prop(ob_halo_json, 'Light_Color', text='Color') 
         col.prop(ob_halo_json, 'Light_Intensity', text='Intensity')
 
-        col.separator()
+        # col.separator() # fade out doesn't do anything. This is all handled by attenuation
 
-        col.prop(ob_halo_json, 'Light_Fade_Start_Distance', text='Fade Out Start Distance')
-        col.prop(ob_halo_json, 'Light_Fade_End_Distance', text='Fade Out End Distance')
+        # col.prop(ob_halo_json, 'Light_Fade_Start_Distance', text='Fade Out Start Distance')
+        # col.prop(ob_halo_json, 'Light_Fade_End_Distance', text='Fade Out End Distance')
 
         col.separator()
 
@@ -1766,14 +1766,9 @@ class JSON_LightProps(Panel):
 
         col.separator()
 
-        col.prop(ob_halo_json, 'Light_Tag_Override', text='Light Tag Override')
-        col.prop(ob_halo_json, 'Light_Shader_Reference', text='Shader Tag Reference')
-        col.prop(ob_halo_json, 'Light_Gel_Reference', text='Gel Tag Reference')
-        col.prop(ob_halo_json, 'Light_Lens_Flare_Reference', text='Lens Flare Tag Reference')
+        col.prop(ob_halo_json, 'Light_Bounce_Ratio', text='Light Bounce Ratio')
 
         col.separator()
-
-        col.prop(ob_halo_json, 'Light_Bounce_Ratio', text='Light Bounce Ratio')
 
         col = layout.column(heading="Flags")
         sub = col.column(align=True)
@@ -1782,99 +1777,31 @@ class JSON_LightProps(Panel):
         sub.prop(ob_halo_json, 'Light_Dynamic_Has_Bounce', text='Light Has Dynamic Bounce')
         sub.prop(ob_halo_json, 'Light_Screenspace_Has_Specular', text='Screenspace Light Has Specular')
 
-class JSON_LightNearAttenuationProps(Panel):
-    bl_label = "Light Uses Near Attenuation"
-    bl_idname = "JSON_PT_LightNearAttenuationPanel"
-    bl_space_type = "PROPERTIES"
-    bl_region_type = "WINDOW"
-    bl_parent_id = "JSON_PT_LightPanel"
-    bl_options = {'DEFAULT_CLOSED'}
-
-
-    def draw_header(self, context):
-        ob = context.object
-        ob_halo_json = ob.halo_json
-        self.layout.prop(ob_halo_json, "Light_Near_Attenuation", text='')
-
-    def draw(self, context):
-        layout = self.layout
-        layout.use_property_split = True
-
-        flow = layout.grid_flow(row_major=True, columns=0, even_columns=True, even_rows=False, align=False)
-
-        ob = context.object
-        ob_halo_json = ob.halo_json
-
-        layout.enabled = ob_halo_json.Light_Near_Attenuation
-
         col = flow.column()
 
         col.prop(ob_halo_json, 'Light_Near_Attenuation_Start', text='Near Attenuation Start')
         col.prop(ob_halo_json, 'Light_Near_Attenuation_End', text='Near Attenuation End')
 
-class JSON_LightFarAttenuationProps(Panel):
-    bl_label = "Light Uses Far Attenuation"
-    bl_idname = "JSON_PT_LightFarAttenuationPanel"
-    bl_space_type = "PROPERTIES"
-    bl_region_type = "WINDOW"
-    bl_parent_id = "JSON_PT_LightPanel"
-    bl_options = {'DEFAULT_CLOSED'}
-
-
-    def draw_header(self, context):
-        ob = context.object
-        ob_halo_json = ob.halo_json
-        self.layout.prop(ob_halo_json, "Light_Far_Attenuation", text='')
-
-    def draw(self, context):
-        layout = self.layout
-        layout.use_property_split = True
-
-        flow = layout.grid_flow(row_major=True, columns=0, even_columns=True, even_rows=False, align=False)
-
-        light = context.object
-        ob_halo_json = light.halo_json
-
-        layout.enabled = ob_halo_json.Light_Far_Attenuation
-
-        col = flow.column()
+        col.separator()
 
         col.prop(ob_halo_json, 'Light_Far_Attenuation_Start', text='Far Attenuation Start')
         col.prop(ob_halo_json, 'Light_Far_Attenuation_End', text='Far Attenuation End')
 
-class JSON_LightClippingProps(Panel):
-    bl_label = "Light Uses Clipping"
-    bl_idname = "JSON_PT_LightClippingPanel"
-    bl_space_type = "PROPERTIES"
-    bl_region_type = "WINDOW"
-    bl_parent_id = "JSON_PT_LightPanel"
-    bl_options = {'DEFAULT_CLOSED'}
+        col.separator()
 
+        col.prop(ob_halo_json, 'Light_Tag_Override', text='Light Tag Override')
+        col.prop(ob_halo_json, 'Light_Shader_Reference', text='Shader Tag Reference')
+        col.prop(ob_halo_json, 'Light_Gel_Reference', text='Gel Tag Reference')
+        col.prop(ob_halo_json, 'Light_Lens_Flare_Reference', text='Lens Flare Tag Reference')
 
-    def draw_header(self, context):
-        ob = context.object
-        ob_halo_json = ob.halo_json
-        self.layout.prop(ob_halo_json, "Light_Use_Clipping", text='')
+        # col.separator() # commenting out light clipping for now.
 
-    def draw(self, context):
-        layout = self.layout
-        layout.use_property_split = True
-
-        flow = layout.grid_flow(row_major=True, columns=0, even_columns=True, even_rows=False, align=False)
-
-        ob = context.object
-        ob_halo_json = ob.halo_json
-
-        layout.enabled = ob_halo_json.Light_Use_Clipping
-
-        col = flow.column()
-
-        col.prop(ob_halo_json, 'Light_Clipping_Size_X_Pos', text='Clipping Size X Forward')
-        col.prop(ob_halo_json, 'Light_Clipping_Size_Y_Pos', text='Clipping Size Y Forward')
-        col.prop(ob_halo_json, 'Light_Clipping_Size_Z_Pos', text='Clipping Size Z Forward')
-        col.prop(ob_halo_json, 'Light_Clipping_Size_X_Neg', text='Clipping Size X Backward')
-        col.prop(ob_halo_json, 'Light_Clipping_Size_Y_Neg', text='Clipping Size Y Backward')
-        col.prop(ob_halo_json, 'Light_Clipping_Size_Z_Neg', text='Clipping Size Z Backward')
+        # col.prop(ob_halo_json, 'Light_Clipping_Size_X_Pos', text='Clipping Size X Forward')
+        # col.prop(ob_halo_json, 'Light_Clipping_Size_Y_Pos', text='Clipping Size Y Forward')
+        # col.prop(ob_halo_json, 'Light_Clipping_Size_Z_Pos', text='Clipping Size Z Forward')
+        # col.prop(ob_halo_json, 'Light_Clipping_Size_X_Neg', text='Clipping Size X Backward')
+        # col.prop(ob_halo_json, 'Light_Clipping_Size_Y_Neg', text='Clipping Size Y Backward')
+        # col.prop(ob_halo_json, 'Light_Clipping_Size_Z_Neg', text='Clipping Size Z Backward')
 
 # BONE PROPERTIES
 class JSON_BoneProps(Panel):
@@ -3068,23 +2995,23 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
     Light_Near_Attenuation_Start: FloatProperty(
         name="Light Near Attenuation Start Distance",
         options=set(),
-        description="",
-        default=250,
+        description="The power of the light remains zero up until this point",
+        default=0,
         min=0,
     )
 
     Light_Near_Attenuation_End: FloatProperty(
         name="Light Near Attenuation Start Distance",
         options=set(),
-        description="",
-        default=500,
+        description="From the starting near attenuation, light power gradually increases up until the end point",
+        default=0,
         min=0,
     )
 
     Light_Far_Attenuation_Start: FloatProperty(
         name="Light Near Attenuation Start Distance",
         options=set(),
-        description="",
+        description="After this point, the light will begin to lose power",
         default=500,
         min=0,
     )
@@ -3092,7 +3019,7 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
     Light_Far_Attenuation_End: FloatProperty(
         name="Light Near Attenuation Start Distance",
         options=set(),
-        description="",
+        description="From the far attenuation start, the light will gradually lose power until it reaches zero by the end point",
         default=1000,
         min=0,
     )
@@ -3186,21 +3113,21 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
         name="Light Clipping Size X Backward",
         options=set(),
         description="",
-        default=-100,
+        default=100,
     )
 
     Light_Clipping_Size_Y_Neg: FloatProperty(
         name="Light Clipping Size Y Backward",
         options=set(),
         description="",
-        default=-100,
+        default=100,
     )
 
     Light_Clipping_Size_Z_Neg: FloatProperty(
         name="Light Clipping Size Z Backward",
         options=set(),
         description="",
-        default=-100,
+        default=100,
     )
 
     Light_Hotspot_Size: FloatProperty(
@@ -3451,9 +3378,6 @@ classeshalo = (
     JSON_ObjectPropertiesGroup,
     JSON_MaterialPropertiesGroup,
     JSON_LightProps,
-    JSON_LightNearAttenuationProps,
-    JSON_LightFarAttenuationProps,
-    JSON_LightClippingProps,
     JSON_BoneProps,
     JSON_BonePropertiesGroup,
 )
