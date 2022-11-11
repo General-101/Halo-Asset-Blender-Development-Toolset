@@ -36,8 +36,8 @@ from mathutils import Matrix, Vector
 # MAIN FUNCTION     
 
 def repair_scene(context, report, objects_selection, active_object, hidden_objects, mode, temp_armature, timeline_start, timeline_end, model_armature, lights, proxies, unselectable_objects, enabled_exclude_collections, export_hidden, sidecar_type, **kwargs):
-    if sidecar_type == 'SCENARIO':
-        FixSceneRotatation(context.view_layer.objects)
+    # if sidecar_type == 'SCENARIO':
+    #     FixSceneRotatation(context.view_layer.objects, model_armature)
         
     scene = context.scene
  
@@ -45,7 +45,7 @@ def repair_scene(context, report, objects_selection, active_object, hidden_objec
 
     DeletePoopProxies(proxies)
 
-    RestoreLightsRotations(lights)
+    #RestoreLightsRotations(lights)
 
     # HaloDeboner(model_armature.data.edit_bones, model_armature, context)
 
@@ -82,18 +82,19 @@ def RepairTimeline(scene, timeline_start, timeline_end):
     scene.frame_start = timeline_start
     scene.frame_end = timeline_end
 
-def FixSceneRotatation(scene_obs):
+def FixSceneRotatation(scene_obs, model_armature):
     DeselectAllObjects()
     angle_z = radians(-90)
     axis_z = (0, 0, 1)
     pivot = Vector((0.0, 0.0, 0.0))
     for ob in scene_obs:
-        M = (
-            Matrix.Translation(pivot) @
-            Matrix.Rotation(angle_z, 4, axis_z) @       
-            Matrix.Translation(-pivot)
-            )
-        ob.matrix_world = M @ ob.matrix_world
+        if ob != model_armature:
+            M = (
+                Matrix.Translation(pivot) @
+                Matrix.Rotation(angle_z, 4, axis_z) @       
+                Matrix.Translation(-pivot)
+                )
+            ob.matrix_world = M @ ob.matrix_world
 
 def DelTempArmature(context, model_armature):
     ops = bpy.ops
@@ -108,18 +109,16 @@ def DelTempArmature(context, model_armature):
 def RestoreLightsRotations(lights_list):
     DeselectAllObjects()
     angle_x = radians(90)
-    angle_y = radians(-90)
-    angle_z = radians(90)
+    angle_z = radians(180)
     axis_x = (1, 0, 0)
-    axis_y = (0, 1, 0)
     axis_z = (0, 0, 1)
+    lights_list = []
     for ob in lights_list:
         pivot = ob.location
         M = (
             Matrix.Translation(pivot) @
-            Matrix.Rotation(angle_z, 4, axis_z) @
-            #Matrix.Rotation(angle_y, 4, axis_y) @  
             Matrix.Rotation(angle_x, 4, axis_x) @
+            #Matrix.Rotation(angle_z, 4, axis_z) @       
             Matrix.Translation(-pivot)
             )
         ob.matrix_world = M @ ob.matrix_world

@@ -67,12 +67,12 @@ def prepare_scene(context, report, sidecar_type, export_hidden, filepath, use_ar
         skeleton_bones = GetBoneList(model_armature, use_armature_deform_only)      # return a list of bones attached to the model armature, ignoring control / non-deform bones
     asset_path, asset = GetAssetInfo(filepath)                                  # get the asset name and path to the asset folder
     # HaloBoner(model_armature.data.edit_bones, model_armature, context)
-    FixLightsRotations(h_objects.lights)                                         # adjust light rotations to match in game rotation, and return a list of lights for later use in repair_scene
+    #FixLightsRotations(h_objects.lights)                                         # adjust light rotations to match in game rotation, and return a list of lights for later use in repair_scene
     timeline_start, timeline_end = SetTimelineRange(context)                      # set the timeline range so we can restore it later
     lod_count = GetDecoratorLODCount(h_objects, sidecar_type == 'DECORATOR SET') # get the max LOD count in the scene if we're exporting a decorator
     ApplyPredominantShaderNames(h_objects.poops)
-    if sidecar_type == 'SCENARIO':
-        RotateScene(context.view_layer.objects)
+    # if sidecar_type == 'SCENARIO':
+    #     RotateScene(context.view_layer.objects, model_armature)
     ApplyObjectIDs(context.view_layer.objects)
 
     return objects_selection, active_object, hidden_objects, mode, model_armature, temp_armature, asset_path, asset, skeleton_bones, h_objects, timeline_start, timeline_end, lod_count, proxies, unselectable_objects, enabled_exclude_collections
@@ -124,18 +124,19 @@ def ApplyObjectIDs(scene_obs):
         if ob.halo_json.object_id == '':
             ob.halo_json.object_id = str(uuid4())
 
-def RotateScene(scene_obs):
+def RotateScene(scene_obs, model_armature):
     DeselectAllObjects()
     angle_z = radians(90)
     axis_z = (0, 0, 1)
     pivot = Vector((0.0, 0.0, 0.0))
     for ob in scene_obs:
-        M = (
-            Matrix.Translation(pivot) @
-            Matrix.Rotation(angle_z, 4, axis_z) @       
-            Matrix.Translation(-pivot)
-            )
-        ob.matrix_world = M @ ob.matrix_world
+        if ob != model_armature:
+            M = (
+                Matrix.Translation(pivot) @
+                Matrix.Rotation(angle_z, 4, axis_z) @       
+                Matrix.Translation(-pivot)
+                )
+            ob.matrix_world = M @ ob.matrix_world
 
 def UnhideObjects(export_hidden, context):
     hidden_objects = []
@@ -172,22 +173,20 @@ def GetCurrentActiveObjectSelection(context):
 
 def FixLightsRotations(lights_list):
     DeselectAllObjects()
-    angle_x = radians(-90)
-    angle_y = radians(90)
+    angle_x = radians(90)
     angle_z = radians(-90)
     axis_x = (1, 0, 0)
-    axis_y = (0, 1, 0)
     axis_z = (0, 0, 1)
     for ob in lights_list:
         pivot = ob.location
         M = (
             Matrix.Translation(pivot) @
             Matrix.Rotation(angle_x, 4, axis_x) @
-            #Matrix.Rotation(angle_y, 4, axis_y) @
             Matrix.Rotation(angle_z, 4, axis_z) @       
             Matrix.Translation(-pivot)
             )
         ob.matrix_world = M @ ob.matrix_world
+
 
 def GetDecoratorLODCount(halo_objects, asset_is_decorator):
     lod_count = 0
@@ -221,7 +220,7 @@ def GetSceneArmature(context, sidecar_type):
         if ob.type == 'ARMATURE' and not ob.name.startswith('+'): # added a check for a '+' prefix in armature name, to support special animation control armatures in the future
             model_armature = ob
             break
-    if model_armature == None and sidecar_type == 'MODEL':
+    if model_armature is None:
         model_armature, no_parent_objects = AddTempArmature(context)
         temp_armature = True
 
