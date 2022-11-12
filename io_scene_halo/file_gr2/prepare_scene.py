@@ -40,6 +40,7 @@ from ..gr2_utils import(
     SelectAllObjects,
     IsShader,
     HaloBoner,
+    GetTagsPath
 )
 #####################################################################################
 #####################################################################################
@@ -345,6 +346,8 @@ def GetProminantShaderName(ob):
             shader_path = material.halo_json.shader_path
             if shader_path.rpartition('.')[0] != '':
                 shader_path = shader_path.rpartition('.')[0]
+            shader_path.replace(GetTagsPath(), '')
+            shader_path.replace(GetTagsPath().lower(), '')
             shader_type = material.halo_json.Shader_Type
             predominant_shader = f'{shader_path}.{shader_type}'
             break

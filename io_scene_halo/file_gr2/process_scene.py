@@ -274,7 +274,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                                     obj.select_set(True)
                                             else:
                                                 export_fbx(self, context, **keywords)
-                                            export_gr2(self, context, report, asset_path, asset, IsWindows(), 'bsp', halo_objects, bsp, perm, **keywords)
+                                            export_gr2(self, context, report, asset_path, asset, IsWindows(), 'bsp', halo_objects, bsp, perm, model_armature, skeleton_bones, **keywords)
                                             gr2_count += 1
 
                             if export_poops:
@@ -293,7 +293,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                                         obj.select_set(True)
                                                 else:
                                                     export_fbx(self, context, **keywords)
-                                                export_gr2(self, context, report, asset_path, asset, IsWindows(), 'poops', halo_objects, bsp, perm, **keywords)
+                                                export_gr2(self, context, report, asset_path, asset, IsWindows(), 'poops', halo_objects, bsp, perm, model_armature, skeleton_bones, **keywords)
                                                 gr2_count += 1
 
                             if export_markers:
@@ -312,7 +312,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                                         obj.select_set(True)
                                                 else:
                                                     export_fbx(self, context, **keywords)
-                                                export_gr2(self, context, report, asset_path, asset, IsWindows(), 'markers', halo_objects, bsp, perm, **keywords)
+                                                export_gr2(self, context, report, asset_path, asset, IsWindows(), 'markers', halo_objects, bsp, perm, model_armature, skeleton_bones, **keywords)
                                                 gr2_count += 1
 
                             if export_lights:
@@ -331,7 +331,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                                         obj.select_set(True)
                                                 else:
                                                     export_fbx(self, context, **keywords)
-                                                export_gr2(self, context, report, asset_path, asset, IsWindows(), 'lights', halo_objects, bsp, perm, **keywords)
+                                                export_gr2(self, context, report, asset_path, asset, IsWindows(), 'lights', halo_objects, bsp, perm, model_armature, skeleton_bones, **keywords)
                                                 gr2_count += 1
 
                             if export_portals:
@@ -350,7 +350,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                                         obj.select_set(True)
                                                 else:
                                                     export_fbx(self, context, **keywords)
-                                                export_gr2(self, context, report, asset_path, asset, IsWindows(), 'portals', halo_objects, bsp, perm, **keywords)
+                                                export_gr2(self, context, report, asset_path, asset, IsWindows(), 'portals', halo_objects, bsp, perm, model_armature, skeleton_bones, **keywords)
                                                 gr2_count += 1
 
                             if export_seams:
@@ -369,7 +369,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                                         obj.select_set(True)
                                                 else:
                                                     export_fbx(self, context, **keywords)
-                                                export_gr2(self, context, report, asset_path, asset, IsWindows(), 'seams', halo_objects, bsp, perm, **keywords)
+                                                export_gr2(self, context, report, asset_path, asset, IsWindows(), 'seams', halo_objects, bsp, perm, model_armature, skeleton_bones, **keywords)
                                                 gr2_count += 1
 
                             if export_water_surfaces:
@@ -388,7 +388,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                                         obj.select_set(True)
                                                 else:
                                                     export_fbx(self, context, **keywords)
-                                                export_gr2(self, context, report, asset_path, asset, IsWindows(), 'water', halo_objects, bsp, perm, **keywords)
+                                                export_gr2(self, context, report, asset_path, asset, IsWindows(), 'water', halo_objects, bsp, perm, model_armature, skeleton_bones, **keywords)
                                                 gr2_count += 1
 
 
@@ -408,7 +408,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                                         obj.select_set(True)
                                                 else:
                                                     export_fbx(self, context, **keywords)
-                                                export_gr2(self, context, report, asset_path, asset, IsWindows(), 'lightmap_region', halo_objects, bsp, perm, **keywords)
+                                                export_gr2(self, context, report, asset_path, asset, IsWindows(), 'lightmap_region', halo_objects, bsp, perm, model_armature, skeleton_bones, **keywords)
                                                 gr2_count += 1
                             # Design time!
                             bsp_list = []
@@ -436,7 +436,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                                     obj.select_set(True)
                                             else:
                                                 export_fbx(self, context, **keywords)
-                                            export_gr2(self, context, report, asset_path, asset, IsWindows(), 'fog', halo_objects, bsp, perm, **keywords)
+                                            export_gr2(self, context, report, asset_path, asset, IsWindows(), 'fog', halo_objects, bsp, perm, model_armature, skeleton_bones, **keywords)
                                             gr2_count += 1
 
                             if export_boundary_surfaces:
@@ -454,7 +454,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                                     obj.select_set(True)
                                             else:
                                                 export_fbx(self, context, **keywords)
-                                            export_gr2(self, context, report, asset_path, asset, IsWindows(), 'design', halo_objects, bsp, perm, **keywords)
+                                            export_gr2(self, context, report, asset_path, asset, IsWindows(), 'design', halo_objects, bsp, perm, model_armature, skeleton_bones, **keywords)
                                             gr2_count += 1
 
                             if export_water_physics:
@@ -472,7 +472,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                                     obj.select_set(True)
                                             else:
                                                 export_fbx(self, context, **keywords)
-                                            export_gr2(self, context, report, asset_path, asset, IsWindows(), 'water_physics', halo_objects, bsp, perm, **keywords)
+                                            export_gr2(self, context, report, asset_path, asset, IsWindows(), 'water_physics', halo_objects, bsp, perm, model_armature, skeleton_bones, **keywords)
                                             gr2_count += 1
 
                             if export_rain_occluders:
@@ -490,7 +490,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                                     obj.select_set(True)
                                             else:
                                                 export_fbx(self, context, **keywords)
-                                            export_gr2(self, context, report, asset_path, asset, IsWindows(), 'rain_blockers', halo_objects, bsp, perm, **keywords)
+                                            export_gr2(self, context, report, asset_path, asset, IsWindows(), 'rain_blockers', halo_objects, bsp, perm, model_armature, skeleton_bones, **keywords)
                                             gr2_count += 1
 
 
@@ -763,10 +763,7 @@ def SelectModelSkeleton(arm):
 # EXTRA FUNCTIONS
 
 def CheckPath(filePath):
-    if(filePath.startswith(os.path.join(GetEKPath(), 'data'))):
-        return True
-    else:
-        return False
+    return filePath.startswith(os.path.join(GetEKPath(), 'data'))
 
 #####################################################################################
 #####################################################################################

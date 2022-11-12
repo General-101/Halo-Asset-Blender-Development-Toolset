@@ -51,10 +51,10 @@ from ..gr2_utils import (
 ##### NODES PROPERTIES #######
 ##############################
 
-def getNodes(model_armature, boneslist, halo_objects):
+def getNodes(model_armature, skeleton_bones, halo_objects):
     nodesList = {}
     if model_armature != None:
-        nodesList.update(boneslist)
+        nodesList.update(skeleton_bones)
 
     for ob in halo_objects.lights:
         halo_light = ob.halo_json
@@ -799,7 +799,7 @@ def getMaterials():
 
     return temp
 
-def export_asset(report, filePath="", keep_fbx=False, keep_json=False, asset_path="", asset_name="", tag_type='', perm='', is_windows=False, bsp='', model_armature='', boneslist={}, halo_objects=None):
+def export_asset(report, filePath="", keep_fbx=False, keep_json=False, asset_path="", asset_name="", tag_type='', perm='', is_windows=False, bsp='', model_armature='', skeleton_bones={}, halo_objects=None):
     if tag_type != 'selected':
         fileName = GetFileName(asset_name, tag_type, perm, asset_path, bsp)
         rename_file(filePath, fileName)
@@ -811,7 +811,7 @@ def export_asset(report, filePath="", keep_fbx=False, keep_json=False, asset_pat
         jsonPath += pathList[x]
     jsonPath += ".json"
 
-    build_json(jsonPath, model_armature, boneslist, halo_objects, asset_name)
+    build_json(jsonPath, model_armature, skeleton_bones, halo_objects, asset_name)
 
     if(is_windows):
         gr2Path = ""
@@ -892,9 +892,9 @@ def move_assets(fileName, jsonPath, gr2Path, asset_path, keep_fbx, keep_json, ta
 
     CleanFiles(fileName, jsonPath, gr2Path)
 
-def build_json(jsonPath, model_armature, boneslist, halo_objects, asset_name):
+def build_json(jsonPath, model_armature, skeleton_bones, halo_objects, asset_name):
     jsonTemp = {}
-    jsonTemp.update(getNodes(model_armature, boneslist, halo_objects))
+    jsonTemp.update(getNodes(model_armature, skeleton_bones, halo_objects))
     jsonTemp.update(getMeshes(halo_objects, asset_name))
     jsonTemp.update(getMaterials())
 
@@ -922,7 +922,7 @@ def export_gr2(operator, context, report, asset_path, asset_name, is_windows, ta
         bsp='',
         perm='',
         model_armature='',
-        boneslist=[],
+        skeleton_bones=[],
         filepath="",
         keep_fbx=False,
         keep_json=False,
@@ -930,7 +930,7 @@ def export_gr2(operator, context, report, asset_path, asset_name, is_windows, ta
         ):
     os.chdir(GetDataPath())
     filepath = filepath.replace(GetDataPath(), '')
-    export_asset(report, filepath, keep_fbx, keep_json, asset_path, asset_name, tag_type, perm, is_windows, bsp, model_armature, boneslist, halo_objects)
+    export_asset(report, filepath, keep_fbx, keep_json, asset_path, asset_name, tag_type, perm, is_windows, bsp, model_armature, skeleton_bones, halo_objects)
 
     return {'FINISHED'}
 
