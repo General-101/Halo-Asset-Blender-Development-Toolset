@@ -27,8 +27,8 @@
 # Don't edit the version or build version here or it will break CI
 # Need to do this because of Blender parsing the plugin init code instead of actually executing it when getting bl_info
 import bpy
-from bpy.types import AddonPreferences
-from bpy.props import StringProperty
+from bpy.types import AddonPreferences, Operator
+from bpy.props import StringProperty, EnumProperty
 
 bl_info = {
     "name": "Halo Asset Blender Development Toolset",
@@ -77,10 +77,42 @@ class ToolkitLocationPreferences(AddonPreferences):
         default="",
     )
 
+    h4ek_path: StringProperty(
+        name="HREK Path",
+        description="Specify the path to your Halo 4 Editing Kit folder containing tool / tool_fast",
+        default="",
+    )
+
+    h2aek_path: StringProperty(
+        name="H2AEK Path",
+        description="Specify the path to your Halo 2 Anniversary MP Editing Kit folder containing tool / tool_fast",
+        default="",
+    )
+
+    tool_type: EnumProperty(
+        name="Tool Type",
+        description="Specify whether the add on should use Tool or Tool Fast",
+        default="tool_fast",
+        items=[('tool_fast', 'Tool Fast', ''), ('tool', 'Tool', '')]
+    )
+
     def draw(self, context):
         layout = self.layout
         row = layout.row()
-        row.prop(self, 'hrek_path', expand=True)
+        row.label(text='HREK Path')
+        row = layout.row()
+        row.prop(self, 'hrek_path', text='')
+        row = layout.row()
+        row.label(text='H4EK Path')
+        row = layout.row()
+        row.prop(self, 'h4ek_path', text='')
+        row = layout.row()
+        row.label(text='H2AEK Path')
+        row = layout.row()
+        row.prop(self, 'h2aek_path', text='')
+        row = layout.row()
+        row.label(text='Tool Type')
+        row.prop(self, 'tool_type', expand=True)
 
 def register():
     bpy.utils.register_class(ToolkitLocationPreferences)

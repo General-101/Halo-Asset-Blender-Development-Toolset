@@ -972,6 +972,8 @@ class Halo_ScenePropertiesGroup(PropertyGroup):
                 ('halo2', "Halo 2", "Show properties for Halo 2 Vista or Halo 2 MCC"),
                 ('halo3', "Halo 3", "Show properties for Halo 3 MCC"),
                 ('reach', "Halo Reach", "Show properties for Halo Reach MCC"),
+                ('h4', "Halo 4", "Show properties for Halo 4 MCC"),
+                ('h2a', "Halo 2A MP", "Show properties for Halo 2A MP MCC"),
                ]
         )
 
@@ -1212,7 +1214,7 @@ class JSON_ObjectProps(Panel):
         scene = context.scene
         scene_halo = scene.halo
 
-        return scene_halo.game_version == 'reach' and context.object.type != 'ARMATURE'
+        return scene_halo.game_version in ('reach','h4','h2a') and context.object.type != 'ARMATURE'
     
     def draw(self, context):
         layout = self.layout
@@ -1678,7 +1680,7 @@ class JSON_MaterialProps(Panel):
         scene = context.scene
         scene_halo = scene.halo
 
-        if scene_halo.game_version == 'reach':
+        if scene_halo.game_version in ('reach','h4','h2a'):
             return context.material
 
     def draw(self, context):
@@ -1720,7 +1722,7 @@ class JSON_LightProps(Panel):
         scene = context.scene
         scene_halo = scene.halo
 
-        if scene_halo.game_version == 'reach':
+        if scene_halo.game_version in ('reach','h4','h2a'):
             return context.object.type == 'LIGHT'
 
     def draw(self, context):
@@ -1815,7 +1817,7 @@ class JSON_BoneProps(Panel):
     def poll(cls, context):
         scene = context.scene
         scene_halo = scene.halo
-        return scene_halo.game_version == 'reach'
+        return scene_halo.game_version in ('reach','h4','h2a')
     
     def draw(self, context):
         layout = self.layout

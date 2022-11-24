@@ -71,7 +71,8 @@ class Export_Scene_GR2(Operator, ExportHelper):
     game_version:EnumProperty(
         name="Game Version",
         description="The game to export this asset for",
-        items=[ ('REACH', "Halo Reach", "Export an asset intended for Halo Reach")]
+        default='reach',
+        items=[('reach', "Halo Reach", "Export an asset intended for Halo Reach"), ('h4', "Halo 4", "Export an asset intended for Halo 4"), ('h2a', "Halo 2A MP", "Export an asset intended for Halo 2A MP")]
     )
     keep_fbx: BoolProperty(
         name="FBX",
@@ -487,6 +488,9 @@ class Export_Scene_GR2(Operator, ExportHelper):
     def __init__(self):
         # SETUP #
         scene = bpy.context.scene
+        if scene.halo.game_version in (('reach','h4','h2a')):
+            self.game_version = scene.halo.game_version
+
         sidecar_filepath = scene.gr2_halo_launcher.sidecar_path
         export_settings = []
         if sidecar_filepath != '' and file_exists(sidecar_filepath):

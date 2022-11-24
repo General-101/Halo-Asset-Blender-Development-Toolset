@@ -27,6 +27,7 @@ import bpy
 import platform
 from math import radians
 from mathutils import Matrix
+import os
 
 ###########
 ##GLOBALS##
@@ -70,10 +71,14 @@ shader_exts = ('.shader', '.shader_cortana', 'shader_custom', 'shader_decal', '.
 #############
 
 def GetEKPath():
-    #scene = bpy.context.scene
-    #scene_halo = scene.halo
-    #if scene_halo.game_version == 'reach':
-    EKPath = bpy.context.preferences.addons[__package__].preferences.hrek_path
+    scene = bpy.context.scene
+    scene_halo = scene.halo
+    if scene_halo.game_version == 'h4':
+        EKPath = bpy.context.preferences.addons[__package__].preferences.h4ek_path
+    elif scene_halo.game_version == 'h2a':
+        EKPath = bpy.context.preferences.addons[__package__].preferences.h2aek_path
+    else:
+        EKPath = bpy.context.preferences.addons[__package__].preferences.hrek_path
 
     EKPath = EKPath.replace('"','')
     EKPath = EKPath.strip('\\')
@@ -82,21 +87,24 @@ def GetEKPath():
 
 def GetToolPath():
     EKPath = GetEKPath()
-    toolPath = EKPath + '\\tool_fast.exe'
+    toolPath = os.path.join(EKPath, GetToolType)
 
     return toolPath
 
 def GetTagsPath():
     EKPath = GetEKPath()
-    tagsPath = EKPath + '\\tags\\'
+    tagsPath = os.path.join(EKPath, 'tags', '')
 
     return tagsPath
 
 def GetDataPath():
     EKPath = GetEKPath()
-    dataPath = EKPath + '\\data\\'
+    dataPath = os.path.join(EKPath, 'data', '')
 
     return dataPath
+
+def GetToolType():
+    return bpy.context.preferences.addons[__package__].preferences.tool_type
 
 def GetPerm(ob): # get the permutation of an object, return default if the perm is empty
     perm = 'default'
