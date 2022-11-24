@@ -45,6 +45,7 @@ from ..gr2_utils import (
     GetTagsPath,
     GetEKPath,
     sel_logic,
+    GetToolType,
 )
 
 ##############################
@@ -908,7 +909,7 @@ def build_gr2(filePath, jsonPath, gr2Path):
         if not os.access(filePath, os.R_OK):
             ctypes.windll.user32.MessageBoxW(0, "GR2 Not Exported. Output Folder Is Read-Only! Try running Blender as an Administrator.", "ACCESS VIOLATION", 0)
         else:
-            toolCommand = '{} fbx-to-gr2 "{}" "{}" "{}"'.format('tool_fast', filePath, jsonPath, gr2Path)
+            toolCommand = '{} fbx-to-gr2 "{}" "{}" "{}"'.format(GetToolType(), filePath, jsonPath, gr2Path)
             os.chdir(GetEKPath())
             p = Popen(toolCommand)
             p.wait()
