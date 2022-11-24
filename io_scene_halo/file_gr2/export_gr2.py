@@ -49,6 +49,12 @@ from ..gr2_utils import (
 )
 
 ##############################
+####### STRING TABLE #########
+##############################
+
+# def getStringTable():
+
+##############################
 ##### NODES PROPERTIES #######
 ##############################
 
@@ -742,7 +748,7 @@ def GetRadius(ob, sphere):
 #### MATERIAL PROPERTIES #####
 ##############################
 
-def getMaterials():
+def getMaterials(not_bungie_game):
     matList = {}
     
     for ob in bpy.context.view_layer.objects:
@@ -792,9 +798,17 @@ def getMaterials():
                         if shaderPath == '':
                             shaderPath = 'shaders\invalid'
                         
-                        shaderType = halo_material.Shader_Type
-
-                    matList.update({halo_material_name : {"bungie_shader_path": shaderPath, "bungie_shader_type": shaderType}})
+                        if not_bungie_game:
+                            shaderType = 'material'
+                        else:
+                            shaderType = halo_material.Shader_Type
+                    if not_bungie_game:
+                        if shaderType == 'override':
+                            matList.update({halo_material_name : {"halo_shader_name": 'override', "halo_shader_path": shaderPath, "halo_shader_type": shaderType}})
+                        else:
+                            matList.update({halo_material_name : {"halo_shader_name": shaderPath.rpartition('\\')[2], "halo_shader_path": shaderPath, "halo_shader_type": shaderType}})
+                    else:
+                        matList.update({halo_material_name : {"bungie_shader_path": shaderPath, "bungie_shader_type": shaderType}})
 
     temp = ({'material_properties': matList})
 
@@ -894,10 +908,12 @@ def move_assets(fileName, jsonPath, gr2Path, asset_path, keep_fbx, keep_json, ta
     CleanFiles(fileName, jsonPath, gr2Path)
 
 def build_json(jsonPath, model_armature, skeleton_bones, halo_objects, asset_name):
+    not_bungie_game = bpy.context.scene.halo.game_version in ('h4','h2a')
     jsonTemp = {}
+    # jsonTemp.update(getStringTable(halo_objects))
     jsonTemp.update(getNodes(model_armature, skeleton_bones, halo_objects))
     jsonTemp.update(getMeshes(halo_objects, asset_name))
-    jsonTemp.update(getMaterials())
+    jsonTemp.update(getMaterials(not_bungie_game))
 
     haloJSON = json.dumps(jsonTemp, indent=4)
 
