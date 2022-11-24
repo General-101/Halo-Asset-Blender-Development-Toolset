@@ -40,7 +40,7 @@ from ..gr2_utils import (
 )
 
 
-def export_xml(report, context, halo_objects, model_armature=None, lod_count=0, filePath="", export_sidecar_xml=False, sidecar_type='MODEL', asset_path='',        
+def export_xml(report, context, halo_objects, model_armature=None, lod_count=0, filePath="", export_sidecar_xml=False, sidecar_type='MODEL', asset_path='', game_version='reach',        
                 output_biped=False,
                 output_crate=False,
                 output_creature=False,
@@ -57,7 +57,7 @@ def export_xml(report, context, halo_objects, model_armature=None, lod_count=0, 
     asset_path = CleanAssetPath(full_path)
     asset_name = asset_path.rpartition('\\')[2]
 
-    BuildSidecar(halo_objects, model_armature, lod_count, asset_path, asset_name, full_path, sidecar_type, context, output_biped,output_crate,output_creature,output_device_control,output_device_machine,output_device_terminal,output_effect_scenery,output_equipment,output_giant,output_scenery,output_vehicle,output_weapon)
+    BuildSidecar(halo_objects, model_armature, lod_count, asset_path, asset_name, full_path, sidecar_type, context, game_version, output_biped,output_crate,output_creature,output_device_control,output_device_machine,output_device_terminal,output_effect_scenery,output_equipment,output_giant,output_scenery,output_vehicle,output_weapon)
 
     report({'INFO'},"Sidecar build complete")
 
@@ -68,7 +68,7 @@ def CleanAssetPath(path):
 
     return f_path
 
-def BuildSidecar(halo_objects, model_armature, lod_count, asset_path, asset_name, full_path, sidecar_type, context,           
+def BuildSidecar(halo_objects, model_armature, lod_count, asset_path, asset_name, full_path, sidecar_type, context, game_version,           
                         output_biped=False,
                         output_crate=False,
                         output_creature=False,
@@ -85,6 +85,8 @@ def BuildSidecar(halo_objects, model_armature, lod_count, asset_path, asset_name
     m_encoding = 'utf-8'
     m_standalone = 'yes'
     metadata = ET.Element("Metadata")
+    # set a boolean to check if game is h4+ or not
+    not_bungie_game = game_version in ('h4', 'h2a')
     WriteHeader(metadata)
     if sidecar_type == 'MODEL':
         GetObjectOutputTypes(context, metadata, "model", asset_path, asset_name, GetModelTags(output_biped,output_crate,output_creature,output_device_control,output_device_machine,output_device_terminal,output_effect_scenery,output_equipment,output_giant,output_scenery,output_vehicle,output_weapon))
@@ -96,8 +98,8 @@ def BuildSidecar(halo_objects, model_armature, lod_count, asset_path, asset_name
         GetObjectOutputTypes(context, metadata, 'decorator_set', asset_path, asset_name, 'decorator_set')
     elif sidecar_type == 'PARTICLE MODEL':
         GetObjectOutputTypes(context, metadata, 'particle_model', asset_path, asset_name, 'particle_model')
-    WriteFolders(metadata)
-    WriteFaceCollections(metadata, sidecar_type)
+    WriteFolders(metadata, not_bungie_game)
+    WriteFaceCollections(metadata, sidecar_type, not_bungie_game)
     if sidecar_type == 'MODEL':
         WriteModelContents(halo_objects, model_armature, metadata, asset_path, asset_name)
     if sidecar_type == 'SCENARIO':
@@ -205,7 +207,7 @@ def GetObjectOutputTypes(context, metadata, type, asset_path, asset_name, output
     for asset in shared_assets:
         ET.SubElement(shared, "SharedAsset", Type=f'TAE.Shared.{asset.shared_asset_type}').text = asset.shared_asset_path
 
-def WriteFolders(metadata): # Write folders to tell foundation where to look for assets. Used by Librarian
+def WriteFolders(metadata, not_bungie_game): # Write folders to tell foundation where to look for assets. Used by Librarian
     folders = ET.SubElement(metadata, "Folders")
 
     ET.SubElement(folders, "Reference").text = "\\reference"
@@ -227,10 +229,51 @@ def WriteFolders(metadata): # Write folders to tell foundation where to look for
     ET.SubElement(folders, "CinemaExport").text = "\\export\\cinematics"
     ET.SubElement(folders, "ExportBSPs").text = "\\models"
     ET.SubElement(folders, "SourceBSPs").text = "\\models"
+    ET.SubElement(folders, "RigFlags").text = "\\animations\\rigs\\flags"
+    ET.SubElement(folders, "RigPoses").text = "\\animations\\rigs\\poses"
+    ET.SubElement(folders, "RigRenders").text = "\\animations\\rigs\\render"
     ET.SubElement(folders, "Scripts").text = "\\scripts"
+    ET.SubElement(folders, "FacePoses").text = "\\animations\\rigs\\poses\\face_poses"
+    ET.SubElement(folders, "CinematicOutsource").text = "\\outsource"
 
-def WriteFaceCollections(metadata, sidecar_type): # FaceCollections is where regions and global materials are defined in the sidecar. 
+    if not_bungie_game:
+        ET.SubElement(folders, "Retarget").text = "\\working\\retarget"
+        ET.SubElement(folders, "RetargetSourceAnimations").text = "\\working\\retarget\\binge"
+        ET.SubElement(folders, "RetargetTargetAnimations").text = "\\working\\retarget\\purge"
+        ET.SubElement(folders, "Export").text = "\\export"
+        ET.SubElement(folders, "CinematicSceneSegments").text = "\\segments"
+        ET.SubElement(folders, "SourceAnimationLibrary").text = "\\animations\\library"
+
+def WriteFaceCollections(metadata, sidecar_type, not_bungie_game): # FaceCollections is where regions and global materials are defined in the sidecar. 
         faceCollections = ET.SubElement(metadata, "FaceCollections")
+
+        if sidecar_type == 'SCENARIO' and not_bungie_game:
+            bsp_list = ["default",""]
+            f1 = ET.SubElement(faceCollections, "FaceCollection", Name="connected_geometry_bsp_table", StringTable="connected_geometry_bsp_table", Description="BSPs")
+
+            FaceCollectionsEntries = ET.SubElement(f1, "FaceCollectionEntries")
+            using_default_bsp = False
+            for ob in bpy.context.view_layer.objects:
+                if ob.halo_json.bsp_name_locked == '':
+                    bsp = ob.halo_json.bsp_name
+                else:
+                    bsp = ob.halo_json.bsp_name_locked
+                if bsp == 'default':
+                    using_default_bsp = True
+                    break
+
+            ET.SubElement(FaceCollectionsEntries, "FaceCollectionEntry", Index="0", Name="default", Active=str(using_default_bsp).lower())
+
+            count = 1
+            for ob in bpy.context.view_layer.objects:
+                if ob.halo_json.bsp_name_locked == '':
+                    bsp = ob.halo_json.bsp_name
+                else:
+                    bsp = ob.halo_json.bsp_name_locked
+                if bsp not in bsp_list:
+                    ET.SubElement(FaceCollectionsEntries, "FaceCollectionEntry", Index=str(count), Name=bsp, Active="true")
+                    bsp_list.append(bsp)
+                    count += 1     
 
         if(sidecar_type in ('MODEL', 'SKY')):
             region_list = ["default",""]
@@ -241,7 +284,10 @@ def WriteFaceCollections(metadata, sidecar_type): # FaceCollections is where reg
 
             count = 1
             for ob in bpy.context.view_layer.objects:
-                region = ob.halo_json.Region_Name
+                if ob.halo_json.Region_Name_Locked == '':
+                    region = ob.halo_json.Region_Name
+                else:
+                    region = ob.halo_json.Region_Name_Locked
                 if region not in region_list:
                     ET.SubElement(FaceCollectionsEntries, "FaceCollectionEntry", Index=str(count), Name=region, Active="true")
                     region_list.append(region)
@@ -799,6 +845,7 @@ def export_sidecar(operator, context, report, asset_path, halo_objects, model_ar
         filepath="",
         export_sidecar_xml=False,
         sidecar_type='MODEL',
+        game_version='reach',
         output_biped=False,
         output_crate=False,
         output_creature=False,
@@ -814,5 +861,5 @@ def export_sidecar(operator, context, report, asset_path, halo_objects, model_ar
         **kwargs
         ):
     if export_sidecar_xml and asset_path != '': # if the user has opted to export a sidecar and a valid asset path exists, proceed
-        export_xml(report, context, halo_objects, model_armature, lod_count, filepath, export_sidecar_xml, sidecar_type, asset_path,output_biped,output_crate,output_creature,output_device_control,output_device_machine,output_device_terminal,output_effect_scenery,output_equipment,output_giant,output_scenery,output_vehicle,output_weapon)
+        export_xml(report, context, halo_objects, model_armature, lod_count, filepath, export_sidecar_xml, sidecar_type, asset_path, game_version, output_biped, output_crate,output_creature,output_device_control,output_device_machine,output_device_terminal,output_effect_scenery,output_equipment,output_giant,output_scenery,output_vehicle,output_weapon)
     return {'FINISHED'}

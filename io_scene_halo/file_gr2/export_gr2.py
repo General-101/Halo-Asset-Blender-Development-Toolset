@@ -356,6 +356,8 @@ def getMeshProperties(mesh, name, ob, asset_name, sidecar_type):
             mesh_props.update({"bungie_mesh_poop_decal_spacing": "1"})
         if mesh.Poop_Precise_Geometry:
             mesh_props.update({"bungie_mesh_poop_precise_geometry": "1"})
+        if mesh.Poop_Collision_Type != 'DEFAULT':
+            mesh_props.update({"bungie_mesh_poop_collision_type": getPoopCollisionType(mesh.Poop_Collision_Type)}) 
     # Poop Collision
     elif '_connected_geometry_mesh_type_poop_collision' in mesh_props.values() and bpy.context.scene.halo.game_version in ('h4','h2a'):
         if mesh.Poop_Collision_Type != 'DEFAULT':
