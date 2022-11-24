@@ -243,13 +243,13 @@ class sel_logic():
         return MeshType(ob, ('DEFAULT')) and NotParentedToPoop(ob)
 
     def ObPoops(ob):
-        return MeshType(ob, ('INSTANCED GEOMETRY', 'INSTANCED GEOMETRY COLLISION', 'INSTANCED GEOMETRY PHYSICS', 'INSTANCED GEOMETRY MARKER', 'COOKIE CUTTER'), ('%', '@', '$', '+cookie'))
+        return MeshType(ob, ('INSTANCED GEOMETRY', 'COLLISION', 'PHYSICS', 'INSTANCED GEOMETRY MARKER', 'COOKIE CUTTER'), ('%', '@', '$', '+cookie'))
 
     def ObPoopsOnly(ob):
         return MeshType(ob, ('INSTANCED GEOMETRY'), ('%'))
 
     def ObPoopsCollPhys(ob):
-        return MeshType(ob, ('INSTANCED GEOMETRY COLLISION', 'INSTANCED GEOMETRY PHYSICS'), ('@', '$'))
+        return MeshType(ob, ('COLLISION', 'PHYSICS'), ('@', '$'))
 
     def ObLights(ob):
         return ObjectType(ob)
@@ -285,10 +285,10 @@ class sel_logic():
         return MeshType(ob, ('DECORATOR'), (decorator_prefixes))
 
     def ObPoopCollision(ob):
-        return MeshType(ob, ('INSTANCED GEOMETRY COLLISION'), ('@'))
+        return MeshType(ob, ('COLLISION'), ('@'))
 
     def ObPoopPhysics(ob):
-        return MeshType(ob, ('INSTANCED GEOMETRY PHYSICS'), ('$'))
+        return MeshType(ob, ('PHYSICS'), ('$'))
 
     def ObCookie(ob):
         return MeshType(ob, ('COOKIE CUTTER'), ('+cookie'))

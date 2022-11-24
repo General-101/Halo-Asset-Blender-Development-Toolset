@@ -1304,10 +1304,16 @@ class JSON_ObjectMeshProps(Panel):
                 else:
                      col.prop(ob_halo_json, "Boundary_Surface_Type", text='Type')
 
+            elif (ob_halo_json.ObjectMesh_Type == 'COLLISION' or ob_halo_json.ObjectMesh_Type_Locked == 'COLLISION') and context.scene.halo.game_version in ('h4', 'h2a'):
+                col.prop(ob_halo_json, "Poop_Collision_Type")
+
             elif (ob_halo_json.ObjectMesh_Type == 'DECORATOR' and type_no_special_prefix):
                 col.prop(ob_halo_json, "Decorator_Name", text='Decorator Name')
                 col.prop(ob_halo_json, "Decorator_LOD", text='Decorator Level of Detail')
             elif (ob_halo_json.ObjectMesh_Type == 'INSTANCED GEOMETRY' or ob_halo_json.ObjectMesh_Type_Locked == 'INSTANCED GEOMETRY'):
+                if context.scene.halo.game_version in ('h4', 'h2a'):
+                    col.prop(ob_halo_json, "Poop_Collision_Type")
+
                 if context.active_object.name.startswith(poop_lighting_prefixes):
                     col.prop(ob_halo_json, "Poop_Lighting_Override_Locked", text='Lighting Policy')
                 else:
@@ -1936,31 +1942,25 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
         if a_ob.name.startswith(('+soft_ceiling','+soft_kill','+slip_surface')):
             return 0
         elif a_ob.name.startswith('@'):
-            if a_ob.parent and ((a_ob.parent.halo_json.ObjectMesh_Type == 'INSTANCED GEOMETRY' and not a_ob.parent.name.startswith(mesh_prefixes)) or a_ob.parent.name.startswith('%')):
-                return 6
-            else:
-                return 1
+            return 1
         elif a_ob.name.startswith('+cookie'):
             return 2
         elif a_ob.name.startswith('%'):
             return 5
         elif a_ob.name.startswith('+flair'):
-            return 12
+            return 10
         elif a_ob.name.startswith('$'):
-            if a_ob.parent and ((a_ob.parent.halo_json.ObjectMesh_Type == 'INSTANCED GEOMETRY' and not a_ob.parent.name.startswith(mesh_prefixes)) or a_ob.parent.name.startswith('%')):
-                return 8
-            else:
-                return 13
+            return 11
         elif a_ob.name.startswith('+fog'):
-            return 14
+            return 12
         elif a_ob.name.startswith('+portal'):
-            return 15
+            return 13
         elif a_ob.name.startswith('+seam'):
-            return 16
+            return 14
         elif a_ob.name.startswith('+water'):
-            return 17
+            return 15
         elif a_ob.name.startswith('\''):
-            return 18
+            return 16
         else:
             return 4
 
@@ -1971,19 +1971,19 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
         ('DECORATOR', "Decorator", "Use this when making a decorator. Allows for different LOD levels to be set. Can be forced on with the prefix: '+dec'"), # 3
         ('DEFAULT', "Default", "By default this mesh type will be treated as render only geometry in models, and render + bsp collision geometry in structures"), #4
         ('INSTANCED GEOMETRY', "Instanced Geometry", "Writes this mesh a json file as instanced geometry. Can be forced on with the prefix: '%'"), # 5
-        ('INSTANCED GEOMETRY COLLISION', "Instanced Collision", "This mesh will act as the collision geometry of its parent instanced geometry mesh. Can be forced on if this mesh is the child of an instanced geometry object and has the prefix: '@'"), # 6
-        ('INSTANCED GEOMETRY MARKER', "Instanced Marker", ""), # 7
-        ('INSTANCED GEOMETRY PHYSICS', "Instanced Physics", "This mesh will act as the physics geometry of its parent instanced geometry mesh. Can be forced on if this mesh is the child of an instanced geometry object and has the prefix: '$'"), # 8
-        ('INSTANCED GEOMETRY RAIN BLOCKER', "Rain Occluder",'Rain is not rendered in the the volume this mesh occupies. Can be forced on with the prefix: ''+rain'), # 9
-        ('INSTANCED GEOMETRY VERTICAL RAIN SHEET', "Vertical Rain Sheet", ''), # 10
-        ('LIGHTMAP REGION', "Lightmap Region", "Defines an area of a structure which should be lightmapped. Can be referenced when lightmapping"), # 11
-        ('OBJECT INSTANCE', "Object Instance", "Writes this mesh to the json as an instanced object. Can be forced on with the prefix: '+flair'"), # 12
-        ('PHYSICS', "Physics", "Sets this mesh to have physics geometry only. Can be forced on with the prefix: '$'"), # 13
-        ('PLANAR FOG VOLUME', "Planar Fog Volume", "Defines an area for a fog volume. The same logic as used for portals should be applied to these.  Can be forced on with the prefix: '+fog'"), # 14
-        ('PORTAL', "Portal", "Cuts up a bsp and defines clusters. Can be forced on with the prefix '+portal'"), # 15
-        ('SEAM', "Seam", "Defines where two bsps meet. Its name should match the name of the bsp its in. Can be forced on with the prefix '+seam'"), # 16
-        ('WATER PHYSICS VOLUME', "Water Physics Volume", "Defines an area where water physics should apply. Only use when importing to a structure_design tag. Can be forced on with the prefix: '+water'"), # 17
-        ('WATER SURFACE', "Water Surface", "Defines a mesh as a water surface. Can be forced on with the prefix: '"), # 18
+        #('INSTANCED GEOMETRY COLLISION', "Instanced Collision", "This mesh will act as the collision geometry of its parent instanced geometry mesh. Can be forced on if this mesh is the child of an instanced geometry object and has the prefix: '@'"),
+        ('INSTANCED GEOMETRY MARKER', "Instanced Marker", ""), # 6
+        #('INSTANCED GEOMETRY PHYSICS', "Instanced Physics", "This mesh will act as the physics geometry of its parent instanced geometry mesh. Can be forced on if this mesh is the child of an instanced geometry object and has the prefix: '$'"),
+        ('INSTANCED GEOMETRY RAIN BLOCKER', "Rain Occluder",'Rain is not rendered in the the volume this mesh occupies. Can be forced on with the prefix: ''+rain'), # 7
+        ('INSTANCED GEOMETRY VERTICAL RAIN SHEET', "Vertical Rain Sheet", ''), # 8
+        ('LIGHTMAP REGION', "Lightmap Region", "Defines an area of a structure which should be lightmapped. Can be referenced when lightmapping"), # 9
+        ('OBJECT INSTANCE', "Object Instance", "Writes this mesh to the json as an instanced object. Can be forced on with the prefix: '+flair'"), # 10
+        ('PHYSICS', "Physics", "Sets this mesh to have physics geometry only. Can be forced on with the prefix: '$'"), # 11
+        ('PLANAR FOG VOLUME', "Planar Fog Volume", "Defines an area for a fog volume. The same logic as used for portals should be applied to these.  Can be forced on with the prefix: '+fog'"), # 12
+        ('PORTAL', "Portal", "Cuts up a bsp and defines clusters. Can be forced on with the prefix '+portal'"), # 13
+        ('SEAM', "Seam", "Defines where two bsps meet. Its name should match the name of the bsp its in. Can be forced on with the prefix '+seam'"), # 14
+        ('WATER PHYSICS VOLUME', "Water Physics Volume", "Defines an area where water physics should apply. Only use when importing to a structure_design tag. Can be forced on with the prefix: '+water'"), # 15
+        ('WATER SURFACE', "Water Surface", "Defines a mesh as a water surface. Can be forced on with the prefix: '"), # 16
     ]
 
     #MESH PROPERTIES
@@ -2462,6 +2462,14 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
         options=set(),
         description = "Instanced geometry set to not have its geometry altered in the BSP pass",
         default = False,
+    )
+
+    Poop_Collision_Type: EnumProperty(
+        name ="Collision Type",
+        options=set(),
+        description = "Set the collision type. Only used when exporting a scenario",
+        default = 'DEFAULT',
+        items=[('DEFAULT', 'Default', 'The collision mesh acts like an invisible wall'), ('PLAYER', 'Player Only', 'The collision mesh only affects the player'), ('BULLET', 'Projectile Only', 'The collision mesh only interacts with projectiles')]
     )
 
     #PORTAL PROPERTIES

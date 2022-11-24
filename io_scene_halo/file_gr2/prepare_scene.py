@@ -318,6 +318,8 @@ def getBoneProperties(FrameID1, FrameID2):
     node_props.update({"bungie_object_type": "_connected_geometry_object_type_frame"}),
     node_props.update({"bungie_frame_ID1": FrameID1}),
     node_props.update({"bungie_frame_ID2": FrameID2}),
+    node_props.update({"bungie_object_animates": "1"}),
+    node_props.update({"halo_export": "1"}),
 
     return node_props
 

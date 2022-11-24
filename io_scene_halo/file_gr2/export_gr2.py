@@ -129,6 +129,7 @@ def getLightProperties(node, light):
         node_props.update({"bungie_light_far_attenuation_start": str(round(node.Light_Far_Attenuation_Start, 6))})
     if node.Light_Far_Attenuation_End != 0:
         node_props.update({"bungie_light_far_attenuation_end": str(round(node.Light_Far_Attenuation_End, 6))})
+    node_props.update({"halo_export": "1"}),
 
     return node_props
 
@@ -213,6 +214,8 @@ def getNodeProperties(node, name, ob):
                     node_props.update({"bungie_physics_constraint_plane_max": str(round(node.Plane_Constraint_Maximum, 6))})
                     node_props.update({"bungie_physics_constraint_twist_start": str(round(node.Twist_Constraint_Start, 6))})
                     node_props.update({"bungie_physics_constraint_twist_end": str(round(node.Twist_Constraint_End, 6))})
+
+    node_props.update({"halo_export": "1"}),
     ###################
 
     return node_props
@@ -292,7 +295,7 @@ def getMarkerVelocity(x, y, z):
 ##### MESHES PROPERTIES ######
 ##############################
 
-def getMeshes(halo_objects, asset_name):
+def getMeshes(halo_objects, asset_name, sidecar_type):
     meshesList = {}
     halo_mesh_objects = halo_objects.render + halo_objects.collision + halo_objects.physics + halo_objects.structure + halo_objects.poops + halo_objects.portals + halo_objects.seams + halo_objects.water_surfaces + halo_objects.lightmap_regions + halo_objects.fog + halo_objects.boundary_surfaces + halo_objects.water_physics + halo_objects.rain_occluders + halo_objects.decorator + halo_objects.particle
     for ob in halo_mesh_objects:
@@ -300,13 +303,13 @@ def getMeshes(halo_objects, asset_name):
         halo_mesh_name = ob.name
         
         if ob.select_get(): # if the name of a mesh starts with this, don't process it.
-            meshesList.update({ob.name: getMeshProperties(halo_mesh, halo_mesh_name, ob, asset_name)})
+            meshesList.update({ob.name: getMeshProperties(halo_mesh, halo_mesh_name, ob, asset_name, sidecar_type)})
 
     temp = ({'meshes_properties': meshesList})
 
     return temp
 
-def getMeshProperties(mesh, name, ob, asset_name):
+def getMeshProperties(mesh, name, ob, asset_name, sidecar_type):
 
     mesh_props = {}
     
@@ -316,7 +319,7 @@ def getMeshProperties(mesh, name, ob, asset_name):
     mesh_props.update({"bungie_object_id": mesh.object_id}),
     ###################
     # MESH PROPERTIES
-    mesh_props.update({"bungie_mesh_type": getMeshType(mesh.ObjectMesh_Type, name, ob)}),
+    mesh_props.update({"bungie_mesh_type": getMeshType(mesh.ObjectMesh_Type, name, ob, sidecar_type)}),
     # Boundary Surface
     if '_connected_geometry_mesh_type_boundary_surface' in mesh_props.values():
         if mesh.Boundary_Surface_Name != '' or name.startswith(('+soft_ceiling:','+soft_kill:','+slip_surface:')):
@@ -353,6 +356,12 @@ def getMeshProperties(mesh, name, ob, asset_name):
             mesh_props.update({"bungie_mesh_poop_decal_spacing": "1"})
         if mesh.Poop_Precise_Geometry:
             mesh_props.update({"bungie_mesh_poop_precise_geometry": "1"})
+    # Poop Collision
+    elif '_connected_geometry_mesh_type_poop_collision' in mesh_props.values() and bpy.context.scene.halo.game_version in ('h4','h2a'):
+        if mesh.Poop_Collision_Type != 'DEFAULT':
+            mesh_props.update({"bungie_mesh_poop_collision_type": getPoopCollisionType(mesh.Poop_Collision_Type)}) 
+        if mesh.Face_Global_Material != '':
+            mesh_props.update({"bungie_mesh_poop_collision_override_global_material": "1"})
     # Fog Volume
     elif '_connected_geometry_mesh_type_planar_fog_volume' in mesh_props.values():
         if mesh.Fog_Name != '':
@@ -399,7 +408,10 @@ def getMeshProperties(mesh, name, ob, asset_name):
         if mesh.Face_Draw_Distance != 'NORMAL':
             mesh_props.update({"bungie_face_draw_distance": getFaceDrawDistance(mesh.Face_Draw_Distance)})
         mesh_props.update({"bungie_face_region": getRegionName(mesh.Region_Name, mesh.Region_Name_Locked)})
-        mesh_props.update({"bungie_face_global_material": getGlobalMaterialName(mesh.Face_Global_Material)})
+        if '_connected_geometry_mesh_type_poop_collision' in mesh_props.values():
+            mesh_props.update({"bungie_mesh_global_material": getGlobalMaterialName(mesh.Face_Global_Material)})
+        else:
+            mesh_props.update({"bungie_face_global_material": getGlobalMaterialName(mesh.Face_Global_Material)})
         if '_connected_geometry_face_type_sky' in mesh_props.values():
             mesh_props.update({"bungie_sky_permutation_index": str(mesh.Sky_Permutation_Index)})
         if mesh.Conveyor:
@@ -465,13 +477,15 @@ def getMeshProperties(mesh, name, ob, asset_name):
             elif mesh.Mesh_Primitive_Type == 'SPHERE':
                 mesh_props.update({"bungie_mesh_primitive_sphere_radius": str(round(GetRadius(ob, True), 6))})
 
+    mesh_props.update({"halo_export": "1"}),
+
     return mesh_props
 
-def getMeshType(type, name, ob):
+def getMeshType(type, name, ob, sidecar_type):
     if name.startswith(('+soft_ceiling','+soft_kill','+slip_surface')):
         return '_connected_geometry_mesh_type_boundary_surface'
     elif name.startswith('@'):
-        if ob.parent and ((ob.parent.halo_json.ObjectMesh_Type == 'INSTANCED GEOMETRY' and not ob.parent.name.startswith(mesh_prefixes)) or ob.parent.name.startswith('%')):
+        if sidecar_type == 'SCENARIO':
             return '_connected_geometry_mesh_type_poop_collision'
         else:
             return '_connected_geometry_mesh_type_collision'
@@ -482,7 +496,7 @@ def getMeshType(type, name, ob):
     elif name.startswith('+flair'):
         return '_connected_geometry_mesh_type_object_instance'
     elif name.startswith('$'):
-        if ob.parent and ((ob.parent.halo_json.ObjectMesh_Type == 'INSTANCED GEOMETRY' and not ob.parent.name.startswith(mesh_prefixes)) or ob.parent.name.startswith('%')):
+        if sidecar_type == 'SCENARIO':
             return '_connected_geometry_mesh_type_poop_physics'
         else:
             return '_connected_geometry_mesh_type_physics'
@@ -501,7 +515,10 @@ def getMeshType(type, name, ob):
             case 'BOUNDARY SURFACE':
                 return '_connected_geometry_mesh_type_boundary_surface'
             case 'COLLISION':
-                return '_connected_geometry_mesh_type_collision'
+                if sidecar_type == 'SCENARIO':
+                    return '_connected_geometry_mesh_type_poop_collision'
+                else:
+                    return '_connected_geometry_mesh_type_collision'
             case 'COOKIE CUTTER':
                 return '_connected_geometry_mesh_type_cookie_cutter'
             case 'DECORATOR':
@@ -510,11 +527,7 @@ def getMeshType(type, name, ob):
                 return '_connected_geometry_mesh_type_default'
             case 'INSTANCED GEOMETRY':
                 return '_connected_geometry_mesh_type_poop'
-            case 'INSTANCED GEOMETRY COLLISION':
-                return '_connected_geometry_mesh_type_poop_collision'
             case 'INSTANCED GEOMETRY MARKER':
-                return '_connected_geometry_mesh_type_poop_physics'
-            case 'INSTANCED GEOMETRY PHYSICS':
                 return '_connected_geometry_mesh_type_poop_marker'
             case 'INSTANCED GEOMETRY RAIN BLOCKER':
                 return '_connected_geometry_mesh_type_poop_rain_blocker'
@@ -525,7 +538,10 @@ def getMeshType(type, name, ob):
             case 'OBJECT INSTANCE':
                 return '_connected_geometry_mesh_type_object_instance'
             case 'PHYSICS':
-                return '_connected_geometry_mesh_type_physics'
+                if sidecar_type == 'SCENARIO':
+                    return '_connected_geometry_mesh_type_poop_physics'
+                else:
+                    return '_connected_geometry_mesh_type_physics'
             case 'PLANAR FOG VOLUME':
                 return '_connected_geometry_mesh_type_planar_fog_volume'
             case 'PORTAL':
@@ -612,6 +628,13 @@ def getPoopImposter(policy):
             return '_connected_poop_instance_imposter_policy_none'
         case 'NEVER':
             return '_connected_poop_instance_imposter_policy_never'
+
+def getPoopCollisionType(type):
+    match type:
+        case 'PLAYER':
+            return '_connected_geometry_poop_collision_type_play_collision'
+        case 'BULLET':
+            return '_connected_geometry_poop_collision_type_bullet_collision'
 
 def getPortalType(type):
     match type:
@@ -814,7 +837,7 @@ def getMaterials(not_bungie_game):
 
     return temp
 
-def export_asset(report, filePath="", keep_fbx=False, keep_json=False, asset_path="", asset_name="", tag_type='', perm='', is_windows=False, bsp='', model_armature='', skeleton_bones={}, halo_objects=None):
+def export_asset(report, filePath="", keep_fbx=False, keep_json=False, asset_path="", asset_name="", tag_type='', perm='', is_windows=False, bsp='', model_armature='', skeleton_bones={}, halo_objects=None, sidecar_type=''):
     if tag_type != 'selected':
         fileName = GetFileName(asset_name, tag_type, perm, asset_path, bsp)
         rename_file(filePath, fileName)
@@ -826,7 +849,7 @@ def export_asset(report, filePath="", keep_fbx=False, keep_json=False, asset_pat
         jsonPath += pathList[x]
     jsonPath += ".json"
 
-    build_json(jsonPath, model_armature, skeleton_bones, halo_objects, asset_name)
+    build_json(jsonPath, model_armature, skeleton_bones, halo_objects, asset_name, sidecar_type)
 
     if(is_windows):
         gr2Path = ""
@@ -907,12 +930,12 @@ def move_assets(fileName, jsonPath, gr2Path, asset_path, keep_fbx, keep_json, ta
 
     CleanFiles(fileName, jsonPath, gr2Path)
 
-def build_json(jsonPath, model_armature, skeleton_bones, halo_objects, asset_name):
+def build_json(jsonPath, model_armature, skeleton_bones, halo_objects, asset_name, sidecar_type):
     not_bungie_game = bpy.context.scene.halo.game_version in ('h4','h2a')
     jsonTemp = {}
     # jsonTemp.update(getStringTable(halo_objects))
     jsonTemp.update(getNodes(model_armature, skeleton_bones, halo_objects))
-    jsonTemp.update(getMeshes(halo_objects, asset_name))
+    jsonTemp.update(getMeshes(halo_objects, asset_name, sidecar_type))
     jsonTemp.update(getMaterials(not_bungie_game))
 
     haloJSON = json.dumps(jsonTemp, indent=4)
@@ -943,11 +966,12 @@ def export_gr2(operator, context, report, asset_path, asset_name, is_windows, ta
         filepath="",
         keep_fbx=False,
         keep_json=False,
+        sidecar_type='',
         **kwargs
         ):
     os.chdir(GetDataPath())
     filepath = filepath.replace(GetDataPath(), '')
-    export_asset(report, filepath, keep_fbx, keep_json, asset_path, asset_name, tag_type, perm, is_windows, bsp, model_armature, skeleton_bones, halo_objects)
+    export_asset(report, filepath, keep_fbx, keep_json, asset_path, asset_name, tag_type, perm, is_windows, bsp, model_armature, skeleton_bones, halo_objects, sidecar_type)
 
     return {'FINISHED'}
 
