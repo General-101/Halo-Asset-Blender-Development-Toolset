@@ -55,7 +55,9 @@ def prepare_scene(context, report, sidecar_type, export_hidden, filepath, use_ar
     for ob in context.scene.objects:
         if ob.halo_json.bsp_name == '':
             ob.halo_json.bsp_name = '000'
-
+    
+    ApplyObjectIDs(context.view_layer.objects)
+    mesh_node_names, temp_nodes = MeshesToEmpties(context)
     h_objects = halo_objects(sidecar_type)
     FixMissingMaterials(context, h_objects)
     proxies = SetPoopProxies(context, h_objects.poops)                                               # create and parent identical poop child objects to matching instances (collision, physics, cookie cutters). Keep them in a list so we can delete them later
@@ -74,9 +76,8 @@ def prepare_scene(context, report, sidecar_type, export_hidden, filepath, use_ar
     ApplyPredominantShaderNames(h_objects.poops)
     # if sidecar_type == 'SCENARIO':
     #     RotateScene(context.view_layer.objects, model_armature)
-    ApplyObjectIDs(context.view_layer.objects)
 
-    return objects_selection, active_object, hidden_objects, mode, model_armature, temp_armature, asset_path, asset, skeleton_bones, h_objects, timeline_start, timeline_end, lod_count, proxies, unselectable_objects, enabled_exclude_collections
+    return objects_selection, active_object, hidden_objects, mode, model_armature, temp_armature, asset_path, asset, skeleton_bones, h_objects, timeline_start, timeline_end, lod_count, proxies, unselectable_objects, enabled_exclude_collections, mesh_node_names, temp_nodes
 
 
 #####################################################################################
@@ -522,4 +523,72 @@ def FixMissingMaterials(context, halo_objects):
                 mat = materials_list.get(mat)
                 # finally, append the new material to the object
                 ob.data.materials.append(mat)
+
+def MeshesToEmpties(context):
+    # get a list of meshes which are nodes
+    mesh_nodes = []
+    for ob in context.scene.objects:
+        if sel_logic.ObMarkers(ob):
+            mesh_nodes.append(ob)
+    # For each mesh node create an empty with the same Halo props and transforms
+    # Mesh objects need their names saved, so we make a dict. Names are stored so that the node can have the exact same name. We add a temp name to each mesh object
+    mesh_node_names = {}
+    mesh_hidden_state = {}
+    temp_nodes = []
+    for ob in mesh_nodes:
+        DeselectAllObjects()
+        bpy.ops.object.empty_add(type='ARROWS')
+        node = context.object
+        node_name = TempName(ob.name)
+        mesh_node_names.update({ob: node_name}) 
+        ob.name = str(uuid4())
+        node.name = node_name
+        if ob.parent is not None:
+            node.parent = ob.parent
+        node.matrix_local = ob.matrix_local
+        # copy the node props from the mesh to the empty
+        SetNodeProps(node, ob)
+        # hide the mesh so it doesn't get included in the export
+        ob.hide_set(True)
+        temp_nodes.append(node)
+
+    return mesh_node_names, temp_nodes
+
+def TempName(name):
+    return name + ''
+
+def SetNodeProps(node, ob):
+    node_halo = node.halo_json
+    ob_halo = ob.halo_json
+
+    if ob.users_collection[0].name != 'Scene Collection':
+        bpy.data.collections[ob.users_collection[0].name].objects.link(node)
+    
+    node_halo.bsp_name = ob_halo.bsp_name
+
+    node_halo.Permutation_Name = ob_halo.Permutation_Name
+
+    node_halo.ObjectMarker_Type = ob_halo.ObjectMarker_Type
+
+    node_halo.Marker_Region = ob_halo.Marker_Region
+    node_halo.Marker_All_Regions = ob_halo.Marker_All_Regions
+    node_halo.Marker_Velocity = ob_halo.Marker_Velocity
+
+    node_halo.Marker_Game_Instance_Tag_Name = ob_halo.Marker_Game_Instance_Tag_Name
+    node_halo.Marker_Game_Instance_Tag_Variant_Name = ob_halo.Marker_Game_Instance_Tag_Variant_Name
+
+    node_halo.Marker_Pathfinding_Sphere_Vehicle = ob_halo.Marker_Pathfinding_Sphere_Vehicle
+    node_halo.Pathfinding_Sphere_Remains_When_Open = ob_halo.Pathfinding_Sphere_Remains_When_Open
+    node_halo.Pathfinding_Sphere_With_Sectors = ob_halo.Pathfinding_Sphere_With_Sectors
+
+    node_halo.Physics_Constraint_Parent = ob_halo.Physics_Constraint_Parent
+    node_halo.Physics_Constraint_Child = ob_halo.Physics_Constraint_Child
+    node_halo.Physics_Constraint_Type = ob_halo.Physics_Constraint_Type
+    node_halo.Physics_Constraint_Uses_Limits = ob_halo.Physics_Constraint_Uses_Limits
+
+    node_halo.object_id = ob_halo.object_id
+
+
+
+
 

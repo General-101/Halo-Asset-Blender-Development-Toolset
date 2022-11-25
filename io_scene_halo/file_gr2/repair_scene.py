@@ -35,7 +35,7 @@ from mathutils import Matrix, Vector
 #####################################################################################
 # MAIN FUNCTION     
 
-def repair_scene(context, report, objects_selection, active_object, hidden_objects, mode, temp_armature, timeline_start, timeline_end, model_armature, lights, proxies, unselectable_objects, enabled_exclude_collections, export_hidden, sidecar_type, **kwargs):
+def repair_scene(context, report, objects_selection, active_object, hidden_objects, mode, temp_armature, timeline_start, timeline_end, model_armature, lights, proxies, unselectable_objects, enabled_exclude_collections, mesh_node_names, temp_nodes, export_hidden, sidecar_type, **kwargs):
     # if sidecar_type == 'SCENARIO':
     #     FixSceneRotatation(context.view_layer.objects, model_armature)
         
@@ -58,6 +58,8 @@ def repair_scene(context, report, objects_selection, active_object, hidden_objec
 
     if temp_armature:
         DelTempArmature(context, model_armature)
+
+    RestoreNodeMeshes(mesh_node_names, temp_nodes, hidden_objects)
 
     try: # try this but don't assert if it fails
         if mode != None:
@@ -132,3 +134,15 @@ def DeletePoopProxies(proxies):
 def ShowExcludedCollections(enabled_exclude_collections):
     for coll in enabled_exclude_collections:
         coll.exclude = False
+
+def RestoreNodeMeshes(mesh_node_names, temp_nodes, hidden_objects):
+    # delete all temp nodes
+    DeselectAllObjects()
+    for ob in temp_nodes:
+        ob.select_set(True)
+    bpy.ops.object.delete()
+    # restore mesh names
+    for index, ob in enumerate(mesh_node_names.keys()):
+        ob.name = mesh_node_names.get(ob)
+        if ob not in hidden_objects:
+            ob.hide_set(False)
