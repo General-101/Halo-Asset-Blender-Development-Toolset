@@ -528,12 +528,11 @@ def MeshesToEmpties(context):
     # get a list of meshes which are nodes
     mesh_nodes = []
     for ob in context.scene.objects:
-        if sel_logic.ObMarkers(ob):
+        if sel_logic.ObMarkers(ob) and ob.type == 'MESH':
             mesh_nodes.append(ob)
     # For each mesh node create an empty with the same Halo props and transforms
     # Mesh objects need their names saved, so we make a dict. Names are stored so that the node can have the exact same name. We add a temp name to each mesh object
     mesh_node_names = {}
-    mesh_hidden_state = {}
     temp_nodes = []
     for ob in mesh_nodes:
         DeselectAllObjects()
@@ -545,7 +544,9 @@ def MeshesToEmpties(context):
         node.name = node_name
         if ob.parent is not None:
             node.parent = ob.parent
-        node.matrix_local = ob.matrix_local
+        node.location = ob.location
+        node.rotation_euler = ob.rotation_euler
+        node.scale = ob.scale
         # copy the node props from the mesh to the empty
         SetNodeProps(node, ob)
         # hide the mesh so it doesn't get included in the export

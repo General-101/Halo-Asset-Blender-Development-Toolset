@@ -175,7 +175,7 @@ def getNodeProperties(node, name, ob):
     ###################
     # MARKER PROPERTIES
     if '_connected_geometry_object_type_marker' in node_props.values():
-        node_props.update({"bungie_marker_type": getMarkerType(node.ObjectMarker_Type, node.Physics_Constraint_Type)})
+        node_props.update({"bungie_marker_type": getMarkerType(node.ObjectMarker_Type, node.Physics_Constraint_Type, node)})
         if node.Marker_All_Regions:
             node_props.update({"bungie_marker_all_regions": "1"})
         else:
@@ -185,7 +185,7 @@ def getNodeProperties(node, name, ob):
                 node_props.update({"bungie_marker_all_regions": "1"})
             else:
                 node_props.update({"bungie_marker_region": node.Marker_Region})
-        if '_connected_geometry_marker_type_game_instance' in node_props.values():
+        if '_connected_geometry_marker_type_game_instance' in node_props.values() or '_connected_geometry_marker_type_prefab' in node_props.values():
             node_props.update({"bungie_marker_game_instance_tag_name": node.Marker_Game_Instance_Tag_Name})
             node_props.update({"bungie_marker_game_instance_variant_name": node.Marker_Game_Instance_Tag_Variant_Name})
         if '_connected_geometry_marker_type_model' in node_props.values() or '_connected_geometry_marker_type_hint' in node_props.values() or '_connected_geometry_marker_type_target' in node_props.values():
@@ -245,14 +245,17 @@ def getNodeType(node, name, ob):
                 case 'MARKER':
                     return '_connected_geometry_object_type_marker'
 
-def getMarkerType(type, physics):
+def getMarkerType(type, physics, node):
     match type:
         case 'DEFAULT':
             return '_connected_geometry_marker_type_model'
         case 'EFFECTS':
             return '_connected_geometry_marker_type_effects'
         case 'GAME INSTANCE':
-            return '_connected_geometry_marker_type_game_instance'
+            if bpy.context.scene.halo.game_version in ('h4', 'h2a') and node.Marker_Game_Instance_Tag_Name.endswith('.prefab'):
+                return '_connected_geometry_marker_type_prefab'
+            else:
+                return '_connected_geometry_marker_type_game_instance'
         case 'GARBAGE':
             return '_connected_geometry_marker_type_garbage'
         case 'HINT':
