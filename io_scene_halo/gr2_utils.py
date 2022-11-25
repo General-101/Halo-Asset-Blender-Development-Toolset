@@ -64,7 +64,7 @@ invalid_mesh_types = ('BOUNDARY SURFACE', 'COOKIE CUTTER', 'INSTANCED GEOMETRY M
 valid_animation_types = ('JMM', 'JMA', 'JMT', 'JMZ', 'JMV', 'JMO', 'JMOX', 'JMR', 'JMRX')
 
 # shader exts #
-shader_exts = ('.shader', '.shader_cortana', 'shader_custom', 'shader_decal', '.shader_foliage', '.shader_fur', '.shader_fur_stencil', '.shader_glass', '.shader_halogram', '.shader_mux', '.shader_mux_material', '.shader_screen', '.shader_skin', '.shader_terrain', '.shader_water')
+shader_exts = ('.shader', '.shader_cortana', 'shader_custom', 'shader_decal', '.shader_foliage', '.shader_fur', '.shader_fur_stencil', '.shader_glass', '.shader_halogram', '.shader_mux', '.shader_mux_material', '.shader_screen', '.shader_skin', '.shader_terrain', '.shader_water', '.material')
 
 #############
 ##FUNCTIONS##
