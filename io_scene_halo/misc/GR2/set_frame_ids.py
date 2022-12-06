@@ -114,19 +114,19 @@ def CleanBoneName(bone):
     return cleaned_bone
 
 def ImportTagXML(toolPath, context):
-    try:
-        xmlPath = GetTagsPath() + "temp.xml"
-        tagPath = GetGraphPath(context)
-        toolCommand = '"{}" export-tag-to-xml "{}" "{}"'.format(toolPath, tagPath, xmlPath)
-        os.chdir(GetEKPath())
-        p = Popen(toolCommand)
-        p.wait()
-        bonelist = ParseXML(xmlPath)
-        os.remove(xmlPath)
-        return bonelist
-    except:
-        ctypes.windll.user32.MessageBoxW(0, "Tool.exe failed to get tag XML for FrameIDs. Please check the path to your .model_animation_graph tag.", "GET FRAMEIDS FAILED", 0)
-        return None
+    # try:
+    xmlPath = GetTagsPath() + "temp.xml"
+    tagPath = GetGraphPath(context)
+    toolCommand = '"{}" export-tag-to-xml "{}" "{}"'.format(toolPath, tagPath, xmlPath)
+    os.chdir(GetEKPath())
+    p = Popen(toolCommand)
+    p.wait()
+    bonelist = ParseXML(xmlPath, context)
+    os.remove(xmlPath)
+    return bonelist
+    # except:
+    #     ctypes.windll.user32.MessageBoxW(0, "Tool.exe failed to get tag XML for FrameIDs. Please check the path to your .model_animation_graph tag.", "GET FRAMEIDS FAILED", 0)
+    #     return None
 
 def GetGraphPath(context):
     path = context.scene.gr2_frame_ids.anim_tag_path
@@ -143,24 +143,47 @@ def GetGraphPath(context):
 
     return path
 
-def ParseXML(xmlPath):
+def ParseXML(xmlPath, context):
     parent = []
-    tree = ET.parse(xmlPath)
-    root = tree.getroot()
-    for e in root.findall('element'):
-        name = ''
-        frameID1 = ''
-        frameID2 = ''
-        for f in e.findall('field'):
-            attributes = f.attrib
-            if(attributes.get('name') == 'frame_ID1'):
-                name = (e.get('name'))
-                frameID1 = (attributes.get('value'))
-            elif(attributes.get('name') == 'frame_ID2'):
-                frameID2 = (attributes.get('value'))
-        if not name == '':
-            temp = [name, frameID1, frameID2]
-            parent.append(temp)
+    scene = context.scene
+    scene_halo = scene.halo
+
+    if scene_halo.game_version in ('h4','h2a'):
+        tree = ET.parse(xmlPath, parser = ET.XMLParser(encoding = 'iso-8859-5'))
+        root = tree.getroot()
+        for b in root.findall('block'):
+            for e in b.findall('element'):
+                name = ''
+                frameID1 = ''
+                frameID2 = ''
+                for f in e.findall('field'):
+                    attributes = f.attrib
+                    if(attributes.get('name') == 'frame_ID1'):
+                        name = (e.get('name'))
+                        frameID1 = (attributes.get('value'))
+                    elif(attributes.get('name') == 'frame_ID2'):
+                        frameID2 = (attributes.get('value'))
+                if not name == '':
+                    temp = [name, frameID1, frameID2]
+                    parent.append(temp)
+    else: 
+        tree = ET.parse(xmlPath)
+        root = tree.getroot()
+        for e in root.findall('element'):
+            name = ''
+            frameID1 = ''
+            frameID2 = ''
+            for f in e.findall('field'):
+                attributes = f.attrib
+                if(attributes.get('name') == 'frame_ID1'):
+                    name = (e.get('name'))
+                    frameID1 = (attributes.get('value'))
+                elif(attributes.get('name') == 'frame_ID2'):
+                    frameID2 = (attributes.get('value'))
+            if not name == '':
+                temp = [name, frameID1, frameID2]
+                parent.append(temp)
+
     return parent
 
 def GetArmature(context, report):

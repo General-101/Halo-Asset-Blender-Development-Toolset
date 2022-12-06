@@ -86,8 +86,7 @@ def GetEKPath():
     return EKPath
 
 def GetToolPath():
-    EKPath = GetEKPath()
-    toolPath = os.path.join(EKPath, GetToolType)
+    toolPath = os.path.join(GetEKPath(), GetToolType())
 
     return toolPath
 
