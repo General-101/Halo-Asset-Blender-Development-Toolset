@@ -325,6 +325,11 @@ def getMeshProperties(mesh, name, ob, asset_name, sidecar_type, not_bungie_game)
     # OBJECT PROPERTIES
     mesh_props.update({"bungie_object_type": "_connected_geometry_object_type_mesh"}),
     mesh_props.update({"bungie_object_id": mesh.object_id}),
+    if not_bungie_game and sidecar_type == 'MODEL' and (mesh.Permutation_Name_Locked != '' or mesh.Permutation_Name != ''):
+        if mesh.Permutation_Name_Locked != '':
+            mesh_props.update({"bungie_permutation_name": mesh.Permutation_Name_Locked}),
+        else:
+            mesh_props.update({"bungie_permutation_name": mesh.Permutation_Name}),
     ###################
     # MESH PROPERTIES
     mesh_props.update({"bungie_mesh_type": getMeshType(mesh.ObjectMesh_Type, name, ob, sidecar_type, not_bungie_game)}),
