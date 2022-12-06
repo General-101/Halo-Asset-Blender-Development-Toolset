@@ -37,7 +37,7 @@ import os
 frame_prefixes = ('b ', 'b_', 'frame ', 'frame_','bip ','bip_','bone ','bone_')
 marker_prefixes = ('#', '?')
 mesh_prefixes = ('+soft_ceiling','+soft_kill','+slip_surface', '@','+cookie','+decorator','+flair', '%', '$','+fog','+portal', '+seam','+water', '\'')
-special_prefixes = ('b ', 'b_', 'frame ', 'frame_','bip ','bip_','bone ','bone_','#','+soft_ceiling','+soft_kill','+slip_surface', '@','+cookie','+decorator','+flair', '%', '$','+fog','+portal', '+seam','+water', '\'')
+special_prefixes = ('b ', 'b_', 'frame ', 'frame_','bip ','bip_','bone ','bone_','#', '?','+soft_ceiling','+soft_kill','+slip_surface', '@','+cookie','+decorator','+flair', '%', '$','+fog','+portal', '+seam','+water', '\'')
 
 
 # Specific Mesh Prefixes #
@@ -236,7 +236,7 @@ class sel_logic():
         return MeshType(ob, ('PHYSICS'), ('$'))
 
     def ObMarkers(ob):
-        return (ObjectType(ob, ('MARKER'), ('#')) or MeshType(ob, ('MARKER'), ('#'))) and NotParentedToPoop(ob)
+        return (ObjectType(ob, ('MARKER'), ('#', '?')) or MeshType(ob, ('MARKER'), ('#', '?'))) and NotParentedToPoop(ob)
 
     def ObStructure(ob):
         return MeshType(ob, ('DEFAULT')) and NotParentedToPoop(ob)

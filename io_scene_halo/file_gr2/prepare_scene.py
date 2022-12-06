@@ -222,7 +222,7 @@ def GetSceneArmature(context, sidecar_type):
         if ob.type == 'ARMATURE' and not ob.name.startswith('+'): # added a check for a '+' prefix in armature name, to support special animation control armatures in the future
             model_armature = ob
             break
-    if model_armature is None:
+    if model_armature is None and context.scene.halo.game_version not in ('h4', 'h2a'):
         model_armature, no_parent_objects = AddTempArmature(context)
         temp_armature = True
 
