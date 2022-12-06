@@ -1692,6 +1692,8 @@ class JSON_MaterialProps(Panel):
             return context.material
 
     def draw(self, context):
+        scene = context.scene
+        scene_halo = scene.halo
         layout = self.layout
         current_material = context.object.active_material
         if current_material is not None:
@@ -1699,7 +1701,10 @@ class JSON_MaterialProps(Panel):
             row = layout.row()
             col = layout.column(align=True)
             if material_halo_json.material_override == 'NONE' and material_halo_json.material_override_locked == 'NONE' and not context.object.active_material.name.lower().startswith('+override'):
-                row.label(text="Shader Path")
+                if scene_halo.game_version == 'reach':
+                    row.label(text="Shader Path")
+                else:
+                    row.label(text="Material Path")
                 col.prop(material_halo_json, "shader_path", text='')
 
             row = col.row()
@@ -1710,7 +1715,8 @@ class JSON_MaterialProps(Panel):
             if material_halo_json.material_override != 'NONE' or material_halo_json.material_override_locked != 'NONE' or context.object.active_material.name.lower().startswith('+override'):
                 col.prop(material_halo_json, "Shader_Type_Override", text='Shader Type')
             else:
-                col.prop(material_halo_json, "Shader_Type", text='Shader Type')
+                if scene_halo.game_version == 'reach':
+                    col.prop(material_halo_json, "Shader_Type", text='Shader Type')
 
             if context.object.active_material.name.lower().startswith(special_materials):
                 col.prop(material_halo_json, "material_override_locked", text='Material Override')
@@ -3265,7 +3271,10 @@ class JSON_MaterialPropertiesGroup(PropertyGroup):
     def update_shader_type(self, context):
         material_path = self.shader_path.replace('"','')
         if material_path != material_path.rpartition('.')[2]:
-            self.Shader_Type = material_path.rpartition('.')[2]
+            try:
+                self.Shader_Type = material_path.rpartition('.')[2]
+            except:
+                self.Shader_Type = 'shader'
 
     shader_path: StringProperty(
         name = "Shader Path",
