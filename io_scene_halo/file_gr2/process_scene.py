@@ -54,7 +54,7 @@ from ..gr2_utils import(
 #####################################################################################
 # MAIN FUNCTION
 
-def process_scene(self, context, keywords, report, model_armature, asset_path, asset, skeleton_bones, halo_objects, timeline_start, timeline_end, lod_count, using_better_fbx, skip_lightmapper,
+def process_scene(self, context, keywords, report, model_armature, asset_path, asset, skeleton_bones, halo_objects, timeline_start, timeline_end, lod_count, using_better_fbx, skip_lightmapper, selected_perms,
                   filepath,
                   sidecar_type,
                   output_biped,
@@ -89,7 +89,6 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                   export_water_physics,
                   export_rain_occluders,
                   export_all_perms,
-                  export_specific_perm,
                   export_all_bsps,
                   export_specific_bsp,
                   export_sidecar_xml,
@@ -141,7 +140,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                             perm = GetPerm(ob)
                             if perm not in perm_list:
                                 perm_list.append(perm)
-                                if SelectModelObject(halo_objects.render, perm, model_armature, export_hidden, export_all_perms, export_specific_perm):
+                                if SelectModelObject(halo_objects.render, perm, model_armature, export_hidden, export_all_perms, selected_perms):
                                     print (f'**Exporting {perm} render model**')
                                     if using_better_fbx:
                                         obj_selection = [obj for obj in context.selected_objects]
@@ -159,7 +158,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                             perm = GetPerm(ob)
                             if perm not in perm_list:
                                 perm_list.append(perm)
-                                if SelectModelObject(halo_objects.collision, perm, model_armature, export_hidden, export_all_perms, export_specific_perm):
+                                if SelectModelObject(halo_objects.collision, perm, model_armature, export_hidden, export_all_perms, selected_perms):
                                     print (f'**Exporting {perm} collision model**')
                                     if using_better_fbx:
                                         obj_selection = [obj for obj in context.selected_objects]
@@ -177,7 +176,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                             perm = GetPerm(ob)
                             if perm not in perm_list:
                                 perm_list.append(perm)
-                                if SelectModelObject(halo_objects.physics, perm, model_armature, export_hidden, export_all_perms, export_specific_perm):
+                                if SelectModelObject(halo_objects.physics, perm, model_armature, export_hidden, export_all_perms, selected_perms):
                                     print (f'**Exporting {perm} physics model**')
                                     if using_better_fbx:
                                         obj_selection = [obj for obj in context.selected_objects]
@@ -265,7 +264,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                     perm = GetPerm(ob)
                                     if perm not in perm_list:
                                         perm_list.append(perm)
-                                        if SelectBSPObject(halo_objects.structure, bsp, model_armature, False, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
+                                        if SelectBSPObject(halo_objects.structure, bsp, model_armature, False, perm, export_hidden, export_all_perms, selected_perms, export_all_bsps, export_specific_bsp):
                                             print (f'**Exporting {bsp} {perm} bsp**')
                                             if using_better_fbx:
                                                 obj_selection = [obj for obj in context.selected_objects]
@@ -284,7 +283,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                         perm = GetPerm(ob)
                                         if perm not in perm_list:
                                             perm_list.append(perm)
-                                            if SelectBSPObject(halo_objects.poops, bsp, model_armature, False, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
+                                            if SelectBSPObject(halo_objects.poops, bsp, model_armature, False, perm, export_hidden, export_all_perms, selected_perms, export_all_bsps, export_specific_bsp):
                                                 print (f'**Exporting {bsp} {perm} instances**')
                                                 if using_better_fbx:
                                                     obj_selection = [obj for obj in context.selected_objects]
@@ -303,7 +302,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                         perm = GetPerm(ob)
                                         if perm not in perm_list:
                                             perm_list.append(perm)
-                                            if SelectBSPObject(halo_objects.markers, bsp, model_armature, False, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
+                                            if SelectBSPObject(halo_objects.markers, bsp, model_armature, False, perm, export_hidden, export_all_perms, selected_perms, export_all_bsps, export_specific_bsp):
                                                 print (f'**Exporting {bsp} {perm} markers**')
                                                 if using_better_fbx:
                                                     obj_selection = [obj for obj in context.selected_objects]
@@ -322,7 +321,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                         perm = GetPerm(ob)
                                         if perm not in perm_list:
                                             perm_list.append(perm)
-                                            if SelectBSPObject(halo_objects.lights, bsp, model_armature, False, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
+                                            if SelectBSPObject(halo_objects.lights, bsp, model_armature, False, perm, export_hidden, export_all_perms, selected_perms, export_all_bsps, export_specific_bsp):
                                                 print (f'**Exporting {bsp} {perm} lights**')
                                                 if using_better_fbx:
                                                     obj_selection = [obj for obj in context.selected_objects]
@@ -341,7 +340,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                         perm = GetPerm(ob)
                                         if perm not in perm_list:
                                             perm_list.append(perm)
-                                            if SelectBSPObject(halo_objects.portals, bsp, model_armature, False, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
+                                            if SelectBSPObject(halo_objects.portals, bsp, model_armature, False, perm, export_hidden, export_all_perms, selected_perms, export_all_bsps, export_specific_bsp):
                                                 print (f'**Exporting {bsp} {perm} portals**')
                                                 if using_better_fbx:
                                                     obj_selection = [obj for obj in context.selected_objects]
@@ -360,7 +359,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                         perm = GetPerm(ob)
                                         if perm not in perm_list:
                                             perm_list.append(perm)
-                                            if SelectBSPObject(halo_objects.seams, bsp, model_armature, False, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
+                                            if SelectBSPObject(halo_objects.seams, bsp, model_armature, False, perm, export_hidden, export_all_perms, selected_perms, export_all_bsps, export_specific_bsp):
                                                 print (f'**Exporting {bsp} {perm} seams**')
                                                 if using_better_fbx:
                                                     obj_selection = [obj for obj in context.selected_objects]
@@ -379,7 +378,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                         perm = GetPerm(ob)
                                         if perm not in perm_list:
                                             perm_list.append(perm)
-                                            if SelectBSPObject(halo_objects.water_surfaces, bsp, model_armature, False, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
+                                            if SelectBSPObject(halo_objects.water_surfaces, bsp, model_armature, False, perm, export_hidden, export_all_perms, selected_perms, export_all_bsps, export_specific_bsp):
                                                 print (f'**Exporting {bsp} {perm} water surfaces**')
                                                 if using_better_fbx:
                                                     obj_selection = [obj for obj in context.selected_objects]
@@ -399,7 +398,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                         perm = GetPerm(ob)
                                         if perm not in perm_list:
                                             perm_list.append(perm)
-                                            if SelectBSPObject(halo_objects.lightmap_regions, bsp, model_armature, False, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
+                                            if SelectBSPObject(halo_objects.lightmap_regions, bsp, model_armature, False, perm, export_hidden, export_all_perms, selected_perms, export_all_bsps, export_specific_bsp):
                                                 print (f'**Exporting {bsp} {perm} lightmap regions**')
                                                 if using_better_fbx:
                                                     obj_selection = [obj for obj in context.selected_objects]
@@ -427,7 +426,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                     perm = GetPerm(ob)
                                     if perm not in perm_list:
                                         perm_list.append(perm)
-                                        if SelectBSPObject(halo_objects.fog, bsp, model_armature, False, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
+                                        if SelectBSPObject(halo_objects.fog, bsp, model_armature, False, perm, export_hidden, export_all_perms, selected_perms, export_all_bsps, export_specific_bsp):
                                             print (f'**Exporting {bsp} {perm} fog planes**')
                                             if using_better_fbx:
                                                 obj_selection = [obj for obj in context.selected_objects]
@@ -445,7 +444,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                     perm = GetPerm(ob)
                                     if perm not in perm_list:
                                         perm_list.append(perm)
-                                        if SelectBSPObject(halo_objects.boundary_surfaces, bsp, model_armature, False, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
+                                        if SelectBSPObject(halo_objects.boundary_surfaces, bsp, model_armature, False, perm, export_hidden, export_all_perms, selected_perms, export_all_bsps, export_specific_bsp):
                                             print (f'**Exporting {bsp} {perm} design**')
                                             if using_better_fbx:
                                                 obj_selection = [obj for obj in context.selected_objects]
@@ -463,7 +462,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                     perm = GetPerm(ob)
                                     if perm not in perm_list:
                                         perm_list.append(perm)
-                                        if SelectBSPObject(halo_objects.water_physics, bsp, model_armature, False, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
+                                        if SelectBSPObject(halo_objects.water_physics, bsp, model_armature, False, perm, export_hidden, export_all_perms, selected_perms, export_all_bsps, export_specific_bsp):
                                             print (f'**Exporting {bsp} {perm} water physics**')
                                             if using_better_fbx:
                                                 obj_selection = [obj for obj in context.selected_objects]
@@ -481,7 +480,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                     perm = GetPerm(ob)
                                     if perm not in perm_list:
                                         perm_list.append(perm)
-                                        if SelectBSPObject(halo_objects.rain_occluders, bsp, model_armature, False, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
+                                        if SelectBSPObject(halo_objects.rain_occluders, bsp, model_armature, False, perm, export_hidden, export_all_perms, selected_perms, export_all_bsps, export_specific_bsp):
                                             print (f'**Exporting {bsp} {perm} rain occluders**')
                                             if using_better_fbx:
                                                 obj_selection = [obj for obj in context.selected_objects]
@@ -507,7 +506,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                     perm = GetPerm(ob)
                                     if perm not in perm_list:
                                         perm_list.append(perm)
-                                        if SelectBSPObject(halo_objects.structure, bsp, model_armature, True, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
+                                        if SelectBSPObject(halo_objects.structure, bsp, model_armature, True, perm, export_hidden, export_all_perms, selected_perms, export_all_bsps, export_specific_bsp):
                                             print (f'**Exporting shared {perm} bsp**')
                                             if using_better_fbx:
                                                 obj_selection = [obj for obj in context.selected_objects]
@@ -526,7 +525,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                     perm = GetPerm(ob)
                                     if perm not in perm_list:
                                         perm_list.append(perm)
-                                        if SelectBSPObject(halo_objects.poops, bsp, model_armature, True, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
+                                        if SelectBSPObject(halo_objects.poops, bsp, model_armature, True, perm, export_hidden, export_all_perms, selected_perms, export_all_bsps, export_specific_bsp):
                                             print (f'**Exporting shared {perm} instances**')
                                             if using_better_fbx:
                                                 obj_selection = [obj for obj in context.selected_objects]
@@ -545,7 +544,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                     perm = GetPerm(ob)
                                     if perm not in perm_list:
                                         perm_list.append(perm)
-                                        if SelectBSPObject(halo_objects.markers, bsp, model_armature, True, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
+                                        if SelectBSPObject(halo_objects.markers, bsp, model_armature, True, perm, export_hidden, export_all_perms, selected_perms, export_all_bsps, export_specific_bsp):
                                             print (f'**Exporting shared {perm} markers**')
                                             if using_better_fbx:
                                                 obj_selection = [obj for obj in context.selected_objects]
@@ -564,7 +563,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                     perm = GetPerm(ob)
                                     if perm not in perm_list:
                                         perm_list.append(perm)
-                                        if SelectBSPObject(halo_objects.lights, bsp, model_armature, True, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
+                                        if SelectBSPObject(halo_objects.lights, bsp, model_armature, True, perm, export_hidden, export_all_perms, selected_perms, export_all_bsps, export_specific_bsp):
                                             print (f'**Exporting shared {perm} lights**')
                                             if using_better_fbx:
                                                 obj_selection = [obj for obj in context.selected_objects]
@@ -583,7 +582,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                     perm = GetPerm(ob)
                                     if perm not in perm_list:
                                         perm_list.append(perm)
-                                        if SelectBSPObject(halo_objects.portals, bsp, model_armature, True, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
+                                        if SelectBSPObject(halo_objects.portals, bsp, model_armature, True, perm, export_hidden, export_all_perms, selected_perms, export_all_bsps, export_specific_bsp):
                                             print (f'**Exporting shared {perm} portals**')
                                             if using_better_fbx:
                                                 obj_selection = [obj for obj in context.selected_objects]
@@ -602,7 +601,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                     perm = GetPerm(ob)
                                     if perm not in perm_list:
                                         perm_list.append(perm)
-                                        if SelectBSPObject(halo_objects.seams, bsp, model_armature, True, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
+                                        if SelectBSPObject(halo_objects.seams, bsp, model_armature, True, perm, export_hidden, export_all_perms, selected_perms, export_all_bsps, export_specific_bsp):
                                             print (f'**Exporting shared {perm} seams**')
                                             if using_better_fbx:
                                                 obj_selection = [obj for obj in context.selected_objects]
@@ -621,7 +620,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                     perm = GetPerm(ob)
                                     if perm not in perm_list:
                                         perm_list.append(perm)
-                                        if SelectBSPObject(halo_objects.water_surfaces, bsp, model_armature, True, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
+                                        if SelectBSPObject(halo_objects.water_surfaces, bsp, model_armature, True, perm, export_hidden, export_all_perms, selected_perms, export_all_bsps, export_specific_bsp):
                                             print (f'**Exporting shared {perm} water surfaces**')
                                             if using_better_fbx:
                                                 obj_selection = [obj for obj in context.selected_objects]
@@ -640,7 +639,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                     perm = GetPerm(ob)
                                     if perm not in perm_list:
                                         perm_list.append(perm)
-                                        if SelectBSPObject(halo_objects.lightmap_regions, bsp, model_armature, True, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
+                                        if SelectBSPObject(halo_objects.lightmap_regions, bsp, model_armature, True, perm, export_hidden, export_all_perms, selected_perms, export_all_bsps, export_specific_bsp):
                                             print (f'**Exporting shared {perm} lightmap regions**')
                                             if using_better_fbx:
                                                 obj_selection = [obj for obj in context.selected_objects]
@@ -659,7 +658,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                             perm = GetPerm(ob)
                             if perm not in perm_list:
                                 perm_list.append(perm)
-                                if SelectModelObject(halo_objects.render + halo_objects.lights + halo_objects.markers, perm, model_armature, export_hidden, export_all_perms, export_specific_perm):
+                                if SelectModelObject(halo_objects.render + halo_objects.lights + halo_objects.markers, perm, model_armature, export_hidden, export_all_perms, selected_perms):
                                     print (f'**Exporting sky render model**')
                                     if using_better_fbx:
                                         obj_selection = [obj for obj in context.selected_objects]

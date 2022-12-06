@@ -74,11 +74,12 @@ def prepare_scene(context, report, sidecar_type, export_hidden, filepath, use_ar
     #FixLightsRotations(h_objects.lights)                                         # adjust light rotations to match in game rotation, and return a list of lights for later use in repair_scene
     timeline_start, timeline_end = SetTimelineRange(context)                      # set the timeline range so we can restore it later
     lod_count = GetDecoratorLODCount(h_objects, sidecar_type == 'DECORATOR SET') # get the max LOD count in the scene if we're exporting a decorator
-    ApplyPredominantShaderNames(h_objects.poops)
+    selected_perms = GetSelectedPermutations(objects_selection)
+    # ApplyPredominantShaderNames(h_objects.poops) # commented out 06-12-2022. I don't think it is needed
     # if sidecar_type == 'SCENARIO':
     #     RotateScene(context.view_layer.objects, model_armature)
 
-    return objects_selection, active_object, hidden_objects, mode, model_armature, temp_armature, asset_path, asset, skeleton_bones, h_objects, timeline_start, timeline_end, lod_count, proxies, unselectable_objects, enabled_exclude_collections, mesh_node_names, temp_nodes
+    return objects_selection, active_object, hidden_objects, mode, model_armature, temp_armature, asset_path, asset, skeleton_bones, h_objects, timeline_start, timeline_end, lod_count, proxies, unselectable_objects, enabled_exclude_collections, mesh_node_names, temp_nodes, selected_perms
 
 
 #####################################################################################
@@ -120,6 +121,22 @@ def GetSceneMode(context):
         print('WARNING: Unable to test mode')
 
     return mode
+
+def GetSelectedPermutations(selection):
+    selected_perms = []
+    # cycle through selected objects and get their permutation
+    for ob in selection:
+        perm = ''
+        if ob.halo_json.Permutation_Name_Locked != '':
+            perm = ob.halo_json.Permutation_Name_Locked
+        else:
+            perm = ob.halo_json.Permutation_Name
+            if perm == '':
+                perm = 'default'
+        if perm not in selected_perms:
+            selected_perms.append(perm)
+    
+    return selected_perms
 
 def ExitLocalView(context):
     for area in context.screen.areas:

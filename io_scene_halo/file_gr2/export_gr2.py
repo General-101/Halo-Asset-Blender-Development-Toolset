@@ -349,8 +349,8 @@ def getMeshProperties(mesh, name, ob, asset_name, sidecar_type, not_bungie_game)
         #     mesh_props.update({"bungie_mesh_poop_fade_range_start": str(mesh.Poop_Imposter_Fade_Range_Start)})
         # if mesh.Poop_Imposter_Fade_Range_End != 30:
         #     mesh_props.update({"bungie_mesh_poop_fade_range_end": str(mesh.Poop_Imposter_Fade_Range_End)})
-        if mesh.Poop_Predominant_Shader_Name != '':
-            mesh_props.update({"bungie_mesh_poop_poop_predominant_shader_name":mesh.Poop_Predominant_Shader_Name[0:1023]})
+        # if mesh.Poop_Predominant_Shader_Name != '':
+        #     mesh_props.update({"bungie_mesh_poop_poop_predominant_shader_name":mesh.Poop_Predominant_Shader_Name[0:1023]})
         mesh_props.update({"bungie_mesh_poop_decomposition_hulls": "-1"})
         if mesh.Poop_Render_Only or name.startswith(poop_render_only_prefixes):
             mesh_props.update({"bungie_mesh_poop_is_render_only": "1"})

@@ -205,15 +205,11 @@ class Export_Scene_GR2(Operator, ExportHelper):
         description='',
         default='',
     )
-    export_all_perms: BoolProperty(
-        name='All Permutations',
-        description='',
-        default=True,
-    )
-    export_specific_perm: StringProperty(
-        name='Permutation',
-        description='Limited exporting to the named permutation only. Must match case',
-        default='',
+    export_all_perms: EnumProperty(
+        name='Permutations',
+        description='Specify whether to export all permutations, or just those selected',
+        default='all',
+        items=[('all', 'All', ''), ('selected', 'Selected', '')]
     )
     output_biped: BoolProperty(
         name='Biped',
@@ -232,6 +228,11 @@ class Export_Scene_GR2(Operator, ExportHelper):
     )
     output_device_control: BoolProperty(
         name='Device Control',
+        description='',
+        default=False,
+    )
+    output_device_dispenser: BoolProperty(
+        name='Device Dispenser',
         description='',
         default=False,
     )
@@ -521,8 +522,10 @@ class Export_Scene_GR2(Operator, ExportHelper):
                             self.output_creature = True
                         case 'device_control':
                             self.output_device_control = True
+                        case 'device_dispenser':
+                            self.output_device_dispenser = True
                         case 'device_machine':
-                            self.output_device_machine = True
+                            self.output_device_machine = True 
                         case 'device_terminal':
                             self.output_device_terminal = True
                         case 'effect_scenery':
@@ -557,11 +560,11 @@ class Export_Scene_GR2(Operator, ExportHelper):
             console.console_toggle() # toggle the console so users can see progress of export
 
         from .prepare_scene import prepare_scene
-        (objects_selection, active_object, hidden_objects, mode, model_armature, temp_armature, asset_path, asset, skeleton_bones, halo_objects, timeline_start, timeline_end, lod_count, proxies, unselectable_objects, enabled_exclude_collections, mesh_node_names, temp_nodes
+        (objects_selection, active_object, hidden_objects, mode, model_armature, temp_armature, asset_path, asset, skeleton_bones, halo_objects, timeline_start, timeline_end, lod_count, proxies, unselectable_objects, enabled_exclude_collections, mesh_node_names, temp_nodes, selected_perms
         ) = prepare_scene(context, self.report, **keywords) # prepares the scene for processing and returns information about the scene
         try:
             from .process_scene import process_scene
-            process_scene(self, context, keywords, self.report, model_armature, asset_path, asset, skeleton_bones, halo_objects, timeline_start, timeline_end, lod_count, UsingBetterFBX(), skip_lightmapper, **keywords)
+            process_scene(self, context, keywords, self.report, model_armature, asset_path, asset, skeleton_bones, halo_objects, timeline_start, timeline_end, lod_count, UsingBetterFBX(), skip_lightmapper, selected_perms, **keywords)
         except:
             print('ASSERT: Scene processing failed')
             error = traceback.format_exc()
@@ -630,9 +633,8 @@ class Export_Scene_GR2(Operator, ExportHelper):
                 sub.prop(self, "export_render")
             if (self.sidecar_type not in ('DECORATOR SET', 'PARTICLE MODEL')):
                 col.separator()
-                if not self.export_all_perms:
-                    sub.prop(self, 'export_specific_perm', text='Permutation')
-                sub.prop(self, 'export_all_perms', text='All Permutations')
+                row = layout.row()
+                row.prop(self, 'export_all_perms', expand=True)
         # SIDECAR SETTINGS #
         box = layout.box()
         box.label(text="Sidecar Settings")
@@ -646,6 +648,8 @@ class Export_Scene_GR2(Operator, ExportHelper):
                 sub.prop(self, "output_crate")
                 sub.prop(self, "output_creature")
                 sub.prop(self, "output_device_control")
+                if self.game_version in ('h4', 'h2a'):
+                    sub.prop(self, "output_device_dispenser")
                 sub.prop(self, "output_device_machine")
                 sub.prop(self, "output_device_terminal")
                 sub.prop(self, "output_effect_scenery")

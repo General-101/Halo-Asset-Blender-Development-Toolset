@@ -124,8 +124,8 @@ def ObjectValid(ob, export_hidden, valid_perm='', evaluated_perm='', evalued_per
     else:
         return ob in tuple(bpy.context.scene.view_layers[0].objects) and (ob.visible_get() or export_hidden) and valid_perm == evaluated_perm
 
-def ExportPerm(perm, export_all_perms, export_specific_perm):
-    return export_all_perms or perm == export_specific_perm
+def ExportPerm(perm, export_all_perms, selected_perms):
+    return export_all_perms == 'all' or perm in selected_perms
 
 def ExportBSP(bsp, export_all_bsps, export_specific_bsp):
     return export_all_bsps or bsp == export_specific_bsp
@@ -157,14 +157,14 @@ def SelectHaloObject(select_func, selected_asset_type, valid_asset_types):
     return halo_objects
 
 
-def SelectModelObject(halo_objects, perm, arm, export_hidden, export_all_perms, export_specific_perm):
+def SelectModelObject(halo_objects, perm, arm, export_hidden, export_all_perms, selected_perms):
     DeselectAllObjects()
     perm = ResetPerm(perm)
     boolean = False
     arm.select_set(True)
     for ob in halo_objects:
         halo = ob.halo_json
-        if ObjectValid(ob, export_hidden, perm, halo.Permutation_Name, halo.Permutation_Name_Locked) and ExportPerm(perm, export_all_perms, export_specific_perm):
+        if ObjectValid(ob, export_hidden, perm, halo.Permutation_Name, halo.Permutation_Name_Locked) and ExportPerm(perm, export_all_perms, selected_perms):
             ob.select_set(True)
             boolean = True
     
@@ -181,7 +181,7 @@ def SelectModelObjectNoPerm(halo_objects, arm, export_hidden):
 
     return boolean
 
-def SelectBSPObject(halo_objects, bsp, arm, shared, perm, export_hidden, export_all_perms, export_specific_perm, export_all_bsps, export_specific_bsp):
+def SelectBSPObject(halo_objects, bsp, arm, shared, perm, export_hidden, export_all_perms, selected_perms, export_all_bsps, export_specific_bsp):
     DeselectAllObjects()
     perm = ResetPerm(perm)
     boolean = False
@@ -194,7 +194,7 @@ def SelectBSPObject(halo_objects, bsp, arm, shared, perm, export_hidden, export_
         else:
             bsp_value = halo.bsp_name
         if bsp_value == bsp or shared:
-            if ObjectValid(ob, export_hidden, perm, halo.Permutation_Name, halo.Permutation_Name_Locked) and ExportPerm(perm, export_all_perms, export_specific_perm) and ExportBSP(bsp, export_all_bsps, export_specific_bsp):
+            if ObjectValid(ob, export_hidden, perm, halo.Permutation_Name, halo.Permutation_Name_Locked) and ExportPerm(perm, export_all_perms, selected_perms) and ExportBSP(bsp, export_all_bsps, export_specific_bsp):
                 ob.select_set(True)
                 boolean = True
 

@@ -45,6 +45,7 @@ def export_xml(report, context, halo_objects, model_armature=None, lod_count=0, 
                 output_crate=False,
                 output_creature=False,
                 output_device_control=False,
+                output_device_dispenser=False,
                 output_device_machine=False,
                 output_device_terminal=False,
                 output_effect_scenery=False,
@@ -57,7 +58,7 @@ def export_xml(report, context, halo_objects, model_armature=None, lod_count=0, 
     asset_path = CleanAssetPath(full_path)
     asset_name = asset_path.rpartition('\\')[2]
 
-    BuildSidecar(halo_objects, model_armature, lod_count, asset_path, asset_name, full_path, sidecar_type, context, game_version, output_biped,output_crate,output_creature,output_device_control,output_device_machine,output_device_terminal,output_effect_scenery,output_equipment,output_giant,output_scenery,output_vehicle,output_weapon)
+    BuildSidecar(halo_objects, model_armature, lod_count, asset_path, asset_name, full_path, sidecar_type, context, game_version, output_biped,output_crate,output_creature,output_device_control, output_device_dispenser, output_device_machine,output_device_terminal,output_effect_scenery,output_equipment,output_giant,output_scenery,output_vehicle,output_weapon)
 
     report({'INFO'},"Sidecar build complete")
 
@@ -73,6 +74,7 @@ def BuildSidecar(halo_objects, model_armature, lod_count, asset_path, asset_name
                         output_crate=False,
                         output_creature=False,
                         output_device_control=False,
+                        output_device_dispenser=False,
                         output_device_machine=False,
                         output_device_terminal=False,
                         output_effect_scenery=False,
@@ -89,7 +91,7 @@ def BuildSidecar(halo_objects, model_armature, lod_count, asset_path, asset_name
     not_bungie_game = game_version in ('h4', 'h2a')
     WriteHeader(metadata)
     if sidecar_type == 'MODEL':
-        GetObjectOutputTypes(context, metadata, "model", asset_path, asset_name, GetModelTags(output_biped,output_crate,output_creature,output_device_control,output_device_machine,output_device_terminal,output_effect_scenery,output_equipment,output_giant,output_scenery,output_vehicle,output_weapon))
+        GetObjectOutputTypes(context, metadata, "model", asset_path, asset_name, GetModelTags(output_biped,output_crate,output_creature,output_device_control, output_device_dispenser, output_device_machine,output_device_terminal,output_effect_scenery,output_equipment,output_giant,output_scenery,output_vehicle,output_weapon))
     elif sidecar_type == 'SCENARIO':
         GetObjectOutputTypes(context, metadata, 'scenario', asset_path, asset_name)
     elif sidecar_type == 'SKY':
@@ -137,6 +139,7 @@ def GetModelTags(       output_biped=False,
                         output_crate=False,
                         output_creature=False,
                         output_device_control=False,
+                        output_device_dispenser=False,
                         output_device_machine=False,
                         output_device_terminal=False,
                         output_effect_scenery=False,
@@ -155,7 +158,9 @@ def GetModelTags(       output_biped=False,
     if output_creature:
         tags.append('creature')
     if output_device_control:
-        tags.append('device_control')
+        tags.append('device_control') 
+    if output_device_dispenser:
+        tags.append('device_dispenser')
     if output_device_machine:
         tags.append('device_machine')
     if output_device_terminal:
@@ -850,6 +855,7 @@ def export_sidecar(operator, context, report, asset_path, halo_objects, model_ar
         output_crate=False,
         output_creature=False,
         output_device_control=False,
+        output_device_dispenser=False,
         output_device_machine=False,
         output_device_terminal=False,
         output_effect_scenery=False,
@@ -860,6 +866,9 @@ def export_sidecar(operator, context, report, asset_path, halo_objects, model_ar
         output_weapon=False,
         **kwargs
         ):
+    if game_version not in ('h4','h2a'):
+        output_device_dispenser = False # force this off in case user is not exporting for H4/H2A
+        
     if export_sidecar_xml and asset_path != '': # if the user has opted to export a sidecar and a valid asset path exists, proceed
-        export_xml(report, context, halo_objects, model_armature, lod_count, filepath, export_sidecar_xml, sidecar_type, asset_path, game_version, output_biped, output_crate,output_creature,output_device_control,output_device_machine,output_device_terminal,output_effect_scenery,output_equipment,output_giant,output_scenery,output_vehicle,output_weapon)
+        export_xml(report, context, halo_objects, model_armature, lod_count, filepath, export_sidecar_xml, sidecar_type, asset_path, game_version, output_biped, output_crate,output_creature,output_device_control, output_device_dispenser, output_device_machine,output_device_terminal,output_effect_scenery,output_equipment,output_giant,output_scenery,output_vehicle,output_weapon)
     return {'FINISHED'}
