@@ -28,12 +28,12 @@ from subprocess import Popen
 import os
 from io_scene_halo.gr2_utils import GetEKPath
 
-def lightmapper(report, filepath, lightmap_quality='DIRECT', lightmap_all_bsps='TRUE', lightmap_specific_bsp='0'):
+def lightmapper(report, filepath, lightmap_quality='DIRECT', lightmap_all_bsps='TRUE', lightmap_specific_bsp='000', lightmap_quality_h4='farm_draft_quality', game_version='reach'):
     full_path = filepath.rpartition('\\')[0]
     asset_path = CleanAssetPath(full_path)
     asset_name = asset_path.rpartition('\\')[2]
     bsp = GetBSPToLightmap(lightmap_all_bsps, lightmap_specific_bsp, asset_name)
-    quality = GetQuality(lightmap_quality)
+    quality = GetQuality(lightmap_quality, lightmap_quality_h4, game_version)
 
     try:
         lightmapCommand = f'python calc_lm_farm_local.py {os.path.join(asset_path, asset_name)} {bsp} {quality}'
@@ -59,7 +59,9 @@ def CleanAssetPath(path):
 
     return path
 
-def GetQuality(lightmap_quality):
+def GetQuality(lightmap_quality, lightmap_quality_h4, game_version):
+    if game_version in ('h4', 'h2a'):
+        return lightmap_quality_h4
     match lightmap_quality:
         case 'DIRECT':
             return 'direct_only'

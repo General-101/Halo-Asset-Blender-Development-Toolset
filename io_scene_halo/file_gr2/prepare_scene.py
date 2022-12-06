@@ -75,11 +75,12 @@ def prepare_scene(context, report, sidecar_type, export_hidden, filepath, use_ar
     timeline_start, timeline_end = SetTimelineRange(context)                      # set the timeline range so we can restore it later
     lod_count = GetDecoratorLODCount(h_objects, sidecar_type == 'DECORATOR SET') # get the max LOD count in the scene if we're exporting a decorator
     selected_perms = GetSelectedPermutations(objects_selection)
+    selected_bsps = GetSelectedBSPs(objects_selection)
     # ApplyPredominantShaderNames(h_objects.poops) # commented out 06-12-2022. I don't think it is needed
     # if sidecar_type == 'SCENARIO':
     #     RotateScene(context.view_layer.objects, model_armature)
 
-    return objects_selection, active_object, hidden_objects, mode, model_armature, temp_armature, asset_path, asset, skeleton_bones, h_objects, timeline_start, timeline_end, lod_count, proxies, unselectable_objects, enabled_exclude_collections, mesh_node_names, temp_nodes, selected_perms
+    return objects_selection, active_object, hidden_objects, mode, model_armature, temp_armature, asset_path, asset, skeleton_bones, h_objects, timeline_start, timeline_end, lod_count, proxies, unselectable_objects, enabled_exclude_collections, mesh_node_names, temp_nodes, selected_perms, selected_bsps
 
 
 #####################################################################################
@@ -137,6 +138,20 @@ def GetSelectedPermutations(selection):
             selected_perms.append(perm)
     
     return selected_perms
+
+def GetSelectedBSPs(selection):
+    selected_bsps = []
+    # cycle through selected objects and get their permutation
+    for ob in selection:
+        bsp = ''
+        if ob.halo_json.bsp_name_locked != '':
+            bsp = ob.halo_json.bsp_name_locked
+        else:
+            bsp = ob.halo_json.bsp_name
+        if bsp not in selected_bsps:
+            selected_bsps.append(bsp)
+    
+    return selected_bsps
 
 def ExitLocalView(context):
     for area in context.screen.areas:

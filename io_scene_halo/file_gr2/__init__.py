@@ -195,15 +195,11 @@ class Export_Scene_GR2(Operator, ExportHelper):
         description='Export geometry which is shared across all BSPs',
         default=True,
     )
-    export_all_bsps: BoolProperty(
-        name='All BSPs',
-        description='',
-        default=True,
-    )
-    export_specific_bsp: StringProperty(
-        name='BSP',
-        description='',
-        default='',
+    export_all_bsps: EnumProperty(
+        name='BSPs',
+        description='Specify whether to export all BSPs, or just those selected',
+        default='all',
+        items=[('all', 'All', ''), ('selected', 'Selected', '')]
     )
     export_all_perms: EnumProperty(
         name='Permutations',
@@ -433,16 +429,17 @@ class Export_Scene_GR2(Operator, ExportHelper):
                 ),
         default='DIRECT',
     )
+    lightmap_quality_h4: StringProperty(
+        name='Quality',
+        default='',
+    )
     lightmap_all_bsps: BoolProperty(
         name='Lightmap All',
         default=True,
     )
-    lightmap_specific_bsp: IntProperty(
+    lightmap_specific_bsp: StringProperty(
         name='Specific BSP',
-        default=0,
-        min=0,
-        max=99,
-        step=5,
+        default='',
     )
     mesh_smooth_type_better: EnumProperty(
             name="Smoothing",
@@ -560,11 +557,11 @@ class Export_Scene_GR2(Operator, ExportHelper):
             console.console_toggle() # toggle the console so users can see progress of export
 
         from .prepare_scene import prepare_scene
-        (objects_selection, active_object, hidden_objects, mode, model_armature, temp_armature, asset_path, asset, skeleton_bones, halo_objects, timeline_start, timeline_end, lod_count, proxies, unselectable_objects, enabled_exclude_collections, mesh_node_names, temp_nodes, selected_perms
+        (objects_selection, active_object, hidden_objects, mode, model_armature, temp_armature, asset_path, asset, skeleton_bones, halo_objects, timeline_start, timeline_end, lod_count, proxies, unselectable_objects, enabled_exclude_collections, mesh_node_names, temp_nodes, selected_perms, selected_bsps
         ) = prepare_scene(context, self.report, **keywords) # prepares the scene for processing and returns information about the scene
         try:
             from .process_scene import process_scene
-            process_scene(self, context, keywords, self.report, model_armature, asset_path, asset, skeleton_bones, halo_objects, timeline_start, timeline_end, lod_count, UsingBetterFBX(), skip_lightmapper, selected_perms, **keywords)
+            process_scene(self, context, keywords, self.report, model_armature, asset_path, asset, skeleton_bones, halo_objects, timeline_start, timeline_end, lod_count, UsingBetterFBX(), skip_lightmapper, selected_perms, selected_bsps, **keywords)
         except:
             print('ASSERT: Scene processing failed')
             error = traceback.format_exc()
@@ -626,15 +623,11 @@ class Export_Scene_GR2(Operator, ExportHelper):
                 sub.prop(self, "export_rain_occluders")
                 col.separator()
                 sub.prop(self, 'export_shared')
-                if not self.export_all_bsps:
-                    sub.prop(self, 'export_specific_bsp')
-                sub.prop(self, 'export_all_bsps')
+                sub.prop(self, 'export_all_bsps', expand=True)
             else:
                 sub.prop(self, "export_render")
             if (self.sidecar_type not in ('DECORATOR SET', 'PARTICLE MODEL')):
-                col.separator()
-                row = layout.row()
-                row.prop(self, 'export_all_perms', expand=True)
+                sub.prop(self, 'export_all_perms', expand=True)
         # SIDECAR SETTINGS #
         box = layout.box()
         box.label(text="Sidecar Settings")
@@ -687,7 +680,10 @@ class Export_Scene_GR2(Operator, ExportHelper):
             col = box.column()
             col.prop(self, "lightmap_structure")
             if self.lightmap_structure:
-                col.prop(self, "lightmap_quality")
+                if self.game_version in ('h4', 'h2a'):
+                    col.prop(self, "lightmap_quality_h4")
+                else:
+                    col.prop(self, "lightmap_quality")
                 if not self.lightmap_all_bsps:
                     col.prop(self, 'lightmap_specific_bsp')
                 col.prop(self, 'lightmap_all_bsps')
