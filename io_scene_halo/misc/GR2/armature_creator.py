@@ -64,6 +64,9 @@ def ArmatureCreate(context, armature_type, use_custom_bone_shapes):
     if armature_type == 'UNIT':
         bpy.ops.armature.bone_primitive_add(name=pitch)
         bpy.ops.armature.bone_primitive_add(name=yaw)
+        arm.data.edit_bones[1].parent = arm.data.edit_bones[0]
+        arm.data.edit_bones[2].parent = arm.data.edit_bones[0]
+
 
     for b in arm.data.edit_bones:
         b.tail[1] = 1
