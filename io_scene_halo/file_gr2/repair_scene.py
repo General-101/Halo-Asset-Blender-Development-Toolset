@@ -50,7 +50,8 @@ def repair_scene(context, report, objects_selection, active_object, hidden_objec
     # HaloDeboner(model_armature.data.edit_bones, model_armature, context)
 
     for ob in unselectable_objects:
-        ob.hide_select = True
+        if not ob.hide_get():
+            ob.hide_select = True
 
     if export_hidden:
         for ob in hidden_objects:
