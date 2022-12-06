@@ -46,6 +46,7 @@ from ..gr2_utils import(
 #####################################################################################
 # MAIN FUNCTION
 def prepare_scene(context, report, sidecar_type, export_hidden, filepath, use_armature_deform_only, **kwargs):
+    ExitLocalView(context)
     enabled_exclude_collections = HideExcludedCollections(context)
     objects_selection, active_object = GetCurrentActiveObjectSelection(context)
     hidden_objects = UnhideObjects(export_hidden, context)                               # If the user has opted to export hidden objects, list all hidden objects and unhide them, return the list for later use
@@ -119,6 +120,16 @@ def GetSceneMode(context):
         print('WARNING: Unable to test mode')
 
     return mode
+
+def ExitLocalView(context):
+    for area in context.screen.areas:
+        if area.type == 'VIEW_3D':
+            space = area.spaces[0]
+            if space.local_view:
+                for region in area.regions:
+                    if region.type == 'WINDOW':
+                        override = {'area': area, 'region': region}
+                        bpy.ops.view3d.localview(override)
 
 def ApplyObjectIDs(scene_obs):
     for ob in scene_obs:
