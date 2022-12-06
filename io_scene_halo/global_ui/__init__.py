@@ -1619,8 +1619,10 @@ class JSON_ObjectMarkerProps(Panel):
         ob_halo_json = ob.halo_json
 
         col = flow.column()
-
-        col.prop(ob_halo_json, "ObjectMarker_Type", text='Marker Type')
+        if ob_halo_json.ObjectMarker_Type_Locked == 'DEFAULT':
+            col.prop(ob_halo_json, "ObjectMarker_Type", text='Marker Type')
+        else:
+            col.prop(ob_halo_json, "ObjectMarker_Type_Locked", text='Marker Type')
         
         group_marker_types = ('DEFAULT', 'HINT', 'TARGET')
 
@@ -1629,19 +1631,19 @@ class JSON_ObjectMarkerProps(Panel):
             sub.prop(ob_halo_json, "Marker_Region", text='Marker Region')
         sub.prop(ob_halo_json, 'Marker_All_Regions', text='All Regions')
 
-        if ob_halo_json.ObjectMarker_Type in group_marker_types:
+        if ob_halo_json.ObjectMarker_Type in group_marker_types and ob_halo_json.ObjectMarker_Type_Locked != 'GAME INSTANCE':
             col.prop(ob_halo_json, "Marker_Group_Name", text='Marker Group')
 
-        if ob_halo_json.ObjectMarker_Type == 'DEFAULT':
+        if ob_halo_json.ObjectMarker_Type == 'DEFAULT' and not ob_halo_json.ObjectMarker_Type_Locked == 'GAME INSTANCE':
             col.separator()
             col.prop(ob_halo_json, "Marker_Velocity", text='Marker Velocity')
 
-        if ob_halo_json.ObjectMarker_Type == 'GAME INSTANCE':
+        if ob_halo_json.ObjectMarker_Type == 'GAME INSTANCE' or ob_halo_json.ObjectMarker_Type_Locked == 'GAME INSTANCE':
             col.separator()
             col.prop(ob_halo_json, "Marker_Game_Instance_Tag_Name", text='Game Instance Tag')
             col.prop(ob_halo_json, "Marker_Game_Instance_Tag_Variant_Name", text='Game Instance Tag Variant')
 
-        if ob_halo_json.ObjectMarker_Type == 'PATHFINDING SPHERE':
+        if ob_halo_json.ObjectMarker_Type == 'PATHFINDING SPHERE' and not ob_halo_json.ObjectMarker_Type_Locked == 'GAME INSTANCE':
             col.separator()
             col = layout.column(heading="Flags")
             sub = col.column(align=True)
@@ -1649,7 +1651,7 @@ class JSON_ObjectMarkerProps(Panel):
             sub.prop(ob_halo_json, "Pathfinding_Sphere_Remains_When_Open", text='Remains When Open')
             sub.prop(ob_halo_json, "Pathfinding_Sphere_With_Sectors", text='With Sectors')
 
-        if ob_halo_json.ObjectMarker_Type == 'PHYSICS CONSTRAINT':
+        if ob_halo_json.ObjectMarker_Type == 'PHYSICS CONSTRAINT' and not ob_halo_json.ObjectMarker_Type_Locked == 'GAME INSTANCE':
             col.separator()
             col.prop(ob_halo_json, "Physics_Constraint_Parent", text='Physics Constraint Parent')
             col.prop(ob_halo_json, "Physics_Constraint_Child", text='Physics Constraint Child')
@@ -2770,13 +2772,14 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
         min=0,
     )
 
-    #MARKER PROPERTIES
-    ObjectMarker_Type : EnumProperty(
-        name="Marker Type",
-        options=set(),
-        description="Select the marker type",
-        default = "DEFAULT",
-        items=[ ('DEFAULT', "Default", "Default marker type. Defines render_model markers for models, and structure markers for bsps"),
+    def get_markertype_enum(self):
+        a_ob = bpy.context.active_object
+        if a_ob.name.startswith('?'):
+            return 2
+        else:
+            return 0
+
+    marker_types = [ ('DEFAULT', "Default", "Default marker type. Defines render_model markers for models, and structure markers for bsps"),
                 ('EFFECTS', "Effects", "Marker for effects only."),
                 ('GAME INSTANCE', "Game Instance", "Game Instance marker"),
                 ('GARBAGE', "Garbage", "marker to define position that garbage pieces should be created"),
@@ -2786,6 +2789,23 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
                 ('TARGET', "Target", "Defines the markers used in a model's targets'"),
                 ('WATER VOLUME FLOW', "Water Volume Flow", "Used to define water flow for water physics volumes. For structure_design tags only"),
                ]
+
+    #MARKER PROPERTIES
+    ObjectMarker_Type : EnumProperty(
+        name="Marker Type",
+        options=set(),
+        description="Select the marker type",
+        default = "DEFAULT",
+        items=marker_types,
+        )
+
+    ObjectMarker_Type_Locked : EnumProperty(
+        name="Marker Type",
+        options=set(),
+        description="Select the marker type",
+        default = "DEFAULT",
+        get=get_markertype_enum,
+        items=marker_types,
         )
     
     def get_marker_group_name(self):

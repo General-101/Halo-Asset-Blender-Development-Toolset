@@ -58,7 +58,7 @@ from ..gr2_utils import (
 ##### NODES PROPERTIES #######
 ##############################
 
-def getNodes(model_armature, skeleton_bones, halo_objects):
+def getNodes(model_armature, skeleton_bones, halo_objects, not_bungie_game):
     nodesList = {}
     if model_armature != None:
         nodesList.update(skeleton_bones)
@@ -72,7 +72,7 @@ def getNodes(model_armature, skeleton_bones, halo_objects):
         halo_node = ob.halo_json
         halo_node_name = ob.name
         if ob.select_get():
-            nodesList.update({ob.name: getNodeProperties(halo_node, halo_node_name, ob)})
+            nodesList.update({ob.name: getNodeProperties(halo_node, halo_node_name, ob, not_bungie_game)})
 
     temp = ({'nodes_properties': nodesList})
     return temp
@@ -166,7 +166,7 @@ def getLightColor(red, green, blue):
 
     return color
 
-def getNodeProperties(node, name, ob):
+def getNodeProperties(node, name, ob, not_bungie_game):
     node_props = {}
     ###################
     # OBJECT PROPERTIES
@@ -175,7 +175,7 @@ def getNodeProperties(node, name, ob):
     ###################
     # MARKER PROPERTIES
     if '_connected_geometry_object_type_marker' in node_props.values():
-        node_props.update({"bungie_marker_type": getMarkerType(node.ObjectMarker_Type, node.Physics_Constraint_Type, node)})
+        node_props.update({"bungie_marker_type": getMarkerType(node.ObjectMarker_Type, node.Physics_Constraint_Type, node, not_bungie_game)})
         if node.Marker_All_Regions:
             node_props.update({"bungie_marker_all_regions": "1"})
         else:
@@ -245,14 +245,19 @@ def getNodeType(node, name, ob):
                 case 'MARKER':
                     return '_connected_geometry_object_type_marker'
 
-def getMarkerType(type, physics, node):
+def getMarkerType(type, physics, node, not_bungie_game):
+    if node.ObjectMarker_Type_Locked == 'GAME INSTANCE':
+        if not not_bungie_game and node.Marker_Game_Instance_Tag_Name.endswith('.prefab'):
+            return '_connected_geometry_marker_type_prefab'
+        else:
+            return '_connected_geometry_marker_type_game_instance'
     match type:
         case 'DEFAULT':
             return '_connected_geometry_marker_type_model'
         case 'EFFECTS':
             return '_connected_geometry_marker_type_effects'
         case 'GAME INSTANCE':
-            if bpy.context.scene.halo.game_version in ('h4', 'h2a') and node.Marker_Game_Instance_Tag_Name.endswith('.prefab'):
+            if not not_bungie_game and node.Marker_Game_Instance_Tag_Name.endswith('.prefab'):
                 return '_connected_geometry_marker_type_prefab'
             else:
                 return '_connected_geometry_marker_type_game_instance'
@@ -298,7 +303,7 @@ def getMarkerVelocity(x, y, z):
 ##### MESHES PROPERTIES ######
 ##############################
 
-def getMeshes(halo_objects, asset_name, sidecar_type):
+def getMeshes(halo_objects, asset_name, sidecar_type, not_bungie_game):
     meshesList = {}
     halo_mesh_objects = halo_objects.render + halo_objects.collision + halo_objects.physics + halo_objects.structure + halo_objects.poops + halo_objects.portals + halo_objects.seams + halo_objects.water_surfaces + halo_objects.lightmap_regions + halo_objects.fog + halo_objects.boundary_surfaces + halo_objects.water_physics + halo_objects.rain_occluders + halo_objects.decorator + halo_objects.particle
     for ob in halo_mesh_objects:
@@ -306,13 +311,13 @@ def getMeshes(halo_objects, asset_name, sidecar_type):
         halo_mesh_name = ob.name
         
         if ob.select_get(): # if the name of a mesh starts with this, don't process it.
-            meshesList.update({ob.name: getMeshProperties(halo_mesh, halo_mesh_name, ob, asset_name, sidecar_type)})
+            meshesList.update({ob.name: getMeshProperties(halo_mesh, halo_mesh_name, ob, asset_name, sidecar_type, not_bungie_game)})
 
     temp = ({'meshes_properties': meshesList})
 
     return temp
 
-def getMeshProperties(mesh, name, ob, asset_name, sidecar_type):
+def getMeshProperties(mesh, name, ob, asset_name, sidecar_type, not_bungie_game):
 
     mesh_props = {}
     
@@ -322,7 +327,7 @@ def getMeshProperties(mesh, name, ob, asset_name, sidecar_type):
     mesh_props.update({"bungie_object_id": mesh.object_id}),
     ###################
     # MESH PROPERTIES
-    mesh_props.update({"bungie_mesh_type": getMeshType(mesh.ObjectMesh_Type, name, ob, sidecar_type)}),
+    mesh_props.update({"bungie_mesh_type": getMeshType(mesh.ObjectMesh_Type, name, ob, sidecar_type, not_bungie_game)}),
     # Boundary Surface
     if '_connected_geometry_mesh_type_boundary_surface' in mesh_props.values():
         if mesh.Boundary_Surface_Name != '' or name.startswith(('+soft_ceiling:','+soft_kill:','+slip_surface:')):
@@ -486,11 +491,11 @@ def getMeshProperties(mesh, name, ob, asset_name, sidecar_type):
 
     return mesh_props
 
-def getMeshType(type, name, ob, sidecar_type):
+def getMeshType(type, name, ob, sidecar_type, not_bungie_game):
     if name.startswith(('+soft_ceiling','+soft_kill','+slip_surface')):
         return '_connected_geometry_mesh_type_boundary_surface'
     elif name.startswith('@'):
-        if sidecar_type == 'SCENARIO':
+        if sidecar_type == 'SCENARIO' and not_bungie_game:
             return '_connected_geometry_mesh_type_poop_collision'
         else:
             return '_connected_geometry_mesh_type_collision'
@@ -939,8 +944,8 @@ def build_json(jsonPath, model_armature, skeleton_bones, halo_objects, asset_nam
     not_bungie_game = bpy.context.scene.halo.game_version in ('h4','h2a')
     jsonTemp = {}
     # jsonTemp.update(getStringTable(halo_objects))
-    jsonTemp.update(getNodes(model_armature, skeleton_bones, halo_objects))
-    jsonTemp.update(getMeshes(halo_objects, asset_name, sidecar_type))
+    jsonTemp.update(getNodes(model_armature, skeleton_bones, halo_objects, not_bungie_game))
+    jsonTemp.update(getMeshes(halo_objects, asset_name, sidecar_type, not_bungie_game))
     jsonTemp.update(getMaterials(not_bungie_game))
 
     haloJSON = json.dumps(jsonTemp, indent=4)
