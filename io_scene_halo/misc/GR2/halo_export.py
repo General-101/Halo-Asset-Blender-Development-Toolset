@@ -28,8 +28,8 @@ def Export(export):
     export('INVOKE_DEFAULT')
     return {'FINISHED'}
 
-def ExportQuick(export, report, context):
-    export(quick_export=True)
+def ExportQuick(export, report, context, export_gr2_files, export_hidden, export_all_bsps, export_all_perms, export_sidecar_xml, import_to_game, import_draft, lightmap_structure, lightmap_quality_h4, lightmap_quality, lightmap_specific_bsp, lightmap_all_bsps):
+    export(export_gr2_files=export_gr2_files, export_hidden=export_hidden, export_all_bsps=export_all_bsps, export_all_perms=export_all_perms, export_sidecar_xml=export_sidecar_xml, import_to_game=import_to_game, import_draft=import_draft, lightmap_structure=lightmap_structure, lightmap_quality_h4=lightmap_quality_h4, lightmap_quality=lightmap_quality, lightmap_specific_bsp=lightmap_specific_bsp, lightmap_all_bsps=lightmap_all_bsps, quick_export=True)
     report({'INFO'}, context.scene.gr2_export.final_report)
     return {'FINISHED'}
 

@@ -28,16 +28,17 @@ from subprocess import Popen
 import os
 from io_scene_halo.gr2_utils import GetEKPath
 
-def lightmapper(report, filepath, lightmap_quality='DIRECT', lightmap_all_bsps='TRUE', lightmap_specific_bsp='000', lightmap_quality_h4='farm_draft_quality', game_version='reach'):
+def lightmapper(report, filepath, not_bungie_game, lightmap_quality='DIRECT', lightmap_all_bsps='TRUE', lightmap_specific_bsp='000', lightmap_quality_h4='farm_draft_quality'):
     full_path = filepath.rpartition('\\')[0]
     asset_path = CleanAssetPath(full_path)
     asset_name = asset_path.rpartition('\\')[2]
     bsp = GetBSPToLightmap(lightmap_all_bsps, lightmap_specific_bsp, asset_name)
-    quality = GetQuality(lightmap_quality, lightmap_quality_h4, game_version)
+    quality = GetQuality(lightmap_quality, lightmap_quality_h4, not_bungie_game)
 
     try:
         lightmapCommand = f'python calc_lm_farm_local.py {os.path.join(asset_path, asset_name)} {bsp} {quality}'
         os.chdir(GetEKPath())
+        print(lightmapCommand)
         p = Popen(lightmapCommand)
         p.wait()
         report({'INFO'},"Lightmapping process complete")
@@ -59,8 +60,8 @@ def CleanAssetPath(path):
 
     return path
 
-def GetQuality(lightmap_quality, lightmap_quality_h4, game_version):
-    if game_version in ('h4', 'h2a'):
+def GetQuality(lightmap_quality, lightmap_quality_h4, not_bungie_game):
+    if not_bungie_game:
         return lightmap_quality_h4
     match lightmap_quality:
         case 'DIRECT':
@@ -77,7 +78,7 @@ def GetQuality(lightmap_quality, lightmap_quality_h4, game_version):
             return 'super_slow'
 
 
-def run_lightmapper(operator, context, report,
+def run_lightmapper(operator, context, report, not_bungie_game,
         filepath="",
         lightmap_quality='DIRECT',
         lightmap_all_bsps='TRUE',
@@ -85,6 +86,6 @@ def run_lightmapper(operator, context, report,
         asset_path='',
         **kwargs
         ):
-        lightmapper(report, filepath, lightmap_quality, lightmap_all_bsps, lightmap_specific_bsp)
+        lightmapper(report, filepath, not_bungie_game, lightmap_quality, lightmap_all_bsps, lightmap_specific_bsp)
 
         return {'FINISHED'}

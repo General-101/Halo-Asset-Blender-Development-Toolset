@@ -263,6 +263,49 @@ class GR2_HaloExport(Panel):
             col.separator()
             col.operator('halo_gr2.export_quick', text='Quick Export', icon='EXPORT')
 
+class GR2_HaloExportSettings(Panel):
+    bl_label = "Quick Export Settings"
+    bl_idname = "HALO_PT_GR2_HaloExportSettings"
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "UI"
+    bl_icon = 'EXPORT'
+    bl_parent_id = "HALO_PT_GR2_HaloExport"
+    bl_options = {"DEFAULT_CLOSED"}
+
+    def draw(self, context):
+        layout = self.layout
+        scene = context.scene
+        scene_gr2_export = scene.gr2_export
+
+        layout.use_property_split = True
+        flow = layout.grid_flow(row_major=True, columns=0, even_columns=True, even_rows=False, align=False)
+        col = flow.column()
+        col = layout.column(heading="Export")
+        col.prop(scene_gr2_export, 'export_gr2_files', text='GR2')
+        if scene_gr2_export.export_gr2_files:
+            col.prop(scene_gr2_export, "export_hidden", text='Hidden')
+            col.prop(scene_gr2_export, 'export_all_bsps', expand=True)
+            col.prop(scene_gr2_export, 'export_all_perms', expand=True)
+        col.separator()
+        col = layout.column(heading="Build")
+        col.prop(scene_gr2_export, "export_sidecar_xml", text='Sidecar')
+        col.separator()
+        col = layout.column(heading="Import")
+        col.prop(scene_gr2_export, "import_to_game", text='To Game')
+        if scene_gr2_export.import_to_game:
+            col.prop(scene_gr2_export, "import_draft", text='As draft')
+        col.separator()
+        col = layout.column(heading="Run")
+        col.prop(scene_gr2_export, "lightmap_structure", text='Lightmapping')
+        if scene_gr2_export.lightmap_structure:
+            if context.scene.halo.game_version in ('h4', 'h2a'):
+                col.prop(scene_gr2_export, "lightmap_quality_h4")
+            else:
+                col.prop(scene_gr2_export, "lightmap_quality")
+            if not scene_gr2_export.lightmap_all_bsps:
+                col.prop(scene_gr2_export, 'lightmap_specific_bsp')
+            col.prop(scene_gr2_export, 'lightmap_all_bsps')
+
 class GR2_HaloExport_Export(Operator):
     bl_idname = 'halo_gr2.export'
     bl_label = 'Export'
@@ -279,156 +322,90 @@ class GR2_HaloExport_ExportQuick(Operator):
 
     def execute(self, context):
         from .halo_export import ExportQuick
-        return ExportQuick(bpy.ops.export_scene.gr2, self.report, context)
+        scene = context.scene
+        scene_gr2_export = scene.gr2_export
+        return ExportQuick(bpy.ops.export_scene.gr2, self.report, context, scene_gr2_export.export_gr2_files, scene_gr2_export.export_hidden, scene_gr2_export.export_all_bsps, scene_gr2_export.export_all_perms, scene_gr2_export.export_sidecar_xml, scene_gr2_export.import_to_game, scene_gr2_export.import_draft, scene_gr2_export.lightmap_structure, scene_gr2_export.lightmap_quality_h4, scene_gr2_export.lightmap_quality, scene_gr2_export.lightmap_specific_bsp, scene_gr2_export.lightmap_all_bsps,)
 
-class GR2_HaloExportFinderPropertiesGroup(PropertyGroup):
+class GR2_HaloExportPropertiesGroup(PropertyGroup):
     final_report: StringProperty(
         name="",
         description="",
         default='',
     )
-    keep_fbx: BoolProperty( # not exposed for quick export
-        name="FBX",
-        description="Keep the source FBX file after GR2 conversion",
-        default=False,
+    export_gr2_files: BoolProperty(
+        name='Export GR2 Files',
+        default=True,
+        options=set(),
     )
-    keep_json: BoolProperty( # not exposed for quick export
-        name="JSON",
-        description="Keep the source JSON file after GR2 conversion",
-        default=False,
+    export_hidden: BoolProperty(
+        name="Hidden",
+        description="Export visible objects only",
+        default=True,
+        options=set(),
+    )
+    export_all_bsps: EnumProperty(
+        name='BSPs',
+        description='Specify whether to export all BSPs, or just those selected',
+        default='all',
+        items=[('all', 'All', ''), ('selected', 'Selected', '')],
+        options=set(),
+    )
+    export_all_perms: EnumProperty(
+        name='Perms',
+        description='Specify whether to export all permutations, or just those selected',
+        default='all',
+        items=[('all', 'All', ''), ('selected', 'Selected', '')],
+        options=set(),
     )
     export_sidecar_xml: BoolProperty(
         name="Build Sidecar",
         description="",
         default=True,
-    )
-    export_animations: BoolProperty(
-        name='Animations',
-        description='',
-        default=True,
-    )
-    export_render: BoolProperty(
-        name='Render Models',
-        description='',
-        default=True,
-    )
-    export_collision: BoolProperty(
-        name='Collision Models',
-        description='',
-        default=True,
-    )
-    export_physics: BoolProperty(
-        name='Physics Models',
-        description='',
-        default=True,
-    )
-    export_markers: BoolProperty(
-        name='Markers',
-        description='',
-        default=True,
-    )
-    export_structure: BoolProperty(
-        name='Structure',
-        description='',
-        default=True,
-    )
-    export_poops: BoolProperty(
-        name='Instanced Geometry',
-        description='',
-        default=True,
-    )
-    export_markers: BoolProperty(
-        name='Markers',
-        description='',
-        default=True,
-    )
-    export_lights: BoolProperty(
-        name='Lights',
-        description='',
-        default=True,
-    )
-    export_portals: BoolProperty(
-        name='Portals',
-        description='',
-        default=True,
-    )
-    export_seams: BoolProperty(
-        name='Seams',
-        description='',
-        default=True,
-    )
-    export_water_surfaces: BoolProperty(
-        name='Water Surfaces',
-        description='',
-        default=True,
-    )
-    export_fog_planes: BoolProperty(
-        name='Fog Planes',
-        description='',
-        default=True,
-    )
-    export_cookie_cutters: BoolProperty(
-        name='Cookie Cutters',
-        description='',
-        default=True,
-    )
-    export_lightmap_regions: BoolProperty(
-        name='Lightmap Regions',
-        description='',
-        default=True,
-    )
-    export_boundary_surfaces: BoolProperty(
-        name='Boundary Surfaces',
-        description='',
-        default=True,
-    )
-    export_water_physics: BoolProperty(
-        name='Water Physics',
-        description='',
-        default=True,
-    )
-    export_rain_occluders: BoolProperty(
-        name='Rain Occluders',
-        description='',
-        default=True,
-    )
-    export_shared: BoolProperty(
-        name='Shared',
-        description='Export geometry which is shared across all BSPs',
-        default=True,
-    )
-    export_all_bsps: BoolProperty(
-        name='All BSPs',
-        description='',
-        default=True,
-    )
-    export_specific_bsp: IntProperty(
-        name='BSP',
-        description='',
-        default=0,
-        min=0,
-        max=99,
-        step=5,
-    )
-    export_all_perms: BoolProperty(
-        name='All Permutations',
-        description='',
-        default=True,
-    )
-    export_specific_perm: StringProperty(
-        name='Permutation',
-        description='Limited exporting to the named permutation only. Must match case',
-        default='',
+        options=set(),
     )
     import_to_game: BoolProperty(
         name='Import to Game',
         description='',
         default=True,
+        options=set(),
     )
     import_draft: BoolProperty(
         name='Draft',
         description="Skip generating PRT data. Faster speed, lower quality",
         default=False,
+        options=set(),
+    )
+    lightmap_structure: BoolProperty(
+        name='Run Lightmapper',
+        default=False,
+        options=set(),
+    )
+    lightmap_quality_h4: StringProperty(
+        name='Quality',
+        default='',
+        options=set(),
+    )
+    lightmap_quality: EnumProperty(
+        name='Quality',
+        items=(('DIRECT', "Direct", ""),
+                ('DRAFT', "Draft", ""),
+                ('LOW', "Low", ""),
+                ('MEDIUM', "Medium", ""),
+                ('HIGH', "High", ""),
+                ('SUPER', "Super (very slow)", ""),
+                ),
+        default='DIRECT',
+        options=set(),
+    )
+    lightmap_all_bsps: BoolProperty(
+        name='All BSPs',
+        default=True,
+        options=set(),
+    )
+    lightmap_specific_bsp: StringProperty(
+        name='Specific BSP',
+        default='',
+        options=set(),
     )
 
 #######################################
@@ -555,7 +532,8 @@ classeshalo = (
     GR2_HaloExport,
     GR2_HaloExport_Export,
     GR2_HaloExport_ExportQuick,
-    GR2_HaloExportFinderPropertiesGroup,
+    GR2_HaloExportSettings,
+    GR2_HaloExportPropertiesGroup,
     GR2_HaloLauncher,
     GR2_HaloLauncher_Foundation,
     GR2_HaloLauncher_Data,
@@ -584,13 +562,12 @@ def register():
     bpy.types.Scene.gr2_frame_ids = PointerProperty(type=GR2_SetFrameIDsPropertiesGroup, name="Halo Frame ID Getter", description="Gets Frame IDs")
     bpy.types.Scene.gr2_halo_launcher = PointerProperty(type=GR2_HaloLauncherPropertiesGroup, name="Halo Launcher", description="Launches stuff")
     bpy.types.Scene.gr2_shader_finder = PointerProperty(type=GR2_HaloShaderFinderPropertiesGroup, name="Shader Finder", description="Find Shaders")
-    bpy.types.Scene.gr2_export = PointerProperty(type=GR2_HaloExportFinderPropertiesGroup, name="Halo Export", description="")
+    bpy.types.Scene.gr2_export = PointerProperty(type=GR2_HaloExportPropertiesGroup, name="Halo Export", description="")
     bpy.types.Scene.gr2_collection_manager = PointerProperty(type=GR2_HaloCollectionManagerPropertiesGroup, name="Collection Manager", description="")
     bpy.types.Scene.gr2_armature_creator = PointerProperty(type=GR2_ArmatureCreatorPropertiesGroup, name="Halo Armature", description="")
 
     
 def unregister():
-    del bpy.types.Scene.halo_import_fixup
     for clshalo in classeshalo:
         bpy.utils.unregister_class(clshalo)
 

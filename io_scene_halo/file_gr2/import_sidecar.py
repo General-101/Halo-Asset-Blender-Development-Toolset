@@ -87,7 +87,6 @@ def GetImportFlags(flag_import_check, flag_import_force, flag_import_verbose, fl
 
 def import_sidecar(operator, context, report,
         filepath="",
-        import_to_game=False,
         import_check=False,
         import_force=False,
         import_verbose=False,
@@ -100,7 +99,6 @@ def import_sidecar(operator, context, report,
         import_in_background=False,
         **kwargs
         ):
-        if import_to_game:
-            import_now(report, filepath, import_check, import_force, import_verbose, import_draft,import_seam_debug,import_skip_instances,import_decompose_instances,import_surpress_errors, run_tagwatcher, import_in_background)
+        import_now(report, filepath, import_check, import_force, import_verbose, import_draft,import_seam_debug,import_skip_instances,import_decompose_instances,import_surpress_errors, run_tagwatcher, import_in_background)
 
         return {'FINISHED'}

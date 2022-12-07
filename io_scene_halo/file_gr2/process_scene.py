@@ -94,7 +94,10 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                   lightmap_structure,
                   lightmap_quality,
                   quick_export,
+                  import_to_game,
                   #import_bitmaps,
+                  export_gr2_files,
+                  game_version,
                   **kwargs
     ):
     
@@ -129,7 +132,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                                                     output_weapon)
             ):
         
-            if export_method == 'BATCH':
+            if export_gr2_files:
 
                 if sidecar_type == 'MODEL':
 
@@ -696,14 +699,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                 export_fbx(self, context, **keywords)
                             export_gr2(self, context, report, asset_path, asset, IsWindows(), 'particle_model', halo_objects, '', 'default', model_armature, skeleton_bones, **keywords)
                             gr2_count += 1
-            else:
-                if using_better_fbx:
-                    export_better_fbx(context, False, **keywords)
-                else:
-                    export_fbx(self, context, **keywords)
-                export_gr2(self, context, report, asset_path, asset, IsWindows(), 'selected', **keywords)
 
-            
             reports.append('Exported ' + str(gr2_count) + ' GR2 Files')
             if(IsWindows()):
                 if export_sidecar_xml:
@@ -711,13 +707,16 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                     export_sidecar(self, context, report, asset_path, halo_objects, model_armature, lod_count, **keywords)
                     reports.append('Built ' + str.title(sidecar_type) + ' Sidecar')
                 from .import_sidecar import import_sidecar
-                import_sidecar(self, context, report, **keywords)
-                reports.append('Tag Export Processed')
+                if import_to_game:
+                    import_sidecar(self, context, report, **keywords)
+                    reports.append('Tag Export Processed')
                 if lightmap_structure and not skip_lightmapper:
                     from .run_lightmapper import run_lightmapper
-                    run_lightmapper(self, context, report, **keywords)
+                    run_lightmapper(self, context, report, game_version in ('h4','h2a'), **keywords)
                     if game_version not in ('h4','h2a'):
                         reports.append('Processed a Lightmap on ' + str.title(lightmap_quality) + ' Quality')
+                    else:
+                        reports.append('Lightmapping complete')
                 # if import_bitmaps:
                 #     print("Temporary implementation, remove this later!")
                 #     #import_bitmap.save(self, context, report, **keywords)

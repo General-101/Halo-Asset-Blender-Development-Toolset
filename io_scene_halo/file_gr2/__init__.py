@@ -434,7 +434,7 @@ class Export_Scene_GR2(Operator, ExportHelper):
         default='',
     )
     lightmap_all_bsps: BoolProperty(
-        name='Lightmap All',
+        name='All BSPs',
         default=True,
     )
     lightmap_specific_bsp: StringProperty(
@@ -464,7 +464,7 @@ class Export_Scene_GR2(Operator, ExportHelper):
         name='',
         default=False,
     )
-    export_gr2: BoolProperty(
+    export_gr2_files: BoolProperty(
         name='Export GR2 Files',
         default=True,
     )
@@ -488,6 +488,24 @@ class Export_Scene_GR2(Operator, ExportHelper):
         scene = bpy.context.scene
         if scene.halo.game_version in (('reach','h4','h2a')):
             self.game_version = scene.halo.game_version
+
+        # QUICK EXPORT SETTINGS #
+
+        scene_gr2_export = scene.gr2_export
+        self.export_gr2_files = scene_gr2_export.export_gr2_files
+        self.export_hidden = scene_gr2_export.export_hidden
+        self.export_all_bsps = scene_gr2_export.export_all_bsps
+        self.export_all_perms = scene_gr2_export.export_all_perms
+        self.export_sidecar_xml = scene_gr2_export.export_sidecar_xml
+        self.import_to_game = scene_gr2_export.import_to_game
+        self.import_draft = scene_gr2_export.import_draft
+        self.lightmap_structure = scene_gr2_export.lightmap_structure
+        self.lightmap_quality_h4 = scene_gr2_export.lightmap_quality_h4
+        self.lightmap_quality = scene_gr2_export.lightmap_quality
+        self.lightmap_quality = scene_gr2_export.lightmap_quality
+        self.lightmap_all_bsps = scene_gr2_export.lightmap_all_bsps
+
+        # SIDECAR SETTINGS # 
 
         sidecar_filepath = scene.gr2_halo_launcher.sidecar_path
         export_settings = []
@@ -592,7 +610,7 @@ class Export_Scene_GR2(Operator, ExportHelper):
         box = layout.box()
         box.label(text="GR2 Settings")
         col = box.column()
-        col.prop(self, "export_gr2", text='Export GR2 Files')
+        col.prop(self, "export_gr2_files", text='Export GR2 Files')
         if self.export_gr2:
             col.separator()
             sub = col.column(heading="Keep")
