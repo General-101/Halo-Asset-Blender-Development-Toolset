@@ -209,7 +209,7 @@ class GR2_ShaderFinder(Panel):
         col.prop(scene_gr2_shader_finder, 'shaders_dir', text='')
         col = layout.column(heading="Overwrite")
         sub = col.column(align=True)
-        sub.prop(scene_gr2_shader_finder, "overwrite_existing", text='Paths')
+        sub.prop(scene_gr2_shader_finder, "overwrite_existing", text='Existing')
         col = col.row()
         col.scale_y = 1.5
         col.operator('halo_gr2.shader_finder')
@@ -296,7 +296,7 @@ class GR2_HaloExportSettings(Panel):
             col.prop(scene_gr2_export, "import_draft", text='As draft')
         col.separator()
         col = layout.column(heading="Run")
-        col.prop(scene_gr2_export, "lightmap_structure", text='Lightmapping')
+        col.prop(scene_gr2_export, "lightmap_structure", text='Lightmap')
         if scene_gr2_export.lightmap_structure:
             if context.scene.halo.game_version in ('h4', 'h2a'):
                 col.prop(scene_gr2_export, "lightmap_quality_h4")
@@ -527,6 +527,37 @@ class GR2_ArmatureCreatorPropertiesGroup(PropertyGroup):
         options=set()
     )
 
+class GR2_CopyHaloProps(Panel):
+    bl_label = "Copy Halo Properties"
+    bl_idname = "HALO_PT_GR2_CopyHaloProps"
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "UI"
+    bl_parent_id = "HALO_PT_GR2_AutoTools"
+
+    def draw(self, context):
+        layout = self.layout
+        scene = context.scene
+
+        layout.use_property_split = True
+        flow = layout.grid_flow(row_major=True, columns=0, even_columns=True, even_rows=False, align=False)
+        col = flow.column()
+        col.scale_y = 1.5
+        col.operator('halo_gr2.props_copy')
+
+class GR2_CopyHaloProps_Copy(Operator):
+    bl_idname = 'halo_gr2.props_copy'
+    bl_label = 'Copy Properties'
+    bl_options = {"REGISTER", "UNDO"}
+    bl_description = "Copy Halo Properties from the active object to selected objects"
+
+    @classmethod
+    def poll(cls, context):
+        return len(context.selected_objects) > 1
+
+    def execute(self, context):
+        from .copy_props import CopyProps
+        return CopyProps(self.report, context.view_layer.objects.active, context.selected_objects)
+
 classeshalo = (
     GR2_Tools_Helper,
     GR2_HaloExport,
@@ -540,6 +571,8 @@ classeshalo = (
     GR2_HaloLauncher_Tags,
     GR2_HaloLauncher_Source,
     GR2_HaloLauncherPropertiesGroup,
+    GR2_CopyHaloProps,
+    GR2_CopyHaloProps_Copy,
     GR2_CollectionManager,
     GR2_CollectionManager_Create,
     GR2_HaloCollectionManagerPropertiesGroup,
@@ -564,7 +597,7 @@ def register():
     bpy.types.Scene.gr2_shader_finder = PointerProperty(type=GR2_HaloShaderFinderPropertiesGroup, name="Shader Finder", description="Find Shaders")
     bpy.types.Scene.gr2_export = PointerProperty(type=GR2_HaloExportPropertiesGroup, name="Halo Export", description="")
     bpy.types.Scene.gr2_collection_manager = PointerProperty(type=GR2_HaloCollectionManagerPropertiesGroup, name="Collection Manager", description="")
-    bpy.types.Scene.gr2_armature_creator = PointerProperty(type=GR2_ArmatureCreatorPropertiesGroup, name="Halo Armature", description="")
+    bpy.types.Scene.gr2_armature_creator = PointerProperty(type=GR2_ArmatureCreatorPropertiesGroup, name="Halo Armature", description="") 
 
     
 def unregister():

@@ -1538,7 +1538,7 @@ class JSON_ObjectMeshLightmapProps(Panel):
         col.separator()
 
         col.prop(ob_halo_json, "Lightmap_Resolution_Scale", text='Resolution Scale')
-        col.prop(ob_halo_json, "Lightmap_Chart_Group", text='Chart Group')
+        # col.prop(ob_halo_json, "Lightmap_Chart_Group", text='Chart Group')
 
         col.separator()
 
@@ -2410,11 +2410,11 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
     #     default= 4294967295,
     # )
     
-    Poop_Predominant_Shader_Name: StringProperty(
-        name="Instanced Geometry Predominant Shader Name",
-        description="I have no idea what this does, but we'll write whatever you put here into the json file. The path should be relative and contain the shader extension (e.g. shader_relative_path\shader_name.shader)",
-        maxlen=1024,
-    )
+    # Poop_Predominant_Shader_Name: StringProperty(
+    #     name="Instanced Geometry Predominant Shader Name",
+    #     description="I have no idea what this does, but we'll write whatever you put here into the json file. The path should be relative and contain the shader extension (e.g. shader_relative_path\shader_name.shader)",
+    #     maxlen=1024,
+    # )
 
     Poop_Render_Only: BoolProperty(
         name ="Render Only",
@@ -2644,13 +2644,13 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
         min=1,
     )
 
-    Lightmap_Chart_Group: IntProperty(
-        name="Lightmap Chart Group",
-        options=set(),
-        description="",
-        default=3,
-        min=1,
-    )
+    # Lightmap_Chart_Group: IntProperty(
+    #     name="Lightmap Chart Group",
+    #     options=set(),
+    #     description="",
+    #     default=3,
+    #     min=1,
+    # )
 
     Lightmap_Type : EnumProperty(
         name="Lightmap Type",
