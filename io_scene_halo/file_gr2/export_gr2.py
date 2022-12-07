@@ -500,7 +500,7 @@ def getMeshType(type, name, ob, sidecar_type, not_bungie_game):
     if name.startswith(('+soft_ceiling','+soft_kill','+slip_surface')):
         return '_connected_geometry_mesh_type_boundary_surface'
     elif name.startswith('@'):
-        if sidecar_type == 'SCENARIO' and not_bungie_game:
+        if sidecar_type in ('SCENARIO', 'PREFAB') and not_bungie_game:
             return '_connected_geometry_mesh_type_poop_collision'
         else:
             return '_connected_geometry_mesh_type_collision'
@@ -511,7 +511,7 @@ def getMeshType(type, name, ob, sidecar_type, not_bungie_game):
     elif name.startswith('+flair'):
         return '_connected_geometry_mesh_type_object_instance'
     elif name.startswith('$'):
-        if sidecar_type == 'SCENARIO':
+        if sidecar_type in ('SCENARIO', 'PREFAB'):
             return '_connected_geometry_mesh_type_poop_physics'
         else:
             return '_connected_geometry_mesh_type_physics'
@@ -530,7 +530,7 @@ def getMeshType(type, name, ob, sidecar_type, not_bungie_game):
             case 'BOUNDARY SURFACE':
                 return '_connected_geometry_mesh_type_boundary_surface'
             case 'COLLISION':
-                if sidecar_type == 'SCENARIO':
+                if sidecar_type in ('SCENARIO', 'PREFAB'):
                     return '_connected_geometry_mesh_type_poop_collision'
                 else:
                     return '_connected_geometry_mesh_type_collision'
@@ -553,7 +553,7 @@ def getMeshType(type, name, ob, sidecar_type, not_bungie_game):
             case 'OBJECT INSTANCE':
                 return '_connected_geometry_mesh_type_object_instance'
             case 'PHYSICS':
-                if sidecar_type == 'SCENARIO':
+                if sidecar_type in ('SCENARIO', 'PREFAB'):
                     return '_connected_geometry_mesh_type_poop_physics'
                 else:
                     return '_connected_geometry_mesh_type_physics'
@@ -904,7 +904,7 @@ def GetFileName(asset_name, tag_type, perm='', asset_path='', bsp=''):
         if name.rpartition('.')[0] != '':
             name = name.rpartition('.')[0]
         name = path.join(asset_path, name)
-    elif tag_type == 'particle_model':
+    elif tag_type == 'particle_model' or tag_type == 'prefab':
         name = path.join(asset_path, asset_name)
     elif bsp == '':
         if perm != '' and perm != 'default':

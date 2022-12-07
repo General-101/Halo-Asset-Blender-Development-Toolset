@@ -93,7 +93,7 @@ class Export_Scene_GR2(Operator, ExportHelper):
         name='Asset Type',
         description='',
         default='MODEL',
-        items=[ ('MODEL', "Model", ""), ('SCENARIO', "Scenario", ""), ('SKY', 'Sky', ''), ('DECORATOR SET', 'Decorator Set', ''), ('PARTICLE MODEL', 'Particle Model', '')]
+        items=[ ('MODEL', "Model", ""), ('SCENARIO', "Scenario", ""), ('SKY', 'Sky', ''), ('DECORATOR SET', 'Decorator Set', ''), ('PARTICLE MODEL', 'Particle Model', ''), ('PREFAB', 'Prefab', '')]
     )
     export_method: EnumProperty(
         name="Export Method",
@@ -525,6 +525,8 @@ class Export_Scene_GR2(Operator, ExportHelper):
                     self.sidecar_type = 'DECORATOR SET'
                 case 'particle_model':
                     self.sidecar_type = 'PARTICLE MODEL'
+                case 'prefab':
+                    self.sidecar_type = 'PREFAB'
             
             if len(export_settings) > 1: # checks if we should also set output tags
                 for tag in export_settings[1]:
@@ -642,9 +644,9 @@ class Export_Scene_GR2(Operator, ExportHelper):
                 col.separator()
                 sub.prop(self, 'export_shared')
                 sub.prop(self, 'export_all_bsps', expand=True)
-            else:
+            elif self.sidecar_type != 'PREFAB':
                 sub.prop(self, "export_render")
-            if (self.sidecar_type not in ('DECORATOR SET', 'PARTICLE MODEL')):
+            if (self.sidecar_type not in ('DECORATOR SET', 'PARTICLE MODEL', 'PREFAB')):
                 sub.prop(self, 'export_all_perms', expand=True)
         # SIDECAR SETTINGS #
         box = layout.box()

@@ -100,18 +100,22 @@ def BuildSidecar(halo_objects, model_armature, lod_count, asset_path, asset_name
         GetObjectOutputTypes(context, metadata, 'decorator_set', asset_path, asset_name, 'decorator_set')
     elif sidecar_type == 'PARTICLE MODEL':
         GetObjectOutputTypes(context, metadata, 'particle_model', asset_path, asset_name, 'particle_model')
+    elif sidecar_type == 'PREFAB':
+        GetObjectOutputTypes(context, metadata, 'prefab', asset_path, asset_name, 'prefab')
     WriteFolders(metadata, not_bungie_game)
     WriteFaceCollections(metadata, sidecar_type, not_bungie_game)
     if sidecar_type == 'MODEL':
         WriteModelContents(halo_objects, model_armature, metadata, asset_path, asset_name)
-    if sidecar_type == 'SCENARIO':
+    elif sidecar_type == 'SCENARIO':
         WriteScenarioContents(halo_objects, metadata, asset_path, asset_name)
-    if sidecar_type == 'SKY':
+    elif sidecar_type == 'SKY':
         WriteSkyContents(halo_objects, metadata, asset_path, asset_name)
-    if sidecar_type == 'DECORATOR SET':
+    elif sidecar_type == 'DECORATOR SET':
         WriteDecoratorContents(halo_objects, metadata, asset_path, asset_name, lod_count)
-    if sidecar_type == 'PARTICLE MODEL':
+    elif sidecar_type == 'PARTICLE MODEL':
         WriteParticleContents(halo_objects, metadata, asset_path, asset_name)
+    elif sidecar_type == 'PREFAB':
+        WritePrefabContents(halo_objects, metadata, asset_path, asset_name)
 
     dom = xml.dom.minidom.parseString(ET.tostring(metadata))
     xml_string = dom.toprettyxml(indent='  ')
@@ -202,6 +206,9 @@ def GetObjectOutputTypes(context, metadata, type, asset_path, asset_name, output
 
     elif type == 'particle_model':
         ET.SubElement(tagcollection, "OutputTag", Type='particle_model').text = path.join(asset_path, asset_name)
+
+    elif type == 'prefab':
+        ET.SubElement(tagcollection, "OutputTag", Type='prefab').text = path.join(asset_path, asset_name)
     
     else:
         ET.SubElement(tagcollection, "OutputTag", Type='cinematic').text = path.join(asset_path, asset_name)
@@ -758,6 +765,20 @@ def WriteParticleContents(halo_objects, metadata, asset_path, asset_name):
 
     ET.SubElement(object, 'OutputTagCollection')
 
+def WritePrefabContents(halo_objects, metadata, asset_path, asset_name):
+    contents = ET.SubElement(metadata, "Contents")
+    content = ET.SubElement(contents, "Content", Name=asset_name, Type='prefab')
+    object = ET.SubElement(content, 'ContentObject', Name='', Type="scenario_structure_bsp")
+
+    if len(halo_objects.structure + halo_objects.poops +  halo_objects.lights + halo_objects.portals + halo_objects.water_surfaces + halo_objects.markers) > 0:
+        network = ET.SubElement(object, 'ContentNetwork' ,Name=asset_name, Type="")
+        ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, 'prefab')
+        ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePath(asset_path, asset_name, 'prefab')
+
+    output = ET.SubElement(object, 'OutputTagCollection')
+    ET.SubElement(output, 'OutputTag', Type='scenario_structure_bsp').text = f'{path.join(asset_path, asset_name)}'
+    ET.SubElement(output, 'OutputTag', Type='scenario_structure_lighting_info').text = f'{path.join(asset_path, asset_name)}'
+
 def GetAssetPathBSP(asset_name, bsp, type, perm=''):
     if perm == '' or perm == 'default':
         name = f'{asset_name}_{bsp}_{type}'
@@ -793,7 +814,7 @@ def SceneHasDesign(halo_objects):
 def GetInputFilePath(asset_path, asset_name, type, perm=''):
     if type == 'model_animation_graph':
         f_path = f'{path.join(asset_path, "animations", asset_name)}.fbx'
-    elif type == 'particle_model':
+    elif type == 'particle_model' or type == 'prefab':
         f_path = f'{path.join(asset_path, "models", asset_name)}.fbx'
     else:
         if perm == '' or perm == 'default':
@@ -806,7 +827,7 @@ def GetInputFilePath(asset_path, asset_name, type, perm=''):
 def GetIntermediateFilePath(asset_path, asset_name, type, perm=''):
     if type == 'model_animation_graph':
         f_path = f'{path.join(asset_path, "export", "animations", asset_name)}.gr2'
-    elif type == 'particle_model':
+    elif type == 'particle_model' or type == 'prefab':
         f_path = f'{path.join(asset_path, "export", "models", asset_name)}.gr2'
     else:
         if perm == '' or perm == 'default':

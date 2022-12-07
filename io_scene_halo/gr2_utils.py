@@ -203,6 +203,18 @@ def SelectBSPObject(halo_objects, bsp, arm, shared, perm, export_hidden, export_
 
     return boolean
 
+def SelectPrefabObject(halo_objects, arm, export_hidden):
+    DeselectAllObjects()
+    boolean = False
+    if arm is not None:
+        arm.select_set(True)
+    for ob in halo_objects:
+        if ob in tuple(bpy.context.scene.view_layers[0].objects) and (ob.visible_get() or export_hidden):
+            ob.select_set(True)
+            boolean = True
+
+    return boolean
+
 
 def DeselectAllObjects():
     bpy.ops.object.select_all(action='DESELECT')

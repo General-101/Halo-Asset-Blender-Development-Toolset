@@ -38,6 +38,7 @@ from ..gr2_utils import(
     SelectModelObject,
     SelectModelObjectNoPerm,
     SelectBSPObject,
+    SelectPrefabObject,
     GetEKPath,
     GetToolPath,
     DeselectAllObjects,
@@ -685,6 +686,19 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                 export_fbx(self, context, **keywords)
                             export_gr2(self, context, report, asset_path, asset, IsWindows(), 'render', halo_objects, '', 'default', model_armature, skeleton_bones, **keywords)
                             gr2_count += 1
+
+                elif sidecar_type == 'PREFAB':
+                    if SelectPrefabObject(halo_objects.structure + halo_objects.poops + halo_objects.lights + halo_objects.portals + halo_objects.water_surfaces + halo_objects.markers, model_armature, export_hidden):
+                        print (f'**Exporting prefab**')
+                        if using_better_fbx:
+                            obj_selection = [obj for obj in context.selected_objects]
+                            export_better_fbx(context, False, **keywords)
+                            for obj in obj_selection:
+                                obj.select_set(True)
+                        else:
+                            export_fbx(self, context, **keywords)
+                        export_gr2(self, context, report, asset_path, asset, IsWindows(), 'prefab', halo_objects, '', '', model_armature, skeleton_bones, **keywords)
+                        gr2_count += 1
 
                 else: # for particles
                     if export_render:
