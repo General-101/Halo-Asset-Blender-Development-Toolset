@@ -611,7 +611,7 @@ class Export_Scene_GR2(Operator, ExportHelper):
         box.label(text="GR2 Settings")
         col = box.column()
         col.prop(self, "export_gr2_files", text='Export GR2 Files')
-        if self.export_gr2:
+        if self.export_gr2_files:
             col.separator()
             sub = col.column(heading="Keep")
             sub.prop(self, "keep_fbx")
