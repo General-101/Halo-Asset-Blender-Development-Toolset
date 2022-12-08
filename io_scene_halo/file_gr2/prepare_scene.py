@@ -606,7 +606,10 @@ def SetNodeProps(node, ob):
     ob_halo = ob.halo_json
 
     if ob.users_collection[0].name != 'Scene Collection':
-        bpy.data.collections[ob.users_collection[0].name].objects.link(node)
+        try:
+            bpy.data.collections[ob.users_collection[0].name].objects.link(node)
+        except:
+            pass # lazy try except as this can cause an assert.
     
     node_halo.bsp_name = ob_halo.bsp_name
 
