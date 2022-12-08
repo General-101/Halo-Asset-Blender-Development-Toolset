@@ -99,15 +99,15 @@ class ToolkitLocationPreferences(AddonPreferences):
     def draw(self, context):
         layout = self.layout
         row = layout.row()
-        row.label(text='HREK Path')
+        row.label(text='Halo Reach Editing Kit Path')
         row = layout.row()
         row.prop(self, 'hrek_path', text='')
         row = layout.row()
-        row.label(text='H4EK Path')
+        row.label(text='Halo 4 Editing Kit Path')
         row = layout.row()
         row.prop(self, 'h4ek_path', text='')
         row = layout.row()
-        row.label(text='H2AEK Path')
+        row.label(text='Halo 2 Anniversary Multiplayer Editing Kit Path')
         row = layout.row()
         row.prop(self, 'h2aek_path', text='')
         row = layout.row()
