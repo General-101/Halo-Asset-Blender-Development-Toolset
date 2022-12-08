@@ -573,6 +573,9 @@ class Export_Scene_GR2(Operator, ExportHelper):
         keywords = self.as_keywords()
         console = bpy.ops.wm
 
+        # set Halo scene version to match game_version (we do this do ensure the code is checking the right toolset)
+        context.scene.halo.game_version = self.game_version
+
         if self.show_output:
             console.console_toggle() # toggle the console so users can see progress of export
 
