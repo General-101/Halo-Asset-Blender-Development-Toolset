@@ -117,7 +117,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
     reports = []
     gr2_count = 0
 
-    if(CheckPath(filepath)): # check the user is saving the file to a location in their editing kit data directory
+    if CheckPath(filepath) and exists(f'{GetToolPath()}.exe'): # check the user is saving the file to a location in their editing kit data directory AND tool exists
         if sidecar_type != 'MODEL' or (sidecar_type == 'MODEL' and(
                                                                     output_biped or
                                                                     output_crate or
@@ -742,10 +742,12 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
             report({'ERROR'},"No sidecar output tags selected")
 
     else:
-        if GetEKPath() == None or GetEKPath() == '' or not exists(GetToolPath()):
-            ctypes.windll.user32.MessageBoxW(0, "Invalid Editing Kit path. Please check your editing kit path in add-on preferences and try again.", "INVALID EK PATH", 0)
+        if GetEKPath() is None or GetEKPath() == '':
+            ctypes.windll.user32.MessageBoxW(0, f"Invalid {self.game_version.upper()} Editing Kit path. Please check the {self.game_version.upper()} editing kit path in add-on preferences [Edit > Preferences > Add-ons > Halo Asset Blender Development Toolset].", f"INVALID {self.game_version.upper()} EK PATH", 0)
+        elif not exists(f'{GetToolPath()}.exe'):
+            ctypes.windll.user32.MessageBoxW(0, f"{self.game_version.upper()} Tool not found. Could not find {self.game_version.upper()} tool or tool_fast in your editing kit. Are you exporting to the correct game's editing kit data folder?", f"INVALID {self.game_version.upper()} TOOL PATH", 0)
         else:
-            ctypes.windll.user32.MessageBoxW(0, "The selected export folder is invalid, please select one within the data folder of your HEK tools.", "INVALID EXPORT PATH", 0)
+            ctypes.windll.user32.MessageBoxW(0, f"The selected export folder is invalid, please ensure you are exporting to a directory within your {self.game_version.upper()} data folder.", f"INVALID {self.game_version.upper()} EXPORT PATH", 0)
     
     final_report = ''
     for idx, r in enumerate(reports):

@@ -84,7 +84,7 @@ class ToolkitLocationPreferences(AddonPreferences):
     )
 
     h2aek_path: StringProperty(
-        name="H2AEK Path",
+        name="H2AMPEK Path",
         description="Specify the path to your Halo 2 Anniversary MP Editing Kit folder containing tool / tool_fast",
         default="",
     )

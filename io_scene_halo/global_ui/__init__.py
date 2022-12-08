@@ -964,10 +964,20 @@ class Halo_GlobalSettings(Panel):
         row.label(text='Expert Mode:')
         row.prop(scene_halo, "expert_mode", text='')
 
+def GameVersionWarning(self, context):
+    self.layout.label(text=f"Please set your editing kit path for {context.scene.halo.game_version.upper()} in add-on preferences [Edit > Preferences > Add-ons > Halo Asset Blender Development Toolset]")
+
 class Halo_ScenePropertiesGroup(PropertyGroup):
+
+    def CheckEKPaths(self, context):
+        if self.game_version in ('reach', 'h4', 'h2a'):
+            if GetEKPath() is None or GetEKPath() == '':
+                context.window_manager.popup_menu(GameVersionWarning, title="Warning", icon='ERROR')
+                
     game_version: EnumProperty(
         name="Game:",
         description="What game will you be exporting for",
+        update=CheckEKPaths,
         items=[ ('haloce', "Halo CE", "Show properties for Halo Custom Edition Or Halo CE MCC"),
                 ('halo2', "Halo 2", "Show properties for Halo 2 Vista or Halo 2 MCC"),
                 ('halo3', "Halo 3", "Show properties for Halo 3 MCC"),
@@ -1200,6 +1210,7 @@ from ..gr2_utils import (
     invalid_mesh_types,
     get_prop_from_collection,
     IsDesign,
+    GetEKPath,
 )
 
 class JSON_ObjectProps(Panel):
