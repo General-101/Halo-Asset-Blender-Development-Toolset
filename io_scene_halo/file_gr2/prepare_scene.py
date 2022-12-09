@@ -587,6 +587,11 @@ def MeshesToEmpties(context):
         node.name = node_name
         if ob.parent is not None:
             node.parent = ob.parent
+            # Added 08-12-2022 to fix empty nodes not being bone parented
+            node.parent_type = ob.parent_type
+            if node.parent_type == 'BONE':
+                node.parent_bone = ob.parent_bone
+
         node.location = ob.location
         node.rotation_euler = ob.rotation_euler
         node.scale = ob.scale
@@ -595,7 +600,6 @@ def MeshesToEmpties(context):
         # hide the mesh so it doesn't get included in the export
         ob.hide_set(True)
         temp_nodes.append(node)
-
     return mesh_node_names, temp_nodes
 
 def TempName(name):
