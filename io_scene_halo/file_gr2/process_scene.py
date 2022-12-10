@@ -501,158 +501,158 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                 ##### SHARED STRUCTURE #####
                 ############################
 
-                if shared_bsp_exists:
-                    if export_structure:
-                        perm_list = []
-                        for ob in halo_objects.structure:
-                            if ob.halo_json.bsp_shared:
-                                perm = GetPerm(ob)
-                                if perm not in perm_list:
-                                    perm_list.append(perm)
-                                    if SelectBSPObject(halo_objects.structure, bsp, model_armature, True, perm, export_hidden, export_all_perms, selected_perms, export_all_bsps, selected_bsps):
-                                        print (f'**Exporting shared {perm} bsp**')
-                                        if using_better_fbx:
-                                            obj_selection = [obj for obj in context.selected_objects]
-                                            export_better_fbx(context, False, **keywords)
-                                            for obj in obj_selection:
-                                                obj.select_set(True)
-                                        else:
-                                            export_fbx(self, context, **keywords)
-                                        export_gr2(self, context, report, asset_path, asset, IsWindows(), 'bsp', halo_objects, 'shared', perm, **keywords)
-                                        gr2_count += 1
+                    if shared_bsp_exists:
+                        if export_structure:
+                            perm_list = []
+                            for ob in halo_objects.structure:
+                                if ob.halo_json.bsp_shared:
+                                    perm = GetPerm(ob)
+                                    if perm not in perm_list:
+                                        perm_list.append(perm)
+                                        if SelectBSPObject(halo_objects.structure, bsp, model_armature, True, perm, export_hidden, export_all_perms, selected_perms, export_all_bsps, selected_bsps):
+                                            print (f'**Exporting shared {perm} bsp**')
+                                            if using_better_fbx:
+                                                obj_selection = [obj for obj in context.selected_objects]
+                                                export_better_fbx(context, False, **keywords)
+                                                for obj in obj_selection:
+                                                    obj.select_set(True)
+                                            else:
+                                                export_fbx(self, context, **keywords)
+                                            export_gr2(self, context, report, asset_path, asset, IsWindows(), 'bsp', halo_objects, 'shared', perm, **keywords)
+                                            gr2_count += 1
 
-                    if export_poops:
-                        perm_list = []
-                        for ob in halo_objects.poops:
-                            if ob.halo_json.bsp_shared:
-                                perm = GetPerm(ob)
-                                if perm not in perm_list:
-                                    perm_list.append(perm)
-                                    if SelectBSPObject(halo_objects.poops, bsp, model_armature, True, perm, export_hidden, export_all_perms, selected_perms, export_all_bsps, selected_bsps):
-                                        print (f'**Exporting shared {perm} instances**')
-                                        if using_better_fbx:
-                                            obj_selection = [obj for obj in context.selected_objects]
-                                            export_better_fbx(context, False, **keywords)
-                                            for obj in obj_selection:
-                                                obj.select_set(True)
-                                        else:
-                                            export_fbx(self, context, **keywords)
-                                        export_gr2(self, context, report, asset_path, asset, IsWindows(), 'poops', halo_objects, 'shared', perm, **keywords)
-                                        gr2_count += 1
+                        if export_poops:
+                            perm_list = []
+                            for ob in halo_objects.poops:
+                                if ob.halo_json.bsp_shared:
+                                    perm = GetPerm(ob)
+                                    if perm not in perm_list:
+                                        perm_list.append(perm)
+                                        if SelectBSPObject(halo_objects.poops, bsp, model_armature, True, perm, export_hidden, export_all_perms, selected_perms, export_all_bsps, selected_bsps):
+                                            print (f'**Exporting shared {perm} instances**')
+                                            if using_better_fbx:
+                                                obj_selection = [obj for obj in context.selected_objects]
+                                                export_better_fbx(context, False, **keywords)
+                                                for obj in obj_selection:
+                                                    obj.select_set(True)
+                                            else:
+                                                export_fbx(self, context, **keywords)
+                                            export_gr2(self, context, report, asset_path, asset, IsWindows(), 'poops', halo_objects, 'shared', perm, **keywords)
+                                            gr2_count += 1
 
-                    if export_markers:
-                        perm_list = []
-                        for ob in halo_objects.markers:
-                            if ob.halo_json.bsp_shared:
-                                perm = GetPerm(ob)
-                                if perm not in perm_list:
-                                    perm_list.append(perm)
-                                    if SelectBSPObject(halo_objects.markers, bsp, model_armature, True, perm, export_hidden, export_all_perms, selected_perms, export_all_bsps, selected_bsps):
-                                        print (f'**Exporting shared {perm} markers**')
-                                        if using_better_fbx:
-                                            obj_selection = [obj for obj in context.selected_objects]
-                                            export_better_fbx(context, False, **keywords)
-                                            for obj in obj_selection:
-                                                obj.select_set(True)
-                                        else:
-                                            export_fbx(self, context, **keywords)
-                                        export_gr2(self, context, report, asset_path, asset, IsWindows(), 'markers', halo_objects, 'shared', perm, **keywords)
-                                        gr2_count += 1
-                                
-                    if export_lights:
-                        perm_list = []
-                        for ob in halo_objects.lights:
-                            if ob.halo_json.bsp_shared:
-                                perm = GetPerm(ob)
-                                if perm not in perm_list:
-                                    perm_list.append(perm)
-                                    if SelectBSPObject(halo_objects.lights, bsp, model_armature, True, perm, export_hidden, export_all_perms, selected_perms, export_all_bsps, selected_bsps):
-                                        print (f'**Exporting shared {perm} lights**')
-                                        if using_better_fbx:
-                                            obj_selection = [obj for obj in context.selected_objects]
-                                            export_better_fbx(context, False, **keywords)
-                                            for obj in obj_selection:
-                                                obj.select_set(True)
-                                        else:
-                                            export_fbx(self, context, **keywords)
-                                        export_gr2(self, context, report, asset_path, asset, IsWindows(), 'lights', halo_objects, 'shared', perm, **keywords)
-                                        gr2_count += 1
+                        if export_markers:
+                            perm_list = []
+                            for ob in halo_objects.markers:
+                                if ob.halo_json.bsp_shared:
+                                    perm = GetPerm(ob)
+                                    if perm not in perm_list:
+                                        perm_list.append(perm)
+                                        if SelectBSPObject(halo_objects.markers, bsp, model_armature, True, perm, export_hidden, export_all_perms, selected_perms, export_all_bsps, selected_bsps):
+                                            print (f'**Exporting shared {perm} markers**')
+                                            if using_better_fbx:
+                                                obj_selection = [obj for obj in context.selected_objects]
+                                                export_better_fbx(context, False, **keywords)
+                                                for obj in obj_selection:
+                                                    obj.select_set(True)
+                                            else:
+                                                export_fbx(self, context, **keywords)
+                                            export_gr2(self, context, report, asset_path, asset, IsWindows(), 'markers', halo_objects, 'shared', perm, **keywords)
+                                            gr2_count += 1
+                                    
+                        if export_lights:
+                            perm_list = []
+                            for ob in halo_objects.lights:
+                                if ob.halo_json.bsp_shared:
+                                    perm = GetPerm(ob)
+                                    if perm not in perm_list:
+                                        perm_list.append(perm)
+                                        if SelectBSPObject(halo_objects.lights, bsp, model_armature, True, perm, export_hidden, export_all_perms, selected_perms, export_all_bsps, selected_bsps):
+                                            print (f'**Exporting shared {perm} lights**')
+                                            if using_better_fbx:
+                                                obj_selection = [obj for obj in context.selected_objects]
+                                                export_better_fbx(context, False, **keywords)
+                                                for obj in obj_selection:
+                                                    obj.select_set(True)
+                                            else:
+                                                export_fbx(self, context, **keywords)
+                                            export_gr2(self, context, report, asset_path, asset, IsWindows(), 'lights', halo_objects, 'shared', perm, **keywords)
+                                            gr2_count += 1
 
-                    if export_portals:
-                        perm_list = []
-                        for ob in halo_objects.portals:
-                            if ob.halo_json.bsp_shared:
-                                perm = GetPerm(ob)
-                                if perm not in perm_list:
-                                    perm_list.append(perm)
-                                    if SelectBSPObject(halo_objects.portals, bsp, model_armature, True, perm, export_hidden, export_all_perms, selected_perms, export_all_bsps, selected_bsps):
-                                        print (f'**Exporting shared {perm} portals**')
-                                        if using_better_fbx:
-                                            obj_selection = [obj for obj in context.selected_objects]
-                                            export_better_fbx(context, False, **keywords)
-                                            for obj in obj_selection:
-                                                obj.select_set(True)
-                                        else:
-                                            export_fbx(self, context, **keywords)
-                                        export_gr2(self, context, report, asset_path, asset, IsWindows(), 'portals', halo_objects, 'shared', perm, **keywords)
-                                        gr2_count += 1
+                        if export_portals:
+                            perm_list = []
+                            for ob in halo_objects.portals:
+                                if ob.halo_json.bsp_shared:
+                                    perm = GetPerm(ob)
+                                    if perm not in perm_list:
+                                        perm_list.append(perm)
+                                        if SelectBSPObject(halo_objects.portals, bsp, model_armature, True, perm, export_hidden, export_all_perms, selected_perms, export_all_bsps, selected_bsps):
+                                            print (f'**Exporting shared {perm} portals**')
+                                            if using_better_fbx:
+                                                obj_selection = [obj for obj in context.selected_objects]
+                                                export_better_fbx(context, False, **keywords)
+                                                for obj in obj_selection:
+                                                    obj.select_set(True)
+                                            else:
+                                                export_fbx(self, context, **keywords)
+                                            export_gr2(self, context, report, asset_path, asset, IsWindows(), 'portals', halo_objects, 'shared', perm, **keywords)
+                                            gr2_count += 1
 
-                    if export_seams:
-                        perm_list = []
-                        for ob in halo_objects.seams:
-                            if ob.halo_json.bsp_shared:
-                                perm = GetPerm(ob)
-                                if perm not in perm_list:
-                                    perm_list.append(perm)
-                                    if SelectBSPObject(halo_objects.seams, bsp, model_armature, True, perm, export_hidden, export_all_perms, selected_perms, export_all_bsps, selected_bsps):
-                                        print (f'**Exporting shared {perm} seams**')
-                                        if using_better_fbx:
-                                            obj_selection = [obj for obj in context.selected_objects]
-                                            export_better_fbx(context, False, **keywords)
-                                            for obj in obj_selection:
-                                                obj.select_set(True)
-                                        else:
-                                            export_fbx(self, context, **keywords)
-                                        export_gr2(self, context, report, asset_path, asset, IsWindows(), 'seams', halo_objects, 'shared', perm, **keywords)
-                                        gr2_count += 1
+                        if export_seams:
+                            perm_list = []
+                            for ob in halo_objects.seams:
+                                if ob.halo_json.bsp_shared:
+                                    perm = GetPerm(ob)
+                                    if perm not in perm_list:
+                                        perm_list.append(perm)
+                                        if SelectBSPObject(halo_objects.seams, bsp, model_armature, True, perm, export_hidden, export_all_perms, selected_perms, export_all_bsps, selected_bsps):
+                                            print (f'**Exporting shared {perm} seams**')
+                                            if using_better_fbx:
+                                                obj_selection = [obj for obj in context.selected_objects]
+                                                export_better_fbx(context, False, **keywords)
+                                                for obj in obj_selection:
+                                                    obj.select_set(True)
+                                            else:
+                                                export_fbx(self, context, **keywords)
+                                            export_gr2(self, context, report, asset_path, asset, IsWindows(), 'seams', halo_objects, 'shared', perm, **keywords)
+                                            gr2_count += 1
 
-                    if export_water_surfaces:
-                        perm_list = []
-                        for ob in halo_objects.water_surfaces:
-                            if ob.halo_json.bsp_shared:
-                                perm = GetPerm(ob)
-                                if perm not in perm_list:
-                                    perm_list.append(perm)
-                                    if SelectBSPObject(halo_objects.water_surfaces, bsp, model_armature, True, perm, export_hidden, export_all_perms, selected_perms, export_all_bsps, selected_bsps):
-                                        print (f'**Exporting shared {perm} water surfaces**')
-                                        if using_better_fbx:
-                                            obj_selection = [obj for obj in context.selected_objects]
-                                            export_better_fbx(context, False, **keywords)
-                                            for obj in obj_selection:
-                                                obj.select_set(True)
-                                        else:
-                                            export_fbx(self, context, **keywords)
-                                        export_gr2(self, context, report, asset_path, asset, IsWindows(), 'water', halo_objects, 'shared', perm, **keywords)
-                                        gr2_count += 1
+                        if export_water_surfaces:
+                            perm_list = []
+                            for ob in halo_objects.water_surfaces:
+                                if ob.halo_json.bsp_shared:
+                                    perm = GetPerm(ob)
+                                    if perm not in perm_list:
+                                        perm_list.append(perm)
+                                        if SelectBSPObject(halo_objects.water_surfaces, bsp, model_armature, True, perm, export_hidden, export_all_perms, selected_perms, export_all_bsps, selected_bsps):
+                                            print (f'**Exporting shared {perm} water surfaces**')
+                                            if using_better_fbx:
+                                                obj_selection = [obj for obj in context.selected_objects]
+                                                export_better_fbx(context, False, **keywords)
+                                                for obj in obj_selection:
+                                                    obj.select_set(True)
+                                            else:
+                                                export_fbx(self, context, **keywords)
+                                            export_gr2(self, context, report, asset_path, asset, IsWindows(), 'water', halo_objects, 'shared', perm, **keywords)
+                                            gr2_count += 1
 
-                    if export_lightmap_regions:
-                        perm_list = []
-                        for ob in halo_objects.lightmap_regions:
-                            if ob.halo_json.bsp_shared:
-                                perm = GetPerm(ob)
-                                if perm not in perm_list:
-                                    perm_list.append(perm)
-                                    if SelectBSPObject(halo_objects.lightmap_regions, bsp, model_armature, True, perm, export_hidden, export_all_perms, selected_perms, export_all_bsps, selected_bsps):
-                                        print (f'**Exporting shared {perm} lightmap regions**')
-                                        if using_better_fbx:
-                                            obj_selection = [obj for obj in context.selected_objects]
-                                            export_better_fbx(context, False, **keywords)
-                                            for obj in obj_selection:
-                                                obj.select_set(True)
-                                        else:
-                                            export_fbx(self, context, **keywords)
-                                        export_gr2(self, context, report, asset_path, asset, IsWindows(), 'lightmap_region', halo_objects, 'shared', perm, **keywords)
-                                        gr2_count += 1
+                        if export_lightmap_regions:
+                            perm_list = []
+                            for ob in halo_objects.lightmap_regions:
+                                if ob.halo_json.bsp_shared:
+                                    perm = GetPerm(ob)
+                                    if perm not in perm_list:
+                                        perm_list.append(perm)
+                                        if SelectBSPObject(halo_objects.lightmap_regions, bsp, model_armature, True, perm, export_hidden, export_all_perms, selected_perms, export_all_bsps, selected_bsps):
+                                            print (f'**Exporting shared {perm} lightmap regions**')
+                                            if using_better_fbx:
+                                                obj_selection = [obj for obj in context.selected_objects]
+                                                export_better_fbx(context, False, **keywords)
+                                                for obj in obj_selection:
+                                                    obj.select_set(True)
+                                            else:
+                                                export_fbx(self, context, **keywords)
+                                            export_gr2(self, context, report, asset_path, asset, IsWindows(), 'lightmap_region', halo_objects, 'shared', perm, **keywords)
+                                            gr2_count += 1
 
                 elif sidecar_type == 'SKY':
                     if export_render:
