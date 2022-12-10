@@ -135,11 +135,6 @@ class Export_Scene_GR2(Operator, ExportHelper):
         description='',
         default=True,
     )
-    export_markers: BoolProperty(
-        name='Markers',
-        description='',
-        default=True,
-    )
     export_lights: BoolProperty(
         name='Lights',
         description='',
@@ -428,10 +423,23 @@ class Export_Scene_GR2(Operator, ExportHelper):
                 ('SUPER', "Super (very slow)", ""),
                 ),
         default='DIRECT',
+        description="Define the lightmap quality you wish to use",
     )
-    lightmap_quality_h4: StringProperty(
+    lightmap_quality_h4: EnumProperty(
         name='Quality',
-        default='',
+        items=(('default_new', "Default New", ""),
+                ('farm_draft_quality', "Draft", ""),
+                ('neutral_lighting_enc', "Neutral", ""),
+                ('mp_medium', "Medium", ""),
+                ('farm_high_quality', "High", ""),
+                ('farm_high_quality_two_bounce', "High Two Bounce", ""),
+                ('high_direct_sun', "High Direct Sun", ""),
+                ('high_direct_sun_sky', "High Direct Sun Sky", ""),
+                ('high_indirect_ao', "High Indirect AO", ""),
+                ('farm_uber_quality', "Uber", ""),
+                ),
+        default='default_new',
+        description="Define the lightmap quality you wish to use",
     )
     lightmap_all_bsps: BoolProperty(
         name='All BSPs',
@@ -504,6 +512,30 @@ class Export_Scene_GR2(Operator, ExportHelper):
         self.lightmap_quality = scene_gr2_export.lightmap_quality
         self.lightmap_quality = scene_gr2_export.lightmap_quality
         self.lightmap_all_bsps = scene_gr2_export.lightmap_all_bsps
+        
+        self.export_animations = scene_gr2_export.export_animations
+        self.export_render = scene_gr2_export.export_render
+        self.export_collision = scene_gr2_export.export_collision
+        self.export_physics = scene_gr2_export.export_physics
+        self.export_markers = scene_gr2_export.export_markers
+        self.export_structure = scene_gr2_export.export_structure
+        self.export_poops = scene_gr2_export.export_poops
+        self.export_lights = scene_gr2_export.export_lights
+        self.export_portals = scene_gr2_export.export_portals
+        self.export_seams = scene_gr2_export.export_seams
+        self.export_water_surfaces = scene_gr2_export.export_water_surfaces 
+        self.export_fog_planes = scene_gr2_export.export_fog_planes
+        self.export_cookie_cutters = scene_gr2_export.export_cookie_cutters
+        self.export_lightmap_regions = scene_gr2_export.export_lightmap_regions
+        self.export_boundary_surfaces = scene_gr2_export.export_boundary_surfaces
+        self.export_water_physics = scene_gr2_export.export_water_physics
+        self.export_rain_occluders = scene_gr2_export.export_rain_occluders
+        self.export_shared = scene_gr2_export.export_shared
+
+        self.use_mesh_modifiers = scene_gr2_export.use_mesh_modifiers
+        self.use_triangles = scene_gr2_export.use_triangles
+        self.global_scale = scene_gr2_export.global_scale
+        self.use_armature_deform_only = scene_gr2_export.use_armature_deform_only
 
         # SIDECAR SETTINGS # 
 
@@ -782,221 +814,6 @@ class GR2_SceneProps(Panel):
     def draw(self, context):
         layout = self.layout
 
-# class GR2_UL_SceneProps_RegionManager(UIList):
-#     use_name_reverse: bpy.props.BoolProperty(
-#         name="Reverse Name",
-#         default=False,
-#         options=set(),
-#         description="Reverse name sort order",
-#     )
-
-#     use_order_name: bpy.props.BoolProperty(
-#         name="Name",
-#         default=False,
-#         options=set(),
-#         description="Sort groups by their name (case-insensitive)",
-#     )
-
-#     filter_string: bpy.props.StringProperty(
-#         name="filter_string",
-#         default = "",
-#         description="Filter string for name"
-#     )
-
-#     filter_invert: bpy.props.BoolProperty(
-#         name="Invert",
-#         default = False,
-#         options=set(),
-#         description="Invert Filter"
-#     )
-
-
-#     def filter_items(self, context,
-#                     data, 
-#                     property 
-#         ):
-
-
-#         items = getattr(data, property)
-#         if not len(items):
-#             return [], []
-
-#         if self.filter_string:
-#             flt_flags = bpy.types.UI_UL_list.filter_items_by_name(
-#                     self.filter_string,
-#                     self.bitflag_filter_item,
-#                     items, 
-#                     propname="name",
-#                     reverse=self.filter_invert)
-#         else:
-#             flt_flags = [self.bitflag_filter_item] * len(items)
-
-#         if self.use_order_name:
-#             flt_neworder = bpy.types.UI_UL_list.sort_items_by_name(items, "name")
-#             if self.use_name_reverse:
-#                 flt_neworder.reverse()
-#         else:
-#             flt_neworder = []    
-
-
-#         return flt_flags, flt_neworder        
-
-#     def draw_filter(self, context,
-#                     layout
-#         ):
-
-#         row = layout.row(align=True)
-#         row.prop(self, "filter_string", text="Filter", icon="VIEWZOOM")
-#         row.prop(self, "filter_invert", text="", icon="ARROW_LEFTRIGHT")
-
-
-#         row = layout.row(align=True)
-#         row.label(text="Order by:")
-#         row.prop(self, "use_order_name", toggle=True)
-
-#         icon = 'TRIA_UP' if self.use_name_reverse else 'TRIA_DOWN'
-#         row.prop(self, "use_name_reverse", text="", icon=icon)
-
-#     def draw_item(self, context, layout, data, item, icon, active_data, active_propname):
-#         scene = context.scene
-#         scene_gr2 = scene.gr2
-#         if self.layout_type in {'DEFAULT', 'COMPACT'}:
-#             if scene:
-#                 layout.label(text=item.region_name, icon='BOOKMARKS')
-#             else:
-#                 layout.label(text='')
-#         elif self.layout_type == 'GRID':
-#             layout.alignment = 'CENTER'
-#             layout.label(text="", icon_value=icon)
-
-# class GR2_List_Assign_Region(Operator):
-#     """ Add an Item to the UIList"""
-#     bl_idname = "gr2_region.assign"
-#     bl_label = "Add"
-#     bl_description = "Add a new shared asset (sidecar) to the list."
-#     filename_ext = ''
-
-#     filter_glob: StringProperty(
-#         default="*.xml",
-#         options={'HIDDEN'},
-#         )
-
-#     filepath: StringProperty(
-#         name="Sidecar",
-#         description="Set path for the Sidecar file",
-#         subtype="FILE_PATH"
-#     )
-
-#     @classmethod
-#     def poll(cls, context):
-#         return context.scene
-    
-#     def execute(self, context):
-#         scene = context.scene
-#         scene_gr2 = scene.gr2
-#         scene_gr2.shared_assets.add()
-        
-#         path = self.filepath
-#         path = path.replace(GetDataPath(), '')
-#         scene_gr2.shared_assets[-1].shared_asset_path = path
-#         scene_gr2.shared_assets_index = len(scene_gr2.shared_assets) - 1
-#         context.area.tag_redraw()
-#         return {'FINISHED'}
-
-#     def invoke(self, context, event):
-#         context.window_manager.fileselect_add(self)
-
-#         return {'RUNNING_MODAL'}
-
-# class GR2_List_Remove_Region(Operator):
-#     """ Remove an Item from the UIList"""
-#     bl_idname = "gr2_shared_asset.list_remove"
-#     bl_label = "Remove"
-#     bl_description = "Remove a region from the list."
-
-#     @classmethod
-#     def poll(cls, context):
-#         scene = context.scene
-#         scene_gr2 = scene.gr2
-#         return context.scene and len(scene_gr2.shared_assets) > 0
-    
-#     def execute(self, context):
-#         scene = context.scene
-#         scene_gr2 = scene.gr2
-#         index = scene_gr2.shared_assets_index
-#         scene_gr2.shared_assets.remove(index)
-#         return {'FINISHED'}
-
-# class GR2_List_Select_Region(Operator):
-#     """ Remove an Item from the UIList"""
-#     bl_idname = "gr2_shared_asset.list_remove"
-#     bl_label = "Remove"
-#     bl_description = "Remove a region from the list."
-
-#     @classmethod
-#     def poll(cls, context):
-#         scene = context.scene
-#         scene_gr2 = scene.gr2
-#         return context.scene and len(scene_gr2.shared_assets) > 0
-    
-#     def execute(self, context):
-#         scene = context.scene
-#         scene_gr2 = scene.gr2
-#         index = scene_gr2.shared_assets_index
-#         scene_gr2.shared_assets.remove(index)
-#         return {'FINISHED'}
-
-# class GR2_List_Deselect_Region(Operator):
-#     """ Remove an Item from the UIList"""
-#     bl_idname = "gr2_shared_asset.list_remove"
-#     bl_label = "Remove"
-#     bl_description = "Remove a region from the list."
-
-#     @classmethod
-#     def poll(cls, context):
-#         scene = context.scene
-#         scene_gr2 = scene.gr2
-#         return context.scene and len(scene_gr2.shared_assets) > 0
-    
-#     def execute(self, context):
-#         scene = context.scene
-#         scene_gr2 = scene.gr2
-#         index = scene_gr2.shared_assets_index
-#         scene_gr2.shared_assets.remove(index)
-#         return {'FINISHED'}
-
-# class GR2_List_CreateAssign_Region(Operator):
-#     """ Remove an Item from the UIList"""
-#     bl_idname = "gr2_shared_asset.list_remove"
-#     bl_label = "Remove"
-#     bl_description = "Remove a region from the list."
-
-#     @classmethod
-#     def poll(cls, context):
-#         scene = context.scene
-#         scene_gr2 = scene.gr2
-#         return context.scene and len(scene_gr2.shared_assets) > 0
-    
-#     def execute(self, context):
-#         scene = context.scene
-#         scene_gr2 = scene.gr2
-#         index = scene_gr2.shared_assets_index
-#         scene_gr2.shared_assets.remove(index)
-#         return {'FINISHED'}
-
-# class GR2_Region_ListItems(PropertyGroup):
-
-#     def GetRegionName(self):
-#         name = self.shared_asset_path
-#         name = name.rpartition('\\')[2]
-#         name = name.rpartition('.sidecar.xml')[0]
-
-#         return name
-
-#     region_name: StringProperty(
-#         get=GetRegionName,
-#     )
-
 class GR2_UL_SceneProps_SharedAssets(UIList):
     use_name_reverse: bpy.props.BoolProperty(
         name="Reverse Name",
@@ -1222,15 +1039,6 @@ class GR2_ScenePropertiesGroup(PropertyGroup):
         default=0,
         min=0,
     )
-    # region: CollectionProperty(
-    #     type=GR2_Region_ListItems,
-    # )
-
-    # region_index: IntProperty(
-    #     name='Index for Region',
-    #     default=0,
-    #     min=0,
-    # )
 
 
 classeshalo = (

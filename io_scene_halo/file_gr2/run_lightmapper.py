@@ -28,7 +28,7 @@ from subprocess import Popen
 import os
 from io_scene_halo.gr2_utils import GetEKPath
 
-def lightmapper(report, filepath, not_bungie_game, lightmap_quality='DIRECT', lightmap_all_bsps='TRUE', lightmap_specific_bsp='000', lightmap_quality_h4='farm_draft_quality'):
+def lightmapper(report, filepath, not_bungie_game, lightmap_quality='DIRECT', lightmap_all_bsps='TRUE', lightmap_specific_bsp='000', lightmap_quality_h4='default_new'):
     full_path = filepath.rpartition('\\')[0]
     asset_path = CleanAssetPath(full_path)
     asset_name = asset_path.rpartition('\\')[2]
