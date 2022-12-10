@@ -58,7 +58,7 @@ from ..gr2_utils import (
 ##### NODES PROPERTIES #######
 ##############################
 
-def getNodes(model_armature, skeleton_bones, halo_objects, not_bungie_game):
+def getNodes(model_armature, skeleton_bones, halo_objects, not_bungie_game, sidecar_type):
     nodesList = {}
     if model_armature != None:
         nodesList.update(skeleton_bones)
@@ -72,7 +72,7 @@ def getNodes(model_armature, skeleton_bones, halo_objects, not_bungie_game):
         halo_node = ob.halo_json
         halo_node_name = ob.name
         if ob.select_get():
-            nodesList.update({ob.name: getNodeProperties(halo_node, halo_node_name, ob, not_bungie_game)})
+            nodesList.update({ob.name: getNodeProperties(halo_node, halo_node_name, ob, not_bungie_game, sidecar_type)})
 
     temp = ({'nodes_properties': nodesList})
     return temp
@@ -166,12 +166,15 @@ def getLightColor(red, green, blue):
 
     return color
 
-def getNodeProperties(node, name, ob, not_bungie_game):
+def getNodeProperties(node, name, ob, not_bungie_game, sidecar_type):
     node_props = {}
     ###################
     # OBJECT PROPERTIES
     node_props.update({"bungie_object_type": getNodeType(node, name, ob)}),
     node_props.update({"bungie_object_id": node.object_id}),
+    if sidecar_type in ('SCENARIO', 'PREFAB'):
+        node_props.update({"bungie_object_animates": '0'}),
+        node_props.update({"bungie_object_animates": '1'}),
     ###################
     # MARKER PROPERTIES
     if '_connected_geometry_object_type_marker' in node_props.values():
@@ -949,7 +952,7 @@ def build_json(jsonPath, model_armature, skeleton_bones, halo_objects, asset_nam
     not_bungie_game = bpy.context.scene.halo.game_version in ('h4','h2a')
     jsonTemp = {}
     # jsonTemp.update(getStringTable(halo_objects))
-    jsonTemp.update(getNodes(model_armature, skeleton_bones, halo_objects, not_bungie_game))
+    jsonTemp.update(getNodes(model_armature, skeleton_bones, halo_objects, not_bungie_game, sidecar_type))
     jsonTemp.update(getMeshes(halo_objects, asset_name, sidecar_type, not_bungie_game))
     jsonTemp.update(getMaterials(not_bungie_game))
 

@@ -1753,82 +1753,141 @@ class JSON_LightProps(Panel):
     def draw(self, context):
         layout = self.layout
         layout.use_property_split = True
+        
         flow = layout.grid_flow(row_major=True, columns=0, even_columns=True, even_rows=False, align=False)
 
         ob = context.object
         ob_halo_json = ob.halo_json
 
         col = flow.column()
-        if context.active_object.data.type == 'POINT' or context.active_object.data.type == 'SUN':
-            col.prop(ob_halo_json, "light_type_override_locked", text='Type')
+
+        scene = context.scene
+        scene_halo = scene.halo
+
+        if scene_halo.game_version in ('h4','h2a'):
+            col.prop(ob_halo_json, 'light_type_h4')
+            col.prop(ob_halo_json, 'light_mode')
+            col.prop(ob_halo_json, 'light_lighting_mode')
+            col.prop(ob_halo_json, 'Light_Color', text='Color')
+
+            col.separator()
+
+            col.prop(ob_halo_json, 'light_cone_projection_shape')
+            col.prop(ob_halo_json, 'light_inner_cone_angle')
+            col.prop(ob_halo_json, 'light_outer_cone_angle')
+
+            col.separator()
+
+            col.prop(ob_halo_json, 'light_jitter_quality')
+            col.prop(ob_halo_json, 'light_jitter_angle')
+            col.prop(ob_halo_json, 'light_jitter_sphere_radius')
+
+            col.separator()
+
+            col.prop(ob_halo_json, 'light_shadow_color')
+            col.prop(ob_halo_json, 'light_dynamic_shadow_quality')
+            col.prop(ob_halo_json, 'light_shadow_near_clipplane')
+            col.prop(ob_halo_json, 'light_shadow_far_clipplane')
+            col.prop(ob_halo_json, 'light_shadow_bias_offset')
+
+            col.separator()
+
+            col.prop(ob_halo_json, 'light_specular_power')
+            col.prop(ob_halo_json, 'light_specular_intensity')
+
+            col.separator()
+
+            col.prop(ob_halo_json, 'light_amplification_factor')
+
+            col.separator()
+
+            col.prop(ob_halo_json, 'light_destroy_after')
+
+            col.separator()
+
+            col.prop(ob_halo_json, 'light_cinema')
+
+            col = layout.column(heading="Flags")
+            sub = col.column(align=True)
+
+            sub.prop(ob_halo_json, "light_specular_contribution")
+            sub.prop(ob_halo_json, "light_shadows")
+            sub.prop(ob_halo_json, "light_screenspace")
+            sub.prop(ob_halo_json, "light_ignore_dynamic_objects")
+            sub.prop(ob_halo_json, "light_diffuse_contribution")
+            sub.prop(ob_halo_json, "light_indirect_only")
+
         else:
-            col.prop(ob_halo_json, "light_type_override", text='Type')
+            if context.active_object.data.type == 'POINT' or context.active_object.data.type == 'SUN':
+                col.prop(ob_halo_json, "light_type_override_locked", text='Type')
+            else:
+                col.prop(ob_halo_json, "light_type_override", text='Type')
 
-        col.prop(ob_halo_json, 'Light_Game_Type', text='Game Type')
-        col.prop(ob_halo_json, 'Light_Shape', text='Shape')
-        col.prop(ob_halo_json, 'Light_Color', text='Color') 
-        col.prop(ob_halo_json, 'Light_Intensity', text='Intensity')
+            col.prop(ob_halo_json, 'Light_Game_Type', text='Game Type')
+            col.prop(ob_halo_json, 'Light_Shape', text='Shape')
+            col.prop(ob_halo_json, 'Light_Color', text='Color') 
+            col.prop(ob_halo_json, 'Light_Intensity', text='Intensity')
 
-        # col.separator() # fade out doesn't do anything. This is all handled by attenuation
+            # col.separator() # fade out doesn't do anything. This is all handled by attenuation
 
-        # col.prop(ob_halo_json, 'Light_Fade_Start_Distance', text='Fade Out Start Distance')
-        # col.prop(ob_halo_json, 'Light_Fade_End_Distance', text='Fade Out End Distance')
+            # col.prop(ob_halo_json, 'Light_Fade_Start_Distance', text='Fade Out Start Distance')
+            # col.prop(ob_halo_json, 'Light_Fade_End_Distance', text='Fade Out End Distance')
 
-        col.separator()
+            col.separator()
 
-        col.prop(ob_halo_json, 'Light_Hotspot_Size', text='Hotspot Size')
-        col.prop(ob_halo_json, 'Light_Hotspot_Falloff', text='Hotspot Falloff')
-        col.prop(ob_halo_json, 'Light_Falloff_Shape', text='Falloff Shape')
-        col.prop(ob_halo_json, 'Light_Aspect', text='Light Aspect')
+            col.prop(ob_halo_json, 'Light_Hotspot_Size', text='Hotspot Size')
+            col.prop(ob_halo_json, 'Light_Hotspot_Falloff', text='Hotspot Falloff')
+            col.prop(ob_halo_json, 'Light_Falloff_Shape', text='Falloff Shape')
+            col.prop(ob_halo_json, 'Light_Aspect', text='Light Aspect')
 
-        col.separator()
+            col.separator()
 
-        col.prop(ob_halo_json, 'Light_Frustum_Width', text='Frustum Width')
-        col.prop(ob_halo_json, 'Light_Frustum_Height', text='Frustum Height')
+            col.prop(ob_halo_json, 'Light_Frustum_Width', text='Frustum Width')
+            col.prop(ob_halo_json, 'Light_Frustum_Height', text='Frustum Height')
 
-        col.separator()
+            col.separator()
 
-        col.prop(ob_halo_json, 'Light_Volume_Distance', text='Light Volume Distance')
-        col.prop(ob_halo_json, 'Light_Volume_Intensity', text='Light Volume Intensity')
+            col.prop(ob_halo_json, 'Light_Volume_Distance', text='Light Volume Distance')
+            col.prop(ob_halo_json, 'Light_Volume_Intensity', text='Light Volume Intensity')
 
-        col.separator()
+            col.separator()
 
-        col.prop(ob_halo_json, 'Light_Bounce_Ratio', text='Light Bounce Ratio')
+            col.prop(ob_halo_json, 'Light_Bounce_Ratio', text='Light Bounce Ratio')
 
-        col.separator()
+            col.separator()
 
-        col = layout.column(heading="Flags")
-        sub = col.column(align=True)
+            col = layout.column(heading="Flags")
+            sub = col.column(align=True)
 
-        sub.prop(ob_halo_json, 'Light_Ignore_BSP_Visibility', text='Ignore BSP Visibility') 
-        sub.prop(ob_halo_json, 'Light_Dynamic_Has_Bounce', text='Light Has Dynamic Bounce')
-        sub.prop(ob_halo_json, 'Light_Screenspace_Has_Specular', text='Screenspace Light Has Specular')
+            sub.prop(ob_halo_json, 'Light_Ignore_BSP_Visibility', text='Ignore BSP Visibility') 
+            sub.prop(ob_halo_json, 'Light_Dynamic_Has_Bounce', text='Light Has Dynamic Bounce')
+            sub.prop(ob_halo_json, 'Light_Screenspace_Has_Specular', text='Screenspace Light Has Specular')
 
-        col = flow.column()
+            col = flow.column()
 
-        col.prop(ob_halo_json, 'Light_Near_Attenuation_Start', text='Near Attenuation Start')
-        col.prop(ob_halo_json, 'Light_Near_Attenuation_End', text='Near Attenuation End')
+            col.prop(ob_halo_json, 'Light_Near_Attenuation_Start', text='Near Attenuation Start')
+            col.prop(ob_halo_json, 'Light_Near_Attenuation_End', text='Near Attenuation End')
 
-        col.separator()
+            col.separator()
 
-        col.prop(ob_halo_json, 'Light_Far_Attenuation_Start', text='Far Attenuation Start')
-        col.prop(ob_halo_json, 'Light_Far_Attenuation_End', text='Far Attenuation End')
+            col.prop(ob_halo_json, 'Light_Far_Attenuation_Start', text='Far Attenuation Start')
+            col.prop(ob_halo_json, 'Light_Far_Attenuation_End', text='Far Attenuation End')
 
-        col.separator()
+            col.separator()
 
-        col.prop(ob_halo_json, 'Light_Tag_Override', text='Light Tag Override')
-        col.prop(ob_halo_json, 'Light_Shader_Reference', text='Shader Tag Reference')
-        col.prop(ob_halo_json, 'Light_Gel_Reference', text='Gel Tag Reference')
-        col.prop(ob_halo_json, 'Light_Lens_Flare_Reference', text='Lens Flare Tag Reference')
+            col.prop(ob_halo_json, 'Light_Tag_Override', text='Light Tag Override')
+            col.prop(ob_halo_json, 'Light_Shader_Reference', text='Shader Tag Reference')
+            col.prop(ob_halo_json, 'Light_Gel_Reference', text='Gel Tag Reference')
+            col.prop(ob_halo_json, 'Light_Lens_Flare_Reference', text='Lens Flare Tag Reference')
 
-        # col.separator() # commenting out light clipping for now.
+            # col.separator() # commenting out light clipping for now.
 
-        # col.prop(ob_halo_json, 'Light_Clipping_Size_X_Pos', text='Clipping Size X Forward')
-        # col.prop(ob_halo_json, 'Light_Clipping_Size_Y_Pos', text='Clipping Size Y Forward')
-        # col.prop(ob_halo_json, 'Light_Clipping_Size_Z_Pos', text='Clipping Size Z Forward')
-        # col.prop(ob_halo_json, 'Light_Clipping_Size_X_Neg', text='Clipping Size X Backward')
-        # col.prop(ob_halo_json, 'Light_Clipping_Size_Y_Neg', text='Clipping Size Y Backward')
-        # col.prop(ob_halo_json, 'Light_Clipping_Size_Z_Neg', text='Clipping Size Z Backward')
+            # col.prop(ob_halo_json, 'Light_Clipping_Size_X_Pos', text='Clipping Size X Forward')
+            # col.prop(ob_halo_json, 'Light_Clipping_Size_Y_Pos', text='Clipping Size Y Forward')
+            # col.prop(ob_halo_json, 'Light_Clipping_Size_Z_Pos', text='Clipping Size Z Forward')
+            # col.prop(ob_halo_json, 'Light_Clipping_Size_X_Neg', text='Clipping Size X Backward')
+            # col.prop(ob_halo_json, 'Light_Clipping_Size_Y_Neg', text='Clipping Size Y Backward')
+            # col.prop(ob_halo_json, 'Light_Clipping_Size_Z_Neg', text='Clipping Size Z Backward')
 
 # BONE PROPERTIES
 class JSON_BoneProps(Panel):
@@ -3276,6 +3335,229 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
         description="",
         maxlen=128,
     )
+
+    # H4 LIGHT PROPERTIES
+    light_dynamic_shadow_quality: EnumProperty(
+        name = "Shadow Quality",
+        options=set(),
+        description = "",
+        default = "NORMAL",
+        items=[ ('NORMAL', "Normal", ""),
+                ('EXPENSIVE', "Expensive", ""),
+               ]
+        )
+
+    light_specular_contribution: BoolProperty(
+        name="Specular Contribution",
+        options=set(),
+        description="",
+        default=False,
+    )
+
+    light_amplification_factor: FloatProperty(
+        name="Indirect Amplification Factor",
+        options=set(),
+        description="",
+        default=0.5,
+        subtype='FACTOR',
+        min=0.0,
+        max=1.0
+    )
+
+    light_type_h4: EnumProperty(
+        name = "Light Type",
+        options=set(),
+        description = "",
+        default = "POINT",
+        items=[ ('POINT', "Point", ""),
+                ('SPOT', "Spot", ""),
+                ('AREA', "Area", ""),
+                ('SUN', "Sun", ""),
+               ]
+        )
+
+    light_outer_cone_angle: FloatProperty(
+        name="Outer Cone Angle",
+        options=set(),
+        description="",
+        default=80,
+        min=0.0,
+        max=160.0
+    )
+
+    light_lighting_mode: EnumProperty(
+        name = "Lighting Mode",
+        options=set(),
+        description = "",
+        default = "ARTISTIC",
+        items=[ ('ARTISTIC', "Artistic", ""),
+                ('CORRECT', "Physically Correct", ""),
+               ]
+        )
+
+    light_specular_power: FloatProperty(
+        name="Specular Power",
+        options=set(),
+        description="",
+        default=32,
+        min=0.0,
+    )
+
+    light_specular_intensity: FloatProperty(
+        name="Specular Intensity",
+        options=set(),
+        description="",
+        default=0,
+        min=0.0,
+    )
+
+    light_inner_cone_angle: FloatProperty(
+        name="Inner Cone Angle",
+        options=set(),
+        description="",
+        default=50,
+        min=0.0,
+        max=160
+    )
+
+    light_cinema: EnumProperty(
+        name="Render",
+        options=set(),
+        description="Define whether this light should only render in cinematics, outside of cinematics, or always render",
+        default='ALWAYS',
+        items=[ ('ALWAYS', "Always", ""),
+                ('CINEMATIC', "Cinematics Only", ""),
+                ('EXCLUDE', "Exclude from Cinematics", ""),
+               ]
+        )
+
+    light_cone_projection_shape: EnumProperty(
+        name="Cone Projection Shape",
+        options=set(),
+        description = "",
+        default = "CONE",
+        items=[ ('CONE', "Cone", ""),
+                ('FRUSTUM', "Frustum", ""),
+               ]
+        )
+
+    light_shadow_near_clipplane: FloatProperty(
+        name="Shadow Near Clip Plane",
+        options=set(),
+        description="",
+        default=0,
+        min=0.0,
+    )
+
+    light_jitter_sphere_radius: FloatProperty(
+        name="Light Jitter Sphere Radius",
+        options=set(),
+        description="",
+        default=2.5,
+        min=0.0,
+    )
+
+    light_shadow_far_clipplane: FloatProperty(
+        name="Shadow Far Clip Plane",
+        options=set(),
+        description="",
+        default=0,
+        min=0.0,
+    )
+
+    light_shadow_bias_offset: FloatProperty(
+        name="Shadow Bias Offset",
+        options=set(),
+        description="",
+        default=0,
+        min=0.0,
+    )
+
+    light_shadow_color: FloatVectorProperty(
+        name="Shadow Color",
+        options=set(),
+        description="",
+        default=(0.0, 0.0, 0.0),
+        subtype='COLOR',
+        min=0.0,
+        max=1.0,
+    )
+
+    light_shadows: BoolProperty(
+        name="Has Shadows",
+        options=set(),
+        description="",
+        default=True,
+    )
+
+    light_screenspace: BoolProperty(
+        name="Screenspace Light",
+        options=set(),
+        description="",
+        default=False,
+    )
+
+    light_ignore_dynamic_objects: BoolProperty(
+        name="Ignore Dynamic Objects",
+        options=set(),
+        description="",
+        default=False,
+    )
+
+    light_diffuse_contribution: BoolProperty(
+        name="Diffuse Contribution",
+        options=set(),
+        description="",
+        default=True,
+    )
+
+    light_destroy_after: FloatProperty(
+        name="Destroy After (seconds)",
+        options=set(),
+        description="Destroy the light after x seconds. 0 means the light is never destroyed",
+        subtype='TIME',
+        unit='TIME',
+        step=100,
+        default=0,
+        min=0.0,
+    )
+
+    light_jitter_angle: FloatProperty(
+        name="Light Jitter Angle",
+        options=set(),
+        description="",
+        default=0,
+        min=0.0,
+    )
+
+    light_jitter_quality: EnumProperty(
+        name="Light Jitter Quality",
+        options=set(),
+        description="",
+        default='LOW',
+        items=[ ('LOW', "Low", ""),
+                ('MEDIUM', "Medium", ""),
+                ('HIGH', "High", ""),
+               ]
+        )
+
+    light_indirect_only: BoolProperty(
+        name="Indirect Only",
+        options=set(),
+        description="",
+        default=False,
+    )
+
+    light_mode: EnumProperty(
+        name="Light Mode",
+        options=set(),
+        description="",
+        default='STATIC',
+        items=[ ('STATIC', "Static", ""),
+                ('DYNAMIC', "Dynamic", ""),
+                ('ANALYTIC', "Analytic", ""),
+               ]
+        )
 
 class JSON_MaterialPropertiesGroup(PropertyGroup):
     

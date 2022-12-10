@@ -592,8 +592,7 @@ def MeshesToEmpties(context):
             if node.parent_type == 'BONE':
                 node.parent_bone = ob.parent_bone
 
-        node.location = ob.location
-        node.rotation_euler = ob.rotation_euler
+        node.matrix_local = ob.matrix_local
         node.scale = ob.scale
         # copy the node props from the mesh to the empty
         SetNodeProps(node, ob)
