@@ -174,6 +174,7 @@ def getNodeProperties(node, name, ob, not_bungie_game, sidecar_type):
     node_props.update({"bungie_object_id": node.object_id}),
     if sidecar_type in ('SCENARIO', 'PREFAB'):
         node_props.update({"bungie_object_animates": '0'}),
+    else:
         node_props.update({"bungie_object_animates": '1'}),
     ###################
     # MARKER PROPERTIES
