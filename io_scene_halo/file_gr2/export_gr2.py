@@ -66,7 +66,7 @@ def getNodes(model_armature, skeleton_bones, halo_objects, not_bungie_game, side
     for ob in halo_objects.lights:
         halo_light = ob.halo_json
         if ob.select_get():
-            nodesList.update({ob.name: getLightProperties(halo_light, ob)})
+            nodesList.update({ob.name: getLightProperties(halo_light, ob, sidecar_type, not_bungie_game)})
 
     for ob in halo_objects.markers:
         halo_node = ob.halo_json
@@ -77,59 +77,154 @@ def getNodes(model_armature, skeleton_bones, halo_objects, not_bungie_game, side
     temp = ({'nodes_properties': nodesList})
     return temp
 
-def getLightProperties(node, light):
+def getLightProperties(node, light, sidecar_type, not_bungie_game):
     node_props = {}
     ###################
     # LIGHT PROPERTIES
     node_props.update({"bungie_object_type": "_connected_geometry_object_type_light"})
-    node_props.update({"bungie_light_type_version": "1"})
-    node_props.update({"bungie_light_type": getLightType(node.light_type_override, light.data.type)})
-    node_props.update({"bungie_light_game_type": getLightGameType(node.Light_Game_Type)})
-    node_props.update({"bungie_light_shape": getLightShape(node.Light_Shape)})
-    node_props.update({"bungie_light_volume_distance": str(round(node.Light_Volume_Distance, 6))})
-    node_props.update({"bungie_light_volume_intensity_scalar": str(round(node.Light_Volume_Intensity, 6))})
-    # node_props.update({"bungie_light_fade_start_distance": str(round(node.Light_Fade_Start_Distance, 6))})
-    # node_props.update({"bungie_light_fade_out_distance": str(round(node.Light_Fade_End_Distance, 6))})
-    node_props.update({"bungie_light_color": getLightColor(node.Light_Color.r, node.Light_Color.g, node.Light_Color.b)})
-    node_props.update({"bungie_light_intensity": str(round(node.Light_Intensity, 6))})
-    node_props.update({"bungie_light_hotspot_size": str(round(node.Light_Hotspot_Size, 6))})
-    node_props.update({"bungie_light_hotspot_falloff": str(round(node.Light_Hotspot_Falloff, 6))})
-    node_props.update({"bungie_light_falloff_shape": str(round(node.Light_Falloff_Shape, 6))})
-    node_props.update({"bungie_light_aspect": str(round(node.Light_Aspect, 6))})
-    node_props.update({"bungie_light_frustum_width": str(round(node.Light_Frustum_Width, 6))})
-    node_props.update({"bungie_light_frustum_height": str(round(node.Light_Frustum_Height, 6))})
-    node_props.update({"bungie_light_bounce_light_ratio": str(round(node.Light_Bounce_Ratio, 6))})
-    if node.Light_Tag_Override != '':
-        node_props.update({"bungie_light_light_tag_override": node.Light_Tag_Override[0:127]})
-    if node.Light_Shader_Reference != '':
-        node_props.update({"bungie_light_shader_reference": node.Light_Shader_Reference[0:127]})
-    if node.Light_Gel_Reference != '':
-        node_props.update({"bungie_light_gel_reference": node.Light_Gel_Reference[0:127]})
-    if node.Light_Lens_Flare_Reference != '':
-        node_props.update({"bungie_light_lens_flare_reference": node.Light_Lens_Flare_Reference[0:127]})
-    if node.Light_Ignore_BSP_Visibility:
-        node_props.update({"bungie_light_ignore_bsp_visibility": "1"})
-    if node.Light_Dynamic_Has_Bounce:
-        node_props.update({"bungie_light_dynamic_light_has_bounce": "1"})
-    if node.Light_Screenspace_Has_Specular:
-        node_props.update({"bungie_light_screenspace_light_has_specular": "1"})
-    # node_props.update({"bungie_light_clipping_size_x_pos": str(round(node.Light_Clipping_Size_X_Pos, 6))})
-    # node_props.update({"bungie_light_clipping_size_y_pos": str(round(node.Light_Clipping_Size_Y_Pos, 6))})
-    # node_props.update({"bungie_light_clipping_size_z_pos": str(round(node.Light_Clipping_Size_Z_Pos, 6))})
-    # node_props.update({"bungie_light_clipping_size_x_neg": str(round(node.Light_Clipping_Size_X_Neg, 6))})
-    # node_props.update({"bungie_light_clipping_size_y_neg": str(round(node.Light_Clipping_Size_Y_Neg, 6))})
-    # node_props.update({"bungie_light_clipping_size_z_neg": str(round(node.Light_Clipping_Size_Z_Neg, 6))})
-    if node.Light_Near_Attenuation_Start != 0:
-        node_props.update({"bungie_light_near_attenuation_start": str(round(node.Light_Near_Attenuation_Start, 6))})
-    elif node.Light_Game_Type == 'RERENDER': # added to prevent a sapien crash that occurs when light is rerender and no near attenuation start is set
-        node_props.update({"bungie_light_near_attenuation_start": "1.000000"})
-    if node.Light_Near_Attenuation_End != 0:
-        node_props.update({"bungie_light_near_attenuation_end": str(round(node.Light_Near_Attenuation_End, 6))})
-    if node.Light_Far_Attenuation_Start != 0:
-        node_props.update({"bungie_light_far_attenuation_start": str(round(node.Light_Far_Attenuation_Start, 6))})
-    if node.Light_Far_Attenuation_End != 0:
-        node_props.update({"bungie_light_far_attenuation_end": str(round(node.Light_Far_Attenuation_End, 6))})
+    node_props.update({"bungie_object_id": node.object_id}),
     node_props.update({"halo_export": "1"}),
+    if sidecar_type in ('SCENARIO', 'PREFAB'):
+        node_props.update({"bungie_object_animates": '0'}),
+    else:
+        node_props.update({"bungie_object_animates": '1'}),
+
+    node_props.update({"bungie_light_fade_start_distance": str(round(node.Light_Fade_Start_Distance, 6))})
+    node_props.update({"bungie_light_fade_out_distance": str(round(node.Light_Fade_End_Distance, 6))})
+        
+    if not_bungie_game:
+        node_props.update({"bungie_light_color": getLightColorH4(node.Light_Color.r, node.Light_Color.g, node.Light_Color.b)})
+
+        node_props.update({"bungie_light_type": getLightTypeH4(node.light_type_h4)})
+        node_props.update({"bungie_light_mode": getLightModeH4(node.light_mode)})
+        node_props.update({"bungie_lighting_mode": getLightingModeH4(node.light_lighting_mode)})
+
+        node_props.update({"bungie_light_intensity": str(round(node.Light_IntensityH4, 6))})
+
+        node_props.update({"bungie_cone_projection_shape": getLightingConeShape(node.light_cone_projection_shape)})
+        node_props.update({"bungie_inner_cone_angle": str(round(node.light_inner_cone_angle, 6))})
+        node_props.update({"bungie_outer_cone_angle": str(round(node.light_outer_cone_angle, 6))})
+
+        node_props.update({"bungie_light_jitter_quality": getLightingJitterQuality(node.light_jitter_quality)})
+        node_props.update({"bungie_light_jitter_angle": str(round(node.light_jitter_angle, 6))})
+        node_props.update({"bungie_light_jitter_sphere_radius": str(round(node.light_jitter_sphere_radius, 6))})
+
+        node_props.update({"bungie_shadow_color": getLightColorH4(node.light_shadow_color.r, node.light_shadow_color.g, node.light_shadow_color.b)})
+        node_props.update({"bungie_dynamic_shadow_quality": getLightShadowQuality(node.light_dynamic_shadow_quality)})
+        node_props.update({"bungie_shadow_near_clipplane": str(round(node.light_shadow_near_clipplane, 6))})
+        node_props.update({"bungie_shadow_far_clipplane": str(round(node.light_shadow_far_clipplane, 6))})
+        node_props.update({"bungie_shadow_bias_offset": str(round(node.light_shadow_bias_offset, 6))})
+
+        node_props.update({"bungie_specular_power": str(round(node.light_specular_power, 6))})
+        node_props.update({"bungie_specular_intensity": str(round(node.light_specular_intensity, 6))})
+
+        node_props.update({"bungie_indirect_amplification_factor": str(round(node.light_amplification_factor, 6))})
+
+        node_props.update({"bungie_destroy_light_after": str(round(node.light_destroy_after, 6))})
+
+        node_props.update({"bungie_light_near_attenuation_start": str(round(node.Light_Near_Attenuation_StartH4, 6))})
+        node_props.update({"bungie_light_near_attenuation_end": str(round(node.Light_Near_Attenuation_EndH4, 6))})
+        node_props.update({"bungie_light_far_attenuation_start": str(round(node.Light_Far_Attenuation_StartH4, 6))})
+        node_props.update({"bungie_light_far_attenuation_end": str(round(node.Light_Far_Attenuation_EndH4, 6))})
+
+        if node.light_cinema == 'CINEMATIC':
+            node_props.update({"bungie_cinema_objects_only": "1"})
+        else:
+            node_props.update({"bungie_cinema_objects_only": "0"})
+
+        if node.light_cinema == 'EXCLUDE':
+            node_props.update({"bungie_cinema_exclude": "1"})
+        else:
+            node_props.update({"bungie_cinema_exclude": "0"})
+
+        if node.light_type_h4 == 'ANALYTIC':
+            node_props.update({"bungie_is_static_analytic": "1"})
+        else:
+            node_props.update({"bungie_is_static_analytic": "0"})
+
+        if node.light_type_h4 == 'SUN':
+            node_props.update({"bungie_is_sun": "1"})
+        else:
+            node_props.update({"bungie_is_sun": "0"})
+
+        if node.light_specular_contribution:
+            node_props.update({"bungie_specular_contribution": "1"})
+        else:
+            node_props.update({"bungie_specular_contribution": "0"})
+
+        if node.light_shadows:
+            node_props.update({"bungie_shadows": "1"})
+        else:
+            node_props.update({"bungie_shadows": "0"})
+
+        if node.light_screenspace:
+            node_props.update({"bungie_screenspace_light": "1"})
+        else:
+            node_props.update({"bungie_screenspace_light": "0"})
+
+        if node.light_ignore_dynamic_objects:
+            node_props.update({"bungie_ignore_dynamic_objects": "1"})
+        else:
+            node_props.update({"bungie_ignore_dynamic_objects": "0"})
+
+        if node.light_diffuse_contribution:
+            node_props.update({"bungie_diffuse_contribution": "1"})
+        else:
+            node_props.update({"bungie_diffuse_contribution": "0"})
+
+        if node.light_indirect_only:
+            node_props.update({"bungie_is_indirect_only": "1"})
+        else:
+            node_props.update({"bungie_is_indirect_only": "0"})
+
+    else:
+        node_props.update({"bungie_light_color": getLightColor(node.Light_Color.r, node.Light_Color.g, node.Light_Color.b)})
+        node_props.update({"bungie_light_type_version": "1"})
+        node_props.update({"bungie_light_type": getLightType(node.light_type_override, light.data.type)})
+        node_props.update({"bungie_light_game_type": getLightGameType(node.Light_Game_Type)})
+        node_props.update({"bungie_light_shape": getLightShape(node.Light_Shape)})
+        node_props.update({"bungie_light_volume_distance": str(round(node.Light_Volume_Distance, 6))})
+        node_props.update({"bungie_light_volume_intensity_scalar": str(round(node.Light_Volume_Intensity, 6))})
+
+        if node.Light_Near_Attenuation_Start != 0:
+            node_props.update({"bungie_light_near_attenuation_start": str(round(node.Light_Near_Attenuation_Start, 6))})
+        elif node.Light_Game_Type == 'RERENDER': # added to prevent a sapien crash that occurs when light is rerender and no near attenuation start is set
+            node_props.update({"bungie_light_near_attenuation_start": "1.000000"})
+        if node.Light_Near_Attenuation_End != 0:
+            node_props.update({"bungie_light_near_attenuation_end": str(round(node.Light_Near_Attenuation_End, 6))})
+        if node.Light_Far_Attenuation_Start != 0:
+            node_props.update({"bungie_light_far_attenuation_start": str(round(node.Light_Far_Attenuation_Start, 6))})
+        if node.Light_Far_Attenuation_End != 0:
+            node_props.update({"bungie_light_far_attenuation_end": str(round(node.Light_Far_Attenuation_End, 6))})
+        
+        node_props.update({"bungie_light_intensity": str(round(node.Light_Intensity, 6))})
+        node_props.update({"bungie_light_hotspot_size": str(round(node.Light_Hotspot_Size, 6))})
+        node_props.update({"bungie_light_hotspot_falloff": str(round(node.Light_Hotspot_Falloff, 6))})
+        node_props.update({"bungie_light_falloff_shape": str(round(node.Light_Falloff_Shape, 6))})
+        node_props.update({"bungie_light_aspect": str(round(node.Light_Aspect, 6))})
+        node_props.update({"bungie_light_frustum_width": str(round(node.Light_Frustum_Width, 6))})
+        node_props.update({"bungie_light_frustum_height": str(round(node.Light_Frustum_Height, 6))})
+        node_props.update({"bungie_light_bounce_light_ratio": str(round(node.Light_Bounce_Ratio, 6))})
+        if node.Light_Tag_Override != '':
+            node_props.update({"bungie_light_light_tag_override": node.Light_Tag_Override[0:127]})
+        if node.Light_Shader_Reference != '':
+            node_props.update({"bungie_light_shader_reference": node.Light_Shader_Reference[0:127]})
+        if node.Light_Gel_Reference != '':
+            node_props.update({"bungie_light_gel_reference": node.Light_Gel_Reference[0:127]})
+        if node.Light_Lens_Flare_Reference != '':
+            node_props.update({"bungie_light_lens_flare_reference": node.Light_Lens_Flare_Reference[0:127]})
+        if node.Light_Ignore_BSP_Visibility:
+            node_props.update({"bungie_light_ignore_bsp_visibility": "1"})
+        if node.Light_Dynamic_Has_Bounce:
+            node_props.update({"bungie_light_dynamic_light_has_bounce": "1"})
+        if node.Light_Screenspace_Has_Specular:
+            node_props.update({"bungie_light_screenspace_light_has_specular": "1"})
+        # node_props.update({"bungie_light_clipping_size_x_pos": str(round(node.Light_Clipping_Size_X_Pos, 6))})
+        # node_props.update({"bungie_light_clipping_size_y_pos": str(round(node.Light_Clipping_Size_Y_Pos, 6))})
+        # node_props.update({"bungie_light_clipping_size_z_pos": str(round(node.Light_Clipping_Size_Z_Pos, 6))})
+        # node_props.update({"bungie_light_clipping_size_x_neg": str(round(node.Light_Clipping_Size_X_Neg, 6))})
+        # node_props.update({"bungie_light_clipping_size_y_neg": str(round(node.Light_Clipping_Size_Y_Neg, 6))})
+        # node_props.update({"bungie_light_clipping_size_z_neg": str(round(node.Light_Clipping_Size_Z_Neg, 6))})
 
     return node_props
 
@@ -166,12 +261,71 @@ def getLightColor(red, green, blue):
 
     return color
 
+# H4 Light functions
+######################
+
+def getLightColorH4(red, green, blue):
+    color = f'{str(round(red, 6))} {str(round(green, 6))} {str(round(blue, 6))}'
+
+    return color
+
+def getLightTypeH4(light_type):
+    match light_type:
+        case 'POINT':
+            return '_connected_geometry_light_type_point'
+        case 'SPOT':
+            return '_connected_geometry_light_type_spot'
+        case 'AREA':
+            return '_connected_geometry_light_type_area'
+        case _:
+            return '_connected_geometry_light_type_sun'
+
+def getLightModeH4(light_mode):
+    match light_mode:
+        case 'STATIC':
+            return '_connected_geometry_light_mode_static'
+        case 'DYNAMIC':
+            return '_connected_geometry_light_mode_dynamic'
+        case _:
+            return '_connected_geometry_light_mode_analytic'
+
+def getLightingModeH4(lighting_mode):
+    match lighting_mode:
+        case 'ARTISTIC':
+            return '_connected_geometry_lighting_mode_artistic'
+        case _:
+            return '_connected_geometry_lighting_physically_correct' 
+
+def getLightingConeShape(cone_shape): 
+    match cone_shape:
+        case 'CONE':
+            return '_connected_geometry_cone_projection_shape_cone'
+        case _:
+            return '_connected_geometry_cone_projection_shape_frustum' 
+
+def getLightingJitterQuality(jitter_quality): 
+    match jitter_quality:
+        case 'LOW':
+            return '_connected_geometry_light_jitter_quality_low'
+        case 'MEDIUM':
+            return '_connected_geometry_light_jitter_quality_medium'
+        case _:
+            return '_connected_geometry_light_jitter_quality_high'
+
+def getLightShadowQuality(shadow_quality): 
+    match shadow_quality:
+        case 'NORMAL':
+            return '_connected_geometry_dynamic_shadow_quality_normal'
+        case _:
+            return '_connected_geometry_dynamic_shadow_quality_expensive'
+
 def getNodeProperties(node, name, ob, not_bungie_game, sidecar_type):
     node_props = {}
     ###################
     # OBJECT PROPERTIES
     node_props.update({"bungie_object_type": getNodeType(node, name, ob)}),
     node_props.update({"bungie_object_id": node.object_id}),
+    node_props.update({"halo_export": "1"}),
     if sidecar_type in ('SCENARIO', 'PREFAB'):
         node_props.update({"bungie_object_animates": '0'}),
     else:

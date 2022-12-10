@@ -1768,7 +1768,23 @@ class JSON_LightProps(Panel):
             col.prop(ob_halo_json, 'light_type_h4')
             col.prop(ob_halo_json, 'light_mode')
             col.prop(ob_halo_json, 'light_lighting_mode')
-            col.prop(ob_halo_json, 'Light_Color', text='Color')
+            col.prop(ob_halo_json, 'Light_Color', text='Color') 
+            col.prop(ob_halo_json, 'Light_IntensityH4')
+
+            col.separator()
+
+            col.prop(ob_halo_json, 'Light_Near_Attenuation_StartH4')
+            col.prop(ob_halo_json, 'Light_Near_Attenuation_EndH4')
+
+            col.separator()
+
+            col.prop(ob_halo_json, 'Light_Far_Attenuation_StartH4')
+            col.prop(ob_halo_json, 'Light_Far_Attenuation_EndH4')
+
+            col.separator()
+
+            col.prop(ob_halo_json, 'Light_Fade_Start_Distance')
+            col.prop(ob_halo_json, 'Light_Fade_End_Distance')
 
             col.separator()
 
@@ -1828,10 +1844,10 @@ class JSON_LightProps(Panel):
             col.prop(ob_halo_json, 'Light_Color', text='Color') 
             col.prop(ob_halo_json, 'Light_Intensity', text='Intensity')
 
-            # col.separator() # fade out doesn't do anything. This is all handled by attenuation
+            col.separator()
 
-            # col.prop(ob_halo_json, 'Light_Fade_Start_Distance', text='Fade Out Start Distance')
-            # col.prop(ob_halo_json, 'Light_Fade_End_Distance', text='Fade Out End Distance')
+            col.prop(ob_halo_json, 'Light_Fade_Start_Distance', text='Fade Out Start Distance')
+            col.prop(ob_halo_json, 'Light_Fade_End_Distance', text='Fade Out End Distance')
 
             col.separator()
 
@@ -3107,7 +3123,7 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
     )
 
     Light_Near_Attenuation_End: FloatProperty(
-        name="Light Near Attenuation Start Distance",
+        name="Light Near Attenuation End Distance",
         options=set(),
         description="From the starting near attenuation, light power gradually increases up until the end point",
         default=0,
@@ -3355,7 +3371,7 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
     )
 
     light_amplification_factor: FloatProperty(
-        name="Indirect Amplification Factor",
+        name="Indirect Amplification",
         options=set(),
         description="",
         default=0.5,
@@ -3558,6 +3574,46 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
                 ('ANALYTIC', "Analytic", ""),
                ]
         )
+
+    Light_Near_Attenuation_StartH4: FloatProperty(
+        name="Attenuation Start Distance",
+        options=set(),
+        description="",
+        default=0.2,
+        min=0,
+    )
+
+    Light_Near_Attenuation_EndH4: FloatProperty(
+        name="Attenuation End Distance",
+        options=set(),
+        description="",
+        default=10,
+        min=0,
+    )
+
+    Light_Far_Attenuation_StartH4: FloatProperty(
+        name="Camera Distance Fade Start",
+        options=set(),
+        description="",
+        default=0,
+        min=0,
+    )
+
+    Light_Far_Attenuation_EndH4: FloatProperty(
+        name="Camera Distance Fade End",
+        options=set(),
+        description="",
+        default=0,
+        min=0,
+    )
+
+    Light_IntensityH4: FloatProperty(
+        name="Light Intensity",
+        options=set(),
+        description="",
+        default=50,
+        min=0.0,
+    )
 
 class JSON_MaterialPropertiesGroup(PropertyGroup):
     
