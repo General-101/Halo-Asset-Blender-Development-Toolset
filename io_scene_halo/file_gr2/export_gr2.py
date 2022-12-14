@@ -404,8 +404,8 @@ def getNodeType(node, name, ob):
                     return '_connected_geometry_object_type_marker'
 
 def getMarkerType(type, physics, node, not_bungie_game):
-    if node.ObjectMarker_Type_Locked == 'GAME INSTANCE':
-        if not not_bungie_game and node.Marker_Game_Instance_Tag_Name.endswith('.prefab'):
+    if node.ObjectMarker_Type_Locked == 'GAME INSTANCE' or node.ObjectMarker_Type == 'GAME INSTANCE':
+        if not_bungie_game and node.Marker_Game_Instance_Tag_Name.endswith('.prefab'):
             return '_connected_geometry_marker_type_prefab'
         else:
             return '_connected_geometry_marker_type_game_instance'
