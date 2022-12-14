@@ -45,7 +45,7 @@ from ..gr2_utils import(
 #####################################################################################
 #####################################################################################
 # MAIN FUNCTION
-def prepare_scene(context, report, sidecar_type, export_hidden, filepath, use_armature_deform_only, **kwargs):
+def prepare_scene(context, report, sidecar_type, export_hidden, filepath, use_armature_deform_only, game_version, **kwargs):
     ExitLocalView(context)
     enabled_exclude_collections = HideExcludedCollections(context)
     objects_selection, active_object = GetCurrentActiveObjectSelection(context)
@@ -64,7 +64,7 @@ def prepare_scene(context, report, sidecar_type, export_hidden, filepath, use_ar
     proxies = SetPoopProxies(context, h_objects.poops)                                               # create and parent identical poop child objects to matching instances (collision, physics, cookie cutters). Keep them in a list so we can delete them later
     for p in proxies:
         h_objects.poops.append(p)
-    model_armature, temp_armature, no_parent_objects = GetSceneArmature(context, sidecar_type)                          # return the main armature in the scene, and create a temp one if a model armature does not exist
+    model_armature, temp_armature, no_parent_objects = GetSceneArmature(context, sidecar_type, game_version)                          # return the main armature in the scene, and create a temp one if a model armature does not exist
     skeleton_bones = {}
     if model_armature is not None:
         ParentToArmature(model_armature, temp_armature, no_parent_objects, context)                             # ensure all objects are parented to an armature on export. Render and collision mesh is parented with armature deform, the rest uses bone parenting
@@ -257,7 +257,7 @@ def HideExcludedCollections(context):
 #####################################################################################
 #####################################################################################
 # ARMATURE FUNCTIONS
-def GetSceneArmature(context, sidecar_type):
+def GetSceneArmature(context, sidecar_type, game_version):
     model_armature = None
     temp_armature = False
     no_parent_objects = []
@@ -265,7 +265,7 @@ def GetSceneArmature(context, sidecar_type):
         if ob.type == 'ARMATURE' and not ob.name.startswith('+'): # added a check for a '+' prefix in armature name, to support special animation control armatures in the future
             model_armature = ob
             break
-    if model_armature is None and context.scene.halo.game_version not in ('h4', 'h2a'):
+    if model_armature is None and (game_version not in ('h4', 'h2a') or sidecar_type not in ('SCENARIO', 'PREFAB')):
         model_armature, no_parent_objects = AddTempArmature(context)
         temp_armature = True
 
