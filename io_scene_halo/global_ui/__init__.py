@@ -1551,10 +1551,10 @@ class JSON_ObjectMeshLightmapProps(Panel):
         col.prop(ob_halo_json, "Lightmap_Resolution_Scale", text='Resolution Scale')
         # col.prop(ob_halo_json, "Lightmap_Chart_Group", text='Chart Group')
 
-        col.separator()
+        # col.separator()
 
-        col.prop(ob_halo_json, "Lightmap_Analytical_Bounce_Modifier", text='Analytical Bounce Modifier')
-        col.prop(ob_halo_json, "Lightmap_General_Bounce_Modifier", text='General Bounce Modifier')
+        # col.prop(ob_halo_json, "Lightmap_Analytical_Bounce_Modifier", text='Analytical Bounce Modifier')
+        # col.prop(ob_halo_json, "Lightmap_General_Bounce_Modifier", text='General Bounce Modifier')
         
         col.separator()
 
