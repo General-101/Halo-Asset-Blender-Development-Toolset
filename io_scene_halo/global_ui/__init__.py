@@ -2882,6 +2882,20 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
                 ('WATER VOLUME FLOW', "Water Volume Flow", "Used to define water flow for water physics volumes. For structure_design tags only"),
                ]
 
+    marker_types_h4 = [ ('DEFAULT', "Default", "Default marker type. Defines render_model markers for models, and structure markers for bsps"),
+                ('EFFECTS', "Effects", "Marker for effects only."),
+                ('GAME INSTANCE', "Game Instance", "Game Instance marker"),
+                ('GARBAGE', "Garbage", "marker to define position that garbage pieces should be created"),
+                ('HINT', "Hint", "Used for ai hints"),
+                ('PATHFINDING SPHERE', "Pathfinding Sphere", "Used to create ai pathfinding spheres"),
+                ('PHYSICS CONSTRAINT', "Physics Constraint", "Used to define various types of physics constraints"),
+                ('TARGET', "Target", "Defines the markers used in a model's targets'"),
+                ('WATER VOLUME FLOW', "Water Volume Flow", "Used to define water flow for water physics volumes. For structure_design tags only"),
+                ('ENFX', "Environment Effect", ""),
+                ('LIGHT CONE', "Light Cone", ""),
+                ('AIRPROBE', "Airprobe", ""),
+               ]
+
     #MARKER PROPERTIES
     ObjectMarker_Type : EnumProperty(
         name="Marker Type",
@@ -3386,6 +3400,7 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
         description = "",
         default = "POINT",
         items=[ ('POINT', "Point", ""),
+                ('DIRECTIONAL', "Directional", ""),
                 ('SPOT', "Spot", ""),
                 ('AREA', "Area", ""),
                 ('SUN', "Sun", ""),

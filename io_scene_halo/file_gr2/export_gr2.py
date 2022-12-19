@@ -278,7 +278,7 @@ def getLightTypeH4(light_type):
         case 'AREA':
             return '_connected_geometry_light_type_area'
         case _:
-            return '_connected_geometry_light_type_sun'
+            return '_connected_geometry_light_type_directional'
 
 def getLightModeH4(light_mode):
     match light_mode:
