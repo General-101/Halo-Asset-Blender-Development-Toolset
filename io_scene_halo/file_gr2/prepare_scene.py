@@ -35,11 +35,9 @@ from ..gr2_utils import(
     IsMesh,
     SetActiveObject,
     sel_logic,
-    GetAssetInfo,
     SelectHaloObject,
     SelectAllObjects,
     IsShader,
-    HaloBoner,
     GetTagsPath
 )
 #####################################################################################
@@ -69,7 +67,6 @@ def prepare_scene(context, report, sidecar_type, export_hidden, filepath, use_ar
     if model_armature is not None:
         ParentToArmature(model_armature, temp_armature, no_parent_objects, context)                             # ensure all objects are parented to an armature on export. Render and collision mesh is parented with armature deform, the rest uses bone parenting
         skeleton_bones = GetBoneList(model_armature, use_armature_deform_only)      # return a list of bones attached to the model armature, ignoring control / non-deform bones
-    asset_path, asset = GetAssetInfo(filepath)                                  # get the asset name and path to the asset folder
     # HaloBoner(model_armature.data.edit_bones, model_armature, context)
     #FixLightsRotations(h_objects.lights)                                         # adjust light rotations to match in game rotation, and return a list of lights for later use in repair_scene
     timeline_start, timeline_end = SetTimelineRange(context)                      # set the timeline range so we can restore it later
@@ -80,7 +77,7 @@ def prepare_scene(context, report, sidecar_type, export_hidden, filepath, use_ar
     # if sidecar_type == 'SCENARIO':
     #     RotateScene(context.view_layer.objects, model_armature)
 
-    return objects_selection, active_object, hidden_objects, mode, model_armature, temp_armature, asset_path, asset, skeleton_bones, h_objects, timeline_start, timeline_end, lod_count, proxies, unselectable_objects, enabled_exclude_collections, mesh_node_names, temp_nodes, selected_perms, selected_bsps
+    return objects_selection, active_object, hidden_objects, mode, model_armature, temp_armature, skeleton_bones, h_objects, timeline_start, timeline_end, lod_count, proxies, unselectable_objects, enabled_exclude_collections, mesh_node_names, temp_nodes, selected_perms, selected_bsps
 
 
 #####################################################################################
@@ -334,7 +331,7 @@ def GetBoneList(model_armature, deform_only):
         else:
             FrameID2 = b.halo_json.frame_id2
         index +=1
-        boneslist.update({b.name: getBoneProperties(FrameID1, FrameID2)})
+        boneslist.update({b.name: getBoneProperties(FrameID1, FrameID2, b.halo_json.object_space_node, b.halo_json.replacement_correction_node, b.halo_json.fik_anchor_node)})
 
     return boneslist
 
@@ -356,12 +353,20 @@ def getArmatureProperties():
 
     return node_props
 
-def getBoneProperties(FrameID1, FrameID2):
+def getBoneProperties(FrameID1, FrameID2, object_space_node, replacement_correction_node, fik_anchor_node):
     node_props = {}
 
     node_props.update({"bungie_object_type": "_connected_geometry_object_type_frame"}),
     node_props.update({"bungie_frame_ID1": FrameID1}),
     node_props.update({"bungie_frame_ID2": FrameID2}),
+
+    if object_space_node:
+        node_props.update({"bungie_is_object_space_offset_node": "1"}),
+    if replacement_correction_node:
+        node_props.update({"bungie_is_replacement_correction_node": "1"}),
+    if fik_anchor_node:
+        node_props.update({"bungie_is_fik_anchor_node": "1"}),
+
     node_props.update({"bungie_object_animates": "1"}),
     node_props.update({"halo_export": "1"}),
 

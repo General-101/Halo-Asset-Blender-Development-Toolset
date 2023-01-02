@@ -1929,11 +1929,17 @@ class JSON_BoneProps(Panel):
         scene = context.scene
         scene_halo = scene.halo
 
-        layout.enabled = scene_halo.expert_mode
+        # layout.enabled = scene_halo.expert_mode
         
         col = flow.column()
         col.prop(bone_halo_json, "frame_id1", text='Frame ID 1')
         col.prop(bone_halo_json, "frame_id2", text='Frame ID 2')
+
+        col.separator()
+
+        col.prop(bone_halo_json, "object_space_node", text='Object Space Offset Node')
+        col.prop(bone_halo_json, "replacement_correction_node", text='Replacement Correction Node')
+        col.prop(bone_halo_json, "fik_anchor_node", text='Forward IK Anchor Node')
 
 # JSON PROPERTY GROUPS
 class JSON_ObjectPropertiesGroup(PropertyGroup):
@@ -3748,6 +3754,24 @@ class JSON_BonePropertiesGroup(PropertyGroup):
         name = "Frame ID 2",
         description = "The Frame ID 1 for this bone. Leave blank for automatic assignment of a Frame ID. Can be manually edited when using expert mode, but don't do this unless you know what you're doing",
         default = "",
+        )
+    object_space_node: BoolProperty(
+        name = "Object Space Offset Node",
+        description = "",
+        default = False,
+        options=set(),
+        )
+    replacement_correction_node: BoolProperty(
+        name = "Replacement Correction Node",
+        description = "",
+        default = False,
+        options=set(),
+        )
+    fik_anchor_node: BoolProperty(
+        name = "Forward IK Anchor Node",
+        description = "",
+        default = False,
+        options=set(),
         )
 
 classeshalo = (

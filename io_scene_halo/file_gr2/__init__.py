@@ -45,12 +45,12 @@ from bpy.props import StringProperty, BoolProperty, EnumProperty, FloatProperty,
 from bpy.types import Operator, Panel, PropertyGroup, UIList
 from addon_utils import check
 from os.path import exists as file_exists
-from os import path
+from os import path, makedirs, chdir
 import ctypes
 import traceback
 
 
-from io_scene_halo.gr2_utils import GetDataPath
+from io_scene_halo.gr2_utils import GetDataPath, GetAssetInfo, GetEKPath
 
 lightmapper_run_once = False
 sidecar_read = False
@@ -600,6 +600,9 @@ class Export_Scene_GR2(Operator, ExportHelper):
             if response != 6:
                 skip_lightmapper = True
 
+        # get the asset name and path to the asset folder
+        asset_path, asset = GetAssetInfo(self.filepath)                                  
+
         print('Preparing Scene for Export...')
 
         keywords = self.as_keywords()
@@ -612,7 +615,7 @@ class Export_Scene_GR2(Operator, ExportHelper):
             console.console_toggle() # toggle the console so users can see progress of export
 
         from .prepare_scene import prepare_scene
-        (objects_selection, active_object, hidden_objects, mode, model_armature, temp_armature, asset_path, asset, skeleton_bones, halo_objects, timeline_start, timeline_end, lod_count, proxies, unselectable_objects, enabled_exclude_collections, mesh_node_names, temp_nodes, selected_perms, selected_bsps
+        (objects_selection, active_object, hidden_objects, mode, model_armature, temp_armature, skeleton_bones, halo_objects, timeline_start, timeline_end, lod_count, proxies, unselectable_objects, enabled_exclude_collections, mesh_node_names, temp_nodes, selected_perms, selected_bsps
         ) = prepare_scene(context, self.report, **keywords) # prepares the scene for processing and returns information about the scene
         try:
             from .process_scene import process_scene

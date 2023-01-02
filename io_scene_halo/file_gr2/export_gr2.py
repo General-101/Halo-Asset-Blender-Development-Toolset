@@ -37,7 +37,6 @@ from ..gr2_utils import (
     GetDataPath,
     frame_prefixes,
     marker_prefixes,
-    mesh_prefixes,
     special_materials,
 
     poop_render_only_prefixes,
@@ -1031,26 +1030,38 @@ def export_asset(report, filePath="", keep_fbx=False, keep_json=False, asset_pat
             gr2Path += ".gr2"
 
         build_gr2(fileName, jsonPath, gr2Path)
-        if(file_exists(gr2Path)):
-            report({'INFO'},"GR2 conversion finished!")
+        if file_exists(gr2Path):
+            if tag_type != 'selected':
+                move_assets(fileName, jsonPath, gr2Path, asset_path, keep_fbx, keep_json, tag_type)
+            else:
+                CleanFiles(filePath, jsonPath, gr2Path)
         else:
-            report({'WARNING'},"GR2 conversion failed!")
-            ctypes.windll.user32.MessageBoxW(0, "Tool.exe failed to export your GR2 file. Blender may need to be run as an Administrator or there may be an issue with your project settings.", "GR2 EXPORT FAILED", 0)
-        
-        if tag_type != 'selected':
-            move_assets(fileName, jsonPath, gr2Path, asset_path, keep_fbx, keep_json, tag_type)
-        else:
-            CleanFiles(filePath, jsonPath, gr2Path)
+            print(f'Failed to export {gr2Path}. Please check your asset errors folder')
+            AddToReports(fileName, jsonPath, asset_path)
 
         return {'FINISHED'}
     else:
         ctypes.windll.user32.MessageBoxW(0, "GR2 Not Created! Your current OS is not supported. The Halo tools only support Windows. FBX & JSON saved succesfully.", "OS NOT SUPPORTED", 0)
         return {'FINISHED'}
 
+def AddToReports(fileName, jsonPath, asset_path):
+    if not file_exists(path.join(asset_path, 'errors')):
+        os.makedirs(path.join(asset_path, 'errors'))
+    if file_exists(fileName):
+        shutil.copy(fileName, path.join(asset_path, 'errors'))
+    if file_exists(jsonPath):
+        shutil.copy(jsonPath, path.join(asset_path, 'errors'))
+
+    CleanFiles(fileName, jsonPath, '')
+
+
 def CleanFiles(filePath, jsonPath, gr2Path):
-    os.remove(filePath)
-    os.remove(jsonPath)
-    os.remove(gr2Path)
+    if file_exists(filePath):
+        os.remove(filePath)
+    if file_exists(jsonPath):
+        os.remove(jsonPath)
+    if gr2Path != '' and file_exists(gr2Path):
+        os.remove(gr2Path)
 
 def rename_file(filePath, fileName=''):
     os.replace(filePath, fileName)
