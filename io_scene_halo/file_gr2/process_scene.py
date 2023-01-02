@@ -85,7 +85,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                   export_water_surfaces,
                   export_fog_planes,
                   export_cookie_cutters,
-                  export_lightmap_regions,
+                  export_misc,
                   export_boundary_surfaces,
                   export_water_physics,
                   export_rain_occluders,
@@ -394,15 +394,15 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                             gr2_count += 1
 
 
-                        if export_lightmap_regions:
+                        if export_misc:
                             perm_list = []
-                            for ob in halo_objects.lightmap_regions:
+                            for ob in halo_objects.misc:
                                 if not ob.halo_json.bsp_shared:
                                     perm = GetPerm(ob)
                                     if perm not in perm_list:
                                         perm_list.append(perm)
-                                        if SelectBSPObject(halo_objects.lightmap_regions, bsp, model_armature, False, perm, export_hidden, export_all_perms, selected_perms, export_all_bsps, selected_bsps):
-                                            print (f'**Exporting {bsp} {perm} lightmap regions**')
+                                        if SelectBSPObject(halo_objects.misc, bsp, model_armature, False, perm, export_hidden, export_all_perms, selected_perms, export_all_bsps, selected_bsps):
+                                            print (f'**Exporting {bsp} {perm} misc**')
                                             if using_better_fbx:
                                                 obj_selection = [obj for obj in context.selected_objects]
                                                 export_better_fbx(context, False, **keywords)
@@ -410,7 +410,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                                     obj.select_set(True)
                                             else:
                                                 export_fbx(self, context, **keywords)
-                                            export_gr2(self, context, report, asset_path, asset, IsWindows(), 'lightmap_region', halo_objects, bsp, perm, model_armature, skeleton_bones, **keywords)
+                                            export_gr2(self, context, report, asset_path, asset, IsWindows(), 'misc', halo_objects, bsp, perm, model_armature, skeleton_bones, **keywords)
                                             gr2_count += 1
                         # Design time!
                         bsp_list = []
@@ -635,14 +635,14 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                             export_gr2(self, context, report, asset_path, asset, IsWindows(), 'water', halo_objects, 'shared', perm, **keywords)
                                             gr2_count += 1
 
-                        if export_lightmap_regions:
+                        if export_misc:
                             perm_list = []
-                            for ob in halo_objects.lightmap_regions:
+                            for ob in halo_objects.misc:
                                 if ob.halo_json.bsp_shared:
                                     perm = GetPerm(ob)
                                     if perm not in perm_list:
                                         perm_list.append(perm)
-                                        if SelectBSPObject(halo_objects.lightmap_regions, bsp, model_armature, True, perm, export_hidden, export_all_perms, selected_perms, export_all_bsps, selected_bsps):
+                                        if SelectBSPObject(halo_objects.misc, bsp, model_armature, True, perm, export_hidden, export_all_perms, selected_perms, export_all_bsps, selected_bsps):
                                             print (f'**Exporting shared {perm} lightmap regions**')
                                             if using_better_fbx:
                                                 obj_selection = [obj for obj in context.selected_objects]

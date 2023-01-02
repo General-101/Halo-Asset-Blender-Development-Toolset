@@ -338,7 +338,7 @@ class GR2_HaloExportSettingsExtended(Panel):
         col.prop(scene_gr2_export, 'export_water_surfaces')
         col.prop(scene_gr2_export, 'export_fog_planes')
         col.prop(scene_gr2_export, 'export_cookie_cutters')
-        col.prop(scene_gr2_export, 'export_lightmap_regions')
+        col.prop(scene_gr2_export, 'export_misc')
         col.prop(scene_gr2_export, 'export_boundary_surfaces')
         col.prop(scene_gr2_export, 'export_water_physics')
         col.prop(scene_gr2_export, 'export_rain_occluders')
@@ -371,7 +371,7 @@ class GR2_HaloExport_ExportQuick(Operator):
         from .halo_export import ExportQuick
         scene = context.scene
         scene_gr2_export = scene.gr2_export
-        return ExportQuick(bpy.ops.export_scene.gr2, self.report, context, scene_gr2_export.export_gr2_files, scene_gr2_export.export_hidden, scene_gr2_export.export_all_bsps, scene_gr2_export.export_all_perms, scene_gr2_export.export_sidecar_xml, scene_gr2_export.import_to_game, scene_gr2_export.import_draft, scene_gr2_export.lightmap_structure, scene_gr2_export.lightmap_quality_h4, scene_gr2_export.lightmap_quality, scene_gr2_export.lightmap_specific_bsp, scene_gr2_export.lightmap_all_bsps, scene_gr2_export.export_animations, scene_gr2_export.export_render, scene_gr2_export.export_collision, scene_gr2_export.export_physics, scene_gr2_export.export_markers, scene_gr2_export.export_structure, scene_gr2_export.export_poops, scene_gr2_export.export_lights, scene_gr2_export.export_portals, scene_gr2_export.export_seams, scene_gr2_export.export_water_surfaces, scene_gr2_export.export_fog_planes, scene_gr2_export.export_cookie_cutters, scene_gr2_export.export_lightmap_regions, scene_gr2_export.export_boundary_surfaces, scene_gr2_export.export_water_physics, scene_gr2_export.export_rain_occluders, scene_gr2_export.export_shared, scene_gr2_export.use_mesh_modifiers, scene_gr2_export.use_triangles, scene_gr2_export.global_scale, scene_gr2_export.use_armature_deform_only)
+        return ExportQuick(bpy.ops.export_scene.gr2, self.report, context, scene_gr2_export.export_gr2_files, scene_gr2_export.export_hidden, scene_gr2_export.export_all_bsps, scene_gr2_export.export_all_perms, scene_gr2_export.export_sidecar_xml, scene_gr2_export.import_to_game, scene_gr2_export.import_draft, scene_gr2_export.lightmap_structure, scene_gr2_export.lightmap_quality_h4, scene_gr2_export.lightmap_quality, scene_gr2_export.lightmap_specific_bsp, scene_gr2_export.lightmap_all_bsps, scene_gr2_export.export_animations, scene_gr2_export.export_render, scene_gr2_export.export_collision, scene_gr2_export.export_physics, scene_gr2_export.export_markers, scene_gr2_export.export_structure, scene_gr2_export.export_poops, scene_gr2_export.export_lights, scene_gr2_export.export_portals, scene_gr2_export.export_seams, scene_gr2_export.export_water_surfaces, scene_gr2_export.export_fog_planes, scene_gr2_export.export_cookie_cutters, scene_gr2_export.export_misc, scene_gr2_export.export_boundary_surfaces, scene_gr2_export.export_water_physics, scene_gr2_export.export_rain_occluders, scene_gr2_export.export_shared, scene_gr2_export.use_mesh_modifiers, scene_gr2_export.use_triangles, scene_gr2_export.global_scale, scene_gr2_export.use_armature_deform_only)
 
 class GR2_HaloExportPropertiesGroup(PropertyGroup):
     final_report: StringProperty(
@@ -548,8 +548,8 @@ class GR2_HaloExportPropertiesGroup(PropertyGroup):
         default=True,
         options=set(),
     )
-    export_lightmap_regions: BoolProperty(
-        name='Lightmap Regions',
+    export_misc: BoolProperty(
+        name='Misc',
         description='',
         default=True,
         options=set(),

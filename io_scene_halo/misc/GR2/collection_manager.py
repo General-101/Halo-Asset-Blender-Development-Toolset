@@ -62,14 +62,14 @@ def GetFullName(coll_type, coll_name):
         case _:
             prefix = '+perm:'
     
-    full_name = f'{prefix} {coll_name}'
+    full_name_base = f'{prefix} {coll_name}'
+    full_name = full_name_base
 
     # check if a collection by this name already exists, if so rename.
     duplicate = 1
     for c in bpy.data.collections:
         if max(c.name.rpartition('.')[0], c.name) == full_name:
-            full_name = f'{prefix} {coll_name}'
-            full_name = f'{full_name}.{duplicate:03d}'
+            full_name = f'{full_name_base}.{duplicate:03d}'
             duplicate += 1
 
     return full_name

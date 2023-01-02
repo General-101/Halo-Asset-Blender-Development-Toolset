@@ -41,6 +41,7 @@ from ..gr2_utils import (
 
     poop_render_only_prefixes,
     invalid_mesh_types,
+    invalid_mesh_types_full,
     GetTagsPath,
     GetEKPath,
     sel_logic,
@@ -371,6 +372,40 @@ def getNodeProperties(node, name, ob, not_bungie_game, sidecar_type):
                     node_props.update({"bungie_physics_constraint_plane_max": str(round(node.Plane_Constraint_Maximum, 6))})
                     node_props.update({"bungie_physics_constraint_twist_start": str(round(node.Twist_Constraint_Start, 6))})
                     node_props.update({"bungie_physics_constraint_twist_end": str(round(node.Twist_Constraint_End, 6))})
+        #h4 stuff
+        if not_bungie_game:
+            
+            if '_connected_geometry_marker_type_hint' in node_props.values():
+                node_props.update({"bungie_marker_hint_length": node.marker_hint_length})
+
+            elif '_connected_geometry_marker_type_envfx' in node_props.values():
+                node_props.update({"bungie_marker_looping_effect": node.marker_looping_effect})
+
+            elif '_connected_geometry_marker_type_airprobe' in node_props.values():
+                node_props.update({"bungie_marker_airprobe": name})
+
+            elif '_connected_geometry_marker_type_lightCone' in node_props.values():
+                node_props.update({"bungie_marker_light_color": getLightColorH4(node.marker_light_cone_color.r, node.marker_light_cone_color.g, node.marker_light_cone_color.b)})
+                node_props.update({"bungie_marker_light_tag": node.marker_light_cone_tag})
+                node_props.update({"bungie_marker_light_cone_curve": node.marker_light_cone_curve})
+                node_props.update({"bungie_marker_light_cone_width": str(round(node.marker_light_cone_width, 6))})
+                node_props.update({"bungie_marker_light_cone_length": str(round(node.marker_light_cone_length, 6))})
+                node_props.update({"bungie_marker_light_cone_alpha": str(round(node.marker_light_cone_alpha, 6))})
+                node_props.update({"bungie_marker_light_cone_intensity": str(round(node.marker_light_cone_intensity, 6))})
+
+            elif '_connected_geometry_marker_type_game_instance' in node_props.values():
+                if node.marker_game_instance_run_scripts:
+                    node_props.update({"bungie_marker_always_run_scripts": "1"})
+                else:
+                    node_props.update({"bungie_marker_always_run_scripts": "0"})
+
+            elif '_connected_geometry_marker_type_cheap_light' in node_props.values():
+                node_props.update({"bungie_marker_cheap_light_tag_name": node.Marker_Game_Instance_Tag_Name})
+            elif '_connected_geometry_marker_type_falling_leaf' in node_props.values():
+                node_props.update({"bungie_marker_falling_leaf_tag_name": node.Marker_Game_Instance_Tag_Name})
+            elif '_connected_geometry_marker_type_light' in node_props.values():
+                node_props.update({"bungie_marker_light_tag_name": node.Marker_Game_Instance_Tag_Name})
+
 
     node_props.update({"halo_export": "1"}),
     ###################
@@ -414,8 +449,17 @@ def getMarkerType(type, physics, node, not_bungie_game):
         case 'EFFECTS':
             return '_connected_geometry_marker_type_effects'
         case 'GAME INSTANCE':
-            if not not_bungie_game and node.Marker_Game_Instance_Tag_Name.endswith('.prefab'):
-                return '_connected_geometry_marker_type_prefab'
+            if not not_bungie_game:
+                if node.Marker_Game_Instance_Tag_Name.endswith('.prefab'):
+                    return '_connected_geometry_marker_type_prefab'
+                elif node.Marker_Game_Instance_Tag_Name.endswith('.cheap_light'):
+                    return '_connected_geometry_marker_type_cheap_light'
+                elif node.Marker_Game_Instance_Tag_Name.endswith('.light'):
+                    return '_connected_geometry_marker_type_light'
+                elif node.Marker_Game_Instance_Tag_Name.endswith('.leaf_system'):
+                    return '_connected_geometry_marker_type_falling_leaf'
+                else:
+                    return '_connected_geometry_marker_type_game_instance'
             else:
                 return '_connected_geometry_marker_type_game_instance'
         case 'GARBAGE':
@@ -433,6 +477,12 @@ def getMarkerType(type, physics, node, not_bungie_game):
             return '_connected_geometry_marker_type_target'
         case 'WATER VOLUME FLOW':
             return '_connected_geometry_marker_type_water_volume_flow'
+        case 'ENFX':
+            return '_connected_geometry_marker_type_envfx'
+        case 'LIGHT CONE':
+            return '_connected_geometry_marker_type_lightCone'
+        case 'AIRPROBE':
+            return '_connected_geometry_marker_type_airprobe'
 
 def getMarkerRegion(region):
     if region == '':
@@ -462,7 +512,7 @@ def getMarkerVelocity(x, y, z):
 
 def getMeshes(halo_objects, asset_name, sidecar_type, not_bungie_game):
     meshesList = {}
-    halo_mesh_objects = halo_objects.render + halo_objects.collision + halo_objects.physics + halo_objects.structure + halo_objects.poops + halo_objects.portals + halo_objects.seams + halo_objects.water_surfaces + halo_objects.lightmap_regions + halo_objects.fog + halo_objects.boundary_surfaces + halo_objects.water_physics + halo_objects.rain_occluders + halo_objects.decorator + halo_objects.particle
+    halo_mesh_objects = halo_objects.render + halo_objects.collision + halo_objects.physics + halo_objects.structure + halo_objects.poops + halo_objects.portals + halo_objects.seams + halo_objects.water_surfaces + halo_objects.misc + halo_objects.fog + halo_objects.boundary_surfaces + halo_objects.water_physics + halo_objects.rain_occluders + halo_objects.decorator + halo_objects.particle
     for ob in halo_mesh_objects:
         halo_mesh = ob.halo_json
         halo_mesh_name = ob.name
@@ -502,7 +552,7 @@ def getMeshProperties(mesh, name, ob, asset_name, sidecar_type, not_bungie_game)
         mesh_props.update({"bungie_mesh_decorator_lod": getDecoratorLOD(mesh.Decorator_LOD)})
     # Poops
     elif '_connected_geometry_mesh_type_poop' in mesh_props.values():
-        mesh_props.update({"bungie_mesh_poop_lighting": getPoopLighting(mesh.Poop_Lighting_Override, name)})
+        mesh_props.update({"bungie_mesh_poop_lighting": getPoopLighting(mesh.Poop_Lighting_Override, name, not_bungie_game)})
         mesh_props.update({"bungie_mesh_poop_pathfinding": getPoopPathfinding(mesh.Poop_Pathfinding_Override, name)})
         mesh_props.update({"bungie_mesh_poop_imposter_policy": getPoopImposter(mesh.Poop_Imposter_Policy)})
         if not mesh.Poop_Imposter_Transition_Distance_Auto:
@@ -513,7 +563,7 @@ def getMeshProperties(mesh, name, ob, asset_name, sidecar_type, not_bungie_game)
         #     mesh_props.update({"bungie_mesh_poop_fade_range_end": str(mesh.Poop_Imposter_Fade_Range_End)})
         # if mesh.Poop_Predominant_Shader_Name != '':
         #     mesh_props.update({"bungie_mesh_poop_poop_predominant_shader_name":mesh.Poop_Predominant_Shader_Name[0:1023]})
-        mesh_props.update({"bungie_mesh_poop_decomposition_hulls": "-1"})
+        # mesh_props.update({"bungie_mesh_poop_decomposition_hulls": "-1"})
         if mesh.Poop_Render_Only or name.startswith(poop_render_only_prefixes):
             mesh_props.update({"bungie_mesh_poop_is_render_only": "1"})
         if mesh.Poop_Chops_Portals:
@@ -528,6 +578,23 @@ def getMeshProperties(mesh, name, ob, asset_name, sidecar_type, not_bungie_game)
             mesh_props.update({"bungie_mesh_poop_precise_geometry": "1"})
         if mesh.Poop_Collision_Type != 'DEFAULT':
             mesh_props.update({"bungie_mesh_poop_collision_type": getPoopCollisionType(mesh.Poop_Collision_Type)}) 
+        # h4 stuff
+        if not_bungie_game:
+            mesh_props.update({"bungie_mesh_poop_lightmap_resolution_scale": str(round(mesh.poop_lightmap_resolution_scale, 6))})
+            mesh_props.update({"bungie_mesh_poop_imposter_brightness": str(round(mesh.poop_imposter_brightness, 6))})
+            mesh_props.update({"bungie_mesh_poop_streamingpriority": mesh.poop_streaming_priority})
+            if mesh.poop_remove_from_shadow_geometry:
+                mesh_props.update({"bungie_mesh_poop_remove_from_shadow_geometry": "1"})
+            if mesh.poop_disallow_lighting_samples:
+                mesh_props.update({"bungie_mesh_poop_disallow_object_lighting_samples": "1"})
+            if mesh.poop_rain_occluder:
+                mesh_props.update({"bungie_mesh_poop_is_rain_occluder": "1"})
+            if mesh.poop_cinematic_properties != 'DEFAULT':
+                if mesh.poop_cinematic_properties == 'CINEMATIC ONLY':
+                    mesh_props.update({"bungie_mesh_poop_cinema_only": "1"})
+                else:
+                    mesh_props.update({"bungie_mesh_poop_exclude_from_cinema": "1"})
+
     # Poop Collision
     elif '_connected_geometry_mesh_type_poop_collision' in mesh_props.values() and bpy.context.scene.halo.game_version in ('h4','h2a'):
         if mesh.Poop_Collision_Type != 'DEFAULT':
@@ -560,9 +627,12 @@ def getMeshProperties(mesh, name, ob, asset_name, sidecar_type, not_bungie_game)
         mesh_props.update({"bungie_mesh_water_volume_flow_velocity": str(round(mesh.Water_Volume_Flow_Velocity, 6))})
         mesh_props.update({"bungie_mesh_water_volume_fog_color": getWaterFogColor(mesh.Water_Volume_Fog_Color.r, mesh.Water_Volume_Fog_Color.g, mesh.Water_Volume_Fog_Color.b)})
         mesh_props.update({"bungie_mesh_water_volume_fog_murkiness": str(round(mesh.Water_Volume_Fog_Murkiness, 6))})
+    # OBB
+    elif '_connected_geometry_mesh_type_obb_volume' in mesh_props.values():
+        mesh_props.update({"bungie_mesh_obb_type": mesh.obb_volume_type}),
     ###################
     # FACE PROPERTIES
-    if mesh.ObjectMesh_Type not in invalid_mesh_types:
+    if mesh_props.values() not in invalid_mesh_types_full:
         if mesh.Face_Type != 'NORMAL':
             mesh_props.update({"bungie_face_type": getFaceType(mesh.Face_Type)})
         render_only_set = False
@@ -576,7 +646,7 @@ def getMeshProperties(mesh, name, ob, asset_name, sidecar_type, not_bungie_game)
             if mesh.Face_Mode != 'NORMAL':
                 mesh_props.update({"bungie_face_mode": getFaceMode(mesh.Face_Mode)})
         if mesh.Face_Sides != 'ONE SIDED':
-            mesh_props.update({"bungie_face_sides": getFaceSides(mesh.Face_Sides)})
+            mesh_props.update({"bungie_face_sides": mesh.Face_Sides})
         if mesh.Face_Draw_Distance != 'NORMAL':
             mesh_props.update({"bungie_face_draw_distance": getFaceDrawDistance(mesh.Face_Draw_Distance)})
         mesh_props.update({"bungie_face_region": getRegionName(mesh.Region_Name, mesh.Region_Name_Locked)})
@@ -600,6 +670,12 @@ def getMeshProperties(mesh, name, ob, asset_name, sidecar_type, not_bungie_game)
             mesh_props.update({"bungie_no_shadow": "1"})
         if mesh.Precise_Position:
             mesh_props.update({"bungie_precise_position": "1"})
+        # h4 stuff
+        if not_bungie_game:
+            if mesh.no_lightmap:
+                mesh_props.update({"bungie_no_lightmap": "1"})
+            if mesh.no_pvs:
+                mesh_props.update({"bungie_invisible_to_pvs": "1"})
     ###################
     # MATERIAL LIGHTING PROPERTIES
     if mesh.Material_Lighting_Enabled:
@@ -630,24 +706,37 @@ def getMeshProperties(mesh, name, ob, asset_name, sidecar_type, not_bungie_game)
         mesh_props.update({"bungie_lightmap_translucency_tint_color": getLightmapColor(mesh.Lightmap_Translucency_Tint_Color.r, mesh.Lightmap_Translucency_Tint_Color.g, mesh.Lightmap_Translucency_Tint_Color.b)})
         if mesh.Lightmap_Lighting_From_Both_Sides:
             mesh_props.update({"bungie_lightmap_lighting_from_both_sides": "1"})
+        # h4 stuff
+        if not_bungie_game:
+            mesh_props.update({"bungie_lightmap_photon_fidelity": mesh.lightmap_photon_fidelity})
     ###################
     # OTHER MESH PROPERTIES
-    if mesh.ObjectMesh_Type not in invalid_mesh_types:
+    if mesh_props.values() not in invalid_mesh_types_full:
         if mesh.Mesh_Tesselation_Density != 'DEFAULT':
             mesh_props.update({"bungie_mesh_tessellation_density": getTesselationDensity(mesh.Mesh_Tesselation_Density)})
         if mesh.Mesh_Compression != 'DEFAULT':
             mesh_props.update({"bungie_mesh_additional_compression": getMeshCompression(mesh.Mesh_Compression)})
         if mesh.Mesh_Primitive_Type != 'NONE':
-            mesh_props.update({"bungie_mesh_primitive_type": getPrimitiveType(mesh.Mesh_Primitive_Type)})
-            if mesh.Mesh_Primitive_Type == 'BOX':
+            mesh_props.update({"bungie_mesh_primitive_type": mesh.Mesh_Primitive_Type})
+            if mesh.Mesh_Primitive_Type == '_connected_geometry_primitive_type_box':
                 mesh_props.update({"bungie_mesh_primitive_box_length": str(round(ob.dimensions.x, 6))})
                 mesh_props.update({"bungie_mesh_primitive_box_width": str(round(ob.dimensions.y, 6))})
                 mesh_props.update({"bungie_mesh_primitive_box_height": str(round(ob.dimensions.z, 6))})
-            elif mesh.Mesh_Primitive_Type == 'PILL':
+            elif mesh.Mesh_Primitive_Type == '_connected_geometry_primitive_type_pill':
                 mesh_props.update({"bungie_mesh_primitive_pill_radius": str(round(GetRadius(ob, False), 6))})
                 mesh_props.update({"bungie_mesh_primitive_pill_height": str(round(ob.dimensions.z, 6))})
-            elif mesh.Mesh_Primitive_Type == 'SPHERE':
+            elif mesh.Mesh_Primitive_Type == '_connected_geometry_primitive_type_sphere':
                 mesh_props.update({"bungie_mesh_primitive_sphere_radius": str(round(GetRadius(ob, True), 6))})
+        
+        # h4
+        if not_bungie_game and ('_connected_geometry_mesh_type_poop' in mesh_props.values() or '_connected_geometry_mesh_type_default' in mesh_props.values()):
+            if mesh.use_uncompressed_verts:
+                mesh_props.update({"bungie_mesh_use_uncompressed_verts": "1"})
+            else:
+                mesh_props.update({"bungie_mesh_use_uncompressed_verts": "0"})
+            
+            if '_connected_geometry_mesh_type_default' in mesh_props.values() and mesh.uvmirror_across_entire_model:
+                mesh_props.update({"bungie_uvmirror_across_entire_model": "1"})
 
     mesh_props.update({"halo_export": "1"}),
 
@@ -724,6 +813,10 @@ def getMeshType(type, name, ob, sidecar_type, not_bungie_game):
                 return '_connected_geometry_mesh_type_water_physics_volume'
             case 'WATER SURFACE':
                 return '_connected_geometry_mesh_type_water_surface'
+            case 'LIGHTPROBE VOLUME':
+                return '_connected_geometry_mesh_type_lightprobevolume'
+            case 'OBB VOLUME':
+                return '_connected_geometry_mesh_type_obb_volume'
 
 def getBoundarySurfaceName(bs_name, name):
     var = ''
@@ -756,7 +849,7 @@ def getDecoratorName(dec_name):
 def getDecoratorLOD(LOD):
     return str(LOD)
 
-def getPoopLighting(policy, name):
+def getPoopLighting(policy, name, not_bungie_game):
     if name.startswith(('%!',     '%-!','%+!','%*!',     '%-*!','%+*!',     '%*-!','%*+!')):
         return '_connected_geometry_poop_lighting_per_pixel'
     elif name.startswith(('%?',     '%-?','%+?','%*?',     '%-*?','%+*?',     '%*-?','%*+?')):
@@ -764,13 +857,10 @@ def getPoopLighting(policy, name):
     elif name.startswith(('%>',     '%->','%+>','%*>',     '%-*>','%+*>',     '%*->','%*+>')):
         return '_connected_geometry_poop_lighting_single_probe'
     else:
-        match policy:
-            case 'PER PIXEL':
-                return '_connected_geometry_poop_lighting_per_pixel'
-            case 'PER VERTEX':
-                return '_connected_geometry_poop_lighting_per_vertex'
-            case 'SINGLE PROBE':
-                return '_connected_geometry_poop_lighting_single_probe'
+        if policy == '_connected_geometry_poop_lighting_per_vertex_ao' and not not_bungie_game:
+            return '_connected_geometry_poop_lighting_default'
+        else:
+            return policy
 
 def getPoopPathfinding(policy, name):
     if name.startswith(('%-',     '%!-','%?-','%>-','%*-',     '%!*-','%?*-','%>*-',     '%*!-','%*?-','%*>-')):
@@ -855,17 +945,6 @@ def getFaceMode(mode):
         case 'BREAKABLE':
             return '_connected_geometry_face_mode_breakable'
 
-def getFaceSides(sides):
-    match sides:
-        case 'ONE SIDED':
-            return '_connected_geometry_face_sides_one_sided'
-        case 'ONE SIDED TRANSPARENT':
-            return '_connected_geometry_face_sides_one_sided_transparent'
-        case 'TWO SIDED':
-            return '_connected_geometry_face_sides_two_sided'
-        case 'TWO SIDED TRANSPARENT':
-            return '_connected_geometry_face_sides_two_sided_transparent' 
-
 def getFaceDrawDistance(distance):
     match distance:
         case 'NORMAL':
@@ -921,15 +1000,6 @@ def getMeshCompression(compression):
             return '_connected_geometry_mesh_additional_compression_force_off'
         case 'FORCE ON':
             return '_connected_geometry_mesh_additional_compression_force_on'
-
-def getPrimitiveType(type):
-    match type:
-        case 'BOX':
-            return '_connected_geometry_primitive_type_box'
-        case 'PILL':
-            return '_connected_geometry_primitive_type_pill'
-        case 'SPHERE':
-            return '_connected_geometry_primitive_type_sphere'
 
 def GetRadius(ob, sphere):
     if sphere:

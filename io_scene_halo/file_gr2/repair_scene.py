@@ -34,8 +34,7 @@ from mathutils import Matrix, Vector
 #####################################################################################
 #####################################################################################
 # MAIN FUNCTION     
-
-def repair_scene(context, report, objects_selection, active_object, hidden_objects, mode, temp_armature, timeline_start, timeline_end, model_armature, lights, proxies, unselectable_objects, enabled_exclude_collections, mesh_node_names, temp_nodes, export_hidden, sidecar_type, **kwargs):
+def repair_scene(context, report, objects_selection, active_object, hidden_objects, mode, temp_armature, timeline_start, timeline_end, model_armature, lights, unselectable_objects, enabled_exclude_collections, mesh_node_names, temp_nodes, export_hidden, sidecar_type, **kwargs):
     # if sidecar_type == 'SCENARIO':
     #     FixSceneRotatation(context.view_layer.objects, model_armature)
         
@@ -43,7 +42,7 @@ def repair_scene(context, report, objects_selection, active_object, hidden_objec
  
     RepairTimeline(scene, timeline_start, timeline_end)
 
-    DeletePoopProxies(proxies)
+    # DeletePoopProxies(proxies)
 
     #RestoreLightsRotations(lights)
 

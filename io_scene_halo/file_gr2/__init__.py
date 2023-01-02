@@ -165,9 +165,9 @@ class Export_Scene_GR2(Operator, ExportHelper):
         description='',
         default=True,
     )
-    export_lightmap_regions: BoolProperty(
-        name='Lightmap Regions',
-        description='',
+    export_misc: BoolProperty(
+        name='Misc',
+        description='Includes Lightmap regions, Lighprobe volumes, and OBB volumes',
         default=True,
     )
     export_boundary_surfaces: BoolProperty(
@@ -526,7 +526,7 @@ class Export_Scene_GR2(Operator, ExportHelper):
         self.export_water_surfaces = scene_gr2_export.export_water_surfaces 
         self.export_fog_planes = scene_gr2_export.export_fog_planes
         self.export_cookie_cutters = scene_gr2_export.export_cookie_cutters
-        self.export_lightmap_regions = scene_gr2_export.export_lightmap_regions
+        self.export_misc = scene_gr2_export.export_misc
         self.export_boundary_surfaces = scene_gr2_export.export_boundary_surfaces
         self.export_water_physics = scene_gr2_export.export_water_physics
         self.export_rain_occluders = scene_gr2_export.export_rain_occluders
@@ -615,7 +615,7 @@ class Export_Scene_GR2(Operator, ExportHelper):
             console.console_toggle() # toggle the console so users can see progress of export
 
         from .prepare_scene import prepare_scene
-        (objects_selection, active_object, hidden_objects, mode, model_armature, temp_armature, skeleton_bones, halo_objects, timeline_start, timeline_end, lod_count, proxies, unselectable_objects, enabled_exclude_collections, mesh_node_names, temp_nodes, selected_perms, selected_bsps
+        (objects_selection, active_object, hidden_objects, mode, model_armature, temp_armature, skeleton_bones, halo_objects, timeline_start, timeline_end, lod_count, unselectable_objects, enabled_exclude_collections, mesh_node_names, temp_nodes, selected_perms, selected_bsps
         ) = prepare_scene(context, self.report, **keywords) # prepares the scene for processing and returns information about the scene
         try:
             from .process_scene import process_scene
@@ -626,7 +626,7 @@ class Export_Scene_GR2(Operator, ExportHelper):
             self.report({'ERROR'}, error)
 
         from .repair_scene import repair_scene
-        repair_scene(context, self.report, objects_selection, active_object, hidden_objects, mode, temp_armature, timeline_start, timeline_end, model_armature, halo_objects.lights, proxies, unselectable_objects, enabled_exclude_collections, mesh_node_names, temp_nodes, **keywords)
+        repair_scene(context, self.report, objects_selection, active_object, hidden_objects, mode, temp_armature, timeline_start, timeline_end, model_armature, halo_objects.lights, unselectable_objects, enabled_exclude_collections, mesh_node_names, temp_nodes, **keywords)
 
         if self.show_output:
             console.console_toggle()

@@ -61,8 +61,9 @@ all_prefixes = ('+slip_surface', '+soft_ceiling', '+soft_kill', '+decorator', '+
 # Material Prefixes #
 special_materials = ('+collision', '+physics', '+portal', '+seamsealer','+sky', '+slip_surface', '+soft_ceiling', '+soft_kill', '+weatherpoly', '+override')
 # Enums #
-special_mesh_types = ('BOUNDARY SURFACE', 'COLLISION','DECORATOR','INSTANCED GEOMETRY','PLANAR FOG VOLUME','PORTAL','SEAM','WATER PHYSICS VOLUME',)
-invalid_mesh_types = ('BOUNDARY SURFACE', 'COOKIE CUTTER', 'INSTANCED GEOMETRY MARKER', 'INSTANCED GEOMETRY RAIN BLOCKER', 'INSTANCED GEOMETRY VERTICAL RAIN SHEET', 'LIGHTMAP REGION', 'PLANAR FOG VOLUME', 'PORTAL', 'SEAM', 'WATER PHYSICS VOLUME')
+special_mesh_types = ('BOUNDARY SURFACE', 'COLLISION','DECORATOR','INSTANCED GEOMETRY','PLANAR FOG VOLUME','PORTAL','SEAM','WATER PHYSICS VOLUME', 'OBB VOLUME')
+invalid_mesh_types = ('BOUNDARY SURFACE', 'COOKIE CUTTER', 'INSTANCED GEOMETRY MARKER', 'INSTANCED GEOMETRY RAIN BLOCKER', 'INSTANCED GEOMETRY VERTICAL RAIN SHEET', 'LIGHTMAP REGION', 'PLANAR FOG VOLUME', 'PORTAL', 'SEAM', 'WATER PHYSICS VOLUME', 'LIGHTPROBE VOLUME', 'OBB VOLUME')
+invalid_mesh_types_full = ('_connected_geometry_mesh_type_boundary_surface', '_connected_geometry_mesh_type_cookie_cutter', 'INSTANCED GEOMETRY MARKER', 'INSTANCED GEOMETRY RAIN BLOCKER', 'INSTANCED GEOMETRY VERTICAL RAIN SHEET', 'LIGHTMAP REGION', '_connected_geometry_mesh_type_planar_fog_volume', '_connected_geometry_mesh_type_portal', '_connected_geometry_mesh_type_seam', '_connected_geometry_mesh_type_water_physics_volume', '_connected_geometry_mesh_type_lightprobevolume', '_connected_geometry_mesh_type_obb_volume')
 # animations #
 valid_animation_types = ('JMM', 'JMA', 'JMT', 'JMZ', 'JMV', 'JMO', 'JMOX', 'JMR', 'JMRX')
 
@@ -277,8 +278,8 @@ class sel_logic():
     def ObWaterSurfaces(ob):
         return MeshType(ob, ('WATER SURFACE'), ('\'')) and NotParentedToPoop(ob)
 
-    def ObLightMapRegions(ob):
-        return MeshType(ob, ('LIGHTMAP REGION')) and NotParentedToPoop(ob)
+    def ObMisc(ob):
+        return MeshType(ob, ('LIGHTMAP REGION', 'LIGHTPROBE VOLUME', 'OBB VOLUME')) and NotParentedToPoop(ob)
 
     def ObFog(ob):
         return MeshType(ob, ('PLANAR FOG VOLUME'), ('+fog')) and NotParentedToPoop(ob)

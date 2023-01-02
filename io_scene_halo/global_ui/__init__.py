@@ -1347,7 +1347,10 @@ class JSON_ObjectMeshProps(Panel):
                     col.prop(ob_halo_json, "Poop_Lighting_Override_Locked", text='Lighting Policy')
                 else:
                     col.prop(ob_halo_json, "Poop_Lighting_Override", text='Lighting Policy')
-
+                
+                if context.scene.halo.game_version in ('h4', 'h2a'):
+                    col.prop(ob_halo_json, "poop_lightmap_resolution_scale")
+                    
                 if context.active_object.name.startswith(poop_pathfinding_prefixes):
                     col.prop(ob_halo_json, "Poop_Pathfinding_Override_Locked", text='Pathfinding Policy')
                 else:
@@ -1359,6 +1362,8 @@ class JSON_ObjectMeshProps(Panel):
                     sub.prop(ob_halo_json, 'Poop_Imposter_Transition_Distance_Auto', text='Automatic')
                     if not ob_halo_json.Poop_Imposter_Transition_Distance_Auto:
                         sub.prop(ob_halo_json, 'Poop_Imposter_Transition_Distance', text='Distance')
+                    if context.scene.halo.game_version in ('h4', 'h2a'):
+                        sub.prop(ob_halo_json, 'poop_imposter_brightness')
                     # col.prop(ob_halo_json, "Poop_Imposter_Fade_Range_Start", text='Fade In Start')
                     # col.prop(ob_halo_json, "Poop_Imposter_Fade_Range_End", text='Fade In End')
                 #col.prop(ob_halo_json, "Poop_Decomposition_Hulls", text='Decomposition Hulls') commented out so it can be set automatically. 
@@ -1366,6 +1371,10 @@ class JSON_ObjectMeshProps(Panel):
                 # col.separator()
 
                 # col.prop(ob_halo_json, "Poop_Predominant_Shader_Name", text='Predominant Shader Name')
+
+                if context.scene.halo.game_version in ('h4', 'h2a'):
+                    col.prop(ob_halo_json, 'poop_streaming_priority')
+                    col.prop(ob_halo_json, 'poop_cinematic_properties')
 
                 col.separator()
 
@@ -1381,7 +1390,11 @@ class JSON_ObjectMeshProps(Panel):
                 sub.prop(ob_halo_json, "Poop_Does_Not_Block_AOE", text='Does Not Block AOE')
                 sub.prop(ob_halo_json, "Poop_Excluded_From_Lightprobe", text='Excluded From Lightprobe')
                 sub.prop(ob_halo_json, "Poop_Decal_Spacing", text='Decal Spacing')
-                sub.prop(ob_halo_json, "Poop_Precise_Geometry", text='Precise Geometry')
+                if context.scene.halo.game_version in ('h4', 'h2a'):
+                    sub.prop(ob_halo_json, "poop_remove_from_shadow_geometry")
+                    sub.prop(ob_halo_json, "poop_disallow_lighting_samples",)
+                    sub.prop(ob_halo_json, "poop_rain_occluder")
+
             elif (ob_halo_json.ObjectMesh_Type == 'PORTAL' or ob_halo_json.ObjectMesh_Type_Locked == 'PORTAL'):
                 col.prop(ob_halo_json, "Portal_Type", text='Portal Type')
 
@@ -1409,6 +1422,9 @@ class JSON_ObjectMeshProps(Panel):
                 col.prop(ob_halo_json, "Fog_Name", text='Fog Name')
                 col.prop(ob_halo_json, "Fog_Appearance_Tag", text='Fog Appearance Tag')
                 col.prop(ob_halo_json, "Fog_Volume_Depth", text='Fog Volume Depth')
+
+            elif ob_halo_json.ObjectMesh_Type == 'OBB VOLUME':
+                col.prop(ob_halo_json, "obb_volume_type")
 
 class JSON_ObjectMeshFaceProps(Panel):
     bl_label = "Face Properties"
@@ -1465,6 +1481,9 @@ class JSON_ObjectMeshFaceProps(Panel):
         sub.prop(ob_halo_json, "Group_Transparents_By_Plane", text='Group Transparents By Plane')
         sub.prop(ob_halo_json, "No_Shadow", text='No Shadow')
         sub.prop(ob_halo_json, "Precise_Position", text='Precise Position')
+        if context.scene.halo.game_version in ('h4', 'h2a'):
+            sub.prop(ob_halo_json, "no_lightmap")
+            sub.prop(ob_halo_json, "no_pvs")
 
 class JSON_ObjectMeshMaterialLightingProps(Panel):
     bl_label = "Lighting Properties"
@@ -1608,6 +1627,7 @@ class JSON_ObjectMeshExtraProps(Panel):
         ob_halo_json = ob.halo_json
 
         col = flow.column()
+        
         col.prop(ob_halo_json, "Mesh_Tesselation_Density", text='Tesselation Density')
         col.prop(ob_halo_json, "Mesh_Compression", text='Compression')
         col.prop(ob_halo_json, "Mesh_Primitive_Type", text='Primitive Type')
@@ -1623,6 +1643,17 @@ class JSON_ObjectMeshExtraProps(Panel):
         #             sub.prop(ob_halo_json, "Pill_Height", text='Height')
         #         case 'SPHERE':
         #             sub.prop(ob_halo_json, "Sphere_Radius", text='Radius')
+        if context.scene.halo.game_version in ('h4', 'h2a'):
+
+            col.separator()
+
+            col = layout.column(heading="Flags")
+            sub = col.column(align=True)
+
+            if (ob_halo_json.ObjectMesh_Type == 'INSTANCED GEOMETRY' or ob_halo_json.ObjectMesh_Type_Locked == 'INSTANCED GEOMETRY') or (ob_halo_json.ObjectMesh_Type == 'DEFAULT' or ob_halo_json.ObjectMesh_Type_Locked == 'DEFAULT'):
+                sub.prop(ob_halo_json, 'use_uncompressed_verts')
+            if (ob_halo_json.ObjectMesh_Type == 'DEFAULT' or ob_halo_json.ObjectMesh_Type_Locked == 'DEFAULT'):
+                sub.prop(ob_halo_json, 'uvmirror_across_entire_model')
 
 # MARKER PROPERTIES
 class JSON_ObjectMarkerProps(Panel):
@@ -1655,22 +1686,34 @@ class JSON_ObjectMarkerProps(Panel):
         
         group_marker_types = ('DEFAULT', 'HINT', 'TARGET')
 
-        sub = col.row(align=True)
-        if not ob_halo_json.Marker_All_Regions:
-            sub.prop(ob_halo_json, "Marker_Region", text='Marker Region')
-        sub.prop(ob_halo_json, 'Marker_All_Regions', text='All Regions')
-
         if ob_halo_json.ObjectMarker_Type in group_marker_types and ob_halo_json.ObjectMarker_Type_Locked != 'GAME INSTANCE':
             col.prop(ob_halo_json, "Marker_Group_Name", text='Marker Group')
 
         if ob_halo_json.ObjectMarker_Type == 'DEFAULT' and not ob_halo_json.ObjectMarker_Type_Locked == 'GAME INSTANCE':
             col.separator()
             col.prop(ob_halo_json, "Marker_Velocity", text='Marker Velocity')
+            sub = col.row(align=True)
+            if not ob_halo_json.Marker_All_Regions:
+                sub.prop(ob_halo_json, "Marker_Region", text='Marker Region')
+            sub.prop(ob_halo_json, 'Marker_All_Regions', text='All Regions')
 
         if ob_halo_json.ObjectMarker_Type == 'GAME INSTANCE' or ob_halo_json.ObjectMarker_Type_Locked == 'GAME INSTANCE':
             col.separator()
             col.prop(ob_halo_json, "Marker_Game_Instance_Tag_Name", text='Game Instance Tag')
             col.prop(ob_halo_json, "Marker_Game_Instance_Tag_Variant_Name", text='Game Instance Tag Variant')
+            if context.scene.halo.game_version in ('h4', 'h2a'):
+                col.prop(ob_halo_json, 'marker_game_instance_run_scripts') 
+                
+        if ob_halo_json.ObjectMarker_Type == 'HINT' and not ob_halo_json.ObjectMarker_Type_Locked == 'GAME INSTANCE' and context.scene.halo.game_version in ('h4', 'h2a'):
+            col.prop(ob_halo_json, 'marker_hint_length')
+
+        if ob_halo_json.ObjectMarker_Type == 'PATHFINDING SPHERE' and not ob_halo_json.ObjectMarker_Type_Locked == 'GAME INSTANCE':
+            col.separator()
+            col = layout.column(heading="Flags")
+            sub = col.column(align=True)
+            sub.prop(ob_halo_json, "Marker_Pathfinding_Sphere_Vehicle", text='Vehicle Only')
+            sub.prop(ob_halo_json, "Pathfinding_Sphere_Remains_When_Open", text='Remains When Open')
+            sub.prop(ob_halo_json, "Pathfinding_Sphere_With_Sectors", text='With Sectors')
 
         if ob_halo_json.ObjectMarker_Type == 'PATHFINDING SPHERE' and not ob_halo_json.ObjectMarker_Type_Locked == 'GAME INSTANCE':
             col.separator()
@@ -1703,6 +1746,18 @@ class JSON_ObjectMarkerProps(Panel):
                     
                     col.prop(ob_halo_json, "Twist_Constraint_Start", text='Twist Start')
                     col.prop(ob_halo_json, "Twist_Constraint_End", text='Twist End')
+
+        if ob_halo_json.ObjectMarker_Type == 'ENFX' and not ob_halo_json.ObjectMarker_Type_Locked == 'GAME INSTANCE':
+            col.prop(ob_halo_json, "marker_looping_effect")
+
+        if ob_halo_json.ObjectMarker_Type == 'LIGHT CONE' and not ob_halo_json.ObjectMarker_Type_Locked == 'GAME INSTANCE': 
+            col.prop(ob_halo_json, "marker_light_cone_tag")
+            col.prop(ob_halo_json, "marker_light_cone_color")
+            col.prop(ob_halo_json, "marker_light_cone_alpha") 
+            col.prop(ob_halo_json, "marker_light_cone_intensity")
+            col.prop(ob_halo_json, "marker_light_cone_width")
+            col.prop(ob_halo_json, "marker_light_cone_length")
+            col.prop(ob_halo_json, "marker_light_cone_curve")
 
 # MATERIAL PROPERTIES
 class JSON_MaterialProps(Panel):
@@ -2030,6 +2085,18 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
         description="Sets the object type",
         default = 'LIGHT',
         items=[('LIGHT', 'Light', '')],
+    ) 
+
+    use_uncompressed_verts: BoolProperty(
+        name="Don't Compress Vertices",
+        options=set(),
+        default = True,
+    )
+
+    uvmirror_across_entire_model: BoolProperty(
+        name="UV Mirror Across Model",
+        options=set(),
+        default = False,
     )
 
     bsp_name: StringProperty(
@@ -2087,14 +2154,14 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
         ('COLLISION', "Collision", "Sets this mesh to have collision geometry only. Can be forced on with the prefix: '@'"), #1
         ('COOKIE CUTTER', "Cookie Cutter", "Defines an area which ai will pathfind around. Can be forced on with the prefix: '+cookie'"), # 2
         ('DECORATOR', "Decorator", "Use this when making a decorator. Allows for different LOD levels to be set. Can be forced on with the prefix: '+dec'"), # 3
-        ('DEFAULT', "Default", "By default this mesh type will be treated as render only geometry in models, and render + bsp collision geometry in structures"), #4
+        ('DEFAULT', "Render / Structure", "By default this mesh type will be treated as render only geometry in models, and render + bsp collision geometry in structures"), #4
         ('INSTANCED GEOMETRY', "Instanced Geometry", "Writes this mesh a json file as instanced geometry. Can be forced on with the prefix: '%'"), # 5
         #('INSTANCED GEOMETRY COLLISION', "Instanced Collision", "This mesh will act as the collision geometry of its parent instanced geometry mesh. Can be forced on if this mesh is the child of an instanced geometry object and has the prefix: '@'"),
-        ('INSTANCED GEOMETRY MARKER', "Instanced Marker", ""), # 6
+        ('INSTANCED GEOMETRY MARKER', "Instanced Marker", "HR only"), # 6
         #('INSTANCED GEOMETRY PHYSICS', "Instanced Physics", "This mesh will act as the physics geometry of its parent instanced geometry mesh. Can be forced on if this mesh is the child of an instanced geometry object and has the prefix: '$'"),
-        ('INSTANCED GEOMETRY RAIN BLOCKER', "Rain Occluder",'Rain is not rendered in the the volume this mesh occupies. Can be forced on with the prefix: ''+rain'), # 7
-        ('INSTANCED GEOMETRY VERTICAL RAIN SHEET', "Vertical Rain Sheet", ''), # 8
-        ('LIGHTMAP REGION', "Lightmap Region", "Defines an area of a structure which should be lightmapped. Can be referenced when lightmapping"), # 9
+        ('INSTANCED GEOMETRY RAIN BLOCKER', "Rain Occluder",'HR only. Rain is not rendered in the the volume this mesh occupies. Can be forced on with the prefix: ''+rain'), # 7
+        ('INSTANCED GEOMETRY VERTICAL RAIN SHEET', "HR only. Vertical Rain Sheet", ''), # 8
+        ('LIGHTMAP REGION', "Lightmap Region", "HR only. Defines an area of a structure which should be lightmapped. Can be referenced when lightmapping"), # 9
         ('OBJECT INSTANCE', "Object Instance", "Writes this mesh to the json as an instanced object. Can be forced on with the prefix: '+flair'"), # 10
         ('PHYSICS', "Physics", "Sets this mesh to have physics geometry only. Can be forced on with the prefix: '$'"), # 11
         ('PLANAR FOG VOLUME', "Planar Fog Volume", "Defines an area for a fog volume. The same logic as used for portals should be applied to these.  Can be forced on with the prefix: '+fog'"), # 12
@@ -2102,6 +2169,8 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
         ('SEAM', "Seam", "Defines where two bsps meet. Its name should match the name of the bsp its in. Can be forced on with the prefix '+seam'"), # 14
         ('WATER PHYSICS VOLUME', "Water Physics Volume", "Defines an area where water physics should apply. Only use when importing to a structure_design tag. Can be forced on with the prefix: '+water'"), # 15
         ('WATER SURFACE', "Water Surface", "Defines a mesh as a water surface. Can be forced on with the prefix: '"), # 16
+        ('LIGHTPROBE VOLUME', 'Lightprobe Volume', 'H4+ Only'), # 17
+        ('OBB VOLUME', 'OBB Volume', 'H4+ Only'), # 18
     ]
 
     #MESH PROPERTIES
@@ -2126,11 +2195,12 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
         name="Mesh Primitive Type",
         options=set(),
         description="Select the primtive type of this mesh",
-        default = "NONE",
-        items=[ ('NONE', "None", "None"),
-                ('BOX', "Box", "Box"),
-                ('PILL', "Pill", "Pill"),
-                ('SPHERE', "Sphere", "Sphere"),
+        default = "_connected_geometry_primitive_type_none",
+        items=[ ('_connected_geometry_primitive_type_none', "None", "None"),
+                ('_connected_geometry_primitive_type_box', "Box", "Box"),
+                ('_connected_geometry_primitive_type_pill', "Pill", "Pill"),
+                ('_connected_geometry_primitive_type_sphere', "Sphere", "Sphere"),
+                ('_connected_geometry_primitive_type_mopp', "MOPP", ""),
                ]
         )
 
@@ -2188,11 +2258,15 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
         name="Face Sides",
         options=set(),
         description="Sets the face sides for this mesh",
-        default = 'ONE SIDED',
-        items=[ ('ONE SIDED', "One Sided", "Faces set to only render on one side (the direction of face normals)"),
-                ('ONE SIDED TRANSPARENT', "One Sided Transparent", "Faces set to only render on one side (the direction of face normals), but also render geometry behind them"),
-                ('TWO SIDED', "Two Sided", "Faces set to render on both sides"),
-                ('TWO SIDED TRANSPARENT', "Two Sided Transparent", "Faces set to render on both sides, but also render geometry through them"),
+        default = '_connected_geometry_face_sides_one_sided',
+        items=[ ('_connected_geometry_face_sides_one_sided', "One Sided", "Faces set to only render on one side (the direction of face normals)"),
+                ('_connected_geometry_face_sides_one_sided_transparent', "One Sided Transparent", "Faces set to only render on one side (the direction of face normals), but also render geometry behind them"),
+                ('_connected_geometry_face_sides_two_sided', "Two Sided", "Faces set to render on both sides"),
+                ('_connected_geometry_face_sides_two_sided_transparent', "Two Sided Transparent", "Faces set to render on both sides and are transparent"),
+                ('_connected_geometry_face_sides_mirror', "Mirror", "H4+ only"),
+                ('_connected_geometry_face_sides_mirror_transparent', "Mirror Transparent", "H4+ only"),
+                ('_connected_geometry_face_sides_keep', "Keep", "H4+ only"),
+                ('_connected_geometry_face_sides_keep_transparent', "Keep Transparent", "H4+ only"),
                ]
         )
 
@@ -2312,6 +2386,20 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
         description = "Enable to prevent faces from being altered during the import process",
         default = False,
     )
+
+    no_lightmap: BoolProperty(
+        name ="Exclude From Lightmap",
+        options=set(),
+        description = "",
+        default = False,
+    )
+
+    no_pvs: BoolProperty(
+        name ="Invisible To PVS",
+        options=set(),
+        description = "",
+        default = False,
+    )
     
     #PRIMITIVE PROPERTIES
     # Box_Length: FloatProperty(
@@ -2405,9 +2493,11 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
         )
     
 
-    poop_lighting_items = [ ('PER PIXEL', "Per Pixel", "Sets the lighting policy to per pixel. Can be forced on with the prefix: '%?'"),
-                            ('PER VERTEX', "Per Vertex", "Sets the lighting policy to per vertex. Can be forced on with the prefix: '%!'"),
-                            ('SINGLE PROBE', "Single Probe", "Sets the lighting policy to single probe."),
+    poop_lighting_items = [ ('_connected_geometry_poop_lighting_default', "Default", "Sets the lighting policy automatically"),
+                            ('_connected_geometry_poop_lighting_per_pixel', "Per Pixel", "Sets the lighting policy to per pixel. Can be forced on with the prefix: '%?'"),
+                            ('_connected_geometry_poop_lighting_per_vertex', "Per Vertex", "Sets the lighting policy to per vertex. Can be forced on with the prefix: '%!'"),
+                            ('_connected_geometry_poop_lighting_single_probe', "Single Probe", "Sets the lighting policy to single probe. Can be forced on with the prefix: '%>'"),
+                            ('_connected_geometry_poop_lighting_per_vertex_ao', "Per Vertex AO", "H4+ only. Sets the lighting policy to per vertex ambient occlusion."),
                             ]
 
 
@@ -2416,17 +2506,17 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
         name="Lighting Policy",
         options=set(),
         description="Sets the lighting policy for this instanced geometry",
-        default = 'PER VERTEX',
+        default = '_connected_geometry_poop_lighting_default',
         items=poop_lighting_items,
         )
 
     def get_poop_lighting_policy(self):
         if bpy.context.active_object.name.startswith(('%!',     '%-!','%+!','%*!',     '%-*!','%+*!',     '%*-!','%*+!')):
-            return 0
-        elif bpy.context.active_object.name.startswith(('%?',     '%-?','%+?','%*?',     '%-*?','%+*?',     '%*-?','%*+?')):
             return 1
-        elif bpy.context.active_object.name.startswith(('%>',     '%->','%+>','%*>',     '%-*>','%+*>',     '%*->','%*+>')):
+        elif bpy.context.active_object.name.startswith(('%?',     '%-?','%+?','%*?',     '%-*?','%+*?',     '%*-?','%*+?')):
             return 2
+        elif bpy.context.active_object.name.startswith(('%>',     '%->','%+>','%*>',     '%-*>','%+*>',     '%*->','%*+>')):
+            return 3
         else:
             return 0 # else won't ever be hit, but adding it stops errors
 
@@ -2435,9 +2525,17 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
         options=set(),
         get=get_poop_lighting_policy,
         description="Sets the lighting policy for this instanced geometry",
-        default = 'PER VERTEX',
+        default = '_connected_geometry_poop_lighting_default',
         items=poop_lighting_items,
         )
+
+    poop_lightmap_resolution_scale : FloatProperty( # H4+ only
+        name="Lightmap Resolution Scale",
+        options=set(),
+        description="Sets lightmap resolutions scale for this instance",
+        default = 1.0,
+        min = 0.0
+    )
 
     poop_pathfinding_items = [  ('CUTOUT', "Cutout", "Sets the pathfinding policy to cutout. AI will be able to pathfind around this mesh, but not on it."),
                                 ('NONE', "None", "Sets the pathfinding policy to none. This mesh will be ignored during pathfinding generation. Can be forced on with the prefix: '%-'"),
@@ -2483,6 +2581,14 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
                ]
         )
 
+    poop_imposter_brightness: FloatProperty( # h4+
+        name="Imposter Brightness",
+        options=set(),
+        description="Sets the brightness of the imposter variant of this instance",
+        default=0.0,
+        min=0.0
+    )
+
     Poop_Imposter_Transition_Distance: FloatProperty(
         name="Instanced Geometry Imposter Transition Distance",
         options=set(),
@@ -2496,6 +2602,17 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
         description="Enable to let the engine set the imposter transition distance by object size",
         default=True,
     )
+
+    poop_streaming_priority : EnumProperty( # h4+
+        name="Streaming Priority",
+        options=set(),
+        description="Sets the streaming priority for this instance",
+        default = "DEFAULT",
+        items=[ ('DEFAULT', "Default", ""),
+                ('HIGHER', "Higher", ""),
+                ('HIGHEST', "Highest", ""),
+               ]
+        )
 
     # Poop_Imposter_Fade_Range_Start: IntProperty(
     #     name="Instanced Geometry Fade Start",
@@ -2582,12 +2699,46 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
         default = False,
     )
 
+    poop_remove_from_shadow_geometry: BoolProperty( # H4+
+        name ="Remove From Shadow Geo",
+        options=set(),
+        description = "",
+        default = False,
+    )
+
+    poop_disallow_lighting_samples: BoolProperty( # H4+
+        name ="Disallow Lighting Samples",
+        options=set(),
+        description = "",
+        default = False,
+    )
+
+    poop_rain_occluder: BoolProperty( # H4+
+        name ="Rain Occluder",
+        options=set(),
+        description = "",
+        default = False,
+    )
+
+    poop_cinematic_properties : EnumProperty( # h4+
+        name="Cinematic Properties",
+        options=set(),
+        description="Sets whether the instance should render only in cinematics, only outside of cinematics, or in both environments",
+        default = "DEFAULT",
+        items=[ ('DEFAULT', "Default", "Include both in cinematics and outside of them"),
+                ('CINEMATIC ONLY', "Cinematic Only", "Only render in cinematics"),
+                ('CINEMATIC EXCLUDE', "Exclude From Cinematics", "Do not render in cinematics"),
+               ]
+        )
+
+    # poop light channel flags. Not included for now   
+
     Poop_Collision_Type: EnumProperty(
         name ="Collision Type",
         options=set(),
         description = "Set the collision type. Only used when exporting a scenario",
         default = 'DEFAULT',
-        items=[('DEFAULT', 'Default', 'The collision mesh acts like an invisible wall'), ('PLAYER', 'Player Only', 'The collision mesh only affects the player'), ('BULLET', 'Projectile Only', 'The collision mesh only interacts with projectiles')]
+        items=[('DEFAULT', 'Default', 'The collision mesh acts like an invisible wall'), ('PLAYER', 'Player Only', 'The collision mesh only affects the player'), ('BULLET', 'Projectile Only', 'The collision mesh only interacts with projectiles'), ('NONE', 'None', 'No collision mesh')]
     )
 
     #PORTAL PROPERTIES
@@ -2720,7 +2871,17 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
         description="Set the depth of the fog volume",
         default=20,
     )
-    
+
+    # OBB PROPERTIES (H4+)
+    obb_volume_type : EnumProperty(
+        name="OBB Type",
+        options=set(),
+        description="",
+        default = "_connected_geometry_mesh_obb_volume_type_streamingvolume",
+        items=[ ('_connected_geometry_mesh_obb_volume_type_streamingvolume', "Streaming Volume", ""),
+                ('_connected_geometry_mesh_obb_volume_type_lightmapexclusionvolume', "Lightmap Exclusion Volume", ""),
+               ]
+        )
     #LIGHTMAP PROPERTIES
     Lightmap_Settings_Enabled: BoolProperty(
         name ="Enable to use lightmap settings",
@@ -2753,6 +2914,18 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
         default=3,
         min=1,
     )
+
+    lightmap_photon_fidelity : EnumProperty(
+        name="Photon Fidelity",
+        options=set(),
+        description="H4+ only",
+        default = "_connected_material_lightmap_photon_fidelity_normal",
+        items=[ ('_connected_material_lightmap_photon_fidelity_normal', "Normal", ""),
+                ('_connected_material_lightmap_photon_fidelity_medium', "Medium", ""),
+                ('_connected_material_lightmap_photon_fidelity_high', "High", ""),
+                ('_connected_material_lightmap_photon_fidelity_none', "None", ""),
+               ]
+        )
 
     # Lightmap_Chart_Group: IntProperty(
     #     name="Lightmap Chart Group",
@@ -2904,20 +3077,9 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
                 ('PHYSICS CONSTRAINT', "Physics Constraint", "Used to define various types of physics constraints"),
                 ('TARGET', "Target", "Defines the markers used in a model's targets'"),
                 ('WATER VOLUME FLOW', "Water Volume Flow", "Used to define water flow for water physics volumes. For structure_design tags only"),
-               ]
-
-    marker_types_h4 = [ ('DEFAULT', "Default", "Default marker type. Defines render_model markers for models, and structure markers for bsps"),
-                ('EFFECTS', "Effects", "Marker for effects only."),
-                ('GAME INSTANCE', "Game Instance", "Game Instance marker"),
-                ('GARBAGE', "Garbage", "marker to define position that garbage pieces should be created"),
-                ('HINT', "Hint", "Used for ai hints"),
-                ('PATHFINDING SPHERE', "Pathfinding Sphere", "Used to create ai pathfinding spheres"),
-                ('PHYSICS CONSTRAINT', "Physics Constraint", "Used to define various types of physics constraints"),
-                ('TARGET', "Target", "Defines the markers used in a model's targets'"),
-                ('WATER VOLUME FLOW', "Water Volume Flow", "Used to define water flow for water physics volumes. For structure_design tags only"),
-                ('ENFX', "Environment Effect", ""),
-                ('LIGHT CONE', "Light Cone", ""),
-                ('AIRPROBE', "Airprobe", ""),
+                ('ENFX', "Environment Effect", "H4+ only"),
+                ('LIGHT CONE', "Light Cone", "H4+ only"),
+                ('AIRPROBE', "Airprobe", "H4+ only"),
                ]
 
     #MARKER PROPERTIES
@@ -2971,7 +3133,21 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
     Marker_Game_Instance_Tag_Variant_Name: StringProperty(
         name="Marker Game Instance Tag Variant",
         description="Define the name of the marker game instance tag variant",
-    ) 
+    )
+
+    marker_game_instance_run_scripts: BoolProperty(
+        name="Always Run Scripts",
+        description="Tells this game instance object to always run scripts if it has any",
+        default=True
+    )
+
+    marker_hint_length: FloatProperty(
+        name="Hint Length",
+        options=set(),
+        description="",
+        default=0.0,
+        min=0.0,
+    )
 
     Marker_Velocity: FloatVectorProperty(
         name="Marker Velocity",
@@ -3086,7 +3262,65 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
         default=180,
         min=-180,
         max=180,
+    )
 
+    marker_looping_effect: StringProperty(
+        name="Effect Path",
+        description="Tag path to an effect",
+    )
+
+    marker_light_cone_tag: StringProperty(
+        name="Light Cone Tag Path",
+        description="Tag path to a light cone",
+    )
+
+    marker_light_cone_color: FloatVectorProperty(
+        name="Light Cone Color",
+        options=set(),
+        description="",
+        default=(1.0, 1.0, 1.0),
+        subtype='COLOR',
+        min=0.0,
+        max=1.0,
+    )
+
+    marker_light_cone_alpha: FloatProperty(
+        name="Light Cone Alpha",
+        options=set(),
+        description="",
+        default=1.0,
+        subtype='FACTOR',
+        min=0.0,
+        max=1.0,
+    )
+
+    marker_light_cone_width: FloatProperty(
+        name="Light Cone Width",
+        options=set(),
+        description="",
+        default=5,
+        min=0,
+    )
+
+    marker_light_cone_length: FloatProperty(
+        name="Light Cone Length",
+        options=set(),
+        description="",
+        default=10,
+        min=0,
+    )
+
+    marker_light_cone_intensity: FloatProperty(
+        name="Light Cone Intensity",
+        options=set(),
+        description="",
+        default=1,
+        min=0,
+    )
+
+    marker_light_cone_curve: StringProperty(
+        name="Light Cone Curve Tag Path",
+        description="",
     )
 
 # LIGHTS #
@@ -3655,7 +3889,7 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
     def set_blend_light_intensity_h4(self, context):
         ob = self.id_data
         if ob.type == 'LIGHT':
-            ob.data.energy = self.Light_IntensityH4 * context.scene.unit_settings.scale_length ** -2 # mafs. Gets around unit scale altering the light intensity to unwanted values
+            ob.data.energy = self.Light_IntensityH4 * 10 * context.scene.unit_settings.scale_length ** -2 # mafs. Gets around unit scale altering the light intensity to unwanted values
 
     Light_IntensityH4: FloatProperty(
         name="Light Intensity",

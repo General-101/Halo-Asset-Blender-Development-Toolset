@@ -59,9 +59,9 @@ def prepare_scene(context, report, sidecar_type, export_hidden, filepath, use_ar
     mesh_node_names, temp_nodes = MeshesToEmpties(context)
     h_objects = halo_objects(sidecar_type)
     FixMissingMaterials(context, h_objects)
-    proxies = SetPoopProxies(context, h_objects.poops)                                               # create and parent identical poop child objects to matching instances (collision, physics, cookie cutters). Keep them in a list so we can delete them later
-    for p in proxies:
-        h_objects.poops.append(p)
+    # proxies = SetPoopProxies(context, h_objects.poops) 02-01-2023 commenting this out as I don't believe the workflow should be this way. Also causes issues in H4
+    # for p in proxies:
+    #     h_objects.poops.append(p)
     model_armature, temp_armature, no_parent_objects = GetSceneArmature(context, sidecar_type, game_version)                          # return the main armature in the scene, and create a temp one if a model armature does not exist
     skeleton_bones = {}
     if model_armature is not None:
@@ -77,7 +77,7 @@ def prepare_scene(context, report, sidecar_type, export_hidden, filepath, use_ar
     # if sidecar_type == 'SCENARIO':
     #     RotateScene(context.view_layer.objects, model_armature)
 
-    return objects_selection, active_object, hidden_objects, mode, model_armature, temp_armature, skeleton_bones, h_objects, timeline_start, timeline_end, lod_count, proxies, unselectable_objects, enabled_exclude_collections, mesh_node_names, temp_nodes, selected_perms, selected_bsps
+    return objects_selection, active_object, hidden_objects, mode, model_armature, temp_armature, skeleton_bones, h_objects, timeline_start, timeline_end, lod_count, unselectable_objects, enabled_exclude_collections, mesh_node_names, temp_nodes, selected_perms, selected_bsps
 
 
 #####################################################################################
@@ -96,7 +96,7 @@ class halo_objects():
         self.portals = SelectHaloObject('ObPortals', asset_type, ('SCENARIO', 'CINEMATIC', 'PREFAB'))
         self.seams = SelectHaloObject('ObSeams', asset_type, ('SCENARIO', 'CINEMATIC'))
         self.water_surfaces = SelectHaloObject('ObWaterSurfaces', asset_type, ('SCENARIO', 'CINEMATIC', 'PREFAB'))
-        self.lightmap_regions = SelectHaloObject('ObLightMapRegions', asset_type, ('SCENARIO', 'CINEMATIC'))
+        self.misc = SelectHaloObject('ObMisc', asset_type, ('SCENARIO', 'CINEMATIC'))
         self.fog = SelectHaloObject('ObFog', asset_type, ('SCENARIO', 'CINEMATIC'))
         self.boundary_surfaces = SelectHaloObject('ObBoundarys', asset_type, ('SCENARIO', 'CINEMATIC'))
         self.water_physics = SelectHaloObject('ObWaterPhysics', asset_type, ('SCENARIO', 'CINEMATIC'))
