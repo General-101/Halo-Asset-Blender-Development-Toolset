@@ -692,6 +692,7 @@ def get_prop_from_collection(ob, prefixes):
                     prop = c.rpartition(':')[2]
                     prop = prop.strip(' ')
                     prop = prop.replace(' ', '_')
+                    prop = prop.rpartition('.')[0]
                     prop = prop.lower()
                     if prop == protected_word:
                         prop = ''
