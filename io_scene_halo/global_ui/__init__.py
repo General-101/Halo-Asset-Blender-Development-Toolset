@@ -3654,7 +3654,7 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
     def set_blend_light_intensity_h4(self, context):
         ob = self.id_data
         if ob.type == 'LIGHT':
-            ob.data.energy = self.Light_IntensityH4 ^ (1 / context.scene.unit_settings.scale_length)
+            ob.data.energy = self.Light_IntensityH4 * context.scene.unit_settings.scale_length ** -2 # mafs. Gets around unit scale altering the light intensity to unwanted values
 
     Light_IntensityH4: FloatProperty(
         name="Light Intensity",
