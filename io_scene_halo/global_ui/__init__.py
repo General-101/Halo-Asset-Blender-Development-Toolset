@@ -3203,6 +3203,11 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
         default=False,
     )
 
+    def set_blend_light_color(self, context):
+        ob = self.id_data
+        if ob.type == 'LIGHT':
+            ob.data.color = self.Light_Color
+
     Light_Color: FloatVectorProperty(
         name="Light Color",
         options=set(),
@@ -3211,6 +3216,7 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
         subtype='COLOR',
         min=0.0,
         max=1.0,
+        update=set_blend_light_color,
     )
 
     Light_Intensity: FloatProperty(
@@ -3628,12 +3634,18 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
         min=0,
     )
 
+    def set_blend_light_intensity_h4(self, context):
+        ob = self.id_data
+        if ob.type == 'LIGHT':
+            ob.data.energy = self.Light_IntensityH4
+
     Light_IntensityH4: FloatProperty(
         name="Light Intensity",
         options=set(),
         description="",
         default=50,
         min=0.0,
+        update=set_blend_light_intensity_h4
     )
 
 class JSON_MaterialPropertiesGroup(PropertyGroup):
