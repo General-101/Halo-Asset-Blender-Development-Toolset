@@ -978,6 +978,7 @@ class Halo_SetUnitScale(Operator):
     bl_options = {"REGISTER", "UNDO"}
 
     def execute(self, context):
+        # set the Halo scale
         context.scene.unit_settings.scale_length = 0.03048
         return {'FINISHED'}
 
@@ -2043,7 +2044,7 @@ class JSON_ObjectPropertiesGroup(PropertyGroup):
 
     bsp_name_locked: StringProperty(
         name="BSP Name",
-        default='000',
+        default='',
         description="Set bsp name for this object. Only valid for scenario exports",
         get=get_bsp_from_collection,
     )

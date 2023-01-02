@@ -28,9 +28,7 @@ import bpy
 def CreateCollections(context, ops, data, coll_type, coll_name):
     # iterates through the selected objects and applies the chosen collection type
     full_name = GetFullName(coll_type, coll_name)
-    print(full_name)
     collection_index = GetCollIfExists(data, full_name)
-    print(collection_index)
     if collection_index == -1:
         ops.object.move_to_collection(collection_index=0, is_new=True, new_collection_name=full_name)
     else:
@@ -65,5 +63,13 @@ def GetFullName(coll_type, coll_name):
             prefix = '+perm:'
     
     full_name = f'{prefix} {coll_name}'
+
+    # check if a collection by this name already exists, if so rename.
+    duplicate = 1
+    for c in bpy.data.collections:
+        if max(c.name.rpartition('.')[0], c.name) == full_name:
+            full_name = f'{prefix} {coll_name}'
+            full_name = f'{full_name}.{duplicate:03d}'
+            duplicate += 1
 
     return full_name
