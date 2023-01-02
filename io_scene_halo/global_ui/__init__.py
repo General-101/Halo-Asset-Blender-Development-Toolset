@@ -963,6 +963,23 @@ class Halo_GlobalSettings(Panel):
         row = col.row()
         row.label(text='Expert Mode:')
         row.prop(scene_halo, "expert_mode", text='')
+        row = col.row()
+        layout.use_property_split = True
+        flow = layout.grid_flow(row_major=True, columns=0, even_columns=True, even_rows=False, align=False)
+        col = flow.column()
+        col = col.row()
+        col.scale_y = 1.5
+        col.operator("halo.set_unit_scale")
+
+class Halo_SetUnitScale(Operator):
+    """Sets the scene unit scale to match Halo's scale"""
+    bl_idname = 'halo.set_unit_scale'
+    bl_label = 'Set Halo Unit Scale'
+    bl_options = {"REGISTER", "UNDO"}
+
+    def execute(self, context):
+        context.scene.unit_settings.scale_length = 0.03048
+        return {'FINISHED'}
 
 def GameVersionWarning(self, context):
     self.layout.label(text=f"Please set your editing kit path for {context.scene.halo.game_version.upper()} in add-on preferences [Edit > Preferences > Add-ons > Halo Asset Blender Development Toolset]")
@@ -3805,6 +3822,7 @@ classeshalo = (
     Halo_ScenePropertiesGroup,
     Halo_SceneProps,
     Halo_GlobalSettings,
+    Halo_SetUnitScale,
     Halo_XREFPath,
     JSON_ObjectProps,
     JSON_ObjectMeshProps,
