@@ -1586,6 +1586,8 @@ class JSON_ObjectMeshLightmapProps(Panel):
         col.separator()
 
         col.prop(ob_halo_json, "Lightmap_Resolution_Scale", text='Resolution Scale')
+        col.prop(ob_halo_json, "lightmap_photon_fidelity")
+
         # col.prop(ob_halo_json, "Lightmap_Chart_Group", text='Chart Group')
 
         # col.separator()

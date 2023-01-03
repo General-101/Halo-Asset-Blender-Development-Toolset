@@ -1080,57 +1080,52 @@ def getMaterials(not_bungie_game):
     return temp
 
 def export_asset(report, filePath="", keep_fbx=False, keep_json=False, asset_path="", asset_name="", tag_type='', perm='', is_windows=False, bsp='', model_armature='', skeleton_bones={}, halo_objects=None, sidecar_type=''):
-    if tag_type != 'selected':
-        fileName = GetFileName(asset_name, tag_type, perm, asset_path, bsp)
-        rename_file(filePath, fileName)
-    else:
-        fileName = filePath
-    pathList = fileName.split(".")
-    jsonPath = ""
-    for x in range(len(pathList)-1):
-        jsonPath += pathList[x]
-    jsonPath += ".json"
+    fileName = GetFileName(asset_name, tag_type, perm, asset_path, bsp)
+    rename_file(filePath, fileName)
+    if file_exists(fileName):
+        jsonPath = fileName.replace('.fbx', '.json')
+        build_json(jsonPath, model_armature, skeleton_bones, halo_objects, asset_name, sidecar_type)
 
-    build_json(jsonPath, model_armature, skeleton_bones, halo_objects, asset_name, sidecar_type)
-
-    if(is_windows):
-        gr2Path = ""
-        for x in range(len(pathList)-1):
-            gr2Path += pathList[x]
-            gr2Path += ".gr2"
-
+        gr2Path = fileName.replace('.fbx', '.gr2')
         build_gr2(fileName, jsonPath, gr2Path)
         if file_exists(gr2Path):
-            if tag_type != 'selected':
-                move_assets(fileName, jsonPath, gr2Path, asset_path, keep_fbx, keep_json, tag_type)
-            else:
-                CleanFiles(filePath, jsonPath, gr2Path)
+            move_assets(fileName, jsonPath, gr2Path, asset_path, keep_fbx, keep_json, tag_type)
         else:
             print(f'Failed to export {gr2Path}. Please check your asset errors folder')
-            AddToReports(fileName, jsonPath, asset_path)
+            WriteErrorReport(asset_path, f'Failed to export {gr2Path} with fbx-to-gr2', fileName, jsonPath)
 
-        return {'FINISHED'}
     else:
-        ctypes.windll.user32.MessageBoxW(0, "GR2 Not Created! Your current OS is not supported. The Halo tools only support Windows. FBX & JSON saved succesfully.", "OS NOT SUPPORTED", 0)
-        return {'FINISHED'}
+        print(f'WARNING: Failed to export {fileName}')
+        WriteErrorReport(asset_path, f'Failed to export FBX file: {fileName}')
 
-def AddToReports(fileName, jsonPath, asset_path):
-    if not file_exists(path.join(asset_path, 'errors')):
-        os.makedirs(path.join(asset_path, 'errors'))
-    if file_exists(fileName):
-        shutil.copy(fileName, path.join(asset_path, 'errors'))
-    if file_exists(jsonPath):
-        shutil.copy(jsonPath, path.join(asset_path, 'errors'))
+    return {'FINISHED'}
 
-    CleanFiles(fileName, jsonPath, '')
+def WriteErrorReport(asset_path, report_text, file_1 = None, file_2 = None, file_3 = None):
+    errors_folder = path.join(asset_path, 'errors')
+
+    if not file_exists(errors_folder):
+        os.makedirs(errors_folder)
+
+    with open(path.join(errors_folder, 'output.txt'), 'a+') as f:
+        f.write(report_text)
+        f.write('\n')
+
+    if file_1 is not None and file_exists(file_1):
+        shutil.copy(file_1, errors_folder)
+    if file_2 is not None and file_exists(file_2):
+        shutil.copy(file_2, errors_folder)
+    if file_3 is not None and file_exists(file_3):
+        shutil.copy(file_3, errors_folder)
+
+    CleanFiles(file_1, file_2, file_3)
 
 
 def CleanFiles(filePath, jsonPath, gr2Path):
-    if file_exists(filePath):
+    if filePath is not None and file_exists(filePath):
         os.remove(filePath)
-    if file_exists(jsonPath):
+    if jsonPath is not None and file_exists(jsonPath):
         os.remove(jsonPath)
-    if gr2Path != '' and file_exists(gr2Path):
+    if gr2Path != '' and gr2Path is not None and file_exists(gr2Path):
         os.remove(gr2Path)
 
 def rename_file(filePath, fileName=''):
@@ -1199,16 +1194,13 @@ def build_json(jsonPath, model_armature, skeleton_bones, halo_objects, asset_nam
 
 def build_gr2(filePath, jsonPath, gr2Path):
     try:            
-        if not os.access(filePath, os.R_OK):
-            ctypes.windll.user32.MessageBoxW(0, "GR2 Not Exported. Output Folder Is Read-Only! Try running Blender as an Administrator.", "ACCESS VIOLATION", 0)
-        else:
-            toolCommand = '{} fbx-to-gr2 "{}" "{}" "{}"'.format(GetToolType(), filePath, jsonPath, gr2Path)
-            os.chdir(GetEKPath())
-            p = Popen(toolCommand)
-            p.wait()
-            os.chdir(GetDataPath())
+        toolCommand = '{} fbx-to-gr2 "{}" "{}" "{}"'.format(GetToolType(), filePath, jsonPath, gr2Path)
+        os.chdir(GetEKPath())
+        p = Popen(toolCommand)
+        p.wait()
+        os.chdir(GetDataPath())
     except:
-        ctypes.windll.user32.MessageBoxW(0, "GR2 Not Exported. Please check your editing kit path in add-on preferences and try again.", "INVALID EK PATH", 0)
+        print(f'Failed to build {gr2Path}')
         os.remove(filePath)
         os.remove(jsonPath)
 
