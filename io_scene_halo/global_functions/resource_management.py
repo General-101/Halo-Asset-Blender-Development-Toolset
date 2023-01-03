@@ -30,9 +30,9 @@ def gather_collection_resources(layer_collection, layer_collection_set, object_s
         "include_this_collection" should be false for the root collection, else restoring visibility will cause everything to become visible regardless of stored value.
     """
 
-    # Don't include anything from collection if exclude
-    if layer_collection.exclude:
-        return
+    # Add collection to set of all included collections
+    if include_this_collection:
+        layer_collection_set.add(layer_collection)
 
     # Don't include anything from collection if hidden in an undesired way
     if not hidden_geo and not layer_collection.is_visible:
@@ -40,10 +40,6 @@ def gather_collection_resources(layer_collection, layer_collection_set, object_s
 
     if not nonrender_geo and layer_collection.collection.hide_render:
         return
-
-    # Add collection to set of all included collections
-    if include_this_collection:
-        layer_collection_set.add(layer_collection)
 
     # Add all of collection's objects when not hidden in an undesired way
     for obj in layer_collection.collection.objects:
