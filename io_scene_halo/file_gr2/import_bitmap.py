@@ -28,9 +28,9 @@ import bpy
 from subprocess import Popen
 import os
 
-from ..gr2_utils import (
-    GetEKPath,
-    GetToolPath,
+from .nwo_utils import (
+    get_ek_path,
+    get_tool_path,
 )
 
 def import_bitmap(report, filePath='', bitmap_type=""):
@@ -39,8 +39,8 @@ def import_bitmap(report, filePath='', bitmap_type=""):
 
     if not bitmap_type == "2dtexture":
         try:
-            toolCommand = '"{}" bitmaps-with-type "{}" {}'.format(GetToolPath(), asset_path, bitmap_type)
-            os.chdir(GetEKPath())
+            toolCommand = '"{}" bitmaps-with-type "{}" {}'.format(get_tool_path(), asset_path, bitmap_type)
+            os.chdir(get_ek_path())
             p = Popen(toolCommand)
             p.wait()
             report({'INFO'},"Import process complete")
@@ -49,8 +49,8 @@ def import_bitmap(report, filePath='', bitmap_type=""):
             report({'WARNING'},"Import Failed!")
     else:
         try:
-            toolCommand = '"{}" bitmaps "{}" {}'.format(GetToolPath(), asset_path)
-            os.chdir(GetEKPath())
+            toolCommand = '"{}" bitmaps "{}" {}'.format(get_tool_path(), asset_path)
+            os.chdir(get_ek_path())
             p = Popen(toolCommand)
             p.wait()
             report({'INFO'},"Import process complete")
@@ -61,7 +61,7 @@ def import_bitmap(report, filePath='', bitmap_type=""):
 def CleanAssetPath(path):
     path = path.replace('"','')
     path = path.strip('\\')
-    path = path.replace(GetEKPath() + '\\data\\','')
+    path = path.replace(get_ek_path() + '\\data\\','')
 
     return path
 

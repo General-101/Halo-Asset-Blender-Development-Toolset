@@ -24,9 +24,9 @@
 #
 # ##### END MIT LICENSE BLOCK #####
 import bpy
-from ..gr2_utils import(
-    DeselectAllObjects,
-    HaloDeboner,
+from .nwo_utils import(
+    deselect_all_objects,
+    halo_deboner,
 )
 from math import radians
 from mathutils import Matrix, Vector
@@ -34,13 +34,13 @@ from mathutils import Matrix, Vector
 #####################################################################################
 #####################################################################################
 # MAIN FUNCTION     
-def repair_scene(context, report, objects_selection, active_object, hidden_objects, mode, temp_armature, timeline_start, timeline_end, model_armature, lights, unselectable_objects, enabled_exclude_collections, mesh_node_names, temp_nodes, export_hidden, sidecar_type, **kwargs):
+def repair_scene(context, report, objects_selection, active_object, hidden_objects, mode, temp_armature, timeline_start, timeline_end, model_armature, lights, unselectable_objects, enabled_exclude_collections, mesh_node_names, temp_nodes, current_frame, export_hidden, sidecar_type, **kwargs):
     # if sidecar_type == 'SCENARIO':
     #     FixSceneRotatation(context.view_layer.objects, model_armature)
         
     scene = context.scene
  
-    RepairTimeline(scene, timeline_start, timeline_end)
+    RepairTimeline(scene, timeline_start, timeline_end, current_frame)
 
     # DeletePoopProxies(proxies)
 
@@ -80,12 +80,13 @@ def repair_scene(context, report, objects_selection, active_object, hidden_objec
 #####################################################################################
 # VARIOUS FUNCTIONS
 
-def RepairTimeline(scene, timeline_start, timeline_end):
+def RepairTimeline(scene, timeline_start, timeline_end, current_frame):
     scene.frame_start = timeline_start
     scene.frame_end = timeline_end
+    scene.frame_set(current_frame)
 
 def FixSceneRotatation(scene_obs, model_armature):
-    DeselectAllObjects()
+    deselect_all_objects()
     angle_z = radians(-90)
     axis_z = (0, 0, 1)
     pivot = Vector((0.0, 0.0, 0.0))
@@ -100,16 +101,16 @@ def FixSceneRotatation(scene_obs, model_armature):
 
 def DelTempArmature(context, model_armature):
     ops = bpy.ops
-    DeselectAllObjects()
+    deselect_all_objects()
     model_armature.select_set(True)
     ops.object.delete(use_global=False, confirm=False)
     for ob in context.view_layer.objects:
         context.view_layer.objects.active = ob
         ops.object.modifier_remove(modifier="Armature")
-    DeselectAllObjects()
+    deselect_all_objects()
 
 def RestoreLightsRotations(lights_list):
-    DeselectAllObjects()
+    deselect_all_objects()
     angle_x = radians(90)
     angle_z = radians(180)
     axis_x = (1, 0, 0)
@@ -126,7 +127,7 @@ def RestoreLightsRotations(lights_list):
         ob.matrix_world = M @ ob.matrix_world
 
 def DeletePoopProxies(proxies):
-    DeselectAllObjects()
+    deselect_all_objects()
     for p in proxies:
         p.select_set(True)
     bpy.ops.object.delete(use_global=False, confirm=False)
@@ -137,7 +138,7 @@ def ShowExcludedCollections(enabled_exclude_collections):
 
 def RestoreNodeMeshes(mesh_node_names, temp_nodes, hidden_objects):
     # delete all temp nodes
-    DeselectAllObjects()
+    deselect_all_objects()
     for ob in temp_nodes:
         ob.select_set(True)
     bpy.ops.object.delete()

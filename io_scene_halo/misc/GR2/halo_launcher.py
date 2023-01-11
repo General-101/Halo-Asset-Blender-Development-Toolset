@@ -26,32 +26,32 @@
 
 import os
 from subprocess import Popen
-from ...gr2_utils import (
-    GetEKPath,
+from ...file_gr2.nwo_utils import (
+    get_ek_path,
 )
 
 def LaunchFoundation():
-    os.chdir(GetEKPath())
+    os.chdir(get_ek_path())
     os.startfile('Foundation.exe')
     Popen('bin\\tools\\bonobo\\TagWatcher.exe')
 
     return {'FINISHED'}
 
 def LaunchData():
-    os.chdir(GetEKPath())
+    os.chdir(get_ek_path())
     os.startfile('data')
 
     return {'FINISHED'}
 
 def LaunchTags():
-    os.chdir(GetEKPath())
+    os.chdir(get_ek_path())
     os.startfile('tags')
 
     return {'FINISHED'}
 
 def LaunchSource(sidecar_path):
-    os.chdir(GetEKPath())
-    source_folder = sidecar_path.replace(GetEKPath(), '')
+    os.chdir(get_ek_path())
+    source_folder = sidecar_path.replace(get_ek_path(), '')
     source_folder = source_folder.rpartition('\\')[0]
     source_folder = source_folder.strip('\\')
     os.startfile(source_folder)

@@ -24,7 +24,7 @@
 #
 # ##### END MIT LICENSE BLOCK #####
 
-from ...gr2_utils import (
+from ...file_gr2.nwo_utils import (
     all_prefixes,
 )
 

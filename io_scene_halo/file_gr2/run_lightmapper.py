@@ -26,18 +26,18 @@
 
 from subprocess import Popen
 import os
-from io_scene_halo.gr2_utils import GetEKPath
+from io_scene_halo.file_gr2.nwo_utils import get_ek_path
 
-def lightmapper(report, filepath, not_bungie_game, lightmap_quality='DIRECT', lightmap_all_bsps='TRUE', lightmap_specific_bsp='000', lightmap_quality_h4='default_new'):
+def lightmapper(report, filepath, not_bungie_game, lightmap_quality='DIRECT', lightmap_all_bsps='TRUE', lightmap_specific_bsp='000', lightmap_quality_h4='default_new', lightmap_quality_custom=''):
     full_path = filepath.rpartition('\\')[0]
     asset_path = CleanAssetPath(full_path)
     asset_name = asset_path.rpartition('\\')[2]
     bsp = GetBSPToLightmap(lightmap_all_bsps, lightmap_specific_bsp, asset_name)
-    quality = GetQuality(lightmap_quality, lightmap_quality_h4, not_bungie_game)
+    quality = GetQuality(lightmap_quality, lightmap_quality_h4, not_bungie_game, lightmap_quality_custom)
 
     try:
         lightmapCommand = f'python calc_lm_farm_local.py {os.path.join(asset_path, asset_name)} {bsp} {quality}'
-        os.chdir(GetEKPath())
+        os.chdir(get_ek_path())
         print(lightmapCommand)
         p = Popen(lightmapCommand)
         p.wait()
@@ -56,13 +56,16 @@ def GetBSPToLightmap(lightmap_all_bsps, lightmap_specific_bsp, asset_name):
 def CleanAssetPath(path):
     path = path.replace('"','')
     path = path.strip('\\')
-    path = path.replace(GetEKPath() + '\\data\\','')
+    path = path.replace(get_ek_path() + '\\data\\','')
 
     return path
 
-def GetQuality(lightmap_quality, lightmap_quality_h4, not_bungie_game):
+def GetQuality(lightmap_quality, lightmap_quality_h4, not_bungie_game, lightmap_quality_custom):
     if not_bungie_game:
-        return lightmap_quality_h4
+        if lightmap_quality_custom != '':
+            return lightmap_quality_custom
+        else:
+            return lightmap_quality_h4
     match lightmap_quality:
         case 'DIRECT':
             return 'direct_only'

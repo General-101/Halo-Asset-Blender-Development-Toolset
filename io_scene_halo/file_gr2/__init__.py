@@ -45,12 +45,11 @@ from bpy.props import StringProperty, BoolProperty, EnumProperty, FloatProperty,
 from bpy.types import Operator, Panel, PropertyGroup, UIList
 from addon_utils import check
 from os.path import exists as file_exists
-from os import path, makedirs, chdir
+from os import path
 import ctypes
-import traceback
 
 
-from io_scene_halo.gr2_utils import GetDataPath, GetAssetInfo, GetEKPath
+from io_scene_halo.file_gr2.nwo_utils import get_data_path, get_asset_info, get_ek_path
 
 lightmapper_run_once = False
 sidecar_read = False
@@ -95,11 +94,6 @@ class Export_Scene_GR2(Operator, ExportHelper):
         default='MODEL',
         items=[ ('MODEL', "Model", ""), ('SCENARIO', "Scenario", ""), ('SKY', 'Sky', ''), ('DECORATOR SET', 'Decorator Set', ''), ('PARTICLE MODEL', 'Particle Model', ''), ('PREFAB', 'Prefab', '')]
     )
-    export_method: EnumProperty(
-        name="Export Method",
-        description="",
-        items=[('BATCH', "Batch", ""), ('SELECTED', "Selected", "")]
-    )
     export_animations: BoolProperty(
         name='Animations',
         description='',
@@ -130,64 +124,9 @@ class Export_Scene_GR2(Operator, ExportHelper):
         description='',
         default=True,
     )
-    export_poops: BoolProperty(
-        name='Instanced Geometry',
+    export_design: BoolProperty(
+        name='Structure Design',
         description='',
-        default=True,
-    )
-    export_lights: BoolProperty(
-        name='Lights',
-        description='',
-        default=True,
-    )
-    export_portals: BoolProperty(
-        name='Portals',
-        description='',
-        default=True,
-    )
-    export_seams: BoolProperty(
-        name='Seams',
-        description='',
-        default=True,
-    )
-    export_water_surfaces: BoolProperty(
-        name='Water Surfaces',
-        description='',
-        default=True,
-    )
-    export_fog_planes: BoolProperty(
-        name='Fog Planes',
-        description='',
-        default=True,
-    )
-    export_cookie_cutters: BoolProperty(
-        name='Cookie Cutters',
-        description='',
-        default=True,
-    )
-    export_misc: BoolProperty(
-        name='Misc',
-        description='Includes Lightmap regions, Lighprobe volumes, and OBB volumes',
-        default=True,
-    )
-    export_boundary_surfaces: BoolProperty(
-        name='Boundary Surfaces',
-        description='',
-        default=True,
-    )
-    export_water_physics: BoolProperty(
-        name='Water Physics',
-        description='',
-        default=True,
-    )
-    export_rain_occluders: BoolProperty(
-        name='Rain Occluders',
-        description='',
-        default=True,
-    )
-    export_shared: BoolProperty(
-        name='Shared',
-        description='Export geometry which is shared across all BSPs',
         default=True,
     )
     export_all_bsps: EnumProperty(
@@ -276,11 +215,6 @@ class Export_Scene_GR2(Operator, ExportHelper):
         name='Show Output',
         description='',
         default=True
-    )
-    run_tagwatcher: BoolProperty(
-        name='Run Tagwatcher',
-        description='Runs tag watcher after asset has been imported',
-        default=False
     )
     import_check: BoolProperty(
         name='Check',
@@ -441,6 +375,11 @@ class Export_Scene_GR2(Operator, ExportHelper):
         default='default_new',
         description="Define the lightmap quality you wish to use",
     )
+    lightmap_quality_custom: StringProperty(
+        name='Custom Quality',
+        default='',
+        description="Define the custom lightmap quality you wish to use (must be defined in globals\lightmapper_settings). This will override the drop down list.",
+    )
     lightmap_all_bsps: BoolProperty(
         name='All BSPs',
         default=True,
@@ -508,7 +447,8 @@ class Export_Scene_GR2(Operator, ExportHelper):
         self.import_to_game = scene_gr2_export.import_to_game
         self.import_draft = scene_gr2_export.import_draft
         self.lightmap_structure = scene_gr2_export.lightmap_structure
-        self.lightmap_quality_h4 = scene_gr2_export.lightmap_quality_h4
+        self.lightmap_quality_h4 = scene_gr2_export.lightmap_quality_h4 
+        self.lightmap_quality_custom = scene_gr2_export.lightmap_quality_custom
         self.lightmap_quality = scene_gr2_export.lightmap_quality
         self.lightmap_quality = scene_gr2_export.lightmap_quality
         self.lightmap_all_bsps = scene_gr2_export.lightmap_all_bsps
@@ -519,18 +459,7 @@ class Export_Scene_GR2(Operator, ExportHelper):
         self.export_physics = scene_gr2_export.export_physics
         self.export_markers = scene_gr2_export.export_markers
         self.export_structure = scene_gr2_export.export_structure
-        self.export_poops = scene_gr2_export.export_poops
-        self.export_lights = scene_gr2_export.export_lights
-        self.export_portals = scene_gr2_export.export_portals
-        self.export_seams = scene_gr2_export.export_seams
-        self.export_water_surfaces = scene_gr2_export.export_water_surfaces 
-        self.export_fog_planes = scene_gr2_export.export_fog_planes
-        self.export_cookie_cutters = scene_gr2_export.export_cookie_cutters
-        self.export_misc = scene_gr2_export.export_misc
-        self.export_boundary_surfaces = scene_gr2_export.export_boundary_surfaces
-        self.export_water_physics = scene_gr2_export.export_water_physics
-        self.export_rain_occluders = scene_gr2_export.export_rain_occluders
-        self.export_shared = scene_gr2_export.export_shared
+        self.export_poops = scene_gr2_export.export_design
 
         self.use_mesh_modifiers = scene_gr2_export.use_mesh_modifiers
         self.use_triangles = scene_gr2_export.use_triangles
@@ -601,7 +530,7 @@ class Export_Scene_GR2(Operator, ExportHelper):
                 skip_lightmapper = True
 
         # get the asset name and path to the asset folder
-        asset_path, asset = GetAssetInfo(self.filepath)                                  
+        asset_path, asset = get_asset_info(self.filepath)                                  
 
         print('Preparing Scene for Export...')
 
@@ -615,18 +544,18 @@ class Export_Scene_GR2(Operator, ExportHelper):
             console.console_toggle() # toggle the console so users can see progress of export
 
         from .prepare_scene import prepare_scene
-        (objects_selection, active_object, hidden_objects, mode, model_armature, temp_armature, skeleton_bones, halo_objects, timeline_start, timeline_end, lod_count, unselectable_objects, enabled_exclude_collections, mesh_node_names, temp_nodes, selected_perms, selected_bsps
+        (objects_selection, active_object, hidden_objects, mode, model_armature, temp_armature, skeleton_bones, halo_objects, timeline_start, timeline_end, lod_count, unselectable_objects, enabled_exclude_collections, mesh_node_names, temp_nodes, selected_perms, selected_bsps, current_frame
         ) = prepare_scene(context, self.report, **keywords) # prepares the scene for processing and returns information about the scene
-        try:
-            from .process_scene import process_scene
-            process_scene(self, context, keywords, self.report, model_armature, asset_path, asset, skeleton_bones, halo_objects, timeline_start, timeline_end, lod_count, UsingBetterFBX(), skip_lightmapper, selected_perms, selected_bsps, **keywords)
-        except:
-            print('ASSERT: Scene processing failed')
-            error = traceback.format_exc()
-            self.report({'ERROR'}, error)
+        # try:
+        from .process_scene import process_scene
+        process_scene(self, context, keywords, self.report, model_armature, asset_path, asset, skeleton_bones, halo_objects, timeline_start, timeline_end, lod_count, UsingBetterFBX(), skip_lightmapper, selected_perms, selected_bsps, **keywords)
+        # except:
+        #     print('ASSERT: Scene processing failed')
+        #     error = traceback.format_exc()
+        #     self.report({'ERROR'}, error)
 
         from .repair_scene import repair_scene
-        repair_scene(context, self.report, objects_selection, active_object, hidden_objects, mode, temp_armature, timeline_start, timeline_end, model_armature, halo_objects.lights, unselectable_objects, enabled_exclude_collections, mesh_node_names, temp_nodes, **keywords)
+        repair_scene(context, self.report, objects_selection, active_object, hidden_objects, mode, temp_armature, timeline_start, timeline_end, model_armature, halo_objects.lights, unselectable_objects, enabled_exclude_collections, mesh_node_names, temp_nodes, current_frame, **keywords)
 
         if self.show_output:
             console.console_toggle()
@@ -643,7 +572,6 @@ class Export_Scene_GR2(Operator, ExportHelper):
 
         col = box.column()
         col.prop(self, "game_version", text='Game Version')
-        #col.prop(self, "export_method", text='Export Method') # commented out 21.10.2022 - Selected mode is unsupported
         col.prop(self, "sidecar_type", text='Asset Type')
         col.prop(self, "show_output", text='Show Output')
         # GR2 SETTINGS #
@@ -667,20 +595,7 @@ class Export_Scene_GR2(Operator, ExportHelper):
                 sub.prop(self, "export_markers")
             elif self.sidecar_type == 'SCENARIO':
                 sub.prop(self, "export_structure")
-                sub.prop(self, 'export_poops')
-                sub.prop(self, 'export_markers')
-                sub.prop(self, 'export_lights')
-                sub.prop(self, 'export_portals')
-                sub.prop(self, 'export_seams')
-                sub.prop(self, 'export_water_surfaces')
-                sub.prop(self, 'export_fog_planes')
-                sub.prop(self, 'export_cookie_cutters')
-                col.separator()
-                sub.prop(self, "export_boundary_surfaces")
-                sub.prop(self, "export_water_physics")
-                sub.prop(self, "export_rain_occluders")
-                col.separator()
-                sub.prop(self, 'export_shared')
+                sub.prop(self, 'export_design')
                 sub.prop(self, 'export_all_bsps', expand=True)
             elif self.sidecar_type != 'PREFAB':
                 sub.prop(self, "export_render")
@@ -716,9 +631,6 @@ class Export_Scene_GR2(Operator, ExportHelper):
         col = box.column()
         col.prop(self, "import_to_game")
         if self.import_to_game:
-            col.prop(self, "run_tagwatcher")
-            #col.prop(self, 'import_in_background') removed for now as risk of causing issues
-        if self.import_to_game:
             sub = box.column(heading="Import Flags")
             sub.prop(self, "import_check")
             sub.prop(self, "import_force")
@@ -739,7 +651,8 @@ class Export_Scene_GR2(Operator, ExportHelper):
             col.prop(self, "lightmap_structure")
             if self.lightmap_structure:
                 if self.game_version in ('h4', 'h2a'):
-                    col.prop(self, "lightmap_quality_h4")
+                    col.prop(self, "lightmap_quality_h4") 
+                    col.prop(self, "lightmap_quality_custom")
                 else:
                     col.prop(self, "lightmap_quality")
                 if not self.lightmap_all_bsps:
@@ -814,8 +727,20 @@ class GR2_SceneProps(Panel):
     bl_options = {'DEFAULT_CLOSED'}
     bl_parent_id = "HALO_PT_ScenePropertiesPanel"
 
+    @classmethod
+    def poll(cls, context):
+        scene = context.scene
+        scene_halo = scene.halo
+        return scene_halo.game_version in ('reach', 'h4', 'h2a')
+
     def draw(self, context):
         layout = self.layout
+        scene_gr2 = context.scene.gr2
+        layout.use_property_split = True
+        flow = layout.grid_flow(row_major=True, columns=0, even_columns=True, even_rows=False, align=False)
+        col = flow.column()
+        col = col.row()
+        col.prop(scene_gr2, 'default_mesh_type_ui')
 
 class GR2_UL_SceneProps_SharedAssets(UIList):
     use_name_reverse: bpy.props.BoolProperty(
@@ -962,7 +887,7 @@ class GR2_List_Add_Shared_Asset(Operator):
         scene_gr2.shared_assets.add()
         
         path = self.filepath
-        path = path.replace(GetDataPath(), '')
+        path = path.replace(get_data_path(), '')
         scene_gr2.shared_assets[-1].shared_asset_path = path
         scene_gr2.shared_assets_index = len(scene_gr2.shared_assets) - 1
         context.area.tag_redraw()
@@ -1042,6 +967,34 @@ class GR2_ScenePropertiesGroup(PropertyGroup):
         default=0,
         min=0,
     )
+
+    def force_set_mesh_types(self, context):
+        """Sets an objects mesh type to it's current mesh type. Gets around the default mesh type get/setter updating existing objects"""
+        for ob in context.scene.objects:
+            ob.nwo.ObjectMesh_Type_H4 = ob.nwo.ObjectMesh_Type_H4
+
+        self.default_mesh_type = self.default_mesh_type_ui
+
+    default_mesh_type_ui: EnumProperty(
+        name="Default Mesh Type",
+        options=set(),
+        description="Set the default Halo mesh type for new objects",
+        default = '_connected_geometry_mesh_type_default',
+        update=force_set_mesh_types,
+        items=[ ('_connected_geometry_mesh_type_default', "Render / Structure", "By default this mesh type will be treated as render only geometry in models snd structures"),
+                ('_connected_geometry_mesh_type_poop', "Instanced Geometry", "Writes this mesh to a json file as instanced geometry. Can be forced on with the prefix: '%'"),
+               ]
+        )
+
+    default_mesh_type: EnumProperty(
+        name="Default Mesh Type",
+        options=set(),
+        description="Set the default Halo mesh type for new objects",
+        default = '_connected_geometry_mesh_type_default',
+        items=[ ('_connected_geometry_mesh_type_default', "Render / Structure", "By default this mesh type will be treated as render only geometry in models snd structures"),
+                ('_connected_geometry_mesh_type_poop', "Instanced Geometry", "Writes this mesh to a json file as instanced geometry. Can be forced on with the prefix: '%'"),
+               ]
+        )
 
 
 classeshalo = (

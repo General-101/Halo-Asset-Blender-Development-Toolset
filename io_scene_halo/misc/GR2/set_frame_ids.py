@@ -29,12 +29,12 @@ import ctypes
 import xml.etree.ElementTree as ET
 from subprocess import Popen
 
-from ...gr2_utils import (
-    GetTagsPath,
-    GetEKPath,
-    GetToolPath,
+from ...file_gr2.nwo_utils import (
+    get_tags_path,
+    get_ek_path,
+    get_tool_path,
     frame_prefixes,
-    GetPrefix,
+    get_prefix,
 )
 
 def reset_frame_ids(context, report):
@@ -53,7 +53,7 @@ def set_frame_ids(context, report):
     model_armature = GetArmature(context, report)
     frame_count = 0
     if model_armature != None:
-        framelist = ImportTagXML(GetToolPath(), context)
+        framelist = ImportTagXML(get_tool_path(), context)
         if(not framelist == None):
             tag_bone_names = CleanBoneNames(framelist)
             blend_bone_names = CleanBones(model_armature.data.bones)
@@ -86,7 +86,7 @@ def GetID(ID, name, framelist):
 def CleanBoneNames(bones):
     cleanlist = []
     for b in bones:
-        prefix = GetPrefix(b[0], frame_prefixes)
+        prefix = get_prefix(b[0], frame_prefixes)
         cleaned_bone = b[0].removeprefix(prefix)
         cleanlist.append(cleaned_bone)
     
@@ -95,30 +95,30 @@ def CleanBoneNames(bones):
 def CleanBones(bones):
     cleanlist = []
     for b in bones:
-        prefix = GetPrefix(b.name, frame_prefixes)
+        prefix = get_prefix(b.name, frame_prefixes)
         cleaned_bone = b.name.removeprefix(prefix)
         cleanlist.append(cleaned_bone)
 
     return cleanlist
 
 def CleanBone(bone):
-    prefix = GetPrefix(bone.name, frame_prefixes)
+    prefix = get_prefix(bone.name, frame_prefixes)
     cleaned_bone = bone.name.removeprefix(prefix)
 
     return cleaned_bone
 
 def CleanBoneName(bone):
-    prefix = GetPrefix(bone, frame_prefixes)
+    prefix = get_prefix(bone, frame_prefixes)
     cleaned_bone = bone.removeprefix(prefix)
 
     return cleaned_bone
 
 def ImportTagXML(toolPath, context):
     # try:
-    xmlPath = GetTagsPath() + "temp.xml"
+    xmlPath = get_tags_path() + "temp.xml"
     tagPath = GetGraphPath(context)
     toolCommand = '"{}" export-tag-to-xml "{}" "{}"'.format(toolPath, tagPath, xmlPath)
-    os.chdir(GetEKPath())
+    os.chdir(get_ek_path())
     p = Popen(toolCommand)
     p.wait()
     bonelist = ParseXML(xmlPath, context)
@@ -132,7 +132,7 @@ def GetGraphPath(context):
     path = context.scene.gr2_frame_ids.anim_tag_path
     # path cleaning
     path = path.strip('\\')
-    path = path.replace(GetTagsPath(), '')
+    path = path.replace(get_tags_path(), '')
     path = path.replace(',jmad','')
     path = '\\tags\\' + path
     if not '.model_animation_graph' in path:

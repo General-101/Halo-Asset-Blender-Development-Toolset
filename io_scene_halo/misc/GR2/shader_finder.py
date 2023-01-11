@@ -26,8 +26,8 @@
 
 import bpy
 import os
-from ...gr2_utils import (
-    GetTagsPath,
+from ...file_gr2.nwo_utils import (
+    get_tags_path,
     shader_exts,
 )
 
@@ -39,10 +39,10 @@ def FindShaders(context, shaders_dir, report, overwrite):
         #clean shaders directory path
         shaders_dir = shaders_dir.replace('"','')
         shaders_dir = shaders_dir.strip('\\')
-        shaders_dir = shaders_dir.replace(GetTagsPath(),'')
+        shaders_dir = shaders_dir.replace(get_tags_path(),'')
     
     #verify that the path created actually exists
-    shaders_dir = os.path.join(GetTagsPath(), shaders_dir)
+    shaders_dir = os.path.join(get_tags_path(), shaders_dir)
     if os.path.isdir(shaders_dir):
         # then proceed to collect all shader names
         for root, dirs, files in os.walk(shaders_dir):
@@ -51,7 +51,7 @@ def FindShaders(context, shaders_dir, report, overwrite):
                     shaders.append(os.path.join(root, file))
         # loop through mats, find a matching shader, and apply it if the shader path field is empty
         for mat in materials:
-            shader_path = FindShaderMatch(mat, shaders, GetTagsPath())
+            shader_path = FindShaderMatch(mat, shaders, get_tags_path())
             # if we've found a shader path, and either overwrite shader path was set in the settings or the shader path field is empty, write the shader path.
             if shader_path != '':
                 if overwrite or mat.halo_json.shader_path == '':

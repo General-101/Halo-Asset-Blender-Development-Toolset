@@ -31,16 +31,17 @@ import xml.etree.cElementTree as ET
 import xml.dom.minidom
 from os import path
 
-from ..gr2_utils import (
-    IsDesign,
+from .nwo_utils import (
+    is_design,
     valid_animation_types,
-    GetDataPath,
-    GetPerm,
-    sel_logic,
+    get_data_path,
+    get_perm,
+    CheckType,
+    is_shared,
 )
 
 
-def export_xml(report, context, halo_objects, model_armature=None, lod_count=0, filePath="", export_sidecar_xml=False, sidecar_type='MODEL', asset_path='', game_version='reach',        
+def export_xml(report, context, halo_objects, model_armature=None, lod_count=0, filePath="", sidecar_type='MODEL', asset_path='', game_version='reach',        
                 output_biped=False,
                 output_crate=False,
                 output_creature=False,
@@ -65,7 +66,7 @@ def export_xml(report, context, halo_objects, model_armature=None, lod_count=0, 
 def CleanAssetPath(path):
     f_path = path.replace('"','')
     f_path = path.strip('\\')
-    f_path = path.replace(GetDataPath(),'')
+    f_path = path.replace(get_data_path(),'')
 
     return f_path
 
@@ -266,10 +267,10 @@ def WriteFaceCollections(metadata, sidecar_type, not_bungie_game): # FaceCollect
             FaceCollectionsEntries = ET.SubElement(f1, "FaceCollectionEntries")
             using_default_bsp = False
             for ob in bpy.context.view_layer.objects:
-                if ob.halo_json.bsp_name_locked == '':
-                    bsp = ob.halo_json.bsp_name
+                if ob.nwo.bsp_name_locked == '':
+                    bsp = ob.nwo.bsp_name
                 else:
-                    bsp = ob.halo_json.bsp_name_locked
+                    bsp = ob.nwo.bsp_name_locked
                 if bsp == 'default':
                     using_default_bsp = True
                     break
@@ -278,10 +279,10 @@ def WriteFaceCollections(metadata, sidecar_type, not_bungie_game): # FaceCollect
 
             count = 1
             for ob in bpy.context.view_layer.objects:
-                if ob.halo_json.bsp_name_locked == '':
-                    bsp = ob.halo_json.bsp_name
+                if ob.nwo.bsp_name_locked == '':
+                    bsp = ob.nwo.bsp_name
                 else:
-                    bsp = ob.halo_json.bsp_name_locked
+                    bsp = ob.nwo.bsp_name_locked
                 if bsp not in bsp_list:
                     ET.SubElement(FaceCollectionsEntries, "FaceCollectionEntry", Index=str(count), Name=bsp, Active="true")
                     bsp_list.append(bsp)
@@ -296,15 +297,15 @@ def WriteFaceCollections(metadata, sidecar_type, not_bungie_game): # FaceCollect
 
             count = 1
             for ob in bpy.context.view_layer.objects:
-                if ob.halo_json.Region_Name_Locked == '':
-                    region = ob.halo_json.Region_Name
+                if ob.nwo.Region_Name_Locked == '':
+                    region = ob.nwo.Region_Name
                 else:
-                    region = ob.halo_json.Region_Name_Locked
+                    region = ob.nwo.Region_Name_Locked
                 if region not in region_list:
                     ET.SubElement(FaceCollectionsEntries, "FaceCollectionEntry", Index=str(count), Name=region, Active="true")
                     region_list.append(region)
                     count += 1
-        if(sidecar_type in ('MODEL', 'SCENARIO', 'SKY')):
+        if(sidecar_type in ('MODEL', 'SCENARIO', 'PREFAB', 'SKY')):
             mat_list = ["default",""]
             f2 = ET.SubElement(faceCollections, "FaceCollection", Name="global materials override", StringTable="connected_geometry_global_material_table", Description="Global material overrides")
 
@@ -313,7 +314,7 @@ def WriteFaceCollections(metadata, sidecar_type, not_bungie_game): # FaceCollect
 
             count = 1
             for ob in bpy.context.view_layer.objects:
-                material = ob.halo_json.Face_Global_Material
+                material = ob.nwo.Face_Global_Material
                 if material not in mat_list:
                         ET.SubElement(FaceCollectionsEntries2, "FaceCollectionEntry", Index=str(count), Name=material, Active="true")
                         mat_list.append(material)
@@ -327,7 +328,7 @@ def WriteModelContents(halo_objects, model_armature, metadata, asset_path, asset
 
     perm_list = []
     for ob in halo_objects.render:
-        perm = GetPerm(ob)
+        perm = get_perm(ob)
         if (perm not in perm_list):
             perm_list.append(perm)
             network = ET.SubElement(object, 'ContentNetwork' ,Name=perm, Type="")
@@ -343,7 +344,7 @@ def WriteModelContents(halo_objects, model_armature, metadata, asset_path, asset
 
         perm_list = []
         for ob in halo_objects.physics:
-            perm = GetPerm(ob)
+            perm = get_perm(ob)
             if (perm not in perm_list):
                 perm_list.append(perm)
                 network = ET.SubElement(object, 'ContentNetwork' ,Name=perm, Type="")
@@ -359,7 +360,7 @@ def WriteModelContents(halo_objects, model_armature, metadata, asset_path, asset
 
         perm_list = []
         for ob in halo_objects.collision:
-            perm = GetPerm(ob)
+            perm = get_perm(ob)
             if (perm not in perm_list):
                 perm_list.append(perm)
                 network = ET.SubElement(object, 'ContentNetwork' ,Name=perm, Type="")
@@ -442,209 +443,55 @@ def WriteScenarioContents(halo_objects, metadata, asset_path, asset_name):
         shared_bsp_exists = False
 
         for ob in bpy.context.view_layer.objects:
-            if ob.halo_json.bsp_name_locked != '':
-                if not ob.halo_json.bsp_shared and (ob.halo_json.bsp_name_locked not in bsp_list) and not IsDesign(ob):
-                    bsp_list.append(ob.halo_json.bsp_name_locked)
+            if ob.nwo.bsp_name_locked != '':
+                if ob.nwo.bsp_name_locked != 'shared' and (ob.nwo.bsp_name_locked not in bsp_list) and not is_design(ob):
+                    bsp_list.append(ob.nwo.bsp_name_locked)
             else:
-                if not ob.halo_json.bsp_shared and (ob.halo_json.bsp_name not in bsp_list) and not IsDesign(ob):
-                    bsp_list.append(ob.halo_json.bsp_name)
+                if ob.nwo.bsp_name != 'shared' and (ob.nwo.bsp_name not in bsp_list) and not is_design(ob):
+                    bsp_list.append(ob.nwo.bsp_name)
 
         # # sort bsp list alphanumerically
         bsp_list.sort()
 
         for ob in bpy.context.view_layer.objects:
-            if ob.halo_json.bsp_shared:
-                shared_bsp_exists = True
-                break
+            if ob.nwo.bsp_name_locked != '':
+                if ob.nwo.bsp_name_locked == 'shared':
+                    shared_bsp_exists = True
+                    break
+            else:
+                if ob.nwo.bsp_name == 'shared':
+                    shared_bsp_exists = True
+                    break
 
-        shared_structure_perm = []
-        shared_poop_perm = []
-        shared_marker_perm = []
-        shared_light_perm = []
-        shared_portal_perm = []
-        shared_seam_perm = []
-        shared_water_perm = []
-        shared_misc_perm = []
+        shared_permutations = []
 
         if shared_bsp_exists:
             for ob in halo_objects.structure:
-                if ob.halo_json.bsp_shared:
-                    perm = GetPerm(ob)
-                    if (perm not in shared_structure_perm):
-                        shared_structure_perm.append(perm)
-
-            for ob in halo_objects.poops:
-                if ob.halo_json.bsp_shared:
-                    perm = GetPerm(ob)
-                    if (perm not in shared_poop_perm):
-                        shared_poop_perm.append(perm)
-
-            for ob in halo_objects.markers:
-                if ob.halo_json.bsp_shared:
-                    perm = GetPerm(ob)
-                    if (perm not in shared_marker_perm):
-                        shared_marker_perm.append(perm)
-
-            for ob in halo_objects.lights:
-                if ob.halo_json.bsp_shared:
-                    perm = GetPerm(ob)
-                    if (perm not in shared_light_perm):
-                        shared_light_perm.append(perm)
-
-            for ob in halo_objects.portals:
-                if ob.halo_json.bsp_shared:
-                    perm = GetPerm(ob)
-                    if (perm not in shared_portal_perm):
-                        shared_portal_perm.append(perm)
-
-            for ob in halo_objects.seams:
-                if ob.halo_json.bsp_shared:
-                    perm = GetPerm(ob)
-                    if (perm not in shared_seam_perm):
-                        shared_seam_perm.append(perm)
-
-            for ob in halo_objects.water_surfaces:
-                if ob.halo_json.bsp_shared:
-                    perm = GetPerm(ob)
-                    if (perm not in shared_water_perm):
-                        shared_water_perm.append(perm)
-
-            for ob in halo_objects.misc:
-                if ob.halo_json.bsp_shared:
-                    perm = GetPerm(ob)
-                    if (perm not in shared_misc_perm):
-                        shared_misc_perm.append(perm)
-
+                if is_shared(ob):
+                    perm = get_perm(ob)
+                    if (perm not in shared_permutations):
+                        shared_permutations.append(perm)
+   
         for bsp in bsp_list:
-            content = ET.SubElement(contents, "Content", Name=asset_name + '_' + bsp, Type='bsp', BspErrorPolicy='auto_generated_physics')
+            content = ET.SubElement(contents, "Content", Name=asset_name + '_' + bsp, Type='bsp')
             object = ET.SubElement(content, 'ContentObject', Name='', Type="scenario_structure_bsp")
-            structure_perm = []
-            poop_perm = []
-            marker_perm = []
-            light_perm = []
-            portal_perm = []
-            seam_perm = []
-            water_perm = []
-            misc_perm = []
-
-            if ob.halo_json.bsp_name_locked != '':
-                bsp_value = ob.halo_json.bsp_name_locked
-            else:
-                bsp_value = ob.halo_json.bsp_name
+            permutations = []
 
             for ob in halo_objects.structure:
-                if ob.halo_json.bsp_name_locked == bsp or ob.halo_json.bsp_name == bsp and not ob.halo_json.bsp_shared:
-                    perm = GetPerm(ob)
-                    if (perm not in structure_perm):
-                        structure_perm.append(perm)
+                if ob.nwo.bsp_name_locked == bsp or ob.nwo.bsp_name == bsp and not is_shared(ob):
+                    perm = get_perm(ob)
+                    if (perm not in permutations):
+                        permutations.append(perm)
 
-            for ob in halo_objects.poops:
-                if ob.halo_json.bsp_name_locked == bsp or ob.halo_json.bsp_name == bsp and not ob.halo_json.bsp_shared:
-                    perm = GetPerm(ob)
-                    if (perm not in poop_perm):
-                        poop_perm.append(perm)
+            for perm in permutations:
+                network = ET.SubElement(object, 'ContentNetwork' ,Name=GetAssetPathBSP(asset_name, bsp, perm), Type="")
+                ET.SubElement(network, 'InputFile').text = GetInputFilePathBSP(asset_path, asset_name, bsp, perm)
+                ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePathBSP(asset_path, asset_name, bsp, perm)
 
-            for ob in halo_objects.markers:
-                if ob.halo_json.bsp_name_locked == bsp or ob.halo_json.bsp_name == bsp and not ob.halo_json.bsp_shared:
-                    perm = GetPerm(ob)
-                    if (perm not in marker_perm):
-                        marker_perm.append(perm)
-
-            for ob in halo_objects.lights:
-                if ob.halo_json.bsp_name_locked == bsp or ob.halo_json.bsp_name == bsp and not ob.halo_json.bsp_shared:
-                    perm = GetPerm(ob)
-                    if (perm not in light_perm):
-                        light_perm.append(perm)
-
-            for ob in halo_objects.portals:
-                if ob.halo_json.bsp_name_locked == bsp or ob.halo_json.bsp_name == bsp and not ob.halo_json.bsp_shared:
-                    perm = GetPerm(ob)
-                    if (perm not in portal_perm):
-                        portal_perm.append(perm)
-
-            for ob in halo_objects.seams:
-                if ob.halo_json.bsp_name_locked == bsp or ob.halo_json.bsp_name == bsp and not ob.halo_json.bsp_shared:
-                    perm = GetPerm(ob)
-                    if (perm not in seam_perm):
-                        seam_perm.append(perm)
-
-            for ob in halo_objects.water_surfaces:
-                if ob.halo_json.bsp_name_locked == bsp or ob.halo_json.bsp_name == bsp and not ob.halo_json.bsp_shared:
-                    perm = GetPerm(ob)
-                    if (perm not in water_perm):
-                        water_perm.append(perm)
-
-            for ob in halo_objects.misc:
-                if ob.halo_json.bsp_name_locked == bsp or ob.halo_json.bsp_name == bsp and not ob.halo_json.bsp_shared:
-                    perm = GetPerm(ob)
-                    if (perm not in misc_perm):
-                        misc_perm.append(perm)
-
-            for perm in structure_perm:
-                network = ET.SubElement(object, 'ContentNetwork' ,Name=GetAssetPathBSP(asset_name, bsp, 'bsp', perm), Type="")
-                ET.SubElement(network, 'InputFile').text = GetInputFilePathBSP(asset_path, asset_name, bsp, 'bsp', perm)
-                ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePathBSP(asset_path, asset_name, bsp, 'bsp', perm)
-            for perm in poop_perm:
-                network = ET.SubElement(object, 'ContentNetwork' ,Name=GetAssetPathBSP(asset_name, bsp, 'poops', perm), Type="")
-                ET.SubElement(network, 'InputFile').text = GetInputFilePathBSP(asset_path, asset_name,  bsp, 'poops', perm)
-                ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePathBSP(asset_path, asset_name, bsp, 'poops', perm)
-            for perm in marker_perm:
-                network = ET.SubElement(object, 'ContentNetwork' ,Name=GetAssetPathBSP(asset_name, bsp, 'markers', perm), Type="")
-                ET.SubElement(network, 'InputFile').text = GetInputFilePathBSP(asset_path, asset_name, bsp, 'markers', perm)
-                ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePathBSP(asset_path, asset_name, bsp, 'markers', perm)
-            for perm in light_perm:
-                network = ET.SubElement(object, 'ContentNetwork' ,Name=GetAssetPathBSP(asset_name, bsp, 'lights', perm), Type="")
-                ET.SubElement(network, 'InputFile').text = GetInputFilePathBSP(asset_path, asset_name, bsp, 'lights', perm)
-                ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePathBSP(asset_path, asset_name, bsp, 'lights', perm)
-            for perm in portal_perm:
-                network = ET.SubElement(object, 'ContentNetwork' ,Name=GetAssetPathBSP(asset_name, bsp, 'portals', perm), Type="")
-                ET.SubElement(network, 'InputFile').text = GetInputFilePathBSP(asset_name, bsp, 'portals', perm)
-                ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePathBSP(asset_path, asset_name, bsp, 'portals', perm)
-            for perm in seam_perm:
-                network = ET.SubElement(object, 'ContentNetwork' ,Name=GetAssetPathBSP(asset_name, bsp, 'seams', perm), Type="")
-                ET.SubElement(network, 'InputFile').text = GetInputFilePathBSP(asset_path, asset_name, bsp, 'seams', perm)
-                ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePathBSP(asset_path, asset_name, bsp, 'seams', perm)
-            for perm in water_perm:
-                network = ET.SubElement(object, 'ContentNetwork' ,Name=GetAssetPathBSP(asset_name, bsp, 'water', perm), Type="")
-                ET.SubElement(network, 'InputFile').text = GetInputFilePathBSP(asset_path, asset_name, bsp, 'water', perm)
-                ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePathBSP(asset_path, asset_name, bsp, 'water', perm)
-            for perm in misc_perm:
-                network = ET.SubElement(object, 'ContentNetwork' ,Name=GetAssetPathBSP(asset_name, bsp, 'misc', perm), Type="")
-                ET.SubElement(network, 'InputFile').text = GetInputFilePathBSP(asset_path, asset_name, bsp, 'misc', perm)
-                ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePathBSP(asset_path, asset_name, bsp, 'misc', perm)
-
-            for perm in shared_structure_perm:
-                network = ET.SubElement(object, 'ContentNetwork' ,Name=GetAssetPathBSP(asset_name, 'shared', 'bsp', perm), Type="")
-                ET.SubElement(network, 'InputFile').text = GetInputFilePathBSP(asset_path, asset_name, 'shared', 'bsp', perm)
-                ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePathBSP(asset_path, asset_name, 'shared', 'bsp', perm)
-            for perm in shared_poop_perm:
-                network = ET.SubElement(object, 'ContentNetwork' ,Name=GetAssetPathBSP(asset_name, 'shared', 'poops', perm), Type="")
-                ET.SubElement(network, 'InputFile').text = GetInputFilePathBSP(asset_path, asset_name,  'shared', 'poops', perm)
-                ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePathBSP(asset_path, asset_name, 'shared', 'poops', perm)
-            for perm in shared_marker_perm:
-                network = ET.SubElement(object, 'ContentNetwork' ,Name=GetAssetPathBSP(asset_name, 'shared', 'markers', perm), Type="")
-                ET.SubElement(network, 'InputFile').text = GetInputFilePathBSP(asset_path, asset_name, 'shared', 'markers', perm)
-                ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePathBSP(asset_path, asset_name, 'shared', 'markers', perm)
-            for perm in shared_light_perm:
-                network = ET.SubElement(object, 'ContentNetwork' ,Name=GetAssetPathBSP(asset_name, 'shared', 'lights', perm), Type="")
-                ET.SubElement(network, 'InputFile').text = GetInputFilePathBSP(asset_path, asset_name, 'shared', 'lights', perm)
-                ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePathBSP(asset_path, asset_name, 'shared', 'lights', perm)
-            for perm in shared_portal_perm:
-                network = ET.SubElement(object, 'ContentNetwork' ,Name=GetAssetPathBSP(asset_name, 'shared', 'portals', perm), Type="")
-                ET.SubElement(network, 'InputFile').text = GetInputFilePathBSP(asset_path, asset_name, 'shared', 'portals', perm)
-                ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePathBSP(asset_path, asset_name, 'shared', 'portals', perm)
-            for perm in shared_seam_perm:
-                network = ET.SubElement(object, 'ContentNetwork' ,Name=GetAssetPathBSP(asset_name, 'shared', 'seams', perm), Type="")
-                ET.SubElement(network, 'InputFile').text = GetInputFilePathBSP(asset_path, asset_name, 'shared', 'seams', perm)
-                ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePathBSP(asset_path, asset_name, 'shared', 'seams', perm)
-            for perm in shared_water_perm:
-                network = ET.SubElement(object, 'ContentNetwork' ,Name=GetAssetPathBSP(asset_name, 'shared', 'water', perm), Type="")
-                ET.SubElement(network, 'InputFile').text = GetInputFilePathBSP(asset_path, asset_name, 'shared', 'water', perm)
-                ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePathBSP(asset_path, asset_name, 'shared', 'water', perm)
-            for perm in shared_misc_perm:
-                network = ET.SubElement(object, 'ContentNetwork' ,Name=GetAssetPathBSP(asset_name, 'shared', 'misc', perm), Type="")
-                ET.SubElement(network, 'InputFile').text = GetInputFilePathBSP(asset_path, asset_name, 'shared', 'misc', perm)
-                ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePathBSP(asset_path, asset_name, 'shared', 'misc', perm)
+            for perm in shared_permutations:
+                network = ET.SubElement(object, 'ContentNetwork' ,Name=GetAssetPathBSP(asset_name, 'shared', perm), Type="")
+                ET.SubElement(network, 'InputFile').text = GetInputFilePathBSP(asset_path, asset_name, 'shared', perm)
+                ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePathBSP(asset_path, asset_name, 'shared', perm)
 
             output = ET.SubElement(object, 'OutputTagCollection')
             ET.SubElement(output, 'OutputTag', Type='scenario_structure_bsp').text = f'{path.join(asset_path, asset_name)}_{bsp}'
@@ -655,12 +502,12 @@ def WriteScenarioContents(halo_objects, metadata, asset_path, asset_name):
         bsp_list = []
 
         for ob in bpy.context.view_layer.objects:
-            if ob.halo_json.bsp_name_locked != '':
-                if not ob.halo_json.bsp_shared and (ob.halo_json.bsp_name_locked not in bsp_list) and IsDesign(ob):
-                    bsp_list.append(ob.halo_json.bsp_name_locked)
+            if ob.nwo.bsp_name_locked != '':
+                if (ob.nwo.bsp_name_locked not in bsp_list) and is_design(ob):
+                    bsp_list.append(ob.nwo.bsp_name_locked)
             else:
-                if not ob.halo_json.bsp_shared and (ob.halo_json.bsp_name not in bsp_list) and IsDesign(ob):
-                    bsp_list.append(ob.halo_json.bsp_name)
+                if (ob.nwo.bsp_name not in bsp_list) and is_design(ob):
+                    bsp_list.append(ob.nwo.bsp_name)
 
         # sort bsp list alphanumerically
         bsp_list.sort()
@@ -669,54 +516,18 @@ def WriteScenarioContents(halo_objects, metadata, asset_path, asset_name):
             content = ET.SubElement(contents, "Content", Name=f'{asset_name}_{bsp}_structure_design', Type='design')
             object = ET.SubElement(content, 'ContentObject', Name='', Type="structure_design")
 
-            boundary_perm = []
-            water_physics_perm = []
-            rain_perm = []
-            fog_perm = []
+            permutations = []
 
             for ob in halo_objects.boundary_surfaces:
-                if ob.halo_json.bsp_name_locked == bsp or ob.halo_json.bsp_name == bsp and not ob.halo_json.bsp_shared:
-                    perm = GetPerm(ob)
-                    if (perm not in boundary_perm):
-                        boundary_perm.append(perm)
+                if ob.nwo.bsp_name_locked == bsp or ob.nwo.bsp_name == bsp:
+                    perm = get_perm(ob)
+                    if (perm not in permutations):
+                        permutations.append(perm)
 
-            for ob in halo_objects.water_physics:
-                if ob.halo_json.bsp_name_locked == bsp or ob.halo_json.bsp_name == bsp and not ob.halo_json.bsp_shared:
-                    perm = GetPerm(ob)
-                    if (perm not in water_physics_perm):
-                        water_physics_perm.append(perm)
-
-            for ob in halo_objects.rain_occluders:
-                if ob.halo_json.bsp_name_locked == bsp or ob.halo_json.bsp_name == bsp and not ob.halo_json.bsp_shared:
-                    perm = GetPerm(ob)
-                    if (perm not in rain_perm):
-                        rain_perm.append(perm)
-
-            for ob in halo_objects.fog:
-                if ob.halo_json.bsp_name_locked == bsp or ob.halo_json.bsp_name == bsp and not ob.halo_json.bsp_shared:
-                    perm = GetPerm(ob)
-                    if (perm not in fog_perm):
-                        fog_perm.append(perm)
-
-            for perm in boundary_perm:
-                network = ET.SubElement(object, 'ContentNetwork' ,Name=GetAssetPathBSP(asset_name, bsp, 'design', perm), Type="")
-                ET.SubElement(network, 'InputFile').text = GetInputFilePathBSP(asset_path, asset_name, bsp, 'design')
-                ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePathBSP(asset_path, asset_name, bsp, 'design')
-            
-            for perm in water_physics_perm:
-                network = ET.SubElement(object, 'ContentNetwork' ,Name=GetAssetPathBSP(asset_name, bsp, 'water_physics', perm), Type="")
-                ET.SubElement(network, 'InputFile').text = GetInputFilePathBSP(asset_path, asset_name, bsp, 'water_physics')
-                ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePathBSP(asset_path, asset_name, bsp, 'water_physics')
-
-            for perm in rain_perm:
-                network = ET.SubElement(object, 'ContentNetwork' ,Name=GetAssetPathBSP(asset_name, bsp, 'rain_blockers', perm), Type="")
-                ET.SubElement(network, 'InputFile').text = GetInputFilePathBSP(asset_path, asset_name, bsp, 'rain_blockers')
-                ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePathBSP(asset_path, asset_name, bsp, 'rain_blockers')
-
-            for perm in fog_perm:
-                network = ET.SubElement(object, 'ContentNetwork' ,Name=GetAssetPathBSP(asset_name, bsp, 'fog', perm), Type="")
-                ET.SubElement(network, 'InputFile').text = GetInputFilePathBSP(asset_path, asset_name, bsp, 'fog', perm)
-                ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePathBSP(asset_path, asset_name, bsp, 'fog', perm)
+            for perm in permutations:
+                network = ET.SubElement(object, 'ContentNetwork' ,Name=GetAssetPathBSP(asset_name, bsp, perm, True), Type="")
+                ET.SubElement(network, 'InputFile').text = GetInputFilePathBSP(asset_path, asset_name, bsp, True)
+                ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePathBSP(asset_path, asset_name, bsp, True)
 
             output = ET.SubElement(object, 'OutputTagCollection')
             ET.SubElement(output, 'OutputTag', Type='structure_design').text = f'{path.join(asset_path, asset_name)}_{bsp}_structure_design'
@@ -728,7 +539,7 @@ def WriteSkyContents(halo_objects, metadata, asset_path, asset_name):
 
     perm_list = []
     for ob in halo_objects.render:
-        perm = GetPerm(ob)
+        perm = get_perm(ob)
         if (perm not in perm_list):
             perm_list.append(perm)
             network = ET.SubElement(object, 'ContentNetwork' ,Name=perm, Type="")
@@ -779,27 +590,39 @@ def WritePrefabContents(halo_objects, metadata, asset_path, asset_name):
     ET.SubElement(output, 'OutputTag', Type='scenario_structure_bsp').text = f'{path.join(asset_path, asset_name)}'
     ET.SubElement(output, 'OutputTag', Type='scenario_structure_lighting_info').text = f'{path.join(asset_path, asset_name)}'
 
-def GetAssetPathBSP(asset_name, bsp, type, perm=''):
-    if perm == '' or perm == 'default':
-        name = f'{asset_name}_{bsp}_{type}'
+def GetAssetPathBSP(asset_name, bsp, perm='', is_design = False):
+    if is_design:
+        if perm == 'default':
+            name = f'{asset_name}_design_{bsp}'
+        else:
+            name = f'{asset_name}_design_{bsp}_{perm}'
     else:
-        name = f'{asset_name}_{bsp}_{type}_{perm}'
+        if perm == 'default':
+            name = f'{asset_name}_{bsp}'
+        else:
+            name = f'{asset_name}_{bsp}_{perm}'
 
     return name
 
-def GetInputFilePathBSP(asset_path, asset_name, bsp, type, perm=''):
-    if perm == '' or perm == 'default':
-        f_path = f'{path.join(asset_path, "models", asset_name)}_{bsp}_{type}.fbx'
+def GetInputFilePathBSP(asset_path, asset_name, bsp, perm='', is_design = False):
+    if is_design:
+        if perm == 'default':
+            f_path = f'{path.join(asset_path, "models", asset_name)}_design_{bsp}.fbx'
+        else:
+            f_path = f'{path.join(asset_path, "models", asset_name)}_design_{bsp}_{perm}.fbx'
     else:
-        f_path = f'{path.join(asset_path, "models", asset_name)}_{bsp}_{type}_{perm}.fbx'
+        if perm == 'default':
+            f_path = f'{path.join(asset_path, "models", asset_name)}_{bsp}.fbx'
+        else:
+            f_path = f'{path.join(asset_path, "models", asset_name)}_{bsp}_{perm}.fbx'
 
     return f_path
 
-def GetIntermediateFilePathBSP(asset_path, asset_name, bsp, type, perm=''):
-    if perm == '' or perm == 'default':
-        f_path = f'{path.join(asset_path, "export", "models", asset_name)}_{bsp}_{type}.gr2'
+def GetIntermediateFilePathBSP(asset_path, asset_name, bsp, perm=''):
+    if perm == 'default':
+        f_path = f'{path.join(asset_path, "export", "models", asset_name)}_{bsp}.gr2'
     else:
-        f_path = f'{path.join(asset_path, "export", "models", asset_name)}_{bsp}_{type}_{perm}.gr2'
+        f_path = f'{path.join(asset_path, "export", "models", asset_name)}_{bsp}_{perm}.gr2'
 
     return f_path
 
@@ -841,7 +664,7 @@ def SceneHasCollisionObject():
     boolean = False
 
     for ob in bpy.context.view_layer.objects:
-        if sel_logic.ObCollision(ob):
+        if CheckType.collision(ob):
             boolean = True
             break
     
@@ -851,7 +674,7 @@ def SceneHasPhysicsObject():
     boolean = False
 
     for ob in bpy.context.view_layer.objects:
-        if sel_logic.ObPhysics(ob):
+        if CheckType.physics(ob):
             boolean = True
             break
     
@@ -861,7 +684,7 @@ def SceneHasMarkers():
     boolean = False
 
     for ob in bpy.context.view_layer.objects:
-        if sel_logic.ObMarkers(ob):
+        if CheckType.marker(ob):
             boolean = True
             break
     
@@ -891,5 +714,5 @@ def export_sidecar(operator, context, report, asset_path, halo_objects, model_ar
         output_device_dispenser = False # force this off in case user is not exporting for H4/H2A
         
     if export_sidecar_xml and asset_path != '': # if the user has opted to export a sidecar and a valid asset path exists, proceed
-        export_xml(report, context, halo_objects, model_armature, lod_count, filepath, export_sidecar_xml, sidecar_type, asset_path, game_version, output_biped, output_crate,output_creature,output_device_control, output_device_dispenser, output_device_machine,output_device_terminal,output_effect_scenery,output_equipment,output_giant,output_scenery,output_vehicle,output_weapon)
+        export_xml(report, context, halo_objects, model_armature, lod_count, filepath, sidecar_type, asset_path, game_version, output_biped, output_crate,output_creature,output_device_control, output_device_dispenser, output_device_machine,output_device_terminal,output_effect_scenery,output_equipment,output_giant,output_scenery,output_vehicle,output_weapon)
     return {'FINISHED'}

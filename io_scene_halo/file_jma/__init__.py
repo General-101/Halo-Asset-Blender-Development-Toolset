@@ -317,6 +317,13 @@ class JMA_SceneProps(Panel):
     bl_context = "scene"
     bl_options = {'DEFAULT_CLOSED'}
     bl_parent_id = "HALO_PT_ScenePropertiesPanel"
+
+    @classmethod
+    def poll(cls, context):
+        scene = context.scene
+        scene_halo = scene.halo
+        return scene_halo.game_version not in ('reach', 'h4', 'h2a')
+        
     def draw(self, context):
         scene = context.scene
         scene_jma = scene.jma

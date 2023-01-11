@@ -27,9 +27,9 @@
 from subprocess import Popen
 import os
 
-from ..gr2_utils import (
-    GetEKPath,
-    GetToolType,
+from .nwo_utils import (
+    get_ek_path,
+    get_tool_type,
 )
 
 def import_now(report, filePath='', import_check=False, import_force=False, import_verbose=False, import_draft=False,import_seam_debug=False,import_skip_instances=False,import_decompose_instances=False,import_surpress_errors=False, run_tagwatcher=False, import_in_background=False):
@@ -37,8 +37,8 @@ def import_now(report, filePath='', import_check=False, import_force=False, impo
     asset_path = CleanAssetPath(full_path)
     asset_name = asset_path.rpartition('\\')[2]
     try:
-        toolCommand = f'{GetToolType()} import {os.path.join(asset_path, asset_name)}.sidecar.xml {GetImportFlags(import_check, import_force, import_verbose, import_draft, import_seam_debug, import_skip_instances, import_decompose_instances, import_surpress_errors)}'
-        os.chdir(GetEKPath())
+        toolCommand = f'{get_tool_type()} import {os.path.join(asset_path, asset_name)}.sidecar.xml {GetImportFlags(import_check, import_force, import_verbose, import_draft, import_seam_debug, import_skip_instances, import_decompose_instances, import_surpress_errors)}'
+        os.chdir(get_ek_path())
         p = Popen(toolCommand)
         if not import_in_background:
             p.wait()
@@ -49,7 +49,7 @@ def import_now(report, filePath='', import_check=False, import_force=False, impo
     else:
         if run_tagwatcher:
             try:
-                tagwatcher = os.path.join(GetEKPath(), 'bin', 'tools', 'bonobo', 'TagWatcher.exe')
+                tagwatcher = os.path.join(get_ek_path(), 'bin', 'tools', 'bonobo', 'TagWatcher.exe')
                 Popen(tagwatcher)
             except:
                 report({'WARNING'},"TagWatcher Failed To Run!")
@@ -59,7 +59,7 @@ def import_now(report, filePath='', import_check=False, import_force=False, impo
 def CleanAssetPath(path):
     path = path.replace('"','')
     path = path.strip('\\')
-    path = path.replace(os.path.join(GetEKPath(), 'data', ''), '')
+    path = path.replace(os.path.join(get_ek_path(), 'data', ''), '')
 
     return path
 

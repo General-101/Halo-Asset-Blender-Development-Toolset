@@ -30,15 +30,16 @@ import csv
 from math import radians
 from mathutils import Matrix, Vector
 from uuid import uuid4
-from ..gr2_utils import(
-    DeselectAllObjects,
-    IsMesh,
-    SetActiveObject,
-    sel_logic,
-    SelectHaloObject,
-    SelectAllObjects,
-    IsShader,
-    GetTagsPath
+from .nwo_utils import(
+    deselect_all_objects,
+    is_mesh,
+    set_active_object,
+    CheckType,
+    select_halo_object,
+    select_all_objects,
+    is_shader,
+    get_tags_path,
+    not_bungie_game,
 )
 #####################################################################################
 #####################################################################################
@@ -50,15 +51,21 @@ def prepare_scene(context, report, sidecar_type, export_hidden, filepath, use_ar
     hidden_objects = UnhideObjects(export_hidden, context)                               # If the user has opted to export hidden objects, list all hidden objects and unhide them, return the list for later use
     mode = GetSceneMode(context)                                                      # get the current selected mode, save the mode for later, and then switch to object mode
     unselectable_objects = MakeSelectable(context)
-    # update bsp names in case any are null
+    # update bsp/perm/region/global mat names in case any are null
     for ob in context.scene.objects:
-        if ob.halo_json.bsp_name == '':
-            ob.halo_json.bsp_name = '000'
+        if ob.nwo.bsp_name == '':
+            ob.nwo.bsp_name = '000'
+        if ob.nwo.Permutation_Name == '':
+            ob.nwo.Permutation_Name = 'default'
+        if ob.nwo.Region_Name == '':
+            ob.nwo.Region_Name = 'default'
+        # if ob.nwo.Face_Global_Material == '':
+        #     ob.nwo.Face_Global_Material = 'default'
     
     ApplyObjectIDs(context.view_layer.objects)
     mesh_node_names, temp_nodes = MeshesToEmpties(context)
     h_objects = halo_objects(sidecar_type)
-    FixMissingMaterials(context, h_objects)
+    FixMissingMaterials(context, sidecar_type)
     # proxies = SetPoopProxies(context, h_objects.poops) 02-01-2023 commenting this out as I don't believe the workflow should be this way. Also causes issues in H4
     # for p in proxies:
     #     h_objects.poops.append(p)
@@ -69,7 +76,7 @@ def prepare_scene(context, report, sidecar_type, export_hidden, filepath, use_ar
         skeleton_bones = GetBoneList(model_armature, use_armature_deform_only)      # return a list of bones attached to the model armature, ignoring control / non-deform bones
     # HaloBoner(model_armature.data.edit_bones, model_armature, context)
     #FixLightsRotations(h_objects.lights)                                         # adjust light rotations to match in game rotation, and return a list of lights for later use in repair_scene
-    timeline_start, timeline_end = SetTimelineRange(context)                      # set the timeline range so we can restore it later
+    timeline_start, timeline_end, current_frame = SetTimelineRange(context)                      # set the timeline range so we can restore it later
     lod_count = GetDecoratorLODCount(h_objects, sidecar_type == 'DECORATOR SET') # get the max LOD count in the scene if we're exporting a decorator
     selected_perms = GetSelectedPermutations(objects_selection)
     selected_bsps = GetSelectedBSPs(objects_selection)
@@ -77,7 +84,7 @@ def prepare_scene(context, report, sidecar_type, export_hidden, filepath, use_ar
     # if sidecar_type == 'SCENARIO':
     #     RotateScene(context.view_layer.objects, model_armature)
 
-    return objects_selection, active_object, hidden_objects, mode, model_armature, temp_armature, skeleton_bones, h_objects, timeline_start, timeline_end, lod_count, unselectable_objects, enabled_exclude_collections, mesh_node_names, temp_nodes, selected_perms, selected_bsps
+    return objects_selection, active_object, hidden_objects, mode, model_armature, temp_armature, skeleton_bones, h_objects, timeline_start, timeline_end, lod_count, unselectable_objects, enabled_exclude_collections, mesh_node_names, temp_nodes, selected_perms, selected_bsps, current_frame
 
 
 #####################################################################################
@@ -86,23 +93,23 @@ def prepare_scene(context, report, sidecar_type, export_hidden, filepath, use_ar
 
 class halo_objects():
     def __init__(self, asset_type):
-        self.render = SelectHaloObject('ObRender', asset_type, ('MODEL', 'SKY', 'CINEMATIC', 'DECORATOR', 'PARTICLE'))
-        self.collision = SelectHaloObject('ObCollision', asset_type, ('MODEL', 'SKY', 'CINEMATIC', 'DECORATOR', 'PARTICLE'))
-        self.physics = SelectHaloObject('ObPhysics', asset_type, ('MODEL', 'SKY', 'CINEMATIC', 'DECORATOR', 'PARTICLE'))
-        self.markers = SelectHaloObject('ObMarkers', asset_type, ('MODEL', 'SCENARIO', 'SKY', 'CINEMATIC', 'DECORATOR', 'PARTICLE', 'PREFAB'))
-        self.structure = SelectHaloObject('ObStructure', asset_type, ('SCENARIO', 'CINEMATIC', 'PREFAB'))
-        self.poops = SelectHaloObject('ObPoops', asset_type, ('SCENARIO', 'CINEMATIC', 'PREFAB'))
-        self.lights = SelectHaloObject('ObLights', asset_type, ('SCENARIO', 'SKY', 'CINEMATIC', 'PREFAB'))
-        self.portals = SelectHaloObject('ObPortals', asset_type, ('SCENARIO', 'CINEMATIC', 'PREFAB'))
-        self.seams = SelectHaloObject('ObSeams', asset_type, ('SCENARIO', 'CINEMATIC'))
-        self.water_surfaces = SelectHaloObject('ObWaterSurfaces', asset_type, ('SCENARIO', 'CINEMATIC', 'PREFAB'))
-        self.misc = SelectHaloObject('ObMisc', asset_type, ('SCENARIO', 'CINEMATIC'))
-        self.fog = SelectHaloObject('ObFog', asset_type, ('SCENARIO', 'CINEMATIC'))
-        self.boundary_surfaces = SelectHaloObject('ObBoundarys', asset_type, ('SCENARIO', 'CINEMATIC'))
-        self.water_physics = SelectHaloObject('ObWaterPhysics', asset_type, ('SCENARIO', 'CINEMATIC'))
-        self.rain_occluders = SelectHaloObject('ObPoopRains', asset_type, ('SCENARIO', 'CINEMATIC'))
-        self.decorator = SelectHaloObject('ObDecorator', asset_type, ('DECORATOR SET'))
-        self.particle = SelectHaloObject('ObRender', asset_type, ('PARTICLE MODEL'))
+        self.render = select_halo_object('render', asset_type, ('MODEL', 'SKY', 'CINEMATIC', 'DECORATOR', 'PARTICLE'))
+        self.collision = select_halo_object('collision', asset_type, ('MODEL', 'SKY', 'CINEMATIC', 'DECORATOR', 'PARTICLE'))
+        self.physics = select_halo_object('physics', asset_type, ('MODEL', 'SKY', 'CINEMATIC', 'DECORATOR', 'PARTICLE'))
+        self.markers = select_halo_object('marker', asset_type, ('MODEL', 'SCENARIO', 'SKY', 'CINEMATIC', 'DECORATOR', 'PARTICLE', 'PREFAB'))
+        self.structure = select_halo_object('structure', asset_type, ('SCENARIO', 'CINEMATIC', 'PREFAB'))
+        self.poops = select_halo_object('poop', asset_type, ('SCENARIO', 'CINEMATIC', 'PREFAB'))
+        self.lights = select_halo_object('light', asset_type, ('SCENARIO', 'SKY', 'CINEMATIC', 'PREFAB'))
+        self.portals = select_halo_object('portal', asset_type, ('SCENARIO', 'CINEMATIC', 'PREFAB'))
+        self.seams = select_halo_object('seam', asset_type, ('SCENARIO', 'CINEMATIC'))
+        self.water_surfaces = select_halo_object('water_surface', asset_type, ('SCENARIO', 'CINEMATIC', 'PREFAB'))
+        self.misc = select_halo_object('misc', asset_type, ('SCENARIO', 'CINEMATIC', 'PREFAB'))
+        self.fog = select_halo_object('fog', asset_type, ('SCENARIO', 'CINEMATIC'))
+        self.boundary_surfaces = select_halo_object('boundary_surface', asset_type, ('SCENARIO', 'CINEMATIC'))
+        self.water_physics = select_halo_object('water_physics', asset_type, ('SCENARIO', 'CINEMATIC'))
+        self.rain_occluders = select_halo_object('poop_rain_blocker', asset_type, ('SCENARIO', 'CINEMATIC'))
+        self.decorator = select_halo_object('decorator', asset_type, ('DECORATOR SET'))
+        self.particle = select_halo_object('render', asset_type, ('PARTICLE MODEL'))
 
 #####################################################################################
 #####################################################################################
@@ -125,12 +132,10 @@ def GetSelectedPermutations(selection):
     # cycle through selected objects and get their permutation
     for ob in selection:
         perm = ''
-        if ob.halo_json.Permutation_Name_Locked != '':
-            perm = ob.halo_json.Permutation_Name_Locked
+        if ob.nwo.Permutation_Name_Locked != '':
+            perm = ob.nwo.Permutation_Name_Locked
         else:
-            perm = ob.halo_json.Permutation_Name
-            if perm == '':
-                perm = 'default'
+            perm = ob.nwo.Permutation_Name
         if perm not in selected_perms:
             selected_perms.append(perm)
     
@@ -141,10 +146,10 @@ def GetSelectedBSPs(selection):
     # cycle through selected objects and get their permutation
     for ob in selection:
         bsp = ''
-        if ob.halo_json.bsp_name_locked != '':
-            bsp = ob.halo_json.bsp_name_locked
+        if ob.nwo.bsp_name_locked != '':
+            bsp = ob.nwo.bsp_name_locked
         else:
-            bsp = ob.halo_json.bsp_name
+            bsp = ob.nwo.bsp_name
         if bsp not in selected_bsps:
             selected_bsps.append(bsp)
     
@@ -162,12 +167,12 @@ def ExitLocalView(context):
 
 def ApplyObjectIDs(scene_obs):
     for ob in scene_obs:
-        ob.halo_json.object_id
-        if ob.halo_json.object_id == '':
-            ob.halo_json.object_id = str(uuid4())
+        ob.nwo.object_id
+        if ob.nwo.object_id == '':
+            ob.nwo.object_id = str(uuid4())
 
 def RotateScene(scene_obs, model_armature):
-    DeselectAllObjects()
+    deselect_all_objects()
     angle_z = radians(90)
     axis_z = (0, 0, 1)
     pivot = Vector((0.0, 0.0, 0.0))
@@ -194,13 +199,14 @@ def UnhideObjects(export_hidden, context):
 
 def SetTimelineRange(context):
     scene = context.scene
+    current_frame = scene.frame_current
     timeline_start = scene.frame_start
     timeline_end = scene.frame_end
 
     scene.frame_start = 0
     scene.frame_end = 0
 
-    return timeline_start, timeline_end
+    return timeline_start, timeline_end, current_frame
 
 def GetCurrentActiveObjectSelection(context):
     objects_selection = None
@@ -214,7 +220,7 @@ def GetCurrentActiveObjectSelection(context):
     return objects_selection, active_object
 
 def FixLightsRotations(lights_list):
-    DeselectAllObjects()
+    deselect_all_objects()
     angle_x = radians(90)
     angle_z = radians(-90)
     axis_x = (1, 0, 0)
@@ -234,7 +240,7 @@ def GetDecoratorLODCount(halo_objects, asset_is_decorator):
     lod_count = 0
     if asset_is_decorator:
         for ob in halo_objects.decorator:
-            ob_lod = ob.halo_json.Decorator_LOD
+            ob_lod = ob.nwo.Decorator_LOD
             if ob_lod > lod_count:
                 lod_count =  ob_lod
     
@@ -282,7 +288,7 @@ def AddTempArmature(context):
             ob.select_set(True)
             no_parent_objects.append(ob)
 
-    SetActiveObject(model_armature)
+    set_active_object(model_armature)
     ops.object.parent_set(type='OBJECT')
 
     return model_armature, no_parent_objects
@@ -291,15 +297,15 @@ def ParentToArmature(model_armature, temp_armature, no_parent_objects, context):
     if temp_armature:
         for ob in no_parent_objects:
             ob.select_set(True)
-        SetActiveObject(model_armature)
+        set_active_object(model_armature)
         bpy.ops.object.parent_set(type='BONE', keep_transform=True)
     else:
         for ob in context.view_layer.objects:
             if (ob.parent == model_armature and ob.parent_type == 'OBJECT') and not any(m != ' ARMATURE' for m in ob.modifiers):
-                DeselectAllObjects()
+                deselect_all_objects()
                 ob.select_set(True)
-                SetActiveObject(model_armature)
-                if (sel_logic.ObRender or sel_logic.ObCollision):
+                set_active_object(model_armature)
+                if (CheckType.render or CheckType.collision):
                     bpy.ops.object.parent_set(type='ARMATURE', keep_transform=True)
                 else:
                     bpy.ops.object.parent_set(type='BONE', keep_transform=True)
@@ -322,16 +328,16 @@ def GetBoneList(model_armature, deform_only):
     if deform_only:
         bone_list = GetDeformBonesOnly(bone_list)
     for b in bone_list:
-        if b.halo_json.frame_id1 == '':
+        if b.nwo.frame_id1 == '':
             FrameID1 = list(f1)[index]
         else:
-            FrameID1 = b.halo_json.frame_id1
-        if b.halo_json.frame_id2 == '':
+            FrameID1 = b.nwo.frame_id1
+        if b.nwo.frame_id2 == '':
             FrameID2 = list(f2)[index]
         else:
-            FrameID2 = b.halo_json.frame_id2
+            FrameID2 = b.nwo.frame_id2
         index +=1
-        boneslist.update({b.name: getBoneProperties(FrameID1, FrameID2, b.halo_json.object_space_node, b.halo_json.replacement_correction_node, b.halo_json.fik_anchor_node)})
+        boneslist.update({b.name: getBoneProperties(FrameID1, FrameID2, b.nwo.object_space_node, b.nwo.replacement_correction_node, b.nwo.fik_anchor_node)})
 
     return boneslist
 
@@ -386,20 +392,20 @@ def openCSV():
 
 def ApplyPredominantShaderNames(poops):
     for ob in poops:
-        ob.halo_json.Poop_Predominant_Shader_Name = GetProminantShaderName(ob)
+        ob.nwo.Poop_Predominant_Shader_Name = GetProminantShaderName(ob)
 
 def GetProminantShaderName(ob):
     predominant_shader = ''
     slots = ob.material_slots
     for s in slots:
         material = s.material
-        if IsShader(material):
-            shader_path = material.halo_json.shader_path
+        if is_shader(material):
+            shader_path = material.nwo.shader_path
             if shader_path.rpartition('.')[0] != '':
                 shader_path = shader_path.rpartition('.')[0]
-            shader_path.replace(GetTagsPath(), '')
-            shader_path.replace(GetTagsPath().lower(), '')
-            shader_type = material.halo_json.Shader_Type
+            shader_path.replace(get_tags_path(), '')
+            shader_path.replace(get_tags_path().lower(), '')
+            shader_type = material.nwo.Shader_Type
             predominant_shader = f'{shader_path}.{shader_type}'
             break
 
@@ -415,12 +421,12 @@ def SetPoopProxies(context, poops):
     physics_offset = 0
     cookie_cutter_offset = 0
     poop_offset = 0
-    DeselectAllObjects()
+    deselect_all_objects()
     for ob in poops:
         if ob.data.name not in mesh_data:
             mesh_data.append(ob.data.name)
             for obj in poops:
-                if (obj.data.name == ob.data.name) and (len(obj.children) > 0) and sel_logic.ObPoopsOnly(obj):
+                if (obj.data.name == ob.data.name) and (len(obj.children) > 0) and CheckType.poop_only(obj):
                     proxy_collision, collision_offset = GetPoopProxyCollision(obj, poops)
                     proxy_physics, physics_offset = GetPoopProxyPhysics(obj, poops)
                     proxy_cookie_cutter, cookie_cutter_offset = GetPoopProxyCookie(obj, poops)
@@ -428,8 +434,8 @@ def SetPoopProxies(context, poops):
                     break
 
             for obj in poops:
-                if sel_logic.ObPoopsOnly(obj) and obj.data.name == ob.data.name and len(obj.children) <= 0:
-                    DeselectAllObjects()
+                if CheckType.poop_only(obj) and obj.data.name == ob.data.name and len(obj.children) <= 0:
+                    deselect_all_objects()
                     obj.select_set(True)
                     poop_offset = obj.matrix_world
                     poop_proxies = AttachPoopProxies(obj, proxy_collision, proxy_physics, proxy_cookie_cutter, collision_offset, physics_offset, cookie_cutter_offset, poop_offset)
@@ -442,7 +448,7 @@ def AttachPoopProxies(obj, proxy_collision, proxy_physics, proxy_cookie_cutter, 
     ops = bpy.ops
     context = bpy.context
     proxy = []
-    DeselectAllObjects()
+    deselect_all_objects()
     if proxy_collision != None:
         proxy_collision.select_set(True)
     if proxy_physics != None:
@@ -466,9 +472,9 @@ def AttachPoopProxies(obj, proxy_collision, proxy_physics, proxy_cookie_cutter, 
     ops.object.parent_set(type='OBJECT', keep_transform=False)
 
     for ob in proxy:
-        if sel_logic.ObPoopCollision(ob):
+        if CheckType.poop_collision(ob):
             ob.matrix_local = collision_offset
-        elif sel_logic.ObPoopPhysics(ob):
+        elif CheckType.poop_physics(ob):
             ob.matrix_local = physics_offset
         else:
             ob.matrix_local = cookie_cutter_offset
@@ -480,7 +486,7 @@ def GetPoopProxyCollision(obj, poops):
     collision = None
     collision_offset = 0
     for child in obj.children:
-        if child in poops and sel_logic.ObPoopCollision(child):
+        if child in poops and CheckType.poop_collision(child):
             collision = child
             collision_offset = collision.matrix_local
             break
@@ -492,7 +498,7 @@ def GetPoopProxyPhysics(obj, poops):
     physics = None
     physics_offset = 0
     for child in obj.children:
-        if child in poops and sel_logic.ObPoopPhysics(child):
+        if child in poops and CheckType.poop_physics(child):
             physics = child
             physics_offset = physics.matrix_local
             break
@@ -503,7 +509,7 @@ def GetPoopProxyCookie(obj, poops):
     cookie = None
     cookie_offset = 0
     for child in obj.children:
-        if child in poops and sel_logic.ObCookie(child):
+        if child in poops and CheckType.cookie_cutter(child):
             cookie = child
             cookie_offset = cookie.matrix_local
             break
@@ -512,7 +518,7 @@ def GetPoopProxyCookie(obj, poops):
 
 def MakeSelectable(context):
     unselectable_objects = []
-    SelectAllObjects()
+    select_all_objects()
     for ob in context.view_layer.objects:
         if ob not in context.selected_objects:
             unselectable_objects.append(ob)
@@ -520,26 +526,19 @@ def MakeSelectable(context):
     for ob in unselectable_objects:
         ob.hide_select = False
     
-    DeselectAllObjects()
+    deselect_all_objects()
 
     return unselectable_objects
 
 
-def FixMissingMaterials(context, halo_objects):
+def FixMissingMaterials(context, sidecar_type):
     # set some locals
     ops = bpy.ops
     materials_list = bpy.data.materials
-    mat_collision = '+collision'
-    mat_physics = '+physics'
-    mat_portal = '+portal'
-    mat_sky = '+sky'
-    mat_seamsealer = '+seamsealer'
-    mat_invalid = 'invalid'
-    mat_override = '+override'
     mat = ''
     # loop through each object in the scene
     for ob in context.scene.objects:
-        if IsMesh(ob): # check if we're processing a mesh
+        if is_mesh(ob): # check if we're processing a mesh
             # remove empty material slots
             for index, slot in enumerate(ob.material_slots.items()):
                 if slot[0] == '':
@@ -548,20 +547,42 @@ def FixMissingMaterials(context, halo_objects):
 
             if len(ob.material_slots) <= 0: # if no material slots...
                 # determine what kind of mesh this is
-                if ob in halo_objects.collision:
-                    mat = mat_collision
-                elif ob in halo_objects.physics:
-                    mat = mat_physics
-                elif ob in halo_objects.portals:
-                    mat = mat_portal
-                elif ob.halo_json.Face_Type == 'SKY':
-                    mat = mat_sky
-                elif ob.halo_json.Face_Type == 'SEAM SEALER':
-                    mat = mat_seamsealer
-                elif sel_logic.ObRender(ob) or sel_logic.ObStructure(ob) or sel_logic.ObPoopsOnly(ob) or sel_logic.ObDecorator(ob):
-                    mat = mat_invalid
+                if CheckType.collision(ob):
+                    if not_bungie_game():
+                        if ob.nwo.Poop_Collision_Type == '_connected_geometry_poop_collision_type_play_collision':
+                            mat = '+player_collision'
+                        elif ob.nwo.Poop_Collision_Type == '_connected_geometry_poop_collision_type_bullet_collision':
+                            mat = '+bullet_collision'
+                        elif ob.nwo.Poop_Collision_Type == '_connected_geometry_poop_collision_type_invisible_wall':
+                            mat = '+wall_collision'
+                        else:
+                            mat = '+collision'
+                    
+                    else:
+                        mat = '+collision'
+
+                elif CheckType.physics(ob):
+                    mat = '+physics'
+                elif CheckType.portal(ob):
+                    mat = '+portal'
+                elif CheckType.seam(ob):
+                    mat = '+seam'
+                elif CheckType.cookie_cutter(ob):
+                    mat = '+cookie_cutter'
+                elif CheckType.water_physics(ob):
+                    mat = '+water_volume'
+                elif CheckType.poop(ob) and ob.nwo.poop_rain_occluder:
+                    mat = '+rain_blocker'
+                elif CheckType.default(ob) and ob.nwo.Face_Type == '_connected_geometry_face_type_sky':
+                    mat = '+sky'
+                elif (CheckType.default(ob) or CheckType.poop(ob)) and ob.nwo.Face_Type == '_connected_geometry_face_type_seam_sealer':
+                    mat = '+seamsealer'
+                elif CheckType.default(ob) and not_bungie_game() and sidecar_type == 'SCENARIO':
+                    mat = '+structure'
+                elif CheckType.default(ob) or CheckType.poop(ob) or CheckType.decorator(ob):
+                    mat = 'invalid'
                 else:
-                    mat = mat_override
+                    mat = '+override'
                 
                 # if this special material isn't already in the users scene, add it
                 if mat not in materials_list:
@@ -576,14 +597,14 @@ def MeshesToEmpties(context):
     # get a list of meshes which are nodes
     mesh_nodes = []
     for ob in context.scene.objects:
-        if sel_logic.ObMarkers(ob) and ob.type == 'MESH':
+        if CheckType.marker(ob) and ob.type == 'MESH':
             mesh_nodes.append(ob)
     # For each mesh node create an empty with the same Halo props and transforms
     # Mesh objects need their names saved, so we make a dict. Names are stored so that the node can have the exact same name. We add a temp name to each mesh object
     mesh_node_names = {}
     temp_nodes = []
     for ob in mesh_nodes:
-        DeselectAllObjects()
+        deselect_all_objects()
         bpy.ops.object.empty_add(type='ARROWS')
         node = context.object
         node_name = TempName(ob.name)
@@ -610,8 +631,8 @@ def TempName(name):
     return name + ''
 
 def SetNodeProps(node, ob):
-    node_halo = node.halo_json
-    ob_halo = ob.halo_json
+    node_halo = node.nwo
+    ob_halo = ob.nwo
 
     if ob.users_collection[0].name != 'Scene Collection':
         try:

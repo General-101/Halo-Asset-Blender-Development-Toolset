@@ -301,6 +301,7 @@ class GR2_HaloExportSettings(Panel):
         if scene_gr2_export.lightmap_structure:
             if context.scene.halo.game_version in ('h4', 'h2a'):
                 col.prop(scene_gr2_export, "lightmap_quality_h4")
+                col.prop(scene_gr2_export, "lightmap_quality_custom")
             else:
                 col.prop(scene_gr2_export, "lightmap_quality")
             if not scene_gr2_export.lightmap_all_bsps:
@@ -331,18 +332,7 @@ class GR2_HaloExportSettingsExtended(Panel):
         col.prop(scene_gr2_export, 'export_physics')
         col.prop(scene_gr2_export, 'export_markers')
         col.prop(scene_gr2_export, 'export_structure')
-        col.prop(scene_gr2_export, 'export_poops')
-        col.prop(scene_gr2_export, 'export_lights')
-        col.prop(scene_gr2_export, 'export_portals')
-        col.prop(scene_gr2_export, 'export_seams')
-        col.prop(scene_gr2_export, 'export_water_surfaces')
-        col.prop(scene_gr2_export, 'export_fog_planes')
-        col.prop(scene_gr2_export, 'export_cookie_cutters')
-        col.prop(scene_gr2_export, 'export_misc')
-        col.prop(scene_gr2_export, 'export_boundary_surfaces')
-        col.prop(scene_gr2_export, 'export_water_physics')
-        col.prop(scene_gr2_export, 'export_rain_occluders')
-        col.prop(scene_gr2_export, 'export_shared')
+        col.prop(scene_gr2_export, 'export_design')
 
         col.separator()
 
@@ -371,7 +361,7 @@ class GR2_HaloExport_ExportQuick(Operator):
         from .halo_export import ExportQuick
         scene = context.scene
         scene_gr2_export = scene.gr2_export
-        return ExportQuick(bpy.ops.export_scene.gr2, self.report, context, scene_gr2_export.export_gr2_files, scene_gr2_export.export_hidden, scene_gr2_export.export_all_bsps, scene_gr2_export.export_all_perms, scene_gr2_export.export_sidecar_xml, scene_gr2_export.import_to_game, scene_gr2_export.import_draft, scene_gr2_export.lightmap_structure, scene_gr2_export.lightmap_quality_h4, scene_gr2_export.lightmap_quality, scene_gr2_export.lightmap_specific_bsp, scene_gr2_export.lightmap_all_bsps, scene_gr2_export.export_animations, scene_gr2_export.export_render, scene_gr2_export.export_collision, scene_gr2_export.export_physics, scene_gr2_export.export_markers, scene_gr2_export.export_structure, scene_gr2_export.export_poops, scene_gr2_export.export_lights, scene_gr2_export.export_portals, scene_gr2_export.export_seams, scene_gr2_export.export_water_surfaces, scene_gr2_export.export_fog_planes, scene_gr2_export.export_cookie_cutters, scene_gr2_export.export_misc, scene_gr2_export.export_boundary_surfaces, scene_gr2_export.export_water_physics, scene_gr2_export.export_rain_occluders, scene_gr2_export.export_shared, scene_gr2_export.use_mesh_modifiers, scene_gr2_export.use_triangles, scene_gr2_export.global_scale, scene_gr2_export.use_armature_deform_only)
+        return ExportQuick(bpy.ops.export_scene.gr2, self.report, context, scene_gr2_export.export_gr2_files, scene_gr2_export.export_hidden, scene_gr2_export.export_all_bsps, scene_gr2_export.export_all_perms, scene_gr2_export.export_sidecar_xml, scene_gr2_export.import_to_game, scene_gr2_export.import_draft, scene_gr2_export.lightmap_structure, scene_gr2_export.lightmap_quality_h4, scene_gr2_export.lightmap_quality_custom, scene_gr2_export.lightmap_quality, scene_gr2_export.lightmap_specific_bsp, scene_gr2_export.lightmap_all_bsps, scene_gr2_export.export_animations, scene_gr2_export.export_render, scene_gr2_export.export_collision, scene_gr2_export.export_physics, scene_gr2_export.export_markers, scene_gr2_export.export_structure, scene_gr2_export.export_design, scene_gr2_export.use_mesh_modifiers, scene_gr2_export.use_triangles, scene_gr2_export.global_scale, scene_gr2_export.use_armature_deform_only)
 
 class GR2_HaloExportPropertiesGroup(PropertyGroup):
     final_report: StringProperty(
@@ -444,6 +434,11 @@ class GR2_HaloExportPropertiesGroup(PropertyGroup):
         options=set(),
         description="Define the lightmap quality you wish to use",
     )
+    lightmap_quality_custom: StringProperty(
+        name='Custom Quality',
+        default='',
+        description="Define the custom lightmap quality you wish to use (must be defined in globals\lightmapper_settings). This will override the drop down list.",
+    )
     lightmap_quality: EnumProperty(
         name='Quality',
         items=(('DIRECT', "Direct", ""),
@@ -506,79 +501,12 @@ class GR2_HaloExportPropertiesGroup(PropertyGroup):
         default=True,
         options=set(),
     )
-    export_poops: BoolProperty(
-        name='Instanced Geometry',
+    export_design: BoolProperty(
+        name='Structure Design',
         description='',
         default=True,
         options=set(),
     )
-    export_lights: BoolProperty(
-        name='Lights',
-        description='',
-        default=True,
-        options=set(),
-    )
-    export_portals: BoolProperty(
-        name='Portals',
-        description='',
-        default=True,
-        options=set(),
-    )
-    export_seams: BoolProperty(
-        name='Seams',
-        description='',
-        default=True,
-        options=set(),
-    )
-    export_water_surfaces: BoolProperty(
-        name='Water Surfaces',
-        description='',
-        default=True,
-        options=set(),
-    )
-    export_fog_planes: BoolProperty(
-        name='Fog Planes',
-        description='',
-        default=True,
-        options=set(),
-    )
-    export_cookie_cutters: BoolProperty(
-        name='Cookie Cutters',
-        description='',
-        default=True,
-        options=set(),
-    )
-    export_misc: BoolProperty(
-        name='Misc',
-        description='',
-        default=True,
-        options=set(),
-    )
-    export_boundary_surfaces: BoolProperty(
-        name='Boundary Surfaces',
-        description='',
-        default=True,
-        options=set(),
-    )
-    export_water_physics: BoolProperty(
-        name='Water Physics',
-        description='',
-        default=True,
-        options=set(),
-    )
-    export_rain_occluders: BoolProperty(
-        name='Rain Occluders',
-        description='',
-        default=True,
-        options=set(),
-    )
-    export_shared: BoolProperty(
-        name='Shared',
-        description='Export geometry which is shared across all BSPs',
-        default=True,
-        options=set(),
-    )
-
     use_mesh_modifiers: BoolProperty(
         name='Apply Modifiers',
         description='',

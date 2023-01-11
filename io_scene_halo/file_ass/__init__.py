@@ -200,6 +200,13 @@ class ASS_SceneProps(Panel):
     bl_region_type = 'WINDOW'
     bl_context = "scene"
     bl_options = {'DEFAULT_CLOSED'}
+
+    @classmethod
+    def poll(cls, context):
+        scene = context.scene
+        scene_halo = scene.halo
+        return scene_halo.game_version not in ('reach', 'h4', 'h2a')
+
     bl_parent_id = "HALO_PT_ScenePropertiesPanel"
     def draw(self, context):
         scene = context.scene

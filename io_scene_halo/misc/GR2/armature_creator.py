@@ -27,14 +27,14 @@ from os import path, remove, chdir, rmdir
 import zipfile
 import bpy
 
-from ...gr2_utils import (
-    DeselectAllObjects,
-    GetActiveObject,
+from ...file_gr2.nwo_utils import (
+    deselect_all_objects,
+    get_active_object,
 )
 from .collection_manager import GetCollIfExists
 
 def ArmatureCreate(context, armature_type, use_custom_bone_shapes):
-    DeselectAllObjects()
+    deselect_all_objects()
     pedestal = 'b_pedestal'
     pitch = 'b_aim_pitch'
     yaw = 'b_aim_yaw'
@@ -59,7 +59,7 @@ def ArmatureCreate(context, armature_type, use_custom_bone_shapes):
             shape_yaw = existing_coll.objects[1]
 
     bpy.ops.object.armature_add(enter_editmode=True, align='WORLD', location=(0, 0, 0), scale=(1, 1, 1))
-    arm = GetActiveObject()
+    arm = get_active_object()
     arm.data.edit_bones[0].name = pedestal
     if armature_type == 'UNIT':
         bpy.ops.armature.bone_primitive_add(name=pitch)
