@@ -92,7 +92,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
         print('Found Better FBX exporter')
     else:
         from io_scene_fbx.export_fbx_bin import save as export_fbx
-        print("Could not find Better FBX exporter (or it is not enabled). Using Blender's native fbx exporter")
+        # print("Could not find Better FBX exporter (or it is not enabled). Using Blender's native fbx exporter")
 
     from .export_gr2 import export_gr2
 

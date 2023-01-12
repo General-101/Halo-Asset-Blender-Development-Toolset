@@ -26,7 +26,7 @@
 
 
 ####################
-# TODO NEED TO CHANGE STRUCTURE DESIGN. SHOULD NOT FOLLOW BSP INDEX RULE. SHOULD NOT CONTAIN SHARED
+# TODO NEED TO CHANGE STRUCTURE DESIGN. SHOULD NOT CONTAIN SHARED
 
 
 bl_info = {
@@ -321,6 +321,12 @@ class Export_Scene_GR2(Operator, ExportHelper):
         default=True,
     )
 
+    meshes_to_empties: BoolProperty(
+        name='Markers as Empties',
+        description='Export all mesh Halo markers as empties. Helps save on export / import time and file size',
+        default=True,
+    )
+
     def UpdateVisible(self, context):
         if self.export_hidden == True:
             self.use_visible = False
@@ -465,6 +471,11 @@ class Export_Scene_GR2(Operator, ExportHelper):
         self.use_triangles = scene_gr2_export.use_triangles
         self.global_scale = scene_gr2_export.global_scale
         self.use_armature_deform_only = scene_gr2_export.use_armature_deform_only
+        self.meshes_to_empties = scene_gr2_export.meshes_to_empties
+
+        self.show_output = scene_gr2_export.show_output
+        self.keep_fbx = scene_gr2_export.keep_fbx
+        self.keep_json = scene_gr2_export.keep_json
 
         # SIDECAR SETTINGS # 
 
@@ -543,6 +554,8 @@ class Export_Scene_GR2(Operator, ExportHelper):
         if self.show_output:
             console.console_toggle() # toggle the console so users can see progress of export
 
+        context.scene.gr2_export.show_output = False
+
         from .prepare_scene import prepare_scene
         (objects_selection, active_object, hidden_objects, mode, model_armature, temp_armature, skeleton_bones, halo_objects, timeline_start, timeline_end, lod_count, unselectable_objects, enabled_exclude_collections, mesh_node_names, temp_nodes, selected_perms, selected_bsps, current_frame
         ) = prepare_scene(context, self.report, **keywords) # prepares the scene for processing and returns information about the scene
@@ -557,9 +570,6 @@ class Export_Scene_GR2(Operator, ExportHelper):
         from .repair_scene import repair_scene
         repair_scene(context, self.report, objects_selection, active_object, hidden_objects, mode, temp_armature, timeline_start, timeline_end, model_armature, halo_objects.lights, unselectable_objects, enabled_exclude_collections, mesh_node_names, temp_nodes, current_frame, **keywords)
 
-        if self.show_output:
-            console.console_toggle()
-
         return {'FINISHED'}
 
     def draw(self, context):
@@ -573,7 +583,7 @@ class Export_Scene_GR2(Operator, ExportHelper):
         col = box.column()
         col.prop(self, "game_version", text='Game Version')
         col.prop(self, "sidecar_type", text='Asset Type')
-        col.prop(self, "show_output", text='Show Output')
+        col.prop(self, "show_output", text='Toggle Output')
         # GR2 SETTINGS #
         box = layout.box()
         box.label(text="GR2 Settings")
@@ -673,7 +683,8 @@ class Export_Scene_GR2(Operator, ExportHelper):
         col = box.column()
         col.prop(self, "use_mesh_modifiers")
         col.prop(self, "use_triangles")
-        col.prop(self, 'use_armature_deform_only')
+        col.prop(self, 'use_armature_deform_only') 
+        col.prop(self, 'meshes_to_empties')
         if UsingBetterFBX():
             col.prop(self, 'mesh_smooth_type_better')
         else:

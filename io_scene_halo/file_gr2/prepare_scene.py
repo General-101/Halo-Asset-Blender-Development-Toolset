@@ -44,7 +44,7 @@ from .nwo_utils import(
 #####################################################################################
 #####################################################################################
 # MAIN FUNCTION
-def prepare_scene(context, report, sidecar_type, export_hidden, filepath, use_armature_deform_only, game_version, **kwargs):
+def prepare_scene(context, report, sidecar_type, export_hidden, filepath, use_armature_deform_only, game_version, meshes_to_empties, **kwargs):
     ExitLocalView(context)
     enabled_exclude_collections = HideExcludedCollections(context)
     objects_selection, active_object = GetCurrentActiveObjectSelection(context)
@@ -63,7 +63,10 @@ def prepare_scene(context, report, sidecar_type, export_hidden, filepath, use_ar
         #     ob.nwo.Face_Global_Material = 'default'
     
     ApplyObjectIDs(context.view_layer.objects)
-    mesh_node_names, temp_nodes = MeshesToEmpties(context)
+    mesh_node_names = {}
+    temp_nodes = []
+    if meshes_to_empties:
+        mesh_node_names, temp_nodes = MeshesToEmpties(context)
     h_objects = halo_objects(sidecar_type)
     FixMissingMaterials(context, sidecar_type)
     # proxies = SetPoopProxies(context, h_objects.poops) 02-01-2023 commenting this out as I don't believe the workflow should be this way. Also causes issues in H4
@@ -596,7 +599,7 @@ def FixMissingMaterials(context, sidecar_type):
 def MeshesToEmpties(context):
     # get a list of meshes which are nodes
     mesh_nodes = []
-    for ob in context.scene.objects:
+    for ob in context.view_layer.objects:
         if CheckType.marker(ob) and ob.type == 'MESH':
             mesh_nodes.append(ob)
     # For each mesh node create an empty with the same Halo props and transforms

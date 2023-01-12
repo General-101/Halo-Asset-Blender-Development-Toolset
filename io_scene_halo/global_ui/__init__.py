@@ -979,7 +979,18 @@ class Halo_SetUnitScale(Operator):
 
     def execute(self, context):
         # set the Halo scale
-        context.scene.unit_settings.scale_length = 0.03048
+        halo_scale = 0.03048
+        # Apply scale to clipping in all windows
+        for workspace in bpy.data.workspaces:
+            for screen in workspace.screens:
+                for area in screen.areas:
+                    if area.type == 'VIEW_3D':
+                        for space in area.spaces:
+                            if space.type == 'VIEW_3D':
+                                space.clip_start = space.clip_start / halo_scale
+                                space.clip_end = space.clip_end / halo_scale
+        # Set halo scale
+        context.scene.unit_settings.scale_length = halo_scale
         return {'FINISHED'}
 
 def GameVersionWarning(self, context):
@@ -1850,8 +1861,16 @@ class NWO_LightProps(Panel):
             col.separator()
                 
             if ob_nwo.light_mode == '_connected_geometry_light_mode_dynamic':
+                col.prop(ob_nwo, 'Light_Far_Attenuation_StartH4')
+                col.prop(ob_nwo, 'Light_Far_Attenuation_EndH4')
+
+                col.separator()
+
                 col.prop(ob_nwo, 'light_cinema')
                 col.prop(ob_nwo, 'light_destroy_after')
+
+                col.separator()
+                
                 col.prop(ob_nwo, "light_shadows")
                 if ob_nwo.light_shadows:
                     col.prop(ob_nwo, 'light_shadow_color')
@@ -1893,11 +1912,8 @@ class NWO_LightProps(Panel):
             # if ob_nwo.light_type_h4 == '_connected_geometry_light_type_spot':
             #     col.prop(ob_nwo, 'outer_cone_angle_off', text='Outer Cone Angle Set Via Tag')
 
-            if ob_nwo.manual_fade_distance:
-                col.prop(ob_nwo, 'Light_Far_Attenuation_StartH4')
-                col.prop(ob_nwo, 'Light_Far_Attenuation_EndH4')
-                col.prop(ob_nwo, 'Light_Fade_Start_Distance')
-                col.prop(ob_nwo, 'Light_Fade_End_Distance')
+                # col.prop(ob_nwo, 'Light_Fade_Start_Distance')
+                # col.prop(ob_nwo, 'Light_Fade_End_Distance')
             
 
         else:
@@ -3757,7 +3773,7 @@ class NWO_ObjectPropertiesGroup(PropertyGroup):
         default=0.5,
         subtype='FACTOR',
         min=0.0,
-        max=1.0
+        soft_max=10.0
     )
 
     light_attenuation_near_radius: FloatProperty(

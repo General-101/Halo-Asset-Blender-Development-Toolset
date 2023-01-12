@@ -41,6 +41,8 @@ from bpy.props import (
         FloatProperty,
         )
 
+is_blender_startup = True
+
 class GR2_Tools_Helper(Panel):
     """Tools to help automate Halo GR2 workflow"""
     bl_label = "Halo GR2 Tools Helper"
@@ -281,6 +283,8 @@ class GR2_HaloExportSettings(Panel):
         layout.use_property_split = True
         flow = layout.grid_flow(row_major=True, columns=0, even_columns=True, even_rows=False, align=False)
         col = flow.column()
+        col = layout.column(heading="Toggle")
+        col.prop(scene_gr2_export, 'show_output', text='Output')
         col = layout.column(heading="Export")
         col.prop(scene_gr2_export, 'export_gr2_files', text='GR2')
         if scene_gr2_export.export_gr2_files:
@@ -325,6 +329,9 @@ class GR2_HaloExportSettingsExtended(Panel):
         layout.use_property_split = True
         flow = layout.grid_flow(row_major=True, columns=0, even_columns=True, even_rows=False, align=False)
         col = flow.column()
+        col = layout.column(heading="Keep")
+        col.prop(scene_gr2_export, 'keep_fbx')
+        col.prop(scene_gr2_export, 'keep_json')
         col = layout.column(heading="Include")
         col.prop(scene_gr2_export, 'export_animations')
         col.prop(scene_gr2_export, 'export_render')
@@ -340,6 +347,7 @@ class GR2_HaloExportSettingsExtended(Panel):
         col.prop(scene_gr2_export, 'use_mesh_modifiers')
         col.prop(scene_gr2_export, 'use_triangles')
         col.prop(scene_gr2_export, 'use_armature_deform_only')
+        col.prop(scene_gr2_export, 'meshes_to_empties')
         col.prop(scene_gr2_export, 'global_scale')
         
 
@@ -361,7 +369,7 @@ class GR2_HaloExport_ExportQuick(Operator):
         from .halo_export import ExportQuick
         scene = context.scene
         scene_gr2_export = scene.gr2_export
-        return ExportQuick(bpy.ops.export_scene.gr2, self.report, context, scene_gr2_export.export_gr2_files, scene_gr2_export.export_hidden, scene_gr2_export.export_all_bsps, scene_gr2_export.export_all_perms, scene_gr2_export.export_sidecar_xml, scene_gr2_export.import_to_game, scene_gr2_export.import_draft, scene_gr2_export.lightmap_structure, scene_gr2_export.lightmap_quality_h4, scene_gr2_export.lightmap_quality_custom, scene_gr2_export.lightmap_quality, scene_gr2_export.lightmap_specific_bsp, scene_gr2_export.lightmap_all_bsps, scene_gr2_export.export_animations, scene_gr2_export.export_render, scene_gr2_export.export_collision, scene_gr2_export.export_physics, scene_gr2_export.export_markers, scene_gr2_export.export_structure, scene_gr2_export.export_design, scene_gr2_export.use_mesh_modifiers, scene_gr2_export.use_triangles, scene_gr2_export.global_scale, scene_gr2_export.use_armature_deform_only)
+        return ExportQuick(bpy.ops.export_scene.gr2, self.report, context, scene_gr2_export.export_gr2_files, scene_gr2_export.export_hidden, scene_gr2_export.export_all_bsps, scene_gr2_export.export_all_perms, scene_gr2_export.export_sidecar_xml, scene_gr2_export.import_to_game, scene_gr2_export.import_draft, scene_gr2_export.lightmap_structure, scene_gr2_export.lightmap_quality_h4, scene_gr2_export.lightmap_quality_custom, scene_gr2_export.lightmap_quality, scene_gr2_export.lightmap_specific_bsp, scene_gr2_export.lightmap_all_bsps, scene_gr2_export.export_animations, scene_gr2_export.export_render, scene_gr2_export.export_collision, scene_gr2_export.export_physics, scene_gr2_export.export_markers, scene_gr2_export.export_structure, scene_gr2_export.export_design, scene_gr2_export.use_mesh_modifiers, scene_gr2_export.use_triangles, scene_gr2_export.global_scale, scene_gr2_export.use_armature_deform_only, scene_gr2_export.meshes_to_empties, scene_gr2_export.show_output, scene_gr2_export.keep_fbx, scene_gr2_export.keep_json)
 
 class GR2_HaloExportPropertiesGroup(PropertyGroup):
     final_report: StringProperty(
@@ -523,11 +531,50 @@ class GR2_HaloExportPropertiesGroup(PropertyGroup):
         name='Scale',
         description='',
         default=1.0,
-        options=set(),
+        options=set(), 
     )
-    use_armature_deform_only: BoolProperty(
+    use_armature_deform_only: BoolProperty( 
         name='Deform Bones Only',
         description='Only export bones with the deform property ticked',
+        default=True,
+        options=set(),
+    )
+    meshes_to_empties: BoolProperty(
+        name='Markers as Empties',
+        description='Export all mesh Halo markers as empties. Helps save on export / import time and file size',
+        default=True,
+        options=set(),
+    )
+
+    def get_show_output(self):
+        global is_blender_startup
+        if is_blender_startup:
+            is_blender_startup = False
+            self["show_output"] = True
+            return True
+        else:
+            return self["show_output"]
+    
+    def set_show_output(self, value):
+        self["show_output"] = value
+
+    show_output: BoolProperty(
+        name='Show Output',
+        description='',
+        default=True,
+        options=set(),
+        get=get_show_output,
+        set=set_show_output,
+    )
+    keep_fbx: BoolProperty(
+        name="FBX",
+        description="Keep the source FBX file after GR2 conversion",
+        default=True,
+        options=set(),
+    )
+    keep_json: BoolProperty(
+        name="JSON",
+        description="Keep the source JSON file after GR2 conversion",
         default=True,
         options=set(),
     )
@@ -723,8 +770,7 @@ def register():
     bpy.types.Scene.gr2_shader_finder = PointerProperty(type=GR2_HaloShaderFinderPropertiesGroup, name="Shader Finder", description="Find Shaders")
     bpy.types.Scene.gr2_export = PointerProperty(type=GR2_HaloExportPropertiesGroup, name="Halo Export", description="")
     bpy.types.Scene.gr2_collection_manager = PointerProperty(type=GR2_HaloCollectionManagerPropertiesGroup, name="Collection Manager", description="")
-    bpy.types.Scene.gr2_armature_creator = PointerProperty(type=GR2_ArmatureCreatorPropertiesGroup, name="Halo Armature", description="") 
-
+    bpy.types.Scene.gr2_armature_creator = PointerProperty(type=GR2_ArmatureCreatorPropertiesGroup, name="Halo Armature", description="")
     
 def unregister():
     for clshalo in classeshalo:
