@@ -46,17 +46,6 @@ class NWOJSON(dict):
         self.json_dict.update({'meshes_properties': self.meshes_properties})
         self.json_dict.update({'material_properties': self.material_properties})
 
-        del self.objects
-        del self.sidecar_type
-        del self.model_armature
-        del self.world_frame
-        del self.asset_name
-        del self.bone_list
-        del self.string_table
-        del self.nodes_properties
-        del self.meshes_properties
-        del self.material_properties
-
     # STRING TABLE
     def build_string_table(self):
         global_materials = self.get_global_materials()

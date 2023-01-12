@@ -124,16 +124,16 @@ class GR2_HaloLauncher(Panel):
         col = flow.column()
         col.scale_y = 1.5
         col.operator('halo_gr2.launch_foundation')
-        col.separator()
         split = layout.split()
         col = split.column()
+        col.scale_y = 1.25
         col.operator('halo_gr2.launch_data')
         col = split.column(align=True)
+        col.scale_y = 1.25
         col.operator('halo_gr2.launch_tags')
         if scene_gr2_halo_launcher.sidecar_path != '':
             flow = layout.grid_flow(row_major=True, columns=0, even_columns=True, even_rows=False, align=False)
             col = flow.column()
-            col.separator()
             col.scale_y = 1.5
             col.operator('halo_gr2.launch_source')
 

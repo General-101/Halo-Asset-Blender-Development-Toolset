@@ -190,40 +190,34 @@ class NWOLight(NWOObject):
         super().__init__(ob, sidecar_type, model_armature, world_frame, asset_name)
         # SHARED
         self.bungie_light_type =  self.light_type()
-        self.bungie_light_fade_start_distance = self.light_fade_start_distance()
-        self.bungie_light_fade_out_distance = self.light_fade_out_distance()
         self.bungie_light_color = self.light_color()
         self.bungie_light_intensity = self.light_intensity()
-        # self.bungie_light_far_attenuation_start = self.light_far_attenuation_start()
-        # self.bungie_light_far_attenuation_end = self.light_far_attenuation_end()
-        # self.bungie_light_near_attenuation_start = self.light_near_attenuation_start()
-        # self.bungie_light_near_attenuation_end = self.light_near_attenuation_end()
-        
+
         if self.not_bungie_game:
             # H4 ONLY
-            self.bungie_light_is_uber_light = self.is_uber_light()
-            self.bungie_light_jitter_quality = self.light_jitter_quality()
-            self.bungie_light_jitter_sphere_radius = self.light_jitter_sphere_radius()
-            self.bungie_light_jitter_angle = self.light_jitter_angle()
-            self.bungie_light_indirect_only = self.light_indirect_only()
-            self.bungie_light_indirect_amplification_factor = self.light_indirect_amplification_factor()
-            self.bungie_light_attenuation_near_radius = self.light_attenuation_near_radius()
-            self.bungie_light_attenuation_far_radius = self.light_attenuation_far_radius()
-            self.bungie_light_attenuation_power = self.light_attenuation_power()
             self.bungie_light_mode = self.light_mode()
             self.bungie_lighting_mode = self.lighting_mode()
-            self.bungie_specular_power = self.specular_power()
-            self.bungie_specular_intensity = self.specular_intensity()
+            self.bungie_light_near_attenuation_start = self.light_near_attenuation_start()
+            self.bungie_light_near_attenuation_end = self.light_near_attenuation_end()
+            self.bungie_light_fade_start_distance = self.light_fade_start_distance()
+            self.bungie_light_fade_out_distance = self.light_fade_out_distance()
+            self.bungie_light_far_attenuation_start = self.light_far_attenuation_start()
+            self.bungie_light_far_attenuation_end = self.light_far_attenuation_end()
+            # self.bungie_light_is_uber_light = self.is_uber_light()
+            # self.bungie_light_indirect_only = self.light_indirect_only()
+            # self.bungie_light_attenuation_near_radius = self.light_attenuation_near_radius()
+            # self.bungie_light_attenuation_far_radius = self.light_attenuation_far_radius()
+            # self.bungie_light_attenuation_power = self.light_attenuation_power()
             self.bungie_inner_cone_angle = self.inner_cone_angle()
             self.bungie_outer_cone_angle = self.outer_cone_angle()
             self.bungie_cone_projection_shape = self.cone_projection_shape()
+            self.bungie_screenspace_light = self.screenspace_light()
             self.bungie_shadow_near_clipplane = self.shadow_near_clipplane()
             self.bungie_shadow_far_clipplane = self.shadow_far_clipplane()
             self.bungie_shadow_bias_offset = self.shadow_bias_offset()
             self.bungie_shadow_color = self.shadow_color()
             self.bungie_dynamic_shadow_quality = self.dynamic_shadow_quality()
             self.bungie_shadows = self.shadows()
-            self.bungie_screenspace_light = self.screenspace_light()
             self.bungie_ignore_dynamic_objects = self.ignore_dynamic_objects()
             self.bungie_cinema_objects_only = self.cinema_objects_only()
             self.bungie_cinema_only = self.cinema_only()
@@ -231,16 +225,29 @@ class NWOLight(NWOObject):
             self.bungie_specular_contribution = self.specular_contribution()
             self.bungie_diffuse_contribution = self.diffuse_contribution()
             self.bungie_destroy_light_after = self.destroy_light_after()
+            self.bungie_specular_power = self.specular_power()
+            self.bungie_specular_intensity = self.specular_intensity()
             self.bungie_indirect_amplification_factor = self.indirect_amplification_factor()
+            self.bungie_light_jitter_quality = self.light_jitter_quality()
+            self.bungie_light_jitter_sphere_radius = self.light_jitter_sphere_radius()
+            self.bungie_light_jitter_angle = self.light_jitter_angle()
             self.bungie_is_sun = self.is_sun()
             self.bungie_is_indirect_only = self.is_indirect_only()
             self.bungie_is_static_analytic = self.is_static_analytic()
-            self.bungie_light_tag_name = self.light_tag_name()
+                # self.bungie_light_indirect_amplification_factor = self.light_indirect_amplification_factor()
+            
+            # self.bungie_light_tag_name = self.light_tag_name()
         else:
             # REACH ONLY
             self.bungie_light_type_version = '1'
             self.bungie_light_game_type = self.light_game_type()
             self.bungie_light_shape = self.light_shape()
+            self.bungie_light_near_attenuation_start = self.light_near_attenuation_start()
+            self.bungie_light_near_attenuation_end = self.light_near_attenuation_end()
+            self.bungie_light_fade_start_distance = self.light_fade_start_distance()
+            self.bungie_light_fade_out_distance = self.light_fade_out_distance()
+            self.bungie_light_far_attenuation_start = self.light_far_attenuation_start()
+            self.bungie_light_far_attenuation_end = self.light_far_attenuation_end()
             # self.bungie_light_use_near_attenuation = self.light_use_near_attenuation()
             # self.bungie_light_use_far_attenuation = self.light_use_far_attenuation()
             self.bungie_light_ignore_bsp_visibility = self.light_ignore_bsp_visibility()
@@ -303,27 +310,27 @@ class NWOLight(NWOObject):
 
     def light_far_attenuation_start(self):
         if self.not_bungie_game:
-            jstr(self.halo.Light_Far_Attenuation_StartH4)
+            return jstr(self.halo.Light_Far_Attenuation_StartH4)
         else:
-            jstr(self.halo.Light_Far_Attenuation_Start)
+            return jstr(self.halo.Light_Far_Attenuation_Start)
 
     def light_far_attenuation_end(self):
         if self.not_bungie_game:
-            jstr(self.halo.Light_Far_Attenuation_EndH4)
+            return jstr(self.halo.Light_Far_Attenuation_EndH4)
         else:
-            jstr(self.halo.Light_Far_Attenuation_End)
+            return jstr(self.halo.Light_Far_Attenuation_End)
 
     def light_near_attenuation_start(self):
         if self.not_bungie_game:
-            jstr(self.halo.Light_Near_Attenuation_StartH4)
+            return jstr(self.halo.Light_Near_Attenuation_StartH4)
         else:
-            jstr(self.halo.Light_Near_Attenuation_Start)
+            return jstr(self.halo.Light_Near_Attenuation_Start)
 
     def light_near_attenuation_end(self):
         if self.not_bungie_game:
-            jstr(self.halo.Light_Near_Attenuation_EndH4)
+            return jstr(self.halo.Light_Near_Attenuation_EndH4)
         else:
-            jstr(self.halo.Light_Near_Attenuation_End)
+            return jstr(self.halo.Light_Near_Attenuation_End)
 
     def light_mode(self):
         return self.halo.light_mode
@@ -428,7 +435,7 @@ class NWOLight(NWOObject):
         return bool_str(self.halo.light_indirect_only)
 
     def is_static_analytic(self):
-        return bool_str(self.halo.light_type_h4 == '_connected_geometry_light_mode_analytic')
+        return bool_str(self.halo.light_static_analytic)
 
     def light_tag_name(self):
         return clean_tag_path(self.halo.light_tag_name)

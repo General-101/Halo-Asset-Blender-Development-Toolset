@@ -412,7 +412,7 @@ class CheckType:
         return mesh_type(ob, ('_connected_geometry_mesh_type_collision', '_connected_geometry_mesh_type_physics'), ('@', '$'))
     @staticmethod
     def light(ob):
-        return object_type(ob)
+        return ob.type == 'LIGHT'
     @staticmethod
     def portal(ob):
         return mesh_type(ob, ('_connected_geometry_mesh_type_portal'), ('+portal')) and not_parented_to_poop(ob)

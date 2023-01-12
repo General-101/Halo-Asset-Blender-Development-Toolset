@@ -1829,78 +1829,76 @@ class NWO_LightProps(Panel):
         scene_halo = scene.halo
 
         if scene_halo.game_version in ('h4','h2a'):
-            col.prop(ob_nwo, 'light_type_h4')
+            col.prop(ob_nwo, 'Light_Color', text='Color')
             col.prop(ob_nwo, 'light_mode')
             col.prop(ob_nwo, 'light_lighting_mode')
-            col.prop(ob_nwo, 'Light_Color', text='Color') 
+            col.prop(ob_nwo, 'light_type_h4')
+            if ob_nwo.light_type_h4 == '_connected_geometry_light_type_spot' and not ob_nwo.light_mode == '_connected_geometry_light_mode_dynamic':
+
+                col.separator()
+
+                col.prop(ob_nwo, 'light_cone_projection_shape')
+                col.prop(ob_nwo, 'light_inner_cone_angle')
+                col.prop(ob_nwo, 'light_outer_cone_angle')
+
+            col.separator()
             col.prop(ob_nwo, 'Light_IntensityH4')
-
+            if ob_nwo.light_lighting_mode == '_connected_geometry_lighting_mode_artistic':
+                col.prop(ob_nwo, 'Light_Near_Attenuation_StartH4')
+                col.prop(ob_nwo, 'Light_Near_Attenuation_EndH4')
+            
             col.separator()
+                
+            if ob_nwo.light_mode == '_connected_geometry_light_mode_dynamic':
+                col.prop(ob_nwo, 'light_cinema')
+                col.prop(ob_nwo, 'light_destroy_after')
+                col.prop(ob_nwo, "light_shadows")
+                if ob_nwo.light_shadows:
+                    col.prop(ob_nwo, 'light_shadow_color')
+                    col.prop(ob_nwo, 'light_dynamic_shadow_quality')
+                    col.prop(ob_nwo, 'light_shadow_near_clipplane')
+                    col.prop(ob_nwo, 'light_shadow_far_clipplane')
+                    col.prop(ob_nwo, 'light_shadow_bias_offset')
+                col.prop(ob_nwo, 'light_cinema_objects_only')
+                col.prop(ob_nwo, "light_specular_contribution")
+                col.prop(ob_nwo, "light_diffuse_contribution")
+                col.prop(ob_nwo, "light_ignore_dynamic_objects")
+                col.prop(ob_nwo, "light_screenspace")
+                if ob_nwo.light_screenspace:
+                    col.prop(ob_nwo, 'light_specular_power')
+                    col.prop(ob_nwo, 'light_specular_intensity')
 
-            col.prop(ob_nwo, 'Light_Near_Attenuation_StartH4')
-            col.prop(ob_nwo, 'Light_Near_Attenuation_EndH4')
+                # col = layout.column(heading="Flags")
+                # sub = col.column(align=True)
+            else:
+                col.prop(ob_nwo, 'light_jitter_quality')
+                col.prop(ob_nwo, 'light_jitter_angle')
+                col.prop(ob_nwo, 'light_jitter_sphere_radius')
 
-            col.separator()
+                col.separator()
 
-            col.prop(ob_nwo, 'Light_Far_Attenuation_StartH4')
-            col.prop(ob_nwo, 'Light_Far_Attenuation_EndH4')
+                col.prop(ob_nwo, 'light_amplification_factor')
 
-            col.separator()
+                col.separator()
+                # col.prop(ob_nwo, 'light_attenuation_near_radius')
+                # col.prop(ob_nwo, 'light_attenuation_far_radius')
+                # col.prop(ob_nwo, 'light_attenuation_power')
+                # col.prop(ob_nwo, 'light_tag_name')
+                col.prop(ob_nwo, "light_indirect_only")
+                col.prop(ob_nwo, "light_static_analytic")
 
-            col.prop(ob_nwo, 'Light_Fade_Start_Distance')
-            col.prop(ob_nwo, 'Light_Fade_End_Distance')
+            # col.prop(ob_nwo, 'light_intensity_off', text='Light Intensity Set Via Tag')
+            # if ob_nwo.light_lighting_mode == '_connected_geometry_lighting_mode_artistic':
+            #     col.prop(ob_nwo, 'near_attenuation_end_off', text='Near Attenuation Set Via Tag')
+            # if ob_nwo.light_type_h4 == '_connected_geometry_light_type_spot':
+            #     col.prop(ob_nwo, 'outer_cone_angle_off', text='Outer Cone Angle Set Via Tag')
 
-            col.separator()
-
-            col.prop(ob_nwo, 'light_cone_projection_shape')
-            col.prop(ob_nwo, 'light_inner_cone_angle')
-            col.prop(ob_nwo, 'light_outer_cone_angle')
-
-            col.separator()
-
-            col.prop(ob_nwo, 'light_jitter_quality')
-            col.prop(ob_nwo, 'light_jitter_angle')
-            col.prop(ob_nwo, 'light_jitter_sphere_radius')
-
-            col.separator()
-
-            col.prop(ob_nwo, 'light_shadow_color')
-            col.prop(ob_nwo, 'light_dynamic_shadow_quality')
-            col.prop(ob_nwo, 'light_shadow_near_clipplane')
-            col.prop(ob_nwo, 'light_shadow_far_clipplane')
-            col.prop(ob_nwo, 'light_shadow_bias_offset')
-
-            col.separator()
-
-            col.prop(ob_nwo, 'light_specular_power')
-            col.prop(ob_nwo, 'light_specular_intensity')
-
-            col.separator()
-
-            col.prop(ob_nwo, 'light_amplification_factor')
-            col.prop(ob_nwo, 'light_attenuation_near_radius')
-            col.prop(ob_nwo, 'light_attenuation_far_radius')
-            col.prop(ob_nwo, 'light_attenuation_power')
-            col.prop(ob_nwo, 'light_cinema_objects_only')
-            col.prop(ob_nwo, 'light_tag_name')
-
-            col.separator()
-
-            col.prop(ob_nwo, 'light_destroy_after')
-
-            col.separator()
-
-            col.prop(ob_nwo, 'light_cinema')
-
-            col = layout.column(heading="Flags")
-            sub = col.column(align=True)
-
-            sub.prop(ob_nwo, "light_specular_contribution")
-            sub.prop(ob_nwo, "light_shadows")
-            sub.prop(ob_nwo, "light_sub_type")
-            sub.prop(ob_nwo, "light_ignore_dynamic_objects")
-            sub.prop(ob_nwo, "light_diffuse_contribution")
-            sub.prop(ob_nwo, "light_indirect_only")
+            if ob_nwo.manual_fade_distance:
+                col.prop(ob_nwo, 'Light_Far_Attenuation_StartH4')
+                col.prop(ob_nwo, 'Light_Far_Attenuation_EndH4')
+                col.prop(ob_nwo, 'Light_Fade_Start_Distance')
+                col.prop(ob_nwo, 'Light_Fade_End_Distance')
+            
 
         else:
             if context.active_object.data.type == 'POINT' or context.active_object.data.type == 'SUN':
@@ -3787,7 +3785,7 @@ class NWO_ObjectPropertiesGroup(PropertyGroup):
     )
 
     light_cinema_objects_only: BoolProperty( 
-        name="Only light cinematic objects",
+        name="Only Light Cinematic Objects",
         options=set(),
         description="",
         default=False,
@@ -3982,6 +3980,48 @@ class NWO_ObjectPropertiesGroup(PropertyGroup):
 
     light_indirect_only: BoolProperty(
         name="Indirect Only",
+        options=set(),
+        description="",
+        default=False,
+    )
+
+    light_screenspace: BoolProperty(
+        name="Screenspace Light",
+        options=set(),
+        description="",
+        default=False,
+    )
+
+    light_intensity_off: BoolProperty(
+        name="Set Via Tag",
+        options=set(),
+        description="Stops this value being passed to the game. Use if you want to set the intensity manually in the tag (such as if you want to make use of functions for lights)",
+        default=False,
+    )
+
+    near_attenuation_end_off: BoolProperty(
+        name="Set Via Tag",
+        options=set(),
+        description="Stops this value being passed to the game. Use if you want to set the near attenuation end manually in the tag (such as if you want to make use of functions for lights)",
+        default=False,
+    )
+
+    outer_cone_angle_off: BoolProperty(
+        name="Set Via Tag",
+        options=set(),
+        description="Stops this value being passed to the game. Use if you want to set the outer cone angle manually in the tag (such as if you want to make use of functions for lights)",
+        default=False,
+    )
+
+    manual_fade_distance: BoolProperty(
+        name="Specify Fade Out Distance",
+        options=set(),
+        description="Reveals fade out distance settings",
+        default=False,
+    )
+
+    light_static_analytic: BoolProperty(
+        name="Static Analytic",
         options=set(),
         description="",
         default=False,
