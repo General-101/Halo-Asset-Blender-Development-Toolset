@@ -42,8 +42,8 @@ def reset_frame_ids(context, report):
     if model_armature != None:
         blend_bones = model_armature.data.bones
         for b in blend_bones:
-            b.halo_json.frame_id1 = ''
-            b.halo_json.frame_id2 = ''
+            b.nwo.frame_id1 = ''
+            b.nwo.frame_id2 = ''
         
         report({'INFO'},"Frame IDs Reset")
     
@@ -72,8 +72,8 @@ def set_frame_ids(context, report):
 def ApplyFrameIDs(bone_name, bone_names_list, framelist):
     for b in bone_names_list:
         if CleanBone(b) == bone_name:
-            b.halo_json.frame_id1 = GetID(1, bone_name, framelist)
-            b.halo_json.frame_id2 = GetID(2, bone_name, framelist)
+            b.nwo.frame_id1 = GetID(1, bone_name, framelist)
+            b.nwo.frame_id2 = GetID(2, bone_name, framelist)
 
 def GetID(ID, name, framelist):
     frame = ''

@@ -349,17 +349,17 @@ def clean_tag_path(path, file_ext = None):
     if path != '':
         # If a file ext is provided, replace the existing one / add it
         if file_ext is not None:
-            path = max(path, path.rpartition('.')[0])
+            path = shortest_string(path, path.rpartition('.')[0])
             path = f'{path}.{file_ext}'
         # remove any quotation characters from path
-        path = path.replace(""""'""", '')
+        path = path.replace('\"\'', '')
         # strip bad characters from the start and end of the path
         path = path.strip('\\/.')
-        # remove 'tags' if path starts with this
-        if path.startswith('tags'):
-            path = path.replace('tags', '')
-            # strip following backslash
-            path = path.strip('\\')
+        # # remove 'tags' if path starts with this
+        # if path.startswith('tags'):
+        #     path = path.replace('tags', '')
+        #     # strip following backslash
+        #     path = path.strip('\\')
         # attempt to make path tag relative
         path = path.replace(get_tags_path(), '')
         # return the new path in lower case
@@ -372,6 +372,25 @@ def is_shared(ob):
         return ob.nwo.bsp_name_locked == 'shared'
     else:
         return ob.nwo.bsp_name == 'shared'
+
+def shortest_string(string_1, string_2):
+    """Takes two strings and returns the shortest non null string"""
+    temp_string = min(string_1, string_2)
+    if temp_string == '':
+        return max(string_1, string_2)
+    else:
+        return temp_string
+
+def print_box(text, line_char='-', char_count=100):
+    """Prints the specified text surrounded by lines created with the specified character. Optionally define the number of charactrers to repeat per line"""
+    side_char_count = (char_count - len(text) - 2) // 2
+    side_char_count = max(side_char_count, 0)
+    side_fix = 0
+    if side_char_count > 1:
+        side_fix = 1 if (char_count - len(text) - 2) // 2 != (char_count - len(text) - 2) / 2 else 0
+    print(line_char * char_count)
+    print(f'{line_char * side_char_count} {text} {line_char * (side_char_count + side_fix)}')
+    print(line_char * char_count)
 
 class CheckType:
     @staticmethod
@@ -736,9 +755,6 @@ def get_prop_from_collection(ob, prefixes):
     if len(bpy.data.collections) > 0:
         collection = None
         all_collections = bpy.data.collections
-        protected_word = 'default'
-        if any(x in prefixes for x in ('+bsp:', '+design:')):
-            protected_word = 'shared'
         # get direct parent collection
         for c in all_collections:
             if ob in tuple(c.objects):
@@ -757,8 +773,6 @@ def get_prop_from_collection(ob, prefixes):
                     if prop.rpartition('.')[0] != '':
                         prop = prop.rpartition('.')[0]
                     prop = prop.lower()
-                    if prop == protected_word:
-                        prop = ''
                     break
 
     return prop

@@ -45,12 +45,12 @@ def CopyProps(report, template, targets):
             ob.name = target_name
 
     # Apply halo properties to target objects
-    template_props = template.halo_json
+    template_props = template.nwo
     target_count = 0
     for ob in targets:
         if ob != template:
             target_count += 1
-            target_props = ob.halo_json
+            target_props = ob.nwo
 
             target_props.object_type_items_all = template_props.object_type_items_all
             target_props.object_type_items_no_mesh = template_props.object_type_items_no_mesh

@@ -54,8 +54,8 @@ def FindShaders(context, shaders_dir, report, overwrite):
             shader_path = FindShaderMatch(mat, shaders, get_tags_path())
             # if we've found a shader path, and either overwrite shader path was set in the settings or the shader path field is empty, write the shader path.
             if shader_path != '':
-                if overwrite or mat.halo_json.shader_path == '':
-                    mat.halo_json.shader_path = shader_path
+                if overwrite or mat.nwo.shader_path == '':
+                    mat.nwo.shader_path = shader_path
                     update_count +=1
 
     report({'INFO'},"Updated " + str(update_count) + ' shader paths')

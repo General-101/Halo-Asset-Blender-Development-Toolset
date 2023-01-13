@@ -39,6 +39,7 @@ from .nwo_utils import(
     true_bsp,
     true_region,
     clean_tag_path,
+    shortest_string,
 
     frame_prefixes,
     marker_prefixes,
@@ -266,7 +267,7 @@ class NWOLight(NWOObject):
             self.bungie_light_frustum_height = self.light_frustum_height()
             self.bungie_light_bounce_light_ratio = self.light_bounce_light_ratio()
             self.bungie_light_dynamic_light_has_bounce = self.light_dynamic_light_has_bounce()
-            self.bungie_light_screenspace_light_has_specular = self.light_screenspace_light_has_specular()
+            # self.bungie_light_screenspace_light_has_specular = self.light_screenspace_light_has_specular()
             self.bungie_light_light_tag_override = self.light_light_tag_override()
             self.bungie_light_shader_reference = self.light_shader_reference()
             self.bungie_light_gel_reference = self.light_gel_reference()
@@ -285,7 +286,7 @@ class NWOLight(NWOObject):
             else:
                 return self.halo.light_type_h4
         else:
-            return self.halo.light_type
+            return self.halo.light_type_override
             
     def is_uber_light(self):
         return bool_str(self.halo.light_sub_type == '_connected_geometry_lighting_sub_type_uber')
@@ -1379,7 +1380,7 @@ class NWOMaterial:
         if self.is_override:
             return 'override'
         else:
-            return clean_tag_path(self.halo.shader_path)
+            return clean_tag_path(self.halo.shader_path, '')
 
 
     def shader_name(self):
@@ -1414,10 +1415,8 @@ class NWOMaterial:
                 return self.halo.material_override_h4
         
         else:
-            if self.halo_shader_path.rpartition('\\')[2] != '':
-                return self.halo_shader_path.rpartition('\\')[2]
-            else:
-                return self.halo_shader_path
+            temp_name = shortest_string(self.halo_shader_path, self.halo_shader_path.rpartition('.')[0])
+            return shortest_string(temp_name, temp_name.rpartition('\\')[2])
 
     def shader_type(self):
         if self.is_override:

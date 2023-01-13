@@ -470,7 +470,7 @@ def WriteScenarioContents(halo_objects, metadata, asset_path, asset_name):
         shared_permutations = []
 
         if shared_bsp_exists:
-            for ob in halo_objects.get_structure_from_halo_objects(halo_objects):
+            for ob in get_structure_from_halo_objects(halo_objects):
                 if is_shared(ob):
                     perm = get_perm(ob)
                     if (perm not in shared_permutations):

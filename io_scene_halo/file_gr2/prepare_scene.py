@@ -110,21 +110,14 @@ class HaloObjects():
         self.poop_markers = select_halo_objects('poop_marker', asset_type, ('SCENARIO'))
         self.misc = select_halo_objects('misc', asset_type, ('SCENARIO', 'PREFAB'))
         self.seams = select_halo_objects('seam', asset_type, ('SCENARIO'))
-        self.portals = select_halo_objects('poop_marker', asset_type, ('SCENARIO'))
-        self.water_surfaces = select_halo_objects('poop_marker', asset_type, ('SCENARIO', 'PREFAB'))
+        self.portals = select_halo_objects('portal', asset_type, ('SCENARIO'))
+        self.water_surfaces = select_halo_objects('water_surface', asset_type, ('SCENARIO', 'PREFAB'))
         self.lights = select_halo_objects('light', asset_type, ('SCENARIO', 'PREFAB', 'SKY'))
         
         self.boundary_surfaces = select_halo_objects('boundary_surface', asset_type, ('SCENARIO'))
         self.fog = select_halo_objects('fog', asset_type, ('SCENARIO'))
         self.water_physics = select_halo_objects('water_physics', asset_type, ('SCENARIO'))
         self.poop_rain_blockers = select_halo_objects('poop_rain_blocker', asset_type, ('SCENARIO'))
-
-# - Fix for some mesh types showing instance geo properties
-# - Fix for a null global material and region being written to jsons
-# - Added 'find' button to more tag path fields
-# - Fixed markers being appended to skeleton exports
-# - Fixed object selection logic
-
 
 #####################################################################################
 #####################################################################################

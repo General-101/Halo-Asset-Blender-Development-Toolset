@@ -45,6 +45,7 @@ from .nwo_utils import(
     get_structure_from_halo_objects,
     get_design_from_halo_objects,
     get_render_from_halo_objects,
+    print_box,
 
     CheckType,
 )
@@ -128,7 +129,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                             if perm not in perm_list:
                                 perm_list.append(perm)
                                 if select_model_objects(get_render_from_halo_objects(halo_objects), perm, model_armature, export_hidden, export_all_perms, selected_perms):
-                                    print (f'**Exporting {perm} render model**')
+                                    print_box(f'**Exporting {perm} render model**')
                                     if using_better_fbx:
                                         obj_selection = [obj for obj in context.selected_objects]
                                         export_better_fbx(context, False, **keywords)
@@ -146,7 +147,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                             if perm not in perm_list:
                                 perm_list.append(perm)
                                 if select_model_objects(halo_objects.collision, perm, model_armature, export_hidden, export_all_perms, selected_perms):
-                                    print (f'**Exporting {perm} collision model**')
+                                    print_box(f'**Exporting {perm} collision model**')
                                     if using_better_fbx:
                                         obj_selection = [obj for obj in context.selected_objects]
                                         export_better_fbx(context, False, **keywords)
@@ -164,7 +165,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                             if perm not in perm_list:
                                 perm_list.append(perm)
                                 if select_model_objects(halo_objects.physics, perm, model_armature, export_hidden, export_all_perms, selected_perms):
-                                    print (f'**Exporting {perm} physics model**')
+                                    print_box(f'**Exporting {perm} physics model**')
                                     if using_better_fbx:
                                         obj_selection = [obj for obj in context.selected_objects]
                                         export_better_fbx(context, False, **keywords)
@@ -177,7 +178,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
 
                     if export_markers:
                         if select_model_objects_no_perm(halo_objects.markers, model_armature, export_hidden):
-                            print ('**Exporting markers**')
+                            print_box('**Exporting markers**')
                             if using_better_fbx:
                                 obj_selection = [obj for obj in context.selected_objects]
                                 export_better_fbx(context, False, **keywords)
@@ -189,7 +190,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                             gr2_count += 1
 
                     if SelectModelSkeleton(model_armature):
-                        print ('**Exporting skeleton**')
+                        print_box('**Exporting skeleton**')
                         if using_better_fbx:
                             export_better_fbx(context, False, **keywords)
                             model_armature.select_set(True)
@@ -203,7 +204,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                             timeline = context.scene
                             for action in bpy.data.actions:
                                 try:
-                                    print (f'**Exporting Animation: {action.name}**')
+                                    print_box(f'**Exporting Animation: {action.name}**')
                                     model_armature.animation_data.action = action
                                     if action.use_frame_range:
                                         timeline.frame_start = int(action.frame_start)
@@ -221,7 +222,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                     export_gr2(report, asset_path, asset, 'animations', [model_armature], '', '', model_armature, skeleton_bones, action.name, **keywords)
                                     gr2_count += 1
                                 except:
-                                    print('Encountered animation not in armature, skipping export of animation: ' + action.name)
+                                    print(f'Encountered animation not in armature, skipping export of animation: {action.name}')
                             
                 elif sidecar_type == 'SCENARIO':
                     
@@ -253,7 +254,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                 if perm not in perm_list:
                                     perm_list.append(perm)
                                     if select_bsp_objects(get_structure_from_halo_objects(halo_objects), bsp, model_armature, False, perm, export_hidden, export_all_perms, selected_perms, export_all_bsps, selected_bsps):
-                                        print (f'**Exporting {bsp} {perm} BSP**')
+                                        print_box(f'**Exporting {bsp} {perm} BSP**')
                                         if using_better_fbx:
                                             obj_selection = [obj for obj in context.selected_objects]
                                             export_better_fbx(context, False, **keywords)
@@ -281,7 +282,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                 if perm not in perm_list:
                                     perm_list.append(perm)
                                     if select_bsp_objects(get_design_from_halo_objects(halo_objects), bsp, model_armature, False, perm, export_hidden, export_all_perms, selected_perms, export_all_bsps, selected_bsps):
-                                        print (f'**Exporting {bsp} {perm} Design**')
+                                        print_box(f'**Exporting {bsp} {perm} Design**')
                                         if using_better_fbx:
                                             obj_selection = [obj for obj in context.selected_objects]
                                             export_better_fbx(context, False, **keywords)
@@ -307,7 +308,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                     if perm not in perm_list:
                                         perm_list.append(perm)
                                         if select_bsp_objects(get_structure_from_halo_objects(halo_objects), bsp, model_armature, True, perm, export_hidden, export_all_perms, selected_perms, export_all_bsps, selected_bsps):
-                                            print (f'**Exporting shared {perm} bsp**')
+                                            print_box(f'**Exporting shared {perm} bsp**')
                                             if using_better_fbx:
                                                 obj_selection = [obj for obj in context.selected_objects]
                                                 export_better_fbx(context, False, **keywords)
@@ -326,7 +327,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                             if perm not in perm_list:
                                 perm_list.append(perm)
                                 if select_model_objects(halo_objects.render + halo_objects.lights + halo_objects.markers, perm, model_armature, export_hidden, export_all_perms, selected_perms):
-                                    print (f'**Exporting sky render model**')
+                                    print_box(f'**Exporting sky render model**')
                                     if using_better_fbx:
                                         obj_selection = [obj for obj in context.selected_objects]
                                         export_better_fbx(context, False, **keywords)
@@ -340,7 +341,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                 elif sidecar_type == 'DECORATOR SET': 
                     if export_render:
                         if select_model_objects_no_perm(halo_objects.decorator, model_armature, export_hidden):
-                            print (f'**Exporting decorator set**')
+                            print_box(f'**Exporting decorator set**')
                             if using_better_fbx:
                                 obj_selection = [obj for obj in context.selected_objects]
                                 export_better_fbx(context, False, **keywords)
@@ -353,7 +354,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
 
                 elif sidecar_type == 'PREFAB':
                     if select_prefab_objects(halo_objects.structure + halo_objects.poops + halo_objects.lights + halo_objects.portals + halo_objects.water_surfaces + halo_objects.markers, model_armature, export_hidden):
-                        print (f'**Exporting prefab**')
+                        print_box(f'**Exporting prefab**')
                         if using_better_fbx:
                             obj_selection = [obj for obj in context.selected_objects]
                             export_better_fbx(context, False, **keywords)
@@ -367,7 +368,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                 else: # for particles
                     if export_render:
                         if select_model_objects_no_perm(halo_objects.particle, model_armature, export_hidden):
-                            print (f'**Exporting particle model**')
+                            print_box(f'**Exporting particle model**')
                             if using_better_fbx:
                                 obj_selection = [obj for obj in context.selected_objects]
                                 export_better_fbx(context, False, **keywords)

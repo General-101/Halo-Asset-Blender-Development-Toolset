@@ -1242,6 +1242,7 @@ from ..file_gr2.nwo_utils import (
     not_bungie_game,
     clean_tag_path,
     get_tags_path,
+    shortest_string,
 
     CheckType
 )
@@ -2573,7 +2574,7 @@ class NWO_ObjectPropertiesGroup(PropertyGroup):
         name = name.removeprefix('+slip_surface')
         name = name.strip(' :"')
 
-        return max(name, name.rpartition('.')[0]).lower()
+        return shortest_string(name, name.rpartition('.')[0]).lower()
 
     Boundary_Surface_Name: StringProperty(
         name="Boundary Surface Name",
@@ -2909,7 +2910,7 @@ class NWO_ObjectPropertiesGroup(PropertyGroup):
         name = name.removeprefix('+decorator')
         name = name.strip(' :"')
 
-        return max(name, name.rpartition('.')[0]).lower()
+        return shortest_string(name, name.rpartition('.')[0]).lower()
 
     Decorator_Name: StringProperty(
         name="Decorator Name",
@@ -2993,7 +2994,7 @@ class NWO_ObjectPropertiesGroup(PropertyGroup):
         name = name.removeprefix('+fog')
         name = name.strip(' :"')
 
-        return max(name, name.rpartition('.')[0]).lower()
+        return shortest_string(name, name.rpartition('.')[0]).lower()
 
     #FOG PROPERTIES
     Fog_Name: StringProperty(
@@ -3279,7 +3280,7 @@ class NWO_ObjectPropertiesGroup(PropertyGroup):
         name = name.removeprefix('#')
         name = name.strip(' :"')
 
-        return max(name, name.rpartition('.')[0]).lower()
+        return shortest_string(name, name.rpartition('.')[0]).lower()
 
     Marker_Group_Name: StringProperty(
         name="Marker Group",
