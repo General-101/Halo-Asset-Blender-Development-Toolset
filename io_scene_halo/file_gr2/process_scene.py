@@ -34,15 +34,17 @@ from subprocess import Popen
 from addon_utils import modules
 from .nwo_utils import(
     get_perm,
-    select_model_object,
-    select_model_object_no_perm,
-    select_bsp_object,
-    select_prefab_object,
+    select_model_objects,
+    select_model_objects_no_perm,
+    select_bsp_objects,
+    select_prefab_objects,
     get_ek_path,
     get_tool_path,
     deselect_all_objects,
     is_shared,
     get_structure_from_halo_objects,
+    get_design_from_halo_objects,
+    get_render_from_halo_objects,
 
     CheckType,
 )
@@ -121,11 +123,11 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
 
                     if export_render:
                         perm_list = []
-                        for ob in halo_objects.render:
+                        for ob in get_render_from_halo_objects(halo_objects):
                             perm = get_perm(ob)
                             if perm not in perm_list:
                                 perm_list.append(perm)
-                                if select_model_object(halo_objects.render, perm, model_armature, export_hidden, export_all_perms, selected_perms):
+                                if select_model_objects(get_render_from_halo_objects(halo_objects), perm, model_armature, export_hidden, export_all_perms, selected_perms):
                                     print (f'**Exporting {perm} render model**')
                                     if using_better_fbx:
                                         obj_selection = [obj for obj in context.selected_objects]
@@ -143,7 +145,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                             perm = get_perm(ob)
                             if perm not in perm_list:
                                 perm_list.append(perm)
-                                if select_model_object(halo_objects.collision, perm, model_armature, export_hidden, export_all_perms, selected_perms):
+                                if select_model_objects(halo_objects.collision, perm, model_armature, export_hidden, export_all_perms, selected_perms):
                                     print (f'**Exporting {perm} collision model**')
                                     if using_better_fbx:
                                         obj_selection = [obj for obj in context.selected_objects]
@@ -161,7 +163,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                             perm = get_perm(ob)
                             if perm not in perm_list:
                                 perm_list.append(perm)
-                                if select_model_object(halo_objects.physics, perm, model_armature, export_hidden, export_all_perms, selected_perms):
+                                if select_model_objects(halo_objects.physics, perm, model_armature, export_hidden, export_all_perms, selected_perms):
                                     print (f'**Exporting {perm} physics model**')
                                     if using_better_fbx:
                                         obj_selection = [obj for obj in context.selected_objects]
@@ -174,7 +176,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                     gr2_count += 1
 
                     if export_markers:
-                        if select_model_object_no_perm(halo_objects.markers, model_armature, export_hidden):
+                        if select_model_objects_no_perm(halo_objects.markers, model_armature, export_hidden):
                             print ('**Exporting markers**')
                             if using_better_fbx:
                                 obj_selection = [obj for obj in context.selected_objects]
@@ -189,13 +191,11 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                     if SelectModelSkeleton(model_armature):
                         print ('**Exporting skeleton**')
                         if using_better_fbx:
-                            obj_selection = [obj for obj in context.selected_objects]
                             export_better_fbx(context, False, **keywords)
-                            for obj in obj_selection:
-                                obj.select_set(True)
+                            model_armature.select_set(True)
                         else:
                             export_fbx(self, context, **keywords)
-                        export_gr2(report, asset_path, asset, 'skeleton', context.selected_objects, '', '', model_armature, skeleton_bones, '', **keywords)
+                        export_gr2(report, asset_path, asset, 'skeleton', [model_armature], '', '', model_armature, skeleton_bones, '', **keywords)
                         gr2_count += 1
 
                     if export_animations and 1<=len(bpy.data.actions):
@@ -214,13 +214,11 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                         timeline.frame_end = timeline_end
                                         context.scene.frame_set(timeline_start)
                                     if using_better_fbx:
-                                        obj_selection = [obj for obj in context.selected_objects]
                                         export_better_fbx(context, True, **keywords)
-                                        for obj in obj_selection:
-                                            obj.select_set(True)
+                                        model_armature.select_set(True)
                                     else:
                                         export_fbx(self, context, **keywords)
-                                    export_gr2(report, asset_path, asset, 'animations', context.selected_objects, '', '', model_armature, skeleton_bones, action.name, **keywords)
+                                    export_gr2(report, asset_path, asset, 'animations', [model_armature], '', '', model_armature, skeleton_bones, action.name, **keywords)
                                     gr2_count += 1
                                 except:
                                     print('Encountered animation not in armature, skipping export of animation: ' + action.name)
@@ -250,13 +248,12 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                     for bsp in bsp_list:
                         if export_structure:
                             perm_list = []
-                            structure_obs = get_structure_from_halo_objects(halo_objects)
-                            for ob in structure_obs:
+                            for ob in get_structure_from_halo_objects(halo_objects):
                                 perm = get_perm(ob)
                                 if perm not in perm_list:
                                     perm_list.append(perm)
-                                    if select_bsp_object(structure_obs, bsp, model_armature, False, perm, export_hidden, export_all_perms, selected_perms, export_all_bsps, selected_bsps):
-                                        print (f'**Exporting {bsp} {perm} bsp**')
+                                    if select_bsp_objects(get_structure_from_halo_objects(halo_objects), bsp, model_armature, False, perm, export_hidden, export_all_perms, selected_perms, export_all_bsps, selected_bsps):
+                                        print (f'**Exporting {bsp} {perm} BSP**')
                                         if using_better_fbx:
                                             obj_selection = [obj for obj in context.selected_objects]
                                             export_better_fbx(context, False, **keywords)
@@ -279,12 +276,12 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
 
                         if export_design:
                             perm_list = []
-                            for ob in halo_objects.fog + halo_objects.boundary_surfaces + halo_objects.water_physics + halo_objects.rain_occluders:
+                            for ob in get_design_from_halo_objects(halo_objects):
                                 perm = get_perm(ob)
                                 if perm not in perm_list:
                                     perm_list.append(perm)
-                                    if select_bsp_object(halo_objects.fog + halo_objects.boundary_surfaces + halo_objects.water_physics + halo_objects.rain_occluders, bsp, model_armature, False, perm, export_hidden, export_all_perms, selected_perms, export_all_bsps, selected_bsps):
-                                        print (f'**Exporting {bsp} {perm} fog planes**')
+                                    if select_bsp_objects(get_design_from_halo_objects(halo_objects), bsp, model_armature, False, perm, export_hidden, export_all_perms, selected_perms, export_all_bsps, selected_bsps):
+                                        print (f'**Exporting {bsp} {perm} Design**')
                                         if using_better_fbx:
                                             obj_selection = [obj for obj in context.selected_objects]
                                             export_better_fbx(context, False, **keywords)
@@ -304,12 +301,12 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                     if shared_bsp_exists:
                         if export_structure:
                             perm_list = []
-                            for ob in halo_objects.structure:
+                            for ob in get_structure_from_halo_objects(halo_objects):
                                 if is_shared(ob):
                                     perm = get_perm(ob)
                                     if perm not in perm_list:
                                         perm_list.append(perm)
-                                        if select_bsp_object(halo_objects.structure, bsp, model_armature, True, perm, export_hidden, export_all_perms, selected_perms, export_all_bsps, selected_bsps):
+                                        if select_bsp_objects(get_structure_from_halo_objects(halo_objects), bsp, model_armature, True, perm, export_hidden, export_all_perms, selected_perms, export_all_bsps, selected_bsps):
                                             print (f'**Exporting shared {perm} bsp**')
                                             if using_better_fbx:
                                                 obj_selection = [obj for obj in context.selected_objects]
@@ -328,7 +325,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                             perm = get_perm(ob)
                             if perm not in perm_list:
                                 perm_list.append(perm)
-                                if select_model_object(halo_objects.render + halo_objects.lights + halo_objects.markers, perm, model_armature, export_hidden, export_all_perms, selected_perms):
+                                if select_model_objects(halo_objects.render + halo_objects.lights + halo_objects.markers, perm, model_armature, export_hidden, export_all_perms, selected_perms):
                                     print (f'**Exporting sky render model**')
                                     if using_better_fbx:
                                         obj_selection = [obj for obj in context.selected_objects]
@@ -342,7 +339,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
 
                 elif sidecar_type == 'DECORATOR SET': 
                     if export_render:
-                        if select_model_object_no_perm(halo_objects.decorator, model_armature, export_hidden):
+                        if select_model_objects_no_perm(halo_objects.decorator, model_armature, export_hidden):
                             print (f'**Exporting decorator set**')
                             if using_better_fbx:
                                 obj_selection = [obj for obj in context.selected_objects]
@@ -355,7 +352,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                             gr2_count += 1
 
                 elif sidecar_type == 'PREFAB':
-                    if select_prefab_object(halo_objects.structure + halo_objects.poops + halo_objects.lights + halo_objects.portals + halo_objects.water_surfaces + halo_objects.markers, model_armature, export_hidden):
+                    if select_prefab_objects(halo_objects.structure + halo_objects.poops + halo_objects.lights + halo_objects.portals + halo_objects.water_surfaces + halo_objects.markers, model_armature, export_hidden):
                         print (f'**Exporting prefab**')
                         if using_better_fbx:
                             obj_selection = [obj for obj in context.selected_objects]
@@ -369,7 +366,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
 
                 else: # for particles
                     if export_render:
-                        if select_model_object_no_perm(halo_objects.particle, model_armature, export_hidden):
+                        if select_model_objects_no_perm(halo_objects.particle, model_armature, export_hidden):
                             print (f'**Exporting particle model**')
                             if using_better_fbx:
                                 obj_selection = [obj for obj in context.selected_objects]

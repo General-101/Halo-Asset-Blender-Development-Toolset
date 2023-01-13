@@ -24,8 +24,8 @@
 #
 # ##### END MIT LICENSE BLOCK #####
 
-from .nwo_utils import not_bungie_game, CheckType
-from .nwo_format import NWOObject, NWOFrame, NWOLight, NWOMarker, NWOMesh, NWOAnimationEvent, NWOAnimationControl, NWOAnimationCamera, NWOFramePCA, NWOMaterial
+from .nwo_utils import CheckType
+from .nwo_format import NWOFrame, NWOLight, NWOMarker, NWOMesh, NWOAnimationEvent, NWOAnimationControl, NWOAnimationCamera, NWOFramePCA, NWOMaterial
 
 class NWOJSON(dict):
     def __init__(self, objects, sidecar_type, model_armature, world_frame, asset_name, bone_list):
@@ -65,7 +65,7 @@ class NWOJSON(dict):
         index = 0
         for ob in self.objects:
             name = ob.nwo.Face_Global_Material
-            if True and ob.nwo.Face_Global_Material not in global_materials.keys():
+            if ob.nwo.Face_Global_Material not in global_materials.keys() and ob.nwo.Face_Global_Material != '':
                 index +=1
                 global_materials.update({name: str(index)})
 
@@ -76,14 +76,15 @@ class NWOJSON(dict):
         index = 0
         for ob in self.objects:
             name = ob.nwo.Region_Name
-            if True and ob.nwo.Region_Name not in regions.keys():
+            if ob.nwo.Region_Name not in regions.keys() and ob.nwo.Region_Name != '':
                 index +=1
                 regions.update({name: str(index)})
 
         return regions
 
     def build_nodes_properties(self):
-        node_properties = self.bone_list
+        node_properties = {}
+        node_properties.update(self.bone_list)
         # build frame props
         for ob in self.objects:
             match CheckType.get(ob):
@@ -108,7 +109,6 @@ class NWOJSON(dict):
                 case '_connected_geometry_object_type_frame':
                     props = NWOFrame(ob, self.sidecar_type, self.model_armature, self.world_frame, self.asset_name)
                     node_properties.update({ob.name: props.__dict__})
-
 
         return node_properties
 

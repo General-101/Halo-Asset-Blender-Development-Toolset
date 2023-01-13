@@ -148,7 +148,7 @@ def get_prefix(string, prefix_list): # gets a prefix from a list of prefixes
     
     return prefix
 
-def select_halo_object(select_func, selected_asset_type, valid_asset_types):
+def select_halo_objects(select_func, selected_asset_type, valid_asset_types):
     deselect_all_objects()
     select_func = getattr(CheckType, select_func)
     halo_objects = []
@@ -160,7 +160,7 @@ def select_halo_object(select_func, selected_asset_type, valid_asset_types):
     return halo_objects
 
 
-def select_model_object(halo_objects, perm, arm, export_hidden, export_all_perms, selected_perms):
+def select_model_objects(halo_objects, perm, arm, export_hidden, export_all_perms, selected_perms):
     deselect_all_objects()
     boolean = False
     arm.select_set(True)
@@ -172,7 +172,7 @@ def select_model_object(halo_objects, perm, arm, export_hidden, export_all_perms
     
     return boolean
 
-def select_model_object_no_perm(halo_objects, arm, export_hidden):
+def select_model_objects_no_perm(halo_objects, arm, export_hidden):
     deselect_all_objects()
     boolean = False
     arm.select_set(True)
@@ -183,7 +183,7 @@ def select_model_object_no_perm(halo_objects, arm, export_hidden):
 
     return boolean
 
-def select_bsp_object(halo_objects, bsp, arm, shared, perm, export_hidden, export_all_perms, selected_perms, export_all_bsps, selected_bsps):
+def select_bsp_objects(halo_objects, bsp, arm, shared, perm, export_hidden, export_all_perms, selected_perms, export_all_bsps, selected_bsps):
     deselect_all_objects()
     boolean = False
     if arm is not None:
@@ -198,10 +198,12 @@ def select_bsp_object(halo_objects, bsp, arm, shared, perm, export_hidden, expor
             if object_valid(ob, export_hidden, perm, halo.Permutation_Name, halo.Permutation_Name_Locked) and export_perm(perm, export_all_perms, selected_perms) and export_bsp(bsp, export_all_bsps, selected_bsps):
                 ob.select_set(True)
                 boolean = True
+            else:
+                print(f'{ob.name} not valid')
 
     return boolean
 
-def select_prefab_object(halo_objects, arm, export_hidden):
+def select_prefab_objects(halo_objects, arm, export_hidden):
     deselect_all_objects()
     boolean = False
     if arm is not None:
@@ -235,9 +237,6 @@ def get_asset_info(filepath):
 
 # -------------------------------------------------------------------------------------------------------------------
 
-def is_mesh(ob):
-    return ob.type == 'MESH'
-
 def mesh_type(ob, types, valid_prefixes=()):
     if ob != None: # temp work around for 'ob' not being passed between functions correctly, and resolving to a NoneType
         if not_bungie_game():
@@ -248,9 +247,9 @@ def mesh_type(ob, types, valid_prefixes=()):
 def marker_type(ob, types):
     if ob != None: # temp work around for 'ob' not being passed between functions correctly, and resolving to a NoneType
             if not_bungie_game():
-                return ob.nwo.ObjectMarker_Type_H4 in types
+                return is_marker(ob) and ob.nwo.ObjectMarker_Type_H4 in types
             else:
-                return ob.nwo.ObjectMarker_Type in types
+                return is_marker(ob) and ob.nwo.ObjectMarker_Type in types
 
 def object_type(ob, types=(), valid_prefixes=()):
     if ob != None: # temp work around for 'ob' not being passed between functions correctly, and resolving to a NoneType
@@ -273,6 +272,25 @@ def not_parented_to_poop(ob):
 
 def is_design(ob):
     return CheckType.fog(ob) or CheckType.boundary_surface(ob) or CheckType.water_physics(ob) or CheckType.poop_rain_blocker(ob)
+
+def is_marker(ob):
+    if ob.type == 'MESH':
+        return (ob.nwo.Object_Type_All == '_connected_geometry_object_type_marker' and not ob.name.startswith(frame_prefixes)) or ob.name.startswith(marker_prefixes)
+    elif ob.type == 'EMPTY':
+        return (ob.nwo.Object_Type_No_Mesh == '_connected_geometry_object_type_marker' and not ob.name.startswith(frame_prefixes)) or ob.name.startswith(marker_prefixes)
+    else:
+        return False
+
+def is_frame(ob):
+    if ob.type == 'MESH':
+        return (ob.nwo.Object_Type_All == '_connected_geometry_object_type_frame' and not ob.name.startswith(marker_prefixes)) or ob.name.startswith(frame_prefixes)
+    elif ob.type == 'EMPTY':
+        return (ob.nwo.Object_Type_No_Mesh == '_connected_geometry_object_type_frame' and not ob.name.startswith(marker_prefixes)) or ob.name.startswith(frame_prefixes)
+    else:
+        return False
+
+def is_mesh(ob):
+    return not is_marker(ob) and not is_frame(ob) and ob.type == 'MESH'
 
 def vector_str(velocity):
     x = velocity.x
@@ -355,12 +373,6 @@ def is_shared(ob):
     else:
         return ob.nwo.bsp_name == 'shared'
 
-def get_structure_from_halo_objects(h):
-    return h.structure + h.poops + h.lights + h.markers + h.collision + h.physics + h.portals + h.seams + h.water_surfaces + h.misc
-
-def get_design_from_halo_objects(h):
-    return h.fog + h.boundary_surfaces + h.water_physics + h.rain_occluders
-
 class CheckType:
     @staticmethod
     def get(ob):
@@ -394,16 +406,16 @@ class CheckType:
         return mesh_type(ob, ('_connected_geometry_mesh_type_default'))
     @staticmethod
     def marker(ob):
-        return (object_type(ob, ('_connected_geometry_object_type_marker'), ('#', '?')) or mesh_type(ob, ('_connected_geometry_object_type_marker'), ('#', '?'))) and not_parented_to_poop(ob)
+        return (object_type(ob, ('_connected_geometry_object_type_marker'), ('#', '?')) or mesh_type(ob, ('_connected_geometry_object_type_marker'), ('#', '?')))
     @staticmethod
     def structure(ob):
-        return mesh_type(ob, ('_connected_geometry_mesh_type_default')) and not_parented_to_poop(ob)
+        return mesh_type(ob, ('_connected_geometry_mesh_type_default'))
     @staticmethod
     def poop(ob):
-        return mesh_type(ob, ('_connected_geometry_mesh_type_poop', '_connected_geometry_mesh_type_collision', '_connected_geometry_mesh_type_physics', '_connected_geometry_mesh_type_poop_marker', '_connected_geometry_mesh_type_cookie_cutter'), ('%', '@', '$', '+cookie'))
-    @staticmethod
-    def poop_only(ob):
         return mesh_type(ob, ('_connected_geometry_mesh_type_poop'), ('%'))
+    @staticmethod
+    def poop_marker(ob):
+        return mesh_type(ob, ('_connected_geometry_mesh_type_poop_marker'))
     @staticmethod
     def object_instance(ob):
         return mesh_type(ob, ('_connected_geometry_mesh_type_object_instance'), ('+flair'))
@@ -415,31 +427,31 @@ class CheckType:
         return ob.type == 'LIGHT'
     @staticmethod
     def portal(ob):
-        return mesh_type(ob, ('_connected_geometry_mesh_type_portal'), ('+portal')) and not_parented_to_poop(ob)
+        return mesh_type(ob, ('_connected_geometry_mesh_type_portal'), ('+portal'))
     @staticmethod
     def seam(ob):
-        return mesh_type(ob, ('_connected_geometry_mesh_type_seam'), ('+seam')) and not_parented_to_poop(ob)
+        return mesh_type(ob, ('_connected_geometry_mesh_type_seam'), ('+seam'))
     @staticmethod
     def water_surface(ob):
-        return mesh_type(ob, ('_connected_geometry_mesh_type_water_surface'), ('\'')) and not_parented_to_poop(ob)
+        return mesh_type(ob, ('_connected_geometry_mesh_type_water_surface'), ('\''))
     @staticmethod
     def misc(ob):
-        return mesh_type(ob, ('_connected_geometry_mesh_type_lightmap_region', 'LIGHTPROBE VOLUME', 'OBB VOLUME')) and not_parented_to_poop(ob)
+        return mesh_type(ob, ('_connected_geometry_mesh_type_lightmap_region', '_connected_geometry_mesh_type_obb_volume'))
     @staticmethod
     def fog(ob):
-        return mesh_type(ob, ('_connected_geometry_mesh_type_planar_fog_volume'), ('+fog')) and not_parented_to_poop(ob)
+        return mesh_type(ob, ('_connected_geometry_mesh_type_planar_fog_volume'), ('+fog'))
     @staticmethod
     def boundary_surface(ob):
-        return mesh_type(ob, ('_connected_geometry_mesh_type_boundary_surface'), ('+soft_kill', '+soft_ceiling', '+slip_surface')) and not_parented_to_poop(ob)
+        return mesh_type(ob, ('_connected_geometry_mesh_type_boundary_surface'), ('+soft_kill', '+soft_ceiling', '+slip_surface'))
     @staticmethod
     def water_physics(ob):
-        return mesh_type(ob, ('_connected_geometry_mesh_type_water_physics_volume'), ('+water')) and not_parented_to_poop(ob)
+        return mesh_type(ob, ('_connected_geometry_mesh_type_water_physics_volume'), ('+water'))
     @staticmethod
     def poop_rain_blocker(ob):
         return mesh_type(ob, ('_connected_geometry_mesh_type_poop_rain_blocker', '_connected_geometry_mesh_type_poop_vertical_rain_sheet'))
     @staticmethod
     def frame(ob):
-        return object_type(ob, ('_connected_geometry_object_type_frame'), (frame_prefixes)) and not_parented_to_poop(ob) and not ob.type == 'LIGHT'
+        return object_type(ob, ('_connected_geometry_object_type_frame'), (frame_prefixes)) and not ob.type == 'LIGHT'and not ob.type == 'ARMATURE' # ignores objects we know must be frames (like bones / armatures) as these are handled seperately
     @staticmethod
     def decorator(ob):
         return mesh_type(ob, ('_connected_geometry_mesh_type_decorator'), (decorator_prefixes))
@@ -454,7 +466,7 @@ class CheckType:
         return mesh_type(ob, ('_connected_geometry_mesh_type_cookie_cutter'), ('+cookie'))
     @staticmethod
     def obb_volume(ob):
-        return mesh_type(ob, ('_connected_geometry_mesh_type_obb_volume')) and not_parented_to_poop(ob)
+        return mesh_type(ob, ('_connected_geometry_mesh_type_obb_volume'))
     @staticmethod
     def mesh(ob):
         return ob.type == 'MESH' and ob.nwo.Object_Type_All in '_connected_geometry_object_type_mesh' and not object_prefix(ob, ((frame_prefixes + marker_prefixes)))
@@ -507,9 +519,6 @@ class CheckType:
     def frame_pca(ob): # H4+ ONLY
         return False
     @staticmethod
-    def lightCone(ob): # H4+ ONLY
-        return marker_type(ob, ('_connected_geometry_marker_type_lightCone'))
-    @staticmethod
     def override(material):
         if not_bungie_game():
             return material.name.startswith('+') or material.nwo.material_override_h4 != 'none'
@@ -557,6 +566,22 @@ def clean_files(file_1, file_2, file_3):
         os.remove(file_2)
     if file_3 != '' and file_3 is not None and file_exists(file_3):
         os.remove(file_3)
+
+def get_structure_from_halo_objects(halo_objects):
+    """Gets structure objects when passed a HaloObjects instance"""
+    return halo_objects.frame + halo_objects.lights + halo_objects.default + halo_objects.collision + halo_objects.physics + halo_objects.markers + halo_objects.cookie_cutters + halo_objects.poops + halo_objects.poop_markers + halo_objects.misc + halo_objects.seams + halo_objects.portals + halo_objects.water_surfaces
+
+def get_design_from_halo_objects(halo_objects):
+    """Gets structure design objects when passed a HaloObjects instance"""
+    return halo_objects.frame + halo_objects.boundary_surfaces + halo_objects.fog + halo_objects.water_physics + halo_objects.poop_rain_blockers
+
+def get_render_from_halo_objects(halo_objects):
+    """Gets render objects when passed a HaloObjects instance"""
+    return halo_objects.default + halo_objects.object_instances + halo_objects.lights
+
+# def get_skeleton_from_halo_objects(halo_objects, model_armature=None):
+#     """Gets skeleton objects when passed a HaloObjects instance"""
+#     return halo_objects.frame + model_armature + model_armature.data.bones
 
 def SetBoneJSONValues(bones):
     print('tbd')

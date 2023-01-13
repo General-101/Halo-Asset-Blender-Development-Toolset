@@ -35,7 +35,7 @@ from .nwo_utils import(
     is_mesh,
     set_active_object,
     CheckType,
-    select_halo_object,
+    select_halo_objects,
     select_all_objects,
     is_shader,
     get_tags_path,
@@ -67,7 +67,7 @@ def prepare_scene(context, report, sidecar_type, export_hidden, filepath, use_ar
     temp_nodes = []
     if meshes_to_empties:
         mesh_node_names, temp_nodes = MeshesToEmpties(context)
-    h_objects = halo_objects(sidecar_type)
+    halo_objects = HaloObjects(sidecar_type)
     FixMissingMaterials(context, sidecar_type)
     # proxies = SetPoopProxies(context, h_objects.poops) 02-01-2023 commenting this out as I don't believe the workflow should be this way. Also causes issues in H4
     # for p in proxies:
@@ -80,39 +80,51 @@ def prepare_scene(context, report, sidecar_type, export_hidden, filepath, use_ar
     # HaloBoner(model_armature.data.edit_bones, model_armature, context)
     #FixLightsRotations(h_objects.lights)                                         # adjust light rotations to match in game rotation, and return a list of lights for later use in repair_scene
     timeline_start, timeline_end, current_frame = SetTimelineRange(context)                      # set the timeline range so we can restore it later
-    lod_count = GetDecoratorLODCount(h_objects, sidecar_type == 'DECORATOR SET') # get the max LOD count in the scene if we're exporting a decorator
+    lod_count = GetDecoratorLODCount(halo_objects, sidecar_type == 'DECORATOR SET') # get the max LOD count in the scene if we're exporting a decorator
     selected_perms = GetSelectedPermutations(objects_selection)
     selected_bsps = GetSelectedBSPs(objects_selection)
     # ApplyPredominantShaderNames(h_objects.poops) # commented out 06-12-2022. I don't think it is needed
     # if sidecar_type == 'SCENARIO':
     #     RotateScene(context.view_layer.objects, model_armature)
 
-    return objects_selection, active_object, hidden_objects, mode, model_armature, temp_armature, skeleton_bones, h_objects, timeline_start, timeline_end, lod_count, unselectable_objects, enabled_exclude_collections, mesh_node_names, temp_nodes, selected_perms, selected_bsps, current_frame
+    return objects_selection, active_object, hidden_objects, mode, model_armature, temp_armature, skeleton_bones, halo_objects, timeline_start, timeline_end, lod_count, unselectable_objects, enabled_exclude_collections, mesh_node_names, temp_nodes, selected_perms, selected_bsps, current_frame
 
 
 #####################################################################################
 #####################################################################################
 # HALO CLASS
 
-class halo_objects():
+class HaloObjects():
     def __init__(self, asset_type):
-        self.render = select_halo_object('render', asset_type, ('MODEL', 'SKY', 'CINEMATIC', 'DECORATOR', 'PARTICLE'))
-        self.collision = select_halo_object('collision', asset_type, ('MODEL', 'SKY', 'CINEMATIC', 'DECORATOR', 'PARTICLE'))
-        self.physics = select_halo_object('physics', asset_type, ('MODEL', 'SKY', 'CINEMATIC', 'DECORATOR', 'PARTICLE'))
-        self.markers = select_halo_object('marker', asset_type, ('MODEL', 'SCENARIO', 'SKY', 'CINEMATIC', 'DECORATOR', 'PARTICLE', 'PREFAB'))
-        self.structure = select_halo_object('structure', asset_type, ('SCENARIO', 'CINEMATIC', 'PREFAB'))
-        self.poops = select_halo_object('poop', asset_type, ('SCENARIO', 'CINEMATIC', 'PREFAB'))
-        self.lights = select_halo_object('light', asset_type, ('SCENARIO', 'SKY', 'CINEMATIC', 'PREFAB'))
-        self.portals = select_halo_object('portal', asset_type, ('SCENARIO', 'CINEMATIC', 'PREFAB'))
-        self.seams = select_halo_object('seam', asset_type, ('SCENARIO', 'CINEMATIC'))
-        self.water_surfaces = select_halo_object('water_surface', asset_type, ('SCENARIO', 'CINEMATIC', 'PREFAB'))
-        self.misc = select_halo_object('misc', asset_type, ('SCENARIO', 'CINEMATIC', 'PREFAB'))
-        self.fog = select_halo_object('fog', asset_type, ('SCENARIO', 'CINEMATIC'))
-        self.boundary_surfaces = select_halo_object('boundary_surface', asset_type, ('SCENARIO', 'CINEMATIC'))
-        self.water_physics = select_halo_object('water_physics', asset_type, ('SCENARIO', 'CINEMATIC'))
-        self.rain_occluders = select_halo_object('poop_rain_blocker', asset_type, ('SCENARIO', 'CINEMATIC'))
-        self.decorator = select_halo_object('decorator', asset_type, ('DECORATOR SET'))
-        self.particle = select_halo_object('render', asset_type, ('PARTICLE MODEL'))
+        self.frame = select_halo_objects('frame', asset_type, ('MODEL', 'SKY', 'DECORATOR', 'PARTICLE', 'SCENARIO', 'PREFAB'))
+        self.default = select_halo_objects('render', asset_type, ('MODEL', 'SKY', 'DECORATOR', 'PARTICLE', 'SCENARIO', 'PREFAB'))
+        self.collision = select_halo_objects('collision', asset_type, (('MODEL', 'SKY', 'DECORATOR', 'PARTICLE', 'SCENARIO', 'PREFAB')))
+        self.physics = select_halo_objects('physics', asset_type, ('MODEL', 'SKY', 'DECORATOR', 'PARTICLE', 'SCENARIO',))
+        self.markers = select_halo_objects('marker', asset_type, ('MODEL', 'SKY', 'DECORATOR', 'PARTICLE', 'SCENARIO', 'PREFAB'))
+        self.object_instances = select_halo_objects('object_instance', asset_type, ('MODEL'))
+
+        self.decorators = select_halo_objects('decorator', asset_type, ('DECORATOR'))
+        
+        self.cookie_cutters = select_halo_objects('cookie_cutter', asset_type, ('SCENARIO', 'PREFAB'))
+        self.poops = select_halo_objects('poop', asset_type, ('SCENARIO', 'PREFAB'))
+        self.poop_markers = select_halo_objects('poop_marker', asset_type, ('SCENARIO'))
+        self.misc = select_halo_objects('misc', asset_type, ('SCENARIO', 'PREFAB'))
+        self.seams = select_halo_objects('seam', asset_type, ('SCENARIO'))
+        self.portals = select_halo_objects('poop_marker', asset_type, ('SCENARIO'))
+        self.water_surfaces = select_halo_objects('poop_marker', asset_type, ('SCENARIO', 'PREFAB'))
+        self.lights = select_halo_objects('light', asset_type, ('SCENARIO', 'PREFAB', 'SKY'))
+        
+        self.boundary_surfaces = select_halo_objects('boundary_surface', asset_type, ('SCENARIO'))
+        self.fog = select_halo_objects('fog', asset_type, ('SCENARIO'))
+        self.water_physics = select_halo_objects('water_physics', asset_type, ('SCENARIO'))
+        self.poop_rain_blockers = select_halo_objects('poop_rain_blocker', asset_type, ('SCENARIO'))
+
+# - Fix for some mesh types showing instance geo properties
+# - Fix for a null global material and region being written to jsons
+# - Added 'find' button to more tag path fields
+# - Fixed markers being appended to skeleton exports
+# - Fixed object selection logic
+
 
 #####################################################################################
 #####################################################################################
@@ -271,7 +283,7 @@ def GetSceneArmature(context, sidecar_type, game_version):
         if ob.type == 'ARMATURE' and not ob.name.startswith('+'): # added a check for a '+' prefix in armature name, to support special animation control armatures in the future
             model_armature = ob
             break
-    if model_armature is None and (game_version not in ('h4', 'h2a') or sidecar_type not in ('SCENARIO', 'PREFAB')):
+    if model_armature is None and (game_version not in ('h4', 'h2a') or sidecar_type not in ('SCENARIO', 'PREFAB', 'PARTICLE MODEL')):
         model_armature, no_parent_objects = AddTempArmature(context)
         temp_armature = True
 
@@ -359,6 +371,8 @@ def getArmatureProperties():
     node_props.update({"bungie_object_type": "_connected_geometry_object_type_frame"}),
     node_props.update({"bungie_frame_ID1": "8078"}),
     node_props.update({"bungie_frame_ID2": "378163771"}),
+    if not_bungie_game():
+        node_props.update({"bungie_frame_world": "1"}),
 
     return node_props
 
@@ -429,7 +443,7 @@ def SetPoopProxies(context, poops):
         if ob.data.name not in mesh_data:
             mesh_data.append(ob.data.name)
             for obj in poops:
-                if (obj.data.name == ob.data.name) and (len(obj.children) > 0) and CheckType.poop_only(obj):
+                if (obj.data.name == ob.data.name) and (len(obj.children) > 0) and CheckType.poop(obj):
                     proxy_collision, collision_offset = GetPoopProxyCollision(obj, poops)
                     proxy_physics, physics_offset = GetPoopProxyPhysics(obj, poops)
                     proxy_cookie_cutter, cookie_cutter_offset = GetPoopProxyCookie(obj, poops)
@@ -437,7 +451,7 @@ def SetPoopProxies(context, poops):
                     break
 
             for obj in poops:
-                if CheckType.poop_only(obj) and obj.data.name == ob.data.name and len(obj.children) <= 0:
+                if CheckType.poop(obj) and obj.data.name == ob.data.name and len(obj.children) <= 0:
                     deselect_all_objects()
                     obj.select_set(True)
                     poop_offset = obj.matrix_world

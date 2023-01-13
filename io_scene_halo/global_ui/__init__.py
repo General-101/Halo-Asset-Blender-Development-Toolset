@@ -1246,20 +1246,23 @@ from ..file_gr2.nwo_utils import (
     CheckType
 )
 
+# ------------------------------------------------------------------------
+# TAG PATH BUTTONS
+# ------------------------------------------------------------------------
+
 class NWO_GameInstancePath(Operator):
-    """Set the path for the a game instance tag"""
+    """Set the path to a game instance tag"""
     bl_idname = "nwo.game_instance_path"
     bl_label = "Find"
-    filename_ext = ''
 
     filter_glob: StringProperty(
-        default="*.biped;*.crate;*.creature;*.device_control;*.device_dispenser;*.device_machine;*.device_terminal;*.effect_scenery;*.equipment;*.giant;*.scenery;*.vehicle;*.weapon;*.prefab;*.cheap_light;*.light",
+        default="*biped;*crate;*creature;*device_control;*device_dispenser;*device_machine;*device_terminal;*effect_scenery;*equipment;*giant;*scenery;*vehicle;*weapon;*prefab;*cheap_light;*light",
         options={'HIDDEN'},
         )
 
     filepath: StringProperty(
         name="game_instance_path",
-        description="Set the path for the tag",
+        description="Set the path to the tag",
         subtype="FILE_PATH"
     )
 
@@ -1274,6 +1277,38 @@ class NWO_GameInstancePath(Operator):
         context.window_manager.fileselect_add(self)
 
         return {'RUNNING_MODAL'}
+
+class NWO_FogPath(Operator):
+    """Set the path to a fog tag"""
+    bl_idname = "nwo.fog_path"
+    bl_label = "Find"
+
+    filter_glob: StringProperty(
+        default="*atmosphere_fog",
+        options={'HIDDEN'},
+        )
+
+    filepath: StringProperty(
+        name="fog_path",
+        description="Set the path to the tag",
+        subtype="FILE_PATH"
+    )
+
+    def execute(self, context):
+        active_object = context.active_object
+        active_object.nwo.Fog_Appearance_Tag = self.filepath
+
+        return {'FINISHED'}
+
+    def invoke(self, context, event):
+        self.filepath = get_tags_path()
+        context.window_manager.fileselect_add(self)
+
+        return {'RUNNING_MODAL'}
+
+# ------------------------------------------------------------------------
+# MAIN UI
+# ------------------------------------------------------------------------
 
 class NWO_ObjectProps(Panel):
     bl_label = "Halo Object Properties"
@@ -1460,8 +1495,11 @@ class NWO_ObjectMeshProps(Panel):
             col.prop(ob_nwo, "Water_Volume_Fog_Color", text='Underwater Fog Color')
             col.prop(ob_nwo, "Water_Volume_Fog_Murkiness", text='Underwater Fog Murkiness')
         elif CheckType.fog(ob):
+
             col.prop(ob_nwo, "Fog_Name", text='Fog Name')
-            col.prop(ob_nwo, "Fog_Appearance_Tag", text='Fog Appearance Tag')
+            row = col.row()
+            row.prop(ob_nwo, "Fog_Appearance_Tag", text='Fog Appearance Tag')
+            row.operator('nwo.fog_path')
             col.prop(ob_nwo, "Fog_Volume_Depth", text='Fog Volume Depth')
 
         elif CheckType.obb_volume(ob):
@@ -1483,7 +1521,6 @@ class NWO_ObjectMeshFaceProps(Panel):
     @classmethod
     def poll(cls, context):
         ob = context.active_object
-        ob_nwo = ob.nwo
 
         return CheckType.render(ob) or CheckType.poop(ob) or CheckType.decorator(ob) or CheckType.object_instance(ob) or CheckType.water_surface(ob)
 
@@ -2534,6 +2571,7 @@ class NWO_ObjectPropertiesGroup(PropertyGroup):
         name = name.removeprefix('+soft_ceiling')
         name = name.removeprefix('+soft_kill')
         name = name.removeprefix('+slip_surface')
+        name = name.strip(' :"')
 
         return max(name, name.rpartition('.')[0]).lower()
 
@@ -2869,6 +2907,7 @@ class NWO_ObjectPropertiesGroup(PropertyGroup):
     def get_decorator_name(self):
         name = self.id_data.name
         name = name.removeprefix('+decorator')
+        name = name.strip(' :"')
 
         return max(name, name.rpartition('.')[0]).lower()
 
@@ -2948,18 +2987,28 @@ class NWO_ObjectPropertiesGroup(PropertyGroup):
         min=0.0,
         max=1.0
     )
+    
+    def get_fog_name(self):
+        name = self.id_data.name
+        name = name.removeprefix('+fog')
+        name = name.strip(' :"')
+
+        return max(name, name.rpartition('.')[0]).lower()
 
     #FOG PROPERTIES
     Fog_Name: StringProperty(
         name="Fog Name",
         description="Name of this fog volume",
-        maxlen=32,
+        get=get_fog_name,
     )
+
+    def fog_clean_tag_path(self, context):
+        self['Fog_Appearance_Tag'] = clean_tag_path(self['Fog_Appearance_Tag']).strip('"')
 
     Fog_Appearance_Tag: StringProperty(
         name="Fog Appearance Tag",
         description="Name of the tag defining the fog volumes appearance",
-        maxlen=32,
+        update=fog_clean_tag_path,
     )
 
     Fog_Volume_Depth: FloatProperty(
@@ -3228,8 +3277,7 @@ class NWO_ObjectPropertiesGroup(PropertyGroup):
     def get_marker_group_name(self):
         name = self.id_data.name
         name = name.removeprefix('#')
-        if name.rpartition('.')[0] != '':
-            name = name.rpartition('.')[0]
+        name = name.strip(' :"')
 
         return max(name, name.rpartition('.')[0]).lower()
 
@@ -4290,6 +4338,7 @@ classeshalo = (
     Halo_SetUnitScale,
     Halo_XREFPath,
     NWO_GameInstancePath,
+    NWO_FogPath,
     NWO_ObjectProps,
     NWO_ObjectMeshProps,
     NWO_ObjectMeshFaceProps,

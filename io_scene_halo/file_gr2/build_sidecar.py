@@ -38,6 +38,10 @@ from .nwo_utils import (
     get_perm,
     CheckType,
     is_shared,
+    get_structure_from_halo_objects,
+    get_design_from_halo_objects,
+    get_render_from_halo_objects,
+
 )
 
 
@@ -327,7 +331,7 @@ def WriteModelContents(halo_objects, model_armature, metadata, asset_path, asset
     object = ET.SubElement(content, 'ContentObject', Name='', Type="render_model")
 
     perm_list = []
-    for ob in halo_objects.render:
+    for ob in get_render_from_halo_objects(halo_objects):
         perm = get_perm(ob)
         if (perm not in perm_list):
             perm_list.append(perm)
@@ -466,7 +470,7 @@ def WriteScenarioContents(halo_objects, metadata, asset_path, asset_name):
         shared_permutations = []
 
         if shared_bsp_exists:
-            for ob in halo_objects.structure:
+            for ob in halo_objects.get_structure_from_halo_objects(halo_objects):
                 if is_shared(ob):
                     perm = get_perm(ob)
                     if (perm not in shared_permutations):
@@ -477,7 +481,7 @@ def WriteScenarioContents(halo_objects, metadata, asset_path, asset_name):
             object = ET.SubElement(content, 'ContentObject', Name='', Type="scenario_structure_bsp")
             permutations = []
 
-            for ob in halo_objects.structure:
+            for ob in get_structure_from_halo_objects(halo_objects):
                 if ob.nwo.bsp_name_locked == bsp or ob.nwo.bsp_name == bsp and not is_shared(ob):
                     perm = get_perm(ob)
                     if (perm not in permutations):
@@ -518,7 +522,7 @@ def WriteScenarioContents(halo_objects, metadata, asset_path, asset_name):
 
             permutations = []
 
-            for ob in halo_objects.boundary_surfaces:
+            for ob in get_design_from_halo_objects(halo_objects):
                 if ob.nwo.bsp_name_locked == bsp or ob.nwo.bsp_name == bsp:
                     perm = get_perm(ob)
                     if (perm not in permutations):
@@ -526,8 +530,8 @@ def WriteScenarioContents(halo_objects, metadata, asset_path, asset_name):
 
             for perm in permutations:
                 network = ET.SubElement(object, 'ContentNetwork' ,Name=GetAssetPathBSP(asset_name, bsp, perm, True), Type="")
-                ET.SubElement(network, 'InputFile').text = GetInputFilePathBSP(asset_path, asset_name, bsp, True)
-                ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePathBSP(asset_path, asset_name, bsp, True)
+                ET.SubElement(network, 'InputFile').text = GetInputFilePathBSP(asset_path, asset_name, bsp, perm, True)
+                ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePathBSP(asset_path, asset_name, bsp, perm, True)
 
             output = ET.SubElement(object, 'OutputTagCollection')
             ET.SubElement(output, 'OutputTag', Type='structure_design').text = f'{path.join(asset_path, asset_name)}_{bsp}_structure_design'
@@ -569,7 +573,7 @@ def WriteParticleContents(halo_objects, metadata, asset_path, asset_name):
     content = ET.SubElement(contents, "Content", Name=asset_name, Type='particle_model')
     object = ET.SubElement(content, 'ContentObject', Name='', Type="particle_model")
 
-    if len(halo_objects.particle) > 0:
+    if len(halo_objects.default) > 0:
         network = ET.SubElement(object, 'ContentNetwork' ,Name=asset_name, Type="")
         ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, 'particle_model')
         ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePath(asset_path, asset_name, 'particle_model')
@@ -581,7 +585,7 @@ def WritePrefabContents(halo_objects, metadata, asset_path, asset_name):
     content = ET.SubElement(contents, "Content", Name=asset_name, Type='prefab')
     object = ET.SubElement(content, 'ContentObject', Name='', Type="scenario_structure_bsp")
 
-    if len(halo_objects.structure + halo_objects.poops +  halo_objects.lights + halo_objects.portals + halo_objects.water_surfaces + halo_objects.markers) > 0:
+    if len(get_structure_from_halo_objects(halo_objects)) > 0:
         network = ET.SubElement(object, 'ContentNetwork' ,Name=asset_name, Type="")
         ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, 'prefab')
         ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePath(asset_path, asset_name, 'prefab')
@@ -618,20 +622,26 @@ def GetInputFilePathBSP(asset_path, asset_name, bsp, perm='', is_design = False)
 
     return f_path
 
-def GetIntermediateFilePathBSP(asset_path, asset_name, bsp, perm=''):
-    if perm == 'default':
-        f_path = f'{path.join(asset_path, "export", "models", asset_name)}_{bsp}.gr2'
+def GetIntermediateFilePathBSP(asset_path, asset_name, bsp, perm='', is_design = False):
+    if is_design:
+        if perm == 'default':
+            f_path = f'{path.join(asset_path, "export", "models", asset_name)}_design_{bsp}.gr2'
+        else:
+            f_path = f'{path.join(asset_path, "export", "models", asset_name)}_design_{bsp}_{perm}.gr2'
     else:
-        f_path = f'{path.join(asset_path, "export", "models", asset_name)}_{bsp}_{perm}.gr2'
+        if perm == 'default':
+            f_path = f'{path.join(asset_path, "export", "models", asset_name)}_{bsp}.gr2'
+        else:
+            f_path = f'{path.join(asset_path, "export", "models", asset_name)}_{bsp}_{perm}.gr2'
 
     return f_path
 
 def SceneHasBSP(halo_objects):
-    bsp_objects = halo_objects.structure
+    bsp_objects = get_structure_from_halo_objects(halo_objects)
     return len(bsp_objects) > 0
 
 def SceneHasDesign(halo_objects):
-    design_objects = halo_objects.boundary_surfaces + halo_objects.water_physics + halo_objects.rain_occluders + halo_objects.fog
+    design_objects = get_design_from_halo_objects(halo_objects)
     return len(design_objects) > 0
 
 def GetInputFilePath(asset_path, asset_name, type, perm=''):
