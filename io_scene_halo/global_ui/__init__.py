@@ -1365,6 +1365,118 @@ class NWO_LightConeCurvePath(Operator):
 
         return {'RUNNING_MODAL'}
 
+class NWO_LightTagPath(Operator):
+    """Set the path to a light tag"""
+    bl_idname = "nwo.light_tag_path"
+    bl_label = "Find"
+
+    filter_glob: StringProperty(
+        default="*light",
+        options={'HIDDEN'},
+        )
+
+    filepath: StringProperty(
+        name="light_tag_path",
+        description="Set the path to the tag",
+        subtype="FILE_PATH"
+    )
+
+    def execute(self, context):
+        active_object = context.active_object
+        active_object.nwo.Light_Tag_Override = self.filepath
+
+        return {'FINISHED'}
+
+    def invoke(self, context, event):
+        self.filepath = get_tags_path()
+        context.window_manager.fileselect_add(self)
+
+        return {'RUNNING_MODAL'}
+
+class NWO_LightShaderPath(Operator):
+    """Set the path to a light shader tag"""
+    bl_idname = "nwo.light_shader_path"
+    bl_label = "Find"
+
+    filter_glob: StringProperty(
+        default="*render_method_definition",
+        options={'HIDDEN'},
+        )
+
+    filepath: StringProperty(
+        name="light_shader_path",
+        description="Set the path to the tag",
+        subtype="FILE_PATH"
+    )
+
+    def execute(self, context):
+        active_object = context.active_object
+        active_object.nwo.Light_Shader_Reference = self.filepath
+
+        return {'FINISHED'}
+
+    def invoke(self, context, event):
+        self.filepath = get_tags_path()
+        context.window_manager.fileselect_add(self)
+
+        return {'RUNNING_MODAL'}
+
+class NWO_LightGelPath(Operator):
+    """Set the path to a gel bitmap"""
+    bl_idname = "nwo.light_gel_path"
+    bl_label = "Find"
+
+    filter_glob: StringProperty(
+        default="*bitmap",
+        options={'HIDDEN'},
+        )
+
+    filepath: StringProperty(
+        name="light_gel_path",
+        description="Set the path to the tag",
+        subtype="FILE_PATH"
+    )
+
+    def execute(self, context):
+        active_object = context.active_object
+        active_object.nwo.Light_Gel_Reference = self.filepath
+
+        return {'FINISHED'}
+
+    def invoke(self, context, event):
+        self.filepath = get_tags_path()
+        context.window_manager.fileselect_add(self)
+
+        return {'RUNNING_MODAL'}
+
+class NWO_LensFlarePath(Operator):
+    """Set the path to a lens flare bitmap"""
+    bl_idname = "nwo.lens_flare_path"
+    bl_label = "Find"
+
+    filter_glob: StringProperty(
+        default="*lens_flare",
+        options={'HIDDEN'},
+        )
+
+    filepath: StringProperty(
+        name="lens_flare_path",
+        description="Set the path to the tag",
+        subtype="FILE_PATH"
+    )
+
+    def execute(self, context):
+        active_object = context.active_object
+        active_object.nwo.Light_Lens_Flare_Reference = self.filepath
+
+        return {'FINISHED'}
+
+    def invoke(self, context, event):
+        self.filepath = get_tags_path()
+        context.window_manager.fileselect_add(self)
+
+        return {'RUNNING_MODAL'}
+
 # ------------------------------------------------------------------------
 # MAIN UI
 # ------------------------------------------------------------------------
@@ -2071,11 +2183,18 @@ class NWO_LightProps(Panel):
             col.prop(ob_nwo, 'Light_Far_Attenuation_End', text='Far Attenuation End')
 
             col.separator()
-
-            col.prop(ob_nwo, 'Light_Tag_Override', text='Light Tag Override')
-            col.prop(ob_nwo, 'Light_Shader_Reference', text='Shader Tag Reference')
-            col.prop(ob_nwo, 'Light_Gel_Reference', text='Gel Tag Reference')
-            col.prop(ob_nwo, 'Light_Lens_Flare_Reference', text='Lens Flare Tag Reference')
+            row = col.row()
+            row.prop(ob_nwo, 'Light_Tag_Override', text='Light Tag Override')
+            row.operator('nwo.light_tag_path')
+            row = col.row()
+            row.prop(ob_nwo, 'Light_Shader_Reference', text='Shader Tag Reference')
+            row.operator('nwo.light_shader_path')
+            row = col.row()
+            row.prop(ob_nwo, 'Light_Gel_Reference', text='Gel Tag Reference')
+            row.operator('nwo.light_gel_path')
+            row = col.row()
+            row.prop(ob_nwo, 'Light_Lens_Flare_Reference', text='Lens Flare Tag Reference')
+            row.operator('nwo.lens_flare_path')
 
             # col.separator() # commenting out light clipping for now.
 
@@ -3836,32 +3955,44 @@ class NWO_ObjectPropertiesGroup(PropertyGroup):
         default=False,
     )
 
+    def light_tag_clean_tag_path(self, context):
+        self['Light_Tag_Override'] = clean_tag_path(self['Light_Tag_Override']).strip('"')
+
     Light_Tag_Override: StringProperty(
         name="Light Tag Override",
         options=set(),
         description="",
-        maxlen=128,
+        update=light_tag_clean_tag_path,
     )
+
+    def light_shader_clean_tag_path(self, context):
+        self['Light_Shader_Reference'] = clean_tag_path(self['Light_Shader_Reference']).strip('"')
 
     Light_Shader_Reference: StringProperty(
         name="Light Shader Reference",
         options=set(),
         description="",
-        maxlen=128,
+        update=light_shader_clean_tag_path,
     )
+
+    def light_gel_clean_tag_path(self, context):
+        self['Light_Gel_Reference'] = clean_tag_path(self['Light_Gel_Reference']).strip('"')
 
     Light_Gel_Reference: StringProperty(
         name="Light Gel Reference",
         options=set(),
         description="",
-        maxlen=128,
+        update=light_gel_clean_tag_path,
     )
+
+    def light_lens_flare_clean_tag_path(self, context):
+        self['Light_Lens_Flare_Reference'] = clean_tag_path(self['Light_Lens_Flare_Reference']).strip('"')
 
     Light_Lens_Flare_Reference: StringProperty(
         name="Light Lens Flare Reference",
         options=set(),
         description="",
-        maxlen=128,
+        update=light_lens_flare_clean_tag_path,
     )
 
     # H4 LIGHT PROPERTIES
@@ -4409,6 +4540,10 @@ classeshalo = (
     NWO_FogPath,
     NWO_LightConePath,
     NWO_LightConeCurvePath,
+    NWO_LightTagPath,
+    NWO_LightShaderPath,
+    NWO_LightGelPath,
+    NWO_LensFlarePath,
     NWO_ObjectProps,
     NWO_ObjectMeshProps,
     NWO_ObjectMeshFaceProps,
