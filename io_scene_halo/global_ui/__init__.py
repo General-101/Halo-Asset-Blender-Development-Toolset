@@ -2017,10 +2017,7 @@ class NWO_LightProps(Panel):
             
 
         else:
-            if context.active_object.data.type == 'POINT' or context.active_object.data.type == 'SUN':
-                col.prop(ob_nwo, "light_type_override_locked", text='Type')
-            else:
-                col.prop(ob_nwo, "light_type_override", text='Type')
+            col.prop(ob_nwo, "light_type_override", text='Type')
 
             col.prop(ob_nwo, 'Light_Game_Type', text='Game Type')
             col.prop(ob_nwo, 'Light_Shape', text='Shape')
