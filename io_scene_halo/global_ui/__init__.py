@@ -1477,6 +1477,34 @@ class NWO_LensFlarePath(Operator):
 
         return {'RUNNING_MODAL'}
 
+class NWO_ShaderPath(Operator):
+    """Set the path to a material / shader tag"""
+    bl_idname = "nwo.shader_path"
+    bl_label = "Find"
+
+    filter_glob: StringProperty(
+        default="*material;*shader;*shader_cortana;*shader_custom;*shader_decal;*shader_foliage;*shader_fur;*shader_fur_stencil;*shader_glass;*shader_halogram;*shader_mux;*shader_mux_material;*shader_screen;*shader_skin;*shader_terrain;*shader_water",
+        options={'HIDDEN'},
+        )
+
+    filepath: StringProperty(
+        name="shader_path",
+        description="Set the path to the tag",
+        subtype="FILE_PATH"
+    )
+
+    def execute(self, context):
+        active_material = context.active_object.active_material
+        active_material.nwo.shader_path = self.filepath
+
+        return {'FINISHED'}
+
+    def invoke(self, context, event):
+        self.filepath = get_tags_path()
+        context.window_manager.fileselect_add(self)
+
+        return {'RUNNING_MODAL'}
+
 # ------------------------------------------------------------------------
 # MAIN UI
 # ------------------------------------------------------------------------
@@ -2008,7 +2036,9 @@ class NWO_MaterialProps(Panel):
                     else:
                         col.prop(material_nwo, "material_override_h4")
                 else:
-                    col.prop(material_nwo, "shader_path", text='Material Path')
+                    row = col.row()
+                    row.prop(material_nwo, "shader_path", text='Material Path')
+                    row.operator('nwo.shader_path')
                     col.prop(material_nwo, "material_override_h4")
             else:
                 if is_override:
@@ -2017,7 +2047,9 @@ class NWO_MaterialProps(Panel):
                     else:
                         col.prop(material_nwo, "material_override")
                 else:
-                    col.prop(material_nwo, "shader_path")
+                    row = col.row()
+                    row.prop(material_nwo, "shader_path")
+                    row.operator('nwo.shader_path')
                     col.prop(material_nwo, "Shader_Type")
                     col.prop(material_nwo, "material_override")
                         
@@ -2056,7 +2088,7 @@ class NWO_LightProps(Panel):
             col.prop(ob_nwo, 'light_mode')
             col.prop(ob_nwo, 'light_lighting_mode')
             col.prop(ob_nwo, 'light_type_h4')
-            if ob_nwo.light_type_h4 == '_connected_geometry_light_type_spot' and not ob_nwo.light_mode == '_connected_geometry_light_mode_dynamic':
+            if ob_nwo.light_type_h4 == '_connected_geometry_light_type_spot':
 
                 col.separator()
 
@@ -4350,6 +4382,7 @@ class NWO_ObjectPropertiesGroup(PropertyGroup):
 class NWO_MaterialPropertiesGroup(PropertyGroup):
     
     def update_shader_type(self, context):
+        self['shader_path'] = clean_tag_path(self['shader_path']).strip('"')
         material_path = self.shader_path.replace('"','')
         if material_path != material_path.rpartition('.')[2]:
             try:
@@ -4544,6 +4577,7 @@ classeshalo = (
     NWO_LightShaderPath,
     NWO_LightGelPath,
     NWO_LensFlarePath,
+    NWO_ShaderPath,
     NWO_ObjectProps,
     NWO_ObjectMeshProps,
     NWO_ObjectMeshFaceProps,
