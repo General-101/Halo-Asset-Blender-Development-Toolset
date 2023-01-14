@@ -771,22 +771,22 @@ class NWOMarker(NWOObject):
         return marker_type(self.ob, ('_connected_geometry_marker_type_lightCone'))
 
     def prefab(self): # H4+ ONLY
-        return self.is_game_instance() and self.not_bungie_game and self.halo.Marker_Game_Instance_Tag_Name.lower().endswith('.prefab')
+        return self.game_instance() and self.not_bungie_game and self.halo.Marker_Game_Instance_Tag_Name.lower().endswith('.prefab')
 
     def cheap_light(self): # H4+ ONLY
-        return self.is_game_instance() and self.not_bungie_game and self.halo.Marker_Game_Instance_Tag_Name.lower().endswith('.cheap_light')
+        return self.game_instance() and self.not_bungie_game and self.halo.Marker_Game_Instance_Tag_Name.lower().endswith('.cheap_light')
 
     def marker_light(self): # H4+ ONLY
-        return self.is_game_instance() and self.not_bungie_game and self.halo.Marker_Game_Instance_Tag_Name.lower().endswith('.light')
+        return self.game_instance() and self.not_bungie_game and self.halo.Marker_Game_Instance_Tag_Name.lower().endswith('.light')
 
     def falling_leaf(self):  # H4+ ONLY
-        return self.is_game_instance() and self.not_bungie_game and self.halo.Marker_Game_Instance_Tag_Name.lower().endswith('.leaf')
+        return self.game_instance() and self.not_bungie_game and self.halo.Marker_Game_Instance_Tag_Name.lower().endswith('.leaf')
 
     def physics_hinge_constraint(self):
-        return self.is_physics_constraint() and self.halo.Physics_Constraint_Type == '_connected_geometry_marker_type_physics_hinge_constraint'
+        return self.physics_constraint() and self.halo.Physics_Constraint_Type == '_connected_geometry_marker_type_physics_hinge_constraint'
 
     def physics_socket_constraint(self):
-        return self.is_physics_constraint() and self.ob.Physics_Constraint_Type == '_connected_geometry_marker_type_physics_socket_constraint'
+        return self.physics_constraint() and self.ob.Physics_Constraint_Type == '_connected_geometry_marker_type_physics_socket_constraint'
         
 # MESH
 #####################

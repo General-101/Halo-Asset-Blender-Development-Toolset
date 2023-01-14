@@ -1243,6 +1243,8 @@ from ..file_gr2.nwo_utils import (
     clean_tag_path,
     get_tags_path,
     shortest_string,
+    is_marker,
+    is_mesh,
 
     CheckType
 )
@@ -1298,6 +1300,62 @@ class NWO_FogPath(Operator):
     def execute(self, context):
         active_object = context.active_object
         active_object.nwo.Fog_Appearance_Tag = self.filepath
+
+        return {'FINISHED'}
+
+    def invoke(self, context, event):
+        self.filepath = get_tags_path()
+        context.window_manager.fileselect_add(self)
+
+        return {'RUNNING_MODAL'}
+
+class NWO_LightConePath(Operator):
+    """Set the path to a light cone tag"""
+    bl_idname = "nwo.light_cone_path"
+    bl_label = "Find"
+
+    filter_glob: StringProperty(
+        default="*light_cone",
+        options={'HIDDEN'},
+        )
+
+    filepath: StringProperty(
+        name="fog_path",
+        description="Set the path to the tag",
+        subtype="FILE_PATH"
+    )
+
+    def execute(self, context):
+        active_object = context.active_object
+        active_object.nwo.marker_light_cone_tag = self.filepath
+
+        return {'FINISHED'}
+
+    def invoke(self, context, event):
+        self.filepath = get_tags_path()
+        context.window_manager.fileselect_add(self)
+
+        return {'RUNNING_MODAL'}
+
+class NWO_LightConeCurvePath(Operator):
+    """Set the path to a light cone curve tag"""
+    bl_idname = "nwo.light_cone_curve_path"
+    bl_label = "Find"
+
+    filter_glob: StringProperty(
+        default="*curve_scalar",
+        options={'HIDDEN'},
+        )
+
+    filepath: StringProperty(
+        name="fog_path",
+        description="Set the path to the tag",
+        subtype="FILE_PATH"
+    )
+
+    def execute(self, context):
+        active_object = context.active_object
+        active_object.nwo.marker_light_cone_curve = self.filepath
 
         return {'FINISHED'}
 
@@ -1380,7 +1438,7 @@ class NWO_ObjectMeshProps(Panel):
     def poll(cls, context):
         ob = context.object
 
-        return CheckType.mesh(ob)
+        return is_mesh(ob)
 
 
     def draw(self, context):
@@ -1706,7 +1764,7 @@ class NWO_ObjectMarkerProps(Panel):
     def poll(cls, context):
         ob = context.object
 
-        return CheckType.marker(ob)
+        return is_marker(ob)
 
     def draw(self, context):
         layout = self.layout
@@ -1728,7 +1786,7 @@ class NWO_ObjectMarkerProps(Panel):
             else:
                 col.prop(ob_nwo, "ObjectMarker_Type", text='Marker Type')
 
-        if CheckType.model(ob):
+        if CheckType.model(ob) and not CheckType.game_instance(ob):
             col.prop(ob_nwo, "Marker_Group_Name", text='Marker Group')
             col.prop(ob_nwo, "Marker_Velocity", text='Marker Velocity')
             sub = col.row(align=True)
@@ -1767,11 +1825,11 @@ class NWO_ObjectMarkerProps(Panel):
             sus.prop(ob_nwo, 'Physics_Constraint_Uses_Limits', text='Uses Limits')
 
             if ob_nwo.Physics_Constraint_Uses_Limits:
-                if ob_nwo.Physics_Constraint_Type == 'HINGE':
+                if ob_nwo.Physics_Constraint_Type == '_connected_geometry_marker_type_physics_hinge_constraint':
                     col.prop(ob_nwo, "Hinge_Constraint_Minimum", text='Minimum')
                     col.prop(ob_nwo, "Hinge_Constraint_Maximum", text='Maximum')
 
-                elif ob_nwo.Physics_Constraint_Type == 'SOCKET':
+                elif ob_nwo.Physics_Constraint_Type == '_connected_geometry_marker_type_physics_socket_constraint':
                     col.prop(ob_nwo, "Cone_Angle", text='Cone Angle')
 
                     col.prop(ob_nwo, "Plane_Constraint_Minimum", text='Plane Minimum')
@@ -1789,14 +1847,18 @@ class NWO_ObjectMarkerProps(Panel):
         elif CheckType.envfx(ob) and not_bungie_game():
             col.prop(ob_nwo, "marker_looping_effect")
 
-        elif CheckType.lightCone(ob) and not_bungie_game(): 
-            col.prop(ob_nwo, "marker_light_cone_tag")
+        elif CheckType.lightCone(ob) and not_bungie_game():
+            row = col.row()
+            row.prop(ob_nwo, "marker_light_cone_tag")
+            row.operator('nwo.light_cone_path') 
             col.prop(ob_nwo, "marker_light_cone_color")
             col.prop(ob_nwo, "marker_light_cone_alpha") 
             col.prop(ob_nwo, "marker_light_cone_intensity")
             col.prop(ob_nwo, "marker_light_cone_width")
             col.prop(ob_nwo, "marker_light_cone_length")
-            col.prop(ob_nwo, "marker_light_cone_curve")
+            row = col.row()
+            row.prop(ob_nwo, "marker_light_cone_curve")
+            row.operator('nwo.light_cone_curve_path') 
 
 # MATERIAL PROPERTIES
 class NWO_MaterialProps(Panel):
@@ -3448,9 +3510,13 @@ class NWO_ObjectPropertiesGroup(PropertyGroup):
         description="Tag path to an effect",
     )
 
+    def light_cone_clean_tag_path(self, context):
+        self['marker_light_cone_tag'] = clean_tag_path(self['marker_light_cone_tag']).strip('"')
+
     marker_light_cone_tag: StringProperty(
         name="Light Cone Tag Path",
         description="Tag path to a light cone",
+        update=light_cone_clean_tag_path,
     )
 
     marker_light_cone_color: FloatVectorProperty(
@@ -3497,9 +3563,13 @@ class NWO_ObjectPropertiesGroup(PropertyGroup):
         min=0,
     )
 
+    def light_cone_curve_clean_tag_path(self, context):
+        self['marker_light_cone_curve'] = clean_tag_path(self['marker_light_cone_curve']).strip('"')
+
     marker_light_cone_curve: StringProperty(
         name="Light Cone Curve Tag Path",
         description="",
+        update=light_cone_curve_clean_tag_path,
     )
 
 # LIGHTS #
@@ -4340,6 +4410,8 @@ classeshalo = (
     Halo_XREFPath,
     NWO_GameInstancePath,
     NWO_FogPath,
+    NWO_LightConePath,
+    NWO_LightConeCurvePath,
     NWO_ObjectProps,
     NWO_ObjectMeshProps,
     NWO_ObjectMeshFaceProps,

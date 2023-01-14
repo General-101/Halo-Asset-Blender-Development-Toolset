@@ -421,6 +421,10 @@ class Export_Scene_GR2(Operator, ExportHelper):
         name='Export GR2 Files',
         default=True,
     )
+    use_tspace: BoolProperty(
+        name='use tspace',
+        default=False,
+    )
     # import_bitmaps: BoolProperty(
     #     name='Import Bitmaps',
     #     default=False,
