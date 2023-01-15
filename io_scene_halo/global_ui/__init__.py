@@ -1931,7 +1931,10 @@ class NWO_ObjectMarkerProps(Panel):
             col.prop(ob_nwo, "Marker_Velocity", text='Marker Velocity')
             sub = col.row(align=True)
             if not ob_nwo.Marker_All_Regions:
-                sub.prop(ob_nwo, "Marker_Region", text='Marker Region')
+                if ob_nwo.Region_Name_Locked != '':
+                    col.prop(ob_nwo, 'Region_Name_Locked', text='Region')
+                else:
+                    col.prop(ob_nwo, "Region_Name", text='Region')
             sub.prop(ob_nwo, 'Marker_All_Regions', text='All Regions')
 
         elif CheckType.game_instance(ob):
@@ -3496,7 +3499,6 @@ class NWO_ObjectPropertiesGroup(PropertyGroup):
     Marker_All_Regions: BoolProperty(
         name="Marker All Regions",
         options=set(),
-        default=True,
         description="Associate this marker with all regions rather than a specific one",
     )
 

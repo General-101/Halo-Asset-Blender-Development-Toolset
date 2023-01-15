@@ -142,8 +142,8 @@ def get_regions_dict(objects):
     regions = {'default': '0'}
     index = 0
     for ob in objects:
-        name = ob.nwo.Region_Name
-        if true_region(ob.nwo) not in regions.keys():
+        name = true_region(ob.nwo)
+        if name not in regions.keys():
             index +=1
             regions.update({name: str(index)})
 
@@ -154,7 +154,7 @@ def get_global_materials_dict(objects):
     index = 0
     for ob in objects:
         name = ob.nwo.Face_Global_Material
-        if ob.nwo.Face_Global_Material not in global_materials.keys() and ob.nwo.Face_Global_Material != '':
+        if name not in global_materials.keys() and name != '':
             index +=1
             global_materials.update({name: str(index)})
 

@@ -383,7 +383,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
             reports.append('Exported ' + str(gr2_count) + ' GR2 Files')
             if export_sidecar_xml:
                 from .build_sidecar import export_sidecar
-                export_sidecar(self, context, report, asset_path, halo_objects, model_armature, lod_count, **keywords)
+                export_sidecar(self, context, report, asset_path, halo_objects, model_armature, lod_count, regions_dict, global_materials_dict, **keywords)
                 reports.append('Built ' + str.title(sidecar_type) + ' Sidecar')
             from .import_sidecar import import_sidecar
             if import_to_game:

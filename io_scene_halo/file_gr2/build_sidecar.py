@@ -46,7 +46,7 @@ from .nwo_utils import (
 )
 
 
-def export_xml(report, context, halo_objects, model_armature=None, lod_count=0, filePath="", sidecar_type='MODEL', asset_path='', game_version='reach',        
+def export_xml(report, context, halo_objects, model_armature=None, lod_count=0, regions_dict={}, global_materials_dict={}, filePath="", sidecar_type='MODEL', asset_path='', game_version='reach',        
                 output_biped=False,
                 output_crate=False,
                 output_creature=False,
@@ -64,7 +64,7 @@ def export_xml(report, context, halo_objects, model_armature=None, lod_count=0, 
     asset_path = CleanAssetPath(full_path)
     asset_name = asset_path.rpartition('\\')[2]
 
-    BuildSidecar(halo_objects, model_armature, lod_count, asset_path, asset_name, full_path, sidecar_type, context, game_version, output_biped,output_crate,output_creature,output_device_control, output_device_dispenser, output_device_machine,output_device_terminal,output_effect_scenery,output_equipment,output_giant,output_scenery,output_vehicle,output_weapon)
+    BuildSidecar(halo_objects, model_armature, lod_count, regions_dict, global_materials_dict, asset_path, asset_name, full_path, sidecar_type, context, game_version, output_biped,output_crate,output_creature,output_device_control, output_device_dispenser, output_device_machine,output_device_terminal,output_effect_scenery,output_equipment,output_giant,output_scenery,output_vehicle,output_weapon)
 
     report({'INFO'},"Sidecar build complete")
 
@@ -75,7 +75,7 @@ def CleanAssetPath(path):
 
     return f_path
 
-def BuildSidecar(halo_objects, model_armature, lod_count, asset_path, asset_name, full_path, sidecar_type, context, game_version,           
+def BuildSidecar(halo_objects, model_armature, lod_count, regions_dict, global_materials_dict, asset_path, asset_name, full_path, sidecar_type, context, game_version,           
                         output_biped=False,
                         output_crate=False,
                         output_creature=False,
@@ -109,7 +109,7 @@ def BuildSidecar(halo_objects, model_armature, lod_count, asset_path, asset_name
     elif sidecar_type == 'PREFAB':
         GetObjectOutputTypes(context, metadata, 'prefab', asset_path, asset_name, sidecar_type, 'prefab')
     WriteFolders(metadata, not_bungo_game)
-    WriteFaceCollections(metadata, sidecar_type, not_bungo_game)
+    WriteFaceCollections(metadata, sidecar_type, not_bungo_game, regions_dict, global_materials_dict)
     if sidecar_type == 'MODEL':
         WriteModelContents(halo_objects, model_armature, metadata, asset_path, asset_name)
     elif sidecar_type == 'SCENARIO':
@@ -262,7 +262,7 @@ def WriteFolders(metadata, not_bungie_game): # Write folders to tell foundation 
         ET.SubElement(folders, "CinematicSceneSegments").text = "\\segments"
         ET.SubElement(folders, "SourceAnimationLibrary").text = "\\animations\\library"
 
-def WriteFaceCollections(metadata, sidecar_type, not_bungie_game): # FaceCollections is where regions and global materials are defined in the sidecar. 
+def WriteFaceCollections(metadata, sidecar_type, not_bungie_game, regions_dict, global_materials_dict): # FaceCollections is where regions and global materials are defined in the sidecar. 
         faceCollections = ET.SubElement(metadata, "FaceCollections")
 
         if sidecar_type == 'SCENARIO' and not_bungie_game:
@@ -294,36 +294,18 @@ def WriteFaceCollections(metadata, sidecar_type, not_bungie_game): # FaceCollect
                     count += 1     
 
         if(sidecar_type in ('MODEL', 'SKY')):
-            region_list = ["default",""]
             f1 = ET.SubElement(faceCollections, "FaceCollection", Name="regions", StringTable="connected_geometry_regions_table", Description="Model regions")
 
             FaceCollectionsEntries = ET.SubElement(f1, "FaceCollectionEntries")
-            ET.SubElement(FaceCollectionsEntries, "FaceCollectionEntry", Index="0", Name="default", Active="true")
+            for region in regions_dict.keys():
+                ET.SubElement(FaceCollectionsEntries, "FaceCollectionEntry", Index=str(regions_dict.get(region)), Name=region, Active="true")
 
-            count = 1
-            for ob in bpy.context.view_layer.objects:
-                if ob.nwo.Region_Name_Locked == '':
-                    region = ob.nwo.Region_Name
-                else:
-                    region = ob.nwo.Region_Name_Locked
-                if region not in region_list:
-                    ET.SubElement(FaceCollectionsEntries, "FaceCollectionEntry", Index=str(count), Name=region, Active="true")
-                    region_list.append(region)
-                    count += 1
         if(sidecar_type in ('MODEL', 'SCENARIO', 'PREFAB', 'SKY')):
-            mat_list = ["default",""]
             f2 = ET.SubElement(faceCollections, "FaceCollection", Name="global materials override", StringTable="connected_geometry_global_material_table", Description="Global material overrides")
 
             FaceCollectionsEntries2 = ET.SubElement(f2, "FaceCollectionEntries")
-            ET.SubElement(FaceCollectionsEntries2, "FaceCollectionEntry", Index="0", Name="default", Active="true")
-
-            count = 1
-            for ob in bpy.context.view_layer.objects:
-                material = ob.nwo.Face_Global_Material
-                if material not in mat_list:
-                        ET.SubElement(FaceCollectionsEntries2, "FaceCollectionEntry", Index=str(count), Name=material, Active="true")
-                        mat_list.append(material)
-                        count += 1
+            for global_material in global_materials_dict.keys():
+                ET.SubElement(FaceCollectionsEntries2, "FaceCollectionEntry", Index=str(global_materials_dict.get(global_material)), Name=global_material, Active="true")
 
 def WriteModelContents(halo_objects, model_armature, metadata, asset_path, asset_name):
     ##### RENDER #####
@@ -703,7 +685,7 @@ def SceneHasMarkers():
     
     return boolean
 
-def export_sidecar(operator, context, report, asset_path, halo_objects, model_armature=None, lod_count=0,
+def export_sidecar(operator, context, report, asset_path, halo_objects, model_armature=None, lod_count=0, regions_dict={}, global_materials_dict={},
         filepath="",
         export_sidecar_xml=False,
         sidecar_type='MODEL',
@@ -727,5 +709,5 @@ def export_sidecar(operator, context, report, asset_path, halo_objects, model_ar
         output_device_dispenser = False # force this off in case user is not exporting for H4/H2A
         
     if export_sidecar_xml and asset_path != '': # if the user has opted to export a sidecar and a valid asset path exists, proceed
-        export_xml(report, context, halo_objects, model_armature, lod_count, filepath, sidecar_type, asset_path, game_version, output_biped, output_crate,output_creature,output_device_control, output_device_dispenser, output_device_machine,output_device_terminal,output_effect_scenery,output_equipment,output_giant,output_scenery,output_vehicle,output_weapon)
+        export_xml(report, context, halo_objects, model_armature, lod_count, regions_dict, global_materials_dict, filepath, sidecar_type, asset_path, game_version, output_biped, output_crate,output_creature,output_device_control, output_device_dispenser, output_device_machine,output_device_terminal,output_effect_scenery,output_equipment,output_giant,output_scenery,output_vehicle,output_weapon)
     return {'FINISHED'}

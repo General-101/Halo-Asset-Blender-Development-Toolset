@@ -639,10 +639,7 @@ class NWOMarker(NWOObject):
         return bool_str(self.halo.Marker_All_Regions)
 
     def marker_region(self): 
-        if self.halo.Marker_Region != '' and self.bungie_marker_all_regions is None:
-            return self.halo.Marker_Region.lower()
-        else:
-            return 'default'
+        return true_region(self.halo).lower()
 
     def marker_game_instance_tag_name(self):
         return clean_tag_path(self.halo.Marker_Game_Instance_Tag_Name)
