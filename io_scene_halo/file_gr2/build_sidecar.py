@@ -94,22 +94,22 @@ def BuildSidecar(halo_objects, model_armature, lod_count, asset_path, asset_name
     m_standalone = 'yes'
     metadata = ET.Element("Metadata")
     # set a boolean to check if game is h4+ or not
-    not_bungie_game = game_version in ('h4', 'h2a')
+    not_bungo_game = not_bungie_game()
     WriteHeader(metadata)
     if sidecar_type == 'MODEL':
-        GetObjectOutputTypes(context, metadata, "model", asset_path, asset_name, GetModelTags(output_biped,output_crate,output_creature,output_device_control, output_device_dispenser, output_device_machine,output_device_terminal,output_effect_scenery,output_equipment,output_giant,output_scenery,output_vehicle,output_weapon))
+        GetObjectOutputTypes(context, metadata, "model", asset_path, asset_name, sidecar_type, GetModelTags(output_biped,output_crate,output_creature,output_device_control, output_device_dispenser, output_device_machine,output_device_terminal,output_effect_scenery,output_equipment,output_giant,output_scenery,output_vehicle,output_weapon))
     elif sidecar_type == 'SCENARIO':
-        GetObjectOutputTypes(context, metadata, 'scenario', asset_path, asset_name)
+        GetObjectOutputTypes(context, metadata, 'scenario', asset_path, asset_name, sidecar_type)
     elif sidecar_type == 'SKY':
-        GetObjectOutputTypes(context, metadata, 'sky', asset_path, asset_name)
+        GetObjectOutputTypes(context, metadata, 'sky' if not not_bungo_game else 'model', asset_path, asset_name, sidecar_type)
     elif sidecar_type == 'DECORATOR SET':
-        GetObjectOutputTypes(context, metadata, 'decorator_set', asset_path, asset_name, 'decorator_set')
+        GetObjectOutputTypes(context, metadata, 'decorator_set', asset_path, asset_name, sidecar_type, 'decorator_set')
     elif sidecar_type == 'PARTICLE MODEL':
-        GetObjectOutputTypes(context, metadata, 'particle_model', asset_path, asset_name, 'particle_model')
+        GetObjectOutputTypes(context, metadata, 'particle_model', asset_path, asset_name, sidecar_type, 'particle_model')
     elif sidecar_type == 'PREFAB':
-        GetObjectOutputTypes(context, metadata, 'prefab', asset_path, asset_name, 'prefab')
-    WriteFolders(metadata, not_bungie_game)
-    WriteFaceCollections(metadata, sidecar_type, not_bungie_game)
+        GetObjectOutputTypes(context, metadata, 'prefab', asset_path, asset_name, sidecar_type, 'prefab')
+    WriteFolders(metadata, not_bungo_game)
+    WriteFaceCollections(metadata, sidecar_type, not_bungo_game)
     if sidecar_type == 'MODEL':
         WriteModelContents(halo_objects, model_armature, metadata, asset_path, asset_name)
     elif sidecar_type == 'SCENARIO':
@@ -190,11 +190,14 @@ def GetModelTags(       output_biped=False,
 
     return tags
 
-def GetObjectOutputTypes(context, metadata, type, asset_path, asset_name, output_tags=[]):
-    asset = ET.SubElement(metadata, "Asset", Name=asset_name, Type=type)
+def GetObjectOutputTypes(context, metadata, type, asset_path, asset_name, sidecar_type, output_tags=[]):
+    if sidecar_type == 'SKY':
+        asset = ET.SubElement(metadata, "Asset", Name=asset_name, Type=type, Sky='true')
+    else:
+        asset = ET.SubElement(metadata, "Asset", Name=asset_name, Type=type)
     tagcollection = ET.SubElement(asset, "OutputTagCollection")
 
-    if type == 'model':
+    if type == 'model' and sidecar_type == 'MODEL':
         for tag in output_tags: # for each output tag that that user as opted to export, add this to the sidecar
             ET.SubElement(tagcollection, "OutputTag", Type=tag).text = path.join(asset_path, asset_name)
     # models are the only sidecar type with optional high level tags exports, all others are fixed
@@ -202,10 +205,6 @@ def GetObjectOutputTypes(context, metadata, type, asset_path, asset_name, output
         ET.SubElement(tagcollection, "OutputTag", Type='scenario_lightmap').text = path.join(asset_path, f'{asset_name}_faux_lightmaps')
         ET.SubElement(tagcollection, "OutputTag", Type='structure_seams').text = path.join(asset_path, asset_name)
         ET.SubElement(tagcollection, "OutputTag", Type='scenario').text = path.join(asset_path, asset_name)
-
-    elif type == 'sky':
-        ET.SubElement(tagcollection, "OutputTag", Type='model').text = path.join(asset_path, asset_name)
-        ET.SubElement(tagcollection, "OutputTag", Type='scenery').text = path.join(asset_path, asset_name)
 
     elif type == 'decorator_set':
         ET.SubElement(tagcollection, "OutputTag", Type='decorator_set').text = path.join(asset_path, asset_name)
@@ -216,8 +215,9 @@ def GetObjectOutputTypes(context, metadata, type, asset_path, asset_name, output
     elif type == 'prefab':
         ET.SubElement(tagcollection, "OutputTag", Type='prefab').text = path.join(asset_path, asset_name)
     
-    else:
-        ET.SubElement(tagcollection, "OutputTag", Type='cinematic').text = path.join(asset_path, asset_name)
+    else: # sky
+        ET.SubElement(tagcollection, "OutputTag", Type='model').text = path.join(asset_path, asset_name)
+        ET.SubElement(tagcollection, "OutputTag", Type='scenery').text = path.join(asset_path, asset_name)
 
     shared = ET.SubElement(asset, "SharedAssetCollection")
     # create a shared asset entry for each that exists

@@ -715,7 +715,10 @@ def ExportSettingsFromSidecar(sidecar_filepath):
     metadata = tree.getroot()
     # get the type of sidecar this is
     asset = metadata.find('Asset')
-    asset_type = asset.get('Type')
+    if asset.get('Sky') == 'true':
+        asset_type = 'sky'
+    else:
+        asset_type = asset.get('Type')
     # append the type to the settings list
     settings.append(asset_type)
     # if asset type is a model, we need to grab some additional info
