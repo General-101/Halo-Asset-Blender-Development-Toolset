@@ -96,14 +96,14 @@ def prepare_scene(context, report, sidecar_type, export_hidden, filepath, use_ar
 
 class HaloObjects():
     def __init__(self, asset_type):
-        self.frame = select_halo_objects('frame', asset_type, ('MODEL', 'SKY', 'DECORATOR', 'PARTICLE', 'SCENARIO', 'PREFAB'))
-        self.default = select_halo_objects('render', asset_type, ('MODEL', 'SKY', 'DECORATOR', 'PARTICLE', 'SCENARIO', 'PREFAB'))
-        self.collision = select_halo_objects('collision', asset_type, (('MODEL', 'SKY', 'DECORATOR', 'PARTICLE', 'SCENARIO', 'PREFAB')))
-        self.physics = select_halo_objects('physics', asset_type, ('MODEL', 'SKY', 'DECORATOR', 'PARTICLE', 'SCENARIO',))
-        self.markers = select_halo_objects('marker', asset_type, ('MODEL', 'SKY', 'DECORATOR', 'PARTICLE', 'SCENARIO', 'PREFAB'))
+        self.frame = select_halo_objects('frame', asset_type, ('MODEL', 'SKY', 'DECORATOR SET', 'PARTICLE MODEL', 'SCENARIO', 'PREFAB'))
+        self.default = select_halo_objects('render', asset_type, ('MODEL', 'SKY', 'DECORATOR SET', 'PARTICLE MODEL', 'SCENARIO', 'PREFAB'))
+        self.collision = select_halo_objects('collision', asset_type, (('MODEL', 'SKY', 'DECORATOR SET', 'PARTICLE MODEL', 'SCENARIO', 'PREFAB')))
+        self.physics = select_halo_objects('physics', asset_type, ('MODEL', 'SKY', 'DECORATOR SET', 'PARTICLE MODEL', 'SCENARIO',))
+        self.markers = select_halo_objects('marker', asset_type, ('MODEL', 'SKY', 'DECORATOR SET', 'PARTICLE MODEL', 'SCENARIO', 'PREFAB'))
         self.object_instances = select_halo_objects('object_instance', asset_type, ('MODEL'))
 
-        self.decorators = select_halo_objects('decorator', asset_type, ('DECORATOR'))
+        self.decorators = select_halo_objects('decorator', asset_type, ('DECORATOR SET'))
         
         self.cookie_cutters = select_halo_objects('cookie_cutter', asset_type, ('SCENARIO', 'PREFAB'))
         self.poops = select_halo_objects('poop', asset_type, ('SCENARIO', 'PREFAB'))
@@ -247,7 +247,7 @@ def FixLightsRotations(lights_list):
 def GetDecoratorLODCount(halo_objects, asset_is_decorator):
     lod_count = 0
     if asset_is_decorator:
-        for ob in halo_objects.decorator:
+        for ob in halo_objects.decorators:
             ob_lod = ob.nwo.Decorator_LOD
             if ob_lod > lod_count:
                 lod_count =  ob_lod
@@ -276,7 +276,7 @@ def GetSceneArmature(context, sidecar_type, game_version):
         if ob.type == 'ARMATURE' and not ob.name.startswith('+'): # added a check for a '+' prefix in armature name, to support special animation control armatures in the future
             model_armature = ob
             break
-    if model_armature is None and (game_version not in ('h4', 'h2a') or sidecar_type not in ('SCENARIO', 'PREFAB', 'PARTICLE MODEL')):
+    if model_armature is None and (sidecar_type not in ('SCENARIO', 'PREFAB', 'PARTICLE MODEL', 'DECORATOR SET') or (sidecar_type == 'SCENARIO' and not not_bungie_game())):
         model_armature, no_parent_objects = AddTempArmature(context)
         temp_armature = True
 

@@ -1505,7 +1505,7 @@ class NWO_ShaderPath(Operator):
 
         return {'RUNNING_MODAL'}
 
-# ------------------------------------------------------------------------
+# ------------------------------------------------------------------------('?'
 # MAIN UI
 # ------------------------------------------------------------------------
 
@@ -1535,13 +1535,13 @@ class NWO_ObjectProps(Panel):
 
         if ob.type == 'LIGHT':
             col.prop(ob_nwo, "Object_Type_Light", text='Object Type')
-        elif object_prefix(context.active_object, special_prefixes):
-            if context.active_object.type == 'EMPTY':
+        elif object_prefix(ob, (marker_prefixes + frame_prefixes)) or (ob.type == 'EMPTY' and ob.name.startswith('$')) or object_prefix(ob, special_prefixes):
+            if ob.type == 'EMPTY':
                 col.prop(ob_nwo, "Object_Type_No_Mesh_Locked", text='Object Type')
             else:
                 col.prop(ob_nwo, "Object_Type_All_Locked", text='Object Type')
         else:
-            if context.active_object.type == 'EMPTY':
+            if ob.type == 'EMPTY':
                 col.prop(ob_nwo, "Object_Type_No_Mesh", text='Object Type')
             else:
                 col.prop(ob_nwo, "Object_Type_All", text='Object Type')
@@ -1707,7 +1707,7 @@ class NWO_ObjectMeshProps(Panel):
         elif CheckType.physics(ob):
             col.prop(ob_nwo, "Mesh_Primitive_Type", text='Primitive Type')
 
-        if CheckType.default(ob) or CheckType.poop(ob) or CheckType.decorator(ob) or CheckType.object_instance(ob) or CheckType.water_surface(ob) or CheckType.collision(ob):
+        if CheckType.default(ob) or CheckType.poop(ob) or CheckType.water_surface(ob) or CheckType.collision(ob):
             col.prop(ob_nwo, "Face_Global_Material", text='Global Material')
 
 class NWO_ObjectMeshFaceProps(Panel):
@@ -1916,17 +1916,17 @@ class NWO_ObjectMarkerProps(Panel):
 
         col = flow.column()
         if not_bungie_game():
-            if object_prefix(ob, ('?')):
+            if object_prefix(ob, ('?', '$')):
                 col.prop(ob_nwo, "ObjectMarker_Type_Locked_H4", text='Marker Type')
             else:
                 col.prop(ob_nwo, "ObjectMarker_Type_H4", text='Marker Type')
         else:
-            if object_prefix(ob, ('?')):
+            if object_prefix(ob, ('?', '$')):
                 col.prop(ob_nwo, "ObjectMarker_Type_Locked", text='Marker Type')
             else:
                 col.prop(ob_nwo, "ObjectMarker_Type", text='Marker Type')
 
-        if CheckType.model(ob) and not CheckType.game_instance(ob):
+        if CheckType.model(ob):
             col.prop(ob_nwo, "Marker_Group_Name", text='Marker Group')
             col.prop(ob_nwo, "Marker_Velocity", text='Marker Velocity')
             sub = col.row(align=True)
@@ -1947,7 +1947,6 @@ class NWO_ObjectMarkerProps(Panel):
             col.prop(ob_nwo, 'marker_hint_length')
 
         elif CheckType.pathfinding_sphere(ob):
-            col.separator()
             col = layout.column(heading="Flags")
             sub = col.column(align=True)
             sub.prop(ob_nwo, "Marker_Pathfinding_Sphere_Vehicle", text='Vehicle Only')
@@ -1955,7 +1954,6 @@ class NWO_ObjectMarkerProps(Panel):
             sub.prop(ob_nwo, "Pathfinding_Sphere_With_Sectors", text='With Sectors')
 
         elif CheckType.physics_constraint(ob):
-            col.separator()
             col.prop(ob_nwo, "Physics_Constraint_Parent", text='Physics Constraint Parent')
             col.prop(ob_nwo, "Physics_Constraint_Child", text='Physics Constraint Child')
 
@@ -2281,9 +2279,9 @@ class NWO_ObjectPropertiesGroup(PropertyGroup):
     )
 
     def get_objecttype_enum(self):
-        if bpy.context.active_object.name.startswith(frame_prefixes):
+        if self.id_data.name.startswith(frame_prefixes):
             return 0
-        elif bpy.context.active_object.name.startswith(marker_prefixes):
+        elif self.id_data.name.startswith(marker_prefixes) or (self.id_data.type == 'EMPTY' and self.id_data.name.startswith('$')):
             return 1
         else:
             return 2
@@ -2450,19 +2448,19 @@ class NWO_ObjectPropertiesGroup(PropertyGroup):
         elif a_ob.name.startswith('%'):
             return 5
         elif a_ob.name.startswith('+flair'):
-            return 10
+            return 6
         elif a_ob.name.startswith('$'):
-            return 11
+            return 7
         elif a_ob.name.startswith('+fog'):
-            return 12
+            return 8
         elif a_ob.name.startswith('+portal'):
-            return 13
+            return 9
         elif a_ob.name.startswith('+seam'):
-            return 14
+            return 10
         elif a_ob.name.startswith('+water'):
-            return 15
+            return 11
         elif a_ob.name.startswith('\''):
-            return 16
+            return 12
         else:
             return 4
 
@@ -2505,20 +2503,10 @@ class NWO_ObjectPropertiesGroup(PropertyGroup):
         items=mesh_type_items_h4,
         )
 
-    ObjectMesh_Type_H4 : EnumProperty(
-        name="Mesh Type",
-        options=set(),
-        description="Sets the type of Halo mesh you want to create. This value is overridden by certain object prefixes",
-        default = '_connected_geometry_mesh_type_default',
-        get=get_default_mesh_type,
-        set=set_default_mesh_type,
-        items=mesh_type_items_h4,
-        )
-
     ObjectMesh_Type_Locked_H4 : EnumProperty(
         name="Mesh Type",
         options=set(),
-        get=get_meshtype_enum,
+        get=get_meshtype_enum_h4,
         description="Sets the type of Halo mesh you want to create. This value is overridden by certain object prefixes e.g. $, @, %",
         default = '_connected_geometry_mesh_type_default',
         items=mesh_type_items_h4,
@@ -3421,6 +3409,8 @@ class NWO_ObjectPropertiesGroup(PropertyGroup):
     def get_markertype_enum(self):
         if self.id_data.name.startswith('?'):
             return 2
+        elif self.id_data.name.startswith('$'):
+            return 6
         else:
             return 0
 
@@ -4381,7 +4371,7 @@ class NWO_ObjectPropertiesGroup(PropertyGroup):
 
 class NWO_MaterialPropertiesGroup(PropertyGroup):
     
-    def update_shader_type(self, context):
+    def update_shader(self, context):
         self['shader_path'] = clean_tag_path(self['shader_path']).strip('"')
         material_path = self.shader_path.replace('"','')
         if material_path != material_path.rpartition('.')[2]:
@@ -4394,7 +4384,7 @@ class NWO_MaterialPropertiesGroup(PropertyGroup):
         name = "Shader Path",
         description = "Define the path to a shader. This can either be a relative path, or if you have added your Editing Kit Path to add on preferences, the full path. Including the file extension will automatically update the shader type",
         default = "",
-        update=update_shader_type,
+        update=update_shader,
         )
 
     shader_types = [ ('shader', "Shader", ""),

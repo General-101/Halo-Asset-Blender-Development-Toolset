@@ -46,6 +46,7 @@ from .nwo_utils import(
     get_design_from_halo_objects,
     get_render_from_halo_objects,
     print_box,
+    not_bungie_game,
 
     CheckType,
 )
@@ -322,11 +323,11 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                 elif sidecar_type == 'SKY':
                     if export_render:
                         perm_list = []
-                        for ob in halo_objects.render:
+                        for ob in halo_objects.default:
                             perm = get_perm(ob)
                             if perm not in perm_list:
                                 perm_list.append(perm)
-                                if select_model_objects(halo_objects.render + halo_objects.lights + halo_objects.markers, perm, model_armature, export_hidden, export_all_perms, selected_perms):
+                                if select_model_objects(halo_objects.default + halo_objects.lights + halo_objects.markers, perm, model_armature, export_hidden, export_all_perms, selected_perms):
                                     print_box(f'**Exporting sky render model**')
                                     if using_better_fbx:
                                         obj_selection = [obj for obj in context.selected_objects]
@@ -340,7 +341,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
 
                 elif sidecar_type == 'DECORATOR SET': 
                     if export_render:
-                        if select_model_objects_no_perm(halo_objects.decorator, model_armature, export_hidden):
+                        if select_model_objects_no_perm(halo_objects.decorators, model_armature, export_hidden):
                             print_box(f'**Exporting decorator set**')
                             if using_better_fbx:
                                 obj_selection = [obj for obj in context.selected_objects]
@@ -367,7 +368,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
 
                 else: # for particles
                     if export_render:
-                        if select_model_objects_no_perm(halo_objects.particle, model_armature, export_hidden):
+                        if select_model_objects_no_perm(halo_objects.default, model_armature, export_hidden):
                             print_box(f'**Exporting particle model**')
                             if using_better_fbx:
                                 obj_selection = [obj for obj in context.selected_objects]

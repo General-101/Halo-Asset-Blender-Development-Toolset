@@ -41,6 +41,7 @@ from .nwo_utils import (
     get_structure_from_halo_objects,
     get_design_from_halo_objects,
     get_render_from_halo_objects,
+    not_bungie_game,
 
 )
 
@@ -542,7 +543,7 @@ def WriteSkyContents(halo_objects, metadata, asset_path, asset_name):
     object = ET.SubElement(content, 'ContentObject', Name='', Type="render_model")
 
     perm_list = []
-    for ob in halo_objects.render:
+    for ob in halo_objects.default:
         perm = get_perm(ob)
         if (perm not in perm_list):
             perm_list.append(perm)
@@ -556,7 +557,7 @@ def WriteSkyContents(halo_objects, metadata, asset_path, asset_name):
 def WriteDecoratorContents(halo_objects, metadata, asset_path, asset_name, lod_count):
     contents = ET.SubElement(metadata, "Contents")
     content = ET.SubElement(contents, "Content", Name=asset_name, Type='decorator_set')
-    if len(halo_objects.decorator) > 0:
+    if len(halo_objects.decorators) > 0:
         count = 0
         while lod_count > count: # count is treated as an index here, wheras lod_count is a range of 1-4. So for a lod_count of 4 the count will be 3 while make its final loop
             object = ET.SubElement(content, 'ContentObject', Name=str(count), Type="render_model", LOD=str(count))
@@ -567,6 +568,8 @@ def WriteDecoratorContents(halo_objects, metadata, asset_path, asset_name, lod_c
             output = ET.SubElement(object, 'OutputTagCollection')
             ET.SubElement(output, 'OutputTag', Type='render_model').text = f'{path.join(asset_path, asset_name)}_lod{str(count + 1)}' # we add 1 here by convention. This results in a tag name that matches the lod value, rather than index
             count += 1
+
+    output = ET.SubElement(object, 'OutputTagCollection')
 
 def WriteParticleContents(halo_objects, metadata, asset_path, asset_name):
     contents = ET.SubElement(metadata, "Contents")

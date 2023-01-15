@@ -163,7 +163,8 @@ def select_halo_objects(select_func, selected_asset_type, valid_asset_types):
 def select_model_objects(halo_objects, perm, arm, export_hidden, export_all_perms, selected_perms):
     deselect_all_objects()
     boolean = False
-    arm.select_set(True)
+    if arm is not None:
+        arm.select_set(True)
     for ob in halo_objects:
         halo = ob.nwo
         if object_valid(ob, export_hidden, perm, halo.Permutation_Name, halo.Permutation_Name_Locked) and export_perm(perm, export_all_perms, selected_perms):
@@ -175,7 +176,8 @@ def select_model_objects(halo_objects, perm, arm, export_hidden, export_all_perm
 def select_model_objects_no_perm(halo_objects, arm, export_hidden):
     deselect_all_objects()
     boolean = False
-    arm.select_set(True)
+    if arm is not None:
+        arm.select_set(True)
     for ob in halo_objects:
         if object_valid(ob, export_hidden):
             ob.select_set(True)
@@ -244,12 +246,12 @@ def mesh_type(ob, types, valid_prefixes=()):
         else:
             return is_mesh(ob) and ((ob.nwo.ObjectMesh_Type in types and not object_prefix(ob, special_prefixes)) or object_prefix(ob, valid_prefixes))
 
-def marker_type(ob, types):
+def marker_type(ob, types, valid_prefixes=()):
     if ob != None: # temp work around for 'ob' not being passed between functions correctly, and resolving to a NoneType
             if not_bungie_game():
-                return is_marker(ob) and ob.nwo.ObjectMarker_Type_H4 in types
+                return is_marker(ob) and ((ob.nwo.ObjectMarker_Type_H4 in types and not object_prefix(ob, ('?', '$'))) or object_prefix(ob, valid_prefixes))
             else:
-                return is_marker(ob) and ob.nwo.ObjectMarker_Type in types
+                return is_marker(ob) and ((ob.nwo.ObjectMarker_Type in types and not object_prefix(ob, ('?', '$'))) or object_prefix(ob, valid_prefixes))
 
 def object_type(ob, types=(), valid_prefixes=()):
     if ob != None: # temp work around for 'ob' not being passed between functions correctly, and resolving to a NoneType
@@ -285,7 +287,7 @@ def is_frame(ob):
     if ob.type == 'MESH':
         return (ob.nwo.Object_Type_All == '_connected_geometry_object_type_frame' and not ob.name.startswith(marker_prefixes)) or ob.name.startswith(frame_prefixes)
     elif ob.type == 'EMPTY':
-        return (ob.nwo.Object_Type_No_Mesh == '_connected_geometry_object_type_frame' and not ob.name.startswith(marker_prefixes)) or ob.name.startswith(frame_prefixes)
+        return (ob.nwo.Object_Type_No_Mesh == '_connected_geometry_object_type_frame' and not ob.name.startswith('#', '?', '$')) or ob.name.startswith(frame_prefixes)
     else:
         return False
 
@@ -347,6 +349,7 @@ def true_region(halo):
 def clean_tag_path(path, file_ext = None):
     """Cleans a path and attempts to make it appropriate for reading by Tool. Can accept a file extension (without a period) to force the existing one if it exists to be replaced"""
     if path != '':
+        path = path.lower()
         # If a file ext is provided, replace the existing one / add it
         if file_ext is not None:
             path = shortest_string(path, path.rpartition('.')[0])
@@ -361,9 +364,9 @@ def clean_tag_path(path, file_ext = None):
         #     # strip following backslash
         #     path = path.strip('\\')
         # attempt to make path tag relative
-        path = path.replace(get_tags_path(), '')
+        path = path.replace(get_tags_path().lower(), '')
         # return the new path in lower case
-        return path.lower()
+        return path
     else:
         return ''
 
@@ -497,7 +500,7 @@ class CheckType:
         return marker_type(ob, ('_connected_geometry_marker_type_effects'))
     @staticmethod
     def game_instance(ob):
-        return marker_type(ob, ('_connected_geometry_marker_type_game_instance'))
+        return marker_type(ob, ('_connected_geometry_marker_type_game_instance'), ('?'))
     @staticmethod
     def garbage(ob):
         return marker_type(ob, ('_connected_geometry_marker_type_garbage'))
@@ -509,7 +512,7 @@ class CheckType:
         return marker_type(ob, ('_connected_geometry_marker_type_pathfinding_sphere'))
     @staticmethod
     def physics_constraint(ob):
-        return marker_type(ob, ('_connected_geometry_marker_type_physics_constraint'))
+        return marker_type(ob, ('_connected_geometry_marker_type_physics_constraint'), ('$'))
     @staticmethod
     def target(ob):
         return marker_type(ob, ('_connected_geometry_marker_type_target'))

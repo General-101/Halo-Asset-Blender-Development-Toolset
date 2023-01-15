@@ -106,7 +106,7 @@ class NWOObject:
         return object_type(self.ob, ('_connected_geometry_object_type_frame'), (frame_prefixes)) and not self.ob.type == 'LIGHT'
 
     def marker(self):
-        return object_type(self.ob, ('_connected_geometry_object_type_marker'), (marker_prefixes))
+        return object_type(self.ob, ('_connected_geometry_object_type_marker'), (marker_prefixes)) or (self.ob.type == 'EMPTY' and self.name.startswith('$'))
 
     def mesh(self):
         return self.ob.type == 'MESH' and self.ob.nwo.Object_Type_All in '_connected_geometry_object_type_mesh' and not object_prefix(self.ob, ((frame_prefixes + marker_prefixes)))
@@ -617,10 +617,10 @@ class NWOMarker(NWOObject):
             elif self.pathfinding_sphere():
                 return '_connected_geometry_marker_type_pathfinding_sphere'
             elif self.physics_constraint():
-                if self.physics_hinge_constraint:
-                    return '_connected_geometry_marker_type_physics_constraint'
+                if self.halo.Physics_Constraint_Type == '_connected_geometry_marker_type_physics_hinge_constraint':
+                    return '_connected_geometry_marker_type_physics_hinge_constraint'
                 else:
-                    return '_connected_geometry_marker_type_socket_constraint'
+                    return '_connected_geometry_marker_type_physics_socket_constraint'
             elif self.target():
                 return '_connected_geometry_marker_type_target'
             elif self.water_volume_flow():
@@ -741,7 +741,7 @@ class NWOMarker(NWOObject):
         return marker_type(self.ob, ('_connected_geometry_marker_type_effects'))
 
     def game_instance(self):
-        return marker_type(self.ob, ('_connected_geometry_marker_type_game_instance'))
+        return marker_type(self.ob, ('_connected_geometry_marker_type_game_instance'), ('?'))
 
     def garbage(self):
         return marker_type(self.ob, ('_connected_geometry_marker_type_garbage'))
@@ -753,7 +753,7 @@ class NWOMarker(NWOObject):
         return marker_type(self.ob, ('_connected_geometry_marker_type_pathfinding_sphere'))
 
     def physics_constraint(self):
-        return marker_type(self.ob, ('_connected_geometry_marker_type_physics_constraint'))
+        return marker_type(self.ob, ('_connected_geometry_marker_type_physics_constraint'), ('$'))
 
     def target(self):
         return marker_type(self.ob, ('_connected_geometry_marker_type_target'))
@@ -761,8 +761,8 @@ class NWOMarker(NWOObject):
     def water_volume_flow(self):
         return marker_type(self.ob, ('_connected_geometry_marker_type_water_volume_flow'))
 
-    def airprselfe(self): # H4+ ONLY
-        return marker_type(self.ob, ('_connected_geometry_marker_type_airprselfe'))
+    def airprobe(self): # H4+ ONLY
+        return marker_type(self.ob, ('_connected_geometry_marker_type_airprobe'))
 
     def envfx(self): # H4+ ONLY
         return marker_type(self.ob, ('_connected_geometry_marker_type_envfx'))
@@ -781,12 +781,6 @@ class NWOMarker(NWOObject):
 
     def falling_leaf(self):  # H4+ ONLY
         return self.game_instance() and self.not_bungie_game and self.halo.Marker_Game_Instance_Tag_Name.lower().endswith('.leaf')
-
-    def physics_hinge_constraint(self):
-        return self.physics_constraint() and self.halo.Physics_Constraint_Type == '_connected_geometry_marker_type_physics_hinge_constraint'
-
-    def physics_socket_constraint(self):
-        return self.physics_constraint() and self.ob.Physics_Constraint_Type == '_connected_geometry_marker_type_physics_socket_constraint'
         
 # MESH
 #####################
