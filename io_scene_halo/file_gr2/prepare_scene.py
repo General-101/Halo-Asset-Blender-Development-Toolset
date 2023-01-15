@@ -40,6 +40,7 @@ from .nwo_utils import(
     is_shader,
     get_tags_path,
     not_bungie_game,
+    true_region,
 )
 #####################################################################################
 #####################################################################################
@@ -63,6 +64,8 @@ def prepare_scene(context, report, sidecar_type, export_hidden, filepath, use_ar
         #     ob.nwo.Face_Global_Material = 'default'
     
     ApplyObjectIDs(context.view_layer.objects)
+    regions_dict = get_regions_dict(context.view_layer.objects)
+    global_materials_dict = get_global_materials_dict(context.view_layer.objects)
     mesh_node_names = {}
     temp_nodes = []
     if meshes_to_empties:
@@ -87,7 +90,7 @@ def prepare_scene(context, report, sidecar_type, export_hidden, filepath, use_ar
     # if sidecar_type == 'SCENARIO':
     #     RotateScene(context.view_layer.objects, model_armature)
 
-    return objects_selection, active_object, hidden_objects, mode, model_armature, temp_armature, skeleton_bones, halo_objects, timeline_start, timeline_end, lod_count, unselectable_objects, enabled_exclude_collections, mesh_node_names, temp_nodes, selected_perms, selected_bsps, current_frame
+    return objects_selection, active_object, hidden_objects, mode, model_armature, temp_armature, skeleton_bones, halo_objects, timeline_start, timeline_end, lod_count, unselectable_objects, enabled_exclude_collections, mesh_node_names, temp_nodes, selected_perms, selected_bsps, current_frame, regions_dict, global_materials_dict
 
 
 #####################################################################################
@@ -134,6 +137,28 @@ def GetSceneMode(context):
         print('WARNING: Unable to test mode')
 
     return mode
+
+def get_regions_dict(objects):
+    regions = {'default': '0'}
+    index = 0
+    for ob in objects:
+        name = ob.nwo.Region_Name
+        if true_region(ob.nwo) not in regions.keys():
+            index +=1
+            regions.update({name: str(index)})
+
+    return regions
+
+def get_global_materials_dict(objects):
+    global_materials = {'default': '0'}
+    index = 0
+    for ob in objects:
+        name = ob.nwo.Face_Global_Material
+        if ob.nwo.Face_Global_Material not in global_materials.keys() and ob.nwo.Face_Global_Material != '':
+            index +=1
+            global_materials.update({name: str(index)})
+
+    return global_materials
 
 def GetSelectedPermutations(selection):
     selected_perms = []

@@ -795,8 +795,6 @@ class NWOMesh(NWOObject):
             self.bungie_face_mode = self.face_mode()
             self.bungie_face_sides = self.face_sides()
             self.bungie_face_draw_distance = self.face_draw_distance()
-            if self.halo.Face_Global_Material != '':
-                self.bungie_face_global_material = self.face_global_material()
             if self.sidecar_type in ('MODEL', 'SKY'):
                 self.bungie_face_region = self.face_region()
             self.bungie_texcoord_usage = self.texcoord_usage()
@@ -859,6 +857,10 @@ class NWOMesh(NWOObject):
                     self.bungie_mesh_poop_exclude_from_cinema = self.mesh_poop_exclude_from_cinema()
                     self.bungie_mesh_poop_disallow_object_lighting_samples = self.mesh_poop_disallow_object_lighting_samples()
                     self.bungie_mesh_poop_is_rain_occluder = self.mesh_poop_is_rain_occluder()
+
+        elif self.bungie_mesh_type in ('_connected_geometry_mesh_type_physics', '_connected_geometry_mesh_type_collision'):
+            if self.halo.Face_Global_Material != '':
+                self.bungie_face_global_material = self.face_global_material()
 
 
         elif self.bungie_mesh_type == '_connected_geometry_mesh_type_physics':

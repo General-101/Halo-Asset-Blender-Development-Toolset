@@ -561,11 +561,11 @@ class Export_Scene_GR2(Operator, ExportHelper):
         context.scene.gr2_export.show_output = False
 
         from .prepare_scene import prepare_scene
-        (objects_selection, active_object, hidden_objects, mode, model_armature, temp_armature, skeleton_bones, halo_objects, timeline_start, timeline_end, lod_count, unselectable_objects, enabled_exclude_collections, mesh_node_names, temp_nodes, selected_perms, selected_bsps, current_frame
+        (objects_selection, active_object, hidden_objects, mode, model_armature, temp_armature, skeleton_bones, halo_objects, timeline_start, timeline_end, lod_count, unselectable_objects, enabled_exclude_collections, mesh_node_names, temp_nodes, selected_perms, selected_bsps, current_frame, regions_dict, global_materials_dict
         ) = prepare_scene(context, self.report, **keywords) # prepares the scene for processing and returns information about the scene
         # try:
         from .process_scene import process_scene
-        process_scene(self, context, keywords, self.report, model_armature, asset_path, asset, skeleton_bones, halo_objects, timeline_start, timeline_end, lod_count, UsingBetterFBX(), skip_lightmapper, selected_perms, selected_bsps, **keywords)
+        process_scene(self, context, keywords, self.report, model_armature, asset_path, asset, skeleton_bones, halo_objects, timeline_start, timeline_end, lod_count, UsingBetterFBX(), skip_lightmapper, selected_perms, selected_bsps, regions_dict, global_materials_dict, **keywords)
         # except:
         #     print('ASSERT: Scene processing failed')
         #     error = traceback.format_exc()

@@ -24,17 +24,19 @@
 #
 # ##### END MIT LICENSE BLOCK #####
 
-from .nwo_utils import CheckType
+from .nwo_utils import CheckType, true_region
 from .nwo_format import NWOFrame, NWOLight, NWOMarker, NWOMesh, NWOAnimationEvent, NWOAnimationControl, NWOAnimationCamera, NWOFramePCA, NWOMaterial
 
 class NWOJSON(dict):
-    def __init__(self, objects, sidecar_type, model_armature, world_frame, asset_name, bone_list):
+    def __init__(self, objects, sidecar_type, model_armature, world_frame, asset_name, bone_list, regions_dict, global_materials_dict):
         self.objects = objects
         self.sidecar_type = sidecar_type
         self.model_armature = model_armature
         self.world_frame = world_frame
         self.asset_name = asset_name
         self.bone_list = bone_list
+        self.regions_dict = regions_dict
+        self.global_materials_dict = global_materials_dict
         self.string_table = self.build_string_table()
         self.nodes_properties = self.build_nodes_properties()
         self.meshes_properties = self.build_meshes_properties()
@@ -61,26 +63,34 @@ class NWOJSON(dict):
         return table
         
     def get_global_materials(self):
-        global_materials = {'default': '0'}
-        index = 0
-        for ob in self.objects:
-            name = ob.nwo.Face_Global_Material
-            if ob.nwo.Face_Global_Material not in global_materials.keys() and ob.nwo.Face_Global_Material != '':
-                index +=1
-                global_materials.update({name: str(index)})
+        keep_list = ['default']
+        for global_material in self.global_materials_dict.keys():
+            for ob in self.objects:
+                if global_material not in keep_list and ob.nwo.Face_Global_Material == global_material:
+                    keep_list.append(global_material)
+        
+        global_materials_list = {}
+        global_materials_list.update(self.global_materials_dict)
+        for key in self.global_materials_dict.keys():
+            if key not in keep_list:
+                global_materials_list.pop(key)
 
-        return global_materials
+        return global_materials_list
 
     def get_regions(self):
-        regions = {'default': '0'}
-        index = 0
-        for ob in self.objects:
-            name = ob.nwo.Region_Name
-            if ob.nwo.Region_Name not in regions.keys() and ob.nwo.Region_Name != '':
-                index +=1
-                regions.update({name: str(index)})
+        keep_list = ['default']
+        for region in self.regions_dict.keys():
+            for ob in self.objects:
+                if region not in keep_list and true_region(ob.nwo) == region:
+                    keep_list.append(region)
+        
+        regions_list = {}
+        regions_list.update(self.regions_dict)
+        for key in self.regions_dict.keys():
+            if key not in keep_list:
+                regions_list.pop(key)
 
-        return regions
+        return regions_list
 
     def build_nodes_properties(self):
         node_properties = {}

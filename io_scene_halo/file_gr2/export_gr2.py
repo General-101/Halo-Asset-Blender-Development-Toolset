@@ -40,7 +40,7 @@ from .nwo_utils import (
 )
 
 ########################################################################################################################################################################################################################
-def export_gr2(report, asset_path, asset_name, tag_type, selected_objects, bsp, perm, model_armature, skeleton_bones, animation, filepath="", sidecar_type='', keep_fbx=True, keep_json=True, **kwargs):
+def export_gr2(report, asset_path, asset_name, tag_type, selected_objects, bsp, perm, model_armature, skeleton_bones, animation, regions_dict={}, global_materials_dict={}, filepath="", sidecar_type='', keep_fbx=True, keep_json=True, **kwargs):
     """Exports a gr2 file"""
     new_fbx_name = get_path(asset_name, tag_type, perm, asset_path, bsp, animation)
     print(filepath)
@@ -49,7 +49,7 @@ def export_gr2(report, asset_path, asset_name, tag_type, selected_objects, bsp, 
     if file_exists(new_fbx_name):
 
         json_path = new_fbx_name.replace('.fbx', '.json')
-        build_json(json_path, model_armature, skeleton_bones, selected_objects, asset_name, sidecar_type)
+        build_json(json_path, model_armature, skeleton_bones, selected_objects, asset_name, sidecar_type, regions_dict, global_materials_dict)
 
         if file_exists(json_path): 
             gr2_path = new_fbx_name.replace('.fbx', '.gr2')
@@ -70,9 +70,9 @@ def export_gr2(report, asset_path, asset_name, tag_type, selected_objects, bsp, 
 
     return {'FINISHED'}
 
-def build_json(json_path, model_armature, skeleton_bones, selected_objects, asset_name, sidecar_type):
+def build_json(json_path, model_armature, skeleton_bones, selected_objects, asset_name, sidecar_type, regions_dict, global_materials_dict):
     """Builds a json file by passing the currently selected objects to the NWOJSON class, and then writing the resulting dictionary to a .json file"""
-    json_props = NWOJSON(selected_objects, sidecar_type, model_armature, None, asset_name, skeleton_bones)
+    json_props = NWOJSON(selected_objects, sidecar_type, model_armature, None, asset_name, skeleton_bones, regions_dict, global_materials_dict)
     with open(json_path, 'w') as j:
         json.dump(json_props.json_dict, j, indent=4)
 

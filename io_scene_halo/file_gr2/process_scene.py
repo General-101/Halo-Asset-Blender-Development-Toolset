@@ -55,7 +55,7 @@ from .nwo_utils import(
 #####################################################################################
 # MAIN FUNCTION
 
-def process_scene(self, context, keywords, report, model_armature, asset_path, asset, skeleton_bones, halo_objects, timeline_start, timeline_end, lod_count, using_better_fbx, skip_lightmapper, selected_perms, selected_bsps,
+def process_scene(self, context, keywords, report, model_armature, asset_path, asset, skeleton_bones, halo_objects, timeline_start, timeline_end, lod_count, using_better_fbx, skip_lightmapper, selected_perms, selected_bsps, regions_dict, global_materials_dict,
                   filepath,
                   sidecar_type,
                   output_biped,
@@ -138,7 +138,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                             obj.select_set(True)
                                     else:
                                         export_fbx(self, context, **keywords)
-                                    export_gr2(report, asset_path, asset, 'render', context.selected_objects, '', perm, model_armature, skeleton_bones, '', **keywords)
+                                    export_gr2(report, asset_path, asset, 'render', context.selected_objects, '', perm, model_armature, skeleton_bones, '', regions_dict, global_materials_dict, **keywords)
                                     gr2_count += 1
 
                     if export_collision:
@@ -156,7 +156,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                             obj.select_set(True)
                                     else:
                                         export_fbx(self, context, **keywords)
-                                    export_gr2(report, asset_path, asset, 'collision', context.selected_objects, '', perm, model_armature, skeleton_bones, '', **keywords)
+                                    export_gr2(report, asset_path, asset, 'collision', context.selected_objects, '', perm, model_armature, skeleton_bones, '', regions_dict, global_materials_dict, **keywords)
                                     gr2_count += 1
 
                     if export_physics:
@@ -174,7 +174,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                             obj.select_set(True)
                                     else:
                                         export_fbx(self, context, **keywords)
-                                    export_gr2(report, asset_path, asset, 'physics', context.selected_objects, '', perm, model_armature, skeleton_bones, '', **keywords)
+                                    export_gr2(report, asset_path, asset, 'physics', context.selected_objects, '', perm, model_armature, skeleton_bones, '', regions_dict, global_materials_dict, **keywords)
                                     gr2_count += 1
 
                     if export_markers:
@@ -187,7 +187,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                     obj.select_set(True)
                             else:
                                 export_fbx(self, context, **keywords)
-                            export_gr2(report, asset_path, asset, 'markers', context.selected_objects, '', '', model_armature, skeleton_bones, '', **keywords)
+                            export_gr2(report, asset_path, asset, 'markers', context.selected_objects, '', '', model_armature, skeleton_bones, '', regions_dict, global_materials_dict, **keywords)
                             gr2_count += 1
 
                     if SelectModelSkeleton(model_armature):
@@ -197,7 +197,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                             model_armature.select_set(True)
                         else:
                             export_fbx(self, context, **keywords)
-                        export_gr2(report, asset_path, asset, 'skeleton', [model_armature], '', '', model_armature, skeleton_bones, '', **keywords)
+                        export_gr2(report, asset_path, asset, 'skeleton', [model_armature], '', '', model_armature, skeleton_bones, '', regions_dict, global_materials_dict, **keywords)
                         gr2_count += 1
 
                     if export_animations and 1<=len(bpy.data.actions):
@@ -220,7 +220,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                         model_armature.select_set(True)
                                     else:
                                         export_fbx(self, context, **keywords)
-                                    export_gr2(report, asset_path, asset, 'animations', [model_armature], '', '', model_armature, skeleton_bones, action.name, **keywords)
+                                    export_gr2(report, asset_path, asset, 'animations', [model_armature], '', '', model_armature, skeleton_bones, action.name, regions_dict, global_materials_dict, **keywords)
                                     gr2_count += 1
                                 except:
                                     print(f'Encountered animation not in armature, skipping export of animation: {action.name}')
@@ -263,7 +263,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                                 obj.select_set(True)
                                         else:
                                             export_fbx(self, context, **keywords)
-                                        export_gr2(report, asset_path, asset, 'bsp', context.selected_objects, bsp, perm, model_armature, skeleton_bones, '', **keywords)
+                                        export_gr2(report, asset_path, asset, 'bsp', context.selected_objects, bsp, perm, model_armature, skeleton_bones, '', regions_dict, global_materials_dict, **keywords)
                                         gr2_count += 1
                         # Design time!
                         bsp_list = []
@@ -291,7 +291,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                                 obj.select_set(True)
                                         else:
                                             export_fbx(self, context, **keywords)
-                                        export_gr2(report, asset_path, asset, 'design', context.selected_objects, bsp, perm, model_armature, skeleton_bones, '', **keywords)
+                                        export_gr2(report, asset_path, asset, 'design', context.selected_objects, bsp, perm, model_armature, skeleton_bones, '', regions_dict, global_materials_dict, **keywords)
                                         gr2_count += 1
 
 
@@ -317,7 +317,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                                     obj.select_set(True)
                                             else:
                                                 export_fbx(self, context, **keywords)
-                                            export_gr2(report, asset_path, asset, 'bsp', context.selected_objects, 'shared', perm, model_armature, skeleton_bones, '', **keywords)
+                                            export_gr2(report, asset_path, asset, 'bsp', context.selected_objects, 'shared', perm, model_armature, skeleton_bones, '', regions_dict, global_materials_dict, **keywords)
                                             gr2_count += 1
 
                 elif sidecar_type == 'SKY':
@@ -336,7 +336,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                             obj.select_set(True)
                                     else:
                                         export_fbx(self, context, **keywords)
-                                    export_gr2(report, asset_path, asset, 'render', context.selected_objects, '', perm, model_armature, skeleton_bones, '', **keywords)
+                                    export_gr2(report, asset_path, asset, 'render', context.selected_objects, '', perm, model_armature, skeleton_bones, '', regions_dict, global_materials_dict, **keywords)
                                     gr2_count += 1
 
                 elif sidecar_type == 'DECORATOR SET': 
@@ -350,7 +350,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                     obj.select_set(True)
                             else:
                                 export_fbx(self, context, **keywords)
-                            export_gr2(report, asset_path, asset, 'render', context.selected_objects, '', 'default', model_armature, skeleton_bones, '', **keywords)
+                            export_gr2(report, asset_path, asset, 'render', context.selected_objects, '', 'default', model_armature, skeleton_bones, '', regions_dict, global_materials_dict, **keywords)
                             gr2_count += 1
 
                 elif sidecar_type == 'PREFAB':
@@ -363,7 +363,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                 obj.select_set(True)
                         else:
                             export_fbx(self, context, **keywords)
-                        export_gr2(report, asset_path, asset, 'prefab', context.selected_objects, '', '', model_armature, skeleton_bones, '', **keywords)
+                        export_gr2(report, asset_path, asset, 'prefab', context.selected_objects, '', '', model_armature, skeleton_bones, '', regions_dict, global_materials_dict, **keywords)
                         gr2_count += 1
 
                 else: # for particles
@@ -377,7 +377,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                     obj.select_set(True)
                             else:
                                 export_fbx(self, context, **keywords)
-                            export_gr2(report, asset_path, asset, 'particle_model', context.selected_objects, '', 'default', model_armature, skeleton_bones, '', **keywords)
+                            export_gr2(report, asset_path, asset, 'particle_model', context.selected_objects, '', 'default', model_armature, skeleton_bones, '', regions_dict, global_materials_dict, **keywords)
                             gr2_count += 1
 
             reports.append('Exported ' + str(gr2_count) + ' GR2 Files')
