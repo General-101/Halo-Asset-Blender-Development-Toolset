@@ -256,7 +256,7 @@ def marker_type(ob, types, valid_prefixes=()):
 def object_type(ob, types=(), valid_prefixes=()):
     if ob != None: # temp work around for 'ob' not being passed between functions correctly, and resolving to a NoneType
         if ob.type == 'MESH':
-            return ob.nwo.Object_Type_All in types and not object_prefix(ob, ((frame_prefixes + marker_prefixes)))
+            return (ob.nwo.Object_Type_All in types and not object_prefix(ob, ((frame_prefixes + marker_prefixes))) or object_prefix(ob, (valid_prefixes)))
         elif ob.type == 'EMPTY':
             return ob.nwo.Object_Type_No_Mesh in types or object_prefix(ob, (valid_prefixes))
         elif ob.type == 'LIGHT' and (types != 'MARKER' and '#' not in valid_prefixes):
@@ -277,17 +277,17 @@ def is_design(ob):
 
 def is_marker(ob):
     if ob.type == 'MESH':
-        return (ob.nwo.Object_Type_All == '_connected_geometry_object_type_marker' and not ob.name.startswith(frame_prefixes)) or ob.name.startswith(marker_prefixes)
+        return ((ob.nwo.Object_Type_All == '_connected_geometry_object_type_marker' and not ob.name.startswith(frame_prefixes)) or ob.name.startswith(marker_prefixes)) or ob.nwo.Object_Type_All_Locked == '_connected_geometry_object_type_marker'
     elif ob.type == 'EMPTY':
-        return (ob.nwo.Object_Type_No_Mesh == '_connected_geometry_object_type_marker' and not ob.name.startswith(frame_prefixes)) or ob.name.startswith(marker_prefixes)
+        return ((ob.nwo.Object_Type_No_Mesh == '_connected_geometry_object_type_marker' and not ob.name.startswith(frame_prefixes)) or ob.name.startswith(marker_prefixes)) or ob.nwo.Object_Type_No_Mesh_Locked == '_connected_geometry_object_type_marker'
     else:
         return False
 
 def is_frame(ob):
     if ob.type == 'MESH':
-        return (ob.nwo.Object_Type_All == '_connected_geometry_object_type_frame' and not ob.name.startswith(marker_prefixes)) or ob.name.startswith(frame_prefixes)
+        return (ob.nwo.Object_Type_All == '_connected_geometry_object_type_frame' and not ob.name.startswith(marker_prefixes)) or ob.name.startswith(frame_prefixes) or ob.nwo.Object_Type_All_Locked == '_connected_geometry_object_type_frame'
     elif ob.type == 'EMPTY':
-        return (ob.nwo.Object_Type_No_Mesh == '_connected_geometry_object_type_frame' and not ob.name.startswith('#', '?', '$')) or ob.name.startswith(frame_prefixes)
+        return (ob.nwo.Object_Type_No_Mesh == '_connected_geometry_object_type_frame' and not ob.name.startswith('#', '?', '$')) or ob.name.startswith(frame_prefixes) or ob.nwo.Object_Type_No_Mesh_Locked == '_connected_geometry_object_type_frame'
     else:
         return False
 
@@ -428,7 +428,7 @@ class CheckType:
         return mesh_type(ob, ('_connected_geometry_mesh_type_default'))
     @staticmethod
     def marker(ob):
-        return (object_type(ob, ('_connected_geometry_object_type_marker'), ('#', '?')) or mesh_type(ob, ('_connected_geometry_object_type_marker'), ('#', '?')))
+        return object_type(ob, ('_connected_geometry_object_type_marker'), ('#', '?'))
     @staticmethod
     def structure(ob):
         return mesh_type(ob, ('_connected_geometry_mesh_type_default'))
@@ -560,7 +560,7 @@ def rename_file(file_path, new_file_path=''):
 
 def dot_partition(target_string):
     """Returns a string after partitioning it using period. If the returned string will be empty, the function will instead return the argument passed"""
-    max(target_string.rpartition('.')[0], target_string)
+    return shortest_string(target_string.rpartition('.')[0], target_string)
 
 def write_error_report(asset_path, report_text, file_1 = None, file_2 = None, file_3 = None):
     errors_folder = os.path.join(asset_path, 'errors')

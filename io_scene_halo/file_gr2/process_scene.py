@@ -210,7 +210,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                     if action.use_frame_range:
                                         timeline.frame_start = int(action.frame_start)
                                         timeline.frame_end = int(action.frame_end)
-                                        context.scene.frame_set(action.frame_start)
+                                        context.scene.frame_set(int(action.frame_start))
                                     else:
                                         timeline.frame_start = timeline_start
                                         timeline.frame_end = timeline_end

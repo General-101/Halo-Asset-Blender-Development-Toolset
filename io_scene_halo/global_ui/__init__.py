@@ -3496,6 +3496,7 @@ class NWO_ObjectPropertiesGroup(PropertyGroup):
     Marker_All_Regions: BoolProperty(
         name="Marker All Regions",
         options=set(),
+        default=True,
         description="Associate this marker with all regions rather than a specific one",
     )
 
