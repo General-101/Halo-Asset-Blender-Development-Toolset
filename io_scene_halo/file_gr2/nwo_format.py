@@ -1414,7 +1414,7 @@ class NWOMaterial:
                 return self.halo.material_override_h4
         
         else:
-            temp_name = shortest_string(self.halo_shader_path, self.halo_shader_path.rpartition('.')[0])
+            temp_name = self.halo_shader_path
             return shortest_string(temp_name, temp_name.rpartition('\\')[2])
 
     def shader_type(self):

@@ -376,13 +376,15 @@ def is_shared(ob):
     else:
         return ob.nwo.bsp_name == 'shared'
 
-def shortest_string(string_1, string_2):
-    """Takes two strings and returns the shortest non null string"""
-    temp_string = min(string_1, string_2)
-    if temp_string == '':
-        return max(string_1, string_2)
-    else:
-        return temp_string
+def shortest_string(*strings):
+    """Takes strings and returns the shortest non null string"""
+    string_list = [*strings]
+    temp_string = ''
+    while temp_string == '' and len(string_list) > 0:
+        temp_string = min(string_list, key=len)
+        string_list.remove(temp_string)
+
+    return temp_string
 
 def print_box(text, line_char='-', char_count=100):
     """Prints the specified text surrounded by lines created with the specified character. Optionally define the number of charactrers to repeat per line"""
