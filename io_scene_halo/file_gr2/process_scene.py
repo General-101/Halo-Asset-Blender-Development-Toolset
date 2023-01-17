@@ -45,6 +45,7 @@ from .nwo_utils import(
     get_structure_from_halo_objects,
     get_design_from_halo_objects,
     get_render_from_halo_objects,
+    get_prefab_from_halo_objects,
     print_box,
     not_bungie_game,
 
@@ -354,7 +355,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                             gr2_count += 1
 
                 elif sidecar_type == 'PREFAB':
-                    if select_prefab_objects(halo_objects.structure + halo_objects.poops + halo_objects.lights + halo_objects.portals + halo_objects.water_surfaces + halo_objects.markers, model_armature, export_hidden):
+                    if select_prefab_objects(get_prefab_from_halo_objects(halo_objects), model_armature, export_hidden):
                         print_box(f'**Exporting prefab**')
                         if using_better_fbx:
                             obj_selection = [obj for obj in context.selected_objects]

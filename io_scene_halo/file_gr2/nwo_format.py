@@ -1373,10 +1373,7 @@ class NWOMaterial:
         if self.is_override:
             return 'override'
         elif self.halo.shader_path == '':
-            if not_bungie_game():
-                return 'shaders\\invalid.material'
-            else:
-                return 'shaders\\invalid.shader'
+            return 'shaders\\invalid'
         else:
             return clean_tag_path(self.halo.shader_path, '')
 

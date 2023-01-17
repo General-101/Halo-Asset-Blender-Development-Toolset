@@ -593,6 +593,10 @@ def get_structure_from_halo_objects(halo_objects):
     """Gets structure objects when passed a HaloObjects instance"""
     return halo_objects.frame + halo_objects.lights + halo_objects.default + halo_objects.collision + halo_objects.physics + halo_objects.markers + halo_objects.cookie_cutters + halo_objects.poops + halo_objects.poop_markers + halo_objects.misc + halo_objects.seams + halo_objects.portals + halo_objects.water_surfaces
 
+def get_prefab_from_halo_objects(halo_objects):
+    """Gets structure objects when passed a HaloObjects instance"""
+    return halo_objects.frame + halo_objects.lights + halo_objects.default + halo_objects.collision + halo_objects.markers + halo_objects.cookie_cutters + halo_objects.poops + halo_objects.water_surfaces
+
 def get_design_from_halo_objects(halo_objects):
     """Gets structure design objects when passed a HaloObjects instance"""
     return halo_objects.frame + halo_objects.boundary_surfaces + halo_objects.fog + halo_objects.water_physics + halo_objects.poop_rain_blockers
