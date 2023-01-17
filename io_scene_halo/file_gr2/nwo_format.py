@@ -504,6 +504,8 @@ class NWOFramePCA(NWOObject):
     def __init__(self, ob, sidecar_type, model_armature, world_frame, asset_name):
         super().__init__(ob, sidecar_type, model_armature, world_frame, asset_name)
         self.bungie_mesh_ispca =  self.mesh_ispca()
+        
+        self.cleanup()
 
     def mesh_ispca(self):
         return bool_str(self.ob.type == 'MESH')
@@ -518,6 +520,8 @@ class NWOFrame(NWOObject):
 
         if self.not_bungie_game:
             self.bungie_frame_world = self.frame_world()
+
+        self.cleanup()
 
     def frame_ID1(self):
         return '8078'
