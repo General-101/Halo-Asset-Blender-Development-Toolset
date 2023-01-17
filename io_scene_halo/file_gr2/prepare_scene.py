@@ -679,6 +679,7 @@ def SetNodeProps(node, ob):
 
     node_halo.Permutation_Name = ob_halo.Permutation_Name
 
+    node_halo.ObjectMarker_Type_H4 = ob_halo.ObjectMarker_Type_H4
     node_halo.ObjectMarker_Type = ob_halo.ObjectMarker_Type
 
     node_halo.Marker_Region = ob_halo.Marker_Region
@@ -687,6 +688,7 @@ def SetNodeProps(node, ob):
 
     node_halo.Marker_Game_Instance_Tag_Name = ob_halo.Marker_Game_Instance_Tag_Name
     node_halo.Marker_Game_Instance_Tag_Variant_Name = ob_halo.Marker_Game_Instance_Tag_Variant_Name
+    node_halo.marker_game_instance_run_scripts = ob_halo.marker_game_instance_run_scripts
 
     node_halo.Marker_Pathfinding_Sphere_Vehicle = ob_halo.Marker_Pathfinding_Sphere_Vehicle
     node_halo.Pathfinding_Sphere_Remains_When_Open = ob_halo.Pathfinding_Sphere_Remains_When_Open
@@ -696,6 +698,18 @@ def SetNodeProps(node, ob):
     node_halo.Physics_Constraint_Child = ob_halo.Physics_Constraint_Child
     node_halo.Physics_Constraint_Type = ob_halo.Physics_Constraint_Type
     node_halo.Physics_Constraint_Uses_Limits = ob_halo.Physics_Constraint_Uses_Limits
+
+    node_halo.marker_hint_length = ob_halo.marker_hint_length
+
+    node_halo.marker_looping_effect = ob_halo.marker_looping_effect
+
+    node_halo.marker_light_cone_tag = ob_halo.marker_light_cone_tag
+    node_halo.marker_light_cone_color = ob_halo.marker_light_cone_color
+    node_halo.marker_light_cone_alpha = ob_halo.marker_light_cone_alpha
+    node_halo.marker_light_cone_intensity = ob_halo.marker_light_cone_intensity
+    node_halo.marker_light_cone_width = ob_halo.marker_light_cone_width
+    node_halo.marker_light_cone_length = ob_halo.marker_light_cone_length
+    node_halo.marker_light_cone_curve = ob_halo.marker_light_cone_curve
 
     node_halo.object_id = ob_halo.object_id
 
