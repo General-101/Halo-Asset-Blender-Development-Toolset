@@ -990,8 +990,25 @@ class GR2_ScenePropertiesGroup(PropertyGroup):
         """Sets an objects mesh type to it's current mesh type. Gets around the default mesh type get/setter updating existing objects"""
         for ob in context.scene.objects:
             ob.nwo.ObjectMesh_Type_H4 = ob.nwo.ObjectMesh_Type_H4
+            ob.nwo.ObjectMesh_Type = ob.nwo.ObjectMesh_Type
 
         self.default_mesh_type = self.default_mesh_type_ui
+
+    mesh_type_items = [
+        ('_connected_geometry_mesh_type_boundary_surface', "Boundary Surface", "Used in structure_design tags for soft_kill, soft_ceiling, and slip_sufaces. Only use when importing to a structure_design tag. Can be forced on with the prefixes: '+soft_ceiling', 'soft_kill', 'slip_surface'"), # 0
+        ('_connected_geometry_mesh_type_collision', "Collision", "Sets this mesh to have collision geometry only. Can be forced on with the prefix: '@'"), #1
+        ('_connected_geometry_mesh_type_cookie_cutter', "Cookie Cutter", "Defines an area which ai will pathfind around. Can be forced on with the prefix: '+cookie'"), # 2
+        ('_connected_geometry_mesh_type_decorator', "Decorator", "Use this when making a decorator. Allows for different LOD levels to be set"), # 3
+        ('_connected_geometry_mesh_type_default', "Render / Structure", "By default this mesh type will be treated as render only geometry in models, and render + bsp collision geometry in structures"), #4
+        ('_connected_geometry_mesh_type_poop', "Instanced Geometry", "Writes this mesh to a json file as instanced geometry. Can be forced on with the prefix: '%'"), # 5
+        ('_connected_geometry_mesh_type_object_instance', "Object Instance", "Writes this mesh to the json as an instanced object. Can be forced on with the prefix: '+flair'"), # 10
+        ('_connected_geometry_mesh_type_physics', "Physics", "Sets this mesh to have physics geometry only. Can be forced on with the prefix: '$'"), # 11
+        ('_connected_geometry_mesh_type_planar_fog_volume', "Planar Fog Volume", "Defines an area for a fog volume. The same logic as used for portals should be applied to these.  Can be forced on with the prefix: '+fog'"), # 12
+        ('_connected_geometry_mesh_type_portal', "Portal", "Cuts up a bsp and defines clusters. Can be forced on with the prefix '+portal'"), # 13
+        ('_connected_geometry_mesh_type_seam', "Seam", "Defines where two bsps meet. Its name should match the name of the bsp its in. Can be forced on with the prefix '+seam'"), # 14
+        ('_connected_geometry_mesh_type_water_physics_volume', "Water Physics Volume", "Defines an area where water physics should apply. Only use when importing to a structure_design tag. Can be forced on with the prefix: '+water'"), # 15
+        ('_connected_geometry_mesh_type_water_surface', "Water Surface", "Defines a mesh as a water surface. Can be forced on with the prefix: '"), # 16
+    ]
 
     default_mesh_type_ui: EnumProperty(
         name="Default Mesh Type",
@@ -999,9 +1016,7 @@ class GR2_ScenePropertiesGroup(PropertyGroup):
         description="Set the default Halo mesh type for new objects",
         default = '_connected_geometry_mesh_type_default',
         update=force_set_mesh_types,
-        items=[ ('_connected_geometry_mesh_type_default', "Render / Structure", "By default this mesh type will be treated as render only geometry in models snd structures"),
-                ('_connected_geometry_mesh_type_poop', "Instanced Geometry", "Writes this mesh to a json file as instanced geometry. Can be forced on with the prefix: '%'"),
-               ]
+        items=mesh_type_items
         )
 
     default_mesh_type: EnumProperty(
@@ -1009,9 +1024,7 @@ class GR2_ScenePropertiesGroup(PropertyGroup):
         options=set(),
         description="Set the default Halo mesh type for new objects",
         default = '_connected_geometry_mesh_type_default',
-        items=[ ('_connected_geometry_mesh_type_default', "Render / Structure", "By default this mesh type will be treated as render only geometry in models snd structures"),
-                ('_connected_geometry_mesh_type_poop', "Instanced Geometry", "Writes this mesh to a json file as instanced geometry. Can be forced on with the prefix: '%'"),
-               ]
+        items=mesh_type_items
         )
 
 

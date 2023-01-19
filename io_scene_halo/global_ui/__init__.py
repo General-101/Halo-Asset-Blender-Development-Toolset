@@ -2422,12 +2422,47 @@ class NWO_ObjectPropertiesGroup(PropertyGroup):
         ('_connected_geometry_mesh_type_water_surface', "Water Surface", "Defines a mesh as a water surface. Can be forced on with the prefix: '"), # 16
     ]
 
+    def get_default_mesh_type(self):
+        if bpy.context.scene.gr2.default_mesh_type == '_connected_geometry_mesh_type_boundary_surface':
+            return self.get("ObjectMesh_Type", 0)
+        elif bpy.context.scene.gr2.default_mesh_type == '_connected_geometry_mesh_type_collision':
+            return self.get("ObjectMesh_Type", 1)
+        elif bpy.context.scene.gr2.default_mesh_type == '_connected_geometry_mesh_type_cookie_cutter':
+            return self.get("ObjectMesh_Type", 2)
+        elif bpy.context.scene.gr2.default_mesh_type == '_connected_geometry_mesh_type_decorator':
+            return self.get("ObjectMesh_Type", 3)
+        if bpy.context.scene.gr2.default_mesh_type == '_connected_geometry_mesh_type_default':
+            return self.get("ObjectMesh_Type", 4)
+        elif bpy.context.scene.gr2.default_mesh_type == '_connected_geometry_mesh_type_poop':
+            return self.get("ObjectMesh_Type", 5)
+        elif bpy.context.scene.gr2.default_mesh_type == '_connected_geometry_mesh_type_object_instance':
+            return self.get("ObjectMesh_Type", 10)
+        elif bpy.context.scene.gr2.default_mesh_type == '_connected_geometry_mesh_type_physics':
+            return self.get("ObjectMesh_Type", 11)
+        elif bpy.context.scene.gr2.default_mesh_type == '_connected_geometry_mesh_type_planar_fog_volume':
+            return self.get("ObjectMesh_Type", 12)
+        elif bpy.context.scene.gr2.default_mesh_type == '_connected_geometry_mesh_type_portal':
+            return self.get("ObjectMesh_Type", 13)
+        elif bpy.context.scene.gr2.default_mesh_type == '_connected_geometry_mesh_type_seam':
+            return self.get("ObjectMesh_Type", 14)
+        elif bpy.context.scene.gr2.default_mesh_type == '_connected_geometry_mesh_type_water_physics_volume':
+            return self.get("ObjectMesh_Type", 15)
+        elif bpy.context.scene.gr2.default_mesh_type == '_connected_geometry_mesh_type_water_surface':
+            return self.get("ObjectMesh_Type", 16)
+        else:
+            return self.get("ObjectMesh_Type", 4)
+    
+    def set_default_mesh_type(self, value):
+        self["ObjectMesh_Type"] = value
+
     #MESH PROPERTIES
     ObjectMesh_Type : EnumProperty(
         name="Mesh Type",
         options=set(),
         description="Sets the type of Halo mesh you want to create. This value is overridden by certain object prefixes",
         default = '_connected_geometry_mesh_type_default',
+        get=get_default_mesh_type,
+        set=set_default_mesh_type,
         items=mesh_type_items,
         )
 
@@ -2485,15 +2520,37 @@ class NWO_ObjectPropertiesGroup(PropertyGroup):
         ('_connected_geometry_mesh_type_obb_volume', 'OBB Volume', ''), # 13
     ]
 
-    def get_default_mesh_type(self):
+    def get_default_mesh_type_h4(self):
+        if bpy.context.scene.gr2.default_mesh_type == '_connected_geometry_mesh_type_boundary_surface':
+            return self.get("ObjectMesh_Type_H4", 0)
+        elif bpy.context.scene.gr2.default_mesh_type == '_connected_geometry_mesh_type_collision':
+            return self.get("ObjectMesh_Type_H4", 1)
+        elif bpy.context.scene.gr2.default_mesh_type == '_connected_geometry_mesh_type_cookie_cutter':
+            return self.get("ObjectMesh_Type_H4", 2)
+        elif bpy.context.scene.gr2.default_mesh_type == '_connected_geometry_mesh_type_decorator':
+            return self.get("ObjectMesh_Type_H4", 3)
         if bpy.context.scene.gr2.default_mesh_type == '_connected_geometry_mesh_type_default':
             return self.get("ObjectMesh_Type_H4", 4)
         elif bpy.context.scene.gr2.default_mesh_type == '_connected_geometry_mesh_type_poop':
             return self.get("ObjectMesh_Type_H4", 5)
+        elif bpy.context.scene.gr2.default_mesh_type == '_connected_geometry_mesh_type_object_instance':
+            return self.get("ObjectMesh_Type_H4", 6)
+        elif bpy.context.scene.gr2.default_mesh_type == '_connected_geometry_mesh_type_physics':
+            return self.get("ObjectMesh_Type_H4", 7)
+        elif bpy.context.scene.gr2.default_mesh_type == '_connected_geometry_mesh_type_planar_fog_volume':
+            return self.get("ObjectMesh_Type_H4", 8)
+        elif bpy.context.scene.gr2.default_mesh_type == '_connected_geometry_mesh_type_portal':
+            return self.get("ObjectMesh_Type_H4", 9)
+        elif bpy.context.scene.gr2.default_mesh_type == '_connected_geometry_mesh_type_seam':
+            return self.get("ObjectMesh_Type_H4", 10)
+        elif bpy.context.scene.gr2.default_mesh_type == '_connected_geometry_mesh_type_water_physics_volume':
+            return self.get("ObjectMesh_Type_H4", 11)
+        elif bpy.context.scene.gr2.default_mesh_type == '_connected_geometry_mesh_type_water_surface':
+            return self.get("ObjectMesh_Type_H4", 12)
         else:
             return self.get("ObjectMesh_Type_H4", 4)
     
-    def set_default_mesh_type(self, value):
+    def set_default_mesh_type_h4(self, value):
         self["ObjectMesh_Type_H4"] = value
 
     ObjectMesh_Type_H4 : EnumProperty(
@@ -2501,8 +2558,8 @@ class NWO_ObjectPropertiesGroup(PropertyGroup):
         options=set(),
         description="Sets the type of Halo mesh you want to create. This value is overridden by certain object prefixes",
         default = '_connected_geometry_mesh_type_default',
-        get=get_default_mesh_type,
-        set=set_default_mesh_type,
+        get=get_default_mesh_type_h4,
+        set=set_default_mesh_type_h4,
         items=mesh_type_items_h4,
         )
 
