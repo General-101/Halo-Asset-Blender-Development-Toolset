@@ -1815,13 +1815,23 @@ class NWO_ObjectMeshMaterialLightingProps(Panel):
         col.prop(ob_nwo, "Material_Lighting_Emissive_Quality", text='Emissive Quality')
 
         col.separator()
-
-        col.prop(ob_nwo, "Material_Lighting_Attenuation_Falloff", text='Attenuation Falloff')
-        col.prop(ob_nwo, "Material_Lighting_Attenuation_Cutoff", text='Attenuation Cutoff')
+        
+        if not_bungie_game():
+            col.prop(ob_nwo, "lighting_frustum_blend")
+            col.prop(ob_nwo, "lighting_frustum_cutoff")
+            col.prop(ob_nwo, "lighting_frustum_falloff")
 
         col.separator()
 
         col.prop(ob_nwo, "Material_Lighting_Bounce_Ratio", text='Bounce Ratio')
+
+        col.separator()
+
+        if not_bungie_game():
+            col.prop(ob_nwo, "lighting_attenuation_enabled")
+        if ob_nwo.lighting_attenuation_enabled or not not_bungie_game():
+            col.prop(ob_nwo, "Material_Lighting_Attenuation_Falloff", text='Attenuation Falloff')
+            col.prop(ob_nwo, "Material_Lighting_Attenuation_Cutoff", text='Attenuation Cutoff')
         
         col.separator()
 
@@ -3402,6 +3412,37 @@ class NWO_ObjectPropertiesGroup(PropertyGroup):
         description="Determines how far light travels before it stops",
         min=0,
         default=200,
+    ) 
+
+    lighting_attenuation_enabled: BoolProperty(
+        name="Use Attenuation",
+        options=set(),
+        description="Enable / Disable use of attenuation",
+        default=True,
+    )
+
+    lighting_frustum_blend: FloatProperty(
+        name="Frustum blend",
+        options=set(),
+        description="",
+        min=0,
+        default=0,
+    )
+
+    lighting_frustum_cutoff: FloatProperty(
+        name="Frustum cutoff",
+        options=set(),
+        description="",
+        min=0,
+        default=0,
+    )
+
+    lighting_frustum_falloff: FloatProperty(
+        name="Frustum Falloff",
+        options=set(),
+        description="",
+        min=0,
+        default=0,
     )
 
     Material_Lighting_Attenuation_Falloff: FloatProperty(

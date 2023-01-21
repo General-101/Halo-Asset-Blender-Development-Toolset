@@ -924,17 +924,19 @@ class NWOMesh(NWOObject):
                 self.bungie_mesh_per_vertex_lighting = self.mesh_per_vertex_lighting()
         # EMMISSIVE PROPERTIES
         if self.halo.Material_Lighting_Enabled:
-            self.bungie_lighting_attenuation_enabled = self.lighting_attenuation_enabled()
-            self.bungie_lighting_attenuation_cutoff = self.lighting_attenuation_cutoff()
-            self.bungie_lighting_attenuation_falloff = self.lighting_attenuation_falloff()
+            if not_bungie_game():
+                self.bungie_lighting_attenuation_enabled = self.lighting_attenuation_enabled()
+                self.bungie_lighting_frustum_blend = self.lighting_frustum_blend()
+                self.bungie_lighting_frustum_cutoff = self.lighting_frustum_cutoff()
+                self.bungie_lighting_frustum_falloff = self.lighting_frustum_falloff()
+            if self.bungie_lighting_attenuation_enabled or not not_bungie_game():
+                self.bungie_lighting_attenuation_cutoff = self.lighting_attenuation_cutoff()
+                self.bungie_lighting_attenuation_falloff = self.lighting_attenuation_falloff()
             self.bungie_lighting_emissive_focus = self.lighting_emissive_focus()
             self.bungie_lighting_emissive_color = self.lighting_emissive_color()
             self.bungie_lighting_emissive_per_unit = self.lighting_emissive_per_unit()
             self.bungie_lighting_emissive_power = self.lighting_emissive_power()
             self.bungie_lighting_emissive_quality = self.lighting_emissive_quality()
-            self.bungie_lighting_frustum_blend = self.lighting_frustum_blend()
-            self.bungie_lighting_frustum_cutoff = self.lighting_frustum_cutoff()
-            self.bungie_lighting_frustum_falloff = self.lighting_frustum_falloff()
             self.bungie_lighting_use_shader_gel = self.lighting_use_shader_gel()
             self.bungie_lighting_bounce_ratio = self.lighting_bounce_ratio()
 
@@ -1271,10 +1273,7 @@ class NWOMesh(NWOObject):
         return jstr(self.halo.Material_Lighting_Emissive_Focus)
 
     def lighting_emissive_color(self):
-        if self.not_bungie_game:
-            return color_3p_str(self.halo.Material_Lighting_Emissive_Color)
-        else:
-            return color_4p_str(self.halo.Material_Lighting_Emissive_Color)
+        return color_4p_str(self.halo.Material_Lighting_Emissive_Color)
 
     def lighting_emissive_per_unit(self):
         return bool_str(self.halo.Material_Lighting_Emissive_Per_Unit)

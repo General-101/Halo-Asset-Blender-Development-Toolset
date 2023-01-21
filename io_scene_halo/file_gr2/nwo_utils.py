@@ -605,7 +605,11 @@ def get_design_from_halo_objects(halo_objects):
 
 def get_render_from_halo_objects(halo_objects):
     """Gets render objects when passed a HaloObjects instance"""
-    return halo_objects.default + halo_objects.object_instances + halo_objects.lights
+    return halo_objects.default + halo_objects.object_instances
+
+def select_all_lights(halo_objects):
+    for ob in halo_objects.lights:
+        ob.select_set(True)
 
 # def get_skeleton_from_halo_objects(halo_objects, model_armature=None):
 #     """Gets skeleton objects when passed a HaloObjects instance"""

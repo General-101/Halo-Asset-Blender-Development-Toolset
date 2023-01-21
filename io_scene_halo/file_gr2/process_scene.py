@@ -48,6 +48,7 @@ from .nwo_utils import(
     get_prefab_from_halo_objects,
     print_box,
     not_bungie_game,
+    select_all_lights,
 
     CheckType,
 )
@@ -180,6 +181,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
 
                     if export_markers:
                         if select_model_objects_no_perm(halo_objects.markers, model_armature, export_hidden):
+                            select_all_lights(halo_objects)
                             print_box('**Exporting markers**')
                             if using_better_fbx:
                                 obj_selection = [obj for obj in context.selected_objects]
