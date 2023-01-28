@@ -27,7 +27,7 @@
 
 ####################
 # TODO NEED TO CHANGE STRUCTURE DESIGN. SHOULD NOT CONTAIN SHARED
-
+# TODO Add proper exception handling for when frame id tool anim graph path invalid or empty
 
 bl_info = {
     'name': 'Halo GR2 Export',
