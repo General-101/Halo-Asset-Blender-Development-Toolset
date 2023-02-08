@@ -12,6 +12,9 @@ The following games are or will be supported by this script:
  * Halo 2 Anniversary MCC - Classic
  * Halo 3 MCC
  * Halo 3 ODST MCC
+ * Halo Reach MCC
+ * Halo 4 MCC
+ * Halo 2 Anniversary Multiplayer MCC
 
 Script supports the following features:
 
@@ -94,3 +97,9 @@ See the following links for information on exporting or importing assets from th
 
  * Discord user General_101#9814
    * Getting the ball rolling I guess?
+
+ * Discord user General Heed
+   * Advice, and python scripting for this fork and also for adding Halo Reach scale models
+
+ * Discord user Crisp
+   * Rolling the ball into Halo Reach

@@ -53,19 +53,22 @@ def set_frame_ids(context, report):
     model_armature = GetArmature(context, report)
     frame_count = 0
     if model_armature != None:
-        framelist = ImportTagXML(get_tool_path(), context)
-        if(not framelist == None):
-            tag_bone_names = CleanBoneNames(framelist)
-            blend_bone_names = CleanBones(model_armature.data.bones)
-            blend_bones = model_armature.data.bones
-            
-            for blend_bone in blend_bone_names:
-                for tag_bone in tag_bone_names:
-                    if blend_bone == tag_bone:
-                        ApplyFrameIDs(blend_bone, blend_bones, framelist)
-                        frame_count += 1
+        try:
+            framelist = ImportTagXML(get_tool_path(), context, report)
+            if(not framelist == None):
+                tag_bone_names = CleanBoneNames(framelist)
+                blend_bone_names = CleanBones(model_armature.data.bones)
+                blend_bones = model_armature.data.bones
+                
+                for blend_bone in blend_bone_names:
+                    for tag_bone in tag_bone_names:
+                        if blend_bone == tag_bone:
+                            ApplyFrameIDs(blend_bone, blend_bones, framelist)
+                            frame_count += 1
 
-            report({'INFO'},"Updated Frame IDs for " + str(frame_count) + ' bones')
+                report({'INFO'},"Updated Frame IDs for " + str(frame_count) + ' bones')
+        except:
+            report({'WARNING'},"Failed to parse exported tag XML")
 
     return {'FINISHED'}
 
@@ -113,14 +116,20 @@ def CleanBoneName(bone):
 
     return cleaned_bone
 
-def ImportTagXML(toolPath, context):
+def ImportTagXML(toolPath, context, report):
     # try:
     xmlPath = get_tags_path() + "temp.xml"
     tagPath = GetGraphPath(context)
+    if not os.path.exists(os.path.join(get_tags_path(), tagPath)):
+        report({'WARNING'},"Could not find file that exists at this path. Are your Editing Kit path and animation graph path correct?")
+        return None
     toolCommand = '"{}" export-tag-to-xml "{}" "{}"'.format(toolPath, tagPath, xmlPath)
     os.chdir(get_ek_path())
     p = Popen(toolCommand)
     p.wait()
+    if not os.path.exists(xmlPath):
+        report({'WARNING'},"Failed to convert supplied tag path to XML. Did you enter a valid tag path?")
+        return None
     bonelist = ParseXML(xmlPath, context)
     os.remove(xmlPath)
     return bonelist

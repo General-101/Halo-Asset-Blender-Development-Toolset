@@ -481,58 +481,75 @@ class Export_Scene_GR2(Operator, ExportHelper):
         self.keep_fbx = scene_gr2_export.keep_fbx
         self.keep_json = scene_gr2_export.keep_json
 
-        # SIDECAR SETTINGS # 
+        # SIDECAR SETTINGS #
+        scene_gr2 = bpy.context.scene.gr2
+
+        self.sidecar_type = scene_gr2.asset_type
+
+        self.output_biped = scene_gr2.output_biped
+        self.output_crate = scene_gr2.output_crate
+        self.output_creature = scene_gr2.output_creature
+        self.output_device_control = scene_gr2.output_device_control
+        self.output_device_dispenser = scene_gr2.output_device_dispenser
+        self.output_device_machine = scene_gr2.output_device_machine
+        self.output_device_terminal = scene_gr2.output_device_terminal
+        self.output_effect_scenery = scene_gr2.output_effect_scenery
+        self.output_equipment = scene_gr2.output_equipment
+        self.output_giant = scene_gr2.output_giant
+        self.output_scenery = scene_gr2.output_scenery
+        self.output_vehicle = scene_gr2.output_vehicle
+        self.output_weapon = scene_gr2.output_weapon
 
         sidecar_filepath = scene.gr2_halo_launcher.sidecar_path
-        export_settings = []
+        # export_settings = []
         if sidecar_filepath != '' and file_exists(sidecar_filepath):
-            export_settings = ExportSettingsFromSidecar(sidecar_filepath)
+            # export_settings = ExportSettingsFromSidecar(sidecar_filepath)
             self.filepath = path.join(sidecar_filepath.rpartition('\\')[0], 'untitled.fbx')
             print(self.filepath)
             # now apply settings
-            match export_settings[0]:
-                case 'model':
-                    self.sidecar_type = 'MODEL'
-                case 'scenario':
-                    self.sidecar_type = 'SCENARIO'
-                case 'sky':
-                    self.sidecar_type = 'SKY'
-                case 'decorator_set':
-                    self.sidecar_type = 'DECORATOR SET'
-                case 'particle_model':
-                    self.sidecar_type = 'PARTICLE MODEL'
-                case 'prefab':
-                    self.sidecar_type = 'PREFAB'
-            
-            if len(export_settings) > 1: # checks if we should also set output tags
-                for tag in export_settings[1]:
-                    match tag:
-                        case 'biped':
-                            self.output_biped = True
-                        case 'crate':
-                            self.output_crate = True
-                        case 'creature':
-                            self.output_creature = True
-                        case 'device_control':
-                            self.output_device_control = True
-                        case 'device_dispenser':
-                            self.output_device_dispenser = True
-                        case 'device_machine':
-                            self.output_device_machine = True 
-                        case 'device_terminal':
-                            self.output_device_terminal = True
-                        case 'effect_scenery':
-                            self.output_effect_scenery = True
-                        case 'equipment':
-                            self.output_equipment = True
-                        case 'giant':
-                            self.output_giant = True
-                        case 'scenery':
-                            self.output_scenery = True
-                        case 'vehicle':
-                            self.output_vehicle = True
-                        case 'weapon':
-                            self.output_weapon = True
+            # match export_settings[0]: commented out as now getting sidecar type from UI
+            #     case 'model':
+            #         self.sidecar_type = 'MODEL'
+            #     case 'scenario':
+            #         self.sidecar_type = 'SCENARIO'
+            #     case 'sky':
+            #         self.sidecar_type = 'SKY'
+            #     case 'decorator_set':
+            #         self.sidecar_type = 'DECORATOR SET'
+            #     case 'particle_model':
+            #         self.sidecar_type = 'PARTICLE MODEL'
+            #     case 'prefab':
+            #         self.sidecar_type = 'PREFAB'
+            # Commented out as getting this from the UI now
+            # if len(export_settings) > 1: # checks if we should also set output tags
+            #     for tag in export_settings[1]:
+            #         match tag:
+            #             case 'biped':
+            #                 self.output_biped = True
+            #             case 'crate':
+            #                 self.output_crate = True
+            #             case 'creature':
+            #                 self.output_creature = True
+            #             case 'device_control':
+            #                 self.output_device_control = True
+            #             case 'device_dispenser':
+            #                 self.output_device_dispenser = True
+            #             case 'device_machine':
+            #                 self.output_device_machine = True 
+            #             case 'device_terminal':
+            #                 self.output_device_terminal = True
+            #             case 'effect_scenery':
+            #                 self.output_effect_scenery = True
+            #             case 'equipment':
+            #                 self.output_equipment = True
+            #             case 'giant':
+            #                 self.output_giant = True
+            #             case 'scenery':
+            #                 self.output_scenery = True
+            #             case 'vehicle':
+            #                 self.output_vehicle = True
+            #             case 'weapon':
+            #                 self.output_weapon = True
 
     def execute(self, context):
         #lightmap warning
@@ -552,8 +569,28 @@ class Export_Scene_GR2(Operator, ExportHelper):
         keywords = self.as_keywords()
         console = bpy.ops.wm
 
+        scene_gr2 = context.scene.gr2
+
         # set Halo scene version to match game_version (we do this do ensure the code is checking the right toolset)
         context.scene.halo.game_version = self.game_version
+
+        # Set the UI asset type to the export type
+        scene_gr2.asset_type = self.sidecar_type
+
+        # Set the model outpug tag types in the UI to match export settings
+        scene_gr2.output_biped = self.output_biped
+        scene_gr2.output_crate = self.output_crate
+        scene_gr2.output_creature = self.output_creature
+        scene_gr2.output_device_control = self.output_device_control
+        scene_gr2.output_device_dispenser = self.output_device_dispenser
+        scene_gr2.output_device_machine = self.output_device_machine
+        scene_gr2.output_device_terminal = self.output_device_terminal
+        scene_gr2.output_effect_scenery = self.output_effect_scenery
+        scene_gr2.output_equipment = self.output_equipment
+        scene_gr2.output_giant = self.output_giant
+        scene_gr2.output_scenery = self.output_scenery
+        scene_gr2.output_vehicle = self.output_vehicle
+        scene_gr2.output_weapon = self.output_weapon
 
         if self.show_output:
             console.console_toggle() # toggle the console so users can see progress of export
@@ -757,8 +794,25 @@ class GR2_SceneProps(Panel):
         layout.use_property_split = True
         flow = layout.grid_flow(row_major=True, columns=0, even_columns=True, even_rows=False, align=False)
         col = flow.column()
-        col = col.row()
         col.prop(scene_gr2, 'default_mesh_type_ui')
+        col.prop(scene_gr2, 'asset_type')
+        col.prop(scene_gr2, 'filter_ui', text = 'Filter UI')
+        sub = layout.column(heading="Output Tags")
+        if scene_gr2.asset_type == 'MODEL':
+            sub.prop(scene_gr2, "output_biped")
+            sub.prop(scene_gr2, "output_crate")
+            sub.prop(scene_gr2, "output_creature")
+            sub.prop(scene_gr2, "output_device_control")
+            if context.scene.halo.game_version in ('h4', 'h2a'):
+                sub.prop(scene_gr2, "output_device_dispenser")
+            sub.prop(scene_gr2, "output_device_machine")
+            sub.prop(scene_gr2, "output_device_terminal")
+            sub.prop(scene_gr2, "output_effect_scenery")
+            sub.prop(scene_gr2, "output_equipment")
+            sub.prop(scene_gr2, "output_giant")
+            sub.prop(scene_gr2, "output_scenery")
+            sub.prop(scene_gr2, "output_vehicle")
+            sub.prop(scene_gr2, "output_weapon")
 
 class GR2_UL_SceneProps_SharedAssets(UIList):
     use_name_reverse: bpy.props.BoolProperty(
@@ -1027,6 +1081,99 @@ class GR2_ScenePropertiesGroup(PropertyGroup):
         items=mesh_type_items
         )
 
+    asset_type: EnumProperty(
+        name="Asset Type",
+        options=set(),
+        description="Define the type of asset you are creating",
+        default = 'MODEL',
+        items=[ ('MODEL', "Model", ""), ('SCENARIO', "Scenario", ""), ('SKY', 'Sky', ''), ('DECORATOR SET', 'Decorator Set', ''), ('PARTICLE MODEL', 'Particle Model', ''), ('PREFAB', 'Prefab', '')]
+        )
+
+    filter_ui: BoolProperty(
+        name="Filter UI",
+        options=set(),
+        description="When True, hides all UI elements that aren't needed for the selected asset type",
+        default = False,
+        )
+
+    output_biped: BoolProperty(
+        name='Biped',
+        description='',
+        default=False,
+        options=set(),
+    )
+    output_crate: BoolProperty(
+        name='Crate',
+        description='',
+        default=False,
+        options=set(),
+    )
+    output_creature: BoolProperty(
+        name='Creature',
+        description='',
+        default=False,
+        options=set(),
+    )
+    output_device_control: BoolProperty(
+        name='Device Control',
+        description='',
+        default=False,
+        options=set(),
+    )
+    output_device_dispenser: BoolProperty(
+        name='Device Dispenser',
+        description='',
+        default=False,
+        options=set(),
+    )
+    output_device_machine: BoolProperty(
+        name='Device Machine',
+        description='',
+        default=False,
+        options=set(),
+    )
+    output_device_terminal: BoolProperty(
+        name='Device Terminal',
+        description='',
+        default=False,
+        options=set(),
+    )
+    output_effect_scenery: BoolProperty(
+        name='Effect Scenery',
+        description='',
+        default=False,
+        options=set(),
+    )
+    output_equipment: BoolProperty(
+        name='Equipment',
+        description='',
+        default=False,
+        options=set(),
+    )
+    output_giant: BoolProperty(
+        name='Giant',
+        description='',
+        default=False,
+        options=set(),
+    )
+    output_scenery: BoolProperty(
+        name='Scenery',
+        description='',
+        default=True,
+        options=set(),
+    )
+    output_vehicle: BoolProperty(
+        name='Vehicle',
+        description='',
+        default=False,
+        options=set(),
+    )
+    output_weapon: BoolProperty(
+        name='Weapon',
+        description='',
+        default=False,
+        options=set(),
+    )
 
 classeshalo = (
     Export_Scene_GR2,

@@ -2,7 +2,7 @@
 #
 # MIT License
 #
-# Copyright (c) 2021 Steven Garcia
+# Copyright (c) 2021 Steven Garcia, Crisp
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -1509,6 +1509,13 @@ class NWO_ShaderPath(Operator):
 # MAIN UI
 # ------------------------------------------------------------------------
 
+def poll_ui(selected_types):
+    scene_gr2 = bpy.context.scene.gr2
+    filter = scene_gr2.filter_ui
+    type = scene_gr2.asset_type
+
+    return not filter or type in selected_types
+
 class NWO_ObjectProps(Panel):
     bl_label = "Halo Object Properties"
     bl_idname = "NWO_PT_ObjectDetailsPanel"
@@ -1546,22 +1553,24 @@ class NWO_ObjectProps(Panel):
             else:
                 col.prop(ob_nwo, "Object_Type_All", text='Object Type')
 
-        sub = col.row()
-        if is_design(ob):
-            if ob_nwo.bsp_name_locked != '':
-                sub.prop(ob_nwo, 'bsp_name_locked', text='Design Group')
+        if poll_ui(('SCENARIO')):
+            sub = col.row()
+            if is_design(ob):
+                if ob_nwo.bsp_name_locked != '':
+                    sub.prop(ob_nwo, 'bsp_name_locked', text='Design Group')
+                else:
+                    sub.prop(ob_nwo, 'bsp_name', text='Design Group')
             else:
-                sub.prop(ob_nwo, 'bsp_name', text='Design Group')
-        else:
-            if ob_nwo.bsp_name_locked != '':
-                sub.prop(ob_nwo, 'bsp_name_locked', text='BSP')
-            else:
-                sub.prop(ob_nwo, 'bsp_name', text='BSP')
+                if ob_nwo.bsp_name_locked != '':
+                    sub.prop(ob_nwo, 'bsp_name_locked', text='BSP')
+                else:
+                    sub.prop(ob_nwo, 'bsp_name', text='BSP')
 
-        if ob_nwo.Permutation_Name_Locked != '':
-            col.prop(ob_nwo, 'Permutation_Name_Locked', text='Permutation')
-        else:
-            col.prop(ob_nwo, 'Permutation_Name', text='Permutation')
+        if poll_ui(('MODEL', 'SCENARIO')):
+            if ob_nwo.Permutation_Name_Locked != '':
+                col.prop(ob_nwo, 'Permutation_Name_Locked', text='Permutation')
+            else:
+                col.prop(ob_nwo, 'Permutation_Name', text='Permutation')
 
         if CheckType.frame(ob) and not_bungie_game():
             col.prop(ob_nwo, 'is_pca')
@@ -1704,10 +1713,16 @@ class NWO_ObjectMeshProps(Panel):
         elif CheckType.obb_volume(ob):
             col.prop(ob_nwo, "obb_volume_type")
 
-        elif CheckType.physics(ob):
+        elif CheckType.physics(ob) and poll_ui(('MODEL')):
             col.prop(ob_nwo, "Mesh_Primitive_Type", text='Primitive Type')
 
-        if CheckType.default(ob) or CheckType.poop(ob) or CheckType.water_surface(ob) or CheckType.collision(ob):
+        if poll_ui(('MODEL', 'SKY')):
+            if ob_nwo.Region_Name_Locked != '':
+                col.prop(ob_nwo, 'Region_Name_Locked', text='Region')
+            else:
+                col.prop(ob_nwo, "Region_Name", text='Region')
+
+        if (CheckType.default(ob) or CheckType.poop(ob) or CheckType.water_surface(ob) or CheckType.collision(ob)) and poll_ui(('MODEL', 'SCENARIO', 'PREFAB')):
             col.prop(ob_nwo, "Face_Global_Material", text='Global Material')
 
 class NWO_ObjectMeshFaceProps(Panel):
@@ -1748,25 +1763,20 @@ class NWO_ObjectMeshFaceProps(Panel):
 
         col.separator()
 
-        if ob_nwo.Region_Name_Locked != '':
-            col.prop(ob_nwo, 'Region_Name_Locked', text='Region')
-        else:
-            col.prop(ob_nwo, "Region_Name", text='Region')
-
-        col.separator()
-
         col = layout.column(heading="Flags")
         sub = col.column(align=True)
-        sub.prop(ob_nwo, "Conveyor", text='Conveyor')
-        sub.prop(ob_nwo, "Ladder", text='Ladder')
-        sub.prop(ob_nwo, "Slip_Surface", text='Slip Surface')
+        # sub.prop(ob_nwo, "Conveyor", text='Conveyor') removed as it seems non-functional. Leaving here in case conveyor functionality is ever fixed/added
+        if poll_ui(('SCENARIO', 'PREFAB')):
+            sub.prop(ob_nwo, "Ladder", text='Ladder')
+            sub.prop(ob_nwo, "Slip_Surface", text='Slip Surface')
         sub.prop(ob_nwo, "Decal_Offset", text='Decal Offset')
         sub.prop(ob_nwo, "Group_Transparents_By_Plane", text='Group Transparents By Plane')
         sub.prop(ob_nwo, "No_Shadow", text='No Shadow')
         sub.prop(ob_nwo, "Precise_Position", text='Precise Position')
         if not_bungie_game():
-            sub.prop(ob_nwo, "no_lightmap")
-            sub.prop(ob_nwo, "no_pvs")
+            if poll_ui(('SCENARIO', 'PREFAB')):
+                sub.prop(ob_nwo, "no_lightmap")
+                sub.prop(ob_nwo, "no_pvs")
             if CheckType.poop(ob) or CheckType.default(ob):
                 sub.prop(ob_nwo, 'compress_verts')
             if CheckType.default(ob):
@@ -1786,6 +1796,9 @@ class NWO_ObjectMeshMaterialLightingProps(Panel):
     def poll(cls, context):
         ob = context.object
         ob_nwo = ob.nwo
+
+        if not poll_ui(('SCENARIO', 'PREFAB')):
+            return False
 
         if object_prefix(context.active_object, special_prefixes):
             return ob_nwo.ObjectMesh_Type_Locked not in invalid_mesh_types
@@ -1852,6 +1865,9 @@ class NWO_ObjectMeshLightmapProps(Panel):
     def poll(cls, context):
         ob = context.object
         ob_nwo = ob.nwo
+
+        if not poll_ui(('SCENARIO', 'PREFAB')):
+            return False
 
         if object_prefix(context.active_object, special_prefixes):
             return ob_nwo.ObjectMesh_Type_Locked not in invalid_mesh_types
@@ -2694,14 +2710,14 @@ class NWO_ObjectPropertiesGroup(PropertyGroup):
 
     Region_Name_Locked: StringProperty(
         name="Face Region",
-        description="Define the name of the region these faces should be associated with",
+        description="Define the region for this mesh",
         get=get_region_from_collection,
     )
 
     Permutation_Name: StringProperty(
         name="Permutation",
         default='default',
-        description="Define the permutation of this object. Leave blank for default",
+        description="Define the permutation of this object. Permutations get exported to seperate files in scenario exports, or in model exports if the mesh type is one of render/collision/physics",
     )
 
     def get_permutation_from_collection(self):
@@ -2724,13 +2740,13 @@ class NWO_ObjectPropertiesGroup(PropertyGroup):
     Face_Global_Material: StringProperty(
         name="Global Material",
         default='',
-        description="Set the global material of the faces of this mesh. For struture geometry leave blank to use the global material of the shader. The global material name should match a valid material defined in tags\globals\globals.globals",
+        description="Set the global material of this mesh. If the global material name matches a valid material defined in tags\globals\globals.globals then this mesh will automatically take the correct global material response type, otherwise, the global material override can be manually defined in the .model tag",
     )
 
     Sky_Permutation_Index: IntProperty(
         name="Sky Permutation Index",
         options=set(),
-        description="Set the sky permutation index of the faces. Only valid if the face type is sky",
+        description="Set the sky permutation index of this mesh. Only valid if the face type is sky",
         min=0,
     )
 
@@ -3598,6 +3614,7 @@ class NWO_ObjectPropertiesGroup(PropertyGroup):
         name="Marker All Regions",
         options=set(),
         description="Associate this marker with all regions rather than a specific one",
+        default=True,
     )
 
     def game_instance_clean_tag_path(self, context):

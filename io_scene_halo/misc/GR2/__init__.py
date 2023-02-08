@@ -25,6 +25,7 @@
 # ##### END MIT LICENSE BLOCK #####
 
 import bpy
+from os.path import exists as file_exists
 
 from bpy.types import (
         Panel,
@@ -40,6 +41,8 @@ from bpy.props import (
         PointerProperty,
         FloatProperty,
         )
+
+from ...file_gr2.nwo_utils import clean_tag_path
 
 is_blender_startup = True
 
@@ -86,6 +89,10 @@ class GR2_SetFrameIDsOp(Operator):
     bl_label = 'Set Frame IDs'
     bl_options = {"REGISTER", "UNDO"}
 
+    @classmethod
+    def poll(cls, context):
+        return len(context.scene.gr2_frame_ids.anim_tag_path) > 0
+
     def execute(self, context):
         from .set_frame_ids import set_frame_ids
         return set_frame_ids(context, self.report)
@@ -100,10 +107,15 @@ class GR2_ResetFrameIDsOp(Operator):
         return reset_frame_ids(context, self.report)
 
 class GR2_SetFrameIDsPropertiesGroup(PropertyGroup):
+
+    def graph_clean_tag_path(self, context):
+        self['anim_tag_path'] = clean_tag_path(self['anim_tag_path']).strip('"')
+
     anim_tag_path: StringProperty(
         name="Path to Animation Tag",
         description="Specify the full or relative path to a model animation graph",
         default='',
+        update=graph_clean_tag_path,
     )
 
 #######################################
@@ -133,7 +145,7 @@ class GR2_HaloLauncher(Panel):
         col = split.column(align=True)
         col.scale_y = 1.25
         col.operator('halo_gr2.launch_tags')
-        if scene_gr2_halo_launcher.sidecar_path != '':
+        if scene_gr2_halo_launcher.sidecar_path != '' and file_exists(scene_gr2_halo_launcher.sidecar_path):
             flow = layout.grid_flow(row_major=True, columns=0, even_columns=True, even_rows=False, align=False)
             col = flow.column()
             col.scale_y = 1.5
@@ -262,7 +274,7 @@ class GR2_HaloExport(Panel):
         col = flow.column()
         col.scale_y = 1.5
         col.operator('halo_gr2.export', text='Export', icon='SETTINGS') 
-        if scene_gr2_halo_launcher.sidecar_path != '':
+        if scene_gr2_halo_launcher.sidecar_path != '' and file_exists(scene_gr2_halo_launcher.sidecar_path):
             col.separator()
             col.operator('halo_gr2.export_quick', text='Quick Export', icon='EXPORT')
 
