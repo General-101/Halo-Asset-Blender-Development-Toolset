@@ -978,17 +978,18 @@ class Halo_SetUnitScale(Operator):
     bl_options = {"REGISTER", "UNDO"}
 
     def execute(self, context):
-        # set the Halo scale
+        # define the Halo scale
         halo_scale = 0.03048
-        # Apply scale to clipping in all windows
-        for workspace in bpy.data.workspaces:
-            for screen in workspace.screens:
-                for area in screen.areas:
-                    if area.type == 'VIEW_3D':
-                        for space in area.spaces:
-                            if space.type == 'VIEW_3D':
-                                space.clip_start = space.clip_start / halo_scale
-                                space.clip_end = space.clip_end / halo_scale
+        # Apply scale to clipping in all windows if halo_scale has not already been set
+        if round(context.scene.unit_settings.scale_length, 5) != halo_scale:
+            for workspace in bpy.data.workspaces:
+                for screen in workspace.screens:
+                    for area in screen.areas:
+                        if area.type == 'VIEW_3D':
+                            for space in area.spaces:
+                                if space.type == 'VIEW_3D':
+                                    space.clip_start = space.clip_start / halo_scale
+                                    space.clip_end = space.clip_end / halo_scale
         # Set halo scale
         context.scene.unit_settings.scale_length = halo_scale
         return {'FINISHED'}

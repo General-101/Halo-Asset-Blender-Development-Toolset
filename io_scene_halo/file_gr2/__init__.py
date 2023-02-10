@@ -33,7 +33,7 @@ bl_info = {
     'name': 'Halo GR2 Export',
     'author': 'Generalkidd, Crisp',
     'version': (117, 343, 2552),
-    'blender': (3, 3, 0),
+    'blender': (3, 4, 0),
     'location': 'File > Export',
     'category': 'Export',
     'description': 'Halo Gen4 Asset Exporter'
@@ -505,7 +505,7 @@ class Export_Scene_GR2(Operator, ExportHelper):
         if sidecar_filepath != '' and file_exists(sidecar_filepath):
             # export_settings = ExportSettingsFromSidecar(sidecar_filepath)
             self.filepath = path.join(sidecar_filepath.rpartition('\\')[0], 'untitled.fbx')
-            print(self.filepath)
+            # print(self.filepath)
             # now apply settings
             # match export_settings[0]: commented out as now getting sidecar type from UI
             #     case 'model':
@@ -797,8 +797,8 @@ class GR2_SceneProps(Panel):
         col.prop(scene_gr2, 'default_mesh_type_ui')
         col.prop(scene_gr2, 'asset_type')
         col.prop(scene_gr2, 'filter_ui', text = 'Filter UI')
-        sub = layout.column(heading="Output Tags")
         if scene_gr2.asset_type == 'MODEL':
+            sub = layout.column(heading="Output Tags")
             sub.prop(scene_gr2, "output_biped")
             sub.prop(scene_gr2, "output_crate")
             sub.prop(scene_gr2, "output_creature")
