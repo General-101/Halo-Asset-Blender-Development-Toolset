@@ -567,7 +567,7 @@ def dot_partition(target_string):
 
 def comma_partition(target_string):
     """Returns a string after partitioning it using comma. If the returned string will be empty, the function will instead return the argument passed"""
-    return shortest_string(target_string.rpartition('.')[0], target_string)
+    return shortest_string(target_string.rpartition(',')[0], target_string)
 
 def write_error_report(asset_path, report_text, file_1 = None, file_2 = None, file_3 = None):
     errors_folder = os.path.join(asset_path, 'errors')
