@@ -553,7 +553,8 @@ class CheckType:
 def run_tool(*tool_args):
     """Runs Tool using the specified function and arguments. Do not include 'tool' in the string passed"""
     os.chdir(get_ek_path())
-    command = f"{get_tool_type()} {' '.join(tool_args)}"
+    command = f"""{get_tool_type()} {' '.join(f'"{arg}"' for arg in tool_args)}"""
+    print(command)
     p = Popen(command)
     p.wait()
 
@@ -562,6 +563,10 @@ def rename_file(file_path, new_file_path=''):
 
 def dot_partition(target_string):
     """Returns a string after partitioning it using period. If the returned string will be empty, the function will instead return the argument passed"""
+    return shortest_string(target_string.rpartition('.')[0], target_string)
+
+def comma_partition(target_string):
+    """Returns a string after partitioning it using comma. If the returned string will be empty, the function will instead return the argument passed"""
     return shortest_string(target_string.rpartition('.')[0], target_string)
 
 def write_error_report(asset_path, report_text, file_1 = None, file_2 = None, file_3 = None):

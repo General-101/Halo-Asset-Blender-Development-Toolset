@@ -42,7 +42,7 @@ from bpy.props import (
         FloatProperty,
         )
 
-from ...file_gr2.nwo_utils import clean_tag_path
+from ...file_gr2.nwo_utils import clean_tag_path, get_tags_path
 
 is_blender_startup = True
 
@@ -73,16 +73,46 @@ class GR2_SetFrameIDs(Panel):
         scene = context.scene
         scene_gr2_frame_ids = scene.gr2_frame_ids
 
-        layout.use_property_split = True
-        flow = layout.grid_flow(row_major=True, columns=0, even_columns=True, even_rows=False, align=False)
-        col = flow.column()
-        col = layout.column(heading="Animation Graph Path")
-        sub = col.column(align=True)
-        sub.prop(scene_gr2_frame_ids, "anim_tag_path", text='')
-        sub.separator()
-        sub.operator("halo_gr2.set_frame_ids", text="Set Frame IDs")
-        sub.separator()
-        sub.operator("halo_gr2.reset_frame_ids", text="Reset Frame IDs")
+        row = layout.row()
+        row.label(text='Animation Graph Path')
+        row = layout.row()
+        row.prop(scene_gr2_frame_ids, "anim_tag_path", text='')
+        row.scale_x = 0.25
+        row.operator('halo_gr2.graph_path')
+        row = layout.row()
+        row.scale_y = 1.5
+        row.operator("halo_gr2.set_frame_ids", text="Set Frame IDs")
+        row = layout.row()
+        row.scale_y = 1.5
+        row.operator("halo_gr2.reset_frame_ids", text="Reset Frame IDs")
+
+
+class GR2_GraphPath(Operator):
+    """Set the path to a model animation graph tag"""
+    bl_idname = "halo_gr2.graph_path"
+    bl_label = "Find"
+
+    filter_glob: StringProperty(
+        default="*.model_*",
+        options={'HIDDEN'},
+        )
+
+    filepath: StringProperty(
+        name="graph_path",
+        description="Set the path to the tag",
+        subtype="FILE_PATH"
+    )
+
+    def execute(self, context):
+        context.scene.gr2_frame_ids.anim_tag_path = self.filepath
+
+        return {'FINISHED'}
+
+    def invoke(self, context, event):
+        self.filepath = get_tags_path()
+        context.window_manager.fileselect_add(self)
+
+        return {'RUNNING_MODAL'}
 
 class GR2_SetFrameIDsOp(Operator):
     bl_idname = 'halo_gr2.set_frame_ids'
@@ -764,6 +794,7 @@ classeshalo = (
     GR2_ShaderFinder,
     GR2_ShaderFinder_Find,
     GR2_HaloShaderFinderPropertiesGroup,
+    GR2_GraphPath,
     GR2_SetFrameIDs,
     GR2_SetFrameIDsOp,
     GR2_ResetFrameIDsOp,

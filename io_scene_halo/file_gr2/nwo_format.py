@@ -790,7 +790,7 @@ class NWOMesh(NWOObject):
         super().__init__(ob, sidecar_type, model_armature, world_frame, asset_name)
         # SHARED
         self.bungie_mesh_type = self.mesh_type()
-        if self.sidecar_type in ('MODEL', 'SKY'):
+        if self.sidecar_type in ('MODEL', 'SKY') and self.bungie_mesh_type in ('_connected_geometry_mesh_type_render', '_connected_geometry_mesh_type_physics', '_connected_geometry_mesh_type_collision'):
             self.bungie_face_region = self.face_region()
         # PROPS FOR MESH TYPES WHICH HAVE RENDERED FACES
         if self.bungie_mesh_type in ('_connected_geometry_mesh_type_structure', '_connected_geometry_mesh_type_render', '_connected_geometry_mesh_type_default', '_connected_geometry_mesh_type_poop', '_connected_geometry_mesh_type_decorator', '_connected_geometry_mesh_type_object_instance', '_connected_geometry_mesh_type_water_surface'):

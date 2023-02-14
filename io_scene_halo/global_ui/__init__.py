@@ -1260,7 +1260,7 @@ class NWO_GameInstancePath(Operator):
     bl_label = "Find"
 
     filter_glob: StringProperty(
-        default="*biped;*crate;*creature;*device_control;*device_dispenser;*device_machine;*device_terminal;*effect_scenery;*equipment;*giant;*scenery;*vehicle;*weapon;*prefab;*cheap_light;*light",
+        default="*.biped;*.crate;*.creature;*.device_*;*.effect_*;*.equipment;*.giant;*.scenery;*.vehicle;*.weapon;*.prefab;*.cheap_l*;*.light",
         options={'HIDDEN'},
         )
 
@@ -1288,7 +1288,7 @@ class NWO_FogPath(Operator):
     bl_label = "Find"
 
     filter_glob: StringProperty(
-        default="*atmosphere_fog",
+        default="*.atmosphere_",
         options={'HIDDEN'},
         )
 
@@ -1316,7 +1316,7 @@ class NWO_LightConePath(Operator):
     bl_label = "Find"
 
     filter_glob: StringProperty(
-        default="*light_cone",
+        default="*.light_",
         options={'HIDDEN'},
         )
 
@@ -1344,7 +1344,7 @@ class NWO_LightConeCurvePath(Operator):
     bl_label = "Find"
 
     filter_glob: StringProperty(
-        default="*curve_scalar",
+        default="*.curve_",
         options={'HIDDEN'},
         )
 
@@ -1372,7 +1372,7 @@ class NWO_LightTagPath(Operator):
     bl_label = "Find"
 
     filter_glob: StringProperty(
-        default="*light",
+        default="*.light",
         options={'HIDDEN'},
         )
 
@@ -1400,7 +1400,7 @@ class NWO_LightShaderPath(Operator):
     bl_label = "Find"
 
     filter_glob: StringProperty(
-        default="*render_method_definition",
+        default="*.render_",
         options={'HIDDEN'},
         )
 
@@ -1428,7 +1428,7 @@ class NWO_LightGelPath(Operator):
     bl_label = "Find"
 
     filter_glob: StringProperty(
-        default="*bitmap",
+        default="*.bitmap",
         options={'HIDDEN'},
         )
 
@@ -1456,7 +1456,7 @@ class NWO_LensFlarePath(Operator):
     bl_label = "Find"
 
     filter_glob: StringProperty(
-        default="*lens_flare",
+        default="*.lens_",
         options={'HIDDEN'},
         )
 
@@ -1484,7 +1484,7 @@ class NWO_ShaderPath(Operator):
     bl_label = "Find"
 
     filter_glob: StringProperty(
-        default="*material;*shader;*shader_cortana;*shader_custom;*shader_decal;*shader_foliage;*shader_fur;*shader_fur_stencil;*shader_glass;*shader_halogram;*shader_mux;*shader_mux_material;*shader_screen;*shader_skin;*shader_terrain;*shader_water",
+        default="*.material;*.shader*",
         options={'HIDDEN'},
         )
 
@@ -1612,119 +1612,146 @@ class NWO_ObjectMeshProps(Panel):
             else:
                 col.prop(ob_nwo, "ObjectMesh_Type", text='Mesh Type')
 
-        if CheckType.boundary_surface(ob):
-            if ob.name.startswith(boundary_surface_prefixes):
-                col.prop(ob_nwo, "Boundary_Surface_Type_Locked", text='Type')
-            else:
-                    col.prop(ob_nwo, "Boundary_Surface_Type", text='Type')
-
-        elif CheckType.collision(ob) and not_bungie_game():
-            col.prop(ob_nwo, "Poop_Collision_Type")
-
-        elif CheckType.decorator(ob):
-            col.prop(ob_nwo, "Decorator_Name", text='Decorator Name')
-            col.prop(ob_nwo, "Decorator_LOD", text='Decorator Level of Detail')
-        elif CheckType.poop(ob):
-            if not_bungie_game():
-                col.prop(ob_nwo, "Poop_Collision_Type")
-
-            if ob.name.startswith(poop_lighting_prefixes):
-                col.prop(ob_nwo, "Poop_Lighting_Override_Locked", text='Lighting Policy')
-            else:
-                col.prop(ob_nwo, "Poop_Lighting_Override", text='Lighting Policy')
-            
-            if not_bungie_game():
-                col.prop(ob_nwo, "poop_lightmap_resolution_scale")
-                
-            if ob.name.startswith(poop_pathfinding_prefixes):
-                col.prop(ob_nwo, "Poop_Pathfinding_Override_Locked", text='Pathfinding Policy')
-            else:
-                col.prop(ob_nwo, "Poop_Pathfinding_Override", text='Pathfinding Policy')
-
-            col.prop(ob_nwo, "Poop_Imposter_Policy", text='Imposter Policy')
-            if ob_nwo.Poop_Imposter_Policy != '_connected_poop_instance_imposter_policy_never':
-                sub = col.row(heading="Imposter Transition")
-                sub.prop(ob_nwo, 'Poop_Imposter_Transition_Distance_Auto', text='Automatic')
-                if not ob_nwo.Poop_Imposter_Transition_Distance_Auto:
-                    sub.prop(ob_nwo, 'Poop_Imposter_Transition_Distance', text='Distance')
-                if not_bungie_game():
-                    col.prop(ob_nwo, 'poop_imposter_brightness')
-                # col.prop(ob_nwo, "Poop_Imposter_Fade_Range_Start", text='Fade In Start')
-                # col.prop(ob_nwo, "Poop_Imposter_Fade_Range_End", text='Fade In End')
-            #col.prop(ob_nwo, "Poop_Decomposition_Hulls", text='Decomposition Hulls') commented out so it can be set automatically. 
-
-            # col.separator()
-
-            # col.prop(ob_nwo, "Poop_Predominant_Shader_Name", text='Predominant Shader Name')
-
-            if not_bungie_game():
-                col.prop(ob_nwo, 'poop_streaming_priority')
-                col.prop(ob_nwo, 'poop_cinematic_properties')
-
-            col.separator()
-
-            col = layout.column(heading="Flags")
-            sub = col.column(align=True)
-
-            if ob.name.startswith(poop_render_only_prefixes):
-                sub.prop(ob_nwo, "Poop_Render_Only_Locked", text='Render Only')
-            else:
-                sub.prop(ob_nwo, "Poop_Render_Only", text='Render Only')
-
-            sub.prop(ob_nwo, "Poop_Chops_Portals", text='Chops Portals')
-            sub.prop(ob_nwo, "Poop_Does_Not_Block_AOE", text='Does Not Block AOE')
-            sub.prop(ob_nwo, "Poop_Excluded_From_Lightprobe", text='Excluded From Lightprobe')
-            sub.prop(ob_nwo, "Poop_Decal_Spacing", text='Decal Spacing')
-            if not_bungie_game():
-                sub.prop(ob_nwo, "poop_remove_from_shadow_geometry")
-                sub.prop(ob_nwo, "poop_disallow_lighting_samples",)
-                sub.prop(ob_nwo, "poop_rain_occluder")
-
-        elif CheckType.portal(ob):
-            col.prop(ob_nwo, "Portal_Type", text='Portal Type')
-
-            col.separator()
-
-            col = layout.column(heading="Flags")
-            sub = col.column(align=True)
-
-            sub.prop(ob_nwo, "Portal_AI_Deafening", text='AI Deafening')
-            sub.prop(ob_nwo, "Portal_Blocks_Sounds", text='Blocks Sounds')
-            sub.prop(ob_nwo, "Portal_Is_Door", text='Is Door')
-        # elif (ob_nwo.ObjectMesh_Type == 'SEAM' or ob_nwo.ObjectMesh_Type_Locked == 'SEAM'):
-        #     if ob.name.startswith('+seam:') and ob.name.rpartition(':')[2] != ob.name:
-        #         col.prop(ob_nwo, "Seam_Name_Locked", text='Seam BSP Name')
-        #     else:
-        #         col.prop(ob_nwo, "Seam_Name", text='Seam BSP Name')
-
-        elif CheckType.water_physics(ob):
-            col.prop(ob_nwo, "Water_Volume_Depth", text='Water Volume Depth')
-            col.prop(ob_nwo, "Water_Volume_Flow_Direction", text='Flow Direction')
-            col.prop(ob_nwo, "Water_Volume_Flow_Velocity", text='Flow Velocity')
-            col.prop(ob_nwo, "Water_Volume_Fog_Color", text='Underwater Fog Color')
-            col.prop(ob_nwo, "Water_Volume_Fog_Murkiness", text='Underwater Fog Murkiness')
-        elif CheckType.fog(ob):
-
-            col.prop(ob_nwo, "Fog_Name", text='Fog Name')
-            row = col.row()
-            row.prop(ob_nwo, "Fog_Appearance_Tag", text='Fog Appearance Tag')
-            row.operator('nwo.fog_path')
-            col.prop(ob_nwo, "Fog_Volume_Depth", text='Fog Volume Depth')
-
-        elif CheckType.obb_volume(ob):
-            col.prop(ob_nwo, "obb_volume_type")
-
-        elif CheckType.physics(ob) and poll_ui(('MODEL')):
-            col.prop(ob_nwo, "Mesh_Primitive_Type", text='Primitive Type')
-
-        if poll_ui(('MODEL', 'SKY')):
+        if poll_ui(('MODEL', 'SKY')) and (CheckType.default(ob) or CheckType.collision(ob) or CheckType.physics(ob)):
             if ob_nwo.Region_Name_Locked != '':
                 col.prop(ob_nwo, 'Region_Name_Locked', text='Region')
             else:
                 col.prop(ob_nwo, "Region_Name", text='Region')
 
-        if (CheckType.default(ob) or CheckType.poop(ob) or CheckType.water_surface(ob) or CheckType.collision(ob)) and poll_ui(('MODEL', 'SCENARIO', 'PREFAB')):
+        if not (poll_ui('MODEL') and CheckType.default(ob)) and not (not_bungie_game() and CheckType.default(ob)) and (CheckType.default(ob) or CheckType.poop(ob) or CheckType.water_surface(ob) or CheckType.collision(ob)) and poll_ui(('MODEL', 'SCENARIO', 'PREFAB')):
             col.prop(ob_nwo, "Face_Global_Material", text='Global Material')
+
+        if poll_ui(('DECORATOR SET')) and context.scene.gr2.asset_type == 'DECORATOR SET' and not CheckType.decorator(ob):
+            col.label(text="Only the Decorator mesh type is valid for Decorator Set exports", icon='ERROR')
+
+        elif poll_ui(('PARTICLE MODEL')) and context.scene.gr2.asset_type == 'PARTICLE MODEL' and not CheckType.default(ob):
+            col.label(text="Only the render mesh type is valid for particle model exports", icon='ERROR')
+
+        elif CheckType.boundary_surface(ob):
+            if poll_ui(('SCENARIO')):
+                if ob.name.startswith(boundary_surface_prefixes):
+                    col.prop(ob_nwo, "Boundary_Surface_Type_Locked", text='Type')
+                else:
+                    col.prop(ob_nwo, "Boundary_Surface_Type", text='Type')
+            else:
+                col.label(text="Boundary Surface mesh type only valid for Scenario exports", icon='ERROR')
+
+        elif poll_ui(('SCENARIO', 'PREFAB')) and CheckType.collision(ob) and not_bungie_game():
+            col.prop(ob_nwo, "Poop_Collision_Type")
+
+        elif CheckType.decorator(ob):
+            if poll_ui(('DECORATOR SET')):
+                col.prop(ob_nwo, "Decorator_Name", text='Decorator Name')
+                col.prop(ob_nwo, "Decorator_LOD", text='Decorator Level of Detail')
+            else:
+                col.label(text="Decorator mesh type only valid for Decorator exports", icon='ERROR')
+
+        elif CheckType.poop(ob):
+            if poll_ui(('SCENARIO', 'PREFAB')):
+                if not_bungie_game():
+                    col.prop(ob_nwo, "Poop_Collision_Type")
+
+                if ob.name.startswith(poop_lighting_prefixes):
+                    col.prop(ob_nwo, "Poop_Lighting_Override_Locked", text='Lighting Policy')
+                else:
+                    col.prop(ob_nwo, "Poop_Lighting_Override", text='Lighting Policy')
+                
+                if not_bungie_game():
+                    col.prop(ob_nwo, "poop_lightmap_resolution_scale")
+                    
+                if ob.name.startswith(poop_pathfinding_prefixes):
+                    col.prop(ob_nwo, "Poop_Pathfinding_Override_Locked", text='Pathfinding Policy')
+                else:
+                    col.prop(ob_nwo, "Poop_Pathfinding_Override", text='Pathfinding Policy')
+
+                col.prop(ob_nwo, "Poop_Imposter_Policy", text='Imposter Policy')
+                if ob_nwo.Poop_Imposter_Policy != '_connected_poop_instance_imposter_policy_never':
+                    sub = col.row(heading="Imposter Transition")
+                    sub.prop(ob_nwo, 'Poop_Imposter_Transition_Distance_Auto', text='Automatic')
+                    if not ob_nwo.Poop_Imposter_Transition_Distance_Auto:
+                        sub.prop(ob_nwo, 'Poop_Imposter_Transition_Distance', text='Distance')
+                    if not_bungie_game():
+                        col.prop(ob_nwo, 'poop_imposter_brightness')
+                    # col.prop(ob_nwo, "Poop_Imposter_Fade_Range_Start", text='Fade In Start')
+                    # col.prop(ob_nwo, "Poop_Imposter_Fade_Range_End", text='Fade In End')
+                #col.prop(ob_nwo, "Poop_Decomposition_Hulls", text='Decomposition Hulls') commented out so it can be set automatically. 
+
+                # col.separator()
+
+                # col.prop(ob_nwo, "Poop_Predominant_Shader_Name", text='Predominant Shader Name')
+
+                if not_bungie_game():
+                    col.prop(ob_nwo, 'poop_streaming_priority')
+                    col.prop(ob_nwo, 'poop_cinematic_properties')
+
+                col.separator()
+
+                col = layout.column(heading="Flags")
+                sub = col.column(align=True)
+
+                if ob.name.startswith(poop_render_only_prefixes):
+                    sub.prop(ob_nwo, "Poop_Render_Only_Locked", text='Render Only')
+                else:
+                    sub.prop(ob_nwo, "Poop_Render_Only", text='Render Only')
+
+                sub.prop(ob_nwo, "Poop_Chops_Portals", text='Chops Portals')
+                sub.prop(ob_nwo, "Poop_Does_Not_Block_AOE", text='Does Not Block AOE')
+                sub.prop(ob_nwo, "Poop_Excluded_From_Lightprobe", text='Excluded From Lightprobe')
+                sub.prop(ob_nwo, "Poop_Decal_Spacing", text='Decal Spacing')
+                if not_bungie_game():
+                    sub.prop(ob_nwo, "poop_remove_from_shadow_geometry")
+                    sub.prop(ob_nwo, "poop_disallow_lighting_samples",)
+                    sub.prop(ob_nwo, "poop_rain_occluder")
+
+            else:
+                col.label(text="Instanced Geometry mesh type only valid for Scenario / Prefab exports", icon='ERROR')
+
+        elif CheckType.portal(ob):
+            if poll_ui(('SCENARIO')):
+                col.prop(ob_nwo, "Portal_Type", text='Portal Type')
+
+                col.separator()
+
+                col = layout.column(heading="Flags")
+                sub = col.column(align=True)
+
+                sub.prop(ob_nwo, "Portal_AI_Deafening", text='AI Deafening')
+                sub.prop(ob_nwo, "Portal_Blocks_Sounds", text='Blocks Sounds')
+                sub.prop(ob_nwo, "Portal_Is_Door", text='Is Door')
+            else:
+                col.label(text="Portal mesh type only valid for Scenario exports", icon='ERROR')
+
+        elif CheckType.water_physics(ob):
+            if poll_ui(('SCENARIO')):
+                col.prop(ob_nwo, "Water_Volume_Depth", text='Water Volume Depth')
+                col.prop(ob_nwo, "Water_Volume_Flow_Direction", text='Flow Direction')
+                col.prop(ob_nwo, "Water_Volume_Flow_Velocity", text='Flow Velocity')
+                col.prop(ob_nwo, "Water_Volume_Fog_Color", text='Underwater Fog Color')
+                col.prop(ob_nwo, "Water_Volume_Fog_Murkiness", text='Underwater Fog Murkiness')
+            else:
+                col.label(text="Water Physics mesh type only valid for Scenario exports", icon='ERROR')
+
+        elif CheckType.fog(ob):
+            if poll_ui(('SCENARIO')):
+                col.prop(ob_nwo, "Fog_Name", text='Fog Name')
+                row = col.row()
+                row.prop(ob_nwo, "Fog_Appearance_Tag", text='Fog Appearance Tag')
+                row.operator('nwo.fog_path')
+                col.prop(ob_nwo, "Fog_Volume_Depth", text='Fog Volume Depth')
+            else:
+                col.label(text="Fog mesh type only valid for Scenario exports", icon='ERROR')
+
+        elif CheckType.obb_volume(ob):
+            if poll_ui(('SCENARIO')):
+                col.prop(ob_nwo, "obb_volume_type")
+            else:
+                col.label(text="OBB Volume mesh type only valid for Scenario exports", icon='ERROR')
+
+        elif CheckType.physics(ob) and poll_ui(('MODEL')):
+            if poll_ui(('MODEL')) or (poll_ui(('SCENARIO')) and not not_bungie_game()):
+                col.prop(ob_nwo, "Mesh_Primitive_Type", text='Primitive Type')
+            else:
+                col.label(text="Physics mesh type only valid for Model and Reach Scenario exports", icon='ERROR')
 
 class NWO_ObjectMeshFaceProps(Panel):
     bl_label = "Face Properties"

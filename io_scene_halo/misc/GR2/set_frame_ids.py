@@ -35,6 +35,9 @@ from ...file_gr2.nwo_utils import (
     get_tool_path,
     frame_prefixes,
     get_prefix,
+    run_tool,
+    dot_partition,
+    comma_partition,
 )
 
 def reset_frame_ids(context, report):
@@ -54,7 +57,7 @@ def set_frame_ids(context, report):
     frame_count = 0
     if model_armature != None:
         try:
-            framelist = ImportTagXML(get_tool_path(), context, report)
+            framelist = ImportTagXML(context, report)
             if(not framelist == None):
                 tag_bone_names = CleanBoneNames(framelist)
                 blend_bone_names = CleanBones(model_armature.data.bones)
@@ -116,22 +119,21 @@ def CleanBoneName(bone):
 
     return cleaned_bone
 
-def ImportTagXML(toolPath, context, report):
+def ImportTagXML(context, report):
     # try:
-    xmlPath = get_tags_path() + "temp.xml"
-    tagPath = GetGraphPath(context)
-    if not os.path.exists(os.path.join(get_tags_path(), tagPath)):
+    xml_path = get_tags_path() + "temp.xml"
+    tag_path = GetGraphPath(context)
+    print(os.path.join(get_ek_path(), tag_path))
+    if not os.path.exists(os.path.join(get_ek_path(), tag_path)):
         report({'WARNING'},"Could not find file that exists at this path. Are your Editing Kit path and animation graph path correct?")
         return None
-    toolCommand = '"{}" export-tag-to-xml "{}" "{}"'.format(toolPath, tagPath, xmlPath)
     os.chdir(get_ek_path())
-    p = Popen(toolCommand)
-    p.wait()
-    if not os.path.exists(xmlPath):
+    run_tool('export-tag-to-xml', f'\\{tag_path}', xml_path)
+    if not os.path.exists(xml_path):
         report({'WARNING'},"Failed to convert supplied tag path to XML. Did you enter a valid tag path?")
         return None
-    bonelist = ParseXML(xmlPath, context)
-    os.remove(xmlPath)
+    bonelist = ParseXML(xml_path, context)
+    os.remove(xml_path)
     return bonelist
     # except:
     #     ctypes.windll.user32.MessageBoxW(0, "Tool.exe failed to get tag XML for FrameIDs. Please check the path to your .model_animation_graph tag.", "GET FRAMEIDS FAILED", 0)
@@ -142,13 +144,10 @@ def GetGraphPath(context):
     # path cleaning
     path = path.strip('\\')
     path = path.replace(get_tags_path(), '')
-    path = path.replace(',jmad','')
-    path = '\\tags\\' + path
-    if not '.model_animation_graph' in path:
-        if path.rpartition('.')[0] == '':
-            path = path + '.model_animation_graph'
-        else:
-            path = path.rpartition('.')[0] + '.model_animation_graph'
+    path = os.path.join('tags', path)
+    path = dot_partition(path)
+    path = comma_partition(path)
+    path = f'{path}.model_animation_graph'
 
     return path
 
