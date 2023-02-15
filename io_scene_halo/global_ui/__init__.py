@@ -1618,7 +1618,7 @@ class NWO_ObjectMeshProps(Panel):
             else:
                 col.prop(ob_nwo, "Region_Name", text='Region')
 
-        if not (poll_ui('MODEL') and CheckType.default(ob)) and not (not_bungie_game() and CheckType.default(ob)) and (CheckType.default(ob) or CheckType.poop(ob) or CheckType.water_surface(ob) or CheckType.collision(ob)) and poll_ui(('MODEL', 'SCENARIO', 'PREFAB')):
+        if not (poll_ui('MODEL') and CheckType.default(ob)) and not (not_bungie_game() and CheckType.default(ob)) and (CheckType.default(ob) or CheckType.poop(ob) or CheckType.water_surface(ob) or CheckType.collision(ob) or CheckType.physics(ob)) and poll_ui(('MODEL', 'SCENARIO', 'PREFAB')):
             col.prop(ob_nwo, "Face_Global_Material", text='Global Material')
 
         if poll_ui(('DECORATOR SET')) and context.scene.gr2.asset_type == 'DECORATOR SET' and not CheckType.decorator(ob):

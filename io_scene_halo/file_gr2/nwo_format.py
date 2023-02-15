@@ -859,7 +859,7 @@ class NWOMesh(NWOObject):
                     self.bungie_mesh_poop_disallow_object_lighting_samples = self.mesh_poop_disallow_object_lighting_samples()
                     self.bungie_mesh_poop_is_rain_occluder = self.mesh_poop_is_rain_occluder()
 
-        elif self.bungie_mesh_type in ('_connected_geometry_mesh_type_physics', '_connected_geometry_mesh_type_collision'):
+        elif self.bungie_mesh_type in ('_connected_geometry_mesh_type_physics', '_connected_geometry_mesh_type_collision', '_connected_geometry_mesh_type_structure', '_connected_geometry_mesh_type_poop', '_connected_geometry_mesh_type_water_surface'):
             if self.halo.Face_Global_Material != '':
                 self.bungie_face_global_material = self.face_global_material()
 
