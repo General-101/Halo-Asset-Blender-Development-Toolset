@@ -598,7 +598,7 @@ class Export_Scene_GR2(Operator, ExportHelper):
         context.scene.gr2_export.show_output = False
 
         from .prepare_scene import prepare_scene
-        (objects_selection, active_object, hidden_objects, mode, model_armature, temp_armature, skeleton_bones, halo_objects, timeline_start, timeline_end, lod_count, unselectable_objects, enabled_exclude_collections, mesh_node_names, temp_nodes, selected_perms, selected_bsps, current_frame, regions_dict, global_materials_dict
+        (objects_selection, active_object, hidden_objects, mode, model_armature, temp_armature, skeleton_bones, halo_objects, timeline_start, timeline_end, lod_count, unselectable_objects, enabled_exclude_collections, mesh_node_names, temp_nodes, selected_perms, selected_bsps, current_frame, regions_dict, global_materials_dict, hidden_collections
         ) = prepare_scene(context, self.report, **keywords) # prepares the scene for processing and returns information about the scene
         # try:
         from .process_scene import process_scene
@@ -609,7 +609,7 @@ class Export_Scene_GR2(Operator, ExportHelper):
         #     self.report({'ERROR'}, error)
 
         from .repair_scene import repair_scene
-        repair_scene(context, self.report, objects_selection, active_object, hidden_objects, mode, temp_armature, timeline_start, timeline_end, model_armature, halo_objects.lights, unselectable_objects, enabled_exclude_collections, mesh_node_names, temp_nodes, current_frame, **keywords)
+        repair_scene(context, self.report, objects_selection, active_object, hidden_objects, mode, temp_armature, timeline_start, timeline_end, model_armature, halo_objects.lights, unselectable_objects, enabled_exclude_collections, mesh_node_names, temp_nodes, current_frame, hidden_collections, **keywords)
 
         return {'FINISHED'}
 

@@ -42,12 +42,17 @@ from .nwo_utils import(
     not_bungie_game,
     true_region,
 )
+
+hidden_collections = []
+
 #####################################################################################
 #####################################################################################
 # MAIN FUNCTION
 def prepare_scene(context, report, sidecar_type, export_hidden, filepath, use_armature_deform_only, game_version, meshes_to_empties, **kwargs):
     ExitLocalView(context)
     enabled_exclude_collections = HideExcludedCollections(context)
+    global hidden_collections
+    unhide_collections(export_hidden, context)
     objects_selection, active_object = GetCurrentActiveObjectSelection(context)
     hidden_objects = UnhideObjects(export_hidden, context)                               # If the user has opted to export hidden objects, list all hidden objects and unhide them, return the list for later use
     mode = GetSceneMode(context)                                                      # get the current selected mode, save the mode for later, and then switch to object mode
@@ -90,7 +95,7 @@ def prepare_scene(context, report, sidecar_type, export_hidden, filepath, use_ar
     # if sidecar_type == 'SCENARIO':
     #     RotateScene(context.view_layer.objects, model_armature)
 
-    return objects_selection, active_object, hidden_objects, mode, model_armature, temp_armature, skeleton_bones, halo_objects, timeline_start, timeline_end, lod_count, unselectable_objects, enabled_exclude_collections, mesh_node_names, temp_nodes, selected_perms, selected_bsps, current_frame, regions_dict, global_materials_dict
+    return objects_selection, active_object, hidden_objects, mode, model_armature, temp_armature, skeleton_bones, halo_objects, timeline_start, timeline_end, lod_count, unselectable_objects, enabled_exclude_collections, mesh_node_names, temp_nodes, selected_perms, selected_bsps, current_frame, regions_dict, global_materials_dict, hidden_collections
 
 
 #####################################################################################
@@ -229,6 +234,20 @@ def UnhideObjects(export_hidden, context):
             ob.hide_set(False)
 
     return hidden_objects # return a list of objects which should be hidden in repair_scene
+
+def unhide_collections(export_hidden, context):
+    layer_collection = context.view_layer.layer_collection
+    recursive_nightmare(layer_collection)
+
+def recursive_nightmare(collections):
+    global hidden_collections
+    for collection in collections.children:
+        if collection.hide_viewport or len(collection.children) > 0:
+            if collection.hide_viewport:
+                hidden_collections.append(collection)
+                collection.hide_viewport = False
+            if len(collection.children) > 0:
+                recursive_nightmare(collection)
 
 def SetTimelineRange(context):
     scene = context.scene
@@ -553,15 +572,12 @@ def GetPoopProxyCookie(obj, poops):
 
 def MakeSelectable(context):
     unselectable_objects = []
-    select_all_objects()
     for ob in context.view_layer.objects:
-        if ob not in context.selected_objects:
+        if ob.hide_select:
             unselectable_objects.append(ob)
     
     for ob in unselectable_objects:
         ob.hide_select = False
-    
-    deselect_all_objects()
 
     return unselectable_objects
 

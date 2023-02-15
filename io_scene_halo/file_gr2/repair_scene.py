@@ -34,7 +34,7 @@ from mathutils import Matrix, Vector
 #####################################################################################
 #####################################################################################
 # MAIN FUNCTION     
-def repair_scene(context, report, objects_selection, active_object, hidden_objects, mode, temp_armature, timeline_start, timeline_end, model_armature, lights, unselectable_objects, enabled_exclude_collections, mesh_node_names, temp_nodes, current_frame, export_hidden, sidecar_type, **kwargs):
+def repair_scene(context, report, objects_selection, active_object, hidden_objects, mode, temp_armature, timeline_start, timeline_end, model_armature, lights, unselectable_objects, enabled_exclude_collections, mesh_node_names, temp_nodes, current_frame, hidden_collections, export_hidden, sidecar_type, **kwargs):
     # if sidecar_type == 'SCENARIO':
     #     FixSceneRotatation(context.view_layer.objects, model_armature)
         
@@ -53,6 +53,7 @@ def repair_scene(context, report, objects_selection, active_object, hidden_objec
             ob.hide_select = True
 
     if export_hidden:
+        rehide_collections(hidden_collections)
         for ob in hidden_objects:
             ob.hide_set(True)
 
@@ -84,6 +85,10 @@ def RepairTimeline(scene, timeline_start, timeline_end, current_frame):
     scene.frame_start = timeline_start
     scene.frame_end = timeline_end
     scene.frame_set(current_frame)
+
+def rehide_collections(hidden_collections):
+    for collection in hidden_collections:
+        collection.hide_viewport = True
 
 def FixSceneRotatation(scene_obs, model_armature):
     deselect_all_objects()

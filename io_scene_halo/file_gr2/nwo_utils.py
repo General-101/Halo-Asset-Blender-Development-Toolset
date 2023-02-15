@@ -554,7 +554,7 @@ def run_tool(*tool_args):
     """Runs Tool using the specified function and arguments. Do not include 'tool' in the string passed"""
     os.chdir(get_ek_path())
     command = f"""{get_tool_type()} {' '.join(f'"{arg}"' for arg in tool_args)}"""
-    print(command)
+    # print(command)
     p = Popen(command)
     p.wait()
 
