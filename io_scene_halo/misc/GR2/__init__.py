@@ -705,10 +705,10 @@ class GR2_ArmatureCreator(Panel):
         layout.use_property_split = True
         flow = layout.grid_flow(row_major=True, columns=0, even_columns=True, even_rows=False, align=False)
         col = flow.column()
-        col.prop(scene_gr2_armature_creator, 'armature_type', text='Type')
-        col = layout.column(heading="Custom")
+        col.prop(scene_gr2_armature_creator, 'armature_type', text='Type', expand=True)
+        col = layout.column(heading="Include")
         sub = col.column(align=True)
-        sub.prop(scene_gr2_armature_creator, 'use_custom_bone_shapes', text='Bone Shapes')
+        sub.prop(scene_gr2_armature_creator, 'control_rig', text='Control Rig')
         col = col.row()
         col.scale_y = 1.5
         col.operator('halo_gr2.armature_create')
@@ -722,7 +722,7 @@ class GR2_ArmatureCreator_Create(Operator):
         scene = context.scene
         scene_gr2_armature_creator = scene.gr2_armature_creator
         from .armature_creator import ArmatureCreate
-        return ArmatureCreate(context, scene_gr2_armature_creator.armature_type, scene_gr2_armature_creator.use_custom_bone_shapes)
+        return ArmatureCreate(context, scene_gr2_armature_creator.armature_type, scene_gr2_armature_creator.control_rig)
 
 class GR2_ArmatureCreatorPropertiesGroup(PropertyGroup):
     armature_type: EnumProperty(
@@ -735,9 +735,9 @@ class GR2_ArmatureCreatorPropertiesGroup(PropertyGroup):
             ('UNIT', 'Unit', ''),
         ]
     )
-    use_custom_bone_shapes: BoolProperty(
-        name="Use Custom Bone Shapes",
-        description="Enable this property",
+    control_rig: BoolProperty(
+        name="Use Control Rig",
+        description="",
         default=True,
         options=set()
     )
