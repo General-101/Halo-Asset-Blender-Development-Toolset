@@ -624,7 +624,18 @@ class GR2_HaloExportPropertiesGroup(PropertyGroup):
 
 
 #######################################
-# COLLECTION MANAGER TOOL
+# PROPERTIES MANAGER TOOL
+
+class GR2_PropertiesManager(Panel):
+    bl_label = "Properties Manager"
+    bl_idname = "HALO_PT_GR2_PropertiesManager"
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "UI"
+    bl_options = {'DEFAULT_CLOSED'}
+    bl_parent_id = "HALO_PT_GR2_AutoTools"
+
+    def draw(self, context):
+        layout = self.layout
 
 class GR2_CollectionManager(Panel):
     bl_label = "Collection Manager"
@@ -632,7 +643,7 @@ class GR2_CollectionManager(Panel):
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     bl_options = {'DEFAULT_CLOSED'}
-    bl_parent_id = "HALO_PT_GR2_AutoTools"
+    bl_parent_id = "HALO_PT_GR2_PropertiesManager"
 
     def draw(self, context):
         layout = self.layout
@@ -747,7 +758,8 @@ class GR2_CopyHaloProps(Panel):
     bl_idname = "HALO_PT_GR2_CopyHaloProps"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
-    bl_parent_id = "HALO_PT_GR2_AutoTools"
+    bl_options = {'DEFAULT_CLOSED'}
+    bl_parent_id = "HALO_PT_GR2_PropertiesManager"
 
     def draw(self, context):
         layout = self.layout
@@ -779,7 +791,7 @@ class GR2_AMFHelper(Panel):
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     bl_options = {'DEFAULT_CLOSED'}
-    bl_parent_id = "HALO_PT_GR2_AutoTools"
+    bl_parent_id = "HALO_PT_GR2_PropertiesManager"
 
     def draw(self, context):
         layout = self.layout
@@ -799,6 +811,32 @@ class GR2_AMFHelper_Assign(Operator):
         from .amf_helper import amf_assign
         return amf_assign(context, self.report)
 
+class GR2_JMSHelper(Panel):
+    bl_label = "JMS Helper"
+    bl_idname = "HALO_PT_GR2_AMFHelper"
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "UI"
+    bl_options = {'DEFAULT_CLOSED'}
+    bl_parent_id = "HALO_PT_GR2_PropertiesManager"
+
+    def draw(self, context):
+        layout = self.layout
+
+        layout.use_property_split = True
+        flow = layout.grid_flow(row_major=True, columns=0, even_columns=True, even_rows=False, align=False)
+        col = flow.column()
+        col.operator('halo_gr2.amf_assign')
+
+class GR2_JMSHelper_Assign(Operator):
+    bl_idname = 'halo_gr2.amf_assign'
+    bl_label = 'Split Facemaps'
+    bl_options = {"REGISTER", "UNDO"}
+    bl_description = ""
+
+    def execute(self, context):
+        from .jms_helper import jms_assign
+        return jms_assign(context, self.report)
+
 classeshalo = (
     GR2_Tools_Helper,
     GR2_HaloExport,
@@ -813,11 +851,12 @@ classeshalo = (
     GR2_HaloLauncher_Tags,
     GR2_HaloLauncher_Source,
     GR2_HaloLauncherPropertiesGroup,
-    GR2_CopyHaloProps,
-    GR2_CopyHaloProps_Copy,
+    GR2_PropertiesManager,
     GR2_CollectionManager,
     GR2_CollectionManager_Create,
     GR2_HaloCollectionManagerPropertiesGroup,
+    GR2_CopyHaloProps,
+    GR2_CopyHaloProps_Copy,
     GR2_ShaderFinder,
     GR2_ShaderFinder_Find,
     GR2_HaloShaderFinderPropertiesGroup,
@@ -831,6 +870,8 @@ classeshalo = (
     GR2_ArmatureCreatorPropertiesGroup,
     GR2_AMFHelper,
     GR2_AMFHelper_Assign,
+    GR2_JMSHelper,
+    GR2_JMSHelper_Assign,
 )
 
 def register():
