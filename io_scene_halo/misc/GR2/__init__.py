@@ -26,6 +26,7 @@
 
 import bpy
 from os.path import exists as file_exists
+from os.path import join as path_join
 
 from bpy.types import (
         Panel,
@@ -42,7 +43,7 @@ from bpy.props import (
         FloatProperty,
         )
 
-from ...file_gr2.nwo_utils import clean_tag_path, get_tags_path
+from ...file_gr2.nwo_utils import clean_tag_path, get_tags_path, get_data_path
 
 is_blender_startup = True
 
@@ -175,7 +176,7 @@ class GR2_HaloLauncher(Panel):
         col = split.column(align=True)
         col.scale_y = 1.25
         col.operator('halo_gr2.launch_tags')
-        if scene_gr2_halo_launcher.sidecar_path != '' and file_exists(scene_gr2_halo_launcher.sidecar_path):
+        if scene_gr2_halo_launcher.sidecar_path != '' and file_exists(path_join(get_data_path(), scene_gr2_halo_launcher.sidecar_path)):
             flow = layout.grid_flow(row_major=True, columns=0, even_columns=True, even_rows=False, align=False)
             col = flow.column()
             col.scale_y = 1.5
@@ -217,7 +218,7 @@ class GR2_HaloLauncher_Source(Operator):
         scene = context.scene
         scene_gr2_halo_launcher = scene.gr2_halo_launcher
         from .halo_launcher import LaunchSource
-        return LaunchSource(scene_gr2_halo_launcher.sidecar_path)
+        return LaunchSource(path_join(get_data_path(), scene_gr2_halo_launcher.sidecar_path))
 
 class GR2_HaloLauncherPropertiesGroup(PropertyGroup):
     sidecar_path: StringProperty(
@@ -304,7 +305,7 @@ class GR2_HaloExport(Panel):
         col = flow.column()
         col.scale_y = 1.5
         col.operator('halo_gr2.export', text='Export', icon='SETTINGS') 
-        if scene_gr2_halo_launcher.sidecar_path != '' and file_exists(scene_gr2_halo_launcher.sidecar_path):
+        if scene_gr2_halo_launcher.sidecar_path != '' and file_exists(path_join(get_data_path(), scene_gr2_halo_launcher.sidecar_path)):
             col.separator()
             col.operator('halo_gr2.export_quick', text='Quick Export', icon='EXPORT')
 

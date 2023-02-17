@@ -499,8 +499,8 @@ class Export_Scene_GR2(Operator, ExportHelper):
         self.output_scenery = scene_gr2.output_scenery
         self.output_vehicle = scene_gr2.output_vehicle
         self.output_weapon = scene_gr2.output_weapon
-
-        sidecar_filepath = scene.gr2_halo_launcher.sidecar_path
+        # get sidecar path from users EK data path + internal path
+        sidecar_filepath = path.join(get_data_path(), scene.gr2_halo_launcher.sidecar_path)
         # export_settings = []
         if sidecar_filepath != '' and file_exists(sidecar_filepath):
             # export_settings = ExportSettingsFromSidecar(sidecar_filepath)

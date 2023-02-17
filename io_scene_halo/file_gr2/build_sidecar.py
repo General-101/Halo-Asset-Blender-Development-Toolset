@@ -126,11 +126,12 @@ def BuildSidecar(halo_objects, model_armature, lod_count, regions_dict, global_m
     dom = xml.dom.minidom.parseString(ET.tostring(metadata))
     xml_string = dom.toprettyxml(indent='  ')
     part1, part2 = xml_string.split('?>')
-    sidecar_path = path.join(full_path, asset_name + '.sidecar.xml')
+    sidecar_path = path.join(asset_path, asset_name + '.sidecar.xml')
+    sidecar_path_full = path.join(full_path, asset_name + '.sidecar.xml')
     # update sidecar path in halo launcher
     bpy.context.scene.gr2_halo_launcher.sidecar_path = sidecar_path
 
-    with open(sidecar_path, 'w') as xfile:
+    with open(sidecar_path_full, 'w') as xfile:
         xfile.write(part1 + 'encoding=\"{}\" standalone=\"{}\"?>'.format(m_encoding, m_standalone) + part2)
         xfile.close()
 
@@ -141,7 +142,7 @@ def WriteHeader(metadata):
     ET.SubElement(header, "Description").text = "Created using the Halo Blender Toolset"
     ET.SubElement(header, "Created").text = str(datetime.today().strftime('%Y-%m-%d %H:%M:%S'))
     ET.SubElement(header, "By").text = getpass.getuser()
-    ET.SubElement(header, 'SourceFile').text = bpy.data.filepath
+    ET.SubElement(header, 'SourceFile').text = bpy.data.filepath.replace(get_data_path(), '')
     ET.SubElement(header, "DirectoryType").text = "TAE.Shared.NWOAssetDirectory"
     ET.SubElement(header, "Schema").text = "1"
 
