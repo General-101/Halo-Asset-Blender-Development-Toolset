@@ -208,23 +208,24 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                             timeline = context.scene
                             for action in bpy.data.actions:
                                 try:
-                                    print_box(f'**Exporting Animation: {action.name}**')
-                                    model_armature.animation_data.action = action
-                                    if action.use_frame_range:
-                                        timeline.frame_start = int(action.frame_start)
-                                        timeline.frame_end = int(action.frame_end)
-                                        context.scene.frame_set(int(action.frame_start))
-                                    else:
-                                        timeline.frame_start = timeline_start
-                                        timeline.frame_end = timeline_end
-                                        context.scene.frame_set(timeline_start)
-                                    if using_better_fbx:
-                                        export_better_fbx(context, True, **keywords)
-                                        model_armature.select_set(True)
-                                    else:
-                                        export_fbx(self, context, **keywords)
-                                    export_gr2(report, asset_path, asset, 'animations', [model_armature], '', '', model_armature, skeleton_bones, action.name, regions_dict, global_materials_dict, **keywords)
-                                    gr2_count += 1
+                                    if action.nwo.export_this:
+                                        print_box(f'**Exporting Animation: {action.name}**')
+                                        model_armature.animation_data.action = action
+                                        if action.use_frame_range:
+                                            timeline.frame_start = int(action.frame_start)
+                                            timeline.frame_end = int(action.frame_end)
+                                            context.scene.frame_set(int(action.frame_start))
+                                        else:
+                                            timeline.frame_start = timeline_start
+                                            timeline.frame_end = timeline_end
+                                            context.scene.frame_set(timeline_start)
+                                        if using_better_fbx:
+                                            export_better_fbx(context, True, **keywords)
+                                            model_armature.select_set(True)
+                                        else:
+                                            export_fbx(self, context, **keywords)
+                                        export_gr2(report, asset_path, asset, 'animations', [model_armature], '', '', model_armature, skeleton_bones, action.name, regions_dict, global_materials_dict, **keywords)
+                                        gr2_count += 1
                                 except:
                                     print(f'Encountered animation not in armature, skipping export of animation: {action.name}')
                             

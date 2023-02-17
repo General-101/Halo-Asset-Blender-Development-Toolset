@@ -2328,6 +2328,32 @@ class NWO_BoneProps(Panel):
         col.prop(bone_nwo, "replacement_correction_node", text='Replacement Correction Node')
         col.prop(bone_nwo, "fik_anchor_node", text='Forward IK Anchor Node')
 
+# ACTION PROPERTIES
+class NWO_ActionProps(Panel):
+    bl_label = "Halo Animation Properties"
+    bl_idname = "NWO_PT_ActionDetailsPanel"
+    bl_space_type = 'DOPESHEET_EDITOR'
+    bl_region_type = "UI"
+    bl_context = "Action"
+    bl_parent_id = "DOPESHEET_PT_action"
+
+    @classmethod
+    def poll(cls, context):
+        scene = context.scene
+        scene_halo = scene.halo
+        return scene_halo.game_version in ('reach','h4','h2a')
+    
+    def draw(self, context):
+        layout = self.layout
+        layout.use_property_split = True
+        flow = layout.grid_flow(row_major=True, columns=0, even_columns=True, even_rows=False, align=False)
+        
+        action = context.object.animation_data.action
+        action_nwo = action.nwo
+        
+        col = flow.column()
+        col.prop(action_nwo, "export_this")
+
 # NWO PROPERTY GROUPS
 class NWO_ObjectPropertiesGroup(PropertyGroup):
     #OBJECT PROPERTIES
@@ -4684,6 +4710,13 @@ class NWO_BonePropertiesGroup(PropertyGroup):
         options=set(),
         )
 
+class NWO_ActionPropertiesGroup(PropertyGroup):
+    export_this: BoolProperty(
+        name = "Export",
+        description = "Toggles whether this animation should be exported",
+        default = True,
+        )
+
 classeshalo = (
     ASS_JMS_MeshPropertiesGroup,
     ASS_JMS_MaterialPropertiesGroup,
@@ -4726,6 +4759,8 @@ classeshalo = (
     NWO_LightProps,
     NWO_BoneProps,
     NWO_BonePropertiesGroup,
+    NWO_ActionProps,
+    NWO_ActionPropertiesGroup,
 )
 
 def register():
@@ -4739,6 +4774,7 @@ def register():
     bpy.types.Object.nwo = PointerProperty(type=NWO_ObjectPropertiesGroup, name="Halo NWO Properties", description="Set Halo Object Properties")
     bpy.types.Material.nwo = PointerProperty(type=NWO_MaterialPropertiesGroup, name="Halo NWO Properties", description="Set Halo Material Properties") 
     bpy.types.Bone.nwo = PointerProperty(type=NWO_BonePropertiesGroup, name="Halo NWO Properties", description="Set Halo Bone Properties")
+    bpy.types.Action.nwo = PointerProperty(type=NWO_ActionPropertiesGroup, name="Halo NWO Properties", description="Set Halo Animation Properties")
 
 def unregister():
     del bpy.types.Light.halo_light
