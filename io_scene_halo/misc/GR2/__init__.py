@@ -773,6 +773,32 @@ class GR2_CopyHaloProps_Copy(Operator):
         from .copy_props import CopyProps
         return CopyProps(self.report, context.view_layer.objects.active, context.selected_objects)
 
+class GR2_AMFHelper(Panel):
+    bl_label = "AMF Helper"
+    bl_idname = "HALO_PT_GR2_AMFHelper"
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "UI"
+    bl_options = {'DEFAULT_CLOSED'}
+    bl_parent_id = "HALO_PT_GR2_AutoTools"
+
+    def draw(self, context):
+        layout = self.layout
+
+        layout.use_property_split = True
+        flow = layout.grid_flow(row_major=True, columns=0, even_columns=True, even_rows=False, align=False)
+        col = flow.column()
+        col.operator('halo_gr2.amf_assign')
+
+class GR2_AMFHelper_Assign(Operator):
+    bl_idname = 'halo_gr2.amf_assign'
+    bl_label = 'Set Regions/Perms'
+    bl_options = {"REGISTER", "UNDO"}
+    bl_description = "Sets regions and permutations per object based on the AMF naming convention [region:permutation]"
+
+    def execute(self, context):
+        from .amf_helper import amf_assign
+        return amf_assign(context, self.report)
+
 classeshalo = (
     GR2_Tools_Helper,
     GR2_HaloExport,
@@ -803,6 +829,8 @@ classeshalo = (
     GR2_ArmatureCreator,
     GR2_ArmatureCreator_Create,
     GR2_ArmatureCreatorPropertiesGroup,
+    GR2_AMFHelper,
+    GR2_AMFHelper_Assign,
 )
 
 def register():
