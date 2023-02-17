@@ -2011,12 +2011,12 @@ class NWO_ObjectMarkerProps(Panel):
             sub.prop(ob_nwo, "Pathfinding_Sphere_With_Sectors", text='With Sectors')
 
         elif CheckType.physics_constraint(ob):
-            col.prop(ob_nwo, "Physics_Constraint_Parent", text='Physics Constraint Parent')
-            col.prop(ob_nwo, "Physics_Constraint_Child", text='Physics Constraint Child')
+            col.prop(ob_nwo, "Physics_Constraint_Parent", text='Constraint Parent')
+            col.prop(ob_nwo, "Physics_Constraint_Child", text='Constraint Child')
 
             sus = col.row(align=True)
 
-            sus.prop(ob_nwo, "Physics_Constraint_Type", text='Physics Constraint Type')
+            sus.prop(ob_nwo, "Physics_Constraint_Type", text='Constraint Type', expand=True)
             sus.prop(ob_nwo, 'Physics_Constraint_Uses_Limits', text='Uses Limits')
 
             if ob_nwo.Physics_Constraint_Uses_Limits:
