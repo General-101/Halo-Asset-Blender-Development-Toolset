@@ -46,6 +46,7 @@ def infer_error_type(binding_type, mtl_diffuse_colors):
         "1.000000 0.000000 1.000000": "magenta",
         "0.000000 0.000000 0.000000": "black",
         "0.000000 0.000000 1.000000": "blue",
+        "1.000000 0.410000 0.700000": "pink",
         # unconfirmed values:
         }
 
@@ -71,6 +72,10 @@ def infer_error_type(binding_type, mtl_diffuse_colors):
             ### WARNING: portal outside the bsp. [see magenta in error geometry]
             if "magenta" in found_colors:
                 return "portal outside BSP" + color_info
+                
+            ### WARNING found possible T-junction (pink).
+            if "pink" in found_colors:
+                return "T-junction" + color_info
 
         elif binding_type == "PER_VERTEX":
             ### ERROR edge #%d is open (red)
@@ -81,9 +86,12 @@ def infer_error_type(binding_type, mtl_diffuse_colors):
                 return "bad edge" + color_info
                 
             ### WARNING unearthed edge (magenta boxed lines)
-            ### WARNING found possible T-junction (pink).
             if "magenta" in found_colors:
-                return "unearthed edge or T-junction" + color_info
+                return "unearthed edge" + color_info
+                
+            ### WARNING found possible T-junction (pink).
+            if "pink" in found_colors:
+                return "T-junction" + color_info
 
         ### WARNING: a surface clipped to no leaves (see cyan in error geometry)
         if "cyan" in found_colors:
@@ -291,6 +299,7 @@ def build_scene(context, WRL, report):
         bm = bmesh.new()
         for object in  object_list:
             if object.error == error:
+                diffuse_count = len(object.diffuse_nodes)
                 if len(object.edges) > 0:
                     for edge in object.edges:
                         vert_list = []
@@ -308,7 +317,11 @@ def build_scene(context, WRL, report):
                     bm.edges.ensure_lookup_table()
 
                     for object_edge_idx, edge in enumerate(object.edges):
-                        color = object.diffuse_nodes[object_edge_idx]
+                        if diffuse_count > object_edge_idx:
+                            color = object.diffuse_nodes[object_edge_idx]
+                        else:
+                            color = object.diffuse_nodes[0]
+
                         r, g, b = color.split()
                         diffuse = (float(r), float(g), float(b), 1.0)
                         mat_name = get_material_name(diffuse, object.error)
@@ -342,7 +355,11 @@ def build_scene(context, WRL, report):
                     bm.faces.ensure_lookup_table()
 
                     for object_face_idx, face in enumerate(object.faces):
-                        color = object.diffuse_nodes[object_face_idx]
+                        if diffuse_count > object_face_idx:
+                            color = object.diffuse_nodes[object_face_idx]
+                        else:
+                            color = object.diffuse_nodes[0]
+
                         r, g, b = color.split()
                         diffuse = (float(r), float(g), float(b), 1.0)
                         mat_name = get_material_name(diffuse, object.error)
