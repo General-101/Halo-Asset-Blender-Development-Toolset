@@ -88,9 +88,12 @@ def prepare_scene(context, report, sidecar_type, export_hidden, filepath, use_ar
     #     h_objects.poops.append(p)
     model_armature, temp_armature, no_parent_objects = GetSceneArmature(context, sidecar_type, game_version)                          # return the main armature in the scene, and create a temp one if a model armature does not exist
     skeleton_bones = {}
+    current_action = ''
     if model_armature is not None:
         ParentToArmature(model_armature, temp_armature, no_parent_objects, context)                             # ensure all objects are parented to an armature on export. Render and collision mesh is parented with armature deform, the rest uses bone parenting
         skeleton_bones = GetBoneList(model_armature, use_armature_deform_only)      # return a list of bones attached to the model armature, ignoring control / non-deform bones
+        if len(bpy.data.actions) > 0:
+            current_action = get_current_action(context, model_armature)
     # HaloBoner(model_armature.data.edit_bones, model_armature, context)
     #FixLightsRotations(h_objects.lights)                                         # adjust light rotations to match in game rotation, and return a list of lights for later use in repair_scene
     timeline_start, timeline_end, current_frame = SetTimelineRange(context)                      # set the timeline range so we can restore it later
@@ -101,7 +104,7 @@ def prepare_scene(context, report, sidecar_type, export_hidden, filepath, use_ar
     # if sidecar_type == 'SCENARIO':
     #     RotateScene(context.view_layer.objects, model_armature)
 
-    return objects_selection, active_object, hidden_objects, mode, model_armature, temp_armature, skeleton_bones, halo_objects, timeline_start, timeline_end, lod_count, unselectable_objects, enabled_exclude_collections, mesh_node_names, temp_nodes, selected_perms, selected_bsps, current_frame, regions_dict, global_materials_dict, hidden_collections
+    return objects_selection, active_object, hidden_objects, mode, model_armature, temp_armature, skeleton_bones, halo_objects, timeline_start, timeline_end, lod_count, unselectable_objects, enabled_exclude_collections, mesh_node_names, temp_nodes, selected_perms, selected_bsps, current_frame, regions_dict, global_materials_dict, hidden_collections, current_action
 
 
 #####################################################################################
@@ -148,6 +151,14 @@ def GetSceneMode(context):
         print('WARNING: Unable to test mode')
 
     return mode
+
+def get_current_action(context, model_armature):
+    deselect_all_objects()
+    set_active_object(model_armature)
+    current_action = str(context.active_object.animation_data.action.name)
+    deselect_all_objects()
+    return current_action
+
 
 def get_regions_dict(objects):
     regions = {'default': '0'}

@@ -27,6 +27,7 @@ import bpy
 from .nwo_utils import(
     deselect_all_objects,
     halo_deboner,
+    set_active_object,
 )
 from math import radians
 from mathutils import Matrix, Vector
@@ -34,13 +35,16 @@ from mathutils import Matrix, Vector
 #####################################################################################
 #####################################################################################
 # MAIN FUNCTION     
-def repair_scene(context, report, objects_selection, active_object, hidden_objects, mode, temp_armature, timeline_start, timeline_end, model_armature, lights, unselectable_objects, enabled_exclude_collections, mesh_node_names, temp_nodes, current_frame, hidden_collections, export_hidden, sidecar_type, **kwargs):
+def repair_scene(context, report, objects_selection, active_object, hidden_objects, mode, temp_armature, timeline_start, timeline_end, model_armature, lights, unselectable_objects, enabled_exclude_collections, mesh_node_names, temp_nodes, current_frame, hidden_collections, current_action, export_hidden, sidecar_type, **kwargs):
     # if sidecar_type == 'SCENARIO':
     #     FixSceneRotatation(context.view_layer.objects, model_armature)
         
     scene = context.scene
  
     RepairTimeline(scene, timeline_start, timeline_end, current_frame)
+
+    if model_armature is not None and len(bpy.data.actions) > 0:
+        set_current_action(context, model_armature, current_action)
 
     # DeletePoopProxies(proxies)
 
@@ -85,6 +89,12 @@ def RepairTimeline(scene, timeline_start, timeline_end, current_frame):
     scene.frame_start = timeline_start
     scene.frame_end = timeline_end
     scene.frame_set(current_frame)
+
+def set_current_action(context, model_armature, current_action):
+    deselect_all_objects()
+    set_active_object(model_armature)
+    model_armature.animation_data.action = bpy.data.actions.get(current_action)
+    deselect_all_objects()
 
 def rehide_collections(hidden_collections):
     for collection in hidden_collections:
