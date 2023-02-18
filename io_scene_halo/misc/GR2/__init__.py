@@ -701,12 +701,12 @@ class GR2_HaloCollectionManagerPropertiesGroup(PropertyGroup):
     )
 
 class GR2_ArmatureCreator(Panel):
-    bl_label = "Halo Armature Creator"
+    bl_label = "Armature Creator"
     bl_idname = "HALO_PT_GR2_ArmatureCreator"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     bl_options = {'DEFAULT_CLOSED'}
-    bl_parent_id = "HALO_PT_GR2_AutoTools"
+    bl_parent_id = "HALO_PT_GR2_AnimationTools"
 
     def draw(self, context):
         layout = self.layout
@@ -813,7 +813,7 @@ class GR2_AMFHelper_Assign(Operator):
 
 class GR2_JMSHelper(Panel):
     bl_label = "JMS Helper"
-    bl_idname = "HALO_PT_GR2_AMFHelper"
+    bl_idname = "HALO_PT_GR2_JMSHelper"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     bl_options = {'DEFAULT_CLOSED'}
@@ -825,10 +825,10 @@ class GR2_JMSHelper(Panel):
         layout.use_property_split = True
         flow = layout.grid_flow(row_major=True, columns=0, even_columns=True, even_rows=False, align=False)
         col = flow.column()
-        col.operator('halo_gr2.amf_assign')
+        col.operator('halo_gr2.jms_assign')
 
 class GR2_JMSHelper_Assign(Operator):
-    bl_idname = 'halo_gr2.amf_assign'
+    bl_idname = 'halo_gr2.jms_assign'
     bl_label = 'Split Facemaps'
     bl_options = {"REGISTER", "UNDO"}
     bl_description = ""
@@ -836,6 +836,65 @@ class GR2_JMSHelper_Assign(Operator):
     def execute(self, context):
         from .jms_helper import jms_assign
         return jms_assign(context, self.report)
+
+class GR2_AnimationTools(Panel):
+    bl_label = "Halo Animation Tools"
+    bl_idname = "HALO_PT_GR2_AnimationTools"
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "UI"
+    bl_options = {'DEFAULT_CLOSED'}
+    bl_parent_id = "HALO_PT_GR2_AutoTools"
+
+    def draw(self, context):
+        layout = self.layout
+
+class GR2_AnimationExportManager(Panel):
+    bl_label = "Export Manager"
+    bl_idname = "HALO_PT_GR2_AnimationExportManager"
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "UI"
+    bl_options = {'DEFAULT_CLOSED'}
+    bl_parent_id = "HALO_PT_GR2_AnimationTools"
+
+    def draw(self, context):
+        layout = self.layout
+
+        layout.use_property_split = True
+        flow = layout.grid_flow(row_major=True, columns=0, even_columns=True, even_rows=False, align=False)
+        col = flow.column()
+        col.operator('halo_gr2.export_none')
+        col.operator('halo_gr2.export_all')
+        col.operator('halo_gr2.export_active')
+
+class GR2_AnimationExport_None(Operator):
+    bl_idname = 'halo_gr2.export_none'
+    bl_label = 'None'
+    bl_options = {"REGISTER", "UNDO"}
+    bl_description = "Turn off the export flag for every action in the scene"
+
+    def execute(self, context):
+        from .export_manager import set_export
+        return set_export(context, self.report, 'none')
+
+class GR2_AnimationExport_All(Operator):
+    bl_idname = 'halo_gr2.export_all'
+    bl_label = 'All'
+    bl_options = {"REGISTER", "UNDO"}
+    bl_description = "Turn on the export flag for every action in the scene"
+
+    def execute(self, context):
+        from .export_manager import set_export
+        return set_export(context, self.report, 'all')
+
+class GR2_AnimationExport_Active(Operator):
+    bl_idname = 'halo_gr2.export_active'
+    bl_label = 'Only Active'
+    bl_options = {"REGISTER", "UNDO"}
+    bl_description = "Enable the export flag for the current active active and toggle off the export flag for every other action in the scene"
+
+    def execute(self, context):
+        from .export_manager import set_export
+        return set_export(context, self.report, 'active')
 
 classeshalo = (
     GR2_Tools_Helper,
@@ -865,13 +924,18 @@ classeshalo = (
     GR2_SetFrameIDsOp,
     GR2_ResetFrameIDsOp,
     GR2_SetFrameIDsPropertiesGroup,
-    GR2_ArmatureCreator,
-    GR2_ArmatureCreator_Create,
-    GR2_ArmatureCreatorPropertiesGroup,
     GR2_AMFHelper,
     GR2_AMFHelper_Assign,
     GR2_JMSHelper,
     GR2_JMSHelper_Assign,
+    GR2_AnimationTools,
+    GR2_ArmatureCreator,
+    GR2_ArmatureCreator_Create,
+    GR2_ArmatureCreatorPropertiesGroup,
+    GR2_AnimationExportManager,
+    GR2_AnimationExport_None,
+    GR2_AnimationExport_All,
+    GR2_AnimationExport_Active,
 )
 
 def register():
