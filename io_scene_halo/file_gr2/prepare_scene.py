@@ -30,6 +30,7 @@ import csv
 from math import radians
 from mathutils import Matrix, Vector
 from uuid import uuid4
+from ..misc.GR2.shader_finder import FindShaders
 from .nwo_utils import(
     deselect_all_objects,
     is_mesh,
@@ -48,7 +49,7 @@ hidden_collections = []
 #####################################################################################
 #####################################################################################
 # MAIN FUNCTION
-def prepare_scene(context, report, sidecar_type, export_hidden, filepath, use_armature_deform_only, game_version, meshes_to_empties, **kwargs):
+def prepare_scene(context, report, sidecar_type, export_hidden, filepath, use_armature_deform_only, game_version, meshes_to_empties, find_shaders, **kwargs):
     ExitLocalView(context)
     enabled_exclude_collections = HideExcludedCollections(context)
     global hidden_collections
@@ -69,6 +70,11 @@ def prepare_scene(context, report, sidecar_type, export_hidden, filepath, use_ar
         #     ob.nwo.Face_Global_Material = 'default'
     
     ApplyObjectIDs(context.view_layer.objects)
+    # run find shaders code if any empty paths
+    for material in bpy.data.materials:
+        if material.nwo.shader_path == '' and not CheckType.override(material) and material.name != 'invalid':
+            FindShaders(context, '', report, False)
+            break
     regions_dict = get_regions_dict(context.view_layer.objects)
     global_materials_dict = get_global_materials_dict(context.view_layer.objects)
     mesh_node_names = {}

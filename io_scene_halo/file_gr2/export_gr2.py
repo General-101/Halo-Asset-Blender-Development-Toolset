@@ -79,7 +79,7 @@ def build_json(json_path, model_armature, skeleton_bones, selected_objects, asse
 
 def build_gr2(filepath, json_path, gr2_path, asset_path):
     """Builds a json file by running a fbx and json file through Tool using fbx-to-gr2"""
-    try:           
+    try: 
         run_tool('fbx-to-gr2', filepath, json_path, gr2_path)
     except:
         print(f'Failed to build {gr2_path}. Please check your asset errors folder')

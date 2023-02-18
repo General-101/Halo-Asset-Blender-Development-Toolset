@@ -26,8 +26,8 @@
 
 
 ####################
-# TODO NEED TO CHANGE STRUCTURE DESIGN. SHOULD NOT CONTAIN SHARED
 # TODO Add proper exception handling for when frame id tool anim graph path invalid or empty
+# TODO Stop structure design bsps being added to the connected_geometry_bsp_table
 
 bl_info = {
     'name': 'Halo GR2 Export',
@@ -421,9 +421,13 @@ class Export_Scene_GR2(Operator, ExportHelper):
         name='Export GR2 Files',
         default=True,
     )
-    use_tspace: BoolProperty(
+    use_tspace: BoolProperty( 
         name='use tspace',
         default=False,
+    )
+    find_shaders: BoolProperty( 
+        name='Find Missing Materials',
+        default=True,
     )
     # import_bitmaps: BoolProperty(
     #     name='Import Bitmaps',
