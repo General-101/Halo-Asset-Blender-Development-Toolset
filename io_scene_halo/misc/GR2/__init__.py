@@ -805,7 +805,11 @@ class GR2_AMFHelper_Assign(Operator):
     bl_idname = 'halo_gr2.amf_assign'
     bl_label = 'Set Regions/Perms'
     bl_options = {"REGISTER", "UNDO"}
-    bl_description = "Sets regions and permutations per object based on the AMF naming convention [region:permutation]"
+    bl_description = "Sets regions and permutations for all scene objects which use the AMF naming convention [region:permutation]"
+
+    @classmethod
+    def poll(cls, context):
+        return context.active_object is not None and context.object.type == 'MESH' and context.object.mode == 'OBJECT'
 
     def execute(self, context):
         from .amf_helper import amf_assign
@@ -831,7 +835,11 @@ class GR2_JMSHelper_Assign(Operator):
     bl_idname = 'halo_gr2.jms_assign'
     bl_label = 'Split Facemaps'
     bl_options = {"REGISTER", "UNDO"}
-    bl_description = ""
+    bl_description = "Splits the active object into it's face maps and assigns a new name for each new object to match the AMF naming convention, as well as setting the proper region & permutation. Collision and physics prefixes are retained"
+
+    @classmethod
+    def poll(cls, context):
+        return context.active_object is not None and context.object.type == 'MESH' and context.object.mode == 'OBJECT'
 
     def execute(self, context):
         from .jms_helper import jms_assign

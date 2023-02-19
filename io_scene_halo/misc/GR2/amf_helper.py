@@ -24,16 +24,22 @@
 #
 # ##### END MIT LICENSE BLOCK #####
 
+import bpy
+from ...file_gr2.nwo_utils import dot_partition
+
 def amf_assign(context, report):
     # Loop through scene objects and apply appropriate perm / region names
+    loop_count = 0
     for ob in context.view_layer.objects:
-        if not ob.name.startswith(('+', ':')) and ':' in ob.name:
-            if ob.name.rpartition(':')[0] != '':
-                ob.nwo.Region_Name = ob.name.rpartition(':')[0]
-            if ob.name.rpartition(':')[2] != '':
-                ob.nwo.Permutation_Name = ob.name.rpartition(':')[2]
+        true_name = dot_partition(ob.name)
+        if not true_name.startswith(('+', ':')) and ':' in true_name:
+            if true_name.rpartition(':')[0] != '':
+                ob.nwo.Region_Name = true_name.rpartition(':')[0]
+            if true_name.rpartition(':')[2] != '':
+                ob.nwo.Permutation_Name = true_name.rpartition(':')[2]
+            loop_count += 1
 
-    report({'INFO'},"Updated regions & permutations for AMF objects")
+    report({'INFO'},f"Updated regions & permutations for {loop_count} AMF objects")
 
     return {'FINISHED'}
 
