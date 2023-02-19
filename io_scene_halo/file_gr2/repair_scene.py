@@ -92,6 +92,7 @@ def RepairTimeline(scene, timeline_start, timeline_end, current_frame):
 
 def set_current_action(context, model_armature, current_action):
     deselect_all_objects()
+    model_armature.select_set(True)
     set_active_object(model_armature)
     model_armature.animation_data.action = bpy.data.actions.get(current_action)
     deselect_all_objects()

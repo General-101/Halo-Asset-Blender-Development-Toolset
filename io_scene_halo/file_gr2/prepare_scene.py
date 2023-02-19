@@ -93,7 +93,10 @@ def prepare_scene(context, report, sidecar_type, export_hidden, filepath, use_ar
         ParentToArmature(model_armature, temp_armature, no_parent_objects, context)                             # ensure all objects are parented to an armature on export. Render and collision mesh is parented with armature deform, the rest uses bone parenting
         skeleton_bones = GetBoneList(model_armature, use_armature_deform_only)      # return a list of bones attached to the model armature, ignoring control / non-deform bones
         if len(bpy.data.actions) > 0:
-            current_action = get_current_action(context, model_armature)
+            try:
+                current_action = get_current_action(context, model_armature)
+            except:
+                pass
     # HaloBoner(model_armature.data.edit_bones, model_armature, context)
     #FixLightsRotations(h_objects.lights)                                         # adjust light rotations to match in game rotation, and return a list of lights for later use in repair_scene
     timeline_start, timeline_end, current_frame = SetTimelineRange(context)                      # set the timeline range so we can restore it later
@@ -154,6 +157,7 @@ def GetSceneMode(context):
 
 def get_current_action(context, model_armature):
     deselect_all_objects()
+    model_armature.select_set(True)
     set_active_object(model_armature)
     current_action = str(context.active_object.animation_data.action.name)
     deselect_all_objects()
