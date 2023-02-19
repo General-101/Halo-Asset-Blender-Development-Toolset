@@ -24,6 +24,9 @@
 #
 # ##### END MIT LICENSE BLOCK #####
 
+import uuid
+import random
+
 from .nwo_utils import(
     CheckType,
     not_bungie_game,
@@ -94,7 +97,12 @@ class NWOObject:
                 return '_connected_geometry_object_type_mesh'
         
     def object_ID(self):
-        return self.halo.object_id
+        # Generate a seeded GUID based off object name. This way objects can retain their IDs and as blender objects must be unique, a unique ID is guaranteed.
+        rnd = random.Random()
+        rnd.seed(self.name)
+        obj_id = str(uuid.UUID(int=rnd.getrandbits(128)))
+
+        return obj_id
 
     def object_animates(self):
         return bool_str(self.sidecar_type == 'MODEL')

@@ -69,7 +69,7 @@ def prepare_scene(context, report, sidecar_type, export_hidden, filepath, use_ar
         # if ob.nwo.Face_Global_Material == '':
         #     ob.nwo.Face_Global_Material = 'default'
     
-    ApplyObjectIDs(context.view_layer.objects)
+    # ApplyObjectIDs(context.view_layer.objects) # removed due to new method of always generating IDs at export
     # run find shaders code if any empty paths
     for material in bpy.data.materials:
         if material.nwo.shader_path == '' and not CheckType.override(material) and material.name != 'invalid':
@@ -224,11 +224,11 @@ def ExitLocalView(context):
                         override = {'area': area, 'region': region}
                         bpy.ops.view3d.localview(override)
 
-def ApplyObjectIDs(scene_obs):
-    for ob in scene_obs:
-        ob.nwo.object_id
-        if ob.nwo.object_id == '':
-            ob.nwo.object_id = str(uuid4())
+# def ApplyObjectIDs(scene_obs):
+#     for ob in scene_obs:
+#         ob.nwo.object_id
+#         if ob.nwo.object_id == '':
+#             ob.nwo.object_id = str(uuid4())
 
 def RotateScene(scene_obs, model_armature):
     deselect_all_objects()
@@ -748,7 +748,7 @@ def SetNodeProps(node, ob):
     node_halo.marker_light_cone_length = ob_halo.marker_light_cone_length
     node_halo.marker_light_cone_curve = ob_halo.marker_light_cone_curve
 
-    node_halo.object_id = ob_halo.object_id
+    # node_halo.object_id = ob_halo.object_id
 
 
 

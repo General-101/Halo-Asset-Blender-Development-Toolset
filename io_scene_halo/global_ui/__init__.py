@@ -2357,9 +2357,9 @@ class NWO_ActionProps(Panel):
 # NWO PROPERTY GROUPS
 class NWO_ObjectPropertiesGroup(PropertyGroup):
     #OBJECT PROPERTIES
-    object_id: StringProperty(
-        name="Object ID",
-    )
+    # object_id: StringProperty(
+    #     name="Object ID",
+    # )
 
     def get_objecttype_enum(self):
         if self.id_data.name.startswith(frame_prefixes):
