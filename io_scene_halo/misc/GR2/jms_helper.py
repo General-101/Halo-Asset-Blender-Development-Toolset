@@ -73,7 +73,8 @@ def jms_assign(context, report):
                         bpy.ops.object.face_map_deselect()
                         index +=1
                     else:
-                        bpy.ops.object.face_map_remove()
+                        if len(obj.face_maps) > 1:
+                            bpy.ops.object.face_map_remove()
                     
                 bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
                 ob.select_set(False)
