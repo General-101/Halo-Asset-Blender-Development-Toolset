@@ -425,10 +425,10 @@ class Export_Scene_GR2(Operator, ExportHelper):
         name='use tspace',
         default=False,
     )
-    find_shaders: BoolProperty( 
-        name='Find Missing Materials',
-        default=True,
-    )
+    # find_shaders: BoolProperty( 
+    #     name='Find Missing Materials',
+    #     default=True,
+    # )
     # import_bitmaps: BoolProperty(
     #     name='Import Bitmaps',
     #     default=False,

@@ -49,7 +49,7 @@ hidden_collections = []
 #####################################################################################
 #####################################################################################
 # MAIN FUNCTION
-def prepare_scene(context, report, sidecar_type, export_hidden, filepath, use_armature_deform_only, game_version, meshes_to_empties, find_shaders, **kwargs):
+def prepare_scene(context, report, sidecar_type, export_hidden, filepath, use_armature_deform_only, game_version, meshes_to_empties, **kwargs):
     ExitLocalView(context)
     enabled_exclude_collections = HideExcludedCollections(context)
     global hidden_collections

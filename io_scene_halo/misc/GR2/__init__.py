@@ -833,7 +833,7 @@ class GR2_JMSHelper(Panel):
 
 class GR2_JMSHelper_Assign(Operator):
     bl_idname = 'halo_gr2.jms_assign'
-    bl_label = 'Split Facemaps'
+    bl_label = 'JMS -> GR2'
     bl_options = {"REGISTER", "UNDO"}
     bl_description = "Splits the active object into it's face maps and assigns a new name for each new object to match the AMF naming convention, as well as setting the proper region & permutation. Collision and physics prefixes are retained"
 
