@@ -826,6 +826,10 @@ class NWOMesh(NWOObject):
 
             if self.bungie_mesh_type in ('_connected_geometry_mesh_type_structure', '_connected_geometry_mesh_type_render', '_connected_geometry_mesh_type_default', '_connected_geometry_mesh_type_poop'):
                 self.bungie_mesh_use_uncompressed_verts = self.mesh_use_uncompressed_verts()
+
+        if self.bungie_mesh_type in ('_connected_geometry_mesh_type_physics', '_connected_geometry_mesh_type_collision', '_connected_geometry_mesh_type_structure', '_connected_geometry_mesh_type_default', '_connected_geometry_mesh_type_poop', '_connected_geometry_mesh_type_water_surface'):
+            if self.halo.Face_Global_Material != '':
+                self.bungie_face_global_material = self.face_global_material()
         
         # SPECIFIC MESH TYPE PROPS
         if self.bungie_mesh_type == '_connected_geometry_mesh_type_boundary_surface':
@@ -866,11 +870,6 @@ class NWOMesh(NWOObject):
                     self.bungie_mesh_poop_exclude_from_cinema = self.mesh_poop_exclude_from_cinema()
                     self.bungie_mesh_poop_disallow_object_lighting_samples = self.mesh_poop_disallow_object_lighting_samples()
                     self.bungie_mesh_poop_is_rain_occluder = self.mesh_poop_is_rain_occluder()
-
-        elif self.bungie_mesh_type in ('_connected_geometry_mesh_type_physics', '_connected_geometry_mesh_type_collision', '_connected_geometry_mesh_type_structure', '_connected_geometry_mesh_type_default', '_connected_geometry_mesh_type_poop', '_connected_geometry_mesh_type_water_surface'):
-            if self.halo.Face_Global_Material != '':
-                self.bungie_face_global_material = self.face_global_material()
-
 
         elif self.bungie_mesh_type == '_connected_geometry_mesh_type_physics':
             self.bungie_mesh_primitive_type = self.mesh_primitive_type()
