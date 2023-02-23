@@ -185,25 +185,28 @@ def select_model_objects_no_perm(halo_objects, arm, export_hidden):
 
     return boolean
 
-def select_bsp_objects(halo_objects, bsp, arm, shared, perm, export_hidden, export_all_perms, selected_perms, export_all_bsps, selected_bsps):
+def select_bsp_objects(halo_objects, bsp, arm, perm, export_hidden, export_all_perms, selected_perms, export_all_bsps, selected_bsps):
     deselect_all_objects()
     boolean = False
     if arm is not None:
         arm.select_set(True)
     for ob in halo_objects:
         halo = ob.nwo
-        if halo.bsp_name_locked != '':
-            bsp_value = halo.bsp_name_locked
-        else:
-            bsp_value = halo.bsp_name
-        if bsp_value == bsp or shared:
+        bsp_value = true_bsp(ob.nwo)
+        if bsp_value == bsp:
             if object_valid(ob, export_hidden, perm, halo.Permutation_Name, halo.Permutation_Name_Locked) and export_perm(perm, export_all_perms, selected_perms) and export_bsp(bsp, export_all_bsps, selected_bsps):
                 ob.select_set(True)
                 boolean = True
-            else:
-                print(f'{ob.name} not valid')
 
     return boolean
+
+def get_shared_objects(halo_objects):
+    new_objects = []
+    for ob in halo_objects:
+        if true_bsp(ob.nwo) == 'shared':
+            new_objects.append(ob)
+
+    return new_objects
 
 def select_prefab_objects(halo_objects, arm, export_hidden):
     deselect_all_objects()
@@ -287,7 +290,7 @@ def is_frame(ob):
     if ob.type == 'MESH':
         return (ob.nwo.Object_Type_All == '_connected_geometry_object_type_frame' and not ob.name.startswith(marker_prefixes)) or ob.name.startswith(frame_prefixes) or ob.nwo.Object_Type_All_Locked == '_connected_geometry_object_type_frame'
     elif ob.type == 'EMPTY':
-        return (ob.nwo.Object_Type_No_Mesh == '_connected_geometry_object_type_frame' and not ob.name.startswith('#', '?', '$')) or ob.name.startswith(frame_prefixes) or ob.nwo.Object_Type_No_Mesh_Locked == '_connected_geometry_object_type_frame'
+        return (ob.nwo.Object_Type_No_Mesh == '_connected_geometry_object_type_frame' and not ob.name.startswith(('#', '?', '$'))) or ob.name.startswith(frame_prefixes) or ob.nwo.Object_Type_No_Mesh_Locked == '_connected_geometry_object_type_frame'
     else:
         return False
 
@@ -371,10 +374,7 @@ def clean_tag_path(path, file_ext = None):
         return ''
 
 def is_shared(ob):
-    if ob.nwo.bsp_name_locked != '':
-        return ob.nwo.bsp_name_locked == 'shared'
-    else:
-        return ob.nwo.bsp_name == 'shared'
+    return true_bsp(ob.nwo) == 'shared'
 
 def shortest_string(*strings):
     """Takes strings and returns the shortest non null string"""

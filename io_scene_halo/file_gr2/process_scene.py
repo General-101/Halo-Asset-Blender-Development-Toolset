@@ -255,20 +255,21 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                         if export_structure:
                             perm_list = []
                             for ob in get_structure_from_halo_objects(halo_objects):
-                                perm = get_perm(ob)
-                                if perm not in perm_list:
-                                    perm_list.append(perm)
-                                    if select_bsp_objects(get_structure_from_halo_objects(halo_objects), bsp, model_armature, False, perm, export_hidden, export_all_perms, selected_perms, export_all_bsps, selected_bsps):
-                                        print_box(f'**Exporting {bsp} {perm} BSP**')
-                                        if using_better_fbx:
-                                            obj_selection = [obj for obj in context.selected_objects]
-                                            export_better_fbx(context, False, **keywords)
-                                            for obj in obj_selection:
-                                                obj.select_set(True)
-                                        else:
-                                            export_fbx(self, context, **keywords)
-                                        export_gr2(report, asset_path, asset, 'bsp', context.selected_objects, bsp, perm, model_armature, skeleton_bones, '', regions_dict, global_materials_dict, **keywords)
-                                        gr2_count += 1
+                                if not is_shared(ob):
+                                    perm = get_perm(ob)
+                                    if perm not in perm_list:
+                                        perm_list.append(perm)
+                                        if select_bsp_objects(get_structure_from_halo_objects(halo_objects), bsp, model_armature, perm, export_hidden, export_all_perms, selected_perms, export_all_bsps, selected_bsps):
+                                            print_box(f'**Exporting {bsp} {perm} BSP**')
+                                            if using_better_fbx:
+                                                obj_selection = [obj for obj in context.selected_objects]
+                                                export_better_fbx(context, False, **keywords)
+                                                for obj in obj_selection:
+                                                    obj.select_set(True)
+                                            else:
+                                                export_fbx(self, context, **keywords)
+                                            export_gr2(report, asset_path, asset, 'bsp', context.selected_objects, bsp, perm, model_armature, skeleton_bones, '', regions_dict, global_materials_dict, **keywords)
+                                            gr2_count += 1
                         # Design time!
                         bsp_list = []
 
@@ -286,7 +287,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                 perm = get_perm(ob)
                                 if perm not in perm_list:
                                     perm_list.append(perm)
-                                    if select_bsp_objects(get_design_from_halo_objects(halo_objects), bsp, model_armature, False, perm, export_hidden, export_all_perms, selected_perms, export_all_bsps, selected_bsps):
+                                    if select_bsp_objects(get_design_from_halo_objects(halo_objects), bsp, model_armature, perm, export_hidden, export_all_perms, selected_perms, export_all_bsps, selected_bsps):
                                         print_box(f'**Exporting {bsp} {perm} Design**')
                                         if using_better_fbx:
                                             obj_selection = [obj for obj in context.selected_objects]
@@ -312,7 +313,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                     perm = get_perm(ob)
                                     if perm not in perm_list:
                                         perm_list.append(perm)
-                                        if select_bsp_objects(get_structure_from_halo_objects(halo_objects), bsp, model_armature, True, perm, export_hidden, export_all_perms, selected_perms, export_all_bsps, selected_bsps):
+                                        if select_bsp_objects(get_structure_from_halo_objects(halo_objects), 'shared', model_armature, perm, export_hidden, export_all_perms, selected_perms, export_all_bsps, selected_bsps):
                                             print_box(f'**Exporting shared {perm} bsp**')
                                             if using_better_fbx:
                                                 obj_selection = [obj for obj in context.selected_objects]
