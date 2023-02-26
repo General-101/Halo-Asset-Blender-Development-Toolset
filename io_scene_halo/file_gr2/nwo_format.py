@@ -552,7 +552,7 @@ class NWOMarker(NWOObject):
         super().__init__(ob, sidecar_type, model_armature, world_frame, asset_name)
         # SHARED
         self.bungie_marker_type = self.marker_type()
-        if self.sidecar_type in ('MODEL', 'SKY'):
+        if self.sidecar_type in ('MODEL', 'SKY') and not self.bungie_marker_type in (('_connected_geometry_marker_type_pathfinding_sphere', '_connected_geometry_marker_type_physics_hinge_constraint', '_connected_geometry_marker_type_physics_socket_constraint')):
             self.bungie_marker_all_regions = self.marker_all_regions()
             self.bungie_marker_region = self.marker_region()
         if self.bungie_marker_type in ('_connected_geometry_marker_type_model', '_connected_geometry_marker_type_hint', '_connected_geometry_marker_type_target'):
@@ -566,6 +566,7 @@ class NWOMarker(NWOObject):
             self.bungie_marker_pathfinding_sphere_vehicle_only = self.marker_pathfinding_sphere_vehicle_only()
             self.bungie_marker_pathfinding_sphere_remains_when_open = self.marker_pathfinding_sphere_remains_when_open()
             self.bungie_marker_pathfinding_sphere_with_sectors = self.marker_pathfinding_sphere_with_sectors()
+            self.bungie_mesh_primitive_sphere_radius = self.marker_sphere_radius() # mesh properties in my node properties... Pathfinding spheres need this or they don't get written to the collision model
         elif self.bungie_marker_type in ('_connected_geometry_marker_type_physics_hinge_constraint', '_connected_geometry_marker_type_physics_socket_constraint'):
             self.bungie_physics_constraint_parent = self.physics_constraint_parent()
             self.bungie_physics_constraint_child = self.physics_constraint_child()
@@ -670,6 +671,9 @@ class NWOMarker(NWOObject):
 
     def marker_pathfinding_sphere_with_sectors(self):
         return bool_str(self.halo.Pathfinding_Sphere_With_Sectors)
+    
+    def marker_sphere_radius(self):
+        return radius_str(self.ob) if self.ob.type == 'MESH' else jstr(self.halo.marker_sphere_radius)
 
     def physics_constraint_parent(self):
         return self.halo.Physics_Constraint_Parent
@@ -714,7 +718,8 @@ class NWOMarker(NWOObject):
         return clean_tag_path(self.halo.Marker_Game_Instance_Tag_Name)
 
     def marker_hint_length(self):
-        return jstr(self.halo.marker_hint_length)
+        # return jstr(self.halo.marker_hint_length)
+        return jstr(max(self.ob.scale.x, self.ob.scale.y, self.ob.scale.z))
 
     def marker_looping_effect(self):
         return clean_tag_path(self.halo.marker_looping_effect, 'effect')

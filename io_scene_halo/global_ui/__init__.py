@@ -2009,6 +2009,8 @@ class NWO_ObjectMarkerProps(Panel):
             sub.prop(ob_nwo, "Marker_Pathfinding_Sphere_Vehicle", text='Vehicle Only')
             sub.prop(ob_nwo, "Pathfinding_Sphere_Remains_When_Open", text='Remains When Open')
             sub.prop(ob_nwo, "Pathfinding_Sphere_With_Sectors", text='With Sectors')
+            if ob.type != 'MESH':
+                sub.prop(ob_nwo, "marker_sphere_radius")
 
         elif CheckType.physics_constraint(ob):
             col.prop(ob_nwo, "Physics_Constraint_Parent", text='Constraint Parent')
@@ -3649,7 +3651,7 @@ class NWO_ObjectPropertiesGroup(PropertyGroup):
     def get_marker_group_name(self):
         name = self.id_data.name
         name = name.removeprefix('#')
-        name = name.strip(' :"')
+        name = name.strip(' :_"')
 
         return shortest_string(name, name.rpartition('.')[0]).lower()
 
@@ -3696,6 +3698,14 @@ class NWO_ObjectPropertiesGroup(PropertyGroup):
         name="Hint Length",
         options=set(),
         description="",
+        default=0.0,
+        min=0.0,
+    )
+
+    marker_sphere_radius: FloatProperty(
+        name="Sphere Radius",
+        options=set(),
+        description="Manually define the sphere radius for this marker. Alternatively, create a marker out of a mesh to have this radius set based on mesh dimensions",
         default=0.0,
         min=0.0,
     )

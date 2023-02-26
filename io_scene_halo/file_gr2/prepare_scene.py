@@ -671,6 +671,7 @@ def MeshesToEmpties(context):
     for ob in context.view_layer.objects:
         if CheckType.marker(ob) and ob.type == 'MESH':
             mesh_nodes.append(ob)
+
     # For each mesh node create an empty with the same Halo props and transforms
     # Mesh objects need their names saved, so we make a dict. Names are stored so that the node can have the exact same name. We add a temp name to each mesh object
     mesh_node_names = {}
@@ -691,6 +692,8 @@ def MeshesToEmpties(context):
                 node.parent_bone = ob.parent_bone
 
         node.matrix_local = ob.matrix_local
+        if CheckType.pathfinding_sphere(ob): # need to handle path finding spheres differently. Dimensions aren't retained for empties, so instead we can store the radius in the marker sphere radius
+            node.nwo.marker_sphere_radius = max(ob.dimensions) / 2
         node.scale = ob.scale
         # copy the node props from the mesh to the empty
         SetNodeProps(node, ob)
