@@ -376,13 +376,13 @@ class GR2_HaloExportSettingsExtended(Panel):
         col.prop(scene_gr2_export, 'keep_fbx')
         col.prop(scene_gr2_export, 'keep_json')
         col = layout.column(heading="Include")
-        col.prop(scene_gr2_export, 'export_animations')
         col.prop(scene_gr2_export, 'export_render')
         col.prop(scene_gr2_export, 'export_collision')
         col.prop(scene_gr2_export, 'export_physics')
         col.prop(scene_gr2_export, 'export_markers')
         col.prop(scene_gr2_export, 'export_structure')
         col.prop(scene_gr2_export, 'export_design')
+        col.prop(scene_gr2_export, 'export_animations', expand=True)
 
         col.separator()
 
@@ -516,10 +516,11 @@ class GR2_HaloExportPropertiesGroup(PropertyGroup):
     ################################
     # Detailed settings
     ###############################
-    export_animations: BoolProperty(
+    export_animations: EnumProperty(
         name='Animations',
         description='',
-        default=True,
+        default='ALL',
+        items=[ ('ALL', "All", ""), ('ACTIVE', "Active", ""), ('NONE', 'None', '')],
         options=set(),
     )
     export_render: BoolProperty(

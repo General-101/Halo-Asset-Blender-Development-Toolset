@@ -94,10 +94,11 @@ class Export_Scene_GR2(Operator, ExportHelper):
         default='MODEL',
         items=[ ('MODEL', "Model", ""), ('SCENARIO', "Scenario", ""), ('SKY', 'Sky', ''), ('DECORATOR SET', 'Decorator Set', ''), ('PARTICLE MODEL', 'Particle Model', ''), ('PREFAB', 'Prefab', '')]
     )
-    export_animations: BoolProperty(
+    export_animations: EnumProperty(
         name='Animations',
         description='',
-        default=True,
+        default='ALL',
+        items=[ ('ALL', "All", ""), ('ACTIVE', "Active", ""), ('NONE', 'None', '')]
     )
     export_render: BoolProperty(
         name='Render Models',
@@ -606,7 +607,7 @@ class Export_Scene_GR2(Operator, ExportHelper):
         ) = prepare_scene(context, self.report, **keywords) # prepares the scene for processing and returns information about the scene
         # try:
         from .process_scene import process_scene
-        process_scene(self, context, keywords, self.report, model_armature, asset_path, asset, skeleton_bones, halo_objects, timeline_start, timeline_end, lod_count, UsingBetterFBX(), skip_lightmapper, selected_perms, selected_bsps, regions_dict, global_materials_dict, **keywords)
+        process_scene(self, context, keywords, self.report, model_armature, asset_path, asset, skeleton_bones, halo_objects, timeline_start, timeline_end, lod_count, UsingBetterFBX(), skip_lightmapper, selected_perms, selected_bsps, regions_dict, global_materials_dict, current_action, **keywords)
         # except:
         #     print('ASSERT: Scene processing failed')
         #     error = traceback.format_exc()
@@ -643,11 +644,11 @@ class Export_Scene_GR2(Operator, ExportHelper):
             sub = col.column(heading="Export")
             sub.prop(self, "export_hidden")
             if self.sidecar_type == 'MODEL':
-                sub.prop(self, "export_animations")
                 sub.prop(self, "export_render")
                 sub.prop(self, "export_collision")
                 sub.prop(self, "export_physics")
                 sub.prop(self, "export_markers")
+                sub.prop(self, "export_animations", expand=True)
             elif self.sidecar_type == 'SCENARIO':
                 sub.prop(self, "export_structure")
                 sub.prop(self, 'export_design')

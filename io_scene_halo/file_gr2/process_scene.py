@@ -57,7 +57,7 @@ from .nwo_utils import(
 #####################################################################################
 # MAIN FUNCTION
 
-def process_scene(self, context, keywords, report, model_armature, asset_path, asset, skeleton_bones, halo_objects, timeline_start, timeline_end, lod_count, using_better_fbx, skip_lightmapper, selected_perms, selected_bsps, regions_dict, global_materials_dict,
+def process_scene(self, context, keywords, report, model_armature, asset_path, asset, skeleton_bones, halo_objects, timeline_start, timeline_end, lod_count, using_better_fbx, skip_lightmapper, selected_perms, selected_bsps, regions_dict, global_materials_dict, current_action,
                   filepath,
                   sidecar_type,
                   output_biped,
@@ -203,12 +203,12 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                         export_gr2(report, asset_path, asset, 'skeleton', [model_armature], '', '', model_armature, skeleton_bones, '', regions_dict, global_materials_dict, **keywords)
                         gr2_count += 1
 
-                    if export_animations and 1<=len(bpy.data.actions):
+                    if export_animations != 'NONE' and 1<=len(bpy.data.actions):
                         if SelectModelSkeleton(model_armature):
                             timeline = context.scene
                             for action in bpy.data.actions:
                                 try:
-                                    if action.nwo.export_this:
+                                    if export_animations == 'ALL' or current_action == action.name:
                                         print_box(f'**Exporting Animation: {action.name}**')
                                         model_armature.animation_data.action = action
                                         if action.use_frame_range:

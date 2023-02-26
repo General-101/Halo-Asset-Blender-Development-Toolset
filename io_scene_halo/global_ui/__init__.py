@@ -2354,7 +2354,7 @@ class NWO_ActionProps(Panel):
         action_nwo = action.nwo
         
         col = flow.column()
-        col.prop(action_nwo, "export_this")
+        # col.prop(action_nwo, "export_this") # this is now only used internally
 
 # NWO PROPERTY GROUPS
 class NWO_ObjectPropertiesGroup(PropertyGroup):
