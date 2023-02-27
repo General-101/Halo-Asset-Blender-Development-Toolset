@@ -941,10 +941,10 @@ classeshalo = (
     GR2_ArmatureCreator,
     GR2_ArmatureCreator_Create,
     GR2_ArmatureCreatorPropertiesGroup,
-    GR2_AnimationExportManager,
-    GR2_AnimationExport_None,
-    GR2_AnimationExport_All,
-    GR2_AnimationExport_Active,
+    # GR2_AnimationExportManager,
+    # GR2_AnimationExport_None,
+    # GR2_AnimationExport_All,
+    # GR2_AnimationExport_Active,
 )
 
 def register():

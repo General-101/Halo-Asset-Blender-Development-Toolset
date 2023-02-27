@@ -46,6 +46,7 @@ from bpy.types import Operator, Panel, PropertyGroup, UIList
 from addon_utils import check
 from os.path import exists as file_exists
 from os import path
+from os import remove as os_remove
 import ctypes
 
 
@@ -448,6 +449,31 @@ class Export_Scene_GR2(Operator, ExportHelper):
     def __init__(self):
         # SETUP #
         scene = bpy.context.scene
+        # temp_file_path = path.join(bpy.app.tempdir, 'gr2_scene_settings.txt')
+        # if file_exists(temp_file_path):
+        #     with open(temp_file_path, 'r') as temp_file:
+        #         settings = temp_file.readlines()
+
+        #     settings = [line.strip() for line in settings]
+        #     scene.gr2_halo_launcher.sidecar_path = settings[0]
+        #     scene.gr2.game_version = settings[1]
+        #     scene.gr2.asset_type = settings[2]
+        #     scene.gr2.output_biped = True if settings[3] == 'True' else False
+        #     scene.gr2.output_crate = True if settings[4] == 'True' else False
+        #     scene.gr2.output_creature = True if settings[5] == 'True' else False
+        #     scene.gr2.output_device_control = True if settings[6] == 'True' else False
+        #     scene.gr2.output_device_dispenser = True if settings[7] == 'True' else False
+        #     scene.gr2.output_device_machine = True if settings[8] == 'True' else False
+        #     scene.gr2.output_device_terminal = True if settings[9] == 'True' else False
+        #     scene.gr2.output_effect_scenery = True if settings[10] == 'True' else False
+        #     scene.gr2.output_equipment = True if settings[11] == 'True' else False
+        #     scene.gr2.output_giant = True if settings[12] == 'True' else False
+        #     scene.gr2.output_scenery = True if settings[13] == 'True' else False
+        #     scene.gr2.output_vehicle = True if settings[14] == 'True' else False
+        #     scene.gr2.output_weapon = True if settings[15] == 'True' else False
+
+        #     os_remove(temp_file_path)
+
         if scene.halo.game_version in (('reach','h4','h2a')):
             self.game_version = scene.halo.game_version
 
@@ -613,8 +639,36 @@ class Export_Scene_GR2(Operator, ExportHelper):
         #     error = traceback.format_exc()
         #     self.report({'ERROR'}, error)
 
-        from .repair_scene import repair_scene
-        repair_scene(context, self.report, objects_selection, active_object, hidden_objects, mode, temp_armature, timeline_start, timeline_end, model_armature, halo_objects.lights, unselectable_objects, enabled_exclude_collections, mesh_node_names, temp_nodes, current_frame, hidden_collections, current_action, **keywords)
+        # from .repair_scene import repair_scene
+        # repair_scene(context, self.report, objects_selection, active_object, hidden_objects, mode, temp_armature, timeline_start, timeline_end, model_armature, halo_objects.lights, unselectable_objects, enabled_exclude_collections, mesh_node_names, temp_nodes, current_frame, hidden_collections, current_action, **keywords)
+
+        sidecar_path = path.join(asset_path.replace(get_data_path(), ''), f'{asset}.sidecar.xml')
+
+        if not file_exists(path.join(get_data_path(), sidecar_path)):
+            sidecar_path = ''
+
+        temp_file_path = path.join(bpy.app.tempdir, 'gr2_scene_settings.txt')
+        with open(temp_file_path, 'w') as temp_file:
+            temp_file.write(f'{sidecar_path}\n')
+            temp_file.write(f'{self.game_version}\n')
+            temp_file.write(f'{self.sidecar_type}\n')
+            temp_file.write(f'{self.output_biped}\n')
+            temp_file.write(f'{self.output_crate}\n')
+            temp_file.write(f'{self.output_creature}\n')
+            temp_file.write(f'{self.output_device_control}\n')
+            temp_file.write(f'{self.output_device_dispenser}\n')
+            temp_file.write(f'{self.output_device_machine}\n')
+            temp_file.write(f'{self.output_device_terminal}\n')
+            temp_file.write(f'{self.output_effect_scenery}\n')
+            temp_file.write(f'{self.output_equipment}\n')
+            temp_file.write(f'{self.output_giant}\n')
+            temp_file.write(f'{self.output_scenery}\n')
+            temp_file.write(f'{self.output_vehicle}\n')
+            temp_file.write(f'{self.output_weapon}\n')
+            temp_file.write(f'{context.scene.gr2_export.show_output}\n')
+
+        bpy.ops.ed.undo_push()
+        bpy.ops.ed.undo()
 
         return {'FINISHED'}
 

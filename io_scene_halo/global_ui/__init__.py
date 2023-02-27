@@ -26,10 +26,12 @@
 
 from itertools import permutations
 import bpy
+import os
 
 from bpy.types import (
         Operator,
         Panel,
+        Header,
         PropertyGroup
         )
 
@@ -4726,6 +4728,51 @@ class NWO_ActionPropertiesGroup(PropertyGroup):
         description = "Toggles whether this animation should be exported",
         default = True,
         )
+    
+class NWO_HeaderPropertiesGroup(PropertyGroup):
+    def get_temp_settings(self):
+        scene = bpy.context.scene
+        temp_file_path = os.path.join(bpy.app.tempdir, 'gr2_scene_settings.txt')
+        if os.path.exists(temp_file_path):
+            with open(temp_file_path, 'r') as temp_file:
+                settings = temp_file.readlines()
+
+            settings = [line.strip() for line in settings]
+            scene.gr2_halo_launcher.sidecar_path = settings[0]
+            scene.gr2.game_version = settings[1]
+            scene.gr2.asset_type = settings[2]
+            scene.gr2.output_biped = True if settings[3] == 'True' else False
+            scene.gr2.output_crate = True if settings[4] == 'True' else False
+            scene.gr2.output_creature = True if settings[5] == 'True' else False
+            scene.gr2.output_device_control = True if settings[6] == 'True' else False
+            scene.gr2.output_device_dispenser = True if settings[7] == 'True' else False
+            scene.gr2.output_device_machine = True if settings[8] == 'True' else False
+            scene.gr2.output_device_terminal = True if settings[9] == 'True' else False
+            scene.gr2.output_effect_scenery = True if settings[10] == 'True' else False
+            scene.gr2.output_equipment = True if settings[11] == 'True' else False
+            scene.gr2.output_giant = True if settings[12] == 'True' else False
+            scene.gr2.output_scenery = True if settings[13] == 'True' else False
+            scene.gr2.output_vehicle = True if settings[14] == 'True' else False
+            scene.gr2.output_weapon = True if settings[15] == 'True' else False
+            scene.gr2_export.show_output = True if settings[16] == 'True' else False
+
+            os.remove(temp_file_path)
+
+        return False
+
+    temp_file_watcher: BoolProperty(
+        name = "",
+        default = False,
+        get=get_temp_settings,
+        )
+    
+def draw_filepath(self, context):
+    layout = self.layout
+    row = layout.row(align=True)
+    row.scale_x = 0.01
+    row.scale_y = 0.01
+    # this is beyond hacky... and I'm not proud... but it works!
+    row.prop(context.scene.nwo, 'temp_file_watcher')
 
 classeshalo = (
     ASS_JMS_MeshPropertiesGroup,
@@ -4771,6 +4818,7 @@ classeshalo = (
     NWO_BonePropertiesGroup,
     NWO_ActionProps,
     NWO_ActionPropertiesGroup,
+    NWO_HeaderPropertiesGroup,
 )
 
 def register():
@@ -4785,6 +4833,8 @@ def register():
     bpy.types.Material.nwo = PointerProperty(type=NWO_MaterialPropertiesGroup, name="Halo NWO Properties", description="Set Halo Material Properties") 
     bpy.types.Bone.nwo = PointerProperty(type=NWO_BonePropertiesGroup, name="Halo NWO Properties", description="Set Halo Bone Properties")
     bpy.types.Action.nwo = PointerProperty(type=NWO_ActionPropertiesGroup, name="Halo NWO Properties", description="Set Halo Animation Properties")
+    bpy.types.Scene.nwo = PointerProperty(type=NWO_HeaderPropertiesGroup, name="Halo NWO Properties", description="Set Halo Properties")
+    bpy.types.TOPBAR_HT_upper_bar.prepend(draw_filepath)
 
 def unregister():
     del bpy.types.Light.halo_light
@@ -4794,6 +4844,7 @@ def unregister():
     del bpy.types.Object.nwo
     del bpy.types.Material.nwo
     del bpy.types.Bone.nwo
+    bpy.types.TOPBAR_HT_upper_bar.remove(draw_filepath)
     for clshalo in classeshalo:
         bpy.utils.unregister_class(clshalo)
 
