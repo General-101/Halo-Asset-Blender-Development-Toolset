@@ -264,14 +264,14 @@ def generate_object_from_fbx(context, array_item, game_version):
     try:
         if path.exists(fbxpath):
             print(f"Loading {fbxpath} from disk")
-            bpy.ops.import_scene.fbx(filepath=fbxpath)
+            bpy.ops.import_scene.fbx(filepath=fbxpath, global_scale=1 * context.scene.unit_settings.scale_length)
         elif path.exists(path_resources_zip):
             print(f"Loading {zip_path_relative} from {path_resources_zip}")
             extracted_file = ''
             chdir(path.dirname(__file__))
             with zipfile.ZipFile(path_resources_zip, "r") as zip:
                 extracted_file = zip.extract(zip_path_relative)
-                bpy.ops.import_scene.fbx(filepath=extracted_file)
+                bpy.ops.import_scene.fbx(filepath=extracted_file, global_scale=1 * context.scene.unit_settings.scale_length)
 
             remove(extracted_file)
             rmdir(path.dirname(extracted_file))

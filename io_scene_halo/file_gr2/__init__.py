@@ -43,7 +43,7 @@ import bpy
 from bpy_extras.io_utils import ExportHelper
 from bpy.props import StringProperty, BoolProperty, EnumProperty, FloatProperty, IntProperty, PointerProperty, CollectionProperty
 from bpy.types import Operator, Panel, PropertyGroup, UIList
-from addon_utils import check
+from addon_utils import check, module_bl_info
 from os.path import exists as file_exists
 from os import path
 from os import remove as os_remove
@@ -799,8 +799,12 @@ def UsingBetterFBX():
     using_better_fbx = False
     addon_default, addon_state = check('better_fbx')
 
-    if addon_default or addon_state:
-        using_better_fbx = True
+    if (addon_default or addon_state):
+        from sys import modules
+        if module_bl_info(modules.get('better_fbx')).get('version') in ((5, 1, 5), (5, 2, 10)):
+            using_better_fbx = True
+        else:
+            print("Only BetterFBX versions [5.1.5] & [5.2.10] are supported. Using Blender's default fbx exporter")
 
     return using_better_fbx
 

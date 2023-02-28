@@ -68,6 +68,8 @@ def prepare_scene(context, report, sidecar_type, export_hidden, filepath, use_ar
             ob.nwo.Region_Name = 'default'
         # if ob.nwo.Face_Global_Material == '':
         #     ob.nwo.Face_Global_Material = 'default'
+
+    fixup_missing_uvs(context)
     
     # ApplyObjectIDs(context.view_layer.objects) # removed due to new method of always generating IDs at export
     # run find shaders code if any empty paths
@@ -142,6 +144,14 @@ class HaloObjects():
 #####################################################################################
 #####################################################################################
 # VARIOUS FUNCTIONS
+
+def fixup_missing_uvs(context):
+    for ob in context.view_layer.objects:
+        if ob.type == 'MESH':
+            mesh = ob.data
+            if mesh.uv_layers.active is None:
+                mesh.uv_layers.new(name="UVMap_0")
+
 def GetSceneMode(context):
     mode = None
     try: # wrapped this in a try as the user can encounter an assert if no object is selected. No reason for this to crash the export

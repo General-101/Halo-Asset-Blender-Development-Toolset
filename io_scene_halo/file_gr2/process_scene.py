@@ -25,6 +25,7 @@
 # ##### END MIT LICENSE BLOCK #####
 
 import bpy
+from addon_utils import module_bl_info
 from os.path import exists
 import os
 import ctypes
@@ -451,6 +452,8 @@ def CheckPath(filePath):
 # BETTER FBX INTEGRATION
 
 def export_better_fbx(context, export_animation, filepath, use_armature_deform_only, mesh_smooth_type_better, use_mesh_modifiers, use_triangles, global_scale, **kwargs):
+    from sys import modules
+    version = module_bl_info(modules.get('better_fbx')).get('version')
     better_fbx_folder = GetBetterFBXFolder()
     if platform.machine().endswith('64'):
         exe = os.path.join(better_fbx_folder, 'bin', 'Windows', 'x64', 'fbx-utility')
@@ -458,9 +461,9 @@ def export_better_fbx(context, export_animation, filepath, use_armature_deform_o
         exe = os.path.join(better_fbx_folder, 'bin', 'Windows', 'x86', 'fbx-utility')
     output = os.path.join(better_fbx_folder, 'data', uuid.uuid4().hex + '.txt')
     from better_fbx.exporter import write_some_data as SetFBXData
-    data_args = GetDataArgs(context, output, export_animation, use_armature_deform_only, mesh_smooth_type_better, use_mesh_modifiers)
+    data_args = GetDataArgs(context, output, export_animation, use_armature_deform_only, mesh_smooth_type_better, use_mesh_modifiers , version)
     SetFBXData(*data_args)
-    fbx_command = GetExeArgs(exe, output, filepath, global_scale, use_triangles, mesh_smooth_type_better)
+    fbx_command = GetExeArgs(exe, output, filepath, global_scale, use_triangles, mesh_smooth_type_better, version)
     p = Popen(fbx_command)
     p.wait()
     os.remove(output)
@@ -476,59 +479,113 @@ def GetBetterFBXFolder():
 
     return path
 
-def GetDataArgs(context, output, export_animation, use_armature_deform_only, mesh_smooth_type, use_mesh_modifiers):
+def GetDataArgs(context, output, export_animation, use_armature_deform_only, mesh_smooth_type, use_mesh_modifiers, version):
     args = []
-    args.append(context)
-    args.append(output)
-    args.append(context.selected_objects)
-    args.append(export_animation)
-    args.append(0) # animation offset
-    args.append('active') # animation type
-    args.append(use_armature_deform_only)
-    args.append(False) # rigify armature
-    args.append(True) # keep root bone
-    args.append(False) # use only selected deform bones
-    args.append('Unlimited') # number of bones that can be influenced per vertex
-    args.append(False) # export vertex animation
-    args.append('mcx') # vertex format
-    args.append('world') # vertex space
-    args.append(1) # vertex frame start
-    args.append(10) # vertex frame end
-    args.append(True) # export edge crease
-    args.append(1.0) # scale of edge crease weights
-    args.append(mesh_smooth_type)
-    args.append(use_mesh_modifiers)
-    args.append(False) # apply armature deform modifier on export
-    args.append(False) # concat animations
-    args.append(False) # embed media in fbx file
-    args.append(False) # copy textures to user specified directory
-    args.append('') # user directory name
-    args.append([]) # texture file names
+    args.append(context) #1
+    args.append(output) #2
+    args.append(context.selected_objects) #3
+    args.append(export_animation) #4
+    if version == (5, 2, 10):
+        args.append(True) # use_timeline_range #5
+        args.append(0) # animation offset #6
+        args.append('active') # animation type #7
+        args.append(use_armature_deform_only) #8
+        args.append(False) # rigify armature #9
+        args.append(True) # keep root bone #10
+        args.append(False) # use only selected deform bones #11
+        args.append('Unlimited') # number of bones that can be influenced per vertex #12
+        args.append('Y') # primary_bone_axis #13
+        args.append('X') # secondary_bone_axis #14
+        args.append(False) # export vertex animation #15
+        args.append('mcx') # vertex format #16
+        args.append('world') # vertex space #17
+        args.append(1) # vertex frame start #18
+        args.append(10) # vertex frame end #19
+        args.append(True) # export edge crease #20
+        args.append(1.0) # scale of edge crease weights #21
+        args.append(mesh_smooth_type) #22
+        args.append(use_mesh_modifiers) #23
+        args.append(False) # apply armature deform modifier on export #24
+        args.append(False) # concat animations #25
+        args.append(False) # embed media in fbx file #26
+        args.append(False) # copy textures to user specified directory #27
+        args.append('') # user directory name #28
+        args.append([]) # texture file names #29
+    else:
+        args.append(0) # animation offset #5
+        args.append('active') # animation type #6
+        args.append(use_armature_deform_only) #7
+        args.append(False) # rigify armature #8
+        args.append(True) # keep root bone #9
+        args.append(False) # use only selected deform bones #10
+        args.append('Unlimited') # number of bones that can be influenced per vertex #11
+        args.append(False) # export vertex animation #12
+        args.append('mcx') # vertex format #13
+        args.append('world') # vertex space #14
+        args.append(1) # vertex frame start #15
+        args.append(10) # vertex frame end #16
+        args.append(True) # export edge crease #17
+        args.append(1.0) # scale of edge crease weights #18
+        args.append(mesh_smooth_type) #19
+        args.append(use_mesh_modifiers) #20
+        args.append(False) # apply armature deform modifier on export #21
+        args.append(False) # concat animations #22
+        args.append(False) # embed media in fbx file #23
+        args.append(False) # copy textures to user specified directory #24
+        args.append('') # user directory name #25
+        args.append([]) # texture file names #26
 
     return args
 
-def GetExeArgs(exe, output, filepath, global_scale, use_triangles, mesh_smooth_type):
+def GetExeArgs(exe, output, filepath, global_scale, use_triangles, mesh_smooth_type, version):
     args = []
-    args.append(exe) 
-    args.append(output) 
-    args.append(filepath) 
-    args.append(str(global_scale))
-    args.append('binary')
-    args.append('FBX202000') 
-    args.append('MayaZUp')
-    args.append('None') 
-    args.append('None')
-    args.append('False') 
-    args.append('False')
-    args.append('False') 
-    args.append('None')
-    args.append(str(use_triangles))
-    args.append('None') 
-    args.append('FBXSDK') 
-    args.append('False')
-    args.append('0') 
-    args.append('1')
-    args.append('Blender')
-    args.append('False')
+    if version == (5, 2, 10):
+        args.append(exe) 
+        args.append(output) 
+        args.append(filepath) 
+        args.append(str(global_scale / 100))
+        args.append('binary')
+        args.append('FBX202000') 
+        args.append('MayaZUp')
+        args.append('None') 
+        args.append('None')
+        args.append('False') 
+        args.append('False')
+        args.append('False') 
+        args.append('False')
+        args.append('None')
+        args.append(str(use_triangles))
+        args.append('None') 
+        args.append(str(mesh_smooth_type)) 
+        args.append('False')
+        args.append('0') 
+        args.append('0')
+        args.append('Blender')
+        args.append('False')
+        args.append('cm')
+        args.append('False')
+        args.append('False')
+    else:
+        args.append(exe) 
+        args.append(output) 
+        args.append(filepath) 
+        args.append(str(global_scale))
+        args.append('binary')
+        args.append('FBX202000') 
+        args.append('MayaZUp')
+        args.append('None') 
+        args.append('None')
+        args.append('False') 
+        args.append('False')
+        args.append('False') 
+        args.append('None')
+        args.append(str(use_triangles))
+        args.append('None') 
+        args.append(str(mesh_smooth_type)) 
+        args.append('False')
+        args.append('0') 
+        args.append('0')
+        args.append('Blender')
+        args.append('False')
 
     return args
