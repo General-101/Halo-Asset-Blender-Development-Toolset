@@ -29,8 +29,6 @@ from addon_utils import module_bl_info
 from os.path import exists
 import os
 import ctypes
-import uuid
-import platform
 from subprocess import Popen
 from addon_utils import modules
 from .nwo_utils import(
@@ -48,9 +46,6 @@ from .nwo_utils import(
     get_render_from_halo_objects,
     get_prefab_from_halo_objects,
     print_box,
-    not_bungie_game,
-    select_all_lights,
-
     CheckType,
 )
 
@@ -97,9 +92,6 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
 
     if using_better_fbx:
         print('Found Better FBX exporter')
-    else:
-        from io_scene_fbx.export_fbx_bin import save as export_fbx
-        # print("Could not find Better FBX exporter (or it is not enabled). Using Blender's native fbx exporter")
 
     from .export_gr2 import export_gr2
 
@@ -134,13 +126,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                 perm_list.append(perm)
                                 if select_model_objects(get_render_from_halo_objects(halo_objects), perm, model_armature, export_hidden, export_all_perms, selected_perms):
                                     print_box(f'**Exporting {perm} render model**')
-                                    if using_better_fbx:
-                                        obj_selection = [obj for obj in context.selected_objects]
-                                        export_better_fbx(context, False, **keywords)
-                                        for obj in obj_selection:
-                                            obj.select_set(True)
-                                    else:
-                                        export_fbx(self, context, **keywords)
+                                    export_fbx(using_better_fbx, **keywords)
                                     export_gr2(report, asset_path, asset, 'render', context.selected_objects, '', perm, model_armature, skeleton_bones, '', regions_dict, global_materials_dict, **keywords)
                                     gr2_count += 1
 
@@ -152,13 +138,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                 perm_list.append(perm)
                                 if select_model_objects(halo_objects.collision, perm, model_armature, export_hidden, export_all_perms, selected_perms):
                                     print_box(f'**Exporting {perm} collision model**')
-                                    if using_better_fbx:
-                                        obj_selection = [obj for obj in context.selected_objects]
-                                        export_better_fbx(context, False, **keywords)
-                                        for obj in obj_selection:
-                                            obj.select_set(True)
-                                    else:
-                                        export_fbx(self, context, **keywords)
+                                    export_fbx(using_better_fbx, **keywords)
                                     export_gr2(report, asset_path, asset, 'collision', context.selected_objects, '', perm, model_armature, skeleton_bones, '', regions_dict, global_materials_dict, **keywords)
                                     gr2_count += 1
 
@@ -170,13 +150,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                 perm_list.append(perm)
                                 if select_model_objects(halo_objects.physics, perm, model_armature, export_hidden, export_all_perms, selected_perms):
                                     print_box(f'**Exporting {perm} physics model**')
-                                    if using_better_fbx:
-                                        obj_selection = [obj for obj in context.selected_objects]
-                                        export_better_fbx(context, False, **keywords)
-                                        for obj in obj_selection:
-                                            obj.select_set(True)
-                                    else:
-                                        export_fbx(self, context, **keywords)
+                                    export_fbx(using_better_fbx, **keywords)
                                     export_gr2(report, asset_path, asset, 'physics', context.selected_objects, '', perm, model_armature, skeleton_bones, '', regions_dict, global_materials_dict, **keywords)
                                     gr2_count += 1
 
@@ -184,23 +158,13 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                         if select_model_objects_no_perm(halo_objects.markers, model_armature, export_hidden):
                             # select_all_lights(halo_objects) # Will restore when solution found for model lights
                             print_box('**Exporting markers**')
-                            if using_better_fbx:
-                                obj_selection = [obj for obj in context.selected_objects]
-                                export_better_fbx(context, False, **keywords)
-                                for obj in obj_selection:
-                                    obj.select_set(True)
-                            else:
-                                export_fbx(self, context, **keywords)
+                            export_fbx(using_better_fbx, **keywords)
                             export_gr2(report, asset_path, asset, 'markers', context.selected_objects, '', '', model_armature, skeleton_bones, '', regions_dict, global_materials_dict, **keywords)
                             gr2_count += 1
 
                     if SelectModelSkeleton(model_armature):
                         print_box('**Exporting skeleton**')
-                        if using_better_fbx:
-                            export_better_fbx(context, False, **keywords)
-                            model_armature.select_set(True)
-                        else:
-                            export_fbx(self, context, **keywords)
+                        export_fbx(using_better_fbx, **keywords)
                         export_gr2(report, asset_path, asset, 'skeleton', [model_armature], '', '', model_armature, skeleton_bones, '', regions_dict, global_materials_dict, **keywords)
                         gr2_count += 1
 
@@ -220,11 +184,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                             timeline.frame_start = timeline_start
                                             timeline.frame_end = timeline_end
                                             context.scene.frame_set(timeline_start)
-                                        if using_better_fbx:
-                                            export_better_fbx(context, True, **keywords)
-                                            model_armature.select_set(True)
-                                        else:
-                                            export_fbx(self, context, **keywords)
+                                        export_fbx(using_better_fbx, **keywords)
                                         export_gr2(report, asset_path, asset, 'animations', [model_armature], '', '', model_armature, skeleton_bones, action.name, regions_dict, global_materials_dict, **keywords)
                                         gr2_count += 1
                                 except:
@@ -262,13 +222,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                         perm_list.append(perm)
                                         if select_bsp_objects(get_structure_from_halo_objects(halo_objects), bsp, model_armature, perm, export_hidden, export_all_perms, selected_perms, export_all_bsps, selected_bsps):
                                             print_box(f'**Exporting {bsp} {perm} BSP**')
-                                            if using_better_fbx:
-                                                obj_selection = [obj for obj in context.selected_objects]
-                                                export_better_fbx(context, False, **keywords)
-                                                for obj in obj_selection:
-                                                    obj.select_set(True)
-                                            else:
-                                                export_fbx(self, context, **keywords)
+                                            export_fbx(using_better_fbx, **keywords)
                                             export_gr2(report, asset_path, asset, 'bsp', context.selected_objects, bsp, perm, model_armature, skeleton_bones, '', regions_dict, global_materials_dict, **keywords)
                                             gr2_count += 1
                         # Design time!
@@ -290,13 +244,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                     perm_list.append(perm)
                                     if select_bsp_objects(get_design_from_halo_objects(halo_objects), bsp, model_armature, perm, export_hidden, export_all_perms, selected_perms, export_all_bsps, selected_bsps):
                                         print_box(f'**Exporting {bsp} {perm} Design**')
-                                        if using_better_fbx:
-                                            obj_selection = [obj for obj in context.selected_objects]
-                                            export_better_fbx(context, False, **keywords)
-                                            for obj in obj_selection:
-                                                obj.select_set(True)
-                                        else:
-                                            export_fbx(self, context, **keywords)
+                                        export_fbx(using_better_fbx, **keywords)
                                         export_gr2(report, asset_path, asset, 'design', context.selected_objects, bsp, perm, model_armature, skeleton_bones, '', regions_dict, global_materials_dict, **keywords)
                                         gr2_count += 1
 
@@ -316,13 +264,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                         perm_list.append(perm)
                                         if select_bsp_objects(get_structure_from_halo_objects(halo_objects), 'shared', model_armature, perm, export_hidden, export_all_perms, selected_perms, export_all_bsps, selected_bsps):
                                             print_box(f'**Exporting shared {perm} bsp**')
-                                            if using_better_fbx:
-                                                obj_selection = [obj for obj in context.selected_objects]
-                                                export_better_fbx(context, False, **keywords)
-                                                for obj in obj_selection:
-                                                    obj.select_set(True)
-                                            else:
-                                                export_fbx(self, context, **keywords)
+                                            export_fbx(using_better_fbx, **keywords)
                                             export_gr2(report, asset_path, asset, 'bsp', context.selected_objects, 'shared', perm, model_armature, skeleton_bones, '', regions_dict, global_materials_dict, **keywords)
                                             gr2_count += 1
 
@@ -335,13 +277,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                 perm_list.append(perm)
                                 if select_model_objects(halo_objects.default + halo_objects.lights + halo_objects.markers, perm, model_armature, export_hidden, export_all_perms, selected_perms):
                                     print_box(f'**Exporting sky render model**')
-                                    if using_better_fbx:
-                                        obj_selection = [obj for obj in context.selected_objects]
-                                        export_better_fbx(context, False, **keywords)
-                                        for obj in obj_selection:
-                                            obj.select_set(True)
-                                    else:
-                                        export_fbx(self, context, **keywords)
+                                    export_fbx(using_better_fbx, **keywords)
                                     export_gr2(report, asset_path, asset, 'render', context.selected_objects, '', perm, model_armature, skeleton_bones, '', regions_dict, global_materials_dict, **keywords)
                                     gr2_count += 1
 
@@ -349,26 +285,14 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                     if export_render:
                         if select_model_objects_no_perm(halo_objects.decorators, model_armature, export_hidden):
                             print_box(f'**Exporting decorator set**')
-                            if using_better_fbx:
-                                obj_selection = [obj for obj in context.selected_objects]
-                                export_better_fbx(context, False, **keywords)
-                                for obj in obj_selection:
-                                    obj.select_set(True)
-                            else:
-                                export_fbx(self, context, **keywords)
+                            export_fbx(using_better_fbx, **keywords)
                             export_gr2(report, asset_path, asset, 'render', context.selected_objects, '', 'default', model_armature, skeleton_bones, '', regions_dict, global_materials_dict, **keywords)
                             gr2_count += 1
 
                 elif sidecar_type == 'PREFAB':
                     if select_prefab_objects(get_prefab_from_halo_objects(halo_objects), model_armature, export_hidden):
                         print_box(f'**Exporting prefab**')
-                        if using_better_fbx:
-                            obj_selection = [obj for obj in context.selected_objects]
-                            export_better_fbx(context, False, **keywords)
-                            for obj in obj_selection:
-                                obj.select_set(True)
-                        else:
-                            export_fbx(self, context, **keywords)
+                        export_fbx(using_better_fbx, **keywords)
                         export_gr2(report, asset_path, asset, 'prefab', context.selected_objects, '', '', model_armature, skeleton_bones, '', regions_dict, global_materials_dict, **keywords)
                         gr2_count += 1
 
@@ -376,13 +300,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                     if export_render:
                         if select_model_objects_no_perm(halo_objects.default, model_armature, export_hidden):
                             print_box(f'**Exporting particle model**')
-                            if using_better_fbx:
-                                obj_selection = [obj for obj in context.selected_objects]
-                                export_better_fbx(context, False, **keywords)
-                                for obj in obj_selection:
-                                    obj.select_set(True)
-                            else:
-                                export_fbx(self, context, **keywords)
+                            export_fbx(using_better_fbx, **keywords)
                             export_gr2(report, asset_path, asset, 'particle_model', context.selected_objects, '', 'default', model_armature, skeleton_bones, '', regions_dict, global_materials_dict, **keywords)
                             gr2_count += 1
 
@@ -449,143 +367,10 @@ def CheckPath(filePath):
 
 #####################################################################################
 #####################################################################################
-# BETTER FBX INTEGRATION
+# FBX
 
-def export_better_fbx(context, export_animation, filepath, use_armature_deform_only, mesh_smooth_type_better, use_mesh_modifiers, use_triangles, global_scale, **kwargs):
-    from sys import modules
-    version = module_bl_info(modules.get('better_fbx')).get('version')
-    better_fbx_folder = GetBetterFBXFolder()
-    if platform.machine().endswith('64'):
-        exe = os.path.join(better_fbx_folder, 'bin', 'Windows', 'x64', 'fbx-utility')
+def export_fbx(using_better_fbx, filepath, global_scale, use_mesh_modifiers, mesh_smooth_type, use_triangles, use_armature_deform_only, mesh_smooth_type_better, **kwargs): # using_better_fbx
+    if using_better_fbx:
+        bpy.ops.better_export.fbx(filepath=filepath, check_existing=False, my_fbx_unit='m', use_selection=True, use_visible=True, use_only_deform_bones=use_armature_deform_only, use_apply_modifiers=use_mesh_modifiers, use_triangulate=use_triangles, my_scale=global_scale, use_optimize_for_game_engine=False, use_ignore_armature_node=False, my_edge_smoothing=mesh_smooth_type_better, my_material_style='Blender')
     else:
-        exe = os.path.join(better_fbx_folder, 'bin', 'Windows', 'x86', 'fbx-utility')
-    output = os.path.join(better_fbx_folder, 'data', uuid.uuid4().hex + '.txt')
-    from better_fbx.exporter import write_some_data as SetFBXData
-    data_args = GetDataArgs(context, output, export_animation, use_armature_deform_only, mesh_smooth_type_better, use_mesh_modifiers , version)
-    SetFBXData(*data_args)
-    fbx_command = GetExeArgs(exe, output, filepath, global_scale, use_triangles, mesh_smooth_type_better, version)
-    p = Popen(fbx_command)
-    p.wait()
-    os.remove(output)
-    return {'FINISHED'}
-
-def GetBetterFBXFolder():
-    path = ''
-    for mod in modules():
-        if mod.bl_info['name'] == 'Better FBX Importer & Exporter':
-            path = mod.__file__
-            break
-    path = path.rpartition('\\')[0]
-
-    return path
-
-def GetDataArgs(context, output, export_animation, use_armature_deform_only, mesh_smooth_type, use_mesh_modifiers, version):
-    args = []
-    args.append(context) #1
-    args.append(output) #2
-    args.append(context.selected_objects) #3
-    args.append(export_animation) #4
-    if version == (5, 2, 10):
-        args.append(True) # use_timeline_range #5
-        args.append(0) # animation offset #6
-        args.append('active') # animation type #7
-        args.append(use_armature_deform_only) #8
-        args.append(False) # rigify armature #9
-        args.append(True) # keep root bone #10
-        args.append(False) # use only selected deform bones #11
-        args.append('Unlimited') # number of bones that can be influenced per vertex #12
-        args.append('Y') # primary_bone_axis #13
-        args.append('X') # secondary_bone_axis #14
-        args.append(False) # export vertex animation #15
-        args.append('mcx') # vertex format #16
-        args.append('world') # vertex space #17
-        args.append(1) # vertex frame start #18
-        args.append(10) # vertex frame end #19
-        args.append(True) # export edge crease #20
-        args.append(1.0) # scale of edge crease weights #21
-        args.append(mesh_smooth_type) #22
-        args.append(use_mesh_modifiers) #23
-        args.append(False) # apply armature deform modifier on export #24
-        args.append(False) # concat animations #25
-        args.append(False) # embed media in fbx file #26
-        args.append(False) # copy textures to user specified directory #27
-        args.append('') # user directory name #28
-        args.append([]) # texture file names #29
-    else:
-        args.append(0) # animation offset #5
-        args.append('active') # animation type #6
-        args.append(use_armature_deform_only) #7
-        args.append(False) # rigify armature #8
-        args.append(True) # keep root bone #9
-        args.append(False) # use only selected deform bones #10
-        args.append('Unlimited') # number of bones that can be influenced per vertex #11
-        args.append(False) # export vertex animation #12
-        args.append('mcx') # vertex format #13
-        args.append('world') # vertex space #14
-        args.append(1) # vertex frame start #15
-        args.append(10) # vertex frame end #16
-        args.append(True) # export edge crease #17
-        args.append(1.0) # scale of edge crease weights #18
-        args.append(mesh_smooth_type) #19
-        args.append(use_mesh_modifiers) #20
-        args.append(False) # apply armature deform modifier on export #21
-        args.append(False) # concat animations #22
-        args.append(False) # embed media in fbx file #23
-        args.append(False) # copy textures to user specified directory #24
-        args.append('') # user directory name #25
-        args.append([]) # texture file names #26
-
-    return args
-
-def GetExeArgs(exe, output, filepath, global_scale, use_triangles, mesh_smooth_type, version):
-    args = []
-    if version == (5, 2, 10):
-        args.append(exe) 
-        args.append(output) 
-        args.append(filepath) 
-        args.append(str(global_scale / 100))
-        args.append('binary')
-        args.append('FBX202000') 
-        args.append('MayaZUp')
-        args.append('None') 
-        args.append('None')
-        args.append('False') 
-        args.append('False')
-        args.append('False') 
-        args.append('False')
-        args.append('None')
-        args.append(str(use_triangles))
-        args.append('None') 
-        args.append(str(mesh_smooth_type)) 
-        args.append('False')
-        args.append('0') 
-        args.append('0')
-        args.append('Blender')
-        args.append('False')
-        args.append('cm')
-        args.append('False')
-        args.append('False')
-    else:
-        args.append(exe) 
-        args.append(output) 
-        args.append(filepath) 
-        args.append(str(global_scale))
-        args.append('binary')
-        args.append('FBX202000') 
-        args.append('MayaZUp')
-        args.append('None') 
-        args.append('None')
-        args.append('False') 
-        args.append('False')
-        args.append('False') 
-        args.append('None')
-        args.append(str(use_triangles))
-        args.append('None') 
-        args.append(str(mesh_smooth_type)) 
-        args.append('False')
-        args.append('0') 
-        args.append('0')
-        args.append('Blender')
-        args.append('False')
-
-    return args
+        bpy.ops.export_scene.fbx(filepath=filepath, check_existing=False, use_selection=True, use_visible=True, global_scale=global_scale, apply_scale_options='FBX_SCALE_UNITS', use_mesh_modifiers=use_mesh_modifiers, mesh_smooth_type=mesh_smooth_type, use_triangles=use_triangles, add_leaf_bones=False, use_armature_deform_only=use_armature_deform_only, bake_anim_use_all_bones=False, bake_anim_use_nla_strips=False, bake_anim_use_all_actions=False, bake_anim_force_startend_keying=False, bake_anim_simplify_factor=0, axis_forward='X', axis_up='Z')

@@ -64,7 +64,7 @@ class NWOObject:
         self.asset_name = asset_name
         self.bungie_object_type = self.object_type()
         self.bungie_object_ID = self.object_ID()
-        self.halo_export = '1'
+        # self.halo_export = '1'
         if self.bungie_object_type == '_connected_geometry_object_type_frame':
             self.bungie_object_animates = self.object_animates()
 
@@ -1370,75 +1370,23 @@ class NWOMaterial:
         self.material = material
         self.material_name = material.name
         self.halo = material.nwo
-        self.is_override = self.override()
-        if not_bungie_game():
-            self.halo_shader_path = self.shader_path()
-            self.halo_shader_name = self.shader_name()
-            self.halo_shader_type = self.shader_type()
-        else:
-            self.bungie_shader_type = self.shader_type()
-            self.bungie_shader_path = self.shader_path()
+        self.bungie_shader_path = self.shader_path()
+        self.bungie_shader_type = self.shader_type()
 
         del self.material
         del self.material_name
         del self.halo
-        del self.is_override
 
     def shader_path(self):
-        if self.is_override:
+        if self.halo.shader_path == '':
             return 'override'
-        elif self.halo.shader_path == '':
-            return 'shaders\\invalid'
         else:
             return clean_tag_path(self.halo.shader_path, '')
 
-
-    def shader_name(self):
-        if self.is_override:
-            if self.material_name.startswith('+sky'):
-                return 'InvisibleSky'
-            elif self.material_name.startswith('+physics'):
-                return 'Physics'
-            elif self.material_name.startswith('+seam'):
-                return 'Seam'
-            elif self.material_name.startswith('+portal'):
-                return 'Portal'
-            elif self.material_name.startswith('+collision'):
-                return 'Collision'
-            elif self.material_name.startswith('+player_collision'):
-                return 'playCollision'
-            elif self.material_name.startswith('+wall_collision'):
-                return 'wallCollision'
-            elif self.material_name.startswith('+bullet_collision'):
-                return 'bulletCollision'
-            elif self.material_name.startswith('+cookie_cutter'):
-                return 'CookieCutter'
-            elif self.material_name.startswith('+rain_blocker'):
-                return 'rainBlocker'
-            elif self.material_name.startswith('+water_volume'):
-                return 'waterVolume'
-            elif self.material_name.startswith('+structure'):
-                return 'Structure'
-            elif self.material_name.startswith('+'):
-                return 'override'
-            else:
-                return self.halo.material_override_h4
-        
-        else:
-            temp_name = self.halo_shader_path
-            return shortest_string(temp_name, temp_name.rpartition('\\')[2])
-
     def shader_type(self):
-        if self.is_override:
+        if self.halo.shader_path == '':
             return 'override'
         elif not_bungie_game():
             return 'material'
         else:
             return self.halo.Shader_Type
-            
-            
-    def override(self):
-        if not_bungie_game():
-            return self.material.name.startswith('+') or self.material.nwo.material_override_h4 != 'none'
-        else:
-            return self.material.name.startswith('+') or self.material.nwo.material_override != 'none'

@@ -28,6 +28,11 @@
 ####################
 # TODO Add proper exception handling for when frame id tool anim graph path invalid or empty
 # TODO Stop structure design bsps being added to the connected_geometry_bsp_table
+# TODO get / setter for halo light colour
+# TODO Animation name tool
+# TODO Animation event creator
+# TODO Face map properties
+# TODO Strip prefixes on export and apply maya namespace prefixes (h4/h2a)
 
 bl_info = {
     'name': 'Halo GR2 Export',
@@ -258,49 +263,15 @@ class Export_Scene_GR2(Operator, ExportHelper):
         description="Do not write errors to vrml files",
         default=False,
     )
-    apply_unit_scale: BoolProperty(
-        name="Apply Unit",
-        description="",
-        default=True,
-    )
-    apply_scale_options: EnumProperty(
-        default='FBX_SCALE_UNITS',
-        items=[('FBX_SCALE_UNITS', "FBX Units Scale",""),]
-    )
     use_selection: BoolProperty(
         name="selection",
         description="",
         default=True,
     )
-    add_leaf_bones: BoolProperty(
-        name='',
-        description='',
-        default=False
-    )
     bake_anim: BoolProperty(
         name='',
         description='',
         default=True
-    )
-    bake_anim_use_all_bones: BoolProperty(
-        name='',
-        description='',
-        default=False
-    )
-    bake_anim_use_nla_strips: BoolProperty(
-        name='',
-        description='',
-        default=False
-    )
-    bake_anim_use_all_actions: BoolProperty(
-        name='',
-        description='',
-        default=False
-    )
-    bake_anim_force_startend_keying: BoolProperty(
-        name='',
-        description='',
-        default=False
     )
     use_mesh_modifiers: BoolProperty(
         name='Apply Modifiers',
@@ -329,22 +300,10 @@ class Export_Scene_GR2(Operator, ExportHelper):
         default=True,
     )
 
-    def UpdateVisible(self, context):
-        if self.export_hidden == True:
-            self.use_visible = False
-        else:
-            self.use_visible = True
-    
     export_hidden: BoolProperty(
         name="Hidden",
-        update=UpdateVisible,
         description="Export visible objects only",
         default=True,
-    )
-    use_visible: BoolProperty(
-        name="",
-        description="",
-        default=False,
     )
     import_in_background: BoolProperty(
         name='Run In Background',
@@ -629,7 +588,7 @@ class Export_Scene_GR2(Operator, ExportHelper):
         context.scene.gr2_export.show_output = False
 
         from .prepare_scene import prepare_scene
-        (objects_selection, active_object, hidden_objects, mode, model_armature, temp_armature, skeleton_bones, halo_objects, timeline_start, timeline_end, lod_count, unselectable_objects, enabled_exclude_collections, mesh_node_names, temp_nodes, selected_perms, selected_bsps, current_frame, regions_dict, global_materials_dict, hidden_collections, current_action
+        (model_armature, skeleton_bones, halo_objects, timeline_start, timeline_end, lod_count, selected_perms, selected_bsps, regions_dict, global_materials_dict, current_action
         ) = prepare_scene(context, self.report, **keywords) # prepares the scene for processing and returns information about the scene
         # try:
         from .process_scene import process_scene

@@ -37,79 +37,69 @@ from .nwo_utils import(
     set_active_object,
     CheckType,
     select_halo_objects,
-    select_all_objects,
     is_shader,
     get_tags_path,
     not_bungie_game,
     true_region,
 )
 
-hidden_collections = []
-
 #####################################################################################
 #####################################################################################
 # MAIN FUNCTION
-def prepare_scene(context, report, sidecar_type, export_hidden, filepath, use_armature_deform_only, game_version, meshes_to_empties, **kwargs):
+def prepare_scene(context, report, sidecar_type, export_hidden, use_armature_deform_only, game_version, meshes_to_empties, **kwargs):
+    # Exit local view. Must do this otherwise fbx export will fail.
     ExitLocalView(context)
-    enabled_exclude_collections = HideExcludedCollections(context)
-    global hidden_collections
+    # Disable collections with the +exclude prefix. This way they are treated as if they are not part of the asset at all
+    HideExcludedCollections(context)
+    # Unhide collections. Hidden collections will stop objects in the collection being exported. We only want this functionality if the collection is disabled
     unhide_collections(export_hidden, context)
-    objects_selection, active_object = GetCurrentActiveObjectSelection(context)
-    hidden_objects = UnhideObjects(export_hidden, context)                               # If the user has opted to export hidden objects, list all hidden objects and unhide them, return the list for later use
-    mode = GetSceneMode(context)                                                      # get the current selected mode, save the mode for later, and then switch to object mode
-    unselectable_objects = MakeSelectable(context)
-    # update bsp/perm/region/global mat names in case any are null
-    for ob in context.scene.objects:
-        if ob.nwo.bsp_name == '':
-            ob.nwo.bsp_name = '000'
-        if ob.nwo.Permutation_Name == '':
-            ob.nwo.Permutation_Name = 'default'
-        if ob.nwo.Region_Name == '':
-            ob.nwo.Region_Name = 'default'
-        # if ob.nwo.Face_Global_Material == '':
-        #     ob.nwo.Face_Global_Material = 'default'
-
+    # Get the current set of selected objects. We need this so selected perms/bsps only functionality can be used
+    objects_selection = GetCurrentActiveObjectSelection(context)
+    # unhide objects if the user has export_hidden ticked
+    UnhideObjects(export_hidden, context)
+    # set the scene to object mode. Object mode is required for export.
+    set_object_mode(context)
+    # Make all currently unselectable objects selectable again. Exporter needs to loop through and select scene objects so we need this.
+    MakeSelectable(context)
+    # update bsp/perm/region names in case any are null.
+    fix_blank_group_names(context)
+    # add a uv map to meshes without one. This prevents an export assert
     fixup_missing_uvs(context)
-    
-    # ApplyObjectIDs(context.view_layer.objects) # removed due to new method of always generating IDs at export
     # run find shaders code if any empty paths
-    for material in bpy.data.materials:
-        if material.nwo.shader_path == '' and not CheckType.override(material) and material.name != 'invalid':
-            FindShaders(context, '', report, False)
-            break
+    find_shaders_on_export(bpy.data.materials, context, report)
+    # Establish a dictionary of scene regions. Used later in export_gr2 and build_sidecar
     regions_dict = get_regions_dict(context.view_layer.objects)
+    # Establish a dictionary of scene global materials. Used later in export_gr2 and build_sidecar
     global_materials_dict = get_global_materials_dict(context.view_layer.objects)
-    mesh_node_names = {}
-    temp_nodes = []
-    if meshes_to_empties:
-        mesh_node_names, temp_nodes = MeshesToEmpties(context)
+    # Convert mesh markers to empty objects. Especially useful with complex marker shapes, such as prefabs
+    MeshesToEmpties(context, meshes_to_empties)
+    # get all objects that we plan to export later
     halo_objects = HaloObjects(sidecar_type)
+    # Add materials to all objects without one. No materials = unhappy Tool.exe
     FixMissingMaterials(context, sidecar_type)
-    # proxies = SetPoopProxies(context, h_objects.poops) 02-01-2023 commenting this out as I don't believe the workflow should be this way. Also causes issues in H4
-    # for p in proxies:
-    #     h_objects.poops.append(p)
-    model_armature, temp_armature, no_parent_objects = GetSceneArmature(context, sidecar_type, game_version)                          # return the main armature in the scene, and create a temp one if a model armature does not exist
+    # Get and set the model armature, or create one if none exists.
+    model_armature, temp_armature, no_parent_objects = GetSceneArmature(context, sidecar_type, game_version)
+    # Handle spooky scary skeleton bones
     skeleton_bones = {}
     current_action = ''
     if model_armature is not None:
-        ParentToArmature(model_armature, temp_armature, no_parent_objects, context)                             # ensure all objects are parented to an armature on export. Render and collision mesh is parented with armature deform, the rest uses bone parenting
+        ParentToArmature(model_armature, temp_armature, no_parent_objects, context) # ensure all objects are parented to an armature on export. Render and collision mesh is parented with armature deform, the rest uses bone parenting
         skeleton_bones = GetBoneList(model_armature, use_armature_deform_only)      # return a list of bones attached to the model armature, ignoring control / non-deform bones
         if len(bpy.data.actions) > 0:
             try:
                 current_action = get_current_action(context, model_armature)
             except:
                 pass
-    # HaloBoner(model_armature.data.edit_bones, model_armature, context)
-    #FixLightsRotations(h_objects.lights)                                         # adjust light rotations to match in game rotation, and return a list of lights for later use in repair_scene
-    timeline_start, timeline_end, current_frame = SetTimelineRange(context)                      # set the timeline range so we can restore it later
-    lod_count = GetDecoratorLODCount(halo_objects, sidecar_type == 'DECORATOR SET') # get the max LOD count in the scene if we're exporting a decorator
+    # Set timeline range for use during animation export
+    timeline_start, timeline_end = SetTimelineRange(context)
+     # get the max LOD count in the scene if we're exporting a decorator
+    lod_count = GetDecoratorLODCount(halo_objects, sidecar_type == 'DECORATOR SET')
+    # get selected perms for use later
     selected_perms = GetSelectedPermutations(objects_selection)
+    # get selected bsps for use later
     selected_bsps = GetSelectedBSPs(objects_selection)
-    # ApplyPredominantShaderNames(h_objects.poops) # commented out 06-12-2022. I don't think it is needed
-    # if sidecar_type == 'SCENARIO':
-    #     RotateScene(context.view_layer.objects, model_armature)
 
-    return objects_selection, active_object, hidden_objects, mode, model_armature, temp_armature, skeleton_bones, halo_objects, timeline_start, timeline_end, lod_count, unselectable_objects, enabled_exclude_collections, mesh_node_names, temp_nodes, selected_perms, selected_bsps, current_frame, regions_dict, global_materials_dict, hidden_collections, current_action
+    return model_armature, skeleton_bones, halo_objects, timeline_start, timeline_end, lod_count, selected_perms, selected_bsps, regions_dict, global_materials_dict, current_action
 
 
 #####################################################################################
@@ -145,6 +135,21 @@ class HaloObjects():
 #####################################################################################
 # VARIOUS FUNCTIONS
 
+def find_shaders_on_export(materials, context, report):
+    for material in materials:
+        if material.nwo.shader_path == '':
+            FindShaders(context, '', report, False)
+            break
+
+def fix_blank_group_names(context):
+    for ob in context.view_layer.objects:
+        if ob.nwo.bsp_name == '':
+            ob.nwo.bsp_name = '000'
+        if ob.nwo.Permutation_Name == '':
+            ob.nwo.Permutation_Name = 'default'
+        if ob.nwo.Region_Name == '':
+            ob.nwo.Region_Name = 'default'
+
 def fixup_missing_uvs(context):
     for ob in context.view_layer.objects:
         if ob.type == 'MESH':
@@ -152,18 +157,15 @@ def fixup_missing_uvs(context):
             if mesh.uv_layers.active is None:
                 mesh.uv_layers.new(name="UVMap_0")
 
-def GetSceneMode(context):
-    mode = None
+def set_object_mode(context):
     try: # wrapped this in a try as the user can encounter an assert if no object is selected. No reason for this to crash the export
         if context.view_layer.objects.active == None: 
             context.view_layer.objects.active = context.view_layer.objects[0]
 
-        mode = context.object.mode
         bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
     except:
         print('WARNING: Unable to test mode')
 
-    return mode
 
 def get_current_action(context, model_armature):
     deselect_all_objects()
@@ -255,52 +257,40 @@ def RotateScene(scene_obs, model_armature):
             ob.matrix_world = M @ ob.matrix_world
 
 def UnhideObjects(export_hidden, context):
-    hidden_objects = []
     if export_hidden:
-        for ob in tuple(context.view_layer.objects):
-            if not ob.visible_get():
-                hidden_objects.append(ob)
-        
-        for ob in hidden_objects:
+        for ob in context.view_layer.objects:
             ob.hide_set(False)
-
-    return hidden_objects # return a list of objects which should be hidden in repair_scene
 
 def unhide_collections(export_hidden, context):
     layer_collection = context.view_layer.layer_collection
     recursive_nightmare(layer_collection)
 
 def recursive_nightmare(collections):
-    global hidden_collections
     for collection in collections.children:
         if collection.hide_viewport or len(collection.children) > 0:
             if collection.hide_viewport:
-                hidden_collections.append(collection)
                 collection.hide_viewport = False
             if len(collection.children) > 0:
                 recursive_nightmare(collection)
 
 def SetTimelineRange(context):
     scene = context.scene
-    current_frame = scene.frame_current
     timeline_start = scene.frame_start
     timeline_end = scene.frame_end
 
     scene.frame_start = 0
     scene.frame_end = 0
 
-    return timeline_start, timeline_end, current_frame
+    return timeline_start, timeline_end
 
 def GetCurrentActiveObjectSelection(context):
     objects_selection = None
-    active_object = None
     try:
         objects_selection = context.selected_objects
-        active_object = context.active_object
     except:
-        print('ASSERT: Unable to attain active object & selection')
+        print('ASSERT: Unable to attain selection')
 
-    return objects_selection, active_object
+    return objects_selection
 
 def FixLightsRotations(lights_list):
     deselect_all_objects()
@@ -330,14 +320,9 @@ def GetDecoratorLODCount(halo_objects, asset_is_decorator):
     return lod_count
 
 def HideExcludedCollections(context):
-    enabled_exclude_collections = []
     for layer in context.view_layer.layer_collection.children:
         if layer.collection.name.startswith('+exclude') and layer.is_visible:
-            enabled_exclude_collections.append(layer)
-        if layer.collection.name.startswith('+exclude'):
             layer.exclude = True
-
-    return enabled_exclude_collections
 
 
 #####################################################################################
@@ -632,39 +617,39 @@ def FixMissingMaterials(context, sidecar_type):
                 if CheckType.collision(ob):
                     if not_bungie_game():
                         if ob.nwo.Poop_Collision_Type == '_connected_geometry_poop_collision_type_play_collision':
-                            mat = '+player_collision'
+                            mat = 'playCollision'
                         elif ob.nwo.Poop_Collision_Type == '_connected_geometry_poop_collision_type_bullet_collision':
-                            mat = '+bullet_collision'
+                            mat = 'bulletCollision'
                         elif ob.nwo.Poop_Collision_Type == '_connected_geometry_poop_collision_type_invisible_wall':
-                            mat = '+wall_collision'
+                            mat = 'wallCollision'
                         else:
-                            mat = '+collision'
+                            mat = 'collisionVolume'
                     
                     else:
-                        mat = '+collision'
+                        mat = 'collisionVolume'
 
                 elif CheckType.physics(ob):
-                    mat = '+physics'
+                    mat = 'physicsVolume'
                 elif CheckType.portal(ob):
-                    mat = '+portal'
+                    mat = 'Portal'
                 elif CheckType.seam(ob):
-                    mat = '+seam'
+                    mat = 'Seam'
                 elif CheckType.cookie_cutter(ob):
-                    mat = '+cookie_cutter'
+                    mat = 'cookieCutter'
                 elif CheckType.water_physics(ob):
-                    mat = '+water_volume'
+                    mat = 'waterVolume'
                 elif CheckType.poop(ob) and ob.nwo.poop_rain_occluder:
-                    mat = '+rain_blocker'
+                    mat = 'rainBlocker'
                 elif CheckType.default(ob) and ob.nwo.Face_Type == '_connected_geometry_face_type_sky':
-                    mat = '+sky'
+                    mat = 'Sky'
                 elif (CheckType.default(ob) or CheckType.poop(ob)) and ob.nwo.Face_Type == '_connected_geometry_face_type_seam_sealer':
-                    mat = '+seamsealer'
+                    mat = 'seamSealer'
                 elif CheckType.default(ob) and not_bungie_game() and sidecar_type == 'SCENARIO':
-                    mat = '+structure'
+                    mat = 'Structure'
                 elif CheckType.default(ob) or CheckType.poop(ob) or CheckType.decorator(ob):
                     mat = 'invalid'
                 else:
-                    mat = '+override'
+                    mat = 'Override'
                 
                 # if this special material isn't already in the users scene, add it
                 if mat not in materials_list:
@@ -675,42 +660,74 @@ def FixMissingMaterials(context, sidecar_type):
                 # finally, append the new material to the object
                 ob.data.materials.append(mat)
 
-def MeshesToEmpties(context):
-    # get a list of meshes which are nodes
-    mesh_nodes = []
-    for ob in context.view_layer.objects:
-        if CheckType.marker(ob) and ob.type == 'MESH':
-            mesh_nodes.append(ob)
+def MeshesToEmpties(context, meshes_to_empties):
+    if meshes_to_empties:
+        # get a list of meshes which are nodes
+        mesh_nodes = []
+        for ob in context.view_layer.objects:
+            if CheckType.marker(ob) and ob.type == 'MESH':
+                mesh_nodes.append(ob)
 
-    # For each mesh node create an empty with the same Halo props and transforms
-    # Mesh objects need their names saved, so we make a dict. Names are stored so that the node can have the exact same name. We add a temp name to each mesh object
-    mesh_node_names = {}
-    temp_nodes = []
-    for ob in mesh_nodes:
-        deselect_all_objects()
-        bpy.ops.object.empty_add(type='ARROWS')
-        node = context.object
-        node_name = TempName(ob.name)
-        mesh_node_names.update({ob: node_name}) 
-        ob.name = str(uuid4())
-        node.name = node_name
-        if ob.parent is not None:
-            node.parent = ob.parent
-            # Added 08-12-2022 to fix empty nodes not being bone parented
-            node.parent_type = ob.parent_type
-            if node.parent_type == 'BONE':
-                node.parent_bone = ob.parent_bone
+        # For each mesh node create an empty with the same Halo props and transforms
+        # Mesh objects need their names saved, so we make a dict. Names are stored so that the node can have the exact same name. We add a temp name to each mesh object
+        for ob in mesh_nodes:
+            deselect_all_objects()
+            bpy.ops.object.empty_add(type='ARROWS')
+            node = context.object
+            node_name = TempName(ob.name)
+            ob.name = str(uuid4())
+            node.name = node_name
+            if ob.parent is not None:
+                node.parent = ob.parent
+                # Added 08-12-2022 to fix empty nodes not being bone parented
+                node.parent_type = ob.parent_type
+                if node.parent_type == 'BONE':
+                    node.parent_bone = ob.parent_bone
 
-        node.matrix_local = ob.matrix_local
-        if CheckType.pathfinding_sphere(ob): # need to handle path finding spheres differently. Dimensions aren't retained for empties, so instead we can store the radius in the marker sphere radius
-            node.nwo.marker_sphere_radius = max(ob.dimensions) / 2
-        node.scale = ob.scale
-        # copy the node props from the mesh to the empty
-        SetNodeProps(node, ob)
-        # hide the mesh so it doesn't get included in the export
-        ob.hide_set(True)
-        temp_nodes.append(node)
-    return mesh_node_names, temp_nodes
+            node.matrix_local = ob.matrix_local
+            if CheckType.pathfinding_sphere(ob): # need to handle path finding spheres differently. Dimensions aren't retained for empties, so instead we can store the radius in the marker sphere radius
+                node.nwo.marker_sphere_radius = max(ob.dimensions) / 2
+            node.scale = ob.scale
+            # copy the node props from the mesh to the empty
+            SetNodeProps(node, ob)
+            # hide the mesh so it doesn't get included in the export
+            ob.hide_set(True)
+
+    # mesh to empties with deletion
+    # if meshes_to_empties:
+    #     # get a list of meshes which are nodes
+    #     mesh_nodes = []
+    #     for ob in context.view_layer.objects:
+    #         if CheckType.marker(ob) and ob.type == 'MESH':
+    #             mesh_nodes.append(ob)
+
+    #     # For each mesh node create an empty with the same Halo props and transforms
+    #     # Mesh objects need their names saved, so we make a dict. Names are stored so that the node can have the exact same name. We add a temp name to each mesh object
+    #     for ob in mesh_nodes:
+    #         deselect_all_objects()
+    #         bpy.ops.object.empty_add(type='ARROWS')
+    #         node = context.object
+    #         if ob.parent is not None:
+    #             node.parent = ob.parent
+    #             # Added 08-12-2022 to fix empty nodes not being bone parented
+    #             node.parent_type = ob.parent_type
+    #             if node.parent_type == 'BONE':
+    #                 node.parent_bone = ob.parent_bone
+
+    #         node.matrix_local = ob.matrix_local
+    #         if CheckType.pathfinding_sphere(ob): # need to handle path finding spheres differently. Dimensions aren't retained for empties, so instead we can store the radius in the marker sphere radius
+    #             node.nwo.marker_sphere_radius = max(ob.dimensions) / 2
+    #         node.scale = ob.scale
+    #         # copy the node props from the mesh to the empty
+    #         SetNodeProps(node, ob)
+    #         # get the meshes name
+    #         mesh_name = str(ob.name)
+    #         # cast the mesh into the abyss
+    #         deselect_all_objects()
+    #         ob.select_set(True)
+    #         bpy.ops.object.delete() 
+    #         # Apply the saved mesh name to the new node
+    #         node.name = mesh_name
 
 def TempName(name):
     return name + ''

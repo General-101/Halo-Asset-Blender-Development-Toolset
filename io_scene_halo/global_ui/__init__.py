@@ -2083,34 +2083,19 @@ class NWO_MaterialProps(Panel):
         current_material = ob.active_material
         if current_material is not None:
             material_nwo = current_material.nwo
-            is_override = CheckType.override(current_material)
             layout.use_property_split = True
             flow = layout.grid_flow(row_major=True, columns=0, even_columns=True, even_rows=False, align=False)
             col = flow.column()
             # fun setup to display the correct fields
             if not_bungie_game():
-                if is_override:
-                    if current_material.name.startswith('+'):
-                        col.prop(material_nwo, "material_override_h4_locked")
-                    else:
-                        col.prop(material_nwo, "material_override_h4")
-                else:
-                    row = col.row()
-                    row.prop(material_nwo, "shader_path", text='Material Path')
-                    row.operator('nwo.shader_path')
-                    col.prop(material_nwo, "material_override_h4")
+                row = col.row()
+                row.prop(material_nwo, "shader_path", text='Material Path')
+                row.operator('nwo.shader_path')
             else:
-                if is_override:
-                    if current_material.name.startswith('+'):
-                        col.prop(material_nwo, "material_override_locked")
-                    else:
-                        col.prop(material_nwo, "material_override")
-                else:
-                    row = col.row()
-                    row.prop(material_nwo, "shader_path")
-                    row.operator('nwo.shader_path')
-                    col.prop(material_nwo, "Shader_Type")
-                    col.prop(material_nwo, "material_override")
+                row = col.row()
+                row.prop(material_nwo, "shader_path")
+                row.operator('nwo.shader_path')
+                col.prop(material_nwo, "Shader_Type")
                         
 # LIGHT PROPERTIES
 class NWO_LightProps(Panel):
@@ -4595,101 +4580,6 @@ class NWO_MaterialPropertiesGroup(PropertyGroup):
         default = "shader",
         items=shader_types,
         )
-
-    material_items = [  ('none', "None", "None"),
-                        ('+portal', "Portal", "Force all faces with this material to be portals"),
-                        ('+seamsealer', "Seamsealer", "Force all faces with this material to be seamsealer"),
-                        ('+sky', "Sky", "Force all faces with this material to be sky"),
-                        ]
-
-    material_override: EnumProperty(
-        name = "Material Override",
-        options=set(),
-        description = "Select to override the shader path with a special material type e.g. sky / seamsealer",
-        default = "none",
-        items=material_items,
-        )
-
-    def material_name_is_special(self):
-        if self.id_data.name.lower().startswith('+portal'):
-            return 1
-        elif self.id_data.name.lower().startswith('+seamsealer'):
-            return 2
-        elif self.id_data.name.lower().startswith('+sky'):
-            return 3
-        else:
-            return 1
-
-    material_override_locked: EnumProperty(
-        name = "Material Override",
-        options=set(),
-        get=material_name_is_special,
-        description = "Select to override the shader path with a special material type e.g. sky / seamsealer",
-        default = "none",
-        items=material_items,
-        )
-
-    def material_name_is_special_h4(self):
-        if self.id_data.name.lower().startswith('+sky'):
-            return 1
-        elif self.id_data.name.lower().startswith('+physics'):
-            return 2
-        elif self.id_data.name.lower().startswith('+seam'):
-            return 3
-        elif self.id_data.name.lower().startswith('+portal'):
-            return 4
-        elif self.id_data.name.lower().startswith('+collision'):
-            return 5
-        elif self.id_data.name.lower().startswith('+player_collision'):
-            return 6
-        elif self.id_data.name.lower().startswith('+wall_collision'):
-            return 7
-        elif self.id_data.name.lower().startswith('+cookie_cutter'):
-            return 8
-        elif self.id_data.name.lower().startswith('+bullet_collision'):
-            return 9
-        elif self.id_data.name.lower().startswith('+rain_blocker'):
-            return 10
-        elif self.id_data.name.lower().startswith('+water_volume'):
-            return 11
-        elif self.id_data.name.lower().startswith('+structure'):
-            return 12
-        elif self.id_data.name.lower().startswith('+override'):
-            return 13
-        else:
-            return 0
-
-    material_items_h4 = [
-                        ('none', "None", "None"),  
-                        ('InvisibleSky', "Sky", "None"),
-                        ('Physics', 'Physics', ''),
-                        ('Seam', "Seam", ""),
-                        ('Portal', "Portal", ""),
-                        ('Collision', "Collision", ""),
-                        ('playCollision', "Player Collision", ""),
-                        ('wallCollision', "Wall Collision", ""),
-                        ('bulletCollision', "Bullet Collision", ""),
-                        ('CookieCutter', "Cookie Cutter", ""),
-                        ('rainBlocker', "Rain Blocker", ""),
-                        ('waterVolume', "Water Volume", ""),
-                        ('Structure', "Structure", ""),
-                        ]
-
-    material_override_h4 : EnumProperty(
-        name = "Material Override",
-        options=set(),
-        description = "Select to override the shader path with a special material type",
-        default = "none",
-        items=material_items_h4,
-        )
-
-    material_override_h4_locked : EnumProperty(
-        name = "Material Override",
-        options=set(),
-        get=material_name_is_special_h4,
-        default = 'none',
-        items=material_items_h4,
-    )
 
 class NWO_BonePropertiesGroup(PropertyGroup):
 
