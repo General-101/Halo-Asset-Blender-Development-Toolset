@@ -2358,6 +2358,13 @@ class NWO_ObjectPropertiesGroup(PropertyGroup):
         else:
             return 2
 
+    def get_objecttype_enum_no_mesh(self):
+        if self.id_data.name.startswith(frame_prefixes):
+            return 0
+        else:
+            return 1
+
+
     object_type_items_all = [
         ('_connected_geometry_object_type_frame', 'Frame', "Treat this object as a frame. Can be forced on with the prefixes: 'b_', 'b ', 'frame ', 'frame_'"),
         ('_connected_geometry_object_type_marker', 'Marker', "Sets this object to be written to a json file as a marker. Can be forced on with the prefix: '#'"),
@@ -2397,7 +2404,7 @@ class NWO_ObjectPropertiesGroup(PropertyGroup):
     Object_Type_No_Mesh_Locked: EnumProperty(
         name="Object Type",
         options=set(),
-        get=get_objecttype_enum,
+        get=get_objecttype_enum_no_mesh,
         description="Sets the object type",
         default = '_connected_geometry_object_type_marker',
         items=object_type_items_no_mesh,

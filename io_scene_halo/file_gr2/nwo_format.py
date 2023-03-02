@@ -958,7 +958,7 @@ class NWOMesh(NWOObject):
         if self.boundary_surface():
             return '_connected_geometry_mesh_type_boundary_surface'
         elif self.collision():
-            if (self.not_bungie_game and self.sidecar_type in ('SCENARIO', 'PREFAB')) or (self.sidecar_type == 'SCENARIO' and NWOMesh.poop(self.ob.parent)):
+            if (self.not_bungie_game and self.sidecar_type in ('SCENARIO', 'PREFAB')) or (self.sidecar_type == 'SCENARIO' and self.ob.parent is not None and CheckType.poop(self.ob.parent)):
                 return '_connected_geometry_mesh_type_poop_collision'
             else:
                 return '_connected_geometry_mesh_type_collision'
@@ -1190,7 +1190,7 @@ class NWOMesh(NWOObject):
         return self.halo.Face_Type
 
     def face_mode(self):
-        if not self.not_bungie_game and len(self.ob.children) > 0 and self.mesh_type == '_connected_geometry_mesh_type_poop':
+        if not self.not_bungie_game and len(self.ob.children) > 0 and self.bungie_mesh_type == '_connected_geometry_mesh_type_poop':
             for child in self.ob.children:
                 if CheckType.poop_collision_physics(child):
                     return '_connected_geometry_face_mode_render_only'

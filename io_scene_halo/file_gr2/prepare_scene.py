@@ -73,6 +73,8 @@ def prepare_scene(context, report, sidecar_type, export_hidden, use_armature_def
     global_materials_dict = get_global_materials_dict(context.view_layer.objects)
     # Convert mesh markers to empty objects. Especially useful with complex marker shapes, such as prefabs
     MeshesToEmpties(context, meshes_to_empties)
+    # poop proxy madness
+    SetPoopProxies(context.view_layer.objects)
     # get all objects that we plan to export later
     halo_objects = HaloObjects(sidecar_type)
     # Add materials to all objects without one. No materials = unhappy Tool.exe
@@ -481,61 +483,68 @@ def GetProminantShaderName(ob):
 
     return predominant_shader
 
-def SetPoopProxies(context, poops):
+def SetPoopProxies(scene_objects):
     proxies = []
-    mesh_data = []
-    proxy_collision = None
-    proxy_physics = None
-    proxy_cookie_cutter = None
-    collision_offset = 0
-    physics_offset = 0
-    cookie_cutter_offset = 0
-    poop_offset = 0
-    deselect_all_objects()
-    for ob in poops:
-        if ob.data.name not in mesh_data:
-            mesh_data.append(ob.data.name)
-            for obj in poops:
-                if (obj.data.name == ob.data.name) and (len(obj.children) > 0) and CheckType.poop(obj):
-                    proxy_collision, collision_offset = GetPoopProxyCollision(obj, poops)
-                    proxy_physics, physics_offset = GetPoopProxyPhysics(obj, poops)
-                    proxy_cookie_cutter, cookie_cutter_offset = GetPoopProxyCookie(obj, poops)
-                    obj.select_set(True)
-                    break
+    if not not_bungie_game():
+        poops = [ob for ob in scene_objects if CheckType.poop(ob)]
+        if len(poops) > 1:
+            print('Building instanced geometry proxy meshes')
+            mesh_data = []
+            proxy_collision = None
+            proxy_physics = None
+            proxy_cookie_cutter = None
+            collision_offset = 0
+            physics_offset = 0
+            cookie_cutter_offset = 0
+            poop_offset = 0
+            deselect_all_objects()
+            for ob in poops:
+                if ob.data.name not in mesh_data:
+                    mesh_data.append(ob.data.name)
+                    for obj in poops:
+                        if obj.data.name == ob.data.name and len(obj.children) > 0 and CheckType.poop(obj):
+                            proxy_collision, collision_offset = GetPoopProxyCollision(obj)
+                            proxy_physics, physics_offset = GetPoopProxyPhysics(obj)
+                            proxy_cookie_cutter, cookie_cutter_offset = GetPoopProxyCookie(obj)
+                            obj.select_set(True)
+                            break
+                    else:
+                        continue
 
-            for obj in poops:
-                if CheckType.poop(obj) and obj.data.name == ob.data.name and len(obj.children) <= 0:
-                    deselect_all_objects()
-                    obj.select_set(True)
-                    poop_offset = obj.matrix_world
-                    poop_proxies = AttachPoopProxies(obj, proxy_collision, proxy_physics, proxy_cookie_cutter, collision_offset, physics_offset, cookie_cutter_offset, poop_offset)
-                    for p in poop_proxies:
-                        proxies.append(p)
+                    for obj in poops:
+                        if CheckType.poop(obj) and obj.data.name == ob.data.name and len(obj.children) == 0:
+                            deselect_all_objects()
+                            obj.select_set(True)
+                            poop_offset = obj.matrix_world
+                            poop_proxies = AttachPoopProxies(obj, proxy_collision, proxy_physics, proxy_cookie_cutter, collision_offset, physics_offset, cookie_cutter_offset, poop_offset)
+                            for p in poop_proxies:
+                                proxies.append(p)
 
-    return proxies
+    proxies = []
+
 
 def AttachPoopProxies(obj, proxy_collision, proxy_physics, proxy_cookie_cutter, collision_offset, physics_offset, cookie_cutter_offset, poop_offset):
     ops = bpy.ops
     context = bpy.context
     proxy = []
     deselect_all_objects()
-    if proxy_collision != None:
+    if proxy_collision is not None:
         proxy_collision.select_set(True)
-    if proxy_physics != None:
+    if proxy_physics is not None:
         proxy_physics.select_set(True)
-    if proxy_cookie_cutter != None:
+    if proxy_cookie_cutter is not None:
         proxy_cookie_cutter.select_set(True)
 
     ops.object.duplicate(linked=True, mode='TRANSLATION')
 
-    if proxy_collision != None:
+    if proxy_collision is not None:
         proxy_collision.select_set(False)
-    if proxy_physics != None:
+    if proxy_physics is not None:
         proxy_physics.select_set(False)
-    if proxy_cookie_cutter != None:
+    if proxy_cookie_cutter is not None:
         proxy_cookie_cutter.select_set(False)
 
-    proxy = [prox for prox in context.selected_objects]
+    proxy = [p for p in context.selected_objects]
 
     context.view_layer.objects.active = obj
 
@@ -548,15 +557,15 @@ def AttachPoopProxies(obj, proxy_collision, proxy_physics, proxy_cookie_cutter, 
             ob.matrix_local = physics_offset
         else:
             ob.matrix_local = cookie_cutter_offset
-
+    
     return proxy
 
 
-def GetPoopProxyCollision(obj, poops):
+def GetPoopProxyCollision(obj):
     collision = None
     collision_offset = 0
     for child in obj.children:
-        if child in poops and CheckType.poop_collision(child):
+        if CheckType.poop_collision(child):
             collision = child
             collision_offset = collision.matrix_local
             break
@@ -564,22 +573,22 @@ def GetPoopProxyCollision(obj, poops):
 
     return collision, collision_offset
 
-def GetPoopProxyPhysics(obj, poops):
+def GetPoopProxyPhysics(obj):
     physics = None
     physics_offset = 0
     for child in obj.children:
-        if child in poops and CheckType.poop_physics(child):
+        if CheckType.poop_physics(child):
             physics = child
             physics_offset = physics.matrix_local
             break
 
     return physics, physics_offset
 
-def GetPoopProxyCookie(obj, poops):
+def GetPoopProxyCookie(obj):
     cookie = None
     cookie_offset = 0
     for child in obj.children:
-        if child in poops and CheckType.cookie_cutter(child):
+        if CheckType.cookie_cutter(child):
             cookie = child
             cookie_offset = cookie.matrix_local
             break
