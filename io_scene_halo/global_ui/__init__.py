@@ -3645,6 +3645,8 @@ class NWO_ObjectPropertiesGroup(PropertyGroup):
     def get_marker_group_name(self):
         name = self.id_data.name
         name = name.removeprefix('#')
+        if name.startswith('('):
+            name = shortest_string(name, name.rpartition(')')[2])
         name = name.strip(' :_"')
 
         return shortest_string(name, name.rpartition('.')[0]).lower()
@@ -4347,7 +4349,7 @@ class NWO_ObjectPropertiesGroup(PropertyGroup):
         name="Light Jitter Sphere Radius",
         options=set(),
         description="",
-        default=2.5,
+        default=0,
         min=0.0,
     )
 
@@ -4432,7 +4434,7 @@ class NWO_ObjectPropertiesGroup(PropertyGroup):
         name="Light Jitter Quality",
         options=set(),
         description="",
-        default='_connected_geometry_light_jitter_quality_low',
+        default='_connected_geometry_light_jitter_quality_high',
         items=[ ('_connected_geometry_light_jitter_quality_low', "Low", ""),
                 ('_connected_geometry_light_jitter_quality_medium', "Medium", ""),
                 ('_connected_geometry_light_jitter_quality_high', "High", ""),
