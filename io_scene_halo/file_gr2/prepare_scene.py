@@ -40,7 +40,9 @@ from .nwo_utils import(
     is_shader,
     get_tags_path,
     not_bungie_game,
+    dot_partition,
     true_region,
+    valid_animation_types,
 )
 
 #####################################################################################
@@ -94,6 +96,8 @@ def prepare_scene(context, report, sidecar_type, export_hidden, use_armature_def
                 pass
     # Set timeline range for use during animation export
     timeline_start, timeline_end = SetTimelineRange(context)
+    # Set animation name overrides / fix them up for the exporter
+    set_animation_overrides(model_armature, current_action)
      # get the max LOD count in the scene if we're exporting a decorator
     lod_count = GetDecoratorLODCount(halo_objects, sidecar_type == 'DECORATOR SET')
     # get selected perms for use later
@@ -137,6 +141,24 @@ class HaloObjects():
 #####################################################################################
 # VARIOUS FUNCTIONS
 
+def set_animation_overrides(model_armature, current_action):
+    if model_armature is not None and len(bpy.data.actions) > 0:
+        deselect_all_objects()
+        model_armature.select_set(True)
+        set_active_object(model_armature)
+        for action in bpy.data.actions:
+                try:
+                    model_armature.animation_data.action = action
+                    if action.nwo.name_override == '':
+                        action.nwo.name_override = action.name
+                except:
+                    pass
+
+        model_armature.animation_data.action = current_action
+        
+        deselect_all_objects()
+
+
 def find_shaders_on_export(materials, context, report):
     for material in materials:
         if material.nwo.shader_path == '':
@@ -173,7 +195,7 @@ def get_current_action(context, model_armature):
     deselect_all_objects()
     model_armature.select_set(True)
     set_active_object(model_armature)
-    current_action = str(context.active_object.animation_data.action.name)
+    current_action = context.active_object.animation_data.action
     deselect_all_objects()
     return current_action
 

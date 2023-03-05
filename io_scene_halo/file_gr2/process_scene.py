@@ -173,8 +173,9 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                             timeline = context.scene
                             for action in bpy.data.actions:
                                 try:
-                                    if export_animations == 'ALL' or current_action == action.name:
-                                        print_box(f'**Exporting Animation: {action.name}**')
+                                    if export_animations == 'ALL' or current_action == action:
+                                        animation_name = action.nwo.name_override
+                                        print_box(f'**Exporting Animation: {animation_name}**')
                                         model_armature.animation_data.action = action
                                         if action.use_frame_range:
                                             timeline.frame_start = int(action.frame_start)
@@ -185,7 +186,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                             timeline.frame_end = timeline_end
                                             context.scene.frame_set(timeline_start)
                                         export_fbx(using_better_fbx, **keywords)
-                                        export_gr2(report, asset_path, asset, 'animations', [model_armature], '', '', model_armature, skeleton_bones, action.name, regions_dict, global_materials_dict, **keywords)
+                                        export_gr2(report, asset_path, asset, 'animations', [model_armature], '', '', model_armature, skeleton_bones, action.nwo.name_override, regions_dict, global_materials_dict, **keywords)
                                         gr2_count += 1
                                 except:
                                     print(f'Encountered animation not in armature, skipping export of animation: {action.name}')

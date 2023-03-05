@@ -1246,7 +1246,8 @@ from ..file_gr2.nwo_utils import (
     shortest_string,
     is_marker,
     is_mesh,
-
+    valid_animation_types,
+    dot_partition,
     CheckType
 )
 
@@ -2569,6 +2570,8 @@ class NWO_ActionProps(Panel):
         
         col = flow.column()
         # col.prop(action_nwo, "export_this") # this is now only used internally
+        col.prop(action_nwo, 'name_override')
+        col.prop(action_nwo, 'animation_type') 
 
 # NWO PROPERTY GROUPS
 class NWO_ObjectPropertiesGroup(PropertyGroup):
@@ -4891,11 +4894,66 @@ class NWO_BonePropertiesGroup(PropertyGroup):
         )
 
 class NWO_ActionPropertiesGroup(PropertyGroup):
-    export_this: BoolProperty(
-        name = "Export",
-        description = "Toggles whether this animation should be exported",
-        default = True,
+
+    def update_name_override(self, context):
+        if self.name_override.rpartition('.')[2] != self.animation_type:
+            match self.name_override.rpartition('.')[2].upper():
+                case 'JMA':
+                    self.animation_type = 'JMA'
+                case 'JMT':
+                    self.animation_type = 'JMT'
+                case 'JMZ':
+                    self.animation_type = 'JMZ'
+                case 'JMV':
+                    self.animation_type = 'JMV'
+                case 'JMO':
+                    self.animation_type = 'JMO'
+                case 'JMOX':
+                    self.animation_type = 'JMOX'
+                case 'JMR':
+                    self.animation_type = 'JMR'
+                case 'JMRX':
+                    self.animation_type = 'JMRX'
+                case _:
+                    self.animation_type = 'JMM'
+
+    name_override: StringProperty(
+        name = "Name Override",
+        update=update_name_override,
+        description = "Overrides the action name when setting exported animation name. Use this if the action field is too short for your animation name",
+        default = '',
         )
+    
+    def update_animation_type(self, context):
+        action_name = str(self.id_data.name) if self.id_data.nwo.name_override == '' else str(self.id_data.nwo.name_override)
+        action_name = dot_partition(action_name)
+        action_name = f'{action_name}.{self.animation_type}'
+        if self.id_data.nwo.name_override != '':
+            self.id_data.nwo.name_override = action_name
+        else:
+            if self.id_data.name.rpartition('.')[0] != '':
+                self.id_data.name = action_name
+        # Set the name override if the action name is out of characters
+        if dot_partition(action_name) != dot_partition(self.id_data.name) and self.id_data.nwo.name_override == '':
+            self.id_data.nwo.name_override = action_name
+            self.id_data.name = dot_partition(self.id_data.name)
+    
+    animation_type: EnumProperty(
+        name = "Type",
+        update=update_animation_type,
+        description = "Set the type of Halo animation you want this action to be.",
+        default = 'JMM',
+        items = [   ('JMM', "Base (JMM)", "Full skeleton animation. Has no physics movement. Examples: enter, exit, idle"),
+                    ('JMA', "Base - Horizontal Movement (JMA)", "Full skeleton animation with physics movement on the X-Y plane. Examples: move_front, walk_left, h_ping front gut"),
+                    ('JMT', "Base - Yaw Rotation (JMT)", "Full skeleton animation with physics rotation on the yaw axis. Examples: turn_left, turn_right"),
+                    ('JMZ', "Base - Full Movement / Yaw Rotation (JMZ)", "Full skeleton animation with physics movement on the X-Y-Z axis and yaw rotation. Examples: climb, jump_down_long, jump_forward_short"),
+                    ('JMV', "Base - Full Movement & Rotation (JMV)", "Full skeleton animation for vehicles. Has full roll / pitch / yaw rotation and angular velocity. Do not use for bipeds. Examples: vehicle roll_left, vehicle roll_right_short"),
+                    ('JMO', "Overlay - Keyframe (JMO)", "Overlays animation on top of others. Use on animations that aren't controlled by a function. Use this type for animating device_machines. Examples: fire_1, reload_1, device position"),
+                    ('JMOX', "Overlay - Pose (JMOX)", "Overlays animation on top of others. Use on animations that rely on functions like aiming / steering / accelaration. These animations require pitch & yaw bones to be animated and defined in the animation graph. Examples: aim_still_up, acc_up_down, vehicle steering"),
+                    ('JMR', "Replacement - Object Space (JMR)", "Replaces animation only on the bones animated in the replacement animation. Examples: combat pistol hp melee_strike_2, revenant_p sword put_away"), 
+                    ('JMRX', "Replacement - Local Space (JMRX)", "Replaces animation only on the bones animated in the replacement animation. Examples: combat pistol any grip, combat rifle sr grip"), 
+                ]
+    )
     
 class NWO_HeaderPropertiesGroup(PropertyGroup):
     def get_temp_settings(self):

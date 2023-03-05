@@ -33,7 +33,7 @@ from os import path
 
 from .nwo_utils import (
     is_design,
-    valid_animation_types,
+    dot_partition,
     get_data_path,
     get_perm,
     CheckType,
@@ -381,19 +381,13 @@ def WriteModelContents(halo_objects, model_armature, metadata, asset_path, asset
 
         for anim in bpy.data.actions:
             try:
-                model_armature.animation_data.action == anim # causes an assert if action is not in armature
-                if anim.name.rpartition('.')[0] != '':
-                    anim_name = anim.name.rpartition('.')[0]
-                    anim_type = anim.name.rpartition('.')[2]
-                    anim_type = anim_type.upper()
-                else:
-                    anim_name = anim.name
-                    anim_type = 'JMM'
-                
-                if anim_type not in valid_animation_types:
-                    anim_type = 'JMM'
+                model_armature.animation_data.action == anim # forces an assert if action is not in armature
+                anim_name = dot_partition(anim.nwo.name_override)
+                anim_type = anim.nwo.animation_type
                 
                 match anim_type:
+                    case 'JMM':
+                        network = ET.SubElement(object, 'ContentNetwork' , Name=anim_name, Type='Base', ModelAnimationMovementData='None')
                     case 'JMA':
                         network = ET.SubElement(object, 'ContentNetwork' , Name=anim_name, Type='Base', ModelAnimationMovementData='XY')
                     case 'JMT':
@@ -410,8 +404,6 @@ def WriteModelContents(halo_objects, model_armature, metadata, asset_path, asset
                         network = ET.SubElement(object, 'ContentNetwork' , Name=anim_name, Type='Overlay', ModelAnimationOverlayType='Keyframe', ModelAnimationOverlayBlending='ReplacementObjectSpace')
                     case 'JMRX':
                         network = ET.SubElement(object, 'ContentNetwork' , Name=anim_name, Type='Overlay', ModelAnimationOverlayType='Keyframe', ModelAnimationOverlayBlending='ReplacementLocalSpace')
-                    case _:
-                        network = ET.SubElement(object, 'ContentNetwork' , Name=anim_name, Type='Base', ModelAnimationMovementData='None')
 
                 ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, anim_name, 'model_animation_graph')
                 ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePath(asset_path, anim_name, 'model_animation_graph')
