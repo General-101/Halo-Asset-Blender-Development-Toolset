@@ -5053,15 +5053,15 @@ class NWO_List_Remove_Animation_Event(Operator):
 
     @classmethod
     def poll(cls, context):
-        scene = context.scene
-        scene_gr2 = scene.gr2
-        return context.scene and len(scene_gr2.shared_assets) > 0
+        action = context.active_object.animation_data.action
+        action_nwo = action.nwo
+        return action_nwo and len(action_nwo.animation_events) > 0
     
     def execute(self, context):
-        scene = context.scene
-        scene_gr2 = scene.gr2
-        index = scene_gr2.shared_assets_index
-        scene_gr2.shared_assets.remove(index)
+        action = context.active_object.animation_data.action
+        action_nwo = action.nwo
+        index = action_nwo.animation_events_index
+        action_nwo.animation_events.remove(index)
         return {'FINISHED'}
 
 class NWO_Animation_ListItems(PropertyGroup):
@@ -5069,8 +5069,6 @@ class NWO_Animation_ListItems(PropertyGroup):
         name="Event Name",
         default='new_event',
     )
-
-
 
     type: EnumProperty(
         name='Type',
