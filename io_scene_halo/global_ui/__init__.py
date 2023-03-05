@@ -30,6 +30,7 @@ import os
 from bpy.types import (
         Operator,
         Panel,
+        UIList,
         PropertyGroup
         )
 
@@ -41,6 +42,7 @@ from bpy.props import (
         StringProperty,
         PointerProperty,
         FloatVectorProperty,
+        CollectionProperty,
         )
 
 class Halo_XREFPath(Operator):
@@ -4892,9 +4894,385 @@ class NWO_BonePropertiesGroup(PropertyGroup):
         default = False,
         options=set(),
         )
+    
+#############################################################
+# ANIMATION EVENTS
+#############################################################
+class NWO_UL_AnimProps_Events(UIList):
+    # use_name_reverse: BoolProperty(
+    #     name="Reverse Name",
+    #     default=False,
+    #     options=set(),
+    #     description="Reverse name sort order",
+    # )
+
+    # use_order_name: BoolProperty(
+    #     name="Name",
+    #     default=False,
+    #     options=set(),
+    #     description="Sort groups by their name (case-insensitive)",
+    # )
+
+    # filter_string: StringProperty(
+    #     name="filter_string",
+    #     default = "",
+    #     description="Filter string for name"
+    # )
+
+    # filter_invert: BoolProperty(
+    #     name="Invert",
+    #     default = False,
+    #     options=set(),
+    #     description="Invert Filter"
+    # )
+
+
+    # def filter_items(self, _context, data, property):
+    #     attributes = getattr(data, property)
+    #     flags = []
+    #     indices = [i for i in range(len(attributes))]
+
+    #     # Filtering by name
+    #     if self.filter_name:
+    #         flags = bpy.types.UI_UL_list.filter_items_by_name(
+    #             self.filter_name, self.bitflag_filter_item, attributes, "name", reverse=self.use_filter_invert)
+    #     if not flags:
+    #         flags = [self.bitflag_filter_item] * len(attributes)
+
+    #     # Filtering internal attributes
+    #     for idx, item in enumerate(attributes):
+    #         flags[idx] = 0 if item.is_internal else flags[idx]
+
+    #     return flags, indices      
+
+    # def draw_filter(self, context,
+    #                 layout
+    #     ):
+
+    #     row = layout.row(align=True)
+    #     row.prop(self, "filter_string", text="Filter", icon="VIEWZOOM")
+    #     row.prop(self, "filter_invert", text="", icon="ARROW_LEFTRIGHT")
+
+
+    #     row = layout.row(align=True)
+    #     row.label(text="Order by:")
+    #     row.prop(self, "use_order_name", toggle=True)
+
+    #     icon = 'TRIA_UP' if self.use_name_reverse else 'TRIA_DOWN'
+    #     row.prop(self, "use_name_reverse", text="", icon=icon)
+
+    def draw_item(self, context, layout, data, item, icon, active_data, active_propname):
+        animation = item
+        if self.layout_type in {'DEFAULT', 'COMPACT'}:
+            if animation:
+                layout.prop(animation, "name", text="", emboss=False, icon_value=495)
+            else:
+                layout.label(text="", translate=False, icon_value=icon)
+        elif self.layout_type == 'GRID':
+            layout.alignment = 'CENTER'
+            layout.label(text="", icon_value=icon)
+
+    # def draw_item(self, _context, layout, _data, item, icon, _active_data, _active_propname, _index):
+    #     if self.layout_type in {'DEFAULT', 'COMPACT'}:
+    #         layout.prop(item, "name", text="", emboss=False, icon='GROUP_UVS')
+    #         icon = 'RESTRICT_RENDER_OFF' if item.active_render else 'RESTRICT_RENDER_ON'
+    #         layout.prop(item, "active_render", text="", icon=icon, emboss=False)
+    #     elif self.layout_type == 'GRID':
+    #         layout.alignment = 'CENTER'
+    #         layout.label(text="", icon_value=icon)
+            
+class NWO_AnimProps_Events(Panel):
+    bl_label = "Animation Events"
+    bl_idname = "NWO_PT_AnimPropsPanel_Events"
+    bl_space_type = 'DOPESHEET_EDITOR'
+    bl_region_type = "UI"
+    bl_context = "Action"
+    bl_parent_id = "NWO_PT_ActionDetailsPanel"
+
+    def draw(self, context):
+        action = context.active_object.animation_data.action
+        action_nwo = action.nwo
+        layout = self.layout
+        row = layout.row()
+        col = row.column()
+
+        # layout.template_list("NWO_UL_AnimProps_Events", "", action_nwo, "animation_events", action_nwo, 'animation_events_index')
+        col.template_list("NWO_UL_AnimProps_Events", "", action_nwo, "animation_events", action_nwo, "animation_events_index", rows=2)
+
+        row = layout.row()
+        col = row.column(align=True)
+        col.operator("animation_event.list_add", text="Add")
+        col = row.column(align=True)
+        col.operator("animation_event.list_remove", text="Remove")
+        
+        if len(action_nwo.animation_events) > 0:
+            item = action_nwo.animation_events[action_nwo.animation_events_index]
+            # row = layout.row()
+            # row.prop(item, "name") # debug only
+            flow = layout.grid_flow(row_major=True, columns=0, even_columns=True, even_rows=False, align=False)
+            col = flow.column()
+            col.prop(item, "type")
+            col.prop(item, "frame_frame")
+            col.prop(item, "frame_end")
+            col.prop(item, "frame_name")
+
+class NWO_List_Add_Animation_Event(Operator):
+    """ Add an Item to the UIList"""
+    bl_idname = "animation_event.list_add"
+    bl_label = "Add"
+    bl_description = "Add a new animation event to the list."
+    filename_ext = ''
+
+    name: StringProperty(name="Name")
+
+    @classmethod
+    def poll(cls, context):
+        return context.active_object.animation_data.action
+    
+    def execute(self, context):
+        action = context.active_object.animation_data.action
+        action_nwo = action.nwo
+        event = action_nwo.animation_events.add()
+        event.frame = context.scene.frame_current
+        event.name = self.name
+
+        action_nwo.animation_event_index = len(action_nwo.animation_events) - 1
+        
+        return {'FINISHED'}
+    
+    def invoke(self, context, event):
+        context.window_manager.invoke_props_dialog(self)
+
+        return {'RUNNING_MODAL'}
+
+class NWO_List_Remove_Animation_Event(Operator):
+    """ Remove an Item from the UIList"""
+    bl_idname = "animation_event.list_remove"
+    bl_label = "Remove"
+    bl_description = "Remove an animation event from the list."
+
+    @classmethod
+    def poll(cls, context):
+        scene = context.scene
+        scene_gr2 = scene.gr2
+        return context.scene and len(scene_gr2.shared_assets) > 0
+    
+    def execute(self, context):
+        scene = context.scene
+        scene_gr2 = scene.gr2
+        index = scene_gr2.shared_assets_index
+        scene_gr2.shared_assets.remove(index)
+        return {'FINISHED'}
+
+class NWO_Animation_ListItems(PropertyGroup):
+    name: StringProperty(
+        name="Event Name",
+        default='new_event',
+    )
+
+
+
+    type: EnumProperty(
+        name='Type',
+        default='_connected_geometry_animation_event_type_frame',
+        options=set(),
+        items = [
+            ('_connected_geometry_animation_event_type_custom', 'Custom', ''),
+            ('_connected_geometry_animation_event_type_loop', 'Loop', ''),
+            ('_connected_geometry_animation_event_type_sound', 'Sound', ''),
+            ('_connected_geometry_animation_event_type_effect', 'Effect', ''),
+            ('_connected_geometry_animation_event_type_ik_active', 'IK Active', ''),
+            ('_connected_geometry_animation_event_type_ik_passive', 'IK Passive', ''),
+            ('_connected_geometry_animation_event_type_text', 'Text', ''),
+            ('_connected_geometry_animation_event_type_wrinkle_map', 'Wrinkle Map', ''),
+            ('_connected_geometry_animation_event_type_footstep', 'Footstep', ''),
+            ('_connected_geometry_animation_event_type_cinematic_effect', 'Cinematic Effect', ''),
+            ('_connected_geometry_animation_event_type_object_function', 'Object Function', ''),
+            ('_connected_geometry_animation_event_type_frame', 'Frame', ''),
+            ('_connected_geometry_animation_event_type_import', 'Import', ''),
+        ]
+    )
+
+    frame_start: IntProperty(
+        name='Frame Start',
+        default=0,
+        options=set(),
+    )
+
+    frame_end: IntProperty(
+        name='Frame End',
+        default=0,
+        options=set(),
+    )
+
+    wrinkle_map_face_region: StringProperty(
+        name='Wrinkle Map Face Region',
+        default='',
+        options=set(),
+    )
+
+    wrinkle_map_effect: IntProperty(
+        name='Wrinkle Map Effect',
+        default=0,
+        options=set(),
+    )
+
+    footstep_type: StringProperty(
+        name='Footstep Type',
+        default='',
+        options=set(),
+    )
+
+    footstep_effect: IntProperty(
+        name='Footstep Effect',
+        default=0,
+        options=set(),
+    )
+
+    ik_chain: StringProperty(
+        name='IK Chain',
+        default='',
+        options=set(),
+    )
+
+    ik_active_tag: StringProperty(
+        name='IK Active Tag',
+        default='',
+        options=set(),
+    )
+
+    ik_target_tag: StringProperty(
+        name='IK Target Tag',
+        default='',
+        options=set(),
+    )
+
+    ik_target_marker: StringProperty(
+        name='IK Target Marker',
+        default='',
+        options=set(),
+    )
+
+    ik_target_usage: StringProperty(
+        name='IK Target Usage',
+        default='',
+        options=set(),
+    )
+
+    ik_proxy_target_id: IntProperty(
+        name='IK Proxy Target ID',
+        default=0,
+        options=set(),
+    )
+
+    ik_pole_vector_id: IntProperty(
+        name='IK Pole Vector ID',
+        default=0,
+        options=set(),
+    )
+
+    ik_effector_id: IntProperty(
+        name='IK Effector ID',
+        default=0,
+        options=set(),
+    )
+
+    cinematic_effect_tag: StringProperty(
+        name='Cinematic Effect Tag',
+        default='',
+        options=set(),
+    )
+
+    cinematic_effect_effect: IntProperty(
+        name='Cinematic Effect',
+        default=0,
+        options=set(),
+    )
+
+    cinematic_effect_marker: StringProperty(
+        name='Cinematic Effect Marker',
+        default='',
+        options=set(),
+    )
+
+    object_function_name: StringProperty(
+        name='Object Function Name',
+        default='',
+        options=set(),
+    )
+
+    object_function_effect: IntProperty(
+        name='Object Function Effect',
+        default=0,
+        options=set(),
+    )
+
+    frame_frame: IntProperty(
+        name='Frame',
+        default=0,
+        options=set(),
+    )
+
+    frame_name: EnumProperty(
+        name='Frame Type',
+        default='none',
+        options=set(),
+        items = [
+                ('none', 'None', ''),
+                ('primary keyframe', 'Primary Keyframe', ''),
+                ('secondary keyframe', 'Secondary Keyframe', ''),
+                ('tertiary keyframe', 'Tertiary Keyframe', ''),
+                ('left foot', 'Left Foot', ''),
+                ('right foot', 'Right Foot', ''),
+                ('allow interruption', 'Allow Interruption', ''),
+                ('do not allow interruption', 'Do Not Allow Interruption', ''),
+                ('both-feet shuffle', 'Both-Feet Shuffle', ''),
+                ('body impact', 'Body Impact', ''),
+                ('left foot lock', 'Left Foot Lock', ''),
+                ('left foot unlock', 'Left Foot Unlock', ''),
+                ('right foot lock', 'Right Foot Lock', ''),
+                ('right foot unlock', 'Right Foot Unlock', ''),
+                ('blend range marker', 'Blend Range Marker', ''),
+                ('stride expansion', 'Stride Expansion', ''),
+                ('stride contraction', 'Stride Contraction', ''),
+                ('ragdoll keyframe', 'Ragdoll Keyframe', ''),
+                ('drop weapon keyframe', 'Drop Weapon Keyframe', ''),
+                ('match a', 'Match A', ''),
+                ('match b', 'Match B', ''),
+                ('match c', 'Match C', ''),
+                ('match d', 'Match D', ''),
+                ('jetpack closed', 'Jetpack Closed', ''),
+                ('jetpack open', 'Jetpack Open', ''),
+                ('sound event', 'Sound Event', ''),
+                ('effect event', 'Effect Event', ''),
+            ]
+    )
+
+    frame_trigger: BoolProperty(
+        name='Frame Trigger',
+        default=False,
+        options=set(),
+    )
+
+    import_frame: IntProperty(
+        name='Import Frame',
+        default=0,
+        options=set(),
+    )
+
+    import_name: StringProperty(
+        name='Import Name',
+        default='',
+        options=set(),
+    )
+
+    text: StringProperty(
+        name='Text',
+        default='',
+        options=set(),
+    )
 
 class NWO_ActionPropertiesGroup(PropertyGroup):
-
     def update_name_override(self, context):
         if self.name_override.rpartition('.')[2] != self.animation_type:
             match self.name_override.rpartition('.')[2].upper():
@@ -4953,6 +5331,16 @@ class NWO_ActionPropertiesGroup(PropertyGroup):
                     ('JMR', "Replacement - Object Space (JMR)", "Replaces animation only on the bones animated in the replacement animation. Examples: combat pistol hp melee_strike_2, revenant_p sword put_away"), 
                     ('JMRX', "Replacement - Local Space (JMRX)", "Replaces animation only on the bones animated in the replacement animation. Examples: combat pistol any grip, combat rifle sr grip"), 
                 ]
+    )
+
+    animation_events: CollectionProperty(
+        type=NWO_Animation_ListItems,
+    )
+
+    animation_events_index: IntProperty(
+        name='Index for Animation Event',
+        default=0,
+        min=0,
     )
     
 class NWO_HeaderPropertiesGroup(PropertyGroup):
@@ -5046,6 +5434,11 @@ classeshalo = (
     NWO_BoneProps,
     NWO_BonePropertiesGroup,
     NWO_ActionProps,
+    NWO_UL_AnimProps_Events,
+    NWO_AnimProps_Events,
+    NWO_List_Add_Animation_Event,
+    NWO_List_Remove_Animation_Event,
+    NWO_Animation_ListItems,
     NWO_ActionPropertiesGroup,
     NWO_HeaderPropertiesGroup,
 )

@@ -156,7 +156,6 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
 
                     if export_markers:
                         if select_model_objects_no_perm(halo_objects.markers, model_armature, export_hidden):
-                            # select_all_lights(halo_objects) # Will restore when solution found for model lights
                             print_box('**Exporting markers**')
                             export_fbx(using_better_fbx, **keywords)
                             export_gr2(report, asset_path, asset, 'markers', context.selected_objects, '', '', model_armature, skeleton_bones, '', regions_dict, global_materials_dict, **keywords)
