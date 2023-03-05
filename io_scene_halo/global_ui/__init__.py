@@ -2285,6 +2285,195 @@ class NWO_LightProps(Panel):
             # col.prop(ob_nwo, 'Light_Clipping_Size_Y_Neg', text='Clipping Size Y Backward')
             # col.prop(ob_nwo, 'Light_Clipping_Size_Z_Neg', text='Clipping Size Z Backward')
 
+class NWO_LightPropsCycles(Panel):
+    bl_label = "Halo Light Properties"
+    bl_idname = "NWO_PT_LightPanel_Cycles"
+    bl_space_type = 'PROPERTIES'
+    bl_region_type = 'WINDOW'
+    bl_context = "data"
+    bl_parent_id = "CYCLES_LIGHT_PT_light"
+
+    @classmethod
+    def poll(cls, context):
+        scene = context.scene
+        scene_halo = scene.halo
+
+        if scene_halo.game_version in ('reach','h4','h2a'):
+            return context.object.type == 'LIGHT'
+
+    def draw(self, context):
+        layout = self.layout
+        layout.use_property_split = True
+        
+        flow = layout.grid_flow(row_major=True, columns=0, even_columns=True, even_rows=False, align=False)
+
+        data = context.object.data
+        ob_nwo = data.nwo
+
+        col = flow.column()
+
+        scene = context.scene
+        scene_halo = scene.halo
+
+        if scene_halo.game_version in ('h4','h2a'):
+            # col.prop(ob_nwo, 'Light_Color', text='Color')
+            row = col.row()
+            row.prop(ob_nwo, 'light_mode', expand=True)
+            row = col.row()
+            row.prop(ob_nwo, 'light_lighting_mode', expand=True)
+            # col.prop(ob_nwo, 'light_type_h4')
+            if data.type == 'SPOT':
+
+                col.separator()
+                row = col.row()
+                row.prop(ob_nwo, 'light_cone_projection_shape', expand=True)
+                # col.prop(ob_nwo, 'light_inner_cone_angle')
+                # col.prop(ob_nwo, 'light_outer_cone_angle')
+
+            col.separator()
+            # col.prop(ob_nwo, 'Light_IntensityH4')
+            if ob_nwo.light_lighting_mode == '_connected_geometry_lighting_mode_artistic':
+                col.prop(ob_nwo, 'Light_Near_Attenuation_StartH4')
+                col.prop(ob_nwo, 'Light_Near_Attenuation_EndH4')
+            
+            col.separator()
+                
+            if ob_nwo.light_mode == '_connected_geometry_light_mode_dynamic':
+                col.prop(ob_nwo, 'Light_Far_Attenuation_StartH4')
+                col.prop(ob_nwo, 'Light_Far_Attenuation_EndH4')
+
+                col.separator()
+
+                row = col.row()
+                row.prop(ob_nwo, 'light_cinema', expand=True)
+                col.prop(ob_nwo, 'light_destroy_after')
+
+                col.separator()
+                
+                col.prop(ob_nwo, "light_shadows")
+                if ob_nwo.light_shadows:
+                    col.prop(ob_nwo, 'light_shadow_color')
+                    row = col.row()
+                    row.prop(ob_nwo, 'light_dynamic_shadow_quality', expand=True)
+                    col.prop(ob_nwo, 'light_shadow_near_clipplane')
+                    col.prop(ob_nwo, 'light_shadow_far_clipplane')
+                    col.prop(ob_nwo, 'light_shadow_bias_offset')
+                col.prop(ob_nwo, 'light_cinema_objects_only')
+                col.prop(ob_nwo, "light_specular_contribution")
+                col.prop(ob_nwo, "light_diffuse_contribution")
+                col.prop(ob_nwo, "light_ignore_dynamic_objects")
+                col.prop(ob_nwo, "light_screenspace")
+                if ob_nwo.light_screenspace:
+                    col.prop(ob_nwo, 'light_specular_power')
+                    col.prop(ob_nwo, 'light_specular_intensity')
+
+                # col = layout.column(heading="Flags")
+                # sub = col.column(align=True)
+            else:
+                row = col.row()
+                row.prop(ob_nwo, 'light_jitter_quality', expand=True)
+                col.prop(ob_nwo, 'light_jitter_angle')
+                col.prop(ob_nwo, 'light_jitter_sphere_radius')
+
+                col.separator()
+
+                col.prop(ob_nwo, 'light_amplification_factor')
+
+                col.separator()
+                # col.prop(ob_nwo, 'light_attenuation_near_radius')
+                # col.prop(ob_nwo, 'light_attenuation_far_radius')
+                # col.prop(ob_nwo, 'light_attenuation_power')
+                # col.prop(ob_nwo, 'light_tag_name')
+                col.prop(ob_nwo, "light_indirect_only")
+                col.prop(ob_nwo, "light_static_analytic")
+
+            # col.prop(ob_nwo, 'light_intensity_off', text='Light Intensity Set Via Tag')
+            # if ob_nwo.light_lighting_mode == '_connected_geometry_lighting_mode_artistic':
+            #     col.prop(ob_nwo, 'near_attenuation_end_off', text='Near Attenuation Set Via Tag')
+            # if ob_nwo.light_type_h4 == '_connected_geometry_light_type_spot':
+            #     col.prop(ob_nwo, 'outer_cone_angle_off', text='Outer Cone Angle Set Via Tag')
+
+                # col.prop(ob_nwo, 'Light_Fade_Start_Distance')
+                # col.prop(ob_nwo, 'Light_Fade_End_Distance')
+            
+
+        else:
+            col.prop(ob_nwo, "light_type_override", text='Type')
+
+            col.prop(ob_nwo, 'Light_Game_Type', text='Game Type')
+            col.prop(ob_nwo, 'Light_Shape', text='Shape')
+            # col.prop(ob_nwo, 'Light_Color', text='Color') 
+            col.prop(ob_nwo, 'Light_Intensity', text='Intensity')
+
+            col.separator()
+
+            col.prop(ob_nwo, 'Light_Fade_Start_Distance', text='Fade Out Start Distance')
+            col.prop(ob_nwo, 'Light_Fade_End_Distance', text='Fade Out End Distance')
+
+            col.separator()
+
+            col.prop(ob_nwo, 'Light_Hotspot_Size', text='Hotspot Size')
+            col.prop(ob_nwo, 'Light_Hotspot_Falloff', text='Hotspot Falloff')
+            col.prop(ob_nwo, 'Light_Falloff_Shape', text='Falloff Shape')
+            col.prop(ob_nwo, 'Light_Aspect', text='Light Aspect')
+
+            col.separator()
+
+            col.prop(ob_nwo, 'Light_Frustum_Width', text='Frustum Width')
+            col.prop(ob_nwo, 'Light_Frustum_Height', text='Frustum Height')
+
+            col.separator()
+
+            col.prop(ob_nwo, 'Light_Volume_Distance', text='Light Volume Distance')
+            col.prop(ob_nwo, 'Light_Volume_Intensity', text='Light Volume Intensity')
+
+            col.separator()
+
+            col.prop(ob_nwo, 'Light_Bounce_Ratio', text='Light Bounce Ratio')
+
+            col.separator()
+
+            col = layout.column(heading="Flags")
+            sub = col.column(align=True)
+
+            sub.prop(ob_nwo, 'Light_Ignore_BSP_Visibility', text='Ignore BSP Visibility') 
+            sub.prop(ob_nwo, 'Light_Dynamic_Has_Bounce', text='Light Has Dynamic Bounce')
+            if ob_nwo.light_sub_type == '_connected_geometry_lighting_sub_type_screenspace':
+                sub.prop(ob_nwo, 'Light_Screenspace_Has_Specular', text='Screenspace Light Has Specular')
+
+            col = flow.column()
+
+            col.prop(ob_nwo, 'Light_Near_Attenuation_Start', text='Near Attenuation Start')
+            col.prop(ob_nwo, 'Light_Near_Attenuation_End', text='Near Attenuation End')
+
+            col.separator()
+
+            col.prop(ob_nwo, 'Light_Far_Attenuation_Start', text='Far Attenuation Start')
+            col.prop(ob_nwo, 'Light_Far_Attenuation_End', text='Far Attenuation End')
+
+            col.separator()
+            row = col.row()
+            row.prop(ob_nwo, 'Light_Tag_Override', text='Light Tag Override')
+            row.operator('nwo.light_tag_path')
+            row = col.row()
+            row.prop(ob_nwo, 'Light_Shader_Reference', text='Shader Tag Reference')
+            row.operator('nwo.light_shader_path')
+            row = col.row()
+            row.prop(ob_nwo, 'Light_Gel_Reference', text='Gel Tag Reference')
+            row.operator('nwo.light_gel_path')
+            row = col.row()
+            row.prop(ob_nwo, 'Light_Lens_Flare_Reference', text='Lens Flare Tag Reference')
+            row.operator('nwo.lens_flare_path')
+
+            # col.separator() # commenting out light clipping for now.
+
+            # col.prop(ob_nwo, 'Light_Clipping_Size_X_Pos', text='Clipping Size X Forward')
+            # col.prop(ob_nwo, 'Light_Clipping_Size_Y_Pos', text='Clipping Size Y Forward')
+            # col.prop(ob_nwo, 'Light_Clipping_Size_Z_Pos', text='Clipping Size Z Forward')
+            # col.prop(ob_nwo, 'Light_Clipping_Size_X_Neg', text='Clipping Size X Backward')
+            # col.prop(ob_nwo, 'Light_Clipping_Size_Y_Neg', text='Clipping Size Y Backward')
+            # col.prop(ob_nwo, 'Light_Clipping_Size_Z_Neg', text='Clipping Size Z Backward')
+
 # BONE PROPERTIES
 class NWO_BoneProps(Panel):
     bl_label = "Halo Bone Properties"
@@ -4756,6 +4945,7 @@ classeshalo = (
     NWO_LightPropertiesGroup,
     NWO_MaterialPropertiesGroup,
     NWO_LightProps,
+    NWO_LightPropsCycles,
     NWO_BoneProps,
     NWO_BonePropertiesGroup,
     NWO_ActionProps,
