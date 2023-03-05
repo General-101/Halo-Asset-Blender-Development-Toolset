@@ -1309,6 +1309,34 @@ class NWO_FogPath(Operator):
         context.window_manager.fileselect_add(self)
 
         return {'RUNNING_MODAL'}
+    
+class NWO_EffectPath(Operator):
+    """Set the path to an effect tag"""
+    bl_idname = "nwo.effect_path"
+    bl_label = "Find"
+
+    filter_glob: StringProperty(
+        default="*.effect",
+        options={'HIDDEN'},
+        )
+
+    filepath: StringProperty(
+        name="fog_path",
+        description="Set the path to the tag",
+        subtype="FILE_PATH"
+    )
+
+    def execute(self, context):
+        active_object = context.active_object
+        active_object.nwo.marker_looping_effect = self.filepath
+
+        return {'FINISHED'}
+
+    def invoke(self, context, event):
+        self.filepath = get_tags_path()
+        context.window_manager.fileselect_add(self)
+
+        return {'RUNNING_MODAL'}
 
 class NWO_LightConePath(Operator):
     """Set the path to a light cone tag"""
@@ -1549,10 +1577,11 @@ class NWO_ObjectProps(Panel):
             else:
                 col.prop(ob_nwo, "Object_Type_All_Locked", text='Object Type')
         else:
+            row = col.row()
             if ob.type == 'EMPTY':
-                col.prop(ob_nwo, "Object_Type_No_Mesh", text='Object Type')
+                row.prop(ob_nwo, "Object_Type_No_Mesh", text='Object Type', expand=True)
             else:
-                col.prop(ob_nwo, "Object_Type_All", text='Object Type')
+                row.prop(ob_nwo, "Object_Type_All", text='Object Type', expand=True)
 
         if poll_ui(('SCENARIO')):
             sub = col.row()
@@ -1629,10 +1658,11 @@ class NWO_ObjectMeshProps(Panel):
 
         elif CheckType.boundary_surface(ob):
             if poll_ui(('SCENARIO')):
+                row = col.row()
                 if ob.name.startswith(boundary_surface_prefixes):
-                    col.prop(ob_nwo, "Boundary_Surface_Type_Locked", text='Type')
+                    row.prop(ob_nwo, "Boundary_Surface_Type_Locked", text='Type', expand=True)
                 else:
-                    col.prop(ob_nwo, "Boundary_Surface_Type", text='Type')
+                    row.prop(ob_nwo, "Boundary_Surface_Type", text='Type', expand=True)
             else:
                 col.label(text="Boundary Surface mesh type only valid for Scenario exports", icon='ERROR')
 
@@ -1708,7 +1738,8 @@ class NWO_ObjectMeshProps(Panel):
 
         elif CheckType.portal(ob):
             if poll_ui(('SCENARIO')):
-                col.prop(ob_nwo, "Portal_Type", text='Portal Type')
+                row = col.row()
+                row.prop(ob_nwo, "Portal_Type", text='Portal Type', expand=True)
 
                 col.separator()
 
@@ -1743,7 +1774,8 @@ class NWO_ObjectMeshProps(Panel):
 
         elif CheckType.obb_volume(ob):
             if poll_ui(('SCENARIO')):
-                col.prop(ob_nwo, "obb_volume_type")
+                row = col.row()
+                row.prop(ob_nwo, "obb_volume_type", expand=True)
             else:
                 col.label(text="OBB Volume mesh type only valid for Scenario exports", icon='ERROR')
 
@@ -2042,7 +2074,9 @@ class NWO_ObjectMarkerProps(Panel):
             col.prop(ob_nwo, "Marker_Group_Name", text='Air Probe Group')
 
         elif CheckType.envfx(ob) and not_bungie_game():
-            col.prop(ob_nwo, "marker_looping_effect")
+            row = col.row()
+            row.prop(ob_nwo, "marker_looping_effect")
+            row.operator('nwo.effect_path') 
 
         elif CheckType.lightCone(ob) and not_bungie_game():
             row = col.row()
@@ -3552,8 +3586,8 @@ class NWO_ObjectPropertiesGroup(PropertyGroup):
         options=set(),
         description="",
         default = "_connected_geometry_mesh_obb_volume_type_streamingvolume",
-        items=[ ('_connected_geometry_mesh_obb_volume_type_streamingvolume', "Streaming Volume", ""),
-                ('_connected_geometry_mesh_obb_volume_type_lightmapexclusionvolume', "Lightmap Exclusion Volume", ""),
+        items=[ ('_connected_geometry_mesh_obb_volume_type_streamingvolume', "Streaming", ""),
+                ('_connected_geometry_mesh_obb_volume_type_lightmapexclusionvolume', "Lightmap Exclusion", ""),
                ]
         )
     #LIGHTMAP PROPERTIES
@@ -4014,9 +4048,13 @@ class NWO_ObjectPropertiesGroup(PropertyGroup):
         max=180,
     )
 
+    def effect_clean_tag_path(self, context):
+        self['marker_looping_effect'] = clean_tag_path(self['marker_looping_effect']).strip('"')
+
     marker_looping_effect: StringProperty(
         name="Effect Path",
         description="Tag path to an effect",
+        update=effect_clean_tag_path
     )
 
     def light_cone_clean_tag_path(self, context):
@@ -4927,6 +4965,7 @@ classeshalo = (
     Halo_XREFPath,
     NWO_GameInstancePath,
     NWO_FogPath,
+    NWO_EffectPath,
     NWO_LightConePath,
     NWO_LightConeCurvePath,
     NWO_LightTagPath,
