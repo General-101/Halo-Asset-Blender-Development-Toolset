@@ -24,14 +24,12 @@
 #
 # ##### END MIT LICENSE BLOCK #####
 
-from itertools import permutations
 import bpy
 import os
 
 from bpy.types import (
         Operator,
         Panel,
-        Header,
         PropertyGroup
         )
 
@@ -2099,11 +2097,12 @@ class NWO_MaterialProps(Panel):
                         
 # LIGHT PROPERTIES
 class NWO_LightProps(Panel):
-    bl_label = "Light Properties"
+    bl_label = "Halo Light Properties"
     bl_idname = "NWO_PT_LightPanel"
     bl_space_type = 'PROPERTIES'
     bl_region_type = 'WINDOW'
-    bl_parent_id = "NWO_PT_ObjectDetailsPanel"
+    bl_context = "data"
+    bl_parent_id = "DATA_PT_EEVEE_light"
 
     @classmethod
     def poll(cls, context):
@@ -2119,8 +2118,8 @@ class NWO_LightProps(Panel):
         
         flow = layout.grid_flow(row_major=True, columns=0, even_columns=True, even_rows=False, align=False)
 
-        ob = context.object
-        ob_nwo = ob.nwo
+        data = context.object.data
+        ob_nwo = data.nwo
 
         col = flow.column()
 
@@ -2128,20 +2127,22 @@ class NWO_LightProps(Panel):
         scene_halo = scene.halo
 
         if scene_halo.game_version in ('h4','h2a'):
-            col.prop(ob_nwo, 'Light_Color', text='Color')
-            col.prop(ob_nwo, 'light_mode')
-            col.prop(ob_nwo, 'light_lighting_mode')
-            col.prop(ob_nwo, 'light_type_h4')
-            if ob_nwo.light_type_h4 == '_connected_geometry_light_type_spot':
+            # col.prop(ob_nwo, 'Light_Color', text='Color')
+            row = col.row()
+            row.prop(ob_nwo, 'light_mode', expand=True)
+            row = col.row()
+            row.prop(ob_nwo, 'light_lighting_mode', expand=True)
+            # col.prop(ob_nwo, 'light_type_h4')
+            if data.type == 'SPOT':
 
                 col.separator()
-
-                col.prop(ob_nwo, 'light_cone_projection_shape')
-                col.prop(ob_nwo, 'light_inner_cone_angle')
-                col.prop(ob_nwo, 'light_outer_cone_angle')
+                row = col.row()
+                row.prop(ob_nwo, 'light_cone_projection_shape', expand=True)
+                # col.prop(ob_nwo, 'light_inner_cone_angle')
+                # col.prop(ob_nwo, 'light_outer_cone_angle')
 
             col.separator()
-            col.prop(ob_nwo, 'Light_IntensityH4')
+            # col.prop(ob_nwo, 'Light_IntensityH4')
             if ob_nwo.light_lighting_mode == '_connected_geometry_lighting_mode_artistic':
                 col.prop(ob_nwo, 'Light_Near_Attenuation_StartH4')
                 col.prop(ob_nwo, 'Light_Near_Attenuation_EndH4')
@@ -2154,7 +2155,8 @@ class NWO_LightProps(Panel):
 
                 col.separator()
 
-                col.prop(ob_nwo, 'light_cinema')
+                row = col.row()
+                row.prop(ob_nwo, 'light_cinema', expand=True)
                 col.prop(ob_nwo, 'light_destroy_after')
 
                 col.separator()
@@ -2162,7 +2164,8 @@ class NWO_LightProps(Panel):
                 col.prop(ob_nwo, "light_shadows")
                 if ob_nwo.light_shadows:
                     col.prop(ob_nwo, 'light_shadow_color')
-                    col.prop(ob_nwo, 'light_dynamic_shadow_quality')
+                    row = col.row()
+                    row.prop(ob_nwo, 'light_dynamic_shadow_quality', expand=True)
                     col.prop(ob_nwo, 'light_shadow_near_clipplane')
                     col.prop(ob_nwo, 'light_shadow_far_clipplane')
                     col.prop(ob_nwo, 'light_shadow_bias_offset')
@@ -2178,7 +2181,8 @@ class NWO_LightProps(Panel):
                 # col = layout.column(heading="Flags")
                 # sub = col.column(align=True)
             else:
-                col.prop(ob_nwo, 'light_jitter_quality')
+                row = col.row()
+                row.prop(ob_nwo, 'light_jitter_quality', expand=True)
                 col.prop(ob_nwo, 'light_jitter_angle')
                 col.prop(ob_nwo, 'light_jitter_sphere_radius')
 
@@ -2209,7 +2213,7 @@ class NWO_LightProps(Panel):
 
             col.prop(ob_nwo, 'Light_Game_Type', text='Game Type')
             col.prop(ob_nwo, 'Light_Shape', text='Shape')
-            col.prop(ob_nwo, 'Light_Color', text='Color') 
+            # col.prop(ob_nwo, 'Light_Color', text='Color') 
             col.prop(ob_nwo, 'Light_Intensity', text='Intensity')
 
             col.separator()
@@ -3888,9 +3892,8 @@ class NWO_ObjectPropertiesGroup(PropertyGroup):
         update=light_cone_curve_clean_tag_path,
     )
 
+class NWO_LightPropertiesGroup(PropertyGroup):
 # LIGHTS #
-
-
     light_type_override: EnumProperty(
         name = "Light Type",
         options=set(),
@@ -4008,21 +4011,23 @@ class NWO_ObjectPropertiesGroup(PropertyGroup):
         default=False,
     )
 
-    def set_blend_light_color(self, context):
-        ob = self.id_data
-        if ob.type == 'LIGHT':
-            ob.data.color = self.Light_Color
+    # def get_blend_light_color(self):
+    #     ob = self.id_data
+    #     if ob.type == 'LIGHT':
+    #         return self.Light_Color
+    #     else:
+    #         return (1.0, 1.0, 1.0)
 
-    Light_Color: FloatVectorProperty(
-        name="Light Color",
-        options=set(),
-        description="",
-        default=(1.0, 1.0, 1.0),
-        subtype='COLOR',
-        min=0.0,
-        max=1.0,
-        update=set_blend_light_color,
-    )
+    # Light_Color: FloatVectorProperty(
+    #     name="Light Color",
+    #     options=set(),
+    #     description="",
+    #     default=(1.0, 1.0, 1.0),
+    #     subtype='COLOR',
+    #     min=0.0,
+    #     max=1.0,
+    #     get=get_blend_light_color,
+    # )
 
     Light_Intensity: FloatProperty(
         name="Light Intensity",
@@ -4260,26 +4265,44 @@ class NWO_ObjectPropertiesGroup(PropertyGroup):
         description="",
     )
 
-    light_type_h4: EnumProperty(
-        name = "Light Type",
-        options=set(),
-        description = "",
-        default = "_connected_geometry_light_type_point",
-        items=[ ('_connected_geometry_light_type_point', "Point", ""),
-                ('_connected_geometry_light_type_spot', "Spot", ""),
-                ('_connected_geometry_light_type_directional', "Directional", ""),
-                ('_connected_geometry_light_type_sun', "Sun", ""),
-               ]
-        )
+    # def get_light_type_h4(self):
+    #     light_type = self.id_data.data.type
+    #     if light_type == 'SUN':
+    #         return 2
+    #     elif light_type == 'POINT':
+    #         return 0
+    #     else:
+    #         return 1
+    
+    # # def set_light_type_h4(self, value):
+    # #     self["light_type_h4"] = value
 
-    light_outer_cone_angle: FloatProperty(
-        name="Outer Cone Angle",
-        options=set(),
-        description="",
-        default=80,
-        min=0.0,
-        max=160.0
-    )
+    # light_type_h4: EnumProperty(
+    #     name = "Light Type",
+    #     options=set(),
+    #     description = "",
+    #     get=get_light_type_h4,
+    #     # set=set_light_type_h4,
+    #     default = "_connected_geometry_light_type_point",
+    #     items=[ ('_connected_geometry_light_type_point', "Point", ""),
+    #             ('_connected_geometry_light_type_spot', "Spot", ""),
+    #             # ('_connected_geometry_light_type_directional', "Directional", ""),
+    #             ('_connected_geometry_light_type_sun', "Sun", ""),
+    #            ]
+    #     )
+
+    # def get_light_outer_cone_angle(self):
+    #     return max(160, radians(self.id_data.data.spot_size))
+
+    # light_outer_cone_angle: FloatProperty(
+    #     name="Outer Cone Angle",
+    #     options=set(),
+    #     description="",
+    #     default=80,
+    #     min=0.0,
+    #     max=160.0,
+    #     get=get_light_outer_cone_angle,
+    # )
 
     light_lighting_mode: EnumProperty(
         name = "Lighting Mode",
@@ -4307,14 +4330,18 @@ class NWO_ObjectPropertiesGroup(PropertyGroup):
         min=0.0,
     )
 
-    light_inner_cone_angle: FloatProperty(
-        name="Inner Cone Angle",
-        options=set(),
-        description="",
-        default=50,
-        min=0.0,
-        max=160
-    )
+    # def get_light_inner_cone_angle(self):
+    #     return max(160, radians(self.id_data.data.spot_size))
+
+    # light_inner_cone_angle: FloatProperty(
+    #     name="Inner Cone Angle",
+    #     options=set(),
+    #     description="",
+    #     default=50,
+    #     min=0.0,
+    #     max=160,
+    #     get=get_light_inner_cone_angle,
+    # )
 
     light_cinema: EnumProperty(
         name="Cinematic Render",
@@ -4323,7 +4350,7 @@ class NWO_ObjectPropertiesGroup(PropertyGroup):
         default='_connected_geometry_lighting_cinema_default',
         items=[ ('_connected_geometry_lighting_cinema_default', "Always", ""),
                 ('_connected_geometry_lighting_cinema_only', "Cinematics Only", ""),
-                ('_connected_geometry_lighting_cinema_exclude', "Exclude from Cinematics", ""),
+                ('_connected_geometry_lighting_cinema_exclude', "Exclude", ""),
                ]
         )
 
@@ -4533,19 +4560,34 @@ class NWO_ObjectPropertiesGroup(PropertyGroup):
         min=0,
     )
 
-    def set_blend_light_intensity_h4(self, context):
-        ob = self.id_data
-        if ob.type == 'LIGHT':
-            ob.data.energy = self.Light_IntensityH4 * 10 * context.scene.unit_settings.scale_length ** -2 # mafs. Gets around unit scale altering the light intensity to unwanted values
+    # def update_blend_light_intensity_h4(self, context):
+    #     print("updooting")
+    #     ob = self.id_data
+    #     if ob.type == 'LIGHT':
+    #         if ob.data.type == 'SUN':
+    #             ob.data.energy = self.Light_IntensityH4
+    #         else:
+    #             ob.data.energy = self.Light_IntensityH4 * 10 * context.scene.unit_settings.scale_length ** -2 # mafs. Gets around unit scale altering the light intensity to unwanted values
 
-    Light_IntensityH4: FloatProperty(
-        name="Light Intensity",
-        options=set(),
-        description="",
-        default=50,
-        min=0.0,
-        update=set_blend_light_intensity_h4
-    )
+    # def get_light_intensity_h4(self):
+    #     if  self.id_data.type == 'LIGHT':
+    #         return (self.id_data.data.energy / 0.03048 ** -2) / 10
+    #     else:
+    #         50
+    
+    # # def set_light_intensity_h4(self, value):
+    # #     self["Light_IntensityH4"] = value
+
+    # Light_IntensityH4: FloatProperty(
+    #     name="Light Intensity",
+    #     options=set(),
+    #     description="",
+    #     default=50,
+    #     min=0.0,
+    #     # get=get_light_intensity_h4,
+    #     # set=set_light_intensity_h4,
+    #     get=get_light_intensity_h4
+    # )
 
 class NWO_MaterialPropertiesGroup(PropertyGroup):
     
@@ -4711,6 +4753,7 @@ classeshalo = (
     NWO_ObjectMarkerProps,
     NWO_MaterialProps,
     NWO_ObjectPropertiesGroup,
+    NWO_LightPropertiesGroup,
     NWO_MaterialPropertiesGroup,
     NWO_LightProps,
     NWO_BoneProps,
@@ -4729,6 +4772,7 @@ def register():
     bpy.types.Material.ass_jms = PointerProperty(type=ASS_JMS_MaterialPropertiesGroup, name="ASS/JMS Properties", description="Set properties for your materials")
     bpy.types.Scene.halo = PointerProperty(type=Halo_ScenePropertiesGroup, name="Halo Scene Properties", description="Set properties for your scene")
     bpy.types.Object.nwo = PointerProperty(type=NWO_ObjectPropertiesGroup, name="Halo NWO Properties", description="Set Halo Object Properties")
+    bpy.types.Light.nwo = PointerProperty(type=NWO_LightPropertiesGroup, name="Halo NWO Properties", description="Set Halo Object Properties")
     bpy.types.Material.nwo = PointerProperty(type=NWO_MaterialPropertiesGroup, name="Halo NWO Properties", description="Set Halo Material Properties") 
     bpy.types.Bone.nwo = PointerProperty(type=NWO_BonePropertiesGroup, name="Halo NWO Properties", description="Set Halo Bone Properties")
     bpy.types.Action.nwo = PointerProperty(type=NWO_ActionPropertiesGroup, name="Halo NWO Properties", description="Set Halo Animation Properties")

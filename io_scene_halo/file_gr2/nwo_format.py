@@ -26,6 +26,7 @@
 
 import uuid
 import random
+from math import degrees
 
 from .nwo_utils import(
     CheckType,
@@ -42,7 +43,6 @@ from .nwo_utils import(
     true_bsp,
     true_region,
     clean_tag_path,
-    shortest_string,
 
     frame_prefixes,
     marker_prefixes,
@@ -55,6 +55,7 @@ class NWOObject:
     def __init__(self, ob, sidecar_type, model_armature, world_frame, asset_name):
         # Set variables passed to this class
         self.ob = ob
+        self.data = ob.data
         self.name = ob.name
         self.halo = ob.nwo
         self.sidecar_type = sidecar_type
@@ -70,6 +71,7 @@ class NWOObject:
 
     def cleanup(self):
         del self.ob
+        del self.data
         del self.name
         del self.halo
         del self.sidecar_type
@@ -289,219 +291,222 @@ class NWOLight(NWOObject):
 
     def light_type(self):
         if self.not_bungie_game:
-            if self.halo.light_type_h4 == '_connected_geometry_light_type_sun':
+            light_type = self.data.type
+            if light_type == 'SUN':
                 return '_connected_geometry_light_type_directional'
+            elif light_type == 'POINT':
+                return '_connected_geometry_light_type_point'
             else:
-                return self.halo.light_type_h4
+                return '_connected_geometry_light_type_spot'
         else:
-            return self.halo.light_type_override
+            return self.data.nwo.light_type_override
             
     def is_uber_light(self):
-        return bool_str(self.halo.light_sub_type == '_connected_geometry_lighting_sub_type_uber')
+        return bool_str(self.data.nwo.light_sub_type == '_connected_geometry_lighting_sub_type_uber')
 
     def light_fade_start_distance(self):
-        return jstr(self.halo.Light_Fade_Start_Distance)
+        return jstr(self.data.nwo.Light_Fade_Start_Distance)
 
     def light_fade_out_distance(self):
-        return jstr(self.halo.Light_Fade_End_Distance)
+        return jstr(self.data.nwo.Light_Fade_End_Distance)
 
     def light_color(self):
         if self.not_bungie_game:
-            return color_3p_str(self.halo.Light_Color)
+            return color_3p_str(self.ob.data.color)
         else:
-            return color_4p_str(self.halo.Light_Color)
+            return color_4p_str(self.ob.data.color)
 
     def light_intensity(self):
         if self.not_bungie_game:
-            return jstr(self.halo.Light_IntensityH4)
+            return jstr((self.ob.data.energy / 0.03048 ** -2) / 10 if self.ob.data.type != 'SUN' else self.ob.data.energy)
         else:
-            return jstr(self.halo.Light_Intensity)
+            return jstr(self.data.nwo.Light_Intensity)
 
     def light_far_attenuation_start(self):
         if self.not_bungie_game:
-            return jstr(self.halo.Light_Far_Attenuation_StartH4)
+            return jstr(self.data.nwo.Light_Far_Attenuation_StartH4)
         else:
-            return jstr(self.halo.Light_Far_Attenuation_Start)
+            return jstr(self.data.nwo.Light_Far_Attenuation_Start)
 
     def light_far_attenuation_end(self):
         if self.not_bungie_game:
-            return jstr(self.halo.Light_Far_Attenuation_EndH4)
+            return jstr(self.data.nwo.Light_Far_Attenuation_EndH4)
         else:
-            return jstr(self.halo.Light_Far_Attenuation_End)
+            return jstr(self.data.nwo.Light_Far_Attenuation_End)
 
     def light_near_attenuation_start(self):
         if self.not_bungie_game:
-            return jstr(self.halo.Light_Near_Attenuation_StartH4)
+            return jstr(self.data.nwo.Light_Near_Attenuation_StartH4)
         else:
-            return jstr(self.halo.Light_Near_Attenuation_Start)
+            return jstr(self.data.nwo.Light_Near_Attenuation_Start)
 
     def light_near_attenuation_end(self):
         if self.not_bungie_game:
-            return jstr(self.halo.Light_Near_Attenuation_EndH4)
+            return jstr(self.data.nwo.Light_Near_Attenuation_EndH4)
         else:
-            return jstr(self.halo.Light_Near_Attenuation_End)
+            return jstr(self.data.nwo.Light_Near_Attenuation_End)
 
     def light_mode(self):
-        return self.halo.light_mode
+        return self.data.nwo.light_mode
 
     def light_jitter_quality(self):
-        return self.halo.light_jitter_quality
+        return self.data.nwo.light_jitter_quality
 
     def light_jitter_sphere_radius(self):
-        return jstr(self.halo.light_jitter_sphere_radius)
+        return jstr(self.data.nwo.light_jitter_sphere_radius)
 
     def light_jitter_angle(self):
-        return jstr(self.halo.light_jitter_angle)
+        return jstr(self.data.nwo.light_jitter_angle)
 
     def light_indirect_only(self):
-        return bool_str(self.halo.light_indirect_only)
+        return bool_str(self.data.nwo.light_indirect_only)
 
     def light_indirect_amplification_factor(self):
-        return jstr(self.halo.light_amplification_factor)
+        return jstr(self.data.nwo.light_amplification_factor)
 
     def light_attenuation_near_radius(self):
-        return jstr(self.halo.light_attenuation_near_radius)
+        return jstr(self.data.nwo.light_attenuation_near_radius)
 
     def light_attenuation_far_radius(self):
-        return jstr(self.halo.light_attenuation_far_radius)
+        return jstr(self.data.nwo.light_attenuation_far_radius)
 
     def light_attenuation_power(self):
-        return jstr(self.halo.light_attenuation_power)
+        return jstr(self.data.nwo.light_attenuation_power)
 
     def lighting_mode(self):
-        return self.halo.light_lighting_mode
+        return self.data.nwo.light_lighting_mode
 
     def specular_power(self):
-        return jstr(self.halo.light_specular_power)
+        return jstr(self.data.nwo.light_specular_power)
 
     def specular_intensity(self):
-        return jstr(self.halo.light_specular_intensity)
+        return jstr(self.data.nwo.light_specular_intensity)
 
     def inner_cone_angle(self):
-        return jstr(self.halo.light_inner_cone_angle)
+        if self.data.type == 'SPOT':
+            return jstr(min(160, degrees(self.data.spot_size) * abs(1 - self.data.spot_blend)))
+        else:
+            return jstr(20)
 
     def outer_cone_angle(self):
-        return jstr(self.halo.light_outer_cone_angle)
-
-    def outer_cone_angle(self):
-        return jstr(self.halo.light_outer_cone_angle)
-
-    def cone_projection_shape(self):
-        return self.halo.light_cone_projection_shape
+        if self.data.type == 'SPOT':
+            return jstr(min(160, degrees(self.data.spot_size)))
+        else:
+            return jstr(60)
 
     def cone_projection_shape(self):
-        return self.halo.light_cone_projection_shape
+        return self.data.nwo.light_cone_projection_shape
 
     def shadow_near_clipplane(self):
-        return jstr(self.halo.light_shadow_near_clipplane)
+        return jstr(self.data.nwo.light_shadow_near_clipplane)
 
     def shadow_far_clipplane(self):
-        return jstr(self.halo.light_shadow_far_clipplane)
+        return jstr(self.data.nwo.light_shadow_far_clipplane)
 
     def shadow_bias_offset(self):
-        return jstr(self.halo.light_shadow_bias_offset)
+        return jstr(self.data.nwo.light_shadow_bias_offset)
 
     def shadow_color(self):
-        return color_3p_str(self.halo.light_shadow_color)
+        return color_3p_str(self.data.nwo.light_shadow_color)
 
     def dynamic_shadow_quality(self):
-        return self.halo.light_dynamic_shadow_quality
+        return self.data.nwo.light_dynamic_shadow_quality
 
     def shadows(self):
-        return bool_str(self.halo.light_shadows)
+        return bool_str(self.data.nwo.light_shadows)
 
     def screenspace_light(self):
-        return bool_str(self.halo.light_sub_type == '_connected_geometry_lighting_sub_type_screenspace')
+        return bool_str(self.data.nwo.light_sub_type == '_connected_geometry_lighting_sub_type_screenspace')
 
     def ignore_dynamic_objects(self):
-        return bool_str(self.halo.light_ignore_dynamic_objects)
+        return bool_str(self.data.nwo.light_ignore_dynamic_objects)
 
     def cinema_objects_only(self):
-        return bool_str(self.halo.light_cinema_objects_only) # NEED TO ADD TO UI
+        return bool_str(self.data.nwo.light_cinema_objects_only) # NEED TO ADD TO UI
 
     def cinema_only(self):
-        return bool_str(self.halo.light_cinema == '_connected_geometry_lighting_cinema_only')
+        return bool_str(self.data.nwo.light_cinema == '_connected_geometry_lighting_cinema_only')
 
     def cinema_exclude(self):
-        return bool_str(self.halo.light_cinema == '_connected_geometry_lighting_cinema_exclude')
+        return bool_str(self.data.nwo.light_cinema == '_connected_geometry_lighting_cinema_exclude')
 
     def specular_contribution(self):
-        return bool_str(self.halo.light_specular_contribution)
+        return bool_str(self.data.nwo.light_specular_contribution)
 
     def diffuse_contribution(self):
-        return bool_str(self.halo.light_diffuse_contribution)
+        return bool_str(self.data.nwo.light_diffuse_contribution)
 
     def destroy_light_after(self):
-        return jstr(self.halo.light_destroy_after)
+        return jstr(self.data.nwo.light_destroy_after)
 
     def indirect_amplification_factor(self):
-        return jstr(self.halo.light_amplification_factor)
+        return jstr(self.data.nwo.light_amplification_factor)
 
     def is_sun(self):
-        return bool_str(self.halo.light_type_h4 == '_connected_geometry_light_type_sun')
+        return bool_str(self.data.type == 'SUN')
 
     def is_indirect_only(self):
-        return bool_str(self.halo.light_indirect_only)
+        return bool_str(self.data.nwo.light_indirect_only)
 
     def is_static_analytic(self):
-        return bool_str(self.halo.light_static_analytic)
+        return bool_str(self.data.nwo.light_static_analytic)
 
     def light_tag_name(self):
-        return clean_tag_path(self.halo.light_tag_name)
+        return clean_tag_path(self.data.nwo.light_tag_name)
 
     def light_game_type(self):
-        return self.halo.Light_Game_Type
+        return self.data.nwo.Light_Game_Type
 
     def light_shape(self):
-        return self.halo.Light_Shape
+        return self.data.nwo.Light_Shape
 
     def light_ignore_bsp_visibility(self):
-        return bool_str(self.halo.Light_Ignore_BSP_Visibility)
+        return bool_str(self.data.nwo.Light_Ignore_BSP_Visibility)
 
     def light_hotspot_size(self):
-        return jstr(self.halo.Light_Hotspot_Size)
+        return jstr(self.data.nwo.Light_Hotspot_Size)
 
     def light_hotspot_falloff(self):
-        return jstr(self.halo.Light_Hotspot_Falloff)
+        return jstr(self.data.nwo.Light_Hotspot_Falloff)
 
     def light_aspect(self):
-        return jstr(self.halo.Light_Aspect)
+        return jstr(self.data.nwo.Light_Aspect)
 
     def light_falloff_shape(self):
-        return jstr(self.halo.Light_Falloff_Shape)
+        return jstr(self.data.nwo.Light_Falloff_Shape)
 
     def light_frustum_width(self):
-        return jstr(self.halo.Light_Frustum_Width)
+        return jstr(self.data.nwo.Light_Frustum_Width)
 
     def light_frustum_height(self):
-        return jstr(self.halo.Light_Frustum_Height)
+        return jstr(self.data.nwo.Light_Frustum_Height)
 
     def light_bounce_light_ratio(self):
-        return jstr(self.halo.Light_Bounce_Ratio)
+        return jstr(self.data.nwo.Light_Bounce_Ratio)
 
     def light_dynamic_light_has_bounce(self):
-        return bool_str(self.halo.Light_Dynamic_Has_Bounce)
+        return bool_str(self.data.nwo.Light_Dynamic_Has_Bounce)
 
     def light_dynamic_light_has_bounce(self):
-        return bool_str(self.halo.Light_Screenspace_Has_Specular)
+        return bool_str(self.data.nwo.Light_Screenspace_Has_Specular)
 
     def light_light_tag_override(self):
-        return clean_tag_path(self.halo.Light_Tag_Override)
+        return clean_tag_path(self.data.nwo.Light_Tag_Override)
 
     def light_shader_reference(self):
-        return clean_tag_path(self.halo.Light_Shader_Reference)
+        return clean_tag_path(self.data.nwo.Light_Shader_Reference)
 
     def light_gel_reference(self):
-        return clean_tag_path(self.halo.Light_Gel_Reference)
+        return clean_tag_path(self.data.nwo.Light_Gel_Reference)
 
     def light_lens_flare_reference(self):
-        return clean_tag_path(self.halo.Light_Lens_Flare_Reference, 'lens_flare')
+        return clean_tag_path(self.data.nwo.Light_Lens_Flare_Reference, 'lens_flare')
 
     def light_volume_distance(self):
-        return jstr(self.halo.Light_Volume_Distance)
+        return jstr(self.data.nwo.Light_Volume_Distance)
 
     def light_volume_intensity_scala(self):
-        return jstr(self.halo.Light_Volume_Intensity)
+        return jstr(self.data.nwo.Light_Volume_Intensity)
 
 # --------------------------------
 
@@ -533,7 +538,6 @@ class NWOFrame(NWOObject):
 
     def frame_ID1(self):
         return '8078'
-
 
     def frame_ID2(self):
         return '378163771'
@@ -803,7 +807,7 @@ class NWOMesh(NWOObject):
         super().__init__(ob, sidecar_type, model_armature, world_frame, asset_name)
         # SHARED
         self.bungie_mesh_type = self.mesh_type()
-        if self.sidecar_type in ('MODEL', 'SKY') and self.bungie_mesh_type in ('_connected_geometry_mesh_type_render', '_connected_geometry_mesh_type_physics', '_connected_geometry_mesh_type_collision', '_connected_geometry_mesh_type_default',):
+        if self.sidecar_type in ('MODEL', 'SKY') and self.bungie_mesh_type in ('_connected_geometry_mesh_type_render', '_connected_geometry_mesh_type_physics', '_connected_geometry_mesh_type_collision', '_connected_geometry_mesh_type_default'):
             self.bungie_face_region = self.face_region()
         # PROPS FOR MESH TYPES WHICH HAVE RENDERED FACES
         if self.bungie_mesh_type in ('_connected_geometry_mesh_type_structure', '_connected_geometry_mesh_type_render', '_connected_geometry_mesh_type_default', '_connected_geometry_mesh_type_poop', '_connected_geometry_mesh_type_decorator', '_connected_geometry_mesh_type_object_instance', '_connected_geometry_mesh_type_water_surface'):
@@ -829,8 +833,7 @@ class NWOMesh(NWOObject):
             if self.bungie_face_type == '_connected_geometry_face_type_sky':
                 self.bungie_sky_permutation_index = self.sky_permutation_index()
 
-            if self.bungie_mesh_type in ('_connected_geometry_mesh_type_structure', '_connected_geometry_mesh_type_render', '_connected_geometry_mesh_type_default', '_connected_geometry_mesh_type_poop'):
-                self.bungie_mesh_use_uncompressed_verts = self.mesh_use_uncompressed_verts()
+        self.bungie_mesh_use_uncompressed_verts = self.mesh_use_uncompressed_verts()
 
         if self.bungie_mesh_type in ('_connected_geometry_mesh_type_physics', '_connected_geometry_mesh_type_collision', '_connected_geometry_mesh_type_structure', '_connected_geometry_mesh_type_default', '_connected_geometry_mesh_type_poop', '_connected_geometry_mesh_type_water_surface'):
             if self.halo.Face_Global_Material != '':
@@ -1118,7 +1121,10 @@ class NWOMesh(NWOObject):
         return self.halo.Mesh_Compression
 
     def mesh_use_uncompressed_verts(self):
-        return bool_str(not self.halo.compress_verts)
+        if self.bungie_mesh_type in ('_connected_geometry_mesh_type_structure', '_connected_geometry_mesh_type_render', '_connected_geometry_mesh_type_default', '_connected_geometry_mesh_type_poop', '_connected_geometry_mesh_type_object_instance', '_connected_geometry_mesh_type_water_surface'):
+            return bool_str(not self.halo.compress_verts)
+        else:
+            return bool_str(False)
 
     def uvmirror_across_entire_model(self):
         return bool_str(self.halo.uvmirror_across_entire_model)
