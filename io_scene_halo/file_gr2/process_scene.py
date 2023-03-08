@@ -215,12 +215,12 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                     for bsp in bsp_list:
                         if export_structure:
                             perm_list = []
-                            for ob in get_structure_from_halo_objects(halo_objects):
+                            for ob in get_structure_from_halo_objects(halo_objects, False):
                                 if not is_shared(ob):
                                     perm = get_perm(ob)
                                     if perm not in perm_list:
                                         perm_list.append(perm)
-                                        if select_bsp_objects(get_structure_from_halo_objects(halo_objects), bsp, model_armature, perm, export_hidden, export_all_perms, selected_perms, export_all_bsps, selected_bsps):
+                                        if select_bsp_objects(get_structure_from_halo_objects(halo_objects, True), bsp, model_armature, perm, export_hidden, export_all_perms, selected_perms, export_all_bsps, selected_bsps):
                                             print_box(f'**Exporting {bsp} {perm} BSP**')
                                             export_fbx(using_better_fbx, **keywords)
                                             export_gr2(report, asset_path, asset, 'bsp', context.selected_objects, bsp, perm, model_armature, skeleton_bones, '', regions_dict, global_materials_dict, **keywords)
@@ -238,11 +238,11 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
 
                         if export_design:
                             perm_list = []
-                            for ob in get_design_from_halo_objects(halo_objects):
+                            for ob in get_design_from_halo_objects(halo_objects, False):
                                 perm = get_perm(ob)
                                 if perm not in perm_list:
                                     perm_list.append(perm)
-                                    if select_bsp_objects(get_design_from_halo_objects(halo_objects), bsp, model_armature, perm, export_hidden, export_all_perms, selected_perms, export_all_bsps, selected_bsps):
+                                    if select_bsp_objects(get_design_from_halo_objects(halo_objects, True), bsp, model_armature, perm, export_hidden, export_all_perms, selected_perms, export_all_bsps, selected_bsps):
                                         print_box(f'**Exporting {bsp} {perm} Design**')
                                         export_fbx(using_better_fbx, **keywords)
                                         export_gr2(report, asset_path, asset, 'design', context.selected_objects, bsp, perm, model_armature, skeleton_bones, '', regions_dict, global_materials_dict, **keywords)
@@ -257,12 +257,12 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                     if shared_bsp_exists:
                         if export_structure:
                             perm_list = []
-                            for ob in get_structure_from_halo_objects(halo_objects):
+                            for ob in get_structure_from_halo_objects(halo_objects, False):
                                 if is_shared(ob):
                                     perm = get_perm(ob)
                                     if perm not in perm_list:
                                         perm_list.append(perm)
-                                        if select_bsp_objects(get_structure_from_halo_objects(halo_objects), 'shared', model_armature, perm, export_hidden, export_all_perms, selected_perms, export_all_bsps, selected_bsps):
+                                        if select_bsp_objects(get_structure_from_halo_objects(halo_objects, True), 'shared', model_armature, perm, export_hidden, export_all_perms, selected_perms, export_all_bsps, selected_bsps):
                                             print_box(f'**Exporting shared {perm} bsp**')
                                             export_fbx(using_better_fbx, **keywords)
                                             export_gr2(report, asset_path, asset, 'bsp', context.selected_objects, 'shared', perm, model_armature, skeleton_bones, '', regions_dict, global_materials_dict, **keywords)

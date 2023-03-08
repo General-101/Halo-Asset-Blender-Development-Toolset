@@ -40,9 +40,7 @@ from .nwo_utils import(
     is_shader,
     get_tags_path,
     not_bungie_game,
-    dot_partition,
     true_region,
-    valid_animation_types,
 )
 
 #####################################################################################
@@ -63,6 +61,8 @@ def prepare_scene(context, report, sidecar_type, export_hidden, use_armature_def
     set_object_mode(context)
     # Make all currently unselectable objects selectable again. Exporter needs to loop through and select scene objects so we need this.
     MakeSelectable(context)
+    # Apply maya namespaces for H4/H2A exports.
+    # apply_maya_namespaces(context)
     # update bsp/perm/region names in case any are null.
     fix_blank_group_names(context)
     # add a uv map to meshes without one. This prevents an export assert
@@ -140,6 +140,22 @@ class HaloObjects():
 #####################################################################################
 #####################################################################################
 # VARIOUS FUNCTIONS
+
+def apply_maya_namespaces(context):
+    for ob in context.view_layer.objects:
+        apply_prefix_properties(ob)
+        apply_namespaces(ob)
+
+def apply_properties(ob):
+    """Applies the properties set by an objects Halo prefix and then removes the prefix"""
+    pass
+
+def apply_namespaces(ob, namespace=''):
+    """Reads the objects halo properties and then applies the appropriate maya namespace, or optionally a set namespace if a second arg is passed"""
+    if namespace != '':
+        ob.name = f'{namespace}:{ob.name}'
+    else:
+        pass
 
 def set_animation_overrides(model_armature, current_action):
     if model_armature is not None and len(bpy.data.actions) > 0:

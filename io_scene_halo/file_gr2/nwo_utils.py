@@ -261,7 +261,7 @@ def object_type(ob, types=(), valid_prefixes=()):
         if ob.type == 'MESH':
             return (ob.nwo.Object_Type_All in types and not object_prefix(ob, ((frame_prefixes + marker_prefixes))) or object_prefix(ob, (valid_prefixes)))
         elif ob.type == 'EMPTY':
-            return ob.nwo.Object_Type_No_Mesh in types or object_prefix(ob, (valid_prefixes))
+            return ob.nwo.Object_Type_No_Mesh in types or object_prefix(ob, (valid_prefixes)) or len(ob.children) > 0
         elif ob.type == 'LIGHT' and (types != 'MARKER' and '#' not in valid_prefixes):
             return True
         elif ob.nwo.Object_Type_All in types or object_prefix(ob, (valid_prefixes)):
@@ -596,17 +596,23 @@ def clean_files(file_1, file_2, file_3):
     if file_3 != '' and file_3 is not None and file_exists(file_3):
         os.remove(file_3)
 
-def get_structure_from_halo_objects(halo_objects):
+def get_structure_from_halo_objects(halo_objects, include_frames=True):
     """Gets structure objects when passed a HaloObjects instance"""
-    return halo_objects.frame + halo_objects.lights + halo_objects.default + halo_objects.collision + halo_objects.physics + halo_objects.markers + halo_objects.cookie_cutters + halo_objects.poops + halo_objects.poop_markers + halo_objects.misc + halo_objects.seams + halo_objects.portals + halo_objects.water_surfaces
+    objects = halo_objects.lights + halo_objects.default + halo_objects.collision + halo_objects.physics + halo_objects.markers + halo_objects.cookie_cutters + halo_objects.poops + halo_objects.poop_markers + halo_objects.misc + halo_objects.seams + halo_objects.portals + halo_objects.water_surfaces
+    if include_frames:
+        objects += halo_objects.frame
+    return objects
 
 def get_prefab_from_halo_objects(halo_objects):
     """Gets structure objects when passed a HaloObjects instance"""
-    return halo_objects.frame + halo_objects.lights + halo_objects.collision + halo_objects.markers + halo_objects.cookie_cutters + halo_objects.poops + halo_objects.water_surfaces
+    return halo_objects.lights + halo_objects.collision + halo_objects.markers + halo_objects.cookie_cutters + halo_objects.poops + halo_objects.water_surfaces + halo_objects.frame
 
-def get_design_from_halo_objects(halo_objects):
+def get_design_from_halo_objects(halo_objects, include_frames=True):
     """Gets structure design objects when passed a HaloObjects instance"""
-    return halo_objects.frame + halo_objects.boundary_surfaces + halo_objects.fog + halo_objects.water_physics + halo_objects.poop_rain_blockers
+    objects = halo_objects.boundary_surfaces + halo_objects.fog + halo_objects.water_physics + halo_objects.poop_rain_blockers
+    if include_frames:
+        objects += halo_objects.frame
+    return objects
 
 def get_render_from_halo_objects(halo_objects):
     """Gets render objects when passed a HaloObjects instance"""

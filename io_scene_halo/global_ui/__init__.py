@@ -1574,7 +1574,7 @@ class NWO_ObjectProps(Panel):
 
         if ob.type == 'LIGHT':
             col.prop(ob_nwo, "Object_Type_Light", text='Object Type')
-        elif object_prefix(ob, (marker_prefixes + frame_prefixes)) or (ob.type == 'EMPTY' and ob.name.startswith('$')) or object_prefix(ob, special_prefixes):
+        elif object_prefix(ob, (marker_prefixes + frame_prefixes)) or (ob.type == 'EMPTY' and (ob.name.startswith('$') or len(ob.children) > 0)) or object_prefix(ob, special_prefixes):
             if ob.type == 'EMPTY':
                 col.prop(ob_nwo, "Object_Type_No_Mesh_Locked", text='Object Type')
             else:
@@ -2591,7 +2591,7 @@ class NWO_ObjectPropertiesGroup(PropertyGroup):
             return 2
 
     def get_objecttype_enum_no_mesh(self):
-        if self.id_data.name.startswith(frame_prefixes):
+        if self.id_data.name.startswith(frame_prefixes) or (not self.id_data.name.startswith(marker_prefixes) and len(self.id_data.children) > 0):
             return 0
         else:
             return 1
