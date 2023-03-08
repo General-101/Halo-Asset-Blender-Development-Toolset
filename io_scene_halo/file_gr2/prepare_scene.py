@@ -41,6 +41,7 @@ from .nwo_utils import(
     get_tags_path,
     not_bungie_game,
     true_region,
+    valid_animation_types,
 )
 
 #####################################################################################
@@ -146,7 +147,7 @@ def apply_maya_namespaces(context):
         apply_prefix_properties(ob)
         apply_namespaces(ob)
 
-def apply_properties(ob):
+def apply_prefix_properties(ob):
     """Applies the properties set by an objects Halo prefix and then removes the prefix"""
     pass
 
@@ -163,12 +164,15 @@ def set_animation_overrides(model_armature, current_action):
         model_armature.select_set(True)
         set_active_object(model_armature)
         for action in bpy.data.actions:
-                try:
-                    model_armature.animation_data.action = action
-                    if action.nwo.name_override == '':
-                        action.nwo.name_override = action.name
-                except:
-                    pass
+            try:
+                model_armature.animation_data.action = action
+                if action.nwo.name_override == '':
+                    animation =  action.name
+                    if animation.rpartition('.')[2] not in valid_animation_types:
+                        animation = f'{animation}.{action.nwo.animation_type}'
+                    action.nwo.name_override = animation
+            except:
+                pass
 
         model_armature.animation_data.action = current_action
         
