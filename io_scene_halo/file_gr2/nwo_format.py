@@ -1193,7 +1193,10 @@ class NWOMesh(NWOObject):
         return self.halo.obb_volume_type
 
     def face_type(self):
-        return self.halo.Face_Type
+        if self.not_bungie_game and self.bungie_mesh_type == '_connected_geometry_mesh_type_structure':
+            return '_connected_geometry_face_type_sky'
+        else:
+            return self.halo.Face_Type
 
     def face_mode(self):
         if not self.not_bungie_game and len(self.ob.children) > 0 and self.bungie_mesh_type == '_connected_geometry_mesh_type_poop':
