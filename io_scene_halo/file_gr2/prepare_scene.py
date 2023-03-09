@@ -365,8 +365,13 @@ def GetDecoratorLODCount(halo_objects, asset_is_decorator):
 
 def HideExcludedCollections(context):
     for layer in context.view_layer.layer_collection.children:
-        if layer.collection.name.startswith('+exclude') and layer.is_visible:
+        hide_excluded_recursively(layer)
+
+def hide_excluded_recursively(layer):
+    if layer.collection.name.startswith('+exclude') and layer.is_visible:
             layer.exclude = True
+    for child_layer in layer.children:
+        hide_excluded_recursively(child_layer)
 
 
 #####################################################################################
