@@ -202,7 +202,8 @@ def process_scene(version, game_version, generate_checksum, fix_rotations, model
             else:
                 sun = skylight
 
-        JMS.skylights.append(sun)
+        if not sun == None:
+            JMS.skylights.append(sun)
 
     if model_type == "render" or model_type == "collision":
         geometry_list = blend_scene.render_geometry_list
