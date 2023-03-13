@@ -41,6 +41,8 @@ from .nwo_utils import(
     get_tags_path,
     not_bungie_game,
     true_region,
+    true_bsp,
+    true_permutation,
     valid_animation_types,
 )
 
@@ -798,14 +800,15 @@ def SetNodeProps(node, ob):
         except:
             pass # lazy try except as this can cause an assert.
     
-    node_halo.bsp_name = ob_halo.bsp_name
+    node_halo.bsp_name = true_bsp(ob_halo)
 
-    node_halo.Permutation_Name = ob_halo.Permutation_Name
+    node_halo.Permutation_Name = true_permutation(ob_halo)
 
     node_halo.ObjectMarker_Type_H4 = ob_halo.ObjectMarker_Type_H4
     node_halo.ObjectMarker_Type = ob_halo.ObjectMarker_Type
 
     node_halo.Marker_Region = ob_halo.Marker_Region
+    node_halo.Region_Name = true_region(ob_halo)
     node_halo.Marker_All_Regions = ob_halo.Marker_All_Regions
     node_halo.Marker_Velocity = ob_halo.Marker_Velocity
 

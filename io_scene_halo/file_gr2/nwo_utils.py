@@ -348,6 +348,12 @@ def true_region(halo):
         return halo.Region_Name_Locked
     else:
         return halo.Region_Name
+    
+def true_permutation(halo):
+    if halo.Permutation_Name_Locked !='':
+        return halo.Permutation_Name_Locked
+    else:
+        return halo.Permutation_Name
 
 def clean_tag_path(path, file_ext = None):
     """Cleans a path and attempts to make it appropriate for reading by Tool. Can accept a file extension (without a period) to force the existing one if it exists to be replaced"""
