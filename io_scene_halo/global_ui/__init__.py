@@ -1820,8 +1820,8 @@ class NWO_ObjectMeshFaceProps(Panel):
         col.prop(ob_nwo, "Face_Sides", text='Face Sides')
         col.prop(ob_nwo, "Face_Draw_Distance", text='Draw Distance')
         col.prop(ob_nwo, 'texcoord_usage')
+        col.prop(ob_nwo, "Mesh_Tessellation_Density", text='Tessellation Density')
         if not_bungie_game():
-            col.prop(ob_nwo, "Mesh_Tessellation_Density", text='Tessellation Density')
             col.prop(ob_nwo, "Mesh_Compression", text='Compression')
 
         col.separator()
@@ -3184,7 +3184,7 @@ class NWO_ObjectPropertiesGroup(PropertyGroup):
         )
     
 
-    poop_lighting_items = [ ('_connected_geometry_poop_lighting_default', "Default", "Sets the lighting policy automatically"),
+    poop_lighting_items = [ ('_connected_geometry_poop_lighting_default', "Automatic", "Sets the lighting policy automatically"),
                             ('_connected_geometry_poop_lighting_per_pixel', "Per Pixel", "Sets the lighting policy to per pixel. Can be forced on with the prefix: '%?'"),
                             ('_connected_geometry_poop_lighting_per_vertex', "Per Vertex", "Sets the lighting policy to per vertex. Can be forced on with the prefix: '%!'"),
                             ('_connected_geometry_poop_lighting_single_probe', "Single Probe", "Sets the lighting policy to single probe. Can be forced on with the prefix: '%>'"),
@@ -3197,7 +3197,7 @@ class NWO_ObjectPropertiesGroup(PropertyGroup):
         name="Lighting Policy",
         options=set(),
         description="Sets the lighting policy for this instanced geometry",
-        default = '_connected_geometry_poop_lighting_default',
+        default = '_connected_geometry_poop_lighting_per_pixel',
         items=poop_lighting_items,
         )
 

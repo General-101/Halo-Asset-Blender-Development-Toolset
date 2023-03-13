@@ -491,55 +491,22 @@ class Export_Scene_GR2(Operator, ExportHelper):
         self.output_weapon = scene_gr2.output_weapon
         # get sidecar path from users EK data path + internal path
         sidecar_filepath = path.join(get_data_path(), scene.gr2_halo_launcher.sidecar_path)
-        # export_settings = []
+        if not sidecar_filepath.endswith('.sidecar.xml'):
+            sidecar_filepath = ''
         if sidecar_filepath != '' and file_exists(sidecar_filepath):
             # export_settings = ExportSettingsFromSidecar(sidecar_filepath)
             self.filepath = path.join(sidecar_filepath.rpartition('\\')[0], 'untitled.fbx')
-            # print(self.filepath)
-            # now apply settings
-            # match export_settings[0]: commented out as now getting sidecar type from UI
-            #     case 'model':
-            #         self.sidecar_type = 'MODEL'
-            #     case 'scenario':
-            #         self.sidecar_type = 'SCENARIO'
-            #     case 'sky':
-            #         self.sidecar_type = 'SKY'
-            #     case 'decorator_set':
-            #         self.sidecar_type = 'DECORATOR SET'
-            #     case 'particle_model':
-            #         self.sidecar_type = 'PARTICLE MODEL'
-            #     case 'prefab':
-            #         self.sidecar_type = 'PREFAB'
-            # Commented out as getting this from the UI now
-            # if len(export_settings) > 1: # checks if we should also set output tags
-            #     for tag in export_settings[1]:
-            #         match tag:
-            #             case 'biped':
-            #                 self.output_biped = True
-            #             case 'crate':
-            #                 self.output_crate = True
-            #             case 'creature':
-            #                 self.output_creature = True
-            #             case 'device_control':
-            #                 self.output_device_control = True
-            #             case 'device_dispenser':
-            #                 self.output_device_dispenser = True
-            #             case 'device_machine':
-            #                 self.output_device_machine = True 
-            #             case 'device_terminal':
-            #                 self.output_device_terminal = True
-            #             case 'effect_scenery':
-            #                 self.output_effect_scenery = True
-            #             case 'equipment':
-            #                 self.output_equipment = True
-            #             case 'giant':
-            #                 self.output_giant = True
-            #             case 'scenery':
-            #                 self.output_scenery = True
-            #             case 'vehicle':
-            #                 self.output_vehicle = True
-            #             case 'weapon':
-            #                 self.output_weapon = True
+        else:
+            filepath_list = bpy.path.abspath("//").split('\\')
+            del filepath_list[-1]
+            if filepath_list[-1] == 'work' and filepath_list[-2] in ('models', 'animations'):
+                del filepath_list[-1]
+                del filepath_list[-1]
+            elif filepath_list[-1] in ('models', 'animations'):
+                del filepath_list[-1]
+            drive = filepath_list[0]
+            del filepath_list[0]
+            self.filepath = path.join(drive, path.sep, *filepath_list, 'untitled.fbx')
 
     def execute(self, context):
         #lightmap warning
