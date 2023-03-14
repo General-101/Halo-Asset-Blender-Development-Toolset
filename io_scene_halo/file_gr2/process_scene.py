@@ -221,7 +221,10 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                     if perm not in perm_list:
                                         perm_list.append(perm)
                                         if select_bsp_objects(get_structure_from_halo_objects(halo_objects, True), bsp, model_armature, perm, export_hidden, export_all_perms, selected_perms, export_all_bsps, selected_bsps):
-                                            print_box(f'**Exporting {bsp} {perm} BSP**')
+                                            if perm != 'default':
+                                                print_box(f'**Exporting {bsp} {perm} BSP**')
+                                            else:
+                                                print_box(f'**Exporting {bsp} BSP**')
                                             export_fbx(using_better_fbx, **keywords)
                                             export_gr2(report, asset_path, asset, 'bsp', context.selected_objects, bsp, perm, model_armature, skeleton_bones, '', regions_dict, global_materials_dict, **keywords)
                                             gr2_count += 1
@@ -243,7 +246,10 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                 if perm not in perm_list:
                                     perm_list.append(perm)
                                     if select_bsp_objects(get_design_from_halo_objects(halo_objects, True), bsp, model_armature, perm, export_hidden, export_all_perms, selected_perms, export_all_bsps, selected_bsps):
-                                        print_box(f'**Exporting {bsp} {perm} Design**')
+                                        if perm != 'default':
+                                            print_box(f'**Exporting {bsp} {perm} Design**')
+                                        else:
+                                            print_box(f'**Exporting {bsp} Design**')
                                         export_fbx(using_better_fbx, **keywords)
                                         export_gr2(report, asset_path, asset, 'design', context.selected_objects, bsp, perm, model_armature, skeleton_bones, '', regions_dict, global_materials_dict, **keywords)
                                         gr2_count += 1
@@ -263,7 +269,10 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                     if perm not in perm_list:
                                         perm_list.append(perm)
                                         if select_bsp_objects(get_structure_from_halo_objects(halo_objects, True), 'shared', model_armature, perm, export_hidden, export_all_perms, selected_perms, export_all_bsps, selected_bsps):
-                                            print_box(f'**Exporting shared {perm} bsp**')
+                                            if perm != 'default':
+                                                print_box(f'**Exporting shared {perm} BSP**')
+                                            else:
+                                                print_box(f'**Exporting shared BSP**')
                                             export_fbx(using_better_fbx, **keywords)
                                             export_gr2(report, asset_path, asset, 'bsp', context.selected_objects, 'shared', perm, model_armature, skeleton_bones, '', regions_dict, global_materials_dict, **keywords)
                                             gr2_count += 1
