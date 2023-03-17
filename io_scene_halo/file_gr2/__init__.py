@@ -496,17 +496,24 @@ class Export_Scene_GR2(Operator, ExportHelper):
         if sidecar_filepath != '' and file_exists(sidecar_filepath):
             # export_settings = ExportSettingsFromSidecar(sidecar_filepath)
             self.filepath = path.join(sidecar_filepath.rpartition('\\')[0], 'untitled.fbx')
-        else:
-            filepath_list = bpy.path.abspath("//").split('\\')
-            del filepath_list[-1]
-            if filepath_list[-1] == 'work' and filepath_list[-2] in ('models', 'animations'):
+        elif bpy.data.is_saved:
+            try:
+                filepath_list = bpy.path.abspath("//").split('\\')
                 del filepath_list[-1]
-                del filepath_list[-1]
-            elif filepath_list[-1] in ('models', 'animations'):
-                del filepath_list[-1]
-            drive = filepath_list[0]
-            del filepath_list[0]
-            self.filepath = path.join(drive, path.sep, *filepath_list, 'untitled.fbx')
+                if filepath_list[-1] == 'work' and filepath_list[-2] in ('models', 'animations'):
+                    del filepath_list[-1]
+                    del filepath_list[-1]
+                elif filepath_list[-1] in ('models', 'animations'):
+                    del filepath_list[-1]
+                drive = filepath_list[0]
+                del filepath_list[0]
+                self.filepath = path.join(drive, path.sep, *filepath_list, 'untitled.fbx')
+            except:
+                if get_data_path() != '':
+                    self.filepath = get_data_path()
+
+        elif get_data_path() != '':
+            self.filepath = get_data_path()
 
     def execute(self, context):
         #lightmap warning
