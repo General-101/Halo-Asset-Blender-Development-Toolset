@@ -495,7 +495,7 @@ class Export_Scene_GR2(Operator, ExportHelper):
             sidecar_filepath = ''
         if sidecar_filepath != '' and file_exists(sidecar_filepath):
             # export_settings = ExportSettingsFromSidecar(sidecar_filepath)
-            self.filepath = path.join(sidecar_filepath.rpartition('\\')[0], 'untitled.fbx')
+            self.filepath = path.join(sidecar_filepath.rpartition('\\')[0], 'halo_export.fbx')
         elif bpy.data.is_saved:
             try:
                 filepath_list = bpy.path.abspath("//").split('\\')
@@ -507,13 +507,13 @@ class Export_Scene_GR2(Operator, ExportHelper):
                     del filepath_list[-1]
                 drive = filepath_list[0]
                 del filepath_list[0]
-                self.filepath = path.join(drive, path.sep, *filepath_list, 'untitled.fbx')
+                self.filepath = path.join(drive, path.sep, *filepath_list, 'halo_export.fbx')
             except:
                 if get_data_path() != '':
-                    self.filepath = get_data_path()
+                    self.filepath = path.join(get_data_path(),  'halo_export.fbx')
 
         elif get_data_path() != '':
-            self.filepath = get_data_path()
+            self.filepath = path.join(get_data_path(),  'halo_export.fbx')
 
     def execute(self, context):
         #lightmap warning
