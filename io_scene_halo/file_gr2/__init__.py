@@ -55,9 +55,9 @@ from os import remove as os_remove
 import ctypes
 
 
-from io_scene_halo.file_gr2.nwo_utils import get_data_path, get_asset_info, get_ek_path
+from io_scene_halo.file_gr2.nwo_utils import CheckPath, get_data_path, get_asset_info, get_ek_path, get_tool_path
 
-lightmapper_run_once = False
+# lightmapper_run_once = False
 sidecar_read = False
 
 class Export_Scene_GR2(Operator, ExportHelper):
@@ -516,89 +516,101 @@ class Export_Scene_GR2(Operator, ExportHelper):
             self.filepath = path.join(get_data_path(),  'halo_export.fbx')
 
     def execute(self, context):
-        #lightmap warning
-        skip_lightmapper = False
-        global lightmapper_run_once
-        if self.lightmap_structure and not lightmapper_run_once:
-            response = ctypes.windll.user32.MessageBoxW(0, 'Lightmapping can take a long time & Blender will be unresponsive during the process. Do you want to continue?', 'WARNING', 4)
-            lightmapper_run_once = True
-            if response != 6:
-                skip_lightmapper = True
-
         # get the asset name and path to the asset folder
-        asset_path, asset = get_asset_info(self.filepath)                                  
+        asset_path, asset = get_asset_info(self.filepath)
 
-        print('Preparing Scene for Export...')
+        # Check that we can export
+        if not CheckPath(self.filepath) or not file_exists(f'{get_tool_path()}.exe') or asset_path + path.sep == get_data_path(): # check the user is saving the file to a location in their editing kit data directory AND tool exists. AND prevent exports to root data dir
+            if get_ek_path() is None or get_ek_path() == '':
+                ctypes.windll.user32.MessageBoxW(0, f"No {self.game_version.upper()} Editing Kit path found. Please check your {self.game_version.upper()} editing kit path in add-on preferences [Edit > Preferences > Add-ons > Halo Asset Blender Development Toolset] and ensure this points to your {self.game_version.upper()} editing kit directory.", f"INVALID {self.game_version.upper()} EK PATH", 0)
+            elif not file_exists(f'{get_tool_path()}.exe'):
+                ctypes.windll.user32.MessageBoxW(0, f"{self.game_version.upper()} Tool not found. Could not find {self.game_version.upper()} tool or tool_fast. Please check your {self.game_version.upper()} editing kit path in add-on preferences [Edit > Preferences > Add-ons > Halo Asset Blender Development Toolset] and ensure this points to your {self.game_version.upper()} editing kit directory.", f"INVALID {self.game_version.upper()} TOOL PATH", 0)
+            elif asset_path + path.sep == get_data_path():
+                ctypes.windll.user32.MessageBoxW(0, f'You cannot export directly to your root {self.game_version.upper()} editing kit data directory. Please create a valid asset directory such as "data\my_asset" and direct your export to this folder', f"ROOT DATA FOLDER EXPORT", 0)
+            else:
+                ctypes.windll.user32.MessageBoxW(0, f"The selected export folder is outside of your {self.game_version.upper()} editing kit data directory, please ensure you are exporting to a directory within your {self.game_version.upper()} editing kit data folder.", f"INVALID {self.game_version.upper()} EXPORT PATH", 0)
+            
+        else:
+            #lightmap warning
+            # skip_lightmapper = False
+            # global lightmapper_run_once
+            # if self.lightmap_structure and not lightmapper_run_once:
+            #     response = ctypes.windll.user32.MessageBoxW(0, 'Lightmapping can take a long time & Blender will be unresponsive during the process. Do you want to continue?', 'WARNING', 4)
+            #     lightmapper_run_once = True
+            #     if response != 6:
+            #         skip_lightmapper = True                            
 
-        keywords = self.as_keywords()
-        console = bpy.ops.wm
+            print('Preparing Scene for Export...')
 
-        scene_gr2 = context.scene.gr2
+            keywords = self.as_keywords()
+            console = bpy.ops.wm
 
-        # set Halo scene version to match game_version (we do this do ensure the code is checking the right toolset)
-        context.scene.halo.game_version = self.game_version
+            scene_gr2 = context.scene.gr2
 
-        # Set the UI asset type to the export type
-        scene_gr2.asset_type = self.sidecar_type
+            # set Halo scene version to match game_version (we do this do ensure the code is checking the right toolset)
+            context.scene.halo.game_version = self.game_version
 
-        # Set the model outpug tag types in the UI to match export settings
-        scene_gr2.output_biped = self.output_biped
-        scene_gr2.output_crate = self.output_crate
-        scene_gr2.output_creature = self.output_creature
-        scene_gr2.output_device_control = self.output_device_control
-        scene_gr2.output_device_dispenser = self.output_device_dispenser
-        scene_gr2.output_device_machine = self.output_device_machine
-        scene_gr2.output_device_terminal = self.output_device_terminal
-        scene_gr2.output_effect_scenery = self.output_effect_scenery
-        scene_gr2.output_equipment = self.output_equipment
-        scene_gr2.output_giant = self.output_giant
-        scene_gr2.output_scenery = self.output_scenery
-        scene_gr2.output_vehicle = self.output_vehicle
-        scene_gr2.output_weapon = self.output_weapon
+            # Set the UI asset type to the export type
+            scene_gr2.asset_type = self.sidecar_type
 
-        if self.show_output:
-            console.console_toggle() # toggle the console so users can see progress of export
+            # Set the model outpug tag types in the UI to match export settings
+            scene_gr2.output_biped = self.output_biped
+            scene_gr2.output_crate = self.output_crate
+            scene_gr2.output_creature = self.output_creature
+            scene_gr2.output_device_control = self.output_device_control
+            scene_gr2.output_device_dispenser = self.output_device_dispenser
+            scene_gr2.output_device_machine = self.output_device_machine
+            scene_gr2.output_device_terminal = self.output_device_terminal
+            scene_gr2.output_effect_scenery = self.output_effect_scenery
+            scene_gr2.output_equipment = self.output_equipment
+            scene_gr2.output_giant = self.output_giant
+            scene_gr2.output_scenery = self.output_scenery
+            scene_gr2.output_vehicle = self.output_vehicle
+            scene_gr2.output_weapon = self.output_weapon
 
-        context.scene.gr2_export.show_output = False
+            if self.show_output:
+                console.console_toggle() # toggle the console so users can see progress of export
 
-        from .prepare_scene import prepare_scene
-        (model_armature, skeleton_bones, halo_objects, timeline_start, timeline_end, lod_count, selected_perms, selected_bsps, regions_dict, global_materials_dict, current_action
-        ) = prepare_scene(context, self.report, **keywords) # prepares the scene for processing and returns information about the scene
-        # try:
-        from .process_scene import process_scene
-        process_scene(self, context, keywords, self.report, model_armature, asset_path, asset, skeleton_bones, halo_objects, timeline_start, timeline_end, lod_count, UsingBetterFBX(), skip_lightmapper, selected_perms, selected_bsps, regions_dict, global_materials_dict, current_action, **keywords)
-        # except:
-        #     print('ASSERT: Scene processing failed')
-        #     error = traceback.format_exc()
-        #     self.report({'ERROR'}, error)
+            context.scene.gr2_export.show_output = False
 
-        # from .repair_scene import repair_scene
-        # repair_scene(context, self.report, objects_selection, active_object, hidden_objects, mode, temp_armature, timeline_start, timeline_end, model_armature, halo_objects.lights, unselectable_objects, enabled_exclude_collections, mesh_node_names, temp_nodes, current_frame, hidden_collections, current_action, **keywords)
+            from .prepare_scene import prepare_scene
+            (model_armature, skeleton_bones, halo_objects, timeline_start, timeline_end, lod_count, selected_perms, selected_bsps, regions_dict, global_materials_dict, current_action
+            ) = prepare_scene(context, self.report, **keywords) # prepares the scene for processing and returns information about the scene
+            # try:
+            from .process_scene import process_scene
+            process_scene(self, context, keywords, self.report, model_armature, asset_path, asset, skeleton_bones, halo_objects, timeline_start, timeline_end, lod_count, UsingBetterFBX(), selected_perms, selected_bsps, regions_dict, global_materials_dict, current_action, **keywords)
+            # except:
+            #     print('ASSERT: Scene processing failed')
+            #     error = traceback.format_exc()
+            #     self.report({'ERROR'}, error)
 
-        sidecar_path = path.join(asset_path.replace(get_data_path(), ''), f'{asset}.sidecar.xml')
+            # from .repair_scene import repair_scene
+            # repair_scene(context, self.report, objects_selection, active_object, hidden_objects, mode, temp_armature, timeline_start, timeline_end, model_armature, halo_objects.lights, unselectable_objects, enabled_exclude_collections, mesh_node_names, temp_nodes, current_frame, hidden_collections, current_action, **keywords)
 
-        if not file_exists(path.join(get_data_path(), sidecar_path)):
-            sidecar_path = ''
+            sidecar_path = path.join(asset_path.replace(get_data_path(), ''), f'{asset}.sidecar.xml')
 
-        temp_file_path = path.join(bpy.app.tempdir, 'gr2_scene_settings.txt')
-        with open(temp_file_path, 'w') as temp_file:
-            temp_file.write(f'{sidecar_path}\n')
-            temp_file.write(f'{self.game_version}\n')
-            temp_file.write(f'{self.sidecar_type}\n')
-            temp_file.write(f'{self.output_biped}\n')
-            temp_file.write(f'{self.output_crate}\n')
-            temp_file.write(f'{self.output_creature}\n')
-            temp_file.write(f'{self.output_device_control}\n')
-            temp_file.write(f'{self.output_device_dispenser}\n')
-            temp_file.write(f'{self.output_device_machine}\n')
-            temp_file.write(f'{self.output_device_terminal}\n')
-            temp_file.write(f'{self.output_effect_scenery}\n')
-            temp_file.write(f'{self.output_equipment}\n')
-            temp_file.write(f'{self.output_giant}\n')
-            temp_file.write(f'{self.output_scenery}\n')
-            temp_file.write(f'{self.output_vehicle}\n')
-            temp_file.write(f'{self.output_weapon}\n')
-            temp_file.write(f'{context.scene.gr2_export.show_output}\n')
+            if not file_exists(path.join(get_data_path(), sidecar_path)):
+                sidecar_path = ''
+
+            temp_file_path = path.join(bpy.app.tempdir, 'gr2_scene_settings.txt')
+            with open(temp_file_path, 'w') as temp_file:
+                temp_file.write(f'{sidecar_path}\n')
+                temp_file.write(f'{self.game_version}\n')
+                temp_file.write(f'{self.sidecar_type}\n')
+                temp_file.write(f'{self.output_biped}\n')
+                temp_file.write(f'{self.output_crate}\n')
+                temp_file.write(f'{self.output_creature}\n')
+                temp_file.write(f'{self.output_device_control}\n')
+                temp_file.write(f'{self.output_device_dispenser}\n')
+                temp_file.write(f'{self.output_device_machine}\n')
+                temp_file.write(f'{self.output_device_terminal}\n')
+                temp_file.write(f'{self.output_effect_scenery}\n')
+                temp_file.write(f'{self.output_equipment}\n')
+                temp_file.write(f'{self.output_giant}\n')
+                temp_file.write(f'{self.output_scenery}\n')
+                temp_file.write(f'{self.output_vehicle}\n')
+                temp_file.write(f'{self.output_weapon}\n')
+                temp_file.write(f'{context.scene.gr2_export.show_output}\n')
 
         bpy.ops.ed.undo_push()
         bpy.ops.ed.undo()

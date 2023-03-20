@@ -47,13 +47,14 @@ from .nwo_utils import(
     get_prefab_from_halo_objects,
     print_box,
     CheckType,
+    get_data_path,
 )
 
 #####################################################################################
 #####################################################################################
 # MAIN FUNCTION
 
-def process_scene(self, context, keywords, report, model_armature, asset_path, asset, skeleton_bones, halo_objects, timeline_start, timeline_end, lod_count, using_better_fbx, skip_lightmapper, selected_perms, selected_bsps, regions_dict, global_materials_dict, current_action,
+def process_scene(self, context, keywords, report, model_armature, asset_path, asset, skeleton_bones, halo_objects, timeline_start, timeline_end, lod_count, using_better_fbx, selected_perms, selected_bsps, regions_dict, global_materials_dict, current_action,
                   filepath,
                   sidecar_type,
                   output_biped,
@@ -98,251 +99,242 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
     reports = []
     gr2_count = 0
 
-    if CheckPath(filepath) and exists(f'{get_tool_path()}.exe'): # check the user is saving the file to a location in their editing kit data directory AND tool exists
-        if sidecar_type != 'MODEL' or (sidecar_type == 'MODEL' and(
-                                                                    output_biped or
-                                                                    output_crate or
-                                                                    output_creature or
-                                                                    output_device_control or
-                                                                    output_device_machine or
-                                                                    output_device_terminal or
-                                                                    output_effect_scenery or
-                                                                    output_equipment or
-                                                                    output_giant or
-                                                                    output_scenery or
-                                                                    output_vehicle or
-                                                                    output_weapon)
-            ):
-        
-            if export_gr2_files:
+    if sidecar_type != 'MODEL' or (sidecar_type == 'MODEL' and(
+                                                                output_biped or
+                                                                output_crate or
+                                                                output_creature or
+                                                                output_device_control or
+                                                                output_device_machine or
+                                                                output_device_terminal or
+                                                                output_effect_scenery or
+                                                                output_equipment or
+                                                                output_giant or
+                                                                output_scenery or
+                                                                output_vehicle or
+                                                                output_weapon)
+        ):
+    
+        if export_gr2_files:
 
-                if sidecar_type == 'MODEL':
+            if sidecar_type == 'MODEL':
 
-                    if export_render:
-                        perm_list = []
-                        for ob in get_render_from_halo_objects(halo_objects):
-                            perm = get_perm(ob)
-                            if perm not in perm_list:
-                                perm_list.append(perm)
-                                if select_model_objects(get_render_from_halo_objects(halo_objects), perm, model_armature, export_hidden, export_all_perms, selected_perms):
-                                    print_box(f'**Exporting {perm} render model**')
-                                    export_fbx(using_better_fbx, **keywords)
-                                    export_gr2(report, asset_path, asset, 'render', context.selected_objects, '', perm, model_armature, skeleton_bones, '', regions_dict, global_materials_dict, **keywords)
-                                    gr2_count += 1
+                if export_render:
+                    perm_list = []
+                    for ob in get_render_from_halo_objects(halo_objects):
+                        perm = get_perm(ob)
+                        if perm not in perm_list:
+                            perm_list.append(perm)
+                            if select_model_objects(get_render_from_halo_objects(halo_objects), perm, model_armature, export_hidden, export_all_perms, selected_perms):
+                                print_box(f'**Exporting {perm} render model**')
+                                export_fbx(using_better_fbx, **keywords)
+                                export_gr2(report, asset_path, asset, 'render', context.selected_objects, '', perm, model_armature, skeleton_bones, '', regions_dict, global_materials_dict, **keywords)
+                                gr2_count += 1
 
-                    if export_collision:
-                        perm_list = []
-                        for ob in halo_objects.collision:
-                            perm = get_perm(ob)
-                            if perm not in perm_list:
-                                perm_list.append(perm)
-                                if select_model_objects(halo_objects.collision, perm, model_armature, export_hidden, export_all_perms, selected_perms):
-                                    print_box(f'**Exporting {perm} collision model**')
-                                    export_fbx(using_better_fbx, **keywords)
-                                    export_gr2(report, asset_path, asset, 'collision', context.selected_objects, '', perm, model_armature, skeleton_bones, '', regions_dict, global_materials_dict, **keywords)
-                                    gr2_count += 1
+                if export_collision:
+                    perm_list = []
+                    for ob in halo_objects.collision:
+                        perm = get_perm(ob)
+                        if perm not in perm_list:
+                            perm_list.append(perm)
+                            if select_model_objects(halo_objects.collision, perm, model_armature, export_hidden, export_all_perms, selected_perms):
+                                print_box(f'**Exporting {perm} collision model**')
+                                export_fbx(using_better_fbx, **keywords)
+                                export_gr2(report, asset_path, asset, 'collision', context.selected_objects, '', perm, model_armature, skeleton_bones, '', regions_dict, global_materials_dict, **keywords)
+                                gr2_count += 1
 
-                    if export_physics:
-                        perm_list = []
-                        for ob in halo_objects.physics:
-                            perm = get_perm(ob)
-                            if perm not in perm_list:
-                                perm_list.append(perm)
-                                if select_model_objects(halo_objects.physics, perm, model_armature, export_hidden, export_all_perms, selected_perms):
-                                    print_box(f'**Exporting {perm} physics model**')
-                                    export_fbx(using_better_fbx, **keywords)
-                                    export_gr2(report, asset_path, asset, 'physics', context.selected_objects, '', perm, model_armature, skeleton_bones, '', regions_dict, global_materials_dict, **keywords)
-                                    gr2_count += 1
+                if export_physics:
+                    perm_list = []
+                    for ob in halo_objects.physics:
+                        perm = get_perm(ob)
+                        if perm not in perm_list:
+                            perm_list.append(perm)
+                            if select_model_objects(halo_objects.physics, perm, model_armature, export_hidden, export_all_perms, selected_perms):
+                                print_box(f'**Exporting {perm} physics model**')
+                                export_fbx(using_better_fbx, **keywords)
+                                export_gr2(report, asset_path, asset, 'physics', context.selected_objects, '', perm, model_armature, skeleton_bones, '', regions_dict, global_materials_dict, **keywords)
+                                gr2_count += 1
 
-                    if export_markers:
-                        if select_model_objects_no_perm(halo_objects.markers, model_armature, export_hidden):
-                            print_box('**Exporting markers**')
-                            export_fbx(using_better_fbx, **keywords)
-                            export_gr2(report, asset_path, asset, 'markers', context.selected_objects, '', '', model_armature, skeleton_bones, '', regions_dict, global_materials_dict, **keywords)
-                            gr2_count += 1
-
-                    if SelectModelSkeleton(model_armature):
-                        print_box('**Exporting skeleton**')
+                if export_markers:
+                    if select_model_objects_no_perm(halo_objects.markers, model_armature, export_hidden):
+                        print_box('**Exporting markers**')
                         export_fbx(using_better_fbx, **keywords)
-                        export_gr2(report, asset_path, asset, 'skeleton', [model_armature], '', '', model_armature, skeleton_bones, '', regions_dict, global_materials_dict, **keywords)
+                        export_gr2(report, asset_path, asset, 'markers', context.selected_objects, '', '', model_armature, skeleton_bones, '', regions_dict, global_materials_dict, **keywords)
                         gr2_count += 1
 
-                    if export_animations != 'NONE' and 1<=len(bpy.data.actions):
-                        if SelectModelSkeleton(model_armature):
-                            timeline = context.scene
-                            for action in bpy.data.actions:
-                                try:
-                                    if export_animations == 'ALL' or current_action == action:
-                                        animation_name = action.nwo.name_override
-                                        print_box(f'**Exporting Animation: {animation_name}**')
-                                        model_armature.animation_data.action = action
-                                        if action.use_frame_range:
-                                            timeline.frame_start = int(action.frame_start)
-                                            timeline.frame_end = int(action.frame_end)
-                                            context.scene.frame_set(int(action.frame_start))
-                                        else:
-                                            timeline.frame_start = timeline_start
-                                            timeline.frame_end = timeline_end
-                                            context.scene.frame_set(timeline_start)
-                                        export_fbx(using_better_fbx, **keywords)
-                                        export_gr2(report, asset_path, asset, 'animations', [model_armature], '', '', model_armature, skeleton_bones, action.nwo.name_override, regions_dict, global_materials_dict, **keywords)
-                                        gr2_count += 1
-                                except:
-                                    print(f'Encountered animation not in armature, skipping export of animation: {action.name}')
-                            
-                elif sidecar_type == 'SCENARIO':
-                    
-                    bsp_list = []
-                    shared_bsp_exists = False
+                if SelectModelSkeleton(model_armature):
+                    print_box('**Exporting skeleton**')
+                    export_fbx(using_better_fbx, **keywords)
+                    export_gr2(report, asset_path, asset, 'skeleton', [model_armature], '', '', model_armature, skeleton_bones, '', regions_dict, global_materials_dict, **keywords)
+                    gr2_count += 1
 
-                    for ob in bpy.context.view_layer.objects:
-                        if ob.nwo.bsp_name_locked != '':
-                            if ob.nwo.bsp_name_locked != 'shared' and (ob.nwo.bsp_name_locked not in bsp_list):
-                                bsp_list.append(ob.nwo.bsp_name_locked)
-                        else:
-                            if ob.nwo.bsp_name != 'shared' and (ob.nwo.bsp_name not in bsp_list):
-                                bsp_list.append(ob.nwo.bsp_name)
+                if export_animations != 'NONE' and 1<=len(bpy.data.actions):
+                    if SelectModelSkeleton(model_armature):
+                        timeline = context.scene
+                        for action in bpy.data.actions:
+                            try:
+                                if export_animations == 'ALL' or current_action == action:
+                                    animation_name = action.nwo.name_override
+                                    print_box(f'**Exporting Animation: {animation_name}**')
+                                    model_armature.animation_data.action = action
+                                    if action.use_frame_range:
+                                        timeline.frame_start = int(action.frame_start)
+                                        timeline.frame_end = int(action.frame_end)
+                                        context.scene.frame_set(int(action.frame_start))
+                                    else:
+                                        timeline.frame_start = timeline_start
+                                        timeline.frame_end = timeline_end
+                                        context.scene.frame_set(timeline_start)
+                                    export_fbx(using_better_fbx, **keywords)
+                                    export_gr2(report, asset_path, asset, 'animations', [model_armature], '', '', model_armature, skeleton_bones, action.nwo.name_override, regions_dict, global_materials_dict, **keywords)
+                                    gr2_count += 1
+                            except:
+                                print(f'Encountered animation not in armature, skipping export of animation: {action.name}')
+                        
+            elif sidecar_type == 'SCENARIO':
+                
+                bsp_list = []
+                shared_bsp_exists = False
 
-                    for ob in context.view_layer.objects:
-                        if ob.nwo.bsp_name_locked != '':
-                            if ob.nwo.bsp_name_locked == 'shared':
-                                shared_bsp_exists = True
-                                break
-                        else:
-                            if ob.nwo.bsp_name == 'shared':
-                                shared_bsp_exists = True
-                                break
-                    for bsp in bsp_list:
-                        if export_structure:
-                            perm_list = []
-                            for ob in get_structure_from_halo_objects(halo_objects, False):
-                                if not is_shared(ob):
-                                    perm = get_perm(ob)
-                                    if perm not in perm_list:
-                                        perm_list.append(perm)
-                                        if select_bsp_objects(get_structure_from_halo_objects(halo_objects, True), bsp, model_armature, perm, export_hidden, export_all_perms, selected_perms, export_all_bsps, selected_bsps):
-                                            if perm != 'default':
-                                                print_box(f'**Exporting {bsp} {perm} BSP**')
-                                            else:
-                                                print_box(f'**Exporting {bsp} BSP**')
-                                            export_fbx(using_better_fbx, **keywords)
-                                            export_gr2(report, asset_path, asset, 'bsp', context.selected_objects, bsp, perm, model_armature, skeleton_bones, '', regions_dict, global_materials_dict, **keywords)
-                                            gr2_count += 1
-                        # Design time!
-                        bsp_list = []
+                for ob in bpy.context.view_layer.objects:
+                    if ob.nwo.bsp_name_locked != '':
+                        if ob.nwo.bsp_name_locked != 'shared' and (ob.nwo.bsp_name_locked not in bsp_list):
+                            bsp_list.append(ob.nwo.bsp_name_locked)
+                    else:
+                        if ob.nwo.bsp_name != 'shared' and (ob.nwo.bsp_name not in bsp_list):
+                            bsp_list.append(ob.nwo.bsp_name)
 
-                        for ob in bpy.context.scene.objects:
-                            if ob.nwo.bsp_name_locked != '':
-                                if ob.nwo.bsp_name_locked != 'shared' and (ob.nwo.bsp_name_locked not in bsp_list) and (CheckType.boundary_surface(ob) or CheckType.water_physics(ob) or CheckType.poop_rain_blocker(ob) or CheckType.fog(ob)):
-                                    bsp_list.append(ob.nwo.bsp_name_locked)
-                            else:
-                                if ob.nwo.bsp_name != 'shared' and (ob.nwo.bsp_name not in bsp_list) and (CheckType.boundary_surface(ob) or CheckType.water_physics(ob) or CheckType.poop_rain_blocker(ob) or CheckType.fog(ob)):
-                                    bsp_list.append(ob.nwo.bsp_name)
-
-                        if export_design:
-                            perm_list = []
-                            for ob in get_design_from_halo_objects(halo_objects, False):
+                for ob in context.view_layer.objects:
+                    if ob.nwo.bsp_name_locked != '':
+                        if ob.nwo.bsp_name_locked == 'shared':
+                            shared_bsp_exists = True
+                            break
+                    else:
+                        if ob.nwo.bsp_name == 'shared':
+                            shared_bsp_exists = True
+                            break
+                for bsp in bsp_list:
+                    if export_structure:
+                        perm_list = []
+                        for ob in get_structure_from_halo_objects(halo_objects, False):
+                            if not is_shared(ob):
                                 perm = get_perm(ob)
                                 if perm not in perm_list:
                                     perm_list.append(perm)
-                                    if select_bsp_objects(get_design_from_halo_objects(halo_objects, True), bsp, model_armature, perm, export_hidden, export_all_perms, selected_perms, export_all_bsps, selected_bsps):
+                                    if select_bsp_objects(get_structure_from_halo_objects(halo_objects, True), bsp, model_armature, perm, export_hidden, export_all_perms, selected_perms, export_all_bsps, selected_bsps):
                                         if perm != 'default':
-                                            print_box(f'**Exporting {bsp} {perm} Design**')
+                                            print_box(f'**Exporting {bsp} {perm} BSP**')
                                         else:
-                                            print_box(f'**Exporting {bsp} Design**')
+                                            print_box(f'**Exporting {bsp} BSP**')
                                         export_fbx(using_better_fbx, **keywords)
-                                        export_gr2(report, asset_path, asset, 'design', context.selected_objects, bsp, perm, model_armature, skeleton_bones, '', regions_dict, global_materials_dict, **keywords)
+                                        export_gr2(report, asset_path, asset, 'bsp', context.selected_objects, bsp, perm, model_armature, skeleton_bones, '', regions_dict, global_materials_dict, **keywords)
                                         gr2_count += 1
+                    # Design time!
+                    bsp_list = []
 
+                    for ob in bpy.context.scene.objects:
+                        if ob.nwo.bsp_name_locked != '':
+                            if ob.nwo.bsp_name_locked != 'shared' and (ob.nwo.bsp_name_locked not in bsp_list) and (CheckType.boundary_surface(ob) or CheckType.water_physics(ob) or CheckType.poop_rain_blocker(ob) or CheckType.fog(ob)):
+                                bsp_list.append(ob.nwo.bsp_name_locked)
+                        else:
+                            if ob.nwo.bsp_name != 'shared' and (ob.nwo.bsp_name not in bsp_list) and (CheckType.boundary_surface(ob) or CheckType.water_physics(ob) or CheckType.poop_rain_blocker(ob) or CheckType.fog(ob)):
+                                bsp_list.append(ob.nwo.bsp_name)
 
-
-                ############################
-                ##### SHARED STRUCTURE #####
-                ############################
-
-                    if shared_bsp_exists:
-                        if export_structure:
-                            perm_list = []
-                            for ob in get_structure_from_halo_objects(halo_objects, False):
-                                if is_shared(ob):
-                                    perm = get_perm(ob)
-                                    if perm not in perm_list:
-                                        perm_list.append(perm)
-                                        if select_bsp_objects(get_structure_from_halo_objects(halo_objects, True), 'shared', model_armature, perm, export_hidden, export_all_perms, selected_perms, export_all_bsps, selected_bsps):
-                                            if perm != 'default':
-                                                print_box(f'**Exporting shared {perm} BSP**')
-                                            else:
-                                                print_box(f'**Exporting shared BSP**')
-                                            export_fbx(using_better_fbx, **keywords)
-                                            export_gr2(report, asset_path, asset, 'bsp', context.selected_objects, 'shared', perm, model_armature, skeleton_bones, '', regions_dict, global_materials_dict, **keywords)
-                                            gr2_count += 1
-
-                elif sidecar_type == 'SKY':
-                    if export_render:
+                    if export_design:
                         perm_list = []
-                        for ob in halo_objects.default:
+                        for ob in get_design_from_halo_objects(halo_objects, False):
                             perm = get_perm(ob)
                             if perm not in perm_list:
                                 perm_list.append(perm)
-                                if select_model_objects(halo_objects.default + halo_objects.lights + halo_objects.markers, perm, model_armature, export_hidden, export_all_perms, selected_perms):
-                                    print_box(f'**Exporting sky render model**')
+                                if select_bsp_objects(get_design_from_halo_objects(halo_objects, True), bsp, model_armature, perm, export_hidden, export_all_perms, selected_perms, export_all_bsps, selected_bsps):
+                                    if perm != 'default':
+                                        print_box(f'**Exporting {bsp} {perm} Design**')
+                                    else:
+                                        print_box(f'**Exporting {bsp} Design**')
                                     export_fbx(using_better_fbx, **keywords)
-                                    export_gr2(report, asset_path, asset, 'render', context.selected_objects, '', perm, model_armature, skeleton_bones, '', regions_dict, global_materials_dict, **keywords)
+                                    export_gr2(report, asset_path, asset, 'design', context.selected_objects, bsp, perm, model_armature, skeleton_bones, '', regions_dict, global_materials_dict, **keywords)
                                     gr2_count += 1
 
-                elif sidecar_type == 'DECORATOR SET': 
-                    if export_render:
-                        if select_model_objects_no_perm(halo_objects.decorators, model_armature, export_hidden):
-                            print_box(f'**Exporting decorator set**')
-                            export_fbx(using_better_fbx, **keywords)
-                            export_gr2(report, asset_path, asset, 'render', context.selected_objects, '', 'default', model_armature, skeleton_bones, '', regions_dict, global_materials_dict, **keywords)
-                            gr2_count += 1
 
-                elif sidecar_type == 'PREFAB':
-                    if select_prefab_objects(get_prefab_from_halo_objects(halo_objects), model_armature, export_hidden):
-                        print_box(f'**Exporting prefab**')
+
+            ############################
+            ##### SHARED STRUCTURE #####
+            ############################
+
+                if shared_bsp_exists:
+                    if export_structure:
+                        perm_list = []
+                        for ob in get_structure_from_halo_objects(halo_objects, False):
+                            if is_shared(ob):
+                                perm = get_perm(ob)
+                                if perm not in perm_list:
+                                    perm_list.append(perm)
+                                    if select_bsp_objects(get_structure_from_halo_objects(halo_objects, True), 'shared', model_armature, perm, export_hidden, export_all_perms, selected_perms, export_all_bsps, selected_bsps):
+                                        if perm != 'default':
+                                            print_box(f'**Exporting shared {perm} BSP**')
+                                        else:
+                                            print_box(f'**Exporting shared BSP**')
+                                        export_fbx(using_better_fbx, **keywords)
+                                        export_gr2(report, asset_path, asset, 'bsp', context.selected_objects, 'shared', perm, model_armature, skeleton_bones, '', regions_dict, global_materials_dict, **keywords)
+                                        gr2_count += 1
+
+            elif sidecar_type == 'SKY':
+                if export_render:
+                    perm_list = []
+                    for ob in halo_objects.default:
+                        perm = get_perm(ob)
+                        if perm not in perm_list:
+                            perm_list.append(perm)
+                            if select_model_objects(halo_objects.default + halo_objects.lights + halo_objects.markers, perm, model_armature, export_hidden, export_all_perms, selected_perms):
+                                print_box(f'**Exporting sky render model**')
+                                export_fbx(using_better_fbx, **keywords)
+                                export_gr2(report, asset_path, asset, 'render', context.selected_objects, '', perm, model_armature, skeleton_bones, '', regions_dict, global_materials_dict, **keywords)
+                                gr2_count += 1
+
+            elif sidecar_type == 'DECORATOR SET': 
+                if export_render:
+                    if select_model_objects_no_perm(halo_objects.decorators, model_armature, export_hidden):
+                        print_box(f'**Exporting decorator set**')
                         export_fbx(using_better_fbx, **keywords)
-                        export_gr2(report, asset_path, asset, 'prefab', context.selected_objects, '', '', model_armature, skeleton_bones, '', regions_dict, global_materials_dict, **keywords)
+                        export_gr2(report, asset_path, asset, 'render', context.selected_objects, '', 'default', model_armature, skeleton_bones, '', regions_dict, global_materials_dict, **keywords)
                         gr2_count += 1
 
-                else: # for particles
-                    if export_render:
-                        if select_model_objects_no_perm(halo_objects.default, model_armature, export_hidden):
-                            print_box(f'**Exporting particle model**')
-                            export_fbx(using_better_fbx, **keywords)
-                            export_gr2(report, asset_path, asset, 'particle_model', context.selected_objects, '', 'default', model_armature, skeleton_bones, '', regions_dict, global_materials_dict, **keywords)
-                            gr2_count += 1
+            elif sidecar_type == 'PREFAB':
+                if select_prefab_objects(get_prefab_from_halo_objects(halo_objects), model_armature, export_hidden):
+                    print_box(f'**Exporting prefab**')
+                    export_fbx(using_better_fbx, **keywords)
+                    export_gr2(report, asset_path, asset, 'prefab', context.selected_objects, '', '', model_armature, skeleton_bones, '', regions_dict, global_materials_dict, **keywords)
+                    gr2_count += 1
 
-            reports.append('Exported ' + str(gr2_count) + ' GR2 Files')
-            if export_sidecar_xml:
-                from .build_sidecar import export_sidecar
-                export_sidecar(self, context, report, asset_path, halo_objects, model_armature, lod_count, regions_dict, global_materials_dict, **keywords)
-                reports.append('Built ' + str.title(sidecar_type) + ' Sidecar')
-            from .import_sidecar import import_sidecar
-            if import_to_game:
-                import_sidecar(self, context, report, **keywords)
-                reports.append('Tag Export Processed')
-            if lightmap_structure and not skip_lightmapper:
-                from .run_lightmapper import run_lightmapper
-                run_lightmapper(self, context, report, game_version in ('h4','h2a'), **keywords)
-                if game_version not in ('h4','h2a'):
-                    reports.append('Processed a Lightmap on ' + str.title(lightmap_quality) + ' Quality')
-                else:
-                    reports.append('Lightmapping complete')
-            # if import_bitmaps:
-            #     print("Temporary implementation, remove this later!")
-            #     #import_bitmap.save(self, context, report, **keywords)
+            else: # for particles
+                if export_render:
+                    if select_model_objects_no_perm(halo_objects.default, model_armature, export_hidden):
+                        print_box(f'**Exporting particle model**')
+                        export_fbx(using_better_fbx, **keywords)
+                        export_gr2(report, asset_path, asset, 'particle_model', context.selected_objects, '', 'default', model_armature, skeleton_bones, '', regions_dict, global_materials_dict, **keywords)
+                        gr2_count += 1
 
-        else:
-            report({'ERROR'},"No sidecar output tags selected")
+        reports.append('Exported ' + str(gr2_count) + ' GR2 Files')
+        if export_sidecar_xml:
+            from .build_sidecar import export_sidecar
+            export_sidecar(self, context, report, asset_path, halo_objects, model_armature, lod_count, regions_dict, global_materials_dict, **keywords)
+            reports.append('Built ' + str.title(sidecar_type) + ' Sidecar')
+        from .import_sidecar import import_sidecar
+        if import_to_game:
+            import_sidecar(self, context, report, **keywords)
+            reports.append('Tag Export Processed')
+        if lightmap_structure:
+            from .run_lightmapper import run_lightmapper
+            run_lightmapper(self, context, report, game_version in ('h4','h2a'), **keywords)
+            if game_version not in ('h4','h2a'):
+                reports.append('Processed a Lightmap on ' + str.title(lightmap_quality) + ' Quality')
+            else:
+                reports.append('Lightmapping complete')
+        # if import_bitmaps:
+        #     print("Temporary implementation, remove this later!")
+        #     #import_bitmap.save(self, context, report, **keywords)
 
     else:
-        if get_ek_path() is None or get_ek_path() == '':
-            ctypes.windll.user32.MessageBoxW(0, f"Invalid {self.game_version.upper()} Editing Kit path. Please check the {self.game_version.upper()} editing kit path in add-on preferences [Edit > Preferences > Add-ons > Halo Asset Blender Development Toolset].", f"INVALID {self.game_version.upper()} EK PATH", 0)
-        elif not exists(f'{get_tool_path()}.exe'):
-            ctypes.windll.user32.MessageBoxW(0, f"{self.game_version.upper()} Tool not found. Could not find {self.game_version.upper()} tool or tool_fast in your editing kit. Are you exporting to the correct game's editing kit data folder?", f"INVALID {self.game_version.upper()} TOOL PATH", 0)
-        else:
-            ctypes.windll.user32.MessageBoxW(0, f"The selected export folder is invalid, please ensure you are exporting to a directory within your {self.game_version.upper()} data folder.", f"INVALID {self.game_version.upper()} EXPORT PATH", 0)
+        report({'ERROR'},"No sidecar output tags selected")
     
     final_report = ''
     for idx, r in enumerate(reports):
@@ -370,9 +362,6 @@ def SelectModelSkeleton(arm):
 #####################################################################################
 #####################################################################################
 # EXTRA FUNCTIONS
-
-def CheckPath(filePath):
-    return filePath.startswith(os.path.join(get_ek_path(), 'data'))
 
 #####################################################################################
 #####################################################################################

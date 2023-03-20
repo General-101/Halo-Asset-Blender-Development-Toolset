@@ -723,6 +723,9 @@ def create_ob_matric_dict(objects_in_scope):
 
     return ob_matrix
 
+def CheckPath(filePath):
+    return filePath.startswith(os.path.join(get_ek_path(), 'data'))
+
 #################################
 
 # import example #
