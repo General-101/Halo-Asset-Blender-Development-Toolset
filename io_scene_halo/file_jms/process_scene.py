@@ -188,6 +188,7 @@ def process_scene(version, game_version, generate_checksum, fix_rotations, model
 
             JMS.bounding_spheres.append(JMSAsset.Bounding_Sphere(translation, scale))
 
+        sun = None
         for light in blend_scene.skylight_list:
             down_vector = Vector((0, 0, -1))
             down_vector.rotate(light.rotation_euler)
@@ -195,8 +196,14 @@ def process_scene(version, game_version, generate_checksum, fix_rotations, model
             direction = (down_vector[0], down_vector[1], down_vector[2])
             radiant_intensity =  (light.data.color[0], light.data.color[1], light.data.color[2])
             solid_angle = light.data.energy
+            skylight = JMSAsset.Skylight(direction, radiant_intensity, solid_angle)
+            if solid_angle > 0.01:
+                JMS.skylights.append(skylight)
+            else:
+                sun = skylight
 
-            JMS.skylights.append(JMSAsset.Skylight(direction, radiant_intensity, solid_angle))
+        if not sun == None:
+            JMS.skylights.append(sun)
 
     if model_type == "render" or model_type == "collision":
         geometry_list = blend_scene.render_geometry_list
