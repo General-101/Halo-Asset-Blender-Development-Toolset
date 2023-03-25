@@ -390,24 +390,26 @@ def build_scene(context, JMA, JMS_A, JMS_B, filepath, game_version, fix_parents,
             pose_bone = armature.pose.bones[node.name]
 
             matrix_scale = Matrix.Scale(frame[idx].scale, 4)
-            matrix_rotation = frame[idx].rotation.to_matrix().to_4x4()
+            matrix_rotation = frame[idx].rotation.to_matrix().to_4x4() 
             matrix_translation = Matrix.Translation(frame[idx].translation)
+
+            if JMA.version < 16394 and fix_rotations:
+                matrix_rotation = matrix_rotation @ Matrix.Rotation(radians(-90.0), 4, 'Z')
+
             transform_matrix = matrix_translation @ matrix_rotation @ matrix_scale
 
-            if fix_rotations:
-                if (JMA.version > 16390 or JMA.version < 16394) and pose_bone.parent:
-                    transform_matrix = (pose_bone.parent.matrix @ Matrix.Rotation(radians(90.0), 4, 'Z')) @ transform_matrix
+            if JMA.version < 16394 and pose_bone.parent:
+                parent_matrix = pose_bone.parent.matrix
+                if fix_rotations:
+                    parent_matrix = parent_matrix @ Matrix.Rotation(radians(90.0), 4, 'Z')
+                    
+                transform_matrix = parent_matrix @ transform_matrix
 
-                rotated_matrix = transform_matrix @ Matrix.Rotation(radians(-90.0), 4, 'Z')
-                pose_bone.matrix = rotated_matrix
-                pose_bone.rotation_euler = rotated_matrix.to_euler()
+            if JMA.version >= 16394 and fix_rotations:
+                transform_matrix = transform_matrix @ Matrix.Rotation(radians(-90.0), 4, 'Z')
 
-            else:
-                if JMA.version < 16394 and pose_bone.parent:
-                    transform_matrix = pose_bone.parent.matrix @ transform_matrix
-
-                pose_bone.matrix = transform_matrix
-                pose_bone.rotation_euler = transform_matrix.to_euler()
+            pose_bone.matrix = transform_matrix
+            pose_bone.rotation_euler = transform_matrix.to_euler()
 
             view_layer.update()
 
