@@ -52,40 +52,57 @@ from .nwo_utils import(
 def prepare_scene(context, report, sidecar_type, export_hidden, use_armature_deform_only, game_version, meshes_to_empties, **kwargs):
     # Exit local view. Must do this otherwise fbx export will fail.
     ExitLocalView(context)
+    print('ExitLocalView')
     # Disable collections with the +exclude prefix. This way they are treated as if they are not part of the asset at all
     HideExcludedCollections(context)
+    print('HideExcludedCollections')
     # Unhide collections. Hidden collections will stop objects in the collection being exported. We only want this functionality if the collection is disabled
     unhide_collections(export_hidden, context)
+    print('unhide_collections')
     # Get the current set of selected objects. We need this so selected perms/bsps only functionality can be used
     objects_selection = GetCurrentActiveObjectSelection(context)
+    print('GetCurrentActiveObjectSelection')
     # unhide objects if the user has export_hidden ticked
     UnhideObjects(export_hidden, context)
+    print('UnhideObjects')
     # set the scene to object mode. Object mode is required for export.
     set_object_mode(context)
+    print('set_object_mode')
     # Make all currently unselectable objects selectable again. Exporter needs to loop through and select scene objects so we need this.
     MakeSelectable(context)
+    print('MakeSelectable')
     # Apply maya namespaces for H4/H2A exports.
     # apply_maya_namespaces(context)
     # update bsp/perm/region names in case any are null.
     fix_blank_group_names(context)
+    print('fix_blank_group_names')
     # add a uv map to meshes without one. This prevents an export assert
     fixup_missing_uvs(context)
+    print('fixup_missing_uvs')
     # run find shaders code if any empty paths
     find_shaders_on_export(bpy.data.materials, context, report)
+    print('find_shaders_on_export')
     # Establish a dictionary of scene regions. Used later in export_gr2 and build_sidecar
     regions_dict = get_regions_dict(context.view_layer.objects)
+    print('get_regions_dict')
     # Establish a dictionary of scene global materials. Used later in export_gr2 and build_sidecar
     global_materials_dict = get_global_materials_dict(context.view_layer.objects)
+    print('get_global_materials_dict')
     # Convert mesh markers to empty objects. Especially useful with complex marker shapes, such as prefabs
     MeshesToEmpties(context, meshes_to_empties)
+    print('MeshesToEmpties')
     # poop proxy madness
     SetPoopProxies(context.view_layer.objects)
+    print('SetPoopProxies')
     # get all objects that we plan to export later
     halo_objects = HaloObjects(sidecar_type)
+    print('HaloObjects')
     # Add materials to all objects without one. No materials = unhappy Tool.exe
     FixMissingMaterials(context, sidecar_type)
+    print('FixMissingMaterials')
     # Get and set the model armature, or create one if none exists.
     model_armature, temp_armature, no_parent_objects = GetSceneArmature(context, sidecar_type, game_version)
+    print('GetSceneArmature')
     # Handle spooky scary skeleton bones
     skeleton_bones = {}
     current_action = ''
@@ -99,14 +116,19 @@ def prepare_scene(context, report, sidecar_type, export_hidden, use_armature_def
                 pass
     # Set timeline range for use during animation export
     timeline_start, timeline_end = SetTimelineRange(context)
+    print('SetTimelineRange')
     # Set animation name overrides / fix them up for the exporter
     set_animation_overrides(model_armature, current_action)
+    print('set_animation_overrides')
      # get the max LOD count in the scene if we're exporting a decorator
     lod_count = GetDecoratorLODCount(halo_objects, sidecar_type == 'DECORATOR SET')
+    print('GetDecoratorLODCount')
     # get selected perms for use later
     selected_perms = GetSelectedPermutations(objects_selection)
+    print('GetSelectedPermutations')
     # get selected bsps for use later
     selected_bsps = GetSelectedBSPs(objects_selection)
+    print('GetSelectedBSPs')
 
     return model_armature, skeleton_bones, halo_objects, timeline_start, timeline_end, lod_count, selected_perms, selected_bsps, regions_dict, global_materials_dict, current_action
 

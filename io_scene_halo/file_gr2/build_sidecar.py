@@ -589,9 +589,9 @@ def GetAssetPathBSP(asset_name, bsp, perm='', is_design = False):
 def GetInputFilePathBSP(asset_path, asset_name, bsp, perm='', is_design = False):
     if is_design:
         if perm == 'default':
-            f_path = f'{path.join(asset_path, "models", asset_name)}_design_{bsp}.fbx'
+            f_path = f'{path.join(asset_path, "models", asset_name)}_{bsp}_design.fbx'
         else:
-            f_path = f'{path.join(asset_path, "models", asset_name)}_design_{bsp}_{perm}.fbx'
+            f_path = f'{path.join(asset_path, "models", asset_name)}_{bsp}_{perm}_design.fbx'
     else:
         if perm == 'default':
             f_path = f'{path.join(asset_path, "models", asset_name)}_{bsp}.fbx'
@@ -603,9 +603,9 @@ def GetInputFilePathBSP(asset_path, asset_name, bsp, perm='', is_design = False)
 def GetIntermediateFilePathBSP(asset_path, asset_name, bsp, perm='', is_design = False):
     if is_design:
         if perm == 'default':
-            f_path = f'{path.join(asset_path, "export", "models", asset_name)}_design_{bsp}.gr2'
+            f_path = f'{path.join(asset_path, "export", "models", asset_name)}_{bsp}_design.gr2'
         else:
-            f_path = f'{path.join(asset_path, "export", "models", asset_name)}_design_{bsp}_{perm}.gr2'
+            f_path = f'{path.join(asset_path, "export", "models", asset_name)}_{bsp}_{perm}_design.gr2'
     else:
         if perm == 'default':
             f_path = f'{path.join(asset_path, "export", "models", asset_name)}_{bsp}.gr2'

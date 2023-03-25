@@ -833,7 +833,8 @@ class NWOMesh(NWOObject):
             if self.bungie_face_type == '_connected_geometry_face_type_sky':
                 self.bungie_sky_permutation_index = self.sky_permutation_index()
 
-        self.bungie_mesh_use_uncompressed_verts = self.mesh_use_uncompressed_verts()
+        if self.halo.Precise_Position:
+            self.bungie_mesh_use_uncompressed_verts = self.mesh_use_uncompressed_verts()
 
         if self.bungie_mesh_type in ('_connected_geometry_mesh_type_physics', '_connected_geometry_mesh_type_collision', '_connected_geometry_mesh_type_structure', '_connected_geometry_mesh_type_default', '_connected_geometry_mesh_type_poop', '_connected_geometry_mesh_type_water_surface'):
             if self.halo.Face_Global_Material != '':

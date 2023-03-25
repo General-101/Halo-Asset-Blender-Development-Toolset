@@ -103,9 +103,9 @@ def get_path(asset_name, tag_type, perm='', asset_path='', bsp='', animation='')
     else:
         if tag_type == 'design':
             if perm == 'default':
-                name = f'{path.join(asset_path, asset_name)}_design_{bsp}'
+                name = f'{path.join(asset_path, asset_name)}_{bsp}_design'
             else:
-                name = f'{path.join(asset_path, asset_name)}_design_{bsp}_{perm}'
+                name = f'{path.join(asset_path, asset_name)}_{bsp}_{perm}_design'
         else:
             if perm == 'default':
                 name = f'{path.join(asset_path, asset_name)}_{bsp}'
