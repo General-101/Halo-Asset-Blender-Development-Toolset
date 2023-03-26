@@ -378,6 +378,7 @@ def create_event_nodes(context, events, frame_start, frame_end):
         deselect_all_objects()
         bpy.ops.object.empty_add()
         event_node = context.active_object.nwo
+        event_ob = context.active_object
         # Set this node to be an animation event
         event_node.is_animation_event = True
         # Set up the event node with the action start and end frame and id
@@ -410,9 +411,21 @@ def create_event_nodes(context, events, frame_start, frame_end):
         event_node.import_name = event.import_name
         event_node.text = event.text
         # set event node name
-        context.active_object.name = f'event_node_{str(event_node.event_id)}'
+        event_ob.name = f'event_node_{str(event_node.event_id)}'
         # add it to the list
-        event_nodes.append(context.active_object)
+        event_nodes.append(event_ob)
+        # duplicate for frame range
+        if event.multi_frame == 'range' and event.frame_range > 1:
+            for i in range(min(event.frame_range - 1, frame_end - event.frame_frame)):
+                bpy.ops.object.duplicate()
+                event_node_new = context.active_object.nwo
+                event_node_ob = context.active_object
+                event_node_new.event_id += 1
+                event_node_new.frame_frame += 1
+                event_node_ob.name = f'event_node_{str(event_node_new.event_id)}'
+                event_nodes.append(event_node_ob)
+                deselect_all_objects()
+                event_node_ob.select_set(True)
 
     return event_nodes
 

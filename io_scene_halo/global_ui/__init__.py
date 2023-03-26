@@ -5259,7 +5259,11 @@ class NWO_AnimProps_Events(Panel):
             # row.prop(item, "name") # debug only
             flow = layout.grid_flow(row_major=True, columns=0, even_columns=True, even_rows=False, align=False)
             col = flow.column()
+            row = col.row()
+            row.prop(item, "multi_frame", expand=True)
             col.prop(item, "frame_frame")
+            if item.multi_frame == 'range':
+                col.prop(item, "frame_range")
             col.prop(item, "frame_name")
             col.prop(item, "event_type")
             if item.event_type == '_connected_geometry_animation_event_type_wrinkle_map':
@@ -5343,6 +5347,22 @@ class NWO_List_Remove_Animation_Event(Operator):
 
 class NWO_Animation_ListItems(PropertyGroup):
     event_id: IntProperty()
+    
+    multi_frame: EnumProperty(
+        name='Usage',
+        description='Toggle whether this animation event should trigger on a single frame, or occur over a range',
+        default='single',
+        options=set(),
+        items= [('single', 'Single', ''), ('range', 'Range', '')]
+    )
+
+    frame_range: IntProperty(
+        name='Frame Range',
+        description='Enter the number of frames this event should last',
+        default=1,
+        min=1,
+        soft_max=10
+    )
 
     name: StringProperty(
         name="Event Name",
@@ -5492,7 +5512,7 @@ class NWO_Animation_ListItems(PropertyGroup):
 
     frame_name: EnumProperty(
         name='Frame Name',
-        default='none',
+        default='primary keyframe',
         options=set(),
         items = [
                 ('none', 'None', ''),

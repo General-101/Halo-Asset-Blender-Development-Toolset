@@ -64,7 +64,8 @@ class NWOObject:
         self.world_frame = world_frame
         self.asset_name = asset_name
         self.bungie_object_type = self.object_type()
-        self.bungie_object_ID = self.object_ID()
+        if self.bungie_object_type not in ('_connected_geometry_object_type_animation_control', '_connected_geometry_object_type_animation_event'):
+            self.bungie_object_ID = self.object_ID()
         # self.halo_export = '1'
         if self.bungie_object_type == '_connected_geometry_object_type_frame':
             self.bungie_object_animates = self.object_animates()
@@ -1103,10 +1104,10 @@ class NWOMesh(NWOObject):
         return self.halo.Mesh_Primitive_Type
 
     def mesh_primitive_box_length(self):
-        return jstr(self.ob.dimensions.x)
+        return jstr(self.ob.dimensions.y)
 
     def mesh_primitive_box_width(self):
-        return jstr(self.ob.dimensions.y)
+        return jstr(self.ob.dimensions.x)
 
     def mesh_primitive_box_height(self):
         return jstr(self.ob.dimensions.z)
