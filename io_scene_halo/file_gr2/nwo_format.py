@@ -131,7 +131,7 @@ class NWOObject:
         return False # temporary until a system for setting these is created
 
     def animation_event(self):
-        return False # temporary until a system for setting these is created
+        return self.halo.is_animation_event 
 
 # ANIMATION CONTROL
 #####################
@@ -154,35 +154,125 @@ class NWOAnimationControl(NWOObject):
 class NWOAnimationEvent(NWOObject):
     def __init__(self, ob, sidecar_type, model_armature, world_frame, asset_name):
         super().__init__(ob, sidecar_type, model_armature, world_frame, asset_name)
-        self.bungie_animation_event_type = None
-        self.bungie_animation_event_start = None
-        self.bungie_animation_event_end = None
-        self.bungie_animation_event_id = None
-        self.bungie_animation_event_wrinkle_map_face_region = None
-        self.bungie_animation_event_wrinkle_map_effect = None
-        self.bungie_animation_event_footstep_type = None
-        self.bungie_animation_event_footstep_effect = None
-        self.bungie_animation_event_ik_chain = None
-        self.bungie_animation_event_ik_active_tag = None
-        self.bungie_animation_event_ik_target_tag = None
-        self.bungie_animation_event_ik_target_marker = None
-        self.bungie_animation_event_ik_target_usage = None
-        self.bungie_animation_event_ik_proxy_target_id = None
-        self.bungie_animation_event_ik_pole_vector_id = None
-        self.bungie_animation_event_ik_effector_id = None
-        self.bungie_animation_event_cinematic_effect_tag = None
-        self.bungie_animation_event_cinematic_effect_effect = None
-        self.bungie_animation_event_cinematic_effect_marker = None
-        self.bungie_animation_event_object_function_name = None
-        self.bungie_animation_event_object_function_effect = None
-        self.bungie_animation_event_frame_frame = None
-        self.bungie_animation_event_frame_name = None
-        self.bungie_animation_event_frame_trigger = None
-        self.bungie_animation_event_import_frame = None
-        self.bungie_animation_event_import_name = None
-        self.bungie_animation_event_text = None
+        self.bungie_animation_event_type = self.animation_event_type()
+        self.bungie_animation_event_start = self.animation_event_start()
+        self.bungie_animation_event_end = self.animation_event_end()
+        self.bungie_animation_event_id = self.animation_event_id()
+        self.bungie_animation_event_frame_frame = self.animation_event_frame_frame()
+        self.bungie_animation_event_frame_name = self.animation_event_frame_name()
+        if self.bungie_animation_event_type == '_connected_geometry_animation_event_type_wrinkle_map':
+            self.bungie_animation_event_wrinkle_map_face_region = self.animation_event_wrinkle_map_face_region()
+            self.bungie_animation_event_wrinkle_map_effect = self.animation_event_wrinkle_map_effect()
+        elif self.bungie_animation_event_type == '_connected_geometry_animation_event_type_footstep':
+            self.bungie_animation_event_footstep_type = self.animation_event_footstep_type()
+            self.bungie_animation_event_footstep_effect = self.animation_event_footstep_effect()
+        elif self.bungie_animation_event_type in ('_connected_geometry_animation_event_type_ik_active', '_connected_geometry_animation_event_type_ik_passive'):
+            self.bungie_animation_event_ik_chain = self.animation_event_ik_chain()
+            self.bungie_animation_event_ik_active_tag = self.animation_event_ik_active_tag()
+            self.bungie_animation_event_ik_target_tag = self.animation_event_ik_target_tag()
+            self.bungie_animation_event_ik_target_marker = self.animation_event_ik_target_marker()
+            self.bungie_animation_event_ik_target_usage = self.animation_event_ik_target_usage()
+            self.bungie_animation_event_ik_proxy_target_id = self.animation_event_ik_proxy_target_id()
+            self.bungie_animation_event_ik_pole_vector_id = self.animation_event_ik_pole_vector_id()
+            self.bungie_animation_event_ik_effector_id = self.animation_event_ik_effector_id()
+        elif self.bungie_animation_event_type == '_connected_geometry_animation_event_type_cinematic_effect':   
+            self.bungie_animation_event_cinematic_effect_tag = self.animation_event_cinematic_effect_tag()
+            self.bungie_animation_event_cinematic_effect_effect = self.animation_event_cinematic_effect_effect()
+            self.bungie_animation_event_cinematic_effect_marker = self.animation_event_cinematic_effect_marker()
+        elif self.bungie_animation_event_type == '_connected_geometry_animation_event_type_object_function':
+            self.bungie_animation_event_object_function_name = self.animation_event_object_function_name()
+            self.bungie_animation_event_object_function_effect = self.animation_event_object_function_effect()
+        elif self.bungie_animation_event_type == '_connected_geometry_animation_event_type_frame':
+            self.bungie_animation_event_frame_trigger = self.animation_event_frame_trigger()
+        elif self.bungie_animation_event_type == '_connected_geometry_animation_event_type_import':
+            self.bungie_animation_event_import_frame = self.animation_event_import_frame()
+            self.bungie_animation_event_import_name = self.animation_event_import_name()
+        elif self.bungie_animation_event_type == '_connected_geometry_animation_event_type_text':
+            self.bungie_animation_event_text = self.animation_event_text()
 
         self.cleanup()
+
+    def animation_event_type(self):
+        return self.halo.event_type
+
+    def animation_event_start(self):
+        return jstr(self.halo.frame_start)
+    
+    def animation_event_end(self):
+        return jstr(self.halo.frame_end)
+    
+    def animation_event_id(self):
+        return str(self.halo.event_id)
+    
+    def animation_event_frame_frame(self):
+        return str(self.halo.frame_frame)
+    
+    def animation_event_frame_name(self):
+        return self.halo.frame_name
+
+    def animation_event_wrinkle_map_face_region(self):
+        return self.halo.wrinkle_map_face_region
+    
+    def animation_event_wrinkle_map_effect(self):
+        return str(self.halo.wrinkle_map_effect)
+
+    def animation_event_footstep_type(self):
+        return self.halo.footstep_type
+    
+    def animation_event_footstep_effect(self):
+        return str(self.halo.footstep_effect)
+    
+    def animation_event_ik_chain(self):
+        return self.halo.ik_chain
+    
+    def animation_event_ik_active_tag(self):
+        return self.halo.ik_active_tag
+    
+    def animation_event_ik_target_tag(self):
+        return self.halo.ik_target_tag
+    
+    def animation_event_ik_target_marker(self):
+        return self.halo.ik_target_marker
+    
+    def animation_event_ik_target_usage(self):
+        return self.halo.ik_target_usage
+    
+    def animation_event_ik_proxy_target_id(self):
+        return str(self.halo.ik_proxy_target_id)
+    
+    def animation_event_ik_pole_vector_id(self):
+        return str(self.halo.ik_pole_vector_id)
+    
+    def animation_event_ik_effector_id(self):
+        return str(self.halo.ik_effector_id)
+    
+    def animation_event_cinematic_effect_tag(self):
+        return self.halo.cinematic_effect_tag
+
+    def animation_event_cinematic_effect_effect(self):
+        return str(self.halo.cinematic_effect_effect)
+
+    def animation_event_cinematic_effect_marker(self):
+        return self.halo.cinematic_effect_marker
+
+    def animation_event_object_function_name(self):
+        return self.halo.object_function_name
+
+    def animation_event_object_function_effect(self):
+        return str(self.halo.object_function_effect)
+
+    def animation_event_frame_trigger(self):
+        return bool_str(self.halo.frame_trigger)
+
+    def animation_event_import_frame(self):
+        return str(self.halo.import_frame)
+
+    def animation_event_import_name(self):
+        return self.halo.import_name
+
+    def animation_event_text(self):
+        return self.halo.text
+
 
 
 # ANIMATION CAMERA

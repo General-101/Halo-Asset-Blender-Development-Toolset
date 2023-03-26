@@ -31,6 +31,7 @@ import os
 import ctypes
 from subprocess import Popen
 from addon_utils import modules
+import random
 from .nwo_utils import(
     get_perm,
     select_model_objects,
@@ -184,8 +185,13 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                         timeline.frame_start = timeline_start
                                         timeline.frame_end = timeline_end
                                         context.scene.frame_set(timeline_start)
+                                    event_nodes = create_event_nodes(context, action.nwo.animation_events, timeline.frame_start, timeline.frame_end) # create objects which store animation event information
+                                    if event_nodes is not None:
+                                        for ob in event_nodes:
+                                            ob.select_set(True)
+                                    model_armature.select_set(True)
                                     export_fbx(using_better_fbx, **keywords)
-                                    export_gr2(report, asset_path, asset, 'animations', [model_armature], '', '', model_armature, skeleton_bones, action.nwo.name_override, regions_dict, global_materials_dict, **keywords)
+                                    export_gr2(report, asset_path, asset, 'animations', context.selected_objects, '', '', model_armature, skeleton_bones, action.nwo.name_override, regions_dict, global_materials_dict, **keywords)
                                     gr2_count += 1
                             except:
                                 print(f'Encountered animation not in armature, skipping export of animation: {action.name}')
@@ -361,7 +367,55 @@ def SelectModelSkeleton(arm):
 
 #####################################################################################
 #####################################################################################
-# EXTRA FUNCTIONS
+# ANIMATION EVENTS
+
+def create_event_nodes(context, events, frame_start, frame_end):
+    if len(events) < 1:
+        return None
+    event_nodes = []
+    for event in events:
+        # create the event node to store event info
+        deselect_all_objects()
+        bpy.ops.object.empty_add()
+        event_node = context.active_object.nwo
+        # Set this node to be an animation event
+        event_node.is_animation_event = True
+        # Set up the event node with the action start and end frame and id
+        event_node.frame_start = frame_start + .4999
+        event_node.frame_end = frame_end + .4999
+        # add the user defined properties from the action
+        event_node.event_id = event.event_id
+        event_node.event_type = event.event_type
+        event_node.wrinkle_map_face_region = event.wrinkle_map_face_region
+        event_node.wrinkle_map_effect = event.wrinkle_map_effect
+        event_node.footstep_type = event.footstep_type
+        event_node.footstep_effect = event.footstep_effect
+        event_node.ik_chain = event.ik_chain
+        event_node.ik_active_tag = event.ik_active_tag
+        event_node.ik_target_tag = event.ik_target_tag
+        event_node.ik_target_marker = event.ik_target_marker
+        event_node.ik_target_usage = event.ik_target_usage
+        event_node.ik_proxy_target_id = event.ik_proxy_target_id
+        event_node.ik_pole_vector_id = event.ik_pole_vector_id
+        event_node.ik_effector_id = event.ik_effector_id
+        event_node.cinematic_effect_tag = event.cinematic_effect_tag
+        event_node.cinematic_effect_effect = event.cinematic_effect_effect
+        event_node.cinematic_effect_marker = event.cinematic_effect_marker
+        event_node.object_function_name = event.object_function_name
+        event_node.object_function_effect = event.object_function_effect
+        event_node.frame_frame = event.frame_frame
+        event_node.frame_name = event.frame_name
+        event_node.frame_trigger = event.frame_trigger
+        event_node.import_frame = event.import_frame
+        event_node.import_name = event.import_name
+        event_node.text = event.text
+        # set event node name
+        context.active_object.name = f'event_node_{str(event_node.event_id)}'
+        # add it to the list
+        event_nodes.append(context.active_object)
+
+    return event_nodes
+
 
 #####################################################################################
 #####################################################################################

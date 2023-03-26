@@ -26,6 +26,7 @@
 
 import bpy
 import os
+import random
 
 from bpy.types import (
         Operator,
@@ -4124,6 +4125,253 @@ class NWO_ObjectPropertiesGroup(PropertyGroup):
         update=light_cone_curve_clean_tag_path,
     )
 
+# ANIMATION EVENTS
+    event_id: IntProperty()
+
+    event_type: EnumProperty(
+        name='Type',
+        default='_connected_geometry_animation_event_type_frame',
+        options=set(),
+        items = [
+            ('_connected_geometry_animation_event_type_custom', 'Custom', ''),
+            ('_connected_geometry_animation_event_type_loop', 'Loop', ''),
+            ('_connected_geometry_animation_event_type_sound', 'Sound', ''),
+            ('_connected_geometry_animation_event_type_effect', 'Effect', ''),
+            ('_connected_geometry_animation_event_type_ik_active', 'IK Active', ''),
+            ('_connected_geometry_animation_event_type_ik_passive', 'IK Passive', ''),
+            ('_connected_geometry_animation_event_type_text', 'Text', ''),
+            ('_connected_geometry_animation_event_type_wrinkle_map', 'Wrinkle Map', ''),
+            ('_connected_geometry_animation_event_type_footstep', 'Footstep', ''),
+            ('_connected_geometry_animation_event_type_cinematic_effect', 'Cinematic Effect', ''),
+            ('_connected_geometry_animation_event_type_object_function', 'Object Function', ''),
+            ('_connected_geometry_animation_event_type_frame', 'Frame', ''),
+            ('_connected_geometry_animation_event_type_import', 'Import', ''),
+        ]
+    )
+
+    frame_start: FloatProperty(
+        name='Frame Start',
+        default=0,
+        options=set(),
+    )
+
+    frame_end: FloatProperty(
+        name='Frame End',
+        default=0,
+        options=set(),
+    )
+
+    wrinkle_map_face_region: StringProperty(
+        name='Wrinkle Map Face Region',
+        default='',
+        options=set(),
+    )
+
+    wrinkle_map_effect: IntProperty(
+        name='Wrinkle Map Effect',
+        default=0,
+        options=set(),
+    )
+
+    footstep_type: StringProperty(
+        name='Footstep Type',
+        default='',
+        options=set(),
+    )
+
+    footstep_effect: IntProperty(
+        name='Footstep Effect',
+        default=0,
+        options=set(),
+    )
+
+    ik_chain: StringProperty(
+        name='IK Chain',
+        default='',
+        options=set(),
+    )
+
+    ik_active_tag: StringProperty(
+        name='IK Active Tag',
+        default='',
+        options=set(),
+    )
+
+    ik_target_tag: StringProperty(
+        name='IK Target Tag',
+        default='',
+        options=set(),
+    )
+
+    ik_target_marker: StringProperty(
+        name='IK Target Marker',
+        default='',
+        options=set(),
+    )
+
+    ik_target_usage: StringProperty(
+        name='IK Target Usage',
+        default='',
+        options=set(),
+    )
+
+    ik_proxy_target_id: IntProperty(
+        name='IK Proxy Target ID',
+        default=0,
+        options=set(),
+    )
+
+    ik_pole_vector_id: IntProperty(
+        name='IK Pole Vector ID',
+        default=0,
+        options=set(),
+    )
+
+    ik_effector_id: IntProperty(
+        name='IK Effector ID',
+        default=0,
+        options=set(),
+    )
+
+    cinematic_effect_tag: StringProperty(
+        name='Cinematic Effect Tag',
+        default='',
+        options=set(),
+    )
+
+    cinematic_effect_effect: IntProperty(
+        name='Cinematic Effect',
+        default=0,
+        options=set(),
+    )
+
+    cinematic_effect_marker: StringProperty(
+        name='Cinematic Effect Marker',
+        default='',
+        options=set(),
+    )
+
+    object_function_name: StringProperty(
+        name='Object Function Name',
+        default='',
+        options=set(),
+    )
+
+    object_function_effect: IntProperty(
+        name='Object Function Effect',
+        default=0,
+        options=set(),
+    )
+
+    frame_frame: IntProperty(
+        name='Event Frame',
+        default=0,
+        options=set(),
+    )
+
+    frame_name: EnumProperty(
+        name='Frame Name',
+        default='none',
+        options=set(),
+        items = [
+                ('none', 'None', ''),
+                ('primary keyframe', 'Primary Keyframe', ''),
+                ('secondary keyframe', 'Secondary Keyframe', ''),
+                ('tertiary keyframe', 'Tertiary Keyframe', ''),
+                ('left foot', 'Left Foot', ''),
+                ('right foot', 'Right Foot', ''),
+                ('allow interruption', 'Allow Interruption', ''),
+                ('do not allow interruption', 'Do Not Allow Interruption', ''),
+                ('both-feet shuffle', 'Both-Feet Shuffle', ''),
+                ('body impact', 'Body Impact', ''),
+                ('left foot lock', 'Left Foot Lock', ''),
+                ('left foot unlock', 'Left Foot Unlock', ''),
+                ('right foot lock', 'Right Foot Lock', ''),
+                ('right foot unlock', 'Right Foot Unlock', ''),
+                ('blend range marker', 'Blend Range Marker', ''),
+                ('stride expansion', 'Stride Expansion', ''),
+                ('stride contraction', 'Stride Contraction', ''),
+                ('ragdoll keyframe', 'Ragdoll Keyframe', ''),
+                ('drop weapon keyframe', 'Drop Weapon Keyframe', ''),
+                ('match a', 'Match A', ''),
+                ('match b', 'Match B', ''),
+                ('match c', 'Match C', ''),
+                ('match d', 'Match D', ''),
+                ('jetpack closed', 'Jetpack Closed', ''),
+                ('jetpack open', 'Jetpack Open', ''),
+                ('sound event', 'Sound Event', ''),
+                ('effect event', 'Effect Event', ''),
+            ]
+    )
+
+    # frame_name_sound: EnumProperty(
+    #     name='Frame Type',
+    #     default='none',
+    #     options=set(),
+    #     items = [
+    #             ('left foot', 'Left Foot', ''),
+    #             ('right foot', 'Right Foot', ''),
+    #             ('both-feet shuffle', 'Both-Feet Shuffle', ''),
+    #             ('body impact', 'Body Impact', ''),
+    #         ]
+    # )
+
+    # frame_name_sync: EnumProperty(
+    #     name='Frame Type',
+    #     default='none',
+    #     options=set(),
+    #     items = [
+    #             ('allow interruption', 'Allow Interruption', ''),
+    #             ('blend range marker', 'Blend Range Marker', ''),
+    #             ('ragdoll keyframe', 'Ragdoll Keyframe', ''),
+    #             ('drop weapon keyframe', 'Drop Weapon Keyframe', ''),
+    #         ]
+    # )
+
+    # frame_name_navigation: EnumProperty(
+    #     name='Frame Type',
+    #     default='none',
+    #     options=set(),
+    #     items = [
+    #             ('match a', 'Match A', ''),
+    #             ('match b', 'Match B', ''),
+    #             ('match c', 'Match C', ''),
+    #             ('match d', 'Match D', ''),
+    #             ('stride expansion', 'Stride Expansion', ''),
+    #             ('stride contraction', 'Stride Contraction', ''),
+    #             ('left foot lock', 'Left Foot Lock', ''),
+    #             ('left foot unlock', 'Left Foot Unlock', ''),
+    #             ('right foot lock', 'Right Foot Lock', ''),
+    #             ('right foot unlock', 'Right Foot Unlock', ''),
+    #         ]
+    # )
+
+    frame_trigger: BoolProperty(
+        name='Frame Trigger',
+        default=False,
+        options=set(),
+    )
+
+    import_frame: IntProperty(
+        name='Import Frame',
+        default=0,
+        options=set(),
+    )
+
+    import_name: StringProperty(
+        name='Import Name',
+        default='',
+        options=set(),
+    )
+
+    text: StringProperty(
+        name='Text',
+        default='',
+        options=set(),
+    )
+
+    is_animation_event: BoolProperty()
+
 class NWO_LightPropertiesGroup(PropertyGroup):
 # LIGHTS #
     light_type_override: EnumProperty(
@@ -5011,10 +5259,38 @@ class NWO_AnimProps_Events(Panel):
             # row.prop(item, "name") # debug only
             flow = layout.grid_flow(row_major=True, columns=0, even_columns=True, even_rows=False, align=False)
             col = flow.column()
-            col.prop(item, "type")
             col.prop(item, "frame_frame")
-            col.prop(item, "frame_end")
             col.prop(item, "frame_name")
+            col.prop(item, "event_type")
+            if item.event_type == '_connected_geometry_animation_event_type_wrinkle_map':
+                col.prop(item, "wrinkle_map_face_region")
+                col.prop(item, "wrinkle_map_effect")
+            elif item.event_type == '_connected_geometry_animation_event_type_footstep':
+                col.prop(item, "footstep_type")
+                col.prop(item, "footstep_effect")
+            elif item.event_type in ('_connected_geometry_animation_event_type_ik_active', '_connected_geometry_animation_event_type_ik_passive'):
+                col.prop(item, "ik_chain")
+                col.prop(item, "ik_active_tag")
+                col.prop(item, "ik_target_tag")
+                col.prop(item, "ik_target_marker")
+                col.prop(item, "ik_target_usage")
+                col.prop(item, "ik_proxy_target_id")
+                col.prop(item, "ik_pole_vector_id")
+                col.prop(item, "ik_effector_id")
+            elif item.event_type == '_connected_geometry_animation_event_type_cinematic_effect':
+                col.prop(item, "cinematic_effect_tag")
+                col.prop(item, "cinematic_effect_effect")
+                col.prop(item, "cinematic_effect_marker")
+            elif item.event_type == '_connected_geometry_animation_event_type_object_function':
+                col.prop(item, "object_function_name")
+                col.prop(item, "object_function_effect")
+            elif item.event_type == '_connected_geometry_animation_event_type_frame':
+                col.prop(item, "frame_trigger")
+            elif item.event_type == '_connected_geometry_animation_event_type_import':
+                col.prop(item, "import_frame")
+                col.prop(item, "import_name")
+            elif item.event_type == '_connected_geometry_animation_event_type_text':
+                col.prop(item, "text")
 
 class NWO_List_Add_Animation_Event(Operator):
     """ Add an Item to the UIList"""
@@ -5033,8 +5309,9 @@ class NWO_List_Add_Animation_Event(Operator):
         action = context.active_object.animation_data.action
         action_nwo = action.nwo
         event = action_nwo.animation_events.add()
-        event.frame = context.scene.frame_current
+        event.frame_frame = context.scene.frame_current
         event.name = self.name
+        event.event_id = random.randint(-2147483647, 2147483647)
 
         action_nwo.animation_event_index = len(action_nwo.animation_events) - 1
         
@@ -5065,12 +5342,14 @@ class NWO_List_Remove_Animation_Event(Operator):
         return {'FINISHED'}
 
 class NWO_Animation_ListItems(PropertyGroup):
+    event_id: IntProperty()
+
     name: StringProperty(
         name="Event Name",
         default='new_event',
     )
 
-    type: EnumProperty(
+    event_type: EnumProperty(
         name='Type',
         default='_connected_geometry_animation_event_type_frame',
         options=set(),
@@ -5091,13 +5370,13 @@ class NWO_Animation_ListItems(PropertyGroup):
         ]
     )
 
-    frame_start: IntProperty(
+    frame_start: FloatProperty(
         name='Frame Start',
         default=0,
         options=set(),
     )
 
-    frame_end: IntProperty(
+    frame_end: FloatProperty(
         name='Frame End',
         default=0,
         options=set(),
@@ -5206,13 +5485,13 @@ class NWO_Animation_ListItems(PropertyGroup):
     )
 
     frame_frame: IntProperty(
-        name='Frame',
+        name='Event Frame',
         default=0,
         options=set(),
     )
 
     frame_name: EnumProperty(
-        name='Frame Type',
+        name='Frame Name',
         default='none',
         options=set(),
         items = [

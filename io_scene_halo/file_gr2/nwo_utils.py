@@ -70,6 +70,16 @@ invalid_mesh_types = ('_connected_geometry_mesh_type_boundary_surface', '_connec
 # animations #
 valid_animation_types = ('JMM', 'JMA', 'JMT', 'JMZ', 'JMV', 'JMO', 'JMOX', 'JMR', 'JMRX')
 
+# animation events #
+non_sound_frame_types = ['primary keyframe', 'secondary keyframe', 'tertiary keyframe', 'allow interruption', 'blend range marker', 'stride expansion', 'stride contraction', 'ragdoll keyframe', 'drop weapon keyframe', 'match a', 'match b', 'match c', 'match d', 'right foot lock', 'right foot unlock', 'left foot lock', 'left foot unlock']
+sound_frame_types = ['left foot', 'right foot', 'both-feet shuffle', 'body impact']
+import_event_types = ['Wrapped Left', 'Wrapped Right']
+frame_event_types = {'Trigger Events':['primary keyframe', 'secondary keyframe', 'tertiary keyframe'],
+                      'Navigation Events':['match a', 'match b', 'match c', 'match d', 'stride expansion', 'stride contraction', 'right foot lock', 'right foot unlock', 'left foot lock',  'left foot unlock'],
+                      'Sync Action Events':['ragdoll keyframe', 'drop weapon keyframe', 'allow interruption', 'blend range marker'],
+                      'Sound Events':['left foot', 'right foot', 'body impact', 'both-feet shuffle'],
+                      'Import Events':['Wrapped Left', 'Wrapped Right']}
+
 # shader exts #
 shader_exts = ('.shader', '.shader_cortana', '.shader_custom', '.shader_decal', '.shader_foliage', '.shader_fur', '.shader_fur_stencil', '.shader_glass', '.shader_halogram', '.shader_mux', '.shader_mux_material', '.shader_screen', '.shader_skin', '.shader_terrain', '.shader_water', '.material')
 
@@ -538,13 +548,13 @@ class CheckType:
         return marker_type(ob, ('_connected_geometry_marker_type_lightCone'))
     @staticmethod
     def animation_event(ob):
-        return False
+        return ob.nwo.is_animation_event
     @staticmethod
     def animation_control(ob):
         return False
     @staticmethod
     def animation_camera(ob):
-        return False
+        return ob.type == 'CAMERA'
     @staticmethod
     def frame_pca(ob): # H4+ ONLY
         return False
