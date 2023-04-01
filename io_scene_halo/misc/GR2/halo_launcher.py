@@ -35,6 +35,7 @@ from ...file_gr2.nwo_utils import (
     get_tags_path,
     not_bungie_game,
     nwo_asset_type,
+    valid_nwo_asset,
 )
 
 def get_tag_if_exists(asset_path, asset_name, type, extra=''):
@@ -48,7 +49,7 @@ def LaunchFoundation(settings, context):
     scene_gr2 = context.scene.gr2
     launch_args = []
     # set the launch args
-    if settings.foundation_default == 'asset':
+    if settings.foundation_default == 'asset' and valid_nwo_asset(context):
         launch_args.append('/dontloadlastopenedwindows')
         asset_path, asset_name = get_asset_info(settings.sidecar_path)
         if nwo_asset_type() == 'MODEL':
