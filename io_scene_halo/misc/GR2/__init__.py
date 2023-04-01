@@ -497,7 +497,7 @@ class GR2_HaloLauncherPropertiesGroup(PropertyGroup):
 
     explorer_default: EnumProperty(
         name="Folder",
-        description="Select whether to open the root data / tags folder or the ones for your asset. When no asset found, defaults to root",
+        description="Select whether to open the root data / tags folder or the one for your asset. When no asset is found, defaults to root",
         default="asset",
         options=set(),
         items=[('default', 'Default', ''), ('asset', 'Asset', '')]
@@ -513,7 +513,7 @@ class GR2_HaloLauncherPropertiesGroup(PropertyGroup):
 
     game_default: EnumProperty(
         name="Scenario",
-        description="Select whether to open Sapien and select a scenario, or open the current scenario asset if it exists",
+        description="Select whether to open Sapien / Tag Test and select a scenario, or open the current scenario asset if it exists",
         default="asset",
         options=set(),
         items=[('default', 'Default', ''), ('asset', 'Asset', '')]
@@ -665,6 +665,7 @@ class GR2_HaloLauncherPropertiesGroup(PropertyGroup):
 
     run_game_scripts: BoolProperty(
         options=set(),
+        description="Strips all player information, global materials, grenades and powerups from the globals tag, as well as interface global tags. Don't use this if you need the game to be playable",
         name='Run Game Scripts'
     )
 
