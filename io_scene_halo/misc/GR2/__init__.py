@@ -43,13 +43,13 @@ from bpy.props import (
         FloatProperty,
         )
 
-from ...file_gr2.nwo_utils import clean_tag_path, get_tags_path, get_data_path
+from ...file_gr2.nwo_utils import clean_tag_path, get_tags_path, get_data_path, not_bungie_game, nwo_asset_type, valid_nwo_asset
 
 is_blender_startup = True
 
 class GR2_Tools_Helper(Panel):
     """Tools to help automate Halo GR2 workflow"""
-    bl_label = "Halo GR2 Tools Helper"
+    bl_label = "Halo GR2 Tools"
     bl_idname = "HALO_PT_GR2_AutoTools"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
@@ -167,58 +167,321 @@ class GR2_HaloLauncher(Panel):
         layout.use_property_split = True
         flow = layout.grid_flow(row_major=True, columns=0, even_columns=True, even_rows=False, align=False)
         col = flow.column()
-        col.scale_y = 1.5
-        col.operator('halo_gr2.launch_foundation')
-        split = layout.split()
-        col = split.column()
-        col.scale_y = 1.25
-        col.operator('halo_gr2.launch_data')
-        col = split.column(align=True)
-        col.scale_y = 1.25
-        col.operator('halo_gr2.launch_tags')
-        if scene_gr2_halo_launcher.sidecar_path != '' and file_exists(path_join(get_data_path(), scene_gr2_halo_launcher.sidecar_path)):
-            flow = layout.grid_flow(row_major=True, columns=0, even_columns=True, even_rows=False, align=False)
-            col = flow.column()
-            col.scale_y = 1.5
-            col.operator('halo_gr2.launch_source')
+        row = col.row(align=False)
+        row.scale_y = 1.25
+        row.operator('halo_gr2.launch_data')
+        row.operator('halo_gr2.launch_tags')
+        row = col.row(align=False)
+        row.scale_y = 1.5
+        row.operator('halo_gr2.launch_foundation')
+        row = col.row(align=False)
+        row.scale_y = 1.25
+        row.operator('halo_gr2.launch_sapien')
+        row.scale_y = 1.25
+        row.operator('halo_gr2.launch_tagtest')
+        # if scene_gr2_halo_launcher.sidecar_path != '' and file_exists(path_join(get_data_path(), scene_gr2_halo_launcher.sidecar_path)):
+        #     flow = layout.grid_flow(row_major=True, columns=0, even_columns=True, even_rows=False, align=False)
+        #     col = flow.column()
+        #     col.scale_y = 1.5
+        #     col.operator('halo_gr2.launch_source')
+
+class GR2_HaloLauncherExplorerSettings(Panel):
+    bl_label = "Explorer Settings"
+    bl_idname = "HALO_PT_GR2_HaloLauncherExplorerSettings"
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "UI"
+    bl_parent_id = "HALO_PT_GR2_HaloLauncher"
+    bl_options = {'DEFAULT_CLOSED'}
+
+    @classmethod
+    def poll(cls, context):
+        return valid_nwo_asset(context)
+
+    def draw(self, context):
+        layout = self.layout
+        scene = context.scene
+        scene_gr2_halo_launcher = scene.gr2_halo_launcher
+
+        layout.use_property_split = True
+        flow = layout.grid_flow(row_major=True, columns=0, even_columns=True, even_rows=False, align=False)
+
+        col = flow.column()
+        row = col.row()
+        row.prop(scene_gr2_halo_launcher, "explorer_default", expand=True)
+
+    
+class GR2_HaloLauncherGameSettings(Panel):
+    bl_label = "Game Settings"
+    bl_idname = "HALO_PT_GR2_HaloLauncherGameSettings"
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "UI"
+    bl_parent_id = "HALO_PT_GR2_HaloLauncher"
+    bl_options = {'DEFAULT_CLOSED'}
+
+    @classmethod
+    def poll(cls, context):
+        return valid_nwo_asset(context)
+
+    def draw(self, context):
+        layout = self.layout
+        scene = context.scene
+        scene_gr2_halo_launcher = scene.gr2_halo_launcher
+
+        layout.use_property_split = True
+        flow = layout.grid_flow(row_major=True, columns=0, even_columns=True, even_rows=False, align=False)
+
+        col = flow.column()
+        row = col.row()
+        row.prop(scene_gr2_halo_launcher, "game_default", expand=True)
+        col.prop(scene_gr2_halo_launcher, "initial_zone_set")
+        if not_bungie_game():
+            col.prop(scene_gr2_halo_launcher, "initial_bsp")
+        col.prop(scene_gr2_halo_launcher, "insertion_point_index")
+        col.prop(scene_gr2_halo_launcher, 'custom_functions')
+
+        col.prop(scene_gr2_halo_launcher, "run_game_scripts")
+        if not_bungie_game():
+            col.prop(scene_gr2_halo_launcher, "enable_firefight")
+            if scene_gr2_halo_launcher.enable_firefight:
+                col.prop(scene_gr2_halo_launcher, "firefight_mission")
+
+class GR2_HaloLauncherGamePruneSettings(Panel):
+    bl_label = "Pruning"
+    bl_idname = "HALO_PT_GR2_HaloLauncherGamePruneSettings"
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "UI"
+    bl_parent_id = "HALO_PT_GR2_HaloLauncherGameSettings"
+    bl_options = {'DEFAULT_CLOSED'}
+
+    def draw(self, context):
+        layout = self.layout
+        scene = context.scene
+        scene_gr2_halo_launcher = scene.gr2_halo_launcher
+
+        layout.use_property_split = True
+        flow = layout.grid_flow(row_major=True, columns=0, even_columns=True, even_rows=False, align=False)
+
+        col = flow.column()
+        col.prop(scene_gr2_halo_launcher, "prune_globals")
+        col.prop(scene_gr2_halo_launcher, "prune_globals_keep_playable")
+        if not_bungie_game():
+            col.prop(scene_gr2_halo_launcher, "prune_globals_use_empty")
+            col.prop(scene_gr2_halo_launcher, "prune_models_enable_alternate_render_models")
+            col.prop(scene_gr2_halo_launcher, "prune_scenario_keep_scriptable_objects")
+        col.prop(scene_gr2_halo_launcher, "prune_scenario_all_lightmaps")
+        col.prop(scene_gr2_halo_launcher, "prune_all_materials_use_gray_shader")
+        if not_bungie_game():
+            col.prop(scene_gr2_halo_launcher, "prune_all_materials_use_default_textures")
+            col.prop(scene_gr2_halo_launcher, "prune_all_materials_use_default_textures_fx_textures")
+        col.prop(scene_gr2_halo_launcher, "prune_all_material_effects")
+        col.prop(scene_gr2_halo_launcher, "prune_all_dialog_sounds")
+        col.prop(scene_gr2_halo_launcher, "prune_all_error_geometry")
+        if not_bungie_game():
+            col.prop(scene_gr2_halo_launcher, "prune_facial_animations")
+            col.prop(scene_gr2_halo_launcher, "prune_first_person_animations")
+            col.prop(scene_gr2_halo_launcher, "prune_low_quality_animations")
+            col.prop(scene_gr2_halo_launcher, "prune_use_imposters")
+            col.prop(scene_gr2_halo_launcher, "prune_cinematic_effects")
+        else:
+            col.prop(scene_gr2_halo_launcher, "prune_scenario_force_solo_mode")
+            col.prop(scene_gr2_halo_launcher, "prune_scenario_force_single_bsp_zone_set")
+            col.prop(scene_gr2_halo_launcher, "prune_scenario_force_single_bsp_zones")
+            col.prop(scene_gr2_halo_launcher, "prune_keep_scripts")
+        col.prop(scene_gr2_halo_launcher, "prune_scenario_for_environment_editing")
+        if scene_gr2_halo_launcher.prune_scenario_for_environment_editing:
+            col.prop(scene_gr2_halo_launcher, "prune_scenario_for_environment_editing_keep_cinematics")
+            col.prop(scene_gr2_halo_launcher, "prune_scenario_for_environment_editing_keep_scenery")
+            if not_bungie_game():
+                col.prop(scene_gr2_halo_launcher, "prune_scenario_for_environment_editing_keep_decals")
+                col.prop(scene_gr2_halo_launcher, "prune_scenario_for_environment_editing_keep_crates")
+                col.prop(scene_gr2_halo_launcher, "prune_scenario_for_environment_editing_keep_creatures")
+                col.prop(scene_gr2_halo_launcher, "prune_scenario_for_environment_editing_keep_pathfinding")
+                col.prop(scene_gr2_halo_launcher, "prune_scenario_for_environment_editing_keep_new_decorator_block")
+            else:
+                col.prop(scene_gr2_halo_launcher, "prune_scenario_for_environment_finishing")
+
+class GR2_HaloLauncherFoundationSettings(Panel):
+    bl_label = "Foundation Settings"
+    bl_idname = "HALO_PT_GR2_HaloLauncherFoundationSettings"
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "UI"
+    bl_parent_id = "HALO_PT_GR2_HaloLauncher"
+    bl_options = {'DEFAULT_CLOSED'}
+
+    @classmethod
+    def poll(cls, context):
+        return valid_nwo_asset(context)
+
+    def draw(self, context):
+        layout = self.layout
+        scene = context.scene
+        scene_gr2_halo_launcher = scene.gr2_halo_launcher
+
+        layout.use_property_split = True
+        flow = layout.grid_flow(row_major=True, columns=0, even_columns=True, even_rows=False, align=False)
+
+        col = flow.column()
+        row = col.row()
+        row.prop(scene_gr2_halo_launcher, "foundation_default", expand=True)
+        col = layout.column(heading="Open")
+        if scene_gr2_halo_launcher.foundation_default == 'asset':
+            if nwo_asset_type() == 'MODEL':
+                col.prop(scene_gr2_halo_launcher, "open_model")
+                col.prop(scene_gr2_halo_launcher, "open_render_model")
+                col.prop(scene_gr2_halo_launcher, "open_collision_model")
+                col.prop(scene_gr2_halo_launcher, "open_physics_model")
+                if len(bpy.data.actions) > 0:
+                    col.prop(scene_gr2_halo_launcher, "open_model_animation_graph")
+                    col.prop(scene_gr2_halo_launcher, "open_frame_event_list")
+                col.separator()
+                if scene.gr2.output_biped:
+                    col.prop(scene_gr2_halo_launcher, "open_biped")
+                if scene.gr2.output_crate:
+                    col.prop(scene_gr2_halo_launcher, "open_crate")
+                if scene.gr2.output_creature:
+                    col.prop(scene_gr2_halo_launcher, "open_creature")
+                if scene.gr2.output_device_control:
+                    col.prop(scene_gr2_halo_launcher, "open_device_control")
+                if scene.gr2.output_device_dispenser:
+                    col.prop(scene_gr2_halo_launcher, "open_device_dispenser")
+                if scene.gr2.output_device_machine:
+                    col.prop(scene_gr2_halo_launcher, "open_device_machine")
+                if scene.gr2.output_device_terminal:
+                    col.prop(scene_gr2_halo_launcher, "open_device_terminal")
+                if scene.gr2.output_effect_scenery:
+                    col.prop(scene_gr2_halo_launcher, "open_effect_scenery")
+                if scene.gr2.output_equipment:
+                    col.prop(scene_gr2_halo_launcher, "open_equipment")
+                if scene.gr2.output_giant:
+                    col.prop(scene_gr2_halo_launcher, "open_giant")
+                if scene.gr2.output_scenery:
+                    col.prop(scene_gr2_halo_launcher, "open_scenery")
+                if scene.gr2.output_vehicle:
+                    col.prop(scene_gr2_halo_launcher, "open_vehicle")
+                if scene.gr2.output_weapon:
+                    col.prop(scene_gr2_halo_launcher, "open_weapon")
+            elif nwo_asset_type() == 'SCENARIO':
+                col.prop(scene_gr2_halo_launcher, "open_scenario")
+                col.prop(scene_gr2_halo_launcher, "open_scenario_structure_bsp")
+                col.prop(scene_gr2_halo_launcher, "open_scenario_lightmap_bsp_data")
+                col.prop(scene_gr2_halo_launcher, "open_scenario_structure_lighting_info")
+                if any([scene_gr2_halo_launcher.open_scenario_structure_bsp, scene_gr2_halo_launcher.open_scenario_lightmap_bsp_data,scene_gr2_halo_launcher.open_scenario_structure_lighting_info]):
+                    col.prop(scene_gr2_halo_launcher, "bsp_name")
+            elif nwo_asset_type() == 'SKY':
+                col.prop(scene_gr2_halo_launcher, "open_model")
+                col.prop(scene_gr2_halo_launcher, "open_render_model")
+                col.prop(scene_gr2_halo_launcher, "open_scenery")
+            elif nwo_asset_type() == 'DECORATOR SET':
+                col.prop(scene_gr2_halo_launcher, "open_decorator_set")
+            elif nwo_asset_type() == 'PARTICLE MODEL':
+                col.prop(scene_gr2_halo_launcher, "open_particle_model")
+            elif nwo_asset_type() == 'PREFAB':
+                col.prop(scene_gr2_halo_launcher, "open_prefab")
+                col.prop(scene_gr2_halo_launcher, "open_scenario_structure_bsp")
+                col.prop(scene_gr2_halo_launcher, "open_scenario_structure_lighting_info")
 
 class GR2_HaloLauncher_Foundation(Operator):
+    """Launches Foundation"""
     bl_idname = 'halo_gr2.launch_foundation'
-    bl_label = 'Launch Foundation'
+    bl_label = 'Foundation'
     bl_options = {"REGISTER", "UNDO"}
 
     def execute(self, context):
         from .halo_launcher import LaunchFoundation
-        return LaunchFoundation()
+        return LaunchFoundation(context.scene.gr2_halo_launcher, context)
 
 class GR2_HaloLauncher_Data(Operator):
+    """Opens the Data Folder"""
     bl_idname = 'halo_gr2.launch_data'
-    bl_label = 'Data Folder'
-    bl_options = {"REGISTER", "UNDO"}
-
-    def execute(self, context):
-        from .halo_launcher import LaunchData
-        return LaunchData()
-
-class GR2_HaloLauncher_Tags(Operator):
-    bl_idname = 'halo_gr2.launch_tags'
-    bl_label = 'Tags Folder'
-    bl_options = {"REGISTER", "UNDO"}
-
-    def execute(self, context):
-        from .halo_launcher import LaunchTags
-        return LaunchTags()
-
-class GR2_HaloLauncher_Source(Operator):
-    bl_idname = 'halo_gr2.launch_source'
-    bl_label = 'Source Files'
+    bl_label = 'Data'
     bl_options = {"REGISTER", "UNDO"}
 
     def execute(self, context):
         scene = context.scene
         scene_gr2_halo_launcher = scene.gr2_halo_launcher
-        from .halo_launcher import LaunchSource
-        return LaunchSource(path_join(get_data_path(), scene_gr2_halo_launcher.sidecar_path))
+        from .halo_launcher import open_file_explorer
+        return open_file_explorer(scene_gr2_halo_launcher.sidecar_path, scene_gr2_halo_launcher.explorer_default == 'asset' and valid_nwo_asset(context), False)
+
+class GR2_HaloLauncher_Tags(Operator):
+    """Opens the Tags Folder"""
+    bl_idname = 'halo_gr2.launch_tags'
+    bl_label = 'Tags'
+    bl_options = {"REGISTER", "UNDO"}
+
+    def execute(self, context):
+        scene = context.scene
+        scene_gr2_halo_launcher = scene.gr2_halo_launcher
+        from .halo_launcher import open_file_explorer
+        return open_file_explorer(scene_gr2_halo_launcher.sidecar_path, scene_gr2_halo_launcher.explorer_default == 'asset' and valid_nwo_asset(context), True)
+
+class GR2_HaloLauncher_Sapien(Operator):
+    """Opens Sapien"""
+    bl_idname = 'halo_gr2.launch_sapien'
+    bl_label = 'Sapien   '
+    bl_options = {"REGISTER", "UNDO"}
+
+    filter_glob: StringProperty(
+        default="*.scenario",
+        options={'HIDDEN'},
+        )
+
+    filepath: StringProperty(
+        name="filepath",
+        description="Set path for the scenario",
+        subtype="FILE_PATH"
+    )
+
+    def execute(self, context):
+        scene = context.scene
+        scene_gr2_halo_launcher = scene.gr2_halo_launcher
+        from .halo_launcher import launch_game
+        return launch_game(True, scene_gr2_halo_launcher, self.filepath)
+    
+    def invoke(self, context, event):
+        scene = context.scene
+        scene_gr2_halo_launcher = scene.gr2_halo_launcher
+        if scene_gr2_halo_launcher.game_default == 'default' or not valid_nwo_asset(context) or nwo_asset_type() != 'SCENARIO':
+            self.filepath = get_tags_path()
+            context.window_manager.fileselect_add(self)
+            return {'RUNNING_MODAL'}
+        else:
+            self.filepath = ''
+            return self.execute(context)
+    
+class GR2_HaloLauncher_TagTest(Operator):
+    """Opens Tag Test"""
+    bl_idname = 'halo_gr2.launch_tagtest'
+    bl_label = 'Tag Test'
+    bl_options = {"REGISTER", "UNDO"}
+
+    filter_glob: StringProperty(
+        default="*.scenario",
+        options={'HIDDEN'},
+        )
+
+    filepath: StringProperty(
+        name="filepath",
+        description="Set path for the scenario",
+        subtype="FILE_PATH"
+    )
+
+    def execute(self, context):
+        scene = context.scene
+        scene_gr2_halo_launcher = scene.gr2_halo_launcher
+        from .halo_launcher import launch_game
+        return launch_game(False, scene_gr2_halo_launcher, self.filepath)
+    
+    def invoke(self, context, event):
+        scene = context.scene
+        scene_gr2_halo_launcher = scene.gr2_halo_launcher
+        if scene_gr2_halo_launcher.game_default == 'default' or not valid_nwo_asset(context) or nwo_asset_type() != 'SCENARIO':
+            self.filepath = get_tags_path()
+            context.window_manager.fileselect_add(self)
+            return {'RUNNING_MODAL'}
+        else:
+            self.filepath = ''
+            return self.execute(context)
+        
 
 class GR2_HaloLauncherPropertiesGroup(PropertyGroup):
     sidecar_path: StringProperty(
@@ -231,6 +494,368 @@ class GR2_HaloLauncherPropertiesGroup(PropertyGroup):
         description="",
         default='',
     )
+
+    explorer_default: EnumProperty(
+        name="Folder",
+        description="Select whether to open the root data / tags folder or the ones for your asset. When no asset found, defaults to root",
+        default="asset",
+        options=set(),
+        items=[('default', 'Default', ''), ('asset', 'Asset', '')]
+    )
+
+    foundation_default: EnumProperty(
+        name="Tags",
+        description="Select whether Foundation should open with the last opended windows, or open to the selected asset tags",
+        default="asset",
+        options=set(),
+        items=[('last', 'Default', ''), ('asset', 'Asset', '')]
+    )
+
+    game_default: EnumProperty(
+        name="Scenario",
+        description="Select whether to open Sapien and select a scenario, or open the current scenario asset if it exists",
+        default="asset",
+        options=set(),
+        items=[('default', 'Default', ''), ('asset', 'Asset', '')]
+    )
+
+    open_model: BoolProperty(
+        name='Model',
+        default=True,
+        options=set(),
+    )
+
+    open_render_model: BoolProperty(
+        options=set(),
+        name='Render Model'
+    )
+    
+    open_collision_model: BoolProperty(
+        options=set(),
+        name='Collision Model'
+    )
+
+    open_physics_model: BoolProperty(
+        options=set(),
+        name='Physics Model'
+    )
+
+    open_model_animation_graph: BoolProperty(
+        options=set(),
+        name='Model Animation Graph'
+    )
+
+    open_frame_event_list: BoolProperty(
+        options=set(),
+        name='Frame Event List'
+    )
+
+    open_biped: BoolProperty(
+        options=set(),
+        name='Biped'
+    )
+
+    open_crate: BoolProperty(
+        options=set(),
+        name='Crate'
+    )
+
+    open_creature: BoolProperty(
+        options=set(),
+        name='Creature'
+    )
+
+    open_device_control: BoolProperty(
+        options=set(),
+        name='Device Control'
+    )
+
+    open_device_dispenser: BoolProperty(
+        options=set(),
+        name='Device Dispenser'
+    )
+
+    open_device_machine: BoolProperty(
+        options=set(),
+        name='Device Machine'
+    )
+
+    open_device_terminal: BoolProperty(
+        options=set(),
+        name='Device Terminal'
+    )
+
+    open_effect_scenery: BoolProperty(
+        options=set(),
+        name='Effect Scenery'
+    )
+
+    open_equipment: BoolProperty(
+        options=set(),
+        name='Equipment'
+    )
+
+    open_giant: BoolProperty(
+        options=set(),
+        name='Giant'
+    )
+
+    open_scenery: BoolProperty(
+        options=set(),
+        name='Scenery'
+    )
+
+    open_vehicle: BoolProperty(
+        options=set(),
+        name='Vehicle'
+    )
+
+    open_weapon: BoolProperty(
+        options=set(),
+        name='Weapon'
+    )
+
+    open_scenario: BoolProperty(
+        options=set(),
+        name='Scenario',
+        default=True
+    )
+
+    open_prefab: BoolProperty(
+        options=set(),
+        name='Prefab',
+        default=True
+    )
+
+    open_particle_model: BoolProperty(
+        options=set(),
+        name='Particle Model',
+        default=True
+    )
+
+    open_decorator_set: BoolProperty(
+        options=set(),
+        name='Decorator Set',
+        default=True
+    )
+
+    bsp_name: StringProperty(
+        options=set(),
+        name='BSP Name(s)',
+        description="Input the bsps to open. Comma delimited for multiple bsps. Leave blank to open all bsps",
+        default=''
+    )
+
+    open_scenario_structure_bsp: BoolProperty(
+        options=set(),
+        name='BSP',
+    )
+
+    open_scenario_lightmap_bsp_data: BoolProperty(
+        options=set(),
+        name='Lightmap Data',
+    )
+
+    open_scenario_structure_lighting_info: BoolProperty(
+        options=set(),
+        name='Lightmap Info',
+    )
+
+    ##### game launch #####
+
+    run_game_scripts: BoolProperty(
+        options=set(),
+        name='Run Game Scripts'
+    )
+
+    prune_globals: BoolProperty(
+        options=set(),
+        name='Globals'
+    )
+
+    prune_globals_keep_playable: BoolProperty(
+        options=set(),
+        name='Globals (Keep Playable)'
+    )
+
+    prune_globals_use_empty: BoolProperty(
+        options=set(),
+        name='Globals Use Empty'
+    )
+
+    prune_models_enable_alternate_render_models: BoolProperty(
+        options=set(),
+        name='Allow Alternate Render Models'
+    )
+
+    prune_scenario_keep_scriptable_objects: BoolProperty(
+        options=set(),
+        name='Keep Scriptable Objects'
+    )
+
+    prune_scenario_for_environment_editing: BoolProperty(
+        options=set(),
+        name='Prune for Environment Editing'
+    )
+
+    prune_scenario_for_environment_editing_keep_cinematics: BoolProperty(
+        options=set(),
+        name='Keep Cinematics'
+    )
+
+    prune_scenario_for_environment_editing_keep_scenery: BoolProperty(
+        options=set(),
+        name='Keep Scenery'
+    )
+
+    prune_scenario_for_environment_editing_keep_decals: BoolProperty(
+        options=set(),
+        name='Keep Decals'
+    )
+
+    prune_scenario_for_environment_editing_keep_crates: BoolProperty(
+        options=set(),
+        name='Keep Crates'
+    )
+
+    prune_scenario_for_environment_editing_keep_creatures: BoolProperty(
+        options=set(),
+        name='Keep Creatures'
+    )
+
+    prune_scenario_for_environment_editing_keep_pathfinding: BoolProperty(
+        options=set(),
+        name='Keep Pathfinding'
+    )
+
+    prune_scenario_for_environment_editing_keep_new_decorator_block: BoolProperty(
+        options=set(),
+        name='Keep Decorators'
+    )
+
+    prune_scenario_all_lightmaps: BoolProperty(
+        options=set(),
+        name='Prune Lightmaps'
+    )
+
+    prune_all_materials_use_gray_shader: BoolProperty(
+        options=set(),
+        name='Use Gray Shader'
+    )
+
+    prune_all_materials_use_default_textures: BoolProperty(
+        options=set(),
+        name='Use Default Textures'
+    )
+
+    prune_all_materials_use_default_textures_fx_textures: BoolProperty(
+        options=set(),
+        name='Include FX materials'
+    )
+
+    prune_all_material_effects: BoolProperty(
+        options=set(),
+        name='Prune Material Effects'
+    )
+
+    prune_all_dialog_sounds: BoolProperty(
+        options=set(),
+        name='Prune Material Effects'
+    )
+
+    prune_all_error_geometry: BoolProperty(
+        options=set(),
+        name='Prune Error Geometry'
+    )
+
+    prune_facial_animations: BoolProperty(
+        options=set(),
+        name='Prune Facial Animations'
+    )
+
+    prune_first_person_animations: BoolProperty(
+        options=set(),
+        name='Prune First Person Animations'
+    )
+
+    prune_low_quality_animations: BoolProperty(
+        options=set(),
+        name='Use Low Quality Animations'
+    )
+
+    prune_use_imposters: BoolProperty(
+        options=set(),
+        name='Use Imposters only'
+    )
+
+    prune_cinematic_effects: BoolProperty(
+        options=set(),
+        name='Prune Cinematic Effects'
+    )
+    # REACH Only prunes
+    prune_scenario_force_solo_mode: BoolProperty(
+        options=set(),
+        name='Force Solo Mode'
+    )
+
+    prune_scenario_for_environment_finishing: BoolProperty(
+        options=set(),
+        name='Prune Finishing'
+    )   
+
+    prune_scenario_force_single_bsp_zone_set: BoolProperty(
+        options=set(),
+        name='Prune Zone Sets'
+    )   
+
+    prune_scenario_force_single_bsp_zones: BoolProperty(
+        options=set(),
+        name='Single BSP zone sets'
+    )   
+
+    prune_keep_scripts: BoolProperty(
+        options=set(),
+        name='Keep Scripts'
+    )   
+    # Other
+    enable_firefight: BoolProperty(
+        options=set(),
+        name='Enable Spartan Ops'
+    )
+
+    firefight_mission: StringProperty(
+        options=set(),
+        name='Spartan Ops Mission',
+        default=''
+    )
+    
+    insertion_point_index: IntProperty(
+        options=set(),
+        name='Insertion Point Index',
+        default=-1,
+        min=-1,
+        soft_max=4
+    )
+
+    initial_zone_set: StringProperty(
+        options=set(),
+        name='Initial Zone Set',
+    )
+
+    initial_bsp: StringProperty(
+        options=set(),
+        name='Initial BSP',
+    )
+
+    custom_functions: StringProperty(
+        options=set(),
+        name='Custom',
+        description="Name of Blender blender text editor file to get custom init lines from. If no such text exists, instead looks in the root editing kit for an init with this name. If this doesn't exist, then the actual text is added to the init",
+        default=''
+    )
+
+    
+
 
 #######################################
 # SHADER FINDER TOOL
@@ -914,10 +1539,15 @@ classeshalo = (
     GR2_HaloExportSettingsExtended,
     GR2_HaloExportPropertiesGroup,
     GR2_HaloLauncher,
+    GR2_HaloLauncherExplorerSettings,
+    GR2_HaloLauncherGameSettings,
+    GR2_HaloLauncherGamePruneSettings,
+    GR2_HaloLauncherFoundationSettings,
     GR2_HaloLauncher_Foundation,
     GR2_HaloLauncher_Data,
     GR2_HaloLauncher_Tags,
-    GR2_HaloLauncher_Source,
+    GR2_HaloLauncher_Sapien,
+    GR2_HaloLauncher_TagTest,
     GR2_HaloLauncherPropertiesGroup,
     GR2_PropertiesManager,
     GR2_CollectionManager,

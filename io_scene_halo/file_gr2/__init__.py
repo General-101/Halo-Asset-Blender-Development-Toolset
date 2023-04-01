@@ -787,7 +787,6 @@ class GR2_SceneProps(Panel):
     bl_space_type = 'PROPERTIES'
     bl_region_type = 'WINDOW'
     bl_context = "scene"
-    bl_options = {'DEFAULT_CLOSED'}
     bl_parent_id = "HALO_PT_ScenePropertiesPanel"
 
     @classmethod

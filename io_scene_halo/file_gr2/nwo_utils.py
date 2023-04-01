@@ -773,6 +773,18 @@ def CheckPath(filePath):
 # )
 
 
+################################################
+# EXTRA
+################################################
+
+def valid_nwo_asset(context):
+    """Returns true if this blender scene is a valid NWO asset i.e. has an existing sidecar file. bpy.context must be supplied"""
+    return context.scene.gr2_halo_launcher.sidecar_path != '' and file_exists(os.path.join(get_data_path(), context.scene.gr2_halo_launcher.sidecar_path))
+
+def nwo_asset_type():
+    """Returns the NWO asset type"""
+    return bpy.context.scene.gr2.asset_type
+
 ######################################
 # MANAGER STUFF
 ######################################
