@@ -48,7 +48,7 @@ from ...file_gr2.nwo_utils import clean_tag_path, get_tags_path, get_data_path, 
 is_blender_startup = True
 
 class GR2_Tools_Helper(Panel):
-    """Tools to help automate Halo GR2 workflow"""
+    """Tools to help automate the Halo GR2 workflow"""
     bl_label = "Halo GR2 Tools"
     bl_idname = "HALO_PT_GR2_AutoTools"
     bl_space_type = "VIEW_3D"
@@ -116,6 +116,7 @@ class GR2_GraphPath(Operator):
         return {'RUNNING_MODAL'}
 
 class GR2_SetFrameIDsOp(Operator):
+    """Set frame IDs using the specified animation graph path"""
     bl_idname = 'halo_gr2.set_frame_ids'
     bl_label = 'Set Frame IDs'
     bl_options = {"REGISTER", "UNDO"}
@@ -129,6 +130,7 @@ class GR2_SetFrameIDsOp(Operator):
         return set_frame_ids(context, self.report)
 
 class GR2_ResetFrameIDsOp(Operator):
+    """Resets the frame IDs to null values"""
     bl_idname = 'halo_gr2.reset_frame_ids'
     bl_label = 'Reset Frame IDs'
     bl_options = {"REGISTER", "UNDO"}
@@ -841,11 +843,13 @@ class GR2_HaloLauncherPropertiesGroup(PropertyGroup):
     initial_zone_set: StringProperty(
         options=set(),
         name='Initial Zone Set',
+        description="Opens the scenario to the zone set specified. This should match a zone set defined in the .scenario tag"
     )
 
     initial_bsp: StringProperty(
         options=set(),
         name='Initial BSP',
+        description="Opens the scenario to the bsp specified. This should match a bsp name in your blender scene"
     )
 
     custom_functions: StringProperty(
@@ -887,6 +891,7 @@ class GR2_ShaderFinder(Panel):
         col.operator('halo_gr2.shader_finder')
 
 class GR2_ShaderFinder_Find(Operator):
+    """Searches the tags folder for shaders (or the specified directory) and applies all that match blender material names"""
     bl_idname = 'halo_gr2.shader_finder'
     bl_label = 'Update Shader Paths'
     bl_options = {"REGISTER", "UNDO"}
@@ -1021,6 +1026,7 @@ class GR2_HaloExportSettingsExtended(Panel):
         
 
 class GR2_HaloExport_Export(Operator):
+    """Opens the GR2 export menu"""
     bl_idname = 'halo_gr2.export'
     bl_label = 'Export'
     bl_options = {"REGISTER", "UNDO"}
@@ -1030,6 +1036,7 @@ class GR2_HaloExport_Export(Operator):
         return Export(bpy.ops.export_scene.gr2)
 
 class GR2_HaloExport_ExportQuick(Operator):
+    """Runs the GR2 exporter immediately, using the settings definied in quick export settings"""
     bl_idname = 'halo_gr2.export_quick'
     bl_label = 'Quick Export'
     bl_options = {"REGISTER", "UNDO"}
@@ -1287,6 +1294,7 @@ class GR2_CollectionManager(Panel):
         col.operator('halo_gr2.collection_create')
 
 class GR2_CollectionManager_Create(Operator):
+    """Creates a special collection with the specified name and adds all currently selected objects to it"""
     bl_idname = 'halo_gr2.collection_create'
     bl_label = 'Create New Collection'
     bl_options = {"REGISTER", "UNDO"}
@@ -1352,6 +1360,7 @@ class GR2_ArmatureCreator(Panel):
         col.operator('halo_gr2.armature_create')
 
 class GR2_ArmatureCreator_Create(Operator):
+    """Creates the specified armature"""
     bl_idname = 'halo_gr2.armature_create'
     bl_label = 'Create Armature'
     bl_options = {"REGISTER", "UNDO"}
@@ -1366,16 +1375,16 @@ class GR2_ArmatureCreatorPropertiesGroup(PropertyGroup):
     armature_type: EnumProperty(
         name="Armature Type",
         options=set(),
-        description="",
+        description="Creates a Halo armature of the specified type",
         default='PEDESTAL',
         items=[
-            ('PEDESTAL', 'Pedestal', ''),
-            ('UNIT', 'Unit', ''),
+            ('PEDESTAL', 'Pedestal', 'Creates a single bone Halo armature'),
+            ('UNIT', 'Unit', 'Creates a rig consisting of a pedestal bone, and a pitch and yaw bone. For bipeds and vehicles'),
         ]
     )
     control_rig: BoolProperty(
         name="Use Control Rig",
-        description="",
+        description="If True, adds a control rig to the specified armature",
         default=True,
         options=set()
     )
@@ -1399,6 +1408,7 @@ class GR2_CopyHaloProps(Panel):
         col.operator('halo_gr2.props_copy')
 
 class GR2_CopyHaloProps_Copy(Operator):
+    """Copies all halo properties from the active object to selected objects"""
     bl_idname = 'halo_gr2.props_copy'
     bl_label = 'Copy Properties'
     bl_options = {"REGISTER", "UNDO"}
@@ -1429,6 +1439,7 @@ class GR2_AMFHelper(Panel):
         col.operator('halo_gr2.amf_assign')
 
 class GR2_AMFHelper_Assign(Operator):
+    """Sets regions and permutations for all scene objects which use the AMF naming convention [region:permutation]"""
     bl_idname = 'halo_gr2.amf_assign'
     bl_label = 'Set Regions/Perms'
     bl_options = {"REGISTER", "UNDO"}
@@ -1459,6 +1470,7 @@ class GR2_JMSHelper(Panel):
         col.operator('halo_gr2.jms_assign')
 
 class GR2_JMSHelper_Assign(Operator):
+    """Splits the active object into it's face maps and assigns a new name for each new object to match the AMF naming convention, as well as setting the proper region & permutation. Collision and physics prefixes are retained"""
     bl_idname = 'halo_gr2.jms_assign'
     bl_label = 'JMS -> GR2'
     bl_options = {"REGISTER", "UNDO"}
@@ -1482,54 +1494,6 @@ class GR2_AnimationTools(Panel):
 
     def draw(self, context):
         layout = self.layout
-
-class GR2_AnimationExportManager(Panel):
-    bl_label = "Export Manager"
-    bl_idname = "HALO_PT_GR2_AnimationExportManager"
-    bl_space_type = "VIEW_3D"
-    bl_region_type = "UI"
-    bl_options = {'DEFAULT_CLOSED'}
-    bl_parent_id = "HALO_PT_GR2_AnimationTools"
-
-    def draw(self, context):
-        layout = self.layout
-
-        layout.use_property_split = True
-        flow = layout.grid_flow(row_major=True, columns=0, even_columns=True, even_rows=False, align=False)
-        col = flow.column()
-        col.operator('halo_gr2.export_none')
-        col.operator('halo_gr2.export_all')
-        col.operator('halo_gr2.export_active')
-
-class GR2_AnimationExport_None(Operator):
-    bl_idname = 'halo_gr2.export_none'
-    bl_label = 'None'
-    bl_options = {"REGISTER", "UNDO"}
-    bl_description = "Turn off the export flag for every action in the scene"
-
-    def execute(self, context):
-        from .export_manager import set_export
-        return set_export(context, self.report, 'none')
-
-class GR2_AnimationExport_All(Operator):
-    bl_idname = 'halo_gr2.export_all'
-    bl_label = 'All'
-    bl_options = {"REGISTER", "UNDO"}
-    bl_description = "Turn on the export flag for every action in the scene"
-
-    def execute(self, context):
-        from .export_manager import set_export
-        return set_export(context, self.report, 'all')
-
-class GR2_AnimationExport_Active(Operator):
-    bl_idname = 'halo_gr2.export_active'
-    bl_label = 'Only Active'
-    bl_options = {"REGISTER", "UNDO"}
-    bl_description = "Enable the export flag for the current active active and toggle off the export flag for every other action in the scene"
-
-    def execute(self, context):
-        from .export_manager import set_export
-        return set_export(context, self.report, 'active')
 
 classeshalo = (
     GR2_Tools_Helper,
@@ -1572,10 +1536,6 @@ classeshalo = (
     GR2_ArmatureCreator,
     GR2_ArmatureCreator_Create,
     GR2_ArmatureCreatorPropertiesGroup,
-    # GR2_AnimationExportManager,
-    # GR2_AnimationExport_None,
-    # GR2_AnimationExport_All,
-    # GR2_AnimationExport_Active,
 )
 
 def register():

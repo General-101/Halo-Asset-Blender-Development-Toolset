@@ -5002,8 +5002,8 @@ class NWO_LightPropertiesGroup(PropertyGroup):
         options=set(),
         description="",
         default='_connected_geometry_light_mode_static',
-        items=[ ('_connected_geometry_light_mode_static', "Static", ""),
-                ('_connected_geometry_light_mode_dynamic', "Dynamic", ""),
+        items=[ ('_connected_geometry_light_mode_static', "Static", "Lights used in lightmapping"),
+                ('_connected_geometry_light_mode_dynamic', "Dynamic", "Lights that appear regardless of whether the map has been lightmapped"),
                 ('_connected_geometry_light_mode_analytic', "Analytic", ""),
                ]
         )
@@ -5121,7 +5121,7 @@ class NWO_BonePropertiesGroup(PropertyGroup):
         )
     frame_id2: StringProperty(
         name = "Frame ID 2",
-        description = "The Frame ID 1 for this bone. Leave blank for automatic assignment of a Frame ID. Can be manually edited when using expert mode, but don't do this unless you know what you're doing",
+        description = "The Frame ID 2 for this bone. Leave blank for automatic assignment of a Frame ID. Can be manually edited when using expert mode, but don't do this unless you know what you're doing",
         default = "",
         )
     object_space_node: BoolProperty(
