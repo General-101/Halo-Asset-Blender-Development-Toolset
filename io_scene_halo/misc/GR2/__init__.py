@@ -220,10 +220,6 @@ class GR2_HaloLauncherGameSettings(Panel):
     bl_parent_id = "HALO_PT_GR2_HaloLauncher"
     bl_options = {'DEFAULT_CLOSED'}
 
-    @classmethod
-    def poll(cls, context):
-        return valid_nwo_asset(context)
-
     def draw(self, context):
         layout = self.layout
         scene = context.scene
