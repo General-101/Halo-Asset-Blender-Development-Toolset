@@ -975,12 +975,14 @@ class Halo_GlobalSettings(Panel):
         col.operator("halo.set_unit_scale")
 
 class Halo_SetUnitScale(Operator):
-    """Sets the scene unit scale to match Halo's scale"""
+    """Sets up the scene for Halo: Sets the unit scale to match Halo's and sets the frame rate to 30fps"""
     bl_idname = 'halo.set_unit_scale'
-    bl_label = 'Set Halo Unit Scale'
+    bl_label = 'Set Halo Scene'
     bl_options = {"REGISTER", "UNDO"}
 
     def execute(self, context):
+        # Set the frame rate to 30
+        context.scene.render.fps = 30
         # define the Halo scale
         halo_scale = 0.03048
         # Apply scale to clipping in all windows if halo_scale has not already been set
