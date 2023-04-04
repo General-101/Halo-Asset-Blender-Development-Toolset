@@ -667,157 +667,187 @@ class GR2_HaloLauncherPropertiesGroup(PropertyGroup):
 
     run_game_scripts: BoolProperty(
         options=set(),
-        description="Strips all player information, global materials, grenades and powerups from the globals tag, as well as interface global tags. Don't use this if you need the game to be playable",
+        description="Runs all startup & continuous scripts on map load",
         name='Run Game Scripts'
     )
 
     prune_globals: BoolProperty(
         options=set(),
+        description="Strips all player information, global materials, grenades and powerups from the globals tag, as well as interface global tags. Don't use this if you need the game to be playable",
         name='Globals'
     )
 
     prune_globals_keep_playable: BoolProperty(
         options=set(),
+        description="Strips player information (keeping one single player element), global materials, grenades and powerups. Keeps the game playable.",
         name='Globals (Keep Playable)'
     )
 
     prune_globals_use_empty: BoolProperty(
         options=set(),
+        description="Uses global_empty.globals instead of globals.globals",
         name='Globals Use Empty'
     )
 
     prune_models_enable_alternate_render_models: BoolProperty(
         options=set(),
+        description="Allows tag build to use alternative render models specified in the .model",
         name='Allow Alternate Render Models'
     )
 
     prune_scenario_keep_scriptable_objects: BoolProperty(
         options=set(),
+        description="Attempts to run scripts while pruning",
         name='Keep Scriptable Objects'
     )
 
     prune_scenario_for_environment_editing: BoolProperty(
         options=set(),
+        description="Removes everything but the environment: Weapons, vehicles, bipeds, equipment, cinematics, AI, etc",
         name='Prune for Environment Editing'
     )
 
     prune_scenario_for_environment_editing_keep_cinematics: BoolProperty(
         options=set(),
+        description="Supersedes prune_scenario_for_environment_editing, with the inclusion of cutscene flags and cinematics",
         name='Keep Cinematics'
     )
 
     prune_scenario_for_environment_editing_keep_scenery: BoolProperty(
         options=set(),
+        description="Supersedes prune_scenario_for_environment_editing, with the inclusion of scenery",
         name='Keep Scenery'
     )
 
     prune_scenario_for_environment_editing_keep_decals: BoolProperty(
         options=set(),
+        description="Supersedes prune_scenario_for_environment_editing, with the inclusion of decals",
         name='Keep Decals'
     )
 
     prune_scenario_for_environment_editing_keep_crates: BoolProperty(
         options=set(),
+        description="Supersedes prune_scenario_for_environment_editing, with the inclusion of crates",
         name='Keep Crates'
     )
 
     prune_scenario_for_environment_editing_keep_creatures: BoolProperty(
         options=set(),
+        description="Supersedes prune_scenario_for_environment_editing, with the inclusion of creatures",
         name='Keep Creatures'
     )
 
     prune_scenario_for_environment_editing_keep_pathfinding: BoolProperty(
         options=set(),
+        description="Supersedes prune_scenario_for_environment_editing, with the inclusion of pathfinding",
         name='Keep Pathfinding'
     )
 
     prune_scenario_for_environment_editing_keep_new_decorator_block: BoolProperty(
         options=set(),
+        description="Supersedes prune_scenario_for_environment_editing, with the inclusion of decorators",
         name='Keep Decorators'
     )
 
     prune_scenario_all_lightmaps: BoolProperty(
         options=set(),
+        description="Loads the scenario without lightmaps",
         name='Prune Lightmaps'
     )
 
     prune_all_materials_use_gray_shader: BoolProperty(
         options=set(),
+        description="Replaces all shaders in the scene with a gray shader, allowing designers to load larger zone sets (the game looks gray, but without artifacts)",
         name='Use Gray Shader'
     )
 
     prune_all_materials_use_default_textures: BoolProperty(
         options=set(),
+        description="Replaces all material textures in the scene with the material shader's default, allowing designers to load larger zone sets",
         name='Use Default Textures'
     )
 
     prune_all_materials_use_default_textures_fx_textures: BoolProperty(
         options=set(),
+        description="Loads only material textures related to FX, all other material textures will show up as the shader's default",
         name='Include FX materials'
     )
 
     prune_all_material_effects: BoolProperty(
         options=set(),
+        description="Loads the scenario without material effects",
         name='Prune Material Effects'
     )
 
     prune_all_dialog_sounds: BoolProperty(
         options=set(),
+        description="Removes all dialog sounds referenced in the globals tag",
         name='Prune Material Effects'
     )
 
     prune_all_error_geometry: BoolProperty(
         options=set(),
+        description="If you're working on geometry and don't need to see the (40+ MB of) data that gets loaded in tags then you should enable this command",
         name='Prune Error Geometry'
     )
 
     prune_facial_animations: BoolProperty(
         options=set(),
+        description="Skips loading the PCA data for facial animations",
         name='Prune Facial Animations'
     )
 
     prune_first_person_animations: BoolProperty(
         options=set(),
+        description="Skips laoding the first-person animations",
         name='Prune First Person Animations'
     )
 
     prune_low_quality_animations: BoolProperty(
         options=set(),
+        description="Use low-quality animations if they are available",
         name='Use Low Quality Animations'
     )
 
     prune_use_imposters: BoolProperty(
         options=set(),
+        description="Uses imposters if they available",
         name='Use Imposters only'
     )
 
     prune_cinematic_effects: BoolProperty(
         options=set(),
+        description="Skips loading and player cinematic effects",
         name='Prune Cinematic Effects'
     )
     # REACH Only prunes
     prune_scenario_force_solo_mode: BoolProperty(
         options=set(),
+        description="Forces the map to be loaded in solo mode even if it is a multiplayer map. The game will look for a solo map spawn point",
         name='Force Solo Mode'
     )
 
     prune_scenario_for_environment_finishing: BoolProperty(
         options=set(),
+        description="Supersedes prune_scenario_for_environment_editing, with the inclusion of decals, scenery, crates and decorators",
         name='Prune Finishing'
     )   
 
     prune_scenario_force_single_bsp_zone_set: BoolProperty(
         options=set(),
+        description="Removes all but the first BSP from the initial zone set. Ensures that the initial zone set will not crash on load due to low memory",
         name='Prune Zone Sets'
     )   
 
     prune_scenario_force_single_bsp_zones: BoolProperty(
         options=set(),
+        description="Add single bsp zone sets (for each BSP) to the debug menu",
         name='Single BSP zone sets'
     )   
 
     prune_keep_scripts: BoolProperty(
         options=set(),
+        description="Attempts to run scripts while pruning",
         name='Keep Scripts'
     )   
     # Other
@@ -829,6 +859,7 @@ class GR2_HaloLauncherPropertiesGroup(PropertyGroup):
     firefight_mission: StringProperty(
         options=set(),
         name='Spartan Ops Mission',
+        description="Set the string that matches the spartan ops mission that should be loaded",
         default=''
     )
     
@@ -855,7 +886,7 @@ class GR2_HaloLauncherPropertiesGroup(PropertyGroup):
     custom_functions: StringProperty(
         options=set(),
         name='Custom',
-        description="Name of Blender blender text editor file to get custom init lines from. If no such text exists, instead looks in the root editing kit for an init with this name. If this doesn't exist, then the actual text is added to the init",
+        description="Name of Blender blender text editor file to get custom init lines from. If no such text exists, instead looks in the root editing kit for an init.txt with this name. If this doesn't exist, then the actual text is used instead",
         default=''
     )
 
