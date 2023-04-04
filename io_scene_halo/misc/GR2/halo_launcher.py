@@ -221,12 +221,20 @@ def launch_game(is_sapien, settings, filepath):
         else:
             init = 'bonobo_init.txt'
 
-    if init != '':            
+    if init != '':
+        h4_plus = not_bungie_game()       
         with open(init, 'w') as file:
             if settings.prune_globals:
-                file.write('prune_globals 1\n')
+                if h4_plus:
+                    file.write('prune_globals 1\n')
+                else:
+                    file.write('prune_global 1\n')
+
             if settings.prune_globals_keep_playable:
-                file.write('prune_globals_keep_playable 1\n')
+                if h4_plus:
+                    file.write('prune_globals_keep_playable 1\n')
+                else:
+                    file.write('prune_global_keep_playable 1\n')
             if settings.prune_scenario_for_environment_editing:
                 file.write('prune_scenario_for_environment_editing 1\n')
                 if settings.prune_scenario_for_environment_editing:
@@ -241,21 +249,43 @@ def launch_game(is_sapien, settings, filepath):
                     if settings.prune_scenario_for_environment_editing_keep_creatures:
                         file.write('prune_scenario_for_environment_editing_keep_creatures 1\n')
                     if settings.prune_scenario_for_environment_editing_keep_pathfinding:
-                        file.write('prune_scenario_for_environment_editing_keep_pathfinding 1\n')
+                        if h4_plus:
+                            file.write('prune_scenario_for_environment_editing_keep_pathfinding 1\n')
+                        else:
+                            file.write('prune_scenario_for_environment_pathfinding 1\n')
+                            
                     if settings.prune_scenario_for_environment_editing_keep_new_decorator_block:
                         file.write('prune_scenario_for_environmnet_editing_keep_new_decorator_block 1\n')
             if settings.prune_scenario_all_lightmaps:
-                file.write('prune_scenario_all_lightmaps 1\n')
+                if h4_plus:
+                    file.write('prune_scenario_all_lightmaps 1\n')
+                else:
+                    file.write('prune_scenario_lightmaps 1\n')
+                    
             if settings.prune_all_materials_use_gray_shader:
-                file.write('prune_all_materials_use_gray_shader 1\n')
+                if h4_plus:
+                    file.write('prune_all_materials_use_gray_shader 1\n')
+                else:
+                    file.write('prune_scenario_use_gray_shader 1\n')
             if settings.prune_all_material_effects:
-                file.write('prune_all_material_effects 1\n')
+                if h4_plus:
+                    file.write('prune_all_material_effects 1\n')
+                else:
+                    file.write('prune_global_material_effects 1\n')
+
             if settings.prune_all_dialog_sounds:
-                file.write('prune_all_dialog_sounds 1\n')
+                if h4_plus:
+                    file.write('prune_all_dialog_sounds 1\n')
+                else:
+                    file.write('prune_global_dialog_sounds 1\n')
+                    
             if settings.prune_all_error_geometry:
-                file.write('prune_all_error_geometry 1\n')
+                if h4_plus:
+                    file.write('prune_all_error_geometry 1\n')
+                else:
+                    file.write('prune_error_geometry 1\n')
             # H4+ only
-            if not_bungie_game():
+            if h4_plus:
                 if settings.prune_globals_use_empty:
                     file.write('prune_globals_use_empty 1\n')
                 if settings.prune_models_enable_alternate_render_models:
@@ -284,12 +314,11 @@ def launch_game(is_sapien, settings, filepath):
                     if settings.prune_scenario_for_environment_finishing:
                         file.write('prune_scenario_for_environment_finishing 1\n')
                 if settings.prune_scenario_force_single_bsp_zone_set:
-                    file.write('prune_scenario_force_solo_mode 1\n')
+                    file.write('prune_scenario_force_single_bsp_zone_set 1\n')
                 if settings.prune_scenario_force_single_bsp_zones:
-                    file.write('prune_scenario_force_solo_mode 1\n')
+                    file.write('prune_scenario_add_single_bsp_zones 1\n')
                 if settings.prune_keep_scripts:
-                    file.write('prune_scenario_force_solo_mode 1\n')
-            
+                    file.write('pruning_keep_scripts 1\n')
 
             file.write(f'run_game_scripts {"1" if settings.run_game_scripts else "0"}\n')
 
@@ -301,13 +330,13 @@ def launch_game(is_sapien, settings, filepath):
 
             if settings.initial_zone_set != '':
                 file.write(f'game_initial_zone_set {settings.initial_zone_set}\n')
-            elif settings.initial_bsp != '':
-                file.write(f'game_initial_zone_set {settings.initial_bsp}\n')
+            elif settings.initial_bsp != '' and h4_plus:
+                file.write(f'game_initial_BSP {settings.initial_bsp}\n')
 
             if settings.insertion_point_index > -1: 
                 file.write(f'game_insertion_point_set {settings.insertion_point_index}\n')
 
-            if settings.enable_firefight:
+            if settings.enable_firefight and h4_plus:
                 file.write(f'game_firefight {settings.enable_firefight}\n')
                 if settings.firefight_mission == '':
                     file.write(f'game_set_variant "midnight_firefight_firefight"\n')
