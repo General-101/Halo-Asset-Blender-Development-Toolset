@@ -47,18 +47,6 @@ from ...file_gr2.nwo_utils import clean_tag_path, get_tags_path, get_data_path, 
 
 is_blender_startup = True
 
-class GR2_Tools_Helper(Panel):
-    """Tools to help automate the Halo GR2 workflow"""
-    bl_label = "Halo GR2 Tools"
-    bl_idname = "HALO_PT_GR2_AutoTools"
-    bl_space_type = "VIEW_3D"
-    bl_region_type = "UI"
-    bl_category = "Halo GR2 Tools"
-
-    def draw(self, context):
-        layout = self.layout
-
-
 #######################################
 # FRAME IDS TOOL
 class GR2_SetFrameIDs(Panel):
@@ -67,7 +55,7 @@ class GR2_SetFrameIDs(Panel):
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     bl_options = {'DEFAULT_CLOSED'}
-    bl_parent_id = "HALO_PT_GR2_AutoTools"
+    bl_parent_id = "HALO_PT_GR2_PropertiesManager"
 
     def draw(self, context):
         layout = self.layout
@@ -159,7 +147,8 @@ class GR2_HaloLauncher(Panel):
     bl_idname = "HALO_PT_GR2_HaloLauncher"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
-    bl_parent_id = "HALO_PT_GR2_AutoTools"
+    bl_category = "Halo GR2 Tools"
+    # bl_parent_id = "HALO_PT_GR2_AutoTools"
 
     def draw(self, context):
         layout = self.layout
@@ -898,7 +887,7 @@ class GR2_ShaderFinder(Panel):
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     bl_options = {'DEFAULT_CLOSED'}
-    bl_parent_id = "HALO_PT_GR2_AutoTools"
+    bl_parent_id = "HALO_PT_GR2_PropertiesManager"
 
     def draw(self, context):
         layout = self.layout
@@ -951,7 +940,8 @@ class GR2_HaloExport(Panel):
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     bl_icon = 'EXPORT'
-    bl_parent_id = "HALO_PT_GR2_AutoTools"
+    bl_category = "Halo GR2 Tools"
+    # bl_parent_id = "HALO_PT_GR2_AutoTools"
 
     def draw(self, context):
         layout = self.layout
@@ -1288,18 +1278,19 @@ class GR2_HaloExportPropertiesGroup(PropertyGroup):
 # PROPERTIES MANAGER TOOL
 
 class GR2_PropertiesManager(Panel):
-    bl_label = "Properties Manager"
+    bl_label = "Halo Properties Tools"
     bl_idname = "HALO_PT_GR2_PropertiesManager"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
-    bl_options = {'DEFAULT_CLOSED'}
-    bl_parent_id = "HALO_PT_GR2_AutoTools"
+    # bl_options = {'DEFAULT_CLOSED'}
+    bl_category = "Halo GR2 Tools"
+    # bl_parent_id = "HALO_PT_GR2_AutoTools"
 
     def draw(self, context):
         layout = self.layout
 
 class GR2_CollectionManager(Panel):
-    bl_label = "Collection Manager"
+    bl_label = "Collection Creator"
     bl_idname = "HALO_PT_GR2_CollectionManager"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
@@ -1516,14 +1507,14 @@ class GR2_AnimationTools(Panel):
     bl_idname = "HALO_PT_GR2_AnimationTools"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
-    bl_options = {'DEFAULT_CLOSED'}
-    bl_parent_id = "HALO_PT_GR2_AutoTools"
+    # bl_options = {'DEFAULT_CLOSED'}
+    bl_category = "Halo GR2 Tools"
+    # bl_parent_id = "HALO_PT_GR2_AutoTools"
 
     def draw(self, context):
         layout = self.layout
 
 classeshalo = (
-    GR2_Tools_Helper,
     GR2_HaloExport,
     GR2_HaloExport_Export,
     GR2_HaloExport_ExportQuick,
@@ -1545,8 +1536,8 @@ classeshalo = (
     GR2_CollectionManager,
     GR2_CollectionManager_Create,
     GR2_HaloCollectionManagerPropertiesGroup,
-    GR2_CopyHaloProps,
-    GR2_CopyHaloProps_Copy,
+    # GR2_CopyHaloProps,
+    # GR2_CopyHaloProps_Copy, #unregistered until this operator is fixed
     GR2_ShaderFinder,
     GR2_ShaderFinder_Find,
     GR2_HaloShaderFinderPropertiesGroup,
