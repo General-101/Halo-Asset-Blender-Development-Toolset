@@ -577,9 +577,12 @@ def run_tool(*tool_args):
 def rename_file(file_path, new_file_path=''):
     os.replace(file_path, new_file_path)
 
-def dot_partition(target_string):
+def dot_partition(target_string, get_suffix=False):
     """Returns a string after partitioning it using period. If the returned string will be empty, the function will instead return the argument passed"""
-    return shortest_string(target_string.rpartition('.')[0], target_string)
+    if get_suffix:
+        return shortest_string(target_string.rpartition('.')[2], target_string)
+    else:
+        return shortest_string(target_string.rpartition('.')[0], target_string)
 
 def comma_partition(target_string):
     """Returns a string after partitioning it using comma. If the returned string will be empty, the function will instead return the argument passed"""

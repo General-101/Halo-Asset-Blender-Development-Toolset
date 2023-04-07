@@ -2526,7 +2526,7 @@ class NWO_BoneProps(Panel):
     def poll(cls, context):
         scene = context.scene
         scene_halo = scene.halo
-        return scene_halo.game_version in ('reach','h4','h2a')
+        return scene_halo.game_version in ('reach','h4','h2a') and context.bone
     
     def draw(self, context):
         layout = self.layout
@@ -2541,6 +2541,10 @@ class NWO_BoneProps(Panel):
         # layout.enabled = scene_halo.expert_mode
         
         col = flow.column()
+        col.prop(bone_nwo, "name_override")
+
+        col.separator()
+
         col.prop(bone_nwo, "frame_id1", text='Frame ID 1')
         col.prop(bone_nwo, "frame_id2", text='Frame ID 2')
 
@@ -5116,6 +5120,12 @@ class NWO_MaterialPropertiesGroup(PropertyGroup):
 
 class NWO_BonePropertiesGroup(PropertyGroup):
 
+    name_override: StringProperty(
+        name="Name Override",
+        description="Set the Halo export name for this bone. Allowing you to use blender friendly naming conventions for bones while rigging/animating",
+        default=""
+    )
+
     frame_id1: StringProperty(
         name = "Frame ID 1",
         description = "The Frame ID 1 for this bone. Leave blank for automatic assignment of a Frame ID. Can be manually edited when using expert mode, but don't do this unless you know what you're doing",
@@ -5240,20 +5250,56 @@ class NWO_AnimProps_Events(Panel):
     bl_parent_id = "NWO_PT_ActionDetailsPanel"
 
     def draw(self, context):
+        layout = self.layout
+
+        ob = context.object
+        key = ob.data.shape_keys
+        kb = ob.active_shape_key
+
+        enable_edit = ob.mode != 'EDIT'
+        enable_edit_value = False
+        enable_pin = False
+
+        if enable_edit or (ob.use_shape_key_edit_mode and ob.type == 'MESH'):
+            enable_pin = True
+            if ob.show_only_shape_key is False:
+                enable_edit_value = True
+
+        row = layout.row()
+
+        rows = 3
+        if kb:
+            rows = 5
+
+        row.template_list("MESH_UL_shape_keys", "", key, "key_blocks", ob, "active_shape_key_index", rows=rows)
+
+        col = row.column(align=True)
+
+        col.operator("object.shape_key_add", icon='ADD', text="").from_mix = False
+        col.operator("object.shape_key_remove", icon='REMOVE', text="").all = False
+
+    def draw(self, context):
+        layout = self.layout
+
+        ob = context.object
+        row = layout.row()
+        col = row.column(align=True)
+
+        col.operator("animation_event.list_add", icon='ADD', text="").from_mix = False
+        col.operator("animation_event.list_remove", icon='REMOVE', text="").all = False
+
+    def draw(self, context):
         action = context.active_object.animation_data.action
         action_nwo = action.nwo
         layout = self.layout
         row = layout.row()
-        col = row.column()
 
         # layout.template_list("NWO_UL_AnimProps_Events", "", action_nwo, "animation_events", action_nwo, 'animation_events_index')
-        col.template_list("NWO_UL_AnimProps_Events", "", action_nwo, "animation_events", action_nwo, "animation_events_index", rows=2)
+        row.template_list("NWO_UL_AnimProps_Events", "", action_nwo, "animation_events", action_nwo, "animation_events_index", rows=2)
 
-        row = layout.row()
         col = row.column(align=True)
-        col.operator("animation_event.list_add", text="Add")
-        col = row.column(align=True)
-        col.operator("animation_event.list_remove", text="Remove")
+        col.operator("animation_event.list_add", icon='ADD', text="")
+        col.operator("animation_event.list_remove", icon='REMOVE', text="")
         
         if len(action_nwo.animation_events) > 0:
             item = action_nwo.animation_events[action_nwo.animation_events_index]

@@ -191,7 +191,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                                             ob.select_set(True)
                                     model_armature.select_set(True)
                                     export_fbx(using_better_fbx, **keywords)
-                                    export_gr2(report, asset_path, asset, 'animations', context.selected_objects, '', '', model_armature, skeleton_bones, action.nwo.name_override, regions_dict, global_materials_dict, **keywords)
+                                    export_gr2(report, asset_path, asset, 'animations', context.selected_objects, '', '', model_armature, skeleton_bones, animation_name, regions_dict, global_materials_dict, **keywords)
                                     # delete the left over event nodes
                                     if event_nodes is not None:
                                         deselect_all_objects()

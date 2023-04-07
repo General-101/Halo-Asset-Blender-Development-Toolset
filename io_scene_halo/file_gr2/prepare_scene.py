@@ -33,6 +33,7 @@ from uuid import uuid4
 from ..misc.GR2.shader_finder import FindShaders
 from .nwo_utils import(
     deselect_all_objects,
+    dot_partition,
     is_mesh,
     set_active_object,
     CheckType,
@@ -86,6 +87,8 @@ def prepare_scene(context, report, sidecar_type, export_hidden, use_armature_def
     FixMissingMaterials(context, sidecar_type)
     # Get and set the model armature, or create one if none exists.
     model_armature, temp_armature, no_parent_objects = GetSceneArmature(context, sidecar_type, game_version)
+    # set bone names equal to their name overrides (if not blank)
+    set_bone_names(model_armature)
     # Handle spooky scary skeleton bones
     skeleton_bones = {}
     current_action = ''
@@ -144,6 +147,13 @@ class HaloObjects():
 #####################################################################################
 # VARIOUS FUNCTIONS
 
+
+def set_bone_names(armature):
+    for bone in armature.data.bones:
+        override = bone.nwo.name_override
+        if override != '':
+            bone.name = override
+
 def apply_maya_namespaces(context):
     for ob in context.view_layer.objects:
         apply_prefix_properties(ob)
@@ -168,6 +178,10 @@ def set_animation_overrides(model_armature, current_action):
         for action in bpy.data.actions:
             try:
                 model_armature.animation_data.action = action
+                forced_type = dot_partition(action.name.upper(), True)
+                action.name = dot_partition(action.name)
+                if forced_type in valid_animation_types:
+                    action.nwo.animation_type = forced_type
                 if action.nwo.name_override == '':
                     animation =  action.name
                     if animation.rpartition('.')[2] not in valid_animation_types:
