@@ -212,7 +212,11 @@ halo_reach_array = (
 halo_four_array = (
 ("chiefsolo", (20.3239, 55.1017, 71.0676)),
 ("chiefmp", (20.1881, 55.1017, 71.3521)),
-("banshee", (228.422, 247.484, 114.588)))
+("banshee", (228.422, 247.484, 114.588)),
+("broadsword", (626.27, 644.99, 243.248)),
+("ghost", (138.389, 126.493, 60.2351)),
+("mantis", (92.9233, 190.286, 185.869)),
+("mongoose", (105.571, 60.6401, 49.3812)))
 
 #  load a mesh from JMS and use it as a scale model
 def generate_mesh(file, array_item, game_version):

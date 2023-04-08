@@ -586,6 +586,10 @@ class Scale_ModelPropertiesGroup(PropertyGroup):
         description="What model to create",
         items=[
                 ('2', "Banshee", "Banshee Model"),
+                ('3', "Broadsword", "Broadsword Model"),
+                ('4', "Ghost", "Ghost Model"),
+                ('5', "Mantis", "Mantis Model"),
+                ('6', "Mongoose", "Mongoose Model"),
                ]
         )
 
