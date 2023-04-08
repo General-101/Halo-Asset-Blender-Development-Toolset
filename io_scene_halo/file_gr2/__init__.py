@@ -803,6 +803,9 @@ class GR2_SceneProps(Panel):
         col = flow.column()
         col.prop(scene_gr2, 'default_mesh_type_ui')
         col.prop(scene_gr2, 'asset_type')
+        if scene_gr2.asset_type == 'MODEL':
+            col.prop(scene_gr2, 'forward_direction')
+        col.separator()
         col.prop(scene_gr2, 'filter_ui', text = 'Filter UI')
         if scene_gr2.asset_type == 'MODEL':
             sub = layout.column(heading="Output Tags")
@@ -1095,6 +1098,14 @@ class GR2_ScenePropertiesGroup(PropertyGroup):
         default = 'MODEL',
         items=[ ('MODEL', "Model", ""), ('SCENARIO', "Scenario", ""), ('SKY', 'Sky', ''), ('DECORATOR SET', 'Decorator Set', ''), ('PARTICLE MODEL', 'Particle Model', ''), ('PREFAB', 'Prefab', '')]
         )
+    
+    forward_direction: EnumProperty(
+        name="Model Forward",
+        options=set(),
+        description="Define the forward direction you are using for this model. By default Halo uses X forward. If you model is not x positive select the correct forward directiom.",
+        default = 'x',
+        items=[ ('x', "X Forward", ""), ('x-', "X Backward", ""), ('y', 'Y Forward', ''), ('y-', 'Y Backward', '')]
+    )
 
     filter_ui: BoolProperty(
         name="Filter UI",

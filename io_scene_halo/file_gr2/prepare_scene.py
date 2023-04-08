@@ -89,6 +89,8 @@ def prepare_scene(context, report, sidecar_type, export_hidden, use_armature_def
     model_armature, temp_armature, no_parent_objects = GetSceneArmature(context, sidecar_type, game_version)
     # set bone names equal to their name overrides (if not blank)
     set_bone_names(model_armature)
+    # rotate the model armature if needed
+    fix_armature_rotation(model_armature, sidecar_type, context)
     # Handle spooky scary skeleton bones
     skeleton_bones = {}
     current_action = ''
@@ -147,6 +149,32 @@ class HaloObjects():
 #####################################################################################
 # VARIOUS FUNCTIONS
 
+def z_rotate_and_apply(ob, angle):
+    deselect_all_objects()
+    ob.select_set(True)
+    angle = radians(angle)
+    axis = (0, 0, 1)
+    pivot = ob.location
+    M = (
+        Matrix.Translation(pivot) @
+        Matrix.Rotation(angle, 4, axis) @   
+        Matrix.Translation(-pivot)
+        )
+    
+    ob.matrix_world = M @ ob.matrix_world
+
+    bpy.ops.object.transform_apply(location=False, rotation=True, scale=False)
+    deselect_all_objects()
+
+def fix_armature_rotation(armature, sidecar_type, context):
+    forward = context.scene.gr2.forward_direction
+    if forward != 'x' and sidecar_type == 'MODEL':
+        if forward == 'y':
+            z_rotate_and_apply(armature, -90)
+        elif forward == 'y-':
+            z_rotate_and_apply(armature, 90)
+        elif forward == 'x-':
+            z_rotate_and_apply(armature, 180)
 
 def set_bone_names(armature):
     for bone in armature.data.bones:
