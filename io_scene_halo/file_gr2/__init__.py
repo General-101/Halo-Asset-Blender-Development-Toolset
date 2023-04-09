@@ -519,8 +519,32 @@ class Export_Scene_GR2(Operator, ExportHelper):
         # get the asset name and path to the asset folder
         asset_path, asset = get_asset_info(self.filepath)
 
+        scene_gr2 = context.scene.gr2
+
+        # set Halo scene version to match game_version (we do this do ensure the code is checking the right toolset)
+        context.scene.halo.game_version = self.game_version
+
+        # Set the UI asset type to the export type
+        scene_gr2.asset_type = self.sidecar_type
+
+        # Set the model outpug tag types in the UI to match export settings
+        scene_gr2.output_biped = self.output_biped
+        scene_gr2.output_crate = self.output_crate
+        scene_gr2.output_creature = self.output_creature
+        scene_gr2.output_device_control = self.output_device_control
+        scene_gr2.output_device_dispenser = self.output_device_dispenser
+        scene_gr2.output_device_machine = self.output_device_machine
+        scene_gr2.output_device_terminal = self.output_device_terminal
+        scene_gr2.output_effect_scenery = self.output_effect_scenery
+        scene_gr2.output_equipment = self.output_equipment
+        scene_gr2.output_giant = self.output_giant
+        scene_gr2.output_scenery = self.output_scenery
+        scene_gr2.output_vehicle = self.output_vehicle
+        scene_gr2.output_weapon = self.output_weapon
+
         # Check that we can export
         if not CheckPath(self.filepath) or not file_exists(f'{get_tool_path()}.exe') or asset_path + path.sep == get_data_path(): # check the user is saving the file to a location in their editing kit data directory AND tool exists. AND prevent exports to root data dir
+
             if get_ek_path() is None or get_ek_path() == '':
                 ctypes.windll.user32.MessageBoxW(0, f"No {self.game_version.upper()} Editing Kit path found. Please check your {self.game_version.upper()} editing kit path in add-on preferences [Edit > Preferences > Add-ons > Halo Asset Blender Development Toolset] and ensure this points to your {self.game_version.upper()} editing kit directory.", f"INVALID {self.game_version.upper()} EK PATH", 0)
             elif not file_exists(f'{get_tool_path()}.exe'):
@@ -544,29 +568,6 @@ class Export_Scene_GR2(Operator, ExportHelper):
 
             keywords = self.as_keywords()
             console = bpy.ops.wm
-
-            scene_gr2 = context.scene.gr2
-
-            # set Halo scene version to match game_version (we do this do ensure the code is checking the right toolset)
-            context.scene.halo.game_version = self.game_version
-
-            # Set the UI asset type to the export type
-            scene_gr2.asset_type = self.sidecar_type
-
-            # Set the model outpug tag types in the UI to match export settings
-            scene_gr2.output_biped = self.output_biped
-            scene_gr2.output_crate = self.output_crate
-            scene_gr2.output_creature = self.output_creature
-            scene_gr2.output_device_control = self.output_device_control
-            scene_gr2.output_device_dispenser = self.output_device_dispenser
-            scene_gr2.output_device_machine = self.output_device_machine
-            scene_gr2.output_device_terminal = self.output_device_terminal
-            scene_gr2.output_effect_scenery = self.output_effect_scenery
-            scene_gr2.output_equipment = self.output_equipment
-            scene_gr2.output_giant = self.output_giant
-            scene_gr2.output_scenery = self.output_scenery
-            scene_gr2.output_vehicle = self.output_vehicle
-            scene_gr2.output_weapon = self.output_weapon
 
             if self.show_output:
                 console.console_toggle() # toggle the console so users can see progress of export
