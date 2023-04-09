@@ -50,7 +50,7 @@ from .nwo_utils import(
 #####################################################################################
 #####################################################################################
 # MAIN FUNCTION
-def prepare_scene(context, report, sidecar_type, export_hidden, use_armature_deform_only, game_version, meshes_to_empties, **kwargs):
+def prepare_scene(context, report, sidecar_type, export_hidden, use_armature_deform_only, game_version, meshes_to_empties, export_animations, **kwargs):
     # Exit local view. Must do this otherwise fbx export will fail.
     ExitLocalView(context)
     # Disable collections with the +exclude prefix. This way they are treated as if they are not part of the asset at all
@@ -89,8 +89,6 @@ def prepare_scene(context, report, sidecar_type, export_hidden, use_armature_def
     model_armature, temp_armature, no_parent_objects = GetSceneArmature(context, sidecar_type, game_version)
     # set bone names equal to their name overrides (if not blank)
     set_bone_names(model_armature)
-    # rotate the model armature if needed
-    fix_armature_rotation(model_armature, sidecar_type, context)
     # Handle spooky scary skeleton bones
     skeleton_bones = {}
     current_action = ''
@@ -104,6 +102,8 @@ def prepare_scene(context, report, sidecar_type, export_hidden, use_armature_def
                 pass
     # Set timeline range for use during animation export
     timeline_start, timeline_end = SetTimelineRange(context)
+    # rotate the model armature if needed
+    fix_armature_rotation(model_armature, sidecar_type, context, export_animations, current_action, timeline_start, timeline_end)
     # Set animation name overrides / fix them up for the exporter
     set_animation_overrides(model_armature, current_action)
      # get the max LOD count in the scene if we're exporting a decorator
@@ -150,8 +150,6 @@ class HaloObjects():
 # VARIOUS FUNCTIONS
 
 def z_rotate_and_apply(ob, angle):
-    deselect_all_objects()
-    ob.select_set(True)
     angle = radians(angle)
     axis = (0, 0, 1)
     pivot = ob.location
@@ -162,19 +160,45 @@ def z_rotate_and_apply(ob, angle):
         )
     
     ob.matrix_world = M @ ob.matrix_world
-
     bpy.ops.object.transform_apply(location=False, rotation=True, scale=False)
-    deselect_all_objects()
 
-def fix_armature_rotation(armature, sidecar_type, context):
+def bake_animations(armature, export_animations, current_action, timeline_start, timeline_end, context):
+    print('Baking animations...')
+    timeline = context.scene
+    for action in bpy.data.actions:
+        if export_animations == 'ALL' or current_action == action:
+            armature.animation_data.action = action
+
+            if action.use_frame_range:
+                frame_start = int(action.frame_start)
+                frame_end = int(action.frame_end)
+            else:
+                frame_start = timeline_start
+                frame_end = timeline_end
+
+            timeline.frame_start = timeline_start
+            timeline.frame_end = timeline_end
+
+            bpy.ops.object.mode_set(mode='POSE', toggle=False)
+            bpy.ops.nla.bake(frame_start=frame_start, frame_end=frame_end, only_selected=False, visual_keying=True, clear_constraints=True, use_current_action=True, clean_curves=True, bake_types={'POSE'})
+            bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
+
+def fix_armature_rotation(armature, sidecar_type, context, export_animations, current_action, timeline_start, timeline_end):
     forward = context.scene.gr2.forward_direction
     if forward != 'x' and sidecar_type == 'MODEL':
+        armature.select_set(True)
+        # bake animation to avoid issues on armature rotation
+        if export_animations != 'NONE' and 1<=len(bpy.data.actions):
+            bake_animations(armature, export_animations, current_action, timeline_start, timeline_end, context)
+        # apply rotation based on selected forward direction
         if forward == 'y':
             z_rotate_and_apply(armature, -90)
         elif forward == 'y-':
             z_rotate_and_apply(armature, 90)
         elif forward == 'x-':
             z_rotate_and_apply(armature, 180)
+
+        deselect_all_objects()
 
 def set_bone_names(armature):
     for bone in armature.data.bones:
