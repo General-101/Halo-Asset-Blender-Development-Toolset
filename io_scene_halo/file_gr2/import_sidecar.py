@@ -24,37 +24,49 @@
 #
 # ##### END MIT LICENSE BLOCK #####
 
-from subprocess import Popen
+from subprocess import run
 import os
 
 from .nwo_utils import (
     get_ek_path,
+    get_tags_path,
     get_tool_type,
 )
 
-def import_now(report, filePath='', import_check=False, import_force=False, import_verbose=False, import_draft=False,import_seam_debug=False,import_skip_instances=False,import_decompose_instances=False,import_surpress_errors=False, run_tagwatcher=False, import_in_background=False):
+def import_now(report, sidecar_type, filePath='', import_check=False, import_force=False, import_verbose=False, import_draft=False,import_seam_debug=False,import_skip_instances=False,import_decompose_instances=False,import_surpress_errors=False, run_tagwatcher=False, import_in_background=False):
     full_path = filePath.rpartition('\\')[0]
     asset_path = CleanAssetPath(full_path)
     asset_name = asset_path.rpartition('\\')[2]
     try:
         toolCommand = f'{get_tool_type()} import "{os.path.join(asset_path, asset_name)}.sidecar.xml" {GetImportFlags(import_check, import_force, import_verbose, import_draft, import_seam_debug, import_skip_instances, import_decompose_instances, import_surpress_errors)}'
         os.chdir(get_ek_path())
-        p = Popen(toolCommand)
-        if not import_in_background:
-            p.wait()
+        run(toolCommand)
 
     except:
         report({'WARNING'},"Import Failed!")
         print('Exception!')
     else:
-        if run_tagwatcher:
-            try:
-                tagwatcher = os.path.join(get_ek_path(), 'bin', 'tools', 'bonobo', 'TagWatcher.exe')
-                Popen(tagwatcher)
-            except:
-                report({'WARNING'},"TagWatcher Failed To Run!")
-
+        if sidecar_type == 'FP ANIMATION':
+            cull_unused_tags(asset_path, asset_name)
         report({'INFO'},"Import process complete")
+
+
+def cull_unused_tags(asset_path, asset_name):
+    try:
+        tag_path = os.path.join(get_tags_path() + asset_path, asset_name)
+        scenery = f'{tag_path}.scenery'
+        model = f'{tag_path}.model'
+        render_model = f'{tag_path}.render_model'
+        # remove the unused tags
+        if os.path.exists(scenery):
+            os.remove(scenery)
+        if os.path.exists(model):
+            os.remove(model)
+        if os.path.exists(render_model):
+            os.remove(render_model)
+
+    except:
+        print('Failed to remove unused tags')
 
 def CleanAssetPath(path):
     path = path.replace('"','')
@@ -86,6 +98,7 @@ def GetImportFlags(flag_import_check, flag_import_force, flag_import_verbose, fl
 
 
 def import_sidecar(operator, context, report,
+        sidecar_type='MODEL',
         filepath="",
         import_check=False,
         import_force=False,
@@ -99,6 +112,6 @@ def import_sidecar(operator, context, report,
         import_in_background=False,
         **kwargs
         ):
-        import_now(report, filepath, import_check, import_force, import_verbose, import_draft,import_seam_debug,import_skip_instances,import_decompose_instances,import_surpress_errors, run_tagwatcher, import_in_background)
+        import_now(report, sidecar_type, filepath, import_check, import_force, import_verbose, import_draft,import_seam_debug,import_skip_instances,import_decompose_instances,import_surpress_errors, run_tagwatcher, import_in_background)
 
         return {'FINISHED'}

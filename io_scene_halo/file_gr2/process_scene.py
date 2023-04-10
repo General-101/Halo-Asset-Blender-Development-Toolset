@@ -117,50 +117,51 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
     
         if export_gr2_files:
 
-            if sidecar_type == 'MODEL':
+            if sidecar_type in ('MODEL', 'FP ANIMATION'): # Added FP animation to this. FP animation only exports the skeleton and animations
+                if sidecar_type == 'MODEL':
 
-                if export_render:
-                    perm_list = []
-                    for ob in get_render_from_halo_objects(halo_objects):
-                        perm = get_perm(ob)
-                        if perm not in perm_list:
-                            perm_list.append(perm)
-                            if select_model_objects(get_render_from_halo_objects(halo_objects), perm, model_armature, export_hidden, export_all_perms, selected_perms):
-                                print_box(f'**Exporting {perm} render model**')
-                                export_fbx(using_better_fbx, **keywords)
-                                export_gr2(report, asset_path, asset, 'render', context.selected_objects, '', perm, model_armature, skeleton_bones, '', regions_dict, global_materials_dict, **keywords)
-                                gr2_count += 1
+                    if export_render:
+                        perm_list = []
+                        for ob in get_render_from_halo_objects(halo_objects):
+                            perm = get_perm(ob)
+                            if perm not in perm_list:
+                                perm_list.append(perm)
+                                if select_model_objects(get_render_from_halo_objects(halo_objects), perm, model_armature, export_hidden, export_all_perms, selected_perms):
+                                    print_box(f'**Exporting {perm} render model**')
+                                    export_fbx(using_better_fbx, **keywords)
+                                    export_gr2(report, asset_path, asset, 'render', context.selected_objects, '', perm, model_armature, skeleton_bones, '', regions_dict, global_materials_dict, **keywords)
+                                    gr2_count += 1
 
-                if export_collision:
-                    perm_list = []
-                    for ob in halo_objects.collision:
-                        perm = get_perm(ob)
-                        if perm not in perm_list:
-                            perm_list.append(perm)
-                            if select_model_objects(halo_objects.collision, perm, model_armature, export_hidden, export_all_perms, selected_perms):
-                                print_box(f'**Exporting {perm} collision model**')
-                                export_fbx(using_better_fbx, **keywords)
-                                export_gr2(report, asset_path, asset, 'collision', context.selected_objects, '', perm, model_armature, skeleton_bones, '', regions_dict, global_materials_dict, **keywords)
-                                gr2_count += 1
+                    if export_collision:
+                        perm_list = []
+                        for ob in halo_objects.collision:
+                            perm = get_perm(ob)
+                            if perm not in perm_list:
+                                perm_list.append(perm)
+                                if select_model_objects(halo_objects.collision, perm, model_armature, export_hidden, export_all_perms, selected_perms):
+                                    print_box(f'**Exporting {perm} collision model**')
+                                    export_fbx(using_better_fbx, **keywords)
+                                    export_gr2(report, asset_path, asset, 'collision', context.selected_objects, '', perm, model_armature, skeleton_bones, '', regions_dict, global_materials_dict, **keywords)
+                                    gr2_count += 1
 
-                if export_physics:
-                    perm_list = []
-                    for ob in halo_objects.physics:
-                        perm = get_perm(ob)
-                        if perm not in perm_list:
-                            perm_list.append(perm)
-                            if select_model_objects(halo_objects.physics, perm, model_armature, export_hidden, export_all_perms, selected_perms):
-                                print_box(f'**Exporting {perm} physics model**')
-                                export_fbx(using_better_fbx, **keywords)
-                                export_gr2(report, asset_path, asset, 'physics', context.selected_objects, '', perm, model_armature, skeleton_bones, '', regions_dict, global_materials_dict, **keywords)
-                                gr2_count += 1
+                    if export_physics:
+                        perm_list = []
+                        for ob in halo_objects.physics:
+                            perm = get_perm(ob)
+                            if perm not in perm_list:
+                                perm_list.append(perm)
+                                if select_model_objects(halo_objects.physics, perm, model_armature, export_hidden, export_all_perms, selected_perms):
+                                    print_box(f'**Exporting {perm} physics model**')
+                                    export_fbx(using_better_fbx, **keywords)
+                                    export_gr2(report, asset_path, asset, 'physics', context.selected_objects, '', perm, model_armature, skeleton_bones, '', regions_dict, global_materials_dict, **keywords)
+                                    gr2_count += 1
 
-                if export_markers:
-                    if select_model_objects_no_perm(halo_objects.markers, model_armature, export_hidden):
-                        print_box('**Exporting markers**')
-                        export_fbx(using_better_fbx, **keywords)
-                        export_gr2(report, asset_path, asset, 'markers', context.selected_objects, '', '', model_armature, skeleton_bones, '', regions_dict, global_materials_dict, **keywords)
-                        gr2_count += 1
+                    if export_markers:
+                        if select_model_objects_no_perm(halo_objects.markers, model_armature, export_hidden):
+                            print_box('**Exporting markers**')
+                            export_fbx(using_better_fbx, **keywords)
+                            export_gr2(report, asset_path, asset, 'markers', context.selected_objects, '', '', model_armature, skeleton_bones, '', regions_dict, global_materials_dict, **keywords)
+                            gr2_count += 1
 
                 if SelectModelSkeleton(model_armature):
                     print_box('**Exporting skeleton**')
