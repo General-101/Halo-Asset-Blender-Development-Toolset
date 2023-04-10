@@ -102,8 +102,13 @@ class Export_Scene_GR2(Operator, ExportHelper):
     export_animations: EnumProperty(
         name='Animations',
         description='',
-        default='ALL',
+        default='ACTIVE',
         items=[ ('ALL', "All", ""), ('ACTIVE', "Active", ""), ('NONE', 'None', '')]
+    )
+    export_skeleton: BoolProperty(
+        name='Skeleton',
+        description='',
+        default=True,
     )
     export_render: BoolProperty(
         name='Render Models',
@@ -453,6 +458,7 @@ class Export_Scene_GR2(Operator, ExportHelper):
         self.lightmap_all_bsps = scene_gr2_export.lightmap_all_bsps
         
         self.export_animations = scene_gr2_export.export_animations
+        self.export_skeleton = scene_gr2_export.export_skeleton
         self.export_render = scene_gr2_export.export_render
         self.export_collision = scene_gr2_export.export_collision
         self.export_physics = scene_gr2_export.export_physics
@@ -647,6 +653,10 @@ class Export_Scene_GR2(Operator, ExportHelper):
                 sub.prop(self, "export_collision")
                 sub.prop(self, "export_physics")
                 sub.prop(self, "export_markers")
+                sub.prop(self, 'export_skeleton')
+                sub.prop(self, "export_animations", expand=True)
+            elif self.sidecar_type == 'FP ANIMATION':
+                sub.prop(self, 'export_skeleton')
                 sub.prop(self, "export_animations", expand=True)
             elif self.sidecar_type == 'SCENARIO':
                 sub.prop(self, "export_structure")
@@ -1111,7 +1121,7 @@ class GR2_ScenePropertiesGroup(PropertyGroup):
         name="Filter UI",
         options=set(),
         description="When True, hides all UI elements that aren't needed for the selected asset type",
-        default = False,
+        default = True,
         )
 
     output_biped: BoolProperty(

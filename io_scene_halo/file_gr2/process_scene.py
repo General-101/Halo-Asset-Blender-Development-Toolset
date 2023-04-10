@@ -71,6 +71,7 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                   output_vehicle,
                   output_weapon,
                   export_hidden,
+                  export_skeleton,
                   export_render,
                   export_collision,
                   export_physics,
@@ -163,11 +164,12 @@ def process_scene(self, context, keywords, report, model_armature, asset_path, a
                             export_gr2(report, asset_path, asset, 'markers', context.selected_objects, '', '', model_armature, skeleton_bones, '', regions_dict, global_materials_dict, **keywords)
                             gr2_count += 1
 
-                if SelectModelSkeleton(model_armature):
-                    print_box('**Exporting skeleton**')
-                    export_fbx(using_better_fbx, **keywords)
-                    export_gr2(report, asset_path, asset, 'skeleton', [model_armature], '', '', model_armature, skeleton_bones, '', regions_dict, global_materials_dict, **keywords)
-                    gr2_count += 1
+                if export_skeleton:
+                    if SelectModelSkeleton(model_armature):
+                        print_box('**Exporting skeleton**')
+                        export_fbx(using_better_fbx, **keywords)
+                        export_gr2(report, asset_path, asset, 'skeleton', [model_armature], '', '', model_armature, skeleton_bones, '', regions_dict, global_materials_dict, **keywords)
+                        gr2_count += 1
 
                 if export_animations != 'NONE' and 1<=len(bpy.data.actions):
                     if SelectModelSkeleton(model_armature):

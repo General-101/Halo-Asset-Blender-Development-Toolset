@@ -31,6 +31,7 @@ from .nwo_utils import (
     get_ek_path,
     get_tags_path,
     get_tool_type,
+    not_bungie_game,
 )
 
 def import_now(report, sidecar_type, filePath='', import_check=False, import_force=False, import_verbose=False, import_draft=False,import_seam_debug=False,import_skip_instances=False,import_decompose_instances=False,import_surpress_errors=False, run_tagwatcher=False, import_in_background=False):
@@ -77,22 +78,25 @@ def CleanAssetPath(path):
 
 def GetImportFlags(flag_import_check, flag_import_force, flag_import_verbose, flag_import_draft, flag_import_seam_debug, flag_import_skip_instances, flag_import_decompose_instances, flag_import_surpress_errors):
     flags = []
-    if flag_import_check:
-        flags.append('check')
     if flag_import_force:
         flags.append('force')
-    if flag_import_verbose:
-        flags.append('verbose')
-    if flag_import_draft:
-        flags.append('draft')
-    if flag_import_seam_debug:
-        flags.append('seam_debug')
     if flag_import_skip_instances:
         flags.append('skip_instances')
-    if flag_import_decompose_instances:
-        flags.append('decompose_instances')
-    if flag_import_surpress_errors:
-        flags.append('surpress_errors_to_vrml')
+    if not_bungie_game():
+        pass # need to add h4 flags
+    else:
+        if flag_import_check:
+            flags.append('check')
+        if flag_import_verbose:
+            flags.append('verbose')
+        if flag_import_draft:
+            flags.append('draft')
+        if flag_import_seam_debug:
+            flags.append('seam_debug')
+        if flag_import_decompose_instances:
+            flags.append('decompose_instances')
+        if flag_import_surpress_errors:
+            flags.append('surpress_errors_to_vrml')
     
     return ' '.join(flags)
 

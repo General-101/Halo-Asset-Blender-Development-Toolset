@@ -1563,7 +1563,7 @@ class NWO_ObjectProps(Panel):
         scene = context.scene
         scene_halo = scene.halo
 
-        return scene_halo.game_version in ('reach','h4','h2a') and context.object.type != 'ARMATURE'
+        return scene_halo.game_version in ('reach','h4','h2a') and context.object.type != 'ARMATURE'  and poll_ui(('MODEL', 'SCENARIO', 'SKY', 'DECORATOR SET', 'PARTICLE MODEL', 'PREFAB'))
     
     def draw(self, context):
         layout = self.layout

@@ -978,17 +978,12 @@ class GR2_HaloExportSettings(Panel):
         col.prop(scene_gr2_export, 'show_output', text='Output')
         col = layout.column(heading="Export")
         col.prop(scene_gr2_export, 'export_gr2_files', text='GR2')
-        if scene_gr2_export.export_gr2_files:
-            col.prop(scene_gr2_export, "export_hidden", text='Hidden')
-            col.prop(scene_gr2_export, 'export_all_bsps', expand=True)
-            col.prop(scene_gr2_export, 'export_all_perms', expand=True)
-        col.separator()
         col = layout.column(heading="Build")
         col.prop(scene_gr2_export, "export_sidecar_xml", text='Sidecar')
         col.separator()
         col = layout.column(heading="Import")
         col.prop(scene_gr2_export, "import_to_game", text='To Game')
-        if scene_gr2_export.import_to_game:
+        if scene_gr2_export.import_to_game and not not_bungie_game():
             col.prop(scene_gr2_export, "import_draft", text='As draft')
         col.separator()
         col = layout.column(heading="Run")
@@ -1016,24 +1011,40 @@ class GR2_HaloExportSettingsExtended(Panel):
         layout = self.layout
         scene = context.scene
         scene_gr2_export = scene.gr2_export
+        scene_gr2 = scene.gr2
 
         layout.use_property_split = True
         flow = layout.grid_flow(row_major=True, columns=0, even_columns=True, even_rows=False, align=False)
         col = flow.column()
+        col = layout.column(heading="Include")
+        if scene_gr2.asset_type == 'MODEL':
+            col.prop(scene_gr2_export, "export_hidden", text='Hidden')
+            col.prop(scene_gr2_export, "export_render")
+            col.prop(scene_gr2_export, "export_collision")
+            col.prop(scene_gr2_export, "export_physics")
+            col.prop(scene_gr2_export, "export_markers")
+            col.prop(scene_gr2_export, 'export_skeleton')
+            col.prop(scene_gr2_export, "export_animations", expand=True)
+        elif scene_gr2.asset_type == 'FP ANIMATION':
+            col.prop(scene_gr2_export, 'export_skeleton')
+            col.prop(scene_gr2_export, "export_animations", expand=True)
+        elif scene_gr2.asset_type == 'SCENARIO':
+            col.prop(scene_gr2_export, "export_hidden", text='Hidden')
+            col.prop(scene_gr2_export, "export_structure")
+            col.prop(scene_gr2_export, 'export_design')
+        elif scene_gr2.asset_type != 'PREFAB':
+            col.prop(scene_gr2_export, "export_hidden", text='Hidden')
+            col.prop(scene_gr2_export, "export_render")
+        if scene_gr2_export.export_gr2_files:
+            if scene_gr2.asset_type == 'SCENARIO':
+                col.prop(scene_gr2_export, 'export_all_bsps', expand=True)
+            if scene_gr2.asset_type in (('MODEL', 'SCENARIO', 'PREFAB')):
+                col.prop(scene_gr2_export, 'export_all_perms', expand=True)
+        col.separator()
         col = layout.column(heading="Keep")
         col.prop(scene_gr2_export, 'keep_fbx')
         col.prop(scene_gr2_export, 'keep_json')
-        col = layout.column(heading="Include")
-        col.prop(scene_gr2_export, 'export_render')
-        col.prop(scene_gr2_export, 'export_collision')
-        col.prop(scene_gr2_export, 'export_physics')
-        col.prop(scene_gr2_export, 'export_markers')
-        col.prop(scene_gr2_export, 'export_structure')
-        col.prop(scene_gr2_export, 'export_design')
-        col.prop(scene_gr2_export, 'export_animations', expand=True)
-
         col.separator()
-
         col = layout.column(heading="Scene")
         col.prop(scene_gr2_export, 'use_mesh_modifiers')
         col.prop(scene_gr2_export, 'use_triangles')
@@ -1062,7 +1073,7 @@ class GR2_HaloExport_ExportQuick(Operator):
         from .halo_export import ExportQuick
         scene = context.scene
         scene_gr2_export = scene.gr2_export
-        return ExportQuick(bpy.ops.export_scene.gr2, self.report, context, scene_gr2_export.export_gr2_files, scene_gr2_export.export_hidden, scene_gr2_export.export_all_bsps, scene_gr2_export.export_all_perms, scene_gr2_export.export_sidecar_xml, scene_gr2_export.import_to_game, scene_gr2_export.import_draft, scene_gr2_export.lightmap_structure, scene_gr2_export.lightmap_quality_h4, scene_gr2_export.lightmap_quality_custom, scene_gr2_export.lightmap_quality, scene_gr2_export.lightmap_specific_bsp, scene_gr2_export.lightmap_all_bsps, scene_gr2_export.export_animations, scene_gr2_export.export_render, scene_gr2_export.export_collision, scene_gr2_export.export_physics, scene_gr2_export.export_markers, scene_gr2_export.export_structure, scene_gr2_export.export_design, scene_gr2_export.use_mesh_modifiers, scene_gr2_export.use_triangles, scene_gr2_export.global_scale, scene_gr2_export.use_armature_deform_only, scene_gr2_export.meshes_to_empties, scene_gr2_export.show_output, scene_gr2_export.keep_fbx, scene_gr2_export.keep_json)
+        return ExportQuick(bpy.ops.export_scene.gr2, self.report, context, scene_gr2_export.export_gr2_files, scene_gr2_export.export_hidden, scene_gr2_export.export_all_bsps, scene_gr2_export.export_all_perms, scene_gr2_export.export_sidecar_xml, scene_gr2_export.import_to_game, scene_gr2_export.import_draft, scene_gr2_export.lightmap_structure, scene_gr2_export.lightmap_quality_h4, scene_gr2_export.lightmap_quality_custom, scene_gr2_export.lightmap_quality, scene_gr2_export.lightmap_specific_bsp, scene_gr2_export.lightmap_all_bsps, scene_gr2_export.export_animations, scene_gr2_export.export_skeleton, scene_gr2_export.export_render, scene_gr2_export.export_collision, scene_gr2_export.export_physics, scene_gr2_export.export_markers, scene_gr2_export.export_structure, scene_gr2_export.export_design, scene_gr2_export.use_mesh_modifiers, scene_gr2_export.use_triangles, scene_gr2_export.global_scale, scene_gr2_export.use_armature_deform_only, scene_gr2_export.meshes_to_empties, scene_gr2_export.show_output, scene_gr2_export.keep_fbx, scene_gr2_export.keep_json)
 
 class GR2_HaloExportPropertiesGroup(PropertyGroup):
     final_report: StringProperty(
@@ -1169,8 +1180,14 @@ class GR2_HaloExportPropertiesGroup(PropertyGroup):
     export_animations: EnumProperty(
         name='Animations',
         description='',
-        default='ALL',
+        default='ACTIVE',
         items=[ ('ALL', "All", ""), ('ACTIVE', "Active", ""), ('NONE', 'None', '')],
+        options=set(),
+    )
+    export_skeleton: BoolProperty(
+        name='Skeleton',
+        description='',
+        default=True,
         options=set(),
     )
     export_render: BoolProperty(
