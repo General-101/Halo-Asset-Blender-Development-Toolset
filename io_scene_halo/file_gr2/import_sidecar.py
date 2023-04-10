@@ -83,7 +83,7 @@ def GetImportFlags(flag_import_check, flag_import_force, flag_import_verbose, fl
     if flag_import_skip_instances:
         flags.append('skip_instances')
     if not_bungie_game():
-        pass # need to add h4 flags
+        flags.append('preserve_namespaces') # cheap workaround for namespace issue
     else:
         if flag_import_check:
             flags.append('check')
