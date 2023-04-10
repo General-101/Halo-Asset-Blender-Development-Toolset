@@ -1531,6 +1531,38 @@ class GR2_AnimationTools(Panel):
     def draw(self, context):
         layout = self.layout
 
+class GR2_GunRigMaker(Panel):
+    bl_label = "Rig gun to FP Arms"
+    bl_idname = "HALO_PT_GR2_GunRigMaker"
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "UI"
+    bl_options = {'DEFAULT_CLOSED'}
+    bl_parent_id = "HALO_PT_GR2_AnimationTools"
+
+    def draw(self, context):
+        layout = self.layout
+        scene = context.scene
+
+        layout.use_property_split = True
+        flow = layout.grid_flow(row_major=True, columns=0, even_columns=True, even_rows=False, align=False)
+        col = flow.column()
+        col.operator('halo_gr2.build_rig')
+
+class GR2_GunRigMaker_Start(Operator):
+    """Joins a gun armature to an first person armature and builds an appropriate rig. Ensure both the FP and Gun rigs are selected before use"""
+    bl_idname = 'halo_gr2.build_rig'
+    bl_label = 'Rig Gun to FP'
+    bl_options = {"REGISTER", "UNDO"}
+    bl_description = "Joins a gun armature to an first person armature and builds an appropriate rig. Ensure both the FP and Gun rigs are selected before use"
+
+    @classmethod
+    def poll(cls, context):
+        return context.active_object is not None and context.object.type == 'ARMATURE' and context.object.mode == 'OBJECT' and len(context.selected_objects) > 1
+
+    def execute(self, context):
+        from .rig_gun_to_fp import build_rig
+        return build_rig(self.report, context.selected_objects)
+
 classeshalo = (
     GR2_HaloExport,
     GR2_HaloExport_Export,
@@ -1571,6 +1603,8 @@ classeshalo = (
     GR2_ArmatureCreator,
     GR2_ArmatureCreator_Create,
     GR2_ArmatureCreatorPropertiesGroup,
+    #GR2_GunRigMaker,
+    #GR2_GunRigMaker_Start,
 )
 
 def register():
