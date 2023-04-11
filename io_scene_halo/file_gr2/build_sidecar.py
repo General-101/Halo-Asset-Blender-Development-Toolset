@@ -108,6 +108,9 @@ def BuildSidecar(halo_objects, model_armature, lod_count, regions_dict, global_m
         GetObjectOutputTypes(context, metadata, 'particle_model', asset_path, asset_name, sidecar_type, 'particle_model')
     elif sidecar_type == 'PREFAB':
         GetObjectOutputTypes(context, metadata, 'prefab', asset_path, asset_name, sidecar_type, 'prefab')
+    elif sidecar_type == 'FP ANIMATION':
+        GetObjectOutputTypes(context, metadata, 'model', asset_path, asset_name, sidecar_type)
+
     WriteFolders(metadata, not_bungo_game)
     WriteFaceCollections(metadata, sidecar_type, not_bungo_game, regions_dict, global_materials_dict)
     if sidecar_type == 'MODEL':
@@ -122,6 +125,9 @@ def BuildSidecar(halo_objects, model_armature, lod_count, regions_dict, global_m
         WriteParticleContents(halo_objects, metadata, asset_path, asset_name)
     elif sidecar_type == 'PREFAB':
         WritePrefabContents(halo_objects, metadata, asset_path, asset_name)
+    elif sidecar_type == 'FP ANIMATION':
+        add_null_render(asset_path)
+        WriteFPAnimationContents(model_armature, metadata, asset_path, asset_name)
 
     dom = xml.dom.minidom.parseString(ET.tostring(metadata))
     xml_string = dom.toprettyxml(indent='  ')
@@ -134,6 +140,19 @@ def BuildSidecar(halo_objects, model_armature, lod_count, regions_dict, global_m
     with open(sidecar_path_full, 'w') as xfile:
         xfile.write(part1 + 'encoding=\"{}\" standalone=\"{}\"?>'.format(m_encoding, m_standalone) + part2)
         xfile.close()
+
+def add_null_render(asset_path):
+    null_gr2_path = path.join(get_data_path() + asset_path, 'export', 'models', 'null_render.gr2')
+    if not path.exists(null_gr2_path):
+        # copy the null gr2 from io_scene_halo to act as the render model
+        try:
+            import shutil
+            script_folder_path = path.dirname(path.dirname(__file__))
+            null_gr2 = path.join(script_folder_path, 'file_gr2', 'resources', 'null_render.gr2')
+            shutil.copy(null_gr2, null_gr2_path)
+        except:
+            print("Unable to copy null gr2 from io_scene_halo to asset folder")
+
 
 def WriteHeader(metadata):
     header = ET.SubElement(metadata, "Header")
@@ -216,7 +235,7 @@ def GetObjectOutputTypes(context, metadata, type, asset_path, asset_name, sideca
     elif type == 'prefab':
         ET.SubElement(tagcollection, "OutputTag", Type='prefab').text = path.join(asset_path, asset_name)
     
-    else: # sky
+    else: # sky & fp animation
         ET.SubElement(tagcollection, "OutputTag", Type='model').text = path.join(asset_path, asset_name)
         ET.SubElement(tagcollection, "OutputTag", Type='scenery').text = path.join(asset_path, asset_name)
 
@@ -571,6 +590,66 @@ def WritePrefabContents(halo_objects, metadata, asset_path, asset_name):
     output = ET.SubElement(object, 'OutputTagCollection')
     ET.SubElement(output, 'OutputTag', Type='scenario_structure_bsp').text = f'{path.join(asset_path, asset_name)}'
     ET.SubElement(output, 'OutputTag', Type='scenario_structure_lighting_info').text = f'{path.join(asset_path, asset_name)}'
+
+def WriteFPAnimationContents(model_armature, metadata, asset_path, asset_name):
+    # NULL RENDER
+    contents = ET.SubElement(metadata, "Contents")
+    content = ET.SubElement(contents, "Content", Name=asset_name, Type='model')
+    object = ET.SubElement(content, 'ContentObject', Name='', Type="render_model")
+
+    network = ET.SubElement(object, 'ContentNetwork' ,Name='default', Type="")
+    ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, 'null', 'render', 'default')
+    ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePath(asset_path, 'null', 'render', 'default')
+
+    output = ET.SubElement(object, 'OutputTagCollection')
+    ET.SubElement(output, 'OutputTag', Type='render_model').text = path.join(asset_path, asset_name)
+
+    ##### SKELETON #####
+    object = ET.SubElement(content, 'ContentObject', Name='', Type="skeleton")
+    network = ET.SubElement(object, 'ContentNetwork' , Name='default', Type="")
+    ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, asset_name, 'skeleton')
+    ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePath(asset_path, asset_name, 'skeleton')
+
+    output = ET.SubElement(object, 'OutputTagCollection')
+
+    ##### ANIMATIONS #####
+    if 1<=len(bpy.data.actions):
+        object = ET.SubElement(content, 'ContentObject', Name='', Type="model_animation_graph")
+
+        for anim in bpy.data.actions:
+            try:
+                model_armature.animation_data.action == anim # forces an assert if action is not in armature
+                anim_name = dot_partition(anim.nwo.name_override)
+                anim_type = anim.nwo.animation_type
+                
+                match anim_type:
+                    case 'JMM':
+                        network = ET.SubElement(object, 'ContentNetwork' , Name=anim_name, Type='Base', ModelAnimationMovementData='None')
+                    case 'JMA':
+                        network = ET.SubElement(object, 'ContentNetwork' , Name=anim_name, Type='Base', ModelAnimationMovementData='XY')
+                    case 'JMT':
+                        network = ET.SubElement(object, 'ContentNetwork' , Name=anim_name, Type='Base', ModelAnimationMovementData='XYYaw')
+                    case 'JMZ':
+                        network = ET.SubElement(object, 'ContentNetwork' , Name=anim_name, Type='Base', ModelAnimationMovementData='XYZYaw')
+                    case 'JMV':
+                        network = ET.SubElement(object, 'ContentNetwork' , Name=anim_name, Type='Base', ModelAnimationMovementData='XYZFullRotation')
+                    case 'JMO':
+                        network = ET.SubElement(object, 'ContentNetwork' , Name=anim_name, Type='Overlay', ModelAnimationOverlayType='Keyframe', ModelAnimationOverlayBlending='Additive')
+                    case 'JMOX':
+                        network = ET.SubElement(object, 'ContentNetwork' , Name=anim_name, Type='Overlay', ModelAnimationOverlayType='Pose', ModelAnimationOverlayBlending='Additive')
+                    case 'JMR':
+                        network = ET.SubElement(object, 'ContentNetwork' , Name=anim_name, Type='Overlay', ModelAnimationOverlayType='Keyframe', ModelAnimationOverlayBlending='ReplacementObjectSpace')
+                    case 'JMRX':
+                        network = ET.SubElement(object, 'ContentNetwork' , Name=anim_name, Type='Overlay', ModelAnimationOverlayType='Keyframe', ModelAnimationOverlayBlending='ReplacementLocalSpace')
+
+                ET.SubElement(network, 'InputFile').text = GetInputFilePath(asset_path, anim_name, 'model_animation_graph')
+                ET.SubElement(network, 'IntermediateFile').text = GetIntermediateFilePath(asset_path, anim_name, 'model_animation_graph')
+            except:
+                print('Animation ' + anim.name + ' not written to sidecar because it does not exist in the armature')
+
+        output = ET.SubElement(object, 'OutputTagCollection')
+        ET.SubElement(output, 'OutputTag', Type='frame_event_list').text = path.join(asset_path, asset_name)
+        ET.SubElement(output, 'OutputTag', Type='model_animation_graph').text = path.join(asset_path, asset_name)
 
 def GetAssetPathBSP(asset_name, bsp, perm='', is_design = False):
     if is_design:

@@ -185,7 +185,7 @@ def bake_animations(armature, export_animations, current_action, timeline_start,
 
 def fix_armature_rotation(armature, sidecar_type, context, export_animations, current_action, timeline_start, timeline_end):
     forward = context.scene.gr2.forward_direction
-    if forward != 'x' and sidecar_type == 'MODEL':
+    if forward != 'x' and sidecar_type in ('MODEL', 'FP ANIMATION'):
         armature.select_set(True)
         # bake animation to avoid issues on armature rotation
         if export_animations != 'NONE' and 1<=len(bpy.data.actions):

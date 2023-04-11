@@ -30,7 +30,6 @@
 # TODO Stop structure design bsps being added to the connected_geometry_bsp_table
 # TODO get / setter for halo light colour
 # TODO Animation name tool
-# TODO Animation event creator
 # TODO Face map properties
 # TODO Strip prefixes on export and apply maya namespace prefixes (h4/h2a)
 
@@ -98,13 +97,18 @@ class Export_Scene_GR2(Operator, ExportHelper):
         name='Asset Type',
         description='',
         default='MODEL',
-        items=[ ('MODEL', "Model", ""), ('SCENARIO', "Scenario", ""), ('SKY', 'Sky', ''), ('DECORATOR SET', 'Decorator Set', ''), ('PARTICLE MODEL', 'Particle Model', ''), ('PREFAB', 'Prefab', '')]
+        items=[ ('MODEL', "Model", ""), ('SCENARIO', "Scenario", ""), ('SKY', 'Sky', ''), ('DECORATOR SET', 'Decorator Set', ''), ('PARTICLE MODEL', 'Particle Model', ''), ('PREFAB', 'Prefab', ''), ('FP ANIMATION', 'First Person Animation', '')]
     )
     export_animations: EnumProperty(
         name='Animations',
         description='',
-        default='ALL',
+        default='ACTIVE',
         items=[ ('ALL', "All", ""), ('ACTIVE', "Active", ""), ('NONE', 'None', '')]
+    )
+    export_skeleton: BoolProperty(
+        name='Skeleton',
+        description='',
+        default=True,
     )
     export_render: BoolProperty(
         name='Render Models',
@@ -454,6 +458,7 @@ class Export_Scene_GR2(Operator, ExportHelper):
         self.lightmap_all_bsps = scene_gr2_export.lightmap_all_bsps
         
         self.export_animations = scene_gr2_export.export_animations
+        self.export_skeleton = scene_gr2_export.export_skeleton
         self.export_render = scene_gr2_export.export_render
         self.export_collision = scene_gr2_export.export_collision
         self.export_physics = scene_gr2_export.export_physics
@@ -580,10 +585,10 @@ class Export_Scene_GR2(Operator, ExportHelper):
             # try:
             from .process_scene import process_scene
             process_scene(self, context, keywords, self.report, model_armature, asset_path, asset, skeleton_bones, halo_objects, timeline_start, timeline_end, lod_count, UsingBetterFBX(), selected_perms, selected_bsps, regions_dict, global_materials_dict, current_action, **keywords)
-            # except:
-            #     print('ASSERT: Scene processing failed')
-            #     error = traceback.format_exc()
-            #     self.report({'ERROR'}, error)
+            # except Exception:
+            #     from traceback import print_exc
+            #     print_exc()
+            #     self.report({'ERROR'}, 'ASSERT: Scene processing failed')
 
             # from .repair_scene import repair_scene
             # repair_scene(context, self.report, objects_selection, active_object, hidden_objects, mode, temp_armature, timeline_start, timeline_end, model_armature, halo_objects.lights, unselectable_objects, enabled_exclude_collections, mesh_node_names, temp_nodes, current_frame, hidden_collections, current_action, **keywords)
@@ -648,6 +653,10 @@ class Export_Scene_GR2(Operator, ExportHelper):
                 sub.prop(self, "export_collision")
                 sub.prop(self, "export_physics")
                 sub.prop(self, "export_markers")
+                sub.prop(self, 'export_skeleton')
+                sub.prop(self, "export_animations", expand=True)
+            elif self.sidecar_type == 'FP ANIMATION':
+                sub.prop(self, 'export_skeleton')
                 sub.prop(self, "export_animations", expand=True)
             elif self.sidecar_type == 'SCENARIO':
                 sub.prop(self, "export_structure")
@@ -804,7 +813,7 @@ class GR2_SceneProps(Panel):
         col = flow.column()
         col.prop(scene_gr2, 'default_mesh_type_ui')
         col.prop(scene_gr2, 'asset_type')
-        if scene_gr2.asset_type == 'MODEL':
+        if scene_gr2.asset_type in ('MODEL', 'FP ANIMATION'):
             col.prop(scene_gr2, 'forward_direction')
         col.separator()
         col.prop(scene_gr2, 'filter_ui', text = 'Filter UI')
@@ -1097,7 +1106,7 @@ class GR2_ScenePropertiesGroup(PropertyGroup):
         options=set(),
         description="Define the type of asset you are creating",
         default = 'MODEL',
-        items=[ ('MODEL', "Model", ""), ('SCENARIO', "Scenario", ""), ('SKY', 'Sky', ''), ('DECORATOR SET', 'Decorator Set', ''), ('PARTICLE MODEL', 'Particle Model', ''), ('PREFAB', 'Prefab', '')]
+        items=[ ('MODEL', "Model", ""), ('SCENARIO', "Scenario", ""), ('SKY', 'Sky', ''), ('DECORATOR SET', 'Decorator Set', ''), ('PARTICLE MODEL', 'Particle Model', ''), ('PREFAB', 'Prefab', ''), ('FP ANIMATION', 'First Person Animation', '')]
         )
     
     forward_direction: EnumProperty(
@@ -1112,7 +1121,7 @@ class GR2_ScenePropertiesGroup(PropertyGroup):
         name="Filter UI",
         options=set(),
         description="When True, hides all UI elements that aren't needed for the selected asset type",
-        default = False,
+        default = True,
         )
 
     output_biped: BoolProperty(
