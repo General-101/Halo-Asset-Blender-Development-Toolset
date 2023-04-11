@@ -341,6 +341,7 @@ class Scale_ModelPropertiesGroup(PropertyGroup):
                 ('halo3', "Halo 3", "Models from Halo 3 only"),
                 ('haloreach', "Halo Reach", "Models from Halo Reach only"),
                 ('halo4', "Halo 4", "Models from Halo 4 only"),
+                ('halo2a', "Halo 2A", "Models from Halo 2A Only"),
                ]
         )
 
@@ -592,6 +593,24 @@ class Scale_ModelPropertiesGroup(PropertyGroup):
                 ('6', "Mongoose", "Mongoose Model"),
                ]
         )
+
+    halo_2a_scale_model_char: EnumProperty(
+        name="Halo 2A Character Models:",
+        description="What model to create",
+        items=[
+                ('0', "Spartan", "Spartan MP Model"),
+                ('1', "Elite", "Elite MP Model"),
+                ('2', "Monitor", "Forge Monitor Model"),
+                ]   
+    )
+
+    halo_2a_scale_model_vehi: EnumProperty(
+        name="Halo 2A Vehicle Models:",
+        description="What model to create",
+        items=[
+                ('3', "Banshee", "Banshee Model"),
+                ]
+    )
 
 class SkyPropertiesGroup(PropertyGroup):
     longitude_slices: IntProperty(
@@ -960,6 +979,13 @@ class Halo_ScaleModelHelper(Panel):
             
             else:
                 row.prop(scene_scale_model, "halo_four_scale_model_vehi", text="")
+        
+        elif scene_scale_model.game_version == "halo2a":
+            if scene_scale_model.unit_type == "character":
+                row.prop(scene_scale_model, "halo_2a_scale_model_char", text="")
+            
+            else:
+                row.prop(scene_scale_model, "halo_2a_scale_model_vehi", text="")
 
         row = col.row()
         row.operator("halo_bulk.scale_model", text="Generate Scale Model")
@@ -1462,8 +1488,14 @@ class Scale_Model(Operator):
                 halo_4_unit_index = scene_scale_model.halo_four_scale_model_char
             else:
                 halo_4_unit_index = scene_scale_model.halo_four_scale_model_vehi
+        
+        elif scene_scale_model.game_version == "halo2a":
+            if scene_scale_model.unit_type == "character":
+                halo_2a_unit_index = scene_scale_model.halo_2a_scale_model_char
+            else:
+                halo_2a_unit_index = scene_scale_model.halo_2a_scale_model_vehi
 
-        return global_functions.run_code("scale_models.create_model(context, scene_scale_model.game_version, halo_1_unit_index, halo_2_unit_index, halo_3_unit_index, halo_reach_unit_index, halo_4_unit_index)")
+        return global_functions.run_code("scale_models.create_model(context, scene_scale_model.game_version, halo_1_unit_index, halo_2_unit_index, halo_3_unit_index, halo_reach_unit_index, halo_4_unit_index, halo_2a_unit_index)")
 
 class GenerateSky(Operator):
     """Generates a hemisphere shaped set of skylights for Halo 3 sky models"""

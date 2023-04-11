@@ -218,6 +218,12 @@ halo_four_array = (
 ("mantis", (92.9233, 190.286, 185.869)),
 ("mongoose", (105.571, 60.6401, 49.3812)))
 
+halo_2a_array = (
+    ("spartan", (20.315, 55.1014, 71.2389)),
+    ("elite", (41.1579, 57.2767, 76.7552)),
+    ("monitor", (0.601062, 0.594609, 0.586353)),
+    ("banshee", (6.9623, 7.54331, 3.49264)))
+
 #  load a mesh from JMS and use it as a scale model
 def generate_mesh(file, array_item, game_version):
     default_region = mesh_processing.get_default_region_permutation_name(game_version)
@@ -345,7 +351,7 @@ def generate_object(context, array_item, game_version):
 
     object_mesh.location = context.scene.cursor.location
 
-def create_model(context, game_version, halo_1_unit_index, halo_2_unit_index, halo_3_unit_index, halo_reach_unit_index, halo_4_unit_index):
+def create_model(context, game_version, halo_1_unit_index, halo_2_unit_index, halo_3_unit_index, halo_reach_unit_index, halo_4_unit_index, halo_2a_unit_index):
     if game_version == "haloce":
         array_item = halo_one_array[int(halo_1_unit_index)]
 
@@ -360,10 +366,13 @@ def create_model(context, game_version, halo_1_unit_index, halo_2_unit_index, ha
 
     elif game_version == "halo4":
         array_item = halo_four_array[int(halo_4_unit_index)]
+    
+    elif game_version == "halo2a":
+        array_item = halo_2a_array[int(halo_2a_unit_index)]
 
     mesh_processing.deselect_objects(context)
 
-    if game_version == "haloreach" or game_version == "halo4":
+    if game_version == "haloreach" or game_version == "halo4" or game_version == "halo2a":
         generate_object_from_fbx(context, array_item, game_version)
     else:
         generate_object(context, array_item, game_version)
