@@ -91,7 +91,7 @@ def prepare_scene(context, report, sidecar_type, export_hidden, use_armature_def
     set_bone_names(model_armature)
     # Handle spooky scary skeleton bones
     skeleton_bones = {}
-    current_action = ''
+    current_action = None
     if model_armature is not None:
         ParentToArmature(model_armature, temp_armature, no_parent_objects, context) # ensure all objects are parented to an armature on export. Render and collision mesh is parented with armature deform, the rest uses bone parenting
         skeleton_bones = GetBoneList(model_armature, use_armature_deform_only)      # return a list of bones attached to the model armature, ignoring control / non-deform bones
@@ -241,8 +241,9 @@ def set_animation_overrides(model_armature, current_action):
                     action.nwo.name_override = animation
             except:
                 pass
-
-        model_armature.animation_data.action = current_action
+        
+        if current_action is not None:
+            model_armature.animation_data.action = current_action
         
         deselect_all_objects()
 
