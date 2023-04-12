@@ -63,7 +63,7 @@ def LaunchFoundation(settings, context):
                 launch_args.append(get_tag_if_exists(asset_path, asset_name, 'physics_model'))
             if settings.open_model_animation_graph and len(bpy.data.actions) > 0:
                 launch_args.append(get_tag_if_exists(asset_path, asset_name, 'model_animation_graph'))
-            if settings.open_frame_event_list  and len(bpy.data.actions) > 0:
+            if settings.open_frame_event_list and len(bpy.data.actions) > 0:
                 launch_args.append(get_tag_if_exists(asset_path, asset_name, 'frame_event_list'))
 
             if settings.open_biped and scene_gr2.output_biped:
@@ -167,6 +167,15 @@ def LaunchFoundation(settings, context):
                 launch_args.append(get_tag_if_exists(asset_path, asset_name, 'scenario_structure_bsp'))
             if settings.open_scenario_structure_lighting_info:
                 launch_args.append(get_tag_if_exists(asset_path, asset_name, 'scenario_structure_lighting_info'))
+
+        elif nwo_asset_type() == 'FP ANIMATION':
+            if settings.open_model_animation_graph:
+                launch_args.append(get_tag_if_exists(asset_path, asset_name, 'model_animation_graph'))
+            if settings.open_frame_event_list:
+                launch_args.append(get_tag_if_exists(asset_path, asset_name, 'frame_event_list'))
+
+    elif settings.foundation_default == 'material' and not_bungie_game(): # check for h4/h2a as doesn't run properly in reach
+        launch_args.append('/pluginset:matman')
 
     os.chdir(get_ek_path())
     command = f"""Foundation.exe {' '.join(f'"{arg}"' for arg in launch_args)}"""

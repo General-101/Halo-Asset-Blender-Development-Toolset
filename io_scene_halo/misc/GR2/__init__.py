@@ -366,6 +366,9 @@ class GR2_HaloLauncherFoundationSettings(Panel):
                 col.prop(scene_gr2_halo_launcher, "open_prefab")
                 col.prop(scene_gr2_halo_launcher, "open_scenario_structure_bsp")
                 col.prop(scene_gr2_halo_launcher, "open_scenario_structure_lighting_info")
+            elif nwo_asset_type() == 'FP ANIMATION':
+                col.prop(scene_gr2_halo_launcher, "open_model_animation_graph")
+                col.prop(scene_gr2_halo_launcher, "open_frame_event_list")
 
 class GR2_HaloLauncher_Foundation(Operator):
     """Launches Foundation"""
@@ -495,7 +498,7 @@ class GR2_HaloLauncherPropertiesGroup(PropertyGroup):
         description="Select whether Foundation should open with the last opended windows, or open to the selected asset tags",
         default="asset",
         options=set(),
-        items=[('last', 'Default', ''), ('asset', 'Asset', '')]
+        items=[('last', 'Default', ''), ('asset', 'Asset', ''), ('material', 'Materials', '')]
     )
 
     game_default: EnumProperty(
