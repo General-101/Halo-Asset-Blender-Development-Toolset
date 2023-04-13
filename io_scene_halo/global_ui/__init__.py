@@ -1236,6 +1236,7 @@ class ASS_LightFarAtten(Panel):
 from ..file_gr2.nwo_utils import (
     frame_prefixes,
     marker_prefixes,
+    run_ek_cmd,
     special_prefixes,
     boundary_surface_prefixes,
     poop_lighting_prefixes,
@@ -2130,11 +2131,36 @@ class NWO_MaterialProps(Panel):
                 row = col.row()
                 row.prop(material_nwo, "shader_path", text='Material Path')
                 row.operator('nwo.shader_path')
+
             else:
                 row = col.row()
                 row.prop(material_nwo, "shader_path")
                 row.operator('nwo.shader_path')
                 col.prop(material_nwo, "Shader_Type")
+
+            if material_nwo.shader_path != '':
+                col.separator()
+                row = col.row()
+                row.scale_y = 1.5
+                row.operator('nwo.open_halo_material')
+
+class NWO_MaterialOpenTag(Operator):
+    """Opens the active material's Halo Shader/Material in Foundation"""
+    bl_idname = 'nwo.open_halo_material'
+    bl_label = 'Open in Foundation'
+    bl_options = {"REGISTER", "UNDO"}
+
+    def execute(self, context):
+        tag_path = get_tags_path() + context.object.active_material.nwo.shader_path
+        if os.path.exists(tag_path):
+            run_ek_cmd(['foundation', '/dontloadlastopenedwindows', tag_path])
+        else:
+            if not_bungie_game():
+                self.report({'ERROR_INVALID_INPUT'}, 'Material tag does not exist')
+            else:
+                self.report({'ERROR_INVALID_INPUT'}, 'Shader tag does not exist')
+
+        return {'FINISHED'}
                         
 # LIGHT PROPERTIES
 class NWO_LightProps(Panel):
@@ -5772,6 +5798,7 @@ classeshalo = (
     NWO_ObjectMeshLightmapProps,
     NWO_ObjectMarkerProps,
     NWO_MaterialProps,
+    NWO_MaterialOpenTag,
     NWO_ObjectPropertiesGroup,
     NWO_LightPropertiesGroup,
     NWO_MaterialPropertiesGroup,
