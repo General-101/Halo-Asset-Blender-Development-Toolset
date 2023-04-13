@@ -3822,7 +3822,7 @@ class NWO_ObjectPropertiesGroup(PropertyGroup):
 
     marker_types = [ ('_connected_geometry_marker_type_model', "Model", "Default marker type. Defines render_model markers for models, and structure markers for bsps"),
                 ('_connected_geometry_marker_type_effects', "Effects", "Marker for effects only."),
-                ('_connected_geometry_marker_type_game_instance', "Game Instance", "Game Instance marker"),
+                ('_connected_geometry_marker_type_game_instance', "Game Object", "Game Instance marker. Used to create an instance of a tag in the bsp. Can be set with the prefix: ?"),
                 ('_connected_geometry_marker_type_garbage', "Garbage", "marker to define position that garbage pieces should be created"),
                 ('_connected_geometry_marker_type_hint', "Hint", "Used for ai hints"),
                 ('_connected_geometry_marker_type_pathfinding_sphere', "Pathfinding Sphere", "Used to create ai pathfinding spheres"),
@@ -3852,7 +3852,7 @@ class NWO_ObjectPropertiesGroup(PropertyGroup):
     # h4 versions
     marker_types_h4 = [ ('_connected_geometry_marker_type_model', "Model", "Default marker type. Defines render_model markers for models, and structure markers for bsps"),
                 ('_connected_geometry_marker_type_effects', "Effects", "Marker for effects only."),
-                ('_connected_geometry_marker_type_game_instance', "Game Instance", "Game Instance marker. Can be set with the prefix: ?"),
+                ('_connected_geometry_marker_type_game_instance', "Game Object", "Game Instance marker. Used to create an instance of a tag in the bsp. Can be set with the prefix: ?"),
                 ('_connected_geometry_marker_type_garbage', "Garbage", "marker to define position that garbage pieces should be created"),
                 ('_connected_geometry_marker_type_hint', "Hint", "Used for ai hints"),
                 ('_connected_geometry_marker_type_pathfinding_sphere', "Pathfinding Sphere", "Used to create ai pathfinding spheres"),

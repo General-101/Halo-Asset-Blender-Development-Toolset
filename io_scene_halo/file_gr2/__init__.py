@@ -811,8 +811,9 @@ class GR2_SceneProps(Panel):
         layout.use_property_split = True
         flow = layout.grid_flow(row_major=True, columns=0, even_columns=True, even_rows=False, align=False)
         col = flow.column()
-        col.prop(scene_gr2, 'default_mesh_type_ui')
         col.prop(scene_gr2, 'asset_type')
+        col.separator()
+        col.prop(scene_gr2, 'default_mesh_type_ui')
         if scene_gr2.asset_type in ('MODEL', 'FP ANIMATION'):
             col.prop(scene_gr2, 'forward_direction')
         col.separator()

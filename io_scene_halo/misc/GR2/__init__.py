@@ -890,7 +890,7 @@ class GR2_ShaderFinder(Panel):
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     bl_options = {'DEFAULT_CLOSED'}
-    bl_parent_id = "HALO_PT_GR2_PropertiesManager"
+    bl_parent_id = "HALO_PT_GR2_MaterialTools"
 
     def draw(self, context):
         layout = self.layout
@@ -1298,7 +1298,7 @@ class GR2_HaloExportPropertiesGroup(PropertyGroup):
 # PROPERTIES MANAGER TOOL
 
 class GR2_PropertiesManager(Panel):
-    bl_label = "Halo Properties Tools"
+    bl_label = "Halo Object Tools"
     bl_idname = "HALO_PT_GR2_PropertiesManager"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
@@ -1565,6 +1565,18 @@ class GR2_GunRigMaker_Start(Operator):
     def execute(self, context):
         from .rig_gun_to_fp import build_rig
         return build_rig(self.report, context.selected_objects)
+    
+class GR2_MaterialsManager(Panel):
+    bl_label = "Halo Material Tools"
+    bl_idname = "HALO_PT_GR2_MaterialTools"
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "UI"
+    # bl_options = {'DEFAULT_CLOSED'}
+    bl_category = "Halo GR2 Tools"
+    # bl_parent_id = "HALO_PT_GR2_AutoTools"
+
+    def draw(self, context):
+        layout = self.layout
 
 classeshalo = (
     GR2_HaloExport,
@@ -1590,6 +1602,7 @@ classeshalo = (
     GR2_HaloCollectionManagerPropertiesGroup,
     # GR2_CopyHaloProps,
     # GR2_CopyHaloProps_Copy, #unregistered until this operator is fixed
+    GR2_MaterialsManager,
     GR2_ShaderFinder,
     GR2_ShaderFinder_Find,
     GR2_HaloShaderFinderPropertiesGroup,
