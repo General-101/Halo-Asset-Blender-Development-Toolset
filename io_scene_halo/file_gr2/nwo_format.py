@@ -1075,7 +1075,10 @@ class NWOMesh(NWOObject):
         elif self.object_instance():
             return '_connected_geometry_mesh_type_object_instance'
         elif self.physics():
-            return '_connected_geometry_mesh_type_physics'
+            if not self.not_bungie_game and self.sidecar_type in ('SCENARIO', 'PREFAB') and self.ob.parent is not None and CheckType.poop(self.ob.parent):
+                return '_connected_geometry_mesh_type_poop_physics'
+            else:
+                return '_connected_geometry_mesh_type_physics'
         elif self.planar_fog_volume():
             return '_connected_geometry_mesh_type_planar_fog_volume'
         elif self.portal():
