@@ -128,7 +128,7 @@ def ImportTagXML(context, report):
         report({'WARNING'},"Could not find file that exists at this path. Are your Editing Kit path and animation graph path correct?")
         return None
     os.chdir(get_ek_path())
-    run_tool('export-tag-to-xml', f'\\{tag_path}', xml_path)
+    run_tool(['export-tag-to-xml', f'\\{tag_path}', xml_path])
     if not os.path.exists(xml_path):
         report({'WARNING'},"Failed to convert supplied tag path to XML. Did you enter a valid tag path?")
         return None

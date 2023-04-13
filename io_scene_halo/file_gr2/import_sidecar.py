@@ -32,6 +32,7 @@ from .nwo_utils import (
     get_tags_path,
     get_tool_type,
     not_bungie_game,
+    run_tool,
 )
 
 def import_now(report, sidecar_type, filePath='', import_check=False, import_force=False, import_verbose=False, import_draft=False,import_seam_debug=False,import_skip_instances=False,import_decompose_instances=False,import_surpress_errors=False, run_tagwatcher=False, import_in_background=False):
@@ -39,10 +40,7 @@ def import_now(report, sidecar_type, filePath='', import_check=False, import_for
     asset_path = CleanAssetPath(full_path)
     asset_name = asset_path.rpartition('\\')[2]
     try:
-        toolCommand = f'{get_tool_type()} import "{os.path.join(asset_path, asset_name)}.sidecar.xml" {GetImportFlags(import_check, import_force, import_verbose, import_draft, import_seam_debug, import_skip_instances, import_decompose_instances, import_surpress_errors)}'
-        os.chdir(get_ek_path())
-        run(toolCommand)
-
+        run_tool(['import', f'{os.path.join(asset_path, asset_name)}.sidecar.xml', GetImportFlags(import_check, import_force, import_verbose, import_draft, import_seam_debug, import_skip_instances, import_decompose_instances, import_surpress_errors)])
     except:
         report({'WARNING'},"Import Failed!")
         print('Exception!')

@@ -29,7 +29,7 @@ from math import radians
 from mathutils import Matrix
 import os
 from os.path import exists as file_exists
-from subprocess import Popen
+from subprocess import Popen, run
 import shutil
 
 ###########
@@ -566,13 +566,26 @@ class CheckType:
             return material.name.startswith('+') or material.nwo.material_override != 'none'
 
 
-def run_tool(*tool_args):
-    """Runs Tool using the specified function and arguments. Do not include 'tool' in the string passed"""
+def run_tool(tool_args: list, in_background=False):
+    """Runs Tool using the specified function and arguments. Do not include 'tool' in the args passed"""
     os.chdir(get_ek_path())
     command = f"""{get_tool_type()} {' '.join(f'"{arg}"' for arg in tool_args)}"""
     # print(command)
-    p = Popen(command)
-    p.wait()
+    if in_background:
+        Popen(command)
+    else:
+        run(command)
+
+def run_ek_cmd(args: list, in_background=False):
+    """Executes a cmd line argument at the root editing kit directory"""
+    os.chdir(get_ek_path())
+    command = f"""{' '.join(f'"{arg}"' for arg in args)}"""
+    print(command)
+    if in_background:
+        Popen(command)
+    else:
+        run(command)
+
 
 def rename_file(file_path, new_file_path=''):
     os.replace(file_path, new_file_path)

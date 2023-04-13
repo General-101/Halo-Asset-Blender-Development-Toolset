@@ -35,6 +35,7 @@ from ...file_gr2.nwo_utils import (
     get_tags_path,
     not_bungie_game,
     nwo_asset_type,
+    run_ek_cmd,
     valid_nwo_asset,
 )
 
@@ -47,7 +48,7 @@ def get_tag_if_exists(asset_path, asset_name, type, extra=''):
 
 def LaunchFoundation(settings, context):
     scene_gr2 = context.scene.gr2
-    launch_args = []
+    launch_args = ['Foundation.exe']
     # set the launch args
     if settings.foundation_default == 'asset' and valid_nwo_asset(context):
         launch_args.append('/dontloadlastopenedwindows')
@@ -177,10 +178,8 @@ def LaunchFoundation(settings, context):
     elif settings.foundation_default == 'material' and not_bungie_game(): # check for h4/h2a as doesn't run properly in reach
         launch_args.append('/pluginset:matman')
 
-    os.chdir(get_ek_path())
-    command = f"""Foundation.exe {' '.join(f'"{arg}"' for arg in launch_args)}"""
-    Popen(command)
-    Popen('bin\\tools\\bonobo\\TagWatcher.exe')
+    run_ek_cmd(launch_args, True)
+    run_ek_cmd(['bin\\tools\\bonobo\\TagWatcher.exe'], True)
 
     return {'FINISHED'}
 
@@ -367,7 +366,7 @@ def launch_game(is_sapien, settings, filepath):
                         file.write(f'{settings.custom_functions}\n')
 
 
-    Popen(' '.join(f'"{arg}"' for arg in args))
+    run_ek_cmd(args, True)
 
     return {'FINISHED'}
 
