@@ -951,7 +951,7 @@ class Halo_GlobalSettings(Panel):
     bl_space_type = 'PROPERTIES'
     bl_region_type = 'WINDOW'
     bl_context = "scene"
-    bl_options = {'DEFAULT_CLOSED'}
+    # bl_options = {'DEFAULT_CLOSED'}
     bl_parent_id = "HALO_PT_ScenePropertiesPanel"
 
     def draw(self, context):
@@ -1012,6 +1012,7 @@ class Halo_ScenePropertiesGroup(PropertyGroup):
     game_version: EnumProperty(
         name="Game:",
         description="What game will you be exporting for",
+        default='reach',
         update=CheckEKPaths,
         items=[ ('haloce', "Halo CE", "Show properties for Halo Custom Edition Or Halo CE MCC"),
                 ('halo2', "Halo 2", "Show properties for Halo 2 Vista or Halo 2 MCC"),

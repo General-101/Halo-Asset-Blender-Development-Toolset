@@ -930,6 +930,10 @@ class GR2_SceneProps_SharedAssets(Panel):
     bl_context = "scene"
     bl_parent_id = "GR2_PT_GameVersionPanel"
 
+    @classmethod
+    def poll(cls, context):
+        return False # hiding this menu until it actually does something
+
     def draw(self, context):
         scene = context.scene
         scene_gr2 = scene.gr2
