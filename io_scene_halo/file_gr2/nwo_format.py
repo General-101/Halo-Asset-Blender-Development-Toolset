@@ -1296,7 +1296,7 @@ class NWOMesh(NWOObject):
     def face_mode(self):
         if not self.not_bungie_game and len(self.ob.children) > 0 and self.bungie_mesh_type == '_connected_geometry_mesh_type_poop':
             for child in self.ob.children:
-                if CheckType.poop_collision_physics(child):
+                if CheckType.poop_collision(child):
                     return '_connected_geometry_face_mode_render_only'
             else:
                 return self.halo.Face_Mode
