@@ -1578,6 +1578,71 @@ class GR2_MaterialsManager(Panel):
     def draw(self, context):
         layout = self.layout
 
+class GR2_BitmapExport(Panel):
+    bl_label = "Export Bitmaps"
+    bl_idname = "HALO_PT_GR2_BitmapExport"
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "UI"
+    bl_options = {'DEFAULT_CLOSED'}
+    bl_parent_id = "HALO_PT_GR2_MaterialTools"
+
+    def draw(self, context):
+        layout = self.layout
+        scene = context.scene
+        scene_gr2_bitmap_export = scene.gr2_bitmap_export
+
+        layout.use_property_split = True
+        flow = layout.grid_flow(row_major=True, columns=0, even_columns=True, even_rows=False, align=False)
+        col = flow.column()
+        col.scale_y = 1.5
+        col.operator('halo_gr2.export_bitmaps')
+        col.separator()
+        col = flow.column(heading="Overwrite")
+        col.prop(scene_gr2_bitmap_export, 'overwrite', text='Existing')
+        row = col.row()
+        row.prop(scene_gr2_bitmap_export, 'bitmaps_selection', expand=True)
+        col.prop(scene_gr2_bitmap_export, 'export_type')
+        
+
+class GR2_BitmapExport_Export(Operator):
+    """Exports TIFFs for the active material and imports them into the game as bitmaps"""
+    bl_idname = 'halo_gr2.export_bitmaps'
+    bl_label = 'Export Bitmaps'
+    bl_options = {"REGISTER", "UNDO"}
+    bl_description = "Exports TIFFs for the active material and imports them into the game as bitmaps"
+
+    @classmethod
+    def poll(cls, context):
+        return context.object.active_material is not None or context.scene.gr2_bitmap_export.bitmaps_selection == 'all'
+
+    def execute(self, context):
+        scene = context.scene
+        scene_gr2_bitmap_export = scene.gr2_bitmap_export
+        from .export_bitmaps import export_bitmaps
+        return export_bitmaps(self.report, context, context.object.active_material, context.scene.gr2_halo_launcher.sidecar_path, scene_gr2_bitmap_export.overwrite, scene_gr2_bitmap_export.export_type, scene_gr2_bitmap_export.bitmaps_selection)
+    
+class GR2_BitmapExportPropertiesGroup(PropertyGroup):
+    overwrite: BoolProperty(
+        name="Overwrite TIFFs",
+        description="Enable to overwrite tiff files already saved to your asset bitmaps directory",
+        options=set(),
+    )
+    export_type: EnumProperty(
+        name='Type',
+        default='both',
+        description="Choose whether to just export material image textures as tiffs, or just import the existing ones to the game, or both",
+        options=set(),
+        items=[('both', 'Both', ''), ('export', 'Export TIFF', 'Export blender image textures to tiff only'), ('import', 'Make Tags', 'Import the tiff to the game as a bitmap tag only')]
+    )
+    bitmaps_selection: EnumProperty(
+        name='Selection',
+        default='active',
+        description="Choose whether to only export textures attached to the active material, or all scene textures",
+        options=set(),
+        items=[('active', 'Active', 'Export the active material only'), ('all', 'All', 'Export all blender textures')]
+    )
+
+
 classeshalo = (
     GR2_HaloExport,
     GR2_HaloExport_Export,
@@ -1619,6 +1684,9 @@ classeshalo = (
     GR2_ArmatureCreator,
     GR2_ArmatureCreator_Create,
     GR2_ArmatureCreatorPropertiesGroup,
+    GR2_BitmapExport,
+    GR2_BitmapExport_Export,
+    GR2_BitmapExportPropertiesGroup,
     #GR2_GunRigMaker,
     #GR2_GunRigMaker_Start,
 )
@@ -1633,6 +1701,7 @@ def register():
     bpy.types.Scene.gr2_export = PointerProperty(type=GR2_HaloExportPropertiesGroup, name="Halo Export", description="")
     bpy.types.Scene.gr2_collection_manager = PointerProperty(type=GR2_HaloCollectionManagerPropertiesGroup, name="Collection Manager", description="")
     bpy.types.Scene.gr2_armature_creator = PointerProperty(type=GR2_ArmatureCreatorPropertiesGroup, name="Halo Armature", description="")
+    bpy.types.Scene.gr2_bitmap_export = PointerProperty(type=GR2_BitmapExportPropertiesGroup, name="Halo Bitmap Export", description="")
     
 def unregister():
     for clshalo in classeshalo:

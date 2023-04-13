@@ -1235,6 +1235,7 @@ class ASS_LightFarAtten(Panel):
 # -------------------------------
 from ..file_gr2.nwo_utils import (
     frame_prefixes,
+    get_asset_info,
     marker_prefixes,
     run_ek_cmd,
     special_prefixes,
@@ -2159,6 +2160,18 @@ class NWO_MaterialOpenTag(Operator):
                 self.report({'ERROR_INVALID_INPUT'}, 'Material tag does not exist')
             else:
                 self.report({'ERROR_INVALID_INPUT'}, 'Shader tag does not exist')
+
+        return {'FINISHED'}
+
+class NWO_MaterialBuildTag(Operator):
+    """Creates a Halo Shader/Material for the current blender Material"""
+    bl_idname = 'nwo.open_halo_material'
+    bl_label = 'Open in Foundation'
+    bl_options = {"REGISTER", "UNDO"}
+
+    def execute(self, context):
+        asset_path, asset = get_asset_info(get_tags_path() + context.scene.gr2_halo_launcher.sidecar_path)
+        create_material_tag(context.object.active_material, asset_path, asset)
 
         return {'FINISHED'}
                         
