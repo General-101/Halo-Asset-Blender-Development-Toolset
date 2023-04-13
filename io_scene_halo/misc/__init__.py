@@ -609,6 +609,12 @@ class Scale_ModelPropertiesGroup(PropertyGroup):
         description="What model to create",
         items=[
                 ('3', "Banshee", "Banshee Model"),
+                ('4', "Ghost", "Ghost Model"),
+                ('5', "Hornet", "Hornet Model"),
+                ('6', "Mongoose", "Mongoose Model"),
+                ('7', "Scorpion", "Scorpion Model"),
+                ('8', "Warthog", "Warthog Model"),
+                ('9', "Wraith", "Wraith Model"),
                 ]
     )
 
@@ -1457,6 +1463,7 @@ class Scale_Model(Operator):
         halo_3_unit_index = 0
         halo_reach_unit_index = 0
         halo_4_unit_index = 0
+        halo_2a_unit_index = 0
 
         if scene_scale_model.game_version == "haloce":
             if scene_scale_model.unit_type == "character":

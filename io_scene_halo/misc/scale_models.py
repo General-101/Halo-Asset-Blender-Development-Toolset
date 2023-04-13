@@ -222,7 +222,9 @@ halo_2a_array = (
     ("spartan", (20.315, 55.1014, 71.2389)),
     ("elite", (41.1579, 57.2767, 76.7552)),
     ("monitor", (19.7199, 19.5082, 19.2373)),
-    ("banshee", (228.422, 247.484, 114.588)))
+    ("banshee", (228.422, 247.484, 114.588)),
+    ("ghost", (138.389, 126.493, 60.2351)),
+    ("hornet", (309.701, 283.367, 144.228)))
 
 #  load a mesh from JMS and use it as a scale model
 def generate_mesh(file, array_item, game_version):
