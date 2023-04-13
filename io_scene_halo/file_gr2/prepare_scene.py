@@ -88,7 +88,8 @@ def prepare_scene(context, report, sidecar_type, export_hidden, use_armature_def
     # Get and set the model armature, or create one if none exists.
     model_armature, temp_armature, no_parent_objects = GetSceneArmature(context, sidecar_type, game_version)
     # set bone names equal to their name overrides (if not blank)
-    set_bone_names(model_armature)
+    if model_armature is not None:
+        set_bone_names(model_armature)
     # Handle spooky scary skeleton bones
     skeleton_bones = {}
     current_action = None
@@ -454,7 +455,7 @@ def GetSceneArmature(context, sidecar_type, game_version):
         if ob.type == 'ARMATURE' and not ob.name.startswith('+'): # added a check for a '+' prefix in armature name, to support special animation control armatures in the future
             model_armature = ob
             break
-    if model_armature is None and (sidecar_type not in ('SCENARIO', 'PREFAB', 'PARTICLE MODEL', 'DECORATOR SET') or (sidecar_type == 'SCENARIO' and not not_bungie_game())):
+    if model_armature is None and (sidecar_type not in ('SCENARIO', 'PREFAB', 'PARTICLE MODEL', 'DECORATOR SET')):
         model_armature, no_parent_objects = AddTempArmature(context)
         temp_armature = True
 
