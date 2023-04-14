@@ -1,16 +1,14 @@
 **/__pycache__/
 *.patch
 output/
-/io_scene_halo/resources.zip
+/io_scene_nwo/resources.zip
 copy to add-ons.bat
 .DS_Store
-io_scene_halo/.vscode/settings.json
+io_scene_ nwo/.vscode/settings.json
 *.vsidx
-io_scene_halo/.vs/io_scene_halo/FileContentIndex/read.lock
-io_scene_halo/.vs/io_scene_halo/v17/.suo
-io_scene_halo/.vs/ProjectSettings.json
-io_scene_halo/.vs/slnx.sqlite
-io_scene_halo/.vs/VSWorkspaceState.json
-/io_scene_halo/managed_blam
-flags.blend
-flags.blend1
+io_scene_nwo/.vs/io_scene_halo/FileContentIndex/read.lock
+io_scene_nwo/.vs/io_scene_halo/v17/.suo
+io_scene_nwo/.vs/ProjectSettings.json
+io_scene_nwo/.vs/slnx.sqlite
+io_scene_nwo/.vs/VSWorkspaceState.json
+/io_scene_nwo/managed_blam
