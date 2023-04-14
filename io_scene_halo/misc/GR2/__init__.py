@@ -1628,7 +1628,7 @@ class GR2_BitmapExportPropertiesGroup(PropertyGroup):
         options=set(),
     )
     export_type: EnumProperty(
-        name='Type',
+        name='Actions',
         default='both',
         description="Choose whether to just export material image textures as tiffs, or just import the existing ones to the game, or both",
         options=set(),
@@ -1639,9 +1639,38 @@ class GR2_BitmapExportPropertiesGroup(PropertyGroup):
         default='active',
         description="Choose whether to only export textures attached to the active material, or all scene textures",
         options=set(),
-        items=[('active', 'Active', 'Export the active material only'), ('all', 'All', 'Export all blender textures')]
+        items=[('active', 'Active', 'Export the active material only'), ('all', 'All', 'Export all blender textures'), ('bake', 'Bake', 'Bakes textures for the currently selected objects and exports the results')]
     )
 
+class GR2_ShaderCreate(Panel):
+    bl_label = "Build Shader"
+    bl_idname = "HALO_PT_GR2_ShaderCreate"
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "UI"
+    bl_options = {'DEFAULT_CLOSED'}
+    bl_parent_id = "HALO_PT_GR2_MaterialTools"
+
+    def draw(self, context):
+        layout = self.layout
+        scene = context.scene
+
+        layout.use_property_split = True
+        flow = layout.grid_flow(row_major=True, columns=0, even_columns=True, even_rows=False, align=False)
+        col = flow.column()
+        col.scale_y = 1.5
+        # col.operator('halo_gr2.build_shader')
+
+class GR2_ShaderCreate_Create(Operator):
+    """Makes a shader"""
+    bl_idname = 'halo_gr2.build_shader'
+    bl_label = 'Build Shader'
+    bl_options = {"REGISTER", "UNDO"}
+    bl_description = "Makes a shader"
+
+    def execute(self, context):
+        scene = context.scene
+        from .build_shader import build_shader
+        return build_shader()
 
 classeshalo = (
     GR2_HaloExport,
@@ -1687,6 +1716,8 @@ classeshalo = (
     GR2_BitmapExport,
     GR2_BitmapExport_Export,
     GR2_BitmapExportPropertiesGroup,
+    GR2_ShaderCreate,
+    GR2_ShaderCreate_Create,
     #GR2_GunRigMaker,
     #GR2_GunRigMaker_Start,
 )
