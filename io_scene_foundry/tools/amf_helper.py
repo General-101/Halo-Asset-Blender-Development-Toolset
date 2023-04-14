@@ -24,8 +24,8 @@
 #
 # ##### END MIT LICENSE BLOCK #####
 
-import bpy
-from ...file_gr2.nwo_utils import dot_partition
+from io_scene_foundry.utils.nwo_utils import dot_partition
+
 
 def amf_assign(context, report):
     # Loop through scene objects and apply appropriate perm / region names

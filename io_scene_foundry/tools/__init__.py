@@ -147,7 +147,7 @@ class NWO_HaloLauncher(Panel):
     bl_idname = "NWO_PT_HaloLauncher"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
-    bl_category = "Foundry Tools"
+    bl_category = "Foundry"
 
     def draw(self, context):
         layout = self.layout
@@ -942,7 +942,7 @@ class NWO_HaloExport(Panel):
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     bl_icon = 'EXPORT'
-    bl_category = "Foundry Tools"
+    bl_category = "Foundry"
 
     def draw(self, context):
         layout = self.layout
@@ -1301,7 +1301,7 @@ class NWO_PropertiesManager(Panel):
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     # bl_options = {'DEFAULT_CLOSED'}
-    bl_category = "Foundry Tools"
+    bl_category = "Foundry"
 
     def draw(self, context):
         layout = self.layout
@@ -1502,7 +1502,13 @@ class NWO_JMSHelper(Panel):
         layout.use_property_split = True
         flow = layout.grid_flow(row_major=True, columns=0, even_columns=True, even_rows=False, align=False)
         col = flow.column()
-        col.operator('nwo.jms_assign')
+        game_version = context.scene.nwo_global.game_version
+        if game_version == 'reach':
+            col.operator('nwo.jms_assign', text="JMS -> Reach Asset")
+        elif game_version == 'h4':
+            col.operator('nwo.jms_assign', text="JMS -> H4 Asset")
+        else:
+            col.operator('nwo.jms_assign', text="JMS -> H2AMP Asset")
 
 class NWO_JMSHelper_Assign(Operator):
     """Splits the active object into it's face maps and assigns a new name for each new object to match the AMF naming convention, as well as setting the proper region & permutation. Collision and physics prefixes are retained"""
@@ -1525,7 +1531,7 @@ class NWO_AnimationTools(Panel):
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     # bl_options = {'DEFAULT_CLOSED'}
-    bl_category = "Foundry Tools"
+    bl_category = "Foundry"
 
     def draw(self, context):
         layout = self.layout
@@ -1568,7 +1574,7 @@ class NWO_MaterialsManager(Panel):
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     # bl_options = {'DEFAULT_CLOSED'}
-    bl_category = "Foundry Tools"
+    bl_category = "Foundry"
 
     def draw(self, context):
         layout = self.layout

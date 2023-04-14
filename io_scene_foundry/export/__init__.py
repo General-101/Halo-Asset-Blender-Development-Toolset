@@ -789,7 +789,7 @@ def ExportSettingsFromSidecar(sidecar_filepath):
 # NWO Scene Settings
 ##############################################
 class NWO_SceneProps(Panel):
-    bl_label = "NWO Scene Properties"
+    bl_label = "Asset Properties"
     bl_idname = "NWO_PT_GameVersionPanel"
     bl_space_type = 'PROPERTIES'
     bl_region_type = 'WINDOW'

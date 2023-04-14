@@ -28,7 +28,7 @@ import os
 import bpy
 import glob
 from subprocess import Popen
-from ...file_gr2.nwo_utils import (
+from io_scene_foundry.utils.nwo_utils import (
     get_asset_info,
     get_data_path,
     get_ek_path,
