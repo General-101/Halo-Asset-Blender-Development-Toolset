@@ -47,39 +47,21 @@ from bpy.props import (
         )
 
 class NWO_SceneProps(Panel):
-    bl_label = "Halo Scene Properties"
+    bl_label = "Halo Scene"
     bl_idname = "NWO_PT_ScenePropertiesPanel"
     bl_space_type = 'PROPERTIES'
     bl_region_type = 'WINDOW'
     bl_context = "scene"
-    bl_options = {'DEFAULT_CLOSED'}
-
-    def draw(self, context):
-        layout = self.layout
-
-class NWO_GlobalSettings(Panel):
-    bl_label = "Global Settings"
-    bl_idname = "NWO_PT_GlobalSettings"
-    bl_space_type = 'PROPERTIES'
-    bl_region_type = 'WINDOW'
-    bl_context = "scene"
-    # bl_options = {'DEFAULT_CLOSED'}
-    bl_parent_id = "NWO_PT_ScenePropertiesPanel"
 
     def draw(self, context):
         layout = self.layout
         scene = context.scene
         scene_nwo = scene.nwo_global
-
-        col = layout.column(align=True)
-        row = col.row()
-        row.label(text='Scene Version:')
-        row.prop(scene_nwo, "game_version", text='')
-        row = col.row()
-        row = col.row()
-        layout.use_property_split = True
         flow = layout.grid_flow(row_major=True, columns=0, even_columns=True, even_rows=False, align=False)
         col = flow.column()
+        row = col.row()
+        row.prop(scene_nwo, "game_version", text='Game', expand=True)
+        col.separator()
         col = col.row()
         col.scale_y = 1.5
         col.operator("nwo.set_unit_scale")
@@ -4665,7 +4647,6 @@ def draw_filepath(self, context):
 classeshalo = (
     NWO_ScenePropertiesGroup,
     NWO_SceneProps,
-    NWO_GlobalSettings,
     NWO_SetUnitScale,
     NWO_GameInstancePath,
     NWO_FogPath,
