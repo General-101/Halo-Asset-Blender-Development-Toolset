@@ -1265,7 +1265,10 @@ class NWO_HaloExportPropertiesGroup(PropertyGroup):
             self["show_output"] = True
             return True
         else:
-            return self["show_output"]
+            try:
+                return self["show_output"]
+            except:
+                return True
     
     def set_show_output(self, value):
         self["show_output"] = value

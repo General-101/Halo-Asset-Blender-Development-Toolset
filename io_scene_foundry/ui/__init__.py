@@ -107,7 +107,7 @@ class NWO_ScenePropertiesGroup(PropertyGroup):
         update=CheckEKPaths,
         items=[ ('reach', "Halo Reach", "Show properties for Halo Reach MCC"),
                 ('h4', "Halo 4", "Show properties for Halo 4 MCC"),
-                ('h2a', "Halo 2A MP", "Show properties for Halo 2A MP MCC"),
+                ('h2a', "Halo 2AMP", "Show properties for Halo 2AMP MCC"),
                ]
         )
     
@@ -4642,7 +4642,7 @@ def draw_filepath(self, context):
     row.scale_x = 0.01
     row.scale_y = 0.01
     # this is beyond hacky... and I'm not proud... but it works!
-    row.prop(context.scene.nwo, 'temp_file_watcher')
+    row.prop(context.scene.nwo_global, 'temp_file_watcher')
 
 classeshalo = (
     NWO_ScenePropertiesGroup,
@@ -4692,7 +4692,7 @@ def register():
     bpy.types.Material.nwo = PointerProperty(type=NWO_MaterialPropertiesGroup, name="Halo NWO Properties", description="Set Halo Material Properties") 
     bpy.types.Bone.nwo = PointerProperty(type=NWO_BonePropertiesGroup, name="Halo NWO Properties", description="Set Halo Bone Properties")
     bpy.types.Action.nwo = PointerProperty(type=NWO_ActionPropertiesGroup, name="Halo NWO Properties", description="Set Halo Animation Properties")
-    # bpy.types.TOPBAR_HT_upper_bar.prepend(draw_filepath)
+    bpy.types.TOPBAR_HT_upper_bar.prepend(draw_filepath)
 
 def unregister():
     del bpy.types.Scene.nwo
@@ -4701,7 +4701,7 @@ def unregister():
     del bpy.types.Material.nwo
     del bpy.types.Bone.nwo
     del bpy.types.Action.nwo
-    # bpy.types.TOPBAR_HT_upper_bar.remove(draw_filepath)
+    bpy.types.TOPBAR_HT_upper_bar.remove(draw_filepath)
     for clshalo in classeshalo:
         bpy.utils.unregister_class(clshalo)
 
