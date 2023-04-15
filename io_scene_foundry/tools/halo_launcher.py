@@ -47,7 +47,7 @@ def get_tag_if_exists(asset_path, asset_name, type, extra=''):
         return ''
 
 def LaunchFoundation(settings, context):
-    scene_gr2 = context.scene.gr2
+    scene_nwo = context.scene.nwo
     launch_args = ['Foundation.exe']
     # set the launch args
     if settings.foundation_default == 'asset' and valid_nwo_asset(context):
@@ -67,31 +67,31 @@ def LaunchFoundation(settings, context):
             if settings.open_frame_event_list and len(bpy.data.actions) > 0:
                 launch_args.append(get_tag_if_exists(asset_path, asset_name, 'frame_event_list'))
 
-            if settings.open_biped and scene_gr2.output_biped:
+            if settings.open_biped and scene_nwo.output_biped:
                 launch_args.append(get_tag_if_exists(asset_path, asset_name, 'biped'))
-            if settings.open_crate and scene_gr2.output_crate:
+            if settings.open_crate and scene_nwo.output_crate:
                 launch_args.append(get_tag_if_exists(asset_path, asset_name, 'crate'))
-            if settings.open_creature and scene_gr2.output_creature:
+            if settings.open_creature and scene_nwo.output_creature:
                 launch_args.append(get_tag_if_exists(asset_path, asset_name, 'creature'))
-            if settings.open_device_control and scene_gr2.output_device_control:
+            if settings.open_device_control and scene_nwo.output_device_control:
                 launch_args.append(get_tag_if_exists(asset_path, asset_name, 'device_control'))
-            if settings.open_device_dispenser and scene_gr2.output_device_dispenser and not_bungie_game():
+            if settings.open_device_dispenser and scene_nwo.output_device_dispenser and not_bungie_game():
                 launch_args.append(get_tag_if_exists(asset_path, asset_name, 'device_dispenser'))
-            if settings.open_device_machine and scene_gr2.output_device_machine:
+            if settings.open_device_machine and scene_nwo.output_device_machine:
                 launch_args.append(get_tag_if_exists(asset_path, asset_name, 'device_machine'))
-            if settings.open_device_terminal and scene_gr2.output_device_terminal:
+            if settings.open_device_terminal and scene_nwo.output_device_terminal:
                 launch_args.append(get_tag_if_exists(asset_path, asset_name, 'device_terminal'))
-            if settings.open_effect_scenery and scene_gr2.output_effect_scenery:
+            if settings.open_effect_scenery and scene_nwo.output_effect_scenery:
                 launch_args.append(get_tag_if_exists(asset_path, asset_name, 'effect_scenery'))
-            if settings.open_equipment and scene_gr2.output_equipment:
+            if settings.open_equipment and scene_nwo.output_equipment:
                 launch_args.append(get_tag_if_exists(asset_path, asset_name, 'equipment'))
-            if settings.open_giant and scene_gr2.output_giant:
+            if settings.open_giant and scene_nwo.output_giant:
                 launch_args.append(get_tag_if_exists(asset_path, asset_name, 'giant'))
-            if settings.open_scenery and scene_gr2.output_scenery:
+            if settings.open_scenery and scene_nwo.output_scenery:
                 launch_args.append(get_tag_if_exists(asset_path, asset_name, 'scenery'))
-            if settings.open_vehicle and scene_gr2.output_vehicle:
+            if settings.open_vehicle and scene_nwo.output_vehicle:
                 launch_args.append(get_tag_if_exists(asset_path, asset_name, 'vehicle'))
-            if settings.open_weapon and scene_gr2.output_weapon:
+            if settings.open_weapon and scene_nwo.output_weapon:
                 launch_args.append(get_tag_if_exists(asset_path, asset_name, 'weapon'))
         
         elif nwo_asset_type() == 'SCENARIO':

@@ -43,10 +43,10 @@ def save_image_as(image, path, name):
     bpy.data.scenes.remove(scene)
 
 def export_bitmaps(report, context, material, sidecar_path, overwrite, export_type, bitmaps_selection):
-    if context.scene.gr2_export.show_output:
+    if context.scene.nwo_export.show_output:
         bpy.ops.wm.console_toggle() # toggle the console so users can see progress of export
 
-    context.scene.gr2_export.show_output = False
+    context.scene.nwo_export.show_output = False
 
     asset_path, asset = get_asset_info(sidecar_path)
     # Create a bitmap folder in the asset directory

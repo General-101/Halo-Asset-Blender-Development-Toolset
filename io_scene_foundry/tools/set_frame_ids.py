@@ -140,7 +140,7 @@ def ImportTagXML(context, report):
     #     return None
 
 def GetGraphPath(context):
-    path = context.scene.gr2_frame_ids.anim_tag_path
+    path = context.scene.nwo_frame_ids.anim_tag_path
     # path cleaning
     path = path.strip('\\')
     path = path.replace(get_tags_path(), '')
@@ -154,9 +154,9 @@ def GetGraphPath(context):
 def ParseXML(xmlPath, context):
     parent = []
     scene = context.scene
-    scene_halo = scene.halo
+    scene_nwo = scene.nwo_global
 
-    if scene_halo.game_version in ('h4','h2a'):
+    if scene_nwo.game_version in ('h4','h2a'):
         tree = ET.parse(xmlPath, parser = ET.XMLParser(encoding = 'iso-8859-5'))
         root = tree.getroot()
         for b in root.findall('block'):
