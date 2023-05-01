@@ -444,7 +444,7 @@ def process_scene(context, version, game_version, hidden_geo, nonrender_geo, app
                         region = region_index
                         scaled_translation, normal = mesh_processing.process_mesh_export_vert(vert, use_loop, "ASS", object_matrix, custom_scale)
                         uv_set = mesh_processing.process_mesh_export_uv(evaluted_mesh, "ASS", loop_index, version)
-                        color = mesh_processing.process_mesh_export_color(evaluted_mesh, loop_index)
+                        color = mesh_processing.process_mesh_export_color(evaluted_mesh, loop.vertex_index)
                         node_influence_count, node_set, node_index_list = mesh_processing.process_mesh_export_weights(vert, armature, original_geo, vertex_groups, instance_list, "ASS")
 
                         verts.append(ASS.Vertex(node_influence_count, node_set, region, scaled_translation, normal, color, uv_set))

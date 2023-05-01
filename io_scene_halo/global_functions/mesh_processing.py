@@ -899,10 +899,11 @@ def process_mesh_export_weights(vert, armature, original_geo, vertex_groups, joi
 
     return node_influence_count, node_set, node_index_list
 
-def process_mesh_export_color(evaluated_geo, loop_index):
+def process_mesh_export_color(evaluated_geo, vertex_index):
     color = (0.0, 0.0, 0.0)
-    if evaluated_geo.vertex_colors:
-        color = evaluated_geo.vertex_colors.active.data[loop_index].color
+    layer_color = evaluated_geo.attributes.active_color
+    if not layer_color == None:
+        color = layer_color.data[vertex_index].color
         if color[0] == 0.0 and "{:.2f}".format(color[1]) == "0.01" and color[2] == 0.0:
             color = (-65536.0000000000, -65536.0000000000, -65536.0000000000, 1.0)
 
