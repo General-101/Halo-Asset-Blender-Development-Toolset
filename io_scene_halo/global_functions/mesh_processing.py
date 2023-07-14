@@ -92,7 +92,7 @@ def gather_parameters(name):
                     index = lm_idx - parameter_length + num
                     processed_name = processed_name[:index] + " " + processed_name[index + 1:]
 
-                processed_parameters.append(parameter)
+                processed_parameters.append(parameter.lower())
 
     return (processed_name, processed_parameters)
 
@@ -189,118 +189,96 @@ def append_material_symbols(material, game_version, is_ass):
 
             for parameter in processed_parameters:
                 split_parameter = parameter.split(':', 1)
-                if split_parameter[0].strip() == "lm" and not "lm" in processed_symbol_name:
+                if split_parameter[0].strip() == "lm" and not "lm" in processed_parameters:
                     processed_symbol_name += " lm:%s" % split_parameter[1]
 
-                elif split_parameter[0].strip() == "lp" and not "lp" in processed_symbol_name:
+                elif split_parameter[0].strip() == "lp" and not "lp" in processed_parameters:
                     processed_symbol_name += " lp:%s" % split_parameter[1]
 
-                elif split_parameter[0].strip() == "hl" and not "hl" in processed_symbol_name:
+                elif split_parameter[0].strip() == "hl" and not "hl" in processed_parameters:
                     processed_symbol_name += " hl:%s" % split_parameter[1]
 
-                elif split_parameter[0].strip() == "ds" and not "ds" in processed_symbol_name:
+                elif split_parameter[0].strip() == "ds" and not "ds" in processed_parameters:
                     processed_symbol_name += " ds:%s" % split_parameter[1]
 
         elif game_version == 'halo3mcc':
-            if not is_ass:
-                if material.ass_jms.two_sided or "%" in used_symbol_list:
-                    processed_symbol_name += "%"
-                if material.ass_jms.transparent_1_sided or "#" in used_symbol_list:
-                    processed_symbol_name += "#"
-                if material.ass_jms.transparent_2_sided or "?" in used_symbol_list:
-                    processed_symbol_name += "?"
-                if material.ass_jms.render_only or "!" in used_symbol_list:
-                    processed_symbol_name += "!"
-                if material.ass_jms.collision_only or "@" in used_symbol_list:
-                    processed_symbol_name += "@"
-                if material.ass_jms.sphere_collision_only or "*" in used_symbol_list:
-                    processed_symbol_name += "*"
-                if material.ass_jms.fog_plane or "$" in used_symbol_list:
-                    processed_symbol_name += "$"
-                if material.ass_jms.ladder or "^" in used_symbol_list:
-                    processed_symbol_name += "^"
-                if material.ass_jms.breakable or "-" in used_symbol_list:
-                    processed_symbol_name += "-"
-                if material.ass_jms.ai_deafening or "&" in used_symbol_list:
-                    processed_symbol_name += "&"
-                if material.ass_jms.no_shadow or "=" in used_symbol_list:
-                    processed_symbol_name += "="
-                if material.ass_jms.shadow_only or "." in used_symbol_list:
-                    processed_symbol_name += "."
-                if material.ass_jms.lightmap_only or ";" in used_symbol_list:
-                    processed_symbol_name += ";"
-                if material.ass_jms.precise or ")" in used_symbol_list:
-                    processed_symbol_name += ")"
-                if material.ass_jms.conveyor or ">" in used_symbol_list:
-                    processed_symbol_name += ">"
-                if material.ass_jms.portal_1_way or "<" in used_symbol_list:
-                    processed_symbol_name += "<"
-                if material.ass_jms.portal_door or "|" in used_symbol_list:
-                    processed_symbol_name += "|"
-                if material.ass_jms.portal_vis_blocker or "~" in used_symbol_list:
-                    processed_symbol_name += "~"
-                if material.ass_jms.dislike_photons or "(" in used_symbol_list:
-                    processed_symbol_name += "("
-                if material.ass_jms.ignored_by_lightmaps or "{" in used_symbol_list:
-                    processed_symbol_name += "{"
-                if material.ass_jms.blocks_sound or "}" in used_symbol_list:
-                    processed_symbol_name += "}"
-                if material.ass_jms.decal_offset or "[" in used_symbol_list:
-                    processed_symbol_name += "["
-
-            if material.ass_jms.water_surface or "'" in used_symbol_list:
+            if "%" in used_symbol_list:
+                processed_symbol_name += "%"
+            if "#" in used_symbol_list:
+                processed_symbol_name += "#"
+            if "?" in used_symbol_list:
+                processed_symbol_name += "?"
+            if "!" in used_symbol_list:
+                processed_symbol_name += "!"
+            if "@" in used_symbol_list:
+                processed_symbol_name += "@"
+            if "*" in used_symbol_list:
+                processed_symbol_name += "*"
+            if "$" in used_symbol_list:
+                processed_symbol_name += "$"
+            if "^" in used_symbol_list:
+                processed_symbol_name += "^"
+            if "-" in used_symbol_list:
+                processed_symbol_name += "-"
+            if "&" in used_symbol_list:
+                processed_symbol_name += "&"
+            if "=" in used_symbol_list:
+                processed_symbol_name += "="
+            if "." in used_symbol_list:
+                processed_symbol_name += "."
+            if ";" in used_symbol_list:
+                processed_symbol_name += ";"
+            if ")" in used_symbol_list:
+                processed_symbol_name += ")"
+            if ">" in used_symbol_list:
+                processed_symbol_name += ">"
+            if "<" in used_symbol_list:
+                processed_symbol_name += "<"
+            if "|" in used_symbol_list:
+                processed_symbol_name += "|"
+            if "~" in used_symbol_list:
+                processed_symbol_name += "~"
+            if "(" in used_symbol_list:
+                processed_symbol_name += "("
+            if "{" in used_symbol_list:
+                processed_symbol_name += "{"
+            if "}" in used_symbol_list:
+                processed_symbol_name += "}"
+            if "[" in used_symbol_list:
+                processed_symbol_name += "["
+            if "'" in used_symbol_list:
                 processed_symbol_name += "'"
-            if material.ass_jms.group_transparents_by_plane or "]" in used_symbol_list:
+            if "]" in used_symbol_list:
                 processed_symbol_name += "]"
 
-            if not is_ass:
-                if not material.ass_jms.lightmap_res == 1.0:
-                    processed_symbol_name += " lm:%s" % material.ass_jms.lightmap_res
-                if material.ass_jms.power > 0.0:
-                    processed_symbol_name += " lp:%s" % material.ass_jms.power
-                if material.ass_jms.emissive_focus > 0.0:
-                    processed_symbol_name += " hl:%s" % material.ass_jms.emissive_focus
-                if not material.ass_jms.quality == 1.0:
-                    processed_symbol_name += " ds:%s" % material.ass_jms.quality
-                if not material.ass_jms.photon_fidelity == 1:
-                    processed_symbol_name += " pf:%s" % material.ass_jms.photon_fidelity
-                if not material.ass_jms.two_sided_transparent_tint[0] == 0.0 and not material.ass_jms.two_sided_transparent_tint[1] == 0.0 and not material.ass_jms.two_sided_transparent_tint[2] == 0.0:
-                    processed_symbol_name += " lt:%s" % 0.0
-                if material.ass_jms.override_lightmap_transparency > 0:
-                    processed_symbol_name += " to:%s" % int(material.ass_jms.override_lightmap_transparency)
-                if not material.ass_jms.additive_transparency[0] == 0.0 and not material.ass_jms.additive_transparency[1] == 0.0 and not material.ass_jms.additive_transparency[2] == 0.0:
-                    processed_symbol_name += " at:%s" % 0.0
-                if material.ass_jms.ignore_default_res_scale > 0.0:
-                    processed_symbol_name += " ro:%s" % int(material.ass_jms.ignore_default_res_scale)
+            for parameter in processed_parameters:
+                split_parameter = parameter.split(':', 1)
+                if split_parameter[0].strip() == "lm" and not "lm" in processed_parameters:
+                    processed_symbol_name += " lm:%s" % split_parameter[1]
 
-                for parameter in processed_parameters:
-                    split_parameter = parameter.split(':', 1)
-                    if split_parameter[0].strip() == "lm" and not "lm" in processed_symbol_name:
-                        processed_symbol_name += " lm:%s" % split_parameter[1]
+                elif split_parameter[0].strip() == "lp" and not "lp" in processed_parameters:
+                    processed_symbol_name += " lp:%s" % split_parameter[1]
 
-                    elif split_parameter[0].strip() == "lp" and not "lp" in processed_symbol_name:
-                        processed_symbol_name += " lp:%s" % split_parameter[1]
+                elif split_parameter[0].strip() == "hl" and not "hl" in processed_parameters:
+                    processed_symbol_name += " hl:%s" % split_parameter[1]
 
-                    elif split_parameter[0].strip() == "hl" and not "hl" in processed_symbol_name:
-                        processed_symbol_name += " hl:%s" % split_parameter[1]
+                elif split_parameter[0].strip() == "ds" and not "ds" in processed_parameters:
+                    processed_symbol_name += " ds:%s" % split_parameter[1]
 
-                    elif split_parameter[0].strip() == "ds" and not "ds" in processed_symbol_name:
-                        processed_symbol_name += " ds:%s" % split_parameter[1]
+                elif split_parameter[0].strip() == "pf" and not "pf" in processed_parameters:
+                    processed_symbol_name += " pf:%s" % split_parameter[1]
 
-                    elif split_parameter[0].strip() == "pf" and not "pf" in processed_symbol_name:
-                        processed_symbol_name += " pf:%s" % split_parameter[1]
+                elif split_parameter[0].strip() == "lt" and not "lt" in processed_parameters:
+                    processed_symbol_name += " lt:%s" % split_parameter[1]
 
-                    elif split_parameter[0].strip() == "lt" and not "lt" in processed_symbol_name:
-                        processed_symbol_name += " lt:%s" % split_parameter[1]
+                elif split_parameter[0].strip() == "to" and not "to" in processed_parameters:
+                    processed_symbol_name += " to:%s" % split_parameter[1]
 
-                    elif split_parameter[0].strip() == "to" and not "to" in processed_symbol_name:
-                        processed_symbol_name += " to:%s" % split_parameter[1]
+                elif split_parameter[0].strip() == "at" and not "at" in processed_parameters:
+                    processed_symbol_name += " at:%s" % split_parameter[1]
 
-                    elif split_parameter[0].strip() == "at" and not "at" in processed_symbol_name:
-                        processed_symbol_name += " at:%s" % split_parameter[1]
-
-                    elif split_parameter[0].strip() == "ro" and not "ro" in processed_symbol_name:
-                        processed_symbol_name += " ro:%s" % split_parameter[1]
+                elif split_parameter[0].strip() == "ro" and not "ro" in processed_parameters:
+                    processed_symbol_name += " ro:%s" % split_parameter[1]
 
     return processed_symbol_name
 
