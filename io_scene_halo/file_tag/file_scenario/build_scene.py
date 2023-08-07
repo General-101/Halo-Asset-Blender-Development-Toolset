@@ -2,7 +2,7 @@
 #
 # MIT License
 #
-# Copyright (c) 2022 Steven Garcia
+# Copyright (c) 2023 Steven Garcia
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -31,5 +31,5 @@ import bmesh
 from math import radians
 from mathutils import Vector, Matrix, Euler
 
-def build_scene(context, LEVEL, game_version, file_version, fix_rotations, report, mesh_processing, global_functions):
+def build_scene(context, LEVEL, game_version, game_title, file_version, fix_rotations, empty_markers, report, mesh_processing, global_functions):
     return 0

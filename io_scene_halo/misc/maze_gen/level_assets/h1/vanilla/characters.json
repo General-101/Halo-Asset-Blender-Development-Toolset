@@ -1,0 +1,335 @@
+{
+    "human": [
+        {
+            "name": "marine",
+            "position_additive": [0.0, 0.0, 0.0],
+            "bounding_box_verts": [
+                [-6.921000003814697, -32.9995002746582, 0.0], 
+                [-6.921000003814697, -32.9995002746582, 63.498600006103516], 
+                [-6.921000003814697, 32.9995002746582, 0.0], 
+                [-6.921000003814697, 32.9995002746582, 63.498600006103516], 
+                [6.921000003814697, -32.9995002746582, 0.0], 
+                [6.921000003814697, -32.9995002746582, 63.498600006103516], 
+                [6.921000003814697, 32.9995002746582, 0.0], 
+                [6.921000003814697, 32.9995002746582, 63.498600006103516]
+            ],
+            "bounding_box_polys": [
+                [0, 1, 3, 2], 
+                [2, 3, 7, 6], 
+                [6, 7, 5, 4], 
+                [4, 5, 1, 0], 
+                [2, 6, 4, 0], 
+                [7, 3, 1, 5]
+            ],
+            "variants": [
+                "characters\\marine\\marine assault rifle major",
+                "characters\\marine\\marine assault rifle",
+                "characters\\marine\\marine needler",
+                "characters\\marine\\marine plasma rifle",
+                "characters\\marine\\marine shotgun"
+            ]
+        },
+        {
+            "name": "marine_armored",
+            "position_additive": [0.0, 0.0, 0.0],
+            "bounding_box_verts": [
+                [-6.921000003814697, -32.9995002746582, 0.0], 
+                [-6.921000003814697, -32.9995002746582, 63.498600006103516], 
+                [-6.921000003814697, 32.9995002746582, 0.0], 
+                [-6.921000003814697, 32.9995002746582, 63.498600006103516], 
+                [6.921000003814697, -32.9995002746582, 0.0], 
+                [6.921000003814697, -32.9995002746582, 63.498600006103516], 
+                [6.921000003814697, 32.9995002746582, 0.0], 
+                [6.921000003814697, 32.9995002746582, 63.498600006103516]
+            ],
+            "bounding_box_polys": [
+                [0, 1, 3, 2], 
+                [2, 3, 7, 6], 
+                [6, 7, 5, 4], 
+                [4, 5, 1, 0], 
+                [2, 6, 4, 0], 
+                [7, 3, 1, 5]
+            ],
+            "variants": [
+                "characters\\marine_armored\\marine_armored assault rifle major",
+                "characters\\marine_armored\\marine_armored assault rifle",
+                "characters\\marine_armored\\marine_armored needler",
+                "characters\\marine_armored\\marine_armored plasma rifle major",
+                "characters\\marine_armored\\marine_armored plasma rifle",
+                "characters\\marine_armored\\marine_armored shotgun major",
+                "characters\\marine_armored\\marine_armored sniper rifle major",
+                "characters\\marine_armored\\marine_armored sniper rifle"
+            ]
+        }
+    ],
+    "covenant": [
+        {
+            "name": "elite",
+            "position_additive": [0.0, 0.0, 0.0],
+            "bounding_box_verts": [
+                [-16.14900016784668, -19.454099655151367, 0.0], 
+                [-16.14900016784668, -19.454099655151367, 78.74310302734375], 
+                [-16.14900016784668, 19.454099655151367, 0.0], 
+                [-16.14900016784668, 19.454099655151367, 78.74310302734375], 
+                [16.14900016784668, -19.454099655151367, 0.0], 
+                [16.14900016784668, -19.454099655151367, 78.74310302734375], 
+                [16.14900016784668, 19.454099655151367, 0.0], 
+                [16.14900016784668, 19.454099655151367, 78.74310302734375]
+            ],
+            "bounding_box_polys": [
+                [0, 1, 3, 2], 
+                [2, 3, 7, 6], 
+                [6, 7, 5, 4], 
+                [4, 5, 1, 0], 
+                [2, 6, 4, 0], 
+                [7, 3, 1, 5]
+            ],
+            "variants": [
+                "characters\\elite\\elite commander\\elite commander energy sword",
+                "characters\\elite\\elite commander\\elite commander plasma rifle",
+                "characters\\elite\\elite major\\elite major needler",
+                "characters\\elite\\elite major\\elite major plasma rifle",
+                "characters\\elite\\elite minor\\elite minor needler",
+                "characters\\elite\\elite minor\\elite minor plasma rifle ranged",
+                "characters\\elite\\elite minor\\elite minor plasma rifle",
+                "characters\\elite\\elite specops\\elite specops needler",
+                "characters\\elite\\elite specops\\elite specops plasma rifle",
+                "characters\\elite\\elite stealth\\stealth elite major energy sword",
+                "characters\\elite\\elite stealth\\stealth elite major plasma rifle",
+                "characters\\elite\\elite stealth\\stealth elite plasma rifle"
+            ]
+        },
+        {
+            "name": "grunt",
+            "position_additive": [0.0, 0.0, 0.0],
+            "bounding_box_verts": [
+                [-6.921000003814697, -32.9995002746582, 0.0], 
+                [-6.921000003814697, -32.9995002746582, 63.498600006103516], 
+                [-6.921000003814697, 32.9995002746582, 0.0], 
+                [-6.921000003814697, 32.9995002746582, 63.498600006103516], 
+                [6.921000003814697, -32.9995002746582, 0.0], 
+                [6.921000003814697, -32.9995002746582, 63.498600006103516], 
+                [6.921000003814697, 32.9995002746582, 0.0], 
+                [6.921000003814697, 32.9995002746582, 63.498600006103516]
+            ],
+            "bounding_box_polys": [
+                [0, 1, 3, 2], 
+                [2, 3, 7, 6], 
+                [6, 7, 5, 4], 
+                [4, 5, 1, 0], 
+                [2, 6, 4, 0], 
+                [7, 3, 1, 5]
+            ],
+            "variants": [
+                "characters\\grunt\\grunt major needler",
+                "characters\\grunt\\grunt major plasma pistol",
+                "characters\\grunt\\grunt minor needler",
+                "characters\\grunt\\grunt minor plasma pistol",
+                "characters\\grunt\\grunt specops fuel rod airdef",
+                "characters\\grunt\\grunt specops fuel rod",
+                "characters\\grunt\\grunt specops needler"
+            ]
+        },
+        {
+            "name": "hunter",
+            "position_additive": [0.0, 0.0, 0.0],
+            "bounding_box_verts": [
+                [-6.921000003814697, -32.9995002746582, 0.0], 
+                [-6.921000003814697, -32.9995002746582, 63.498600006103516], 
+                [-6.921000003814697, 32.9995002746582, 0.0], 
+                [-6.921000003814697, 32.9995002746582, 63.498600006103516], 
+                [6.921000003814697, -32.9995002746582, 0.0], 
+                [6.921000003814697, -32.9995002746582, 63.498600006103516], 
+                [6.921000003814697, 32.9995002746582, 0.0], 
+                [6.921000003814697, 32.9995002746582, 63.498600006103516]
+            ],
+            "bounding_box_polys": [
+                [0, 1, 3, 2], 
+                [2, 3, 7, 6], 
+                [6, 7, 5, 4], 
+                [4, 5, 1, 0], 
+                [2, 6, 4, 0], 
+                [7, 3, 1, 5]
+            ],
+            "variants": [
+                "characters\\hunter\\hunter major",
+                "characters\\hunter\\hunter"
+            ]
+        },
+        {
+            "name": "jackal",
+            "position_additive": [0.0, 0.0, 0.0],
+            "bounding_box_verts": [
+                [-11.10515022277832, -39.37889862060547, 0.0], 
+                [-11.10515022277832, -39.37889862060547, 68.92780303955078], 
+                [-11.10515022277832, 39.37889862060547, 0.0], 
+                [-11.10515022277832, 39.37889862060547, 68.92780303955078], 
+                [11.10515022277832, -39.37889862060547, 0.0], 
+                [11.10515022277832, -39.37889862060547, 68.92780303955078], 
+                [11.10515022277832, 39.37889862060547, 0.0], 
+                [11.10515022277832, 39.37889862060547, 68.92780303955078]
+            ],
+            "bounding_box_polys": [
+                [0, 1, 3, 2], 
+                [2, 3, 7, 6], 
+                [6, 7, 5, 4], 
+                [4, 5, 1, 0], 
+                [2, 6, 4, 0], 
+                [7, 3, 1, 5]
+            ],
+            "variants": [
+                "characters\\jackal\\jackal major plasma pistol",
+                "characters\\jackal\\jackal minor plasma pistol"
+            ]
+        }
+    ],
+    "flood": [
+        {
+            "name": "floodcarrier",
+            "position_additive": [0.0, 0.0, 0.0],
+            "bounding_box_verts": [
+                [-15.080100059509277, -19.008899688720703, 0.0], 
+                [-15.080100059509277, -19.008899688720703, 66.91819763183594], 
+                [-15.080100059509277, 19.008899688720703, 0.0], 
+                [-15.080100059509277, 19.008899688720703, 66.91819763183594], 
+                [15.080100059509277, -19.008899688720703, 0.0], 
+                [15.080100059509277, -19.008899688720703, 66.91819763183594], 
+                [15.080100059509277, 19.008899688720703, 0.0], 
+                [15.080100059509277, 19.008899688720703, 66.91819763183594]
+            ],
+            "bounding_box_polys": [
+                [0, 1, 3, 2], 
+                [2, 3, 7, 6], 
+                [6, 7, 5, 4], 
+                [4, 5, 1, 0], 
+                [2, 6, 4, 0], 
+                [7, 3, 1, 5]
+            ],
+            "variants": [
+                "characters\\floodcarrier\\floodcarrier"
+            ]
+        },
+        {
+            "name": "floodcombat_elite",
+            "position_additive": [0.0, 0.0, 0.0],
+            "bounding_box_verts": [
+                [-20.81505012512207, -26.445899963378906, 0.0], 
+                [-20.81505012512207, -26.445899963378906, 77.60440063476562], 
+                [-20.81505012512207, 26.445899963378906, 0.0], 
+                [-20.81505012512207, 26.445899963378906, 77.60440063476562], 
+                [20.81505012512207, -26.445899963378906, 0.0], 
+                [20.81505012512207, -26.445899963378906, 77.60440063476562], 
+                [20.81505012512207, 26.445899963378906, 0.0], 
+                [20.81505012512207, 26.445899963378906, 77.60440063476562]
+            ],
+            "bounding_box_polys": [
+                [0, 1, 3, 2], 
+                [2, 3, 7, 6], 
+                [6, 7, 5, 4], 
+                [4, 5, 1, 0], 
+                [2, 6, 4, 0], 
+                [7, 3, 1, 5]
+            ],
+            "variants": [
+                "characters\\floodcombat elite\\floodcombat elite assault rifle",
+                "characters\\floodcombat elite\\floodcombat elite needler",
+                "characters\\floodcombat elite\\floodcombat elite pistol",
+                "characters\\floodcombat elite\\floodcombat elite plasma pistol",
+                "characters\\floodcombat elite\\floodcombat elite plasma rifle",
+                "characters\\floodcombat elite\\floodcombat elite rocket launcher",
+                "characters\\floodcombat elite\\floodcombat elite shotgun",
+                "characters\\floodcombat elite\\floodcombat elite sniper rifle",
+                "characters\\floodcombat elite\\floodcombat elite stealth unarmed",
+                "characters\\floodcombat elite\\floodcombat elite unarmed"
+            ]
+        },
+        {
+            "name": "floodcombat_human",
+            "position_additive": [0.0, 0.0, 0.0],
+            "bounding_box_verts": [
+                [-11.609749794006348, -35.22880172729492, 0.0], 
+                [-11.609749794006348, -35.22880172729492, 65.97869873046875], 
+                [-11.609749794006348, 35.22880172729492, 0.0], 
+                [-11.609749794006348, 35.22880172729492, 65.97869873046875], 
+                [11.609749794006348, -35.22880172729492, 0.0], 
+                [11.609749794006348, -35.22880172729492, 65.97869873046875], 
+                [11.609749794006348, 35.22880172729492, 0.0], 
+                [11.609749794006348, 35.22880172729492, 65.97869873046875]
+            ],
+            "bounding_box_polys": [
+                [0, 1, 3, 2], 
+                [2, 3, 7, 6], 
+                [6, 7, 5, 4], 
+                [4, 5, 1, 0], 
+                [2, 6, 4, 0], 
+                [7, 3, 1, 5]
+            ],
+            "variants": [
+                "characters\\floodcombat_human\\floodcombat_human assault rifle",
+                "characters\\floodcombat_human\\floodcombat_human needler",
+                "characters\\floodcombat_human\\floodcombat_human pistol",
+                "characters\\floodcombat_human\\floodcombat_human plasma pistol",
+                "characters\\floodcombat_human\\floodcombat_human plasma rifle",
+                "characters\\floodcombat_human\\floodcombat_human rocket launcher",
+                "characters\\floodcombat_human\\floodcombat_human shotgun",
+                "characters\\floodcombat_human\\floodcombat_human unarmed"
+            ]
+        },
+        {
+            "name": "flood_infection",
+            "position_additive": [0.0, 0.0, 0.0],
+            "bounding_box_verts": [
+                [-16.706499099731445, -8.659549713134766, 0.0], 
+                [-16.706499099731445, -8.659549713134766, 29.381799697875977], 
+                [-16.706499099731445, 8.659549713134766, 0.0], 
+                [-16.706499099731445, 8.659549713134766, 29.381799697875977], 
+                [16.706499099731445, -8.659549713134766, 0.0], 
+                [16.706499099731445, -8.659549713134766, 29.381799697875977], 
+                [16.706499099731445, 8.659549713134766, 0.0], 
+                [16.706499099731445, 8.659549713134766, 29.381799697875977]
+            ],
+            "bounding_box_polys": [
+                [0, 1, 3, 2], 
+                [2, 3, 7, 6], 
+                [6, 7, 5, 4], 
+                [4, 5, 1, 0], 
+                [2, 6, 4, 0], 
+                [7, 3, 1, 5]
+            ],
+            "variants": [
+                "characters\\flood_infection\\flood_infection"
+            ]
+        }
+    ],
+    "sentinel": [
+        {
+            "name": "sentinel",
+            "position_additive": [0.0, 0.0, 25.0],
+            "bounding_box_verts": [
+                [-48.694698333740234, -38.908199310302734, 0.0], 
+                [-48.694698333740234, -38.908199310302734, 54.18840026855469], 
+                [-48.694698333740234, 38.908199310302734, 0.0], 
+                [-48.694698333740234, 38.908199310302734, 54.18840026855469], 
+                [48.694698333740234, -38.908199310302734, 0.0], 
+                [48.694698333740234, -38.908199310302734, 54.18840026855469], 
+                [48.694698333740234, 38.908199310302734, 0.0], 
+                [48.694698333740234, 38.908199310302734, 54.1884002685546]
+            ],
+            "bounding_box_polys": [
+                [0, 1, 3, 2], 
+                [2, 3, 7, 6], 
+                [6, 7, 5, 4], 
+                [4, 5, 1, 0], 
+                [2, 6, 4, 0], 
+                [7, 3, 1, 5]
+            ],
+            "variants": [
+                "characters\\sentinel\\sentinel major",
+                "characters\\sentinel\\sentinel",
+                "characters\\sentinel\\sentinel_defensive",
+                "characters\\sentinel\\sentinel_shielded major",
+                "characters\\sentinel\\sentinel_shielded"
+            ]
+        }
+    ]
+}

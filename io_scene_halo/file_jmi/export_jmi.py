@@ -2,7 +2,7 @@
 #
 # MIT License
 #
-# Copyright (c) 2021 Steven Garcia
+# Copyright (c) 2023 Steven Garcia
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -36,22 +36,13 @@ def write_file(
     report,
 
     jmi_version,
-    jmi_version_ce,
-    jmi_version_h2,
-    jmi_version_h3,
-
     apply_modifiers,
     triangulate_faces,
     loop_normals,
     folder_type,
     edge_split,
-    use_edge_angle,
-    use_edge_sharp,
-    split_angle,
     clean_normalize_weights,
-    scale_enum,
-    scale_float,
-    console,
+    scale_value,
     hidden_geo,
     nonrender_geo,
     export_render,
@@ -61,8 +52,8 @@ def write_file(
     write_textures,
     game_version,
     fix_rotations,
+    use_maya_sorting,
 ):
-    version = global_functions.get_version(jmi_version, jmi_version_ce, jmi_version_h2, jmi_version_h3, game_version, console)
 
     filename = global_functions.get_filename(None, None, None, None, None, True, filepath)
     root_directory = global_functions.get_directory(context, None, None, None, folder_type, None, filepath)
@@ -70,10 +61,6 @@ def write_file(
     JMS_args = JMIAsset.JMSArgs()
 
     JMS_args.jmi_version = jmi_version
-    JMS_args.jmi_version_ce = jmi_version_ce
-    JMS_args.jmi_version_h2 = jmi_version_h2
-    JMS_args.jmi_version_h3 = jmi_version_h3
-
     JMS_args.folder_type = folder_type
     JMS_args.hidden_geo = hidden_geo
     JMS_args.nonrender_geo = nonrender_geo
@@ -83,22 +70,18 @@ def write_file(
     JMS_args.export_physics = export_physics
 
     JMS_args.fix_rotations = fix_rotations
+    JMS_args.use_maya_sorting = use_maya_sorting
     JMS_args.apply_modifiers = apply_modifiers
     JMS_args.triangulate_faces = triangulate_faces
     JMS_args.loop_normals = loop_normals
     JMS_args.edge_split = edge_split
-    JMS_args.use_edge_angle = use_edge_angle
-    JMS_args.use_edge_sharp = use_edge_sharp
-    JMS_args.split_angle = split_angle
     JMS_args.clean_normalize_weights = clean_normalize_weights
-    JMS_args.scale_enum = scale_enum
-    JMS_args.scale_float = scale_float
-    JMS_args.console = console
+    JMS_args.scale_value = scale_value
 
     build_asset(
         context,
         JMS_args,
-        version,
+        jmi_version,
         game_version,
         write_textures,
         root_directory,

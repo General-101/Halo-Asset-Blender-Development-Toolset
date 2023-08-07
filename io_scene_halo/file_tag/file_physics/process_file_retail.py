@@ -2,7 +2,7 @@
 #
 # MIT License
 #
-# Copyright (c) 2022 Steven Garcia
+# Copyright (c) 2023 Steven Garcia
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -24,205 +24,132 @@
 #
 # ##### END MIT LICENSE BLOCK #####
 
-import struct
+import os
 
-from mathutils import Vector
-from .format import PhysicsAsset
+from xml.dom import minidom
+from .format_retail import PhysicsAsset, PoweredMassPointFlags, MassPointFlags, FrictionTypeEnum
 
-DEBUG_PARSER = False
-DEBUG_HEADER = True
-DEBUG_BODY = True
-DEBUG_INERTIAL_MATRIX_AND_INVERSE = True
-DEBUG_POWERED_MASS_POINT = True
-DEBUG_MASS_POINT = True
+XML_OUTPUT = True
 
 def process_file_retail(input_stream, tag_format, report):
     TAG = tag_format.TagAsset()
     PHYSICS = PhysicsAsset()
+    TAG.is_legacy = False
 
-    header_struct = struct.unpack('>hbb32s4sIIIIHbb4s', input_stream.read(64))
-    PHYSICS.header = TAG.Header()
-    PHYSICS.header.unk1 = header_struct[0]
-    PHYSICS.header.flags = header_struct[1]
-    PHYSICS.header.type = header_struct[2]
-    PHYSICS.header.name = header_struct[3].decode().rstrip('\x00')
-    PHYSICS.header.tag_group = header_struct[4].decode().rstrip('\x00')
-    PHYSICS.header.checksum = header_struct[5]
-    PHYSICS.header.data_offset = header_struct[6]
-    PHYSICS.header.data_length = header_struct[7]
-    PHYSICS.header.unk2 = header_struct[8]
-    PHYSICS.header.version = header_struct[9]
-    PHYSICS.header.destination = header_struct[10]
-    PHYSICS.header.plugin_handle = header_struct[11]
-    PHYSICS.header.engine_tag = header_struct[12].decode().rstrip('\x00')
+    if XML_OUTPUT:
+        TAG.xml_doc = minidom.Document()
 
-    if DEBUG_PARSER and DEBUG_HEADER:
-        print(" ===== Tag Header ===== ")
-        print("Unknown Value: ", PHYSICS.header.unk1)
-        print("Flags: ", PHYSICS.header.flags)
-        print("Type: ", PHYSICS.header.type)
-        print("Name: ", PHYSICS.header.name)
-        print("Tag Group: ", PHYSICS.header.tag_group)
-        print("Checksum: ", PHYSICS.header.checksum)
-        print("Data Offset: ", PHYSICS.header.data_offset)
-        print("Data Length:", PHYSICS.header.data_length)
-        print("Unknown Value: ", PHYSICS.header.unk2)
-        print("Version: ", PHYSICS.header.version)
-        print("Destination: ", PHYSICS.header.destination)
-        print("Plugin Handle: ", PHYSICS.header.plugin_handle)
-        print("Engine Tag: ", PHYSICS.header.engine_tag)
-        print(" ")
+    PHYSICS.header = TAG.Header().read(input_stream, TAG)
 
+    tag_node = None
+    if XML_OUTPUT:
+        tag_node = TAG.xml_doc.childNodes[0]
 
-    phys_body_struct = struct.unpack('>fffffffffffff4xfff4xf4xfffiIIiIIiII', input_stream.read(128))
     PHYSICS.phys_body = PHYSICS.PhysBody()
-    PHYSICS.phys_body.radius = phys_body_struct[0]
-    PHYSICS.phys_body.moment_scale = phys_body_struct[1]
-    PHYSICS.phys_body.mass = phys_body_struct[2]
-    PHYSICS.phys_body.center_of_mass = Vector((phys_body_struct[3], phys_body_struct[4], phys_body_struct[5]))
-    PHYSICS.phys_body.density = phys_body_struct[6]
-    PHYSICS.phys_body.gravity_scale = phys_body_struct[7]
-    PHYSICS.phys_body.ground_friction = phys_body_struct[8]
-    PHYSICS.phys_body.ground_depth = phys_body_struct[9]
-    PHYSICS.phys_body.ground_damp_fraction = phys_body_struct[10]
-    PHYSICS.phys_body.ground_normal_k1 = phys_body_struct[11]
-    PHYSICS.phys_body.ground_normal_k0 = phys_body_struct[12]
-    PHYSICS.phys_body.water_friction = phys_body_struct[13]
-    PHYSICS.phys_body.water_depth = phys_body_struct[14]
-    PHYSICS.phys_body.water_density = phys_body_struct[15]
-    PHYSICS.phys_body.air_friction = phys_body_struct[16]
-    PHYSICS.phys_body.xx_moment = phys_body_struct[17]
-    PHYSICS.phys_body.yy_moment = phys_body_struct[18]
-    PHYSICS.phys_body.zz_moment = phys_body_struct[19]
-    PHYSICS.phys_body.inertial_matrix_and_inverse_tag_block = TAG.TagBlock(phys_body_struct[20], 2, phys_body_struct[21], phys_body_struct[22])
-    PHYSICS.phys_body.powered_mass_points_tag_block = TAG.TagBlock(phys_body_struct[23], 32, phys_body_struct[24], phys_body_struct[25])
-    PHYSICS.phys_body.mass_points_tag_block = TAG.TagBlock(phys_body_struct[26], 32, phys_body_struct[27], phys_body_struct[28])
+    PHYSICS.phys_body.radius = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "radius"))
+    PHYSICS.phys_body.moment_scale = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "moment"))
+    PHYSICS.phys_body.mass = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "mass"))
+    PHYSICS.phys_body.center_of_mass = TAG.read_point_3d(input_stream, TAG, tag_format.XMLData(tag_node, "center of mass"))
+    PHYSICS.phys_body.density = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "density"))
+    PHYSICS.phys_body.gravity_scale = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "gravity scale"))
+    PHYSICS.phys_body.ground_friction = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "ground friction"))
+    PHYSICS.phys_body.ground_depth = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "ground depth"))
+    PHYSICS.phys_body.ground_damp_fraction = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "ground damp fraction"))
+    PHYSICS.phys_body.ground_normal_k1 = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "ground normal k1"))
+    PHYSICS.phys_body.ground_normal_k0 = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "ground normal k0"))
+    input_stream.read(4) # Padding?
+    PHYSICS.phys_body.water_friction = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "water friction"))
+    PHYSICS.phys_body.water_depth = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "water depth"))
+    PHYSICS.phys_body.water_density = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "water density"))
+    input_stream.read(4) # Padding?
+    PHYSICS.phys_body.air_friction = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "air friction"))
+    input_stream.read(4) # Padding?
+    PHYSICS.phys_body.xx_moment = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "xx moment"))
+    PHYSICS.phys_body.yy_moment = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "yy moment"))
+    PHYSICS.phys_body.zz_moment = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "zz moment"))
+    PHYSICS.phys_body.inertial_matrix_and_inverse_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "inertial matrix and inverse"))
+    PHYSICS.phys_body.powered_mass_points_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "powered mass points"))
+    PHYSICS.phys_body.mass_points_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "mass points"))
 
-    if DEBUG_PARSER and DEBUG_BODY:
-        print(" ===== Phys Body ===== ")
-        print("Radius: ", PHYSICS.phys_body.radius)
-        print("Moment Scale: ", PHYSICS.phys_body.moment_scale)
-        print("Mass: ", PHYSICS.phys_body.mass)
-        print("Center of Mass: ", PHYSICS.phys_body.center_of_mass)
-        print("Density: ", PHYSICS.phys_body.density)
-        print("Gravity Scale: ", PHYSICS.phys_body.gravity_scale)
-        print("Ground Friction: ", PHYSICS.phys_body.ground_friction)
-        print("Ground Depth: ", PHYSICS.phys_body.ground_depth)
-        print("Ground Damp Fraction: ", PHYSICS.phys_body.ground_damp_fraction)
-        print("Ground Normal K1: ", PHYSICS.phys_body.ground_normal_k1)
-        print("Ground Normal K0: ", PHYSICS.phys_body.ground_normal_k0)
-        print("Water Friction: ", PHYSICS.phys_body.water_friction)
-        print("Water Depth: ", PHYSICS.phys_body.water_depth)
-        print("Water Density: ", PHYSICS.phys_body.water_density)
-        print("Air Friction: ", PHYSICS.phys_body.air_friction)
-        print("XX Moment: ", PHYSICS.phys_body.xx_moment)
-        print("YY Moment: ", PHYSICS.phys_body.yy_moment)
-        print("ZZ Moment: ", PHYSICS.phys_body.zz_moment)
-        print("Inertial Matrix and Inverse Tag Block Count: ", PHYSICS.phys_body.inertial_matrix_and_inverse_tag_block.count)
-        print("Inertial Matrix and Inverse Tag Block Maximum Count: ", PHYSICS.phys_body.inertial_matrix_and_inverse_tag_block.maximum_count)
-        print("Inertial Matrix and Inverse Tag Block Address: ", PHYSICS.phys_body.inertial_matrix_and_inverse_tag_block.address)
-        print("Inertial Matrix and Inverse Tag Block Definition: ", PHYSICS.phys_body.inertial_matrix_and_inverse_tag_block.definition)
-        print("Powered Mass Points Tag Block Count: ", PHYSICS.phys_body.powered_mass_points_tag_block.count)
-        print("Powered Mass Points Tag Block Maximum Count: ", PHYSICS.phys_body.powered_mass_points_tag_block.maximum_count)
-        print("Powered Mass Points Tag Block Address: ", PHYSICS.phys_body.powered_mass_points_tag_block.address)
-        print("Powered Mass Points Tag Block Definition: ", PHYSICS.phys_body.powered_mass_points_tag_block.definition)
-        print("Mass Point Tag Block Count: ", PHYSICS.phys_body.mass_points_tag_block.count)
-        print("Mass Point Tag Block Maximum Count: ", PHYSICS.phys_body.mass_points_tag_block.maximum_count)
-        print("Mass Point Tag Block Address: ", PHYSICS.phys_body.mass_points_tag_block.address)
-        print("Mass Point Tag Block Definition: ", PHYSICS.phys_body.mass_points_tag_block.definition)
-        print(" ")
+    PHYSICS.inertial_matrix_and_inverse = []
+    inertial_matrix_and_inverse_node = tag_format.get_xml_node(XML_OUTPUT, PHYSICS.phys_body.inertial_matrix_and_inverse_tag_block.count, tag_node, "name", "inertial matrix and inverse")
+    for inertial_matrix_and_inverse_idx in range(PHYSICS.phys_body.inertial_matrix_and_inverse_tag_block.count):
+        inertial_matrix_and_inverse_element_node = None
+        if XML_OUTPUT:
+            inertial_matrix_and_inverse_element_node = TAG.xml_doc.createElement('element')
+            inertial_matrix_and_inverse_element_node.setAttribute('index', str(inertial_matrix_and_inverse_idx))
+            inertial_matrix_and_inverse_node.appendChild(inertial_matrix_and_inverse_element_node)
 
-    for matrix_idx in range(PHYSICS.phys_body.inertial_matrix_and_inverse_tag_block.count):
-        phys_inertial_matrix_and_inverse_tag_block_struct = struct.unpack('>fffffffff', input_stream.read(36))
         InertialMatrixAndInverse = PHYSICS.InertialMatrixAndInverse()
-        InertialMatrixAndInverse.yy_zz_xy_zx = Vector((phys_inertial_matrix_and_inverse_tag_block_struct[0], phys_inertial_matrix_and_inverse_tag_block_struct[1], phys_inertial_matrix_and_inverse_tag_block_struct[2]))
-        InertialMatrixAndInverse.xy_zz_xx_yz = Vector((phys_inertial_matrix_and_inverse_tag_block_struct[3], phys_inertial_matrix_and_inverse_tag_block_struct[4], phys_inertial_matrix_and_inverse_tag_block_struct[5]))
-        InertialMatrixAndInverse.zx_yz_xx_yy = Vector((phys_inertial_matrix_and_inverse_tag_block_struct[6], phys_inertial_matrix_and_inverse_tag_block_struct[7], phys_inertial_matrix_and_inverse_tag_block_struct[8]))
+        InertialMatrixAndInverse.yy_zz_xy_zx = TAG.read_vector(input_stream, TAG, tag_format.XMLData(inertial_matrix_and_inverse_element_node, "yy+zz -xy -zx"))
+        InertialMatrixAndInverse.xy_zz_xx_yz = TAG.read_vector(input_stream, TAG, tag_format.XMLData(inertial_matrix_and_inverse_element_node, "-xy zz+xx -yz"))
+        InertialMatrixAndInverse.zx_yz_xx_yy = TAG.read_vector(input_stream, TAG, tag_format.XMLData(inertial_matrix_and_inverse_element_node, "-zx -yz xx+yy"))
 
         PHYSICS.inertial_matrix_and_inverse.append(InertialMatrixAndInverse)
 
-    if DEBUG_PARSER and DEBUG_INERTIAL_MATRIX_AND_INVERSE:
-        print(" ===== Inertial Matrix and Inverses ===== ")
-        for matrix_idx, matrix in enumerate(PHYSICS.inertial_matrix_and_inverse):
-            print(" ===== Inertial Matrix and Inverse %s ===== " % matrix_idx)
-            print("yy+zz    -xy     -zx: ", matrix.yy_zz_xy_zx)
-            print("-xy    zz+xx    -yz: ", matrix.xy_zz_xx_yz)
-            print("-zx     -yz    xx+yy: ", matrix.zx_yz_xx_yy)
-            print(" ")
-
+    PHYSICS.powered_mass_points = []
+    powered_mass_point_node = tag_format.get_xml_node(XML_OUTPUT, PHYSICS.phys_body.powered_mass_points_tag_block.count, tag_node, "name", "powered mass points")
     for powered_mass_point_idx in range(PHYSICS.phys_body.powered_mass_points_tag_block.count):
-        phys_powered_mass_point_tag_block_struct = struct.unpack('>32siffffff68x', input_stream.read(128))
-        PoweredMassPoint = PHYSICS.PoweredMassPoint()
-        PoweredMassPoint.name = phys_powered_mass_point_tag_block_struct[0].decode().rstrip('\x00')
-        PoweredMassPoint.flags = phys_powered_mass_point_tag_block_struct[1]
-        PoweredMassPoint.antigrav_strength = phys_powered_mass_point_tag_block_struct[2]
-        PoweredMassPoint.antigrav_offset = phys_powered_mass_point_tag_block_struct[3]
-        PoweredMassPoint.antigrav_height = phys_powered_mass_point_tag_block_struct[4]
-        PoweredMassPoint.antigrav_damp_fraction = phys_powered_mass_point_tag_block_struct[5]
-        PoweredMassPoint.antigrav_normal_k1 = phys_powered_mass_point_tag_block_struct[6]
-        PoweredMassPoint.antigrav_normal_k0 = phys_powered_mass_point_tag_block_struct[7]
+        powered_mass_point_element_node = None
+        if XML_OUTPUT:
+            powered_mass_point_element_node = TAG.xml_doc.createElement('element')
+            powered_mass_point_element_node.setAttribute('index', str(powered_mass_point_idx))
+            powered_mass_point_node.appendChild(powered_mass_point_element_node)
 
-        PHYSICS.powered_mass_points.append(PoweredMassPoint)
+        powered_mass_point = PHYSICS.PoweredMassPoint()
+        powered_mass_point.name = TAG.read_string32(input_stream, TAG, tag_format.XMLData(powered_mass_point_element_node, "name"))
+        powered_mass_point.flags = TAG.read_flag_unsigned_integer(input_stream, TAG, tag_format.XMLData(powered_mass_point_element_node, "flags", PoweredMassPointFlags))
+        powered_mass_point.antigrav_strength = TAG.read_float(input_stream, TAG, tag_format.XMLData(powered_mass_point_element_node, "antigrav strength"))
+        powered_mass_point.antigrav_offset = TAG.read_float(input_stream, TAG, tag_format.XMLData(powered_mass_point_element_node, "antigrav offset"))
+        powered_mass_point.antigrav_height = TAG.read_float(input_stream, TAG, tag_format.XMLData(powered_mass_point_element_node, "antigrav height"))
+        powered_mass_point.antigrav_damp_fraction = TAG.read_float(input_stream, TAG, tag_format.XMLData(powered_mass_point_element_node, "antigrav damp fraction"))
+        powered_mass_point.antigrav_normal_k1 = TAG.read_float(input_stream, TAG, tag_format.XMLData(powered_mass_point_element_node, "antigrav normal k1"))
+        powered_mass_point.antigrav_normal_k0 = TAG.read_float(input_stream, TAG, tag_format.XMLData(powered_mass_point_element_node, "antigrav normal k0"))
+        input_stream.read(68) # Padding?
 
-    if DEBUG_PARSER and DEBUG_POWERED_MASS_POINT:
-        print(" ===== Powered Mass Points ===== ")
-        for powered_mass_point_idx, powered_mass_point in enumerate(PHYSICS.powered_mass_points):
-            print(" ===== Powered Mass Point %s ===== " % powered_mass_point_idx)
-            print("Name: ", powered_mass_point.name)
-            print("Flags: ", powered_mass_point.flags)
-            print("Antigrav Strength: ", powered_mass_point.antigrav_strength)
-            print("Antigrav Offset: ", powered_mass_point.antigrav_offset)
-            print("Antigrav Height: ", powered_mass_point.antigrav_height)
-            print("Antigrav Damp Fraction: ", powered_mass_point.antigrav_damp_fraction)
-            print("Antigrav Normal K1: ", powered_mass_point.antigrav_normal_k1)
-            print("Antigrav Normal K0: ", powered_mass_point.antigrav_normal_k0)
-            print(" ")
+        PHYSICS.powered_mass_points.append(powered_mass_point)
 
+    PHYSICS.mass_points = []
+    mass_point_node = tag_format.get_xml_node(XML_OUTPUT, PHYSICS.phys_body.mass_points_tag_block.count, tag_node, "name", "mass points")
     for mass_point_idx in range(PHYSICS.phys_body.mass_points_tag_block.count):
-        phys_mass_point_tag_block_struct = struct.unpack('>32shhifffffffffffffh2xfff20x', input_stream.read(128))
-        MassPoint = PHYSICS.MassPoint()
-        MassPoint.name = phys_mass_point_tag_block_struct[0].decode().rstrip('\x00')
-        MassPoint.powered_mass_point = phys_mass_point_tag_block_struct[1]
-        MassPoint.model_node = phys_mass_point_tag_block_struct[2]
-        MassPoint.flags = phys_mass_point_tag_block_struct[3]
-        MassPoint.relative_mass = phys_mass_point_tag_block_struct[4]
-        MassPoint.mass = phys_mass_point_tag_block_struct[5]
-        MassPoint.relative_density = phys_mass_point_tag_block_struct[6]
-        MassPoint.density = phys_mass_point_tag_block_struct[7]
-        MassPoint.position = Vector((phys_mass_point_tag_block_struct[8], phys_mass_point_tag_block_struct[9], phys_mass_point_tag_block_struct[10])) * 100
-        MassPoint.forward = Vector((phys_mass_point_tag_block_struct[11], phys_mass_point_tag_block_struct[12], phys_mass_point_tag_block_struct[13]))
-        MassPoint.up = Vector((phys_mass_point_tag_block_struct[14], phys_mass_point_tag_block_struct[15], phys_mass_point_tag_block_struct[16]))
-        MassPoint.friction_type = phys_mass_point_tag_block_struct[17]
-        MassPoint.friction_parallel_scale = phys_mass_point_tag_block_struct[18]
-        MassPoint.friction_perpendicular_scale = phys_mass_point_tag_block_struct[19]
-        MassPoint.radius = phys_mass_point_tag_block_struct[20] * 100
+        mass_point_element_node = None
+        if XML_OUTPUT:
+            mass_point_element_node = TAG.xml_doc.createElement('element')
+            mass_point_element_node.setAttribute('index', str(mass_point_idx))
+            mass_point_node.appendChild(mass_point_element_node)
 
-        PHYSICS.mass_points.append(MassPoint)
+        mass_point = PHYSICS.MassPoint()
+        mass_point.name = TAG.read_string32(input_stream, TAG, tag_format.XMLData(mass_point_element_node, "name"))
+        mass_point.powered_mass_point = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(mass_point_element_node, "powered mass point", None, PHYSICS.phys_body.powered_mass_points_tag_block.count, "powered_mass_point_block"))
+        mass_point.model_node = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(mass_point_element_node, "model node"))
+        mass_point.flags = TAG.read_flag_unsigned_integer(input_stream, TAG, tag_format.XMLData(mass_point_element_node, "flags", MassPointFlags))
+        mass_point.relative_mass = TAG.read_float(input_stream, TAG, tag_format.XMLData(mass_point_element_node, "relative mass"))
+        mass_point.mass = TAG.read_float(input_stream, TAG, tag_format.XMLData(mass_point_element_node, "mass"))
+        mass_point.relative_density = TAG.read_float(input_stream, TAG, tag_format.XMLData(mass_point_element_node, "relative density"))
+        mass_point.density = TAG.read_float(input_stream, TAG, tag_format.XMLData(mass_point_element_node, "density"))
+        mass_point.position = TAG.read_point_3d(input_stream, TAG, tag_format.XMLData(mass_point_element_node, "position"), True)
+        mass_point.forward = TAG.read_vector(input_stream, TAG, tag_format.XMLData(mass_point_element_node, "forward"))
+        mass_point.up = TAG.read_vector(input_stream, TAG, tag_format.XMLData(mass_point_element_node, "up"))
+        mass_point.friction_type = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(mass_point_element_node, "friction type", FrictionTypeEnum))
+        input_stream.read(2) # Padding?
+        mass_point.friction_parallel_scale = TAG.read_float(input_stream, TAG, tag_format.XMLData(mass_point_element_node, "friction parallel scale"))
+        mass_point.friction_perpendicular_scale = TAG.read_float(input_stream, TAG, tag_format.XMLData(mass_point_element_node, "friction perpendicular scale"))
+        mass_point.radius = TAG.read_float(input_stream, TAG, tag_format.XMLData(mass_point_element_node, "radius"), True)
+        input_stream.read(20) # Padding?
 
-    if DEBUG_PARSER and DEBUG_MASS_POINT:
-        print(" ===== Mass Points ===== ")
-        for mass_point_idx, mass_point in enumerate(PHYSICS.mass_points):
-            print(" ===== Mass Point %s ===== " % mass_point_idx)
-            print("Name: ", mass_point.name)
-            print("Powered Mass Point: ", mass_point.powered_mass_point)
-            print("Model Node: ", mass_point.model_node)
-            print("Flags: ", mass_point.flags)
-            print("Relative Mass: ", mass_point.relative_mass)
-            print("Mass: ", mass_point.mass)
-            print("Relative Density: ", mass_point.relative_density)
-            print("Density: ", mass_point.density)
-            print("Position: ", mass_point.position)
-            print("Forward: ", mass_point.forward)
-            print("Up: ", mass_point.up)
-            print("Friction Type: ", mass_point.friction_type)
-            print("Friction Parellel Scale: ", mass_point.friction_parallel_scale)
-            print("Friction Perpendicular Scale: ", mass_point.friction_perpendicular_scale)
-            print("Radius: ", mass_point.radius)
-            print(" ")
+        PHYSICS.mass_points.append(mass_point)
 
     current_position = input_stream.tell()
     EOF = input_stream.seek(0, 2)
     if not EOF - current_position == 0: # is something wrong with the parser?
         report({'WARNING'}, "%s elements left after parse end" % (EOF - current_position))
+
+    if XML_OUTPUT:
+        xml_str = TAG.xml_doc.toprettyxml(indent ="\t")
+
+        save_path_file = tag_format.get_xml_path(input_stream.name, PHYSICS.header.tag_group, TAG.is_legacy)
+
+        with open(save_path_file, "w") as f:
+            f.write(xml_str)
 
     return PHYSICS

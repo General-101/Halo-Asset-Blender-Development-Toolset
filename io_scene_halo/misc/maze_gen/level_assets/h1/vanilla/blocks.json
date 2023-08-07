@@ -1,0 +1,82 @@
+{
+    "human": {
+        "start_blocks": [
+            {
+                "name": "F_block",
+                "weight": 100
+            }
+        ],
+        "hallway_blocks": [
+            {
+                "name": "I_block",
+                "weight": 60
+            },
+            {
+                "name": "I_block2",
+                "weight": 40
+            },
+            {
+                "name": "I_block3",
+                "weight": 40
+            },
+            {
+                "name": "I_block4",
+                "weight": 40
+            }
+        ],
+        "elbow_blocks": [
+            {
+                "name": "L_block",
+                "weight": 100
+            }
+        ]
+    },
+    "covenant": {
+        "start_blocks": [
+            {
+                "name": "F_block",
+                "weight": 100
+            }
+        ],
+        "hallway_blocks": [
+            {
+                "name": "I_block",
+                "weight": 60
+            },
+            {
+                "name": "I_block_2",
+                "weight": 40
+            }
+        ],
+        "elbow_blocks": [
+            {
+                "name": "L_block",
+                "weight": 100
+            }
+        ]
+    },
+    "forerunner": {
+        "start_blocks": [
+            {
+                "name": "F_block",
+                "weight": 100
+            }
+        ],
+        "hallway_blocks": [
+            {
+                "name": "I_block",
+                "weight": 60
+            },
+            {
+                "name": "I_block_2",
+                "weight": 40
+            }
+        ],
+        "elbow_blocks": [
+            {
+                "name": "L_block",
+                "weight": 100
+            }
+        ]
+    }
+}

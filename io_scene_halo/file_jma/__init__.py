@@ -2,7 +2,7 @@
 #
 # MIT License
 #
-# Copyright (c) 2021 Steven Garcia
+# Copyright (c) 2023 Steven Garcia
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -25,8 +25,6 @@
 # ##### END MIT LICENSE BLOCK #####
 
 import bpy
-import sys
-import argparse
 
 from ..global_functions import global_functions
 
@@ -110,114 +108,66 @@ class JMS_RestPositionsBDialog(Operator):
 
         return {'RUNNING_MODAL'}
 
+def extension_settings_callback(self, context):
+    items=[ ('.JMA', "JMA", "Jointed Model Animation CE/H2/H3"),
+            ('.JMM', "JMM", "Jointed Model Moving CE/H2/H3"),
+            ('.JMT', "JMT", "Jointed Model Turning CE/H2/H3"),
+            ('.JMO', "JMO", "Jointed Model Overlay CE/H2/H3"),
+            ('.JMR', "JMR", "Jointed Model Replacement CE/H2/H3"),
+            ('.JMZ', "JMZ", "Jointed Model Height CE/H2/H3"),
+            ('.JMW', "JMW", "Jointed Model World CE/H2/H3"),
+        ]
+
+    if not self.game_title == "halo1":
+            items.insert(5, ('.JMRX', "JMRX", "Jointed Model Replacement Extended H2/H3"))
+            items.insert(6, ('.JMH', "JMH", "Jointed Model Havok H2/H3"))
+
+    return items
+
+def version_settings_callback(self, context):
+    items=[ ('16390', "16390", "CE/H2/H3"),
+            ('16391', "16391", "CE/H2/H3"),
+            ('16392', "16392", "CE/H2/H3"),
+        ]
+
+    if not self.game_title == "halo1":
+            items.append(('16393', "16393", "H2/H3"))
+            items.append(('16394', "16394", "H2/H3"))
+            items.append(('16395', "16395", "H2/H3"))
+
+    return items
+
+def update_version(self, context):
+    if self.game_title == "halo1":
+        self.jma_version = '16392'
+
+    else:
+        self.jma_version = '16395'
+
 class JMA_ScenePropertiesGroup(PropertyGroup):
     extension: EnumProperty(
         name="Extension:",
         description="What extension to use for the animation file",
         options={'HIDDEN'},
-        items=[ ('.JMA', "JMA", "Jointed Model Animation CE/H2/H3"),
-                ('.JMM', "JMM", "Jointed Model Moving CE/H2/H3"),
-                ('.JMT', "JMT", "Jointed Model Turning CE/H2/H3"),
-                ('.JMO', "JMO", "Jointed Model Overlay CE/H2/H3"),
-                ('.JMR', "JMR", "Jointed Model Replacement CE/H2/H3"),
-                ('.JMRX', "JMRX", "Jointed Model Replacement Extended H2/H3"),
-                ('.JMH', "JMH", "Jointed Model Havok H2/H3"),
-                ('.JMZ', "JMZ", "Jointed Model Height CE/H2/H3"),
-                ('.JMW', "JMW", "Jointed Model World CE/H2/H3"),
-            ]
-        )
-
-    extension_ce: EnumProperty(
-        name="Extension:",
-        description="What extension to use for the animation file",
-        items=[ ('.JMA', "JMA", "Jointed Model Animation CE"),
-                ('.JMM', "JMM", "Jointed Model Moving CE"),
-                ('.JMT', "JMT", "Jointed Model Turning CE"),
-                ('.JMO', "JMO", "Jointed Model Overlay CE"),
-                ('.JMR', "JMR", "Jointed Model Replacement CE"),
-                ('.JMZ', "JMZ", "Jointed Model Height CE"),
-                ('.JMW', "JMW", "Jointed Model World CE"),
-            ]
-        )
-
-    extension_h2: EnumProperty(
-        name="Extension:",
-        description="What extension to use for the animation file",
-        items=[ ('.JMA', "JMA", "Jointed Model Animation H2"),
-                ('.JMM', "JMM", "Jointed Model Moving H2"),
-                ('.JMT', "JMT", "Jointed Model Turning H2"),
-                ('.JMO', "JMO", "Jointed Model Overlay H2"),
-                ('.JMR', "JMR", "Jointed Model Replacement H2"),
-                ('.JMRX', "JMRX", "Jointed Model Replacement Extended H2"),
-                ('.JMH', "JMH", "Jointed Model Havok H2"),
-                ('.JMZ', "JMZ", "Jointed Model Height H2"),
-                ('.JMW', "JMW", "Jointed Model World H2"),
-            ]
-        )
-
-    extension_h3: EnumProperty(
-        name="Extension:",
-        description="What extension to use for the animation file",
-        items=[ ('.JMA', "JMA", "Jointed Model Animation H3"),
-                ('.JMM', "JMM", "Jointed Model Moving H3"),
-                ('.JMT', "JMT", "Jointed Model Turning H3"),
-                ('.JMO', "JMO", "Jointed Model Overlay H3"),
-                ('.JMR', "JMR", "Jointed Model Replacement H3"),
-                ('.JMRX', "JMRX", "Jointed Model Replacement Extended H3"),
-                ('.JMH', "JMH", "Jointed Model Havok H3"),
-                ('.JMZ', "JMZ", "Jointed Model Height H3"),
-                ('.JMW', "JMW", "Jointed Model World H3"),
-            ]
+        items=extension_settings_callback
         )
 
     jma_version: EnumProperty(
         name="Version:",
         description="What version to use for the animation file",
-        default="16392",
         options={'HIDDEN'},
-        items=[ ('16390', "16390", "CE/H2/H3"),
-                ('16391', "16391", "CE/H2/H3"),
-                ('16392', "16392", "CE/H2/H3"),
-                ('16393', "16393", "H2/H3"),
-                ('16394', "16394", "H2/H3"),
-                ('16395', "16395", "H2/H3"),
-            ]
+        items=version_settings_callback,
+        default=2
         )
 
-    jma_version_ce: EnumProperty(
-        name="Version:",
-        description="What version to use for the animation file",
-        default="16392",
-        items=[ ('16390', "16390", "CE"),
-                ('16391', "16391", "CE"),
-                ('16392', "16392", "CE"),
-            ]
-        )
-
-    jma_version_h2: EnumProperty(
-        name="Version:",
-        description="What version to use for the animation file",
-        default="16395",
-        items=[ ('16390', "16390", "H2"),
-                ('16391', "16391", "H2"),
-                ('16392', "16392", "H2"),
-                ('16393', "16393", "H2"),
-                ('16394', "16394", "H2"),
-                ('16395', "16395", "H2"),
-            ]
-        )
-
-    jma_version_h3: EnumProperty(
-        name="Version:",
-        description="What version to use for the animation file",
-        default="16395",
-        items=[ ('16390', "16390", "H3"),
-                ('16391', "16391", "H3"),
-                ('16392', "16392", "H3"),
-                ('16393', "16393", "H3"),
-                ('16394', "16394", "H3"),
-                ('16395', "16395", "H3"),
-            ]
+    game_title: EnumProperty(
+        name="Game Title:",
+        description="What game will the model file be used for",
+        items=[ ('halo1', "Halo 1", "Export an animation intended for Halo 1"),
+                ('halo2', "Halo 2", "Export an animation intended for Halo 2"),
+                ('halo3', "Halo 3", "Export an animation intended for Halo 3"),
+            ],
+        update = update_version
         )
 
     generate_checksum: BoolProperty(
@@ -226,13 +176,29 @@ class JMA_ScenePropertiesGroup(PropertyGroup):
         default = True,
         )
 
-    game_version: EnumProperty(
-        name="Game:",
-        description="What game will the model file be used for",
-        items=[ ('haloce', "Halo CE", "Export an animation intended for Halo Custom Edition or Halo 1 MCC"),
-                ('halo2', "Halo 2", "Export an animation intended for Halo 2 Vista or Halo 2 MCC"),
-                ('halo3mcc', "Halo 3 MCC", "Export an animation intended for Halo 3 MCC"),
-            ]
+    folder_structure: BoolProperty(
+        name ="Generate Asset Subdirectories",
+        description = "Generate folder subdirectories for exported assets",
+        default = False,
+        )
+
+    fix_rotations: BoolProperty(
+        name ="Fix Rotations",
+        description = "Rotates bones by 90 degrees on a local Z axis",
+        default = False,
+        )
+
+    use_maya_sorting: BoolProperty(
+        name ="Use Maya Sorting",
+        description = "Certain models have different checksums due to how the Maya bipeds worked. Try this if the checksum doesn't match as is.",
+        default = False,
+        )
+
+
+    use_scene_properties: BoolProperty(
+        name ="Use scene properties",
+        description = "Use the options set in the scene or uncheck this to override",
+        default = False,
         )
 
     custom_frame_rate: EnumProperty(
@@ -256,31 +222,6 @@ class JMA_ScenePropertiesGroup(PropertyGroup):
         description="Set your own framerate",
         default=30,
         min=1,
-        )
-
-    biped_controller: BoolProperty(
-        name ="Biped Controller",
-        description = "Transform values for armature object",
-        default = False,
-        options={'HIDDEN'},
-        )
-
-    fix_rotations: BoolProperty(
-        name ="Fix Rotations",
-        description = "Rotates bones by 90 degrees on a local Z axis",
-        default = False,
-        )
-
-    folder_structure: BoolProperty(
-        name ="Generate Asset Subdirectories",
-        description = "Generate folder subdirectories for exported assets",
-        default = False,
-        )
-
-    use_scene_properties: BoolProperty(
-        name ="Use scene properties",
-        description = "Use the options set in the scene or uncheck this to override",
-        default = False,
         )
 
     scale_enum: EnumProperty(
@@ -317,6 +258,7 @@ class JMA_SceneProps(Panel):
     bl_context = "scene"
     bl_options = {'DEFAULT_CLOSED'}
     bl_parent_id = "HALO_PT_ScenePropertiesPanel"
+
     def draw(self, context):
         scene = context.scene
         scene_jma = scene.jma
@@ -328,33 +270,18 @@ class JMA_SceneProps(Panel):
         box.label(text="Game Version:")
         col = box.column(align=True)
         row = col.row()
-        row.prop(scene_jma, "game_version", text='')
+        row.prop(scene_jma, "game_title", text='')
         box = layout.box()
         box.label(text="File Details:")
         col = box.column(align=True)
         if scene_halo.expert_mode:
             row = col.row()
             row.label(text='JMA Version:')
-            if scene_jma.game_version == 'haloce':
-                row.prop(scene_jma, "jma_version_ce", text='')
-
-            elif scene_jma.game_version == 'halo2':
-                row.prop(scene_jma, "jma_version_h2", text='')
-
-            elif scene_jma.game_version == 'halo3mcc':
-                row.prop(scene_jma, "jma_version_h3", text='')
+            row.prop(scene_jma, "jma_version", text='')
 
         row = col.row()
         row.label(text='Extension:')
-        if scene_jma.game_version == 'haloce':
-            row.prop(scene_jma, "extension_ce", text='')
-
-        elif scene_jma.game_version == 'halo2':
-            row.prop(scene_jma, "extension_h2", text='')
-
-        elif scene_jma.game_version == 'halo3mcc':
-            row.prop(scene_jma, "extension_h3", text='')
-
+        row.prop(scene_jma, "extension", text='')
         row = col.row()
         row.label(text='Generate Checksum:')
         row.prop(scene_jma, "generate_checksum", text='')
@@ -364,15 +291,12 @@ class JMA_SceneProps(Panel):
         box = layout.box()
         box.label(text="Scene Options:")
         col = box.column(align=True)
-        if scene_jma.jma_version_h2 == '16395' or scene_jma.jma_version_h3 == '16395':
-            if not scene_jma.game_version == 'haloce':
-                row = col.row()
-                row.label(text='Biped Controller:')
-                row.prop(scene_jma, "biped_controller", text='')
-
         row = col.row()
         row.label(text='Fix Rotation:')
         row.prop(scene_jma, "fix_rotations", text='')
+        row = col.row()
+        row.label(text='Use Maya Sorting:')
+        row.prop(scene_jma, "use_maya_sorting", text='')
         row = col.row()
         row.label(text='Use As Default Export Settings:')
         row.prop(scene_jma, "use_scene_properties", text='')
@@ -404,109 +328,25 @@ class ExportJMA(Operator, ExportHelper):
         name="Extension:",
         description="What extension to use for the animation file",
         options={'HIDDEN'},
-        items=[ ('.JMA', "JMA", "Jointed Model Animation CE/H2/H3"),
-                ('.JMM', "JMM", "Jointed Model Moving CE/H2/H3"),
-                ('.JMT', "JMT", "Jointed Model Turning CE/H2/H3"),
-                ('.JMO', "JMO", "Jointed Model Overlay CE/H2/H3"),
-                ('.JMR', "JMR", "Jointed Model Replacement CE/H2/H3"),
-                ('.JMRX', "JMRX", "Jointed Model Replacement Extended H2/H3"),
-                ('.JMH', "JMH", "Jointed Model Havok H2/H3"),
-                ('.JMZ', "JMZ", "Jointed Model Height CE/H2/H3"),
-                ('.JMW', "JMW", "Jointed Model World CE/H2/H3"),
-            ]
-        )
-
-    extension_ce: EnumProperty(
-        name="Extension:",
-        description="What extension to use for the animation file",
-        items=[ ('.JMA', "JMA", "Jointed Model Animation CE"),
-                ('.JMM', "JMM", "Jointed Model Moving CE"),
-                ('.JMT', "JMT", "Jointed Model Turning CE"),
-                ('.JMO', "JMO", "Jointed Model Overlay CE"),
-                ('.JMR', "JMR", "Jointed Model Replacement CE"),
-                ('.JMZ', "JMZ", "Jointed Model Height CE"),
-                ('.JMW', "JMW", "Jointed Model World CE"),
-            ]
-        )
-
-    extension_h2: EnumProperty(
-        name="Extension:",
-        description="What extension to use for the animation file",
-        items=[ ('.JMA', "JMA", "Jointed Model Animation H2"),
-                ('.JMM', "JMM", "Jointed Model Moving H2"),
-                ('.JMT', "JMT", "Jointed Model Turning H2"),
-                ('.JMO', "JMO", "Jointed Model Overlay H2"),
-                ('.JMR', "JMR", "Jointed Model Replacement H2"),
-                ('.JMRX', "JMRX", "Jointed Model Replacement Extended H2"),
-                ('.JMH', "JMH", "Jointed Model Havok H2"),
-                ('.JMZ', "JMZ", "Jointed Model Height H2"),
-                ('.JMW', "JMW", "Jointed Model World H2"),
-            ]
-        )
-
-    extension_h3: EnumProperty(
-        name="Extension:",
-        description="What extension to use for the animation file",
-        items=[ ('.JMA', "JMA", "Jointed Model Animation H3"),
-                ('.JMM', "JMM", "Jointed Model Moving H3"),
-                ('.JMT', "JMT", "Jointed Model Turning H3"),
-                ('.JMO', "JMO", "Jointed Model Overlay H3"),
-                ('.JMR', "JMR", "Jointed Model Replacement H3"),
-                ('.JMRX', "JMRX", "Jointed Model Replacement Extended H3"),
-                ('.JMH', "JMH", "Jointed Model Havok H3"),
-                ('.JMZ', "JMZ", "Jointed Model Height H3"),
-                ('.JMW', "JMW", "Jointed Model World H3"),
-            ]
+        items=extension_settings_callback
         )
 
     jma_version: EnumProperty(
         name="Version:",
         description="What version to use for the animation file",
-        default="16392",
         options={'HIDDEN'},
-        items=[ ('16390', "16390", "CE/H2/H3"),
-                ('16391', "16391", "CE/H2/H3"),
-                ('16392', "16392", "CE/H2/H3"),
-                ('16393', "16393", "H2/H3"),
-                ('16394', "16394", "H2/H3"),
-                ('16395', "16395", "H2/H3"),
-            ]
+        items=version_settings_callback,
+        default=2
         )
 
-    jma_version_ce: EnumProperty(
-        name="Version:",
-        description="What version to use for the animation file",
-        default="16392",
-        items=[ ('16390', "16390", "CE"),
-                ('16391', "16391", "CE"),
-                ('16392', "16392", "CE"),
-            ]
-        )
-
-    jma_version_h2: EnumProperty(
-        name="Version:",
-        description="What version to use for the animation file",
-        default="16395",
-        items=[ ('16390', "16390", "H2"),
-                ('16391', "16391", "H2"),
-                ('16392', "16392", "H2"),
-                ('16393', "16393", "H2"),
-                ('16394', "16394", "H2"),
-                ('16395', "16395", "H2"),
-            ]
-        )
-
-    jma_version_h3: EnumProperty(
-        name="Version:",
-        description="What version to use for the animation file",
-        default="16395",
-        items=[ ('16390', "16390", "H3"),
-                ('16391', "16391", "H3"),
-                ('16392', "16392", "H3"),
-                ('16393', "16393", "H3"),
-                ('16394', "16394", "H3"),
-                ('16395', "16395", "H3"),
-            ]
+    game_title: EnumProperty(
+        name="Game Title:",
+        description="What game will the model file be used for",
+        items=[ ('halo1', "Halo 1", "Export an animation intended for Halo 1"),
+                ('halo2', "Halo 2", "Export an animation intended for Halo 2"),
+                ('halo3', "Halo 3", "Export an animation intended for Halo 3"),
+            ],
+        update = update_version
         )
 
     generate_checksum: BoolProperty(
@@ -515,16 +355,31 @@ class ExportJMA(Operator, ExportHelper):
         default = True,
         )
 
-    game_version: EnumProperty(
-        name="Game:",
-        description="What game will the model file be used for",
-        items=[ ('haloce', "Halo CE", "Export an animation intended for Halo Custom Edition or Halo 1 MCC"),
-                ('halo2', "Halo 2", "Export an animation intended for Halo 2 Vista or Halo 2 MCC"),
-                ('halo3mcc', "Halo 3 MCC", "Export an animation intended for Halo 3 MCC"),
-            ]
+    folder_structure: BoolProperty(
+        name ="Generate Asset Subdirectories",
+        description = "Generate folder subdirectories for exported assets",
+        default = False,
         )
 
-    custom_frame_rate: EnumProperty(
+    fix_rotations: BoolProperty(
+        name ="Fix Rotations",
+        description = "Rotates bones by 90 degrees on a local Z axis",
+        default = False,
+        )
+
+    use_maya_sorting: BoolProperty(
+        name ="Use Maya Sorting",
+        description = "Certain models have different checksums due to how the Maya bipeds worked. Try this if the checksum doesn't match as is.",
+        default = False,
+        )
+
+    use_scene_properties: BoolProperty(
+        name ="Use scene properties",
+        description = "Use the options set in the scene or uncheck this to override",
+        default = False,
+        )
+
+    frame_rate_enum: EnumProperty(
         name="Framerate:",
         description="Set the framerate this animation will run at",
         default="30",
@@ -545,31 +400,6 @@ class ExportJMA(Operator, ExportHelper):
         description="Set your own framerate",
         default=30,
         min=1,
-        )
-
-    biped_controller: BoolProperty(
-        name ="Biped Controller",
-        description = "Transform values for armature object",
-        default = False,
-        options={'HIDDEN'},
-        )
-
-    fix_rotations: BoolProperty(
-        name ="Fix Rotations",
-        description = "Rotates bones by 90 degrees on a local Z axis",
-        default = False,
-        )
-
-    folder_structure: BoolProperty(
-        name ="Generate Asset Subdirectories",
-        description = "Generate folder subdirectories for exported assets",
-        default = False,
-        )
-
-    use_scene_properties: BoolProperty(
-        name ="Use scene properties",
-        description = "Use the options set in the scene or uncheck this to override",
-        default = False,
         )
 
     scale_enum: EnumProperty(
@@ -593,64 +423,16 @@ class ExportJMA(Operator, ExportHelper):
         options={'HIDDEN'},
         )
 
-    console: BoolProperty(
-        name ="Console",
-        description = "Is your console running",
-        default = False,
-        options={'HIDDEN'},
-        )
-
     def execute(self, context):
         from ..file_jma import export_jma
 
-        if '--' in sys.argv:
-            argv = sys.argv[sys.argv.index('--') + 1:]
-            parser = argparse.ArgumentParser()
-            parser.add_argument('-arg1', '--filepath', dest='filepath', metavar='FILE', required = True)
-            parser.add_argument('-arg2', '--game_version', dest='game_version', type=str, default="halo2")
-            parser.add_argument('-arg3', '--jma_version', dest='jma_version', type=str, default="16392")
-            parser.add_argument('-arg4', '--extension', dest='extension', type=str, default=".JMA")
-            parser.add_argument('-arg5', '--generate_checksum', dest='generate_checksum', action='store_true')
-            parser.add_argument('-arg6', '--folder_structure', dest='folder_structure', action='store_true')
-            parser.add_argument('-arg7', '--biped_controller', dest='biped_controller', action='store_true')
-            parser.add_argument('-arg8', '--fix_rotations', dest='fix_rotations', action='store_true')
-            parser.add_argument('-arg9', '--custom_frame_rate', dest='custom_frame_rate', type=str, default="30")
-            parser.add_argument('-arg10', '--frame_rate_float', dest='frame_rate_float', type=str, default=30)
-            parser.add_argument('-arg11', '--scale_enum', dest='scale_enum', type=str, default="0")
-            parser.add_argument('-arg12', '--scale_float', dest='scale_float', type=float, default=1.0)
-            parser.add_argument('-arg13', '--console', dest='console', action='store_true', default=True)
-            args = parser.parse_known_args(argv)[0]
-            print('filepath: ', args.filepath)
-            print('game_version: ', args.game_version)
-            print('jma_version: ', args.jma_version)
-            print('extension: ', args.extension)
-            print('generate_checksum: ', args.generate_checksum)
-            print('folder_structure: ', args.folder_structure)
-            print('biped_controller: ', args.biped_controller)
-            print('fix_rotations: ', args.fix_rotations)
-            print('custom_frame_rate: ', args.custom_frame_rate)
-            print('frame_rate_float: ', args.frame_rate_float)
-            print('scale_enum: ', args.scale_enum)
-            print('scale_float: ', args.scale_float)
-            print('console: ', args.console)
-            self.filepath = args.filepath
-            self.game_version = args.game_version
-            self.jma_version = args.jma_version
-            self.extension = args.extension
-            self.generate_checksum = args.generate_checksum
-            self.folder_structure = args.folder_structure
-            self.biped_controller = args.biped_controller
-            self.fix_rotations = args.fix_rotations
-            self.custom_frame_rate = args.custom_frame_rate
-            self.frame_rate_float = args.frame_rate_float
-            self.scale_enum = args.scale_enum
-            self.scale_float = args.scale_float
-            self.console = args.console
+        scale_value = global_functions.set_scale(self.scale_enum, self.scale_float)
+        frame_rate_value = global_functions.set_framerate(self.frame_rate_enum, self.frame_rate_float)
+        int_jma_version = int(self.jma_version)
 
-        return global_functions.run_code("export_jma.write_file(context, self.filepath, self.report, self.extension, self.extension_ce, self.extension_h2, self.extension_h3, self.jma_version, self.jma_version_ce, self.jma_version_h2, self.jma_version_h3, self.generate_checksum, self.custom_frame_rate, self.frame_rate_float, self.biped_controller, self.folder_structure, self.scale_enum, self.scale_float, self.console, self.game_version, self.fix_rotations)")
+        return global_functions.run_code("export_jma.write_file(context, self.filepath, self.report, self.extension, int_jma_version, self.game_title, self.generate_checksum, self.folder_structure, self.fix_rotations, self.use_maya_sorting, frame_rate_value, scale_value)")
 
     def draw(self, context):
-        fps_options = [23.98, 24, 25, 29.97, 30, 50, 59.94, 60]
         scene = context.scene
         scene_jma = scene.jma
         scene_halo = scene.halo
@@ -661,32 +443,29 @@ class ExportJMA(Operator, ExportHelper):
             is_enabled = False
 
         if scene_jma.use_scene_properties:
-            self.game_version = scene_jma.game_version
-            self.jma_version_ce = scene_jma.jma_version_ce
-            self.jma_version_h2 = scene_jma.jma_version_h2
-            self.jma_version_h3 = scene_jma.jma_version_h3
-            self.extension_ce = scene_jma.extension_ce
-            self.extension_h2 = scene_jma.extension_h2
-            self.extension_h3 = scene_jma.extension_h3
+            self.game_title = scene_jma.game_title
+            self.jma_version = scene_jma.jma_version
+            self.extension = scene_jma.extension
             self.generate_checksum = scene_jma.generate_checksum
-            self.biped_controller = scene_jma.biped_controller
-            self.fix_rotations = scene_jma.fix_rotations
             self.folder_structure = scene_jma.folder_structure
+            self.fix_rotations = scene_jma.fix_rotations
+            self.use_maya_sorting = scene_jma.use_maya_sorting
             self.scale_enum = scene_jma.scale_enum
             self.scale_float = scene_jma.scale_float
-            if scene.render.fps not in fps_options:
-                self.custom_frame_rate = 'CUSTOM'
+            frame_rate_string = str(scene.render.fps)
+            if frame_rate_string not in self.rna_type.properties["frame_rate_enum"].enum_items.keys():
+                self.frame_rate_enum = 'CUSTOM'
                 self.frame_rate_float = scene.render.fps
 
             else:
-                self.custom_frame_rate = '%s' % (scene.render.fps)
+                self.frame_rate_enum = frame_rate_string
 
         box = layout.box()
-        box.label(text="Game Version:")
+        box.label(text="Game Title:")
         col = box.column(align=True)
         row = col.row()
         row.enabled = is_enabled
-        row.prop(self, "game_version", text='')
+        row.prop(self, "game_title", text='')
         box = layout.box()
         box.label(text="File Details:")
         col = box.column(align=True)
@@ -694,27 +473,12 @@ class ExportJMA(Operator, ExportHelper):
             row = col.row()
             row.enabled = is_enabled
             row.label(text='JMA Version:')
-            if self.game_version == 'haloce':
-                 row.prop(self, "jma_version_ce", text='')
-
-            elif self.game_version == 'halo2':
-                row.prop(self, "jma_version_h2", text='')
-
-            elif self.game_version == 'halo3mcc':
-                row.prop(self, "jma_version_h3", text='')
+            row.prop(self, "jma_version", text='')
 
         row = col.row()
         row.enabled = is_enabled
         row.label(text='Extension:')
-        if self.game_version == 'haloce':
-            row.prop(self, "extension_ce", text='')
-
-        elif self.game_version == 'halo2':
-            row.prop(self, "extension_h2", text='')
-
-        elif self.game_version == 'halo3mcc':
-            row.prop(self, "extension_h3", text='')
-
+        row.prop(self, "extension", text='')
         row = col.row()
         row.enabled = is_enabled
         row.label(text='Generate Checksum:')
@@ -726,17 +490,14 @@ class ExportJMA(Operator, ExportHelper):
         box = layout.box()
         box.label(text="Scene Options:")
         col = box.column(align=True)
-        if self.jma_version_h2 == '16395' or self.jma_version_h3 == '16395':
-            if not self.game_version == 'haloce':
-                row = col.row()
-                row.enabled = is_enabled
-                row.label(text='Biped Controller:')
-                row.prop(self, "biped_controller", text='')
-
         row = col.row()
         row.enabled = is_enabled
         row.label(text='Fix Rotation:')
         row.prop(self, "fix_rotations", text='')
+        row = col.row()
+        row.enabled = is_enabled
+        row.label(text='Use Maya Sorting:')
+        row.prop(self, "use_maya_sorting", text='')
         row = col.row()
         row.label(text='Use Scene Export Settings:')
         row.prop(scene_jma, "use_scene_properties", text='')
@@ -745,8 +506,8 @@ class ExportJMA(Operator, ExportHelper):
             box.label(text="Custom Frame Rate:")
             row = box.row()
             row.enabled = is_enabled
-            row.prop(self, "custom_frame_rate", text='')
-            if self.custom_frame_rate == 'CUSTOM':
+            row.prop(self, "frame_rate_enum", text='')
+            if self.frame_rate_enum == 'CUSTOM':
                 row = box.row()
                 row.enabled = is_enabled
                 row.prop(self, "frame_rate_float")
@@ -767,14 +528,14 @@ class ImportJMA(Operator, ImportHelper):
     bl_label = "Import JMA"
     filename_ext = '.JMA'
 
-    game_version: EnumProperty(
-        name="Game:",
+    game_title: EnumProperty(
+        name="Game Title:",
         description="What game was the model file made for",
         default="auto",
         items=[ ('auto', "Auto", "Attempt to guess the game this animation was intended for. Will default to Halo CE if this fails."),
-                ('haloce', "Halo CE", "Import an animation intended for Halo Custom Edition or Halo 1 MCC"),
-                ('halo2', "Halo 2", "Import an animation intended for Halo 2 Vista or Halo 2 MCC"),
-                ('halo3', "Halo 3", "Import an animation intended for Halo 3 MCC"),
+                ('halo1', "Halo 1", "Import an animation intended for Halo 1"),
+                ('halo2', "Halo 2", "Import an animation intended for Halo 2"),
+                ('halo3', "Halo 3", "Import an animation intended for Halo 3"),
             ]
         )
 
@@ -807,30 +568,8 @@ class ImportJMA(Operator, ImportHelper):
 
     def execute(self, context):
         from ..file_jma import import_jma
-        if '--' in sys.argv:
-            argv = sys.argv[sys.argv.index('--') + 1:]
-            parser = argparse.ArgumentParser()
-            parser.add_argument('-arg1', '--filepath', dest='filepath', metavar='FILE', required = True)
-            parser.add_argument('-arg2', '--game_version', dest='game_version', type=str, default="auto")
-            parser.add_argument('-arg3', '--fix_parents', dest='fix_parents', action='store_true')
-            parser.add_argument('-arg4', '--fix_rotations', dest='fix_rotations', action='store_true')
-            parser.add_argument('-arg5', '--jms_path_a', dest='jms_path_a', type=str, default="")
-            parser.add_argument('-arg6', '--jms_path_b', dest='jms_path_b', type=str, default="")
-            args = parser.parse_known_args(argv)[0]
-            print('filepath: ', args.filepath)
-            print('game_version: ', args.game_version)
-            print('fix_parents: ', args.fix_parents)
-            print('fix_rotations: ', args.fix_rotations)
-            print('jms_path_a: ', args.jms_path_a)
-            print('jms_path_b: ', args.jms_path_b)
-            self.filepath = args.filepath
-            self.game_version = args.game_version
-            self.fix_parents = args.fix_parents
-            self.fix_rotations = args.fix_rotations
-            self.jms_path_a = args.jms_path_a
-            self.jms_path_b = args.jms_path_b
 
-        return global_functions.run_code("import_jma.load_file(context, self.filepath, self.game_version, self.fix_parents, self.fix_rotations, self.jms_path_a, self.jms_path_b, self.report)")
+        return global_functions.run_code("import_jma.load_file(context, self.filepath, self.game_title, self.fix_parents, self.fix_rotations, self.jms_path_a, self.jms_path_b, self.report)")
 
     def draw(self, context):
         scene = context.scene
@@ -843,10 +582,14 @@ class ImportJMA(Operator, ImportHelper):
         box.label(text="Version:")
         col = box.column(align=True)
         row = col.row()
-        row.label(text='Game Version:')
-        row.prop(self, "game_version", text='')
+        row.label(text='Game Title:')
+        row.prop(self, "game_title", text='')
+        if self.game_title == "halo1" or self.game_title == 'auto':
+            row = col.row()
+            row.label(text='Game Version:')
+            row.prop(self, "game_version", text='')
 
-        if not self.game_version == 'haloce':
+        if not self.game_title == "halo1":
             box = layout.box()
             box.label(text="Import Options:")
             col = box.column(align=True)

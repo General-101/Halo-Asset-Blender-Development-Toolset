@@ -2,7 +2,7 @@
 #
 # MIT License
 #
-# Copyright (c) 2022 Steven Garcia
+# Copyright (c) 2023 Steven Garcia
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -31,7 +31,7 @@ def process_file_retail(JMS, game_version, extension, version_list, default_regi
     JMS.version = int(JMS.next())
     JMS.game_version = game_version
     if game_version == 'auto':
-        JMS.game_version = global_functions.get_game_version(JMS.version, 'JMS')
+        JMS.game_version = global_functions.get_game_title(JMS.version, 'JMS')
 
     if not JMS.version in version_list:
         raise global_functions.ParseError("Importer does not support this " + extension + " version")
@@ -65,10 +65,10 @@ def process_file_retail(JMS, game_version, extension, version_list, default_regi
             texture_definition = JMS.next()
 
         material_definition = JMS.next()
-        if JMS.game_version == 'haloce':
+        if JMS.game_version == "halo1":
             JMS.materials.append(JMSAsset.Material(name, material_definition, None, None, None, None))
 
-        elif JMS.game_version == 'halo2' or JMS.game_version == 'halo3':
+        elif JMS.game_version == "halo2" or JMS.game_version == "halo3":
             material_definition_items = material_definition.split()
             lod, permutation, region = global_functions.material_definition_parser(True, material_definition_items, default_region, default_permutation)
 
@@ -94,7 +94,7 @@ def process_file_retail(JMS, game_version, extension, version_list, default_regi
         xref_instance_count = int(JMS.next())
         for xref_idx in range(xref_instance_count):
             xref_path = JMS.next()
-            xref_name = None
+            xref_name = ""
             if JMS.version >= 8208:
                 xref_name = JMS.next()
 
@@ -303,7 +303,12 @@ def process_file_retail(JMS, game_version, extension, version_list, default_regi
     for triangle in range(triangle_count):
         region = None
         if JMS.version >= 8198 and JMS.version < 8205:
-            region = int(JMS.next())
+            try:
+                region = int(JMS.next())
+
+            except ValueError:
+                region = 0
+
             JMS.active_regions.append(region)
 
         material_index = int(JMS.next())

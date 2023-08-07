@@ -2,7 +2,7 @@
 #
 # MIT License
 #
-# Copyright (c) 2020 Steven Garcia
+# Copyright (c) 2023 Steven Garcia
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -46,6 +46,26 @@ from bpy.props import (
 
 from ..global_functions import global_functions
 
+def version_settings_callback(self, context):
+    items=[ ('16390', "16390", "CE/H2/H3"),
+            ('16391', "16391", "CE/H2/H3"),
+            ('16392', "16392", "CE/H2/H3"),
+        ]
+
+    if not self.game_title == "halo1":
+            items.append(('16393', "16393", "H2/H3"))
+            items.append(('16394', "16394", "H2/H3"))
+            items.append(('16395', "16395", "H2/H3"))
+
+    return items
+
+def update_version(self, context):
+    if self.game_title == "halo1":
+        self.jma_version = '16392'
+
+    else:
+        self.jma_version = '16395'
+
 class JMA_BatchDialog(Operator):
     """Convert multiple animation source files for a specific game"""
     bl_idname = "import_scene.jma_batch"
@@ -72,25 +92,46 @@ class JMA_BatchDialog(Operator):
         context.window_manager.fileselect_add(self)
         return {'RUNNING_MODAL'}
 
-class JSON_Import_Dialog(Operator):
-    """Select a JSON to convert to a tag"""
-    bl_idname = "import_scene.convert_json"
-    bl_label = "Convert JSON"
-
-    filter_glob: StringProperty(
-        default="*.json",
-        options={'HIDDEN'},
-        )
+class Generate_Tag_Dialog(Operator):
+    """Select the source file to read data from"""
+    bl_idname = "import_scene.generate_tag"
+    bl_label = "Select Source"
 
     filepath: StringProperty(
-        name="JSON Filepath",
-        description="The filepath to the JSON we wish to convert",
+        name="Upgrade Patches Filepath",
+        description="The filepath to the patches we wish to use",
     )
 
     def execute(self, context):
         scene = context.scene
-        scene_halo_json = scene.halo_json
-        scene_halo_json.input_file = self.filepath
+        scene_halo_scenario = scene.halo_scenario
+        scene_halo_scenario.input_file = self.filepath
+        context.area.tag_redraw()
+        return {'FINISHED'}
+
+    def invoke(self, context, event):
+        context.window_manager.fileselect_add(self)
+        return {'RUNNING_MODAL'}
+
+class Generate_Tag_Patches_Dialog(Operator):
+    """Select the upgrade patches file to use during the upgrade process"""
+    bl_idname = "import_scene.generate_tag_patches"
+    bl_label = "Select Patches"
+
+    filter_glob: StringProperty(
+        default="*.txt",
+        options={'HIDDEN'},
+        )
+
+    filepath: StringProperty(
+        name="Source Filepath",
+        description="The filepath to the source we wish to use",
+    )
+
+    def execute(self, context):
+        scene = context.scene
+        scene_halo_scenario = scene.halo_scenario
+        scene_halo_scenario.upgrade_patches = self.filepath
         context.area.tag_redraw()
         return {'FINISHED'}
 
@@ -192,60 +233,19 @@ class JMA_BatchPropertiesGroup(PropertyGroup):
     jma_version: EnumProperty(
         name="Version:",
         description="What version to use for the animation file",
-        default="16392",
         options={'HIDDEN'},
-        items=[ ('16390', "16390", "CE/H2/H3"),
-                ('16391', "16391", "CE/H2/H3"),
-                ('16392', "16392", "CE/H2/H3"),
-                ('16393', "16393", "H2/H3"),
-                ('16394', "16394", "H2/H3"),
-                ('16395', "16395", "H2/H3"),
-            ]
+        items=version_settings_callback,
+        default=2
         )
 
-    jma_version_ce: EnumProperty(
-        name="Version:",
-        description="What version to use for the animation file",
-        default="16392",
-        items=[ ('16390', "16390", "CE"),
-                ('16391', "16391", "CE"),
-                ('16392', "16392", "CE"),
-            ]
-        )
-
-    jma_version_h2: EnumProperty(
-        name="Version:",
-        description="What version to use for the animation file",
-        default="16395",
-        items=[ ('16390', "16390", "H2"),
-                ('16391', "16391", "H2"),
-                ('16392', "16392", "H2"),
-                ('16393', "16393", "H2"),
-                ('16394', "16394", "H2"),
-                ('16395', "16395", "H2"),
-            ]
-        )
-
-    jma_version_h3: EnumProperty(
-        name="Version:",
-        description="What version to use for the animation file",
-        default="16395",
-        items=[ ('16390', "16390", "H3"),
-                ('16391', "16391", "H3"),
-                ('16392', "16392", "H3"),
-                ('16393', "16393", "H3"),
-                ('16394', "16394", "H3"),
-                ('16395', "16395", "H3"),
-            ]
-        )
-
-    game_version: EnumProperty(
-        name="Game:",
+    game_title: EnumProperty(
+        name="Game Title:",
         description="What game will the model file be used for",
-        items=[ ('haloce', "Halo CE", "Export an animation intended for Halo Custom Edition or Halo 1 MCC"),
-                ('halo2', "Halo 2", "Export an animation intended for Halo 2 Vista or Halo 2 MCC"),
-                ('halo3mcc', "Halo 3 MCC", "Export an animation intended for Halo 3 MCC"),
-            ]
+        items=[ ('halo1', "Halo 1", "Export an animation intended for Halo 1"),
+                ('halo2', "Halo 2", "Export an animation intended for Halo 2"),
+                ('halo3', "Halo 3", "Export an animation intended for Halo 3"),
+            ],
+        update = update_version
         )
 
     directory: StringProperty(
@@ -253,11 +253,125 @@ class JMA_BatchPropertiesGroup(PropertyGroup):
         description="A directory containing animation source files to convert",
         )
 
-class JSON_PropertiesGroup(PropertyGroup):
-    input_file: StringProperty(
-        name="JSON",
-        description="A JSON file to load and convert to a tag",
+class Source_PropertiesGroup(PropertyGroup):
+    source_game_title: EnumProperty(
+        name="Game:",
+        description="What game to target",
+        items=[ ('halo1', "Halo 1", "Source is from Halo 1 MCC"),
+                ('halo2', "Halo 2", "Source is from Halo 2 MCC"),
+            ]
         )
+
+    target_game_title: EnumProperty(
+        name="Game:",
+        description="What game to target",
+        items=[ ('halo1', "Halo 1", "Generate a tag intended for Halo 1 MCC"),
+                ('halo2', "Halo 2", "Generate a tag intended for Halo 2 MCC"),
+            ]
+        )
+
+    input_file: StringProperty(
+        name="Source",
+        description="A source file to load and convert to a tag",
+        )
+
+    upgrade_patches: StringProperty(
+        name="Upgrade Patches",
+        description="A text file containing paths to replace during a scenario upgrade",
+        )
+
+class LevelProprtiesGroup(PropertyGroup):
+    game_title: EnumProperty(
+        name="Game:",
+        description="What game to target",
+        items=[ ('h1', "Halo 1", "Generate a tag intended for Halo 1 MCC"),
+                ('h2', "Halo 2", "Generate a tag intended for Halo 2 MCC"),
+            ]
+        )
+
+    level_seed: IntProperty(
+        name="Seed",
+        description="Set the seed for the generator. System time will be used if nothing is set",
+    )
+
+    level_theme: EnumProperty(
+        name="Theme",
+        description="What theme to use for the level geometry",
+        items=[ ('human', "Human", "Generate a human themed level"),
+                ('covenant', "Covenant", "Generate a Covenant themed level"),
+                ('forerunner', "Forerunner", "Generate a Forerunner themed level"),
+            ]
+        )
+
+    level_damage: EnumProperty(
+        name="Level Damage",
+        description="How much damage has the level gone through. Will determine decals and level pieces used",
+        items=[ ('0', "None", "Pristine and ready for ruination"),
+                ('1', "Small", "Someone might have had a heated argument in the breakroom"),
+                ('2', "Medium", "Bit of a trash heap."),
+                ('3', "Large", "Someone has been here before you and they most certainly had their fun."),
+            ]
+        )
+
+    level_goal: EnumProperty(
+        name="Goal",
+        description="What are you trying to achieve? Where do you see yourself 5 years from now",
+        items=[ ('0', "Reclaimer", "There's an artifact at the location. Recover it and use it against your foes"),
+                ('1', "Defense", "There is a location or squad of great importance. Secure it"),
+                ('2', "Attack", "There is a location or squad of great importance. Destroy it"),
+            ]
+        )
+
+    player_biped: EnumProperty(
+        name="Player Biped",
+        description="Are we Master Chief or the Arbiter",
+        items=[ ('0', "Masterchief", "We are allied with human and separatists characters"),
+                ('1', "Arbiter", "We are allied with the Covenant or human and separatists"),
+            ]
+        )
+
+    level_conflict: EnumProperty(
+        name="Conflict",
+        description="Who is our friend? Who is our foe?",
+        items=[ ('0', "Standard", "Unified Covenant"),
+                ('1', "Schism", "The Covenant are in a civil war. Brutes will be fighting elites"),
+                ('2', "Separatists", "Humans and separatists against the Covenant"),
+            ]
+        )
+
+    mutator_random_weapons: BoolProperty(
+        name ="Mutator Random Weapons",
+        description = "Recieve a random loadout every couple of seconds. Make due with what you get",
+        default = False,
+    )
+
+    mutator_extended_family: BoolProperty(
+        name ="Mutator Extended Family",
+        description = "Only one unit. Will you get all hunters? I hope so",
+        default = False,
+    )
+
+    maze_height: IntProperty(
+        name="Maze Height",
+        description="Set the height of the maze",
+        default=8,
+        min=4,
+    )
+
+    maze_width: IntProperty(
+        name="Maze Height",
+        description="Set the width of the maze",
+        default=8,
+        min=4,
+    )
+
+    output_directory: StringProperty(
+            name = "Scenario Output",
+            description="Where to place the generated scenario file for this level",
+            default="",
+            maxlen=1024,
+            subtype='DIR_PATH'
+    )
 
 class Halo_H3EKPropertiesGroup(PropertyGroup):
     directory: StringProperty(
@@ -336,7 +450,7 @@ class Scale_ModelPropertiesGroup(PropertyGroup):
     game_version: EnumProperty(
         name="Game:",
         description="What game will the scale models be from.",
-        items=[ ('haloce', "Halo CE", "Models from CE only"),
+        items=[ ('halo1', "Halo 1", "Models from CE only"),
                 ('halo2', "Halo 2", "Models from Halo 2 only"),
                 ('halo3', "Halo 3", "Models from Halo 3 only"),
                ]
@@ -845,7 +959,7 @@ class Halo_ScaleModelHelper(Panel):
         row.prop(scene_scale_model, "unit_type", text="")
         row = col.row()
         row.label(text='Model:')
-        if scene_scale_model.game_version == "haloce":
+        if scene_scale_model.game_version == "halo1":
             if scene_scale_model.unit_type == "character":
                 row.prop(scene_scale_model, "halo_one_scale_model_char", text="")
 
@@ -972,21 +1086,14 @@ class Halo_BatchAnimConverter(Panel):
         if scene_halo.expert_mode:
             row = col.row()
             row.label(text='JMA Version:')
-            if scene_halo_anim_batch.game_version == 'haloce':
-                row.prop(scene_halo_anim_batch, "jma_version_ce", text='')
-
-            elif scene_halo_anim_batch.game_version == 'halo2':
-                row.prop(scene_halo_anim_batch, "jma_version_h2", text='')
-
-            elif scene_halo_anim_batch.game_version == 'halo3mcc':
-                row.prop(scene_halo_anim_batch, "jma_version_h3", text='')
+            row.prop(scene_halo_anim_batch, "jma_version", text='')
 
         row = col.row()
         row.operator("halo_bulk.anim_convert", text="Convert Directory")
 
-class Halo_ConvertJSON(Panel):
-    bl_label = "JSON Converter"
-    bl_idname = "HALO_PT_JSONConverter"
+class Halo_GenerateTag(Panel):
+    bl_label = "Generate Tag"
+    bl_idname = "HALO_PT_GenerateTag"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     bl_options = {'DEFAULT_CLOSED'}
@@ -995,16 +1102,101 @@ class Halo_ConvertJSON(Panel):
     def draw(self, context):
         layout = self.layout
         scene = context.scene
-        scene_halo = scene.halo
-        scene_halo_json = scene.halo_json
+        scene_halo_scenario = scene.halo_scenario
 
         col = layout.column(align=True)
         row = col.row()
-        row.operator(JSON_Import_Dialog.bl_idname, text="Select JSON")
-        row.prop(scene_halo_json, "input_file", text='')
+        row.operator(Generate_Tag_Dialog.bl_idname, text="Select Source")
+        row.prop(scene_halo_scenario, "input_file", text='')
 
         row = col.row()
-        row.operator("halo_bulk.convert_json", text="Convert JSON")
+        row.operator(Generate_Tag_Patches_Dialog.bl_idname, text="Select Patches")
+        row.prop(scene_halo_scenario, "upgrade_patches", text='')
+
+        row = col.row()
+        row.label(text="Source Game Title:")
+        row.prop(scene_halo_scenario, "source_game_title", text='')
+
+        row = col.row()
+        row.label(text="Target Game Title:")
+        row.prop(scene_halo_scenario, "target_game_title", text='')
+
+        row = col.row()
+        row.operator("halo_bulk.generate_tag", text="Generate Tag")
+
+class Halo_GenerateLevel(Panel):
+    bl_label = "Generate Level"
+    bl_idname = "HALO_PT_GenerateLevel"
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "UI"
+    bl_options = {'DEFAULT_CLOSED'}
+    bl_parent_id = "HALO_PT_AutoTools"
+
+    def draw(self, context):
+        layout = self.layout
+        scene = context.scene
+        scene_halo_maze = scene.halo_maze
+
+        col = layout.column(align=True)
+        row = col.row()
+        row.label(text="Source Game Title:")
+        row.prop(scene_halo_maze, "game_title", text='')
+        row = col.row()
+        row.label(text="Level Seed:")
+        row.prop(scene_halo_maze, "level_seed", text='')
+        row = col.row()
+        row.label(text="Level Theme:")
+        row.prop(scene_halo_maze, "level_theme", text='')
+        row = col.row()
+        row.label(text="Level Damage:")
+        row.prop(scene_halo_maze, "level_damage", text='')
+        row = col.row()
+        row.label(text="Level Goal:")
+        row.prop(scene_halo_maze, "level_goal", text='')
+        row = col.row()
+        row.label(text="Level Conflict:")
+        row.prop(scene_halo_maze, "level_conflict", text='')
+        row = col.row()
+        row.label(text="Player Biped:")
+        row.prop(scene_halo_maze, "player_biped", text='')
+        row = col.row()
+        row.label(text="Mutator Random Weapons:")
+        row.prop(scene_halo_maze, "mutator_random_weapons", text='')
+        row = col.row()
+        row.label(text="Mutator Extended Family:")
+        row.prop(scene_halo_maze, "mutator_extended_family", text='')
+        row = col.row()
+        row.label(text="Maze Height:")
+        row.prop(scene_halo_maze, "maze_height", text='')
+        row = col.row()
+        row.label(text="Maze Width:")
+        row.prop(scene_halo_maze, "maze_width", text='')
+        row = col.row()
+        row.label(text="Output Directory:")
+        row.prop(scene_halo_maze, "output_directory", text='')
+
+        row = col.row()
+        row.operator("halo_bulk.generate_level", text="Generate Level")
+
+class Halo_BatchAnimConverter(Panel):
+    bl_label = "Batch Anim Converter"
+    bl_idname = "HALO_PT_BatchAnimConverter"
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "UI"
+    bl_options = {'DEFAULT_CLOSED'}
+    bl_parent_id = "HALO_PT_AutoTools"
+
+    def draw(self, context):
+        layout = self.layout
+        scene = context.scene
+        scene_halo_anim_batch = scene.halo_anim_batch
+
+        col = layout.column(align=True)
+        row = col.row()
+        row.operator(JMA_BatchDialog.bl_idname, text="Select Directory")
+        row.prop(scene_halo_anim_batch, "directory", text='')
+        row = col.row()
+        row.operator("halo_bulk.anim_convert", text="Convert Directory")
 
 class Halo_MatTools(Panel):
     bl_label = "Halo Material Tools"
@@ -1040,7 +1232,6 @@ class Halo_MatTools(Panel):
         row.operator(Set_Material_Type.bl_idname, text='Apply Material Type')
         row = col.row()
         row.operator(Enable_Material_Type.bl_idname, text='Toggle Usage of Material Types')
-
 
 class Halo_Sky_Tools_Helper(Panel):
     """Tools to help automate Halo workflow"""
@@ -1335,7 +1526,7 @@ class Scale_Model(Operator):
         halo_2_unit_index = 0
         halo_3_unit_index = 0
 
-        if scene_scale_model.game_version == "haloce":
+        if scene_scale_model.game_version == "halo1":
             if scene_scale_model.unit_type == "character":
                 halo_1_unit_index = scene_scale_model.halo_one_scale_model_char
             else:
@@ -1365,7 +1556,20 @@ class GenerateSky(Operator):
     def execute(self, context):
         from ..misc import generate_sky
         scene_halo_sky = context.scene.halo_sky
+
         return global_functions.run_code("generate_sky.generate_sky(context, self.report, scene_halo_sky.longitude_slices, scene_halo_sky.lattitude_slices, scene_halo_sky.dome_radius, scene_halo_sky.horizontal_fov, scene_halo_sky.vertical_fov, scene_halo_sky.sky_type, scene_halo_sky.cie_sky_number, scene_halo_sky.hdr_map, scene_halo_sky.haze_height, scene_halo_sky.luminance_only, scene_halo_sky.dome_intensity, scene_halo_sky.override_zenith_color, scene_halo_sky.zenith_color, scene_halo_sky.override_horizon_color, scene_halo_sky.horizon_color, scene_halo_sky.sun_altittude, scene_halo_sky.sun_heading, scene_halo_sky.sun_intensity, scene_halo_sky.sun_disc_size, scene_halo_sky.windowing, scene_halo_sky.override_sun_color, scene_halo_sky.sun_color, scene_halo_sky.air_cleaness, scene_halo_sky.exposure, scene_halo_sky.clamp_colors)")
+
+class GenerateLevel(Operator):
+    """Generates a level"""
+    bl_idname = 'halo_bulk.generate_level'
+    bl_label = 'Generate Level'
+    bl_options = {"REGISTER", "UNDO"}
+
+    def execute(self, context):
+        from ..misc import generate_level
+        scene_maze = context.scene.halo_maze
+
+        return global_functions.run_code("generate_level.generate_level(context, scene_maze.game_title, scene_maze.level_seed, scene_maze.level_theme, scene_maze.level_damage, scene_maze.level_goal, scene_maze.player_biped, scene_maze.level_conflict, scene_maze.mutator_random_weapons, scene_maze.mutator_extended_family, scene_maze.maze_height, scene_maze.maze_width, scene_maze.output_directory)")
 
 class ExportLightmap(Operator, ExportHelper):
     """Write a LUV file"""
@@ -1430,18 +1634,15 @@ class Bulk_Anim_Convert(Operator):
     def execute(self, context):
         from ..misc import batch_anims
         scene_halo_anim_batch = context.scene.halo_anim_batch
-        
-        return global_functions.run_code("batch_anims.write_file(context, self.report, scene_halo_anim_batch.directory, scene_halo_anim_batch.jma_version, scene_halo_anim_batch.jma_version_ce, scene_halo_anim_batch.jma_version_h2, scene_halo_anim_batch.jma_version_h3, scene_halo_anim_batch.game_version)")
 
-def menu_func_export(self, context):
-    self.layout.operator(ExportLightmap.bl_idname, text="Halo Lightmap UV (.luv)")
+        return global_functions.run_code("batch_anims.write_file(context, self.report, scene_halo_anim_batch.directory, scene_halo_anim_batch.jma_version, scene_halo_anim_batch.game_version)")
 
 class Export_Textures(Operator):
     """Exports Textures for the selected object"""
     bl_idname = 'halo_mattools.export_texture'
     bl_label = 'Export Textures'
     bl_options = {"REGISTER", "UNDO"}
-    
+
     def execute(self, context):
         from ..misc import mattools
         scene = context.scene
@@ -1454,7 +1655,7 @@ class Make_Bitmaps(Operator):
     bl_idname = 'halo_mattools.make_bitmaps'
     bl_label = 'Make Bitmaps'
     bl_options = {"REGISTER", "UNDO"}
-    
+
     def execute(self, context):
         from ..misc import mattools
         scene = context.scene
@@ -1468,7 +1669,7 @@ class Set_Material_Type(Operator):
     bl_idname = 'halo_mattools.set_material_type'
     bl_label = 'Set Material Type'
     bl_options = {"REGISTER", "UNDO"}
-    
+
     def execute(self, context):
         from ..misc import mattools
         scene = context.scene
@@ -1480,25 +1681,73 @@ class Enable_Material_Type(Operator):
     bl_idname = 'halo_mattools.enable_material_type'
     bl_label = 'Set Material Type'
     bl_options = {"REGISTER", "UNDO"}
-    
+
     def execute(self, context):
         from ..misc import mattools
         scene = context.scene
         scene_halo_mattype = scene.halo_mattype
         return global_functions.run_code("mattools.enable_material_type(context)")
 
-class ImportJSON(Operator):
-    """Import and convert a JSON to a Halo tag"""
-    bl_idname = 'halo_bulk.convert_json'
-    bl_label = 'Generate Tag from JSON'
+class GenerateTag(Operator):
+    """Generate a Halo tag from JSON or older tags"""
+    bl_idname = 'halo_bulk.generate_tag'
+    bl_label = 'Generate Tag'
     bl_options = {"REGISTER", "UNDO"}
 
     def execute(self, context):
-        from ..file_tag import export_tag
+        from ..misc import generate_tag
 
-        scene_halo_json = context.scene.halo_json
+        scene_halo_scenario = context.scene.halo_scenario
 
-        return global_functions.run_code("export_tag.write_file(context, scene_halo_json.input_file, self.report)")
+        return global_functions.run_code("generate_tag.convert_tag(context, scene_halo_scenario.input_file, scene_halo_scenario.source_game_title, scene_halo_scenario.target_game_title, scene_halo_scenario.upgrade_patches, self.report)")
+
+class Halo_JoinObjectPanel(Panel):
+    bl_label = "Halo Join Objects"
+    bl_idname = "HALO_PT_JoinObjects"
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "UI"
+    bl_options = {'DEFAULT_CLOSED'}
+    bl_parent_id = "HALO_PT_AutoTools"
+
+    def draw(self, context):
+        layout = self.layout
+        col = layout.column(align=True)
+        row = col.row()
+        row.operator(Halo_JoinObject.bl_idname, text='Joins Objects')
+
+class Halo_JoinObject(Operator):
+    """Joins objects while preserving region setup"""
+    bl_idname = 'halo_bulk.join_objects'
+    bl_label = 'Join selected objects into active object'
+    bl_options = {"REGISTER", "UNDO"}
+
+    def execute(self, context):
+        from ..misc import join_objects
+        return global_functions.run_code("join_objects.join_objects(context)")
+
+class Halo_ConvertFacemapstPanel(Panel):
+    bl_label = "Halo Convert Facemaps"
+    bl_idname = "HALO_PT_ConvertFacemaps"
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "UI"
+    bl_options = {'DEFAULT_CLOSED'}
+    bl_parent_id = "HALO_PT_AutoTools"
+
+    def draw(self, context):
+        layout = self.layout
+        col = layout.column(align=True)
+        row = col.row()
+        row.operator(Halo_ConvertFacemaps.bl_idname, text='Convert Facemaps')
+
+class Halo_ConvertFacemaps(Operator):
+    """Converts facemaps to the custom region attribute system"""
+    bl_idname = 'halo_bulk.convert_facemaps'
+    bl_label = 'Convert facemaps of the active object'
+    bl_options = {"REGISTER", "UNDO"}
+
+    def execute(self, context):
+        from ..misc import convert_facemaps
+        return global_functions.run_code("convert_facemaps.convert_facemaps(context)")
 
 classeshalo = (
     Halo_MaterialPropertiesGroup,
@@ -1515,6 +1764,7 @@ classeshalo = (
     Random_Material_Colors,
     Scale_Model,
     GenerateSky,
+    GenerateLevel,
     FaceSet,
     ImportFixup,
     Bulk_IK_Prep,
@@ -1554,11 +1804,21 @@ classeshalo = (
     SkyPropertiesGroup,
     Halo_PrefixPropertiesGroup,
     Face_SetPropertiesGroup,
-    ImportJSON,
-    Halo_ConvertJSON,
-    JSON_PropertiesGroup,
-    JSON_Import_Dialog
+    GenerateTag,
+    Halo_GenerateTag,
+    Source_PropertiesGroup,
+    Halo_GenerateLevel,
+    LevelProprtiesGroup,
+    Generate_Tag_Dialog,
+    Generate_Tag_Patches_Dialog,
+    Halo_JoinObject,
+    Halo_JoinObjectPanel,
+    Halo_ConvertFacemapstPanel,
+    Halo_ConvertFacemaps
 )
+
+def menu_func_export(self, context):
+    self.layout.operator(ExportLightmap.bl_idname, text="Halo Lightmap UV (.luv)")
 
 def register():
     for clshalo in classeshalo:
@@ -1569,14 +1829,15 @@ def register():
     bpy.types.Scene.halo_lightmapper = PointerProperty(type=Halo_LightmapperPropertiesGroup, name="Halo Lightmapper Helper", description="Set properties for the lightmapper")
     bpy.types.Scene.halo_prefix = PointerProperty(type=Halo_PrefixPropertiesGroup, name="Halo Prefix Helper", description="Set properties for node prefixes")
     bpy.types.Scene.scale_model = PointerProperty(type=Scale_ModelPropertiesGroup, name="Halo Scale Model Helper", description="Create meshes for scale")
-    bpy.types.Scene.halo_json = PointerProperty(type=JSON_PropertiesGroup, name="Halo JSON Converter", description="Create tags from JSON")
+    bpy.types.Scene.halo_scenario = PointerProperty(type=Source_PropertiesGroup, name="Halo Source Converter", description="Create tags from JSON or older tag versions")
     bpy.types.Scene.halo_sky = PointerProperty(type=SkyPropertiesGroup, name="Sky Helper", description="Generate a sky for Halo 3")
     bpy.types.Scene.halo_face_set = PointerProperty(type=Face_SetPropertiesGroup, name="Halo Face Set Helper", description="Creates a facemap with the exact name we need")
     bpy.types.Scene.halo_anim_batch = PointerProperty(type=JMA_BatchPropertiesGroup, name="Halo Batch Anims", description="Converts all animations in a specific directory to a different version.")
     bpy.types.Scene.halo_h3ek_path = PointerProperty(type=Halo_H3EKPropertiesGroup, name="H3EK Path", description="The H3EK Path")
     bpy.types.Scene.halo_h3ek_data_path = PointerProperty(type=Halo_H3EKPropertiesGroup, name="H3EK Path", description="The H3EK Data Path")
     bpy.types.Scene.halo_mattype = PointerProperty(type=Halo_MaterialPropertiesGroup, name ="Material Properties", description="Set the material properties of the active object")
-    
+    bpy.types.Scene.halo_maze = PointerProperty(type=LevelProprtiesGroup, name="Halo Level Properties", description="Create a Halo level using a maze layout")
+
 def unregister():
     bpy.types.TOPBAR_MT_file_export.remove(menu_func_export)
     del bpy.types.Scene.halo_import_fixup

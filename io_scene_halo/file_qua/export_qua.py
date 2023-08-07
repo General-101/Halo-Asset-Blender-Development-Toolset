@@ -2,7 +2,7 @@
 #
 # MIT License
 #
-# Copyright (c) 2021 Steven Garcia
+# Copyright (c) 2023 Steven Garcia
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -29,8 +29,8 @@ import bpy
 
 
 from decimal import *
-from mathutils import Vector, Matrix
-from math import degrees, atan, radians
+from mathutils import Vector
+from math import degrees, atan
 from ..global_functions import global_functions
 
 class QUAScene(global_functions.HaloAsset):

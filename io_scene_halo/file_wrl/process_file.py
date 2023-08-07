@@ -2,7 +2,7 @@
 #
 # MIT License
 #
-# Copyright (c) 2022 Steven Garcia
+# Copyright (c) 2023 Steven Garcia
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -79,7 +79,7 @@ def process_old_vrml(input_stream):
                 if bracket_level >= 1:
                     current_child_node.content = previous_line
 
-                bracket_level += -1 
+                bracket_level += -1
                 if bracket_level == 0:
                     current_child_node.child_nodes = content_nodes
                     child_nodes.append(current_child_node)
@@ -92,7 +92,7 @@ def process_old_vrml(input_stream):
                 previous_line = "".join(wrl_content[start_index:char_idx]).replace('\t', '').strip("{[}] ")
                 start_index = char_idx
                 current_content_node.content = previous_line
-                content_nodes.append(current_content_node) 
+                content_nodes.append(current_content_node)
 
     WRL.nodes = root_nodes
 
@@ -101,7 +101,7 @@ def process_old_vrml(input_stream):
 def process_new_vrml(input_stream):
     WRL = WRLAsset()
     WRL.version = 2.0
-    
+
     root_nodes = []
     child_nodes = []
     content_nodes = []
@@ -148,7 +148,7 @@ def process_new_vrml(input_stream):
 
             elif element == "}" or element == "]":
                 if element == "}":
-                    bracket_level += -1 
+                    bracket_level += -1
                     if bracket_level == 1:
                         current_content_node.child_nodes = value_nodes
                         content_nodes.append(current_content_node)
@@ -163,7 +163,7 @@ def process_new_vrml(input_stream):
 
                 elif element == "]":
                     current_value_node.content = content
-                    value_nodes.append(current_value_node) 
+                    value_nodes.append(current_value_node)
                     content = []
                     store_content = False
 

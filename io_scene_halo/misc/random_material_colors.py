@@ -2,7 +2,7 @@
 #
 # MIT License
 #
-# Copyright (c) 2021 Steven Garcia
+# Copyright (c) 2023 Steven Garcia
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -30,10 +30,8 @@ from ..global_functions import  global_functions
 
 def random_material_colors(context):
     random_color_gen = global_functions.RandomColorGenerator() # generates a random sequence of colors
-
-    new_diffuse = random_color_gen.next()
-
     for material in bpy.data.materials:
+        new_diffuse = random_color_gen.next()
         material.diffuse_color = new_diffuse
         if material.use_nodes:
             if not material.node_tree == None:

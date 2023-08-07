@@ -1,0 +1,64 @@
+{
+    "weapons": [
+        {
+            "name": "assault_rifle",
+            "path": "weapons\\assault rifle\\assault rifle",
+            "rounds_loaded": 60,
+            "rounds_total": 600
+        },
+        {
+            "name": "flamethrower",
+            "path": "weapons\\flamethrower\\flamethrower",
+            "rounds_loaded": 100,
+            "rounds_total": 600
+        },
+        {
+            "name": "needler",
+            "path": "weapons\\needler\\needler",
+            "rounds_loaded": 20,
+            "rounds_total": 80
+        },
+        {
+            "name": "pistol",
+            "path": "weapons\\pistol\\pistol",
+            "rounds_loaded": 12,
+            "rounds_total": 120
+        },
+        {
+            "name": "plasma_pistol",
+            "path": "weapons\\plasma pistol\\plasma pistol",
+            "rounds_loaded": 0,
+            "rounds_total": 0
+        },
+        {
+            "name": "plasma_rifle",
+            "path": "weapons\\plasma rifle\\plasma rifle",
+            "rounds_loaded": 0,
+            "rounds_total": 0
+        },
+        {
+            "name": "plasma_cannon",
+            "path": "weapons\\plasma_cannon\\plasma_cannon",
+            "rounds_loaded": 0,
+            "rounds_total": 0
+        },
+        {
+            "name": "rocket_launcher",
+            "path": "weapons\\rocket launcher\\rocket launcher",
+            "rounds_loaded": 2,
+            "rounds_total": 8
+        },
+        {
+            "name": "shotgun",
+            "path": "weapons\\shotgun\\shotgun",
+            "rounds_loaded": 12,
+            "rounds_total": 60
+        },
+        {
+            "name": "sniper_rifle",
+            "path": "weapons\\sniper rifle\\sniper rifle",
+            "rounds_loaded": 4,
+            "rounds_total": 24
+        }
+    ]
+}

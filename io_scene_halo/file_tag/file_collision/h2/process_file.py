@@ -2,7 +2,7 @@
 #
 # MIT License
 #
-# Copyright (c) 2022 Steven Garcia
+# Copyright (c) 2023 Steven Garcia
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -26,9 +26,8 @@
 
 import struct
 
-from math import degrees
 from .format import CollisionAsset
-from mathutils import Vector, Quaternion
+from mathutils import Vector
 
 DEBUG_PARSER = True
 DEBUG_HEADER = True
@@ -59,25 +58,646 @@ DEBUG_BSP_PHYSICS = True
 DEBUG_PATHFINDING_SPHERES = True
 DEBUG_NODES = True
 
+def collision_body_1(COLLISION, TAG, input_stream):
+    collision_body = COLLISION.CollisionBody()
+    collision_body.import_info_tag_block = TAG.TagBlock().read(input_stream, 0, TAG.big_endian)
+    collision_body.errors_tag_block = TAG.TagBlock().read(input_stream, 0, TAG.big_endian)
+    collision_body.flags = TAG.read_signed_integer(input_stream, TAG.big_endian)
+    collision_body.materials_tag_block = TAG.TagBlock().read(input_stream, 0, TAG.big_endian)
+    collision_body.regions_tag_block = TAG.TagBlock().read(input_stream, 0, TAG.big_endian)
+    collision_body.pathfinding_spheres_tag_block = TAG.TagBlock().read(input_stream, 0, TAG.big_endian)
+    collision_body.nodes_tag_block = TAG.TagBlock().read(input_stream, 0, TAG.big_endian)
+
+    return collision_body
+
+def get_collision_body_tag_block(COLLISION, TAG, input_stream):
+    collision_body_tag_block_header = TAG.TagBlockHeader().read(input_stream, TAG.big_endian)
+
+    if collision_body_tag_block_header.version == 1:
+        COLLISION.collision_body = collision_body_1(COLLISION, TAG, input_stream)
+
+
+def import_info_0(COLLISION, TAG, input_stream):
+    import_info = COLLISION.ImportInfo()
+    import_info.build = TAG.read_signed_integer(input_stream, TAG.big_endian)
+    import_info.version = TAG.read_string256(input_stream, TAG.big_endian)
+    import_info.import_date = TAG.read_string32(input_stream, TAG.big_endian)
+    import_info.culprit = TAG.read_string32(input_stream, TAG.big_endian)
+    input_stream.read(96) # Padding?
+    import_info.import_time = TAG.read_string32(input_stream, TAG.big_endian)
+    input_stream.read(4) # Padding?
+    import_info.files_tag_block = TAG.TagBlock().read(input_stream, 0, TAG.big_endian)
+    input_stream.read(128) # Padding?
+
+    return import_info
+
+def files_0(COLLISION, TAG, input_stream):
+    file = COLLISION.Files()
+    file.path = TAG.read_string256(input_stream, TAG.big_endian)
+    file.modification_date = TAG.read_string32(input_stream, TAG.big_endian)
+    input_stream.read(96) # Padding?
+    file.checksum = TAG.read_signed_integer(input_stream, TAG.big_endian)
+    file.size = TAG.read_signed_integer(input_stream, TAG.big_endian)
+    file.zipped_data = TAG.read_signed_integer(input_stream, TAG.big_endian)
+    input_stream.read(144) # Padding?
+    file.uncompressed_data = input_stream.read(file.zipped_data)
+
+    return file
+
+def get_import_info_tag_block(COLLISION, TAG, input_stream):
+    import_info_count = COLLISION.collision_body.import_info_tag_block.count
+    COLLISION.import_info_blocks = []
+    if import_info_count > 0:
+        import_info_tag_block_header = TAG.TagBlockHeader().read(input_stream, TAG.big_endian)
+        import_info = None
+        if import_info_tag_block_header.version == 0:
+            import_info = import_info_0
+
+        for import_info_idx in range(import_info_count):
+            COLLISION.import_info_blocks.append(import_info(COLLISION, TAG, input_stream))
+
+        file_tag_block_header = TAG.TagBlockHeader().read(input_stream, TAG.big_endian)
+        file = None
+        if file_tag_block_header.version == 0:
+            file = files_0
+
+        for import_info in COLLISION.import_info_blocks:
+            import_info.files = []
+            for file_idx in range(import_info.files_tag_block.count):
+                import_info.files.append(file(COLLISION, TAG, input_stream))
+
+def errors_0(COLLISION, TAG, input_stream):
+    error = COLLISION.Error()
+    error.name = TAG.read_string256(input_stream, TAG.big_endian)
+    error.report_type = TAG.read_signed_short(input_stream, TAG.big_endian)
+    error.flags = TAG.read_signed_short(input_stream, TAG.big_endian)
+    input_stream.read(408) # Padding?
+    error.reports_tag_block = TAG.TagBlock().read(input_stream, 0, TAG.big_endian)
+
+    return error
+
+def reports_0(COLLISION, TAG, input_stream):
+    report_block = COLLISION.Report()
+    report_block.type = TAG.read_signed_short(input_stream, TAG.big_endian)
+    report_block.flags = TAG.read_signed_short(input_stream, TAG.big_endian)
+    report_block.report_length = TAG.read_signed_short(input_stream, TAG.big_endian)
+    input_stream.read(18) # Padding?
+    report_block.source_filename = TAG.read_string32(input_stream, TAG.big_endian)
+    report_block.source_line_number = TAG.read_signed_integer(input_stream, TAG.big_endian)
+    report_block.vertices_tag_block = TAG.TagBlock().read(input_stream, 0, TAG.big_endian)
+    report_block.vectors_tag_block = TAG.TagBlock().read(input_stream, 0, TAG.big_endian)
+    report_block.lines_tag_block = TAG.TagBlock().read(input_stream, 0, TAG.big_endian)
+    report_block.triangles_tag_block = TAG.TagBlock().read(input_stream, 0, TAG.big_endian)
+    report_block.quads_tag_block = TAG.TagBlock().read(input_stream, 0, TAG.big_endian)
+    report_block.comments_tag_block = TAG.TagBlock().read(input_stream, 0, TAG.big_endian)
+    input_stream.read(380) # Padding?
+    report_block.report_key = TAG.read_signed_integer(input_stream, TAG.big_endian)
+    report_block.node_index = TAG.read_signed_integer(input_stream, TAG.big_endian)
+    report_block.bounds_x = TAG.read_min_max(input_stream, TAG.big_endian)
+    report_block.bounds_y = TAG.read_min_max(input_stream, TAG.big_endian)
+    report_block.bounds_z = TAG.read_min_max(input_stream, TAG.big_endian)
+    report_block.color = TAG.read_argb(input_stream, TAG.big_endian)
+    input_stream.read(84) # Padding?
+
+    return report_block
+
+def vertex_0(COLLISION, TAG, input_stream):
+    report_vertex = COLLISION.ReportVertex()
+    report_vertex.position = TAG.read_vector(input_stream, TAG.big_endian)
+    report_vertex.node_index_0 = TAG.read_signed_byte(input_stream, TAG.big_endian)
+    report_vertex.node_index_1 = TAG.read_signed_byte(input_stream, TAG.big_endian)
+    report_vertex.node_index_2 = TAG.read_signed_byte(input_stream, TAG.big_endian)
+    report_vertex.node_index_3 = TAG.read_signed_byte(input_stream, TAG.big_endian)
+    report_vertex.node_weight_0 = TAG.read_float(input_stream, TAG.big_endian)
+    report_vertex.node_weight_1 = TAG.read_float(input_stream, TAG.big_endian)
+    report_vertex.node_weight_2 = TAG.read_float(input_stream, TAG.big_endian)
+    report_vertex.node_weight_3 = TAG.read_float(input_stream, TAG.big_endian)
+    report_vertex.color = TAG.read_argb(input_stream, TAG.big_endian)
+    report_vertex.screen_size = TAG.read_float(input_stream, TAG.big_endian)
+
+    return report_vertex
+
+def vector_0(COLLISION, TAG, input_stream):
+    report_vector = COLLISION.ReportVector()
+    report_vector.position = TAG.read_vector(input_stream, TAG.big_endian)
+    report_vector.node_index_0 = TAG.read_signed_byte(input_stream, TAG.big_endian)
+    report_vector.node_index_1 = TAG.read_signed_byte(input_stream, TAG.big_endian)
+    report_vector.node_index_2 = TAG.read_signed_byte(input_stream, TAG.big_endian)
+    report_vector.node_index_3 = TAG.read_signed_byte(input_stream, TAG.big_endian)
+    report_vector.node_weight_0 = TAG.read_float(input_stream, TAG.big_endian)
+    report_vector.node_weight_1 = TAG.read_float(input_stream, TAG.big_endian)
+    report_vector.node_weight_2 = TAG.read_float(input_stream, TAG.big_endian)
+    report_vector.node_weight_3 = TAG.read_float(input_stream, TAG.big_endian)
+    report_vector.color = TAG.read_argb(input_stream, TAG.big_endian)
+    report_vector.normal = TAG.read_vector(input_stream, TAG.big_endian)
+    report_vector.screen_length = TAG.read_float(input_stream, TAG.big_endian)
+
+    return report_vector
+
+def line_0(COLLISION, TAG, input_stream):
+    report_line = COLLISION.ReportLine()
+    report_line.position_a = TAG.read_vector(input_stream, TAG.big_endian)
+    report_line.node_index_a_0 = TAG.read_signed_byte(input_stream, TAG.big_endian)
+    report_line.node_index_a_1 = TAG.read_signed_byte(input_stream, TAG.big_endian)
+    report_line.node_index_a_2 = TAG.read_signed_byte(input_stream, TAG.big_endian)
+    report_line.node_index_a_3 = TAG.read_signed_byte(input_stream, TAG.big_endian)
+    report_line.node_weight_a_0 = TAG.read_float(input_stream, TAG.big_endian)
+    report_line.node_weight_a_1 = TAG.read_float(input_stream, TAG.big_endian)
+    report_line.node_weight_a_2 = TAG.read_float(input_stream, TAG.big_endian)
+    report_line.node_weight_a_3 = TAG.read_float(input_stream, TAG.big_endian)
+    report_line.position_b = TAG.read_vector(input_stream, TAG.big_endian)
+    report_line.node_index_b_0 = TAG.read_signed_byte(input_stream, TAG.big_endian)
+    report_line.node_index_b_1 = TAG.read_signed_byte(input_stream, TAG.big_endian)
+    report_line.node_index_b_2 = TAG.read_signed_byte(input_stream, TAG.big_endian)
+    report_line.node_index_b_3 = TAG.read_signed_byte(input_stream, TAG.big_endian)
+    report_line.node_weight_b_0 = TAG.read_float(input_stream, TAG.big_endian)
+    report_line.node_weight_b_1 = TAG.read_float(input_stream, TAG.big_endian)
+    report_line.node_weight_b_2 = TAG.read_float(input_stream, TAG.big_endian)
+    report_line.node_weight_b_3 = TAG.read_float(input_stream, TAG.big_endian)
+    report_line.color = TAG.read_argb(input_stream, TAG.big_endian)
+
+    return report_line
+
+def triangle_0(COLLISION, TAG, input_stream):
+    report_triangle = COLLISION.ReportTriangle()
+    report_triangle.position_a = TAG.read_vector(input_stream, TAG.big_endian)
+    report_triangle.node_index_a_0 = TAG.read_signed_byte(input_stream, TAG.big_endian)
+    report_triangle.node_index_a_1 = TAG.read_signed_byte(input_stream, TAG.big_endian)
+    report_triangle.node_index_a_2 = TAG.read_signed_byte(input_stream, TAG.big_endian)
+    report_triangle.node_index_a_3 = TAG.read_signed_byte(input_stream, TAG.big_endian)
+    report_triangle.node_weight_a_0 = TAG.read_float(input_stream, TAG.big_endian)
+    report_triangle.node_weight_a_1 = TAG.read_float(input_stream, TAG.big_endian)
+    report_triangle.node_weight_a_2 = TAG.read_float(input_stream, TAG.big_endian)
+    report_triangle.node_weight_a_3 = TAG.read_float(input_stream, TAG.big_endian)
+    report_triangle.position_b = TAG.read_vector(input_stream, TAG.big_endian)
+    report_triangle.node_index_b_0 = TAG.read_signed_byte(input_stream, TAG.big_endian)
+    report_triangle.node_index_b_1 = TAG.read_signed_byte(input_stream, TAG.big_endian)
+    report_triangle.node_index_b_2 = TAG.read_signed_byte(input_stream, TAG.big_endian)
+    report_triangle.node_index_b_3 = TAG.read_signed_byte(input_stream, TAG.big_endian)
+    report_triangle.node_weight_b_0 = TAG.read_float(input_stream, TAG.big_endian)
+    report_triangle.node_weight_b_1 = TAG.read_float(input_stream, TAG.big_endian)
+    report_triangle.node_weight_b_2 = TAG.read_float(input_stream, TAG.big_endian)
+    report_triangle.node_weight_b_3 = TAG.read_float(input_stream, TAG.big_endian)
+    report_triangle.position_c = TAG.read_vector(input_stream, TAG.big_endian)
+    report_triangle.node_index_c_0 = TAG.read_signed_byte(input_stream, TAG.big_endian)
+    report_triangle.node_index_c_1 = TAG.read_signed_byte(input_stream, TAG.big_endian)
+    report_triangle.node_index_c_2 = TAG.read_signed_byte(input_stream, TAG.big_endian)
+    report_triangle.node_index_c_3 = TAG.read_signed_byte(input_stream, TAG.big_endian)
+    report_triangle.node_weight_c_0 = TAG.read_float(input_stream, TAG.big_endian)
+    report_triangle.node_weight_c_1 = TAG.read_float(input_stream, TAG.big_endian)
+    report_triangle.node_weight_c_2 = TAG.read_float(input_stream, TAG.big_endian)
+    report_triangle.node_weight_c_3 = TAG.read_float(input_stream, TAG.big_endian)
+    report_triangle.color = TAG.read_argb(input_stream, TAG.big_endian)
+
+    return report_triangle
+
+def quad_0(COLLISION, TAG, input_stream):
+    report_quad = COLLISION.ReportQuad()
+    report_quad.position_a = TAG.read_vector(input_stream, TAG.big_endian)
+    report_quad.node_index_a_0 = TAG.read_signed_byte(input_stream, TAG.big_endian)
+    report_quad.node_index_a_1 = TAG.read_signed_byte(input_stream, TAG.big_endian)
+    report_quad.node_index_a_2 = TAG.read_signed_byte(input_stream, TAG.big_endian)
+    report_quad.node_index_a_3 = TAG.read_signed_byte(input_stream, TAG.big_endian)
+    report_quad.node_weight_a_0 = TAG.read_float(input_stream, TAG.big_endian)
+    report_quad.node_weight_a_1 = TAG.read_float(input_stream, TAG.big_endian)
+    report_quad.node_weight_a_2 = TAG.read_float(input_stream, TAG.big_endian)
+    report_quad.node_weight_a_3 = TAG.read_float(input_stream, TAG.big_endian)
+    report_quad.position_b = TAG.read_vector(input_stream, TAG.big_endian)
+    report_quad.node_index_b_0 = TAG.read_signed_byte(input_stream, TAG.big_endian)
+    report_quad.node_index_b_1 = TAG.read_signed_byte(input_stream, TAG.big_endian)
+    report_quad.node_index_b_2 = TAG.read_signed_byte(input_stream, TAG.big_endian)
+    report_quad.node_index_b_3 = TAG.read_signed_byte(input_stream, TAG.big_endian)
+    report_quad.node_weight_b_0 = TAG.read_float(input_stream, TAG.big_endian)
+    report_quad.node_weight_b_1 = TAG.read_float(input_stream, TAG.big_endian)
+    report_quad.node_weight_b_2 = TAG.read_float(input_stream, TAG.big_endian)
+    report_quad.node_weight_b_3 = TAG.read_float(input_stream, TAG.big_endian)
+    report_quad.position_c = TAG.read_vector(input_stream, TAG.big_endian)
+    report_quad.node_index_c_0 = TAG.read_signed_byte(input_stream, TAG.big_endian)
+    report_quad.node_index_c_1 = TAG.read_signed_byte(input_stream, TAG.big_endian)
+    report_quad.node_index_c_2 = TAG.read_signed_byte(input_stream, TAG.big_endian)
+    report_quad.node_index_c_3 = TAG.read_signed_byte(input_stream, TAG.big_endian)
+    report_quad.node_weight_c_0 = TAG.read_float(input_stream, TAG.big_endian)
+    report_quad.node_weight_c_1 = TAG.read_float(input_stream, TAG.big_endian)
+    report_quad.node_weight_c_2 = TAG.read_float(input_stream, TAG.big_endian)
+    report_quad.node_weight_c_3 = TAG.read_float(input_stream, TAG.big_endian)
+    report_quad.position_d = TAG.read_vector(input_stream, TAG.big_endian)
+    report_quad.node_index_d_0 = TAG.read_signed_byte(input_stream, TAG.big_endian)
+    report_quad.node_index_d_1 = TAG.read_signed_byte(input_stream, TAG.big_endian)
+    report_quad.node_index_d_2 = TAG.read_signed_byte(input_stream, TAG.big_endian)
+    report_quad.node_index_d_3 = TAG.read_signed_byte(input_stream, TAG.big_endian)
+    report_quad.node_weight_d_0 = TAG.read_float(input_stream, TAG.big_endian)
+    report_quad.node_weight_d_1 = TAG.read_float(input_stream, TAG.big_endian)
+    report_quad.node_weight_d_2 = TAG.read_float(input_stream, TAG.big_endian)
+    report_quad.node_weight_d_3 = TAG.read_float(input_stream, TAG.big_endian)
+    report_quad.color = TAG.read_argb(input_stream, TAG.big_endian)
+
+    return report_quad
+
+def comment_0(COLLISION, TAG, input_stream):
+    report_quad = COLLISION.ReportQuad()
+    report_quad.position_a = TAG.read_vector(input_stream, TAG.big_endian)
+    report_quad.node_index_a_0 = TAG.read_signed_byte(input_stream, TAG.big_endian)
+    report_quad.node_index_a_1 = TAG.read_signed_byte(input_stream, TAG.big_endian)
+    report_quad.node_index_a_2 = TAG.read_signed_byte(input_stream, TAG.big_endian)
+    report_quad.node_index_a_3 = TAG.read_signed_byte(input_stream, TAG.big_endian)
+    report_quad.node_weight_a_0 = TAG.read_float(input_stream, TAG.big_endian)
+    report_quad.node_weight_a_1 = TAG.read_float(input_stream, TAG.big_endian)
+    report_quad.node_weight_a_2 = TAG.read_float(input_stream, TAG.big_endian)
+    report_quad.node_weight_a_3 = TAG.read_float(input_stream, TAG.big_endian)
+    report_quad.position_b = TAG.read_vector(input_stream, TAG.big_endian)
+    report_quad.node_index_b_0 = TAG.read_signed_byte(input_stream, TAG.big_endian)
+    report_quad.node_index_b_1 = TAG.read_signed_byte(input_stream, TAG.big_endian)
+    report_quad.node_index_b_2 = TAG.read_signed_byte(input_stream, TAG.big_endian)
+    report_quad.node_index_b_3 = TAG.read_signed_byte(input_stream, TAG.big_endian)
+    report_quad.node_weight_b_0 = TAG.read_float(input_stream, TAG.big_endian)
+    report_quad.node_weight_b_1 = TAG.read_float(input_stream, TAG.big_endian)
+    report_quad.node_weight_b_2 = TAG.read_float(input_stream, TAG.big_endian)
+    report_quad.node_weight_b_3 = TAG.read_float(input_stream, TAG.big_endian)
+    report_quad.position_c = TAG.read_vector(input_stream, TAG.big_endian)
+    report_quad.node_index_c_0 = TAG.read_signed_byte(input_stream, TAG.big_endian)
+    report_quad.node_index_c_1 = TAG.read_signed_byte(input_stream, TAG.big_endian)
+    report_quad.node_index_c_2 = TAG.read_signed_byte(input_stream, TAG.big_endian)
+    report_quad.node_index_c_3 = TAG.read_signed_byte(input_stream, TAG.big_endian)
+    report_quad.node_weight_c_0 = TAG.read_float(input_stream, TAG.big_endian)
+    report_quad.node_weight_c_1 = TAG.read_float(input_stream, TAG.big_endian)
+    report_quad.node_weight_c_2 = TAG.read_float(input_stream, TAG.big_endian)
+    report_quad.node_weight_c_3 = TAG.read_float(input_stream, TAG.big_endian)
+    report_quad.position_d = TAG.read_vector(input_stream, TAG.big_endian)
+    report_quad.node_index_d_0 = TAG.read_signed_byte(input_stream, TAG.big_endian)
+    report_quad.node_index_d_1 = TAG.read_signed_byte(input_stream, TAG.big_endian)
+    report_quad.node_index_d_2 = TAG.read_signed_byte(input_stream, TAG.big_endian)
+    report_quad.node_index_d_3 = TAG.read_signed_byte(input_stream, TAG.big_endian)
+    report_quad.node_weight_d_0 = TAG.read_float(input_stream, TAG.big_endian)
+    report_quad.node_weight_d_1 = TAG.read_float(input_stream, TAG.big_endian)
+    report_quad.node_weight_d_2 = TAG.read_float(input_stream, TAG.big_endian)
+    report_quad.node_weight_d_3 = TAG.read_float(input_stream, TAG.big_endian)
+    report_quad.color = TAG.read_argb(input_stream, TAG.big_endian)
+
+    return report_quad
+
+def comment_0(COLLISION, TAG, input_stream):
+    report_comment = COLLISION.ReportComment()
+    report_comment.text_length = TAG.read_signed_short(input_stream, TAG.big_endian)
+    input_stream.read(18) # Padding?
+    report_comment.position = TAG.read_vector(input_stream, TAG.big_endian)
+    report_comment.node_index_0 = TAG.read_signed_byte(input_stream, TAG.big_endian)
+    report_comment.node_index_1 = TAG.read_signed_byte(input_stream, TAG.big_endian)
+    report_comment.node_index_2 = TAG.read_signed_byte(input_stream, TAG.big_endian)
+    report_comment.node_index_3 = TAG.read_signed_byte(input_stream, TAG.big_endian)
+    report_comment.node_weight_0 = TAG.read_float(input_stream, TAG.big_endian)
+    report_comment.node_weight_1 = TAG.read_float(input_stream, TAG.big_endian)
+    report_comment.node_weight_2 = TAG.read_float(input_stream, TAG.big_endian)
+    report_comment.node_weight_3 = TAG.read_float(input_stream, TAG.big_endian)
+    report_comment.color = TAG.read_argb(input_stream, TAG.big_endian)
+
+    return report_comment
+
+def get_errors_tag_block(COLLISION, TAG, input_stream):
+    error_count = COLLISION.collision_body.errors_tag_block.count
+    COLLISION.errors = []
+    if error_count > 0:
+        error_tag_block_header = TAG.TagBlockHeader().read(input_stream, TAG.big_endian)
+        error = None
+        if error_tag_block_header.version == 0:
+            error = errors_0
+
+        for error_idx in range(error_count):
+            COLLISION.errors.append(error(COLLISION, TAG, input_stream))
+
+        for error in COLLISION.errors:
+            report_count = error.reports_tag_block.count
+            error.reports = []
+            if report_count > 0:
+                report_tag_block_header = TAG.TagBlockHeader().read(input_stream, TAG.big_endian)
+                report = None
+                if report_tag_block_header.version == 0:
+                    report = reports_0
+
+                for report_idx in range(report_count):
+                    error.reports.append(report)
+
+                for report_block in error.reports:
+                    if report_block.report_length > 1:
+                        report_block.text = TAG.read_variable_string(input_stream, report_block.report_length, TAG.big_endian)
+
+                    report_block.vertices = []
+                    report_block.vectors = []
+                    report_block.lines = []
+                    report_block.triangles = []
+                    report_block.quads = []
+                    report_block.comments = []
+
+                    vertices_count = report_block.vertices_tag_block.count
+                    if vertices_count > 0:
+                        vertices_tag_block_header = TAG.TagBlockHeader().read(input_stream, TAG.big_endian)
+                        vertex = None
+                        if vertices_tag_block_header.version == 0:
+                            vertex = vertex_0
+
+                        for vertices_idx in range(vertices_count):
+                            report_block.vertices.append(vertex(COLLISION, TAG, input_stream))
+
+                    vectors_count = report_block.vectors_tag_block.count
+                    if vectors_count > 0:
+                        vectors_tag_block_header = TAG.TagBlockHeader().read(input_stream, TAG.big_endian)
+                        vector = None
+                        if vectors_tag_block_header.version == 0:
+                            vector = vector_0
+
+                        for vectors_idx in range(vectors_count):
+                            report_block.vectors.append(vector(COLLISION, TAG, input_stream))
+
+                    lines_count = report_block.lines_tag_block.count
+                    if lines_count > 0:
+                        lines_tag_block_header = TAG.TagBlockHeader().read(input_stream, TAG.big_endian)
+                        line = None
+                        if lines_tag_block_header.version == 0:
+                            line = line_0
+
+                        for lines_idx in range(lines_count):
+                            report_block.lines.append(line(COLLISION, TAG, input_stream))
+
+                    triangle_count = report_block.triangles_tag_block.count
+                    if triangle_count > 0:
+                        triangle_tag_block_header = TAG.TagBlockHeader().read(input_stream, TAG.big_endian)
+                        triangle = None
+                        if triangle_tag_block_header.version == 0:
+                            triangle = triangle_0
+
+                        for triangle_idx in range(triangle_count):
+                            report_block.triangles.append(triangle(COLLISION, TAG, input_stream))
+
+                    quad_count = report_block.quads_tag_block.count
+                    if quad_count > 0:
+                        quad_tag_block_header = TAG.TagBlockHeader().read(input_stream, TAG.big_endian)
+                        quad = None
+                        if quad_tag_block_header.version == 0:
+                            quad = quad_0
+
+                        for quad_idx in range(quad_count):
+                            report_block.quads.append(quad(COLLISION, TAG, input_stream))
+
+                    comment_count = report_block.comments_tag_block.count
+                    if comment_count > 0:
+                        comment_tag_block_header = TAG.TagBlockHeader().read(input_stream, TAG.big_endian)
+                        comment = None
+                        if comment_tag_block_header.version == 0:
+                            comment = comment_0
+
+                        for comment_idx in range(comment_count):
+                            report_block.comments.append(comment(COLLISION, TAG, input_stream))
+
+                        for report_comment in report_block.comments:
+                            if report_comment.text_length > 1:
+                                report_comment.text = TAG.read_variable_string(input_stream, report_block.text_length, TAG.big_endian)
+
+def material_length_0(TAG, input_stream):
+    input_stream.read(2) # Padding?
+    material_name_length = TAG.read_signed_short(input_stream, TAG.big_endian)
+
+    return material_name_length
+
+def material_string_0(material_name_length, TAG, input_stream):
+    material_name = TAG.read_variable_string(input_stream, material_name_length, TAG.big_endian)
+
+    return material_name
+
+def get_materials_tag_block(COLLISION, TAG, input_stream):
+    materials_count = COLLISION.collision_body.materials_tag_block.count
+    COLLISION.materials = []
+    if materials_count > 0:
+        materials_tag_block_header = TAG.TagBlockHeader().read(input_stream, TAG.big_endian)
+        materials_length = None
+        materials_name = None
+        if materials_tag_block_header.version == 0:
+            materials_length = material_length_0
+            materials_name = material_string_0
+
+        material_name_lengths = []
+        for collision_material_idx in range(materials_count):
+            material_name_lengths.append(materials_length(TAG, input_stream))
+
+        for material_name_length in material_name_lengths:
+            if material_name_length > 1:
+                COLLISION.materials.append(materials_name(TAG, input_stream))
+
+def region_0(COLLISION, TAG, input_stream):
+    region = COLLISION.Region()
+    input_stream.read(2) # Padding?
+    region.name_length = TAG.read_signed_short(input_stream, TAG.big_endian)
+    region.permutation_tag_block = TAG.TagBlock().read(input_stream, 0, TAG.big_endian)
+
+    return region
+
+def permutation_1(COLLISION, TAG, input_stream):
+    permutation = COLLISION.Permutations()
+    input_stream.read(2) # Padding?
+    permutation.name_length = TAG.read_signed_short(input_stream, TAG.big_endian)
+    permutation.bsps_tag_block = TAG.TagBlock().read(input_stream, 0, TAG.big_endian)
+    permutation.bsps_physics_tag_block = TAG.TagBlock().read(input_stream, 0, TAG.big_endian)
+
+    return permutation
+
+def get_regions_tag_block(COLLISION, TAG, input_stream):
+    region_count = COLLISION.collision_body.regions_tag_block.count
+    COLLISION.regions = []
+    if region_count > 0:
+        region_tag_block_header = TAG.TagBlockHeader().read(input_stream, TAG.big_endian)
+        region = None
+        if region_tag_block_header.version == 0:
+            region = region_0
+
+        for region_idx in range(region_count):
+            COLLISION.regions.append(region(COLLISION, TAG, input_stream))
+
+        for region in COLLISION.regions:
+            if region.name_length > 1:
+                region.name = TAG.read_variable_string(input_stream, region.name_length, TAG.big_endian)
+
+            permutation_count = region.permutation_tag_block.count
+            region.permutations = []
+            if permutation_count > 0:
+                permutation_tag_block_header = TAG.TagBlockHeader().read(input_stream, TAG.big_endian)
+                permutation = None
+                if permutation_tag_block_header.version == 1:
+                    permutation = permutation_1
+
+                for permutation_idx in range(permutation_count):
+                    region.permutations.append(permutation(COLLISION, TAG, input_stream))
+
+                for permutation in enumerate(region.permutations):
+                    if permutation.name_length > 1:
+                        permutation.name = TAG.read_variable_string(input_stream, permutation.name_length, TAG.big_endian)
+
+                    bsp_count = permutation.bsps_tag_block.count
+                    permutation.bsps = []
+                    if bsp_count > 0:
+                        bsp_tag_block_header = TAG.TagBlockHeader().read(input_stream, TAG.big_endian)
+                        bsp = None
+                        if bsp_tag_block_header.version == 0:
+                            bsp = bsp_0
+
+                        for collision_bsp_idx in range(bsp_count):
+                            bsp = COLLISION.BSP()
+                            bsp.node_index = TAG.read_signed_integer(input_stream, TAG.big_endian)
+                            bsp.bsp3d_nodes_tag_block = TAG.TagBlock().read(input_stream, 131072, TAG.big_endian)
+                            bsp.planes_tag_block = TAG.TagBlock().read(input_stream, 65535, TAG.big_endian)
+                            bsp.leaves_tag_block = TAG.TagBlock().read(input_stream, 65535, TAG.big_endian)
+                            bsp.bsp2d_references_tag_block = TAG.TagBlock().read(input_stream, 131072, TAG.big_endian)
+                            bsp.bsp2d_nodes_tag_block = TAG.TagBlock().read(input_stream, 65535, TAG.big_endian)
+                            bsp.surfaces_tag_block = TAG.TagBlock().read(input_stream, 131072, TAG.big_endian)
+                            bsp.edges_tag_block = TAG.TagBlock().read(input_stream, 262144, TAG.big_endian)
+                            bsp.vertices_tag_block = TAG.TagBlock().read(input_stream, 131072, TAG.big_endian)
+
+                            permutation.bsps.append(bsp)
+
+                        for collision_bsp in permutation.bsps:
+                            bsp_3d_nodes = []
+                            planes = []
+                            leaves = []
+                            bsp2d_references = []
+                            bsp2d_nodes = []
+                            surfaces = []
+                            edges = []
+                            vertices = []
+                            collision_tag_block_header = struct.unpack('<16x', input_stream.read(16))
+                            bsp3d_nodes_count = collision_bsp.bsp3d_nodes_tag_block.count
+                            if bsp3d_nodes_count > 0:
+                                bsp3d_nodes_tag_block_header = struct.unpack('<16x', input_stream.read(16))
+                                for bsp3d_node_idx in range(bsp3d_nodes_count):
+                                    bsp_3d_node_struct = struct.unpack('<ii', input_stream.read(8))
+                                    bsp_3d_node = COLLISION.BSP3DNode()
+                                    bsp_3d_node.back_child = bsp_3d_node_struct[0]
+                                    bsp_3d_node.front_child = bsp_3d_node_struct[1]
+
+                                    bsp_3d_nodes.append(bsp_3d_node)
+
+                            planes_count = collision_bsp.planes_tag_block.count
+                            if planes_count > 0:
+                                planes_tag_block_header = struct.unpack('<16x', input_stream.read(16))
+                                for plane_idx in range(planes_count):
+                                    plane_struct = struct.unpack('<ffff', input_stream.read(16))
+                                    plane = COLLISION.Plane()
+                                    plane.translation = Vector((plane_struct[0], plane_struct[1], plane_struct[2])) * 100
+                                    plane.distance = plane_struct[3] * 100
+
+                                    planes.append(plane)
+
+                            leaves_count = collision_bsp.leaves_tag_block.count
+                            if leaves_count > 0:
+                                leaves_tag_block_header = struct.unpack('<16x', input_stream.read(16))
+                                for leaf_idx in range(leaves_count):
+                                    leaf_struct = struct.unpack('<bbbx', input_stream.read(4))
+                                    leaf = COLLISION.Leaf()
+                                    leaf.flags = leaf_struct[0]
+                                    leaf.bsp2d_reference_count = leaf_struct[1]
+                                    leaf.first_bsp2d_reference = leaf_struct[2]
+
+                                    leaves.append(leaf)
+
+                            bsp2d_references_count = collision_bsp.bsp2d_references_tag_block.count
+                            if bsp2d_references_count > 0:
+                                bsp2d_references_tag_block_header = struct.unpack('<16x', input_stream.read(16))
+                                for bsp2d_reference_idx in range(bsp2d_references_count):
+                                    bsp2d_reference_struct = struct.unpack('<hh', input_stream.read(4))
+                                    bsp2d_reference = COLLISION.BSP2DReference()
+                                    bsp2d_reference.plane = bsp2d_reference_struct[0]
+                                    bsp2d_reference.bsp2d_node = bsp2d_reference_struct[1]
+
+                                    bsp2d_references.append(bsp2d_reference)
+
+                            bsp2d_nodes_count = collision_bsp.bsp2d_nodes_tag_block.count
+                            if bsp2d_nodes_count > 0:
+                                bsp2d_nodes_tag_block_header = struct.unpack('<16x', input_stream.read(16))
+                                for bsp2d_nodes_idx in range(bsp2d_nodes_count):
+                                    bsp2d_node_struct = struct.unpack('<fffhh', input_stream.read(16))
+                                    bsp2d_node = COLLISION.BSP2DNode()
+                                    bsp2d_node.plane_i = bsp2d_node_struct[0]
+                                    bsp2d_node.plane_j = bsp2d_node_struct[1]
+                                    bsp2d_node.distance = bsp2d_node_struct[2] * 100
+                                    bsp2d_node.left_child = bsp2d_node_struct[3]
+                                    bsp2d_node.right_child = bsp2d_node_struct[4]
+
+                                    bsp2d_nodes.append(bsp2d_node)
+
+                            surfaces_count = collision_bsp.surfaces_tag_block.count
+                            if surfaces_count > 0:
+                                surfaces_tag_block_header = struct.unpack('<16x', input_stream.read(16))
+                                for surfaces_idx in range(surfaces_count):
+                                    surfaces_struct = struct.unpack('<hhbbbx', input_stream.read(8))
+                                    surface = COLLISION.Surface()
+                                    surface.plane = surfaces_struct[0]
+                                    surface.first_edge = surfaces_struct[1]
+                                    surface.flags = surfaces_struct[2]
+                                    surface.breakable_surface = surfaces_struct[3]
+                                    surface.material_index = surfaces_struct[4]
+
+                                    surfaces.append(surface)
+
+                            edges_count = collision_bsp.edges_tag_block.count
+                            if edges_count > 0:
+                                edges_tag_block_header = struct.unpack('<16x', input_stream.read(16))
+                                for edge_idx in range(edges_count):
+                                    edge_struct = struct.unpack('<hhhhhh', input_stream.read(12))
+                                    edge = COLLISION.Edge()
+                                    edge.start_vertex = edge_struct[0]
+                                    edge.end_vertex = edge_struct[1]
+                                    edge.forward_edge = edge_struct[2]
+                                    edge.reverse_edge = edge_struct[3]
+                                    edge.left_surface = edge_struct[4]
+                                    edge.right_surface = edge_struct[5]
+
+                                    edges.append(edge)
+
+                            vertices_count = collision_bsp.vertices_tag_block.count
+                            if vertices_count > 0:
+                                vertices_tag_block_header = struct.unpack('<16x', input_stream.read(16))
+                                for vertex_idx in range(vertices_count):
+                                    vertex_struct = struct.unpack('<fffi', input_stream.read(16))
+                                    vertex = COLLISION.Vertex()
+                                    vertex.translation = Vector((vertex_struct[0], vertex_struct[1], vertex_struct[2])) * 100
+                                    vertex.first_edge = vertex_struct[3]
+
+                                    vertices.append(vertex)
+
+                            collision_bsp.bsp3d_nodes = bsp_3d_nodes
+                            collision_bsp.planes = planes
+                            collision_bsp.leaves = leaves
+                            collision_bsp.bsp2d_references = bsp2d_references
+                            collision_bsp.bsp2d_nodes = bsp2d_nodes
+                            collision_bsp.surfaces = surfaces
+                            collision_bsp.edges = edges
+                            collision_bsp.vertices = vertices
+
+                    bsp_physics_count = permutation.bsps_physics_tag_block.count
+                    permutation.bsp_physics = []
+                    if bsp_physics_count > 0:
+                        bsp_physics_tag_block_header = struct.unpack('<16x', input_stream.read(16))
+                        for bsp_physics_idx in range(bsp_physics_count):
+                            bsp_physics_struct = struct.unpack('<4xhh60xhh12xhh12xiiIII8x', input_stream.read(128))
+                            bsp_physics_block = COLLISION.BSPPhysics()
+                            bsp_physics_block.size_0 = bsp_physics_struct[0]
+                            bsp_physics_block.count_0 = bsp_physics_struct[1]
+                            bsp_physics_block.size_1 = bsp_physics_struct[2]
+                            bsp_physics_block.count_1 = bsp_physics_struct[3]
+                            bsp_physics_block.size_2 = bsp_physics_struct[4]
+                            bsp_physics_block.count_2 = bsp_physics_struct[5]
+                            bsp_physics_block.mopp_code_data_ref = TAG.RawData(bsp_physics_struct[6], bsp_physics_struct[7], bsp_physics_struct[8], bsp_physics_struct[9], bsp_physics_struct[10])
+
+                            permutation.bsp_physics.append(bsp_physics_block)
+
+                        for bsp_physics_block in permutation.bsp_physics:
+                            mopp_code_data_size = bsp_physics_block.mopp_code_data_ref.size
+                            if mopp_code_data_size > 0:
+                                bsp_physics_struct = struct.unpack('<%sb' % mopp_code_data_size, input_stream.read(mopp_code_data_size))
+                                bsp_physics_block.mopp_code_data = bsp_physics_struct[0]
+
 def process_file(input_stream, tag_format, report):
     TAG = tag_format.TagAsset()
+    TAG.big_endian = False
     COLLISION = CollisionAsset()
 
-    header_struct = struct.unpack('<hbb32s4sIIIIHbb4s', input_stream.read(64))
-    COLLISION.header = TAG.Header()
-    COLLISION.header.unk1 = header_struct[0]
-    COLLISION.header.flags = header_struct[1]
-    COLLISION.header.type = header_struct[2]
-    COLLISION.header.name = header_struct[3].decode().rstrip('\x00')
-    COLLISION.header.tag_group = header_struct[4].decode().rstrip('\x00')
-    COLLISION.header.checksum = header_struct[5]
-    COLLISION.header.data_offset = header_struct[6]
-    COLLISION.header.data_length = header_struct[7]
-    COLLISION.header.unk2 = header_struct[8]
-    COLLISION.header.version = header_struct[9]
-    COLLISION.header.destination = header_struct[10]
-    COLLISION.header.plugin_handle = header_struct[11]
-    COLLISION.header.engine_tag = header_struct[12].decode().rstrip('\x00')
+    COLLISION.header = TAG.Header().read(input_stream, TAG.big_endian)
 
     if DEBUG_PARSER and DEBUG_HEADER:
         print(" ===== Tag Header ===== ")
@@ -96,16 +716,7 @@ def process_file(input_stream, tag_format, report):
         print("Engine Tag: ", COLLISION.header.engine_tag)
         print(" ")
 
-    collision_body_tag_block_header = struct.unpack('<16x', input_stream.read(16))
-    collision_body_struct = struct.unpack('<iIIiIIiiIIiIIiIIiII', input_stream.read(76))
-    COLLISION.collision_body = COLLISION.CollisionBody()
-    COLLISION.collision_body.import_info_tag_block = TAG.TagBlock(collision_body_struct[0], 0, collision_body_struct[1], collision_body_struct[2])
-    COLLISION.collision_body.errors_tag_block = TAG.TagBlock(collision_body_struct[3], 0, collision_body_struct[4], collision_body_struct[5])
-    COLLISION.collision_body.flags = collision_body_struct[6]
-    COLLISION.collision_body.materials_tag_block = TAG.TagBlock(collision_body_struct[7], 0, collision_body_struct[8], collision_body_struct[9])
-    COLLISION.collision_body.regions_tag_block = TAG.TagBlock(collision_body_struct[10], 0, collision_body_struct[11], collision_body_struct[12])
-    COLLISION.collision_body.pathfinding_spheres_tag_block = TAG.TagBlock(collision_body_struct[13], 0, collision_body_struct[14], collision_body_struct[15])
-    COLLISION.collision_body.nodes_tag_block = TAG.TagBlock(collision_body_struct[16], 0, collision_body_struct[17], collision_body_struct[18])
+    get_collision_body_tag_block(COLLISION, TAG, input_stream)
 
     if DEBUG_PARSER and DEBUG_BODY:
         print(" ===== SBSP Body ===== ")
@@ -136,37 +747,7 @@ def process_file(input_stream, tag_format, report):
         print("Nodes Reference Tag Block Definition: ", COLLISION.collision_body.nodes_tag_block.definition)
         print(" ")
 
-    import_info_count = COLLISION.collision_body.import_info_tag_block.count
-    if import_info_count > 0:
-        import_info_tag_block_header = struct.unpack('<16x', input_stream.read(16))
-        for import_info_idx in range(import_info_count):
-            import_info_struct = struct.unpack('<i256s32s32s96x32s4xiII128x', input_stream.read(596))
-            import_info = COLLISION.ImportInfo()
-            import_info.build = import_info_struct[0]
-            import_info.version = import_info_struct[1].decode().rstrip('\x00')
-            import_info.import_date = import_info_struct[2].decode().rstrip('\x00')
-            import_info.culprit = import_info_struct[3].decode().rstrip('\x00')
-            import_info.import_time = import_info_struct[4].decode().rstrip('\x00')
-            import_info.files_tag_block = TAG.TagBlock(import_info_struct[5], 0, import_info_struct[6], import_info_struct[7])
-
-            COLLISION.import_info_blocks.append(import_info)
-
-        file_tag_block_header = struct.unpack('<16x', input_stream.read(16))
-        for import_info in COLLISION.import_info_blocks:
-            files = []
-            for file_idx in range(import_info.files_tag_block.count):
-                file_struct = struct.unpack('<256s32s96xiii144x', input_stream.read(540))
-                file = COLLISION.Files()
-                file.path = file_struct[0].decode().rstrip('\x00')
-                file.modification_date = file_struct[1].decode().rstrip('\x00')
-                file.checksum = file_struct[2]
-                file.size = file_struct[3]
-                file.zipped_data = file_struct[4]
-                file.uncompressed_data = input_stream.read(file_struct[4])
-
-                files.append(file)
-
-            import_info.files = files
+    get_import_info_tag_block(COLLISION, TAG, input_stream)
 
     if DEBUG_PARSER and DEBUG_IMPORT_INFO:
         print(" ===== Import Info ===== ")
@@ -192,247 +773,7 @@ def process_file(input_stream, tag_format, report):
                     print("Zipped Data: ", file.zipped_data)
                     print(" ")
 
-    error_count = COLLISION.collision_body.errors_tag_block.count
-    if error_count > 0:
-        error_tag_block_header = struct.unpack('<16x', input_stream.read(16))
-        for error_idx in range(error_count):
-            error_struct = struct.unpack('<256shh408xiII', input_stream.read(680))
-            error = COLLISION.Error()
-            error.name = error_struct[0].decode().rstrip('\x00')
-            error.report_type = error_struct[1]
-            error.flags = error_struct[2]
-            error.reports_tag_block = TAG.TagBlock(error_struct[3], 0, error_struct[4], error_struct[5])
-
-            COLLISION.errors.append(error)
-
-        for error in COLLISION.errors:
-            report_count = error.reports_tag_block.count
-            if report_count > 0:
-                report_tag_block_header = struct.unpack('<16x', input_stream.read(16))
-                reports = []
-                report_lengths = []
-                for report_idx in range(report_count):
-                    report_struct = struct.unpack('<hhh18x32siiIIiIIiIIiIIiIIiII380xiiffffffffff84x', input_stream.read(644))
-                    report_block = COLLISION.Report()
-                    report_block.type = report_struct[0]
-                    report_block.flags = report_struct[1]
-                    report_lengths.append(report_struct[2])
-                    report_block.source_filename = report_struct[3].decode().rstrip('\x00')
-                    report_block.source_line_number = report_struct[4]
-                    report_block.vertices_tag_block = TAG.TagBlock(report_struct[5], 0, report_struct[6], report_struct[7])
-                    report_block.vectors_tag_block = TAG.TagBlock(report_struct[8], 0, report_struct[9], report_struct[10])
-                    report_block.lines_tag_block = TAG.TagBlock(report_struct[11], 0, report_struct[12], report_struct[13])
-                    report_block.triangles_tag_block = TAG.TagBlock(report_struct[14], 0, report_struct[15], report_struct[16])
-                    report_block.quads_tag_block = TAG.TagBlock(report_struct[17], 0, report_struct[18], report_struct[19])
-                    report_block.comments_tag_block = TAG.TagBlock(report_struct[20], 0, report_struct[21], report_struct[22])
-                    report_block.report_key = report_struct[23]
-                    report_block.node_index = report_struct[24]
-                    report_block.bounds_x = (report_struct[25], report_struct[26])
-                    report_block.bounds_y = (report_struct[27], report_struct[28])
-                    report_block.bounds_z = (report_struct[29], report_struct[30])
-                    report_block.color = (report_struct[32], report_struct[33], report_struct[34], report_struct[31])
-
-                    reports.append(report_block)
-
-                for report_idx, report_block in enumerate(reports):
-                    report_length = report_lengths[report_idx]
-                    if report_length > 1:
-                        report_text = struct.unpack('>%ss' % report_length, input_stream.read(report_length))
-                        report_block.text = report_text[0].decode().rstrip('\x00')
-
-                    report_vertices = []
-                    report_vectors = []
-                    report_lines = []
-                    report_triangles = []
-                    report_quads = []
-                    report_comments = []
-                    vertices_count = report_block.vertices_tag_block.count
-                    if vertices_count > 0:
-                        vertices_tag_block_header = struct.unpack('<16x', input_stream.read(16))
-                        for vertices_idx in range(vertices_count):
-                            report_vertex_struct = struct.unpack('<fffbbbbfffffffff', input_stream.read(52))
-                            report_vertex = COLLISION.ReportVertex()
-                            report_vertex.position =  Vector((report_vertex_struct[0], report_vertex_struct[1], report_vertex_struct[2]))
-                            report_vertex.node_index_0 = report_vertex_struct[3]
-                            report_vertex.node_index_1 = report_vertex_struct[4]
-                            report_vertex.node_index_2 = report_vertex_struct[5]
-                            report_vertex.node_index_3 = report_vertex_struct[6]
-                            report_vertex.node_weight_0 = report_vertex_struct[7]
-                            report_vertex.node_weight_1 = report_vertex_struct[8]
-                            report_vertex.node_weight_2 = report_vertex_struct[9]
-                            report_vertex.node_weight_3 = report_vertex_struct[10]
-                            report_vertex.color = (report_vertex_struct[12], report_vertex_struct[13], report_vertex_struct[14], report_vertex_struct[11])
-                            report_vertex.screen_size = report_vertex_struct[15]
-
-                            report_vertices.append(report_vertex)
-
-                    vectors_count = report_block.vectors_tag_block.count
-                    if vectors_count > 0:
-                        vectors_tag_block_header = struct.unpack('<16x', input_stream.read(16))
-                        for vectors_idx in range(vectors_count):
-                            report_vectors_struct = struct.unpack('<fffbbbbffffffffffff', input_stream.read(64))
-                            report_vector = COLLISION.ReportVector()
-                            report_vector.position =  Vector((report_vectors_struct[0], report_vectors_struct[1], report_vectors_struct[2]))
-                            report_vector.node_index_0 = report_vectors_struct[3]
-                            report_vector.node_index_1 = report_vectors_struct[4]
-                            report_vector.node_index_2 = report_vectors_struct[5]
-                            report_vector.node_index_3 = report_vectors_struct[6]
-                            report_vector.node_weight_0 = report_vectors_struct[7]
-                            report_vector.node_weight_1 = report_vectors_struct[8]
-                            report_vector.node_weight_2 = report_vectors_struct[9]
-                            report_vector.node_weight_3 = report_vectors_struct[10]
-                            report_vector.color = (report_vectors_struct[12], report_vectors_struct[13], report_vectors_struct[14], report_vectors_struct[11])
-                            report_vector.normal =  Vector((report_vectors_struct[15], report_vectors_struct[16], report_vectors_struct[17]))
-                            report_vector.screen_length = report_vectors_struct[18]
-
-                            report_vectors.append(report_vector)
-
-                    lines_count = report_block.lines_tag_block.count
-                    if lines_count > 0:
-                        lines_tag_block_header = struct.unpack('<16x', input_stream.read(16))
-                        for lines_idx in range(lines_count):
-                            report_line_struct = struct.unpack('<fffbbbbfffffffbbbbffffffff', input_stream.read(80))
-                            report_line = COLLISION.ReportLine()
-                            report_line.position_a =  Vector((report_line_struct[0], report_line_struct[1], report_line_struct[2]))
-                            report_line.node_index_a_0 = report_line_struct[3]
-                            report_line.node_index_a_1 = report_line_struct[4]
-                            report_line.node_index_a_2 = report_line_struct[5]
-                            report_line.node_index_a_3 = report_line_struct[6]
-                            report_line.node_weight_a_0 = report_line_struct[7]
-                            report_line.node_weight_a_1 = report_line_struct[8]
-                            report_line.node_weight_a_2 = report_line_struct[9]
-                            report_line.node_weight_a_3 = report_line_struct[10]
-                            report_line.position_b =  Vector((report_line_struct[11], report_line_struct[12], report_line_struct[13]))
-                            report_line.node_index_b_0 = report_line_struct[14]
-                            report_line.node_index_b_1 = report_line_struct[15]
-                            report_line.node_index_b_2 = report_line_struct[16]
-                            report_line.node_index_b_3 = report_line_struct[17]
-                            report_line.node_weight_b_0 = report_line_struct[18]
-                            report_line.node_weight_b_1 = report_line_struct[19]
-                            report_line.node_weight_b_2 = report_line_struct[20]
-                            report_line.node_weight_b_3 = report_line_struct[21]
-                            report_line.color = (report_line_struct[23], report_line_struct[24], report_line_struct[25], report_line_struct[22])
-
-                            report_lines.append(report_line)
-
-                    triangle_count = report_block.triangles_tag_block.count
-                    if triangle_count > 0:
-                        triangle_tag_block_header = struct.unpack('<16x', input_stream.read(16))
-                        for triangle_idx in range(triangle_count):
-                            report_triangle_struct = struct.unpack('<fffbbbbfffffffbbbbfffffffbbbbffffffff', input_stream.read(112))
-                            report_triangle = COLLISION.ReportTriangle()
-                            report_triangle.position_a =  Vector((report_triangle_struct[0], report_triangle_struct[1], report_triangle_struct[2]))
-                            report_triangle.node_index_a_0 = report_triangle_struct[3]
-                            report_triangle.node_index_a_1 = report_triangle_struct[4]
-                            report_triangle.node_index_a_2 = report_triangle_struct[5]
-                            report_triangle.node_index_a_3 = report_triangle_struct[6]
-                            report_triangle.node_weight_a_0 = report_triangle_struct[7]
-                            report_triangle.node_weight_a_1 = report_triangle_struct[8]
-                            report_triangle.node_weight_a_2 = report_triangle_struct[9]
-                            report_triangle.node_weight_a_3 = report_triangle_struct[10]
-                            report_triangle.position_b =  Vector((report_triangle_struct[11], report_triangle_struct[12], report_triangle_struct[13]))
-                            report_triangle.node_index_b_0 = report_triangle_struct[14]
-                            report_triangle.node_index_b_1 = report_triangle_struct[15]
-                            report_triangle.node_index_b_2 = report_triangle_struct[16]
-                            report_triangle.node_index_b_3 = report_triangle_struct[17]
-                            report_triangle.node_weight_b_0 = report_triangle_struct[18]
-                            report_triangle.node_weight_b_1 = report_triangle_struct[19]
-                            report_triangle.node_weight_b_2 = report_triangle_struct[20]
-                            report_triangle.node_weight_b_3 = report_triangle_struct[21]
-                            report_triangle.position_c =  Vector((report_triangle_struct[22], report_triangle_struct[23], report_triangle_struct[24]))
-                            report_triangle.node_index_c_0 = report_triangle_struct[25]
-                            report_triangle.node_index_c_1 = report_triangle_struct[26]
-                            report_triangle.node_index_c_2 = report_triangle_struct[27]
-                            report_triangle.node_index_c_3 = report_triangle_struct[28]
-                            report_triangle.node_weight_c_0 = report_triangle_struct[29]
-                            report_triangle.node_weight_c_1 = report_triangle_struct[30]
-                            report_triangle.node_weight_c_2 = report_triangle_struct[31]
-                            report_triangle.node_weight_c_3 = report_triangle_struct[32]
-                            report_triangle.color = (report_triangle_struct[34], report_triangle_struct[35], report_triangle_struct[36], report_triangle_struct[33])
-
-                            report_triangles.append(report_triangle)
-
-                    quad_count = report_block.quads_tag_block.count
-                    if quad_count > 0:
-                        quad_tag_block_header = struct.unpack('<16x', input_stream.read(16))
-                        for quad_idx in range(quad_count):
-                            report_quad_struct = struct.unpack('<fffbbbbfffffffbbbbfffffffbbbbfffffffbbbbffffffff', input_stream.read(144))
-                            report_quad = COLLISION.ReportQuad()
-                            report_quad.position_a =  Vector((report_quad_struct[0], report_quad_struct[1], report_quad_struct[2]))
-                            report_quad.node_index_a_0 = report_quad_struct[3]
-                            report_quad.node_index_a_1 = report_quad_struct[4]
-                            report_quad.node_index_a_2 = report_quad_struct[5]
-                            report_quad.node_index_a_3 = report_quad_struct[6]
-                            report_quad.node_weight_a_0 = report_quad_struct[7]
-                            report_quad.node_weight_a_1 = report_quad_struct[8]
-                            report_quad.node_weight_a_2 = report_quad_struct[9]
-                            report_quad.node_weight_a_3 = report_quad_struct[10]
-                            report_quad.position_b =  Vector((report_quad_struct[11], report_quad_struct[12], report_quad_struct[13]))
-                            report_quad.node_index_b_0 = report_quad_struct[14]
-                            report_quad.node_index_b_1 = report_quad_struct[15]
-                            report_quad.node_index_b_2 = report_quad_struct[16]
-                            report_quad.node_index_b_3 = report_quad_struct[17]
-                            report_quad.node_weight_b_0 = report_quad_struct[18]
-                            report_quad.node_weight_b_1 = report_quad_struct[19]
-                            report_quad.node_weight_b_2 = report_quad_struct[20]
-                            report_quad.node_weight_b_3 = report_quad_struct[21]
-                            report_quad.position_c =  Vector((report_quad_struct[22], report_quad_struct[23], report_quad_struct[24]))
-                            report_quad.node_index_c_0 = report_quad_struct[25]
-                            report_quad.node_index_c_1 = report_quad_struct[26]
-                            report_quad.node_index_c_2 = report_quad_struct[27]
-                            report_quad.node_index_c_3 = report_quad_struct[28]
-                            report_quad.node_weight_c_0 = report_quad_struct[29]
-                            report_quad.node_weight_c_1 = report_quad_struct[30]
-                            report_quad.node_weight_c_2 = report_quad_struct[31]
-                            report_quad.node_weight_c_3 = report_quad_struct[32]
-                            report_quad.position_d =  Vector((report_quad_struct[33], report_quad_struct[34], report_quad_struct[35]))
-                            report_quad.node_index_d_0 = report_quad_struct[36]
-                            report_quad.node_index_d_1 = report_quad_struct[37]
-                            report_quad.node_index_d_2 = report_quad_struct[38]
-                            report_quad.node_index_d_3 = report_quad_struct[39]
-                            report_quad.node_weight_d_0 = report_quad_struct[40]
-                            report_quad.node_weight_d_1 = report_quad_struct[41]
-                            report_quad.node_weight_d_2 = report_quad_struct[42]
-                            report_quad.node_weight_d_3 = report_quad_struct[43]
-                            report_quad.color = (report_quad_struct[45], report_quad_struct[46], report_quad_struct[47], report_quad_struct[44])
-
-                            report_quads.append(report_quad)
-
-                    comment_count = report_block.comments_tag_block.count
-                    if comment_count > 0:
-                        comment_tag_block_header = struct.unpack('<16x', input_stream.read(16))
-                        comment_lengths = []
-                        for comment_idx in range(comment_count):
-                            report_comment_struct = struct.unpack('<h18xfffbbbbffffffff', input_stream.read(68))
-                            report_comment = COLLISION.ReportComment()
-                            comment_lengths.append(report_comment_struct[0])
-                            report_comment.position =  Vector((report_comment_struct[1], report_comment_struct[2], report_comment_struct[3]))
-                            report_comment.node_index_0 = report_comment_struct[4]
-                            report_comment.node_index_1 = report_comment_struct[5]
-                            report_comment.node_index_2 = report_comment_struct[6]
-                            report_comment.node_index_3 = report_comment_struct[7]
-                            report_comment.node_weight_0 = report_comment_struct[8]
-                            report_comment.node_weight_1 = report_comment_struct[9]
-                            report_comment.node_weight_2 = report_comment_struct[10]
-                            report_comment.node_weight_3 = report_comment_struct[11]
-                            report_comment.color = (report_comment_struct[13], report_comment_struct[14], report_comment_struct[15], report_comment_struct[12])
-
-                            report_comments.append(report_comment)
-
-                        for comment_idx, report_comment in enumerate(report_comments):
-                            comment_length = comment_lengths[comment_idx]
-                            if comment_length > 1:
-                                comment_text = struct.unpack('>%ss' % comment_length, input_stream.read(comment_length))
-                                report_comment.text = comment_text[0].decode().rstrip('\x00')
-
-                    report_block.vertices = report_vertices
-                    report_block.vectors = report_vectors
-                    report_block.lines = report_lines
-                    report_block.triangles = report_triangles
-                    report_block.quads = report_quads
-                    report_block.comments = report_comments
-
-            error.reports = reports
+    get_errors_tag_block(COLLISION, TAG, input_stream)
 
     if DEBUG_PARSER and DEBUG_ERRORS:
         print(" ===== Errors ===== ")
@@ -633,19 +974,7 @@ def process_file(input_stream, tag_format, report):
                             print("Color RGBA: ", report_comment.color)
                             print(" ")
 
-    materials_count = COLLISION.collision_body.materials_tag_block.count
-    if materials_count > 0:
-        file_tag_block_header = struct.unpack('<16x', input_stream.read(16))
-        material_name_lengths = []
-        for collision_material_idx in range(materials_count):
-            print(input_stream.tell())
-            collision_material_struct = struct.unpack('>2xh', input_stream.read(4))
-            material_name_lengths.append(collision_material_struct[0])
-
-        for material_name_length in material_name_lengths:
-            if material_name_length > 1:
-                material_name = struct.unpack('>%ss' % material_name_length, input_stream.read(material_name_length))
-                COLLISION.materials.append(material_name[0].decode())
+    get_materials_tag_block(COLLISION, TAG, input_stream)
 
     if DEBUG_PARSER and DEBUG_MATERIALS:
         print(" ===== Materials ===== ")
@@ -654,211 +983,7 @@ def process_file(input_stream, tag_format, report):
             print("Material Name: ", material)
             print(" ")
 
-    region_count = COLLISION.collision_body.regions_tag_block.count
-    if region_count > 0:
-        region_tag_block_header = struct.unpack('<16x', input_stream.read(16))
-        region_name_lengths = []
-        for region_idx in range(region_count):
-            region_name_struct = struct.unpack('>2xh', input_stream.read(4))
-            region_struct = struct.unpack('<iII', input_stream.read(12))
-            region = COLLISION.Region()
-            region_name_lengths.append(region_name_struct[0])
-            region.permutation_tag_block = TAG.TagBlock(region_struct[0], 0, region_struct[1], region_struct[2])
-
-            COLLISION.regions.append(region)
-
-        for region_idx, region in enumerate(COLLISION.regions):
-            region_name_length = region_name_lengths[region_idx]
-            if region_name_length > 1:
-                region_name = struct.unpack('>%ss' % region_name_length, input_stream.read(region_name_length))
-                region.name = region_name[0].decode()
-
-            permutation_count = region.permutation_tag_block.count
-            if permutation_count > 0:
-                permutation_tag_block_header = struct.unpack('<16x', input_stream.read(16))
-                permutation_name_lengths = []
-                permutations = []
-                for permutation_idx in range(permutation_count):
-                    permutation_name_struct = struct.unpack('>2xh', input_stream.read(4))
-                    permutation_struct = struct.unpack('<iIIiII', input_stream.read(24))
-                    permutation = COLLISION.Permutations()
-                    permutation_name_lengths.append(permutation_name_struct[0])
-                    permutation.bsps_tag_block = TAG.TagBlock(permutation_struct[0], 0, permutation_struct[1], permutation_struct[2])
-                    permutation.bsps_physics_tag_block = TAG.TagBlock(permutation_struct[3], 0, permutation_struct[4], permutation_struct[5])
-
-                    permutations.append(permutation)
-
-                for permutation_idx, permutation in enumerate(permutations):
-                    permutation_name_length = permutation_name_lengths[permutation_idx]
-                    if permutation_name_length > 1:
-                        permutation_name = struct.unpack('>%ss' % permutation_name_length, input_stream.read(permutation_name_length))
-                        permutation.name = permutation_name[0].decode()
-
-                    bsp_count = permutation.bsps_tag_block.count
-                    if bsp_count > 0:
-                        bsps = []
-                        bsp_tag_block_header = struct.unpack('<16x', input_stream.read(16))
-                        for collision_bsp_idx in range(bsp_count):
-                            bsp_struct = struct.unpack('<iiIIiIIiIIiIIiIIiIIiIIiII', input_stream.read(100))
-                            bsp = COLLISION.BSP()
-                            bsp.node_index = bsp_struct[0]
-                            bsp.bsp3d_nodes_tag_block = TAG.TagBlock(bsp_struct[1], 131072, bsp_struct[2], bsp_struct[3])
-                            bsp.planes_tag_block = TAG.TagBlock(bsp_struct[4], 65535, bsp_struct[5], bsp_struct[6])
-                            bsp.leaves_tag_block = TAG.TagBlock(bsp_struct[7], 65535, bsp_struct[8], bsp_struct[9])
-                            bsp.bsp2d_references_tag_block = TAG.TagBlock(bsp_struct[10], 131072, bsp_struct[11], bsp_struct[12])
-                            bsp.bsp2d_nodes_tag_block = TAG.TagBlock(bsp_struct[13], 65535, bsp_struct[14], bsp_struct[15])
-                            bsp.surfaces_tag_block = TAG.TagBlock(bsp_struct[16], 131072, bsp_struct[17], bsp_struct[18])
-                            bsp.edges_tag_block = TAG.TagBlock(bsp_struct[19], 262144, bsp_struct[20], bsp_struct[21])
-                            bsp.vertices_tag_block = TAG.TagBlock(bsp_struct[22], 131072, bsp_struct[23], bsp_struct[24])
-
-                            bsps.append(bsp)
-
-                        for collision_bsp in bsps:
-                            bsp_3d_nodes = []
-                            planes = []
-                            leaves = []
-                            bsp2d_references = []
-                            bsp2d_nodes = []
-                            surfaces = []
-                            edges = []
-                            vertices = []
-                            collision_tag_block_header = struct.unpack('<16x', input_stream.read(16))
-                            bsp3d_nodes_count = collision_bsp.bsp3d_nodes_tag_block.count
-                            if bsp3d_nodes_count > 0:
-                                bsp3d_nodes_tag_block_header = struct.unpack('<16x', input_stream.read(16))
-                                for bsp3d_node_idx in range(bsp3d_nodes_count):
-                                    bsp_3d_node_struct = struct.unpack('<ii', input_stream.read(8))
-                                    bsp_3d_node = COLLISION.BSP3DNode()
-                                    bsp_3d_node.back_child = bsp_3d_node_struct[0]
-                                    bsp_3d_node.front_child = bsp_3d_node_struct[1]
-
-                                    bsp_3d_nodes.append(bsp_3d_node)
-
-                            planes_count = collision_bsp.planes_tag_block.count
-                            if planes_count > 0:
-                                planes_tag_block_header = struct.unpack('<16x', input_stream.read(16))
-                                for plane_idx in range(planes_count):
-                                    plane_struct = struct.unpack('<ffff', input_stream.read(16))
-                                    plane = COLLISION.Plane()
-                                    plane.translation = Vector((plane_struct[0], plane_struct[1], plane_struct[2])) * 100
-                                    plane.distance = plane_struct[3] * 100
-
-                                    planes.append(plane)
-
-                            leaves_count = collision_bsp.leaves_tag_block.count
-                            if leaves_count > 0:
-                                leaves_tag_block_header = struct.unpack('<16x', input_stream.read(16))
-                                for leaf_idx in range(leaves_count):
-                                    leaf_struct = struct.unpack('<bbbx', input_stream.read(4))
-                                    leaf = COLLISION.Leaf()
-                                    leaf.flags = leaf_struct[0]
-                                    leaf.bsp2d_reference_count = leaf_struct[1]
-                                    leaf.first_bsp2d_reference = leaf_struct[2]
-
-                                    leaves.append(leaf)
-
-                            bsp2d_references_count = collision_bsp.bsp2d_references_tag_block.count
-                            if bsp2d_references_count > 0:
-                                bsp2d_references_tag_block_header = struct.unpack('<16x', input_stream.read(16))
-                                for bsp2d_reference_idx in range(bsp2d_references_count):
-                                    bsp2d_reference_struct = struct.unpack('<hh', input_stream.read(4))
-                                    bsp2d_reference = COLLISION.BSP2DReference()
-                                    bsp2d_reference.plane = bsp2d_reference_struct[0]
-                                    bsp2d_reference.bsp2d_node = bsp2d_reference_struct[1]
-
-                                    bsp2d_references.append(bsp2d_reference)
-
-                            bsp2d_nodes_count = collision_bsp.bsp2d_nodes_tag_block.count
-                            if bsp2d_nodes_count > 0:
-                                bsp2d_nodes_tag_block_header = struct.unpack('<16x', input_stream.read(16))
-                                for bsp2d_nodes_idx in range(bsp2d_nodes_count):
-                                    bsp2d_node_struct = struct.unpack('<fffhh', input_stream.read(16))
-                                    bsp2d_node = COLLISION.BSP2DNode()
-                                    bsp2d_node.plane_i = bsp2d_node_struct[0]
-                                    bsp2d_node.plane_j = bsp2d_node_struct[1]
-                                    bsp2d_node.distance = bsp2d_node_struct[2] * 100
-                                    bsp2d_node.left_child = bsp2d_node_struct[3]
-                                    bsp2d_node.right_child = bsp2d_node_struct[4]
-
-                                    bsp2d_nodes.append(bsp2d_node)
-
-                            surfaces_count = collision_bsp.surfaces_tag_block.count
-                            if surfaces_count > 0:
-                                surfaces_tag_block_header = struct.unpack('<16x', input_stream.read(16))
-                                for surfaces_idx in range(surfaces_count):
-                                    surfaces_struct = struct.unpack('<hhbbbx', input_stream.read(8))
-                                    surface = COLLISION.Surface()
-                                    surface.plane = surfaces_struct[0]
-                                    surface.first_edge = surfaces_struct[1]
-                                    surface.flags = surfaces_struct[2]
-                                    surface.breakable_surface = surfaces_struct[3]
-                                    surface.material = surfaces_struct[4]
-
-                                    surfaces.append(surface)
-
-                            edges_count = collision_bsp.edges_tag_block.count
-                            if edges_count > 0:
-                                edges_tag_block_header = struct.unpack('<16x', input_stream.read(16))
-                                for edge_idx in range(edges_count):
-                                    edge_struct = struct.unpack('<hhhhhh', input_stream.read(12))
-                                    edge = COLLISION.Edge()
-                                    edge.start_vertex = edge_struct[0]
-                                    edge.end_vertex = edge_struct[1]
-                                    edge.forward_edge = edge_struct[2]
-                                    edge.reverse_edge = edge_struct[3]
-                                    edge.left_surface = edge_struct[4]
-                                    edge.right_surface = edge_struct[5]
-
-                                    edges.append(edge)
-
-                            vertices_count = collision_bsp.vertices_tag_block.count
-                            if vertices_count > 0:
-                                vertices_tag_block_header = struct.unpack('<16x', input_stream.read(16))
-                                for vertex_idx in range(vertices_count):
-                                    vertex_struct = struct.unpack('<fffi', input_stream.read(16))
-                                    vertex = COLLISION.Vertex()
-                                    vertex.translation = Vector((vertex_struct[0], vertex_struct[1], vertex_struct[2])) * 100
-                                    vertex.first_edge = vertex_struct[3]
-
-                                    vertices.append(vertex)
-
-                            collision_bsp.bsp3d_nodes = bsp_3d_nodes
-                            collision_bsp.planes = planes
-                            collision_bsp.leaves = leaves
-                            collision_bsp.bsp2d_references = bsp2d_references
-                            collision_bsp.bsp2d_nodes = bsp2d_nodes
-                            collision_bsp.surfaces = surfaces
-                            collision_bsp.edges = edges
-                            collision_bsp.vertices = vertices
-
-                        permutation.bsps = bsps
-
-                    bsp_physics_count = permutation.bsps_physics_tag_block.count
-                    if bsp_physics_count > 0:
-                        bsp_physics = []
-                        bsp_physics_tag_block_header = struct.unpack('<16x', input_stream.read(16))
-                        for bsp_physics_idx in range(bsp_physics_count):
-                            bsp_physics_struct = struct.unpack('<4xhh60xhh12xhh12xiiIII8x', input_stream.read(128))
-                            bsp_physics_block = COLLISION.BSPPhysics()
-                            bsp_physics_block.size_0 = bsp_physics_struct[0]
-                            bsp_physics_block.count_0 = bsp_physics_struct[1]
-                            bsp_physics_block.size_1 = bsp_physics_struct[2]
-                            bsp_physics_block.count_1 = bsp_physics_struct[3]
-                            bsp_physics_block.size_2 = bsp_physics_struct[4]
-                            bsp_physics_block.count_2 = bsp_physics_struct[5]
-                            bsp_physics_block.mopp_code_data_ref = TAG.RawData(bsp_physics_struct[6], bsp_physics_struct[7], bsp_physics_struct[8], bsp_physics_struct[9], bsp_physics_struct[10])
-
-                            bsp_physics.append(bsp_physics_block)
-
-                        for bsp_physics_block in bsp_physics:
-                            mopp_code_data_size = bsp_physics_block.mopp_code_data_ref.size
-                            if mopp_code_data_size > 0:
-                                bsp_physics_struct = struct.unpack('<%sb' % mopp_code_data_size, input_stream.read(mopp_code_data_size))
-                                bsp_physics_block.mopp_code_data = bsp_physics_struct[0]
-
-                        permutation.bsp_physics = bsp_physics
-
-                region.permutations = permutations
+    get_regions_tag_block(COLLISION, TAG, input_stream)
 
     if DEBUG_PARSER and DEBUG_REGIONS:
         print(" ===== Regions ===== ")
@@ -966,7 +1091,7 @@ def process_file(input_stream, tag_format, report):
                                     print("Surface First Edge: ", surface.first_edge)
                                     print("Surface Flags: ", surface.flags)
                                     print("Surface Breakable Surface: ", surface.breakable_surface)
-                                    print("Surface Material: ", surface.material)
+                                    print("Surface Material: ", surface.material_index)
                                     print(" ")
 
                             if DEBUG_EDGES:
@@ -1005,6 +1130,7 @@ def process_file(input_stream, tag_format, report):
                             print(" ")
 
     pathfinding_spheres_count = COLLISION.collision_body.pathfinding_spheres_tag_block.count
+    COLLISION.pathfinding_spheres = []
     if pathfinding_spheres_count > 0:
         pathfinding_spheres_tag_block_header = struct.unpack('<16x', input_stream.read(16))
         for pathfinding_sphere_idx in range(pathfinding_spheres_count):
@@ -1028,6 +1154,7 @@ def process_file(input_stream, tag_format, report):
             print(" ")
 
     node_count = COLLISION.collision_body.nodes_tag_block.count
+    COLLISION.nodes = []
     if node_count > 0:
         node_tag_block_header = struct.unpack('<16x', input_stream.read(16))
         node_name_lengths = []

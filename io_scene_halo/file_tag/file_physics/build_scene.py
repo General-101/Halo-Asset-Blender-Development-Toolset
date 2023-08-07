@@ -2,7 +2,7 @@
 #
 # MIT License
 #
-# Copyright (c) 2022 Steven Garcia
+# Copyright (c) 2023 Steven Garcia
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -27,10 +27,10 @@
 import bpy
 import bmesh
 
-from math import radians
-from mathutils import Vector, Matrix
+import numpy as np
+from mathutils import Matrix
 
-def build_scene(context, PHYSICS, fix_rotations, report, mesh_processing, global_functions):
+def build_scene(context, PHYSICS, game_version, game_title, file_version, fix_rotations, empty_markers, report, mesh_processing, global_functions):
     collection = context.collection
 
     active_object = context.view_layer.objects.active
@@ -39,9 +39,11 @@ def build_scene(context, PHYSICS, fix_rotations, report, mesh_processing, global
         armature = active_object
 
     if armature:
-        for mass_point in PHYSICS.mass_points:
+        for mass_point_idx, mass_point in enumerate(PHYSICS.mass_points):
+
             parent_idx = mass_point.model_node
             object_name_prefix = '#%s' % mass_point.name
+
             marker_name_override = ""
             if context.scene.objects.get('#%s' % mass_point.name):
                 marker_name_override = mass_point.name
@@ -50,52 +52,39 @@ def build_scene(context, PHYSICS, fix_rotations, report, mesh_processing, global
             object_mesh = bpy.data.objects.new(object_name_prefix, mesh)
             collection.objects.link(object_mesh)
 
-            object_mesh.marker.name_override = marker_name_override
+            object_mesh.ass_jms.name_override = marker_name_override
 
             bm = bmesh.new()
             bmesh.ops.create_uvsphere(bm, u_segments=32, v_segments=16, radius=1)
             bm.to_mesh(mesh)
             bm.free()
 
-            mesh_processing.select_object(context, object_mesh)
-            mesh_processing.select_object(context, armature)
-            if not parent_idx == -1:
-                bpy.ops.object.mode_set(mode='EDIT')
-                armature.data.edit_bones.active = armature.data.edit_bones[parent_idx]
-                bpy.ops.object.mode_set(mode='OBJECT')
-                bpy.ops.object.parent_set(type='BONE', keep_transform=True)
+            node_count = len(armature.data.bones)
+            if not parent_idx == -1 and not parent_idx >= node_count:
+                bone_name = armature.data.bones[parent_idx].name
+
+                object_mesh.parent = armature
+                object_mesh.parent_type = "BONE"
+                object_mesh.parent_bone = bone_name
 
             else:
-                bpy.ops.object.parent_set(type='ARMATURE', keep_transform=True)
+                object_mesh.parent = armature
 
             matrix_translate = Matrix.Translation(mass_point.position)
             matrix_rotation = Matrix.Identity(3)
 
-            a = mass_point.up[1] * mass_point.forward[2] - mass_point.forward[1] * mass_point.up[2]
-            b = mass_point.up[2] * mass_point.forward[0] - mass_point.forward[2] * mass_point.up[0]
-            c = mass_point.up[0] * mass_point.forward[1] - mass_point.forward[0] * mass_point.up[1]
-
-            matrix_rotation[0] = mass_point.forward
-            matrix_rotation[1] = mass_point.up
-            matrix_rotation[2] = Vector((a, b, c))
-
-            matrix_rotation = matrix_rotation.to_quaternion().inverted().to_matrix().to_4x4()
-
-            marker_radius = 1
             marker_radius = mass_point.radius
 
-            scale_x = Matrix.Scale(marker_radius, 4, (1, 0, 0))
-            scale_y = Matrix.Scale(marker_radius, 4, (0, 1, 0))
-            scale_z = Matrix.Scale(marker_radius, 4, (0, 0, 1))
-            scale = scale_x @ scale_y @ scale_z
+            scale = Matrix.Scale(marker_radius, 4)
 
+            right = np.cross(mass_point.up, mass_point.forward)
+            matrix_rotation = Matrix((mass_point.forward, right, mass_point.up))
+            matrix_rotation = matrix_rotation.to_4x4().inverted(Matrix.Identity(4))
             transform_matrix = matrix_translate @ matrix_rotation @ scale
 
             object_mesh.matrix_world = transform_matrix
             object_mesh.data.ass_jms.Object_Type = 'SPHERE'
-            object_mesh.marker.marker_mask_type = '1'
-            object_mesh.select_set(False)
-            armature.select_set(False)
+            object_mesh.ass_jms.marker_mask_type = '2'
 
     else:
         report({'ERROR'}, "No valid armature is active. Import will now be aborted")

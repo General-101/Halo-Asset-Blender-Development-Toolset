@@ -2,7 +2,7 @@
 #
 # MIT License
 #
-# Copyright (c) 2022 Steven Garcia
+# Copyright (c) 2023 Steven Garcia
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -30,10 +30,10 @@ import bmesh
 
 from math import radians
 from mathutils import Vector, Matrix, Euler
-from .h1.format import ClusterPortalFlags, SurfaceFlags as H1SurfaceFlags
-from .h2.format import SurfaceFlags as H2SurfaceFlags
+from .h1.format_retail import ClusterPortalFlags, SurfaceFlags as H1SurfaceFlags
+from .h2.format_retail import SurfaceFlags as H2SurfaceFlags
 
-def build_scene(context, LEVEL, fix_rotations, report, mesh_processing, global_functions):
+def build_scene(context, LEVEL, game_version, game_title, file_version, fix_rotations, empty_markers, report, mesh_processing, global_functions):
     collection = context.collection
 
     random_color_gen = global_functions.RandomColorGenerator() # generates a random sequence of colors
@@ -45,10 +45,6 @@ def build_scene(context, LEVEL, fix_rotations, report, mesh_processing, global_f
     bpy.ops.object.mode_set(mode='EDIT')
     bpy.ops.mesh.primitive_cube_add(size=2, enter_editmode=False, align='WORLD', location=(0, 0, 0), scale=(1, 1, 1))
     bpy.ops.object.mode_set(mode='OBJECT')
-
-    is_h1 = True
-    if LEVEL.header.tag_group == "psbs":
-        is_h1 = False
 
     for bsp_idx, bsp in enumerate(LEVEL.collision_bsps):
         collision_name = "level_collision"
@@ -73,17 +69,18 @@ def build_scene(context, LEVEL, fix_rotations, report, mesh_processing, global_f
                     edge_index = edge.reverse_edge
 
             is_invalid = False
-            if not is_h1 and H2SurfaceFlags.Invalid in H2SurfaceFlags(surface.flags):
+            if game_title == "halo2" and H2SurfaceFlags.Invalid in H2SurfaceFlags(surface.flags):
                 is_invalid = True
 
-            if not is_invalid:
+            if not is_invalid and len(vert_indices) >= 3:
                 collision_bm.faces.new(vert_indices)
-                
 
+        collision_bm.verts.ensure_lookup_table()
         collision_bm.faces.ensure_lookup_table()
-        for surface_idx, surface in enumerate(bsp.surfaces):
+        surface_idx = 0
+        for surface in bsp.surfaces:
             is_invalid = False
-            if not is_h1 and H2SurfaceFlags.Invalid in H2SurfaceFlags(surface.flags):
+            if game_title == "halo2" and H2SurfaceFlags.Invalid in H2SurfaceFlags(surface.flags):
                 is_invalid = True
 
             if not is_invalid:
@@ -92,29 +89,29 @@ def build_scene(context, LEVEL, fix_rotations, report, mesh_processing, global_f
                     mat = LEVEL.collision_materials[ngon_material_index]
 
                 if not ngon_material_index == -1:
-                    if LEVEL.header.tag_group == "sbsp":
+                    if game_title == "halo1":
                         shader = mat.shader_tag_ref
                     else:
                         shader = mat.new_shader
 
                     material_name = os.path.basename(shader.name)
-                    if is_h1:
-                        if H1SurfaceFlags.Two_Sided in H1SurfaceFlags(surface.flags):
+                    if game_title == "halo1":
+                        if H1SurfaceFlags.two_sided in H1SurfaceFlags(surface.flags):
                             material_name += "%"
 
-                        if H1SurfaceFlags.Invisible in H1SurfaceFlags(surface.flags):
+                        if H1SurfaceFlags.invisible in H1SurfaceFlags(surface.flags):
                             material_name += "*"
 
-                        if H1SurfaceFlags.Climbable in H1SurfaceFlags(surface.flags):
+                        if H1SurfaceFlags.climbable in H1SurfaceFlags(surface.flags):
                             material_name += "^"
 
-                        if H1SurfaceFlags.Breakable in H1SurfaceFlags(surface.flags):
+                        if H1SurfaceFlags.breakable in H1SurfaceFlags(surface.flags):
                             material_name += "-"
 
                     else:
                         if H2SurfaceFlags.Two_Sided in H2SurfaceFlags(surface.flags):
                             material_name += "%"
-                            
+
                         if H2SurfaceFlags.Invisible in H2SurfaceFlags(surface.flags):
                             material_name += "*"
 
@@ -145,161 +142,141 @@ def build_scene(context, LEVEL, fix_rotations, report, mesh_processing, global_f
                 mat.diffuse_color = random_color_gen.next()
                 material_index = material_list.index(mat)
                 collision_bm.faces[surface_idx].material_index = material_index
+                surface_idx += 1
 
         collision_bm.to_mesh(collision_mesh)
         collision_bm.free()
 
-        mesh_processing.select_object(context, collision_object)
-        mesh_processing.select_object(context, level_root)
-        bpy.ops.object.parent_set(type='OBJECT', keep_transform=False)
-        collision_object.select_set(False)
-        level_root.select_set(False)
+        collision_object.parent = level_root
 
-    if is_h1 and len(LEVEL.lightmaps) > 0:
-        surfaces = LEVEL.surfaces
-        render_name = "level_render"
-        render_bm = bmesh.new()
+    if game_title == "halo1":
+        if len(LEVEL.lightmaps) > 0:
+            surfaces = LEVEL.surfaces
+            for lightmap_idx, lightmap in enumerate(LEVEL.lightmaps):
+                cluster_name = "cluster_%s" % lightmap_idx
+                full_mesh = bpy.data.meshes.new(cluster_name)
+                object_mesh = bpy.data.objects.new(cluster_name, full_mesh)
+                object_mesh.parent = level_root
+                collection.objects.link(object_mesh)
+                bm = bmesh.new()
 
-        render_mesh = bpy.data.meshes.new(render_name)
-        render_object = bpy.data.objects.new(render_name, render_mesh)
-        collection.objects.link(render_object)
-        face_counter = 0
-        vert_normal_list = []
-        for lightmap_idx, lightmap in enumerate(LEVEL.lightmaps):
-            for material in lightmap.materials:
-                triangles = []
-                start_index = material.surfaces
+                for material_idx, material in enumerate(lightmap.materials):
+                    material_name = "material_%s" % material_idx
+                    mesh = bpy.data.meshes.new(material_name)
 
-                for idx in range(material.surface_count):
-                    surface_idx = start_index + idx
-                    triangles.append([surfaces[surface_idx].v2, surfaces[surface_idx].v1, surfaces[surface_idx].v0])
+                    triangles = []
+                    start_index = material.surfaces
 
-                for triangle in triangles:
-                    vertex_v0 = material.uncompressed_render_vertices[triangle[0]]
-                    vertex_v1 = material.uncompressed_render_vertices[triangle[1]]
-                    vertex_v2 = material.uncompressed_render_vertices[triangle[2]]
-                    vert_normal_list.append(vertex_v0.normal)
-                    vert_normal_list.append(vertex_v1.normal)
-                    vert_normal_list.append(vertex_v2.normal)
-                    p1 = vertex_v0.translation
-                    p2 = vertex_v1.translation
-                    p3 = vertex_v2.translation
-                    v1 = render_bm.verts.new((p1[0], p1[1], p1[2]))
-                    v2 = render_bm.verts.new((p2[0], p2[1], p2[2]))
-                    v3 = render_bm.verts.new((p3[0], p3[1], p3[2]))
-                    render_bm.faces.new((v1, v2, v3))
+                    triangle_indices = []
+                    triangles = []
+                    vertices = [vertex.translation for vertex in material.uncompressed_render_vertices]
 
-                render_bm.verts.ensure_lookup_table()
-                render_bm.faces.ensure_lookup_table()
+                    for idx in range(material.surface_count):
+                        surface_idx = start_index + idx
+                        triangles.append([surfaces[surface_idx].v2, surfaces[surface_idx].v1, surfaces[surface_idx].v0]) # Reversed order to fix facing normals
 
-                for triangle in triangles:
+                    mesh.from_pydata(vertices, [], triangles)
+                    for tri_idx, poly in enumerate(mesh.polygons):
+                        surface_idx = start_index + tri_idx
+                        tri = surfaces[surface_idx]
+                        v0_index = tri.v0
+                        vert = material.uncompressed_render_vertices[v0_index]
+                        if poly.normal.dot(vert.normal) < 0:
+                            poly.flip()
+
+                        poly.use_smooth = True
+
+                    for triangle_idx, triangle in enumerate(triangles):
+                        if material.shader_tag_ref.name_length > 0:
+                            permutation_index = ""
+                            if not material.shader_permutation == 0:
+                                permutation_index = "%s" % material.permutation_index
+
+                            material_name = "%s%s" % (os.path.basename(material.shader_tag_ref.name), permutation_index)
+
+                        else:
+                            material_name = "invalid_material_%s" % triangle_material_index
+
+                        mat = bpy.data.materials.get(material_name)
+                        if mat is None:
+                            mat = bpy.data.materials.new(name=material_name)
+
+                        if not material_name in object_mesh.data.materials.keys():
+                            object_mesh.data.materials.append(mat)
+
+                        mat.diffuse_color = random_color_gen.next()
+                        material_index = object_mesh.data.materials.keys().index(material_name)
+                        mesh.polygons[triangle_idx].material_index = material_index
+
+                        vertex_list = [material.uncompressed_render_vertices[triangle[0]], material.uncompressed_render_vertices[triangle[1]], material.uncompressed_render_vertices[triangle[2]]]
+                        for vertex_idx, vertex in enumerate(vertex_list):
+                            loop_index = (3 * triangle_idx) + vertex_idx
+                            uv_name = 'UVMap_%s' % 0
+                            layer_uv = mesh.uv_layers.get(uv_name)
+                            if layer_uv is None:
+                                layer_uv = mesh.uv_layers.new(name=uv_name)
+
+                            U = vertex.UV[0]
+                            V = vertex.UV[1]
+
+                            layer_uv.data[loop_index].uv = (U, 1 - V)
+
+                    bm.from_mesh(mesh)
+                    bpy.data.meshes.remove(mesh)
+
+                bm.to_mesh(full_mesh)
+                bm.free()
+
+        if len(LEVEL.cluster_portals) > 0:
+            portal_bm = bmesh.new()
+            portal_mesh = bpy.data.meshes.new("level_portals")
+            portal_object = bpy.data.objects.new("level_portals", portal_mesh)
+            portal_object.parent = level_root
+            collection.objects.link(portal_object)
+            for cluster in LEVEL.clusters:
+                for portal in cluster.portals:
+                    vert_indices = []
+                    cluster_portal = LEVEL.cluster_portals[portal]
+                    for vertex in cluster_portal.vertices:
+                        vert_indices.append(portal_bm.verts.new(vertex.translation))
+
+                    portal_bm.faces.new(vert_indices)
+
+                portal_bm.verts.ensure_lookup_table()
+                portal_bm.faces.ensure_lookup_table()
+
+                for portal_idx, portal in enumerate(cluster.portals):
+                    cluster_portal = LEVEL.cluster_portals[portal]
                     material_list = []
-                    if material.shader_tag_ref.name_length > 1:
-                        permutation_index = ""
-                        if not material.shader_permutation == 0:
-                            permutation_index = "%s" % material.shader_permutation
 
-                        material_name = "%s%s" % (os.path.basename(material.shader_tag_ref.name), permutation_index)
-
-                    else:
-                        material_name = "unassigned_material"
+                    material_name = "+portal"
+                    if ClusterPortalFlags.ai_cant_hear_through_this in ClusterPortalFlags(cluster_portal.flags):
+                        material_name = "+portal&"
 
                     mat = bpy.data.materials.get(material_name)
                     if mat is None:
                         mat = bpy.data.materials.new(name=material_name)
 
-                    for slot in render_object.material_slots:
+                    for slot in portal_object.material_slots:
                         material_list.append(slot.material)
 
                     if not mat in material_list:
                         material_list.append(mat)
-                        render_object.data.materials.append(mat)
+                        portal_object.data.materials.append(mat)
 
                     mat.diffuse_color = random_color_gen.next()
                     material_index = material_list.index(mat)
-                    render_bm.faces[face_counter].material_index = material_index
+                    portal_bm.faces[portal_idx].material_index = material_index
 
-                    vertex_v0 = material.uncompressed_render_vertices[triangle[0]]
-                    vertex_v1 = material.uncompressed_render_vertices[triangle[1]]
-                    vertex_v2 = material.uncompressed_render_vertices[triangle[2]]
+                    cluster_portal = LEVEL.cluster_portals[portal]
+                    poly = portal_bm.faces[portal_idx]
+                    plane = LEVEL.collision_bsps[0].planes[cluster_portal.plane_index]
+                    if poly.normal.dot(plane.point_3d) < 0:
+                        poly.flip()
 
-                    vert_list = [vertex_v0, vertex_v1, vertex_v2]
-                    for vert_idx, vert in enumerate(vert_list):
-                        vertex_index = (3 * face_counter) + vert_idx
-                        render_bm.verts[vertex_index].normal = vert.normal
+            portal_bm.to_mesh(portal_mesh)
+            portal_bm.free()
 
-                        uv_name = 'UVMap_0'
-                        layer_uv = render_bm.loops.layers.uv.get(uv_name)
-                        if layer_uv is None:
-                            layer_uv = render_bm.loops.layers.uv.new(uv_name)
-
-                        loop = render_bm.faces[face_counter].loops[vert_idx]
-                        loop[layer_uv].uv = (vert.UV[0], 1 - vert.UV[1])
-
-                    face_counter += 1
-
-        render_bm.to_mesh(render_mesh)
-        render_bm.free()
-
-        render_object.data.normals_split_custom_set(vert_normal_list)
-        render_object.data.use_auto_smooth = True
-
-        mesh_processing.select_object(context, render_object)
-        mesh_processing.select_object(context, level_root)
-        bpy.ops.object.parent_set(type='OBJECT', keep_transform=False)
-        render_object.select_set(False)
-        level_root.select_set(False)
-
-    if is_h1 and len(LEVEL.cluster_portals) > 0:
-        portal_bm = bmesh.new()
-        portal_mesh = bpy.data.meshes.new("level_portals")
-        portal_object = bpy.data.objects.new("level_portals", portal_mesh)
-        collection.objects.link(portal_object)
-        for cluster in LEVEL.clusters:
-            for portal in cluster.portals:
-                vert_indices = []
-                cluster_portal = LEVEL.cluster_portals[portal]
-                for vertex in cluster_portal.vertices:
-                    vert_indices.append(portal_bm.verts.new(vertex.translation))
-                
-                portal_bm.faces.new(vert_indices)
-
-            portal_bm.verts.ensure_lookup_table()
-            portal_bm.faces.ensure_lookup_table()
-
-            for portal_idx, portal in enumerate(cluster.portals):
-                cluster_portal = LEVEL.cluster_portals[portal]
-                material_list = []
-
-                material_name = "+portal"
-                if ClusterPortalFlags.AI_Cant_Hear_Through_This in ClusterPortalFlags(cluster_portal.flags):
-                    material_name = "+portal&"
-
-                mat = bpy.data.materials.get(material_name)
-                if mat is None:
-                    mat = bpy.data.materials.new(name=material_name)
-
-                for slot in portal_object.material_slots:
-                    material_list.append(slot.material)
-
-                if not mat in material_list:
-                    material_list.append(mat)
-                    portal_object.data.materials.append(mat)
-
-                mat.diffuse_color = random_color_gen.next()
-                material_index = material_list.index(mat)
-                portal_bm.faces[portal_idx].material_index = material_index
-
-        portal_bm.to_mesh(portal_mesh)
-        portal_bm.free()
-
-        mesh_processing.select_object(context, portal_object)
-        mesh_processing.select_object(context, level_root)
-        bpy.ops.object.parent_set(type='OBJECT', keep_transform=False)
-        portal_object.select_set(False)
-        level_root.select_set(False)
-
-    if is_h1:
         for marker in LEVEL.markers:
             object_name_prefix = '#%s' % marker.name
             marker_name_override = ""
@@ -310,7 +287,7 @@ def build_scene(context, LEVEL, fix_rotations, report, mesh_processing, global_f
             object_mesh = bpy.data.objects.new(object_name_prefix, mesh)
             collection.objects.link(object_mesh)
 
-            object_mesh.marker.name_override = marker_name_override
+            object_mesh.ass_jms.name_override = marker_name_override
 
             bm = bmesh.new()
             bmesh.ops.create_uvsphere(bm, u_segments=32, v_segments=16, radius=1)
@@ -334,80 +311,215 @@ def build_scene(context, LEVEL, fix_rotations, report, mesh_processing, global_f
             object_mesh.select_set(False)
             level_root.select_set(False)
 
-    if is_h1 and False: # MEK does this for some reason but lens flare markers are generated by settings in the shader. Enable if you need them for some reason.
-        for lens_flare_marker in LEVEL.lens_flare_markers:
-            lens_flare = LEVEL.lens_flares[lens_flare_marker.lens_flare_index]
-            lens_flare_name = os.path.basename(lens_flare.name)
-            object_name_prefix = '#%s' % lens_flare_name
-            marker_name_override = ""
-            if context.scene.objects.get('#%s' % lens_flare_name):
-                marker_name_override = lens_flare_name
+        if False: # MEK does this for some reason but lens flare markers are generated by settings in the shader. Enable if you need them for some reason.
+            for lens_flare_marker in LEVEL.lens_flare_markers:
+                lens_flare = LEVEL.lens_flares[lens_flare_marker.lens_flare_index]
+                lens_flare_name = os.path.basename(lens_flare.name)
+                object_name_prefix = '#%s' % lens_flare_name
+                marker_name_override = ""
+                if context.scene.objects.get('#%s' % lens_flare_name):
+                    marker_name_override = lens_flare_name
 
-            mesh = bpy.data.meshes.new(object_name_prefix)
-            object_mesh = bpy.data.objects.new(object_name_prefix, mesh)
-            collection.objects.link(object_mesh)
+                mesh = bpy.data.meshes.new(object_name_prefix)
+                object_mesh = bpy.data.objects.new(object_name_prefix, mesh)
+                collection.objects.link(object_mesh)
 
-            object_mesh.marker.name_override = marker_name_override
+                object_mesh.ass_jms.name_override = marker_name_override
 
-            bm = bmesh.new()
-            bmesh.ops.create_uvsphere(bm, u_segments=32, v_segments=16, radius=1)
-            bm.to_mesh(mesh)
-            bm.free()
+                bm = bmesh.new()
+                bmesh.ops.create_uvsphere(bm, u_segments=32, v_segments=16, radius=1)
+                bm.to_mesh(mesh)
+                bm.free()
 
-            mesh_processing.select_object(context, object_mesh)
+                mesh_processing.select_object(context, object_mesh)
+                mesh_processing.select_object(context, level_root)
+                bpy.ops.object.parent_set(type='OBJECT', keep_transform=False)
+
+                matrix_translate = Matrix.Translation(lens_flare_marker.position)
+                lens_flare_euler = Euler((lens_flare_marker.direction_i_compenent / 128, lens_flare_marker.direction_j_compenent / 128, lens_flare_marker.direction_k_compenent / 128))
+                matrix_rotation = lens_flare_euler.to_matrix().to_4x4()
+
+                transform_matrix = matrix_translate @ matrix_rotation
+                if fix_rotations:
+                    transform_matrix = Matrix.Rotation(radians(90.0), 4, 'Z') @ transform_matrix
+
+                object_mesh.matrix_world = transform_matrix
+                object_mesh.data.ass_jms.Object_Type = 'SPHERE'
+                object_mesh.dimensions = (2, 2, 2)
+                object_mesh.select_set(False)
+                level_root.select_set(False)
+
+        if len(LEVEL.fog_planes) > 0:
+            fog_planes_bm = bmesh.new()
+            fog_planes_mesh = bpy.data.meshes.new("level_fog_planes")
+            fog_planes_object = bpy.data.objects.new("level_fog_planes", fog_planes_mesh)
+            collection.objects.link(fog_planes_object)
+            for fog_plane in LEVEL.fog_planes:
+                vert_indices = []
+                for vertex in fog_plane.vertices:
+                    vert_indices.append(fog_planes_bm.verts.new(vertex.translation))
+
+                fog_planes_bm.faces.new(vert_indices)
+
+            fog_planes_bm.verts.ensure_lookup_table()
+            fog_planes_bm.faces.ensure_lookup_table()
+
+            material_list = []
+
+            material_name = "+unused$"
+            mat = bpy.data.materials.get(material_name)
+            if mat is None:
+                mat = bpy.data.materials.new(name=material_name)
+
+            for slot in fog_planes_object.material_slots:
+                material_list.append(slot.material)
+
+            if not mat in material_list:
+                material_list.append(mat)
+                fog_planes_object.data.materials.append(mat)
+
+            mat.diffuse_color = random_color_gen.next()
+
+            fog_planes_bm.to_mesh(fog_planes_mesh)
+            fog_planes_bm.free()
+
+            mesh_processing.select_object(context, fog_planes_object)
             mesh_processing.select_object(context, level_root)
             bpy.ops.object.parent_set(type='OBJECT', keep_transform=False)
-
-            matrix_translate = Matrix.Translation(lens_flare_marker.position)
-            lens_flare_euler = Euler((lens_flare_marker.direction_i_compenent / 128, lens_flare_marker.direction_j_compenent / 128, lens_flare_marker.direction_k_compenent / 128))
-            matrix_rotation = lens_flare_euler.to_matrix().to_4x4()
-
-            transform_matrix = matrix_translate @ matrix_rotation
-            if fix_rotations:
-                transform_matrix = Matrix.Rotation(radians(90.0), 4, 'Z') @ transform_matrix
-
-            object_mesh.matrix_world = transform_matrix
-            object_mesh.data.ass_jms.Object_Type = 'SPHERE'
-            object_mesh.dimensions = (2, 2, 2)
-            object_mesh.select_set(False)
+            fog_planes_object.select_set(False)
             level_root.select_set(False)
 
-    if is_h1 and len(LEVEL.fog_planes) > 0:
-        fog_planes_bm = bmesh.new()
-        fog_planes_mesh = bpy.data.meshes.new("level_fog_planes")
-        fog_planes_object = bpy.data.objects.new("level_fog_planes", fog_planes_mesh)
-        collection.objects.link(fog_planes_object)
-        for fog_plane in LEVEL.fog_planes:
-            vert_indices = []
-            for vertex in fog_plane.vertices:
-                vert_indices.append(fog_planes_bm.verts.new(vertex.translation))
-            
-            fog_planes_bm.faces.new(vert_indices)
+        #if len(LEVEL.weather_polyhedras) > 0:
 
-        fog_planes_bm.verts.ensure_lookup_table()
-        fog_planes_bm.faces.ensure_lookup_table()
+    else:
+        if len(LEVEL.clusters) > 0:
+            material_count = len(LEVEL.materials)
+            for cluster_idx, cluster in enumerate(LEVEL.clusters):
+                cluster_name = "cluster_%s" % cluster_idx
+                full_mesh = bpy.data.meshes.new(cluster_name)
+                object_mesh = bpy.data.objects.new(cluster_name, full_mesh)
+                object_mesh.parent = level_root
+                bm = bmesh.new()
+                for cluster_data in cluster.cluster_data:
+                    for part_idx, part in enumerate(cluster_data.parts):
+                        mesh = bpy.data.meshes.new("%s_%s" % ("part", str(part_idx)))
 
-        material_list = []
+                        triangles = []
+                        vertices = [raw_vertex.position for raw_vertex in cluster_data.raw_vertices]
 
-        material_name = "+unused$"
-        mat = bpy.data.materials.get(material_name)
-        if mat is None:
-            mat = bpy.data.materials.new(name=material_name)
+                        strip_length = part.strip_length
+                        strip_start = part.strip_start_index
 
-        for slot in fog_planes_object.material_slots:
-            material_list.append(slot.material)
+                        triangle_indices = cluster_data.strip_indices[strip_start : (strip_start + strip_length)]
+                        index_count = len(triangle_indices)
+                        for idx in range(index_count - 2):
+                            triangles.append([triangle_indices[idx], triangle_indices[idx + 1], triangle_indices[idx + 2]])
 
-        if not mat in material_list:
-            material_list.append(mat)
-            fog_planes_object.data.materials.append(mat)
+                        # Fix face normals on uneven triangle indices
+                        for triangle_idx in range(len(triangles)):
+                            if not triangle_idx % 2 == 0:
+                                triangles[triangle_idx].reverse()
 
-        mat.diffuse_color = random_color_gen.next()
+                        # clean up any triangles that reference the same vertex multiple times
+                        for reversed_triangle in reversed(triangles):
+                            if (reversed_triangle[0] == reversed_triangle[1]) or (reversed_triangle[1] == reversed_triangle[2]) or (reversed_triangle[0] == reversed_triangle[2]):
+                                del triangles[triangles.index(reversed_triangle)]
 
-        fog_planes_bm.to_mesh(fog_planes_mesh)
-        fog_planes_bm.free()
+                        mesh.from_pydata(vertices, [], triangles)
+                        for poly in mesh.polygons:
+                            poly.use_smooth = True
 
-        mesh_processing.select_object(context, fog_planes_object)
-        mesh_processing.select_object(context, level_root)
-        bpy.ops.object.parent_set(type='OBJECT', keep_transform=False)
-        fog_planes_object.select_set(False)
-        level_root.select_set(False)
+                        for triangle_idx, triangle in enumerate(triangles):
+                            triangle_material_index = part.material_index
+                            if not triangle_material_index == -1 and triangle_material_index < material_count:
+                                mat = LEVEL.materials[triangle_material_index]
+
+                            if not triangle_material_index == -1:
+                                material_list = []
+                                if triangle_material_index < material_count:
+                                    material_name = os.path.basename(mat.shader.name)
+
+                                else:
+                                    material_name = "invalid_material_%s" % triangle_material_index
+
+                                mat = bpy.data.materials.get(material_name)
+                                if mat is None:
+                                    mat = bpy.data.materials.new(name=material_name)
+
+                                for slot in object_mesh.material_slots:
+                                    material_list.append(slot.material)
+
+                                if not mat in material_list:
+                                    material_list.append(mat)
+                                    object_mesh.data.materials.append(mat)
+
+                                mat.diffuse_color = random_color_gen.next()
+                                material_index = material_list.index(mat)
+                                mesh.polygons[triangle_idx].material_index = material_index
+
+                            vertex_list = [cluster_data.raw_vertices[triangle[0]], cluster_data.raw_vertices[triangle[1]], cluster_data.raw_vertices[triangle[2]]]
+                            for vertex_idx, vertex in enumerate(vertex_list):
+                                loop_index = (3 * triangle_idx) + vertex_idx
+                                uv_name = 'UVMap_%s' % 0
+                                layer_uv = mesh.uv_layers.get(uv_name)
+                                if layer_uv is None:
+                                    layer_uv = mesh.uv_layers.new(name=uv_name)
+
+                                layer_uv.data[loop_index].uv = (vertex.texcoord[0], 1 - vertex.texcoord[1])
+
+                        bm.from_mesh(mesh)
+                        bpy.data.meshes.remove(mesh)
+
+                    bm.to_mesh(full_mesh)
+                    bm.free()
+
+                    bpy.context.collection.objects.link(object_mesh)
+
+        if len(LEVEL.cluster_portals) > 0:
+            portal_bm = bmesh.new()
+            portal_mesh = bpy.data.meshes.new("level_portals")
+            portal_object = bpy.data.objects.new("level_portals", portal_mesh)
+            collection.objects.link(portal_object)
+            for cluster in LEVEL.clusters:
+                for portal in cluster.portals:
+                    vert_indices = []
+                    cluster_portal = LEVEL.cluster_portals[portal]
+                    for vertex in cluster_portal.vertices:
+                        vert_indices.append(portal_bm.verts.new((vertex * 100)))
+
+                    portal_bm.faces.new(vert_indices)
+
+                portal_bm.verts.ensure_lookup_table()
+                portal_bm.faces.ensure_lookup_table()
+
+                for portal_idx, portal in enumerate(cluster.portals):
+                    cluster_portal = LEVEL.cluster_portals[portal]
+                    material_list = []
+
+                    material_name = "+portal"
+                    if ClusterPortalFlags.ai_cant_hear_through_this in ClusterPortalFlags(cluster_portal.flags):
+                        material_name = "+portal&"
+
+                    mat = bpy.data.materials.get(material_name)
+                    if mat is None:
+                        mat = bpy.data.materials.new(name=material_name)
+
+                    for slot in portal_object.material_slots:
+                        material_list.append(slot.material)
+
+                    if not mat in material_list:
+                        material_list.append(mat)
+                        portal_object.data.materials.append(mat)
+
+                    mat.diffuse_color = random_color_gen.next()
+                    material_index = material_list.index(mat)
+                    portal_bm.faces[portal_idx].material_index = material_index
+
+            portal_bm.to_mesh(portal_mesh)
+            portal_bm.free()
+
+            mesh_processing.select_object(context, portal_object)
+            mesh_processing.select_object(context, level_root)
+            bpy.ops.object.parent_set(type='OBJECT', keep_transform=False)
+            portal_object.select_set(False)
+            level_root.select_set(False)

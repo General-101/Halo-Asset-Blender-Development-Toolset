@@ -2,7 +2,7 @@
 #
 # MIT License
 #
-# Copyright (c) 2022 Steven Garcia
+# Copyright (c) 2023 Steven Garcia
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -30,7 +30,7 @@ class CameraTrackAsset():
     def __init__(self):
         self.header = None
         self.camera_track_body = None
-        self.control_points = []
+        self.control_points = None
 
     class CameraTrackBody:
         def __init__(self, control_points_tag_block=None):

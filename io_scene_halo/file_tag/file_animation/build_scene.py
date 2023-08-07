@@ -2,7 +2,7 @@
 #
 # MIT License
 #
-# Copyright (c) 2022 Steven Garcia
+# Copyright (c) 2023 Steven Garcia
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -51,14 +51,21 @@ def find_base_animation(ANIMATION, current_animation):
 
     return animation_index
 
-def create_animation(scene, armature, animation, nodes, fix_rotations, view_layer):
+def create_animation(scene, armature, animation, nodes, fix_rotations, view_layer, is_inverted):
+    node_name = []
     for frame_idx, frame in enumerate(animation.frame_data):
         scene.frame_set(frame_idx + 1)
+        #for node_idx in range(animation.node_count):
+        #    pose_bone = armature.pose.bones[node_name[node_idx]]
         for node_idx, node in enumerate(nodes):
             pose_bone = armature.pose.bones[node.name]
 
-            matrix_scale = Matrix.Scale(frame[node_idx].scale, 4, (1, 1, 1))
-            matrix_rotation = frame[node_idx].rotation.inverted().to_matrix().to_4x4()
+            rotation = frame[node_idx].rotation
+            if is_inverted:
+                rotation = frame[node_idx].rotation.inverted()
+
+            matrix_scale = Matrix.Scale(frame[node_idx].scale, 4)
+            matrix_rotation = rotation.to_matrix().to_4x4()
             matrix_translation = Matrix.Translation(frame[node_idx].translation)
             transform_matrix = matrix_translation @ matrix_rotation @ matrix_scale
 
@@ -73,24 +80,28 @@ def create_animation(scene, armature, animation, nodes, fix_rotations, view_laye
                     transform_matrix = pose_bone.parent.matrix @ transform_matrix
 
             pose_bone.matrix = transform_matrix
-            pose_bone.rotation_euler = transform_matrix.to_euler()
 
             view_layer.update()
 
             pose_bone.keyframe_insert('location')
-            pose_bone.keyframe_insert('rotation_euler')
             pose_bone.keyframe_insert('rotation_quaternion')
             pose_bone.keyframe_insert('scale')
 
-def create_overlay_animation(scene, armature, animation, nodes, base_transforms, default_node_transforms, fix_rotations, view_layer):
+def create_overlay_animation(scene, armature, animation, nodes, fix_rotations, view_layer, is_inverted):
+    node_name = []
     for frame_idx, frame in enumerate(animation.frame_data):
-        absolute_matrices = []
         scene.frame_set(frame_idx + 1)
+        #for node_idx in range(animation.node_count):
+        #    pose_bone = armature.pose.bones[node_name[node_idx]]
         for node_idx, node in enumerate(nodes):
             pose_bone = armature.pose.bones[node.name]
 
-            matrix_scale = Matrix.Scale(frame[node_idx].scale, 4, (1, 1, 1))
-            matrix_rotation = frame[node_idx].rotation.inverted().to_matrix().to_4x4()
+            rotation = frame[node_idx].rotation
+            if is_inverted:
+                rotation = frame[node_idx].rotation.inverted()
+
+            matrix_scale = Matrix.Scale(frame[node_idx].scale, 4)
+            matrix_rotation = rotation.to_matrix().to_4x4()
             matrix_translation = Matrix.Translation(frame[node_idx].translation)
             transform_matrix = matrix_translation @ matrix_rotation @ matrix_scale
 
@@ -105,16 +116,14 @@ def create_overlay_animation(scene, armature, animation, nodes, base_transforms,
                     transform_matrix = pose_bone.parent.matrix @ transform_matrix
 
             pose_bone.matrix = transform_matrix
-            pose_bone.rotation_euler = transform_matrix.to_euler()
 
             view_layer.update()
 
             pose_bone.keyframe_insert('location')
-            pose_bone.keyframe_insert('rotation_euler')
             pose_bone.keyframe_insert('rotation_quaternion')
             pose_bone.keyframe_insert('scale')
 
-def build_scene(context, ANIMATION, fix_rotations, report, mesh_processing, global_functions):
+def build_scene(context, ANIMATION, game_version, game_title, file_version, fix_rotations, empty_markers, report, mesh_processing, global_functions):
     scene = context.scene
     view_layer = context.view_layer
 
@@ -123,31 +132,35 @@ def build_scene(context, ANIMATION, fix_rotations, report, mesh_processing, glob
     if active_object and active_object.type == 'ARMATURE':
         armature = active_object
 
-    if armature and len(armature.data.bones) == ANIMATION.animations[0].node_count:
+    if armature:
+        bone_count = len(armature.data.bones)
         nodes = global_functions.sort_by_layer(list(armature.data.bones), armature)[0]
-        default_node_transforms = []
-        for node in nodes:
-            pose_bone = armature.pose.bones[node.name]
-            pose_bone_loc, pose_bone_rot, pose_bone_scale = pose_bone.matrix.decompose()
-            pose_translation = Matrix.Translation(pose_bone_loc)
-            pose_rotation = pose_bone_rot.to_matrix().to_4x4()
-            pose_scale = Matrix.Scale(pose_bone_scale[0], 4, (1, 1, 1))
-            pose_matrix = pose_translation @ pose_rotation @ pose_scale
-            if pose_bone.parent:
-                parent_node_idx = nodes.index(node.parent)
-                pose_bone_parent_matrix = default_node_transforms[parent_node_idx]
-                pose_matrix = pose_bone_parent_matrix @ pose_matrix
 
-            default_node_transforms.append(pose_matrix)
+        node_names = []
+        default_node_transforms = []
+        for node_idx, node in enumerate(nodes):
+            node_name = node.name
+            node_names.append(node_name)
+            pose_bone = armature.pose.bones[node_name]
+            default_node_transforms.append(pose_bone.matrix)
 
         scene.render.fps = 30
+
+        is_inverted = False
+        if game_title == "halo1":
+            is_inverted = True
+
         for animation in ANIMATION.animations:
+            if len(animation.frame_data) == 0:
+                continue
+
             scene.frame_end = animation.frame_count + 1
 
             action = bpy.data.actions.get(animation.name)
             if action is None:
                 action = bpy.data.actions.new(name=animation.name)
 
+            action.use_fake_user = True
             mesh_processing.select_object(context, armature)
             armature.animation_data_create()
             armature.animation_data.action = action
@@ -160,10 +173,10 @@ def build_scene(context, ANIMATION, fix_rotations, report, mesh_processing, glob
                 if not animation_index == -1:
                     base_transforms = ANIMATION.animations[animation_index].frame_data[0]
 
-                create_overlay_animation(scene, armature, animation, nodes, base_transforms, default_node_transforms, fix_rotations, view_layer)
+                create_overlay_animation(scene, armature, animation, nodes, fix_rotations, view_layer, is_inverted)
 
             else:
-                create_animation(scene, armature, animation, nodes, fix_rotations, view_layer)
+                create_animation(scene, armature, animation, nodes, fix_rotations, view_layer, is_inverted)
 
             scene.frame_set(1)
             bpy.ops.object.mode_set(mode = 'OBJECT')

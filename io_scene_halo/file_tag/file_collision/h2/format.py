@@ -2,7 +2,7 @@
 #
 # MIT License
 #
-# Copyright (c) 2022 Steven Garcia
+# Copyright (c) 2023 Steven Garcia
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -25,7 +25,7 @@
 # ##### END MIT LICENSE BLOCK #####
 
 from enum import Flag, auto
-from mathutils import Vector, Quaternion
+from mathutils import Vector
 
 class SurfaceFlags(Flag):
     Two_Sided = auto()
@@ -39,16 +39,16 @@ class CollisionAsset():
     def __init__(self):
         self.header = None
         self.collision_body = None
-        self.import_info_blocks = []
-        self.errors = []
+        self.import_info_blocks = None
+        self.errors = None
         self.flags = 0
-        self.materials = []
-        self.regions = []
-        self.pathfinding_spheres = []
-        self.nodes = []
+        self.materials = None
+        self.regions = None
+        self.pathfinding_spheres = None
+        self.nodes = None
 
     class CollisionBody:
-        def __init__(self, import_info_tag_block=None, errors_tag_block=None, flags=0, materials_tag_block=None, regions_tag_block=None, pathfinding_spheres_tag_block=None, 
+        def __init__(self, import_info_tag_block=None, errors_tag_block=None, flags=0, materials_tag_block=None, regions_tag_block=None, pathfinding_spheres_tag_block=None,
                      nodes_tag_block=None):
             self.import_info_tag_block = import_info_tag_block
             self.errors_tag_block = errors_tag_block
@@ -59,8 +59,7 @@ class CollisionAsset():
             self.nodes_tag_block = nodes_tag_block
 
     class ImportInfo:
-        def __init__(self, build=0, version="", import_date="", culprit="", import_time="", files_tag_block=None, 
-                     files=[]):
+        def __init__(self, build=0, version="", import_date="", culprit="", import_time="", files_tag_block=None, files=None):
             self.build = build
             self.version = version
             self.import_date = import_date
@@ -76,10 +75,10 @@ class CollisionAsset():
             self.checksum = checksum
             self.size = size
             self.zipped_data = zipped_data
-            self.uncompressed_data = uncompressed_data 
+            self.uncompressed_data = uncompressed_data
 
     class Error:
-        def __init__(self, name="", report_type=0, flags=0, reports_tag_block=None, reports=[]):
+        def __init__(self, name="", report_type=0, flags=0, reports_tag_block=None, reports=None):
             self.name = name
             self.report_type = report_type
             self.flags = flags
@@ -87,11 +86,12 @@ class CollisionAsset():
             self.reports = reports
 
     class Report:
-        def __init__(self, type=0, flags=0, text="", source_filename="", source_line_number=0, vertices_tag_block=None, vectors_tag_block=None, 
-                     lines_tag_block=None, triangles_tag_block=None, quads_tag_block=None, comments_tag_block=None, vertices=[], vectors=[], lines=[], triangles=[], quads=[], 
-                     comments=[], report_key=0, node_index=0, bounds_x=(0.0, 0.0), bounds_y=(0.0, 0.0), bounds_z=(0.0, 0.0), color=(0.0, 0.0, 0.0, 0.0)):
+        def __init__(self, type=0, flags=0, report_length=0, text="", source_filename="", source_line_number=0, vertices_tag_block=None, vectors_tag_block=None,
+                     lines_tag_block=None, triangles_tag_block=None, quads_tag_block=None, comments_tag_block=None, vertices=None, vectors=None, lines=None, triangles=None,
+                     quads=None, comments=None, report_key=0, node_index=0, bounds_x=(0.0, 0.0), bounds_y=(0.0, 0.0), bounds_z=(0.0, 0.0), color=(0.0, 0.0, 0.0, 0.0)):
             self.type = type
             self.flags = flags
+            self.report_length = report_length
             self.text = text
             self.source_filename = source_filename
             self.source_line_number = source_line_number
@@ -115,7 +115,7 @@ class CollisionAsset():
             self.color = color
 
     class ReportVertex:
-        def __init__(self, position=Vector(), node_index_0=0, node_index_1=0, node_index_2=0, node_index_3=0, node_weight_0=0.0, node_weight_1=0.0, node_weight_2=0.0, 
+        def __init__(self, position=Vector(), node_index_0=0, node_index_1=0, node_index_2=0, node_index_3=0, node_weight_0=0.0, node_weight_1=0.0, node_weight_2=0.0,
                      node_weight_3=0.0, color=(0.0, 0.0, 0.0, 0.0), screen_size=0.0):
             self.position = position
             self.node_index_0 = node_index_0
@@ -130,7 +130,7 @@ class CollisionAsset():
             self.screen_size = screen_size
 
     class ReportVector:
-        def __init__(self, position=Vector(), node_index_0=0, node_index_1=0, node_index_2=0, node_index_3=0, node_weight_0=0.0, node_weight_1=0.0, node_weight_2=0.0, 
+        def __init__(self, position=Vector(), node_index_0=0, node_index_1=0, node_index_2=0, node_index_3=0, node_weight_0=0.0, node_weight_1=0.0, node_weight_2=0.0,
                      node_weight_3=0.0, color=(0.0, 0.0, 0.0, 0.0), normal=Vector(), screen_length=0.0):
             self.position = position
             self.node_index_0 = node_index_0
@@ -146,8 +146,8 @@ class CollisionAsset():
             self.screen_length = screen_length
 
     class ReportLine:
-        def __init__(self, position_a=Vector(), node_index_a_0=0, node_index_a_1=0, node_index_a_2=0, node_index_a_3=0, node_weight_a_0=0.0, node_weight_a_1=0.0, 
-                     node_weight_a_2=0.0, node_weight_a_3=0.0, position_b=Vector(), node_index_b_0=0, node_index_b_1=0, node_index_b_2=0, node_index_b_3=0, node_weight_b_0=0.0, 
+        def __init__(self, position_a=Vector(), node_index_a_0=0, node_index_a_1=0, node_index_a_2=0, node_index_a_3=0, node_weight_a_0=0.0, node_weight_a_1=0.0,
+                     node_weight_a_2=0.0, node_weight_a_3=0.0, position_b=Vector(), node_index_b_0=0, node_index_b_1=0, node_index_b_2=0, node_index_b_3=0, node_weight_b_0=0.0,
                      node_weight_b_1=0.0, node_weight_b_2=0.0, node_weight_b_3=0.0, color=(0.0, 0.0, 0.0, 0.0)):
             self.position_a = position_a
             self.node_index_a_0 = node_index_a_0
@@ -170,9 +170,9 @@ class CollisionAsset():
             self.color = color
 
     class ReportTriangle:
-        def __init__(self, position_a=Vector(), node_index_a_0=0, node_index_a_1=0, node_index_a_2=0, node_index_a_3=0, node_weight_a_0=0.0, node_weight_a_1=0.0, 
-                     node_weight_a_2=0.0, node_weight_a_3=0.0, position_b=Vector(), node_index_b_0=0, node_index_b_1=0, node_index_b_2=0, node_index_b_3=0, node_weight_b_0=0.0, 
-                     node_weight_b_1=0.0, node_weight_b_2=0.0, node_weight_b_3=0.0, position_c=Vector(), node_index_c_0=0, node_index_c_1=0, node_index_c_2=0, node_index_c_3=0, 
+        def __init__(self, position_a=Vector(), node_index_a_0=0, node_index_a_1=0, node_index_a_2=0, node_index_a_3=0, node_weight_a_0=0.0, node_weight_a_1=0.0,
+                     node_weight_a_2=0.0, node_weight_a_3=0.0, position_b=Vector(), node_index_b_0=0, node_index_b_1=0, node_index_b_2=0, node_index_b_3=0, node_weight_b_0=0.0,
+                     node_weight_b_1=0.0, node_weight_b_2=0.0, node_weight_b_3=0.0, position_c=Vector(), node_index_c_0=0, node_index_c_1=0, node_index_c_2=0, node_index_c_3=0,
                      node_weight_c_0=0.0, node_weight_c_1=0.0, node_weight_c_2=0.0, node_weight_c_3=0.0, color=(0.0, 0.0, 0.0, 0.0)):
             self.position_a = position_a
             self.node_index_a_0 = node_index_a_0
@@ -204,10 +204,10 @@ class CollisionAsset():
             self.color = color
 
     class ReportQuad:
-        def __init__(self, position_a=Vector(), node_index_a_0=0, node_index_a_1=0, node_index_a_2=0, node_index_a_3=0, node_weight_a_0=0.0, node_weight_a_1=0.0, 
-                     node_weight_a_2=0.0, node_weight_a_3=0.0, position_b=Vector(), node_index_b_0=0, node_index_b_1=0, node_index_b_2=0, node_index_b_3=0, node_weight_b_0=0.0, 
-                     node_weight_b_1=0.0, node_weight_b_2=0.0, node_weight_b_3=0.0, position_c=Vector(), node_index_c_0=0, node_index_c_1=0, node_index_c_2=0, node_index_c_3=0, 
-                     node_weight_c_0=0.0, node_weight_c_1=0.0, node_weight_c_2=0.0, node_weight_c_3=0.0, position_d=Vector(), node_index_d_0=0, node_index_d_1=0, 
+        def __init__(self, position_a=Vector(), node_index_a_0=0, node_index_a_1=0, node_index_a_2=0, node_index_a_3=0, node_weight_a_0=0.0, node_weight_a_1=0.0,
+                     node_weight_a_2=0.0, node_weight_a_3=0.0, position_b=Vector(), node_index_b_0=0, node_index_b_1=0, node_index_b_2=0, node_index_b_3=0, node_weight_b_0=0.0,
+                     node_weight_b_1=0.0, node_weight_b_2=0.0, node_weight_b_3=0.0, position_c=Vector(), node_index_c_0=0, node_index_c_1=0, node_index_c_2=0, node_index_c_3=0,
+                     node_weight_c_0=0.0, node_weight_c_1=0.0, node_weight_c_2=0.0, node_weight_c_3=0.0, position_d=Vector(), node_index_d_0=0, node_index_d_1=0,
                      node_index_d_2=0, node_index_d_3=0, node_weight_d_0=0.0, node_weight_d_1=0.0, node_weight_d_2=0.0, node_weight_d_3=0.0, color=(0.0, 0.0, 0.0, 0.0)):
             self.position_a = position_a
             self.node_index_a_0 = node_index_a_0
@@ -248,8 +248,9 @@ class CollisionAsset():
             self.color = color
 
     class ReportComment:
-        def __init__(self, text="", position=Vector(), node_index_0=0, node_index_1=0, node_index_2=0, node_index_3=0, node_weight_0=0.0, node_weight_1=0.0, node_weight_2=0.0, 
-                     node_weight_3=0.0, color=(0.0, 0.0, 0.0, 0.0)):
+        def __init__(self, text_length=0, text="", position=Vector(), node_index_0=0, node_index_1=0, node_index_2=0, node_index_3=0, node_weight_0=0.0, node_weight_1=0.0,
+                     node_weight_2=0.0, node_weight_3=0.0, color=(0.0, 0.0, 0.0, 0.0)):
+            self.text_length = text_length
             self.text = text
             self.position = position
             self.node_index_0 = node_index_0
@@ -262,14 +263,21 @@ class CollisionAsset():
             self.node_weight_3 = node_weight_3
             self.color = color
 
+    class Material:
+        def __init__(self, name_length=0, name=""):
+            self.name_length = name_length
+            self.name = name
+
     class Region:
-        def __init__(self, name="", permutation_tag_block=None, permutations=[]):
+        def __init__(self, name_length=0, name="", permutation_tag_block=None, permutations=None):
+            self.name_length = name_length
             self.name = name
             self.permutation_tag_block = permutation_tag_block
             self.permutations = permutations
 
     class Permutations:
-        def __init__(self, name="", bsps_tag_block=None, bsps_physics_tag_block=None, bsps=[], bsp_physics=[]):
+        def __init__(self, name_length=0, name="", bsps_tag_block=None, bsps_physics_tag_block=None, bsps=None, bsp_physics=None):
+            self.name_length = name_length
             self.name = name
             self.bsps_tag_block = bsps_tag_block
             self.bsps_physics_tag_block = bsps_physics_tag_block
@@ -278,8 +286,8 @@ class CollisionAsset():
 
     class BSP:
         def __init__(self, node_index=0, bsp3d_nodes_tag_block=None, planes_tag_block=None, leaves_tag_block=None, bsp2d_references_tag_block=None, bsp2d_nodes_tag_block=None,
-                     surfaces_tag_block=None, edges_tag_block=None, vertices_tag_block=None, bsp3d_nodes=[], planes=[], leaves=[], bsp2d_references=[], bsp2d_nodes=[], surfaces=[],
-                     edges=[], vertices=[]):
+                     surfaces_tag_block=None, edges_tag_block=None, vertices_tag_block=None, bsp3d_nodes=None, planes=None, leaves=None, bsp2d_references=None, bsp2d_nodes=None,
+                     surfaces=None, edges=None, vertices=None):
             self.node_index = node_index
             self.bsp3d_nodes_tag_block = bsp3d_nodes_tag_block
             self.planes_tag_block = planes_tag_block
@@ -329,12 +337,12 @@ class CollisionAsset():
             self.right_child = right_child
 
     class Surface:
-        def __init__(self, plane=0, first_edge=0, flags=0, breakable_surface=0, material=0):
+        def __init__(self, plane=0, first_edge=0, flags=0, breakable_surface=0, material_index=0):
             self.plane = plane
             self.first_edge = first_edge
             self.flags = flags
             self.breakable_surface = breakable_surface
-            self.material = material
+            self.material_index = material_index
 
     class Edge:
         def __init__(self, start_vertex=0, end_vertex=0, forward_edge=0, reverse_edge=0, left_surface=0, right_surface=0):
@@ -373,4 +381,4 @@ class CollisionAsset():
             self.name = name
             self.parent_node = parent_node
             self.next_sibling_node = next_sibling_node
-            self.first_child_node = first_child_node 
+            self.first_child_node = first_child_node

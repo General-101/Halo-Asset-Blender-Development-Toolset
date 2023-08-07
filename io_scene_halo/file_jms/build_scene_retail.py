@@ -2,7 +2,7 @@
 #
 # MIT License
 #
-# Copyright (c) 2022 Steven Garcia
+# Copyright (c) 2023 Steven Garcia
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -38,7 +38,7 @@ def generate_jms_skeleton(JMS, armature, parent_id_class, fix_rotations):
     bpy.ops.object.mode_set(mode = 'EDIT')
     for idx, jms_node in enumerate(JMS.nodes):
         current_bone = armature.data.edit_bones.new(jms_node.name)
-        current_bone.tail[2] = mesh_processing.get_bone_distance(JMS, idx, "JMS")
+        current_bone.tail[2] = mesh_processing.get_bone_distance(None, JMS, idx, "JMS")
         parent_idx = jms_node.parent
 
         if not parent_idx == -1 and not parent_idx == None:
@@ -104,7 +104,7 @@ def jms_file_check(armature, JMS, report):
         if not name in scene_bone_names:
             report({'WARNING'}, "Node '%s' from JMS skeleton not found in scene skeleton." % name)
 
-def build_scene_retail(context, JMS, filepath, game_version, reuse_armature, fix_parents, fix_rotations, report):
+def build_scene_retail(context, JMS, filepath, game_version, reuse_armature, fix_parents, fix_rotations, empty_markers, report):
     collection = context.collection
     scene = context.scene
     armature = None
@@ -144,14 +144,14 @@ def build_scene_retail(context, JMS, filepath, game_version, reuse_armature, fix
 
         mesh_processing.select_object(context, armature)
         if fix_parents:
-            if game_version == 'halo2' or game_version == 'halo3':
+            if game_version == "halo2" or game_version == "halo3":
                 set_parent_id_class(JMS, parent_id_class)
 
         generate_jms_skeleton(JMS, armature, parent_id_class, fix_rotations)
 
     for region in JMS.active_regions:
         name = JMS.regions[region].name
-        if JMS.game_version == 'haloce':
+        if JMS.game_version == "halo1":
             if not name in region_permutation_list:
                 region_permutation_list.append(name)
 
@@ -165,73 +165,12 @@ def build_scene_retail(context, JMS, filepath, game_version, reuse_armature, fix
             region = material.region
             permutation = material.permutation
 
-        if JMS.game_version == 'halo2' or JMS.game_version == 'halo3':
+        if JMS.game_version == "halo2" or JMS.game_version == "halo3":
             if not [region, permutation] in region_permutation_list:
                 region_permutation_list.append([permutation, region])
 
     for marker_obj in JMS.markers:
-        parent_idx = marker_obj.parent
-        marker_region_index = marker_obj.region
-        radius = marker_obj.radius
-        object_name_prefix = '#%s' % marker_obj.name
-        marker_name_override = ""
-        if context.scene.objects.get('#%s' % marker_obj.name):
-            marker_name_override = marker_obj.name
-
-        mesh = bpy.data.meshes.new(object_name_prefix)
-        object_mesh = bpy.data.objects.new(object_name_prefix, mesh)
-        collection.objects.link(object_mesh)
-
-        if game_version == 'haloce':
-            if 'physics' in filepath or 'collision' in filepath:
-                object_mesh.marker.marker_mask_type = '1'
-
-        else:
-            if 'collision' in filepath:
-                object_mesh.marker.marker_mask_type = '1'
-
-            elif 'collision' in filepath:
-                object_mesh.marker.marker_mask_type = '2'
-
-        object_mesh.marker.name_override = marker_name_override
-
-        bm = bmesh.new()
-        bmesh.ops.create_uvsphere(bm, u_segments=32, v_segments=16, radius=1)
-        bm.to_mesh(mesh)
-        bm.free()
-
-        if not marker_region_index == -1:
-            object_mesh.face_maps.new(name=JMS.regions[marker_region_index].name)
-
-        mesh_processing.select_object(context, object_mesh)
-        mesh_processing.select_object(context, armature)
-        if not parent_idx == -1:
-            bpy.ops.object.mode_set(mode='EDIT')
-            armature.data.edit_bones.active = armature.data.edit_bones[JMS.nodes[parent_idx].name]
-            bpy.ops.object.mode_set(mode='OBJECT')
-            bpy.ops.object.parent_set(type='BONE', keep_transform=True)
-
-        else:
-            bpy.ops.object.parent_set(type='ARMATURE', keep_transform=True)
-
-        matrix_translate = Matrix.Translation(marker_obj.translation)
-        matrix_rotation = marker_obj.rotation.to_matrix().to_4x4()
-
-        transform_matrix = matrix_translate @ matrix_rotation
-        if not parent_idx == -1:
-            pose_bone = armature.pose.bones[JMS.nodes[parent_idx].name]
-            if fix_rotations:
-                transform_matrix = (pose_bone.matrix @ Matrix.Rotation(radians(90.0), 4, 'Z')) @ transform_matrix
-
-            else:
-                transform_matrix = pose_bone.matrix @ transform_matrix
-
-        object_mesh.matrix_world = transform_matrix
-        object_mesh.data.ass_jms.Object_Type = 'SPHERE'
-        object_scale = radius
-        object_mesh.scale = (object_scale, object_scale, object_scale)
-        object_mesh.select_set(False)
-        armature.select_set(False)
+        mesh_processing.generate_marker(context, collection, "retail", "halo1", 20011115, filepath, JMS, None, "", armature, marker_obj, fix_rotations, empty_markers, True)
 
     for xref_marker in JMS.xref_markers:
         xref_name = xref_marker.name
@@ -269,7 +208,7 @@ def build_scene_retail(context, JMS, filepath, game_version, reuse_armature, fix
     #generate mesh object
     if not len(JMS.vertices) == 0:
         object_name = bpy.path.basename(filepath).rsplit('.', 1)[0]
-        if game_version == 'haloce':
+        if game_version == "halo1":
             if 'physics' in filepath or 'collision' in filepath:
                 object_name = '@%s' % object_name
 
@@ -277,17 +216,7 @@ def build_scene_retail(context, JMS, filepath, game_version, reuse_armature, fix
             if 'collision' in filepath:
                 object_name = '@%s' % object_name
 
-        mesh = bpy.data.meshes.new(object_name)
-        object_mesh = bpy.data.objects.new(object_name, mesh)
-        collection.objects.link(object_mesh)
-        bm, vert_normal_list = mesh_processing.process_mesh_import_data(game_version, JMS, None, object_mesh, random_color_gen, 'JMS', 0, None, None, None, False)
-        bm.to_mesh(mesh)
-        bm.free()
-        object_mesh.data.normals_split_custom_set(vert_normal_list)
-        object_mesh.data.use_auto_smooth = True
-        object_mesh.parent = armature
-        mesh_processing.add_modifier(context, object_mesh, False, None, armature)
-
+        object_mesh = mesh_processing.generate_mesh_object_retail(JMS, JMS.vertices, JMS.triangles, object_name, collection, game_version, random_color_gen, armature, context)
 
     primitive_shapes = []
     for sphere in JMS.spheres:
@@ -307,16 +236,15 @@ def build_scene_retail(context, JMS, filepath, game_version, reuse_armature, fix
         bm.to_mesh(mesh)
         bm.free()
 
-        mesh_processing.select_object(context, object_mesh)
-        mesh_processing.select_object(context, armature)
-        if not parent_idx == -1:
-            bpy.ops.object.mode_set(mode='EDIT')
-            armature.data.edit_bones.active = armature.data.edit_bones[JMS.nodes[parent_idx].name]
-            bpy.ops.object.mode_set(mode='OBJECT')
-            bpy.ops.object.parent_set(type='BONE', keep_transform=True)
+        if not parent_idx == -1 :
+            bone_name = JMS.nodes[parent_idx].name
+
+            object_mesh.parent = armature
+            object_mesh.parent_type = "BONE"
+            object_mesh.parent_bone = bone_name
 
         else:
-            bpy.ops.object.parent_set(type='ARMATURE', keep_transform=True)
+            object_mesh.parent = armature
 
         matrix_translate = Matrix.Translation(sphere.translation)
         matrix_rotation = sphere.rotation.to_matrix().to_4x4()
@@ -336,7 +264,7 @@ def build_scene_retail(context, JMS, filepath, game_version, reuse_armature, fix
         if not material_index == -1:
             mat = JMS.materials[material_index]
             current_region_permutation = global_functions.material_definition_helper(material_index, mat)
-            object_mesh.face_maps.new(name=current_region_permutation)
+            object_mesh.region_add(current_region_permutation)
             material_name = mat.name
             mat = bpy.data.materials.get(material_name)
             if mat is None:
@@ -375,16 +303,15 @@ def build_scene_retail(context, JMS, filepath, game_version, reuse_armature, fix
         bm.to_mesh(mesh)
         bm.free()
 
-        mesh_processing.select_object(context, object_mesh)
-        mesh_processing.select_object(context, armature)
-        if not parent_idx == -1:
-            bpy.ops.object.mode_set(mode='EDIT')
-            armature.data.edit_bones.active = armature.data.edit_bones[JMS.nodes[parent_idx].name]
-            bpy.ops.object.mode_set(mode='OBJECT')
-            bpy.ops.object.parent_set(type='BONE', keep_transform=True)
+        if not parent_idx == -1 :
+            bone_name = JMS.nodes[parent_idx].name
+
+            object_mesh.parent = armature
+            object_mesh.parent_type = "BONE"
+            object_mesh.parent_bone = bone_name
 
         else:
-            bpy.ops.object.parent_set(type='ARMATURE', keep_transform=True)
+            object_mesh.parent = armature
 
         matrix_translate = Matrix.Translation(box.translation)
         matrix_rotation = box.rotation.to_matrix().to_4x4()
@@ -404,7 +331,7 @@ def build_scene_retail(context, JMS, filepath, game_version, reuse_armature, fix
         if not material_index == -1:
             mat = JMS.materials[material_index]
             current_region_permutation = global_functions.material_definition_helper(material_index, mat)
-            object_mesh.face_maps.new(name=current_region_permutation)
+            object_mesh.region_add(current_region_permutation)
 
             material_name = mat.name
             mat = bpy.data.materials.get(material_name)
@@ -420,7 +347,7 @@ def build_scene_retail(context, JMS, filepath, game_version, reuse_armature, fix
             mat.diffuse_color = random_color_gen.next()
 
         object_mesh.data.ass_jms.Object_Type = 'BOX'
-        object_mesh.scale = ((width / 2), (length / 2), (height / 2))
+        object_mesh.scale = (width, length, height)
         object_mesh.select_set(False)
         armature.select_set(False)
 
@@ -443,16 +370,15 @@ def build_scene_retail(context, JMS, filepath, game_version, reuse_armature, fix
         bm.to_mesh(mesh)
         bm.free()
 
-        mesh_processing.select_object(context, object_mesh)
-        mesh_processing.select_object(context, armature)
-        if not parent_idx == -1:
-            bpy.ops.object.mode_set(mode='EDIT')
-            armature.data.edit_bones.active = armature.data.edit_bones[JMS.nodes[parent_idx].name]
-            bpy.ops.object.mode_set(mode='OBJECT')
-            bpy.ops.object.parent_set(type='BONE', keep_transform=True)
+        if not parent_idx == -1 :
+            bone_name = JMS.nodes[parent_idx].name
+
+            object_mesh.parent = armature
+            object_mesh.parent_type = "BONE"
+            object_mesh.parent_bone = bone_name
 
         else:
-            bpy.ops.object.parent_set(type='ARMATURE', keep_transform=True)
+            object_mesh.parent = armature
 
         matrix_translate = Matrix.Translation(capsule.translation)
         matrix_rotation = capsule.rotation.to_matrix().to_4x4()
@@ -472,7 +398,7 @@ def build_scene_retail(context, JMS, filepath, game_version, reuse_armature, fix
         if not material_index == -1:
             mat = JMS.materials[material_index]
             current_region_permutation = global_functions.material_definition_helper(material_index, mat)
-            object_mesh.face_maps.new(name=current_region_permutation)
+            object_mesh.region_add(current_region_permutation)
 
             material_name = mat.name
             mat = bpy.data.materials.get(material_name)
@@ -513,16 +439,15 @@ def build_scene_retail(context, JMS, filepath, game_version, reuse_armature, fix
         bm.to_mesh(mesh)
         bm.free()
 
-        mesh_processing.select_object(context, object_mesh)
-        mesh_processing.select_object(context, armature)
-        if not parent_idx == -1:
-            bpy.ops.object.mode_set(mode='EDIT')
-            armature.data.edit_bones.active = armature.data.edit_bones[JMS.nodes[parent_idx].name]
-            bpy.ops.object.mode_set(mode='OBJECT')
-            bpy.ops.object.parent_set(type='BONE', keep_transform=True)
+        if not parent_idx == -1 :
+            bone_name = JMS.nodes[parent_idx].name
+
+            object_mesh.parent = armature
+            object_mesh.parent_type = "BONE"
+            object_mesh.parent_bone = bone_name
 
         else:
-            bpy.ops.object.parent_set(type='ARMATURE', keep_transform=True)
+            object_mesh.parent = armature
 
         matrix_translate = Matrix.Translation(convex_shape.translation)
         matrix_rotation = convex_shape.rotation.to_matrix().to_4x4()
@@ -542,7 +467,7 @@ def build_scene_retail(context, JMS, filepath, game_version, reuse_armature, fix
         if not material_index == -1:
             mat = JMS.materials[material_index]
             current_region_permutation = global_functions.material_definition_helper(material_index, mat)
-            object_mesh.face_maps.new(name=current_region_permutation)
+            object_mesh.region_add(current_region_permutation)
 
             material_name = mat.name
             mat = bpy.data.materials.get(material_name)

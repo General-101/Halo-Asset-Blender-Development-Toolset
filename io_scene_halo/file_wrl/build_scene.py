@@ -2,7 +2,7 @@
 #
 # MIT License
 #
-# Copyright (c) 2022 Steven Garcia
+# Copyright (c) 2023 Steven Garcia
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -72,7 +72,7 @@ def infer_error_type(binding_type, mtl_diffuse_colors):
             ### WARNING: portal outside the bsp. [see magenta in error geometry]
             if "magenta" in found_colors:
                 return "portal outside BSP" + color_info
-                
+
             ### WARNING found possible T-junction (pink).
             if "pink" in found_colors:
                 return "T-junction" + color_info
@@ -84,11 +84,11 @@ def infer_error_type(binding_type, mtl_diffuse_colors):
             # edge has more than four triangles (see red in error geometry)
             if "red" in found_colors:
                 return "bad edge" + color_info
-                
+
             ### WARNING unearthed edge (magenta boxed lines)
             if "magenta" in found_colors:
                 return "unearthed edge" + color_info
-                
+
             ### WARNING found possible T-junction (pink).
             if "pink" in found_colors:
                 return "T-junction" + color_info
@@ -288,7 +288,7 @@ def build_scene(context, WRL, report):
     if WRL.version == 1.0:
         error_list, object_list = build_object_list_old(WRL)
 
-    elif WRL.version == 2.0: 
+    elif WRL.version == 2.0:
         error_list, object_list = build_object_list_new(WRL)
 
     for error in error_list:

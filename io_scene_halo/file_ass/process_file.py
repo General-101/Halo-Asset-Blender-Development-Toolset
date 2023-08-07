@@ -2,7 +2,7 @@
 #
 # MIT License
 #
-# Copyright (c) 2022 Steven Garcia
+# Copyright (c) 2023 Steven Garcia
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -185,12 +185,6 @@ def process_file(filepath):
             bone_influence_count = len(object_element.node_index_list)
 
         name = ASS.next().strip('\"')
-        if name in name_list:
-            true_name = '%s_%s' % (name, instance)
-
-        else:
-            true_name = name
-
         name_list.append(name)
         unique_id = int(ASS.next())
         parent_id = int(ASS.next())
@@ -206,7 +200,7 @@ def process_file(filepath):
         if bone_influence_count > 0:
             ASS.skip(bone_influence_count)
 
-        ASS.instances.append(ASSAsset.Instance(true_name, object_index, unique_id, parent_id, inheritance_flag, local_transform, pivot_transform))
+        ASS.instances.append(ASSAsset.Instance(name, object_index, unique_id, parent_id, inheritance_flag, local_transform, pivot_transform))
 
     if ASS.left() != 0: # is something wrong with the parser?
         raise RuntimeError("%s elements left after parse end" % ASS.left())

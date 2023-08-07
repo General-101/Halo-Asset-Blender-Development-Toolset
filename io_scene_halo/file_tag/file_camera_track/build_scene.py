@@ -2,7 +2,7 @@
 #
 # MIT License
 #
-# Copyright (c) 2022 Steven Garcia
+# Copyright (c) 2023 Steven Garcia
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -38,7 +38,7 @@ def generate_camera_track_skeleton(armature):
 
     bpy.ops.object.mode_set(mode = 'OBJECT')
 
-def build_scene(context, CAMERATRACK, fix_rotations, report, mesh_processing, global_functions):
+def build_scene(context, CAMERATRACK, game_version, game_title, file_version, fix_rotations, empty_markers, report, mesh_processing, global_functions):
     scene = context.scene
     view_layer = context.view_layer
     collection = context.collection

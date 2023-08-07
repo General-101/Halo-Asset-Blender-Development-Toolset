@@ -2,7 +2,7 @@
 #
 # MIT License
 #
-# Copyright (c) 2022 Steven Garcia
+# Copyright (c) 2023 Steven Garcia
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -26,13 +26,12 @@
 
 import bpy
 
+from bpy_extras.io_utils import ImportHelper
 from bpy.types import Operator
 from bpy.props import (
         BoolProperty,
         EnumProperty
         )
-
-from bpy_extras.io_utils import ImportHelper
 
 from ..global_functions import global_functions
 
@@ -41,19 +40,41 @@ class ImportTag(Operator, ImportHelper):
     bl_idname = "import_scene.tag"
     bl_label = "Import Tag"
 
+    game_title: EnumProperty(
+        name="Game:",
+        description="What game does the tag group belong to",
+        items=[ ('halo1', "Halo 1", "Use tag data from Halo 1"),
+                ('halo2', "Halo 2", "Use tag data from Halo 2"),
+                ('halo3', "Halo 3", "Use tag data from Halo 3"),
+            ]
+        )
+
     fix_rotations: BoolProperty(
         name ="Fix Rotations",
         description = "Set rotations to match what you would visually see in 3DS Max. Rotates bones by 90 degrees on a local Z axis to match how Blender handles rotations",
         default = False,
         )
 
+    empty_markers: BoolProperty(
+        name ="Generate Empty Markers",
+        description = "Generate empty markers instead of UV spheres",
+        default = False,
+        )
+
     def execute(self, context):
         from ..file_tag import import_tag
 
-        return global_functions.run_code("import_tag.load_file(context, self.filepath, self.fix_rotations, self.report)")
+        return global_functions.run_code("import_tag.load_file(context, self.filepath, self.game_title, self.fix_rotations, self.empty_markers, self.report)")
 
     def draw(self, context):
         layout = self.layout
+
+        box = layout.box()
+        box.label(text="Game Title:")
+        col = box.column(align=True)
+        row = col.row()
+        row.prop(self, "game_title", text='')
+        col = box.column(align=True)
 
         box = layout.box()
         box.label(text="Import Options:")
@@ -62,6 +83,9 @@ class ImportTag(Operator, ImportHelper):
         row = col.row()
         row.label(text='Fix Rotations:')
         row.prop(self, "fix_rotations", text='')
+        row = col.row()
+        row.label(text='Use Empties For Markers:')
+        row.prop(self, "empty_markers", text='')
 
 def menu_func_import(self, context):
     self.layout.operator(ImportTag.bl_idname, text="Halo Tag (mode/mod2/coll/phys/antr/sbsp)")

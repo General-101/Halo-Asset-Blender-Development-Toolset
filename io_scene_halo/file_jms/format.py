@@ -2,7 +2,7 @@
 #
 # MIT License
 #
-# Copyright (c) 2022 Steven Garcia
+# Copyright (c) 2023 Steven Garcia
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -32,7 +32,7 @@ class JMSAsset(global_functions.HaloAsset):
             super().__init__(filepath)
 
         self.version = 0
-        self.game_version = "haloce"
+        self.game_version = "halo1"
         self.node_checksum = 0
         self.nodes = []
         self.transforms = []
@@ -91,12 +91,12 @@ class JMSAsset(global_functions.HaloAsset):
             self.radius = radius
 
     class XREF:
-        def __init__(self, path, name):
+        def __init__(self, path="", name=""):
             self.path = path
             self.name = name
 
     class XREF_Marker:
-        def __init__(self, name, unique_identifier=-1, index=-1, rotation=None, translation=None):
+        def __init__(self, name="", unique_identifier=-1, index=-1, rotation=None, translation=None):
             self.name = name
             self.unique_identifier = unique_identifier
             self.index = index

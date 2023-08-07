@@ -2,7 +2,7 @@
 #
 # MIT License
 #
-# Copyright (c) 2021 Steven Garcia
+# Copyright (c) 2023 Steven Garcia
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -25,8 +25,6 @@
 # ##### END MIT LICENSE BLOCK #####
 
 import bpy
-import sys
-import argparse
 
 from ..global_functions import global_functions
 
@@ -49,50 +47,42 @@ from bpy.props import (
         StringProperty
         )
 
+def version_settings_callback(self, context):
+    items=[ ('1', "1", "H2/H3"),
+            ('2', "2", "H2/H3"),
+        ]
+
+    if not self.game_title == "halo3":
+        items.append(('3', "3", "H3 Non-functional"))
+        items.append(('4', "4", "H3 Non-functional"))
+        items.append(('5', "5", "H3 Non-functional"))
+        items.append(('6', "6", "H3 Non-functional"))
+        items.append(('7', "7", "H3"))
+
+    return items
+
+def update_version(self, context):
+    if self.game_title == "halo2":
+        self.ass_version = '2'
+
+    else:
+        self.ass_version = '7'
+
 class ASS_ScenePropertiesGroup(PropertyGroup):
     ass_version: EnumProperty(
         name="Version:",
         description="What version to use for the model file",
-        default="2",
-        items=[ ('1', "1", "H2/H3"),
-                ('2', "2", "H2/H3"),
-                ('3', "3", "H3 Non-functional"),
-                ('4', "4", "H3 Non-functional"),
-                ('5', "5", "H3 Non-functional"),
-                ('6', "6", "H3 Non-functional"),
-                ('7', "7", "H3"),
-            ]
+        items=version_settings_callback,
+        default=1
         )
 
-    ass_version_h2: EnumProperty(
-        name="Version:",
-        description="What version to use for the model file",
-        default="2",
-        items=[ ('1', "1", "H2"),
-                ('2', "2", "H2"),
-            ]
-        )
-
-    ass_version_h3: EnumProperty(
-        name="Version:",
-        description="What version to use for the model file",
-        default="7",
-        items=[ ('1', "1", "H3"),
-                ('2', "2", "H3"),
-                ('3', "3", "H3 Non-functional"),
-                ('4', "4", "H3 Non-functional"),
-                ('5', "5", "H3 Non-functional"),
-                ('6', "6", "H3 Non-functional"),
-                ('7', "7", "H3"),
-            ]
-        )
-
-    game_version: EnumProperty(
-        name="Game:",
+    game_title: EnumProperty(
+        name="Game Title:",
         description="What game will the model file be used for",
-        items=[ ('halo2', "Halo 2", "Export a level intended for Halo 2 Vista or Halo 2 MCC"),
-                ('halo3mcc', "Halo 3 MCC", "Export a level intended for Halo 3 MCC"),
-            ]
+        items=[ ('halo2', "Halo 2", "Export a level intended for Halo 2"),
+                ('halo3', "Halo 3", "Export a level intended for Halo 3"),
+            ],
+        update = update_version
         )
 
     use_scene_properties: BoolProperty(
@@ -145,7 +135,7 @@ class ASS_ScenePropertiesGroup(PropertyGroup):
 
     edge_split: BoolProperty(
         name ="Edge Split",
-        description = "Apply a edge split modifier",
+        description = "Apply an edge split modifier",
         default = True,
         )
 
@@ -186,13 +176,6 @@ class ASS_ScenePropertiesGroup(PropertyGroup):
         min=1.0,
         )
 
-    console: BoolProperty(
-        name ="Console",
-        description = "Is your console running",
-        default = False,
-        options={'HIDDEN'},
-        )
-
 class ASS_SceneProps(Panel):
     bl_label = "ASS Scene Properties"
     bl_idname = "ASS_PT_GameVersionPanel"
@@ -209,21 +192,17 @@ class ASS_SceneProps(Panel):
         layout = self.layout
 
         box = layout.box()
-        box.label(text="Game Version:")
+        box.label(text="Game Title:")
         col = box.column(align=True)
         row = col.row()
-        row.prop(scene_ass, "game_version", text='')
+        row.prop(scene_ass, "game_title", text='')
         box = layout.box()
         box.label(text="File Details:")
         col = box.column(align=True)
         if scene_halo.expert_mode:
             row = col.row()
             row.label(text='ASS Version:')
-            if scene_ass.game_version == 'halo2':
-                row.prop(scene_ass, "ass_version_h2", text='')
-
-            elif scene_ass.game_version == 'halo3mcc':
-                row.prop(scene_ass, "ass_version_h3", text='')
+            row.prop(scene_ass, "ass_version", text='')
 
         row = col.row()
         row.label(text='Generate Asset Subdirectories:')
@@ -289,46 +268,17 @@ class ExportASS(Operator, ExportHelper):
     ass_version: EnumProperty(
         name="Version:",
         description="What version to use for the model file",
-        default="2",
-        items=[ ('1', "1", "H2/H3"),
-                ('2', "2", "H2/H3"),
-                ('3', "3", "H3 Non-functional"),
-                ('4', "4", "H3 Non-functional"),
-                ('5', "5", "H3 Non-functional"),
-                ('6', "6", "H3 Non-functional"),
-                ('7', "7", "H3"),
-            ]
+        items=version_settings_callback,
+        default=1
         )
 
-    ass_version_h2: EnumProperty(
-        name="Version:",
-        description="What version to use for the model file",
-        default="2",
-        items=[ ('1', "1", "H2"),
-                ('2', "2", "H2"),
-            ]
-        )
-
-    ass_version_h3: EnumProperty(
-        name="Version:",
-        description="What version to use for the model file",
-        default="7",
-        items=[ ('1', "1", "H3"),
-                ('2', "2", "H3"),
-                ('3', "3", "H3 Non-functional"),
-                ('4', "4", "H3 Non-functional"),
-                ('5', "5", "H3 Non-functional"),
-                ('6', "6", "H3 Non-functional"),
-                ('7', "7", "H3"),
-            ]
-        )
-
-    game_version: EnumProperty(
-        name="Game:",
+    game_title: EnumProperty(
+        name="Game Title:",
         description="What game will the model file be used for",
-        items=[ ('halo2', "Halo 2", "Export a level intended for Halo 2 Vista or Halo 2 MCC"),
-                ('halo3mcc', "Halo 3 MCC", "Export a level intended for Halo 3 MCC"),
-            ]
+        items=[ ('halo2', "Halo 2", "Export a level intended for Halo 2"),
+                ('halo3', "Halo 3", "Export a level intended for Halo 3"),
+            ],
+        update = update_version
         )
 
     use_scene_properties: BoolProperty(
@@ -422,13 +372,6 @@ class ExportASS(Operator, ExportHelper):
         min=1.0,
         )
 
-    console: BoolProperty(
-        name ="Console",
-        description = "Is your console running",
-        default = False,
-        options={'HIDDEN'},
-        )
-
     filter_glob: StringProperty(
         default="*.ass",
         options={'HIDDEN'},
@@ -437,63 +380,11 @@ class ExportASS(Operator, ExportHelper):
     def execute(self, context):
         from ..file_ass import export_ass
 
-        if '--' in sys.argv:
-            argv = sys.argv[sys.argv.index('--') + 1:]
-            parser = argparse.ArgumentParser()
-            parser.add_argument('-arg1', '--filepath', dest='filepath', metavar='FILE', required = True)
-            parser.add_argument('-arg2', '--ass_version', dest='ass_version', type=str, default="2")
-            parser.add_argument('-arg3', '--game_version', dest='game_version', type=str, default="halo2")
-            parser.add_argument('-arg4', '--folder_structure', dest='folder_structure', action='store_true')
-            parser.add_argument('-arg5', '--hidden_geo', dest='hidden_geo', action='store_true')
-            parser.add_argument('-arg6', '--nonrender_geo', dest='nonrender_geo', action='store_true')
-            parser.add_argument('-arg7', '--apply_modifiers', dest='apply_modifiers', action='store_true')
-            parser.add_argument('-arg8', '--triangulate_faces', dest='triangulate_faces', action='store_true')
-            parser.add_argument('-arg9', '--loop_normals', dest='loop_normals', action='store_true')
-            parser.add_argument('-arg10', '--clean_normalize_weights', dest='clean_normalize_weights', action='store_true')
-            parser.add_argument('-arg11', '--edge_split', dest='edge_split', action='store_true')
-            parser.add_argument('-arg12', '--use_edge_angle', dest='use_edge_angle', action='store_true')
-            parser.add_argument('-arg13', '--split_angle', dest='split_angle', type=float, default=1.0)
-            parser.add_argument('-arg14', '--use_edge_sharp', dest='use_edge_sharp', action='store_true')
-            parser.add_argument('-arg15', '--scale_enum', dest='scale_enum', type=str, default="0")
-            parser.add_argument('-arg16', '--scale_float', dest='scale_float', type=float, default=1.0)
-            parser.add_argument('-arg17', '--console', dest='console', action='store_true', default=True)
-            args = parser.parse_known_args(argv)[0]
-            print('filepath: ', args.filepath)
-            print('ass_version: ', args.ass_version)
-            print('game_version: ', args.game_version)
-            print('folder_structure: ', args.folder_structure)
-            print('hidden_geo: ', args.hidden_geo)
-            print('nonrender_geo: ', args.nonrender_geo)
-            print('apply_modifiers: ', args.apply_modifiers)
-            print('triangulate_faces: ', args.triangulate_faces)
-            print('loop_normals: ', args.loop_normals)
-            print('clean_normalize_weights: ', args.clean_normalize_weights)
-            print('edge_split: ', args.edge_split)
-            print('use_edge_angle: ', args.use_edge_angle)
-            print('split_angle: ', args.split_angle)
-            print('use_edge_sharp: ', args.use_edge_sharp)
-            print('scale_enum: ', args.scale_enum)
-            print('scale_float: ', args.scale_float)
-            print('console: ', args.console)
-            self.filepath = args.filepath
-            self.ass_version = args.ass_version
-            self.game_version = args.game_version
-            self.folder_structure = args.folder_structure
-            self.hidden_geo = args.hidden_geo
-            self.nonrender_geo = args.nonrender_geo
-            self.apply_modifiers = args.apply_modifiers
-            self.triangulate_faces = args.triangulate_faces
-            self.loop_normals = args.loop_normals
-            self.clean_normalize_weights = args.clean_normalize_weights
-            self.edge_split = args.edge_split
-            self.use_edge_angle = args.use_edge_angle
-            self.split_angle = args.split_angle
-            self.use_edge_sharp = args.use_edge_sharp
-            self.scale_enum = args.scale_enum
-            self.scale_float = args.scale_float
-            self.console = args.console
+        scale_value = global_functions.set_scale(self.scale_enum, self.scale_float)
+        edge_split = global_functions.EdgeSplit(self.edge_split, self.use_edge_angle, self.split_angle, self.use_edge_sharp)
+        int_ass_version = int(self.ass_version)
 
-        return global_functions.run_code("export_ass.write_file(context, self.filepath, self.ass_version, self.ass_version_h2, self.ass_version_h3, self.game_version, self.folder_structure, self.hidden_geo, self.nonrender_geo, self.apply_modifiers, self.triangulate_faces, self.loop_normals, self.edge_split, self.use_edge_angle, self.use_edge_sharp, self.split_angle, self.clean_normalize_weights, self.scale_enum, self.scale_float, self.console, self.report)")
+        return global_functions.run_code("export_ass.write_file(context, self.filepath, int_ass_version, self.game_title, self.folder_structure, self.hidden_geo, self.nonrender_geo, self.apply_modifiers, self.triangulate_faces, self.loop_normals, edge_split, self.clean_normalize_weights, scale_value, self.report)")
 
     def draw(self, context):
         scene = context.scene
@@ -506,9 +397,8 @@ class ExportASS(Operator, ExportHelper):
             is_enabled = False
 
         if scene_ass.use_scene_properties:
-            self.game_version = scene_ass.game_version
-            self.ass_version_h2 = scene_ass.ass_version_h2
-            self.ass_version_h3 = scene_ass.ass_version_h3
+            self.game_title = scene_ass.game_title
+            self.ass_version = scene_ass.ass_version
             self.folder_structure = scene_ass.folder_structure
             self.hidden_geo = scene_ass.hidden_geo
             self.nonrender_geo = scene_ass.nonrender_geo
@@ -524,11 +414,11 @@ class ExportASS(Operator, ExportHelper):
             self.scale_float = scene_ass.scale_float
 
         box = layout.box()
-        box.label(text="Game Version:")
+        box.label(text="Game Title:")
         col = box.column(align=True)
         row = col.row()
         row.enabled = is_enabled
-        row.prop(self, "game_version", text='')
+        row.prop(self, "game_title", text='')
         box = layout.box()
         box.label(text="File Details:")
         col = box.column(align=True)
@@ -536,11 +426,7 @@ class ExportASS(Operator, ExportHelper):
             row = col.row()
             row.enabled = is_enabled
             row.label(text='ASS Version:')
-            if self.game_version == 'halo2':
-                row.prop(self, "ass_version_h2", text='')
-
-            elif self.game_version == 'halo3mcc':
-                row.prop(self, "ass_version_h3", text='')
+            row.prop(self, "ass_version", text='')
 
         row = col.row()
         row.enabled = is_enabled
@@ -622,13 +508,6 @@ class ImportASS(Operator, ImportHelper):
 
     def execute(self, context):
         from ..file_ass import import_ass
-        if '--' in sys.argv:
-            argv = sys.argv[sys.argv.index('--') + 1:]
-            parser = argparse.ArgumentParser()
-            parser.add_argument('-arg1', '--filepath', dest='filepath', metavar='FILE', required = True)
-            args = parser.parse_known_args(argv)[0]
-            print('filepath: ', args.filepath)
-            self.filepath = args.filepath
 
         return global_functions.run_code("import_ass.load_file(context, self.filepath, self.report)")
 

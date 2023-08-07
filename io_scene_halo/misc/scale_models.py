@@ -2,7 +2,7 @@
 #
 # MIT License
 #
-# Copyright (c) 2021 Steven Garcia
+# Copyright (c) 2023 Steven Garcia
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -256,7 +256,7 @@ def generate_object(context, array_item, game_version):
     object_mesh.location = context.scene.cursor.location
 
 def create_model(context, game_version, halo_1_unit_index, halo_2_unit_index, halo_3_unit_index):
-    if game_version == "haloce":
+    if game_version == "halo1":
         array_item = halo_one_array[int(halo_1_unit_index)]
 
     elif game_version == "halo2":

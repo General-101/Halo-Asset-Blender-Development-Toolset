@@ -2,7 +2,7 @@
 #
 # MIT License
 #
-# Copyright (c) 2021 Steven Garcia
+# Copyright (c) 2023 Steven Garcia
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -27,15 +27,22 @@
 import os
 import bpy
 import sys
+import math
 import colorsys
 import re
 import operator
 
 from decimal import *
-from typing import Any
 from math import radians
 from io import TextIOWrapper
-from mathutils import Vector, Quaternion, Matrix
+from enum import Enum, auto
+from mathutils import Vector, Euler, Quaternion, Matrix
+
+class ModelTypeEnum(Enum):
+    render = 0
+    collision = auto()
+    physics = auto()
+    animations = auto()
 
 class JmsDimensions:
     def __init__(self, quaternion, position, scale, dimension, object_radius, pill_height):
@@ -119,21 +126,67 @@ class ParentIDFix():
         self.clavicle0 = clavicle0
         self.clavicle1 = clavicle1
 
-def get_child(bone, bone_list):
+def get_child(bone, bone_list, game_title, preexport_sorting):
     set_node = None
-    for node in bone_list:
-        if bone == node.parent:
-            set_node = node
-            break
+    if game_title == "halo1" and preexport_sorting:
+        for node in bone_list:
+            if 'pelvis' in bone.name.lower():
+                thigh_list = []
+                for child in bone_list:
+                    if child.parent == bone and 'thigh' in child.name.lower():
+                        thigh_list.append(child)
+
+                thigh_list = sorted(thigh_list, key=lambda x: x.name)
+                thigh_list.reverse()
+                if len(thigh_list) > 0:
+                    set_node = thigh_list[0]
+
+            elif 'spine1' in bone.name.lower():
+                clavical_list = []
+                for child in bone_list:
+                    if child.parent == bone and 'clavicle' in child.name.lower():
+                        clavical_list.append(child)
+
+                clavical_list = sorted(clavical_list, key=lambda x: x.name)
+                clavical_list.reverse()
+                if len(clavical_list) > 0:
+                    set_node = clavical_list[0]
+
+    if not set_node:
+        for node in bone_list:
+            if bone == node.parent:
+                set_node = node
+                break
 
     return set_node
 
-def get_sibling(armature, bone, bone_list):
+def get_sibling(armature, bone, bone_list, game_title, preexport_sorting):
     sibling_list = []
     set_sibling = None
     for node in bone_list:
         if bone.parent == node.parent:
             sibling_list.append(node)
+
+    if game_title == "halo1" and preexport_sorting:
+        if bone.parent and 'pelvis' in bone.parent.name.lower():
+            thigh_list = []
+            for sibling in reversed(sibling_list):
+                if 'thigh' in sibling.name.lower():
+                    sibling_index = sibling_list.index(sibling)
+                    thigh_list.append(sibling_list.pop(sibling_index))
+
+            thigh_list.reverse()
+            sibling_list = thigh_list + sibling_list
+
+        elif bone.parent and 'spine1' in bone.parent.name.lower():
+            clavical_list = []
+            for sibling in reversed(sibling_list):
+                if 'clavicle' in sibling.name.lower():
+                    sibling_index = sibling_list.index(sibling)
+                    clavical_list.append(sibling_list.pop(sibling_index))
+
+            clavical_list.reverse()
+            sibling_list = clavical_list + sibling_list
 
     if len(sibling_list) <= 1:
         set_sibling = None
@@ -240,10 +293,10 @@ def sort_by_index(node_list):
 def sort_list(node_list, armature, game_version, version, animation):
     version = int(version)
     sorted_list = []
-    if game_version == 'haloce':
+    if game_version == "halo1":
         sorted_list = sort_by_layer(node_list, armature)
 
-    elif game_version == 'halo2' or game_version == 'halo3mcc':
+    elif game_version == "halo2" or game_version == "halo3":
         if animation:
             if version <= 16394:
                 sorted_list = sort_by_layer(node_list, armature)
@@ -342,10 +395,10 @@ def sort_by_layer_batch(node_list):
 def sort_list_batch(node_list, game_version, version, animation):
     version = int(version)
     sorted_list = []
-    if game_version == 'haloce':
+    if game_version == "halo1":
         sorted_list = sort_by_layer_batch(node_list)
 
-    elif game_version == 'halo2' or game_version == 'halo3mcc':
+    elif game_version == "halo2" or game_version == "halo3":
         if animation:
             if version <= 16394:
                 sorted_list = sort_by_layer_batch(node_list)
@@ -414,24 +467,6 @@ def test_encoding(filepath):
 
     return encoding
 
-def get_version(file_version_console, file_version_ce, file_version_h2, file_version_h3, game_version, console):
-
-    version = None
-    if console:
-        version = int(file_version_console)
-
-    else:
-        if game_version == 'haloce':
-            version = int(file_version_ce)
-
-        elif game_version == 'halo2':
-            version = int(file_version_h2)
-
-        elif game_version == 'halo3mcc':
-            version = int(file_version_h3)
-
-    return version
-
 def get_true_extension(filepath, extension, is_import):
     extension_list = ['.jma', '.jmm', '.jmt', '.jmo', '.jmr', '.jmrx', '.jmh', '.jmz', '.jmw', '.jms', '.jmp']
     true_extension = ''
@@ -445,11 +480,83 @@ def get_true_extension(filepath, extension, is_import):
 
     return true_extension
 
+def generate_fcurve_matrix(bone, action, frame_idx):
+    dpath_loc = bone.path_from_id("location")
+    dpath_rot_quat = bone.path_from_id("rotation_quaternion")
+    dpath_rot_euler = bone.path_from_id("rotation_euler")
+    dpath_sca = bone.path_from_id("scale")
+
+    translation = Vector((0.0, 0.0, 0.0))
+    rotation = Quaternion((1.0, 0.0, 0.0, 0.0))
+    scale = Vector((1.0, 1.0, 1.0))
+    if not action == None:
+        x_pos = action.fcurves.find(dpath_loc, index=0)
+        y_pos = action.fcurves.find(dpath_loc, index=1)
+        z_pos = action.fcurves.find(dpath_loc, index=2)
+        if x_pos:
+            translation[0] = x_pos.evaluate(frame_idx)
+        if y_pos:
+            translation[1] = y_pos.evaluate(frame_idx)
+        if z_pos:
+            translation[2] = z_pos.evaluate(frame_idx)
+
+        if bone.rotation_mode == 'QUATERNION':
+            w_rot = action.fcurves.find(dpath_rot_quat, index=0)
+            i_rot = action.fcurves.find(dpath_rot_quat, index=1)
+            j_rot = action.fcurves.find(dpath_rot_quat, index=2)
+            k_rot = action.fcurves.find(dpath_rot_quat, index=3)
+            if w_rot:
+                rotation[0] = w_rot.evaluate(frame_idx)
+            if i_rot:
+                rotation[1] = i_rot.evaluate(frame_idx)
+            if j_rot:
+                rotation[2] = j_rot.evaluate(frame_idx)
+            if k_rot:
+                rotation[3] = k_rot.evaluate(frame_idx)
+
+        else:
+            rotation = Euler((0.0, 0.0, 0.0))
+            x_rot = action.fcurves.find(dpath_rot_euler, index=0)
+            y_rot = action.fcurves.find(dpath_rot_euler, index=1)
+            z_rot = action.fcurves.find(dpath_rot_euler, index=2)
+            if x_rot:
+                rotation[0] = x_rot.evaluate(frame_idx)
+            if y_rot:
+                rotation[1] = y_rot.evaluate(frame_idx)
+            if z_rot:
+                rotation[2] = z_rot.evaluate(frame_idx)
+
+            rotation = rotation.to_quaternion()
+
+        x_sca = action.fcurves.find(dpath_sca, index=0)
+        y_sca = action.fcurves.find(dpath_sca, index=1)
+        z_sca = action.fcurves.find(dpath_sca, index=2)
+        if x_sca:
+            scale[0] = x_sca.evaluate(frame_idx)
+        if y_sca:
+            scale[1] = y_sca.evaluate(frame_idx)
+        if z_sca:
+            scale[2] = z_sca.evaluate(frame_idx)
+
+    matrix_translation = Matrix.Translation(translation)
+    matrix_rotation = rotation.to_matrix().to_4x4()
+    matrix_scale = Matrix.Scale(scale[0], 4)
+
+    return matrix_translation @ matrix_rotation @ matrix_scale
+
+def get_fcurve_matrix(node, node_idx, fcurve_matrices, jma_version):
+    object_matrix = fcurve_matrices[node_idx]
+    if not node.parent == -1 and not jma_version >= get_version_matrix_check("JMA", None):
+        #Files at or above 8205 use absolute transform instead of local transform for nodes
+        object_matrix = fcurve_matrices[node.parent].inverted() @ object_matrix
+
+    return object_matrix
+
 def get_matrix(obj_a, obj_b, is_local, armature, joined_list, is_node, version, file_type, constraint, custom_scale, fix_rotation):
     object_matrix = Matrix.Translation((0, 0, 0))
     rotation_matrix = Matrix.Rotation(0, 4, 'Z')
     if file_type == 'ASS':
-        scale_matrix = Matrix.Scale(1, 4, (0, 0, 1))
+        scale_matrix = Matrix.Scale(1, 4)
 
     else:
         rotation = 0.0
@@ -457,22 +564,19 @@ def get_matrix(obj_a, obj_b, is_local, armature, joined_list, is_node, version, 
             rotation = 90.0
 
         rotation_matrix = Matrix.Rotation(radians(rotation), 4, 'Z')
-        scale_x = Matrix.Scale(custom_scale, 4, (1, 0, 0))
-        scale_y = Matrix.Scale(custom_scale, 4, (0, 1, 0))
-        scale_z = Matrix.Scale(custom_scale, 4, (0, 0, 1))
-        scale_matrix = scale_x @ scale_y @ scale_z
+        scale_matrix = Matrix.Scale(custom_scale, 4)
 
     if is_node:
         if armature:
             pose_bone = armature.pose.bones['%s' % (obj_a.name)]
             object_matrix = (pose_bone.matrix @ rotation_matrix) @ scale_matrix
-            if pose_bone.parent and not version >= get_version_matrix_check(file_type):
+            if pose_bone.parent and not version >= get_version_matrix_check(file_type, None):
                 #Files at or above 8205 use absolute transform instead of local transform for nodes
                 object_matrix = ((pose_bone.parent.matrix @ rotation_matrix).inverted() @ (pose_bone.matrix @ rotation_matrix)) @ scale_matrix
 
         else:
             object_matrix = obj_a.matrix_world @ scale_matrix
-            if obj_a.parent and not version >= get_version_matrix_check(file_type):
+            if obj_a.parent and not version >= get_version_matrix_check(file_type, None):
                 #Files at or above 8205 use absolute transform instead of local transform for nodes
                 object_matrix = (obj_a.parent.matrix_world.inverted() @ obj_a.matrix_world) @ scale_matrix
 
@@ -511,16 +615,13 @@ def get_dimensions(mesh_matrix, original_geo, version, is_bone, file_type, custo
     if original_geo:
         pos, rot, scale = mesh_matrix.decompose()
         quat = rot.inverted()
-        if version >= get_version_matrix_check(file_type):
+        if version >= get_version_matrix_check(file_type, None):
             quat = rot
 
         quaternion = (quat[1], quat[2], quat[3], quat[0])
         position = mesh_matrix.to_translation()
         if file_type == 'JMS':
-            scale_x = Matrix.Scale(custom_scale, 4, (1, 0, 0))
-            scale_y = Matrix.Scale(custom_scale, 4, (0, 1, 0))
-            scale_z = Matrix.Scale(custom_scale, 4, (0, 0, 1))
-            scale_matrix = scale_x @ scale_y @ scale_z
+            scale_matrix = Matrix.Scale(custom_scale, 4)
 
             position = position @ scale_matrix
 
@@ -555,24 +656,6 @@ def get_dimensions(mesh_matrix, original_geo, version, is_bone, file_type, custo
 
     return JmsDimensions(quaternion, position, scale, dimension, object_radius, pill_height)
 
-def get_extension(extension_console, extension_ce, extension_h2, extension_h3, game_version, console):
-
-    extension = None
-    if console:
-        extension = extension_console
-
-    else:
-        if game_version == 'haloce':
-            extension = extension_ce
-
-        elif game_version == 'halo2':
-            extension = extension_h2
-
-        elif game_version == 'halo3mcc':
-            extension = extension_h3
-
-    return extension
-
 def get_hierarchy(mesh):
     hierarchy_list = [mesh]
     while mesh.parent:
@@ -595,16 +678,30 @@ def get_parent(armature, mesh, joined_list, default_parent):
     parent = None
     if mesh:
         if armature:
-            parent = mesh.parent_bone
+            if type(mesh).__name__ == 'Bone':
+                parent = mesh.parent
+
+            else:
+                parent = mesh.parent_bone
 
         else:
             parent = mesh.parent
 
         while parent:
             if armature:
-                bone_test = armature.data.bones.get(mesh.parent_bone)
+                if type(mesh).__name__ == 'Bone':
+                    bone_test = armature.data.bones.get(mesh.parent.name)
+
+                else:
+                    bone_test = armature.data.bones.get(mesh.parent_bone)
+
                 if bone_test:
-                    mesh = armature.data.bones[mesh.parent_bone]
+                    if type(mesh).__name__ == 'Bone':
+                        mesh = armature.data.bones[mesh.parent.name]
+
+                    else:
+                        mesh = armature.data.bones[mesh.parent_bone]
+
                     if mesh in joined_list:
                         parent_object = mesh
                         break
@@ -633,7 +730,17 @@ def set_scale(scale_enum, scale_float):
 
     return scale
 
-def get_version_matrix_check(filetype):
+def set_framerate(frame_rate_enum, frame_rate_float):
+    frame_rate_value = 30
+    if frame_rate_enum == 'CUSTOM':
+        frame_rate_value = math.floor(frame_rate_float)
+
+    else:
+        frame_rate_value = math.floor(float(frame_rate_enum))
+
+    return frame_rate_value
+
+def get_version_matrix_check(filetype, game_version):
     matrix_version = 0
     if filetype == 'JMA':
         matrix_version = 16394
@@ -650,24 +757,24 @@ def gather_materials(game_version, material, material_list, export_type):
             assigned_materials_list.append(material)
 
     else:
-        if game_version == 'haloce' and not None in material_list:
+        if game_version == "halo1" and not None in material_list:
             material_list.append(None)
 
-    if game_version == 'haloce':
+    if game_version == "halo1":
         if material not in material_list:
             material_list.append(material)
 
-    elif game_version == 'halo2' or game_version == 'halo3mcc':
-        if export_type == 'JMS':
+    elif game_version == "halo2" or game_version == "halo3":
+        if export_type == "JMS":
             if material not in material_list and material in assigned_materials_list:
                 material_list.append(material)
 
-        if export_type == 'ASS':
+        if export_type == "ASS":
             if material not in material_list and material in assigned_materials_list:
                 material_list.append(material)
 
     else:
-        if game_version == 'haloce' and not None in material_list:
+        if game_version == "halo1" and not None in material_list:
             material_list.append(None)
 
     return material_list
@@ -686,7 +793,7 @@ def get_material(game_version, original_geo, face, geometry, lod, region, permut
     mat = None
     assigned_material = None
     face_material_index = face.material_index
-    if game_version == 'haloce':
+    if game_version == "halo1":
         if not object_materials <= 0 and not face_material_index >= object_materials:
             mat_slot = original_geo.material_slots[face_material_index]
             if mat_slot.link == 'OBJECT':
@@ -700,7 +807,7 @@ def get_material(game_version, original_geo, face, geometry, lod, region, permut
             if mat:
                 assigned_material = mat
 
-    elif game_version == 'halo2' or game_version == 'halo3mcc':
+    elif game_version == "halo2" or game_version == "halo3":
         assigned_material = -1
         if  not object_materials <= 0 and not face_material_index >= object_materials:
             mat_slot = original_geo.material_slots[face_material_index]
@@ -749,7 +856,6 @@ class HaloAsset:
                             self._elements.append(element)
 
                         break # ignore the rest of the line if we found a comment
-
     def left(self):
         """Returns the number of elements left"""
         if self._index < len(self._elements):
@@ -822,26 +928,26 @@ class HaloAsset:
 
         return quat
 
-def get_game_version(version, filetype):
-    game_version = None
-    if filetype == 'JMS':
-        if version >= 8211:
-            game_version = 'halo3'
+def get_game_title(asset_version, filetype):
+    game_title = None
+    if filetype == "JMS":
+        if asset_version >= 8211:
+            game_title = "halo3"
 
-        elif version >= 8201:
-            game_version = 'halo2'
-
-        else:
-            game_version = 'haloce'
-
-    elif filetype == 'JMA':
-        if version >= 16393:
-            game_version = 'halo2'
+        elif asset_version >= 8201:
+            game_title = "halo2"
 
         else:
-            game_version = 'haloce'
+            game_title = "halo1"
 
-    return game_version
+    elif filetype == "JMA":
+        if asset_version >= 16393:
+            game_title = "halo2"
+
+        else:
+            game_title = "halo1"
+
+    return game_title
 
 def lim32(n):
     """Simulate a 32 bit unsigned interger overflow"""
@@ -908,6 +1014,12 @@ class RandomColorGenerator(PreshingSequenceGenerator32):
         colors = (rgb[0], rgb[1] , rgb[2], 1)
         return colors
 
+def node_checksum(node, checksum = 0):
+    checksum = lim32(rotl_32(checksum, 1) + halo_string_checksum(node.name))
+    checksum = rotl_32(checksum, 2)
+
+    return rotr_32(checksum, 2)
+
 def node_hierarchy_checksum(nodes, node, checksum = 0):
     checksum = lim32(rotl_32(checksum, 1) + halo_string_checksum(node.name))
     checksum = rotl_32(checksum, 2)
@@ -923,10 +1035,10 @@ def node_hierarchy_checksum(nodes, node, checksum = 0):
     # way, the order of siblings matters to the checksum.
     return rotr_32(checksum, 2)
 
-def get_filename(game_version, permutation_ce, level_of_detail_ce, folder_structure, model_type, jmi, filepath):
+def get_filename(game_title, permutation_ce, level_of_detail_ce, folder_structure, asset_type, is_jmi, filepath):
     ce_settings = ''
     extension = '.JMS'
-    if jmi:
+    if is_jmi:
         extension = '.JMI'
 
     filename = filepath.rsplit(os.sep, 1)[1]
@@ -934,11 +1046,11 @@ def get_filename(game_version, permutation_ce, level_of_detail_ce, folder_struct
     if filename.lower().endswith('.jms') or filename.lower().endswith('.jmp') or filename.lower().endswith('.jmi'):
         filename = filename.rsplit('.', 1)[0]
 
-    if game_version == 'haloce':
+    if game_title == "halo1":
         if not permutation_ce == '' or not level_of_detail_ce == None:
             if not permutation_ce == '':
                 permutation_string = permutation_ce
-                if not game_version == 'haloce':
+                if not game_title == "halo1":
                     permutation_string = permutation_ce.replace(' ', '_').replace('\t', '_')
 
                 ce_settings += '%s ' % (permutation_string)
@@ -955,21 +1067,25 @@ def get_filename(game_version, permutation_ce, level_of_detail_ce, folder_struct
             filename = ce_settings
 
     model_string = ""
-    if model_type == "collision":
+    if asset_type == ModelTypeEnum.collision:
         model_string = "_collision"
 
-    elif model_type == "physics":
+    elif asset_type == ModelTypeEnum.physics:
         model_string = "_physics"
 
     model_name = model_string
-    if folder_structure and game_version == 'haloce' and not model_type == "physics":
-        model_name = ""
+    if folder_structure:
+        if game_title == "halo1":
+            if not asset_type == ModelTypeEnum.physics:
+                model_name = ""
+        else:
+            model_name = ""
 
     filename = filename + model_name + extension
 
     return filename
 
-def get_directory(context, game_version, model_type, folder_structure, asset_type, jmi, filepath):
+def get_directory(context, game_title, asset_type, folder_structure, is_bsp, is_jmi, filepath):
     directory = filepath.rsplit(os.sep, 1)[0]
     blend_filename = bpy.path.basename(context.blend_data.filepath)
 
@@ -977,37 +1093,38 @@ def get_directory(context, game_version, model_type, folder_structure, asset_typ
     if len(blend_filename) > 0:
         parent_folder = blend_filename.rsplit('.', 1)[0]
 
-    if game_version == 'haloce':
-        folder_type = "models"
-
-    else:
-        if asset_type == "0":
-            folder_type = "structure"
+    if asset_type == ModelTypeEnum.render:
+        if game_title == "halo1":
+            folder_type = "models"
 
         else:
-            folder_type = "render"
+            if is_bsp:
+                folder_type = "structure"
 
-    if model_type == "collision":
-        if game_version == 'haloce':
+            else:
+                folder_type = "render"
+
+    elif asset_type == ModelTypeEnum.collision:
+        if game_title == "halo1":
             folder_type = "physics"
 
         else:
             folder_type = "collision"
 
-    elif model_type == "physics":
+    elif asset_type == ModelTypeEnum.physics:
         folder_type = "physics"
 
-    elif model_type == "animations":
+    elif asset_type == ModelTypeEnum.animations:
         folder_type = "animations"
 
     root_directory = directory
 
-    if jmi:
+    if is_jmi:
         root_directory = directory + os.sep + folder_type
         if not os.path.exists(root_directory):
             os.makedirs(root_directory)
 
-    if folder_structure and not jmi:
+    if folder_structure and not is_jmi:
         folder_subdirectories = ("models", "structure", "render", "collision", "physics", "animations")
         true_directory = directory
         if not os.path.basename(directory).lower() in folder_subdirectories: # Check if last folder in file path is not a valid source import folder
@@ -1154,6 +1271,7 @@ def material_definition_parser(is_import, material_definition_items, default_reg
     if not is_import:
         if permutation == None:
             permutation = default_permutation
+
         if region == None:
             region = default_region
 
@@ -1162,10 +1280,8 @@ def material_definition_parser(is_import, material_definition_items, default_reg
 def get_import_matrix(transform):
     translation = Matrix.Translation(transform.translation)
     rotation = transform.rotation.to_matrix().to_4x4()
-    scale_x = Matrix.Scale(transform.scale, 4, (1, 0, 0))
-    scale_y = Matrix.Scale(transform.scale, 4, (0, 1, 0))
-    scale_z = Matrix.Scale(transform.scale, 4, (0, 0, 1))
-    scale = scale_x @ scale_y @ scale_z
+    scale = Matrix.Scale(transform.scale, 4)
+
     transform_matrix = translation @ rotation @ scale
 
     return transform_matrix

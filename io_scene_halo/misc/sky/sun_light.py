@@ -2,7 +2,7 @@
 #
 # MIT License
 #
-# Copyright (c) 2021 Steven Garcia
+# Copyright (c) 2023 Steven Garcia
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -122,7 +122,7 @@ class SunLight():
         artificial_tweak_curve = SpectralCurve().regular_curve(0.0, 1.5, sun_artificial_tweak_curve, 16)
 
         beta = 0.04608365822050 * turpidity - 0.04586025928522
-        
+
         m = 1.0 / (math.cos(sun_theta) + 0.15 * math.pow(93.885 - sun_theta / math.pi * 180.0, -1.253))
 
         curve_value = 350.0

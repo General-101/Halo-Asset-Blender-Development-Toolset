@@ -2,7 +2,7 @@
 #
 # MIT License
 #
-# Copyright (c) 2021 Steven Garcia
+# Copyright (c) 2023 Steven Garcia
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -25,11 +25,15 @@
 # ##### END MIT LICENSE BLOCK #####
 
 import bpy
+import bmesh
 
+from enum import Flag, auto
 from bpy.types import (
+        PropertyGroup,
         Operator,
+        UIList,
         Panel,
-        PropertyGroup
+        Menu
         )
 
 from bpy.props import (
@@ -39,7 +43,8 @@ from bpy.props import (
         FloatProperty,
         StringProperty,
         PointerProperty,
-        FloatVectorProperty
+        FloatVectorProperty,
+        CollectionProperty
         )
 
 class Halo_XREFPath(Operator):
@@ -103,7 +108,7 @@ class ASS_JMS_MaterialProps(Panel):
             row = layout.row()
             row.label(text="Name Override:")
             row.prop(material_ass_jms, "name_override", text='')
-            if scene_halo.game_version == 'halo2' or scene_halo.game_version == 'halo3':
+            if scene_halo.game_title == "halo2" or scene_halo.game_title == "halo3":
                 row = layout.row()
                 row.label(text="Material Effect:")
                 row.prop(material_ass_jms, "material_effect", text='')
@@ -129,7 +134,7 @@ class ASS_JMS_MaterialFlagsProps(Panel):
             col = box.column(align=True)
             row = col.row()
 
-            if scene_halo.game_version == 'haloce':
+            if scene_halo.game_title == "halo1":
                 row = col.row()
                 row.label(text='Two-sided:')
                 row.prop(material_ass_jms, "two_sided", text='')
@@ -161,7 +166,7 @@ class ASS_JMS_MaterialFlagsProps(Panel):
                 row.label(text='Exact Portal:')
                 row.prop(material_ass_jms, "portal_exact", text='')
 
-            if scene_halo.game_version == 'halo2':
+            if scene_halo.game_title == "halo2":
                 row = col.row()
                 row.label(text='Two-sided:')
                 row.prop(material_ass_jms, "two_sided", text='')
@@ -230,7 +235,7 @@ class ASS_JMS_MaterialFlagsProps(Panel):
                 row.label(text='Decal Offset:')
                 row.prop(material_ass_jms, "decal_offset", text='')
 
-            if scene_halo.game_version == 'halo3':
+            if scene_halo.game_title == "halo3":
                 row = col.row()
                 row.label(text='Two-sided:')
                 row.prop(material_ass_jms, "two_sided", text='')
@@ -318,7 +323,7 @@ class ASS_JMS_MaterialLightmapProps(Panel):
     def poll(self, context):
         scene = context.scene
         scene_halo = scene.halo
-        if scene_halo.game_version == 'halo2' or scene_halo.game_version == 'halo3':
+        if scene_halo.game_title == "halo2" or scene_halo.game_title == "halo3":
             return True
 
     def draw(self, context):
@@ -329,7 +334,7 @@ class ASS_JMS_MaterialLightmapProps(Panel):
         if current_material is not None:
             material_ass_jms = current_material.ass_jms
             layout.enabled = material_ass_jms.is_bm
-            if scene_halo.game_version == 'halo2':
+            if scene_halo.game_title == "halo2":
                 col = layout.column(align=True)
                 row = col.row()
                 row.label(text='Lightmap Resolution Scale:')
@@ -385,7 +390,7 @@ class ASS_JMS_MaterialBasicProps(Panel):
         scene = context.scene
         scene_halo = scene.halo
 
-        if scene_halo.game_version == 'halo3':
+        if scene_halo.game_title == "halo3":
             return True
 
     def draw(self, context):
@@ -830,32 +835,6 @@ class Halo_MeshProps(Panel):
     bl_options = {"DEFAULT_CLOSED"}
 
     @classmethod
-    def poll(cls, context):
-        scene = context.scene
-        scene_halo = scene.halo
-
-        obj = context.object
-        mesh = obj.data
-
-        show_panel = None
-        if hasattr(obj, 'marker') and obj.name[0:1].lower() == '#' or hasattr(mesh, 'ass_jms') and not scene_halo.game_version == 'haloce' or hasattr(obj, 'jmi') and obj.name[0:1].lower() == '!' and scene_halo.game_version == 'haloce':
-            show_panel = True
-
-        return show_panel
-
-    def draw(self, context):
-        layout = self.layout
-
-class ASS_JMS_MeshProps(Panel):
-    bl_label = "ASS/JMS Properties"
-    bl_idname = "ASS_JMS_PT_DetailsPanel"
-    bl_space_type = "PROPERTIES"
-    bl_region_type = "WINDOW"
-    bl_context = "data"
-    bl_options = {"DEFAULT_CLOSED"}
-    bl_parent_id = "HALO_PT_MeshDetailsPanel"
-
-    @classmethod
     def poll(self, context):
         scene = context.scene
         scene_halo = scene.halo
@@ -863,7 +842,7 @@ class ASS_JMS_MeshProps(Panel):
         mesh = context.object.data
 
         ass_jms = None
-        if hasattr(mesh, 'ass_jms') and not scene_halo.game_version == 'haloce':
+        if hasattr(mesh, 'ass_jms') and not scene_halo.game_title == "halo1":
             ass_jms = mesh.ass_jms
 
         return ass_jms
@@ -916,6 +895,75 @@ class ASS_JMS_MeshPropertiesGroup(PropertyGroup):
         description="Set the name of the XREF object. The model file should contain an object by this name",
     )
 
+class Halo_ObjectProps(Panel):
+    bl_label = "Halo Object Properties"
+    bl_idname = "HALO_PT_ObjectDetailsPanel"
+    bl_space_type = "PROPERTIES"
+    bl_region_type = "WINDOW"
+    bl_context = "object"
+    bl_options = {"DEFAULT_CLOSED"}
+
+    @classmethod
+    def poll(self, context):
+        ob = context.object
+
+        ass_jms = None
+        if hasattr(ob, 'ass_jms'):
+            ass_jms = ob.ass_jms
+
+        return ass_jms
+
+    def draw(self, context):
+        layout = self.layout
+        scene = context.scene
+        scene_halo = scene.halo
+
+        ob = context.object
+        ob_ass_jms = ob.ass_jms
+
+        col = layout.column(align=True)
+        row = col.row()
+        row.label(text='Name Override:')
+        row.prop(ob_ass_jms, "name_override", text='')
+        row = col.row()
+        row.label(text='Unique ID:')
+        row.prop(ob_ass_jms, "unique_id", text='')
+        if ob.name[0:1].lower() == '#':
+            row = col.row()
+            row.label(text='Mask Type:')
+            row.prop(ob_ass_jms, "marker_mask_type", text='')
+            if scene_halo.game_title == "halo1":
+                row = col.row()
+                row.label(text='Region:')
+                row.prop(ob_ass_jms, "marker_region", text='')
+
+class ASS_JMS_ObjectPropertiesGroup(PropertyGroup):
+    name_override: StringProperty(
+        name="Name Override",
+        description="If filled then export will use the name set here instead of the object name",
+    )
+
+    unique_id: StringProperty(
+        name="Unique ID",
+        description="Store the original ID here. Uses a random value if nothing is defined"
+    )
+
+    marker_mask_type: EnumProperty(
+        name="Mask Type",
+        description="Choose the mask type for the marker object",
+        items=( ('0', "Render",    "Render"),
+                ('1', "Collision", "Collision"),
+                ('2', "Physics",   "Physics"),
+                ('3', "All",       "All"),
+            )
+        )
+
+    marker_region: StringProperty(
+        name="Region",
+        description="Region for a marker object. If empty then the first assigned facemap will be used",
+        default = "",
+        )
+
 class Halo_SceneProps(Panel):
     bl_label = "Halo Scene Properties"
     bl_idname = "HALO_PT_ScenePropertiesPanel"
@@ -943,17 +991,17 @@ class Halo_GlobalSettings(Panel):
 
         col = layout.column(align=True)
         row = col.row()
-        row.label(text='Scene Version:')
-        row.prop(scene_halo, "game_version", text='')
+        row.label(text='Scene Game Title:')
+        row.prop(scene_halo, "game_title", text='')
         row = col.row()
         row.label(text='Expert Mode:')
         row.prop(scene_halo, "expert_mode", text='')
 
 class Halo_ScenePropertiesGroup(PropertyGroup):
-    game_version: EnumProperty(
+    game_title: EnumProperty(
         name="Game:",
         description="What game will you be exporting for",
-        items=[ ('haloce', "Halo CE", "Show properties for Halo Custom Edition Or Halo CE MCC"),
+        items=[ ('halo1', "Halo 1", "Show properties for Halo Custom Edition Or Halo CE MCC"),
                 ('halo2', "Halo 2", "Show properties for Halo 2 Vista or Halo 2 MCC"),
                 ('halo3', "Halo 3", "Show properties for Halo 3 MCC"),
                ]
@@ -1159,11 +1207,961 @@ class ASS_LightFarAtten(Panel):
         row.label(text='End:')
         row.prop(light_ass, "far_atten_end", text='')
 
+class Halo_SurfaceFlags(bpy.types.Panel):
+    """Set settings for surface to be used in the Halo maze generator"""
+    bl_label = "Halo Surface Flags"
+    bl_idname = "OBJECT_PT_halo_surface_flags"
+    bl_space_type = 'PROPERTIES'
+    bl_region_type = 'WINDOW'
+    bl_context = "data"
+    bl_options = {'DEFAULT_CLOSED'}
+    ebm = dict()
+
+    @classmethod
+    def poll(cls, context):
+        if context.mode == 'EDIT_MESH':
+            me = context.edit_object.data
+            hvs = me.attributes.get("Halo Valid Surface")
+            hvc = me.attributes.get("Halo Valid Characters")
+            if hvs is None:
+                me.attributes.new(name="Halo Valid Surface", domain='FACE', type='INT')
+
+            if hvc is None:
+                me.attributes.new(name="Halo Valid Characters", domain='FACE', type='INT')
+
+            cls.ebm.setdefault(me.name, bmesh.from_edit_mesh(me))
+            return True
+
+        cls.ebm.clear()
+        return False
+
+    def draw(self, context):
+        layout = self.layout
+        me = context.edit_object.data
+
+        row = layout.row()
+        row.label(text="Valid Surface:")
+        row.prop(me, "halo_valid_surface", text='')
+        row = layout.row()
+        row.label(text="Valid Character Flags:")
+        row.prop(me, "halo_valid_characters", text='')
+
+        box = layout.split()
+        col = box.column(align=True)
+        row = col.row()
+
+        row = col.row()
+        row.label(text='Marine:')
+        row.prop(me, "halo_marine", text='')
+        row = col.row()
+        row.label(text='Elite:')
+        row.prop(me, "halo_elite", text='')
+        row = col.row()
+        row.label(text='Grunt:')
+        row.prop(me, "halo_grunt", text='')
+        row = col.row()
+        row.label(text='Hunter:')
+        row.prop(me, "halo_hunter", text='')
+        row = col.row()
+        row.label(text='Jackal:')
+        row.prop(me, "halo_jackal", text='')
+        row = col.row()
+        row.label(text='Floodcarrier:')
+        row.prop(me, "halo_floodcarrier", text='')
+        col = box.column()
+        row = col.row()
+        row.label(text='Floodcombat Elite:')
+        row.prop(me, "halo_floodcombat_elite", text='')
+        row = col.row()
+        row.label(text='Floodcombat Human:')
+        row.prop(me, "halo_floodcombat_human", text='')
+        row = col.row()
+        row.label(text='Flood Infection:')
+        row.prop(me, "halo_flood_infection", text='')
+        row = col.row()
+        row.label(text='Sentinel:')
+        row.prop(me, "halo_sentinel", text='')
+        row = col.row()
+        row.label(text='Drinol:')
+        row.prop(me, "halo_drinol", text='')
+        row = col.row()
+        row.label(text='Slug Man:')
+        row.prop(me, "halo_slug_man", text='')
+
+def set_surface_usage(self, value):
+    bm = Halo_SurfaceFlags.ebm.setdefault(self.name, bmesh.from_edit_mesh(self))
+
+    surface_layer = bm.faces.layers.int.get("Halo Valid Surface")
+
+    af = bm.faces.active
+    if af and surface_layer:
+        af[surface_layer] = value
+        bmesh.update_edit_mesh(self)
+
+def get_surface_usage(self):
+    is_valid = False
+    bm = Halo_SurfaceFlags.ebm.setdefault(self.name, bmesh.from_edit_mesh(self))
+
+    surface_layer = bm.faces.layers.int.get("Halo Valid Surface")
+
+    af = bm.faces.active
+    if af and surface_layer:
+        is_valid = af[surface_layer]
+
+    return is_valid
+
+def set_character_usage(self, value):
+    bm = Halo_SurfaceFlags.ebm.setdefault(self.name, bmesh.from_edit_mesh(self))
+
+    surface_layer = bm.faces.layers.int.get("Halo Valid Characters")
+
+    af = bm.faces.active
+    if af and surface_layer:
+        af[surface_layer] = value
+        bmesh.update_edit_mesh(self)
+
+def get_character_usage(self):
+    is_valid = False
+    bm = Halo_SurfaceFlags.ebm.setdefault(self.name, bmesh.from_edit_mesh(self))
+
+    surface_layer = bm.faces.layers.int.get("Halo Valid Characters")
+
+    af = bm.faces.active
+    if af and surface_layer:
+        is_valid = af[surface_layer]
+
+    return is_valid
+
+class CharacterFlags(Flag):
+    marine = auto()
+    elite = auto()
+    grunt = auto()
+    hunter = auto()
+    jackal = auto()
+    floodcarrier = auto()
+    floodcombat_elite = auto()
+    floodcombat_human = auto()
+    flood_infection = auto()
+    sentinel = auto()
+    drinol = auto()
+    slug_man = auto()
+
+def set_marine_usage(self, value):
+    bm = Halo_SurfaceFlags.ebm.setdefault(self.name, bmesh.from_edit_mesh(self))
+
+    surface_layer = bm.faces.layers.int.get("Halo Valid Characters")
+
+    af = bm.faces.active
+    if af and surface_layer:
+        if value:
+            af[surface_layer] += CharacterFlags.marine.value
+        else:
+            af[surface_layer] -= CharacterFlags.marine.value
+            if af[surface_layer] < 0:
+                af[surface_layer] = 0
+
+        bmesh.update_edit_mesh(self)
+
+def get_marine_usage(self):
+    is_valid = False
+    bm = Halo_SurfaceFlags.ebm.setdefault(self.name, bmesh.from_edit_mesh(self))
+
+    surface_layer = bm.faces.layers.int.get("Halo Valid Characters")
+
+    af = bm.faces.active
+    if af and surface_layer:
+        if CharacterFlags.marine in CharacterFlags(af[surface_layer]):
+            is_valid = True
+
+    return is_valid
+
+def set_elite_usage(self, value):
+    bm = Halo_SurfaceFlags.ebm.setdefault(self.name, bmesh.from_edit_mesh(self))
+
+    surface_layer = bm.faces.layers.int.get("Halo Valid Characters")
+
+    af = bm.faces.active
+    if af and surface_layer:
+        if value:
+            af[surface_layer] += CharacterFlags.elite.value
+        else:
+            af[surface_layer] -= CharacterFlags.elite.value
+            if af[surface_layer] < 0:
+                af[surface_layer] = 0
+
+        bmesh.update_edit_mesh(self)
+
+def get_elite_usage(self):
+    is_valid = False
+    bm = Halo_SurfaceFlags.ebm.setdefault(self.name, bmesh.from_edit_mesh(self))
+
+    surface_layer = bm.faces.layers.int.get("Halo Valid Characters")
+
+    af = bm.faces.active
+    if af and surface_layer:
+        if CharacterFlags.elite in CharacterFlags(af[surface_layer]):
+            is_valid = True
+
+    return is_valid
+
+def set_grunt_usage(self, value):
+    bm = Halo_SurfaceFlags.ebm.setdefault(self.name, bmesh.from_edit_mesh(self))
+
+    surface_layer = bm.faces.layers.int.get("Halo Valid Characters")
+
+    af = bm.faces.active
+    if af and surface_layer:
+        if value:
+            af[surface_layer] += CharacterFlags.grunt.value
+        else:
+            af[surface_layer] -= CharacterFlags.grunt.value
+            if af[surface_layer] < 0:
+                af[surface_layer] = 0
+
+        bmesh.update_edit_mesh(self)
+
+def get_grunt_usage(self):
+    is_valid = False
+    bm = Halo_SurfaceFlags.ebm.setdefault(self.name, bmesh.from_edit_mesh(self))
+
+    surface_layer = bm.faces.layers.int.get("Halo Valid Characters")
+
+    af = bm.faces.active
+    if af and surface_layer:
+        if CharacterFlags.grunt in CharacterFlags(af[surface_layer]):
+            is_valid = True
+
+    return is_valid
+
+def set_hunter_usage(self, value):
+    bm = Halo_SurfaceFlags.ebm.setdefault(self.name, bmesh.from_edit_mesh(self))
+
+    surface_layer = bm.faces.layers.int.get("Halo Valid Characters")
+
+    af = bm.faces.active
+    if af and surface_layer:
+        if value:
+            af[surface_layer] += CharacterFlags.hunter.value
+        else:
+            af[surface_layer] -= CharacterFlags.hunter.value
+            if af[surface_layer] < 0:
+                af[surface_layer] = 0
+
+        bmesh.update_edit_mesh(self)
+
+def get_hunter_usage(self):
+    is_valid = False
+    bm = Halo_SurfaceFlags.ebm.setdefault(self.name, bmesh.from_edit_mesh(self))
+
+    surface_layer = bm.faces.layers.int.get("Halo Valid Characters")
+
+    af = bm.faces.active
+    if af and surface_layer:
+        if CharacterFlags.hunter in CharacterFlags(af[surface_layer]):
+            is_valid = True
+
+    return is_valid
+
+def set_jackal_usage(self, value):
+    bm = Halo_SurfaceFlags.ebm.setdefault(self.name, bmesh.from_edit_mesh(self))
+
+    surface_layer = bm.faces.layers.int.get("Halo Valid Characters")
+
+    af = bm.faces.active
+    if af and surface_layer:
+        if value:
+            af[surface_layer] += CharacterFlags.jackal.value
+        else:
+            af[surface_layer] -= CharacterFlags.jackal.value
+            if af[surface_layer] < 0:
+                af[surface_layer] = 0
+
+        bmesh.update_edit_mesh(self)
+
+def get_jackal_usage(self):
+    is_valid = False
+    bm = Halo_SurfaceFlags.ebm.setdefault(self.name, bmesh.from_edit_mesh(self))
+
+    surface_layer = bm.faces.layers.int.get("Halo Valid Characters")
+
+    af = bm.faces.active
+    if af and surface_layer:
+        if CharacterFlags.jackal in CharacterFlags(af[surface_layer]):
+            is_valid = True
+
+    return is_valid
+
+def set_floodcarrier_usage(self, value):
+    bm = Halo_SurfaceFlags.ebm.setdefault(self.name, bmesh.from_edit_mesh(self))
+
+    surface_layer = bm.faces.layers.int.get("Halo Valid Characters")
+
+    af = bm.faces.active
+    if af and surface_layer:
+        if value:
+            af[surface_layer] += CharacterFlags.floodcarrier.value
+        else:
+            af[surface_layer] -= CharacterFlags.floodcarrier.value
+            if af[surface_layer] < 0:
+                af[surface_layer] = 0
+
+        bmesh.update_edit_mesh(self)
+
+def get_floodcarrier_usage(self):
+    is_valid = False
+    bm = Halo_SurfaceFlags.ebm.setdefault(self.name, bmesh.from_edit_mesh(self))
+
+    surface_layer = bm.faces.layers.int.get("Halo Valid Characters")
+
+    af = bm.faces.active
+    if af and surface_layer:
+        if CharacterFlags.floodcarrier in CharacterFlags(af[surface_layer]):
+            is_valid = True
+
+    return is_valid
+
+def set_floodcombat_elite_usage(self, value):
+    bm = Halo_SurfaceFlags.ebm.setdefault(self.name, bmesh.from_edit_mesh(self))
+
+    surface_layer = bm.faces.layers.int.get("Halo Valid Characters")
+
+    af = bm.faces.active
+    if af and surface_layer:
+        if value:
+            af[surface_layer] += CharacterFlags.floodcombat_elite.value
+        else:
+            af[surface_layer] -= CharacterFlags.floodcombat_elite.value
+            if af[surface_layer] < 0:
+                af[surface_layer] = 0
+
+        bmesh.update_edit_mesh(self)
+
+def get_floodcombat_elite_usage(self):
+    is_valid = False
+    bm = Halo_SurfaceFlags.ebm.setdefault(self.name, bmesh.from_edit_mesh(self))
+
+    surface_layer = bm.faces.layers.int.get("Halo Valid Characters")
+
+    af = bm.faces.active
+    if af and surface_layer:
+        if CharacterFlags.floodcombat_elite in CharacterFlags(af[surface_layer]):
+            is_valid = True
+
+    return is_valid
+
+def set_floodcombat_human_usage(self, value):
+    bm = Halo_SurfaceFlags.ebm.setdefault(self.name, bmesh.from_edit_mesh(self))
+
+    surface_layer = bm.faces.layers.int.get("Halo Valid Characters")
+
+    af = bm.faces.active
+    if af and surface_layer:
+        if value:
+            af[surface_layer] += CharacterFlags.floodcombat_human.value
+        else:
+            af[surface_layer] -= CharacterFlags.floodcombat_human.value
+            if af[surface_layer] < 0:
+                af[surface_layer] = 0
+
+        bmesh.update_edit_mesh(self)
+
+def get_floodcombat_human_usage(self):
+    is_valid = False
+    bm = Halo_SurfaceFlags.ebm.setdefault(self.name, bmesh.from_edit_mesh(self))
+
+    surface_layer = bm.faces.layers.int.get("Halo Valid Characters")
+
+    af = bm.faces.active
+    if af and surface_layer:
+        if CharacterFlags.floodcombat_human in CharacterFlags(af[surface_layer]):
+            is_valid = True
+
+    return is_valid
+
+def set_flood_infection_usage(self, value):
+    bm = Halo_SurfaceFlags.ebm.setdefault(self.name, bmesh.from_edit_mesh(self))
+
+    surface_layer = bm.faces.layers.int.get("Halo Valid Characters")
+
+    af = bm.faces.active
+    if af and surface_layer:
+        if value:
+            af[surface_layer] += CharacterFlags.flood_infection.value
+        else:
+            af[surface_layer] -= CharacterFlags.flood_infection.value
+            if af[surface_layer] < 0:
+                af[surface_layer] = 0
+
+        bmesh.update_edit_mesh(self)
+
+def get_flood_infection_usage(self):
+    is_valid = False
+    bm = Halo_SurfaceFlags.ebm.setdefault(self.name, bmesh.from_edit_mesh(self))
+
+    surface_layer = bm.faces.layers.int.get("Halo Valid Characters")
+
+    af = bm.faces.active
+    if af and surface_layer:
+        if CharacterFlags.flood_infection in CharacterFlags(af[surface_layer]):
+            is_valid = True
+
+    return is_valid
+
+def set_sentinel_usage(self, value):
+    bm = Halo_SurfaceFlags.ebm.setdefault(self.name, bmesh.from_edit_mesh(self))
+
+    surface_layer = bm.faces.layers.int.get("Halo Valid Characters")
+
+    af = bm.faces.active
+    if af and surface_layer:
+        if value:
+            af[surface_layer] += CharacterFlags.sentinel.value
+        else:
+            af[surface_layer] -= CharacterFlags.sentinel.value
+            if af[surface_layer] < 0:
+                af[surface_layer] = 0
+
+        bmesh.update_edit_mesh(self)
+
+def get_sentinel_usage(self):
+    is_valid = False
+    bm = Halo_SurfaceFlags.ebm.setdefault(self.name, bmesh.from_edit_mesh(self))
+
+    surface_layer = bm.faces.layers.int.get("Halo Valid Characters")
+
+    af = bm.faces.active
+    if af and surface_layer:
+        if CharacterFlags.sentinel in CharacterFlags(af[surface_layer]):
+            is_valid = True
+
+    return is_valid
+
+def set_drinol_usage(self, value):
+    bm = Halo_SurfaceFlags.ebm.setdefault(self.name, bmesh.from_edit_mesh(self))
+
+    surface_layer = bm.faces.layers.int.get("Halo Valid Characters")
+
+    af = bm.faces.active
+    if af and surface_layer:
+        if value:
+            af[surface_layer] += CharacterFlags.drinol.value
+        else:
+            af[surface_layer] -= CharacterFlags.drinol.value
+            if af[surface_layer] < 0:
+                af[surface_layer] = 0
+
+        bmesh.update_edit_mesh(self)
+
+def get_drinol_usage(self):
+    is_valid = False
+    bm = Halo_SurfaceFlags.ebm.setdefault(self.name, bmesh.from_edit_mesh(self))
+
+    surface_layer = bm.faces.layers.int.get("Halo Valid Characters")
+
+    af = bm.faces.active
+    if af and surface_layer:
+        if CharacterFlags.drinol in CharacterFlags(af[surface_layer]):
+            is_valid = True
+
+    return is_valid
+
+def set_slug_man_usage(self, value):
+    bm = Halo_SurfaceFlags.ebm.setdefault(self.name, bmesh.from_edit_mesh(self))
+
+    surface_layer = bm.faces.layers.int.get("Halo Valid Characters")
+
+    af = bm.faces.active
+    if af and surface_layer:
+        if value:
+            af[surface_layer] += CharacterFlags.slug_man.value
+        else:
+            af[surface_layer] -= CharacterFlags.slug_man.value
+            if af[surface_layer] < 0:
+                af[surface_layer] = 0
+
+        bmesh.update_edit_mesh(self)
+
+def get_slug_man_usage(self):
+    is_valid = False
+    bm = Halo_SurfaceFlags.ebm.setdefault(self.name, bmesh.from_edit_mesh(self))
+
+    surface_layer = bm.faces.layers.int.get("Halo Valid Characters")
+
+    af = bm.faces.active
+    if af and surface_layer:
+        if CharacterFlags.slug_man in CharacterFlags(af[surface_layer]):
+            is_valid = True
+
+    return is_valid
+
+def get_custom_attribute(self, attribute_name="Region Assignment"):
+    region_attribute = self.attributes.get(attribute_name)
+    if region_attribute == None:
+        region_attribute = self.attributes.new(name=attribute_name, type="INT", domain="FACE")
+
+    return region_attribute
+
+def get_unique_name(region_list, name):
+    formatted_name = name
+    region_name_dic = {}
+    region_set = set(region_list)
+    for region in region_set:
+        region_name_dic[region] = region_list.count(region)
+
+    if region_name_dic[name] > 1:
+        increment_count = 1
+        while not region_name_dic.get(formatted_name) == None:
+            formatted_name = "{0}.{1:003}".format(name, increment_count)
+            increment_count += 1
+
+    return formatted_name
+
+def update_region_prop(self, context):
+    scene = context.scene
+    if len(scene.active_region_list) > 1:
+        self["name"] = get_unique_name(scene.active_region_list, self.name)
+
+def region_add(self, name="unnamed"):
+    scene = bpy.context.scene
+    scene.active_region_list.clear()
+    for region in self.region_list:
+        scene.active_region_list.append(region.name)
+
+    scene.active_region_list.append(name)
+
+    region = self.region_list.add()
+    region.name = name
+    self.active_region = 0
+
+class RegionItem(PropertyGroup):
+    name: StringProperty(
+           name="Name",
+           description="A name for this item",
+           default="unnamed",
+           update=update_region_prop
+           )
+
+class REGION_UL_List(UIList):
+    def draw_item(self, context, layout, data, item, icon, active_data, active_propname, index):
+        if self.layout_type in {'DEFAULT', 'COMPACT'}:
+            layout.prop(item, "name", text="", emboss=False, icon='FACE_MAPS')
+
+        elif self.layout_type == 'GRID':
+            layout.alignment = 'CENTER'
+            layout.label(text="", icon_value=icon)
+
+class Halo_OT_RegionAdd(Operator):
+    """Add a new region to the active object"""
+    bl_idname = "region_list.region_add"
+    bl_label = "Add region"
+
+    @classmethod
+    def poll(cls, context):
+        valid = False
+        active_object = context.active_object
+        if active_object and active_object.type == "MESH":
+            valid = True
+
+        return valid
+
+    def execute(self, context):
+        ob = bpy.context.object
+
+        ob.region_add()
+        ob.data.get_custom_attribute()
+        ob.active_region = len(ob.region_list) - 1
+
+        return{'FINISHED'}
+
+class Halo_OT_RegionRemove(Operator):
+    """Remove a region from the active object"""
+    bl_idname = "region_list.region_remove"
+    bl_label = "Remove a region"
+
+    @classmethod
+    def poll(cls, context):
+        valid = False
+        active_object = context.active_object
+        if active_object and active_object.type == "MESH" and len(active_object.region_list) > 0:
+            valid = True
+
+        return valid
+
+    def execute(self, context):
+        ob = context.object
+        data = ob.data
+
+        region_list = ob.region_list
+        active_region = ob.active_region
+        data_region_value = active_region + 1 
+
+        modified_indices = list(range(active_region, len(ob.region_list)))
+        for idx, index in enumerate(modified_indices):
+            modified_indices[idx] += 1
+
+        del modified_indices[0]
+
+        region_attribute = ob.data.get_custom_attribute()
+        if context.mode == 'EDIT_MESH':
+            bm = bmesh.from_edit_mesh(data)
+
+            surface_layer = bm.faces.layers.int.get("Region Assignment")
+            for face in bm.faces:
+                face_value = face[surface_layer]
+                if face_value == data_region_value:
+                    face[surface_layer] = -1
+                elif face_value in modified_indices:
+                    face[surface_layer] += -1
+
+            bmesh.update_edit_mesh(data)
+
+        else:
+            for face in data.polygons:
+                face_value = region_attribute.data[face.index].value
+                if face_value == data_region_value:
+                    region_attribute.data[face.index].value = -1
+                elif face_value in modified_indices:
+                    region_attribute.data[face.index].value += -1
+
+        region_list.remove(active_region)
+        ob.active_region = min(max(0, active_region), len(region_list) - 1)
+
+        return{'FINISHED'}
+
+class Halo_OT_RegionMove(Operator):
+    """Move the active region up/down in the list"""
+    bl_idname = "region_list.region_move"
+    bl_label = "Move region"
+
+    direction: bpy.props.EnumProperty(items=(('UP', 'Up', ""), ('DOWN', 'Down', ""),))
+
+    @classmethod
+    def poll(cls, context):
+        valid = False
+        active_object = context.active_object
+        if active_object and active_object.type == "MESH" and len(context.active_object.region_list) > 0:
+            valid = True
+
+        return valid
+
+    def move_attribute_index(self, context, neighbor, active_region):
+        ob = context.object
+        data = ob.data
+
+        neighbor += 1
+        active_region += 1
+
+        region_attribute = ob.data.get_custom_attribute()
+        if context.mode == 'EDIT_MESH':
+            bm = bmesh.from_edit_mesh(data)
+
+            surface_layer = bm.faces.layers.int.get("Region Assignment")
+            for face in bm.faces:
+                if face[surface_layer] == neighbor:
+                    face[surface_layer] = active_region
+                else:
+                    face[surface_layer] = neighbor
+
+            bmesh.update_edit_mesh(data)
+
+        else:
+            for face in data.polygons:
+                if region_attribute.data[face.index].value == neighbor:
+                    region_attribute.data[face.index].value = active_region
+                else:
+                    region_attribute.data[face.index].value = neighbor
+
+    def move_index(self, ob):
+        active_region = ob.active_region
+        list_length = len(ob.region_list) - 1
+        new_index = active_region + (-1 if self.direction == 'UP' else 1)
+
+        ob.active_region = max(0, min(new_index, list_length))
+
+    def execute(self, context):
+        ob = context.object
+
+        region_list = ob.region_list
+        active_region = ob.active_region
+
+        neighbor = active_region + (-1 if self.direction == 'UP' else 1)
+        region_list.move(neighbor, active_region)
+        self.move_index(ob)
+
+        self.move_attribute_index(context, neighbor, active_region)
+
+        return{'FINISHED'}
+
+class Halo_OT_RegionAssign(Operator):
+    """Assign faces to a region"""
+    bl_idname = "region_list.region_assign"
+    bl_label = "Region Assign"
+
+    @classmethod
+    def poll(cls, context):
+        valid = False
+        active_object = context.active_object
+        if active_object and active_object.type == "MESH" and context.mode == 'EDIT_MESH':
+            valid = True
+
+        return valid
+
+    def execute(self, context):
+        ob = bpy.context.object
+        data = ob.data
+        active_region = ob.active_region + 1
+
+        ob.data.get_custom_attribute()
+
+        bm = bmesh.from_edit_mesh(data)
+
+        surface_layer = bm.faces.layers.int.get("Region Assignment")
+        for face in bm.faces:
+            if face.select:
+                face[surface_layer] = active_region
+
+        bmesh.update_edit_mesh(data)
+
+        return{'FINISHED'}
+
+class Halo_OT_RegionRemoveFrom(Operator):
+    """Remove faces from a region"""
+    bl_idname = "region_list.region_remove_from"
+    bl_label = "Region Remove From"
+
+    @classmethod
+    def poll(cls, context):
+        valid = False
+        active_object = context.active_object
+        if active_object and active_object.type == "MESH" and context.mode == 'EDIT_MESH':
+            valid = True
+
+        return valid
+
+    def execute(self, context):
+        ob = bpy.context.object
+        data = ob.data
+        active_region = ob.active_region + 1
+
+        ob.data.get_custom_attribute()
+
+        bm = bmesh.from_edit_mesh(data)
+
+        surface_layer = bm.faces.layers.int.get("Region Assignment")
+        for face in bm.faces:
+            if face.select and face[surface_layer] == active_region:
+                face[surface_layer] = -1
+
+        bmesh.update_edit_mesh(data)
+
+        return{'FINISHED'}
+
+class Halo_OT_RegionSelect(Operator):
+    """Select faces beloging to a region"""
+    bl_idname = "region_list.region_select"
+    bl_label = "Region Select"
+
+    @classmethod
+    def poll(cls, context):
+        valid = False
+        active_object = context.active_object
+        if active_object and active_object.type == "MESH" and context.mode == 'EDIT_MESH':
+            valid = True
+
+        return valid
+
+    def execute(self, context):
+        ob = bpy.context.object
+        data = ob.data
+        active_region = ob.active_region + 1
+
+        ob.data.get_custom_attribute()
+
+        bm = bmesh.from_edit_mesh(data)
+
+        surface_layer = bm.faces.layers.int.get("Region Assignment")
+        for face in bm.faces:
+            if face[surface_layer] == active_region:
+                face.select = True
+
+        bmesh.update_edit_mesh(data)
+
+        return{'FINISHED'}
+
+class Halo_OT_RegionDeselect(Operator):
+    """Deselect faces beloging to a region"""
+    bl_idname = "region_list.region_deselect"
+    bl_label = "Region Deselect"
+
+    @classmethod
+    def poll(cls, context):
+        valid = False
+        active_object = context.active_object
+        if active_object and active_object.type == "MESH" and context.mode == 'EDIT_MESH':
+            valid = True
+
+        return valid
+
+    def execute(self, context):
+        ob = bpy.context.object
+        data = ob.data
+        active_region = ob.active_region + 1
+
+        ob.data.get_custom_attribute()
+
+        bm = bmesh.from_edit_mesh(data)
+
+        surface_layer = bm.faces.layers.int.get("Region Assignment")
+        for face in bm.faces:
+            if face[surface_layer] == active_region:
+                face.select = False
+
+        bmesh.update_edit_mesh(data)
+
+        return{'FINISHED'}
+
+class Halo_OT_RegionRemoveUnused(Operator):
+    """Removes all unused regions from the active object"""
+    bl_idname = "region_list.region_remove_unused"
+    bl_label = "Remove unused regions"
+
+    @classmethod
+    def poll(cls, context):
+        valid = False
+        active_object = context.active_object
+        if active_object and active_object.type == "MESH" and len(active_object.region_list) > 0:
+            valid = True
+
+        return valid
+
+    def execute(self, context):
+        ob = context.object
+        data = ob.data
+
+        region_list = ob.region_list
+        active_region = ob.active_region
+        data_region_value = active_region + 1 
+        region_attribute = ob.data.get_custom_attribute()
+        index_set = set()
+        unused_indices = set()
+        if context.mode == 'EDIT_MESH':
+            bm = bmesh.from_edit_mesh(data)
+
+            surface_layer = bm.faces.layers.int.get("Region Assignment")
+            for face in bm.faces:
+                if not face[surface_layer] == 0:
+                    index_set.add(face[surface_layer] - 1)
+
+            bmesh.update_edit_mesh(data)
+
+        else:
+            for face in data.polygons:
+                if not region_attribute.data[face.index].value == 0:
+                    index_set.add(region_attribute.data[face.index].value - 1)
+
+        for region_idx, region in enumerate(region_list):
+            if not region_idx in index_set:
+                unused_indices.add(region_idx)
+
+        for region_index in reversed(sorted(unused_indices)):
+            modified_indices = list(range(region_index, len(ob.region_list)))
+            for idx, index in enumerate(modified_indices):
+                modified_indices[idx] += 1
+
+            del modified_indices[0]
+
+            if context.mode == 'EDIT_MESH':
+                bm = bmesh.from_edit_mesh(data)
+
+                surface_layer = bm.faces.layers.int.get("Region Assignment")
+                for face in bm.faces:
+                    face_value = face[surface_layer]
+                    if face_value in modified_indices:
+                        face[surface_layer] += -1
+
+                bmesh.update_edit_mesh(data)
+
+            else:
+                for face in data.polygons:
+                    face_value = region_attribute.data[face.index].value
+                    if face_value in modified_indices:
+                        region_attribute.data[face.index].value += -1
+
+            region_list.remove(region_index)
+            ob.active_region = min(max(0, active_region), len(region_list) - 1)
+
+        return{'FINISHED'}
+
+class REGION_MT_context_menu(Menu):
+    bl_label = "Region Specials"
+
+    def draw(self, _context):
+        layout = self.layout
+
+        layout.operator("region_list.region_remove_unused")
+
+class Halo_RegionsPanel(Panel):
+    bl_label = "Halo Regions"
+    bl_idname = "OBJECT_PT_halo_regions"
+    bl_space_type = 'PROPERTIES'
+    bl_region_type = 'WINDOW'
+    bl_context = "data"
+    bl_options = {'DEFAULT_CLOSED'}
+
+    @classmethod
+    def poll(cls, context):
+        valid = False
+        active_object = context.active_object
+        if active_object and active_object.type == "MESH":
+            valid = True
+
+        return valid
+
+    def draw(self, context):
+        layout = self.layout
+        ob = context.object
+        data = ob.data
+        region_count = len(ob.region_list)
+
+        scene = context.scene
+        if ob and ob.type == "MESH":
+            scene.active_region_list.clear()
+            for region in ob.region_list:
+                scene.active_region_list.append(region.name)
+
+        row = layout.row()
+        row.template_list("REGION_UL_List", "Region_List", ob, "region_list", ob, "active_region")
+
+        col = row.column(align=True)
+        col.operator("region_list.region_add", icon='ADD', text="")
+        col.operator("region_list.region_remove", icon='REMOVE', text="")
+
+        if region_count >= 2:
+            col.separator()
+            col.operator("region_list.region_move", icon='TRIA_UP', text="").direction = 'UP'
+            col.operator("region_list.region_move", icon='TRIA_DOWN', text="").direction = 'DOWN'
+
+        col.separator()
+        col.menu("REGION_MT_context_menu", icon='DOWNARROW_HLT', text="")
+        if region_count >= 1:
+            if ob.mode == 'EDIT' and ob.type == 'MESH':
+                row = layout.row()
+
+                sub = row.row(align=True)
+                sub.operator("region_list.region_assign", text="Assign")
+                sub.operator("region_list.region_remove_from", text="Remove")
+
+                sub = row.row(align=True)
+                sub.operator("region_list.region_select", text="Select")
+                sub.operator("region_list.region_deselect", text="Deselect")
+
 classeshalo = (
+    Halo_SurfaceFlags,
+    ASS_JMS_ObjectPropertiesGroup,
     ASS_JMS_MeshPropertiesGroup,
     ASS_JMS_MaterialPropertiesGroup,
+    Halo_ObjectProps,
     Halo_MeshProps,
-    ASS_JMS_MeshProps,
     ASS_LightPropertiesGroup,
     ASS_LightProps,
     ASS_LightSpot,
@@ -1178,23 +2176,61 @@ classeshalo = (
     Halo_ScenePropertiesGroup,
     Halo_SceneProps,
     Halo_GlobalSettings,
-    Halo_XREFPath
-)
+    Halo_XREFPath,
+    Halo_RegionsPanel,
+    Halo_OT_RegionMove,
+    Halo_OT_RegionRemove,
+    Halo_OT_RegionAdd,
+    REGION_UL_List,
+    RegionItem,
+    Halo_OT_RegionAssign,
+    Halo_OT_RegionRemoveFrom,
+    Halo_OT_RegionSelect,
+    Halo_OT_RegionDeselect,
+    Halo_OT_RegionRemoveUnused,
+    REGION_MT_context_menu
+    )
 
 def register():
     for clshalo in classeshalo:
         bpy.utils.register_class(clshalo)
 
     bpy.types.Light.halo_light = PointerProperty(type=ASS_LightPropertiesGroup, name="ASS Properties", description="Set properties for your light")
+    bpy.types.Object.ass_jms = PointerProperty(type=ASS_JMS_ObjectPropertiesGroup, name="ASS/JMS Properties", description="Set properties for your object")
     bpy.types.Mesh.ass_jms = PointerProperty(type=ASS_JMS_MeshPropertiesGroup, name="ASS/JMS Properties", description="Set properties for your mesh")
     bpy.types.Material.ass_jms = PointerProperty(type=ASS_JMS_MaterialPropertiesGroup, name="ASS/JMS Properties", description="Set properties for your materials")
     bpy.types.Scene.halo = PointerProperty(type=Halo_ScenePropertiesGroup, name="Halo Scene Properties", description="Set properties for your scene")
+    bpy.types.Mesh.halo_valid_surface = BoolProperty(name="Valid Surface", get=get_surface_usage, set=set_surface_usage)
+    bpy.types.Mesh.halo_valid_characters = IntProperty(name="Valid Characters Flag", get=get_character_usage, set=set_character_usage)
+    bpy.types.Mesh.halo_marine = BoolProperty(name="Marine", get=get_marine_usage, set=set_marine_usage)
+    bpy.types.Mesh.halo_elite = BoolProperty(name="Elite", get=get_elite_usage, set=set_elite_usage)
+    bpy.types.Mesh.halo_grunt = BoolProperty(name="Grunt", get=get_grunt_usage, set=set_grunt_usage)
+    bpy.types.Mesh.halo_hunter = BoolProperty(name="Hunter", get=get_hunter_usage, set=set_hunter_usage)
+    bpy.types.Mesh.halo_jackal = BoolProperty(name="Jackal", get=get_jackal_usage, set=set_jackal_usage)
+    bpy.types.Mesh.halo_floodcarrier = BoolProperty(name="Flood Carrier", get=get_floodcarrier_usage, set=set_floodcarrier_usage)
+    bpy.types.Mesh.halo_floodcombat_elite = BoolProperty(name="Floodcombat Elite", get=get_floodcombat_elite_usage, set=set_floodcombat_elite_usage)
+    bpy.types.Mesh.halo_floodcombat_human = BoolProperty(name="Floodcombat Human", get=get_floodcombat_human_usage, set=set_floodcombat_human_usage)
+    bpy.types.Mesh.halo_flood_infection = BoolProperty(name="Flood Infection", get=get_flood_infection_usage, set=set_flood_infection_usage)
+    bpy.types.Mesh.halo_sentinel = BoolProperty(name="Sentinel", get=get_sentinel_usage, set=set_sentinel_usage)
+    bpy.types.Mesh.halo_drinol = BoolProperty(name="Drinol", get=get_drinol_usage, set=set_drinol_usage)
+    bpy.types.Mesh.halo_slug_man = BoolProperty(name="Slug Man", get=get_slug_man_usage, set=set_slug_man_usage)
+    bpy.types.Object.region_list = CollectionProperty(type = RegionItem)
+    bpy.types.Object.active_region = IntProperty(name = "Active region index", description="Active index in the region array", default = -1)
+    bpy.types.Scene.active_region_list = []
+    bpy.types.Object.region_add = region_add
+    bpy.types.Mesh.get_custom_attribute = get_custom_attribute
 
 def unregister():
     del bpy.types.Light.halo_light
+    del bpy.types.Object.ass_jms
     del bpy.types.Mesh.ass_jms
     del bpy.types.Material.ass_jms
     del bpy.types.Scene.halo
+    del bpy.types.Object.region_list
+    del bpy.types.Object.active_region
+    del bpy.types.Scene.active_region_list
+    del bpy.types.Object.region_add
+    del bpy.types.Mesh.get_custom_attribute
     for clshalo in classeshalo:
         bpy.utils.unregister_class(clshalo)
 

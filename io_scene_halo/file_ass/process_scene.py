@@ -2,7 +2,7 @@
 #
 # MIT License
 #
-# Copyright (c) 2022 Steven Garcia
+# Copyright (c) 2023 Steven Garcia
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -118,19 +118,19 @@ def scale_is_uniform(obj):
 def process_scene(context, version, game_version, hidden_geo, nonrender_geo, apply_modifiers, triangulate_faces, loop_normals, edge_split, clean_normalize_weights, custom_scale, report):
     ASS = ASSAsset()
 
-    layer_collection_set = set()
-    object_set = set()
+    layer_collection_list = []
+    object_list = []
 
     # Gather all scene resources that fit export criteria
-    resource_management.gather_collection_resources(context.view_layer.layer_collection, layer_collection_set, object_set, hidden_geo, nonrender_geo)
+    resource_management.gather_scene_resources(context, layer_collection_list, object_list, hidden_geo)
 
     # Store visibility for all relevant resources
-    stored_collection_visibility = resource_management.store_collection_visibility(layer_collection_set)
-    stored_object_visibility = resource_management.store_object_visibility(object_set)
-    stored_modifier_visibility = resource_management.store_modifier_visibility(object_set)
+    stored_collection_visibility = resource_management.store_collection_visibility(layer_collection_list)
+    stored_object_visibility = resource_management.store_object_visibility(object_list)
+    stored_modifier_visibility = resource_management.store_modifier_visibility(object_list)
 
     # Unhide all relevant resources for exporting
-    resource_management.unhide_relevant_resources(layer_collection_set, object_set)
+    resource_management.unhide_relevant_resources(layer_collection_list, object_list)
 
     default_region = mesh_processing.get_default_region_permutation_name(game_version)
     default_permutation = mesh_processing.get_default_region_permutation_name(game_version)
@@ -151,7 +151,7 @@ def process_scene(context, version, game_version, hidden_geo, nonrender_geo, app
     instance_list = [None]
     object_count = 0
 
-    for obj in object_set:
+    for obj in object_list:
         if obj.type== 'MESH':
             if clean_normalize_weights:
                 mesh_processing.vertex_group_clean_normalize(context, obj, limit_value)
@@ -161,7 +161,7 @@ def process_scene(context, version, game_version, hidden_geo, nonrender_geo, app
 
     depsgraph = context.evaluated_depsgraph_get()
 
-    for obj in object_set:
+    for obj in object_list:
         if not scale_is_uniform(obj):
             report({'WARNING'}, "Object %s has non uniform scale. Object will not look correct ingame. Apply transforms and export again." % (obj.name))
 
@@ -239,6 +239,38 @@ def process_scene(context, version, game_version, hidden_geo, nonrender_geo, app
             geometry_list.append((obj_mesh_data, obj_data, 'EMPTY'))
             instance_list.append(obj_data)
 
+
+    instance_ids_original = set()
+    instance_ids_full = set()
+    for idx, geometry in enumerate(geometry_list):
+        original_geo = geometry[1]
+        instance_id = original_geo.ass_jms.unique_id
+        if not instance_id == "":
+            if not instance_id in instance_ids_original:
+                instance_ids_original.add(instance_id)
+                instance_ids_full.add(instance_id)
+            else:
+                increment_count = 0
+                generated_id = global_functions.node_checksum(original_geo) + (idx + increment_count)
+                while generated_id in instance_ids_original:
+                    increment_count += 1
+                    generated_id = global_functions.node_checksum(original_geo) + (idx + increment_count)
+
+                original_geo.ass_jms.unique_id = str(generated_id)
+                instance_ids_full.add(generated_id)
+
+    for idx, geometry in enumerate(geometry_list):
+        original_geo = geometry[1]
+        instance_id = original_geo.ass_jms.unique_id
+        if instance_id == "":
+            increment_count = 0
+            generated_id = global_functions.node_checksum(original_geo) + (idx + increment_count)
+            while generated_id in instance_ids_full:
+                increment_count += 1
+                generated_id = global_functions.node_checksum(original_geo) + (idx + increment_count)
+
+            original_geo.ass_jms.unique_id = str(generated_id)
+
     ASS.instances.append(ASS.Instance(name='Scene Root', local_transform=ASS.Transform(), pivot_transform=ASS.Transform()))
     for idx, geometry in enumerate(geometry_list):
         verts = []
@@ -254,6 +286,10 @@ def process_scene(context, version, game_version, hidden_geo, nonrender_geo, app
         evaluted_mesh = geometry[0]
         original_geo = geometry[1]
         geo_class = geometry[2]
+
+        instance_name = original_geo.name
+        if not global_functions.string_empty_check(original_geo.ass_jms.name_override):
+            instance_name = original_geo.ass_jms.name_override
 
         evaluted_mesh_name = None
         if evaluted_mesh:
@@ -293,7 +329,7 @@ def process_scene(context, version, game_version, hidden_geo, nonrender_geo, app
                     else:
                         parent = original_geo.parent.data.bones[0]
 
-        if not parent == None and parent in object_set:
+        if not parent == None and parent in object_list:
             parent_id = instance_list.index(parent)
 
         geo_matrix = global_functions.get_matrix(original_geo, original_geo, True, armature, instance_list, is_bone, version, 'ASS', False, custom_scale, False)
@@ -303,7 +339,7 @@ def process_scene(context, version, game_version, hidden_geo, nonrender_geo, app
         scale = geo_dimensions.scale
 
         local_transform = ASS.Transform(rotation, translation, scale)
-        ASS.instances.append(ASS.Instance(original_geo.name, object_index, idx, parent_id, inheritance_flag, local_transform, pivot_transform=ASS.Transform()))
+        ASS.instances.append(ASS.Instance(instance_name, object_index, original_geo.ass_jms.unique_id, parent_id, inheritance_flag, local_transform, pivot_transform=ASS.Transform()))
         if not evaluted_mesh_name in linked_instance_list and not object_index == -1:
             linked_instance_list.append(evaluted_mesh_name)
             object_matrix = global_functions.get_matrix(original_geo, original_geo, False, armature, instance_list, is_bone, version, 'ASS', False, custom_scale, False)
@@ -334,9 +370,9 @@ def process_scene(context, version, game_version, hidden_geo, nonrender_geo, app
                 if global_functions.string_empty_check(xref_name):
                     xref_name = os.path.basename(xref_path).rsplit('.', 1)[0]
 
-                if original_geo.face_maps.active:
-                    face_set = original_geo.face_maps[0].name.split()
-                    lod, permutation, region = global_functions.material_definition_parser(False, face_set, default_region, default_permutation)
+                if not original_geo.active_region == -1:
+                    region_set = original_geo.region_list[original_geo.active_region].name.split()
+                    lod, permutation, region = global_functions.material_definition_parser(False, region_set, default_region, default_permutation)
 
                     if not permutation in permutation_list:
                         permutation_list.append(permutation)
@@ -357,9 +393,9 @@ def process_scene(context, version, game_version, hidden_geo, nonrender_geo, app
                 if global_functions.string_empty_check(xref_name):
                     xref_name = os.path.basename(xref_path).rsplit('.', 1)[0]
 
-                if original_geo.face_maps.active:
-                    face_set = original_geo.face_maps[0].name.split()
-                    lod, permutation, region = global_functions.material_definition_parser(False, face_set, default_region, default_permutation)
+                if not original_geo.active_region == -1:
+                    region_set = original_geo.region_list[original_geo.active_region].name.split()
+                    lod, permutation, region = global_functions.material_definition_parser(False, region_set, default_region, default_permutation)
 
                     if not permutation in permutation_list:
                         permutation_list.append(permutation)
@@ -380,9 +416,9 @@ def process_scene(context, version, game_version, hidden_geo, nonrender_geo, app
                 if global_functions.string_empty_check(xref_name):
                     xref_name = os.path.basename(xref_path).rsplit('.', 1)[0]
 
-                if original_geo.face_maps.active:
-                    face_set = original_geo.face_maps[0].name.split()
-                    lod, permutation, region = global_functions.material_definition_parser(False, face_set, default_region, default_permutation)
+                if not original_geo.active_region == -1:
+                    region_set = original_geo.region_list[original_geo.active_region].name.split()
+                    lod, permutation, region = global_functions.material_definition_parser(False, region_set, default_region, default_permutation)
 
                     if not permutation in permutation_list:
                         permutation_list.append(permutation)
@@ -399,6 +435,7 @@ def process_scene(context, version, game_version, hidden_geo, nonrender_geo, app
                     material_index = material_list.index(material)
 
             elif geo_class == 'MESH':
+                layer_color = evaluted_mesh.attributes.active_color
                 xref_path = original_geo.data.ass_jms.XREF_path
                 xref_name = original_geo.data.ass_jms.XREF_name
                 if global_functions.string_empty_check(xref_name):
@@ -406,16 +443,18 @@ def process_scene(context, version, game_version, hidden_geo, nonrender_geo, app
 
                 vertex_groups = original_geo.vertex_groups.keys()
                 evaluted_mesh.calc_normals_split()
+                region_attribute = evaluted_mesh.get_custom_attribute()
+                region_count = len(original_geo.region_list)
                 for idx, face in enumerate(evaluted_mesh.polygons):
-                    if evaluted_mesh.face_maps.active and len(original_geo.face_maps) > 0:
-                        face_map_idx = evaluted_mesh.face_maps.active.data[idx].value
-                        if not face_map_idx == -1:
-                            face_set = mesh_processing.process_mesh_export_face_set(default_permutation, default_region, game_version, original_geo, face_map_idx)
+                    if not original_geo.active_region == -1 and region_count > 0:
+                        region_idx = region_attribute.data[idx].value - 1
+                        if not region_idx == -1 and not region_idx >= region_count:
+                            face_set = mesh_processing.process_mesh_export_face_set(default_permutation, default_region, game_version, original_geo, region_idx)
                             if not region in region_list:
                                 region_list.append(region)
 
                             region_index = region_list.index(region)
-                            if not game_version == 'haloce':
+                            if not game_version == "halo1":
                                 if not permutation in permutation_list:
                                     permutation_list.append(permutation)
 
@@ -434,18 +473,17 @@ def process_scene(context, version, game_version, hidden_geo, nonrender_geo, app
 
                     triangles.append(ASS.Triangle(region_index, material_index, v0, v1, v2))
                     for loop_index in face.loop_indices:
-                        loop = evaluted_mesh.loops[loop_index]
-                        vert = evaluted_mesh.vertices[loop.vertex_index]
-
-                        use_loop = None
-                        if loop_normals:
-                            use_loop = loop
+                        point_idx = evaluted_mesh.loops[loop_index].vertex_index
+                        point_data = evaluted_mesh.loops[loop_index]
+                        vertex_data = evaluted_mesh.vertices[point_data.vertex_index]
+                        if not loop_normals:
+                            point_data = vertex_data
 
                         region = region_index
-                        scaled_translation, normal = mesh_processing.process_mesh_export_vert(vert, use_loop, "ASS", object_matrix, custom_scale)
+                        scaled_translation, normal = mesh_processing.process_mesh_export_vert(vertex_data, point_data, "ASS", object_matrix, custom_scale)
                         uv_set = mesh_processing.process_mesh_export_uv(evaluted_mesh, "ASS", loop_index, version)
-                        color = mesh_processing.process_mesh_export_color(evaluted_mesh, loop.vertex_index)
-                        node_influence_count, node_set, node_index_list = mesh_processing.process_mesh_export_weights(vert, armature, original_geo, vertex_groups, instance_list, "ASS")
+                        color = mesh_processing.process_mesh_export_color(layer_color, loop_index, point_idx)
+                        node_influence_count, node_set, node_index_list = mesh_processing.process_mesh_export_weights(vertex_data, armature, original_geo, vertex_groups, instance_list, "ASS")
 
                         verts.append(ASS.Vertex(node_influence_count, node_set, region, scaled_translation, normal, color, uv_set))
 

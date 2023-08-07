@@ -2,7 +2,7 @@
 #
 # MIT License
 #
-# Copyright (c) 2022 Steven Garcia
+# Copyright (c) 2023 Steven Garcia
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -104,14 +104,36 @@ def set_primitive_material(object_material_index, ASS, mesh):
         if mesh.materials:
             mesh.materials[0] = bpy.data.materials[mat.name]
 
+def sort_by_parent(instances):
+    instance_count = len(instances)
+    iteration_count = 0
+    instance_list = instances
+    ordered_list = []
+    unordered_map = []
+    layer_index_list = [-1]
+    while not len(ordered_list) == instance_count and not iteration_count == instance_count:
+        layer_list = []
+        layer_instance_list = []
+        for instance_idx, instance in enumerate(instance_list):
+            if instance.parent_id in layer_index_list:
+                layer_list.append(instance_idx)
+                unordered_map.append(instance_idx)
+                layer_instance_list.append(instance)
+
+        iteration_count += 1
+        ordered_list = ordered_list + layer_instance_list
+        layer_index_list = layer_list
+
+    return ordered_list, unordered_map
+
 def build_scene(context, filepath, report):
     ASS = process_file(filepath)
 
     collection = context.collection
     random_color_gen = global_functions.RandomColorGenerator() # generates a random sequence of colors
-    mesh_vertex_groups = []
 
-    mesh_processing.deselect_objects(context)
+    object_list = []
+    object_settings_list = []
 
     for idx, ass_mat in enumerate(ASS.materials):
         material_name = ass_mat.name
@@ -124,183 +146,236 @@ def build_scene(context, filepath, report):
         mat.ass_jms.name_override = ass_mat.asset_name
         mat.diffuse_color = random_color_gen.next()
 
-    object_list = []
-    mesh_list = []
-    object_index_list = []
-    for idx, instance in enumerate(ASS.instances):
-        object_index = instance.object_index
-        unique_id = instance.unique_id
+    for ass_object in ASS.objects:
+        mesh_name = "object_%s" % idx
 
-        geo_class = 'EMPTY'
-        object_radius = 2
-        object_height = 1
-        object_extents = [1.0, 1.0, 1.0]
+        geo_class = ass_object.geo_class
+        object_radius = ass_object.radius
+        object_height = ass_object.height
+        object_extents = ass_object.extents
+        object_material_index = ass_object.material_index
 
-        if not unique_id == -1:
-            if not object_index in object_index_list:
-                if not object_index == -1:
-                    object_index_list.append(object_index)
-                    object_element = ASS.objects[object_index]
-                    geo_class = object_element.geo_class
-                    object_radius = object_element.radius
-                    object_height = object_element.height
-                    object_extents = object_element.extents
-                    object_material_index = object_element.material_index
+        light_type = "POINT"
+        if geo_class == 'GENERIC_LIGHT':
+            if ass_object.light_properties.light_type == 'SPOT_LGT':
+                light_type = "SPOT"
 
-                    light_type = "POINT"
-                    if geo_class == 'GENERIC_LIGHT':
-                        if object_element.light_properties.light_type == 'SPOT_LGT':
-                            light_type = "SPOT"
+            elif ass_object.light_properties.light_type == 'DIRECT_LGT':
+                light_type = "AREA"
 
-                        elif object_element.light_properties.light_type == 'DIRECT_LGT':
-                            light_type = "AREA"
+            elif ass_object.light_properties.light_type == 'OMNI_LGT':
+                light_type = "POINT"
 
-                        elif object_element.light_properties.light_type == 'OMNI_LGT':
-                            light_type = "POINT"
+            elif ass_object.light_properties.light_type == 'AMBIENT_LGT':
+                light_type = "SUN"
 
-                        elif object_element.light_properties.light_type == 'AMBIENT_LGT':
-                            light_type = "SUN"
+        if geo_class == 'GENERIC_LIGHT':
+            object_data = bpy.data.lights.new(mesh_name, light_type)
+        else:
+            object_data = bpy.data.meshes.new(mesh_name)
+            object_data.ass_jms.XREF_path = ass_object.xref_filepath
+            object_data.ass_jms.XREF_name = ass_object.xref_objectname
 
-                    if geo_class == 'GENERIC_LIGHT':
-                        object_data = bpy.data.lights.new(instance.name, light_type)
-                    else:
-                        object_data = bpy.data.meshes.new("%s" % idx)
+        object_settings = None
+        if geo_class == 'GENERIC_LIGHT':
+            object_data.color = (ass_object.light_properties.light_color)
+            object_data.energy = (ass_object.light_properties.intensity)
+            if ass_object.light_properties.light_type == 'SPOT_LGT' or ass_object.light_properties.light_type == 'DIRECT_LGT':
+                if ass_object.light_properties.light_type == 'DIRECT_LGT':
+                    light_shape_type = "DISK"
+                    if not ass_object.light_properties.light_shape == 0:
+                        light_shape_type = "RECTANGLE"
 
-                    object_mesh = bpy.data.objects.new(instance.name, object_data)
-                    collection.objects.link(object_mesh)
-
-                    if not geo_class == 'GENERIC_LIGHT':
-                        object_mesh.data.ass_jms.XREF_path = object_element.xref_filepath
-                        object_mesh.data.ass_jms.XREF_name = object_element.xref_objectname
-
-                    if geo_class == 'GENERIC_LIGHT':
-                        object_mesh.data.color = (object_element.light_properties.light_color)
-                        object_mesh.data.energy = (object_element.light_properties.intensity)
-                        if object_element.light_properties.light_type == 'SPOT_LGT' or object_element.light_properties.light_type == 'DIRECT_LGT':
-                            if object_element.light_properties.light_type == 'DIRECT_LGT':
-                                light_shape_type = "DISK"
-                                if not object_element.light_properties.light_shape == 0:
-                                    light_shape_type = "RECTANGLE"
-
-                                object_mesh.data.shape = light_shape_type
-
-                            else:
-                                object_mesh.data.spot_size = radians(object_element.light_properties.hotspot_size)
-                                object_mesh.data.spot_blend = object_element.light_properties.hotspot_falloff_size / object_element.light_properties.hotspot_size
-
-                            object_mesh.data.halo_light.spot_size = radians(object_element.light_properties.hotspot_size)
-                            object_mesh.data.halo_light.spot_blend = object_element.light_properties.hotspot_falloff_size / object_element.light_properties.hotspot_size
-
-                            object_mesh.data.halo_light.light_cone_shape = str(object_element.light_properties.light_shape)
-                            object_mesh.data.halo_light.light_aspect_ratio = object_element.light_properties.light_aspect_ratio
-
-                            object_mesh.data.halo_light.use_near_atten = bool(object_element.light_properties.uses_near_attenuation)
-                            object_mesh.data.halo_light.near_atten_start = object_element.light_properties.near_attenuation_start
-                            object_mesh.data.halo_light.near_atten_end = object_element.light_properties.near_attenuation_end
-                            object_mesh.data.halo_light.use_far_atten = bool(object_element.light_properties.uses_far_attenuation)
-                            object_mesh.data.halo_light.far_atten_start = object_element.light_properties.far_attenuation_start
-                            object_mesh.data.halo_light.far_atten_end = object_element.light_properties.far_attenuation_end
-
-                    elif geo_class == 'PILL':
-                        set_primitive_material(object_material_index, ASS, object_data)
-
-                        bm = bmesh.new()
-                        bmesh.ops.create_cone(bm, cap_ends=True, cap_tris=False, segments=12, radius1=1, radius2=1, depth=2)
-                        bm.transform(Matrix.Translation((0, 0, 1)))
-
-                        bm.to_mesh(object_data)
-                        bm.free()
-
-                        object_mesh.data.ass_jms.Object_Type = 'CAPSULES'
-                        object_dimension = object_radius * 2
-                        object_mesh.dimensions = (object_dimension, object_dimension, (object_dimension + object_height))
-
-                    elif geo_class == 'SPHERE':
-                        set_primitive_material(object_material_index, ASS, object_data)
-
-                        bm = bmesh.new()
-                        bmesh.ops.create_uvsphere(bm, u_segments=32, v_segments=16, radius=1)
-
-                        bm.to_mesh(object_data)
-                        bm.free()
-
-                        object_mesh.data.ass_jms.Object_Type = 'SPHERE'
-                        object_dimension = object_radius * 2
-                        object_mesh.dimensions = (object_dimension, object_dimension, object_dimension)
-
-                    elif geo_class == 'BOX':
-                        set_primitive_material(object_material_index, ASS, object_data)
-
-                        bm = bmesh.new()
-                        bmesh.ops.create_cube(bm, size=1.0)
-
-                        bm.to_mesh(object_data)
-                        bm.free()
-
-                        object_mesh.data.ass_jms.Object_Type = 'BOX'
-                        object_mesh.dimensions = ((object_extents[0] * 2), (object_extents[1] * 2), (object_extents[2] * 2))
-
-                    elif geo_class == 'MESH':
-                        bm, vert_normal_list = mesh_processing.process_mesh_import_data('halo3', ASS, object_element, object_mesh, random_color_gen, 'ASS', 0, None, None, None, False)
-
-                        bm.to_mesh(object_data)
-                        bm.free()
-                        object_mesh.data.normals_split_custom_set(vert_normal_list)
-                        object_mesh.data.use_auto_smooth = True
-
-                        for vertex_groups in mesh_vertex_groups:
-                            for group in vertex_groups:
-                                if not group in object_mesh.vertex_groups:
-                                    object_mesh.vertex_groups.new(name = group)
-
-                    mesh_list.append(object_data)
+                    object_data.shape = light_shape_type
 
                 else:
-                    object_mesh = bpy.data.objects.new(instance.name, None)
-                    collection.objects.link(object_mesh)
+                    object_data.spot_size = radians(ass_object.light_properties.hotspot_size)
+                    if not ass_object.light_properties.hotspot_size == 0.0:
+                        object_data.spot_blend = ass_object.light_properties.hotspot_falloff_size / ass_object.light_properties.hotspot_size
 
-            else:
-                object_mesh = bpy.data.objects.new(instance.name, mesh_list[object_index])
-                collection.objects.link(object_mesh)
+                object_data.halo_light.spot_size = radians(ass_object.light_properties.hotspot_size)
+                if not ass_object.light_properties.hotspot_size == 0.0:
+                    object_data.halo_light.spot_blend = ass_object.light_properties.hotspot_falloff_size / ass_object.light_properties.hotspot_size
 
-            object_list.append(object_mesh)
+                object_data.halo_light.light_cone_shape = str(ass_object.light_properties.light_shape)
+                object_data.halo_light.light_aspect_ratio = ass_object.light_properties.light_aspect_ratio
+
+                object_data.halo_light.use_near_atten = bool(ass_object.light_properties.uses_near_attenuation)
+                object_data.halo_light.near_atten_start = ass_object.light_properties.near_attenuation_start
+                object_data.halo_light.near_atten_end = ass_object.light_properties.near_attenuation_end
+                object_data.halo_light.use_far_atten = bool(ass_object.light_properties.uses_far_attenuation)
+                object_data.halo_light.far_atten_start = ass_object.light_properties.far_attenuation_start
+                object_data.halo_light.far_atten_end = ass_object.light_properties.far_attenuation_end
+
+        elif geo_class == 'PILL':
+            set_primitive_material(object_material_index, ASS, object_data)
+
+            bm = bmesh.new()
+            bmesh.ops.create_cone(bm, cap_ends=True, cap_tris=False, segments=12, radius1=1, radius2=1, depth=2)
+            bm.transform(Matrix.Translation((0, 0, 1)))
+
+            object_data.ass_jms.Object_Type = 'CAPSULES'
+            object_dimension = object_radius * 2
+            bmesh.ops.scale(bm, vec=(object_dimension, object_dimension, (object_dimension + object_height)), verts=bm.verts)
+
+            bm.to_mesh(object_data)
+            bm.free()
+
+        elif geo_class == 'SPHERE':
+            set_primitive_material(object_material_index, ASS, object_data)
+
+            bm = bmesh.new()
+            bmesh.ops.create_uvsphere(bm, u_segments=32, v_segments=16, radius=1)
+
+            object_data.ass_jms.Object_Type = 'SPHERE'
+            object_dimension = object_radius * 2
+            bmesh.ops.scale(bm, vec=(object_dimension, object_dimension, object_dimension), verts=bm.verts)
+
+            bm.to_mesh(object_data)
+            bm.free()
+
+        elif geo_class == 'BOX':
+            set_primitive_material(object_material_index, ASS, object_data)
+
+            bm = bmesh.new()
+            bmesh.ops.create_cube(bm, size=1.0)
+
+            object_data.ass_jms.Object_Type = 'BOX'
+            bmesh.ops.scale(bm, vec=((object_extents[0] * 2), (object_extents[1] * 2), (object_extents[2] * 2)), verts=bm.verts)
+
+            bm.to_mesh(object_data)
+            bm.free()
+
+        elif geo_class == 'MESH':
+            vertex_groups, vertex_weights, regions = mesh_processing.generate_mesh_retail(context, ASS, ass_object.vertices, ass_object.triangles, object_data, "halo3", random_color_gen)
+            object_settings = (vertex_groups, vertex_weights, regions)
+
+        object_settings_list.append(object_settings)
+        object_list.append(object_data)
+
+    instances = []
+    visited_objects = [False for object in object_list]
+    for idx, instance_element in enumerate(ASS.instances):
+        object_index = instance_element.object_index
+        unique_id = instance_element.unique_id
+        if not unique_id == -1:
+            pivot_transform = instance_element.pivot_transform
+            pivot_scale = (pivot_transform.scale, pivot_transform.scale, pivot_transform.scale)
+            if ASS.version == 1:
+                pivot_scale = pivot_transform.scale
+
+            pivot_matrix = Matrix.LocRotScale(pivot_transform.translation, pivot_transform.rotation, pivot_scale)
+
+            mesh = None
+            object_setings = None
+            xref = False
+            if not object_index == -1:
+                mesh = object_list[object_index]
+                object_setings = object_settings_list[object_index]
+                if hasattr(mesh, 'ass_jms') and not len(mesh.ass_jms.XREF_path) == 0:
+                    xref = True
+
+            instance_name_override = ""
+            if context.scene.objects.get(instance_element.name):
+                instance_name_override = instance_element.name
+
+            instance = bpy.data.objects.new(instance_element.name, mesh)
+            collection.objects.link(instance)
+            instances.append(instance)
+
+            instance.ass_jms.name_override = instance_name_override
+            instance.ass_jms.unique_id = str(instance_element.unique_id)
+
+            if not object_setings == None:
+                vertex_groups = object_setings[0]
+                vertex_weights = object_setings[1]
+                regions = object_setings[2]
+
+                for vertex_group in vertex_groups:
+                    instance.vertex_groups.new(name = vertex_group)
+
+                for vertex_weight_idx, vertex_weight in enumerate(vertex_weights):
+                    group_index = vertex_weight[0]
+                    node_weight = vertex_weight[1]
+                    instance.vertex_groups[group_index].add([vertex_weight_idx], node_weight, 'ADD')
+
+                for region in regions:
+                    instance.region_add(region)
+
+            if xref and instance.type == 'MESH' and not visited_objects[object_index]:
+                visited_objects[object_index] = True
+                bm = bmesh.new()
+                bm.from_mesh(instance.data)
+                bmesh.ops.transform(bm, matrix=pivot_matrix, space=Matrix.Identity(4), verts=bm.verts)
+                bm.to_mesh(instance.data)
+                bm.free()
 
         else:
-            if not None in object_list:
-                object_list.append(None)
+            instances.append(None)
 
-    for idx, instance in enumerate(ASS.instances):
-        object_index = instance.object_index
-        unique_id = instance.unique_id
-        object_scene = object_list[idx]
-
-        geo_class = 'EMPTY'
-
-        local_transform = instance.local_transform
-        pivot_transform = instance.pivot_transform
-        local_scale = (local_transform.scale, local_transform.scale, local_transform.scale)
-        pivot_scale = (pivot_transform.scale, pivot_transform.scale, pivot_transform.scale)
-        if ASS.version == 1:
-            local_scale = local_transform.scale
-            pivot_scale = pivot_transform.scale
-
-        local_matrix = Matrix.LocRotScale(local_transform.translation, local_transform.rotation, local_scale)
-        pivot_matrix = Matrix.LocRotScale(pivot_transform.translation, pivot_transform.rotation, pivot_scale)
-        full_matrix = local_matrix
-
+    ordered_instances, unordered_map = sort_by_parent(ASS.instances)
+    for idx, instance_element in enumerate(ASS.instances):
+        object_index = instance_element.object_index
+        unique_id = instance_element.unique_id
         if not unique_id == -1:
-            if not object_index == -1:
-                full_matrix = local_matrix @ pivot_matrix
+            local_transform = instance_element.local_transform
+            pivot_transform = instance_element.pivot_transform
+            local_scale = (local_transform.scale, local_transform.scale, local_transform.scale)
+            pivot_scale = (pivot_transform.scale, pivot_transform.scale, pivot_transform.scale)
+            if ASS.version == 1:
+                local_scale = local_transform.scale
+                pivot_scale = pivot_transform.scale
 
-            object_scene.matrix_world = full_matrix
+            local_matrix = Matrix.LocRotScale(local_transform.translation, local_transform.rotation, local_scale)
+            pivot_matrix = Matrix.LocRotScale(pivot_transform.translation, pivot_transform.rotation, pivot_scale)
 
-            parent_index = instance.parent_id
+            instance = instances[idx]
+
+            xref = False
+            parent_xref = False
+            if not object_index == -1 and instance.type == "MESH" and not len(instance.data.ass_jms.XREF_path) == 0:
+                xref = True
+
+            transform = Matrix()
+            parent_object = None
+            parent_index = instance_element.parent_id
+            child_transform = local_matrix
+            if not xref:
+                child_transform = local_matrix @ pivot_matrix
+
             if not parent_index == -1:
                 parent_instance = ASS.instances[parent_index]
                 parent_unique_id = parent_instance.unique_id
                 parent_parent_id = parent_instance.parent_id
-                if parent_unique_id >= -1 and parent_parent_id >= -1:
-                    object_scene.parent = object_list[parent_index]
+                parent_object_index = parent_instance.object_index
+                parent_object = instances[parent_index]
+                if parent_unique_id >= -1 and parent_parent_id >= -1 and not parent_object == None:
+                    parent_pivot_transform = parent_instance.pivot_transform
+                    parent_pivot_scale = (parent_pivot_transform.scale, parent_pivot_transform.scale, parent_pivot_transform.scale)
+                    if ASS.version == 1:
+                        parent_pivot_scale = parent_pivot_transform.scale
+
+                    parent_pivot_matrix = Matrix.LocRotScale(parent_pivot_transform.translation, parent_pivot_transform.rotation, parent_pivot_scale)
+                    parent_object = parent_object
+                    parent_transform = parent_object.matrix_world
+                    if not parent_object_index == -1:
+                        parent_mesh = object_list[parent_object_index]
+                        if not len(parent_mesh.ass_jms.XREF_path) == 0:
+                            parent_xref = True
+
+                    if not parent_xref:
+                        parent_transform = parent_pivot_matrix.inverted() @ parent_object.matrix_world
+
+                    transform = parent_transform @ child_transform
+
+                else:
+                    transform = child_transform
+
+            else:
+                transform = child_transform
+
+            instance.parent = parent_object
+            instance.matrix_world = transform
 
     report({'INFO'}, "Import completed successfully")
     return {'FINISHED'}

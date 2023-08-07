@@ -2,7 +2,7 @@
 #
 # MIT License
 #
-# Copyright (c) 2021 Steven Garcia
+# Copyright (c) 2023 Steven Garcia
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -108,8 +108,7 @@ class JMAFile(global_functions.HaloAsset):
                 self.biped_controller_transforms.append(JMAFile.Transform(transform.vector, transform.rotation, transform.scale))
 
 
-def write_file(context, report, directory, jma_version, jma_version_ce, jma_version_h2, jma_version_h3, game_version):
-    version = global_functions.get_version(jma_version, jma_version_ce, jma_version_h2, jma_version_h3, game_version, False)
+def write_file(context, report, directory, jma_version, game_version):
     extension_list = ('.jma', '.jmm', '.jmt', '.jmo', '.jmr', '.jmrx', '.jmh', '.jmz', '.jmw')
     retail_version_list = (16390,16391,16392,16393,16394,16395)
     if not os.path.exists(bpy.path.abspath(directory)):
@@ -123,9 +122,9 @@ def write_file(context, report, directory, jma_version, jma_version_ce, jma_vers
             extension = global_functions.get_true_extension(file_path, None, True)
             process_file_retail(imported_jma_file, extension, game_version, retail_version_list, report)
             if not imported_jma_file.broken_skeleton:
-                exported_jma_file = JMAFile(context, version, game_version, imported_jma_file)
+                exported_jma_file = JMAFile(context, jma_version, game_version, imported_jma_file)
 
-                if version > 16394:
+                if jma_version > 16394:
                     decimal_1 = '\n%0.10f'
                     decimal_2 = '\n%0.10f\t%0.10f'
                     decimal_3 = '\n%0.10f\t%0.10f\t%0.10f'
@@ -142,9 +141,9 @@ def write_file(context, report, directory, jma_version, jma_version_ce, jma_vers
                 file = open(os.path.join(directory, file_item), 'w', encoding='utf_8')
 
                 #write header
-                if version >= 16394:
+                if jma_version >= 16394:
                     file.write(
-                        '%s' % (version) +
+                        '%s' % (jma_version) +
                         '\n%s' % (exported_jma_file.node_checksum) +
                         '\n%s' % (imported_jma_file.frame_count) +
                         '\n%s' % (int(imported_jma_file.frame_rate)) +
@@ -155,7 +154,7 @@ def write_file(context, report, directory, jma_version, jma_version_ce, jma_vers
 
                 else:
                     file.write(
-                        '%s' % (version) +
+                        '%s' % (jma_version) +
                         '\n%s' % (imported_jma_file.frame_count) +
                         '\n%s' % (int(imported_jma_file.frame_rate)) +
                         '\n%s' % (1) +
@@ -164,9 +163,9 @@ def write_file(context, report, directory, jma_version, jma_version_ce, jma_vers
                         '\n%s' % (exported_jma_file.node_checksum)
                         )
 
-                if version >= 16391:
+                if jma_version >= 16391:
                         for node in exported_jma_file.nodes:
-                            if version >= 16394:
+                            if jma_version >= 16394:
                                 file.write(
                                     '\n%s' % (node.name) +
                                     '\n%s' % (node.parent)
@@ -174,7 +173,7 @@ def write_file(context, report, directory, jma_version, jma_version_ce, jma_vers
 
                             else:
                                 file.write('\n%s' % (node.name))
-                                if version >= 16392:
+                                if jma_version >= 16392:
                                     file.write(
                                         '\n%s' % (node.child) +
                                         '\n%s' % (node.sibling)
@@ -190,7 +189,7 @@ def write_file(context, report, directory, jma_version, jma_version_ce, jma_vers
                             )
 
                 #H2 specific biped controller data bool value.
-                if version > 16394:
+                if jma_version > 16394:
                     file.write('\n%s' % (int(len(exported_jma_file.biped_controller_transforms) > 0)))
                     if len(exported_jma_file.biped_controller_transforms) > 0:
                         for biped_transform in exported_jma_file.biped_controller_transforms:

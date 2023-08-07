@@ -2,7 +2,7 @@
 #
 # MIT License
 #
-# Copyright (c) 2022 Steven Garcia
+# Copyright (c) 2023 Steven Garcia
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -25,8 +25,6 @@
 # ##### END MIT LICENSE BLOCK #####
 
 import bpy
-import sys
-import argparse
 
 from ..global_functions import global_functions
 
@@ -48,69 +46,6 @@ from bpy.props import (
         PointerProperty,
         StringProperty
         )
-
-class JMS_MarkerPropertiesGroup(PropertyGroup):
-    name_override: StringProperty(
-        name = "Name Override",
-        description = "If filled then export will use the name set here instead of the object name",
-        default = "",
-        )
-
-    marker_mask_type: EnumProperty(
-        name="Mask Type",
-        description="Choose the mask type for the marker object",
-        items=( ('0', "Render",    "Render"),
-                ('1', "Collision", "Collision"),
-                ('2', "Physics",   "Physics"),
-                ('3', "All",       "All"),
-            )
-        )
-
-    marker_region: StringProperty(
-        name="Region",
-        description="Region for a marker object. If empty then the first assigned facemap will be used",
-        default = "",
-        )
-
-class JMS_MarkerProps(Panel):
-    bl_label = "Marker Properties"
-    bl_idname = "JMS_PT_MarkerPanel"
-    bl_space_type = "PROPERTIES"
-    bl_region_type = "WINDOW"
-    bl_context = "data"
-    bl_options = {"DEFAULT_CLOSED"}
-    bl_parent_id = "HALO_PT_MeshDetailsPanel"
-
-    @classmethod
-    def poll(cls, context):
-        obj = context.object
-        is_marker = None
-        if hasattr(obj, 'marker') and obj.name[0:1].lower() == '#':
-            is_marker = True
-
-        return is_marker
-
-    def draw(self, context):
-        layout = self.layout
-
-        scene = context.scene
-        scene_halo = scene.halo
-
-        mesh = context.object
-        mesh_marker = mesh.marker
-
-        box = layout
-        col = box.column(align=True)
-        row = col.row()
-        row.label(text='Name Override:')
-        row.prop(mesh_marker, "name_override", text='')
-        row = col.row()
-        row.label(text='Mask Type:')
-        row.prop(mesh_marker, "marker_mask_type", text='')
-        if scene_halo.game_version == 'haloce':
-            row = col.row()
-            row.label(text='Region:')
-            row.prop(mesh_marker, "marker_region", text='')
 
 class JMS_PhysicsPropertiesGroup(PropertyGroup):
     jms_spring_type: EnumProperty(
@@ -140,7 +75,7 @@ class JMS_PhysicsProps(Panel):
         scene = context.scene
         scene_halo = scene.halo
 
-        if not scene_halo.game_version == 'haloce':
+        if not scene_halo.game_title == "halo1":
             return (ob and rbc and (rbc.type in {'GENERIC_SPRING'})
                     and context.engine in cls.COMPAT_ENGINES)
 
@@ -153,7 +88,7 @@ class JMS_PhysicsProps(Panel):
         ob = context.object
         obj_jms = ob.jms
 
-        if not scene_halo.game_version == 'haloce':
+        if not scene_halo.game_title == "halo1":
             box = layout.box()
             box.label(text="Spring Type:")
             col = box.column(align=True)
@@ -176,26 +111,19 @@ class JMS_SceneProps(Panel):
         layout = self.layout
 
         box = layout.box()
-        box.label(text="Game Version:")
+        box.label(text="Game Title:")
         col = box.column(align=True)
         row = col.row()
-        row.prop(scene_jms, "game_version", text='')
+        row.prop(scene_jms, "game_title", text='')
         box = layout.box()
         box.label(text="File Details:")
         col = box.column(align=True)
         if scene_halo.expert_mode:
             row = col.row()
             row.label(text='JMS Version:')
-            if scene_jms.game_version == 'haloce':
-                row.prop(scene_jms, "jms_version_ce", text='')
+            row.prop(scene_jms, "jms_version", text='')
 
-            elif scene_jms.game_version == 'halo2':
-                row.prop(scene_jms, "jms_version_h2", text='')
-
-            elif scene_jms.game_version == 'halo3mcc':
-                row.prop(scene_jms, "jms_version_h3", text='')
-
-        if scene_jms.game_version == 'haloce':
+        if scene_jms.game_title == "halo1":
             row = col.row()
             row.label(text='Permutation:')
             row.prop(scene_jms, "permutation_ce", text='')
@@ -222,7 +150,6 @@ class JMS_SceneProps(Panel):
         row = col.row()
         row.label(text='Export Non-render Geometry:')
         row.prop(scene_jms, "nonrender_geo", text='')
-
         row = col.row()
         row.label(text='Export Render Geometry:')
         row.prop(scene_jms, "export_render", text='')
@@ -254,9 +181,12 @@ class JMS_SceneProps(Panel):
         row.label(text='Fix Rotations:')
         row.prop(scene_jms, "fix_rotations", text='')
         row = col.row()
+        row.label(text='Use Maya Sorting:')
+        row.prop(scene_jms, "use_maya_sorting", text='')
+        row = col.row()
         row.label(text='Use As Default Export Settings:')
         row.prop(scene_jms, "use_scene_properties", text='')
-        if scene_jms.folder_structure == True and not scene_jms.game_version == 'haloce':
+        if scene_jms.folder_structure == True and not scene_jms.game_title == "halo1":
             box = layout.box()
             box.label(text="Subdirectory Type:")
             col = box.column(align=True)
@@ -285,6 +215,52 @@ class JMS_SceneProps(Panel):
             row = box.row()
             row.prop(scene_jms, "scale_float")
 
+def version_settings_callback(self, context):
+    items=[ ('8197', "8197", "CE/H2/H3"),
+            ('8198', "8198", "CE/H2/H3"),
+            ('8199', "8199", "CE/H2/H3"),
+            ('8200', "8200", "CE/H2/H3"),
+        ]
+
+    if self.game_title == "halo2":
+            items.append(('8201', "8201", "H2/H3 Non-functional"))
+            items.append(('8202', "8202", "H2/H3 Non-functional"))
+            items.append(('8203', "8203", "H2/H3 Non-functional"))
+            items.append(('8204', "8204", "H2/H3 Non-functional"))
+            items.append(('8205', "8205", "H2/H3"))
+            items.append(('8206', "8206", "H2/H3 Non-functional"))
+            items.append(('8207', "8207", "H2/H3 Non-functional"))
+            items.append(('8208', "8208", "H2/H3 Non-functional"))
+            items.append(('8209', "8209", "H2/H3"))
+            items.append(('8210', "8210", "H2/H3"))
+
+    elif self.game_title == "halo3":
+            items.append(('8201', "8201", "H2/H3 Non-functional"))
+            items.append(('8202', "8202", "H2/H3 Non-functional"))
+            items.append(('8203', "8203", "H2/H3 Non-functional"))
+            items.append(('8204', "8204", "H2/H3 Non-functional"))
+            items.append(('8205', "8205", "H2/H3"))
+            items.append(('8206', "8206", "H2/H3 Non-functional"))
+            items.append(('8207', "8207", "H2/H3 Non-functional"))
+            items.append(('8208', "8208", "H2/H3 Non-functional"))
+            items.append(('8209', "8209", "H2/H3"))
+            items.append(('8210', "8210", "H2/H3"))
+            items.append(('8211', "8211", "H3 Non-functional"))
+            items.append(('8212', "8212", "H3 Non-functional"))
+            items.append(('8213', "8213", "H3"))
+
+    return items
+
+def update_version(self, context):
+    if self.game_title == "halo1":
+        self.jms_version = '8200'
+
+    elif self.game_title == "halo2":
+        self.jms_version = '8210'
+
+    else:
+        self.jms_version = '8213'
+
 class JMS_ScenePropertiesGroup(PropertyGroup):
     permutation_ce: StringProperty(
         name="Permutation",
@@ -307,91 +283,19 @@ class JMS_ScenePropertiesGroup(PropertyGroup):
     jms_version: EnumProperty(
         name="Version:",
         description="What version to use for the model file",
-        default="8200",
         options={'HIDDEN'},
-        items=[ ('8197', "8197", "CE/H2/H3"),
-                ('8198', "8198", "CE/H2/H3"),
-                ('8199', "8199", "CE/H2/H3"),
-                ('8200', "8200", "CE/H2/H3"),
-                ('8201', "8201", "H2/H3 Non-functional"),
-                ('8202', "8202", "H2/H3 Non-functional"),
-                ('8203', "8203", "H2/H3 Non-functional"),
-                ('8204', "8204", "H2/H3 Non-functional"),
-                ('8205', "8205", "H2/H3"),
-                ('8206', "8206", "H2/H3 Non-functional"),
-                ('8207', "8207", "H2/H3 Non-functional"),
-                ('8208', "8208", "H2/H3 Non-functional"),
-                ('8209', "8209", "H2/H3"),
-                ('8210', "8210", "H2/H3"),
-                ('8211', "8211", "H3 Non-functional"),
-                ('8212', "8212", "H3 Non-functional"),
-                ('8213', "8213", "H3"),
-            ]
+        items=version_settings_callback,
+        default=3
         )
 
-    jms_version_ce: EnumProperty(
-        name="Version:",
-        description="What version to use for the model file",
-        default="8200",
-        items=[ ('8197', "8197", "CE"),
-                ('8198', "8198", "CE"),
-                ('8199', "8199", "CE"),
-                ('8200', "8200", "CE"),
-            ]
-        )
-
-    jms_version_h2: EnumProperty(
-        name="Version:",
-        description="What version to use for the model file",
-        default="8210",
-        items=[ ('8197', "8197", "H2"),
-                ('8198', "8198", "H2"),
-                ('8199', "8199", "H2"),
-                ('8200', "8200", "H2"),
-                ('8201', "8201", "H2 Non-functional"),
-                ('8202', "8202", "H2 Non-functional"),
-                ('8203', "8203", "H2 Non-functional"),
-                ('8204', "8204", "H2 Non-functional"),
-                ('8205', "8205", "H2"),
-                ('8206', "8206", "H2 Non-functional"),
-                ('8207', "8207", "H2 Non-functional"),
-                ('8208', "8208", "H2 Non-functional"),
-                ('8209', "8209", "H2"),
-                ('8210', "8210", "H2"),
-            ]
-        )
-
-    jms_version_h3: EnumProperty(
-        name="Version:",
-        description="What version to use for the model file",
-        default="8213",
-        items=[ ('8197', "8197", "H3"),
-                ('8198', "8198", "H3"),
-                ('8199', "8199", "H3"),
-                ('8200', "8200", "H3"),
-                ('8201', "8201", "H3 Non-functional"),
-                ('8202', "8202", "H3 Non-functional"),
-                ('8203', "8203", "H3 Non-functional"),
-                ('8204', "8204", "H3 Non-functional"),
-                ('8205', "8205", "H3"),
-                ('8206', "8206", "H3 Non-functional"),
-                ('8207', "8207", "H3 Non-functional"),
-                ('8208', "8208", "H3 Non-functional"),
-                ('8209', "8209", "H3"),
-                ('8210', "8210", "H3"),
-                ('8211', "8211", "H3 Non-functional"),
-                ('8212', "8212", "H3 Non-functional"),
-                ('8213', "8213", "H3"),
-            ]
-        )
-
-    game_version: EnumProperty(
-        name="Game:",
+    game_title: EnumProperty(
+        name="Game Title:",
         description="What game will the model file be used for",
-        items=[ ('haloce', "Halo CE", "Export a JMS intended for Halo Custom Edition or Halo 1 MCC"),
-                ('halo2', "Halo 2", "Export a JMS intended for Halo 2 Vista or Halo 2 MCC"),
-                ('halo3mcc', "Halo 3 MCC", "Export a JMS intended for Halo 3 MCC"),
-            ]
+        items=[ ('halo1', "Halo 1", "Export a JMS intended for Halo 1"),
+                ('halo2', "Halo 2", "Export a JMS intended for Halo 2"),
+                ('halo3', "Halo 3", "Export a JMS intended for Halo 3"),
+            ],
+        update = update_version
         )
 
     generate_checksum: BoolProperty(
@@ -410,8 +314,8 @@ class JMS_ScenePropertiesGroup(PropertyGroup):
         name="Model Type:",
         description="What type to use for the model file",
         default="0",
-        items=[ ('0', "Structure", "Asset subdirectory intended for levels"),
-                ('1', "Render", "Asset subdirectory intended for models"),
+        items=[ ('0', "Render", "Asset subdirectory intended for models"),
+                ('1', "Structure", "Asset subdirectory intended for levels"),
             ]
         )
 
@@ -442,6 +346,12 @@ class JMS_ScenePropertiesGroup(PropertyGroup):
     fix_rotations: BoolProperty(
         name ="Fix Rotations",
         description = "Rotates bones by 90 degrees on a local Z axis",
+        default = False,
+        )
+
+    use_maya_sorting: BoolProperty(
+        name ="Use Maya Sorting",
+        description = "Certain models have different checksums due to how the Maya bipeds worked. Try this if the checksum doesn't match as is.",
         default = False,
         )
 
@@ -489,7 +399,7 @@ class JMS_ScenePropertiesGroup(PropertyGroup):
 
     edge_split: BoolProperty(
         name ="Edge Split",
-        description = "Apply a edge split modifier",
+        description = "Apply an edge split modifier",
         default = True,
         )
 
@@ -556,91 +466,19 @@ class ExportJMS(Operator, ExportHelper):
     jms_version: EnumProperty(
         name="Version:",
         description="What version to use for the model file",
-        default="8200",
         options={'HIDDEN'},
-        items=[ ('8197', "8197", "CE/H2/H3"),
-                ('8198', "8198", "CE/H2/H3"),
-                ('8199', "8199", "CE/H2/H3"),
-                ('8200', "8200", "CE/H2/H3"),
-                ('8201', "8201", "H2/H3 Non-functional"),
-                ('8202', "8202", "H2/H3 Non-functional"),
-                ('8203', "8203", "H2/H3 Non-functional"),
-                ('8204', "8204", "H2/H3 Non-functional"),
-                ('8205', "8205", "H2/H3"),
-                ('8206', "8206", "H2/H3 Non-functional"),
-                ('8207', "8207", "H2/H3 Non-functional"),
-                ('8208', "8208", "H2/H3 Non-functional"),
-                ('8209', "8209", "H2/H3"),
-                ('8210', "8210", "H2/H3"),
-                ('8211', "8211", "H3 Non-functional"),
-                ('8212', "8212", "H3 Non-functional"),
-                ('8213', "8213", "H3"),
-            ]
+        items=version_settings_callback,
+        default=3
         )
 
-    jms_version_ce: EnumProperty(
-        name="Version:",
-        description="What version to use for the model file",
-        default="8200",
-        items=[ ('8197', "8197", "CE"),
-                ('8198', "8198", "CE"),
-                ('8199', "8199", "CE"),
-                ('8200', "8200", "CE"),
-            ]
-        )
-
-    jms_version_h2: EnumProperty(
-        name="Version:",
-        description="What version to use for the model file",
-        default="8210",
-        items=[ ('8197', "8197", "H2"),
-                ('8198', "8198", "H2"),
-                ('8199', "8199", "H2"),
-                ('8200', "8200", "H2"),
-                ('8201', "8201", "H2 Non-functional"),
-                ('8202', "8202", "H2 Non-functional"),
-                ('8203', "8203", "H2 Non-functional"),
-                ('8204', "8204", "H2 Non-functional"),
-                ('8205', "8205", "H2"),
-                ('8206', "8206", "H2 Non-functional"),
-                ('8207', "8207", "H2 Non-functional"),
-                ('8208', "8208", "H2 Non-functional"),
-                ('8209', "8209", "H2"),
-                ('8210', "8210", "H2"),
-            ]
-        )
-
-    jms_version_h3: EnumProperty(
-        name="Version:",
-        description="What version to use for the model file",
-        default="8213",
-        items=[ ('8197', "8197", "H3"),
-                ('8198', "8198", "H3"),
-                ('8199', "8199", "H3"),
-                ('8200', "8200", "H3"),
-                ('8201', "8201", "H3 Non-functional"),
-                ('8202', "8202", "H3 Non-functional"),
-                ('8203', "8203", "H3 Non-functional"),
-                ('8204', "8204", "H3 Non-functional"),
-                ('8205', "8205", "H3"),
-                ('8206', "8206", "H3 Non-functional"),
-                ('8207', "8207", "H3 Non-functional"),
-                ('8208', "8208", "H3 Non-functional"),
-                ('8209', "8209", "H3"),
-                ('8210', "8210", "H3"),
-                ('8211', "8211", "H3 Non-functional"),
-                ('8212', "8212", "H3 Non-functional"),
-                ('8213', "8213", "H3"),
-            ]
-        )
-
-    game_version: EnumProperty(
-        name="Game:",
+    game_title: EnumProperty(
+        name="Game Title:",
         description="What game will the model file be used for",
-        items=[ ('haloce', "Halo CE", "Export a JMS intended for Halo Custom Edition or Halo 1 MCC"),
-                ('halo2', "Halo 2", "Export a JMS intended for Halo 2 Vista or Halo 2 MCC"),
-                ('halo3mcc', "Halo 3 MCC", "Export a JMS intended for Halo 3 MCC"),
-            ]
+        items=[ ('halo1', "Halo 1", "Export a JMS intended for Halo 1"),
+                ('halo2', "Halo 2", "Export a JMS intended for Halo 2"),
+                ('halo3', "Halo 3", "Export a JMS intended for Halo 3"),
+            ],
+        update = update_version
         )
 
     generate_checksum: BoolProperty(
@@ -659,8 +497,8 @@ class ExportJMS(Operator, ExportHelper):
         name="Model Type:",
         description="What type to use for the model file",
         default="0",
-        items=[ ('0', "Structure", "Asset subdirectory intended for levels"),
-                ('1', "Render", "Asset subdirectory intended for models"),
+        items=[ ('0', "Render", "Asset subdirectory intended for models"),
+                ('1', "Structure", "Asset subdirectory intended for levels"),
             ]
         )
 
@@ -678,7 +516,7 @@ class ExportJMS(Operator, ExportHelper):
 
     loop_normals: BoolProperty(
         name ="Use Loop Normals",
-        description = "Use loop data for normals instead of vertex. May not match original 3DS Max output at the moment.",
+        description = "Use loop data for normals instead of vertex. May not match original 3DS Max output",
         default = True,
         )
 
@@ -691,6 +529,12 @@ class ExportJMS(Operator, ExportHelper):
     fix_rotations: BoolProperty(
         name ="Fix Rotations",
         description = "Rotates bones by 90 degrees on a local Z axis",
+        default = False,
+        )
+
+    use_maya_sorting: BoolProperty(
+        name ="Use Maya Sorting",
+        description = "Certain models have different checksums due to how the Maya bipeds worked. Try this if the checksum doesn't match as is.",
         default = False,
         )
 
@@ -738,7 +582,7 @@ class ExportJMS(Operator, ExportHelper):
 
     edge_split: BoolProperty(
         name ="Edge Split",
-        description = "Apply a edge split modifier",
+        description = "Apply an edge split modifier",
         default = True,
         )
 
@@ -784,99 +628,15 @@ class ExportJMS(Operator, ExportHelper):
         options={'HIDDEN'},
         )
 
-    console: BoolProperty(
-        name ="Console",
-        description = "Is your console running",
-        default = False,
-        options={'HIDDEN'},
-        )
-
     def execute(self, context):
         from . import export_jms
-        if '--' in sys.argv:
-            argv = sys.argv[sys.argv.index('--') + 1:]
-            parser = argparse.ArgumentParser()
-            parser.add_argument('-arg1', '--filepath', dest='filepath', metavar='FILE', required = True)
-            parser.add_argument('-arg2', '--game_version', dest='game_version', type=str, default="halo2")
-            parser.add_argument('-arg3', '--jms_version', dest='jms_version', type=str, default="8210")
-            parser.add_argument('-arg4', '--permutation', dest='permutation_ce', type=str, default="")
-            parser.add_argument('-arg5', '--lod', dest='level_of_detail_ce', type=str, default="0")
-            parser.add_argument('-arg6', '--generate_checksum', dest='generate_checksum', action='store_true')
-            parser.add_argument('-arg7', '--folder_structure', dest='folder_structure', action='store_true')
-            parser.add_argument('-arg8', '--hidden_geo', dest='hidden_geo', action='store_true')
-            parser.add_argument('-arg9', '--nonrender_geo', dest='nonrender_geo', action='store_true')
-            parser.add_argument('-arg10', '--export_render', dest='export_render', action='store_true')
-            parser.add_argument('-arg11', '--export_collision', dest='export_collision', action='store_true')
-            parser.add_argument('-arg12', '--export_physics', dest='export_physics', action='store_true')
-            parser.add_argument('-arg13', '--write_textures', dest='write_textures', action='store_true')
-            parser.add_argument('-arg14', '--apply_modifiers', dest='apply_modifiers', action='store_true')
-            parser.add_argument('-arg15', '--triangulate_faces', dest='triangulate_faces', action='store_true')
-            parser.add_argument('-arg16', '--loop_normals', dest='loop_normals', action='store_true')
-            parser.add_argument('-arg17', '--clean_normalize_weights', dest='clean_normalize_weights', action='store_true')
-            parser.add_argument('-arg18', '--fix_rotations', dest='fix_rotations', action='store_true')
-            parser.add_argument('-arg19', '--edge_split', dest='edge_split', action='store_true')
-            parser.add_argument('-arg20', '--folder_type', dest='folder_type', action='0')
-            parser.add_argument('-arg21', '--use_edge_angle', dest='use_edge_angle', action='store_true')
-            parser.add_argument('-arg22', '--split_angle', dest='split_angle', type=float, default=1.0)
-            parser.add_argument('-arg23', '--use_edge_sharp', dest='use_edge_sharp', action='store_true')
-            parser.add_argument('-arg24', '--scale_enum', dest='scale_enum', type=str, default="0")
-            parser.add_argument('-arg25', '--scale_float', dest='scale_float', type=float, default=1.0)
-            parser.add_argument('-arg26', '--console', dest='console', action='store_true', default=True)
-            args = parser.parse_known_args(argv)[0]
-            print('filepath: ', args.filepath)
-            print('game_version: ', args.game_version)
-            print('jms_version: ', args.jms_version)
-            print('permutation_ce: ', args.permutation_ce)
-            print('level_of_detail_ce: ', args.level_of_detail_ce)
-            print('generate_checksum: ', args.generate_checksum)
-            print('folder_structure: ', args.folder_structure)
-            print('hidden_geo: ', args.hidden_geo)
-            print('nonrender_geo: ', args.nonrender_geo)
-            print('export_render: ', args.export_render)
-            print('export_collision: ', args.export_collision)
-            print('export_physics: ', args.export_physics)
-            print('write_textures: ', args.write_textures)
-            print('apply_modifiers: ', args.apply_modifiers)
-            print('triangulate_faces: ', args.triangulate_faces)
-            print('loop_normals: ', args.loop_normals)
-            print('clean_normalize_weights: ', args.clean_normalize_weights)
-            print('fix_rotations: ', args.fix_rotations)
-            print('edge_split: ', args.edge_split)
-            print('folder_type: ', args.folder_type)
-            print('use_edge_angle: ', args.use_edge_angle)
-            print('split_angle: ', args.split_angle)
-            print('use_edge_sharp: ', args.use_edge_sharp)
-            print('scale_enum: ', args.scale_enum)
-            print('scale_float: ', args.scale_float)
-            print('console: ', args.console)
-            self.filepath = args.filepath
-            self.game_version = args.game_version
-            self.jms_version = args.jms_version
-            self.permutation_ce = args.permutation_ce
-            self.level_of_detail_ce = args.level_of_detail_ce
-            self.generate_checksum = args.generate_checksum
-            self.folder_structure = args.folder_structure
-            self.hidden_geo = args.hidden_geo
-            self.nonrender_geo = args.nonrender_geo
-            self.export_render = args.export_render
-            self.export_collision = args.export_collision
-            self.export_physics = args.export_physics
-            self.write_textures = args.write_textures
-            self.apply_modifiers = args.apply_modifiers
-            self.triangulate_faces = args.triangulate_faces
-            self.loop_normals = args.loop_normals
-            self.clean_normalize_weights = args.clean_normalize_weights
-            self.fix_rotations = args.fix_rotations
-            self.edge_split = args.edge_split
-            self.folder_type = args.folder_type
-            self.use_edge_angle = args.use_edge_angle
-            self.split_angle = args.split_angle
-            self.use_edge_sharp = args.use_edge_sharp
-            self.scale_enum = args.scale_enum
-            self.scale_float = args.scale_float
-            self.console = args.console
 
-        return global_functions.run_code("export_jms.write_file(context, self.filepath, self.report, self.jms_version, self.jms_version_ce, self.jms_version_h2, self.jms_version_h3, self.generate_checksum, self.folder_structure, self.folder_type, self.apply_modifiers, self.triangulate_faces, self.loop_normals, self.fix_rotations, self.edge_split, self.use_edge_angle, self.use_edge_sharp, self.split_angle, self.clean_normalize_weights, self.scale_enum, self.scale_float, self.console, self.permutation_ce, self.level_of_detail_ce, self.hidden_geo, self.nonrender_geo, self.export_render, self.export_collision, self.export_physics, self.write_textures, self.game_version)")
+        jms_version = int(self.jms_version)
+        folder_type = bool(int(self.folder_type))
+        scale_value = global_functions.set_scale(self.scale_enum, self.scale_float)
+        edge_split = global_functions.EdgeSplit(self.edge_split, self.use_edge_angle, self.split_angle, self.use_edge_sharp)
+
+        return global_functions.run_code("export_jms.write_file(context, self.filepath, self.game_title, jms_version, self.permutation_ce, self.level_of_detail_ce, self.generate_checksum, self.folder_structure, self.write_textures, self.hidden_geo, self.nonrender_geo, self.export_render, self.export_collision, self.export_physics, self.apply_modifiers, self.triangulate_faces, self.loop_normals, self.clean_normalize_weights, edge_split, self.fix_rotations, self.use_maya_sorting, folder_type, scale_value, self.report)")
 
     def draw(self, context):
         scene = context.scene
@@ -890,10 +650,8 @@ class ExportJMS(Operator, ExportHelper):
             is_enabled = False
 
         if scene_jms.use_scene_properties:
-            self.game_version = scene_jms.game_version
-            self.jms_version_ce = scene_jms.jms_version_ce
-            self.jms_version_h2 = scene_jms.jms_version_h2
-            self.jms_version_h3 = scene_jms.jms_version_h3
+            self.game_title = scene_jms.game_title
+            self.jms_version = scene_jms.jms_version
             self.permutation_ce = scene_jms.permutation_ce
             self.level_of_detail_ce = scene_jms.level_of_detail_ce
             self.generate_checksum = scene_jms.generate_checksum
@@ -910,6 +668,7 @@ class ExportJMS(Operator, ExportHelper):
             self.clean_normalize_weights = scene_jms.clean_normalize_weights
             self.edge_split = scene_jms.edge_split
             self.fix_rotations = scene_jms.fix_rotations
+            self.use_maya_sorting = scene_jms.use_maya_sorting
             self.folder_type = scene_jms.folder_type
             self.use_edge_angle = scene_jms.use_edge_angle
             self.split_angle = scene_jms.split_angle
@@ -918,11 +677,11 @@ class ExportJMS(Operator, ExportHelper):
             self.scale_float = scene_jms.scale_float
 
         box = layout.box()
-        box.label(text="Game Version:")
+        box.label(text="Game Title:")
         col = box.column(align=True)
         row = col.row()
         row.enabled = is_enabled
-        row.prop(self, "game_version", text='')
+        row.prop(self, "game_title", text='')
         box = layout.box()
         box.label(text="File Details:")
         col = box.column(align=True)
@@ -930,14 +689,9 @@ class ExportJMS(Operator, ExportHelper):
             row = col.row()
             row.enabled = is_enabled
             row.label(text='JMS Version:')
-            if self.game_version == 'haloce':
-                row.prop(self, "jms_version_ce", text='')
-            elif self.game_version == 'halo2':
-                row.prop(self, "jms_version_h2", text='')
-            elif self.game_version == 'halo3mcc':
-                row.prop(self, "jms_version_h3", text='')
+            row.prop(self, "jms_version", text='')
 
-        if self.game_version == 'haloce':
+        if self.game_title == "halo1":
             row = col.row()
             row.enabled = is_enabled
             row.label(text='Permutation:')
@@ -971,7 +725,6 @@ class ExportJMS(Operator, ExportHelper):
         row.enabled = is_enabled
         row.label(text='Export Non-render Geometry:')
         row.prop(self, "nonrender_geo", text='')
-
         row = col.row()
         row.enabled = is_enabled
         row.label(text='Export Render Geometry:')
@@ -1012,9 +765,13 @@ class ExportJMS(Operator, ExportHelper):
         row.label(text='Fix Rotation:')
         row.prop(self, "fix_rotations", text='')
         row = col.row()
+        row.enabled = is_enabled
+        row.label(text='Use Maya Sorting:')
+        row.prop(self, "use_maya_sorting", text='')
+        row = col.row()
         row.label(text='Use Scene Export Settings:')
         row.prop(scene_jms, "use_scene_properties", text='')
-        if self.folder_structure == True and not self.game_version == 'haloce':
+        if self.folder_structure == True and not self.game_title == "halo1":
             box = layout.box()
             box.label(text="Subdirectory Type:")
             col = box.column(align=True)
@@ -1053,14 +810,14 @@ class ImportJMS(Operator, ImportHelper):
     bl_idname = "import_scene.jms"
     bl_label = "Import JMS"
     filename_ext = '.JMS'
-    game_version: EnumProperty(
-        name="Game:",
+    game_title: EnumProperty(
+        name="Game Title:",
         description="What game was the model file made for",
         default="auto",
         items=[ ('auto', "Auto", "Attempt to guess the game this JMS was intended for. Will default to Halo CE if this fails"),
-                ('haloce', "Halo CE", "Import a JMS intended for Halo Custom Edition or Halo 1 MCC"),
-                ('halo2', "Halo 2", "Import a JMS intended for Halo 2 Vista or Halo 2 MCC"),
-                ('halo3', "Halo 3", "Import a JMS intended for Halo 3 MCC"),
+                ('halo1', "Halo 1", "Import a JMS intended for Halo 1"),
+                ('halo2', "Halo 2", "Import a JMS intended for Halo 2"),
+                ('halo3', "Halo 3", "Import a JMS intended for Halo 3"),
             ]
         )
 
@@ -1082,6 +839,12 @@ class ImportJMS(Operator, ImportHelper):
         default = False,
         )
 
+    empty_markers: BoolProperty(
+        name ="Generate Empty Markers",
+        description = "Generate empty markers instead of UV spheres",
+        default = False,
+        )
+
     filter_glob: StringProperty(
         default="*.jms;*.jmp",
         options={'HIDDEN'},
@@ -1089,27 +852,8 @@ class ImportJMS(Operator, ImportHelper):
 
     def execute(self, context):
         from . import import_jms
-        if '--' in sys.argv:
-            argv = sys.argv[sys.argv.index('--') + 1:]
-            parser = argparse.ArgumentParser()
-            parser.add_argument('-arg1', '--filepath', dest='filepath', metavar='FILE', required = True)
-            parser.add_argument('-arg2', '--game_version', dest='game_version', type=str, default="halo2")
-            parser.add_argument('-arg3', '--reuse_armature', dest='reuse_armature', action='store_true')
-            parser.add_argument('-arg4', '--fix_parents', dest='fix_parents', action='store_true')
-            parser.add_argument('-arg5', '--fix_rotations', dest='fix_rotations', action='store_true')
-            args = parser.parse_known_args(argv)[0]
-            print('filepath: ', args.filepath)
-            print('game_version: ', args.game_version)
-            print('reuse_armature: ', args.reuse_armature)
-            print('fix_parents: ', args.fix_parents)
-            print('fix_rotations: ', args.fix_rotations)
-            self.filepath = args.filepath
-            self.game_version = args.game_version
-            self.reuse_armature = args.reuse_armature
-            self.fix_parents = args.fix_parents
-            self.fix_rotations = args.fix_rotations
 
-        return global_functions.run_code("import_jms.load_file(context, self.filepath, self.game_version, self.reuse_armature, self.fix_parents, self.fix_rotations, self.report)")
+        return global_functions.run_code("import_jms.load_file(context, self.filepath, self.game_title, self.reuse_armature, self.fix_parents, self.fix_rotations, self.empty_markers, self.report)")
 
     def draw(self, context):
         layout = self.layout
@@ -1118,8 +862,7 @@ class ImportJMS(Operator, ImportHelper):
         col = box.column(align=True)
         row = col.row()
         box.label(text="Game Version:")
-        row.prop(self, "game_version", text='')
-
+        row.prop(self, "game_title", text='')
         box = layout.box()
         box.label(text="Import Options:")
         col = box.column(align=True)
@@ -1127,7 +870,7 @@ class ImportJMS(Operator, ImportHelper):
         row = col.row()
         row.label(text='Reuse Armature:')
         row.prop(self, "reuse_armature", text='')
-        if self.game_version == 'auto' or self.game_version == 'halo2' or self.game_version == 'halo3':
+        if self.game_title == 'auto' or self.game_title == "halo2" or self.game_title == "halo3":
             row = col.row()
             row.label(text='Force node parents:')
             row.prop(self, "fix_parents", text='')
@@ -1135,6 +878,9 @@ class ImportJMS(Operator, ImportHelper):
         row = col.row()
         row.label(text='Fix Rotations:')
         row.prop(self, "fix_rotations", text='')
+        row = col.row()
+        row.label(text='Use Empties For Markers:')
+        row.prop(self, "empty_markers", text='')
 
 def menu_func_export(self, context):
     self.layout.operator(ExportJMS.bl_idname, text="Halo Jointed Model Skeleton (.jms)")
@@ -1143,8 +889,6 @@ def menu_func_import(self, context):
     self.layout.operator(ImportJMS.bl_idname, text="Halo Jointed Model Skeleton (.jms)")
 
 classeshalo = (
-    JMS_MarkerPropertiesGroup,
-    JMS_MarkerProps,
     JMS_ScenePropertiesGroup,
     JMS_SceneProps,
     JMS_PhysicsPropertiesGroup,
@@ -1161,16 +905,12 @@ def register():
     bpy.types.TOPBAR_MT_file_import.append(menu_func_import)
     bpy.types.Scene.jms = PointerProperty(type=JMS_ScenePropertiesGroup, name="JMS Scene Properties", description="Set properties for the JMS exporter")
     bpy.types.Object.jms = PointerProperty(type=JMS_PhysicsPropertiesGroup, name="JMS Physics Properties", description="Set properties for your constraints")
-    bpy.types.Object.marker = PointerProperty(type=JMS_MarkerPropertiesGroup, name="JMS Marker Properties", description="Set properties for your marker object")
-    bpy.types.Mesh.marker = PointerProperty(type=JMS_MarkerPropertiesGroup, name="JMS Marker Properties", description="Set properties for your marker object")
 
 def unregister():
     bpy.types.TOPBAR_MT_file_export.remove(menu_func_export)
     bpy.types.TOPBAR_MT_file_import.remove(menu_func_import)
     del bpy.types.Scene.jms
     del bpy.types.Object.jms
-    del bpy.types.Object.marker
-    del bpy.types.Mesh.marker
     for clshalo in classeshalo:
         bpy.utils.unregister_class(clshalo)
 

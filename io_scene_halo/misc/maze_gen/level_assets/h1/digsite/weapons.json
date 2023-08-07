@@ -1,0 +1,262 @@
+{
+    "weapons": [
+        {
+            "name": "assault_rifle_00_e3",
+            "path": "digsite\\weapons\\assault_rifle\\00_e3\\assault_rifle_00_e3",
+            "rounds_loaded": 42,
+            "rounds_total": 252
+        },
+        {
+            "name": "assault_rifle_99_e3",
+            "path": "digsite\\weapons\\assault_rifle\\99_e3\\assault_rifle_99_e3",
+            "rounds_loaded": 42,
+            "rounds_total": 210
+        },
+        {
+            "name": "assault_rifle_99_mac",
+            "path": "digsite\\weapons\\assault_rifle\\99_mac\\assault_rifle_99_mac",
+            "rounds_loaded": 42,
+            "rounds_total": 210
+        },
+        {
+            "name": "assault_rifle_digsite",
+            "path": "digsite\\weapons\\assault_rifle\\99_mac\\_dig\\assault_rifle_digsite",
+            "rounds_loaded": 42,
+            "rounds_total": 210
+        },
+        {
+            "name": "chaingun_99_mac",
+            "path": "digsite\\weapons\\chaingun\\99_mac\\chaingun_99_mac",
+            "rounds_loaded": 176,
+            "rounds_total": 528
+        },
+        {
+            "name": "chaingun_digsite",
+            "path": "digsite\\weapons\\chaingun\\99_mac\\_dig\\chaingun_digsite",
+            "rounds_loaded": 176,
+            "rounds_total": 528
+        },
+        {
+            "name": "concussion_gun_99_mac",
+            "path": "digsite\\weapons\\concussion_gun\\99_mac\\concussion_gun_99_mac",
+            "rounds_loaded": 151,
+            "rounds_total": 0
+        },
+        {
+            "name": "force_blade_00_e3",
+            "path": "digsite\\weapons\\energy_sword\\00_e3\\force_blade_00_e3",
+            "rounds_loaded": 0,
+            "rounds_total": 0
+        },
+        {
+            "name": "excavator_99_mac",
+            "path": "digsite\\weapons\\excavator\\99_mac\\excavator_99_mac",
+            "rounds_loaded": 16,
+            "rounds_total": 400
+        },
+        {
+            "name": "flak_cannon_99_mac",
+            "path": "digsite\\weapons\\flak_cannon\\99_mac\\flak_cannon_99_mac",
+            "rounds_loaded": 16,
+            "rounds_total": 384
+        },
+        {
+            "name": "defoliant_projector_99_mac",
+            "path": "digsite\\weapons\\flamethrower\\99_mac\\defoliant_projector_99_mac",
+            "rounds_loaded": 122,
+            "rounds_total": 366
+        },
+        {
+            "name": "fuel_rod_gun_99_mac",
+            "path": "digsite\\weapons\\fuel_rod_gun\\99_mac\\fuel_rod_gun_99_mac",
+            "rounds_loaded": 6,
+            "rounds_total": 18
+        },
+        {
+            "name": "mortar_99_mac",
+            "path": "digsite\\weapons\\gravity_wrench\\99_mac\\mortar_99_mac",
+            "rounds_loaded": 201,
+            "rounds_total": 0
+        },
+        {
+            "name": "knife_99_e3",
+            "path": "digsite\\weapons\\machete\\99_e3\\knife_99_e3",
+            "rounds_loaded": 0,
+            "rounds_total": 0
+        },
+        {
+            "name": "knife_99_mac",
+            "path": "digsite\\weapons\\machete\\99_mac\\knife_99_mac",
+            "rounds_loaded": 0,
+            "rounds_total": 0
+        },
+        {
+            "name": "microwave_gun_99_mac",
+            "path": "digsite\\weapons\\microwave_gun\\99_mac\\microwave_gun_99_mac",
+            "rounds_loaded": 81,
+            "rounds_total": 0
+        },
+        {
+            "name": "missile_launcher_99_mac",
+            "path": "digsite\\weapons\\missile_launcher\\99_mac\\missile_launcher_99_mac",
+            "rounds_loaded": 1,
+            "rounds_total": 3
+        },
+        {
+            "name": "needler_00_e3",
+            "path": "digsite\\weapons\\needler\\00_e3\\needler_00_e3",
+            "rounds_loaded": 16,
+            "rounds_total": 128
+        },
+        {
+            "name": "particle_beam_00_e3",
+            "path": "digsite\\weapons\\particle_beam\\00_e3\\particle_beam_00_e3",
+            "rounds_loaded": 101,
+            "rounds_total": 0
+        },
+        {
+            "name": "particle_beam_rifle_99_mac",
+            "path": "digsite\\weapons\\particle_beam\\99_mac\\particle_beam_rifle_99_mac",
+            "rounds_loaded": 201,
+            "rounds_total": 0
+        },
+        {
+            "name": "pistol_00_e3",
+            "path": "digsite\\weapons\\pistol\\00_e3\\pistol_00_e3",
+            "rounds_loaded": 18,
+            "rounds_total": 90
+        },
+        {
+            "name": "pistol_00_mac",
+            "path": "digsite\\weapons\\pistol\\00_mac\\pistol_00_mac",
+            "rounds_loaded": 18,
+            "rounds_total": 90
+        },
+        {
+            "name": "pistol_99_e3",
+            "path": "digsite\\weapons\\pistol\\99_e3\\pistol_99_e3",
+            "rounds_loaded": 18,
+            "rounds_total": 90
+        },
+        {
+            "name": "pistol_99_mac",
+            "path": "digsite\\weapons\\pistol\\99_mac\\pistol_99_mac",
+            "rounds_loaded": 18,
+            "rounds_total": 90
+        },
+        {
+            "name": "pistol_laser_designator",
+            "path": "digsite\\weapons\\pistol\\99_mac\\_dig\\pistol_laser_designator",
+            "rounds_loaded": 18,
+            "rounds_total": 90
+        },
+        {
+            "name": "energy_pistol_99_mac",
+            "path": "digsite\\weapons\\plasma_pistol\\99_mac\\energy_pistol_99_mac",
+            "rounds_loaded": 32,
+            "rounds_total": 96
+        },
+        {
+            "name": "plasma_rifle_00_e3",
+            "path": "digsite\\weapons\\plasma_rifle\\00_e3\\plasma_rifle_00_e3",
+            "rounds_loaded": 42,
+            "rounds_total": 252
+        },
+        {
+            "name": "plasma_rifle_01_beta",
+            "path": "digsite\\weapons\\plasma_rifle\\01_beta\\plasma_rifle_01_beta",
+            "rounds_loaded": 0,
+            "rounds_total": 0
+        },
+        {
+            "name": "plasma_rifle_01_gs",
+            "path": "digsite\\weapons\\plasma_rifle\\01_gs\\plasma_rifle_01_gs",
+            "rounds_loaded": 42,
+            "rounds_total": 420
+        },
+        {
+            "name": "energy_carbine_99_mac",
+            "path": "digsite\\weapons\\plasma_rifle\\99_mac\\energy_carbine_99_mac",
+            "rounds_loaded": 100,
+            "rounds_total": 300
+        },
+        {
+            "name": "rocket_launcher_99_mac",
+            "path": "digsite\\weapons\\rocket_launcher\\99_mac\\rocket_launcher_99_mac",
+            "rounds_loaded": 2,
+            "rounds_total": 6
+        },
+        {
+            "name": "shotgun_00_e3",
+            "path": "digsite\\weapons\\shotgun\\00_e3\\shotgun_00_e3",
+            "rounds_loaded": 10,
+            "rounds_total": 45
+        },
+        {
+            "name": "shotgun_00_mac",
+            "path": "digsite\\weapons\\shotgun\\00_mac\\shotgun_00_mac",
+            "rounds_loaded": 5,
+            "rounds_total": 25
+        },
+        {
+            "name": "shotgun_99_e3",
+            "path": "digsite\\weapons\\shotgun\\99_e3\\shotgun_99_e3",
+            "rounds_loaded": 5,
+            "rounds_total": 25
+        },
+        {
+            "name": "shotgun_99_mac",
+            "path": "digsite\\weapons\\shotgun\\99_mac\\shotgun_99_mac",
+            "rounds_loaded": 10,
+            "rounds_total": 45
+        },
+        {
+            "name": "smg_00_mac",
+            "path": "digsite\\weapons\\smg\\00_mac\\smg_00_mac",
+            "rounds_loaded": 50,
+            "rounds_total": 250
+        },
+        {
+            "name": "smg_99_e3",
+            "path": "digsite\\weapons\\smg\\99_e3\\smg_99_e3",
+            "rounds_loaded": 50,
+            "rounds_total": 250
+        },
+        {
+            "name": "smg_99_mac",
+            "path": "digsite\\weapons\\smg\\99_mac\\smg_99_mac",
+            "rounds_loaded": 50,
+            "rounds_total": 250
+        },
+        {
+            "name": "sniper_rifle_00_e3",
+            "path": "digsite\\weapons\\sniper_rifle\\00_e3\\sniper_rifle_00_e3",
+            "rounds_loaded": 5,
+            "rounds_total": 20
+        },
+        {
+            "name": "sniper_rifle_99_e3",
+            "path": "digsite\\weapons\\sniper_rifle\\99_e3\\sniper_rifle_99_e3",
+            "rounds_loaded": 1,
+            "rounds_total": 8
+        },
+        {
+            "name": "sniper_rifle_99_mac",
+            "path": "digsite\\weapons\\sniper_rifle\\99_mac\\sniper_rifle_99_mac",
+            "rounds_loaded": 1,
+            "rounds_total": 8
+        },
+        {
+            "name": "speargun_99_e3",
+            "path": "digsite\\weapons\\speargun\\99_e3\\speargun_99_e3",
+            "rounds_loaded": 1,
+            "rounds_total": 5
+        },
+        {
+            "name": "speargun_99_mac",
+            "path": "digsite\\weapons\\speargun\\99_mac\\speargun_99_mac",
+            "rounds_loaded": 1,
+            "rounds_total": 5
+        }
+    ]
+}

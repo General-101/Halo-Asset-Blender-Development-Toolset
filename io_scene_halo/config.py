@@ -9,3 +9,5 @@ ENABLE_CRASH_REPORT = True
 OVERRIDE_USER_DETAILS = False
 USERNAME = "MissingString"
 DEVICE_NAME = "HiddenIntentions"
+
+HALO_1_TAG_PATH = ""

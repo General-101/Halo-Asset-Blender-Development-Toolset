@@ -2,7 +2,7 @@
 #
 # MIT License
 #
-# Copyright (c) 2022 Steven Garcia
+# Copyright (c) 2023 Steven Garcia
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -32,14 +32,15 @@ from .. import config
 from getpass import getuser
 from .process_scene import process_scene
 from ..global_functions import global_functions
+from ..global_functions.global_functions import ModelTypeEnum
 
 def build_asset(context, filepath, version, game_version, folder_structure, hidden_geo, nonrender_geo, apply_modifiers, triangulate_faces, loop_normals, edge_split, clean_normalize_weights, custom_scale, report):
     ASS = process_scene(context, version, game_version, hidden_geo, nonrender_geo, apply_modifiers, triangulate_faces, loop_normals, edge_split, clean_normalize_weights, custom_scale, report)
 
     filename = os.path.basename(filepath)
-    root_directory = global_functions.get_directory(context, game_version, "render", folder_structure, "0", False, filepath)
+    root_directory = global_functions.get_directory(context, game_version, ModelTypeEnum.render, folder_structure, True, False, filepath)
 
-    file = open(root_directory + os.sep + filename, 'w', encoding='utf_8')
+    file = open(os.path.join(root_directory, filename), 'w', encoding='utf_8')
 
     username = config.USERNAME
     device_name = config.DEVICE_NAME

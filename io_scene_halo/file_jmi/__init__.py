@@ -2,7 +2,7 @@
 #
 # MIT License
 #
-# Copyright (c) 2021 Steven Garcia
+# Copyright (c) 2023 Steven Garcia
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -25,8 +25,6 @@
 # ##### END MIT LICENSE BLOCK #####
 
 import bpy
-import sys
-import argparse
 
 from ..global_functions import global_functions
 
@@ -45,6 +43,52 @@ from bpy.props import (
         PointerProperty,
         StringProperty
         )
+
+def version_settings_callback(self, context):
+    items=[ ('8197', "8197", "CE/H2/H3"),
+            ('8198', "8198", "CE/H2/H3"),
+            ('8199', "8199", "CE/H2/H3"),
+            ('8200', "8200", "CE/H2/H3"),
+        ]
+
+    if self.game_title == "halo2":
+        items.append(('8201', "8201", "H2/H3 Non-functional"))
+        items.append(('8202', "8202", "H2/H3 Non-functional"))
+        items.append(('8203', "8203", "H2/H3 Non-functional"))
+        items.append(('8204', "8204", "H2/H3 Non-functional"))
+        items.append(('8205', "8205", "H2/H3"))
+        items.append(('8206', "8206", "H2/H3 Non-functional"))
+        items.append(('8207', "8207", "H2/H3 Non-functional"))
+        items.append(('8208', "8208", "H2/H3 Non-functional"))
+        items.append(('8209', "8209", "H2/H3"))
+        items.append(('8210', "8210", "H2/H3"))
+
+    elif self.game_title == "halo3":
+        items.append(('8201', "8201", "H2/H3 Non-functional"))
+        items.append(('8202', "8202", "H2/H3 Non-functional"))
+        items.append(('8203', "8203", "H2/H3 Non-functional"))
+        items.append(('8204', "8204", "H2/H3 Non-functional"))
+        items.append(('8205', "8205", "H2/H3"))
+        items.append(('8206', "8206", "H2/H3 Non-functional"))
+        items.append(('8207', "8207", "H2/H3 Non-functional"))
+        items.append(('8208', "8208", "H2/H3 Non-functional"))
+        items.append(('8209', "8209", "H2/H3"))
+        items.append(('8210', "8210", "H2/H3"))
+        items.append(('8211', "8211", "H3 Non-functional"))
+        items.append(('8212', "8212", "H3 Non-functional"))
+        items.append(('8213', "8213", "H3"))
+
+    return items
+
+def update_version(self, context):
+    if self.game_title == "halo1":
+        self.jmi_version = '8200'
+
+    elif self.game_title == "halo2":
+        self.jmi_version = '8210'
+
+    else:
+        self.jmi_version = '8213'
 
 class JMI_FilePropertiesGroup(PropertyGroup):
     permutation_ce: StringProperty(
@@ -81,7 +125,7 @@ class JMI_FileProps(Panel):
 
         obj = context.object
         is_ce_world_node = None
-        if hasattr(obj, 'jmi') and obj.name[0:1].lower() == '!' and scene_halo.game_version == 'haloce':
+        if hasattr(obj, 'jmi') and obj.name[0:1].lower() == '!' and scene_halo.game_title == "halo1":
             is_ce_world_node = True
 
         return is_ce_world_node
@@ -104,99 +148,27 @@ class JMI_ScenePropertiesGroup(PropertyGroup):
     jmi_version: EnumProperty(
         name="Version:",
         description="What version to use for the model file. Versions below 8207 will not have a JMI file",
-        default="8210",
         options={'HIDDEN'},
-        items=[ ('8197', "8197", "CE/H2/H3"),
-                ('8198', "8198", "CE/H2/H3"),
-                ('8199', "8199", "CE/H2/H3"),
-                ('8200', "8200", "CE/H2/H3"),
-                ('8201', "8201", "H2/H3 Non-functional"),
-                ('8202', "8202", "H2/H3 Non-functional"),
-                ('8203', "8203", "H2/H3 Non-functional"),
-                ('8204', "8204", "H2/H3 Non-functional"),
-                ('8205', "8205", "H2/H3"),
-                ('8206', "8206", "H2/H3 Non-functional"),
-                ('8207', "8207", "H2/H3 Non-functional"),
-                ('8208', "8208", "H2/H3 Non-functional"),
-                ('8209', "8209", "H2/H3"),
-                ('8210', "8210", "H2/H3"),
-                ('8211', "8211", "H3 Non-functional"),
-                ('8212', "8212", "H3 Non-functional"),
-                ('8213', "8213", "H3"),
-            ]
+        items=version_settings_callback,
+        default=3
         )
 
-    jmi_version_ce: EnumProperty(
-        name="Version:",
-        description="What version to use for the model file. No JMI file will be written",
-        default="8200",
-        items=[ ('8197', "8197", "CE"),
-                ('8198', "8198", "CE"),
-                ('8199', "8199", "CE"),
-                ('8200', "8200", "CE"),
-            ]
-        )
-
-    jmi_version_h2: EnumProperty(
-        name="Version:",
-        description="What version to use for the model file. Versions below 8207 will not have a JMI file",
-        default="8210",
-        items=[ ('8197', "8197", "CE/H2"),
-                ('8198', "8198", "CE/H2"),
-                ('8199', "8199", "CE/H2"),
-                ('8200', "8200", "CE/H2"),
-                ('8201', "8201", "H2 Non-functional"),
-                ('8202', "8202", "H2 Non-functional"),
-                ('8203', "8203", "H2 Non-functional"),
-                ('8204', "8204", "H2 Non-functional"),
-                ('8205', "8205", "H2"),
-                ('8206', "8206", "H2 Non-functional"),
-                ('8207', "8207", "H2 Non-functional"),
-                ('8208', "8208", "H2 Non-functional"),
-                ('8209', "8209", "H2"),
-                ('8210', "8210", "H2"),
-            ]
-        )
-
-    jmi_version_h3: EnumProperty(
-        name="Version:",
-        description="What version to use for the model file. Versions below 8207 will not have a JMI file",
-        default="8213",
-        items=[ ('8197', "8197", "CE/H2/H3"),
-                ('8198', "8198", "CE/H2/H3"),
-                ('8199', "8199", "CE/H2/H3"),
-                ('8200', "8200", "CE/H2/H3"),
-                ('8201', "8201", "H2/H3 Non-functional"),
-                ('8202', "8202", "H2/H3 Non-functional"),
-                ('8203', "8203", "H2/H3 Non-functional"),
-                ('8204', "8204", "H2/H3 Non-functional"),
-                ('8205', "8205", "H2/H3"),
-                ('8206', "8206", "H2/H3 Non-functional"),
-                ('8207', "8207", "H2/H3 Non-functional"),
-                ('8208', "8208", "H2/H3 Non-functional"),
-                ('8209', "8209", "H2/H3"),
-                ('8210', "8210", "H2/H3"),
-                ('8211', "8211", "H3 Non-functional"),
-                ('8212', "8212", "H3 Non-functional"),
-                ('8213', "8213", "H3"),
-            ]
-        )
-
-    game_version: EnumProperty(
-        name="Game:",
+    game_title: EnumProperty(
+        name="Game Title:",
         description="What game will the model file be used for",
-        items=[ ('haloce', "Halo CE", "Export a JMS set intended for Halo Custom Edition or Halo 1 MCC"),
-                ('halo2', "Halo 2", "Export a JMS set intended for Halo 2 Vista or Halo 2 MCC"),
-                ('halo3mcc', "Halo 3 MCC", "Export a JMS set intended for Halo 3 MCC"),
-            ]
+        items=[ ('halo1', "Halo 1", "Export a JMS intended for Halo 1"),
+                ('halo2', "Halo 2", "Export a JMS intended for Halo 2"),
+                ('halo3', "Halo 3", "Export a JMS intended for Halo 3"),
+            ],
+        update = update_version
         )
 
     folder_type: EnumProperty(
         name="Model Type:",
         description="What type to use for the model file",
         default="0",
-        items=[ ('0', "Structure", "Asset subdirectory intended for levels"),
-                ('1', "Render", "Asset subdirectory intended for models"),
+        items=[ ('0', "Render", "Asset subdirectory intended for models"),
+                ('1', "Structure", "Asset subdirectory intended for levels"),
             ]
         )
 
@@ -222,6 +194,18 @@ class JMI_ScenePropertiesGroup(PropertyGroup):
         name ="Clean and Normalize Weights",
         description = "Remove unused vertex groups and normalize weights before export. Permanently affects scene",
         default = True,
+        )
+
+    fix_rotations: BoolProperty(
+        name ="Fix Rotations",
+        description = "Rotates bones by 90 degrees on a local Z axis",
+        default = False,
+        )
+
+    use_maya_sorting: BoolProperty(
+        name ="Use Maya Sorting",
+        description = "Certain models have different checksums due to how the Maya bipeds worked. Try this if the checksum doesn't match as is.",
+        default = False,
         )
 
     use_scene_properties: BoolProperty(
@@ -268,7 +252,7 @@ class JMI_ScenePropertiesGroup(PropertyGroup):
 
     edge_split: BoolProperty(
         name ="Edge Split",
-        description = "Apply a edge split modifier",
+        description = "Apply an edge split modifier",
         default = True,
         )
 
@@ -325,24 +309,17 @@ class JMI_SceneProps(Panel):
         layout = self.layout
 
         box = layout.box()
-        box.label(text="Game Version:")
+        box.label(text="Game Title:")
         col = box.column(align=True)
         row = col.row()
-        row.prop(scene_jmi, "game_version", text='')
+        row.prop(scene_jmi, "game_title", text='')
         box = layout.box()
         box.label(text="File Details:")
         col = box.column(align=True)
         if scene_halo.expert_mode:
             row = col.row()
             row.label(text='JMI Version:')
-            if scene_jmi.game_version == 'haloce':
-                row.prop(scene_jmi, "jmi_version_ce", text='')
-
-            elif scene_jmi.game_version == 'halo2mcc':
-                row.prop(scene_jmi, "jmi_version_h2", text='')
-
-            elif scene_jmi.game_version == 'halo3mcc':
-                row.prop(scene_jmi, "jmi_version_h3", text='')
+            row.prop(scene_jmi, "jmi_version", text='')
 
         row = col.row()
         row.label(text='Write Texture Paths:')
@@ -387,10 +364,16 @@ class JMI_SceneProps(Panel):
         row.label(text='Use Edge Split:')
         row.prop(scene_jmi, "edge_split", text='')
         row = col.row()
+        row.label(text='Fix Rotations:')
+        row.prop(scene_jmi, "fix_rotations", text='')
+        row = col.row()
+        row.label(text='Use Maya Sorting:')
+        row.prop(scene_jmi, "use_maya_sorting", text='')
+        row = col.row()
         row.label(text='Use As Default Export Settings:')
         row.prop(scene_jmi, "use_scene_properties", text='')
 
-        if not scene_jmi.game_version == 'haloce':
+        if not scene_jmi.game_title == "halo1":
             box = layout.box()
             box.label(text="Subdirectory Type:")
             col = box.column(align=True)
@@ -428,99 +411,28 @@ class ExportJMI(Operator, ExportHelper):
     jmi_version: EnumProperty(
         name="Version:",
         description="What version to use for the model file. Versions below 8207 will not have a JMI file",
-        default="8210",
         options={'HIDDEN'},
-        items=[ ('8197', "8197", "CE/H2/H3"),
-                ('8198', "8198", "CE/H2/H3"),
-                ('8199', "8199", "CE/H2/H3"),
-                ('8200', "8200", "CE/H2/H3"),
-                ('8201', "8201", "H2/H3 Non-functional"),
-                ('8202', "8202", "H2/H3 Non-functional"),
-                ('8203', "8203", "H2/H3 Non-functional"),
-                ('8204', "8204", "H2/H3 Non-functional"),
-                ('8205', "8205", "H2/H3"),
-                ('8206', "8206", "H2/H3 Non-functional"),
-                ('8207', "8207", "H2/H3 Non-functional"),
-                ('8208', "8208", "H2/H3 Non-functional"),
-                ('8209', "8209", "H2/H3"),
-                ('8210', "8210", "H2/H3"),
-                ('8211', "8211", "H3 Non-functional"),
-                ('8212', "8212", "H3 Non-functional"),
-                ('8213', "8213", "H3"),
-            ]
+        items=version_settings_callback,
+        update = version_settings_callback,
+        default=3
         )
 
-    jmi_version_ce: EnumProperty(
-        name="Version:",
-        description="What version to use for the model file. No JMI file will be written",
-        default="8200",
-        items=[ ('8197', "8197", "CE"),
-                ('8198', "8198", "CE"),
-                ('8199', "8199", "CE"),
-                ('8200', "8200", "CE"),
-            ]
-        )
-
-    jmi_version_h2: EnumProperty(
-        name="Version:",
-        description="What version to use for the model file. Versions below 8207 will not have a JMI file",
-        default="8210",
-        items=[ ('8197', "8197", "CE/H2"),
-                ('8198', "8198", "CE/H2"),
-                ('8199', "8199", "CE/H2"),
-                ('8200', "8200", "CE/H2"),
-                ('8201', "8201", "H2 Non-functional"),
-                ('8202', "8202", "H2 Non-functional"),
-                ('8203', "8203", "H2 Non-functional"),
-                ('8204', "8204", "H2 Non-functional"),
-                ('8205', "8205", "H2"),
-                ('8206', "8206", "H2 Non-functional"),
-                ('8207', "8207", "H2 Non-functional"),
-                ('8208', "8208", "H2 Non-functional"),
-                ('8209', "8209", "H2"),
-                ('8210', "8210", "H2"),
-            ]
-        )
-
-    jmi_version_h3: EnumProperty(
-        name="Version:",
-        description="What version to use for the model file. Versions below 8207 will not have a JMI file",
-        default="8213",
-        items=[ ('8197', "8197", "CE/H2/H3"),
-                ('8198', "8198", "CE/H2/H3"),
-                ('8199', "8199", "CE/H2/H3"),
-                ('8200', "8200", "CE/H2/H3"),
-                ('8201', "8201", "H2/H3 Non-functional"),
-                ('8202', "8202", "H2/H3 Non-functional"),
-                ('8203', "8203", "H2/H3 Non-functional"),
-                ('8204', "8204", "H2/H3 Non-functional"),
-                ('8205', "8205", "H2/H3"),
-                ('8206', "8206", "H2/H3 Non-functional"),
-                ('8207', "8207", "H2/H3 Non-functional"),
-                ('8208', "8208", "H2/H3 Non-functional"),
-                ('8209', "8209", "H2/H3"),
-                ('8210', "8210", "H2/H3"),
-                ('8211', "8211", "H3 Non-functional"),
-                ('8212', "8212", "H3 Non-functional"),
-                ('8213', "8213", "H3"),
-            ]
-        )
-
-    game_version: EnumProperty(
-        name="Game:",
+    game_title: EnumProperty(
+        name="Game Title:",
         description="What game will the model file be used for",
-        items=[ ('haloce', "Halo CE", "Export a JMS set intended for Halo Custom Edition or Halo 1 MCC"),
-                ('halo2', "Halo 2 MCC", "Export a JMS set intended for Halo 2 Vista or Halo 2 MCC"),
-                ('halo3mcc', "Halo 3 MCC", "Export a JMS set intended for Halo 3 MCC"),
-            ]
+        items=[ ('halo1', "Halo 1", "Export a JMS intended for Halo 1"),
+                ('halo2', "Halo 2", "Export a JMS intended for Halo 2"),
+                ('halo3', "Halo 3", "Export a JMS intended for Halo 3"),
+            ],
+        update = update_version
         )
 
     folder_type: EnumProperty(
         name="Model Type:",
         description="What type to use for the model file",
         default="0",
-        items=[ ('0', "Structure", "Asset subdirectory intended for levels"),
-                ('1', "Render", "Asset subdirectory intended for models"),
+        items=[ ('0', "Render", "Asset subdirectory intended for models"),
+                ('1', "Structure", "Asset subdirectory intended for levels"),
             ]
         )
 
@@ -538,7 +450,7 @@ class ExportJMI(Operator, ExportHelper):
 
     loop_normals: BoolProperty(
         name ="Use Loop Normals",
-        description = "Use loop data for normals instead of vertex. May not match original 3DS Max output at the moment.",
+        description = "Use loop data for normals instead of vertex. May not match original 3DS Max output.",
         default = True,
         )
 
@@ -551,6 +463,12 @@ class ExportJMI(Operator, ExportHelper):
     fix_rotations: BoolProperty(
         name ="Fix Rotations",
         description = "Rotates bones by 90 degrees on a local Z axis",
+        default = False,
+        )
+
+    use_maya_sorting: BoolProperty(
+        name ="Use Maya Sorting",
+        description = "Certain models have different checksums due to how the Maya bipeds worked. Try this if the checksum doesn't match as is.",
         default = False,
         )
 
@@ -598,7 +516,7 @@ class ExportJMI(Operator, ExportHelper):
 
     edge_split: BoolProperty(
         name ="Edge Split",
-        description = "Apply a edge split modifier",
+        description = "Apply an edge split modifier",
         default = True,
         )
 
@@ -645,87 +563,14 @@ class ExportJMI(Operator, ExportHelper):
         options={'HIDDEN'},
         )
 
-    console: BoolProperty(
-        name ="Console",
-        description = "Is your console running",
-        default = False,
-        options={'HIDDEN'},
-        )
-
     def execute(self, context):
         from ..file_jmi import export_jmi
-        if '--' in sys.argv:
-            argv = sys.argv[sys.argv.index('--') + 1:]
-            parser = argparse.ArgumentParser()
-            parser.add_argument('-arg1', '--filepath', dest='filepath', metavar='FILE', required = True)
-            parser.add_argument('-arg2', '--game_version', dest='game_version', type=str, default="halo2")
-            parser.add_argument('-arg3', '--jmi_version', dest='jmi_version', type=str, default="8210")
-            parser.add_argument('-arg4', '--hidden_geo', dest='hidden_geo', action='store_true')
-            parser.add_argument('-arg5', '--nonrender_geo', dest='nonrender_geo', action='store_true')
-            parser.add_argument('-arg6', '--export_render', dest='export_render', action='store_true')
-            parser.add_argument('-arg7', '--export_collision', dest='export_collision', action='store_true')
-            parser.add_argument('-arg8', '--export_physics', dest='export_physics', action='store_true')
-            parser.add_argument('-arg9', '--write_textures', dest='write_textures', action='store_true')
-            parser.add_argument('-arg10', '--apply_modifiers', dest='apply_modifiers', action='store_true')
-            parser.add_argument('-arg11', '--triangulate_faces', dest='triangulate_faces', action='store_true')
-            parser.add_argument('-arg12', '--loop_normals', dest='loop_normals', action='store_true')
-            parser.add_argument('-arg13', '--clean_normalize_weights', dest='clean_normalize_weights', action='store_true')
-            parser.add_argument('-arg14', '--fix_rotations', dest='fix_rotations', action='store_true')
-            parser.add_argument('-arg15', '--edge_split', dest='edge_split', action='store_true')
-            parser.add_argument('-arg16', '--folder_type', dest='folder_type', action='store_true')
-            parser.add_argument('-arg17', '--use_edge_angle', dest='use_edge_angle', action='store_true')
-            parser.add_argument('-arg18', '--split_angle', dest='split_angle', type=float, default=1.0)
-            parser.add_argument('-arg19', '--use_edge_sharp', dest='use_edge_sharp', action='store_true')
-            parser.add_argument('-arg20', '--scale_enum', dest='scale_enum', type=str, default="0")
-            parser.add_argument('-arg21', '--scale_float', dest='scale_float', type=float, default=1.0)
-            parser.add_argument('-arg22', '--console', dest='console', action='store_true', default=True)
-            args = parser.parse_known_args(argv)[0]
-            print('filepath: ', args.filepath)
-            print('game_version: ', args.game_version)
-            print('jmi_version: ', args.jmi_version)
-            print('hidden_geo: ', args.hidden_geo)
-            print('nonrender_geo: ', args.nonrender_geo)
-            print('export_render: ', args.export_render)
-            print('export_collision: ', args.export_collision)
-            print('export_physics: ', args.export_physics)
-            print('write_textures: ', args.write_textures)
-            print('apply_modifiers: ', args.apply_modifiers)
-            print('triangulate_faces: ', args.triangulate_faces)
-            print('loop_normals: ', args.loop_normals)
-            print('clean_normalize_weights: ', args.clean_normalize_weights)
-            print('fix_rotations: ', args.fix_rotations)
-            print('edge_split: ', args.edge_split)
-            print('folder_type: ', args.folder_type)
-            print('use_edge_angle: ', args.use_edge_angle)
-            print('split_angle: ', args.split_angle)
-            print('use_edge_sharp: ', args.use_edge_sharp)
-            print('scale_enum: ', args.scale_enum)
-            print('scale_float: ', args.scale_float)
-            print('console: ', args.console)
-            self.filepath = args.filepath
-            self.game_version = args.game_version
-            self.jmi_version = args.jmi_version
-            self.hidden_geo = args.hidden_geo
-            self.nonrender_geo = args.nonrender_geo
-            self.export_render = args.export_render
-            self.export_collision = args.export_collision
-            self.export_physics = args.export_physics
-            self.write_textures = args.write_textures
-            self.apply_modifiers = args.apply_modifiers
-            self.triangulate_faces = args.triangulate_faces
-            self.loop_normals = args.loop_normals
-            self.clean_normalize_weights = args.clean_normalize_weights
-            self.fix_rotations = args.fix_rotations
-            self.edge_split = args.edge_split
-            self.folder_type = args.folder_type
-            self.use_edge_angle = args.use_edge_angle
-            self.split_angle = args.split_angle
-            self.use_edge_sharp = args.use_edge_sharp
-            self.scale_enum = args.scale_enum
-            self.scale_float = args.scale_float
-            self.console = args.console
 
-        return global_functions.run_code("export_jmi.write_file(context, self.filepath, self.report, self.jmi_version, self.jmi_version_ce, self.jmi_version_h2, self.jmi_version_h3, self.apply_modifiers, self.triangulate_faces, self.loop_normals, self.folder_type, self.edge_split, self.use_edge_angle, self.use_edge_sharp, self.split_angle, self.clean_normalize_weights, self.scale_enum, self.scale_float, self.console, self.hidden_geo, self.nonrender_geo, self.export_render, self.export_collision, self.export_physics, self.write_textures, self.game_version, self.fix_rotations)")
+        scale_value = global_functions.set_scale(self.scale_enum, self.scale_float)
+        edge_split = global_functions.EdgeSplit(self.edge_split, self.use_edge_angle, self.split_angle, self.use_edge_sharp)
+        int_jmi_version = int(self.jmi_version)
+
+        return global_functions.run_code("export_jmi.write_file(context, self.filepath, self.report, int_jmi_version, self.apply_modifiers, self.triangulate_faces, self.loop_normals, self.folder_type, edge_split, self.clean_normalize_weights, scale_value, self.hidden_geo, self.nonrender_geo, self.export_render, self.export_collision, self.export_physics, self.write_textures, self.game_title, self.fix_rotations, self.use_maya_sorting)")
 
     def draw(self, context):
         scene = context.scene
@@ -739,10 +584,8 @@ class ExportJMI(Operator, ExportHelper):
             is_enabled = False
 
         if scene_jmi.use_scene_properties:
-            self.game_version = scene_jmi.game_version
-            self.jmi_version_ce = scene_jmi.jmi_version_ce
-            self.jmi_version_h2 = scene_jmi.jmi_version_h2
-            self.jmi_version_h3 = scene_jmi.jmi_version_h3
+            self.game_title = scene_jmi.game_title
+            self.jmi_version = scene_jmi.jmi_version
             self.hidden_geo = scene_jmi.hidden_geo
             self.nonrender_geo = scene_jmi.nonrender_geo
             self.export_render = scene_jmi.export_render
@@ -754,6 +597,8 @@ class ExportJMI(Operator, ExportHelper):
             self.loop_normals = scene_jmi.loop_normals
             self.clean_normalize_weights = scene_jmi.clean_normalize_weights
             self.edge_split = scene_jmi.edge_split
+            self.fix_rotations = scene_jmi.fix_rotations
+            self.use_maya_sorting = scene_jmi.use_maya_sorting
             self.folder_type = scene_jmi.folder_type
             self.use_edge_angle = scene_jmi.use_edge_angle
             self.split_angle = scene_jmi.split_angle
@@ -762,11 +607,11 @@ class ExportJMI(Operator, ExportHelper):
             self.scale_float = scene_jmi.scale_float
 
         box = layout.box()
-        box.label(text="Game Version:")
+        box.label(text="Game Title:")
         col = box.column(align=True)
         row = col.row()
         row.enabled = is_enabled
-        row.prop(self, "game_version", text='')
+        row.prop(self, "game_title", text='')
         box = layout.box()
         box.label(text="File Details:")
         col = box.column(align=True)
@@ -774,14 +619,7 @@ class ExportJMI(Operator, ExportHelper):
             row = col.row()
             row.enabled = is_enabled
             row.label(text='JMI Version:')
-            if self.game_version == 'haloce':
-                row.prop(scene_jmi, "jmi_version_ce", text='')
-
-            elif self.game_version == 'halo2mcc':
-                row.prop(scene_jmi, "jmi_version_h2", text='')
-
-            elif self.game_version == 'halo3mcc':
-                row.prop(scene_jmi, "jmi_version_h3", text='')
+            row.prop(self, "jmi_version", text='')
 
         row = col.row()
         row.enabled = is_enabled
@@ -799,7 +637,6 @@ class ExportJMI(Operator, ExportHelper):
         row.enabled = is_enabled
         row.label(text='Export Non-render Geometry:')
         row.prop(self, "nonrender_geo", text='')
-
         row = col.row()
         row.enabled = is_enabled
         row.label(text='Export Render Geometry:')
@@ -837,10 +674,18 @@ class ExportJMI(Operator, ExportHelper):
         row.label(text='Use Edge Split:')
         row.prop(self, "edge_split", text='')
         row = col.row()
+        row.enabled = is_enabled
+        row.label(text='Fix Rotation:')
+        row.prop(self, "fix_rotations", text='')
+        row = col.row()
+        row.enabled = is_enabled
+        row.label(text='Use Maya Sorting:')
+        row.prop(self, "use_maya_sorting", text='')
+        row = col.row()
         row.label(text='Use Scene Export Settings:')
         row.prop(scene_jmi, "use_scene_properties", text='')
 
-        if not self.game_version == 'haloce':
+        if not self.game_title == "halo1":
             box = layout.box()
             box.label(text="Subdirectory Type:")
             col = box.column(align=True)

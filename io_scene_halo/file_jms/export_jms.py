@@ -2,7 +2,7 @@
 #
 # MIT License
 #
-# Copyright (c) 2022 Steven Garcia
+# Copyright (c) 2023 Steven Garcia
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -29,92 +29,74 @@ import bpy
 
 from .build_asset import build_asset
 from ..global_functions import mesh_processing, global_functions, resource_management, scene_validation
+from ..global_functions.global_functions import ModelTypeEnum
 
-def write_file(
-    context,
-    filepath,
-    report,
+def write_file(context,
+               filepath,
+               game_title,
+               jms_version,
+               permutation_ce,
+               level_of_detail_ce,
+               generate_checksum,
+               folder_structure,
+               write_textures,
+               hidden_geo,
+               nonrender_geo,
+               export_render,
+               export_collision,
+               export_physics,
+               apply_modifiers,
+               triangulate_faces,
+               loop_normals,
+               clean_normalize_weights,
+               edge_split,
+               fix_rotations,
+               use_maya_sorting,
+               folder_type,
+               scale_value,
+               report):
 
-    jms_version,
-    jms_version_ce,
-    jms_version_h2,
-    jms_version_h3,
-
-    generate_checksum,
-    folder_structure,
-    folder_type,
-    apply_modifiers,
-    triangulate_faces,
-    loop_normals,
-    fix_rotations,
-    edge_split,
-    use_edge_angle,
-    use_edge_sharp,
-    split_angle,
-    clean_normalize_weights,
-    scale_enum,
-    scale_float,
-    console,
-    permutation_ce,
-    level_of_detail_ce,
-    hidden_geo,
-    nonrender_geo,
-    export_render,
-    export_collision,
-    export_physics,
-    write_textures,
-    game_version,
-):
-    layer_collection_set = set()
-    object_set = set()
+    layer_collection_list = []
+    object_list = []
 
     # Gather all scene resources that fit export criteria
-    resource_management.gather_collection_resources(context.view_layer.layer_collection, layer_collection_set, object_set, hidden_geo, nonrender_geo)
+    resource_management.gather_scene_resources(context, layer_collection_list, object_list, hidden_geo)
 
     # Store visibility for all relevant resources
-    stored_collection_visibility = resource_management.store_collection_visibility(layer_collection_set)
-    stored_object_visibility = resource_management.store_object_visibility(object_set)
-    stored_modifier_visibility = resource_management.store_modifier_visibility(object_set)
+    stored_collection_visibility = resource_management.store_collection_visibility(layer_collection_list)
+    stored_object_visibility = resource_management.store_object_visibility(object_list)
+    stored_modifier_visibility = resource_management.store_modifier_visibility(object_list)
 
     # Unhide all relevant resources for exporting
-    resource_management.unhide_relevant_resources(layer_collection_set, object_set)
+    resource_management.unhide_relevant_resources(layer_collection_list, object_list)
 
     # Execute export
-    export_result = command_queue(
-        context,
-        False,
-        filepath,
-        report,
-
-        jms_version,
-        jms_version_ce,
-        jms_version_h2,
-        jms_version_h3,
-
-        generate_checksum,
-        folder_structure,
-        folder_type,
-        apply_modifiers,
-        triangulate_faces,
-        loop_normals,
-        fix_rotations,
-        edge_split,
-        use_edge_angle,
-        use_edge_sharp,
-        split_angle,
-        clean_normalize_weights,
-        scale_enum,
-        scale_float,
-        console,
-        permutation_ce,
-        level_of_detail_ce,
-        export_render,
-        export_collision,
-        export_physics,
-        write_textures,
-        game_version,
-        object_set,
-    )
+    export_result = command_queue(False,
+                                  context,
+                                  object_list,
+                                  filepath,
+                                  game_title,
+                                  jms_version,
+                                  permutation_ce,
+                                  level_of_detail_ce,
+                                  generate_checksum,
+                                  folder_structure,
+                                  write_textures,
+                                  hidden_geo,
+                                  nonrender_geo,
+                                  export_render,
+                                  export_collision,
+                                  export_physics,
+                                  apply_modifiers,
+                                  triangulate_faces,
+                                  loop_normals,
+                                  clean_normalize_weights,
+                                  edge_split,
+                                  fix_rotations,
+                                  use_maya_sorting,
+                                  folder_type,
+                                  scale_value,
+                                  report)
 
     # Restore visibility status for all resources
     resource_management.restore_collection_visibility(stored_collection_visibility)
@@ -123,43 +105,32 @@ def write_file(
 
     return export_result
 
-def command_queue(
-    context,
-    is_jmi,
-    filepath,
-    report,
-
-    jms_version,
-    jms_version_ce,
-    jms_version_h2,
-    jms_version_h3,
-
-    generate_checksum,
-
-    folder_structure,
-    folder_type,
-
-    apply_modifiers,
-    triangulate_faces,
-    loop_normals,
-    fix_rotations,
-    edge_split,
-    use_edge_angle,
-    use_edge_sharp,
-    split_angle,
-    clean_normalize_weights,
-    scale_enum,
-    scale_float,
-    console,
-    permutation_ce,
-    level_of_detail_ce,
-    export_render,
-    export_collision,
-    export_physics,
-    write_textures,
-    game_version,
-    object_set,
-):
+def command_queue(is_jmi,
+                  context,
+                  object_set,
+                  filepath,
+                  game_title,
+                  jms_version,
+                  permutation_ce,
+                  level_of_detail_ce,
+                  generate_checksum,
+                  folder_structure,
+                  write_textures,
+                  hidden_geo,
+                  nonrender_geo,
+                  export_render,
+                  export_collision,
+                  export_physics,
+                  apply_modifiers,
+                  triangulate_faces,
+                  loop_normals,
+                  clean_normalize_weights,
+                  edge_split,
+                  fix_rotations,
+                  use_maya_sorting,
+                  folder_type,
+                  scale_value,
+                  report):
 
     node_prefix_tuple = ('b ', 'b_', 'bone', 'frame', 'bip01')
     limit_value = 0.00000000009
@@ -192,11 +163,7 @@ def command_queue(
     bounding_sphere_list = []
     skylight_list = []
 
-    edge_split = global_functions.EdgeSplit(edge_split, use_edge_angle, split_angle, use_edge_sharp)
-
-    version = global_functions.get_version(jms_version, jms_version_ce, jms_version_h2, jms_version_h3, game_version, console)
-    level_of_detail_ce = mesh_processing.get_lod(level_of_detail_ce, game_version)
-    custom_scale = global_functions.set_scale(scale_enum, scale_float)
+    level_of_detail_ce = mesh_processing.get_lod(level_of_detail_ce, game_title)
 
     for obj in object_set:
         if obj.type== 'MESH':
@@ -217,10 +184,14 @@ def command_queue(
             world_node_count += 1
 
         elif obj.type == 'ARMATURE':
-            armature = obj
             armature_bones = obj.data.bones
-            armature_count += 1
-            node_list = list(armature_bones)
+            for bone in armature_bones:
+                if bone.use_deform:
+                    node_list.append(bone)
+
+            if len(node_list) > 0:
+                armature = obj
+                armature_count += 1
 
         elif name.startswith(node_prefix_tuple):
             mesh_frame_count += 1
@@ -228,7 +199,7 @@ def command_queue(
 
         elif name[0:1] == '#':
             if obj.parent and (obj.parent.type == 'ARMATURE' or parent_name.startswith(node_prefix_tuple)):
-                mask_type = obj.marker.marker_mask_type
+                mask_type = obj.ass_jms.marker_mask_type
                 if export_render and mask_type =='0':
                     render_marker_list.append(obj)
                     render_count += 1
@@ -260,7 +231,7 @@ def command_queue(
 
                     collision_geometry_list.append((evaluted_mesh, obj))
 
-        elif name[0:1] == '$' and not game_version == "haloce" and version > 8205:
+        elif name[0:1] == '$' and not game_title == "halo1" and jms_version > 8205:
             if export_physics:
                 physics_count += 1
                 if obj.rigid_body_constraint:
@@ -294,13 +265,13 @@ def command_queue(
 
                             convex_shape_list.append((evaluted_mesh, obj))
 
-        elif obj.type == 'LIGHT' and obj.data.type == 'SUN' and version > 8212:
+        elif obj.type == 'LIGHT' and obj.data.type == 'SUN' and jms_version > 8212:
             if export_render:
                 skylight_list.append(obj)
 
         elif obj.type== 'MESH':
             if export_render:
-                if not global_functions.string_empty_check(obj.data.ass_jms.XREF_path) and version > 8205:
+                if not global_functions.string_empty_check(obj.data.ass_jms.XREF_path) and jms_version > 8205:
                     instance_markers.append(obj)
                     xref_path = obj.data.ass_jms.XREF_path
                     xref_name = obj.data.ass_jms.XREF_name
@@ -311,7 +282,7 @@ def command_queue(
                     if not xref_tuple in xref_instances:
                         xref_instances.append(xref_tuple)
 
-                elif obj.data.ass_jms.bounding_radius and version >= 8209:
+                elif obj.data.ass_jms.bounding_radius and jms_version >= 8209:
                     bounding_sphere_list.append(obj)
 
                 elif len(obj.data.polygons) > 0:
@@ -328,22 +299,22 @@ def command_queue(
 
     blend_scene = global_functions.BlendScene(world_node_count, armature_count, mesh_frame_count, render_count, collision_count, physics_count, armature, node_list, render_marker_list, collision_marker_list, physics_marker_list, marker_list, xref_instances, instance_markers, render_geometry_list, collision_geometry_list, sphere_list, box_list, capsule_list, convex_shape_list, ragdoll_list, hinge_list, car_wheel_list, point_to_point_list, prismatic_list, bounding_sphere_list, skylight_list)
 
-    scene_validation.validate_halo_jms_scene(game_version, version, blend_scene, object_set, is_jmi)
+    scene_validation.validate_halo_jms_scene(game_title, jms_version, blend_scene, object_set, is_jmi)
 
     if export_render and blend_scene.render_count > 0:
-        model_type = "render"
+        model_type = ModelTypeEnum.render
 
-        build_asset(context, blend_scene, filepath, version, game_version, generate_checksum, fix_rotations, folder_structure, folder_type, model_type, is_jmi, permutation_ce, level_of_detail_ce, custom_scale, loop_normals, write_textures, report)
+        build_asset(context, blend_scene, filepath, jms_version, game_title, generate_checksum, fix_rotations, use_maya_sorting, folder_structure, folder_type, model_type, is_jmi, permutation_ce, level_of_detail_ce, scale_value, loop_normals, write_textures, report)
 
     if export_collision and blend_scene.collision_count > 0:
-        model_type = "collision"
+        model_type = ModelTypeEnum.collision
 
-        build_asset(context, blend_scene, filepath, version, game_version, generate_checksum, fix_rotations, folder_structure, folder_type, model_type, is_jmi, permutation_ce, level_of_detail_ce, custom_scale, loop_normals, write_textures, report)
+        build_asset(context, blend_scene, filepath, jms_version, game_title, generate_checksum, fix_rotations, use_maya_sorting, folder_structure, folder_type, model_type, is_jmi, permutation_ce, level_of_detail_ce, scale_value, loop_normals, write_textures, report)
 
     if export_physics and blend_scene.physics_count > 0:
-        model_type = "physics"
+        model_type = ModelTypeEnum.physics
 
-        build_asset(context, blend_scene, filepath, version, game_version, generate_checksum, fix_rotations, folder_structure, folder_type, model_type, is_jmi, permutation_ce, level_of_detail_ce, custom_scale, loop_normals, write_textures, report)
+        build_asset(context, blend_scene, filepath, jms_version, game_title, generate_checksum, fix_rotations, use_maya_sorting, folder_structure, folder_type, model_type, is_jmi, permutation_ce, level_of_detail_ce, scale_value, loop_normals, write_textures, report)
 
     return {'FINISHED'}
 

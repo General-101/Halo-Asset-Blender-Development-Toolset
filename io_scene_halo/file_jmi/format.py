@@ -2,7 +2,7 @@
 #
 # MIT License
 #
-# Copyright (c) 2022 Steven Garcia
+# Copyright (c) 2023 Steven Garcia
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -36,10 +36,6 @@ class JMIAsset(global_functions.HaloAsset):
             self,
 
             jmi_version=0,
-            jmi_version_ce=0,
-            jmi_version_h2=0,
-            jmi_version_h3=0,
-
             folder_type=0,
             hidden_geo=False,
             nonrender_geo=False,
@@ -49,39 +45,29 @@ class JMIAsset(global_functions.HaloAsset):
             export_physics=False,
 
             fix_rotations=False,
+            use_maya_sorting=False,
             apply_modifiers=False,
             triangulate_faces=False,
             loop_normals=False,
-            edge_split=False,
-            use_edge_angle=False,
-            use_edge_sharp=False,
-            split_angle=0,
+            edge_split=None,
             clean_normalize_weights=False,
-            scale_enum=0,
-            scale_float=0.0,
-            console=False,
+            scale_value=0.0,
         ):
             self.jmi_version = jmi_version
-            self.jmi_version_ce = jmi_version_ce
-            self.jmi_version_h2 = jmi_version_h2
-            self.jmi_version_h3 = jmi_version_h3
 
             self.folder_type = folder_type
             self.hidden_geo = hidden_geo
             self.nonrender_geo = nonrender_geo
+
             self.export_render = export_render
             self.export_collision = export_collision
             self.export_physics = export_physics
 
             self.fix_rotations = fix_rotations
+            self.use_maya_sorting = use_maya_sorting
             self.apply_modifiers = apply_modifiers
             self.triangulate_faces = triangulate_faces
             self.loop_normals = loop_normals
             self.edge_split = edge_split
-            self.use_edge_angle = use_edge_angle
-            self.use_edge_sharp = use_edge_sharp
-            self.split_angle = split_angle
             self.clean_normalize_weights = clean_normalize_weights
-            self.scale_enum = scale_enum
-            self.scale_float = scale_float
-            self.console = console
+            self.scale_value = scale_value

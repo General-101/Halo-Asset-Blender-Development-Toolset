@@ -2,7 +2,7 @@
 #
 # MIT License
 #
-# Copyright (c) 2021 Steven Garcia
+# Copyright (c) 2023 Steven Garcia
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -24,29 +24,29 @@
 #
 # ##### END MIT LICENSE BLOCK #####
 
-import os
+import io
 import bpy
 import bmesh
+import struct
 
 from math import radians
 from mathutils import Vector, Matrix
-from ..file_tag.file_model.process_file_mod2_retail import ModelFlags
 from ..global_functions import global_functions, mesh_processing
 
-class Triangle:
-    def __init__(self, material_index=0, normal=Vector(), v0=0, v1=0, v2=0):
+class Surface:
+    def __init__(self, material_index=0, surface_normal=Vector(), vertices=None):
         self.material_index = material_index
-        self.normal = normal
-        self.v0 = v0
-        self.v1 = v1
-        self.v2 = v2
+        self.surface_normal = surface_normal
+        self.vertices = vertices
 
 class Vertex:
-    def __init__(self, translation=Vector(), normal=Vector(), UV=(0.0, 0.0), node_index=0):
-        self.translation = translation
-        self.normal = normal
+    def __init__(self, vertex_index=0, normal_index=0, UV=(0.0, 0.0), node_0_index=0, node_1_index=-1, weight=1.0):
+        self.vertex_index = vertex_index
+        self.normal_index = normal_index
         self.UV = UV
-        self.node_index = node_index
+        self.node_0_index = node_0_index
+        self.node_1_index = node_1_index
+        self.weight = weight
 
 def count_steps(name, start, val):
     real_pos = start
@@ -63,7 +63,7 @@ def gather_symbols(used_symbols_list, processed_symbol_name, game_version):
     if game_version == "halo2":
         symbol_list = ("%", "#", "?", "!", "@", "*", "$", "^", "-", "&", "=", ".", ";", ")", ">", "<", "|", "~", "(", "{", "}", "[")
 
-    elif game_version == "halo3mcc":
+    elif game_version == "halo3":
         symbol_list = ("%", "#", "?", "!", "@", "*", "$", "^", "-", "&", "=", ".", ";", ")", ">", "<", "|", "~", "(", "{", "}", "[", "'", "]")
 
     for idx, char in enumerate(symbol_name): # loop through the characters in the name
@@ -111,7 +111,7 @@ def append_material_symbols(material, game_version, is_ass):
         symbol_properties = gather_symbols(symbol_properties[0], reversed(symbol_properties[1]), game_version)
         used_symbol_list = symbol_properties[0]
         processed_symbol_name = "".join(reversed(symbol_properties[1])).strip()
-        if game_version == 'haloce':
+        if game_version == "halo1":
             if material.ass_jms.two_sided or "%" in used_symbol_list:
                 processed_symbol_name += "%"
             if material.ass_jms.transparent_1_sided or "#" in used_symbol_list:
@@ -133,7 +133,7 @@ def append_material_symbols(material, game_version, is_ass):
             if material.ass_jms.portal_exact or "." in used_symbol_list:
                 processed_symbol_name += "."
 
-        elif game_version == 'halo2':
+        elif game_version == "halo2":
             if material.ass_jms.two_sided or "%" in used_symbol_list:
                 processed_symbol_name += "%"
             if material.ass_jms.transparent_1_sided or "#" in used_symbol_list:
@@ -201,7 +201,7 @@ def append_material_symbols(material, game_version, is_ass):
                 elif split_parameter[0].strip() == "ds" and not "ds" in processed_parameters:
                     processed_symbol_name += " ds:%s" % split_parameter[1]
 
-        elif game_version == 'halo3mcc':
+        elif game_version == "halo3":
             if "%" in used_symbol_list:
                 processed_symbol_name += "%"
             if "#" in used_symbol_list:
@@ -355,460 +355,423 @@ def get_color_version_check(file_type):
 
     return version
 
-class TriangleStrips:
-    def __init__(self, strips):
-        self.strips = strips
-        self.index = 0
-        self.count = len(strips)
-
-    def next(self):
-        self.index += 1
-        return self.strips[self.index - 1]
-
-    def next_array(self, count):
-        start = self.index
-        self.index += count
-        return self.strips[start:(start+count)]
-
-    def reached_end(self) -> bool:
-        return self.index >= self.count
-
-def generate_markers_layout_new(context, collection, marker, parent_name, armature, fix_rotations):
-    object_name_prefix = '#%s' % marker.name
-    marker_name_override = ""
-    if context.scene.objects.get('#%s' % marker.name):
-        marker_name_override = marker.name
-
-    mesh = bpy.data.meshes.new(object_name_prefix)
-    object_mesh = bpy.data.objects.new(object_name_prefix, mesh)
-    collection.objects.link(object_mesh)
-
-    object_mesh.marker.name_override = marker_name_override
-
-    bm = bmesh.new()
-    bmesh.ops.create_uvsphere(bm, u_segments=32, v_segments=16, radius=1)
-    bm.to_mesh(mesh)
-    bm.free()
-
-    mesh_processing.select_object(context, object_mesh)
-    mesh_processing.select_object(context, armature)
-
-    bpy.ops.object.mode_set(mode='EDIT')
-    armature.data.edit_bones.active = armature.data.edit_bones[parent_name]
-    bpy.ops.object.mode_set(mode='OBJECT')
-    bpy.ops.object.parent_set(type='BONE', keep_transform=True)
-
-    matrix_translate = Matrix.Translation(marker.translation)
-    matrix_rotation = marker.rotation.to_matrix().to_4x4()
-
-    transform_matrix = matrix_translate @ matrix_rotation
-    pose_bone = armature.pose.bones[parent_name]
-    if fix_rotations:
-        transform_matrix = (pose_bone.matrix @ Matrix.Rotation(radians(90.0), 4, 'Z')) @ transform_matrix
+def generate_marker(context, collection, game_version, game_title, file_version, filepath, ASSET, region_element_name, marker_group, armature, marker_obj, fix_rotations, empty_markers, is_intermediate):
+    parent_idx = -1
+    if is_intermediate:
+        parent_idx = marker_obj.parent
+        marker_region_index = marker_obj.region
+        radius = marker_obj.radius
 
     else:
-        transform_matrix = pose_bone.matrix @ transform_matrix
+        parent_idx = marker_obj.node_index
 
-    object_mesh.matrix_world = transform_matrix
-    object_mesh.data.ass_jms.Object_Type = 'SPHERE'
-    object_mesh.dimensions = (2, 2, 2)
-    object_mesh.select_set(False)
-    armature.select_set(False)
+    marker_name = ""
+    if game_title == 'halo1':
+        marker_name = marker_obj.name
+    else:
+        marker_name = marker_group
+        if not marker_obj.region_index == -1:
+            region_element = ASSET.regions[marker_obj.region_index]
+            permutation_element = region_element[marker_obj.permutation_index]
+            marker_name = "(%s %s)%s" % (permutation_element.name, region_element.name, marker_group)
 
-def build_mesh_layout_new(import_file, geometry, object_mesh, region_name, is_triangle_list, bm):
-    random_color_gen = global_functions.RandomColorGenerator() # generates a random sequence of colors
+    object_name_prefix = '#%s' % marker_name
+    marker_name_override = ""
+    if context.scene.objects.get('#%s' % marker_name):
+        marker_name_override = marker_name
 
-    vert_normal_list = []
-    active_region_permutations = []
-    vertex_groups = []
+    if empty_markers:
+        object_mesh = bpy.data.objects.new(object_name_prefix, None)
 
-    current_region_permutation = region_name
+    else:
+        mesh = bpy.data.meshes.new(object_name_prefix)
+        object_mesh = bpy.data.objects.new(object_name_prefix, mesh)
 
-    if not current_region_permutation in active_region_permutations:
-        active_region_permutations.append(current_region_permutation)
-        object_mesh.face_maps.new(name=current_region_permutation)
+    collection.objects.link(object_mesh)
 
-    uses_local_nodes = False
-    if import_file.header.tag_group == "mod2":
-        uses_local_nodes = ModelFlags.Parts_Have_Local_Nodes in ModelFlags(import_file.mod2_body.flags)
-
-    face_counter = 0
-    vertex_counter = 0
-    shader_count = len(import_file.shaders)
-    for part_idx, part in enumerate(geometry.parts):
-        triangle_indices = []
-        triangles = []
-
-        if is_triangle_list:
-            for triangle in part.triangles:
-                triangles.append([triangle.v2, triangle.v1, triangle.v0]) # Reversed order to fix facing normals
+    if filepath:
+        if game_title == "halo1":
+            if 'physics' in filepath or 'collision' in filepath:
+                object_mesh.ass_jms.marker_mask_type = '1'
 
         else:
-            for triangle in part.triangles:
-                if not triangle.v0 == -1:
-                    triangle_indices.append(triangle.v0)
-                if not triangle.v1 == -1:
-                    triangle_indices.append(triangle.v1)
-                if not triangle.v2 == -1:
-                    triangle_indices.append(triangle.v2)
+            if 'collision' in filepath:
+                object_mesh.ass_jms.marker_mask_type = '1'
 
-            index_count = len(triangle_indices)
-            for idx in range(index_count - 2):
-                triangles.append([triangle_indices[idx], triangle_indices[idx + 1], triangle_indices[idx + 2]])
+            elif 'physics' in filepath:
+                object_mesh.ass_jms.marker_mask_type = '2'
 
-            # Fix face normals on even triangle indices
-            for even_triangle_idx in range(0, len(triangles), 2):
-                triangles[even_triangle_idx].reverse()
+    object_mesh.ass_jms.name_override = marker_name_override
 
-            # clean up any triangles that reference the same vertex multiple times
-            for reversed_triangle in reversed(triangles):
-                if (reversed_triangle[0] == reversed_triangle[1]) or (reversed_triangle[1] == reversed_triangle[2]) or (reversed_triangle[0] == reversed_triangle[2]):
-                    del triangles[triangles.index(reversed_triangle)]
+    if not empty_markers:
+        bm = bmesh.new()
+        bmesh.ops.create_uvsphere(bm, u_segments=32, v_segments=16, radius=1)
+        bm.to_mesh(mesh)
+        bm.free()
 
-        for triangle in triangles:
-            vertex_v0 = part.uncompressed_vertices[triangle[0]]
-            vertex_v1 = part.uncompressed_vertices[triangle[1]]
-            vertex_v2 = part.uncompressed_vertices[triangle[2]]
-            vert_normal_list.append(vertex_v0.normal)
-            vert_normal_list.append(vertex_v1.normal)
-            vert_normal_list.append(vertex_v2.normal)
-            p1 = vertex_v0.translation
-            p2 = vertex_v1.translation
-            p3 = vertex_v2.translation
-            v1 = bm.verts.new((p1[0], p1[1], p1[2]))
-            v2 = bm.verts.new((p2[0], p2[1], p2[2]))
-            v3 = bm.verts.new((p3[0], p3[1], p3[2]))
-            bm.faces.new((v1, v2, v3))
+    if game_title == "halo1":
+        region_name = None
+        if is_intermediate:
+            if not marker_region_index == -1:
+                region_name = ASSET.regions[marker_region_index].name
 
-            vert_list = [vertex_v0, vertex_v1, vertex_v2]
-            for vert in vert_list:
-                node_0_index = vert.node_0_index
-                node_1_index = vert.node_1_index
-                if uses_local_nodes:
-                    if not node_0_index == -1:
-                        node_0_index = part.local_nodes[node_0_index]
+        region_name = region_element_name
+        if region_name == "__unnamed":
+            region_name = "unnamed"
 
-                    if not node_1_index == -1:
-                        node_1_index = part.local_nodes[node_1_index]
+        if not region_name == None:
+            if empty_markers:
+                object_mesh.ass_jms.marker_region = region_name
 
-                if not node_0_index == -1 and not node_0_index in vertex_groups:
-                    vertex_groups.append(node_0_index)
-                    object_mesh.vertex_groups.new(name = import_file.nodes[node_0_index].name)
+            else:
+                object_mesh.region_add(region_name)
 
-                if not node_1_index == -1 and not node_1_index in vertex_groups:
-                    vertex_groups.append(node_1_index)
-                    object_mesh.vertex_groups.new(name = import_file.nodes[node_1_index].name)
+    if not parent_idx == -1:
+        bone_name = ASSET.nodes[parent_idx].name
 
-        bm.verts.ensure_lookup_table()
-        bm.faces.ensure_lookup_table()
-        vertex_groups_names = object_mesh.vertex_groups.keys()
-        for triangle in triangles:
-            triangle_material_index = part.shader_index
-            if not triangle_material_index == -1 and triangle_material_index < shader_count:
-                mat = import_file.shaders[triangle_material_index]
+        object_mesh.parent = armature
+        object_mesh.parent_type = "BONE"
+        object_mesh.parent_bone = bone_name
 
-            current_region_permutation = region_name
+    else:
+        object_mesh.parent = armature
 
-            if not current_region_permutation in active_region_permutations:
-                active_region_permutations.append(current_region_permutation)
-                object_mesh.face_maps.new(name=current_region_permutation)
+    matrix_translate = Matrix.Translation(marker_obj.translation)
+    matrix_rotation = marker_obj.rotation.to_matrix().to_4x4()
 
-            if not triangle_material_index == -1:
-                material_list = []
-                if triangle_material_index < shader_count:
-                    permutation_index = ""
-                    if not mat.permutation_index == 0:
-                        permutation_index = "%s" % mat.permutation_index
+    transform_matrix = matrix_translate @ matrix_rotation
+    if not parent_idx == -1:
+        pose_bone = armature.pose.bones[ASSET.nodes[parent_idx].name]
 
-                    material_name = "%s%s" % (os.path.basename(mat.tag_ref.name), permutation_index)
+        if fix_rotations:
+            transform_matrix = (pose_bone.matrix @ Matrix.Rotation(radians(90.0), 4, 'Z')) @ transform_matrix
 
-                else:
-                    material_name = "invalid_material_%s" % triangle_material_index
+        else:
+            transform_matrix = pose_bone.matrix @ transform_matrix
 
-                mat = bpy.data.materials.get(material_name)
-                if mat is None:
-                    mat = bpy.data.materials.new(name=material_name)
+    object_mesh.matrix_world = transform_matrix
+    if empty_markers:
+        object_mesh.empty_display_type = 'ARROWS'
 
-                for slot in object_mesh.material_slots:
-                    material_list.append(slot.material)
+    else:
+        object_mesh.data.ass_jms.Object_Type = 'SPHERE'
 
-                if not mat in material_list:
-                    material_list.append(mat)
-                    object_mesh.data.materials.append(mat)
-
-                mat.diffuse_color = random_color_gen.next()
-                material_index = material_list.index(mat)
-                bm.faces[face_counter].material_index = material_index
-
-            fm = bm.faces.layers.face_map.verify()
-            face_idx = bm.faces[face_counter]
-            face_idx[fm] = active_region_permutations.index(current_region_permutation)
-
-            vertex_v0 = part.uncompressed_vertices[triangle[0]]
-            vertex_v1 = part.uncompressed_vertices[triangle[1]]
-            vertex_v2 = part.uncompressed_vertices[triangle[2]]
-
-            vert_list = [vertex_v0, vertex_v1, vertex_v2]
-            for vert_idx, vert in enumerate(vert_list):
-                vertex_index = (3 * face_counter) + vert_idx
-                bm.verts[vertex_index].normal = vert.normal
-
-                uv_name = 'UVMap_0'
-                layer_uv = bm.loops.layers.uv.get(uv_name)
-                if layer_uv is None:
-                    layer_uv = bm.loops.layers.uv.new(uv_name)
-
-                loop = bm.faces[face_counter].loops[vert_idx]
-                loop[layer_uv].uv = (vert.UV[0], 1 - vert.UV[1])
-
-                layer_deform = bm.verts.layers.deform.verify()
-
-                node_0_index = vert.node_0_index
-                node_1_index = vert.node_1_index
-                if uses_local_nodes:
-                    if not node_0_index == -1:
-                        node_0_index = part.local_nodes[node_0_index]
-
-                    if not node_1_index == -1:
-                        node_1_index = part.local_nodes[node_1_index]
-
-                node_0_weight = vert.node_0_weight
-                node_1_weight = vert.node_1_weight
-                if not node_0_index == -1:
-                    group_name = import_file.nodes[node_0_index].name
-                    group_index = vertex_groups_names.index(group_name)
-                    vert_idx = bm.verts[vertex_index]
-                    vert_idx[layer_deform][group_index] = node_0_weight
-
-                if not node_1_index == -1:
-                    group_name = import_file.nodes[node_1_index].name
-                    group_index = vertex_groups_names.index(group_name)
-                    vert_idx = bm.verts[vertex_index]
-                    vert_idx[layer_deform][group_index] = node_1_weight
-
-            face_counter += 1
-
-    return bm, vert_normal_list
-
-def build_object(context, collection, geometry, armature, LOD, region_name, permutation_name, import_file, fix_rotations):
-    if region_name == "__unnamed":
-        region_name = "unnamed"
-
-    if permutation_name == "__base":
-        permutation_name = "base"
-
-    object_name = '%s %s %s' % (region_name, permutation_name, LOD)
-
-    bm = bmesh.new()
-
-    mesh = bpy.data.meshes.new(object_name)
-    object_mesh = bpy.data.objects.new(object_name, mesh)
-    collection.objects.link(object_mesh)
-
-    bm, vert_normal_list = build_mesh_layout_new(import_file, geometry, object_mesh, region_name, False, bm)
-
-    bm.to_mesh(mesh)
-    bm.free()
-    object_mesh.data.normals_split_custom_set(vert_normal_list)
-    object_mesh.data.use_auto_smooth = True
-
-    object_mesh.parent = armature
-    add_modifier(context, object_mesh, False, None, armature)
+    if is_intermediate:
+        object_scale = radius
+        object_mesh.scale = (object_scale, object_scale, object_scale)
 
     object_mesh.select_set(False)
     armature.select_set(False)
 
-def get_geometry_layout_new(context, collection, import_file, armature, fix_rotations):
-    for region in import_file.regions:
-        for permutation in region.permutations:
-            superlow_geometry_index = permutation.superlow_geometry_block
-            low_geometry_index = permutation.low_geometry_block
-            medium_geometry_index = permutation.medium_geometry_block
-            high_geometry_index = permutation.high_geometry_block
-            superhigh_geometry_index = permutation.superhigh_geometry_block
+def optimize_geo(object_vertices, object_triangles):
+    # From MEK
+    verts = object_vertices
+    vert_ct = len(verts)
+    # this will map the verts to prune to the vert they are identical to
+    dup_vert_map = {}
+    similar_vert_map = {}
 
-            geometry_count = len(import_file.geometries)
-            if not superhigh_geometry_index == -1 and superhigh_geometry_index < geometry_count and not import_file.geometries[superhigh_geometry_index].visited:
-                import_file.geometries[superhigh_geometry_index].visited = True
-                superhigh_geometry = import_file.geometries[superhigh_geometry_index]
-                build_object(context, collection, superhigh_geometry, armature, 'superhigh', region.name, permutation.name, import_file, fix_rotations)
+    for vertex_idx, vertex in enumerate(object_vertices):
+        similar_vert_map.setdefault((tuple(vertex.translation)), []).append(vertex_idx)
 
-            if not high_geometry_index == -1 and high_geometry_index < geometry_count and not import_file.geometries[high_geometry_index].visited:
-                import_file.geometries[high_geometry_index].visited = True
-                high_geometry = import_file.geometries[high_geometry_index]
-                build_object(context, collection, high_geometry, armature, 'high', region.name, permutation.name, import_file, fix_rotations)
+    # loop over all verts and figure out which ones to replace with others
+    for similar_vert_indices in similar_vert_map.values():
+        for i in range(len(similar_vert_indices) - 1):
+            orig_idx = similar_vert_indices[i]
+            if orig_idx in dup_vert_map:
+                continue
 
-            if not medium_geometry_index == -1 and medium_geometry_index < geometry_count and not import_file.geometries[medium_geometry_index].visited:
-                import_file.geometries[medium_geometry_index].visited = True
-                medium_geometry = import_file.geometries[medium_geometry_index]
-                build_object(context, collection, medium_geometry, armature, 'medium', region.name, permutation.name, import_file, fix_rotations)
+            vert_a = object_vertices[orig_idx]
+            for j in similar_vert_indices[i + 1: ]:
+                if j in dup_vert_map:
+                    continue
 
-            if not low_geometry_index == -1 and low_geometry_index < geometry_count and not import_file.geometries[low_geometry_index].visited:
-                import_file.geometries[low_geometry_index].visited = True
-                low_geometry = import_file.geometries[low_geometry_index]
-                build_object(context, collection, low_geometry, armature, 'low', region.name, permutation.name, import_file, fix_rotations)
+                vert_b = object_vertices[j]
+                a_node_influence_count = len(vert_a.node_set)
+                b_node_influence_count = len(vert_b.node_set)
+                a_uv_count = len(vert_a.uv_set)
+                b_uv_count = len(vert_b.uv_set)
+                if vert_a.normal != vert_b.normal:
+                    continue
 
-            if not superlow_geometry_index == -1 and superlow_geometry_index < geometry_count and not import_file.geometries[superlow_geometry_index].visited:
-                import_file.geometries[superlow_geometry_index].visited = True
-                superlow_geometry = import_file.geometries[superlow_geometry_index]
-                build_object(context, collection, superlow_geometry, armature, 'superlow', region.name, permutation.name, import_file, fix_rotations)
+                elif vert_a.color != vert_b.color:
+                    continue
 
-def process_mesh_import_data(game_version, import_file, object_element, object_mesh, random_color_gen, file_type, node_idx, context, collection, armature, fix_rotations):
-    if file_type == "TAG":
-        get_geometry_layout_new(context, collection, import_file, armature, fix_rotations)
-
-    else:
-        vert_normal_list = []
-        vertex_groups = []
-        active_region_permutations = []
-        bm = bmesh.new()
-        if file_type == 'JMS':
-            object_data = import_file
-            object_triangles = object_data.triangles
-            object_vertices = object_data.vertices
-
-        elif file_type == 'ASS':
-            object_data = object_element
-            object_triangles = object_data.triangles
-            object_vertices = object_data.vertices
-
-        for idx, triangle in enumerate(object_triangles):
-            triangle_material_index = triangle.material_index
-            mat = None
-            if not triangle_material_index == -1:
-                mat = import_file.materials[triangle_material_index]
-
-            if game_version == 'haloce':
-                if import_file.version >= 8198:
-                    region = triangle.region
-
-                    current_region_permutation = import_file.regions[region].name
+                matching_node_set = True
+                if a_node_influence_count == b_node_influence_count:
+                    for node_index in range(a_node_influence_count):
+                        if vert_a.node_set[node_index] != vert_b.node_set[node_index]:
+                            matching_node_set = False
 
                 else:
-                    region = import_file.vertices[triangle.v0].region
-                    current_region_permutation = import_file.regions[region].name
+                    matching_node_set = False
 
-            elif game_version == 'halo2' or game_version == 'halo3':
-                current_region_permutation = global_functions.material_definition_helper(triangle_material_index, mat)
+                if not matching_node_set:
+                    continue
 
-            if not current_region_permutation in active_region_permutations:
-                active_region_permutations.append(current_region_permutation)
-                object_mesh.face_maps.new(name=current_region_permutation)
-
-            p1 = object_vertices[triangle.v0].translation
-            p2 = object_vertices[triangle.v1].translation
-            p3 = object_vertices[triangle.v2].translation
-            v1 = bm.verts.new((p1[0], p1[1], p1[2]))
-            v2 = bm.verts.new((p2[0], p2[1], p2[2]))
-            v3 = bm.verts.new((p3[0], p3[1], p3[2]))
-
-            bm.faces.new((v1, v2, v3))
-            vert_list = [triangle.v0, triangle.v1, triangle.v2]
-            for vert in vert_list:
-                vert_normals = []
-                file_vert = object_vertices[vert]
-                for normal in file_vert.normal:
-                    vert_normals.append(normal)
-
-                vert_normal_list.append(vert_normals)
-                for node_values in file_vert.node_set:
-                    node_index = node_values[0]
-                    if not node_index == -1 and not node_index in vertex_groups:
-                        vertex_groups.append(node_index)
-                        object_mesh.vertex_groups.new(name = import_file.nodes[node_index].name)
-
-        bm.verts.ensure_lookup_table()
-        bm.faces.ensure_lookup_table()
-        if file_type == 'JMS':
-            vertex_groups_names = object_mesh.vertex_groups.keys()
-
-        for idx, triangle in enumerate(object_triangles):
-            triangle_material_index = triangle.material_index
-            if not triangle_material_index == -1:
-                mat = import_file.materials[triangle_material_index]
-
-            if game_version == 'haloce':
-                if import_file.version >= 8198:
-                    region = triangle.region
-
-                    current_region_permutation = import_file.regions[region].name
+                matching_uv_set = True
+                if a_uv_count == b_uv_count:
+                    for uv_index in range(a_uv_count):
+                        if vert_a.uv_set[uv_index] != vert_b.uv_set[uv_index]:
+                            matching_uv_set = False
 
                 else:
-                    region = import_file.vertices[triangle.v0].region
-                    current_region_permutation = import_file.regions[region].name
+                    matching_uv_set = False
 
-            elif game_version == 'halo2' or game_version == 'halo3':
-                current_region_permutation = global_functions.material_definition_helper(triangle_material_index, mat)
+                if not matching_uv_set:
+                    continue
 
-            if not current_region_permutation in active_region_permutations:
-                active_region_permutations.append(current_region_permutation)
-                object_mesh.face_maps.new(name=current_region_permutation)
+                dup_vert_map[j] = orig_idx
 
-            if not triangle_material_index == -1:
-                material_list = []
-                material_name = mat.name
-                mat = bpy.data.materials.get(material_name)
-                if mat is None:
-                    mat = bpy.data.materials.new(name=material_name)
+    if not dup_vert_map:
+        new_verts = object_vertices
+        # nothing to optimize away
+        return new_verts, object_triangles
 
-                for slot in object_mesh.material_slots:
-                    material_list.append(slot.material)
+    # remap any duplicate triangle vert indices to the original
+    get_mapped_vert = dup_vert_map.get
+    for tri in object_triangles:
+        tri.v0 = get_mapped_vert(tri.v0, tri.v0)
+        tri.v1 = get_mapped_vert(tri.v1, tri.v1)
+        tri.v2 = get_mapped_vert(tri.v2, tri.v2)
 
-                if not mat in material_list:
-                    material_list.append(mat)
-                    object_mesh.data.materials.append(mat)
+    # copy the verts list so we can modify it without side-effects
+    new_vert_ct = vert_ct - len(dup_vert_map)
+    new_verts = object_vertices[: new_vert_ct]
 
-                mat.diffuse_color = random_color_gen.next()
-                material_index = material_list.index(mat)
-                bm.faces[idx].material_index = material_index
+    shift_map = {}
+    copy_idx = vert_ct - 1
+    # loop over all duplicate vert indices and move any vertices
+    # on the high end of the vert list down to fill in the empty
+    # spaces left by the duplicate verts we're removing.
+    for dup_i in sorted(dup_vert_map):
+        while copy_idx in dup_vert_map:
+            # keep looping until we get to a vert we can move
+            # from its high index to overwrite the low index dup
+            copy_idx -= 1
 
-            fm = bm.faces.layers.face_map.verify()
-            face_idx = bm.faces[idx]
-            face_idx[fm] = active_region_permutations.index(current_region_permutation)
+        if copy_idx <= dup_i or dup_i >= new_vert_ct:
+            # cant copy any lower. all upper index verts are duplicates
+            break
 
-            vert_list = [triangle.v0, triangle.v1, triangle.v2]
-            for vert_idx, vert in enumerate(vert_list):
-                vertex_index = (3 * idx) + vert_idx
-                file_vert = object_vertices[vert]
-                bm.verts[vertex_index].normal = file_vert.normal
-                if not file_vert.color == None and game_version == 'halo3' and import_file.version >= get_color_version_check(file_type):
-                    color_r = file_vert.color[0]
-                    color_g = file_vert.color[1]
-                    color_b = file_vert.color[2]
-                    color_a = 1
-                    if color_r < -1000 and color_g < -1000 and color_b < -1000:
-                        color_r = 0.0
-                        color_g = 0.01
-                        color_b = 0.0
+        # move the vert from its high index to the low index dup
+        new_verts[dup_i] = verts[copy_idx]
+        shift_map[copy_idx] = dup_i
+        copy_idx -= 1
 
-                    layer_color = bm.loops.layers.color.get("color")
-                    if layer_color is None:
-                        layer_color = bm.loops.layers.color.new("color")
+    # remap any triangle vert indices
+    get_mapped_vert = shift_map.get
+    for tri in object_triangles:
+        tri.v0 = get_mapped_vert(tri.v0, tri.v0)
+        tri.v1 = get_mapped_vert(tri.v1, tri.v1)
+        tri.v2 = get_mapped_vert(tri.v2, tri.v2)
 
-                    loop = bm.faces[idx].loops[vert_idx]
-                    loop[layer_color] = (color_r, color_g, color_b, color_a)
+    return new_verts, object_triangles
 
-                for uv_idx, uv in enumerate(file_vert.uv_set):
-                    uv_name = 'UVMap_%s' % uv_idx
-                    layer_uv = bm.loops.layers.uv.get(uv_name)
-                    if layer_uv is None:
-                        layer_uv = bm.loops.layers.uv.new(uv_name)
+def generate_mesh_object_retail(asset, object_vertices, object_triangles, object_name, collection, game_title, random_color_gen, armature, context):
+    vertex_groups = []
+    active_region_permutations = []
 
-                    loop = bm.faces[idx].loops[vert_idx]
-                    loop[layer_uv].uv = (uv[0], uv[1])
+    object_vertices, object_triangles = optimize_geo(object_vertices, object_triangles)
+    verts = [vertex.translation for vertex in object_vertices]
+    tris = [(triangles.v0, triangles.v1, triangles.v2) for triangles in object_triangles]
 
-                for node_values in file_vert.node_set:
-                    layer_deform = bm.verts.layers.deform.verify()
+    mesh = bpy.data.meshes.new(object_name)
+    mesh.from_pydata(verts, [], tris)
+    object_mesh = bpy.data.objects.new(object_name, mesh)
+    for tri_idx, poly in enumerate(mesh.polygons):
+        tri = object_triangles[tri_idx]
+        v0_index = tri.v0
+        vert = object_vertices[v0_index]
 
-                    node_index = node_values[0]
-                    node_weight = node_values[1]
-                    if not node_index == -1:
-                        group_name = import_file.nodes[node_index].name
-                        group_index = vertex_groups_names.index(group_name)
-                        vert_idx = bm.verts[vertex_index]
-                        vert_idx[layer_deform][group_index] = node_weight
+        if poly.normal.dot(vert.normal) < 0:
+            poly.flip()
 
-        return bm, vert_normal_list
+        poly.use_smooth = True
+
+    region_attribute = mesh.get_custom_attribute()
+    for vertex_idx, vertex in enumerate(object_vertices):
+        for node_values in vertex.node_set:
+            node_index = node_values[0]
+            node_weight = node_values[1]
+            if not node_index == -1 and not node_index in vertex_groups:
+                vertex_groups.append(node_index)
+                object_mesh.vertex_groups.new(name = asset.nodes[node_index].name)
+
+            if not node_index == -1:
+                group_name = asset.nodes[node_index].name
+                group_index = object_mesh.vertex_groups.keys().index(group_name)
+
+                object_mesh.vertex_groups[group_index].add([vertex_idx], node_weight, 'ADD')
+
+        if not vertex.color == None and game_title == "halo3" and asset.version >= get_color_version_check("JMS"):
+            color_r = vertex.color[0]
+            color_g = vertex.color[1]
+            color_b = vertex.color[2]
+            color_a = 1
+            if color_r < -1000 and color_g < -1000 and color_b < -1000:
+                color_r = 0.0
+                color_g = 0.01
+                color_b = 0.0
+
+            layer_color = mesh.color_attributes.get("color")
+            if layer_color is None:
+                layer_color = mesh.color_attributes.new("color", "FLOAT_COLOR", "POINT")
+
+            layer_color.data[vertex_idx].color = [color_r, color_g, color_b, color_a]
+
+    for triangle_idx, triangle in enumerate(object_triangles):
+        triangle_material_index = triangle.material_index
+        mat = None
+        if not triangle_material_index == -1:
+            mat = asset.materials[triangle_material_index]
+
+        if game_title == "halo1":
+            if asset.version >= 8198:
+                region = triangle.region
+                current_region_permutation = asset.regions[region].name
+
+            else:
+                region = asset.vertices[triangle.v0].region
+                current_region_permutation = asset.regions[region].name
+
+        elif game_title == "halo2" or game_title == "halo3":
+            current_region_permutation = global_functions.material_definition_helper(triangle_material_index, mat)
+
+        if not current_region_permutation in active_region_permutations:
+            active_region_permutations.append(current_region_permutation)
+            object_mesh.region_add(current_region_permutation)
+
+        if not triangle_material_index == -1:
+            material_name = mat.name
+            mat = bpy.data.materials.get(material_name)
+            if mat is None:
+                mat = bpy.data.materials.new(name=material_name)
+
+            if not material_name in object_mesh.data.materials.keys():
+                object_mesh.data.materials.append(mat)
+
+            mat.diffuse_color = random_color_gen.next()
+            material_index = object_mesh.data.materials.keys().index(material_name)
+            object_mesh.data.polygons[triangle_idx].material_index = material_index
+
+        region_index = active_region_permutations.index(current_region_permutation)
+        region_attribute.data[triangle_idx].value = region_index + 1
+
+        vertex_list = [object_vertices[triangle.v0], object_vertices[triangle.v1], object_vertices[triangle.v2]]
+        for vertex_idx, vertex in enumerate(vertex_list):
+            loop_index = (3 * triangle_idx) + vertex_idx
+            for uv_idx, uv in enumerate(vertex.uv_set):
+                uv_name = 'UVMap_%s' % uv_idx
+                layer_uv = mesh.uv_layers.get(uv_name)
+                if layer_uv is None:
+                    layer_uv = mesh.uv_layers.new(name=uv_name)
+
+                layer_uv.data[loop_index].uv = (uv[0], uv[1])
+
+    collection.objects.link(object_mesh)
+
+    if not armature == None:
+        object_mesh.parent = armature
+        mesh_processing.add_modifier(context, object_mesh, False, None, armature)
+
+    return object_mesh
+
+def generate_mesh_retail(context, asset, object_vertices, object_triangles, object_data, game_title, random_color_gen):
+    vertex_groups_indices = []
+
+    object_vertices, object_triangles = optimize_geo(object_vertices, object_triangles)
+    verts = [vertex.translation for vertex in object_vertices]
+    tris = [(triangles.v0, triangles.v1, triangles.v2) for triangles in object_triangles]
+
+    vertex_groups = []
+    vertex_weights = []
+    region_list = []
+
+    object_data.from_pydata(verts, [], tris)
+    for poly in object_data.polygons:
+        poly.use_smooth = True
+
+    region_attribute = object_data.get_custom_attribute()
+    for vertex_idx, vertex in enumerate(object_vertices):
+        for node_values in vertex.node_set:
+            node_index = node_values[0]
+            node_weight = node_values[1]
+            if not node_index == -1 and not node_index in vertex_groups_indices:
+                vertex_groups_indices.append(node_index)
+                vertex_groups.append(asset.nodes[node_index].name)
+
+            if not node_index == -1:
+                group_name = asset.nodes[node_index].name
+                group_index = vertex_groups.index(group_name)
+
+                vertex_weights.append((group_index, node_weight))
+
+    for triangle_idx, triangle in enumerate(object_triangles):
+        triangle_material_index = triangle.material_index
+        mat = None
+        if not triangle_material_index == -1:
+            mat = asset.materials[triangle_material_index]
+
+        if game_title == "halo1":
+            if asset.version >= 8198:
+                region = triangle.region
+                current_region_permutation = asset.regions[region].name
+
+            else:
+                region = asset.vertices[triangle.v0].region
+                current_region_permutation = asset.regions[region].name
+
+        elif game_title == "halo2" or game_title == "halo3":
+            current_region_permutation = global_functions.material_definition_helper(triangle_material_index, mat)
+
+        if not current_region_permutation in region_list:
+            region_list.append(current_region_permutation)
+
+        if not triangle_material_index == -1:
+            material_name = mat.name
+            mat = bpy.data.materials.get(material_name)
+            if mat is None:
+                mat = bpy.data.materials.new(name=material_name)
+
+            if not material_name in object_data.materials.keys():
+                object_data.materials.append(mat)
+
+            mat.diffuse_color = random_color_gen.next()
+            material_index = object_data.materials.keys().index(material_name)
+            object_data.polygons[triangle_idx].material_index = material_index
+
+        region_index = region_list.index(current_region_permutation)
+        region_attribute.data[triangle_idx].value = region_index + 1
+
+        vertex_list = [object_vertices[triangle.v0], object_vertices[triangle.v1], object_vertices[triangle.v2]]
+        for vertex_idx, vertex in enumerate(vertex_list):
+            loop_index = (3 * triangle_idx) + vertex_idx
+            for uv_idx, uv in enumerate(vertex.uv_set):
+                uv_name = 'UVMap_%s' % uv_idx
+                layer_uv = object_data.uv_layers.get(uv_name)
+                if layer_uv is None:
+                    layer_uv = object_data.uv_layers.new(name=uv_name)
+
+                layer_uv.data[loop_index].uv = (uv[0], uv[1])
+
+            if not vertex.color == None and game_title == "halo3" and asset.version >= get_color_version_check("JMS"):
+                color_r = vertex.color[0]
+                color_g = vertex.color[1]
+                color_b = vertex.color[2]
+                color_a = 1
+                if color_r < -1000 and color_g < -1000 and color_b < -1000:
+                    color_r = 0.0
+                    color_g = 0.01
+                    color_b = 0.0
+
+                layer_color = object_data.color_attributes.get("color")
+                if layer_color is None:
+                    layer_color = object_data.color_attributes.new("color", "BYTE_COLOR", "CORNER")
+
+                layer_color.data[loop_index].color = (color_r, color_g, color_b, color_a)
+
+    return vertex_groups, vertex_weights, region_list
 
 def process_mesh_export_weights(vert, armature, original_geo, vertex_groups, joined_list, file_type):
     node_index_list = []
@@ -877,11 +840,14 @@ def process_mesh_export_weights(vert, armature, original_geo, vertex_groups, joi
 
     return node_influence_count, node_set, node_index_list
 
-def process_mesh_export_color(evaluated_geo, vertex_index):
+def process_mesh_export_color(layer_color, loop_index, vertex_index):
     color = (0.0, 0.0, 0.0)
-    layer_color = evaluated_geo.attributes.active_color
     if not layer_color == None:
-        color = layer_color.data[vertex_index].color
+        if layer_color.domain == "POINT":
+            color = layer_color.data[vertex_index].color
+        else:
+            color = layer_color.data[loop_index].color
+
         if color[0] == 0.0 and "{:.2f}".format(color[1]) == "0.01" and color[2] == 0.0:
             color = (-65536.0000000000, -65536.0000000000, -65536.0000000000, 1.0)
 
@@ -900,7 +866,7 @@ def process_mesh_export_uv(evaluated_geo, file_type, loop_index, version):
 
     return uv_set
 
-def process_mesh_export_vert(vert, loop, file_type, original_geo_matrix, custom_scale):
+def process_mesh_export_vert(vert, point, file_type, original_geo_matrix, custom_scale):
     if file_type == 'JMS':
         translation = vert.co
         negative_matrix = original_geo_matrix.determinant() < 0.0
@@ -911,12 +877,7 @@ def process_mesh_export_vert(vert, loop, file_type, original_geo_matrix, custom_
             translation = Vector((invert_translation_x, invert_translation_y, invert_translation_z))
 
         final_translation = original_geo_matrix @ translation
-
-        if loop:
-            final_normal = (original_geo_matrix @ (translation + loop.normal) - final_translation).normalized()
-
-        else:
-            final_normal = (original_geo_matrix @ (translation + vert.normal) - final_translation).normalized()
+        final_normal = (original_geo_matrix @ (translation + point.normal) - final_translation).normalized()
 
         if negative_matrix and original_geo_matrix.determinant() < 0.0 and file_type == 'JMS':
             invert_normal_x = final_normal[0] * -1
@@ -927,24 +888,19 @@ def process_mesh_export_vert(vert, loop, file_type, original_geo_matrix, custom_
 
     else:
         final_translation = custom_scale * vert.co
-        if loop:
-            final_normal = (loop.normal).normalized()
-
-        else:
-            final_normal = (vert.normal).normalized()
-
+        final_normal = (point.normal).normalized()
 
     return final_translation, final_normal
 
-def process_mesh_export_face_set(default_permutation, default_region, game_version, original_geo, face_map_idx):
-    if game_version == 'haloce':
-        if not face_map_idx == -1:
-            region = original_geo.face_maps[face_map_idx].name
+def process_mesh_export_face_set(default_permutation, default_region, game_version, original_geo, region_idx):
+    if game_version == "halo1":
+        if not region_idx == -1:
+            region = original_geo.region_list[region_idx].name
             face_set = (None, None, region)
 
     else:
-        if not face_map_idx == -1:
-            face_set = original_geo.face_maps[face_map_idx].name.split()
+        if not region_idx == -1:
+            face_set = original_geo.region_list[region_idx].name.split()
 
         lod, permutation, region = global_functions.material_definition_parser(False, face_set, default_region, default_permutation)
         face_set = (lod, permutation, region)
@@ -953,7 +909,7 @@ def process_mesh_export_face_set(default_permutation, default_region, game_versi
 
 def get_default_region_permutation_name(game_version):
     default_name = None
-    if game_version == 'haloce':
+    if game_version == "halo1":
         default_name = 'unnamed'
 
     else:
@@ -963,7 +919,7 @@ def get_default_region_permutation_name(game_version):
 
 def get_lod(lod_setting, game_version):
     LOD_name = None
-    if game_version == 'haloce':
+    if game_version == "halo1":
         if lod_setting == '1':
             LOD_name = 'superlow'
 
@@ -984,30 +940,32 @@ def get_lod(lod_setting, game_version):
 
     return LOD_name
 
-def get_child_nodes(import_file_main, parent_idx, file_type):
+def get_child_nodes(import_file_prerelease, import_file_main, parent_idx, file_type):
     file_version = import_file_main.version
     first_frame = import_file_main.transforms[0]
+
     child_list = []
     for child_idx, node in enumerate(import_file_main.nodes):
         if node.parent == parent_idx:
             child_distance = (Vector((0, 0, 0)) - first_frame[child_idx].translation).length
-            if file_version >= global_functions.get_version_matrix_check(file_type):
+            if file_version >= global_functions.get_version_matrix_check(file_type, None):
                 child_distance = (first_frame[parent_idx].translation - first_frame[child_idx].translation).length
 
             child_list.append(child_distance)
 
     return child_list
 
-def get_bone_distance(import_file_main, current_idx, file_type):
+def get_bone_distance(import_file_prerelease, import_file_main, current_idx, file_type):
     bone_distance = 0
     file_version = import_file_main.version
     first_frame = import_file_main.transforms[0]
-    child_list = get_child_nodes(import_file_main, current_idx, file_type)
+
+    child_list = get_child_nodes(import_file_prerelease, import_file_main, current_idx, file_type)
     import_file_main_nodes = import_file_main.nodes
 
     if len(child_list) == 0 and import_file_main_nodes[current_idx].parent and not import_file_main_nodes[current_idx].parent == -1:
         bone_distance = (Vector((0, 0, 0)) - first_frame[current_idx].translation).length
-        if file_version >= global_functions.get_version_matrix_check(file_type):
+        if file_version >= global_functions.get_version_matrix_check(file_type, None):
             bone_distance = (first_frame[import_file_main_nodes[current_idx].parent].translation - first_frame[current_idx].translation).length
 
     elif len(child_list) == 1:

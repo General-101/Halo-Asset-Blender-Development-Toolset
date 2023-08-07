@@ -2,7 +2,7 @@
 #
 # MIT License
 #
-# Copyright (c) 2022 Steven Garcia
+# Copyright (c) 2023 Steven Garcia
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -25,8 +25,6 @@
 # ##### END MIT LICENSE BLOCK #####
 
 import bpy
-import sys
-import argparse
 
 from bpy.types import Operator
 from bpy.props import StringProperty
@@ -46,13 +44,6 @@ class ImportWRL(Operator, ImportHelper):
 
     def execute(self, context):
         from ..file_wrl import import_wrl
-        if '--' in sys.argv:
-            argv = sys.argv[sys.argv.index('--') + 1:]
-            parser = argparse.ArgumentParser()
-            parser.add_argument('-arg1', '--filepath', dest='filepath', metavar='FILE', required = True)
-            args = parser.parse_known_args(argv)[0]
-            print('filepath: ', args.filepath)
-            self.filepath = args.filepath
 
         return global_functions.run_code("import_wrl.generate_wrl(context, self.filepath, self.report)")
 

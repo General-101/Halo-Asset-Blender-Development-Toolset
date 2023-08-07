@@ -2,7 +2,7 @@
 #
 # MIT License
 #
-# Copyright (c) 2021 Steven Garcia
+# Copyright (c) 2023 Steven Garcia
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -45,15 +45,15 @@ def model_fixup(context, threshold):
     hidden_geo = False
     nonrender_geo = True
 
-    layer_collection_set = set()
-    object_set = set()
+    layer_collection_list = []
+    object_list = []
 
     # Gather all scene resources that fit export criteria
-    resource_management.gather_collection_resources(context.view_layer.layer_collection, layer_collection_set, object_set, hidden_geo, nonrender_geo)
+    resource_management.gather_scene_resources(context, layer_collection_list, object_list, hidden_geo)
 
     processed_mesh_name_list = []
 
-    for obj in object_set:
+    for obj in object_list:
         if obj.type== 'MESH':
             edge_split = global_functions.EdgeSplit(True, False, 0.523599, True)
             mesh_processing.add_modifier(context, obj, False, edge_split, None)
@@ -67,6 +67,8 @@ def model_fixup(context, threshold):
                 render_only_material_idx = []
                 two_sided_material_idx = []
                 media_material_idx = []
+                hack1_material_idx = []
+                hack2_material_idx = []
                 portal_material_idx = []
 
                 for idx, slot in enumerate(obj.material_slots):
@@ -84,6 +86,12 @@ def model_fixup(context, threshold):
                         elif mat.name == "+media" or mat.name == "+sound" or mat.name == "+unused" or mat.name == "+weatherpoly" or "$" in mat.name or mat.ass_jms.fog_plane:
                             media_material_idx.append(idx)
 
+                        elif mat.name == "+seamsealer":
+                            hack1_material_idx.append(idx)
+
+                        elif mat.name == "+SEAMSEALER":
+                            hack2_material_idx.append(idx)
+
                         else:
                             main_material_idx.append(idx)
 
@@ -91,6 +99,8 @@ def model_fixup(context, threshold):
                 merge_verts(render_only_material_idx, threshold)
                 merge_verts(two_sided_material_idx, threshold)
                 merge_verts(media_material_idx, threshold)
+                merge_verts(hack1_material_idx, threshold)
+                merge_verts(hack2_material_idx, threshold)
                 merge_verts(portal_material_idx, threshold)
 
                 bpy.ops.mesh.customdata_custom_splitnormals_clear()

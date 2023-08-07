@@ -2,7 +2,7 @@
 #
 # MIT License
 #
-# Copyright (c) 2022 Steven Garcia & Jadeon Sheppard
+# Copyright (c) 2023 Steven Garcia & Jadeon Sheppard
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -24,39 +24,24 @@
 #
 # ##### END MIT LICENSE BLOCK #####
 
-def gather_collection_resources(layer_collection, layer_collection_set, object_set, hidden_geo, nonrender_geo, include_this_collection = False):
-    """
-        Recursively gathers the relevant collections and objects for export, starting from a root layer collection.
-        "include_this_collection" should be false for the root collection, else restoring visibility will cause everything to become visible regardless of stored value.
-    """
+def gather_scene_resources(context, layer_collection_list, object_list, hidden_geo):
+    object_scene_list = list(context.scene.objects)
+    for obj in object_scene_list:
+        if hidden_geo:
+            object_list.append(obj)
+            for collection in obj.users_collection:
+                layer_collection = context.view_layer.layer_collection.children.get(collection.name)
+                if not layer_collection == None and not layer_collection in layer_collection_list:
+                    layer_collection_list.append(layer_collection)
 
-    # Add collection to set of all included collections
-    if include_this_collection:
-        layer_collection_set.add(layer_collection)
-
-    # Don't include anything from collection if hidden in an undesired way
-    if not hidden_geo and not layer_collection.is_visible:
-        return
-
-    if not nonrender_geo and layer_collection.collection.hide_render:
-        return
-
-    # Add all of collection's objects when not hidden in an undesired way
-    for obj in layer_collection.collection.objects:
-        if not hidden_geo and obj.hide_viewport:
-            continue
-
-        if not hidden_geo and obj.hide_get():
-            continue
-
-        if not nonrender_geo and obj.hide_render:
-            continue
-
-        object_set.add(obj)
-
-    # Recursively gather resources for child collections
-    for collection in layer_collection.children:
-        gather_collection_resources(collection, layer_collection_set, object_set, hidden_geo, nonrender_geo, True)
+        else:
+            if obj.visible_get():
+                object_list.append(obj)
+                for collection in obj.users_collection:
+                    layer_collection = context.view_layer.layer_collection.children.get(collection.name)
+                    if not layer_collection == None and not layer_collection in layer_collection_list:
+                        if layer_collection.is_visible:
+                            layer_collection_list.append(layer_collection)
 
 def filter_root_nodes(node_list, is_jmi = False):
     ''' Takes a set of objects and returns all that are root nodes '''
