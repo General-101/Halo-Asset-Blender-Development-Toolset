@@ -56,7 +56,7 @@ def create_facemap(context, level_of_detail, permutation_string, region_string, 
 
         if set_facemap:
             region_list = []
-            for region in active_object.data.region_list:
+            for region in active_object.region_list:
                 region_list.append(region.name)
 
             region_index = region_list.index(region_name)
