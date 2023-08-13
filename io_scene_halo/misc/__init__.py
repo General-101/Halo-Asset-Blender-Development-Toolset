@@ -1614,8 +1614,9 @@ class Bulk_Anim_Convert(Operator):
     def execute(self, context):
         from ..misc import batch_anims
         scene_halo_anim_batch = context.scene.halo_anim_batch
+        jma_version = int(scene_halo_anim_batch.jma_version)
 
-        return global_functions.run_code("batch_anims.write_file(context, self.report, scene_halo_anim_batch.directory, scene_halo_anim_batch.jma_version, scene_halo_anim_batch.game_title)")
+        return global_functions.run_code("batch_anims.write_file(context, self.report, scene_halo_anim_batch.directory, jma_version, scene_halo_anim_batch.game_title)")
 
 class Export_Textures(Operator):
     """Exports Textures for the selected object"""
