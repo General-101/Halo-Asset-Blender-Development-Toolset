@@ -1082,7 +1082,7 @@ class Halo_BatchAnimConverter(Panel):
         row.prop(scene_halo_anim_batch, "directory", text='')
         row = col.row()
         row.label(text="Game Version:")
-        row.prop(scene_halo_anim_batch, "game_version", text='')
+        row.prop(scene_halo_anim_batch, "game_title", text='')
         if scene_halo.expert_mode:
             row = col.row()
             row.label(text='JMA Version:')
@@ -1177,26 +1177,6 @@ class Halo_GenerateLevel(Panel):
 
         row = col.row()
         row.operator("halo_bulk.generate_level", text="Generate Level")
-
-class Halo_BatchAnimConverter(Panel):
-    bl_label = "Batch Anim Converter"
-    bl_idname = "HALO_PT_BatchAnimConverter"
-    bl_space_type = "VIEW_3D"
-    bl_region_type = "UI"
-    bl_options = {'DEFAULT_CLOSED'}
-    bl_parent_id = "HALO_PT_AutoTools"
-
-    def draw(self, context):
-        layout = self.layout
-        scene = context.scene
-        scene_halo_anim_batch = scene.halo_anim_batch
-
-        col = layout.column(align=True)
-        row = col.row()
-        row.operator(JMA_BatchDialog.bl_idname, text="Select Directory")
-        row.prop(scene_halo_anim_batch, "directory", text='')
-        row = col.row()
-        row.operator("halo_bulk.anim_convert", text="Convert Directory")
 
 class Halo_MatTools(Panel):
     bl_label = "Halo Material Tools"
