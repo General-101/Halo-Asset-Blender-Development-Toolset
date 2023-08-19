@@ -1207,7 +1207,7 @@ class ASS_LightFarAtten(Panel):
         row.label(text='End:')
         row.prop(light_ass, "far_atten_end", text='')
 
-class Halo_SurfaceFlags(bpy.types.Panel):
+class Halo_SurfaceFlags(Panel):
     """Set settings for surface to be used in the Halo maze generator"""
     bl_label = "Halo Surface Flags"
     bl_idname = "OBJECT_PT_halo_surface_flags"
@@ -1219,15 +1219,9 @@ class Halo_SurfaceFlags(bpy.types.Panel):
 
     @classmethod
     def poll(cls, context):
-        if context.mode == 'EDIT_MESH':
+        active_object = context.active_object
+        if active_object and active_object.type == "MESH" and context.mode == 'EDIT_MESH':
             me = context.edit_object.data
-            hvs = me.attributes.get("Halo Valid Surface")
-            hvc = me.attributes.get("Halo Valid Characters")
-            if hvs is None:
-                me.attributes.new(name="Halo Valid Surface", domain='FACE', type='INT')
-
-            if hvc is None:
-                me.attributes.new(name="Halo Valid Characters", domain='FACE', type='INT')
 
             cls.ebm.setdefault(me.name, bmesh.from_edit_mesh(me))
             return True
@@ -1289,6 +1283,10 @@ class Halo_SurfaceFlags(bpy.types.Panel):
         row.prop(me, "halo_slug_man", text='')
 
 def set_surface_usage(self, value):
+    hvs = self.attributes.get("Halo Valid Surface")
+    if hvs is None:
+        self.attributes.new(name="Halo Valid Surface", domain='FACE', type='INT')
+
     bm = Halo_SurfaceFlags.ebm.setdefault(self.name, bmesh.from_edit_mesh(self))
 
     surface_layer = bm.faces.layers.int.get("Halo Valid Surface")
@@ -1299,6 +1297,10 @@ def set_surface_usage(self, value):
         bmesh.update_edit_mesh(self)
 
 def get_surface_usage(self):
+    hvs = self.attributes.get("Halo Valid Surface")
+    if hvs is None:
+        self.attributes.new(name="Halo Valid Surface", domain='FACE', type='INT')
+
     is_valid = False
     bm = Halo_SurfaceFlags.ebm.setdefault(self.name, bmesh.from_edit_mesh(self))
 
@@ -1311,6 +1313,10 @@ def get_surface_usage(self):
     return is_valid
 
 def set_character_usage(self, value):
+    hvc = self.attributes.get("Halo Valid Characters")
+    if hvc is None:
+        self.attributes.new(name="Halo Valid Characters", domain='FACE', type='INT')
+
     bm = Halo_SurfaceFlags.ebm.setdefault(self.name, bmesh.from_edit_mesh(self))
 
     surface_layer = bm.faces.layers.int.get("Halo Valid Characters")
@@ -1321,6 +1327,10 @@ def set_character_usage(self, value):
         bmesh.update_edit_mesh(self)
 
 def get_character_usage(self):
+    hvc = self.attributes.get("Halo Valid Characters")
+    if hvc is None:
+        self.attributes.new(name="Halo Valid Characters", domain='FACE', type='INT')
+
     is_valid = False
     bm = Halo_SurfaceFlags.ebm.setdefault(self.name, bmesh.from_edit_mesh(self))
 
@@ -1347,6 +1357,10 @@ class CharacterFlags(Flag):
     slug_man = auto()
 
 def set_marine_usage(self, value):
+    hvc = self.attributes.get("Halo Valid Characters")
+    if hvc is None:
+        self.attributes.new(name="Halo Valid Characters", domain='FACE', type='INT')
+
     bm = Halo_SurfaceFlags.ebm.setdefault(self.name, bmesh.from_edit_mesh(self))
 
     surface_layer = bm.faces.layers.int.get("Halo Valid Characters")
@@ -1363,6 +1377,10 @@ def set_marine_usage(self, value):
         bmesh.update_edit_mesh(self)
 
 def get_marine_usage(self):
+    hvc = self.attributes.get("Halo Valid Characters")
+    if hvc is None:
+        self.attributes.new(name="Halo Valid Characters", domain='FACE', type='INT')
+
     is_valid = False
     bm = Halo_SurfaceFlags.ebm.setdefault(self.name, bmesh.from_edit_mesh(self))
 
@@ -1376,6 +1394,10 @@ def get_marine_usage(self):
     return is_valid
 
 def set_elite_usage(self, value):
+    hvc = self.attributes.get("Halo Valid Characters")
+    if hvc is None:
+        self.attributes.new(name="Halo Valid Characters", domain='FACE', type='INT')
+
     bm = Halo_SurfaceFlags.ebm.setdefault(self.name, bmesh.from_edit_mesh(self))
 
     surface_layer = bm.faces.layers.int.get("Halo Valid Characters")
@@ -1392,6 +1414,10 @@ def set_elite_usage(self, value):
         bmesh.update_edit_mesh(self)
 
 def get_elite_usage(self):
+    hvc = self.attributes.get("Halo Valid Characters")
+    if hvc is None:
+        self.attributes.new(name="Halo Valid Characters", domain='FACE', type='INT')
+
     is_valid = False
     bm = Halo_SurfaceFlags.ebm.setdefault(self.name, bmesh.from_edit_mesh(self))
 
@@ -1405,6 +1431,10 @@ def get_elite_usage(self):
     return is_valid
 
 def set_grunt_usage(self, value):
+    hvc = self.attributes.get("Halo Valid Characters")
+    if hvc is None:
+        self.attributes.new(name="Halo Valid Characters", domain='FACE', type='INT')
+
     bm = Halo_SurfaceFlags.ebm.setdefault(self.name, bmesh.from_edit_mesh(self))
 
     surface_layer = bm.faces.layers.int.get("Halo Valid Characters")
@@ -1421,6 +1451,10 @@ def set_grunt_usage(self, value):
         bmesh.update_edit_mesh(self)
 
 def get_grunt_usage(self):
+    hvc = self.attributes.get("Halo Valid Characters")
+    if hvc is None:
+        self.attributes.new(name="Halo Valid Characters", domain='FACE', type='INT')
+
     is_valid = False
     bm = Halo_SurfaceFlags.ebm.setdefault(self.name, bmesh.from_edit_mesh(self))
 
@@ -1434,6 +1468,10 @@ def get_grunt_usage(self):
     return is_valid
 
 def set_hunter_usage(self, value):
+    hvc = self.attributes.get("Halo Valid Characters")
+    if hvc is None:
+        self.attributes.new(name="Halo Valid Characters", domain='FACE', type='INT')
+
     bm = Halo_SurfaceFlags.ebm.setdefault(self.name, bmesh.from_edit_mesh(self))
 
     surface_layer = bm.faces.layers.int.get("Halo Valid Characters")
@@ -1450,6 +1488,10 @@ def set_hunter_usage(self, value):
         bmesh.update_edit_mesh(self)
 
 def get_hunter_usage(self):
+    hvc = self.attributes.get("Halo Valid Characters")
+    if hvc is None:
+        self.attributes.new(name="Halo Valid Characters", domain='FACE', type='INT')
+
     is_valid = False
     bm = Halo_SurfaceFlags.ebm.setdefault(self.name, bmesh.from_edit_mesh(self))
 
@@ -1463,6 +1505,10 @@ def get_hunter_usage(self):
     return is_valid
 
 def set_jackal_usage(self, value):
+    hvc = self.attributes.get("Halo Valid Characters")
+    if hvc is None:
+        self.attributes.new(name="Halo Valid Characters", domain='FACE', type='INT')
+
     bm = Halo_SurfaceFlags.ebm.setdefault(self.name, bmesh.from_edit_mesh(self))
 
     surface_layer = bm.faces.layers.int.get("Halo Valid Characters")
@@ -1479,6 +1525,10 @@ def set_jackal_usage(self, value):
         bmesh.update_edit_mesh(self)
 
 def get_jackal_usage(self):
+    hvc = self.attributes.get("Halo Valid Characters")
+    if hvc is None:
+        self.attributes.new(name="Halo Valid Characters", domain='FACE', type='INT')
+
     is_valid = False
     bm = Halo_SurfaceFlags.ebm.setdefault(self.name, bmesh.from_edit_mesh(self))
 
@@ -1492,6 +1542,10 @@ def get_jackal_usage(self):
     return is_valid
 
 def set_floodcarrier_usage(self, value):
+    hvc = self.attributes.get("Halo Valid Characters")
+    if hvc is None:
+        self.attributes.new(name="Halo Valid Characters", domain='FACE', type='INT')
+
     bm = Halo_SurfaceFlags.ebm.setdefault(self.name, bmesh.from_edit_mesh(self))
 
     surface_layer = bm.faces.layers.int.get("Halo Valid Characters")
@@ -1508,6 +1562,10 @@ def set_floodcarrier_usage(self, value):
         bmesh.update_edit_mesh(self)
 
 def get_floodcarrier_usage(self):
+    hvc = self.attributes.get("Halo Valid Characters")
+    if hvc is None:
+        self.attributes.new(name="Halo Valid Characters", domain='FACE', type='INT')
+
     is_valid = False
     bm = Halo_SurfaceFlags.ebm.setdefault(self.name, bmesh.from_edit_mesh(self))
 
@@ -1521,6 +1579,10 @@ def get_floodcarrier_usage(self):
     return is_valid
 
 def set_floodcombat_elite_usage(self, value):
+    hvc = self.attributes.get("Halo Valid Characters")
+    if hvc is None:
+        self.attributes.new(name="Halo Valid Characters", domain='FACE', type='INT')
+
     bm = Halo_SurfaceFlags.ebm.setdefault(self.name, bmesh.from_edit_mesh(self))
 
     surface_layer = bm.faces.layers.int.get("Halo Valid Characters")
@@ -1537,6 +1599,10 @@ def set_floodcombat_elite_usage(self, value):
         bmesh.update_edit_mesh(self)
 
 def get_floodcombat_elite_usage(self):
+    hvc = self.attributes.get("Halo Valid Characters")
+    if hvc is None:
+        self.attributes.new(name="Halo Valid Characters", domain='FACE', type='INT')
+
     is_valid = False
     bm = Halo_SurfaceFlags.ebm.setdefault(self.name, bmesh.from_edit_mesh(self))
 
@@ -1550,6 +1616,10 @@ def get_floodcombat_elite_usage(self):
     return is_valid
 
 def set_floodcombat_human_usage(self, value):
+    hvc = self.attributes.get("Halo Valid Characters")
+    if hvc is None:
+        self.attributes.new(name="Halo Valid Characters", domain='FACE', type='INT')
+
     bm = Halo_SurfaceFlags.ebm.setdefault(self.name, bmesh.from_edit_mesh(self))
 
     surface_layer = bm.faces.layers.int.get("Halo Valid Characters")
@@ -1566,6 +1636,10 @@ def set_floodcombat_human_usage(self, value):
         bmesh.update_edit_mesh(self)
 
 def get_floodcombat_human_usage(self):
+    hvc = self.attributes.get("Halo Valid Characters")
+    if hvc is None:
+        self.attributes.new(name="Halo Valid Characters", domain='FACE', type='INT')
+
     is_valid = False
     bm = Halo_SurfaceFlags.ebm.setdefault(self.name, bmesh.from_edit_mesh(self))
 
@@ -1579,6 +1653,10 @@ def get_floodcombat_human_usage(self):
     return is_valid
 
 def set_flood_infection_usage(self, value):
+    hvc = self.attributes.get("Halo Valid Characters")
+    if hvc is None:
+        self.attributes.new(name="Halo Valid Characters", domain='FACE', type='INT')
+
     bm = Halo_SurfaceFlags.ebm.setdefault(self.name, bmesh.from_edit_mesh(self))
 
     surface_layer = bm.faces.layers.int.get("Halo Valid Characters")
@@ -1595,6 +1673,10 @@ def set_flood_infection_usage(self, value):
         bmesh.update_edit_mesh(self)
 
 def get_flood_infection_usage(self):
+    hvc = self.attributes.get("Halo Valid Characters")
+    if hvc is None:
+        self.attributes.new(name="Halo Valid Characters", domain='FACE', type='INT')
+
     is_valid = False
     bm = Halo_SurfaceFlags.ebm.setdefault(self.name, bmesh.from_edit_mesh(self))
 
@@ -1608,6 +1690,10 @@ def get_flood_infection_usage(self):
     return is_valid
 
 def set_sentinel_usage(self, value):
+    hvc = self.attributes.get("Halo Valid Characters")
+    if hvc is None:
+        self.attributes.new(name="Halo Valid Characters", domain='FACE', type='INT')
+
     bm = Halo_SurfaceFlags.ebm.setdefault(self.name, bmesh.from_edit_mesh(self))
 
     surface_layer = bm.faces.layers.int.get("Halo Valid Characters")
@@ -1624,6 +1710,10 @@ def set_sentinel_usage(self, value):
         bmesh.update_edit_mesh(self)
 
 def get_sentinel_usage(self):
+    hvc = self.attributes.get("Halo Valid Characters")
+    if hvc is None:
+        self.attributes.new(name="Halo Valid Characters", domain='FACE', type='INT')
+
     is_valid = False
     bm = Halo_SurfaceFlags.ebm.setdefault(self.name, bmesh.from_edit_mesh(self))
 
@@ -1637,6 +1727,10 @@ def get_sentinel_usage(self):
     return is_valid
 
 def set_drinol_usage(self, value):
+    hvc = self.attributes.get("Halo Valid Characters")
+    if hvc is None:
+        self.attributes.new(name="Halo Valid Characters", domain='FACE', type='INT')
+
     bm = Halo_SurfaceFlags.ebm.setdefault(self.name, bmesh.from_edit_mesh(self))
 
     surface_layer = bm.faces.layers.int.get("Halo Valid Characters")
@@ -1653,6 +1747,10 @@ def set_drinol_usage(self, value):
         bmesh.update_edit_mesh(self)
 
 def get_drinol_usage(self):
+    hvc = self.attributes.get("Halo Valid Characters")
+    if hvc is None:
+        self.attributes.new(name="Halo Valid Characters", domain='FACE', type='INT')
+
     is_valid = False
     bm = Halo_SurfaceFlags.ebm.setdefault(self.name, bmesh.from_edit_mesh(self))
 
@@ -1666,6 +1764,10 @@ def get_drinol_usage(self):
     return is_valid
 
 def set_slug_man_usage(self, value):
+    hvc = self.attributes.get("Halo Valid Characters")
+    if hvc is None:
+        self.attributes.new(name="Halo Valid Characters", domain='FACE', type='INT')
+
     bm = Halo_SurfaceFlags.ebm.setdefault(self.name, bmesh.from_edit_mesh(self))
 
     surface_layer = bm.faces.layers.int.get("Halo Valid Characters")
@@ -1682,6 +1784,10 @@ def set_slug_man_usage(self, value):
         bmesh.update_edit_mesh(self)
 
 def get_slug_man_usage(self):
+    hvc = self.attributes.get("Halo Valid Characters")
+    if hvc is None:
+        self.attributes.new(name="Halo Valid Characters", domain='FACE', type='INT')
+
     is_valid = False
     bm = Halo_SurfaceFlags.ebm.setdefault(self.name, bmesh.from_edit_mesh(self))
 
@@ -1793,7 +1899,7 @@ class Halo_OT_RegionRemove(Operator):
 
         region_list = ob.region_list
         active_region = ob.active_region
-        data_region_value = active_region + 1 
+        data_region_value = active_region + 1
 
         modified_indices = list(range(active_region, len(ob.region_list)))
         for idx, index in enumerate(modified_indices):
@@ -2040,7 +2146,7 @@ class Halo_OT_RegionRemoveUnused(Operator):
 
         region_list = ob.region_list
         active_region = ob.active_region
-        data_region_value = active_region + 1 
+        data_region_value = active_region + 1
         region_attribute = ob.data.get_custom_attribute()
         index_set = set()
         unused_indices = set()
