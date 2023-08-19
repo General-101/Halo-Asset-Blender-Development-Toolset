@@ -905,13 +905,14 @@ class Halo_ObjectProps(Panel):
 
     @classmethod
     def poll(self, context):
+        valid = False
         ob = context.object
 
-        ass_jms = None
-        if hasattr(ob, 'ass_jms'):
-            ass_jms = ob.ass_jms
+        if not ob.type == 'ARMATURE':
+            if hasattr(ob, 'ass_jms'):
+                valid = True
 
-        return ass_jms
+        return valid
 
     def draw(self, context):
         layout = self.layout
@@ -936,6 +937,40 @@ class Halo_ObjectProps(Panel):
                 row = col.row()
                 row.label(text='Region:')
                 row.prop(ob_ass_jms, "marker_region", text='')
+
+class Halo_BoneProps(Panel):
+    bl_label = "Halo Bone Properties"
+    bl_idname = "HALO_PT_BoneDetailsPanel"
+    bl_space_type = "PROPERTIES"
+    bl_region_type = "WINDOW"
+    bl_context = "bone"
+    bl_options = {"DEFAULT_CLOSED"}
+
+    @classmethod
+    def poll(self, context):
+        valid = False
+        ob = context.object
+
+        if ob.type == 'ARMATURE' and ob.data.bones.active:
+            if hasattr(ob, 'ass_jms'):
+                valid = True
+
+        return valid
+
+    def draw(self, context):
+        layout = self.layout
+
+        ob = context.object
+        bone = ob.data.bones.active
+        bone_ass_jms = bone.ass_jms
+
+        col = layout.column(align=True)
+        row = col.row()
+        row.label(text='Name Override:')
+        row.prop(bone_ass_jms, "name_override", text='')
+        row = col.row()
+        row.label(text='Unique ID:')
+        row.prop(bone_ass_jms, "unique_id", text='')
 
 class ASS_JMS_ObjectPropertiesGroup(PropertyGroup):
     name_override: StringProperty(
@@ -2267,6 +2302,7 @@ classeshalo = (
     ASS_JMS_MeshPropertiesGroup,
     ASS_JMS_MaterialPropertiesGroup,
     Halo_ObjectProps,
+    Halo_BoneProps,
     Halo_MeshProps,
     ASS_LightPropertiesGroup,
     ASS_LightProps,
@@ -2303,6 +2339,7 @@ def register():
 
     bpy.types.Light.halo_light = PointerProperty(type=ASS_LightPropertiesGroup, name="ASS Properties", description="Set properties for your light")
     bpy.types.Object.ass_jms = PointerProperty(type=ASS_JMS_ObjectPropertiesGroup, name="ASS/JMS Properties", description="Set properties for your object")
+    bpy.types.Bone.ass_jms = PointerProperty(type=ASS_JMS_ObjectPropertiesGroup, name="ASS/JMS Properties", description="Set properties for your Bone")
     bpy.types.Mesh.ass_jms = PointerProperty(type=ASS_JMS_MeshPropertiesGroup, name="ASS/JMS Properties", description="Set properties for your mesh")
     bpy.types.Material.ass_jms = PointerProperty(type=ASS_JMS_MaterialPropertiesGroup, name="ASS/JMS Properties", description="Set properties for your materials")
     bpy.types.Scene.halo = PointerProperty(type=Halo_ScenePropertiesGroup, name="Halo Scene Properties", description="Set properties for your scene")
