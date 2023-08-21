@@ -678,14 +678,11 @@ def generate_mesh_object_retail(asset, object_vertices, object_triangles, object
     return object_mesh
 
 def generate_mesh_retail(context, asset, object_vertices, object_triangles, object_data, game_title, random_color_gen):
-    vertex_groups_indices = []
-
     object_vertices, object_triangles = optimize_geo(object_vertices, object_triangles)
     verts = [vertex.translation for vertex in object_vertices]
     tris = [(triangles.v0, triangles.v1, triangles.v2) for triangles in object_triangles]
 
-    vertex_groups = []
-    vertex_weights = []
+    vertex_weights_sets = []
     region_list = []
 
     object_data.from_pydata(verts, [], tris)
@@ -694,18 +691,14 @@ def generate_mesh_retail(context, asset, object_vertices, object_triangles, obje
 
     region_attribute = object_data.get_custom_attribute()
     for vertex_idx, vertex in enumerate(object_vertices):
+        node_set = []
         for node_values in vertex.node_set:
             node_index = node_values[0]
             node_weight = node_values[1]
-            if not node_index == -1 and not node_index in vertex_groups_indices:
-                vertex_groups_indices.append(node_index)
-                vertex_groups.append(asset.nodes[node_index].name)
-
             if not node_index == -1:
-                group_name = asset.nodes[node_index].name
-                group_index = vertex_groups.index(group_name)
+                node_set.append((node_index, node_weight))
 
-                vertex_weights.append((group_index, node_weight))
+        vertex_weights_sets.append(node_set)
 
     for triangle_idx, triangle in enumerate(object_triangles):
         triangle_material_index = triangle.material_index
@@ -771,7 +764,7 @@ def generate_mesh_retail(context, asset, object_vertices, object_triangles, obje
 
                 layer_color.data[loop_index].color = (color_r, color_g, color_b, color_a)
 
-    return vertex_groups, vertex_weights, region_list
+    return vertex_weights_sets, region_list
 
 def process_mesh_export_weights(vert, armature, original_geo, vertex_groups, joined_list, file_type):
     node_index_list = []

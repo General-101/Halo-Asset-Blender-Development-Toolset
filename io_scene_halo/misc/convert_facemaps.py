@@ -34,8 +34,9 @@ def convert_facemaps(context):
             object_regions = [region.name for region in ob.region_list]
             region_attribute = ob.data.get_custom_attribute()
             for facemap_idx, facemap in enumerate(ob.face_maps):
-                ob.region_add(facemap.name)
-                object_regions.append(facemap.name)
+                if not facemap.name in object_regions:
+                    ob.region_add(facemap.name)
+                    object_regions.append(facemap.name)
 
                 if ob.data.face_maps.active and len(ob.face_maps) > 0:
                     for face_idx, face in enumerate(ob.data.polygons):

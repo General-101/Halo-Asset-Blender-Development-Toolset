@@ -104,7 +104,7 @@ class ASSAsset(global_functions.HaloAsset):
             self.v2 = v2
 
     class Instance:
-        def __init__(self, name="", object_index=-1, unique_id=-1, parent_id=-1, inheritance_flag=0, local_transform=None, pivot_transform=None):
+        def __init__(self, name="", object_index=-1, unique_id=-1, parent_id=-1, inheritance_flag=0, local_transform=None, pivot_transform=None, bone_groups=None):
             self.name = name
             self.object_index = object_index
             self.unique_id = unique_id
@@ -112,6 +112,7 @@ class ASSAsset(global_functions.HaloAsset):
             self.inheritance_flag = inheritance_flag
             self.local_transform = local_transform
             self.pivot_transform = pivot_transform
+            self.bone_groups = bone_groups
 
     def are_quaternions_inverted(self):
         return self.version < 1

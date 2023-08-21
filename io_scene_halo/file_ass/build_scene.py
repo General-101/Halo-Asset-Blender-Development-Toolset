@@ -33,9 +33,7 @@ from .process_file import process_file
 from ..global_functions import mesh_processing, global_functions
 
 def set_ass_material_properties(ass_mat, mat):
-    material_effect = ass_mat.material_effect
     material_strings = ass_mat.material_strings
-    mat.ass_jms.material_effect = material_effect
     if len(material_strings) > 0:
         mat.ass_jms.is_bm = True
 
@@ -134,7 +132,6 @@ def build_scene(context, filepath, report):
 
     object_list = []
     object_settings_list = []
-
     for idx, ass_mat in enumerate(ASS.materials):
         material_name = ass_mat.name
 
@@ -247,8 +244,8 @@ def build_scene(context, filepath, report):
             bm.free()
 
         elif geo_class == 'MESH':
-            vertex_groups, vertex_weights, regions = mesh_processing.generate_mesh_retail(context, ASS, ass_object.vertices, ass_object.triangles, object_data, "halo3", random_color_gen)
-            object_settings = (vertex_groups, vertex_weights, regions)
+            vertex_weights_sets, regions = mesh_processing.generate_mesh_retail(context, ASS, ass_object.vertices, ass_object.triangles, object_data, "halo3", random_color_gen)
+            object_settings = (vertex_weights_sets, regions)
 
         object_settings_list.append(object_settings)
         object_list.append(object_data)
@@ -287,20 +284,21 @@ def build_scene(context, filepath, report):
             instance.ass_jms.unique_id = str(instance_element.unique_id)
 
             if not object_setings == None:
-                vertex_groups = object_setings[0]
-                vertex_weights = object_setings[1]
-                regions = object_setings[2]
+                vertex_weights_sets = object_setings[0]
+                regions = object_setings[1]
 
-                for vertex_group in vertex_groups:
-                    instance.vertex_groups.new(name = vertex_group)
+                for bone_goup in instance_element.bone_groups:
+                    instance.vertex_groups.new(name = ASS.instances[bone_goup].name)
 
-                for vertex_weight_idx, vertex_weight in enumerate(vertex_weights):
-                    group_index = vertex_weight[0]
-                    node_weight = vertex_weight[1]
-                    instance.vertex_groups[group_index].add([vertex_weight_idx], node_weight, 'ADD')
+                for vertex_weights_set_idx, vertex_weights_set in enumerate(vertex_weights_sets):
+                    for node_set in vertex_weights_set:
+                        group_index = node_set[0]
+                        node_weight = node_set[1]
+                        instance.vertex_groups[group_index].add([vertex_weights_set_idx], node_weight, 'ADD')
 
                 for region in regions:
-                    instance.region_add(region)
+                    if not global_functions.string_empty_check(region):
+                        instance.region_add(region)
 
             if xref and instance.type == 'MESH' and not visited_objects[object_index]:
                 visited_objects[object_index] = True

@@ -64,7 +64,10 @@ def process_file(filepath):
             for string in range(material_string_count):
                 material_strings.append(ASS.next().strip('\"'))
 
-        ASS.materials.append(ASSAsset.Material(scene_name, file_name, None, 0, None, None, None, material_effect, material_strings))
+        material_definition_items = material_effect.split()
+        lod, permutation, region = global_functions.material_definition_parser(True, material_definition_items, 'Default', 'Default')
+
+        ASS.materials.append(ASSAsset.Material(scene_name, file_name, None, material, lod, permutation, region, material_effect, material_strings))
 
     object_count = int(ASS.next())
     for object in range(object_count):
@@ -197,10 +200,11 @@ def process_file(filepath):
             local_transform = ASS.next_transform()
             pivot_transform = ASS.next_transform()
 
-        if bone_influence_count > 0:
-            ASS.skip(bone_influence_count)
+        bone_groups = []
+        for bone in range(bone_influence_count):
+            bone_groups.append(int(ASS.next()))
 
-        ASS.instances.append(ASSAsset.Instance(name, object_index, unique_id, parent_id, inheritance_flag, local_transform, pivot_transform))
+        ASS.instances.append(ASSAsset.Instance(name, object_index, unique_id, parent_id, inheritance_flag, local_transform, pivot_transform, bone_groups))
 
     if ASS.left() != 0: # is something wrong with the parser?
         raise RuntimeError("%s elements left after parse end" % ASS.left())
