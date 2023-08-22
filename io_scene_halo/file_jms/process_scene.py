@@ -138,7 +138,7 @@ def process_scene(context, version, game_version, generate_checksum, fix_rotatio
 
         elif marker.type == 'MESH':
             if not marker.active_region == -1:
-                region_name = marker.data.region_list[marker.active_region].name
+                region_name = marker.region_list[marker.active_region].name
                 if not region_name in region_list:
                     region_list.append(region_name)
 
