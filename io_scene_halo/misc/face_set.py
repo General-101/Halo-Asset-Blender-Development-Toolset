@@ -60,7 +60,7 @@ def create_facemap(context, level_of_detail, permutation_string, region_string, 
                 region_list.append(region.name)
 
             region_index = region_list.index(region_name)
-            region_attribute = active_object.data.get_custom_attribute(context)
+            region_attribute = active_object.data.get_custom_attribute()
             if context.mode == 'EDIT_MESH':
                 bm = bmesh.from_edit_mesh(active_object.data)
 
