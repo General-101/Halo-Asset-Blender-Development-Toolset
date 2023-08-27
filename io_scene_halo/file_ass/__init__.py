@@ -52,7 +52,7 @@ def version_settings_callback(self, context):
             ('2', "2", "H2/H3"),
         ]
 
-    if not self.game_title == "halo3":
+    if not self.game_title == "halo2":
         items.append(('3', "3", "H3 Non-functional"))
         items.append(('4', "4", "H3 Non-functional"))
         items.append(('5', "5", "H3 Non-functional"))
