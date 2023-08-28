@@ -587,21 +587,13 @@ def get_matrix(obj_a, obj_b, is_local, armature, joined_list, is_node, version, 
             if obj_b.parent_bone and is_local and bone_test:
                 parent_object = get_parent(armature, obj_b, joined_list, -1)
                 pose_bone = armature.pose.bones['%s' % (parent_object[1].name)]
-                if constraint:
-                    object_matrix = (pose_bone.matrix.inverted() @ ( obj_a.matrix_world @ rotation_matrix)) @ scale_matrix
-
-                else:
-                    object_matrix = ((pose_bone.matrix @ rotation_matrix).inverted() @ obj_a.matrix_world) @ scale_matrix
+                object_matrix = ((pose_bone.matrix @ rotation_matrix).inverted() @ obj_a.matrix_world) @ scale_matrix
 
         else:
             object_matrix = obj_a.matrix_world @ scale_matrix
             if obj_b.parent and is_local:
                 parent_object = get_parent(armature, obj_b, joined_list, -1)
-                if constraint:
-                    object_matrix = (parent_object[1].matrix_world.inverted() @ obj_a.matrix_world) @ scale_matrix
-
-                else:
-                    object_matrix = (parent_object[1].matrix_world.inverted() @ obj_a.matrix_world) @ scale_matrix
+                object_matrix = (parent_object[1].matrix_world.inverted() @ obj_a.matrix_world) @ scale_matrix
 
     return object_matrix
 
