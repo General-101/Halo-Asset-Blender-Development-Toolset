@@ -2000,7 +2000,7 @@ class Halo_OT_RegionMove(Operator):
             for face in bm.faces:
                 if face[surface_layer] == neighbor:
                     face[surface_layer] = active_region
-                else:
+                elif face[surface_layer] == active_region:
                     face[surface_layer] = neighbor
 
             bmesh.update_edit_mesh(data)
@@ -2009,7 +2009,7 @@ class Halo_OT_RegionMove(Operator):
             for face in data.polygons:
                 if region_attribute.data[face.index].value == neighbor:
                     region_attribute.data[face.index].value = active_region
-                else:
+                elif region_attribute.data[face.index].value == active_region:
                     region_attribute.data[face.index].value = neighbor
 
     def move_index(self, ob):
@@ -2026,10 +2026,9 @@ class Halo_OT_RegionMove(Operator):
         active_region = ob.active_region
 
         neighbor = active_region + (-1 if self.direction == 'UP' else 1)
+        self.move_attribute_index(context, neighbor, active_region)
         region_list.move(neighbor, active_region)
         self.move_index(ob)
-
-        self.move_attribute_index(context, neighbor, active_region)
 
         return{'FINISHED'}
 
