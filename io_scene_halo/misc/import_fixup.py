@@ -51,17 +51,17 @@ def model_fixup(context, threshold):
     # Gather all scene resources that fit export criteria
     resource_management.gather_scene_resources(context, layer_collection_list, object_list, hidden_geo)
 
-    processed_mesh_name_list = []
+    processed_mesh_list = []
 
+    edge_split = global_functions.EdgeSplit(True, False, 0.523599, True)
     for obj in object_list:
         if obj.type== 'MESH':
-            edge_split = global_functions.EdgeSplit(True, False, 0.523599, True)
             mesh_processing.add_modifier(context, obj, False, edge_split, None)
-            if not obj.data.name in processed_mesh_name_list:
-                processed_mesh_name_list.append(obj.data.name)
+            if obj.data in processed_mesh_list:
+                processed_mesh_list.append(obj.data)
                 mesh_processing.select_object(context, obj)
                 bpy.ops.object.mode_set(mode = 'EDIT')
-                merge_normals()
+                #merge_normals()
 
                 main_material_idx = []
                 render_only_material_idx = []
