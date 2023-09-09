@@ -372,7 +372,7 @@ def generate_marker(context, collection, game_version, game_title, file_version,
         marker_name = marker_group
         if not marker_obj.region_index == -1:
             region_element = ASSET.regions[marker_obj.region_index]
-            permutation_element = region_element[marker_obj.permutation_index]
+            permutation_element = region_element.permutations[marker_obj.permutation_index]
             marker_name = "(%s %s)%s" % (permutation_element.name, region_element.name, marker_group)
 
     object_name_prefix = '#%s' % marker_name
