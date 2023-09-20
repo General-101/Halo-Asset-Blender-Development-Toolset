@@ -670,16 +670,16 @@ def get_cutscene_flags(input_stream, SCENARIO, TAG, tag_format, node_element):
     return cutscene_flag
 
 def get_cutscene_camera_points(input_stream, SCENARIO, TAG, tag_format, node_element):
-    cutscene_flag = SCENARIO.CutsceneFlag()
+    cutscene_camera = SCENARIO.CutsceneCameraPoint()
     input_stream.read(4) # Padding
-    cutscene_flag.name = TAG.read_string32(input_stream, TAG, tag_format.XMLData(node_element, "name"))
+    cutscene_camera.name = TAG.read_string32(input_stream, TAG, tag_format.XMLData(node_element, "name"))
     input_stream.read(4) # Padding
-    cutscene_flag.position = TAG.read_point_3d(input_stream, TAG, tag_format.XMLData(node_element, "position"))
-    cutscene_flag.orientation = TAG.read_euler_angles(input_stream, TAG, tag_format.XMLData(node_element, "orientation"))
-    cutscene_flag.field_of_view = TAG.read_degree(input_stream, TAG, tag_format.XMLData(node_element, "field of view"))
+    cutscene_camera.position = TAG.read_point_3d(input_stream, TAG, tag_format.XMLData(node_element, "position"), True)
+    cutscene_camera.orientation = TAG.read_euler_angles(input_stream, TAG, tag_format.XMLData(node_element, "orientation"))
+    cutscene_camera.field_of_view = TAG.read_degree(input_stream, TAG, tag_format.XMLData(node_element, "field of view"))
     input_stream.read(36) # Padding
 
-    return cutscene_flag
+    return cutscene_camera
 
 def get_cutscene_titles(input_stream, SCENARIO, TAG, tag_format, node_element):
     cutscene_title = SCENARIO.CutsceneTitle()

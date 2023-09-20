@@ -43,6 +43,7 @@ class CollisionAsset():
         self.errors = None
         self.flags = 0
         self.materials = None
+        self.materials_header = None
         self.regions = None
         self.pathfinding_spheres = None
         self.nodes = None
@@ -264,20 +265,17 @@ class CollisionAsset():
             self.color = color
 
     class Material:
-        def __init__(self, name_length=0, name=""):
-            self.name_length = name_length
+        def __init__(self, name=""):
             self.name = name
 
     class Region:
-        def __init__(self, name_length=0, name="", permutation_tag_block=None, permutations=None):
-            self.name_length = name_length
+        def __init__(self, name="", permutation_tag_block=None, permutations=None):
             self.name = name
             self.permutation_tag_block = permutation_tag_block
             self.permutations = permutations
 
-    class Permutations:
-        def __init__(self, name_length=0, name="", bsps_tag_block=None, bsps_physics_tag_block=None, bsps=None, bsp_physics=None):
-            self.name_length = name_length
+    class Permutation:
+        def __init__(self, name="", bsps_tag_block=None, bsps_physics_tag_block=None, bsps=None, bsp_physics=None):
             self.name = name
             self.bsps_tag_block = bsps_tag_block
             self.bsps_physics_tag_block = bsps_physics_tag_block

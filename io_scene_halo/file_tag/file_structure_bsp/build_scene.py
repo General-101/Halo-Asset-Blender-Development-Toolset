@@ -435,26 +435,34 @@ def build_scene(context, LEVEL, game_version, game_title, file_version, fix_rota
                                 mat = LEVEL.materials[triangle_material_index]
 
                             if not triangle_material_index == -1:
-                                material_list = []
                                 if triangle_material_index < material_count:
                                     material_name = os.path.basename(mat.shader.name)
 
                                 else:
                                     material_name = "invalid_material_%s" % triangle_material_index
 
+                                for halo_property in mat.properties:
+                                    if halo_property.property_type == 0:
+                                        material_name += " lm:%s" % halo_property.real_value
+
+                                    elif halo_property.property_type == 1:
+                                        material_name += " lp:%s" % halo_property.real_value
+
+                                    elif halo_property.property_type == 2:
+                                        material_name += " hl:%s" % halo_property.real_value
+
+                                    elif halo_property.property_type == 3:
+                                        material_name += " ds:%s" % halo_property.real_value
+
                                 mat = bpy.data.materials.get(material_name)
                                 if mat is None:
                                     mat = bpy.data.materials.new(name=material_name)
 
-                                for slot in object_mesh.material_slots:
-                                    material_list.append(slot.material)
-
-                                if not mat in material_list:
-                                    material_list.append(mat)
+                                if not mat in object_mesh.data.materials.values():
                                     object_mesh.data.materials.append(mat)
 
                                 mat.diffuse_color = random_color_gen.next()
-                                material_index = material_list.index(mat)
+                                material_index = object_mesh.data.materials.values().index(mat)
                                 mesh.polygons[triangle_idx].material_index = material_index
 
                             vertex_list = [cluster_data.raw_vertices[triangle[0]], cluster_data.raw_vertices[triangle[1]], cluster_data.raw_vertices[triangle[2]]]

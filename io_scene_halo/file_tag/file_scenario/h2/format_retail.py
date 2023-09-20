@@ -181,6 +181,18 @@ class StartingEquipment(Flag):
     no_grenades = auto()
     plasma_grenades = auto()
 
+class PathfindingPolicyEnum(Enum):
+    tag_default = 0
+    pathfinding_dynamic = auto()
+    pathfinding_cut_out = auto()
+    pathfinding_static = auto()
+    pathfinding_none = auto()
+
+class LightmappingPolicyEnum(Enum):
+    tag_default = 0
+    dynamic = auto()
+    per_vertex = auto()
+
 class ScenarioAsset():
     def __init__(self):
         self.header = None

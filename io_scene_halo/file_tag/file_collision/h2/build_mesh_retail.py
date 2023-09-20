@@ -75,7 +75,7 @@ def build_collision(context, armature, COLLISION, game_version, mesh_processing,
                     if not ngon_material_index == -1:
                         mat = COLLISION.materials[ngon_material_index]
 
-                    current_region_permutation = region_name
+                    current_region_permutation = "%s %s" % (permutation_name, region_name)
 
                     if not current_region_permutation in active_region_permutations:
                         active_region_permutations.append(current_region_permutation)

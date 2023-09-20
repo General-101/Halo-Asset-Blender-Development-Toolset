@@ -26,8 +26,8 @@
 
 import struct
 
-def write_body(output_stream, BITMAP):
-    BITMAP.bitmap_body_header.write(output_stream, False, True)
+def write_body(output_stream, BITMAP, TAG):
+    BITMAP.bitmap_body_header.write(output_stream, TAG, True)
     output_stream.write(struct.pack('<H', BITMAP.bitmap_body.type))
     output_stream.write(struct.pack('<H', BITMAP.bitmap_body.format))
     output_stream.write(struct.pack('<H', BITMAP.bitmap_body.usage))
@@ -54,6 +54,9 @@ def write_body(output_stream, BITMAP):
     output_stream.write(struct.pack('<b', BITMAP.bitmap_body.overlap))
     output_stream.write(struct.pack('<B', BITMAP.bitmap_body.color_subsampling))
 
-def build_asset(output_stream, BITMAP, report):
-    BITMAP.header.write(output_stream, False, True)
-    write_body(output_stream, BITMAP)
+def build_asset(output_stream, BITMAP, tag_format, report):
+    TAG = tag_format.TagAsset()
+    TAG.big_endian = False
+
+    BITMAP.header.write(output_stream, TAG.big_endian, True)
+    write_body(output_stream, BITMAP, TAG)

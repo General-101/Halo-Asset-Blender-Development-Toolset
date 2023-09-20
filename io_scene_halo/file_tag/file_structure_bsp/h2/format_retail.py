@@ -388,10 +388,16 @@ class LevelAsset():
             self.primary_lightmap_incident_direction = primary_lightmap_incident_direction
 
     class Material:
-        def __init__(self, old_shader=None, shader=None, properties_tag_block_header=None, properties_tag_block=None, breakable_surface_index=0, properties=[]):
+        def __init__(self, old_shader=None, shader=None, properties_tag_block_header=None, properties_tag_block=None, breakable_surface_index=0, properties=None):
             self.old_shader = old_shader
             self.shader = shader
             self.properties_tag_block_header = properties_tag_block_header
             self.properties_tag_block = properties_tag_block
             self.breakable_surface_index = breakable_surface_index
             self.properties = properties
+
+    class Property:
+        def __init__(self, property_type=0, int_value=0, real_value=0.0):
+            self.property_type = property_type
+            self.int_value = int_value
+            self.real_value = real_value

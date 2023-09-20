@@ -107,7 +107,7 @@ def write_parameters(output_stream, TAG, parameters, parameters_header):
                 output_stream.write(struct.pack('<%ssx' % bitmap_name_length, TAG.string_to_bytes(parameter_element.bitmap.name, False)))
 
             if len(parameter_element.animation_properties) > 0:
-                parameter_element.animation_properties_tag_block_header.write(output_stream, False, True)
+                parameter_element.animation_properties_tag_block_header.write(output_stream, TAG, True)
                 for animation_properties in parameter_element.animation_properties:
                     output_stream.write(struct.pack('<H', animation_properties.type))
                     output_stream.write(struct.pack('<2x'))
