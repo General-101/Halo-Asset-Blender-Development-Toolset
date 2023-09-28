@@ -165,7 +165,7 @@ def convert_tag(context, input_file, source_game_title, target_game_title, patch
                             output_stream = open(new_path, 'wb')
 
                             H2_ASSET = upgrade_h1_h2_bitmap(H1_ASSET, patch_txt_path, tag_format, report)
-                            build_h2_bitmap(output_stream, H2_ASSET, report)
+                            build_h2_bitmap(output_stream, H2_ASSET, tag_format, report)
 
                             output_stream.close()
                             input_stream.close()
