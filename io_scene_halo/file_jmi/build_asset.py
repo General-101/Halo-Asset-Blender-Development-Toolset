@@ -86,7 +86,7 @@ def build_asset(
         file.write('\n')
         file.close()
 
-    for idx, world_nodes in enumerate(JMI.children_sets): 
+    for idx, world_nodes in enumerate(JMI.children_sets):
         permutation_name = JMI.world_nodes[idx].jmi.permutation_ce
         lod_setting = JMI.world_nodes[idx].jmi.level_of_detail_ce
         world_name = world_nodes[0].name.split('!', 1)[1]

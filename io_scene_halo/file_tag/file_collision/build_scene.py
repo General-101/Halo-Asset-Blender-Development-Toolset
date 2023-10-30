@@ -30,6 +30,7 @@ import bmesh
 from math import radians
 from mathutils import Matrix
 from ..file_collision.h1.build_mesh_retail import build_collision as build_retail_h1_collision
+
 from ..file_collision.h2.build_mesh_retail import build_collision as build_retail_h2_collision
 
 def build_pathfinding_spheres(context, armature, COLLISION, fix_rotations, empty_markers, mesh_processing, global_functions):
@@ -81,7 +82,7 @@ def build_pathfinding_spheres(context, armature, COLLISION, fix_rotations, empty
         object_mesh.select_set(False)
         armature.select_set(False)
 
-def build_scene(context, COLLISION, game_version, game_title, file_version, fix_rotations, empty_markers, report, mesh_processing, global_functions):
+def build_scene(context, COLLISION, game_version, game_title, file_version, fix_rotations, empty_markers, report, mesh_processing, global_functions, tag_format):
     active_object = context.view_layer.objects.active
     armature = None
     if active_object and active_object.type == 'ARMATURE':

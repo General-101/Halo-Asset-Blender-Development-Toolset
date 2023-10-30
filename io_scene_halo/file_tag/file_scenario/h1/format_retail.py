@@ -751,8 +751,9 @@ class ScenarioAsset():
             self.type_3 = type_3
 
     class TriggerVolume():
-        def __init__(self, name="", forward=Vector(), up=Vector(), position=Vector(), extents=Vector()):
+        def __init__(self, name="", parameter=Vector(), forward=Vector(), up=Vector(), position=Vector(), extents=Vector()):
             self.name = name
+            self.parameter = parameter
             self.forward = forward
             self.up = up
             self.position = position

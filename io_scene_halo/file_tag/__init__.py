@@ -26,11 +26,23 @@
 
 import bpy
 
-from bpy_extras.io_utils import ImportHelper
-from bpy.types import Operator
+from bpy_extras.io_utils import (
+        ImportHelper,
+        ExportHelper
+        )
+
+from bpy.types import (
+        Operator,
+        Panel,
+        PropertyGroup
+        )
+
 from bpy.props import (
         BoolProperty,
-        EnumProperty
+        EnumProperty,
+        FloatProperty,
+        PointerProperty,
+        StringProperty
         )
 
 from ..global_functions import global_functions
@@ -87,17 +99,45 @@ class ImportTag(Operator, ImportHelper):
         row.label(text='Use Empties For Markers:')
         row.prop(self, "empty_markers", text='')
 
+class ExportSCNR(Operator, ExportHelper):
+    """Write a scenario tag file"""
+    bl_idname = "export_scene.scnr"
+    bl_label = "Export Scenario"
+    filename_ext = '.scenario'
+
+    filter_glob: StringProperty(
+        default="*.scenario",
+        options={'HIDDEN'},
+        )
+
+    def execute(self, context):
+        from . import export_tag
+
+        return global_functions.run_code("export_tag.write_file(context, self.filepath, self.report)")
+
+classeshalo = (
+    ImportTag,
+    ExportSCNR
+)
+
+def menu_func_export(self, context):
+    self.layout.operator(ExportSCNR.bl_idname, text="Halo Scenario (.scenario)")
+
 def menu_func_import(self, context):
     self.layout.operator(ImportTag.bl_idname, text="Halo Tag (mode/mod2/coll/phys/antr/sbsp)")
 
 def register():
-    bpy.utils.register_class(ImportTag)
+    for clshalo in classeshalo:
+        bpy.utils.register_class(clshalo)
 
+    bpy.types.TOPBAR_MT_file_export.append(menu_func_export)
     bpy.types.TOPBAR_MT_file_import.append(menu_func_import)
 
 def unregister():
+    bpy.types.TOPBAR_MT_file_export.remove(menu_func_export)
     bpy.types.TOPBAR_MT_file_import.remove(menu_func_import)
-    bpy.utils.unregister_class(ImportTag)
+    for clshalo in classeshalo:
+        bpy.utils.unregister_class(clshalo)
 
 if __name__ == '__main__':
     register()

@@ -24,6 +24,7 @@
 #
 # ##### END MIT LICENSE BLOCK #####
 
+import os
 import bpy
 
 from ..global_functions import tag_format, mesh_processing, global_functions
@@ -45,6 +46,8 @@ from ..file_tag.file_animation.h1.process_file_retail import process_file_retail
 from ..file_tag.file_structure_bsp.h1.process_file_retail import process_file_retail as process_level_retail
 from .file_structure_bsp.h2.process_file_retail import process_file_retail as process_h2_level
 from ..file_tag.file_structure_lightmap.h2.process_file import process_file_retail as process_h2_lightmap
+
+from .file_scenario.h1.process_file_retail import process_file_retail as process_h1_scenario
 from .file_scenario.h2.process_file_retail import process_file as process_h2_scenario
 from ..file_tag.file_camera_track.process_file_retail import process_file_retail as process_camera_track_retail
 
@@ -140,7 +143,10 @@ def load_file(context, file_path, game_title, fix_rotations, empty_markers, repo
 
     elif tag_group == "scnr":
         build_scene = build_scenario
-        if game_title == "halo2":
+        if game_title == "halo1":
+            ASSET = process_h1_scenario(input_stream, tag_format, report)
+
+        elif game_title == "halo2":
             ASSET = process_h2_scenario(input_stream, tag_format, report)
 
         else:
@@ -167,7 +173,7 @@ def load_file(context, file_path, game_title, fix_rotations, empty_markers, repo
         return {'CANCELLED'}
 
     input_stream.close()
-    build_scene.build_scene(context, ASSET, "retail", game_title, 0, fix_rotations, empty_markers, report, mesh_processing, global_functions)
+    build_scene.build_scene(context, ASSET, "retail", game_title, 0, fix_rotations, empty_markers, report, mesh_processing, global_functions, tag_format)
 
     return {'FINISHED'}
 

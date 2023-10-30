@@ -26,7 +26,7 @@
 
 from enum import Flag, Enum, auto
 
-class BitmapTypeEnum(Enum):
+class ImportTypeEnum(Enum):
     _2d_textures = 0
     _3d_textures = auto()
     cube_maps = auto()
@@ -49,7 +49,7 @@ class UsageEnum(Enum):
     light_map = auto()
     vector_map = auto()
 
-class BitmapFlags(Flag):
+class ImportFlags(Flag):
     enable_diffusion_dithering = auto()
     disable_height_map_compression = auto()
     uniform_sprite_sequences = auto()
@@ -70,6 +70,41 @@ class SpriteUsageEnum(Enum):
     blend_add_subtract_max = 0
     multiply_min = auto()
     double_multiply = auto()
+
+class BitmapTypeEnum(Enum):
+    _2d_texture = 0
+    _3d_texture = auto()
+    cube_map = auto()
+    white = auto()
+
+class BitmapFormatEnum(Enum):
+    a8 = 0
+    y8 = auto()
+    ay8 = auto()
+    a8y8 = auto()
+    unused1 = auto()
+    unused2 = auto()
+    r5g6b5 = auto()
+    unused3 = auto()
+    a1r5g5b5 = auto()
+    a4r4g4b4 = auto()
+    x8r8g8b8 = auto()
+    a8r8g8b8 = auto()
+    unused4 = auto()
+    unused5 = auto()
+    dxt1 = auto()
+    dxt3 = auto()
+    dxt5 = auto()
+    p8_bump = auto()
+    bc7 = auto()
+
+class BitmapFlags(Flag):
+    power_of_two_dimensions = auto()
+    compressed = auto()
+    palettized = auto()
+    swizzled = auto()
+    linear = auto()
+    v16u16 = auto()
 
 class BitmapAsset():
     def __init__(self):
@@ -104,3 +139,33 @@ class BitmapAsset():
             self.sprite_spacing = sprite_spacing
             self.sequences_tag_block = sequences_tag_block
             self.bitmaps_tag_block = bitmaps_tag_block
+
+    class Sequence:
+        def __init__(self, name="", first_bitmap_index=0, bitmap_count=0, sprites_tag_block=None, sprites=None):
+            self.name = name
+            self.first_bitmap_index = first_bitmap_index
+            self.bitmap_count = bitmap_count
+            self.sprites_tag_block = sprites_tag_block
+            self.sprites = sprites
+
+    class Sprite:
+        def __init__(self, bitmap_index=0, left=0, right=0, top=0, bottom=0, registration_point=(0.0, 0.0)):
+            self.bitmap_index = bitmap_index
+            self.left = left
+            self.right = right
+            self.top = top
+            self.bottom = bottom
+            self.registration_point = registration_point
+
+    class Bitmap:
+        def __init__(self, signature="", width=0, height=0, depth=0, bitmap_type=0, bitmap_format=0, flags=0, registration_point=(0.0, 0.0), mipmap_count=0, pixels_offset=0):
+            self.signature = signature
+            self.width = width
+            self.height = height
+            self.depth = depth
+            self.bitmap_type = bitmap_type
+            self.bitmap_format = bitmap_format
+            self.flags = flags
+            self.registration_point = registration_point
+            self.mipmap_count = mipmap_count
+            self.pixels_offset = pixels_offset

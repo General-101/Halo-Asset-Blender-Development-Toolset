@@ -25,6 +25,7 @@
 # ##### END MIT LICENSE BLOCK #####
 
 import os
+import struct
 
 from .process_scene import process_scene
 from ..global_functions.global_functions import get_directory, get_true_extension, ModelTypeEnum
@@ -35,72 +36,130 @@ DECIMAL_2 = '\n%0.{decimal_point}f\t%0.{decimal_point}f'.format(decimal_point=DE
 DECIMAL_3 = '\n%0.{decimal_point}f\t%0.{decimal_point}f\t%0.{decimal_point}f'.format(decimal_point=DECIMAL_POINT)
 DECIMAL_4 = '\n%0.{decimal_point}f\t%0.{decimal_point}f\t%0.{decimal_point}f\t%0.{decimal_point}f'.format(decimal_point=DECIMAL_POINT)
 
-def write_header_16394(file, JMA):
+def write_header_16394(file, JMA, binary):
     #write header
-    file.write(
-        '%s' % (JMA.version) +
-        '\n%s' % (JMA.node_checksum) +
-        '\n%s' % (JMA.frame_count) +
-        '\n%s' % (JMA.frame_rate) +
-        '\n%s' % (len(JMA.actor_names)) +
-        '\n%s' % (JMA.actor_names[0]) +
-        '\n%s' % (JMA.node_count)
-        )
+    if binary:
+        file.write(struct.pack('<i', JMA.version))
+        file.write(struct.pack('<i', JMA.node_checksum))
+        file.write(struct.pack('<i', JMA.frame_count))
+        file.write(struct.pack('<i', JMA.frame_rate))
+        file.write(struct.pack('<i', len(JMA.actor_names)))
+        for actor_name in JMA.actor_names:
+            file.write(struct.pack('<%ssx' % (len(actor_name)), bytes(actor_name, 'utf-8')))
 
-def write_header_16390(file, JMA):
-    #write header
-    file.write(
-        '%s' % (JMA.version) +
-        '\n%s' % (JMA.frame_count) +
-        '\n%s' % (JMA.frame_rate) +
-        '\n%s' % (len(JMA.actor_names)) +
-        '\n%s' % (JMA.actor_names[0]) +
-        '\n%s' % (JMA.node_count) +
-        '\n%s' % (JMA.node_checksum)
-        )
+        file.write(struct.pack('<i', JMA.node_count))
 
-def write_nodes_16394(file, JMA):
-    for node in JMA.nodes:
+    else:
         file.write(
-            '\n%s' % (node.name) +
-            '\n%s' % (node.parent)
+            '%s' % (JMA.version) +
+            '\n%s' % (JMA.node_checksum) +
+            '\n%s' % (JMA.frame_count) +
+            '\n%s' % (JMA.frame_rate) +
+            '\n%s' % (len(JMA.actor_names)) +
+            '\n%s' % (JMA.actor_names[0]) +
+            '\n%s' % (JMA.node_count)
             )
 
-def write_nodes_16392(file, JMA):
-    for node in JMA.nodes:
+def write_header_16390(file, JMA, binary):
+    #write header
+    if binary:
+        file.write(struct.pack('<i', JMA.version))
+        file.write(struct.pack('<i', JMA.frame_count))
+        file.write(struct.pack('<i', JMA.frame_rate))
+        file.write(struct.pack('<i', len(JMA.actor_names)))
+        for actor_name in JMA.actor_names:
+            file.write(struct.pack('<%ssx' % (len(actor_name)), bytes(actor_name, 'utf-8')))
+
+        file.write(struct.pack('<i', JMA.node_count))
+        file.write(struct.pack('<i', JMA.node_checksum))
+
+    else:
         file.write(
-            '\n%s' % (node.name) +
-            '\n%s' % (node.child) +
-            '\n%s' % (node.sibling)
+            '%s' % (JMA.version) +
+            '\n%s' % (JMA.frame_count) +
+            '\n%s' % (JMA.frame_rate) +
+            '\n%s' % (len(JMA.actor_names)) +
+            '\n%s' % (JMA.actor_names[0]) +
+            '\n%s' % (JMA.node_count) +
+            '\n%s' % (JMA.node_checksum)
             )
 
-def write_nodes_16391(file, JMA):
-    for node in JMA.nodes:
-        file.write('\n%s' % (node.name))
+def write_nodes_16394(file, JMA, binary):
+    if binary:
+        for node in JMA.nodes:
+            file.write(struct.pack('<%ssx' % (len(node.name)), bytes(node.name, 'utf-8')))
+            file.write(struct.pack('<i', node.parent))
 
-def write_node_transforms_16390(file, JMA):
-    #write transforms
-    for node_transform in JMA.transforms:
-        for node in node_transform:
+    else:
+        for node in JMA.nodes:
             file.write(
-                DECIMAL_3 % (node.translation[0], node.translation[1], node.translation[2]) +
-                DECIMAL_4 % (node.rotation[0], node.rotation[1], node.rotation[2], node.rotation[3]) +
-                DECIMAL_1 % (node.scale)
+                '\n%s' % (node.name) +
+                '\n%s' % (node.parent)
                 )
 
-def write_root_transforms_16395(file, JMA):
+def write_nodes_16392(file, JMA, binary):
+    if binary:
+        for node in JMA.nodes:
+            file.write(struct.pack('<%ssx' % (len(node.name)), bytes(node.name, 'utf-8')))
+            file.write(struct.pack('<i', node.child))
+            file.write(struct.pack('<i', node.sibling))
+
+    else:
+        for node in JMA.nodes:
+            file.write(
+                '\n%s' % (node.name) +
+                '\n%s' % (node.child) +
+                '\n%s' % (node.sibling)
+                )
+
+def write_nodes_16391(file, JMA, binary):
+    if binary:
+        for node in JMA.nodes:
+            file.write(struct.pack('<%ssx' % (len(node.name)), bytes(node.name, 'utf-8')))
+
+    else:
+        for node in JMA.nodes:
+            file.write('\n%s' % (node.name))
+
+def write_node_transforms_16390(file, JMA, binary):
+    #write transforms
+    if binary:
+        for node_transform in JMA.transforms:
+            for node in node_transform:
+                file.write(struct.pack('<fff', *node.translation))
+                file.write(struct.pack('<ffff', *node.rotation))
+                file.write(struct.pack('<f', node.scale))
+
+    else:
+        for node_transform in JMA.transforms:
+            for node in node_transform:
+                file.write(
+                    DECIMAL_3 % (node.translation[0], node.translation[1], node.translation[2]) +
+                    DECIMAL_4 % (node.rotation[0], node.rotation[1], node.rotation[2], node.rotation[3]) +
+                    DECIMAL_1 % (node.scale)
+                    )
+
+def write_root_transforms_16395(file, JMA, binary):
     #H2 specific biped controller data bool value.
     BIPED_CONTROLLER = False
     if len(JMA.biped_controller_transforms) > 0:
         BIPED_CONTROLLER = True
 
-    file.write('\n%s' % (int(BIPED_CONTROLLER)))
-    for biped_transform in JMA.biped_controller_transforms:
-        file.write(
-            DECIMAL_3 % (biped_transform.translation[0], biped_transform.translation[1], biped_transform.translation[2]) +
-            DECIMAL_4 % (biped_transform.rotation[0], biped_transform.rotation[1], biped_transform.rotation[2], biped_transform.rotation[3]) +
-            DECIMAL_1 % (biped_transform.scale)
-            )
+    if binary:
+        file.write(struct.pack('<i', int(BIPED_CONTROLLER)))
+        for biped_transform in JMA.biped_controller_transforms:
+            file.write(struct.pack('<fff', *biped_transform.translation))
+            file.write(struct.pack('<ffff', *biped_transform.rotation))
+            file.write(struct.pack('<f', biped_transform.scale))
+
+    else:
+        file.write('\n%s' % (int(BIPED_CONTROLLER)))
+        for biped_transform in JMA.biped_controller_transforms:
+            file.write(
+                DECIMAL_3 % (biped_transform.translation[0], biped_transform.translation[1], biped_transform.translation[2]) +
+                DECIMAL_4 % (biped_transform.rotation[0], biped_transform.rotation[1], biped_transform.rotation[2], biped_transform.rotation[3]) +
+                DECIMAL_1 % (biped_transform.scale)
+                )
 
 def update_decimal():
     global DECIMAL_POINT
@@ -119,7 +178,7 @@ def build_asset(context, filepath, report, extension, jma_version, game_title, g
     JMA = process_scene(context, extension, jma_version, game_title, generate_checksum, fix_rotations, use_maya_sorting, scale_value)
     JMA.version = jma_version
     JMA.frame_rate = frame_rate_value
-
+    binary = False
 
     if jma_version >= 16395:
         update_decimal()
@@ -128,32 +187,38 @@ def build_asset(context, filepath, report, extension, jma_version, game_title, g
 
     root_directory = get_directory(context, game_title, ModelTypeEnum.animations, folder_structure, False, False, filepath)
     output_path = os.path.join(root_directory, "%s%s" % (filename, get_true_extension(filepath, extension, False)))
-    file = open(output_path, 'w', encoding='utf_8')
+    if binary:
+        file = open(output_path + "B", 'wb')
+        file.write(struct.pack('<4s', bytes("IMBF", 'utf-8')))
+
+    else:
+        file = open(output_path, 'w', encoding='utf_8')
 
     if jma_version >= 16395:
-        write_header_16394(file, JMA)
-        write_nodes_16394(file, JMA)
-        write_node_transforms_16390(file, JMA)
-        write_root_transforms_16395(file, JMA)
+        write_header_16394(file, JMA, binary)
+        write_nodes_16394(file, JMA, binary)
+        write_node_transforms_16390(file, JMA, binary)
+        write_root_transforms_16395(file, JMA, binary)
 
     elif jma_version == 16394:
-        write_header_16394(file, JMA)
-        write_nodes_16394(file, JMA)
-        write_node_transforms_16390(file, JMA)
+        write_header_16394(file, JMA, binary)
+        write_nodes_16394(file, JMA, binary)
+        write_node_transforms_16390(file, JMA, binary)
 
     elif jma_version >= 16392:
-        write_header_16390(file, JMA)
-        write_nodes_16392(file, JMA)
-        write_node_transforms_16390(file, JMA)
+        write_header_16390(file, JMA, binary)
+        write_nodes_16392(file, JMA, binary)
+        write_node_transforms_16390(file, JMA, binary)
 
     elif jma_version == 16391:
-        write_header_16390(file, JMA)
-        write_nodes_16391(file, JMA)
-        write_node_transforms_16390(file, JMA)
+        write_header_16390(file, JMA, binary)
+        write_nodes_16391(file, JMA, binary)
+        write_node_transforms_16390(file, JMA, binary)
 
     elif jma_version == 16390:
-        write_header_16390(file, JMA)
-        write_node_transforms_16390(file, JMA)
+        write_header_16390(file, JMA, binary)
+        write_node_transforms_16390(file, JMA, binary)
 
-    file.write('\n')
+    if not binary:
+        file.write('\n')
     file.close()

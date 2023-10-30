@@ -38,7 +38,7 @@ def generate_camera_track_skeleton(armature):
 
     bpy.ops.object.mode_set(mode = 'OBJECT')
 
-def build_scene(context, CAMERATRACK, game_version, game_title, file_version, fix_rotations, empty_markers, report, mesh_processing, global_functions):
+def build_scene(context, CAMERATRACK, game_version, game_title, file_version, fix_rotations, empty_markers, report, mesh_processing, global_functions, tag_format):
     scene = context.scene
     view_layer = context.view_layer
     collection = context.collection

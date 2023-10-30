@@ -26,6 +26,8 @@
 
 import struct
 
+from math import radians
+
 def write_body(output_stream, SCENARIO):
     SCENARIO.scenario_body.dont_use_tag_ref.write(output_stream, True)
     SCENARIO.scenario_body.wont_use_tag_ref.write(output_stream, True)
@@ -33,7 +35,7 @@ def write_body(output_stream, SCENARIO):
     SCENARIO.scenario_body.skies_tag_block.write(output_stream, True)
     output_stream.write(struct.pack('>HH', SCENARIO.scenario_body.scenario_type, SCENARIO.scenario_body.scenario_flags))
     SCENARIO.scenario_body.child_scenarios_tag_block.write(output_stream, True)
-    output_stream.write(struct.pack('>f', SCENARIO.scenario_body.local_north))
+    output_stream.write(struct.pack('>f', radians(SCENARIO.scenario_body.local_north)))
     output_stream.write(struct.pack('>156x'))
     SCENARIO.scenario_body.predicted_resources_tag_block.write(output_stream, True)
     SCENARIO.scenario_body.functions_tag_block.write(output_stream, True)
@@ -97,6 +99,36 @@ def write_body(output_stream, SCENARIO):
     SCENARIO.scenario_body.hud_messages_tag_ref.write(output_stream, True)
     SCENARIO.scenario_body.structure_bsps_tag_block.write(output_stream, True)
 
+def write_predicted_resources(output_stream, SCENARIO):
+    for predicted_resource_element in SCENARIO.predicted_resources:
+        output_stream.write(struct.pack('>h', predicted_resource_element.tag_type))
+        output_stream.write(struct.pack('>h', predicted_resource_element.resource_index))
+        output_stream.write(struct.pack('>i', predicted_resource_element.tag_index))
+
+def write_functions(output_stream, SCENARIO, TAG):
+    for function_element in SCENARIO.functions:
+        output_stream.write(struct.pack('>2x'))
+        output_stream.write(struct.pack('>h', function_element.flags))
+        output_stream.write(struct.pack('>31sx', TAG.string_to_bytes(function_element.name, False)))
+        output_stream.write(struct.pack('>f', function_element.period))
+        output_stream.write(struct.pack('>h', function_element.scale_period_by))
+        output_stream.write(struct.pack('>h', function_element.function_type))
+        output_stream.write(struct.pack('>h', function_element.scale_function_by))
+        output_stream.write(struct.pack('>h', function_element.wobble_function_type))
+        output_stream.write(struct.pack('>f', function_element.wobble_period))
+        output_stream.write(struct.pack('>f', function_element.wobble_magnitude))
+        output_stream.write(struct.pack('>f', function_element.square_wave_threshold))
+        output_stream.write(struct.pack('>h', function_element.step_count))
+        output_stream.write(struct.pack('>h', function_element.map_to))
+        output_stream.write(struct.pack('>h', function_element.sawtooth_count))
+        output_stream.write(struct.pack('>2x'))
+        output_stream.write(struct.pack('>h', function_element.scale_result_by))
+        output_stream.write(struct.pack('>h', function_element.bounds_mode))
+        output_stream.write(struct.pack('>ff', function_element.bounds[0], function_element.bounds[1]))
+        output_stream.write(struct.pack('>6x'))
+        output_stream.write(struct.pack('>h', function_element.turn_off_with))
+        output_stream.write(struct.pack('>32x'))
+
 def write_comments(output_stream, comment_tag_block, TAG):
     for comment_element in comment_tag_block:
         output_stream.write(struct.pack('>fff', comment_element.position[0], comment_element.position[1], comment_element.position[2]))
@@ -104,18 +136,24 @@ def write_comments(output_stream, comment_tag_block, TAG):
         comment_element.data.write(output_stream, True)
         output_stream.write(struct.pack('>%ssx' % len(comment_element.text), TAG.string_to_bytes(comment_element.text, False)))
 
+def write_scavenger_hunt_objects(output_stream, SCENARIO, TAG):
+    for scavenger_hunt_object_element in SCENARIO.scavenger_hunt_objects:
+        output_stream.write(struct.pack('>31sx', TAG.string_to_bytes(scavenger_hunt_object_element.exported_name, False)))
+        output_stream.write(struct.pack('>h', scavenger_hunt_object_element.scenario_object_name_index))
+        output_stream.write(struct.pack('>2x'))
+
 def write_object_names(output_stream, SCENARIO, TAG):
     for object_name in SCENARIO.object_names:
-        output_stream.write(struct.pack('>31sx', TAG.string_to_bytes(object_name.name, False)))
+        output_stream.write(struct.pack('>31sx', TAG.string_to_bytes(object_name, False)))
         output_stream.write(struct.pack('>4x'))
 
 def write_object(output_stream, scenery_element):
     output_stream.write(struct.pack('>h', scenery_element.type_index))
     output_stream.write(struct.pack('>h', scenery_element.name_index))
-    output_stream.write(struct.pack('>H', scenery_element.placement_flags))
-    output_stream.write(struct.pack('>H', scenery_element.desired_permutation))
+    output_stream.write(struct.pack('>h', scenery_element.placement_flags))
+    output_stream.write(struct.pack('>h', scenery_element.desired_permutation))
     output_stream.write(struct.pack('>fff', scenery_element.position[0], scenery_element.position[1], scenery_element.position[2]))
-    output_stream.write(struct.pack('>fff', scenery_element.rotation[0], scenery_element.rotation[1], scenery_element.rotation[2]))
+    output_stream.write(struct.pack('>fff', radians(scenery_element.rotation[0]), radians(scenery_element.rotation[1]), radians(scenery_element.rotation[2])))
 
 def write_scenery(output_stream, SCENARIO, TAG):
     for scenery_element in SCENARIO.scenery:
@@ -141,9 +179,11 @@ def write_vehicles(output_stream, SCENARIO, TAG):
         output_stream.write(struct.pack('>b', vehicle_element.appearance_player_index))
         output_stream.write(struct.pack('>35x'))
         output_stream.write(struct.pack('>f', vehicle_element.body_vitality))
-        output_stream.write(struct.pack('>I', vehicle_element.flags))
+        output_stream.write(struct.pack('>2x'))
+        output_stream.write(struct.pack('>h', vehicle_element.flags))
         output_stream.write(struct.pack('>8x'))
-        output_stream.write(struct.pack('>h', vehicle_element.multiplayer_team_index))
+        output_stream.write(struct.pack('>b', vehicle_element.multiplayer_team_index))
+        output_stream.write(struct.pack('>1x'))
         output_stream.write(struct.pack('>H', vehicle_element.multiplayer_spawn_flags))
         output_stream.write(struct.pack('>28x'))
 
@@ -232,8 +272,8 @@ def write_player_starting_profiles(output_stream, SCENARIO, TAG):
         output_stream.write(struct.pack('>h', player_starting_profile_element.secondary_rounds_total))
         output_stream.write(struct.pack('>b', player_starting_profile_element.starting_fragmentation_grenades_count))
         output_stream.write(struct.pack('>b', player_starting_profile_element.starting_plasma_grenade_count))
-        output_stream.write(struct.pack('>b', player_starting_profile_element.starting_custom_2_grenade_count))
-        output_stream.write(struct.pack('>b', player_starting_profile_element.starting_custom_3_grenade_count))
+        output_stream.write(struct.pack('>b', player_starting_profile_element.starting_grenade_type2_count))
+        output_stream.write(struct.pack('>b', player_starting_profile_element.starting_grenade_type3_count))
         output_stream.write(struct.pack('>20x'))
 
     for player_starting_profile_element in SCENARIO.player_starting_profiles:
@@ -248,7 +288,7 @@ def write_player_starting_profiles(output_stream, SCENARIO, TAG):
 def write_player_starting_locations(output_stream, SCENARIO):
     for player_starting_location_element in SCENARIO.player_starting_locations:
         output_stream.write(struct.pack('>fff', player_starting_location_element.position[0], player_starting_location_element.position[1], player_starting_location_element.position[2]))
-        output_stream.write(struct.pack('>f', player_starting_location_element.facing))
+        output_stream.write(struct.pack('>f', radians(player_starting_location_element.facing)))
         output_stream.write(struct.pack('>h', player_starting_location_element.team_index))
         output_stream.write(struct.pack('>h', player_starting_location_element.bsp_index))
         output_stream.write(struct.pack('>h', player_starting_location_element.type_0))
@@ -259,9 +299,9 @@ def write_player_starting_locations(output_stream, SCENARIO):
 
 def write_trigger_volumes(output_stream, SCENARIO, TAG):
     for trigger_volume_element in SCENARIO.trigger_volumes:
-        output_stream.write(struct.pack('<i', 1))
+        output_stream.write(struct.pack('>4x'))
         output_stream.write(struct.pack('>31sx', TAG.string_to_bytes(trigger_volume_element.name, False)))
-        output_stream.write(struct.pack('>12x'))
+        output_stream.write(struct.pack('>fff', trigger_volume_element.parameter[0], trigger_volume_element.parameter[1], trigger_volume_element.parameter[2]))
         output_stream.write(struct.pack('>fff', trigger_volume_element.forward[0], trigger_volume_element.forward[1], trigger_volume_element.forward[2]))
         output_stream.write(struct.pack('>fff', trigger_volume_element.up[0], trigger_volume_element.up[1], trigger_volume_element.up[2]))
         output_stream.write(struct.pack('>fff', trigger_volume_element.position[0], trigger_volume_element.position[1], trigger_volume_element.position[2]))
@@ -281,12 +321,98 @@ def write_recorded_animations(output_stream, SCENARIO, TAG):
     for recorded_animation_element in SCENARIO.recorded_animations:
         output_stream.write(recorded_animation_element.recorded_animation_event_stream)
 
+def write_netgame_flags(output_stream, SCENARIO, TAG):
+    for netgame_flag_element in SCENARIO.netgame_flags:
+        output_stream.write(struct.pack('>fff', netgame_flag_element.position[0], netgame_flag_element.position[1], netgame_flag_element.position[2]))
+        output_stream.write(struct.pack('>f', radians(netgame_flag_element.facing)))
+        output_stream.write(struct.pack('>h', netgame_flag_element.type))
+        output_stream.write(struct.pack('>h', netgame_flag_element.usage_id))
+        netgame_flag_element.weapon_group.write(output_stream, True, False)
+        output_stream.write(struct.pack('>112x'))
+
+    for netgame_flag_element in SCENARIO.netgame_flags:
+        weapon_group_name_length = len(netgame_flag_element.weapon_group.name)
+        if weapon_group_name_length > 0:
+            output_stream.write(struct.pack('>%ssx' % weapon_group_name_length, TAG.string_to_bytes(netgame_flag_element.weapon_group.name, False)))
+
+def write_netgame_equipment(output_stream, SCENARIO, TAG):
+    for netgame_equipment_element in SCENARIO.netgame_equipment:
+        output_stream.write(struct.pack('>2x'))
+        output_stream.write(struct.pack('>h', netgame_equipment_element.flags))
+        output_stream.write(struct.pack('>h', netgame_equipment_element.type_0))
+        output_stream.write(struct.pack('>h', netgame_equipment_element.type_1))
+        output_stream.write(struct.pack('>h', netgame_equipment_element.type_2))
+        output_stream.write(struct.pack('>h', netgame_equipment_element.type_3))
+        output_stream.write(struct.pack('>h', netgame_equipment_element.team_index))
+        output_stream.write(struct.pack('>h', netgame_equipment_element.spawn_time))
+        output_stream.write(struct.pack('>48x'))
+        output_stream.write(struct.pack('>fff', netgame_equipment_element.position[0], netgame_equipment_element.position[1], netgame_equipment_element.position[2]))
+        output_stream.write(struct.pack('>f', radians(netgame_equipment_element.facing)))
+        netgame_equipment_element.item_collection.write(output_stream, True, False)
+        output_stream.write(struct.pack('>48x'))
+
+    for netgame_equipment_element in SCENARIO.netgame_equipment:
+        item_collection_name_length = len(netgame_equipment_element.item_collection.name)
+        if item_collection_name_length > 0:
+            output_stream.write(struct.pack('>%ssx' % item_collection_name_length, TAG.string_to_bytes(netgame_equipment_element.item_collection.name, False)))
+
+def write_starting_equipment(output_stream, SCENARIO, TAG):
+    for starting_equipment_element in SCENARIO.starting_equipment:
+        output_stream.write(struct.pack('>2x'))
+        output_stream.write(struct.pack('>h', starting_equipment_element.flags))
+        output_stream.write(struct.pack('>h', starting_equipment_element.type_0))
+        output_stream.write(struct.pack('>h', starting_equipment_element.type_1))
+        output_stream.write(struct.pack('>h', starting_equipment_element.type_2))
+        output_stream.write(struct.pack('>h', starting_equipment_element.type_3))
+        output_stream.write(struct.pack('>48x'))
+        starting_equipment_element.item_collection_1.write(output_stream, True, False)
+        starting_equipment_element.item_collection_2.write(output_stream, True, False)
+        starting_equipment_element.item_collection_3.write(output_stream, True, False)
+        starting_equipment_element.item_collection_4.write(output_stream, True, False)
+        starting_equipment_element.item_collection_5.write(output_stream, True, False)
+        starting_equipment_element.item_collection_6.write(output_stream, True, False)
+        output_stream.write(struct.pack('>48x'))
+
+    for starting_equipment_element in SCENARIO.starting_equipment:
+        item_collection_1_name_length = len(starting_equipment_element.item_collection_1.name)
+        item_collection_2_name_length = len(starting_equipment_element.item_collection_2.name)
+        item_collection_3_name_length = len(starting_equipment_element.item_collection_3.name)
+        item_collection_4_name_length = len(starting_equipment_element.item_collection_4.name)
+        item_collection_5_name_length = len(starting_equipment_element.item_collection_5.name)
+        item_collection_6_name_length = len(starting_equipment_element.item_collection_6.name)
+        if item_collection_1_name_length > 0:
+            output_stream.write(struct.pack('>%ssx' % item_collection_1_name_length, TAG.string_to_bytes(starting_equipment_element.item_collection_1.name, False)))
+        if item_collection_2_name_length > 0:
+            output_stream.write(struct.pack('>%ssx' % item_collection_2_name_length, TAG.string_to_bytes(starting_equipment_element.item_collection_2.name, False)))
+        if item_collection_3_name_length > 0:
+            output_stream.write(struct.pack('>%ssx' % item_collection_3_name_length, TAG.string_to_bytes(starting_equipment_element.item_collection_3.name, False)))
+        if item_collection_4_name_length > 0:
+            output_stream.write(struct.pack('>%ssx' % item_collection_4_name_length, TAG.string_to_bytes(starting_equipment_element.item_collection_4.name, False)))
+        if item_collection_5_name_length > 0:
+            output_stream.write(struct.pack('>%ssx' % item_collection_5_name_length, TAG.string_to_bytes(starting_equipment_element.item_collection_5.name, False)))
+        if item_collection_6_name_length > 0:
+            output_stream.write(struct.pack('>%ssx' % item_collection_6_name_length, TAG.string_to_bytes(starting_equipment_element.item_collection_6.name, False)))
+
+def write_bsp_switch_trigger_volumes(output_stream, SCENARIO, TAG):
+    for bsp_switch_trigger_volume_element in SCENARIO.bsp_switch_trigger_volumes:
+        output_stream.write(struct.pack('>h', bsp_switch_trigger_volume_element.trigger_volume))
+        output_stream.write(struct.pack('>h', bsp_switch_trigger_volume_element.source))
+        output_stream.write(struct.pack('>h', bsp_switch_trigger_volume_element.destination))
+        output_stream.write(struct.pack('>2x'))
+
+def write_decals(output_stream, SCENARIO, TAG):
+    for decal_element in SCENARIO.decals:
+        output_stream.write(struct.pack('>h', decal_element.palette_index))
+        output_stream.write(struct.pack('>b', decal_element.yaw))
+        output_stream.write(struct.pack('>b', decal_element.pitch))
+        output_stream.write(struct.pack('>fff', decal_element.position[0], decal_element.position[1], decal_element.position[2]))
+
 def write_encounters(output_stream, SCENARIO, TAG):
     for encounter in SCENARIO.encounters:
         output_stream.write(struct.pack('>31sx', TAG.string_to_bytes(encounter.name, False)))
         output_stream.write(struct.pack('>I', encounter.flags))
         output_stream.write(struct.pack('>h', encounter.team_index))
-        output_stream.write(struct.pack('<h', 0)) # What is this?
+        output_stream.write(struct.pack('>h', 0)) # What is this?
         output_stream.write(struct.pack('>h', encounter.search_behavior))
         output_stream.write(struct.pack('>h', encounter.manual_bsp_index))
         output_stream.write(struct.pack('>ff', encounter.respawn_delay[0], encounter.respawn_delay[1]))
@@ -333,7 +459,7 @@ def write_encounters(output_stream, SCENARIO, TAG):
         for squad in encounter.squads:
             for move_position in squad.move_positions:
                 output_stream.write(struct.pack('>fff', move_position.position[0], move_position.position[1], move_position.position[2]))
-                output_stream.write(struct.pack('>f', move_position.facing))
+                output_stream.write(struct.pack('>f', radians(move_position.facing)))
                 output_stream.write(struct.pack('>f', move_position.weight))
                 output_stream.write(struct.pack('>ff', move_position.time[0], move_position.time[1]))
                 output_stream.write(struct.pack('>h', move_position.animation))
@@ -343,7 +469,7 @@ def write_encounters(output_stream, SCENARIO, TAG):
 
             for starting_location in squad.starting_locations:
                 output_stream.write(struct.pack('>fff', starting_location.position[0], starting_location.position[1], starting_location.position[2]))
-                output_stream.write(struct.pack('>f', starting_location.facing))
+                output_stream.write(struct.pack('>f', radians(starting_location.facing)))
                 output_stream.write(struct.pack('>2x'))
                 output_stream.write(struct.pack('>b', starting_location.sequence_id))
                 output_stream.write(struct.pack('>b', starting_location.flags))
@@ -370,7 +496,7 @@ def write_encounters(output_stream, SCENARIO, TAG):
 
         for player_starting_location_element in encounter.player_starting_locations:
             output_stream.write(struct.pack('>fff', player_starting_location_element.position[0], player_starting_location_element.position[1], player_starting_location_element.position[2]))
-            output_stream.write(struct.pack('>f', player_starting_location_element.facing))
+            output_stream.write(struct.pack('>f', radians(player_starting_location_element.facing)))
             output_stream.write(struct.pack('>h', player_starting_location_element.team_index))
             output_stream.write(struct.pack('>h', player_starting_location_element.bsp_index))
             output_stream.write(struct.pack('>h', player_starting_location_element.type_0))
@@ -379,13 +505,157 @@ def write_encounters(output_stream, SCENARIO, TAG):
             output_stream.write(struct.pack('>h', player_starting_location_element.type_3))
             output_stream.write(struct.pack('>24x'))
 
+def write_command_lists(output_stream, SCENARIO, TAG):
+    for command_list in SCENARIO.command_lists:
+        output_stream.write(struct.pack('>31sx', TAG.string_to_bytes(command_list.name, False)))
+        output_stream.write(struct.pack('>2x'))
+        output_stream.write(struct.pack('>h', command_list.flags))
+        output_stream.write(struct.pack('>8x'))
+        output_stream.write(struct.pack('>h', command_list.manual_bsp_index))
+        output_stream.write(struct.pack('>2x'))
+        command_list.command_tag_block.write(output_stream, True)
+        command_list.points_tag_block.write(output_stream, True)
+        output_stream.write(struct.pack('>24x'))
+
+    for command_list in SCENARIO.command_lists:
+        for command in command_list.commands:
+            output_stream.write(struct.pack('>h', command.atom_type))
+            output_stream.write(struct.pack('>h', command.atom_modifier))
+            output_stream.write(struct.pack('>f', command.parameter1))
+            output_stream.write(struct.pack('>f', command.parameter2))
+            output_stream.write(struct.pack('>h', command.point_1))
+            output_stream.write(struct.pack('>h', command.point_2))
+            output_stream.write(struct.pack('>h', command.animation))
+            output_stream.write(struct.pack('>h', command.script))
+            output_stream.write(struct.pack('>h', command.recording))
+            output_stream.write(struct.pack('>h', command.command))
+            output_stream.write(struct.pack('>h', command.object_name))
+            output_stream.write(struct.pack('>6x'))
+
+        for point in command_list.points:
+            output_stream.write(struct.pack('>fff', point[0], point[1], point[2]))
+            output_stream.write(struct.pack('>8x'))
+
+def write_ai_animation_references(output_stream, SCENARIO, TAG):
+    for ai_animation_reference in SCENARIO.ai_animation_references:
+        output_stream.write(struct.pack('>31sx', TAG.string_to_bytes(ai_animation_reference.name, False)))
+        ai_animation_reference.animation_reference.write(output_stream, True, False)
+        output_stream.write(struct.pack('>12x'))
+
+    for ai_animation_reference in SCENARIO.ai_animation_references:
+        animation_reference_name_length = len(ai_animation_reference.animation_reference.name)
+        if animation_reference_name_length > 0:
+            output_stream.write(struct.pack('>%ssx' % animation_reference_name_length, TAG.string_to_bytes(ai_animation_reference.animation_reference.name, False)))
+
+def write_ai_references(output_stream, tag_block, TAG):
+    for element in tag_block:
+        output_stream.write(struct.pack('>31sx', TAG.string_to_bytes(element, False)))
+        output_stream.write(struct.pack('>8x'))
+
+def write_ai_conversations(output_stream, SCENARIO, TAG):
+    for ai_conversation in SCENARIO.ai_conversations:
+        output_stream.write(struct.pack('>31sx', TAG.string_to_bytes(ai_conversation.name, False)))
+        output_stream.write(struct.pack('>h', ai_conversation.flags))
+        output_stream.write(struct.pack('>2x'))
+        output_stream.write(struct.pack('>f', ai_conversation.trigger_distance))
+        output_stream.write(struct.pack('>f', ai_conversation.run_to_player_distance))
+        output_stream.write(struct.pack('>36x'))
+        ai_conversation.participants_tag_block.write(output_stream, True)
+        ai_conversation.lines_tag_block.write(output_stream, True)
+        output_stream.write(struct.pack('>12x'))
+
+    for ai_conversation in SCENARIO.ai_conversations:
+        for participant in ai_conversation.participants:
+            output_stream.write(struct.pack('>2x'))
+            output_stream.write(struct.pack('>h', participant.flags))
+            output_stream.write(struct.pack('>h', participant.selection_type))
+            output_stream.write(struct.pack('>h', participant.actor_type))
+            output_stream.write(struct.pack('>h', participant.use_this_object))
+            output_stream.write(struct.pack('>h', participant.set_new_name))
+            output_stream.write(struct.pack('>24x'))
+            output_stream.write(struct.pack('>31sx', TAG.string_to_bytes(participant.encounter_name, False)))
+            output_stream.write(struct.pack('>16x'))
+
+        for line in ai_conversation.lines:
+            output_stream.write(struct.pack('>h', line.flags))
+            output_stream.write(struct.pack('>h', line.participant))
+            output_stream.write(struct.pack('>h', line.addresses))
+            output_stream.write(struct.pack('>h', line.addresse_participant))
+            output_stream.write(struct.pack('>4x'))
+            output_stream.write(struct.pack('>f', line.line_delay_time))
+            output_stream.write(struct.pack('>12x'))
+            line.variant_1.write(output_stream, True, False)
+            line.variant_2.write(output_stream, True, False)
+            line.variant_3.write(output_stream, True, False)
+            line.variant_4.write(output_stream, True, False)
+            line.variant_5.write(output_stream, True, False)
+            line.variant_6.write(output_stream, True, False)
+
+        for line in ai_conversation.lines:
+            variant_1_name_length = len(line.variant_1.name)
+            variant_2_name_length = len(line.variant_2.name)
+            variant_3_name_length = len(line.variant_3.name)
+            variant_4_name_length = len(line.variant_4.name)
+            variant_5_name_length = len(line.variant_5.name)
+            variant_6_name_length = len(line.variant_6.name)
+            if variant_1_name_length > 0:
+                output_stream.write(struct.pack('>%ssx' % variant_1_name_length, TAG.string_to_bytes(line.variant_1.name, False)))
+
+            if variant_2_name_length > 0:
+                output_stream.write(struct.pack('>%ssx' % variant_2_name_length, TAG.string_to_bytes(line.variant_2.name, False)))
+
+            if variant_3_name_length > 0:
+                output_stream.write(struct.pack('>%ssx' % variant_3_name_length, TAG.string_to_bytes(line.variant_3.name, False)))
+
+            if variant_4_name_length > 0:
+                output_stream.write(struct.pack('>%ssx' % variant_4_name_length, TAG.string_to_bytes(line.variant_4.name, False)))
+
+            if variant_5_name_length > 0:
+                output_stream.write(struct.pack('>%ssx' % variant_5_name_length, TAG.string_to_bytes(line.variant_5.name, False)))
+
+            if variant_6_name_length > 0:
+                output_stream.write(struct.pack('>%ssx' % variant_6_name_length, TAG.string_to_bytes(line.variant_6.name, False)))
+
+def write_scripts(output_stream, SCENARIO, TAG):
+    for script in SCENARIO.scripts:
+        output_stream.write(struct.pack('>31sx', TAG.string_to_bytes(script.name, False)))
+        output_stream.write(struct.pack('>h', script.script_type))
+        output_stream.write(struct.pack('>h', script.return_type))
+        output_stream.write(struct.pack('>i', script.root_expression_index))
+        output_stream.write(struct.pack('>40x'))
+        script.parameters_tag_block.write(output_stream, True)
+
+    for script in SCENARIO.scripts:
+        for parameter in script.parameters:
+            output_stream.write(struct.pack('>31sx', TAG.string_to_bytes(parameter.name, False)))
+            output_stream.write(struct.pack('>h', parameter.return_type))
+            output_stream.write(struct.pack('>2x'))
+
+def write_globals(output_stream, SCENARIO, TAG):
+    for global_element in SCENARIO.globals:
+        output_stream.write(struct.pack('>31sx', TAG.string_to_bytes(global_element.name, False)))
+        output_stream.write(struct.pack('>h', global_element.return_type))
+        output_stream.write(struct.pack('>6x'))
+        output_stream.write(struct.pack('>i', global_element.initialization_expression_index))
+        output_stream.write(struct.pack('>48x'))
+
+def write_references(output_stream, SCENARIO, TAG):
+    for reference in SCENARIO.references:
+        output_stream.write(struct.pack('>24x'))
+        reference.write(output_stream, True, False)
+
+    for reference in SCENARIO.references:
+        reference_name_length = len(reference.name)
+        if reference_name_length > 0:
+            output_stream.write(struct.pack('>%ssx' % reference_name_length, TAG.string_to_bytes(reference.name, False)))
+
 def write_source_files(output_stream, SCENARIO, TAG):
     for source_file in SCENARIO.source_files:
         output_stream.write(struct.pack('>31sx', TAG.string_to_bytes(source_file.name, False)))
         source_file.source_tag_data.write(output_stream, True)
 
     for source_file in SCENARIO.source_files:
-        output_stream.write(source_file.source)
+        output_stream.write(TAG.string_to_bytes(source_file.source, False))
         output_stream.write(struct.pack('>x'))
 
 def write_cutscene_flags(output_stream, SCENARIO, TAG):
@@ -393,7 +663,7 @@ def write_cutscene_flags(output_stream, SCENARIO, TAG):
         output_stream.write(struct.pack('>4x'))
         output_stream.write(struct.pack('>31sx', TAG.string_to_bytes(cutscene_flag.name, False)))
         output_stream.write(struct.pack('>fff', cutscene_flag.position[0], cutscene_flag.position[1], cutscene_flag.position[2]))
-        output_stream.write(struct.pack('>ff', cutscene_flag.facing[0], cutscene_flag.facing[1]))
+        output_stream.write(struct.pack('>ff', radians(cutscene_flag.facing[0]), radians(cutscene_flag.facing[1])))
         output_stream.write(struct.pack('>36x'))
 
 def write_cutscene_camera_points(output_stream, SCENARIO, TAG):
@@ -402,8 +672,8 @@ def write_cutscene_camera_points(output_stream, SCENARIO, TAG):
         output_stream.write(struct.pack('>31sx', TAG.string_to_bytes(cutscene_camera_point.name, False)))
         output_stream.write(struct.pack('>4x'))
         output_stream.write(struct.pack('>fff', cutscene_camera_point.position[0], cutscene_camera_point.position[1], cutscene_camera_point.position[2]))
-        output_stream.write(struct.pack('>fff', cutscene_camera_point.orientation[0], cutscene_camera_point.orientation[1], cutscene_camera_point.orientation[2]))
-        output_stream.write(struct.pack('>f', cutscene_camera_point.field_of_view))
+        output_stream.write(struct.pack('>fff', radians(cutscene_camera_point.orientation[0]), radians(cutscene_camera_point.orientation[1]), radians(cutscene_camera_point.orientation[2])))
+        output_stream.write(struct.pack('>f', radians(cutscene_camera_point.field_of_view)))
         output_stream.write(struct.pack('>36x'))
 
 def write_cutscene_titles(output_stream, SCENARIO, TAG):
@@ -412,16 +682,16 @@ def write_cutscene_titles(output_stream, SCENARIO, TAG):
         output_stream.write(struct.pack('>31sx', TAG.string_to_bytes(cutscene_title.name, False)))
         output_stream.write(struct.pack('>4x'))
         output_stream.write(struct.pack('>4h', cutscene_title.text_bounds[0], cutscene_title.text_bounds[1], cutscene_title.text_bounds[2], cutscene_title.text_bounds[3]))
-        output_stream.write(struct.pack('<h', cutscene_title.string_index))
-        output_stream.write(struct.pack('<h', cutscene_title.style))
-        output_stream.write(struct.pack('<h', cutscene_title.justification))
+        output_stream.write(struct.pack('>h', cutscene_title.string_index))
+        output_stream.write(struct.pack('>h', cutscene_title.style))
+        output_stream.write(struct.pack('>h', cutscene_title.justification))
         output_stream.write(struct.pack('>2x'))
         output_stream.write(struct.pack('>i', cutscene_title.text_flags))
-        output_stream.write(struct.pack('<4B', cutscene_title.text_color[3], cutscene_title.text_color[0], cutscene_title.text_color[1], cutscene_title.text_color[2]))
-        output_stream.write(struct.pack('<4B', cutscene_title.shadow_color[3], cutscene_title.shadow_color[0], cutscene_title.shadow_color[1], cutscene_title.shadow_color[2]))
-        output_stream.write(struct.pack('<f', cutscene_title.fade_in_time))
-        output_stream.write(struct.pack('<f', cutscene_title.up_time))
-        output_stream.write(struct.pack('<f', cutscene_title.fade_out_time))
+        output_stream.write(struct.pack('>4B', cutscene_title.text_color[3], cutscene_title.text_color[0], cutscene_title.text_color[1], cutscene_title.text_color[2]))
+        output_stream.write(struct.pack('>4B', cutscene_title.shadow_color[3], cutscene_title.shadow_color[0], cutscene_title.shadow_color[1], cutscene_title.shadow_color[2]))
+        output_stream.write(struct.pack('>f', cutscene_title.fade_in_time))
+        output_stream.write(struct.pack('>f', cutscene_title.up_time))
+        output_stream.write(struct.pack('>f', cutscene_title.fade_out_time))
         output_stream.write(struct.pack('>16x'))
 
 def write_structure_bsps(output_stream, SCENARIO, TAG):
@@ -442,17 +712,37 @@ def write_palette(output_stream, palette, size, TAG):
     for palette_element in palette:
         palette_name_length = palette_element.name_length
         if palette_name_length > 0:
-            output_stream.write(struct.pack('>%ssx' % palette_name_length, TAG.string_to_bytes(palette_element.name, False)))
+            output_stream.write(struct.pack('>%ss1x' % palette_name_length, TAG.string_to_bytes(palette_element.name, False)))
 
 def build_asset(output_stream, SCENARIO, TAG, report):
     SCENARIO.header.write(output_stream, True)
     write_body(output_stream, SCENARIO)
 
+    dont_use_length = SCENARIO.scenario_body.dont_use_tag_ref.name_length
+    if dont_use_length > 0:
+        output_stream.write(struct.pack('>%ssx' % dont_use_length, TAG.string_to_bytes(SCENARIO.scenario_body.dont_use_tag_ref.name, False)))
+
+    wont_use_length = SCENARIO.scenario_body.wont_use_tag_ref.name_length
+    if wont_use_length > 0:
+        output_stream.write(struct.pack('>%ssx' % wont_use_length, TAG.string_to_bytes(SCENARIO.scenario_body.wont_use_tag_ref.name, False)))
+
+    cant_use_length = SCENARIO.scenario_body.cant_use_tag_ref.name_length
+    if cant_use_length > 0:
+        output_stream.write(struct.pack('>%ssx' % cant_use_length, TAG.string_to_bytes(SCENARIO.scenario_body.cant_use_tag_ref.name, False)))
+
     write_palette(output_stream, SCENARIO.skies, 0, TAG)
 
     write_palette(output_stream, SCENARIO.child_scenarios, 16, TAG)
 
+    write_predicted_resources(output_stream, SCENARIO)
+
+    write_functions(output_stream, SCENARIO, TAG)
+
+    output_stream.write(SCENARIO.editor_scenario_data)
+
     write_comments(output_stream, SCENARIO.comments, TAG)
+
+    write_scavenger_hunt_objects(output_stream, SCENARIO, TAG)
 
     write_object_names(output_stream, SCENARIO, TAG)
 
@@ -493,9 +783,41 @@ def build_asset(output_stream, SCENARIO, TAG, report):
 
     write_recorded_animations(output_stream, SCENARIO, TAG)
 
+    write_netgame_flags(output_stream, SCENARIO, TAG)
+
+    write_netgame_equipment(output_stream, SCENARIO, TAG)
+
+    write_starting_equipment(output_stream, SCENARIO, TAG)
+
+    write_bsp_switch_trigger_volumes(output_stream, SCENARIO, TAG)
+
+    write_decals(output_stream, SCENARIO, TAG)
+    write_palette(output_stream, SCENARIO.decal_palette, 0, TAG)
+
+    write_palette(output_stream, SCENARIO.detail_object_collection_palette, 32, TAG)
+
     write_palette(output_stream, SCENARIO.actor_palette, 0, TAG)
 
     write_encounters(output_stream, SCENARIO, TAG)
+
+    write_command_lists(output_stream, SCENARIO, TAG)
+
+    write_ai_animation_references(output_stream, SCENARIO, TAG)
+
+    write_ai_references(output_stream, SCENARIO.ai_script_references, TAG)
+
+    write_ai_references(output_stream, SCENARIO.ai_recording_references, TAG)
+
+    write_ai_conversations(output_stream, SCENARIO, TAG)
+
+    output_stream.write(SCENARIO.script_syntax_data)
+    output_stream.write(SCENARIO.script_string_data)
+
+    write_scripts(output_stream, SCENARIO, TAG)
+
+    write_globals(output_stream, SCENARIO, TAG)
+
+    write_references(output_stream, SCENARIO, TAG)
 
     write_source_files(output_stream, SCENARIO, TAG)
 
@@ -504,5 +826,17 @@ def build_asset(output_stream, SCENARIO, TAG, report):
     write_cutscene_camera_points(output_stream, SCENARIO, TAG)
 
     write_cutscene_titles(output_stream, SCENARIO, TAG)
+
+    custom_object_names_length = SCENARIO.scenario_body.custom_object_names_tag_ref.name_length
+    if custom_object_names_length > 0:
+        output_stream.write(struct.pack('>%ssx' % custom_object_names_length, TAG.string_to_bytes(SCENARIO.scenario_body.custom_object_names_tag_ref.name, False)))
+
+    chapter_title_text_length = SCENARIO.scenario_body.chapter_title_text_tag_ref.name_length
+    if chapter_title_text_length > 0:
+        output_stream.write(struct.pack('>%ssx' % chapter_title_text_length, TAG.string_to_bytes(SCENARIO.scenario_body.chapter_title_text_tag_ref.name, False)))
+
+    hud_messages_length = SCENARIO.scenario_body.hud_messages_tag_ref.name_length
+    if hud_messages_length > 0:
+        output_stream.write(struct.pack('>%ssx' % hud_messages_length, TAG.string_to_bytes(SCENARIO.scenario_body.hud_messages_tag_ref.name, False)))
 
     write_structure_bsps(output_stream, SCENARIO, TAG)

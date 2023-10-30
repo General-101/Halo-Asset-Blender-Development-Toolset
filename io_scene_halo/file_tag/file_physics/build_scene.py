@@ -30,7 +30,7 @@ import bmesh
 import numpy as np
 from mathutils import Matrix
 
-def build_scene(context, PHYSICS, game_version, game_title, file_version, fix_rotations, empty_markers, report, mesh_processing, global_functions):
+def build_scene(context, PHYSICS, game_version, game_title, file_version, fix_rotations, empty_markers, report, mesh_processing, global_functions, tag_format):
     collection = context.collection
 
     active_object = context.view_layer.objects.active

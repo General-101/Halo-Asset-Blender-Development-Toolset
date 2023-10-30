@@ -134,7 +134,11 @@ def build_scene(context, ANIMATION, game_version, game_title, file_version, fix_
 
     if armature:
         bone_count = len(armature.data.bones)
-        nodes = global_functions.sort_by_layer(list(armature.data.bones), armature)[0]
+        nodes = list(armature.data.bones)
+        if game_title == "halo1":
+            nodes = global_functions.sort_by_layer(list(armature.data.bones), armature)[0]
+        else:
+            nodes = ANIMATION.nodes
 
         node_names = []
         default_node_transforms = []

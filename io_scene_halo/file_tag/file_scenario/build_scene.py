@@ -24,12 +24,17 @@
 #
 # ##### END MIT LICENSE BLOCK #####
 
-import os
 import bpy
-import bmesh
 
 from math import radians
-from mathutils import Vector, Matrix, Euler
+from mathutils import Matrix
 
-def build_scene(context, LEVEL, game_version, game_title, file_version, fix_rotations, empty_markers, report, mesh_processing, global_functions):
-    return 0
+from ..file_scenario.h1.build_scene_retail import generate_scenario_scene as generate_h1_scenerio_retail
+
+def build_scene(context, ASSET, game_version, game_title, version, fix_rotations, empty_markers, report, mesh_processing, global_functions, tag_format):
+    if game_title == "halo1":
+        generate_h1_scenerio_retail(context, ASSET, game_version, game_title, version, fix_rotations, empty_markers, report, mesh_processing, global_functions, tag_format)
+
+    #else:
+        #generate_h2_scenerio_retail(context, SCENARIO)
+

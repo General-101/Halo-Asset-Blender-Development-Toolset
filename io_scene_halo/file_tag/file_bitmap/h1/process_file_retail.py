@@ -27,15 +27,18 @@
 from xml.dom import minidom
 from .format_retail import (
         BitmapAsset,
-        BitmapTypeEnum,
+        ImportTypeEnum,
         FormatEnum,
         UsageEnum,
-        BitmapFlags,
+        ImportFlags,
         SpriteBudgetSizeEnum,
-        SpriteUsageEnum
+        SpriteUsageEnum,
+        BitmapTypeEnum,
+        BitmapFormatEnum,
+        BitmapFlags
         )
 
-XML_OUTPUT = True
+XML_OUTPUT = False
 
 def process_file_retail(input_stream, tag_format, report):
     TAG = tag_format.TagAsset()
@@ -52,10 +55,10 @@ def process_file_retail(input_stream, tag_format, report):
         tag_node = TAG.xml_doc.childNodes[0]
 
     BITMAP.bitmap_body = BITMAP.BitmapBody()
-    BITMAP.bitmap_body.type = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "type", BitmapTypeEnum))
+    BITMAP.bitmap_body.type = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "type", ImportTypeEnum))
     BITMAP.bitmap_body.format = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "format", FormatEnum))
     BITMAP.bitmap_body.usage = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "usage", UsageEnum))
-    BITMAP.bitmap_body.flags = TAG.read_flag_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "flags", BitmapFlags))
+    BITMAP.bitmap_body.flags = TAG.read_flag_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "flags", ImportFlags))
     BITMAP.bitmap_body.detail_fade_factor = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "detail fade factor"))
     BITMAP.bitmap_body.sharpen_amount = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "sharpen amount"))
     BITMAP.bitmap_body.bump_height = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "bump height"))
@@ -76,6 +79,75 @@ def process_file_retail(input_stream, tag_format, report):
 
     BITMAP.bitmap_body.compressed_color_plate = input_stream.read(BITMAP.bitmap_body.compressed_color_plate_data.size)
     BITMAP.bitmap_body.processed_pixels = input_stream.read(BITMAP.bitmap_body.processed_pixel_data.size)
+
+    BITMAP.sequences = []
+    sequence_node = tag_format.get_xml_node(XML_OUTPUT, BITMAP.bitmap_body.sequences_tag_block.count, tag_node, "name", "sequences")
+    for sequence_idx in range(BITMAP.bitmap_body.sequences_tag_block.count):
+        sequence_element_node = None
+        if XML_OUTPUT:
+            sequence_element_node = TAG.xml_doc.createElement('element')
+            sequence_element_node.setAttribute('index', str(sequence_idx))
+            sequence_node.appendChild(sequence_element_node)
+
+        sequence = BITMAP.Sequence()
+        sequence.name = TAG.read_string32(input_stream, TAG, tag_format.XMLData(sequence_element_node, "name"))
+        sequence.first_bitmap_index = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(sequence_element_node, "first bitmap index"))
+        sequence.bitmap_count = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(sequence_element_node, "bitmap count"))
+        input_stream.read(16) # Padding
+        sequence.sprites_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(sequence_element_node, "sprites"))
+
+        BITMAP.sequences.append(sequence)
+
+    for sequence_idx, sequence in enumerate(BITMAP.sequences):
+        sequence_element_node = None
+        if XML_OUTPUT:
+            sequence_element_node = sequence_node.childNodes[sequence_idx]
+
+        sequence.sprites = []
+        sprite_node = tag_format.get_xml_node(XML_OUTPUT, sequence.sprites_tag_block.count, sequence_element_node, "name", "sprites")
+        for sprite_idx in range(sequence.sprites_tag_block.count):
+            sprite_element_node = None
+            if XML_OUTPUT:
+                sprite_element_node = TAG.xml_doc.createElement('element')
+                sprite_element_node.setAttribute('index', str(sprite_idx))
+                sprite_node.appendChild(sprite_element_node)
+
+            sprite = BITMAP.Sprite()
+            input_stream.read(2) # Padding
+            sprite.bitmap_index = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(sprite_element_node, "bitmap index"))
+            input_stream.read(16) # Padding
+            sprite.left = TAG.read_float(input_stream, TAG, tag_format.XMLData(sprite_element_node, "left"))
+            sprite.right = TAG.read_float(input_stream, TAG, tag_format.XMLData(sprite_element_node, "right"))
+            sprite.top = TAG.read_float(input_stream, TAG, tag_format.XMLData(sprite_element_node, "top"))
+            sprite.bottom = TAG.read_float(input_stream, TAG, tag_format.XMLData(sprite_element_node, "bottom"))
+            sprite.registration_point = TAG.read_point_2d(input_stream, TAG, tag_format.XMLData(sprite_element_node, "registration point"))
+
+            sequence.sprites.append(sprite)
+
+    BITMAP.bitmaps = []
+    bitmap_node = tag_format.get_xml_node(XML_OUTPUT, BITMAP.bitmap_body.bitmaps_tag_block.count, tag_node, "name", "bitmaps")
+    for bitmap_idx in range(BITMAP.bitmap_body.bitmaps_tag_block.count):
+        bitmap_element_node = None
+        if XML_OUTPUT:
+            bitmap_element_node = TAG.xml_doc.createElement('element')
+            bitmap_element_node.setAttribute('index', str(bitmap_idx))
+            bitmap_node.appendChild(bitmap_element_node)
+
+        bitmap = BITMAP.Bitmap()
+        bitmap.signature = TAG.read_variable_string_no_terminator(input_stream, 4, TAG, tag_format.XMLData(bitmap_element_node, "signature"))
+        bitmap.width = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(bitmap_element_node, "width"))
+        bitmap.height = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(bitmap_element_node, "height"))
+        bitmap.depth = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(bitmap_element_node, "depth"))
+        bitmap.bitmap_type = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(bitmap_element_node, "type", BitmapTypeEnum))
+        bitmap.bitmap_format = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(bitmap_element_node, "format", BitmapFormatEnum))
+        bitmap.flags = TAG.read_flag_unsigned_short(input_stream, TAG, tag_format.XMLData(bitmap_element_node, "flags", BitmapFlags))
+        bitmap.registration_point = TAG.read_point_2d_short(input_stream, TAG, tag_format.XMLData(bitmap_element_node, "registration point"))
+        bitmap.mipmap_count = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(bitmap_element_node, "mipmap count"))
+        input_stream.read(4) # Padding
+        bitmap.pixels_offset = TAG.read_float(input_stream, TAG, tag_format.XMLData(bitmap_element_node, "pixels offset"))
+        input_stream.read(20) # Padding
+
+        BITMAP.bitmaps.append(bitmap)
 
     current_position = input_stream.tell()
     EOF = input_stream.seek(0, 2)

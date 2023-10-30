@@ -511,7 +511,7 @@ def get_regions_tag_block(COLLISION, TAG, input_stream):
             COLLISION.regions.append(region(COLLISION, TAG, input_stream))
 
         for region in COLLISION.regions:
-            if region.name_length > 1:
+            if region.name_length > 0:
                 region.name = TAG.read_variable_string(input_stream, region.name_length, TAG.big_endian)
 
             permutation_count = region.permutation_tag_block.count
@@ -526,7 +526,7 @@ def get_regions_tag_block(COLLISION, TAG, input_stream):
                     region.permutations.append(permutation(COLLISION, TAG, input_stream))
 
                 for permutation in enumerate(region.permutations):
-                    if permutation.name_length > 1:
+                    if permutation.name_length > 0:
                         permutation.name = TAG.read_variable_string(input_stream, permutation.name_length, TAG.big_endian)
 
                     bsp_count = permutation.bsps_tag_block.count

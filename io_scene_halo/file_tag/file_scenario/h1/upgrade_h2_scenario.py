@@ -928,7 +928,7 @@ def generate_h2_squads(H1_ASSET, TAG, SCENARIO, tag_format, report):
         character_tag_paths.append(weapon_tag_path)
 
     for actor in actors_palette_tag_block:
-        actor_tag = actor.parse_tag(tag_format, report)
+        actor_tag = actor.parse_tag(tag_format, report, "halo1", "retail")
         if not actor_tag == None:
             actor_weapon_tag = actor_tag.actor_variant_body.weapon
             actor_weapon_name = actor_weapon_tag.name

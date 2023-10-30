@@ -108,7 +108,7 @@ def build_objects(object_tag_block, object_name, random_color_gen, material_coun
 
             bpy.context.collection.objects.link(object_mesh)
 
-def build_scene(context, LIGHTMAP, game_version, game_title, file_version, fix_rotations, empty_markers, report, mesh_processing, global_functions):
+def build_scene(context, LIGHTMAP, game_version, game_title, file_version, fix_rotations, empty_markers, report, mesh_processing, global_functions, tag_format):
     random_color_gen = global_functions.RandomColorGenerator() # generates a random sequence of colors
 
     material_count = 0

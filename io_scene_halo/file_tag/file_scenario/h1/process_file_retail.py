@@ -74,7 +74,7 @@ from .format_retail import (
         TextFlags
         )
 
-XML_OUTPUT = True
+XML_OUTPUT = False
 
 def get_predicted_resource(input_stream, SCENARIO, TAG, tag_format, node_element):
     predicted_resource = SCENARIO.PredictedResource()
@@ -96,9 +96,9 @@ def get_functions(input_stream, SCENARIO, TAG, tag_format, node_element):
     function.wobble_period = TAG.read_float(input_stream, TAG, tag_format.XMLData(node_element, "wobble period"))
     function.wobble_magnitude = TAG.read_float(input_stream, TAG, tag_format.XMLData(node_element, "wobble magnitude"))
     function.square_wave_threshold = TAG.read_float(input_stream, TAG, tag_format.XMLData(node_element, "square wave threshold"))
-    function.step_count = TAG.read_unsigned_short(input_stream, TAG, tag_format.XMLData(node_element, "step count"))
+    function.step_count = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(node_element, "step count"))
     function.map_to = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(node_element, "map to", MapEnum))
-    function.sawtooth_count = TAG.read_unsigned_short(input_stream, TAG, tag_format.XMLData(node_element, "sawtooth count"))
+    function.sawtooth_count = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(node_element, "sawtooth count"))
     input_stream.read(2) # Padding?
     function.scale_result_by = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(node_element, "scale result by", None, SCENARIO.scenario_body.functions_tag_block.count, "scenario_function_block"))
     function.bounds_mode = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(node_element, "bounds mode", BoundsModeEnum))
@@ -336,7 +336,7 @@ def get_trigger_volumes(input_stream, SCENARIO, TAG, tag_format, node_element):
     trigger_volume = SCENARIO.TriggerVolume()
     input_stream.read(4) # Padding?
     trigger_volume.name = TAG.read_string32(input_stream, TAG, tag_format.XMLData(node_element, "name"))
-    input_stream.read(12) # Padding?
+    trigger_volume.parameter = TAG.read_vector(input_stream, TAG, tag_format.XMLData(node_element, "parameter"))
     trigger_volume.forward = TAG.read_vector(input_stream, TAG, tag_format.XMLData(node_element, "forward"))
     trigger_volume.up = TAG.read_vector(input_stream, TAG, tag_format.XMLData(node_element, "up"))
     trigger_volume.position = TAG.read_point_3d(input_stream, TAG, tag_format.XMLData(node_element, "position"))
@@ -476,7 +476,7 @@ def get_squads(input_stream, SCENARIO, TAG, tag_format, node_element, squad_coun
 
 def get_move_positions(input_stream, SCENARIO, TAG, tag_format, node_element):
     move_position = SCENARIO.MovePosition()
-    move_position.name = TAG.read_point_3d(input_stream, TAG, tag_format.XMLData(node_element, "position"))
+    move_position.position = TAG.read_point_3d(input_stream, TAG, tag_format.XMLData(node_element, "position"))
     move_position.facing = TAG.read_degree(input_stream, TAG, tag_format.XMLData(node_element, "facing"))
     move_position.weight = TAG.read_float(input_stream, TAG, tag_format.XMLData(node_element, "weight"))
     move_position.time = TAG.read_min_max(input_stream, TAG, tag_format.XMLData(node_element, "time"))
@@ -633,6 +633,7 @@ def get_parameters(input_stream, SCENARIO, TAG, tag_format, node_element):
     parameter = SCENARIO.Parameter()
     parameter.name = TAG.read_string32(input_stream, TAG, tag_format.XMLData(node_element, "name"))
     parameter.return_type = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(node_element, "return type", ReturnTypeEnum))
+    input_stream.read(2) # Padding
 
     return parameter
 
@@ -674,7 +675,7 @@ def get_cutscene_camera_points(input_stream, SCENARIO, TAG, tag_format, node_ele
     input_stream.read(4) # Padding
     cutscene_camera.name = TAG.read_string32(input_stream, TAG, tag_format.XMLData(node_element, "name"))
     input_stream.read(4) # Padding
-    cutscene_camera.position = TAG.read_point_3d(input_stream, TAG, tag_format.XMLData(node_element, "position"), True)
+    cutscene_camera.position = TAG.read_point_3d(input_stream, TAG, tag_format.XMLData(node_element, "position"))
     cutscene_camera.orientation = TAG.read_euler_angles(input_stream, TAG, tag_format.XMLData(node_element, "orientation"))
     cutscene_camera.field_of_view = TAG.read_degree(input_stream, TAG, tag_format.XMLData(node_element, "field of view"))
     input_stream.read(36) # Padding
@@ -799,7 +800,7 @@ def process_file_retail(input_stream, tag_format, report):
     SCENARIO.scenario_body.hud_messages_tag_ref = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "hud messages"))
     SCENARIO.scenario_body.structure_bsps_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "structure bsps"))
 
-    dont_use_tag_ref = SCENARIO.scenario_body.cant_use_tag_ref
+    dont_use_tag_ref = SCENARIO.scenario_body.dont_use_tag_ref
     wont_use_tag_ref = SCENARIO.scenario_body.wont_use_tag_ref
     cant_use_tag_ref = SCENARIO.scenario_body.cant_use_tag_ref
     dont_use_name_length = dont_use_tag_ref.name_length
@@ -949,7 +950,7 @@ def process_file_retail(input_stream, tag_format, report):
         SCENARIO.comments.append(get_comments(input_stream, SCENARIO, TAG, tag_format, comment_element_node))
 
     for comment_idx, comment in enumerate(SCENARIO.comments):
-        comment.text = TAG.read_variable_string(input_stream, comment.data.size, TAG)
+        comment.text = TAG.read_variable_string_no_terminator(input_stream, comment.data.size, TAG)
         if XML_OUTPUT:
             child_scenario_element_node = comment_node.childNodes[comment_idx]
             tag_format.append_xml_node(tag_format.XMLData(child_scenario_element_node, "text"), "string", comment.text)
@@ -1798,7 +1799,7 @@ def process_file_retail(input_stream, tag_format, report):
         SCENARIO.source_files.append(get_source_file(input_stream, SCENARIO, TAG, tag_format, source_file_element_node))
 
     for source_file_idx, source_file in enumerate(SCENARIO.source_files):
-        source_file.source = TAG.read_variable_string(input_stream, source_file.source_tag_data.size, TAG)
+        source_file.source = TAG.read_variable_string_no_terminator(input_stream, source_file.source_tag_data.size, TAG)
 
     cutscene_flag_node = tag_format.get_xml_node(XML_OUTPUT, SCENARIO.scenario_body.cutscene_flags_tag_block.count, tag_node, "name", "cutscene flags")
     for cutscene_flag_idx in range(SCENARIO.scenario_body.cutscene_flags_tag_block.count):

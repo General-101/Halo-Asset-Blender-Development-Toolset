@@ -91,28 +91,28 @@ def process_file_retail(input_stream, tag_format, report):
     COLLISION.coll_body.pathfinding_spheres_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "pathfinding spheres"))
     COLLISION.coll_body.nodes_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "nodes"))
 
-    if COLLISION.coll_body.localized_damage_effect.name_length > 1:
+    if COLLISION.coll_body.localized_damage_effect.name_length > 0:
         COLLISION.coll_body.localized_damage_effect.name = TAG.read_variable_string(input_stream, COLLISION.coll_body.localized_damage_effect.name_length, TAG)
 
-    if COLLISION.coll_body.area_damage_effect.name_length > 1:
+    if COLLISION.coll_body.area_damage_effect.name_length > 0:
         COLLISION.coll_body.area_damage_effect.name = TAG.read_variable_string(input_stream, COLLISION.coll_body.area_damage_effect.name_length, TAG)
 
-    if COLLISION.coll_body.body_damaged_effect.name_length > 1:
+    if COLLISION.coll_body.body_damaged_effect.name_length > 0:
         COLLISION.coll_body.body_damaged_effect.name = TAG.read_variable_string(input_stream, COLLISION.coll_body.body_damaged_effect.name_length, TAG)
 
-    if COLLISION.coll_body.body_depleted_effect.name_length > 1:
+    if COLLISION.coll_body.body_depleted_effect.name_length > 0:
         COLLISION.coll_body.body_depleted_effect.name = TAG.read_variable_string(input_stream, COLLISION.coll_body.body_depleted_effect.name_length, TAG)
 
-    if COLLISION.coll_body.body_destroyed_effect.name_length > 1:
+    if COLLISION.coll_body.body_destroyed_effect.name_length > 0:
         COLLISION.coll_body.body_destroyed_effect.name = TAG.read_variable_string(input_stream, COLLISION.coll_body.body_destroyed_effect.name_length, TAG)
 
-    if COLLISION.coll_body.shield_damaged_effect.name_length > 1:
+    if COLLISION.coll_body.shield_damaged_effect.name_length > 0:
         COLLISION.coll_body.shield_damaged_effect.name = TAG.read_variable_string(input_stream, COLLISION.coll_body.shield_damaged_effect.name_length, TAG)
 
-    if COLLISION.coll_body.shield_depleted_effect.name_length > 1:
+    if COLLISION.coll_body.shield_depleted_effect.name_length > 0:
         COLLISION.coll_body.shield_depleted_effect.name = TAG.read_variable_string(input_stream, COLLISION.coll_body.shield_depleted_effect.name_length, TAG)
 
-    if COLLISION.coll_body.shield_recharging_effect.name_length > 1:
+    if COLLISION.coll_body.shield_recharging_effect.name_length > 0:
         COLLISION.coll_body.shield_recharging_effect.name = TAG.read_variable_string(input_stream, COLLISION.coll_body.shield_recharging_effect.name_length, TAG)
 
     if XML_OUTPUT:
@@ -179,7 +179,7 @@ def process_file_retail(input_stream, tag_format, report):
         region_element_node = None
 
         region.permutations = []
-        if region.destroyed_effect.name_length > 1:
+        if region.destroyed_effect.name_length > 0:
             region.destroyed_effect.name = TAG.read_variable_string(input_stream, region.destroyed_effect.name_length, TAG)
 
         if XML_OUTPUT:

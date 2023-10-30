@@ -27,14 +27,16 @@
 import io
 import bpy
 import copy
+import struct
 import binascii
 
 from xml.dom import minidom
+from math import degrees, sqrt
 from mathutils import Vector, Matrix, Quaternion, Euler
 from .format_retail import AnimationAsset, AnimationTagFlags, FunctionEnum, FunctionControlsEnum, NodeJointFlags, AnimationTypeEnum, AnimationFrameInfoTypeEnum, AnimationFlags
 
-XML_OUTPUT = True
-XML_RAW_DATA_OUTPUT = True
+XML_OUTPUT = False
+XML_RAW_DATA_OUTPUT = False
 
 def get_anim_flags(anim):
     rot_flags   = anim.rot_flags0 | anim.rot_flags1 << 32
@@ -299,6 +301,376 @@ def apply_root_node_info_to_states(animation_element, undo=False):
             animation_element.frame_data[frame_idx][0].translation = final_translation + animation_element.frame_data[frame_idx][0].translation
 
     animation_element.frame_info_applied = not undo
+
+def decompress_quaternion48(word_0, word_1, word_2):
+    '''Decompress a ones-signed 6byte quaternion to floats'''
+    comp_rot = (word_2 & 0xFFff) | ((word_1 & 0xFFff)<<16) | ((word_0 & 0xFFff)<<32)
+    w =  comp_rot & 4095
+    k = (comp_rot >> 12) & 4095
+    j = (comp_rot >> 24) & 4095
+    i = (comp_rot >> 36) & 4095
+    # avoid division by zero
+    if i | j | k | w:
+        if i & 0x800: i -= 4095
+        if j & 0x800: j -= 4095
+        if k & 0x800: k -= 4095
+        if w & 0x800: w -= 4095
+        length = 1.0 / sqrt(i**2 + j**2 + k**2 + w**2)
+        return i * length, j * length, k * length, w * length
+    return 0.0, 0.0, 0.0, 1.0
+
+def lerp_blend_vectors(v0, v1, ratio):
+    r1 = max(0.0, min(1.0, ratio))
+    r0 = 1.0 - r1
+    return [a*r0 + b*r1 for a, b in zip(v0, v1)]
+
+
+def nlerp_blend_quaternions(q0, q1, ratio):
+    r1 = max(0.0, min(1.0, ratio))
+    r0 = 1.0 - ratio
+
+    i0, j0, k0, w0 = q0
+    i1, j1, k1, w1 = q1
+
+    cos_half_theta = i0*i1 + j0*j1 + k0*k1 + w0*w1
+    if cos_half_theta < 0:
+        # need to change the vector rotations to be 2pi - rot
+        r1 = -r1
+
+    return [i0*r0 + i1*r1, j0*r0 + j1*r1, k0*r0 + k1*r1, w0*r0 + w1*r1]
+
+def get_keyframe_index_of_frame(frame, keyframes,
+keyframe_count=None, offset=0):
+    if keyframe_count is None:
+        keyframe_count = len(keyframes) - offset
+
+    # TODO: make this more efficent using a binary search
+    for i in range(offset, offset + keyframe_count - 1):
+        if keyframes[i] <= frame and frame < keyframes[i + 1]:
+            return i
+
+    raise ValueError(
+        "No keyframes pairs containing frame %s" % frame)
+
+def deserialize_compressed_frame_data(animation_element, frame_data):
+    rot_keyframes_by_nodes = []
+    trans_keyframes_by_nodes = []
+    scale_keyframes_by_nodes = []
+
+    keyframes = (rot_keyframes_by_nodes,
+                 trans_keyframes_by_nodes,
+                 scale_keyframes_by_nodes)
+
+    # make a bunch of frames we can fill in below
+    frames = [[AnimationAsset.FrameTransform() for n in range(animation_element.node_count)]
+              for f in range(animation_element.frame_count + 1)]
+
+    rot_flags, trans_flags, scale_flags = get_anim_flags(animation_element)
+
+    # get the keyframe counts and keyframe offsets
+    frame_data.seek(animation_element.offset_to_compressed_data, 0)
+    translation_keyframe_offset, scale_keyframe_offset = struct.unpack('<12xI12xI12x', frame_data.read(44))
+
+    data_size = animation_element.frame_data_tag_data.size
+
+    rot_keyframes = []
+    trans_keyframes = []
+    scale_keyframes = []
+
+    rot_def_data = []
+    trans_def_data = []
+    scale_def_data = [1.0 for node_idx in range(animation_element.node_count)]
+
+    rot_keyframe_data = []
+    trans_keyframe_data = []
+    scale_keyframe_data = []
+
+    rot_keyframe_headers   = []
+    trans_keyframe_headers = []
+    scale_keyframe_headers = []
+
+    rotation_offset = animation_element.offset_to_compressed_data + 44
+    if data_size > rotation_offset:
+        frame_data.seek(rotation_offset, 0)
+        for node_idx in range(animation_element.node_count):
+            if rot_flags[node_idx] == True:
+                rotation_keyframe_count = struct.unpack('<I', frame_data.read(4))[0]
+                header = (rotation_keyframe_count & 4095, rotation_keyframe_count >> 12)
+                rot_keyframe_headers.append(header)
+
+        index = 0
+        for node_idx in range(animation_element.node_count):
+            if rot_flags[node_idx] == True:
+                rotation_keyframe_count = rot_keyframe_headers[index][0]
+                for rotation_frame in range(rotation_keyframe_count):
+                    rot_keyframes.append(struct.unpack('<H', frame_data.read(2))[0])
+
+                index += 1
+
+        for node_idx in range(animation_element.node_count):
+            default_x, default_y, default_z = struct.unpack('<HHH', frame_data.read(6))
+            rot_def_data.append(default_x)
+            rot_def_data.append(default_y)
+            rot_def_data.append(default_z)
+
+        index = 0
+        for node_idx in range(animation_element.node_count):
+            if rot_flags[node_idx] == True:
+                rotation_keyframe_count = rot_keyframe_headers[index][0]
+                for rotation_frame in range(rotation_keyframe_count):
+                    x, y, z = struct.unpack('<HHH', frame_data.read(6))
+                    rot_keyframe_data.append(x)
+                    rot_keyframe_data.append(y)
+                    rot_keyframe_data.append(z)
+
+                index += 1
+
+    translation_offset = animation_element.offset_to_compressed_data + translation_keyframe_offset
+    if data_size > translation_offset:
+        frame_data.seek(translation_offset, 0)
+        for node_idx in range(animation_element.node_count):
+            if trans_flags[node_idx] == True:
+                translation_keyframe_count = struct.unpack('<I', frame_data.read(4))[0]
+                header = (translation_keyframe_count & 4095, translation_keyframe_count >> 12)
+                trans_keyframe_headers.append(header)
+
+        index = 0
+        for node_idx in range(animation_element.node_count):
+            if trans_flags[node_idx] == True:
+                translation_keyframe_count = trans_keyframe_headers[index][0]
+                for translation_frame in range(translation_keyframe_count):
+                    trans_keyframes.append(struct.unpack('<H', frame_data.read(2))[0])
+
+                index += 1
+
+        for node_idx in range(animation_element.node_count):
+            default_x, default_y, default_z = struct.unpack('<fff', frame_data.read(12))
+            trans_def_data.append(default_x)
+            trans_def_data.append(default_y)
+            trans_def_data.append(default_z)
+
+        index = 0
+        for node_idx in range(animation_element.node_count):
+            if trans_flags[node_idx] == True:
+                translation_keyframe_count = trans_keyframe_headers[index][0]
+                for translation_frame in range(translation_keyframe_count):
+                    x, y, z = struct.unpack('<fff', frame_data.read(12))
+                    trans_keyframe_data.append(x)
+                    trans_keyframe_data.append(y)
+                    trans_keyframe_data.append(z)
+
+                index += 1
+                    
+    scale_offset = animation_element.offset_to_compressed_data + scale_keyframe_offset
+    if data_size > scale_offset:
+        frame_data.seek(scale_offset, 0)
+        for node_idx in range(animation_element.node_count):
+            if scale_flags[node_idx] == True:
+                scale_keyframe_count = struct.unpack('<I', frame_data.read(4))[0]
+                header = (scale_keyframe_count & 4095, scale_keyframe_count >> 12)
+                scale_keyframe_headers.append(header)
+        index = 0
+        for node_idx in range(animation_element.node_count):
+            if scale_flags[node_idx] == True:
+                scale_keyframe_count = scale_keyframe_headers[index][0]
+                for scale_frame in range(scale_keyframe_count):
+                    scale_keyframes.append(struct.unpack('<H', frame_data.read(2))[0])
+
+                index += 1
+
+        for node_idx in range(animation_element.node_count):
+            if scale_flags[node_idx] == True:
+                default_scale = struct.unpack('<f', frame_data.read(4))[0]
+                scale_def_data[node_idx] = default_scale
+
+        index = 0
+        for node_idx in range(animation_element.node_count):
+            if scale_flags[node_idx] == True:
+                scale_keyframe_count = scale_keyframe_headers[index][0]
+                for scale_frame in range(scale_keyframe_count):
+                    scale = struct.unpack('<f', frame_data.read(4))[0]
+                    scale_keyframe_data.append(scale)
+
+                index += 1
+
+    decomp_quat = decompress_quaternion48
+    blend_trans = lerp_blend_vectors
+    blend_quats = nlerp_blend_quaternions
+
+    ri = ti = si = 0
+    for ni in range(animation_element.node_count):
+        rot_kf_ct  = trans_kf_ct  = scale_kf_ct  = 0
+        rot_kf_off = trans_kf_off = scale_kf_off = 0
+
+        rot_def = decomp_quat(*rot_def_data[3 * ni: 3 * (ni + 1)])
+        trans_def = trans_def_data[3 * ni: 3 * (ni + 1)]
+        scale_def = 1.0
+
+        if rot_flags[ni]:
+            rot_kf_ct, rot_kf_off = rot_keyframe_headers[ri]
+            ri += 1
+
+        if trans_flags[ni]:
+            trans_kf_ct, trans_kf_off = trans_keyframe_headers[ti]
+            ti += 1
+
+        if scale_flags[ni]:
+            scale_kf_ct, scale_kf_off = scale_keyframe_headers[si]
+            si += 1
+            scale_def = scale_def_data[ni]
+
+        # add this nodes keyframes to the keyframe lists in the jma_anim
+        for kf_ct, kf_off, all_kfs, kfs_by_nodes in (
+                (rot_kf_ct, rot_kf_off, rot_keyframes,
+                 rot_keyframes_by_nodes),
+                (trans_kf_ct, trans_kf_off, trans_keyframes,
+                 trans_keyframes_by_nodes),
+                (scale_kf_ct, scale_kf_off, scale_keyframes,
+                 scale_keyframes_by_nodes)):
+            kfs_by_nodes.append(list(all_kfs[kf_off: kf_off + kf_ct]))
+
+
+        if rot_kf_ct:
+            rot_first_kf = rot_keyframes[rot_kf_off]
+            rot_last_kf  = rot_keyframes[rot_kf_off + rot_kf_ct - 1]
+            rot_first = decomp_quat(*rot_keyframe_data[
+                3 * rot_kf_off:
+                3 * (rot_kf_off + 1)])
+            rot_last = decomp_quat(*rot_keyframe_data[
+                3 * (rot_kf_off + rot_kf_ct - 1):
+                3 * (rot_kf_off + rot_kf_ct)])
+
+        if trans_kf_ct:
+            trans_first_kf = trans_keyframes[trans_kf_off]
+            trans_last_kf  = trans_keyframes[trans_kf_off + trans_kf_ct - 1]
+            trans_first = trans_keyframe_data[
+                3 * trans_kf_off:
+                3 * (trans_kf_off + 1)]
+            trans_last = trans_keyframe_data[
+                3 * (trans_kf_off + trans_kf_ct - 1):
+                3 * (trans_kf_off + trans_kf_ct)]
+
+        if scale_kf_ct:
+            scale_first_kf = scale_keyframes[scale_kf_off]
+            scale_last_kf  = scale_keyframes[scale_kf_off + scale_kf_ct - 1]
+            scale_first = scale_keyframe_data[scale_kf_off]
+            scale_last  = scale_keyframe_data[scale_kf_off + scale_kf_ct - 1]
+
+        for fi in range(animation_element.frame_count):
+            node_frame = frames[fi][ni]
+
+            if not rot_kf_ct or fi == 0:
+                # first frame OR only default data stored for this node
+                i, j, k, w = rot_def
+            elif fi == rot_last_kf:
+                # frame is the last keyframe. repeat it to the end
+                i, j, k, w = rot_last
+            elif fi < rot_first_kf:
+                # frame is before the first stored keyframe.
+                # blend from default data to first keyframe.
+                i, j, k, w = blend_quats(
+                    rot_def, rot_first, fi / rot_first_kf)
+            else:
+                # frame is at/past the first stored keyframe.
+                # don't need to use default data at all.
+                kf_i = get_keyframe_index_of_frame(
+                    fi, rot_keyframes, rot_kf_ct, rot_kf_off)
+                kf0 = rot_keyframes[kf_i]
+                q0 = decomp_quat(
+                    *rot_keyframe_data[kf_i * 3: (kf_i + 1) * 3])
+
+                if fi == kf0:
+                    # this keyframe is the frame we want.
+                    # no blending required
+                    i, j, k, w = q0
+                else:
+                    kf1 = rot_keyframes[kf_i + 1]
+                    ratio = (fi - kf0) / (kf1 - kf0)
+                    kf_i += 1
+                    q1 = decomp_quat(
+                        *rot_keyframe_data[kf_i * 3: (kf_i + 1) * 3])
+                    i, j, k, w = blend_quats(q0, q1, ratio)
+
+
+            if not trans_kf_ct or fi == 0:
+                # first frame OR only default data stored for this node
+                x, y, z = trans_def
+            elif fi == trans_last_kf:
+                # frame is the last keyframe. repeat it to the end
+                x, y, z = trans_last
+            elif fi < trans_first_kf:
+                # frame is before the first stored keyframe.
+                # blend from default data to first keyframe.
+                x, y, z = blend_trans(
+                    trans_def, trans_first, fi / trans_first_kf)
+            else:
+                # frame is at/past the first stored keyframe.
+                # don't need to use default data at all.
+                kf_i = get_keyframe_index_of_frame(
+                    fi, trans_keyframes, trans_kf_ct, trans_kf_off)
+                kf0 = trans_keyframes[kf_i]
+                p0 = trans_keyframe_data[kf_i * 3: (kf_i + 1) * 3]
+
+                if fi == kf0:
+                    # this keyframe is the frame we want.
+                    # no blending required
+                    x, y, z = p0
+                else:
+                    kf1 = trans_keyframes[kf_i + 1]
+                    ratio = (fi - kf0) / (kf1 - kf0)
+
+                    kf_i += 1
+                    p1 = trans_keyframe_data[kf_i * 3: (kf_i + 1) * 3]
+                    x, y, z = blend_trans(p0, p1, ratio)
+
+
+            if not scale_kf_ct or fi == 0:
+                # first frame OR only default data stored for this node
+                scale = scale_def
+            elif fi == scale_last_kf:
+                # frame is the last keyframe. repeat it to the end
+                scale = scale_last
+            elif fi < scale_first_kf:
+                # frame is before the first stored keyframe.
+                # blend from default data to first keyframe.
+                ratio = fi / scale_first_kf
+                scale = scale_def * (1 - ratio) + scale_first * ratio
+            else:
+                # frame is at/past the first stored keyframe.
+                # don't need to use default data at all.
+                kf_i = get_keyframe_index_of_frame(
+                    fi, scale_keyframes, scale_kf_ct, scale_kf_off)
+
+                if fi == kf0:
+                    # this keyframe is the frame we want.
+                    # no blending required
+                    scale = scale_keyframes[kf_i]
+                else:
+                    ratio = ((fi - scale_keyframes[kf_i]) /
+                             (scale_keyframes[kf_i + 1] -
+                              scale_keyframes[kf_i]))
+                    scale = (
+                        scale_keyframe_data[kf_i] * (1 - ratio) +
+                        scale_keyframe_data[kf_i + 1] * ratio)
+
+
+            nmag = i**2 + j**2 + k**2 + w**2
+            if nmag:
+                nmag = 1 / sqrt(nmag)
+                i = i * nmag
+                j = j * nmag
+                k = k * nmag
+                w = w * nmag
+                node_frame.rotation = Quaternion((w, i, j, k))
+
+            node_frame.translation = Vector((x, y, z)) * 100
+            node_frame.scale = scale
+
+    if not AnimationTypeEnum(animation_element.type) == AnimationTypeEnum.overlay:
+        # duplicate the first frame to the last frame for non-overlays
+        frames[-1] = copy.deepcopy(frames[-2])
+
+    return frames
 
 def process_file_retail(input_stream, global_functions, tag_format, report):
     TAG = tag_format.TagAsset()
@@ -671,7 +1043,7 @@ def process_file_retail(input_stream, global_functions, tag_format, report):
         ANIMATION.sound_references.append(tag_ref)
 
     for sound_reference_idx, sound_reference in enumerate(ANIMATION.sound_references):
-        if sound_reference.name_length > 1:
+        if sound_reference.name_length > 0:
             sound_reference.name = TAG.read_variable_string(input_stream, sound_reference.name_length, TAG)
 
         if XML_OUTPUT:
@@ -746,9 +1118,9 @@ def process_file_retail(input_stream, global_functions, tag_format, report):
 
         ANIMATION.animations.append(animation)
 
-    armature = bpy.data.objects.get("Armature")
+    armature = bpy.context.object
     transforms = None
-    if armature:
+    if armature and armature.type == "ARMATURE":
         sorted_list = global_functions.sort_list(list(armature.data.bones), armature, "halo1", 8200, False)
         joined_list = sorted_list[0]
 
@@ -802,12 +1174,8 @@ def process_file_retail(input_stream, global_functions, tag_format, report):
         animation_element.frame_info = deserialize_frame_info(frame_info, frame_info_node, ANIMATION, animation_element, TAG, tag_format)
 
         if AnimationFlags.compressed_data in AnimationFlags(animation_element.flags):
-            raise Exception("Not Implmented")
             # decompress compressed animations
-            #keyframes, animation.frame_data = deserialize_compressed_frame_data(animation)
-            #jma_anim.rot_keyframes   = keyframes[0]
-            #jma_anim.trans_keyframes = keyframes[1]
-            #jma_anim.scale_keyframes = keyframes[2]
+            animation.frame_data = deserialize_compressed_frame_data(animation_element, frame_data)
 
         else:
             # create the node states from the frame_data and default_data

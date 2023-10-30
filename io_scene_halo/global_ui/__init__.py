@@ -908,9 +908,8 @@ class Halo_ObjectProps(Panel):
         valid = False
         ob = context.object
 
-        if not ob.type == 'ARMATURE':
-            if hasattr(ob, 'ass_jms'):
-                valid = True
+        if hasattr(ob, 'ass_jms'):
+            valid = True
 
         return valid
 
@@ -929,6 +928,9 @@ class Halo_ObjectProps(Panel):
         row = col.row()
         row.label(text='Unique ID:')
         row.prop(ob_ass_jms, "unique_id", text='')
+        row = col.row()
+        row.label(text='Tag Path:')
+        row.prop(ob_ass_jms, "tag_path", text='')
         if ob.name[0:1].lower() == '#':
             row = col.row()
             row.label(text='Mask Type:')
@@ -981,6 +983,11 @@ class ASS_JMS_ObjectPropertiesGroup(PropertyGroup):
     unique_id: StringProperty(
         name="Unique ID",
         description="Store the original ID here. Uses a random value if nothing is defined"
+    )
+
+    tag_path: StringProperty(
+        name="Tag Path",
+        description="Store the tag path here."
     )
 
     marker_mask_type: EnumProperty(
@@ -2338,6 +2345,7 @@ def register():
 
     bpy.types.Light.halo_light = PointerProperty(type=ASS_LightPropertiesGroup, name="ASS Properties", description="Set properties for your light")
     bpy.types.Object.ass_jms = PointerProperty(type=ASS_JMS_ObjectPropertiesGroup, name="ASS/JMS Properties", description="Set properties for your object")
+    bpy.types.Armature.ass_jms = PointerProperty(type=ASS_JMS_ObjectPropertiesGroup, name="ASS/JMS Properties", description="Set properties for your object")
     bpy.types.Bone.ass_jms = PointerProperty(type=ASS_JMS_ObjectPropertiesGroup, name="ASS/JMS Properties", description="Set properties for your Bone")
     bpy.types.Mesh.ass_jms = PointerProperty(type=ASS_JMS_MeshPropertiesGroup, name="ASS/JMS Properties", description="Set properties for your mesh")
     bpy.types.Material.ass_jms = PointerProperty(type=ASS_JMS_MaterialPropertiesGroup, name="ASS/JMS Properties", description="Set properties for your materials")
@@ -2365,6 +2373,7 @@ def register():
 def unregister():
     del bpy.types.Light.halo_light
     del bpy.types.Object.ass_jms
+    del bpy.types.Armature.ass_jms
     del bpy.types.Mesh.ass_jms
     del bpy.types.Material.ass_jms
     del bpy.types.Scene.halo

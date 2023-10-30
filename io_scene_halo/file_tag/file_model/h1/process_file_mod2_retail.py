@@ -27,7 +27,7 @@
 from xml.dom import minidom
 from .format_retail import ModelAsset, ModelFlags, PermutationFlags, PartFlags
 
-XML_OUTPUT = True
+XML_OUTPUT = False
 
 def process_file_mod2_retail(input_stream, tag_format, report):
     TAG = tag_format.TagAsset()
@@ -339,7 +339,7 @@ def process_file_mod2_retail(input_stream, tag_format, report):
         MODEL.shaders.append(shader)
 
     for shader_idx, shader in enumerate(MODEL.shaders):
-        if shader.tag_ref.name_length > 1:
+        if shader.tag_ref.name_length > 0:
             shader.tag_ref.name = TAG.read_variable_string(input_stream, shader.tag_ref.name_length, TAG)
 
     if XML_OUTPUT:

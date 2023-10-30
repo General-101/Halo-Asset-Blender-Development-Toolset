@@ -10,4 +10,5 @@ OVERRIDE_USER_DETAILS = False
 USERNAME = "MissingString"
 DEVICE_NAME = "HiddenIntentions"
 
+HALO_1_DATA_PATH = ""
 HALO_1_TAG_PATH = ""

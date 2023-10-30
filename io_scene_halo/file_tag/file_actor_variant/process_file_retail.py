@@ -158,19 +158,19 @@ def process_file_retail(input_stream, tag_format, report):
     major_variant_name_length = major_variant_tag_ref.name_length
     weapon_name_length = weapon_tag_ref.name_length
     equipment_name_length = equipment_tag_ref.name_length
-    if actor_definition_name_length > 1:
+    if actor_definition_name_length > 0:
         actor_definition_tag_ref.name = TAG.read_variable_string(input_stream, actor_definition_name_length, TAG)
 
-    if unit_name_length > 1:
+    if unit_name_length > 0:
         unit_tag_ref.name = TAG.read_variable_string(input_stream, unit_name_length, TAG)
 
-    if major_variant_name_length > 1:
+    if major_variant_name_length > 0:
         major_variant_tag_ref.name = TAG.read_variable_string(input_stream, major_variant_name_length, TAG)
 
-    if weapon_name_length > 1:
+    if weapon_name_length > 0:
         weapon_tag_ref.name = TAG.read_variable_string(input_stream, weapon_name_length, TAG)
 
-    if equipment_name_length > 1:
+    if equipment_name_length > 0:
         equipment_tag_ref.name = TAG.read_variable_string(input_stream, equipment_name_length, TAG)
 
     if XML_OUTPUT:

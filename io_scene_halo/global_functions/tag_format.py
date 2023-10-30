@@ -32,8 +32,28 @@ from xml.dom import minidom
 from math import degrees, sqrt, radians
 from mathutils import Vector, Quaternion, Euler
 
+from ..file_tag.file_scenario.h1.process_file_retail import process_file_retail as process_h1_scenario
+from ..file_tag.file_shader_environment.process_file_retail import process_file_retail as process_shader_environment
+from ..file_tag.file_structure_bsp.h1.process_file_retail import process_file_retail as process_h1_structure_bsp
 from ..file_tag.file_actor_variant.process_file_retail import process_file_retail as process_actor_variant
 from ..file_tag.file_actor_variant.process_json_retail import process_json_retail as process_actor_variant_json
+from ..file_tag.file_model.h1.process_file_mode_retail import process_file_mode_retail as process_mode
+from ..file_tag.file_model.h1.process_file_mod2_retail import process_file_mod2_retail as process_mod2
+from ..file_tag.file_scenery.process_file_retail import process_file_retail as process_scenery
+from ..file_tag.file_biped.process_file_retail import process_file_retail as process_biped
+from ..file_tag.file_vehicle.process_file_retail import process_file_retail as process_vehicle
+from ..file_tag.file_equipment.process_file_retail import process_file_retail as process_equipment
+from ..file_tag.file_machine.process_file_retail import process_file_retail as process_machine
+from ..file_tag.file_control.process_file_retail import process_file_retail as process_control
+from ..file_tag.file_sound_scenery.process_file_retail import process_file_retail as process_sound_scenery
+from ..file_tag.file_light_fixture.process_file_retail import process_file_retail as process_light_fixture
+from ..file_tag.file_shader_model.process_file_retail import process_file_retail as process_shader_model
+from ..file_tag.file_bitmap.h1.process_file_retail import process_file_retail as process_bitmap
+from ..file_tag.file_weapon.process_file_retail import process_file_retail as process_weapon
+from ..file_tag.file_item_collection.process_file_retail import process_file_retail as process_item_collection
+from ..file_tag.file_sky.process_file_retail import process_file_retail as process_sky
+from ..file_tag.file_shader_transparent_meter.process_file_retail import process_file_retail as process_shader_transparent_meter
+from ..file_tag.file_shader_transparent_glass.process_file_retail import process_file_retail as process_shader_transparent_glass
 
 class XMLData:
     def __init__(self, xml_node=None, element_name="", enum_class=None, block_count=0, block_name=""):
@@ -577,6 +597,15 @@ class TagAsset():
         return string_value
 
     def read_variable_string(self, input_stream, string_length, tag, xml_data=None):
+        unpack_string = '%s%ssx' % (get_endian_symbol(tag.big_endian), string_length)
+
+        string_value = (struct.unpack(unpack_string, input_stream.read(string_length + 1)))[0].decode('utf-8', 'replace').split('\x00', 1)[0].strip('\x20')
+        if not tag.xml_doc == None and not xml_data == None:
+            xml_data.xml_node.appendChild(create_xml_node("field", [("name", xml_data.element_name), ("type", "string")], string_value))
+
+        return string_value
+
+    def read_variable_string_no_terminator(self, input_stream, string_length, tag, xml_data=None):
         unpack_string = '%s%ss' % (get_endian_symbol(tag.big_endian), string_length)
 
         string_value = (struct.unpack(unpack_string, input_stream.read(string_length)))[0].decode('utf-8', 'replace').split('\x00', 1)[0].strip('\x20')
@@ -670,9 +699,6 @@ class TagAsset():
 
             self.name = ""
             self.name_length = tag_reference_struct[2]
-            if tag_reference_struct[2] > 0:
-                self.name_length += 1
-
             self.salt = tag_reference_struct[1]
             self.index = tag_reference_struct[3]
             if not tag.xml_doc == None and not xml_data == None:
@@ -695,14 +721,147 @@ class TagAsset():
             if not xml_data == None:
                 xml_data.xml_node.appendChild(create_xml_node("tag_reference", [("name", xml_data.element_name), ("type", self.tag_group)], self.name))
 
-        def parse_tag(self, tag_format, report):
+        def parse_tag(self, tag_format, report, game_title, game_version):
             ASSET = None
-            if self.tag_group == "actv":
-                input_file = os.path.join(config.HALO_1_TAG_PATH, "%s.actor_variant" % self.name)
-                if os.path.exists(input_file):
-                    input_stream = open(input_file, 'rb')
-                    ASSET = process_actor_variant(input_stream, tag_format, report)
-                    input_stream.close()
+            if game_title == "halo1":
+                if self.tag_group == "actv":
+                    input_file = os.path.join(config.HALO_1_TAG_PATH, "%s.actor_variant" % self.name)
+                    if os.path.exists(input_file):
+                        input_stream = open(input_file, 'rb')
+                        ASSET = process_actor_variant(input_stream, tag_format, report)
+                        input_stream.close()
+
+                elif self.tag_group == "sky ":
+                    input_file = os.path.join(config.HALO_1_TAG_PATH, "%s.sky" % self.name)
+                    if os.path.exists(input_file):
+                        input_stream = open(input_file, 'rb')
+                        ASSET = process_sky(input_stream, tag_format, report)
+                        input_stream.close()
+
+                elif self.tag_group == "bitm":
+                    input_file = os.path.join(config.HALO_1_TAG_PATH, "%s.bitmap" % self.name)
+                    if os.path.exists(input_file):
+                        input_stream = open(input_file, 'rb')
+                        ASSET = process_bitmap(input_stream, tag_format, report)
+                        input_stream.close()
+
+                elif self.tag_group == "scen":
+                    input_file = os.path.join(config.HALO_1_TAG_PATH, "%s.scenery" % self.name)
+                    if os.path.exists(input_file):
+                        input_stream = open(input_file, 'rb')
+                        ASSET = process_scenery(input_stream, tag_format, report)
+                        input_stream.close()
+
+                elif self.tag_group == "bipd":
+                    input_file = os.path.join(config.HALO_1_TAG_PATH, "%s.biped" % self.name)
+                    if os.path.exists(input_file):
+                        input_stream = open(input_file, 'rb')
+                        ASSET = process_biped(input_stream, tag_format, report)
+                        input_stream.close()
+
+                elif self.tag_group == "vehi":
+                    input_file = os.path.join(config.HALO_1_TAG_PATH, "%s.vehicle" % self.name)
+                    if os.path.exists(input_file):
+                        input_stream = open(input_file, 'rb')
+                        ASSET = process_vehicle(input_stream, tag_format, report)
+                        input_stream.close()
+
+                elif self.tag_group == "mach":
+                    input_file = os.path.join(config.HALO_1_TAG_PATH, "%s.device_machine" % self.name)
+                    if os.path.exists(input_file):
+                        input_stream = open(input_file, 'rb')
+                        ASSET = process_machine(input_stream, tag_format, report)
+                        input_stream.close()
+
+                elif self.tag_group == "ctrl":
+                    input_file = os.path.join(config.HALO_1_TAG_PATH, "%s.device_control" % self.name)
+                    if os.path.exists(input_file):
+                        input_stream = open(input_file, 'rb')
+                        ASSET = process_control(input_stream, tag_format, report)
+                        input_stream.close()
+
+                elif self.tag_group == "lifi":
+                    input_file = os.path.join(config.HALO_1_TAG_PATH, "%s.device_light_fixture" % self.name)
+                    if os.path.exists(input_file):
+                        input_stream = open(input_file, 'rb')
+                        ASSET = process_light_fixture(input_stream, tag_format, report)
+                        input_stream.close()
+
+                elif self.tag_group == "ssce":
+                    input_file = os.path.join(config.HALO_1_TAG_PATH, "%s.sound_scenery" % self.name)
+                    if os.path.exists(input_file):
+                        input_stream = open(input_file, 'rb')
+                        ASSET = process_sound_scenery(input_stream, tag_format, report)
+                        input_stream.close()
+
+                elif self.tag_group == "eqip":
+                    input_file = os.path.join(config.HALO_1_TAG_PATH, "%s.equipment" % self.name)
+                    if os.path.exists(input_file):
+                        input_stream = open(input_file, 'rb')
+                        ASSET = process_equipment(input_stream, tag_format, report)
+                        input_stream.close()
+
+                elif self.tag_group == "weap":
+                    input_file = os.path.join(config.HALO_1_TAG_PATH, "%s.weapon" % self.name)
+                    if os.path.exists(input_file):
+                        input_stream = open(input_file, 'rb')
+                        ASSET = process_weapon(input_stream, tag_format, report)
+                        input_stream.close()
+
+                elif self.tag_group == "itmc":
+                    input_file = os.path.join(config.HALO_1_TAG_PATH, "%s.item_collection" % self.name)
+                    if os.path.exists(input_file):
+                        input_stream = open(input_file, 'rb')
+                        ASSET = process_item_collection(input_stream, tag_format, report)
+                        input_stream.close()
+
+                elif self.tag_group == "mod2" or self.tag_group == "mode":
+                    input_file = os.path.join(config.HALO_1_TAG_PATH, "%s.gbxmodel" % self.name)
+                    if os.path.exists(input_file):
+                        input_stream = open(input_file, 'rb')
+                        ASSET = process_mod2(input_stream, tag_format, report)
+                        input_stream.close()
+                    else:
+                        input_file = os.path.join(config.HALO_1_TAG_PATH, "%s.model" % self.name)
+                        if os.path.exists(input_file):
+                            input_stream = open(input_file, 'rb')
+                            ASSET = process_mode(input_stream, tag_format, report)
+                            input_stream.close()
+                        
+                elif self.tag_group == "sbsp":
+                    input_file = os.path.join(config.HALO_1_TAG_PATH, "%s.scenario_structure_bsp" % self.name)
+                    if os.path.exists(input_file):
+                        input_stream = open(input_file, 'rb')
+                        ASSET = process_h1_structure_bsp(input_stream, tag_format, report)
+                        input_stream.close()
+
+                elif self.tag_group == "soso":
+                    input_file = os.path.join(config.HALO_1_TAG_PATH, "%s.shader_model" % self.name)
+                    if os.path.exists(input_file):
+                        input_stream = open(input_file, 'rb')
+                        ASSET = process_shader_model(input_stream, tag_format, report)
+                        input_stream.close()
+
+                elif self.tag_group == "senv":
+                    input_file = os.path.join(config.HALO_1_TAG_PATH, "%s.shader_environment" % self.name)
+                    if os.path.exists(input_file):
+                        input_stream = open(input_file, 'rb')
+                        ASSET = process_shader_environment(input_stream, tag_format, report)
+                        input_stream.close()
+
+                elif self.tag_group == "smet":
+                    input_file = os.path.join(config.HALO_1_TAG_PATH, "%s.shader_transparent_meter" % self.name)
+                    if os.path.exists(input_file):
+                        input_stream = open(input_file, 'rb')
+                        ASSET = process_shader_transparent_meter(input_stream, tag_format, report)
+                        input_stream.close()
+
+                elif self.tag_group == "sgla":
+                    input_file = os.path.join(config.HALO_1_TAG_PATH, "%s.shader_transparent_glass" % self.name)
+                    if os.path.exists(input_file):
+                        input_stream = open(input_file, 'rb')
+                        ASSET = process_shader_transparent_glass(input_stream, tag_format, report)
+                        input_stream.close()
 
             return ASSET
 

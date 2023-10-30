@@ -546,7 +546,7 @@ def process_file_retail(input_stream, tag_format, report):
         LEVEL.lens_flares.append(TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(material_element_node, "lensflare")))
 
     for lens_flare in LEVEL.lens_flares:
-        if lens_flare.name_length > 1:
+        if lens_flare.name_length > 0:
             lens_flare.name = TAG.read_variable_string(input_stream, lens_flare.name_length, TAG)
 
     lens_flare_marker_node = tag_format.get_xml_node(XML_OUTPUT, LEVEL.level_body.lens_flare_markers_tag_block.count, tag_node, "name", "lens flare markers")
@@ -631,15 +631,15 @@ def process_file_retail(input_stream, tag_format, report):
             mirror_struct = struct.unpack('>ffff20x4siiIiII', input_stream.read(64))
             mirror.plane_translation = Vector((mirror_struct[0], mirror_struct[1], mirror_struct[2]))
             mirror.plane_distance = mirror_struct[3]
-            mirror.shader_tag_ref = TAG.TagRef(mirror_struct[4].decode().rstrip('\x00'), "", mirror_struct[6] + 1, mirror_struct[5], mirror_struct[7])
+            mirror.shader_tag_ref = TAG.TagRef(mirror_struct[4].decode().rstrip('\x00'), "", mirror_struct[6], mirror_struct[5], mirror_struct[7])
             mirror.vertices_tag_block = TAG.TagBlock(mirror_struct[8], 512, mirror_struct[9], mirror_struct[10])
 
             mirrors.append(mirror)
 
         for mirror in mirrors:
             mirror_vertices = []
-            if mirror.shader_tag_ref.name_length > 1:
-                tag_path = struct.unpack('>%ss' % mirror.shader_tag_ref.name_length, input_stream.read(mirror.shader_tag_ref.name_length))
+            if mirror.shader_tag_ref.name_length > 0:
+                tag_path = struct.unpack('>%ssx' % mirror.shader_tag_ref.name_length, input_stream.read(mirror.shader_tag_ref.name_length + 1))
                 mirror.shader_tag_ref.name = tag_path[0].decode().rstrip('\x00')
 
             for vertex_idx in range(mirror.vertices_tag_block.count):
@@ -743,23 +743,23 @@ def process_file_retail(input_stream, tag_format, report):
         fog_palette_struct = struct.unpack('>32s4siiI4x32s52x', input_stream.read(136))
         fog_palette = LEVEL.FogPalette()
         fog_palette.name = fog_palette_struct[0].decode().rstrip('\x00')
-        fog_palette.fog_tag_ref = TAG.TagRef(fog_palette_struct[1].decode().rstrip('\x00'), "", fog_palette_struct[3] + 1, fog_palette_struct[2], fog_palette_struct[4])
+        fog_palette.fog_tag_ref = TAG.TagRef(fog_palette_struct[1].decode().rstrip('\x00'), "", fog_palette_struct[3], fog_palette_struct[2], fog_palette_struct[4])
         fog_palette.fog_scale_function = fog_palette_struct[5].decode().rstrip('\x00')
 
         LEVEL.fog_palettes.append(fog_palette)
 
     for fog_palette in LEVEL.fog_palettes:
-        if fog_palette.fog_tag_ref.name_length > 1:
-            tag_path = struct.unpack('>%ss' % fog_palette.fog_tag_ref.name_length, input_stream.read(fog_palette.fog_tag_ref.name_length))
+        if fog_palette.fog_tag_ref.name_length > 0:
+            tag_path = struct.unpack('>%ssx' % fog_palette.fog_tag_ref.name_length, input_stream.read(fog_palette.fog_tag_ref.name_length  + 1))
             fog_palette.fog_tag_ref.name = tag_path[0].decode().rstrip('\x00')
 
     for weather_palette_idx in range(LEVEL.level_body.weather_palettes_tag_block.count):
         weather_palette_struct = struct.unpack('>32s4siiI4x32s44x4siiIffff4x32s44x', input_stream.read(240))
         weather_palette = LEVEL.WeatherPalette()
         weather_palette.name = weather_palette_struct[0].decode().rstrip('\x00')
-        weather_palette.particle_system_tag_ref = TAG.TagRef(weather_palette_struct[1].decode().rstrip('\x00'), "", weather_palette_struct[3] + 1, weather_palette_struct[2], weather_palette_struct[4])
+        weather_palette.particle_system_tag_ref = TAG.TagRef(weather_palette_struct[1].decode().rstrip('\x00'), "", weather_palette_struct[3], weather_palette_struct[2], weather_palette_struct[4])
         weather_palette.particle_system_scale_function = weather_palette_struct[5].decode().rstrip('\x00')
-        weather_palette.wind_tag_ref = TAG.TagRef(weather_palette_struct[6].decode().rstrip('\x00'), "", weather_palette_struct[8] + 1, weather_palette_struct[7], weather_palette_struct[9])
+        weather_palette.wind_tag_ref = TAG.TagRef(weather_palette_struct[6].decode().rstrip('\x00'), "", weather_palette_struct[8], weather_palette_struct[7], weather_palette_struct[9])
         weather_palette.wind_direction = Vector((weather_palette_struct[10], weather_palette_struct[11], weather_palette_struct[12]))
         weather_palette.wind_magnitude = weather_palette_struct[13]
         weather_palette.wind_scale_function = weather_palette_struct[14].decode().rstrip('\x00')
@@ -767,12 +767,12 @@ def process_file_retail(input_stream, tag_format, report):
         LEVEL.weather_palettes.append(weather_palette)
 
     for weather_palette in LEVEL.weather_palettes:
-        if weather_palette.particle_system_tag_ref.name_length > 1:
-            tag_path = struct.unpack('>%ss' % weather_palette.particle_system_tag_ref.name_length, input_stream.read(weather_palette.particle_system_tag_ref.name_length))
+        if weather_palette.particle_system_tag_ref.name_length > 0:
+            tag_path = struct.unpack('>%ssx' % weather_palette.particle_system_tag_ref.name_length, input_stream.read(weather_palette.particle_system_tag_ref.name_length + 1))
             weather_palette.particle_system_tag_ref.name = tag_path[0].decode().rstrip('\x00')
 
-        if weather_palette.wind_tag_ref.name_length > 1:
-            tag_path = struct.unpack('>%ss' % weather_palette.wind_tag_ref.name_length, input_stream.read(weather_palette.wind_tag_ref.name_length))
+        if weather_palette.wind_tag_ref.name_length > 0:
+            tag_path = struct.unpack('>%ssx' % weather_palette.wind_tag_ref.name_length, input_stream.read(weather_palette.wind_tag_ref.name_length + 1))
             weather_palette.wind_tag_ref.name = tag_path[0].decode().rstrip('\x00')
 
     for weather_polyhedra_idx in range(LEVEL.level_body.weather_polyhedras_tag_block.count):
@@ -810,27 +810,27 @@ def process_file_retail(input_stream, tag_format, report):
         background_sounds_palette_struct = struct.unpack('>32s4siiI4x32s32x', input_stream.read(116))
         background_sounds_palette = LEVEL.BackgroundSoundsPalette()
         background_sounds_palette.name = background_sounds_palette_struct[0].decode().rstrip('\x00')
-        background_sounds_palette.background_sound_tag_ref = TAG.TagRef(background_sounds_palette_struct[1].decode().rstrip('\x00'), "", background_sounds_palette_struct[3] + 1, background_sounds_palette_struct[2], background_sounds_palette_struct[4])
+        background_sounds_palette.background_sound_tag_ref = TAG.TagRef(background_sounds_palette_struct[1].decode().rstrip('\x00'), "", background_sounds_palette_struct[3], background_sounds_palette_struct[2], background_sounds_palette_struct[4])
         background_sounds_palette.scale_function = background_sounds_palette_struct[5].decode().rstrip('\x00')
 
         LEVEL.background_sounds_palettes.append(background_sounds_palette)
 
     for background_sounds_palette in LEVEL.background_sounds_palettes:
-        if background_sounds_palette.background_sound_tag_ref.name_length > 1:
-            tag_path = struct.unpack('>%ss' % background_sounds_palette.background_sound_tag_ref.name_length, input_stream.read(background_sounds_palette.background_sound_tag_ref.name_length))
+        if background_sounds_palette.background_sound_tag_ref.name_length > 0:
+            tag_path = struct.unpack('>%ssx' % background_sounds_palette.background_sound_tag_ref.name_length, input_stream.read(background_sounds_palette.background_sound_tag_ref.name_length + 1))
             background_sounds_palette.background_sound_tag_ref.name = tag_path[0].decode().rstrip('\x00')
 
     for sound_environments_palette_idx in range(LEVEL.level_body.sound_environments_palette_tag_block.count):
         sound_environments_palette_struct = struct.unpack('>32s4siiI32x', input_stream.read(80))
         sound_environments_palette = LEVEL.SoundEnvironmentsPalette()
         sound_environments_palette.name = sound_environments_palette_struct[0].decode().rstrip('\x00')
-        sound_environments_palette.sound_environment_tag_ref = TAG.TagRef(sound_environments_palette_struct[1].decode().rstrip('\x00'), "", sound_environments_palette_struct[3] + 1, sound_environments_palette_struct[2], sound_environments_palette_struct[4])
+        sound_environments_palette.sound_environment_tag_ref = TAG.TagRef(sound_environments_palette_struct[1].decode().rstrip('\x00'), "", sound_environments_palette_struct[3], sound_environments_palette_struct[2], sound_environments_palette_struct[4])
 
         LEVEL.sound_environments_palettes.append(sound_environments_palette)
 
     for sound_environments_palette in LEVEL.sound_environments_palettes:
-        if sound_environments_palette.sound_environment_tag_ref.name_length > 1:
-            tag_path = struct.unpack('>%ss' % sound_environments_palette.sound_environment_tag_ref.name_length, input_stream.read(sound_environments_palette.sound_environment_tag_ref.name_length))
+        if sound_environments_palette.sound_environment_tag_ref.name_length > 0:
+            tag_path = struct.unpack('>%ssx' % sound_environments_palette.sound_environment_tag_ref.name_length, input_stream.read(sound_environments_palette.sound_environment_tag_ref.name_length + 1))
             sound_environments_palette.sound_environment_tag_ref.name = tag_path[0].decode().rstrip('\x00')
 
     sound_pas_raw_data_size = LEVEL.level_body.sound_pas_raw_data.size

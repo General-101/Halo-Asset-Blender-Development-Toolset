@@ -43,7 +43,7 @@ from .format_retail import (
         ReflectionTypeEnum
         )
 
-XML_OUTPUT = True
+XML_OUTPUT = False
 
 def process_file_retail(input_stream, tag_format, report):
     TAG = tag_format.TagAsset()
