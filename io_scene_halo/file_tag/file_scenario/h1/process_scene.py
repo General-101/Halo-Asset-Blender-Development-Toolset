@@ -47,6 +47,14 @@ def get_palette_index(TAG, SCENARIO, tag_group, tag_path, palette_tag_block):
 
     return palette_index
 
+def get_half_angle(angle):
+    angle =  angle % 360
+    angle = (angle + 360) % 360
+    if angle > 180:
+        angle -= 360
+
+    return angle
+
 def generate_comments(TAG, SCENARIO):
     comment_collection = bpy.data.collections.get("Comments")
     blender_comments = []
@@ -74,8 +82,8 @@ def generate_scenery(TAG, SCENARIO):
             scenery.placement_flags = 0
             scenery.desired_permutation = 0
             scenery.position = ob.location / 100
-            rot = ob.matrix_world.transposed().to_euler()
-            scenery.rotation = (-degrees(rot[1]), degrees(rot[2]), 0)
+            rot = ob.rotation_euler
+            scenery.rotation = (get_half_angle(degrees(rot[2])), get_half_angle(degrees(-rot[0])), get_half_angle(degrees(-rot[1])))
             scenery.appearance_player_index = 0
 
             blender_scenery.append(scenery)
@@ -94,8 +102,8 @@ def generate_bipeds(TAG, SCENARIO):
             biped.placement_flags = 0
             biped.desired_permutation = 0
             biped.position = ob.location / 100
-            rot = ob.matrix_world.transposed().to_euler()
-            biped.rotation = (-degrees(rot[2]), -degrees(rot[1]), -degrees(rot[0]))
+            rot = ob.rotation_euler
+            biped.rotation = (get_half_angle(degrees(rot[2])), get_half_angle(degrees(-rot[0])), get_half_angle(degrees(-rot[1])))
             biped.appearance_player_index = 0
             biped.body_vitality = 0.0
             biped.flags = 0
@@ -116,8 +124,8 @@ def generate_vehicles(TAG, SCENARIO):
             vehicle.placement_flags = 0
             vehicle.desired_permutation = 0
             vehicle.position = ob.location / 100
-            rot = ob.matrix_world.transposed().to_euler()
-            vehicle.rotation = (-degrees(rot[2]), -degrees(rot[1]), -degrees(rot[0]))
+            rot = ob.matrix_world.to_euler
+            vehicle.rotation = (get_half_angle(degrees(rot[2])), get_half_angle(degrees(-rot[0])), get_half_angle(degrees(-rot[1])))
             vehicle.appearance_player_index = 0
             vehicle.body_vitality = 0.0
             vehicle.flags = 0
@@ -140,8 +148,8 @@ def generate_equipment(TAG, SCENARIO):
             equipment.placement_flags = 0
             equipment.desired_permutation = 0
             equipment.position = ob.location / 100
-            rot = ob.matrix_world.transposed().to_euler()
-            equipment.rotation = (-degrees(rot[2]), -degrees(rot[1]), -degrees(rot[0]))
+            rot = ob.rotation_euler
+            equipment.rotation = (get_half_angle(degrees(rot[2])), get_half_angle(degrees(-rot[0])), get_half_angle(degrees(-rot[1])))
             equipment.appearance_player_index = 0
             equipment.misc_flags = 0
 
@@ -161,8 +169,8 @@ def generate_weapons(TAG, SCENARIO):
             weapon.placement_flags = 0
             weapon.desired_permutation = 0
             weapon.position = ob.location / 100
-            rot = ob.matrix_world.transposed().to_euler()
-            weapon.rotation = (-degrees(rot[2]), -degrees(rot[1]), -degrees(rot[0]))
+            rot = ob.rotation_euler
+            weapon.rotation = (get_half_angle(degrees(rot[2])), get_half_angle(degrees(-rot[0])), get_half_angle(degrees(-rot[1])))
             weapon.appearance_player_index = 0
             weapon.rounds_left = 0
             weapon.rounds_loaded = 0
@@ -184,8 +192,8 @@ def generate_machines(TAG, SCENARIO):
             machine.placement_flags = 0
             machine.desired_permutation = 0
             machine.position = ob.location / 100
-            rot = ob.matrix_world.transposed().to_euler()
-            machine.rotation = (-degrees(rot[2]), -degrees(rot[1]), -degrees(rot[0]))
+            rot = ob.rotation_euler
+            machine.rotation = (get_half_angle(degrees(rot[2])), get_half_angle(degrees(-rot[0])), get_half_angle(degrees(-rot[1])))
             machine.appearance_player_index = 0
             machine.power_group_index = 0
             machine.position_group_index = 0
@@ -208,8 +216,8 @@ def generate_controls(TAG, SCENARIO):
             control.placement_flags = 0
             control.desired_permutation = 0
             control.position = ob.location / 100
-            rot = ob.matrix_world.transposed().to_euler()
-            control.rotation = (-degrees(rot[2]), -degrees(rot[1]), -degrees(rot[0]))
+            rot = ob.rotation_euler
+            control.rotation = (get_half_angle(degrees(rot[2])), get_half_angle(degrees(-rot[0])), get_half_angle(degrees(-rot[1])))
             control.appearance_player_index = 0
             control.power_group_index = 0
             control.position_group_index = 0
@@ -233,8 +241,8 @@ def generate_light_fixtures(TAG, SCENARIO):
             light_fixture.placement_flags = 0
             light_fixture.desired_permutation = 0
             light_fixture.position = ob.location / 100
-            rot = ob.matrix_world.transposed().to_euler()
-            light_fixture.rotation = (-degrees(rot[2]), -degrees(rot[1]), -degrees(rot[0]))
+            rot = ob.rotation_euler
+            light_fixture.rotation = (get_half_angle(degrees(rot[2])), get_half_angle(degrees(-rot[0])), get_half_angle(degrees(-rot[1])))
             light_fixture.appearance_player_index = 0
             light_fixture.power_group_index = 0
             light_fixture.position_group_index = 0
@@ -260,8 +268,8 @@ def generate_sound_scenery(TAG, SCENARIO):
             sound_scenery.placement_flags = 0
             sound_scenery.desired_permutation = 0
             sound_scenery.position = ob.location / 100
-            rot = ob.matrix_world.transposed().to_euler()
-            sound_scenery.rotation = (-degrees(rot[2]), -degrees(rot[1]), -degrees(rot[0]))
+            rot = ob.rotation_euler
+            rot.rotation = (get_half_angle(degrees(rot[2])), get_half_angle(degrees(-rot[0])), get_half_angle(degrees(-rot[1])))
             sound_scenery.appearance_player_index = 0
 
             blender_sound_scenery.append(sound_scenery)
@@ -275,10 +283,10 @@ def generate_player_starting_locations(TAG, SCENARIO):
     if playey_starting_locations_collection:
         for ob in playey_starting_locations_collection.objects:
             playey_starting_location = SCENARIO.PlayerStartingLocation()
-            rot = ob.matrix_world.transposed().to_euler()
+            rot = ob.rotation_euler
 
             playey_starting_location.position = ob.location / 100
-            playey_starting_location.facing = degrees(rot[2])
+            playey_starting_location.facing = get_half_angle(degrees(rot[2]))
             playey_starting_location.team_index = 0
             playey_starting_location.bsp_index = 0
             playey_starting_location.type_0 = 0
