@@ -152,12 +152,8 @@ def write_object(output_stream, scenery_element):
     output_stream.write(struct.pack('>h', scenery_element.name_index))
     output_stream.write(struct.pack('>h', scenery_element.placement_flags))
     output_stream.write(struct.pack('>h', scenery_element.desired_permutation))
-    output_stream.write(struct.pack('>f', scenery_element.position[0]))
-    output_stream.write(struct.pack('>f', scenery_element.position[1]))
-    output_stream.write(struct.pack('>f', scenery_element.position[2]))
-    output_stream.write(struct.pack('>f', radians(scenery_element.rotation[0])))
-    output_stream.write(struct.pack('>f', radians(scenery_element.rotation[1])))
-    output_stream.write(struct.pack('>f', radians(scenery_element.rotation[2])))
+    output_stream.write(struct.pack('>fff', scenery_element.position[0], scenery_element.position[1], scenery_element.position[2]))
+    output_stream.write(struct.pack('>fff', radians(scenery_element.rotation[0]), radians(scenery_element.rotation[1]), radians(scenery_element.rotation[2])))
 
 def write_scenery(output_stream, SCENARIO, TAG):
     for scenery_element in SCENARIO.scenery:

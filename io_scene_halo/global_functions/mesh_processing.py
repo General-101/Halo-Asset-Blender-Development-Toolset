@@ -1689,10 +1689,13 @@ def generate_shader_model(mat, shader, tag_format, report):
 
     bdsf_principled.location = Vector((-260.0, 0.0))
 
-    bdsf_principled.inputs[7].default_value = 0.5
+    bdsf_principled.inputs[7].default_value = 0
     bdsf_principled.inputs[9].default_value = 1
 
     base_node = generate_image_node(mat, base_map)
+    if not base_node.image == None:
+        base_node.image.alpha_mode = 'CHANNEL_PACKED'
+    
     base_node.location = Vector((-1600, 500))
     shader_model_flags = ModelFlags(shader.shader_body.model_flags)
     if base_bitmap:
@@ -1719,6 +1722,8 @@ def generate_shader_model(mat, shader, tag_format, report):
 
     detail_node = generate_image_node(mat, detail_map)
     detail_node.location = Vector((-1600, -100))
+    if not detail_node.image == None:
+        detail_node.image.alpha_mode = 'CHANNEL_PACKED'
 
     reflection_node = generate_image_node(mat, reflection_map, True)
     reflection_node.location = Vector((-1600.0, 750.0))
@@ -1827,14 +1832,15 @@ def generate_shader_model(mat, shader, tag_format, report):
 
     detail_logic_node = generate_detail_logic_node(mat.node_tree, shader)
     detail_logic_node.location = Vector((-425.0, 0.0))
+    detail_logic_node.inputs[3].default_value = (1, 1, 1, 1)
     detail_after_reflections = 0
     if ModelFlags.detail_after_reflections in ModelFlags(shader.shader_body.model_flags):
+        connect_inputs(mat.node_tree, mutipurpose_logic_node, "Reflective Mask", detail_logic_node, "Mask")
         detail_after_reflections = 1
 
     detail_logic_node.inputs[0].default_value = detail_after_reflections
     connect_inputs(mat.node_tree, diffuse_mix_node, 2, detail_logic_node, "Reflection Color")
     connect_inputs(mat.node_tree, detail_node, "Color", detail_logic_node, "Detail")
-    connect_inputs(mat.node_tree, mutipurpose_logic_node, "Reflective Mask", detail_logic_node, "Mask")
     connect_inputs(mat.node_tree, base_node, "Color", detail_logic_node, "Base Color")
     connect_inputs(mat.node_tree, reflection_mix_node, 2, detail_logic_node, "Reflection Only")
     connect_inputs(mat.node_tree, mutipurpose_logic_node, "Reflective Mask", detail_logic_node, "Reflection Mask")
@@ -1972,12 +1978,15 @@ def generate_shader_environment(mat, shader, permutation_index, tag_format, repo
 
     base_node = generate_image_node(mat, base_map)
     base_node.name = "Base Map"
-    base_node.image.alpha_mode = 'CHANNEL_PACKED'
     base_node.location = Vector((-2100, 475))
-
+    if not base_node.image == None:
+        base_node.image.alpha_mode = 'CHANNEL_PACKED'
+        
     primary_detail_node = generate_image_node(mat, primary_detail_map)
     primary_detail_node.name = "Primary Detail Map"
     primary_detail_node.location = Vector((-2100, 1350))
+    if not primary_detail_node.image == None:
+        primary_detail_node.image.alpha_mode = 'CHANNEL_PACKED'
 
     vect_math_node = mat.node_tree.nodes.new("ShaderNodeVectorMath")
     vect_math_node.operation = 'MULTIPLY'
@@ -2019,6 +2028,8 @@ def generate_shader_environment(mat, shader, permutation_index, tag_format, repo
     secondary_detail_node = generate_image_node(mat, secondary_detail_map)
     secondary_detail_node.name = "Secondary Detail Map"
     secondary_detail_node.location = Vector((-2100, 1050))
+    if not secondary_detail_node.image == None:
+        secondary_detail_node.image.alpha_mode = 'CHANNEL_PACKED'
 
     vect_math_node = mat.node_tree.nodes.new("ShaderNodeVectorMath")
     vect_math_node.operation = 'MULTIPLY'
@@ -2059,6 +2070,8 @@ def generate_shader_environment(mat, shader, permutation_index, tag_format, repo
     micro_detail_node = generate_image_node(mat, micro_detail_map)
     micro_detail_node.name = "Micro Detail Map"
     micro_detail_node.location = Vector((-2100, 775))
+    if not micro_detail_node.image == None:
+        micro_detail_node.image.alpha_mode = 'CHANNEL_PACKED'
 
     vect_math_node = mat.node_tree.nodes.new("ShaderNodeVectorMath")
     vect_math_node.operation = 'MULTIPLY'
@@ -2099,6 +2112,8 @@ def generate_shader_environment(mat, shader, permutation_index, tag_format, repo
     bump_node = generate_image_node(mat, bump_map)
     bump_node.name = "Bump Map"
     bump_node.location = Vector((-700, -600))
+    if not bump_node.image == None:
+        bump_node.image.colorspace_settings.name = 'Non-Color'
 
     alpha_shader = EnvironmentFlags.alpha_tested in EnvironmentFlags(shader.shader_body.environment_flags)
     if alpha_shader:
