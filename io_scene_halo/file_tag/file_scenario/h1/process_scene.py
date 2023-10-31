@@ -277,26 +277,45 @@ def generate_sound_scenery(TAG, SCENARIO):
     SCENARIO.sound_scenery = blender_sound_scenery
 
 def generate_player_starting_locations(TAG, SCENARIO):
-    playey_starting_locations_collection = bpy.data.collections.get("Player Starting Locations")
-    blender_playey_starting_locations = []
+    player_starting_locations_collection = bpy.data.collections.get("Player Starting Locations")
+    blender_player_starting_locations = []
     ob_index = 0
-    if playey_starting_locations_collection:
-        for ob in playey_starting_locations_collection.objects:
-            playey_starting_location = SCENARIO.PlayerStartingLocation()
+    if player_starting_locations_collection:
+        for ob in player_starting_locations_collection.objects:
+            player_starting_location = SCENARIO.PlayerStartingLocation()
             rot = ob.rotation_euler
 
-            playey_starting_location.position = ob.location / 100
-            playey_starting_location.facing = get_half_angle(degrees(rot[2]))
-            playey_starting_location.team_index = 0
-            playey_starting_location.bsp_index = 0
-            playey_starting_location.type_0 = 0
-            playey_starting_location.type_1 = 0
-            playey_starting_location.type_2 = 0
-            playey_starting_location.type_3 = 0
+            player_starting_location.position = ob.location / 100
+            player_starting_location.facing = get_half_angle(degrees(rot[2]))
+            player_starting_location.team_index = 0
+            player_starting_location.bsp_index = 0
+            player_starting_location.type_0 = 0
+            player_starting_location.type_1 = 0
+            player_starting_location.type_2 = 0
+            player_starting_location.type_3 = 0
 
-            blender_playey_starting_locations.append(playey_starting_location)
+            blender_player_starting_locations.append(player_starting_location)
 
-    SCENARIO.player_starting_locations = blender_playey_starting_locations
+    SCENARIO.player_starting_locations = blender_player_starting_locations
+
+def generate_trigger_volumes(TAG, SCENARIO):
+    trigger_volumes_collection = bpy.data.collections.get("Trigger Volumes")
+    blender_trigger_volumes = []
+    ob_index = 0
+    if trigger_volumes_collection:
+        for ob in trigger_volumes_collection.objects:
+            trigger_volume = SCENARIO.TriggerVolume()
+            rot = ob.matrix_world.normalized()
+
+            trigger_volume.name = ob.name
+            trigger_volume.forward = rot[0]
+            trigger_volume.up = rot[2]
+            trigger_volume.position = ob.location / 100
+            trigger_volume.extents = ob.dimensions / 100
+
+            blender_trigger_volumes.append(trigger_volume)
+
+    SCENARIO.trigger_volumes = blender_trigger_volumes
 
 def create_tag(TAG):
     SCENARIO = ScenarioAsset()
@@ -455,6 +474,7 @@ def generate_scenario_scene(DONOR_ASSET, tag_format):
     generate_light_fixtures(TAG, DONOR_ASSET)
     generate_sound_scenery(TAG, DONOR_ASSET)
     generate_player_starting_locations(TAG, DONOR_ASSET)
+    generate_trigger_volumes(TAG, DONOR_ASSET)
 
     DONOR_ASSET.scenario_body.scenery_tag_block = TAG.TagBlock(len(DONOR_ASSET.scenery))
     DONOR_ASSET.scenario_body.scenery_palette_tag_block = TAG.TagBlock(len(DONOR_ASSET.scenery_palette))
@@ -475,5 +495,6 @@ def generate_scenario_scene(DONOR_ASSET, tag_format):
     DONOR_ASSET.scenario_body.sound_scenery_tag_block = TAG.TagBlock(len(DONOR_ASSET.sound_scenery))
     DONOR_ASSET.scenario_body.sound_scenery_palette_tag_block = TAG.TagBlock(len(DONOR_ASSET.sound_scenery_palette))
     DONOR_ASSET.scenario_body.player_starting_locations_tag_block = TAG.TagBlock(len(DONOR_ASSET.player_starting_locations))
+    DONOR_ASSET.scenario_body.trigger_volumes_tag_block = TAG.TagBlock(len(DONOR_ASSET.trigger_volumes))
 
     return DONOR_ASSET

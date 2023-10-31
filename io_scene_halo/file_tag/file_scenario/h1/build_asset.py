@@ -152,8 +152,12 @@ def write_object(output_stream, scenery_element):
     output_stream.write(struct.pack('>h', scenery_element.name_index))
     output_stream.write(struct.pack('>h', scenery_element.placement_flags))
     output_stream.write(struct.pack('>h', scenery_element.desired_permutation))
-    output_stream.write(struct.pack('>fff', scenery_element.position[0], scenery_element.position[1], scenery_element.position[2]))
-    output_stream.write(struct.pack('>fff', radians(scenery_element.rotation[0]), radians(scenery_element.rotation[1]), radians(scenery_element.rotation[2])))
+    output_stream.write(struct.pack('>f', scenery_element.position[0]))
+    output_stream.write(struct.pack('>f', scenery_element.position[1]))
+    output_stream.write(struct.pack('>f', scenery_element.position[2]))
+    output_stream.write(struct.pack('>f', radians(scenery_element.rotation[0])))
+    output_stream.write(struct.pack('>f', radians(scenery_element.rotation[1])))
+    output_stream.write(struct.pack('>f', radians(scenery_element.rotation[2])))
 
 def write_scenery(output_stream, SCENARIO, TAG):
     for scenery_element in SCENARIO.scenery:
@@ -299,7 +303,7 @@ def write_player_starting_locations(output_stream, SCENARIO):
 
 def write_trigger_volumes(output_stream, SCENARIO, TAG):
     for trigger_volume_element in SCENARIO.trigger_volumes:
-        output_stream.write(struct.pack('>4x'))
+        output_stream.write(struct.pack('<i', 1)) # Rotation flag?
         output_stream.write(struct.pack('>31sx', TAG.string_to_bytes(trigger_volume_element.name, False)))
         output_stream.write(struct.pack('>fff', trigger_volume_element.parameter[0], trigger_volume_element.parameter[1], trigger_volume_element.parameter[2]))
         output_stream.write(struct.pack('>fff', trigger_volume_element.forward[0], trigger_volume_element.forward[1], trigger_volume_element.forward[2]))

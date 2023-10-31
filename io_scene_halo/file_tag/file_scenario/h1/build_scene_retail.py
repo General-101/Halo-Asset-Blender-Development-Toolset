@@ -27,10 +27,11 @@
 import os
 import bpy
 import bmesh
+import numpy as np
 
 from enum import Flag, auto
 from math import degrees, radians
-from mathutils import Vector, Quaternion, Euler
+from mathutils import Vector, Quaternion, Euler, Matrix
 from ..h1.mesh_helper.build_mesh_retail import get_object
 from io_scene_halo.file_tag.file_structure_bsp import build_scene as build_scene_level
 
@@ -270,6 +271,32 @@ def generate_camera_points(context, level_root, tag_block):
 
         asset_collection.objects.link(ob)
 
+def generate_trigger_volumes(context, level_root, collection_name, tag_block):
+    asset_collection = bpy.data.collections.get(collection_name)
+    if asset_collection == None:
+        asset_collection = bpy.data.collections.new(collection_name)
+        context.scene.collection.children.link(asset_collection)
+
+    for element_idx, element in enumerate(tag_block):
+        mesh = bpy.data.meshes.new("part_%s" % element.name)
+        ob = bpy.data.objects.new(element.name, mesh)
+
+        bm = bmesh.new()
+        bmesh.ops.create_cube(bm, size=2.0)
+        bm.transform(Matrix.Translation((1, 1, 1)))
+        bm.to_mesh(mesh)
+        bm.free()
+
+        ob.parent = level_root
+        right = np.cross(element.up, element.forward)
+        matrix_rotation = Matrix((element.forward, right, element.up))
+
+        ob.matrix_world = matrix_rotation.to_4x4()
+        ob.location = element.position * 100
+        ob.dimensions = element.extents * 100
+
+        asset_collection.objects.link(ob)
+
 def generate_scenario_scene(context, H1_ASSET, game_version, game_title, file_version, fix_rotations, empty_markers, report, mesh_processing, global_functions, tag_format):
     random_color_gen = global_functions.RandomColorGenerator() # generates a random sequence of colors
     levels_collection = bpy.data.collections.get("BSPs")
@@ -321,6 +348,8 @@ def generate_scenario_scene(context, H1_ASSET, game_version, game_title, file_ve
         generate_empties(context, level_root, "Netgame Flags", H1_ASSET.netgame_flags)
     if len(H1_ASSET.netgame_equipment) > 0:
         generate_netgame_equipment_elements(level_root, H1_ASSET.netgame_equipment, context, game_version, file_version, fix_rotations, report, mesh_processing, tag_format, random_color_gen)
+    if len(H1_ASSET.trigger_volumes) > 0:
+        generate_trigger_volumes(context, level_root, "Trigger Volumes", H1_ASSET.trigger_volumes)
     if len(H1_ASSET.cutscene_flags) > 0:
         generate_camera_flags(context, level_root, "Cutscene Flags", H1_ASSET.cutscene_flags)
     if len(H1_ASSET.cutscene_camera_points) > 0:
