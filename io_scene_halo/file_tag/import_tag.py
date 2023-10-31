@@ -66,6 +66,8 @@ def load_file(context, file_path, game_title, fix_rotations, empty_markers, repo
     tag_group, group_is_valid = tag_format.check_group(input_stream, is_big_endian)
     if not group_is_valid:
         input_stream.close()
+        print(file_path)
+        print(tag_group)
         report({'ERROR'}, "File does not have a valid tag class. Make sure you are importing a tag supported by the toolset")
 
         return {'CANCELLED'}
