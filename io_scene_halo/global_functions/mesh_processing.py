@@ -1695,7 +1695,7 @@ def generate_shader_model(mat, shader, tag_format, report):
     base_node = generate_image_node(mat, base_map)
     if not base_node.image == None:
         base_node.image.alpha_mode = 'CHANNEL_PACKED'
-    
+
     base_node.location = Vector((-1600, 500))
     shader_model_flags = ModelFlags(shader.shader_body.model_flags)
     if base_bitmap:
@@ -1721,9 +1721,10 @@ def generate_shader_model(mat, shader, tag_format, report):
     multipurpose_node.interpolation = 'Cubic'
 
     detail_node = generate_image_node(mat, detail_map)
-    detail_node.location = Vector((-1600, -100))
     if not detail_node.image == None:
         detail_node.image.alpha_mode = 'CHANNEL_PACKED'
+
+    detail_node.location = Vector((-1600, -100))
 
     reflection_node = generate_image_node(mat, reflection_map, True)
     reflection_node.location = Vector((-1600.0, 750.0))
@@ -1981,12 +1982,13 @@ def generate_shader_environment(mat, shader, permutation_index, tag_format, repo
     base_node.location = Vector((-2100, 475))
     if not base_node.image == None:
         base_node.image.alpha_mode = 'CHANNEL_PACKED'
-        
+
     primary_detail_node = generate_image_node(mat, primary_detail_map)
-    primary_detail_node.name = "Primary Detail Map"
-    primary_detail_node.location = Vector((-2100, 1350))
     if not primary_detail_node.image == None:
         primary_detail_node.image.alpha_mode = 'CHANNEL_PACKED'
+
+    primary_detail_node.name = "Primary Detail Map"
+    primary_detail_node.location = Vector((-2100, 1350))
 
     vect_math_node = mat.node_tree.nodes.new("ShaderNodeVectorMath")
     vect_math_node.operation = 'MULTIPLY'
@@ -2026,10 +2028,11 @@ def generate_shader_environment(mat, shader, permutation_index, tag_format, repo
     combine_xyz_node.inputs[2].default_value = 1
 
     secondary_detail_node = generate_image_node(mat, secondary_detail_map)
-    secondary_detail_node.name = "Secondary Detail Map"
-    secondary_detail_node.location = Vector((-2100, 1050))
     if not secondary_detail_node.image == None:
         secondary_detail_node.image.alpha_mode = 'CHANNEL_PACKED'
+
+    secondary_detail_node.name = "Secondary Detail Map"
+    secondary_detail_node.location = Vector((-2100, 1050))
 
     vect_math_node = mat.node_tree.nodes.new("ShaderNodeVectorMath")
     vect_math_node.operation = 'MULTIPLY'
@@ -2068,10 +2071,11 @@ def generate_shader_environment(mat, shader, permutation_index, tag_format, repo
     combine_xyz_node.inputs[2].default_value = 1
 
     micro_detail_node = generate_image_node(mat, micro_detail_map)
-    micro_detail_node.name = "Micro Detail Map"
-    micro_detail_node.location = Vector((-2100, 775))
     if not micro_detail_node.image == None:
         micro_detail_node.image.alpha_mode = 'CHANNEL_PACKED'
+
+    micro_detail_node.name = "Micro Detail Map"
+    micro_detail_node.location = Vector((-2100, 775))
 
     vect_math_node = mat.node_tree.nodes.new("ShaderNodeVectorMath")
     vect_math_node.operation = 'MULTIPLY'
@@ -2110,10 +2114,11 @@ def generate_shader_environment(mat, shader, permutation_index, tag_format, repo
     combine_xyz_node.inputs[2].default_value = 1
 
     bump_node = generate_image_node(mat, bump_map)
-    bump_node.name = "Bump Map"
-    bump_node.location = Vector((-700, -600))
     if not bump_node.image == None:
         bump_node.image.colorspace_settings.name = 'Non-Color'
+
+    bump_node.name = "Bump Map"
+    bump_node.location = Vector((-700, -600))
 
     alpha_shader = EnvironmentFlags.alpha_tested in EnvironmentFlags(shader.shader_body.environment_flags)
     if alpha_shader:
@@ -2241,26 +2246,25 @@ def generate_shader_environment(mat, shader, permutation_index, tag_format, repo
         blend_mix_node.location = Vector((-1475.0, -75.0))
         connect_inputs(mat.node_tree, base_mix_node, 2, blend_mix_node, 6)
         connect_inputs(mat.node_tree, base_node, "Color", blend_mix_node, 7)
-        connect_inputs(mat.node_tree, base_node, "Alpha", blend_mix_node, 0)
 
         blend_biased_multiply_node = generate_biased_multiply_node(mat.node_tree)
         blend_biased_multiply_node.location = Vector((-1300, -75))
         connect_inputs(mat.node_tree, blend_mix_node, 2, blend_biased_multiply_node, "Color")
         connect_inputs(mat.node_tree, micro_detail_node, "Color", blend_biased_multiply_node, "Detail")
-        connect_inputs(mat.node_tree, base_node, "Alpha", blend_biased_multiply_node, "Mask")
+        blend_biased_multiply_node.inputs[2].default_value = (1, 1, 1, 1)
 
         blend_multiply_a_node = generate_multiply_node(mat.node_tree)
         blend_multiply_a_node.location = Vector((-1125, -75))
         connect_inputs(mat.node_tree, blend_biased_multiply_node, "Color", blend_multiply_a_node, "Color")
         connect_inputs(mat.node_tree, secondary_detail_node, "Color", blend_multiply_a_node, "Detail")
-        connect_inputs(mat.node_tree, base_node, "Alpha", blend_multiply_a_node, "Mask")
+        blend_multiply_a_node.inputs[2].default_value = (1, 1, 1, 1)
 
         blend_multiply_b_node = generate_multiply_node(mat.node_tree)
         blend_multiply_b_node.location = Vector((-950, -75))
         connect_inputs(mat.node_tree, blend_multiply_a_node, "Color", blend_multiply_b_node, "Color")
         connect_inputs(mat.node_tree, primary_detail_node, "Color", blend_multiply_b_node, "Detail")
-        connect_inputs(mat.node_tree, base_node, "Alpha", blend_multiply_b_node, "Mask")
         connect_inputs(mat.node_tree, blend_multiply_b_node, "Color", bdsf_principled, "Base Color")
+        blend_multiply_b_node.inputs[2].default_value = (1, 1, 1, 1)
 
     elif shader.shader_body.environment_type == EnvironmentTypeEnum.blended.value:
         blend_mix_node = mat.node_tree.nodes.new("ShaderNodeMix")
