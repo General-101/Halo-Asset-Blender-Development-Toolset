@@ -179,9 +179,6 @@ class Halo_ObjectProps(Panel):
         row = col.row()
         row.label(text='Unique ID:')
         row.prop(ob_ass_jms, "unique_id", text='')
-        row = col.row()
-        row.label(text='Tag Path:')
-        row.prop(ob_ass_jms, "tag_path", text='')
         if ob.name[0:1].lower() == '#':
             row = col.row()
             row.label(text='Mask Type:')
@@ -234,11 +231,6 @@ class ASS_JMS_ObjectPropertiesGroup(PropertyGroup):
     unique_id: StringProperty(
         name="Unique ID",
         description="Store the original ID here. Uses a random value if nothing is defined"
-    )
-
-    tag_path: StringProperty(
-        name="Tag Path",
-        description="Store the tag path here."
     )
 
     marker_mask_type: EnumProperty(

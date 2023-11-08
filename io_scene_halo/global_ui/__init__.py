@@ -25,9 +25,7 @@
 # ##### END MIT LICENSE BLOCK #####
 
 import bpy
-import bmesh
 
-from enum import Flag, auto
 from bpy.types import (
         PropertyGroup,
         Operator,
@@ -120,101 +118,10 @@ from .object_ui import (
     Halo_XREFPath
 )
 
-class HALO_PropertiesGroup(PropertyGroup):
-    tag_path: StringProperty(
-        name = "Tag Path",
-        description = "Set the referenced tag for the object"
-        )
-
-    object_name: StringProperty(
-        name = "Object Name",
-        description = "Set the reference name for the object"
-        )
-
-    automatically: BoolProperty(
-        name ="Automatically",
-        description = "Not placed automatically. Must be created via script",
-        default = False,
-        )
-    
-    on_easy: BoolProperty(
-        name ="On Easy",
-        description = "Not placed automatically on easy difficulty. Must be created via script",
-        default = False,
-        )
-    
-    on_normal: BoolProperty(
-        name ="On Normal",
-        description = "Not placed automatically on normal difficulty. Must be created via script",
-        default = False,
-        )
-    
-    on_hard: BoolProperty(
-        name ="On Hard",
-        description = "Not placed automatically on Heroic difficulty. Must be created via script",
-        default = False,
-        )
-    
-    use_player_appearance: BoolProperty(
-        name ="Use Player Appearance",
-        description = "I have no idea what this is",
-        default = False,
-        )
-
-    desired_permutation: IntProperty(
-        name = "Desired Permutation",
-        description = "What permutation to use for the object"
-        )
-
-    appearance_player_index: IntProperty(
-        name = "Appearance Player Index",
-        description = "I have no idea what this is"
-        )
-
-class Halo_TagView(Panel):
-    bl_label = "Halo Tag View"
-    bl_idname = "Halo_PT_TagView"
-    bl_space_type = 'PROPERTIES'
-    bl_region_type = 'WINDOW'
-    bl_context = "object"
-    bl_options = {'DEFAULT_CLOSED'}
-
-    def draw(self, context):
-        layout = self.layout
-        scene = context.scene
-        tag_view = context.object.tag_view
-
-        box = layout.split()
-        col = box.column(align=True)
-        row = col.row()
-        row.label(text='Tag Path:')
-        row.prop(tag_view, "tag_path", text='')
-        row = col.row()
-        row.label(text='Object Name:')
-        row.prop(tag_view, "object_name", text='')
-
-        box_flags = layout.box()
-        box_flags.label(text="Not Placed:")
-        col_flags = box_flags.column(align=True)
-        row_flags = col_flags.row()
-        row_flags.prop(tag_view, "automatically")
-        row_flags = col_flags.row()
-        row_flags.prop(tag_view, "on_easy")
-        row_flags = col_flags.row()
-        row_flags.prop(tag_view, "on_normal")
-        row_flags = col_flags.row()
-        row_flags.prop(tag_view, "on_hard")
-        row_flags = col_flags.row()
-        row_flags.prop(tag_view, "use_player_appearance")
-
-        box = layout.split()
-        col = box.column(align=True)
-        row = col.row()
-        row.label(text='Desired Permutation:')
-        row.prop(tag_view, "desired_permutation", text='')
-        row = col.row()
-        row.label(text='Appearance Player Index:')
-        row.prop(tag_view, "appearance_player_index", text='')
+from .tag_view import (
+    Halo_TagView,
+    HALO_PropertiesGroup
+)
 
 class Halo_SceneProps(Panel):
     bl_label = "Halo Scene Properties"

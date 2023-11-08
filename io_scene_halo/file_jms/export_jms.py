@@ -59,6 +59,9 @@ def write_file(context,
     layer_collection_list = []
     object_list = []
 
+    if not context.view_layer.objects.active == None:
+        bpy.ops.object.mode_set(mode='OBJECT')
+
     # Gather all scene resources that fit export criteria
     resource_management.gather_scene_resources(context, layer_collection_list, object_list, hidden_geo)
 

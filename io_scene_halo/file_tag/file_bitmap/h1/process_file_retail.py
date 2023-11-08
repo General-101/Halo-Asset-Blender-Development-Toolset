@@ -143,8 +143,8 @@ def process_file_retail(input_stream, tag_format, report):
         bitmap.flags = TAG.read_flag_unsigned_short(input_stream, TAG, tag_format.XMLData(bitmap_element_node, "flags", BitmapFlags))
         bitmap.registration_point = TAG.read_point_2d_short(input_stream, TAG, tag_format.XMLData(bitmap_element_node, "registration point"))
         bitmap.mipmap_count = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(bitmap_element_node, "mipmap count"))
-        input_stream.read(4) # Padding
-        bitmap.pixels_offset = TAG.read_float(input_stream, TAG, tag_format.XMLData(bitmap_element_node, "pixels offset"))
+        input_stream.read(2) # Padding
+        bitmap.pixels_offset = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(bitmap_element_node, "pixels offset"))
         input_stream.read(20) # Padding
 
         BITMAP.bitmaps.append(bitmap)

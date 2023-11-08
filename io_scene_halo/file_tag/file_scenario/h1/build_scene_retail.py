@@ -29,6 +29,7 @@ import bpy
 import bmesh
 import numpy as np
 
+from .format_retail import DataTypesEnum, ObjectFlags, UnitFlags, VehicleFlags
 from enum import Flag, auto
 from math import degrees, radians
 from mathutils import Vector, Quaternion, Euler, Matrix
@@ -79,6 +80,93 @@ def generate_comments(context, level_root, comment_tag_block):
         font_ob.parent = level_root
         font_ob.location = comment_element.position * 100
         comment_collection.objects.link(font_ob)
+
+def set_object_data(ob, tag_path, element):
+    element_flags = ObjectFlags(element.placement_flags)
+
+    ob.tag_view.tag_path = tag_path
+    ob.tag_view.automatically = ObjectFlags.automatically in element_flags
+    ob.tag_view.on_easy = ObjectFlags.on_easy in element_flags
+    ob.tag_view.on_normal = ObjectFlags.on_normal in element_flags
+    ob.tag_view.on_hard = ObjectFlags.on_hard in element_flags
+    ob.tag_view.use_player_appearance = ObjectFlags.use_player_appearance in element_flags
+    ob.tag_view.desired_permutation = element.desired_permutation
+    ob.tag_view.appearance_player_index = element.appearance_player_index
+
+def set_unit_data(ob, element):
+    element_flags = UnitFlags(element.flags)
+
+    ob.tag_view.unit_vitality = element.body_vitality
+    ob.tag_view.unit_dead = UnitFlags.dead in element_flags
+
+def set_vehicle_data(ob, element):
+    element_flags = VehicleFlags(element.multiplayer_spawn_flags)
+
+    ob.tag_view.multiplayer_team_index = element.multiplayer_team_index
+    ob.tag_view.slayer_default = VehicleFlags.slayer_default in element_flags
+    ob.tag_view.ctf_default = VehicleFlags.ctf_default in element_flags
+    ob.tag_view.king_default = VehicleFlags.king_default in element_flags
+    ob.tag_view.oddball_default = VehicleFlags.oddball_default in element_flags
+    ob.tag_view.slayer_allowed = VehicleFlags.slayer_allowed in element_flags
+    ob.tag_view.ctf_allowed = VehicleFlags.ctf_allowed in element_flags
+    ob.tag_view.king_allowed = VehicleFlags.king_allowed in element_flags
+    ob.tag_view.oddball_allowed = VehicleFlags.oddball_allowed in element_flags
+
+def get_data_type(collection_name, root, tag_path, element):
+        if collection_name == "BSPs":
+            root.tag_view.data_type_enum = str(DataTypesEnum.clusters.value)
+            root.tag_view.lightmap_index = -1
+
+        elif collection_name == "Scenery":
+            root.tag_view.data_type_enum = str(DataTypesEnum.scenery.value)
+            set_object_data(root, tag_path, element)
+
+        elif collection_name == "Biped":
+            root.lock_rotation[0] = True
+            root.lock_rotation[1] = True
+
+            root.tag_view.data_type_enum = str(DataTypesEnum.bipeds.value)
+            set_object_data(root, tag_path, element)
+            set_unit_data(root, element)
+
+        elif collection_name == "Vehicle":
+            root.tag_view.data_type_enum = str(DataTypesEnum.vehicles.value)
+            set_object_data(root, tag_path, element)
+            set_unit_data(root, element)
+            set_vehicle_data(root, element)
+
+        elif collection_name == "Equipment":
+            root.tag_view.data_type_enum = str(DataTypesEnum.equipment.value)
+            set_object_data(root, tag_path, element)
+
+        elif collection_name == "Weapons":
+            root.tag_view.data_type_enum = str(DataTypesEnum.weapons.value)
+            set_object_data(root, tag_path, element)
+
+        elif collection_name == "Machines":
+            root.tag_view.data_type_enum = str(DataTypesEnum.machines.value)
+            set_object_data(root, tag_path, element)
+
+        elif collection_name == "Controls":
+            root.tag_view.data_type_enum = str(DataTypesEnum.controls.value)
+            set_object_data(root, tag_path, element)
+
+        elif collection_name == "Light Fixtures":
+            root.tag_view.data_type_enum = str(DataTypesEnum.light_fixtures.value)
+            set_object_data(root, tag_path, element)
+
+        elif collection_name == "Sound Scenery":
+            root.tag_view.data_type_enum = str(DataTypesEnum.sound_scenery.value)
+            set_object_data(root, tag_path, element)
+
+        elif collection_name == "Player Starting Locations":
+            root.tag_view.data_type_enum = str(DataTypesEnum.player_starting_locations.value)
+
+        elif collection_name == "Netgame Flags":
+            root.tag_view.data_type_enum = str(DataTypesEnum.netgame_flags.value)
+
+        elif collection_name == "Netgame Equipment":
+            root.tag_view.data_type_enum = str(DataTypesEnum.netgame_equipment.value)
 
 def generate_object_elements(level_root, collection_name, palette, tag_block, context, game_version, file_version, fix_rotations, report, mesh_processing, tag_format, random_color_gen):
     objects_list = []
@@ -148,12 +236,9 @@ def generate_object_elements(level_root, collection_name, palette, tag_block, co
             asset_collection.objects.link(root)
         
         root.parent = level_root
-        root.ass_jms.tag_path = pallete_item.name
         root.location = element.position * 100
 
-        if collection_name == "Biped":
-            root.lock_location[0] = True
-            root.lock_location[1] = True
+        get_data_type(collection_name, root, pallete_item.name, element)
 
         rotation = Euler((radians(0.0), radians(0.0), radians(0.0)), 'XYZ')
         roll = Euler((radians(element.rotation[2]), radians(0.0), radians(0.0)), 'XYZ')
@@ -196,9 +281,10 @@ def generate_netgame_equipment_elements(level_root, tag_block, context, game_ver
             ob = bpy.data.objects.new(object_name, None)
             ob.empty_display_type = 'ARROWS'
             asset_collection.objects.link(ob)
-        
+
+        get_data_type("Netgame Equipment", ob, element.item_collection.name, element)
+
         ob.parent = level_root
-        ob.ass_jms.tag_path = element.item_collection.name
         ob.location = element.position * 100
         ob.rotation_euler = (radians(0.0), radians(0.0), radians(element.facing))
 
@@ -310,9 +396,11 @@ def generate_scenario_scene(context, H1_ASSET, game_version, game_title, file_ve
             level_collection = bpy.data.collections.get("%s_%s" % (os.path.basename(bsp.name), bsp_idx))
             if level_collection == None:
                 level_collection = bpy.data.collections.new("%s_%s" % (os.path.basename(bsp.name), bsp_idx))
+                clusters_collection = bpy.data.collections.new("%s_clusters" % (os.path.basename(bsp.name)))
                 levels_collection.children.link(level_collection)
+                level_collection.children.link(clusters_collection)
 
-            build_scene_level.build_scene(context, ASSET, game_version, game_title, file_version, fix_rotations, empty_markers, report, mesh_processing, global_functions, tag_format, level_collection)
+            build_scene_level.build_scene(context, ASSET, game_version, game_title, file_version, fix_rotations, empty_markers, report, mesh_processing, global_functions, tag_format, level_collection, clusters_collection)
 
     level_root = bpy.data.objects.get("frame_root")
     if level_root == None:

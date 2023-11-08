@@ -33,10 +33,13 @@ from mathutils import Vector, Matrix, Euler
 from .h1.format_retail import ClusterPortalFlags, SurfaceFlags as H1SurfaceFlags
 from .h2.format_retail import SurfaceFlags as H2SurfaceFlags
 
-def build_scene(context, LEVEL, game_version, game_title, file_version, fix_rotations, empty_markers, report, mesh_processing, global_functions, tag_format, collection_override=None):
+def build_scene(context, LEVEL, game_version, game_title, file_version, fix_rotations, empty_markers, report, mesh_processing, global_functions, tag_format, collection_override=None, cluster_collection_override=None):
     collection = context.collection
     if not collection_override == None:
         collection = collection_override
+
+    if cluster_collection_override == None:
+        cluster_collection_override = collection
 
     random_color_gen = global_functions.RandomColorGenerator() # generates a random sequence of colors
 
@@ -56,97 +59,100 @@ def build_scene(context, LEVEL, game_version, game_title, file_version, fix_rota
         if len(LEVEL.lightmaps) > 0:
             surfaces = LEVEL.surfaces
             for lightmap_idx, lightmap in enumerate(LEVEL.lightmaps):
-                cluster_name = "cluster_%s" % lightmap_idx
-                full_mesh = bpy.data.meshes.new(cluster_name)
-                object_mesh = bpy.data.objects.new(cluster_name, full_mesh)
+                if len(lightmap.materials) > 0:
+                    cluster_name = "cluster_%s" % lightmap_idx
+                    full_mesh = bpy.data.meshes.new(cluster_name)
+                    object_mesh = bpy.data.objects.new(cluster_name, full_mesh)
+                    object_mesh.tag_view.data_type_enum = '1'
+                    object_mesh.tag_view.lightmap_index = lightmap.bitmap_index
 
-                object_mesh.parent = level_root
-                collection.objects.link(object_mesh)
-                bm = bmesh.new()
+                    object_mesh.parent = level_root
+                    cluster_collection_override.objects.link(object_mesh)
+                    bm = bmesh.new()
 
-                for material_idx, material in enumerate(lightmap.materials):
-                    has_lightmap = False
-                    if material.vertices_count == material.lightmap_vertices_count:
-                        has_lightmap = True
+                    for material_idx, material in enumerate(lightmap.materials):
+                        has_lightmap = False
+                        if material.vertices_count == material.lightmap_vertices_count:
+                            has_lightmap = True
 
-                    material_name = "material_%s" % material_idx
-                    mesh = bpy.data.meshes.new(material_name)
+                        material_name = "material_%s" % material_idx
+                        mesh = bpy.data.meshes.new(material_name)
 
-                    triangles = []
-                    start_index = material.surfaces
+                        triangles = []
+                        start_index = material.surfaces
 
-                    triangle_indices = []
-                    triangles = []
-                    vertices = [vertex.translation for vertex in material.uncompressed_render_vertices]
-                    normals = [vertex.normal for vertex in material.uncompressed_render_vertices]
+                        triangle_indices = []
+                        triangles = []
+                        vertices = [vertex.translation for vertex in material.uncompressed_render_vertices]
+                        normals = [vertex.normal for vertex in material.uncompressed_render_vertices]
 
-                    for idx in range(material.surface_count):
-                        surface_idx = start_index + idx
-                        triangles.append([surfaces[surface_idx].v2, surfaces[surface_idx].v1, surfaces[surface_idx].v0]) # Reversed order to fix facing normals
+                        for idx in range(material.surface_count):
+                            surface_idx = start_index + idx
+                            triangles.append([surfaces[surface_idx].v2, surfaces[surface_idx].v1, surfaces[surface_idx].v0]) # Reversed order to fix facing normals
 
-                    mesh.from_pydata(vertices, [], triangles)
-                    mesh.normals_split_custom_set_from_vertices(normals)
-                    for tri_idx, poly in enumerate(mesh.polygons):
-                        poly.use_smooth = True
+                        mesh.from_pydata(vertices, [], triangles)
+                        mesh.normals_split_custom_set_from_vertices(normals)
+                        for tri_idx, poly in enumerate(mesh.polygons):
+                            poly.use_smooth = True
 
-                    for triangle_idx, triangle in enumerate(triangles):
-                        if material.shader_tag_ref.name_length > 0:
-                            permutation_index = ""
-                            if not material.shader_permutation == 0:
-                                permutation_index = "%s" % material.shader_permutation
-
-                            material_name = "%s%s" % (os.path.basename(material.shader_tag_ref.name), permutation_index)
-
-                        else:
-                            material_name = "invalid_material_%s" % triangle_material_index
-
-                        mat = bpy.data.materials.get(material_name)
-                        if mat is None:
-                            mat = bpy.data.materials.new(name=material_name)
+                        for triangle_idx, triangle in enumerate(triangles):
                             if material.shader_tag_ref.name_length > 0:
-                                if game_title == "halo1":
-                                    mesh_processing.generate_shader(mat, material.shader_tag_ref, material.shader_permutation, tag_format, report)
+                                permutation_index = ""
+                                if not material.shader_permutation == 0:
+                                    permutation_index = "%s" % material.shader_permutation
 
-                        if not material_name in object_mesh.data.materials.keys():
-                            object_mesh.data.materials.append(mat)
+                                material_name = "%s%s" % (os.path.basename(material.shader_tag_ref.name), permutation_index)
 
-                        mat.diffuse_color = random_color_gen.next()
-                        material_index = object_mesh.data.materials.keys().index(material_name)
-                        mesh.polygons[triangle_idx].material_index = material_index
+                            else:
+                                material_name = "invalid_material_%s" % triangle_material_index
 
-                        render_vertex_list = [material.uncompressed_render_vertices[triangle[0]], material.uncompressed_render_vertices[triangle[1]], material.uncompressed_render_vertices[triangle[2]]]
-                        for vertex_idx, vertex in enumerate(render_vertex_list):
-                            loop_index = (3 * triangle_idx) + vertex_idx
-                            uv_name = 'UVMap_%s' % 0
-                            layer_uv = mesh.uv_layers.get(uv_name)
-                            if layer_uv is None:
-                                layer_uv = mesh.uv_layers.new(name=uv_name)
+                            mat = bpy.data.materials.get(material_name)
+                            if mat is None:
+                                mat = bpy.data.materials.new(name=material_name)
+                                if material.shader_tag_ref.name_length > 0:
+                                    if game_title == "halo1":
+                                        mesh_processing.generate_shader(mat, material.shader_tag_ref, material.shader_permutation, tag_format, report)
 
-                            U = vertex.UV[0]
-                            V = vertex.UV[1]
+                            if not material_name in object_mesh.data.materials.keys():
+                                object_mesh.data.materials.append(mat)
 
-                            layer_uv.data[loop_index].uv = (U, 1 - V)
+                            mat.diffuse_color = random_color_gen.next()
+                            material_index = object_mesh.data.materials.keys().index(material_name)
+                            mesh.polygons[triangle_idx].material_index = material_index
 
-                        if has_lightmap:
-                            lightmap_vertex_list = [material.uncompressed_lightmap_vertices[triangle[0]], material.uncompressed_lightmap_vertices[triangle[1]], material.uncompressed_lightmap_vertices[triangle[2]]]
-                            for vertex_idx, vertex in enumerate(lightmap_vertex_list):
+                            render_vertex_list = [material.uncompressed_render_vertices[triangle[0]], material.uncompressed_render_vertices[triangle[1]], material.uncompressed_render_vertices[triangle[2]]]
+                            for vertex_idx, vertex in enumerate(render_vertex_list):
                                 loop_index = (3 * triangle_idx) + vertex_idx
-                                uv_lightmap_name = 'UVMap_Lightmap_%s' % 0
+                                uv_name = 'UVMap_%s' % 0
+                                layer_uv = mesh.uv_layers.get(uv_name)
+                                if layer_uv is None:
+                                    layer_uv = mesh.uv_layers.new(name=uv_name)
 
-                                layer_uv_lightmap = mesh.uv_layers.get(uv_lightmap_name)
-                                if layer_uv_lightmap is None:
-                                    layer_uv_lightmap = mesh.uv_layers.new(name=uv_lightmap_name)
+                                U = vertex.UV[0]
+                                V = vertex.UV[1]
 
-                                U_L = vertex.UV[0]
-                                V_L = vertex.UV[1]
+                                layer_uv.data[loop_index].uv = (U, 1 - V)
 
-                                layer_uv_lightmap.data[loop_index].uv = (U_L, 1 - V_L)
+                            if has_lightmap:
+                                lightmap_vertex_list = [material.uncompressed_lightmap_vertices[triangle[0]], material.uncompressed_lightmap_vertices[triangle[1]], material.uncompressed_lightmap_vertices[triangle[2]]]
+                                for vertex_idx, vertex in enumerate(lightmap_vertex_list):
+                                    loop_index = (3 * triangle_idx) + vertex_idx
+                                    uv_lightmap_name = 'UVMap_Lightmap_%s' % 0
 
-                    bm.from_mesh(mesh)
-                    bpy.data.meshes.remove(mesh)
+                                    layer_uv_lightmap = mesh.uv_layers.get(uv_lightmap_name)
+                                    if layer_uv_lightmap is None:
+                                        layer_uv_lightmap = mesh.uv_layers.new(name=uv_lightmap_name)
 
-                bm.to_mesh(full_mesh)
-                bm.free()
+                                    U_L = vertex.UV[0]
+                                    V_L = vertex.UV[1]
+
+                                    layer_uv_lightmap.data[loop_index].uv = (U_L, V_L)
+
+                        bm.from_mesh(mesh)
+                        bpy.data.meshes.remove(mesh)
+
+                    bm.to_mesh(full_mesh)
+                    bm.free()
 
         if len(LEVEL.cluster_portals) > 0:
             portal_bm = bmesh.new()

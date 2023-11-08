@@ -40,6 +40,7 @@ class FormatEnum(Enum):
     _16bit_color = auto()
     _32bit_color = auto()
     monochrome = auto()
+    high_quality_compression = auto()
 
 class UsageEnum(Enum):
     alpha_blend = 0

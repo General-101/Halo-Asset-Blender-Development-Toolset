@@ -132,6 +132,9 @@ def process_scene(context, version, game_version, hidden_geo, nonrender_geo, app
     # Unhide all relevant resources for exporting
     resource_management.unhide_relevant_resources(layer_collection_list, object_list)
 
+    if not context.view_layer.objects.active == None:
+        bpy.ops.object.mode_set(mode='OBJECT')
+
     default_region = mesh_processing.get_default_region_permutation_name(game_version)
     default_permutation = mesh_processing.get_default_region_permutation_name(game_version)
 
