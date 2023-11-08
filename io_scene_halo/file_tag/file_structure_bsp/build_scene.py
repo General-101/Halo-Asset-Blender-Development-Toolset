@@ -146,7 +146,7 @@ def build_scene(context, LEVEL, game_version, game_title, file_version, fix_rota
                                     U_L = vertex.UV[0]
                                     V_L = vertex.UV[1]
 
-                                    layer_uv_lightmap.data[loop_index].uv = (U_L, V_L)
+                                    layer_uv_lightmap.data[loop_index].uv = (U_L, 1 - V_L)
 
                         bm.from_mesh(mesh)
                         bpy.data.meshes.remove(mesh)

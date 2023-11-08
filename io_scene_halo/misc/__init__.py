@@ -392,21 +392,6 @@ class Halo_ImportFixupPropertiesGroup(PropertyGroup):
         max=50.0
     )
 
-class Halo_LightmapperPropertiesGroup(PropertyGroup):
-    res_x: IntProperty(
-        name="Image Width",
-        description="Set the width for images created during bulk",
-        default=256,
-        min=2,
-    )
-
-    res_y: IntProperty(
-        name="Image Height",
-        description="Set the height for images created during bulk",
-        default=256,
-        min=2,
-    )
-
 class Halo_PrefixPropertiesGroup(PropertyGroup):
     prefix_string: StringProperty(
         name = "Prefix",
@@ -831,29 +816,6 @@ class Halo_Tools_Helper(Panel):
 
     def draw(self, context):
         layout = self.layout
-
-class Halo_Lightmapper(Panel):
-    bl_label = "Lightmap Helper"
-    bl_idname = "HALO_PT_Lightmapper"
-    bl_space_type = "VIEW_3D"
-    bl_region_type = "UI"
-    bl_options = {'DEFAULT_CLOSED'}
-    bl_parent_id = "HALO_PT_AutoTools"
-
-    def draw(self, context):
-        layout = self.layout
-        scene = context.scene
-        scene_halo_lightmapper = scene.halo_lightmapper
-
-        col = layout.column(align=True)
-        row = col.row()
-        row.label(text='Image Width:')
-        row.prop(scene_halo_lightmapper, "res_x", text='')
-        row = col.row()
-        row.label(text='Image Height:')
-        row.prop(scene_halo_lightmapper, "res_y", text='')
-        row = col.row()
-        row.operator("halo_bulk.lightmapper_images", text="Generate Lightmap Images")
 
 class Halo_BoneNameHelper(Panel):
     bl_label = "Bone Name Helper"
@@ -1420,17 +1382,6 @@ class Halo_Sky_Misc_Settings(Panel):
         row.label(text='Clamp Colors:')
         row.prop(scene_halo_sky, "clamp_colors", text='')
 
-class Bulk_Lightmap_Images(Operator):
-    """Create image nodes with a set size for all materials in the scene"""
-    bl_idname = 'halo_bulk.lightmapper_images'
-    bl_label = 'Bulk Halo Images'
-    bl_options = {"REGISTER", "UNDO"}
-
-    def execute(self, context):
-        from ..misc import lightmapper_prep
-        scene_halo_lightmapper = context.scene.halo_lightmapper
-        return global_functions.run_code("lightmapper_prep.lightmap_bulk(context, scene_halo_lightmapper.res_x, scene_halo_lightmapper.res_y)")
-
 class Bulk_Rename_Bones(Operator):
     """Rename all bones in the scene to swap from Blender .L/.R to Halo l/r bone naming scheme and vice versa"""
     bl_idname = 'halo_bulk.bulk_bone_names'
@@ -1706,7 +1657,7 @@ class Halo_JoinObject(Operator):
         from ..misc import join_objects
         return global_functions.run_code("join_objects.join_objects(context)")
 
-class Halo_ConvertFacemapstPanel(Panel):
+class Halo_ConvertFacemapsPanel(Panel):
     bl_label = "Halo Convert Facemaps"
     bl_idname = "HALO_PT_ConvertFacemaps"
     bl_space_type = "VIEW_3D"
@@ -1730,13 +1681,81 @@ class Halo_ConvertFacemaps(Operator):
         from ..misc import convert_facemaps
         return global_functions.run_code("convert_facemaps.convert_facemaps(context)")
 
+class Scenario_SceneProps(Panel):
+    bl_label = "Tag Scene Properties"
+    bl_idname = "HALO_PT_ScenarioTag"
+    bl_space_type = 'PROPERTIES'
+    bl_region_type = 'WINDOW'
+    bl_context = "scene"
+    bl_options = {'DEFAULT_CLOSED'}
+    bl_parent_id = "HALO_PT_ScenePropertiesPanel"
+
+    def draw(self, context):
+        layout = self.layout
+        scene_halo_tag = context.scene.halo_tag
+
+        col = layout.column(align=True)
+        row = col.row()
+        row.label(text='Scenario Path:')
+        row.prop(scene_halo_tag, "scenario_path", text='')
+
+class ScenarioTagGroup(PropertyGroup):
+    scenario_path: StringProperty(
+            name = "Scenario Path",
+            description="Where to place the generated scenario file for this level",
+            default="",
+            maxlen=1024,
+            subtype='FILE_PATH'
+    )
+
+    image_multiplier: IntProperty(
+        name="Image Multiplier",
+        description="Takes image resolution and multiplies it by set value",
+        default=1,
+        min=1
+    )
+
+class Halo_LightmapBakingPanel(Panel):
+    bl_label = "Halo Lightmap Baking"
+    bl_idname = "HALO_PT_LightmapBaking"
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "UI"
+    bl_options = {'DEFAULT_CLOSED'}
+    bl_parent_id = "HALO_PT_AutoTools"
+
+    def draw(self, context):
+        layout = self.layout
+        scene_halo_tag = context.scene.halo_tag
+
+        if global_functions.string_empty_check(scene_halo_tag.scenario_path):
+            layout.enabled = False
+
+        col = layout.column(align=True)
+        row = col.row()
+        row.label(text='Image Multiplier:')
+        row.prop(scene_halo_tag, "image_multiplier", text='')
+        row = col.row()
+        row.operator(LightmapBaking.bl_idname, text='Bake Lightmaps')
+
+class LightmapBaking(Operator):
+    """Bake lightmaps for all clusters in scene"""
+    bl_idname = 'halo_bulk.bake_clusters'
+    bl_label = 'Bake Clusters'
+    bl_options = {"REGISTER", "UNDO"}
+
+    def execute(self, context):
+        from ..misc import lightmap_baking
+        scene_halo = context.scene.halo
+        scene_halo_tag = context.scene.halo_tag
+
+        return global_functions.run_code("lightmap_baking.bake_clusters(context, scene_halo.game_title, scene_halo_tag.scenario_path, scene_halo_tag.image_multiplier, self.report)")
+
 classeshalo = (
     Halo_MaterialPropertiesGroup,
     JMA_BatchDialog,
     H3EK_PathDialog,
     H3EK_DataPathDialog,
     ExportLightmap,
-    Bulk_Lightmap_Images,
     Bulk_Rename_Bones,
     Bulk_Rename_Prefix,
     Bulk_Rotate_Bones,
@@ -1752,7 +1771,6 @@ classeshalo = (
     Bulk_Anim_Convert,
     Bulk_Set_Transform,
     Halo_Tools_Helper,
-    Halo_Lightmapper,
     Halo_BoneNameHelper,
     Halo_NodePrefixHelper,
     Halo_BoneRotationHelper,
@@ -1780,7 +1798,6 @@ classeshalo = (
     JMA_BatchPropertiesGroup,
     Halo_H3EKPropertiesGroup,
     Halo_ImportFixupPropertiesGroup,
-    Halo_LightmapperPropertiesGroup,
     Scale_ModelPropertiesGroup,
     SkyPropertiesGroup,
     Halo_PrefixPropertiesGroup,
@@ -1794,8 +1811,12 @@ classeshalo = (
     Generate_Tag_Patches_Dialog,
     Halo_JoinObject,
     Halo_JoinObjectPanel,
-    Halo_ConvertFacemapstPanel,
-    Halo_ConvertFacemaps
+    Halo_ConvertFacemapsPanel,
+    Halo_ConvertFacemaps,
+    ScenarioTagGroup,
+    Halo_LightmapBakingPanel,
+    LightmapBaking,
+    Scenario_SceneProps
 )
 
 def menu_func_export(self, context):
@@ -1807,7 +1828,6 @@ def register():
 
     bpy.types.TOPBAR_MT_file_export.append(menu_func_export)
     bpy.types.Scene.halo_import_fixup = PointerProperty(type=Halo_ImportFixupPropertiesGroup, name="Halo Import Helper", description="Set properties for the import fixup helper")
-    bpy.types.Scene.halo_lightmapper = PointerProperty(type=Halo_LightmapperPropertiesGroup, name="Halo Lightmapper Helper", description="Set properties for the lightmapper")
     bpy.types.Scene.halo_prefix = PointerProperty(type=Halo_PrefixPropertiesGroup, name="Halo Prefix Helper", description="Set properties for node prefixes")
     bpy.types.Scene.scale_model = PointerProperty(type=Scale_ModelPropertiesGroup, name="Halo Scale Model Helper", description="Create meshes for scale")
     bpy.types.Scene.halo_scenario = PointerProperty(type=Source_PropertiesGroup, name="Halo Source Converter", description="Create tags from JSON or older tag versions")
@@ -1818,11 +1838,11 @@ def register():
     bpy.types.Scene.halo_h3ek_data_path = PointerProperty(type=Halo_H3EKPropertiesGroup, name="H3EK Path", description="The H3EK Data Path")
     bpy.types.Scene.halo_mattype = PointerProperty(type=Halo_MaterialPropertiesGroup, name ="Material Properties", description="Set the material properties of the active object")
     bpy.types.Scene.halo_maze = PointerProperty(type=LevelProprtiesGroup, name="Halo Level Properties", description="Create a Halo level using a maze layout")
+    bpy.types.Scene.halo_tag = PointerProperty(type=ScenarioTagGroup, name="Scenario Tag", description="Store properties for a scenario tag")
 
 def unregister():
     bpy.types.TOPBAR_MT_file_export.remove(menu_func_export)
     del bpy.types.Scene.halo_import_fixup
-    del bpy.types.Scene.halo_lightmapper
     del bpy.types.Scene.halo_prefix
     del bpy.types.Scene.scale_model
     del bpy.types.Scene.halo_sky
@@ -1831,6 +1851,7 @@ def unregister():
     del bpy.types.Scene.halo_h3ek_path
     del bpy.types.Scene.halo_h3ek_data_path
     del bpy.types.Scene.halo_mattype
+    del bpy.types.Scene.halo_lightmapper
     for clshalo in classeshalo:
         bpy.utils.unregister_class(clshalo)
 

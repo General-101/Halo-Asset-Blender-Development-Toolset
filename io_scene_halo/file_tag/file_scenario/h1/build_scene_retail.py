@@ -175,6 +175,25 @@ def generate_object_elements(level_root, collection_name, palette, tag_block, co
         asset_collection = bpy.data.collections.new(collection_name)
         context.scene.collection.children.link(asset_collection)
 
+    if collection_name == "Scenery":
+        asset_collection.hide_render = False
+    elif collection_name == "Biped":
+        asset_collection.hide_render = True
+    elif collection_name == "Vehicle":
+        asset_collection.hide_render = True
+    elif collection_name == "Equipment":
+        asset_collection.hide_render = True
+    elif collection_name == "Weapons":
+        asset_collection.hide_render = True
+    elif collection_name == "Machines":
+        asset_collection.hide_render = True
+    elif collection_name == "Controls":
+        asset_collection.hide_render = True
+    elif collection_name == "Light Fixtures":
+        asset_collection.hide_render = True
+    elif collection_name == "Sound Scenery":
+        asset_collection.hide_render = True
+
     for palette_idx, palette_element in enumerate(palette):
         ob = None
         object_name = "temp_%s_%s" % (os.path.basename(palette_element.name), palette_idx)
@@ -260,6 +279,7 @@ def generate_netgame_equipment_elements(level_root, tag_block, context, game_ver
         asset_collection = bpy.data.collections.new("Netgame Equipment")
         context.scene.collection.children.link(asset_collection)
 
+    asset_collection.hide_render = True
     for element_idx, element in enumerate(tag_block):
         ob = None
         object_name = "%s_%s" % (os.path.basename(element.item_collection.name), element_idx)
@@ -294,6 +314,7 @@ def generate_empties(context, level_root, collection_name, tag_block):
         asset_collection = bpy.data.collections.new(collection_name)
         context.scene.collection.children.link(asset_collection)
 
+    asset_collection.hide_render = True
     for element_idx, element in enumerate(tag_block):
         ob = bpy.data.objects.new("%s_%s" % (collection_name, element_idx), None)
 
@@ -310,6 +331,7 @@ def generate_camera_flags(context, level_root, collection_name, tag_block):
         asset_collection = bpy.data.collections.new(collection_name)
         context.scene.collection.children.link(asset_collection)
 
+    asset_collection.hide_render = True
     for element_idx, element in enumerate(tag_block):
         ob = bpy.data.objects.new(element.name, None)
 
@@ -363,6 +385,7 @@ def generate_trigger_volumes(context, level_root, collection_name, tag_block):
         asset_collection = bpy.data.collections.new(collection_name)
         context.scene.collection.children.link(asset_collection)
 
+    asset_collection.hide_render = True
     for element_idx, element in enumerate(tag_block):
         mesh = bpy.data.meshes.new("part_%s" % element.name)
         ob = bpy.data.objects.new(element.name, mesh)
