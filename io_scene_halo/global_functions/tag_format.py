@@ -169,8 +169,13 @@ def append_xml_attributes(field_node, node_attributes=[], node_value=None, set_f
 
 def get_tag_path(file_path, is_legacy):
     local_path = file_path
-    if "\\tags\\" in os.path.dirname(file_path):
-        local_path = local_path.split("\\tags\\", 1)[1].rsplit(".", 1)[0]
+    file_directory = os.path.dirname(file_path)
+    tag_dir = "%stags" % os.sep
+    tag_dir2 = "%s%s" % (tag_dir, os.sep)
+    if tag_dir2 in file_directory:
+        local_path = file_path.split(tag_dir2, 1)[1].rsplit(".", 1)[0]
+    elif file_directory.endswith(tag_dir):
+        local_path = file_path.split(tag_dir2, 1)[1].rsplit(".", 1)[0]
 
     return local_path
 
@@ -261,11 +266,14 @@ def get_patched_name(upgrade_patches, name):
 
     return patched_name
 
-def get_xml_path(input_path, tag_group, is_legacy):
+def get_xml_path(input_path, tag_group, is_legacy, is_reversed=False):
     if is_legacy:
         tag_name = os.path.basename(input_path)
     else:
         tag_name = get_tag_name(os.path.basename(input_path))
+
+    if is_reversed:
+        tag_group = tag_group[::-1]
 
     xml_path = os.path.join(os.path.dirname(input_path), "%s_%s.XML" % (tag_name, tag_group))
 
@@ -694,7 +702,7 @@ class TagAsset():
         def read(self, input_stream, tag, xml_data=None, is_reversed=False):
             tag_reference_struct = struct.unpack('%s4siii' % get_endian_symbol(tag.big_endian), input_stream.read(16))
             self.tag_group = tag_reference_struct[0].decode('utf-8', 'replace')
-            if is_reversed:
+            if not tag.big_endian:
                 self.tag_group = tag_reference_struct[0].decode('utf-8', 'replace')[::-1]
 
             self.name = ""
@@ -966,8 +974,12 @@ class TagAsset():
             self.plugin_handle = header_struct[11]
             self.engine_tag = header_struct[12].decode('utf-8', 'replace')
             if not tag.xml_doc == None:
+                tag_group = get_tag_extension(self.tag_group)
+                if not tag.big_endian:
+                    tag_group = tag_group[::-1]
+
                 tag_node = tag.xml_doc.createElement('tag')
-                tag_node.setAttribute('group', get_tag_extension(self.tag_group))
+                tag_node.setAttribute('group', tag_group)
                 tag_node.setAttribute('id', get_tag_path(input_stream.name, tag.is_legacy))
                 tag_node.setAttribute('version', str(self.version))
                 tag.xml_doc.appendChild(tag_node)
