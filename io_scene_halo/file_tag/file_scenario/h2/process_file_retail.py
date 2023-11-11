@@ -49,6 +49,7 @@ from .format_retail import (
         DeviceGroupFlags,
         DeviceFlags,
         MachineFlags,
+        ControlFlags,
         GametypeEnum,
         NetGameEnum,
         StartingEquipment,
@@ -119,23 +120,27 @@ def get_object_names(input_stream, SCENARIO, TAG, tag_format, node_element):
 
     return object_name
 
+def object_helper(tag_element, TAG, input_stream, tag_format, SCENARIO, node_element, palette_count, palette_name):
+    tag_element.palette_index = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(node_element, "type", None, palette_count, palette_name))
+    tag_element.name_index = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(node_element, "name", None, SCENARIO.scenario_body.object_names_tag_block.count, "scenario_object_names_block"))
+    tag_element.placement_flags = TAG.read_flag_unsigned_integer(input_stream, TAG, tag_format.XMLData(node_element, "placement flags", ObjectFlags))
+    tag_element.position = TAG.read_point_3d(input_stream, TAG, tag_format.XMLData(node_element, "position"))
+    tag_element.rotation = TAG.read_euler_angles(input_stream, TAG, tag_format.XMLData(node_element, "rotation"))
+    tag_element.scale = TAG.read_float(input_stream, TAG, tag_format.XMLData(node_element, "scale"))
+    tag_element.transform_flags = TAG.read_flag_unsigned_short(input_stream, TAG, tag_format.XMLData(node_element, "transform flags", TransformFlags))
+    tag_element.manual_bsp_flags = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(node_element, "manual bsp flags"))
+    tag_element.unique_id = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(node_element, "unique id"))
+    tag_element.origin_bsp_index = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(node_element, "origin bsp index", None, SCENARIO.scenario_body.structure_bsps_tag_block.count, "scenario_bsp_block"))
+    tag_element.object_type = TAG.read_enum_unsigned_byte(input_stream, TAG, tag_format.XMLData(node_element, "object type", ObjectTypeFlags))
+    tag_element.source = TAG.read_enum_unsigned_byte(input_stream, TAG, tag_format.XMLData(node_element, "source", ObjectSourceFlags))
+    tag_element.bsp_policy = TAG.read_enum_unsigned_byte(input_stream, TAG, tag_format.XMLData(node_element, "bsp policy", ObjectBSPPolicyFlags))
+    input_stream.read(1) # Padding?
+    tag_element.editor_folder_index = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(node_element, "editor folder", None, SCENARIO.scenario_body.editor_folders_tag_block.count, "scenario_editor_folder_block"))
+
+
 def get_scenery(input_stream, SCENARIO, TAG, tag_format, node_element):
     scenery = SCENARIO.Scenery()
-    scenery.palette_index = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(node_element, "type", None, SCENARIO.scenario_body.scenery_palette_tag_block.count, "scenario_scenery_palette_block"))
-    scenery.name_index = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(node_element, "name", None, SCENARIO.scenario_body.object_names_tag_block.count, "scenario_object_names_block"))
-    scenery.placement_flags = TAG.read_flag_unsigned_integer(input_stream, TAG, tag_format.XMLData(node_element, "placement flags", ObjectFlags))
-    scenery.position = TAG.read_point_3d(input_stream, TAG, tag_format.XMLData(node_element, "position"))
-    scenery.rotation = TAG.read_euler_angles(input_stream, TAG, tag_format.XMLData(node_element, "rotation"))
-    scenery.scale = TAG.read_float(input_stream, TAG, tag_format.XMLData(node_element, "scale"))
-    scenery.transform_flags = TAG.read_flag_unsigned_short(input_stream, TAG, tag_format.XMLData(node_element, "transform flags", TransformFlags))
-    scenery.manual_bsp_flags = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(node_element, "manual bsp flags"))
-    scenery.unique_id = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(node_element, "unique id"))
-    scenery.origin_bsp_index = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(node_element, "origin bsp index", None, SCENARIO.scenario_body.structure_bsps_tag_block.count, "scenario_bsp_block"))
-    scenery.object_type = TAG.read_enum_unsigned_byte(input_stream, TAG, tag_format.XMLData(node_element, "object type", ObjectTypeFlags))
-    scenery.source = TAG.read_enum_unsigned_byte(input_stream, TAG, tag_format.XMLData(node_element, "source", ObjectSourceFlags))
-    scenery.bsp_policy = TAG.read_enum_unsigned_byte(input_stream, TAG, tag_format.XMLData(node_element, "bsp policy", ObjectBSPPolicyFlags))
-    input_stream.read(1) # Padding?
-    scenery.editor_folder_index = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(node_element, "editor folder", None, SCENARIO.scenario_body.editor_folders_tag_block.count, "scenario_editor_folder_block"))
+    object_helper(scenery, TAG, input_stream, tag_format, SCENARIO, node_element, SCENARIO.scenario_body.scenery_palette_tag_block.count, "scenario_scenery_palette_block")
 
     TAG.big_endian = True
     scenery.variant_name_length = TAG.read_signed_integer(input_stream, TAG)
@@ -156,21 +161,7 @@ def get_scenery(input_stream, SCENARIO, TAG, tag_format, node_element):
 
 def get_units(input_stream, SCENARIO, TAG, tag_format, node_element, palette_count, palette_name):
     unit = SCENARIO.Unit()
-    unit.palette_index = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(node_element, "type", None, palette_count, palette_name))
-    unit.name_index = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(node_element, "name", None, SCENARIO.scenario_body.object_names_tag_block.count, "scenario_object_names_block"))
-    unit.placement_flags = TAG.read_flag_unsigned_integer(input_stream, TAG, tag_format.XMLData(node_element, "placement flags", ObjectFlags))
-    unit.position = TAG.read_point_3d(input_stream, TAG, tag_format.XMLData(node_element, "position"))
-    unit.rotation = TAG.read_euler_angles(input_stream, TAG, tag_format.XMLData(node_element, "rotation"))
-    unit.scale = TAG.read_float(input_stream, TAG, tag_format.XMLData(node_element, "scale"))
-    unit.transform_flags = TAG.read_flag_unsigned_short(input_stream, TAG, tag_format.XMLData(node_element, "transform flags", TransformFlags))
-    unit.manual_bsp_flags = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(node_element, "manual bsp flags"))
-    unit.unique_id = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(node_element, "unique id"))
-    unit.origin_bsp_index = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(node_element, "origin bsp index", None, SCENARIO.scenario_body.structure_bsps_tag_block.count, "scenario_bsp_block"))
-    unit.object_type = TAG.read_enum_unsigned_byte(input_stream, TAG, tag_format.XMLData(node_element, "object type", ObjectTypeFlags))
-    unit.source = TAG.read_enum_unsigned_byte(input_stream, TAG, tag_format.XMLData(node_element, "source", ObjectSourceFlags))
-    unit.bsp_policy = TAG.read_enum_unsigned_byte(input_stream, TAG, tag_format.XMLData(node_element, "bsp policy", ObjectBSPPolicyFlags))
-    input_stream.read(1) # Padding?
-    unit.editor_folder_index = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(node_element, "editor folder", None, SCENARIO.scenario_body.editor_folders_tag_block.count, "scenario_editor_folder_block"))
+    object_helper(unit, TAG, input_stream, tag_format, SCENARIO, node_element, palette_count, palette_name)
 
     TAG.big_endian = True
     unit.variant_name_length = TAG.read_signed_integer(input_stream, TAG)
@@ -186,23 +177,9 @@ def get_units(input_stream, SCENARIO, TAG, tag_format, node_element, palette_cou
 
     return unit
 
-def get_equipment(input_stream, SCENARIO, TAG, tag_format, node_element, palette_count, palette_name):
+def get_equipment(input_stream, SCENARIO, TAG, tag_format, node_element):
     equipment = SCENARIO.Equipment()
-    equipment.palette_index = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(node_element, "type", None, palette_count, palette_name))
-    equipment.name_index = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(node_element, "name", None, SCENARIO.scenario_body.object_names_tag_block.count, "scenario_object_names_block"))
-    equipment.placement_flags = TAG.read_flag_unsigned_integer(input_stream, TAG, tag_format.XMLData(node_element, "placement flags", ObjectFlags))
-    equipment.position = TAG.read_point_3d(input_stream, TAG, tag_format.XMLData(node_element, "position"))
-    equipment.rotation = TAG.read_euler_angles(input_stream, TAG, tag_format.XMLData(node_element, "rotation"))
-    equipment.scale = TAG.read_float(input_stream, TAG, tag_format.XMLData(node_element, "scale"))
-    equipment.transform_flags = TAG.read_flag_unsigned_short(input_stream, TAG, tag_format.XMLData(node_element, "transform flags", TransformFlags))
-    equipment.manual_bsp_flags = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(node_element, "manual bsp flags"))
-    equipment.unique_id = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(node_element, "unique id"))
-    equipment.origin_bsp_index = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(node_element, "origin bsp index", None, SCENARIO.scenario_body.structure_bsps_tag_block.count, "scenario_bsp_block"))
-    equipment.object_type = TAG.read_enum_unsigned_byte(input_stream, TAG, tag_format.XMLData(node_element, "object type", ObjectTypeFlags))
-    equipment.source = TAG.read_enum_unsigned_byte(input_stream, TAG, tag_format.XMLData(node_element, "source", ObjectSourceFlags))
-    equipment.bsp_policy = TAG.read_enum_unsigned_byte(input_stream, TAG, tag_format.XMLData(node_element, "bsp policy", ObjectBSPPolicyFlags))
-    input_stream.read(1) # Padding?
-    equipment.editor_folder_index = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(node_element, "editor folder", None, SCENARIO.scenario_body.editor_folders_tag_block.count, "scenario_editor_folder_block"))
+    object_helper(equipment, TAG, input_stream, tag_format, SCENARIO, node_element, SCENARIO.scenario_body.equipment_palette_tag_block.count, "scenario_equipment_palette_block")
 
     equipment.flags = TAG.read_flag_unsigned_integer(input_stream, TAG, tag_format.XMLData(node_element, "flags", ItemFlags))
 
@@ -210,21 +187,7 @@ def get_equipment(input_stream, SCENARIO, TAG, tag_format, node_element, palette
 
 def get_weapons(input_stream, SCENARIO, TAG, tag_format, node_element):
     weapon = SCENARIO.Weapon()
-    weapon.palette_index = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(node_element, "type", None, SCENARIO.scenario_body.scenery_palette_tag_block.count, "scenario_scenery_palette_block"))
-    weapon.name_index = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(node_element, "name", None, SCENARIO.scenario_body.object_names_tag_block.count, "scenario_object_names_block"))
-    weapon.placement_flags = TAG.read_flag_unsigned_integer(input_stream, TAG, tag_format.XMLData(node_element, "placement flags", ObjectFlags))
-    weapon.position = TAG.read_point_3d(input_stream, TAG, tag_format.XMLData(node_element, "position"))
-    weapon.rotation = TAG.read_euler_angles(input_stream, TAG, tag_format.XMLData(node_element, "rotation"))
-    weapon.scale = TAG.read_float(input_stream, TAG, tag_format.XMLData(node_element, "scale"))
-    weapon.transform_flags = TAG.read_flag_unsigned_short(input_stream, TAG, tag_format.XMLData(node_element, "transform flags", TransformFlags))
-    weapon.manual_bsp_flags = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(node_element, "manual bsp flags"))
-    weapon.unique_id = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(node_element, "unique id"))
-    weapon.origin_bsp_index = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(node_element, "origin bsp index", None, SCENARIO.scenario_body.structure_bsps_tag_block.count, "scenario_bsp_block"))
-    weapon.object_type = TAG.read_enum_unsigned_byte(input_stream, TAG, tag_format.XMLData(node_element, "object type", ObjectTypeFlags))
-    weapon.source = TAG.read_enum_unsigned_byte(input_stream, TAG, tag_format.XMLData(node_element, "source", ObjectSourceFlags))
-    weapon.bsp_policy = TAG.read_enum_unsigned_byte(input_stream, TAG, tag_format.XMLData(node_element, "bsp policy", ObjectBSPPolicyFlags))
-    input_stream.read(1) # Padding?
-    weapon.editor_folder_index = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(node_element, "editor folder", None, SCENARIO.scenario_body.editor_folders_tag_block.count, "scenario_editor_folder_block"))
+    object_helper(weapon, TAG, input_stream, tag_format, SCENARIO, node_element, SCENARIO.scenario_body.weapon_palette_tag_block.count, "scenario_weapon_palette_block")
 
     TAG.big_endian = True
     weapon.variant_name_length = TAG.read_signed_integer(input_stream, TAG)
@@ -251,21 +214,7 @@ def get_device_groups(input_stream, SCENARIO, TAG, tag_format, node_element):
 
 def get_machines(input_stream, SCENARIO, TAG, tag_format, node_element):
     machine = SCENARIO.DeviceMachine()
-    machine.palette_index = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(node_element, "type", None, SCENARIO.scenario_body.scenery_palette_tag_block.count, "scenario_scenery_palette_block"))
-    machine.name_index = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(node_element, "name", None, SCENARIO.scenario_body.object_names_tag_block.count, "scenario_object_names_block"))
-    machine.placement_flags = TAG.read_flag_unsigned_integer(input_stream, TAG, tag_format.XMLData(node_element, "placement flags", ObjectFlags))
-    machine.position = TAG.read_point_3d(input_stream, TAG, tag_format.XMLData(node_element, "position"))
-    machine.rotation = TAG.read_euler_angles(input_stream, TAG, tag_format.XMLData(node_element, "rotation"))
-    machine.scale = TAG.read_float(input_stream, TAG, tag_format.XMLData(node_element, "scale"))
-    machine.transform_flags = TAG.read_flag_unsigned_short(input_stream, TAG, tag_format.XMLData(node_element, "transform flags", TransformFlags))
-    machine.manual_bsp_flags = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(node_element, "manual bsp flags"))
-    machine.unique_id = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(node_element, "unique id"))
-    machine.origin_bsp_index = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(node_element, "origin bsp index", None, SCENARIO.scenario_body.structure_bsps_tag_block.count, "scenario_bsp_block"))
-    machine.object_type = TAG.read_enum_unsigned_byte(input_stream, TAG, tag_format.XMLData(node_element, "object type", ObjectTypeFlags))
-    machine.source = TAG.read_enum_unsigned_byte(input_stream, TAG, tag_format.XMLData(node_element, "source", ObjectSourceFlags))
-    machine.bsp_policy = TAG.read_enum_unsigned_byte(input_stream, TAG, tag_format.XMLData(node_element, "bsp policy", ObjectBSPPolicyFlags))
-    input_stream.read(1) # Padding?
-    machine.editor_folder_index = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(node_element, "editor folder", None, SCENARIO.scenario_body.editor_folders_tag_block.count, "scenario_editor_folder_block"))
+    object_helper(machine, TAG, input_stream, tag_format, SCENARIO, node_element, SCENARIO.scenario_body.machine_palette_tag_block.count, "scenario_machine_palette_block")
 
     machine.power_group_index = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(node_element, "power group", None, SCENARIO.scenario_body.device_groups_tag_block.count, "scenario_device_groups_block"))
     machine.position_group_index = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(node_element, "position group", None, SCENARIO.scenario_body.device_groups_tag_block.count, "scenario_device_groups_block"))
@@ -274,6 +223,33 @@ def get_machines(input_stream, SCENARIO, TAG, tag_format, node_element):
     machine.pathfinding_references_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(node_element, "pathfinding references"))
 
     return machine
+
+def get_controls(input_stream, SCENARIO, TAG, tag_format, node_element):
+    control = SCENARIO.DeviceControl()
+    object_helper(control, TAG, input_stream, tag_format, SCENARIO, node_element, SCENARIO.scenario_body.control_palette_tag_block.count, "scenario_control_palette_block")
+
+    control.power_group_index = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(node_element, "power group", None, SCENARIO.scenario_body.device_groups_tag_block.count, "scenario_device_groups_block"))
+    control.position_group_index = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(node_element, "position group", None, SCENARIO.scenario_body.device_groups_tag_block.count, "scenario_device_groups_block"))
+    control.flags_0 = TAG.read_flag_unsigned_integer(input_stream, TAG, tag_format.XMLData(node_element, "flags", DeviceFlags))
+    control.flags_1 = TAG.read_flag_unsigned_integer(input_stream, TAG, tag_format.XMLData(node_element, "flags", ControlFlags))
+    control.unk = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(node_element, "unknown"))
+    input_stream.read(2) # Padding?
+
+    return control
+
+def get_light_fixtures(input_stream, SCENARIO, TAG, tag_format, node_element):
+    light_fixture = SCENARIO.LightFixture()
+    object_helper(light_fixture, TAG, input_stream, tag_format, SCENARIO, node_element, SCENARIO.scenario_body.light_fixtures_palette_tag_block.count, "scenario_light_fixtures_palette_block")
+
+    light_fixture.power_group_index = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(node_element, "power group", None, SCENARIO.scenario_body.device_groups_tag_block.count, "scenario_device_groups_block"))
+    light_fixture.position_group_index = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(node_element, "position group", None, SCENARIO.scenario_body.device_groups_tag_block.count, "scenario_device_groups_block"))
+    light_fixture.flags = TAG.read_flag_unsigned_integer(input_stream, TAG, tag_format.XMLData(node_element, "flags", DeviceFlags))
+    light_fixture.color_RGBA = TAG.read_rgb(input_stream, TAG, tag_format.XMLData(node_element, "color"))
+    light_fixture.intensity = TAG.read_float(input_stream, TAG, tag_format.XMLData(node_element, "intensity"))
+    light_fixture.falloff_angle = TAG.read_degree(input_stream, TAG, tag_format.XMLData(node_element, "falloff angle"))
+    light_fixture.cutoff_angle = TAG.read_degree(input_stream, TAG, tag_format.XMLData(node_element, "cutoff angle"))
+
+    return light_fixture
 
 def get_palette(input_stream, TAG, tag_format, node_element, padding=32):
     tag_reference = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(node_element, "name"))
@@ -812,7 +788,7 @@ def process_file(input_stream, tag_format, report):
                 equipment_element_node.setAttribute('index', str(equipment_idx))
                 equipment_node.appendChild(equipment_element_node)
 
-            SCENARIO.equipment.append(get_equipment(input_stream, SCENARIO, TAG, tag_format, equipment_element_node, SCENARIO.scenario_body.equipment_palette_tag_block.count, "scenario_equipment_palette_block"))
+            SCENARIO.equipment.append(get_equipment(input_stream, SCENARIO, TAG, tag_format, equipment_element_node))
 
         for equipment_idx, equipment in enumerate(SCENARIO.equipment):
             equipment_element_node = None
@@ -904,6 +880,55 @@ def process_file(input_stream, tag_format, report):
                     device_machine.pathfinding_references.append(pathfinding_reference)
 
     palette_helper(input_stream, SCENARIO.scenario_body.machine_palette_tag_block.count, "machine palette", SCENARIO.device_machine_palette_header, SCENARIO.device_machine_palette, tag_node, TAG, tag_format)
+
+    if SCENARIO.scenario_body.controls_tag_block.count > 0:
+        SCENARIO.device_control_header = TAG.TagBlockHeader().read(input_stream, TAG)
+        device_control_node = tag_format.get_xml_node(XML_OUTPUT, SCENARIO.scenario_body.controls_tag_block.count, tag_node, "name", "controls")
+        for device_control_idx in range(SCENARIO.scenario_body.controls_tag_block.count):
+            device_control_element_node = None
+            if XML_OUTPUT:
+                device_control_element_node = TAG.xml_doc.createElement('element')
+                device_control_element_node.setAttribute('index', str(device_control_idx))
+                device_control_node.appendChild(device_control_element_node)
+
+            SCENARIO.device_controls.append(get_controls(input_stream, SCENARIO, TAG, tag_format, device_control_element_node))
+
+        for device_control_idx, device_control in enumerate(SCENARIO.device_controls):
+            device_control_element_node = None
+            if XML_OUTPUT:
+                device_control_element_node = device_control_node.childNodes[device_control_idx]
+
+            device_control.sobj_header = TAG.TagBlockHeader().read(input_stream, TAG)
+            device_control.obj0_header = TAG.TagBlockHeader().read(input_stream, TAG)
+            device_control.sdvt_header = TAG.TagBlockHeader().read(input_stream, TAG)
+            device_control.sctt_header = TAG.TagBlockHeader().read(input_stream, TAG)
+            
+    palette_helper(input_stream, SCENARIO.scenario_body.control_palette_tag_block.count, "control palette", SCENARIO.device_control_palette_header, SCENARIO.device_control_palette, tag_node, TAG, tag_format)
+
+    if SCENARIO.scenario_body.light_fixtures_tag_block.count > 0:
+        SCENARIO.device_light_fixture_header = TAG.TagBlockHeader().read(input_stream, TAG)
+        light_fixtures_node = tag_format.get_xml_node(XML_OUTPUT, SCENARIO.scenario_body.light_fixtures_tag_block.count, tag_node, "name", "light fixtures")
+        for light_fixture_idx in range(SCENARIO.scenario_body.light_fixtures_tag_block.count):
+            light_fixture_element_node = None
+            if XML_OUTPUT:
+                light_fixture_element_node = TAG.xml_doc.createElement('element')
+                light_fixture_element_node.setAttribute('index', str(light_fixture_idx))
+                light_fixtures_node.appendChild(light_fixture_element_node)
+
+            SCENARIO.device_light_fixtures.append(get_light_fixtures(input_stream, SCENARIO, TAG, tag_format, light_fixture_element_node))
+
+        for device_light_fixture_idx, device_light_fixture in enumerate(SCENARIO.device_light_fixtures):
+            light_fixture_element_node = None
+            if XML_OUTPUT:
+                light_fixture_element_node = light_fixtures_node.childNodes[device_light_fixture_idx]
+
+            device_light_fixture.sobj_header = TAG.TagBlockHeader().read(input_stream, TAG)
+            device_light_fixture.obj0_header = TAG.TagBlockHeader().read(input_stream, TAG)
+            device_light_fixture.sdvt_header = TAG.TagBlockHeader().read(input_stream, TAG)
+            device_light_fixture.slft_header = TAG.TagBlockHeader().read(input_stream, TAG)
+            
+    palette_helper(input_stream, SCENARIO.scenario_body.light_fixtures_palette_tag_block.count, "light fixtures palette", SCENARIO.device_light_fixture_palette_header, SCENARIO.device_light_fixtures_palette, tag_node, TAG, tag_format)
+
 
     current_position = input_stream.tell()
     EOF = input_stream.seek(0, 2)

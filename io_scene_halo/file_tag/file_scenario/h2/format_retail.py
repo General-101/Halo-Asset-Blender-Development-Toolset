@@ -195,6 +195,9 @@ class MachineFlags(Flag):
     one_sided_for_player = auto()
     does_not_close_automatically = auto()
 
+class ControlFlags(Flag):
+    usable_from_both_sides = auto()
+
 class TeamDesignatorEnum(Enum):
     alpha = 0
     bravo = auto()
