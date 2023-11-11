@@ -93,6 +93,9 @@ class BoundsModeEnum(Enum):
     clip_and_normalize = auto()
     scale_to_fit = auto()
 
+class CommentTypeEnum(Enum):
+    generic = 0
+
 class ObjectFlags(Flag):
     not_automatically = auto()
     unused_0 = auto()
@@ -103,6 +106,94 @@ class ObjectFlags(Flag):
     never_placed = auto()
     lock_name_to_env_object = auto()
     create_at_rest = auto()
+
+class TransformFlags(Flag):
+    mirrored = auto()
+
+class ObjectTypeFlags(Enum):
+    biped = 0
+    vehicle = auto()
+    weapon = auto()
+    equipment = auto()
+    garbage = auto()
+    projectile = auto()
+    scenery = auto()
+    machine = auto()
+    control = auto()
+    light_fixture = auto()
+    sound_scenery = auto()
+    crate = auto()
+    creature = auto()
+
+class ObjectSourceFlags(Enum):
+    structure = 0
+    editor = auto()
+    dynamic = auto()
+    legacy = auto()
+
+class ObjectBSPPolicyFlags(Enum):
+    default = 0
+    always_placed = auto()
+    manual_bsp_placement = auto()
+
+class ObjectColorChangeFlags(Flag):
+    primary = auto()
+    secondary = auto()
+    tertiary = auto()
+    quaternary = auto()
+
+class PathfindingPolicyEnum(Enum):
+    tag_default = 0
+    pathfinding_dynamic = auto()
+    pathfinding_cut_out = auto()
+    pathfinding_static = auto()
+    pathfinding_none = auto()
+
+class LightmappingPolicyEnum(Enum):
+    tag_default = 0
+    dynamic = auto()
+    per_vertex = auto()
+
+class ObjectGametypeEnum(Flag):
+    ctf = auto()
+    slayer = auto()
+    oddball = auto()
+    king = auto()
+    juggernaut = auto()
+    territories = auto()
+    assault = auto()
+    medic = auto()
+    vip = auto()
+    infection = auto()
+    headhunter = auto()
+
+class UnitFlags(Flag):
+    dead = auto()
+    closed = auto()
+    not_enterable_by_player = auto()
+
+class ItemFlags(Flag):
+    initially_at_rest = auto()
+    obsolete = auto()
+    does_accelerate = auto()
+
+class DeviceGroupFlags(Flag):
+    can_change_only_once = auto()
+
+class DeviceFlags(Flag):
+    initially_open = auto()
+    initially_off = auto()
+    can_change_only_once = auto()
+    position_reversed = auto()
+    not_usable_from_any_side = auto()
+
+class MachineFlags(Flag):
+    does_not_operate_automatically = auto()
+    one_sided = auto()
+    never_appears_locked = auto()
+    opened_by_melee_attack = auto()
+    one_sided_for_player = auto()
+    does_not_close_automatically = auto()
 
 class TeamDesignatorEnum(Enum):
     alpha = 0
@@ -181,18 +272,6 @@ class StartingEquipment(Flag):
     no_grenades = auto()
     plasma_grenades = auto()
 
-class PathfindingPolicyEnum(Enum):
-    tag_default = 0
-    pathfinding_dynamic = auto()
-    pathfinding_cut_out = auto()
-    pathfinding_static = auto()
-    pathfinding_none = auto()
-
-class LightmappingPolicyEnum(Enum):
-    tag_default = 0
-    dynamic = auto()
-    per_vertex = auto()
-
 class ScenarioAsset():
     def __init__(self):
         self.header = None
@@ -202,8 +281,15 @@ class ScenarioAsset():
         self.skies = None
         self.child_scenario_header = None
         self.child_scenarios = None
+        self.predicted_resources_header = None
+        self.predicted_resources = None
+        self.functions_header = None
+        self.functions = None
+        self.editor_scenario_data = None
         self.comment_header = None
         self.comments = None
+        self.environment_objects_header = None
+        self.environment_objects = None
         self.object_name_header = None
         self.object_names = None
         self.scenery_header = None
@@ -236,10 +322,10 @@ class ScenarioAsset():
         self.device_controls = None
         self.device_control_palette_header = None
         self.device_control_palette = None
-        self.light_fixture_header = None
-        self.light_fixtures = None
-        self.light_fixture_palette_header = None
-        self.light_fixtures_palette = None
+        self.device_light_fixture_header = None
+        self.device_light_fixtures = None
+        self.device_light_fixture_palette_header = None
+        self.device_light_fixtures_palette = None
         self.sound_scenery_header = None
         self.sound_scenery = None
         self.sound_scenery_palette_header = None
@@ -262,10 +348,14 @@ class ScenarioAsset():
         self.netgame_equipment = None
         self.starting_equipment_header = None
         self.starting_equipment = None
+        self.bsp_switch_trigger_volumes_header = None
+        self.bsp_switch_trigger_volumes = None
         self.decals_header = None
         self.decals = None
         self.decal_palette_header = None
         self.decal_palette = None
+        self.detail_object_collection_palette_header = None
+        self.detail_object_collection_palette = None
         self.style_palette_header = None
         self.style_palette = None
         self.squad_groups_header = None
@@ -274,8 +364,30 @@ class ScenarioAsset():
         self.squads = None
         self.zones_header = None
         self.zones = None
+        self.mission_scenes_header = None
+        self.mission_scenes = None
         self.character_palette_header = None
         self.character_palette = None
+        self.ai_pathfinding_data_header = None
+        self.ai_pathfinding_data = None
+        self.ai_animation_references_header = None
+        self.ai_animation_references = None
+        self.ai_script_references_header = None
+        self.ai_script_references = None
+        self.ai_recording_references_header = None
+        self.ai_recording_references = None
+        self.ai_conversations_header = None
+        self.ai_conversations = None
+        self.script_syntax_data = None
+        self.script_string_data = None
+        self.scripts_header = None
+        self.scripts = None
+        self.globals_header = None
+        self.globals = None
+        self.references_header = None
+        self.references = None
+        self.source_files_header = None
+        self.source_files = None
         self.scripting_data_header = None
         self.scripting_data = None
         self.cutscene_flags_header = None
@@ -284,8 +396,18 @@ class ScenarioAsset():
         self.cutscene_camera_points = None
         self.cutscene_titles_header = None
         self.cutscene_titles = None
-        self.structure_bsp_header = None
-        self.structure_bsp = None
+        self.structure_bsps_header = None
+        self.structure_bsps = None
+        self.scenario_resources_header = None
+        self.scenario_resources = None
+        self.old_structure_physics_header = None
+        self.old_structure_physics = None
+        self.hs_unit_seat_header = None
+        self.hs_unit_seat = None
+        self.scenario_kill_triggers_header = None
+        self.scenario_kill_triggers = None
+        self.hs_syntax_datums_header = None
+        self.hs_syntax_datums = None
         self.orders_header = None
         self.orders = None
         self.triggers_header = None
@@ -294,10 +416,58 @@ class ScenarioAsset():
         self.background_sound_palette = None
         self.sound_environment_palette_header = None
         self.sound_environment_palette = None
+        self.weather_palette_header = None
+        self.weather_palette = None
+        self.unused_0_header = None
+        self.unused_0 = None
+        self.unused_1_header = None
+        self.unused_1 = None
+        self.unused_2_header = None
+        self.unused_2 = None
+        self.unused_3_header = None
+        self.unused_3 = None
+        self.scavenger_hunt_objects_header = None
+        self.scavenger_hunt_objects = None
+        self.scenario_cluster_data_header = None
+        self.scenario_cluster_data = None
+        self.spawn_data_header = None
+        self.spawn_data = None
         self.crates_header = None
         self.crates = None
         self.crates_palette_header = None
         self.crates_palette = None
+        self.atmospheric_fog_palette_header = None
+        self.atmospheric_fog_palette = None
+        self.planar_fog_palette_header = None
+        self.planar_fog_palette = None
+        self.flocks_header = None
+        self.flocks = None
+        self.decorators_header = None
+        self.decorators = None
+        self.creatures_header = None
+        self.creatures = None
+        self.creatures_palette_header = None
+        self.creatures_palette = None
+        self.decorator_palette_header = None
+        self.decorator_palette = None
+        self.bsp_transition_volumes_header = None
+        self.bsp_transition_volumes = None
+        self.structure_bsp_lighting_header = None
+        self.structure_bsp_lighting = None
+        self.editor_folders_header = None
+        self.editor_folders = None
+        self.level_data_header = None
+        self.level_data = None
+        self.mission_dialogue_header = None
+        self.mission_dialogue = None
+        self.interpolators_header = None
+        self.interpolators = None
+        self.shared_references_header = None
+        self.shared_references = None
+        self.screen_effect_references_header = None
+        self.screen_effect_references = None
+        self.simulation_definition_table_header = None
+        self.simulation_definition_table = None
 
     class ScenarioBody:
         def __init__(self, unused_tag_ref=None, skies_tag_block=None, scenario_type=0, scenario_flags=0, child_scenarios_tag_block=None, local_north=0.0,
@@ -436,12 +606,47 @@ class ScenarioAsset():
             self.screen_effect_references_tag_block = screen_effect_references_tag_block
             self.simulation_definition_table_tag_block = simulation_definition_table_tag_block
 
+    class PredictedResource:
+        def __init__(self, tag_type=0, resource_index=0, tag_index=0):
+            self.tag_type = tag_type
+            self.resource_index = resource_index
+            self.tag_index = tag_index
+
+    class Function:
+        def __init__(self, flags=0, name="", period=0, scale_period_by=0, function_type=0, scale_function_by=0, wobble_function_type=0, wobble_period=0, wobble_magnitude=0,
+                     square_wave_threshold=0, step_count=0, map_to=0, sawtooth_count=0, scale_result_by=0, bounds_mode=0, bounds=(0.0, 0.0), turn_off_with=0):
+            self.flags = flags
+            self.name = name
+            self.period = period
+            self.scale_period_by = scale_period_by
+            self.function_type = function_type
+            self.scale_function_by = scale_function_by
+            self.wobble_function_type = wobble_function_type
+            self.wobble_period = wobble_period
+            self.wobble_magnitude = wobble_magnitude
+            self.square_wave_threshold = square_wave_threshold
+            self.step_count = step_count
+            self.map_to = map_to
+            self.sawtooth_count = sawtooth_count
+            self.scale_result_by = scale_result_by
+            self.bounds_mode = bounds_mode
+            self.bounds = bounds
+            self.turn_off_with = turn_off_with
+
     class Comment:
         def __init__(self, position=Vector(), type=0, name="", comment=""):
             self.position = position
             self.type = type
             self.name = name
             self.comment = comment
+
+    class EnvironmentObject:
+        def __init__(self, bsp_index=0, runtime_object_type=0, unique_id=0, object_definition_tag=0, environment_object=0):
+            self.bsp_index = bsp_index
+            self.runtime_object_type = runtime_object_type
+            self.unique_id = unique_id
+            self.object_definition_tag = object_definition_tag
+            self.environment_object = environment_object
 
     class ObjectName:
         def __init__(self, name="", object_type=0, placement_index=0):
@@ -470,8 +675,8 @@ class ScenarioAsset():
     class Scenery(Object):
         def __init__(self, sobj_header=None, obj0_header=None, sper_header=None, sct3_header=None, variant_name="", variant_name_length=0, active_change_colors=0,
                      primary_color_BGRA=(0, 0, 0, 255), secondary_color_BGRA=(0, 0, 0, 255), tertiary_color_BGRA=(0, 0, 0, 255),
-                     quaternary_color_BGRA=(0, 0, 0, 255), pathfinding_policy=0, lightmap_policy=0, pathfinding_references_header=None, pathfinding_references=None,
-                     valid_multiplayer_games=0):
+                     quaternary_color_BGRA=(0, 0, 0, 255), pathfinding_policy=0, lightmap_policy=0, pathfinding_references_header=None, pathfinding_references_tag_block=None,
+                     valid_multiplayer_games=0, pathfinding_references=None):
             super().__init__()
             self.sobj_header = sobj_header
             self.obj0_header = obj0_header
@@ -487,8 +692,14 @@ class ScenarioAsset():
             self.pathfinding_policy = pathfinding_policy
             self.lightmap_policy = lightmap_policy
             self.pathfinding_references_header = pathfinding_references_header
-            self.pathfinding_references = pathfinding_references
+            self.pathfinding_references_tag_block = pathfinding_references_tag_block
             self.valid_multiplayer_games = valid_multiplayer_games
+            self.pathfinding_references = pathfinding_references
+
+    class PathfindingReference:
+        def __init__(self, bsp_index=0, pathfinding_object_index=0):
+            self.bsp_index = bsp_index
+            self.pathfinding_object_index = pathfinding_object_index
 
     class Unit(Object):
         def __init__(self, sobj_header=None, obj0_header=None, sper_header=None, sunt_header=None, variant_name="", variant_name_length=0, active_change_colors=0,
@@ -545,7 +756,7 @@ class ScenarioAsset():
 
     class DeviceMachine(Object):
         def __init__(self, sobj_header=None, obj0_header=None, sdvt_header=None, smht_header=None, power_group_index=0, position_group_index=0, flags_0=0,
-                     flags_1=0, pathfinding_references_header=None, pathfinding_references=None):
+                     flags_1=0, pathfinding_references_header=None, pathfinding_references_tag_block=None, pathfinding_references=None):
             super().__init__()
             self.sobj_header = sobj_header
             self.obj0_header = obj0_header
@@ -556,6 +767,7 @@ class ScenarioAsset():
             self.flags_0 = flags_0
             self.flags_1 = flags_1
             self.pathfinding_references_header = pathfinding_references_header
+            self.pathfinding_references_tag_block = pathfinding_references_tag_block
             self.pathfinding_references = pathfinding_references
 
     class DeviceControl(Object):

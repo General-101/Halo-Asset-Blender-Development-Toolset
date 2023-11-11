@@ -99,6 +99,14 @@ def xml_vector(vector):
 
     return vector_string
 
+def xml_vector_short(vector):
+    v1 = vector[0]
+    v2 = vector[1]
+    v3 = vector[2]
+    vector_string = "%s,%s,%s" % (v1, v2, v3)
+
+    return vector_string
+
 def xml_quaternion(quat):
     v1 = '%0.6f' % round(quat[0], 6)
     v2 = '%0.6f' % round(quat[1], 6)
@@ -323,6 +331,13 @@ class TagAsset():
             xml_data.xml_node.appendChild(create_xml_node("field", [("name", xml_data.element_name), ("type", "byte flags")], flags, flag_enums))
 
         return flags
+
+    def read_enum_unsigned_byte(self, input_stream, tag, xml_data=None):
+        unsigned_byte = (struct.unpack('%sB' % get_endian_symbol(tag.big_endian), input_stream.read(1)))[0]
+        if not tag.xml_doc == None and not xml_data == None:
+            xml_data.xml_node.appendChild(create_xml_node("field", [("name", xml_data.element_name), ("type", "enum")], xml_enum(xml_data.enum_class, unsigned_byte)))
+
+        return unsigned_byte
 
     def read_signed_short(self, input_stream, tag, xml_data=None):
         signed_short = (struct.unpack('%sh' % get_endian_symbol(tag.big_endian), input_stream.read(2)))[0]
@@ -567,6 +582,13 @@ class TagAsset():
 
         return (rgb[0], rgb[1], rgb[2], 1)
 
+    def read_bgr_byte(self, input_stream, tag, xml_data=None):
+        bgr = struct.unpack('%s4b' % get_endian_symbol(tag.big_endian), input_stream.read(4))
+        if not tag.xml_doc == None and not xml_data == None:
+            xml_data.xml_node.appendChild(create_xml_node("field", [("name", xml_data.element_name), ("type", "rgb color")], xml_vector_short((bgr[2], bgr[1], bgr[0]))))
+
+        return (bgr[2], bgr[1], bgr[0], 1) # Order is the way it is cause Halo stores color as BGR while Blender is RGBA. - General_101
+
     def read_argb(self, input_stream, tag, xml_data=None):
         argb = struct.unpack('%s4f' % get_endian_symbol(tag.big_endian), input_stream.read(16))
         if not tag.xml_doc == None and not xml_data == None:
@@ -622,6 +644,15 @@ class TagAsset():
 
         return string_value
 
+    def read_variable_string_no_terminator_reversed(self, input_stream, string_length, tag, xml_data=None):
+        unpack_string = '%s%ss' % (get_endian_symbol(tag.big_endian), string_length)
+
+        string_value = (struct.unpack(unpack_string, input_stream.read(string_length)))[0].decode('utf-8', 'replace').split('\x00', 1)[0].strip('\x20')[::-1]
+        if not tag.xml_doc == None and not xml_data == None:
+            xml_data.xml_node.appendChild(create_xml_node("field", [("name", xml_data.element_name), ("type", "string")], string_value))
+
+        return string_value
+    
     class TagBlockHeader:
         def __init__(self, name="", version=0, count=0, size=0):
             self.name = name
