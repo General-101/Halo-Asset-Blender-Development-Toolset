@@ -1204,7 +1204,8 @@ def process_file_retail(input_stream, global_functions, tag_format, report):
             if not unit_animation == -1:
                 name = ANIMATION.animations[unit_animation].name
 
-            tag_format.append_xml_attributes(unit_animation_element_node, [("name", name)])
+            if XML_OUTPUT:
+                tag_format.append_xml_attributes(unit_animation_element_node, [("name", name)])
 
         for unit_weapon_idx, unit_weapon in enumerate(unit.weapons):
             unit_weapon_element_node = None
@@ -1222,7 +1223,8 @@ def process_file_retail(input_stream, global_functions, tag_format, report):
                 if not weapon_animation == -1:
                     name = ANIMATION.animations[weapon_animation].name
 
-                tag_format.append_xml_attributes(weapon_animation_element_node, [("name", name)])
+                if XML_OUTPUT:
+                    tag_format.append_xml_attributes(weapon_animation_element_node, [("name", name)])
 
             for weapon_type_idx, weapon_type in enumerate(unit_weapon.weapons):
                 weapon_type_element_node = None
@@ -1239,7 +1241,8 @@ def process_file_retail(input_stream, global_functions, tag_format, report):
                     if not weapon_type_animation == -1:
                         name = ANIMATION.animations[weapon_type_animation].name
 
-                    tag_format.append_xml_attributes(weapon_type_animation_element_node, [("name", name)])
+                    if XML_OUTPUT:
+                        tag_format.append_xml_attributes(weapon_type_animation_element_node, [("name", name)])
 
     current_position = input_stream.tell()
     EOF = input_stream.seek(0, 2)
