@@ -123,7 +123,7 @@ def create_overlay_animation(scene, armature, animation, nodes, fix_rotations, v
             pose_bone.keyframe_insert('rotation_quaternion')
             pose_bone.keyframe_insert('scale')
 
-def build_scene(context, ANIMATION, game_version, game_title, file_version, fix_rotations, empty_markers, report, mesh_processing, global_functions):
+def build_scene(context, ANIMATION, game_version, game_title, file_version, fix_rotations, empty_markers, report, mesh_processing, global_functions, tag_format):
     scene = context.scene
     view_layer = context.view_layer
 
