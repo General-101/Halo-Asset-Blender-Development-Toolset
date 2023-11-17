@@ -438,7 +438,6 @@ def process_scene(context, version, game_version, hidden_geo, nonrender_geo, app
                     material_index = material_list.index(material)
 
             elif geo_class == 'MESH':
-                layer_color = evaluted_mesh.attributes.active_color
                 xref_path = original_geo.data.ass_jms.XREF_path
                 xref_name = original_geo.data.ass_jms.XREF_name
                 if global_functions.string_empty_check(xref_name):
@@ -485,7 +484,7 @@ def process_scene(context, version, game_version, hidden_geo, nonrender_geo, app
                         region = region_index
                         scaled_translation, normal = mesh_processing.process_mesh_export_vert(vertex_data, point_data, "ASS", object_matrix, custom_scale)
                         uv_set = mesh_processing.process_mesh_export_uv(evaluted_mesh, "ASS", loop_index, version)
-                        color = mesh_processing.process_mesh_export_color(layer_color, loop_index, point_idx)
+                        color = mesh_processing.process_mesh_export_color(evaluted_mesh, loop_index, point_idx)
                         node_influence_count, node_set, node_index_list = mesh_processing.process_mesh_export_weights(vertex_data, armature, original_geo, vertex_groups, instance_list, "ASS")
 
                         verts.append(ASS.Vertex(node_influence_count, node_set, region, scaled_translation, normal, color, uv_set))

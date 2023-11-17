@@ -209,7 +209,6 @@ def process_scene(context, version, game_version, generate_checksum, fix_rotatio
             original_geo = geometry[1]
             evaluted_mesh.calc_normals_split()
             vertex_groups = original_geo.vertex_groups.keys()
-            layer_color = evaluted_mesh.attributes.active_color
             original_geo_matrix = global_functions.get_matrix(original_geo, original_geo, False, blend_scene.armature, joined_list, False, version, "JMS", False, custom_scale, fix_rotations)
             region_count = len(original_geo.region_list)
             for idx, face in enumerate(evaluted_mesh.polygons):
@@ -258,7 +257,7 @@ def process_scene(context, version, game_version, generate_checksum, fix_rotatio
                     region = region_index
                     scaled_translation, normal = mesh_processing.process_mesh_export_vert(vertex_data, point_data, "JMS", original_geo_matrix, custom_scale)
                     uv_set = mesh_processing.process_mesh_export_uv(evaluted_mesh, "JMS", loop_index, version)
-                    color = mesh_processing.process_mesh_export_color(layer_color, loop_index, point_idx)
+                    color = mesh_processing.process_mesh_export_color(evaluted_mesh, loop_index, point_idx)
                     node_influence_count, node_set, node_index_list = mesh_processing.process_mesh_export_weights(vertex_data, blend_scene.armature, original_geo, vertex_groups, joined_list, "JMS")
 
                     JMS.vertices.append(JMSAsset.Vertex(node_influence_count, node_set, region, scaled_translation, normal, color, uv_set))

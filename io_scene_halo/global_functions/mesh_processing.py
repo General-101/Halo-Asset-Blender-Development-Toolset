@@ -838,13 +838,13 @@ def process_mesh_export_weights(vert, armature, original_geo, vertex_groups, joi
 
     return node_influence_count, node_set, node_index_list
 
-def process_mesh_export_color(layer_color, loop_index, vertex_index):
+def process_mesh_export_color(evaluted_mesh, loop_index, vertex_index):
     color = (0.0, 0.0, 0.0)
-    if not layer_color == None:
-        if layer_color.domain == "POINT":
-            color = layer_color.data[vertex_index].color
+    if not evaluted_mesh.attributes.active_color == None:
+        if evaluted_mesh.attributes.active_color.domain == "POINT":
+            color = evaluted_mesh.attributes.active_color.data[vertex_index].color
         else:
-            color = layer_color.data[loop_index].color
+            color = evaluted_mesh.attributes.active_color.data[loop_index].color
 
         if color[0] == 0.0 and "{:.2f}".format(color[1]) == "0.01" and color[2] == 0.0:
             color = (-65536.0000000000, -65536.0000000000, -65536.0000000000, 1.0)
