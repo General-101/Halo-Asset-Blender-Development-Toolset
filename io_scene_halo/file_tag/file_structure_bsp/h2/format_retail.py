@@ -45,6 +45,14 @@ class SurfaceFlags(Flag):
     invalid = auto()
     conveyor = auto()
 
+class ClusterPortalFlags(Flag):
+    ai_cant_hear_through_this = auto()
+    one_way = auto()
+    door = auto()
+    no_way = auto()
+    one_way_reversed = auto()
+    no_one_can_hear_through_this = auto()
+
 class LevelAsset():
     def __init__(self):
         self.header = None
@@ -56,6 +64,14 @@ class LevelAsset():
         self.collision_materials = None
         self.collision_bsp_header = None
         self.collision_bsps = None
+        self.unused_nodes_header = None
+        self.unused_nodes = None
+        self.leaves_header = None
+        self.leaves = None
+        self.surface_references_header = None
+        self.surface_references = None
+        self.cluster_data = None
+        self.cluster_portals_header = None
         self.cluster_portals = None
         self.clusters = None
         self.materials = None
@@ -222,6 +238,11 @@ class LevelAsset():
             self.breakable_surface = breakable_surface
             self.material = material
 
+    class Vertex:
+        def __init__(self, translation=Vector(), first_edge=0):
+            self.translation = translation
+            self.first_edge = first_edge
+
     class Edge:
         def __init__(self, start_vertex=0, end_vertex=0, forward_edge=0, reverse_edge=0, left_surface=0, right_surface=0):
             self.start_vertex = start_vertex
@@ -231,13 +252,20 @@ class LevelAsset():
             self.left_surface = left_surface
             self.right_surface = right_surface
 
-    class Vertex:
-        def __init__(self, translation=Vector(), first_edge=0):
-            self.translation = translation
-            self.first_edge = first_edge
+    class ClusterLeaf:
+        def __init__(self, cluster=0, surface_reference_count=0, surface_reference=0):
+            self.cluster = cluster
+            self.surface_reference_count = surface_reference_count
+            self.surface_reference = surface_reference
+
+    class SurfaceReference:
+        def __init__(self, strip_index=0, lightmap_triangle_index=0, bsp_node_index=0):
+            self.strip_index = strip_index
+            self.lightmap_triangle_index = lightmap_triangle_index
+            self.bsp_node_index = bsp_node_index
 
     class ClusterPortal:
-        def __init__(self, back_cluster=0, front_cluster=0, plane_index=0, centroid=Vector(), bounding_radius=0.0, flags=0, vertices_tag_block_header=None, vertices_tag_block=None,
+        def __init__(self, back_cluster=0, front_cluster=0, plane_index=0, centroid=Vector(), bounding_radius=0.0, flags=0, vertices_header=None, vertices_tag_block=None,
                      vertices=None):
             self.back_cluster = back_cluster
             self.front_cluster = front_cluster
@@ -245,7 +273,7 @@ class LevelAsset():
             self.centroid = centroid
             self.bounding_radius = bounding_radius
             self.flags = flags
-            self.vertices_tag_block_header = vertices_tag_block_header
+            self.vertices_header = vertices_header
             self.vertices_tag_block = vertices_tag_block
             self.vertices = vertices
 

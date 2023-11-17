@@ -28,16 +28,19 @@ from xml.dom import minidom
 from .format_retail import (
         LevelAsset,
         LeafFlags,
-        SurfaceFlags
+        SurfaceFlags,
+        ClusterPortalFlags
         )
 from mathutils import Vector, Quaternion
 
-XML_OUTPUT = False
+XML_OUTPUT = True
 
 def initilize_scenario(LEVEL):
     LEVEL.import_info = []
     LEVEL.collision_materials = []
     LEVEL.collision_bsps = []
+    LEVEL.unused_nodes = []
+    LEVEL.leaves = []
     LEVEL.cluster_portals = []
     LEVEL.clusters = []
     LEVEL.materials = []
@@ -365,6 +368,95 @@ def read_collision_bsps(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTP
 
                     collision_bsp.vertices.append(vertex)
 
+def read_unused_nodes(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT):
+    if LEVEL.level_body.unused_nodes_tag_block.count > 0:
+        unused_node = tag_format.get_xml_node(XML_OUTPUT, LEVEL.level_body.unused_nodes_tag_block.count, tag_node, "name", "unused nodes")
+        LEVEL.unused_nodes_header = TAG.TagBlockHeader().read(input_stream, TAG)
+        for unused_node_idx in range(LEVEL.level_body.unused_nodes_tag_block.count):
+            unused_node_element_node = None
+            if XML_OUTPUT:
+                unused_node_element_node = TAG.xml_doc.createElement('element')
+                unused_node_element_node.setAttribute('index', str(unused_node_idx))
+                unused_node.appendChild(unused_node_element_node)
+
+            input_stream.read(6) # Padding?
+
+def read_leaves(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT):
+    if LEVEL.level_body.leaves_tag_block.count > 0:
+        leaves_node = tag_format.get_xml_node(XML_OUTPUT, LEVEL.level_body.leaves_tag_block.count, tag_node, "name", "leaves")
+        LEVEL.unused_nodes_header = TAG.TagBlockHeader().read(input_stream, TAG)
+        for leaf_idx in range(LEVEL.level_body.leaves_tag_block.count):
+            leaf_element_node = None
+            if XML_OUTPUT:
+                leaf_element_node = TAG.xml_doc.createElement('element')
+                leaf_element_node.setAttribute('index', str(leaf_idx))
+                leaves_node.appendChild(leaf_element_node)
+
+            cluster_leaf = LEVEL.ClusterLeaf()
+            cluster_leaf.cluster = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(leaf_element_node, "cluster"))
+            cluster_leaf.surface_reference_count = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(leaf_element_node, "surface reference count"))
+            cluster_leaf.surface_reference = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(leaf_element_node, "surface reference"))
+
+            LEVEL.leaves.append(cluster_leaf)
+
+def read_surface_references(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT):
+    if LEVEL.level_body.surfaces_references_tag_block.count > 0:
+        surfaces_reference_node = tag_format.get_xml_node(XML_OUTPUT, LEVEL.level_body.surfaces_references_tag_block.count, tag_node, "name", "surfaces references")
+        LEVEL.unused_nodes_header = TAG.TagBlockHeader().read(input_stream, TAG)
+        for surfaces_reference_idx in range(LEVEL.level_body.surfaces_references_tag_block.count):
+            surfaces_reference_element_node = None
+            if XML_OUTPUT:
+                surfaces_reference_element_node = TAG.xml_doc.createElement('element')
+                surfaces_reference_element_node.setAttribute('index', str(surfaces_reference_idx))
+                surfaces_reference_node.appendChild(surfaces_reference_element_node)
+
+            surfaces_reference = LEVEL.SurfaceReference()
+            surfaces_reference.strip_index = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(surfaces_reference_element_node, "cluster"))
+            surfaces_reference.lightmap_triangle_index = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(surfaces_reference_element_node, "surface reference count"))
+            surfaces_reference.bsp_node_index = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(surfaces_reference_element_node, "surface reference"))
+
+            LEVEL.surfaces_references.append(surfaces_reference)
+
+def read_cluster_portals(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT):
+    if LEVEL.level_body.cluster_portals_tag_block.count > 0:
+        cluster_portals_node = tag_format.get_xml_node(XML_OUTPUT, LEVEL.level_body.cluster_portals_tag_block.count, tag_node, "name", "cluster portals")
+        LEVEL.cluster_portals_header = TAG.TagBlockHeader().read(input_stream, TAG)
+        for cluster_portal_idx in range(LEVEL.level_body.cluster_portals_tag_block.count):
+            cluster_portal_element_node = None
+            if XML_OUTPUT:
+                cluster_portal_element_node = TAG.xml_doc.createElement('element')
+                cluster_portal_element_node.setAttribute('index', str(cluster_portal_idx))
+                cluster_portals_node.appendChild(cluster_portal_element_node)
+
+            cluster_portal = LEVEL.ClusterPortal()
+            cluster_portal.back_cluster = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(cluster_portal_element_node, "back cluster"))
+            cluster_portal.front_cluster = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(cluster_portal_element_node, "front cluster"))
+            cluster_portal.plane_index = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(cluster_portal_element_node, "plane index"))
+            cluster_portal.centroid = TAG.read_point_3d(input_stream, TAG, tag_format.XMLData(cluster_portal_element_node, "centroid"))
+            cluster_portal.bounding_radius = TAG.read_float(input_stream, TAG, tag_format.XMLData(cluster_portal_element_node, "bounding radius"))
+            cluster_portal.flags = TAG.read_flag_unsigned_integer(input_stream, TAG, tag_format.XMLData(cluster_portal_element_node, "flags", ClusterPortalFlags))
+            cluster_portal.vertices_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "vertices"))
+
+            LEVEL.cluster_portals.append(cluster_portal)
+
+        for cluster_portal_idx, cluster_portal in enumerate(LEVEL.cluster_portals):
+            cluster_portal_element_node = None
+            if XML_OUTPUT:
+                cluster_portal_element_node = cluster_portals_node.childNodes[cluster_portal_idx]
+
+            cluster_portal.vertices = []
+            if cluster_portal.vertices_tag_block.count > 0:
+                vertices_node = tag_format.get_xml_node(XML_OUTPUT, cluster_portal.vertices_tag_block.count, cluster_portal_element_node, "name", "vertices")
+                cluster_portal.vertices_header = TAG.TagBlockHeader().read(input_stream, TAG)
+                for vertex_idx in range(cluster_portal.vertices_tag_block.count):
+                    vertex_element_node = None
+                    if XML_OUTPUT:
+                        vertex_element_node = TAG.xml_doc.createElement('element')
+                        vertex_element_node.setAttribute('index', str(vertex_idx))
+                        vertices_node.appendChild(vertex_element_node)
+
+                    cluster_portal.vertices.append(TAG.read_point_3d(input_stream, TAG, tag_format.XMLData(vertex_element_node, "point"), True))
+
 def process_file_retail(input_stream, tag_format, report):
     TAG = tag_format.TagAsset()
     LEVEL = LevelAsset()
@@ -385,6 +477,11 @@ def process_file_retail(input_stream, tag_format, report):
     read_import_info(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT)
     read_collision_materials(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT)
     read_collision_bsps(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT)
+    read_unused_nodes(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT)
+    read_leaves(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT)
+    read_surface_references(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT)
+    LEVEL.cluster_data = input_stream.read(LEVEL.level_body.cluster_raw_data.size)
+    read_cluster_portals(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT)
 
     current_position = input_stream.tell()
     EOF = input_stream.seek(0, 2)

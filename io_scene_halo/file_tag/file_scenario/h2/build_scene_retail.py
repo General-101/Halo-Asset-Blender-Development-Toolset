@@ -34,6 +34,7 @@ from math import degrees, radians
 from mathutils import Vector, Quaternion, Euler, Matrix
 from .format_retail import DataTypesEnum
 from io_scene_halo.file_tag.file_structure_bsp import build_scene as build_scene_level
+from io_scene_halo.file_tag.file_structure_lightmap import build_scene as build_scene_lightmap
 
 def generate_comments(context, level_root, comment_tag_block):
     comment_collection = bpy.data.collections.get("Comments")
@@ -322,17 +323,31 @@ def generate_scenario_scene(context, H2_ASSET, game_version, game_title, file_ve
         lightmap = bsp_element.structure_lightmap
         SBSP_ASSET = bsp.parse_tag(tag_format, report, "halo2", "retail")
         LTMP_ASSET = lightmap.parse_tag(tag_format, report, "halo2", "retail")
+
+        bsp_name = os.path.basename(bsp.name)
+        collection_name = "%s_%s" % (bsp_name, bsp_idx)
+        level_collection = bpy.data.collections.get(collection_name)
+        if level_collection == None:
+            level_collection = bpy.data.collections.new(collection_name)
+            levels_collection.children.link(level_collection)
+
         if not SBSP_ASSET == None:
-            bsp_name = os.path.basename(bsp.name)
-            collection_name = "%s_%s" % (bsp_name, bsp_idx)
-            level_collection = bpy.data.collections.get(collection_name)
-            if level_collection == None:
-                level_collection = bpy.data.collections.new(collection_name)
-                clusters_collection = bpy.data.collections.new("%s_clusters" % bsp_name)
-                levels_collection.children.link(level_collection)
+            cluster_name = "%s_clusters" % bsp_name
+            clusters_collection = bpy.data.collections.get(cluster_name)
+            if clusters_collection == None:
+                clusters_collection = bpy.data.collections.new(cluster_name)
                 level_collection.children.link(clusters_collection)
 
             build_scene_level.build_scene(context, SBSP_ASSET, game_version, game_title, file_version, fix_rotations, empty_markers, report, mesh_processing, global_functions, tag_format, level_collection, clusters_collection)
+
+        if not LTMP_ASSET == None:
+            lightmap_name = "%s_lightmaps" % bsp_name
+            lightmap_collection = bpy.data.collections.get(lightmap_name)
+            if lightmap_collection == None:
+                lightmap_collection = bpy.data.collections.new(lightmap_name)
+                level_collection.children.link(lightmap_collection)
+
+            build_scene_lightmap.build_scene(context, LTMP_ASSET, game_version, game_title, file_version, fix_rotations, empty_markers, report, mesh_processing, global_functions, tag_format, level_collection, lightmap_collection)
 
     level_root = bpy.data.objects.get("frame_root")
     if level_root == None:

@@ -31,7 +31,7 @@ import bmesh
 from math import radians
 from mathutils import Vector, Matrix, Euler
 
-def build_objects(object_tag_block, object_name, random_color_gen, material_count):
+def build_objects(object_tag_block, object_name, random_color_gen, material_count, collection):
     for cluster_idx, cluster in enumerate(object_tag_block):
         cluster_name = "%s_%s" % (object_name, cluster_idx)
         full_mesh = bpy.data.meshes.new(cluster_name)
@@ -106,12 +106,19 @@ def build_objects(object_tag_block, object_name, random_color_gen, material_coun
             bm.to_mesh(full_mesh)
             bm.free()
 
-            bpy.context.collection.objects.link(object_mesh)
+            collection.objects.link(object_mesh)
 
-def build_scene(context, LIGHTMAP, game_version, game_title, file_version, fix_rotations, empty_markers, report, mesh_processing, global_functions, tag_format):
+def build_scene(context, LIGHTMAP, game_version, game_title, file_version, fix_rotations, empty_markers, report, mesh_processing, global_functions, tag_format, collection_override=None, cluster_collection_override=None, material_list=None):
     random_color_gen = global_functions.RandomColorGenerator() # generates a random sequence of colors
+
+    collection = context.collection
+    if not collection_override == None:
+        collection = collection_override
+
+    if cluster_collection_override == None:
+        cluster_collection_override = collection
 
     material_count = 0
     for lightmap_groups_idx, lightmap_group in enumerate(LIGHTMAP.lightmap_groups):
-        build_objects(lightmap_group.clusters, "cluster", random_color_gen, material_count)
-        build_objects(lightmap_group.poop_definitions, "instance", random_color_gen, material_count)
+        build_objects(lightmap_group.clusters, "cluster", random_color_gen, material_count, cluster_collection_override)
+        build_objects(lightmap_group.poop_definitions, "instance", random_color_gen, material_count, cluster_collection_override)

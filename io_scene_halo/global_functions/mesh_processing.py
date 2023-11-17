@@ -1030,9 +1030,9 @@ def generate_biased_multiply_node(tree):
     if not biased_multiply_logic_group:
         biased_multiply_logic_group = bpy.data.node_groups.new(type="ShaderNodeTree", name="Biased Multiply")
 
-        base_color_socket = biased_multiply_logic_group.inputs.new("NodeSocketColor", "Color")
-        detail_color_socket = biased_multiply_logic_group.inputs.new("NodeSocketColor", "Detail")
-        reflection_mask_socket = biased_multiply_logic_group.inputs.new("NodeSocketColor", "Mask")
+        base_color_socket = biased_multiply_logic_group.interface.new_socket(name="Color", in_out='INPUT', socket_type="NodeSocketColor")
+        detail_color_socket = biased_multiply_logic_group.interface.new_socket(name="Detail", in_out='INPUT', socket_type="NodeSocketColor")
+        reflection_mask_socket = biased_multiply_logic_group.interface.new_socket(name="Mask", in_out='INPUT', socket_type="NodeSocketColor")
         input_node = biased_multiply_logic_group.nodes.new("NodeGroupInput")
         input_node.location = Vector((-1100, 0))
 
@@ -1040,7 +1040,7 @@ def generate_biased_multiply_node(tree):
         detail_color_socket.default_value = (0.0, 0.0, 0.0, 1)
         reflection_mask_socket.default_value = (0.0, 0.0, 0.0, 1)
 
-        color_socket = biased_multiply_logic_group.outputs.new("NodeSocketColor", "Color")
+        color_socket = biased_multiply_logic_group.interface.new_socket(name="Color", in_out='OUTPUT', socket_type="NodeSocketColor")
         output_node = biased_multiply_logic_group.nodes.new("NodeGroupOutput")
         output_node.location = Vector((0.0, 0.0))
 
@@ -1127,9 +1127,9 @@ def generate_multiply_node(tree):
     if not multiply_logic_group:
         multiply_logic_group = bpy.data.node_groups.new(type="ShaderNodeTree", name="Multiply")
 
-        base_color_socket = multiply_logic_group.inputs.new("NodeSocketColor", "Color")
-        detail_color_socket = multiply_logic_group.inputs.new("NodeSocketColor", "Detail")
-        reflection_mask_socket = multiply_logic_group.inputs.new("NodeSocketColor", "Mask")
+        base_color_socket = multiply_logic_group.interface.new_socket(name="Color", in_out='INPUT', socket_type="NodeSocketColor")
+        detail_color_socket = multiply_logic_group.interface.new_socket(name="Detail", in_out='INPUT', socket_type="NodeSocketColor")
+        reflection_mask_socket = multiply_logic_group.interface.new_socket(name="Mask", in_out='INPUT', socket_type="NodeSocketColor")
         input_node = multiply_logic_group.nodes.new("NodeGroupInput")
         input_node.location = Vector((-350, 0))
 
@@ -1137,7 +1137,7 @@ def generate_multiply_node(tree):
         detail_color_socket.default_value = (1, 1, 1, 1)
         reflection_mask_socket.default_value = (1, 1, 1, 1)
 
-        color_socket = multiply_logic_group.outputs.new("NodeSocketColor", "Color")
+        color_socket = multiply_logic_group.interface.new_socket(name="Color", in_out='OUTPUT', socket_type="NodeSocketColor")
         output_node = multiply_logic_group.nodes.new("NodeGroupOutput")
         output_node.location = Vector((0, 0))
 
@@ -1164,9 +1164,9 @@ def generate_biased_add_node(tree):
     if not biased_add_logic_group:
         biased_add_logic_group = bpy.data.node_groups.new(type="ShaderNodeTree", name="Biased Add")
 
-        base_color_socket = biased_add_logic_group.inputs.new("NodeSocketColor", "Color")
-        detail_color_socket = biased_add_logic_group.inputs.new("NodeSocketColor", "Detail")
-        reflection_mask_socket = biased_add_logic_group.inputs.new("NodeSocketColor", "Mask")
+        base_color_socket = biased_add_logic_group.interface.new_socket(name="Color", in_out='INPUT', socket_type="NodeSocketColor")
+        detail_color_socket = biased_add_logic_group.interface.new_socket(name="Detail", in_out='INPUT', socket_type="NodeSocketColor")
+        reflection_mask_socket = biased_add_logic_group.interface.new_socket(name="Mask", in_out='INPUT', socket_type="NodeSocketColor")
         input_node = biased_add_logic_group.nodes.new("NodeGroupInput")
         input_node.location = Vector((-1100, 0))
 
@@ -1174,7 +1174,7 @@ def generate_biased_add_node(tree):
         detail_color_socket.default_value = (0.0, 0.0, 0.0, 1)
         reflection_mask_socket.default_value = (0.0, 0.0, 0.0, 1)
 
-        color_socket = biased_add_logic_group.outputs.new("NodeSocketColor", "Color")
+        color_socket = biased_add_logic_group.interface.new_socket(name="Color", in_out='OUTPUT', socket_type="NodeSocketColor")
         output_node = biased_add_logic_group.nodes.new("NodeGroupOutput")
         output_node.location = Vector((0.0, 0.0))
 
@@ -1261,9 +1261,9 @@ def generate_multipurpose_logic_node(tree):
     if not multipurpose_logic_group:
         multipurpose_logic_group = bpy.data.node_groups.new(type="ShaderNodeTree", name="Multipurpose Logic")
 
-        xbox_socket = multipurpose_logic_group.inputs.new("NodeSocketFloat", "Xbox")
-        multipurpose_logic_group.inputs.new("NodeSocketVector", "RGB")
-        multipurpose_logic_group.inputs.new("NodeSocketFloat", "A")
+        xbox_socket = multipurpose_logic_group.interface.new_socket(name="Xbox", in_out='INPUT', socket_type="NodeSocketFloat")
+        multipurpose_logic_group.interface.new_socket(name="RGB", in_out='INPUT', socket_type="NodeSocketVector")
+        multipurpose_logic_group.interface.new_socket(name="A", in_out='INPUT', socket_type="NodeSocketFloat")
         input_node = multipurpose_logic_group.nodes.new("NodeGroupInput")
         input_node.location = Vector((-1250.0, 0))
 
@@ -1271,10 +1271,10 @@ def generate_multipurpose_logic_node(tree):
         xbox_socket.min_value = -10000.0
         xbox_socket.max_value = 10000.0
 
-        multipurpose_logic_group.outputs.new("NodeSocketFloat", "Reflective Mask")
-        multipurpose_logic_group.outputs.new("NodeSocketFloat", "Self Illumination")
-        multipurpose_logic_group.outputs.new("NodeSocketFloat", "Change Color")
-        multipurpose_logic_group.outputs.new("NodeSocketFloat", "Auxiliary")
+        multipurpose_logic_group.interface.new_socket(name="Reflective Mask", in_out='OUTPUT', socket_type="NodeSocketFloat")
+        multipurpose_logic_group.interface.new_socket(name="Self Illumination", in_out='OUTPUT', socket_type="NodeSocketFloat")
+        multipurpose_logic_group.interface.new_socket(name="Change Color", in_out='OUTPUT', socket_type="NodeSocketFloat")
+        multipurpose_logic_group.interface.new_socket(name="Auxiliary", in_out='OUTPUT', socket_type="NodeSocketFloat")
         output_node = multipurpose_logic_group.nodes.new("NodeGroupOutput")
         output_node.location = Vector((0, 0))
 
@@ -1395,10 +1395,10 @@ def generate_reflection_tint_logic_node(tree):
     if not reflection_tint_logic_group:
         reflection_tint_logic_group = bpy.data.node_groups.new(type="ShaderNodeTree", name="Reflection Tint Logic")
 
-        perpendicular_tint_socket = reflection_tint_logic_group.inputs.new("NodeSocketVector", "Perpendicular Tint")
-        reflection_tint_logic_group.inputs.new("NodeSocketFloat", "Perpendicular Brightness")
-        parallel_tint_socket = reflection_tint_logic_group.inputs.new("NodeSocketVector", "Parallel Tint")
-        reflection_tint_logic_group.inputs.new("NodeSocketFloat", "Parallel Brightness")
+        perpendicular_tint_socket = reflection_tint_logic_group.interface.new_socket(name="Perpendicular Tint", in_out='INPUT', socket_type="NodeSocketVector")
+        reflection_tint_logic_group.interface.new_socket(name="Perpendicular Brightness", in_out='INPUT', socket_type="NodeSocketFloat")
+        parallel_tint_socket = reflection_tint_logic_group.interface.new_socket(name="Parallel Tint", in_out='INPUT', socket_type="NodeSocketVector")
+        reflection_tint_logic_group.interface.new_socket(name="Parallel Brightness", in_out='INPUT', socket_type="NodeSocketFloat")
         input_node = reflection_tint_logic_group.nodes.new("NodeGroupInput")
         input_node.location = Vector((-700, -200))
 
@@ -1408,7 +1408,7 @@ def generate_reflection_tint_logic_node(tree):
         parallel_tint_socket.min_value = -10000.0
         parallel_tint_socket.max_value = 10000.0
 
-        reflection_tint_socket = reflection_tint_logic_group.outputs.new("NodeSocketColor", "Color")
+        reflection_tint_socket = reflection_tint_logic_group.interface.new_socket(name="Color", in_out='OUTPUT', socket_type="NodeSocketColor")
         reflection_tint_socket.default_value = (0, 0, 0, 0)
 
         output_node = reflection_tint_logic_group.nodes.new("NodeGroupOutput")
@@ -1482,13 +1482,13 @@ def generate_detail_logic_node(tree, shader):
     if not detail_logic_group:
         detail_logic_group = bpy.data.node_groups.new(type="ShaderNodeTree", name="Detail Logic")
 
-        detail_after_reflection_socket = detail_logic_group.inputs.new("NodeSocketFloat", "Detail After Reflection")
-        reflection_color_socket = detail_logic_group.inputs.new("NodeSocketColor", "Reflection Color")
-        detail_socket = detail_logic_group.inputs.new("NodeSocketColor", "Detail")
-        mask_socket = detail_logic_group.inputs.new("NodeSocketColor", "Mask")
-        base_color_socket = detail_logic_group.inputs.new("NodeSocketColor", "Base Color")
-        reflection_only_socket = detail_logic_group.inputs.new("NodeSocketColor", "Reflection Only")
-        reflection_mask_socket = detail_logic_group.inputs.new("NodeSocketColor", "Reflection Mask")
+        detail_after_reflection_socket = detail_logic_group.interface.new_socket(name="Detail After Reflection", in_out='INPUT', socket_type="NodeSocketFloat")
+        reflection_color_socket = detail_logic_group.interface.new_socket(name="Reflection Color", in_out='INPUT', socket_type="NodeSocketColor")
+        detail_socket = detail_logic_group.interface.new_socket(name="Detail", in_out='INPUT', socket_type="NodeSocketColor")
+        mask_socket = detail_logic_group.interface.new_socket(name="Mask", in_out='INPUT', socket_type="NodeSocketColor")
+        base_color_socket = detail_logic_group.interface.new_socket(name="Base Color", in_out='INPUT', socket_type="NodeSocketColor")
+        reflection_only_socket = detail_logic_group.interface.new_socket(name="Reflection Only", in_out='INPUT', socket_type="NodeSocketColor")
+        reflection_mask_socket = detail_logic_group.interface.new_socket(name="Reflection Mask", in_out='INPUT', socket_type="NodeSocketColor")
         input_node = detail_logic_group.nodes.new("NodeGroupInput")
         input_node.location = Vector((-1500.0, 0.0))
 
@@ -1504,7 +1504,7 @@ def generate_detail_logic_node(tree, shader):
         reflection_only_socket.default_value = (0.0, 0.0, 0.0, 1)
         reflection_mask_socket.default_value = (0.0, 0.0, 0.0, 1)
 
-        color_socket = detail_logic_group.outputs.new("NodeSocketColor", "Color")
+        color_socket = detail_logic_group.interface.new_socket(name="Color", in_out='OUTPUT', socket_type="NodeSocketColor")
         color_socket.default_value = (0, 0, 0, 0)
         output_node = detail_logic_group.nodes.new("NodeGroupOutput")
         output_node.location = Vector((0, 0))
@@ -1877,7 +1877,7 @@ def generate_shader_model(mat, shader, tag_format, report):
     animation_color_mix_node.location = Vector((-425, -600))
     connect_inputs(mat.node_tree, animation_color_lower_bound_gamma_node, "Color", animation_color_mix_node, 6)
     connect_inputs(mat.node_tree, animation_color_upper_bound_gamma_node, "Color", animation_color_mix_node, 7)
-    connect_inputs(mat.node_tree, animation_color_mix_node, 2, bdsf_principled, "Emission")
+    connect_inputs(mat.node_tree, animation_color_mix_node, 2, bdsf_principled, "Emission Color")
 
 def generate_shader_environment(mat, shader, permutation_index, tag_format, report):
     mat.use_nodes = True

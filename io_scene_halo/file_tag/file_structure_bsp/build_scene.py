@@ -409,7 +409,7 @@ def build_scene(context, LEVEL, game_version, game_title, file_version, fix_rota
                     bm.to_mesh(full_mesh)
                     bm.free()
 
-                    bpy.context.collection.objects.link(object_mesh)
+                    cluster_collection_override.objects.link(object_mesh)
 
         if len(LEVEL.cluster_portals) > 0:
             portal_bm = bmesh.new()
