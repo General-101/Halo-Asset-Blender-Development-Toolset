@@ -25,27 +25,25 @@
 # ##### END MIT LICENSE BLOCK #####
 
 from xml.dom import minidom
-from .format_retail import LevelAsset
+from .format_retail import (
+        LevelAsset,
+        LeafFlags,
+        SurfaceFlags
+        )
 from mathutils import Vector, Quaternion
 
 XML_OUTPUT = False
 
-def process_file_retail(input_stream, tag_format, report):
-    TAG = tag_format.TagAsset()
-    LEVEL = LevelAsset()
-    TAG.is_legacy = False
-    TAG.big_endian = False
+def initilize_scenario(LEVEL):
+    LEVEL.import_info = []
+    LEVEL.collision_materials = []
+    LEVEL.collision_bsps = []
+    LEVEL.cluster_portals = []
+    LEVEL.clusters = []
+    LEVEL.materials = []
 
-    if XML_OUTPUT:
-        TAG.xml_doc = minidom.Document()
-
-    LEVEL.header = TAG.Header().read(input_stream, TAG)
-
-    tag_node = None
-    if XML_OUTPUT:
-        tag_node = TAG.xml_doc.childNodes[0]
-
-    level_tag_block_header = TAG.TagBlockHeader().read(input_stream, TAG)
+def read_bsp_body(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT):
+    LEVEL.level_header = TAG.TagBlockHeader().read(input_stream, TAG)
     LEVEL.level_body = LEVEL.LevelBody()
     LEVEL.level_body.import_info_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "import info"))
     input_stream.read(4) # Padding?
@@ -108,12 +106,11 @@ def process_file_retail(input_stream, tag_format, report):
     LEVEL.level_body.object_fake_lightprobes_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "object fake lightprobes"))
     LEVEL.level_body.decorators_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "decorators"))
 
-    LEVEL.import_info = []
-    import_info_count = LEVEL.level_body.import_info_tag_block.count
-    if import_info_count > 0:
-        import_info_node = tag_format.get_xml_node(XML_OUTPUT, import_info_count, tag_node, "name", "import info")
-        import_info_tag_block_header = TAG.TagBlockHeader().read(input_stream, TAG)
-        for import_info_idx in range(import_info_count):
+def read_import_info(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT):
+    if LEVEL.level_body.import_info_tag_block.count > 0:
+        import_info_node = tag_format.get_xml_node(XML_OUTPUT, LEVEL.level_body.import_info_tag_block.count, tag_node, "name", "import info")
+        LEVEL.import_info_header = TAG.TagBlockHeader().read(input_stream, TAG)
+        for import_info_idx in range(LEVEL.level_body.import_info_tag_block.count):
             import_info_element_node = None
             if XML_OUTPUT:
                 import_info_element_node = TAG.xml_doc.createElement('element')
@@ -139,11 +136,10 @@ def process_file_retail(input_stream, tag_format, report):
                 import_info_element_node = import_info_node.childNodes[import_info_idx]
 
             import_info.files = []
-            files_count = import_info.files_tag_block.count
-            if files_count > 0:
-                files_node = tag_format.get_xml_node(XML_OUTPUT, files_count, import_info_element_node, "name", "files")
-                files_tag_block_header = TAG.TagBlockHeader().read(input_stream, TAG)
-                for file_idx in range(files_count):
+            if import_info.files_tag_block.count > 0:
+                files_node = tag_format.get_xml_node(XML_OUTPUT, import_info.files_tag_block.count, import_info_element_node, "name", "files")
+                import_info.files_header = TAG.TagBlockHeader().read(input_stream, TAG)
+                for file_idx in range(import_info.files_tag_block.count):
                     file_element_node = None
                     if XML_OUTPUT:
                         file_element_node = TAG.xml_doc.createElement('element')
@@ -162,12 +158,11 @@ def process_file_retail(input_stream, tag_format, report):
 
                     import_info.files.append(file)
 
-    LEVEL.collision_materials = []
-    collision_materials_count = LEVEL.level_body.collision_materials_tag_block.count
-    if collision_materials_count > 0:
-        collision_materials_node = tag_format.get_xml_node(XML_OUTPUT, collision_materials_count, tag_node, "name", "collision materials")
-        collision_materials_tag_block_header = TAG.TagBlockHeader().read(input_stream, TAG)
-        for collision_material_idx in range(collision_materials_count):
+def read_collision_materials(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT):
+    if LEVEL.level_body.collision_materials_tag_block.count > 0:
+        collision_materials_node = tag_format.get_xml_node(XML_OUTPUT, LEVEL.level_body.collision_materials_tag_block.count, tag_node, "name", "collision materials")
+        LEVEL.collision_materials_header = TAG.TagBlockHeader().read(input_stream, TAG)
+        for collision_material_idx in range(LEVEL.level_body.collision_materials_tag_block.count):
             collision_material_element_node = None
             if XML_OUTPUT:
                 collision_material_element_node = TAG.xml_doc.createElement('element')
@@ -199,152 +194,197 @@ def process_file_retail(input_stream, tag_format, report):
                 collision_material.old_shader.append_xml_attributes(old_shader_node)
                 collision_material.new_shader.append_xml_attributes(new_shader_node)
 
-    LEVEL.collision_bsps = []
-    collision_bsps_count = LEVEL.level_body.collision_bsps_tag_block.count
-    if collision_bsps_count > 0:
-        collision_bsps_node = tag_format.get_xml_node(XML_OUTPUT, collision_bsps_count, tag_node, "name", "collision bsps")
-        collision_bsps_tag_block_header = TAG.TagBlockHeader().read(input_stream, TAG)
-        for collision_bsp_idx in range(collision_bsps_count):
+def read_collision_bsps(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT):
+    if LEVEL.level_body.collision_bsps_tag_block.count > 0:
+        collision_bsps_node = tag_format.get_xml_node(XML_OUTPUT, LEVEL.level_body.collision_bsps_tag_block.count, tag_node, "name", "collision bsps")
+        LEVEL.collision_bsp_header = TAG.TagBlockHeader().read(input_stream, TAG)
+        for collision_bsp_idx in range(LEVEL.level_body.collision_bsps_tag_block.count):
             collision_bsp_element_node = None
             if XML_OUTPUT:
                 collision_bsp_element_node = TAG.xml_doc.createElement('element')
                 collision_bsp_element_node.setAttribute('index', str(collision_bsp_idx))
                 collision_bsps_node.appendChild(collision_bsp_element_node)
 
-    collision_bsps_count = LEVEL.level_body.collision_bsps_tag_block.count
-    if collision_bsps_count > 0:
-        collision_bsps_header = struct.unpack('<4siii', input_stream.read(16))
-        LEVEL.level_body.collision_bsps_header = TAG.TagBlockHeader(collision_bsps_header[0], collision_bsps_header[1], collision_bsps_header[2], collision_bsps_header[3])
-        for collision_bsp_idx in range(collision_bsps_count):
-            collision_bsp_struct = struct.unpack('<iIIiIIiIIiIIiIIiIIiIIiII', input_stream.read(96))
             collision_bsp = LEVEL.CollisionBSP()
-            collision_bsp.bsp3d_nodes_tag_block = TAG.TagBlock(collision_bsp_struct[0], 131072, collision_bsp_struct[1], collision_bsp_struct[2])
-            collision_bsp.planes_tag_block = TAG.TagBlock(collision_bsp_struct[3], 65535, collision_bsp_struct[4], collision_bsp_struct[5])
-            collision_bsp.leaves_tag_block = TAG.TagBlock(collision_bsp_struct[6], 65535, collision_bsp_struct[7], collision_bsp_struct[8])
-            collision_bsp.bsp2d_references_tag_block = TAG.TagBlock(collision_bsp_struct[9], 131072, collision_bsp_struct[10], collision_bsp_struct[11])
-            collision_bsp.bsp2d_nodes_tag_block = TAG.TagBlock(collision_bsp_struct[12], 65535, collision_bsp_struct[13], collision_bsp_struct[14])
-            collision_bsp.surfaces_tag_block = TAG.TagBlock(collision_bsp_struct[15], 131072, collision_bsp_struct[16], collision_bsp_struct[17])
-            collision_bsp.edges_tag_block = TAG.TagBlock(collision_bsp_struct[18], 262144, collision_bsp_struct[19], collision_bsp_struct[20])
-            collision_bsp.vertices_tag_block = TAG.TagBlock(collision_bsp_struct[21], 131072, collision_bsp_struct[22], collision_bsp_struct[23])
+            collision_bsp.bsp3d_nodes_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(collision_bsp_element_node, "bsp3d nodes"))
+            collision_bsp.planes_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(collision_bsp_element_node, "planes"))
+            collision_bsp.leaves_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(collision_bsp_element_node, "leaves"))
+            collision_bsp.bsp2d_references_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(collision_bsp_element_node, "bsp2d references"))
+            collision_bsp.bsp2d_nodes_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(collision_bsp_element_node, "bsp2d nodes"))
+            collision_bsp.surfaces_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(collision_bsp_element_node, "surfaces"))
+            collision_bsp.edges_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(collision_bsp_element_node, "edges"))
+            collision_bsp.vertices_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(collision_bsp_element_node, "vertices"))
 
             LEVEL.collision_bsps.append(collision_bsp)
 
-        for collision_bsp in LEVEL.collision_bsps:
-            bsp_3d_nodes = []
-            planes = []
-            leaves = []
-            bsp2d_references = []
-            bsp2d_nodes = []
-            surfaces = []
-            edges = []
-            vertices = []
-            bsp3d_nodes_count = collision_bsp.bsp3d_nodes_tag_block.count
-            if bsp3d_nodes_count > 0:
-                bsp3d_nodes_tag_block_header = struct.unpack('<16x', input_stream.read(16))
-                for bsp3d_node_idx in range(bsp3d_nodes_count):
-                    bsp_3d_node_struct = struct.unpack('<ii', input_stream.read(8))
-                    bsp_3d_node = LEVEL.BSP3DNode()
-                    bsp_3d_node.back_child = bsp_3d_node_struct[0]
-                    bsp_3d_node.front_child = bsp_3d_node_struct[1]
+        for collision_bsp_idx, collision_bsp in enumerate(LEVEL.collision_bsps):
+            collision_bsp_element_node = None
+            if XML_OUTPUT:
+                collision_bsp_element_node = collision_bsps_node.childNodes[collision_bsp_idx]
 
-                    bsp_3d_nodes.append(bsp_3d_node)
+            collision_bsp.bsp3d_nodes = []
+            collision_bsp.planes = []
+            collision_bsp.leaves = []
+            collision_bsp.bsp2d_references = []
+            collision_bsp.bsp2d_nodes = []
+            collision_bsp.surfaces = []
+            collision_bsp.edges = []
+            collision_bsp.vertices = []
+            if collision_bsp.bsp3d_nodes_tag_block.count > 0:
+                collision_bsp.bsp3d_nodes_header = TAG.TagBlockHeader().read(input_stream, TAG)
+                bsp3d_node = tag_format.get_xml_node(XML_OUTPUT, collision_bsp.bsp3d_nodes_tag_block.count, collision_bsp_element_node, "name", "bsp3d nodes")
+                for bsp3d_node_idx in range(collision_bsp.bsp3d_nodes_tag_block.count):
+                    bsp3d_node_element_node = None
+                    if XML_OUTPUT:
+                        bsp3d_node_element_node = TAG.xml_doc.createElement('element')
+                        bsp3d_node_element_node.setAttribute('index', str(bsp3d_node_idx))
+                        bsp3d_node.appendChild(bsp3d_node_element_node)
 
-            planes_count = collision_bsp.planes_tag_block.count
-            if planes_count > 0:
-                planes_tag_block_header = struct.unpack('<16x', input_stream.read(16))
-                for plane_idx in range(planes_count):
-                    plane_struct = struct.unpack('<ffff', input_stream.read(16))
-                    plane = LEVEL.Plane()
-                    plane.translation = Vector((plane_struct[0], plane_struct[1], plane_struct[2])) * 100
-                    plane.distance = plane_struct[3] * 100
+                    bsp3d_node = LEVEL.BSP3DNode()
+                    bsp3d_node.back_child = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(bsp3d_node_element_node, "back child"))
+                    bsp3d_node.front_child = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(bsp3d_node_element_node, "front child"))
 
-                    planes.append(plane)
+                    collision_bsp.bsp3d_nodes.append(bsp3d_node)
 
-            leaves_count = collision_bsp.leaves_tag_block.count
-            if leaves_count > 0:
-                leaves_tag_block_header = struct.unpack('<16x', input_stream.read(16))
-                for leaf_idx in range(leaves_count):
-                    leaf_struct = struct.unpack('<bbbx', input_stream.read(4))
+            if collision_bsp.planes_tag_block.count > 0:
+                collision_bsp.planes_header = TAG.TagBlockHeader().read(input_stream, TAG)
+                plane_node = tag_format.get_xml_node(XML_OUTPUT, collision_bsp.planes_tag_block.count, collision_bsp_element_node, "name", "planes")
+                for plane_idx in range(collision_bsp.planes_tag_block.count):
+                    plane_element_node = None
+                    if XML_OUTPUT:
+                        plane_element_node = TAG.xml_doc.createElement('element')
+                        plane_element_node.setAttribute('index', str(plane_idx))
+                        plane_node.appendChild(plane_element_node)
+
+                    collision_bsp.planes.append(TAG.Plane3D().read(input_stream, TAG, tag_format.XMLData(plane_element_node, "plane")))
+
+            if collision_bsp.leaves_tag_block.count > 0:
+                collision_bsp.leaves_header = TAG.TagBlockHeader().read(input_stream, TAG)
+                leaf_node = tag_format.get_xml_node(XML_OUTPUT, collision_bsp.leaves_tag_block.count, collision_bsp_element_node, "name", "leaves")
+                for leaf_idx in range(collision_bsp.leaves_tag_block.count):
+                    leaf_element_node = None
+                    if XML_OUTPUT:
+                        leaf_element_node = TAG.xml_doc.createElement('element')
+                        leaf_element_node.setAttribute('index', str(leaf_idx))
+                        leaf_node.appendChild(leaf_element_node)
+
                     leaf = LEVEL.Leaf()
-                    leaf.flags = leaf_struct[0]
-                    leaf.bsp2d_reference_count = leaf_struct[1]
-                    leaf.first_bsp2d_reference = leaf_struct[2]
+                    leaf.flags = TAG.read_flag_unsigned_byte(input_stream, TAG, tag_format.XMLData(leaf_element_node, "flags", LeafFlags))
+                    leaf.bsp2d_reference_count = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(leaf_element_node, "bsp2d reference count"))
+                    leaf.first_bsp2d_reference = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(leaf_element_node, "first bsp2d reference"))
+                    input_stream.read(1) # Padding?
 
-                    leaves.append(leaf)
+                    collision_bsp.leaves.append(leaf)
 
-            bsp2d_references_count = collision_bsp.bsp2d_references_tag_block.count
-            if bsp2d_references_count > 0:
-                bsp2d_references_tag_block_header = struct.unpack('<16x', input_stream.read(16))
-                for bsp2d_reference_idx in range(bsp2d_references_count):
-                    bsp2d_reference_struct = struct.unpack('<hh', input_stream.read(4))
+            if collision_bsp.bsp2d_references_tag_block.count > 0:
+                collision_bsp.bsp2d_references_header = TAG.TagBlockHeader().read(input_stream, TAG)
+                bsp2d_references_node = tag_format.get_xml_node(XML_OUTPUT, collision_bsp.bsp2d_references_tag_block.count, collision_bsp_element_node, "name", "bsp2d references")
+                for bsp2d_reference_idx in range(collision_bsp.bsp2d_references_tag_block.count):
+                    bsp2d_reference_element_node = None
+                    if XML_OUTPUT:
+                        bsp2d_reference_element_node = TAG.xml_doc.createElement('element')
+                        bsp2d_reference_element_node.setAttribute('index', str(bsp2d_reference_idx))
+                        bsp2d_references_node.appendChild(bsp2d_reference_element_node)
+
                     bsp2d_reference = LEVEL.BSP2DReference()
-                    bsp2d_reference.plane = bsp2d_reference_struct[0]
-                    bsp2d_reference.bsp2d_node = bsp2d_reference_struct[1]
+                    bsp2d_reference.plane = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(bsp2d_reference_element_node, "plane"))
+                    bsp2d_reference.bsp2d_node = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(bsp2d_reference_element_node, "bsp2d node"))
 
-                    bsp2d_references.append(bsp2d_reference)
+                    collision_bsp.bsp2d_references.append(bsp2d_reference)
 
-            bsp2d_nodes_count = collision_bsp.bsp2d_nodes_tag_block.count
-            if bsp2d_nodes_count > 0:
-                bsp2d_nodes_tag_block_header = struct.unpack('<16x', input_stream.read(16))
-                for bsp2d_nodes_idx in range(bsp2d_nodes_count):
-                    bsp2d_node_struct = struct.unpack('<fffhh', input_stream.read(16))
+            if collision_bsp.bsp2d_nodes_tag_block.count > 0:
+                collision_bsp.bsp2d_nodes_header = TAG.TagBlockHeader().read(input_stream, TAG)
+                bsp2d_node = tag_format.get_xml_node(XML_OUTPUT, collision_bsp.bsp2d_nodes_tag_block.count, collision_bsp_element_node, "name", "bsp2d nodes")
+                for bsp2d_node_idx in range(collision_bsp.bsp2d_nodes_tag_block.count):
+                    bsp2d_node_element_node = None
+                    if XML_OUTPUT:
+                        bsp2d_node_element_node = TAG.xml_doc.createElement('element')
+                        bsp2d_node_element_node.setAttribute('index', str(bsp2d_node_idx))
+                        bsp2d_node.appendChild(bsp2d_node_element_node)
+
                     bsp2d_node = LEVEL.BSP2DNode()
-                    bsp2d_node.plane_i = bsp2d_node_struct[0]
-                    bsp2d_node.plane_j = bsp2d_node_struct[1]
-                    bsp2d_node.distance = bsp2d_node_struct[2] * 100
-                    bsp2d_node.left_child = bsp2d_node_struct[3]
-                    bsp2d_node.right_child = bsp2d_node_struct[4]
+                    bsp2d_node.plane = TAG.Plane2D().read(input_stream, TAG, tag_format.XMLData(bsp2d_node_element_node, "plane"))
+                    bsp2d_node.left_child = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(bsp2d_node_element_node, "left child"))
+                    bsp2d_node.right_child = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(bsp2d_node_element_node, "right child"))
 
-                    bsp2d_nodes.append(bsp2d_node)
+                    collision_bsp.bsp2d_nodes.append(bsp2d_node)
 
-            surfaces_count = collision_bsp.surfaces_tag_block.count
-            if surfaces_count > 0:
-                surfaces_tag_block_header = struct.unpack('<16x', input_stream.read(16))
-                for surfaces_idx in range(surfaces_count):
-                    surfaces_struct = struct.unpack('<hhbbbx', input_stream.read(8))
+            if collision_bsp.surfaces_tag_block.count > 0:
+                collision_bsp.surfaces_header = TAG.TagBlockHeader().read(input_stream, TAG)
+                surfaces_node = tag_format.get_xml_node(XML_OUTPUT, collision_bsp.surfaces_tag_block.count, collision_bsp_element_node, "name", "surfaces")
+                for surfaces_idx in range(collision_bsp.surfaces_tag_block.count):
+                    surface_element_node = None
+                    if XML_OUTPUT:
+                        surface_element_node = TAG.xml_doc.createElement('element')
+                        surface_element_node.setAttribute('index', str(surfaces_idx))
+                        surfaces_node.appendChild(surface_element_node)
+
                     surface = LEVEL.Surface()
-                    surface.plane = surfaces_struct[0]
-                    surface.first_edge = surfaces_struct[1]
-                    surface.flags = surfaces_struct[2]
-                    surface.breakable_surface = surfaces_struct[3]
-                    surface.material = surfaces_struct[4]
+                    surface.plane = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(surface_element_node, "plane"))
+                    surface.first_edge = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(surface_element_node, "first edge"))
+                    surface.flags = TAG.read_flag_unsigned_byte(input_stream, TAG, tag_format.XMLData(surface_element_node, "flags", SurfaceFlags))
+                    surface.breakable_surface = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(surface_element_node, "breakable surface"))
+                    surface.material = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(surface_element_node, "material"))
+                    input_stream.read(1) # Padding?
 
-                    surfaces.append(surface)
+                    collision_bsp.surfaces.append(surface)
 
-            edges_count = collision_bsp.edges_tag_block.count
-            if edges_count > 0:
-                edges_tag_block_header = struct.unpack('<16x', input_stream.read(16))
-                for edge_idx in range(edges_count):
-                    edge_struct = struct.unpack('<hhhhhh', input_stream.read(12))
+            if collision_bsp.edges_tag_block.count > 0:
+                collision_bsp.edges_header = TAG.TagBlockHeader().read(input_stream, TAG)
+                edge_node = tag_format.get_xml_node(XML_OUTPUT, collision_bsp.edges_tag_block.count, collision_bsp_element_node, "name", "edges")
+                for edge_idx in range(collision_bsp.edges_tag_block.count):
+                    edge_element_node = None
+                    if XML_OUTPUT:
+                        edge_element_node = TAG.xml_doc.createElement('element')
+                        edge_element_node.setAttribute('index', str(edge_idx))
+                        edge_node.appendChild(edge_element_node)
+
                     edge = LEVEL.Edge()
-                    edge.start_vertex = edge_struct[0]
-                    edge.end_vertex = edge_struct[1]
-                    edge.forward_edge = edge_struct[2]
-                    edge.reverse_edge = edge_struct[3]
-                    edge.left_surface = edge_struct[4]
-                    edge.right_surface = edge_struct[5]
+                    edge.start_vertex = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(edge_element_node, "start vertex"))
+                    edge.end_vertex = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(edge_element_node, "end vertex"))
+                    edge.forward_edge = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(edge_element_node, "forward edge"))
+                    edge.reverse_edge = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(edge_element_node, "reverse edge"))
+                    edge.left_surface = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(edge_element_node, "left surface"))
+                    edge.right_surface = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(edge_element_node, "right surface"))
 
-                    edges.append(edge)
+                    collision_bsp.edges.append(edge)
 
-            vertices_count = collision_bsp.vertices_tag_block.count
-            if vertices_count > 0:
-                vertices_tag_block_header = struct.unpack('<16x', input_stream.read(16))
-                for vertex_idx in range(vertices_count):
-                    vertex_struct = struct.unpack('<fffi', input_stream.read(16))
+            if collision_bsp.vertices_tag_block.count > 0:
+                collision_bsp.vertices_header = TAG.TagBlockHeader().read(input_stream, TAG)
+                vertex_node = tag_format.get_xml_node(XML_OUTPUT, collision_bsp.vertices_tag_block.count, collision_bsp_element_node, "name", "vertices")
+                for vertex_idx in range(collision_bsp.vertices_tag_block.count):
+                    vertex_element_node = None
+                    if XML_OUTPUT:
+                        vertex_element_node = TAG.xml_doc.createElement('element')
+                        vertex_element_node.setAttribute('index', str(vertex_idx))
+                        vertex_node.appendChild(vertex_element_node)
+
                     vertex = LEVEL.Vertex()
-                    vertex.translation = Vector((vertex_struct[0], vertex_struct[1], vertex_struct[2])) * 100
-                    vertex.first_edge = vertex_struct[3]
+                    vertex.translation = TAG.read_point_3d(input_stream, TAG,  tag_format.XMLData(vertex_element_node, "translation"), True)
+                    vertex.first_edge = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(vertex_element_node, "first edge"))
 
-                    vertices.append(vertex)
+                    collision_bsp.vertices.append(vertex)
 
-            collision_bsp.bsp3d_nodes = bsp_3d_nodes
-            collision_bsp.planes = planes
-            collision_bsp.leaves = leaves
-            collision_bsp.bsp2d_references = bsp2d_references
-            collision_bsp.bsp2d_nodes = bsp2d_nodes
-            collision_bsp.surfaces = surfaces
-            collision_bsp.edges = edges
-            collision_bsp.vertices = vertices
+def process_file_retail(input_stream, tag_format, report):
+    TAG = tag_format.TagAsset()
+    LEVEL = LevelAsset()
+    TAG.is_legacy = False
+    TAG.big_endian = False
+
+    if XML_OUTPUT:
+        TAG.xml_doc = minidom.Document()
+
+    LEVEL.header = TAG.Header().read(input_stream, TAG)
+
+    tag_node = None
+    if XML_OUTPUT:
+        tag_node = TAG.xml_doc.childNodes[0]
+
+    initilize_scenario(LEVEL)
+    read_bsp_body(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT)
+    read_import_info(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT)
+    read_collision_materials(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT)
+    read_collision_bsps(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT)
 
     current_position = input_stream.tell()
     EOF = input_stream.seek(0, 2)

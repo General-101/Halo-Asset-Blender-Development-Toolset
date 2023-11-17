@@ -485,7 +485,7 @@ def build_scene(context, LEVEL, game_version, game_title, file_version, fix_rota
                     edge_index = edge.reverse_edge
 
             is_invalid = False
-            if game_title == "halo2" and H2SurfaceFlags.Invalid in H2SurfaceFlags(surface.flags):
+            if game_title == "halo2" and H2SurfaceFlags.invalid in H2SurfaceFlags(surface.flags):
                 is_invalid = True
 
             if not is_invalid and len(vert_indices) >= 3:
@@ -496,7 +496,7 @@ def build_scene(context, LEVEL, game_version, game_title, file_version, fix_rota
         surface_idx = 0
         for surface in bsp.surfaces:
             is_invalid = False
-            if game_title == "halo2" and H2SurfaceFlags.Invalid in H2SurfaceFlags(surface.flags):
+            if game_title == "halo2" and H2SurfaceFlags.invalid in H2SurfaceFlags(surface.flags):
                 is_invalid = True
 
             if not is_invalid:
@@ -525,19 +525,19 @@ def build_scene(context, LEVEL, game_version, game_title, file_version, fix_rota
                             material_name += "-"
 
                     else:
-                        if H2SurfaceFlags.Two_Sided in H2SurfaceFlags(surface.flags):
+                        if H2SurfaceFlags.two_sided in H2SurfaceFlags(surface.flags):
                             material_name += "%"
 
-                        if H2SurfaceFlags.Invisible in H2SurfaceFlags(surface.flags):
+                        if H2SurfaceFlags.invisible in H2SurfaceFlags(surface.flags):
                             material_name += "*"
 
-                        if H2SurfaceFlags.Climbable in H2SurfaceFlags(surface.flags):
+                        if H2SurfaceFlags.climbable in H2SurfaceFlags(surface.flags):
                             material_name += "^"
 
-                        if H2SurfaceFlags.Breakable in H2SurfaceFlags(surface.flags):
+                        if H2SurfaceFlags.breakable in H2SurfaceFlags(surface.flags):
                             material_name += "-"
 
-                        if H2SurfaceFlags.Conveyor in H2SurfaceFlags(surface.flags):
+                        if H2SurfaceFlags.conveyor in H2SurfaceFlags(surface.flags):
                             material_name += ">"
 
                 else:

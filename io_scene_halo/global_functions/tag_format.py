@@ -55,6 +55,9 @@ from ..file_tag.file_sky.process_file_retail import process_file_retail as proce
 from ..file_tag.file_shader_transparent_meter.process_file_retail import process_file_retail as process_shader_transparent_meter
 from ..file_tag.file_shader_transparent_glass.process_file_retail import process_file_retail as process_shader_transparent_glass
 
+from ..file_tag.file_structure_bsp.h2.process_file_retail import process_file_retail as process_h2_structure_bsp
+from ..file_tag.file_structure_lightmap.h2.process_file_retail import process_file_retail as process_h2_structure_lightmap
+
 class XMLData:
     def __init__(self, xml_node=None, element_name="", enum_class=None, block_count=0, block_name=""):
         self.xml_node = xml_node
@@ -900,6 +903,21 @@ class TagAsset():
                     if os.path.exists(input_file):
                         input_stream = open(input_file, 'rb')
                         ASSET = process_shader_transparent_glass(input_stream, tag_format, report)
+                        input_stream.close()
+
+            elif game_title == "halo2":
+                if self.tag_group == "sbsp":
+                    input_file = os.path.join(config.HALO_2_TAG_PATH, "%s.scenario_structure_bsp" % self.name)
+                    if os.path.exists(input_file):
+                        input_stream = open(input_file, 'rb')
+                        ASSET = process_h2_structure_bsp(input_stream, tag_format, report)
+                        input_stream.close()
+
+                elif self.tag_group == "ltmp":
+                    input_file = os.path.join(config.HALO_2_TAG_PATH, "%s.scenario_structure_lightmap" % self.name)
+                    if os.path.exists(input_file):
+                        input_stream = open(input_file, 'rb')
+                        ASSET = process_h2_structure_lightmap(input_stream, tag_format, report)
                         input_stream.close()
 
             return ASSET

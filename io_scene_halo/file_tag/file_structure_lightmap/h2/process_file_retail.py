@@ -25,7 +25,7 @@
 # ##### END MIT LICENSE BLOCK #####
 
 from xml.dom import minidom
-from .format import (
+from .format_retail import (
                 LightmapAsset,
                 GroupTypeEnum,
                 GroupFlags,

@@ -29,6 +29,24 @@ from mathutils import Vector, Euler
 
 SALT_SIZE = 32
 
+class DataTypesEnum(Enum):
+    none = 0
+    clusters = auto()
+    scenery = auto()
+    bipeds = auto()
+    vehicles = auto()
+    equipment = auto()
+    weapons = auto()
+    machines = auto()
+    controls = auto()
+    light_fixtures = auto()
+    sound_scenery = auto()
+    player_starting_locations = auto()
+    netgame_flags = auto()
+    netgame_equipment = auto()
+    decals = auto()
+    encounters = auto()
+
 class ScenarioTypeEnum(Enum):
     solo = 0
     multiplayer = auto()
@@ -198,6 +216,30 @@ class MachineFlags(Flag):
 class ControlFlags(Flag):
     usable_from_both_sides = auto()
 
+class VolumeTypeEnum(Enum):
+    sphere = 0
+    vertical_cylinder = auto()
+
+class ShapeTypeEnum(Enum):
+    sphere = 0
+    orthogonal = auto()
+    projective = auto()
+    pyramid = auto()
+
+class LightFlags(Flag):
+    custom_geometry = auto()
+    unused = auto()
+    cinematic_only = auto()
+
+class LightmapTypeEnum(Enum):
+    use_light_tag_settings = 0
+    dynamic_only = auto()
+    dynamic_with_lightmaps = auto()
+    lightmaps_only = auto()
+
+class LightmapFlags(Flag):
+    unused = auto()
+
 class TeamDesignatorEnum(Enum):
     alpha = 0
     bravo = auto()
@@ -229,6 +271,17 @@ class GametypeEnum(Enum):
     vip = auto()
     infection = auto()
 
+class SpawnTypeEnum(Enum):
+    both = 0
+    initial_spawn_only = auto()
+    respawn_only = auto()
+
+class CampaignPlayerTypeEnum(Enum):
+    masterchief = 0
+    dervish = auto()
+    chief_multiplayer = auto()
+    elite_multiplayer = auto()
+
 class NetGameEnum(Enum):
     ctf_flag_spawn = 0
     ctf_flag_return = auto()
@@ -255,6 +308,10 @@ class NetGameFlags(Flag):
     single_flag_bomb = auto()
     neutral_flag_bomb = auto()
 
+class NetGameEquipmentFlags(Flag):
+    levitate = auto()
+    destroy_existing_on_new_spawn = auto()
+
 class RespawnTimerStartsEnum(Enum):
     on_pick_up = 0
     on_body_depletion = auto()
@@ -274,6 +331,312 @@ class ClassificationEnum(Enum):
 class StartingEquipment(Flag):
     no_grenades = auto()
     plasma_grenades = auto()
+
+class SquadFlags(Flag):
+    unused = auto()
+    never_search = auto()
+    start_timer_immediately = auto()
+    no_timer_delay_forever = auto()
+    magic_sight_after_timer = auto()
+    automatic_migration = auto()
+    deprecated = auto()
+    respawn_enabled = auto()
+    blind = auto()
+    deaf = auto()
+    braindead = auto()
+    _3d_firing_positions = auto()
+    initially_placed = auto()
+    units_not_enterable_by_player = auto()
+
+class TeamEnum(Enum):
+    default = 0
+    player = auto()
+    human = auto()
+    covenant = auto()
+    flood = auto()
+    sentinel = auto()
+    heretic = auto()
+    prophet = auto()
+    unused8 = auto()
+    unused9 = auto()
+    unused10 = auto()
+    unused11 = auto()
+    unused12 = auto()
+    unused13 = auto()
+    unused14 = auto()
+    unused15 = auto()
+
+class MajorUpgradeEnum(Enum):
+    normal = 0
+    few = auto()
+    many = auto()
+    none = auto()
+    all = auto()
+
+class GrenadeTypeEnum(Enum):
+    none = 0
+    human_grenade = auto()
+    plasma_grenade = auto()
+
+class StartingLocationFlags(Flag):
+    initially_asleep = auto()
+    infection_from_explode = auto()
+    not_applicable = auto()
+    always_place = auto()
+    initially_hidden = auto()
+
+class SeatTypeEnum(Enum):
+    default = 0
+    passenger = auto()
+    gunner = auto()
+    driver = 0
+    small_cargo = auto()
+    large_cargo = auto()
+    no_driver = auto()
+    no_vehicle = auto()
+
+class InitialMovementModeEnum(Enum):
+    default = 0
+    climbing = auto()
+    flying = auto()
+
+class ZoneFlags(Flag):
+    manual_bsp_index = auto()
+
+class FiringPointFlags(Flag):
+    open = auto()
+    partial = auto()
+    closed = auto()
+    mobile = auto()
+    wall_lean = auto()
+    perch = auto()
+    ground_point = auto()
+    dynamic_cover_point = auto()
+
+class AreaFlags(Flag):
+    vehicle_area = auto()
+    perch = auto()
+    manual_reference_frame = auto()
+
+class MissionSceneFlags(Flag):
+    scene_can_play_multiple_times = auto()
+    enable_combat_dialogue = auto()
+
+class CombinationRuleEnum(Enum):
+    _or = 0
+    _and = auto()
+
+class TriggerFlags(Flag):
+    _not = auto()
+
+class GroupEnum(Enum):
+    group_1 = 0
+    group_2 = auto()
+    group_3 = auto()
+
+class PathfindingSectorFlags(Flag):
+    sector_walkable = auto()
+    sector_breakable = auto()
+    sector_mobile = auto()
+    sector_bsp_source = auto()
+    floor = auto()
+    ceiling = auto()
+    wall_north = auto()
+    wall_south = auto()
+    wall_east = auto()
+    wall_west = auto()
+    crouchable = auto()
+    aligned = auto()
+    sector_step = auto()
+    sector_interior = auto()
+
+class LinkFlags(Flag):
+    sector_link_from_collision_edge = auto()
+    sector_intersection_link = auto()
+    sector_link_bsp2d_creation_error = auto()
+    sector_link_topology_error = auto()
+    sector_link_chain_error = auto()
+    sector_link_both_sectors_walkable = auto()
+    sector_link_magic_hanging_link = auto()
+    sector_link_threshold = auto()
+    sector_link_crouchable = auto()
+    sector_link_wall_base = auto()
+    sector_link_ledge = auto()
+    sector_link_leanable = auto()
+    sector_link_start_corner = auto()
+    sector_link_end_corner = auto()
+
+class ObjectRefFlags(Flag):
+    mobile = auto()
+
+class NodeFlags(Flag):
+    projection_sign = auto()
+
+class HintTypeEnum(Enum):
+    intersection_link = 0
+    jump_link = auto()
+    climb_link = auto()
+    vault_link = auto()
+    mount_link = auto()
+    hoist_link = auto()
+    wall_jump_link = auto()
+    breakable_floor = auto()
+
+class GeometryFlags(Flag):
+    bidirectional = auto()
+    closed = auto()
+
+class ForceJumpHeightEnum(Enum):
+    none = 0
+    down = auto()
+    step = auto()
+    crouch = auto()
+    stand = auto()
+    storey = auto()
+    tower = auto()
+    infinite = auto()
+
+class JumpControlFlags(Flag):
+    magic_lift = auto()
+
+class HintFlags(Flag):
+    bidirectional = auto()
+
+class WellTypeEnum(Enum):
+    jump = 0
+    climb = auto()
+    hoist = auto()
+
+class AIConversationFlags(Flag):
+    stop_if_death = auto()
+    stop_if_damaged = auto()
+    stop_if_visible_enemy = auto()
+    stop_if_alerted_to_enemy = auto()
+    player_must_be_visible = auto()
+    stop_other_actions = auto()
+    keep_trying_to_play = auto()
+    player_must_be_looking = auto()
+
+class LineFlags(Flag):
+    addressee_look_at_speaker = auto()
+    everyone_look_at_speaker = auto()
+    everyone_look_at_addresse = auto()
+    wait_after_until_told_to_advance = auto()
+    wait_until_speaker_nearby = auto()
+    wait_until_everyone_nearby = auto()
+
+class AddresseeEnum(Enum):
+    none = 0
+    player = auto()
+    participant = auto()
+
+class ScriptTypeEnum(Enum):
+    startup = 0
+    dormant = auto()
+    continuous = auto()
+    static = auto()
+    stub = auto()
+    command_script = auto()
+
+class ReturnTypeEnum(Enum):
+    unparsed = 0
+    special_form = auto()
+    function_name = auto()
+    passthrough = auto()
+    void = auto()
+    boolean = auto()
+    real = auto()
+    short = auto()
+    long = auto()
+    string = auto()
+    script = auto()
+    string_id = auto()
+    unit_seat_mapping = auto()
+    trigger_volume = auto()
+    cutscene_flag = auto()
+    cutscene_camera_point = auto()
+    cutscene_title = auto()
+    cutscene_recording = auto()
+    device_group = auto()
+    ai = auto()
+    ai_command_list = auto()
+    ai_command_script = auto()
+    ai_behavior = auto()
+    ai_orders = auto()
+    starting_profile = auto()
+    conversation = auto()
+    structure_bsp = auto()
+    navpoint = auto()
+    point_reference = auto()
+    style = auto()
+    hud_message = auto()
+    object_list = auto()
+    sound = auto()
+    effect = auto()
+    damage = auto()
+    looping_sound = auto()
+    animation_graph = auto()
+    damage_effect = auto()
+    object_definition = auto()
+    bitmap = auto()
+    shader = auto()
+    render_model = auto()
+    structure_definition = auto()
+    lightmap_definition = auto()
+    game_difficulty = auto()
+    team = auto()
+    actor_type = auto()
+    hud_corner = auto()
+    model_state = auto()
+    network_event = auto()
+    object = auto()
+    unit = auto()
+    vehicle = auto()
+    weapon = auto()
+    device = auto()
+    scenery = auto()
+    object_name = auto()
+    unit_name = auto()
+    vehicle_name = auto()
+    weapon_name = auto()
+    device_name = auto()
+    scenery_name = auto()
+
+class PointSetFlags(Flag):
+    manual_reference_frame = auto()
+    turret_deployment = auto()
+
+class CameraFlags(Flag):
+    edit_as_relative = auto()
+
+class CameraTypeEnum(Enum):
+    normal = 0
+    ignore_target_orientation = auto()
+    dolly = auto()
+    ignore_target_updates = auto()
+
+class JustificationEnum(Enum):
+    left = 0
+    right = auto()
+    center = auto()
+    custom_text_entry = auto()
+
+class FontEnum(Enum):
+    terminal_font = auto()
+    body_text_font = auto()
+    title_font = auto()
+    super_large_font = auto()
+    large_body_text_font = auto()
+    split_screen_hud_message_font = auto()
+    full_screen_hud_message_font = auto()
+    english_body_text_font = auto()
+    hud_number_font = auto()
+    subtitle_font = auto()
+    mainmenu_font = auto()
+    text_chat_font = auto()
+
+class StructureBSPFlags(Flag):
+    default_sky_enabled = auto()
 
 class ScenarioAsset():
     def __init__(self):
@@ -953,6 +1316,12 @@ class ScenarioAsset():
             self.item_collection_5 = item_collection_5
             self.item_collection_6 = item_collection_6
 
+    class BSPSwitchTriggerVolume():
+        def __init__(self, trigger_volume=0, source=0, destination=0):
+            self.trigger_volume = trigger_volume
+            self.source = source
+            self.destination = destination
+
     class Decal():
         def __init__(self, palette_index=0, yaw=0, pitch=0, position=Vector()):
             self.palette_index = palette_index
@@ -969,7 +1338,8 @@ class ScenarioAsset():
     class Squad():
         def __init__(self, name="", flags=0, team=0, parent_squad_group_index=0, squad_delay_time=0.0, normal_difficulty_count=0, insane_difficulty_count=0, major_upgrade=0,
                      vehicle_type_index=0, character_type_index=0, initial_zone_index=0, initial_weapon_index=0, initial_secondary_weapon_index=0, grenade_type=0,
-                     initial_order_index=0, vehicle_variant="", starting_locations_tag_block=None, placement_script="", starting_locations_header=None, starting_locations=None):
+                     initial_order_index=0, vehicle_variant="", vehicle_variant_length=0, starting_locations_tag_block=None, placement_script="", starting_locations_header=None, 
+                     starting_locations=None):
             self.name = name
             self.flags = flags
             self.team = team
@@ -986,22 +1356,22 @@ class ScenarioAsset():
             self.grenade_type = grenade_type
             self.initial_order_index = initial_order_index
             self.vehicle_variant = vehicle_variant
+            self.vehicle_variant_length = vehicle_variant_length
             self.starting_locations_tag_block = starting_locations_tag_block
             self.placement_script = placement_script
             self.starting_locations_header = starting_locations_header
             self.starting_locations = starting_locations
 
     class StartingLocation():
-        def __init__(self, name="", name_length=0, position=Vector(), reference_frame=0, facing_y=0.0, facing_p=0.0, flags=0, character_type_index=0,
+        def __init__(self, name="", name_length=0, position=Vector(), reference_frame=0, facing=(0.0, 0.0), flags=0, character_type_index=0,
                      initial_weapon_index=0, initial_secondary_weapon_index=0, vehicle_type_index=0, seat_type=0, grenade_type=0, swarm_count=0,
-                     actor_variant="", vehicle_variant="", initial_movement_distance=0, emitter_vehicle_index=0, initial_movement_mode=0,
-                     placement_script=""):
+                     actor_variant="", actor_variant_length=0, vehicle_variant="", vehicle_variant_length=0, initial_movement_distance=0, emitter_vehicle_index=0, 
+                     initial_movement_mode=0, placement_script=""):
             self.name = name
             self.name_length = name_length
             self.position = position
             self.reference_frame = reference_frame
-            self.facing_y = facing_y
-            self.facing_p = facing_p
+            self.facing = facing
             self.flags = flags
             self.character_type_index = character_type_index
             self.initial_weapon_index = initial_weapon_index
@@ -1011,7 +1381,9 @@ class ScenarioAsset():
             self.grenade_type = grenade_type
             self.swarm_count = swarm_count
             self.actor_variant = actor_variant
+            self.actor_variant_length = actor_variant_length
             self.vehicle_variant = vehicle_variant
+            self.vehicle_variant_length = vehicle_variant_length
             self.initial_movement_distance = initial_movement_distance
             self.emitter_vehicle_index = emitter_vehicle_index
             self.initial_movement_mode = initial_movement_mode
@@ -1031,14 +1403,13 @@ class ScenarioAsset():
             self.areas = areas
 
     class FiringPosition():
-        def __init__(self, position=Vector(), reference_frame=0, flags=0, area_index=0, cluster_index=0, normal_y=0.0, normal_p=0.0):
+        def __init__(self, position=Vector(), reference_frame=0, flags=0, area_index=0, cluster_index=0, normal=(0.0, 0.0)):
             self.position = position
             self.reference_frame = reference_frame
             self.flags = flags
             self.area_index = area_index
             self.cluster_index = cluster_index
-            self.normal_y = normal_y
-            self.normal_p = normal_p
+            self.normal = normal
 
     class Area():
         def __init__(self, name="", flags=0, runtime_starting_index=0, runtime_count=0, manual_reference_frame=0, flight_hints_tag_block=None, flight_hints_header=None,
@@ -1051,6 +1422,308 @@ class ScenarioAsset():
             self.flight_hints_tag_block = flight_hints_tag_block
             self.flight_hints_header = flight_hints_header
             self.flight_hints = flight_hints
+
+    class FlightHint():
+        def __init__(self, flight_hint_index=0, point_index=0):
+            self.flight_hint_index = flight_hint_index
+            self.point_index = point_index
+
+    class MissionScene():
+        def __init__(self, name="", name_length=0, flags=0, trigger_conditions_tag_block=None, roles_tag_block=None, trigger_conditions_header=None, roles_header=None,
+                     trigger_conditions=None, roles=None):
+            self.name = name
+            self.name_length = name_length
+            self.flags = flags
+            self.trigger_conditions_tag_block = trigger_conditions_tag_block
+            self.roles_tag_block = roles_tag_block
+            self.trigger_conditions_header = trigger_conditions_header
+            self.roles_header = roles_header
+            self.trigger_conditions = trigger_conditions
+            self.roles = roles
+
+    class TriggerCondition():
+        def __init__(self, combination_rule=0, triggers_tag_block=None, triggers_header=None, triggers=None):
+            self.combination_rule = combination_rule
+            self.triggers_tag_block = triggers_tag_block
+            self.triggers_header = triggers_header
+            self.triggers = triggers
+
+    class Trigger():
+        def __init__(self, trigger_flags=0, trigger=0):
+            self.trigger_flags = trigger_flags
+            self.trigger = trigger
+
+    class Role():
+        def __init__(self, name="", name_length=0, group=0, role_variants_tag_block=None, role_variants_header=None, role_variants=None):
+            self.name = name
+            self.name_length = name_length
+            self.group = group
+            self.role_variants_tag_block = role_variants_tag_block
+            self.role_variants_header = role_variants_header
+            self.role_variants = role_variants
+
+    class RoleVariant():
+        def __init__(self, name="", name_length=0):
+            self.name = name
+            self.name_length = name_length
+
+    class AIPathfindingData():
+        def __init__(self, sectors_tag_block=None, sectors_header=None, sectors=None, links_tag_block=None, links_header=None, links=None, refs_tag_block=None, refs_header=None, 
+                     refs=None, bsp2d_nodes_tag_block=None, bsp2d_nodes_header=None, bsp2d_nodes=None, surface_flags_tag_block=None, surface_flags_header=None, surface_flags=None, 
+                     vertices_tag_block=None, vertices_header=None, vertices=None, object_refs_tag_block=None, object_refs_header=None, object_refs=None, 
+                     pathfinding_hints_tag_block=None, pathfinding_hints_header=None, pathfinding_hints=None, instanced_geometry_refs_tag_block=None, 
+                     instanced_geometry_refs_header=None, instanced_geometry_refs=None, structure_checksum=0, user_placed_hints_tag_block=None, user_placed_hints_header=None, 
+                     user_placed_hints=None):
+            self.sectors_tag_block = sectors_tag_block
+            self.sectors_header = sectors_header
+            self.sectors = sectors
+            self.links_tag_block = links_tag_block
+            self.links_header = links_header
+            self.links = links
+            self.refs_tag_block = refs_tag_block
+            self.refs_header = refs_header
+            self.refs = refs
+            self.bsp2d_nodes_tag_block = bsp2d_nodes_tag_block
+            self.bsp2d_nodes_header = bsp2d_nodes_header
+            self.bsp2d_nodes = bsp2d_nodes
+            self.surface_flags_tag_block = surface_flags_tag_block
+            self.surface_flags_header = surface_flags_header
+            self.surface_flags = surface_flags
+            self.vertices_tag_block = vertices_tag_block
+            self.vertices_header = vertices_header
+            self.vertices = vertices
+            self.object_refs_tag_block = object_refs_tag_block
+            self.object_refs_header = object_refs_header
+            self.object_refs = object_refs
+            self.pathfinding_hints_tag_block = pathfinding_hints_tag_block
+            self.pathfinding_hints_header = pathfinding_hints_header
+            self.pathfinding_hints = pathfinding_hints
+            self.instanced_geometry_refs_tag_block = instanced_geometry_refs_tag_block
+            self.instanced_geometry_refs_header = instanced_geometry_refs_header
+            self.instanced_geometry_refs = instanced_geometry_refs
+            self.structure_checksum = structure_checksum
+            self.user_placed_hints_tag_block = user_placed_hints_tag_block
+            self.user_placed_hints_header = user_placed_hints_header
+            self.user_placed_hints = user_placed_hints
+
+    class Sector():
+        def __init__(self, pathfinding_sector_flags=0, hint_index=0, first_link=0):
+            self.pathfinding_sector_flags = pathfinding_sector_flags
+            self.hint_index = hint_index
+            self.first_link = first_link
+
+    class Link():
+        def __init__(self, vertex_1=0, vertex_2=0, link_flags=0, hint_index=0, forward_link=0, reverse_link=0, left_sector=0, right_sector=0):
+            self.vertex_1 = vertex_1
+            self.vertex_2 = vertex_2
+            self.link_flags = link_flags
+            self.hint_index = hint_index
+            self.forward_link = forward_link
+            self.reverse_link = reverse_link
+            self.left_sector = left_sector
+            self.right_sector = right_sector
+
+    class Bsp2DNode():
+        def __init__(self, plane=None, left_child=0, right_child=0):
+            self.plane = plane
+            self.left_child = left_child
+            self.right_child = right_child
+
+    class ObjectRef():
+        def __init__(self, flags=0, first_sector=0, last_sector=0, bsps_tag_block=None, bsps_header=None, bsps=None, nodes_tag_block=None, nodes_header=None, nodes=None):
+            self.flags = flags
+            self.first_sector = first_sector
+            self.last_sector = last_sector
+            self.bsps_tag_block = bsps_tag_block
+            self.bsps_header = bsps_header
+            self.bsps = bsps
+            self.nodes_tag_block = nodes_tag_block
+            self.nodes_header = nodes_header
+            self.nodes = nodes
+
+    class BSP():
+        def __init__(self, bsp_reference=0, first_sector=0, last_sector=0, node_index=0):
+            self.bsp_reference = bsp_reference
+            self.first_sector = first_sector
+            self.last_sector = last_sector
+            self.node_index = node_index
+
+    class Node():
+        def __init__(self, reference_frame_index=0, projection_axis=0, projection_sign=0):
+            self.reference_frame_index = reference_frame_index
+            self.projection_axis = projection_axis
+            self.projection_sign = projection_sign
+
+    class PathfindingHint():
+        def __init__(self, hint_type=0, next_hint_index=0, hint_data_0=0, hint_data_1=0, hint_data_2=0, hint_data_3=0, hint_data_4=0, hint_data_5=0, hint_data_6=0, hint_data_7=0):
+            self.hint_type = hint_type
+            self.next_hint_index = next_hint_index
+            self.hint_data_0 = hint_data_0
+            self.hint_data_1 = hint_data_1
+            self.hint_data_2 = hint_data_2
+            self.hint_data_3 = hint_data_3
+            self.hint_data_4 = hint_data_4
+            self.hint_data_5 = hint_data_5
+            self.hint_data_6 = hint_data_6
+            self.hint_data_7 = hint_data_7
+
+    class UserPlacedHint():
+        def __init__(self, point_geometry_tag_block=None, point_geometry_header=None, point_geometry=None, ray_geometry_tag_block=None, ray_geometry_header=None, ray_geometry=None, 
+                     line_segment_geometry_tag_block=None, line_segment_geometry_header=None, line_segment_geometry=None, parallelogram_geometry_tag_block=None, 
+                     parallelogram_geometry_header=None, parallelogram_geometry=None, polygon_geometry_tag_block=None, polygon_geometry_header=None, polygon_geometry=None, 
+                     jump_hints_tag_block=None, jump_hints_header=None, jump_hints=None, climb_hints_tag_block=None, climb_hints_header=None, climb_hints=None, 
+                     well_hints_tag_block=None, well_hints_header=None, well_hints=None, flight_hints_tag_block=None, flight_hints_header=None, flight_hints=None):
+            self.point_geometry_tag_block = point_geometry_tag_block
+            self.point_geometry_header = point_geometry_header
+            self.point_geometry = point_geometry
+            self.ray_geometry_tag_block = ray_geometry_tag_block
+            self.ray_geometry_header = ray_geometry_header
+            self.ray_geometry = ray_geometry
+            self.line_segment_geometry_tag_block = line_segment_geometry_tag_block
+            self.line_segment_geometry_header = line_segment_geometry_header
+            self.line_segment_geometry = line_segment_geometry
+            self.parallelogram_geometry_tag_block = parallelogram_geometry_tag_block
+            self.parallelogram_geometry_header = parallelogram_geometry_header
+            self.parallelogram_geometry = parallelogram_geometry
+            self.polygon_geometry_tag_block = polygon_geometry_tag_block
+            self.polygon_geometry_header = polygon_geometry_header
+            self.polygon_geometry = polygon_geometry
+            self.jump_hints_tag_block = jump_hints_tag_block
+            self.jump_hints_header = jump_hints_header
+            self.jump_hints = jump_hints
+            self.climb_hints_tag_block = climb_hints_tag_block
+            self.climb_hints_header = climb_hints_header
+            self.climb_hints = climb_hints
+            self.well_hints_tag_block = well_hints_tag_block
+            self.well_hints_header = well_hints_header
+            self.well_hints = well_hints
+            self.flight_hints_tag_block = flight_hints_tag_block
+            self.flight_hints_header = flight_hints_header
+            self.flight_hints = flight_hints
+
+    class PointGeometry():
+        def __init__(self, point=Vector(), reference_frame=0):
+            self.point = point
+            self.reference_frame = reference_frame
+
+    class RayGeometry():
+        def __init__(self, point=Vector(), reference_frame=0, vector=Vector()):
+            self.point = point
+            self.reference_frame = reference_frame
+            self.vector = vector
+
+    class LineSegmentGeometry():
+        def __init__(self, flags=0, point_0=Vector(), reference_frame_0=0, point_1=Vector(), reference_frame_1=0):
+            self.flags = flags
+            self.point_0 = point_0
+            self.reference_frame_0 = reference_frame_0
+            self.point_1 = point_1
+            self.reference_frame_1 = reference_frame_1
+
+    class ParallelogramGeometry():
+        def __init__(self, flags=0, point_0=Vector(), reference_frame_0=0, point_1=Vector(), reference_frame_1=0, point_2=Vector(), reference_frame_2=0, point_3=Vector(), 
+                     reference_frame_3=0):
+            self.flags = flags
+            self.point_0 = point_0
+            self.reference_frame_0 = reference_frame_0
+            self.point_1 = point_1
+            self.reference_frame_1 = reference_frame_1
+            self.point_2 = point_2
+            self.reference_frame_2 = reference_frame_2
+            self.point_3 = point_3
+            self.reference_frame_3 = reference_frame_3
+
+    class Hint():
+        def __init__(self, flags=0, points_tag_block=None, points_header=None, points=None):
+            self.flags = flags
+            self.points_tag_block = points_tag_block
+            self.points_header = points_header
+            self.points = points
+
+    class JumpHint():
+        def __init__(self, flags=0, geometry_index=0, force_jump_height=0, control_flags=0):
+            self.flags = flags
+            self.geometry_index = geometry_index
+            self.force_jump_height = force_jump_height
+            self.control_flags = control_flags
+
+    class ClimbHint():
+        def __init__(self, flags=0, geometry_index=0):
+            self.flags = flags
+            self.geometry_index = geometry_index
+
+    class WellPoint():
+        def __init__(self, type=0, point=Vector(), reference_frame=0, sector_index=0, normal=(0.0, 0.0)):
+            self.type = type
+            self.point = point
+            self.reference_frame = reference_frame
+            self.sector_index = sector_index
+            self.normal = normal
+
+    class FlightHint():
+        def __init__(self, points_tag_block=None, points_header=None, points=None):
+            self.points_tag_block = points_tag_block
+            self.points_header = points_header
+            self.points = points
+
+    class AIAnimationReference():
+        def __init__(self, animation_name="", animation_reference=None):
+            self.animation_name = animation_name
+            self.animation_reference = animation_reference
+
+    class AIConversation():
+        def __init__(self, name="", flags=0, trigger_distance=0.0, run_to_player_distance=0.0, participants_tag_block=None, lines_tag_block=None, participants_header=None, 
+                     lines_header=None, participants=None, lines=None):
+            self.name = name
+            self.flags = flags
+            self.trigger_distance = trigger_distance
+            self.run_to_player_distance = run_to_player_distance
+            self.participants_tag_block = participants_tag_block
+            self.lines_tag_block = lines_tag_block
+            self.participants_header = participants_header
+            self.lines_header = lines_header
+            self.participants = participants
+            self.lines = lines
+
+    class Participant():
+        def __init__(self, use_this_object=0, set_new_name=0, encounter_name=""):
+            self.use_this_object = use_this_object
+            self.set_new_name = set_new_name
+            self.encounter_name = encounter_name
+
+    class Line():
+        def __init__(self, flags=0, participant=0, addresses=0, addresse_participant=0, line_delay_time=0.0, variant_1=None, variant_2=None, variant_3=None, variant_4=None,
+                     variant_5=None, variant_6=None):
+            self.flags = flags
+            self.participant = participant
+            self.addresses = addresses
+            self.addresse_participant = addresse_participant
+            self.line_delay_time = line_delay_time
+            self.variant_1 = variant_1
+            self.variant_2 = variant_2
+            self.variant_3 = variant_3
+            self.variant_4 = variant_4
+            self.variant_5 = variant_5
+            self.variant_6 = variant_6
+
+    class Script():
+        def __init__(self, name="", script_type=0, return_type=0, root_expression_index=0):
+            self.name = name
+            self.script_type = script_type
+            self.return_type = return_type
+            self.root_expression_index = root_expression_index
+
+    class ScriptGlobal():
+        def __init__(self, name="", return_type=0, initialization_expression_index=0):
+            self.name = name
+            self.return_type = return_type
+            self.initialization_expression_index = initialization_expression_index
+
+    class SourceFile():
+        def __init__(self, name="", source_tag_data=None, source=""):
+            self.name = name
+            self.source_tag_data = source_tag_data
+            self.source = source
 
     class ScriptingData():
         def __init__(self, point_sets_tag_block=None, point_sets_header=None, point_sets=None):
@@ -1069,22 +1742,20 @@ class ScenarioAsset():
             self.points = points
 
     class Point():
-        def __init__(self, name="", position=Vector(), reference_frame=0, surface_index=0, facing_direction_y=0.0, facing_direction_p=0.0):
+        def __init__(self, name="", position=Vector(), reference_frame=0, surface_index=0, facing_direction=(0.0, 0.0)):
             self.name = name
             self.position = position
             self.reference_frame = reference_frame
             self.surface_index = surface_index
-            self.facing_direction_y = facing_direction_y
-            self.facing_direction_p = facing_direction_p
+            self.facing_direction = facing_direction
 
-    class CutsceneFlags():
-        def __init__(self, name="", position=Vector(), facing_y=0.0, facing_p=0.0):
+    class CutsceneFlag():
+        def __init__(self, name="", position=Vector(), facing=(0.0, 0.0)):
             self.name = name
             self.position = position
-            self.facing_y = facing_y
-            self.facing_p = facing_p
+            self.facing = facing
 
-    class CutsceneCameraPoints():
+    class CutsceneCameraPoint():
         def __init__(self, flags=0, camera_type=0, name="", position=Vector(), orientation=Vector()):
             self.flags = flags
             self.camera_type = camera_type
@@ -1160,11 +1831,6 @@ class ScenarioAsset():
             self.triggers_tag_block = triggers_tag_block
             self.triggers_header = triggers_header
             self.triggers = triggers
-
-    class Trigger():
-        def __init__(self, trigger_flags=0, trigger_index=0):
-            self.trigger_flags = trigger_flags
-            self.trigger_index = trigger_index
 
     class AITrigger():
         def __init__(self, name="", trigger_flags=0, combination_rule=0, conditions_tag_block=None, conditions_header=None, conditions=None):

@@ -34,20 +34,27 @@ class GeometryClassification(Enum):
     skinned = 3
     unsupported = 4
 
+class LeafFlags(Flag):
+    contains_double_sided_surfaces = auto()
+
 class SurfaceFlags(Flag):
-    Two_Sided = auto()
-    Invisible = auto()
-    Climbable = auto()
-    Breakable = auto()
-    Invalid = auto()
-    Conveyor = auto()
+    two_sided = auto()
+    invisible = auto()
+    climbable = auto()
+    breakable = auto()
+    invalid = auto()
+    conveyor = auto()
 
 class LevelAsset():
     def __init__(self):
         self.header = None
+        self.level_header = None
         self.level_body = None
+        self.import_info_header = None
         self.import_info = None
+        self.collision_materials_header = None
         self.collision_materials = None
+        self.collision_bsp_header = None
         self.collision_bsps = None
         self.cluster_portals = None
         self.clusters = None
@@ -124,13 +131,14 @@ class LevelAsset():
             self.decorators_tag_block = decorators_tag_block
 
     class ImportInfo:
-        def __init__(self, build=0, version="", import_date="", culprit="", import_time="", files_tag_block=None, files=None):
+        def __init__(self, build=0, version="", import_date="", culprit="", import_time="", files_tag_block=None, files_header=None, files=None):
             self.build = build
             self.version = version
             self.import_date = import_date
             self.culprit = culprit
             self.import_time = import_time
             self.files_tag_block = files_tag_block
+            self.files_header = files_header
             self.files = files
 
     class File:
@@ -151,8 +159,8 @@ class LevelAsset():
     class CollisionBSP:
         def __init__(self, bsp3d_nodes_tag_block=None, planes_tag_block=None, leaves_tag_block=None, bsp2d_references_tag_block=None, bsp2d_nodes_tag_block=None,
                      surfaces_tag_block=None, edges_tag_block=None, vertices_tag_block=None, bsp3d_nodes_header=None, planes_header=None, leaves_header=None,
-                     bsp2d_references_header=None, bsp2d_nodes_header=None, surfaces_header=None, edges_header=None, vertices_header=None, bsp3d_nodes=[], planes=[], leaves=[],
-                     bsp2d_references=[], bsp2d_nodes=[], surfaces=[], edges=[], vertices=[]):
+                     bsp2d_references_header=None, bsp2d_nodes_header=None, surfaces_header=None, edges_header=None, vertices_header=None, bsp3d_nodes=None, planes=None, leaves=None,
+                     bsp2d_references=None, bsp2d_nodes=None, surfaces=None, edges=None, vertices=None):
             self.bsp3d_nodes_tag_block = bsp3d_nodes_tag_block
             self.planes_tag_block = planes_tag_block
             self.leaves_tag_block = leaves_tag_block
@@ -201,10 +209,8 @@ class LevelAsset():
             self.bsp2d_node = bsp2d_node
 
     class BSP2DNode:
-        def __init__(self, plane_i=0.0, plane_j=0.0, distance=0.0, left_child=0, right_child=0):
-            self.plane_i = plane_i
-            self.plane_j = plane_j
-            self.distance = distance
+        def __init__(self, plane=None, left_child=0, right_child=0):
+            self.plane = plane
             self.left_child = left_child
             self.right_child = right_child
 

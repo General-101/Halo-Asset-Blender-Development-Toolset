@@ -45,7 +45,7 @@ from ..file_tag.file_physics.process_file_retail import process_file_retail as p
 from ..file_tag.file_animation.h1.process_file_retail import process_file_retail as process_h1_animation_retail
 from ..file_tag.file_structure_bsp.h1.process_file_retail import process_file_retail as process_level_retail
 from .file_structure_bsp.h2.process_file_retail import process_file_retail as process_h2_level
-from ..file_tag.file_structure_lightmap.h2.process_file import process_file_retail as process_h2_lightmap
+from ..file_tag.file_structure_lightmap.h2.process_file_retail import process_file_retail as process_h2_lightmap
 
 from .file_scenario.h1.process_file_retail import process_file_retail as process_h1_scenario
 from .file_scenario.h2.process_file_retail import process_file as process_h2_scenario
