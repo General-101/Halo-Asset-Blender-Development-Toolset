@@ -1008,7 +1008,7 @@ class TagAsset():
             self.engine_tag = engine_tag
 
         def read(self, input_stream, tag):
-            header_struct = struct.unpack('%shbb32s4sIIIIHbb4s' % get_endian_symbol(tag.big_endian), input_stream.read(64))
+            header_struct = struct.unpack('%shbb32s4siiiihbb4s' % get_endian_symbol(tag.big_endian), input_stream.read(64))
             self.unk1 = header_struct[0]
             self.flags = header_struct[1]
             self.type = header_struct[2]
@@ -1050,4 +1050,4 @@ class TagAsset():
                       self.plugin_handle,
                       string_to_bytes(self.engine_tag, reverse))
 
-            output_stream.write(struct.pack('%shbb32s4sIIIIHbb4s' % get_endian_symbol(big_endian), *header))
+            output_stream.write(struct.pack('%shbb32s4siiiihbb4s' % get_endian_symbol(big_endian), *header))
