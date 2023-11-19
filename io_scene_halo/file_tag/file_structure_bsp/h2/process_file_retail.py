@@ -1041,7 +1041,6 @@ def read_clusters(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT):
 
                     cluster.instanced_geometry_indices.append(TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(index_reorder_table_element_node, "index")))
 
-
             cluster.collision_mopp_code = input_stream.read(cluster.collision_mopp_code_data.size)
 
 def read_materials(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT):
@@ -1060,7 +1059,8 @@ def read_materials(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT):
             material.shader = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(material_element_node, "shader"))
             material.properties_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(material_element_node, "properties"))
             input_stream.read(4) # Padding?
-            material.breakable_surface_index = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(material_element_node, "breakable surface index"))
+            material.breakable_surface_index = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(material_element_node, "breakable surface index"))
+            input_stream.read(3) # Padding?
 
             LEVEL.materials.append(material)
 
@@ -1068,6 +1068,18 @@ def read_materials(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT):
             material_element_node = None
             if XML_OUTPUT:
                 material_element_node = material_node.childNodes[material_idx]
+
+            if material.old_shader.name_length > 0:
+                material.old_shader.name = TAG.read_variable_string(input_stream, material.old_shader.name_length, TAG)
+
+            if material.shader.name_length > 0:
+                material.shader.name = TAG.read_variable_string(input_stream, material.shader.name_length, TAG)
+
+            if XML_OUTPUT:
+                old_shader_node = tag_format.get_xml_node(XML_OUTPUT, 1, material_element_node, "name", "old shader")
+                shader_node = tag_format.get_xml_node(XML_OUTPUT, 1, material_element_node, "name", "shader")
+                material.old_shader.append_xml_attributes(old_shader_node)
+                material.shader.append_xml_attributes(shader_node)
 
             material.properties = []
             if material.properties_tag_block.count > 0:
@@ -1086,8 +1098,6 @@ def read_materials(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT):
                     property.real_value = TAG.read_float(input_stream, TAG, tag_format.XMLData(property_element_node, "real value"))
 
                     material.properties.append(property)
-
-
 
 def process_file_retail(input_stream, tag_format, report):
     TAG = tag_format.TagAsset()
