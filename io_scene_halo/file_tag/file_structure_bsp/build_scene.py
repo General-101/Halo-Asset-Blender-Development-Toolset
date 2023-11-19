@@ -33,6 +33,25 @@ from mathutils import Vector, Matrix, Euler
 from .h1.format_retail import ClusterPortalFlags, SurfaceFlags as H1SurfaceFlags
 from .h2.format_retail import SurfaceFlags as H2SurfaceFlags
 
+def get_triangle_info(part_list, strip_indices):
+    part_points_sets = []
+    for part in part_list:
+        part_points = set()
+
+        strip_length = part.strip_length
+        strip_start = part.strip_start_index
+
+        triangle_indices = strip_indices[strip_start : (strip_start + strip_length)]
+        index_count = len(triangle_indices)
+        for idx in range(index_count - 2):
+            part_points.add(triangle_indices[idx])
+            part_points.add(triangle_indices[idx + 1])
+            part_points.add(triangle_indices[idx + 2])
+
+        part_points_sets.append(part_points)
+
+    return part_points_sets
+
 def build_scene(context, LEVEL, game_version, game_title, file_version, fix_rotations, empty_markers, report, mesh_processing, global_functions, tag_format, collection_override=None, cluster_collection_override=None):
     collection = context.collection
     if not collection_override == None:
@@ -104,7 +123,7 @@ def build_scene(context, LEVEL, game_version, game_title, file_version, fix_rota
                                 material_name = "%s%s" % (os.path.basename(material.shader_tag_ref.name), permutation_index)
 
                             else:
-                                material_name = "invalid_material_%s" % triangle_material_index
+                                material_name = "invalid_material_%s" % material_idx
 
                             mat = bpy.data.materials.get(material_name)
                             if mat is None:
@@ -146,7 +165,7 @@ def build_scene(context, LEVEL, game_version, game_title, file_version, fix_rota
                                     U_L = vertex.UV[0]
                                     V_L = vertex.UV[1]
 
-                                    layer_uv_lightmap.data[loop_index].uv = (U_L, 1 - V_L)
+                                    layer_uv_lightmap.data[loop_index].uv = (U_L, V_L)
 
                         bm.from_mesh(mesh)
                         bpy.data.meshes.remove(mesh)
@@ -329,82 +348,18 @@ def build_scene(context, LEVEL, game_version, game_title, file_version, fix_rota
                 object_mesh.parent = level_root
                 bm = bmesh.new()
                 for cluster_data in cluster.cluster_data:
-                    for part_idx, part in enumerate(cluster_data.parts):
-                        mesh = bpy.data.meshes.new("%s_%s" % ("part", str(part_idx)))
+                    triangles = get_triangle_info(cluster_data.parts, cluster_data.strip_indices)
+                    vertices = [raw_vertex.position for raw_vertex in cluster_data.raw_vertices]
 
-                        triangles = []
-                        vertices = [raw_vertex.position for raw_vertex in cluster_data.raw_vertices]
+                    mesh = bpy.data.meshes.new("part")
 
-                        strip_length = part.strip_length
-                        strip_start = part.strip_start_index
+                    mesh.from_pydata(vertices, [], triangles)
+                    for poly in mesh.polygons:
 
-                        triangle_indices = cluster_data.strip_indices[strip_start : (strip_start + strip_length)]
-                        index_count = len(triangle_indices)
-                        for idx in range(index_count - 2):
-                            triangles.append([triangle_indices[idx], triangle_indices[idx + 1], triangle_indices[idx + 2]])
+                        poly.use_smooth = True
 
-                        # Fix face normals on uneven triangle indices
-                        for triangle_idx in range(len(triangles)):
-                            if not triangle_idx % 2 == 0:
-                                triangles[triangle_idx].reverse()
-
-                        # clean up any triangles that reference the same vertex multiple times
-                        for reversed_triangle in reversed(triangles):
-                            if (reversed_triangle[0] == reversed_triangle[1]) or (reversed_triangle[1] == reversed_triangle[2]) or (reversed_triangle[0] == reversed_triangle[2]):
-                                del triangles[triangles.index(reversed_triangle)]
-
-                        mesh.from_pydata(vertices, [], triangles)
-                        for poly in mesh.polygons:
-                            poly.use_smooth = True
-
-                        for triangle_idx, triangle in enumerate(triangles):
-                            triangle_material_index = part.material_index
-                            if not triangle_material_index == -1 and triangle_material_index < material_count:
-                                mat = LEVEL.materials[triangle_material_index]
-
-                            if not triangle_material_index == -1:
-                                if triangle_material_index < material_count:
-                                    material_name = os.path.basename(mat.shader.name)
-
-                                else:
-                                    material_name = "invalid_material_%s" % triangle_material_index
-
-                                for halo_property in mat.properties:
-                                    if halo_property.property_type == 0:
-                                        material_name += " lm:%s" % halo_property.real_value
-
-                                    elif halo_property.property_type == 1:
-                                        material_name += " lp:%s" % halo_property.real_value
-
-                                    elif halo_property.property_type == 2:
-                                        material_name += " hl:%s" % halo_property.real_value
-
-                                    elif halo_property.property_type == 3:
-                                        material_name += " ds:%s" % halo_property.real_value
-        
-                                mat = bpy.data.materials.get(material_name)
-                                if mat is None:
-                                    mat = bpy.data.materials.new(name=material_name)
-
-                                if not mat in object_mesh.data.materials.values():
-                                    object_mesh.data.materials.append(mat)
-
-                                mat.diffuse_color = random_color_gen.next()
-                                material_index = object_mesh.data.materials.values().index(mat)
-                                mesh.polygons[triangle_idx].material_index = material_index
-
-                            vertex_list = [cluster_data.raw_vertices[triangle[0]], cluster_data.raw_vertices[triangle[1]], cluster_data.raw_vertices[triangle[2]]]
-                            for vertex_idx, vertex in enumerate(vertex_list):
-                                loop_index = (3 * triangle_idx) + vertex_idx
-                                uv_name = 'UVMap_%s' % 0
-                                layer_uv = mesh.uv_layers.get(uv_name)
-                                if layer_uv is None:
-                                    layer_uv = mesh.uv_layers.new(name=uv_name)
-
-                                layer_uv.data[loop_index].uv = (vertex.texcoord[0], 1 - vertex.texcoord[1])
-
-                        bm.from_mesh(mesh)
-                        bpy.data.meshes.remove(mesh)
+                    bm.from_mesh(mesh)
+                    bpy.data.meshes.remove(mesh)
 
                     bm.to_mesh(full_mesh)
                     bm.free()

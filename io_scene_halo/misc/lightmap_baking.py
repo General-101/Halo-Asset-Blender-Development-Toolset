@@ -64,7 +64,7 @@ def bake_clusters(context, game_title, scenario_path, image_multiplier, report):
             BITMAP.header.type = 0
             BITMAP.header.name = ""
             BITMAP.header.tag_group = "bitm"
-            BITMAP.header.checksum = 0
+            BITMAP.header.checksum = -1
             BITMAP.header.data_offset = 64
             BITMAP.header.data_length = 0
             BITMAP.header.unk2 = 0

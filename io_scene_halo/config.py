@@ -12,3 +12,5 @@ DEVICE_NAME = "HiddenIntentions"
 
 HALO_1_DATA_PATH = ""
 HALO_1_TAG_PATH = ""
+HALO_2_DATA_PATH = ""
+HALO_2_TAG_PATH = ""

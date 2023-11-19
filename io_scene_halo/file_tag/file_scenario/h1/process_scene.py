@@ -327,7 +327,7 @@ def create_tag(TAG):
     SCENARIO.header.type = 0
     SCENARIO.header.name = ""
     SCENARIO.header.tag_group = "scnr"
-    SCENARIO.header.checksum = 0
+    SCENARIO.header.checksum = -1
     SCENARIO.header.data_offset = 64
     SCENARIO.header.data_length = 0
     SCENARIO.header.unk2 = 0
