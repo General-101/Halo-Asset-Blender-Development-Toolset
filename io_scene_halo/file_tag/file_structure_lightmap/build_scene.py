@@ -31,84 +31,182 @@ import bmesh
 from math import radians
 from mathutils import Vector, Matrix, Euler
 
-def build_objects(object_tag_block, object_name, random_color_gen, material_count, collection):
-    for cluster_idx, cluster in enumerate(object_tag_block):
-        cluster_name = "%s_%s" % (object_name, cluster_idx)
-        full_mesh = bpy.data.meshes.new(cluster_name)
-        object_mesh = bpy.data.objects.new(cluster_name, full_mesh)
-        bm = bmesh.new()
-        for cache_data in cluster.cache_data:
-            for part_idx, part in enumerate(cache_data.parts):
-                mesh = bpy.data.meshes.new("%s_%s" % ("part", str(part_idx)))
-
+def build_clusters(lightmap_group, SBSP_ASSET, level_root, random_color_gen, collection):
+    if len(lightmap_group.clusters) > 0:
+        material_count = 0
+        if not SBSP_ASSET == None:
+            material_count = len(SBSP_ASSET.materials)
+        
+        for cluster_idx, cluster in enumerate(lightmap_group.clusters):
+            cluster_name = "cluster_%s" % cluster_idx
+            full_mesh = bpy.data.meshes.new(cluster_name)
+            object_mesh = bpy.data.objects.new(cluster_name, full_mesh)
+            object_mesh.parent = level_root
+            for cache_data in cluster.cache_data:
                 triangles = []
                 vertices = [raw_vertex.position for raw_vertex in cache_data.raw_vertices]
 
-                strip_length = part.strip_length
-                strip_start = part.strip_start_index
+                triangle_length = int(len(cache_data.strip_indices) / 3)
+                for idx in range(triangle_length):
+                    triangle_index = (idx * 3)
+                    v0 = cache_data.strip_indices[triangle_index]
+                    v1 = cache_data.strip_indices[triangle_index + 1]
+                    v2 = cache_data.strip_indices[triangle_index + 2]
+                    triangles.append((v0, v1, v2))
 
-                triangle_indices = cache_data.strip_indices[strip_start : (strip_start + strip_length)]
-                index_count = len(triangle_indices)
-
-                for idx in range(int(index_count / 3)):
-                    triangles.append([triangle_indices[(idx * 3) + 2], triangle_indices[(idx * 3) + 1], triangle_indices[(idx * 3) + 0]])
-
-                # clean up any triangles that reference the same vertex multiple times
-                for reversed_triangle in reversed(triangles):
-                    if (reversed_triangle[0] == reversed_triangle[1]) or (reversed_triangle[1] == reversed_triangle[2]) or (reversed_triangle[0] == reversed_triangle[2]):
-                        del triangles[triangles.index(reversed_triangle)]
-
-                mesh.from_pydata(vertices, [], triangles)
-                for poly in mesh.polygons:
+                full_mesh.from_pydata(vertices, [], triangles)
+                for poly in full_mesh.polygons:
                     poly.use_smooth = True
 
-                for triangle_idx, triangle in enumerate(triangles):
-                    triangle_material_index = part.material_index
-                    if not triangle_material_index == -1 and triangle_material_index < material_count:
-                        mat = -1
+                uv_name = 'UVMap_%s' % 0
+                layer_uv = full_mesh.uv_layers.get(uv_name)
+                if layer_uv is None:
+                    layer_uv = full_mesh.uv_layers.new(name=uv_name)
+                
+                for idx in range(triangle_length):
+                    triangle_index = (idx * 3)
+                    v0 = cache_data.strip_indices[triangle_index]
+                    v1 = cache_data.strip_indices[triangle_index + 1]
+                    v2 = cache_data.strip_indices[triangle_index + 2]
+                
+                    vertex_list = [cache_data.raw_vertices[v0], cache_data.raw_vertices[v1], cache_data.raw_vertices[v2]]
+                    for vertex_idx, vertex in enumerate(vertex_list):
+                        loop_index = triangle_index + vertex_idx
 
-                    if not triangle_material_index == -1:
-                        material_list = []
-                        if triangle_material_index < material_count:
-                            material_name = os.path.basename(mat.shader.name)
+                        U = vertex.primary_lightmap_texcoord[0]
+                        V = vertex.primary_lightmap_texcoord[1]
+
+                        layer_uv.data[loop_index].uv = (U, 1 - V)
+
+                triangle_start = 0
+                for part in cache_data.parts:
+                    part_indices = cache_data.strip_indices[part.strip_start_index : (part.strip_start_index + part.strip_length)]
+                    part_triangle_length = int(len(part_indices) / 3)
+                    material = None
+                    if not part.material_index == -1 and material_count > 0:
+                        material = SBSP_ASSET.materials[part.material_index]
+
+                    if material:
+                        if len(material.shader.name) > 0:
+                            material_name = os.path.basename(material.shader.name)
 
                         else:
-                            material_name = "invalid_material_%s" % triangle_material_index
+                            material_name = "invalid_material_%s" % part.material_index
 
                         mat = bpy.data.materials.get(material_name)
                         if mat is None:
                             mat = bpy.data.materials.new(name=material_name)
 
-                        for slot in object_mesh.material_slots:
-                            material_list.append(slot.material)
-
-                        if not mat in material_list:
-                            material_list.append(mat)
+                        if not material_name in object_mesh.data.materials.keys():
                             object_mesh.data.materials.append(mat)
 
                         mat.diffuse_color = random_color_gen.next()
-                        material_index = material_list.index(mat)
-                        mesh.polygons[triangle_idx].material_index = material_index
+                        material_index = object_mesh.data.materials.keys().index(material_name)
 
-                    vertex_list = [cache_data.raw_vertices[triangle[0]], cache_data.raw_vertices[triangle[1]], cache_data.raw_vertices[triangle[2]]]
+                        for triangle_idx in range(part_triangle_length):
+                            full_mesh.polygons[triangle_start + triangle_idx].material_index = material_index
+
+                    triangle_start += part_triangle_length
+
+                collection.objects.link(object_mesh)
+
+def build_poops(lightmap_group, SBSP_ASSET, level_root, random_color_gen, collection):
+    if len(lightmap_group.poop_definitions) > 0:
+        meshes = []
+        material_count = 0
+        if not SBSP_ASSET == None:
+            material_count = len(SBSP_ASSET.materials)
+
+        for poop_definition_idx, poop_definition in enumerate(lightmap_group.poop_definitions):
+            cluster_name = "instanced_geometry_definition_%s" % poop_definition_idx
+            mesh = bpy.data.meshes.new(cluster_name)
+            for render_data in poop_definition.cache_data:
+                triangles = []
+                vertices = [raw_vertex.position for raw_vertex in render_data.raw_vertices]
+
+                triangle_length = int(len(render_data.strip_indices) / 3)
+                for idx in range(triangle_length):
+                    triangle_index = (idx * 3)
+                    v0 = render_data.strip_indices[triangle_index]
+                    v1 = render_data.strip_indices[triangle_index + 1]
+                    v2 = render_data.strip_indices[triangle_index + 2]
+                    triangles.append((v0, v1, v2))
+
+                mesh.from_pydata(vertices, [], triangles)
+                for poly in mesh.polygons:
+                    poly.use_smooth = True
+
+                uv_name = 'UVMap_%s' % 0
+                layer_uv = mesh.uv_layers.get(uv_name)
+                if layer_uv is None:
+                    layer_uv = mesh.uv_layers.new(name=uv_name)
+                
+                for idx in range(triangle_length):
+                    triangle_index = (idx * 3)
+                    v0 = render_data.strip_indices[triangle_index]
+                    v1 = render_data.strip_indices[triangle_index + 1]
+                    v2 = render_data.strip_indices[triangle_index + 2]
+                
+                    vertex_list = [render_data.raw_vertices[v0], render_data.raw_vertices[v1], render_data.raw_vertices[v2]]
                     for vertex_idx, vertex in enumerate(vertex_list):
-                        loop_index = (3 * triangle_idx) + vertex_idx
-                        uv_name = 'UVMap_%s' % 0
-                        layer_uv = mesh.uv_layers.get(uv_name)
-                        if layer_uv is None:
-                            layer_uv = mesh.uv_layers.new(name=uv_name)
+                        loop_index = triangle_index + vertex_idx
 
-                        layer_uv.data[loop_index].uv = (vertex.primary_lightmap_texcoord[0], 1 - vertex.primary_lightmap_texcoord[1])
+                        U = vertex.primary_lightmap_texcoord[0]
+                        V = vertex.primary_lightmap_texcoord[1]
 
-                bm.from_mesh(mesh)
-                bpy.data.meshes.remove(mesh)
+                        layer_uv.data[loop_index].uv = (U, 1 - V)
 
-            bm.to_mesh(full_mesh)
-            bm.free()
+                triangle_start = 0
+                for part in render_data.parts:
+                    part_indices = render_data.strip_indices[part.strip_start_index : (part.strip_start_index + part.strip_length)]
+                    part_triangle_length = int(len(part_indices) / 3)
+                    material = None
+                    if not part.material_index == -1  and material_count > 0:
+                        material = SBSP_ASSET.materials[part.material_index]
 
+                    if material:
+                        if len(material.shader.name) > 0:
+                            material_name = os.path.basename(material.shader.name)
+
+                        else:
+                            material_name = "invalid_material_%s" % part.material_index
+
+                        mat = bpy.data.materials.get(material_name)
+                        if mat is None:
+                            mat = bpy.data.materials.new(name=material_name)
+
+                        if not material_name in mesh.materials.keys():
+                            mesh.materials.append(mat)
+
+                        mat.diffuse_color = random_color_gen.next()
+                        material_index = mesh.materials.keys().index(material_name)
+
+                        for triangle_idx in range(part_triangle_length):
+                            mesh.polygons[triangle_start + triangle_idx].material_index = material_index
+
+                    triangle_start += part_triangle_length
+
+            meshes.append(mesh)
+
+        for instanced_geometry_instance_idx, instanced_geometry_instance in enumerate(SBSP_ASSET.instanced_geometry_instances):
+            mesh = meshes[instanced_geometry_instance.instance_definition]
+            ob_name = instanced_geometry_instance.name
+
+            object_mesh = bpy.data.objects.new(ob_name, mesh)
+            object_mesh.parent = level_root
             collection.objects.link(object_mesh)
 
-def build_scene(context, LIGHTMAP, game_version, game_title, file_version, fix_rotations, empty_markers, report, mesh_processing, global_functions, tag_format, collection_override=None, cluster_collection_override=None, material_list=None):
+            matrix_scale = Matrix.Scale(instanced_geometry_instance.scale, 4)
+            matrix_rotation = Matrix()
+            matrix_rotation[0] = *instanced_geometry_instance.forward, 0
+            matrix_rotation[1] = *instanced_geometry_instance.left, 0
+            matrix_rotation[2] = *instanced_geometry_instance.up, 0
+            matrix_rotation = matrix_rotation.inverted()
+            matrix_translation = Matrix.Translation(instanced_geometry_instance.position)
+            transform_matrix = (matrix_translation @ matrix_rotation @ matrix_scale)
+            object_mesh.matrix_world = transform_matrix
+
+def build_scene(context, LTMP_ASSET, game_version, game_title, file_version, fix_rotations, empty_markers, report, mesh_processing, global_functions, tag_format, collection_override=None, cluster_collection_override=None, SBSP_ASSET=None):
     random_color_gen = global_functions.RandomColorGenerator() # generates a random sequence of colors
 
     collection = context.collection
@@ -118,7 +216,12 @@ def build_scene(context, LIGHTMAP, game_version, game_title, file_version, fix_r
     if cluster_collection_override == None:
         cluster_collection_override = collection
 
-    material_count = 0
-    for lightmap_groups_idx, lightmap_group in enumerate(LIGHTMAP.lightmap_groups):
-        build_objects(lightmap_group.clusters, "cluster", random_color_gen, material_count, cluster_collection_override)
-        build_objects(lightmap_group.poop_definitions, "instance", random_color_gen, material_count, cluster_collection_override)
+    level_root = bpy.data.objects.get("frame_root")
+    if level_root == None:
+        level_mesh = bpy.data.meshes.new("frame_root")
+        level_root = bpy.data.objects.new("frame_root", level_mesh)
+        collection.objects.link(level_root)
+
+    for lightmap_groups_idx, lightmap_group in enumerate(LTMP_ASSET.lightmap_groups):
+        build_clusters(lightmap_group, SBSP_ASSET, level_root, random_color_gen, cluster_collection_override)
+        build_poops(lightmap_group, SBSP_ASSET, level_root, random_color_gen, cluster_collection_override)

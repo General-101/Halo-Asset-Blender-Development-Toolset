@@ -347,7 +347,7 @@ def generate_scenario_scene(context, H2_ASSET, game_version, game_title, file_ve
                 lightmap_collection = bpy.data.collections.new(lightmap_name)
                 level_collection.children.link(lightmap_collection)
 
-            build_scene_lightmap.build_scene(context, LTMP_ASSET, game_version, game_title, file_version, fix_rotations, empty_markers, report, mesh_processing, global_functions, tag_format, level_collection, lightmap_collection)
+            build_scene_lightmap.build_scene(context, LTMP_ASSET, game_version, game_title, file_version, fix_rotations, empty_markers, report, mesh_processing, global_functions, tag_format, level_collection, lightmap_collection, SBSP_ASSET)
 
     level_root = bpy.data.objects.get("frame_root")
     if level_root == None:
