@@ -33,7 +33,6 @@ from math import degrees, sqrt, radians
 from mathutils import Vector, Quaternion, Euler
 
 from ..file_tag.file_scenario.h1.process_file_retail import process_file_retail as process_h1_scenario
-from ..file_tag.file_shader_environment.process_file_retail import process_file_retail as process_shader_environment
 from ..file_tag.file_structure_bsp.h1.process_file_retail import process_file_retail as process_h1_structure_bsp
 from ..file_tag.file_actor_variant.process_file_retail import process_file_retail as process_actor_variant
 from ..file_tag.file_actor_variant.process_json_retail import process_json_retail as process_actor_variant_json
@@ -47,13 +46,20 @@ from ..file_tag.file_machine.process_file_retail import process_file_retail as p
 from ..file_tag.file_control.process_file_retail import process_file_retail as process_control
 from ..file_tag.file_sound_scenery.process_file_retail import process_file_retail as process_sound_scenery
 from ..file_tag.file_light_fixture.process_file_retail import process_file_retail as process_light_fixture
-from ..file_tag.file_shader_model.process_file_retail import process_file_retail as process_shader_model
 from ..file_tag.file_bitmap.h1.process_file_retail import process_file_retail as process_bitmap
 from ..file_tag.file_weapon.process_file_retail import process_file_retail as process_weapon
 from ..file_tag.file_item_collection.process_file_retail import process_file_retail as process_item_collection
 from ..file_tag.file_sky.process_file_retail import process_file_retail as process_sky
-from ..file_tag.file_shader_transparent_meter.process_file_retail import process_file_retail as process_shader_transparent_meter
+
+from ..file_tag.file_shader_environment.process_file_retail import process_file_retail as process_shader_environment
+from ..file_tag.file_shader_model.process_file_retail import process_file_retail as process_shader_model
+from ..file_tag.file_shader_transparent_chicago.process_file_retail import process_file_retail as process_shader_transparent_chicago
+from ..file_tag.file_shader_transparent_chicago_extended.process_file_retail import process_file_retail as process_shader_transparent_chicago_extended
+from ..file_tag.file_shader_transparent_generic.process_file_retail import process_file_retail as process_shader_transparent_generic
 from ..file_tag.file_shader_transparent_glass.process_file_retail import process_file_retail as process_shader_transparent_glass
+from ..file_tag.file_shader_transparent_meter.process_file_retail import process_file_retail as process_shader_transparent_meter
+from ..file_tag.file_shader_transparent_plasma.process_file_retail import process_file_retail as process_shader_transparent_plasma
+from ..file_tag.file_shader_transparent_water.process_file_retail import process_file_retail as process_shader_transparent_water
 
 from ..file_tag.file_structure_bsp.h2.process_file_retail import process_file_retail as process_h2_structure_bsp
 from ..file_tag.file_structure_lightmap.h2.process_file_retail import process_file_retail as process_h2_structure_lightmap
@@ -877,33 +883,68 @@ class TagAsset():
                         ASSET = process_h1_structure_bsp(input_stream, tag_format, report)
                         input_stream.close()
 
-                elif self.tag_group == "soso":
-                    input_file = os.path.join(config.HALO_1_TAG_PATH, "%s.shader_model" % self.name)
-                    if os.path.exists(input_file):
-                        input_stream = open(input_file, 'rb')
-                        ASSET = process_shader_model(input_stream, tag_format, report)
-                        input_stream.close()
+                    elif self.tag_group == "senv":
+                        input_file = os.path.join(config.HALO_1_TAG_PATH, "%s.shader_environment" % self.name)
+                        if os.path.exists(input_file):
+                            input_stream = open(input_file, 'rb')
+                            ASSET = process_shader_environment(input_stream, tag_format, report)
+                            input_stream.close()
 
-                elif self.tag_group == "senv":
-                    input_file = os.path.join(config.HALO_1_TAG_PATH, "%s.shader_environment" % self.name)
-                    if os.path.exists(input_file):
-                        input_stream = open(input_file, 'rb')
-                        ASSET = process_shader_environment(input_stream, tag_format, report)
-                        input_stream.close()
+                    elif self.tag_group == "soso":
+                        input_file = os.path.join(config.HALO_1_TAG_PATH, "%s.shader_model" % self.name)
+                        if os.path.exists(input_file):
+                            input_stream = open(input_file, 'rb')
+                            ASSET = process_shader_model(input_stream, tag_format, report)
+                            input_stream.close()
 
-                elif self.tag_group == "smet":
-                    input_file = os.path.join(config.HALO_1_TAG_PATH, "%s.shader_transparent_meter" % self.name)
-                    if os.path.exists(input_file):
-                        input_stream = open(input_file, 'rb')
-                        ASSET = process_shader_transparent_meter(input_stream, tag_format, report)
-                        input_stream.close()
+                    elif self.tag_group == "schi":
+                        input_file = os.path.join(config.HALO_1_TAG_PATH, "%s.shader_transparent_chicago" % self.name)
+                        if os.path.exists(input_file):
+                            input_stream = open(input_file, 'rb')
+                            ASSET = process_shader_transparent_chicago(input_stream, tag_format, report)
+                            input_stream.close()
 
-                elif self.tag_group == "sgla":
-                    input_file = os.path.join(config.HALO_1_TAG_PATH, "%s.shader_transparent_glass" % self.name)
-                    if os.path.exists(input_file):
-                        input_stream = open(input_file, 'rb')
-                        ASSET = process_shader_transparent_glass(input_stream, tag_format, report)
-                        input_stream.close()
+                    elif self.tag_group == "scex":
+                        input_file = os.path.join(config.HALO_1_TAG_PATH, "%s.shader_transparent_chicago_extended" % self.name)
+                        if os.path.exists(input_file):
+                            input_stream = open(input_file, 'rb')
+                            ASSET = process_shader_transparent_chicago_extended(input_stream, tag_format, report)
+                            input_stream.close()
+
+                    elif self.tag_group == "sotr":
+                        input_file = os.path.join(config.HALO_1_TAG_PATH, "%s.shader_transparent_generic" % self.name)
+                        if os.path.exists(input_file):
+                            input_stream = open(input_file, 'rb')
+                            ASSET = process_shader_transparent_generic(input_stream, tag_format, report)
+                            input_stream.close()
+
+                    elif self.tag_group == "sgla":
+                        input_file = os.path.join(config.HALO_1_TAG_PATH, "%s.shader_transparent_glass" % self.name)
+                        if os.path.exists(input_file):
+                            input_stream = open(input_file, 'rb')
+                            ASSET = process_shader_transparent_glass(input_stream, tag_format, report)
+                            input_stream.close()
+
+                    elif self.tag_group == "smet":
+                        input_file = os.path.join(config.HALO_1_TAG_PATH, "%s.shader_transparent_meter" % self.name)
+                        if os.path.exists(input_file):
+                            input_stream = open(input_file, 'rb')
+                            ASSET = process_shader_transparent_meter(input_stream, tag_format, report)
+                            input_stream.close()
+
+                    elif self.tag_group == "spla":
+                        input_file = os.path.join(config.HALO_1_TAG_PATH, "%s.shader_transparent_plasma" % self.name)
+                        if os.path.exists(input_file):
+                            input_stream = open(input_file, 'rb')
+                            ASSET = process_shader_transparent_plasma(input_stream, tag_format, report)
+                            input_stream.close()
+
+                    elif self.tag_group == "swat":
+                        input_file = os.path.join(config.HALO_1_TAG_PATH, "%s.shader_transparent_water" % self.name)
+                        if os.path.exists(input_file):
+                            input_stream = open(input_file, 'rb')
+                            ASSET = process_shader_transparent_water(input_stream, tag_format, report)
+                            input_stream.close()
 
             elif game_title == "halo2":
                 if self.tag_group == "sbsp":

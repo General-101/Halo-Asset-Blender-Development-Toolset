@@ -56,15 +56,15 @@ def process_file_retail(input_stream, tag_format, report):
     SHADER.shader_body.power = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "power"))
     SHADER.shader_body.color_of_emitted_light = TAG.read_rgb(input_stream, TAG, tag_format.XMLData(tag_node, "color of emitted light"))
     SHADER.shader_body.light_tint_color = TAG.read_rgb(input_stream, TAG, tag_format.XMLData(tag_node, "tint color"))
-    input_stream.read(2)
+    input_stream.read(2) # Padding
     SHADER.shader_body.material_type = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "material type", MaterialTypeEnum))
-    input_stream.read(4)
+    input_stream.read(4) # Padding
     SHADER.shader_body.glass_flags = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "flags", GlassFlags))
-    input_stream.read(42)
+    input_stream.read(42) # Padding
     SHADER.shader_body.background_tint_color = TAG.read_rgb(input_stream, TAG, tag_format.XMLData(tag_node, "background tint color"))
     SHADER.shader_body.background_tint_map_scale = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "background tint map scale"))
     SHADER.shader_body.background_tint_map = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "background tint map"))
-    input_stream.read(22)
+    input_stream.read(22) # Padding
     SHADER.shader_body.reflection_type = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "reflection type", ReflectionTypeEnum))
     SHADER.shader_body.perpendicular_brightness = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "perpendicular brightness"))
     SHADER.shader_body.perpendicular_tint_color = TAG.read_rgb(input_stream, TAG, tag_format.XMLData(tag_node, "perpendicular tint color"))
@@ -73,17 +73,17 @@ def process_file_retail(input_stream, tag_format, report):
     SHADER.shader_body.reflection_map = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "reflection map"))
     SHADER.shader_body.bump_map_scale = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "bump map scale"))
     SHADER.shader_body.bump_map = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "bump map"))
-    input_stream.read(132)
+    input_stream.read(132) # Padding
     SHADER.shader_body.diffuse_map_scale = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "diffuse map scale"))
     SHADER.shader_body.diffuse_map = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "diffuse map"))
     SHADER.shader_body.diffuse_detail_map_scale = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "diffuse detail map scale"))
     SHADER.shader_body.diffuse_detail_map = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "diffuse detail map"))
-    input_stream.read(32)
+    input_stream.read(32) # Padding
     SHADER.shader_body.specular_map_scale = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "specular map scale"))
     SHADER.shader_body.specular_map = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "specular map"))
     SHADER.shader_body.specular_detail_map_scale = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "specular detail map scale"))
     SHADER.shader_body.specular_detail_map = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "specular detail map"))
-    input_stream.read(28)
+    input_stream.read(28) # Padding
 
     background_tint_map_name_length = SHADER.shader_body.background_tint_map.name_length
     reflection_map_name_length = SHADER.shader_body.reflection_map.name_length

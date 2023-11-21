@@ -56,13 +56,13 @@ def process_file_retail(input_stream, tag_format, report):
     SHADER.shader_body.power = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "power"))
     SHADER.shader_body.color_of_emitted_light = TAG.read_rgb(input_stream, TAG, tag_format.XMLData(tag_node, "color of emitted light"))
     SHADER.shader_body.light_tint_color = TAG.read_rgb(input_stream, TAG, tag_format.XMLData(tag_node, "tint color"))
-    input_stream.read(2)
+    input_stream.read(2) # Padding
     SHADER.shader_body.material_type = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "material type", MaterialTypeEnum))
-    input_stream.read(4)
+    input_stream.read(4) # Padding
     SHADER.shader_body.meter_flags = TAG.read_flag_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "flags", MeterFlags))
-    input_stream.read(34)
+    input_stream.read(34) # Padding
     SHADER.shader_body.meter_map = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "map"))
-    input_stream.read(32)
+    input_stream.read(32) # Padding
     SHADER.shader_body.gradient_min_color = TAG.read_rgb(input_stream, TAG, tag_format.XMLData(tag_node, "gradient min color"))
     SHADER.shader_body.gradient_max_color = TAG.read_rgb(input_stream, TAG, tag_format.XMLData(tag_node, "gradient max color"))
     SHADER.shader_body.background_color = TAG.read_rgb(input_stream, TAG, tag_format.XMLData(tag_node, "background color"))
@@ -70,13 +70,13 @@ def process_file_retail(input_stream, tag_format, report):
     SHADER.shader_body.tint_color = TAG.read_rgb(input_stream, TAG, tag_format.XMLData(tag_node, "tint color"))
     SHADER.shader_body.meter_transparency = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "meter transparency"))
     SHADER.shader_body.background_transparency = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "background transparency"))
-    input_stream.read(24)
+    input_stream.read(24) # Padding
     SHADER.shader_body.meter_brightness_source = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "meter brightness source", ChannelSourceEnum))
     SHADER.shader_body.flash_brightness_source = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "flash brightness source", ChannelSourceEnum))
     SHADER.shader_body.value_source = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "value source", ChannelSourceEnum))
     SHADER.shader_body.gradient_source = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "gradient source", ChannelSourceEnum))
     SHADER.shader_body.flash_extension_source = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "flash extension source", ChannelSourceEnum))
-    input_stream.read(34)
+    input_stream.read(34) # Padding
 
     meter_map_name_length = SHADER.shader_body.meter_map.name_length
     if meter_map_name_length > 0:
