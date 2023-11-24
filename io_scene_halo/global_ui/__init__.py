@@ -28,20 +28,14 @@ import bpy
 
 from bpy.types import (
         PropertyGroup,
-        Operator,
-        UIList,
-        Panel,
-        Menu
+        Panel
         )
 
 from bpy.props import (
         IntProperty,
         BoolProperty,
         EnumProperty,
-        FloatProperty,
-        StringProperty,
         PointerProperty,
-        FloatVectorProperty,
         CollectionProperty
         )
 

@@ -24,28 +24,10 @@
 #
 # ##### END MIT LICENSE BLOCK #####
 
-import bpy
 import bmesh
 
 from enum import Flag, auto
-from bpy.types import (
-        PropertyGroup,
-        Operator,
-        UIList,
-        Panel,
-        Menu
-        )
-
-from bpy.props import (
-        IntProperty,
-        BoolProperty,
-        EnumProperty,
-        FloatProperty,
-        StringProperty,
-        PointerProperty,
-        FloatVectorProperty,
-        CollectionProperty
-        )
+from bpy.types import Panel
 
 class Halo_SurfaceFlags(Panel):
     """Set settings for surface to be used in the Halo maze generator"""

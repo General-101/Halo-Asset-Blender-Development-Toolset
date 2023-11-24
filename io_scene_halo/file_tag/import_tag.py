@@ -29,29 +29,35 @@ import bpy
 
 from ..global_functions import tag_format, mesh_processing, global_functions
 
-from ..file_tag.file_model import build_scene as build_scene_model
-from ..file_tag.file_physics import build_scene as build_scene_physics
-from ..file_tag.file_animation import build_scene as build_scene_animation
-from ..file_tag.file_collision import build_scene as build_scene_collision
-from ..file_tag.file_structure_bsp import build_scene as build_scene_level
-from ..file_tag.file_structure_lightmap import build_scene as build_scene_lightmap
-from ..file_tag.file_scenario import build_scene as build_scenario
-from ..file_tag.file_camera_track import build_scene as build_camera_track
-from ..file_tag.file_model.h1.process_file_mode_retail import process_file_mode_retail as process_mode
-from ..file_tag.file_model.h1.process_file_mod2_retail import process_file_mod2_retail as process_mod2
-from ..file_tag.file_collision.h1.process_file_retail import process_file_retail as process_collision_retail
-from ..file_tag.file_collision.h2.process_file import process_file as process_h2_collision
-from ..file_tag.file_physics.process_file_retail import process_file_retail as process_physics_retail
-from ..file_tag.file_animation.h1.process_file_retail import process_file_retail as process_h1_animation_retail
-from ..file_tag.file_structure_bsp.h1.process_file_retail import process_file_retail as process_level_retail
-from .file_structure_bsp.h2.process_file_retail import process_file_retail as process_h2_level
-from ..file_tag.file_structure_lightmap.h2.process_file_retail import process_file_retail as process_h2_lightmap
+from .build_scene import build_mesh as build_scene_model
+from .build_scene import build_physics as build_scene_physics
+from .build_scene import build_animations as build_scene_animation
+from .build_scene import build_collision as build_scene_collision
+from .build_scene import build_bsp as build_scene_level
+from .build_scene import build_lightmap as build_scene_lightmap
+from .build_scene import build_scenario as build_scenario
+from .build_scene import build_camera_track as build_camera_track
 
-from .file_scenario.h1.process_file_retail import process_file_retail as process_h1_scenario
-from .file_scenario.h2.process_file_retail import process_file as process_h2_scenario
-from ..file_tag.file_camera_track.process_file_retail import process_file_retail as process_camera_track_retail
+from .h1.file_model.process_file import process_file as process_mode
+from .h1.file_gbxmodel.process_file import process_file as process_mod2
 
-def load_file(context, file_path, game_title, fix_rotations, empty_markers, report):
+from .h1.file_model_collision_geometry.process_file import process_file as process_collision
+from .h2.file_collision_model.process_file import process_file as process_h2_collision
+
+from .h1.file_physics.process_file import process_file as process_physics
+from .h1.file_model_animations.process_file import process_file_retail as process_h1_animation
+
+from .h1.file_scenario_structure_bsp.process_file import process_file as process_level
+from .h2.file_scenario_structure_bsp.process_file import process_file as process_h2_level
+from .h2.file_scenario_structure_lightmap.process_file import process_file as process_h2_lightmap
+
+from .h1.file_scenario.process_file import process_file as process_h1_scenario
+from .h2.file_scenario.process_file import process_file as process_h2_scenario
+
+from .h1.file_camera_track.process_file import process_file as process_camera_track
+
+def load_file(context, file_path, game_title, file_version, fix_rotations, empty_markers, report):
+    version = int(file_version)
     input_stream = open(file_path, "rb")
     if tag_format.check_file_size(input_stream) < 64: # Size of the header for all tags
         input_stream.close()
@@ -90,7 +96,7 @@ def load_file(context, file_path, game_title, fix_rotations, empty_markers, repo
     elif tag_group == "coll" or tag_group == "col2":
         build_scene = build_scene_collision
         if game_title == "halo1":
-            ASSET = process_collision_retail(input_stream, tag_format, report)
+            ASSET = process_collision(input_stream, tag_format, report)
 
         elif game_title == "halo2":
             ASSET = process_h2_collision(input_stream, tag_format, report)
@@ -104,7 +110,7 @@ def load_file(context, file_path, game_title, fix_rotations, empty_markers, repo
     elif tag_group == "phys":
         build_scene = build_scene_physics
         if game_title == "halo1":
-            ASSET = process_physics_retail(input_stream, tag_format, report)
+            ASSET = process_physics(input_stream, tag_format, report)
 
         else:
             input_stream.close()
@@ -115,7 +121,7 @@ def load_file(context, file_path, game_title, fix_rotations, empty_markers, repo
     elif tag_group == "antr":
         build_scene = build_scene_animation
         if game_title == "halo1":
-            ASSET = process_h1_animation_retail(input_stream, global_functions, tag_format, report)
+            ASSET = process_h1_animation(input_stream, global_functions, tag_format, report)
 
         else:
             input_stream.close()
@@ -127,14 +133,14 @@ def load_file(context, file_path, game_title, fix_rotations, empty_markers, repo
     elif tag_group == "sbsp":
         build_scene = build_scene_level
         if game_title == "halo1":
-            ASSET = process_level_retail(input_stream, tag_format, report)
+            ASSET = process_level(input_stream, tag_format, report)
 
         elif game_title == "halo2":
             ASSET = process_h2_level(input_stream, tag_format, report)
 
         else:
             input_stream.close()
-            report({'ERROR'}, "Not implemented")
+            report({'ERROR'}, "Not applicable")
 
             return {'CANCELLED'}
 
@@ -162,7 +168,7 @@ def load_file(context, file_path, game_title, fix_rotations, empty_markers, repo
     elif tag_group == "trak":
         build_scene = build_camera_track
         if game_title == "halo1":
-            ASSET = process_camera_track_retail(input_stream, tag_format, report)
+            ASSET = process_camera_track(input_stream, tag_format, report)
 
         else:
             input_stream.close()
@@ -178,6 +184,8 @@ def load_file(context, file_path, game_title, fix_rotations, empty_markers, repo
 
     input_stream.close()
     build_scene.build_scene(context, ASSET, "retail", game_title, 0, fix_rotations, empty_markers, report, mesh_processing, global_functions, tag_format)
+
+    del ASSET
 
     return {'FINISHED'}
 

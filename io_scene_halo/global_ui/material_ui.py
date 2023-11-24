@@ -24,16 +24,9 @@
 #
 # ##### END MIT LICENSE BLOCK #####
 
-import bpy
-import bmesh
-
-from enum import Flag, auto
 from bpy.types import (
         PropertyGroup,
-        Operator,
-        UIList,
         Panel,
-        Menu
         )
 
 from bpy.props import (
@@ -42,9 +35,7 @@ from bpy.props import (
         EnumProperty,
         FloatProperty,
         StringProperty,
-        PointerProperty,
-        FloatVectorProperty,
-        CollectionProperty
+        FloatVectorProperty
         )
 
 class ASS_JMS_MaterialProps(Panel):

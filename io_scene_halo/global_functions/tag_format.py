@@ -32,37 +32,40 @@ from xml.dom import minidom
 from math import degrees, sqrt, radians
 from mathutils import Vector, Quaternion, Euler
 
-from ..file_tag.file_scenario.h1.process_file_retail import process_file_retail as process_h1_scenario
-from ..file_tag.file_structure_bsp.h1.process_file_retail import process_file_retail as process_h1_structure_bsp
-from ..file_tag.file_actor_variant.process_file_retail import process_file_retail as process_actor_variant
-from ..file_tag.file_actor_variant.process_json_retail import process_json_retail as process_actor_variant_json
-from ..file_tag.file_model.h1.process_file_mode_retail import process_file_mode_retail as process_mode
-from ..file_tag.file_model.h1.process_file_mod2_retail import process_file_mod2_retail as process_mod2
-from ..file_tag.file_scenery.process_file_retail import process_file_retail as process_scenery
-from ..file_tag.file_biped.process_file_retail import process_file_retail as process_biped
-from ..file_tag.file_vehicle.process_file_retail import process_file_retail as process_vehicle
-from ..file_tag.file_equipment.process_file_retail import process_file_retail as process_equipment
-from ..file_tag.file_machine.process_file_retail import process_file_retail as process_machine
-from ..file_tag.file_control.process_file_retail import process_file_retail as process_control
-from ..file_tag.file_sound_scenery.process_file_retail import process_file_retail as process_sound_scenery
-from ..file_tag.file_light_fixture.process_file_retail import process_file_retail as process_light_fixture
-from ..file_tag.file_bitmap.h1.process_file_retail import process_file_retail as process_bitmap
-from ..file_tag.file_weapon.process_file_retail import process_file_retail as process_weapon
-from ..file_tag.file_item_collection.process_file_retail import process_file_retail as process_item_collection
-from ..file_tag.file_sky.process_file_retail import process_file_retail as process_sky
+from ..file_tag.h1.file_scenario.process_file import process_file as process_h1_scenario
+from ..file_tag.h1.file_scenario_structure_bsp.process_file import process_file as process_h1_structure_bsp
+from ..file_tag.h1.file_actor_variant.process_file import process_file as process_actor_variant
+from ..file_tag.h1.file_actor_variant.process_json import process_json as process_actor_variant_json
+from ..file_tag.h1.file_model.process_file import process_file as process_mode
+from ..file_tag.h1.file_gbxmodel.process_file import process_file as process_mod2
+from ..file_tag.h1.file_scenery.process_file import process_file as process_h1_scenery
+from ..file_tag.h1.file_biped.process_file import process_file as process_biped
+from ..file_tag.h1.file_vehicle.process_file import process_file as process_vehicle
+from ..file_tag.h1.file_equipment.process_file import process_file as process_equipment
+from ..file_tag.h1.file_device_machine.process_file import process_file as process_machine
+from ..file_tag.h1.file_device_control.process_file import process_file as process_control
+from ..file_tag.h1.file_sound_scenery.process_file import process_file as process_sound_scenery
+from ..file_tag.h1.file_device_light_fixture.process_file import process_file as process_light_fixture
+from ..file_tag.h1.file_bitmap.process_file import process_file as process_bitmap
+from ..file_tag.h1.file_weapon.process_file import process_file as process_weapon
+from ..file_tag.h1.file_item_collection.process_file import process_file as process_item_collection
+from ..file_tag.h1.file_sky.process_file import process_file as process_sky
 
-from ..file_tag.file_shader_environment.process_file_retail import process_file_retail as process_shader_environment
-from ..file_tag.file_shader_model.process_file_retail import process_file_retail as process_shader_model
-from ..file_tag.file_shader_transparent_chicago.process_file_retail import process_file_retail as process_shader_transparent_chicago
-from ..file_tag.file_shader_transparent_chicago_extended.process_file_retail import process_file_retail as process_shader_transparent_chicago_extended
-from ..file_tag.file_shader_transparent_generic.process_file_retail import process_file_retail as process_shader_transparent_generic
-from ..file_tag.file_shader_transparent_glass.process_file_retail import process_file_retail as process_shader_transparent_glass
-from ..file_tag.file_shader_transparent_meter.process_file_retail import process_file_retail as process_shader_transparent_meter
-from ..file_tag.file_shader_transparent_plasma.process_file_retail import process_file_retail as process_shader_transparent_plasma
-from ..file_tag.file_shader_transparent_water.process_file_retail import process_file_retail as process_shader_transparent_water
+from ..file_tag.h1.file_shader_environment.process_file import process_file as process_shader_environment
+from ..file_tag.h1.file_shader_model.process_file import process_file as process_shader_model
+from ..file_tag.h1.file_shader_transparent_chicago.process_file import process_file as process_shader_transparent_chicago
+from ..file_tag.h1.file_shader_transparent_chicago_extended.process_file import process_file as process_shader_transparent_chicago_extended
+from ..file_tag.h1.file_shader_transparent_generic.process_file import process_file as process_shader_transparent_generic
+from ..file_tag.h1.file_shader_transparent_glass.process_file import process_file as process_shader_transparent_glass
+from ..file_tag.h1.file_shader_transparent_meter.process_file import process_file as process_shader_transparent_meter
+from ..file_tag.h1.file_shader_transparent_plasma.process_file import process_file as process_shader_transparent_plasma
+from ..file_tag.h1.file_shader_transparent_water.process_file import process_file as process_shader_transparent_water
 
-from ..file_tag.file_structure_bsp.h2.process_file_retail import process_file_retail as process_h2_structure_bsp
-from ..file_tag.file_structure_lightmap.h2.process_file_retail import process_file_retail as process_h2_structure_lightmap
+from ..file_tag.h2.file_scenario_structure_bsp.process_file import process_file as process_h2_structure_bsp
+from ..file_tag.h2.file_scenario_structure_lightmap.process_file import process_file as process_h2_structure_lightmap
+from ..file_tag.h2.file_model.process_file import process_file as process_h2_model
+from ..file_tag.h2.file_render_model.process_file import process_file as process_h2_render
+from ..file_tag.h2.file_scenery.process_file import process_file as process_h2_scenery
 
 class XMLData:
     def __init__(self, xml_node=None, element_name="", enum_class=None, block_count=0, block_name=""):
@@ -661,7 +664,7 @@ class TagAsset():
             xml_data.xml_node.appendChild(create_xml_node("field", [("name", xml_data.element_name), ("type", "string")], string_value))
 
         return string_value
-    
+
     class TagBlockHeader:
         def __init__(self, name="", version=0, count=0, size=0):
             self.name = name
@@ -875,7 +878,7 @@ class TagAsset():
                             input_stream = open(input_file, 'rb')
                             ASSET = process_mode(input_stream, tag_format, report)
                             input_stream.close()
-                        
+
                 elif self.tag_group == "sbsp":
                     input_file = os.path.join(config.HALO_1_TAG_PATH, "%s.scenario_structure_bsp" % self.name)
                     if os.path.exists(input_file):
@@ -959,6 +962,27 @@ class TagAsset():
                     if os.path.exists(input_file):
                         input_stream = open(input_file, 'rb')
                         ASSET = process_h2_structure_lightmap(input_stream, tag_format, report)
+                        input_stream.close()
+
+                elif self.tag_group == "hlmt":
+                    input_file = os.path.join(config.HALO_2_TAG_PATH, "%s.model" % self.name)
+                    if os.path.exists(input_file):
+                        input_stream = open(input_file, 'rb')
+                        ASSET = process_h2_model(input_stream, tag_format, report)
+                        input_stream.close()
+
+                elif self.tag_group == "mode":
+                    input_file = os.path.join(config.HALO_2_TAG_PATH, "%s.render_model" % self.name)
+                    if os.path.exists(input_file):
+                        input_stream = open(input_file, 'rb')
+                        ASSET = process_h2_render(input_stream, tag_format, report)
+                        input_stream.close()
+
+                elif self.tag_group == "scen":
+                    input_file = os.path.join(config.HALO_2_TAG_PATH, "%s.scenery" % self.name)
+                    if os.path.exists(input_file):
+                        input_stream = open(input_file, 'rb')
+                        ASSET = process_h2_scenery(input_stream, tag_format, report)
                         input_stream.close()
 
             return ASSET

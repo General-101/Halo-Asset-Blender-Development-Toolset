@@ -27,10 +27,10 @@
 import os
 import bpy
 
-from ..file_tag.file_scenario.h1.build_asset import build_asset as build_h1_scenario
-from ..file_tag.file_scenario.h1.process_scene import generate_scenario_scene
-from ..global_functions import tag_format, mesh_processing, global_functions, bitmap_processing
-from ..file_tag.file_scenario.h1.process_file_retail import process_file_retail as process_h1_scenario
+from .h1.file_scenario.build_asset import build_asset as build_h1_scenario
+from .h1.file_scenario.process_scene import generate_scenario_scene
+from ..global_functions import tag_format, mesh_processing, global_functions
+from .h1.file_scenario.process_file import process_file as process_h1_scenario
 
 def write_file(context, file_path, report):
     DONOR_ASSET = None

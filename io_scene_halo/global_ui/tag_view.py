@@ -24,17 +24,11 @@
 #
 # ##### END MIT LICENSE BLOCK #####
 
-import bpy
-import bmesh
 
-from enum import Flag, auto
-from ..file_tag.file_scenario.h1.format_retail import DataTypesEnum
+from ..file_tag.h1.file_scenario.format import DataTypesEnum
 from bpy.types import (
         PropertyGroup,
-        Operator,
-        UIList,
         Panel,
-        Menu
         )
 
 from bpy.props import (
@@ -43,9 +37,7 @@ from bpy.props import (
         EnumProperty,
         FloatProperty,
         StringProperty,
-        PointerProperty,
-        FloatVectorProperty,
-        CollectionProperty
+        FloatVectorProperty
         )
 
 class HALO_PropertiesGroup(PropertyGroup):

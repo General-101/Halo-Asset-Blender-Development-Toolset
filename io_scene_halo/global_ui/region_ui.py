@@ -27,7 +27,6 @@
 import bpy
 import bmesh
 
-from enum import Flag, auto
 from bpy.types import (
         PropertyGroup,
         Operator,
@@ -36,16 +35,7 @@ from bpy.types import (
         Menu
         )
 
-from bpy.props import (
-        IntProperty,
-        BoolProperty,
-        EnumProperty,
-        FloatProperty,
-        StringProperty,
-        PointerProperty,
-        FloatVectorProperty,
-        CollectionProperty
-        )
+from bpy.props import StringProperty
 
 def get_custom_attribute(self, attribute_name="Region Assignment"):
     region_attribute = self.attributes.get(attribute_name)

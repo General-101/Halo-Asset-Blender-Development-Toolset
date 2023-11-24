@@ -29,9 +29,9 @@ import bpy
 
 from .. import config
 from mathutils import Vector
-from ..file_tag.file_shader_environment.format_retail import EnvironmentTypeEnum, EnvironmentFlags, DiffuseFlags, ReflectionFlags
-from ..file_tag.file_shader_model.format_retail import ModelFlags, DetailFumctionEnum, DetailMaskEnum, FunctionEnum
-from ..file_tag.file_bitmap.h1.format_retail import FormatEnum
+from ..file_tag.h1.file_shader_environment.format import EnvironmentTypeEnum, EnvironmentFlags, DiffuseFlags, ReflectionFlags
+from ..file_tag.h1.file_shader_model.format import ModelFlags, DetailFumctionEnum, DetailMaskEnum, FunctionEnum
+from ..file_tag.h1.file_bitmap.format import FormatEnum
 
 def get_output_material_node(mat):
     output_material_node = None
