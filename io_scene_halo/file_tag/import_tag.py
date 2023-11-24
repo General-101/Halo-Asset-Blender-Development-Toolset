@@ -56,8 +56,7 @@ from .h2.file_scenario.process_file import process_file as process_h2_scenario
 
 from .h1.file_camera_track.process_file import process_file as process_camera_track
 
-def load_file(context, file_path, game_title, file_version, fix_rotations, empty_markers, report):
-    version = int(file_version)
+def load_file(context, file_path, game_title, fix_rotations, empty_markers, report):
     input_stream = open(file_path, "rb")
     if tag_format.check_file_size(input_stream) < 64: # Size of the header for all tags
         input_stream.close()
