@@ -261,14 +261,14 @@ def generate_biased_add_node(tree):
         multiply_node_a_0 = biased_add_logic_group.nodes.new("ShaderNodeMath")
         multiply_node_a_0.operation = 'MULTIPLY'
         multiply_node_a_0.use_clamp = True
-        multiply_node_b_0.location = Vector((-600, 525))
+        multiply_node_a_0.location = Vector((-600, 525))
         connect_inputs(biased_add_logic_group, base_seperate_node, "Red", multiply_node_a_0, 0)
         connect_inputs(biased_add_logic_group, x_node, "Value", multiply_node_a_0, 1)
 
         multiply_node_a_1 = biased_add_logic_group.nodes.new("ShaderNodeMath")
         multiply_node_a_1.operation = 'MULTIPLY'
         multiply_node_a_1.use_clamp = True
-        multiply_node_b_1.location = Vector((-600, 350))
+        multiply_node_a_1.location = Vector((-600, 350))
         connect_inputs(biased_add_logic_group, base_seperate_node, "Green", multiply_node_a_1, 0)
         connect_inputs(biased_add_logic_group, x_node, "Value", multiply_node_a_1, 1)
 
