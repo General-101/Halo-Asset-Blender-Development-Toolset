@@ -62,6 +62,7 @@ from ..file_tag.h1.file_shader_transparent_water.process_file import process_fil
 
 from ..file_tag.h2.file_scenario_structure_bsp.process_file import process_file as process_h2_structure_bsp
 from ..file_tag.h2.file_scenario_structure_lightmap.process_file import process_file as process_h2_structure_lightmap
+from ..file_tag.h2.file_bitmap.process_file import process_file as process_h2_bitmap
 from ..file_tag.h2.file_model.process_file import process_file as process_h2_model
 from ..file_tag.h2.file_render_model.process_file import process_file as process_h2_render
 from ..file_tag.h2.file_scenery.process_file import process_file as process_h2_scenery
@@ -399,14 +400,10 @@ class TagAsset():
 
         return flags
 
-    def read_point_2d_short(self, input_stream, tag, xml_data=None, increase_scale=False):
+    def read_point_2d_short(self, input_stream, tag, xml_data=None):
         short_a, short_b = struct.unpack('%shh' % get_endian_symbol(tag.big_endian), input_stream.read(4))
         if not tag.xml_doc == None and not xml_data == None:
             xml_data.xml_node.appendChild(create_xml_node("field", [("name", xml_data.element_name), ("type", "short point 2d")], xml_bounds_short(short_a, short_b)))
-
-        if increase_scale:
-            short_a *= 100
-            short_b *= 100
 
         return (short_a, short_b)
 
@@ -961,6 +958,13 @@ class TagAsset():
                     if os.path.exists(input_file):
                         input_stream = open(input_file, 'rb')
                         ASSET = process_h2_structure_lightmap(input_stream, tag_format, report)
+                        input_stream.close()
+
+                elif self.tag_group == "bitm":
+                    input_file = os.path.join(config.HALO_2_TAG_PATH, "%s.bitmap" % self.name)
+                    if os.path.exists(input_file):
+                        input_stream = open(input_file, 'rb')
+                        ASSET = process_h2_bitmap(input_stream, tag_format, report)
                         input_stream.close()
 
                 elif self.tag_group == "hlmt":

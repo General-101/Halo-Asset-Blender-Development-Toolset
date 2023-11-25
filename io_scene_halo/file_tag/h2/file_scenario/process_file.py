@@ -103,7 +103,7 @@ from .format import (
         SALT_SIZE
         )
 
-XML_OUTPUT = True
+XML_OUTPUT = False
 
 def get_predicted_resource(input_stream, SCENARIO, TAG, tag_format, node_element):
     predicted_resource = SCENARIO.PredictedResource()

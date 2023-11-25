@@ -59,7 +59,7 @@ from .format import (
         LightmappingPolicyEnum
         )
 
-XML_OUTPUT = True
+XML_OUTPUT = False
 
 def initilize_scenario(LEVEL):
     LEVEL.import_info = []

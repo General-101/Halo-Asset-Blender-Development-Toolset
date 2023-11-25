@@ -74,7 +74,7 @@ def build_clusters(lightmap_group, SBSP_ASSET, level_root, random_color_gen, col
                         U = vertex.primary_lightmap_texcoord[0]
                         V = vertex.primary_lightmap_texcoord[1]
 
-                        layer_uv.data[loop_index].uv = (U, 1 - V)
+                        layer_uv.data[loop_index].uv = (U, V)
 
                 triangle_start = 0
                 for part in cache_data.parts:
@@ -152,7 +152,7 @@ def build_poops(lightmap_group, SBSP_ASSET, level_root, random_color_gen, collec
                         U = vertex.primary_lightmap_texcoord[0]
                         V = vertex.primary_lightmap_texcoord[1]
 
-                        layer_uv.data[loop_index].uv = (U, 1 - V)
+                        layer_uv.data[loop_index].uv = (U, V)
 
                 triangle_start = 0
                 for part in render_data.parts:

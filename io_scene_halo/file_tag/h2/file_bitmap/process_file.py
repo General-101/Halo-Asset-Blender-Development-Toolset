@@ -41,7 +41,7 @@ from .format import (
         CacheUsageEnum
         )
 
-XML_OUTPUT = True
+XML_OUTPUT = False
 
 def initilize_bitmap(BITMAP):
     BITMAP.sequences = []
@@ -216,8 +216,10 @@ def process_file(input_stream, tag_format, report):
 
     initilize_bitmap(BITMAP)
     read_bitmap_body(BITMAP, TAG, input_stream, tag_format, tag_node, XML_OUTPUT)
-    BITMAP.bitmap_body.compressed_color_plate = input_stream.read(BITMAP.bitmap_body.compressed_color_plate_data.size)
-    BITMAP.bitmap_body.processed_pixels = input_stream.read(BITMAP.bitmap_body.processed_pixel_data.size)
+    input_stream.seek(BITMAP.bitmap_body.compressed_color_plate_data.size, 1)
+    input_stream.seek(BITMAP.bitmap_body.processed_pixel_data.size, 1)
+    BITMAP.bitmap_body.compressed_color_plate = bytes()
+    BITMAP.bitmap_body.processed_pixels = bytes()
     read_sequences(BITMAP, TAG, input_stream, tag_format, tag_node, XML_OUTPUT)
     read_bitmaps(BITMAP, TAG, input_stream, tag_format, tag_node, XML_OUTPUT)
 

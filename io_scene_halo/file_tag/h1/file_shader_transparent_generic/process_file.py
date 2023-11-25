@@ -48,7 +48,7 @@ from .format import (
         AlphaOutputEnum
         )
 
-XML_OUTPUT = True
+XML_OUTPUT = False
 
 def process_file(input_stream, tag_format, report):
     TAG = tag_format.TagAsset()

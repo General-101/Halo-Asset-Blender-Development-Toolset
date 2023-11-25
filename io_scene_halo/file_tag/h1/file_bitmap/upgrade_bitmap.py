@@ -24,8 +24,6 @@
 #
 # ##### END MIT LICENSE BLOCK #####
 
-import os
-
 from .format import (
         BitmapAsset as H1BitmapAsset,
         BitmapTypeEnum as H1BitmapTypeEnum,
