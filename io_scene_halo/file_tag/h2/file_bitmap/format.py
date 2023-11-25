@@ -26,7 +26,7 @@
 
 from enum import Flag, Enum, auto
 
-class BitmapTypeEnum(Enum):
+class ImportTypeEnum(Enum):
     _2d_textures = 0
     _3d_textures = auto()
     cube_maps = auto()
@@ -54,7 +54,7 @@ class UsageEnum(Enum):
     height_map_g8b8 = auto()
     height_map_g8b8_with_alpha = auto()
 
-class BitmapFlags(Flag):
+class ImportFlags(Flag):
     enable_diffusion_dithering = auto()
     disable_height_map_compression = auto()
     uniform_sprite_sequences = auto()
@@ -92,11 +92,74 @@ class ForceFormatEnum(Enum):
     force_alpha_lumincance8 = auto()
     force_a4r4g4b4 = auto()
 
-class ColorSubsamplingEnum(Enum):
-    _4_0_0 = 0
-    _4_2_0 = auto()
-    _4_2_2 = auto()
-    _4_4_4 = auto()
+class MoreFlags(Flag):
+    delete_from_cache_file = auto()
+    bitmap_create_attempted = auto()
+    bitmap_recreate_allowed = auto()
+    bitmap_sampling_allowed = auto()
+
+class BitmapTypeEnum(Enum):
+    _2d_texture = 0
+    _3d_texture = auto()
+    cube_map = auto()
+
+class BitmapFormatEnum(Enum):
+    a8 = 0
+    y8 = auto()
+    ay8 = auto()
+    a8y8 = auto()
+    unused1 = auto()
+    unused2 = auto()
+    r5g6b5 = auto()
+    unused3 = auto()
+    a1r5g5b5 = auto()
+    a4r4g4b4 = auto()
+    x8r8g8b8 = auto()
+    a8r8g8b8 = auto()
+    unused4 = auto()
+    unused5 = auto()
+    dxt1 = auto()
+    dxt3 = auto()
+    dxt5 = auto()
+    p8_bump = auto()
+    p8 = auto()
+    argbfb32 = auto()
+    rgbfb32 = auto()
+    rgbfb16 = auto()
+    v8u8 = auto()
+    g8b8 = auto()
+
+class BitmapFlags(Flag):
+    power_of_two_dimensions = auto()
+    compressed = auto()
+    palettized = auto()
+    swizzled = auto()
+    linear = auto()
+    v16u16 = auto()
+    mipmap_debug_level = auto()
+    prefer_stutter = auto()
+
+class CacheUsageEnum(Enum):
+    default = 0
+    environment = auto()
+    environment_bump = auto()
+    environment_lightmap = auto()
+    scenery = auto()
+    scenery_bump = auto()
+    weapon = auto()
+    weapon_bump = auto()
+    vehicle = auto()
+    vehicle_bump = auto()
+    biped = auto()
+    biped_bump = auto()
+    object = auto()
+    object_bump = auto()
+    effect = auto()
+    hud = auto()
+    ui = auto()
+    sky = auto()
+    first_person = auto()
+    rasterizer = auto()
 
 class BitmapAsset():
     def __init__(self):
@@ -140,3 +203,51 @@ class BitmapAsset():
             self.alpha_compression_quality = alpha_compression_quality
             self.overlap = overlap
             self.color_subsampling = color_subsampling
+
+    class Sequence:
+        def __init__(self, name="", first_bitmap_index=0, bitmap_count=0, sprites_tag_block=None, sprites_header=None, sprites=None):
+            self.name = name
+            self.first_bitmap_index = first_bitmap_index
+            self.bitmap_count = bitmap_count
+            self.sprites_tag_block = sprites_tag_block
+            self.sprites_header = sprites_header
+            self.sprites = sprites
+
+    class Sprite:
+        def __init__(self, bitmap_index=0, left=0, right=0, top=0, bottom=0, registration_point=(0.0, 0.0)):
+            self.bitmap_index = bitmap_index
+            self.left = left
+            self.right = right
+            self.top = top
+            self.bottom = bottom
+            self.registration_point = registration_point
+
+    class Bitmap:
+        def __init__(self, signature="", width=0, height=0, depth=0, more_flags=0, bitmap_type=0, bitmap_format=0, flags=0, registration_point=(0.0, 0.0), mipmap_count=0, 
+                     lod_adjust=0, cache_usage=0, pixels_offset=0, native_mipmap_info_tag_block=None, native_mipmap_info_header=None, native_mipmap_info=None, native_size=0, 
+                     tile_mode=0, nbmi_header=None):
+            self.signature = signature
+            self.width = width
+            self.height = height
+            self.depth = depth
+            self.more_flags = more_flags
+            self.bitmap_type = bitmap_type
+            self.bitmap_format = bitmap_format
+            self.flags = flags
+            self.registration_point = registration_point
+            self.mipmap_count = mipmap_count
+            self.lod_adjust = lod_adjust
+            self.cache_usage = cache_usage
+            self.pixels_offset = pixels_offset
+            self.native_mipmap_info_tag_block = native_mipmap_info_tag_block
+            self.native_mipmap_info_header = native_mipmap_info_header
+            self.native_mipmap_info = native_mipmap_info
+            self.native_size = native_size
+            self.tile_mode = tile_mode
+            self.nbmi_header = nbmi_header
+
+    class NativeMipMapInfo:
+        def __init__(self, offset=0, pitch_row=0, pitch_slice=0):
+            self.offset = offset
+            self.pitch_row = pitch_row
+            self.pitch_slice = pitch_slice
