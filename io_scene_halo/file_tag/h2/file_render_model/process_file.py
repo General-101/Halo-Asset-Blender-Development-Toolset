@@ -25,22 +25,23 @@
 # ##### END MIT LICENSE BLOCK #####
 
 from xml.dom import minidom
+from ....global_functions import tag_format
 from .format import (
-        RenderAsset, 
-        RenderFlags, 
-        GeometryClassificationEnum, 
-        GeometryCompressionFlags,
-        SectionLightingFlags,
-        SectionFlags,
-        ResourceEnum,
-        PartTypeEnum,
-        PartFlags,
-        ISQFlags,
-        DetailLevelsFlags,
-        PropertyTypeEnum,
-        ReportTypeEnum,
-        ReportFlags,
-        )
+    RenderAsset, 
+    RenderFlags, 
+    GeometryClassificationEnum, 
+    GeometryCompressionFlags,
+    SectionLightingFlags,
+    SectionFlags,
+    ResourceEnum,
+    PartTypeEnum,
+    PartFlags,
+    ISQFlags,
+    DetailLevelsFlags,
+    PropertyTypeEnum,
+    ReportTypeEnum,
+    ReportFlags,
+    )
 
 XML_OUTPUT = False
 
@@ -60,7 +61,7 @@ def initilize_render(RENDER):
     RENDER.prt_info = []
     RENDER.section_render_leaves = []
 
-def read_render_body_v0(RENDER, TAG, input_stream, tag_format, tag_node, XML_OUTPUT):
+def read_render_body_v0(RENDER, TAG, input_stream, tag_node, XML_OUTPUT):
     RENDER.render_body_header = TAG.TagBlockHeader().read(input_stream, TAG)
     RENDER.render_body = RenderAsset.RenderBody()
 
@@ -91,7 +92,7 @@ def read_render_body_v0(RENDER, TAG, input_stream, tag_format, tag_node, XML_OUT
     RENDER.render_body.prt_info_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "prt info"))
     RENDER.render_body.section_render_leaves_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "section render leaves"))
 
-def read_render_body_retail(RENDER, TAG, input_stream, tag_format, tag_node, XML_OUTPUT):
+def read_render_body_retail(RENDER, TAG, input_stream, tag_node, XML_OUTPUT):
     RENDER.render_body_header = TAG.TagBlockHeader().read(input_stream, TAG)
     RENDER.render_body = RenderAsset.RenderBody()
 
@@ -125,7 +126,7 @@ def read_render_body_retail(RENDER, TAG, input_stream, tag_format, tag_node, XML
     RENDER.render_body.prt_info_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "prt info"))
     RENDER.render_body.section_render_leaves_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "section render leaves"))
 
-def read_import_info(RENDER, TAG, input_stream, tag_format, tag_node, XML_OUTPUT):
+def read_import_info(RENDER, TAG, input_stream, tag_node, XML_OUTPUT):
     if RENDER.render_body.import_info_tag_block.count > 0:
         import_info_node = tag_format.get_xml_node(XML_OUTPUT, RENDER.render_body.import_info_tag_block.count, tag_node, "name", "import info")
         RENDER.import_info_header = TAG.TagBlockHeader().read(input_stream, TAG)
@@ -183,7 +184,7 @@ def read_import_info(RENDER, TAG, input_stream, tag_format, tag_node, XML_OUTPUT
 
                     file.uncompressed_data = input_stream.read(file.zipped_data)
 
-def read_compression_info(RENDER, TAG, input_stream, tag_format, tag_node, XML_OUTPUT):
+def read_compression_info(RENDER, TAG, input_stream, tag_node, XML_OUTPUT):
     if RENDER.render_body.compression_info_tag_block.count > 0:
         compression_info_node = tag_format.get_xml_node(XML_OUTPUT, RENDER.render_body.compression_info_tag_block.count, tag_node, "name", "compression info")
         RENDER.compression_info_header = TAG.TagBlockHeader().read(input_stream, TAG)
@@ -205,7 +206,7 @@ def read_compression_info(RENDER, TAG, input_stream, tag_format, tag_node, XML_O
 
             RENDER.compression_info.append(compression_info)
 
-def read_regions_v0(RENDER, TAG, input_stream, tag_format, tag_node, XML_OUTPUT):
+def read_regions_v0(RENDER, TAG, input_stream, tag_node, XML_OUTPUT):
     if RENDER.render_body.regions_tag_block.count > 0:
         regions_node = tag_format.get_xml_node(XML_OUTPUT, RENDER.render_body.regions_tag_block.count, tag_node, "name", "regions")
         RENDER.region_header = TAG.TagBlockHeader().read(input_stream, TAG)
@@ -255,7 +256,7 @@ def read_regions_v0(RENDER, TAG, input_stream, tag_format, tag_node, XML_OUTPUT)
 
                     region.permutations.append(permutation)
 
-def read_regions_retail(RENDER, TAG, input_stream, tag_format, tag_node, XML_OUTPUT):
+def read_regions_retail(RENDER, TAG, input_stream, tag_node, XML_OUTPUT):
     if RENDER.render_body.regions_tag_block.count > 0:
         regions_node = tag_format.get_xml_node(XML_OUTPUT, RENDER.render_body.regions_tag_block.count, tag_node, "name", "regions")
         RENDER.region_header = TAG.TagBlockHeader().read(input_stream, TAG)
@@ -322,7 +323,269 @@ def read_regions_retail(RENDER, TAG, input_stream, tag_format, tag_node, XML_OUT
                     if region.name_length > 0:
                         permutation.name = TAG.read_variable_string_no_terminator(input_stream, permutation.name_length, TAG, tag_format.XMLData(permutation_element_node, "name"))
 
-def read_sections_v0(RENDER, TAG, input_stream, tag_format, tag_node, XML_OUTPUT):
+def read_parts_v0(RENDER, section_data, TAG, input_stream, node_element):
+    if section_data.parts_tag_block.count > 0:
+        parts_node = tag_format.get_xml_node(XML_OUTPUT, section_data.parts_tag_block.count, node_element, "name", "parts")
+        section_data.parts_header = TAG.TagBlockHeader().read(input_stream, TAG)
+        for part_idx in range(section_data.parts_tag_block.count):
+            part_element_node = None
+            if XML_OUTPUT:
+                part_element_node = TAG.xml_doc.createElement('element')
+                part_element_node.setAttribute('index', str(part_idx))
+                parts_node.appendChild(part_element_node)
+
+            part = RENDER.Part()
+            part.part_type = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(part_element_node, "type", PartTypeEnum))
+            part.flags = TAG.read_flag_unsigned_short(input_stream, TAG, tag_format.XMLData(part_element_node, "flags", PartFlags))
+            part.material_index = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(part_element_node, "material", None, RENDER.render_body.materials_tag_block.count, "material"))
+            input_stream.read(2) # Padding?
+            part.strip_start_index = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(part_element_node, "strip start index"))
+            part.strip_length = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(part_element_node, "strip length"))
+            #part.first_subpart_index = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(part_element_node, "first subpart index"))
+            #part.subpart_count = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(part_element_node, "subpart count"))
+            input_stream.read(12) # Padding?
+            part.max_nodes_vertex = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(part_element_node, "max nodes vertex"))
+            part.contributing_compound_node_count = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(part_element_node, "contributing compound node count"))
+            input_stream.read(18) # Padding?
+            part.position = TAG.read_point_3d(input_stream, TAG, tag_format.XMLData(part_element_node, "position"))
+            part.node_index_0 = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(part_element_node, "node index 0"))
+            part.node_index_1 = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(part_element_node, "node index 1"))
+            part.node_index_2 = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(part_element_node, "node index 2"))
+            part.node_index_3 = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(part_element_node, "node index 3"))
+            part.node_weight_0 = TAG.read_float(input_stream, TAG, tag_format.XMLData(part_element_node, "node weight 0"))
+            part.node_weight_1 = TAG.read_float(input_stream, TAG, tag_format.XMLData(part_element_node, "node weight 1"))
+            part.node_weight_2 = TAG.read_float(input_stream, TAG, tag_format.XMLData(part_element_node, "node weight 2"))
+            part.lod_mipmap_magic_number = TAG.read_float(input_stream, TAG, tag_format.XMLData(part_element_node, "lod mipmap magic number"))
+            input_stream.read(24) # Padding?
+
+            section_data.parts.append(part)
+
+def read_parts_retail(RENDER, section_data, TAG, input_stream, node_element):
+    if section_data.parts_tag_block.count > 0:
+        parts_node = tag_format.get_xml_node(XML_OUTPUT, section_data.parts_tag_block.count, node_element, "name", "parts")
+        section_data.parts_header = TAG.TagBlockHeader().read(input_stream, TAG)
+        for part_idx in range(section_data.parts_tag_block.count):
+            part_element_node = None
+            if XML_OUTPUT:
+                part_element_node = TAG.xml_doc.createElement('element')
+                part_element_node.setAttribute('index', str(part_idx))
+                parts_node.appendChild(part_element_node)
+
+            part = RENDER.Part()
+            part.part_type = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(part_element_node, "type", PartTypeEnum))
+            part.flags = TAG.read_flag_unsigned_short(input_stream, TAG, tag_format.XMLData(part_element_node, "flags", PartFlags))
+            part.material_index = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(part_element_node, "material", None, RENDER.render_body.materials_tag_block.count, "material"))
+            part.strip_start_index = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(part_element_node, "strip start index"))
+            part.strip_length = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(part_element_node, "strip length"))
+            part.first_subpart_index = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(part_element_node, "first subpart index"))
+            part.subpart_count = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(part_element_node, "subpart count"))
+            part.max_nodes_vertex = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(part_element_node, "max nodes vertex"))
+            part.contributing_compound_node_count = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(part_element_node, "contributing compound node count"))
+            part.position = TAG.read_point_3d(input_stream, TAG, tag_format.XMLData(part_element_node, "position"))
+            part.node_index_0 = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(part_element_node, "node index 0"))
+            part.node_index_1 = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(part_element_node, "node index 1"))
+            part.node_index_2 = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(part_element_node, "node index 2"))
+            part.node_index_3 = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(part_element_node, "node index 3"))
+            part.node_weight_0 = TAG.read_float(input_stream, TAG, tag_format.XMLData(part_element_node, "node weight 0"))
+            part.node_weight_1 = TAG.read_float(input_stream, TAG, tag_format.XMLData(part_element_node, "node weight 1"))
+            part.node_weight_2 = TAG.read_float(input_stream, TAG, tag_format.XMLData(part_element_node, "node weight 2"))
+            part.lod_mipmap_magic_number = TAG.read_float(input_stream, TAG, tag_format.XMLData(part_element_node, "lod mipmap magic number"))
+            input_stream.read(24) # Padding?
+
+            section_data.parts.append(part)
+
+def read_subparts(RENDER, section_data, TAG, input_stream, node_element):
+    if section_data.subparts_tag_block.count > 0:
+        subparts_node = tag_format.get_xml_node(XML_OUTPUT, section_data.subparts_tag_block.count, node_element, "name", "subparts")
+        section_data.subparts_header = TAG.TagBlockHeader().read(input_stream, TAG)
+        for subpart_idx in range(section_data.subparts_tag_block.count):
+            subpart_element_node = None
+            if XML_OUTPUT:
+                subpart_element_node = TAG.xml_doc.createElement('element')
+                subpart_element_node.setAttribute('index', str(subpart_idx))
+                subparts_node.appendChild(subpart_element_node)
+
+            sub_part = RENDER.SubPart()
+            sub_part.indices_start_index = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(subpart_element_node, "indices start index"))
+            sub_part.indices_length = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(subpart_element_node, "indices length"))
+            sub_part.visibility_bounds_index = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(subpart_element_node, "visibility bounds index"))
+            sub_part.part_index = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(subpart_element_node, "part index"))
+
+            section_data.subparts.append(sub_part)
+
+def read_visibility_bounds(RENDER, section_data, TAG, input_stream, node_element):
+    if section_data.visibility_bounds_tag_block.count > 0:
+        visibility_bounds_node = tag_format.get_xml_node(XML_OUTPUT, section_data.visibility_bounds_tag_block.count, node_element, "name", "visibility bounds")
+        section_data.subparts_header = TAG.TagBlockHeader().read(input_stream, TAG)
+        for visibility_bound_idx in range(section_data.visibility_bounds_tag_block.count):
+            visibility_bound_element_node = None
+            if XML_OUTPUT:
+                visibility_bound_element_node = TAG.xml_doc.createElement('element')
+                visibility_bound_element_node.setAttribute('index', str(visibility_bound_idx))
+                visibility_bounds_node.appendChild(visibility_bound_element_node)
+
+            visibility_bound = RENDER.VisibilityBounds()
+            visibility_bound.position = TAG.read_point_3d(input_stream, TAG, tag_format.XMLData(visibility_bound_element_node, "position"))
+            visibility_bound.radius = TAG.read_float(input_stream, TAG, tag_format.XMLData(visibility_bound_element_node, "radius"))
+            visibility_bound.node_0 = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(visibility_bound_element_node, "node 0"))
+            input_stream.read(2) # Padding?
+
+            section_data.visibility_bounds.append(visibility_bound)
+
+def read_raw_vertices(RENDER, section_data, TAG, input_stream, node_element):
+    if section_data.raw_vertices_tag_block.count > 0:
+        raw_vertices_node = tag_format.get_xml_node(XML_OUTPUT, section_data.raw_vertices_tag_block.count, node_element, "name", "raw vertices")
+        section_data.raw_vertices_header = TAG.TagBlockHeader().read(input_stream, TAG)
+        for raw_vertex_idx in range(section_data.raw_vertices_tag_block.count):
+            raw_vertex_element_node = None
+            if XML_OUTPUT:
+                raw_vertex_element_node = TAG.xml_doc.createElement('element')
+                raw_vertex_element_node.setAttribute('index', str(raw_vertex_idx))
+                raw_vertices_node.appendChild(raw_vertex_element_node)
+
+            raw_vertex = RENDER.RawVertex()
+            raw_vertex.position = TAG.read_point_3d(input_stream, TAG, tag_format.XMLData(raw_vertex_element_node, "position"), True)
+            raw_vertex.node_index_0_old = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(raw_vertex_element_node, "node index 0 old"))
+            raw_vertex.node_index_1_old = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(raw_vertex_element_node, "node index 1 old"))
+            raw_vertex.node_index_2_old = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(raw_vertex_element_node, "node index 2 old"))
+            raw_vertex.node_index_3_old = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(raw_vertex_element_node, "node index 3 old"))
+            raw_vertex.node_weight_0 = TAG.read_float(input_stream, TAG, tag_format.XMLData(raw_vertex_element_node, "node weight 0"))
+            raw_vertex.node_weight_1 = TAG.read_float(input_stream, TAG, tag_format.XMLData(raw_vertex_element_node, "node weight 1"))
+            raw_vertex.node_weight_2 = TAG.read_float(input_stream, TAG, tag_format.XMLData(raw_vertex_element_node, "node weight 2"))
+            raw_vertex.node_weight_3 = TAG.read_float(input_stream, TAG, tag_format.XMLData(raw_vertex_element_node, "node weight 3"))
+            raw_vertex.node_index_0_new = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(raw_vertex_element_node, "node index 0 new"))
+            raw_vertex.node_index_1_new = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(raw_vertex_element_node, "node index 1 new"))
+            raw_vertex.node_index_2_new = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(raw_vertex_element_node, "node index 2 new"))
+            raw_vertex.node_index_3_new = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(raw_vertex_element_node, "node index 3 new"))
+            raw_vertex.uses_new_node_indices = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(raw_vertex_element_node, "uses new node indices"))
+            raw_vertex.adjusted_compound_node_index = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(raw_vertex_element_node, "adjusted compound node index"))
+            raw_vertex.texcoord = TAG.read_point_2d(input_stream, TAG, tag_format.XMLData(raw_vertex_element_node, "texcoord"))
+            raw_vertex.normal = TAG.read_vector(input_stream, TAG, tag_format.XMLData(raw_vertex_element_node, "normal"))
+            raw_vertex.binormal = TAG.read_vector(input_stream, TAG, tag_format.XMLData(raw_vertex_element_node, "binormal"))
+            raw_vertex.tangent = TAG.read_vector(input_stream, TAG, tag_format.XMLData(raw_vertex_element_node, "tangent"))
+            raw_vertex.anisotropic_binormal = TAG.read_vector(input_stream, TAG, tag_format.XMLData(raw_vertex_element_node, "anisotropic tangent"))
+            raw_vertex.secondary_texcoord = TAG.read_point_2d(input_stream, TAG, tag_format.XMLData(raw_vertex_element_node, "secondary texcoord"))
+            raw_vertex.primary_lightmap_color_RGBA = TAG.read_rgb(input_stream, TAG, tag_format.XMLData(raw_vertex_element_node, "primary lightmap color"))
+            raw_vertex.primary_lightmap_texcoord = TAG.read_point_2d(input_stream, TAG, tag_format.XMLData(raw_vertex_element_node, "primary lightmap texcoord"))
+            raw_vertex.primary_lightmap_incident_direction = TAG.read_vector(input_stream, TAG, tag_format.XMLData(raw_vertex_element_node, "primary lightmap incident direction"))
+            input_stream.read(32) # Padding?
+
+            section_data.raw_vertices.append(raw_vertex)
+
+def read_strip_indices(RENDER, section_data, TAG, input_stream, node_element):
+    if section_data.strip_indices_tag_block.count > 0:
+        strip_indices_node = tag_format.get_xml_node(XML_OUTPUT, section_data.strip_indices_tag_block.count, node_element, "name", "strip indices")
+        section_data.strip_indices_header = TAG.TagBlockHeader().read(input_stream, TAG)
+        for strip_index_idx in range(section_data.strip_indices_tag_block.count):
+            strip_index_element_node = None
+            if XML_OUTPUT:
+                strip_index_element_node = TAG.xml_doc.createElement('element')
+                strip_index_element_node.setAttribute('index', str(strip_index_idx))
+                strip_indices_node.appendChild(strip_index_element_node)
+
+            section_data.strip_indices.append(TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(strip_index_element_node, "index")))
+
+def read_mopp_reorder_table(RENDER, section_data, TAG, input_stream, node_element):
+    if section_data.mopp_reorder_table_tag_block.count > 0:
+        mopp_reorder_table_node = tag_format.get_xml_node(XML_OUTPUT, section_data.mopp_reorder_table_tag_block.count, node_element, "name", "mopp reorder table")
+        section_data.mopp_reorder_table_header = TAG.TagBlockHeader().read(input_stream, TAG)
+        for mopp_reorder_table_idx in range(section_data.mopp_reorder_table_tag_block.count):
+            mopp_reorder_table_element_node = None
+            if XML_OUTPUT:
+                mopp_reorder_table_element_node = TAG.xml_doc.createElement('element')
+                mopp_reorder_table_element_node.setAttribute('index', str(mopp_reorder_table_idx))
+                mopp_reorder_table_node.appendChild(mopp_reorder_table_element_node)
+
+            section_data.mopp_reorder_table.append(TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(mopp_reorder_table_element_node, "index")))
+
+def read_vertex_buffers(RENDER, section_data, TAG, input_stream, node_element):
+    if section_data.vertex_buffers_tag_block.count > 0:
+        vertex_buffers_node = tag_format.get_xml_node(XML_OUTPUT, section_data.vertex_buffers_tag_block.count, node_element, "name", "vertex buffers")
+        section_data.mopp_reorder_table_header = TAG.TagBlockHeader().read(input_stream, TAG)
+        for vertex_buffer_idx in range(section_data.vertex_buffers_tag_block.count):
+            vertex_buffer_element_node = None
+            if XML_OUTPUT:
+                vertex_buffer_element_node = TAG.xml_doc.createElement('element')
+                vertex_buffer_element_node.setAttribute('index', str(vertex_buffer_idx))
+                vertex_buffers_node.appendChild(vertex_buffer_element_node)
+
+            input_stream.read(32) # Padding?
+
+def read_raw_points(RENDER, section_data, TAG, input_stream, node_element):
+    if section_data.raw_points_tag_block.count > 0:
+        raw_points_node = tag_format.get_xml_node(XML_OUTPUT, section_data.raw_points_tag_block.count, node_element, "name", "raw points")
+        section_data.raw_points_header = TAG.TagBlockHeader().read(input_stream, TAG)
+        for raw_point_idx in range(section_data.raw_points_tag_block.count):
+            raw_point_element_node = None
+            if XML_OUTPUT:
+                raw_point_element_node = TAG.xml_doc.createElement('element')
+                raw_point_element_node.setAttribute('index', str(raw_point_idx))
+                raw_points_node.appendChild(raw_point_element_node)
+
+            raw_point = RENDER.RawPoint()
+            raw_point.position = TAG.read_point_3d(input_stream, TAG, tag_format.XMLData(raw_point_element_node, "position"), True)
+            raw_point.node_index_0_old = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(raw_point_element_node, "node index 0 old"))
+            raw_point.node_index_1_old = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(raw_point_element_node, "node index 1 old"))
+            raw_point.node_index_2_old = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(raw_point_element_node, "node index 2 old"))
+            raw_point.node_index_3_old = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(raw_point_element_node, "node index 3 old"))
+            raw_point.node_weight_0 = TAG.read_float(input_stream, TAG, tag_format.XMLData(raw_point_element_node, "node weight 0"))
+            raw_point.node_weight_1 = TAG.read_float(input_stream, TAG, tag_format.XMLData(raw_point_element_node, "node weight 1"))
+            raw_point.node_weight_2 = TAG.read_float(input_stream, TAG, tag_format.XMLData(raw_point_element_node, "node weight 2"))
+            raw_point.node_weight_3 = TAG.read_float(input_stream, TAG, tag_format.XMLData(raw_point_element_node, "node weight 3"))
+            raw_point.node_index_0_new = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(raw_point_element_node, "node index 0 new"))
+            raw_point.node_index_1_new = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(raw_point_element_node, "node index 1 new"))
+            raw_point.node_index_2_new = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(raw_point_element_node, "node index 2 new"))
+            raw_point.node_index_3_new = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(raw_point_element_node, "node index 3 new"))
+            raw_point.uses_new_node_indices = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(raw_point_element_node, "uses new node indices"))
+            raw_point.adjusted_compound_node_index = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(raw_point_element_node, "adjusted compound node index"))
+
+            section_data.raw_points.append(raw_point)
+
+def read_rigid_point_groups(RENDER, section_data, TAG, input_stream, node_element):
+    if section_data.rigid_point_groups_tag_block.count > 0:
+        rigid_point_groups_node = tag_format.get_xml_node(XML_OUTPUT, section_data.rigid_point_groups_tag_block.count, node_element, "name", "rigid point groups")
+        section_data.rigid_point_groups_header = TAG.TagBlockHeader().read(input_stream, TAG)
+        for rigid_point_group_idx in range(section_data.rigid_point_groups_tag_block.count):
+            rigid_point_group_element_node = None
+            if XML_OUTPUT:
+                rigid_point_group_element_node = TAG.xml_doc.createElement('element')
+                rigid_point_group_element_node.setAttribute('index', str(rigid_point_group_idx))
+                rigid_point_groups_node.appendChild(rigid_point_group_element_node)
+
+            rigid_point_group = RENDER.RigidPointGroup()
+            rigid_point_group.rigid_node_index = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(rigid_point_group_element_node, "rigid node index"))
+            rigid_point_group.nodes_per_point = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(rigid_point_group_element_node, "nodes per point"))
+            rigid_point_group.point_count = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(rigid_point_group_element_node, "point count"))
+
+            section_data.rigid_point_groups.append(rigid_point_group)
+
+def read_vertex_point_indices(RENDER, section_data, TAG, input_stream, node_element):
+    if section_data.vertex_point_indices_tag_block.count > 0:
+        vertex_point_indices_node = tag_format.get_xml_node(XML_OUTPUT, section_data.vertex_point_indices_tag_block.count, node_element, "name", "vertex point indices")
+        section_data.vertex_point_indices_header = TAG.TagBlockHeader().read(input_stream, TAG)
+        for vertex_point_idx in range(section_data.vertex_point_indices_tag_block.count):
+            vertex_point_element_node = None
+            if XML_OUTPUT:
+                vertex_point_element_node = TAG.xml_doc.createElement('element')
+                vertex_point_element_node.setAttribute('index', str(vertex_point_idx))
+                vertex_point_indices_node.appendChild(vertex_point_element_node)
+
+            section_data.vertex_point_indices.append(TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(vertex_point_element_node, "index")))
+
+def read_section_node_map(RENDER, section_data, TAG, input_stream, node_element):
+    if section_data.node_map_tag_block.count > 0:
+        node_map_node = tag_format.get_xml_node(XML_OUTPUT, section_data.node_map_tag_block.count, node_element, "name", "node map")
+        section_data.node_map_header = TAG.TagBlockHeader().read(input_stream, TAG)
+        for node_map_idx in range(section_data.node_map_tag_block.count):
+            node_map_element_node = None
+            if XML_OUTPUT:
+                node_map_element_node = TAG.xml_doc.createElement('element')
+                node_map_element_node.setAttribute('index', str(node_map_idx))
+                node_map_node.appendChild(node_map_element_node)
+
+            section_data.node_map.append(TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(node_map_element_node, "node index")))
+
+def read_sections_v0(RENDER, TAG, input_stream, tag_node, XML_OUTPUT):
     if RENDER.render_body.sections_tag_block.count > 0:
         sections_node = tag_format.get_xml_node(XML_OUTPUT, RENDER.render_body.sections_tag_block.count, tag_node, "name", "sections")
         RENDER.section_header = TAG.TagBlockHeader().read(input_stream, TAG)
@@ -353,8 +616,10 @@ def read_sections_v0(RENDER, TAG, input_stream, tag_format, tag_node, XML_OUTPUT
             section.hardware_node_count = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(section_element_node, "hardware node count"))
             section.node_map_size = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(section_element_node, "node map size"))
             section.software_plane_count = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(section_element_node, "software plane count"))
-            section.total_subpart_count = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(section_element_node, "total subpart count"))
-            section.section_lighting_flags = TAG.read_flag_unsigned_short(input_stream, TAG, tag_format.XMLData(section_element_node, "section lighting flags", SectionLightingFlags))
+            if RENDER.section_header.size >= 104:
+                section.total_subpart_count = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(section_element_node, "total subpart count"))
+                section.section_lighting_flags = TAG.read_flag_unsigned_short(input_stream, TAG, tag_format.XMLData(section_element_node, "section lighting flags", SectionLightingFlags))
+
             section.rigid_node = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(section_element_node, "rigid node", None, RENDER.render_body.nodes_tag_block.count, "nodes"))
             section.flags = TAG.read_flag_unsigned_short(input_stream, TAG, tag_format.XMLData(section_element_node, "flags", SectionFlags))
             section.section_data_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(section_element_node, "section data"))
@@ -413,37 +678,72 @@ def read_sections_v0(RENDER, TAG, input_stream, tag_format, tag_node, XML_OUTPUT
                     section_data = RENDER.LegacySectionData()
 
                     if section.section_data_header.version == 0:
-                        section_data.parts_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(section_data_element_node, "parts"))
-                        section_data.subparts_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(section_data_element_node, "subparts"))
-                        section_data.visibility_bounds_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(section_data_element_node, "visibility bounds"))
-                        section_data.raw_vertices_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(section_data_element_node, "raw vertices"))
-                        section_data.strip_indices_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(section_data_element_node, "strip indices"))
-                        section_data.visibility_mopp_code_data = TAG.RawData().read(input_stream, TAG, tag_format.XMLData(section_data_element_node, "visibility mopp code"))
-                        section_data.mopp_reorder_table_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(section_data_element_node, "mopp reorder table"))
-                        section_data.vertex_buffers_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(section_data_element_node, "vertex buffers"))
-                        input_stream.read(4) # Padding?
-                        section_data.raw_points_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(section_data_element_node, "raw points"))
-                        section_data.runtime_point_tag_data = TAG.RawData().read(input_stream, TAG, tag_format.XMLData(section_data_element_node, "runtime point data"))
-                        section_data.rigid_point_groups_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(section_data_element_node, "rigid point groups"))
-                        section_data.vertex_point_indices_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(section_data_element_node, "vertex point indices"))
-                        section_data.node_map_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(section_data_element_node, "node map"))
+                        if section.section_data_header.size == 524:
+                            section_data.raw_vertices_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(section_data_element_node, "raw vertices"))
+                            input_stream.read(128) # Padding?
+                            section_data.vertex_buffers_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(section_data_element_node, "vertex buffers"))
+                            section_data.strip_indices_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(section_data_element_node, "strip indices"))
+                            section_data.parts_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(section_data_element_node, "parts"))
+                            input_stream.read(96) # Padding?
+                            section_data.raw_points_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(section_data_element_node, "raw points"))
+                            section_data.runtime_point_tag_data = TAG.RawData().read(input_stream, TAG, tag_format.XMLData(section_data_element_node, "runtime point data"))
+                            section_data.rigid_point_groups_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(section_data_element_node, "rigid point groups"))
+                            section_data.vertex_point_indices_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(section_data_element_node, "vertex point indices"))
+                            section_data.node_map_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(section_data_element_node, "node map"))
 
-                        section_data.isq_flags = TAG.read_flag_unsigned_short(input_stream, TAG, tag_format.XMLData(section_data_element_node, "flags", ISQFlags))
-                        input_stream.read(2) # Padding?
-                        section_data.raw_planes_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(section_data_element_node, "raw planes"))
-                        section_data.runtime_plane_tag_data = TAG.RawData().read(input_stream, TAG, tag_format.XMLData(section_data_element_node, "runtime plane data"))
-                        section_data.rigid_plane_groups_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(section_data_element_node, "rigid plane groups"))
-                        input_stream.read(32) # Padding?
-                        section_data.explicit_edges_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(section_data_element_node, "explicit edges"))
-                        section_data.forward_shared_edges_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(section_data_element_node, "forward shared edges"))
-                        section_data.forward_shared_edge_groups_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(section_data_element_node, "forward shared edge groups"))
-                        section_data.backward_shared_edges_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(section_data_element_node, "backward shared edges"))
-                        section_data.backward_shared_edge_groups_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(section_data_element_node, "backward shared edge groups"))
-                        section_data.dsq_raw_vertices_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(section_data_element_node, "dsq raw vertices"))
-                        section_data.dsq_strip_indices_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(section_data_element_node, "dsq strip indices"))
-                        section_data.dsq_silhouette_quads_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(section_data_element_node, "dsq silhouette quads"))
-                        section_data.carmack_silhouette_quad_count = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(section_data_element_node, "carmack silhouette quad count"))
-                        input_stream.read(6) # Padding?
+                            section_data.isq_flags = TAG.read_flag_unsigned_short(input_stream, TAG, tag_format.XMLData(section_data_element_node, "flags", ISQFlags))
+                            input_stream.read(2) # Padding?
+                            section_data.raw_planes_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(section_data_element_node, "raw planes"))
+                            section_data.runtime_plane_tag_data = TAG.RawData().read(input_stream, TAG, tag_format.XMLData(section_data_element_node, "runtime plane data"))
+                            section_data.rigid_plane_groups_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(section_data_element_node, "rigid plane groups"))
+                            input_stream.read(32) # Padding?
+                            section_data.explicit_edges_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(section_data_element_node, "explicit edges"))
+                            section_data.forward_shared_edges_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(section_data_element_node, "forward shared edges"))
+                            section_data.forward_shared_edge_groups_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(section_data_element_node, "forward shared edge groups"))
+                            section_data.backward_shared_edges_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(section_data_element_node, "backward shared edges"))
+                            section_data.backward_shared_edge_groups_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(section_data_element_node, "backward shared edge groups"))
+                            section_data.dsq_raw_vertices_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(section_data_element_node, "dsq raw vertices"))
+                            section_data.dsq_strip_indices_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(section_data_element_node, "dsq strip indices"))
+                            section_data.dsq_silhouette_quads_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(section_data_element_node, "dsq silhouette quads"))
+                            section_data.carmack_silhouette_quad_count = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(section_data_element_node, "carmack silhouette quad count"))
+                            input_stream.read(6) # Padding?
+
+                            section_data.visibility_bounds_tag_block = TAG.TagBlock()
+                            section_data.mopp_reorder_table_tag_block = TAG.TagBlock()
+
+                        else:
+                            section_data.parts_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(section_data_element_node, "parts"))
+                            section_data.subparts_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(section_data_element_node, "subparts"))
+                            section_data.visibility_bounds_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(section_data_element_node, "visibility bounds"))
+                            section_data.raw_vertices_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(section_data_element_node, "raw vertices"))
+                            section_data.strip_indices_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(section_data_element_node, "strip indices"))
+                            section_data.visibility_mopp_code_data = TAG.RawData().read(input_stream, TAG, tag_format.XMLData(section_data_element_node, "visibility mopp code"))
+                            section_data.mopp_reorder_table_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(section_data_element_node, "mopp reorder table"))
+                            section_data.vertex_buffers_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(section_data_element_node, "vertex buffers"))
+                            input_stream.read(4) # Padding?
+                            section_data.raw_points_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(section_data_element_node, "raw points"))
+                            section_data.runtime_point_tag_data = TAG.RawData().read(input_stream, TAG, tag_format.XMLData(section_data_element_node, "runtime point data"))
+                            section_data.rigid_point_groups_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(section_data_element_node, "rigid point groups"))
+                            section_data.vertex_point_indices_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(section_data_element_node, "vertex point indices"))
+                            section_data.node_map_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(section_data_element_node, "node map"))
+
+                            section_data.isq_flags = TAG.read_flag_unsigned_short(input_stream, TAG, tag_format.XMLData(section_data_element_node, "flags", ISQFlags))
+                            input_stream.read(2) # Padding?
+                            section_data.raw_planes_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(section_data_element_node, "raw planes"))
+                            section_data.runtime_plane_tag_data = TAG.RawData().read(input_stream, TAG, tag_format.XMLData(section_data_element_node, "runtime plane data"))
+                            section_data.rigid_plane_groups_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(section_data_element_node, "rigid plane groups"))
+                            input_stream.read(32) # Padding?
+                            section_data.explicit_edges_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(section_data_element_node, "explicit edges"))
+                            section_data.forward_shared_edges_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(section_data_element_node, "forward shared edges"))
+                            section_data.forward_shared_edge_groups_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(section_data_element_node, "forward shared edge groups"))
+                            section_data.backward_shared_edges_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(section_data_element_node, "backward shared edges"))
+                            section_data.backward_shared_edge_groups_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(section_data_element_node, "backward shared edge groups"))
+                            section_data.dsq_raw_vertices_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(section_data_element_node, "dsq raw vertices"))
+                            section_data.dsq_strip_indices_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(section_data_element_node, "dsq strip indices"))
+                            section_data.dsq_silhouette_quads_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(section_data_element_node, "dsq silhouette quads"))
+                            section_data.carmack_silhouette_quad_count = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(section_data_element_node, "carmack silhouette quad count"))
+                            input_stream.read(6) # Padding?
+
                     elif section.section_data_header.version == 1:
                         section_data.parts_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(section_data_element_node, "parts"))
                         section_data.subparts_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(section_data_element_node, "subparts"))
@@ -474,7 +774,8 @@ def read_sections_v0(RENDER, TAG, input_stream, tag_format, tag_node, XML_OUTPUT
                         section_data.dsq_strip_indices_tag_block = TAG.TagBlock()
                         section_data.dsq_silhouette_quads_tag_block = TAG.TagBlock()
                     else:
-                        print(section.section_data_header.version)
+                        print(input_stream.name)
+                        print("Unknown Render Model Version: ", section.section_data_header.version)
 
                     section.section_data.append(section_data)
 
@@ -496,224 +797,33 @@ def read_sections_v0(RENDER, TAG, input_stream, tag_format, tag_node, XML_OUTPUT
                     section_data.node_map = []
 
                     section_data.sect_header = TAG.TagBlockHeader().read(input_stream, TAG)
-                    if section_data.parts_tag_block.count > 0:
-                        parts_node = tag_format.get_xml_node(XML_OUTPUT, section_data.parts_tag_block.count, section_data_element_node, "name", "parts")
-                        section_data.parts_header = TAG.TagBlockHeader().read(input_stream, TAG)
-                        for part_idx in range(section_data.parts_tag_block.count):
-                            part_element_node = None
-                            if XML_OUTPUT:
-                                part_element_node = TAG.xml_doc.createElement('element')
-                                part_element_node.setAttribute('index', str(part_idx))
-                                parts_node.appendChild(part_element_node)
+                    if section.section_data_header.size == 524:
+                        read_raw_vertices(RENDER, section_data, TAG, input_stream, section_data_element_node)
+                        read_vertex_buffers(RENDER, section_data, TAG, input_stream, section_data_element_node)
+                        read_strip_indices(RENDER, section_data, TAG, input_stream, section_data_element_node)
+                        read_parts_v0(RENDER, section_data, TAG, input_stream, section_data_element_node)
+                        section_data.pdat_header = TAG.TagBlockHeader().read(input_stream, TAG)
+                        read_raw_points(RENDER, section_data, TAG, input_stream, section_data_element_node)
+                        section_data.runtime_point_data = input_stream.read(section_data.runtime_point_tag_data.size)
+                        read_rigid_point_groups(RENDER, section_data, TAG, input_stream, section_data_element_node)
+                        read_vertex_point_indices(RENDER, section_data, TAG, input_stream, section_data_element_node)
+                        read_section_node_map(RENDER, section_data, TAG, input_stream, section_data_element_node)
 
-                            part = RENDER.Part()
-                            part.part_type = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(part_element_node, "type", PartTypeEnum))
-                            part.flags = TAG.read_flag_unsigned_short(input_stream, TAG, tag_format.XMLData(part_element_node, "flags", PartFlags))
-                            part.material_index = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(part_element_node, "material", None, RENDER.render_body.materials_tag_block.count, "material"))
-                            part.strip_start_index = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(part_element_node, "strip start index"))
-                            part.strip_length = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(part_element_node, "strip length"))
-                            part.first_subpart_index = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(part_element_node, "first subpart index"))
-                            part.subpart_count = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(part_element_node, "subpart count"))
-                            part.max_nodes_vertex = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(part_element_node, "max nodes vertex"))
-                            part.contributing_compound_node_count = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(part_element_node, "contributing compound node count"))
-                            part.position = TAG.read_point_3d(input_stream, TAG, tag_format.XMLData(part_element_node, "position"))
-                            part.node_index_0 = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(part_element_node, "node index 0"))
-                            part.node_index_1 = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(part_element_node, "node index 1"))
-                            part.node_index_2 = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(part_element_node, "node index 2"))
-                            part.node_index_3 = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(part_element_node, "node index 3"))
-                            part.node_weight_0 = TAG.read_float(input_stream, TAG, tag_format.XMLData(part_element_node, "node weight 0"))
-                            part.node_weight_1 = TAG.read_float(input_stream, TAG, tag_format.XMLData(part_element_node, "node weight 1"))
-                            part.node_weight_2 = TAG.read_float(input_stream, TAG, tag_format.XMLData(part_element_node, "node weight 2"))
-                            part.lod_mipmap_magic_number = TAG.read_float(input_stream, TAG, tag_format.XMLData(part_element_node, "lod mipmap magic number"))
-                            input_stream.read(24) # Padding?
-
-                            section_data.parts.append(part)
-
-                    if section_data.subparts_tag_block.count > 0:
-                        subparts_node = tag_format.get_xml_node(XML_OUTPUT, section_data.subparts_tag_block.count, section_data_element_node, "name", "subparts")
-                        section_data.subparts_header = TAG.TagBlockHeader().read(input_stream, TAG)
-                        for subpart_idx in range(section_data.subparts_tag_block.count):
-                            subpart_element_node = None
-                            if XML_OUTPUT:
-                                subpart_element_node = TAG.xml_doc.createElement('element')
-                                subpart_element_node.setAttribute('index', str(subpart_idx))
-                                subparts_node.appendChild(subpart_element_node)
-
-                            sub_part = RENDER.SubPart()
-                            sub_part.indices_start_index = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(subpart_element_node, "indices start index"))
-                            sub_part.indices_length = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(subpart_element_node, "indices length"))
-                            sub_part.visibility_bounds_index = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(subpart_element_node, "visibility bounds index"))
-                            sub_part.part_index = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(subpart_element_node, "part index"))
-
-                            section_data.subparts.append(sub_part)
-
-                    if section_data.visibility_bounds_tag_block.count > 0:
-                        visibility_bounds_node = tag_format.get_xml_node(XML_OUTPUT, section_data.visibility_bounds_tag_block.count, section_data_element_node, "name", "visibility bounds")
-                        section_data.subparts_header = TAG.TagBlockHeader().read(input_stream, TAG)
-                        for visibility_bound_idx in range(section_data.visibility_bounds_tag_block.count):
-                            visibility_bound_element_node = None
-                            if XML_OUTPUT:
-                                visibility_bound_element_node = TAG.xml_doc.createElement('element')
-                                visibility_bound_element_node.setAttribute('index', str(visibility_bound_idx))
-                                visibility_bounds_node.appendChild(visibility_bound_element_node)
-
-                            visibility_bound = RENDER.VisibilityBounds()
-                            visibility_bound.position = TAG.read_point_3d(input_stream, TAG, tag_format.XMLData(visibility_bound_element_node, "position"))
-                            visibility_bound.radius = TAG.read_float(input_stream, TAG, tag_format.XMLData(visibility_bound_element_node, "radius"))
-                            visibility_bound.node_0 = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(visibility_bound_element_node, "node 0"))
-                            input_stream.read(2) # Padding?
-
-                            section_data.visibility_bounds.append(visibility_bound)
-
-                    if section_data.raw_vertices_tag_block.count > 0:
-                        raw_vertices_node = tag_format.get_xml_node(XML_OUTPUT, section_data.raw_vertices_tag_block.count, section_data_element_node, "name", "raw vertices")
-                        section_data.raw_vertices_header = TAG.TagBlockHeader().read(input_stream, TAG)
-                        for raw_vertex_idx in range(section_data.raw_vertices_tag_block.count):
-                            raw_vertex_element_node = None
-                            if XML_OUTPUT:
-                                raw_vertex_element_node = TAG.xml_doc.createElement('element')
-                                raw_vertex_element_node.setAttribute('index', str(raw_vertex_idx))
-                                raw_vertices_node.appendChild(raw_vertex_element_node)
-
-                            raw_vertex = RENDER.RawVertex()
-                            raw_vertex.position = TAG.read_point_3d(input_stream, TAG, tag_format.XMLData(raw_vertex_element_node, "position"), True)
-                            raw_vertex.node_index_0_old = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(raw_vertex_element_node, "node index 0 old"))
-                            raw_vertex.node_index_1_old = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(raw_vertex_element_node, "node index 1 old"))
-                            raw_vertex.node_index_2_old = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(raw_vertex_element_node, "node index 2 old"))
-                            raw_vertex.node_index_3_old = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(raw_vertex_element_node, "node index 3 old"))
-                            raw_vertex.node_weight_0 = TAG.read_float(input_stream, TAG, tag_format.XMLData(raw_vertex_element_node, "node weight 0"))
-                            raw_vertex.node_weight_1 = TAG.read_float(input_stream, TAG, tag_format.XMLData(raw_vertex_element_node, "node weight 1"))
-                            raw_vertex.node_weight_2 = TAG.read_float(input_stream, TAG, tag_format.XMLData(raw_vertex_element_node, "node weight 2"))
-                            raw_vertex.node_weight_3 = TAG.read_float(input_stream, TAG, tag_format.XMLData(raw_vertex_element_node, "node weight 3"))
-                            raw_vertex.node_index_0_new = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(raw_vertex_element_node, "node index 0 new"))
-                            raw_vertex.node_index_1_new = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(raw_vertex_element_node, "node index 1 new"))
-                            raw_vertex.node_index_2_new = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(raw_vertex_element_node, "node index 2 new"))
-                            raw_vertex.node_index_3_new = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(raw_vertex_element_node, "node index 3 new"))
-                            raw_vertex.uses_new_node_indices = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(raw_vertex_element_node, "uses new node indices"))
-                            raw_vertex.adjusted_compound_node_index = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(raw_vertex_element_node, "adjusted compound node index"))
-                            raw_vertex.texcoord = TAG.read_point_2d(input_stream, TAG, tag_format.XMLData(raw_vertex_element_node, "texcoord"))
-                            raw_vertex.normal = TAG.read_vector(input_stream, TAG, tag_format.XMLData(raw_vertex_element_node, "normal"))
-                            raw_vertex.binormal = TAG.read_vector(input_stream, TAG, tag_format.XMLData(raw_vertex_element_node, "binormal"))
-                            raw_vertex.tangent = TAG.read_vector(input_stream, TAG, tag_format.XMLData(raw_vertex_element_node, "tangent"))
-                            raw_vertex.anisotropic_binormal = TAG.read_vector(input_stream, TAG, tag_format.XMLData(raw_vertex_element_node, "anisotropic tangent"))
-                            raw_vertex.secondary_texcoord = TAG.read_point_2d(input_stream, TAG, tag_format.XMLData(raw_vertex_element_node, "secondary texcoord"))
-                            raw_vertex.primary_lightmap_color_RGBA = TAG.read_rgb(input_stream, TAG, tag_format.XMLData(raw_vertex_element_node, "primary lightmap color"))
-                            raw_vertex.primary_lightmap_texcoord = TAG.read_point_2d(input_stream, TAG, tag_format.XMLData(raw_vertex_element_node, "primary lightmap texcoord"))
-                            raw_vertex.primary_lightmap_incident_direction = TAG.read_vector(input_stream, TAG, tag_format.XMLData(raw_vertex_element_node, "primary lightmap incident direction"))
-                            input_stream.read(32) # Padding?
-
-                            section_data.raw_vertices.append(raw_vertex)
-
-                    if section_data.strip_indices_tag_block.count > 0:
-                        strip_indices_node = tag_format.get_xml_node(XML_OUTPUT, section_data.strip_indices_tag_block.count, section_data_element_node, "name", "strip indices")
-                        section_data.strip_indices_header = TAG.TagBlockHeader().read(input_stream, TAG)
-                        for strip_index_idx in range(section_data.strip_indices_tag_block.count):
-                            strip_index_element_node = None
-                            if XML_OUTPUT:
-                                strip_index_element_node = TAG.xml_doc.createElement('element')
-                                strip_index_element_node.setAttribute('index', str(strip_index_idx))
-                                strip_indices_node.appendChild(strip_index_element_node)
-
-                            section_data.strip_indices.append(TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(strip_index_element_node, "index")))
-
-                    section_data.visibility_mopp_code = input_stream.read(section_data.visibility_mopp_code_data.size)
-
-                    if section_data.mopp_reorder_table_tag_block.count > 0:
-                        mopp_reorder_table_node = tag_format.get_xml_node(XML_OUTPUT, section_data.mopp_reorder_table_tag_block.count, section_data_element_node, "name", "mopp reorder table")
-                        section_data.mopp_reorder_table_header = TAG.TagBlockHeader().read(input_stream, TAG)
-                        for mopp_reorder_table_idx in range(section_data.mopp_reorder_table_tag_block.count):
-                            mopp_reorder_table_element_node = None
-                            if XML_OUTPUT:
-                                mopp_reorder_table_element_node = TAG.xml_doc.createElement('element')
-                                mopp_reorder_table_element_node.setAttribute('index', str(mopp_reorder_table_idx))
-                                mopp_reorder_table_node.appendChild(mopp_reorder_table_element_node)
-
-                            section_data.mopp_reorder_table.append(TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(mopp_reorder_table_element_node, "index")))
-
-                    if section_data.vertex_buffers_tag_block.count > 0:
-                        vertex_buffers_node = tag_format.get_xml_node(XML_OUTPUT, section_data.vertex_buffers_tag_block.count, section_data_element_node, "name", "vertex buffers")
-                        section_data.mopp_reorder_table_header = TAG.TagBlockHeader().read(input_stream, TAG)
-                        for vertex_buffer_idx in range(section_data.vertex_buffers_tag_block.count):
-                            vertex_buffer_element_node = None
-                            if XML_OUTPUT:
-                                vertex_buffer_element_node = TAG.xml_doc.createElement('element')
-                                vertex_buffer_element_node.setAttribute('index', str(vertex_buffer_idx))
-                                vertex_buffers_node.appendChild(vertex_buffer_element_node)
-
-                            input_stream.read(32) # Padding?
-
-                    section_data.pdat_header = TAG.TagBlockHeader().read(input_stream, TAG)
-                    if section_data.raw_points_tag_block.count > 0:
-                        raw_points_node = tag_format.get_xml_node(XML_OUTPUT, section_data.raw_points_tag_block.count, section_data_element_node, "name", "raw points")
-                        section_data.raw_points_header = TAG.TagBlockHeader().read(input_stream, TAG)
-                        for raw_point_idx in range(section_data.raw_points_tag_block.count):
-                            raw_point_element_node = None
-                            if XML_OUTPUT:
-                                raw_point_element_node = TAG.xml_doc.createElement('element')
-                                raw_point_element_node.setAttribute('index', str(raw_point_idx))
-                                raw_points_node.appendChild(raw_point_element_node)
-
-                            raw_point = RENDER.RawPoint()
-                            raw_point.position = TAG.read_point_3d(input_stream, TAG, tag_format.XMLData(raw_point_element_node, "position"), True)
-                            raw_point.node_index_0_old = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(raw_point_element_node, "node index 0 old"))
-                            raw_point.node_index_1_old = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(raw_point_element_node, "node index 1 old"))
-                            raw_point.node_index_2_old = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(raw_point_element_node, "node index 2 old"))
-                            raw_point.node_index_3_old = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(raw_point_element_node, "node index 3 old"))
-                            raw_point.node_weight_0 = TAG.read_float(input_stream, TAG, tag_format.XMLData(raw_point_element_node, "node weight 0"))
-                            raw_point.node_weight_1 = TAG.read_float(input_stream, TAG, tag_format.XMLData(raw_point_element_node, "node weight 1"))
-                            raw_point.node_weight_2 = TAG.read_float(input_stream, TAG, tag_format.XMLData(raw_point_element_node, "node weight 2"))
-                            raw_point.node_weight_3 = TAG.read_float(input_stream, TAG, tag_format.XMLData(raw_point_element_node, "node weight 3"))
-                            raw_point.node_index_0_new = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(raw_point_element_node, "node index 0 new"))
-                            raw_point.node_index_1_new = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(raw_point_element_node, "node index 1 new"))
-                            raw_point.node_index_2_new = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(raw_point_element_node, "node index 2 new"))
-                            raw_point.node_index_3_new = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(raw_point_element_node, "node index 3 new"))
-                            raw_point.uses_new_node_indices = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(raw_point_element_node, "uses new node indices"))
-                            raw_point.adjusted_compound_node_index = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(raw_point_element_node, "adjusted compound node index"))
-
-                            section_data.raw_points.append(raw_point)
-
-                    section_data.runtime_point_data = input_stream.read(section_data.runtime_point_tag_data.size)
-
-                    if section_data.rigid_point_groups_tag_block.count > 0:
-                        rigid_point_groups_node = tag_format.get_xml_node(XML_OUTPUT, section_data.rigid_point_groups_tag_block.count, section_data_element_node, "name", "rigid point groups")
-                        section_data.rigid_point_groups_header = TAG.TagBlockHeader().read(input_stream, TAG)
-                        for rigid_point_group_idx in range(section_data.rigid_point_groups_tag_block.count):
-                            rigid_point_group_element_node = None
-                            if XML_OUTPUT:
-                                rigid_point_group_element_node = TAG.xml_doc.createElement('element')
-                                rigid_point_group_element_node.setAttribute('index', str(rigid_point_group_idx))
-                                rigid_point_groups_node.appendChild(rigid_point_group_element_node)
-
-                            rigid_point_group = RENDER.RigidPointGroup()
-                            rigid_point_group.rigid_node_index = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(rigid_point_group_element_node, "rigid node index"))
-                            rigid_point_group.nodes_per_point = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(rigid_point_group_element_node, "nodes per point"))
-                            rigid_point_group.point_count = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(rigid_point_group_element_node, "point count"))
-
-                            section_data.rigid_point_groups.append(rigid_point_group)
-
-                    if section_data.vertex_point_indices_tag_block.count > 0:
-                        vertex_point_indices_node = tag_format.get_xml_node(XML_OUTPUT, section_data.vertex_point_indices_tag_block.count, section_data_element_node, "name", "vertex point indices")
-                        section_data.vertex_point_indices_header = TAG.TagBlockHeader().read(input_stream, TAG)
-                        for vertex_point_idx in range(section_data.vertex_point_indices_tag_block.count):
-                            vertex_point_element_node = None
-                            if XML_OUTPUT:
-                                vertex_point_element_node = TAG.xml_doc.createElement('element')
-                                vertex_point_element_node.setAttribute('index', str(vertex_point_idx))
-                                vertex_point_indices_node.appendChild(vertex_point_element_node)
-
-                            section_data.vertex_point_indices.append(TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(vertex_point_element_node, "index")))
-
-                    if section_data.node_map_tag_block.count > 0:
-                        node_map_node = tag_format.get_xml_node(XML_OUTPUT, section_data.node_map_tag_block.count, section_data_element_node, "name", "node map")
-                        section_data.node_map_header = TAG.TagBlockHeader().read(input_stream, TAG)
-                        for node_map_idx in range(section_data.node_map_tag_block.count):
-                            node_map_element_node = None
-                            if XML_OUTPUT:
-                                node_map_element_node = TAG.xml_doc.createElement('element')
-                                node_map_element_node.setAttribute('index', str(node_map_idx))
-                                node_map_node.appendChild(node_map_element_node)
-
-                            section_data.node_map.append(TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(node_map_element_node, "node index")))
+                    else:
+                        read_parts_retail(RENDER, section_data, TAG, input_stream, section_data_element_node)
+                        read_subparts(RENDER, section_data, TAG, input_stream, section_data_element_node)
+                        read_visibility_bounds(RENDER, section_data, TAG, input_stream, section_data_element_node)
+                        read_raw_vertices(RENDER, section_data, TAG, input_stream, section_data_element_node)
+                        read_strip_indices(RENDER, section_data, TAG, input_stream, section_data_element_node)
+                        section_data.visibility_mopp_code = input_stream.read(section_data.visibility_mopp_code_data.size)
+                        read_mopp_reorder_table(RENDER, section_data, TAG, input_stream, section_data_element_node)
+                        read_vertex_buffers(RENDER, section_data, TAG, input_stream, section_data_element_node)
+                        section_data.pdat_header = TAG.TagBlockHeader().read(input_stream, TAG)
+                        read_raw_points(RENDER, section_data, TAG, input_stream, section_data_element_node)
+                        section_data.runtime_point_data = input_stream.read(section_data.runtime_point_tag_data.size)
+                        read_rigid_point_groups(RENDER, section_data, TAG, input_stream, section_data_element_node)
+                        read_vertex_point_indices(RENDER, section_data, TAG, input_stream, section_data_element_node)
+                        read_section_node_map(RENDER, section_data, TAG, input_stream, section_data_element_node)
 
                     if section.section_data_header.version == 0:
                         isqi_header = TAG.TagBlockHeader().read(input_stream, TAG)
@@ -791,7 +901,7 @@ def read_sections_v0(RENDER, TAG, input_stream, tag_format, tag_node, XML_OUTPUT
 
                     section.resources.append(resource)
 
-def read_sections_retail(RENDER, TAG, input_stream, tag_format, tag_node, XML_OUTPUT):
+def read_sections_retail(RENDER, TAG, input_stream, tag_node, XML_OUTPUT):
     if RENDER.render_body.sections_tag_block.count > 0:
         sections_node = tag_format.get_xml_node(XML_OUTPUT, RENDER.render_body.sections_tag_block.count, tag_node, "name", "sections")
         RENDER.section_header = TAG.TagBlockHeader().read(input_stream, TAG)
@@ -916,224 +1026,20 @@ def read_sections_retail(RENDER, TAG, input_stream, tag_format, tag_node, XML_OU
                     section_data.node_map = []
 
                     section_data.sect_header = TAG.TagBlockHeader().read(input_stream, TAG)
-                    if section_data.parts_tag_block.count > 0:
-                        parts_node = tag_format.get_xml_node(XML_OUTPUT, section_data.parts_tag_block.count, section_data_element_node, "name", "parts")
-                        section_data.parts_header = TAG.TagBlockHeader().read(input_stream, TAG)
-                        for part_idx in range(section_data.parts_tag_block.count):
-                            part_element_node = None
-                            if XML_OUTPUT:
-                                part_element_node = TAG.xml_doc.createElement('element')
-                                part_element_node.setAttribute('index', str(part_idx))
-                                parts_node.appendChild(part_element_node)
-
-                            part = RENDER.Part()
-                            part.part_type = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(part_element_node, "type", PartTypeEnum))
-                            part.flags = TAG.read_flag_unsigned_short(input_stream, TAG, tag_format.XMLData(part_element_node, "flags", PartFlags))
-                            part.material_index = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(part_element_node, "material", None, RENDER.render_body.materials_tag_block.count, "material"))
-                            part.strip_start_index = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(part_element_node, "strip start index"))
-                            part.strip_length = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(part_element_node, "strip length"))
-                            part.first_subpart_index = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(part_element_node, "first subpart index"))
-                            part.subpart_count = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(part_element_node, "subpart count"))
-                            part.max_nodes_vertex = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(part_element_node, "max nodes vertex"))
-                            part.contributing_compound_node_count = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(part_element_node, "contributing compound node count"))
-                            part.position = TAG.read_point_3d(input_stream, TAG, tag_format.XMLData(part_element_node, "position"))
-                            part.node_index_0 = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(part_element_node, "node index 0"))
-                            part.node_index_1 = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(part_element_node, "node index 1"))
-                            part.node_index_2 = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(part_element_node, "node index 2"))
-                            part.node_index_3 = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(part_element_node, "node index 3"))
-                            part.node_weight_0 = TAG.read_float(input_stream, TAG, tag_format.XMLData(part_element_node, "node weight 0"))
-                            part.node_weight_1 = TAG.read_float(input_stream, TAG, tag_format.XMLData(part_element_node, "node weight 1"))
-                            part.node_weight_2 = TAG.read_float(input_stream, TAG, tag_format.XMLData(part_element_node, "node weight 2"))
-                            part.lod_mipmap_magic_number = TAG.read_float(input_stream, TAG, tag_format.XMLData(part_element_node, "lod mipmap magic number"))
-                            input_stream.read(24) # Padding?
-
-                            section_data.parts.append(part)
-
-                    if section_data.subparts_tag_block.count > 0:
-                        subparts_node = tag_format.get_xml_node(XML_OUTPUT, section_data.subparts_tag_block.count, section_data_element_node, "name", "subparts")
-                        section_data.subparts_header = TAG.TagBlockHeader().read(input_stream, TAG)
-                        for subpart_idx in range(section_data.subparts_tag_block.count):
-                            subpart_element_node = None
-                            if XML_OUTPUT:
-                                subpart_element_node = TAG.xml_doc.createElement('element')
-                                subpart_element_node.setAttribute('index', str(subpart_idx))
-                                subparts_node.appendChild(subpart_element_node)
-
-                            sub_part = RENDER.SubPart()
-                            sub_part.indices_start_index = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(subpart_element_node, "indices start index"))
-                            sub_part.indices_length = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(subpart_element_node, "indices length"))
-                            sub_part.visibility_bounds_index = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(subpart_element_node, "visibility bounds index"))
-                            sub_part.part_index = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(subpart_element_node, "part index"))
-
-                            section_data.subparts.append(sub_part)
-
-                    if section_data.visibility_bounds_tag_block.count > 0:
-                        visibility_bounds_node = tag_format.get_xml_node(XML_OUTPUT, section_data.visibility_bounds_tag_block.count, section_data_element_node, "name", "visibility bounds")
-                        section_data.subparts_header = TAG.TagBlockHeader().read(input_stream, TAG)
-                        for visibility_bound_idx in range(section_data.visibility_bounds_tag_block.count):
-                            visibility_bound_element_node = None
-                            if XML_OUTPUT:
-                                visibility_bound_element_node = TAG.xml_doc.createElement('element')
-                                visibility_bound_element_node.setAttribute('index', str(visibility_bound_idx))
-                                visibility_bounds_node.appendChild(visibility_bound_element_node)
-
-                            visibility_bound = RENDER.VisibilityBounds()
-                            visibility_bound.position = TAG.read_point_3d(input_stream, TAG, tag_format.XMLData(visibility_bound_element_node, "position"))
-                            visibility_bound.radius = TAG.read_float(input_stream, TAG, tag_format.XMLData(visibility_bound_element_node, "radius"))
-                            visibility_bound.node_0 = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(visibility_bound_element_node, "node 0"))
-                            input_stream.read(2) # Padding?
-
-                            section_data.visibility_bounds.append(visibility_bound)
-
-                    if section_data.raw_vertices_tag_block.count > 0:
-                        raw_vertices_node = tag_format.get_xml_node(XML_OUTPUT, section_data.raw_vertices_tag_block.count, section_data_element_node, "name", "raw vertices")
-                        section_data.raw_vertices_header = TAG.TagBlockHeader().read(input_stream, TAG)
-                        for raw_vertex_idx in range(section_data.raw_vertices_tag_block.count):
-                            raw_vertex_element_node = None
-                            if XML_OUTPUT:
-                                raw_vertex_element_node = TAG.xml_doc.createElement('element')
-                                raw_vertex_element_node.setAttribute('index', str(raw_vertex_idx))
-                                raw_vertices_node.appendChild(raw_vertex_element_node)
-
-                            raw_vertex = RENDER.RawVertex()
-                            raw_vertex.position = TAG.read_point_3d(input_stream, TAG, tag_format.XMLData(raw_vertex_element_node, "position"), True)
-                            raw_vertex.node_index_0_old = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(raw_vertex_element_node, "node index 0 old"))
-                            raw_vertex.node_index_1_old = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(raw_vertex_element_node, "node index 1 old"))
-                            raw_vertex.node_index_2_old = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(raw_vertex_element_node, "node index 2 old"))
-                            raw_vertex.node_index_3_old = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(raw_vertex_element_node, "node index 3 old"))
-                            raw_vertex.node_weight_0 = TAG.read_float(input_stream, TAG, tag_format.XMLData(raw_vertex_element_node, "node weight 0"))
-                            raw_vertex.node_weight_1 = TAG.read_float(input_stream, TAG, tag_format.XMLData(raw_vertex_element_node, "node weight 1"))
-                            raw_vertex.node_weight_2 = TAG.read_float(input_stream, TAG, tag_format.XMLData(raw_vertex_element_node, "node weight 2"))
-                            raw_vertex.node_weight_3 = TAG.read_float(input_stream, TAG, tag_format.XMLData(raw_vertex_element_node, "node weight 3"))
-                            raw_vertex.node_index_0_new = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(raw_vertex_element_node, "node index 0 new"))
-                            raw_vertex.node_index_1_new = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(raw_vertex_element_node, "node index 1 new"))
-                            raw_vertex.node_index_2_new = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(raw_vertex_element_node, "node index 2 new"))
-                            raw_vertex.node_index_3_new = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(raw_vertex_element_node, "node index 3 new"))
-                            raw_vertex.uses_new_node_indices = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(raw_vertex_element_node, "uses new node indices"))
-                            raw_vertex.adjusted_compound_node_index = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(raw_vertex_element_node, "adjusted compound node index"))
-                            raw_vertex.texcoord = TAG.read_point_2d(input_stream, TAG, tag_format.XMLData(raw_vertex_element_node, "texcoord"))
-                            raw_vertex.normal = TAG.read_vector(input_stream, TAG, tag_format.XMLData(raw_vertex_element_node, "normal"))
-                            raw_vertex.binormal = TAG.read_vector(input_stream, TAG, tag_format.XMLData(raw_vertex_element_node, "binormal"))
-                            raw_vertex.tangent = TAG.read_vector(input_stream, TAG, tag_format.XMLData(raw_vertex_element_node, "tangent"))
-                            raw_vertex.anisotropic_binormal = TAG.read_vector(input_stream, TAG, tag_format.XMLData(raw_vertex_element_node, "anisotropic tangent"))
-                            raw_vertex.secondary_texcoord = TAG.read_point_2d(input_stream, TAG, tag_format.XMLData(raw_vertex_element_node, "secondary texcoord"))
-                            raw_vertex.primary_lightmap_color_RGBA = TAG.read_rgb(input_stream, TAG, tag_format.XMLData(raw_vertex_element_node, "primary lightmap color"))
-                            raw_vertex.primary_lightmap_texcoord = TAG.read_point_2d(input_stream, TAG, tag_format.XMLData(raw_vertex_element_node, "primary lightmap texcoord"))
-                            raw_vertex.primary_lightmap_incident_direction = TAG.read_vector(input_stream, TAG, tag_format.XMLData(raw_vertex_element_node, "primary lightmap incident direction"))
-                            input_stream.read(32) # Padding?
-
-                            section_data.raw_vertices.append(raw_vertex)
-
-                    if section_data.strip_indices_tag_block.count > 0:
-                        strip_indices_node = tag_format.get_xml_node(XML_OUTPUT, section_data.strip_indices_tag_block.count, section_data_element_node, "name", "strip indices")
-                        section_data.strip_indices_header = TAG.TagBlockHeader().read(input_stream, TAG)
-                        for strip_index_idx in range(section_data.strip_indices_tag_block.count):
-                            strip_index_element_node = None
-                            if XML_OUTPUT:
-                                strip_index_element_node = TAG.xml_doc.createElement('element')
-                                strip_index_element_node.setAttribute('index', str(strip_index_idx))
-                                strip_indices_node.appendChild(strip_index_element_node)
-
-                            section_data.strip_indices.append(TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(strip_index_element_node, "index")))
-
+                    read_parts_retail(RENDER, section_data, TAG, input_stream, section_data_element_node)
+                    read_subparts(RENDER, section_data, TAG, input_stream, section_data_element_node)
+                    read_visibility_bounds(RENDER, section_data, TAG, input_stream, section_data_element_node)
+                    read_raw_vertices(RENDER, section_data, TAG, input_stream, section_data_element_node)
+                    read_strip_indices(RENDER, section_data, TAG, input_stream, section_data_element_node)
                     section_data.visibility_mopp_code = input_stream.read(section_data.visibility_mopp_code_data.size)
-
-                    if section_data.mopp_reorder_table_tag_block.count > 0:
-                        mopp_reorder_table_node = tag_format.get_xml_node(XML_OUTPUT, section_data.mopp_reorder_table_tag_block.count, section_data_element_node, "name", "mopp reorder table")
-                        section_data.mopp_reorder_table_header = TAG.TagBlockHeader().read(input_stream, TAG)
-                        for mopp_reorder_table_idx in range(section_data.mopp_reorder_table_tag_block.count):
-                            mopp_reorder_table_element_node = None
-                            if XML_OUTPUT:
-                                mopp_reorder_table_element_node = TAG.xml_doc.createElement('element')
-                                mopp_reorder_table_element_node.setAttribute('index', str(mopp_reorder_table_idx))
-                                mopp_reorder_table_node.appendChild(mopp_reorder_table_element_node)
-
-                            section_data.mopp_reorder_table.append(TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(mopp_reorder_table_element_node, "index")))
-
-                    if section_data.vertex_buffers_tag_block.count > 0:
-                        vertex_buffers_node = tag_format.get_xml_node(XML_OUTPUT, section_data.vertex_buffers_tag_block.count, section_data_element_node, "name", "vertex buffers")
-                        section_data.mopp_reorder_table_header = TAG.TagBlockHeader().read(input_stream, TAG)
-                        for vertex_buffer_idx in range(section_data.vertex_buffers_tag_block.count):
-                            vertex_buffer_element_node = None
-                            if XML_OUTPUT:
-                                vertex_buffer_element_node = TAG.xml_doc.createElement('element')
-                                vertex_buffer_element_node.setAttribute('index', str(vertex_buffer_idx))
-                                vertex_buffers_node.appendChild(vertex_buffer_element_node)
-
-                            input_stream.read(32) # Padding?
-
+                    read_mopp_reorder_table(RENDER, section_data, TAG, input_stream, section_data_element_node)
+                    read_vertex_buffers(RENDER, section_data, TAG, input_stream, section_data_element_node)
                     section_data.pdat_header = TAG.TagBlockHeader().read(input_stream, TAG)
-                    if section_data.raw_points_tag_block.count > 0:
-                        raw_points_node = tag_format.get_xml_node(XML_OUTPUT, section_data.raw_points_tag_block.count, section_data_element_node, "name", "raw points")
-                        section_data.raw_points_header = TAG.TagBlockHeader().read(input_stream, TAG)
-                        for raw_point_idx in range(section_data.raw_points_tag_block.count):
-                            raw_point_element_node = None
-                            if XML_OUTPUT:
-                                raw_point_element_node = TAG.xml_doc.createElement('element')
-                                raw_point_element_node.setAttribute('index', str(raw_point_idx))
-                                raw_points_node.appendChild(raw_point_element_node)
-
-                            raw_point = RENDER.RawPoint()
-                            raw_point.position = TAG.read_point_3d(input_stream, TAG, tag_format.XMLData(raw_point_element_node, "position"), True)
-                            raw_point.node_index_0_old = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(raw_point_element_node, "node index 0 old"))
-                            raw_point.node_index_1_old = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(raw_point_element_node, "node index 1 old"))
-                            raw_point.node_index_2_old = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(raw_point_element_node, "node index 2 old"))
-                            raw_point.node_index_3_old = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(raw_point_element_node, "node index 3 old"))
-                            raw_point.node_weight_0 = TAG.read_float(input_stream, TAG, tag_format.XMLData(raw_point_element_node, "node weight 0"))
-                            raw_point.node_weight_1 = TAG.read_float(input_stream, TAG, tag_format.XMLData(raw_point_element_node, "node weight 1"))
-                            raw_point.node_weight_2 = TAG.read_float(input_stream, TAG, tag_format.XMLData(raw_point_element_node, "node weight 2"))
-                            raw_point.node_weight_3 = TAG.read_float(input_stream, TAG, tag_format.XMLData(raw_point_element_node, "node weight 3"))
-                            raw_point.node_index_0_new = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(raw_point_element_node, "node index 0 new"))
-                            raw_point.node_index_1_new = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(raw_point_element_node, "node index 1 new"))
-                            raw_point.node_index_2_new = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(raw_point_element_node, "node index 2 new"))
-                            raw_point.node_index_3_new = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(raw_point_element_node, "node index 3 new"))
-                            raw_point.uses_new_node_indices = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(raw_point_element_node, "uses new node indices"))
-                            raw_point.adjusted_compound_node_index = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(raw_point_element_node, "adjusted compound node index"))
-
-                            section_data.raw_points.append(raw_point)
-
+                    read_raw_points(RENDER, section_data, TAG, input_stream, section_data_element_node)
                     section_data.runtime_point_data = input_stream.read(section_data.runtime_point_tag_data.size)
-
-                    if section_data.rigid_point_groups_tag_block.count > 0:
-                        rigid_point_groups_node = tag_format.get_xml_node(XML_OUTPUT, section_data.rigid_point_groups_tag_block.count, section_data_element_node, "name", "rigid point groups")
-                        section_data.rigid_point_groups_header = TAG.TagBlockHeader().read(input_stream, TAG)
-                        for rigid_point_group_idx in range(section_data.rigid_point_groups_tag_block.count):
-                            rigid_point_group_element_node = None
-                            if XML_OUTPUT:
-                                rigid_point_group_element_node = TAG.xml_doc.createElement('element')
-                                rigid_point_group_element_node.setAttribute('index', str(rigid_point_group_idx))
-                                rigid_point_groups_node.appendChild(rigid_point_group_element_node)
-
-                            rigid_point_group = RENDER.RigidPointGroup()
-                            rigid_point_group.rigid_node_index = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(rigid_point_group_element_node, "rigid node index"))
-                            rigid_point_group.nodes_per_point = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(rigid_point_group_element_node, "nodes per point"))
-                            rigid_point_group.point_count = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(rigid_point_group_element_node, "point count"))
-
-                            section_data.rigid_point_groups.append(rigid_point_group)
-
-                    if section_data.vertex_point_indices_tag_block.count > 0:
-                        vertex_point_indices_node = tag_format.get_xml_node(XML_OUTPUT, section_data.vertex_point_indices_tag_block.count, section_data_element_node, "name", "vertex point indices")
-                        section_data.vertex_point_indices_header = TAG.TagBlockHeader().read(input_stream, TAG)
-                        for vertex_point_idx in range(section_data.vertex_point_indices_tag_block.count):
-                            vertex_point_element_node = None
-                            if XML_OUTPUT:
-                                vertex_point_element_node = TAG.xml_doc.createElement('element')
-                                vertex_point_element_node.setAttribute('index', str(vertex_point_idx))
-                                vertex_point_indices_node.appendChild(vertex_point_element_node)
-
-                            section_data.vertex_point_indices.append(TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(vertex_point_element_node, "index")))
-
-                    if section_data.node_map_tag_block.count > 0:
-                        node_map_node = tag_format.get_xml_node(XML_OUTPUT, section_data.node_map_tag_block.count, section_data_element_node, "name", "node map")
-                        section_data.node_map_header = TAG.TagBlockHeader().read(input_stream, TAG)
-                        for node_map_idx in range(section_data.node_map_tag_block.count):
-                            node_map_element_node = None
-                            if XML_OUTPUT:
-                                node_map_element_node = TAG.xml_doc.createElement('element')
-                                node_map_element_node.setAttribute('index', str(node_map_idx))
-                                node_map_node.appendChild(node_map_element_node)
-
-                            section_data.node_map.append(TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(node_map_element_node, "node index")))
+                    read_rigid_point_groups(RENDER, section_data, TAG, input_stream, section_data_element_node)
+                    read_vertex_point_indices(RENDER, section_data, TAG, input_stream, section_data_element_node)
+                    read_section_node_map(RENDER, section_data, TAG, input_stream, section_data_element_node)
 
             section.blok_header = TAG.TagBlockHeader().read(input_stream, TAG)
 
@@ -1157,7 +1063,7 @@ def read_sections_retail(RENDER, TAG, input_stream, tag_format, tag_node, XML_OU
 
                     section.resources.append(resource)
 
-def read_invalid_section_pair_bits(RENDER, TAG, input_stream, tag_format, tag_node, XML_OUTPUT):
+def read_invalid_section_pair_bits(RENDER, TAG, input_stream, tag_node, XML_OUTPUT):
     if RENDER.render_body.invalid_section_pair_bits_tag_block.count > 0:
         invalid_section_pair_bits_node = tag_format.get_xml_node(XML_OUTPUT, RENDER.render_body.invalid_section_pair_bits_tag_block.count, tag_node, "name", "invalid section pair bits")
         RENDER.invalid_section_pair_bits_header = TAG.TagBlockHeader().read(input_stream, TAG)
@@ -1170,7 +1076,7 @@ def read_invalid_section_pair_bits(RENDER, TAG, input_stream, tag_format, tag_no
 
             RENDER.invalid_section_pair_bits.append(TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(invalid_section_pair_bit_element_node, "bits")))
 
-def read_section_groups(RENDER, TAG, input_stream, tag_format, tag_node, XML_OUTPUT):
+def read_section_groups(RENDER, TAG, input_stream, tag_node, XML_OUTPUT):
     if RENDER.render_body.section_groups_tag_block.count > 0:
         section_groups_node = tag_format.get_xml_node(XML_OUTPUT, RENDER.render_body.section_groups_tag_block.count, tag_node, "name", "section groups")
         RENDER.section_groups_header = TAG.TagBlockHeader().read(input_stream, TAG)
@@ -1216,7 +1122,7 @@ def read_section_groups(RENDER, TAG, input_stream, tag_format, tag_node, XML_OUT
 
                     section_group.compound_nodes.append(compound_node)
 
-def read_nodes_v0(RENDER, TAG, input_stream, tag_format, tag_node, XML_OUTPUT):
+def read_nodes_v0(RENDER, TAG, input_stream, tag_node, XML_OUTPUT):
     if RENDER.render_body.nodes_tag_block.count > 0:
         nodes_node = tag_format.get_xml_node(XML_OUTPUT, RENDER.render_body.nodes_tag_block.count, tag_node, "name", "nodes")
         RENDER.nodes_header = TAG.TagBlockHeader().read(input_stream, TAG)
@@ -1248,7 +1154,7 @@ def read_nodes_v0(RENDER, TAG, input_stream, tag_format, tag_node, XML_OUTPUT):
             RENDER.nodes.append(node)
             RENDER.transforms.append(node_transform)
 
-def read_nodes_retail(RENDER, TAG, input_stream, tag_format, tag_node, XML_OUTPUT):
+def read_nodes_retail(RENDER, TAG, input_stream, tag_node, XML_OUTPUT):
     if RENDER.render_body.nodes_tag_block.count > 0:
         nodes_node = tag_format.get_xml_node(XML_OUTPUT, RENDER.render_body.nodes_tag_block.count, tag_node, "name", "nodes")
         RENDER.nodes_header = TAG.TagBlockHeader().read(input_stream, TAG)
@@ -1291,7 +1197,7 @@ def read_nodes_retail(RENDER, TAG, input_stream, tag_format, tag_node, XML_OUTPU
             if node.name_length > 0:
                 node.name = TAG.read_variable_string_no_terminator(input_stream, node.name_length, TAG, tag_format.XMLData(node_element_node, "name"))
 
-def read_node_map(RENDER, TAG, input_stream, tag_format, tag_node, XML_OUTPUT):
+def read_node_map(RENDER, TAG, input_stream, tag_node, XML_OUTPUT):
     if RENDER.render_body.node_map_tag_block.count > 0:
         node_map_node = tag_format.get_xml_node(XML_OUTPUT, RENDER.render_body.node_map_tag_block.count, tag_node, "name", "node map")
         RENDER.node_map_header = TAG.TagBlockHeader().read(input_stream, TAG)
@@ -1304,7 +1210,54 @@ def read_node_map(RENDER, TAG, input_stream, tag_format, tag_node, XML_OUTPUT):
 
             RENDER.node_map.append(TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(node_map_element_node, "node index")))
 
-def read_marker_groups(RENDER, TAG, input_stream, tag_format, tag_node, XML_OUTPUT):
+def read_marker_groups_v0(RENDER, TAG, input_stream, tag_node, XML_OUTPUT):
+    if RENDER.render_body.marker_groups_tag_block.count > 0:
+        marker_groups_node = tag_format.get_xml_node(XML_OUTPUT, RENDER.render_body.marker_groups_tag_block.count, tag_node, "name", "marker groups")
+        RENDER.marker_group_header = TAG.TagBlockHeader().read(input_stream, TAG)
+        for marker_group_idx in range(RENDER.render_body.marker_groups_tag_block.count):
+            marker_group_element_node = None
+            if XML_OUTPUT:
+                marker_group_element_node = TAG.xml_doc.createElement('element')
+                marker_group_element_node.setAttribute('index', str(marker_group_idx))
+                marker_groups_node.appendChild(marker_group_element_node)
+
+            marker_group = RENDER.MarkerGroup()
+
+            marker_group.name = TAG.read_string32(input_stream, TAG, tag_format.XMLData(marker_group_element_node, "name"))
+            marker_group.name_length = len(marker_group.name)
+            marker_group.markers_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(marker_group_element_node, "markers"))
+
+            RENDER.marker_groups.append(marker_group)
+
+        for marker_group_idx, marker_group in enumerate(RENDER.marker_groups):
+            marker_group_element_node = None
+            if XML_OUTPUT:
+                marker_group_element_node = marker_groups_node.childNodes[marker_group_idx]
+
+            marker_group.markers = []
+            if marker_group.markers_tag_block.count > 0:
+                markers_node = tag_format.get_xml_node(XML_OUTPUT, marker_group.markers_tag_block.count, marker_group_element_node, "name", "markers")
+                marker_group.markers_tag_block_header = TAG.TagBlockHeader().read(input_stream, TAG)
+                for marker_idx in range(marker_group.markers_tag_block.count):
+                    marker_element_node = None
+                    if XML_OUTPUT:
+                        marker_element_node = TAG.xml_doc.createElement('element')
+                        marker_element_node.setAttribute('index', str(marker_idx))
+                        markers_node.appendChild(marker_element_node)
+
+                    marker = RENDER.Marker()
+
+                    marker.region_index = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(marker_element_node, "region index"))
+                    marker.permutation_index = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(marker_element_node, "permutation index"))
+                    marker.node_index = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(marker_element_node, "node index"))
+                    input_stream.read(1) # Padding?
+                    marker.translation = TAG.read_point_3d(input_stream, TAG, tag_format.XMLData(marker_element_node, "translation"), True)
+                    marker.rotation = TAG.read_quaternion(input_stream, TAG,  tag_format.XMLData(marker_element_node, "rotation"), True)
+                    marker.scale = TAG.read_float(input_stream, TAG,  tag_format.XMLData(marker_element_node, "scale"))
+
+                    marker_group.markers.append(marker)
+
+def read_marker_groups_retail(RENDER, TAG, input_stream, tag_node, XML_OUTPUT):
     if RENDER.render_body.marker_groups_tag_block.count > 0:
         marker_groups_node = tag_format.get_xml_node(XML_OUTPUT, RENDER.render_body.marker_groups_tag_block.count, tag_node, "name", "marker groups")
         RENDER.marker_group_header = TAG.TagBlockHeader().read(input_stream, TAG)
@@ -1357,7 +1310,7 @@ def read_marker_groups(RENDER, TAG, input_stream, tag_format, tag_node, XML_OUTP
 
                     marker_group.markers.append(marker)
 
-def read_materials(RENDER, TAG, input_stream, tag_format, tag_node, XML_OUTPUT):
+def read_materials(RENDER, TAG, input_stream, tag_node, XML_OUTPUT):
     if RENDER.render_body.materials_tag_block.count > 0:
         material_node = tag_format.get_xml_node(XML_OUTPUT, RENDER.render_body.materials_tag_block.count, tag_node, "name", "materials")
         RENDER.material_header = TAG.TagBlockHeader().read(input_stream, TAG)
@@ -1413,7 +1366,7 @@ def read_materials(RENDER, TAG, input_stream, tag_format, tag_node, XML_OUTPUT):
 
                     material.properties.append(property)
 
-def read_errors(RENDER, TAG, input_stream, tag_format, tag_node, XML_OUTPUT):
+def read_errors(RENDER, TAG, input_stream, tag_node, XML_OUTPUT):
     if RENDER.render_body.errors_tag_block.count > 0:
         errors_node = tag_format.get_xml_node(XML_OUTPUT, RENDER.render_body.errors_tag_block.count, tag_node, "name", "errors")
         RENDER.errors_header = TAG.TagBlockHeader().read(input_stream, TAG)
@@ -1698,7 +1651,7 @@ def read_errors(RENDER, TAG, input_stream, tag_format, tag_node, XML_OUTPUT):
                             if comment.text_length > 0:
                                 comment.text = TAG.read_variable_string_no_terminator(input_stream, comment.text_length, TAG, tag_format.XMLData(comment_element_node, "text"))
 
-def process_file(input_stream, tag_format, report):
+def process_file(input_stream, report):
     TAG = tag_format.TagAsset()
     RENDER = RenderAsset()
     TAG.is_legacy = False
@@ -1715,54 +1668,54 @@ def process_file(input_stream, tag_format, report):
 
     initilize_render(RENDER)
     if RENDER.header.engine_tag == "BMAL":
-        read_render_body_v0(RENDER, TAG, input_stream, tag_format, tag_node, XML_OUTPUT)
-        read_import_info(RENDER, TAG, input_stream, tag_format, tag_node, XML_OUTPUT)
-        read_compression_info(RENDER, TAG, input_stream, tag_format, tag_node, XML_OUTPUT)
-        read_regions_v0(RENDER, TAG, input_stream, tag_format, tag_node, XML_OUTPUT)
-        read_sections_v0(RENDER, TAG, input_stream, tag_format, tag_node, XML_OUTPUT)
-        read_invalid_section_pair_bits(RENDER, TAG, input_stream, tag_format, tag_node, XML_OUTPUT)
-        read_section_groups(RENDER, TAG, input_stream, tag_format, tag_node, XML_OUTPUT)
-        read_nodes_v0(RENDER, TAG, input_stream, tag_format, tag_node, XML_OUTPUT)
-        read_node_map(RENDER, TAG, input_stream, tag_format, tag_node, XML_OUTPUT)
-        read_marker_groups(RENDER, TAG, input_stream, tag_format, tag_node, XML_OUTPUT)
-        read_materials(RENDER, TAG, input_stream, tag_format, tag_node, XML_OUTPUT)
-        read_errors(RENDER, TAG, input_stream, tag_format, tag_node, XML_OUTPUT)
+        read_render_body_v0(RENDER, TAG, input_stream, tag_node, XML_OUTPUT)
+        read_import_info(RENDER, TAG, input_stream, tag_node, XML_OUTPUT)
+        read_compression_info(RENDER, TAG, input_stream, tag_node, XML_OUTPUT)
+        read_regions_v0(RENDER, TAG, input_stream, tag_node, XML_OUTPUT)
+        read_sections_v0(RENDER, TAG, input_stream, tag_node, XML_OUTPUT)
+        read_invalid_section_pair_bits(RENDER, TAG, input_stream, tag_node, XML_OUTPUT)
+        read_section_groups(RENDER, TAG, input_stream, tag_node, XML_OUTPUT)
+        read_nodes_v0(RENDER, TAG, input_stream, tag_node, XML_OUTPUT)
+        read_node_map(RENDER, TAG, input_stream, tag_node, XML_OUTPUT)
+        read_marker_groups_v0(RENDER, TAG, input_stream, tag_node, XML_OUTPUT)
+        read_materials(RENDER, TAG, input_stream, tag_node, XML_OUTPUT)
+        read_errors(RENDER, TAG, input_stream, tag_node, XML_OUTPUT)
 
     elif RENDER.header.engine_tag == "BALM":
-        read_render_body_retail(RENDER, TAG, input_stream, tag_format, tag_node, XML_OUTPUT)
+        read_render_body_retail(RENDER, TAG, input_stream, tag_node, XML_OUTPUT)
 
         if RENDER.render_body.name_length > 0:
             RENDER.render_body.name = TAG.read_variable_string_no_terminator(input_stream, RENDER.render_body.name_length, TAG, tag_format.XMLData(tag_node, "name"))
 
-        read_import_info(RENDER, TAG, input_stream, tag_format, tag_node, XML_OUTPUT)
-        read_compression_info(RENDER, TAG, input_stream, tag_format, tag_node, XML_OUTPUT)
-        read_regions_retail(RENDER, TAG, input_stream, tag_format, tag_node, XML_OUTPUT)
-        read_sections_retail(RENDER, TAG, input_stream, tag_format, tag_node, XML_OUTPUT)
-        read_invalid_section_pair_bits(RENDER, TAG, input_stream, tag_format, tag_node, XML_OUTPUT)
-        read_section_groups(RENDER, TAG, input_stream, tag_format, tag_node, XML_OUTPUT)
-        read_nodes_retail(RENDER, TAG, input_stream, tag_format, tag_node, XML_OUTPUT)
-        read_node_map(RENDER, TAG, input_stream, tag_format, tag_node, XML_OUTPUT)
-        read_marker_groups(RENDER, TAG, input_stream, tag_format, tag_node, XML_OUTPUT)
-        read_materials(RENDER, TAG, input_stream, tag_format, tag_node, XML_OUTPUT)
-        read_errors(RENDER, TAG, input_stream, tag_format, tag_node, XML_OUTPUT)
+        read_import_info(RENDER, TAG, input_stream, tag_node, XML_OUTPUT)
+        read_compression_info(RENDER, TAG, input_stream, tag_node, XML_OUTPUT)
+        read_regions_retail(RENDER, TAG, input_stream, tag_node, XML_OUTPUT)
+        read_sections_retail(RENDER, TAG, input_stream, tag_node, XML_OUTPUT)
+        read_invalid_section_pair_bits(RENDER, TAG, input_stream, tag_node, XML_OUTPUT)
+        read_section_groups(RENDER, TAG, input_stream, tag_node, XML_OUTPUT)
+        read_nodes_retail(RENDER, TAG, input_stream, tag_node, XML_OUTPUT)
+        read_node_map(RENDER, TAG, input_stream, tag_node, XML_OUTPUT)
+        read_marker_groups_retail(RENDER, TAG, input_stream, tag_node, XML_OUTPUT)
+        read_materials(RENDER, TAG, input_stream, tag_node, XML_OUTPUT)
+        read_errors(RENDER, TAG, input_stream, tag_node, XML_OUTPUT)
 
     elif RENDER.header.engine_tag == "!MLB":
-        read_render_body_retail(RENDER, TAG, input_stream, tag_format, tag_node, XML_OUTPUT)
+        read_render_body_retail(RENDER, TAG, input_stream, tag_node, XML_OUTPUT)
 
         if RENDER.render_body.name_length > 0:
             RENDER.render_body.name = TAG.read_variable_string_no_terminator(input_stream, RENDER.render_body.name_length, TAG, tag_format.XMLData(tag_node, "name"))
 
-        read_import_info(RENDER, TAG, input_stream, tag_format, tag_node, XML_OUTPUT)
-        read_compression_info(RENDER, TAG, input_stream, tag_format, tag_node, XML_OUTPUT)
-        read_regions_retail(RENDER, TAG, input_stream, tag_format, tag_node, XML_OUTPUT)
-        read_sections_retail(RENDER, TAG, input_stream, tag_format, tag_node, XML_OUTPUT)
-        read_invalid_section_pair_bits(RENDER, TAG, input_stream, tag_format, tag_node, XML_OUTPUT)
-        read_section_groups(RENDER, TAG, input_stream, tag_format, tag_node, XML_OUTPUT)
-        read_nodes_retail(RENDER, TAG, input_stream, tag_format, tag_node, XML_OUTPUT)
-        read_node_map(RENDER, TAG, input_stream, tag_format, tag_node, XML_OUTPUT)
-        read_marker_groups(RENDER, TAG, input_stream, tag_format, tag_node, XML_OUTPUT)
-        read_materials(RENDER, TAG, input_stream, tag_format, tag_node, XML_OUTPUT)
-        read_errors(RENDER, TAG, input_stream, tag_format, tag_node, XML_OUTPUT)
+        read_import_info(RENDER, TAG, input_stream, tag_node, XML_OUTPUT)
+        read_compression_info(RENDER, TAG, input_stream, tag_node, XML_OUTPUT)
+        read_regions_retail(RENDER, TAG, input_stream, tag_node, XML_OUTPUT)
+        read_sections_retail(RENDER, TAG, input_stream, tag_node, XML_OUTPUT)
+        read_invalid_section_pair_bits(RENDER, TAG, input_stream, tag_node, XML_OUTPUT)
+        read_section_groups(RENDER, TAG, input_stream, tag_node, XML_OUTPUT)
+        read_nodes_retail(RENDER, TAG, input_stream, tag_node, XML_OUTPUT)
+        read_node_map(RENDER, TAG, input_stream, tag_node, XML_OUTPUT)
+        read_marker_groups_retail(RENDER, TAG, input_stream, tag_node, XML_OUTPUT)
+        read_materials(RENDER, TAG, input_stream, tag_node, XML_OUTPUT)
+        read_errors(RENDER, TAG, input_stream, tag_node, XML_OUTPUT)
 
     current_position = input_stream.tell()
     EOF = input_stream.seek(0, 2)

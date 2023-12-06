@@ -24,7 +24,7 @@
 #
 # ##### END MIT LICENSE BLOCK #####
 
-from mathutils import Vector, Quaternion
+from mathutils import Vector
 from ..global_functions import global_functions
 
 class ASSAsset(global_functions.HaloAsset):

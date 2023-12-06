@@ -24,8 +24,8 @@
 #
 # ##### END MIT LICENSE BLOCK #####
 
-from enum import Flag, Enum, auto
 from mathutils import Vector
+from enum import Flag, Enum, auto
 
 class PoweredMassPointFlags(Flag):
     ground_friction = auto()

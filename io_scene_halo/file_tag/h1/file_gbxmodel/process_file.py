@@ -25,11 +25,12 @@
 # ##### END MIT LICENSE BLOCK #####
 
 from xml.dom import minidom
+from ....global_functions import tag_format
 from ...h1.file_model.format import ModelAsset, ModelFlags, PermutationFlags, PartFlags
 
 XML_OUTPUT = False
 
-def process_file(input_stream, tag_format, report):
+def process_file(input_stream, report):
     TAG = tag_format.TagAsset()
     MODEL = ModelAsset()
     TAG.is_legacy = False

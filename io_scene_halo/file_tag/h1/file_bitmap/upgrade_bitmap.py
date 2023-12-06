@@ -24,27 +24,12 @@
 #
 # ##### END MIT LICENSE BLOCK #####
 
-from .format import (
-        BitmapAsset as H1BitmapAsset,
-        BitmapTypeEnum as H1BitmapTypeEnum,
-        FormatEnum as H1FormatEnum,
-        UsageEnum as H1UsageEnum,
-        BitmapFlags as H1BitmapFlags,
-        SpriteBudgetSizeEnum as H1SpriteBudgetSizeEnum,
-        SpriteUsageEnum as H1SpriteUsageEnum
-        )
-
+from .format import BitmapFlags as H1BitmapFlags
 from ...h2.file_bitmap.format import (
-        BitmapAsset,
-        BitmapTypeEnum,
-        FormatEnum,
-        UsageEnum,
-        BitmapFlags,
-        SpriteBudgetSizeEnum,
-        SpriteUsageEnum,
-        ForceFormatEnum,
-        ColorSubsamplingEnum
-        )
+    BitmapAsset,
+    BitmapFlags
+    )
+from ....global_functions import tag_format
 
 def convert_flags(bitmap_flags):
     flags = 0
@@ -66,7 +51,7 @@ def convert_flags(bitmap_flags):
 
     return flags
 
-def upgrade_h2_bitmap(H1_ASSET, patch_txt_path, tag_format, report):
+def upgrade_h2_bitmap(H1_ASSET, patch_txt_path, report):
     TAG = tag_format.TagAsset()
     BITMAP = BitmapAsset()
     TAG.upgrade_patches = tag_format.get_patch_set(patch_txt_path)

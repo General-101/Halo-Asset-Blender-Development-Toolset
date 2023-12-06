@@ -26,24 +26,11 @@
 
 import bpy
 
+from bpy.types import Operator
+from bpy_extras.io_utils import ExportHelper
 from ..global_functions import global_functions
-
-from bpy_extras.io_utils import (
-        ImportHelper,
-        ExportHelper
-        )
-
-from bpy.types import (
-        Operator,
-        Panel,
-        PropertyGroup
-        )
-
 from bpy.props import (
-        BoolProperty,
         EnumProperty,
-        FloatProperty,
-        PointerProperty,
         StringProperty
         )
 
@@ -75,45 +62,16 @@ class ExportQUA(Operator, ExportHelper):
 
         return global_functions.run_code("export_qua.write_file(context, self.filepath, self.report, self.qua_version)")
 
-class ImportQUA(Operator, ImportHelper):
-    """Import a QUA file"""
-    bl_idname = "import_scene.qua"
-    bl_label = "Import QUA"
-    filename_ext = '.QUA'
-
-    filter_glob: StringProperty(
-        default="*.qua",
-        options={'HIDDEN'},
-        )
-
-    def execute(self, context):
-        from ..file_qua import import_qua
-
-        return global_functions.run_code("import_qua.load_file(context, self.filepath, self.report)")
-
 def menu_func_export(self, context):
     self.layout.operator(ExportQUA.bl_idname, text='Halo Ubercam Animation (.qua)')
 
-def menu_func_import(self, context):
-    self.layout.operator(ImportQUA.bl_idname, text="Halo Ubercam Animation (.qua)")
-
-classeshalo = (
-    ImportQUA,
-    ExportQUA,
-)
-
 def register():
-    for clshalo in classeshalo:
-        bpy.utils.register_class(clshalo)
-
+    bpy.utils.register_class(ExportQUA)
     bpy.types.TOPBAR_MT_file_export.append(menu_func_export)
-    #bpy.types.TOPBAR_MT_file_import.append(menu_func_import)
 
 def unregister():
     bpy.types.TOPBAR_MT_file_export.remove(menu_func_export)
-    #bpy.types.TOPBAR_MT_file_import.remove(menu_func_import)
-    for clshalo in classeshalo:
-        bpy.utils.unregister_class(clshalo)
+    bpy.utils.unregister_class(ExportQUA)
 
 if __name__ == '__main__':
     register()

@@ -26,10 +26,11 @@
 
 from xml.dom import minidom
 from .format import CameraTrackAsset
+from ....global_functions import tag_format
 
 XML_OUTPUT = False
 
-def process_file(input_stream, tag_format, report):
+def process_file(input_stream, report):
     TAG = tag_format.TagAsset()
     CAMERATRACK = CameraTrackAsset()
     TAG.is_legacy = False

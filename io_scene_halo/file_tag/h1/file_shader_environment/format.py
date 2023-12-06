@@ -25,7 +25,6 @@
 # ##### END MIT LICENSE BLOCK #####
 
 from enum import Flag, Enum, auto
-from mathutils import Vector, Quaternion
 
 class RadiosityFlags(Flag):
     simple_parameterization = auto()
@@ -77,6 +76,7 @@ class EnvironmentFlags(Flag):
     alpha_tested = auto()
     bump_map_is_specular_mask = auto()
     true_atmospheric_fog = auto()
+    use_alternate_bump_attenuation = auto()
 
 class EnvironmentTypeEnum(Enum):
     normal = 0

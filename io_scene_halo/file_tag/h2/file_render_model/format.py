@@ -25,7 +25,6 @@
 # ##### END MIT LICENSE BLOCK #####
 
 from enum import Flag, Enum, auto
-
 from mathutils import Vector, Quaternion
 
 class RenderFlags(Flag):

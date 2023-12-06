@@ -24,7 +24,7 @@
 #
 # ##### END MIT LICENSE BLOCK #####
 
-from enum import Flag, Enum, auto
+from enum import Flag, auto
 from mathutils import Vector, Quaternion
 
 class LeafFlags(Flag):

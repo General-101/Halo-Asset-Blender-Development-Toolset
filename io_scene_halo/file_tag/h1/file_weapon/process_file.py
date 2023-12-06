@@ -25,6 +25,7 @@
 # ##### END MIT LICENSE BLOCK #####
 
 from xml.dom import minidom
+from ....global_functions import tag_format
 from .format import (WeaponAsset, 
                             ObjectFlags, 
                             ObjectFunctionEnum, 
@@ -38,7 +39,7 @@ from .format import (WeaponAsset,
 
 XML_OUTPUT = False
 
-def process_file(input_stream, tag_format, report):
+def process_file(input_stream, report):
     TAG = tag_format.TagAsset()
     WEAPON = WeaponAsset()
     TAG.is_legacy = False

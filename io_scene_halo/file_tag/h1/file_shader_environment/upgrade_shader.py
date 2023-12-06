@@ -27,6 +27,7 @@
 import os
 import copy
 
+from ....global_functions import tag_format
 from .format import (
         ShaderAsset as H1ShaderAsset,
         MaterialTypeEnum as H1MaterialTypeEnum,
@@ -537,7 +538,7 @@ def get_material_name(material_type):
 
     return h2_name
 
-def upgrade_h2_shader(H1_ASSET, patch_txt_path, tag_format, report):
+def upgrade_h2_shader(H1_ASSET, patch_txt_path, report):
     TAG = tag_format.TagAsset()
     SHADER = ShaderAsset()
     TAG.upgrade_patches = tag_format.get_patch_set(patch_txt_path)

@@ -28,6 +28,7 @@ import os
 import bpy
 
 from mathutils import Matrix
+from ...global_functions import global_functions
 
 def build_clusters(lightmap_group, SBSP_ASSET, level_root, random_color_gen, collection):
     if len(lightmap_group.clusters) > 0:
@@ -204,7 +205,7 @@ def build_poops(lightmap_group, SBSP_ASSET, level_root, random_color_gen, collec
             transform_matrix = (matrix_translation @ matrix_rotation @ matrix_scale)
             object_mesh.matrix_world = transform_matrix
 
-def build_scene(context, LTMP_ASSET, game_version, game_title, file_version, fix_rotations, empty_markers, report, mesh_processing, global_functions, tag_format, collection_override=None, cluster_collection_override=None, SBSP_ASSET=None):
+def build_scene(context, LTMP_ASSET, game_version, game_title, file_version, fix_rotations, empty_markers, report, collection_override=None, cluster_collection_override=None, SBSP_ASSET=None):
     random_color_gen = global_functions.RandomColorGenerator() # generates a random sequence of colors
 
     collection = context.collection

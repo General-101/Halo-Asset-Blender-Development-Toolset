@@ -25,6 +25,7 @@
 # ##### END MIT LICENSE BLOCK #####
 
 from xml.dom import minidom
+from ....global_functions import tag_format
 from .format import (
         ModelAsset, 
         ShadowFadeDistance, 
@@ -45,7 +46,7 @@ def initilize_model(MODEL):
     MODEL.model_object_data = []
     MODEL.scenario_load_parameters = []
 
-def read_model_body_v0(MODEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT):
+def read_model_body_v0(MODEL, TAG, input_stream, tag_node, XML_OUTPUT):
     MODEL.model_body_header = TAG.TagBlockHeader().read(input_stream, TAG)
     MODEL.model_body = MODEL.ModelBody()
     MODEL.model_body.render_model = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "render model"))
@@ -72,14 +73,48 @@ def read_model_body_v0(MODEL, TAG, input_stream, tag_format, tag_node, XML_OUTPU
     MODEL.model_body.runtime_nodes_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "runtime nodes"))
     input_stream.read(4) # Padding?
     MODEL.model_body.model_object_data_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "model object data"))
-    MODEL.model_body.default_dialogue = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "default dialogue"))
 
+    MODEL.model_body.default_dialogue = TAG.TagRef()
     MODEL.model_body.unused = TAG.TagRef()
     MODEL.model_body.salt_array = []
     MODEL.model_body.scenario_load_parameters_tag_block = TAG.TagBlock()
     MODEL.model_body.hologram_shader = TAG.TagRef()
 
-def read_model_body_retail(MODEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT):
+    if MODEL.model_body_header.size >= 224:
+        MODEL.model_body.default_dialogue = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "default dialogue"))
+
+    if MODEL.model_body_header.size >= 240:
+        MODEL.model_body.unused = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "unused"))
+
+    if MODEL.model_body_header.size >= 244:
+        MODEL.model_body.flags = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "flags", ModelFlags))
+        input_stream.read(2) # Padding?
+
+    if MODEL.model_body_header.size >= 248:
+        TAG.big_endian = True
+        input_stream.read(2) # Padding?
+        MODEL.model_body.default_dialogue_effect_length = TAG.read_signed_short(input_stream, TAG)
+        TAG.big_endian = False
+
+    if MODEL.model_body_header.size >= 316:
+        for salt_idx in range(SALT_SIZE):
+            MODEL.model_body.salt_array.append(TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(tag_node, "salt %s" % salt_idx)))
+
+        MODEL.model_body.runtime_flags = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "runtime flags", RuntimeFlags))
+        input_stream.read(2) # Padding?
+
+    if MODEL.model_body_header.size >= 328:
+        MODEL.model_body.scenario_load_parameters_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "scenariom load parameters"))
+
+    if MODEL.model_body_header.size >= 348:
+        MODEL.model_body.hologram_shader = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "hologram shader"))
+
+        TAG.big_endian = True
+        input_stream.read(2) # Padding?
+        MODEL.model_body.hologram_control_function_length = TAG.read_signed_short(input_stream, TAG)
+        TAG.big_endian = False
+
+def read_model_body_retail(MODEL, TAG, input_stream, tag_node, XML_OUTPUT):
     MODEL.model_body_header = TAG.TagBlockHeader().read(input_stream, TAG)
     MODEL.model_body = MODEL.ModelBody()
     MODEL.model_body.render_model = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "render model"))
@@ -112,7 +147,8 @@ def read_model_body_retail(MODEL, TAG, input_stream, tag_format, tag_node, XML_O
     input_stream.read(2) # Padding?
 
     TAG.big_endian = True
-    MODEL.model_body.default_dialogue_effect_length = TAG.read_signed_integer(input_stream, TAG)
+    input_stream.read(2) # Padding?
+    MODEL.model_body.default_dialogue_effect_length = TAG.read_signed_short(input_stream, TAG)
     TAG.big_endian = False
 
     MODEL.model_body.salt_array = []
@@ -125,10 +161,11 @@ def read_model_body_retail(MODEL, TAG, input_stream, tag_format, tag_node, XML_O
     MODEL.model_body.hologram_shader = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "hologram shader"))
 
     TAG.big_endian = True
-    MODEL.model_body.hologram_control_function_length = TAG.read_signed_integer(input_stream, TAG)
+    input_stream.read(2) # Padding?
+    MODEL.model_body.hologram_control_function_length = TAG.read_signed_short(input_stream, TAG)
     TAG.big_endian = False
 
-def process_file(input_stream, tag_format, report):
+def process_file(input_stream, report):
     TAG = tag_format.TagAsset()
     MODEL = ModelAsset()
     TAG.is_legacy = False
@@ -145,11 +182,11 @@ def process_file(input_stream, tag_format, report):
 
     initilize_model(MODEL)
     if MODEL.header.engine_tag == "BMAL":
-        read_model_body_v0(MODEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT)
+        read_model_body_v0(MODEL, TAG, input_stream, tag_node, XML_OUTPUT)
     elif MODEL.header.engine_tag == "BALM":
-        read_model_body_retail(MODEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT)
+        read_model_body_retail(MODEL, TAG, input_stream, tag_node, XML_OUTPUT)
     elif MODEL.header.engine_tag == "!MLB":
-        read_model_body_retail(MODEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT)
+        read_model_body_retail(MODEL, TAG, input_stream, tag_node, XML_OUTPUT)
 
     if MODEL.model_body.render_model.name_length > 0:
         MODEL.model_body.render_model.name = TAG.read_variable_string(input_stream, MODEL.model_body.render_model.name_length, TAG)

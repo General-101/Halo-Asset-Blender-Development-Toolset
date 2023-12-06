@@ -25,6 +25,7 @@
 # ##### END MIT LICENSE BLOCK #####
 
 from xml.dom import minidom
+from ....global_functions import tag_format
 from .format import (
         LevelAsset,
         LeafFlags,
@@ -94,7 +95,7 @@ def initilize_scenario(LEVEL):
     LEVEL.instanced_geometry_definition = []
     LEVEL.instanced_geometry_instances = []
 
-def read_bsp_body(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT):
+def read_bsp_body(LEVEL, TAG, input_stream, tag_node, XML_OUTPUT):
     LEVEL.level_header = TAG.TagBlockHeader().read(input_stream, TAG)
     LEVEL.level_body = LEVEL.LevelBody()
     LEVEL.level_body.import_info_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "import info"))
@@ -158,7 +159,7 @@ def read_bsp_body(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT):
     LEVEL.level_body.object_fake_lightprobes_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "object fake lightprobes"))
     LEVEL.level_body.decorators_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "decorators"))
 
-def read_import_info(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT):
+def read_import_info(LEVEL, TAG, input_stream, tag_node, XML_OUTPUT):
     if LEVEL.level_body.import_info_tag_block.count > 0:
         import_info_node = tag_format.get_xml_node(XML_OUTPUT, LEVEL.level_body.import_info_tag_block.count, tag_node, "name", "import info")
         LEVEL.import_info_header = TAG.TagBlockHeader().read(input_stream, TAG)
@@ -216,7 +217,7 @@ def read_import_info(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT)
 
                     file.uncompressed_data = input_stream.read(file.zipped_data)
 
-def read_collision_materials(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT):
+def read_collision_materials(LEVEL, TAG, input_stream, tag_node, XML_OUTPUT):
     if LEVEL.level_body.collision_materials_tag_block.count > 0:
         collision_materials_node = tag_format.get_xml_node(XML_OUTPUT, LEVEL.level_body.collision_materials_tag_block.count, tag_node, "name", "collision materials")
         LEVEL.collision_materials_header = TAG.TagBlockHeader().read(input_stream, TAG)
@@ -252,7 +253,7 @@ def read_collision_materials(LEVEL, TAG, input_stream, tag_format, tag_node, XML
                 collision_material.old_shader.append_xml_attributes(old_shader_node)
                 collision_material.new_shader.append_xml_attributes(new_shader_node)
 
-def read_collision_bsps(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT):
+def read_collision_bsps(LEVEL, TAG, input_stream, tag_node, XML_OUTPUT):
     if LEVEL.level_body.collision_bsps_tag_block.count > 0:
         collision_bsps_node = tag_format.get_xml_node(XML_OUTPUT, LEVEL.level_body.collision_bsps_tag_block.count, tag_node, "name", "collision bsps")
         LEVEL.collision_bsp_header = TAG.TagBlockHeader().read(input_stream, TAG)
@@ -423,7 +424,7 @@ def read_collision_bsps(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTP
 
                     collision_bsp.vertices.append(vertex)
 
-def read_unused_nodes(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT):
+def read_unused_nodes(LEVEL, TAG, input_stream, tag_node, XML_OUTPUT):
     if LEVEL.level_body.unused_nodes_tag_block.count > 0:
         unused_node = tag_format.get_xml_node(XML_OUTPUT, LEVEL.level_body.unused_nodes_tag_block.count, tag_node, "name", "unused nodes")
         LEVEL.unused_nodes_header = TAG.TagBlockHeader().read(input_stream, TAG)
@@ -436,7 +437,7 @@ def read_unused_nodes(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT
 
             input_stream.read(6) # Padding?
 
-def read_leaves(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT):
+def read_leaves(LEVEL, TAG, input_stream, tag_node, XML_OUTPUT):
     if LEVEL.level_body.leaves_tag_block.count > 0:
         leaves_node = tag_format.get_xml_node(XML_OUTPUT, LEVEL.level_body.leaves_tag_block.count, tag_node, "name", "leaves")
         LEVEL.unused_nodes_header = TAG.TagBlockHeader().read(input_stream, TAG)
@@ -454,7 +455,7 @@ def read_leaves(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT):
 
             LEVEL.leaves.append(cluster_leaf)
 
-def read_surface_references(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT):
+def read_surface_references(LEVEL, TAG, input_stream, tag_node, XML_OUTPUT):
     if LEVEL.level_body.surface_references_tag_block.count > 0:
         surface_reference_node = tag_format.get_xml_node(XML_OUTPUT, LEVEL.level_body.surface_references_tag_block.count, tag_node, "name", "surface references")
         LEVEL.surface_references_header = TAG.TagBlockHeader().read(input_stream, TAG)
@@ -472,7 +473,7 @@ def read_surface_references(LEVEL, TAG, input_stream, tag_format, tag_node, XML_
 
             LEVEL.surface_references.append(surface_reference)
 
-def read_cluster_portals(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT):
+def read_cluster_portals(LEVEL, TAG, input_stream, tag_node, XML_OUTPUT):
     if LEVEL.level_body.cluster_portals_tag_block.count > 0:
         cluster_portals_node = tag_format.get_xml_node(XML_OUTPUT, LEVEL.level_body.cluster_portals_tag_block.count, tag_node, "name", "cluster portals")
         LEVEL.cluster_portals_header = TAG.TagBlockHeader().read(input_stream, TAG)
@@ -512,7 +513,7 @@ def read_cluster_portals(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUT
 
                     cluster_portal.vertices.append(TAG.read_point_3d(input_stream, TAG, tag_format.XMLData(vertex_element_node, "point"), True))
 
-def read_fog_planes(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT):
+def read_fog_planes(LEVEL, TAG, input_stream, tag_node, XML_OUTPUT):
     if LEVEL.level_body.fog_planes_tag_block.count > 0:
         fog_planes_node = tag_format.get_xml_node(XML_OUTPUT, LEVEL.level_body.fog_planes_tag_block.count, tag_node, "name", "fog planes")
         LEVEL.fog_planes_header = TAG.TagBlockHeader().read(input_stream, TAG)
@@ -532,7 +533,7 @@ def read_fog_planes(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT):
 
             LEVEL.fog_planes.append(fog_plane)
 
-def read_weather_palette(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT):
+def read_weather_palette(LEVEL, TAG, input_stream, tag_node, XML_OUTPUT):
     if LEVEL.level_body.weather_palette_tag_block.count > 0:
         weather_palette_node = tag_format.get_xml_node(XML_OUTPUT, LEVEL.level_body.weather_palette_tag_block.count, tag_node, "name", "weather palette")
         LEVEL.weather_palette_header = TAG.TagBlockHeader().read(input_stream, TAG)
@@ -572,7 +573,7 @@ def read_weather_palette(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUT
                 weather_palette.weather_system.append_xml_attributes(weather_system_node)
                 weather_palette.wind.append_xml_attributes(wind_node)
 
-def read_weather_polyhedra(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT):
+def read_weather_polyhedra(LEVEL, TAG, input_stream, tag_node, XML_OUTPUT):
     if LEVEL.level_body.weather_polyhedra_tag_block.count > 0:
         weather_polyhedra_node = tag_format.get_xml_node(XML_OUTPUT, LEVEL.level_body.weather_polyhedra_tag_block.count, tag_node, "name", "weather polyhedra")
         LEVEL.weather_polyhedra_header = TAG.TagBlockHeader().read(input_stream, TAG)
@@ -608,7 +609,7 @@ def read_weather_polyhedra(LEVEL, TAG, input_stream, tag_format, tag_node, XML_O
 
                     weather_polyhedra.planes.append(TAG.Plane3D().read(input_stream, TAG, tag_format.XMLData(plane_element_node, "plane")))
 
-def read_detail_objects(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT):
+def read_detail_objects(LEVEL, TAG, input_stream, tag_node, XML_OUTPUT):
     if LEVEL.level_body.detail_objects_tag_block.count > 0:
         detail_object_node = tag_format.get_xml_node(XML_OUTPUT, LEVEL.level_body.detail_objects_tag_block.count, tag_node, "name", "detail objects")
         LEVEL.detail_objects_header = TAG.TagBlockHeader().read(input_stream, TAG)
@@ -712,7 +713,7 @@ def read_detail_objects(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTP
 
                     detail_object.z_reference_vectors.append(z_reference_vector)
 
-def read_clusters(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT):
+def read_clusters(LEVEL, TAG, input_stream, tag_node, XML_OUTPUT):
     if LEVEL.level_body.clusters_tag_block.count > 0:
         cluster_node = tag_format.get_xml_node(XML_OUTPUT, LEVEL.level_body.clusters_tag_block.count, tag_node, "name", "clusters")
         LEVEL.clusters_header = TAG.TagBlockHeader().read(input_stream, TAG)
@@ -1070,7 +1071,7 @@ def read_clusters(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT):
 
             cluster.collision_mopp_code = input_stream.read(cluster.collision_mopp_code_data.size)
 
-def read_materials(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT):
+def read_materials(LEVEL, TAG, input_stream, tag_node, XML_OUTPUT):
     if LEVEL.level_body.materials_tag_block.count > 0:
         material_node = tag_format.get_xml_node(XML_OUTPUT, LEVEL.level_body.materials_tag_block.count, tag_node, "name", "materials")
         LEVEL.material_header = TAG.TagBlockHeader().read(input_stream, TAG)
@@ -1126,7 +1127,7 @@ def read_materials(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT):
 
                     material.properties.append(property)
 
-def read_sky_owner_cluster(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT):
+def read_sky_owner_cluster(LEVEL, TAG, input_stream, tag_node, XML_OUTPUT):
     if LEVEL.level_body.sky_owner_cluster_tag_block.count > 0:
         sky_owner_cluster_node = tag_format.get_xml_node(XML_OUTPUT, LEVEL.level_body.sky_owner_cluster_tag_block.count, tag_node, "name", "sky owner cluster")
         LEVEL.conveyor_surfaces_header = TAG.TagBlockHeader().read(input_stream, TAG)
@@ -1139,7 +1140,7 @@ def read_sky_owner_cluster(LEVEL, TAG, input_stream, tag_format, tag_node, XML_O
 
             LEVEL.sky_owner_cluster.append(TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(sky_owner_cluster_element_node, "cluster owner")))
 
-def read_conveyor_surfaces(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT):
+def read_conveyor_surfaces(LEVEL, TAG, input_stream, tag_node, XML_OUTPUT):
     if LEVEL.level_body.conveyor_surfaces_tag_block.count > 0:
         conveyor_surface_node = tag_format.get_xml_node(XML_OUTPUT, LEVEL.level_body.conveyor_surfaces_tag_block.count, tag_node, "name", "conveyor surfaces")
         LEVEL.conveyor_surfaces_header = TAG.TagBlockHeader().read(input_stream, TAG)
@@ -1156,7 +1157,7 @@ def read_conveyor_surfaces(LEVEL, TAG, input_stream, tag_format, tag_node, XML_O
 
             LEVEL.conveyor_surfaces.append(conveyor_surface)
 
-def read_breakable_surfaces(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT):
+def read_breakable_surfaces(LEVEL, TAG, input_stream, tag_node, XML_OUTPUT):
     if LEVEL.level_body.breakable_surfaces_tag_block.count > 0:
         breakable_surface_node = tag_format.get_xml_node(XML_OUTPUT, LEVEL.level_body.breakable_surfaces_tag_block.count, tag_node, "name", "breakable surfaces")
         LEVEL.breakable_surfaces_header = TAG.TagBlockHeader().read(input_stream, TAG)
@@ -1176,7 +1177,7 @@ def read_breakable_surfaces(LEVEL, TAG, input_stream, tag_format, tag_node, XML_
 
             LEVEL.breakable_surfaces.append(breakable_surface)
 
-def read_pathfinding_data(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT):
+def read_pathfinding_data(LEVEL, TAG, input_stream, tag_node, XML_OUTPUT):
     if LEVEL.level_body.pathfinding_data_tag_block.count > 0:
         LEVEL.pathfinding_data_header = TAG.TagBlockHeader().read(input_stream, TAG)
         pathfinding_data_node = tag_format.get_xml_node(XML_OUTPUT, LEVEL.level_body.pathfinding_data_tag_block.count, tag_node, "name", "pathfinding data")
@@ -1701,7 +1702,7 @@ def read_pathfinding_data(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OU
 
                                     flight_hint.points.append(TAG.read_vector(input_stream, TAG, tag_format.XMLData(flight_point_element_node, "point")))
 
-def read_pathfinding_edges(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT):
+def read_pathfinding_edges(LEVEL, TAG, input_stream, tag_node, XML_OUTPUT):
     if LEVEL.level_body.background_sound_palette_tag_block.count > 0:
         pathfinding_edges_node = tag_format.get_xml_node(XML_OUTPUT, LEVEL.level_body.background_sound_palette_tag_block.count, tag_node, "name", "pathfinding edges")
         LEVEL.background_sound_palette_header = TAG.TagBlockHeader().read(input_stream, TAG)
@@ -1714,7 +1715,7 @@ def read_pathfinding_edges(LEVEL, TAG, input_stream, tag_format, tag_node, XML_O
 
             LEVEL.pathfinding_edges.append(TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(pathfinding_edge_element_node, "midpoint")))
 
-def read_background_sound_palette(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT):
+def read_background_sound_palette(LEVEL, TAG, input_stream, tag_node, XML_OUTPUT):
     if LEVEL.level_body.background_sound_palette_tag_block.count > 0:
         background_sound_palette_node = tag_format.get_xml_node(XML_OUTPUT, LEVEL.level_body.background_sound_palette_tag_block.count, tag_node, "name", "background sound palette")
         LEVEL.background_sound_palette_header = TAG.TagBlockHeader().read(input_stream, TAG)
@@ -1757,7 +1758,7 @@ def read_background_sound_palette(LEVEL, TAG, input_stream, tag_format, tag_node
                 background_sound_palette.background_sound.append_xml_attributes(background_sound_node)
                 background_sound_palette.inside_cluster_sound.append_xml_attributes(inside_cluster_sound_node)
 
-def read_sound_environment_palette(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT):
+def read_sound_environment_palette(LEVEL, TAG, input_stream, tag_node, XML_OUTPUT):
     if LEVEL.level_body.sound_environment_palette_tag_block.count > 0:
         sound_environment_palette_node = tag_format.get_xml_node(XML_OUTPUT, LEVEL.level_body.sound_environment_palette_tag_block.count, tag_node, "name", "sound environment palette")
         LEVEL.sound_environment_palette_header = TAG.TagBlockHeader().read(input_stream, TAG)
@@ -1789,7 +1790,7 @@ def read_sound_environment_palette(LEVEL, TAG, input_stream, tag_format, tag_nod
                 sound_environment_node = tag_format.get_xml_node(XML_OUTPUT, 1, sound_environment_palette_element_node, "name", "sound environment")
                 sound_environment_palette.sound_environment.append_xml_attributes(sound_environment_node)
 
-def read_markers(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT):
+def read_markers(LEVEL, TAG, input_stream, tag_node, XML_OUTPUT):
     if LEVEL.level_body.markers_tag_block.count > 0:
         markers_node = tag_format.get_xml_node(XML_OUTPUT, LEVEL.level_body.markers_tag_block.count, tag_node, "name", "markers")
         LEVEL.markers_header = TAG.TagBlockHeader().read(input_stream, TAG)
@@ -1807,7 +1808,7 @@ def read_markers(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT):
 
             LEVEL.markers.append(marker)
 
-def read_runtime_decals(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT):
+def read_runtime_decals(LEVEL, TAG, input_stream, tag_node, XML_OUTPUT):
     if LEVEL.level_body.runtime_decals_tag_block.count > 0:
         runtime_decals_node = tag_format.get_xml_node(XML_OUTPUT, LEVEL.level_body.runtime_decals_tag_block.count, tag_node, "name", "runtime decals")
         LEVEL.runtime_decals_header = TAG.TagBlockHeader().read(input_stream, TAG)
@@ -1820,7 +1821,7 @@ def read_runtime_decals(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTP
 
             input_stream.read(16) # Padding?
 
-def read_environment_object_palette(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT):
+def read_environment_object_palette(LEVEL, TAG, input_stream, tag_node, XML_OUTPUT):
     if LEVEL.level_body.environment_object_palette_tag_block.count > 0:
         environment_object_palette_node = tag_format.get_xml_node(XML_OUTPUT, LEVEL.level_body.environment_object_palette_tag_block.count, tag_node, "name", "environment object palette")
         LEVEL.environment_object_palette_header = TAG.TagBlockHeader().read(input_stream, TAG)
@@ -1855,7 +1856,7 @@ def read_environment_object_palette(LEVEL, TAG, input_stream, tag_format, tag_no
                 environment_object_palette.definition.append_xml_attributes(definition_node)
                 environment_object_palette.model.append_xml_attributes(model_node)
 
-def read_environment_object(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT):
+def read_environment_object(LEVEL, TAG, input_stream, tag_node, XML_OUTPUT):
     if LEVEL.level_body.environment_objects_tag_block.count > 0:
         environment_objects_node = tag_format.get_xml_node(XML_OUTPUT, LEVEL.level_body.environment_objects_tag_block.count, tag_node, "name", "environment objects")
         LEVEL.environment_objects_header = TAG.TagBlockHeader().read(input_stream, TAG)
@@ -1878,7 +1879,7 @@ def read_environment_object(LEVEL, TAG, input_stream, tag_format, tag_node, XML_
 
             LEVEL.environment_objects.append(environment_object)
 
-def read_lightmaps(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT):
+def read_lightmaps(LEVEL, TAG, input_stream, tag_node, XML_OUTPUT):
     if LEVEL.level_body.lightmaps_tag_block.count > 0:
         lightmaps_node = tag_format.get_xml_node(XML_OUTPUT, LEVEL.level_body.lightmaps_tag_block.count, tag_node, "name", "lightmaps")
         LEVEL.lightmaps_header = TAG.TagBlockHeader().read(input_stream, TAG)
@@ -1903,7 +1904,7 @@ def read_lightmaps(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT):
                 lightmap_node = tag_format.get_xml_node(XML_OUTPUT, 1, lightmap_element_node, "name", "bitmap group")
                 lightmap.append_xml_attributes(lightmap_node)
 
-def read_leaf_map_leaves(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT):
+def read_leaf_map_leaves(LEVEL, TAG, input_stream, tag_node, XML_OUTPUT):
     if LEVEL.level_body.leaf_map_leaves_tag_block.count > 0:
         leaf_map_leaves_node = tag_format.get_xml_node(XML_OUTPUT, LEVEL.level_body.leaf_map_leaves_tag_block.count, tag_node, "name", "leaf map leaves")
         LEVEL.leaf_map_leaves_header = TAG.TagBlockHeader().read(input_stream, TAG)
@@ -1974,7 +1975,7 @@ def read_leaf_map_leaves(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUT
 
                     leaf_map_leaf.connection_indices.append(TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(connection_element_node, "connection index")))
 
-def read_leaf_map_connections(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT):
+def read_leaf_map_connections(LEVEL, TAG, input_stream, tag_node, XML_OUTPUT):
     if LEVEL.level_body.leaf_map_connections_tag_block.count > 0:
         leaf_map_connections_node = tag_format.get_xml_node(XML_OUTPUT, LEVEL.level_body.leaf_map_connections_tag_block.count, tag_node, "name", "leaf map connections")
         LEVEL.leaf_map_connections_header = TAG.TagBlockHeader().read(input_stream, TAG)
@@ -2012,7 +2013,7 @@ def read_leaf_map_connections(LEVEL, TAG, input_stream, tag_format, tag_node, XM
 
                     leaf_map_connection.vertices.append(TAG.read_point_3d(input_stream, TAG, tag_format.XMLData(vertex_element_node, "vertex")))
 
-def read_errors(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT):
+def read_errors(LEVEL, TAG, input_stream, tag_node, XML_OUTPUT):
     if LEVEL.level_body.errors_tag_block.count > 0:
         errors_node = tag_format.get_xml_node(XML_OUTPUT, LEVEL.level_body.errors_tag_block.count, tag_node, "name", "errors")
         LEVEL.errors_header = TAG.TagBlockHeader().read(input_stream, TAG)
@@ -2276,16 +2277,16 @@ def read_errors(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT):
                             comment = LEVEL.ReportComment()
                             comment.text_length = TAG.read_signed_short(input_stream, TAG)
                             input_stream.read(18) # Padding?
-                            comment.position = TAG.read_point_3d(input_stream, TAG, tag_format.XMLData(vector_element_node, "position"))
-                            comment.node_index_0 = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(vector_element_node, "node index"))
-                            comment.node_index_1 = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(vector_element_node, "node index"))
-                            comment.node_index_2 = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(vector_element_node, "node index"))
-                            comment.node_index_3 = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(vector_element_node, "node index"))
-                            comment.node_weight_0 = TAG.read_float(input_stream, TAG, tag_format.XMLData(vector_element_node, "node weight"))
-                            comment.node_weight_1 = TAG.read_float(input_stream, TAG, tag_format.XMLData(vector_element_node, "node weight"))
-                            comment.node_weight_2 = TAG.read_float(input_stream, TAG, tag_format.XMLData(vector_element_node, "node weight"))
-                            comment.node_weight_3 = TAG.read_float(input_stream, TAG, tag_format.XMLData(vector_element_node, "node weight"))
-                            comment.color = TAG.read_argb(input_stream, TAG, tag_format.XMLData(vector_element_node, "color"))
+                            comment.position = TAG.read_point_3d(input_stream, TAG, tag_format.XMLData(comment_element_node, "position"))
+                            comment.node_index_0 = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(comment_element_node, "node index"))
+                            comment.node_index_1 = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(comment_element_node, "node index"))
+                            comment.node_index_2 = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(comment_element_node, "node index"))
+                            comment.node_index_3 = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(comment_element_node, "node index"))
+                            comment.node_weight_0 = TAG.read_float(input_stream, TAG, tag_format.XMLData(comment_element_node, "node weight"))
+                            comment.node_weight_1 = TAG.read_float(input_stream, TAG, tag_format.XMLData(comment_element_node, "node weight"))
+                            comment.node_weight_2 = TAG.read_float(input_stream, TAG, tag_format.XMLData(comment_element_node, "node weight"))
+                            comment.node_weight_3 = TAG.read_float(input_stream, TAG, tag_format.XMLData(comment_element_node, "node weight"))
+                            comment.color = TAG.read_argb(input_stream, TAG, tag_format.XMLData(comment_element_node, "color"))
 
                             report.comments.append(comment)
 
@@ -2297,7 +2298,7 @@ def read_errors(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT):
                             if comment.text_length > 0:
                                 comment.text = TAG.read_variable_string_no_terminator(input_stream, comment.text_length, TAG, tag_format.XMLData(comment_element_node, "text"))
 
-def read_precomputed_lighting(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT):
+def read_precomputed_lighting(LEVEL, TAG, input_stream, tag_node, XML_OUTPUT):
     if LEVEL.level_body.precomputed_lighting_tag_block.count > 0:
         precomputed_lighting_node = tag_format.get_xml_node(XML_OUTPUT, LEVEL.level_body.precomputed_lighting_tag_block.count, tag_node, "name", "precomputed lighting")
         LEVEL.precomputed_lighting_header = TAG.TagBlockHeader().read(input_stream, TAG)
@@ -2335,7 +2336,7 @@ def read_precomputed_lighting(LEVEL, TAG, input_stream, tag_format, tag_node, XM
             precomputed_lighting.visibility_volumes = input_stream.read(precomputed_lighting.visibility_volumes_data.size)
             precomputed_lighting.svis_header = TAG.TagBlockHeader().read(input_stream, TAG)
 
-def read_instanced_geometry_definition(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT):
+def read_instanced_geometry_definition(LEVEL, TAG, input_stream, tag_node, XML_OUTPUT):
     if LEVEL.level_body.instanced_geometry_definition_tag_block.count > 0:
         instanced_geometry_definition_node = tag_format.get_xml_node(XML_OUTPUT, LEVEL.level_body.instanced_geometry_definition_tag_block.count, tag_node, "name", "instanced geometry definition")
         LEVEL.instanced_geometry_definition_header = TAG.TagBlockHeader().read(input_stream, TAG)
@@ -2857,7 +2858,7 @@ def read_instanced_geometry_definition(LEVEL, TAG, input_stream, tag_format, tag
 
                     instanced_geometry_definition.surface_references.append(surface_reference)
 
-def read_instanced_geometry_instances(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT):
+def read_instanced_geometry_instances(LEVEL, TAG, input_stream, tag_node, XML_OUTPUT):
     if LEVEL.level_body.instanced_geometry_instances_tag_block.count > 0:
         instanced_geometry_instances_node = tag_format.get_xml_node(XML_OUTPUT, LEVEL.level_body.instanced_geometry_instances_tag_block.count, tag_node, "name", "instanced geometry instances")
         LEVEL.instanced_geometry_instances_header = TAG.TagBlockHeader().read(input_stream, TAG)
@@ -2897,7 +2898,7 @@ def read_instanced_geometry_instances(LEVEL, TAG, input_stream, tag_format, tag_
             if instanced_geometry_instance.name_length > 0:
                 instanced_geometry_instance.name = TAG.read_variable_string_no_terminator(input_stream, instanced_geometry_instance.name_length, TAG, tag_format.XMLData(instanced_geometry_instance_element_node, "name"))
 
-def process_file(input_stream, tag_format, report):
+def process_file(input_stream, report):
     TAG = tag_format.TagAsset()
     LEVEL = LevelAsset()
     TAG.is_legacy = False
@@ -2913,40 +2914,40 @@ def process_file(input_stream, tag_format, report):
         tag_node = TAG.xml_doc.childNodes[0]
 
     initilize_scenario(LEVEL)
-    read_bsp_body(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT)
-    read_import_info(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT)
-    read_collision_materials(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT)
-    read_collision_bsps(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT)
-    read_unused_nodes(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT)
-    read_leaves(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT)
-    read_surface_references(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT)
+    read_bsp_body(LEVEL, TAG, input_stream, tag_node, XML_OUTPUT)
+    read_import_info(LEVEL, TAG, input_stream, tag_node, XML_OUTPUT)
+    read_collision_materials(LEVEL, TAG, input_stream, tag_node, XML_OUTPUT)
+    read_collision_bsps(LEVEL, TAG, input_stream, tag_node, XML_OUTPUT)
+    read_unused_nodes(LEVEL, TAG, input_stream, tag_node, XML_OUTPUT)
+    read_leaves(LEVEL, TAG, input_stream, tag_node, XML_OUTPUT)
+    read_surface_references(LEVEL, TAG, input_stream, tag_node, XML_OUTPUT)
     LEVEL.cluster_data = input_stream.read(LEVEL.level_body.cluster_raw_data.size)
-    read_cluster_portals(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT)
-    read_fog_planes(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT)
-    read_weather_palette(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT)
-    read_weather_polyhedra(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT)
-    read_detail_objects(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT)
-    read_clusters(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT)
-    read_materials(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT)
-    read_sky_owner_cluster(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT)
-    read_conveyor_surfaces(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT)
-    read_breakable_surfaces(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT)
-    read_pathfinding_data(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT)
-    read_pathfinding_edges(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT)
-    read_background_sound_palette(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT)
-    read_sound_environment_palette(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT)
+    read_cluster_portals(LEVEL, TAG, input_stream, tag_node, XML_OUTPUT)
+    read_fog_planes(LEVEL, TAG, input_stream, tag_node, XML_OUTPUT)
+    read_weather_palette(LEVEL, TAG, input_stream, tag_node, XML_OUTPUT)
+    read_weather_polyhedra(LEVEL, TAG, input_stream, tag_node, XML_OUTPUT)
+    read_detail_objects(LEVEL, TAG, input_stream, tag_node, XML_OUTPUT)
+    read_clusters(LEVEL, TAG, input_stream, tag_node, XML_OUTPUT)
+    read_materials(LEVEL, TAG, input_stream, tag_node, XML_OUTPUT)
+    read_sky_owner_cluster(LEVEL, TAG, input_stream, tag_node, XML_OUTPUT)
+    read_conveyor_surfaces(LEVEL, TAG, input_stream, tag_node, XML_OUTPUT)
+    read_breakable_surfaces(LEVEL, TAG, input_stream, tag_node, XML_OUTPUT)
+    read_pathfinding_data(LEVEL, TAG, input_stream, tag_node, XML_OUTPUT)
+    read_pathfinding_edges(LEVEL, TAG, input_stream, tag_node, XML_OUTPUT)
+    read_background_sound_palette(LEVEL, TAG, input_stream, tag_node, XML_OUTPUT)
+    read_sound_environment_palette(LEVEL, TAG, input_stream, tag_node, XML_OUTPUT)
     LEVEL.sound_pas_data = input_stream.read(LEVEL.level_body.sound_pas_raw_data.size)
-    read_markers(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT)
-    read_runtime_decals(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT)
-    read_environment_object_palette(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT)
-    read_environment_object(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT)
-    read_lightmaps(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT)
-    read_leaf_map_leaves(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT)
-    read_leaf_map_connections(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT)
-    read_errors(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT)
-    read_precomputed_lighting(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT)
-    read_instanced_geometry_definition(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT)
-    read_instanced_geometry_instances(LEVEL, TAG, input_stream, tag_format, tag_node, XML_OUTPUT)
+    read_markers(LEVEL, TAG, input_stream, tag_node, XML_OUTPUT)
+    read_runtime_decals(LEVEL, TAG, input_stream, tag_node, XML_OUTPUT)
+    read_environment_object_palette(LEVEL, TAG, input_stream, tag_node, XML_OUTPUT)
+    read_environment_object(LEVEL, TAG, input_stream, tag_node, XML_OUTPUT)
+    read_lightmaps(LEVEL, TAG, input_stream, tag_node, XML_OUTPUT)
+    read_leaf_map_leaves(LEVEL, TAG, input_stream, tag_node, XML_OUTPUT)
+    read_leaf_map_connections(LEVEL, TAG, input_stream, tag_node, XML_OUTPUT)
+    read_errors(LEVEL, TAG, input_stream, tag_node, XML_OUTPUT)
+    read_precomputed_lighting(LEVEL, TAG, input_stream, tag_node, XML_OUTPUT)
+    read_instanced_geometry_definition(LEVEL, TAG, input_stream, tag_node, XML_OUTPUT)
+    read_instanced_geometry_instances(LEVEL, TAG, input_stream, tag_node, XML_OUTPUT)
 
     current_position = input_stream.tell()
     EOF = input_stream.seek(0, 2)

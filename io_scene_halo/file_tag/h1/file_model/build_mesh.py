@@ -30,6 +30,7 @@ import bmesh
 
 from mathutils import Vector
 from .format import ModelFlags
+from ....global_functions import shader_processing, mesh_processing, global_functions
 
 def decompress_normal32(n):
     i = (n&1023) / 1023
@@ -52,7 +53,7 @@ def uncompress_vertices(compressed_vertices):
         vertex.node_0_weight = vertex.node_0_weight / 32767
         vertex.node_1_weight = 1 - vertex.node_0_weight
 
-def build_mesh_layout(asset, geometry, region_name, object_name, game_version, is_triangle_list, random_color_gen, mesh_processing, armature, materials):
+def build_mesh_layout(asset, geometry, region_name, object_name, game_version, is_triangle_list, random_color_gen, armature, materials):
     vertex_groups = []
     active_region_permutations = []
     shader_count = len(asset.shaders)
@@ -214,7 +215,7 @@ def build_mesh_layout(asset, geometry, region_name, object_name, game_version, i
 
     bpy.context.collection.objects.link(object_mesh)
 
-def build_object(context, collection, geometry, armature, LOD, region_name, permutation_name, game_version, import_file, is_triangle_list, random_color_gen, mesh_processing, materials):
+def build_object(context, collection, geometry, armature, LOD, region_name, permutation_name, game_version, import_file, is_triangle_list, random_color_gen, materials):
     if region_name == "__unnamed":
         region_name = "unnamed"
 
@@ -223,9 +224,9 @@ def build_object(context, collection, geometry, armature, LOD, region_name, perm
 
     object_name = '%s %s %s' % (region_name, permutation_name, LOD)
 
-    build_mesh_layout(import_file, geometry, region_name, object_name, game_version, is_triangle_list, random_color_gen, mesh_processing, armature, materials)
+    build_mesh_layout(import_file, geometry, region_name, object_name, game_version, is_triangle_list, random_color_gen, armature, materials)
 
-def get_geometry_layout(context, collection, import_file, armature, game_version, game_title, file_version, fix_rotations, is_triangle_list, mesh_processing, global_functions, tag_format, report):
+def get_geometry_layout(context, collection, import_file, armature, game_version, game_title, file_version, fix_rotations, is_triangle_list, report):
     random_color_gen = global_functions.RandomColorGenerator() # generates a random sequence of colors
     materials = []
     for shader in import_file.shaders:
@@ -235,7 +236,7 @@ def get_geometry_layout(context, collection, import_file, armature, game_version
 
         material_name = "%s%s" % (os.path.basename(shader.tag_ref.name), permutation_index)
         mat = bpy.data.materials.new(name=material_name)
-        mesh_processing.generate_shader(mat, shader.tag_ref, shader.permutation_index, tag_format, report)
+        shader_processing.generate_shader(mat, shader.tag_ref, shader.permutation_index, report)
 
         materials.append(mat)
     
@@ -251,24 +252,24 @@ def get_geometry_layout(context, collection, import_file, armature, game_version
             if not superhigh_geometry_index == -1 and superhigh_geometry_index < geometry_count and not import_file.geometries[superhigh_geometry_index].visited:
                 import_file.geometries[superhigh_geometry_index].visited = True
                 superhigh_geometry = import_file.geometries[superhigh_geometry_index]
-                build_object(context, collection, superhigh_geometry, armature, 'superhigh', region.name, permutation.name, game_version, import_file, is_triangle_list, random_color_gen, mesh_processing, materials)
+                build_object(context, collection, superhigh_geometry, armature, 'superhigh', region.name, permutation.name, game_version, import_file, is_triangle_list, random_color_gen, materials)
 
             if not high_geometry_index == -1 and high_geometry_index < geometry_count and not import_file.geometries[high_geometry_index].visited:
                 import_file.geometries[high_geometry_index].visited = True
                 high_geometry = import_file.geometries[high_geometry_index]
-                build_object(context, collection, high_geometry, armature, 'high', region.name, permutation.name, game_version, import_file, is_triangle_list, random_color_gen, mesh_processing, materials)
+                build_object(context, collection, high_geometry, armature, 'high', region.name, permutation.name, game_version, import_file, is_triangle_list, random_color_gen, materials)
 
             if not medium_geometry_index == -1 and medium_geometry_index < geometry_count and not import_file.geometries[medium_geometry_index].visited:
                 import_file.geometries[medium_geometry_index].visited = True
                 medium_geometry = import_file.geometries[medium_geometry_index]
-                build_object(context, collection, medium_geometry, armature, 'medium', region.name, permutation.name, game_version, import_file, is_triangle_list, random_color_gen, mesh_processing, materials)
+                build_object(context, collection, medium_geometry, armature, 'medium', region.name, permutation.name, game_version, import_file, is_triangle_list, random_color_gen, materials)
 
             if not low_geometry_index == -1 and low_geometry_index < geometry_count and not import_file.geometries[low_geometry_index].visited:
                 import_file.geometries[low_geometry_index].visited = True
                 low_geometry = import_file.geometries[low_geometry_index]
-                build_object(context, collection, low_geometry, armature, 'low', region.name, permutation.name, game_version, import_file, is_triangle_list, random_color_gen, mesh_processing, materials)
+                build_object(context, collection, low_geometry, armature, 'low', region.name, permutation.name, game_version, import_file, is_triangle_list, random_color_gen, materials)
 
             if not superlow_geometry_index == -1 and superlow_geometry_index < geometry_count and not import_file.geometries[superlow_geometry_index].visited:
                 import_file.geometries[superlow_geometry_index].visited = True
                 superlow_geometry = import_file.geometries[superlow_geometry_index]
-                build_object(context, collection, superlow_geometry, armature, 'superlow', region.name, permutation.name, game_version, import_file, is_triangle_list, random_color_gen, mesh_processing, materials)
+                build_object(context, collection, superlow_geometry, armature, 'superlow', region.name, permutation.name, game_version, import_file, is_triangle_list, random_color_gen, materials)

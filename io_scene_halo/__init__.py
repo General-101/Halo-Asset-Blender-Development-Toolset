@@ -30,7 +30,7 @@ bl_info = {
     "name": "Halo Asset Blender Development Toolset",
     "author": "General_101",
     "version": (117, 343, 65521),
-    "blender": (3, 0, 0),
+    "blender": (4, 0, 0),
     "location": "File > Import-Export",
     "description": "Import-Export Halo intermediate files Build: BUILD_VERSION_STR",
     "warning": "",

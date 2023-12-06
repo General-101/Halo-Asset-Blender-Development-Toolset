@@ -28,8 +28,8 @@ import os
 import bpy
 
 from ..file_jma.format import JMAAsset
-from ..file_jma.process_file_retail import process_file_retail
 from ..global_functions import global_functions
+from ..file_jma.process_file_retail import process_file_retail
 
 class JMAFile(global_functions.HaloAsset):
     class Transform:

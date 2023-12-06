@@ -25,15 +25,16 @@
 # ##### END MIT LICENSE BLOCK #####
 
 from xml.dom import minidom
+from ....global_functions import tag_format
 from .format import (
-        SceneryAsset, 
-        ObjectFlags, 
-        LightmapShadowModeEnum, 
-        SweetenerSizeEnum,
-        PathfindingPolicyEnum,
-        SceneryFlags,
-        LightmappingPolicyEnum,
-        )
+    SceneryAsset, 
+    ObjectFlags, 
+    LightmapShadowModeEnum, 
+    SweetenerSizeEnum,
+    PathfindingPolicyEnum,
+    SceneryFlags,
+    LightmappingPolicyEnum,
+    )
 
 XML_OUTPUT = False
 
@@ -46,7 +47,7 @@ def initilize_scenery(SCENERY):
     SCENERY.change_colors = []
     SCENERY.predicted_resources = []
 
-def read_scenery_body_v0(SCENERY, TAG, input_stream, tag_format, tag_node, XML_OUTPUT):
+def read_scenery_body_v0(SCENERY, TAG, input_stream, tag_node, XML_OUTPUT):
     SCENERY.scenery_body_header = TAG.TagBlockHeader().read(input_stream, TAG)
     SCENERY.scenery_body = SCENERY.SceneryBody()
     input_stream.read(2) # Padding?
@@ -98,7 +99,7 @@ def read_scenery_body_v0(SCENERY, TAG, input_stream, tag_format, tag_node, XML_O
     SCENERY.scenery_body.lightmapping_policy = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "lightmapping policy", LightmappingPolicyEnum))
     input_stream.read(122) # Padding?
 
-def read_scenery_body_retail(SCENERY, TAG, input_stream, tag_format, tag_node, XML_OUTPUT):
+def read_scenery_body_retail(SCENERY, TAG, input_stream, tag_node, XML_OUTPUT):
     SCENERY.scenery_body_header = TAG.TagBlockHeader().read(input_stream, TAG)
     SCENERY.scenery_body = SCENERY.SceneryBody()
     input_stream.read(2) # Padding?
@@ -113,7 +114,8 @@ def read_scenery_body_retail(SCENERY, TAG, input_stream, tag_format, tag_node, X
     SCENERY.scenery_body.dynamic_light_sphere_offset = TAG.read_point_3d(input_stream, TAG, tag_format.XMLData(tag_node, "dynamic light sphere offset"))
 
     TAG.big_endian = True
-    SCENERY.scenery_body.default_model_variant_length = TAG.read_signed_integer(input_stream, TAG)
+    input_stream.read(2) # Padding?
+    SCENERY.scenery_body.default_model_variant_length = TAG.read_signed_short(input_stream, TAG)
     TAG.big_endian = False
 
     SCENERY.scenery_body.model = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "model"))
@@ -144,7 +146,7 @@ def read_scenery_body_retail(SCENERY, TAG, input_stream, tag_format, tag_node, X
     SCENERY.scenery_body.lightmapping_policy = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "lightmapping policy", LightmappingPolicyEnum))
     input_stream.read(2) # Padding?
 
-def process_file(input_stream, tag_format, report):
+def process_file(input_stream, report):
     TAG = tag_format.TagAsset()
     SCENERY = SceneryAsset()
     TAG.is_legacy = False
@@ -160,11 +162,11 @@ def process_file(input_stream, tag_format, report):
 
     initilize_scenery(SCENERY)
     if SCENERY.header.engine_tag == "BMAL":
-        read_scenery_body_v0(SCENERY, TAG, input_stream, tag_format, tag_node, XML_OUTPUT)
+        read_scenery_body_v0(SCENERY, TAG, input_stream, tag_node, XML_OUTPUT)
     elif SCENERY.header.engine_tag == "BALM":
-        read_scenery_body_v0(SCENERY, TAG, input_stream, tag_format, tag_node, XML_OUTPUT)
+        read_scenery_body_v0(SCENERY, TAG, input_stream, tag_node, XML_OUTPUT)
     elif SCENERY.header.engine_tag == "!MLB":
-        read_scenery_body_retail(SCENERY, TAG, input_stream, tag_format, tag_node, XML_OUTPUT)
+        read_scenery_body_retail(SCENERY, TAG, input_stream, tag_node, XML_OUTPUT)
 
     if SCENERY.scenery_body.default_model_variant_length > 0:
         SCENERY.scenery_body.default_model_variant = TAG.read_variable_string_no_terminator(input_stream, SCENERY.scenery_body.default_model_variant_length, TAG, tag_format.XMLData(tag_node, "default model variant"))

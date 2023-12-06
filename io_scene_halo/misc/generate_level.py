@@ -27,19 +27,17 @@
 import os
 import bpy
 import json
-import time
 import random
 
-from enum import Flag, Enum, auto
+from math import radians, degrees
 from mathutils import Matrix, Vector, Euler
-from math import radians, degrees, acos, sqrt
-from ..misc.maze_gen.solve_maze import solve_maze
-from ..misc.maze_gen.generate_maze import generate_maze
-from ..file_tag.file_scenario.h1.format_retail import ScenarioAsset, EncounterFlags, GroupFlags, TeamEnum, ObjectFlags
-from ..file_tag.file_scenario.h1.build_asset import build_asset as build_h1_scenario
-from ..global_functions.tag_format import TagAsset
-from ..global_functions.mesh_processing import deselect_objects, select_object
 from ..global_ui.__init__ import CharacterFlags
+from ..misc.maze_gen.solve_maze import solve_maze
+from ..global_functions.tag_format import TagAsset
+from ..misc.maze_gen.generate_maze import generate_maze
+from ..global_functions.mesh_processing import deselect_objects, select_object
+from ..file_tag.h1.file_scenario.build_asset import build_asset as build_h1_scenario
+from ..file_tag.h1.file_scenario.format import ScenarioAsset, EncounterFlags, GroupFlags, TeamEnum, ObjectFlags
 
 DEBUG = False
 ADDON_DIRECTORY = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))

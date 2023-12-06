@@ -25,6 +25,7 @@
 # ##### END MIT LICENSE BLOCK #####
 
 from xml.dom import minidom
+from ....global_functions import tag_format
 from .format import (VehicleAsset, 
                             ObjectFlags, 
                             ObjectFunctionEnum, 
@@ -42,7 +43,7 @@ from .format import (VehicleAsset,
 
 XML_OUTPUT = False
 
-def process_file(input_stream, tag_format, report):
+def process_file(input_stream, report):
     TAG = tag_format.TagAsset()
     VEHICLE = VehicleAsset()
     TAG.is_legacy = False

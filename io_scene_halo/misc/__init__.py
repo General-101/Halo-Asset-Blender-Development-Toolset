@@ -259,6 +259,7 @@ class Source_PropertiesGroup(PropertyGroup):
         description="What game to target",
         items=[ ('halo1', "Halo 1", "Source is from Halo 1 MCC"),
                 ('halo2', "Halo 2", "Source is from Halo 2 MCC"),
+                ('halo3', "Halo 3", "Source is from Halo 3 MCC"),
             ]
         )
 
@@ -267,6 +268,7 @@ class Source_PropertiesGroup(PropertyGroup):
         description="What game to target",
         items=[ ('halo1', "Halo 1", "Generate a tag intended for Halo 1 MCC"),
                 ('halo2', "Halo 2", "Generate a tag intended for Halo 2 MCC"),
+                ('halo3', "Halo 3", "Generate a tag intended for Halo 3 MCC"),
             ]
         )
 

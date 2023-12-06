@@ -30,6 +30,7 @@ import bmesh
 
 from mathutils import Vector
 from ....h1.file_model.format import ModelFlags
+from .....global_functions import shader_processing
 
 def decompress_normal32(n):
     i = (n&1023) / 1023
@@ -214,7 +215,7 @@ def build_mesh_layout(asset, geometry, region_name, random_color_gen, object_mes
 
     return object_mesh
 
-def get_object(collection, import_file, game_version, object_name, mesh_processing, random_color_gen, tag_format, report):
+def get_object(collection, import_file, game_version, object_name, random_color_gen, report):
     geometry_count = len(import_file.geometries)
     materials = []
     for shader in import_file.shaders:
@@ -224,7 +225,7 @@ def get_object(collection, import_file, game_version, object_name, mesh_processi
 
         material_name = "%s%s" % (os.path.basename(shader.tag_ref.name), permutation_index)
         mat = bpy.data.materials.new(name=material_name)
-        mesh_processing.generate_shader(mat, shader.tag_ref, shader.permutation_index, tag_format, report)
+        shader_processing.generate_shader(mat, shader.tag_ref, shader.permutation_index, report)
 
         materials.append(mat)
 

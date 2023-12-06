@@ -25,6 +25,7 @@
 # ##### END MIT LICENSE BLOCK #####
 
 from xml.dom import minidom
+from ....global_functions import tag_format
 from .format import (
         BitmapAsset,
         ImportTypeEnum,
@@ -47,7 +48,7 @@ def initilize_bitmap(BITMAP):
     BITMAP.sequences = []
     BITMAP.bitmaps = []
 
-def read_bitmap_body(BITMAP, TAG, input_stream, tag_format, tag_node, XML_OUTPUT):
+def read_bitmap_body(BITMAP, TAG, input_stream, tag_node, XML_OUTPUT):
     BITMAP.bitmap_body_header = TAG.TagBlockHeader().read(input_stream, TAG)
     BITMAP.bitmap_body = BITMAP.BitmapBody()
     BITMAP.bitmap_body.type = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "type", ImportTypeEnum))
@@ -76,7 +77,7 @@ def read_bitmap_body(BITMAP, TAG, input_stream, tag_format, tag_node, XML_OUTPUT
     BITMAP.bitmap_body.overlap = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(tag_node, "overlap"))
     BITMAP.bitmap_body.color_subsampling = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(tag_node, "color subsampling"))
 
-def read_sequences(BITMAP, TAG, input_stream, tag_format, tag_node, XML_OUTPUT):
+def read_sequences(BITMAP, TAG, input_stream, tag_node, XML_OUTPUT):
     if BITMAP.bitmap_body.sequences_tag_block.count > 0:
         sequences_node = tag_format.get_xml_node(XML_OUTPUT, BITMAP.bitmap_body.sequences_tag_block.count, tag_node, "name", "sequences")
         BITMAP.sequence_header = TAG.TagBlockHeader().read(input_stream, TAG)
@@ -123,7 +124,7 @@ def read_sequences(BITMAP, TAG, input_stream, tag_format, tag_node, XML_OUTPUT):
 
                     sequence.sprites.append(sprite)
 
-def read_bitmaps(BITMAP, TAG, input_stream, tag_format, tag_node, XML_OUTPUT):
+def read_bitmaps(BITMAP, TAG, input_stream, tag_node, XML_OUTPUT):
     if BITMAP.bitmap_body.bitmaps_tag_block.count > 0:
         bitmap_node = tag_format.get_xml_node(XML_OUTPUT, BITMAP.bitmap_body.bitmaps_tag_block.count, tag_node, "name", "bitmaps")
         BITMAP.bitmap_header = TAG.TagBlockHeader().read(input_stream, TAG)
@@ -161,8 +162,8 @@ def read_bitmaps(BITMAP, TAG, input_stream, tag_format, tag_node, XML_OUTPUT):
                 bitmap.bitmap_format = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(bitmap_element_node, "format", BitmapFormatEnum))
                 bitmap.flags = TAG.read_flag_unsigned_short(input_stream, TAG, tag_format.XMLData(bitmap_element_node, "flags", BitmapFlags))
                 bitmap.registration_point = TAG.read_point_2d_short(input_stream, TAG, tag_format.XMLData(bitmap_element_node, "registration point"))
+                bitmap.mipmap_count = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(bitmap_element_node, "mipmap count"))
                 bitmap.lod_adjust = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(bitmap_element_node, "lod adjust"))
-                bitmap.cache_usage = TAG.read_enum_unsigned_byte(input_stream, TAG, tag_format.XMLData(bitmap_element_node, "cache usage", CacheUsageEnum))
                 bitmap.cache_usage = TAG.read_enum_unsigned_byte(input_stream, TAG, tag_format.XMLData(bitmap_element_node, "cache usage", CacheUsageEnum))
                 bitmap.pixels_offset = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(bitmap_element_node, "pixels offset"))
                 input_stream.read(4) # Padding
@@ -199,7 +200,7 @@ def read_bitmaps(BITMAP, TAG, input_stream, tag_format, tag_node, XML_OUTPUT):
 
                     bitmap.native_mipmap_info.append(native_mipmap_info)
 
-def process_file(input_stream, tag_format, report):
+def process_file(input_stream, report):
     TAG = tag_format.TagAsset()
     BITMAP = BitmapAsset()
     TAG.is_legacy = False
@@ -215,13 +216,13 @@ def process_file(input_stream, tag_format, report):
         tag_node = TAG.xml_doc.childNodes[0]
 
     initilize_bitmap(BITMAP)
-    read_bitmap_body(BITMAP, TAG, input_stream, tag_format, tag_node, XML_OUTPUT)
+    read_bitmap_body(BITMAP, TAG, input_stream, tag_node, XML_OUTPUT)
     input_stream.seek(BITMAP.bitmap_body.compressed_color_plate_data.size, 1)
     input_stream.seek(BITMAP.bitmap_body.processed_pixel_data.size, 1)
     BITMAP.bitmap_body.compressed_color_plate = bytes()
     BITMAP.bitmap_body.processed_pixels = bytes()
-    read_sequences(BITMAP, TAG, input_stream, tag_format, tag_node, XML_OUTPUT)
-    read_bitmaps(BITMAP, TAG, input_stream, tag_format, tag_node, XML_OUTPUT)
+    read_sequences(BITMAP, TAG, input_stream, tag_node, XML_OUTPUT)
+    read_bitmaps(BITMAP, TAG, input_stream, tag_node, XML_OUTPUT)
 
     current_position = input_stream.tell()
     EOF = input_stream.seek(0, 2)

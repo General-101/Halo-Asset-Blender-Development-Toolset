@@ -28,7 +28,10 @@ import os
 import bpy
 import bmesh
 
-def build_mesh_layout(context, import_file, geometry, current_region_permutation, armature, global_functions, mesh_processing):
+from ....global_functions import global_functions, mesh_processing
+from .format import PartFlags
+
+def build_mesh_layout(context, import_file, geometry, current_region_permutation, armature):
     random_color_gen = global_functions.RandomColorGenerator() # generates a random sequence of colors
 
     vertex_groups = []
@@ -56,23 +59,37 @@ def build_mesh_layout(context, import_file, geometry, current_region_permutation
             strip_start = part.strip_start_index
 
             triangle_indices = section_data.strip_indices[strip_start : (strip_start + strip_length)]
-            index_count = len(triangle_indices)
-            for idx in range(index_count - 2):
-                triangle_part.append([triangle_indices[idx], triangle_indices[idx + 1], triangle_indices[idx + 2]])
+            if PartFlags.override_triangle_list in PartFlags(part.flags):
+                triangle_length = int(len(triangle_indices) / 3)
+                for idx in range(triangle_length):
+                    triangle_index = (idx * 3)
+                    v0 = section_data.strip_indices[triangle_index]
+                    v1 = section_data.strip_indices[triangle_index + 1]
+                    v2 = section_data.strip_indices[triangle_index + 2]
+                    triangle_part.append((v0, v1, v2))
 
-            # Fix face normals on uneven triangle indices
-            for triangle_idx in range(len(triangle_part)):
-                if not triangle_idx % 2 == 0:
-                    triangle_part[triangle_idx].reverse()
+                for tri in triangle_part:
+                    triangle_mat_indices.append(part.material_index)
+                    triangles.append(tri)
 
-            # clean up any triangles that reference the same vertex multiple times
-            for reversed_triangle in reversed(triangle_part):
-                if (reversed_triangle[0] == reversed_triangle[1]) or (reversed_triangle[1] == reversed_triangle[2]) or (reversed_triangle[0] == reversed_triangle[2]):
-                    del triangle_part[triangle_part.index(reversed_triangle)]
+            else:
+                index_count = len(triangle_indices)
+                for idx in range(index_count - 2):
+                    triangle_part.append([triangle_indices[idx], triangle_indices[idx + 1], triangle_indices[idx + 2]])
 
-            for tri in triangle_part:
-                triangle_mat_indices.append(part.material_index)
-                triangles.append(tri)
+                # Fix face normals on uneven triangle indices
+                for triangle_idx in range(len(triangle_part)):
+                    if not triangle_idx % 2 == 0:
+                        triangle_part[triangle_idx].reverse()
+
+                # clean up any triangles that reference the same vertex multiple times
+                for reversed_triangle in reversed(triangle_part):
+                    if (reversed_triangle[0] == reversed_triangle[1]) or (reversed_triangle[1] == reversed_triangle[2]) or (reversed_triangle[0] == reversed_triangle[2]):
+                        del triangle_part[triangle_part.index(reversed_triangle)]
+
+                for tri in triangle_part:
+                    triangle_mat_indices.append(part.material_index)
+                    triangles.append(tri)
 
         mesh.from_pydata(vertices, [], triangles)
         for tri_idx, poly in enumerate(mesh.polygons):
@@ -190,7 +207,7 @@ def build_mesh_layout(context, import_file, geometry, current_region_permutation
     object_mesh.parent = armature
     mesh_processing.add_modifier(context, object_mesh, False, None, armature)
 
-def build_object(context, collection, geometry, armature, LOD, region_name, permutation_name, import_file, mesh_processing, global_functions):
+def build_object(context, collection, geometry, armature, LOD, region_name, permutation_name, import_file):
     if region_name == "__unnamed":
         region_name = "unnamed"
 
@@ -199,9 +216,9 @@ def build_object(context, collection, geometry, armature, LOD, region_name, perm
 
     object_name = '%s %s %s' % (LOD, permutation_name, region_name)
 
-    build_mesh_layout(context, import_file, geometry, object_name, armature, global_functions, mesh_processing)
+    build_mesh_layout(context, import_file, geometry, object_name, armature)
 
-def get_geometry_layout(context, collection, import_file, armature, mesh_processing, global_functions):
+def get_geometry_layout(context, collection, import_file, armature):
     for region in import_file.regions:
         for permutation in region.permutations:
             l1_geometry_index = permutation.l1_section_index
@@ -215,29 +232,29 @@ def get_geometry_layout(context, collection, import_file, armature, mesh_process
             if not l6_geometry_index == -1 and l6_geometry_index < geometry_count and not import_file.sections[l6_geometry_index].visited:
                 import_file.sections[l6_geometry_index].visited = True
                 l6_geometry = import_file.sections[l6_geometry_index]
-                build_object(context, collection, l6_geometry, armature, 'L6', region.name, permutation.name, import_file, mesh_processing, global_functions)
+                build_object(context, collection, l6_geometry, armature, 'L6', region.name, permutation.name, import_file)
 
             if not l5_geometry_index == -1 and l5_geometry_index < geometry_count and not import_file.sections[l5_geometry_index].visited:
                 import_file.sections[l5_geometry_index].visited = True
                 l5_geometry = import_file.sections[l5_geometry_index]
-                build_object(context, collection, l5_geometry, armature, 'L5', region.name, permutation.name, import_file, mesh_processing, global_functions)
+                build_object(context, collection, l5_geometry, armature, 'L5', region.name, permutation.name, import_file)
 
             if not l4_geometry_index == -1 and l4_geometry_index < geometry_count and not import_file.sections[l4_geometry_index].visited:
                 import_file.sections[l4_geometry_index].visited = True
                 l4_geometry = import_file.sections[l4_geometry_index]
-                build_object(context, collection, l4_geometry, armature, 'L4', region.name, permutation.name, import_file, mesh_processing, global_functions)
+                build_object(context, collection, l4_geometry, armature, 'L4', region.name, permutation.name, import_file)
 
             if not l3_geometry_index == -1 and l3_geometry_index < geometry_count and not import_file.sections[l3_geometry_index].visited:
                 import_file.sections[l3_geometry_index].visited = True
                 l3_geometry = import_file.sections[l3_geometry_index]
-                build_object(context, collection, l3_geometry, armature, 'L3', region.name, permutation.name, import_file, mesh_processing, global_functions)
+                build_object(context, collection, l3_geometry, armature, 'L3', region.name, permutation.name, import_file)
 
             if not l2_geometry_index == -1 and l2_geometry_index < geometry_count and not import_file.sections[l2_geometry_index].visited:
                 import_file.sections[l2_geometry_index].visited = True
                 l2_geometry = import_file.sections[l2_geometry_index]
-                build_object(context, collection, l2_geometry, armature, 'L2', region.name, permutation.name, import_file, mesh_processing, global_functions)
+                build_object(context, collection, l2_geometry, armature, 'L2', region.name, permutation.name, import_file)
 
             if not l1_geometry_index == -1 and l1_geometry_index < geometry_count and not import_file.sections[l1_geometry_index].visited:
                 import_file.sections[l1_geometry_index].visited = True
                 l1_geometry = import_file.sections[l1_geometry_index]
-                build_object(context, collection, l1_geometry, armature, 'L1', region.name, permutation.name, import_file, mesh_processing, global_functions)
+                build_object(context, collection, l1_geometry, armature, 'L1', region.name, permutation.name, import_file)

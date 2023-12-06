@@ -26,28 +26,26 @@
 
 import os
 
-from ..global_functions import tag_format, global_functions
+from ..global_functions import tag_format
 
-from ..file_tag.file_scenario.h1.build_asset import build_asset as build_h1_scenario
-from ..file_tag.file_scenario.h2.build_asset import build_asset as build_h2_scenario
-from ..file_tag.file_shader.build_asset import build_asset as build_h2_shader
-from ..file_tag.file_bitmap.h2.build_asset import build_asset as build_h2_bitmap
-from ..file_tag.file_animation.h1.build_asset import build_asset as build_h1_animation
-from ..file_tag.file_scenario.h1.upgrade_h2_scenario import upgrade_h2_scenario as upgrade_h1_h2_scenario
-from ..file_tag.file_shader_environment.upgrade_h2_shader import upgrade_h2_shader as upgrade_h1_h2_shader
-from ..file_tag.file_bitmap.h1.process_file_retail import process_file_retail as process_h1_bitmap
-from ..file_tag.file_bitmap.h1.upgrade_h2_bitmap import upgrade_h2_bitmap as upgrade_h1_h2_bitmap
-from ..file_tag.file_scenario.h1.process_file_retail import process_file_retail as process_h1_scenario
-from ..file_tag.file_shader_environment.process_file_retail import process_file_retail as process_h1_shader
-from ..file_tag.file_structure_bsp.h1.process_file_retail import process_file_retail as process_h1_structure_bsp
-from ..file_tag.file_actor_variant.process_file_retail import process_file_retail as process_actor_variant
-from ..file_tag.file_animation.h1.process_file_retail import process_file_retail as process_h1_animation_retail
-from ..file_tag.file_animation.h1.animation_utilities import animation_rename
-from ..file_tag.file_animation.h1.animation_utilities import animation_settings_transfer
+from ..file_tag.h1.file_scenario.build_asset import build_asset as build_h1_scenario
+from ..file_tag.h2.file_scenario.build_asset import build_asset as build_h2_scenario
+from ..file_tag.h2.file_shader.build_asset import build_asset as build_h2_shader
+from ..file_tag.h2.file_bitmap.build_asset import build_asset as build_h2_bitmap
+from ..file_tag.h1.file_model_animations.build_asset import build_asset as build_h1_animation
 
-from ..file_tag import import_tag
+from ..file_tag.h1.file_scenario.upgrade_scenario import upgrade_h2_scenario as upgrade_h1_h2_scenario
+from ..file_tag.h1.file_shader_environment.upgrade_shader import upgrade_h2_shader as upgrade_h1_h2_shader
+from ..file_tag.h1.file_bitmap.process_file import process_file as process_h1_bitmap
+from ..file_tag.h1.file_bitmap.upgrade_bitmap import upgrade_h2_bitmap as upgrade_h1_h2_bitmap
 
-def convert_tag(context, input_file, source_game_title, target_game_title, patch_txt_path, report):
+from ..file_tag.h1.file_scenario.process_file import process_file as process_h1_scenario
+from ..file_tag.h1.file_shader_environment.process_file import process_file as process_h1_shader
+from ..file_tag.h1.file_model_animations.process_file import process_file as process_h1_animation_retail
+from ..file_tag.h1.file_model_animations.animation_utilities import animation_rename
+from ..file_tag.h1.file_model_animations.animation_utilities import animation_settings_transfer
+
+def convert_tag(context, input_file, source_game_title, game_version, target_game_title, patch_txt_path, report):
     path_basename = os.path.basename(input_file)
     path_dirname = os.path.dirname(input_file)
     filename_no_ext = path_basename.rsplit('.', 1)[0]
@@ -72,13 +70,13 @@ def convert_tag(context, input_file, source_game_title, target_game_title, patch
 
     if source_game_title == "halo1":
         if tag_group == "scnr":
-            H1_ASSET = process_h1_scenario(input_stream, tag_format, report)
+            H1_ASSET = process_h1_scenario(input_stream, report)
 
             if target_game_title == "halo2":
                 output_stream = open(file_path + "_blender" + ".scenario", 'wb')
 
-                H2_ASSET = upgrade_h1_h2_scenario(H1_ASSET, patch_txt_path, tag_format, report)
-                build_h2_scenario(output_stream, H2_ASSET, tag_format, report)
+                H2_ASSET = upgrade_h1_h2_scenario(H1_ASSET, patch_txt_path, report)
+                build_h2_scenario(output_stream, H2_ASSET, report)
 
                 output_stream.close()
 
@@ -112,15 +110,16 @@ def convert_tag(context, input_file, source_game_title, target_game_title, patch
                             continue
 
                         if tag_group == "senv":
-                            H1_ASSET = process_h1_shader(input_stream, tag_format, report)
+
+                            H1_ASSET = process_h1_shader(input_stream, report)
 
                             file_name = file_item.rsplit('.', 1)[0].replace(" ", "_")
                             new_path = os.path.join(output_path, "%s.shader" % file_name)
 
                             output_stream = open(new_path, 'wb')
 
-                            H2_ASSET = upgrade_h1_h2_shader(H1_ASSET, patch_txt_path, tag_format, report)
-                            build_h2_shader(output_stream, tag_format, H2_ASSET, report)
+                            H2_ASSET = upgrade_h1_h2_shader(H1_ASSET, patch_txt_path, report)
+                            build_h2_shader(output_stream, H2_ASSET, report)
 
                             output_stream.close()
                             input_stream.close()
@@ -130,6 +129,7 @@ def convert_tag(context, input_file, source_game_title, target_game_title, patch
                 report({'ERROR'}, "Not implemented")
 
         elif tag_group == "bitm":
+            input_stream.close()
             if target_game_title == "halo2":
                 bitmap_directory = os.path.dirname(file_path)
                 output_path = os.path.join(bitmap_directory, "output")
@@ -157,15 +157,15 @@ def convert_tag(context, input_file, source_game_title, target_game_title, patch
                             input_file = os.path.join(bitmap_directory, file_item)
                             input_stream = open(input_file, 'rb')
 
-                            H1_ASSET = process_h1_bitmap(input_stream, tag_format, report)
+                            H1_ASSET = process_h1_bitmap(input_stream, report)
 
                             file_name = file_item.rsplit('.', 1)[0].replace(" ", "_")
                             new_path = os.path.join(output_path, "%s.bitmap" % file_name)
 
                             output_stream = open(new_path, 'wb')
 
-                            H2_ASSET = upgrade_h1_h2_bitmap(H1_ASSET, patch_txt_path, tag_format, report)
-                            build_h2_bitmap(output_stream, H2_ASSET, tag_format, report)
+                            H2_ASSET = upgrade_h1_h2_bitmap(H1_ASSET, patch_txt_path, report)
+                            build_h2_bitmap(output_stream, H2_ASSET, report)
 
                             output_stream.close()
                             input_stream.close()
@@ -174,31 +174,33 @@ def convert_tag(context, input_file, source_game_title, target_game_title, patch
                 input_stream.close()
                 report({'ERROR'}, "Not implemented")
 
-        elif tag_group == "actv":
-            H1_ASSET = process_actor_variant(input_stream, tag_format, report)
-
         elif tag_group == "antr":
-            H1_ASSET = process_h1_animation_retail(input_stream, global_functions, tag_format, report)
-            if target_game_title == "halo1":
-                output_path = os.path.join(path_dirname, "output")
-                if not os.path.exists(output_path):
-                    os.makedirs(output_path)
+            if game_version == "retail":
+                H1_ASSET = process_h1_animation_retail(input_stream, report)
+                if target_game_title == "halo1":
+                    output_path = os.path.join(path_dirname, "output")
+                    if not os.path.exists(output_path):
+                        os.makedirs(output_path)
 
-                output_stream = open(os.path.join(output_path, path_basename), 'wb')
+                    output_stream = open(os.path.join(output_path, path_basename), 'wb')
 
-                if "settings_transfer" in patch_txt_path:
-                    donor_file = r""
-                    donor_stream = open(donor_file, 'rb')
-                    DONOR_TAG = process_h1_animation_retail(donor_stream, global_functions, tag_format, report)
-                    H1_ASSET = animation_settings_transfer(H1_ASSET, DONOR_TAG, patch_txt_path, tag_format, report)
+                    if "settings_transfer" in patch_txt_path:
+                        donor_file = r""
+                        donor_stream = open(donor_file, 'rb')
+                        DONOR_TAG = process_h1_animation_retail(donor_stream, report)
+                        H1_ASSET = animation_settings_transfer(H1_ASSET, DONOR_TAG, patch_txt_path, report)
+
+                    else:
+                        H1_ASSET = animation_rename(H1_ASSET, patch_txt_path, report)
+
+                    build_h1_animation(output_stream, H1_ASSET, report)
+
+                    output_stream.close()
+                    input_stream.close()
 
                 else:
-                    H1_ASSET = animation_rename(H1_ASSET, patch_txt_path, tag_format, report)
-
-                build_h1_animation(output_stream, H1_ASSET, tag_format, report)
-
-                output_stream.close()
-                input_stream.close()
+                    input_stream.close()
+                    report({'ERROR'}, "Not implemented")
 
             else:
                 input_stream.close()

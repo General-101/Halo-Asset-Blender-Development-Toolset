@@ -37,10 +37,11 @@ from .format import (
         BitmapFormatEnum,
         BitmapFlags
         )
+from ....global_functions import tag_format
 
 XML_OUTPUT = False
 
-def process_file(input_stream, tag_format, report):
+def process_file(input_stream, report):
     TAG = tag_format.TagAsset()
     BITMAP = BitmapAsset()
     TAG.is_legacy = False
@@ -77,10 +78,9 @@ def process_file(input_stream, tag_format, report):
     BITMAP.bitmap_body.sequences_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "sequences"))
     BITMAP.bitmap_body.bitmaps_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "bitmaps"))
 
-    input_stream.seek(BITMAP.bitmap_body.compressed_color_plate_data.size, 1)
-    input_stream.seek(BITMAP.bitmap_body.processed_pixel_data.size, 1)
-    BITMAP.bitmap_body.compressed_color_plate = bytes()
-    BITMAP.bitmap_body.processed_pixels = bytes()
+    size = input_stream.read(4) # Padding
+    BITMAP.bitmap_body.compressed_color_plate = input_stream.read(BITMAP.bitmap_body.compressed_color_plate_data.size - 4)
+    BITMAP.bitmap_body.processed_pixels = input_stream.read(BITMAP.bitmap_body.processed_pixel_data.size)
 
     BITMAP.sequences = []
     sequence_node = tag_format.get_xml_node(XML_OUTPUT, BITMAP.bitmap_body.sequences_tag_block.count, tag_node, "name", "sequences")

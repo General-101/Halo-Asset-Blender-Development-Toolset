@@ -25,6 +25,7 @@
 # ##### END MIT LICENSE BLOCK #####
 
 import math
+
 from .format import JMAAsset
 from ..global_functions import global_functions
 

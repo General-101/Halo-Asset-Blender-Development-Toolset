@@ -26,8 +26,9 @@
 
 import struct
 
-from .format import CollisionAsset
 from mathutils import Vector
+from .format import CollisionAsset
+from ....global_functions import tag_format
 
 DEBUG_PARSER = True
 DEBUG_HEADER = True
@@ -692,7 +693,7 @@ def get_regions_tag_block(COLLISION, TAG, input_stream):
                                 bsp_physics_struct = struct.unpack('<%sb' % mopp_code_data_size, input_stream.read(mopp_code_data_size))
                                 bsp_physics_block.mopp_code_data = bsp_physics_struct[0]
 
-def process_file(input_stream, tag_format, report):
+def process_file(input_stream, report):
     TAG = tag_format.TagAsset()
     TAG.big_endian = False
     COLLISION = CollisionAsset()

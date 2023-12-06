@@ -30,8 +30,8 @@ from os import path
 from .format import JMAAsset
 from .build_scene import build_scene
 from ..file_jms.format import JMSAsset
-from ..global_functions import mesh_processing, global_functions
 from .process_file_retail import process_file_retail
+from ..global_functions import mesh_processing, global_functions
 from ..file_jms.process_file_retail import process_file_retail as jms_process_file_retail
 
 def load_file(context, filepath, game_title, fix_parents, fix_rotations, jms_path_a, jms_path_b, report):

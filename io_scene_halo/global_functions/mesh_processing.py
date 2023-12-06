@@ -31,7 +31,7 @@ import struct
 
 from math import radians
 from mathutils import Vector, Matrix
-from ..global_functions import global_functions, mesh_processing, shader_processing
+from ..global_functions import global_functions, mesh_processing
 
 class Surface:
     def __init__(self, material_index=0, surface_normal=Vector(), vertices=None):
@@ -971,6 +971,3 @@ def get_bone_distance(import_file_prerelease, import_file_main, current_idx, fil
         bone_distance = 1
 
     return bone_distance
-
-def generate_shader(mat, tag_ref, shader_permutation_index, tag_format, report):
-    shader_processing.generate_shader(mat, tag_ref, shader_permutation_index, tag_format, report)

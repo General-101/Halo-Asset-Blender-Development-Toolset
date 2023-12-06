@@ -25,23 +25,26 @@
 # ##### END MIT LICENSE BLOCK #####
 
 from xml.dom import minidom
-from .format import (BipedAsset, 
-                            ObjectFlags, 
-                            ObjectFunctionEnum, 
-                            UnitFlags, 
-                            TeamsEnum, 
-                            ConstantSoundVolumeEnum, 
-                            UnitFunctionEnum, 
-                            MotionSensorBlipSizeEnum, 
-                            MetaGameTypeEnum, 
-                            MetaGameClassEnum, 
-                            GrenadeTypeEnum, 
-                            BipedFlags, 
-                            BipedFunctionEnum)
+from .format import (
+    BipedAsset, 
+    ObjectFlags, 
+    ObjectFunctionEnum, 
+    UnitFlags, 
+    TeamsEnum, 
+    ConstantSoundVolumeEnum, 
+    UnitFunctionEnum, 
+    MotionSensorBlipSizeEnum, 
+    MetaGameTypeEnum, 
+    MetaGameClassEnum, 
+    GrenadeTypeEnum, 
+    BipedFlags, 
+    BipedFunctionEnum
+    )
+from ....global_functions import tag_format
 
 XML_OUTPUT = False
 
-def process_file(input_stream, tag_format, report):
+def process_file(input_stream, report):
     TAG = tag_format.TagAsset()
     BIPED = BipedAsset()
     TAG.is_legacy = False

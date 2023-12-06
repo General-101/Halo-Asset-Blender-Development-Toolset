@@ -26,21 +26,22 @@
 
 from xml.dom import minidom
 from .format import (
-        ActorVariantAsset,
-        ActorVariantFlags,
-        MetaGameTypeEnum,
-        MetaGameClassEnum,
-        MovementTypeEnum,
-        SpecialFireModeEnum,
-        SpecialFireSituationEnum,
-        GrenadeTypeEnum,
-        TrajectoryTypeEnum,
-        GrenadeStimulusEnum
-        )
+    ActorVariantAsset,
+    ActorVariantFlags,
+    MetaGameTypeEnum,
+    MetaGameClassEnum,
+    MovementTypeEnum,
+    SpecialFireModeEnum,
+    SpecialFireSituationEnum,
+    GrenadeTypeEnum,
+    TrajectoryTypeEnum,
+    GrenadeStimulusEnum
+    )
+from ....global_functions import tag_format
 
 XML_OUTPUT = False
 
-def process_file(input_stream, tag_format, report):
+def process_file(input_stream, report):
     TAG = tag_format.TagAsset()
     ACTORVARIANT = ActorVariantAsset()
     TAG.is_legacy = False

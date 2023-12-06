@@ -30,9 +30,10 @@ import copy
 import struct
 import binascii
 
+from math import sqrt
 from xml.dom import minidom
-from math import degrees, sqrt
 from mathutils import Vector, Matrix, Quaternion, Euler
+from ....global_functions import tag_format, global_functions
 from .format import AnimationAsset, AnimationTagFlags, FunctionEnum, FunctionControlsEnum, NodeJointFlags, AnimationTypeEnum, AnimationFrameInfoTypeEnum, AnimationFlags
 
 XML_OUTPUT = False
@@ -49,7 +50,7 @@ def get_anim_flags(anim):
 
     return rot_flags, trans_flags, scale_flags
 
-def deserialize_frame_info(frame_info, frame_info_node, ANIMATION, animation_element, TAG, tag_format):
+def deserialize_frame_info(frame_info, frame_info_node, ANIMATION, animation_element, TAG):
     dx = dy = dz = dyaw = x = y = z = yaw = 0.0
 
     root_node_info = []
@@ -149,7 +150,7 @@ def deserialize_frame_info(frame_info, frame_info_node, ANIMATION, animation_ele
 
     return root_node_info
 
-def read_animation_data(ANIMATION, animation_element, data_steam, data_node, get_default_data, def_node_states, transforms, TAG, tag_format):
+def read_animation_data(ANIMATION, animation_element, data_steam, data_node, get_default_data, def_node_states, transforms, TAG):
     rot_flags, trans_flags, scale_flags = get_anim_flags(animation_element)
 
     if get_default_data:
@@ -260,9 +261,9 @@ def read_animation_data(ANIMATION, animation_element, data_steam, data_node, get
 
     return all_node_states
 
-def build_frame_data(default_data, frame_data, default_data_node, frame_data_node, ANIMATION, animation_element, transforms, TAG, tag_format):
-    def_node_states = read_animation_data(ANIMATION, animation_element, default_data, default_data_node, True, None, transforms, TAG, tag_format)[0]
-    frame_data = read_animation_data(ANIMATION, animation_element, frame_data, frame_data_node, False, def_node_states, transforms, TAG, tag_format)
+def build_frame_data(default_data, frame_data, default_data_node, frame_data_node, ANIMATION, animation_element, transforms, TAG):
+    def_node_states = read_animation_data(ANIMATION, animation_element, default_data, default_data_node, True, None, transforms, TAG)[0]
+    frame_data = read_animation_data(ANIMATION, animation_element, frame_data, frame_data_node, False, def_node_states, transforms, TAG)
 
     if not AnimationTypeEnum(animation_element.type) == AnimationTypeEnum.overlay:
         # duplicate the first frame to the last frame for non-overlays
@@ -339,8 +340,7 @@ def nlerp_blend_quaternions(q0, q1, ratio):
 
     return [i0*r0 + i1*r1, j0*r0 + j1*r1, k0*r0 + k1*r1, w0*r0 + w1*r1]
 
-def get_keyframe_index_of_frame(frame, keyframes,
-keyframe_count=None, offset=0):
+def get_keyframe_index_of_frame(frame, keyframes, keyframe_count=None, offset=0):
     if keyframe_count is None:
         keyframe_count = len(keyframes) - offset
 
@@ -672,37 +672,35 @@ def deserialize_compressed_frame_data(animation_element, frame_data):
 
     return frames
 
-def process_file_retail(input_stream, global_functions, tag_format, report):
-    TAG = tag_format.TagAsset()
-    ANIMATION = AnimationAsset()
-    TAG.is_legacy = False
-
-    if XML_OUTPUT:
-        TAG.xml_doc = minidom.Document()
-
-    ANIMATION.header = TAG.Header().read(input_stream, TAG)
-
-    tag_node = None
-    if XML_OUTPUT:
-        tag_node = TAG.xml_doc.childNodes[0]
-
-    ANIMATION.antr_body = ANIMATION.AntrBody()
-    ANIMATION.antr_body.objects_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "objects"))
-    ANIMATION.antr_body.units_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "units"))
-    ANIMATION.antr_body.weapons_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "weapons"))
-    ANIMATION.antr_body.vehicles_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "vehicles"))
-    ANIMATION.antr_body.devices_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "devices"))
-    ANIMATION.antr_body.unit_damage_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "unit damage"))
-    ANIMATION.antr_body.first_person_weapons_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "first person weapons"))
-    ANIMATION.antr_body.sound_references_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "sound references"))
-    ANIMATION.antr_body.limp_body_node_radius = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "limp body node radius"))
-    ANIMATION.antr_body.flags = TAG.read_flag_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "flags", AnimationTagFlags))
-    input_stream.read(2) # Padding?
-    ANIMATION.antr_body.nodes_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "nodes"))
-    ANIMATION.antr_body.animations_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "animations"))
-
+def initilize_animation(ANIMATION):
     ANIMATION.objects = []
-    object_node = tag_format.get_xml_node(XML_OUTPUT, ANIMATION.antr_body.objects_tag_block.count, tag_node, "name", "objects")
+    ANIMATION.units = []
+    ANIMATION.weapons = []
+    ANIMATION.devices = []
+    ANIMATION.unit_damages = []
+    ANIMATION.first_person_weapons = []
+    ANIMATION.sound_references = []
+    ANIMATION.nodes = []
+    ANIMATION.animations = []
+
+def read_animation_body(input_stream, ANIMATION, TAG, node_element):
+    ANIMATION.antr_body = ANIMATION.AntrBody()
+    ANIMATION.antr_body.objects_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(node_element, "objects"))
+    ANIMATION.antr_body.units_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(node_element, "units"))
+    ANIMATION.antr_body.weapons_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(node_element, "weapons"))
+    ANIMATION.antr_body.vehicles_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(node_element, "vehicles"))
+    ANIMATION.antr_body.devices_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(node_element, "devices"))
+    ANIMATION.antr_body.unit_damage_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(node_element, "unit damage"))
+    ANIMATION.antr_body.first_person_weapons_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(node_element, "first person weapons"))
+    ANIMATION.antr_body.sound_references_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(node_element, "sound references"))
+    ANIMATION.antr_body.limp_body_node_radius = TAG.read_float(input_stream, TAG, tag_format.XMLData(node_element, "limp body node radius"))
+    ANIMATION.antr_body.flags = TAG.read_flag_unsigned_short(input_stream, TAG, tag_format.XMLData(node_element, "flags", AnimationTagFlags))
+    input_stream.read(2) # Padding?
+    ANIMATION.antr_body.nodes_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(node_element, "nodes"))
+    ANIMATION.antr_body.animations_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(node_element, "animations"))
+
+def read_objects(input_stream, ANIMATION, TAG, node_element):
+    object_node = tag_format.get_xml_node(XML_OUTPUT, ANIMATION.antr_body.objects_tag_block.count, node_element, "name", "objects")
     for objects_idx in range(ANIMATION.antr_body.objects_tag_block.count):
         object_element_node = None
         if XML_OUTPUT:
@@ -718,8 +716,8 @@ def process_file_retail(input_stream, global_functions, tag_format, report):
 
         ANIMATION.objects.append(object)
 
-    ANIMATION.units = []
-    unit_node = tag_format.get_xml_node(XML_OUTPUT, ANIMATION.antr_body.units_tag_block.count, tag_node, "name", "units")
+def read_units(input_stream, ANIMATION, TAG, node_element):
+    unit_node = tag_format.get_xml_node(XML_OUTPUT, ANIMATION.antr_body.units_tag_block.count, node_element, "name", "units")
     for unit_idx in range(ANIMATION.antr_body.units_tag_block.count):
         unit_element_node = None
         if XML_OUTPUT:
@@ -866,8 +864,8 @@ def process_file_retail(input_stream, global_functions, tag_format, report):
 
                     weapon_type.animations.append(TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(weapon_type_animation_element_node, "animation", None, ANIMATION.antr_body.animations_tag_block.count, "animation_block")))
 
-    ANIMATION.weapons = []
-    weapon_node = tag_format.get_xml_node(XML_OUTPUT, ANIMATION.antr_body.weapons_tag_block.count, tag_node, "name", "weapons")
+def read_weapons(input_stream, ANIMATION, TAG, node_element):
+    weapon_node = tag_format.get_xml_node(XML_OUTPUT, ANIMATION.antr_body.weapons_tag_block.count, node_element, "name", "weapons")
     for weapon_idx in range(ANIMATION.antr_body.weapons_tag_block.count):
         weapon_element_node = None
         if XML_OUTPUT:
@@ -877,7 +875,7 @@ def process_file_retail(input_stream, global_functions, tag_format, report):
 
         weapon = ANIMATION.AnimationGroups()
         input_stream.read(16) # Padding?
-        weapon.animations_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "animations"))
+        weapon.animations_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(weapon_element_node, "animations"))
 
         ANIMATION.weapons.append(weapon)
 
@@ -897,8 +895,9 @@ def process_file_retail(input_stream, global_functions, tag_format, report):
 
             weapon.animations.append(TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(weapon_animation_element_node, "animation", None, ANIMATION.antr_body.animations_tag_block.count, "animation_block")))
 
+def read_vehicles(input_stream, ANIMATION, TAG, node_element):
     ANIMATION.vehicles = []
-    vehicle_node = tag_format.get_xml_node(XML_OUTPUT, ANIMATION.antr_body.vehicles_tag_block.count, tag_node, "name", "vehicles")
+    vehicle_node = tag_format.get_xml_node(XML_OUTPUT, ANIMATION.antr_body.vehicles_tag_block.count, node_element, "name", "vehicles")
     for vehicle_idx in range(ANIMATION.antr_body.vehicles_tag_block.count):
         vehicle_element_node = None
         if XML_OUTPUT:
@@ -955,8 +954,8 @@ def process_file_retail(input_stream, global_functions, tag_format, report):
 
             vehicle.suspension_animations.append(vehicle_suspension)
 
-    ANIMATION.devices = []
-    device_node = tag_format.get_xml_node(XML_OUTPUT, ANIMATION.antr_body.devices_tag_block.count, tag_node, "name", "devices")
+def read_devices(input_stream, ANIMATION, TAG, node_element):
+    device_node = tag_format.get_xml_node(XML_OUTPUT, ANIMATION.antr_body.devices_tag_block.count, node_element, "name", "devices")
     for devices_idx in range(ANIMATION.antr_body.devices_tag_block.count):
         device_element_node = None
         if XML_OUTPUT:
@@ -986,8 +985,8 @@ def process_file_retail(input_stream, global_functions, tag_format, report):
 
             device.animations.append(TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(device_animation_element_node, "animation", None, ANIMATION.antr_body.animations_tag_block.count, "animation_block")))
 
-    ANIMATION.unit_damages = []
-    unit_damage_node = tag_format.get_xml_node(XML_OUTPUT, ANIMATION.antr_body.unit_damage_tag_block.count, tag_node, "name", "unit damage")
+def read_unit_damage(input_stream, ANIMATION, TAG, node_element):
+    unit_damage_node = tag_format.get_xml_node(XML_OUTPUT, ANIMATION.antr_body.unit_damage_tag_block.count, node_element, "name", "unit damage")
     for unit_damage_idx in range(ANIMATION.antr_body.unit_damage_tag_block.count):
         unit_damage_element_node = None
         if XML_OUTPUT:
@@ -997,8 +996,8 @@ def process_file_retail(input_stream, global_functions, tag_format, report):
 
         ANIMATION.unit_damages.append(TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(unit_damage_element_node, "animation", None, ANIMATION.antr_body.animations_tag_block.count, "animation_block")))
 
-    ANIMATION.first_person_weapons = []
-    first_person_weapon_node = tag_format.get_xml_node(XML_OUTPUT, ANIMATION.antr_body.first_person_weapons_tag_block.count, tag_node, "name", "first person weapons")
+def read_first_person_weapon(input_stream, ANIMATION, TAG, node_element):
+    first_person_weapon_node = tag_format.get_xml_node(XML_OUTPUT, ANIMATION.antr_body.first_person_weapons_tag_block.count, node_element, "name", "first person weapons")
     for first_person_weapon_idx in range(ANIMATION.antr_body.first_person_weapons_tag_block.count):
         first_person_weapon_element_node = None
         if XML_OUTPUT:
@@ -1028,8 +1027,8 @@ def process_file_retail(input_stream, global_functions, tag_format, report):
 
             first_person_weapon.animations.append(TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(first_person_weapon_animation_element_node, "animation", None, ANIMATION.antr_body.animations_tag_block.count, "animation_block")))
 
-    ANIMATION.sound_references = []
-    sound_reference_node = tag_format.get_xml_node(XML_OUTPUT, ANIMATION.antr_body.sound_references_tag_block.count, tag_node, "name", "sound references")
+def read_sound_reference(input_stream, ANIMATION, TAG, node_element):
+    sound_reference_node = tag_format.get_xml_node(XML_OUTPUT, ANIMATION.antr_body.sound_references_tag_block.count, node_element, "name", "sound references")
     for sound_reference_idx in range(ANIMATION.antr_body.sound_references_tag_block.count):
         sound_reference_element_node = None
         if XML_OUTPUT:
@@ -1051,8 +1050,8 @@ def process_file_retail(input_stream, global_functions, tag_format, report):
 
             sound_reference.create_xml_node(tag_format.XMLData(sound_reference_element_node, "sound"))
 
-    ANIMATION.nodes = []
-    bone_node = tag_format.get_xml_node(XML_OUTPUT, ANIMATION.antr_body.nodes_tag_block.count, tag_node, "name", "nodes")
+def read_nodes(input_stream, ANIMATION, TAG, node_element):
+    bone_node = tag_format.get_xml_node(XML_OUTPUT, ANIMATION.antr_body.nodes_tag_block.count, node_element, "name", "nodes")
     for node_idx in range(ANIMATION.antr_body.nodes_tag_block.count):
         node_element_node = None
         if XML_OUTPUT:
@@ -1073,8 +1072,8 @@ def process_file_retail(input_stream, global_functions, tag_format, report):
 
         ANIMATION.nodes.append(node)
 
-    ANIMATION.animations = []
-    animation_node = tag_format.get_xml_node(XML_OUTPUT, ANIMATION.antr_body.animations_tag_block.count, tag_node, "name", "animations")
+def read_animations(input_stream, ANIMATION, TAG, node_element):
+    animation_node = tag_format.get_xml_node(XML_OUTPUT, ANIMATION.antr_body.animations_tag_block.count, node_element, "name", "animations")
     for animation_idx in range(ANIMATION.antr_body.animations_tag_block.count):
         animation_element_node = None
         if XML_OUTPUT:
@@ -1118,6 +1117,7 @@ def process_file_retail(input_stream, global_functions, tag_format, report):
 
         ANIMATION.animations.append(animation)
 
+def get_default_transforms():
     armature = bpy.context.object
     transforms = None
     if armature and armature.type == "ARMATURE":
@@ -1141,10 +1141,13 @@ def process_file_retail(input_stream, global_functions, tag_format, report):
 
             transforms.append(transform_matrix)
 
+    return transforms
+
+def get_animation_data(input_stream, ANIMATION, TAG, node_element, transforms):
     for animation_idx, animation_element in enumerate(ANIMATION.animations):
         animation_element_node = None
         if XML_OUTPUT:
-            animation_element_node = animation_node.childNodes[animation_idx]
+            animation_element_node = node_element.childNodes[animation_idx]
 
         animation_element.frame_info = []
         animation_element.default_data = []
@@ -1171,15 +1174,15 @@ def process_file_retail(input_stream, global_functions, tag_format, report):
         frame_data = io.BytesIO(animation_element.frame_data_tag_data.data)
 
         # sum the frame info changes for each frame from the frame_info
-        animation_element.frame_info = deserialize_frame_info(frame_info, frame_info_node, ANIMATION, animation_element, TAG, tag_format)
+        animation_element.frame_info = deserialize_frame_info(frame_info, frame_info_node, ANIMATION, animation_element, TAG)
 
         if AnimationFlags.compressed_data in AnimationFlags(animation_element.flags):
             # decompress compressed animations
-            animation.frame_data = deserialize_compressed_frame_data(animation_element, frame_data)
+            animation_element.frame_data = deserialize_compressed_frame_data(animation_element, frame_data)
 
         else:
             # create the node states from the frame_data and default_data
-            animation_element.frame_data = build_frame_data(default_data, frame_data, default_data_node, frame_data_node, ANIMATION, animation_element, transforms, TAG, tag_format)
+            animation_element.frame_data = build_frame_data(default_data, frame_data, default_data_node, frame_data_node, ANIMATION, animation_element, transforms, TAG)
 
         if not AnimationTypeEnum(animation_element.type) == AnimationTypeEnum.overlay:
             # this is set to True on instantiation.
@@ -1187,7 +1190,8 @@ def process_file_retail(input_stream, global_functions, tag_format, report):
             animation_element.frame_info_applied = False
             apply_root_node_info_to_states(animation_element)
 
-    unit_node = tag_format.get_xml_node(XML_OUTPUT, ANIMATION.antr_body.units_tag_block.count, tag_node, "name", "units")
+def process_xml_data(ANIMATION, node_element):
+    unit_node = tag_format.get_xml_node(XML_OUTPUT, ANIMATION.antr_body.units_tag_block.count, node_element, "name", "units")
     for unit_idx, unit in enumerate(ANIMATION.units):
         unit_element_node = None
         if XML_OUTPUT:
@@ -1243,6 +1247,38 @@ def process_file_retail(input_stream, global_functions, tag_format, report):
 
                     if XML_OUTPUT:
                         tag_format.append_xml_attributes(weapon_type_animation_element_node, [("name", name)])
+
+def process_file(input_stream, report):
+    TAG = tag_format.TagAsset()
+    ANIMATION = AnimationAsset()
+    TAG.is_legacy = False
+
+    if XML_OUTPUT:
+        TAG.xml_doc = minidom.Document()
+
+    ANIMATION.header = TAG.Header().read(input_stream, TAG)
+
+    tag_node = None
+    if XML_OUTPUT:
+        tag_node = TAG.xml_doc.childNodes[0]
+
+    initilize_animation(ANIMATION)
+    read_animation_body(input_stream, ANIMATION, TAG, tag_node)
+    read_objects(input_stream, ANIMATION, TAG, tag_node)
+    read_units(input_stream, ANIMATION, TAG, tag_node)
+    read_weapons(input_stream, ANIMATION, TAG, tag_node)
+    read_vehicles(input_stream, ANIMATION, TAG, tag_node)
+    read_devices(input_stream, ANIMATION, TAG, tag_node)
+    read_unit_damage(input_stream, ANIMATION, TAG, tag_node)
+    read_first_person_weapon(input_stream, ANIMATION, TAG, tag_node)
+    read_sound_reference(input_stream, ANIMATION, TAG, tag_node)
+    read_nodes(input_stream, ANIMATION, TAG, tag_node)
+    read_animations(input_stream, ANIMATION, TAG, tag_node)
+
+    transforms = get_default_transforms()
+
+    get_animation_data(input_stream, ANIMATION, TAG, tag_node, transforms)
+    process_xml_data(ANIMATION, tag_node)
 
     current_position = input_stream.tell()
     EOF = input_stream.seek(0, 2)

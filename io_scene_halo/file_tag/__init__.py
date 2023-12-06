@@ -26,24 +26,17 @@
 
 import bpy
 
+from bpy.types import Operator
 from bpy_extras.io_utils import (
-        ImportHelper,
-        ExportHelper
-        )
-
-from bpy.types import (
-        Operator,
-        Panel,
-        PropertyGroup
-        )
+    ImportHelper,
+    ExportHelper
+    )
 
 from bpy.props import (
-        BoolProperty,
-        EnumProperty,
-        FloatProperty,
-        PointerProperty,
-        StringProperty
-        )
+    BoolProperty,
+    EnumProperty,
+    StringProperty
+    )
 
 from ..global_functions import global_functions
 

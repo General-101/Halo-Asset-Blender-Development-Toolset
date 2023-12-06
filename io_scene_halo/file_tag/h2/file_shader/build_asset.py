@@ -26,9 +26,8 @@
 
 import struct
 
-from .format import (
-        FunctionTypeEnum
-        )
+from .format import FunctionTypeEnum
+from ....global_functions import tag_format
 
 def write_body(output_stream, TAG, SHADER):
     SHADER.shader_body_header.write(output_stream, TAG, True)
@@ -174,7 +173,7 @@ def write_parameters(output_stream, TAG, parameters, parameters_header):
                     elif FunctionTypeEnum.spline2 == function_type:
                         write_constant(output_stream, TAG, animation_properties)
 
-def build_asset(output_stream, tag_format, SHADER, report):
+def build_asset(output_stream, SHADER, report):
     TAG = tag_format.TagAsset()
     TAG.is_legacy = False
     TAG.big_endian = False

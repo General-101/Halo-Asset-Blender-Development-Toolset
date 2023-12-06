@@ -33,7 +33,7 @@ from ..h1.file_model_collision_geometry.build_mesh import build_collision as bui
 
 from ..h2.file_collision_model.build_mesh import build_collision as build_retail_h2_collision
 
-def build_pathfinding_spheres(context, armature, COLLISION, fix_rotations, empty_markers, mesh_processing, global_functions):
+def build_pathfinding_spheres(context, armature, COLLISION, fix_rotations, empty_markers):
     collection = context.collection
     for pathfinding_sphere_idx, pathfinding_sphere in enumerate(COLLISION.pathfinding_spheres):
         parent_idx = pathfinding_sphere.node
@@ -82,7 +82,7 @@ def build_pathfinding_spheres(context, armature, COLLISION, fix_rotations, empty
         object_mesh.select_set(False)
         armature.select_set(False)
 
-def build_scene(context, COLLISION, game_version, game_title, file_version, fix_rotations, empty_markers, report, mesh_processing, global_functions, tag_format):
+def build_scene(context, COLLISION, game_version, game_title, file_version, fix_rotations, empty_markers, report):
     active_object = context.view_layer.objects.active
     armature = None
     if active_object and active_object.type == 'ARMATURE':
@@ -90,12 +90,12 @@ def build_scene(context, COLLISION, game_version, game_title, file_version, fix_
 
     if not armature == None:
         if game_title == "halo1":
-            build_retail_h1_collision(context, armature, COLLISION, game_version, mesh_processing, global_functions)
-            build_pathfinding_spheres(context, armature, COLLISION, fix_rotations, empty_markers, mesh_processing, global_functions)
+            build_retail_h1_collision(context, armature, COLLISION, game_version)
+            build_pathfinding_spheres(context, armature, COLLISION, fix_rotations, empty_markers)
 
         elif game_title == "halo2":
-            build_retail_h2_collision(context, armature, COLLISION, game_version, mesh_processing, global_functions)
-            build_pathfinding_spheres(context, armature, COLLISION, fix_rotations, empty_markers, mesh_processing, global_functions)
+            build_retail_h2_collision(context, armature, COLLISION, game_version)
+            build_pathfinding_spheres(context, armature, COLLISION, fix_rotations, empty_markers)
 
         else:
             report({'ERROR'}, "Game title not supported. Import will now be aborted")

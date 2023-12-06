@@ -26,6 +26,8 @@
 
 import struct
 
+from ....global_functions import tag_format
+
 def write_body(output_stream, SCENARIO, TAG):
     SCENARIO.scenario_body_header.write(output_stream, TAG, True)
     SCENARIO.scenario_body.unused_tag_ref.write(output_stream, False, True)
@@ -141,7 +143,7 @@ def write_body(output_stream, SCENARIO, TAG):
     SCENARIO.scenario_body.screen_effect_references_tag_block.write(output_stream, False)
     SCENARIO.scenario_body.simulation_definition_table_tag_block.write(output_stream, False)
 
-def write_comments(output_stream, SCENARIO, tag_format, TAG):
+def write_comments(output_stream, SCENARIO, TAG):
     if len(SCENARIO.comments) > 0:
         SCENARIO.comment_header.write(output_stream, TAG, True)
         for comment_element in SCENARIO.comments:
@@ -150,7 +152,7 @@ def write_comments(output_stream, SCENARIO, tag_format, TAG):
             output_stream.write(struct.pack('<30s2x', tag_format.string_to_bytes(comment_element.name, False)))
             output_stream.write(struct.pack('<254s2x', tag_format.string_to_bytes(comment_element.comment, False)))
 
-def write_object_names(output_stream, SCENARIO, tag_format, TAG):
+def write_object_names(output_stream, SCENARIO, TAG):
     if len(SCENARIO.object_names) > 0:
         SCENARIO.object_name_header.write(output_stream, TAG, True)
         for object_name_element in SCENARIO.object_names:
@@ -179,7 +181,7 @@ def write_color_change(output_stream, scenery_element):
     output_stream.write(struct.pack('<bbbx', scenery_element.tertiary_color_BGRA[0], scenery_element.tertiary_color_BGRA[1], scenery_element.tertiary_color_BGRA[2]))
     output_stream.write(struct.pack('<bbbx', scenery_element.quaternary_color_BGRA[0], scenery_element.quaternary_color_BGRA[1], scenery_element.quaternary_color_BGRA[2]))
 
-def write_scenery(output_stream, SCENARIO, tag_format, TAG):
+def write_scenery(output_stream, SCENARIO, TAG):
     if len(SCENARIO.scenery) > 0:
         SCENARIO.scenery_header.write(output_stream, TAG, True)
         for scenery_element in SCENARIO.scenery:
@@ -202,7 +204,7 @@ def write_scenery(output_stream, SCENARIO, tag_format, TAG):
 
             scenery_element.sct3_header.write(output_stream, TAG, True)
 
-def write_units(output_stream, unit_list, unit_header, tag_format, TAG):
+def write_units(output_stream, unit_list, unit_header, TAG):
     if len(unit_list) > 0:
         unit_header.write(output_stream, TAG, True)
         for unit_element in unit_list:
@@ -234,7 +236,7 @@ def write_equipment(output_stream, SCENARIO, TAG):
             equipment_element.obj0_header.write(output_stream, TAG, True)
             equipment_element.seqt_header.write(output_stream, TAG, True)
 
-def write_weapons(output_stream, SCENARIO, tag_format, TAG):
+def write_weapons(output_stream, SCENARIO, TAG):
     if len(SCENARIO.weapons) > 0:
         SCENARIO.weapon_header.write(output_stream, TAG, True)
         for weapon_element in SCENARIO.weapons:
@@ -255,7 +257,7 @@ def write_weapons(output_stream, SCENARIO, tag_format, TAG):
 
             weapon_element.swpt_header.write(output_stream, TAG, True)
 
-def write_device_groups(output_stream, SCENARIO, tag_format, TAG):
+def write_device_groups(output_stream, SCENARIO, TAG):
     if len(SCENARIO.device_groups) > 0:
         SCENARIO.device_group_header.write(output_stream, TAG, True)
         for device_group_element in SCENARIO.device_groups:
@@ -357,7 +359,7 @@ def write_light_volumes(output_stream, SCENARIO, TAG):
             light_volume_element.sdvt_header.write(output_stream, TAG, True)
             light_volume_element.slit_header.write(output_stream, TAG, True)
 
-def write_player_starting_profiles(output_stream, SCENARIO, tag_format, TAG):
+def write_player_starting_profiles(output_stream, SCENARIO, TAG):
     if len(SCENARIO.player_starting_profiles) > 0:
         SCENARIO.player_starting_profile_header.write(output_stream, TAG, True)
         for player_starting_profile_element in SCENARIO.player_starting_profiles:
@@ -384,7 +386,7 @@ def write_player_starting_profiles(output_stream, SCENARIO, tag_format, TAG):
             if secondary_weapon_name_length > 0:
                 output_stream.write(struct.pack('<%ssx' % secondary_weapon_name_length, tag_format.string_to_bytes(player_starting_profile_element.secondary_weapon_tag_ref.name, False)))
 
-def write_player_starting_locations(output_stream, SCENARIO, tag_format, TAG):
+def write_player_starting_locations(output_stream, SCENARIO, TAG):
     if len(SCENARIO.player_starting_locations) > 0:
         SCENARIO.player_starting_location_header.write(output_stream, TAG, True)
         for player_starting_location_element in SCENARIO.player_starting_locations:
@@ -413,7 +415,7 @@ def write_player_starting_locations(output_stream, SCENARIO, tag_format, TAG):
             if unk_1_name_length > 0:
                 output_stream.write(struct.pack('<%ss' % unk_1_name_length, tag_format.string_to_bytes(player_starting_location_element.unk_1, False)))
 
-def write_trigger_volumes(output_stream, SCENARIO, tag_format, TAG):
+def write_trigger_volumes(output_stream, SCENARIO, TAG):
     if len(SCENARIO.trigger_volumes) > 0:
         SCENARIO.trigger_volumes_header.write(output_stream, TAG, True)
         for trigger_volume_element in SCENARIO.trigger_volumes:
@@ -432,7 +434,7 @@ def write_trigger_volumes(output_stream, SCENARIO, tag_format, TAG):
         for trigger_volume_element in SCENARIO.trigger_volumes:
             output_stream.write(struct.pack('<%ss' % len(trigger_volume_element.name), tag_format.string_to_bytes(trigger_volume_element.name, False)))
 
-def write_recorded_animations(output_stream, SCENARIO, tag_format, TAG):
+def write_recorded_animations(output_stream, SCENARIO, TAG):
     if len(SCENARIO.recorded_animations) > 0:
         SCENARIO.recorded_animation_header.write(output_stream, TAG, True)
         for recorded_animation_element in SCENARIO.recorded_animations:
@@ -444,7 +446,7 @@ def write_recorded_animations(output_stream, SCENARIO, tag_format, TAG):
         for recorded_animation_element in SCENARIO.recorded_animations:
             output_stream.write(recorded_animation_element.recorded_animation_event_stream)
 
-def write_netgame_flags(output_stream, SCENARIO, tag_format, TAG):
+def write_netgame_flags(output_stream, SCENARIO, TAG):
     if len(SCENARIO.netgame_flags) > 0:
         SCENARIO.netgame_flag_header.write(output_stream, TAG, True)
         for netgame_flag_element in SCENARIO.netgame_flags:
@@ -457,7 +459,7 @@ def write_netgame_flags(output_stream, SCENARIO, tag_format, TAG):
             output_stream.write(struct.pack('<%ss' % len(netgame_flag_element.spawn_object_name), tag_format.string_to_bytes(netgame_flag_element.spawn_object_name, False)))
             output_stream.write(struct.pack('<%ss' % len(netgame_flag_element.spawn_marker_name), tag_format.string_to_bytes(netgame_flag_element.spawn_marker_name, False)))
 
-def write_netgame_equipment(output_stream, SCENARIO, tag_format, TAG):
+def write_netgame_equipment(output_stream, SCENARIO, TAG):
     if len(SCENARIO.netgame_equipment) > 0:
         SCENARIO.netgame_equipment_header.write(output_stream, TAG, True)
         for netgame_equipment_element in SCENARIO.netgame_equipment:
@@ -475,7 +477,7 @@ def write_netgame_equipment(output_stream, SCENARIO, tag_format, TAG):
             if item_vehicle_collection_name_length > 0:
                 output_stream.write(struct.pack('<%ssx' % item_vehicle_collection_name_length, tag_format.string_to_bytes(netgame_equipment_element.item_vehicle_collection.name, False)))
 
-def write_starting_equipment(output_stream, SCENARIO, tag_format, TAG):
+def write_starting_equipment(output_stream, SCENARIO, TAG):
     if len(SCENARIO.starting_equipment) > 0:
         SCENARIO.starting_equipment_header.write(output_stream, TAG, True)
         for starting_equipment_element in SCENARIO.starting_equipment:
@@ -525,14 +527,14 @@ def write_decals(output_stream, SCENARIO, TAG):
             output_stream.write(struct.pack('<b', decal_element.pitch))
             output_stream.write(struct.pack('<fff', decal_element.position[0], decal_element.position[1], decal_element.position[2]))
 
-def write_squad_groups(output_stream, SCENARIO, tag_format, TAG):
+def write_squad_groups(output_stream, SCENARIO, TAG):
     if len(SCENARIO.squad_groups) > 0:
         SCENARIO.squad_groups_header.write(output_stream, TAG, True)
         for squad_group_element in SCENARIO.squad_groups:
             output_stream.write(struct.pack('<31sx', tag_format.string_to_bytes(squad_group_element.name, False)))
             output_stream.write(struct.pack('<hh', squad_group_element.parent_index, squad_group_element.initial_order_index))
 
-def write_squads(output_stream, SCENARIO, tag_format, TAG):
+def write_squads(output_stream, SCENARIO, TAG):
     if len(SCENARIO.squads) > 0:
         SCENARIO.squads_header.write(output_stream, TAG, True)
         for squad in SCENARIO.squads:
@@ -583,7 +585,7 @@ def write_squads(output_stream, SCENARIO, tag_format, TAG):
                 for starting_location in squad.starting_locations:
                     output_stream.write(struct.pack('<%ss' % len(starting_location.name), tag_format.string_to_bytes(starting_location.name, False)))
 
-def write_zones(output_stream, SCENARIO, tag_format, TAG):
+def write_zones(output_stream, SCENARIO, TAG):
     if len(SCENARIO.zones) > 0:
         SCENARIO.zones_header.write(output_stream, TAG, True)
         for zone in SCENARIO.zones:
@@ -618,7 +620,7 @@ def write_zones(output_stream, SCENARIO, tag_format, TAG):
                     output_stream.write(struct.pack('<2x'))
                     area.flight_hints_tag_block.write(output_stream, False)
 
-def write_scripting_data(output_stream, SCENARIO, tag_format, TAG):
+def write_scripting_data(output_stream, SCENARIO, TAG):
     if len(SCENARIO.scripting_data) > 0:
         SCENARIO.scripting_data_header.write(output_stream, TAG, True)
         for scripting_data in SCENARIO.scripting_data:
@@ -643,7 +645,7 @@ def write_scripting_data(output_stream, SCENARIO, tag_format, TAG):
                             output_stream.write(struct.pack('<i', point.surface_index))
                             output_stream.write(struct.pack('<ff', point.facing_direction_y, point.facing_direction_p))
 
-def write_cutscene_flags(output_stream, SCENARIO, tag_format, TAG):
+def write_cutscene_flags(output_stream, SCENARIO, TAG):
     if len(SCENARIO.cutscene_flags) > 0:
         SCENARIO.cutscene_flags_header.write(output_stream, TAG, True)
         for cutscene_flag in SCENARIO.cutscene_flags:
@@ -652,7 +654,7 @@ def write_cutscene_flags(output_stream, SCENARIO, tag_format, TAG):
             output_stream.write(struct.pack('<fff', cutscene_flag.position[0], cutscene_flag.position[1], cutscene_flag.position[2]))
             output_stream.write(struct.pack('<ff', cutscene_flag.facing_y, cutscene_flag.facing_p))
 
-def write_cutscene_camera_points(output_stream, SCENARIO, tag_format, TAG):
+def write_cutscene_camera_points(output_stream, SCENARIO, TAG):
     if len(SCENARIO.cutscene_camera_points) > 0:
         SCENARIO.cutscene_camera_points_header.write(output_stream, TAG, True)
         for cutscene_camera_point in SCENARIO.cutscene_camera_points:
@@ -663,7 +665,7 @@ def write_cutscene_camera_points(output_stream, SCENARIO, tag_format, TAG):
             output_stream.write(struct.pack('<fff', cutscene_camera_point.position[0], cutscene_camera_point.position[1], cutscene_camera_point.position[2]))
             output_stream.write(struct.pack('<fff', cutscene_camera_point.orientation[0], cutscene_camera_point.orientation[1], cutscene_camera_point.orientation[2]))
 
-def write_cutscene_titles(output_stream, SCENARIO, tag_format, TAG):
+def write_cutscene_titles(output_stream, SCENARIO, TAG):
     if len(SCENARIO.cutscene_titles) > 0:
         SCENARIO.cutscene_titles_header.write(output_stream, TAG, True)
         for cutscene_title in SCENARIO.cutscene_titles:
@@ -680,7 +682,7 @@ def write_cutscene_titles(output_stream, SCENARIO, tag_format, TAG):
         for cutscene_title in SCENARIO.cutscene_titles:
                 output_stream.write(struct.pack('<%ss' % len(cutscene_title.name), tag_format.string_to_bytes(cutscene_title.name, False)))
 
-def write_structure_bsps(output_stream, SCENARIO, tag_format, TAG):
+def write_structure_bsps(output_stream, SCENARIO, TAG):
     if len(SCENARIO.structure_bsp) > 0:
         SCENARIO.structure_bsp_header.write(output_stream, TAG, True)
         for structure_bsp in SCENARIO.structure_bsp:
@@ -705,7 +707,7 @@ def write_structure_bsps(output_stream, SCENARIO, tag_format, TAG):
             if structure_lightmap_name_length > 0:
                 output_stream.write(struct.pack('<%ssx' % structure_lightmap_name_length, tag_format.string_to_bytes(structure_bsp_element.structure_lightmap.name, False)))
 
-def write_orders(output_stream, SCENARIO, tag_format, TAG):
+def write_orders(output_stream, SCENARIO, TAG):
     if len(SCENARIO.orders) > 0:
         SCENARIO.orders_header.write(output_stream, TAG, True)
         for order in SCENARIO.orders:
@@ -746,7 +748,7 @@ def write_orders(output_stream, SCENARIO, tag_format, TAG):
                             output_stream.write(struct.pack('<i', trigger.trigger_flags))
                             output_stream.write(struct.pack('<h2x', trigger.trigger_index))
 
-def write_triggers(output_stream, SCENARIO, tag_format, TAG):
+def write_triggers(output_stream, SCENARIO, TAG):
     if len(SCENARIO.triggers) > 0:
         SCENARIO.triggers_header.write(output_stream, TAG, True)
         for trigger in SCENARIO.triggers:
@@ -769,7 +771,7 @@ def write_triggers(output_stream, SCENARIO, tag_format, TAG):
                     output_stream.write(struct.pack('<4x'))
                     output_stream.write(struct.pack('<I', condition.flags))
 
-def write_background_sound_palette(output_stream, SCENARIO, tag_format, TAG):
+def write_background_sound_palette(output_stream, SCENARIO, TAG):
     if len(SCENARIO.background_sound_palette) > 0:
         SCENARIO.background_sound_palette_header.write(output_stream, TAG, True)
         for background_sound in SCENARIO.background_sound_palette:
@@ -794,7 +796,7 @@ def write_background_sound_palette(output_stream, SCENARIO, tag_format, TAG):
             if inside_cluster_sound_name_length > 0:
                 output_stream.write(struct.pack('<%ssx' % inside_cluster_sound_name_length, tag_format.string_to_bytes(background_sound.inside_cluster_sound.name, False)))
 
-def write_sound_environment_palette(output_stream, SCENARIO, tag_format, TAG):
+def write_sound_environment_palette(output_stream, SCENARIO, TAG):
     if len(SCENARIO.sound_environment_palette) > 0:
         SCENARIO.sound_environment_palette_header.write(output_stream, TAG, True)
         for sound_environment in SCENARIO.sound_environment_palette:
@@ -809,7 +811,7 @@ def write_sound_environment_palette(output_stream, SCENARIO, tag_format, TAG):
             if sound_environment_name_length > 0:
                 output_stream.write(struct.pack('<%ssx' % sound_environment_name_length, tag_format.string_to_bytes(sound_environment.sound_environment.name, False)))
 
-def write_crates(output_stream, SCENARIO, tag_format, TAG):
+def write_crates(output_stream, SCENARIO, TAG):
     if len(SCENARIO.crates) > 0:
         SCENARIO.crates_header.write(output_stream, TAG, True)
         for crate_element in SCENARIO.crates:
@@ -825,7 +827,7 @@ def write_crates(output_stream, SCENARIO, tag_format, TAG):
             if variant_count > 0:
                 output_stream.write(struct.pack('<%ss' % variant_count, tag_format.string_to_bytes(crate_element.variant_name, False)))
 
-def write_palette(output_stream, palette, palette_header, size, tag_format, TAG):
+def write_palette(output_stream, palette, palette_header, size, TAG):
     if len(palette) > 0:
         palette_header.write(output_stream, TAG, True)
         for palette_element in palette:
@@ -837,97 +839,97 @@ def write_palette(output_stream, palette, palette_header, size, tag_format, TAG)
             if palette_name_length > 0:
                 output_stream.write(struct.pack('<%ssx' % palette_name_length, tag_format.string_to_bytes(palette_element.name, False)))
 
-def build_asset(output_stream, SCENARIO, tag_format, report):
+def build_asset(output_stream, SCENARIO, report):
     TAG = tag_format.TagAsset()
     TAG.big_endian = False
 
     SCENARIO.header.write(output_stream, False, True)
     write_body(output_stream, SCENARIO, TAG)
 
-    write_palette(output_stream, SCENARIO.skies, SCENARIO.skies_header, 0, tag_format, TAG)
+    write_palette(output_stream, SCENARIO.skies, SCENARIO.skies_header, 0, TAG)
 
-    write_palette(output_stream, SCENARIO.child_scenarios, SCENARIO.child_scenario_header, 16, tag_format, TAG)
+    write_palette(output_stream, SCENARIO.child_scenarios, SCENARIO.child_scenario_header, 16, TAG)
 
-    write_comments(output_stream, SCENARIO, tag_format, TAG)
+    write_comments(output_stream, SCENARIO, TAG)
 
-    write_object_names(output_stream, SCENARIO, tag_format, TAG)
+    write_object_names(output_stream, SCENARIO, TAG)
 
-    write_scenery(output_stream, SCENARIO, tag_format, TAG)
-    write_palette(output_stream, SCENARIO.scenery_palette, SCENARIO.scenery_palette_header, 32, tag_format, TAG)
+    write_scenery(output_stream, SCENARIO, TAG)
+    write_palette(output_stream, SCENARIO.scenery_palette, SCENARIO.scenery_palette_header, 32, TAG)
 
-    write_units(output_stream, SCENARIO.bipeds, SCENARIO.bipeds_header, tag_format, TAG)
-    write_palette(output_stream, SCENARIO.biped_palette, SCENARIO.biped_palette_header, 32, tag_format, TAG)
+    write_units(output_stream, SCENARIO.bipeds, SCENARIO.bipeds_header, TAG)
+    write_palette(output_stream, SCENARIO.biped_palette, SCENARIO.biped_palette_header, 32, TAG)
 
-    write_units(output_stream, SCENARIO.vehicles, SCENARIO.vehicles_header, tag_format, TAG)
-    write_palette(output_stream, SCENARIO.vehicle_palette, SCENARIO.vehicle_palette_header, 32, tag_format, TAG)
+    write_units(output_stream, SCENARIO.vehicles, SCENARIO.vehicles_header, TAG)
+    write_palette(output_stream, SCENARIO.vehicle_palette, SCENARIO.vehicle_palette_header, 32, TAG)
 
     write_equipment(output_stream, SCENARIO, TAG)
-    write_palette(output_stream, SCENARIO.equipment_palette, SCENARIO.equipment_palette_header, 32, tag_format, TAG)
+    write_palette(output_stream, SCENARIO.equipment_palette, SCENARIO.equipment_palette_header, 32, TAG)
 
-    write_weapons(output_stream, SCENARIO, tag_format, TAG)
-    write_palette(output_stream, SCENARIO.weapon_palette, SCENARIO.weapon_palette_header, 32, tag_format, TAG)
+    write_weapons(output_stream, SCENARIO, TAG)
+    write_palette(output_stream, SCENARIO.weapon_palette, SCENARIO.weapon_palette_header, 32, TAG)
 
-    write_device_groups(output_stream, SCENARIO, tag_format, TAG)
+    write_device_groups(output_stream, SCENARIO, TAG)
 
     write_machines(output_stream, SCENARIO, TAG)
-    write_palette(output_stream, SCENARIO.device_machine_palette, SCENARIO.device_machine_palette_header, 32, tag_format, TAG)
+    write_palette(output_stream, SCENARIO.device_machine_palette, SCENARIO.device_machine_palette_header, 32, TAG)
 
     write_controls(output_stream, SCENARIO, TAG)
-    write_palette(output_stream, SCENARIO.device_control_palette, SCENARIO.device_control_palette_header, 32, tag_format, TAG)
+    write_palette(output_stream, SCENARIO.device_control_palette, SCENARIO.device_control_palette_header, 32, TAG)
 
     write_light_fixtures(output_stream, SCENARIO, TAG)
-    write_palette(output_stream, SCENARIO.light_fixtures_palette, SCENARIO.light_fixture_palette_header, 32, tag_format, TAG)
+    write_palette(output_stream, SCENARIO.light_fixtures_palette, SCENARIO.light_fixture_palette_header, 32, TAG)
 
     write_sound_scenery(output_stream, SCENARIO, TAG)
-    write_palette(output_stream, SCENARIO.sound_scenery_palette, SCENARIO.sound_scenery_palette_header, 32, tag_format, TAG)
+    write_palette(output_stream, SCENARIO.sound_scenery_palette, SCENARIO.sound_scenery_palette_header, 32, TAG)
 
     write_light_volumes(output_stream, SCENARIO, TAG)
-    write_palette(output_stream, SCENARIO.light_volume_palette, SCENARIO.light_volume_palette_header, 32, tag_format, TAG)
+    write_palette(output_stream, SCENARIO.light_volume_palette, SCENARIO.light_volume_palette_header, 32, TAG)
 
-    write_player_starting_profiles(output_stream, SCENARIO, tag_format, TAG)
+    write_player_starting_profiles(output_stream, SCENARIO, TAG)
 
-    write_player_starting_locations(output_stream, SCENARIO, tag_format, TAG)
+    write_player_starting_locations(output_stream, SCENARIO, TAG)
 
-    write_trigger_volumes(output_stream, SCENARIO, tag_format, TAG)
+    write_trigger_volumes(output_stream, SCENARIO, TAG)
 
-    write_recorded_animations(output_stream, SCENARIO, tag_format, TAG)
+    write_recorded_animations(output_stream, SCENARIO, TAG)
 
-    write_netgame_flags(output_stream, SCENARIO, tag_format, TAG)
+    write_netgame_flags(output_stream, SCENARIO, TAG)
 
-    write_netgame_equipment(output_stream, SCENARIO, tag_format, TAG)
+    write_netgame_equipment(output_stream, SCENARIO, TAG)
 
-    write_starting_equipment(output_stream, SCENARIO, tag_format, TAG)
+    write_starting_equipment(output_stream, SCENARIO, TAG)
 
     write_decals(output_stream, SCENARIO, TAG)
-    write_palette(output_stream, SCENARIO.decal_palette, SCENARIO.decal_palette_header, 0, tag_format, TAG)
+    write_palette(output_stream, SCENARIO.decal_palette, SCENARIO.decal_palette_header, 0, TAG)
 
-    write_palette(output_stream, SCENARIO.style_palette, SCENARIO.style_palette_header, 0, tag_format, TAG)
+    write_palette(output_stream, SCENARIO.style_palette, SCENARIO.style_palette_header, 0, TAG)
 
-    write_squad_groups(output_stream, SCENARIO, tag_format, TAG)
+    write_squad_groups(output_stream, SCENARIO, TAG)
 
-    write_squads(output_stream, SCENARIO, tag_format, TAG)
+    write_squads(output_stream, SCENARIO, TAG)
 
-    write_zones(output_stream, SCENARIO, tag_format, TAG)
+    write_zones(output_stream, SCENARIO, TAG)
 
-    write_palette(output_stream, SCENARIO.character_palette, SCENARIO.character_palette_header, 0, tag_format, TAG)
+    write_palette(output_stream, SCENARIO.character_palette, SCENARIO.character_palette_header, 0, TAG)
 
-    write_scripting_data(output_stream, SCENARIO, tag_format, TAG)
+    write_scripting_data(output_stream, SCENARIO, TAG)
 
-    write_cutscene_flags(output_stream, SCENARIO, tag_format, TAG)
+    write_cutscene_flags(output_stream, SCENARIO, TAG)
 
-    write_cutscene_camera_points(output_stream, SCENARIO, tag_format, TAG)
+    write_cutscene_camera_points(output_stream, SCENARIO, TAG)
 
-    write_cutscene_titles(output_stream, SCENARIO, tag_format, TAG)
+    write_cutscene_titles(output_stream, SCENARIO, TAG)
 
-    write_structure_bsps(output_stream, SCENARIO, tag_format, TAG)
+    write_structure_bsps(output_stream, SCENARIO, TAG)
 
-    write_orders(output_stream, SCENARIO, tag_format, TAG)
+    write_orders(output_stream, SCENARIO, TAG)
 
-    write_triggers(output_stream, SCENARIO, tag_format, TAG)
+    write_triggers(output_stream, SCENARIO, TAG)
 
-    write_background_sound_palette(output_stream, SCENARIO, tag_format, TAG)
+    write_background_sound_palette(output_stream, SCENARIO, TAG)
 
-    write_sound_environment_palette(output_stream, SCENARIO, tag_format, TAG)
+    write_sound_environment_palette(output_stream, SCENARIO, TAG)
 
-    write_crates(output_stream, SCENARIO, tag_format, TAG)
-    write_palette(output_stream, SCENARIO.crates_palette, SCENARIO.crates_palette_header, 32, tag_format, TAG)
+    write_crates(output_stream, SCENARIO, TAG)
+    write_palette(output_stream, SCENARIO.crates_palette, SCENARIO.crates_palette_header, 32, TAG)

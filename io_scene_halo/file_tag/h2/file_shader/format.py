@@ -25,7 +25,6 @@
 # ##### END MIT LICENSE BLOCK #####
 
 from enum import Flag, Enum, auto
-from mathutils import Vector, Euler
 
 class ShaderFlags(Flag):
     water = auto()

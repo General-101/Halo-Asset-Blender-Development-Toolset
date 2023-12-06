@@ -27,26 +27,25 @@
 import bpy
 
 from ..global_functions import global_functions
-
 from bpy_extras.io_utils import (
-        ImportHelper,
-        ExportHelper
-        )
+    ImportHelper,
+    ExportHelper
+    )
 
 from bpy.types import (
-        Operator,
-        Panel,
-        PropertyGroup
-        )
+    Operator,
+    Panel,
+    PropertyGroup
+    )
 
 from bpy.props import (
-        BoolProperty,
-        EnumProperty,
-        FloatProperty,
-        IntProperty,
-        PointerProperty,
-        StringProperty
-        )
+    BoolProperty,
+    EnumProperty,
+    FloatProperty,
+    IntProperty,
+    PointerProperty,
+    StringProperty
+    )
 
 class JMS_RestPositionsADialog(Operator):
     """Set rest positions from a JMS file"""

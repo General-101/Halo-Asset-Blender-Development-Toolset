@@ -24,8 +24,8 @@
 #
 # ##### END MIT LICENSE BLOCK #####
 
-from enum import Flag, Enum, auto
 from mathutils import Vector
+from enum import Flag, Enum, auto
 
 class ActorVariantFlags(Flag):
     can_shoot_while_flying = auto()

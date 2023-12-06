@@ -30,10 +30,9 @@ from math import radians
 from mathutils import Matrix
 from ..h1.file_model.build_mesh import get_geometry_layout as get_retail_h1_geometry_layout
 from ..h2.file_render_model.build_mesh import get_geometry_layout as get_retail_h2_geometry_layout
+from ...global_functions import mesh_processing, global_functions
 
-from .build_animations import build_scene as build_animation_scene
-
-def generate_jms_skeleton(MODEL, file_version, armature, fix_rotations, mesh_processing):
+def generate_jms_skeleton(MODEL, file_version, armature, fix_rotations):
     first_frame = MODEL.transforms[0]
 
     bpy.ops.object.mode_set(mode = 'EDIT')
@@ -64,7 +63,7 @@ def generate_jms_skeleton(MODEL, file_version, armature, fix_rotations, mesh_pro
 
     bpy.ops.object.mode_set(mode = 'OBJECT')
 
-def build_scene(context, MODEL, game_version, game_title, file_version, fix_rotations, empty_markers, report, mesh_processing, global_functions, tag_format):
+def build_scene(context, MODEL, game_version, game_title, file_version, fix_rotations, empty_markers, report):
     collection = context.collection
     random_color_gen = global_functions.RandomColorGenerator() # generates a random sequence of colors
 
@@ -74,18 +73,18 @@ def build_scene(context, MODEL, game_version, game_title, file_version, fix_rota
 
     mesh_processing.select_object(context, armature)
 
-    generate_jms_skeleton(MODEL, file_version, armature, fix_rotations, mesh_processing)
+    generate_jms_skeleton(MODEL, file_version, armature, fix_rotations)
 
     if game_title == "halo1":
         is_triangle_list = False
-        get_retail_h1_geometry_layout(context, collection, MODEL, armature, game_version, game_title, file_version, fix_rotations, is_triangle_list, mesh_processing, global_functions, tag_format, report)
+        get_retail_h1_geometry_layout(context, collection, MODEL, armature, game_version, game_title, file_version, fix_rotations, is_triangle_list, report)
         for region in MODEL.regions:
             for permutation in region.permutations:
                 for local_marker in permutation.local_markers:
                     mesh_processing.generate_marker(context, collection, game_version, game_title, file_version, None, MODEL, region.name, "", armature, local_marker, fix_rotations, empty_markers, False)
 
     else:
-        get_retail_h2_geometry_layout(context, collection, MODEL, armature, mesh_processing, global_functions)
+        get_retail_h2_geometry_layout(context, collection, MODEL, armature)
         for marker_group in MODEL.marker_groups:
             for marker in marker_group.markers:
                 mesh_processing.generate_marker(context, collection, game_version, game_title, file_version, None, MODEL, "", marker_group.name, armature, marker, fix_rotations, empty_markers, False)

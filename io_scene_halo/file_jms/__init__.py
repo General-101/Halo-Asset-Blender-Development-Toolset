@@ -27,7 +27,6 @@
 import bpy
 
 from ..global_functions import global_functions
-
 from bpy_extras.io_utils import (
         ImportHelper,
         ExportHelper

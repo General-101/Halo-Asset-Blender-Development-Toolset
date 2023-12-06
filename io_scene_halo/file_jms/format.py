@@ -31,6 +31,7 @@ class JMSAsset(global_functions.HaloAsset):
         if filepath:
             super().__init__(filepath)
 
+        self.is_prerelease = False
         self.version = 0
         self.game_version = "halo1"
         self.node_checksum = 0

@@ -27,9 +27,9 @@
 import os
 import bpy
 
-from .h1.file_scenario.build_asset import build_asset as build_h1_scenario
+from ..global_functions import tag_format
 from .h1.file_scenario.process_scene import generate_scenario_scene
-from ..global_functions import tag_format, mesh_processing, global_functions
+from .h1.file_scenario.build_asset import build_asset as build_h1_scenario
 from .h1.file_scenario.process_file import process_file as process_h1_scenario
 
 def write_file(context, file_path, report):
@@ -51,13 +51,13 @@ def write_file(context, file_path, report):
 
             return {'CANCELLED'}
 
-        DONOR_ASSET = process_h1_scenario(input_stream, tag_format, report)
+        DONOR_ASSET = process_h1_scenario(input_stream, report)
 
     filename_no_ext = file_path.rsplit('.scenario', 1)[0]
     filepath = "%s%s" % (filename_no_ext, "_blender.scenario")
     output_stream = open(filepath, 'wb')
-    BLENDER_ASSET = generate_scenario_scene(DONOR_ASSET, tag_format)
-    build_h1_scenario(output_stream, BLENDER_ASSET, tag_format, report)
+    BLENDER_ASSET = generate_scenario_scene(DONOR_ASSET)
+    build_h1_scenario(output_stream, BLENDER_ASSET, report)
 
     return {'FINISHED'}
 

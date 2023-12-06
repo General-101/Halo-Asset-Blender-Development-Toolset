@@ -24,6 +24,8 @@
 #
 # ##### END MIT LICENSE BLOCK #####
 
+from ....global_functions import tag_format
+
 unit_animation_names = (
     'airborne-dead', 'landing-dead',
     'acc-front-back', 'acc-left-right', 'acc-up-down',
@@ -54,7 +56,7 @@ unit_weapon_type_animation_names = (
     'melee', 'overheat'
     )
 
-def animation_settings_transfer(H1_ASSET, DONOR_TAG, patch_txt_path, tag_format, report):
+def animation_settings_transfer(H1_ASSET, DONOR_TAG, patch_txt_path, report):
     TAG = tag_format.TagAsset()
     TAG.upgrade_patches = tag_format.get_patch_set(patch_txt_path)
     animation_names = []
@@ -95,7 +97,7 @@ def find_animation_index(tag_block, rename_string):
 
     return animation_element_index
 
-def animation_rename(H1_ASSET, patch_txt_path, tag_format, report):
+def animation_rename(H1_ASSET, patch_txt_path, report):
     TAG = tag_format.TagAsset()
     TAG.upgrade_patches = tag_format.get_patch_set(patch_txt_path)
 

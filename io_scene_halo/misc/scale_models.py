@@ -31,7 +31,6 @@ import bmesh
 
 from os import path
 from mathutils import Matrix
-from ..file_jms import import_jms
 from ..file_jms.format import JMSAsset
 from ..global_functions import mesh_processing
 from ..file_jms.process_file_retail import process_file_retail

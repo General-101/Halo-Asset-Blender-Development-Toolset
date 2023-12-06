@@ -28,8 +28,9 @@ import bpy
 import bmesh
 
 from mathutils import Vector
+from ....global_functions import mesh_processing, global_functions
 
-def build_collision(context, armature, COLLISION, game_version, mesh_processing, global_functions):
+def build_collision(context, armature, COLLISION, game_version):
     collection = context.collection
     random_color_gen = global_functions.RandomColorGenerator() # generates a random sequence of colors
 
@@ -118,19 +119,10 @@ def build_collision(context, armature, COLLISION, game_version, mesh_processing,
                 bm.to_mesh(mesh)
                 bm.free()
 
-                mesh_processing.select_object(context, object_mesh)
-                mesh_processing.select_object(context, armature)
-                bpy.ops.object.mode_set(mode='EDIT')
-                for bone_idx, armature_bone in enumerate(bone_list):
-                    if parent_name.lower() == armature_bone.lower():
-                        parent_name = armature_bone
-                        armature.data.edit_bones.active = armature.data.edit_bones[bone_idx]
-
-                bpy.ops.object.mode_set(mode='OBJECT')
-                bpy.ops.object.parent_set(type='BONE', keep_transform=True)
+                object_mesh.parent = armature
+                object_mesh.parent_type = "BONE"
+                object_mesh.parent_bone = parent_name
                 object_mesh.matrix_world = armature.pose.bones[parent_name].matrix
-                object_mesh.select_set(False)
-                armature.select_set(False)
 
             else:
                 active_region_permutations = []
@@ -188,18 +180,13 @@ def build_collision(context, armature, COLLISION, game_version, mesh_processing,
                 if region_layer == None:
                     region_layer = bm.faces.layers.int.new('Region Assignment')
 
-                face = bm.faces[surface_idx]
+                face = bm.faces[0]
                 face[region_layer] = active_region_permutations.index(current_region_permutation) + 1
 
                 bm.to_mesh(mesh)
                 bm.free()
 
-                mesh_processing.select_object(context, object_mesh)
-                mesh_processing.select_object(context, armature)
-                bpy.ops.object.mode_set(mode='EDIT')
-                armature.data.edit_bones.active = armature.data.edit_bones[parent_name]
-                bpy.ops.object.mode_set(mode='OBJECT')
-                bpy.ops.object.parent_set(type='BONE', keep_transform=True)
+                object_mesh.parent = armature
+                object_mesh.parent_type = "BONE"
+                object_mesh.parent_bone = parent_name
                 object_mesh.matrix_world = armature.pose.bones[parent_name].matrix
-                object_mesh.select_set(False)
-                armature.select_set(False)

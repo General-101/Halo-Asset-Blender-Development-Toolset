@@ -54,7 +54,7 @@ def bake_clusters(context, game_title, scenario_path, image_multiplier, report):
     bpy.ops.object.select_all(action='DESELECT')
     if game_title == "halo1":
         input_stream = open(scenario_path, "rb")
-        SCNR_ASSET = process_h1_scenario(input_stream, tag_format, report)
+        SCNR_ASSET = process_h1_scenario(input_stream, report)
         input_stream.close()
 
         TAG = tag_format.TagAsset()
@@ -62,9 +62,14 @@ def bake_clusters(context, game_title, scenario_path, image_multiplier, report):
         levels_collection = bpy.data.collections.get("BSPs")
         if not levels_collection == None:
             for bsp_idx, bsp_collection in enumerate(levels_collection.children):
+                for cluster_collection in bsp_collection.children:
+                    for cluster_idx, cluster_ob in enumerate(cluster_collection.objects):
+                        cluster_ob.hide_render = True
+
+            for bsp_idx, bsp_collection in enumerate(levels_collection.children):
                 bsp_element = SCNR_ASSET.structure_bsps[bsp_idx]
-                BSP_ASSET = bsp_element.parse_tag(tag_format, report, game_title, "retail")
-                BITMAP_ASSET = BSP_ASSET.level_body.lightmap_bitmaps_tag_ref.parse_tag(tag_format, report, game_title, "retail")
+                BSP_ASSET = bsp_element.parse_tag(report, game_title, "retail")
+                BITMAP_ASSET = BSP_ASSET.level_body.lightmap_bitmaps_tag_ref.parse_tag(report, game_title, "retail")
 
                 bitmap_path = os.path.join(config.HALO_1_TAG_PATH, "%s.bitmap" %  BSP_ASSET.level_body.lightmap_bitmaps_tag_ref.name)
 
@@ -115,6 +120,7 @@ def bake_clusters(context, game_title, scenario_path, image_multiplier, report):
                                 image.update()
 
                             for material_slot in cluster_ob.material_slots:
+                                material_slot.material.use_nodes = True
                                 material_nodes = material_slot.material.node_tree.nodes
                                 image_node = material_nodes.get("Lightmap Texture")
                                 if image_node == None:
@@ -134,8 +140,9 @@ def bake_clusters(context, game_title, scenario_path, image_multiplier, report):
                             context.view_layer.objects.active = cluster_ob
                             
                             context.scene.render.engine = 'CYCLES'
+                            cluster_ob.hide_render = False
                             bpy.ops.object.bake(type='DIFFUSE', pass_filter={'DIRECT','INDIRECT'}, uv_layer=cluster_ob.data.uv_layers[1].name)
-                            
+                            cluster_ob.hide_render = True
                             cluster_ob.select_set(False)
                             context.view_layer.objects.active = None
 
@@ -203,12 +210,19 @@ def bake_clusters(context, game_title, scenario_path, image_multiplier, report):
                     BITMAP.bitmap_body.bitmaps_tag_block = TAG.TagBlock(len(BITMAP.bitmaps))
 
                     output_stream = open(bitmap_path, 'wb')
-                    build_h1_bitmap(output_stream, BITMAP, tag_format, report)
+                    build_h1_bitmap(output_stream, BITMAP, report)
                     output_stream.close()
 
     elif game_title == "halo2":
+        levels_collection = bpy.data.collections.get("BSPs")
+        if not levels_collection == None:
+            for bsp_idx, bsp_collection in enumerate(levels_collection.children):
+                for cluster_collection in bsp_collection.children:
+                    for cluster_idx, cluster_ob in enumerate(cluster_collection.objects):
+                        cluster_ob.hide_render = True
+
         input_stream = open(scenario_path, "rb")
-        SCNR_ASSET = process_h2_scenario(input_stream, tag_format, report)
+        SCNR_ASSET = process_h2_scenario(input_stream, report)
         input_stream.close()
 
         TAG = tag_format.TagAsset()
@@ -217,10 +231,9 @@ def bake_clusters(context, game_title, scenario_path, image_multiplier, report):
             lightmap_name = "%s_lightmaps" % bsp_name
             lightmap_collection = bpy.data.collections.get(lightmap_name)
             if not lightmap_collection == None:
-                BSP_ASSET = bsp_element.structure_bsp.parse_tag(tag_format, report, game_title, "retail")
-                LTMP_ASSET = bsp_element.structure_lightmap.parse_tag(tag_format, report, game_title, "retail")
-                print(LTMP_ASSET.lightmap_groups[0].bitmap_group_tag_ref.name)
-                BITMAP_ASSET = LTMP_ASSET.lightmap_groups[0].bitmap_group_tag_ref.parse_tag(tag_format, report, game_title, "retail")
+                BSP_ASSET = bsp_element.structure_bsp.parse_tag(report, game_title, "retail")
+                LTMP_ASSET = bsp_element.structure_lightmap.parse_tag(report, game_title, "retail")
+                BITMAP_ASSET = LTMP_ASSET.lightmap_groups[0].bitmap_group_tag_ref.parse_tag(report, game_title, "retail")
 
                 bitmap_path = os.path.join(config.HALO_2_TAG_PATH, "%s.bitmap" %  LTMP_ASSET.lightmap_groups[0].bitmap_group_tag_ref.name)
 
@@ -271,6 +284,7 @@ def bake_clusters(context, game_title, scenario_path, image_multiplier, report):
                         image.update()
 
                     for material_slot in lightmap_ob.material_slots:
+                        material_slot.material.use_nodes = True
                         material_nodes = material_slot.material.node_tree.nodes
                         image_node = material_nodes.get("Lightmap Texture")
                         if image_node == None:
@@ -290,8 +304,9 @@ def bake_clusters(context, game_title, scenario_path, image_multiplier, report):
                     context.view_layer.objects.active = lightmap_ob
                     
                     context.scene.render.engine = 'CYCLES'
+                    lightmap_ob.hide_render = False
                     bpy.ops.object.bake(type='DIFFUSE', pass_filter={'DIRECT','INDIRECT'}, uv_layer=lightmap_ob.data.uv_layers[0].name)
-                    
+                    lightmap_ob.hide_render = True
                     lightmap_ob.select_set(False)
                     context.view_layer.objects.active = None
 
@@ -335,7 +350,7 @@ def bake_clusters(context, game_title, scenario_path, image_multiplier, report):
                 BITMAP.bitmap_body.bitmaps_tag_block = TAG.TagBlock(bitmap_count)
 
                 output_stream = open(bitmap_path, 'wb')
-                build_h2_bitmap(output_stream, BITMAP, tag_format, report)
+                build_h2_bitmap(output_stream, BITMAP, report)
                 output_stream.close()
 
     return {'FINISHED'}

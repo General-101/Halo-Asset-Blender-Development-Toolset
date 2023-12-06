@@ -28,6 +28,7 @@ import bpy
 import random
 
 from math import radians
+from ....global_functions import tag_format
 from .format import (
         ScenarioTypeEnum as H1ScenarioTypeEnum,
         ScenarioFlags as H1ScenarioFlags,
@@ -301,7 +302,7 @@ def get_object_names(object_names_tag_block, TAG, SCENARIO):
 
     SCENARIO.object_name_header = TAG.TagBlockHeader("tbfd", 0, len(SCENARIO.object_names), 36)
 
-def get_scenery(scenery_tag_block, TAG, SCENARIO, tag_format):
+def get_scenery(scenery_tag_block, TAG, SCENARIO):
     SCENARIO.scenery = []
     for scenery_element in scenery_tag_block:
         scenery = SCENARIO.Scenery()
@@ -342,7 +343,7 @@ def get_scenery(scenery_tag_block, TAG, SCENARIO, tag_format):
 
     SCENARIO.scenery_header = TAG.TagBlockHeader("tbfd", 4, len(SCENARIO.scenery), 96)
 
-def get_unit(unit_tag_block, TAG, SCENARIO, tag_format, is_biped):
+def get_unit(unit_tag_block, TAG, SCENARIO, is_biped):
     unit_list = []
     for unit_element in unit_tag_block:
         unit = SCENARIO.Unit()
@@ -385,7 +386,7 @@ def get_unit(unit_tag_block, TAG, SCENARIO, tag_format, is_biped):
 
     return TAG.TagBlockHeader("tbfd", 2, len(unit_list), 84), unit_list
 
-def get_equipment(equipment_tag_block, TAG, SCENARIO, tag_format):
+def get_equipment(equipment_tag_block, TAG, SCENARIO):
     SCENARIO.equipment = []
     for equipment_element in equipment_tag_block:
         equipment = SCENARIO.Equipment()
@@ -415,7 +416,7 @@ def get_equipment(equipment_tag_block, TAG, SCENARIO, tag_format):
 
     SCENARIO.equipment_header = TAG.TagBlockHeader("tbfd", 2, len(SCENARIO.equipment), 56)
 
-def get_weapon(weapons_tag_block, TAG, SCENARIO, tag_format):
+def get_weapon(weapons_tag_block, TAG, SCENARIO):
     SCENARIO.weapons = []
     for weapon_element in weapons_tag_block:
         weapon = SCENARIO.Weapon()
@@ -467,7 +468,7 @@ def get_device_groups(device_groups_tag_block, TAG, SCENARIO):
 
     SCENARIO.device_group_header = TAG.TagBlockHeader("tbfd", 0, len(SCENARIO.device_groups), 40)
 
-def get_device_machines(machine_tag_block, TAG, SCENARIO, tag_format):
+def get_device_machines(machine_tag_block, TAG, SCENARIO):
     SCENARIO.device_machines = []
     for machine_element in machine_tag_block:
         device_machine = SCENARIO.DeviceMachine()
@@ -502,7 +503,7 @@ def get_device_machines(machine_tag_block, TAG, SCENARIO, tag_format):
 
     SCENARIO.device_machine_header = TAG.TagBlockHeader("tbfd", 3, len(SCENARIO.device_machines), 76)
 
-def get_device_controls(controls_tag_block, TAG, SCENARIO, tag_format):
+def get_device_controls(controls_tag_block, TAG, SCENARIO):
     SCENARIO.device_controls = []
     for control_element in controls_tag_block:
         device_control = SCENARIO.DeviceControl()
@@ -538,7 +539,7 @@ def get_device_controls(controls_tag_block, TAG, SCENARIO, tag_format):
     SCENARIO.device_control_header = TAG.TagBlockHeader("tbfd", 2, len(SCENARIO.device_controls), 68)
 
 
-def get_light_fixtures(light_fixtures_tag_block, TAG, SCENARIO, tag_format):
+def get_light_fixtures(light_fixtures_tag_block, TAG, SCENARIO):
     SCENARIO.light_fixtures = []
     for light_fixture_element in light_fixtures_tag_block:
         light_fixture = SCENARIO.LightFixture()
@@ -575,7 +576,7 @@ def get_light_fixtures(light_fixtures_tag_block, TAG, SCENARIO, tag_format):
 
     SCENARIO.light_fixture_header = TAG.TagBlockHeader("tbfd", 2, len(SCENARIO.light_fixtures), 84)
 
-def get_sound_scenery(sound_scenery_tag_block, TAG, SCENARIO, tag_format):
+def get_sound_scenery(sound_scenery_tag_block, TAG, SCENARIO):
     SCENARIO.sound_scenery = []
     for sound_scenery_element in sound_scenery_tag_block:
         sound_scenery = SCENARIO.SoundScenery()
@@ -745,7 +746,7 @@ def get_netgame_flags(netgame_flags_tag_block, TAG, SCENARIO):
 
     SCENARIO.netgame_flag_header = TAG.TagBlockHeader("tbfd", 1, len(SCENARIO.netgame_flags), 32)
 
-def get_netgame_equipment(netgame_equipment_tag_block, vehicles_tag_block, vehicle_palette_tag_block, scenario_type, TAG, SCENARIO, tag_format):
+def get_netgame_equipment(netgame_equipment_tag_block, vehicles_tag_block, vehicle_palette_tag_block, scenario_type, TAG, SCENARIO):
     SCENARIO.netgame_equipment = []
     for netgame_equipment_element in netgame_equipment_tag_block:
         spawn_time, respawn_on_empty_time, respawn_timer_starts, classification = get_item_stats(netgame_equipment_element.item_collection.name)
@@ -860,7 +861,7 @@ def get_zone_index(encounter_index, firing_position_count):
 
     return zone_index
 
-def generate_h2_squads(H1_ASSET, TAG, SCENARIO, tag_format, report):
+def generate_h2_squads(H1_ASSET, TAG, SCENARIO, report):
     encounters_tag_block = H1_ASSET.encounters
     actors_palette_tag_block = H1_ASSET.actor_palette
 
@@ -926,7 +927,7 @@ def generate_h2_squads(H1_ASSET, TAG, SCENARIO, tag_format, report):
         character_tag_paths.append(weapon_tag_path)
 
     for actor in actors_palette_tag_block:
-        actor_tag = actor.parse_tag(tag_format, report, "halo1", "retail")
+        actor_tag = actor.parse_tag(report, "halo1", "retail")
         if not actor_tag == None:
             actor_weapon_tag = actor_tag.actor_variant_body.weapon
             actor_weapon_name = actor_weapon_tag.name
@@ -1031,7 +1032,7 @@ def generate_h2_squads(H1_ASSET, TAG, SCENARIO, tag_format, report):
 
     SCENARIO.character_palette_header, SCENARIO.character_palette = get_palette(TAG, actors_palette_tag_block, 16, "char")
 
-def generate_point_sets(H1_ASSET, TAG, SCENARIO, tag_format, report):
+def generate_point_sets(H1_ASSET, TAG, SCENARIO, report):
     SCENARIO.scripting_data = []
 
     for script_data_idx in range(1):
@@ -1086,7 +1087,7 @@ def get_cutscene_flags(cutscene_flags_tag_block, TAG, SCENARIO):
 
     SCENARIO.cutscene_flags_header = TAG.TagBlockHeader("tbfd", 0, len(SCENARIO.cutscene_flags), 56)
 
-def get_cutscene_camera_points(cutscene_camera_points_tag_block, TAG, SCENARIO, tag_format):
+def get_cutscene_camera_points(cutscene_camera_points_tag_block, TAG, SCENARIO):
     SCENARIO.cutscene_camera_points = []
     for cutscene_camera_point_element in cutscene_camera_points_tag_block:
         cutscene_camera_point = SCENARIO.CutsceneCameraPoints()
@@ -1157,7 +1158,7 @@ def get_palette(TAG, palette_tag_block, size, tag_group=None):
 
     return TAG.TagBlockHeader("tbfd", 0, len(palette_list), size), palette_list
 
-def upgrade_h2_scenario(H1_ASSET, patch_txt_path, tag_format, report):
+def upgrade_h2_scenario(H1_ASSET, patch_txt_path, report):
     TAG = tag_format.TagAsset()
     SCENARIO = ScenarioAsset()
     TAG.upgrade_patches = tag_format.get_patch_set(patch_txt_path)
@@ -1233,34 +1234,34 @@ def upgrade_h2_scenario(H1_ASSET, patch_txt_path, tag_format, report):
 
     get_object_names(H1_ASSET.object_names, TAG, SCENARIO)
 
-    get_scenery(H1_ASSET.scenery, TAG, SCENARIO, tag_format)
+    get_scenery(H1_ASSET.scenery, TAG, SCENARIO)
     SCENARIO.scenery_palette_header, SCENARIO.scenery_palette = get_palette(TAG, H1_ASSET.scenery_palette, 48)
 
-    SCENARIO.bipeds_header, SCENARIO.bipeds = get_unit(H1_ASSET.bipeds, TAG, SCENARIO, tag_format, True)
+    SCENARIO.bipeds_header, SCENARIO.bipeds = get_unit(H1_ASSET.bipeds, TAG, SCENARIO, True)
     SCENARIO.biped_palette_header, SCENARIO.biped_palette = get_palette(TAG, H1_ASSET.biped_palette, 48)
 
     if not H1ScenarioTypeEnum(H1_ASSET.scenario_body.scenario_type) == H1ScenarioTypeEnum.multiplayer:
-        SCENARIO.vehicles_header, SCENARIO.vehicles = get_unit(H1_ASSET.vehicles, TAG, SCENARIO, tag_format, False)
+        SCENARIO.vehicles_header, SCENARIO.vehicles = get_unit(H1_ASSET.vehicles, TAG, SCENARIO, False)
         SCENARIO.vehicle_palette_header, SCENARIO.vehicle_palette = get_palette(TAG, H1_ASSET.vehicle_palette, 48)
 
-    get_equipment(H1_ASSET.equipment, TAG, SCENARIO, tag_format)
+    get_equipment(H1_ASSET.equipment, TAG, SCENARIO)
     SCENARIO.equipment_palette_header, SCENARIO.equipment_palette = get_palette(TAG, H1_ASSET.equipment_palette, 48)
 
-    get_weapon(H1_ASSET.weapons, TAG, SCENARIO, tag_format)
+    get_weapon(H1_ASSET.weapons, TAG, SCENARIO)
     SCENARIO.weapon_palette_header, SCENARIO.weapon_palette = get_palette(TAG, H1_ASSET.weapon_palette, 48)
 
     get_device_groups(H1_ASSET.device_groups, TAG, SCENARIO)
 
-    get_device_machines(H1_ASSET.device_machines, TAG, SCENARIO, tag_format)
+    get_device_machines(H1_ASSET.device_machines, TAG, SCENARIO)
     SCENARIO.device_machine_palette_header, SCENARIO.device_machine_palette = get_palette(TAG, H1_ASSET.device_machine_palette, 48)
 
-    get_device_controls(H1_ASSET.device_controls, TAG, SCENARIO, tag_format)
+    get_device_controls(H1_ASSET.device_controls, TAG, SCENARIO)
     SCENARIO.device_control_palette_header, SCENARIO.device_control_palette = get_palette(TAG, H1_ASSET.device_control_palette, 48)
 
-    get_light_fixtures(H1_ASSET.device_light_fixtures, TAG, SCENARIO, tag_format)
+    get_light_fixtures(H1_ASSET.device_light_fixtures, TAG, SCENARIO)
     SCENARIO.light_fixture_palette_header, SCENARIO.light_fixtures_palette = get_palette(TAG, H1_ASSET.device_light_fixtures_palette, 48)
 
-    get_sound_scenery(H1_ASSET.sound_scenery, TAG, SCENARIO, tag_format)
+    get_sound_scenery(H1_ASSET.sound_scenery, TAG, SCENARIO)
     SCENARIO.sound_scenery_palette_header, SCENARIO.sound_scenery_palette = get_palette(TAG, H1_ASSET.sound_scenery_palette, 48)
 
     get_player_starting_profiles(H1_ASSET.player_starting_profiles, TAG, SCENARIO)
@@ -1273,21 +1274,21 @@ def upgrade_h2_scenario(H1_ASSET, patch_txt_path, tag_format, report):
 
     get_netgame_flags(H1_ASSET.netgame_flags, TAG, SCENARIO)
 
-    get_netgame_equipment(H1_ASSET.netgame_equipment, H1_ASSET.vehicles, H1_ASSET.vehicle_palette, H1_ASSET.scenario_body.scenario_type, TAG, SCENARIO, tag_format)
+    get_netgame_equipment(H1_ASSET.netgame_equipment, H1_ASSET.vehicles, H1_ASSET.vehicle_palette, H1_ASSET.scenario_body.scenario_type, TAG, SCENARIO)
 
     get_starting_equipment(H1_ASSET.starting_equipment, TAG, SCENARIO)
 
     get_decals(H1_ASSET.decals, TAG, SCENARIO)
     SCENARIO.decal_palette_header, SCENARIO.decal_palette = get_palette(TAG, H1_ASSET.decal_palette, 16)
 
-    generate_h2_squads(H1_ASSET, TAG, SCENARIO, tag_format, report)
+    generate_h2_squads(H1_ASSET, TAG, SCENARIO, report)
 
     if False:
-        generate_point_sets(H1_ASSET, TAG, SCENARIO, tag_format, report)
+        generate_point_sets(H1_ASSET, TAG, SCENARIO, report)
 
     get_cutscene_flags(H1_ASSET.cutscene_flags, TAG, SCENARIO)
 
-    get_cutscene_camera_points(H1_ASSET.cutscene_camera_points, TAG, SCENARIO, tag_format)
+    get_cutscene_camera_points(H1_ASSET.cutscene_camera_points, TAG, SCENARIO)
 
     get_cutscene_titles(H1_ASSET.cutscene_titles, TAG, SCENARIO)
 

@@ -27,7 +27,7 @@
 import bpy
 import bmesh
 
-from ..global_functions import mesh_processing, global_functions
+from ..global_functions import global_functions
 
 def create_facemap(context, level_of_detail, permutation_string, region_string, set_facemap):
     active_object = context.view_layer.objects.active

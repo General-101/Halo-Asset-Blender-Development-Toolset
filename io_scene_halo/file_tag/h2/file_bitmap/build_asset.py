@@ -25,6 +25,7 @@
 # ##### END MIT LICENSE BLOCK #####
 
 import struct
+from ....global_functions import tag_format
 
 def write_body(output_stream, BITMAP, TAG):
     BITMAP.bitmap_body_header.write(output_stream, TAG, True)
@@ -58,7 +59,7 @@ def write_sequences(output_stream, BITMAP, TAG):
     if len(BITMAP.sequences) > 0:
         BITMAP.sequence_header.write(output_stream, TAG, True)
         for sequence in BITMAP.sequences:
-            output_stream.write(struct.pack('<31sx', TAG.string_to_bytes(sequence.name, False)))
+            output_stream.write(struct.pack('<31sx', tag_format.string_to_bytes(sequence.name, False)))
             output_stream.write(struct.pack('<h', sequence.first_bitmap_index))
             output_stream.write(struct.pack('<h', sequence.bitmap_count))
             output_stream.write(struct.pack('<16x'))
@@ -80,7 +81,7 @@ def write_bitmaps(output_stream, BITMAP, TAG):
     if len(BITMAP.bitmaps) > 0:
         BITMAP.bitmap_header.write(output_stream, TAG, True)
         for bitmap in BITMAP.bitmaps:
-            output_stream.write(struct.pack('<4s', TAG.string_to_bytes(bitmap.signature, True)))
+            output_stream.write(struct.pack('<4s', tag_format.string_to_bytes(bitmap.signature, True)))
             output_stream.write(struct.pack('<h', bitmap.width))
             output_stream.write(struct.pack('<h', bitmap.height))
             output_stream.write(struct.pack('<b', bitmap.depth))
@@ -108,7 +109,7 @@ def write_bitmaps(output_stream, BITMAP, TAG):
                     output_stream.write(struct.pack('<i', native_mipmap_info.pitch_row))
                     output_stream.write(struct.pack('<i', native_mipmap_info.pitch_slice))
 
-def build_asset(output_stream, BITMAP, tag_format, report):
+def build_asset(output_stream, BITMAP):
     TAG = tag_format.TagAsset()
     TAG.big_endian = False
 

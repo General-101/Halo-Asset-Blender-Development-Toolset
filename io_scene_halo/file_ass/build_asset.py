@@ -32,13 +32,12 @@ from .. import config
 from getpass import getuser
 from .process_scene import process_scene
 from ..global_functions import global_functions
-from ..global_functions.global_functions import ModelTypeEnum
 
 def build_asset(context, filepath, version, game_version, folder_structure, hidden_geo, nonrender_geo, apply_modifiers, triangulate_faces, loop_normals, edge_split, clean_normalize_weights, custom_scale, report):
     ASS = process_scene(context, version, game_version, hidden_geo, nonrender_geo, apply_modifiers, triangulate_faces, loop_normals, edge_split, clean_normalize_weights, custom_scale, report)
 
     filename = os.path.basename(filepath)
-    root_directory = global_functions.get_directory(context, game_version, ModelTypeEnum.render, folder_structure, True, False, filepath)
+    root_directory = global_functions.get_directory(context, game_version, global_functions.ModelTypeEnum.render, folder_structure, True, False, filepath)
 
     file = open(os.path.join(root_directory, filename), 'w', encoding='utf_8')
 

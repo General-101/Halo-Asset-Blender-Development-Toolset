@@ -192,9 +192,7 @@ def build_scene_retail(context, JMS, filepath, game_version, reuse_armature, fix
             object_mesh.data.ass_jms.XREF_path = xref_path
             object_mesh.data.ass_jms.XREF_name = xref_path
 
-        mesh_processing.select_object(context, object_mesh)
-        mesh_processing.select_object(context, armature)
-        bpy.ops.object.parent_set(type='ARMATURE', keep_transform=True)
+        object_mesh.parent = armature
 
         matrix_translate = Matrix.Translation(xref_marker.translation)
         matrix_rotation = xref_marker.rotation.to_matrix().to_4x4()
@@ -202,8 +200,6 @@ def build_scene_retail(context, JMS, filepath, game_version, reuse_armature, fix
         transform_matrix = matrix_translate @ matrix_rotation
 
         object_mesh.matrix_world = transform_matrix
-        object_mesh.select_set(False)
-        armature.select_set(False)
 
     #generate mesh object
     if not len(JMS.vertices) == 0:
@@ -563,8 +559,7 @@ def build_scene_retail(context, JMS, filepath, game_version, reuse_armature, fix
         object_empty.rigid_body_constraint.object1 = ragdoll_attached_object
         object_empty.rigid_body_constraint.object2 = ragdoll_referenced_object
 
-        mesh_processing.select_object(context, armature)
-        bpy.ops.object.parent_set(type='ARMATURE', keep_transform=True)
+        object_empty.parent = armature
         transform_matrix = Euler((0, 0, 0)).to_matrix().to_4x4()
 
         ragdoll_origin_index = None
@@ -596,7 +591,6 @@ def build_scene_retail(context, JMS, filepath, game_version, reuse_armature, fix
 
         object_empty.matrix_world = transform_matrix
         object_empty.select_set(False)
-        armature.select_set(False)
 
     for hinge in JMS.hinges:
         name = hinge.name
@@ -654,8 +648,7 @@ def build_scene_retail(context, JMS, filepath, game_version, reuse_armature, fix
         object_empty.rigid_body_constraint.object1 = hinge_body_a_object
         object_empty.rigid_body_constraint.object2 = hinge_body_b_object
 
-        mesh_processing.select_object(context, armature)
-        bpy.ops.object.parent_set(type='ARMATURE', keep_transform=True)
+        object_empty.parent = armature
         transform_matrix = Euler((0, 0, 0)).to_matrix().to_4x4()
 
         hinge_origin_index = None
@@ -687,7 +680,6 @@ def build_scene_retail(context, JMS, filepath, game_version, reuse_armature, fix
 
         object_empty.matrix_world = transform_matrix
         object_empty.select_set(False)
-        armature.select_set(False)
 
     for car_wheel in JMS.car_wheels:
         name = car_wheel.name
@@ -733,8 +725,7 @@ def build_scene_retail(context, JMS, filepath, game_version, reuse_armature, fix
         object_empty.empty_display_type = 'ARROWS'
 
         mesh_processing.select_object(context, object_empty)
-        mesh_processing.select_object(context, armature)
-        bpy.ops.object.parent_set(type='ARMATURE', keep_transform=True)
+        object_empty.parent = armature
         transform_matrix = Euler((0, 0, 0)).to_matrix().to_4x4()
 
         car_wheel_origin_index = None
@@ -766,7 +757,6 @@ def build_scene_retail(context, JMS, filepath, game_version, reuse_armature, fix
 
         object_empty.matrix_world = transform_matrix
         object_empty.select_set(False)
-        armature.select_set(False)
 
     for point_to_point in JMS.point_to_points:
         name = point_to_point.name
@@ -818,8 +808,7 @@ def build_scene_retail(context, JMS, filepath, game_version, reuse_armature, fix
         object_empty.rigid_body_constraint.object1 = point_to_point_body_a_object
         object_empty.rigid_body_constraint.object2 = point_to_point_body_b_object
 
-        mesh_processing.select_object(context, armature)
-        bpy.ops.object.parent_set(type='ARMATURE', keep_transform=True)
+        object_empty.parent = armature
         transform_matrix = Euler((0, 0, 0)).to_matrix().to_4x4()
 
         point_to_point_origin_index = None
@@ -851,7 +840,6 @@ def build_scene_retail(context, JMS, filepath, game_version, reuse_armature, fix
 
         object_empty.matrix_world = transform_matrix
         object_empty.select_set(False)
-        armature.select_set(False)
 
     for prismatic in JMS.prismatics:
         name = prismatic.name
@@ -872,8 +860,7 @@ def build_scene_retail(context, JMS, filepath, game_version, reuse_armature, fix
         object_empty.empty_display_type = 'ARROWS'
 
         mesh_processing.select_object(context, object_empty)
-        mesh_processing.select_object(context, armature)
-        bpy.ops.object.parent_set(type='ARMATURE', keep_transform=True)
+        object_empty.parent = armature
         matrix_translate = Matrix.Translation(prismatic.body_a_translation)
         matrix_rotation = prismatic.body_a_rotation.to_matrix().to_4x4()
 
@@ -888,7 +875,6 @@ def build_scene_retail(context, JMS, filepath, game_version, reuse_armature, fix
 
         object_empty.matrix_world = transform_matrix
         object_empty.select_set(False)
-        armature.select_set(False)
 
     for idx, bounding_sphere in enumerate(JMS.bounding_spheres):
         name = 'bounding_sphere_%s' % idx
@@ -903,9 +889,7 @@ def build_scene_retail(context, JMS, filepath, game_version, reuse_armature, fix
         bm.to_mesh(mesh)
         bm.free()
 
-        mesh_processing.select_object(context, object_mesh)
-        mesh_processing.select_object(context, armature)
-        bpy.ops.object.parent_set(type='ARMATURE', keep_transform=True)
+        object_mesh.parent = armature
 
         matrix_translate = Matrix.Translation(bounding_sphere.translation)
 
@@ -916,8 +900,6 @@ def build_scene_retail(context, JMS, filepath, game_version, reuse_armature, fix
         object_mesh.data.ass_jms.bounding_radius = True
         object_scale = radius
         object_mesh.scale = (object_scale, object_scale, object_scale)
-        object_mesh.select_set(False)
-        armature.select_set(False)
 
     for idx, skylight in enumerate(JMS.skylights):
         name = 'skylight_%s' % idx
@@ -930,9 +912,7 @@ def build_scene_retail(context, JMS, filepath, game_version, reuse_armature, fix
         object_mesh.data.color = (skylight.radiant_intensity)
         object_mesh.data.energy = (skylight.solid_angle)
 
-        mesh_processing.select_object(context, object_mesh)
-        mesh_processing.select_object(context, armature)
-        bpy.ops.object.parent_set(type='ARMATURE', keep_transform=True)
+        object_mesh.parent = armature
 
         object_mesh.select_set(False)
         armature.select_set(False)

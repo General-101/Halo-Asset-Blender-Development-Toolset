@@ -24,9 +24,8 @@
 #
 # ##### END MIT LICENSE BLOCK #####
 
-import subprocess
 import bpy
-from ..global_functions import mesh_processing
+import subprocess
 
 def export_texture(context, directory):
     scene = context.scene

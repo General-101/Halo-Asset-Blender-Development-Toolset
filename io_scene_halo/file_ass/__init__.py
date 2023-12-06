@@ -27,25 +27,24 @@
 import bpy
 
 from ..global_functions import global_functions
-
 from bpy_extras.io_utils import (
-        ImportHelper,
-        ExportHelper
-        )
+    ImportHelper,
+    ExportHelper
+    )
 
 from bpy.types import (
-        Operator,
-        Panel,
-        PropertyGroup
-        )
+    Operator,
+    Panel,
+    PropertyGroup
+    )
 
 from bpy.props import (
-        BoolProperty,
-        EnumProperty,
-        FloatProperty,
-        PointerProperty,
-        StringProperty
-        )
+    BoolProperty,
+    EnumProperty,
+    FloatProperty,
+    PointerProperty,
+    StringProperty
+    )
 
 def version_settings_callback(self, context):
     items=[ ('1', "1", "H2/H3"),

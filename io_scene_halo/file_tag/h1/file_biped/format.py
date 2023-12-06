@@ -24,8 +24,8 @@
 #
 # ##### END MIT LICENSE BLOCK #####
 
+from mathutils import Vector
 from enum import Flag, Enum, auto
-from mathutils import Vector, Quaternion
 
 class ObjectFlags(Flag):
     does_not_cast_shadow = auto()
@@ -115,9 +115,9 @@ class UnitFunctionEnum(Enum):
     shield_sapping = auto()
 
 class MotionSensorBlipSizeEnum(Enum):
-    brute = 0
-    grunt = auto()
-    jackal = auto()
+    medium = 0
+    small = auto()
+    large = auto()
 
 class MetaGameTypeEnum(Enum):
     brute = 0

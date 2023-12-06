@@ -27,7 +27,7 @@
 import os
 import bpy
 
-from ..global_functions import tag_format, mesh_processing, global_functions
+from ..global_functions import tag_format
 
 from .build_scene import build_mesh as build_scene_model
 from .build_scene import build_physics as build_scene_physics
@@ -45,7 +45,7 @@ from .h1.file_model_collision_geometry.process_file import process_file as proce
 from .h2.file_collision_model.process_file import process_file as process_h2_collision
 
 from .h1.file_physics.process_file import process_file as process_physics
-from .h1.file_model_animations.process_file import process_file_retail as process_h1_animation
+from .h1.file_model_animations.process_file import process_file as process_h1_animation
 
 from .h1.file_scenario_structure_bsp.process_file import process_file as process_level
 from .h2.file_scenario_structure_bsp.process_file import process_file as process_h2_level
@@ -56,7 +56,8 @@ from .h2.file_scenario.process_file import process_file as process_h2_scenario
 
 from .h1.file_camera_track.process_file import process_file as process_camera_track
 
-def load_file(context, file_path, game_title, fix_rotations, empty_markers, report):
+def load_file(context, file_path, game_version, game_title, file_version, fix_rotations, empty_markers, report):
+    version = int(file_version)
     input_stream = open(file_path, "rb")
     if tag_format.check_file_size(input_stream) < 64: # Size of the header for all tags
         input_stream.close()
@@ -81,10 +82,10 @@ def load_file(context, file_path, game_title, fix_rotations, empty_markers, repo
         build_scene = build_scene_model
         if game_title == "halo1":
             if tag_group == "mode":
-                ASSET = process_mode(input_stream, tag_format, report)
+                ASSET = process_mode(input_stream, report)
 
             else:
-                ASSET = process_mod2(input_stream, tag_format, report)
+                ASSET = process_mod2(input_stream, report)
 
         else:
             input_stream.close()
@@ -92,13 +93,13 @@ def load_file(context, file_path, game_title, fix_rotations, empty_markers, repo
 
             return {'CANCELLED'}
 
-    elif tag_group == "coll" or tag_group == "col2":
+    elif tag_group == "coll":
         build_scene = build_scene_collision
         if game_title == "halo1":
-            ASSET = process_collision(input_stream, tag_format, report)
+            ASSET = process_collision(input_stream, report)
 
         elif game_title == "halo2":
-            ASSET = process_h2_collision(input_stream, tag_format, report)
+            ASSET = process_h2_collision(input_stream, report)
 
         else:
             input_stream.close()
@@ -109,7 +110,7 @@ def load_file(context, file_path, game_title, fix_rotations, empty_markers, repo
     elif tag_group == "phys":
         build_scene = build_scene_physics
         if game_title == "halo1":
-            ASSET = process_physics(input_stream, tag_format, report)
+            ASSET = process_physics(input_stream, report)
 
         else:
             input_stream.close()
@@ -120,7 +121,7 @@ def load_file(context, file_path, game_title, fix_rotations, empty_markers, repo
     elif tag_group == "antr":
         build_scene = build_scene_animation
         if game_title == "halo1":
-            ASSET = process_h1_animation(input_stream, global_functions, tag_format, report)
+            ASSET = process_h1_animation(input_stream, report)
 
         else:
             input_stream.close()
@@ -128,35 +129,40 @@ def load_file(context, file_path, game_title, fix_rotations, empty_markers, repo
 
             return {'CANCELLED'}
 
-
     elif tag_group == "sbsp":
         build_scene = build_scene_level
         if game_title == "halo1":
-            ASSET = process_level(input_stream, tag_format, report)
+            ASSET = process_level(input_stream, report)
 
         elif game_title == "halo2":
-            ASSET = process_h2_level(input_stream, tag_format, report)
+            ASSET = process_h2_level(input_stream, report)
 
         else:
             input_stream.close()
-            report({'ERROR'}, "Not applicable")
+            report({'ERROR'}, "Not implemented")
 
             return {'CANCELLED'}
 
     elif tag_group == "ltmp":
         build_scene = build_scene_lightmap
-        ASSET = process_h2_lightmap(input_stream, tag_format, report)
+        if game_title == "halo2":
+            ASSET = process_h2_lightmap(input_stream, report)
 
+        else:
+            input_stream.close()
+            report({'ERROR'}, "Not implemented")
+
+            return {'CANCELLED'}
 
     elif tag_group == "scnr":
         context.scene.halo.game_title = game_title
         context.scene.halo_tag.scenario_path = file_path
         build_scene = build_scenario
         if game_title == "halo1":
-            ASSET = process_h1_scenario(input_stream, tag_format, report)
+            ASSET = process_h1_scenario(input_stream, report)
 
         elif game_title == "halo2":
-            ASSET = process_h2_scenario(input_stream, tag_format, report)
+            ASSET = process_h2_scenario(input_stream, report)
 
         else:
             input_stream.close()
@@ -167,7 +173,7 @@ def load_file(context, file_path, game_title, fix_rotations, empty_markers, repo
     elif tag_group == "trak":
         build_scene = build_camera_track
         if game_title == "halo1":
-            ASSET = process_camera_track(input_stream, tag_format, report)
+            ASSET = process_camera_track(input_stream, report)
 
         else:
             input_stream.close()
@@ -182,9 +188,7 @@ def load_file(context, file_path, game_title, fix_rotations, empty_markers, repo
         return {'CANCELLED'}
 
     input_stream.close()
-    build_scene.build_scene(context, ASSET, "retail", game_title, 0, fix_rotations, empty_markers, report, mesh_processing, global_functions, tag_format)
-
-    del ASSET
+    build_scene.build_scene(context, ASSET, game_version, game_title, version, fix_rotations, empty_markers, report)
 
     return {'FINISHED'}
 

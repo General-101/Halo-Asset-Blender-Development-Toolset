@@ -27,19 +27,20 @@
 import struct
 
 from xml.dom import minidom
-from .format import LevelAsset, LeafFlags, SurfaceFlags, MaterialFlags
 from mathutils import Vector, Quaternion
+from ....global_functions import tag_format
+from .format import LevelAsset, LeafFlags, SurfaceFlags
 
 XML_OUTPUT = False
 
-def get_collision_material(input_stream, LEVEL, TAG, tag_format, node_element):
+def get_collision_material(input_stream, LEVEL, TAG, node_element):
     collision_material = LEVEL.CollisionMaterial()
     collision_material.shader_tag_ref = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(node_element, "shader"))
     collision_material.unknown_0 = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(node_element, "unknown 0"))
 
     return collision_material
 
-def get_collision_bsp(input_stream, LEVEL, TAG, tag_format, node_element):
+def get_collision_bsp(input_stream, LEVEL, TAG, node_element):
     collision_bsp = LEVEL.CollisionBSP()
     collision_bsp.bsp3d_nodes_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(node_element, "bsp3d nodes"))
     collision_bsp.planes_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(node_element, "planes"))
@@ -52,7 +53,7 @@ def get_collision_bsp(input_stream, LEVEL, TAG, tag_format, node_element):
 
     return collision_bsp
 
-def process_file(input_stream, tag_format, report):
+def process_file(input_stream, report):
     TAG = tag_format.TagAsset()
     LEVEL = LevelAsset()
     TAG.is_legacy = False
@@ -165,7 +166,7 @@ def process_file(input_stream, tag_format, report):
             collision_material_element_node.setAttribute('index', str(collision_material_idx))
             collision_material_node.appendChild(collision_material_element_node)
 
-        LEVEL.collision_materials.append(get_collision_material(input_stream, LEVEL, TAG, tag_format, collision_material_element_node))
+        LEVEL.collision_materials.append(get_collision_material(input_stream, LEVEL, TAG, collision_material_element_node))
 
     for collision_material_idx, collision_material in enumerate(LEVEL.collision_materials):
         collision_material_name_length = collision_material.shader_tag_ref.name_length
@@ -185,7 +186,7 @@ def process_file(input_stream, tag_format, report):
             collision_bsp_element_node.setAttribute('index', str(collision_bsp_idx))
             collision_bsp_node.appendChild(collision_bsp_element_node)
 
-        LEVEL.collision_bsps.append(get_collision_bsp(input_stream, LEVEL, TAG, tag_format, collision_bsp_element_node))
+        LEVEL.collision_bsps.append(get_collision_bsp(input_stream, LEVEL, TAG, collision_bsp_element_node))
 
     for collision_bsp_idx, collision_bsp in enumerate(LEVEL.collision_bsps):
         collision_bsp_element_node = None

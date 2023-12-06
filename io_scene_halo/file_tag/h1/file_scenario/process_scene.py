@@ -27,8 +27,8 @@
 import bpy
 
 from math import degrees
-from io_scene_halo.global_functions.global_functions import string_empty_check
 from .format import ScenarioAsset
+from ....global_functions import global_functions, tag_format
 
 def get_palette_index(TAG, SCENARIO, tag_group, tag_path, palette_tag_block):
     palette_index = -1
@@ -37,7 +37,7 @@ def get_palette_index(TAG, SCENARIO, tag_group, tag_path, palette_tag_block):
             palette_index = palette_element_idx
             break
 
-    if palette_index == -1 and not string_empty_check(tag_group):
+    if palette_index == -1 and not global_functions.string_empty_check(tag_group):
         palette_tag_block.append(TAG.TagRef(tag_group, tag_path, len(tag_path)))
         palette_index = len(palette_tag_block) - 1
 
@@ -453,7 +453,7 @@ def create_tag(TAG):
 
     return SCENARIO
 
-def generate_scenario_scene(DONOR_ASSET, tag_format):
+def generate_scenario_scene(DONOR_ASSET):
     TAG = tag_format.TagAsset()
 
     if DONOR_ASSET == None:

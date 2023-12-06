@@ -1788,6 +1788,19 @@ class ScenarioAsset():
             self.flags = flags
             self.default_sky = default_sky
 
+    class ScenarioResource():
+        def __init__(self, references_tag_block=None, references_header=None, references=None, script_source_tag_block=None, script_source_header=None, script_source=None, 
+                     ai_resources_tag_block=None, ai_resources_header=None, ai_resources=None):
+            self.references_tag_block = references_tag_block
+            self.references_header = references_header
+            self.references = references
+            self.script_source_tag_block = script_source_tag_block
+            self.script_source_header = script_source_header
+            self.script_source = script_source
+            self.ai_resources_tag_block = ai_resources_tag_block
+            self.ai_resources_header = ai_resources_header
+            self.ai_resources = ai_resources
+
     class Order():
         def __init__(self, name="", style_index=0, flags=0, force_combat_status=0, entry_script="", follow_squad=0, follow_radius=0.0, primary_area_set_tag_block=None,
                      secondary_area_set_tag_block=None, secondary_set_trigger_tag_block=None, special_movement_tag_block=None, order_endings_tag_block=None,

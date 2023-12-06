@@ -27,7 +27,9 @@
 import bpy
 import bmesh
 
-def build_collision(context, armature, COLLISION, game_version, mesh_processing, global_functions):
+from ....global_functions import global_functions, mesh_processing
+
+def build_collision(context, armature, COLLISION, game_version):
     collection = context.collection
     random_color_gen = global_functions.RandomColorGenerator() # generates a random sequence of colors
     for region_idx, region in enumerate(COLLISION.regions):
@@ -110,12 +112,7 @@ def build_collision(context, armature, COLLISION, game_version, mesh_processing,
                 bm.to_mesh(mesh)
                 bm.free()
 
-                mesh_processing.select_object(context, object_mesh)
-                mesh_processing.select_object(context, armature)
-                bpy.ops.object.mode_set(mode='EDIT')
-                armature.data.edit_bones.active = armature.data.edit_bones[parent_name]
-                bpy.ops.object.mode_set(mode='OBJECT')
-                bpy.ops.object.parent_set(type='BONE', keep_transform=True)
+                object_mesh.parent = armature
+                object_mesh.parent_type = "BONE"
+                object_mesh.parent_bone = parent_name
                 object_mesh.matrix_world = armature.pose.bones[parent_name].matrix
-                object_mesh.select_set(False)
-                armature.select_set(False)

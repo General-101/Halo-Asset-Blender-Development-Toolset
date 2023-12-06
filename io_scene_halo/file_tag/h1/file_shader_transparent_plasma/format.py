@@ -24,8 +24,8 @@
 #
 # ##### END MIT LICENSE BLOCK #####
 
+from mathutils import Vector
 from enum import Flag, Enum, auto
-from mathutils import Vector, Quaternion
 
 class RadiosityFlags(Flag):
     simple_parameterization = auto()

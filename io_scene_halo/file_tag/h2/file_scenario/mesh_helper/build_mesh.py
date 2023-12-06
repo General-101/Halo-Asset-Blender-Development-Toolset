@@ -28,6 +28,8 @@ import os
 import bpy
 import bmesh
 
+from .....file_tag.h2.file_render_model.format import PartFlags
+
 def build_mesh_layout(asset, section, region_name, random_color_gen, object_mesh, materials):
     vertex_groups = []
     active_region_permutations = []
@@ -52,23 +54,37 @@ def build_mesh_layout(asset, section, region_name, random_color_gen, object_mesh
             strip_start = part.strip_start_index
 
             triangle_indices = section_data.strip_indices[strip_start : (strip_start + strip_length)]
-            index_count = len(triangle_indices)
-            for idx in range(index_count - 2):
-                triangle_part.append([triangle_indices[idx], triangle_indices[idx + 1], triangle_indices[idx + 2]])
+            if PartFlags.override_triangle_list in PartFlags(part.flags):
+                triangle_length = int(len(triangle_indices) / 3)
+                for idx in range(triangle_length):
+                    triangle_index = (idx * 3)
+                    v0 = section_data.strip_indices[triangle_index]
+                    v1 = section_data.strip_indices[triangle_index + 1]
+                    v2 = section_data.strip_indices[triangle_index + 2]
+                    triangle_part.append((v0, v1, v2))
 
-            # Fix face normals on uneven triangle indices
-            for triangle_idx in range(len(triangle_part)):
-                if not triangle_idx % 2 == 0:
-                    triangle_part[triangle_idx].reverse()
+                for tri in triangle_part:
+                    triangle_mat_indices.append(part.material_index)
+                    triangles.append(tri)
 
-            # clean up any triangles that reference the same vertex multiple times
-            for reversed_triangle in reversed(triangle_part):
-                if (reversed_triangle[0] == reversed_triangle[1]) or (reversed_triangle[1] == reversed_triangle[2]) or (reversed_triangle[0] == reversed_triangle[2]):
-                    del triangle_part[triangle_part.index(reversed_triangle)]
+            else:
+                index_count = len(triangle_indices)
+                for idx in range(index_count - 2):
+                    triangle_part.append([triangle_indices[idx], triangle_indices[idx + 1], triangle_indices[idx + 2]])
 
-            for tri in triangle_part:
-                triangle_mat_indices.append(part.material_index)
-                triangles.append(tri)
+                # Fix face normals on uneven triangle indices
+                for triangle_idx in range(len(triangle_part)):
+                    if not triangle_idx % 2 == 0:
+                        triangle_part[triangle_idx].reverse()
+
+                # clean up any triangles that reference the same vertex multiple times
+                for reversed_triangle in reversed(triangle_part):
+                    if (reversed_triangle[0] == reversed_triangle[1]) or (reversed_triangle[1] == reversed_triangle[2]) or (reversed_triangle[0] == reversed_triangle[2]):
+                        del triangle_part[triangle_part.index(reversed_triangle)]
+
+                for tri in triangle_part:
+                    triangle_mat_indices.append(part.material_index)
+                    triangles.append(tri)
 
         mesh.from_pydata(vertices, [], triangles)
         for tri_idx, poly in enumerate(mesh.polygons):
@@ -127,20 +143,19 @@ def build_mesh_layout(asset, section, region_name, random_color_gen, object_mesh
     bm.to_mesh(object_mesh.data)
     bm.free()
 
-def get_object(collection, import_file, game_version, object_name, mesh_processing, random_color_gen, tag_format, report):
+def get_object(collection, import_file, game_version, object_name, random_color_gen, report):
     section_count = len(import_file.sections)
     materials = []
     for material in import_file.materials:
         material_name = os.path.basename(material.shader.name)
         mat = bpy.data.materials.new(name=material_name)
-        #mesh_processing.generate_shader(mat, shader.tag_ref, shader.permutation_index, tag_format, report)
+        #mesh_processing.generate_shader(mat, shader.tag_ref, shader.permutation_index, report)
 
         materials.append(mat)
 
     full_mesh = bpy.data.meshes.new(object_name)
     object_mesh = bpy.data.objects.new(object_name, full_mesh)
     collection.objects.link(object_mesh)
-    print(object_name)
     for region in import_file.regions:
         region_name = "unnamed"
         if not region_name == "__unnamed":
@@ -148,7 +163,6 @@ def get_object(collection, import_file, game_version, object_name, mesh_processi
 
         for permutation in region.permutations:
             l6_section_index = permutation.l6_section_index
-            print(permutation.name)
             if not l6_section_index == -1 and l6_section_index < section_count and not import_file.sections[l6_section_index].visited:
                 import_file.sections[l6_section_index].visited = True
                 l6_section = import_file.sections[l6_section_index]     
@@ -156,5 +170,4 @@ def get_object(collection, import_file, game_version, object_name, mesh_processi
             
             break
 
-    print(" ")
     return object_mesh

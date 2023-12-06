@@ -10,6 +10,7 @@ OVERRIDE_USER_DETAILS = False
 USERNAME = "MissingString"
 DEVICE_NAME = "HiddenIntentions"
 
+SHADER_GEN = 2
 HALO_1_DATA_PATH = ""
 HALO_1_TAG_PATH = ""
 HALO_2_DATA_PATH = ""

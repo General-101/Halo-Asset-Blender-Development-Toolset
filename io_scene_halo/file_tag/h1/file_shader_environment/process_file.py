@@ -24,9 +24,8 @@
 #
 # ##### END MIT LICENSE BLOCK #####
 
-import os
-
 from xml.dom import minidom
+from ....global_functions import tag_format
 from .format import (
         ShaderAsset,
         RadiosityFlags,
@@ -45,7 +44,7 @@ from .format import (
 
 XML_OUTPUT = False
 
-def process_file(input_stream, tag_format, report):
+def process_file(input_stream, report):
     TAG = tag_format.TagAsset()
     SHADER = ShaderAsset()
     TAG.is_legacy = False

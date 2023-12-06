@@ -27,6 +27,7 @@
 import struct
 
 from math import radians
+from ....global_functions import tag_format
 
 def write_body(output_stream, ANIMATION):
     ANIMATION.antr_body.objects_tag_block.write(output_stream, True)
@@ -50,9 +51,9 @@ def write_objects(output_stream, ANIMATION):
         output_stream.write(struct.pack('>H', object_element.function_controls))
         output_stream.write(struct.pack('>14x'))
 
-def write_units(output_stream, ANIMATION, TAG):
+def write_units(output_stream, ANIMATION):
     for unit in ANIMATION.units:
-        output_stream.write(struct.pack('>31sx', TAG.string_to_bytes(unit.label, False)))
+        output_stream.write(struct.pack('>31sx', tag_format.string_to_bytes(unit.label, False)))
         output_stream.write(struct.pack('>f', radians(unit.right_yaw_per_frame)))
         output_stream.write(struct.pack('>f', radians(unit.left_yaw_per_frame)))
         output_stream.write(struct.pack('>h', unit.right_frame_count))
@@ -71,13 +72,13 @@ def write_units(output_stream, ANIMATION, TAG):
             output_stream.write(struct.pack('>h', unit_animation))
 
         for unit_ik_point in unit.ik_points:
-            output_stream.write(struct.pack('>31sx', TAG.string_to_bytes(unit_ik_point.marker, False)))
-            output_stream.write(struct.pack('>31sx', TAG.string_to_bytes(unit_ik_point.attach_to_marker, False)))
+            output_stream.write(struct.pack('>31sx', tag_format.string_to_bytes(unit_ik_point.marker, False)))
+            output_stream.write(struct.pack('>31sx', tag_format.string_to_bytes(unit_ik_point.attach_to_marker, False)))
 
         for unit_weapon in unit.weapons:
-            output_stream.write(struct.pack('>31sx', TAG.string_to_bytes(unit_weapon.label, False)))
-            output_stream.write(struct.pack('>31sx', TAG.string_to_bytes(unit_weapon.grip_marker, False)))
-            output_stream.write(struct.pack('>31sx', TAG.string_to_bytes(unit_weapon.hand_marker, False)))
+            output_stream.write(struct.pack('>31sx', tag_format.string_to_bytes(unit_weapon.label, False)))
+            output_stream.write(struct.pack('>31sx', tag_format.string_to_bytes(unit_weapon.grip_marker, False)))
+            output_stream.write(struct.pack('>31sx', tag_format.string_to_bytes(unit_weapon.hand_marker, False)))
             output_stream.write(struct.pack('>f', radians(unit_weapon.right_yaw_per_frame)))
             output_stream.write(struct.pack('>f', radians(unit_weapon.left_yaw_per_frame)))
             output_stream.write(struct.pack('>h', unit_weapon.right_frame_count))
@@ -96,11 +97,11 @@ def write_units(output_stream, ANIMATION, TAG):
                 output_stream.write(struct.pack('>h', weapon_animation))
 
             for weapon_ik_point in unit_weapon.ik_points:
-                output_stream.write(struct.pack('>31sx', TAG.string_to_bytes(weapon_ik_point.marker, False)))
-                output_stream.write(struct.pack('>31sx', TAG.string_to_bytes(weapon_ik_point.attach_to_marker, False)))
+                output_stream.write(struct.pack('>31sx', tag_format.string_to_bytes(weapon_ik_point.marker, False)))
+                output_stream.write(struct.pack('>31sx', tag_format.string_to_bytes(weapon_ik_point.attach_to_marker, False)))
 
             for weapon_type in unit_weapon.weapons:
-                output_stream.write(struct.pack('>31sx', TAG.string_to_bytes(weapon_type.label, False)))
+                output_stream.write(struct.pack('>31sx', tag_format.string_to_bytes(weapon_type.label, False)))
                 output_stream.write(struct.pack('>16x'))
                 weapon_type.animations_tag_block.write(output_stream, True)
 
@@ -164,17 +165,17 @@ def write_first_person_weapons(output_stream, ANIMATION):
         for first_person_weapon_animation in first_person_weapon.animations:
             output_stream.write(struct.pack('>h', first_person_weapon_animation))
 
-def write_sound_references(output_stream, ANIMATION, TAG):
+def write_sound_references(output_stream, ANIMATION):
     for sound_reference in ANIMATION.sound_references:
         sound_reference.write(output_stream, True)
         output_stream.write(struct.pack('>4x'))
 
     for sound_reference in ANIMATION.sound_references:
-        output_stream.write(struct.pack('>%ssx' % len(sound_reference.name), TAG.string_to_bytes(sound_reference.name, False)))
+        output_stream.write(struct.pack('>%ssx' % len(sound_reference.name), tag_format.string_to_bytes(sound_reference.name, False)))
 
-def write_nodes(output_stream, ANIMATION, TAG):
+def write_nodes(output_stream, ANIMATION):
     for node in ANIMATION.nodes:
-        output_stream.write(struct.pack('>31sx', TAG.string_to_bytes(node.name, False)))
+        output_stream.write(struct.pack('>31sx', tag_format.string_to_bytes(node.name, False)))
         output_stream.write(struct.pack('>h', node.sibling))
         output_stream.write(struct.pack('>h', node.child))
         output_stream.write(struct.pack('>h', node.parent))
@@ -184,9 +185,9 @@ def write_nodes(output_stream, ANIMATION, TAG):
         output_stream.write(struct.pack('>f', node.vector_range))
         output_stream.write(struct.pack('>4x'))
 
-def write_animations(output_stream, ANIMATION, TAG):
+def write_animations(output_stream, ANIMATION):
     for animation in ANIMATION.animations:
-        output_stream.write(struct.pack('>31sx', TAG.string_to_bytes(animation.name, False)))
+        output_stream.write(struct.pack('>31sx', tag_format.string_to_bytes(animation.name, False)))
         output_stream.write(struct.pack('>H', animation.type))
         output_stream.write(struct.pack('>h', animation.frame_count))
         output_stream.write(struct.pack('>h', animation.frame_size))
@@ -224,17 +225,17 @@ def write_animations(output_stream, ANIMATION, TAG):
         output_stream.write(animation.default_data_tag_data.data)
         output_stream.write(animation.frame_data_tag_data.data)
 
-def build_asset(output_stream, ANIMATION, TAG, report):
+def build_asset(output_stream, ANIMATION, report):
     ANIMATION.header.write(output_stream, True)
     write_body(output_stream, ANIMATION)
 
     write_objects(output_stream, ANIMATION)
-    write_units(output_stream, ANIMATION, TAG)
+    write_units(output_stream, ANIMATION)
     write_weapons(output_stream, ANIMATION)
     write_vehicles(output_stream, ANIMATION)
     write_devices(output_stream, ANIMATION)
     write_unit_damages(output_stream, ANIMATION)
     write_first_person_weapons(output_stream, ANIMATION)
-    write_sound_references(output_stream, ANIMATION, TAG)
-    write_nodes(output_stream, ANIMATION, TAG)
-    write_animations(output_stream, ANIMATION, TAG)
+    write_sound_references(output_stream, ANIMATION)
+    write_nodes(output_stream, ANIMATION)
+    write_animations(output_stream, ANIMATION)
