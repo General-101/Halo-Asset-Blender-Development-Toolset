@@ -1897,12 +1897,12 @@ def generate_shader_simple(mat, shader, report):
                 base_parameter = parameter
                 break
 
+    base_map = None
+    base_map_name = "White"
+    base_bitmap = None
     if base_parameter:
         base_map, base_map_name = get_bitmap(base_parameter.bitmap, texture_root)
         base_bitmap = base_parameter.bitmap.parse_tag(report, "halo2", "retail")
-    else:
-        base_map, base_map_name = get_bitmap("", texture_root)
-        base_bitmap = None
 
     output_material_node = get_output_material_node(mat)
     output_material_node.location = Vector((0.0, 0.0))
