@@ -225,7 +225,7 @@ def get_object(collection, import_file, game_version, object_name, random_color_
 
         material_name = "%s%s" % (os.path.basename(shader.tag_ref.name), permutation_index)
         mat = bpy.data.materials.new(name=material_name)
-        shader_processing.generate_shader(mat, shader.tag_ref, shader.permutation_index, report)
+        shader_processing.generate_h1_shader(mat, shader.tag_ref, shader.permutation_index, report)
 
         materials.append(mat)
 

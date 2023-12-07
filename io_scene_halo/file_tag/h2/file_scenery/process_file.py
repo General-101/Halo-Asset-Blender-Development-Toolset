@@ -161,11 +161,11 @@ def process_file(input_stream, report):
         tag_node = TAG.xml_doc.childNodes[0]
 
     initilize_scenery(SCENERY)
-    if SCENERY.header.engine_tag == "BMAL":
+    if SCENERY.header.engine_tag == "LAMB":
         read_scenery_body_v0(SCENERY, TAG, input_stream, tag_node, XML_OUTPUT)
-    elif SCENERY.header.engine_tag == "BALM":
+    elif SCENERY.header.engine_tag == "MLAB":
         read_scenery_body_v0(SCENERY, TAG, input_stream, tag_node, XML_OUTPUT)
-    elif SCENERY.header.engine_tag == "!MLB":
+    elif SCENERY.header.engine_tag == "BLM!":
         read_scenery_body_retail(SCENERY, TAG, input_stream, tag_node, XML_OUTPUT)
 
     if SCENERY.scenery_body.default_model_variant_length > 0:

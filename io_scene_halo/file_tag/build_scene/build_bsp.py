@@ -111,8 +111,7 @@ def build_scene(context, LEVEL, game_version, game_title, file_version, fix_rota
                             if mat is None:
                                 mat = bpy.data.materials.new(name=material_name)
                                 if material.shader_tag_ref.name_length > 0:
-                                    if game_title == "halo1":
-                                        shader_processing.generate_shader(mat, material.shader_tag_ref, material.shader_permutation, report)
+                                    shader_processing.generate_h1_shader(mat, material.shader_tag_ref, material.shader_permutation, report)
 
                             if not material_name in object_mesh.data.materials.keys():
                                 object_mesh.data.materials.append(mat)
@@ -340,6 +339,8 @@ def build_scene(context, LEVEL, game_version, game_title, file_version, fix_rota
                             mat = bpy.data.materials.get(material_name)
                             if mat is None:
                                 mat = bpy.data.materials.new(name=material_name)
+                                if material.shader.name_length > 0:
+                                    shader_processing.generate_h2_shader(mat, material.shader, report)
 
                             if not material_name in object_mesh.data.materials.keys():
                                 object_mesh.data.materials.append(mat)
@@ -413,6 +414,8 @@ def build_scene(context, LEVEL, game_version, game_title, file_version, fix_rota
                             mat = bpy.data.materials.get(material_name)
                             if mat is None:
                                 mat = bpy.data.materials.new(name=material_name)
+                                if material.shader.name_length > 0:
+                                    shader_processing.generate_h2_shader(mat, material.shader, report)
 
                             if not material_name in mesh.materials.keys():
                                 mesh.materials.append(mat)
@@ -584,9 +587,6 @@ def build_scene(context, LEVEL, game_version, game_title, file_version, fix_rota
                 mat = bpy.data.materials.get(material_name)
                 if mat is None:
                     mat = bpy.data.materials.new(name=material_name)
-                    if not ngon_material_index == -1:
-                        if game_title == "halo1":
-                            shader_processing.generate_shader(mat, shader, 0, report)
 
                 for slot in collision_object.material_slots:
                     material_list.append(slot.material)

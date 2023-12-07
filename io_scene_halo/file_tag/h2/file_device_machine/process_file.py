@@ -214,11 +214,11 @@ def process_file(input_stream, report):
         tag_node = TAG.xml_doc.childNodes[0]
 
     initilize_machine(MACHINE)
-    if MACHINE.header.engine_tag == "BMAL":
+    if MACHINE.header.engine_tag == "LAMB":
         read_machine_body_v0(MACHINE, TAG, input_stream, tag_node, XML_OUTPUT)
-    elif MACHINE.header.engine_tag == "BALM":
+    elif MACHINE.header.engine_tag == "MLAB":
         read_machine_body_v0(MACHINE, TAG, input_stream, tag_node, XML_OUTPUT)
-    elif MACHINE.header.engine_tag == "!MLB":
+    elif MACHINE.header.engine_tag == "BLM!":
         read_machine_body_retail(MACHINE, TAG, input_stream, tag_node, XML_OUTPUT)
 
     if MACHINE.machine_body.default_model_variant_length > 0:

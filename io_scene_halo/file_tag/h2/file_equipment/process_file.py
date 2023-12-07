@@ -239,12 +239,12 @@ def process_file(input_stream, report):
         tag_node = TAG.xml_doc.childNodes[0]
 
     initilize_equipment(EQUIPMENT)
-    
-    if EQUIPMENT.header.engine_tag == "BMAL":
+
+    if EQUIPMENT.header.engine_tag == "LAMB":
         read_equipment_body_v0(EQUIPMENT, TAG, input_stream, tag_node, XML_OUTPUT)
-    elif EQUIPMENT.header.engine_tag == "BALM":
+    elif EQUIPMENT.header.engine_tag == "MLAB":
         read_equipment_body_v0(EQUIPMENT, TAG, input_stream, tag_node, XML_OUTPUT)
-    elif EQUIPMENT.header.engine_tag == "!MLB":
+    elif EQUIPMENT.header.engine_tag == "BLM!":
         read_equipment_body_retail(EQUIPMENT, TAG, input_stream, tag_node, XML_OUTPUT)
 
     if EQUIPMENT.equipment_body.default_model_variant_length > 0:

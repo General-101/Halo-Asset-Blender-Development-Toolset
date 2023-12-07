@@ -363,7 +363,7 @@ def process_file(input_stream, report):
     if XML_OUTPUT:
         tag_node = TAG.xml_doc.childNodes[0]
 
-    if SKY.header.engine_tag == "BMAL":
+    if SKY.header.engine_tag == "LAMB":
         initilize_sky(SKY)
         read_sky_body_v0(SKY, TAG, input_stream, tag_node, XML_OUTPUT)
         read_cubemaps(SKY, TAG, input_stream, tag_node, XML_OUTPUT)
@@ -374,7 +374,7 @@ def process_file(input_stream, report):
         read_lights(SKY, TAG, input_stream, tag_node, XML_OUTPUT)
         read_shader_functions(SKY, TAG, input_stream, tag_node, XML_OUTPUT)
         read_animations(SKY, TAG, input_stream, tag_node, XML_OUTPUT)
-    elif SKY.header.engine_tag == "BALM":
+    elif SKY.header.engine_tag == "MLAB":
         initilize_sky(SKY)
         read_sky_body_v0(SKY, TAG, input_stream, tag_node, XML_OUTPUT)
         read_cubemaps(SKY, TAG, input_stream, tag_node, XML_OUTPUT)
@@ -385,7 +385,7 @@ def process_file(input_stream, report):
         read_lights(SKY, TAG, input_stream, tag_node, XML_OUTPUT)
         read_shader_functions(SKY, TAG, input_stream, tag_node, XML_OUTPUT)
         read_animations(SKY, TAG, input_stream, tag_node, XML_OUTPUT)
-    elif SKY.header.engine_tag == "!MLB":
+    elif SKY.header.engine_tag == "BLM!":
         initilize_sky(SKY)
         read_sky_body_retail(SKY, TAG, input_stream, tag_node, XML_OUTPUT)
         read_cubemaps(SKY, TAG, input_stream, tag_node, XML_OUTPUT)

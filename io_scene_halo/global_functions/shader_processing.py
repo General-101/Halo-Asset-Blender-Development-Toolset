@@ -1817,7 +1817,7 @@ def generate_shader_transparent_glass(mat, shader, report):
     combine_xyz_node.inputs[1].default_value = scale
     combine_xyz_node.inputs[2].default_value = 1
 
-def generate_shader(mat, tag_ref, shader_permutation_index, report):
+def generate_h1_shader(mat, tag_ref, shader_permutation_index, report):
     # 0 = Shader generation is disabled
     # 1 = Simple shader generation. Only the base map is generated
     # 2 = Full Shader generation
@@ -1857,7 +1857,6 @@ def generate_shader(mat, tag_ref, shader_permutation_index, report):
                     print("Skipping shader_transparent_generic")
                     #generate_shader_transparent_generic(mat, shader, report)
 
-
             elif shader.header.tag_group == "sgla":
                 if config.SHADER_GEN == 1:
                     generate_shader_transparent_glass_simple(mat, shader, report)
@@ -1883,3 +1882,55 @@ def generate_shader(mat, tag_ref, shader_permutation_index, report):
                 else:
                     print("Skipping shader_transparent_water")
                     #generate_shader_transparent_water(mat, shader, report)
+
+def generate_shader_simple(mat, shader, report):
+    mat.use_nodes = True
+
+    texture_root = config.HALO_2_DATA_PATH
+    base_parameter = None
+    if len(shader.parameters) > 0:
+        for parameter in shader.parameters:
+            if base_parameter == None and len(parameter.bitmap.name) > 0:
+                base_parameter = parameter
+
+            if parameter.name == "base_map":
+                base_parameter = parameter
+                break
+
+    if base_parameter:
+        base_map, base_map_name = get_bitmap(base_parameter.bitmap, texture_root)
+        base_bitmap = base_parameter.bitmap.parse_tag(report, "halo2", "retail")
+    else:
+        base_map, base_map_name = get_bitmap("", texture_root)
+        base_bitmap = None
+
+    output_material_node = get_output_material_node(mat)
+    output_material_node.location = Vector((0.0, 0.0))
+    bdsf_principled = get_linked_node(output_material_node, "Surface", "BSDF_PRINCIPLED")
+    if bdsf_principled is None:
+        bdsf_principled = mat.node_tree.nodes.new("ShaderNodeBsdfPrincipled")
+        connect_inputs(mat.node_tree, bdsf_principled, "BSDF", output_material_node, "Surface")
+
+    bdsf_principled.location = Vector((-260.0, 0.0))
+
+    base_node = generate_image_node(mat, base_map, base_bitmap, base_map_name)
+    if not base_node.image == None:
+        base_node.image.alpha_mode = 'CHANNEL_PACKED'
+
+    base_node.location = Vector((-1600, 500))
+
+    connect_inputs(mat.node_tree, base_node, "Color", bdsf_principled, "Base Color")
+
+def generate_h2_shader(mat, tag_ref, report):
+    # 0 = Shader generation is disabled
+    # 1 = Simple shader generation. Only the base map is generated
+    # 2 = Full Shader generation
+    if not config.SHADER_GEN == 0:
+        shader = tag_ref.parse_tag(report, "halo2", "retail")
+        if not shader == None:
+            if shader.header.tag_group == "shad":
+                if config.SHADER_GEN == 1:
+                    generate_shader_simple(mat, shader, report)
+                else:
+                    print("Skipping shader")
+                    #generate_shader_environment(mat, shader, report)

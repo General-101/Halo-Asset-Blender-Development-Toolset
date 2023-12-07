@@ -181,11 +181,11 @@ def process_file(input_stream, report):
         tag_node = TAG.xml_doc.childNodes[0]
 
     initilize_model(MODEL)
-    if MODEL.header.engine_tag == "BMAL":
+    if MODEL.header.engine_tag == "LAMB":
         read_model_body_v0(MODEL, TAG, input_stream, tag_node, XML_OUTPUT)
-    elif MODEL.header.engine_tag == "BALM":
+    elif MODEL.header.engine_tag == "MLAB":
         read_model_body_retail(MODEL, TAG, input_stream, tag_node, XML_OUTPUT)
-    elif MODEL.header.engine_tag == "!MLB":
+    elif MODEL.header.engine_tag == "BLM!":
         read_model_body_retail(MODEL, TAG, input_stream, tag_node, XML_OUTPUT)
 
     if MODEL.model_body.render_model.name_length > 0:

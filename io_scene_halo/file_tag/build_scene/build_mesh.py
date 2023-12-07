@@ -84,7 +84,7 @@ def build_scene(context, MODEL, game_version, game_title, file_version, fix_rota
                     mesh_processing.generate_marker(context, collection, game_version, game_title, file_version, None, MODEL, region.name, "", armature, local_marker, fix_rotations, empty_markers, False)
 
     else:
-        get_retail_h2_geometry_layout(context, collection, MODEL, armature)
+        get_retail_h2_geometry_layout(context, collection, MODEL, armature, report)
         for marker_group in MODEL.marker_groups:
             for marker in marker_group.markers:
                 mesh_processing.generate_marker(context, collection, game_version, game_title, file_version, None, MODEL, "", marker_group.name, armature, marker, fix_rotations, empty_markers, False)

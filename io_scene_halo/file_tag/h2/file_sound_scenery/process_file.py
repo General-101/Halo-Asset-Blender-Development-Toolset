@@ -152,11 +152,11 @@ def process_file(input_stream, report):
         tag_node = TAG.xml_doc.childNodes[0]
 
     initilize_scenery(SOUNDSCENERY)
-    if SOUNDSCENERY.header.engine_tag == "BMAL":
+    if SOUNDSCENERY.header.engine_tag == "LAMB":
         read_sound_scenery_body_v0(SOUNDSCENERY, TAG, input_stream, tag_node, XML_OUTPUT)
-    elif SOUNDSCENERY.header.engine_tag == "BALM":
+    elif SOUNDSCENERY.header.engine_tag == "MLAB":
         read_sound_scenery_body_v0(SOUNDSCENERY, TAG, input_stream, tag_node, XML_OUTPUT)
-    elif SOUNDSCENERY.header.engine_tag == "!MLB":
+    elif SOUNDSCENERY.header.engine_tag == "BLM!":
         read_sound_scenery_body_retail(SOUNDSCENERY, TAG, input_stream, tag_node, XML_OUTPUT)
 
     if SOUNDSCENERY.sound_scenery_body.default_model_variant_length > 0:

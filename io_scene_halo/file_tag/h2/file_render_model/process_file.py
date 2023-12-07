@@ -1667,7 +1667,7 @@ def process_file(input_stream, report):
         tag_node = TAG.xml_doc.childNodes[0]
 
     initilize_render(RENDER)
-    if RENDER.header.engine_tag == "BMAL":
+    if RENDER.header.engine_tag == "LAMB":
         read_render_body_v0(RENDER, TAG, input_stream, tag_node, XML_OUTPUT)
         read_import_info(RENDER, TAG, input_stream, tag_node, XML_OUTPUT)
         read_compression_info(RENDER, TAG, input_stream, tag_node, XML_OUTPUT)
@@ -1681,7 +1681,7 @@ def process_file(input_stream, report):
         read_materials(RENDER, TAG, input_stream, tag_node, XML_OUTPUT)
         read_errors(RENDER, TAG, input_stream, tag_node, XML_OUTPUT)
 
-    elif RENDER.header.engine_tag == "BALM":
+    elif RENDER.header.engine_tag == "MLAB":
         read_render_body_retail(RENDER, TAG, input_stream, tag_node, XML_OUTPUT)
 
         if RENDER.render_body.name_length > 0:
@@ -1699,7 +1699,7 @@ def process_file(input_stream, report):
         read_materials(RENDER, TAG, input_stream, tag_node, XML_OUTPUT)
         read_errors(RENDER, TAG, input_stream, tag_node, XML_OUTPUT)
 
-    elif RENDER.header.engine_tag == "!MLB":
+    elif RENDER.header.engine_tag == "BLM!":
         read_render_body_retail(RENDER, TAG, input_stream, tag_node, XML_OUTPUT)
 
         if RENDER.render_body.name_length > 0:

@@ -218,11 +218,11 @@ def process_file(input_stream, report):
         tag_node = TAG.xml_doc.childNodes[0]
 
     initilize_CONTROL(CONTROL)
-    if CONTROL.header.engine_tag == "BMAL":
+    if CONTROL.header.engine_tag == "LAMB":
         read_control_body_v0(CONTROL, TAG, input_stream, tag_node, XML_OUTPUT)
-    elif CONTROL.header.engine_tag == "BALM":
+    elif CONTROL.header.engine_tag == "MLAB":
         read_control_body_v0(CONTROL, TAG, input_stream, tag_node, XML_OUTPUT)
-    elif CONTROL.header.engine_tag == "!MLB":
+    elif CONTROL.header.engine_tag == "BLM!":
         read_control_body_retail(CONTROL, TAG, input_stream, tag_node, XML_OUTPUT)
 
     if CONTROL.control_body.default_model_variant_length > 0:

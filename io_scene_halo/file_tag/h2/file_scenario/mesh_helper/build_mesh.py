@@ -28,6 +28,7 @@ import os
 import bpy
 import bmesh
 
+from .....global_functions import shader_processing, global_functions
 from .....file_tag.h2.file_render_model.format import PartFlags
 
 def build_mesh_layout(asset, section, region_name, random_color_gen, object_mesh, materials):
@@ -149,7 +150,7 @@ def get_object(collection, import_file, game_version, object_name, random_color_
     for material in import_file.materials:
         material_name = os.path.basename(material.shader.name)
         mat = bpy.data.materials.new(name=material_name)
-        #mesh_processing.generate_shader(mat, shader.tag_ref, shader.permutation_index, report)
+        shader_processing.generate_h2_shader(mat, material.shader, report)
 
         materials.append(mat)
 

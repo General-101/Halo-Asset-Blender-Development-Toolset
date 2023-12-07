@@ -64,6 +64,7 @@ from ..file_tag.h2.file_sky.process_file import process_file as process_h2_sky
 from ..file_tag.h2.file_scenario_structure_bsp.process_file import process_file as process_h2_structure_bsp
 from ..file_tag.h2.file_scenario_structure_lightmap.process_file import process_file as process_h2_structure_lightmap
 from ..file_tag.h2.file_bitmap.process_file import process_file as process_h2_bitmap
+from ..file_tag.h2.file_shader.process_file import process_file as process_h2_shader
 from ..file_tag.h2.file_model.process_file import process_file as process_h2_model
 from ..file_tag.h2.file_render_model.process_file import process_file as process_h2_render
 from ..file_tag.h2.file_scenery.process_file import process_file as process_h2_scenery
@@ -988,6 +989,13 @@ class TagAsset():
                         ASSET = process_h2_bitmap(input_stream, report)
                         input_stream.close()
 
+                elif self.tag_group == "shad":
+                    input_file = os.path.join(config.HALO_2_TAG_PATH, "%s.shader" % self.name)
+                    if os.path.exists(input_file):
+                        input_stream = open(input_file, 'rb')
+                        ASSET = process_h2_shader(input_stream, report)
+                        input_stream.close()
+
                 elif self.tag_group == "hlmt":
                     input_file = os.path.join(config.HALO_2_TAG_PATH, "%s.model" % self.name)
                     if os.path.exists(input_file):
@@ -1163,6 +1171,9 @@ class TagAsset():
             self.type = header_struct[2]
             self.name = header_struct[3].decode('utf-8', 'replace').split('\x00', 1)[0].strip('\x20')
             self.tag_group = header_struct[4].decode('utf-8', 'replace')
+            if not tag.big_endian:
+                self.tag_group = self.tag_group[::-1]
+
             self.checksum = header_struct[5]
             self.data_offset = header_struct[6]
             self.data_length = header_struct[7]
@@ -1171,11 +1182,11 @@ class TagAsset():
             self.destination = header_struct[10]
             self.plugin_handle = header_struct[11]
             self.engine_tag = header_struct[12].decode('utf-8', 'replace')
+            if not tag.big_endian:
+                self.engine_tag = self.engine_tag[::-1]
+
             if not tag.xml_doc == None:
                 tag_group = get_tag_extension(self.tag_group)
-                if not tag.big_endian:
-                    tag_group = tag_group[::-1]
-
                 tag_node = tag.xml_doc.createElement('tag')
                 tag_node.setAttribute('group', tag_group)
                 tag_node.setAttribute('id', get_tag_path(input_stream.name, tag.is_legacy))

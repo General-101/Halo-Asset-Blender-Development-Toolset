@@ -217,10 +217,9 @@ def process_file(input_stream, report):
 
     initilize_bitmap(BITMAP)
     read_bitmap_body(BITMAP, TAG, input_stream, tag_node, XML_OUTPUT)
-    input_stream.seek(BITMAP.bitmap_body.compressed_color_plate_data.size, 1)
-    input_stream.seek(BITMAP.bitmap_body.processed_pixel_data.size, 1)
-    BITMAP.bitmap_body.compressed_color_plate = bytes()
-    BITMAP.bitmap_body.processed_pixels = bytes()
+    size = input_stream.read(4) # Padding
+    BITMAP.bitmap_body.compressed_color_plate = input_stream.read(BITMAP.bitmap_body.compressed_color_plate_data.size - 4)
+    BITMAP.bitmap_body.processed_pixels = input_stream.read(BITMAP.bitmap_body.processed_pixel_data.size)
     read_sequences(BITMAP, TAG, input_stream, tag_node, XML_OUTPUT)
     read_bitmaps(BITMAP, TAG, input_stream, tag_node, XML_OUTPUT)
 

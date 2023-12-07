@@ -139,13 +139,13 @@ def process_file(input_stream, report):
         tag_node = TAG.xml_doc.childNodes[0]
 
     initilize_collection(COLLECTION)
-    if COLLECTION.header.engine_tag == "BMAL":
+    if COLLECTION.header.engine_tag == "LAMB":
         read_collection_body_v0(COLLECTION, TAG, input_stream, tag_node, XML_OUTPUT)
         read_permutations_v0(COLLECTION, TAG, input_stream, tag_node, XML_OUTPUT)
-    elif COLLECTION.header.engine_tag == "BALM":
+    elif COLLECTION.header.engine_tag == "MLAB":
         read_collection_body_v0(COLLECTION, TAG, input_stream, tag_node, XML_OUTPUT)
         read_permutations_v0(COLLECTION, TAG, input_stream, tag_node, XML_OUTPUT)
-    elif COLLECTION.header.engine_tag == "!MLB":
+    elif COLLECTION.header.engine_tag == "BLM!":
         read_collection_body_retail(COLLECTION, TAG, input_stream, tag_node, XML_OUTPUT)
         read_permutations_retail(COLLECTION, TAG, input_stream, tag_node, XML_OUTPUT)
 

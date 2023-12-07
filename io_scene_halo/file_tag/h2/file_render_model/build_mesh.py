@@ -28,12 +28,10 @@ import os
 import bpy
 import bmesh
 
-from ....global_functions import global_functions, mesh_processing
+from ....global_functions import shader_processing, global_functions, mesh_processing
 from .format import PartFlags
 
-def build_mesh_layout(context, import_file, geometry, current_region_permutation, armature):
-    random_color_gen = global_functions.RandomColorGenerator() # generates a random sequence of colors
-
+def build_mesh_layout(context, import_file, geometry, current_region_permutation, armature, random_color_gen, materials):
     vertex_groups = []
     active_region_permutations = []
     vertex_normals = []
@@ -154,27 +152,27 @@ def build_mesh_layout(context, import_file, geometry, current_region_permutation
                 object_mesh.region_add(current_region_permutation)
 
             if not triangle_material_index == -1:
-                material_list = []
-                if triangle_material_index < materials_count:
-                    material_name = "%s" % (os.path.basename(mat.shader.name))
+                if triangle_material_index < materials_count:  
+                    mat = materials[triangle_material_index]
 
+                    if not mat in object_mesh.data.materials.values():
+                        object_mesh.data.materials.append(mat)
+
+                    mat.diffuse_color = random_color_gen.next()
+                    material_index = object_mesh.data.materials.values().index(mat)
+                    mesh.polygons[triangle_idx].material_index = material_index
                 else:
                     material_name = "invalid_material_%s" % triangle_material_index
+                    mat = bpy.data.materials.get(name=material_name)
+                    if mat is None:
+                        mat = bpy.data.materials.new(name=material_name)
 
-                mat = bpy.data.materials.get(material_name)
-                if mat is None:
-                    mat = bpy.data.materials.new(name=material_name)
+                    if not mat in object_mesh.data.materials.values():
+                        object_mesh.data.materials.append(mat)
 
-                for slot in object_mesh.material_slots:
-                    material_list.append(slot.material)
-
-                if not mat in material_list:
-                    material_list.append(mat)
-                    object_mesh.data.materials.append(mat)
-
-                mat.diffuse_color = random_color_gen.next()
-                material_index = material_list.index(mat)
-                mesh.polygons[triangle_idx].material_index = material_index
+                    mat.diffuse_color = random_color_gen.next()
+                    material_index = object_mesh.data.materials.values().index(mat)
+                    mesh.polygons[triangle_idx].material_index = material_index
 
             region_index = active_region_permutations.index(current_region_permutation)
             region_attribute.data[triangle_idx].value = region_index + 1
@@ -207,7 +205,7 @@ def build_mesh_layout(context, import_file, geometry, current_region_permutation
     object_mesh.parent = armature
     mesh_processing.add_modifier(context, object_mesh, False, None, armature)
 
-def build_object(context, collection, geometry, armature, LOD, region_name, permutation_name, import_file):
+def build_object(context, collection, geometry, armature, LOD, region_name, permutation_name, import_file, random_color_gen, materials):
     if region_name == "__unnamed":
         region_name = "unnamed"
 
@@ -216,9 +214,18 @@ def build_object(context, collection, geometry, armature, LOD, region_name, perm
 
     object_name = '%s %s %s' % (LOD, permutation_name, region_name)
 
-    build_mesh_layout(context, import_file, geometry, object_name, armature)
+    build_mesh_layout(context, import_file, geometry, object_name, armature, random_color_gen, materials)
 
-def get_geometry_layout(context, collection, import_file, armature):
+def get_geometry_layout(context, collection, import_file, armature, report):
+    random_color_gen = global_functions.RandomColorGenerator() # generates a random sequence of colors
+    materials = []
+    for material in import_file.materials:
+        material_name = os.path.basename(material.shader.name)
+        mat = bpy.data.materials.new(name=material_name)
+        shader_processing.generate_h2_shader(mat, material.shader, report)
+
+        materials.append(mat)
+
     for region in import_file.regions:
         for permutation in region.permutations:
             l1_geometry_index = permutation.l1_section_index
@@ -232,29 +239,29 @@ def get_geometry_layout(context, collection, import_file, armature):
             if not l6_geometry_index == -1 and l6_geometry_index < geometry_count and not import_file.sections[l6_geometry_index].visited:
                 import_file.sections[l6_geometry_index].visited = True
                 l6_geometry = import_file.sections[l6_geometry_index]
-                build_object(context, collection, l6_geometry, armature, 'L6', region.name, permutation.name, import_file)
+                build_object(context, collection, l6_geometry, armature, 'L6', region.name, permutation.name, import_file, random_color_gen, materials)
 
             if not l5_geometry_index == -1 and l5_geometry_index < geometry_count and not import_file.sections[l5_geometry_index].visited:
                 import_file.sections[l5_geometry_index].visited = True
                 l5_geometry = import_file.sections[l5_geometry_index]
-                build_object(context, collection, l5_geometry, armature, 'L5', region.name, permutation.name, import_file)
+                build_object(context, collection, l5_geometry, armature, 'L5', region.name, permutation.name, import_file, random_color_gen, materials)
 
             if not l4_geometry_index == -1 and l4_geometry_index < geometry_count and not import_file.sections[l4_geometry_index].visited:
                 import_file.sections[l4_geometry_index].visited = True
                 l4_geometry = import_file.sections[l4_geometry_index]
-                build_object(context, collection, l4_geometry, armature, 'L4', region.name, permutation.name, import_file)
+                build_object(context, collection, l4_geometry, armature, 'L4', region.name, permutation.name, import_file, random_color_gen, materials)
 
             if not l3_geometry_index == -1 and l3_geometry_index < geometry_count and not import_file.sections[l3_geometry_index].visited:
                 import_file.sections[l3_geometry_index].visited = True
                 l3_geometry = import_file.sections[l3_geometry_index]
-                build_object(context, collection, l3_geometry, armature, 'L3', region.name, permutation.name, import_file)
+                build_object(context, collection, l3_geometry, armature, 'L3', region.name, permutation.name, import_file, random_color_gen, materials)
 
             if not l2_geometry_index == -1 and l2_geometry_index < geometry_count and not import_file.sections[l2_geometry_index].visited:
                 import_file.sections[l2_geometry_index].visited = True
                 l2_geometry = import_file.sections[l2_geometry_index]
-                build_object(context, collection, l2_geometry, armature, 'L2', region.name, permutation.name, import_file)
+                build_object(context, collection, l2_geometry, armature, 'L2', region.name, permutation.name, import_file, random_color_gen, materials)
 
             if not l1_geometry_index == -1 and l1_geometry_index < geometry_count and not import_file.sections[l1_geometry_index].visited:
                 import_file.sections[l1_geometry_index].visited = True
                 l1_geometry = import_file.sections[l1_geometry_index]
-                build_object(context, collection, l1_geometry, armature, 'L1', region.name, permutation.name, import_file)
+                build_object(context, collection, l1_geometry, armature, 'L1', region.name, permutation.name, import_file, random_color_gen, materials)
