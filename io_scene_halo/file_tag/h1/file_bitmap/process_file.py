@@ -79,7 +79,11 @@ def process_file(input_stream, report):
     BITMAP.bitmap_body.bitmaps_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "bitmaps"))
 
     size = input_stream.read(4) # Padding
-    BITMAP.bitmap_body.compressed_color_plate = input_stream.read(BITMAP.bitmap_body.compressed_color_plate_data.size - 4)
+    color_plate_length = BITMAP.bitmap_body.compressed_color_plate_data.size - 4
+    if color_plate_length < 0:
+        color_plate_length = 0
+
+    BITMAP.bitmap_body.compressed_color_plate = input_stream.read(color_plate_length)
     BITMAP.bitmap_body.processed_pixels = input_stream.read(BITMAP.bitmap_body.processed_pixel_data.size)
 
     BITMAP.sequences = []
