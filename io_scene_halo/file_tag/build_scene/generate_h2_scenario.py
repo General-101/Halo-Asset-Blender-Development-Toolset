@@ -485,8 +485,9 @@ def generate_scenario_scene(context, H2_ASSET, game_version, game_title, file_ve
         scenery = H2_ASSET.scenery
         if scenery_resource:
             SCENERY_RESOURCE_ASSET = scenery_resource.parse_tag(report, "halo2", "retail")
-            scenery_palette = SCENERY_RESOURCE_ASSET.scenery_palette
-            scenery = SCENERY_RESOURCE_ASSET.scenery
+            if not SCENERY_RESOURCE_ASSET == None:
+                scenery_palette = SCENERY_RESOURCE_ASSET.scenery_palette
+                scenery = SCENERY_RESOURCE_ASSET.scenery
 
         generate_object_elements(level_root, "Scenery", scenery_palette, scenery, context, game_version, file_version, fix_rotations, report, random_color_gen)
     if len(H2_ASSET.bipeds) > 0:
