@@ -60,6 +60,7 @@ class HALO_PropertiesGroup(PropertyGroup):
                 ('13', "Netgame Equipment", "Netgame Equipment"),
                 ('14', "Decals", "Decals"),
                 ('15', "Encounters", "Encounters"),
+                ('16', "Instance", "Instance"),
             )
         )
 
@@ -67,6 +68,14 @@ class HALO_PropertiesGroup(PropertyGroup):
         name = "Lightmap Index",
         description = "What index do we use in the referenced lightmap tag. Try not to edit this manually",
         default = -1
+        )
+
+    instance_lightmap_policy_enum: EnumProperty(
+        name="Lightmap Policy",
+        description="Wow the lightmapper uses the object",
+        items=( ('0', "Per Pixel", "Object uses baked lighting"),
+                ('1', "Per Vertex", "Object uses vertex lighting")
+            )
         )
 
     tag_path: StringProperty(
@@ -102,7 +111,7 @@ class HALO_PropertiesGroup(PropertyGroup):
         description = "Not placed automatically on Heroic difficulty. Must be created via script",
         default = False,
         )
-    
+
     use_player_appearance: BoolProperty(
         name ="Use Player Appearance",
         description = "I have no idea what this is",
@@ -314,6 +323,13 @@ def render_cluster(layout, tag_view):
     row = col.row()
     row.label(text='Lightmap Index:')
     row.prop(tag_view, "lightmap_index", text='')
+
+def render_instance(layout, tag_view):
+    box = layout.split()
+    col = box.column(align=True)
+    row = col.row()
+    row.label(text='Lightmap Policy:')
+    row.prop(tag_view, "instance_lightmap_policy_enum", text='')
 
 def render_object(layout, tag_view):
     box = layout.split()
@@ -529,7 +545,8 @@ class Halo_TagView(Panel):
         
         data_type_value = int(tag_view.data_type_enum)
         if data_type_value == DataTypesEnum.clusters.value:
-            render_cluster(layout, tag_view)
+            if context.scene.halo.game_title == 'halo1':
+                render_cluster(layout, tag_view)
         elif data_type_value == DataTypesEnum.scenery.value or data_type_value == DataTypesEnum.sound_scenery.value:
             render_object(layout, tag_view)
             render_scenery(layout, tag_view)
@@ -558,3 +575,5 @@ class Halo_TagView(Panel):
             render_object(layout, tag_view)
             render_device(layout, tag_view)
             render_light_fixture(layout, tag_view)
+        elif data_type_value == DataTypesEnum.instances.value:
+            render_instance(layout, tag_view)

@@ -72,10 +72,11 @@ def read_bitmap_body(BITMAP, TAG, input_stream, tag_node, XML_OUTPUT):
     BITMAP.bitmap_body.force_format = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "force format", ForceFormatEnum))
     BITMAP.bitmap_body.sequences_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "sequences"))
     BITMAP.bitmap_body.bitmaps_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "bitmaps"))
-    BITMAP.bitmap_body.color_compression_quality = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(tag_node, "color compression quality"))
-    BITMAP.bitmap_body.alpha_compression_quality = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(tag_node, "alpha compression quality"))
-    BITMAP.bitmap_body.overlap = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(tag_node, "overlap"))
-    BITMAP.bitmap_body.color_subsampling = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(tag_node, "color subsampling"))
+    if BITMAP.bitmap_body_header.size == 112:
+        BITMAP.bitmap_body.color_compression_quality = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(tag_node, "color compression quality"))
+        BITMAP.bitmap_body.alpha_compression_quality = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(tag_node, "alpha compression quality"))
+        BITMAP.bitmap_body.overlap = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(tag_node, "overlap"))
+        BITMAP.bitmap_body.color_subsampling = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(tag_node, "color subsampling"))
 
 def read_sequences(BITMAP, TAG, input_stream, tag_node, XML_OUTPUT):
     if BITMAP.bitmap_body.sequences_tag_block.count > 0:
@@ -217,12 +218,14 @@ def process_file(input_stream, report):
 
     initilize_bitmap(BITMAP)
     read_bitmap_body(BITMAP, TAG, input_stream, tag_node, XML_OUTPUT)
-    size = input_stream.read(4) # Padding
-    color_plate_length = BITMAP.bitmap_body.compressed_color_plate_data.size - 4
-    if color_plate_length < 0:
-        color_plate_length = 0
+    if BITMAP.bitmap_body.compressed_color_plate_data.size > 0:
+        size = input_stream.read(4) # Padding
+        color_plate_length = BITMAP.bitmap_body.compressed_color_plate_data.size - 4
+        if color_plate_length < 0:
+            color_plate_length = 0
 
-    BITMAP.bitmap_body.compressed_color_plate = input_stream.read(color_plate_length)
+        BITMAP.bitmap_body.compressed_color_plate = input_stream.read(color_plate_length)
+
     BITMAP.bitmap_body.processed_pixels = input_stream.read(BITMAP.bitmap_body.processed_pixel_data.size)
     read_sequences(BITMAP, TAG, input_stream, tag_node, XML_OUTPUT)
     read_bitmaps(BITMAP, TAG, input_stream, tag_node, XML_OUTPUT)

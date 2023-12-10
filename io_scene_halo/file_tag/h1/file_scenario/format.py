@@ -44,6 +44,7 @@ class DataTypesEnum(Enum):
     netgame_equipment = auto()
     decals = auto()
     encounters = auto()
+    instances = auto()
 
 class ScenarioTypeEnum(Enum):
     solo = 0

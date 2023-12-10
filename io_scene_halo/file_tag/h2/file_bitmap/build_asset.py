@@ -109,7 +109,7 @@ def write_bitmaps(output_stream, BITMAP, TAG):
                     output_stream.write(struct.pack('<i', native_mipmap_info.pitch_row))
                     output_stream.write(struct.pack('<i', native_mipmap_info.pitch_slice))
 
-def build_asset(output_stream, BITMAP):
+def build_asset(output_stream, BITMAP, report):
     TAG = tag_format.TagAsset()
     TAG.big_endian = False
 

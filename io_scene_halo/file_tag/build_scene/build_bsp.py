@@ -93,6 +93,7 @@ def build_scene(context, LEVEL, game_version, game_title, file_version, fix_rota
 
                         mesh.from_pydata(vertices, [], triangles)
                         mesh.normals_split_custom_set_from_vertices(normals)
+                        mesh.use_auto_smooth = True
                         for tri_idx, poly in enumerate(mesh.polygons):
                             poly.use_smooth = True
 
@@ -284,6 +285,8 @@ def build_scene(context, LEVEL, game_version, game_title, file_version, fix_rota
                 cluster_name = "cluster_%s" % cluster_idx
                 full_mesh = bpy.data.meshes.new(cluster_name)
                 object_mesh = bpy.data.objects.new(cluster_name, full_mesh)
+                object_mesh.tag_view.data_type_enum = '1'
+                
                 object_mesh.parent = level_root
                 for cluster_data in cluster.cluster_data:
                     triangles = []
@@ -435,6 +438,9 @@ def build_scene(context, LEVEL, game_version, game_title, file_version, fix_rota
                 ob_name = instanced_geometry_instance.name
 
                 object_mesh = bpy.data.objects.new(ob_name, mesh)
+                object_mesh.tag_view.data_type_enum = '16'
+                object_mesh.tag_view.instance_lightmap_policy_enum = str(instanced_geometry_instance.lightmapping_policy)
+                
                 object_mesh.parent = level_root
                 cluster_collection_override.objects.link(object_mesh)
 

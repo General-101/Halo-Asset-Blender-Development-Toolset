@@ -63,8 +63,7 @@ def bake_clusters(context, game_title, scenario_path, image_multiplier, report):
         if not levels_collection == None:
             for bsp_idx, bsp_collection in enumerate(levels_collection.children):
                 for cluster_collection in bsp_collection.children:
-                    for cluster_idx, cluster_ob in enumerate(cluster_collection.objects):
-                        cluster_ob.hide_render = True
+                    cluster_collection.hide_render = True
 
             for bsp_idx, bsp_collection in enumerate(levels_collection.children):
                 bsp_element = SCNR_ASSET.structure_bsps[bsp_idx]
@@ -107,6 +106,7 @@ def bake_clusters(context, game_title, scenario_path, image_multiplier, report):
                 BITMAP.bitmaps = []
 
                 for cluster_collection in bsp_collection.children:
+                    cluster_collection.hide_render = False
                     for cluster_idx, cluster_ob in enumerate(cluster_collection.objects):
                         if not cluster_ob.tag_view.lightmap_index == -1:
                             bitmap_element = BITMAP_ASSET.bitmaps[cluster_idx]
@@ -140,9 +140,7 @@ def bake_clusters(context, game_title, scenario_path, image_multiplier, report):
                             context.view_layer.objects.active = cluster_ob
                             
                             context.scene.render.engine = 'CYCLES'
-                            cluster_ob.hide_render = False
                             bpy.ops.object.bake(type='DIFFUSE', pass_filter={'DIRECT','INDIRECT'}, uv_layer=cluster_ob.data.uv_layers[1].name)
-                            cluster_ob.hide_render = True
                             cluster_ob.select_set(False)
                             context.view_layer.objects.active = None
 
@@ -151,18 +149,6 @@ def bake_clusters(context, game_title, scenario_path, image_multiplier, report):
 
                             bitmap_format = BITMAP.bitmap_body.format
                             lightmap_flags = H1BitmapFlags.power_of_two_dimensions.value
-            #                if bitmap_format == FormatEnum.compressed_with_color_key_transparency.value:
-            #                    lightmap_image = image.convert('BGR;16')
-            #					lightmap_format = H1BitmapFormatEnum.dxt1.value
-            #					lightmap_flags += H1BitmapFlags.compressed.value
-            #                elif bitmap_format == FormatEnum.compressed_with_explicit_alpha.value:
-            #                    lightmap_image = image.convert('BGR;16')
-            #					lightmap_format = H1BitmapFormatEnum.r5g6b5.value
-            #					lightmap_flags += H1BitmapFlags.compressed.value
-            #                elif bitmap_format == FormatEnum.compressed_with_interpolated_alpha.value:
-            #                    lightmap_image = image.convert('BGR;16')
-            #					lightmap_format = H1BitmapFormatEnum.r5g6b5.value
-            #					lightmap_flags += H1BitmapFlags.compressed.value
                             if bitmap_format == H1FormatEnum._16bit_color.value:
                                 lightmap_data = image.convert('BGR;16').tobytes()
                                 lightmap_format = H1BitmapFormatEnum.r5g6b5.value
@@ -171,14 +157,7 @@ def bake_clusters(context, game_title, scenario_path, image_multiplier, report):
                                 r,g,b,a = lightmap_image.split()
                                 lightmap_data = Image.merge("RGBA", (b, g, r, a)).tobytes()
                                 lightmap_format = H1BitmapFormatEnum.x8r8g8b8.value
-                                
-            #                elif bitmap_format == FormatEnum.monochrome.value:
-            #                    lightmap_image = image.convert('BGR;16')
-            #					lightmap_format = H1BitmapFormatEnum.r5g6b5.value
-            #                elif bitmap_format == FormatEnum.high_quality_compression.value:
-            #                    lightmap_image = image.convert('BGR;16')
-            #					lightmap_format = H1BitmapFormatEnum.r5g6b5.value
-                                
+
                             pixel_data = pixel_data + lightmap_data
                             
                             sequence = BITMAP.Sequence()
@@ -203,6 +182,7 @@ def bake_clusters(context, game_title, scenario_path, image_multiplier, report):
 
                             pixel_offset += len(lightmap_data)
 
+                    cluster_collection.hide_render = True
                     BITMAP.bitmap_body.processed_pixel_data = TAG.RawData(len(pixel_data))
                     BITMAP.bitmap_body.processed_pixels = pixel_data
 
@@ -218,8 +198,7 @@ def bake_clusters(context, game_title, scenario_path, image_multiplier, report):
         if not levels_collection == None:
             for bsp_idx, bsp_collection in enumerate(levels_collection.children):
                 for cluster_collection in bsp_collection.children:
-                    for cluster_idx, cluster_ob in enumerate(cluster_collection.objects):
-                        cluster_ob.hide_render = True
+                    cluster_collection.hide_render = True
 
         input_stream = open(scenario_path, "rb")
         SCNR_ASSET = process_h2_scenario(input_stream, report)
@@ -272,74 +251,77 @@ def bake_clusters(context, game_title, scenario_path, image_multiplier, report):
                 BITMAP.sequences = []
                 BITMAP.bitmaps = []
 
-                for lightmap_idx, lightmap_ob in enumerate(lightmap_collection.objects):
-                    bitmap_element = BITMAP_ASSET.bitmaps[lightmap_idx]
-                    width = int(bitmap_element.width * image_multiplier)
-                    height = int(bitmap_element.height * image_multiplier)
-                    image = bpy.data.images.get("Lightmap_%s" % lightmap_idx)
-                    if not image:
-                        image = bpy.data.images.new("Lightmap_%s" % lightmap_idx, width, height)
-                    else:
-                        image.scale(width, height)
-                        image.update()
+                lightmap_idx = 0
+                lightmap_collection.hide_render = False
+                for lightmap_ob in lightmap_collection.objects:
+                    if lightmap_ob.tag_view.instance_lightmap_policy_enum == '0':
+                        bitmap_element = BITMAP_ASSET.bitmaps[lightmap_idx]
+                        width = int(bitmap_element.width * image_multiplier)
+                        height = int(bitmap_element.height * image_multiplier)
+                        image = bpy.data.images.get("Lightmap_%s" % lightmap_idx)
+                        if not image:
+                            image = bpy.data.images.new("Lightmap_%s" % lightmap_idx, width, height)
+                        else:
+                            image.scale(width, height)
+                            image.update()
 
-                    for material_slot in lightmap_ob.material_slots:
-                        material_slot.material.use_nodes = True
-                        material_nodes = material_slot.material.node_tree.nodes
-                        image_node = material_nodes.get("Lightmap Texture")
-                        if image_node == None:
-                            image_node = material_nodes.new("ShaderNodeTexImage")
-                            image_node.name = "Lightmap Texture"
-                            image_node.location = Vector((-260.0, 280.0))
+                        lightmap_idx += 1
+                        for material_slot in lightmap_ob.material_slots:
+                            material_slot.material.use_nodes = True
+                            material_nodes = material_slot.material.node_tree.nodes
+                            image_node = material_nodes.get("Lightmap Texture")
+                            if image_node == None:
+                                image_node = material_nodes.new("ShaderNodeTexImage")
+                                image_node.name = "Lightmap Texture"
+                                image_node.location = Vector((-260.0, 280.0))
 
-                        image_node.image = image
+                            image_node.image = image
 
-                        for node in material_nodes:
-                            node.select = False
+                            for node in material_nodes:
+                                node.select = False
 
-                        image_node.select = True
-                        material_nodes.active = image_node
+                            image_node.select = True
+                            material_nodes.active = image_node
 
-                    lightmap_ob.select_set(True)
-                    context.view_layer.objects.active = lightmap_ob
-                    
-                    context.scene.render.engine = 'CYCLES'
-                    lightmap_ob.hide_render = False
-                    bpy.ops.object.bake(type='DIFFUSE', pass_filter={'DIRECT','INDIRECT'}, uv_layer=lightmap_ob.data.uv_layers[0].name)
-                    lightmap_ob.hide_render = True
-                    lightmap_ob.select_set(False)
-                    context.view_layer.objects.active = None
-
-                    buf = bytearray([int(p * 255) for p in image.pixels])
-                    image = Image.frombytes("RGBA", (width, height), buf, 'raw', "RGBA")
-
-                    bitmap_format = BITMAP.bitmap_body.format
-                    lightmap_flags = H2BitmapFlags.power_of_two_dimensions.value
-
-                    lightmap_image = image.convert('RGBA')
-                    r,g,b,a = lightmap_image.split()
-                    lightmap_data = Image.merge("RGBA", (b, g, r, a)).tobytes()
-                    lightmap_format = H2BitmapFormatEnum.a8r8g8b8.value
+                        lightmap_ob.select_set(True)
+                        context.view_layer.objects.active = lightmap_ob
                         
-                    pixel_data = pixel_data + lightmap_data
+                        context.scene.render.engine = 'CYCLES'
+                        bpy.ops.object.bake(type='DIFFUSE', pass_filter={'DIRECT','INDIRECT'}, uv_layer=lightmap_ob.data.uv_layers[0].name)
+                        lightmap_ob.select_set(False)
+                        context.view_layer.objects.active = None
 
-                    bitmap_class = BITMAP.Bitmap()
-                    bitmap_class.signature = "bitm"
-                    bitmap_class.width = width
-                    bitmap_class.height = height
-                    bitmap_class.depth = 1
-                    bitmap_class.bitmap_format = lightmap_format
-                    bitmap_class.flags = lightmap_flags
-                    bitmap_class.pixels_offset = pixel_offset
-                    bitmap_class.native_mipmap_info_tag_block = TAG.TagBlock()
-                    bitmap_class.native_mipmap_info_header = TAG.TagBlockHeader("tbfd", 0, 0, 12)
-                    bitmap_class.native_mipmap_info = []
-                    bitmap_class.nbmi_header = TAG.TagBlockHeader("nbmi", 0, 1, 24)
+                        buf = bytearray([int(p * 255) for p in image.pixels])
+                        image = Image.frombytes("RGBA", (width, height), buf, 'raw', "RGBA")
 
-                    BITMAP.bitmaps.append(bitmap_class)
+                        bitmap_format = BITMAP.bitmap_body.format
+                        lightmap_flags = H2BitmapFlags.power_of_two_dimensions.value
 
-                    pixel_offset += len(lightmap_data)
+                        lightmap_image = image.convert('RGBA')
+                        r,g,b,a = lightmap_image.split()
+                        lightmap_data = Image.merge("RGBA", (b, g, r, a)).tobytes()
+                        lightmap_format = H2BitmapFormatEnum.a8r8g8b8.value
+                            
+                        pixel_data = pixel_data + lightmap_data
 
+                        bitmap_class = BITMAP.Bitmap()
+                        bitmap_class.signature = "bitm"
+                        bitmap_class.width = width
+                        bitmap_class.height = height
+                        bitmap_class.depth = 1
+                        bitmap_class.bitmap_format = lightmap_format
+                        bitmap_class.flags = lightmap_flags
+                        bitmap_class.pixels_offset = pixel_offset
+                        bitmap_class.native_mipmap_info_tag_block = TAG.TagBlock()
+                        bitmap_class.native_mipmap_info_header = TAG.TagBlockHeader("tbfd", 0, 0, 12)
+                        bitmap_class.native_mipmap_info = []
+                        bitmap_class.nbmi_header = TAG.TagBlockHeader("nbmi", 0, 1, 24)
+
+                        BITMAP.bitmaps.append(bitmap_class)
+
+                        pixel_offset += len(lightmap_data)
+
+                lightmap_collection.hide_render = True
                 BITMAP.bitmap_body.processed_pixel_data = TAG.RawData(len(pixel_data))
                 BITMAP.bitmap_body.processed_pixels = pixel_data
 
