@@ -75,8 +75,8 @@ def process_mesh(SBSP_ASSET, random_color_gen, tag_block, poop_name, material_co
             for poly in mesh.polygons:
                 poly.use_smooth = True
 
-            mesh.normals_split_custom_set_from_vertices([vertex.normal for vertex in vertices])
-            mesh.use_auto_smooth = True
+            #mesh.normals_split_custom_set_from_vertices([vertex.normal for vertex in vertices])
+            #mesh.use_auto_smooth = True
 
             uv_name = 'UVMap_%s' % 0
             layer_uv = mesh.uv_layers.get(uv_name)
@@ -99,7 +99,7 @@ def process_mesh(SBSP_ASSET, random_color_gen, tag_block, poop_name, material_co
                     
                         vertex_list = [vertices[vertex_map[v0]], vertices[vertex_map[v1]], vertices[vertex_map[v2]]]
                         for vertex_idx, vertex in enumerate(vertex_list):
-                            loop_index = triangle_index + vertex_idx
+                            loop_index = (triangle_start * 3) + triangle_index + vertex_idx
 
                             U = vertex.primary_lightmap_texcoord[0]
                             V = vertex.primary_lightmap_texcoord[1]
