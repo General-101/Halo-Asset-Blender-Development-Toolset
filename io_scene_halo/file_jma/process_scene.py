@@ -125,7 +125,7 @@ def process_scene(context, extension, jma_version, game_title, generate_checksum
             first_child_node = joined_list.index(find_child_node)
         if not find_sibling_node == None:
             first_sibling_node = joined_list.index(find_sibling_node)
-        if not node.parent == None and not node.parent.name.startswith('!'):
+        if not node.parent == None and node.parent.use_deform and not node.parent.name.startswith('!'):
             parent_node = joined_list.index(node.parent)
 
         name = node.name
