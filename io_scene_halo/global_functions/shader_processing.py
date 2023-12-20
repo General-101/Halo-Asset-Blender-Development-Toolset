@@ -1546,7 +1546,7 @@ def generate_shader_environment(mat, shader, permutation_index, report):
         connect_inputs(mat.node_tree, blend_detail_mix_node, 2, blend_biased_multiply_node, "Detail")
         connect_inputs(mat.node_tree, blend_biased_multiply_node, "Color", bdsf_principled, "Base Color")
 
-    elif shader.shader_body.blended_base_specular == EnvironmentTypeEnum.blended_base_specular.value:
+    elif shader.shader_body.environment_type == EnvironmentTypeEnum.blended_base_specular.value:
         blend_mix_node = mat.node_tree.nodes.new("ShaderNodeMix")
         blend_mix_node.data_type = 'RGBA'
         blend_mix_node.blend_type = "ADD"
