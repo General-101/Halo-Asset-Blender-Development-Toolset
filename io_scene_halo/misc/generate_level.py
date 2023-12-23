@@ -31,7 +31,7 @@ import random
 
 from math import radians, degrees
 from mathutils import Matrix, Vector, Euler
-from ..global_ui.__init__ import CharacterFlags
+from ..global_ui.maze_ui import CharacterFlags
 from ..misc.maze_gen.solve_maze import solve_maze
 from ..global_functions.tag_format import TagAsset
 from ..misc.maze_gen.generate_maze import generate_maze
@@ -547,7 +547,7 @@ def generate_string_from_dic(script):
         if script_functions[script_name]["type"] == "startup":
             dic_string += process_dic_element(script_functions[script_name], script_name)
 
-    return dic_string.encode('ascii')
+    return dic_string
 
 def generate_source_files(TAG, SCENARIO, output_path, script_dic):
     hek_root, local_path = output_path.split("\\tags\\")
@@ -560,10 +560,10 @@ def generate_source_files(TAG, SCENARIO, output_path, script_dic):
         ascii_text = generate_string_from_dic(script_dic[script_name])
         if script_name == "global_scripts":
             with open(os.path.join(data_directory, "global_scripts.hsc"), 'wb') as f:
-                f.write(ascii_text)
+                f.write(ascii_text.encode('ascii'))
         else:
             with open(os.path.join(script_directory, "%s.hsc" % script_name), 'wb') as f:
-                f.write(ascii_text)
+                f.write(ascii_text.encode('ascii'))
 
         source_file = SCENARIO.SourceFile()
         source_file.name = script_name
@@ -583,6 +583,7 @@ def generate_structure_bsps(TAG, SCENARIO):
 def initialize_scenario():
     TAG = TagAsset()
     SCENARIO = ScenarioAsset()
+    TAG.is_legacy = False
 
     SCENARIO.header = TAG.Header()
     SCENARIO.header.unk1 = 0
@@ -590,7 +591,7 @@ def initialize_scenario():
     SCENARIO.header.type = 0
     SCENARIO.header.name = ""
     SCENARIO.header.tag_group = "scnr"
-    SCENARIO.header.checksum = 0
+    SCENARIO.header.checksum = -1
     SCENARIO.header.data_offset = 64
     SCENARIO.header.data_length = 0
     SCENARIO.header.unk2 = 0
@@ -599,10 +600,74 @@ def initialize_scenario():
     SCENARIO.header.plugin_handle = -1
     SCENARIO.header.engine_tag = "blam"
 
+    SCENARIO.scenario_body = SCENARIO.ScenarioBody()
+    SCENARIO.scenario_body.dont_use_tag_ref = TAG.TagRef()
+    SCENARIO.scenario_body.wont_use_tag_ref = TAG.TagRef()
+    SCENARIO.scenario_body.cant_use_tag_ref = TAG.TagRef()
+    SCENARIO.scenario_body.skies_tag_block = TAG.TagBlock()
+    SCENARIO.scenario_body.child_scenarios_tag_block = TAG.TagBlock()
+    SCENARIO.scenario_body.predicted_resources_tag_block = TAG.TagBlock()
+    SCENARIO.scenario_body.functions_tag_block = TAG.TagBlock()
+    SCENARIO.scenario_body.editor_scenario_data = TAG.RawData()
+    SCENARIO.scenario_body.comments_tag_block = TAG.TagBlock()
+    SCENARIO.scenario_body.scavenger_hunt_objects_tag_block = TAG.TagBlock()
+    SCENARIO.scenario_body.object_names_tag_block = TAG.TagBlock()
+    SCENARIO.scenario_body.scenery_tag_block = TAG.TagBlock()
+    SCENARIO.scenario_body.scenery_palette_tag_block = TAG.TagBlock()
+    SCENARIO.scenario_body.bipeds_tag_block = TAG.TagBlock()
+    SCENARIO.scenario_body.biped_palette_tag_block = TAG.TagBlock()
+    SCENARIO.scenario_body.vehicles_tag_block = TAG.TagBlock()
+    SCENARIO.scenario_body.vehicle_palette_tag_block = TAG.TagBlock()
+    SCENARIO.scenario_body.equipment_tag_block = TAG.TagBlock()
+    SCENARIO.scenario_body.equipment_palette_tag_block = TAG.TagBlock()
+    SCENARIO.scenario_body.weapons_tag_block = TAG.TagBlock()
+    SCENARIO.scenario_body.weapon_palette_tag_block = TAG.TagBlock()
+    SCENARIO.scenario_body.device_groups_tag_block = TAG.TagBlock()
+    SCENARIO.scenario_body.machines_tag_block = TAG.TagBlock()
+    SCENARIO.scenario_body.machine_palette_tag_block = TAG.TagBlock()
+    SCENARIO.scenario_body.controls_tag_block = TAG.TagBlock()
+    SCENARIO.scenario_body.control_palette_tag_block = TAG.TagBlock()
+    SCENARIO.scenario_body.light_fixtures_tag_block = TAG.TagBlock()
+    SCENARIO.scenario_body.light_fixtures_palette_tag_block = TAG.TagBlock()
+    SCENARIO.scenario_body.sound_scenery_tag_block = TAG.TagBlock()
+    SCENARIO.scenario_body.sound_scenery_palette_tag_block = TAG.TagBlock()
+    SCENARIO.scenario_body.player_starting_profile_tag_block = TAG.TagBlock()
+    SCENARIO.scenario_body.player_starting_locations_tag_block = TAG.TagBlock()
+    SCENARIO.scenario_body.trigger_volumes_tag_block = TAG.TagBlock()
+    SCENARIO.scenario_body.recorded_animations_tag_block = TAG.TagBlock()
+    SCENARIO.scenario_body.netgame_flags_tag_block = TAG.TagBlock()
+    SCENARIO.scenario_body.netgame_equipment_tag_block = TAG.TagBlock()
+    SCENARIO.scenario_body.starting_equipment_tag_block = TAG.TagBlock()
+    SCENARIO.scenario_body.bsp_switch_trigger_volumes_tag_block = TAG.TagBlock()
+    SCENARIO.scenario_body.decals_tag_block = TAG.TagBlock()
+    SCENARIO.scenario_body.decal_palette_tag_block = TAG.TagBlock()
+    SCENARIO.scenario_body.detail_object_collection_palette_tag_block = TAG.TagBlock()
+    SCENARIO.scenario_body.actor_palette_tag_block = TAG.TagBlock()
+    SCENARIO.scenario_body.encounters_tag_block = TAG.TagBlock()
+    SCENARIO.scenario_body.command_lists_tag_block = TAG.TagBlock()
+    SCENARIO.scenario_body.ai_animation_references_tag_block = TAG.TagBlock()
+    SCENARIO.scenario_body.ai_script_references_tag_block = TAG.TagBlock()
+    SCENARIO.scenario_body.ai_recording_references_tag_block = TAG.TagBlock()
+    SCENARIO.scenario_body.ai_conversations_tag_block = TAG.TagBlock()
+    SCENARIO.scenario_body.script_syntax_data_tag_data = TAG.RawData()
+    SCENARIO.scenario_body.script_string_data_tag_data = TAG.RawData()
+    SCENARIO.scenario_body.scripts_tag_block = TAG.TagBlock()
+    SCENARIO.scenario_body.globals_tag_block = TAG.TagBlock()
+    SCENARIO.scenario_body.references_tag_block = TAG.TagBlock()
+    SCENARIO.scenario_body.source_files_tag_block = TAG.TagBlock()
+    SCENARIO.scenario_body.cutscene_flags_tag_block = TAG.TagBlock()
+    SCENARIO.scenario_body.cutscene_camera_points_tag_block = TAG.TagBlock()
+    SCENARIO.scenario_body.cutscene_titles_tag_block = TAG.TagBlock()
+    SCENARIO.scenario_body.custom_object_names_tag_ref = TAG.TagRef()
+    SCENARIO.scenario_body.chapter_title_text_tag_ref = TAG.TagRef()
+    SCENARIO.scenario_body.hud_messages_tag_ref = TAG.TagRef()
+    SCENARIO.scenario_body.structure_bsps_tag_block = TAG.TagBlock()
+
     SCENARIO.skies = []
     SCENARIO.child_scenarios = []
     SCENARIO.predicted_resources = []
     SCENARIO.functions = []
+    SCENARIO.editor_scenario_data = bytes()
     SCENARIO.comments = []
     SCENARIO.scavenger_hunt_objects = []
     SCENARIO.object_names = []
@@ -643,6 +708,8 @@ def initialize_scenario():
     SCENARIO.ai_script_references = []
     SCENARIO.ai_recording_references = []
     SCENARIO.ai_conversations = []
+    SCENARIO.script_syntax_data = bytes()
+    SCENARIO.script_string_data = bytes()
     SCENARIO.scripts = []
     SCENARIO.globals = []
     SCENARIO.references = []
@@ -1031,7 +1098,7 @@ def generate_global_scripts(script_dic, player_count):
                        "(player_effect_start (real_random_range .7 .9) 1)"
                        ]
 
-def generate_level(context, game_title, level_seed, level_theme, level_damage, level_goal, player_biped, level_conflict, mutator_random_weapons, mutator_extended_family, maze_height, maze_width, output_directory):
+def generate_level(context, game_title, level_seed, level_theme, level_damage, level_goal, player_biped, level_conflict, mutator_random_weapons, mutator_extended_family, maze_height, maze_width, output_directory, report):
     player_count = 2
 
     if not level_seed == 0:
@@ -1261,7 +1328,7 @@ def generate_level(context, game_title, level_seed, level_theme, level_damage, l
 
     output_file = os.path.join(output_directory, "maze_gen.scenario")
     output_stream = open(output_file, 'wb')
-    build_h1_scenario(output_stream, SCENARIO, TAG, print)
+    build_h1_scenario(output_stream, SCENARIO, report)
     output_stream.close()
 
     return {'FINISHED'}

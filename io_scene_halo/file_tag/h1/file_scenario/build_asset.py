@@ -145,7 +145,7 @@ def write_scavenger_hunt_objects(output_stream, SCENARIO):
 
 def write_object_names(output_stream, SCENARIO):
     for object_name in SCENARIO.object_names:
-        output_stream.write(struct.pack('>31sx', tag_format.string_to_bytes(object_name, False)))
+        output_stream.write(struct.pack('>31sx', tag_format.string_to_bytes(object_name.name, False)))
         output_stream.write(struct.pack('>4x'))
 
 def write_object(output_stream, scenery_element):

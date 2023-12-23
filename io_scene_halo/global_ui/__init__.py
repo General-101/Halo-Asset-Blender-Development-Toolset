@@ -72,7 +72,6 @@ from .material_ui import (
 )
 
 from .maze_ui import (
-    Halo_SurfaceFlags,
     set_surface_usage,
     get_surface_usage,
     set_character_usage,
@@ -167,7 +166,6 @@ class Halo_ScenePropertiesGroup(PropertyGroup):
         )
 
 classeshalo = (
-    Halo_SurfaceFlags,
     ASS_JMS_ObjectPropertiesGroup,
     ASS_JMS_MeshPropertiesGroup,
     ASS_JMS_MaterialPropertiesGroup,

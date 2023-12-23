@@ -316,7 +316,7 @@ def get_scenery(scenery_tag_block, TAG, SCENARIO):
         scenery.name_index = scenery_element.name_index
         scenery.placement_flags = convert_object_flags(scenery_element.placement_flags)
         scenery.position = scenery_element.position
-        scenery.rotation = tag_format.vector_as_radians(scenery_element.rotation)
+        scenery.rotation = scenery_element.rotation
         scenery.scale = 0
         scenery.transform_flags = 0
         scenery.manual_bsp_flags = 0
@@ -357,7 +357,7 @@ def get_unit(unit_tag_block, TAG, SCENARIO, is_biped):
         unit.name_index = unit_element.name_index
         unit.placement_flags = convert_object_flags(unit_element.placement_flags)
         unit.position = unit_element.position
-        unit.rotation = tag_format.vector_as_radians(unit_element.rotation)
+        unit.rotation = unit_element.rotation
         unit.scale = 0
         unit.transform_flags = 0
         unit.manual_bsp_flags = 0
@@ -399,7 +399,7 @@ def get_equipment(equipment_tag_block, TAG, SCENARIO):
         equipment.name_index = equipment_element.name_index
         equipment.placement_flags = convert_object_flags(equipment_element.placement_flags)
         equipment.position = equipment_element.position
-        equipment.rotation = tag_format.vector_as_radians(equipment_element.rotation)
+        equipment.rotation = equipment_element.rotation
         equipment.scale = 0
         equipment.transform_flags = 0
         equipment.manual_bsp_flags = 0
@@ -430,7 +430,7 @@ def get_weapon(weapons_tag_block, TAG, SCENARIO):
         weapon.name_index = weapon_element.name_index
         weapon.placement_flags = convert_object_flags(weapon_element.placement_flags)
         weapon.position = weapon_element.position
-        weapon.rotation = tag_format.vector_as_radians(weapon_element.rotation)
+        weapon.rotation = weapon_element.rotation
         weapon.scale = 0
         weapon.transform_flags = 0
         weapon.manual_bsp_flags = 0
@@ -482,7 +482,7 @@ def get_device_machines(machine_tag_block, TAG, SCENARIO):
         device_machine.name_index = machine_element.name_index
         device_machine.placement_flags = convert_object_flags(machine_element.placement_flags)
         device_machine.position = machine_element.position
-        device_machine.rotation = tag_format.vector_as_radians(machine_element.rotation)
+        device_machine.rotation = machine_element.rotation
         device_machine.scale = 0
         device_machine.transform_flags = 0
         device_machine.manual_bsp_flags = 0
@@ -517,7 +517,7 @@ def get_device_controls(controls_tag_block, TAG, SCENARIO):
         device_control.name_index = control_element.name_index
         device_control.placement_flags = convert_object_flags(control_element.placement_flags)
         device_control.position = control_element.position
-        device_control.rotation = tag_format.vector_as_radians(control_element.rotation)
+        device_control.rotation = control_element.rotation
         device_control.scale = 0
         device_control.transform_flags = 0
         device_control.manual_bsp_flags = 0
@@ -553,7 +553,7 @@ def get_light_fixtures(light_fixtures_tag_block, TAG, SCENARIO):
         light_fixture.name_index = light_fixture_element.name_index
         light_fixture.placement_flags = convert_object_flags(light_fixture_element.placement_flags)
         light_fixture.position = light_fixture_element.position
-        light_fixture.rotation = tag_format.vector_as_radians(light_fixture_element.rotation)
+        light_fixture.rotation = light_fixture_element.rotation
         light_fixture.scale = 0
         light_fixture.transform_flags = 0
         light_fixture.manual_bsp_flags = 0
@@ -589,7 +589,7 @@ def get_sound_scenery(sound_scenery_tag_block, TAG, SCENARIO):
         sound_scenery.name_index = sound_scenery_element.name_index
         sound_scenery.placement_flags = convert_object_flags(sound_scenery_element.placement_flags)
         sound_scenery.position = sound_scenery_element.position
-        sound_scenery.rotation = tag_format.vector_as_radians(sound_scenery_element.rotation)
+        sound_scenery.rotation = sound_scenery_element.rotation
         sound_scenery.scale = 0
         sound_scenery.transform_flags = 0
         sound_scenery.manual_bsp_flags = 0
@@ -648,7 +648,7 @@ def get_player_starting_locations(player_starting_locations_tag_block, TAG, SCEN
             player_starting_location = SCENARIO.PlayerStartingLocation()
 
             player_starting_location.position = player_starting_location_element.position
-            player_starting_location.facing = radians(player_starting_location_element.facing)
+            player_starting_location.facing = player_starting_location_element.facing
             player_starting_location.team_designator = player_starting_location_element.team_index
             player_starting_location.bsp_index = -1
             player_starting_location.type_0 = convert_game_type_setting(player_starting_location_element.type_0)
@@ -715,7 +715,7 @@ def get_netgame_flags(netgame_flags_tag_block, TAG, SCENARIO):
             netgame_flag = SCENARIO.NetGameFlag()
 
             netgame_flag.position = netgame_flag_element.position
-            netgame_flag.facing = radians(netgame_flag_element.facing)
+            netgame_flag.facing = netgame_flag_element.facing
             netgame_flag.type = flag_type
             netgame_flag.team_designator = team_designator
             netgame_flag.identifer = identifer
@@ -731,7 +731,7 @@ def get_netgame_flags(netgame_flags_tag_block, TAG, SCENARIO):
             netgame_flag = SCENARIO.NetGameFlag()
 
             netgame_flag.position = netgame_flag_element.position
-            netgame_flag.facing = radians(netgame_flag_element.facing)
+            netgame_flag.facing = netgame_flag_element.facing
             netgame_flag.type = NetGameEnum.ctf_flag_return.value
             netgame_flag.team_designator = team_designator
             netgame_flag.identifer = identifer
@@ -765,7 +765,7 @@ def get_netgame_equipment(netgame_equipment_tag_block, vehicles_tag_block, vehic
         netgame_equipment.respawn_timer_starts = respawn_timer_starts
         netgame_equipment.classification = classification
         netgame_equipment.position = netgame_equipment_element.position
-        netgame_equipment.orientation = (0.0, 0.0, radians(netgame_equipment_element.facing))
+        netgame_equipment.orientation = (0.0, 0.0, netgame_equipment_element.facing)
 
         item_collection_tag_group = netgame_equipment_element.item_collection.tag_group
         item_collection_tag_path = netgame_equipment_element.item_collection.name
@@ -792,7 +792,7 @@ def get_netgame_equipment(netgame_equipment_tag_block, vehicles_tag_block, vehic
             netgame_equipment.respawn_timer_starts = respawn_timer_starts
             netgame_equipment.classification = classification
             netgame_equipment.position = vehicle_element.position
-            netgame_equipment.orientation = tag_format.vector_as_radians(vehicle_element.rotation)
+            netgame_equipment.orientation = vehicle_element.rotation
 
             item_collection_tag_group = "vehc"
             item_collection_tag_path = vehicle_palette_tag_block[vehicle_element.type_index].name
@@ -896,8 +896,7 @@ def generate_h2_squads(H1_ASSET, TAG, SCENARIO, report):
                 firing_position.flags = 0
                 firing_position.area_index = active_groups.index(H1GroupEnum(firing_position_element.group_index).name)
                 firing_position.cluster_index = 0
-                firing_position.normal_y = 0.0
-                firing_position.normal_p = radians(90)
+                firing_position.normal = (0.0, 90)
 
                 zone.firing_positions.append(firing_position)
 
@@ -1006,8 +1005,7 @@ def generate_h2_squads(H1_ASSET, TAG, SCENARIO, report):
                     starting_location.name_length = len(starting_location.name)
                     starting_location.position = starting_location_element.position
                     starting_location.reference_frame = -1
-                    starting_location.facing_y = radians(starting_location_element.facing)
-                    starting_location.facing_p = 0
+                    starting_location.facing = (0.0, starting_location_element.facing)
 
                     starting_location.flags = 0
                     starting_location.character_type_index = -1
@@ -1076,12 +1074,11 @@ def generate_point_sets(H1_ASSET, TAG, SCENARIO, report):
 def get_cutscene_flags(cutscene_flags_tag_block, TAG, SCENARIO):
     SCENARIO.cutscene_flags = []
     for cutscene_flag_element in cutscene_flags_tag_block:
-        cutscene_flags = SCENARIO.CutsceneFlags()
+        cutscene_flags = SCENARIO.CutsceneFlag()
 
         cutscene_flags.name = cutscene_flag_element.name
         cutscene_flags.position = cutscene_flag_element.position
-        cutscene_flags.facing_y = radians(cutscene_flag_element.facing[0])
-        cutscene_flags.facing_p = radians(cutscene_flag_element.facing[1])
+        cutscene_flags.facing = cutscene_flag_element.facing
 
         SCENARIO.cutscene_flags.append(cutscene_flags)
 
@@ -1090,13 +1087,13 @@ def get_cutscene_flags(cutscene_flags_tag_block, TAG, SCENARIO):
 def get_cutscene_camera_points(cutscene_camera_points_tag_block, TAG, SCENARIO):
     SCENARIO.cutscene_camera_points = []
     for cutscene_camera_point_element in cutscene_camera_points_tag_block:
-        cutscene_camera_point = SCENARIO.CutsceneCameraPoints()
+        cutscene_camera_point = SCENARIO.CutsceneCameraPoint()
 
         cutscene_camera_point.flags = 0
         cutscene_camera_point.camera_type = 0
         cutscene_camera_point.name = cutscene_camera_point_element.name
         cutscene_camera_point.position = cutscene_camera_point_element.position
-        cutscene_camera_point.orientation = tag_format.vector_as_radians(cutscene_camera_point_element.orientation)
+        cutscene_camera_point.orientation = cutscene_camera_point_element.orientation
 
         SCENARIO.cutscene_camera_points.append(cutscene_camera_point)
 
@@ -1301,7 +1298,7 @@ def upgrade_h2_scenario(H1_ASSET, patch_txt_path, report):
     SCENARIO.scenario_body.scenario_type = H1_ASSET.scenario_body.scenario_type
     SCENARIO.scenario_body.scenario_flags = convert_scenario_flags(H1_ASSET.scenario_body.scenario_flags)
     SCENARIO.scenario_body.child_scenarios_tag_block = TAG.TagBlock(len(SCENARIO.child_scenarios), 0, 0, 0)
-    SCENARIO.scenario_body.local_north = radians(H1_ASSET.scenario_body.local_north) # Value in radians
+    SCENARIO.scenario_body.local_north = H1_ASSET.scenario_body.local_north # Value in radians
     SCENARIO.scenario_body.predicted_resources_tag_block = TAG.TagBlock(0, 0, 0, 0)
     SCENARIO.scenario_body.functions_tag_block = TAG.TagBlock(0, 0, 0, 0)
     SCENARIO.scenario_body.editor_scenario_data = TAG.RawData(0, 0, 0, 0, 0)

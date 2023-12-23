@@ -1502,7 +1502,7 @@ class GenerateLevel(Operator):
         from ..misc import generate_level
         scene_maze = context.scene.halo_maze
 
-        return global_functions.run_code("generate_level.generate_level(context, scene_maze.game_title, scene_maze.level_seed, scene_maze.level_theme, scene_maze.level_damage, scene_maze.level_goal, scene_maze.player_biped, scene_maze.level_conflict, scene_maze.mutator_random_weapons, scene_maze.mutator_extended_family, scene_maze.maze_height, scene_maze.maze_width, scene_maze.output_directory)")
+        return global_functions.run_code("generate_level.generate_level(context, scene_maze.game_title, scene_maze.level_seed, scene_maze.level_theme, scene_maze.level_damage, scene_maze.level_goal, scene_maze.player_biped, scene_maze.level_conflict, scene_maze.mutator_random_weapons, scene_maze.mutator_extended_family, scene_maze.maze_height, scene_maze.maze_width, scene_maze.output_directory, self.report)")
 
 class ExportLightmap(Operator, ExportHelper):
     """Write a LUV file"""
@@ -1853,7 +1853,6 @@ def unregister():
     del bpy.types.Scene.halo_h3ek_path
     del bpy.types.Scene.halo_h3ek_data_path
     del bpy.types.Scene.halo_mattype
-    del bpy.types.Scene.halo_lightmapper
     for clshalo in classeshalo:
         bpy.utils.unregister_class(clshalo)
 

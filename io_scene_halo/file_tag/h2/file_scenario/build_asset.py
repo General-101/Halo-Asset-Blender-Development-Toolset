@@ -26,6 +26,7 @@
 
 import struct
 
+from math import radians
 from ....global_functions import tag_format
 
 def write_body(output_stream, SCENARIO, TAG):
@@ -34,7 +35,7 @@ def write_body(output_stream, SCENARIO, TAG):
     SCENARIO.scenario_body.skies_tag_block.write(output_stream, False)
     output_stream.write(struct.pack('<HH', SCENARIO.scenario_body.scenario_type, SCENARIO.scenario_body.scenario_flags))
     SCENARIO.scenario_body.child_scenarios_tag_block.write(output_stream, False)
-    output_stream.write(struct.pack('<f', SCENARIO.scenario_body.local_north))
+    output_stream.write(struct.pack('<f', radians(SCENARIO.scenario_body.local_north)))
     SCENARIO.scenario_body.predicted_resources_tag_block.write(output_stream, False)
     SCENARIO.scenario_body.functions_tag_block.write(output_stream, False)
     SCENARIO.scenario_body.editor_scenario_data.write(output_stream, False)
@@ -565,7 +566,7 @@ def write_squads(output_stream, SCENARIO, TAG):
                     output_stream.write(struct.pack('>i', len(starting_location.name)))
                     output_stream.write(struct.pack('<fff', starting_location.position[0], starting_location.position[1], starting_location.position[2]))
                     output_stream.write(struct.pack('<i', starting_location.reference_frame))
-                    output_stream.write(struct.pack('<ff', starting_location.facing_y, starting_location.facing_p))
+                    output_stream.write(struct.pack('<ff', radians(starting_location.facing[0]), radians(starting_location.facing[1])))
                     output_stream.write(struct.pack('<i', starting_location.flags))
                     output_stream.write(struct.pack('<h', starting_location.character_type_index))
                     output_stream.write(struct.pack('<h', starting_location.initial_weapon_index))
@@ -605,7 +606,7 @@ def write_zones(output_stream, SCENARIO, TAG):
                     output_stream.write(struct.pack('<h', firing_position.area_index))
                     output_stream.write(struct.pack('<h', firing_position.cluster_index))
                     output_stream.write(struct.pack('<4x'))
-                    output_stream.write(struct.pack('<ff', firing_position.normal_y, firing_position.normal_p))
+                    output_stream.write(struct.pack('<ff', radians(firing_position.normal[0]), radians(firing_position.normal[1])))
 
             if len(zone.areas) > 0:
                 zone.areas_header.write(output_stream, TAG, True)
@@ -643,7 +644,7 @@ def write_scripting_data(output_stream, SCENARIO, TAG):
                             output_stream.write(struct.pack('<fff', point.position[0], point.position[1], point.position[2]))
                             output_stream.write(struct.pack('<i', point.reference_frame))
                             output_stream.write(struct.pack('<i', point.surface_index))
-                            output_stream.write(struct.pack('<ff', point.facing_direction_y, point.facing_direction_p))
+                            output_stream.write(struct.pack('<ff', radians(point.facing_direction[0]), radians(point.facing_direction[1])))
 
 def write_cutscene_flags(output_stream, SCENARIO, TAG):
     if len(SCENARIO.cutscene_flags) > 0:
@@ -652,7 +653,7 @@ def write_cutscene_flags(output_stream, SCENARIO, TAG):
             output_stream.write(struct.pack('<4x'))
             output_stream.write(struct.pack('>31sx', tag_format.string_to_bytes(cutscene_flag.name, False)))
             output_stream.write(struct.pack('<fff', cutscene_flag.position[0], cutscene_flag.position[1], cutscene_flag.position[2]))
-            output_stream.write(struct.pack('<ff', cutscene_flag.facing_y, cutscene_flag.facing_p))
+            output_stream.write(struct.pack('<ff', radians(cutscene_flag.facing[0]), radians(cutscene_flag.facing[1])))
 
 def write_cutscene_camera_points(output_stream, SCENARIO, TAG):
     if len(SCENARIO.cutscene_camera_points) > 0:

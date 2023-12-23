@@ -580,13 +580,6 @@ def generate_mesh_object_retail(asset, object_vertices, object_triangles, object
     mesh.from_pydata(verts, [], tris)
     object_mesh = bpy.data.objects.new(object_name, mesh)
     for tri_idx, poly in enumerate(mesh.polygons):
-        tri = object_triangles[tri_idx]
-        v0_index = tri.v0
-        vert = object_vertices[v0_index]
-
-        if poly.normal.dot(vert.normal) < 0:
-            poly.flip()
-
         poly.use_smooth = True
 
     region_attribute = mesh.get_custom_attribute()
