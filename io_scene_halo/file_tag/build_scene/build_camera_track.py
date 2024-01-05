@@ -66,7 +66,7 @@ def build_scene(context, CAMERATRACK, game_version, game_title, file_version, fi
 
         view_layer.update()
 
-        pose_bone.keyframe_insert('location')
-        pose_bone.keyframe_insert('rotation_euler')
-        pose_bone.keyframe_insert('rotation_quaternion')
-        pose_bone.keyframe_insert('scale')
+        pose_bone.keyframe_insert(data_path='location', group=pose_bone.name)
+        pose_bone.keyframe_insert(data_path='rotation_euler', group=pose_bone.name)
+        pose_bone.keyframe_insert(data_path='rotation_quaternion', group=pose_bone.name)
+        pose_bone.keyframe_insert(data_path='scale', group=pose_bone.name)

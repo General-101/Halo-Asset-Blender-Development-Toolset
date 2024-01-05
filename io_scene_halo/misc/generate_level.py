@@ -883,8 +883,8 @@ def generate_camera_zoom(context, armature, shot_start, shot_end, distance, zoom
         context.scene.frame_set(frame_idx)
         pose_bone.matrix = transform_matrix
         context.view_layer.update()
-        pose_bone.keyframe_insert('location')
-        pose_bone.keyframe_insert('rotation_euler')
+        pose_bone.keyframe_insert(data_path='location', group=pose_bone.name)
+        pose_bone.keyframe_insert(data_path='rotation_euler', group=pose_bone.name)
 
     bpy.ops.object.mode_set(mode = 'OBJECT')
     context.scene.frame_set(context.scene.frame_current + 1)
@@ -917,8 +917,8 @@ def generate_camera_arc(context, armature, shot_start, shot_end, interpolation, 
 
         pose_bone.rotation_euler[2] += rad_rot
         context.view_layer.update()
-        pose_bone.keyframe_insert('location')
-        pose_bone.keyframe_insert('rotation_euler')
+        pose_bone.keyframe_insert(data_path='location', group=pose_bone.name)
+        pose_bone.keyframe_insert(data_path='rotation_euler', group=pose_bone.name)
 
     bpy.ops.object.mode_set(mode = 'OBJECT')
     context.scene.frame_set(context.scene.frame_current + 1)

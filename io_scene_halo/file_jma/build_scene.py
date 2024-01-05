@@ -425,10 +425,10 @@ def build_scene(context, JMA, JMS_A, JMS_B, filepath, game_version, fix_parents,
 
                 view_layer.update()
 
-                pose_bone.keyframe_insert('location')
-                pose_bone.keyframe_insert('rotation_euler')
-                pose_bone.keyframe_insert('rotation_quaternion')
-                pose_bone.keyframe_insert('scale')
+                pose_bone.keyframe_insert(data_path='location', group=pose_bone.name)
+                pose_bone.keyframe_insert(data_path='rotation_euler', group=pose_bone.name)
+                pose_bone.keyframe_insert(data_path='rotation_quaternion', group=pose_bone.name)
+                pose_bone.keyframe_insert(data_path='scale', group=pose_bone.name)
 
     scene.frame_set(1)
     bpy.ops.object.mode_set(mode = 'OBJECT')

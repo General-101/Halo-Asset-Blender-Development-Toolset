@@ -84,9 +84,10 @@ def create_animation(scene, armature, animation, nodes, fix_rotations, view_laye
 
             view_layer.update()
 
-            pose_bone.keyframe_insert('location')
-            pose_bone.keyframe_insert('rotation_quaternion')
-            pose_bone.keyframe_insert('scale')
+            pose_bone.keyframe_insert(data_path='location', group=pose_bone.name)
+            pose_bone.keyframe_insert(data_path='rotation_euler', group=pose_bone.name)
+            pose_bone.keyframe_insert(data_path='rotation_quaternion', group=pose_bone.name)
+            pose_bone.keyframe_insert(data_path='scale', group=pose_bone.name)
 
 def create_overlay_animation(scene, armature, animation, nodes, fix_rotations, view_layer, is_inverted):
     node_name = []
@@ -120,9 +121,10 @@ def create_overlay_animation(scene, armature, animation, nodes, fix_rotations, v
 
             view_layer.update()
 
-            pose_bone.keyframe_insert('location')
-            pose_bone.keyframe_insert('rotation_quaternion')
-            pose_bone.keyframe_insert('scale')
+            pose_bone.keyframe_insert(data_path='location', group=pose_bone.name)
+            pose_bone.keyframe_insert(data_path='rotation_euler', group=pose_bone.name)
+            pose_bone.keyframe_insert(data_path='rotation_quaternion', group=pose_bone.name)
+            pose_bone.keyframe_insert(data_path='scale', group=pose_bone.name)
 
 def build_scene(context, ANIMATION, game_version, game_title, file_version, fix_rotations, empty_markers, report):
     scene = context.scene
