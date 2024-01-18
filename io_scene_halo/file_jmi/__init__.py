@@ -564,11 +564,12 @@ class ExportJMI(Operator, ExportHelper):
     def execute(self, context):
         from ..file_jmi import export_jmi
 
+        jmi_version = int(self.jmi_version)
+        folder_type = bool(int(self.folder_type))
         scale_value = global_functions.set_scale(self.scale_enum, self.scale_float)
         edge_split = global_functions.EdgeSplit(self.edge_split, self.use_edge_angle, self.split_angle, self.use_edge_sharp)
-        int_jmi_version = int(self.jmi_version)
 
-        return global_functions.run_code("export_jmi.write_file(context, self.filepath, self.report, int_jmi_version, self.apply_modifiers, self.triangulate_faces, self.loop_normals, self.folder_type, edge_split, self.clean_normalize_weights, scale_value, self.hidden_geo, self.nonrender_geo, self.export_render, self.export_collision, self.export_physics, self.write_textures, self.game_title, self.fix_rotations, self.use_maya_sorting)")
+        return global_functions.run_code("export_jmi.write_file(context, self.filepath, self.report, jmi_version, self.apply_modifiers, self.triangulate_faces, self.loop_normals, folder_type, edge_split, self.clean_normalize_weights, scale_value, self.hidden_geo, self.nonrender_geo, self.export_render, self.export_collision, self.export_physics, self.write_textures, self.game_title, self.fix_rotations, self.use_maya_sorting)")
 
     def draw(self, context):
         scene = context.scene
