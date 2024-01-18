@@ -638,6 +638,84 @@ class FontEnum(Enum):
 class StructureBSPFlags(Flag):
     default_sky_enabled = auto()
 
+class OrderFlags(Flag):
+    locked = auto()
+    always_active = auto()
+    debug_on = auto()
+    strict_area_def = auto()
+    follow_closest_player = auto()
+    follow_squad = auto()
+    active_camo = auto()
+    suppress_combat_until_engaged = auto()
+    inhibit_vehicle_use = auto()
+
+class OrderEnum(Enum):
+    none = 0
+    asleep = auto()
+    idle = auto()
+    alert = auto()
+    combat = auto()
+
+class AreaTypeEnum(Enum):
+    default = 0
+    search = auto()
+    goal = auto()
+
+class DialogueTypeEnum(Enum):
+    none = 0
+    advance = auto()
+    charge = auto()
+    fall_back = auto()
+    retreat = auto()
+    move_one = auto()
+    arrival = auto()
+    enter_vehicle = auto()
+    exit_vehicle = auto()
+    follow_player = auto()
+    leave_player = auto()
+    support = auto()
+
+class SpecialMovementFlags(Flag):
+    jump = auto()
+    climb = auto()
+    vault = auto()
+    mount = auto()
+    hoist = auto()
+    wall_jump = auto()
+    not_applicable = auto()
+
+class AITriggerFlags(Flag):
+    latch_on_when_triggered = auto()
+
+class RuleTypeEnum(Enum):
+    a_or_greater_alive = 0
+    a_or_fewer_alive = auto()
+    x_or_greater_strength = 0
+    x_or_less_strength = auto()
+    if_enemy_sighted = auto()
+    after_a_ticks = auto()
+    if_alerted_by_squad_a = auto()
+    script_ref_true = auto()
+    script_ref_false = auto()
+    if_player_in_trigger_volume = auto()
+    if_all_players_in_trigger_volume = auto()
+    combat_status_a_or_more = auto()
+    combat_status_a_or_less = auto()
+    arrived = auto()
+    in_vehicle = auto()
+    sighted_player = auto()
+    a_or_greater_fighting = auto()
+    a_or_fewer_fighting = auto()
+    player_within_x_world_units = auto()
+    player_shot_more_than_x_seconds_ago = auto()
+    game_safe_to_save = auto()
+
+class ScaleFlags(Flag):
+    override_default_scale = auto()
+    use_adjacent_cluster_as_portal_scale = auto()
+    use_adjacent_cluster_as_exterior_scale = auto()
+    scale_with_weather_intensity = auto()
+
 class ScenarioAsset():
     def __init__(self):
         self.header = None
@@ -769,7 +847,7 @@ class ScenarioAsset():
         self.old_structure_physics_header = None
         self.old_structure_physics = None
         self.hs_unit_seat_header = None
-        self.hs_unit_seat = None
+        self.hs_unit_seats = None
         self.scenario_kill_triggers_header = None
         self.scenario_kill_triggers = None
         self.hs_syntax_datums_header = None
@@ -1801,6 +1879,40 @@ class ScenarioAsset():
             self.ai_resources_header = ai_resources_header
             self.ai_resources = ai_resources
 
+    class OldStructurePhysics():
+        def __init__(self, physics_tag_data=None, physics_data=None, object_identifiers_tag_block=None, object_identifiers_header=None, mopp_bounds_min=Vector(), 
+                     mopp_bounds_max=Vector(), object_identifiers=None):
+            self.physics_tag_data = physics_tag_data
+            self.physics_data = physics_data
+            self.object_identifiers_tag_block = object_identifiers_tag_block
+            self.object_identifiers_header = object_identifiers_header
+            self.mopp_bounds_min = mopp_bounds_min
+            self.mopp_bounds_max = mopp_bounds_max
+            self.object_identifiers = object_identifiers
+
+    class ObjectIdentifier:
+        def __init__(self, unique_id=0, origin_bsp_index=0, object_type=0, source=0, sobj_header=None):
+            self.unique_id = unique_id
+            self.origin_bsp_index = origin_bsp_index
+            self.object_type = object_type
+            self.source = source
+            self.sobj_header = sobj_header
+
+    class HSUnitSeat:
+        def __init__(self, unit_definition_tag_index=0, unit_seats=0):
+            self.unit_definition_tag_index = unit_definition_tag_index
+            self.unit_seats = unit_seats
+
+    class HSSyntaxDatum:
+        def __init__(self, datum_header=0, script_index_function_index_con=0, datum_type=0, flags=0, next_node_index=0, data=0, source_offset=0):
+            self.datum_header = datum_header
+            self.script_index_function_index_con = script_index_function_index_con
+            self.datum_type = datum_type
+            self.flags = flags
+            self.next_node_index = next_node_index
+            self.data = data
+            self.source_offset = source_offset
+
     class Order():
         def __init__(self, name="", style_index=0, flags=0, force_combat_status=0, entry_script="", follow_squad=0, follow_radius=0.0, primary_area_set_tag_block=None,
                      secondary_area_set_tag_block=None, secondary_set_trigger_tag_block=None, special_movement_tag_block=None, order_endings_tag_block=None,
@@ -1829,11 +1941,19 @@ class ScenarioAsset():
             self.special_movement = special_movement
             self.order_endings = order_endings
 
-    class PrimaryAreaSet():
+    class AreaSet():
         def __init__(self, area_type=0, zone_index=0, area_index=0):
             self.area_type = area_type
             self.zone_index = zone_index
             self.area_index = area_index
+
+    class SetTrigger():
+        def __init__(self, combination_rule=0, dialogue_type=0, triggers_tag_block=None, triggers_header=None, triggers=None):
+            self.combination_rule = combination_rule
+            self.dialogue_type = dialogue_type
+            self.triggers_tag_block = triggers_tag_block
+            self.triggers_header = triggers_header
+            self.triggers = triggers
 
     class OrderEnding():
         def __init__(self, next_order_index=0, combination_rule=0, delay_time=0.0, dialogue_type=0, triggers_tag_block=None, triggers_header=None, triggers=None):
@@ -1886,6 +2006,20 @@ class ScenarioAsset():
             self.sound_environment = sound_environment
             self.cutoff_distance = cutoff_distance
             self.interpolation_speed = interpolation_speed
+
+    class WeatherPalette():
+        def __init__(self, name="", weather_system=None, wind=None, wind_direction=Vector(), wind_magnitude=0.0, wind_scale_function=""):
+            self.name = name
+            self.weather_system = weather_system
+            self.wind = wind
+            self.wind_direction = wind_direction
+            self.wind_magnitude = wind_magnitude
+            self.wind_scale_function = wind_scale_function
+
+    class ScavengerHuntObject:
+        def __init__(self, exported_name="", scenario_object_name_index=0):
+            self.exported_name = exported_name
+            self.scenario_object_name_index = scenario_object_name_index
 
     class Crate(Object):
         def __init__(self, sobj_header=None, obj0_header=None, sper_header=None, variant_name="", variant_name_length=0, active_change_colors=0,
