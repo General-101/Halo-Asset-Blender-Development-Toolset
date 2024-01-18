@@ -166,7 +166,7 @@ def write_object(output_stream, scenery_element):
     output_stream.write(struct.pack('<h', scenery_element.name_index))
     output_stream.write(struct.pack('<I', scenery_element.placement_flags))
     output_stream.write(struct.pack('<fff', scenery_element.position[0], scenery_element.position[1], scenery_element.position[2]))
-    output_stream.write(struct.pack('<fff', scenery_element.rotation[0], scenery_element.rotation[1], scenery_element.rotation[2]))
+    output_stream.write(struct.pack('<fff', radians(scenery_element.rotation[0]), radians(scenery_element.rotation[1]), radians(scenery_element.rotation[2])))
     output_stream.write(struct.pack('<f', scenery_element.scale))
     output_stream.write(struct.pack('<H', scenery_element.transform_flags))
     output_stream.write(struct.pack('<H', scenery_element.manual_bsp_flags))
@@ -309,7 +309,9 @@ def write_light_fixtures(output_stream, SCENARIO, TAG):
             output_stream.write(struct.pack('<h', light_fixture_element.position_group_index))
             output_stream.write(struct.pack('<I', light_fixture_element.flags))
             output_stream.write(struct.pack('<fff', light_fixture_element.color_RGBA[0], light_fixture_element.color_RGBA[1], light_fixture_element.color_RGBA[2]))
-            output_stream.write(struct.pack('<fff', light_fixture_element.intensity, light_fixture_element.falloff_angle, light_fixture_element.cutoff_angle))
+            output_stream.write(struct.pack('<f', light_fixture_element.intensity))
+            output_stream.write(struct.pack('<f', radians(light_fixture_element.falloff_angle)))
+            output_stream.write(struct.pack('<f', radians(light_fixture_element.cutoff_angle)))
 
         for light_fixture_element in SCENARIO.light_fixtures:
             light_fixture_element.sobj_header.write(output_stream, TAG, True)
@@ -325,7 +327,7 @@ def write_sound_scenery(output_stream, SCENARIO, TAG):
             output_stream.write(struct.pack('<I', sound_scenery_element.volume_type))
             output_stream.write(struct.pack('<f', sound_scenery_element.height))
             output_stream.write(struct.pack('<ff', sound_scenery_element.override_distance_bounds[0], sound_scenery_element.override_distance_bounds[1]))
-            output_stream.write(struct.pack('<ff', sound_scenery_element.override_core_angle_bounds[0], sound_scenery_element.override_core_angle_bounds[1]))
+            output_stream.write(struct.pack('<ff', radians(sound_scenery_element.override_core_angle_bounds[0]), radians(sound_scenery_element.override_core_angle_bounds[1])))
             output_stream.write(struct.pack('<f', sound_scenery_element.override_outer_core_gain))
 
         for sound_scenery_element in SCENARIO.sound_scenery:
@@ -350,7 +352,7 @@ def write_light_volumes(output_stream, SCENARIO, TAG):
             output_stream.write(struct.pack('<fff', light_volume_element.target_point[0], light_volume_element.target_point[1], light_volume_element.target_point[2]))
             output_stream.write(struct.pack('<f', light_volume_element.width))
             output_stream.write(struct.pack('<f', light_volume_element.height_scale))
-            output_stream.write(struct.pack('<f', light_volume_element.field_of_view))
+            output_stream.write(struct.pack('<f', radians(light_volume_element.field_of_view)))
             output_stream.write(struct.pack('<f', light_volume_element.falloff_distance))
             output_stream.write(struct.pack('<f', light_volume_element.cutoff_distance))
 
@@ -392,7 +394,7 @@ def write_player_starting_locations(output_stream, SCENARIO, TAG):
         SCENARIO.player_starting_location_header.write(output_stream, TAG, True)
         for player_starting_location_element in SCENARIO.player_starting_locations:
             output_stream.write(struct.pack('<fff', player_starting_location_element.position[0], player_starting_location_element.position[1], player_starting_location_element.position[2]))
-            output_stream.write(struct.pack('<f', player_starting_location_element.facing))
+            output_stream.write(struct.pack('<f', radians(player_starting_location_element.facing)))
             output_stream.write(struct.pack('<h', player_starting_location_element.team_designator))
             output_stream.write(struct.pack('<h', player_starting_location_element.bsp_index))
             output_stream.write(struct.pack('<h', player_starting_location_element.type_0))
@@ -452,7 +454,7 @@ def write_netgame_flags(output_stream, SCENARIO, TAG):
         SCENARIO.netgame_flag_header.write(output_stream, TAG, True)
         for netgame_flag_element in SCENARIO.netgame_flags:
             output_stream.write(struct.pack('<fff', netgame_flag_element.position[0], netgame_flag_element.position[1], netgame_flag_element.position[2]))
-            output_stream.write(struct.pack('<f', netgame_flag_element.facing))
+            output_stream.write(struct.pack('<f', radians(netgame_flag_element.facing)))
             output_stream.write(struct.pack('<4h', netgame_flag_element.type, netgame_flag_element.team_designator, netgame_flag_element.identifer, netgame_flag_element.flags))
             output_stream.write(struct.pack('>2I', len(netgame_flag_element.spawn_object_name), len(netgame_flag_element.spawn_marker_name)))
 
@@ -664,14 +666,14 @@ def write_cutscene_camera_points(output_stream, SCENARIO, TAG):
             output_stream.write(struct.pack('<31sx', tag_format.string_to_bytes(cutscene_camera_point.name, False)))
             output_stream.write(struct.pack('<4x'))
             output_stream.write(struct.pack('<fff', cutscene_camera_point.position[0], cutscene_camera_point.position[1], cutscene_camera_point.position[2]))
-            output_stream.write(struct.pack('<fff', cutscene_camera_point.orientation[0], cutscene_camera_point.orientation[1], cutscene_camera_point.orientation[2]))
+            output_stream.write(struct.pack('<fff', radians(cutscene_camera_point.orientation[0]), radians(cutscene_camera_point.orientation[1]), radians(cutscene_camera_point.orientation[2])))
 
 def write_cutscene_titles(output_stream, SCENARIO, TAG):
     if len(SCENARIO.cutscene_titles) > 0:
         SCENARIO.cutscene_titles_header.write(output_stream, TAG, True)
         for cutscene_title in SCENARIO.cutscene_titles:
             output_stream.write(struct.pack('>I', len(cutscene_title.name)))
-            output_stream.write(struct.pack('<4h', cutscene_title.text_bounds[0], cutscene_title.text_bounds[1], cutscene_title.text_bounds[2], cutscene_title.text_bounds[3]))
+            output_stream.write(struct.pack('<4h', cutscene_title.text_bounds[1], cutscene_title.text_bounds[0], cutscene_title.text_bounds[3], cutscene_title.text_bounds[2]))
             output_stream.write(struct.pack('<h', cutscene_title.justification))
             output_stream.write(struct.pack('<h', cutscene_title.font))
             output_stream.write(struct.pack('<3Bx', cutscene_title.text_color[0], cutscene_title.text_color[1], cutscene_title.text_color[2]))

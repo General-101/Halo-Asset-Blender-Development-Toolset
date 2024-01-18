@@ -28,6 +28,17 @@ import bpy
 
 from ..global_functions import  global_functions
 
+def get_linked_node(node, input_name, search_type):
+    linked_node = None
+    node_input = node.inputs[input_name]
+    if node_input.is_linked:
+        for node_link in node_input.links:
+            if node_link.from_node.type == search_type:
+                linked_node = node_link.from_node
+                break
+
+    return linked_node
+
 def random_material_colors(context):
     random_color_gen = global_functions.RandomColorGenerator() # generates a random sequence of colors
     for material in bpy.data.materials:
@@ -37,11 +48,13 @@ def random_material_colors(context):
             if not material.node_tree == None:
                 for node in material.node_tree.nodes:
                     if node.type == 'OUTPUT_MATERIAL':
-                        surface_input = node.inputs["Surface"]
-                        if surface_input.is_linked:
-                            surface_node = surface_input.links[0].from_node
-                            diffuse_nodes = surface_node.inputs["Base Color"]
-                            diffuse_nodes.default_value = new_diffuse
+                        bdsf_principled = get_linked_node(node, "Surface", "BSDF_PRINCIPLED")
+                        if not bdsf_principled is None:
+                            surface_input = node.inputs["Surface"]
+                            if surface_input.is_linked:
+                                surface_node = surface_input.links[0].from_node
+                                diffuse_nodes = surface_node.inputs["Base Color"]
+                                diffuse_nodes.default_value = new_diffuse
 
     return {'FINISHED'}
 
