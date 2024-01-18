@@ -38,6 +38,8 @@ def process_file(input_stream, report):
         TAG.xml_doc = minidom.Document()
 
     COLLISION.header = TAG.Header().read(input_stream, TAG)
+    # refinery extracted stubbs the zombie model_collision
+    is_stubbs_the_zombie = (COLLISION.header.version == 11)
 
     tag_node = None
     if XML_OUTPUT:
@@ -149,8 +151,13 @@ def process_file(input_stream, report):
         material.shield_leak_percentage  = TAG.read_float(input_stream, TAG, tag_format.XMLData(material_element_node, "shield leak percentage"))
         material.shield_damage_multiplier = TAG.read_float(input_stream, TAG, tag_format.XMLData(material_element_node, "shield damage multiplier"))
         input_stream.read(12) # Padding?
+        if is_stubbs_the_zombie:
+            input_stream.read(16) # Padding?
+
         material.body_damage_multiplier = TAG.read_float(input_stream, TAG, tag_format.XMLData(material_element_node, "body damage multiplier"))
         input_stream.read(8) # Padding?
+        if is_stubbs_the_zombie:
+            input_stream.read(56) # Padding?
 
         COLLISION.materials.append(material)
 
@@ -164,13 +171,25 @@ def process_file(input_stream, report):
             region_node.appendChild(region_element_node)
 
         region = COLLISION.Region()
-        region.name = TAG.read_string32(input_stream, TAG, tag_format.XMLData(material_element_node, "name"))
-        region.flags = TAG.read_flag_unsigned_integer(input_stream, TAG, tag_format.XMLData(material_element_node, "flags", RegionFlags))
+        region.name = TAG.read_string32(input_stream, TAG, tag_format.XMLData(region_element_node, "name"))
+        region.flags = TAG.read_flag_unsigned_integer(input_stream, TAG, tag_format.XMLData(region_element_node, "flags", RegionFlags))
         input_stream.read(4) # Padding?
-        region.damage_threshold = TAG.read_float(input_stream, TAG, tag_format.XMLData(material_element_node, "damage threshold"))
-        input_stream.read(12) # Padding?
-        region.destroyed_effect = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "destroyed effect"))
-        region.permutations_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "permutations"))
+
+        if is_stubbs_the_zombie:
+            input_stream.read(16) # Padding?
+            region.damage_threshold = TAG.read_float(input_stream, TAG, tag_format.XMLData(region_element_node, "damage threshold"))
+            input_stream.read(4*11) # skipping unknown floats
+            region.destroyed_garbage = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(region_element_node, "destroyed garbage"))
+            region.destroyed_weapon = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(region_element_node, "destroyed weapon"))
+            region.destroyed_effect = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(region_element_node, "destroyed effect"))
+            region.stubbs_unk_name = TAG.read_string32(input_stream, TAG, tag_format.XMLData(region_element_node, "stubbs unk name"))
+            input_stream.read(28) # Padding?
+        else:
+            region.damage_threshold = TAG.read_float(input_stream, TAG, tag_format.XMLData(region_element_node, "damage threshold"))
+            input_stream.read(12) # Padding?
+            region.destroyed_effect = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(region_element_node, "destroyed effect"))
+
+        region.permutations_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(region_element_node, "permutations"))
 
         COLLISION.regions.append(region)
 
@@ -180,6 +199,13 @@ def process_file(input_stream, report):
         region.permutations = []
         if region.destroyed_effect.name_length > 0:
             region.destroyed_effect.name = TAG.read_variable_string(input_stream, region.destroyed_effect.name_length, TAG)
+
+        if is_stubbs_the_zombie:
+            if region.destroyed_garbage.name_length > 0:
+                region.destroyed_garbage.name = TAG.read_variable_string(input_stream, region.destroyed_garbage.name_length, TAG)
+
+            if region.destroyed_weapon.name_length > 0:
+                region.destroyed_weapon.name = TAG.read_variable_string(input_stream, region.destroyed_weapon.name_length, TAG)
 
         if XML_OUTPUT:
             region_element_node = region_node.childNodes[region_idx]
@@ -195,7 +221,10 @@ def process_file(input_stream, report):
                 permutation_node.appendChild(permutation_element_node)
 
             permutation = COLLISION.Permutation()
-            permutation.name = TAG.read_string32(input_stream, TAG, tag_format.XMLData(material_element_node, "name"))
+            permutation.name = TAG.read_string32(input_stream, TAG, tag_format.XMLData(permutation_element_node, "name"))
+            if is_stubbs_the_zombie:
+                permutation.stubbs_unk_name = TAG.read_string32(input_stream, TAG, tag_format.XMLData(permutation_element_node, "stubbs unk name"))
+                input_stream.read(64) # Padding?
 
             region.permutations.append(permutation)
 

@@ -165,17 +165,23 @@ class CollisionAsset():
             self.body_damage_multiplier = body_damage_multiplier
 
     class Region:
-        def __init__(self, name="", flags=0, damage_threshold=0, destroyed_effect=None, permutations_tag_block=None, permutations=None):
+        def __init__(self, name="", flags=0, damage_threshold=0, destroyed_effect=None, permutations_tag_block=None, permutations=None, 
+                     destroyed_garbage=None, destroyed_weapon=None, stubbs_unk_name=""):
             self.name = name
             self.flags = flags
             self.damage_threshold = damage_threshold
             self.destroyed_effect = destroyed_effect
             self.permutations_tag_block = permutations_tag_block
             self.permutations = permutations
+            # stubbs the zombie stuff
+            self.destroyed_weapon = destroyed_weapon
+            self.destroyed_garbage = destroyed_garbage
+            self.stubbs_unk_name = stubbs_unk_name
 
     class Permutation:
-        def __init__(self, name=""):
+        def __init__(self, name="", stubbs_unk_name=""):
             self.name = name
+            self.stubbs_unk_name = stubbs_unk_name
 
     class PathfindingSphere:
         def __init__(self, node=0, center=Vector(), radius=0.0):

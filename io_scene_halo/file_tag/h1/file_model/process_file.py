@@ -39,6 +39,8 @@ def process_file(input_stream, report):
         TAG.xml_doc = minidom.Document()
 
     MODEL.header = TAG.Header().read(input_stream, TAG)
+    # refinery extracted stubbs the zombie model_collision
+    is_stubbs_the_zombie = (MODEL.header.version == 6)
 
     tag_node = None
     if XML_OUTPUT:
@@ -60,12 +62,37 @@ def process_file(input_stream, report):
     input_stream.read(10) # Padding?
     MODEL.mode_body.base_map_u_scale = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "base map u-scale"))
     MODEL.mode_body.base_map_v_scale = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "base map v-scale"))
-    input_stream.read(116) # Padding?
+    input_stream.read(104) # Padding?
+
+    if is_stubbs_the_zombie:
+        # refinery extracted stubbs the zombie model
+        MODEL.mode_body.stubbs_unk_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "stubbs_unk_arr"))
+    else:
+        input_stream.read(12) # Padding?
+        
     MODEL.mode_body.markers_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "markers"))
     MODEL.mode_body.nodes_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "nodes"))
     MODEL.mode_body.regions_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "regions"))
     MODEL.mode_body.geometries_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "geometries"))
     MODEL.mode_body.shaders_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "shaders"))
+
+    if is_stubbs_the_zombie:
+        MODEL.stubbs_unk_arr = []
+        stubbs_unk_node = tag_format.get_xml_node(XML_OUTPUT, MODEL.mode_body.stubbs_unk_tag_block.count, tag_node, "name", "stubbs_unk_arr")
+        for stubbs_unk_idx in range(MODEL.mode_body.stubbs_unk_tag_block.count):
+            stubbs_unk_element_node = None
+            if XML_OUTPUT:
+                stubbs_unk_element_node = TAG.xml_doc.createElement('element')
+                stubbs_unk_element_node.setAttribute('index', str(stubbs_unk_idx))
+                stubbs_unk_node.appendChild(stubbs_unk_element_node)
+
+            stubbs_unk = MODEL.StubbsUnknown()
+            stubbs_unk.name = TAG.read_string32(input_stream, TAG, tag_format.XMLData(stubbs_unk_element_node, "name"))
+            stubbs_unk.unknown0 = TAG.read_float(input_stream, TAG, tag_format.XMLData(stubbs_unk_element_node, "unknown0"))
+            stubbs_unk.unknown1 = TAG.read_float(input_stream, TAG, tag_format.XMLData(stubbs_unk_element_node, "unknown1"))
+            input_stream.read(24) # Padding?
+
+            MODEL.stubbs_unk_arr.append(stubbs_unk)
 
     MODEL.markers = []
     marker_node = tag_format.get_xml_node(XML_OUTPUT, MODEL.mode_body.markers_tag_block.count, tag_node, "name", "markers")

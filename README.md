@@ -80,7 +80,7 @@ See the following links for information on exporting or importing assets from th
    * For some modifications done to the WaltzStreet version the script was based on.
 
  * Discord user MosesofEgypt#2751
-   * For some modifications done to the WaltzStreet version the script was based.
+   * For some modifications done to the WaltzStreet version the script was based on and Stubbs related tooling. 
 
  * Discord user num0005#8646
    * For help with code reviews and several features.

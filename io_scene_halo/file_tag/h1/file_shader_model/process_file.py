@@ -50,6 +50,7 @@ def process_file(input_stream, report):
         TAG.xml_doc = minidom.Document()
 
     SHADER.header = TAG.Header().read(input_stream, TAG)
+    is_stubbs_the_zombie = (SHADER.header.version == 3)
 
     tag_node = None
     if XML_OUTPUT:
@@ -114,7 +115,14 @@ def process_file(input_stream, report):
     SHADER.shader_body.parallel_brightness = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "parallel brightness"))
     SHADER.shader_body.parallel_tint_color = TAG.read_rgb(input_stream, TAG, tag_format.XMLData(tag_node, "parallel tint color"))
     SHADER.shader_body.reflection_cube_map = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "reflection cube map"))
-    input_stream.read(68) # Padding
+    
+    input_stream.read(16) # Padding
+    if is_stubbs_the_zombie:
+        SHADER.shader_body.bump_scale = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "bump scale"))
+        SHADER.shader_body.bump_map = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "bump map"))
+        input_stream.read(40) # Padding
+    else:
+        input_stream.read(52) # Padding
 
     base_map_name_length = SHADER.shader_body.base_map.name_length
     multipurpose_map_name_length = SHADER.shader_body.multipurpose_map.name_length
@@ -132,6 +140,9 @@ def process_file(input_stream, report):
     if reflection_cube_map_name_length > 0:
         SHADER.shader_body.reflection_cube_map.name = TAG.read_variable_string(input_stream, reflection_cube_map_name_length, TAG)
 
+    if is_stubbs_the_zombie and SHADER.shader_body.bump_map.name_length > 0:
+        SHADER.shader_body.base_map.name = TAG.read_variable_string(input_stream, SHADER.shader_body.bump_map.name_length, TAG)
+
     if XML_OUTPUT:
         base_map_node = tag_format.get_xml_node(XML_OUTPUT, 1, tag_node, "name", "base map")
         multipurpose_map_node = tag_format.get_xml_node(XML_OUTPUT, 1, tag_node, "name", "multipurpose map")
@@ -141,6 +152,9 @@ def process_file(input_stream, report):
         SHADER.shader_body.multipurpose_map.append_xml_attributes(multipurpose_map_node)
         SHADER.shader_body.detail_map.append_xml_attributes(detail_map_node)
         SHADER.shader_body.reflection_cube_map.append_xml_attributes(reflection_cube_map_node)
+        if is_stubbs_the_zombie:
+            bump_map_node = tag_format.get_xml_node(XML_OUTPUT, 1, tag_node, "name", "bump map")
+            SHADER.shader_body.bump_map_node.append_xml_attributes(bump_map_node)
 
     current_position = input_stream.tell()
     EOF = input_stream.seek(0, 2)

@@ -76,6 +76,12 @@ class ModelAsset():
             self.geometries_tag_block = geometries_tag_block
             self.shaders_tag_block = shaders_tag_block
 
+    class StubbsUnknown:
+        def __init__(self, name="", unknown0=1.0, unknown1=1.0):
+            self.name = name
+            self.unknown0 = unknown0
+            self.unknown1 = unknown1
+
     class Markers:
         def __init__(self, name="", magic_identifier=0, instance_tag_block=None, instances=None):
             self.name = name
