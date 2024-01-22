@@ -30,11 +30,16 @@ import zlib
 import numpy as np
 
 from .. import config
-from PIL import Image
 from mathutils import Vector
 from ..file_tag.h1.file_shader_environment.format import EnvironmentTypeEnum, EnvironmentFlags, DiffuseFlags, ReflectionFlags
 from ..file_tag.h1.file_shader_model.format import ModelFlags, DetailFumctionEnum, DetailMaskEnum, FunctionEnum
 from ..file_tag.h1.file_bitmap.format import FormatEnum
+
+try:
+    from PIL import Image
+except ModuleNotFoundError:
+    print("PIL not found. Unable to create image node.")
+    Image = None
 
 def get_bitmap(tag_ref, texture_root):
     texture_extensions = ("tif", "tiff")
@@ -90,7 +95,7 @@ def generate_image_node(mat, texture, BITMAP=None, bitmap_name="White", is_env=F
     else:
         image_node = mat.node_tree.nodes.new("ShaderNodeTexImage")
 
-    if BITMAP and BITMAP.bitmap_body.compressed_color_plate_data.size > 0:
+    if BITMAP and Image and BITMAP.bitmap_body.compressed_color_plate_data.size > 0:
         image = bpy.data.images.get(bitmap_name)
         if not image:
             x = BITMAP.bitmap_body.color_plate_width
