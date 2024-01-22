@@ -3410,6 +3410,120 @@ def read_scavenger_hunt_objects(SCENARIO, TAG, input_stream, tag_node, XML_OUTPU
 
             SCENARIO.scavenger_hunt_objects.append(scavenger_hunt_object)
 
+def read_scenario_cluster_data(SCENARIO, TAG, input_stream, tag_node, XML_OUTPUT):
+    if SCENARIO.scenario_body.scenario_cluster_data_tag_block.count > 0:
+        SCENARIO.scenario_cluster_data_header = TAG.TagBlockHeader().read(input_stream, TAG)
+        scenario_cluster_data_node = tag_format.get_xml_node(XML_OUTPUT, SCENARIO.scenario_body.scenario_cluster_data_tag_block.count, tag_node, "name", "scenario cluster data")
+        for scenario_cluster_data_idx in range(SCENARIO.scenario_body.scenario_cluster_data_tag_block.count):
+            scenario_cluster_data_element_node = None
+            if XML_OUTPUT:
+                scenario_cluster_data_element_node = TAG.xml_doc.createElement('element')
+                scenario_cluster_data_element_node.setAttribute('index', str(scenario_cluster_data_idx))
+                scenario_cluster_data_node.appendChild(scenario_cluster_data_element_node)
+
+            scenario_cluster_data = SCENARIO.ScenarioClusterData()
+            scenario_cluster_data.bsp = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(scenario_cluster_data_element_node, "bsp"))
+            scenario_cluster_data.background_sounds_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(scenario_cluster_data_element_node, "background sounds"))
+            scenario_cluster_data.sound_environments_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(scenario_cluster_data_element_node, "sound environments"))
+            scenario_cluster_data.bsp_checksum = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(scenario_cluster_data_element_node, "bsp checksum"))
+            scenario_cluster_data.cluster_centroids_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(scenario_cluster_data_element_node, "cluster centroids"))
+            scenario_cluster_data.weather_properties_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(scenario_cluster_data_element_node, "weather properties"))
+            scenario_cluster_data.atmospheric_fog_properties_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(scenario_cluster_data_element_node, "atmospheric fog properties"))
+
+            SCENARIO.scenario_cluster_data.append(scenario_cluster_data)
+
+        for scenario_cluster_data_idx, scenario_cluster_data in enumerate(SCENARIO.scenario_cluster_data):
+            scenario_cluster_data_element_node = None
+            if XML_OUTPUT:
+                scenario_cluster_data_element_node = scenario_cluster_data_node.childNodes[scenario_cluster_data_idx]
+
+            bsp_name_length = scenario_cluster_data.bsp.name_length
+            if bsp_name_length > 0:
+                scenario_cluster_data.bsp.name = TAG.read_variable_string(input_stream, bsp_name_length, TAG)
+
+            if XML_OUTPUT:
+                bsp_tag_ref_node = tag_format.get_xml_node(XML_OUTPUT, 1, scenario_cluster_data_element_node, "name", "bsp")
+                scenario_cluster_data.bsp.append_xml_attributes(bsp_tag_ref_node)
+
+            scenario_cluster_data.background_sounds = []
+            scenario_cluster_data.sound_environments = []
+            scenario_cluster_data.cluster_centroids = []
+            scenario_cluster_data.weather_properties = []
+            scenario_cluster_data.atmospheric_fog_properties = []
+            if scenario_cluster_data.background_sounds_tag_block.count > 0:
+                scenario_cluster_data.background_sounds_header = TAG.TagBlockHeader().read(input_stream, TAG)
+                background_sounds_node = tag_format.get_xml_node(XML_OUTPUT, scenario_cluster_data.background_sounds_tag_block.count, scenario_cluster_data_element_node, "name", "background sounds")
+                for background_sound_idx in range(scenario_cluster_data.background_sounds_tag_block.count):
+                    background_sound_element_node = None
+                    if XML_OUTPUT:
+                        background_sound_element_node = TAG.xml_doc.createElement('element')
+                        background_sound_element_node.setAttribute('index', str(background_sound_idx))
+                        background_sounds_node.appendChild(background_sound_element_node)
+
+                    background_sound_index = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(background_sound_element_node, "type", None, SCENARIO.scenario_body.background_sound_palette_tag_block.count, "structure_bsp_background_sound_palette_block"))
+                    input_stream.read(2) # Padding
+
+                    scenario_cluster_data.background_sounds.append(background_sound_index)
+
+            if scenario_cluster_data.sound_environments_tag_block.count > 0:
+                scenario_cluster_data.sound_environments_header = TAG.TagBlockHeader().read(input_stream, TAG)
+                sound_environments_node = tag_format.get_xml_node(XML_OUTPUT, scenario_cluster_data.sound_environments_tag_block.count, scenario_cluster_data_element_node, "name", "sound environments")
+                for sound_environment_idx in range(scenario_cluster_data.sound_environments_tag_block.count):
+                    sound_environment_element_node = None
+                    if XML_OUTPUT:
+                        sound_environment_element_node = TAG.xml_doc.createElement('element')
+                        sound_environment_element_node.setAttribute('index', str(sound_environment_idx))
+                        sound_environments_node.appendChild(sound_environment_element_node)
+
+                    sound_environment_index = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(sound_environment_element_node, "type", None, SCENARIO.scenario_body.sound_environment_palette_tag_block.count, "structure_bsp_sound_environment_palette_block"))
+                    input_stream.read(2) # Padding
+
+                    scenario_cluster_data.sound_environments.append(sound_environment_index)
+
+            if scenario_cluster_data.cluster_centroids_tag_block.count > 0:
+                scenario_cluster_data.cluster_centroids_header = TAG.TagBlockHeader().read(input_stream, TAG)
+                cluster_centroids_node = tag_format.get_xml_node(XML_OUTPUT, scenario_cluster_data.cluster_centroids_tag_block.count, scenario_cluster_data_element_node, "name", "cluster centroids")
+                for cluster_centroid_idx in range(scenario_cluster_data.cluster_centroids_tag_block.count):
+                    cluster_centroid_element_node = None
+                    if XML_OUTPUT:
+                        cluster_centroid_element_node = TAG.xml_doc.createElement('element')
+                        cluster_centroid_element_node.setAttribute('index', str(cluster_centroid_idx))
+                        cluster_centroids_node.appendChild(cluster_centroid_element_node)
+
+                    centroid = TAG.read_point_3d(input_stream, TAG, tag_format.XMLData(cluster_centroid_element_node, "centroid"))
+
+                    scenario_cluster_data.cluster_centroids.append(centroid)
+
+            if scenario_cluster_data.weather_properties_tag_block.count > 0:
+                scenario_cluster_data.weather_properties_header = TAG.TagBlockHeader().read(input_stream, TAG)
+                weather_properties_node = tag_format.get_xml_node(XML_OUTPUT, scenario_cluster_data.weather_properties_tag_block.count, scenario_cluster_data_element_node, "name", "weather properties")
+                for weather_property_idx in range(scenario_cluster_data.weather_properties_tag_block.count):
+                    weather_property_element_node = None
+                    if XML_OUTPUT:
+                        weather_property_element_node = TAG.xml_doc.createElement('element')
+                        weather_property_element_node.setAttribute('index', str(weather_property_idx))
+                        weather_properties_node.appendChild(weather_property_element_node)
+
+                    weather_property_index = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(weather_property_element_node, "type", None, SCENARIO.scenario_body.weather_palette_tag_block.count, "structure_bsp_weather_palette_block"))
+                    input_stream.read(2) # Padding
+
+                    scenario_cluster_data.weather_properties.append(weather_property_index)
+
+            if scenario_cluster_data.atmospheric_fog_properties_tag_block.count > 0:
+                scenario_cluster_data.atmospheric_fog_properties_header = TAG.TagBlockHeader().read(input_stream, TAG)
+                atmospheric_fog_properties_node = tag_format.get_xml_node(XML_OUTPUT, scenario_cluster_data.atmospheric_fog_properties_tag_block.count, scenario_cluster_data_element_node, "name", "atmospheric fog properties")
+                for atmospheric_fog_property_idx in range(scenario_cluster_data.atmospheric_fog_properties_tag_block.count):
+                    atmospheric_fog_property_element_node = None
+                    if XML_OUTPUT:
+                        atmospheric_fog_property_element_node = TAG.xml_doc.createElement('element')
+                        atmospheric_fog_property_element_node.setAttribute('index', str(atmospheric_fog_property_idx))
+                        atmospheric_fog_properties_node.appendChild(atmospheric_fog_property_element_node)
+
+                    atmospheric_fog_property_index = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(atmospheric_fog_property_element_node, "type", None, SCENARIO.scenario_body.atmospheric_fog_palette_tag_block.count, "scenario_atmospheric_fog_palette"))
+                    input_stream.read(2) # Padding
+
+                    scenario_cluster_data.atmospheric_fog_properties.append(atmospheric_fog_property_index)
+
 def process_file(input_stream, report):
     TAG = tag_format.TagAsset()
     SCENARIO = ScenarioAsset()
@@ -3521,6 +3635,7 @@ def process_file(input_stream, report):
     read_sound_environment_palette(SCENARIO, TAG, input_stream, tag_node, XML_OUTPUT)
     read_weather_palette(SCENARIO, TAG, input_stream, tag_node, XML_OUTPUT)
     read_scavenger_hunt_objects(SCENARIO, TAG, input_stream, tag_node, XML_OUTPUT)
+    read_scenario_cluster_data(SCENARIO, TAG, input_stream, tag_node, XML_OUTPUT)
 
     current_position = input_stream.tell()
     EOF = input_stream.seek(0, 2)

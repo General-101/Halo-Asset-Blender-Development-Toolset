@@ -221,6 +221,9 @@ def get_geometry_layout(context, collection, import_file, armature, report):
     materials = []
     for material in import_file.materials:
         material_name = os.path.basename(material.shader.name)
+        if global_functions.string_empty_check(material_name):
+            material_name = os.path.basename(material.old_shader.name)
+
         mat = bpy.data.materials.new(name=material_name)
         shader_processing.generate_h2_shader(mat, material.shader, report)
 

@@ -2957,7 +2957,7 @@ def process_file(input_stream, report):
     if XML_OUTPUT:
         xml_str = TAG.xml_doc.toprettyxml(indent ="\t")
 
-        save_path_file = tag_format.get_xml_path(input_stream.name, LEVEL.header.tag_group, TAG.is_legacy, True)
+        save_path_file = tag_format.get_xml_path(input_stream.name, LEVEL.header.tag_group, TAG.is_legacy)
 
         with open(save_path_file, "w") as f:
             f.write(xml_str)

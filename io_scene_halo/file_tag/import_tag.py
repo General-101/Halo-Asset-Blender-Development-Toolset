@@ -40,6 +40,7 @@ from .build_scene import build_camera_track as build_camera_track
 
 from .h1.file_model.process_file import process_file as process_mode
 from .h1.file_gbxmodel.process_file import process_file as process_mod2
+from .h2.file_render_model.process_file import process_file as process_h2_mode
 
 from .h1.file_model_collision_geometry.process_file import process_file as process_collision
 from .h2.file_collision_model.process_file import process_file as process_h2_collision
@@ -85,6 +86,9 @@ def load_file(context, file_path, game_title, fix_rotations, empty_markers, repo
 
             else:
                 ASSET = process_mod2(input_stream, report)
+
+        elif game_title == "halo2":
+            ASSET = process_h2_mode(input_stream, report)
 
         else:
             input_stream.close()

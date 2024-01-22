@@ -2021,6 +2021,29 @@ class ScenarioAsset():
             self.exported_name = exported_name
             self.scenario_object_name_index = scenario_object_name_index
 
+    class ScenarioClusterData():
+        def __init__(self, bsp=None, background_sounds_tag_block=None, sound_environments_tag_block=None, bsp_checksum=0, cluster_centroids_tag_block=None, 
+                     weather_properties_tag_block=None, atmospheric_fog_properties_tag_block=None, background_sounds_header=None, sound_environments_header=None, 
+                     cluster_centroids_header=None, weather_properties_header=None, atmospheric_fog_properties_header=None, background_sounds=None, sound_environments=None, 
+                     cluster_centroids=None, weather_properties=None, atmospheric_fog_properties=None):
+            self.bsp = bsp
+            self.background_sounds_tag_block = background_sounds_tag_block
+            self.sound_environments_tag_block = sound_environments_tag_block
+            self.bsp_checksum = bsp_checksum
+            self.cluster_centroids_tag_block = cluster_centroids_tag_block
+            self.weather_properties_tag_block = weather_properties_tag_block
+            self.atmospheric_fog_properties_tag_block = atmospheric_fog_properties_tag_block
+            self.background_sounds_header = background_sounds_header
+            self.sound_environments_header = sound_environments_header
+            self.cluster_centroids_header = cluster_centroids_header
+            self.weather_properties_header = weather_properties_header
+            self.atmospheric_fog_properties_header = atmospheric_fog_properties_header
+            self.background_sounds = background_sounds
+            self.sound_environments = sound_environments
+            self.cluster_centroids = cluster_centroids
+            self.weather_properties = weather_properties
+            self.atmospheric_fog_properties = atmospheric_fog_properties
+
     class Crate(Object):
         def __init__(self, sobj_header=None, obj0_header=None, sper_header=None, variant_name="", variant_name_length=0, active_change_colors=0,
                      primary_color_BGRA=(0, 0, 0, 255), secondary_color_BGRA=(0, 0, 0, 255), tertiary_color_BGRA=(0, 0, 0, 255),

@@ -67,7 +67,7 @@ def read_render_body_v0(RENDER, TAG, input_stream, tag_node, XML_OUTPUT):
 
     RENDER.render_body.name = TAG.read_string32(input_stream, TAG, tag_format.XMLData(tag_node, "name"))
     RENDER.render_body.name_length = len(RENDER.render_body.name)
-    RENDER.render_body.flags = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "flags", RenderFlags))
+    RENDER.render_body.flags = TAG.read_flag_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "flags", RenderFlags))
     input_stream.read(6) # Padding?
     RENDER.render_body.import_info_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "import info"))
     RENDER.render_body.compression_info_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "compression info"))
@@ -88,9 +88,11 @@ def read_render_body_v0(RENDER, TAG, input_stream, tag_node, XML_OUTPUT):
     RENDER.render_body.marker_groups_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "marker groups"))
     RENDER.render_body.materials_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "materials"))
     RENDER.render_body.errors_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "errors"))
-    RENDER.render_body.dont_draw_over_camera_cosine_angle = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "dont draw over camera cosine angle"))
-    RENDER.render_body.prt_info_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "prt info"))
-    RENDER.render_body.section_render_leaves_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "section render leaves"))
+    if RENDER.render_body_header.size >= 188:
+        RENDER.render_body.dont_draw_over_camera_cosine_angle = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "dont draw over camera cosine angle"))
+    if RENDER.render_body_header.size >= 212:
+        RENDER.render_body.prt_info_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "prt info"))
+        RENDER.render_body.section_render_leaves_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "section render leaves"))
 
 def read_render_body_retail(RENDER, TAG, input_stream, tag_node, XML_OUTPUT):
     RENDER.render_body_header = TAG.TagBlockHeader().read(input_stream, TAG)
@@ -101,7 +103,7 @@ def read_render_body_retail(RENDER, TAG, input_stream, tag_node, XML_OUTPUT):
     RENDER.render_body.name_length = TAG.read_signed_short(input_stream, TAG)
     TAG.big_endian = False
 
-    RENDER.render_body.flags = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "flags", RenderFlags))
+    RENDER.render_body.flags = TAG.read_flag_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "flags", RenderFlags))
     input_stream.read(6) # Padding?
     RENDER.render_body.import_info_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "import info"))
     RENDER.render_body.compression_info_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "compression info"))
@@ -341,8 +343,6 @@ def read_parts_v0(RENDER, section_data, TAG, input_stream, node_element):
             input_stream.read(2) # Padding?
             part.strip_start_index = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(part_element_node, "strip start index"))
             part.strip_length = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(part_element_node, "strip length"))
-            #part.first_subpart_index = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(part_element_node, "first subpart index"))
-            #part.subpart_count = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(part_element_node, "subpart count"))
             input_stream.read(12) # Padding?
             part.max_nodes_vertex = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(part_element_node, "max nodes vertex"))
             part.contributing_compound_node_count = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(part_element_node, "contributing compound node count"))
@@ -355,8 +355,9 @@ def read_parts_v0(RENDER, section_data, TAG, input_stream, node_element):
             part.node_weight_0 = TAG.read_float(input_stream, TAG, tag_format.XMLData(part_element_node, "node weight 0"))
             part.node_weight_1 = TAG.read_float(input_stream, TAG, tag_format.XMLData(part_element_node, "node weight 1"))
             part.node_weight_2 = TAG.read_float(input_stream, TAG, tag_format.XMLData(part_element_node, "node weight 2"))
-            part.lod_mipmap_magic_number = TAG.read_float(input_stream, TAG, tag_format.XMLData(part_element_node, "lod mipmap magic number"))
-            input_stream.read(24) # Padding?
+            if section_data.parts_header.size >= 100:
+                part.lod_mipmap_magic_number = TAG.read_float(input_stream, TAG, tag_format.XMLData(part_element_node, "lod mipmap magic number"))
+                input_stream.read(24) # Padding?
 
             section_data.parts.append(part)
 
@@ -1123,6 +1124,7 @@ def read_section_groups(RENDER, TAG, input_stream, tag_node, XML_OUTPUT):
                     section_group.compound_nodes.append(compound_node)
 
 def read_nodes_v0(RENDER, TAG, input_stream, tag_node, XML_OUTPUT):
+    transforms = []
     if RENDER.render_body.nodes_tag_block.count > 0:
         nodes_node = tag_format.get_xml_node(XML_OUTPUT, RENDER.render_body.nodes_tag_block.count, tag_node, "name", "nodes")
         RENDER.nodes_header = TAG.TagBlockHeader().read(input_stream, TAG)
@@ -1144,17 +1146,20 @@ def read_nodes_v0(RENDER, TAG, input_stream, tag_node, XML_OUTPUT):
             node.import_node_index = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(node_element_node, "import node index"))
             node_transform.translation = TAG.read_point_3d(input_stream, TAG, tag_format.XMLData(node_element_node, "default translation"), True)
             node_transform.rotation = TAG.read_quaternion(input_stream, TAG,  tag_format.XMLData(node_element_node, "default rotation"), True)
+            node_transform.inverse_scale = TAG.read_float(input_stream, TAG, tag_format.XMLData(node_element_node, "inverse scale"))
             node_transform.inverse_forward = TAG.read_vector(input_stream, TAG, tag_format.XMLData(node_element_node, "inverse forward"))
             node_transform.inverse_left = TAG.read_vector(input_stream, TAG, tag_format.XMLData(node_element_node, "inverse left"))
             node_transform.inverse_up = TAG.read_vector(input_stream, TAG, tag_format.XMLData(node_element_node, "inverse up"))
             node_transform.inverse_position = TAG.read_point_3d(input_stream, TAG, tag_format.XMLData(node_element_node, "inverse position"), True)
-            node_transform.inverse_scale = TAG.read_float(input_stream, TAG, tag_format.XMLData(node_element_node, "inverse scale"))
             node.distance_from_parent = TAG.read_float(input_stream, TAG, tag_format.XMLData(node_element_node, "distance from parent"))
 
             RENDER.nodes.append(node)
-            RENDER.transforms.append(node_transform)
+            transforms.append(node_transform)
+
+    RENDER.transforms.append(transforms)
 
 def read_nodes_retail(RENDER, TAG, input_stream, tag_node, XML_OUTPUT):
+    transforms = []
     if RENDER.render_body.nodes_tag_block.count > 0:
         nodes_node = tag_format.get_xml_node(XML_OUTPUT, RENDER.render_body.nodes_tag_block.count, tag_node, "name", "nodes")
         RENDER.nodes_header = TAG.TagBlockHeader().read(input_stream, TAG)
@@ -1179,15 +1184,15 @@ def read_nodes_retail(RENDER, TAG, input_stream, tag_node, XML_OUTPUT):
             node.import_node_index = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(node_element_node, "import node index"))
             node_transform.translation = TAG.read_point_3d(input_stream, TAG, tag_format.XMLData(node_element_node, "default translation"), True)
             node_transform.rotation = TAG.read_quaternion(input_stream, TAG,  tag_format.XMLData(node_element_node, "default rotation"), True)
+            node_transform.inverse_scale = TAG.read_float(input_stream, TAG, tag_format.XMLData(node_element_node, "inverse scale"))
             node_transform.inverse_forward = TAG.read_vector(input_stream, TAG, tag_format.XMLData(node_element_node, "inverse forward"))
             node_transform.inverse_left = TAG.read_vector(input_stream, TAG, tag_format.XMLData(node_element_node, "inverse left"))
             node_transform.inverse_up = TAG.read_vector(input_stream, TAG, tag_format.XMLData(node_element_node, "inverse up"))
             node_transform.inverse_position = TAG.read_point_3d(input_stream, TAG, tag_format.XMLData(node_element_node, "inverse position"), True)
-            node_transform.inverse_scale = TAG.read_float(input_stream, TAG, tag_format.XMLData(node_element_node, "inverse scale"))
             node.distance_from_parent = TAG.read_float(input_stream, TAG, tag_format.XMLData(node_element_node, "distance from parent"))
 
             RENDER.nodes.append(node)
-            RENDER.transforms.append(node_transform)
+            transforms.append(node_transform)
 
         for node_idx, node in enumerate(RENDER.nodes):
             node_element_node = None
@@ -1196,6 +1201,8 @@ def read_nodes_retail(RENDER, TAG, input_stream, tag_node, XML_OUTPUT):
 
             if node.name_length > 0:
                 node.name = TAG.read_variable_string_no_terminator(input_stream, node.name_length, TAG, tag_format.XMLData(node_element_node, "name"))
+
+    RENDER.transforms.append(transforms)
 
 def read_node_map(RENDER, TAG, input_stream, tag_node, XML_OUTPUT):
     if RENDER.render_body.node_map_tag_block.count > 0:
@@ -1253,7 +1260,8 @@ def read_marker_groups_v0(RENDER, TAG, input_stream, tag_node, XML_OUTPUT):
                     input_stream.read(1) # Padding?
                     marker.translation = TAG.read_point_3d(input_stream, TAG, tag_format.XMLData(marker_element_node, "translation"), True)
                     marker.rotation = TAG.read_quaternion(input_stream, TAG,  tag_format.XMLData(marker_element_node, "rotation"), True)
-                    marker.scale = TAG.read_float(input_stream, TAG,  tag_format.XMLData(marker_element_node, "scale"))
+                    if marker_group.markers_tag_block_header.size >= 36:
+                        marker.scale = TAG.read_float(input_stream, TAG,  tag_format.XMLData(marker_element_node, "scale"))
 
                     marker_group.markers.append(marker)
 
@@ -1325,9 +1333,11 @@ def read_materials(RENDER, TAG, input_stream, tag_node, XML_OUTPUT):
             material.old_shader = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(material_element_node, "old shader"))
             material.shader = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(material_element_node, "shader"))
             material.properties_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(material_element_node, "properties"))
-            input_stream.read(4) # Padding?
-            material.breakable_surface_index = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(material_element_node, "breakable surface index"))
-            input_stream.read(3) # Padding?
+            if RENDER.material_header.size >= 48:
+                input_stream.read(4) # Padding?
+            if RENDER.material_header.size >= 52:
+                material.breakable_surface_index = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(material_element_node, "breakable surface index"))
+                input_stream.read(3) # Padding?
 
             RENDER.materials.append(material)
 

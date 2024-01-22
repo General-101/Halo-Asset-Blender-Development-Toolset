@@ -32,7 +32,7 @@ from ..h1.file_model.build_mesh import get_geometry_layout as get_retail_h1_geom
 from ..h2.file_render_model.build_mesh import get_geometry_layout as get_retail_h2_geometry_layout
 from ...global_functions import mesh_processing, global_functions
 
-def generate_jms_skeleton(MODEL, file_version, armature, fix_rotations):
+def generate_jms_skeleton(MODEL, game_version, game_title, file_version, armature, fix_rotations):
     first_frame = MODEL.transforms[0]
 
     bpy.ops.object.mode_set(mode = 'EDIT')
@@ -45,10 +45,19 @@ def generate_jms_skeleton(MODEL, file_version, armature, fix_rotations):
             parent = MODEL.nodes[parent_idx].name
             current_bone.parent = armature.data.edit_bones[parent]
 
-        matrix_translate = Matrix.Translation(first_frame[idx].translation)
-        matrix_rotation = first_frame[idx].rotation.to_matrix().to_4x4()
+        if game_title == "halo1":
+            matrix_translate = Matrix.Translation(first_frame[idx].translation)
+            matrix_rotation = first_frame[idx].rotation.to_matrix().to_4x4()
+            transform_matrix = matrix_translate @ matrix_rotation
+        elif game_title == "halo2":
+            #loc = (first_frame[idx].inverse_position)
+            #rot = Matrix((first_frame[idx].inverse_forward,first_frame[idx].inverse_left,first_frame[idx].inverse_up))
+            #scale = (first_frame[idx].inverse_scale,first_frame[idx].inverse_scale,first_frame[idx].inverse_scale)
+            #transform_matrix = Matrix.LocRotScale(loc, rot, scale).inverted()
+            matrix_translate = Matrix.Translation(first_frame[idx].translation)
+            matrix_rotation = first_frame[idx].rotation.inverted().to_matrix().to_4x4()
+            transform_matrix = matrix_translate @ matrix_rotation
 
-        transform_matrix = matrix_translate @ matrix_rotation
         if fix_rotations:
             if current_bone.parent:
                 transform_matrix = (current_bone.parent.matrix @ Matrix.Rotation(radians(90.0), 4, 'Z')) @ transform_matrix
@@ -73,7 +82,7 @@ def build_scene(context, MODEL, game_version, game_title, file_version, fix_rota
 
     mesh_processing.select_object(context, armature)
 
-    generate_jms_skeleton(MODEL, file_version, armature, fix_rotations)
+    generate_jms_skeleton(MODEL, game_version, game_title, file_version, armature, fix_rotations)
 
     if game_title == "halo1":
         is_triangle_list = False
