@@ -243,7 +243,7 @@ def process_file(input_stream, report):
         pathfinding_sphere = COLLISION.PathfindingSphere()
         pathfinding_sphere.node = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(pathfinding_sphere_element_node, "node", None, COLLISION.coll_body.nodes_tag_block.count, "collision_node_block"))
         input_stream.read(14) # Padding?
-        pathfinding_sphere.center = TAG.read_point_3d(input_stream, TAG, tag_format.XMLData(pathfinding_sphere_element_node, "center"))
+        pathfinding_sphere.center = TAG.read_point_3d(input_stream, TAG, tag_format.XMLData(pathfinding_sphere_element_node, "center"), True)
         pathfinding_sphere.radius = TAG.read_float(input_stream, TAG, tag_format.XMLData(pathfinding_sphere_element_node, "radius"), True)
 
         COLLISION.pathfinding_spheres.append(pathfinding_sphere)
