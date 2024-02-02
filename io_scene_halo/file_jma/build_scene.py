@@ -289,6 +289,11 @@ def find_valid_armature(context, JMA, obj):
 
     return scene_nodes, valid_armature
 
+def get_pose_bone(arm: bpy.types.Object, node_name: str) -> bpy.types.PoseBone | None:
+    for bone in arm.pose.bones:
+        if remove_node_prefix(bone.name).lower() == node_name.lower():
+            return bone
+
 def build_scene(context, JMA, JMS_A, JMS_B, filepath, game_version, fix_parents, fix_rotations, report):
     collection = context.collection
     scene = context.scene
@@ -399,7 +404,7 @@ def build_scene(context, JMA, JMS_A, JMS_B, filepath, game_version, fix_parents,
             armature.keyframe_insert('rotation_euler')
 
         for idx, node in enumerate(nodes):
-            pose_bone = armature.pose.bones.get(node.name)
+            pose_bone = get_pose_bone(armature, node.name)
             if not pose_bone == None:
                 matrix_scale = Matrix.Scale(frame[idx].scale, 4)
                 matrix_rotation = frame[idx].rotation.to_matrix().to_4x4()
