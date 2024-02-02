@@ -410,7 +410,7 @@ def build_scene(context, JMA, JMS_A, JMS_B, filepath, game_version, fix_parents,
             armature.keyframe_insert('rotation_euler')
 
         for idx, node in enumerate(nodes):
-            pose_bone = armature.pose.bones.get(node.name)
+            pose_bone = get_pose_bone(armature, node.name)
             if not pose_bone == None:
                 matrix_scale = Matrix.Scale(frame[idx].scale, 4)
                 matrix_rotation = frame[idx].rotation.to_matrix().to_4x4()
