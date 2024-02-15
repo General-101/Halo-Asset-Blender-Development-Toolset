@@ -28,11 +28,205 @@ import os
 import bpy
 import bmesh
 
-from math import radians
-from mathutils import Matrix
-from ..h2.file_scenario_structure_bsp.format import ClusterPortalFlags as H2ClusterPortalFlags, SurfaceFlags as H2SurfaceFlags
+from sys import float_info
+from math import radians, log
+from mathutils import Matrix, Vector
+from ..h2.file_scenario_structure_bsp.format import ClusterPortalFlags as H2ClusterPortalFlags, SurfaceFlags as H2SurfaceFlags, PartFlags
 from ...global_functions import shader_processing, mesh_processing, global_functions
 from ..h1.file_scenario_structure_bsp.format import ClusterPortalFlags as H1ClusterPortalFlags, SurfaceFlags as H1SurfaceFlags
+
+PLANE_PARALLEL_ANGLE_EPSILON = 0.0001
+WEATHER_POLYHEDRA_TOLERANCE  = 0.00001
+
+def point_distance_to_plane(point, normal, dist, round_adjust=0):
+    ''' 
+    Returns distance from the point to the plane.
+    '''
+    # NOTE: we're taking into account rounding errors for 32bit floats
+    #       by calculating for rounding errors using float epsilon.
+    #       23 is the mantissa length of 32bit floating point numbers, which
+    #       can be used as a measurement for the accuracy of the float.
+    delta_max = 2**(int(log(abs(dist) + float_info.epsilon, 2)) - 23) + abs(round_adjust)
+    delta = point.dot(normal) - dist
+    #print(delta_max, delta, round_adjust)
+    return 0.0 if abs(delta) < delta_max else delta
+
+def is_point_this_side_of_plane(point, normal, dist, on_plane_ok=False,
+                                side_to_check=True, round_adjust=0):
+    ''' 
+    Returns True if point is on the side of the plane being checked.
+    If side_to_check == True, point is expected to be on front side of plane.
+    If side_to_check == False, point is expected to be on back side of plane.
+    '''
+    rounded_dist = point_distance_to_plane(point, normal, dist, round_adjust)
+    return (
+        (on_plane_ok and rounded_dist == 0) or 
+        (rounded_dist if side_to_check else -rounded_dist) > 0
+        )
+
+def is_point_on_this_side_of_planes(point, planes, on_plane_ok=False, 
+                                    side_to_check=True, round_adjust=0):
+    '''
+    Returns True if point is on the side of every the plane being checked.
+    If side_to_check == True, point is expected to be on front side of planes.
+    If side_to_check == False, point is expected to be on back side of planes.
+    '''
+    for normal, dist in planes:
+        if not is_point_this_side_of_plane(
+                point, normal, dist, on_plane_ok,
+                side_to_check, round_adjust
+                ):
+            return False
+    return True
+
+def get_intersection_point_and_ray_of_planes(plane_a, plane_b):
+    '''
+    Solves for the ray vector parallel with the intersection
+    of the planes, and an arbitrary point on the ray. Throws
+    ValueError if planes do not intersect.
+    '''
+    ray = plane_a[0].cross(plane_b[0])
+    if ray.magnitude < PLANE_PARALLEL_ANGLE_EPSILON:
+        raise ValueError("Magnitude is less than epsilon")
+
+    ray.normalize()
+    # calculate an arbitrary point on the ray.
+    # we do this by setting the same coordinate in each plane to
+    # zero, isolating a second variable to one side of an equation,
+    # and substituting it into the other to find the third variable.
+    # then take your 2 known variables and solve for the unknown.
+    #   d0 = x*a0 + y*b0 + z*c0   and   d1 = x*a1 + y*b1 + z*c1
+    # holding x at 0, we simplify like so:
+    #   d0 = y*b0 + z*c0          and   d1 = y*b1 + z*c1
+    #   (d0 -y*b0)/c0 = z         and   (d1 - z*c1)/b1 = y
+    #   y             = (d1 - ((d0 - y*b0)/c0)*c1)/b1
+    #   y*b1          = d1 - ((d0 - y*b0)/c0)*c1
+    #   y*(b1/c1)     = d1/c1 - (d0 - y*b0)/c0
+    #   d1            = y*b1 + (d0 - y*b0)*(c1/c0)
+    #   d1            = y*b1 + (d0*c1)/c0 - y*(b0*c1)/c0
+    #   d1*c0 - d0*c1 = y*b1*c0 - y*b0*c1
+    # holding x at 0 the equations are:
+    #   y             = (d1*c0 - d0*c1) / (b1*c0 - b0*c1)
+    #   z             = (d0*b1 - d1*b0) / (c0*b1 - c1*b0)
+    # holding y at 0 the equations are:
+    #   x             = (d1*c0 - d0*c1) / (a1*c0 - a0*c1)
+    #   z             = (d0*a1 - d1*a0) / (c0*a1 - c1*a0)
+    # holding z at 0 the equations are:
+    #   y             = (d1*a0 - d0*a1) / (b1*a0 - b0*a1)
+    #   x             = (d0*b1 - d1*b0) / (a0*b1 - a1*b0)
+    a0, b0, c0 = plane_a[0]
+    a1, b1, c1 = plane_b[0]
+    d0, d1     = plane_a[1], plane_b[1]
+    pos  = Vector([0, 0, 0])
+    # we pick the axis to hold at 0 by which has the largest magnitude.
+    if (abs(ray.x) > abs(ray.y) and
+        abs(ray.x) > abs(ray.z)):
+        pos.y = (d1*c0 - d0*c1) / (b1*c0 - b0*c1)
+        pos.z = (d0*b1 - d1*b0) / (c0*b1 - c1*b0)
+    elif abs(ray.y) > abs(ray.z):
+        pos.x = (d1*c0 - d0*c1) / (a1*c0 - a0*c1)
+        pos.z = (d0*a1 - d1*a0) / (c0*a1 - c1*a0)
+    elif abs(ray.z) > 0:
+        pos.y = (d1*a0 - d0*a1) / (b1*a0 - b0*a1)
+        pos.x = (d0*b1 - d1*b0) / (a0*b1 - a1*b0)
+
+    return ray, pos
+
+def get_point_on_plane(norm, dist):
+    ''' 
+    Solves for an arbitrary point on the plane by rearranging 
+    the plane equation(d = x*a + y*b + z*c) and holding two of 
+    the values constant and solve for the third.
+    '''
+    # Solve for the axis with the largest magnitude, as it 
+    # indicates the other axis values can be held at 0.
+    # we can simplify from this:
+    #   d   = x*a + y*b + z*c
+    # to this:
+    #   d/x = a
+    pos  = Vector([0, 0, 0])
+    if (abs(norm.x) > abs(norm.y) and
+        abs(norm.x) > abs(norm.z)):
+        pos.x = dist/norm.x
+    elif abs(norm.y) > abs(norm.z):
+        pos.y = dist/norm.y
+    elif abs(norm.z) > 0:
+        pos.z = dist/norm.z
+
+    return pos
+
+def find_intersect_point_of_planes(plane_0, plane_1, plane_2):
+    '''
+    Returns intersection point of 3 planes as a Vector, or
+    None if there is no intersection. If any of the planes 
+    are parallel to each other, there is no intersection.
+    '''
+    norm_0, norm_1, norm_2 = plane_0[0], plane_1[0], plane_2[0]
+    
+    # find the intersection vectors between each plane
+    cross_01 = norm_0.cross(norm_1)
+    cross_02 = norm_2.cross(norm_0)
+    cross_12 = norm_1.cross(norm_2)
+    # the magnitude of the crosses is the sine of the angle between them.
+    # any being ~zero indicates the planes are parallel to each other.
+    if min(cross_01.magnitude, cross_02.magnitude, cross_12.magnitude) < PLANE_PARALLEL_ANGLE_EPSILON:
+        return None
+    
+    # figure out which planes to cross and which to try and intersect 
+    # with. we're comparing the angle between the planes being crossed
+    # to ensure we maximize the precision of the crossed vectors.
+    if (cross_01.magnitude > cross_02.magnitude and 
+        cross_01.magnitude > cross_12.magnitude):
+        plane_a, plane_b, plane_c = plane_0, plane_1, plane_2
+    elif cross_02.magnitude > cross_12.magnitude:
+        plane_a, plane_b, plane_c = plane_0, plane_2, plane_1
+    else:
+        plane_a, plane_b, plane_c = plane_2, plane_1, plane_0
+
+    # find the point where the edge ray intersects the plane
+    edge_ray, edge_pos = get_intersection_point_and_ray_of_planes(
+        plane_a, plane_b
+        )
+
+    # find the distance from origin to the intersection of plane and edge
+    plane_norm, plane_dist = plane_c
+    plane_pos = get_point_on_plane(plane_norm, plane_dist)
+
+    # find and return the point that the edge intersects the other plane
+    cos_angle = plane_norm.dot(edge_ray)
+    if cos_angle < PLANE_PARALLEL_ANGLE_EPSILON:
+        return None
+
+    intersect_dist_to_origin = plane_norm.dot(plane_pos-edge_pos) / cos_angle
+    return edge_pos + edge_ray * intersect_dist_to_origin
+
+def planes_to_convex_hull_vert_coords(planes, round_adjust=0.000001):
+    '''
+    Returns a list of all points that make up a convex hull formed by
+    the intersection of all provided planes. Note that there is little
+    cleanup done here, so the list may have nearly-coplanar verts.
+    '''
+    verts = []
+
+    # find the intersect points of all planes within the polyhedron
+    plane_ct = len(planes)
+    for i in range(plane_ct):
+        for j in range(plane_ct):
+            if i == j: continue
+            for k in range(plane_ct):
+                if k == i or k == j: 
+                    continue
+
+                intersect = find_intersect_point_of_planes(
+                    planes[i], planes[j], planes[k],
+                    )
+
+                if (intersect is not None and is_point_on_this_side_of_planes(
+                        intersect, planes, True, round_adjust=round_adjust
+                        )):
+                    verts.append(intersect)
+
+    return verts
 
 def build_scene(context, LEVEL, game_version, game_title, file_version, fix_rotations, empty_markers, report, collection_override=None, cluster_collection_override=None):
     collection = context.collection
@@ -276,7 +470,37 @@ def build_scene(context, LEVEL, game_version, game_title, file_version, fix_rota
             fog_planes_bm.to_mesh(fog_planes_mesh)
             fog_planes_bm.free()
 
-        #if len(LEVEL.weather_polyhedras) > 0:
+        if len(LEVEL.weather_polyhedras) > 0:
+            material_name = "+weatherpoly"
+            mat = bpy.data.materials.get(material_name)
+            if mat is None:
+                mat = bpy.data.materials.new(name=material_name)
+
+            mat.diffuse_color = random_color_gen.next()
+            for poly_idx, weather_polyhedra in enumerate(LEVEL.weather_polyhedras):
+                tolerance = weather_polyhedra.bounding_sphere_center.magnitude * WEATHER_POLYHEDRA_TOLERANCE
+                coords = planes_to_convex_hull_vert_coords([
+                    (plane.point_3d, plane.distance)
+                    for plane in weather_polyhedra.planes
+                    ], tolerance
+                    )
+                if len(coords) <= 3:
+                    continue
+
+                bm = bmesh.new()
+                for coord in coords:
+                    bm.verts.new(coord*100 + weather_polyhedra.bounding_sphere_center)
+
+                bmesh.ops.convex_hull(bm, input=bm.verts)
+                mesh = bpy.data.meshes.new("weather_polyhedra_%d" % poly_idx)
+                obj = bpy.data.objects.new("weather_polyhedra_%d" % poly_idx, mesh)
+                obj.parent = level_root
+                collection.objects.link(obj)
+                bm.to_mesh(mesh)
+                bm.free()
+
+                if not mat in mesh.materials.values():
+                    mesh.materials.append(mat)
 
     else:
         if len(LEVEL.clusters) > 0:
