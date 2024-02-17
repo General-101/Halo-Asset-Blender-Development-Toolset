@@ -135,8 +135,7 @@ class ShaderAsset():
                      u_animation_phase=0.0, u_animation_scale=0.0, v_animation_source=0, v_animation_function=0, v_animation_period=0.0, v_animation_phase=0.0, v_animation_scale=0.0, 
                      rotation_animation_source=0, rotation_animation_function=0, rotation_animation_period=0.0, rotation_animation_phase=0.0, rotation_animation_scale=0.0, 
                      rotation_animation_center=(0.0, 0.0), reflection_falloff_distance=0.0, reflection_cutoff_distance=0.0, perpendicular_brightness=0.0, 
-                     perpendicular_tint_color=(0.0, 0.0, 0.0, 1.0), parallel_brightness=0.0, parallel_tint_color=(0.0, 0.0, 0.0, 1.0), reflection_cube_map=None,
-                     bump_scale=1.0, bump_map=None):
+                     perpendicular_tint_color=(0.0, 0.0, 0.0, 1.0), parallel_brightness=0.0, parallel_tint_color=(0.0, 0.0, 0.0, 1.0), reflection_cube_map=None, bump_scale=1.0, bump_map=None):
             self.radiosity_flags = radiosity_flags
             self.detail_level = detail_level
             self.power = power

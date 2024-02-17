@@ -167,7 +167,7 @@ def build_mesh_layout(asset, geometry, region_name, random_color_gen, object_mes
                     mesh.polygons[triangle_idx].material_index = material_index
                 else:
                     material_name = "invalid_material_%s" % triangle_material_index
-                    mat = bpy.data.materials.get(name=material_name)
+                    mat = bpy.data.materials.get(material_name)
                     if mat is None:
                         mat = bpy.data.materials.new(name=material_name)
 
@@ -224,8 +224,10 @@ def get_object(collection, import_file, game_version, object_name, random_color_
             permutation_index = "%s" % shader.permutation_index
 
         material_name = "%s%s" % (os.path.basename(shader.tag_ref.name), permutation_index)
-        mat = bpy.data.materials.new(name=material_name)
-        shader_processing.generate_h1_shader(mat, shader.tag_ref, shader.permutation_index, report)
+        mat = bpy.data.materials.get(material_name)
+        if mat == None:
+            mat = bpy.data.materials.new(name=material_name)
+            shader_processing.generate_h1_shader(mat, shader.tag_ref, shader.permutation_index, report)
 
         materials.append(mat)
 

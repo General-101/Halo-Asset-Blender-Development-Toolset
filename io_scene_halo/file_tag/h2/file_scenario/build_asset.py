@@ -301,9 +301,9 @@ def write_controls(output_stream, SCENARIO, TAG):
             device_control_element.sctt_header.write(output_stream, TAG, True)
 
 def write_light_fixtures(output_stream, SCENARIO, TAG):
-    if len(SCENARIO.light_fixtures) > 0:
-        SCENARIO.light_fixture_header.write(output_stream, TAG, True)
-        for light_fixture_element in SCENARIO.light_fixtures:
+    if len(SCENARIO.device_light_fixtures) > 0:
+        SCENARIO.device_light_fixture_header.write(output_stream, TAG, True)
+        for light_fixture_element in SCENARIO.device_light_fixtures:
             write_object(output_stream, light_fixture_element)
             output_stream.write(struct.pack('<h', light_fixture_element.power_group_index))
             output_stream.write(struct.pack('<h', light_fixture_element.position_group_index))
@@ -313,7 +313,7 @@ def write_light_fixtures(output_stream, SCENARIO, TAG):
             output_stream.write(struct.pack('<f', radians(light_fixture_element.falloff_angle)))
             output_stream.write(struct.pack('<f', radians(light_fixture_element.cutoff_angle)))
 
-        for light_fixture_element in SCENARIO.light_fixtures:
+        for light_fixture_element in SCENARIO.device_light_fixtures:
             light_fixture_element.sobj_header.write(output_stream, TAG, True)
             light_fixture_element.obj0_header.write(output_stream, TAG, True)
             light_fixture_element.sdvt_header.write(output_stream, TAG, True)
@@ -881,7 +881,7 @@ def build_asset(output_stream, SCENARIO, report):
     write_palette(output_stream, SCENARIO.device_control_palette, SCENARIO.device_control_palette_header, 32, TAG)
 
     write_light_fixtures(output_stream, SCENARIO, TAG)
-    write_palette(output_stream, SCENARIO.light_fixtures_palette, SCENARIO.light_fixture_palette_header, 32, TAG)
+    write_palette(output_stream, SCENARIO.device_light_fixtures_palette, SCENARIO.device_light_fixture_palette_header, 32, TAG)
 
     write_sound_scenery(output_stream, SCENARIO, TAG)
     write_palette(output_stream, SCENARIO.sound_scenery_palette, SCENARIO.sound_scenery_palette_header, 32, TAG)

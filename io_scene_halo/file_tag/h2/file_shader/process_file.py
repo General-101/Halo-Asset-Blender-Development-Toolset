@@ -396,7 +396,6 @@ def read_parameters(SHADER, TAG, input_stream, tag_node, XML_OUTPUT):
                         input_stream.read(16) # Padding?
 
 def process_file(input_stream, report):
-    print(input_stream.name)
     TAG = tag_format.TagAsset()
     SHADER = ShaderAsset()
     TAG.is_legacy = False

@@ -24,28 +24,57 @@
 #
 # ##### END MIT LICENSE BLOCK #####
 
-from enum import Flag, auto
+from enum import Flag, Enum, auto
 from mathutils import Vector
 
+class CollisionFlags(Flag):
+    contains_open_edges = auto()
+
+class ReportTypeEnum(Enum):
+    silent = 0
+    comment = auto()
+    warning = auto()
+    error = auto()
+
+class ReportFlags(Flag):
+    rendered = auto()
+    tangent_space = auto()
+    non_critical = auto()
+    lightmap_light = auto()
+    report_key_is_valid = auto()
+
+class LeafFlags(Flag):
+    contains_double_sided_surfaces = auto()
+
 class SurfaceFlags(Flag):
-    Two_Sided = auto()
-    Invisible = auto()
-    Climbable = auto()
-    Breakable = auto()
-    Invalid = auto()
-    Conveyor = auto()
+    two_sided = auto()
+    invisible = auto()
+    climbable = auto()
+    breakable = auto()
+    invalid = auto()
+    conveyor = auto()
+
+class PathfindingSphereFlags(Flag):
+    remains_when_open = auto()
+    vehicle_only = auto()
+    with_sector = auto()
 
 class CollisionAsset():
     def __init__(self):
         self.header = None
+        self.collision_body_header = None
         self.collision_body = None
-        self.import_info_blocks = None
+        self.import_info_header = None
+        self.import_info = None
+        self.errors_header = None
         self.errors = None
-        self.flags = 0
-        self.materials = None
         self.materials_header = None
+        self.materials = None
+        self.regions_header = None
         self.regions = None
+        self.pathfinding_spheres_header = None
         self.pathfinding_spheres = None
+        self.nodes_header = None
         self.nodes = None
 
     class CollisionBody:
@@ -69,8 +98,8 @@ class CollisionAsset():
             self.files_tag_block = files_tag_block
             self.files = files
 
-    class Files:
-        def __init__(self, path="", modification_date="", checksum=0, size=0, zipped_data=0, uncompressed_data=None):
+    class File:
+        def __init__(self, path="", modification_date="", checksum=0, size=0, zipped_data=None, uncompressed_data=None):
             self.path = path
             self.modification_date = modification_date
             self.checksum = checksum
@@ -265,27 +294,34 @@ class CollisionAsset():
             self.color = color
 
     class Material:
-        def __init__(self, name=""):
+        def __init__(self, name="", name_length=0):
             self.name = name
+            self.name_length = name_length
 
     class Region:
-        def __init__(self, name="", permutation_tag_block=None, permutations=None):
+        def __init__(self, name="", name_length=0, permutations_tag_block=None, permutations_header=None, permutations=None):
             self.name = name
-            self.permutation_tag_block = permutation_tag_block
+            self.name_length = name_length
+            self.permutations_tag_block = permutations_tag_block
+            self.permutations_header = permutations_header
             self.permutations = permutations
 
     class Permutation:
-        def __init__(self, name="", bsps_tag_block=None, bsps_physics_tag_block=None, bsps=None, bsp_physics=None):
+        def __init__(self, name="", name_length=0, bsps_tag_block=None, bsp_physics_tag_block=None, bsps_header=None, bsp_physics_header=None, bsps=None, bsp_physics=None):
             self.name = name
+            self.name_length = name_length
             self.bsps_tag_block = bsps_tag_block
-            self.bsps_physics_tag_block = bsps_physics_tag_block
+            self.bsp_physics_tag_block = bsp_physics_tag_block
+            self.bsps_header = bsps_header
+            self.bsp_physics_header = bsp_physics_header
             self.bsps = bsps
             self.bsp_physics = bsp_physics
 
     class BSP:
         def __init__(self, node_index=0, bsp3d_nodes_tag_block=None, planes_tag_block=None, leaves_tag_block=None, bsp2d_references_tag_block=None, bsp2d_nodes_tag_block=None,
-                     surfaces_tag_block=None, edges_tag_block=None, vertices_tag_block=None, bsp3d_nodes=None, planes=None, leaves=None, bsp2d_references=None, bsp2d_nodes=None,
-                     surfaces=None, edges=None, vertices=None):
+                     surfaces_tag_block=None, edges_tag_block=None, vertices_tag_block=None, cbsp_header=None, bsp3d_nodes_header=None, planes_header=None, leaves_header=None,
+                     bsp2d_references_header=None, bsp2d_nodes_header=None, surfaces_header=None, edges_header=None, vertices_header=None, bsp3d_nodes=None, planes=None, leaves=None,
+                     bsp2d_references=None, bsp2d_nodes=None, surfaces=None, edges=None, vertices=None):
             self.node_index = node_index
             self.bsp3d_nodes_tag_block = bsp3d_nodes_tag_block
             self.planes_tag_block = planes_tag_block
@@ -295,6 +331,15 @@ class CollisionAsset():
             self.surfaces_tag_block = surfaces_tag_block
             self.edges_tag_block = edges_tag_block
             self.vertices_tag_block = vertices_tag_block
+            self.cbsp_header = cbsp_header
+            self.bsp3d_nodes_header = bsp3d_nodes_header
+            self.planes_header = planes_header
+            self.leaves_header = leaves_header
+            self.bsp2d_references_header = bsp2d_references_header
+            self.bsp2d_nodes_header = bsp2d_nodes_header
+            self.surfaces_header = surfaces_header
+            self.edges_header = edges_header
+            self.vertices_header = vertices_header
             self.bsp3d_nodes = bsp3d_nodes
             self.planes = planes
             self.leaves = leaves
@@ -327,20 +372,23 @@ class CollisionAsset():
             self.bsp2d_node = bsp2d_node
 
     class BSP2DNode:
-        def __init__(self, plane_i=0.0, plane_j=0.0, distance=0.0, left_child=0, right_child=0):
-            self.plane_i = plane_i
-            self.plane_j = plane_j
-            self.distance = distance
+        def __init__(self, plane=None, left_child=0, right_child=0):
+            self.plane = plane
             self.left_child = left_child
             self.right_child = right_child
 
     class Surface:
-        def __init__(self, plane=0, first_edge=0, flags=0, breakable_surface=0, material_index=0):
+        def __init__(self, plane=0, first_edge=0, flags=0, breakable_surface=0, material=0):
             self.plane = plane
             self.first_edge = first_edge
             self.flags = flags
             self.breakable_surface = breakable_surface
-            self.material_index = material_index
+            self.material = material
+
+    class Vertex:
+        def __init__(self, translation=Vector(), first_edge=0):
+            self.translation = translation
+            self.first_edge = first_edge
 
     class Edge:
         def __init__(self, start_vertex=0, end_vertex=0, forward_edge=0, reverse_edge=0, left_surface=0, right_surface=0):
@@ -350,11 +398,6 @@ class CollisionAsset():
             self.reverse_edge = reverse_edge
             self.left_surface = left_surface
             self.right_surface = right_surface
-
-    class Vertex:
-        def __init__(self, translation=Vector(), first_edge=0):
-            self.translation = translation
-            self.first_edge = first_edge
 
     class BSPPhysics:
         def __init__(self, size_0=0, count_0=0, size_1=0, count_1=0, size_2=0, count_2=0, mopp_code_data_ref=None, mopp_code_data=None):

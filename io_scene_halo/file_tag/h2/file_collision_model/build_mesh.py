@@ -28,6 +28,7 @@ import bpy
 import bmesh
 
 from ....global_functions import global_functions, mesh_processing
+from .format import SurfaceFlags
 
 def build_collision(context, armature, COLLISION, game_version):
     collection = context.collection
@@ -69,45 +70,65 @@ def build_collision(context, armature, COLLISION, game_version):
                             vert_indices.append(bm.verts.new(bsp.vertices[edge.end_vertex].translation))
                             edge_index = edge.reverse_edge
 
-                    bm.faces.new(vert_indices)
+                    is_invalid = False
+                    if SurfaceFlags.invalid in SurfaceFlags(surface.flags):
+                        is_invalid = True
+
+                    if not is_invalid and len(vert_indices) >= 3:
+                        bm.faces.new(vert_indices)
 
                 bm.faces.ensure_lookup_table()
                 for surface_idx, surface in enumerate(bsp.surfaces):
-                    ngon_material_index = surface.material_index
-                    if not ngon_material_index == -1:
-                        mat = COLLISION.materials[ngon_material_index]
+                    is_invalid = False
+                    if SurfaceFlags.invalid in SurfaceFlags(surface.flags):
+                        is_invalid = True
 
-                    current_region_permutation = "%s %s" % (permutation_name, region_name)
+                    if not is_invalid:
+                        ngon_material_index = surface.material
+                        if not ngon_material_index == -1:
+                            mat = COLLISION.materials[ngon_material_index]
 
-                    if not current_region_permutation in active_region_permutations:
-                        active_region_permutations.append(current_region_permutation)
-                        object_mesh.region_add(current_region_permutation)
+                        current_region_permutation = "%s %s" % (permutation_name, region_name)
 
-                    if not ngon_material_index == -1:
-                        material_list = []
+                        if not current_region_permutation in active_region_permutations:
+                            active_region_permutations.append(current_region_permutation)
+                            object_mesh.region_add(current_region_permutation)
 
-                        material_name = mat
-                        mat = bpy.data.materials.get(material_name)
-                        if mat is None:
-                            mat = bpy.data.materials.new(name=material_name)
+                        if not ngon_material_index == -1:
+                            material_name = mat.name
 
-                        for slot in object_mesh.material_slots:
-                            material_list.append(slot.material)
+                            if SurfaceFlags.two_sided in SurfaceFlags(surface.flags):
+                                material_name += "%"
 
-                        if not mat in material_list:
-                            material_list.append(mat)
-                            object_mesh.data.materials.append(mat)
+                            if SurfaceFlags.invisible in SurfaceFlags(surface.flags):
+                                material_name += "*"
 
-                        mat.diffuse_color = random_color_gen.next()
-                        material_index = material_list.index(mat)
-                        bm.faces[surface_idx].material_index = material_index
+                            if SurfaceFlags.climbable in SurfaceFlags(surface.flags):
+                                material_name += "^"
 
-                    region_layer = bm.faces.layers.int.get('Region Assignment')
-                    if region_layer == None:
-                        region_layer = bm.faces.layers.int.new('Region Assignment')
+                            if SurfaceFlags.breakable in SurfaceFlags(surface.flags):
+                                material_name += "-"
 
-                    face = bm.faces[surface_idx]
-                    face[region_layer] = active_region_permutations.index(current_region_permutation) + 1
+                            if SurfaceFlags.conveyor in SurfaceFlags(surface.flags):
+                                material_name += ">"
+
+                            mat = bpy.data.materials.get(material_name)
+                            if mat is None:
+                                mat = bpy.data.materials.new(name=material_name)
+
+                            if not mat in object_mesh.data.materials.values():
+                                object_mesh.data.materials.append(mat)
+
+                            mat.diffuse_color = random_color_gen.next()
+                            material_index = object_mesh.data.materials.values().index(mat)
+                            bm.faces[surface_idx].material_index = material_index
+
+                        region_layer = bm.faces.layers.int.get('Region Assignment')
+                        if region_layer == None:
+                            region_layer = bm.faces.layers.int.new('Region Assignment')
+
+                        face = bm.faces[surface_idx]
+                        face[region_layer] = active_region_permutations.index(current_region_permutation) + 1
 
                 bm.to_mesh(mesh)
                 bm.free()

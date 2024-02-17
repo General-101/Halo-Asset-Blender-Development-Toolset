@@ -24,7 +24,10 @@
 #
 # ##### END MIT LICENSE BLOCK #####
 
+import io
 import os
+import bpy
+import subprocess
 
 from ..global_functions import tag_format
 
@@ -41,11 +44,20 @@ from ..file_tag.h1.file_bitmap.upgrade_bitmap import upgrade_h2_bitmap as upgrad
 
 from ..file_tag.h1.file_scenario.process_file import process_file as process_h1_scenario
 from ..file_tag.h1.file_shader_environment.process_file import process_file as process_h1_shader
+from ..file_tag.h1.file_scenario_structure_bsp.process_file import process_file as process_h1_structure_bsp
+from ..file_tag.h1.file_actor_variant.process_file import process_file as process_actor_variant
 from ..file_tag.h1.file_model_animations.process_file import process_file as process_h1_animation_retail
 from ..file_tag.h1.file_model_animations.animation_utilities import animation_rename
 from ..file_tag.h1.file_model_animations.animation_utilities import animation_settings_transfer
+from ..file_tag import import_tag
 
-def convert_tag(context, input_file, source_game_title, game_version, target_game_title, patch_txt_path, report):
+try:
+    from PIL import Image
+except ModuleNotFoundError:
+    print("PIL not found. Unable to create image node.")
+    Image = None
+
+def convert_tag(context, input_file, source_game_title, target_game_title, tag_action, patch_txt_path, donor_tag, report):
     path_basename = os.path.basename(input_file)
     path_dirname = os.path.dirname(input_file)
     filename_no_ext = path_basename.rsplit('.', 1)[0]
@@ -174,6 +186,9 @@ def convert_tag(context, input_file, source_game_title, game_version, target_gam
                 input_stream.close()
                 report({'ERROR'}, "Not implemented")
 
+        elif tag_group == "actv":
+            H1_ASSET = process_actor_variant(input_stream, report)
+
         elif tag_group == "antr":
             if game_version == "retail":
                 H1_ASSET = process_h1_animation_retail(input_stream, report)
@@ -183,14 +198,12 @@ def convert_tag(context, input_file, source_game_title, game_version, target_gam
                         os.makedirs(output_path)
 
                     output_stream = open(os.path.join(output_path, path_basename), 'wb')
-
-                    if "settings_transfer" in patch_txt_path:
-                        donor_file = r""
-                        donor_stream = open(donor_file, 'rb')
+                    if "settings_transfer" == tag_action and donor_tag.endswith(".model_animations"):
+                        donor_stream = open(donor_tag, 'rb')
                         DONOR_TAG = process_h1_animation_retail(donor_stream, report)
                         H1_ASSET = animation_settings_transfer(H1_ASSET, DONOR_TAG, patch_txt_path, report)
 
-                    else:
+                    elif "rename" == tag_action:
                         H1_ASSET = animation_rename(H1_ASSET, patch_txt_path, report)
 
                     build_h1_animation(output_stream, H1_ASSET, report)

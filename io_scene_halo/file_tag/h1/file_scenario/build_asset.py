@@ -260,9 +260,9 @@ def write_sound_scenery(output_stream, SCENARIO):
         output_stream.write(struct.pack('>b', sound_scenery_element.appearance_player_index))
         output_stream.write(struct.pack('>3x'))
 
-def write_player_starting_profiles(output_stream, SCENARIO, TAG):
+def write_player_starting_profiles(output_stream, SCENARIO):
     for player_starting_profile_element in SCENARIO.player_starting_profiles:
-        output_stream.write(struct.pack('>31sx', TAG.string_to_bytes(player_starting_profile_element.name, False)))
+        output_stream.write(struct.pack('>31sx', tag_format.string_to_bytes(player_starting_profile_element.name, False)))
         output_stream.write(struct.pack('>f', player_starting_profile_element.starting_health_damage))
         output_stream.write(struct.pack('>f', player_starting_profile_element.starting_shield_damage))
         player_starting_profile_element.primary_weapon_tag_ref.write(output_stream, True, False)
@@ -281,10 +281,10 @@ def write_player_starting_profiles(output_stream, SCENARIO, TAG):
         primary_weapon_name_length = len(player_starting_profile_element.primary_weapon_tag_ref.name)
         secondary_weapon_name_length = len(player_starting_profile_element.secondary_weapon_tag_ref.name)
         if primary_weapon_name_length > 0:
-            output_stream.write(struct.pack('>%ssx' % primary_weapon_name_length, TAG.string_to_bytes(player_starting_profile_element.primary_weapon_tag_ref.name, False)))
+            output_stream.write(struct.pack('>%ssx' % primary_weapon_name_length, tag_format.string_to_bytes(player_starting_profile_element.primary_weapon_tag_ref.name, False)))
 
         if secondary_weapon_name_length > 0:
-            output_stream.write(struct.pack('>%ssx' % secondary_weapon_name_length, TAG.string_to_bytes(player_starting_profile_element.secondary_weapon_tag_ref.name, False)))
+            output_stream.write(struct.pack('>%ssx' % secondary_weapon_name_length, tag_format.string_to_bytes(player_starting_profile_element.secondary_weapon_tag_ref.name, False)))
 
 def write_player_starting_locations(output_stream, SCENARIO):
     for player_starting_location_element in SCENARIO.player_starting_locations:

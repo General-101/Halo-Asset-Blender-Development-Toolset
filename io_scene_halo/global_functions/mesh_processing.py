@@ -852,18 +852,24 @@ def process_mesh_export_uv(evaluated_geo, file_type, loop_index, version):
 
     return uv_set
 
-def process_mesh_export_vert(vert, point, file_type, original_geo_matrix, custom_scale):
+def process_mesh_export_vert(vertex_data, loop_data, loop_normals, file_type, original_geo_matrix, custom_scale):
     if file_type == 'JMS':
-        translation = vert.co
+        translation = vertex_data.co
         negative_matrix = original_geo_matrix.determinant() < 0.0
         if negative_matrix and file_type == 'JMS':
-            invert_translation_x = vert.co[0] * -1
-            invert_translation_y = vert.co[1] * -1
-            invert_translation_z = vert.co[2] * -1
+            invert_translation_x = vertex_data.co[0] * -1
+            invert_translation_y = vertex_data.co[1] * -1
+            invert_translation_z = vertex_data.co[2] * -1
             translation = Vector((invert_translation_x, invert_translation_y, invert_translation_z))
 
         final_translation = original_geo_matrix @ translation
-        final_normal = (original_geo_matrix @ (translation + point.normal) - final_translation).normalized()
+        if loop_normals:
+            final_normal = (original_geo_matrix @ (translation + loop_data.normal) - final_translation).normalized()
+            if final_normal.length == 0.0:
+                final_normal = (original_geo_matrix @ (translation + vertex_data.normal) - final_translation).normalized()
+
+        else:
+            final_normal = (original_geo_matrix @ (translation + vertex_data.normal) - final_translation).normalized()
 
         if negative_matrix and original_geo_matrix.determinant() < 0.0 and file_type == 'JMS':
             invert_normal_x = final_normal[0] * -1
@@ -873,8 +879,13 @@ def process_mesh_export_vert(vert, point, file_type, original_geo_matrix, custom
             final_normal = Vector((invert_normal_x, invert_normal_y, invert_normal_z))
 
     else:
-        final_translation = custom_scale * vert.co
-        final_normal = (point.normal).normalized()
+        final_translation = custom_scale * vertex_data.co
+        if loop_normals:
+            final_normal = (loop_data.normal).normalized()
+            if final_normal.length == 0.0:
+                final_normal = (vertex_data.normal).normalized()
+        else:
+            final_normal = (vertex_data.normal).normalized()
 
     return final_translation, final_normal
 
@@ -964,3 +975,86 @@ def get_bone_distance(import_file_prerelease, import_file_main, current_idx, fil
         bone_distance = 1
 
     return bone_distance
+
+def get_mesh_data(ASSET, section_data, mesh, material_count, materials, random_color_gen, part_flags):
+    for section_data in section_data:
+        triangles = []
+        triangle_mat_indices = []
+        vertices = [raw_vertex.position for raw_vertex in section_data.raw_vertices]
+        for part_idx, part in enumerate(section_data.parts):
+            triangle_part = []
+
+            strip_length = part.strip_length
+            strip_start = part.strip_start_index
+
+            triangle_indices = section_data.strip_indices[strip_start : (strip_start + strip_length)]
+            if part_flags.override_triangle_list in part_flags(part.flags):
+                triangle_length = int(len(triangle_indices) / 3)
+                for idx in range(triangle_length):
+                    triangle_index = (idx * 3)
+                    v0 = section_data.strip_indices[strip_start + triangle_index]
+                    v1 = section_data.strip_indices[strip_start + triangle_index + 1]
+                    v2 = section_data.strip_indices[strip_start + triangle_index + 2]
+                    triangles.append((v0, v1, v2))
+                    triangle_mat_indices.append(part.material_index)
+
+            else:
+                index_count = len(triangle_indices)
+                for idx in range(index_count - 2):
+                    triangle_part.append([triangle_indices[idx], triangle_indices[idx + 1], triangle_indices[idx + 2]])
+
+                # Fix face normals on uneven triangle indices
+                for triangle_idx in range(len(triangle_part)):
+                    if not triangle_idx % 2 == 0:
+                        triangle_part[triangle_idx].reverse()
+
+                # clean up any triangles that reference the same vertex multiple times
+                for reversed_triangle in reversed(triangle_part):
+                    if (reversed_triangle[0] == reversed_triangle[1]) or (reversed_triangle[1] == reversed_triangle[2]) or (reversed_triangle[0] == reversed_triangle[2]):
+                        del triangle_part[triangle_part.index(reversed_triangle)]
+
+                for tri in triangle_part:
+                    triangle_mat_indices.append(part.material_index)
+                    triangles.append(tri)
+
+        mesh.from_pydata(vertices, [], triangles)
+        for tri_idx, poly in enumerate(mesh.polygons):
+            poly.use_smooth = True
+
+        for triangle_idx, triangle in enumerate(triangles):
+            triangle_material_index = triangle_mat_indices[triangle_idx]
+            if not triangle_material_index == -1 and triangle_material_index < material_count:
+                mat = ASSET.materials[triangle_material_index]
+
+            if not triangle_material_index == -1:
+                if triangle_material_index < material_count:  
+                    mat = materials[triangle_material_index]
+
+                    if not mat in mesh.materials.values():
+                        mesh.materials.append(mat)
+
+                    mat.diffuse_color = random_color_gen.next()
+                    material_index = mesh.materials.values().index(mat)
+                    mesh.polygons[triangle_idx].material_index = material_index
+                else:
+                    material_name = "invalid_material_%s" % triangle_material_index
+                    mat = bpy.data.materials.get(material_name)
+                    if mat is None:
+                        mat = bpy.data.materials.new(name=material_name)
+
+                    if not mat in mesh.materials.values():
+                        mesh.materials.append(mat)
+
+                    mat.diffuse_color = random_color_gen.next()
+                    material_index = mesh.materials.values().index(mat)
+                    mesh.polygons[triangle_idx].material_index = material_index
+
+            vertex_list = [section_data.raw_vertices[triangle[0]], section_data.raw_vertices[triangle[1]], section_data.raw_vertices[triangle[2]]]
+            for vertex_idx, vertex in enumerate(vertex_list):
+                loop_index = (3 * triangle_idx) + vertex_idx
+                uv_name = 'UVMap_%s' % 0
+                layer_uv = mesh.uv_layers.get(uv_name)
+                if layer_uv is None:
+                    layer_uv = mesh.uv_layers.new(name=uv_name)
+
+                layer_uv.data[loop_index].uv = (vertex.texcoord[0], 1 - vertex.texcoord[1])

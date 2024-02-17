@@ -120,7 +120,7 @@ class Generate_Tag_Patches_Dialog(Operator):
 
     filter_glob: StringProperty(
         default="*.txt",
-        options={'HIDDEN'},
+        options={'HIDDEN'}
         )
 
     filepath: StringProperty(
@@ -132,6 +132,27 @@ class Generate_Tag_Patches_Dialog(Operator):
         scene = context.scene
         scene_halo_scenario = scene.halo_scenario
         scene_halo_scenario.upgrade_patches = self.filepath
+        context.area.tag_redraw()
+        return {'FINISHED'}
+
+    def invoke(self, context, event):
+        context.window_manager.fileselect_add(self)
+        return {'RUNNING_MODAL'}
+
+class Generate_Tag_Donor_Dialog(Operator):
+    """Select the donor file to use during the transfer process"""
+    bl_idname = "import_scene.set_donor_tag"
+    bl_label = "Select Donor"
+
+    filepath: StringProperty(
+        name="Source Filepath",
+        description="The filepath to the source we wish to use",
+    )
+
+    def execute(self, context):
+        scene = context.scene
+        scene_halo_scenario = scene.halo_scenario
+        scene_halo_scenario.donor_tag = self.filepath
         context.area.tag_redraw()
         return {'FINISHED'}
 
@@ -272,6 +293,14 @@ class Source_PropertiesGroup(PropertyGroup):
             ]
         )
 
+    tag_action: EnumProperty(
+        name="Tag Action:",
+        description="What action to run on referenced animations",
+        items=[ ('settings_transfer', "Settings Transfer", "Settings Transfer"),
+                ('rename', "Rename", "Rename"),
+               ]
+        )
+
     input_file: StringProperty(
         name="Source",
         description="A source file to load and convert to a tag",
@@ -280,6 +309,11 @@ class Source_PropertiesGroup(PropertyGroup):
     upgrade_patches: StringProperty(
         name="Upgrade Patches",
         description="A text file containing paths to replace during a scenario upgrade",
+        )
+    
+    donor_tag: StringProperty(
+        name="Donor Tag",
+        description="A tag file for transfer",
         )
 
 class LevelProprtiesGroup(PropertyGroup):
@@ -1078,12 +1112,20 @@ class Halo_GenerateTag(Panel):
         row.prop(scene_halo_scenario, "upgrade_patches", text='')
 
         row = col.row()
+        row.operator(Generate_Tag_Donor_Dialog.bl_idname, text="Select Donor")
+        row.prop(scene_halo_scenario, "donor_tag", text='')
+
+        row = col.row()
         row.label(text="Source Game Title:")
         row.prop(scene_halo_scenario, "source_game_title", text='')
 
         row = col.row()
         row.label(text="Target Game Title:")
         row.prop(scene_halo_scenario, "target_game_title", text='')
+
+        row = col.row()
+        row.label(text="Tag Action:")
+        row.prop(scene_halo_scenario, "tag_action", text='')
 
         row = col.row()
         row.operator("halo_bulk.generate_tag", text="Generate Tag")
@@ -1633,7 +1675,7 @@ class GenerateTag(Operator):
 
         scene_halo_scenario = context.scene.halo_scenario
 
-        return global_functions.run_code("generate_tag.convert_tag(context, scene_halo_scenario.input_file, scene_halo_scenario.source_game_title, scene_halo_scenario.target_game_title, scene_halo_scenario.upgrade_patches, self.report)")
+        return global_functions.run_code("generate_tag.convert_tag(context, scene_halo_scenario.input_file, scene_halo_scenario.source_game_title, scene_halo_scenario.target_game_title, scene_halo_scenario.tag_action, scene_halo_scenario.upgrade_patches, scene_halo_scenario.donor_tag, self.report)")
 
 class Halo_JoinObjectPanel(Panel):
     bl_label = "Halo Join Objects"
@@ -1811,6 +1853,7 @@ classeshalo = (
     LevelProprtiesGroup,
     Generate_Tag_Dialog,
     Generate_Tag_Patches_Dialog,
+    Generate_Tag_Donor_Dialog,
     Halo_JoinObject,
     Halo_JoinObjectPanel,
     Halo_ConvertFacemapsPanel,

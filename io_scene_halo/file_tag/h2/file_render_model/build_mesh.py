@@ -29,7 +29,7 @@ import bpy
 import bmesh
 
 from ....global_functions import shader_processing, global_functions, mesh_processing
-from .format import PartFlags
+from .format import PartFlags, GeometryClassificationEnum
 
 def build_mesh_layout(context, import_file, geometry, current_region_permutation, armature, random_color_gen, materials):
     vertex_groups = []
@@ -43,6 +43,11 @@ def build_mesh_layout(context, import_file, geometry, current_region_permutation
     vertex_weights_sets = []
     for section_idx, section_data in enumerate(geometry.section_data):
         mesh = bpy.data.meshes.new("%s_%s" % ("part", str(section_idx)))
+
+        uses_node_map = False
+        node_map_count = len(section_data.node_map)
+        if node_map_count > 0:
+            uses_node_map = True
 
         triangles = []
         triangle_mat_indices = []
@@ -61,14 +66,11 @@ def build_mesh_layout(context, import_file, geometry, current_region_permutation
                 triangle_length = int(len(triangle_indices) / 3)
                 for idx in range(triangle_length):
                     triangle_index = (idx * 3)
-                    v0 = section_data.strip_indices[triangle_index]
-                    v1 = section_data.strip_indices[triangle_index + 1]
-                    v2 = section_data.strip_indices[triangle_index + 2]
-                    triangle_part.append((v0, v1, v2))
-
-                for tri in triangle_part:
+                    v0 = section_data.strip_indices[strip_start + triangle_index]
+                    v1 = section_data.strip_indices[strip_start + triangle_index + 1]
+                    v2 = section_data.strip_indices[strip_start + triangle_index + 2]
+                    triangles.append((v0, v1, v2))
                     triangle_mat_indices.append(part.material_index)
-                    triangles.append(tri)
 
             else:
                 index_count = len(triangle_indices)
@@ -96,25 +98,46 @@ def build_mesh_layout(context, import_file, geometry, current_region_permutation
         region_attribute = mesh.get_custom_attribute()
         for vertex_idx, vertex in enumerate(section_data.raw_vertices):
             node_sets = []
-            node_0_index = vertex.node_index_0_new
+            if GeometryClassificationEnum.rigid == GeometryClassificationEnum(geometry.geometry_classification):
+                node_0_index = geometry.rigid_node
+            else:
+                node_0_index = vertex.node_index_0_new
+                if uses_node_map:
+                    node_0_index = section_data.node_map[node_0_index]
+                
             node_1_index = vertex.node_index_1_new
+            if uses_node_map:
+                node_1_index = section_data.node_map[node_1_index]
+
             node_2_index = vertex.node_index_2_new
+            if uses_node_map:
+                node_2_index = section_data.node_map[node_2_index]
+
             node_3_index = vertex.node_index_3_new
+            if uses_node_map:
+                node_3_index = section_data.node_map[node_3_index]
+
             node_0_weight = vertex.node_weight_0
             node_1_weight = vertex.node_weight_1
             node_2_weight = vertex.node_weight_2
             node_3_weight = vertex.node_weight_3
             if not node_0_index == -1:
                 group_name = import_file.nodes[node_0_index].name
+                if not len(group_name) > 0:
+                    group_name = str(node_0_index)
+
                 if not node_0_index in vertex_groups:
                     vertex_groups.append(node_0_index)
-                    object_mesh.vertex_groups.new(name = import_file.nodes[node_0_index].name)
+                    object_mesh.vertex_groups.new(name = group_name)
 
                 group_index = object_mesh.vertex_groups.keys().index(group_name)
                 node_sets.append((group_index, vertex_idx, node_0_weight))
 
             if not node_1_index == -1:
                 group_name = import_file.nodes[node_1_index].name
+                if not len(group_name) > 0:
+                    group_name = str(node_1_index)
+
                 if not node_1_index in vertex_groups:
                     vertex_groups.append(node_1_index)
                     object_mesh.vertex_groups.new(name = group_name)
@@ -124,15 +147,21 @@ def build_mesh_layout(context, import_file, geometry, current_region_permutation
 
             if not node_2_index == -1:
                 group_name = import_file.nodes[node_2_index].name
+                if len(group_name) == 0:
+                    group_name = str(node_2_index)
+
                 if not node_2_index in vertex_groups:
                     vertex_groups.append(node_2_index)
-                    object_mesh.vertex_groups.new(name = import_file.nodes[node_2_index].name)
+                    object_mesh.vertex_groups.new(name = group_name)
 
                 group_index = object_mesh.vertex_groups.keys().index(group_name)
                 node_sets.append((group_index, vertex_idx, node_2_weight))
 
             if not node_3_index == -1:
                 group_name = import_file.nodes[node_3_index].name
+                if len(group_name) == 0:
+                    group_name = str(node_3_index)
+
                 if not node_3_index in vertex_groups:
                     vertex_groups.append(node_3_index)
                     object_mesh.vertex_groups.new(name = group_name)
@@ -163,7 +192,7 @@ def build_mesh_layout(context, import_file, geometry, current_region_permutation
                     mesh.polygons[triangle_idx].material_index = material_index
                 else:
                     material_name = "invalid_material_%s" % triangle_material_index
-                    mat = bpy.data.materials.get(name=material_name)
+                    mat = bpy.data.materials.get(material_name)
                     if mat is None:
                         mat = bpy.data.materials.new(name=material_name)
 

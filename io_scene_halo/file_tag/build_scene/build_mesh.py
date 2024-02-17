@@ -27,7 +27,7 @@
 import bpy
 
 from math import radians
-from mathutils import Matrix
+from mathutils import Matrix, Vector
 from ..h1.file_model.build_mesh import get_geometry_layout as get_retail_h1_geometry_layout
 from ..h2.file_render_model.build_mesh import get_geometry_layout as get_retail_h2_geometry_layout
 from ...global_functions import mesh_processing, global_functions
@@ -37,13 +37,20 @@ def generate_jms_skeleton(MODEL, game_version, game_title, file_version, armatur
 
     bpy.ops.object.mode_set(mode = 'EDIT')
     for idx, asset_node in enumerate(MODEL.nodes):
-        current_bone = armature.data.edit_bones.new(asset_node.name)
+        bone_name = asset_node.name
+        if len(bone_name) == 0:
+            bone_name = str(idx)
+
+        current_bone = armature.data.edit_bones.new(bone_name)
         current_bone.tail[2] = mesh_processing.get_bone_distance(None, MODEL, idx, "JMS")
         parent_idx = asset_node.parent
 
         if not parent_idx == -1 and not parent_idx == None:
-            parent = MODEL.nodes[parent_idx].name
-            current_bone.parent = armature.data.edit_bones[parent]
+            parent_name = MODEL.nodes[parent_idx].name
+            if len(parent_name) == 0:
+                parent_name = str(parent_idx)
+
+            current_bone.parent = armature.data.edit_bones[parent_name]
 
         if game_title == "halo1":
             matrix_translate = Matrix.Translation(first_frame[idx].translation)

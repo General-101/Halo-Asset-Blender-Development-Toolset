@@ -503,157 +503,36 @@ def build_scene(context, LEVEL, game_version, game_title, file_version, fix_rota
                     mesh.materials.append(mat)
 
     else:
+        materials = []
+        for material in LEVEL.materials:
+            material_name = os.path.basename(material.shader.name)
+            if global_functions.string_empty_check(material_name):
+                material_name = os.path.basename(material.old_shader.name)
+
+            mat = bpy.data.materials.new(name=material_name)
+            shader_processing.generate_h2_shader(mat, material.shader, report)
+
+            materials.append(mat)
+
         if len(LEVEL.clusters) > 0:
             material_count = len(LEVEL.materials)
             for cluster_idx, cluster in enumerate(LEVEL.clusters):
                 cluster_name = "cluster_%s" % cluster_idx
-                full_mesh = bpy.data.meshes.new(cluster_name)
-                object_mesh = bpy.data.objects.new(cluster_name, full_mesh)
+                mesh = bpy.data.meshes.new(cluster_name)
+                object_mesh = bpy.data.objects.new(cluster_name, mesh)
                 object_mesh.tag_view.data_type_enum = '1'
-                
+
                 object_mesh.parent = level_root
-                for cluster_data in cluster.cluster_data:
-                    triangles = []
-                    vertices = [raw_vertex.position for raw_vertex in cluster_data.raw_vertices]
+                mesh_processing.get_mesh_data(LEVEL, cluster.cluster_data, mesh, material_count, materials, random_color_gen, PartFlags)
 
-                    triangle_length = int(len(cluster_data.strip_indices) / 3)
-                    for idx in range(triangle_length):
-                        triangle_index = (idx * 3)
-                        v0 = cluster_data.strip_indices[triangle_index]
-                        v1 = cluster_data.strip_indices[triangle_index + 1]
-                        v2 = cluster_data.strip_indices[triangle_index + 2]
-                        triangles.append((v0, v1, v2))
-
-                    full_mesh.from_pydata(vertices, [], triangles)
-                    for poly in full_mesh.polygons:
-                        poly.use_smooth = True
-
-                    uv_name = 'UVMap_%s' % 0
-                    layer_uv = full_mesh.uv_layers.get(uv_name)
-                    if layer_uv is None:
-                        layer_uv = full_mesh.uv_layers.new(name=uv_name)
-                    
-                    for idx in range(triangle_length):
-                        triangle_index = (idx * 3)
-                        v0 = cluster_data.strip_indices[triangle_index]
-                        v1 = cluster_data.strip_indices[triangle_index + 1]
-                        v2 = cluster_data.strip_indices[triangle_index + 2]
-                    
-                        vertex_list = [cluster_data.raw_vertices[v0], cluster_data.raw_vertices[v1], cluster_data.raw_vertices[v2]]
-                        for vertex_idx, vertex in enumerate(vertex_list):
-                            loop_index = triangle_index + vertex_idx
-
-                            U = vertex.texcoord[0]
-                            V = vertex.texcoord[1]
-
-                            layer_uv.data[loop_index].uv = (U, 1 - V)
-
-                    triangle_start = 0
-                    for part in cluster_data.parts:
-                        part_indices = cluster_data.strip_indices[part.strip_start_index : (part.strip_start_index + part.strip_length)]
-                        part_triangle_length = int(len(part_indices) / 3)
-                        material = None
-                        if not part.material_index == -1:
-                            material = LEVEL.materials[part.material_index]
-
-                        if material:
-                            if len(material.shader.name) > 0:
-                                material_name = os.path.basename(material.shader.name)
-
-                            else:
-                                material_name = "invalid_material_%s" % material_idx
-
-                            mat = bpy.data.materials.get(material_name)
-                            if mat is None:
-                                mat = bpy.data.materials.new(name=material_name)
-                                if material.shader.name_length > 0:
-                                    shader_processing.generate_h2_shader(mat, material.shader, report)
-
-                            if not material_name in object_mesh.data.materials.keys():
-                                object_mesh.data.materials.append(mat)
-
-                            mat.diffuse_color = random_color_gen.next()
-                            material_index = object_mesh.data.materials.keys().index(material_name)
-
-                            for triangle_idx in range(part_triangle_length):
-                                full_mesh.polygons[triangle_start + triangle_idx].material_index = material_index
-
-                        triangle_start += part_triangle_length
-
-                    cluster_collection_override.objects.link(object_mesh)
+                cluster_collection_override.objects.link(object_mesh)
 
         if len(LEVEL.instanced_geometry_instances) > 0:
             meshes = []
             for instanced_geometry_definition_idx, instanced_geometry_definition in enumerate(LEVEL.instanced_geometry_definition):
                 cluster_name = "instanced_geometry_definition_%s" % instanced_geometry_definition_idx
                 mesh = bpy.data.meshes.new(cluster_name)
-                for render_data in instanced_geometry_definition.render_data:
-                    triangles = []
-                    vertices = [raw_vertex.position for raw_vertex in render_data.raw_vertices]
-
-                    triangle_length = int(len(render_data.strip_indices) / 3)
-                    for idx in range(triangle_length):
-                        triangle_index = (idx * 3)
-                        v0 = render_data.strip_indices[triangle_index]
-                        v1 = render_data.strip_indices[triangle_index + 1]
-                        v2 = render_data.strip_indices[triangle_index + 2]
-                        triangles.append((v0, v1, v2))
-
-                    mesh.from_pydata(vertices, [], triangles)
-                    for poly in mesh.polygons:
-                        poly.use_smooth = True
-
-                    uv_name = 'UVMap_%s' % 0
-                    layer_uv = mesh.uv_layers.get(uv_name)
-                    if layer_uv is None:
-                        layer_uv = mesh.uv_layers.new(name=uv_name)
-                    
-                    for idx in range(triangle_length):
-                        triangle_index = (idx * 3)
-                        v0 = render_data.strip_indices[triangle_index]
-                        v1 = render_data.strip_indices[triangle_index + 1]
-                        v2 = render_data.strip_indices[triangle_index + 2]
-                    
-                        vertex_list = [render_data.raw_vertices[v0], render_data.raw_vertices[v1], render_data.raw_vertices[v2]]
-                        for vertex_idx, vertex in enumerate(vertex_list):
-                            loop_index = triangle_index + vertex_idx
-
-                            U = vertex.texcoord[0]
-                            V = vertex.texcoord[1]
-
-                            layer_uv.data[loop_index].uv = (U, 1 - V)
-
-                    triangle_start = 0
-                    for part in render_data.parts:
-                        part_indices = render_data.strip_indices[part.strip_start_index : (part.strip_start_index + part.strip_length)]
-                        part_triangle_length = int(len(part_indices) / 3)
-                        material = None
-                        if not part.material_index == -1:
-                            material = LEVEL.materials[part.material_index]
-
-                        if material:
-                            if len(material.shader.name) > 0:
-                                material_name = os.path.basename(material.shader.name)
-
-                            else:
-                                material_name = "invalid_material_%s" % material_idx
-
-                            mat = bpy.data.materials.get(material_name)
-                            if mat is None:
-                                mat = bpy.data.materials.new(name=material_name)
-                                if material.shader.name_length > 0:
-                                    shader_processing.generate_h2_shader(mat, material.shader, report)
-
-                            if not material_name in mesh.materials.keys():
-                                mesh.materials.append(mat)
-
-                            mat.diffuse_color = random_color_gen.next()
-                            material_index = mesh.materials.keys().index(material_name)
-
-                            for triangle_idx in range(part_triangle_length):
-                                mesh.polygons[triangle_start + triangle_idx].material_index = material_index
-
-                        triangle_start += part_triangle_length
+                mesh_processing.get_mesh_data(LEVEL, instanced_geometry_definition.render_data, mesh, material_count, materials, random_color_gen, PartFlags)
 
                 meshes.append(mesh)
 
@@ -724,8 +603,6 @@ def build_scene(context, LEVEL, game_version, game_title, file_version, fix_rota
                     cluster_portal = LEVEL.cluster_portals[portal]
                     poly = portal_bm.faces[portal_idx]
                     plane = LEVEL.collision_bsps[0].planes[cluster_portal.plane_index]
-                    if poly.normal.dot(plane.point_3d) < 0:
-                        poly.flip()
 
             portal_bm.to_mesh(portal_mesh)
             portal_bm.free()

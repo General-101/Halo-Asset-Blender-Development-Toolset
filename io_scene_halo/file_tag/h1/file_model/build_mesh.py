@@ -167,7 +167,7 @@ def build_mesh_layout(asset, geometry, region_name, object_name, game_version, i
                     mesh.polygons[triangle_idx].material_index = material_index
                 else:
                     material_name = "invalid_material_%s" % triangle_material_index
-                    mat = bpy.data.materials.get(name=material_name)
+                    mat = bpy.data.materials.get(material_name)
                     if mat is None:
                         mat = bpy.data.materials.new(name=material_name)
 

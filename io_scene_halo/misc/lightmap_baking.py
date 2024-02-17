@@ -28,7 +28,6 @@ import os
 import bpy
 
 from .. import config
-from PIL import Image
 from mathutils import Vector
 from ..global_functions import tag_format
 from ..file_tag.h1.file_bitmap.build_asset import build_asset as build_h1_bitmap
@@ -50,9 +49,15 @@ from ..file_tag.h2.file_bitmap.format import (
 from ..file_tag.h1.file_scenario.process_file import process_file as process_h1_scenario
 from ..file_tag.h2.file_scenario.process_file import process_file as process_h2_scenario
 
+try:
+    from PIL import Image
+except ModuleNotFoundError:
+    print("PIL not found. Unable to create image node.")
+    Image = None
+
 def bake_clusters(context, game_title, scenario_path, image_multiplier, report):
     bpy.ops.object.select_all(action='DESELECT')
-    if game_title == "halo1":
+    if game_title == "halo1" and Image:
         input_stream = open(scenario_path, "rb")
         SCNR_ASSET = process_h1_scenario(input_stream, report)
         input_stream.close()
@@ -193,7 +198,7 @@ def bake_clusters(context, game_title, scenario_path, image_multiplier, report):
                     build_h1_bitmap(output_stream, BITMAP, report)
                     output_stream.close()
 
-    elif game_title == "halo2":
+    elif game_title == "halo2" and Image:
         levels_collection = bpy.data.collections.get("BSPs")
         if not levels_collection == None:
             for bsp_idx, bsp_collection in enumerate(levels_collection.children):

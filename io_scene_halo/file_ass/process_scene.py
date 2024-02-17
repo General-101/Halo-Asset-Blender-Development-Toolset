@@ -476,13 +476,11 @@ def process_scene(context, version, game_version, hidden_geo, nonrender_geo, app
                     triangles.append(ASS.Triangle(region_index, material_index, v0, v1, v2))
                     for loop_index in face.loop_indices:
                         point_idx = evaluted_mesh.loops[loop_index].vertex_index
-                        point_data = evaluted_mesh.loops[loop_index]
-                        vertex_data = evaluted_mesh.vertices[point_data.vertex_index]
-                        if not loop_normals:
-                            point_data = vertex_data
+                        loop_data = evaluted_mesh.loops[loop_index]
+                        vertex_data = evaluted_mesh.vertices[loop_data.vertex_index]
 
                         region = region_index
-                        scaled_translation, normal = mesh_processing.process_mesh_export_vert(vertex_data, point_data, "ASS", object_matrix, custom_scale)
+                        scaled_translation, normal = mesh_processing.process_mesh_export_vert(vertex_data, loop_data, loop_normals, "ASS", object_matrix, custom_scale)
                         uv_set = mesh_processing.process_mesh_export_uv(evaluted_mesh, "ASS", loop_index, version)
                         color = mesh_processing.process_mesh_export_color(evaluted_mesh, loop_index, point_idx)
                         node_influence_count, node_set, node_index_list = mesh_processing.process_mesh_export_weights(vertex_data, armature, original_geo, vertex_groups, instance_list, "ASS")
