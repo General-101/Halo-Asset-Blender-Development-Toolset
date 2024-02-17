@@ -341,8 +341,8 @@ def read_parts_v0(RENDER, section_data, TAG, input_stream, node_element):
             part.flags = TAG.read_flag_unsigned_short(input_stream, TAG, tag_format.XMLData(part_element_node, "flags", PartFlags))
             part.material_index = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(part_element_node, "material", None, RENDER.render_body.materials_tag_block.count, "material"))
             input_stream.read(2) # Padding?
-            part.strip_start_index = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(part_element_node, "strip start index"))
-            part.strip_length = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(part_element_node, "strip length"))
+            part.strip_start_index = TAG.read_unsigned_short(input_stream, TAG, tag_format.XMLData(part_element_node, "strip start index"))
+            part.strip_length = TAG.read_unsigned_short(input_stream, TAG, tag_format.XMLData(part_element_node, "strip length"))
             input_stream.read(12) # Padding?
             part.max_nodes_vertex = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(part_element_node, "max nodes vertex"))
             part.contributing_compound_node_count = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(part_element_node, "contributing compound node count"))
@@ -376,8 +376,8 @@ def read_parts_retail(RENDER, section_data, TAG, input_stream, node_element):
             part.part_type = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(part_element_node, "type", PartTypeEnum))
             part.flags = TAG.read_flag_unsigned_short(input_stream, TAG, tag_format.XMLData(part_element_node, "flags", PartFlags))
             part.material_index = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(part_element_node, "material", None, RENDER.render_body.materials_tag_block.count, "material"))
-            part.strip_start_index = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(part_element_node, "strip start index"))
-            part.strip_length = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(part_element_node, "strip length"))
+            part.strip_start_index = TAG.read_unsigned_short(input_stream, TAG, tag_format.XMLData(part_element_node, "strip start index"))
+            part.strip_length = TAG.read_unsigned_short(input_stream, TAG, tag_format.XMLData(part_element_node, "strip length"))
             part.first_subpart_index = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(part_element_node, "first subpart index"))
             part.subpart_count = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(part_element_node, "subpart count"))
             part.max_nodes_vertex = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(part_element_node, "max nodes vertex"))
