@@ -489,7 +489,7 @@ def build_scene(context, LEVEL, game_version, game_title, file_version, fix_rota
 
                 bm = bmesh.new()
                 for coord in coords:
-                    bm.verts.new(coord*100 + weather_polyhedra.bounding_sphere_center)
+                    bm.verts.new(coord*100)
 
                 bmesh.ops.convex_hull(bm, input=bm.verts)
                 mesh = bpy.data.meshes.new("weather_polyhedra_%d" % poly_idx)
