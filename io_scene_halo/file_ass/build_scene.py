@@ -251,26 +251,38 @@ def build_scene(context, filepath, report):
         object_list.append(object_data)
 
     instances = []
-    visited_objects = [False for object in object_list]
+    global_transforms = []
     for idx, instance_element in enumerate(ASS.instances):
         object_index = instance_element.object_index
         unique_id = instance_element.unique_id
+
+        local_transform = instance_element.local_transform
+        pivot_transform = instance_element.pivot_transform
+        local_scale = (local_transform.scale, local_transform.scale, local_transform.scale)
+        pivot_scale = (pivot_transform.scale, pivot_transform.scale, pivot_transform.scale)
+        if ASS.version == 1:
+            local_scale = local_transform.scale
+            pivot_scale = pivot_transform.scale
+
+        global_transform = Matrix.LocRotScale(local_transform.translation, local_transform.rotation, local_scale)
+        parent_index = instance_element.parent_id
+        if not parent_index == -1:
+            parent_matrix = global_transforms[parent_index]
+            global_transform = parent_matrix @ global_transform
+
+        global_transforms.append(global_transform)
+
         if not unique_id == -1:
             pivot_transform = instance_element.pivot_transform
             pivot_scale = (pivot_transform.scale, pivot_transform.scale, pivot_transform.scale)
             if ASS.version == 1:
                 pivot_scale = pivot_transform.scale
 
-            pivot_matrix = Matrix.LocRotScale(pivot_transform.translation, pivot_transform.rotation, pivot_scale)
-
             mesh = None
             object_setings = None
-            xref = False
             if not object_index == -1:
                 mesh = object_list[object_index]
                 object_setings = object_settings_list[object_index]
-                if hasattr(mesh, 'ass_jms') and not len(mesh.ass_jms.XREF_path) == 0:
-                    xref = True
 
             instance_name_override = ""
             if context.scene.objects.get(instance_element.name):
@@ -300,21 +312,13 @@ def build_scene(context, filepath, report):
                     if not global_functions.string_empty_check(region):
                         instance.region_add(region)
 
-            if xref and instance.type == 'MESH' and not visited_objects[object_index]:
-                visited_objects[object_index] = True
-                bm = bmesh.new()
-                bm.from_mesh(instance.data)
-                bmesh.ops.transform(bm, matrix=pivot_matrix, space=Matrix.Identity(4), verts=bm.verts)
-                bm.to_mesh(instance.data)
-                bm.free()
-
         else:
             instances.append(None)
 
-    ordered_instances, unordered_map = sort_by_parent(ASS.instances)
     for idx, instance_element in enumerate(ASS.instances):
         object_index = instance_element.object_index
         unique_id = instance_element.unique_id
+
         if not unique_id == -1:
             local_transform = instance_element.local_transform
             pivot_transform = instance_element.pivot_transform
@@ -326,54 +330,18 @@ def build_scene(context, filepath, report):
 
             local_matrix = Matrix.LocRotScale(local_transform.translation, local_transform.rotation, local_scale)
             pivot_matrix = Matrix.LocRotScale(pivot_transform.translation, pivot_transform.rotation, pivot_scale)
+            full_transform = local_matrix @ pivot_matrix
 
             instance = instances[idx]
 
-            xref = False
-            parent_xref = False
-            if not object_index == -1 and instance.type == "MESH" and not len(instance.data.ass_jms.XREF_path) == 0:
-                xref = True
-
-            transform = Matrix()
             parent_object = None
             parent_index = instance_element.parent_id
-            child_transform = local_matrix
-            if not xref:
-                child_transform = local_matrix @ pivot_matrix
-
             if not parent_index == -1:
-                parent_instance = ASS.instances[parent_index]
-                parent_unique_id = parent_instance.unique_id
-                parent_parent_id = parent_instance.parent_id
-                parent_object_index = parent_instance.object_index
                 parent_object = instances[parent_index]
-                if parent_unique_id >= -1 and parent_parent_id >= -1 and not parent_object == None:
-                    parent_pivot_transform = parent_instance.pivot_transform
-                    parent_pivot_scale = (parent_pivot_transform.scale, parent_pivot_transform.scale, parent_pivot_transform.scale)
-                    if ASS.version == 1:
-                        parent_pivot_scale = parent_pivot_transform.scale
-
-                    parent_pivot_matrix = Matrix.LocRotScale(parent_pivot_transform.translation, parent_pivot_transform.rotation, parent_pivot_scale)
-                    parent_object = parent_object
-                    parent_transform = parent_object.matrix_world
-                    if not parent_object_index == -1:
-                        parent_mesh = object_list[parent_object_index]
-                        if not len(parent_mesh.ass_jms.XREF_path) == 0:
-                            parent_xref = True
-
-                    if not parent_xref:
-                        parent_transform = parent_pivot_matrix.inverted() @ parent_object.matrix_world
-
-                    transform = parent_transform @ child_transform
-
-                else:
-                    transform = child_transform
-
-            else:
-                transform = child_transform
+                full_transform = global_transforms[parent_index] @ full_transform
 
             instance.parent = parent_object
-            instance.matrix_world = transform
+            instance.matrix_world = full_transform
 
     report({'INFO'}, "Import completed successfully")
     return {'FINISHED'}
