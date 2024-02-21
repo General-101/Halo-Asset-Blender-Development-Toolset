@@ -141,6 +141,9 @@ def build_scene(context, filepath, report):
 
         set_ass_material_properties(ass_mat, mat)
         mat.ass_jms.name_override = ass_mat.asset_name
+        if len(mat.ass_jms.name_override) > 0:
+            mat.ass_jms.is_bm = True
+
         mat.diffuse_color = random_color_gen.next()
 
     for ass_object in ASS.objects:
