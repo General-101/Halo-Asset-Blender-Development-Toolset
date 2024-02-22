@@ -40,6 +40,7 @@ def set_ass_material_properties(ass_mat, mat):
     for string in material_strings:
         if string.startswith("BM_FLAGS"):
             string_bitfield = string.split()[1] #Split the string and retrieve the bitfield.
+            settings_count = len(string_bitfield)
             mat.ass_jms.two_sided = int(string_bitfield[0])
             mat.ass_jms.transparent_1_sided = int(string_bitfield[1])
             mat.ass_jms.transparent_2_sided = int(string_bitfield[2])
@@ -61,27 +62,35 @@ def set_ass_material_properties(ass_mat, mat):
             mat.ass_jms.ignored_by_lightmaps = int(string_bitfield[18])
             mat.ass_jms.blocks_sound = int(string_bitfield[19])
             mat.ass_jms.decal_offset = int(string_bitfield[20])
-            mat.ass_jms.slip_surface = int(string_bitfield[21])
+            if settings_count >= 22:
+                mat.ass_jms.slip_surface = int(string_bitfield[21])
 
         elif string.startswith("BM_LMRES"):
             lmres_string_args = string.split()
+            lmres_count = len(lmres_string_args) - 1
             mat.ass_jms.lightmap_res = float(lmres_string_args[1])
             mat.ass_jms.photon_fidelity = int(lmres_string_args[2])
-            mat.ass_jms.two_sided_transparent_tint = (float(lmres_string_args[3]), float(lmres_string_args[4]), float(lmres_string_args[5]))
-            if len(lmres_string_args) > 6:
+            if lmres_count >= 3:
+                transparent_color = float(lmres_string_args[3])
+                mat.ass_jms.two_sided_transparent_tint = (transparent_color, transparent_color, transparent_color)
+            else:
+                mat.ass_jms.two_sided_transparent_tint = (float(lmres_string_args[3]), float(lmres_string_args[4]), float(lmres_string_args[5]))
+            if lmres_count >= 6:
                 mat.ass_jms.override_lightmap_transparency = int(lmres_string_args[6])
                 mat.ass_jms.additive_transparency = (float(lmres_string_args[7]), float(lmres_string_args[8]), float(lmres_string_args[9]))
                 mat.ass_jms.use_shader_gel = int(lmres_string_args[10])
-                if len(lmres_string_args) > 11:
-                    mat.ass_jms.ignore_default_res_scale = int(lmres_string_args[11])
+            if lmres_count >= 11:
+                mat.ass_jms.ignore_default_res_scale = int(lmres_string_args[11])
 
         elif string.startswith("BM_LIGHTING_BASIC"):
             lighting_basic_args = string.split()
+            lighting_count = len(lighting_basic_args) - 1
             mat.ass_jms.power = float(lighting_basic_args[1])
             mat.ass_jms.color = (float(lighting_basic_args[2]), float(lighting_basic_args[3]), float(lighting_basic_args[4]))
             mat.ass_jms.quality = float(lighting_basic_args[5])
-            mat.ass_jms.power_per_unit_area = int(lighting_basic_args[6])
-            if len(lmres_string_args) > 7:
+            if lighting_count >= 6:
+                mat.ass_jms.power_per_unit_area = int(lighting_basic_args[6])
+            if lighting_count >= 7:
                 mat.ass_jms.emissive_focus = float(lighting_basic_args[7])
 
         elif string.startswith("BM_LIGHTING_ATTEN"):
