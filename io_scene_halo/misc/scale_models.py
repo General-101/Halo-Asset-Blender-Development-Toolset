@@ -196,7 +196,6 @@ def generate_mesh(file, array_item, game_version):
         bm.to_mesh(mesh)
         bm.free()
         mesh.normals_split_custom_set(vert_normal_list)
-        mesh.use_auto_smooth = True
 
     return mesh
 

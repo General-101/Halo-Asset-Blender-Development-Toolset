@@ -105,7 +105,6 @@ def model_fixup(context, threshold):
 
                 bpy.ops.mesh.customdata_custom_splitnormals_clear()
                 bpy.ops.object.mode_set(mode = 'OBJECT')
-                obj.data.use_auto_smooth = False
                 mesh_processing.deselect_objects(context)
 
     return {'FINISHED'}

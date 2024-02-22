@@ -287,7 +287,6 @@ def build_scene(context, LEVEL, game_version, game_title, file_version, fix_rota
 
                         mesh.from_pydata(vertices, [], triangles)
                         mesh.normals_split_custom_set_from_vertices(normals)
-                        mesh.use_auto_smooth = True
                         for tri_idx, poly in enumerate(mesh.polygons):
                             poly.use_smooth = True
 

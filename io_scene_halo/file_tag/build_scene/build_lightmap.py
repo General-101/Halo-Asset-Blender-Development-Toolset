@@ -75,9 +75,6 @@ def process_mesh(SBSP_ASSET, random_color_gen, tag_block, poop_name, material_co
             for poly in mesh.polygons:
                 poly.use_smooth = True
 
-            #mesh.normals_split_custom_set_from_vertices([vertex.normal for vertex in vertices])
-            #mesh.use_auto_smooth = True
-
             uv_name = 'UVMap_%s' % 0
             layer_uv = mesh.uv_layers.get(uv_name)
             if layer_uv is None:
