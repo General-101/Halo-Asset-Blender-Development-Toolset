@@ -65,7 +65,6 @@ class ASS_JMS_MaterialProps(Panel):
         current_material = context.object.active_material
         if current_material is not None:
             material_ass_jms = current_material.ass_jms
-            layout.enabled = material_ass_jms.is_bm
             row = layout.row()
             row.label(text="Name Override:")
             row.prop(material_ass_jms, "name_override", text='')
