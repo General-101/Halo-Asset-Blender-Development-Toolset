@@ -389,7 +389,7 @@ class RenderAsset():
 
     class RawPoint:
         def __init__(self, position=Vector(), node_index_0_old=0, node_index_1_old=0, node_index_2_old=0, node_index_3_old=0, node_weight_0=0.0, node_weight_1=0.0,
-                     node_weight_2=0.0, node_weight_3=0.0, node_index_0_new=0, node_index_1_new=0, node_index_2_new=0, node_index_3_new=0, uses_new_node_indices=0,
+                     node_weight_2=0.0, node_weight_3=0.0, node_index_0_new=-1, node_index_1_new=-1, node_index_2_new=-1, node_index_3_new=-1, uses_new_node_indices=0,
                      adjusted_compound_node_index=0):
             self.position = position
             self.node_index_0_old = node_index_0_old

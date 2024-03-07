@@ -34,7 +34,6 @@ from .format import PartFlags, GeometryClassificationEnum
 def build_mesh_layout(context, import_file, geometry, current_region_permutation, armature, random_color_gen, materials):
     vertex_groups = []
     active_region_permutations = []
-    vertex_normals = []
 
     materials_count = len(import_file.materials)
     full_mesh = bpy.data.meshes.new(current_region_permutation)
@@ -42,6 +41,7 @@ def build_mesh_layout(context, import_file, geometry, current_region_permutation
     bm = bmesh.new()
     vertex_weights_sets = []
     for section_idx, section_data in enumerate(geometry.section_data):
+        vertex_normals = []
         mesh = bpy.data.meshes.new("%s_%s" % ("part", str(section_idx)))
 
         uses_node_map = False
@@ -96,6 +96,8 @@ def build_mesh_layout(context, import_file, geometry, current_region_permutation
             poly.use_smooth = True
 
         region_attribute = mesh.get_custom_attribute()
+        mesh.normals_split_custom_set_from_vertices(vertex_normals)
+
         for vertex_idx, vertex in enumerate(section_data.raw_vertices):
             node_sets = []
             if GeometryClassificationEnum.rigid == GeometryClassificationEnum(geometry.geometry_classification):
@@ -231,6 +233,7 @@ def build_mesh_layout(context, import_file, geometry, current_region_permutation
             node_weight = node_set[2]
             object_mesh.vertex_groups[group_index].add([vertex_weights_set_idx], node_weight, 'ADD')
 
+    full_mesh.use_auto_smooth = True
     object_mesh.parent = armature
     mesh_processing.add_modifier(context, object_mesh, False, None, armature)
 
