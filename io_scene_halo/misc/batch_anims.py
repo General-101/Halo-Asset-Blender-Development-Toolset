@@ -30,83 +30,76 @@ import bpy
 from ..file_jma.format import JMAAsset
 from ..global_functions import global_functions
 from ..file_jma.process_file_retail import process_file_retail
+from ..file_jma.build_asset import build_asset
 
-class JMAFile(global_functions.HaloAsset):
-    class Transform:
-        def __init__(self, vector, rotation, scale):
-            self.vector = vector
-            self.rotation = rotation
-            self.scale = scale
+def generate_jma_data(context, jma_version, game_version, imported_jma_file):
+    JMA = JMAAsset()
 
-    class Node:
-        def __init__(self, name, parent=None, child=None, sibling=None):
-            self.name = name
-            self.parent = parent
-            self.child = child
-            self.sibling = sibling
+    JMA.version = jma_version
+    JMA.frame_rate = imported_jma_file.frame_rate
+    JMA.frame_count = imported_jma_file.frame_count
+    JMA.actor_names = ['unnamedActor'] # Actor values are hardcoded and unused as they are in the official exporter. Leave as is.
+    JMA.broken_skeleton = imported_jma_file.broken_skeleton
+    JMA.node_checksum = -1
+    JMA.node_count = imported_jma_file.node_count
+    JMA.biped_controller_frame_type = imported_jma_file.biped_controller_frame_type
+    JMA.nodes = []
+    JMA.transforms = []
+    JMA.biped_controller_transforms = []
 
-    def __init__(self, context, version, game_version, jma_asset):
-        node_list = jma_asset.nodes
+    sorted_list = global_functions.sort_list_batch(imported_jma_file.nodes, game_version, jma_version, True)
+    joined_list = sorted_list[0]
+    reversed_joined_list = sorted_list[1]
 
-        #actor related items are hardcoded due to them being an unused feature in tool. Do not attempt to do anything to write this out as it is a waste of time and will get you nothing.
-        self.actor_names = ['unnamedActor']
-        self.node_count = len(node_list)
-        self.transforms = []
-        self.biped_controller_transforms = []
-        self.nodes = []
+    JMA.node_checksum = 0
+    for node in joined_list:
+        name = node.name
+        find_child_node = global_functions.get_child_batch(node, reversed_joined_list, imported_jma_file.nodes)
+        find_sibling_node = global_functions.get_sibling_batch(node, reversed_joined_list)
 
-        sorted_list = global_functions.sort_list_batch(node_list, game_version, version, True)
-        joined_list = sorted_list[0]
-        reversed_joined_list = sorted_list[1]
+        first_child_node = -1
+        first_sibling_node = -1
+        parent_node = -1
+        if find_child_node and not find_child_node == -1:
+            first_child_node = joined_list.index(find_child_node)
 
-        self.node_checksum = 0
-        for node in joined_list:
-            name = node.name
-            find_child_node = global_functions.get_child_batch(node, reversed_joined_list, node_list)
-            find_sibling_node = global_functions.get_sibling_batch(node, reversed_joined_list)
+        if find_sibling_node and not find_sibling_node == -1:
+            first_sibling_node = joined_list.index(find_sibling_node)
 
-            first_child_node = -1
-            first_sibling_node = -1
-            parent_node = -1
-            if find_child_node and not find_child_node == -1:
-                first_child_node = joined_list.index(find_child_node)
+        if not node.parent == None and not node.parent == -1:
+            parent_node = node.parent
 
-            if find_sibling_node and not find_sibling_node == -1:
-                first_sibling_node = joined_list.index(find_sibling_node)
+        JMA.nodes.append(JMAAsset.Node(name, parent_node, first_child_node, first_sibling_node))
 
-            if not node.parent == None and not node.parent == -1:
-                parent_node = node.parent
+    JMA.node_checksum = global_functions.node_hierarchy_checksum(JMA.nodes, JMA.nodes[0], JMA.node_checksum)
 
-            self.nodes.append(JMAFile.Node(name, parent_node, first_child_node, first_sibling_node))
+    for frame in range(imported_jma_file.frame_count):
+        transforms_for_frame = []
+        for node_idx, node in enumerate(joined_list):
+            absolute_matrix = []
+            if imported_jma_file.version < 16394:
+                absolute_matrix = global_functions.get_absolute_matrix(imported_jma_file.nodes, frame, imported_jma_file.transforms)
 
-        self.node_checksum = global_functions.node_hierarchy_checksum(self.nodes, self.nodes[0], self.node_checksum)
+            transform = global_functions.get_transform(imported_jma_file.version, jma_version, node, frame, imported_jma_file.nodes, imported_jma_file.transforms, absolute_matrix)
 
-        for frame in range(jma_asset.frame_count):
-            transforms_for_frame = []
-            for node_idx, node in enumerate(joined_list):
-                absolute_matrix = []
-                if jma_asset.version < 16394:
-                    absolute_matrix = global_functions.get_absolute_matrix(node_list, frame, jma_asset.transforms)
+            pos, rot, scale = transform.decompose()
+            quat = rot.inverted()
+            if jma_version >= 16394:
+                quat = rot
 
-                transform = global_functions.get_transform(jma_asset.version, version, node, frame, node_list, jma_asset.transforms, absolute_matrix)
+            quaternion = (quat[1], quat[2], quat[3], quat[0])
+            transforms_for_frame.append(JMAAsset.Transform(pos, quaternion, scale[0]))
 
-                pos, rot, scale = transform.decompose()
-                quat = rot.inverted()
-                if version >= 16394:
-                    quat = rot
+        JMA.transforms.append(transforms_for_frame)
 
-                quaternion = (quat[1], quat[2], quat[3], quat[0])
-                transforms_for_frame.append(JMAFile.Transform(pos, quaternion, scale[0]))
+    #H2 specific biped controller data bool value.
+    if jma_version == 16395 and len(imported_jma_file.biped_controller_transforms) > 0:
+        for frame in range(JMA.frame_count):
+            transform = imported_jma_file.biped_controller_transforms[frame]
 
-            self.transforms.append(transforms_for_frame)
+            JMA.biped_controller_transforms.append(JMAAsset.Transform(transform.translation, transform.rotation, transform.scale))
 
-        #H2 specific biped controller data bool value.
-        if version == 16395 and len(jma_asset.biped_controller_transforms) > 0:
-            for frame in range(self.transform_count):
-                transform = jma_asset.biped_controller_transforms[frame]
-
-                self.biped_controller_transforms.append(JMAFile.Transform(transform.vector, transform.rotation, transform.scale))
-
+    return JMA
 
 def write_file(context, report, directory, jma_version, game_version):
     extension_list = ('.jma', '.jmm', '.jmt', '.jmo', '.jmr', '.jmrx', '.jmh', '.jmz', '.jmw')
@@ -118,89 +111,14 @@ def write_file(context, report, directory, jma_version, game_version):
     for file_item in os.listdir(directory):
         if file_item.lower().endswith(extension_list):
             file_path = os.path.join(directory, file_item)
-            imported_jma_file = JMAAsset(file_path)
+            print(file_path)
             extension = global_functions.get_true_extension(file_path, None, True)
-            process_file_retail(imported_jma_file, extension, game_version, retail_version_list, report)
-            if not imported_jma_file.broken_skeleton:
-                exported_jma_file = JMAFile(context, jma_version, game_version, imported_jma_file)
-
-                if jma_version > 16394:
-                    decimal_1 = '\n%0.10f'
-                    decimal_2 = '\n%0.10f\t%0.10f'
-                    decimal_3 = '\n%0.10f\t%0.10f\t%0.10f'
-                    decimal_4 = '\n%0.10f\t%0.10f\t%0.10f\t%0.10f'
-
-                else:
-                    decimal_1 = '\n%0.6f'
-                    decimal_2 = '\n%0.6f\t%0.6f'
-                    decimal_3 = '\n%0.6f\t%0.6f\t%0.6f'
-                    decimal_4 = '\n%0.6f\t%0.6f\t%0.6f\t%0.6f'
-
-                filename = os.path.basename(file_item)
-
-                file = open(os.path.join(directory, file_item), 'w', encoding='utf_8')
-
-                #write header
-                if jma_version >= 16394:
-                    file.write(
-                        '%s' % (jma_version) +
-                        '\n%s' % (exported_jma_file.node_checksum) +
-                        '\n%s' % (imported_jma_file.frame_count) +
-                        '\n%s' % (int(imported_jma_file.frame_rate)) +
-                        '\n%s' % (1) +
-                        '\n%s' % (imported_jma_file.actor_name) +
-                        '\n%s' % (len(imported_jma_file.nodes))
-                        )
-
-                else:
-                    file.write(
-                        '%s' % (jma_version) +
-                        '\n%s' % (imported_jma_file.frame_count) +
-                        '\n%s' % (int(imported_jma_file.frame_rate)) +
-                        '\n%s' % (1) +
-                        '\n%s' % (imported_jma_file.actor_name) +
-                        '\n%s' % (len(imported_jma_file.nodes)) +
-                        '\n%s' % (exported_jma_file.node_checksum)
-                        )
-
-                if jma_version >= 16391:
-                        for node in exported_jma_file.nodes:
-                            if jma_version >= 16394:
-                                file.write(
-                                    '\n%s' % (node.name) +
-                                    '\n%s' % (node.parent)
-                                    )
-
-                            else:
-                                file.write('\n%s' % (node.name))
-                                if jma_version >= 16392:
-                                    file.write(
-                                        '\n%s' % (node.child) +
-                                        '\n%s' % (node.sibling)
-                                        )
-
-                #write transforms
-                for node_transform in exported_jma_file.transforms:
-                    for node in node_transform:
-                        file.write(
-                            decimal_3 % (node.vector[0], node.vector[1], node.vector[2]) +
-                            decimal_4 % (node.rotation[0], node.rotation[1], node.rotation[2], node.rotation[3]) +
-                            decimal_1 % (node.scale)
-                            )
-
-                #H2 specific biped controller data bool value.
-                if jma_version > 16394:
-                    file.write('\n%s' % (int(len(exported_jma_file.biped_controller_transforms) > 0)))
-                    if len(exported_jma_file.biped_controller_transforms) > 0:
-                        for biped_transform in exported_jma_file.biped_controller_transforms:
-                            file.write(
-                                decimal_3 % (biped_transform.vector[0], biped_transform.vector[1], biped_transform.vector[2]) +
-                                decimal_4 % (biped_transform.rotation[0], biped_transform.rotation[1], biped_transform.rotation[2], biped_transform.rotation[3]) +
-                                decimal_1 % (biped_transform.scale)
-                                )
-
-                file.write('\n')
-                file.close()
+            print(extension)
+            imported_jma_file = JMAAsset(file_path)
+            JMA = process_file_retail(imported_jma_file, extension, game_version, retail_version_list, report)
+            if not JMA.broken_skeleton:
+                exported_jma_file = generate_jma_data(context, jma_version, game_version, JMA)
+                build_asset(context, file_path.rsplit('.', 1)[0], report, ".%s" % extension.upper(), exported_jma_file.version, game_version, True, False, False, False, exported_jma_file.frame_rate, 1.0, exported_jma_file)
 
     report({'INFO'}, "Conversion completed successfully")
     return {'FINISHED'}
