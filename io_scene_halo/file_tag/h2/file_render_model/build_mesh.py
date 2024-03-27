@@ -233,7 +233,6 @@ def build_mesh_layout(context, import_file, geometry, current_region_permutation
             node_weight = node_set[2]
             object_mesh.vertex_groups[group_index].add([vertex_weights_set_idx], node_weight, 'ADD')
 
-    full_mesh.use_auto_smooth = True
     object_mesh.parent = armature
     mesh_processing.add_modifier(context, object_mesh, False, None, armature)
 

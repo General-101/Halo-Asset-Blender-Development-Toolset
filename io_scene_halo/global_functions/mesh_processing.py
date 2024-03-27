@@ -685,7 +685,6 @@ def generate_mesh_retail(context, asset, object_vertices, object_triangles, obje
 
     region_attribute = object_data.get_custom_attribute()
     object_data.normals_split_custom_set_from_vertices(vertex_normals)
-    object_data.use_auto_smooth = True
     for vertex_idx, vertex in enumerate(object_vertices):
         node_set = []
         for node_values in vertex.node_set:
