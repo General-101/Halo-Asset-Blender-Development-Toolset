@@ -151,7 +151,7 @@ def process_scene(context, version, game_version, hidden_geo, nonrender_geo, app
     geometry_list = []
     linked_object_list = []
     linked_instance_list = []
-    instance_list = [None]
+    instance_list = []
     object_count = 0
 
     for obj in object_list:
@@ -333,7 +333,7 @@ def process_scene(context, version, game_version, hidden_geo, nonrender_geo, app
                         parent = original_geo.parent.data.bones[0]
 
         if not parent == None and parent in object_list:
-            parent_id = instance_list.index(parent)
+            parent_id = instance_list.index(parent) + 1
 
         geo_matrix = global_functions.get_matrix(original_geo, original_geo, True, armature, instance_list, is_bone, version, 'ASS', False, custom_scale, False)
         geo_dimensions = global_functions.get_dimensions(geo_matrix, original_geo, version, is_bone, 'ASS', custom_scale)

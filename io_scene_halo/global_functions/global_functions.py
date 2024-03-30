@@ -593,7 +593,8 @@ def get_matrix(obj_a, obj_b, is_local, armature, joined_list, is_node, version, 
             object_matrix = obj_a.matrix_world @ scale_matrix
             if obj_b.parent and is_local:
                 parent_object = get_parent(armature, obj_b, joined_list, -1)
-                object_matrix = (parent_object[1].matrix_world.inverted() @ obj_a.matrix_world) @ scale_matrix
+                if not parent_object[1] == None:
+                    object_matrix = (parent_object[1].matrix_world.inverted() @ obj_a.matrix_world) @ scale_matrix
 
     return object_matrix
 
@@ -702,6 +703,8 @@ def get_parent(armature, mesh, joined_list, default_parent):
                     break
 
             else:
+                if mesh == None:
+                    break
                 mesh = mesh.parent
                 if mesh in joined_list and mesh.hide_viewport == False and mesh.hide_get() == False:
                     parent_object = mesh
