@@ -174,28 +174,33 @@ def generate_mesh(file, array_item, game_version):
 
     mesh = bpy.data.meshes.new(item_name)
     if not len(JMS.vertices) == 0:
-        vert_normal_list = []
+        vertex_normals = []
         bm = bmesh.new()
         for triangle in JMS.triangles:
-            p1 = JMS.vertices[triangle.v0].translation
-            p2 = JMS.vertices[triangle.v1].translation
-            p3 = JMS.vertices[triangle.v2].translation
+            v0 = JMS.vertices[triangle.v0]
+            v1 = JMS.vertices[triangle.v1]
+            v2 = JMS.vertices[triangle.v2]
+
+            p1 = v0.translation
+            p2 = v1.translation
+            p3 = v2.translation
+
+            n1 = v0.normal
+            n2 = v1.normal
+            n3 = v2.normal
+
+            vertex_normals.append(n1)
+            vertex_normals.append(n2)
+            vertex_normals.append(n3)
+            
             v1 = bm.verts.new((p1[0], p1[1], p1[2]))
             v2 = bm.verts.new((p2[0], p2[1], p2[2]))
             v3 = bm.verts.new((p3[0], p3[1], p3[2]))
             bm.faces.new((v1, v2, v3))
-            vert_list = [triangle.v0, triangle.v1, triangle.v2]
-            for vert in vert_list:
-                vert_normals = []
-                jms_vert = JMS.vertices[vert]
-                for normal in jms_vert.normal:
-                    vert_normals.append(normal)
-
-                vert_normal_list.append(vert_normals)
 
         bm.to_mesh(mesh)
         bm.free()
-        mesh.normals_split_custom_set(vert_normal_list)
+        mesh.normals_split_custom_set_from_vertices(vertex_normals)
 
     return mesh
 

@@ -41,7 +41,6 @@ def build_mesh_layout(context, import_file, geometry, current_region_permutation
     bm = bmesh.new()
     vertex_weights_sets = []
     for section_idx, section_data in enumerate(geometry.section_data):
-        vertex_normals = []
         mesh = bpy.data.meshes.new("%s_%s" % ("part", str(section_idx)))
 
         uses_node_map = False
@@ -52,8 +51,7 @@ def build_mesh_layout(context, import_file, geometry, current_region_permutation
         triangles = []
         triangle_mat_indices = []
         vertices = [raw_vertex.position for raw_vertex in section_data.raw_vertices]
-        for raw_vertex in section_data.raw_vertices:
-            vertex_normals.append(raw_vertex.normal)
+        vertex_normals = [raw_vertex.normal for raw_vertex in section_data.raw_vertices]
 
         for part_idx, part in enumerate(section_data.parts):
             triangle_part = []

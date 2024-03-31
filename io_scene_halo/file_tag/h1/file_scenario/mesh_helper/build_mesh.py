@@ -110,11 +110,11 @@ def build_mesh_layout(asset, geometry, region_name, random_color_gen, object_mes
                     del triangles[triangles.index(reversed_triangle)]
 
         mesh.from_pydata(vertices, [], triangles)
-        mesh.normals_split_custom_set_from_vertices(normals)
         for poly in mesh.polygons:
             poly.use_smooth = True
 
         region_attribute = mesh.get_custom_attribute()
+        mesh.normals_split_custom_set_from_vertices(normals)
         for vertex_idx, vertex in enumerate(vertex_data):
             node_0_index = vertex.node_0_index
             node_1_index = vertex.node_1_index

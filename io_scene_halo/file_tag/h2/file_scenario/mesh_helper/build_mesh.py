@@ -40,14 +40,12 @@ def build_mesh_layout(asset, section, region_name, random_color_gen, object_mesh
     bm = bmesh.new()
     bm.from_mesh(object_mesh.data)
     for section_idx, section_data in enumerate(section.section_data):
-        vertex_normals = []
         mesh = bpy.data.meshes.new("%s_%s" % ("part", str(section_idx)))
 
         triangles = []
         triangle_mat_indices = []
         vertices = [raw_vertex.position for raw_vertex in section_data.raw_vertices]
-        for raw_vertex in section_data.raw_vertices:
-            vertex_normals.append(raw_vertex.normal)
+        vertex_normals = [raw_vertex.normal for raw_vertex in section_data.raw_vertices]
 
         for part_idx, part in enumerate(section_data.parts):
             triangle_part = []

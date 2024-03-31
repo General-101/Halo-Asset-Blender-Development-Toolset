@@ -286,10 +286,10 @@ def build_scene(context, LEVEL, game_version, game_title, file_version, fix_rota
                             triangles.append([surfaces[surface_idx].v2, surfaces[surface_idx].v1, surfaces[surface_idx].v0]) # Reversed order to fix facing normals
 
                         mesh.from_pydata(vertices, [], triangles)
-                        mesh.normals_split_custom_set_from_vertices(normals)
                         for tri_idx, poly in enumerate(mesh.polygons):
                             poly.use_smooth = True
 
+                        mesh.normals_split_custom_set_from_vertices(normals)
                         for triangle_idx, triangle in enumerate(triangles):
                             if material.shader_tag_ref.name_length > 0:
                                 permutation_index = ""
