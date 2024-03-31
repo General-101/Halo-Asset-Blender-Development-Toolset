@@ -121,7 +121,7 @@ def process_scene(context, version, game_version, generate_checksum, fix_rotatio
         region_idx = -1
 
         parent_idx = global_functions.get_parent(blend_scene.armature, marker, joined_list, 0)
-        marker_matrix = global_functions.get_matrix(marker, marker, True, blend_scene.armature, joined_list, False, version, 'JMS', False, custom_scale, fix_rotations)
+        marker_matrix = global_functions.get_matrix(marker, marker, True, blend_scene.armature, joined_list, False, version, 'JMS', False, custom_scale, fix_rotations, 0)
         mesh_dimensions = global_functions.get_dimensions(marker_matrix, marker, version, False, 'JMS', custom_scale)
 
         rotation = (mesh_dimensions.quaternion[0], mesh_dimensions.quaternion[1], mesh_dimensions.quaternion[2], mesh_dimensions.quaternion[3])

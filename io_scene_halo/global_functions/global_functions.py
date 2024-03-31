@@ -552,7 +552,7 @@ def get_fcurve_matrix(node, node_idx, fcurve_matrices, jma_version):
 
     return object_matrix
 
-def get_matrix(obj_a, obj_b, is_local, armature, joined_list, is_node, version, file_type, constraint, custom_scale, fix_rotation):
+def get_matrix(obj_a, obj_b, is_local, armature, joined_list, is_node, version, file_type, constraint, custom_scale, fix_rotation, default_parent=-1):
     object_matrix = Matrix.Translation((0, 0, 0))
     rotation_matrix = Matrix.Rotation(0, 4, 'Z')
     if file_type == 'ASS':
@@ -583,18 +583,16 @@ def get_matrix(obj_a, obj_b, is_local, armature, joined_list, is_node, version, 
     else:
         if armature:
             object_matrix = obj_a.matrix_world @ scale_matrix
-            bone_test = armature.data.bones.get(obj_b.parent_bone)
-            if obj_b.parent_bone and is_local and bone_test:
-                parent_object = get_parent(armature, obj_b, joined_list, -1)
+            parent_object = get_parent(armature, obj_b, joined_list, default_parent)
+            if parent_object[1] and is_local:
                 pose_bone = armature.pose.bones['%s' % (parent_object[1].name)]
                 object_matrix = ((pose_bone.matrix @ rotation_matrix).inverted() @ obj_a.matrix_world) @ scale_matrix
 
         else:
             object_matrix = obj_a.matrix_world @ scale_matrix
-            if obj_b.parent and is_local:
-                parent_object = get_parent(armature, obj_b, joined_list, -1)
-                if not parent_object[1] == None:
-                    object_matrix = (parent_object[1].matrix_world.inverted() @ obj_a.matrix_world) @ scale_matrix
+            parent_object = get_parent(armature, obj_b, joined_list, default_parent)
+            if parent_object[1] and is_local:
+                object_matrix = (parent_object[1].matrix_world.inverted() @ obj_a.matrix_world) @ scale_matrix
 
     return object_matrix
 
@@ -665,55 +663,56 @@ def get_children(world_node):
 
     return children_hierarchy
 
-def get_parent(armature, mesh, joined_list, default_parent):
-    parent_object = None
-    parent_index = default_parent
-    parent = None
-    if mesh:
-        if armature:
-            if type(mesh).__name__ == 'Bone':
-                parent = mesh.parent
+def get_parent(armature, node, joined_list, default_parent):
+    valid_parent_idx = default_parent
+    valid_parent = None
+    if valid_parent_idx >= 0:
+        valid_parent = joined_list[default_parent]
 
-            else:
-                parent = mesh.parent_bone
+    if node and node.parent:
+        node_parent = node.parent
+        if node_parent.type == 'ARMATURE':
+            node_parent = node_parent.parent_bone
+            while valid_parent == None:
+                if type(node).__name__ == 'Bone':
+                    if node_parent != None:
+                        if node_parent in joined_list and node_parent.use_deform:
+                            valid_parent = node_parent
+                            valid_parent_idx = joined_list.index(node_parent)
 
-        else:
-            parent = mesh.parent
-
-        while parent:
-            if armature:
-                if type(mesh).__name__ == 'Bone':
-                    bone_test = armature.data.bones.get(mesh.parent.name)
-
-                else:
-                    bone_test = armature.data.bones.get(mesh.parent_bone)
-
-                if bone_test:
-                    if type(mesh).__name__ == 'Bone':
-                        mesh = armature.data.bones[mesh.parent.name]
+                        else:
+                            node_parent = node_parent.parent
 
                     else:
-                        mesh = armature.data.bones[mesh.parent_bone]
-
-                    if mesh in joined_list:
-                        parent_object = mesh
                         break
 
                 else:
+                    if not string_empty_check(node_parent):
+                        node_parent = armature.data.bones[node_parent]
+                        if node_parent in joined_list and node_parent.use_deform:
+                            valid_parent = node_parent
+                            valid_parent_idx = joined_list.index(node_parent)
+
+                        else:
+                            node_parent = node_parent.parent
+
+                    else:
+                        break
+
+        else:
+            while valid_parent == None:
+                if node_parent != None:
+                    if node_parent in joined_list and node_parent.hide_viewport == False and node_parent.hide_get() == False:
+                        valid_parent = node_parent
+                        valid_parent_idx = joined_list.index(node_parent)
+
+                    else:
+                        node_parent = node_parent.parent
+
+                else:
                     break
 
-            else:
-                if mesh == None:
-                    break
-                mesh = mesh.parent
-                if mesh in joined_list and mesh.hide_viewport == False and mesh.hide_get() == False:
-                    parent_object = mesh
-                    break
-
-        if parent_object:
-            parent_index = joined_list.index(parent_object)
-
-    return (parent_index, parent_object)
+    return (valid_parent_idx, valid_parent)
 
 def set_scale(scale_enum, scale_float):
     scale = 1
