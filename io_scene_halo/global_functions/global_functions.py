@@ -664,17 +664,14 @@ def get_children(world_node):
     return children_hierarchy
 
 def get_parent(armature, node, joined_list, default_parent):
-    valid_parent_idx = default_parent
+    valid_parent_idx = -1
     valid_parent = None
-    if valid_parent_idx >= 0:
-        valid_parent = joined_list[default_parent]
-
     if node and node.parent:
         node_parent = node.parent
         if node_parent.type == 'ARMATURE':
-            node_parent = node_parent.parent_bone
+            node_parent = node.parent_bone
             while valid_parent == None:
-                if type(node).__name__ == 'Bone':
+                if type(node_parent).__name__ == 'Bone':
                     if node_parent != None:
                         if node_parent in joined_list and node_parent.use_deform:
                             valid_parent = node_parent
@@ -711,6 +708,10 @@ def get_parent(armature, node, joined_list, default_parent):
 
                 else:
                     break
+
+    if valid_parent == None and default_parent >= 0:
+        valid_parent = joined_list[default_parent]
+        valid_parent_idx = default_parent
 
     return (valid_parent_idx, valid_parent)
 
