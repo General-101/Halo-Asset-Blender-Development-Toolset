@@ -191,7 +191,7 @@ def write_scenery(output_stream, SCENARIO, TAG):
             write_color_change(output_stream, scenery_element)
             output_stream.write(struct.pack('<h', scenery_element.pathfinding_policy))
             output_stream.write(struct.pack('<h', scenery_element.lightmap_policy))
-            scenery_element.pathfinding_references.write(output_stream, False)
+            scenery_element.pathfinding_references_tag_block.write(output_stream, False)
             output_stream.write(struct.pack('<2x'))
             output_stream.write(struct.pack('<h', scenery_element.valid_multiplayer_games))
 
@@ -275,7 +275,7 @@ def write_machines(output_stream, SCENARIO, TAG):
             output_stream.write(struct.pack('<h', device_machines_element.position_group_index))
             output_stream.write(struct.pack('<I', device_machines_element.flags_0))
             output_stream.write(struct.pack('<I', device_machines_element.flags_1))
-            device_machines_element.pathfinding_references.write(output_stream, False)
+            device_machines_element.pathfinding_references_tag_block.write(output_stream, False)
 
         for device_machines_element in SCENARIO.device_machines:
             device_machines_element.sobj_header.write(output_stream, TAG, True)
@@ -562,6 +562,8 @@ def write_squads(output_stream, SCENARIO, TAG):
             output_stream.write(struct.pack('<4x'))
 
         for squad in SCENARIO.squads:
+            output_stream.write(struct.pack('<%ss' % len(squad.vehicle_variant), tag_format.string_to_bytes(squad.vehicle_variant, False)))
+
             if len(squad.starting_locations) > 0:
                 squad.starting_locations_header.write(output_stream, TAG, True)
                 for starting_location in squad.starting_locations:
@@ -587,6 +589,8 @@ def write_squads(output_stream, SCENARIO, TAG):
 
                 for starting_location in squad.starting_locations:
                     output_stream.write(struct.pack('<%ss' % len(starting_location.name), tag_format.string_to_bytes(starting_location.name, False)))
+                    output_stream.write(struct.pack('<%ss' % len(starting_location.actor_variant), tag_format.string_to_bytes(starting_location.actor_variant, False)))
+                    output_stream.write(struct.pack('<%ss' % len(starting_location.vehicle_variant), tag_format.string_to_bytes(starting_location.vehicle_variant, False)))
 
 def write_zones(output_stream, SCENARIO, TAG):
     if len(SCENARIO.zones) > 0:
@@ -686,9 +690,9 @@ def write_cutscene_titles(output_stream, SCENARIO, TAG):
                 output_stream.write(struct.pack('<%ss' % len(cutscene_title.name), tag_format.string_to_bytes(cutscene_title.name, False)))
 
 def write_structure_bsps(output_stream, SCENARIO, TAG):
-    if len(SCENARIO.structure_bsp) > 0:
+    if len(SCENARIO.structure_bsps) > 0:
         SCENARIO.structure_bsps_header.write(output_stream, TAG, True)
-        for structure_bsp in SCENARIO.structure_bsp:
+        for structure_bsp in SCENARIO.structure_bsps:
             output_stream.write(struct.pack('>16x'))
             structure_bsp.structure_bsp.write(output_stream, False, True)
             structure_bsp.structure_lightmap.write(output_stream, False, True)
@@ -701,7 +705,7 @@ def write_structure_bsps(output_stream, SCENARIO, TAG):
             output_stream.write(struct.pack('<I', structure_bsp.flags))
             output_stream.write(struct.pack('<h2x', structure_bsp.default_sky))
 
-        for structure_bsp_element in SCENARIO.structure_bsp:
+        for structure_bsp_element in SCENARIO.structure_bsps:
             structure_bsp_name_length = len(structure_bsp_element.structure_bsp.name)
             structure_lightmap_name_length = len(structure_bsp_element.structure_lightmap.name)
             if structure_bsp_name_length > 0:
