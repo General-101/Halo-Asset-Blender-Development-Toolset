@@ -336,8 +336,12 @@ def get_scenery(scenery_tag_block, TAG, SCENARIO):
         scenery.quaternary_color_BGRA = (0, 0, 0, 1)
         scenery.pathfinding_policy = 0
         scenery.lightmap_policy = 0
-        scenery.pathfinding_references = TAG.TagBlock(0, 0, 0, 0)
         scenery.valid_multiplayer_games = 0
+
+        scenery.pathfinding_references = []
+        pathfinding_ref_count = len(scenery.pathfinding_references)
+        scenery.pathfinding_references_header = TAG.TagBlockHeader("tbfd", 0, pathfinding_ref_count, 4)
+        scenery.pathfinding_references_tag_block = TAG.TagBlock(pathfinding_ref_count)
 
         SCENARIO.scenery.append(scenery)
 
@@ -497,7 +501,11 @@ def get_device_machines(machine_tag_block, TAG, SCENARIO):
         device_machine.position_group_index = machine_element.position_group_index
         device_machine.flags_0 = machine_element.flags_0
         device_machine.flags_1 = machine_element.flags_1
-        device_machine.pathfinding_references = TAG.TagBlock(0, 0, 0, 0)
+
+        device_machine.pathfinding_references = []
+        pathfinding_ref_count = len(device_machine.pathfinding_references)
+        device_machine.pathfinding_references_header = TAG.TagBlockHeader("tbfd", 0, pathfinding_ref_count, 4)
+        device_machine.pathfinding_references_tag_block = TAG.TagBlock(pathfinding_ref_count)
 
         SCENARIO.device_machines.append(device_machine)
 
@@ -540,7 +548,7 @@ def get_device_controls(controls_tag_block, TAG, SCENARIO):
 
 
 def get_light_fixtures(light_fixtures_tag_block, TAG, SCENARIO):
-    SCENARIO.light_fixtures = []
+    SCENARIO.device_light_fixtures = []
     for light_fixture_element in light_fixtures_tag_block:
         light_fixture = SCENARIO.LightFixture()
 
@@ -572,9 +580,9 @@ def get_light_fixtures(light_fixtures_tag_block, TAG, SCENARIO):
         light_fixture.falloff_angle = light_fixture_element.falloff_angle
         light_fixture.cutoff_angle = light_fixture_element.cutoff_angle
 
-        SCENARIO.light_fixtures.append(light_fixture)
+        SCENARIO.device_light_fixtures.append(light_fixture)
 
-    SCENARIO.light_fixture_header = TAG.TagBlockHeader("tbfd", 2, len(SCENARIO.light_fixtures), 84)
+    SCENARIO.device_light_fixture_header = TAG.TagBlockHeader("tbfd", 2, len(SCENARIO.device_light_fixtures), 84)
 
 def get_sound_scenery(sound_scenery_tag_block, TAG, SCENARIO):
     SCENARIO.sound_scenery = []
@@ -1120,7 +1128,7 @@ def get_cutscene_titles(cutscene_titles_tag_block, TAG, SCENARIO):
     SCENARIO.cutscene_titles_header = TAG.TagBlockHeader("tbfd", 0, len(SCENARIO.cutscene_titles), 36)
 
 def get_structure_bsp(structure_bsp_tag_block, TAG, SCENARIO):
-    SCENARIO.structure_bsp = []
+    SCENARIO.structure_bsps = []
     for structure_bsp_element in structure_bsp_tag_block:
         structure_bsp = SCENARIO.StructureBSP()
 
@@ -1137,9 +1145,9 @@ def get_structure_bsp(structure_bsp_tag_block, TAG, SCENARIO):
         structure_bsp.flags = 0
         structure_bsp.default_sky = -1
 
-        SCENARIO.structure_bsp.append(structure_bsp)
+        SCENARIO.structure_bsps.append(structure_bsp)
 
-    SCENARIO.structure_bsp_header = TAG.TagBlockHeader("tbfd", 1, len(SCENARIO.structure_bsp), 84)
+    SCENARIO.structure_bsps_header = TAG.TagBlockHeader("tbfd", 1, len(SCENARIO.structure_bsps), 84)
 
 def get_palette(TAG, palette_tag_block, size, tag_group=None):
     palette_list = []
@@ -1177,7 +1185,11 @@ def upgrade_h2_scenario(H1_ASSET, patch_txt_path, report):
 
     SCENARIO.skies = []
     SCENARIO.child_scenarios = []
+    SCENARIO.predicted_resources = []
+    SCENARIO.functions = []
+    SCENARIO.editor_scenario_data = bytes()
     SCENARIO.comments = []
+    SCENARIO.environment_objects = []
     SCENARIO.object_names = []
     SCENARIO.scenery = []
     SCENARIO.scenery_palette = []
@@ -1194,8 +1206,8 @@ def upgrade_h2_scenario(H1_ASSET, patch_txt_path, report):
     SCENARIO.device_machine_palette = []
     SCENARIO.device_controls = []
     SCENARIO.device_control_palette = []
-    SCENARIO.light_fixtures = []
-    SCENARIO.light_fixtures_palette = []
+    SCENARIO.device_light_fixtures = []
+    SCENARIO.device_light_fixtures_palette = []
     SCENARIO.sound_scenery = []
     SCENARIO.sound_scenery_palette = []
     SCENARIO.light_volumes = []
@@ -1206,22 +1218,68 @@ def upgrade_h2_scenario(H1_ASSET, patch_txt_path, report):
     SCENARIO.recorded_animations = []
     SCENARIO.netgame_flags = []
     SCENARIO.netgame_equipment = []
+    SCENARIO.starting_equipment = []
+    SCENARIO.bsp_switch_trigger_volumes = []
     SCENARIO.decals = []
     SCENARIO.decal_palette = []
+    SCENARIO.detail_object_collection_palette = []
     SCENARIO.style_palette = []
     SCENARIO.squad_groups = []
     SCENARIO.squads = []
     SCENARIO.zones = []
+    SCENARIO.mission_scenes = []
     SCENARIO.character_palette = []
+    SCENARIO.ai_pathfinding_data = []
+    SCENARIO.ai_animation_references = []
+    SCENARIO.ai_script_references = []
+    SCENARIO.ai_recording_references = []
+    SCENARIO.ai_conversations = []
+    SCENARIO.script_syntax_data = bytes()
+    SCENARIO.script_string_data = bytes()
+    SCENARIO.scripts = []
+    SCENARIO.globals = []
+    SCENARIO.references = []
+    SCENARIO.source_files = []
     SCENARIO.scripting_data = []
     SCENARIO.cutscene_flags = []
     SCENARIO.cutscene_camera_points = []
+    SCENARIO.cutscene_titles = []
+    SCENARIO.structure_bsps = []
+    SCENARIO.scenario_resources = []
+    SCENARIO.old_structure_physics = []
+    SCENARIO.hs_unit_seats = []
+    SCENARIO.scenario_kill_triggers = []
+    SCENARIO.hs_syntax_datums = []
     SCENARIO.orders = []
     SCENARIO.triggers = []
     SCENARIO.background_sound_palette = []
     SCENARIO.sound_environment_palette = []
+    SCENARIO.weather_palette = []
+    SCENARIO.unused_0 = []
+    SCENARIO.unused_1 = []
+    SCENARIO.unused_2 = []
+    SCENARIO.unused_3 = []
+    SCENARIO.scavenger_hunt_objects = []
+    SCENARIO.scenario_cluster_data = []
+    SCENARIO.spawn_data = []
     SCENARIO.crates = []
     SCENARIO.crates_palette = []
+    SCENARIO.atmospheric_fog_palette = []
+    SCENARIO.planar_fog_palette = []
+    SCENARIO.flocks = []
+    SCENARIO.decorators = []
+    SCENARIO.creatures = []
+    SCENARIO.creatures_palette = []
+    SCENARIO.decorator_palette = []
+    SCENARIO.bsp_transition_volumes = []
+    SCENARIO.structure_bsp_lighting = []
+    SCENARIO.editor_folders = []
+    SCENARIO.level_data = []
+    SCENARIO.mission_dialogue = []
+    SCENARIO.interpolators = []
+    SCENARIO.shared_references = []
+    SCENARIO.screen_effect_references = []
+    SCENARIO.simulation_definition_table = []
 
     SCENARIO.skies_header, SCENARIO.skies = get_palette(TAG, H1_ASSET.skies, 16)
 
@@ -1256,7 +1314,7 @@ def upgrade_h2_scenario(H1_ASSET, patch_txt_path, report):
     SCENARIO.device_control_palette_header, SCENARIO.device_control_palette = get_palette(TAG, H1_ASSET.device_control_palette, 48)
 
     get_light_fixtures(H1_ASSET.device_light_fixtures, TAG, SCENARIO)
-    SCENARIO.light_fixture_palette_header, SCENARIO.light_fixtures_palette = get_palette(TAG, H1_ASSET.device_light_fixtures_palette, 48)
+    SCENARIO.device_light_fixture_palette_header, SCENARIO.device_light_fixtures_palette = get_palette(TAG, H1_ASSET.device_light_fixtures_palette, 48)
 
     get_sound_scenery(H1_ASSET.sound_scenery, TAG, SCENARIO)
     SCENARIO.sound_scenery_palette_header, SCENARIO.sound_scenery_palette = get_palette(TAG, H1_ASSET.sound_scenery_palette, 48)
@@ -1294,118 +1352,118 @@ def upgrade_h2_scenario(H1_ASSET, patch_txt_path, report):
     SCENARIO.scenario_body_header = TAG.TagBlockHeader("tbfd", 2, 1, 1476)
     SCENARIO.scenario_body = SCENARIO.ScenarioBody()
     SCENARIO.scenario_body.unused_tag_ref = TAG.TagRef("sbsp")
-    SCENARIO.scenario_body.skies_tag_block = TAG.TagBlock(len(SCENARIO.skies), 0, 0, 0)
+    SCENARIO.scenario_body.skies_tag_block = TAG.TagBlock(len(SCENARIO.skies))
     SCENARIO.scenario_body.scenario_type = H1_ASSET.scenario_body.scenario_type
     SCENARIO.scenario_body.scenario_flags = convert_scenario_flags(H1_ASSET.scenario_body.scenario_flags)
-    SCENARIO.scenario_body.child_scenarios_tag_block = TAG.TagBlock(len(SCENARIO.child_scenarios), 0, 0, 0)
-    SCENARIO.scenario_body.local_north = H1_ASSET.scenario_body.local_north # Value in radians
-    SCENARIO.scenario_body.predicted_resources_tag_block = TAG.TagBlock(0, 0, 0, 0)
-    SCENARIO.scenario_body.functions_tag_block = TAG.TagBlock(0, 0, 0, 0)
-    SCENARIO.scenario_body.editor_scenario_data = TAG.RawData(0, 0, 0, 0, 0)
-    SCENARIO.scenario_body.comments_tag_block = TAG.TagBlock(len(SCENARIO.comments), 0, 0, 0)
-    SCENARIO.scenario_body.environment_objects_tag_block = TAG.TagBlock(0, 0, 0, 0)
-    SCENARIO.scenario_body.object_names_tag_block = TAG.TagBlock(len(SCENARIO.object_names), 0, 0, 0)
-    SCENARIO.scenario_body.scenery_tag_block = TAG.TagBlock(len(SCENARIO.scenery), 0, 0, 0)
-    SCENARIO.scenario_body.scenery_palette_tag_block = TAG.TagBlock(len(SCENARIO.scenery_palette), 0, 0, 0)
-    SCENARIO.scenario_body.bipeds_tag_block = TAG.TagBlock(len(SCENARIO.bipeds), 0, 0, 0)
-    SCENARIO.scenario_body.biped_palette_tag_block = TAG.TagBlock(len(SCENARIO.biped_palette), 0, 0, 0)
-    SCENARIO.scenario_body.vehicles_tag_block = TAG.TagBlock(len(SCENARIO.vehicles), 0, 0, 0)
-    SCENARIO.scenario_body.vehicle_palette_tag_block = TAG.TagBlock(len(SCENARIO.vehicle_palette), 0, 0, 0)
-    SCENARIO.scenario_body.equipment_tag_block = TAG.TagBlock(len(SCENARIO.equipment), 0, 0, 0)
-    SCENARIO.scenario_body.equipment_palette_tag_block = TAG.TagBlock(len(SCENARIO.equipment_palette), 0, 0, 0)
-    SCENARIO.scenario_body.weapons_tag_block = TAG.TagBlock(len(SCENARIO.weapons), 0, 0, 0)
-    SCENARIO.scenario_body.weapon_palette_tag_block = TAG.TagBlock(len(SCENARIO.weapon_palette), 0, 0, 0)
-    SCENARIO.scenario_body.device_groups_tag_block = TAG.TagBlock(len(SCENARIO.device_groups), 0, 0, 0)
-    SCENARIO.scenario_body.machines_tag_block = TAG.TagBlock(len(SCENARIO.device_machines), 0, 0, 0)
-    SCENARIO.scenario_body.machine_palette_tag_block = TAG.TagBlock(len(SCENARIO.device_machine_palette), 0, 0, 0)
-    SCENARIO.scenario_body.controls_tag_block = TAG.TagBlock(len(SCENARIO.device_controls), 0, 0, 0)
-    SCENARIO.scenario_body.control_palette_tag_block = TAG.TagBlock(len(SCENARIO.device_control_palette), 0, 0, 0)
-    SCENARIO.scenario_body.light_fixtures_tag_block = TAG.TagBlock(len(SCENARIO.light_fixtures), 0, 0, 0)
-    SCENARIO.scenario_body.light_fixtures_palette_tag_block = TAG.TagBlock(len(SCENARIO.light_fixtures_palette), 0, 0, 0)
-    SCENARIO.scenario_body.sound_scenery_tag_block = TAG.TagBlock(len(SCENARIO.sound_scenery), 0, 0, 0)
-    SCENARIO.scenario_body.sound_scenery_palette_tag_block = TAG.TagBlock(len(SCENARIO.sound_scenery_palette), 0, 0, 0)
-    SCENARIO.scenario_body.light_volumes_tag_block = TAG.TagBlock(len(SCENARIO.light_volumes), 0, 0, 0)
-    SCENARIO.scenario_body.light_volume_palette_tag_block = TAG.TagBlock(len(SCENARIO.light_volume_palette), 0, 0, 0)
-    SCENARIO.scenario_body.player_starting_profile_tag_block = TAG.TagBlock(len(SCENARIO.player_starting_profiles), 0, 0, 0)
-    SCENARIO.scenario_body.player_starting_locations_tag_block = TAG.TagBlock(len(SCENARIO.player_starting_locations), 0, 0, 0)
-    SCENARIO.scenario_body.trigger_volumes_tag_block = TAG.TagBlock(len(SCENARIO.trigger_volumes), 0, 0, 0)
-    SCENARIO.scenario_body.recorded_animations_tag_block = TAG.TagBlock(len(SCENARIO.recorded_animations), 0, 0, 0)
-    SCENARIO.scenario_body.netgame_flags_tag_block = TAG.TagBlock(len(SCENARIO.netgame_flags), 0, 0, 0)
-    SCENARIO.scenario_body.netgame_equipment_tag_block = TAG.TagBlock(len(SCENARIO.netgame_equipment), 0, 0, 0)
-    SCENARIO.scenario_body.starting_equipment_tag_block = TAG.TagBlock(len(SCENARIO.starting_equipment), 0, 0, 0)
-    SCENARIO.scenario_body.bsp_switch_trigger_volumes_tag_block = TAG.TagBlock(0, 0, 0, 0)
-    SCENARIO.scenario_body.decals_tag_block = TAG.TagBlock(len(SCENARIO.decals), 0, 0, 0)
-    SCENARIO.scenario_body.decal_palette_tag_block = TAG.TagBlock(len(SCENARIO.decal_palette), 0, 0, 0)
-    SCENARIO.scenario_body.detail_object_collection_palette_tag_block = TAG.TagBlock(0, 0, 0, 0)
-    SCENARIO.scenario_body.style_palette_tag_block = TAG.TagBlock(len(SCENARIO.style_palette), 0, 0, 0)
-    SCENARIO.scenario_body.squad_groups_tag_block = TAG.TagBlock(len(SCENARIO.squad_groups), 0, 0, 0)
-    SCENARIO.scenario_body.squads_tag_block = TAG.TagBlock(len(SCENARIO.squads), 0, 0, 0)
-    SCENARIO.scenario_body.zones_tag_block = TAG.TagBlock(len(SCENARIO.zones), 0, 0, 0)
-    SCENARIO.scenario_body.mission_scenes_tag_block = TAG.TagBlock(0, 0, 0, 0)
-    SCENARIO.scenario_body.character_palette_tag_block = TAG.TagBlock(len(SCENARIO.character_palette), 0, 0, 0)
-    SCENARIO.scenario_body.ai_pathfinding_data_tag_block = TAG.TagBlock(0, 0, 0, 0)
-    SCENARIO.scenario_body.ai_animation_references_tag_block = TAG.TagBlock(0, 0, 0, 0)
-    SCENARIO.scenario_body.ai_script_references_tag_block = TAG.TagBlock(0, 0, 0, 0)
-    SCENARIO.scenario_body.ai_recording_references_tag_block = TAG.TagBlock(0, 0, 0, 0)
-    SCENARIO.scenario_body.ai_conversations_tag_block = TAG.TagBlock(0, 0, 0, 0)
-    SCENARIO.scenario_body.script_syntax_data_tag_data = TAG.RawData(0, 0, 0, 0, 0)
-    SCENARIO.scenario_body.script_string_data_tag_data = TAG.RawData(0, 0, 0, 0, 0)
-    SCENARIO.scenario_body.scripts_tag_block = TAG.TagBlock(0, 0, 0, 0)
-    SCENARIO.scenario_body.globals_tag_block = TAG.TagBlock(0, 0, 0, 0)
-    SCENARIO.scenario_body.references_tag_block = TAG.TagBlock(0, 0, 0, 0)
-    SCENARIO.scenario_body.source_files_tag_block = TAG.TagBlock(0, 0, 0, 0)
-    SCENARIO.scenario_body.scripting_data_tag_block = TAG.TagBlock(len(SCENARIO.scripting_data), 0, 0, 0)
-    SCENARIO.scenario_body.cutscene_flags_tag_block = TAG.TagBlock(len(SCENARIO.cutscene_flags), 0, 0, 0)
-    SCENARIO.scenario_body.cutscene_camera_points_tag_block = TAG.TagBlock(len(SCENARIO.cutscene_camera_points), 0, 0, 0)
-    SCENARIO.scenario_body.cutscene_titles_tag_block = TAG.TagBlock(len(SCENARIO.cutscene_titles), 0, 0, 0)
+    SCENARIO.scenario_body.child_scenarios_tag_block = TAG.TagBlock(len(SCENARIO.child_scenarios))
+    SCENARIO.scenario_body.local_north = H1_ASSET.scenario_body.local_north
+    SCENARIO.scenario_body.predicted_resources_tag_block = TAG.TagBlock(len(SCENARIO.predicted_resources))
+    SCENARIO.scenario_body.functions_tag_block = TAG.TagBlock(len(SCENARIO.functions))
+    SCENARIO.scenario_body.editor_scenario_data = TAG.RawData()
+    SCENARIO.scenario_body.comments_tag_block = TAG.TagBlock(len(SCENARIO.comments))
+    SCENARIO.scenario_body.environment_objects_tag_block = TAG.TagBlock(len(SCENARIO.environment_objects))
+    SCENARIO.scenario_body.object_names_tag_block = TAG.TagBlock(len(SCENARIO.object_names))
+    SCENARIO.scenario_body.scenery_tag_block = TAG.TagBlock(len(SCENARIO.scenery))
+    SCENARIO.scenario_body.scenery_palette_tag_block = TAG.TagBlock(len(SCENARIO.scenery_palette))
+    SCENARIO.scenario_body.bipeds_tag_block = TAG.TagBlock(len(SCENARIO.bipeds))
+    SCENARIO.scenario_body.biped_palette_tag_block = TAG.TagBlock(len(SCENARIO.biped_palette))
+    SCENARIO.scenario_body.vehicles_tag_block = TAG.TagBlock(len(SCENARIO.vehicles))
+    SCENARIO.scenario_body.vehicle_palette_tag_block = TAG.TagBlock(len(SCENARIO.vehicle_palette))
+    SCENARIO.scenario_body.equipment_tag_block = TAG.TagBlock(len(SCENARIO.equipment))
+    SCENARIO.scenario_body.equipment_palette_tag_block = TAG.TagBlock(len(SCENARIO.equipment_palette))
+    SCENARIO.scenario_body.weapons_tag_block = TAG.TagBlock(len(SCENARIO.weapons))
+    SCENARIO.scenario_body.weapon_palette_tag_block = TAG.TagBlock(len(SCENARIO.weapon_palette))
+    SCENARIO.scenario_body.device_groups_tag_block = TAG.TagBlock(len(SCENARIO.device_groups))
+    SCENARIO.scenario_body.machines_tag_block = TAG.TagBlock(len(SCENARIO.device_machines))
+    SCENARIO.scenario_body.machine_palette_tag_block = TAG.TagBlock(len(SCENARIO.device_machine_palette))
+    SCENARIO.scenario_body.controls_tag_block = TAG.TagBlock(len(SCENARIO.device_controls))
+    SCENARIO.scenario_body.control_palette_tag_block = TAG.TagBlock(len(SCENARIO.device_control_palette))
+    SCENARIO.scenario_body.light_fixtures_tag_block = TAG.TagBlock(len(SCENARIO.device_light_fixtures))
+    SCENARIO.scenario_body.light_fixtures_palette_tag_block = TAG.TagBlock(len(SCENARIO.device_light_fixtures_palette))
+    SCENARIO.scenario_body.sound_scenery_tag_block = TAG.TagBlock(len(SCENARIO.sound_scenery))
+    SCENARIO.scenario_body.sound_scenery_palette_tag_block = TAG.TagBlock(len(SCENARIO.sound_scenery_palette))
+    SCENARIO.scenario_body.light_volumes_tag_block = TAG.TagBlock(len(SCENARIO.light_volumes))
+    SCENARIO.scenario_body.light_volume_palette_tag_block = TAG.TagBlock(len(SCENARIO.light_volume_palette))
+    SCENARIO.scenario_body.player_starting_profile_tag_block = TAG.TagBlock(len(SCENARIO.player_starting_profiles))
+    SCENARIO.scenario_body.player_starting_locations_tag_block = TAG.TagBlock(len(SCENARIO.player_starting_locations))
+    SCENARIO.scenario_body.trigger_volumes_tag_block = TAG.TagBlock(len(SCENARIO.trigger_volumes))
+    SCENARIO.scenario_body.recorded_animations_tag_block = TAG.TagBlock(len(SCENARIO.recorded_animations))
+    SCENARIO.scenario_body.netgame_flags_tag_block = TAG.TagBlock(len(SCENARIO.netgame_flags))
+    SCENARIO.scenario_body.netgame_equipment_tag_block = TAG.TagBlock(len(SCENARIO.netgame_equipment))
+    SCENARIO.scenario_body.starting_equipment_tag_block = TAG.TagBlock(len(SCENARIO.starting_equipment))
+    SCENARIO.scenario_body.bsp_switch_trigger_volumes_tag_block = TAG.TagBlock(len(SCENARIO.bsp_switch_trigger_volumes))
+    SCENARIO.scenario_body.decals_tag_block = TAG.TagBlock(len(SCENARIO.decals))
+    SCENARIO.scenario_body.decal_palette_tag_block = TAG.TagBlock(len(SCENARIO.decal_palette))
+    SCENARIO.scenario_body.detail_object_collection_palette_tag_block = TAG.TagBlock(len(SCENARIO.detail_object_collection_palette))
+    SCENARIO.scenario_body.style_palette_tag_block = TAG.TagBlock(len(SCENARIO.style_palette))
+    SCENARIO.scenario_body.squad_groups_tag_block = TAG.TagBlock(len(SCENARIO.squad_groups))
+    SCENARIO.scenario_body.squads_tag_block = TAG.TagBlock(len(SCENARIO.squads))
+    SCENARIO.scenario_body.zones_tag_block = TAG.TagBlock(len(SCENARIO.zones))
+    SCENARIO.scenario_body.mission_scenes_tag_block = TAG.TagBlock(len(SCENARIO.mission_scenes))
+    SCENARIO.scenario_body.character_palette_tag_block = TAG.TagBlock(len(SCENARIO.character_palette))
+    SCENARIO.scenario_body.ai_pathfinding_data_tag_block = TAG.TagBlock(len(SCENARIO.ai_pathfinding_data))
+    SCENARIO.scenario_body.ai_animation_references_tag_block = TAG.TagBlock(len(SCENARIO.ai_animation_references))
+    SCENARIO.scenario_body.ai_script_references_tag_block = TAG.TagBlock(len(SCENARIO.ai_script_references))
+    SCENARIO.scenario_body.ai_recording_references_tag_block = TAG.TagBlock(len(SCENARIO.ai_recording_references))
+    SCENARIO.scenario_body.ai_conversations_tag_block = TAG.TagBlock(len(SCENARIO.ai_conversations))
+    SCENARIO.scenario_body.script_syntax_data_tag_data = TAG.RawData()
+    SCENARIO.scenario_body.script_string_data_tag_data = TAG.RawData()
+    SCENARIO.scenario_body.scripts_tag_block = TAG.TagBlock(len(SCENARIO.scripts))
+    SCENARIO.scenario_body.globals_tag_block = TAG.TagBlock(len(SCENARIO.globals))
+    SCENARIO.scenario_body.references_tag_block = TAG.TagBlock(len(SCENARIO.references))
+    SCENARIO.scenario_body.source_files_tag_block = TAG.TagBlock(len(SCENARIO.source_files))
+    SCENARIO.scenario_body.scripting_data_tag_block = TAG.TagBlock(len(SCENARIO.scripting_data))
+    SCENARIO.scenario_body.cutscene_flags_tag_block = TAG.TagBlock(len(SCENARIO.cutscene_flags))
+    SCENARIO.scenario_body.cutscene_camera_points_tag_block = TAG.TagBlock(len(SCENARIO.cutscene_camera_points))
+    SCENARIO.scenario_body.cutscene_titles_tag_block = TAG.TagBlock(len(SCENARIO.cutscene_titles))
     SCENARIO.scenario_body.custom_object_names_tag_ref = TAG.TagRef("unic")
     SCENARIO.scenario_body.chapter_title_text_tag_ref = TAG.TagRef("unic")
     SCENARIO.scenario_body.hud_messages_tag_ref = TAG.TagRef("hmt ")
-    SCENARIO.scenario_body.structure_bsps_tag_block = TAG.TagBlock(len(SCENARIO.structure_bsp), 0, 0, 0)
-    SCENARIO.scenario_body.scenario_resources_tag_block = TAG.TagBlock(0, 0, 0, 0)
-    SCENARIO.scenario_body.old_structure_physics_tag_block = TAG.TagBlock(0, 0, 0, 0)
-    SCENARIO.scenario_body.hs_unit_seats_tag_block =TAG.TagBlock(0, 0, 0, 0)
-    SCENARIO.scenario_body.scenario_kill_triggers_tag_block = TAG.TagBlock(0, 0, 0, 0)
-    SCENARIO.scenario_body.hs_syntax_datums_tag_block = TAG.TagBlock(0, 0, 0, 0)
-    SCENARIO.scenario_body.orders_tag_block = TAG.TagBlock(len(SCENARIO.orders), 0, 0, 0)
-    SCENARIO.scenario_body.triggers_tag_block = TAG.TagBlock(len(SCENARIO.triggers), 0, 0, 0)
-    SCENARIO.scenario_body.background_sound_palette_tag_block = TAG.TagBlock(0, 0, 0, 0)
-    SCENARIO.scenario_body.sound_environment_palette_tag_block = TAG.TagBlock(0, 0, 0, 0)
-    SCENARIO.scenario_body.weather_palette_tag_block = TAG.TagBlock(0, 0, 0, 0)
-    SCENARIO.scenario_body.unused_0_tag_block = TAG.TagBlock(0, 0, 0, 0)
-    SCENARIO.scenario_body.unused_1_tag_block = TAG.TagBlock(0, 0, 0, 0)
-    SCENARIO.scenario_body.unused_2_tag_block = TAG.TagBlock(0, 0, 0, 0)
-    SCENARIO.scenario_body.unused_3_tag_block = TAG.TagBlock(0, 0, 0, 0)
-    SCENARIO.scenario_body.scavenger_hunt_objects_tag_block = TAG.TagBlock(0, 0, 0, 0)
-    SCENARIO.scenario_body.scenario_cluster_data_tag_block = TAG.TagBlock(0, 0, 0, 0)
+    SCENARIO.scenario_body.structure_bsps_tag_block = TAG.TagBlock(len(SCENARIO.structure_bsps))
+    SCENARIO.scenario_body.scenario_resources_tag_block = TAG.TagBlock(len(SCENARIO.scenario_resources))
+    SCENARIO.scenario_body.old_structure_physics_tag_block = TAG.TagBlock(len(SCENARIO.old_structure_physics))
+    SCENARIO.scenario_body.hs_unit_seats_tag_block =TAG.TagBlock(len(SCENARIO.hs_unit_seats))
+    SCENARIO.scenario_body.scenario_kill_triggers_tag_block = TAG.TagBlock(len(SCENARIO.scenario_kill_triggers))
+    SCENARIO.scenario_body.hs_syntax_datums_tag_block = TAG.TagBlock(len(SCENARIO.hs_syntax_datums))
+    SCENARIO.scenario_body.orders_tag_block = TAG.TagBlock(len(SCENARIO.orders))
+    SCENARIO.scenario_body.triggers_tag_block = TAG.TagBlock(len(SCENARIO.triggers))
+    SCENARIO.scenario_body.background_sound_palette_tag_block = TAG.TagBlock(len(SCENARIO.background_sound_palette))
+    SCENARIO.scenario_body.sound_environment_palette_tag_block = TAG.TagBlock(len(SCENARIO.sound_environment_palette))
+    SCENARIO.scenario_body.weather_palette_tag_block = TAG.TagBlock(len(SCENARIO.weather_palette))
+    SCENARIO.scenario_body.unused_0_tag_block = TAG.TagBlock(len(SCENARIO.unused_0))
+    SCENARIO.scenario_body.unused_1_tag_block = TAG.TagBlock(len(SCENARIO.unused_1))
+    SCENARIO.scenario_body.unused_2_tag_block = TAG.TagBlock(len(SCENARIO.unused_2))
+    SCENARIO.scenario_body.unused_3_tag_block = TAG.TagBlock(len(SCENARIO.unused_3))
+    SCENARIO.scenario_body.scavenger_hunt_objects_tag_block = TAG.TagBlock(len(SCENARIO.scavenger_hunt_objects))
+    SCENARIO.scenario_body.scenario_cluster_data_tag_block = TAG.TagBlock(len(SCENARIO.scenario_cluster_data))
 
     SCENARIO.scenario_body.salt_array = []
     for salt_idx in range(SALT_SIZE):
         SCENARIO.scenario_body.salt_array.append(0)
 
-    SCENARIO.scenario_body.spawn_data_tag_block = TAG.TagBlock(0, 0, 0, 0)
+    SCENARIO.scenario_body.spawn_data_tag_block = TAG.TagBlock(len(SCENARIO.spawn_data))
     SCENARIO.scenario_body.sound_effect_collection_tag_ref = TAG.TagRef("sfx+")
-    SCENARIO.scenario_body.crates_tag_block = TAG.TagBlock(0, 0, 0, 0)
-    SCENARIO.scenario_body.crate_palette_tag_block = TAG.TagBlock(0, 0, 0, 0)
+    SCENARIO.scenario_body.crates_tag_block = TAG.TagBlock(len(SCENARIO.crates))
+    SCENARIO.scenario_body.crate_palette_tag_block = TAG.TagBlock(len(SCENARIO.crates_palette))
     SCENARIO.scenario_body.global_lighting_tag_ref = TAG.TagRef("gldf")
-    SCENARIO.scenario_body.atmospheric_fog_palette_tag_block = TAG.TagBlock(0, 0, 0, 0)
-    SCENARIO.scenario_body.planar_fog_palette_tag_block = TAG.TagBlock(0, 0, 0, 0)
-    SCENARIO.scenario_body.flocks_tag_block = TAG.TagBlock(0, 0, 0, 0)
+    SCENARIO.scenario_body.atmospheric_fog_palette_tag_block = TAG.TagBlock(len(SCENARIO.atmospheric_fog_palette))
+    SCENARIO.scenario_body.planar_fog_palette_tag_block = TAG.TagBlock(len(SCENARIO.planar_fog_palette))
+    SCENARIO.scenario_body.flocks_tag_block = TAG.TagBlock(len(SCENARIO.flocks))
     SCENARIO.scenario_body.subtitles_tag_ref = TAG.TagRef("unic")
-    SCENARIO.scenario_body.decorators_tag_block = TAG.TagBlock(0, 0, 0, 0)
-    SCENARIO.scenario_body.creatures_tag_block = TAG.TagBlock(0, 0, 0, 0)
-    SCENARIO.scenario_body.creature_palette_tag_block = TAG.TagBlock(0, 0, 0, 0)
-    SCENARIO.scenario_body.decorator_palette_tag_block = TAG.TagBlock(0, 0, 0, 0)
-    SCENARIO.scenario_body.bsp_transition_volumes_tag_block = TAG.TagBlock(0, 0, 0, 0)
-    SCENARIO.scenario_body.structure_bsp_lighting_tag_block = TAG.TagBlock(0, 0, 0, 0)
-    SCENARIO.scenario_body.editor_folders_tag_block = TAG.TagBlock(0, 0, 0, 0)
-    SCENARIO.scenario_body.level_data_tag_block = TAG.TagBlock(0, 0, 0, 0)
+    SCENARIO.scenario_body.decorators_tag_block = TAG.TagBlock(len(SCENARIO.decorators))
+    SCENARIO.scenario_body.creatures_tag_block = TAG.TagBlock(len(SCENARIO.creatures))
+    SCENARIO.scenario_body.creature_palette_tag_block = TAG.TagBlock(len(SCENARIO.creatures_palette))
+    SCENARIO.scenario_body.decorator_palette_tag_block = TAG.TagBlock(len(SCENARIO.decorator_palette))
+    SCENARIO.scenario_body.bsp_transition_volumes_tag_block = TAG.TagBlock(len(SCENARIO.bsp_transition_volumes))
+    SCENARIO.scenario_body.structure_bsp_lighting_tag_block = TAG.TagBlock(len(SCENARIO.structure_bsp_lighting))
+    SCENARIO.scenario_body.editor_folders_tag_block = TAG.TagBlock(len(SCENARIO.editor_folders))
+    SCENARIO.scenario_body.level_data_tag_block = TAG.TagBlock(len(SCENARIO.level_data))
     SCENARIO.scenario_body.game_engine_strings_tag_ref = TAG.TagRef("unic")
-    SCENARIO.scenario_body.mission_dialogue_tag_block = TAG.TagBlock(0, 0, 0, 0)
+    SCENARIO.scenario_body.mission_dialogue_tag_block = TAG.TagBlock(len(SCENARIO.mission_dialogue))
     SCENARIO.scenario_body.objectives_tag_ref = TAG.TagRef("unic")
-    SCENARIO.scenario_body.interpolators_tag_block = TAG.TagBlock(0, 0, 0, 0)
-    SCENARIO.scenario_body.shared_references_tag_block = TAG.TagBlock(0, 0, 0, 0)
-    SCENARIO.scenario_body.screen_effect_references_tag_block = TAG.TagBlock(0, 0, 0, 0)
-    SCENARIO.scenario_body.simulation_definition_table_tag_block = TAG.TagBlock(0, 0, 0, 0)
+    SCENARIO.scenario_body.interpolators_tag_block = TAG.TagBlock(len(SCENARIO.interpolators))
+    SCENARIO.scenario_body.shared_references_tag_block = TAG.TagBlock(len(SCENARIO.shared_references))
+    SCENARIO.scenario_body.screen_effect_references_tag_block = TAG.TagBlock(len(SCENARIO.screen_effect_references))
+    SCENARIO.scenario_body.simulation_definition_table_tag_block = TAG.TagBlock(len(SCENARIO.simulation_definition_table))
 
     return SCENARIO

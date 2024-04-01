@@ -687,7 +687,7 @@ def write_cutscene_titles(output_stream, SCENARIO, TAG):
 
 def write_structure_bsps(output_stream, SCENARIO, TAG):
     if len(SCENARIO.structure_bsp) > 0:
-        SCENARIO.structure_bsp_header.write(output_stream, TAG, True)
+        SCENARIO.structure_bsps_header.write(output_stream, TAG, True)
         for structure_bsp in SCENARIO.structure_bsp:
             output_stream.write(struct.pack('>16x'))
             structure_bsp.structure_bsp.write(output_stream, False, True)

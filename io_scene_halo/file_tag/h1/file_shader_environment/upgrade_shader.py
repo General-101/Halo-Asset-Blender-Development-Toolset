@@ -43,7 +43,6 @@ from ...h2.file_shader.format import (
         LightmapTypeEnum,
         AnimationTypeEnum,
         FunctionTypeEnum,
-        OutputTypeEnum,
         TransitionExponentEnum,
         PeriodicExponentEnum
         )
@@ -60,7 +59,7 @@ template_selction = [r"shaders\shader_templates\opaque\illum_opaque",
 def conver_real_rgba_integer_bgra(material_color):
     return (round(material_color[2] * 255), round(material_color[1] * 255), round(material_color[0] * 255), 0)
 
-def add_animation_property(SHADER, TAG, parameter, animation_type, function_type, output_value=OutputTypeEnum.scalar_intensity.value, material_color=(0, 0, 0, 0), lower_bound=0.0):
+def add_animation_property(SHADER, TAG, parameter, animation_type, function_type, output_value=0, material_color=(0, 0, 0, 0), lower_bound=0.0):
     animation_property = SHADER.AnimationProperty()
 
     animation_property.type = animation_type.value
@@ -173,8 +172,8 @@ def generate_tex_bump_dprs_env(shader_body, TAG, SHADER):
 
     SHADER.parameters.append(add_parameter(SHADER, TAG, parameter_name="env_tint_color", enum=TypeEnum.color, rgba=shader_body.perpendicular_color))
     SHADER.parameters.append(add_parameter(SHADER, TAG, parameter_name="env_glancing_tint_color", enum=TypeEnum.color, rgba=shader_body.parallel_color))
-    SHADER.parameters.append(add_parameter(SHADER, TAG, parameter_name="env_brightness", enum=TypeEnum._value, float_value=shader_body.perpendicular_brightness))
-    SHADER.parameters.append(add_parameter(SHADER, TAG, parameter_name="env_glancing_brightness", enum=TypeEnum._value, float_value=shader_body.parallel_brightness))
+    SHADER.parameters.append(add_parameter(SHADER, TAG, parameter_name="env_brightness", enum=TypeEnum.value, float_value=shader_body.perpendicular_brightness))
+    SHADER.parameters.append(add_parameter(SHADER, TAG, parameter_name="env_glancing_brightness", enum=TypeEnum.value, float_value=shader_body.parallel_brightness))
     SHADER.parameters.append(add_parameter(SHADER, TAG, parameter_name="specular_color", enum=TypeEnum.color, float_value=0.0, rgba=shader_body.perpendicular_color))
     SHADER.parameters.append(add_parameter(SHADER, TAG, parameter_name="specular_glancing_color", enum=TypeEnum.color, float_value=0.0, rgba=shader_body.parallel_color))
 
@@ -220,8 +219,8 @@ def generate_tex_bump_env_alpha_test(shader_body, TAG, SHADER):
 
     SHADER.parameters.append(add_parameter(SHADER, TAG, parameter_name="env_tint_color", enum=TypeEnum.color, rgba=shader_body.perpendicular_color))
     SHADER.parameters.append(add_parameter(SHADER, TAG, parameter_name="env_glancing_tint_color", enum=TypeEnum.color, rgba=shader_body.parallel_color))
-    SHADER.parameters.append(add_parameter(SHADER, TAG, parameter_name="env_brightness", enum=TypeEnum._value, float_value=shader_body.perpendicular_brightness))
-    SHADER.parameters.append(add_parameter(SHADER, TAG, parameter_name="env_glancing_brightness", enum=TypeEnum._value, float_value=shader_body.parallel_brightness))
+    SHADER.parameters.append(add_parameter(SHADER, TAG, parameter_name="env_brightness", enum=TypeEnum.value, float_value=shader_body.perpendicular_brightness))
+    SHADER.parameters.append(add_parameter(SHADER, TAG, parameter_name="env_glancing_brightness", enum=TypeEnum.value, float_value=shader_body.parallel_brightness))
     SHADER.parameters.append(add_parameter(SHADER, TAG, parameter_name="specular_color", enum=TypeEnum.color, float_value=0.0, rgba=shader_body.perpendicular_color))
     SHADER.parameters.append(add_parameter(SHADER, TAG, parameter_name="specular_glancing_color", enum=TypeEnum.color, float_value=0.0, rgba=shader_body.parallel_color))
 
@@ -260,8 +259,8 @@ def generate_tex_bump_dprs_env_illum(shader_body, TAG, SHADER):
 
     SHADER.parameters.append(add_parameter(SHADER, TAG, parameter_name="env_tint_color", enum=TypeEnum.color, rgba=shader_body.perpendicular_color))
     SHADER.parameters.append(add_parameter(SHADER, TAG, parameter_name="env_glancing_tint_color", enum=TypeEnum.color, rgba=shader_body.parallel_color))
-    SHADER.parameters.append(add_parameter(SHADER, TAG, parameter_name="env_brightness", enum=TypeEnum._value, float_value=shader_body.perpendicular_brightness))
-    SHADER.parameters.append(add_parameter(SHADER, TAG, parameter_name="env_glancing_brightness", enum=TypeEnum._value, float_value=shader_body.parallel_brightness))
+    SHADER.parameters.append(add_parameter(SHADER, TAG, parameter_name="env_brightness", enum=TypeEnum.value, float_value=shader_body.perpendicular_brightness))
+    SHADER.parameters.append(add_parameter(SHADER, TAG, parameter_name="env_glancing_brightness", enum=TypeEnum.value, float_value=shader_body.parallel_brightness))
     SHADER.parameters.append(add_parameter(SHADER, TAG, parameter_name="specular_color", enum=TypeEnum.color, float_value=0.0, rgba=shader_body.perpendicular_color))
     SHADER.parameters.append(add_parameter(SHADER, TAG, parameter_name="specular_glancing_color", enum=TypeEnum.color, float_value=0.0, rgba=shader_body.parallel_color))
 
@@ -269,7 +268,7 @@ def generate_tex_bump_dprs_env_illum(shader_body, TAG, SHADER):
     add_animation_property(SHADER, TAG, parameter, AnimationTypeEnum.color, FunctionTypeEnum.constant, 32, shader_body.color_of_emitted_light)
 
     SHADER.parameters.append(add_parameter(SHADER, TAG, parameter_name="emissive_color", enum=TypeEnum.color, rgba=shader_body.color_of_emitted_light))
-    SHADER.parameters.append(add_parameter(SHADER, TAG, parameter_name="emissive_power", enum=TypeEnum._value, float_value=shader_body.power / 1000))
+    SHADER.parameters.append(add_parameter(SHADER, TAG, parameter_name="emissive_power", enum=TypeEnum.value, float_value=shader_body.power / 1000))
 
     parameter.animation_properties_tag_block_header = TAG.TagBlockHeader("tbfd", 0, len(parameter.animation_properties), 28)
     parameter.animation_properties_tag_block = TAG.TagBlock(len(parameter.animation_properties))
@@ -310,8 +309,8 @@ def generate_tex_bump_env_illum_3_channel(shader_body, TAG, SHADER):
 
     SHADER.parameters.append(add_parameter(SHADER, TAG, parameter_name="env_tint_color", enum=TypeEnum.color, rgba=shader_body.perpendicular_color))
     SHADER.parameters.append(add_parameter(SHADER, TAG, parameter_name="env_glancing_tint_color", enum=TypeEnum.color, rgba=shader_body.parallel_color))
-    SHADER.parameters.append(add_parameter(SHADER, TAG, parameter_name="env_brightness", enum=TypeEnum._value, float_value=shader_body.perpendicular_brightness))
-    SHADER.parameters.append(add_parameter(SHADER, TAG, parameter_name="env_glancing_brightness", enum=TypeEnum._value, float_value=shader_body.parallel_brightness))
+    SHADER.parameters.append(add_parameter(SHADER, TAG, parameter_name="env_brightness", enum=TypeEnum.value, float_value=shader_body.perpendicular_brightness))
+    SHADER.parameters.append(add_parameter(SHADER, TAG, parameter_name="env_glancing_brightness", enum=TypeEnum.value, float_value=shader_body.parallel_brightness))
     SHADER.parameters.append(add_parameter(SHADER, TAG, parameter_name="specular_color", enum=TypeEnum.color, float_value=0.0, rgba=shader_body.perpendicular_color))
     SHADER.parameters.append(add_parameter(SHADER, TAG, parameter_name="specular_glancing_color", enum=TypeEnum.color, float_value=0.0, rgba=shader_body.parallel_color))
 
@@ -327,7 +326,7 @@ def generate_tex_bump_env_illum_3_channel(shader_body, TAG, SHADER):
         SHADER.parameters.append(add_parameter(SHADER, TAG, parameter_name="lightmap_emmisive_map", bitmap_name=shader_body.map.name, float_value=0.0))
 
     SHADER.parameters.append(add_parameter(SHADER, TAG, parameter_name="emissive_color", enum=TypeEnum.color, rgba=shader_body.color_of_emitted_light))
-    SHADER.parameters.append(add_parameter(SHADER, TAG, parameter_name="emissive_power", enum=TypeEnum._value, float_value=shader_body.power / 1000))
+    SHADER.parameters.append(add_parameter(SHADER, TAG, parameter_name="emissive_power", enum=TypeEnum.value, float_value=shader_body.power / 1000))
 
 def generate_tex_bump_illum(shader_body, TAG, SHADER):
     if not shader_body.bump_map.name == "":
@@ -363,7 +362,7 @@ def generate_tex_bump_illum(shader_body, TAG, SHADER):
     add_animation_property(SHADER, TAG, parameter, AnimationTypeEnum.color, FunctionTypeEnum.constant, 32, shader_body.color_of_emitted_light)
 
     SHADER.parameters.append(add_parameter(SHADER, TAG, parameter_name="emissive_color", enum=TypeEnum.color, rgba=shader_body.color_of_emitted_light))
-    SHADER.parameters.append(add_parameter(SHADER, TAG, parameter_name="emissive_power", enum=TypeEnum._value, float_value=shader_body.power / 1000))
+    SHADER.parameters.append(add_parameter(SHADER, TAG, parameter_name="emissive_power", enum=TypeEnum.value, float_value=shader_body.power / 1000))
 
     parameter.animation_properties_tag_block_header = TAG.TagBlockHeader("tbfd", 0, len(parameter.animation_properties), 28)
     parameter.animation_properties_tag_block = TAG.TagBlock(len(parameter.animation_properties))
@@ -411,7 +410,7 @@ def generate_tex_bump_illum_3_channel(shader_body, TAG, SHADER):
         SHADER.parameters.append(add_parameter(SHADER, TAG, parameter_name="lightmap_emmisive_map", bitmap_name=shader_body.map.name, float_value=0.0))
 
     SHADER.parameters.append(add_parameter(SHADER, TAG, parameter_name="emissive_color", enum=TypeEnum.color, rgba=shader_body.color_of_emitted_light))
-    SHADER.parameters.append(add_parameter(SHADER, TAG, parameter_name="emissive_power", enum=TypeEnum._value, float_value=shader_body.power / 1000))
+    SHADER.parameters.append(add_parameter(SHADER, TAG, parameter_name="emissive_power", enum=TypeEnum.value, float_value=shader_body.power / 1000))
 
 def generate_parameters(shader_body, TAG, SHADER, template_index):
     if template_index == 0:
@@ -571,18 +570,18 @@ def upgrade_h2_shader(H1_ASSET, patch_txt_path, report):
     SHADER.shader_body = SHADER.ShaderBody()
     SHADER.shader_body.template = TAG.TagRef("stem", template_path, len(template_path))
     SHADER.shader_body.material_name = get_material_name(H1_ASSET.shader_body.material_type)
-    SHADER.shader_body.runtime_properties = TAG.TagBlock()
+    SHADER.shader_body.runtime_properties_tag_block = TAG.TagBlock()
     SHADER.shader_body.flags = 0
-    SHADER.shader_body.parameters = generate_parameters(H1_ASSET.shader_body, TAG, SHADER, template_index)
-    SHADER.shader_body.postprocess_definition = TAG.TagBlock()
-    SHADER.shader_body.predicted_resources = TAG.TagBlock()
+    SHADER.shader_body.parameters_tag_block = generate_parameters(H1_ASSET.shader_body, TAG, SHADER, template_index)
+    SHADER.shader_body.postprocess_definition_tag_block = TAG.TagBlock()
+    SHADER.shader_body.predicted_resources_tag_block = TAG.TagBlock()
     SHADER.shader_body.light_response = TAG.TagRef("slit")
     SHADER.shader_body.shader_lod_bias = 0
     SHADER.shader_body.specular_type = SpecularTypeEnum.default.value
     SHADER.shader_body.lightmap_type = LightmapTypeEnum.diffuse.value
     SHADER.shader_body.lightmap_specular_brightness = 1.0
     SHADER.shader_body.lightmap_ambient_bias = 0.0
-    SHADER.shader_body.postprocess_properties = TAG.TagBlock()
+    SHADER.shader_body.postprocess_properties_tag_block = TAG.TagBlock()
     SHADER.shader_body.added_depth_bias_offset = 0.0
     SHADER.shader_body.added_depth_bias_slope = 0.0
 
