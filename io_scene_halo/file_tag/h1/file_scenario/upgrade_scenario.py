@@ -970,70 +970,80 @@ def generate_h2_squads(H1_ASSET, TAG, SCENARIO, report):
     SCENARIO.squads = []
     encounter_index = 0
     for encounter_idx, encounter_element in enumerate(encounters_tag_block):
-        for squad_element in encounter_element.squads:
-            starting_location_count = squad_element.starting_locations_tag_block.count
+        for squad_idx, squad_element in enumerate(encounter_element.squads):
+            if not len(SCENARIO.squads) >= 335 and squad_element.starting_locations_tag_block.count > 0:
+                actor_weapon = actor_weapon_paths[squad_element.actor_type]
 
-            actor_weapon = actor_weapon_paths[squad_element.actor_type]
+                squad = SCENARIO.Squad()
 
-            squad = SCENARIO.Squad()
+                squad.name = squad_element.name
+                squad.flags = 0
+                squad.team = encounter_element.team_index
+                squad.parent_squad_group_index = encounter_idx
+                squad.squad_delay_time = squad_element.squad_delay_time
+                squad.normal_difficulty_count = squad_element.normal_diff_count
+                squad.insane_difficulty_count = squad_element.insane_diff_count
+                squad.major_upgrade = squad_element.major_upgrade
+                squad.vehicle_type_index = -1
+                squad.character_type_index = squad_element.actor_type
+                squad.initial_zone_index = get_zone_index(encounter_index, len(encounter_element.firing_positions))
+                squad.initial_weapon_index = -1
+                if not actor_weapon == None:
+                    squad.initial_weapon_index = character_tag_paths.index(actor_weapon)
 
-            squad.name = squad_element.name
-            squad.flags = 0
-            squad.team = encounter_element.team_index
-            squad.parent_squad_group_index = encounter_idx
-            squad.squad_delay_time = squad_element.squad_delay_time
-            squad.normal_difficulty_count = squad_element.normal_diff_count
-            squad.insane_difficulty_count = squad_element.insane_diff_count
-            squad.major_upgrade = squad_element.major_upgrade
-            squad.vehicle_type_index = -1
-            squad.character_type_index = squad_element.actor_type
-            squad.initial_zone_index = get_zone_index(encounter_index, len(encounter_element.firing_positions))
-            squad.initial_weapon_index = -1
-            if not actor_weapon == None:
-                squad.initial_weapon_index = character_tag_paths.index(actor_weapon)
+                squad.initial_secondary_weapon_index = -1
+                squad.grenade_type = 0
+                squad.initial_order_index = -1
+                squad.vehicle_variant = ""
+                squad.vehicle_variant_length = len(squad.vehicle_variant)
+                squad.placement_script = ""
 
-            squad.initial_secondary_weapon_index = -1
-            squad.grenade_type = 0
-            squad.initial_order_index = -1
-            squad.vehicle_variant = ""
-            squad.starting_locations_tag_block = TAG.TagBlock(starting_location_count, 0, 0, 0)
-            squad.placement_script = ""
-            squad.starting_locations = []
+                squad.starting_locations = []
+                if squad_element.starting_locations_tag_block.count > 0:
+                    for starting_location_idx, starting_location_element in enumerate(squad_element.starting_locations):
+                        if not starting_location_idx > 31:
+                            starting_location = SCENARIO.StartingLocation()
 
-            if len(encounter_element.firing_positions) > 0:
-                encounter_index += 1
+                            starting_location_name = "starting_locations_%s" % starting_location_idx
+                            starting_location.name = starting_location_name
+                            starting_location.name_length = len(starting_location.name)
+                            starting_location.position = starting_location_element.position
+                            starting_location.reference_frame = -1
+                            starting_location.facing = (0.0, starting_location_element.facing)
 
-            if starting_location_count > 0:
+                            starting_location.flags = 0
+                            starting_location.character_type_index = -1
+                            starting_location.initial_weapon_index = -1
+                            starting_location.initial_secondary_weapon_index = -1
+                            starting_location.vehicle_type_index = -1
+                            starting_location.seat_type = 0
+                            starting_location.grenade_type = 0
+                            starting_location.swarm_count = 0
+                            starting_location.actor_variant = ""
+                            starting_location.vehicle_variant = ""
+                            starting_location.initial_movement_distance = 0
+                            starting_location.emitter_vehicle_index = -1
+                            starting_location.initial_movement_mode = 0
+                            starting_location.placement_script = ""
+
+                            squad.starting_locations.append(starting_location)
+
+                        else:
+                            print("Excedded limits on starting locations")
+
+                starting_location_count = len(squad.starting_locations)
                 squad.starting_locations_header = TAG.TagBlockHeader("tbfd", 6, starting_location_count, 100)
-                for starting_location_idx, starting_location_element in enumerate(squad_element.starting_locations):
-                    starting_location = SCENARIO.StartingLocation()
+                squad.starting_locations_tag_block = TAG.TagBlock(starting_location_count)
 
-                    starting_location_name = "starting_locations_%s" % starting_location_idx
-                    starting_location.name = starting_location_name
-                    starting_location.name_length = len(starting_location.name)
-                    starting_location.position = starting_location_element.position
-                    starting_location.reference_frame = -1
-                    starting_location.facing = (0.0, starting_location_element.facing)
+                SCENARIO.squads.append(squad)
 
-                    starting_location.flags = 0
-                    starting_location.character_type_index = -1
-                    starting_location.initial_weapon_index = -1
-                    starting_location.initial_secondary_weapon_index = -1
-                    starting_location.vehicle_type_index = -1
-                    starting_location.seat_type = 0
-                    starting_location.grenade_type = 0
-                    starting_location.swarm_count = 0
-                    starting_location.actor_variant = ""
-                    starting_location.vehicle_variant = ""
-                    starting_location.initial_movement_distance = 0
-                    starting_location.emitter_vehicle_index = -1
-                    starting_location.initial_movement_mode = 0
-                    starting_location.placement_script = ""
+            else:
+                print("Excedded limits on squad")
 
-                    squad.starting_locations.append(starting_location)
+        if len(encounter_element.firing_positions) > 0:
+            encounter_index += 1
 
-            SCENARIO.squads.append(squad)
-
+    print(len(SCENARIO.squads))
     SCENARIO.squads_header = TAG.TagBlockHeader("tbfd", 2, len(SCENARIO.squads), 120)
 
     SCENARIO.character_palette_header, SCENARIO.character_palette = get_palette(TAG, actors_palette_tag_block, 16, "char")
@@ -1163,6 +1173,236 @@ def get_palette(TAG, palette_tag_block, size, tag_group=None):
 
     return TAG.TagBlockHeader("tbfd", 0, len(palette_list), size), palette_list
 
+def scan_palette(TAG, palette_tag_block):
+    palette_indices = []
+    palette_destination_list = []
+    for palette_element_idx, palette_element in enumerate(palette_tag_block):
+        name = '%s,%s' % (palette_element.name, palette_element.tag_group)
+
+        patched_name = tag_format.get_patched_name(TAG.upgrade_patches, name)
+        if name[-5] == "," and patched_name[-5] == ",":
+            if not name[-4:] == patched_name[-4:]:
+                palette_indices.append(palette_element_idx)
+                palette_destination_list.append((palette_element.tag_group, patched_name[-4:]))
+
+    return palette_indices, palette_destination_list
+
+def mutate_element(block_element, TAG, SCENARIO):
+    crate = SCENARIO.Crate()
+
+    crate.sobj_header = TAG.TagBlockHeader("sobj", 1, 1, 48)
+    crate.obj0_header = TAG.TagBlockHeader("obj#", 0, 1, 8)
+    crate.sper_header = TAG.TagBlockHeader("sper", 0, 1, 24)
+
+    crate.palette_index = block_element.type_index
+    crate.name_index = block_element.name_index
+    crate.placement_flags = block_element.placement_flags
+    crate.position = block_element.position
+    crate.rotation = (radians(block_element.rotation[0]), radians(block_element.rotation[1]), radians(block_element.rotation[2]))
+    crate.scale = 0
+    crate.transform_flags = 0
+    crate.manual_bsp_flags = 0
+    crate.unique_id = get_id()
+    crate.origin_bsp_index = -1
+    crate.object_type = 11
+    crate.source = 1
+    crate.bsp_policy = 0
+    crate.editor_folder_index = -1
+    crate.variant_name = ""
+    crate.active_change_colors = 0
+    crate.primary_color_BGRA = (0, 0, 0, 255)
+    crate.secondary_color_BGRA = (0, 0, 0, 255)
+    crate.tertiary_color_BGRA = (0, 0, 0, 255)
+    crate.quaternary_color_BGRA = (0, 0, 0, 255)
+
+    return crate
+
+def mutate_tag_ref(TAG, palette_element, destination_group):
+    tag_ref = TAG.TagRef(palette_element.tag_group, palette_element.name, len(palette_element.name), upgrade_patches=TAG.upgrade_patches)
+    tag_ref.tag_group = destination_group
+
+    return tag_ref
+
+def mutate_palette_name(SCENARIO, name):
+    element_name = None
+    if name == "scen":
+        element_name = SCENARIO.scenery_palette
+    elif name == "bipd":
+        element_name = SCENARIO.biped_palette
+    elif name == "vehi":
+        element_name = SCENARIO.vehicle_palette
+    elif name == "eqip":
+        element_name = SCENARIO.equipment_palette
+    elif name == "weap":
+        element_name = SCENARIO.weapon_palette
+    elif name == "mach":
+        element_name = SCENARIO.device_machine_palette
+    elif name == "ctrl":
+        element_name = SCENARIO.device_control_palette
+    elif name == "lifi":
+        element_name = SCENARIO.device_light_fixtures_palette
+    elif name == "ssce":
+        element_name = SCENARIO.sound_scenery_palette
+    elif name == "bloc":
+        element_name = SCENARIO.crates_palette
+
+    return element_name
+
+def find_tag_ref(TAG, palette, source_tag_path, source_tag_group):
+    index = 0
+    name = '%s,%s' % (source_tag_path, source_tag_group)
+    patched_name = tag_format.get_patched_name(TAG.upgrade_patches, name)
+    tag_path = patched_name.rsplit(",", 1)[0]
+    for ref_idx, tag_ref in enumerate(palette):
+        if tag_ref.name == tag_path:
+            index = ref_idx
+            break
+
+    return index
+
+def mutate_block(TAG, H1_SCENARIO, SCENARIO, palette_indices, palette_destination_list, donor_tag_block):
+    transfered_indices = []
+
+    for block_element_idx, block_element in enumerate(donor_tag_block):
+        palette_index = block_element.type_index
+        if palette_index in palette_indices:
+            index = palette_indices.index(palette_index)
+            palette_destination_item = palette_destination_list[index]
+            source = palette_destination_item[0]
+            destination = palette_destination_item[1]
+            palette_tag_block = mutate_palette_name(H1_SCENARIO, source)
+            transfered_indices.append(block_element_idx)
+
+            if destination == "scen":
+                mutated_element = mutate_element(block_element, TAG, SCENARIO)
+                mutated_element.palette_index = find_tag_ref(TAG, SCENARIO.scenery_palette, palette_tag_block[palette_index].name, source)
+                SCENARIO.scenery.append(mutated_element)
+            elif destination == "bipd":
+                mutated_element = mutate_element(block_element, TAG, SCENARIO)
+                mutated_element.palette_index = find_tag_ref(TAG, SCENARIO.biped_palette, palette_tag_block[palette_index].name, source)
+                SCENARIO.bipeds.append(mutated_element)
+            elif destination == "vehi":
+                mutated_element = mutate_element(block_element, TAG, SCENARIO)
+                mutated_element.palette_index = find_tag_ref(TAG, SCENARIO.vehicle_palette, palette_tag_block[palette_index].name, source)
+                SCENARIO.vehicles.append(mutated_element)
+            elif destination == "eqip":
+                mutated_element = mutate_element(block_element, TAG, SCENARIO)
+                mutated_element.palette_index = find_tag_ref(TAG, SCENARIO.equipment_palette, palette_tag_block[palette_index].name, source)
+                SCENARIO.equipment.append(mutated_element)
+            elif destination == "weap":
+                mutated_element = mutate_element(block_element, TAG, SCENARIO)
+                mutated_element.palette_index = find_tag_ref(TAG, SCENARIO.weapon_palette, palette_tag_block[palette_index].name, source)
+                SCENARIO.weapons.append(mutated_element)
+            elif destination == "mach":
+                mutated_element = mutate_element(block_element, TAG, SCENARIO)
+                mutated_element.palette_index = find_tag_ref(TAG, SCENARIO.device_machine_palette, palette_tag_block[palette_index].name, source)
+                SCENARIO.device_machines.append(mutated_element)
+            elif destination == "ctrl":
+                mutated_element = mutate_element(block_element, TAG, SCENARIO)
+                mutated_element.palette_index = find_tag_ref(TAG, SCENARIO.device_control_palette, palette_tag_block[palette_index].name, source)
+                SCENARIO.device_controls.append(mutated_element)
+            elif destination == "lifi":
+                mutated_element = mutate_element(block_element, TAG, SCENARIO)
+                mutated_element.palette_index = find_tag_ref(TAG, SCENARIO.device_light_fixtures_palette, palette_tag_block[palette_index].name, source)
+                SCENARIO.device_light_fixtures.append(mutated_element)
+            elif destination == "ssce":
+                mutated_element = mutate_element(block_element, TAG, SCENARIO)
+                mutated_element.palette_index = find_tag_ref(TAG, SCENARIO.sound_scenery_palette, palette_tag_block[palette_index].name, source)
+                SCENARIO.sound_scenery.append(mutated_element)
+            elif destination == "bloc":
+                mutated_element = mutate_element(block_element, TAG, SCENARIO)
+                mutated_element.palette_index = find_tag_ref(TAG, SCENARIO.crates_palette, palette_tag_block[palette_index].name, source)
+                SCENARIO.crates.append(mutated_element)
+
+    for idx in reversed(transfered_indices):
+        del donor_tag_block[idx]
+
+def mutate_palette(TAG, H1_SCENARIO, SCENARIO, palette_indices, palette_destination_list):
+    for palette_idx, palette_index in enumerate(palette_indices):
+        palette_destination_item = palette_destination_list[palette_idx]
+        source = palette_destination_item[0]
+        destination = palette_destination_item[1]
+        palette_element = mutate_palette_name(H1_SCENARIO, source)[palette_index]
+
+        if destination == "scen":
+            SCENARIO.scenery_palette.append(mutate_tag_ref(TAG, palette_element, destination))
+        elif destination == "bipd":
+            SCENARIO.biped_palette.append(mutate_tag_ref(TAG, palette_element, destination))
+        elif destination == "vehi":
+            SCENARIO.vehicle_palette.append(mutate_tag_ref(TAG, palette_element, destination))
+        elif destination == "eqip":
+            SCENARIO.equipment_palette.append(mutate_tag_ref(TAG, palette_element, destination))
+        elif destination == "weap":
+            SCENARIO.weapon_palette.append(mutate_tag_ref(TAG, palette_element, destination))
+        elif destination == "mach":
+            SCENARIO.device_machine_palette.append(mutate_tag_ref(TAG, palette_element, destination))
+        elif destination == "ctrl":
+            SCENARIO.device_control_palette.append(mutate_tag_ref(TAG, palette_element, destination))
+        elif destination == "lifi":
+            SCENARIO.device_light_fixture_palette.append(mutate_tag_ref(TAG, palette_element, destination))
+        elif destination == "ssce":
+            SCENARIO.sound_scenery_palette.append(mutate_tag_ref(TAG, palette_element, destination))
+        elif destination == "bloc":
+            SCENARIO.crates_palette.append(mutate_tag_ref(TAG, palette_element, destination))
+
+def block_mutation(TAG, H1_SCENARIO, SCENARIO):
+    scenery_palette_indices, scenery_palette_destination_list = scan_palette(TAG, H1_SCENARIO.scenery_palette)
+    biped_palette_indices, biped_palette_destination_list = scan_palette(TAG, H1_SCENARIO.biped_palette)
+    vehicle_palette_indices, vehicle_palette_destination_list = scan_palette(TAG, H1_SCENARIO.vehicle_palette)
+    equipment_palette_indices, equipment_palette_destination_list = scan_palette(TAG, H1_SCENARIO.equipment_palette)
+    weapon_palette_indices, weapon_palette_destination_list = scan_palette(TAG, H1_SCENARIO.weapon_palette)
+    machine_palette_indices, machine_palette_destination_list = scan_palette(TAG, H1_SCENARIO.device_machine_palette)
+    sound_scenery_palette_indices, sound_scenery_destination_list = scan_palette(TAG, H1_SCENARIO.sound_scenery_palette)
+    if len(scenery_palette_indices) > 0:
+        mutate_palette(TAG, H1_SCENARIO, SCENARIO, scenery_palette_indices, scenery_palette_destination_list)
+        mutate_block(TAG, H1_SCENARIO, SCENARIO, scenery_palette_indices, scenery_palette_destination_list, H1_SCENARIO.scenery)
+
+    if len(biped_palette_indices) > 0:
+        mutate_palette(TAG, H1_SCENARIO, SCENARIO, biped_palette_indices, biped_palette_destination_list)
+        mutate_block(TAG, H1_SCENARIO, SCENARIO, biped_palette_indices, biped_palette_destination_list, H1_SCENARIO.bipeds)
+
+    if len(vehicle_palette_indices) > 0:
+        mutate_palette(TAG, H1_SCENARIO, SCENARIO, vehicle_palette_indices, vehicle_palette_destination_list)
+        mutate_block(TAG, H1_SCENARIO, SCENARIO, vehicle_palette_indices, vehicle_palette_destination_list, H1_SCENARIO.vehicles)
+
+    if len(equipment_palette_indices) > 0:
+        mutate_palette(TAG, H1_SCENARIO, SCENARIO, equipment_palette_indices, equipment_palette_destination_list)
+        mutate_block(TAG, H1_SCENARIO, SCENARIO, equipment_palette_indices, equipment_palette_destination_list, H1_SCENARIO.equipment)
+
+    if len(weapon_palette_indices) > 0:
+        mutate_palette(TAG, H1_SCENARIO, SCENARIO, weapon_palette_indices, weapon_palette_destination_list)
+        mutate_block(TAG, H1_SCENARIO, SCENARIO, weapon_palette_indices, weapon_palette_destination_list, H1_SCENARIO.weapons)
+
+    if len(machine_palette_indices) > 0:
+        mutate_palette(TAG, H1_SCENARIO, SCENARIO, machine_palette_indices, machine_palette_destination_list)
+        mutate_block(TAG, H1_SCENARIO, SCENARIO, machine_palette_indices, machine_palette_destination_list, H1_SCENARIO.device_machines)
+
+    if len(sound_scenery_palette_indices) > 0:
+        mutate_palette(TAG, H1_SCENARIO, SCENARIO, sound_scenery_palette_indices, sound_scenery_destination_list)
+        mutate_block(TAG, H1_SCENARIO, SCENARIO, sound_scenery_palette_indices, sound_scenery_destination_list, H1_SCENARIO.sound_scenery)
+
+    SCENARIO.scenery_header = TAG.TagBlockHeader("tbfd", 4, len(SCENARIO.scenery), 96)
+    SCENARIO.bipeds_header = TAG.TagBlockHeader("tbfd", 2, len(SCENARIO.bipeds), 84)
+    SCENARIO.vehicles_header = TAG.TagBlockHeader("tbfd", 2, len(SCENARIO.vehicles), 84)
+    SCENARIO.equipment_header = TAG.TagBlockHeader("tbfd", 2, len(SCENARIO.equipment), 56)
+    SCENARIO.weapon_header = TAG.TagBlockHeader("tbfd", 2, len(SCENARIO.weapons), 84)
+    SCENARIO.device_machine_header = TAG.TagBlockHeader("tbfd", 3, len(SCENARIO.device_machines), 76)
+    SCENARIO.device_control_header = TAG.TagBlockHeader("tbfd", 2, len(SCENARIO.device_controls), 68)
+    SCENARIO.light_fixture_header = TAG.TagBlockHeader("tbfd", 2, len(SCENARIO.device_light_fixtures), 84)
+    SCENARIO.sound_scenery_header = TAG.TagBlockHeader("tbfd", 2, len(SCENARIO.sound_scenery), 80)
+    SCENARIO.light_volume_header = TAG.TagBlockHeader("tbfd", 2, len(SCENARIO.light_volumes), 108)
+    SCENARIO.crates_header = TAG.TagBlockHeader("tbfd", 0, len(SCENARIO.crates), 76)
+    SCENARIO.scenery_palette_header = TAG.TagBlockHeader("tbfd", 0, len(SCENARIO.scenery_palette), 48)
+    SCENARIO.biped_palette_header = TAG.TagBlockHeader("tbfd", 0, len(SCENARIO.biped_palette), 48)
+    SCENARIO.vehicle_palette_header = TAG.TagBlockHeader("tbfd", 0, len(SCENARIO.vehicle_palette), 48)
+    SCENARIO.equipment_palette_header = TAG.TagBlockHeader("tbfd", 0, len(SCENARIO.equipment_palette), 48)
+    SCENARIO.weapon_palette_header = TAG.TagBlockHeader("tbfd", 0, len(SCENARIO.weapon_palette), 48)
+    SCENARIO.device_machine_palette_header = TAG.TagBlockHeader("tbfd", 0, len(SCENARIO.device_machine_palette), 48)
+    SCENARIO.device_control_palette_header = TAG.TagBlockHeader("tbfd", 0, len(SCENARIO.device_control_palette), 48)
+    SCENARIO.device_light_fixture_palette_header = TAG.TagBlockHeader("tbfd", 0, len(SCENARIO.device_light_fixtures_palette), 48)
+    SCENARIO.sound_scenery_palette_header = TAG.TagBlockHeader("tbfd", 0, len(SCENARIO.sound_scenery_palette), 48)
+    SCENARIO.crates_palette_header = TAG.TagBlockHeader("tbfd", 0, len(SCENARIO.crates_palette), 48)
+
 def upgrade_h2_scenario(H1_ASSET, patch_txt_path, report):
     TAG = tag_format.TagAsset()
     SCENARIO = ScenarioAsset()
@@ -1280,6 +1520,8 @@ def upgrade_h2_scenario(H1_ASSET, patch_txt_path, report):
     SCENARIO.shared_references = []
     SCENARIO.screen_effect_references = []
     SCENARIO.simulation_definition_table = []
+
+    block_mutation(TAG, H1_ASSET, SCENARIO)
 
     SCENARIO.skies_header, SCENARIO.skies = get_palette(TAG, H1_ASSET.skies, 16)
 
