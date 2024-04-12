@@ -28,10 +28,11 @@ import os
 import bpy
 import bmesh
 
+from ... import config
 from sys import float_info
 from math import radians, log
 from mathutils import Matrix, Vector
-from ..h2.file_scenario_structure_bsp.format import ClusterPortalFlags as H2ClusterPortalFlags, SurfaceFlags as H2SurfaceFlags, PartFlags
+from ..h2.file_scenario_structure_bsp.format import ClusterPortalFlags as H2ClusterPortalFlags, SurfaceFlags as H2SurfaceFlags, PartFlags, PropertyTypeEnum
 from ...global_functions import shader_processing, mesh_processing, global_functions
 from ..h1.file_scenario_structure_bsp.format import ClusterPortalFlags as H1ClusterPortalFlags, SurfaceFlags as H1SurfaceFlags
 
@@ -502,11 +503,46 @@ def build_scene(context, LEVEL, game_version, game_title, file_version, fix_rota
                     mesh.materials.append(mat)
 
     else:
+        shader_collection_dic = {}
+        shader_collection_path = os.path.join(config.HALO_2_TAG_PATH, r"scenarios\shaders\shader_collections.shader_collections") 
+        shader_collection_file = open(shader_collection_path, "r")
+        for line in shader_collection_file.readlines():
+            if not global_functions.string_empty_check(line) and not line.startswith(";"):
+                split_result = line.split()
+                if len(split_result) == 2:
+                    prefix = split_result[0]
+                    path = split_result[1]
+                    shader_collection_dic[path] = prefix
+
         materials = []
         for material in LEVEL.materials:
-            material_name = os.path.basename(material.shader.name)
-            if global_functions.string_empty_check(material_name):
-                material_name = os.path.basename(material.old_shader.name)
+            material_path = material.shader.name
+            if global_functions.string_empty_check(material_path):
+                material_path = material.old_shader.name
+
+            material_directory = os.path.dirname(material_path)
+            material_name = os.path.basename(material_path)
+
+            collection_prefix = shader_collection_dic.get(material_directory)
+            if not collection_prefix == None:
+                material_name = "%s %s" % (collection_prefix, material_name)
+            else:
+                print("Could not find a collection for: %s" % material_path)
+
+            for material_property in material.properties:
+                property_enum = PropertyTypeEnum(material_property.property_type)
+                property_value = material_property.real_value
+                if PropertyTypeEnum.lightmap_resolution == property_enum:
+                    material_name += " lm:%s" % property_value
+
+                elif PropertyTypeEnum.lightmap_power == property_enum:
+                    material_name += " lp:%s" % property_value
+
+                elif PropertyTypeEnum.lightmap_half_life == property_enum:
+                    material_name += " hl:%s" % property_value
+
+                elif PropertyTypeEnum.lightmap_diffuse_scale == property_enum:
+                    material_name += " ds:%s" % property_value
 
             mat = bpy.data.materials.new(name=material_name)
             shader_processing.generate_h2_shader(mat, material.shader, report)
@@ -542,7 +578,7 @@ def build_scene(context, LEVEL, game_version, game_title, file_version, fix_rota
                 object_mesh = bpy.data.objects.new(ob_name, mesh)
                 object_mesh.tag_view.data_type_enum = '16'
                 object_mesh.tag_view.instance_lightmap_policy_enum = str(instanced_geometry_instance.lightmapping_policy)
-                
+
                 object_mesh.parent = level_root
                 cluster_collection_override.objects.link(object_mesh)
 
@@ -652,11 +688,21 @@ def build_scene(context, LEVEL, game_version, game_title, file_version, fix_rota
 
                 if not ngon_material_index == -1:
                     if game_title == "halo1":
-                        shader = mat.shader_tag_ref
+                        shader_path = mat.shader_tag_ref.name
+                        material_name = os.path.basename(shader_path)
                     else:
-                        shader = mat.new_shader
+                        shader_path = mat.new_shader.name
 
-                    material_name = os.path.basename(shader.name)
+                        material_directory = os.path.dirname(shader_path)
+                        material_name = os.path.basename(shader_path)
+
+                        collection_prefix = shader_collection_dic.get(material_directory)
+                        if not collection_prefix == None:
+                            material_name = "%s %s" % (collection_prefix, material_name)
+                        else:
+                            print("Could not find a collection for: %s" % material_path)
+
+                    
                     if game_title == "halo1":
                         if H1SurfaceFlags.two_sided in H1SurfaceFlags(surface.flags):
                             material_name += "%"

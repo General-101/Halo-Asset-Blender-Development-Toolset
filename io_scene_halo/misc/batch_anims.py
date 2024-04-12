@@ -111,9 +111,7 @@ def write_file(context, report, directory, jma_version, game_version):
     for file_item in os.listdir(directory):
         if file_item.lower().endswith(extension_list):
             file_path = os.path.join(directory, file_item)
-            print(file_path)
             extension = global_functions.get_true_extension(file_path, None, True)
-            print(extension)
             imported_jma_file = JMAAsset(file_path)
             JMA = process_file_retail(imported_jma_file, extension, game_version, retail_version_list, report)
             if not JMA.broken_skeleton:

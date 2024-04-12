@@ -71,7 +71,7 @@ class AnimationTypeEnum(Enum):
     bitmap_rotation_axis_x = auto()
     bitmap_rotation_axis_y = auto()
     bitmap_rotation_axis_z = auto()
-    value = auto()
+    _value = auto()
     color = auto()
     bitmap_index = auto()
 
@@ -88,8 +88,11 @@ class FunctionTypeEnum(Enum):
     exponent = auto()
     spline2 = auto()
 
-class OutputTypeEnum(Enum):
-    scalar_intensity = 0
+class OutputTypeFlags(Flag):
+    range = auto()
+    _2_color = 32
+    _3_color = 48
+    _4_color = 64
 
 class TransitionExponentEnum(Enum):
     linear = 0
@@ -184,15 +187,20 @@ class ShaderAsset():
             self.animation_properties = animation_properties
 
     class AnimationProperty:
-        def __init__(self, type=0, input_name="", input_name_length=0, range_name="", range_name_length=0, time_period=0.0, map_property_header=None, 
-                     function_header=None, function_type=0, range_check=False, input_function_data=None, range_function_data=None, output_type=0, upper_bound=1.0, 
-                     lower_bound=0.0, color_a=(0.0, 0.0, 0.0, 1.0), color_b=(0.0, 0.0, 0.0, 1.0), color_c=(0.0, 0.0, 0.0, 1.0), color_d=(0.0, 0.0, 0.0, 1.0)):
+        def __init__(self, type=0, input_name="", input_name_length=0, input_type=0, range_name="", range_name_length=0, range_type=0, time_period=0.0, output_modifier=0, 
+                     output_modifier_input=0, map_property_header=None, function_header=None, function_type=0, range_check=False, input_function_data=None, range_function_data=None, 
+                     output_type=0, upper_bound=1.0, lower_bound=0.0, range_upper_bound=1.0, range_lower_bound=1.0, color_a=(0.0, 0.0, 0.0, 1.0), color_b=(0.0, 0.0, 0.0, 1.0), 
+                     color_c=(0.0, 0.0, 0.0, 1.0), color_d=(0.0, 0.0, 0.0, 1.0)):
             self.type = type
             self.input_name = input_name
             self.input_name_length = input_name_length
+            self.input_type = input_type
             self.range_name = range_name
             self.range_name_length = range_name_length
+            self.range_type = range_type
             self.time_period = time_period
+            self.output_modifier = output_modifier
+            self.output_modifier_input = output_modifier_input
             self.map_property_header = map_property_header
             self.function_header = function_header
             self.function_type = function_type
@@ -202,6 +210,8 @@ class ShaderAsset():
             self.output_type = output_type
             self.upper_bound = upper_bound
             self.lower_bound = lower_bound
+            self.range_upper_bound = range_upper_bound
+            self.range_lower_bound = range_lower_bound
             self.color_a = color_a
             self.color_b = color_b
             self.color_c = color_c

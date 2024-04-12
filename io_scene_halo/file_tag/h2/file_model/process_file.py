@@ -28,7 +28,7 @@ from xml.dom import minidom
 from ....global_functions import tag_format
 from .format import (
         ModelAsset, 
-        ShadowFadeDistance, 
+        ShadowFadeDistanceEnum, 
         ModelFlags, 
         RuntimeFlags,
         SALT_SIZE
@@ -63,7 +63,7 @@ def read_model_body_v0(MODEL, TAG, input_stream, tag_node, XML_OUTPUT):
     MODEL.model_body.reduce_to_l4 = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "reduce to l4"))
     MODEL.model_body.reduce_to_l5 = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "reduce to l5"))
     input_stream.read(4) # Padding?
-    MODEL.model_body.shadow_fade_distance = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "shadow fade distance", ShadowFadeDistance))
+    MODEL.model_body.shadow_fade_distance = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "shadow fade distance", ShadowFadeDistanceEnum))
     input_stream.read(2) # Padding?
     MODEL.model_body.variants_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "variants"))
     MODEL.model_body.materials_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "materials"))
@@ -131,7 +131,7 @@ def read_model_body_retail(MODEL, TAG, input_stream, tag_node, XML_OUTPUT):
     MODEL.model_body.reduce_to_l4 = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "reduce to l4"))
     MODEL.model_body.reduce_to_l5 = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "reduce to l5"))
     input_stream.read(4) # Padding?
-    MODEL.model_body.shadow_fade_distance = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "shadow fade distance", ShadowFadeDistance))
+    MODEL.model_body.shadow_fade_distance = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "shadow fade distance", ShadowFadeDistanceEnum))
     input_stream.read(2) # Padding?
     MODEL.model_body.variants_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "variants"))
     MODEL.model_body.materials_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "materials"))

@@ -26,18 +26,18 @@
 
 from xml.dom import minidom
 from ....global_functions import tag_format
-from .format import (
-    BipedAsset, 
-    ObjectFlags, 
-    LightmapShadowModeEnum, 
-    SweetenerSizeEnum, 
+from ..file_object.format import ObjectFlags, LightmapShadowModeEnum, SweetenerSizeEnum
+from ..file_unit.format import (
     UnitFlags, 
     TeamsEnum, 
     ConstantSoundVolumeEnum, 
     MotionSensorBlipSizeEnum, 
     MetaGameTypeEnum, 
     MetaGameClassEnum, 
-    GrenadeTypeEnum, 
+    GrenadeTypeEnum
+    )
+from .format import (
+    BipedAsset, 
     BipedFlags, 
     LockOnFlags, 
     CollisionFlags

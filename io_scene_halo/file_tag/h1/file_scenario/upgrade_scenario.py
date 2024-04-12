@@ -25,6 +25,7 @@
 # ##### END MIT LICENSE BLOCK #####
 
 import bpy
+import struct
 import random
 
 from math import radians
@@ -248,7 +249,7 @@ def get_item_stats(collection_name):
             spawn_time = 110
             respawn_on_empty_time = 90
 
-        elif "turret" in collection_name: # We are assuming all turrets are Covenant cause that's all there is in vanilla
+        elif "turret" in collection_name: # We are assuming all turrets are Covenant cause that's all there is in the H1 sandbox
             classification = ClassificationEnum.secondary_turret.value
             spawn_time = 100
             respawn_on_empty_time = 120
@@ -1403,6 +1404,185 @@ def block_mutation(TAG, H1_SCENARIO, SCENARIO):
     SCENARIO.sound_scenery_palette_header = TAG.TagBlockHeader("tbfd", 0, len(SCENARIO.sound_scenery_palette), 48)
     SCENARIO.crates_palette_header = TAG.TagBlockHeader("tbfd", 0, len(SCENARIO.crates_palette), 48)
 
+def merge_by_name(base_tag_block, donor_tag_block, name_type=0):
+    base_entries = []
+    for base_element in base_tag_block:
+        entry_name = ""
+        if name_type == 0:
+            entry_name = base_element.name
+        elif name_type == 1:
+            entry_name = base_element.animation_name
+        elif name_type == 2:
+            entry_name = base_element
+
+        base_entries.append(entry_name)
+
+    for donor_element in donor_tag_block:
+        entry_name = ""
+        if name_type == 0:
+            entry_name = donor_element.name
+        elif name_type == 1:
+            entry_name = donor_element.animation_name
+        elif name_type == 2:
+            entry_name = donor_element
+
+        if not entry_name in base_entries:
+            base_tag_block.append(donor_element)
+
+def merge_scavenger_hunt_objects(base_scavenger_hunt_objects, donor_scavenger_hunt_objects, base_object_names, donor_object_names):
+    base_indices = [base_object.scenario_object_name_index for base_object in base_scavenger_hunt_objects]
+    base_names = [object_name for object_name in base_object_names]
+    donor_names = [object_name for object_name in donor_object_names]
+
+    for donor_element in donor_scavenger_hunt_objects:
+        if donor_element.scenario_object_name_index >= 0:
+            donor_name = donor_names[donor_element.scenario_object_name_index]
+            base_name_index = base_names.index(donor_name)
+            donor_element.scenario_object_name_index = base_name_index
+
+        if not base_name_index in base_indices:
+            base_scavenger_hunt_objects.append(donor_element)
+
+def merge_objects(base_objects, donor_object, base_palette, donor_palette, base_object_names=None, donor_object_names=None, base_device_groups=None, donor_device_groups=None):
+    base_palette_names = [base_element.name for base_element in base_palette]
+    donor_palette_names = [object_element.name for object_element in donor_palette]
+    base_names = []
+    donor_names = []
+    base_device_groups_names = []
+    donor_device_groups_names = []
+    if not base_object_names == None:
+        base_names = [object_name for object_name in base_object_names]
+    if not donor_object_names == None:
+        donor_names = [object_name for object_name in donor_object_names]
+    if not base_device_groups == None:
+        base_device_groups_names = [base_device_group.name for base_device_group in base_device_groups]
+    if not donor_device_groups == None:
+        donor_device_groups_names = [donor_device_group.name for donor_device_group in donor_device_groups]
+
+    for donor_element in donor_palette:
+        if not donor_element.name in base_palette_names:
+            base_palette.append(donor_element)
+
+    base_palette_names = [base_element.name for base_element in base_palette]
+    for donor_element in donor_object:
+        if not base_object_names == None:
+            donor_type_index = donor_palette_names[donor_element.type_index]
+            donor_element.type_index = base_palette_names.index(donor_type_index)
+            donor_name_index = donor_names[donor_element.name_index]
+            donor_element.name_index = base_names.index(donor_name_index)
+            if not base_device_groups == None:
+                if donor_element.power_group_index >= 0:
+                    power_group_index = donor_device_groups_names[donor_element.power_group_index]
+                    donor_element.power_group_index = base_device_groups_names.index(power_group_index)
+
+            if not donor_device_groups == None:
+                if donor_element.position_group_index >= 0:
+                    position_group_index = donor_device_groups_names[donor_element.position_group_index]
+                    donor_element.position_group_index = base_device_groups_names.index(position_group_index)
+
+        else:
+            donor_type_index = donor_palette_names[donor_element.palette_index]
+            donor_element.palette_index = base_palette_names.index(donor_type_index)
+
+        base_objects.append(donor_element)
+
+def merge_by_location(base_tag_block, donor_tag_block):
+    location_checksums = []
+    for base_element in base_tag_block:
+        x, y, z = base_element.position
+        x_int = struct.unpack('<i', struct.pack('<f', x))[0]
+        y_int = struct.unpack('<i', struct.pack('<f', y))[0]
+        z_int = struct.unpack('<i', struct.pack('<f', z))[0]
+
+        location_checksums.append((x_int + y_int + z_int))
+
+    for donor_element in donor_tag_block:
+        x, y, z = donor_element.position
+        x_int = struct.unpack('<i', struct.pack('<f', x))[0]
+        y_int = struct.unpack('<i', struct.pack('<f', y))[0]
+        z_int = struct.unpack('<i', struct.pack('<f', z))[0]
+        donor_checksum = (x_int + y_int + z_int)
+        if not donor_checksum in location_checksums:
+            base_tag_block.append(donor_element)
+
+def merge_elements(base_tag_block, donor_tag_block):
+    for donor_element in donor_tag_block:
+        base_tag_block.append(donor_element)
+
+def merge_ai_conversations(base_tag_block, donor_tag_block, base_object_names, donor_object_names):
+    base_names = [object_name for object_name in base_object_names]
+    donor_names = [object_name for object_name in donor_object_names]
+    base_entries = [base_element.name for base_element in base_tag_block]
+    for donor_element in donor_tag_block:
+        if not donor_element.name in base_entries:
+            for participant in donor_element.participants:
+                if participant.use_this_object >= 0:
+                    use_this_object_index = donor_names[participant.use_this_object]
+                    participant.use_this_object = base_names.index(use_this_object_index)
+
+                if participant.set_new_name >= 0:
+                    set_new_name_index = donor_names[participant.set_new_name]
+                    participant.set_new_name = base_names.index(set_new_name_index)
+
+            base_tag_block.append(donor_element)
+
+def merge_encounters(base_encounters, donor_encounters, base_palette, donor_palette):
+    base_encounters_names = [base_element.name for base_element in base_encounters]
+    base_palette_names = [base_element.name for base_element in base_palette]
+    donor_palette_names = [object_element.name for object_element in donor_palette]
+    for donor_element in donor_palette:
+        if not donor_element.name in base_palette_names:
+            base_palette.append(donor_element)
+
+    base_palette_names = [base_element.name for base_element in base_palette]
+    for donor_element in donor_encounters:
+        if not donor_element.name in base_encounters_names:
+            for squad_element in donor_element.squads:
+                if squad_element.actor_type >= 0:
+                    donor_actor_index = donor_palette_names[squad_element.actor_type]
+                    squad_element.actor_type = base_palette_names.index(donor_actor_index)
+
+            base_encounters.append(donor_element)
+
+def merge_child_scenarios(TAG, SCENARIO, report):
+    for child_scenario_element in SCENARIO.child_scenarios:
+        CHILD = child_scenario_element.parse_tag(report, "halo1", "retail")
+
+        merge_by_name(SCENARIO.skies, CHILD.skies)
+        merge_by_name(SCENARIO.object_names, CHILD.object_names, 2)
+        merge_by_location(SCENARIO.comments, CHILD.comments)
+        merge_scavenger_hunt_objects(SCENARIO.scavenger_hunt_objects, CHILD.scavenger_hunt_objects, SCENARIO.object_names, CHILD.object_names)
+        merge_objects(SCENARIO.scenery, CHILD.scenery, SCENARIO.scenery_palette, CHILD.scenery_palette, SCENARIO.object_names, CHILD.object_names)
+        merge_objects(SCENARIO.bipeds, CHILD.bipeds, SCENARIO.biped_palette, CHILD.biped_palette, SCENARIO.object_names, CHILD.object_names)
+        merge_objects(SCENARIO.vehicles, CHILD.vehicles, SCENARIO.vehicle_palette, CHILD.vehicle_palette, SCENARIO.object_names, CHILD.object_names)
+        merge_objects(SCENARIO.equipment, CHILD.equipment, SCENARIO.equipment_palette, CHILD.equipment_palette, SCENARIO.object_names, CHILD.object_names)
+        merge_objects(SCENARIO.weapons, CHILD.weapons, SCENARIO.weapon_palette, CHILD.weapon_palette, SCENARIO.object_names, CHILD.object_names)
+        merge_by_name(SCENARIO.device_groups, CHILD.device_groups)
+        merge_objects(SCENARIO.device_machines, CHILD.device_machines, SCENARIO.device_machine_palette, CHILD.device_machine_palette, SCENARIO.object_names, CHILD.object_names, SCENARIO.device_groups, CHILD.device_groups)
+        merge_objects(SCENARIO.device_controls, CHILD.device_controls, SCENARIO.device_control_palette, CHILD.device_control_palette, SCENARIO.object_names, CHILD.object_names, SCENARIO.device_groups, CHILD.device_groups)
+        merge_objects(SCENARIO.device_light_fixtures, CHILD.device_light_fixtures, SCENARIO.device_light_fixtures_palette, CHILD.device_light_fixtures_palette, SCENARIO.object_names, CHILD.object_names, SCENARIO.device_groups, CHILD.device_groups)
+        merge_objects(SCENARIO.sound_scenery, CHILD.sound_scenery, SCENARIO.sound_scenery_palette, CHILD.sound_scenery_palette, SCENARIO.object_names, CHILD.object_names)
+        merge_by_name(SCENARIO.player_starting_profiles, CHILD.player_starting_profiles)
+        #merge_by_location(SCENARIO.player_starting_locations, CHILD.player_starting_locations)
+        merge_by_name(SCENARIO.trigger_volumes, CHILD.trigger_volumes)
+        merge_by_name(SCENARIO.recorded_animations, CHILD.recorded_animations)
+        merge_by_location(SCENARIO.netgame_flags, CHILD.netgame_flags)
+        merge_by_location(SCENARIO.netgame_equipment, CHILD.netgame_equipment)
+        merge_elements(SCENARIO.starting_equipment, CHILD.starting_equipment)
+        merge_elements(SCENARIO.bsp_switch_trigger_volumes, CHILD.bsp_switch_trigger_volumes)
+        merge_objects(SCENARIO.decals, CHILD.decals, SCENARIO.decal_palette, CHILD.decal_palette)
+        merge_by_name(SCENARIO.detail_object_collection_palette, CHILD.detail_object_collection_palette)
+        merge_encounters(SCENARIO.encounters, CHILD.encounters, SCENARIO.actor_palette, CHILD.actor_palette)
+        merge_by_name(SCENARIO.command_lists, CHILD.command_lists)
+        merge_by_name(SCENARIO.ai_animation_references, CHILD.ai_animation_references, 1)
+        merge_by_name(SCENARIO.ai_script_references, CHILD.ai_script_references, 2)
+        merge_ai_conversations(SCENARIO.ai_conversations, CHILD.ai_conversations, SCENARIO.object_names, CHILD.object_names)
+        merge_by_name(SCENARIO.source_files, CHILD.source_files)
+        merge_by_name(SCENARIO.cutscene_flags, CHILD.cutscene_flags)
+        merge_by_name(SCENARIO.cutscene_camera_points, CHILD.cutscene_camera_points)
+        merge_by_name(SCENARIO.cutscene_titles, CHILD.cutscene_titles)
+        merge_by_name(SCENARIO.structure_bsps, CHILD.structure_bsps)
+
 def upgrade_h2_scenario(H1_ASSET, patch_txt_path, report):
     TAG = tag_format.TagAsset()
     SCENARIO = ScenarioAsset()
@@ -1520,6 +1700,8 @@ def upgrade_h2_scenario(H1_ASSET, patch_txt_path, report):
     SCENARIO.shared_references = []
     SCENARIO.screen_effect_references = []
     SCENARIO.simulation_definition_table = []
+
+    merge_child_scenarios(TAG, H1_ASSET, report)
 
     block_mutation(TAG, H1_ASSET, SCENARIO)
 

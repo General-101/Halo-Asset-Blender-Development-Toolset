@@ -104,7 +104,6 @@ def process_scene(context, extension, jma_version, game_title, generate_checksum
                 node_list.append(obj)
 
     JMA.node_count = len(node_list)
-
     sorted_list = global_functions.sort_list(node_list, armature, game_title, jma_version, True)
     joined_list = sorted_list[0]
     reversed_joined_list = sorted_list[1]

@@ -787,8 +787,8 @@ class LevelAsset():
             self.properties = properties
 
     class Property:
-        def __init__(self, type=0, int_value=0, real_value=0.0):
-            self.type = type
+        def __init__(self, property_type=0, int_value=0, real_value=0.0):
+            self.property_type = property_type
             self.int_value = int_value
             self.real_value = real_value
 

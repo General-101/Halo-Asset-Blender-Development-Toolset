@@ -115,7 +115,6 @@ def process_file(input_stream, report):
     SHADER.shader_body.parallel_brightness = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "parallel brightness"))
     SHADER.shader_body.parallel_tint_color = TAG.read_rgb(input_stream, TAG, tag_format.XMLData(tag_node, "parallel tint color"))
     SHADER.shader_body.reflection_cube_map = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "reflection cube map"))
-    
     input_stream.read(16) # Padding
     if is_stubbs_the_zombie:
         SHADER.shader_body.bump_scale = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "bump scale"))

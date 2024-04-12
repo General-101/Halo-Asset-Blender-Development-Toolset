@@ -72,8 +72,8 @@ from ..file_tag.h2.file_biped.process_file import process_file as process_h2_bip
 from ..file_tag.h2.file_vehicle.process_file import process_file as process_h2_vehicle
 from ..file_tag.h2.file_equipment.process_file import process_file as process_h2_equipment
 from ..file_tag.h2.file_weapon.process_file import process_file as process_h2_weapon
-from ..file_tag.h2.file_device_machine.process_file import process_file as process_h2_machine
-from ..file_tag.h2.file_device_control.process_file import process_file as process_h2_control
+from ..file_tag.h2.file_machine.process_file import process_file as process_h2_machine
+from ..file_tag.h2.file_control.process_file import process_file as process_h2_control
 from ..file_tag.h2.file_sound_scenery.process_file import process_file as process_h2_sound_scenery
 from ..file_tag.h2.file_item_collection.process_file import process_file as process_h2_item_collection
 from ..file_tag.h2.file_vehicle_collection.process_file import process_file as process_h2_vehicle_collection
@@ -726,7 +726,7 @@ class TagAsset():
             output_stream.write(struct.pack('%siII' % get_endian_symbol(big_endian), *tag_block))
 
     class TagRef:
-        def __init__(self, tag_group="", name="", name_length=0, salt=0, index=-1, upgrade_patches=None):
+        def __init__(self, tag_group=None, name="", name_length=0, salt=0, index=-1, upgrade_patches=None):
             self.tag_group = tag_group
             self.name = name
             self.name_length = name_length
@@ -769,12 +769,15 @@ class TagAsset():
             return self
 
         def write(self, output_stream, big_endian, reverse=False, pad=0):
-            tag_ref = (string_to_bytes(self.tag_group, reverse),
-                       self.salt,
-                       len(self.name) + pad,
-                       self.index)
+            if self.tag_group == None:
+                output_stream.write(struct.pack('%siiii' % get_endian_symbol(big_endian), -1, self.salt, 0, self.index))
+            else:
+                tag_ref = (string_to_bytes(self.tag_group, reverse),
+                        self.salt,
+                        len(self.name) + pad,
+                        self.index)
 
-            output_stream.write(struct.pack('%s4siii' % get_endian_symbol(big_endian), *tag_ref))
+                output_stream.write(struct.pack('%s4siii' % get_endian_symbol(big_endian), *tag_ref))
 
         def append_xml_attributes(self, xml_node):
             append_xml_attributes(xml_node, [("type", self.tag_group)], self.name)
@@ -958,6 +961,13 @@ class TagAsset():
                     if os.path.exists(input_file):
                         input_stream = open(input_file, 'rb')
                         ASSET = process_shader_transparent_water(input_stream, report)
+                        input_stream.close()
+
+                elif self.tag_group == "scnr":
+                    input_file = os.path.join(config.HALO_1_TAG_PATH, "%s.scenario" % self.name)
+                    if os.path.exists(input_file):
+                        input_stream = open(input_file, 'rb')
+                        ASSET = process_h1_scenario(input_stream, report)
                         input_stream.close()
 
             elif game_title == "halo2":

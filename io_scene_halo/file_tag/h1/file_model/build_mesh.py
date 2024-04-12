@@ -117,6 +117,7 @@ def build_mesh_layout(asset, geometry, region_name, object_name, game_version, i
 
         region_attribute = mesh.get_custom_attribute()
         mesh.normals_split_custom_set_from_vertices(vertex_normals)
+
         for vertex_idx, vertex in enumerate(vertex_data):
             node_0_index = vertex.node_0_index
             node_1_index = vertex.node_1_index

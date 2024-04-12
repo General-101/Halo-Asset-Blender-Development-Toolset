@@ -26,12 +26,10 @@
 
 from xml.dom import minidom
 from ....global_functions import tag_format
+from ..file_object.format import ObjectFlags, LightmapShadowModeEnum, SweetenerSizeEnum
+from ..file_item.format import ItemFlags
 from .format import (
     WeaponAsset, 
-    ObjectFlags, 
-    LightmapShadowModeEnum, 
-    SweetenerSizeEnum, 
-    ItemFlags, 
     WeaponFlags, 
     SecondaryTriggerModeEnum,
     MeleeDamageReportingTypeEnum,
@@ -138,8 +136,7 @@ def read_weapon_body(WEAPON, TAG, input_stream, tag_node, XML_OUTPUT):
     WEAPON.weapon_body.detonating_effect = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "detonating effect"))
     WEAPON.weapon_body.detonation_effect = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "detonation effect"))
 
-    WEAPON.weapon_body.weapon_flags = TAG.read_flag_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "flags", WeaponFlags))
-    input_stream.read(2) # Padding?
+    WEAPON.weapon_body.weapon_flags = TAG.read_flag_unsigned_integer(input_stream, TAG, tag_format.XMLData(tag_node, "flags", WeaponFlags))
 
     TAG.big_endian = True
     input_stream.read(2) # Padding?
@@ -180,7 +177,8 @@ def read_weapon_body(WEAPON, TAG, input_stream, tag_node, XML_OUTPUT):
     WEAPON.weapon_body.third_hit_melee_response = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "third hit melee response"))
     WEAPON.weapon_body.lunge_melee_damage = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "lunge melee damage"))
     WEAPON.weapon_body.lunge_melee_response = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "lunge melee response"))
-    WEAPON.weapon_body.melee_damage_reporting_type = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "melee damage reporting type", MeleeDamageReportingTypeEnum))
+    WEAPON.weapon_body.melee_damage_reporting_type = TAG.read_enum_unsigned_byte(input_stream, TAG, tag_format.XMLData(tag_node, "melee damage reporting type", MeleeDamageReportingTypeEnum))
+    input_stream.read(1) # Padding?
     WEAPON.weapon_body.magnification_levels = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(tag_node, "magnification levels"))
     WEAPON.weapon_body.magnification_range = TAG.read_min_max(input_stream, TAG, tag_format.XMLData(tag_node, "magnification range"))
     WEAPON.weapon_body.autoaim_angle = TAG.read_degree(input_stream, TAG, tag_format.XMLData(tag_node, "autoaim angle"))

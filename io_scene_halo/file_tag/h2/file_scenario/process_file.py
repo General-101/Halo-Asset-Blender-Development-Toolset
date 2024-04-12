@@ -3436,7 +3436,7 @@ def read_scenario_cluster_data(SCENARIO, TAG, input_stream, tag_node, XML_OUTPUT
             scenario_cluster_data_element_node = None
             if XML_OUTPUT:
                 scenario_cluster_data_element_node = scenario_cluster_data_node.childNodes[scenario_cluster_data_idx]
-
+ 
             bsp_name_length = scenario_cluster_data.bsp.name_length
             if bsp_name_length > 0:
                 scenario_cluster_data.bsp.name = TAG.read_variable_string(input_stream, bsp_name_length, TAG)

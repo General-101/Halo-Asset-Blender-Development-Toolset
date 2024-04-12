@@ -49,8 +49,7 @@ def read_sky_body_v0(SKY, TAG, input_stream, tag_node, XML_OUTPUT):
     SKY.sky_body = SKY.SkyBody()
     SKY.sky_body.render_model = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "render model"))
     SKY.sky_body.animation_graph = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "animation graph"))
-    SKY.sky_body.flags = TAG.read_flag_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "flags", SkyFlags))
-    input_stream.read(2) # Padding?
+    SKY.sky_body.flags = TAG.read_flag_unsigned_integer(input_stream, TAG, tag_format.XMLData(tag_node, "flags", SkyFlags))
     SKY.sky_body.render_model_scale = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "bounding radius"))
     SKY.sky_body.movement_scale = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "bounding radius"))
     SKY.sky_body.cubemap_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "cubemap"))
@@ -84,8 +83,7 @@ def read_sky_body_retail(SKY, TAG, input_stream, tag_node, XML_OUTPUT):
     SKY.sky_body = SKY.SkyBody()
     SKY.sky_body.render_model = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "render model"))
     SKY.sky_body.animation_graph = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "animation graph"))
-    SKY.sky_body.flags = TAG.read_flag_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "flags", SkyFlags))
-    input_stream.read(2) # Padding?
+    SKY.sky_body.flags = TAG.read_flag_unsigned_integer(input_stream, TAG, tag_format.XMLData(tag_node, "flags", SkyFlags))
     SKY.sky_body.render_model_scale = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "bounding radius"))
     SKY.sky_body.movement_scale = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "bounding radius"))
     SKY.sky_body.cubemap_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "cubemap"))
@@ -304,8 +302,7 @@ def read_lights(SKY, TAG, input_stream, tag_node, XML_OUTPUT):
                         radiosity_node.appendChild(radiosity_element_node)
 
                     radiosity = SKY.Radiosity()
-                    radiosity.flags = TAG.read_flag_unsigned_short(input_stream, TAG, tag_format.XMLData(radiosity_element_node, "flags", LightFlags))
-                    input_stream.read(2) # Padding?
+                    radiosity.flags = TAG.read_flag_unsigned_integer(input_stream, TAG, tag_format.XMLData(radiosity_element_node, "flags", LightFlags))
                     radiosity.color = TAG.read_rgb(input_stream, TAG, tag_format.XMLData(radiosity_element_node, "color"))
                     radiosity.power = TAG.read_float(input_stream, TAG, tag_format.XMLData(radiosity_element_node, "power"))
                     radiosity.test_distance = TAG.read_float(input_stream, TAG, tag_format.XMLData(radiosity_element_node, "test distance"))

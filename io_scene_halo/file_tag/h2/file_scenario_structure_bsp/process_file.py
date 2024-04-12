@@ -1121,7 +1121,7 @@ def read_materials(LEVEL, TAG, input_stream, tag_node, XML_OUTPUT):
                         property_node.appendChild(property_element_node)
 
                     property = LEVEL.Property()
-                    property.type = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(property_element_node, "type", PropertyTypeEnum))
+                    property.property_type = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(property_element_node, "type", PropertyTypeEnum))
                     property.int_value = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(property_element_node, "int value"))
                     property.real_value = TAG.read_float(input_stream, TAG, tag_format.XMLData(property_element_node, "real value"))
 

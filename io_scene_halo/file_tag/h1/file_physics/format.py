@@ -56,8 +56,7 @@ class PhysicsAsset():
     class PhysBody:
         def __init__(self, radius=0.0, moment_scale=0.0, mass=0.0, center_of_mass=Vector(), density=0.0, gravity_scale=0.0, ground_friction=0.0, ground_depth=0.0,
                      ground_damp_fraction=0.0, ground_normal_k1=0.0, ground_normal_k0=0.0, water_friction=0.0, water_depth=0.0, water_density=0.0, air_friction=0.0,
-                     xx_moment=0.0, yy_moment=0.0, zz_moment=0.0, inertial_matrix_and_inverse_tag_block=None, powered_mass_points_tag_block=None, mass_points_tag_block=None,
-                     inertial_matrix_and_inverse=None, powered_mass_points=None, mass_points=None):
+                     xx_moment=0.0, yy_moment=0.0, zz_moment=0.0, inertial_matrix_and_inverse_tag_block=None, powered_mass_points_tag_block=None, mass_points_tag_block=None):
             self.radius = radius
             self.moment_scale = moment_scale
             self.mass = mass
@@ -79,9 +78,6 @@ class PhysicsAsset():
             self.inertial_matrix_and_inverse_tag_block = inertial_matrix_and_inverse_tag_block
             self.powered_mass_points_tag_block = powered_mass_points_tag_block
             self.mass_points_tag_block = mass_points_tag_block
-            self.inertial_matrix_and_inverse = inertial_matrix_and_inverse
-            self.powered_mass_points = powered_mass_points
-            self.mass_points = mass_points
 
     class InertialMatrixAndInverse:
         def __init__(self, yy_zz_xy_zx=Vector(), xy_zz_xx_yz=Vector(), zx_yz_xx_yy=Vector()):

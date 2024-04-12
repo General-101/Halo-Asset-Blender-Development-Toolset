@@ -26,15 +26,9 @@
 
 from xml.dom import minidom
 from ....global_functions import tag_format
-from .format import (
-    EquipmentAsset, 
-    ObjectFlags, 
-    LightmapShadowModeEnum, 
-    SweetenerSizeEnum, 
-    ItemFlags, 
-    PowerupTypeEnum, 
-    GrenadeTypeEnum
-    )
+from ..file_object.format import ObjectFlags, LightmapShadowModeEnum, SweetenerSizeEnum
+from ..file_item.format import ItemFlags
+from .format import EquipmentAsset, PowerupTypeEnum, GrenadeTypeEnum
 
 XML_OUTPUT = False
 
@@ -104,25 +98,25 @@ def read_equipment_body_v0(EQUIPMENT, TAG, input_stream, tag_node, XML_OUTPUT):
 
     TAG.big_endian = True
     input_stream.read(2) # Padding?
-    EQUIPMENT.equipment_body.pickup_message_length = TAG.read_signed_short(input_stream, TAG)
+    EQUIPMENT.equipment_body.pickup_msg_length = TAG.read_signed_short(input_stream, TAG)
     input_stream.read(2) # Padding?
-    EQUIPMENT.equipment_body.swap_message_length = TAG.read_signed_short(input_stream, TAG)
+    EQUIPMENT.equipment_body.swap_msg_length = TAG.read_signed_short(input_stream, TAG)
     input_stream.read(2) # Padding?
-    EQUIPMENT.equipment_body.pickup_or_dual_message_length = TAG.read_signed_short(input_stream, TAG)
+    EQUIPMENT.equipment_body.pickup_or_dual_msg_length = TAG.read_signed_short(input_stream, TAG)
     input_stream.read(2) # Padding?
-    EQUIPMENT.equipment_body.swap_or_dual_message_length = TAG.read_signed_short(input_stream, TAG)
+    EQUIPMENT.equipment_body.swap_or_dual_msg_length = TAG.read_signed_short(input_stream, TAG)
     input_stream.read(2) # Padding?
-    EQUIPMENT.equipment_body.dual_only_message_length = TAG.read_signed_short(input_stream, TAG)
+    EQUIPMENT.equipment_body.dual_only_msg_length = TAG.read_signed_short(input_stream, TAG)
     input_stream.read(2) # Padding?
-    EQUIPMENT.equipment_body.picked_up_message_length = TAG.read_signed_short(input_stream, TAG)
+    EQUIPMENT.equipment_body.picked_up_msg_length = TAG.read_signed_short(input_stream, TAG)
     input_stream.read(2) # Padding?
-    EQUIPMENT.equipment_body.singluar_quantity_message_length = TAG.read_signed_short(input_stream, TAG)
+    EQUIPMENT.equipment_body.singluar_quantity_msg_length = TAG.read_signed_short(input_stream, TAG)
     input_stream.read(2) # Padding?
-    EQUIPMENT.equipment_body.plural_quantity_message_length = TAG.read_signed_short(input_stream, TAG)
+    EQUIPMENT.equipment_body.plural_quantity_msg_length = TAG.read_signed_short(input_stream, TAG)
     input_stream.read(2) # Padding?
-    EQUIPMENT.equipment_body.switch_to_message_length = TAG.read_signed_short(input_stream, TAG)
+    EQUIPMENT.equipment_body.switch_to_msg_length = TAG.read_signed_short(input_stream, TAG)
     input_stream.read(2) # Padding?
-    EQUIPMENT.equipment_body.switch_to_from_ai_message_length = TAG.read_signed_short(input_stream, TAG)
+    EQUIPMENT.equipment_body.switch_to_from_ai_msg_length = TAG.read_signed_short(input_stream, TAG)
     TAG.big_endian = False
 
     input_stream.read(148) # Padding?
@@ -191,25 +185,25 @@ def read_equipment_body_retail(EQUIPMENT, TAG, input_stream, tag_node, XML_OUTPU
 
     TAG.big_endian = True
     input_stream.read(2) # Padding?
-    EQUIPMENT.equipment_body.pickup_message_length = TAG.read_signed_short(input_stream, TAG)
+    EQUIPMENT.equipment_body.pickup_msg_length = TAG.read_signed_short(input_stream, TAG)
     input_stream.read(2) # Padding?
-    EQUIPMENT.equipment_body.swap_message_length = TAG.read_signed_short(input_stream, TAG)
+    EQUIPMENT.equipment_body.swap_msg_length = TAG.read_signed_short(input_stream, TAG)
     input_stream.read(2) # Padding?
-    EQUIPMENT.equipment_body.pickup_or_dual_message_length = TAG.read_signed_short(input_stream, TAG)
+    EQUIPMENT.equipment_body.pickup_or_dual_msg_length = TAG.read_signed_short(input_stream, TAG)
     input_stream.read(2) # Padding?
-    EQUIPMENT.equipment_body.swap_or_dual_message_length = TAG.read_signed_short(input_stream, TAG)
+    EQUIPMENT.equipment_body.swap_or_dual_msg_length = TAG.read_signed_short(input_stream, TAG)
     input_stream.read(2) # Padding?
-    EQUIPMENT.equipment_body.dual_only_message_length = TAG.read_signed_short(input_stream, TAG)
+    EQUIPMENT.equipment_body.dual_only_msg_length = TAG.read_signed_short(input_stream, TAG)
     input_stream.read(2) # Padding?
-    EQUIPMENT.equipment_body.picked_up_message_length = TAG.read_signed_short(input_stream, TAG)
+    EQUIPMENT.equipment_body.picked_up_msg_length = TAG.read_signed_short(input_stream, TAG)
     input_stream.read(2) # Padding?
-    EQUIPMENT.equipment_body.singluar_quantity_message_length = TAG.read_signed_short(input_stream, TAG)
+    EQUIPMENT.equipment_body.singluar_quantity_msg_length = TAG.read_signed_short(input_stream, TAG)
     input_stream.read(2) # Padding?
-    EQUIPMENT.equipment_body.plural_quantity_message_length = TAG.read_signed_short(input_stream, TAG)
+    EQUIPMENT.equipment_body.plural_quantity_msg_length = TAG.read_signed_short(input_stream, TAG)
     input_stream.read(2) # Padding?
-    EQUIPMENT.equipment_body.switch_to_message_length = TAG.read_signed_short(input_stream, TAG)
+    EQUIPMENT.equipment_body.switch_to_msg_length = TAG.read_signed_short(input_stream, TAG)
     input_stream.read(2) # Padding?
-    EQUIPMENT.equipment_body.switch_to_from_ai_message_length = TAG.read_signed_short(input_stream, TAG)
+    EQUIPMENT.equipment_body.switch_to_from_ai_msg_length = TAG.read_signed_short(input_stream, TAG)
     TAG.big_endian = False
 
     EQUIPMENT.equipment_body.unused = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "unused"))

@@ -40,6 +40,8 @@ def build_scene(context, PHYSICS, game_version, game_title, file_version, fix_ro
 
     if armature:
         for mass_point_idx, mass_point in enumerate(PHYSICS.mass_points):
+            if game_title == "halo2" and mass_point.powered_mass_point < 0:
+                continue
 
             parent_idx = mass_point.model_node
             object_name_prefix = '#%s' % mass_point.name
@@ -48,16 +50,22 @@ def build_scene(context, PHYSICS, game_version, game_title, file_version, fix_ro
             if context.scene.objects.get('#%s' % mass_point.name):
                 marker_name_override = mass_point.name
 
-            mesh = bpy.data.meshes.new(object_name_prefix)
-            object_mesh = bpy.data.objects.new(object_name_prefix, mesh)
+            if empty_markers:
+                object_mesh = bpy.data.objects.new(object_name_prefix, None)
+
+            else:
+                mesh = bpy.data.meshes.new(object_name_prefix)
+                object_mesh = bpy.data.objects.new(object_name_prefix, mesh)
+
             collection.objects.link(object_mesh)
 
             object_mesh.ass_jms.name_override = marker_name_override
 
-            bm = bmesh.new()
-            bmesh.ops.create_uvsphere(bm, u_segments=32, v_segments=16, radius=1)
-            bm.to_mesh(mesh)
-            bm.free()
+            if not empty_markers:
+                bm = bmesh.new()
+                bmesh.ops.create_uvsphere(bm, u_segments=32, v_segments=16, radius=1)
+                bm.to_mesh(mesh)
+                bm.free()
 
             node_count = len(armature.data.bones)
             if not parent_idx == -1 and not parent_idx >= node_count:
@@ -83,8 +91,12 @@ def build_scene(context, PHYSICS, game_version, game_title, file_version, fix_ro
             transform_matrix = matrix_translate @ matrix_rotation @ scale
 
             object_mesh.matrix_world = transform_matrix
-            object_mesh.data.ass_jms.Object_Type = 'SPHERE'
-            object_mesh.ass_jms.marker_mask_type = '2'
+            if not empty_markers:
+                object_mesh.data.ass_jms.Object_Type = 'SPHERE'
+            if game_title == "halo2":
+                object_mesh.ass_jms.marker_mask_type = '0'
+            else:
+                object_mesh.ass_jms.marker_mask_type = '2'
 
     else:
         report({'ERROR'}, "No valid armature is active. Import will now be aborted")

@@ -677,7 +677,6 @@ def read_sections_v0(RENDER, TAG, input_stream, tag_node, XML_OUTPUT):
                         section_data_node.appendChild(section_data_element_node)
 
                     section_data = RENDER.LegacySectionData()
-
                     if section.section_data_header.version == 0:
                         if section.section_data_header.size == 524:
                             section_data.raw_vertices_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(section_data_element_node, "raw vertices"))
@@ -1330,6 +1329,7 @@ def read_materials(RENDER, TAG, input_stream, tag_node, XML_OUTPUT):
                 material_node.appendChild(material_element_node)
 
             material = RENDER.Material()
+
             material.old_shader = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(material_element_node, "old shader"))
             material.shader = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(material_element_node, "shader"))
             material.properties_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(material_element_node, "properties"))
@@ -1370,7 +1370,7 @@ def read_materials(RENDER, TAG, input_stream, tag_node, XML_OUTPUT):
                         property_node.appendChild(property_element_node)
 
                     property = RENDER.Property()
-                    property.type = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(property_element_node, "type", PropertyTypeEnum))
+                    property.property_type = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(property_element_node, "type", PropertyTypeEnum))
                     property.int_value = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(property_element_node, "int value"))
                     property.real_value = TAG.read_float(input_stream, TAG, tag_format.XMLData(property_element_node, "real value"))
 

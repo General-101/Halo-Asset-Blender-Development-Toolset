@@ -69,7 +69,7 @@ def process_file(input_stream, report):
         MODEL.mode_body.stubbs_unk_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "stubbs_unk_arr"))
     else:
         input_stream.read(12) # Padding?
-        
+
     MODEL.mode_body.markers_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "markers"))
     MODEL.mode_body.nodes_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "nodes"))
     MODEL.mode_body.regions_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "regions"))

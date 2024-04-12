@@ -294,7 +294,7 @@ def get_pose_bone(arm: bpy.types.Object, node_name: str) -> bpy.types.PoseBone |
     for bone in arm.pose.bones:
         if bone.name.lower() == node_name.lower():
             return bone
-    
+
     # If a bone hasn't been found yet, test whether the node name matches a bone name stripped of prefixes
     for bone in arm.pose.bones:
         if remove_node_prefix(bone.name).lower() == node_name.lower():

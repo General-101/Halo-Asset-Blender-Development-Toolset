@@ -28,13 +28,14 @@ import os
 import bpy
 import bmesh
 
+from .... import config
 from ....global_functions import shader_processing, global_functions, mesh_processing
-from .format import PartFlags, GeometryClassificationEnum
+from .format import PartFlags, GeometryClassificationEnum, PropertyTypeEnum
 
 def build_mesh_layout(context, import_file, geometry, current_region_permutation, armature, random_color_gen, materials):
     vertex_groups = []
     active_region_permutations = []
-
+    
     materials_count = len(import_file.materials)
     full_mesh = bpy.data.meshes.new(current_region_permutation)
     object_mesh = bpy.data.objects.new(current_region_permutation, full_mesh)
@@ -52,7 +53,6 @@ def build_mesh_layout(context, import_file, geometry, current_region_permutation
         triangle_mat_indices = []
         vertices = [raw_vertex.position for raw_vertex in section_data.raw_vertices]
         vertex_normals = [raw_vertex.normal for raw_vertex in section_data.raw_vertices]
-
         for part_idx, part in enumerate(section_data.parts):
             triangle_part = []
 
@@ -229,6 +229,7 @@ def build_mesh_layout(context, import_file, geometry, current_region_permutation
             group_index = node_set[0]
             vertex_index = node_set[1]
             node_weight = node_set[2]
+
             object_mesh.vertex_groups[group_index].add([vertex_weights_set_idx], node_weight, 'ADD')
 
     object_mesh.parent = armature
@@ -248,10 +249,45 @@ def build_object(context, collection, geometry, armature, LOD, region_name, perm
 def get_geometry_layout(context, collection, import_file, armature, report):
     random_color_gen = global_functions.RandomColorGenerator() # generates a random sequence of colors
     materials = []
+    shader_collection_dic = {}
+    shader_collection_path = os.path.join(config.HALO_2_TAG_PATH, r"scenarios\shaders\shader_collections.shader_collections") 
+    shader_collection_file = open(shader_collection_path, "r")
+    for line in shader_collection_file.readlines():
+        if not global_functions.string_empty_check(line) and not line.startswith(";"):
+            split_result = line.split()
+            if len(split_result) == 2:
+                prefix = split_result[0]
+                path = split_result[1]
+                shader_collection_dic[path] = prefix
+
     for material in import_file.materials:
-        material_name = os.path.basename(material.shader.name)
-        if global_functions.string_empty_check(material_name):
-            material_name = os.path.basename(material.old_shader.name)
+        material_path = material.shader.name
+        if global_functions.string_empty_check(material_path):
+            material_path = material.old_shader.name
+
+        material_directory = os.path.dirname(material_path)
+        material_name = os.path.basename(material_path)
+
+        collection_prefix = shader_collection_dic.get(material_directory)
+        if not collection_prefix == None:
+            material_name = "%s %s" % (collection_prefix, material_name)
+        else:
+            print("Could not find a collection for: %s" % material_path)
+
+        for material_property in material.properties:
+            property_enum = PropertyTypeEnum(material_property.property_type)
+            property_value = material_property.real_value
+            if PropertyTypeEnum.lightmap_resolution == property_enum:
+                material_name += " lm:%s" % property_value
+
+            elif PropertyTypeEnum.lightmap_power == property_enum:
+                material_name += " lp:%s" % property_value
+
+            elif PropertyTypeEnum.lightmap_half_life == property_enum:
+                material_name += " hl:%s" % property_value
+
+            elif PropertyTypeEnum.lightmap_diffuse_scale == property_enum:
+                material_name += " ds:%s" % property_value
 
         mat = bpy.data.materials.new(name=material_name)
         shader_processing.generate_h2_shader(mat, material.shader, report)

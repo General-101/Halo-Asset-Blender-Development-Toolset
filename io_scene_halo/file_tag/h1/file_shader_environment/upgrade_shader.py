@@ -94,7 +94,7 @@ def add_parameter(SHADER, TAG, parameter_name="", enum=TypeEnum.bitmap, bitmap_n
     parameter.const_value = float_value
     parameter.const_color = rgba
     parameter.animation_properties = []
-    parameter.animation_properties_tag_block_header = TAG.TagBlockHeader("tbfd", 0, 0, 28)
+    parameter.animation_properties_header = TAG.TagBlockHeader("tbfd", 0, 0, 28)
     parameter.animation_properties_tag_block = TAG.TagBlock()
 
     return parameter
@@ -103,7 +103,7 @@ def generate_illum_opaque(shader_body, TAG, SHADER):
     parameter = add_parameter(SHADER, TAG, parameter_name="self_illum_color", enum=TypeEnum.color, rgba=(1.0, 1.0, 1.0, 1.0))
     add_animation_property(SHADER, TAG, parameter, AnimationTypeEnum.color, FunctionTypeEnum.constant, 32, shader_body.color_of_emitted_light)
 
-    parameter.animation_properties_tag_block_header = TAG.TagBlockHeader("tbfd", 0, len(parameter.animation_properties), 28)
+    parameter.animation_properties_header = TAG.TagBlockHeader("tbfd", 0, len(parameter.animation_properties), 28)
     parameter.animation_properties_tag_block = TAG.TagBlock(len(parameter.animation_properties))
     SHADER.parameters.append(parameter)
 
@@ -114,13 +114,13 @@ def generate_tex_bump(shader_body, TAG, SHADER):
             add_animation_property(SHADER, TAG, parameter, AnimationTypeEnum.bitmap_scale_x, FunctionTypeEnum.constant, lower_bound=shader_body.bump_map_scale)
             add_animation_property(SHADER, TAG, parameter, AnimationTypeEnum.bitmap_scale_y, FunctionTypeEnum.constant, lower_bound=shader_body.bump_map_scale)
 
-        parameter.animation_properties_tag_block_header = TAG.TagBlockHeader("tbfd", 0, len(parameter.animation_properties), 28)
+        parameter.animation_properties_header = TAG.TagBlockHeader("tbfd", 0, len(parameter.animation_properties), 28)
         parameter.animation_properties_tag_block = TAG.TagBlock(len(parameter.animation_properties))
         SHADER.parameters.append(parameter)
 
     if not shader_body.base_map.name == "":
         parameter = add_parameter(SHADER, TAG, parameter_name="base_map", bitmap_name=shader_body.base_map.name, float_value=0.0)
-        parameter.animation_properties_tag_block_header = TAG.TagBlockHeader("tbfd", 0, len(parameter.animation_properties), 28)
+        parameter.animation_properties_header = TAG.TagBlockHeader("tbfd", 0, len(parameter.animation_properties), 28)
         parameter.animation_properties_tag_block = TAG.TagBlock(len(parameter.animation_properties))
         SHADER.parameters.append(parameter)
 
@@ -130,7 +130,7 @@ def generate_tex_bump(shader_body, TAG, SHADER):
             add_animation_property(SHADER, TAG, parameter, AnimationTypeEnum.bitmap_scale_x, FunctionTypeEnum.constant, lower_bound=shader_body.primary_detail_map_scale)
             add_animation_property(SHADER, TAG, parameter, AnimationTypeEnum.bitmap_scale_y, FunctionTypeEnum.constant, lower_bound=shader_body.primary_detail_map_scale)
 
-        parameter.animation_properties_tag_block_header = TAG.TagBlockHeader("tbfd", 0, len(parameter.animation_properties), 28)
+        parameter.animation_properties_header = TAG.TagBlockHeader("tbfd", 0, len(parameter.animation_properties), 28)
         parameter.animation_properties_tag_block = TAG.TagBlock(len(parameter.animation_properties))
         SHADER.parameters.append(parameter)
 
@@ -144,13 +144,13 @@ def generate_tex_bump_dprs_env(shader_body, TAG, SHADER):
             add_animation_property(SHADER, TAG, parameter, AnimationTypeEnum.bitmap_scale_x, FunctionTypeEnum.constant, lower_bound=shader_body.bump_map_scale)
             add_animation_property(SHADER, TAG, parameter, AnimationTypeEnum.bitmap_scale_y, FunctionTypeEnum.constant, lower_bound=shader_body.bump_map_scale)
 
-        parameter.animation_properties_tag_block_header = TAG.TagBlockHeader("tbfd", 0, len(parameter.animation_properties), 28)
+        parameter.animation_properties_header = TAG.TagBlockHeader("tbfd", 0, len(parameter.animation_properties), 28)
         parameter.animation_properties_tag_block = TAG.TagBlock(len(parameter.animation_properties))
         SHADER.parameters.append(parameter)
 
     if not shader_body.base_map.name == "":
         parameter = add_parameter(SHADER, TAG, parameter_name="base_map", bitmap_name=shader_body.base_map.name, float_value=0.0)
-        parameter.animation_properties_tag_block_header = TAG.TagBlockHeader("tbfd", 0, len(parameter.animation_properties), 28)
+        parameter.animation_properties_header = TAG.TagBlockHeader("tbfd", 0, len(parameter.animation_properties), 28)
         parameter.animation_properties_tag_block = TAG.TagBlock(len(parameter.animation_properties))
         SHADER.parameters.append(parameter)
 
@@ -160,13 +160,13 @@ def generate_tex_bump_dprs_env(shader_body, TAG, SHADER):
             add_animation_property(SHADER, TAG, parameter, AnimationTypeEnum.bitmap_scale_x, FunctionTypeEnum.constant, lower_bound=shader_body.primary_detail_map_scale)
             add_animation_property(SHADER, TAG, parameter, AnimationTypeEnum.bitmap_scale_y, FunctionTypeEnum.constant, lower_bound=shader_body.primary_detail_map_scale)
 
-        parameter.animation_properties_tag_block_header = TAG.TagBlockHeader("tbfd", 0, len(parameter.animation_properties), 28)
+        parameter.animation_properties_header = TAG.TagBlockHeader("tbfd", 0, len(parameter.animation_properties), 28)
         parameter.animation_properties_tag_block = TAG.TagBlock(len(parameter.animation_properties))
         SHADER.parameters.append(parameter)
 
     if not shader_body.reflection_cube_map.name == "":
         parameter = add_parameter(SHADER, TAG, parameter_name="environment_map", bitmap_name=shader_body.reflection_cube_map.name, float_value=0.0)
-        parameter.animation_properties_tag_block_header = TAG.TagBlockHeader("tbfd", 0, len(parameter.animation_properties), 28)
+        parameter.animation_properties_header = TAG.TagBlockHeader("tbfd", 0, len(parameter.animation_properties), 28)
         parameter.animation_properties_tag_block = TAG.TagBlock(len(parameter.animation_properties))
         SHADER.parameters.append(parameter)
 
@@ -184,7 +184,7 @@ def generate_tex_bump_env_alpha_test(shader_body, TAG, SHADER):
             add_animation_property(SHADER, TAG, parameter, AnimationTypeEnum.bitmap_scale_x, FunctionTypeEnum.constant, lower_bound=shader_body.bump_map_scale)
             add_animation_property(SHADER, TAG, parameter, AnimationTypeEnum.bitmap_scale_y, FunctionTypeEnum.constant, lower_bound=shader_body.bump_map_scale)
 
-        parameter.animation_properties_tag_block_header = TAG.TagBlockHeader("tbfd", 0, len(parameter.animation_properties), 28)
+        parameter.animation_properties_header = TAG.TagBlockHeader("tbfd", 0, len(parameter.animation_properties), 28)
         parameter.animation_properties_tag_block = TAG.TagBlock(len(parameter.animation_properties))
         SHADER.parameters.append(parameter)
 
@@ -197,7 +197,7 @@ def generate_tex_bump_env_alpha_test(shader_body, TAG, SHADER):
 
     if not shader_body.base_map.name == "":
         parameter = add_parameter(SHADER, TAG, parameter_name="base_map", bitmap_name=shader_body.base_map.name, float_value=0.0)
-        parameter.animation_properties_tag_block_header = TAG.TagBlockHeader("tbfd", 0, len(parameter.animation_properties), 28)
+        parameter.animation_properties_header = TAG.TagBlockHeader("tbfd", 0, len(parameter.animation_properties), 28)
         parameter.animation_properties_tag_block = TAG.TagBlock(len(parameter.animation_properties))
         SHADER.parameters.append(parameter)
 
@@ -207,13 +207,13 @@ def generate_tex_bump_env_alpha_test(shader_body, TAG, SHADER):
             add_animation_property(SHADER, TAG, parameter, AnimationTypeEnum.bitmap_scale_x, FunctionTypeEnum.constant, lower_bound=shader_body.primary_detail_map_scale)
             add_animation_property(SHADER, TAG, parameter, AnimationTypeEnum.bitmap_scale_y, FunctionTypeEnum.constant, lower_bound=shader_body.primary_detail_map_scale)
 
-        parameter.animation_properties_tag_block_header = TAG.TagBlockHeader("tbfd", 0, len(parameter.animation_properties), 28)
+        parameter.animation_properties_header = TAG.TagBlockHeader("tbfd", 0, len(parameter.animation_properties), 28)
         parameter.animation_properties_tag_block = TAG.TagBlock(len(parameter.animation_properties))
         SHADER.parameters.append(parameter)
 
     if not shader_body.reflection_cube_map.name == "":
         parameter = add_parameter(SHADER, TAG, parameter_name="environment_map", bitmap_name=shader_body.reflection_cube_map.name, float_value=0.0)
-        parameter.animation_properties_tag_block_header = TAG.TagBlockHeader("tbfd", 0, len(parameter.animation_properties), 28)
+        parameter.animation_properties_header = TAG.TagBlockHeader("tbfd", 0, len(parameter.animation_properties), 28)
         parameter.animation_properties_tag_block = TAG.TagBlock(len(parameter.animation_properties))
         SHADER.parameters.append(parameter)
 
@@ -231,13 +231,13 @@ def generate_tex_bump_dprs_env_illum(shader_body, TAG, SHADER):
             add_animation_property(SHADER, TAG, parameter, AnimationTypeEnum.bitmap_scale_x, FunctionTypeEnum.constant, lower_bound=shader_body.bump_map_scale)
             add_animation_property(SHADER, TAG, parameter, AnimationTypeEnum.bitmap_scale_y, FunctionTypeEnum.constant, lower_bound=shader_body.bump_map_scale)
 
-        parameter.animation_properties_tag_block_header = TAG.TagBlockHeader("tbfd", 0, len(parameter.animation_properties), 28)
+        parameter.animation_properties_header = TAG.TagBlockHeader("tbfd", 0, len(parameter.animation_properties), 28)
         parameter.animation_properties_tag_block = TAG.TagBlock(len(parameter.animation_properties))
         SHADER.parameters.append(parameter)
 
     if not shader_body.base_map.name == "":
         parameter = add_parameter(SHADER, TAG, parameter_name="base_map", bitmap_name=shader_body.base_map.name, float_value=0.0)
-        parameter.animation_properties_tag_block_header = TAG.TagBlockHeader("tbfd", 0, len(parameter.animation_properties), 28)
+        parameter.animation_properties_header = TAG.TagBlockHeader("tbfd", 0, len(parameter.animation_properties), 28)
         parameter.animation_properties_tag_block = TAG.TagBlock(len(parameter.animation_properties))
         SHADER.parameters.append(parameter)
 
@@ -247,13 +247,13 @@ def generate_tex_bump_dprs_env_illum(shader_body, TAG, SHADER):
             add_animation_property(SHADER, TAG, parameter, AnimationTypeEnum.bitmap_scale_x, FunctionTypeEnum.constant, lower_bound=shader_body.primary_detail_map_scale)
             add_animation_property(SHADER, TAG, parameter, AnimationTypeEnum.bitmap_scale_y, FunctionTypeEnum.constant, lower_bound=shader_body.primary_detail_map_scale)
 
-        parameter.animation_properties_tag_block_header = TAG.TagBlockHeader("tbfd", 0, len(parameter.animation_properties), 28)
+        parameter.animation_properties_header = TAG.TagBlockHeader("tbfd", 0, len(parameter.animation_properties), 28)
         parameter.animation_properties_tag_block = TAG.TagBlock(len(parameter.animation_properties))
         SHADER.parameters.append(parameter)
 
     if not shader_body.reflection_cube_map.name == "":
         parameter = add_parameter(SHADER, TAG, parameter_name="environment_map", bitmap_name=shader_body.reflection_cube_map.name, float_value=0.0)
-        parameter.animation_properties_tag_block_header = TAG.TagBlockHeader("tbfd", 0, len(parameter.animation_properties), 28)
+        parameter.animation_properties_header = TAG.TagBlockHeader("tbfd", 0, len(parameter.animation_properties), 28)
         parameter.animation_properties_tag_block = TAG.TagBlock(len(parameter.animation_properties))
         SHADER.parameters.append(parameter)
 
@@ -270,7 +270,7 @@ def generate_tex_bump_dprs_env_illum(shader_body, TAG, SHADER):
     SHADER.parameters.append(add_parameter(SHADER, TAG, parameter_name="emissive_color", enum=TypeEnum.color, rgba=shader_body.color_of_emitted_light))
     SHADER.parameters.append(add_parameter(SHADER, TAG, parameter_name="emissive_power", enum=TypeEnum.value, float_value=shader_body.power / 1000))
 
-    parameter.animation_properties_tag_block_header = TAG.TagBlockHeader("tbfd", 0, len(parameter.animation_properties), 28)
+    parameter.animation_properties_header = TAG.TagBlockHeader("tbfd", 0, len(parameter.animation_properties), 28)
     parameter.animation_properties_tag_block = TAG.TagBlock(len(parameter.animation_properties))
     SHADER.parameters.append(parameter)
 
@@ -281,13 +281,13 @@ def generate_tex_bump_env_illum_3_channel(shader_body, TAG, SHADER):
             add_animation_property(SHADER, TAG, parameter, AnimationTypeEnum.bitmap_scale_x, FunctionTypeEnum.constant, lower_bound=shader_body.bump_map_scale)
             add_animation_property(SHADER, TAG, parameter, AnimationTypeEnum.bitmap_scale_y, FunctionTypeEnum.constant, lower_bound=shader_body.bump_map_scale)
 
-        parameter.animation_properties_tag_block_header = TAG.TagBlockHeader("tbfd", 0, len(parameter.animation_properties), 28)
+        parameter.animation_properties_header = TAG.TagBlockHeader("tbfd", 0, len(parameter.animation_properties), 28)
         parameter.animation_properties_tag_block = TAG.TagBlock(len(parameter.animation_properties))
         SHADER.parameters.append(parameter)
 
     if not shader_body.base_map.name == "":
         parameter = add_parameter(SHADER, TAG, parameter_name="base_map", bitmap_name=shader_body.base_map.name, float_value=0.0)
-        parameter.animation_properties_tag_block_header = TAG.TagBlockHeader("tbfd", 0, len(parameter.animation_properties), 28)
+        parameter.animation_properties_header = TAG.TagBlockHeader("tbfd", 0, len(parameter.animation_properties), 28)
         parameter.animation_properties_tag_block = TAG.TagBlock(len(parameter.animation_properties))
         SHADER.parameters.append(parameter)
 
@@ -297,13 +297,13 @@ def generate_tex_bump_env_illum_3_channel(shader_body, TAG, SHADER):
             add_animation_property(SHADER, TAG, parameter, AnimationTypeEnum.bitmap_scale_x, FunctionTypeEnum.constant, lower_bound=shader_body.primary_detail_map_scale)
             add_animation_property(SHADER, TAG, parameter, AnimationTypeEnum.bitmap_scale_y, FunctionTypeEnum.constant, lower_bound=shader_body.primary_detail_map_scale)
 
-        parameter.animation_properties_tag_block_header = TAG.TagBlockHeader("tbfd", 0, len(parameter.animation_properties), 28)
+        parameter.animation_properties_header = TAG.TagBlockHeader("tbfd", 0, len(parameter.animation_properties), 28)
         parameter.animation_properties_tag_block = TAG.TagBlock(len(parameter.animation_properties))
         SHADER.parameters.append(parameter)
 
     if not shader_body.reflection_cube_map.name == "":
         parameter = add_parameter(SHADER, TAG, parameter_name="environment_map", bitmap_name=shader_body.reflection_cube_map.name, float_value=0.0)
-        parameter.animation_properties_tag_block_header = TAG.TagBlockHeader("tbfd", 0, len(parameter.animation_properties), 28)
+        parameter.animation_properties_header = TAG.TagBlockHeader("tbfd", 0, len(parameter.animation_properties), 28)
         parameter.animation_properties_tag_block = TAG.TagBlock(len(parameter.animation_properties))
         SHADER.parameters.append(parameter)
 
@@ -320,7 +320,7 @@ def generate_tex_bump_env_illum_3_channel(shader_body, TAG, SHADER):
             add_animation_property(SHADER, TAG, parameter, AnimationTypeEnum.bitmap_scale_x, FunctionTypeEnum.constant, lower_bound=shader_body.map_scale)
             add_animation_property(SHADER, TAG, parameter, AnimationTypeEnum.bitmap_scale_y, FunctionTypeEnum.constant, lower_bound=shader_body.map_scale)
 
-        parameter.animation_properties_tag_block_header = TAG.TagBlockHeader("tbfd", 0, len(parameter.animation_properties), 28)
+        parameter.animation_properties_header = TAG.TagBlockHeader("tbfd", 0, len(parameter.animation_properties), 28)
         parameter.animation_properties_tag_block = TAG.TagBlock(len(parameter.animation_properties))
         SHADER.parameters.append(parameter)
         SHADER.parameters.append(add_parameter(SHADER, TAG, parameter_name="lightmap_emmisive_map", bitmap_name=shader_body.map.name, float_value=0.0))
@@ -335,13 +335,13 @@ def generate_tex_bump_illum(shader_body, TAG, SHADER):
             add_animation_property(SHADER, TAG, parameter, AnimationTypeEnum.bitmap_scale_x, FunctionTypeEnum.constant, lower_bound=shader_body.bump_map_scale)
             add_animation_property(SHADER, TAG, parameter, AnimationTypeEnum.bitmap_scale_y, FunctionTypeEnum.constant, lower_bound=shader_body.bump_map_scale)
 
-        parameter.animation_properties_tag_block_header = TAG.TagBlockHeader("tbfd", 0, len(parameter.animation_properties), 28)
+        parameter.animation_properties_header = TAG.TagBlockHeader("tbfd", 0, len(parameter.animation_properties), 28)
         parameter.animation_properties_tag_block = TAG.TagBlock(len(parameter.animation_properties))
         SHADER.parameters.append(parameter)
 
     if not shader_body.base_map.name == "":
         parameter = add_parameter(SHADER, TAG, parameter_name="base_map", bitmap_name=shader_body.base_map.name, float_value=0.0)
-        parameter.animation_properties_tag_block_header = TAG.TagBlockHeader("tbfd", 0, len(parameter.animation_properties), 28)
+        parameter.animation_properties_header = TAG.TagBlockHeader("tbfd", 0, len(parameter.animation_properties), 28)
         parameter.animation_properties_tag_block = TAG.TagBlock(len(parameter.animation_properties))
         SHADER.parameters.append(parameter)
 
@@ -351,7 +351,7 @@ def generate_tex_bump_illum(shader_body, TAG, SHADER):
             add_animation_property(SHADER, TAG, parameter, AnimationTypeEnum.bitmap_scale_x, FunctionTypeEnum.constant, lower_bound=shader_body.primary_detail_map_scale)
             add_animation_property(SHADER, TAG, parameter, AnimationTypeEnum.bitmap_scale_y, FunctionTypeEnum.constant, lower_bound=shader_body.primary_detail_map_scale)
 
-        parameter.animation_properties_tag_block_header = TAG.TagBlockHeader("tbfd", 0, len(parameter.animation_properties), 28)
+        parameter.animation_properties_header = TAG.TagBlockHeader("tbfd", 0, len(parameter.animation_properties), 28)
         parameter.animation_properties_tag_block = TAG.TagBlock(len(parameter.animation_properties))
         SHADER.parameters.append(parameter)
 
@@ -364,7 +364,7 @@ def generate_tex_bump_illum(shader_body, TAG, SHADER):
     SHADER.parameters.append(add_parameter(SHADER, TAG, parameter_name="emissive_color", enum=TypeEnum.color, rgba=shader_body.color_of_emitted_light))
     SHADER.parameters.append(add_parameter(SHADER, TAG, parameter_name="emissive_power", enum=TypeEnum.value, float_value=shader_body.power / 1000))
 
-    parameter.animation_properties_tag_block_header = TAG.TagBlockHeader("tbfd", 0, len(parameter.animation_properties), 28)
+    parameter.animation_properties_header = TAG.TagBlockHeader("tbfd", 0, len(parameter.animation_properties), 28)
     parameter.animation_properties_tag_block = TAG.TagBlock(len(parameter.animation_properties))
     SHADER.parameters.append(parameter)
 
@@ -375,13 +375,13 @@ def generate_tex_bump_illum_3_channel(shader_body, TAG, SHADER):
             add_animation_property(SHADER, TAG, parameter, AnimationTypeEnum.bitmap_scale_x, FunctionTypeEnum.constant, lower_bound=shader_body.bump_map_scale)
             add_animation_property(SHADER, TAG, parameter, AnimationTypeEnum.bitmap_scale_y, FunctionTypeEnum.constant, lower_bound=shader_body.bump_map_scale)
 
-        parameter.animation_properties_tag_block_header = TAG.TagBlockHeader("tbfd", 0, len(parameter.animation_properties), 28)
+        parameter.animation_properties_header = TAG.TagBlockHeader("tbfd", 0, len(parameter.animation_properties), 28)
         parameter.animation_properties_tag_block = TAG.TagBlock(len(parameter.animation_properties))
         SHADER.parameters.append(parameter)
 
     if not shader_body.base_map.name == "":
         parameter = add_parameter(SHADER, TAG, parameter_name="base_map", bitmap_name=shader_body.base_map.name, float_value=0.0)
-        parameter.animation_properties_tag_block_header = TAG.TagBlockHeader("tbfd", 0, len(parameter.animation_properties), 28)
+        parameter.animation_properties_header = TAG.TagBlockHeader("tbfd", 0, len(parameter.animation_properties), 28)
         parameter.animation_properties_tag_block = TAG.TagBlock(len(parameter.animation_properties))
         SHADER.parameters.append(parameter)
 
@@ -391,7 +391,7 @@ def generate_tex_bump_illum_3_channel(shader_body, TAG, SHADER):
             add_animation_property(SHADER, TAG, parameter, AnimationTypeEnum.bitmap_scale_x, FunctionTypeEnum.constant, lower_bound=shader_body.primary_detail_map_scale)
             add_animation_property(SHADER, TAG, parameter, AnimationTypeEnum.bitmap_scale_y, FunctionTypeEnum.constant, lower_bound=shader_body.primary_detail_map_scale)
 
-        parameter.animation_properties_tag_block_header = TAG.TagBlockHeader("tbfd", 0, len(parameter.animation_properties), 28)
+        parameter.animation_properties_header = TAG.TagBlockHeader("tbfd", 0, len(parameter.animation_properties), 28)
         parameter.animation_properties_tag_block = TAG.TagBlock(len(parameter.animation_properties))
         SHADER.parameters.append(parameter)
 
@@ -404,7 +404,7 @@ def generate_tex_bump_illum_3_channel(shader_body, TAG, SHADER):
             add_animation_property(SHADER, TAG, parameter, AnimationTypeEnum.bitmap_scale_x, FunctionTypeEnum.constant, lower_bound=shader_body.map_scale)
             add_animation_property(SHADER, TAG, parameter, AnimationTypeEnum.bitmap_scale_y, FunctionTypeEnum.constant, lower_bound=shader_body.map_scale)
 
-        parameter.animation_properties_tag_block_header = TAG.TagBlockHeader("tbfd", 0, len(parameter.animation_properties), 28)
+        parameter.animation_properties_header = TAG.TagBlockHeader("tbfd", 0, len(parameter.animation_properties), 28)
         parameter.animation_properties_tag_block = TAG.TagBlock(len(parameter.animation_properties))
         SHADER.parameters.append(parameter)
         SHADER.parameters.append(add_parameter(SHADER, TAG, parameter_name="lightmap_emmisive_map", bitmap_name=shader_body.map.name, float_value=0.0))

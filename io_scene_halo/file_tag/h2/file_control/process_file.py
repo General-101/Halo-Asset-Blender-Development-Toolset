@@ -26,16 +26,9 @@
 
 from xml.dom import minidom
 from ....global_functions import tag_format
-from .format import (
-    ControlAsset, 
-    ObjectFlags, 
-    LightmapShadowModeEnum, 
-    SweetenerSizeEnum,
-    DeviceFlags,
-    LightmapFlags,
-    ControlTypeEnum,
-    TriggersWhenEnum,
-    )
+from ..file_object.format import ObjectFlags, LightmapShadowModeEnum, SweetenerSizeEnum
+from ..file_device.format import DeviceFlags, LightmapFlags
+from .format import ControlAsset, ControlTypeEnum, TriggersWhenEnum
 
 XML_OUTPUT = False
 

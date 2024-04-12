@@ -54,40 +54,74 @@ class SweetenerSizeEnum(Enum):
     medium = auto()
     large = auto()
 
-class DeviceFlags(Flag):
-    position_loops = auto()
-    unused = auto()
-    allow_interpolation = auto()
-
-class LightmapFlags(Flag):
-    dont_use_in_lightmap = auto()
-    dont_use_in_lightprobe = auto()
-
-class MachineTypeEnum(Enum):
-    door = 0
-    platform = auto()
-    gear = auto()
-
-class MachineFlags(Flag):
-    pathfinding_obstacle = auto()
-    but_not_when_open = auto()
-    elevator = auto()
-
-class CollisionResponseEnum(Enum):
-    pause_until_crushed = 0
-    reverse_directions = auto()
-
 class PathfindingPolicyEnum(Enum):
-    discs = 0
-    sectors = auto()
-    cut_out = auto()
-    none = auto()
+    pathfinding_cut_out = 0
+    pathfinding_static = auto()
+    pathfinding_dynamic = auto()
+    pathfinding_none = auto()
 
-class MachineAsset():
+class SceneryFlags(Flag):
+    physically_stimulates = auto()
+
+class LightmappingPolicyEnum(Enum):
+    per_vertex = 0
+    per_pixel = auto()
+    dynamic = auto()
+
+class AIFlags(Flag):
+    destroyable_cover = auto()
+    pathfinding_ignore_when_dead = auto()
+    dynamic_cover = auto()
+
+class AISizeEnum(Enum):
+    default = 0
+    tiny = auto()
+    small = auto()
+    medium = auto()
+    large = auto()
+    huge = auto()
+    immobile = auto()
+
+class LeapJumpSpeedEnum(Enum):
+    none = 0
+    down = auto()
+    step = auto()
+    crouch = auto()
+    stand = auto()
+    storey = auto()
+    tower = auto()
+    infinite = auto()
+
+class FunctionFlags(Flag):
+    invert = auto()
+    mapping_does_not_controls_active = auto()
+    always_active = auto()
+    random_time_offset = auto()
+
+class ChangeColorEnum(Enum):
+    none = 0
+    primary = auto()
+    secondary = auto()
+    tertiary = auto()
+    quaternary = auto()
+
+class ScaleFlags(Flag):
+    blend_in_hsv = auto()
+    more_colors = auto()
+
+class ResourceTypeEnum(Enum):
+    bitmap = 0
+    sound = auto()
+    render_model_geometry = auto()
+    cluster_geometry = auto()
+    cluster_instanced_geometry = auto()
+    lightmap_geometry_object_buckets = auto()
+    lightmap_geometry_instance_buckets = auto()
+    lightmap_cluster_bitmaps = auto()
+    lightmap_instance_bitmaps = auto()
+
+class ObjectAsset():
     def __init__(self):
-        self.header = None
-        self.machine_body_header = None
-        self.machine_body = None
         self.ai_properties_header = None
         self.ai_properties = None
         self.functions_header = None
@@ -103,16 +137,13 @@ class MachineAsset():
         self.predicted_resources_header = None
         self.predicted_resources = None
 
-    class MachineBody:
+    class ObjectBody:
         def __init__(self, object_flags=0, bounding_radius=0.0, bounding_offset=Vector(), acceleration_scale=0.0, lightmap_shadow_mode=0, sweetner_size=0, 
                      dynamic_light_sphere_radius=0.0, dynamic_light_sphere_offset=Vector(), default_model_variant="", default_model_variant_length=0, model=None, crate_object=None, 
                      modifier_shader=None, creation_effect=None, material_effects=None, ai_properties_tag_block=None, functions_tag_block=None, apply_collision_damage_scale=0.0, 
                      min_game_acc=0.0, max_game_acc=0.0, min_game_scale=0.0, max_game_scale=0.0, min_abs_acc=0.0, max_abs_acc=0.0, min_abs_scale=0.0, max_abs_scale=0.0, 
                      hud_text_message_index=0, attachments_tag_block=None, widgets_tag_block=None, old_functions_tag_block=None, change_colors_tag_block=None, 
-                     predicted_resources_tag_block=None, device_flags=0, power_transition_time=0.0, power_acceleration_time=0.0, position_transition_time=0.0, 
-                     position_acceleration_time=0.0, depowered_position_transition_time=0.0, depowered_position_acceleration_time=0.0, lightmap_flags=0, open_up=None, 
-                     close_down=None, opened=None, closed=None, depowered=None, repowered=None, delay_time=0.0, delay_effect=None, automatic_activation_radius=0.0, machine_type=0, 
-                     machine_flags=0, door_open_time=0.0, door_occlusion_time=(0.0, 0.0), collision_response=0, elevator_node=0, pathfinding_policy=0):
+                     predicted_resources_tag_block=None):
             self.object_flags = object_flags
             self.bounding_radius = bounding_radius
             self.bounding_offset = bounding_offset
@@ -145,27 +176,76 @@ class MachineAsset():
             self.old_functions_tag_block = old_functions_tag_block
             self.change_colors_tag_block = change_colors_tag_block
             self.predicted_resources_tag_block = predicted_resources_tag_block
-            self.device_flags = device_flags
-            self.power_transition_time = power_transition_time
-            self.power_acceleration_time = power_acceleration_time
-            self.position_transition_time = position_transition_time
-            self.position_acceleration_time = position_acceleration_time
-            self.depowered_position_transition_time = depowered_position_transition_time
-            self.depowered_position_acceleration_time = depowered_position_acceleration_time
-            self.lightmap_flags = lightmap_flags
-            self.open_up = open_up
-            self.close_down = close_down
-            self.opened = opened
-            self.closed = closed
-            self.depowered = depowered
-            self.repowered = repowered
-            self.delay_time = delay_time
-            self.delay_effect = delay_effect
-            self.automatic_activation_radius = automatic_activation_radius
-            self.machine_type = machine_type
-            self.machine_flags = machine_flags
-            self.door_open_time = door_open_time
-            self.door_occlusion_time = door_occlusion_time
-            self.collision_response = collision_response
-            self.elevator_node = elevator_node
-            self.pathfinding_policy = pathfinding_policy
+
+    class AIProperties:
+        def __init__(self, ai_flags=0, ai_type_name="", ai_type_name_length=0, ai_size=0, leap_jump_speed=0):
+            self.ai_flags = ai_flags
+            self.ai_type_name = ai_type_name
+            self.ai_type_name_length = ai_type_name_length
+            self.ai_size = ai_size
+            self.leap_jump_speed = leap_jump_speed
+
+    class Function:
+        def __init__(self, flags=0, import_name="", import_name_length=0, export_name="", export_name_length=0, turn_off_with="", turn_off_with_length=0, min_value=0, 
+                     function_property=None, scale_by="", scale_by_length=0):
+            self.flags = flags
+            self.import_name = import_name
+            self.import_name_length = import_name_length
+            self.export_name = export_name
+            self.export_name_length = export_name_length
+            self.turn_off_with = turn_off_with
+            self.turn_off_with_length = turn_off_with_length
+            self.min_value = min_value
+            self.function_property = function_property
+            self.scale_by = scale_by
+            self.scale_by_length = scale_by_length
+
+    class Attachment:
+        def __init__(self, attachment_type=None, marker="", marker_length=0, change_color=0, primary_scale="", primary_scale_length=0, secondary_scale="", secondary_scale_length=0):
+            self.attachment_type = attachment_type
+            self.marker = marker
+            self.marker_length = marker_length
+            self.change_color = change_color
+            self.primary_scale = primary_scale
+            self.primary_scale_length = primary_scale_length
+            self.secondary_scale = secondary_scale
+            self.secondary_scale_length = secondary_scale_length
+
+    class StringEntry:
+        def __init__(self, name="", name_length=0):
+            self.name = name
+            self.name_length = name_length
+
+    class ChangeColor:
+        def __init__(self, initial_permutations_tag_block=None, initial_permutations_header=None, initial_permutations=None, functions_tag_block=None, functions_header=None, 
+                     functions=None):
+            self.initial_permutations_tag_block = initial_permutations_tag_block
+            self.initial_permutations_header = initial_permutations_header
+            self.initial_permutations = initial_permutations
+            self.functions_tag_block = functions_tag_block
+            self.functions_header = functions_header
+            self.functions = functions
+
+    class InitialPermutations:
+        def __init__(self, weight=0.0, color_lower_bound=(0, 0, 0, 0), color_upper_bound=(0, 0, 0, 0), variant_name="", variant_name_length=0):
+            self.weight = weight
+            self.color_lower_bound = color_lower_bound
+            self.color_upper_bound = color_upper_bound
+            self.variant_name = variant_name
+            self.variant_name_length = variant_name_length
+
+    class Function:
+        def __init__(self, scale_flags=0, color_lower_bound=(0, 0, 0, 0), color_upper_bound=(0, 0, 0, 0), darken_by="", darken_by_length=0, scale_by="", scale_by_length=0):
+            self.scale_flags = scale_flags
+            self.color_lower_bound = color_lower_bound
+            self.color_upper_bound = color_upper_bound
+            self.darken_by = darken_by
+            self.darken_by_length = darken_by_length
+            self.scale_by = scale_by
+            self.scale_by_length = scale_by_length
+
+    class PredictedResources:
+        def __init__(self, predicted_resources_type=0, resource_index=0, tag_index=0):
+            self.predicted_resources_type = predicted_resources_type
+            self.resource_index = resource_index
+            self.tag_index = tag_index

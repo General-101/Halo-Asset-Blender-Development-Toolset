@@ -31,6 +31,10 @@ from math import radians
 from .sky.sun_light import SunLight, sun_solid_angle
 from .sky.sky_math import SkyHalo
 
+import bpy
+import math
+
+
 columm_rot = 13.84615384615385
 column_elements = 25
 row_rot = 11.25

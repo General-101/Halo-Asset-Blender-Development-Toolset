@@ -26,12 +26,8 @@
 
 from xml.dom import minidom
 from ....global_functions import tag_format
-from .format import (
-    SoundSceneryAsset, 
-    ObjectFlags, 
-    LightmapShadowModeEnum, 
-    SweetenerSizeEnum,
-    )
+from ..file_object.format import ObjectFlags, LightmapShadowModeEnum, SweetenerSizeEnum
+from .format import SoundSceneryAsset
 
 XML_OUTPUT = False
 

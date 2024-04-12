@@ -46,7 +46,6 @@ def build_mesh_layout(asset, section, region_name, random_color_gen, object_mesh
         triangle_mat_indices = []
         vertices = [raw_vertex.position for raw_vertex in section_data.raw_vertices]
         vertex_normals = [raw_vertex.normal for raw_vertex in section_data.raw_vertices]
-
         for part_idx, part in enumerate(section_data.parts):
             triangle_part = []
 

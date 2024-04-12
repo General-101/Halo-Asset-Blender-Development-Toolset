@@ -27,13 +27,30 @@
 import os
 import bpy
 import zlib
+import struct
 import numpy as np
 
 from .. import config
 from mathutils import Vector
+from enum import Flag, Enum, auto
 from ..file_tag.h1.file_shader_environment.format import EnvironmentTypeEnum, EnvironmentFlags, DiffuseFlags, ReflectionFlags
 from ..file_tag.h1.file_shader_model.format import ModelFlags, DetailFumctionEnum, DetailMaskEnum, FunctionEnum
 from ..file_tag.h1.file_bitmap.format import FormatEnum
+from ..file_tag.h2.file_shader.format import (
+        ShaderAsset,
+        ShaderFlags,
+        TypeEnum,
+        ShaderLODBiasEnum,
+        SpecularTypeEnum,
+        LightmapTypeEnum,
+        AnimationTypeEnum,
+        FunctionTypeEnum,
+        OutputTypeFlags,
+        TransitionExponentEnum,
+        PeriodicExponentEnum,
+        )
+from ..file_tag.h2.file_particle.format import OutputModifierInputEnum
+from . import global_functions
 
 try:
     from PIL import Image
@@ -1939,3 +1956,621 @@ def generate_h2_shader(mat, tag_ref, report):
                 else:
                     print("Skipping shader")
                     #generate_shader_environment(mat, shader, report)
+
+class OpaqueTemplateEnum(Enum):
+    active_camo_opaque = r'shaders\shader_templates\opaque\active_camo_opaque'
+    bloom = r'shaders\shader_templates\opaque\bloom'
+    decal_simple = r'shaders\shader_templates\opaque\decal_simple'
+    emblem_flag = r'shaders\shader_templates\opaque\emblem_flag'
+    emblem_opaque = r'shaders\shader_templates\opaque\emblem_opaque'
+    emblem_overlay = r'shaders\shader_templates\opaque\emblem_overlay'
+    emblem_overlay_simple = r'shaders\shader_templates\opaque\emblem_overlay_simple'
+    illum = r'shaders\shader_templates\opaque\illum'
+    illum_3_channel = r'shaders\shader_templates\opaque\illum_3_channel'
+    illum_3_channel_opaque = r'shaders\shader_templates\opaque\illum_3_channel_opaque'
+    illum_3_channel_plasma = r'shaders\shader_templates\opaque\illum_3_channel_plasma'
+    illum_bloom = r'shaders\shader_templates\opaque\illum_bloom'
+    illum_bloom_3_channel = r'shaders\shader_templates\opaque\illum_bloom_3_channel'
+    illum_bloom_3_channel_opaque = r'shaders\shader_templates\opaque\illum_bloom_3_channel_opaque'
+    illum_bloom_masked = r'shaders\shader_templates\opaque\illum_bloom_masked'
+    illum_bloom_opaque = r'shaders\shader_templates\opaque\illum_bloom_opaque'
+    illum_clamped = r'shaders\shader_templates\opaque\illum_clamped'
+    illum_detail = r'shaders\shader_templates\opaque\illum_detail'
+    illum_opaque = r'shaders\shader_templates\opaque\illum_opaque'
+    illum_opaque_index = r'shaders\shader_templates\opaque\illum_opaque_index'
+    illum_wrap = r'shaders\shader_templates\opaque\illum_wrap'
+    overlay = r'shaders\shader_templates\opaque\overlay'
+    prt_lightmap = r'shaders\shader_templates\opaque\prt_lightmap'
+    prt_scarab = r'shaders\shader_templates\opaque\prt_scarab'
+    prt_simple = r'shaders\shader_templates\opaque\prt_simple'
+    prt_simple_lm_emissive = r'shaders\shader_templates\opaque\prt_simple_lm_emissive'
+    render_layer_disabled = r'shaders\shader_templates\opaque\render_layer_disabled'
+    tex_alpha_test = r'shaders\shader_templates\opaque\tex_alpha_test'
+    tex_alpha_test_clamped = r'shaders\shader_templates\opaque\tex_alpha_test_clamped'
+    tex_bump = r'shaders\shader_templates\opaque\tex_bump'
+    tex_bump_active_camo = r'shaders\shader_templates\opaque\tex_bump_active_camo'
+    tex_bump_alpha_test = r'shaders\shader_templates\opaque\tex_bump_alpha_test'
+    tex_bump_alpha_test_clamped = r'shaders\shader_templates\opaque\tex_bump_alpha_test_clamped'
+    tex_bump_alpha_test_clamped_single_pass = r'shaders\shader_templates\opaque\tex_bump_alpha_test_clamped_single_pass'
+    tex_bump_alpha_test_detail = r'shaders\shader_templates\opaque\tex_bump_alpha_test_detail'
+    tex_bump_alpha_test_single_pass = r'shaders\shader_templates\opaque\tex_bump_alpha_test_single_pass'
+    tex_bump_bloom = r'shaders\shader_templates\opaque\tex_bump_bloom'
+    tex_bump_clamped_multiply_map = r'shaders\shader_templates\opaque\tex_bump_clamped_multiply_map'
+    tex_bump_detail_blend = r'shaders\shader_templates\opaque\tex_bump_detail_blend'
+    tex_bump_detail_blend_detail = r'shaders\shader_templates\opaque\tex_bump_detail_blend_detail'
+    tex_bump_detail_blend_specular = r'shaders\shader_templates\opaque\tex_bump_detail_blend_specular'
+    tex_bump_detail_blend_specular_combined = r'shaders\shader_templates\opaque\tex_bump_detail_blend_specular_combined'
+    tex_bump_detail_blend_specular_dblmult = r'shaders\shader_templates\opaque\tex_bump_detail_blend_specular_dblmult'
+    tex_bump_detail_keep = r'shaders\shader_templates\opaque\tex_bump_detail_keep'
+    tex_bump_detail_keep_blend = r'shaders\shader_templates\opaque\tex_bump_detail_keep_blend'
+    tex_bump_detail_mask = r'shaders\shader_templates\opaque\tex_bump_detail_mask'
+    tex_bump_detail_overlay = r'shaders\shader_templates\opaque\tex_bump_detail_overlay'
+    tex_bump_dprs_env = r'shaders\shader_templates\opaque\tex_bump_dprs_env'
+    tex_bump_dprs_env_illum = r'shaders\shader_templates\opaque\tex_bump_dprs_env_illum'
+    tex_bump_dprs_env_illum_emissive = r'shaders\shader_templates\opaque\tex_bump_dprs_env_illum_emissive'
+    tex_bump_env = r'shaders\shader_templates\opaque\tex_bump_env'
+    tex_bump_env_alpha_test = r'shaders\shader_templates\opaque\tex_bump_env_alpha_test'
+    tex_bump_env_alpha_test_combined = r'shaders\shader_templates\opaque\tex_bump_env_alpha_test_combined'
+    tex_bump_env_alpha_test_indexed = r'shaders\shader_templates\opaque\tex_bump_env_alpha_test_indexed'
+    tex_bump_env_clamped = r'shaders\shader_templates\opaque\tex_bump_env_clamped'
+    tex_bump_env_clamped_combined = r'shaders\shader_templates\opaque\tex_bump_env_clamped_combined'
+    tex_bump_env_combined = r'shaders\shader_templates\opaque\tex_bump_env_combined'
+    tex_bump_env_dbl_spec = r'shaders\shader_templates\opaque\tex_bump_env_dbl_spec'
+    tex_bump_env_detail_blend = r'shaders\shader_templates\opaque\tex_bump_env_detail_blend'
+    tex_bump_env_detail_blend_specular = r'shaders\shader_templates\opaque\tex_bump_env_detail_blend_specular'
+    tex_bump_env_detail_mask = r'shaders\shader_templates\opaque\tex_bump_env_detail_mask'
+    tex_bump_env_detail_mask_combined = r'shaders\shader_templates\opaque\tex_bump_env_detail_mask_combined'
+    tex_bump_env_detail_overlay = r'shaders\shader_templates\opaque\tex_bump_env_detail_overlay'
+    tex_bump_env_detail_overlay_combined = r'shaders\shader_templates\opaque\tex_bump_env_detail_overlay_combined'
+    tex_bump_env_fast_masked = r'shaders\shader_templates\opaque\tex_bump_env_fast_masked'
+    tex_bump_env_four_change_color = r'shaders\shader_templates\opaque\tex_bump_env_four_change_color'
+    tex_bump_env_four_change_color_combined = r'shaders\shader_templates\opaque\tex_bump_env_four_change_color_combined'
+    tex_bump_env_illum = r'shaders\shader_templates\opaque\tex_bump_env_illum'
+    tex_bump_env_illum_3_channel = r'shaders\shader_templates\opaque\tex_bump_env_illum_3_channel'
+    tex_bump_env_illum_3_channel_combined = r'shaders\shader_templates\opaque\tex_bump_env_illum_3_channel_combined'
+    tex_bump_env_illum_3_channel_combined_unfucked = r'shaders\shader_templates\opaque\tex_bump_env_illum_3_channel_combined_unfucked'
+    tex_bump_env_illum_3_channel_occlusion = r'shaders\shader_templates\opaque\tex_bump_env_illum_3_channel_occlusion'
+    tex_bump_env_illum_3_channel_occlusion_combined = r'shaders\shader_templates\opaque\tex_bump_env_illum_3_channel_occlusion_combined'
+    tex_bump_env_illum_combined = r'shaders\shader_templates\opaque\tex_bump_env_illum_combined'
+    tex_bump_env_illum_combined_emmisive_map = r'shaders\shader_templates\opaque\tex_bump_env_illum_combined_emmisive_map'
+    tex_bump_env_illum_detail_honor_guard = r'shaders\shader_templates\opaque\tex_bump_env_illum_detail_honor_guard'
+    tex_bump_env_illum_detail_honor_guard_base = r'shaders\shader_templates\opaque\tex_bump_env_illum_detail_honor_guard_base'
+    tex_bump_env_illum_emmisive_map = r'shaders\shader_templates\opaque\tex_bump_env_illum_emmisive_map'
+    tex_bump_env_illum_four_change_color = r'shaders\shader_templates\opaque\tex_bump_env_illum_four_change_color'
+    tex_bump_env_illum_four_change_color_no_lod = r'shaders\shader_templates\opaque\tex_bump_env_illum_four_change_color_no_lod'
+    tex_bump_env_illum_tiling_specular = r'shaders\shader_templates\opaque\tex_bump_env_illum_tiling_specular'
+    tex_bump_env_illum_trace = r'shaders\shader_templates\opaque\tex_bump_env_illum_trace'
+    tex_bump_env_illum_two_change_color = r'shaders\shader_templates\opaque\tex_bump_env_illum_two_change_color'
+    tex_bump_env_illum_two_change_color_combined = r'shaders\shader_templates\opaque\tex_bump_env_illum_two_change_color_combined'
+    tex_bump_env_no_detail = r'shaders\shader_templates\opaque\tex_bump_env_no_detail'
+    tex_bump_env_tiling_specular = r'shaders\shader_templates\opaque\tex_bump_env_tiling_specular'
+    tex_bump_env_two_change_color = r'shaders\shader_templates\opaque\tex_bump_env_two_change_color'
+    tex_bump_env_two_change_color_combined = r'shaders\shader_templates\opaque\tex_bump_env_two_change_color_combined'
+    tex_bump_env_two_change_color_indexed = r'shaders\shader_templates\opaque\tex_bump_env_two_change_color_indexed'
+    tex_bump_env_two_change_color_multiply_map_self_illum = r'shaders\shader_templates\opaque\tex_bump_env_two_change_color_multiply_map_self_illum'
+    tex_bump_env_two_detail = r'shaders\shader_templates\opaque\tex_bump_env_two_detail'
+    tex_bump_env_two_detail_combined = r'shaders\shader_templates\opaque\tex_bump_env_two_detail_combined'
+    tex_bump_foliage = r'shaders\shader_templates\opaque\tex_bump_foliage'
+    tex_bump_four_change_color = r'shaders\shader_templates\opaque\tex_bump_four_change_color'
+    tex_bump_illum = r'shaders\shader_templates\opaque\tex_bump_illum'
+    tex_bump_illum_3_channel = r'shaders\shader_templates\opaque\tex_bump_illum_3_channel'
+    tex_bump_illum_alpha_test = r'shaders\shader_templates\opaque\tex_bump_illum_alpha_test'
+    tex_bump_illum_alpha_test_illum = r'shaders\shader_templates\opaque\tex_bump_illum_alpha_test_illum'
+    tex_bump_illum_alpha_test_single_pass = r'shaders\shader_templates\opaque\tex_bump_illum_alpha_test_single_pass'
+    tex_bump_illum_bloom = r'shaders\shader_templates\opaque\tex_bump_illum_bloom'
+    tex_bump_illum_bloom_3_channel = r'shaders\shader_templates\opaque\tex_bump_illum_bloom_3_channel'
+    tex_bump_illum_detail = r'shaders\shader_templates\opaque\tex_bump_illum_detail'
+    tex_bump_illum_detail_honor_guard = r'shaders\shader_templates\opaque\tex_bump_illum_detail_honor_guard'
+    tex_bump_illum_no_specular = r'shaders\shader_templates\opaque\tex_bump_illum_no_specular'
+    tex_bump_illum_trace = r'shaders\shader_templates\opaque\tex_bump_illum_trace'
+    tex_bump_illum_two_detail = r'shaders\shader_templates\opaque\tex_bump_illum_two_detail'
+    tex_bump_meter_illum = r'shaders\shader_templates\opaque\tex_bump_meter_illum'
+    tex_bump_multiply_map = r'shaders\shader_templates\opaque\tex_bump_multiply_map'
+    tex_bump_no_alpha = r'shaders\shader_templates\opaque\tex_bump_no_alpha'
+    tex_bump_no_specular = r'shaders\shader_templates\opaque\tex_bump_no_specular'
+    tex_bump_one_change_color = r'shaders\shader_templates\opaque\tex_bump_one_change_color'
+    tex_bump_plasma = r'shaders\shader_templates\opaque\tex_bump_plasma'
+    tex_bump_plasma_one_channel_illum = r'shaders\shader_templates\opaque\tex_bump_plasma_one_channel_illum'
+    tex_bump_shiny = r'shaders\shader_templates\opaque\tex_bump_shiny'
+    tex_bump_terrain = r'shaders\shader_templates\opaque\tex_bump_terrain'
+    tex_bump_three_detail_blend = r'shaders\shader_templates\opaque\tex_bump_three_detail_blend'
+    tex_bump_tiling_specular = r'shaders\shader_templates\opaque\tex_bump_tiling_specular'
+    tex_bump_two_change_color = r'shaders\shader_templates\opaque\tex_bump_two_change_color'
+    tex_bump_two_change_color_multiply_map = r'shaders\shader_templates\opaque\tex_bump_two_change_color_multiply_map'
+    tex_bump_two_change_color_multiply_map_self_illum = r'shaders\shader_templates\opaque\tex_bump_two_change_color_multiply_map_self_illum'
+    tex_bump_two_detail = r'shaders\shader_templates\opaque\tex_bump_two_detail'
+    tex_bump_two_detail_tint = r'shaders\shader_templates\opaque\tex_bump_two_detail_tint'
+    tex_detail_blend = r'shaders\shader_templates\opaque\tex_detail_blend'
+    tex_env = r'shaders\shader_templates\opaque\tex_env'
+    tex_env_3_channel_illum = r'shaders\shader_templates\opaque\tex_env_3_channel_illum'
+    tex_illum = r'shaders\shader_templates\opaque\tex_illum'
+    tex_illum_bloom = r'shaders\shader_templates\opaque\tex_illum_bloom'
+
+class TransparentTemplateEnum(Enum):
+    add_illum_detail = r'shaders\shader_templates\transparent\add_illum_detail'
+    bumped_environment_additive = r'shaders\shader_templates\transparent\bumped_environment_additive'
+    bumped_environment_blended = r'shaders\shader_templates\transparent\bumped_environment_blended'
+    bumped_environment_darkened = r'shaders\shader_templates\transparent\bumped_environment_darkened'
+    bumped_environment_masked = r'shaders\shader_templates\transparent\bumped_environment_masked'
+    bumped_environment_mask_colored = r'shaders\shader_templates\transparent\bumped_environment_mask_colored'
+    cortana = r'shaders\shader_templates\transparent\cortana'
+    cortana_holographic_active_camo = r'shaders\shader_templates\transparent\cortana_holographic_active_camo'
+    lit = r'shaders\shader_templates\transparent\lit'
+    meter = r'shaders\shader_templates\transparent\meter'
+    meter_active_camo = r'shaders\shader_templates\transparent\meter_active_camo'
+    one_add_changecolor_screenspace_xform2 = r'shaders\shader_templates\transparent\one_add_changecolor_screenspace_xform2'
+    one_add_env_illum = r'shaders\shader_templates\transparent\one_add_env_illum'
+    one_add_env_illum_clamped = r'shaders\shader_templates\transparent\one_add_env_illum_clamped'
+    one_add_env_illum_trace = r'shaders\shader_templates\transparent\one_add_env_illum_trace'
+    one_add_illum = r'shaders\shader_templates\transparent\one_add_illum'
+    one_add_illum_detail = r'shaders\shader_templates\transparent\one_add_illum_detail'
+    one_add_illum_no_fog = r'shaders\shader_templates\transparent\one_add_illum_no_fog'
+    one_add_illum_screenspace_xform2 = r'shaders\shader_templates\transparent\one_add_illum_screenspace_xform2'
+    one_add_two_plus_two = r'shaders\shader_templates\transparent\one_add_two_plus_two'
+    one_alpha_env = r'shaders\shader_templates\transparent\one_alpha_env'
+    one_alpha_env_active_camo = r'shaders\shader_templates\transparent\one_alpha_env_active_camo'
+    one_alpha_env_clamped = r'shaders\shader_templates\transparent\one_alpha_env_clamped'
+    one_alpha_env_fixed = r'shaders\shader_templates\transparent\one_alpha_env_fixed'
+    one_alpha_env_illum = r'shaders\shader_templates\transparent\one_alpha_env_illum'
+    one_alpha_env_illum_specular_mask = r'shaders\shader_templates\transparent\one_alpha_env_illum_specular_mask'
+    one_alpha_env_plasma = r'shaders\shader_templates\transparent\one_alpha_env_plasma'
+    one_alpha_env_trace = r'shaders\shader_templates\transparent\one_alpha_env_trace'
+    overshield = r'shaders\shader_templates\transparent\overshield'
+    overshield_tartarus = r'shaders\shader_templates\transparent\overshield_tartarus'
+    particle_additive = r'shaders\shader_templates\transparent\particle_additive'
+    particle_additive_tint = r'shaders\shader_templates\transparent\particle_additive_tint'
+    particle_alpha_blend = r'shaders\shader_templates\transparent\particle_alpha_blend'
+    particle_alpha_blend_tint = r'shaders\shader_templates\transparent\particle_alpha_blend_tint'
+    particle_alpha_multiply_add = r'shaders\shader_templates\transparent\particle_alpha_multiply_add'
+    particle_alpha_multiply_add_tint = r'shaders\shader_templates\transparent\particle_alpha_multiply_add_tint'
+    particle_alpha_test = r'shaders\shader_templates\transparent\particle_alpha_test'
+    particle_alpha_test_no_lighting = r'shaders\shader_templates\transparent\particle_alpha_test_no_lighting'
+    particle_alpha_test_no_lighting_fixed_for_glass = r'shaders\shader_templates\transparent\particle_alpha_test_no_lighting_fixed_for_glass'
+    particle_alpha_test_tint = r'shaders\shader_templates\transparent\particle_alpha_test_tint'
+    particle_alpha_test_tint_no_lighting = r'shaders\shader_templates\transparent\particle_alpha_test_tint_no_lighting'
+    particle_plasma = r'shaders\shader_templates\transparent\particle_plasma'
+    plasma_1_channel = r'shaders\shader_templates\transparent\plasma_1_channel'
+    plasma_alpha = r'shaders\shader_templates\transparent\plasma_alpha'
+    plasma_alpha_active_camo = r'shaders\shader_templates\transparent\plasma_alpha_active_camo'
+    plasma_mask_offset = r'shaders\shader_templates\transparent\plasma_mask_offset'
+    plasma_mask_offset_active_camo = r'shaders\shader_templates\transparent\plasma_mask_offset_active_camo'
+    plasma_shield = r'shaders\shader_templates\transparent\plasma_shield'
+    plasma_shield_change_color = r'shaders\shader_templates\transparent\plasma_shield_change_color'
+    plasma_time = r'shaders\shader_templates\transparent\plasma_time'
+    roadsign_glass_newmombasa = r'shaders\shader_templates\transparent\roadsign_glass_newmombasa'
+    sky_one_add_illum_detail = r'shaders\shader_templates\transparent\sky_one_add_illum_detail'
+    sky_one_add_two_plus_two = r'shaders\shader_templates\transparent\sky_one_add_two_plus_two'
+    sky_one_alpha_env = r'shaders\shader_templates\transparent\sky_one_alpha_env'
+    sky_one_alpha_env_clamped = r'shaders\shader_templates\transparent\sky_one_alpha_env_clamped'
+    sky_one_alpha_env_illum = r'shaders\shader_templates\transparent\sky_one_alpha_env_illum'
+    sky_two_add_clouds = r'shaders\shader_templates\transparent\sky_two_add_clouds'
+    sky_two_add_clouds_clamped = r'shaders\shader_templates\transparent\sky_two_add_clouds_clamped'
+    sky_two_add_detail_masked = r'shaders\shader_templates\transparent\sky_two_add_detail_masked'
+    sky_two_alpha_clouds = r'shaders\shader_templates\transparent\sky_two_alpha_clouds'
+    tartarus_shield = r'shaders\shader_templates\transparent\tartarus_shield'
+    trace = r'shaders\shader_templates\transparent\trace'
+    transparent_glass = r'shaders\shader_templates\transparent\transparent_glass'
+    two_add_clouds = r'shaders\shader_templates\transparent\two_add_clouds'
+    two_add_detail_masked = r'shaders\shader_templates\transparent\two_add_detail_masked'
+    two_add_detail_masked_prepass = r'shaders\shader_templates\transparent\two_add_detail_masked_prepass'
+    two_add_detail_masked_trace = r'shaders\shader_templates\transparent\two_add_detail_masked_trace'
+    two_add_env_illum = r'shaders\shader_templates\transparent\two_add_env_illum'
+    two_add_env_illum_3_channel = r'shaders\shader_templates\transparent\two_add_env_illum_3_channel'
+    two_add_env_illum_active_camo = r'shaders\shader_templates\transparent\two_add_env_illum_active_camo'
+    two_add_tint = r'shaders\shader_templates\transparent\two_add_tint'
+    two_alpha_clouds = r'shaders\shader_templates\transparent\two_alpha_clouds'
+    two_alpha_detail_masked = r'shaders\shader_templates\transparent\two_alpha_detail_masked'
+    two_alpha_env_detail = r'shaders\shader_templates\transparent\two_alpha_env_detail'
+    two_alpha_env_illum = r'shaders\shader_templates\transparent\two_alpha_env_illum'
+    two_alpha_env_illum_bumped_environment_masked = r'shaders\shader_templates\transparent\two_alpha_env_illum_bumped_environment_masked'
+    two_alpha_env_multichannel = r'shaders\shader_templates\transparent\two_alpha_env_multichannel'
+    two_alpha_env_two_change_color = r'shaders\shader_templates\transparent\two_alpha_env_two_change_color'
+    two_alpha_two_change_color = r'shaders\shader_templates\transparent\two_alpha_two_change_color'
+    waterfall = r'shaders\shader_templates\transparent\waterfall'
+    waves = r'shaders\shader_templates\transparent\waves'
+    z_only_active_camo = r'shaders\shader_templates\transparent\z_only_active_camo'
+
+def conver_real_rgba_integer_bgra(material_color):
+    return (round(material_color[2] * 255), round(material_color[1] * 255), round(material_color[0] * 255), 0)
+
+def add_animation_property(SHADER, TAG, property_list, animation_type=AnimationTypeEnum.bitmap_index, input_name="", input_type=0, range_name="", range_type=0, time=0, 
+                           output_modifier=0, output_modifier_input=0, function_header=None, function_type=FunctionTypeEnum.constant, output_value=0, 
+                           material_colors=((0, 0, 0, 0), (0, 0, 0, 0), (0, 0, 0, 0), (0, 0, 0, 0)), lower_bound=0.0, upper_bound=1.0, 
+                           input_function=(0.0, 0.0, 0, 0.0, 0.0, []), range_function=(0.0, 0.0, 0, 0.0, 0.0, []), range_lower_bound=1.0, range_upper_bound=1.0):
+    animation_property = ShaderAsset.AnimationProperty()
+
+    animation_property.type = animation_type.value
+    animation_property.input_name = input_name
+    animation_property.input_name_length = len(input_name)
+    animation_property.input_type = input_type
+    animation_property.range_name = range_name
+    animation_property.range_name_length = len(range_name)
+    animation_property.range_type = range_type
+    animation_property.time_period = time
+    animation_property.output_modifier = output_modifier
+    animation_property.output_modifier_input = output_modifier_input
+    animation_property.map_property_header = TAG.TagBlockHeader("MAPP", 1, 1, 12)
+    animation_property.function_header = function_header
+    animation_property.function_type = function_type.value
+    animation_property.range_check = output_value
+    animation_property.input_function_data = ShaderAsset.FunctionData()
+    animation_property.range_function_data = ShaderAsset.FunctionData()
+    animation_property.upper_bound = upper_bound
+    animation_property.lower_bound = lower_bound
+    animation_property.range_upper_bound = range_lower_bound
+    animation_property.range_lower_bound = range_upper_bound
+    animation_property.color_a = conver_real_rgba_integer_bgra(material_colors[0])
+    animation_property.color_b = conver_real_rgba_integer_bgra(material_colors[1])
+    animation_property.color_c = conver_real_rgba_integer_bgra(material_colors[2])
+    animation_property.color_d = conver_real_rgba_integer_bgra(material_colors[3])
+
+    animation_property.input_function_data.points = []
+    animation_property.range_function_data.points = []
+    if FunctionTypeEnum.transition == function_type:
+        animation_property.input_function_data.min = input_function[0]
+        animation_property.input_function_data.max = input_function[1]
+        animation_property.input_function_data.exponent = input_function[2]
+        animation_property.input_function_data.frequency = input_function[3]
+        animation_property.input_function_data.phase = input_function[4]
+
+        animation_property.range_function_data.min = range_function[0]
+        animation_property.range_function_data.max = range_function[1]
+        animation_property.range_function_data.exponent = range_function[2]
+        animation_property.range_function_data.frequency = range_function[3]
+        animation_property.range_function_data.phase = range_function[4]
+
+    elif FunctionTypeEnum.periodic == function_type:
+        animation_property.input_function_data.min = input_function[0]
+        animation_property.input_function_data.max = input_function[1]
+        animation_property.input_function_data.exponent = input_function[2]
+        animation_property.input_function_data.frequency = input_function[3]
+        animation_property.input_function_data.phase = input_function[4]
+
+        animation_property.range_function_data.min = range_function[0]
+        animation_property.range_function_data.max = range_function[1]
+        animation_property.range_function_data.exponent = range_function[2]
+        animation_property.range_function_data.frequency = range_function[3]
+        animation_property.range_function_data.phase = range_function[4]
+
+    elif FunctionTypeEnum.linear == function_type:
+        animation_property.input_function_data.points = input_function[5]
+        animation_property.range_function_data.points = range_function[5]
+    elif FunctionTypeEnum.linear_key == function_type:
+        animation_property.input_function_data.points = input_function[5]
+        animation_property.range_function_data.points = range_function[5]
+    elif FunctionTypeEnum.multi_linear_key == function_type:
+        animation_property.input_function_data.points = input_function[5]
+        animation_property.range_function_data.points = range_function[5]
+    elif FunctionTypeEnum.spline == function_type:
+        animation_property.input_function_data.points = input_function[5]
+        animation_property.range_function_data.points = range_function[5]
+    elif FunctionTypeEnum.multi_spline == function_type:
+        animation_property.input_function_data.points = input_function[5]
+        animation_property.range_function_data.points = range_function[5]
+
+    property_list.append(animation_property)
+
+def add_parameter(SHADER, TAG, parameter_name="", enum=TypeEnum.bitmap, bitmap_name="", float_value=1.0, rgba=(0.0, 0.0, 0.0, 1.0), replace_directory=False):
+    parameter = ShaderAsset.Parameter()
+
+    path = bitmap_name
+    new_directory = r"scenarios\bitmaps\solo\a10"
+    if len(bitmap_name) > 0 and replace_directory:
+        base_name = os.path.basename(bitmap_name).replace(" ", "_")
+        path = os.path.join(new_directory, base_name)
+
+    parameter.name = parameter_name
+    parameter.type = enum.value
+    parameter.bitmap = TAG.TagRef("bitm", path, len(path))
+    parameter.const_value = float_value
+    parameter.const_color = rgba
+
+    return parameter
+
+def get_percentage(channel):
+    value = 0.0
+    if not channel == 0:
+        value = channel / 255
+
+    return value
+    
+def write_identity(output_stream, TAG, animation_properties):
+    output_stream.write(struct.pack('<4s3I', TAG.string_to_bytes("tbfd", True), 0, 20, 1))
+    output_stream.write(struct.pack('<B', animation_properties.function_type))
+    output_stream.write(struct.pack('<B', animation_properties.range_check))
+    output_stream.write(struct.pack('<2x'))
+    if animation_properties.range_check > 1:
+        output_stream.write(struct.pack('<BBBB', animation_properties.color_a[0], animation_properties.color_a[1], animation_properties.color_a[2], animation_properties.color_a[3]))
+        output_stream.write(struct.pack('<BBBB', animation_properties.color_b[0], animation_properties.color_b[1], animation_properties.color_b[2], animation_properties.color_b[3]))
+        output_stream.write(struct.pack('<BBBB', animation_properties.color_c[0], animation_properties.color_c[1], animation_properties.color_c[2], animation_properties.color_c[3]))
+        output_stream.write(struct.pack('<BBBB', animation_properties.color_d[0], animation_properties.color_d[1], animation_properties.color_d[2], animation_properties.color_d[3]))
+
+    else:
+        output_stream.write(struct.pack('<f', animation_properties.lower_bound))
+        output_stream.write(struct.pack('<f', animation_properties.upper_bound))
+        output_stream.write(struct.pack('<8x'))
+
+def write_constant(output_stream, TAG, animation_properties):
+    output_stream.write(struct.pack('<4s3I', TAG.string_to_bytes("tbfd", True), 0, 28, 1))
+    output_stream.write(struct.pack('<B', animation_properties.function_type))
+    output_stream.write(struct.pack('<B', animation_properties.range_check))
+    output_stream.write(struct.pack('<2x'))
+    if animation_properties.range_check > 1:
+        output_stream.write(struct.pack('<BBBB', animation_properties.color_a[0], animation_properties.color_a[1], animation_properties.color_a[2], animation_properties.color_a[3]))
+        output_stream.write(struct.pack('<BBBB', animation_properties.color_b[0], animation_properties.color_b[1], animation_properties.color_b[2], animation_properties.color_b[3]))
+        output_stream.write(struct.pack('<BBBB', animation_properties.color_c[0], animation_properties.color_c[1], animation_properties.color_c[2], animation_properties.color_c[3]))
+        output_stream.write(struct.pack('<BBBB', animation_properties.color_d[0], animation_properties.color_d[1], animation_properties.color_d[2], animation_properties.color_d[3]))
+
+    else:
+        output_stream.write(struct.pack('<f', animation_properties.lower_bound))
+        output_stream.write(struct.pack('<f', animation_properties.upper_bound))
+        output_stream.write(struct.pack('<8x'))
+
+    output_stream.write(struct.pack('<f', animation_properties.range_lower_bound))
+    output_stream.write(struct.pack('<f', animation_properties.range_upper_bound))
+
+def write_transition(output_stream, TAG, animation_properties):
+    output_stream.write(struct.pack('<4s3I', TAG.string_to_bytes("tbfd", True), 0, 36, 1))
+    output_stream.write(struct.pack('<B', animation_properties.function_type))
+    output_stream.write(struct.pack('<B', animation_properties.range_check))
+    output_stream.write(struct.pack('<B', animation_properties.input_function_data.exponent))
+    output_stream.write(struct.pack('<B', animation_properties.range_function_data.exponent))
+    if animation_properties.range_check > 1:
+        output_stream.write(struct.pack('<BBBB', animation_properties.color_a[0], animation_properties.color_a[1], animation_properties.color_a[2], animation_properties.color_a[3]))
+        output_stream.write(struct.pack('<BBBB', animation_properties.color_b[0], animation_properties.color_b[1], animation_properties.color_b[2], animation_properties.color_b[3]))
+        output_stream.write(struct.pack('<BBBB', animation_properties.color_c[0], animation_properties.color_c[1], animation_properties.color_c[2], animation_properties.color_c[3]))
+        output_stream.write(struct.pack('<BBBB', animation_properties.color_d[0], animation_properties.color_d[1], animation_properties.color_d[2], animation_properties.color_d[3]))
+
+    else:
+        output_stream.write(struct.pack('<f', animation_properties.lower_bound))
+        output_stream.write(struct.pack('<f', animation_properties.upper_bound))
+        output_stream.write(struct.pack('<8x'))
+
+    output_stream.write(struct.pack('<f', animation_properties.input_function_data.min))
+    output_stream.write(struct.pack('<f', animation_properties.input_function_data.max))
+    output_stream.write(struct.pack('<f', animation_properties.range_function_data.min))
+    output_stream.write(struct.pack('<f', animation_properties.range_function_data.max))
+
+def write_periodic(output_stream, TAG, animation_properties):
+    output_stream.write(struct.pack('<4s3I', TAG.string_to_bytes("tbfd", True), 0, 52, 1))
+    output_stream.write(struct.pack('<B', animation_properties.function_type))
+    output_stream.write(struct.pack('<B', animation_properties.range_check))
+    output_stream.write(struct.pack('<B', animation_properties.input_function_data.exponent))
+    output_stream.write(struct.pack('<B', animation_properties.range_function_data.exponent))
+    if animation_properties.range_check > 1:
+        output_stream.write(struct.pack('<BBBB', animation_properties.color_a[0], animation_properties.color_a[1], animation_properties.color_a[2], animation_properties.color_a[3]))
+        output_stream.write(struct.pack('<BBBB', animation_properties.color_b[0], animation_properties.color_b[1], animation_properties.color_b[2], animation_properties.color_b[3]))
+        output_stream.write(struct.pack('<BBBB', animation_properties.color_c[0], animation_properties.color_c[1], animation_properties.color_c[2], animation_properties.color_c[3]))
+        output_stream.write(struct.pack('<BBBB', animation_properties.color_d[0], animation_properties.color_d[1], animation_properties.color_d[2], animation_properties.color_d[3]))
+
+    else:
+        output_stream.write(struct.pack('<f', animation_properties.lower_bound))
+        output_stream.write(struct.pack('<f', animation_properties.upper_bound))
+        output_stream.write(struct.pack('<8x'))
+
+    output_stream.write(struct.pack('<f', animation_properties.input_function_data.frequency))
+    output_stream.write(struct.pack('<f', animation_properties.input_function_data.phase))
+    output_stream.write(struct.pack('<f', animation_properties.input_function_data.min))
+    output_stream.write(struct.pack('<f', animation_properties.input_function_data.max))
+    output_stream.write(struct.pack('<f', animation_properties.range_function_data.frequency))
+    output_stream.write(struct.pack('<f', animation_properties.range_function_data.phase))
+    output_stream.write(struct.pack('<f', animation_properties.range_function_data.min))
+    output_stream.write(struct.pack('<f', animation_properties.range_function_data.max))
+
+def write_linear(output_stream, TAG, animation_properties):
+    output_stream.write(struct.pack('<4s3I', TAG.string_to_bytes("tbfd", True), 0, 68, 1))
+    output_stream.write(struct.pack('<B', animation_properties.function_type))
+    output_stream.write(struct.pack('<B', animation_properties.range_check))
+    output_stream.write(struct.pack('<B', animation_properties.input_function_data.exponent))
+    output_stream.write(struct.pack('<B', animation_properties.range_function_data.exponent))
+    if animation_properties.range_check > 1:
+        output_stream.write(struct.pack('<BBBB', animation_properties.color_a[0], animation_properties.color_a[1], animation_properties.color_a[2], animation_properties.color_a[3]))
+        output_stream.write(struct.pack('<BBBB', animation_properties.color_b[0], animation_properties.color_b[1], animation_properties.color_b[2], animation_properties.color_b[3]))
+        output_stream.write(struct.pack('<BBBB', animation_properties.color_c[0], animation_properties.color_c[1], animation_properties.color_c[2], animation_properties.color_c[3]))
+        output_stream.write(struct.pack('<BBBB', animation_properties.color_d[0], animation_properties.color_d[1], animation_properties.color_d[2], animation_properties.color_d[3]))
+
+    else:
+        output_stream.write(struct.pack('<f', animation_properties.lower_bound))
+        output_stream.write(struct.pack('<f', animation_properties.upper_bound))
+        output_stream.write(struct.pack('<8x'))
+
+    for point in animation_properties.input_function_data.points:
+        output_stream.write(struct.pack('<ff', point[0], point[1]))
+
+    output_stream.write(struct.pack('<8x'))
+    for point in animation_properties.range_function_data.points:
+        output_stream.write(struct.pack('<ff', point[0], point[1]))
+
+    output_stream.write(struct.pack('<8x'))
+
+def write_linear_key(output_stream, TAG, animation_properties):
+    output_stream.write(struct.pack('<4s3I', TAG.string_to_bytes("tbfd", True), 0, 180, 1))
+    output_stream.write(struct.pack('<B', animation_properties.function_type))
+    output_stream.write(struct.pack('<B', animation_properties.range_check))
+    output_stream.write(struct.pack('<B', animation_properties.input_function_data.exponent))
+    output_stream.write(struct.pack('<B', animation_properties.range_function_data.exponent))
+    if animation_properties.range_check > 1:
+        output_stream.write(struct.pack('<BBBB', animation_properties.color_a[0], animation_properties.color_a[1], animation_properties.color_a[2], animation_properties.color_a[3]))
+        output_stream.write(struct.pack('<BBBB', animation_properties.color_b[0], animation_properties.color_b[1], animation_properties.color_b[2], animation_properties.color_b[3]))
+        output_stream.write(struct.pack('<BBBB', animation_properties.color_c[0], animation_properties.color_c[1], animation_properties.color_c[2], animation_properties.color_c[3]))
+        output_stream.write(struct.pack('<BBBB', animation_properties.color_d[0], animation_properties.color_d[1], animation_properties.color_d[2], animation_properties.color_d[3]))
+
+    else:
+        output_stream.write(struct.pack('<f', animation_properties.lower_bound))
+        output_stream.write(struct.pack('<f', animation_properties.upper_bound))
+        output_stream.write(struct.pack('<8x'))
+
+    for point in animation_properties.input_function_data.points:
+        output_stream.write(struct.pack('<ff', point[0], point[1]))
+
+    output_stream.write(struct.pack('<48x'))
+    for point in animation_properties.range_function_data.points:
+        output_stream.write(struct.pack('<ff', point[0], point[1]))
+
+    output_stream.write(struct.pack('<48x'))
+
+def write_multi_linear_key(output_stream, TAG, animation_properties):
+    output_stream.write(struct.pack('<4s3I', TAG.string_to_bytes("tbfd", True), 0, 276, 1))
+    output_stream.write(struct.pack('<B', animation_properties.function_type))
+    output_stream.write(struct.pack('<B', animation_properties.range_check))
+    output_stream.write(struct.pack('<2x'))
+    if animation_properties.range_check > 1:
+        output_stream.write(struct.pack('<BBBB', animation_properties.color_a[0], animation_properties.color_a[1], animation_properties.color_a[2], animation_properties.color_a[3]))
+        output_stream.write(struct.pack('<BBBB', animation_properties.color_b[0], animation_properties.color_b[1], animation_properties.color_b[2], animation_properties.color_b[3]))
+        output_stream.write(struct.pack('<BBBB', animation_properties.color_c[0], animation_properties.color_c[1], animation_properties.color_c[2], animation_properties.color_c[3]))
+        output_stream.write(struct.pack('<BBBB', animation_properties.color_d[0], animation_properties.color_d[1], animation_properties.color_d[2], animation_properties.color_d[3]))
+
+    else:
+        output_stream.write(struct.pack('<f', animation_properties.lower_bound))
+        output_stream.write(struct.pack('<f', animation_properties.upper_bound))
+        output_stream.write(struct.pack('<8x'))
+
+    output_stream.write(struct.pack('<256x'))
+
+def write_spline(output_stream, TAG, animation_properties):
+    output_stream.write(struct.pack('<4s3I', TAG.string_to_bytes("tbfd", True), 0, 116, 1))
+    output_stream.write(struct.pack('<B', animation_properties.function_type))
+    output_stream.write(struct.pack('<B', animation_properties.range_check))
+    output_stream.write(struct.pack('<B', 4))
+    output_stream.write(struct.pack('<B', 4))
+    if animation_properties.range_check > 1:
+        output_stream.write(struct.pack('<BBBB', animation_properties.color_a[0], animation_properties.color_a[1], animation_properties.color_a[2], animation_properties.color_a[3]))
+        output_stream.write(struct.pack('<BBBB', animation_properties.color_b[0], animation_properties.color_b[1], animation_properties.color_b[2], animation_properties.color_b[3]))
+        output_stream.write(struct.pack('<BBBB', animation_properties.color_c[0], animation_properties.color_c[1], animation_properties.color_c[2], animation_properties.color_c[3]))
+        output_stream.write(struct.pack('<BBBB', animation_properties.color_d[0], animation_properties.color_d[1], animation_properties.color_d[2], animation_properties.color_d[3]))
+
+    else:
+        output_stream.write(struct.pack('<f', animation_properties.lower_bound))
+        output_stream.write(struct.pack('<f', animation_properties.upper_bound))
+        output_stream.write(struct.pack('<8x'))
+
+    for point in animation_properties.input_function_data.points:
+        output_stream.write(struct.pack('<ff', point[0], point[1]))
+
+    output_stream.write(struct.pack('<16x'))
+    for point in animation_properties.range_function_data.points:
+        output_stream.write(struct.pack('<ff', point[0], point[1]))
+
+    output_stream.write(struct.pack('<16x'))
+
+def write_multi_spline(output_stream, TAG, animation_properties):
+    output_stream.write(struct.pack('<4s3I', TAG.string_to_bytes("tbfd", True), 0, 52, 1))
+    output_stream.write(struct.pack('<B', animation_properties.function_type))
+    output_stream.write(struct.pack('<B', animation_properties.range_check))
+    output_stream.write(struct.pack('<2x'))
+    if animation_properties.range_check > 1:
+        output_stream.write(struct.pack('<BBBB', animation_properties.color_a[0], animation_properties.color_a[1], animation_properties.color_a[2], animation_properties.color_a[3]))
+        output_stream.write(struct.pack('<BBBB', animation_properties.color_b[0], animation_properties.color_b[1], animation_properties.color_b[2], animation_properties.color_b[3]))
+        output_stream.write(struct.pack('<BBBB', animation_properties.color_c[0], animation_properties.color_c[1], animation_properties.color_c[2], animation_properties.color_c[3]))
+        output_stream.write(struct.pack('<BBBB', animation_properties.color_d[0], animation_properties.color_d[1], animation_properties.color_d[2], animation_properties.color_d[3]))
+
+    else:
+        output_stream.write(struct.pack('<f', animation_properties.lower_bound))
+        output_stream.write(struct.pack('<f', animation_properties.upper_bound))
+        output_stream.write(struct.pack('<8x'))
+
+    output_stream.write(struct.pack('<32x'))
+
+def write_parameters(output_stream, TAG, parameters, parameters_header):
+    if len(parameters) > 0:
+        parameters_header.write(output_stream, TAG, True)
+        for parameter_element in parameters:
+            output_stream.write(struct.pack('>I', len(parameter_element.name)))
+            output_stream.write(struct.pack('<H', parameter_element.type))
+            output_stream.write(struct.pack('<2x'))
+            parameter_element.bitmap.write(output_stream, False, True)
+            output_stream.write(struct.pack('<f', parameter_element.const_value))
+            output_stream.write(struct.pack('<fff', parameter_element.const_color[0], parameter_element.const_color[1], parameter_element.const_color[2]))
+            parameter_element.animation_properties_tag_block.write(output_stream, False)
+
+        for parameter_element in parameters:
+            name_length = len(parameter_element.name)
+            bitmap_name_length = len(parameter_element.bitmap.name)
+            if name_length > 0:
+                output_stream.write(struct.pack('<%ss' % name_length, TAG.string_to_bytes(parameter_element.name, False)))
+            if bitmap_name_length > 0:
+                output_stream.write(struct.pack('<%ssx' % bitmap_name_length, TAG.string_to_bytes(parameter_element.bitmap.name, False)))
+
+            if len(parameter_element.animation_properties) > 0:
+                parameter_element.animation_properties_header.write(output_stream, TAG, True)
+                for animation_properties in parameter_element.animation_properties:
+                    output_stream.write(struct.pack('<H', animation_properties.type))
+                    output_stream.write(struct.pack('<2x'))
+                    output_stream.write(struct.pack('>I', len(animation_properties.input_name)))
+                    output_stream.write(struct.pack('>I', len(animation_properties.range_name)))
+                    output_stream.write(struct.pack('<f', animation_properties.time_period))
+
+                    write_function_size(output_stream, animation_properties)
+
+                for animation_properties in parameter_element.animation_properties:
+                    input_name_length = len(animation_properties.input_name)
+                    range_name_length = len(animation_properties.range_name)
+                    if input_name_length > 0:
+                        output_stream.write(struct.pack('<%ss' % input_name_length, TAG.string_to_bytes(animation_properties.input_name, False)))
+                    if range_name_length > 0:
+                        output_stream.write(struct.pack('<%ss' % range_name_length, TAG.string_to_bytes(animation_properties.range_name, False)))
+
+                    write_function(output_stream, TAG, animation_properties)
+
+def write_function_size(output_stream, function_property):
+    function_type = FunctionTypeEnum(function_property.function_type)
+    if FunctionTypeEnum.identity == function_type:
+        output_stream.write(struct.pack('<I', 20))
+
+    elif FunctionTypeEnum.constant == function_type:
+        output_stream.write(struct.pack('<I', 28))
+
+    elif FunctionTypeEnum.transition == function_type:
+        output_stream.write(struct.pack('<I', 36))
+
+    elif FunctionTypeEnum.periodic == function_type:
+        output_stream.write(struct.pack('<I', 52))
+
+    elif FunctionTypeEnum.linear == function_type:
+        output_stream.write(struct.pack('<I', 68))
+
+    elif FunctionTypeEnum.linear_key == function_type:
+        output_stream.write(struct.pack('<I', 180))
+
+    elif FunctionTypeEnum.multi_linear_key == function_type:
+        output_stream.write(struct.pack('<I', 276))
+
+    elif FunctionTypeEnum.spline == function_type:
+        output_stream.write(struct.pack('<I', 116))
+
+    elif FunctionTypeEnum.multi_spline == function_type:
+        output_stream.write(struct.pack('<I', 52))
+
+    elif FunctionTypeEnum.exponent == function_type:
+        output_stream.write(struct.pack('<I', 44))
+
+    elif FunctionTypeEnum.spline2 == function_type:
+        output_stream.write(struct.pack('<I', 116))
+
+    output_stream.write(struct.pack('<8x'))
+
+def write_function(output_stream, TAG, function_property):
+    function_property.map_property_header.write(output_stream, TAG, True)
+    function_type = FunctionTypeEnum(function_property.function_type)
+    if FunctionTypeEnum.identity == function_type:
+        write_identity(output_stream, TAG, function_property)
+    elif FunctionTypeEnum.constant == function_type:
+        write_constant(output_stream, TAG, function_property)
+    elif FunctionTypeEnum.transition == function_type:
+        write_transition(output_stream, TAG, function_property)
+    elif FunctionTypeEnum.periodic == function_type:
+        write_periodic(output_stream, TAG, function_property)
+    elif FunctionTypeEnum.linear == function_type:
+        write_linear(output_stream, TAG, function_property)
+    elif FunctionTypeEnum.linear_key == function_type:
+        write_linear_key(output_stream, TAG, function_property)
+    elif FunctionTypeEnum.multi_linear_key == function_type:
+        write_multi_linear_key(output_stream, TAG, function_property)
+    elif FunctionTypeEnum.spline == function_type:
+        write_spline(output_stream, TAG, function_property)
+    elif FunctionTypeEnum.multi_spline == function_type:
+        write_multi_spline(output_stream, TAG, function_property)
+    elif FunctionTypeEnum.exponent == function_type:
+        write_constant(output_stream, TAG, function_property)
+    elif FunctionTypeEnum.spline2 == function_type:
+        write_constant(output_stream, TAG, function_property)

@@ -32,6 +32,8 @@ import struct
 from math import radians
 from mathutils import Vector, Matrix
 from ..global_functions import global_functions, mesh_processing
+from ..file_tag.h2.file_render_model.format import DetailLevelsFlags
+
 
 class Surface:
     def __init__(self, material_index=0, surface_normal=Vector(), vertices=None):
@@ -574,6 +576,7 @@ def generate_mesh_object_retail(asset, object_vertices, object_triangles, object
 
     object_vertices, object_triangles = optimize_geo(object_vertices, object_triangles)
     verts = [vertex.translation for vertex in object_vertices]
+    vertex_normals = [vertex.normal for vertex in object_vertices]
     tris = [(triangles.v0, triangles.v1, triangles.v2) for triangles in object_triangles]
 
     mesh = bpy.data.meshes.new(object_name)
@@ -583,6 +586,7 @@ def generate_mesh_object_retail(asset, object_vertices, object_triangles, object
         poly.use_smooth = True
 
     region_attribute = mesh.get_custom_attribute()
+    mesh.normals_split_custom_set_from_vertices(vertex_normals)
     for vertex_idx, vertex in enumerate(object_vertices):
         for node_values in vertex.node_set:
             node_index = node_values[0]
@@ -866,12 +870,12 @@ def process_mesh_export_vert(vertex_data, loop_data, loop_normals, file_type, or
 
         final_translation = original_geo_matrix @ translation
         if loop_normals:
-            final_normal = (original_geo_matrix @ (translation + loop_data.normal) - final_translation).normalized()
+            final_normal = (original_geo_matrix.to_3x3() @ loop_data.normal).normalized()
             if final_normal.length == 0.0:
-                final_normal = (original_geo_matrix @ (translation + vertex_data.normal) - final_translation).normalized()
+                final_normal = (original_geo_matrix.to_3x3() @ vertex_data.normal).normalized()
 
         else:
-            final_normal = (original_geo_matrix @ (translation + vertex_data.normal) - final_translation).normalized()
+            final_normal = (original_geo_matrix.to_3x3() @ vertex_data.normal).normalized()
 
         if negative_matrix and original_geo_matrix.determinant() < 0.0 and file_type == 'JMS':
             invert_normal_x = final_normal[0] * -1
@@ -983,6 +987,7 @@ def get_mesh_data(ASSET, section_data, mesh, material_count, materials, random_c
         triangles = []
         triangle_mat_indices = []
         vertices = [raw_vertex.position for raw_vertex in section_data.raw_vertices]
+        vertex_normals = [raw_vertex.normal for raw_vertex in section_data.raw_vertices]
         for part_idx, part in enumerate(section_data.parts):
             triangle_part = []
 
@@ -1023,6 +1028,7 @@ def get_mesh_data(ASSET, section_data, mesh, material_count, materials, random_c
         for tri_idx, poly in enumerate(mesh.polygons):
             poly.use_smooth = True
 
+        mesh.normals_split_custom_set_from_vertices(vertex_normals)
         for triangle_idx, triangle in enumerate(triangles):
             triangle_material_index = triangle_mat_indices[triangle_idx]
             if not triangle_material_index == -1 and triangle_material_index < material_count:

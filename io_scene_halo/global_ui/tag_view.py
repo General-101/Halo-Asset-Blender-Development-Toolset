@@ -69,7 +69,7 @@ class HALO_PropertiesGroup(PropertyGroup):
         description = "What index do we use in the referenced lightmap tag. Try not to edit this manually",
         default = -1
         )
-
+    
     instance_lightmap_policy_enum: EnumProperty(
         name="Lightmap Policy",
         description="Wow the lightmapper uses the object",

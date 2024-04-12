@@ -39,14 +39,20 @@ def build_pathfinding_spheres(context, armature, COLLISION, fix_rotations, empty
         parent_idx = pathfinding_sphere.node
         object_name = '#pathfinding_sphere_%s' % pathfinding_sphere_idx
 
-        mesh = bpy.data.meshes.new(object_name)
-        object_mesh = bpy.data.objects.new(object_name, mesh)
+        if empty_markers:
+            object_mesh = bpy.data.objects.new(object_name, None)
+
+        else:
+            mesh = bpy.data.meshes.new(object_name)
+            object_mesh = bpy.data.objects.new(object_name, mesh)
+
         collection.objects.link(object_mesh)
 
-        bm = bmesh.new()
-        bmesh.ops.create_uvsphere(bm, u_segments=32, v_segments=16, radius=1)
-        bm.to_mesh(mesh)
-        bm.free()
+        if not empty_markers:
+            bm = bmesh.new()
+            bmesh.ops.create_uvsphere(bm, u_segments=32, v_segments=16, radius=1)
+            bm.to_mesh(mesh)
+            bm.free()
 
         matrix_translate = Matrix.Translation(pathfinding_sphere.center)
 
@@ -77,7 +83,9 @@ def build_pathfinding_spheres(context, armature, COLLISION, fix_rotations, empty
             object_mesh.parent = armature
 
         object_mesh.matrix_world = transform_matrix
-        object_mesh.data.ass_jms.Object_Type = 'SPHERE'
+        if not empty_markers:
+            object_mesh.data.ass_jms.Object_Type = 'SPHERE'
+
         object_mesh.ass_jms.marker_mask_type = '1'
         object_mesh.select_set(False)
         armature.select_set(False)

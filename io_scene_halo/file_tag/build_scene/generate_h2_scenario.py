@@ -241,6 +241,9 @@ def generate_object_elements(level_root, collection_name, palette, tag_block, co
         
         root.parent = level_root
         root.location = element.position * 100
+        ob_scale = element.scale
+        if ob_scale > 0.0:
+            root.scale = (ob_scale, ob_scale, ob_scale)
 
         get_data_type(collection_name, root, pallete_item.name, element)
 

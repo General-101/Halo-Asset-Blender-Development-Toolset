@@ -73,6 +73,7 @@ def read_shader_body_v0(SHADER, TAG, input_stream, tag_node, XML_OUTPUT):
     SHADER.shader_body.lightmap_ambient_bias = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "lightmap ambient bias"))
     SHADER.shader_body.postprocess_properties_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "predicted resources"))
 
+
 def read_shader_body_retail(SHADER, TAG, input_stream, tag_node, XML_OUTPUT):
     SHADER.shader_body_header = TAG.TagBlockHeader().read(input_stream, TAG)
     SHADER.shader_body = SHADER.ShaderBody()
