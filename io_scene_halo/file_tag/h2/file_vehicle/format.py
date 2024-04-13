@@ -89,6 +89,18 @@ class VehicleSizeEnum(Enum):
 class PhysicsFlags(Flag):
     invalid = auto()
 
+class FrictionPointFlags(Flag):
+    gets_damage_from_region = auto()
+    powered = auto()
+    front_turning = auto()
+    rear_turning = auto()
+    attached_to_e_brake = auto()
+    can_be_destroyed = auto()
+
+class FrictionTypeEnum(Enum):
+    point = 0
+    forward = auto()
+
 class VehicleAsset(UnitAsset):
     def __init__(self):
         super().__init__()

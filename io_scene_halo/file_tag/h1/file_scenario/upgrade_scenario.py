@@ -116,6 +116,8 @@ def convert_game_type_setting(game_type_index):
     h1_gametype = H1GametypeEnum(game_type_index)
     if h1_gametype == H1GametypeEnum.none:
         h2_gametype_index = GametypeEnum.none.value
+    elif h1_gametype == H1GametypeEnum.ctf:
+        h2_gametype_index = GametypeEnum.ctf.value
     elif h1_gametype == H1GametypeEnum.slayer:
         h2_gametype_index = GametypeEnum.slayer.value
     elif h1_gametype == H1GametypeEnum.oddball:
@@ -145,7 +147,7 @@ def convert_game_type_setting(game_type_index):
 
     return h2_gametype_index
 
-def convert_netgame_flag_type(type_index, usage_id):
+def convert_netgame_flag_type(type_index, usage_id, hill_identifiers):
     is_valid = True
     needs_return = False
     flag_type = 0
@@ -187,32 +189,36 @@ def convert_netgame_flag_type(type_index, usage_id):
         identifer = usage_id
 
     elif H1NetGameEnum(type_index) == H1NetGameEnum.hill_flag:
-        if not usage_id > 7:
-            if usage_id == 0:
+        if not len(hill_identifiers) > 8 or usage_id in hill_identifiers:
+            if not usage_id in hill_identifiers:
+                hill_identifiers.append(usage_id)
+            hill_index = hill_identifiers.index(usage_id)
+            if hill_index == 0:
                 flag_type = NetGameEnum.king_of_the_hill_0.value
 
-            elif usage_id == 1:
+            elif hill_index == 1:
                 flag_type = NetGameEnum.king_of_the_hill_1.value
 
-            elif usage_id == 2:
+            elif hill_index == 2:
                 flag_type = NetGameEnum.king_of_the_hill_2.value
 
-            elif usage_id == 3:
+            elif hill_index == 3:
                 flag_type = NetGameEnum.king_of_the_hill_3.value
 
-            elif usage_id == 4:
+            elif hill_index == 4:
                 flag_type = NetGameEnum.king_of_the_hill_4.value
 
-            elif usage_id == 5:
+            elif hill_index == 5:
                 flag_type = NetGameEnum.king_of_the_hill_5.value
 
-            elif usage_id == 6:
+            elif hill_index == 6:
                 flag_type = NetGameEnum.king_of_the_hill_6.value
 
-            elif usage_id == 7:
+            elif hill_index == 7:
                 flag_type = NetGameEnum.king_of_the_hill_7.value
 
         else:
+            print("Map has more than 8 hills. Hill %s is now sleeping with the fishes" % usage_id)
             flag_type = NetGameEnum.king_of_the_hill_0.value
             is_valid = False
 
@@ -717,8 +723,9 @@ def get_recorded_animations(recorded_animations_tag_block, TAG, SCENARIO):
 
 def get_netgame_flags(netgame_flags_tag_block, TAG, SCENARIO):
     SCENARIO.netgame_flags = []
+    hill_identifiers = []
     for netgame_flag_element in netgame_flags_tag_block:
-        flag_type, team_designator, identifer, flags, is_valid, needs_return = convert_netgame_flag_type(netgame_flag_element.type, netgame_flag_element.usage_id)
+        flag_type, team_designator, identifer, flags, is_valid, needs_return = convert_netgame_flag_type(netgame_flag_element.type, netgame_flag_element.usage_id, hill_identifiers)
 
         if is_valid:
             netgame_flag = SCENARIO.NetGameFlag()
@@ -751,7 +758,6 @@ def get_netgame_flags(netgame_flags_tag_block, TAG, SCENARIO):
             netgame_flag.spawn_marker_name_length = len(netgame_flag.spawn_marker_name)
 
             SCENARIO.netgame_flags.append(netgame_flag)
-
 
     SCENARIO.netgame_flag_header = TAG.TagBlockHeader("tbfd", 1, len(SCENARIO.netgame_flags), 32)
 
