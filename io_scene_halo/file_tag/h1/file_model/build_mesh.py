@@ -159,7 +159,7 @@ def build_mesh_layout(asset, geometry, region_name, object_name, game_version, i
                 object_mesh.region_add(current_region_permutation)
 
             if not triangle_material_index == -1:
-                if triangle_material_index < shader_count:  
+                if triangle_material_index < shader_count:
                     mat = materials[triangle_material_index]
 
                     if not mat in object_mesh.data.materials.values():
@@ -242,7 +242,7 @@ def get_geometry_layout(context, collection, import_file, armature, game_version
         shader_processing.generate_h1_shader(mat, shader.tag_ref, shader.permutation_index, report)
 
         materials.append(mat)
-    
+
     for region in import_file.regions:
         for permutation in region.permutations:
             superlow_geometry_index = permutation.superlow_geometry_block

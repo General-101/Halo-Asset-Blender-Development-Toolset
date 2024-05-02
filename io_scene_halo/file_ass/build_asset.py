@@ -71,20 +71,25 @@ def build_asset(context, filepath, version, game_version, folder_structure, hidd
     )
 
     for idx, material in enumerate(ASS.materials):
+        material_definition = ''
+        if not material.permutation == '':
+            material_definition += '%s' % (material.permutation)
+
+        if len(material_definition) > 0:
+            material_definition += ' '
+
+        if not material.region == '':
+            material_definition += '%s' % (material.region)
+
+
         file.write(
             '\n;MATERIAL %s' % (idx) +
             '\n"%s"' % (material.name)
         )
 
-        if version >= 8: #3
-            file.write(
-                '\n"%s %s"\n' % (material.permutation, material.region)
-            )
-
-        else:
-            file.write(
-                '\n"%s"\n' % (material.material_effect)
-            )
+        file.write(
+            '\n"%s"\n' % material_definition
+        )
 
         if version >= 4:
             file.write(
@@ -231,7 +236,7 @@ def build_asset(context, filepath, version, game_version, folder_structure, hidd
             file.write('\n')
 
         else:
-            print("Bad object")
+            print("Geometry file has an invalid geometry class during build: ",  geometry.geo_class)
 
     file.write(
         '\n;### INSTANCES ###' +
@@ -239,12 +244,6 @@ def build_asset(context, filepath, version, game_version, folder_structure, hidd
     )
 
     for idx, instance in enumerate(ASS.instances):
-        node_index_list = []
-        if not instance.object_index == -1:
-            instance_object = ASS.objects[instance.object_index]
-            if not instance_object.node_index_list == None:
-                node_index_list = instance_object.node_index_list
-
         file.write(
             '\n;INSTANCE %s' % (idx) +
             '\n%s' % (instance.object_index) +
@@ -281,7 +280,7 @@ def build_asset(context, filepath, version, game_version, folder_structure, hidd
                 '\n%0.10f\n' % (instance.pivot_transform.scale[0])
                 )
 
-        for node_index in node_index_list:
+        for node_index in instance.bone_groups:
             file.write('%s\n' % node_index)
 
     file.close()

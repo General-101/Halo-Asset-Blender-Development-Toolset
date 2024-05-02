@@ -40,7 +40,7 @@ PLANE_PARALLEL_ANGLE_EPSILON = 0.0001
 WEATHER_POLYHEDRA_TOLERANCE  = 0.00001
 
 def point_distance_to_plane(point, normal, dist, round_adjust=0):
-    ''' 
+    '''
     Returns distance from the point to the plane.
     '''
     # NOTE: we're taking into account rounding errors for 32bit floats
@@ -54,18 +54,18 @@ def point_distance_to_plane(point, normal, dist, round_adjust=0):
 
 def is_point_this_side_of_plane(point, normal, dist, on_plane_ok=False,
                                 side_to_check=True, round_adjust=0):
-    ''' 
+    '''
     Returns True if point is on the side of the plane being checked.
     If side_to_check == True, point is expected to be on front side of plane.
     If side_to_check == False, point is expected to be on back side of plane.
     '''
     rounded_dist = point_distance_to_plane(point, normal, dist, round_adjust)
     return (
-        (on_plane_ok and rounded_dist == 0) or 
+        (on_plane_ok and rounded_dist == 0) or
         (rounded_dist if side_to_check else -rounded_dist) > 0
         )
 
-def is_point_on_this_side_of_planes(point, planes, on_plane_ok=False, 
+def is_point_on_this_side_of_planes(point, planes, on_plane_ok=False,
                                     side_to_check=True, round_adjust=0):
     '''
     Returns True if point is on the side of every the plane being checked.
@@ -134,12 +134,12 @@ def get_intersection_point_and_ray_of_planes(plane_a, plane_b):
     return ray, pos
 
 def get_point_on_plane(norm, dist):
-    ''' 
-    Solves for an arbitrary point on the plane by rearranging 
-    the plane equation(d = x*a + y*b + z*c) and holding two of 
+    '''
+    Solves for an arbitrary point on the plane by rearranging
+    the plane equation(d = x*a + y*b + z*c) and holding two of
     the values constant and solve for the third.
     '''
-    # Solve for the axis with the largest magnitude, as it 
+    # Solve for the axis with the largest magnitude, as it
     # indicates the other axis values can be held at 0.
     # we can simplify from this:
     #   d   = x*a + y*b + z*c
@@ -159,11 +159,11 @@ def get_point_on_plane(norm, dist):
 def find_intersect_point_of_planes(plane_0, plane_1, plane_2):
     '''
     Returns intersection point of 3 planes as a Vector, or
-    None if there is no intersection. If any of the planes 
+    None if there is no intersection. If any of the planes
     are parallel to each other, there is no intersection.
     '''
     norm_0, norm_1, norm_2 = plane_0[0], plane_1[0], plane_2[0]
-    
+
     # find the intersection vectors between each plane
     cross_01 = norm_0.cross(norm_1)
     cross_02 = norm_2.cross(norm_0)
@@ -172,11 +172,11 @@ def find_intersect_point_of_planes(plane_0, plane_1, plane_2):
     # any being ~zero indicates the planes are parallel to each other.
     if min(cross_01.magnitude, cross_02.magnitude, cross_12.magnitude) < PLANE_PARALLEL_ANGLE_EPSILON:
         return None
-    
-    # figure out which planes to cross and which to try and intersect 
+
+    # figure out which planes to cross and which to try and intersect
     # with. we're comparing the angle between the planes being crossed
     # to ensure we maximize the precision of the crossed vectors.
-    if (cross_01.magnitude > cross_02.magnitude and 
+    if (cross_01.magnitude > cross_02.magnitude and
         cross_01.magnitude > cross_12.magnitude):
         plane_a, plane_b, plane_c = plane_0, plane_1, plane_2
     elif cross_02.magnitude > cross_12.magnitude:
@@ -215,7 +215,7 @@ def planes_to_convex_hull_vert_coords(planes, round_adjust=0.000001):
         for j in range(plane_ct):
             if i == j: continue
             for k in range(plane_ct):
-                if k == i or k == j: 
+                if k == i or k == j:
                     continue
 
                 intersect = find_intersect_point_of_planes(
@@ -504,15 +504,16 @@ def build_scene(context, LEVEL, game_version, game_title, file_version, fix_rota
 
     else:
         shader_collection_dic = {}
-        shader_collection_path = os.path.join(config.HALO_2_TAG_PATH, r"scenarios\shaders\shader_collections.shader_collections") 
-        shader_collection_file = open(shader_collection_path, "r")
-        for line in shader_collection_file.readlines():
-            if not global_functions.string_empty_check(line) and not line.startswith(";"):
-                split_result = line.split()
-                if len(split_result) == 2:
-                    prefix = split_result[0]
-                    path = split_result[1]
-                    shader_collection_dic[path] = prefix
+        shader_collection_path = os.path.join(config.HALO_2_TAG_PATH, r"scenarios\shaders\shader_collections.shader_collections")
+        if os.path.is_file(shader_collection_path):
+            shader_collection_file = open(shader_collection_path, "r")
+            for line in shader_collection_file.readlines():
+                if not global_functions.string_empty_check(line) and not line.startswith(";"):
+                    split_result = line.split()
+                    if len(split_result) == 2:
+                        prefix = split_result[0]
+                        path = split_result[1]
+                        shader_collection_dic[path] = prefix
 
         materials = []
         for material in LEVEL.materials:
@@ -702,7 +703,7 @@ def build_scene(context, LEVEL, game_version, game_title, file_version, fix_rota
                         else:
                             print("Could not find a collection for: %s" % material_path)
 
-                    
+
                     if game_title == "halo1":
                         if H1SurfaceFlags.two_sided in H1SurfaceFlags(surface.flags):
                             material_name += "%"

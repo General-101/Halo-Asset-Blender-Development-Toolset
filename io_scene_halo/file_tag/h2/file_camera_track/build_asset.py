@@ -40,7 +40,7 @@ def write_control_points(output_stream, TAG, control_points, control_points_head
         control_points_header.write(output_stream, TAG, True)
         for control_point_element in control_points:
             output_stream.write(struct.pack('<fff', *control_point_element.position))
-            output_stream.write(struct.pack('<ffff', *control_point_element.orientation))
+            output_stream.write(struct.pack('<ffff', control_point_element.orientation[1], control_point_element.orientation[2], control_point_element.orientation[3], control_point_element.orientation[0]))
 
 def build_asset(output_stream, CAMERATRACK, report):
     TAG = tag_format.TagAsset()

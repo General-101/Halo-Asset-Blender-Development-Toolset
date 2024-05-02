@@ -138,11 +138,11 @@ class ObjectAsset():
         self.predicted_resources = None
 
     class ObjectBody:
-        def __init__(self, object_flags=0, bounding_radius=0.0, bounding_offset=Vector(), acceleration_scale=0.0, lightmap_shadow_mode=0, sweetner_size=0, 
-                     dynamic_light_sphere_radius=0.0, dynamic_light_sphere_offset=Vector(), default_model_variant="", default_model_variant_length=0, model=None, crate_object=None, 
-                     modifier_shader=None, creation_effect=None, material_effects=None, ai_properties_tag_block=None, functions_tag_block=None, apply_collision_damage_scale=0.0, 
-                     min_game_acc=0.0, max_game_acc=0.0, min_game_scale=0.0, max_game_scale=0.0, min_abs_acc=0.0, max_abs_acc=0.0, min_abs_scale=0.0, max_abs_scale=0.0, 
-                     hud_text_message_index=0, attachments_tag_block=None, widgets_tag_block=None, old_functions_tag_block=None, change_colors_tag_block=None, 
+        def __init__(self, object_flags=0, bounding_radius=0.0, bounding_offset=Vector(), acceleration_scale=0.0, lightmap_shadow_mode=0, sweetner_size=0,
+                     dynamic_light_sphere_radius=0.0, dynamic_light_sphere_offset=Vector(), default_model_variant="", default_model_variant_length=0, model=None, crate_object=None,
+                     modifier_shader=None, creation_effect=None, material_effects=None, ai_properties_tag_block=None, functions_tag_block=None, apply_collision_damage_scale=0.0,
+                     min_game_acc=0.0, max_game_acc=0.0, min_game_scale=0.0, max_game_scale=0.0, min_abs_acc=0.0, max_abs_acc=0.0, min_abs_scale=0.0, max_abs_scale=0.0,
+                     hud_text_message_index=0, attachments_tag_block=None, widgets_tag_block=None, old_functions_tag_block=None, change_colors_tag_block=None,
                      predicted_resources_tag_block=None):
             self.object_flags = object_flags
             self.bounding_radius = bounding_radius
@@ -177,7 +177,7 @@ class ObjectAsset():
             self.change_colors_tag_block = change_colors_tag_block
             self.predicted_resources_tag_block = predicted_resources_tag_block
 
-    class AIProperties:
+    class AIProperty:
         def __init__(self, ai_flags=0, ai_type_name="", ai_type_name_length=0, ai_size=0, leap_jump_speed=0):
             self.ai_flags = ai_flags
             self.ai_type_name = ai_type_name
@@ -186,7 +186,7 @@ class ObjectAsset():
             self.leap_jump_speed = leap_jump_speed
 
     class Function:
-        def __init__(self, flags=0, import_name="", import_name_length=0, export_name="", export_name_length=0, turn_off_with="", turn_off_with_length=0, min_value=0, 
+        def __init__(self, flags=0, import_name="", import_name_length=0, export_name="", export_name_length=0, turn_off_with="", turn_off_with_length=0, min_value=0,
                      function_property=None, scale_by="", scale_by_length=0):
             self.flags = flags
             self.import_name = import_name
@@ -217,7 +217,7 @@ class ObjectAsset():
             self.name_length = name_length
 
     class ChangeColor:
-        def __init__(self, initial_permutations_tag_block=None, initial_permutations_header=None, initial_permutations=None, functions_tag_block=None, functions_header=None, 
+        def __init__(self, initial_permutations_tag_block=None, initial_permutations_header=None, initial_permutations=None, functions_tag_block=None, functions_header=None,
                      functions=None):
             self.initial_permutations_tag_block = initial_permutations_tag_block
             self.initial_permutations_header = initial_permutations_header

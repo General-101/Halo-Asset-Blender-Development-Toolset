@@ -29,12 +29,12 @@ import struct
 from ....global_functions import tag_format, shader_processing
 from ....file_tag.h2.file_shader.format import FunctionTypeEnum
 from ..file_object.build_asset import (
-    write_ai_properties, 
-    write_functions, 
-    write_attachments, 
-    write_tag_ref, 
-    write_old_functions, 
-    write_change_colors, 
+    write_ai_properties,
+    write_functions,
+    write_attachments,
+    write_tag_ref,
+    write_old_functions,
+    write_change_colors,
     write_predicted_resources
     )
 
@@ -118,4 +118,3 @@ def build_asset(output_stream, SCENERY, report):
     write_old_functions(output_stream, TAG, SCENERY.old_functions, SCENERY.old_functions_header)
     write_change_colors(output_stream, TAG, SCENERY.change_colors, SCENERY.change_colors_header)
     write_predicted_resources(output_stream, TAG, SCENERY.predicted_resources, SCENERY.predicted_resources_header)
-

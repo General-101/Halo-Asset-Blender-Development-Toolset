@@ -53,13 +53,13 @@ def process_mesh(SBSP_ASSET, random_color_gen, tag_block, poop_name, material_co
                         vertex_map[v0] = vertex_idx
                         vertices.append(render_data.raw_vertices[v0])
                         vertex_idx += 1
-                        
+
                     v1 = triangle_indices[triangle_index + 1]
                     if vertex_map[v1] == -1:
                         vertex_map[v1] = vertex_idx
                         vertices.append(render_data.raw_vertices[v1])
                         vertex_idx += 1
-                        
+
                     v2 = triangle_indices[triangle_index + 2]
                     if vertex_map[v2] == -1:
                         vertex_map[v2] = vertex_idx
@@ -93,7 +93,7 @@ def process_mesh(SBSP_ASSET, random_color_gen, tag_block, poop_name, material_co
                         v0 = triangle_indices[triangle_index]
                         v1 = triangle_indices[triangle_index + 1]
                         v2 = triangle_indices[triangle_index + 2]
-                    
+
                         vertex_list = [vertices[vertex_map[v0]], vertices[vertex_map[v1]], vertices[vertex_map[v2]]]
                         for vertex_idx, vertex in enumerate(vertex_list):
                             loop_index = (triangle_start * 3) + triangle_index + vertex_idx
@@ -136,7 +136,7 @@ def build_clusters(lightmap_group, SBSP_ASSET, level_root, random_color_gen, col
         material_count = 0
         if not SBSP_ASSET == None:
             material_count = len(SBSP_ASSET.materials)
-        
+
         for cluster_idx, cluster in enumerate(lightmap_group.clusters):
             cluster_name = "cluster_%s" % cluster_idx
             mesh = process_mesh(SBSP_ASSET, random_color_gen, cluster, cluster_name, material_count)
@@ -165,7 +165,7 @@ def build_poops(lightmap_group, SBSP_ASSET, level_root, random_color_gen, collec
                     object_mesh = bpy.data.objects.new(ob_name, mesh)
                     object_mesh.parent = level_root
                     collection.objects.link(object_mesh)
-                    
+
                     object_mesh.tag_view.data_type_enum = '16'
                     object_mesh.tag_view.instance_lightmap_policy_enum = str(instanced_geometry_instance.lightmapping_policy)
 

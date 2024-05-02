@@ -86,10 +86,10 @@ class ShaderAsset():
         self.shader_body = None
 
     class ShaderBody:
-        def __init__(self, radiosity_flags=0, detail_level=0, power=0.0, color_of_emitted_light=(0.0, 0.0, 0.0, 1.0), light_tint_color=(0.0, 0.0, 0.0, 1.0), material_type=0, 
-                     intensity_source=0, intensity_exponent=0.0, offset_source=0, offset_amount=0.0, offset_exponent=0.0, perpendicular_brightness=0.0, 
-                     perpendicular_tint_color=(0.0, 0.0, 0.0, 1.0), parallel_brightness=0.0, parallel_tint_color=(0.0, 0.0, 0.0, 1.0), tint_color_source=0, 
-                     primary_animation_period=0.0, primary_animation_direction=Vector(), primary_noise_map_scale=0.0, primary_noise_map=None, 
+        def __init__(self, radiosity_flags=0, detail_level=0, power=0.0, color_of_emitted_light=(0.0, 0.0, 0.0, 1.0), light_tint_color=(0.0, 0.0, 0.0, 1.0), material_type=0,
+                     intensity_source=0, intensity_exponent=0.0, offset_source=0, offset_amount=0.0, offset_exponent=0.0, perpendicular_brightness=0.0,
+                     perpendicular_tint_color=(0.0, 0.0, 0.0, 1.0), parallel_brightness=0.0, parallel_tint_color=(0.0, 0.0, 0.0, 1.0), tint_color_source=0,
+                     primary_animation_period=0.0, primary_animation_direction=Vector(), primary_noise_map_scale=0.0, primary_noise_map=None,
                      secondary_animation_period=0.0, secondary_animation_direction=Vector(), secondary_noise_map_scale=0.0, secondary_noise_map=None):
             self.radiosity_flags = radiosity_flags
             self.detail_level = detail_level

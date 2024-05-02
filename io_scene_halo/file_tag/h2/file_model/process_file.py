@@ -27,9 +27,9 @@
 from xml.dom import minidom
 from ....global_functions import tag_format
 from .format import (
-        ModelAsset, 
-        ShadowFadeDistanceEnum, 
-        ModelFlags, 
+        ModelAsset,
+        ShadowFadeDistanceEnum,
+        ModelFlags,
         RuntimeFlags,
         SALT_SIZE
         )

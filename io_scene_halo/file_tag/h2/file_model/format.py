@@ -96,11 +96,11 @@ class ModelAsset():
         self.scenario_load_parameters = None
 
     class ModelBody:
-        def __init__(self, render_model=None, collision_model=None, animation=None, physics=None, physics_model=None, disappear_distance=0.0, begin_fade_distance=0.0, 
-                     reduce_to_l1=0.0, reduce_to_l2=0.0, reduce_to_l3=0.0, reduce_to_l4=0.0, reduce_to_l5=0.0, shadow_fade_distance=0, variants_tag_block=None, 
-                     materials_tag_block=None, new_damage_info_tag_block=None, targets_tag_block=None, runtime_regions_tag_block=None, runtime_nodes_tag_block=None, 
-                     model_object_data_tag_block=None, default_dialogue=None, unused=None, flags=0, default_dialogue_effect="", default_dialogue_effect_length=0, 
-                     salt_array=None, runtime_flags=0, scenario_load_parameters_tag_block=None, hologram_shader=None, hologram_control_function="", 
+        def __init__(self, render_model=None, collision_model=None, animation=None, physics=None, physics_model=None, disappear_distance=0.0, begin_fade_distance=0.0,
+                     reduce_to_l1=0.0, reduce_to_l2=0.0, reduce_to_l3=0.0, reduce_to_l4=0.0, reduce_to_l5=0.0, shadow_fade_distance=0, variants_tag_block=None,
+                     materials_tag_block=None, new_damage_info_tag_block=None, targets_tag_block=None, runtime_regions_tag_block=None, runtime_nodes_tag_block=None,
+                     model_object_data_tag_block=None, default_dialogue=None, unused=None, flags=0, default_dialogue_effect="", default_dialogue_effect_length=0,
+                     salt_array=None, runtime_flags=0, scenario_load_parameters_tag_block=None, hologram_shader=None, hologram_control_function="",
                      hologram_control_function_length=0):
             self.render_model = render_model
             self.collision_model = collision_model
@@ -135,7 +135,7 @@ class ModelAsset():
             self.hologram_control_function_length = hologram_control_function_length
 
     class Variant:
-        def __init__(self, name="", name_length=0, regions_tag_block=None, regions_header=None, regions=None, objects_tag_block=None, objects_header=None, 
+        def __init__(self, name="", name_length=0, regions_tag_block=None, regions_header=None, regions=None, objects_tag_block=None, objects_header=None,
                      objects=None, dialogue_sound_effect="", dialogue_sound_effect_length=0, dialogue=None):
             self.name = name
             self.name_length = name_length
@@ -150,7 +150,7 @@ class ModelAsset():
             self.dialogue = dialogue
 
     class Region:
-        def __init__(self, region_name="", region_name_length=0, parent_variant=0, permutations_tag_block=None, permutations_header=None, permutations=None, 
+        def __init__(self, region_name="", region_name_length=0, parent_variant=0, permutations_tag_block=None, permutations_header=None, permutations=None,
                      sort_order=0):
             self.region_name = region_name
             self.region_name_length = region_name_length
@@ -161,7 +161,7 @@ class ModelAsset():
             self.sort_order = sort_order
 
     class Permutation:
-        def __init__(self, permutation_name="", permutation_name_length=0, flags=0, probability=0.0, states_tag_block=None, states_header=None, 
+        def __init__(self, permutation_name="", permutation_name_length=0, flags=0, probability=0.0, states_tag_block=None, states_header=None,
                      states=None):
             self.permutation_name = permutation_name
             self.permutation_name_length = permutation_name_length
@@ -172,7 +172,7 @@ class ModelAsset():
             self.states = states
 
     class State:
-        def __init__(self, permutation_name="", permutation_name_length=0, property_flags=0, state=0, looping_effect=None, looping_effect_marker_name="", 
+        def __init__(self, permutation_name="", permutation_name_length=0, property_flags=0, state=0, looping_effect=None, looping_effect_marker_name="",
                      looping_effect_marker_name_length=0, initial_probability=0.0):
             self.permutation_name = permutation_name
             self.permutation_name_length = permutation_name_length
@@ -192,7 +192,7 @@ class ModelAsset():
             self.child_object = child_object
 
     class Materials:
-        def __init__(self, material_name="", material_name_length=0, material_type=0, damage_section=0, global_material_name="", 
+        def __init__(self, material_name="", material_name_length=0, material_type=0, damage_section=0, global_material_name="",
                      global_material_name_length=0):
             self.material_name = material_name
             self.material_name_length = material_name_length
@@ -202,14 +202,14 @@ class ModelAsset():
             self.global_material_name_length = global_material_name_length
 
     class NewDamageInfo:
-        def __init__(self, flags=0, global_indirect_material_name="", global_indirect_material_name_length=0, indirect_damage_section=0, 
-                     collision_damage_reporting_type=0, response_damage_reporting_type=0, maximum_vitality=0.0, body_minimum_stun_damage=0.0, 
-                     body_stun_time=0.0, body_recharge_time=0.0, recharge_fraction=0.0, shield_damaged_first_person_shader=None, shield_damaged_shader=None, 
-                     maximum_shield_vitality=0.0, global_shield_material_name="", global_shield_material_name_length=0, shield_minimum_stun_damage=0.0, 
-                     shield_stun_time=0.0, shield_recharge_time=0.0, shield_damaged_threshold=0.0, shield_damaged_effect=None, shield_depleted_effect=None, 
-                     shield_recharging_effect=None, damage_sections_tag_block=None, damage_sections_header=None, damage_sections=None, nodes_tag_block=None, 
-                     nodes_header=None, nodes=None, damage_seats_tag_block=None, damage_seats_header=None, damage_seats=None, 
-                     damage_constraints_tag_block=None, damage_constraints_header=None, damage_constraints=None, overshield_first_person_shader=None, 
+        def __init__(self, flags=0, global_indirect_material_name="", global_indirect_material_name_length=0, indirect_damage_section=0,
+                     collision_damage_reporting_type=0, response_damage_reporting_type=0, maximum_vitality=0.0, body_minimum_stun_damage=0.0,
+                     body_stun_time=0.0, body_recharge_time=0.0, recharge_fraction=0.0, shield_damaged_first_person_shader=None, shield_damaged_shader=None,
+                     maximum_shield_vitality=0.0, global_shield_material_name="", global_shield_material_name_length=0, shield_minimum_stun_damage=0.0,
+                     shield_stun_time=0.0, shield_recharge_time=0.0, shield_damaged_threshold=0.0, shield_damaged_effect=None, shield_depleted_effect=None,
+                     shield_recharging_effect=None, damage_sections_tag_block=None, damage_sections_header=None, damage_sections=None, nodes_tag_block=None,
+                     nodes_header=None, nodes=None, damage_seats_tag_block=None, damage_seats_header=None, damage_seats=None,
+                     damage_constraints_tag_block=None, damage_constraints_header=None, damage_constraints=None, overshield_first_person_shader=None,
                      overshield_shader=None):
             self.flags = flags
             self.global_indirect_material_name = global_indirect_material_name
@@ -250,9 +250,9 @@ class ModelAsset():
             self.overshield_shader = overshield_shader
 
     class DamageSection:
-        def __init__(self, name="", name_length=0, flags=0, vitality_percentage=0.0, instant_responses_tag_block=None, instant_responses_header=None, 
-                     instant_responses=None, unknown_0_tag_block=None, unknown_0_header=None, unknown_0=None, unknown_1_tag_block=None, 
-                     unknown_1_header=None, unknown_1=None, stun_time=0.0, recharge_time=0.0, resurrection_restored_region_name="", 
+        def __init__(self, name="", name_length=0, flags=0, vitality_percentage=0.0, instant_responses_tag_block=None, instant_responses_header=None,
+                     instant_responses=None, unknown_0_tag_block=None, unknown_0_header=None, unknown_0=None, unknown_1_tag_block=None,
+                     unknown_1_header=None, unknown_1=None, stun_time=0.0, recharge_time=0.0, resurrection_restored_region_name="",
                      resurrection_restored_region_name_length=0):
             self.name = name
             self.name_length = name_length
@@ -273,11 +273,11 @@ class ModelAsset():
             self.resurrection_restored_region_name_length = resurrection_restored_region_name_length
 
     class InstantResponse:
-        def __init__(self, response_type=0, constraint_damage_type=0, flags=0, damage_threshold=0.0, transition_effect=None, transition_damage_effect=None, 
-                     region="", region_length=0, new_state=0, runtime_region_index=0, effect_marker_name="", effect_marker_name_length=0, 
-                     damage_effect_marker_name="", damage_effect_marker_name_length=0, response_delay=0.0, delay_effect=None, delay_effect_marker_name="", 
-                     delay_effect_marker_name_length=0, constraint_group_name="", constraint_group_name_length=0, ejecting_seat_label="", 
-                     ejecting_seat_label_length=0, skip_fraction=0.0, destroyed_child_object_marker_name="", destroyed_child_object_marker_name_length=0, 
+        def __init__(self, response_type=0, constraint_damage_type=0, flags=0, damage_threshold=0.0, transition_effect=None, transition_damage_effect=None,
+                     region="", region_length=0, new_state=0, runtime_region_index=0, effect_marker_name="", effect_marker_name_length=0,
+                     damage_effect_marker_name="", damage_effect_marker_name_length=0, response_delay=0.0, delay_effect=None, delay_effect_marker_name="",
+                     delay_effect_marker_name_length=0, constraint_group_name="", constraint_group_name_length=0, ejecting_seat_label="",
+                     ejecting_seat_label_length=0, skip_fraction=0.0, destroyed_child_object_marker_name="", destroyed_child_object_marker_name_length=0,
                      total_damage_threshold=0.0, ires_header=None, irem_header=None):
             self.response_type = response_type
             self.constraint_damage_type = constraint_damage_type
@@ -309,7 +309,7 @@ class ModelAsset():
             self.irem_header = irem_header
 
     class DamageSeat:
-        def __init__(self, seat_label="", seat_label_length=0, direct_damage_scale=0.0, damage_transfer_fall_off=0.0, maximum_transfer_damage_scale=0.0, 
+        def __init__(self, seat_label="", seat_label_length=0, direct_damage_scale=0.0, damage_transfer_fall_off=0.0, maximum_transfer_damage_scale=0.0,
                      minimum_transfer_damage_scale=0.0):
             self.seat_label = seat_label
             self.seat_label_length = seat_label_length
@@ -319,7 +319,7 @@ class ModelAsset():
             self.minimum_transfer_damage_scale = minimum_transfer_damage_scale
 
     class DamageConstraint:
-        def __init__(self, physics_model_constraint_name="", physics_model_constraint_name_length=0, damage_constraint_name="", 
+        def __init__(self, physics_model_constraint_name="", physics_model_constraint_name_length=0, damage_constraint_name="",
                      damage_constraint_name_length=0, damage_constraint_group_name="", damage_constraint_group_name_length=0, group_probability_scale=0.0):
             self.physics_model_constraint_name = physics_model_constraint_name
             self.physics_model_constraint_name_length = physics_model_constraint_name_length

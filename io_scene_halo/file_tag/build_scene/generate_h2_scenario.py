@@ -53,7 +53,7 @@ def generate_skies(context, level_root, tag_block, report):
                     radiosity = light.radiosity[0]
                     radiosity_color = radiosity.color
                     radiosity_power = radiosity.power
-                    
+
                 tag_name = os.path.basename(element.name)
 
                 name = "%s_light_%s" % (tag_name, light_idx)
@@ -238,7 +238,7 @@ def generate_object_elements(level_root, collection_name, palette, tag_block, co
             root = bpy.data.objects.new(name, None)
             root.empty_display_type = 'ARROWS'
             asset_collection.objects.link(root)
-        
+
         root.parent = level_root
         root.location = element.position * 100
         ob_scale = element.scale

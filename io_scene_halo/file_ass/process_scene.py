@@ -135,8 +135,8 @@ def process_scene(context, version, game_version, hidden_geo, nonrender_geo, app
     if not context.view_layer.objects.active == None:
         bpy.ops.object.mode_set(mode='OBJECT')
 
-    default_region = mesh_processing.get_default_region_permutation_name(game_version)
-    default_permutation = mesh_processing.get_default_region_permutation_name(game_version)
+    default_region = ""
+    default_permutation = ""
 
     limit_value = 0.001
 
@@ -227,7 +227,7 @@ def process_scene(context, version, game_version, hidden_geo, nonrender_geo, app
                     geometry_list.append((evaluted_mesh, obj, 'MESH'))
 
             else:
-                print("Bad object")
+                print("%s has an out of bounds object_type setting" % obj.name)
 
         else:
             obj_data = None
@@ -274,7 +274,7 @@ def process_scene(context, version, game_version, hidden_geo, nonrender_geo, app
 
             original_geo.ass_jms.unique_id = str(generated_id)
 
-    ASS.instances.append(ASS.Instance(name='Scene Root', local_transform=ASS.Transform(), pivot_transform=ASS.Transform()))
+    ASS.instances.append(ASS.Instance(name='Scene Root', local_transform=ASS.Transform(), pivot_transform=ASS.Transform(), bone_groups=[]))
     for idx, geometry in enumerate(geometry_list):
         verts = []
         triangles = []
@@ -282,8 +282,8 @@ def process_scene(context, version, game_version, hidden_geo, nonrender_geo, app
 
         region_index = -1
         lod = None
-        region = default_region
-        permutation = default_permutation
+        region = ""
+        permutation = ""
         face_set = (None, default_permutation, default_region)
 
         evaluted_mesh = geometry[0]
@@ -320,6 +320,8 @@ def process_scene(context, version, game_version, hidden_geo, nonrender_geo, app
         if geo_class == 'BONE':
             is_bone = True
             armature = geometry[3]
+            if original_geo.parent:
+                parent = original_geo.parent
 
         else:
             if original_geo.parent:
@@ -327,13 +329,12 @@ def process_scene(context, version, game_version, hidden_geo, nonrender_geo, app
                 if original_geo.parent.type == 'ARMATURE':
                     armature = parent
                     if original_geo.parent_type == 'BONE':
-                        parent = original_geo.parent.data.bones[original_geo.parent_bone]
+                        parent = original_geo.parent.data.bones.get(original_geo.parent_bone)
 
-                    else:
-                        parent = original_geo.parent.data.bones[0]
-
-        if not parent == None and parent in object_list:
-            parent_id = instance_list.index(parent) + 1
+        if not parent == None:
+            for instance_idx, instance in enumerate(instance_list):
+                if instance == parent:
+                    parent_id = instance_idx + 1
 
         geo_matrix = global_functions.get_matrix(original_geo, original_geo, True, armature, instance_list, is_bone, version, 'ASS', False, custom_scale, False)
         geo_dimensions = global_functions.get_dimensions(geo_matrix, original_geo, version, is_bone, 'ASS', custom_scale)
@@ -482,16 +483,18 @@ def process_scene(context, version, game_version, hidden_geo, nonrender_geo, app
                         scaled_translation, normal = mesh_processing.process_mesh_export_vert(vertex_data, loop_data, loop_normals, "ASS", object_matrix, custom_scale)
                         uv_set = mesh_processing.process_mesh_export_uv(evaluted_mesh, "ASS", loop_index, version)
                         color = mesh_processing.process_mesh_export_color(evaluted_mesh, loop_index, point_idx)
-                        node_influence_count, node_set, node_index_list = mesh_processing.process_mesh_export_weights(vertex_data, armature, original_geo, vertex_groups, instance_list, "ASS")
+                        node_influence_count, node_set = mesh_processing.process_mesh_export_weights(vertex_data, armature, original_geo, vertex_groups, instance_list, "ASS", node_index_list)
 
                         verts.append(ASS.Vertex(node_influence_count, node_set, region, scaled_translation, normal, color, uv_set))
 
                 original_geo.to_mesh_clear()
 
             else:
-                print("Bad object")
+                print("Geometry file has an invalid geometry class during scene processing: ",  geo_class)
 
-            ASS.objects.append(ASS.Object(geo_class, xref_path, xref_name, material_index, radius, extents, height, verts, triangles, node_index_list, light_properties))
+            ASS.objects.append(ASS.Object(geo_class, xref_path, xref_name, material_index, radius, extents, height, verts, triangles, light_properties))
+
+        ASS.instances[-1].bone_groups = node_index_list
 
     for material in material_list:
         material_data = material[0]
@@ -512,7 +515,7 @@ def process_scene(context, version, game_version, hidden_geo, nonrender_geo, app
         if permutation:
             permutation = permutation.replace(' ', '_').replace('\t', '_')
 
-        ASS.materials.append(ASS.Material(material_name, material_name, texture_path, slot_index, lod, permutation, region, material_data.ass_jms.material_effect, material_lightmap))
+        ASS.materials.append(ASS.Material(material_name, material_name, texture_path, slot_index, lod, permutation, region, material_lightmap))
 
     # Restore visibility status for all resources
     resource_management.restore_collection_visibility(stored_collection_visibility)

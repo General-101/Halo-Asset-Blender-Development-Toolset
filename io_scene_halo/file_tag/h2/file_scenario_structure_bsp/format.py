@@ -507,7 +507,7 @@ class LevelAsset():
             self.wind_direction = wind_direction
             self.wind_magnitude = wind_magnitude
             self.wind_scale_function = wind_scale_function
-    
+
     class WeatherPolyhedra:
         def __init__(self, bounding_sphere_center=Vector(), bounding_sphere_radius=0.0, planes_header=None, planes_tag_block=None, planes=None):
             self.bounding_sphere_center = bounding_sphere_center
@@ -517,7 +517,7 @@ class LevelAsset():
             self.planes = planes
 
     class DetailObject:
-        def __init__(self, cells_header=None, cells_tag_block=None, cells=None, instances_header=None, instances_tag_block=None, instances=None, counts_header=None, 
+        def __init__(self, cells_header=None, cells_tag_block=None, cells=None, instances_header=None, instances_tag_block=None, instances=None, counts_header=None,
                      counts_tag_block=None, counts=None, z_reference_vectors_header=None, z_reference_vectors_tag_block=None, z_reference_vectors=None):
             self.cells_header = cells_header
             self.cells_tag_block = cells_tag_block
@@ -558,10 +558,10 @@ class LevelAsset():
             self.unknown_3 = unknown_3
 
     class Section:
-        def __init__(self, total_vertex_count=0, total_triangle_count=0, total_part_count=0, shadow_casting_triangle_count=0, shadow_casting_part_count=0, opaque_point_count=0, 
-                     opaque_vertex_count=0, opaque_part_count=0, opaque_max_nodes_vertex=0, transparent_max_nodes_vertex=0, shadow_casting_rigid_triangle_count=0, 
-                     geometry_classification=0, geometry_compression_flags=0, compression_info_header=None, compression_info_tag_block=None, hardware_node_count=0, node_map_size=0, 
-                     software_plane_count=0, total_subpart_count=0, section_lighting_flags=0, block_offset=0, block_size=0, section_data_size=0, resource_data_size=0, 
+        def __init__(self, total_vertex_count=0, total_triangle_count=0, total_part_count=0, shadow_casting_triangle_count=0, shadow_casting_part_count=0, opaque_point_count=0,
+                     opaque_vertex_count=0, opaque_part_count=0, opaque_max_nodes_vertex=0, transparent_max_nodes_vertex=0, shadow_casting_rigid_triangle_count=0,
+                     geometry_classification=0, geometry_compression_flags=0, compression_info_header=None, compression_info_tag_block=None, hardware_node_count=0, node_map_size=0,
+                     software_plane_count=0, total_subpart_count=0, section_lighting_flags=0, block_offset=0, block_size=0, section_data_size=0, resource_data_size=0,
                      resources_header=None, resources_tag_block=None, owner_tag_section_offset=0):
             self.total_vertex_count = total_vertex_count
             self.total_triangle_count = total_triangle_count
@@ -592,11 +592,11 @@ class LevelAsset():
             self.owner_tag_section_offset = owner_tag_section_offset
 
     class Cluster(Section):
-        def __init__(self, cluster_data_header=None, cluster_data_tag_block=None, bounds_x=(0.0, 0.0), bounds_y=(0.0, 0.0), bounds_z=(0.0, 0.0), scenario_sky_index=0, media_index=0, 
-                     scenario_visible_sky_index=0, scenario_atmospheric_fog_index=0, planar_fog_designator=0, visible_fog_plane_index=0, background_sound=0, sound_environment=0, 
-                     weather=0, transition_structure_bsp=0, flags=0, predicted_resources_header=None, predicted_resources_tag_block=None, portals_header=None, portals_tag_block=None, 
-                     checksum_from_structure=0, instanced_geometry_indices_header=None, instanced_geometry_indices_tag_block=None, index_reorder_table_header=None, 
-                     index_reorder_table_tag_block=None, collision_mopp_code_data=None, sinf_header=None, blok_header=None, compression_info=None, cluster_data=None, 
+        def __init__(self, cluster_data_header=None, cluster_data_tag_block=None, bounds_x=(0.0, 0.0), bounds_y=(0.0, 0.0), bounds_z=(0.0, 0.0), scenario_sky_index=0, media_index=0,
+                     scenario_visible_sky_index=0, scenario_atmospheric_fog_index=0, planar_fog_designator=0, visible_fog_plane_index=0, background_sound=0, sound_environment=0,
+                     weather=0, transition_structure_bsp=0, flags=0, predicted_resources_header=None, predicted_resources_tag_block=None, portals_header=None, portals_tag_block=None,
+                     checksum_from_structure=0, instanced_geometry_indices_header=None, instanced_geometry_indices_tag_block=None, index_reorder_table_header=None,
+                     index_reorder_table_tag_block=None, collision_mopp_code_data=None, sinf_header=None, blok_header=None, compression_info=None, cluster_data=None,
                      predicted_resources=None, resources=None, portals=None, instanced_geometry_indices=None, index_reorder_table=None, collision_mopp_code=None):
             super().__init__()
             self.cluster_data_header = cluster_data_header
@@ -637,7 +637,7 @@ class LevelAsset():
             self.collision_mopp_code = collision_mopp_code
 
     class CompressionInfo:
-        def __init__(self, position_bounds_x=(0.0, 0.0), position_bounds_y=(0.0, 0.0), position_bounds_z=(0.0, 0.0), texcoord_bounds_x=(0.0, 0.0), texcoord_bounds_y=(0.0, 0.0), 
+        def __init__(self, position_bounds_x=(0.0, 0.0), position_bounds_y=(0.0, 0.0), position_bounds_z=(0.0, 0.0), texcoord_bounds_x=(0.0, 0.0), texcoord_bounds_y=(0.0, 0.0),
                      secondary_texcoord_bounds_x=(0.0, 0.0), secondary_texcoord_bounds_y=(0.0, 0.0)):
             self.position_bounds_x = position_bounds_x
             self.position_bounds_y = position_bounds_y
@@ -806,11 +806,11 @@ class LevelAsset():
             self.collision_surface_index = collision_surface_index
 
     class AIPathfindingData():
-        def __init__(self, sectors_tag_block=None, sectors_header=None, sectors=None, links_tag_block=None, links_header=None, links=None, refs_tag_block=None, refs_header=None, 
-                     refs=None, bsp2d_nodes_tag_block=None, bsp2d_nodes_header=None, bsp2d_nodes=None, surface_flags_tag_block=None, surface_flags_header=None, surface_flags=None, 
-                     vertices_tag_block=None, vertices_header=None, vertices=None, object_refs_tag_block=None, object_refs_header=None, object_refs=None, 
-                     pathfinding_hints_tag_block=None, pathfinding_hints_header=None, pathfinding_hints=None, instanced_geometry_refs_tag_block=None, 
-                     instanced_geometry_refs_header=None, instanced_geometry_refs=None, structure_checksum=0, user_placed_hints_tag_block=None, user_placed_hints_header=None, 
+        def __init__(self, sectors_tag_block=None, sectors_header=None, sectors=None, links_tag_block=None, links_header=None, links=None, refs_tag_block=None, refs_header=None,
+                     refs=None, bsp2d_nodes_tag_block=None, bsp2d_nodes_header=None, bsp2d_nodes=None, surface_flags_tag_block=None, surface_flags_header=None, surface_flags=None,
+                     vertices_tag_block=None, vertices_header=None, vertices=None, object_refs_tag_block=None, object_refs_header=None, object_refs=None,
+                     pathfinding_hints_tag_block=None, pathfinding_hints_header=None, pathfinding_hints=None, instanced_geometry_refs_tag_block=None,
+                     instanced_geometry_refs_header=None, instanced_geometry_refs=None, structure_checksum=0, user_placed_hints_tag_block=None, user_placed_hints_header=None,
                      user_placed_hints=None):
             self.sectors_tag_block = sectors_tag_block
             self.sectors_header = sectors_header
@@ -906,10 +906,10 @@ class LevelAsset():
             self.hint_data_7 = hint_data_7
 
     class UserPlacedHint():
-        def __init__(self, point_geometry_tag_block=None, point_geometry_header=None, point_geometry=None, ray_geometry_tag_block=None, ray_geometry_header=None, ray_geometry=None, 
-                     line_segment_geometry_tag_block=None, line_segment_geometry_header=None, line_segment_geometry=None, parallelogram_geometry_tag_block=None, 
-                     parallelogram_geometry_header=None, parallelogram_geometry=None, polygon_geometry_tag_block=None, polygon_geometry_header=None, polygon_geometry=None, 
-                     jump_hints_tag_block=None, jump_hints_header=None, jump_hints=None, climb_hints_tag_block=None, climb_hints_header=None, climb_hints=None, 
+        def __init__(self, point_geometry_tag_block=None, point_geometry_header=None, point_geometry=None, ray_geometry_tag_block=None, ray_geometry_header=None, ray_geometry=None,
+                     line_segment_geometry_tag_block=None, line_segment_geometry_header=None, line_segment_geometry=None, parallelogram_geometry_tag_block=None,
+                     parallelogram_geometry_header=None, parallelogram_geometry=None, polygon_geometry_tag_block=None, polygon_geometry_header=None, polygon_geometry=None,
+                     jump_hints_tag_block=None, jump_hints_header=None, jump_hints=None, climb_hints_tag_block=None, climb_hints_header=None, climb_hints=None,
                      well_hints_tag_block=None, well_hints_header=None, well_hints=None, flight_hints_tag_block=None, flight_hints_header=None, flight_hints=None):
             self.point_geometry_tag_block = point_geometry_tag_block
             self.point_geometry_header = point_geometry_header
@@ -959,7 +959,7 @@ class LevelAsset():
             self.reference_frame_1 = reference_frame_1
 
     class ParallelogramGeometry():
-        def __init__(self, flags=0, point_0=Vector(), reference_frame_0=0, point_1=Vector(), reference_frame_1=0, point_2=Vector(), reference_frame_2=0, point_3=Vector(), 
+        def __init__(self, flags=0, point_0=Vector(), reference_frame_0=0, point_1=Vector(), reference_frame_1=0, point_2=Vector(), reference_frame_2=0, point_3=Vector(),
                      reference_frame_3=0):
             self.flags = flags
             self.point_0 = point_0
@@ -1005,7 +1005,7 @@ class LevelAsset():
             self.points = points
 
     class BackgroundSoundPalette:
-        def __init__(self, name="", background_sound=None, inside_cluster_sound=None, cutoff_distance=0.0, scale_flags=0, interior_scale=0, portal_scale=0, exterior_scale=0, 
+        def __init__(self, name="", background_sound=None, inside_cluster_sound=None, cutoff_distance=0.0, scale_flags=0, interior_scale=0, portal_scale=0, exterior_scale=0,
                      interpolation_speed=0.0):
             self.name = name
             self.background_sound = background_sound
@@ -1266,8 +1266,8 @@ class LevelAsset():
             self.color = color
 
     class PrecomputedLighting:
-        def __init__(self, index=0, light_type=0, attachment_index=0, object_type=0, projection_count=0, cluster_count=0, volume_count=0, projections_data=None, 
-                     visiblity_clusters_data=None, cluster_remap_table_data=None, visibility_volumes_data=None, projections=None, visiblity_clusters=None, cluster_remap_table=None, 
+        def __init__(self, index=0, light_type=0, attachment_index=0, object_type=0, projection_count=0, cluster_count=0, volume_count=0, projections_data=None,
+                     visiblity_clusters_data=None, cluster_remap_table_data=None, visibility_volumes_data=None, projections=None, visiblity_clusters=None, cluster_remap_table=None,
                      visibility_volumes=None, svis_header=None):
             self.index = index
             self.light_type = light_type
@@ -1287,12 +1287,12 @@ class LevelAsset():
             self.svis_header = svis_header
 
     class InstanceGeometryDefinition(Section):
-        def __init__(self, render_data_tag_block=None, render_data_header=None, render_data=None, index_reorder_table_tag_block=None, index_reorder_table_header=None, 
-                     index_reorder_table=None, checksum=None, bounding_sphere_center=Vector(), bounding_sphere_radius=0.0, bsp3d_nodes_tag_block=None, bsp3d_nodes_header=None, 
-                     bsp3d_nodes=None, planes_tag_block=None, planes_header=None, planes=None, leaves_tag_block=None, leaves_header=None, leaves=None, bsp2d_references_tag_block=None, 
-                     bsp2d_references_header=None, bsp2d_references=None, bsp2d_nodes_tag_block=None, bsp2d_nodes_header=None, bsp2d_nodes=None, surfaces_tag_block=None, 
-                     surfaces_header=None, surfaces=None, edges_tag_block=None, edges_header=None, edges=None, vertices_tag_block=None, vertices_header=None, vertices=None, 
-                     bsp_physics_tag_block=None, bsp_physics_header=None, bsp_physics=None, render_leaves_tag_block=None, render_leaves_header=None, render_leaves=None, 
+        def __init__(self, render_data_tag_block=None, render_data_header=None, render_data=None, index_reorder_table_tag_block=None, index_reorder_table_header=None,
+                     index_reorder_table=None, checksum=None, bounding_sphere_center=Vector(), bounding_sphere_radius=0.0, bsp3d_nodes_tag_block=None, bsp3d_nodes_header=None,
+                     bsp3d_nodes=None, planes_tag_block=None, planes_header=None, planes=None, leaves_tag_block=None, leaves_header=None, leaves=None, bsp2d_references_tag_block=None,
+                     bsp2d_references_header=None, bsp2d_references=None, bsp2d_nodes_tag_block=None, bsp2d_nodes_header=None, bsp2d_nodes=None, surfaces_tag_block=None,
+                     surfaces_header=None, surfaces=None, edges_tag_block=None, edges_header=None, edges=None, vertices_tag_block=None, vertices_header=None, vertices=None,
+                     bsp_physics_tag_block=None, bsp_physics_header=None, bsp_physics=None, render_leaves_tag_block=None, render_leaves_header=None, render_leaves=None,
                      surface_references_tag_block=None, surface_references_header=None, surface_references=None, igri_header=None, sinf_header=None, cbsp_header=None):
             super().__init__()
             self.render_data_tag_block = render_data_tag_block
@@ -1365,7 +1365,7 @@ class LevelAsset():
             self.bsp_node_index = bsp_node_index
 
     class InstancedGeometryInstance:
-        def __init__(self, scale=0.0, forward=Vector(), left=Vector(), up=Vector(), position=Vector(), instance_definition=0, flags=0, checksum=0, name="", name_length=0, 
+        def __init__(self, scale=0.0, forward=Vector(), left=Vector(), up=Vector(), position=Vector(), instance_definition=0, flags=0, checksum=0, name="", name_length=0,
                      pathfinding_policy=0, lightmapping_policy=0):
             self.scale = scale
             self.forward = forward

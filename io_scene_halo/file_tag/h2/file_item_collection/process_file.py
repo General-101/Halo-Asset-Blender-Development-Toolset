@@ -62,12 +62,12 @@ def read_permutations_v0(COLLECTION, TAG, input_stream, tag_node, XML_OUTPUT):
             input_stream.read(32) # Padding?
             permutation.weight = TAG.read_float(input_stream, TAG, tag_format.XMLData(permutation_element_node, "weight"))
             permutation.item = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(permutation_element_node, "item"))
-            
+
             TAG.big_endian = True
             input_stream.read(2) # Padding?
             permutation.variant_length = TAG.read_signed_short(input_stream, TAG)
             TAG.big_endian = False
-            
+
             input_stream.read(28) # Padding?
 
             COLLECTION.permutations.append(permutation)
@@ -101,7 +101,7 @@ def read_permutations_retail(COLLECTION, TAG, input_stream, tag_node, XML_OUTPUT
             permutation = COLLECTION.Permutation()
             permutation.weight = TAG.read_float(input_stream, TAG, tag_format.XMLData(permutation_element_node, "weight"))
             permutation.item = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(permutation_element_node, "item"))
-            
+
             TAG.big_endian = True
             input_stream.read(2) # Padding?
             permutation.variant_length = TAG.read_signed_short(input_stream, TAG)

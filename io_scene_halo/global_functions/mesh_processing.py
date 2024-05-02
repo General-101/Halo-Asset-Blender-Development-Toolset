@@ -574,7 +574,7 @@ def generate_mesh_object_retail(asset, object_vertices, object_triangles, object
     vertex_groups = []
     active_region_permutations = []
 
-    object_vertices, object_triangles = optimize_geo(object_vertices, object_triangles)
+    #object_vertices, object_triangles = optimize_geo(object_vertices, object_triangles)
     verts = [vertex.translation for vertex in object_vertices]
     vertex_normals = [vertex.normal for vertex in object_vertices]
     tris = [(triangles.v0, triangles.v1, triangles.v2) for triangles in object_triangles]
@@ -675,7 +675,7 @@ def generate_mesh_object_retail(asset, object_vertices, object_triangles, object
     return object_mesh
 
 def generate_mesh_retail(context, asset, object_vertices, object_triangles, object_data, game_title, random_color_gen):
-    object_vertices, object_triangles = optimize_geo(object_vertices, object_triangles)
+    #object_vertices, object_triangles = optimize_geo(object_vertices, object_triangles)
     verts = [vertex.translation for vertex in object_vertices]
     vertex_normals = [vertex.normal for vertex in object_vertices]
     tris = [(triangles.v0, triangles.v1, triangles.v2) for triangles in object_triangles]
@@ -765,8 +765,7 @@ def generate_mesh_retail(context, asset, object_vertices, object_triangles, obje
 
     return vertex_weights_sets, region_list
 
-def process_mesh_export_weights(vert, armature, original_geo, vertex_groups, joined_list, file_type):
-    node_index_list = []
+def process_mesh_export_weights(vert, armature, original_geo, vertex_groups, joined_list, file_type, node_index_list=None):
     if len(vert.groups) != 0 and len(vert.groups) <= len(vertex_groups):
         object_vert_group_list = []
         vertex_vert_group_list = []
@@ -804,8 +803,12 @@ def process_mesh_export_weights(vert, armature, original_geo, vertex_groups, joi
                     node_obj = bpy.data.objects[object_vertex_group]
 
                 node_index = int(joined_list.index(node_obj))
-                if not node_index in node_index_list:
-                    node_index_list.append(node_index)
+                if file_type == 'ASS':
+                    node_index += 1
+                    if not node_index_list == None and not node_index in node_index_list:
+                        node_index_list.append(node_index)
+
+                    node_index = node_index_list.index(node_index)
 
                 node_weight = float(vert.groups[vert_index].weight)
                 node_set.append([node_index, node_weight])
@@ -830,7 +833,7 @@ def process_mesh_export_weights(vert, armature, original_geo, vertex_groups, joi
             node_weight = float(1.0000000000)
             node_set.append([node_index, node_weight])
 
-    return node_influence_count, node_set, node_index_list
+    return node_influence_count, node_set
 
 def process_mesh_export_color(evaluted_mesh, loop_index, vertex_index):
     color = (0.0, 0.0, 0.0)
@@ -1035,7 +1038,7 @@ def get_mesh_data(ASSET, section_data, mesh, material_count, materials, random_c
                 mat = ASSET.materials[triangle_material_index]
 
             if not triangle_material_index == -1:
-                if triangle_material_index < material_count:  
+                if triangle_material_index < material_count:
                     mat = materials[triangle_material_index]
 
                     if not mat in mesh.materials.values():

@@ -156,7 +156,7 @@ def build_mesh_layout(asset, geometry, region_name, random_color_gen, object_mes
                 object_mesh.region_add(current_region_permutation)
 
             if not triangle_material_index == -1:
-                if triangle_material_index < shader_count:  
+                if triangle_material_index < shader_count:
                     mat = materials[triangle_material_index]
 
                     if not mat in object_mesh.data.materials.values():
@@ -243,9 +243,9 @@ def get_object(collection, import_file, game_version, object_name, random_color_
             superhigh_geometry_index = permutation.superhigh_geometry_block
             if not superhigh_geometry_index == -1 and superhigh_geometry_index < geometry_count and not import_file.geometries[superhigh_geometry_index].visited:
                 import_file.geometries[superhigh_geometry_index].visited = True
-                superhigh_geometry = import_file.geometries[superhigh_geometry_index]     
+                superhigh_geometry = import_file.geometries[superhigh_geometry_index]
                 build_mesh_layout(import_file, superhigh_geometry, region_name, random_color_gen, object_mesh, materials)
-            
+
             break
 
     return object_mesh

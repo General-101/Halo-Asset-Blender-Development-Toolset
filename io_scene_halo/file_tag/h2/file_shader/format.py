@@ -135,8 +135,8 @@ class ShaderAsset():
         self.postprocess_properties = None
 
     class ShaderBody:
-        def __init__(self, template=None, material_name="", material_name_length=0, runtime_properties_tag_block=None, flags=0, parameters_tag_block=None, 
-                     postprocess_definition_tag_block=None, predicted_resources_tag_block=None, light_response=None, shader_lod_bias=0, specular_type=0, lightmap_type=0, 
+        def __init__(self, template=None, material_name="", material_name_length=0, runtime_properties_tag_block=None, flags=0, parameters_tag_block=None,
+                     postprocess_definition_tag_block=None, predicted_resources_tag_block=None, light_response=None, shader_lod_bias=0, specular_type=0, lightmap_type=0,
                      lightmap_specular_brightness=0.0, lightmap_ambient_bias=0.0, postprocess_properties_tag_block=None, added_depth_bias_offset=0.0, added_depth_bias_slope=0.0):
             self.template = template
             self.material_name = material_name
@@ -157,8 +157,8 @@ class ShaderAsset():
             self.added_depth_bias_slope = added_depth_bias_slope
 
     class RuntimeProperty:
-        def __init__(self, diffuse_map=None, lightmap_emissive_map=None, lightmap_emissive_color=(0.0, 0.0, 0.0, 1.0), lightmap_emissive_power=0.0, lightmap_resolution_scale=0.0, 
-                     lightmap_half_life=0.0, lightmap_diffuse_scale=0.0, alphatest_map=None, translucent_map=None, lightmap_transparent_color=(0.0, 0.0, 0.0, 1.0), 
+        def __init__(self, diffuse_map=None, lightmap_emissive_map=None, lightmap_emissive_color=(0.0, 0.0, 0.0, 1.0), lightmap_emissive_power=0.0, lightmap_resolution_scale=0.0,
+                     lightmap_half_life=0.0, lightmap_diffuse_scale=0.0, alphatest_map=None, translucent_map=None, lightmap_transparent_color=(0.0, 0.0, 0.0, 1.0),
                      lightmap_transparent_alpha=0.0, lightmap_foliage_scale=0.0):
             self.diffuse_map = diffuse_map
             self.lightmap_emissive_map = lightmap_emissive_map
@@ -174,7 +174,7 @@ class ShaderAsset():
             self.lightmap_foliage_scale = lightmap_foliage_scale
 
     class Parameter:
-        def __init__(self, name="", name_length=0, type=0, bitmap=None, const_value=0.0, const_color=(0.0, 0.0, 0.0, 1.0), animation_properties_tag_block=None, 
+        def __init__(self, name="", name_length=0, type=0, bitmap=None, const_value=0.0, const_color=(0.0, 0.0, 0.0, 1.0), animation_properties_tag_block=None,
                      animation_properties_header=None, animation_properties=None):
             self.name = name
             self.name_length = name_length
@@ -187,9 +187,9 @@ class ShaderAsset():
             self.animation_properties = animation_properties
 
     class AnimationProperty:
-        def __init__(self, type=0, input_name="", input_name_length=0, input_type=0, range_name="", range_name_length=0, range_type=0, time_period=0.0, output_modifier=0, 
-                     output_modifier_input=0, map_property_header=None, function_header=None, function_type=0, range_check=False, input_function_data=None, range_function_data=None, 
-                     output_type=0, upper_bound=1.0, lower_bound=0.0, range_upper_bound=1.0, range_lower_bound=1.0, color_a=(0.0, 0.0, 0.0, 1.0), color_b=(0.0, 0.0, 0.0, 1.0), 
+        def __init__(self, type=0, input_name="", input_name_length=0, input_type=0, range_name="", range_name_length=0, range_type=0, time_period=0.0, output_modifier=0,
+                     output_modifier_input=0, map_property_header=None, function_header=None, function_type=0, range_check=False, input_function_data=None, range_function_data=None,
+                     output_type=0, upper_bound=1.0, lower_bound=0.0, range_upper_bound=1.0, range_lower_bound=1.0, color_a=(0.0, 0.0, 0.0, 1.0), color_b=(0.0, 0.0, 0.0, 1.0),
                      color_c=(0.0, 0.0, 0.0, 1.0), color_d=(0.0, 0.0, 0.0, 1.0)):
             self.type = type
             self.input_name = input_name

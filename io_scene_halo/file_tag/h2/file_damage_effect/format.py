@@ -46,12 +46,12 @@ class DamageEffectAsset():
         self.player_responses = None
 
     class DamageEffectBody:
-        def __init__(self, radius=(0.0, 0.0), cutoff_scale=0.0, flags=0, side_effect=0, category=0, damage_flags=0, aoe_core_radius=0.0, damage_lower_bound=0.0, damage_upper_bound=(0.0, 0.0), 
-                     dmg_inner_cone_angle=0.0, dmg_outer_cone_angle=0.0, active_camouflage_damage=0.0, stun=0.0, maximum_stun=0.0, stun_time=0.0, instantaneous_acceleration=0.0, 
-                     rider_direct_damage_scale=0.0, rider_maximum_transfer_damage_scale=0.0, rider_minimum_transfer_damage_scale=0.0, general_damage="", general_damage_length=0, 
-                     specific_damage="", specific_damage_length=0, ai_stun_radius=0.0, ai_stun_bounds=(0.0, 0.0), shake_radius=0.0, emp_radius=0, player_responses_tag_block=None, 
-                     impulse_duration=0.0, fade_function=0, rotation=0, pushback=0.0, jitter=(0.0, 0.0), shaking_duration=0.0, falloff_function=0, random_translation=0.0, random_rotation=0.0, 
-                     wobble_function=0, wobble_function_period=0.0, wobble_weight=0.0, sound=None, forward_velocity=0.0, forward_radius=0.0, forward_exponent=0.0, outward_velocity=0.0, 
+        def __init__(self, radius=(0.0, 0.0), cutoff_scale=0.0, flags=0, side_effect=0, category=0, damage_flags=0, aoe_core_radius=0.0, damage_lower_bound=0.0, damage_upper_bound=(0.0, 0.0),
+                     dmg_inner_cone_angle=0.0, dmg_outer_cone_angle=0.0, active_camouflage_damage=0.0, stun=0.0, maximum_stun=0.0, stun_time=0.0, instantaneous_acceleration=0.0,
+                     rider_direct_damage_scale=0.0, rider_maximum_transfer_damage_scale=0.0, rider_minimum_transfer_damage_scale=0.0, general_damage="", general_damage_length=0,
+                     specific_damage="", specific_damage_length=0, ai_stun_radius=0.0, ai_stun_bounds=(0.0, 0.0), shake_radius=0.0, emp_radius=0, player_responses_tag_block=None,
+                     impulse_duration=0.0, fade_function=0, rotation=0, pushback=0.0, jitter=(0.0, 0.0), shaking_duration=0.0, falloff_function=0, random_translation=0.0, random_rotation=0.0,
+                     wobble_function=0, wobble_function_period=0.0, wobble_weight=0.0, sound=None, forward_velocity=0.0, forward_radius=0.0, forward_exponent=0.0, outward_velocity=0.0,
                      outward_radius=0.0, outward_exponent=0.0):
             self.radius = radius
             self.cutoff_scale = cutoff_scale
@@ -102,7 +102,7 @@ class DamageEffectAsset():
             self.outward_exponent = outward_exponent
 
     class PlayerResponse:
-        def __init__(self, response_type=0, flash_type=0, priority=0, flash_duration=0.0, fade_function=0, maximum_intensity=0.0, color=(0.0, 0.0, 0.0, 0.0), low_vibration_duration=0.0, 
+        def __init__(self, response_type=0, flash_type=0, priority=0, flash_duration=0.0, fade_function=0, maximum_intensity=0.0, color=(0.0, 0.0, 0.0, 0.0), low_vibration_duration=0.0,
                      high_vibration_duration=0.0, effect_name="", effect_name_length=0, sound_duration=0.0, functions=[]):
             self.response_type = response_type
             self.flash_type = flash_type

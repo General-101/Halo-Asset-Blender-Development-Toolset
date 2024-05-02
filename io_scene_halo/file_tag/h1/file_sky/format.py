@@ -39,10 +39,10 @@ class SkyAsset():
         self.lights = None
 
     class SkyBody:
-        def __init__(self, model=None, animation_graph=None, indoor_ambient_radiosity_color=(0.0, 0.0, 0.0, 1.0), indoor_ambient_radiosity_power=0.0, 
-                     outdoor_ambient_radiosity_color=(0.0, 0.0, 0.0, 1.0), outdoor_ambient_radiosity_power=0.0, outdoor_fog_color=(0.0, 0.0, 0.0, 1.0), 
-                     outdoor_fog_maximum_density=0.0, outdoor_fog_start_distance=0.0, outdoor_fog_opaque_distance=0.0, indoor_fog_color=(0.0, 0.0, 0.0, 1.0), 
-                     indoor_fog_maximum_density=0.0, indoor_fog_start_distance=0.0, indoor_fog_opaque_distance=0.0, indoor_fog_screen=None, shader_functions=None, animations=None, 
+        def __init__(self, model=None, animation_graph=None, indoor_ambient_radiosity_color=(0.0, 0.0, 0.0, 1.0), indoor_ambient_radiosity_power=0.0,
+                     outdoor_ambient_radiosity_color=(0.0, 0.0, 0.0, 1.0), outdoor_ambient_radiosity_power=0.0, outdoor_fog_color=(0.0, 0.0, 0.0, 1.0),
+                     outdoor_fog_maximum_density=0.0, outdoor_fog_start_distance=0.0, outdoor_fog_opaque_distance=0.0, indoor_fog_color=(0.0, 0.0, 0.0, 1.0),
+                     indoor_fog_maximum_density=0.0, indoor_fog_start_distance=0.0, indoor_fog_opaque_distance=0.0, indoor_fog_screen=None, shader_functions=None, animations=None,
                      lights=None):
             self.model = model
             self.animation_graph = animation_graph

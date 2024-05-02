@@ -127,14 +127,14 @@ class ShaderAsset():
         self.shader_body = None
 
     class ShaderBody:
-        def __init__(self, radiosity_flags=0, detail_level=0, power=0.0, color_of_emitted_light=(0.0, 0.0, 0.0, 1.0), tint_color=(0.0, 0.0, 0.0, 1.0), material_type=0, model_flags=0, 
-                     translucency=0.0, change_color_source=0, self_illumination_flags=0, self_illumination_color_source=0, self_illumination_animation_function=0, 
-                     self_illumination_animation_period=0.0, self_illumination_animation_color_lower_bound=(0.0, 0.0, 0.0, 1.0), 
-                     self_illumination_animation_color_upper_bound=(0.0, 0.0, 0.0, 1.0), map_u_scale=0.0, map_v_scale=0.0, base_map=None, multipurpose_map=None, detail_function=0, 
-                     detail_mask=0, detail_map_scale=0.0, detail_map=None, detail_map_v_scale=0.0, u_animation_source=0, u_animation_function=0, u_animation_period=0.0, 
-                     u_animation_phase=0.0, u_animation_scale=0.0, v_animation_source=0, v_animation_function=0, v_animation_period=0.0, v_animation_phase=0.0, v_animation_scale=0.0, 
-                     rotation_animation_source=0, rotation_animation_function=0, rotation_animation_period=0.0, rotation_animation_phase=0.0, rotation_animation_scale=0.0, 
-                     rotation_animation_center=(0.0, 0.0), reflection_falloff_distance=0.0, reflection_cutoff_distance=0.0, perpendicular_brightness=0.0, 
+        def __init__(self, radiosity_flags=0, detail_level=0, power=0.0, color_of_emitted_light=(0.0, 0.0, 0.0, 1.0), tint_color=(0.0, 0.0, 0.0, 1.0), material_type=0, model_flags=0,
+                     translucency=0.0, change_color_source=0, self_illumination_flags=0, self_illumination_color_source=0, self_illumination_animation_function=0,
+                     self_illumination_animation_period=0.0, self_illumination_animation_color_lower_bound=(0.0, 0.0, 0.0, 1.0),
+                     self_illumination_animation_color_upper_bound=(0.0, 0.0, 0.0, 1.0), map_u_scale=0.0, map_v_scale=0.0, base_map=None, multipurpose_map=None, detail_function=0,
+                     detail_mask=0, detail_map_scale=0.0, detail_map=None, detail_map_v_scale=0.0, u_animation_source=0, u_animation_function=0, u_animation_period=0.0,
+                     u_animation_phase=0.0, u_animation_scale=0.0, v_animation_source=0, v_animation_function=0, v_animation_period=0.0, v_animation_phase=0.0, v_animation_scale=0.0,
+                     rotation_animation_source=0, rotation_animation_function=0, rotation_animation_period=0.0, rotation_animation_phase=0.0, rotation_animation_scale=0.0,
+                     rotation_animation_center=(0.0, 0.0), reflection_falloff_distance=0.0, reflection_cutoff_distance=0.0, perpendicular_brightness=0.0,
                      perpendicular_tint_color=(0.0, 0.0, 0.0, 1.0), parallel_brightness=0.0, parallel_tint_color=(0.0, 0.0, 0.0, 1.0), reflection_cube_map=None, bump_scale=1.0, bump_map=None):
             self.radiosity_flags = radiosity_flags
             self.detail_level = detail_level

@@ -92,9 +92,9 @@ class ShaderAsset():
         self.shader_body = None
 
     class ShaderBody:
-        def __init__(self, radiosity_flags=0, detail_level=0, power=0.0, color_of_emitted_light=(0.0, 0.0, 0.0, 1.0), light_tint_color=(0.0, 0.0, 0.0, 1.0), material_type=0, 
-                     meter_flags=0, meter_map=None, gradient_min_color=(0.0, 0.0, 0.0, 1.0), gradient_max_color=(0.0, 0.0, 0.0, 1.0), background_color=(0.0, 0.0, 0.0, 1.0), 
-                     flash_color=(0.0, 0.0, 0.0, 1.0), tint_color=(0.0, 0.0, 0.0, 1.0), meter_transparency=0.0, background_transparency=0.0, meter_brightness_source=0, 
+        def __init__(self, radiosity_flags=0, detail_level=0, power=0.0, color_of_emitted_light=(0.0, 0.0, 0.0, 1.0), light_tint_color=(0.0, 0.0, 0.0, 1.0), material_type=0,
+                     meter_flags=0, meter_map=None, gradient_min_color=(0.0, 0.0, 0.0, 1.0), gradient_max_color=(0.0, 0.0, 0.0, 1.0), background_color=(0.0, 0.0, 0.0, 1.0),
+                     flash_color=(0.0, 0.0, 0.0, 1.0), tint_color=(0.0, 0.0, 0.0, 1.0), meter_transparency=0.0, background_transparency=0.0, meter_brightness_source=0,
                      flash_brightness_source=0, value_source=0, gradient_source=0, flash_extension_source=0):
             self.radiosity_flags = radiosity_flags
             self.detail_level = detail_level

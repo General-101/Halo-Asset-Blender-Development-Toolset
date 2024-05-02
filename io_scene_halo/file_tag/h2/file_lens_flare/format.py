@@ -42,8 +42,8 @@ class LensFlareAsset():
         self.rotation = None
 
     class LensFlareBody:
-        def __init__(self, falloff_angle=0.0, cutoff_angle=0.0, occlusion_radius=0.05, occlusion_offset_direction=0, occlusion_inner_radius_scale=0, near_fade_distance=90.0, 
-                     far_fade_distance=100.0, bitmap=None, occlusion_flags=0, rotation_function=None, rotation_function_scale=0.0, corona_scale=(1.0, 1.0), falloff_function=0,  
+        def __init__(self, falloff_angle=0.0, cutoff_angle=0.0, occlusion_radius=0.05, occlusion_offset_direction=0, occlusion_inner_radius_scale=0, near_fade_distance=90.0,
+                     far_fade_distance=100.0, bitmap=None, occlusion_flags=0, rotation_function=None, rotation_function_scale=0.0, corona_scale=(1.0, 1.0), falloff_function=0,
                      reflections_tag_block=None, flags=0, brightness_tag_block=None, color_tag_block=None, rotation_tag_block=None):
             self.falloff_angle = falloff_angle
             self.cutoff_angle = cutoff_angle

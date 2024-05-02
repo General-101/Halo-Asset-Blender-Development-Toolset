@@ -27,10 +27,10 @@
 from xml.dom import minidom
 from ....global_functions import tag_format
 from .format import (
-        SceneryResourceAsset, 
-        StructureBSPFlags, 
+        SceneryResourceAsset,
+        StructureBSPFlags,
         ObjectFlags,
-        TransformFlags, 
+        TransformFlags,
         ObjectTypeFlags,
         ObjectSourceFlags,
         ObjectBSPPolicyFlags,
@@ -271,7 +271,7 @@ def read_scenery(RESOURCE, TAG, input_stream, tag_node, XML_OUTPUT):
                 scenery.variant_name = TAG.read_variable_string_no_terminator(input_stream, scenery.variant_name_length, TAG, tag_format.XMLData(scenery_element_node, "variant name"))
 
             scenery.sct3_header = TAG.TagBlockHeader().read(input_stream, TAG)
-            
+
             scenery.pathfinding_references = []
             if scenery.pathfinding_references_tag_block.count > 0:
                 scenery.pathfinding_references_header = TAG.TagBlockHeader().read(input_stream, TAG)

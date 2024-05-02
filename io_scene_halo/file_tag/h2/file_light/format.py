@@ -144,12 +144,12 @@ class LightAsset():
         self.gel_animation = None
 
     class LightBody:
-        def __init__(self, flags=0, shape_type=0, size_modifier=(0.0, 0.0), shadow_quality_bias=0.0, shadow_tap_bias=0, radius=0.0, specular_radius=0.0, near_width=0.0, 
-                     height_stretch=0.0, field_of_view=0.0, falloff_distance=0.0, cutoff_distance=0.0, interpolation_flags=0, bloom_bounds=(0.0, 0.0), 
-                     specular_lower_bound=(0.0, 0.0, 0.0, 1.0), specular_upper_bound=(0.0, 0.0, 0.0, 1.0), diffuse_lower_bound=(0.0, 0.0, 0.0, 1.0), 
-                     diffuse_upper_bound=(0.0, 0.0, 0.0, 1.0), brightness_bounds=(0.0, 0.0), gel_map=None, specular_mask=0, falloff_function=0, diffuse_contrast=0, 
-                     specular_contrast=0, falloff_geometry=0, lens_flare=None, bounding_radius=0.0, light_volume=None, default_lightmap_setting=0, lightmap_half_life=0.0, 
-                     lightmap_light_scale=0.0, duration=0.0, effect_falloff_function=0, illumination_fade=0, shadow_fade=0, specular_fade=0, animation_flags=0, 
+        def __init__(self, flags=0, shape_type=0, size_modifier=(0.0, 0.0), shadow_quality_bias=0.0, shadow_tap_bias=0, radius=0.0, specular_radius=0.0, near_width=0.0,
+                     height_stretch=0.0, field_of_view=0.0, falloff_distance=0.0, cutoff_distance=0.0, interpolation_flags=0, bloom_bounds=(0.0, 0.0),
+                     specular_lower_bound=(0.0, 0.0, 0.0, 1.0), specular_upper_bound=(0.0, 0.0, 0.0, 1.0), diffuse_lower_bound=(0.0, 0.0, 0.0, 1.0),
+                     diffuse_upper_bound=(0.0, 0.0, 0.0, 1.0), brightness_bounds=(0.0, 0.0), gel_map=None, specular_mask=0, falloff_function=0, diffuse_contrast=0,
+                     specular_contrast=0, falloff_geometry=0, lens_flare=None, bounding_radius=0.0, light_volume=None, default_lightmap_setting=0, lightmap_half_life=0.0,
+                     lightmap_light_scale=0.0, duration=0.0, effect_falloff_function=0, illumination_fade=0, shadow_fade=0, specular_fade=0, animation_flags=0,
                      brightness_animation_tag_block=None, color_animation_tag_block=None, gel_animation_tag_block=None, shader=None):
             self.flags = flags
             self.shape_type = shape_type

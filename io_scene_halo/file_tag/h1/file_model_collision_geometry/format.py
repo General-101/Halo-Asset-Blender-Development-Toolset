@@ -165,7 +165,7 @@ class CollisionAsset():
             self.body_damage_multiplier = body_damage_multiplier
 
     class Region:
-        def __init__(self, name="", flags=0, damage_threshold=0, destroyed_effect=None, permutations_tag_block=None, permutations=None, 
+        def __init__(self, name="", flags=0, damage_threshold=0, destroyed_effect=None, permutations_tag_block=None, permutations=None,
                      destroyed_garbage=None, destroyed_weapon=None, stubbs_unk_name=""):
             self.name = name
             self.flags = flags

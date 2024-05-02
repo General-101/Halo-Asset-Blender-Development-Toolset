@@ -93,7 +93,7 @@ class EffectAsset():
         self.events = None
 
     class EffectBody:
-        def __init__(self, flags=0, loop_start_event=0, locations_tag_block=None, events_tag_block=None, looping_sound=None, location=0, always_play_distance=0.0, 
+        def __init__(self, flags=0, loop_start_event=0, locations_tag_block=None, events_tag_block=None, looping_sound=None, location=0, always_play_distance=0.0,
                      never_play_distance=0.0):
             self.flags = flags
             self.loop_start_event = loop_start_event
@@ -110,8 +110,8 @@ class EffectAsset():
             self.name_length = name_length
 
     class Event:
-        def __init__(self, flags=0, skip_fraction=0.0, delay_bounds=(0.0, 0.0), duration_bounds=(0.0, 0.0), parts_tag_block=None, parts_header=None, parts=None, 
-                     beams_tag_block=None, beams_header=None, beams=None, accelerations_tag_block=None, accelerations_header=None, accelerations=None, 
+        def __init__(self, flags=0, skip_fraction=0.0, delay_bounds=(0.0, 0.0), duration_bounds=(0.0, 0.0), parts_tag_block=None, parts_header=None, parts=None,
+                     beams_tag_block=None, beams_header=None, beams=None, accelerations_tag_block=None, accelerations_header=None, accelerations=None,
                      particle_systems_tag_block=None, particle_systems_header=None, particle_systems=None):
             self.flags = flags
             self.skip_fraction = skip_fraction
@@ -131,7 +131,7 @@ class EffectAsset():
             self.particle_systems = particle_systems
 
     class Part:
-        def __init__(self, create_in_environment=0, create_in_mode=0, location=0, flags=0, object_type=None, velocity_bounds=(0.0, 0.0), velocity_cone_angle=0.0, 
+        def __init__(self, create_in_environment=0, create_in_mode=0, location=0, flags=0, object_type=None, velocity_bounds=(0.0, 0.0), velocity_cone_angle=0.0,
                      angular_velocity_bounds=(0.0, 0.0), radius_modifier_bounds=(0.0, 0.0), a_scales_value=0, b_scales_value=0):
             self.create_in_environment = create_in_environment
             self.create_in_mode = create_in_mode
@@ -161,7 +161,7 @@ class EffectAsset():
             self.outer_cone_angle = outer_cone_angle
 
     class ParticleSystem:
-        def __init__(self, particle=None, location=0, coordinate_system=0, environment=0, disposition=0, camera_mode=0, sort_bias=0, flags=0, lod_in_distance=0.0, 
+        def __init__(self, particle=None, location=0, coordinate_system=0, environment=0, disposition=0, camera_mode=0, sort_bias=0, flags=0, lod_in_distance=0.0,
                      lod_feather_in_delta=0.0, lod_out_distance=0.0, lod_feather_out_delta=0.0, emitters_tag_block=None, emitters_header=None, emitters=None):
             self.particle = particle
             self.location = location

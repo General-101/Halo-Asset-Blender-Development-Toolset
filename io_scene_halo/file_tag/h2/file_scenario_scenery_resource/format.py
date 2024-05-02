@@ -124,7 +124,7 @@ class SceneryResourceAsset():
         self.editor_folders = None
 
     class ResourceBody:
-        def __init__(self, object_names_tag_block=None, environment_objects_tag_block=None, structure_bsps_tag_block=None, scenery_palette_tag_block=None, scenery_tag_block=None, 
+        def __init__(self, object_names_tag_block=None, environment_objects_tag_block=None, structure_bsps_tag_block=None, scenery_palette_tag_block=None, scenery_tag_block=None,
                      next_scenery_object_id_salt=0, crate_palette_tag_block=None, crates_tag_block=None, next_block_object_id_salt=0, editor_folders_tag_block=None):
             self.object_names_tag_block = object_names_tag_block
             self.environment_objects_tag_block = environment_objects_tag_block

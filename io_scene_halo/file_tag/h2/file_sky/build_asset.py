@@ -156,7 +156,7 @@ def write_shader_functions(output_stream, TAG, shader_functions, shader_function
         shader_functions_header.write(output_stream, TAG, True)
         for shader_function_element in shader_functions:
             output_stream.write(struct.pack('<4x'))
-            output_stream.write(struct.pack('<31sx', TAG.string_to_bytes(shader_function_element, False)))           
+            output_stream.write(struct.pack('<31sx', TAG.string_to_bytes(shader_function_element, False)))
 
 def write_animations(output_stream, TAG, animations, animations_header):
     if len(animations) > 0:

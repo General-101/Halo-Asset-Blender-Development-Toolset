@@ -35,7 +35,7 @@ from .format import PartFlags, GeometryClassificationEnum, PropertyTypeEnum
 def build_mesh_layout(context, import_file, geometry, current_region_permutation, armature, random_color_gen, materials):
     vertex_groups = []
     active_region_permutations = []
-    
+
     materials_count = len(import_file.materials)
     full_mesh = bpy.data.meshes.new(current_region_permutation)
     object_mesh = bpy.data.objects.new(current_region_permutation, full_mesh)
@@ -104,7 +104,7 @@ def build_mesh_layout(context, import_file, geometry, current_region_permutation
                 node_0_index = vertex.node_index_0_new
                 if uses_node_map:
                     node_0_index = section_data.node_map[node_0_index]
-                
+
             node_1_index = vertex.node_index_1_new
             if uses_node_map:
                 node_1_index = section_data.node_map[node_1_index]
@@ -181,7 +181,7 @@ def build_mesh_layout(context, import_file, geometry, current_region_permutation
                 object_mesh.region_add(current_region_permutation)
 
             if not triangle_material_index == -1:
-                if triangle_material_index < materials_count:  
+                if triangle_material_index < materials_count:
                     mat = materials[triangle_material_index]
 
                     if not mat in object_mesh.data.materials.values():
@@ -250,15 +250,16 @@ def get_geometry_layout(context, collection, import_file, armature, report):
     random_color_gen = global_functions.RandomColorGenerator() # generates a random sequence of colors
     materials = []
     shader_collection_dic = {}
-    shader_collection_path = os.path.join(config.HALO_2_TAG_PATH, r"scenarios\shaders\shader_collections.shader_collections") 
-    shader_collection_file = open(shader_collection_path, "r")
-    for line in shader_collection_file.readlines():
-        if not global_functions.string_empty_check(line) and not line.startswith(";"):
-            split_result = line.split()
-            if len(split_result) == 2:
-                prefix = split_result[0]
-                path = split_result[1]
-                shader_collection_dic[path] = prefix
+    shader_collection_path = os.path.join(config.HALO_2_TAG_PATH, r"scenarios\shaders\shader_collections.shader_collections")
+    if os.path.is_file(shader_collection_path):
+        shader_collection_file = open(shader_collection_path, "r")
+        for line in shader_collection_file.readlines():
+            if not global_functions.string_empty_check(line) and not line.startswith(";"):
+                split_result = line.split()
+                if len(split_result) == 2:
+                    prefix = split_result[0]
+                    path = split_result[1]
+                    shader_collection_dic[path] = prefix
 
     for material in import_file.materials:
         material_path = material.shader.name

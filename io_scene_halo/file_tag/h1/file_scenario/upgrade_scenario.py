@@ -24,12 +24,15 @@
 #
 # ##### END MIT LICENSE BLOCK #####
 
+import os
 import bpy
 import struct
 import random
+import ....config
 
 from math import radians
-from ....global_functions import tag_format
+from ....global_functions import tag_format, global_functions
+from ....file_tag.h2.file_scenario.process_file import process_file as process_h2_scenario
 from .format import (
         ScenarioTypeEnum as H1ScenarioTypeEnum,
         ScenarioFlags as H1ScenarioFlags,
@@ -309,7 +312,7 @@ def get_object_names(object_names_tag_block, TAG, SCENARIO):
 
     SCENARIO.object_name_header = TAG.TagBlockHeader("tbfd", 0, len(SCENARIO.object_names), 36)
 
-def get_scenery(scenery_tag_block, TAG, SCENARIO):
+def get_scenery(scenery_tag_block, TAG, SCENARIO, bsp_bounds_list):
     SCENARIO.scenery = []
     for scenery_element in scenery_tag_block:
         scenery = SCENARIO.Scenery()
@@ -328,7 +331,7 @@ def get_scenery(scenery_tag_block, TAG, SCENARIO):
         scenery.transform_flags = 0
         scenery.manual_bsp_flags = 0
         scenery.unique_id = get_id()
-        scenery.origin_bsp_index = -1
+        scenery.origin_bsp_index = global_functions.get_origin_bsp(bsp_bounds_list, scenery)
         scenery.object_type = 6
         scenery.source = 1
         scenery.bsp_policy = 0
@@ -337,10 +340,10 @@ def get_scenery(scenery_tag_block, TAG, SCENARIO):
         scenery.variant_name = ""
         scenery.variant_name_length = len(scenery.variant_name)
         scenery.active_change_colors = 0
-        scenery.primary_color_BGRA = (0, 0, 0, 1)
-        scenery.secondary_color_BGRA = (0, 0, 0, 1)
-        scenery.tertiary_color_BGRA = (0, 0, 0, 1)
-        scenery.quaternary_color_BGRA = (0, 0, 0, 1)
+        scenery.primary_color_BGRA = (0, 0, 0, 255)
+        scenery.secondary_color_BGRA = (0, 0, 0, 255)
+        scenery.tertiary_color_BGRA = (0, 0, 0, 255)
+        scenery.quaternary_color_BGRA = (0, 0, 0, 255)
         scenery.pathfinding_policy = 0
         scenery.lightmap_policy = 0
         scenery.valid_multiplayer_games = 0
@@ -354,7 +357,7 @@ def get_scenery(scenery_tag_block, TAG, SCENARIO):
 
     SCENARIO.scenery_header = TAG.TagBlockHeader("tbfd", 4, len(SCENARIO.scenery), 96)
 
-def get_unit(unit_tag_block, TAG, SCENARIO, is_biped):
+def get_unit(unit_tag_block, TAG, SCENARIO, is_biped, bsp_bounds_list):
     unit_list = []
     for unit_element in unit_tag_block:
         unit = SCENARIO.Unit()
@@ -373,7 +376,7 @@ def get_unit(unit_tag_block, TAG, SCENARIO, is_biped):
         unit.transform_flags = 0
         unit.manual_bsp_flags = 0
         unit.unique_id = get_id()
-        unit.origin_bsp_index = -1
+        unit.origin_bsp_index = global_functions.get_origin_bsp(bsp_bounds_list, unit)
         if is_biped:
             unit.object_type = 0
         else:
@@ -386,10 +389,10 @@ def get_unit(unit_tag_block, TAG, SCENARIO, is_biped):
         unit.variant_name = ""
         unit.variant_name_length = len(unit.variant_name)
         unit.active_change_colors = 0
-        unit.primary_color_BGRA = (0, 0, 0, 1)
-        unit.secondary_color_BGRA = (0, 0, 0, 1)
-        unit.tertiary_color_BGRA = (0, 0, 0, 1)
-        unit.quaternary_color_BGRA = (0, 0, 0, 1)
+        unit.primary_color_BGRA = (0, 0, 0, 255)
+        unit.secondary_color_BGRA = (0, 0, 0, 255)
+        unit.tertiary_color_BGRA = (0, 0, 0, 255)
+        unit.quaternary_color_BGRA = (0, 0, 0, 255)
         unit.body_vitality = unit_element.body_vitality
         unit.flags = unit_element.flags
 
@@ -397,7 +400,7 @@ def get_unit(unit_tag_block, TAG, SCENARIO, is_biped):
 
     return TAG.TagBlockHeader("tbfd", 2, len(unit_list), 84), unit_list
 
-def get_equipment(equipment_tag_block, TAG, SCENARIO):
+def get_equipment(equipment_tag_block, TAG, SCENARIO, bsp_bounds_list):
     SCENARIO.equipment = []
     for equipment_element in equipment_tag_block:
         equipment = SCENARIO.Equipment()
@@ -415,7 +418,7 @@ def get_equipment(equipment_tag_block, TAG, SCENARIO):
         equipment.transform_flags = 0
         equipment.manual_bsp_flags = 0
         equipment.unique_id = get_id()
-        equipment.origin_bsp_index = -1
+        equipment.origin_bsp_index = global_functions.get_origin_bsp(bsp_bounds_list, equipment)
         equipment.object_type = 3
         equipment.source = 1
         equipment.bsp_policy = 0
@@ -427,7 +430,7 @@ def get_equipment(equipment_tag_block, TAG, SCENARIO):
 
     SCENARIO.equipment_header = TAG.TagBlockHeader("tbfd", 2, len(SCENARIO.equipment), 56)
 
-def get_weapon(weapons_tag_block, TAG, SCENARIO):
+def get_weapon(weapons_tag_block, TAG, SCENARIO, bsp_bounds_list):
     SCENARIO.weapons = []
     for weapon_element in weapons_tag_block:
         weapon = SCENARIO.Weapon()
@@ -446,7 +449,7 @@ def get_weapon(weapons_tag_block, TAG, SCENARIO):
         weapon.transform_flags = 0
         weapon.manual_bsp_flags = 0
         weapon.unique_id = get_id()
-        weapon.origin_bsp_index = -1
+        weapon.origin_bsp_index = global_functions.get_origin_bsp(bsp_bounds_list, weapon)
         weapon.object_type = 2
         weapon.source = 1
         weapon.bsp_policy = 0
@@ -455,10 +458,10 @@ def get_weapon(weapons_tag_block, TAG, SCENARIO):
         weapon.variant_name = ""
         weapon.variant_name_length = len(weapon.variant_name)
         weapon.active_change_colors = 0
-        weapon.primary_color_BGRA = (0, 0, 0, 1)
-        weapon.secondary_color_BGRA = (0, 0, 0, 1)
-        weapon.tertiary_color_BGRA = (0, 0, 0, 1)
-        weapon.quaternary_color_BGRA = (0, 0, 0, 1)
+        weapon.primary_color_BGRA = (0, 0, 0, 255)
+        weapon.secondary_color_BGRA = (0, 0, 0, 255)
+        weapon.tertiary_color_BGRA = (0, 0, 0, 255)
+        weapon.quaternary_color_BGRA = (0, 0, 0, 255)
         weapon.rounds_left = weapon_element.rounds_left
         weapon.rounds_loaded = weapon_element.rounds_loaded
         weapon.flags = weapon_element.flags
@@ -479,7 +482,7 @@ def get_device_groups(device_groups_tag_block, TAG, SCENARIO):
 
     SCENARIO.device_group_header = TAG.TagBlockHeader("tbfd", 0, len(SCENARIO.device_groups), 40)
 
-def get_device_machines(machine_tag_block, TAG, SCENARIO):
+def get_device_machines(machine_tag_block, TAG, SCENARIO, bsp_bounds_list):
     SCENARIO.device_machines = []
     for machine_element in machine_tag_block:
         device_machine = SCENARIO.DeviceMachine()
@@ -498,7 +501,7 @@ def get_device_machines(machine_tag_block, TAG, SCENARIO):
         device_machine.transform_flags = 0
         device_machine.manual_bsp_flags = 0
         device_machine.unique_id = get_id()
-        device_machine.origin_bsp_index = -1
+        device_machine.origin_bsp_index = global_functions.get_origin_bsp(bsp_bounds_list, device_machine)
         device_machine.object_type = 7
         device_machine.source = 1
         device_machine.bsp_policy = 0
@@ -518,7 +521,7 @@ def get_device_machines(machine_tag_block, TAG, SCENARIO):
 
     SCENARIO.device_machine_header = TAG.TagBlockHeader("tbfd", 3, len(SCENARIO.device_machines), 76)
 
-def get_device_controls(controls_tag_block, TAG, SCENARIO):
+def get_device_controls(controls_tag_block, TAG, SCENARIO, bsp_bounds_list):
     SCENARIO.device_controls = []
     for control_element in controls_tag_block:
         device_control = SCENARIO.DeviceControl()
@@ -537,7 +540,7 @@ def get_device_controls(controls_tag_block, TAG, SCENARIO):
         device_control.transform_flags = 0
         device_control.manual_bsp_flags = 0
         device_control.unique_id = get_id()
-        device_control.origin_bsp_index = -1
+        device_control.origin_bsp_index = global_functions.get_origin_bsp(bsp_bounds_list, device_control)
         device_control.object_type = 8
         device_control.source = 1
         device_control.bsp_policy = 0
@@ -553,8 +556,7 @@ def get_device_controls(controls_tag_block, TAG, SCENARIO):
 
     SCENARIO.device_control_header = TAG.TagBlockHeader("tbfd", 2, len(SCENARIO.device_controls), 68)
 
-
-def get_light_fixtures(light_fixtures_tag_block, TAG, SCENARIO):
+def get_light_fixtures(light_fixtures_tag_block, TAG, SCENARIO, bsp_bounds_list):
     SCENARIO.device_light_fixtures = []
     for light_fixture_element in light_fixtures_tag_block:
         light_fixture = SCENARIO.LightFixture()
@@ -573,7 +575,7 @@ def get_light_fixtures(light_fixtures_tag_block, TAG, SCENARIO):
         light_fixture.transform_flags = 0
         light_fixture.manual_bsp_flags = 0
         light_fixture.unique_id = get_id()
-        light_fixture.origin_bsp_index = -1
+        light_fixture.origin_bsp_index = global_functions.get_origin_bsp(bsp_bounds_list, light_fixture)
         light_fixture.object_type = 9
         light_fixture.source = 1
         light_fixture.bsp_policy = 0
@@ -591,7 +593,7 @@ def get_light_fixtures(light_fixtures_tag_block, TAG, SCENARIO):
 
     SCENARIO.device_light_fixture_header = TAG.TagBlockHeader("tbfd", 2, len(SCENARIO.device_light_fixtures), 84)
 
-def get_sound_scenery(sound_scenery_tag_block, TAG, SCENARIO):
+def get_sound_scenery(sound_scenery_tag_block, TAG, SCENARIO, bsp_bounds_list):
     SCENARIO.sound_scenery = []
     for sound_scenery_element in sound_scenery_tag_block:
         sound_scenery = SCENARIO.SoundScenery()
@@ -609,7 +611,7 @@ def get_sound_scenery(sound_scenery_tag_block, TAG, SCENARIO):
         sound_scenery.transform_flags = 0
         sound_scenery.manual_bsp_flags = 0
         sound_scenery.unique_id = get_id()
-        sound_scenery.origin_bsp_index = -1
+        sound_scenery.origin_bsp_index = global_functions.get_origin_bsp(bsp_bounds_list, sound_scenery)
         sound_scenery.object_type = 10
         sound_scenery.source = 1
         sound_scenery.bsp_policy = 0
@@ -1050,7 +1052,6 @@ def generate_h2_squads(H1_ASSET, TAG, SCENARIO, report):
         if len(encounter_element.firing_positions) > 0:
             encounter_index += 1
 
-    print(len(SCENARIO.squads))
     SCENARIO.squads_header = TAG.TagBlockHeader("tbfd", 2, len(SCENARIO.squads), 120)
 
     SCENARIO.character_palette_header, SCENARIO.character_palette = get_palette(TAG, actors_palette_tag_block, 16, "char")
@@ -1194,35 +1195,286 @@ def scan_palette(TAG, palette_tag_block):
 
     return palette_indices, palette_destination_list
 
-def mutate_element(block_element, TAG, SCENARIO):
-    crate = SCENARIO.Crate()
+def mutate_element(block_element, TAG, SCENARIO, destination, bsp_bounds_list):
+    if destination == "scen":
+        mutated_element = SCENARIO.Scenery()
 
-    crate.sobj_header = TAG.TagBlockHeader("sobj", 1, 1, 48)
-    crate.obj0_header = TAG.TagBlockHeader("obj#", 0, 1, 8)
-    crate.sper_header = TAG.TagBlockHeader("sper", 0, 1, 24)
+        mutated_element.sobj_header = TAG.TagBlockHeader("sobj", 1, 1, 48)
+        mutated_element.obj0_header = TAG.TagBlockHeader("obj#", 0, 1, 8)
+        mutated_element.sper_header = TAG.TagBlockHeader("sper", 0, 1, 24)
+        mutated_element.sct3_header = TAG.TagBlockHeader("sct3", 0, 1, 20)
 
-    crate.palette_index = block_element.type_index
-    crate.name_index = block_element.name_index
-    crate.placement_flags = block_element.placement_flags
-    crate.position = block_element.position
-    crate.rotation = (radians(block_element.rotation[0]), radians(block_element.rotation[1]), radians(block_element.rotation[2]))
-    crate.scale = 0
-    crate.transform_flags = 0
-    crate.manual_bsp_flags = 0
-    crate.unique_id = get_id()
-    crate.origin_bsp_index = -1
-    crate.object_type = 11
-    crate.source = 1
-    crate.bsp_policy = 0
-    crate.editor_folder_index = -1
-    crate.variant_name = ""
-    crate.active_change_colors = 0
-    crate.primary_color_BGRA = (0, 0, 0, 255)
-    crate.secondary_color_BGRA = (0, 0, 0, 255)
-    crate.tertiary_color_BGRA = (0, 0, 0, 255)
-    crate.quaternary_color_BGRA = (0, 0, 0, 255)
+        mutated_element.palette_index = block_element.type_index
+        mutated_element.name_index = block_element.name_index
+        mutated_element.placement_flags = convert_object_flags(block_element.placement_flags)
+        mutated_element.position = block_element.position
+        mutated_element.rotation = block_element.rotation
+        mutated_element.scale = block_element.scale
+        mutated_element.transform_flags = block_element.transform_flags
+        mutated_element.manual_bsp_flags = block_element.manual_bsp_flags
+        mutated_element.unique_id = get_id()
+        mutated_element.origin_bsp_index = global_functions.get_origin_bsp(bsp_bounds_list, mutated_element)
+        mutated_element.object_type = 6
+        mutated_element.source = 1
+        mutated_element.bsp_policy = 0
+        mutated_element.editor_folder_index = -1
 
-    return crate
+        mutated_element.variant_name = ""
+        mutated_element.variant_name_length = len(mutated_element.variant_name)
+        mutated_element.active_change_colors = 0
+        mutated_element.primary_color_BGRA = (0, 0, 0, 255)
+        mutated_element.secondary_color_BGRA = (0, 0, 0, 255)
+        mutated_element.tertiary_color_BGRA = (0, 0, 0, 255)
+        mutated_element.quaternary_color_BGRA = (0, 0, 0, 255)
+        mutated_element.pathfinding_policy = 0
+        mutated_element.lightmap_policy = 0
+        mutated_element.valid_multiplayer_games = 0
+
+        mutated_element.pathfinding_references = []
+        pathfinding_ref_count = len(mutated_element.pathfinding_references)
+        mutated_element.pathfinding_references_header = TAG.TagBlockHeader("tbfd", 0, pathfinding_ref_count, 4)
+        mutated_element.pathfinding_references_tag_block = TAG.TagBlock(pathfinding_ref_count)
+
+    elif destination == "bipd" or destination == "vehi":
+        mutated_element = SCENARIO.Unit()
+
+        mutated_element.sobj_header = TAG.TagBlockHeader("sobj", 1, 1, 48)
+        mutated_element.obj0_header = TAG.TagBlockHeader("obj#", 0, 1, 8)
+        mutated_element.sper_header = TAG.TagBlockHeader("sper", 0, 1, 24)
+        mutated_element.sunt_header = TAG.TagBlockHeader("sunt", 0, 1, 8)
+
+        mutated_element.palette_index = block_element.type_index
+        mutated_element.name_index = block_element.name_index
+        mutated_element.placement_flags = convert_object_flags(block_element.placement_flags)
+        mutated_element.position = block_element.position
+        mutated_element.rotation = block_element.rotation
+        mutated_element.scale = block_element.scale
+        mutated_element.transform_flags = block_element.transform_flags
+        mutated_element.manual_bsp_flags = block_element.manual_bsp_flags
+        mutated_element.unique_id = get_id()
+        mutated_element.origin_bsp_index = global_functions.get_origin_bsp(bsp_bounds_list, mutated_element)
+        if destination == "bipd":
+            mutated_element.object_type = 0
+        else:
+            mutated_element.object_type = 1
+
+        mutated_element.source = 1
+        mutated_element.bsp_policy = 0
+        mutated_element.editor_folder_index = -1
+        mutated_element.variant_name = ""
+        mutated_element.variant_name_length = len(mutated_element.variant_name)
+        mutated_element.active_change_colors = 0
+        mutated_element.primary_color_BGRA = (0, 0, 0, 255)
+        mutated_element.secondary_color_BGRA = (0, 0, 0, 255)
+        mutated_element.tertiary_color_BGRA = (0, 0, 0, 255)
+        mutated_element.quaternary_color_BGRA = (0, 0, 0, 255)
+        mutated_element.body_vitality = 0.0
+        mutated_element.flags = 0
+
+    elif destination == "eqip":
+        mutated_element = SCENARIO.Equipment()
+
+        mutated_element.sobj_header = TAG.TagBlockHeader("sobj", 1, 1, 48)
+        mutated_element.obj0_header = TAG.TagBlockHeader("obj#", 0, 1, 8)
+        mutated_element.seqt_header = TAG.TagBlockHeader("seqt", 0, 1, 4)
+
+        mutated_element.palette_index = block_element.type_index
+        mutated_element.name_index = block_element.name_index
+        mutated_element.placement_flags = convert_object_flags(block_element.placement_flags)
+        mutated_element.position = block_element.position
+        mutated_element.rotation = block_element.rotation
+        mutated_element.scale = block_element.scale
+        mutated_element.transform_flags = block_element.transform_flags
+        mutated_element.manual_bsp_flags = block_element.manual_bsp_flags
+        mutated_element.unique_id = get_id()
+        mutated_element.origin_bsp_index = global_functions.get_origin_bsp(bsp_bounds_list, mutated_element)
+        mutated_element.object_type = 3
+        mutated_element.source = 1
+        mutated_element.bsp_policy = 0
+        mutated_element.editor_folder_index = -1
+        mutated_element.flags = 0
+
+    elif destination == "weap":
+        mutated_element = SCENARIO.Weapon()
+
+        mutated_element.sobj_header = TAG.TagBlockHeader("sobj", 1, 1, 48)
+        mutated_element.obj0_header = TAG.TagBlockHeader("obj#", 0, 1, 8)
+        mutated_element.sper_header = TAG.TagBlockHeader("sper", 0, 1, 24)
+        mutated_element.swpt_header = TAG.TagBlockHeader("swpt", 0, 1, 8)
+
+        mutated_element.palette_index = block_element.type_index
+        mutated_element.name_index = block_element.name_index
+        mutated_element.placement_flags = convert_object_flags(block_element.placement_flags)
+        mutated_element.position = block_element.position
+        mutated_element.rotation = block_element.rotation
+        mutated_element.scale = block_element.scale
+        mutated_element.transform_flags = block_element.transform_flags
+        mutated_element.manual_bsp_flags = block_element.manual_bsp_flags
+        mutated_element.unique_id = get_id()
+        mutated_element.origin_bsp_index = global_functions.get_origin_bsp(bsp_bounds_list, mutated_element)
+        mutated_element.object_type = 2
+        mutated_element.source = 1
+        mutated_element.bsp_policy = 0
+        mutated_element.editor_folder_index = -1
+
+        mutated_element.variant_name = ""
+        mutated_element.variant_name_length = len(mutated_element.variant_name)
+        mutated_element.active_change_colors = 0
+        mutated_element.primary_color_BGRA = (0, 0, 0, 255)
+        mutated_element.secondary_color_BGRA = (0, 0, 0, 255)
+        mutated_element.tertiary_color_BGRA = (0, 0, 0, 255)
+        mutated_element.quaternary_color_BGRA = (0, 0, 0, 255)
+        mutated_element.rounds_left = 0
+        mutated_element.rounds_loaded = 0
+        mutated_element.flags = 0
+
+    elif destination == "mach":
+        mutated_element = SCENARIO.DeviceMachine()
+
+        mutated_element.sobj_header = TAG.TagBlockHeader("sobj", 1, 1, 48)
+        mutated_element.obj0_header = TAG.TagBlockHeader("obj#", 0, 1, 8)
+        mutated_element.sdvt_header = TAG.TagBlockHeader("sdvt", 0, 1, 8)
+        mutated_element.smht_header = TAG.TagBlockHeader("smht", 0, 1, 16)
+
+        mutated_element.palette_index = block_element.type_index
+        mutated_element.name_index = block_element.name_index
+        mutated_element.placement_flags = convert_object_flags(block_element.placement_flags)
+        mutated_element.position = block_element.position
+        mutated_element.rotation = block_element.rotation
+        mutated_element.scale = block_element.scale
+        mutated_element.transform_flags = block_element.transform_flags
+        mutated_element.manual_bsp_flags = block_element.manual_bsp_flags
+        mutated_element.unique_id = get_id()
+        mutated_element.origin_bsp_index = global_functions.get_origin_bsp(bsp_bounds_list, mutated_element)
+        mutated_element.object_type = 7
+        mutated_element.source = 1
+        mutated_element.bsp_policy = 0
+        mutated_element.editor_folder_index = -1
+
+        mutated_element.power_group_index = -1
+        mutated_element.position_group_index = -1
+        mutated_element.flags_0 = 0
+        mutated_element.flags_1 = 0
+
+        mutated_element.pathfinding_references = []
+        pathfinding_ref_count = len(mutated_element.pathfinding_references)
+        mutated_element.pathfinding_references_header = TAG.TagBlockHeader("tbfd", 0, pathfinding_ref_count, 4)
+        mutated_element.pathfinding_references_tag_block = TAG.TagBlock(pathfinding_ref_count)
+
+    elif destination == "ctrl":
+        mutated_element = SCENARIO.DeviceControl()
+
+        mutated_element.sobj_header = TAG.TagBlockHeader("sobj", 1, 1, 48)
+        mutated_element.obj0_header = TAG.TagBlockHeader("obj#", 0, 1, 8)
+        mutated_element.sdvt_header = TAG.TagBlockHeader("sdvt", 0, 1, 8)
+        mutated_element.sctt_header = TAG.TagBlockHeader("sctt", 0, 1, 8)
+
+        mutated_element.palette_index = block_element.type_index
+        mutated_element.name_index = block_element.name_index
+        mutated_element.placement_flags = convert_object_flags(block_element.placement_flags)
+        mutated_element.position = block_element.position
+        mutated_element.rotation = block_element.rotation
+        mutated_element.scale = block_element.scale
+        mutated_element.transform_flags = block_element.transform_flags
+        mutated_element.manual_bsp_flags = block_element.manual_bsp_flags
+        mutated_element.unique_id = get_id()
+        mutated_element.origin_bsp_index = global_functions.get_origin_bsp(bsp_bounds_list, mutated_element)
+        mutated_element.object_type = 8
+        mutated_element.source = 1
+        mutated_element.bsp_policy = 0
+        mutated_element.editor_folder_index = -1
+        mutated_element.power_group_index = -1
+        mutated_element.position_group_index = -1
+        mutated_element.flags_0 = 0
+        mutated_element.flags_1 = 0
+        mutated_element.unk = 0
+
+    elif destination == "lifi":
+        mutated_element = SCENARIO.LightFixture()
+
+        mutated_element.sobj_header = TAG.TagBlockHeader("sobj", 1, 1, 48)
+        mutated_element.obj0_header = TAG.TagBlockHeader("obj#", 0, 1, 8)
+        mutated_element.sdvt_header = TAG.TagBlockHeader("sdvt", 0, 1, 8)
+        mutated_element.slft_header = TAG.TagBlockHeader("slft", 0, 1, 24)
+
+        mutated_element.palette_index = block_element.type_index
+        mutated_element.name_index = block_element.name_index
+        mutated_element.placement_flags = convert_object_flags(block_element.placement_flags)
+        mutated_element.position = block_element.position
+        mutated_element.rotation = block_element.rotation
+        mutated_element.scale = block_element.scale
+        mutated_element.transform_flags = block_element.transform_flags
+        mutated_element.manual_bsp_flags = block_element.manual_bsp_flags
+        mutated_element.unique_id = get_id()
+        mutated_element.origin_bsp_index = global_functions.get_origin_bsp(bsp_bounds_list, mutated_element)
+        mutated_element.object_type = 9
+        mutated_element.source = 1
+        mutated_element.bsp_policy = 0
+        mutated_element.editor_folder_index = -1
+        mutated_element.power_group_index = -1
+        mutated_element.position_group_index = -1
+        mutated_element.flags = 0
+        mutated_element.color_RGBA = (0, 0, 0, 255)
+        mutated_element.intensity = 0.0
+        mutated_element.falloff_angle = 0.0
+        mutated_element.cutoff_angle = 0.0
+
+    elif destination == "ssce":
+        mutated_element = SCENARIO.SoundScenery()
+
+        mutated_element.sobj_header = TAG.TagBlockHeader("sobj", 1, 1, 48)
+        mutated_element.obj0_header = TAG.TagBlockHeader("obj#", 0, 1, 8)
+        mutated_element._sc__header = TAG.TagBlockHeader("#sc#", 0, 1, 28)
+
+        mutated_element.palette_index = block_element.type_index
+        mutated_element.name_index = block_element.name_index
+        mutated_element.placement_flags = convert_object_flags(block_element.placement_flags)
+        mutated_element.position = block_element.position
+        mutated_element.rotation = block_element.rotation
+        mutated_element.scale = block_element.scale
+        mutated_element.transform_flags = block_element.transform_flags
+        mutated_element.manual_bsp_flags = block_element.manual_bsp_flags
+        mutated_element.unique_id = get_id()
+        mutated_element.origin_bsp_index = global_functions.get_origin_bsp(bsp_bounds_list, mutated_element)
+        mutated_element.object_type = 10
+        mutated_element.source = 1
+        mutated_element.bsp_policy = 0
+        mutated_element.editor_folder_index = -1
+        mutated_element.volume_type = 0
+        mutated_element.height = 0.0
+        mutated_element.override_distance_bounds = (0.0, 0.0)
+        mutated_element.override_core_angle_bounds = (0.0, 0.0)
+        mutated_element.override_outer_core_gain = 0.0
+
+    elif destination == "bloc":
+        mutated_element = SCENARIO.Crate()
+
+        mutated_element.sobj_header = TAG.TagBlockHeader("sobj", 1, 1, 48)
+        mutated_element.obj0_header = TAG.TagBlockHeader("obj#", 0, 1, 8)
+        mutated_element.sper_header = TAG.TagBlockHeader("sper", 0, 1, 24)
+
+        mutated_element.palette_index = block_element.type_index
+        mutated_element.name_index = block_element.name_index
+        mutated_element.placement_flags = convert_object_flags(block_element.placement_flags)
+        mutated_element.position = block_element.position
+        mutated_element.rotation = block_element.rotation
+        mutated_element.scale = block_element.scale
+        mutated_element.transform_flags = block_element.transform_flags
+        mutated_element.manual_bsp_flags = block_element.manual_bsp_flags
+        mutated_element.unique_id = get_id()
+        mutated_element.origin_bsp_index = global_functions.get_origin_bsp(bsp_bounds_list, mutated_element)
+        mutated_element.object_type = 11
+        mutated_element.source = 1
+        mutated_element.bsp_policy = 0
+        mutated_element.editor_folder_index = -1
+        mutated_element.variant_name = ""
+        mutated_element.active_change_colors = 0
+        mutated_element.primary_color_BGRA = (0, 0, 0, 255)
+        mutated_element.secondary_color_BGRA = (0, 0, 0, 255)
+        mutated_element.tertiary_color_BGRA = (0, 0, 0, 255)
+        mutated_element.quaternary_color_BGRA = (0, 0, 0, 255)
+
+    return mutated_element
 
 def mutate_tag_ref(TAG, palette_element, destination_group):
     tag_ref = TAG.TagRef(palette_element.tag_group, palette_element.name, len(palette_element.name), upgrade_patches=TAG.upgrade_patches)
@@ -1267,7 +1519,7 @@ def find_tag_ref(TAG, palette, source_tag_path, source_tag_group):
 
     return index
 
-def mutate_block(TAG, H1_SCENARIO, SCENARIO, palette_indices, palette_destination_list, donor_tag_block):
+def mutate_block(TAG, H1_SCENARIO, SCENARIO, palette_indices, palette_destination_list, donor_tag_block, bsp_bounds_list):
     transfered_indices = []
 
     for block_element_idx, block_element in enumerate(donor_tag_block):
@@ -1281,43 +1533,43 @@ def mutate_block(TAG, H1_SCENARIO, SCENARIO, palette_indices, palette_destinatio
             transfered_indices.append(block_element_idx)
 
             if destination == "scen":
-                mutated_element = mutate_element(block_element, TAG, SCENARIO)
+                mutated_element = mutate_element(block_element, TAG, SCENARIO, destination, bsp_bounds_list)
                 mutated_element.palette_index = find_tag_ref(TAG, SCENARIO.scenery_palette, palette_tag_block[palette_index].name, source)
                 SCENARIO.scenery.append(mutated_element)
             elif destination == "bipd":
-                mutated_element = mutate_element(block_element, TAG, SCENARIO)
+                mutated_element = mutate_element(block_element, TAG, SCENARIO, destination, bsp_bounds_list)
                 mutated_element.palette_index = find_tag_ref(TAG, SCENARIO.biped_palette, palette_tag_block[palette_index].name, source)
                 SCENARIO.bipeds.append(mutated_element)
             elif destination == "vehi":
-                mutated_element = mutate_element(block_element, TAG, SCENARIO)
+                mutated_element = mutate_element(block_element, TAG, SCENARIO, destination, bsp_bounds_list)
                 mutated_element.palette_index = find_tag_ref(TAG, SCENARIO.vehicle_palette, palette_tag_block[palette_index].name, source)
                 SCENARIO.vehicles.append(mutated_element)
             elif destination == "eqip":
-                mutated_element = mutate_element(block_element, TAG, SCENARIO)
+                mutated_element = mutate_element(block_element, TAG, SCENARIO, destination, bsp_bounds_list)
                 mutated_element.palette_index = find_tag_ref(TAG, SCENARIO.equipment_palette, palette_tag_block[palette_index].name, source)
                 SCENARIO.equipment.append(mutated_element)
             elif destination == "weap":
-                mutated_element = mutate_element(block_element, TAG, SCENARIO)
+                mutated_element = mutate_element(block_element, TAG, SCENARIO, destination, bsp_bounds_list)
                 mutated_element.palette_index = find_tag_ref(TAG, SCENARIO.weapon_palette, palette_tag_block[palette_index].name, source)
                 SCENARIO.weapons.append(mutated_element)
             elif destination == "mach":
-                mutated_element = mutate_element(block_element, TAG, SCENARIO)
+                mutated_element = mutate_element(block_element, TAG, SCENARIO, destination, bsp_bounds_list)
                 mutated_element.palette_index = find_tag_ref(TAG, SCENARIO.device_machine_palette, palette_tag_block[palette_index].name, source)
                 SCENARIO.device_machines.append(mutated_element)
             elif destination == "ctrl":
-                mutated_element = mutate_element(block_element, TAG, SCENARIO)
+                mutated_element = mutate_element(block_element, TAG, SCENARIO, destination, bsp_bounds_list)
                 mutated_element.palette_index = find_tag_ref(TAG, SCENARIO.device_control_palette, palette_tag_block[palette_index].name, source)
                 SCENARIO.device_controls.append(mutated_element)
             elif destination == "lifi":
-                mutated_element = mutate_element(block_element, TAG, SCENARIO)
+                mutated_element = mutate_element(block_element, TAG, SCENARIO, destination, bsp_bounds_list)
                 mutated_element.palette_index = find_tag_ref(TAG, SCENARIO.device_light_fixtures_palette, palette_tag_block[palette_index].name, source)
                 SCENARIO.device_light_fixtures.append(mutated_element)
             elif destination == "ssce":
-                mutated_element = mutate_element(block_element, TAG, SCENARIO)
+                mutated_element = mutate_element(block_element, TAG, SCENARIO, destination, bsp_bounds_list)
                 mutated_element.palette_index = find_tag_ref(TAG, SCENARIO.sound_scenery_palette, palette_tag_block[palette_index].name, source)
                 SCENARIO.sound_scenery.append(mutated_element)
             elif destination == "bloc":
-                mutated_element = mutate_element(block_element, TAG, SCENARIO)
+                mutated_element = mutate_element(block_element, TAG, SCENARIO, destination, bsp_bounds_list)
                 mutated_element.palette_index = find_tag_ref(TAG, SCENARIO.crates_palette, palette_tag_block[palette_index].name, source)
                 SCENARIO.crates.append(mutated_element)
 
@@ -1352,7 +1604,7 @@ def mutate_palette(TAG, H1_SCENARIO, SCENARIO, palette_indices, palette_destinat
         elif destination == "bloc":
             SCENARIO.crates_palette.append(mutate_tag_ref(TAG, palette_element, destination))
 
-def block_mutation(TAG, H1_SCENARIO, SCENARIO):
+def block_mutation(TAG, H1_SCENARIO, SCENARIO, bsp_bounds_list):
     scenery_palette_indices, scenery_palette_destination_list = scan_palette(TAG, H1_SCENARIO.scenery_palette)
     biped_palette_indices, biped_palette_destination_list = scan_palette(TAG, H1_SCENARIO.biped_palette)
     vehicle_palette_indices, vehicle_palette_destination_list = scan_palette(TAG, H1_SCENARIO.vehicle_palette)
@@ -1362,31 +1614,31 @@ def block_mutation(TAG, H1_SCENARIO, SCENARIO):
     sound_scenery_palette_indices, sound_scenery_destination_list = scan_palette(TAG, H1_SCENARIO.sound_scenery_palette)
     if len(scenery_palette_indices) > 0:
         mutate_palette(TAG, H1_SCENARIO, SCENARIO, scenery_palette_indices, scenery_palette_destination_list)
-        mutate_block(TAG, H1_SCENARIO, SCENARIO, scenery_palette_indices, scenery_palette_destination_list, H1_SCENARIO.scenery)
+        mutate_block(TAG, H1_SCENARIO, SCENARIO, scenery_palette_indices, scenery_palette_destination_list, H1_SCENARIO.scenery, bsp_bounds_list)
 
     if len(biped_palette_indices) > 0:
         mutate_palette(TAG, H1_SCENARIO, SCENARIO, biped_palette_indices, biped_palette_destination_list)
-        mutate_block(TAG, H1_SCENARIO, SCENARIO, biped_palette_indices, biped_palette_destination_list, H1_SCENARIO.bipeds)
+        mutate_block(TAG, H1_SCENARIO, SCENARIO, biped_palette_indices, biped_palette_destination_list, H1_SCENARIO.bipeds, bsp_bounds_list)
 
     if len(vehicle_palette_indices) > 0:
         mutate_palette(TAG, H1_SCENARIO, SCENARIO, vehicle_palette_indices, vehicle_palette_destination_list)
-        mutate_block(TAG, H1_SCENARIO, SCENARIO, vehicle_palette_indices, vehicle_palette_destination_list, H1_SCENARIO.vehicles)
+        mutate_block(TAG, H1_SCENARIO, SCENARIO, vehicle_palette_indices, vehicle_palette_destination_list, H1_SCENARIO.vehicles, bsp_bounds_list)
 
     if len(equipment_palette_indices) > 0:
         mutate_palette(TAG, H1_SCENARIO, SCENARIO, equipment_palette_indices, equipment_palette_destination_list)
-        mutate_block(TAG, H1_SCENARIO, SCENARIO, equipment_palette_indices, equipment_palette_destination_list, H1_SCENARIO.equipment)
+        mutate_block(TAG, H1_SCENARIO, SCENARIO, equipment_palette_indices, equipment_palette_destination_list, H1_SCENARIO.equipment, bsp_bounds_list)
 
     if len(weapon_palette_indices) > 0:
         mutate_palette(TAG, H1_SCENARIO, SCENARIO, weapon_palette_indices, weapon_palette_destination_list)
-        mutate_block(TAG, H1_SCENARIO, SCENARIO, weapon_palette_indices, weapon_palette_destination_list, H1_SCENARIO.weapons)
+        mutate_block(TAG, H1_SCENARIO, SCENARIO, weapon_palette_indices, weapon_palette_destination_list, H1_SCENARIO.weapons, bsp_bounds_list)
 
     if len(machine_palette_indices) > 0:
         mutate_palette(TAG, H1_SCENARIO, SCENARIO, machine_palette_indices, machine_palette_destination_list)
-        mutate_block(TAG, H1_SCENARIO, SCENARIO, machine_palette_indices, machine_palette_destination_list, H1_SCENARIO.device_machines)
+        mutate_block(TAG, H1_SCENARIO, SCENARIO, machine_palette_indices, machine_palette_destination_list, H1_SCENARIO.device_machines, bsp_bounds_list)
 
     if len(sound_scenery_palette_indices) > 0:
         mutate_palette(TAG, H1_SCENARIO, SCENARIO, sound_scenery_palette_indices, sound_scenery_destination_list)
-        mutate_block(TAG, H1_SCENARIO, SCENARIO, sound_scenery_palette_indices, sound_scenery_destination_list, H1_SCENARIO.sound_scenery)
+        mutate_block(TAG, H1_SCENARIO, SCENARIO, sound_scenery_palette_indices, sound_scenery_destination_list, H1_SCENARIO.sound_scenery, bsp_bounds_list)
 
     SCENARIO.scenery_header = TAG.TagBlockHeader("tbfd", 4, len(SCENARIO.scenery), 96)
     SCENARIO.bipeds_header = TAG.TagBlockHeader("tbfd", 2, len(SCENARIO.bipeds), 84)
@@ -1707,9 +1959,19 @@ def upgrade_h2_scenario(H1_ASSET, patch_txt_path, report):
     SCENARIO.screen_effect_references = []
     SCENARIO.simulation_definition_table = []
 
+    bsp_bounds_list = []
+
+    h2_scenario_path = os.path.join(config.HALO_2_TAG_PATH, "%s.scenario" % H1_ASSET.header.local_path)
+    if os.path.isfile(h2_scenario_path):
+        input_stream = open(h2_scenario_path, "rb")
+        SCNR_ASSET = process_h2_scenario(input_stream, print)
+        input_stream.close()
+
+        global_functions.build_bounds_list(SCNR_ASSET, bsp_bounds_list)
+
     merge_child_scenarios(TAG, H1_ASSET, report)
 
-    block_mutation(TAG, H1_ASSET, SCENARIO)
+    block_mutation(TAG, H1_ASSET, SCENARIO, bsp_bounds_list)
 
     SCENARIO.skies_header, SCENARIO.skies = get_palette(TAG, H1_ASSET.skies, 16)
 
@@ -1719,34 +1981,34 @@ def upgrade_h2_scenario(H1_ASSET, patch_txt_path, report):
 
     get_object_names(H1_ASSET.object_names, TAG, SCENARIO)
 
-    get_scenery(H1_ASSET.scenery, TAG, SCENARIO)
+    get_scenery(H1_ASSET.scenery, TAG, SCENARIO, bsp_bounds_list)
     SCENARIO.scenery_palette_header, SCENARIO.scenery_palette = get_palette(TAG, H1_ASSET.scenery_palette, 48)
 
-    SCENARIO.bipeds_header, SCENARIO.bipeds = get_unit(H1_ASSET.bipeds, TAG, SCENARIO, True)
+    SCENARIO.bipeds_header, SCENARIO.bipeds = get_unit(H1_ASSET.bipeds, TAG, SCENARIO, True, bsp_bounds_list)
     SCENARIO.biped_palette_header, SCENARIO.biped_palette = get_palette(TAG, H1_ASSET.biped_palette, 48)
 
     if not H1ScenarioTypeEnum(H1_ASSET.scenario_body.scenario_type) == H1ScenarioTypeEnum.multiplayer:
-        SCENARIO.vehicles_header, SCENARIO.vehicles = get_unit(H1_ASSET.vehicles, TAG, SCENARIO, False)
+        SCENARIO.vehicles_header, SCENARIO.vehicles = get_unit(H1_ASSET.vehicles, TAG, SCENARIO, False, bsp_bounds_list)
         SCENARIO.vehicle_palette_header, SCENARIO.vehicle_palette = get_palette(TAG, H1_ASSET.vehicle_palette, 48)
 
-    get_equipment(H1_ASSET.equipment, TAG, SCENARIO)
+    get_equipment(H1_ASSET.equipment, TAG, SCENARIO, bsp_bounds_list)
     SCENARIO.equipment_palette_header, SCENARIO.equipment_palette = get_palette(TAG, H1_ASSET.equipment_palette, 48)
 
-    get_weapon(H1_ASSET.weapons, TAG, SCENARIO)
+    get_weapon(H1_ASSET.weapons, TAG, SCENARIO, bsp_bounds_list)
     SCENARIO.weapon_palette_header, SCENARIO.weapon_palette = get_palette(TAG, H1_ASSET.weapon_palette, 48)
 
     get_device_groups(H1_ASSET.device_groups, TAG, SCENARIO)
 
-    get_device_machines(H1_ASSET.device_machines, TAG, SCENARIO)
+    get_device_machines(H1_ASSET.device_machines, TAG, SCENARIO, bsp_bounds_list)
     SCENARIO.device_machine_palette_header, SCENARIO.device_machine_palette = get_palette(TAG, H1_ASSET.device_machine_palette, 48)
 
-    get_device_controls(H1_ASSET.device_controls, TAG, SCENARIO)
+    get_device_controls(H1_ASSET.device_controls, TAG, SCENARIO, bsp_bounds_list)
     SCENARIO.device_control_palette_header, SCENARIO.device_control_palette = get_palette(TAG, H1_ASSET.device_control_palette, 48)
 
-    get_light_fixtures(H1_ASSET.device_light_fixtures, TAG, SCENARIO)
+    get_light_fixtures(H1_ASSET.device_light_fixtures, TAG, SCENARIO, bsp_bounds_list)
     SCENARIO.device_light_fixture_palette_header, SCENARIO.device_light_fixtures_palette = get_palette(TAG, H1_ASSET.device_light_fixtures_palette, 48)
 
-    get_sound_scenery(H1_ASSET.sound_scenery, TAG, SCENARIO)
+    get_sound_scenery(H1_ASSET.sound_scenery, TAG, SCENARIO, bsp_bounds_list)
     SCENARIO.sound_scenery_palette_header, SCENARIO.sound_scenery_palette = get_palette(TAG, H1_ASSET.sound_scenery_palette, 48)
 
     get_player_starting_profiles(H1_ASSET.player_starting_profiles, TAG, SCENARIO)

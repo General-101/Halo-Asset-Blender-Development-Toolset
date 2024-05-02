@@ -27,8 +27,8 @@
 from xml.dom import minidom
 from ....global_functions import tag_format
 from .format import (
-    SkyAsset, 
-    SkyFlags, 
+    SkyAsset,
+    SkyFlags,
     LightFlags
     )
 

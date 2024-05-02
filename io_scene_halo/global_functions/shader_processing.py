@@ -117,7 +117,7 @@ def generate_image_node(mat, texture, BITMAP=None, bitmap_name="White", is_env=F
         if not image:
             x = BITMAP.bitmap_body.color_plate_width
             y = BITMAP.bitmap_body.color_plate_height
-            
+
             image = bpy.data.images.new(bitmap_name, x, y)
             decompressed_data = zlib.decompress(BITMAP.bitmap_body.compressed_color_plate)
             pil_image = Image.frombytes("RGBA", (x, y), decompressed_data, 'raw', "BGRA").transpose(method=Image.Transpose.FLIP_TOP_BOTTOM)
@@ -1053,7 +1053,7 @@ def generate_shader_model(mat, shader, report):
     texture_coordinate_node = mat.node_tree.nodes.new("ShaderNodeTexCoord")
     texture_coordinate_node.location = Vector((-1775.0, 750.0))
     connect_inputs(mat.node_tree, texture_coordinate_node, "Reflection", reflection_node, "Vector")
-    
+
     vect_math_node = mat.node_tree.nodes.new("ShaderNodeVectorMath")
     vect_math_node.operation = 'MULTIPLY'
     vect_math_node.location = Vector((-1775, 250))
@@ -2173,9 +2173,9 @@ class TransparentTemplateEnum(Enum):
 def conver_real_rgba_integer_bgra(material_color):
     return (round(material_color[2] * 255), round(material_color[1] * 255), round(material_color[0] * 255), 0)
 
-def add_animation_property(SHADER, TAG, property_list, animation_type=AnimationTypeEnum.bitmap_index, input_name="", input_type=0, range_name="", range_type=0, time=0, 
-                           output_modifier=0, output_modifier_input=0, function_header=None, function_type=FunctionTypeEnum.constant, output_value=0, 
-                           material_colors=((0, 0, 0, 0), (0, 0, 0, 0), (0, 0, 0, 0), (0, 0, 0, 0)), lower_bound=0.0, upper_bound=1.0, 
+def add_animation_property(SHADER, TAG, property_list, animation_type=AnimationTypeEnum.bitmap_index, input_name="", input_type=0, range_name="", range_type=0, time=0,
+                           output_modifier=0, output_modifier_input=0, function_header=None, function_type=FunctionTypeEnum.constant, output_value=0,
+                           material_colors=((0, 0, 0, 0), (0, 0, 0, 0), (0, 0, 0, 0), (0, 0, 0, 0)), lower_bound=0.0, upper_bound=1.0,
                            input_function=(0.0, 0.0, 0, 0.0, 0.0, []), range_function=(0.0, 0.0, 0, 0.0, 0.0, []), range_lower_bound=1.0, range_upper_bound=1.0):
     animation_property = ShaderAsset.AnimationProperty()
 
@@ -2273,7 +2273,165 @@ def get_percentage(channel):
         value = channel / 255
 
     return value
-    
+
+def get_rgb_percentage(rgb, has_alpha=True):
+    if has_alpha:
+        result = (1, 1, 1, 0)
+        if rgb:
+            r = get_percentage(rgb["R"])
+            g = get_percentage(rgb["G"])
+            b = get_percentage(rgb["B"])
+            a = 0
+
+            a_dic = rgb.get("A")
+            if a_dic:
+                a = get_percentage(a_dic)
+
+            result = (r, g, b, a)
+
+    else:
+        result = (1, 1, 1)
+        if rgb:
+            r = get_percentage(rgb["R"])
+            g = get_percentage(rgb["G"])
+            b = get_percentage(rgb["B"])
+            result = (r, g, b)
+
+    return result
+
+def convert_legacy_function(PARTICLE, TAG, properties, input_type=0, range_type=0, function_type=FunctionTypeEnum.constant, flag_value=0, output_modifier=0,
+                            output_modifier_input=0, rgb_0=None, rgb_1=None, rgb_2=None, rgb_3=None, value_0=0, value_1=0, value_2=0, value_3=0, function_0_type=0,
+                            function_1_type=0, function_values=[], function_header=None):
+    input_function=(0.0, 0.0, 0, 0.0, 0.0, [])
+    range_function=(0.0, 0.0, 0, 0.0, 0.0, [])
+    if FunctionTypeEnum.transition == function_type:
+        min = function_values[0]
+        max = function_values[1]
+        exponent = function_0_type
+        frequency = 0.0
+        phase = 0.0
+
+        range_min = function_values[2]
+        range_max = function_values[3]
+        range_exponent = function_1_type
+        range_frequency = 0.0
+        range_phase = 0.0
+
+        input_function=(min, max, exponent, frequency, phase, [])
+        range_function=(range_min, range_max, range_exponent, range_frequency, range_phase, [])
+
+    elif FunctionTypeEnum.periodic == function_type:
+        min = function_values[2]
+        max = function_values[3]
+        exponent = function_0_type
+        frequency = function_values[0]
+        phase = function_values[1]
+
+        range_min = function_values[6]
+        range_max = function_values[7]
+        range_exponent = function_1_type
+        range_frequency = function_values[4]
+        range_phase = function_values[5]
+
+        input_function=(min, max, exponent, frequency, phase, [])
+        range_function=(range_min, range_max, range_exponent, range_frequency, range_phase, [])
+
+    elif FunctionTypeEnum.linear == function_type:
+        points = []
+        range_points = []
+        for point_idx in range(2):
+            point_index = (point_idx * 2)
+            x = function_values[point_index]
+            y = function_values[point_index + 1]
+            points.append((x, y))
+
+        for point_idx in range(2):
+            point_index = (6 + (point_idx * 2))
+            x = function_values[point_index]
+            y = function_values[point_index + 1]
+            range_points.append((x, y))
+
+        input_function=(0.0, 0.0, 0, 0.0, 0.0, points)
+        range_function=(0.0, 0.0, 0, 0.0, 0.0, range_points)
+
+    elif FunctionTypeEnum.linear_key == function_type:
+        points = []
+        range_points = []
+        for point_idx in range(4):
+            point_index = (point_idx * 2)
+            x = function_values[point_index]
+            y = function_values[point_index + 1]
+            points.append((x, y))
+
+        for point_idx in range(4):
+            point_index = (20 + (point_idx * 2))
+            x = function_values[point_index]
+            y = function_values[point_index + 1]
+            range_points.append((x, y))
+
+        input_function=(0.0, 0.0, 0, 0.0, 0.0, points)
+        range_function=(0.0, 0.0, 0, 0.0, 0.0, range_points)
+
+    elif FunctionTypeEnum.multi_linear_key == function_type:
+        points = []
+        range_points = []
+        for point_idx in range(2):
+            point_index = (point_idx * 2)
+            x = function_values[point_index]
+            y = function_values[point_index + 1]
+            points.append((x, y))
+
+        for point_idx in range(2):
+            point_index = (4 + (point_idx * 2))
+            x = function_values[point_index]
+            y = function_values[point_index + 1]
+            range_points.append((x, y))
+
+        input_function=(0.0, 0.0, 0, 0.0, 0.0, points)
+        range_function=(0.0, 0.0, 0, 0.0, 0.0, range_points)
+
+    elif FunctionTypeEnum.spline == function_type:
+        points = []
+        range_points = []
+        for point_idx in range(4):
+            point_index = (point_idx * 2)
+            x = function_values[point_index]
+            y = function_values[point_index + 1]
+            points.append((x, y))
+
+        for point_idx in range(4):
+            point_index = (12 + (point_idx * 2))
+            x = function_values[point_index]
+            y = function_values[point_index + 1]
+            range_points.append((x, y))
+
+        input_function=(0.0, 0.0, 0, 0.0, 0.0, points)
+        range_function=(0.0, 0.0, 0, 0.0, 0.0, range_points)
+
+    elif FunctionTypeEnum.multi_spline == function_type:
+        points = []
+        range_points = []
+        for point_idx in range(2):
+            point_index = (point_idx * 2)
+            x = function_values[point_index]
+            y = function_values[point_index + 1]
+            points.append((x, y))
+
+        for point_idx in range(2):
+            point_index = (4 + (point_idx * 2))
+            x = function_values[point_index]
+            y = function_values[point_index + 1]
+            range_points.append((x, y))
+
+        input_function=(0.0, 0.0, 0, 0.0, 0.0, points)
+        range_function=(0.0, 0.0, 0, 0.0, 0.0, range_points)
+
+    colors = (get_rgb_percentage(rgb_0), get_rgb_percentage(rgb_1), get_rgb_percentage(rgb_2), get_rgb_percentage(rgb_3))
+    add_animation_property(PARTICLE, TAG, properties, animation_type=AnimationTypeEnum.bitmap_scale_x, input_type=input_type, range_type=range_type, output_modifier=output_modifier,
+                           output_modifier_input=output_modifier_input, function_header=function_header, function_type=function_type, output_value=flag_value,
+                           material_colors=colors, lower_bound=value_0, upper_bound=value_1, input_function=input_function, range_function=range_function, range_lower_bound=value_2,
+                           range_upper_bound=value_3)
+
 def write_identity(output_stream, TAG, animation_properties):
     output_stream.write(struct.pack('<4s3I', TAG.string_to_bytes("tbfd", True), 0, 20, 1))
     output_stream.write(struct.pack('<B', animation_properties.function_type))

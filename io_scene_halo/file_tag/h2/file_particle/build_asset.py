@@ -198,9 +198,3 @@ def build_asset(output_stream, PARTICLE, report):
         output_stream.write(struct.pack('<%ssx' % death_effect_name_length, TAG.string_to_bytes(PARTICLE.particle_body.death_effect.name, False)))
 
     write_locations(output_stream, TAG, PARTICLE.locations, PARTICLE.locations_header)
-
-
-
-
-
-

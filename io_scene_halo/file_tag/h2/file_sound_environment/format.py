@@ -31,7 +31,7 @@ class SoundEnvironmentAsset():
         self.sound_environment_body = None
 
     class SoundEnvironmentBody:
-        def __init__(self, priority=0, room_intensity=0.0, room_intensity_hf=0.0, room_rolloff=0.0, decay_time=0.0, decay_hf_ratio=0.0, reflections_intensity=0.0, 
+        def __init__(self, priority=0, room_intensity=0.0, room_intensity_hf=0.0, room_rolloff=0.0, decay_time=0.0, decay_hf_ratio=0.0, reflections_intensity=0.0,
                      reflections_delay=0.0, reverb_intensity=0.0, reverb_delay=0.0, diffusion=0.0, density=0.0, hf_reference=0.0, reflection_type="", reflection_type_length=0):
             self.priority = priority
             self.room_intensity = room_intensity

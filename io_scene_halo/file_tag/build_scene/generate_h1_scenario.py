@@ -222,7 +222,7 @@ def generate_object_elements(level_root, collection_name, palette, tag_block, co
                 if not MODEL == None:
                     ob = get_object(asset_collection, MODEL, game_version, object_name, random_color_gen, report)
             elif collection_name == "Weapons":
-                MODEL = ASSET.weapon_body.model.parse_tag(report, "halo1", "retail")
+                MODEL = ASSET.model.parse_tag(report, "halo1", "retail")
                 if not MODEL == None:
                     ob = get_object(asset_collection, MODEL, game_version, object_name, random_color_gen, report)
             elif collection_name == "Machines":
@@ -259,7 +259,7 @@ def generate_object_elements(level_root, collection_name, palette, tag_block, co
             root = bpy.data.objects.new(name, None)
             root.empty_display_type = 'ARROWS'
             asset_collection.objects.link(root)
-        
+
         root.parent = level_root
         root.location = element.position * 100
 
@@ -303,7 +303,7 @@ def generate_netgame_equipment_elements(level_root, tag_block, context, game_ver
                     if not MODEL == None:
                         ob = get_object(asset_collection, MODEL, game_version, object_name, random_color_gen, report)
                 elif item_perutation_element.item.tag_group == "weap":
-                    MODEL = ITEM.weapon_body.model.parse_tag(report, "halo1", "retail")
+                    MODEL = ITEM.model.parse_tag(report, "halo1", "retail")
                     if not MODEL == None:
                         ob = get_object(asset_collection, MODEL, game_version, object_name, random_color_gen, report)
 
@@ -379,7 +379,7 @@ def generate_camera_points(context, level_root, tag_block):
         rotation.rotate(yaw)
         rotation.rotate(pitch)
         rotation.rotate(roll)
-        
+
         ob.data.lens_unit = 'FOV'
         ob.data.angle = radians(element.field_of_view)
 

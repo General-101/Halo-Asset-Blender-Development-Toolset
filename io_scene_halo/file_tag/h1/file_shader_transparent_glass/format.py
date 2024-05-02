@@ -89,10 +89,10 @@ class ShaderAsset():
         self.shader_body = None
 
     class ShaderBody:
-        def __init__(self, radiosity_flags=0, detail_level=0, power=0.0, color_of_emitted_light=(0.0, 0.0, 0.0, 1.0), light_tint_color=(0.0, 0.0, 0.0, 1.0), material_type=0, 
-                     glass_flags=0, background_tint_color=(0.0, 0.0, 0.0, 1.0), background_tint_map_scale=0.0, background_tint_map=None, reflection_type=0, 
-                     perpendicular_brightness=0.0, perpendicular_tint_color=(0.0, 0.0, 0.0, 1.0), parallel_brightness=0.0, parallel_tint_color=(0.0, 0.0, 0.0, 1.0), 
-                     reflection_map=None, bump_map_scale=0.0, bump_map=None, diffuse_map_scale=0.0, diffuse_map=None, diffuse_detail_map_scale=0.0, diffuse_detail_map=None, 
+        def __init__(self, radiosity_flags=0, detail_level=0, power=0.0, color_of_emitted_light=(0.0, 0.0, 0.0, 1.0), light_tint_color=(0.0, 0.0, 0.0, 1.0), material_type=0,
+                     glass_flags=0, background_tint_color=(0.0, 0.0, 0.0, 1.0), background_tint_map_scale=0.0, background_tint_map=None, reflection_type=0,
+                     perpendicular_brightness=0.0, perpendicular_tint_color=(0.0, 0.0, 0.0, 1.0), parallel_brightness=0.0, parallel_tint_color=(0.0, 0.0, 0.0, 1.0),
+                     reflection_map=None, bump_map_scale=0.0, bump_map=None, diffuse_map_scale=0.0, diffuse_map=None, diffuse_detail_map_scale=0.0, diffuse_detail_map=None,
                      specular_map_scale=0.0, specular_map=None, specular_detail_map_scale=0.0, specular_detail_map=None):
             self.radiosity_flags = radiosity_flags
             self.detail_level = detail_level

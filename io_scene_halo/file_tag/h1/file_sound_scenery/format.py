@@ -69,9 +69,9 @@ class SoundSceneryAsset():
         self.predicted_resources = None
 
     class SoundSceneryBody:
-        def __init__(self, object_flags=0, bounding_radius=0.0, bounding_offset=Vector(), origin_offset=Vector(), acceleration_scale=0.0, model=None, animation_graph=None, 
-                     collision_model=None, physics=None, modifier_shader=None, creation_effect=None, render_bounding_radius=0.0, a_in=0, b_in=0, c_in=0, d_in=0, 
-                     hud_text_message_index=0, forced_shader_permutation_index=0, attachments_tag_block=None, widgets_tag_block=None, functions_tag_block=None, 
+        def __init__(self, object_flags=0, bounding_radius=0.0, bounding_offset=Vector(), origin_offset=Vector(), acceleration_scale=0.0, model=None, animation_graph=None,
+                     collision_model=None, physics=None, modifier_shader=None, creation_effect=None, render_bounding_radius=0.0, a_in=0, b_in=0, c_in=0, d_in=0,
+                     hud_text_message_index=0, forced_shader_permutation_index=0, attachments_tag_block=None, widgets_tag_block=None, functions_tag_block=None,
                      change_colors_tag_block=None, predicted_resources_tag_block=None):
             self.object_flags = object_flags
             self.bounding_radius = bounding_radius

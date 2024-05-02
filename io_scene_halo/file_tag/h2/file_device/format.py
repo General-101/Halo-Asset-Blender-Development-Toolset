@@ -45,8 +45,8 @@ class DeviceAsset(ObjectAsset):
         self.device_body = None
 
     class DeviceBody(ObjectAsset.ObjectBody):
-        def __init__(self, device_flags=0, power_transition_time=0.0, power_acceleration_time=0.0, position_transition_time=0.0, position_acceleration_time=0.0, 
-                     depowered_position_transition_time=0.0, depowered_position_acceleration_time=0.0, lightmap_flags=0, open_up=None, close_down=None, opened=None, closed=None, 
+        def __init__(self, device_flags=0, power_transition_time=0.0, power_acceleration_time=0.0, position_transition_time=0.0, position_acceleration_time=0.0,
+                     depowered_position_transition_time=0.0, depowered_position_acceleration_time=0.0, lightmap_flags=0, open_up=None, close_down=None, opened=None, closed=None,
                      depowered=None, repowered=None, delay_time=0.0, delay_effect=None, automatic_activation_radius=0.0):
             super().__init__()
             self.device_flags = device_flags

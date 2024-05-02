@@ -28,18 +28,18 @@ from xml.dom import minidom
 from ....global_functions import tag_format
 from ..file_object.format import ObjectFlags, LightmapShadowModeEnum, SweetenerSizeEnum
 from ..file_unit.format import (
-    UnitFlags, 
-    TeamsEnum, 
-    ConstantSoundVolumeEnum, 
-    MotionSensorBlipSizeEnum, 
-    MetaGameTypeEnum, 
-    MetaGameClassEnum, 
+    UnitFlags,
+    TeamsEnum,
+    ConstantSoundVolumeEnum,
+    MotionSensorBlipSizeEnum,
+    MetaGameTypeEnum,
+    MetaGameClassEnum,
     GrenadeTypeEnum
     )
 from .format import (
-    BipedAsset, 
-    BipedFlags, 
-    LockOnFlags, 
+    BipedAsset,
+    BipedFlags,
+    LockOnFlags,
     CollisionFlags
     )
 
@@ -223,7 +223,7 @@ def read_biped_body(BIPED, TAG, input_stream, tag_node, XML_OUTPUT):
     input_stream.read(2) # Padding?
     BIPED.biped_body.dead_material_name_length = TAG.read_signed_short(input_stream, TAG)
     TAG.big_endian = False
-    
+
     input_stream.read(4) # Padding?
     BIPED.biped_body.dead_sphere_shapes_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "dead sphere shapes"))
     BIPED.biped_body.pill_shapes_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "pill shapes"))

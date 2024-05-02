@@ -43,11 +43,11 @@ class ItemAsset(ObjectAsset):
         self.predicted_bitmaps = None
 
     class ItemBody(ObjectAsset.ObjectBody):
-        def __init__(self, item_flags=0, old_message_index=0, sort_order=0, multiplayer_on_ground_scale=0.0, campaign_on_ground_scale=0.0, pickup_message="", 
-                     pickup_message_length=0, swap_message="", swap_message_length=0, pickup_or_dual_msg="", pickup_or_dual_msg_length=0, swap_or_dual_msg="", 
-                     swap_or_dual_msg_length=0, dual_only_msg="", dual_only_msg_length=0, picked_up_msg="", picked_up_msg_length=0, singluar_quantity_msg="", 
-                     singluar_quantity_msg_length=0, plural_quantity_msg="", plural_quantity_msg_length=0, switch_to_msg="", switch_to_msg_length=0, switch_to_from_ai_msg="", 
-                     switch_to_from_ai_msg_length=0, unused=None, collision_sound=None, predicted_bitmaps_tag_block=None, detonation_damage_effect=None, detonation_delay=(0.0, 0.0), 
+        def __init__(self, item_flags=0, old_message_index=0, sort_order=0, multiplayer_on_ground_scale=0.0, campaign_on_ground_scale=0.0, pickup_message="",
+                     pickup_message_length=0, swap_message="", swap_message_length=0, pickup_or_dual_msg="", pickup_or_dual_msg_length=0, swap_or_dual_msg="",
+                     swap_or_dual_msg_length=0, dual_only_msg="", dual_only_msg_length=0, picked_up_msg="", picked_up_msg_length=0, singluar_quantity_msg="",
+                     singluar_quantity_msg_length=0, plural_quantity_msg="", plural_quantity_msg_length=0, switch_to_msg="", switch_to_msg_length=0, switch_to_from_ai_msg="",
+                     switch_to_from_ai_msg_length=0, unused=None, collision_sound=None, predicted_bitmaps_tag_block=None, detonation_damage_effect=None, detonation_delay=(0.0, 0.0),
                      detonating_effect=None, detonation_effect=None):
             super().__init__()
             self.item_flags = item_flags

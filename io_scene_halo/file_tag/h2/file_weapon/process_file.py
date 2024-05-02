@@ -24,13 +24,15 @@
 #
 # ##### END MIT LICENSE BLOCK #####
 
+import os
+
 from xml.dom import minidom
 from ....global_functions import tag_format
 from ..file_object.format import ObjectFlags, LightmapShadowModeEnum, SweetenerSizeEnum
 from ..file_item.format import ItemFlags
 from .format import (
-    WeaponAsset, 
-    WeaponFlags, 
+    WeaponAsset,
+    WeaponFlags,
     SecondaryTriggerModeEnum,
     MeleeDamageReportingTypeEnum,
     MovementPenalizedEnum,

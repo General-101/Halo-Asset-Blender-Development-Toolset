@@ -192,7 +192,7 @@ def generate_mesh(file, array_item, game_version):
             vertex_normals.append(n1)
             vertex_normals.append(n2)
             vertex_normals.append(n3)
-            
+
             v1 = bm.verts.new((p1[0], p1[1], p1[2]))
             v2 = bm.verts.new((p2[0], p2[1], p2[2]))
             v3 = bm.verts.new((p3[0], p3[1], p3[2]))

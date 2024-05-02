@@ -33,17 +33,17 @@ from ..global_functions import tag_format
 from ..file_tag.h1.file_bitmap.build_asset import build_asset as build_h1_bitmap
 from ..file_tag.h2.file_bitmap.build_asset import build_asset as build_h2_bitmap
 from ..file_tag.h1.file_bitmap.format import (
-    BitmapAsset as H1BitmapAsset, 
-    FormatEnum as H1FormatEnum, 
-    UsageEnum as H1UsageEnum, 
-    BitmapFormatEnum as H1BitmapFormatEnum, 
+    BitmapAsset as H1BitmapAsset,
+    FormatEnum as H1FormatEnum,
+    UsageEnum as H1UsageEnum,
+    BitmapFormatEnum as H1BitmapFormatEnum,
     BitmapFlags as H1BitmapFlags
     )
 from ..file_tag.h2.file_bitmap.format import (
-    BitmapAsset as H2BitmapAsset, 
-    FormatEnum as H2FormatEnum, 
-    UsageEnum as H2UsageEnum, 
-    BitmapFormatEnum as H2BitmapFormatEnum, 
+    BitmapAsset as H2BitmapAsset,
+    FormatEnum as H2FormatEnum,
+    UsageEnum as H2UsageEnum,
+    BitmapFormatEnum as H2BitmapFormatEnum,
     BitmapFlags as H2BitmapFlags
     )
 from ..file_tag.h1.file_scenario.process_file import process_file as process_h1_scenario
@@ -143,7 +143,7 @@ def bake_clusters(context, game_title, scenario_path, image_multiplier, report):
 
                             cluster_ob.select_set(True)
                             context.view_layer.objects.active = cluster_ob
-                            
+
                             context.scene.render.engine = 'CYCLES'
                             bpy.ops.object.bake(type='DIFFUSE', pass_filter={'DIRECT','INDIRECT'}, uv_layer=cluster_ob.data.uv_layers[1].name)
                             cluster_ob.select_set(False)
@@ -164,7 +164,7 @@ def bake_clusters(context, game_title, scenario_path, image_multiplier, report):
                                 lightmap_format = H1BitmapFormatEnum.x8r8g8b8.value
 
                             pixel_data = pixel_data + lightmap_data
-                            
+
                             sequence = BITMAP.Sequence()
                             sequence.first_bitmap_index = cluster_idx
                             sequence.bitmap_count = 1
@@ -290,7 +290,7 @@ def bake_clusters(context, game_title, scenario_path, image_multiplier, report):
 
                         lightmap_ob.select_set(True)
                         context.view_layer.objects.active = lightmap_ob
-                        
+
                         context.scene.render.engine = 'CYCLES'
                         bpy.ops.object.bake(type='DIFFUSE', pass_filter={'DIRECT','INDIRECT'}, uv_layer=lightmap_ob.data.uv_layers[0].name)
                         lightmap_ob.select_set(False)
@@ -306,7 +306,7 @@ def bake_clusters(context, game_title, scenario_path, image_multiplier, report):
                         r,g,b,a = lightmap_image.split()
                         lightmap_data = Image.merge("RGBA", (b, g, r, a)).tobytes()
                         lightmap_format = H2BitmapFormatEnum.a8r8g8b8.value
-                            
+
                         pixel_data = pixel_data + lightmap_data
 
                         bitmap_class = BITMAP.Bitmap()
