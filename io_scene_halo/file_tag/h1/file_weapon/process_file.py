@@ -401,12 +401,6 @@ def process_file(input_stream, report):
         TAG.xml_doc = minidom.Document()
 
     WEAPON.header = TAG.Header().read(input_stream, TAG)
-    tags_folder = "%stags%s" % (os.sep, os.sep)
-    if tags_folder in input_stream.name:
-        WEAPON.header.local_path = input_stream.name.split("tags%s" % os.sep)[1].rsplit(".", 1)[0]
-    else:
-        WEAPON.header.local_path = input_stream.name.rsplit(".", 1)[0]
-
     tag_node = None
     if XML_OUTPUT:
         tag_node = TAG.xml_doc.childNodes[0]
