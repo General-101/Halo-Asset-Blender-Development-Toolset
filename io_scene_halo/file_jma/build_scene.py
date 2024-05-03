@@ -370,13 +370,16 @@ def build_scene(context, JMA, JMS_A, JMS_B, filepath, game_version, fix_parents,
 
                 return {'CANCELLED'}
 
-    scene.frame_end = JMA.frame_count
     scene.render.fps = JMA.frame_rate
 
     animation_filename = bpy.path.basename(filepath).rsplit('.', 1)[0]
     action = bpy.data.actions.get(animation_filename)
     if action is None:
         action = bpy.data.actions.new(name=animation_filename)
+
+    action.use_frame_range = True
+    action.frame_start = 1
+    action.frame_end = JMA.frame_count
 
     armature.animation_data_create()
     armature.animation_data.action = action

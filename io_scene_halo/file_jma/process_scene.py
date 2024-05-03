@@ -73,7 +73,15 @@ def process_scene(context, extension, jma_version, game_title, generate_checksum
     first_frame = context.scene.frame_start
     last_frame = context.scene.frame_end + 1
     JMA.frame_count = context.scene.frame_end - first_frame + 1
+    
     active_object = context.view_layer.objects.active
+    if active_object and active_object.animation_data:
+        action = active_object.animation_data.action
+        if action and action.use_frame_range:
+            first_frame = int(action.frame_start)
+            last_frame = int(action.frame_end) + 1
+            JMA.frame_count = last_frame - first_frame
+
     mesh_frame_count = 0
     world_node_count = 0
     node_prefix_tuple = ('b ', 'b_', 'bone', 'frame', 'bip01')

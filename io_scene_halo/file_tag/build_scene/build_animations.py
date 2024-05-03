@@ -161,13 +161,15 @@ def build_scene(context, ANIMATION, game_version, game_title, file_version, fix_
             if len(animation.frame_data) == 0:
                 continue
 
-            scene.frame_end = animation.frame_count + 1
-
             action = bpy.data.actions.get(animation.name)
             if action is None:
                 action = bpy.data.actions.new(name=animation.name)
 
             action.use_fake_user = True
+            action.use_frame_range = True
+            action.frame_start = 1
+            action.frame_end = animation.frame_count + 1
+
             mesh_processing.select_object(context, armature)
             armature.animation_data_create()
             armature.animation_data.action = action
