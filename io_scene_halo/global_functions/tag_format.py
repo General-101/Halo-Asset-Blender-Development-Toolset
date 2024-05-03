@@ -1177,9 +1177,9 @@ class TagAsset():
 
         def read(self, input_stream, tag):
             if config.HALO_2_TAG_PATH in input_stream.name:
-                self.header.local_path = input_stream.name.split("%s%s" % (config.HALO_2_TAG_PATH, os.sep))[1].rsplit(".", 1)[0]
+                self.local_path = input_stream.name.split("%s%s" % (config.HALO_2_TAG_PATH, os.sep))[1].rsplit(".", 1)[0]
             else:
-                self.header.local_path = input_stream.name.rsplit(".", 1)[0]
+                self.local_path = input_stream.name.rsplit(".", 1)[0]
 
             header_struct = struct.unpack('%shbb32s4siiiihbb4s' % get_endian_symbol(tag.big_endian), input_stream.read(64))
             self.unk1 = header_struct[0]
