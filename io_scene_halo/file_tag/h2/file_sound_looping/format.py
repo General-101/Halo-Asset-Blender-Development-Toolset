@@ -48,7 +48,7 @@ class SoundLoopingAsset():
             self.detail_sounds_tag_block = detail_sounds_tag_block
 
     class Track:
-        def __init__(self, name="", name_length=0, flags=0, gain=0.0, fade_in_duration=0.0, fade_out_duration=0.0, in_sound=None, loop_sound=None, out_sound=None, alt_loop=None, 
+        def __init__(self, name="", name_length=0, flags=0, gain=0.0, fade_in_duration=0.0, fade_out_duration=0.0, in_sound=None, loop_sound=None, out_sound=None, alt_loop=None,
                      alt_out=None, output_effect=0, alt_trans_in=None, alt_trans_out=None, alt_crossfade_duration=0.0, alt_fade_out_duration=0.0):
             self.name = name
             self.name_length = name_length
@@ -68,7 +68,7 @@ class SoundLoopingAsset():
             self.alt_fade_out_duration = alt_fade_out_duration
 
     class DetailSound:
-        def __init__(self, name="", name_length=0, sound=None, random_period_bounds=(0.0, 0.0), unk_0=0.0, flags=0, yaw_bounds=(0.0, 0.0), pitch_bounds=(0.0, 0.0), 
+        def __init__(self, name="", name_length=0, sound=None, random_period_bounds=(0.0, 0.0), unk_0=0.0, flags=0, yaw_bounds=(0.0, 0.0), pitch_bounds=(0.0, 0.0),
                      distance_bounds=(0.0, 0.0)):
             self.name = name
             self.name_length = name_length

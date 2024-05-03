@@ -179,7 +179,7 @@ def build_asset(context, filepath, report, extension, jma_version, game_title, g
         JMA = process_scene(context, extension, jma_version, game_title, generate_checksum, fix_rotations, use_maya_sorting, scale_value)
         JMA.version = jma_version
         JMA.frame_rate = frame_rate_value
-        
+
     binary = False
 
     if jma_version >= 16395:

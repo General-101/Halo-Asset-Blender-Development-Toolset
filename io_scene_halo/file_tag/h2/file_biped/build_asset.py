@@ -30,18 +30,18 @@ from math import radians
 from ....global_functions import tag_format, shader_processing
 from ....file_tag.h2.file_shader.format import FunctionTypeEnum
 from ..file_object.build_asset import (
-    write_ai_properties, 
-    write_functions, 
-    write_attachments, 
-    write_tag_ref, 
-    write_old_functions, 
-    write_change_colors, 
+    write_ai_properties,
+    write_functions,
+    write_attachments,
+    write_tag_ref,
+    write_old_functions,
+    write_change_colors,
     write_predicted_resources
     )
 from ..file_unit.build_asset import (
-    write_postures, 
-    write_dialogue_variant, 
-    write_powered_seats, 
+    write_postures,
+    write_dialogue_variant,
+    write_powered_seats,
     write_seats
     )
 
@@ -157,8 +157,8 @@ def write_body(output_stream, TAG, BIPED):
     output_stream.write(struct.pack('<f', BIPED.biped_body.standing_camera_height))
     output_stream.write(struct.pack('<f', BIPED.biped_body.crouching_camera_height))
     output_stream.write(struct.pack('<f', BIPED.biped_body.crouching_transition_time))
-    output_stream.write(struct.pack('<f', BIPED.biped_body.camera_interpolation_start))
-    output_stream.write(struct.pack('<f', BIPED.biped_body.camera_interpolation_end))
+    output_stream.write(struct.pack('<f', radians(BIPED.biped_body.camera_interpolation_start)))
+    output_stream.write(struct.pack('<f', radians(BIPED.biped_body.camera_interpolation_end)))
     output_stream.write(struct.pack('<f', BIPED.biped_body.camera_forward_movement_scale))
     output_stream.write(struct.pack('<f', BIPED.biped_body.camera_side_movement_scale))
     output_stream.write(struct.pack('<f', BIPED.biped_body.camera_vertical_movement_scale))

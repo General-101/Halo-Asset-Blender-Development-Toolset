@@ -248,8 +248,8 @@ class ShaderAsset():
         self.stages = None
 
     class ShaderBody:
-        def __init__(self, radiosity_flags=0, detail_level=0, power=0.0, color_of_emitted_light=(0.0, 0.0, 0.0, 1.0), light_tint_color=(0.0, 0.0, 0.0, 1.0), material_type=0, 
-                     numeric_counter_limit=0, chicago_flags=0, first_map_type=0, framebuffer_blend_function=0, framebuffer_fade_mode=0, framebuffer_fade_source=0, 
+        def __init__(self, radiosity_flags=0, detail_level=0, power=0.0, color_of_emitted_light=(0.0, 0.0, 0.0, 1.0), light_tint_color=(0.0, 0.0, 0.0, 1.0), material_type=0,
+                     numeric_counter_limit=0, chicago_flags=0, first_map_type=0, framebuffer_blend_function=0, framebuffer_fade_mode=0, framebuffer_fade_source=0,
                      lens_flare_spacing=0.0, lens_flare=None, extra_layers_tag_block=None, maps_tag_block=None, stages_tag_block=None):
             self.radiosity_flags = radiosity_flags
             self.detail_level = detail_level
@@ -270,9 +270,9 @@ class ShaderAsset():
             self.stages_tag_block = stages_tag_block
 
     class Map:
-        def __init__(self, flags=0, color_function=0, alpha_function=0, map_u_scale=0.0, map_v_scale=0.0, map_u_offset=0.0, map_v_offset=0.0, map_rotation=0.0, mipmap_bias=0.0, 
-                     map=None, u_animation_source=0, u_animation_function=0, u_animation_period=0.0, u_animation_phase=0.0, u_animation_scale=0.0, v_animation_source=0, 
-                     v_animation_function=0, v_animation_period=0.0, v_animation_phase=0.0, v_animation_scale=0.0, rotation_animation_source=0, rotation_animation_function=0, 
+        def __init__(self, flags=0, color_function=0, alpha_function=0, map_u_scale=0.0, map_v_scale=0.0, map_u_offset=0.0, map_v_offset=0.0, map_rotation=0.0, mipmap_bias=0.0,
+                     map=None, u_animation_source=0, u_animation_function=0, u_animation_period=0.0, u_animation_phase=0.0, u_animation_scale=0.0, v_animation_source=0,
+                     v_animation_function=0, v_animation_period=0.0, v_animation_phase=0.0, v_animation_scale=0.0, rotation_animation_source=0, rotation_animation_function=0,
                      rotation_animation_period=0.0, rotation_animation_phase=0.0, rotation_animation_scale=0.0, rotation_animation_center=(0.0, 0.0)):
             self.flags = flags
             self.color_function = color_function
@@ -302,11 +302,11 @@ class ShaderAsset():
             self.rotation_animation_center = rotation_animation_center
 
     class Stage:
-        def __init__(self, flags=0, color0_source=0, color0_animation_function=0, color0_animation_period=0.0, color0_animation_lower_bound=(0.0, 0.0, 0.0, 1.0), 
-                     color0_animation_upper_bound=(0.0, 0.0, 0.0, 1.0), color1=(0.0, 0.0, 0.0, 1.0), color_input_a=0, color_input_a_mapping=0, color_input_b=0, color_input_b_mapping=0, 
-                     color_input_c=0, color_input_c_mapping=0, color_input_d=0, color_input_d_mapping=0, color_output_ab=0, color_output_ab_function=0, color_output_cd=0, 
-                     color_output_cd_function=0, color_output_ab_cd=0, color_output_mapping=0, alpha_input_a=0, alpha_input_a_mapping=0, alpha_input_b=0, alpha_input_b_mapping=0, 
-                     alpha_input_c=0, alpha_input_c_mapping=0, alpha_input_d=0, alpha_input_d_mapping=0, alpha_output_ab=0, alpha_output_cd=0, alpha_output_ab_cd=0, 
+        def __init__(self, flags=0, color0_source=0, color0_animation_function=0, color0_animation_period=0.0, color0_animation_lower_bound=(0.0, 0.0, 0.0, 1.0),
+                     color0_animation_upper_bound=(0.0, 0.0, 0.0, 1.0), color1=(0.0, 0.0, 0.0, 1.0), color_input_a=0, color_input_a_mapping=0, color_input_b=0, color_input_b_mapping=0,
+                     color_input_c=0, color_input_c_mapping=0, color_input_d=0, color_input_d_mapping=0, color_output_ab=0, color_output_ab_function=0, color_output_cd=0,
+                     color_output_cd_function=0, color_output_ab_cd=0, color_output_mapping=0, alpha_input_a=0, alpha_input_a_mapping=0, alpha_input_b=0, alpha_input_b_mapping=0,
+                     alpha_input_c=0, alpha_input_c_mapping=0, alpha_input_d=0, alpha_input_d_mapping=0, alpha_output_ab=0, alpha_output_cd=0, alpha_output_ab_cd=0,
                      alpha_output_mapping=0):
             self.flags = flags
             self.color0_source = color0_source

@@ -158,8 +158,8 @@ class ShaderAsset():
         self.maps = None
 
     class ShaderBody:
-        def __init__(self, radiosity_flags=0, detail_level=0, power=0.0, color_of_emitted_light=(0.0, 0.0, 0.0, 1.0), light_tint_color=(0.0, 0.0, 0.0, 1.0), material_type=0, 
-                     numeric_counter_limit=0, chicago_flags=0, first_map_type=0, framebuffer_blend_function=0, framebuffer_fade_mode=0, framebuffer_fade_source=0, 
+        def __init__(self, radiosity_flags=0, detail_level=0, power=0.0, color_of_emitted_light=(0.0, 0.0, 0.0, 1.0), light_tint_color=(0.0, 0.0, 0.0, 1.0), material_type=0,
+                     numeric_counter_limit=0, chicago_flags=0, first_map_type=0, framebuffer_blend_function=0, framebuffer_fade_mode=0, framebuffer_fade_source=0,
                      lens_flare_spacing=0.0, lens_flare=None, extra_layers_tag_block=None, maps_tag_block=None, extra_flags=0):
             self.radiosity_flags = radiosity_flags
             self.detail_level = detail_level
@@ -180,9 +180,9 @@ class ShaderAsset():
             self.extra_flags = extra_flags
 
     class Map:
-        def __init__(self, flags=0, color_function=0, alpha_function=0, map_u_scale=0.0, map_v_scale=0.0, map_u_offset=0.0, map_v_offset=0.0, map_rotation=0.0, mipmap_bias=0.0, 
-                     map=None, u_animation_source=0, u_animation_function=0, u_animation_period=0.0, u_animation_phase=0.0, u_animation_scale=0.0, v_animation_source=0, 
-                     v_animation_function=0, v_animation_period=0.0, v_animation_phase=0.0, v_animation_scale=0.0, rotation_animation_source=0, rotation_animation_function=0, 
+        def __init__(self, flags=0, color_function=0, alpha_function=0, map_u_scale=0.0, map_v_scale=0.0, map_u_offset=0.0, map_v_offset=0.0, map_rotation=0.0, mipmap_bias=0.0,
+                     map=None, u_animation_source=0, u_animation_function=0, u_animation_period=0.0, u_animation_phase=0.0, u_animation_scale=0.0, v_animation_source=0,
+                     v_animation_function=0, v_animation_period=0.0, v_animation_phase=0.0, v_animation_scale=0.0, rotation_animation_source=0, rotation_animation_function=0,
                      rotation_animation_period=0.0, rotation_animation_phase=0.0, rotation_animation_scale=0.0, rotation_animation_center=(0.0, 0.0)):
             self.flags = flags
             self.color_function = color_function

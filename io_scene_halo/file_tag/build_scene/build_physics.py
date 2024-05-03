@@ -28,7 +28,8 @@ import bpy
 import bmesh
 
 import numpy as np
-from mathutils import Matrix
+from math import radians
+from mathutils import Matrix, Euler, Vector
 
 def build_scene(context, PHYSICS, game_version, game_title, file_version, fix_rotations, empty_markers, report):
     collection = context.collection
@@ -77,6 +78,8 @@ def build_scene(context, PHYSICS, game_version, game_title, file_version, fix_ro
 
             else:
                 object_mesh.parent = armature
+                object_mesh.parent_type = "BONE"
+                object_mesh.parent_bone = armature.data.bones[0].name
 
             matrix_translate = Matrix.Translation(mass_point.position)
             matrix_rotation = Matrix.Identity(3)
@@ -95,6 +98,20 @@ def build_scene(context, PHYSICS, game_version, game_title, file_version, fix_ro
                 object_mesh.data.ass_jms.Object_Type = 'SPHERE'
             if game_title == "halo2":
                 object_mesh.ass_jms.marker_mask_type = '0'
+                marker_transform = object_mesh.matrix_world
+
+                pos, rot, sca = marker_transform.decompose()
+                rot_z = -90.0
+                if pos[1] > 0.0:
+                    rot_z = 90.0
+
+                transform_matrix = Matrix.LocRotScale(pos, Euler((0.0, 0.0, radians(rot_z))), Vector((-1, -1, -1)))
+
+                object_mesh.parent = armature
+                object_mesh.parent_type = "BONE"
+                object_mesh.parent_bone = armature.data.bones[0].name
+                object_mesh.matrix_world = transform_matrix
+
             else:
                 object_mesh.ass_jms.marker_mask_type = '2'
 

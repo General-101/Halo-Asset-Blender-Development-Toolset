@@ -85,9 +85,9 @@ class ShaderAsset():
         self.ripples = None
 
     class ShaderBody:
-        def __init__(self, radiosity_flags=0, detail_level=0, power=0.0, color_of_emitted_light=(0.0, 0.0, 0.0, 1.0), light_tint_color=(0.0, 0.0, 0.0, 1.0), material_type=0, 
-                     water_flags=0, base_map=None, view_perpendicular_brightness=0.0, view_perpendicular_tint_color=(0.0, 0.0, 0.0, 1.0), view_parallel_brightness=0.0, 
-                     view_parallel_tint_color=(0.0, 0.0, 0.0, 1.0), reflection_map=None, ripple_animation_angle=0.0, ripple_animation_velocity=0.0, ripple_scale=0.0, 
+        def __init__(self, radiosity_flags=0, detail_level=0, power=0.0, color_of_emitted_light=(0.0, 0.0, 0.0, 1.0), light_tint_color=(0.0, 0.0, 0.0, 1.0), material_type=0,
+                     water_flags=0, base_map=None, view_perpendicular_brightness=0.0, view_perpendicular_tint_color=(0.0, 0.0, 0.0, 1.0), view_parallel_brightness=0.0,
+                     view_parallel_tint_color=(0.0, 0.0, 0.0, 1.0), reflection_map=None, ripple_animation_angle=0.0, ripple_animation_velocity=0.0, ripple_scale=0.0,
                      ripple_maps=None, ripple_mipmap_levels=0, ripple_mipmap_fade_factor=0.0, ripple_mipmap_detail_bias=0.0, ripples_tag_block=None):
             self.radiosity_flags = radiosity_flags
             self.detail_level = detail_level

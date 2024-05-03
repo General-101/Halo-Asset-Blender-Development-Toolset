@@ -27,9 +27,9 @@
 from xml.dom import minidom
 from ....global_functions import tag_format
 from .format import (
-    ShaderAsset, 
-    ShaderFlags, 
-    ShaderLODBiasEnum, 
+    ShaderAsset,
+    ShaderFlags,
+    ShaderLODBiasEnum,
     SpecularTypeEnum,
     LightmapTypeEnum,
     TypeEnum,
@@ -294,7 +294,7 @@ def read_parameters(SHADER, TAG, input_stream, tag_node, XML_OUTPUT):
                         animation_property.range_function_data = SHADER.FunctionData()
                         animation_property.input_function_data.points = []
                         animation_property.range_function_data.points = []
-                        
+
                         input_stream.read(2) # Padding?
                         animation_property.lower_bound = TAG.read_float(input_stream, TAG, tag_format.XMLData(animation_property_element_node, "lower bound"))
                         animation_property.upper_bound = TAG.read_float(input_stream, TAG, tag_format.XMLData(animation_property_element_node, "upper bound"))
@@ -313,7 +313,7 @@ def read_parameters(SHADER, TAG, input_stream, tag_node, XML_OUTPUT):
                         animation_property.range_function_data = SHADER.FunctionData()
                         animation_property.input_function_data.points = []
                         animation_property.range_function_data.points = []
-                        
+
                         input_stream.read(2) # Padding?
                         animation_property.lower_bound = TAG.read_float(input_stream, TAG, tag_format.XMLData(animation_property_element_node, "lower bound"))
                         animation_property.upper_bound = TAG.read_float(input_stream, TAG, tag_format.XMLData(animation_property_element_node, "upper bound"))
@@ -338,7 +338,7 @@ def read_parameters(SHADER, TAG, input_stream, tag_node, XML_OUTPUT):
                         animation_property.range_function_data = SHADER.FunctionData()
                         animation_property.input_function_data.points = []
                         animation_property.range_function_data.points = []
-                        
+
                         input_stream.read(2) # Padding?
                         animation_property.lower_bound = TAG.read_float(input_stream, TAG, tag_format.XMLData(animation_property_element_node, "lower bound"))
                         animation_property.upper_bound = TAG.read_float(input_stream, TAG, tag_format.XMLData(animation_property_element_node, "upper bound"))
@@ -382,7 +382,7 @@ def read_parameters(SHADER, TAG, input_stream, tag_node, XML_OUTPUT):
                         animation_property.range_function_data = SHADER.FunctionData()
                         animation_property.input_function_data.points = []
                         animation_property.range_function_data.points = []
-                        
+
                         input_stream.read(2) # Padding?
                         animation_property.lower_bound = TAG.read_float(input_stream, TAG, tag_format.XMLData(animation_property_element_node, "lower bound"))
                         animation_property.upper_bound = TAG.read_float(input_stream, TAG, tag_format.XMLData(animation_property_element_node, "upper bound"))

@@ -26,18 +26,18 @@
 
 from xml.dom import minidom
 from ....global_functions import tag_format
-from .format import (VehicleAsset, 
-                            ObjectFlags, 
-                            ObjectFunctionEnum, 
-                            UnitFlags, 
-                            TeamsEnum, 
-                            ConstantSoundVolumeEnum, 
-                            UnitFunctionEnum, 
-                            MotionSensorBlipSizeEnum, 
-                            MetaGameTypeEnum, 
-                            MetaGameClassEnum, 
-                            GrenadeTypeEnum, 
-                            VehicleFlags, 
+from .format import (VehicleAsset,
+                            ObjectFlags,
+                            ObjectFunctionEnum,
+                            UnitFlags,
+                            TeamsEnum,
+                            ConstantSoundVolumeEnum,
+                            UnitFunctionEnum,
+                            MotionSensorBlipSizeEnum,
+                            MetaGameTypeEnum,
+                            MetaGameClassEnum,
+                            GrenadeTypeEnum,
+                            VehicleFlags,
                             VehicleTypeEnum,
                             VehicleFunctionEnum)
 

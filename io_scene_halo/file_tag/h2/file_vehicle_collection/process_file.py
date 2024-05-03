@@ -54,7 +54,7 @@ def read_permutations(COLLECTION, TAG, input_stream, tag_node, XML_OUTPUT):
             permutation = COLLECTION.Permutation()
             permutation.weight = TAG.read_float(input_stream, TAG, tag_format.XMLData(permutation_element_node, "weight"))
             permutation.item = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(permutation_element_node, "vehicle"))
-            
+
             if COLLECTION.permutations_header.size >= 24:
                 TAG.big_endian = True
                 input_stream.read(2) # Padding?

@@ -69,7 +69,7 @@ class HALO_PropertiesGroup(PropertyGroup):
         description = "What index do we use in the referenced lightmap tag. Try not to edit this manually",
         default = -1
         )
-    
+
     instance_lightmap_policy_enum: EnumProperty(
         name="Lightmap Policy",
         description="Wow the lightmapper uses the object",
@@ -93,19 +93,19 @@ class HALO_PropertiesGroup(PropertyGroup):
         description = "Not placed automatically. Must be created via script",
         default = False,
         )
-    
+
     on_easy: BoolProperty(
         name ="On Easy",
         description = "Not placed automatically on easy difficulty. Must be created via script",
         default = False,
         )
-    
+
     on_normal: BoolProperty(
         name ="On Normal",
         description = "Not placed automatically on normal difficulty. Must be created via script",
         default = False,
         )
-    
+
     on_hard: BoolProperty(
         name ="On Hard",
         description = "Not placed automatically on Heroic difficulty. Must be created via script",
@@ -151,7 +151,7 @@ class HALO_PropertiesGroup(PropertyGroup):
         description = "I have no idea what this is",
         default = False,
         )
-    
+
     ctf_default: BoolProperty(
         name ="CTF Default",
         description = "I have no idea what this is",
@@ -163,7 +163,7 @@ class HALO_PropertiesGroup(PropertyGroup):
         description = "I have no idea what this is",
         default = False,
         )
-    
+
     oddball_default: BoolProperty(
         name ="Oddball Default",
         description = "I have no idea what this is",
@@ -175,7 +175,7 @@ class HALO_PropertiesGroup(PropertyGroup):
         description = "I have no idea what this is",
         default = False,
         )
-    
+
     ctf_allowed: BoolProperty(
         name ="CTF Allowed",
         description = "I have no idea what this is",
@@ -187,7 +187,7 @@ class HALO_PropertiesGroup(PropertyGroup):
         description = "I have no idea what this is",
         default = False,
         )
-    
+
     oddball_allowed: BoolProperty(
         name ="Oddball Allowed",
         description = "I have no idea what this is",
@@ -199,7 +199,7 @@ class HALO_PropertiesGroup(PropertyGroup):
         description = "Doesn't Fall",
         default = False,
         )
-    
+
     obsolete: BoolProperty(
         name ="Obsolete",
         description = "I have no idea what this is",
@@ -216,7 +216,7 @@ class HALO_PropertiesGroup(PropertyGroup):
         name = "Rounds Left",
         description = "How many rounds left in reserve"
         )
-    
+
     rounds_loaded: IntProperty(
         name = "Round Loaded",
         description = "How many rounds in the clip"
@@ -226,7 +226,7 @@ class HALO_PropertiesGroup(PropertyGroup):
         name = "Power Group",
         description = "Power group index"
         )
-    
+
     position_group: IntProperty(
         name = "Position Group",
         description = "Position group index"
@@ -249,13 +249,13 @@ class HALO_PropertiesGroup(PropertyGroup):
         description = "Device can only be set once",
         default = False,
         )
-    
+
     position_reversed: BoolProperty(
         name ="Position Reversed",
         description = "Position value is inverted",
         default = False,
         )
-    
+
     not_usable_from_any_side: BoolProperty(
         name ="Not Usable From Any Side",
         description = "Unable to interact with the device",
@@ -267,7 +267,7 @@ class HALO_PropertiesGroup(PropertyGroup):
         description = "Automatic activation radius is ignored",
         default = False,
         )
-    
+
     one_sided: BoolProperty(
         name ="One Sided",
         description = "Object is only usable from forward vector",
@@ -306,12 +306,12 @@ class HALO_PropertiesGroup(PropertyGroup):
         description="Strength of the light",
         min=0.0
         )
-    
+
     falloff_angle: FloatProperty(
         name="Falloff Angle",
         description="I have no idea what this is"
         )
-    
+
     cutoff_angle: FloatProperty(
         name="Cutoff Angle",
         description="I have no idea what this is"
@@ -542,7 +542,7 @@ class Halo_TagView(Panel):
         row = col.row()
         row.label(text='Data Type:')
         row.prop(tag_view, "data_type_enum", text='')
-        
+
         data_type_value = int(tag_view.data_type_enum)
         if data_type_value == DataTypesEnum.clusters.value:
             if context.scene.halo.game_title == 'halo1':

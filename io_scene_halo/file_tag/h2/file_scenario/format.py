@@ -1416,7 +1416,7 @@ class ScenarioAsset():
     class Squad():
         def __init__(self, name="", flags=0, team=0, parent_squad_group_index=0, squad_delay_time=0.0, normal_difficulty_count=0, insane_difficulty_count=0, major_upgrade=0,
                      vehicle_type_index=0, character_type_index=0, initial_zone_index=0, initial_weapon_index=0, initial_secondary_weapon_index=0, grenade_type=0,
-                     initial_order_index=0, vehicle_variant="", vehicle_variant_length=0, starting_locations_tag_block=None, placement_script="", starting_locations_header=None, 
+                     initial_order_index=0, vehicle_variant="", vehicle_variant_length=0, starting_locations_tag_block=None, placement_script="", starting_locations_header=None,
                      starting_locations=None):
             self.name = name
             self.flags = flags
@@ -1443,7 +1443,7 @@ class ScenarioAsset():
     class StartingLocation():
         def __init__(self, name="", name_length=0, position=Vector(), reference_frame=0, facing=(0.0, 0.0), flags=0, character_type_index=0,
                      initial_weapon_index=0, initial_secondary_weapon_index=0, vehicle_type_index=0, seat_type=0, grenade_type=0, swarm_count=0,
-                     actor_variant="", actor_variant_length=0, vehicle_variant="", vehicle_variant_length=0, initial_movement_distance=0, emitter_vehicle_index=0, 
+                     actor_variant="", actor_variant_length=0, vehicle_variant="", vehicle_variant_length=0, initial_movement_distance=0, emitter_vehicle_index=0,
                      initial_movement_mode=0, placement_script=""):
             self.name = name
             self.name_length = name_length
@@ -1546,11 +1546,11 @@ class ScenarioAsset():
             self.name_length = name_length
 
     class AIPathfindingData():
-        def __init__(self, sectors_tag_block=None, sectors_header=None, sectors=None, links_tag_block=None, links_header=None, links=None, refs_tag_block=None, refs_header=None, 
-                     refs=None, bsp2d_nodes_tag_block=None, bsp2d_nodes_header=None, bsp2d_nodes=None, surface_flags_tag_block=None, surface_flags_header=None, surface_flags=None, 
-                     vertices_tag_block=None, vertices_header=None, vertices=None, object_refs_tag_block=None, object_refs_header=None, object_refs=None, 
-                     pathfinding_hints_tag_block=None, pathfinding_hints_header=None, pathfinding_hints=None, instanced_geometry_refs_tag_block=None, 
-                     instanced_geometry_refs_header=None, instanced_geometry_refs=None, structure_checksum=0, user_placed_hints_tag_block=None, user_placed_hints_header=None, 
+        def __init__(self, sectors_tag_block=None, sectors_header=None, sectors=None, links_tag_block=None, links_header=None, links=None, refs_tag_block=None, refs_header=None,
+                     refs=None, bsp2d_nodes_tag_block=None, bsp2d_nodes_header=None, bsp2d_nodes=None, surface_flags_tag_block=None, surface_flags_header=None, surface_flags=None,
+                     vertices_tag_block=None, vertices_header=None, vertices=None, object_refs_tag_block=None, object_refs_header=None, object_refs=None,
+                     pathfinding_hints_tag_block=None, pathfinding_hints_header=None, pathfinding_hints=None, instanced_geometry_refs_tag_block=None,
+                     instanced_geometry_refs_header=None, instanced_geometry_refs=None, structure_checksum=0, user_placed_hints_tag_block=None, user_placed_hints_header=None,
                      user_placed_hints=None):
             self.sectors_tag_block = sectors_tag_block
             self.sectors_header = sectors_header
@@ -1646,10 +1646,10 @@ class ScenarioAsset():
             self.hint_data_7 = hint_data_7
 
     class UserPlacedHint():
-        def __init__(self, point_geometry_tag_block=None, point_geometry_header=None, point_geometry=None, ray_geometry_tag_block=None, ray_geometry_header=None, ray_geometry=None, 
-                     line_segment_geometry_tag_block=None, line_segment_geometry_header=None, line_segment_geometry=None, parallelogram_geometry_tag_block=None, 
-                     parallelogram_geometry_header=None, parallelogram_geometry=None, polygon_geometry_tag_block=None, polygon_geometry_header=None, polygon_geometry=None, 
-                     jump_hints_tag_block=None, jump_hints_header=None, jump_hints=None, climb_hints_tag_block=None, climb_hints_header=None, climb_hints=None, 
+        def __init__(self, point_geometry_tag_block=None, point_geometry_header=None, point_geometry=None, ray_geometry_tag_block=None, ray_geometry_header=None, ray_geometry=None,
+                     line_segment_geometry_tag_block=None, line_segment_geometry_header=None, line_segment_geometry=None, parallelogram_geometry_tag_block=None,
+                     parallelogram_geometry_header=None, parallelogram_geometry=None, polygon_geometry_tag_block=None, polygon_geometry_header=None, polygon_geometry=None,
+                     jump_hints_tag_block=None, jump_hints_header=None, jump_hints=None, climb_hints_tag_block=None, climb_hints_header=None, climb_hints=None,
                      well_hints_tag_block=None, well_hints_header=None, well_hints=None, flight_hints_tag_block=None, flight_hints_header=None, flight_hints=None):
             self.point_geometry_tag_block = point_geometry_tag_block
             self.point_geometry_header = point_geometry_header
@@ -1699,7 +1699,7 @@ class ScenarioAsset():
             self.reference_frame_1 = reference_frame_1
 
     class ParallelogramGeometry():
-        def __init__(self, flags=0, point_0=Vector(), reference_frame_0=0, point_1=Vector(), reference_frame_1=0, point_2=Vector(), reference_frame_2=0, point_3=Vector(), 
+        def __init__(self, flags=0, point_0=Vector(), reference_frame_0=0, point_1=Vector(), reference_frame_1=0, point_2=Vector(), reference_frame_2=0, point_3=Vector(),
                      reference_frame_3=0):
             self.flags = flags
             self.point_0 = point_0
@@ -1750,7 +1750,7 @@ class ScenarioAsset():
             self.animation_reference = animation_reference
 
     class AIConversation():
-        def __init__(self, name="", flags=0, trigger_distance=0.0, run_to_player_distance=0.0, participants_tag_block=None, lines_tag_block=None, participants_header=None, 
+        def __init__(self, name="", flags=0, trigger_distance=0.0, run_to_player_distance=0.0, participants_tag_block=None, lines_tag_block=None, participants_header=None,
                      lines_header=None, participants=None, lines=None):
             self.name = name
             self.flags = flags
@@ -1867,7 +1867,7 @@ class ScenarioAsset():
             self.default_sky = default_sky
 
     class ScenarioResource():
-        def __init__(self, references_tag_block=None, references_header=None, references=None, script_source_tag_block=None, script_source_header=None, script_source=None, 
+        def __init__(self, references_tag_block=None, references_header=None, references=None, script_source_tag_block=None, script_source_header=None, script_source=None,
                      ai_resources_tag_block=None, ai_resources_header=None, ai_resources=None):
             self.references_tag_block = references_tag_block
             self.references_header = references_header
@@ -1880,7 +1880,7 @@ class ScenarioAsset():
             self.ai_resources = ai_resources
 
     class OldStructurePhysics():
-        def __init__(self, physics_tag_data=None, physics_data=None, object_identifiers_tag_block=None, object_identifiers_header=None, mopp_bounds_min=Vector(), 
+        def __init__(self, physics_tag_data=None, physics_data=None, object_identifiers_tag_block=None, object_identifiers_header=None, mopp_bounds_min=Vector(),
                      mopp_bounds_max=Vector(), object_identifiers=None):
             self.physics_tag_data = physics_tag_data
             self.physics_data = physics_data
@@ -2022,9 +2022,9 @@ class ScenarioAsset():
             self.scenario_object_name_index = scenario_object_name_index
 
     class ScenarioClusterData():
-        def __init__(self, bsp=None, background_sounds_tag_block=None, sound_environments_tag_block=None, bsp_checksum=0, cluster_centroids_tag_block=None, 
-                     weather_properties_tag_block=None, atmospheric_fog_properties_tag_block=None, background_sounds_header=None, sound_environments_header=None, 
-                     cluster_centroids_header=None, weather_properties_header=None, atmospheric_fog_properties_header=None, background_sounds=None, sound_environments=None, 
+        def __init__(self, bsp=None, background_sounds_tag_block=None, sound_environments_tag_block=None, bsp_checksum=0, cluster_centroids_tag_block=None,
+                     weather_properties_tag_block=None, atmospheric_fog_properties_tag_block=None, background_sounds_header=None, sound_environments_header=None,
+                     cluster_centroids_header=None, weather_properties_header=None, atmospheric_fog_properties_header=None, background_sounds=None, sound_environments=None,
                      cluster_centroids=None, weather_properties=None, atmospheric_fog_properties=None):
             self.bsp = bsp
             self.background_sounds_tag_block = background_sounds_tag_block

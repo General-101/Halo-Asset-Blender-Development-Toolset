@@ -42,8 +42,8 @@ class DecalAsset():
         self.decal_body = None
 
     class DecalBody:
-        def __init__(self, flags=0, decal_type=0, layer=3, max_overlapping_count=8, next_decal_in_chain=None, radius=(0.1, 0.1), radius_overlap_rejection=0.75, 
-                     color_lower_bounds=(1.0, 1.0, 1.0, 1.0), color_upper_bounds=(1.0, 1.0, 1.0, 1.0), lifetime=(10.0, 10.0), decay_time=(1.0, 1.0), bitmap=None, 
+        def __init__(self, flags=0, decal_type=0, layer=3, max_overlapping_count=8, next_decal_in_chain=None, radius=(0.1, 0.1), radius_overlap_rejection=0.75,
+                     color_lower_bounds=(1.0, 1.0, 1.0, 1.0), color_upper_bounds=(1.0, 1.0, 1.0, 1.0), lifetime=(10.0, 10.0), decay_time=(1.0, 1.0), bitmap=None,
                      maximum_sprite_extent=0.0):
             self.flags = flags
             self.decal_type = decal_type
@@ -58,4 +58,3 @@ class DecalAsset():
             self.decay_time = decay_time
             self.bitmap = bitmap
             self.maximum_sprite_extent = maximum_sprite_extent
-

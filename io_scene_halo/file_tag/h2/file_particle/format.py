@@ -139,7 +139,7 @@ class ParticleAsset():
         self.shader_postprocess_definitions = None
 
     class ParticleBody:
-        def __init__(self, flags=0, particle_billboard_style=0, first_sequence_index=0, sequence_count=0, shader_template=None, parameters_tag_block=None, properties=None, 
+        def __init__(self, flags=0, particle_billboard_style=0, first_sequence_index=0, sequence_count=0, shader_template=None, parameters_tag_block=None, properties=None,
                      collision_effect=None, death_effect=None, locations_tag_block=None, attached_particle_systems_tag_block=None, shader_postprocess_definitions_tag_block=None):
             self.flags = flags
             self.particle_billboard_style = particle_billboard_style
@@ -160,7 +160,7 @@ class ParticleAsset():
             self.name_length = name_length
 
     class AttachedParticleSystem:
-        def __init__(self, particle=None, location=0, coordinate_system=0, environment=0, disposition=0, camera_mode=0, sort_bias=0, flags=0, lod_in_distance=0.0, 
+        def __init__(self, particle=None, location=0, coordinate_system=0, environment=0, disposition=0, camera_mode=0, sort_bias=0, flags=0, lod_in_distance=0.0,
                      lod_feather_in_delta=0.0, lod_out_distance=0.0, lod_feather_out_delta=0.0, emitters_tag_block=None, emitters_header=None, emitters=None):
             self.particle = particle
             self.location = location

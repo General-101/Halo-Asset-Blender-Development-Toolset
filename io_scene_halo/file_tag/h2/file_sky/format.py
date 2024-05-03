@@ -64,9 +64,9 @@ class SkyAsset():
         self.animations = None
 
     class SkyBody:
-        def __init__(self, render_model=None, animation_graph=None, flags=0, render_model_scale=0.0, movement_scale=0.0, cubemap_tag_block=None, 
-                     indoor_ambient_color=(0.0, 0.0, 0.0, 1.0), outdoor_ambient_color=(0.0, 0.0, 0.0, 1.0), fog_spread_distance=0.0, atmospheric_fog_tag_block=None, 
-                     secondary_fog_tag_block=None, sky_fog_tag_block=None, patchy_fog_tag_block=None, amount=0.0, threshold=0.0, brightness=0.0, gamma_power=0.0, 
+        def __init__(self, render_model=None, animation_graph=None, flags=0, render_model_scale=0.0, movement_scale=0.0, cubemap_tag_block=None,
+                     indoor_ambient_color=(0.0, 0.0, 0.0, 1.0), outdoor_ambient_color=(0.0, 0.0, 0.0, 1.0), fog_spread_distance=0.0, atmospheric_fog_tag_block=None,
+                     secondary_fog_tag_block=None, sky_fog_tag_block=None, patchy_fog_tag_block=None, amount=0.0, threshold=0.0, brightness=0.0, gamma_power=0.0,
                      lights_tag_block=None, global_sky_rotation=0.0, shader_functions_tag_block=None, animations_tag_block=None, clear_color=(0.0, 0.0, 0.0, 1.0)):
             self.render_model = render_model
             self.animation_graph = animation_graph
@@ -111,7 +111,7 @@ class SkyAsset():
             self.patchy_fog = patchy_fog
 
     class Light:
-        def __init__(self, direction_vector=Vector(), direction=(0.0, 0.0), lens_flare=None, fog_tag_block=None, fog_header=None, fog=None, fog_opposite_tag_block=None, 
+        def __init__(self, direction_vector=Vector(), direction=(0.0, 0.0), lens_flare=None, fog_tag_block=None, fog_header=None, fog=None, fog_opposite_tag_block=None,
                      fog_opposite_header=None, fog_opposite=None, radiosity_tag_block=None, radiosity_header=None, radiosity=None):
             self.direction_vector = direction_vector
             self.direction = direction
@@ -127,7 +127,7 @@ class SkyAsset():
             self.radiosity = radiosity
 
     class LightFog:
-        def __init__(self, color=(0.0, 0.0, 0.0, 1.0), maximum_density=0.0, start_distance=0.0, opaque_distance=0.0, cone=(0.0, 0.0), atmospheric_fog_influence=0.0, 
+        def __init__(self, color=(0.0, 0.0, 0.0, 1.0), maximum_density=0.0, start_distance=0.0, opaque_distance=0.0, cone=(0.0, 0.0), atmospheric_fog_influence=0.0,
                      secondary_fog_influence=0.0, sky_fog_influence=0.0):
             self.color = color
             self.maximum_density = maximum_density

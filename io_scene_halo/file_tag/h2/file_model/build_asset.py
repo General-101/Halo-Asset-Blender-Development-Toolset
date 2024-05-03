@@ -124,7 +124,7 @@ def write_variants(output_stream, TAG, variants, variants_header):
                                     state_element.looping_effect.write(output_stream, False, True)
                                     output_stream.write(struct.pack('>I', len(state_element.looping_effect_marker_name)))
                                     output_stream.write(struct.pack('<f', state_element.initial_probability))
-  
+
                                 for state_element in permutation_element.states:
                                     permutation_name_length = len(state_element.permutation_name)
                                     if permutation_name_length > 0:

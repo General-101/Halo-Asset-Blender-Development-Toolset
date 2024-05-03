@@ -47,13 +47,13 @@ class ProjectileAsset(ObjectAsset):
         self.material_responses = None
 
     class ProjectileBody(ObjectAsset.ObjectBody):
-        def __init__(self, projectile_flags=0, detonation_timer_starts=0, impact_noise=0, ai_perception_radius=0.0, collision_radius=0.0, arming_time=0.0, danger_radius=0.0, 
-                     timer=(0.0, 0.0), minimum_velocity=0.0, maximum_range=0.0, detonation_noise=0, super_detonation_projectile_count=0, detonation_started=None, 
-                     detonation_effect_airborne=None, detonation_effect_ground=None, detonation_damage=None, attached_detonation_damage=None, super_detonation=None, 
-                     super_detonation_damage=None, detonation_sound=None, damage_reporting_type=0, super_attached_detonation_damage_effect=None, material_effect_radius=0.0, 
-                     flyby_sound=None, impact_effect=None, impact_damage=None, boarding_detonation_time=0.0, boarding_detonation_damage_effect=None, 
-                     boarding_attached_detonation_damage_effect=None, air_gravity_scale=0.0, air_damage_range=(0.0, 0.0), water_gravity_scale=0.0, water_damage_range=(0.0, 0.0), 
-                     initial_velocity=0.0, final_velocity=0.0, guided_angular_velocity_lower=0.0, guided_angular_velocity_upper=0.0, acceleration_range=(0.0, 0.0), 
+        def __init__(self, projectile_flags=0, detonation_timer_starts=0, impact_noise=0, ai_perception_radius=0.0, collision_radius=0.0, arming_time=0.0, danger_radius=0.0,
+                     timer=(0.0, 0.0), minimum_velocity=0.0, maximum_range=0.0, detonation_noise=0, super_detonation_projectile_count=0, detonation_started=None,
+                     detonation_effect_airborne=None, detonation_effect_ground=None, detonation_damage=None, attached_detonation_damage=None, super_detonation=None,
+                     super_detonation_damage=None, detonation_sound=None, damage_reporting_type=0, super_attached_detonation_damage_effect=None, material_effect_radius=0.0,
+                     flyby_sound=None, impact_effect=None, impact_damage=None, boarding_detonation_time=0.0, boarding_detonation_damage_effect=None,
+                     boarding_attached_detonation_damage_effect=None, air_gravity_scale=0.0, air_damage_range=(0.0, 0.0), water_gravity_scale=0.0, water_damage_range=(0.0, 0.0),
+                     initial_velocity=0.0, final_velocity=0.0, guided_angular_velocity_lower=0.0, guided_angular_velocity_upper=0.0, acceleration_range=(0.0, 0.0),
                      targeted_leading_fraction=0.0, material_responses_tag_block=None):
             super().__init__()
             self.projectile_flags = projectile_flags
@@ -98,8 +98,8 @@ class ProjectileAsset(ObjectAsset):
             self.material_responses_tag_block = material_responses_tag_block
 
     class MaterialResponse:
-        def __init__(self, flags=0, result_response=0, result_effect=None, material_name="", material_name_length=0, potential_result_response=0, potential_result_flags=0, 
-                     chance_fraction=0.0, between=(0.0, 0.0), and_bounds=(0.0, 0.0), potential_result_effect=None, scale_effects_by=0, angular_noise=0.0, velocity_noise=0.0, 
+        def __init__(self, flags=0, result_response=0, result_effect=None, material_name="", material_name_length=0, potential_result_response=0, potential_result_flags=0,
+                     chance_fraction=0.0, between=(0.0, 0.0), and_bounds=(0.0, 0.0), potential_result_effect=None, scale_effects_by=0, angular_noise=0.0, velocity_noise=0.0,
                      detonation_effect=None, initial_friction=0.0, maximum_distance=0.0, parallel_friction=0.0, perpendicular_friction=0.0):
             self.flags = flags
             self.result_response = result_response

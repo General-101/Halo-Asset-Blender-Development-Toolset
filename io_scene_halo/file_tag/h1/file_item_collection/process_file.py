@@ -77,7 +77,7 @@ def process_file(input_stream, report):
         if XML_OUTPUT:
             item_node = tag_format.get_xml_node(XML_OUTPUT, 1, item_permutation_element_node, "name", "item")
             item_permutation.item.append_xml_attributes(item_node)
-    
+
     current_position = input_stream.tell()
     EOF = input_stream.seek(0, 2)
     if not EOF - current_position == 0: # is something wrong with the parser?

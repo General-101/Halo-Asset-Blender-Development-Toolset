@@ -38,4 +38,3 @@ class GarbageAsset(ItemAsset):
     class GarbageBody(ItemAsset.ItemBody):
         def __init__(self, ):
             super().__init__()
-

@@ -149,6 +149,28 @@ class GrenadeTypeEnum(Enum):
     human_fragmentation = 0
     covenant_plasma = auto()
 
+class SeatFlags(Flag):
+    invisible = auto()
+    unused1 = auto()
+    driver = auto()
+    gunner = auto()
+    third_person_camera = auto()
+    allows_weapons = auto()
+    third_person_on_enter = auto()
+    first_person_camera_slaved_to_gun = auto()
+    unused8 = auto()
+    not_valid_without_driver = auto()
+    allow_al_noncombatants = auto()
+    boarding_seat = auto()
+    ai_firing_disabled_by_max_acceleration = auto()
+    boarding_enters_seat = auto()
+    boarding_need_any_passenger = auto()
+    controls_open_and_close = auto()
+    invalid_for_player = auto()
+    invalid_for_non_player = auto()
+    gunner_player_only = auto()
+    invisible_under_major_damage = auto()
+
 class UnitAsset(ObjectAsset):
     def __init__(self):
         super().__init__()
@@ -171,17 +193,17 @@ class UnitAsset(ObjectAsset):
         self.seats = None
 
     class UnitBody(ObjectAsset.ObjectBody):
-        def __init__(self, unit_flags=0, default_team=0, constant_sound_volume=0, integrated_light_toggle=None, camera_field_of_view=0.0, camera_stiffness=0.0, 
-                     camera_marker_name="", camera_marker_name_length=0, camera_submerged_marker_name="", camera_submerged_marker_name_length=0, pitch_auto_level=0.0, 
-                     pitch_range=(0.0, 0.0), camera_tracks_tag_block=None, acceleration_range=Vector(), acceleration_action_scale=0.0, acceleration_attach_scale=0.0, 
-                     soft_ping_threshold=0.0, soft_ping_interrupt_time=0.0, hard_ping_threshold=0.0, hard_ping_interrupt_time=0.0, hard_death_threshold=0.0, 
-                     feign_death_threshold=0.0, feign_death_time=0.0, distance_of_evade_anim=0.0, distance_of_dive_anim=0.0, stunned_movement_threshold=0.0, 
-                     feign_death_chance=0.0, feign_repeat_chance=0.0, spawned_turret_actor=None, spawned_actor_count=(0, 0), spawned_velocity=0.0, aiming_velocity_maximum=0.0, 
-                     aiming_acceleration_maximum=0.0, casual_aiming_modifier=0.0, looking_velocity_maximum=0.0, looking_acceleration_maximum=0.0, right_hand_node="", 
-                     right_hand_node_length=0, left_hand_node="", left_hand_node_length=0, preferred_gun_node="", preferred_gun_node_length=0, melee_damage=None, 
-                     boarding_melee_damage=None, boarding_melee_response=None, landing_melee_damage=None, flurry_melee_damage=None, obstacle_smash_damage=None, 
-                     motion_sensor_blip_size=0, unit_type=0, unit_class=0, postures_tag_block=None, new_hud_interfaces_tag_block=None, dialogue_variants_tag_block=None, 
-                     grenade_velocity=0.0, grenade_type=0, grenade_count=0, powered_seats_tag_block=None, weapons_tag_block=None, seats_tag_block=None, boost_peak_power=0.0, 
+        def __init__(self, unit_flags=0, default_team=0, constant_sound_volume=0, integrated_light_toggle=None, camera_field_of_view=0.0, camera_stiffness=0.0,
+                     camera_marker_name="", camera_marker_name_length=0, camera_submerged_marker_name="", camera_submerged_marker_name_length=0, pitch_auto_level=0.0,
+                     pitch_range=(0.0, 0.0), camera_tracks_tag_block=None, acceleration_range=Vector(), acceleration_action_scale=0.0, acceleration_attach_scale=0.0,
+                     soft_ping_threshold=0.0, soft_ping_interrupt_time=0.0, hard_ping_threshold=0.0, hard_ping_interrupt_time=0.0, hard_death_threshold=0.0,
+                     feign_death_threshold=0.0, feign_death_time=0.0, distance_of_evade_anim=0.0, distance_of_dive_anim=0.0, stunned_movement_threshold=0.0,
+                     feign_death_chance=0.0, feign_repeat_chance=0.0, spawned_turret_actor=None, spawned_actor_count=(0, 0), spawned_velocity=0.0, aiming_velocity_maximum=0.0,
+                     aiming_acceleration_maximum=0.0, casual_aiming_modifier=0.0, looking_velocity_maximum=0.0, looking_acceleration_maximum=0.0, right_hand_node="",
+                     right_hand_node_length=0, left_hand_node="", left_hand_node_length=0, preferred_gun_node="", preferred_gun_node_length=0, melee_damage=None,
+                     boarding_melee_damage=None, boarding_melee_response=None, landing_melee_damage=None, flurry_melee_damage=None, obstacle_smash_damage=None,
+                     motion_sensor_blip_size=0, unit_type=0, unit_class=0, postures_tag_block=None, new_hud_interfaces_tag_block=None, dialogue_variants_tag_block=None,
+                     grenade_velocity=0.0, grenade_type=0, grenade_count=0, powered_seats_tag_block=None, weapons_tag_block=None, seats_tag_block=None, boost_peak_power=0.0,
                      boost_rise_power=0.0, boost_peak_time=0.0, boost_fall_power=0.0, dead_time=0.0, attack_weight=0.0, decay_weight=0.0):
             super().__init__()
             self.unit_flags = unit_flags
@@ -269,14 +291,14 @@ class UnitAsset(ObjectAsset):
             self.driver_powerdown_time = driver_powerdown_time
 
     class Seat:
-        def __init__(self, flags=0, label="", label_length=0, marker_name="", marker_name_length=0, entry_marker_name="", entry_marker_name_length=0, boarding_grenade_marker="", 
-                     boarding_grenade_marker_length=0, boarding_grenade_string="", boarding_grenade_string_length=0, boarding_melee_string="", boarding_melee_string_length=0, 
-                     ping_scale=0.0, turnover_time=0.0, acceleration_range=Vector(), acceleration_action_scale=0.0, acceleration_attach_scale=0.0, ai_scariness=0.0, 
-                     ai_seat_type=0, boarding_seat=-1, listener_interpolation_factor=0.0, yaw_rate_bounds=(0.0, 0.0), pitch_rate_bounds=(0.0, 0.0), min_speed_reference=0.0, 
-                     max_speed_reference=0.0, speed_exponent=0.0, camera_marker_name="", camera_marker_name_length=0, camera_submerged_marker_name="", 
-                     camera_submerged_marker_name_length=0, pitch_auto_level=0.0, pitch_range=(0.0, 0.0), camera_tracks_tag_block=None, camera_tracks_header=None, camera_tracks=None, 
-                     unit_hud_interface_tag_block=None, unit_hud_interface_header=None, unit_hud_interface=None, enter_seat_string="", enter_seat_string_length=0, yaw_minimum=0.0, 
-                     yaw_maximum=0.0, built_in_gunner=None, entry_radius=0.0, entry_marker_cone_angle=0.0, entry_marker_facing_angle=0.0, maximum_relative_velocity=0.0, 
+        def __init__(self, flags=0, label="", label_length=0, marker_name="", marker_name_length=0, entry_marker_name="", entry_marker_name_length=0, boarding_grenade_marker="",
+                     boarding_grenade_marker_length=0, boarding_grenade_string="", boarding_grenade_string_length=0, boarding_melee_string="", boarding_melee_string_length=0,
+                     ping_scale=0.0, turnover_time=0.0, acceleration_range=Vector(), acceleration_action_scale=0.0, acceleration_attach_scale=0.0, ai_scariness=0.0,
+                     ai_seat_type=0, boarding_seat=-1, listener_interpolation_factor=0.0, yaw_rate_bounds=(0.0, 0.0), pitch_rate_bounds=(0.0, 0.0), min_speed_reference=0.0,
+                     max_speed_reference=0.0, speed_exponent=0.0, camera_marker_name="", camera_marker_name_length=0, camera_submerged_marker_name="",
+                     camera_submerged_marker_name_length=0, pitch_auto_level=0.0, pitch_range=(0.0, 0.0), camera_tracks_tag_block=None, camera_tracks_header=None, camera_tracks=None,
+                     unit_hud_interface_tag_block=None, unit_hud_interface_header=None, unit_hud_interface=None, enter_seat_string="", enter_seat_string_length=0, yaw_minimum=0.0,
+                     yaw_maximum=0.0, built_in_gunner=None, entry_radius=0.0, entry_marker_cone_angle=0.0, entry_marker_facing_angle=0.0, maximum_relative_velocity=0.0,
                      invisible_seat_region="", invisible_seat_region_length=0, runtime_invisible_seat_region_index=0):
             self.flags = flags
             self.label = label

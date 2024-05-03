@@ -101,7 +101,7 @@ def process_file(input_stream, report):
         SHADER.shader_body.base_map.append_xml_attributes(base_map_node)
         SHADER.shader_body.reflection_map.append_xml_attributes(reflection_map_node)
         SHADER.shader_body.ripple_maps.append_xml_attributes(ripple_maps_node)
-        
+
     SHADER.ripples = []
     ripples_node = tag_format.get_xml_node(XML_OUTPUT, SHADER.shader_body.ripples_tag_block.count, tag_node, "name", "ripples")
     for ripple_idx in range(SHADER.shader_body.ripples_tag_block.count):

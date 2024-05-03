@@ -145,7 +145,7 @@ def process_file(input_stream, report):
         if XML_OUTPUT:
             light_node = tag_format.get_xml_node(XML_OUTPUT, 1, light_element_node, "name", "lens flare")
             light.lens_flare.append_xml_attributes(light_node)
-    
+
     current_position = input_stream.tell()
     EOF = input_stream.seek(0, 2)
     if not EOF - current_position == 0: # is something wrong with the parser?

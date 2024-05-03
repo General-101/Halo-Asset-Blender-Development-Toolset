@@ -56,6 +56,7 @@ from .h1.file_scenario.process_file import process_file as process_h1_scenario
 from .h2.file_scenario.process_file import process_file as process_h2_scenario
 
 from .h1.file_camera_track.process_file import process_file as process_camera_track
+from .h2.file_camera_track.process_file import process_file as process_h2_camera_track
 
 def load_file(context, file_path, game_title, fix_rotations, empty_markers, report):
     input_stream = open(file_path, "rb")
@@ -179,10 +180,7 @@ def load_file(context, file_path, game_title, fix_rotations, empty_markers, repo
             ASSET = process_camera_track(input_stream, report)
 
         else:
-            input_stream.close()
-            report({'ERROR'}, "Not implemented")
-
-            return {'CANCELLED'}
+            ASSET = process_h2_camera_track(input_stream, report)
 
     else:
         input_stream.close()

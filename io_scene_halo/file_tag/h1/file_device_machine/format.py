@@ -96,12 +96,12 @@ class MachineAsset():
         self.predicted_resources = None
 
     class MachineBody:
-        def __init__(self, object_flags=0, bounding_radius=0.0, bounding_offset=Vector(), origin_offset=Vector(), acceleration_scale=0.0, model=None, animation_graph=None, 
-                     collision_model=None, physics=None, modifier_shader=None, creation_effect=None, render_bounding_radius=0.0, object_a_in=0, object_b_in=0, object_c_in=0, 
-                     object_d_in=0, hud_text_message_index=0, forced_shader_permutation_index=0, attachments_tag_block=None, widgets_tag_block=None, functions_tag_block=None, 
-                     change_colors_tag_block=None, predicted_resources_tag_block=None, device_flags=0, power_transition_time=0.0, power_acceleration_time=0.0, 
-                     position_transition_time=0.0, position_acceleration_time=0.0, depowered_position_transition_time=0.0, depowered_position_acceleration_time=0.0, 
-                     machine_a_in=0, machine_b_in=0, machine_c_in=0, machine_d_in=0, open_up=None, close_down=None, opened=None, closed=None, depowered=None, repowered=None, 
+        def __init__(self, object_flags=0, bounding_radius=0.0, bounding_offset=Vector(), origin_offset=Vector(), acceleration_scale=0.0, model=None, animation_graph=None,
+                     collision_model=None, physics=None, modifier_shader=None, creation_effect=None, render_bounding_radius=0.0, object_a_in=0, object_b_in=0, object_c_in=0,
+                     object_d_in=0, hud_text_message_index=0, forced_shader_permutation_index=0, attachments_tag_block=None, widgets_tag_block=None, functions_tag_block=None,
+                     change_colors_tag_block=None, predicted_resources_tag_block=None, device_flags=0, power_transition_time=0.0, power_acceleration_time=0.0,
+                     position_transition_time=0.0, position_acceleration_time=0.0, depowered_position_transition_time=0.0, depowered_position_acceleration_time=0.0,
+                     machine_a_in=0, machine_b_in=0, machine_c_in=0, machine_d_in=0, open_up=None, close_down=None, opened=None, closed=None, depowered=None, repowered=None,
                      delay_time=0.0, delay_effect=None, automatic_activation_radius=0.0, machine_type=0, machine_flags=0, door_open_time=0.0, collision_response=0, elevator_node=0):
             self.object_flags = object_flags
             self.bounding_radius = bounding_radius

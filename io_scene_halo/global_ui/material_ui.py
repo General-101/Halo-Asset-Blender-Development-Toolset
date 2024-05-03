@@ -68,10 +68,6 @@ class ASS_JMS_MaterialProps(Panel):
             row = layout.row()
             row.label(text="Name Override:")
             row.prop(material_ass_jms, "name_override", text='')
-            if scene_halo.game_title == "halo2" or scene_halo.game_title == "halo3":
-                row = layout.row()
-                row.label(text="Material Effect:")
-                row.prop(material_ass_jms, "material_effect", text='')
 
 class ASS_JMS_MaterialFlagsProps(Panel):
     bl_label = "Flags"
@@ -453,12 +449,6 @@ class ASS_JMS_MaterialPropertiesGroup(PropertyGroup):
         default = "",
         )
 
-    material_effect: StringProperty(
-        name = "Material Effect",
-        description = "Set material effect name",
-        default = "",
-        )
-
     two_sided: BoolProperty(
         name ="Two-sided",
         description = "This flag or shader symbol when applied to a material that is applied to a face or surface renders both sides of the surface instead of just the side that the normal is facing",
@@ -785,7 +775,7 @@ class ASS_JMS_MaterialPropertiesGroup(PropertyGroup):
         default = 0.0,
         min = 0.0,
         )
-    
+
 class ASS_LightPropertiesGroup(PropertyGroup):
     use_near_atten: BoolProperty(
         name = "Near Attenuation",

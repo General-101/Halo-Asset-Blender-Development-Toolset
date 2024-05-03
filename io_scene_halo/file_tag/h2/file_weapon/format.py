@@ -193,20 +193,20 @@ class WeaponAsset(ItemAsset):
         self.barrels = None
 
     class WeaponBody(ItemAsset.ItemBody):
-        def __init__(self, weapon_flags=0, unknown="", unknown_length=0, secondary_trigger_mode=0, maximum_alternate_shots_loaded=0, turn_on_time=0.0, ready_time=0.0, 
-                     ready_effect=None, ready_damage_effect=None, heat_recovery_threshold=0.0, overheated_threshold=0.0, heat_detonation_threshold=0.0, heat_detonation_fraction=0.0, 
-                     heat_loss_per_second=0.0, heat_illumination=0.0, overheated_loss_per_second=0.0, overheated=None, overheated_damage_effect=None, detonation=None, 
-                     weapon_detonation_damage_effect=None, player_melee_damage=None, player_melee_response=None, magnetism_angle=0.0, magnetism_range=0.0, throttle_magnitude=0.0, 
-                     throttle_minimum_distance=0.0, throttle_maximum_adjustment_angle=0.0, damage_pyramid_angles=(0.0, 0.0), damage_pyramid_depth=0.0, first_hit_melee_damage=None, 
-                     first_hit_melee_response=None, second_hit_melee_damage=None, second_hit_melee_response=None, third_hit_melee_damage=None, third_hit_melee_response=None, 
-                     lunge_melee_damage=None, lunge_melee_response=None, melee_damage_reporting_type=0, magnification_levels=0, magnification_range=(0.0, 0.0), autoaim_angle=0.0, 
-                     autoaim_range=0.0, weapon_aim_assist_magnetism_angle=0.0, weapon_aim_assist_magnetism_range=0.0, deviation_angle=0.0, movement_penalized=0, 
-                     forward_movement_penalty=0.0, sideways_movement_penalty=0.0, ai_scariness=0.0, weapon_power_on_time=0.0, weapon_power_off_time=0.0, weapon_power_on_effect=None, 
-                     weapon_power_off_effect=None, age_heat_recovery_penalty=0.0, age_rate_of_fire_penalty=0.0, age_misfire_start=0.0, age_misfire_chance=0.0, pickup_sound=None, 
-                     zoom_in_sound=None, zoom_out_sound=None, active_camo_ding=0.0, active_camo_regrowth_rate=0.0, handle_node="", handle_node_length=0, weapon_class="", 
-                     weapon_class_length=0, weapon_name="", weapon_name_length=0, multiplayer_weapon_type=0, weapon_type=0, tracking_type=0, first_person_tag_block=None, 
-                     new_hud_interface=None, weapon_predicted_resources_tag_block=None, magazines_tag_block=None, new_triggers_tag_block=None, barrels_tag_block=None, 
-                     max_movement_acceleration=0.0, max_movement_velocity=0.0, max_turning_acceleration=0.0, max_turning_velocity=0.0, deployed_vehicle=None, age_effect=None, 
+        def __init__(self, weapon_flags=0, unknown="", unknown_length=0, secondary_trigger_mode=0, maximum_alternate_shots_loaded=0, turn_on_time=0.0, ready_time=0.0,
+                     ready_effect=None, ready_damage_effect=None, heat_recovery_threshold=0.0, overheated_threshold=0.0, heat_detonation_threshold=0.0, heat_detonation_fraction=0.0,
+                     heat_loss_per_second=0.0, heat_illumination=0.0, overheated_loss_per_second=0.0, overheated=None, overheated_damage_effect=None, detonation=None,
+                     weapon_detonation_damage_effect=None, player_melee_damage=None, player_melee_response=None, magnetism_angle=0.0, magnetism_range=0.0, throttle_magnitude=0.0,
+                     throttle_minimum_distance=0.0, throttle_maximum_adjustment_angle=0.0, damage_pyramid_angles=(0.0, 0.0), damage_pyramid_depth=0.0, first_hit_melee_damage=None,
+                     first_hit_melee_response=None, second_hit_melee_damage=None, second_hit_melee_response=None, third_hit_melee_damage=None, third_hit_melee_response=None,
+                     lunge_melee_damage=None, lunge_melee_response=None, melee_damage_reporting_type=0, magnification_levels=0, magnification_range=(0.0, 0.0), autoaim_angle=0.0,
+                     autoaim_range=0.0, weapon_aim_assist_magnetism_angle=0.0, weapon_aim_assist_magnetism_range=0.0, deviation_angle=0.0, movement_penalized=0,
+                     forward_movement_penalty=0.0, sideways_movement_penalty=0.0, ai_scariness=0.0, weapon_power_on_time=0.0, weapon_power_off_time=0.0, weapon_power_on_effect=None,
+                     weapon_power_off_effect=None, age_heat_recovery_penalty=0.0, age_rate_of_fire_penalty=0.0, age_misfire_start=0.0, age_misfire_chance=0.0, pickup_sound=None,
+                     zoom_in_sound=None, zoom_out_sound=None, active_camo_ding=0.0, active_camo_regrowth_rate=0.0, handle_node="", handle_node_length=0, weapon_class="",
+                     weapon_class_length=0, weapon_name="", weapon_name_length=0, multiplayer_weapon_type=0, weapon_type=0, tracking_type=0, first_person_tag_block=None,
+                     new_hud_interface=None, weapon_predicted_resources_tag_block=None, magazines_tag_block=None, new_triggers_tag_block=None, barrels_tag_block=None,
+                     max_movement_acceleration=0.0, max_movement_velocity=0.0, max_turning_acceleration=0.0, max_turning_velocity=0.0, deployed_vehicle=None, age_effect=None,
                      aged_weapon=None, first_person_weapon_offset=Vector(), first_person_scope_size=(0.0, 0.0)):
             super().__init__()
             self.weapon_flags = weapon_flags
@@ -302,8 +302,8 @@ class WeaponAsset(ItemAsset):
             self.first_person_animations = first_person_animations
 
     class MagazineStats:
-        def __init__(self, flags=0, rounds_recharged=0, rounds_total_initial=0, rounds_total_maximum=0, rounds_loaded_maximum=0, reload_time=0.0, 
-                     rounds_reloaded=0, chamber_time=0.0, reloading_effect=None, reloading_damage_effect=None, chambering_effect=None, 
+        def __init__(self, flags=0, rounds_recharged=0, rounds_total_initial=0, rounds_total_maximum=0, rounds_loaded_maximum=0, reload_time=0.0,
+                     rounds_reloaded=0, chamber_time=0.0, reloading_effect=None, reloading_damage_effect=None, chambering_effect=None,
                      chambering_damage_effect=None, magazines_tag_block=None, magazines_header=None, magazines=None):
             self.flags = flags
             self.rounds_recharged = rounds_recharged
@@ -327,8 +327,8 @@ class WeaponAsset(ItemAsset):
             self.equipment = equipment
 
     class NewTrigger:
-        def __init__(self, flags=0, input_type=0, behavior=0, primary_barrel=0, secondary_barrel=0, prediction=0, autofire_time=0.0, autofire_throw=0.0, 
-                     secondary_action=0, primary_action=0, charging_time=0.0, charged_time=0.0, overcharged_action=0, charged_illumination=0.0, spew_time=0.0, 
+        def __init__(self, flags=0, input_type=0, behavior=0, primary_barrel=0, secondary_barrel=0, prediction=0, autofire_time=0.0, autofire_throw=0.0,
+                     secondary_action=0, primary_action=0, charging_time=0.0, charged_time=0.0, overcharged_action=0, charged_illumination=0.0, spew_time=0.0,
                      charging_effect=None, charging_damage_effect=None):
             self.flags = flags
             self.input_type = input_type
@@ -349,15 +349,15 @@ class WeaponAsset(ItemAsset):
             self.charging_damage_effect = charging_damage_effect
 
     class Barrel:
-        def __init__(self, flags=0, rounds_per_second=(0.0, 0.0), firing_acceleration_time=0.0, firing_deceleration_time=0.0, barrel_spin_scale=0.0, 
-                     blurred_rate_of_fire=0.0, shots_per_fire=(0, 0), fire_recovery_time=0.0, soft_recovery_fraction=0.0, magazine=0, rounds_per_shot=0, 
-                     minimum_rounds_loaded=0, rounds_between_tracers=0, optional_barrel_marker_name="", optional_barrel_marker_name_length=0, prediction_type=0, 
-                     firing_noise=0, error_acceleration_time=0.0, error_deceleration_time=0.0, damage_error=(0.0, 0.0), dual_acceleration_time=0.0, 
-                     dual_deceleration_time=0.0, dual_minimum_error=0.0, dual_error_angle=(0.0, 0.0), dual_wield_damage_scale=0.0, distribution_function=0, 
-                     projectiles_per_shot=0, distribution_angle=0.0, projectile_minimum_error=0.0, projectile_error_angle=(0.0, 0.0), 
-                     first_person_offset=Vector(), damage_effect_reporting_type=0, projectile=None, damage_effect=None, ejection_port_recovery_time=0.0, 
-                     illumination_recovery_time=0.0, heat_generated_per_round=0.0, age_generated_per_round=0.0, overload_time=0.0, 
-                     angle_change_per_shot=(0.0, 0.0), recoil_acceleration_time=0.0, recoil_deceleration_time=0.0, angle_change_function=0, 
+        def __init__(self, flags=0, rounds_per_second=(0.0, 0.0), firing_acceleration_time=0.0, firing_deceleration_time=0.0, barrel_spin_scale=0.0,
+                     blurred_rate_of_fire=0.0, shots_per_fire=(0, 0), fire_recovery_time=0.0, soft_recovery_fraction=0.0, magazine=0, rounds_per_shot=0,
+                     minimum_rounds_loaded=0, rounds_between_tracers=0, optional_barrel_marker_name="", optional_barrel_marker_name_length=0, prediction_type=0,
+                     firing_noise=0, error_acceleration_time=0.0, error_deceleration_time=0.0, damage_error=(0.0, 0.0), dual_acceleration_time=0.0,
+                     dual_deceleration_time=0.0, dual_minimum_error=0.0, dual_error_angle=(0.0, 0.0), dual_wield_damage_scale=0.0, distribution_function=0,
+                     projectiles_per_shot=0, distribution_angle=0.0, projectile_minimum_error=0.0, projectile_error_angle=(0.0, 0.0),
+                     first_person_offset=Vector(), damage_effect_reporting_type=0, projectile=None, damage_effect=None, ejection_port_recovery_time=0.0,
+                     illumination_recovery_time=0.0, heat_generated_per_round=0.0, age_generated_per_round=0.0, overload_time=0.0,
+                     angle_change_per_shot=(0.0, 0.0), recoil_acceleration_time=0.0, recoil_deceleration_time=0.0, angle_change_function=0,
                      firing_effects_tag_block=None, firing_effects_header=None, firing_effects=None):
             self.flags = flags
             self.rounds_per_second = rounds_per_second
@@ -407,7 +407,7 @@ class WeaponAsset(ItemAsset):
             self.firing_effects = firing_effects
 
     class FiringEffect:
-        def __init__(self, shot_count_lower_bound=0, shot_count_upper_bound=0, firing_effect=None, misfire_effect=None, empty_effect=None, firing_damage=None, 
+        def __init__(self, shot_count_lower_bound=0, shot_count_upper_bound=0, firing_effect=None, misfire_effect=None, empty_effect=None, firing_damage=None,
                      misfire_damage=None, empty_damage=None):
             self.shot_count_lower_bound = shot_count_lower_bound
             self.shot_count_upper_bound = shot_count_upper_bound

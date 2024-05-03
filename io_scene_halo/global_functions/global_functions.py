@@ -581,18 +581,16 @@ def get_matrix(obj_a, obj_b, is_local, armature, joined_list, is_node, version, 
                 object_matrix = (obj_a.parent.matrix_world.inverted() @ obj_a.matrix_world) @ scale_matrix
 
     else:
-        if armature:
-            object_matrix = obj_a.matrix_world @ scale_matrix
+        object_matrix = obj_a.matrix_world @ scale_matrix
+        if is_local:
             parent_object = get_parent(armature, obj_b, joined_list, default_parent)
-            if parent_object[1] and is_local:
-                pose_bone = armature.pose.bones['%s' % (parent_object[1].name)]
-                object_matrix = ((pose_bone.matrix @ rotation_matrix).inverted() @ obj_a.matrix_world) @ scale_matrix
+            if parent_object[1]:
+                if type(parent_object[1]).__name__ == 'Bone':
+                    pose_bone = armature.pose.bones['%s' % (parent_object[1].name)]
+                    object_matrix = ((pose_bone.matrix @ rotation_matrix).inverted() @ obj_a.matrix_world) @ scale_matrix
 
-        else:
-            object_matrix = obj_a.matrix_world @ scale_matrix
-            parent_object = get_parent(armature, obj_b, joined_list, default_parent)
-            if parent_object[1] and is_local:
-                object_matrix = (parent_object[1].matrix_world.inverted() @ obj_a.matrix_world) @ scale_matrix
+                else:
+                    object_matrix = (parent_object[1].matrix_world.inverted() @ obj_a.matrix_world) @ scale_matrix
 
     return object_matrix
 
@@ -606,7 +604,7 @@ def get_dimensions(mesh_matrix, original_geo, version, is_bone, file_type, custo
     if original_geo:
         pos, rot, scale = mesh_matrix.decompose()
         quat = rot.inverted()
-        if version >= get_version_matrix_check(file_type, None):
+        if not invert_rotations(file_type, version):
             quat = rot
 
         quaternion = (quat[1], quat[2], quat[3], quat[0])
@@ -743,7 +741,23 @@ def get_version_matrix_check(filetype, game_version):
     elif filetype == 'JMS':
         matrix_version = 8205
 
+    elif filetype == 'ASS':
+        matrix_version = 8
+
     return matrix_version
+
+def invert_rotations(filetype, file_version):
+    invert_rotations = True
+    if filetype == 'JMA' and file_version >= 16394:
+        invert_rotations = False
+
+    elif filetype == 'JMS' and file_version >= 8205:
+        invert_rotations = False
+
+    elif filetype == 'ASS':
+        invert_rotations = False
+
+    return invert_rotations
 
 def gather_materials(game_version, material, material_list, export_type):
     assigned_materials_list = []
@@ -1316,6 +1330,30 @@ def get_transform(import_version, export_version, node, frame, node_list, transf
             transform_matrix = parent_transform_matrix @ transform_matrix
 
     return transform_matrix
+
+def build_bounds_list(SCNR_ASSET, bsp_bounds_list):
+    for structure_bsp_element in SCNR_ASSET.structure_bsps:
+        bsp_bounds = []
+        BSP_ASSET = structure_bsp_element.structure_bsp.parse_tag(print, "halo2", "retail")
+        if BSP_ASSET:
+            bsp_bounds.append(BSP_ASSET.level_body.world_bounds_x)
+            bsp_bounds.append(BSP_ASSET.level_body.world_bounds_y)
+            bsp_bounds.append(BSP_ASSET.level_body.world_bounds_z)
+
+            bsp_bounds_list.append(bsp_bounds)
+
+def get_origin_bsp(bsp_bounds_list, object_element):
+    bsp_index = -1
+    for bsp_idx, bsp_bounds in enumerate(bsp_bounds_list):
+        x_min, x_max = bsp_bounds[0]
+        y_min, y_max = bsp_bounds[1]
+        z_min, z_max = bsp_bounds[2]
+        x, y, z = object_element.position
+        if x_min < x and x_max > x and y_min < y and y_max > y and z_min < z and z_max > z:
+            bsp_index = bsp_idx
+            break
+
+    return bsp_index
 
 def run_code(code_string):
     from .. import config

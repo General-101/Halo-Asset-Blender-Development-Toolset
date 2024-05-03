@@ -72,16 +72,16 @@ class BipedAsset(UnitAsset):
         self.contact_points = None
 
     class BipedBody(UnitAsset.UnitBody):
-        def __init__(self, moving_turning_speed=0.0, biped_flags=0, stationary_turning_threshold=0.0, jump_velocity=0.0, maximum_soft_landing_time=0.0, 
-                     maximum_hard_landing_time=0.0, minimum_soft_landing_velocity=0.0, minimum_hard_landing_velocity=0.0, maximum_hard_landing_velocity=0.0, 
-                     death_hard_landing_velocity=0.0, stun_duration=0.0, standing_camera_height=0.0, crouching_camera_height=0.0, crouching_transition_time=0.0, 
-                     camera_interpolation_start=0.0, camera_interpolation_end=0.0, camera_forward_movement_scale=0.0, camera_side_movement_scale=0.0, 
-                     camera_vertical_movement_scale=0.0, camera_exclusion_distance=0.0, autoaim_width=0.0, lock_on_flags=0, lock_on_distance=0.0, head_shot_acceleration_scale=0.0, 
-                     area_damage_effect=None, collision_flags=0, height_standing=0.0, height_crouching=0.0, radius=0.0, mass=0.0, living_material_name="", 
-                     living_material_name_length=0, dead_material_name="", dead_material_name_length=0, dead_sphere_shapes_tag_block=None, pill_shapes_tag_block=None, 
-                     sphere_shapes_tag_block=None, maximum_slope_angle=0.0, downhill_falloff_angle=0.0, downhill_cuttoff_angle=0.0, uphill_falloff_angle=0.0, 
-                     uphill_cuttoff_angle=0.0, downhill_velocity_scale=0.0, uphill_velocity_scale=0.0, bank_angle=0.0, bank_apply_time=0.0, bank_decay_time=0.0, pitch_ratio=0.0, 
-                     max_velocity=0.0, max_sidestep_velocity=0.0, acceleration=0.0, deceleration=0.0, angular_velocity_maximum=0.0, angular_acceleration_maximum=0.0, 
+        def __init__(self, moving_turning_speed=0.0, biped_flags=0, stationary_turning_threshold=0.0, jump_velocity=0.0, maximum_soft_landing_time=0.0,
+                     maximum_hard_landing_time=0.0, minimum_soft_landing_velocity=0.0, minimum_hard_landing_velocity=0.0, maximum_hard_landing_velocity=0.0,
+                     death_hard_landing_velocity=0.0, stun_duration=0.0, standing_camera_height=0.0, crouching_camera_height=0.0, crouching_transition_time=0.0,
+                     camera_interpolation_start=0.0, camera_interpolation_end=0.0, camera_forward_movement_scale=0.0, camera_side_movement_scale=0.0,
+                     camera_vertical_movement_scale=0.0, camera_exclusion_distance=0.0, autoaim_width=0.0, lock_on_flags=0, lock_on_distance=0.0, head_shot_acceleration_scale=0.0,
+                     area_damage_effect=None, collision_flags=0, height_standing=0.0, height_crouching=0.0, radius=0.0, mass=0.0, living_material_name="",
+                     living_material_name_length=0, dead_material_name="", dead_material_name_length=0, dead_sphere_shapes_tag_block=None, pill_shapes_tag_block=None,
+                     sphere_shapes_tag_block=None, maximum_slope_angle=0.0, downhill_falloff_angle=0.0, downhill_cuttoff_angle=0.0, uphill_falloff_angle=0.0,
+                     uphill_cuttoff_angle=0.0, downhill_velocity_scale=0.0, uphill_velocity_scale=0.0, bank_angle=0.0, bank_apply_time=0.0, bank_decay_time=0.0, pitch_ratio=0.0,
+                     max_velocity=0.0, max_sidestep_velocity=0.0, acceleration=0.0, deceleration=0.0, angular_velocity_maximum=0.0, angular_acceleration_maximum=0.0,
                      crouch_velocity_modifier=0.0, contact_points_tag_block=None, reanimation_character=None, death_spawn_character=None, death_spawn_count=0):
             super().__init__()
             self.moving_turning_speed = moving_turning_speed
@@ -145,7 +145,7 @@ class BipedAsset(UnitAsset):
             self.death_spawn_count = death_spawn_count
 
     class Shape:
-        def __init__(self, name="", name_length=0, material=-1, flags=0, relative_mass_scale=0.0, friction=0.0, restitution=0.0, volume=0.0, mass=0.0, phantom=-1, size_a=0, 
+        def __init__(self, name="", name_length=0, material=-1, flags=0, relative_mass_scale=0.0, friction=0.0, restitution=0.0, volume=0.0, mass=0.0, phantom=-1, size_a=0,
                      count_a=0, radius=0.0, size_b=0, count_b=0, rotation_i=Vector(), rotation_j=Vector(), rotation_k=Vector(), translation=Vector(), bottom=Vector(), top=Vector()):
             self.name = name
             self.name_length = name_length
@@ -168,5 +168,3 @@ class BipedAsset(UnitAsset):
             self.translation = translation
             self.bottom = bottom
             self.top = top
-
-

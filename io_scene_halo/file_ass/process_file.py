@@ -67,7 +67,7 @@ def process_file(filepath):
         material_definition_items = material_effect.split()
         lod, permutation, region = global_functions.material_definition_parser(True, material_definition_items, 'Default', 'Default')
 
-        ASS.materials.append(ASSAsset.Material(scene_name, file_name, None, material, lod, permutation, region, material_effect, material_strings))
+        ASS.materials.append(ASSAsset.Material(scene_name, file_name, None, material, lod, permutation, region, material_strings))
 
     object_count = int(ASS.next())
     for object in range(object_count):
@@ -174,7 +174,7 @@ def process_file(filepath):
             light_properties = ASSAsset.Light(light_type, light_color, intensity, hotspot_size, hotspot_falloff_size, uses_near_attenuation, near_attenuation_start, near_attenuation_end, uses_far_attenuation, far_attenuation_start, far_attenuation_end, light_shape, light_aspect_ratio)
 
         else:
-            print("Bad object")
+            print("Geometry file has an invalid geometry class during read: ",  geo_class)
 
         ASS.objects.append(ASSAsset.Object(geo_class, xref_path, xref_name, material_index, radius, extents, height, vertices, triangles, node_index_list, light_properties))
 

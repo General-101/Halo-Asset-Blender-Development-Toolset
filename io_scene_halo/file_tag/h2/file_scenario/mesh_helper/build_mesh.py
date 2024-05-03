@@ -102,7 +102,7 @@ def build_mesh_layout(asset, section, region_name, random_color_gen, object_mesh
                 object_mesh.region_add(current_region_permutation)
 
             if not triangle_material_index == -1:
-                if triangle_material_index < shader_count:  
+                if triangle_material_index < shader_count:
                     mat = materials[triangle_material_index]
 
                     if not mat in object_mesh.data.materials.values():
@@ -147,15 +147,16 @@ def get_object(collection, import_file, game_version, object_name, random_color_
     section_count = len(import_file.sections)
     materials = []
     shader_collection_dic = {}
-    shader_collection_path = os.path.join(config.HALO_2_TAG_PATH, r"scenarios\shaders\shader_collections.shader_collections") 
-    shader_collection_file = open(shader_collection_path, "r")
-    for line in shader_collection_file.readlines():
-        if not global_functions.string_empty_check(line) and not line.startswith(";"):
-            split_result = line.split()
-            if len(split_result) == 2:
-                prefix = split_result[0]
-                path = split_result[1]
-                shader_collection_dic[path] = prefix
+    shader_collection_path = os.path.join(config.HALO_2_TAG_PATH, r"scenarios\shaders\shader_collections.shader_collections")
+    if os.path.is_file(shader_collection_path):
+        shader_collection_file = open(shader_collection_path, "r")
+        for line in shader_collection_file.readlines():
+            if not global_functions.string_empty_check(line) and not line.startswith(";"):
+                split_result = line.split()
+                if len(split_result) == 2:
+                    prefix = split_result[0]
+                    path = split_result[1]
+                    shader_collection_dic[path] = prefix
 
     for material in import_file.materials:
         material_path = material.shader.name
@@ -203,9 +204,9 @@ def get_object(collection, import_file, game_version, object_name, random_color_
             l6_section_index = permutation.l6_section_index
             if not l6_section_index == -1 and l6_section_index < section_count and not import_file.sections[l6_section_index].visited:
                 import_file.sections[l6_section_index].visited = True
-                l6_section = import_file.sections[l6_section_index]     
+                l6_section = import_file.sections[l6_section_index]
                 build_mesh_layout(import_file, l6_section, region_name, random_color_gen, object_mesh, materials)
-            
+
             break
 
     return object_mesh

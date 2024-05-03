@@ -135,4 +135,3 @@ def build_asset(output_stream, SOUNDLOOP, report):
 
     write_tracks(output_stream, TAG, SOUNDLOOP.tracks, SOUNDLOOP.tracks_header)
     write_detail_sounds(output_stream, TAG, SOUNDLOOP.detail_sounds, SOUNDLOOP.detail_sounds_header)
-

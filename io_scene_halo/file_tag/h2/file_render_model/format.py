@@ -140,10 +140,10 @@ class RenderAsset():
         self.section_render_leaves = None
 
     class RenderBody:
-        def __init__(self, name="", name_length=0, flags=0, import_info_tag_block=None, compression_info_tag_block=None, regions_tag_block=None, sections_tag_block=None, 
-                     invalid_section_pair_bits_tag_block=None, section_groups_tag_block=None, l1_section_group_index=0, l2_section_group_index=0, l3_section_group_index=0, 
-                     l4_section_group_index=0, l5_section_group_index=0, l6_section_group_index=0, node_list_checksum=0, nodes_tag_block=None, node_map_tag_block=None, 
-                     marker_groups_tag_block=None, materials_tag_block=None, errors_tag_block=None, dont_draw_over_camera_cosine_angle=0.0, prt_info_tag_block=None, 
+        def __init__(self, name="", name_length=0, flags=0, import_info_tag_block=None, compression_info_tag_block=None, regions_tag_block=None, sections_tag_block=None,
+                     invalid_section_pair_bits_tag_block=None, section_groups_tag_block=None, l1_section_group_index=0, l2_section_group_index=0, l3_section_group_index=0,
+                     l4_section_group_index=0, l5_section_group_index=0, l6_section_group_index=0, node_list_checksum=0, nodes_tag_block=None, node_map_tag_block=None,
+                     marker_groups_tag_block=None, materials_tag_block=None, errors_tag_block=None, dont_draw_over_camera_cosine_angle=0.0, prt_info_tag_block=None,
                      section_render_leaves_tag_block=None):
             self.name = name
             self.name_length = name_length
@@ -190,7 +190,7 @@ class RenderAsset():
             self.uncompressed_data = uncompressed_data
 
     class CompressionInfo:
-        def __init__(self, position_bounds_x=(0.0, 0.0), position_bounds_y=(0.0, 0.0), position_bounds_z=(0.0, 0.0), texcoord_bounds_x=(0.0, 0.0), texcoord_bounds_y=(0.0, 0.0), 
+        def __init__(self, position_bounds_x=(0.0, 0.0), position_bounds_y=(0.0, 0.0), position_bounds_z=(0.0, 0.0), texcoord_bounds_x=(0.0, 0.0), texcoord_bounds_y=(0.0, 0.0),
                      secondary_texcoord_bounds_x=(0.0, 0.0), secondary_texcoord_bounds_y=(0.0, 0.0)):
             self.position_bounds_x = position_bounds_x
             self.position_bounds_y = position_bounds_y
@@ -222,11 +222,11 @@ class RenderAsset():
             self.l6_section_index = l6_section_index
 
     class Section:
-        def __init__(self, global_geometry_classification=0, total_vertex_count=0, total_triangle_count=0, total_part_count=0, shadow_casting_triangle_count=0, 
-                     shadow_casting_part_count=0, opaque_point_count=0, opaque_vertex_count=0, opaque_part_count=0, opaque_max_nodes_vertex=0, transparent_max_nodes_vertex=0, 
-                     shadow_casting_rigid_triangle_count=0, geometry_classification=0, geometry_compression_flags=0, compression_info_header=None, 
-                     compression_info_tag_block=None, hardware_node_count=0, node_map_size=0, software_plane_count=0, total_subpart_count=0, section_lighting_flags=0, 
-                     rigid_node=0, flags=0, section_data_header=None, section_data_tag_block=None, block_offset=0, block_size=0, section_data_size=0, resource_data_size=0, 
+        def __init__(self, global_geometry_classification=0, total_vertex_count=0, total_triangle_count=0, total_part_count=0, shadow_casting_triangle_count=0,
+                     shadow_casting_part_count=0, opaque_point_count=0, opaque_vertex_count=0, opaque_part_count=0, opaque_max_nodes_vertex=0, transparent_max_nodes_vertex=0,
+                     shadow_casting_rigid_triangle_count=0, geometry_classification=0, geometry_compression_flags=0, compression_info_header=None,
+                     compression_info_tag_block=None, hardware_node_count=0, node_map_size=0, software_plane_count=0, total_subpart_count=0, section_lighting_flags=0,
+                     rigid_node=0, flags=0, section_data_header=None, section_data_tag_block=None, block_offset=0, block_size=0, section_data_size=0, resource_data_size=0,
                      resources_header=None, resources_tag_block=None, owner_tag_section_offset=0, compression_info=None, section_data=None, resources=None, visited=False):
             self.global_geometry_classification = global_geometry_classification
             self.total_vertex_count = total_vertex_count
@@ -266,13 +266,13 @@ class RenderAsset():
             self.visited = visited
 
     class SectionData:
-        def __init__(self, parts_header=None, parts_tag_block=None, subparts_header=None, subparts_tag_block=None, visibility_bounds_header=None, 
-                     visibility_bounds_tag_block=None, raw_vertices_header=None, raw_vertices_tag_block=None, strip_indices_header=None, strip_indices_tag_block=None, 
-                     visibility_mopp_code_data=0, mopp_reorder_table_header=None, mopp_reorder_table_tag_block=None, vertex_buffers_header=None, vertex_buffers_tag_block=None, 
-                     raw_points_header=None, raw_points_tag_block=None, runtime_point_tag_data=None, rigid_point_groups_header=None, rigid_point_groups_tag_block=None, 
-                     vertex_point_indices_header=None, vertex_point_indices_tag_block=None, node_map_header=None, node_map_tag_block=None, sinf_header=None, blok_header=None, 
-                     parts=None, subparts=None, visibility_bounds=None, raw_vertices=None, strip_indices=None, visibility_mopp_code=None, mopp_reorder_table=None, 
-                     vertex_buffers=None, raw_points=None, runtime_point_data=None, rigid_point_groups=None, vertex_point_indices=None, node_map=None, sect_header=None, 
+        def __init__(self, parts_header=None, parts_tag_block=None, subparts_header=None, subparts_tag_block=None, visibility_bounds_header=None,
+                     visibility_bounds_tag_block=None, raw_vertices_header=None, raw_vertices_tag_block=None, strip_indices_header=None, strip_indices_tag_block=None,
+                     visibility_mopp_code_data=0, mopp_reorder_table_header=None, mopp_reorder_table_tag_block=None, vertex_buffers_header=None, vertex_buffers_tag_block=None,
+                     raw_points_header=None, raw_points_tag_block=None, runtime_point_tag_data=None, rigid_point_groups_header=None, rigid_point_groups_tag_block=None,
+                     vertex_point_indices_header=None, vertex_point_indices_tag_block=None, node_map_header=None, node_map_tag_block=None, sinf_header=None, blok_header=None,
+                     parts=None, subparts=None, visibility_bounds=None, raw_vertices=None, strip_indices=None, visibility_mopp_code=None, mopp_reorder_table=None,
+                     vertex_buffers=None, raw_points=None, runtime_point_data=None, rigid_point_groups=None, vertex_point_indices=None, node_map=None, sect_header=None,
                      pdat_header=None):
             self.parts_header = parts_header
             self.parts_tag_block = parts_tag_block
@@ -317,9 +317,9 @@ class RenderAsset():
             self.pdat_header = pdat_header
 
     class LegacySectionData(SectionData):
-        def __init__(self, isq_flags=0, raw_planes_tag_block=None, runtime_plane_tag_data=None, rigid_plane_groups_tag_block=None, explicit_edges_tag_block=None, 
-                     forward_shared_edges_tag_block=None, forward_shared_edge_groups_tag_block=None, backward_shared_edges_tag_block=None, 
-                     backward_shared_edge_groups_tag_block=None, dsq_raw_vertices_tag_block=None, dsq_strip_indices_tag_block=None, dsq_silhouette_quads_tag_block=None, 
+        def __init__(self, isq_flags=0, raw_planes_tag_block=None, runtime_plane_tag_data=None, rigid_plane_groups_tag_block=None, explicit_edges_tag_block=None,
+                     forward_shared_edges_tag_block=None, forward_shared_edge_groups_tag_block=None, backward_shared_edges_tag_block=None,
+                     backward_shared_edge_groups_tag_block=None, dsq_raw_vertices_tag_block=None, dsq_strip_indices_tag_block=None, dsq_silhouette_quads_tag_block=None,
                      carmack_silhouette_quad_count=0):
             super().__init__()
             self.isq_flags = isq_flags
@@ -426,6 +426,12 @@ class RenderAsset():
             self.rigid_node_index = rigid_node_index
             self.nodes_per_point = nodes_per_point
             self.point_count = point_count
+
+    class RigidPlaneGroup:
+        def __init__(self, rigid_node_index=0, part_index=0, triangle_count=0):
+            self.rigid_node_index = rigid_node_index
+            self.part_index = part_index
+            self.triangle_count = triangle_count
 
     class Resource:
         def __init__(self, type=0, primary_locator=0, secondary_locator=0, resource_data_size=0, resource_data_offset=0):

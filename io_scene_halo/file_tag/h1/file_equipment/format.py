@@ -92,11 +92,11 @@ class EquipmentAsset():
         self.predicted_resources = None
 
     class EquipmentBody:
-        def __init__(self, object_flags=0, bounding_radius=0.0, bounding_offset=Vector(), origin_offset=Vector(), acceleration_scale=0.0, model=None, animation_graph=None, 
-                     collision_model=None, physics=None, modifier_shader=None, creation_effect=None, render_bounding_radius=0.0, object_a_in=0, object_b_in=0, object_c_in=0, 
-                     object_d_in=0, hud_text_message_index=0, forced_shader_permutation_index=0, attachments_tag_block=None, widgets_tag_block=None, functions_tag_block=None, 
-                     change_colors_tag_block=None, predicted_resources_tag_block=None, equipment_flags=0, message_index=0, sort_order=0, scale=0.0, hud_message_value_scale=0, 
-                     equipment_a_in=0, equipment_b_in=0, equipment_c_in=0, equipment_d_in=0, material_effects=None, collision_sound=None, detonation_delay=(0.0, 0.0), 
+        def __init__(self, object_flags=0, bounding_radius=0.0, bounding_offset=Vector(), origin_offset=Vector(), acceleration_scale=0.0, model=None, animation_graph=None,
+                     collision_model=None, physics=None, modifier_shader=None, creation_effect=None, render_bounding_radius=0.0, object_a_in=0, object_b_in=0, object_c_in=0,
+                     object_d_in=0, hud_text_message_index=0, forced_shader_permutation_index=0, attachments_tag_block=None, widgets_tag_block=None, functions_tag_block=None,
+                     change_colors_tag_block=None, predicted_resources_tag_block=None, equipment_flags=0, message_index=0, sort_order=0, scale=0.0, hud_message_value_scale=0,
+                     equipment_a_in=0, equipment_b_in=0, equipment_c_in=0, equipment_d_in=0, material_effects=None, collision_sound=None, detonation_delay=(0.0, 0.0),
                      detonating_effect=None, detonation_effect=None, powerup_type=0, grenade_type=0, powerup_time=0.0, pickup_sound=None):
             self.object_flags = object_flags
             self.bounding_radius = bounding_radius

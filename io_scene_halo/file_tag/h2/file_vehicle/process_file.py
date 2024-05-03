@@ -28,18 +28,18 @@ from xml.dom import minidom
 from ....global_functions import tag_format
 from ..file_object.format import ObjectFlags, LightmapShadowModeEnum, SweetenerSizeEnum
 from ..file_unit.format import (
-    UnitFlags, 
-    TeamsEnum, 
-    ConstantSoundVolumeEnum, 
-    MotionSensorBlipSizeEnum, 
-    MetaGameTypeEnum, 
-    MetaGameClassEnum, 
+    UnitFlags,
+    TeamsEnum,
+    ConstantSoundVolumeEnum,
+    MotionSensorBlipSizeEnum,
+    MetaGameTypeEnum,
+    MetaGameClassEnum,
     GrenadeTypeEnum
     )
 from .format import (
-    VehicleAsset, 
-    VehicleFlags, 
-    VehicleTypeEnum, 
+    VehicleAsset,
+    VehicleFlags,
+    VehicleTypeEnum,
     VehicleControlEnum,
     SpecificTypeEnum,
     PlayerTrainingVehicleTypeEnum,

@@ -1114,7 +1114,7 @@ def read_scenery(SCENARIO, TAG, input_stream, tag_node, XML_OUTPUT):
                 scenery.variant_name = TAG.read_variable_string_no_terminator(input_stream, scenery.variant_name_length, TAG, tag_format.XMLData(scenery_element_node, "variant name"))
 
             scenery.sct3_header = TAG.TagBlockHeader().read(input_stream, TAG)
-            
+
             scenery.pathfinding_references = []
             if scenery.pathfinding_references_tag_block.count > 0:
                 scenery.pathfinding_references_header = TAG.TagBlockHeader().read(input_stream, TAG)
@@ -1277,7 +1277,7 @@ def read_machines(SCENARIO, TAG, input_stream, tag_node, XML_OUTPUT):
             device_machine.obj0_header = TAG.TagBlockHeader().read(input_stream, TAG)
             device_machine.sdvt_header = TAG.TagBlockHeader().read(input_stream, TAG)
             device_machine.smht_header = TAG.TagBlockHeader().read(input_stream, TAG)
-            
+
             device_machine.pathfinding_references = []
             if device_machine.pathfinding_references_tag_block.count > 0:
                 device_machine.pathfinding_references_header = TAG.TagBlockHeader().read(input_stream, TAG)
@@ -1319,7 +1319,7 @@ def read_controls(SCENARIO, TAG, input_stream, tag_node, XML_OUTPUT):
             device_control.obj0_header = TAG.TagBlockHeader().read(input_stream, TAG)
             device_control.sdvt_header = TAG.TagBlockHeader().read(input_stream, TAG)
             device_control.sctt_header = TAG.TagBlockHeader().read(input_stream, TAG)
-            
+
     palette_helper(input_stream, SCENARIO.scenario_body.control_palette_tag_block.count, "control palette", SCENARIO.device_control_palette_header, SCENARIO.device_control_palette, tag_node, TAG)
 
 def read_light_fixtures(SCENARIO, TAG, input_stream, tag_node, XML_OUTPUT):
@@ -1344,7 +1344,7 @@ def read_light_fixtures(SCENARIO, TAG, input_stream, tag_node, XML_OUTPUT):
             device_light_fixture.obj0_header = TAG.TagBlockHeader().read(input_stream, TAG)
             device_light_fixture.sdvt_header = TAG.TagBlockHeader().read(input_stream, TAG)
             device_light_fixture.slft_header = TAG.TagBlockHeader().read(input_stream, TAG)
-            
+
     palette_helper(input_stream, SCENARIO.scenario_body.light_fixtures_palette_tag_block.count, "light fixtures palette", SCENARIO.device_light_fixture_palette_header, SCENARIO.device_light_fixtures_palette, tag_node, TAG)
 
 def read_sound_scenery(SCENARIO, TAG, input_stream, tag_node, XML_OUTPUT):
@@ -1368,7 +1368,7 @@ def read_sound_scenery(SCENARIO, TAG, input_stream, tag_node, XML_OUTPUT):
             device_light_fixture.sobj_header = TAG.TagBlockHeader().read(input_stream, TAG)
             device_light_fixture.obj0_header = TAG.TagBlockHeader().read(input_stream, TAG)
             device_light_fixture._sc__header = TAG.TagBlockHeader().read(input_stream, TAG)
-            
+
     palette_helper(input_stream, SCENARIO.scenario_body.sound_scenery_palette_tag_block.count, "sound scenery palette", SCENARIO.sound_scenery_palette_header, SCENARIO.sound_scenery_palette, tag_node, TAG)
 
 def read_light_volumes(SCENARIO, TAG, input_stream, tag_node, XML_OUTPUT):
@@ -1393,7 +1393,7 @@ def read_light_volumes(SCENARIO, TAG, input_stream, tag_node, XML_OUTPUT):
             light_volume.obj0_header = TAG.TagBlockHeader().read(input_stream, TAG)
             light_volume.sdvt_header = TAG.TagBlockHeader().read(input_stream, TAG)
             light_volume.slit_header = TAG.TagBlockHeader().read(input_stream, TAG)
-            
+
     palette_helper(input_stream, SCENARIO.scenario_body.light_volume_palette_tag_block.count, "light volume palette", SCENARIO.light_volume_palette_header, SCENARIO.light_volume_palette, tag_node, TAG)
 
 def read_player_starting_profiles(SCENARIO, TAG, input_stream, tag_node, XML_OUTPUT):
@@ -2783,7 +2783,7 @@ def read_scripting_data(SCENARIO, TAG, input_stream, tag_node, XML_OUTPUT):
             scripting_data_element_node = None
             if XML_OUTPUT:
                 scripting_data_element_node = scripting_data_node.childNodes[scripting_data_idx]
- 
+
             scripting_data.point_sets = []
             if scripting_data.point_sets_tag_block.count > 0:
                 scripting_data.point_sets_header = TAG.TagBlockHeader().read(input_stream, TAG)
@@ -2809,7 +2809,7 @@ def read_scripting_data(SCENARIO, TAG, input_stream, tag_node, XML_OUTPUT):
                     point_set_element_node = None
                     if XML_OUTPUT:
                         point_set_element_node = point_set_node.childNodes[point_set_idx]
-        
+
                     point_set.points = []
                     if point_set.points_tag_block.count > 0:
                         point_set.points_header = TAG.TagBlockHeader().read(input_stream, TAG)
@@ -3073,7 +3073,7 @@ def read_orders(SCENARIO, TAG, input_stream, tag_node, XML_OUTPUT):
             orders_element_node = None
             if XML_OUTPUT:
                 orders_element_node = orders_node.childNodes[order_idx]
- 
+
             order.primary_area_set = []
             order.secondary_area_set = []
             order.secondary_set_trigger = []
@@ -3145,7 +3145,7 @@ def read_orders(SCENARIO, TAG, input_stream, tag_node, XML_OUTPUT):
                     secondary_set_trigger_element_node = None
                     if XML_OUTPUT:
                         secondary_set_trigger_element_node = secondary_set_trigger_node.childNodes[secondary_set_trigger_idx]
-        
+
                     secondary_set_trigger.triggers = []
                     if secondary_set_trigger.triggers_tag_block.count > 0:
                         secondary_set_trigger.triggers_header = TAG.TagBlockHeader().read(input_stream, TAG)
@@ -3204,7 +3204,7 @@ def read_orders(SCENARIO, TAG, input_stream, tag_node, XML_OUTPUT):
                     order_ending_element_node = None
                     if XML_OUTPUT:
                         order_ending_element_node = order_endings_node.childNodes[order_ending_idx]
-        
+
                     order_ending.triggers = []
                     if order_ending.triggers_tag_block.count > 0:
                         order_ending.triggers_header = TAG.TagBlockHeader().read(input_stream, TAG)
@@ -3248,7 +3248,7 @@ def read_triggers(SCENARIO, TAG, input_stream, tag_node, XML_OUTPUT):
             trigger_element_node = None
             if XML_OUTPUT:
                 trigger_element_node = triggers_node.childNodes[trigger_idx]
- 
+
             trigger.conditions = []
             if trigger.conditions_tag_block.count > 0:
                 trigger.conditions_header = TAG.TagBlockHeader().read(input_stream, TAG)
@@ -3436,7 +3436,7 @@ def read_scenario_cluster_data(SCENARIO, TAG, input_stream, tag_node, XML_OUTPUT
             scenario_cluster_data_element_node = None
             if XML_OUTPUT:
                 scenario_cluster_data_element_node = scenario_cluster_data_node.childNodes[scenario_cluster_data_idx]
- 
+
             bsp_name_length = scenario_cluster_data.bsp.name_length
             if bsp_name_length > 0:
                 scenario_cluster_data.bsp.name = TAG.read_variable_string(input_stream, bsp_name_length, TAG)

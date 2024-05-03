@@ -97,6 +97,32 @@ class ClassEnum(Enum):
     test = auto()
     multilingual_test = auto()
 
+class OutputEffectEnum(Enum):
+    none = 0
+    output_front_speakers = auto()
+    output_rear_speakers = auto()
+    output_center_speakers = auto()
+
+class ImportTypeEnum(Enum):
+    unknown = 0
+    single_shot = auto()
+    single_layer = auto()
+    multi_layer = auto()
+
+class EncodingEnum(Enum):
+    mono = 0
+    stereo = auto()
+    codec = auto()
+    quad = auto()
+
+class CompressionEnum(Enum):
+    none_big_endian = 0
+    xbox_adpcm = auto()
+    ima_adpcm = auto()
+    none_little_endian = 0
+    wma = 0
+    opus = 0
+
 class SoundAsset():
     def __init__(self):
         self.header = None
@@ -116,11 +142,11 @@ class SoundAsset():
         self.reflections = None
 
     class SoundBody:
-        def __init__(self, remastered_sound=None, flags=0, class_type=0, sample_rate=0, output_effect=0, import_type=0, minimum_distance=0.0, maximum_distance=0.0, skip_fraction=0.0, 
-                     maximum_bend_per_second=0.0, gain_base=0.0, gain_variance=0.0, random_pitch_bounds=(0, 0), inner_cone_angle=0.0, outer_cone_angle=0.0, outer_cone_gain=0.0, 
-                     override_flags=0, azimuth=0.0, positional_gain=0.0, first_person_gain=0.0, gain_modifier=(0.0, 0.0), pitch_modifier=(0, 0), skip_fraction_modifier=(0.0, 0.0), 
-                     encoding=0, compression=0, promotion_rules_tag_block=None, runtime_timers_tag_block=None, runtime_active_promotion_index=0, runtime_last_promotion_time=0, 
-                     runtime_suppression_timeout=0, inner_silence_distance=0.0, pitch_ranges_tag_block=None, platform_parameters_tag_block=None, extra_sound_info_tag_block=None, 
+        def __init__(self, remastered_sound=None, flags=0, class_type=0, sample_rate=0, output_effect=0, import_type=0, minimum_distance=0.0, maximum_distance=0.0, skip_fraction=0.0,
+                     maximum_bend_per_second=0.0, gain_base=0.0, gain_variance=0.0, random_pitch_bounds=(0, 0), inner_cone_angle=0.0, outer_cone_angle=0.0, outer_cone_gain=0.0,
+                     override_flags=0, azimuth=0.0, positional_gain=0.0, first_person_gain=0.0, gain_modifier=(0.0, 0.0), pitch_modifier=(0, 0), skip_fraction_modifier=(0.0, 0.0),
+                     encoding=0, compression=0, promotion_rules_tag_block=None, runtime_timers_tag_block=None, runtime_active_promotion_index=0, runtime_last_promotion_time=0,
+                     runtime_suppression_timeout=0, inner_silence_distance=0.0, pitch_ranges_tag_block=None, platform_parameters_tag_block=None, extra_sound_info_tag_block=None,
                      reflections_tag_block=None, low_pass_minimum_distance=0.0, low_pass_maximum_distance=1.0, parameters=None):
             self.remastered_sound = remastered_sound
             self.flags = flags
@@ -173,7 +199,7 @@ class SoundAsset():
             self.permutations = permutations
 
     class Permutation:
-        def __init__(self, name="", name_length=0, skip_fraction=0.0, gain=0.0, sound_data=0, sound_index=0, lipsync_data=0, sound_permutation_chunk_tag_block=None, 
+        def __init__(self, name="", name_length=0, skip_fraction=0.0, gain=0.0, sound_data=0, sound_index=0, lipsync_data=0, sound_permutation_chunk_tag_block=None,
                      sound_permutation_chunk_header=None, sound_permutation_chunk=None):
             self.name = name
             self.name_length = name_length
@@ -187,8 +213,8 @@ class SoundAsset():
             self.sound_permutation_chunk = sound_permutation_chunk
 
     class SoundExtraInfo:
-        def __init__(self, language_permutation_info_tag_block=None, language_permutation_info_header=None, language_permutation_info=None, encoded_permutation_section_tag_block=None, 
-                     encoded_permutation_section_header=None, encoded_permutation_section=None, block_offset=0, block_size=0, section_data_size=0, resource_data_size=0, 
+        def __init__(self, language_permutation_info_tag_block=None, language_permutation_info_header=None, language_permutation_info=None, encoded_permutation_section_tag_block=None,
+                     encoded_permutation_section_header=None, encoded_permutation_section=None, block_offset=0, block_size=0, section_data_size=0, resource_data_size=0,
                      resources_tag_block=None, resources_header=None, resources=None, owner_tag_section_offset=0):
             self.language_permutation_info_tag_block = language_permutation_info_tag_block
             self.language_permutation_info_header = language_permutation_info_header
@@ -206,8 +232,8 @@ class SoundAsset():
             self.owner_tag_section_offset = owner_tag_section_offset
 
     class SoundExtraInfo:
-        def __init__(self, language_permutation_info_tag_block=None, language_permutation_info_header=None, language_permutation_info=None, encoded_permutation_section_tag_block=None, 
-                     encoded_permutation_section_header=None, encoded_permutation_section=None, block_offset=0, block_size=0, section_data_size=0, resource_data_size=0, 
+        def __init__(self, language_permutation_info_tag_block=None, language_permutation_info_header=None, language_permutation_info=None, encoded_permutation_section_tag_block=None,
+                     encoded_permutation_section_header=None, encoded_permutation_section=None, block_offset=0, block_size=0, section_data_size=0, resource_data_size=0,
                      resources_tag_block=None, resources_header=None, resources=None, owner_tag_section_offset=0, blok_header=None):
             self.language_permutation_info_tag_block = language_permutation_info_tag_block
             self.language_permutation_info_header = language_permutation_info_header
@@ -232,8 +258,8 @@ class SoundAsset():
             self.raw_info_block = raw_info_block
 
     class RawInfoBlock:
-        def __init__(self, skip_fraction_name="", skip_fraction_name_length=0, samples_tag_data=None, unk_1_tag_data=None, unk_2_tag_data=None, markers_tag_block=None, 
-                     markers_header=None, markers=None, compression=0, language=0, sound_permutation_chunk_tag_block=None, sound_permutation_chunk_header=None, 
+        def __init__(self, skip_fraction_name="", skip_fraction_name_length=0, samples_tag_data=None, unk_1_tag_data=None, unk_2_tag_data=None, markers_tag_block=None,
+                     markers_header=None, markers=None, compression=0, language=0, sound_permutation_chunk_tag_block=None, sound_permutation_chunk_header=None,
                      sound_permutation_chunk=None, remaining_data=0):
             self.skip_fraction_name = skip_fraction_name
             self.skip_fraction_name_length = skip_fraction_name_length

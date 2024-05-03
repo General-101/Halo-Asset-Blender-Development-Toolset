@@ -47,6 +47,7 @@ def infer_error_type(binding_type, mtl_diffuse_colors):
         "0.000000 0.000000 0.000000": "black",
         "0.000000 0.000000 1.000000": "blue",
         "1.000000 0.410000 0.700000": "pink",
+        "1.000000 1.000000 1.000000": "white"
         # unconfirmed values:
         }
 

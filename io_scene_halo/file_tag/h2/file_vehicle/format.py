@@ -117,15 +117,15 @@ class VehicleAsset(UnitAsset):
         self.phantom_shapes = None
 
     class VehicleBody(UnitAsset.UnitBody):
-        def __init__(self, vehicle_flags=0, vehicle_type=0, vehicle_control=0, maximum_forward_speed=0.0, maximum_reverse_speed=0.0, speed_acceleration=0.0, speed_deceleration=0.0, 
-                     maximum_left_turn=0.0, maximum_right_turn=0.0, wheel_circumference=0.0, turn_rate=0.0, blur_speed=0.0, specific_type=0, player_training_vehicle_type=0, 
-                     flip_message="", flip_message_length=0, turn_scale=0.0, speed_turn_penalty_power=0.0, speed_turn_penalty=0.0, maximum_left_slide=0.0, maximum_right_slide=0.0, 
-                     slide_acceleration=0.0, slide_deceleration=0.0, minimum_flipping_angular_velocity=0.0, maximum_flipping_angular_velocity=0.0, vehicle_size=0, 
-                     fixed_gun_yaw=0.0, fixed_gun_pitch=0.0, overdampen_cusp_angle=0.0, overdampen_exponent=0.0, crouch_transition_time=0.0, engine_moment=0.0, 
-                     engine_max_angular_velocity=0.0, gears_tag_block=None, flying_torque_scale=0.0, seat_enterance_acceleration_scale=0.0, seat_exit_acceleration_scale=0.0, 
-                     air_friction_deceleration=0.0, thrust_scale=0.0, suspension_sound=None, crash_sound=None, unused=None, special_effect=None, unused_effect=None, 
-                     physics_flags=0, ground_fricton=0.0, ground_depth=0.0, ground_damp_factor=0.0, ground_moving_friction=0.0, ground_maximum_slope_0=0.0, 
-                     ground_maximum_slope_1=0.0, anti_gravity_bank_lift=0.0, steering_bank_reaction_scale=0.0, gravity_scale=0.0, radius=0.0, anti_gravity_point_tag_block=None, 
+        def __init__(self, vehicle_flags=0, vehicle_type=0, vehicle_control=0, maximum_forward_speed=0.0, maximum_reverse_speed=0.0, speed_acceleration=0.0, speed_deceleration=0.0,
+                     maximum_left_turn=0.0, maximum_right_turn=0.0, wheel_circumference=0.0, turn_rate=0.0, blur_speed=0.0, specific_type=0, player_training_vehicle_type=0,
+                     flip_message="", flip_message_length=0, turn_scale=0.0, speed_turn_penalty_power=0.0, speed_turn_penalty=0.0, maximum_left_slide=0.0, maximum_right_slide=0.0,
+                     slide_acceleration=0.0, slide_deceleration=0.0, minimum_flipping_angular_velocity=0.0, maximum_flipping_angular_velocity=0.0, vehicle_size=0,
+                     fixed_gun_yaw=0.0, fixed_gun_pitch=0.0, overdampen_cusp_angle=0.0, overdampen_exponent=0.0, crouch_transition_time=0.0, engine_moment=0.0,
+                     engine_max_angular_velocity=0.0, gears_tag_block=None, flying_torque_scale=0.0, seat_enterance_acceleration_scale=0.0, seat_exit_acceleration_scale=0.0,
+                     air_friction_deceleration=0.0, thrust_scale=0.0, suspension_sound=None, crash_sound=None, unused=None, special_effect=None, unused_effect=None,
+                     physics_flags=0, ground_fricton=0.0, ground_depth=0.0, ground_damp_factor=0.0, ground_moving_friction=0.0, ground_maximum_slope_0=0.0,
+                     ground_maximum_slope_1=0.0, anti_gravity_bank_lift=0.0, steering_bank_reaction_scale=0.0, gravity_scale=0.0, radius=0.0, anti_gravity_point_tag_block=None,
                      friction_points_tag_block=None, phantom_shapes_tag_block=None):
             super().__init__()
             self.vehicle_flags = vehicle_flags
@@ -188,9 +188,9 @@ class VehicleAsset(UnitAsset):
             self.phantom_shapes_tag_block = phantom_shapes_tag_block
 
     class Gear:
-        def __init__(self, a_min_torque=0.0, a_max_torque=0.0, a_peak_torque_scale=0.0, a_past_peak_torque_exponent=0.0, a_torque_at_max_angular_velocity=0.0, 
-                     a_torque_at_2x_max_angular_velocity=0.0, b_min_torque=0.0, b_max_torque=0.0, b_peak_torque_scale=0.0, b_past_peak_torque_exponent=0.0, 
-                     b_torque_at_max_angular_velocity=0.0, b_torque_at_2x_max_angular_velocity=0.0, min_time_to_upshift=0.0, engine_up_shift_scale=0.0, gear_ratio=0.0, 
+        def __init__(self, a_min_torque=0.0, a_max_torque=0.0, a_peak_torque_scale=0.0, a_past_peak_torque_exponent=0.0, a_torque_at_max_angular_velocity=0.0,
+                     a_torque_at_2x_max_angular_velocity=0.0, b_min_torque=0.0, b_max_torque=0.0, b_peak_torque_scale=0.0, b_past_peak_torque_exponent=0.0,
+                     b_torque_at_max_angular_velocity=0.0, b_torque_at_2x_max_angular_velocity=0.0, min_time_to_upshift=0.0, engine_up_shift_scale=0.0, gear_ratio=0.0,
                      min_time_to_downshift=0.0, engine_down_shift_scale=0.0):
             self.a_min_torque = a_min_torque
             self.a_max_torque = a_max_torque
@@ -211,8 +211,8 @@ class VehicleAsset(UnitAsset):
             self.engine_down_shift_scale = engine_down_shift_scale
 
     class AntiGravityPoint:
-        def __init__(self, marker_name="", marker_name_length=0, flags=0, antigrav_strength=0.0, antigrav_offset=0.0, antigrav_height=0.0, antigrav_damp_factor=0.0, 
-                     antigrav_normal_k1=0.0, antigrav_normal_k0=0.0, radius=0.0, damage_source_region_name="", damage_source_region_name_length=0, default_state_error=0.0, 
+        def __init__(self, marker_name="", marker_name_length=0, flags=0, antigrav_strength=0.0, antigrav_offset=0.0, antigrav_height=0.0, antigrav_damp_factor=0.0,
+                     antigrav_normal_k1=0.0, antigrav_normal_k0=0.0, radius=0.0, damage_source_region_name="", damage_source_region_name_length=0, default_state_error=0.0,
                      minor_damage_error=0.0, medium_damage_error=0.0, major_damage_error=0.0, destroyed_state_error=0.0):
             self.marker_name = marker_name
             self.marker_name_length = marker_name_length
@@ -233,8 +233,8 @@ class VehicleAsset(UnitAsset):
             self.destroyed_state_error = destroyed_state_error
 
     class FrictionPoint:
-        def __init__(self, marker_name="", marker_name_length=0, flags=0, fraction_of_total_mass=0.0, radius=0.0, damaged_radius=0.0, friction_type=0, 
-                     moving_friction_velocity_diff=0.0, e_brake_moving_friction=0.0, e_brake_friction=0.0, e_brake_moving_friction_vel_dif=0.0, collision_global_material_name="", 
+        def __init__(self, marker_name="", marker_name_length=0, flags=0, fraction_of_total_mass=0.0, radius=0.0, damaged_radius=0.0, friction_type=0,
+                     moving_friction_velocity_diff=0.0, e_brake_moving_friction=0.0, e_brake_friction=0.0, e_brake_moving_friction_vel_dif=0.0, collision_global_material_name="",
                      collision_global_material_name_length=0, model_state_destroyed=0, region_name="", region_name_length=0):
             self.marker_name = marker_name
             self.marker_name_length = marker_name_length
@@ -254,7 +254,7 @@ class VehicleAsset(UnitAsset):
             self.region_name_length = region_name_length
 
     class PhantomVolume:
-        def __init__(self, size=0, count=0, child_shapes_size=0, child_shapes_capacity=0, multisphere_count=0, flags=0, x0=0.0, x1=0.0, y0=0.0, y1=0.0, z0=0.0, z1=0.0, 
+        def __init__(self, size=0, count=0, child_shapes_size=0, child_shapes_capacity=0, multisphere_count=0, flags=0, x0=0.0, x1=0.0, y0=0.0, y1=0.0, z0=0.0, z1=0.0,
                      spheres=None):
             self.size = size
             self.count = count
@@ -271,7 +271,7 @@ class VehicleAsset(UnitAsset):
             self.spheres = spheres
 
     class Sphere:
-        def __init__(self, size=0, count=0, num_spheres=0, sphere_0=Vector(), sphere_1=Vector(), sphere_2=Vector(), sphere_3=Vector(), sphere_4=Vector(), sphere_5=Vector(), 
+        def __init__(self, size=0, count=0, num_spheres=0, sphere_0=Vector(), sphere_1=Vector(), sphere_2=Vector(), sphere_3=Vector(), sphere_4=Vector(), sphere_5=Vector(),
                      sphere_6=Vector(), sphere_7=Vector()):
             self.size = size
             self.count = count

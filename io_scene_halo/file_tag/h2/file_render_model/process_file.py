@@ -27,9 +27,9 @@
 from xml.dom import minidom
 from ....global_functions import tag_format
 from .format import (
-    RenderAsset, 
-    RenderFlags, 
-    GeometryClassificationEnum, 
+    RenderAsset,
+    RenderFlags,
+    GeometryClassificationEnum,
     GeometryCompressionFlags,
     SectionLightingFlags,
     SectionFlags,

@@ -460,7 +460,7 @@ def deserialize_compressed_frame_data(animation_element, frame_data):
                     trans_keyframe_data.append(z)
 
                 index += 1
-                    
+
     scale_offset = animation_element.offset_to_compressed_data + scale_keyframe_offset
     if data_size > scale_offset:
         frame_data.seek(scale_offset, 0)

@@ -1158,8 +1158,9 @@ class TagAsset():
             return self
 
     class Header:
-        def __init__(self, unk1=0, flags=0, type=0, name="", tag_group="", checksum=0, data_offset=0, data_length=0, unk2=0, version=0, destination=0, plugin_handle=0,
+        def __init__(self, local_path="", unk1=0, flags=0, type=0, name="", tag_group="", checksum=0, data_offset=0, data_length=0, unk2=0, version=0, destination=0, plugin_handle=0,
                      engine_tag=""):
+            self.local_path = local_path
             self.unk1 = unk1
             self.flags = flags
             self.type = type
@@ -1175,6 +1176,11 @@ class TagAsset():
             self.engine_tag = engine_tag
 
         def read(self, input_stream, tag):
+            if config.HALO_2_TAG_PATH in input_stream.name:
+                self.header.local_path = input_stream.name.split("%s%s" % (config.HALO_2_TAG_PATH, os.sep))[1].rsplit(".", 1)[0]
+            else:
+                self.header.local_path = input_stream.name.rsplit(".", 1)[0]
+
             header_struct = struct.unpack('%shbb32s4siiiihbb4s' % get_endian_symbol(tag.big_endian), input_stream.read(64))
             self.unk1 = header_struct[0]
             self.flags = header_struct[1]
