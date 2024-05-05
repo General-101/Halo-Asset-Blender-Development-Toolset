@@ -262,7 +262,7 @@ def check_group(input_stream, is_big_endian=True):
     if tag_group in valid_group and engine_tag in valid_engine:
         group_match = True
 
-    return tag_group, group_match
+    return tag_group, group_match, engine_tag
 
 def get_endian_symbol(big_endian):
     endian_type = "<"

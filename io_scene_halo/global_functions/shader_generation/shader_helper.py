@@ -30,6 +30,7 @@ import zlib
 import numpy as np
 
 from mathutils import Vector
+from ...global_functions import global_functions
 from ...file_tag.h1.file_shader_model.format import ModelFlags, DetailFumctionEnum, DetailMaskEnum, FunctionEnum
 try:
     from PIL import Image
@@ -44,7 +45,7 @@ def get_bitmap(tag_ref, texture_root):
     texture_path = None
     bitmap_name = "White"
     if tag_ref.name_length > 0:
-        bitmap_name = os.path.basename(tag_ref.name)
+        bitmap_name = "%s_%s" % (global_functions.string_checksum(tag_ref.name, checksum = 0), os.path.basename(tag_ref.name))
         for extension in texture_extensions:
             check_path = os.path.join(texture_root, "%s.%s" % (tag_ref.name, extension))
             if os.path.isfile(check_path):
@@ -99,11 +100,24 @@ def generate_image_node(mat, texture, BITMAP=None, bitmap_name="White", is_env=F
             x = BITMAP.bitmap_body.color_plate_width
             y = BITMAP.bitmap_body.color_plate_height
 
-            image = bpy.data.images.new(bitmap_name, x, y)
+            image = bpy.data.images.new(bitmap_name, x, y, alpha = True)
             decompressed_data = zlib.decompress(BITMAP.bitmap_body.compressed_color_plate)
             pil_image = Image.frombytes("RGBA", (x, y), decompressed_data, 'raw', "BGRA").transpose(method=Image.Transpose.FLIP_TOP_BOTTOM)
+            pixels = list(pil_image.getdata())
+            background_color = pixels[0][:3]
+            divider_color = pixels[1][:3]
+            dummy_color = pixels[2][:3]
+
             normalized = 1.0 / 255.0
-            image.pixels[:] = (np.asarray(pil_image.convert('RGBA'),dtype=np.float32) * normalized).ravel()
+            
+            blender_pixels = (np.asarray(pil_image.convert('RGBA'),dtype=np.float32) * normalized).ravel()
+
+            if not background_color == divider_color:
+                print(background_color)
+                print(divider_color)
+                print("%s has a color plate" % bitmap_name)
+
+            image.pixels[:] = blender_pixels
             image.pack()
 
         image_node.image = image

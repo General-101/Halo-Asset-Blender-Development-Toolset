@@ -73,7 +73,7 @@ def convert_tag(context, input_file, source_game_title, target_game_title, tag_a
     if not source_game_title == "halo1":
         is_big_endian = False
 
-    tag_group, group_is_valid = tag_format.check_group(input_stream, is_big_endian)
+    tag_group, group_is_valid, engine_tag = tag_format.check_group(input_stream, is_big_endian)
     if not group_is_valid:
         input_stream.close()
         report({'ERROR'}, "File does not have a valid tag class. Make sure you are importing a tag supported by the toolset")
@@ -114,7 +114,7 @@ def convert_tag(context, input_file, source_game_title, target_game_title, tag_a
 
                             continue
 
-                        tag_group, group_is_valid = tag_format.check_group(input_stream, is_big_endian)
+                        tag_group, group_is_valid, engine_tag = tag_format.check_group(input_stream, is_big_endian)
                         if not group_is_valid:
                             input_stream.close()
                             report({'ERROR'}, "File %s does not have a valid tag class. Make sure you are importing a tag supported by the toolset" % file_item)
@@ -158,7 +158,7 @@ def convert_tag(context, input_file, source_game_title, target_game_title, tag_a
 
                             continue
 
-                        tag_group, group_is_valid = tag_format.check_group(input_stream, is_big_endian)
+                        tag_group, group_is_valid, engine_tag = tag_format.check_group(input_stream, is_big_endian)
                         if not group_is_valid:
                             input_stream.close()
                             report({'ERROR'}, "File %s does not have a valid tag header. Make sure you are importing a tag supported by the toolset" % file_item)

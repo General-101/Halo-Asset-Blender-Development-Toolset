@@ -148,7 +148,7 @@ def get_object(collection, import_file, game_version, object_name, random_color_
     materials = []
     shader_collection_dic = {}
     shader_collection_path = os.path.join(config.HALO_2_TAG_PATH, r"scenarios\shaders\shader_collections.shader_collections")
-    if os.path.is_file(shader_collection_path):
+    if os.path.isfile(shader_collection_path):
         shader_collection_file = open(shader_collection_path, "r")
         for line in shader_collection_file.readlines():
             if not global_functions.string_empty_check(line) and not line.startswith(";"):

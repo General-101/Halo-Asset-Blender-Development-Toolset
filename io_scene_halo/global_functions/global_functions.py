@@ -1029,6 +1029,12 @@ def node_checksum(node, checksum = 0):
 
     return rotr_32(checksum, 2)
 
+def string_checksum(string_value, checksum = 0):
+    checksum = lim32(rotl_32(checksum, 1) + halo_string_checksum(string_value))
+    checksum = rotl_32(checksum, 2)
+
+    return rotr_32(checksum, 2)
+
 def node_hierarchy_checksum(nodes, node, checksum = 0):
     checksum = lim32(rotl_32(checksum, 1) + halo_string_checksum(node.name))
     checksum = rotl_32(checksum, 2)

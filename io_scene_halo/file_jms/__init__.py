@@ -35,7 +35,8 @@ from bpy_extras.io_utils import (
 from bpy.types import (
         Operator,
         Panel,
-        PropertyGroup
+        PropertyGroup,
+        FileHandler
         )
 
 from bpy.props import (
@@ -854,6 +855,12 @@ class ImportJMS(Operator, ImportHelper):
 
         return global_functions.run_code("import_jms.load_file(context, self.filepath, self.game_title, self.reuse_armature, self.fix_parents, self.fix_rotations, self.empty_markers, self.report)")
 
+    def invoke(self, context, event):
+        if self.filepath:
+            return self.execute(context)
+        context.window_manager.fileselect_add(self)
+        return {'RUNNING_MODAL'}
+
     def draw(self, context):
         layout = self.layout
         box = layout.box()
@@ -881,6 +888,16 @@ class ImportJMS(Operator, ImportHelper):
         row.label(text='Use Empties For Markers:')
         row.prop(self, "empty_markers", text='')
 
+class ImportJMS_FileHandler(FileHandler):
+    bl_idname = "JMS_FH_import"
+    bl_label = "File handler for JMS import"
+    bl_import_operator = "import_scene.jms"
+    bl_file_extensions = ".JMS"
+
+    @classmethod
+    def poll_drop(cls, context):
+        return (context.area and context.area.type == 'VIEW_3D')
+
 def menu_func_export(self, context):
     self.layout.operator(ExportJMS.bl_idname, text="Halo Jointed Model Skeleton (.jms)")
 
@@ -893,6 +910,7 @@ classeshalo = (
     JMS_PhysicsPropertiesGroup,
     JMS_PhysicsProps,
     ImportJMS,
+    ImportJMS_FileHandler,
     ExportJMS
 )
 

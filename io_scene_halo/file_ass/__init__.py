@@ -35,7 +35,8 @@ from bpy_extras.io_utils import (
 from bpy.types import (
     Operator,
     Panel,
-    PropertyGroup
+    PropertyGroup,
+    FileHandler
     )
 
 from bpy.props import (
@@ -510,6 +511,22 @@ class ImportASS(Operator, ImportHelper):
 
         return global_functions.run_code("import_ass.load_file(context, self.filepath, self.report)")
 
+    def invoke(self, context, event):
+        if self.filepath:
+            return self.execute(context)
+        context.window_manager.fileselect_add(self)
+        return {'RUNNING_MODAL'}
+
+class ImportASS_FileHandler(FileHandler):
+    bl_idname = "ASS_FH_import"
+    bl_label = "File handler for ASS import"
+    bl_import_operator = "import_scene.ass"
+    bl_file_extensions = ".ASS"
+
+    @classmethod
+    def poll_drop(cls, context):
+        return (context.area and context.area.type == 'VIEW_3D')
+
 def menu_func_export(self, context):
     self.layout.operator(ExportASS.bl_idname, text='Halo Amalgam Scene Specification (.ass)')
 
@@ -520,6 +537,7 @@ classeshalo = (
     ASS_ScenePropertiesGroup,
     ASS_SceneProps,
     ImportASS,
+    ImportASS_FileHandler,
     ExportASS,
 )
 

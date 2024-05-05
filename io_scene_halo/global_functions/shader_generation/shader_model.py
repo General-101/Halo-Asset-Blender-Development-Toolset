@@ -28,7 +28,8 @@ import bpy
 
 from ... import config
 from mathutils import Vector
-from ...file_tag.h1.file_shader_model.format import ModelFlags, DetailFumctionEnum, DetailMaskEnum
+from ...file_tag.h1.file_shader_model.format import ModelFlags, DetailFumctionEnum, DetailMaskEnum, FunctionEnum
+from ...file_tag.h1.file_bitmap.format import FormatEnum
 from .shader_helper import (
     get_bitmap, 
     get_output_material_node, 
@@ -269,13 +270,25 @@ def generate_shader_model(mat, shader, report):
     if ModelFlags.detail_after_reflections in shader_model_flags:
         shader_model_node.inputs["Detail After Reflections"].default_value = True
 
-    mat.use_backface_culling = False
+    mat.use_backface_culling = True
     if ModelFlags.two_sided in shader_model_flags:
         shader_model_node.inputs["Two-Sided"].default_value = True
-        mat.use_backface_culling = True
+        mat.use_backface_culling = False
 
-    if ModelFlags.multipurpose_map_uses_og_xbox_channel_order in ModelFlags(shader.shader_body.model_flags):
+    if ModelFlags.not_alpha_tested in shader_model_flags:
+        shader_model_node.inputs["Not Alpha-Tested"].default_value = True
+
+    if ModelFlags.alpha_blended_decal in shader_model_flags:
+        shader_model_node.inputs["Alpha-Blended Decal"].default_value = True
+
+    if ModelFlags.multipurpose_map_uses_og_xbox_channel_order in shader_model_flags:
         shader_model_node.inputs["Multipurpose Map Uses OG Xbox Channel Order"].default_value = True
+
+    shader_model_node.inputs["Animation Color Lower Bound"].default_value = shader.shader_body.self_illumination_animation_color_lower_bound
+    shader_model_node.inputs["Animation Color Upper Bound"].default_value = shader.shader_body.self_illumination_animation_color_upper_bound
+    shader_model_node.inputs["Animation Color Bound Factor"].default_value = 0
+    if not FunctionEnum.one.value == shader.shader_body.self_illumination_animation_function:
+        shader_model_node.inputs["Animation Color Bound Factor"].default_value = 1
 
     shader_model_node.inputs["Detail Function Setting"].default_value = shader.shader_body.detail_function
     shader_model_node.inputs["Detail Mask Setting"].default_value = shader.shader_body.detail_mask
@@ -285,15 +298,15 @@ def generate_shader_model(mat, shader, report):
     shader_model_node.inputs["Parallel Brightness"].default_value = shader.shader_body.parallel_brightness
     shader_model_node.inputs["Parallel Tint Color"].default_value = shader.shader_body.parallel_tint_color
 
-    #if base_bitmap:
-        #ignore_alpha_bitmap = base_bitmap.bitmap_body.format is FormatEnum.compressed_with_color_key_transparency.value
-        #ignore_alpha_shader = ModelFlags.not_alpha_tested in shader_model_flags
-        #if ignore_alpha_shader or ignore_alpha_bitmap:
-            #base_node.image.alpha_mode = 'NONE'
-        #else:
-            #connect_inputs(mat.node_tree, base_node, "Alpha", bdsf_principled, "Alpha")
-            #mat.shadow_method = 'CLIP'
-            #mat.blend_method = 'CLIP'
+    if base_bitmap:
+        ignore_alpha_bitmap = base_bitmap.bitmap_body.format is FormatEnum.compressed_with_color_key_transparency.value
+        ignore_alpha_shader = ModelFlags.not_alpha_tested in shader_model_flags
+        is_blended_decal = ModelFlags.alpha_blended_decal in shader_model_flags
+        if ignore_alpha_bitmap or (ignore_alpha_shader and not is_blended_decal):
+            base_node.image.alpha_mode = 'NONE'
+        else:
+            mat.shadow_method = 'CLIP'
+            mat.blend_method = 'HASHED'
 
 
 

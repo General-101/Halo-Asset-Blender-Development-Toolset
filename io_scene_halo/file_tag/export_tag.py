@@ -44,7 +44,7 @@ def write_file(context, file_path, report):
 
         is_big_endian = True
 
-        tag_group, group_is_valid = tag_format.check_group(input_stream, is_big_endian)
+        tag_group, group_is_valid, engine_tag = tag_format.check_group(input_stream, is_big_endian)
         if not group_is_valid:
             input_stream.close()
             report({'ERROR'}, "File does not have a valid tag class. Make sure you are importing a tag supported by the toolset")

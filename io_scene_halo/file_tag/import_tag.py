@@ -66,11 +66,18 @@ def load_file(context, file_path, game_title, fix_rotations, empty_markers, repo
 
         return {'CANCELLED'}
 
+    if game_title == "auto":
+        tag_group, group_is_valid, engine_tag = tag_format.check_group(input_stream, True)
+        if engine_tag == "blam":
+            game_title = "halo1"
+        else:
+            game_title = "halo2"
+
     is_big_endian = True
     if not game_title == "halo1":
         is_big_endian = False
 
-    tag_group, group_is_valid = tag_format.check_group(input_stream, is_big_endian)
+    tag_group, group_is_valid, engine_tag = tag_format.check_group(input_stream, is_big_endian)
     if not group_is_valid:
         input_stream.close()
         print(file_path)

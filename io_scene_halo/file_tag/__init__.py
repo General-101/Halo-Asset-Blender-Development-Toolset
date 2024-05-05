@@ -26,10 +26,14 @@
 
 import bpy
 
-from bpy.types import Operator
 from bpy_extras.io_utils import (
     ImportHelper,
     ExportHelper
+    )
+
+from bpy.types import (
+    Operator,
+    FileHandler
     )
 
 from bpy.props import (
@@ -48,7 +52,8 @@ class ImportTag(Operator, ImportHelper):
     game_title: EnumProperty(
         name="Game:",
         description="What game does the tag group belong to",
-        items=[ ('halo1', "Halo 1", "Use tag data from Halo 1"),
+        items=[ ('auto', "Auto", "Attempt to get the game title automatically. Defaults to Halo 1 if it fails."),
+                ('halo1', "Halo 1", "Use tag data from Halo 1"),
                 ('halo2', "Halo 2", "Use tag data from Halo 2"),
                 ('halo3', "Halo 3", "Use tag data from Halo 3"),
             ]
@@ -71,6 +76,12 @@ class ImportTag(Operator, ImportHelper):
 
         return global_functions.run_code("import_tag.load_file(context, self.filepath, self.game_title, self.fix_rotations, self.empty_markers, self.report)")
 
+    def invoke(self, context, event):
+        if self.filepath:
+            return self.execute(context)
+        context.window_manager.fileselect_add(self)
+        return {'RUNNING_MODAL'}
+
     def draw(self, context):
         layout = self.layout
 
@@ -92,6 +103,16 @@ class ImportTag(Operator, ImportHelper):
         row.label(text='Use Empties For Markers:')
         row.prop(self, "empty_markers", text='')
 
+class ImportTag_FileHandler(FileHandler):
+    bl_idname = "Tag_FH_import"
+    bl_label = "File handler for tag import"
+    bl_import_operator = "import_scene.tag"
+    bl_file_extensions = ".model;.gbxmodel;.model_collision_geometry;.model_animations;.physics;.scenario_structure_bsp;.scenario;.camera_track;.render_model"
+
+    @classmethod
+    def poll_drop(cls, context):
+        return (context.area and context.area.type == 'VIEW_3D')
+
 class ExportSCNR(Operator, ExportHelper):
     """Write a scenario tag file"""
     bl_idname = "export_scene.scnr"
@@ -110,6 +131,7 @@ class ExportSCNR(Operator, ExportHelper):
 
 classeshalo = (
     ImportTag,
+    ImportTag_FileHandler,
     ExportSCNR
 )
 

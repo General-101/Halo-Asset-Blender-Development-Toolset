@@ -35,7 +35,8 @@ from bpy_extras.io_utils import (
 from bpy.types import (
     Operator,
     Panel,
-    PropertyGroup
+    PropertyGroup,
+    FileHandler
     )
 
 from bpy.props import (
@@ -570,6 +571,12 @@ class ImportJMA(Operator, ImportHelper):
 
         return global_functions.run_code("import_jma.load_file(context, self.filepath, self.game_title, self.fix_parents, self.fix_rotations, self.jms_path_a, self.jms_path_b, self.report)")
 
+    def invoke(self, context, event):
+        if self.filepath:
+            return self.execute(context)
+        context.window_manager.fileselect_add(self)
+        return {'RUNNING_MODAL'}
+
     def draw(self, context):
         scene = context.scene
         scene_jma = scene.jma
@@ -611,6 +618,16 @@ class ImportJMA(Operator, ImportHelper):
             row.label(text='Secondary JMS:')
             row.prop(self, "jms_path_b", text='')
 
+class ImportJMA_FileHandler(FileHandler):
+    bl_idname = "JMA_FH_import"
+    bl_label = "File handler for JMA import"
+    bl_import_operator = "import_scene.jma"
+    bl_file_extensions = ".JMA;.JMM;.JMT;.JMO;.JMR;.JMRX;.JMH;.JMZ;.JMW"
+
+    @classmethod
+    def poll_drop(cls, context):
+        return (context.area and context.area.type == 'VIEW_3D')
+
 def menu_func_export(self, context):
     self.layout.operator(ExportJMA.bl_idname, text="Halo Jointed Model Animation (.jma)")
 
@@ -621,6 +638,7 @@ classeshalo = (
     JMA_ScenePropertiesGroup,
     JMA_SceneProps,
     ImportJMA,
+    ImportJMA_FileHandler,
     ExportJMA,
     JMS_RestPositionsADialog,
     JMS_RestPositionsBDialog,

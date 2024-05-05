@@ -28,7 +28,7 @@ import bpy
 
 from ... import config
 from mathutils import Vector
-from ...file_tag.h1.file_shader_environment.format import EnvironmentTypeEnum, EnvironmentFlags, DiffuseFlags, ReflectionFlags
+from ...file_tag.h1.file_shader_environment.format import EnvironmentTypeEnum, EnvironmentFlags, DiffuseFlags, ReflectionFlags, FunctionEnum
 from .shader_helper import (
     get_bitmap, 
     get_output_material_node, 
@@ -341,7 +341,7 @@ def generate_shader_environment(mat, shader, permutation_index, report):
     if alpha_shader:
         shader_environment_node.inputs["Alpha Tested"].default_value = True
         mat.shadow_method = 'CLIP'
-        mat.blend_method = 'CLIP'
+        mat.blend_method = 'HASHED'
 
     mat.use_backface_culling = True
     shader_environment_node.inputs["Blend Type"].default_value = shader.shader_body.environment_type
@@ -349,14 +349,25 @@ def generate_shader_environment(mat, shader, permutation_index, report):
     shader_environment_node.inputs["Micro Detail Map Function"].default_value = shader.shader_body.micro_detail_map_function
 
     if bump_bitmap:
-        shader_environment_node.inputs["Bump Strength"].default_value = bump_bitmap.bitmap_body.bump_height
+        shader_environment_node.inputs["Bump Strength"].default_value = bump_bitmap.bitmap_body.bump_height * 15
 
     shader_environment_node.inputs["Primary On Color"].default_value = shader.shader_body.primary_on_color
     shader_environment_node.inputs["Primary Off Color"].default_value = shader.shader_body.primary_off_color
+    shader_environment_node.inputs["Primary Self-Illumination Activation Level"].default_value = 0
+    if not FunctionEnum.one.value == shader.shader_body.primary_animation_function:
+        shader_environment_node.inputs["Primary Self-Illumination Activation Level"].default_value = 1
+
     shader_environment_node.inputs["Secondary On Color"].default_value = shader.shader_body.secondary_on_color
     shader_environment_node.inputs["Secondary Off Color"].default_value = shader.shader_body.secondary_off_color
+    shader_environment_node.inputs["Secondary Self-Illumination Activation Level"].default_value = 0
+    if not FunctionEnum.one.value == shader.shader_body.secondary_animation_function:
+        shader_environment_node.inputs["Secondary Self-Illumination Activation Level"].default_value = 1
+
     shader_environment_node.inputs["Plasma On Color"].default_value = shader.shader_body.plasma_on_color
     shader_environment_node.inputs["Plasma Off Color"].default_value = shader.shader_body.plasma_off_color
+    shader_environment_node.inputs["Plasma Self-Illumination Activation Level"].default_value = 0
+    if not FunctionEnum.one.value == shader.shader_body.plasma_animation_function:
+        shader_environment_node.inputs["Plasma Self-Illumination Activation Level"].default_value = 1
 
     shader_environment_node.inputs["Brightness"].default_value = shader.shader_body.brightness
     shader_environment_node.inputs["Perpendicular Color"].default_value = shader.shader_body.perpendicular_color
@@ -364,5 +375,3 @@ def generate_shader_environment(mat, shader, permutation_index, report):
 
     shader_environment_node.inputs["Perpendicular Brightness"].default_value = shader.shader_body.perpendicular_brightness
     shader_environment_node.inputs["Parallel Brightness"].default_value = shader.shader_body.parallel_brightness
-
-    shader_environment_node.inputs["Shader Self-Illumination Activation Level"].default_value = 1
