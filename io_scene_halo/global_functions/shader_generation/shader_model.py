@@ -104,7 +104,6 @@ def set_micro_detail_scale(shader, mat, micro_detail_node, base_bitmap_count, mi
     connect_inputs(mat.node_tree, vect_math_node, "Vector", micro_detail_node, "Vector")
 
     uv_map_node = mat.node_tree.nodes.new("ShaderNodeUVMap")
-    uv_map_node.uv_map = "UVMap_0"
     combine_xyz_node = mat.node_tree.nodes.new("ShaderNodeCombineXYZ")
     uv_map_node.location = Vector((-1600, 275))
     combine_xyz_node.location = Vector((-1600, 150))
@@ -142,7 +141,6 @@ def set_bump_scale(shader, mat, bump_node, base_bitmap_count, bump_bitmap_count,
     connect_inputs(mat.node_tree, vect_math_node, "Vector", bump_node, "Vector")
 
     uv_map_node = mat.node_tree.nodes.new("ShaderNodeUVMap")
-    uv_map_node.uv_map = "UVMap_0"
     combine_xyz_node = mat.node_tree.nodes.new("ShaderNodeCombineXYZ")
     uv_map_node.location = Vector((-1600, -25))
     combine_xyz_node.location = Vector((-1600, -150))
@@ -180,7 +178,6 @@ def set_illum_scale(shader, mat, self_illumination_node):
     connect_inputs(mat.node_tree, vect_math_node, "Vector", self_illumination_node, "Vector")
 
     uv_map_node = mat.node_tree.nodes.new("ShaderNodeUVMap")
-    uv_map_node.uv_map = "UVMap_0"
     combine_xyz_node = mat.node_tree.nodes.new("ShaderNodeCombineXYZ")
     uv_map_node.location = Vector((-1600, -325))
     combine_xyz_node.location = Vector((-1600, -450))

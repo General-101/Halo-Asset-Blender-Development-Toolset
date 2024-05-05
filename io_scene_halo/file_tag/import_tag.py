@@ -58,7 +58,23 @@ from .h2.file_scenario.process_file import process_file as process_h2_scenario
 from .h1.file_camera_track.process_file import process_file as process_camera_track
 from .h2.file_camera_track.process_file import process_file as process_h2_camera_track
 
+from ..file_tag.h1.file_shader_environment.process_file import process_file as process_shader_environment
+from ..file_tag.h1.file_shader_model.process_file import process_file as process_shader_model
+from ..file_tag.h1.file_shader_transparent_chicago.process_file import process_file as process_shader_transparent_chicago
+from ..file_tag.h1.file_shader_transparent_chicago_extended.process_file import process_file as process_shader_transparent_chicago_extended
+from ..file_tag.h1.file_shader_transparent_generic.process_file import process_file as process_shader_transparent_generic
+from ..file_tag.h1.file_shader_transparent_glass.process_file import process_file as process_shader_transparent_glass
+from ..file_tag.h1.file_shader_transparent_meter.process_file import process_file as process_shader_transparent_meter
+from ..file_tag.h1.file_shader_transparent_plasma.process_file import process_file as process_shader_transparent_plasma
+from ..file_tag.h1.file_shader_transparent_water.process_file import process_file as process_shader_transparent_water
+
+from ..global_functions.shader_processing import generate_shader_transparent_glass
+from ..global_functions.shader_processing import generate_shader_transparent_meter
+from ..global_functions.shader_generation.shader_environment import generate_shader_environment
+from ..global_functions.shader_generation.shader_model import generate_shader_model
+
 def load_file(context, file_path, game_title, fix_rotations, empty_markers, report):
+    tag_name = os.path.basename(file_path).rsplit(".", 1)[0]
     input_stream = open(file_path, "rb")
     if tag_format.check_file_size(input_stream) < 64: # Size of the header for all tags
         input_stream.close()
@@ -189,6 +205,45 @@ def load_file(context, file_path, game_title, fix_rotations, empty_markers, repo
         else:
             ASSET = process_h2_camera_track(input_stream, report)
 
+    elif tag_group == "senv":
+        build_scene = None
+        ASSET = process_shader_environment(input_stream, report)
+        mat = bpy.data.materials.new(name=tag_name)
+        generate_shader_environment(mat, ASSET, 0, report)
+
+    elif tag_group == "soso":
+        build_scene = None
+        ASSET = process_shader_model(input_stream, report)
+        mat = bpy.data.materials.new(name=tag_name)
+        generate_shader_model(mat, ASSET, report)
+
+    #elif tag_group == "schi":
+        #generate_shader_transparent_chicago(mat, shader, report)
+
+    #elif tag_group == "scex":
+        #generate_shader_transparent_chicago_extended(mat, shader, report)
+
+    #elif tag_group == "sotr":
+        #generate_shader_transparent_generic(mat, shader, report)
+
+    elif tag_group == "sgla":
+        build_scene = None
+        ASSET = process_shader_transparent_glass(input_stream, report)
+        mat = bpy.data.materials.new(name=tag_name)
+        generate_shader_transparent_glass(mat, ASSET, report)
+
+    elif tag_group == "smet":
+        build_scene = None
+        ASSET = process_shader_transparent_meter(input_stream, report)
+        mat = bpy.data.materials.new(name=tag_name)
+        generate_shader_transparent_meter(mat, ASSET, report)
+
+    #elif tag_group == "spla":
+        #generate_shader_transparent_plasma(mat, shader, report)
+
+    #elif tag_group == "swat":
+        #generate_shader_transparent_water(mat, shader, report)
+
     else:
         input_stream.close()
         report({'ERROR'}, "Not implemented")
@@ -196,7 +251,8 @@ def load_file(context, file_path, game_title, fix_rotations, empty_markers, repo
         return {'CANCELLED'}
 
     input_stream.close()
-    build_scene.build_scene(context, ASSET, "retail", game_title, 0, fix_rotations, empty_markers, report)
+    if build_scene:
+        build_scene.build_scene(context, ASSET, "retail", game_title, 0, fix_rotations, empty_markers, report)
 
     return {'FINISHED'}
 

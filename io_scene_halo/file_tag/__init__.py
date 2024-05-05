@@ -107,7 +107,7 @@ class ImportTag_FileHandler(FileHandler):
     bl_idname = "Tag_FH_import"
     bl_label = "File handler for tag import"
     bl_import_operator = "import_scene.tag"
-    bl_file_extensions = ".model;.gbxmodel;.model_collision_geometry;.model_animations;.physics;.scenario_structure_bsp;.scenario;.camera_track;.render_model"
+    bl_file_extensions = ".model;.gbxmodel;.model_collision_geometry;.model_animations;.physics;.scenario_structure_bsp;.scenario;.camera_track;.render_model;.shader_environment;.shader_model;.shader_transparent_meter;.shader_transparent_glass"
 
     @classmethod
     def poll_drop(cls, context):
