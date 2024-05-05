@@ -257,14 +257,8 @@ class ASS_JMS_MaterialFlagsProps(Panel):
                 row.label(text='Decal Offset:')
                 row.prop(material_ass_jms, "decal_offset", text='')
                 row = col.row()
-                row.label(text='Water Surface:')
-                row.prop(material_ass_jms, "water_surface", text='')
-                row = col.row()
                 row.label(text='Slip Surface:')
                 row.prop(material_ass_jms, "slip_surface", text='')
-                row = col.row()
-                row.label(text='Group Transparents By Plane:')
-                row.prop(material_ass_jms, "group_transparents_by_plane", text='')
 
 class ASS_JMS_MaterialLightmapProps(Panel):
     bl_label = "Lightmap Resolution Properties"
