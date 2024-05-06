@@ -104,14 +104,16 @@ def get_material_strings(material, version):
 
 def scale_is_uniform(obj):
     is_uniform = True
-    scale_x = obj.scale[0]
-    scale_y = obj.scale[1]
-    scale_z = obj.scale[2]
-    if scale_y > (scale_x + 0.0000900000) or scale_y < (scale_x - 0.0000900000):
-        is_uniform = False
+    if obj.type== 'MESH':
+        loc, rot, scale = obj.matrix_world.decompose()
+        scale_x = scale[0]
+        scale_y = scale[1]
+        scale_z = scale[2]
+        if scale_y > (scale_x + 0.0000900000) or scale_y < (scale_x - 0.0000900000):
+            is_uniform = False
 
-    if scale_z > (scale_x + 0.0000900000) or scale_z < (scale_x - 0.0000900000):
-        is_uniform = False
+        if scale_z > (scale_x + 0.0000900000) or scale_z < (scale_x - 0.0000900000):
+            is_uniform = False
 
     return is_uniform
 

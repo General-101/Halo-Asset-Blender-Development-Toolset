@@ -31,10 +31,11 @@ def gather_scene_resources(context, layer_collection_list, object_list, hidden_g
             layer_hidden_from_render = False
             for collection in obj.users_collection:
                 layer_collection = context.view_layer.layer_collection.children.get(collection.name)
-                if layer_collection.collection.hide_render:
-                    layer_hidden_from_render = True
-                if not layer_collection == None and not layer_collection in layer_collection_list:
-                    layer_collection_list.append(layer_collection)
+                if not layer_collection == None:
+                    if layer_collection.collection.hide_render:
+                        layer_hidden_from_render = True
+                    if not layer_collection in layer_collection_list:
+                        layer_collection_list.append(layer_collection)
 
             if nonrender_geo:
                 object_list.append(obj)
@@ -47,9 +48,10 @@ def gather_scene_resources(context, layer_collection_list, object_list, hidden_g
                 layer_hidden_from_render = False
                 for collection in obj.users_collection:
                     layer_collection = context.view_layer.layer_collection.children.get(collection.name)
-                if layer_collection.collection.hide_render:
-                    layer_hidden_from_render = True
-                    if not layer_collection == None and not layer_collection in layer_collection_list:
+                if not layer_collection == None:
+                    if layer_collection.collection.hide_render:
+                        layer_hidden_from_render = True
+                    if not layer_collection in layer_collection_list:
                         if layer_collection.is_visible:
                             layer_collection_list.append(layer_collection)
 
