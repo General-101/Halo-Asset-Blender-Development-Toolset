@@ -850,6 +850,11 @@ class ImportJMS(Operator, ImportHelper):
         options={'HIDDEN'},
         )
 
+    filepath: StringProperty(
+        subtype='FILE_PATH', 
+        options={'SKIP_SAVE'}
+        )
+
     def execute(self, context):
         from . import import_jms
 

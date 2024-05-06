@@ -24,6 +24,7 @@
 #
 # ##### END MIT LICENSE BLOCK #####
 
+import os
 import bpy
 
 from bpy_extras.io_utils import (
@@ -33,13 +34,15 @@ from bpy_extras.io_utils import (
 
 from bpy.types import (
     Operator,
-    FileHandler
+    FileHandler,
+    OperatorFileListElement
     )
 
 from bpy.props import (
     BoolProperty,
     EnumProperty,
-    StringProperty
+    StringProperty,
+    CollectionProperty
     )
 
 from ..global_functions import global_functions
@@ -71,13 +74,29 @@ class ImportTag(Operator, ImportHelper):
         default = False,
         )
 
+    directory: StringProperty(
+        subtype='FILE_PATH', 
+        options={'SKIP_SAVE'}
+        )
+
+    files: CollectionProperty(
+        type=OperatorFileListElement, 
+        options={'SKIP_SAVE'}
+        )
+
     def execute(self, context):
         from ..file_tag import import_tag
+        if not self.directory:
+            return {'CANCELLED'}
 
-        return global_functions.run_code("import_tag.load_file(context, self.filepath, self.game_title, self.fix_rotations, self.empty_markers, self.report)")
+        for file in self.files:
+            filepath = os.path.join(self.directory, file.name)
+            global_functions.run_code("import_tag.load_file(context, filepath, self.game_title, self.fix_rotations, self.empty_markers, self.report)")
+
+        return {'FINISHED'}
 
     def invoke(self, context, event):
-        if self.filepath:
+        if self.directory:
             return self.execute(context)
         context.window_manager.fileselect_add(self)
         return {'RUNNING_MODAL'}

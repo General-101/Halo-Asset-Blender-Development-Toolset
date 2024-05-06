@@ -254,7 +254,5 @@ def load_file(context, file_path, game_title, fix_rotations, empty_markers, repo
     if build_scene:
         build_scene.build_scene(context, ASSET, "retail", game_title, 0, fix_rotations, empty_markers, report)
 
-    return {'FINISHED'}
-
 if __name__ == '__main__':
     bpy.ops.import_scene.model()

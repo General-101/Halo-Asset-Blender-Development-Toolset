@@ -246,7 +246,7 @@ def check_file_size(input_stream):
     return filesize
 
 def check_group(input_stream, is_big_endian=True):
-    valid_group =  ("mode", "mod2", "coll", "phys", "antr", "sbsp", "scnr", "ltmp", "trak", "snd!", "snpm", "senv", "bitm", "actv", "bipd", "ctrl", "devi", "eqip", "item", "mach", "obje", "pane", "plac", "proj", "scen", "sens", "stat", "unit", "vehi", "weap")
+    valid_group =  ("mode", "mod2", "coll", "phys", "antr", "sbsp", "scnr", "ltmp", "trak", "snd!", "snpm", "senv", "soso", "sgla", "smet", "bitm", "actv", "bipd", "ctrl", "devi", "eqip", "item", "mach", "obje", "pane", "plac", "proj", "scen", "sens", "stat", "unit", "vehi", "weap")
     valid_engine = ('blam', 'BLM!', 'LAMB', 'MLAB')
     group_match = False
 
