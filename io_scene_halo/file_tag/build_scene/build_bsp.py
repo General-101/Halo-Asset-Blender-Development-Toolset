@@ -245,12 +245,12 @@ def build_scene(context, LEVEL, game_version, game_title, file_version, fix_rota
         level_root = bpy.data.objects.new("frame_root", level_mesh)
         collection.objects.link(level_root)
 
-    level_root.hide_set(True)
-    level_root.hide_render = True
     mesh_processing.select_object(context, level_root)
     bpy.ops.object.mode_set(mode='EDIT')
     bpy.ops.mesh.primitive_cube_add(size=2, enter_editmode=False, align='WORLD', location=(0, 0, 0), scale=(1, 1, 1))
     bpy.ops.object.mode_set(mode='OBJECT')
+    level_root.hide_set(True)
+    level_root.hide_render = True
     if game_title == "halo1":
         if len(LEVEL.lightmaps) > 0:
             surfaces = LEVEL.surfaces
