@@ -676,20 +676,31 @@ def generate_mesh_object_retail(asset, object_vertices, object_triangles, object
 
 def generate_mesh_retail(context, asset, object_vertices, object_triangles, object_data, game_title, random_color_gen):
     #object_vertices, object_triangles = optimize_geo(object_vertices, object_triangles)
-    verts = [vertex.translation for vertex in object_vertices]
-    vertex_normals = [vertex.normal for vertex in object_vertices]
-    tris = [(triangles.v0, triangles.v1, triangles.v2) for triangles in object_triangles]
+    vertices = []
+    triangles = []
+    for tri_idx, triangle in enumerate(object_triangles):
+        triangle_index = tri_idx * 3
+        v0 = object_vertices[triangle.v0]
+        v1 = object_vertices[triangle.v1]
+        v2 = object_vertices[triangle.v2]
+        vertices.append(v0)
+        vertices.append(v1)
+        vertices.append(v2)
+        triangles.append((triangle_index, triangle_index + 1, triangle_index + 2))
+
+    positions = [vertex.translation for vertex in vertices]
+    vertex_normals = [vertex.normal for vertex in vertices]
 
     vertex_weights_sets = []
     region_list = []
 
-    object_data.from_pydata(verts, [], tris)
+    object_data.from_pydata(positions, [], triangles)
     for poly in object_data.polygons:
         poly.use_smooth = True
 
     region_attribute = object_data.get_custom_attribute()
     object_data.normals_split_custom_set_from_vertices(vertex_normals)
-    for vertex_idx, vertex in enumerate(object_vertices):
+    for vertex_idx, vertex in enumerate(vertices):
         node_set = []
         for node_values in vertex.node_set:
             node_index = node_values[0]
@@ -736,7 +747,7 @@ def generate_mesh_retail(context, asset, object_vertices, object_triangles, obje
         region_index = region_list.index(current_region_permutation)
         region_attribute.data[triangle_idx].value = region_index + 1
 
-        vertex_list = [object_vertices[triangle.v0], object_vertices[triangle.v1], object_vertices[triangle.v2]]
+        vertex_list = [vertices[triangle.v0], vertices[triangle.v1], vertices[triangle.v2]]
         for vertex_idx, vertex in enumerate(vertex_list):
             loop_index = (3 * triangle_idx) + vertex_idx
             for uv_idx, uv in enumerate(vertex.uv_set):

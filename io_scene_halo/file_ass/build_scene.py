@@ -111,27 +111,35 @@ def set_primitive_material(object_material_index, ASS, mesh):
         if mesh.materials:
             mesh.materials[0] = bpy.data.materials[mat.name]
 
-def sort_by_parent(instances):
-    instance_count = len(instances)
-    iteration_count = 0
-    instance_list = instances
-    ordered_list = []
+def sort_by_parent(ASS):
+    parent_index_list = []
+    ordered_instances = []
     unordered_map = []
-    layer_index_list = [-1]
-    while not len(ordered_list) == instance_count and not iteration_count == instance_count:
-        layer_list = []
-        layer_instance_list = []
-        for instance_idx, instance in enumerate(instance_list):
-            if instance.parent_id in layer_index_list:
-                layer_list.append(instance_idx)
+    for instance in ASS.instances:
+        if not instance.parent_id in parent_index_list:
+            parent_index_list.append(instance.parent_id)
+
+    parent_index_list.sort()
+    for parent_idx, parent_index in enumerate(parent_index_list):
+        for instance_idx, instance in enumerate(ASS.instances):
+            if instance.parent_id == parent_index:
+                ordered_instances.append(instance)
                 unordered_map.append(instance_idx)
-                layer_instance_list.append(instance)
 
-        iteration_count += 1
-        ordered_list = ordered_list + layer_instance_list
-        layer_index_list = layer_list
+    for ordered_instance in ordered_instances:
+        if ordered_instance.parent_id >= 0:
+            ordered_instance.parent_id = unordered_map.index(ordered_instance.parent_id)
 
-    return ordered_list, unordered_map
+        for bone_group_idx, bone_group in enumerate(ordered_instance.bone_groups):
+            if bone_group >= 0:
+                ordered_instance.bone_groups[bone_group_idx] = unordered_map.index(bone_group)
+
+    for ob in ASS.objects:
+        for node_idx, node_index in enumerate(ob.node_index_list):
+            if node_index >= 0:
+                ob.node_index_list[node_idx] = unordered_map.index(node_index)
+
+    return ordered_instances
 
 def build_scene(context, filepath, report):
     ASS = process_file(filepath)
@@ -152,10 +160,11 @@ def build_scene(context, filepath, report):
         mat.ass_jms.name_override = ass_mat.asset_name
         mat.diffuse_color = random_color_gen.next()
 
+    ordered_instances = sort_by_parent(ASS)
     node_prefix_tuple = ('b ', 'b_', 'bone', 'frame', 'bip01')
     bone_instance_index_list = []
     bone_object_index_list = []
-    for instance_idx, instance in enumerate(ASS.instances):
+    for instance_idx, instance in enumerate(ordered_instances):
         object_index = instance.object_index
         if instance.name.startswith(node_prefix_tuple):
             bone_instance_index_list.append(instance_idx)
@@ -171,7 +180,7 @@ def build_scene(context, filepath, report):
             mesh_processing.select_object(context, armature)
             bpy.ops.object.mode_set(mode = 'EDIT')
 
-            child_bone = armature.data.edit_bones.new(ASS.instances[bone_instance].name)
+            child_bone = armature.data.edit_bones.new(ordered_instances[bone_instance].name)
             child_bone.tail[2] = 1
 
             bpy.ops.object.mode_set(mode = 'OBJECT')
@@ -288,7 +297,8 @@ def build_scene(context, filepath, report):
     instances = []
     global_transforms = []
     visited_objects = [False for object in object_list]
-    for instance_idx, instance_element in enumerate(ASS.instances):
+
+    for instance_idx, instance_element in enumerate(ordered_instances):
         object_index = instance_element.object_index
         unique_id = instance_element.unique_id
 
@@ -338,7 +348,7 @@ def build_scene(context, filepath, report):
                 regions = object_setings[1]
 
                 for bone_goup in instance_element.bone_groups:
-                    instance.vertex_groups.new(name = ASS.instances[bone_goup].name)
+                    instance.vertex_groups.new(name = ordered_instances[bone_goup].name)
 
                 for vertex_weights_set_idx, vertex_weights_set in enumerate(vertex_weights_sets):
                     for node_set in vertex_weights_set:
@@ -361,7 +371,7 @@ def build_scene(context, filepath, report):
         else:
             instances.append(None)
 
-    for instance_idx, instance_element in enumerate(ASS.instances):
+    for instance_idx, instance_element in enumerate(ordered_instances):
         object_index = instance_element.object_index
         unique_id = instance_element.unique_id
 
@@ -398,7 +408,7 @@ def build_scene(context, filepath, report):
                 if parent_index in bone_instance_index_list:
                     instance.parent = armature
                     instance.parent_type = "BONE"
-                    instance.parent_bone = ASS.instances[parent_index].name
+                    instance.parent_bone = ordered_instances[parent_index].name
                 else:
                     instance.parent = parent_object
 
@@ -415,7 +425,7 @@ def build_scene(context, filepath, report):
 
                 child_bone = armature.data.edit_bones.get(instance_element.name)
                 if parent_index >= 0 and parent_index in bone_instance_index_list:
-                    instance_name = ASS.instances[parent_index].name
+                    instance_name = ordered_instances[parent_index].name
                     child_bone.parent = armature.data.edit_bones.get(instance_name)
                     full_transform = global_transforms[parent_index] @ full_transform
 
