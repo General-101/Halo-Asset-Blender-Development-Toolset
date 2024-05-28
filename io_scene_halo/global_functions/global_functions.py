@@ -1356,8 +1356,11 @@ def get_origin_bsp(bsp_bounds_list, object_element):
         z_min, z_max = bsp_bounds[2]
         x, y, z = object_element.position
         if x_min < x and x_max > x and y_min < y and y_max > y and z_min < z and z_max > z:
-            bsp_index = bsp_idx
-            break
+            if not bsp_index == -1:
+                bsp_index = -1
+                break
+            else:
+                bsp_index = bsp_idx
 
     return bsp_index
 

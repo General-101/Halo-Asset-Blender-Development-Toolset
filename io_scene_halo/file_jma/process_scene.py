@@ -132,8 +132,12 @@ def process_scene(context, extension, jma_version, game_title, generate_checksum
             first_child_node = joined_list.index(find_child_node)
         if not find_sibling_node == None:
             first_sibling_node = joined_list.index(find_sibling_node)
-        if not node.parent == None and node.parent.use_deform and not node.parent.name.startswith('!'):
-            parent_node = joined_list.index(node.parent)
+        if not node.parent == None and not node.parent.name.startswith('!'):
+            if armature:
+                if node.parent.use_deform:
+                    parent_node = joined_list.index(node.parent)
+            else:
+                parent_node = joined_list.index(node.parent)
 
         name = node.name
         child = first_child_node
@@ -168,9 +172,13 @@ def process_scene(context, extension, jma_version, game_title, generate_checksum
             is_bone = False
             if armature:
                 is_bone = True
-            armature_matrix = global_functions.get_matrix(armature, armature, True, None, joined_list, False, jma_version, 'JMA', False, scale_value, fix_rotations)
+                
             bone_matrix = global_functions.get_matrix(node, node, True, armature, joined_list, True, jma_version, 'JMA', False, scale_value, fix_rotations)
-            full_matrix = armature_matrix @ bone_matrix
+            full_matrix = bone_matrix
+            if armature:
+                armature_matrix = global_functions.get_matrix(armature, armature, True, None, joined_list, False, jma_version, 'JMA', False, scale_value, fix_rotations)
+                full_matrix = armature_matrix @ bone_matrix
+
             mesh_dimensions = global_functions.get_dimensions(full_matrix, node, jma_version, is_bone, 'JMA', scale_value)
             rotation = (mesh_dimensions.quaternion[0], mesh_dimensions.quaternion[1], mesh_dimensions.quaternion[2], mesh_dimensions.quaternion[3])
             translation = (mesh_dimensions.position[0], mesh_dimensions.position[1], mesh_dimensions.position[2])

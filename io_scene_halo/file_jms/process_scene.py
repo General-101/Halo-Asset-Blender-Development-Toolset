@@ -244,6 +244,10 @@ def process_scene(context, version, game_version, generate_checksum, fix_rotatio
                 v0 = vert_count
                 v1 = vert_count + 1
                 v2 = vert_count + 2
+                if original_geo_matrix.determinant() < 0.0:
+                    v0 = vert_count + 2
+                    v1 = vert_count + 1
+                    v2 = vert_count
 
                 JMS.triangles.append(JMSAsset.Triangle(region_index, material_index, v0, v1, v2))
                 for loop_index in face.loop_indices:
@@ -685,6 +689,27 @@ def process_scene(context, version, game_version, generate_checksum, fix_rotatio
                                 break
 
         else:
+            texture_path = '<none>'
+            if not material[0] == None:
+                name = mesh_processing.append_material_symbols(material[0], game_version, False)
+                if not material[0].node_tree == None and write_textures:
+                    for node in material[0].node_tree.nodes:
+                        if node.type == 'TEX_IMAGE':
+                            if not node.image == None:
+                                if node.image.source == "FILE" and not node.image.packed_file:
+                                    image_filepath = bpy.path.abspath(node.image.filepath)
+                                    image_path = image_filepath.rsplit('.', 1)[0]
+                                    image_name = bpy.path.basename(image_path)
+                                    tex = image_name
+                                    if version >= 8200:
+                                        tex = image_path
+
+                                else:
+                                    tex = node.image.name.rsplit('.', 1)[0]
+
+                                texture_path = tex
+                                break
+
             name = mesh_processing.append_material_symbols(material[0], game_version, False)
             slot = bpy.data.materials.find(material[0].name)
             lod = mesh_processing.get_lod(material[1], game_version)

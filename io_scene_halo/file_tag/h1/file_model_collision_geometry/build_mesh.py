@@ -29,6 +29,7 @@ import bmesh
 
 from mathutils import Vector
 from ....global_functions import mesh_processing, global_functions
+from .format import SurfaceFlags
 
 def build_collision(context, armature, COLLISION, game_version):
     collection = context.collection
@@ -94,6 +95,18 @@ def build_collision(context, armature, COLLISION, game_version):
                         material_list = []
 
                         material_name = mat.name
+                        if SurfaceFlags.two_sided in SurfaceFlags(surface.flags):
+                            material_name += "%"
+
+                        if SurfaceFlags.invisible in SurfaceFlags(surface.flags):
+                            material_name += "*"
+
+                        if SurfaceFlags.climbable in SurfaceFlags(surface.flags):
+                            material_name += "^"
+
+                        if SurfaceFlags.breakable in SurfaceFlags(surface.flags):
+                            material_name += "-"
+
                         mat = bpy.data.materials.get(material_name)
                         if mat is None:
                             mat = bpy.data.materials.new(name=material_name)

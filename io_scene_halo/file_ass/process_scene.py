@@ -104,16 +104,16 @@ def get_material_strings(material, version):
 
 def scale_is_uniform(obj):
     is_uniform = True
-    if obj.type== 'MESH':
-        loc, rot, scale = obj.matrix_world.decompose()
-        scale_x = scale[0]
-        scale_y = scale[1]
-        scale_z = scale[2]
-        if scale_y > (scale_x + 0.0000900000) or scale_y < (scale_x - 0.0000900000):
-            is_uniform = False
+    loc, rot, scale = obj.matrix_world.decompose()
 
-        if scale_z > (scale_x + 0.0000900000) or scale_z < (scale_x - 0.0000900000):
-            is_uniform = False
+    scale_x = scale[0]
+    scale_y = scale[1]
+    scale_z = scale[2]
+    if scale_y > (scale_x + 0.0000900000) or scale_y < (scale_x - 0.0000900000):
+        is_uniform = False
+
+    if scale_z > (scale_x + 0.0000900000) or scale_z < (scale_x - 0.0000900000):
+        is_uniform = False
 
     return is_uniform
 
@@ -494,7 +494,7 @@ def process_scene(context, version, game_version, hidden_geo, nonrender_geo, app
             else:
                 print("Geometry file has an invalid geometry class during scene processing: ",  geo_class)
 
-            ASS.objects.append(ASS.Object(geo_class, xref_path, xref_name, material_index, radius, extents, height, verts, triangles, light_properties))
+            ASS.objects.append(ASS.Object(geo_class, xref_path, xref_name, material_index, radius, extents, height, verts, triangles, node_index_list, light_properties))
 
         ASS.instances[-1].bone_groups = node_index_list
 

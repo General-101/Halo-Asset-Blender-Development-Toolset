@@ -690,7 +690,7 @@ class AITriggerFlags(Flag):
 class RuleTypeEnum(Enum):
     a_or_greater_alive = 0
     a_or_fewer_alive = auto()
-    x_or_greater_strength = 0
+    x_or_greater_strength = auto()
     x_or_less_strength = auto()
     if_enemy_sighted = auto()
     after_a_ticks = auto()
@@ -1750,18 +1750,21 @@ class ScenarioAsset():
             self.animation_reference = animation_reference
 
     class AIConversation():
-        def __init__(self, name="", flags=0, trigger_distance=0.0, run_to_player_distance=0.0, participants_tag_block=None, lines_tag_block=None, participants_header=None,
-                     lines_header=None, participants=None, lines=None):
+        def __init__(self, name="", flags=0, trigger_distance=0.0, run_to_player_distance=0.0, participants_tag_block=None, lines_tag_block=None, unknown_tag_block=None, 
+                     participants_header=None, lines_header=None, unknown_header=None , participants=None, lines=None, unknown=None):
             self.name = name
             self.flags = flags
             self.trigger_distance = trigger_distance
             self.run_to_player_distance = run_to_player_distance
             self.participants_tag_block = participants_tag_block
             self.lines_tag_block = lines_tag_block
+            self.unknown_tag_block = unknown_tag_block
             self.participants_header = participants_header
             self.lines_header = lines_header
+            self.unknown_header = unknown_header
             self.participants = participants
             self.lines = lines
+            self.unknown = unknown
 
     class Participant():
         def __init__(self, use_this_object=0, set_new_name=0, encounter_name=""):

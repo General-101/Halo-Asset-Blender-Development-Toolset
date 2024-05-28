@@ -55,7 +55,7 @@ class LightmapTypeEnum(Enum):
 
 class TypeEnum(Enum):
     bitmap = 0
-    value = auto()
+    _value = auto()
     color = auto()
     switch = auto()
 

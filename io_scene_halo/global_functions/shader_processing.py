@@ -50,7 +50,7 @@ from ..file_tag.h2.file_shader.format import (
         PeriodicExponentEnum,
         )
 from ..file_tag.h2.file_particle.format import OutputModifierInputEnum
-from . import global_functions
+from . import tag_format
 from .shader_generation.shader_helper import (
     get_bitmap, 
     get_linked_node, 
@@ -919,14 +919,12 @@ def add_animation_property(SHADER, TAG, property_list, animation_type=AnimationT
 
     property_list.append(animation_property)
 
-def add_parameter(SHADER, TAG, parameter_name="", enum=TypeEnum.bitmap, bitmap_name="", float_value=1.0, rgba=(0.0, 0.0, 0.0, 1.0), replace_directory=False):
+def add_parameter(SHADER, TAG, parameter_name="", enum=TypeEnum.bitmap, bitmap_name="", float_value=1.0, rgba=(0.0, 0.0, 0.0, 1.0)):
     parameter = ShaderAsset.Parameter()
 
     path = bitmap_name
-    new_directory = r"scenarios\bitmaps\solo\a10"
-    if len(bitmap_name) > 0 and replace_directory:
-        base_name = os.path.basename(bitmap_name).replace(" ", "_")
-        path = os.path.join(new_directory, base_name)
+    if len(bitmap_name) > 0 :
+        path = tag_format.get_patched_name(TAG.upgrade_patches, bitmap_name).replace(" ", "_")
 
     parameter.name = parameter_name
     parameter.type = enum.value

@@ -38,12 +38,14 @@ from ..file_tag.h2.file_bitmap.build_asset import build_asset as build_h2_bitmap
 from ..file_tag.h1.file_model_animations.build_asset import build_asset as build_h1_animation
 
 from ..file_tag.h1.file_scenario.upgrade_scenario import upgrade_h2_scenario as upgrade_h1_h2_scenario
-from ..file_tag.h1.file_shader_environment.upgrade_shader import upgrade_h2_shader as upgrade_h1_h2_shader
+from ..file_tag.h1.file_shader_environment.upgrade_shader import upgrade_shader as upgrade_h1_env_h2_shader
+from ..file_tag.h1.file_shader_transparent_glass.upgrade_shader import upgrade_shader as upgrade_h1_glass_h2_shader
 from ..file_tag.h1.file_bitmap.process_file import process_file as process_h1_bitmap
 from ..file_tag.h1.file_bitmap.upgrade_bitmap import upgrade_h2_bitmap as upgrade_h1_h2_bitmap
 
 from ..file_tag.h1.file_scenario.process_file import process_file as process_h1_scenario
-from ..file_tag.h1.file_shader_environment.process_file import process_file as process_h1_shader
+from ..file_tag.h1.file_shader_environment.process_file import process_file as process_h1_env_shader
+from ..file_tag.h1.file_shader_transparent_glass.process_file import process_file as process_h1_glass_shader
 from ..file_tag.h1.file_scenario_structure_bsp.process_file import process_file as process_h1_structure_bsp
 from ..file_tag.h1.file_actor_variant.process_file import process_file as process_actor_variant
 from ..file_tag.h1.file_model_animations.process_file import process_file as process_h1_animation_retail
@@ -96,7 +98,7 @@ def convert_tag(context, input_file, source_game_title, target_game_title, tag_a
                 input_stream.close()
                 report({'ERROR'}, "Not implemented")
 
-        elif tag_group == "senv":
+        elif tag_group == "senv" or tag_group == "sgla":
             input_stream.close()
             if target_game_title == "halo2":
                 shader_directory = os.path.dirname(file_path)
@@ -123,14 +125,29 @@ def convert_tag(context, input_file, source_game_title, target_game_title, tag_a
 
                         if tag_group == "senv":
 
-                            H1_ASSET = process_h1_shader(input_stream, report)
+                            H1_ASSET = process_h1_env_shader(input_stream, report)
 
                             file_name = file_item.rsplit('.', 1)[0].replace(" ", "_")
                             new_path = os.path.join(output_path, "%s.shader" % file_name)
 
                             output_stream = open(new_path, 'wb')
 
-                            H2_ASSET = upgrade_h1_h2_shader(H1_ASSET, patch_txt_path, report)
+                            H2_ASSET = upgrade_h1_env_h2_shader(H1_ASSET, patch_txt_path, report)
+                            build_h2_shader(output_stream, H2_ASSET, report)
+
+                            output_stream.close()
+                            input_stream.close()
+
+                        elif tag_group == "sgla":
+
+                            H1_ASSET = process_h1_glass_shader(input_stream, report)
+
+                            file_name = file_item.rsplit('.', 1)[0].replace(" ", "_")
+                            new_path = os.path.join(output_path, "%s.shader" % file_name)
+
+                            output_stream = open(new_path, 'wb')
+
+                            H2_ASSET = upgrade_h1_glass_h2_shader(H1_ASSET, patch_txt_path, report)
                             build_h2_shader(output_stream, H2_ASSET, report)
 
                             output_stream.close()

@@ -291,10 +291,38 @@ def get_patched_name(upgrade_patches, name):
     patched_name = name
     if not upgrade_patches == None:
         for patch in upgrade_patches:
-            search_name = patch[0]
-            if search_name == name:
-                patched_name = patch[1]
+            prepatched_tag_path = patch[0]
+            prepatched_tag_group = None
+            patched_tag_path = patch[1]
+            patched_tag_group = None
+            if "," in prepatched_tag_path:
+                result = prepatched_tag_path.rsplit(",", 1)
+                if len(result) == 2 and len(result[1]) <= 4:
+                    prepatched_tag_path = result[0].lower()
+                    prepatched_tag_group = "{:<4}".format(result[1].lower())
+
+            if "," in patched_tag_path:
+                result = patched_tag_path.rsplit(",", 1)
+                if len(result) == 2 and len(result[1]) <= 4:
+                    patched_tag_path = result[0].lower()
+                    patched_tag_group = "{:<4}".format(result[1].lower())
+
+            if prepatched_tag_path == name:
+                tag_name = patched_tag_path
+                if patched_tag_group:
+                    tag_name = "%s,%s" % (prepatched_tag_path, patched_tag_group)
+
+                patched_name = tag_name
                 break
+
+            else:
+                if prepatched_tag_path in name:
+                    tag_name = prepatched_tag_path
+                    if patched_tag_group:
+                        tag_name = "%s,%s" % (prepatched_tag_path, patched_tag_group)
+
+                    patched_name = tag_name.replace(prepatched_tag_path, patched_tag_path)
+                    break
 
     return patched_name
 
@@ -733,26 +761,6 @@ class TagAsset():
             self.salt = salt
             self.index = index
 
-            if not upgrade_patches == None:
-                for patch in upgrade_patches:
-                    search_name = patch[0]
-                    tag_name_patching = name
-                    tag_group_patching = tag_group
-                    if search_name.endswith((",%s" % tag_group_patching)):
-                        tag_path = "%s,%s" % (tag_name_patching, tag_group_patching)
-                        if search_name == tag_path:
-                            patched_tag_path = patch[1].rsplit(",", 1)[0]
-                            self.name = patched_tag_path
-                            self.name_length = len(patched_tag_path)
-                            break
-
-                    else:
-                        if search_name in tag_name_patching:
-                            tag_name_patching = tag_name_patching.replace(search_name, patch[1])
-                            self.name = tag_name_patching
-                            self.name_length = len(tag_name_patching)
-                            break
-
         def read(self, input_stream, tag, xml_data=None, is_reversed=False):
             tag_reference_struct = struct.unpack('%s4siii' % get_endian_symbol(tag.big_endian), input_stream.read(16))
             self.tag_group = tag_reference_struct[0].decode('utf-8', 'replace')
@@ -1099,6 +1107,41 @@ class TagAsset():
 
             return ASSET
 
+        def get_patched_tag_ref(self, upgrade_patches):
+            if not upgrade_patches == None and self.tag_group:
+                for patch in upgrade_patches:
+                    prepatched_tag_path = patch[0]
+                    prepatched_tag_group = None
+                    patched_tag_path = patch[1]
+                    patched_tag_group = None
+                    if "," in prepatched_tag_path:
+                        result = prepatched_tag_path.rsplit(",", 1)
+                        if len(result) == 2 and len(result[1]) <= 4:
+                            prepatched_tag_path = result[0].lower()
+                            prepatched_tag_group = "{:<4}".format(result[1].lower())
+
+                    if "," in patched_tag_path:
+                        result = patched_tag_path.rsplit(",", 1)
+                        if len(result) == 2 and len(result[1]) <= 4:
+                            patched_tag_path = result[0].lower()
+                            patched_tag_group = "{:<4}".format(result[1].lower())
+
+                    if not prepatched_tag_group == None:
+                        if "%s,%s" % (prepatched_tag_path, prepatched_tag_group) == "%s,%s" % (self.name, self.tag_group):
+                            self.tag_group = patched_tag_group
+                            self.name = patched_tag_path
+                            self.name_length = len(self.name)
+                            break
+
+                    else:
+                        if prepatched_tag_path in self.name:
+                            if patched_tag_group:
+                                self.tag_group = patched_tag_group
+
+                            self.name = self.name.replace(prepatched_tag_path, patched_tag_path)
+                            self.name_length = len(self.name)
+                            break
+
     class RawData:
         def __init__(self, size=0, flags=0, raw_pointer=0, pointer=0, id=0, data=None):
             self.size = size
@@ -1176,7 +1219,9 @@ class TagAsset():
             self.engine_tag = engine_tag
 
         def read(self, input_stream, tag):
-            if config.HALO_2_TAG_PATH in input_stream.name:
+            if config.HALO_1_TAG_PATH in input_stream.name:
+                self.local_path = input_stream.name.split("%s%s" % (config.HALO_1_TAG_PATH, os.sep))[1].rsplit(".", 1)[0]
+            elif config.HALO_2_TAG_PATH in input_stream.name:
                 self.local_path = input_stream.name.split("%s%s" % (config.HALO_2_TAG_PATH, os.sep))[1].rsplit(".", 1)[0]
             else:
                 self.local_path = input_stream.name.rsplit(".", 1)[0]

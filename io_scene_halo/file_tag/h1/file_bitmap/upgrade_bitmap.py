@@ -24,30 +24,30 @@
 #
 # ##### END MIT LICENSE BLOCK #####
 
-from .format import BitmapFlags as H1BitmapFlags
+from .format import ImportFlags as H1ImportFlags
 from ...h2.file_bitmap.format import (
     BitmapAsset,
-    BitmapFlags
+    ImportFlags
     )
 from ....global_functions import tag_format
 
 def convert_flags(bitmap_flags):
     flags = 0
-    active_h1_flags = H1BitmapFlags(bitmap_flags)
-    if H1BitmapFlags.enable_diffusion_dithering in active_h1_flags:
-        flags += BitmapFlags.enable_diffusion_dithering.value
+    active_h1_flags = H1ImportFlags(bitmap_flags)
+    if H1ImportFlags.enable_diffusion_dithering in active_h1_flags:
+        flags += ImportFlags.enable_diffusion_dithering.value
 
-    if H1BitmapFlags.disable_height_map_compression in active_h1_flags:
-        flags += BitmapFlags.disable_height_map_compression.value
+    if H1ImportFlags.disable_height_map_compression in active_h1_flags:
+        flags += ImportFlags.disable_height_map_compression.value
 
-    if H1BitmapFlags.uniform_sprite_sequences in active_h1_flags:
-        flags += BitmapFlags.uniform_sprite_sequences.value
+    if H1ImportFlags.uniform_sprite_sequences in active_h1_flags:
+        flags += ImportFlags.uniform_sprite_sequences.value
 
-    if H1BitmapFlags.filthy_sprite_bug_fix in active_h1_flags:
-        flags += BitmapFlags.filthy_sprite_bug_fix.value
+    if H1ImportFlags.filthy_sprite_bug_fix in active_h1_flags:
+        flags += ImportFlags.filthy_sprite_bug_fix.value
 
-    if H1BitmapFlags.invert_detail_fade in active_h1_flags:
-        flags += BitmapFlags.invert_detail_fade.value
+    if H1ImportFlags.invert_detail_fade in active_h1_flags:
+        flags += ImportFlags.invert_detail_fade.value
 
     return flags
 
@@ -98,6 +98,8 @@ def upgrade_h2_bitmap(H1_ASSET, patch_txt_path, report):
     BITMAP.bitmap_body.color_plate_height = 0
     BITMAP.bitmap_body.compressed_color_plate_data = TAG.RawData()
     BITMAP.bitmap_body.processed_pixel_data = TAG.RawData()
+    BITMAP.bitmap_body.compressed_color_plate = bytes()
+    BITMAP.bitmap_body.processed_pixels = bytes()
     BITMAP.bitmap_body.blur_filter_size = H1_ASSET.bitmap_body.blur_filter_size
     BITMAP.bitmap_body.alpha_bias = H1_ASSET.bitmap_body.alpha_bias
     BITMAP.bitmap_body.mipmap_count = H1_ASSET.bitmap_body.mipmap_count

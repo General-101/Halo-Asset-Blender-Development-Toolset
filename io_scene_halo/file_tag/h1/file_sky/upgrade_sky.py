@@ -63,7 +63,7 @@ def generate_lights(H1_ASSET, TAG, SKY):
         radiosity = SKY.Radiosity()
         radiosity.flags = light_element.flags
         radiosity.color = light_element.color
-        radiosity.power = light_element.power / 1000
+        radiosity.power = 0.1 * light_element.power
         radiosity.test_distance = light_element.test_distance
         radiosity.diameter = light_element.diameter
 

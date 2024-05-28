@@ -875,13 +875,6 @@ def process_mesh_export_uv(evaluated_geo, file_type, loop_index, version):
 def process_mesh_export_vert(vertex_data, loop_data, loop_normals, file_type, original_geo_matrix, custom_scale):
     if file_type == 'JMS':
         translation = vertex_data.co
-        negative_matrix = original_geo_matrix.determinant() < 0.0
-        if negative_matrix and file_type == 'JMS':
-            invert_translation_x = vertex_data.co[0] * -1
-            invert_translation_y = vertex_data.co[1] * -1
-            invert_translation_z = vertex_data.co[2] * -1
-            translation = Vector((invert_translation_x, invert_translation_y, invert_translation_z))
-
         final_translation = original_geo_matrix @ translation
         if loop_normals:
             final_normal = (original_geo_matrix.to_3x3() @ loop_data.normal).normalized()
@@ -890,13 +883,6 @@ def process_mesh_export_vert(vertex_data, loop_data, loop_normals, file_type, or
 
         else:
             final_normal = (original_geo_matrix.to_3x3() @ vertex_data.normal).normalized()
-
-        if negative_matrix and original_geo_matrix.determinant() < 0.0 and file_type == 'JMS':
-            invert_normal_x = final_normal[0] * -1
-            invert_normal_y = final_normal[1] * -1
-            invert_normal_z = final_normal[2] * -1
-
-            final_normal = Vector((invert_normal_x, invert_normal_y, invert_normal_z))
 
     else:
         final_translation = custom_scale * vertex_data.co

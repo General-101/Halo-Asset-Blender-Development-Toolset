@@ -307,6 +307,7 @@ def build_scene(context, JMA, JMS_A, JMS_B, filepath, game_version, fix_parents,
     armature = None
     hidden_geo = False
     nonrender_geo = True
+    active_object = view_layer.objects.active
 
     layer_collection_list = []
     object_list = []
@@ -316,10 +317,11 @@ def build_scene(context, JMA, JMS_A, JMS_B, filepath, game_version, fix_parents,
 
     scene_nodes = []
     jma_nodes = []
-    active_object = bpy.context.view_layer.objects.active
+
 
     scene_nodes = []
-    armature = active_object
+    if active_object.type == 'ARMATURE':
+        armature = active_object
 
     if armature is None:
         for obj in object_list:

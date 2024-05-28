@@ -261,7 +261,7 @@ def generate_illum_parameters(H1_ASSET, TAG, SHADER, template, permutation_index
     SHADER.parameters.append(shader_processing.add_parameter(SHADER, TAG, parameter_name="lightmap_emmisive_map", bitmap_name=H1_ASSET.shader_body.map.name, float_value=0.0))
 
     SHADER.parameters.append(shader_processing.add_parameter(SHADER, TAG, parameter_name="emissive_color", enum=TypeEnum.color, rgba=H1_ASSET.shader_body.color_of_emitted_light))
-    SHADER.parameters.append(shader_processing.add_parameter(SHADER, TAG, parameter_name="emissive_power", enum=TypeEnum._value, float_value= 0.001 * H1_ASSET.shader_body.power))
+    SHADER.parameters.append(shader_processing.add_parameter(SHADER, TAG, parameter_name="emissive_power", enum=TypeEnum._value, float_value= 0.10 * H1_ASSET.shader_body.power))
 
 def generate_env_parameters(H1_ASSET, TAG, SHADER, template, permutation_index):
     parameter = shader_processing.add_parameter(SHADER, TAG, parameter_name="environment_map", bitmap_name=H1_ASSET.shader_body.reflection_cube_map.name, float_value=0.0)
@@ -310,7 +310,7 @@ def get_template(H1_ASSET):
 
     is_emissive = False
     has_alpha = False
-    is_blended = False
+    has_cc = False
     has_diffuse = False
     detail_map_count = 0
     has_bump = False
