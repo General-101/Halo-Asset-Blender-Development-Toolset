@@ -747,7 +747,7 @@ def generate_mesh_retail(context, asset, object_vertices, object_triangles, obje
         region_index = region_list.index(current_region_permutation)
         region_attribute.data[triangle_idx].value = region_index + 1
 
-        vertex_list = [vertices[triangle.v0], vertices[triangle.v1], vertices[triangle.v2]]
+        vertex_list = [object_vertices[triangle.v0], object_vertices[triangle.v1], object_vertices[triangle.v2]]
         for vertex_idx, vertex in enumerate(vertex_list):
             loop_index = (3 * triangle_idx) + vertex_idx
             for uv_idx, uv in enumerate(vertex.uv_set):
