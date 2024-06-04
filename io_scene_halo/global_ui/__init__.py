@@ -105,10 +105,12 @@ from .maze_ui import (
 from .object_ui import (
     ASS_JMS_ObjectPropertiesGroup,
     ASS_JMS_MeshPropertiesGroup,
+    QUA_ObjectPropertiesGroup,
     Halo_ObjectProps,
     Halo_BoneProps,
     Halo_MeshProps,
-    Halo_XREFPath
+    Halo_XREFPath,
+    Halo_CameraProps
 )
 
 from .tag_view import (
@@ -169,6 +171,7 @@ classeshalo = (
     ASS_JMS_ObjectPropertiesGroup,
     ASS_JMS_MeshPropertiesGroup,
     ASS_JMS_MaterialPropertiesGroup,
+    QUA_ObjectPropertiesGroup,
     Halo_ObjectProps,
     Halo_BoneProps,
     Halo_MeshProps,
@@ -183,6 +186,7 @@ classeshalo = (
     ASS_JMS_MaterialBasicProps,
     ASS_JMS_MaterialAttenuationProps,
     ASS_JMS_MaterialFrustumProps,
+    Halo_CameraProps,
     Halo_ScenePropertiesGroup,
     Halo_SceneProps,
     Halo_GlobalSettings,
@@ -215,6 +219,7 @@ def register():
     bpy.types.Mesh.ass_jms = PointerProperty(type=ASS_JMS_MeshPropertiesGroup, name="ASS/JMS Properties", description="Set properties for your mesh")
     bpy.types.Material.ass_jms = PointerProperty(type=ASS_JMS_MaterialPropertiesGroup, name="ASS/JMS Properties", description="Set properties for your materials")
     bpy.types.Scene.halo = PointerProperty(type=Halo_ScenePropertiesGroup, name="Halo Scene Properties", description="Set properties for your scene")
+    bpy.types.Camera.qua = PointerProperty(type=QUA_ObjectPropertiesGroup, name="Halo Camera Properties", description="Set properties for your camera")
     bpy.types.Mesh.halo_valid_surface = BoolProperty(name="Valid Surface", get=get_surface_usage, set=set_surface_usage)
     bpy.types.Mesh.halo_valid_characters = IntProperty(name="Valid Characters Flag", get=get_character_usage, set=set_character_usage)
     bpy.types.Mesh.halo_marine = BoolProperty(name="Marine", get=get_marine_usage, set=set_marine_usage)

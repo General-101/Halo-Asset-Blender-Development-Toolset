@@ -34,6 +34,7 @@ from bpy.props import (
         BoolProperty,
         EnumProperty,
         StringProperty,
+        FloatProperty
         )
 
 class Halo_XREFPath(Operator):
@@ -177,6 +178,15 @@ class Halo_ObjectProps(Panel):
                 row.label(text='Region:')
                 row.prop(ob_ass_jms, "marker_region", text='')
 
+        if scene_halo.game_title == "halo3":
+            if ob.type == 'ARMATURE':
+                row = col.row()
+                row.label(text='Ubercam Object Type:')
+                row.prop(ob_ass_jms, "ubercam_object_type", text='')
+                row = col.row()
+                row.label(text='Ubercam Object Animation:')
+                row.prop(ob_ass_jms, "ubercam_object_animation", text='')
+
 class Halo_BoneProps(Panel):
     bl_label = "Halo Bone Properties"
     bl_idname = "HALO_PT_BoneDetailsPanel"
@@ -237,3 +247,74 @@ class ASS_JMS_ObjectPropertiesGroup(PropertyGroup):
         description="Region for a marker object. If empty then the first assigned facemap will be used",
         default = "",
         )
+
+    ubercam_object_type: EnumProperty(
+        name="Ubercam Object Type",
+        description="Choose the group for the object",
+        items=( ('0', "Unit",    "Unit"),
+                ('1', "Scenery", "Scenery"),
+                ('2', "Effect Scenery",   "Effect Scenery"),
+            )
+        )
+
+    ubercam_object_animation: StringProperty(
+            name = "Ubercam Animation Path",
+            description="Source file for ubercam object animation",
+            default="",
+            maxlen=1024,
+            subtype='FILE_PATH'
+    )
+
+class QUA_ObjectPropertiesGroup(PropertyGroup):
+    ubercam_type: StringProperty(
+        name="Ubercam Type",
+        description="Type of camera the ubercam is set to",
+        default = "",
+        )
+
+    near_focal_plane_distance: FloatProperty(
+        name="Near Focal Plane Distance",
+        description="Near distance for depth of field"
+        )
+
+    far_focal_plane_distance: FloatProperty(
+        name="Far Focal Plane Distance",
+        description="Far distance for depth of field"
+        )
+
+class Halo_CameraProps(Panel):
+    bl_label = "Halo Camera Properties"
+    bl_idname = "HALO_PT_CameraDetailsPanel"
+    bl_space_type = "PROPERTIES"
+    bl_region_type = "WINDOW"
+    bl_context = "data"
+    bl_options = {"DEFAULT_CLOSED"}
+
+    @classmethod
+    def poll(self, context):
+        valid = False
+        scene = context.scene
+        scene_halo = scene.halo
+        ob_data = context.object.data
+
+        if hasattr(ob_data, 'qua') and scene_halo.game_title == "halo3":
+            valid = True
+
+        return valid
+
+    def draw(self, context):
+        layout = self.layout
+
+        ob = context.object
+        ob_qua = ob.data.qua
+
+        col = layout.column(align=True)
+        row = col.row()
+        row.label(text='Ubercam Type:')
+        row.prop(ob_qua, "ubercam_type", text='')
+        row = col.row()
+        row.label(text='Near Focal Plane Distance:')
+        row.prop(ob_qua, "near_focal_plane_distance", text='')
+        row = col.row()
+        row.label(text='Far Focal Plane Distance:')
+        row.prop(ob_qua, "far_focal_plane_distance", text='')
