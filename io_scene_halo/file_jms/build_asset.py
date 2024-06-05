@@ -148,8 +148,7 @@ def write_nodes_8205(file, JMS, binary, write_comments=False, write_whitespace=F
         file.write('\n%s' % (len(JMS.nodes)))
         if write_comments:
             file.write('\n;\t<name>')
-            file.write('\n;\t<child node index>')
-            file.write('\n;\t<sibling node index>')
+            file.write('\n;\t<parent node index>')
             file.write('\n;\t<default rotation <i,j,k,w>>')
             file.write('\n;\t<default translation <x,y,z>>')
             if write_whitespace:
@@ -161,8 +160,7 @@ def write_nodes_8205(file, JMS, binary, write_comments=False, write_whitespace=F
 
             transform = JMS.transforms[idx]
             file.write('\n%s' % (node.name))
-            file.write('\n%s' % (node.child))
-            file.write('\n%s' % (node.sibling))
+            file.write('\n%s' % (node.parent))
             file.write(DECIMAL_4 % (transform.rotation))
             file.write(DECIMAL_3 % (transform.translation))
             if write_whitespace:
