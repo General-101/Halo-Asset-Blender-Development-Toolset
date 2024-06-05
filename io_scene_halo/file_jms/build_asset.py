@@ -419,7 +419,6 @@ def write_markers_8205(file, JMS, binary, write_comments=False, write_whitespace
         file.write(struct.pack('<i', len(JMS.markers)))
         for idx, marker in enumerate(JMS.markers):
             file.write(struct.pack('<%ssx' % (len(marker.name)), bytes(marker.name, 'utf-8')))
-            file.write(struct.pack('<i', marker.region))
             file.write(struct.pack('<i', marker.parent))
             file.write(struct.pack('<ffff', *marker.rotation))
             file.write(struct.pack('<fff', *marker.translation))
@@ -444,7 +443,6 @@ def write_markers_8205(file, JMS, binary, write_comments=False, write_whitespace
                 file.write('\n;MARKER %s' % idx)
 
             file.write('\n%s' % (marker.name))
-            file.write('\n%s' % (marker.region))
             file.write('\n%s' % (marker.parent))
             file.write(DECIMAL_4 % (marker.rotation))
             file.write(DECIMAL_3 % (marker.translation))
