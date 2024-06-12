@@ -1282,7 +1282,7 @@ def write_vertices_8211(file, JMS, binary, write_comments=False, write_whitespac
                 uv_0, uv_1 = uv
                 file.write(DECIMAL_2 % (uv_0, uv_1))
 
-            file.write(DECIMAL_3 % vertex.color)
+            file.write(DECIMAL_3 % (vertex.color[0], vertex.color[1], vertex.color[2]))
             if write_whitespace:
                 file.write('\n')
 
