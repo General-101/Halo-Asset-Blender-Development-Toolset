@@ -24,12 +24,32 @@
 #
 # ##### END MIT LICENSE BLOCK #####
 
-from .format import ImportFlags as H1ImportFlags
+from .format import ImportFlags as H1ImportFlags, FormatEnum as H1FormatEnum
 from ...h2.file_bitmap.format import (
     BitmapAsset,
-    ImportFlags
+    ImportFlags,
+    FormatEnum
     )
 from ....global_functions import tag_format
+
+def convert_format(format_index):
+    h2_format_index = 0
+    h1_format = H1FormatEnum(format_index)
+    if h1_format == H1FormatEnum.compressed_with_color_key_transparency:
+        h2_format_index = FormatEnum.compressed_with_color_key_transparency.value
+    elif h1_format == H1FormatEnum.compressed_with_explicit_alpha:
+        h2_format_index = FormatEnum.compressed_with_explicit_alpha.value
+    elif h1_format == H1FormatEnum.compressed_with_interpolated_alpha:
+        h2_format_index = FormatEnum.compressed_with_interpolated_alpha.value
+    elif h1_format == H1FormatEnum._16bit_color:
+        h2_format_index = FormatEnum._16bit_color.value
+    elif h1_format == H1FormatEnum._32bit_color:
+        h2_format_index = FormatEnum._32bit_color.value
+    elif h1_format == H1FormatEnum.monochrome:
+        h2_format_index = FormatEnum.monochrome.value
+    elif h1_format == H1FormatEnum.high_quality_compression:
+        h2_format_index = FormatEnum._32bit_color.value
+    return h2_format_index
 
 def convert_flags(bitmap_flags):
     flags = 0
@@ -77,7 +97,7 @@ def upgrade_h2_bitmap(H1_ASSET, patch_txt_path, report):
     BITMAP.bitmap_body_header = TAG.TagBlockHeader("tbfd", 0, 1, 112)
     BITMAP.bitmap_body = BITMAP.BitmapBody()
     BITMAP.bitmap_body.type = H1_ASSET.bitmap_body.type
-    BITMAP.bitmap_body.format = H1_ASSET.bitmap_body.format
+    BITMAP.bitmap_body.format = convert_format(H1_ASSET.bitmap_body.format)
     BITMAP.bitmap_body.usage = H1_ASSET.bitmap_body.usage
     BITMAP.bitmap_body.flags = convert_flags(H1_ASSET.bitmap_body.flags)
     BITMAP.bitmap_body.detail_fade_factor = H1_ASSET.bitmap_body.detail_fade_factor

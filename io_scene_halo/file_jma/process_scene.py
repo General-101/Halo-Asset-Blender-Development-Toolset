@@ -162,7 +162,7 @@ def process_scene(context, extension, jma_version, game_title, generate_checksum
 
         JMA.nodes.append(JMA.Node(name, parent, child, sibling))
 
-    if generate_checksum:
+    if generate_checksum and len(JMA.nodes) > 0:
         JMA.node_checksum = global_functions.node_hierarchy_checksum(JMA.nodes, JMA.nodes[0], JMA.node_checksum)
 
     for frame in range(first_frame, last_frame):

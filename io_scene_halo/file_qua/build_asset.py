@@ -150,7 +150,7 @@ def build_asset(context, filepath, game_title, qua_version, strip_identifier, re
             )
 
         file.write(
-            '\n;*** SHOT %s AUDIO DATA ***' % idx +
+            '\n;*** SHOT %s AUDIO DATA ***' % (idx + 1) +
             '\n%s' % (len(shot.audio_data)) +
             '\n;          <Audio filename (string)>' +
             '\n;          <Frame number (int)>' +

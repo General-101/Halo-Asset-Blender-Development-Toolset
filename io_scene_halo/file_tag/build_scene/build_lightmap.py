@@ -104,7 +104,7 @@ def process_mesh(SBSP_ASSET, random_color_gen, tag_block, poop_name, material_co
                             layer_uv.data[loop_index].uv = (U, V)
 
                     material = None
-                    if not part.material_index == -1 and material_count > 0:
+                    if not part.material_index == -1 and material_count > 0 and part.material_index < material_count:
                         material = SBSP_ASSET.materials[part.material_index]
 
                     if material:
@@ -146,7 +146,8 @@ def build_clusters(lightmap_group, SBSP_ASSET, level_root, random_color_gen, col
                 object_mesh.parent = level_root
 
 def build_poops(lightmap_group, SBSP_ASSET, level_root, random_color_gen, collection):
-    if len(lightmap_group.poop_definitions) > 0:
+    lightmap_instance_count = len(lightmap_group.poop_definitions)
+    if lightmap_instance_count > 0:
         meshes = []
         material_count = 0
         if not SBSP_ASSET == None:
@@ -158,7 +159,7 @@ def build_poops(lightmap_group, SBSP_ASSET, level_root, random_color_gen, collec
             meshes.append(mesh)
 
         for instanced_geometry_instance in SBSP_ASSET.instanced_geometry_instances:
-            if not instanced_geometry_instance.instance_definition == -1:
+            if not instanced_geometry_instance.instance_definition == -1 and instanced_geometry_instance.instance_definition < lightmap_instance_count:
                 mesh = meshes[instanced_geometry_instance.instance_definition]
                 ob_name = instanced_geometry_instance.name
                 if not mesh == None:

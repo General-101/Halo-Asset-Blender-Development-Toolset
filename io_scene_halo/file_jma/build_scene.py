@@ -320,7 +320,7 @@ def build_scene(context, JMA, JMS_A, JMS_B, filepath, game_version, fix_parents,
 
 
     scene_nodes = []
-    if active_object.type == 'ARMATURE':
+    if not active_object == None and active_object.type == 'ARMATURE':
         armature = active_object
 
     if armature is None:
