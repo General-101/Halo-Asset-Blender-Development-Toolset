@@ -1884,7 +1884,6 @@ def write_hinges(file, JMS, binary, write_comments=False, write_whitespace=False
             file.write(DECIMAL_3 % hinge.body_a_translation)
             file.write(DECIMAL_4 % hinge.body_b_rotation)
             file.write(DECIMAL_3 % hinge.body_b_translation)
-            file.write(DECIMAL_1 % hinge.min_twist)
             file.write('\n%s' % hinge.is_limited)
             file.write(DECIMAL_1 % hinge.friction_limit)
             file.write(DECIMAL_1 % hinge.min_angle)

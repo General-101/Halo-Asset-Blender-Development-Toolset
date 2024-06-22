@@ -41,10 +41,10 @@ def get_function_list(H1_ASSET, function_list, keyword, FunctionsEnum):
         if d_scale_function != FunctionsEnum.none:
             function_list[3] = get_valid_h1_object_functions(d_scale_function.name)
     elif "Weapon" == keyword:
-        a_scale_function = FunctionsEnum(H1_ASSET.weapon_body.weapon_a_in)
-        b_scale_function = FunctionsEnum(H1_ASSET.weapon_body.weapon_b_in)
-        c_scale_function = FunctionsEnum(H1_ASSET.weapon_body.weapon_c_in)
-        d_scale_function = FunctionsEnum(H1_ASSET.weapon_body.weapon_d_in)
+        a_scale_function = FunctionsEnum(H1_ASSET.weapon_a_in)
+        b_scale_function = FunctionsEnum(H1_ASSET.weapon_b_in)
+        c_scale_function = FunctionsEnum(H1_ASSET.weapon_c_in)
+        d_scale_function = FunctionsEnum(H1_ASSET.weapon_d_in)
         if a_scale_function != FunctionsEnum.none:
             function_list[0] = get_valid_h1_weapon_functions(a_scale_function.name)
         if b_scale_function != FunctionsEnum.none:
