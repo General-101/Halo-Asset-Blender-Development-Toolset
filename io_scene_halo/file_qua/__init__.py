@@ -32,14 +32,22 @@ from bpy.props import (
         StringProperty,
         BoolProperty
         )
-from bpy.types import (
-    Operator,
-    FileHandler
-    )
+from bpy.types import Operator
 from bpy_extras.io_utils import (
     ImportHelper,
     ExportHelper
     )
+
+try:
+    from bpy.types import (
+        FileHandler,
+        OperatorFileListElement
+        )
+except ImportError:
+    print("Blender is out of date. Drag and drop will not function")
+    FileHandler = None
+    OperatorFileListElement = None
+
 
 class ExportQUA(Operator, ExportHelper):
     """Write a QUA file"""

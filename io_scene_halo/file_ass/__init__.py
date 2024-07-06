@@ -35,8 +35,7 @@ from bpy_extras.io_utils import (
 from bpy.types import (
     Operator,
     Panel,
-    PropertyGroup,
-    FileHandler
+    PropertyGroup
     )
 
 from bpy.props import (
@@ -46,6 +45,16 @@ from bpy.props import (
     PointerProperty,
     StringProperty
     )
+
+try:
+    from bpy.types import (
+        FileHandler,
+        OperatorFileListElement
+        )
+except ImportError:
+    print("Blender is out of date. Drag and drop will not function")
+    FileHandler = None
+    OperatorFileListElement = None
 
 def version_settings_callback(self, context):
     items=[ ('1', "1", "H2/H3"),

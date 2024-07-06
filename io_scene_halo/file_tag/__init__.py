@@ -32,11 +32,7 @@ from bpy_extras.io_utils import (
     ExportHelper
     )
 
-from bpy.types import (
-    Operator,
-    FileHandler,
-    OperatorFileListElement
-    )
+from bpy.types import Operator
 
 from bpy.props import (
     BoolProperty,
@@ -46,6 +42,16 @@ from bpy.props import (
     )
 
 from ..global_functions import global_functions
+
+try:
+    from bpy.types import (
+        FileHandler,
+        OperatorFileListElement
+        )
+except ImportError:
+    print("Blender is out of date. Drag and drop will not function")
+    FileHandler = None
+    OperatorFileListElement = None
 
 class ImportTag(Operator, ImportHelper):
     """Import a tag for various Halo titles"""
@@ -71,21 +77,21 @@ class ImportTag(Operator, ImportHelper):
     empty_markers: BoolProperty(
         name ="Generate Empty Markers",
         description = "Generate empty markers instead of UV spheres",
-        default = False,
+        default = True,
         )
 
     directory: StringProperty(
-        subtype='FILE_PATH', 
+        subtype='FILE_PATH',
         options={'SKIP_SAVE'}
         )
-
     files: CollectionProperty(
-        type=OperatorFileListElement, 
+        type=OperatorFileListElement,
         options={'SKIP_SAVE'}
         )
 
     def execute(self, context):
         from ..file_tag import import_tag
+
         if not self.directory:
             return {'CANCELLED'}
 

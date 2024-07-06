@@ -123,7 +123,7 @@ def generate_image_node(mat, texture, BITMAP=None, bitmap_name="White", is_env=F
         image_node.image = image
 
     else:
-        if not texture == None:
+        if not texture == None and os.path.isfile(texture):
             print("No color plate found. Loading texture found in data directory.")
             image = bpy.data.images.load(texture, check_existing=True)
             image_node.image = image

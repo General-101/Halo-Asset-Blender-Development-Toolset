@@ -24,6 +24,7 @@
 #
 # ##### END MIT LICENSE BLOCK #####
 
+import os
 import bpy
 
 from ..global_functions import global_functions
@@ -35,8 +36,7 @@ from bpy_extras.io_utils import (
 from bpy.types import (
         Operator,
         Panel,
-        PropertyGroup,
-        FileHandler
+        PropertyGroup
         )
 
 from bpy.props import (
@@ -44,8 +44,19 @@ from bpy.props import (
         EnumProperty,
         FloatProperty,
         PointerProperty,
-        StringProperty
+        StringProperty,
+        CollectionProperty
         )
+
+try:
+    from bpy.types import (
+        FileHandler,
+        OperatorFileListElement
+        )
+except ImportError:
+    print("Blender is out of date. Drag and drop will not function")
+    FileHandler = None
+    OperatorFileListElement = None
 
 class JMS_PhysicsPropertiesGroup(PropertyGroup):
     jms_spring_type: EnumProperty(
@@ -842,7 +853,7 @@ class ImportJMS(Operator, ImportHelper):
     empty_markers: BoolProperty(
         name ="Generate Empty Markers",
         description = "Generate empty markers instead of UV spheres",
-        default = False,
+        default = True,
         )
 
     filter_glob: StringProperty(
@@ -850,18 +861,29 @@ class ImportJMS(Operator, ImportHelper):
         options={'HIDDEN'},
         )
 
-    filepath: StringProperty(
+    directory: StringProperty(
         subtype='FILE_PATH', 
+        options={'SKIP_SAVE'}
+        )
+    files: CollectionProperty(
+        type=OperatorFileListElement, 
         options={'SKIP_SAVE'}
         )
 
     def execute(self, context):
         from . import import_jms
 
-        return global_functions.run_code("import_jms.load_file(context, self.filepath, self.game_title, self.reuse_armature, self.fix_parents, self.fix_rotations, self.empty_markers, self.report)")
+        if not self.directory:
+            return {'CANCELLED'}
+        
+        for file in self.files:
+            filepath = os.path.join(self.directory, file.name)
+            global_functions.run_code("import_jms.load_file(context, filepath, self.game_title, self.reuse_armature, self.fix_parents, self.fix_rotations, self.empty_markers, self.report)")
+
+        return {'FINISHED'}
 
     def invoke(self, context, event):
-        if self.filepath:
+        if self.directory:
             return self.execute(context)
         context.window_manager.fileselect_add(self)
         return {'RUNNING_MODAL'}
