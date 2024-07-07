@@ -48,16 +48,6 @@ from bpy.props import (
         CollectionProperty
         )
 
-try:
-    from bpy.types import (
-        FileHandler,
-        OperatorFileListElement
-        )
-except ImportError:
-    print("Blender is out of date. Drag and drop will not function")
-    FileHandler = None
-    OperatorFileListElement = None
-
 class JMS_PhysicsPropertiesGroup(PropertyGroup):
     jms_spring_type: EnumProperty(
         name="Spring Type",
@@ -816,114 +806,197 @@ class ExportJMS(Operator, ExportHelper):
             row.enabled = is_enabled
             row.prop(self, "scale_float")
 
-class ImportJMS(Operator, ImportHelper):
-    """Import a JMS file"""
-    bl_idname = "import_scene.jms"
-    bl_label = "Import JMS"
-    filename_ext = '.JMS'
-    game_title: EnumProperty(
-        name="Game Title:",
-        description="What game was the model file made for",
-        default="auto",
-        items=[ ('auto', "Auto", "Attempt to guess the game this JMS was intended for. Will default to Halo CE if this fails"),
-                ('halo1', "Halo 1", "Import a JMS intended for Halo 1"),
-                ('halo2', "Halo 2", "Import a JMS intended for Halo 2"),
-                ('halo3', "Halo 3", "Import a JMS intended for Halo 3"),
-            ]
+try:
+    from bpy.types import (
+        FileHandler,
+        OperatorFileListElement
         )
 
-    reuse_armature: BoolProperty(
-        name ="Reuse Armature",
-        description = "Reuse a preexisting armature in the scene if it matches what is in the JMS file",
-        default = True,
-        )
+    class ImportJMS(Operator, ImportHelper):
+        """Import a JMS file"""
+        bl_idname = "import_scene.jms"
+        bl_label = "Import JMS"
+        filename_ext = '.JMS'
+        game_title: EnumProperty(
+            name="Game Title:",
+            description="What game was the model file made for",
+            default="auto",
+            items=[ ('auto', "Auto", "Attempt to guess the game this JMS was intended for. Will default to Halo CE if this fails"),
+                    ('halo1', "Halo 1", "Import a JMS intended for Halo Custom Edition or Halo 1 MCC"),
+                    ('halo2', "Halo 2", "Import a JMS intended for Halo 2 Vista or Halo 2 MCC"),
+                    ('halo3', "Halo 3", "Import a JMS intended for Halo 3 MCC"),
+                ]
+            )
 
-    fix_parents: BoolProperty(
-        name ="Force node parents",
-        description = "Force thigh bones to use pelvis and clavicles to use spine1. Used to match node import behavior used by Halo 2, Halo 3, and Halo 3 ODST",
-        default = True,
-        )
+        reuse_armature: BoolProperty(
+            name ="Reuse Armature",
+            description = "Reuse a preexisting armature in the scene if it matches what is in the JMS file",
+            default = True,
+            )
 
-    fix_rotations: BoolProperty(
-        name ="Fix Rotations",
-        description = "Set rotations to match what you would visually see in 3DS Max. Rotates bones by 90 degrees on a local Z axis to match how Blender handles rotations",
-        default = False,
-        )
+        fix_parents: BoolProperty(
+            name ="Force node parents",
+            description = "Force thigh bones to use pelvis and clavicles to use spine1. Used to match node import behavior used by Halo 2, Halo 3, and Halo 3 ODST",
+            default = True,
+            )
 
-    empty_markers: BoolProperty(
-        name ="Generate Empty Markers",
-        description = "Generate empty markers instead of UV spheres",
-        default = True,
-        )
+        fix_rotations: BoolProperty(
+            name ="Fix Rotations",
+            description = "Set rotations to match what you would visually see in 3DS Max. Rotates bones by 90 degrees on a local Z axis to match how Blender handles rotations",
+            default = False,
+            )
 
-    filter_glob: StringProperty(
-        default="*.jms;*.jmp",
-        options={'HIDDEN'},
-        )
+        empty_markers: BoolProperty(
+            name ="Generate Empty Markers",
+            description = "Generate empty markers instead of UV spheres",
+            default = True,
+            )
 
-    directory: StringProperty(
-        subtype='FILE_PATH', 
-        options={'SKIP_SAVE'}
-        )
-    files: CollectionProperty(
-        type=OperatorFileListElement, 
-        options={'SKIP_SAVE'}
-        )
+        filter_glob: StringProperty(
+            default="*.jms;*.jmp",
+            options={'HIDDEN'},
+            )
 
-    def execute(self, context):
-        from . import import_jms
+        directory: StringProperty(
+            subtype='FILE_PATH', 
+            options={'SKIP_SAVE'}
+            )
 
-        if not self.directory:
-            return {'CANCELLED'}
-        
-        for file in self.files:
-            filepath = os.path.join(self.directory, file.name)
-            global_functions.run_code("import_jms.load_file(context, filepath, self.game_title, self.reuse_armature, self.fix_parents, self.fix_rotations, self.empty_markers, self.report)")
+        files: CollectionProperty(
+            type=OperatorFileListElement, 
+            options={'SKIP_SAVE'}
+            )
 
-        return {'FINISHED'}
+        def execute(self, context):
+            from . import import_jms
 
-    def invoke(self, context, event):
-        if self.directory:
-            return self.execute(context)
-        context.window_manager.fileselect_add(self)
-        return {'RUNNING_MODAL'}
+            if not self.directory:
+                return {'CANCELLED'}
+            
+            for file in self.files:
+                filepath = os.path.join(self.directory, file.name)
+                global_functions.run_code("import_jms.load_file(context, filepath, self.game_title, self.reuse_armature, self.fix_parents, self.fix_rotations, self.empty_markers, self.report)")
 
-    def draw(self, context):
-        layout = self.layout
-        box = layout.box()
-        box.label(text="Version:")
-        col = box.column(align=True)
-        row = col.row()
-        box.label(text="Game Version:")
-        row.prop(self, "game_title", text='')
-        box = layout.box()
-        box.label(text="Import Options:")
-        col = box.column(align=True)
+            return {'FINISHED'}
 
-        row = col.row()
-        row.label(text='Reuse Armature:')
-        row.prop(self, "reuse_armature", text='')
-        if self.game_title == 'auto' or self.game_title == "halo2" or self.game_title == "halo3":
+        def draw(self, context):
+            layout = self.layout
+            box = layout.box()
+            box.label(text="Version:")
+            col = box.column(align=True)
             row = col.row()
-            row.label(text='Force node parents:')
-            row.prop(self, "fix_parents", text='')
+            box.label(text="Game Version:")
+            row.prop(self, "game_title", text='')
+            box = layout.box()
+            box.label(text="Import Options:")
+            col = box.column(align=True)
 
-        row = col.row()
-        row.label(text='Fix Rotations:')
-        row.prop(self, "fix_rotations", text='')
-        row = col.row()
-        row.label(text='Use Empties For Markers:')
-        row.prop(self, "empty_markers", text='')
+            row = col.row()
+            row.label(text='Reuse Armature:')
+            row.prop(self, "reuse_armature", text='')
+            if self.game_title == 'auto' or self.game_title == "halo2" or self.game_title == "halo3":
+                row = col.row()
+                row.label(text='Force node parents:')
+                row.prop(self, "fix_parents", text='')
 
-class ImportJMS_FileHandler(FileHandler):
-    bl_idname = "JMS_FH_import"
-    bl_label = "File handler for JMS import"
-    bl_import_operator = "import_scene.jms"
-    bl_file_extensions = ".JMS"
+            row = col.row()
+            row.label(text='Fix Rotations:')
+            row.prop(self, "fix_rotations", text='')
+            row = col.row()
+            row.label(text='Use Empties For Markers:')
+            row.prop(self, "empty_markers", text='')
 
-    @classmethod
-    def poll_drop(cls, context):
-        return (context.area and context.area.type == 'VIEW_3D')
+    class ImportJMS_FileHandler(FileHandler):
+        bl_idname = "JMS_FH_import"
+        bl_label = "File handler for JMS import"
+        bl_import_operator = "import_scene.jms"
+        bl_file_extensions = ".JMS"
+
+        @classmethod
+        def poll_drop(cls, context):
+            return (context.area and context.area.type == 'VIEW_3D')
+
+except ImportError:
+    FileHandler = None
+    print("Blender is out of date. Drag and drop will not function")
+    class ImportJMS(Operator, ImportHelper):
+        """Import a JMS file"""
+        bl_idname = "import_scene.jms"
+        bl_label = "Import JMS"
+        filename_ext = '.JMS'
+        game_title: EnumProperty(
+            name="Game Title:",
+            description="What game was the model file made for",
+            default="auto",
+            items=[ ('auto', "Auto", "Attempt to guess the game this JMS was intended for. Will default to Halo CE if this fails"),
+                    ('halo1', "Halo 1", "Import a JMS intended for Halo Custom Edition or Halo 1 MCC"),
+                    ('halo2', "Halo 2", "Import a JMS intended for Halo 2 Vista or Halo 2 MCC"),
+                    ('halo3', "Halo 3", "Import a JMS intended for Halo 3 MCC"),
+                ]
+            )
+
+        reuse_armature: BoolProperty(
+            name ="Reuse Armature",
+            description = "Reuse a preexisting armature in the scene if it matches what is in the JMS file",
+            default = True,
+            )
+
+        fix_parents: BoolProperty(
+            name ="Force node parents",
+            description = "Force thigh bones to use pelvis and clavicles to use spine1. Used to match node import behavior used by Halo 2, Halo 3, and Halo 3 ODST",
+            default = True,
+            )
+
+        fix_rotations: BoolProperty(
+            name ="Fix Rotations",
+            description = "Set rotations to match what you would visually see in 3DS Max. Rotates bones by 90 degrees on a local Z axis to match how Blender handles rotations",
+            default = False,
+            )
+
+        empty_markers: BoolProperty(
+            name ="Generate Empty Markers",
+            description = "Generate empty markers instead of UV spheres",
+            default = True,
+            )
+
+        filter_glob: StringProperty(
+            default="*.jms;*.jmp",
+            options={'HIDDEN'},
+            )
+
+        def execute(self, context):
+            from . import import_jms
+
+            global_functions.run_code("import_jms.load_file(context, self.filepath, self.game_title, self.reuse_armature, self.fix_parents, self.fix_rotations, self.empty_markers, self.report)")
+
+            return {'FINISHED'}
+
+        def draw(self, context):
+            layout = self.layout
+            box = layout.box()
+            box.label(text="Version:")
+            col = box.column(align=True)
+            row = col.row()
+            box.label(text="Game Version:")
+            row.prop(self, "game_title", text='')
+            box = layout.box()
+            box.label(text="Import Options:")
+            col = box.column(align=True)
+
+            row = col.row()
+            row.label(text='Reuse Armature:')
+            row.prop(self, "reuse_armature", text='')
+            if self.game_title == 'auto' or self.game_title == "halo2" or self.game_title == "halo3":
+                row = col.row()
+                row.label(text='Force node parents:')
+                row.prop(self, "fix_parents", text='')
+
+            row = col.row()
+            row.label(text='Fix Rotations:')
+            row.prop(self, "fix_rotations", text='')
+            row = col.row()
+            row.label(text='Use Empties For Markers:')
+            row.prop(self, "empty_markers", text='')
 
 def menu_func_export(self, context):
     self.layout.operator(ExportJMS.bl_idname, text="Halo Jointed Model Skeleton (.jms)")
@@ -931,15 +1004,18 @@ def menu_func_export(self, context):
 def menu_func_import(self, context):
     self.layout.operator(ImportJMS.bl_idname, text="Halo Jointed Model Skeleton (.jms)")
 
-classeshalo = (
+classeshalo = [
+    JMA_TransformsDialog,
     JMS_ScenePropertiesGroup,
     JMS_SceneProps,
     JMS_PhysicsPropertiesGroup,
     JMS_PhysicsProps,
     ImportJMS,
-    ImportJMS_FileHandler,
     ExportJMS
-)
+]
+
+if not FileHandler == None:
+    classeshalo.append(ImportJMS_FileHandler)
 
 def register():
     for clshalo in classeshalo:

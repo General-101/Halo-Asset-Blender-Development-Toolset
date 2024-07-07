@@ -38,17 +38,6 @@ from bpy_extras.io_utils import (
     ExportHelper
     )
 
-try:
-    from bpy.types import (
-        FileHandler,
-        OperatorFileListElement
-        )
-except ImportError:
-    print("Blender is out of date. Drag and drop will not function")
-    FileHandler = None
-    OperatorFileListElement = None
-
-
 class ExportQUA(Operator, ExportHelper):
     """Write a QUA file"""
     bl_idname = 'export_scene.qua'
@@ -115,53 +104,91 @@ class ExportQUA(Operator, ExportHelper):
         row.label(text='Strip Identifier:')
         row.prop(self, "strip_identifier", text='')
 
-class ImportQUA(Operator, ImportHelper):
-    """Import a QUA file"""
-    bl_idname = "import_scene.qua"
-    bl_label = "Import QUA"
-    filename_ext = '.QUA'
+try:
+    from bpy.types import FileHandler
 
-    game_title: EnumProperty(
-        name="Game Title:",
-        description="What game was the cinematic file made for",
-        default="auto",
-        items=[ ('auto', "Auto", "Attempt to guess the game this animation was intended for. Will default to Halo CE if this fails."),
-                ('halo1', "Halo 1", "Import an animation intended for Halo 1"),
-                ('halo2', "Halo 2", "Import an animation intended for Halo 2"),
-                ('halo3', "Halo 3", "Import an animation intended for Halo 3"),
-            ]
-        )
+    class ImportQUA(Operator, ImportHelper):
+        """Import a QUA file"""
+        bl_idname = "import_scene.qua"
+        bl_label = "Import QUA"
+        filename_ext = '.QUA'
 
-    filter_glob: StringProperty(
-        default="*.qua",
-        options={'HIDDEN'},
-        )
+        game_title: EnumProperty(
+            name="Game Title:",
+            description="What game was the cinematic file made for",
+            default="auto",
+            items=[ ('auto', "Auto", "Attempt to guess the game this animation was intended for. Will default to Halo CE if this fails."),
+                    ('halo1', "Halo 1", "Import an animation intended for Halo 1"),
+                    ('halo2', "Halo 2", "Import an animation intended for Halo 2"),
+                    ('halo3', "Halo 3", "Import an animation intended for Halo 3"),
+                ]
+            )
 
-    filepath: StringProperty(
-        subtype='FILE_PATH', 
-        options={'SKIP_SAVE'}
-        )
+        filter_glob: StringProperty(
+            default="*.qua",
+            options={'HIDDEN'},
+            )
 
-    def execute(self, context):
-        from ..file_qua import import_qua
+        filepath: StringProperty(
+            subtype='FILE_PATH', 
+            options={'SKIP_SAVE'}
+            )
 
-        return global_functions.run_code("import_qua.load_file(context, self.filepath, self.report)")
+        def execute(self, context):
+            from ..file_qua import import_qua
 
-    def invoke(self, context, event):
-        if self.filepath:
-            return self.execute(context)
-        context.window_manager.fileselect_add(self)
-        return {'RUNNING_MODAL'}
+            return global_functions.run_code("import_qua.load_file(context, self.filepath, self.report)")
 
-class ImportQUA_FileHandler(FileHandler):
-    bl_idname = "QUA_FH_import"
-    bl_label = "File handler for QUA import"
-    bl_import_operator = "import_scene.qua"
-    bl_file_extensions = ".QUA"
+        def invoke(self, context, event):
+            if self.filepath:
+                return self.execute(context)
+            context.window_manager.fileselect_add(self)
+            return {'RUNNING_MODAL'}
 
-    @classmethod
-    def poll_drop(cls, context):
-        return (context.area and context.area.type == 'VIEW_3D')
+    class ImportQUA_FileHandler(FileHandler):
+        bl_idname = "QUA_FH_import"
+        bl_label = "File handler for QUA import"
+        bl_import_operator = "import_scene.qua"
+        bl_file_extensions = ".QUA"
+
+        @classmethod
+        def poll_drop(cls, context):
+            return (context.area and context.area.type == 'VIEW_3D')
+
+except ImportError:
+    print("Blender is out of date. Drag and drop will not function")
+    FileHandler = None
+    class ImportQUA(Operator, ImportHelper):
+        """Import a QUA file"""
+        bl_idname = "import_scene.qua"
+        bl_label = "Import QUA"
+        filename_ext = '.QUA'
+
+        game_title: EnumProperty(
+            name="Game Title:",
+            description="What game was the cinematic file made for",
+            default="auto",
+            items=[ ('auto', "Auto", "Attempt to guess the game this animation was intended for. Will default to Halo CE if this fails."),
+                    ('halo1', "Halo 1", "Import an animation intended for Halo 1"),
+                    ('halo2', "Halo 2", "Import an animation intended for Halo 2"),
+                    ('halo3', "Halo 3", "Import an animation intended for Halo 3"),
+                ]
+            )
+
+        filter_glob: StringProperty(
+            default="*.qua",
+            options={'HIDDEN'},
+            )
+
+        filepath: StringProperty(
+            subtype='FILE_PATH', 
+            options={'SKIP_SAVE'}
+            )
+
+        def execute(self, context):
+            from ..file_qua import import_qua
+
+            return global_functions.run_code("import_qua.load_file(context, self.filepath, self.report)")
 
 def menu_func_export(self, context):
     self.layout.operator(ExportQUA.bl_idname, text='Halo Ubercam Animation (.qua)')
@@ -169,11 +196,13 @@ def menu_func_export(self, context):
 def menu_func_import(self, context):
     self.layout.operator(ImportQUA.bl_idname, text="Halo Ubercam Animation (.qua)")
 
-classeshalo = (
+classeshalo = [
     ImportQUA,
-    ImportQUA_FileHandler,
     ExportQUA
-)
+]
+
+if not FileHandler == None:
+    classeshalo.append(ImportQUA_FileHandler)
 
 def register():
     for clshalo in classeshalo:

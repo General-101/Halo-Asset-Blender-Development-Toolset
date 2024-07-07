@@ -46,16 +46,6 @@ from bpy.props import (
     StringProperty
     )
 
-try:
-    from bpy.types import (
-        FileHandler,
-        OperatorFileListElement
-        )
-except ImportError:
-    print("Blender is out of date. Drag and drop will not function")
-    FileHandler = None
-    OperatorFileListElement = None
-
 def version_settings_callback(self, context):
     items=[ ('1', "1", "H2/H3"),
             ('2', "2", "H2/H3"),
@@ -504,42 +494,69 @@ class ExportASS(Operator, ExportHelper):
             row.enabled = is_enabled
             row.prop(self, "scale_float")
 
-class ImportASS(Operator, ImportHelper):
-    """Import an ASS file"""
-    bl_idname = "import_scene.ass"
-    bl_label = "Import ASS"
-    filename_ext = '.ASS'
+try:
+    from bpy.types import FileHandler
 
-    filter_glob: StringProperty(
-        default="*.ass",
-        options={'HIDDEN'},
-        )
+    class ImportASS(Operator, ImportHelper):
+        """Import an ASS file"""
+        bl_idname = "import_scene.ass"
+        bl_label = "Import ASS"
+        filename_ext = '.ASS'
 
-    filepath: StringProperty(
-        subtype='FILE_PATH', 
-        options={'SKIP_SAVE'}
-        )
+        filter_glob: StringProperty(
+            default="*.ass",
+            options={'HIDDEN'},
+            )
 
-    def execute(self, context):
-        from ..file_ass import import_ass
+        filepath: StringProperty(
+            subtype='FILE_PATH', 
+            options={'SKIP_SAVE'}
+            )
 
-        return global_functions.run_code("import_ass.load_file(context, self.filepath, self.report)")
+        def execute(self, context):
+            from ..file_ass import import_ass
 
-    def invoke(self, context, event):
-        if self.filepath:
-            return self.execute(context)
-        context.window_manager.fileselect_add(self)
-        return {'RUNNING_MODAL'}
+            return global_functions.run_code("import_ass.load_file(context, self.filepath, self.report)")
 
-class ImportASS_FileHandler(FileHandler):
-    bl_idname = "ASS_FH_import"
-    bl_label = "File handler for ASS import"
-    bl_import_operator = "import_scene.ass"
-    bl_file_extensions = ".ASS"
+        def invoke(self, context, event):
+            if self.filepath:
+                return self.execute(context)
+            context.window_manager.fileselect_add(self)
+            return {'RUNNING_MODAL'}
 
-    @classmethod
-    def poll_drop(cls, context):
-        return (context.area and context.area.type == 'VIEW_3D')
+    class ImportASS_FileHandler(FileHandler):
+        bl_idname = "ASS_FH_import"
+        bl_label = "File handler for ASS import"
+        bl_import_operator = "import_scene.ass"
+        bl_file_extensions = ".ASS"
+
+        @classmethod
+        def poll_drop(cls, context):
+            return (context.area and context.area.type == 'VIEW_3D')
+
+except ImportError:
+    print("Blender is out of date. Drag and drop will not function")
+    FileHandler = None
+    class ImportASS(Operator, ImportHelper):
+        """Import an ASS file"""
+        bl_idname = "import_scene.ass"
+        bl_label = "Import ASS"
+        filename_ext = '.ASS'
+
+        filter_glob: StringProperty(
+            default="*.ass",
+            options={'HIDDEN'},
+            )
+
+        filepath: StringProperty(
+            subtype='FILE_PATH', 
+            options={'SKIP_SAVE'}
+            )
+
+        def execute(self, context):
+            from ..file_ass import import_ass
+
+            return global_functions.run_code("import_ass.load_file(context, self.filepath, self.report)")
 
 def menu_func_export(self, context):
     self.layout.operator(ExportASS.bl_idname, text='Halo Amalgam Scene Specification (.ass)')
@@ -547,13 +564,15 @@ def menu_func_export(self, context):
 def menu_func_import(self, context):
     self.layout.operator(ImportASS.bl_idname, text="Halo Amalgam Scene Specification (.ass)")
 
-classeshalo = (
+classeshalo = [
     ASS_ScenePropertiesGroup,
     ASS_SceneProps,
     ImportASS,
-    ImportASS_FileHandler,
-    ExportASS,
-)
+    ExportASS
+]
+
+if not FileHandler == None:
+    classeshalo.append(ImportASS_FileHandler)
 
 def register():
     for clshalo in classeshalo:
