@@ -1005,7 +1005,6 @@ def menu_func_import(self, context):
     self.layout.operator(ImportJMS.bl_idname, text="Halo Jointed Model Skeleton (.jms)")
 
 classeshalo = [
-    JMA_TransformsDialog,
     JMS_ScenePropertiesGroup,
     JMS_SceneProps,
     JMS_PhysicsPropertiesGroup,
