@@ -61,7 +61,7 @@ def model_fixup(context, threshold):
                 processed_mesh_list.append(obj.data)
                 mesh_processing.select_object(context, obj)
                 bpy.ops.object.mode_set(mode = 'EDIT')
-                merge_normals()
+                @merge_normals() # Seems to break more than it helps - General_101
 
                 main_material_idx = []
                 render_only_material_idx = []
