@@ -34,6 +34,7 @@ def merge_normals():
     bpy.ops.mesh.select_all(action='DESELECT')
 
 def merge_verts(material_idx_list, threshold):
+    bpy.ops.mesh.select_all(action='DESELECT')
     for material_idx in material_idx_list:
         bpy.context.object.active_material_index = material_idx
         bpy.ops.object.material_slot_select()
@@ -61,47 +62,43 @@ def model_fixup(context, threshold):
                 processed_mesh_list.append(obj.data)
                 mesh_processing.select_object(context, obj)
                 bpy.ops.object.mode_set(mode = 'EDIT')
-                @merge_normals() # Seems to break more than it helps - General_101
+                #merge_normals() # Seems to break more than it helps - General_101
 
-                main_material_idx = []
-                render_only_material_idx = []
-                two_sided_material_idx = []
-                media_material_idx = []
-                hack1_material_idx = []
-                hack2_material_idx = []
-                portal_material_idx = []
+                main_material_ids = []
+                render_only_material_ids = []
+                two_sided_material_ids = []
+                media_material_ids = []
+                seamsealer_material_ids = []
+                portal_material_ids = []
 
                 for idx, slot in enumerate(obj.material_slots):
                     mat = slot.material
                     if mat is not None:
-                        if "!" in mat.name or mat.ass_jms.render_only:
-                            render_only_material_idx.append(idx)
+                        mat_name = mat.name.lower()
+                        if "!" in mat_name or mat.ass_jms.render_only:
+                            render_only_material_ids.append(idx)
 
-                        elif mat.name == "+portal" or mat.name == "+exactportal":
-                            portal_material_idx.append(idx)
+                        elif "+portal" in mat_name or "+exactportal" in mat_name:
+                            portal_material_ids.append(idx)
 
-                        elif "%" in mat.name or mat.ass_jms.two_sided or "?" in mat.name or mat.ass_jms.transparent_2_sided or "#" in mat.name or mat.ass_jms.transparent_1_sided:
-                            two_sided_material_idx.append(idx)
+                        elif "%" in mat_name or mat.ass_jms.two_sided or "?" in mat_name or mat.ass_jms.transparent_2_sided or "#" in mat_name or mat.ass_jms.transparent_1_sided:
+                            two_sided_material_ids.append(idx)
 
-                        elif mat.name == "+media" or mat.name == "+sound" or mat.name == "+unused" or mat.name == "+weatherpoly" or "$" in mat.name or mat.ass_jms.fog_plane:
-                            media_material_idx.append(idx)
+                        elif "+media" in mat_name or "+sound" in mat_name or "+unused" in mat_name or "+weatherpoly" in mat_name or "$" in mat_name or mat.ass_jms.fog_plane:
+                            media_material_ids.append(idx)
 
-                        elif mat.name == "+seamsealer":
-                            hack1_material_idx.append(idx)
-
-                        elif mat.name == "+SEAMSEALER":
-                            hack2_material_idx.append(idx)
+                        #elif "+seamsealer" in mat.name:
+                            #seamsealer_material_ids.append(idx)
 
                         else:
-                            main_material_idx.append(idx)
+                            main_material_ids.append(idx)
 
-                merge_verts(main_material_idx, threshold)
-                merge_verts(render_only_material_idx, threshold)
-                merge_verts(two_sided_material_idx, threshold)
-                merge_verts(media_material_idx, threshold)
-                merge_verts(hack1_material_idx, threshold)
-                merge_verts(hack2_material_idx, threshold)
-                merge_verts(portal_material_idx, threshold)
+                merge_verts(main_material_ids, threshold)
+                merge_verts(render_only_material_ids, threshold)
+                merge_verts(two_sided_material_ids, threshold)
+                merge_verts(media_material_ids, threshold)
+                #merge_verts(seamsealer_material_ids, threshold)
+                merge_verts(portal_material_ids, threshold)
 
                 bpy.ops.mesh.customdata_custom_splitnormals_clear()
                 bpy.ops.object.mode_set(mode = 'OBJECT')
