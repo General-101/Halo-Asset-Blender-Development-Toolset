@@ -324,7 +324,10 @@ def add_modifier(context, obj, triangulate_faces, edge_split_class, armature):
     if triangulate_faces:
         if not 'TRIANGULATE' in modifier_list:
             triangulate = obj.modifiers.new("Triangulate", type='TRIANGULATE')
-            triangulate.keep_custom_normals = True
+            try:
+                triangulate.keep_custom_normals = True
+            except AttributeError:
+                print("Can't set keep custom normals for triangulate modifier. Blender version is newer or something went very wrong.")
 
     if edge_split_class and edge_split_class.is_enabled:
         if not 'EDGE_SPLIT' in modifier_list:
