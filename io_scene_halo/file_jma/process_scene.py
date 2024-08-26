@@ -57,7 +57,7 @@ def process_scene(context, extension, jma_version, game_title, generate_checksum
     object_list = []
 
     # Gather all scene resources that fit export criteria
-    resource_management.gather_scene_resources(context, layer_collection_list, object_list, hidden_geo)
+    resource_management.gather_scene_resources(context, layer_collection_list, object_list, hidden_geo, nonrender_geo)
 
     # Store visibility for all relevant resources
     stored_collection_visibility = resource_management.store_collection_visibility(layer_collection_list)

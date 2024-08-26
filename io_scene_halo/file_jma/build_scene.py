@@ -313,7 +313,7 @@ def build_scene(context, JMA, JMS_A, JMS_B, filepath, game_version, fix_parents,
     object_list = []
 
     # Gather all scene resources that fit export criteria
-    resource_management.gather_scene_resources(context, layer_collection_list, object_list, hidden_geo)
+    resource_management.gather_scene_resources(context, layer_collection_list, object_list, hidden_geo, nonrender_geo)
 
     scene_nodes = []
     jma_nodes = []

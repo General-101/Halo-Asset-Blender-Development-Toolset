@@ -24,7 +24,7 @@
 #
 # ##### END MIT LICENSE BLOCK #####
 
-def gather_scene_resources(context, layer_collection_list, object_list, hidden_geo, nonrender_geo=True):
+def gather_scene_resources(context, layer_collection_list, object_list, hidden_geo, nonrender_geo):
     object_scene_list = list(context.scene.objects)
     for obj in object_scene_list:
         if hidden_geo:

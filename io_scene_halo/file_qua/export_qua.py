@@ -28,8 +28,8 @@ import bpy
 
 from .build_asset import build_asset
 
-def write_file(context, filepath, game_title, qua_version, strip_identifier, report):
-    build_asset(context, filepath, game_title, qua_version, strip_identifier, report)
+def write_file(context, filepath, game_title, qua_version, strip_identifier, hidden_geo, nonrender_geo, report):
+    build_asset(context, filepath, game_title, qua_version, strip_identifier, hidden_geo, nonrender_geo, report)
 
     report({'INFO'}, "Export completed successfully")
 

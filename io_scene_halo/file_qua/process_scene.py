@@ -30,7 +30,7 @@ import bpy
 from math import radians
 from mathutils import Vector, Matrix, Euler
 from .format import QUAAsset, UbercamObjectTypeEnum
-from ..global_functions import global_functions
+from ..global_functions import global_functions, resource_management
 
 def get_camera_frame(context, frame, camera, version):
     context.scene.frame_set(frame)
@@ -58,7 +58,7 @@ def get_camera_frame(context, frame, camera, version):
 
     return QUAAsset.Frames(is_enabled, position, (up[0], up[1], up[2]), (forward[0], forward[1], forward[2]), vfov, aperture, focal_length, depth_of_field, near_focal, far_focal, focal_depth, blur_amount)
 
-def process_scene(context, game_title, qua_version, strip_identifier, report):
+def process_scene(context, game_title, qua_version, strip_identifier, hidden_geo, nonrender_geo, report):
     QUA = QUAAsset()
 
     blend_filename = bpy.path.basename(context.blend_data.filepath)
@@ -74,11 +74,28 @@ def process_scene(context, game_title, qua_version, strip_identifier, report):
     QUA.shots = []
     QUA.extra_cameras = []
 
+    layer_collection_list = []
+    object_list = []
+
+    if not context.view_layer.objects.active == None:
+        bpy.ops.object.mode_set(mode='OBJECT')
+
+    # Gather all scene resources that fit export criteria
+    resource_management.gather_scene_resources(context, layer_collection_list, object_list, hidden_geo, nonrender_geo)
+
+    # Store visibility for all relevant resources
+    stored_collection_visibility = resource_management.store_collection_visibility(layer_collection_list)
+    stored_object_visibility = resource_management.store_object_visibility(object_list)
+    stored_modifier_visibility = resource_management.store_modifier_visibility(object_list)
+
+    # Unhide all relevant resources for exporting
+    resource_management.unhide_relevant_resources(layer_collection_list, object_list)
+
     ubercam = None
     extra_cameras = []
     speakers = []
     armatures = []
-    for obj in context.scene.objects:
+    for obj in object_list:
         name = obj.name.lower()
         if obj.type == 'CAMERA':
             if name[0:1] == '&' and ubercam == None:
@@ -198,4 +215,8 @@ def process_scene(context, game_title, qua_version, strip_identifier, report):
     else:
         raise global_functions.ParseError("No uber camera in your scene. Create a camera and give it & as the prefix for the object name")
     
+    resource_management.restore_collection_visibility(stored_collection_visibility)
+    resource_management.restore_object_visibility(stored_object_visibility)
+    resource_management.restore_modifier_visibility(stored_modifier_visibility)
+
     return QUA

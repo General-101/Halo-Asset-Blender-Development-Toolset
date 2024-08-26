@@ -47,7 +47,7 @@ def build_asset(
     object_list = []
 
     # Gather all scene resources that fit export criteria
-    resource_management.gather_scene_resources(context, layer_collection_list, object_list, JMS_args.hidden_geo)
+    resource_management.gather_scene_resources(context, layer_collection_list, object_list, JMS_args.hidden_geo, JMS_args.nonrender_geo)
 
     # Store visibility for all relevant resources
     stored_collection_visibility = resource_management.store_collection_visibility(layer_collection_list)

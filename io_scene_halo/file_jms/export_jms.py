@@ -63,7 +63,7 @@ def write_file(context,
         bpy.ops.object.mode_set(mode='OBJECT')
 
     # Gather all scene resources that fit export criteria
-    resource_management.gather_scene_resources(context, layer_collection_list, object_list, hidden_geo)
+    resource_management.gather_scene_resources(context, layer_collection_list, object_list, hidden_geo, nonrender_geo)
 
     # Store visibility for all relevant resources
     stored_collection_visibility = resource_management.store_collection_visibility(layer_collection_list)

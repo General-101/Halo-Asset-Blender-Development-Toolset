@@ -26,13 +26,13 @@
 
 from .process_scene import process_scene
 
-def build_asset(context, filepath, game_title, qua_version, strip_identifier, report):
+def build_asset(context, filepath, game_title, qua_version, strip_identifier, hidden_geo, nonrender_geo, report):
     decimal_1 = '\n%s'
     decimal_2 = '\n%s %s'
     decimal_3 = '\n%s %s %s'
     decimal_4 = '\n%s %s %s %s'
 
-    QUA = process_scene(context, game_title, qua_version, strip_identifier, report)
+    QUA = process_scene(context, game_title, qua_version, strip_identifier, hidden_geo, nonrender_geo, report)
 
     file = open(filepath, 'w', encoding="utf-8")
 
