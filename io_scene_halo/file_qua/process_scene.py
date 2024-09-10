@@ -58,7 +58,7 @@ def get_camera_frame(context, frame, camera, version):
 
     return QUAAsset.Frames(is_enabled, position, (up[0], up[1], up[2]), (forward[0], forward[1], forward[2]), vfov, aperture, focal_length, depth_of_field, near_focal, far_focal, focal_depth, blur_amount)
 
-def process_scene(context, game_title, qua_version, strip_identifier, hidden_geo, nonrender_geo, report):
+def process_scene(context, game_title, qua_version, qua_type, qua_revision, strip_identifier, hidden_geo, nonrender_geo, report):
     QUA = QUAAsset()
 
     blend_filename = bpy.path.basename(context.blend_data.filepath)
@@ -67,10 +67,13 @@ def process_scene(context, game_title, qua_version, strip_identifier, hidden_geo
         scene_name = blend_filename.rsplit('.', 1)[0]
 
     QUA.version = qua_version
-    QUA.name = scene_name
+    QUA.scene_type = qua_type
+    QUA.scene_version = qua_revision
+    QUA.scene_name = scene_name
     QUA.units = []
     QUA.scenery = []
     QUA.effects_scenery = []
+    QUA.objects = []
     QUA.shots = []
     QUA.extra_cameras = []
 
@@ -91,10 +94,14 @@ def process_scene(context, game_title, qua_version, strip_identifier, hidden_geo
     # Unhide all relevant resources for exporting
     resource_management.unhide_relevant_resources(layer_collection_list, object_list)
 
+    data_key = "data%s" % os.sep
+    tags_key = "tags%s" % os.sep
+
     ubercam = None
     extra_cameras = []
     speakers = []
     armatures = []
+    effects = []
     for obj in object_list:
         name = obj.name.lower()
         if obj.type == 'CAMERA':
@@ -110,32 +117,126 @@ def process_scene(context, game_title, qua_version, strip_identifier, hidden_geo
         elif obj.type == 'ARMATURE':
             armatures.append(obj)
 
+        elif obj.qua.ubercam_halo_effect:
+            effects.append(obj)
+
     if ubercam:
         if ubercam.animation_data:
             for nla_track in ubercam.animation_data.nla_tracks:
                 for strip in nla_track.strips:
                     action_tranforms = []
                     sound_data = []
+                    custom_scripts = []
+                    shot_effects = []
                     first_frame = round(strip.frame_start)
                     last_frame = round(strip.frame_end + 1)
                     for frame in range(first_frame, last_frame):
                         action_tranforms.append(get_camera_frame(context, frame, ubercam, qua_version))
 
                     for speaker in speakers:
-                        object_name = "none"
+                        sound_tag = "none"
+                        female_sound_tag = "none"
+                        audio_filename = "none"
+                        female_audio_filename = "none"
+                        character = "none"
+                        dialog_color = "none"
                         if speaker.parent and not global_functions.string_empty_check(speaker.parent.name):
-                            object_name = speaker.parent.name
+                            character = speaker.parent.name
 
-                        sound_path = "none"
+                        if not global_functions.string_empty_check(speaker.data.qua.ubercam_sound_tag_reference):
+                            sound_tag = os.path.abspath(bpy.path.abspath(speaker.data.qua.ubercam_sound_tag_reference))
+                            if tags_key in sound_tag:
+                                sound_tag_string = sound_tag.split(tags_key, 1)[1]
+                                sound_tag = "%s%s" % (tags_key, sound_tag_string)
+
+                        if not global_functions.string_empty_check(speaker.data.qua.ubercam_female_sound_tag_reference):
+                            female_sound_tag = os.path.abspath(bpy.path.abspath(speaker.data.qua.ubercam_female_sound_tag_reference))
+                            if tags_key in female_sound_tag:
+                                female_sound_tag_string = female_sound_tag.split(tags_key, 1)[1]
+                                female_sound_tag = "%s%s" % (tags_key, female_sound_tag_string)
+
+                        else:
+                            female_sound_tag = sound_tag
+
+                        if not global_functions.string_empty_check(speaker.data.qua.ubercam_female_sound_file_reference):
+                            female_audio_filename = os.path.abspath(bpy.path.abspath(speaker.data.qua.ubercam_female_sound_file_reference))
+                            if data_key in female_audio_filename:
+                                female_audio_string = female_audio_filename.split(data_key, 1)[1]
+                                female_audio_filename = "%s%s" % (data_key, female_audio_string)
+
+                        if not global_functions.string_empty_check(speaker.data.qua.ubercam_dialog_color):
+                            dialog_color = speaker.data.qua.ubercam_dialog_color
+
                         if speaker.data.sound and not global_functions.string_empty_check(speaker.data.sound.filepath):
-                            sound_path = os.path.abspath(bpy.path.abspath(speaker.data.sound.filepath))
+                            audio_filename = os.path.abspath(bpy.path.abspath(speaker.data.sound.filepath))
+                            if data_key in audio_filename:
+                                audio_filename_string = audio_filename.split(data_key, 1)[1]
+                                audio_filename = "%s%s" % (data_key, audio_filename_string)
+
+                            if female_audio_filename == "none":
+                                female_audio_filename = audio_filename
+
                             for nla_track in speaker.animation_data.nla_tracks:
                                 for strip in nla_track.strips:
                                     sound_initial_frame = round(strip.frame_start)
                                     if sound_initial_frame in range(first_frame, last_frame):
-                                        sound_data.append(QUAAsset.AudioData(sound_path, sound_initial_frame, object_name))
+                                        sound_data.append(QUAAsset.AudioData(sound_tag, female_sound_tag, audio_filename, female_audio_filename, sound_initial_frame, character, 
+                                                                             dialog_color))
 
-                    QUA.shots.append(QUAAsset.Shots(action_tranforms, sound_data))
+                    for text in bpy.data.texts:
+                        if text.qua.ubercam_halo_script:
+                            ubercam_frame_number = round(text.qua.ubercam_frame_number)
+                            if ubercam_frame_number in range(first_frame, last_frame):
+                                script = QUAAsset.CustomScriptData()
+                                script.node_id = text.qua.ubercam_node_id
+                                script.sequence_id = text.qua.ubercam_sequence_id
+                                script.script = text.as_string().replace("\n", " ")
+                                script.frame = text.qua.ubercam_frame_number
+
+                                custom_scripts.append(script)
+
+                    for effect in effects:
+                        ubercam_frame_number = round(effect.qua.ubercam_frame_number)
+                        if ubercam_frame_number in range(first_frame, last_frame):
+                            effect_string = "none"
+                            marker_name_string = "none"
+                            marker_parent_string = "none"
+                            function_a_string = "none"
+                            function_b_string = "none"
+                            if not global_functions.string_empty_check(effect.qua.ubercam_effect):
+                                effect_string = os.path.abspath(bpy.path.abspath(effect.qua.ubercam_effect))
+                                if tags_key in effect_string:
+                                    effect_string = effect_string.split(tags_key, 1)[1]
+        
+                            if not global_functions.string_empty_check(effect.name):
+                                marker_name_string = effect.name
+
+                            if effect.parent:
+                                marker_parent_string = effect.parent.name
+
+                            if not global_functions.string_empty_check(effect.qua.ubercam_function_a):
+                                function_a_string = effect.qua.ubercam_function_a
+
+                            if not global_functions.string_empty_check(effect.qua.ubercam_function_b):
+                                function_b_string = effect.qua.ubercam_function_b
+
+                            effect_data = QUAAsset.EffectData()
+                            effect_data.node_id = effect.qua.ubercam_node_id
+                            effect_data.sequence_id = effect.qua.ubercam_sequence_id
+                            effect_data.effect = effect_string
+                            effect_data.marker_name = marker_name_string
+                            effect_data.marker_parent = marker_parent_string
+                            effect_data.frame = effect.qua.ubercam_frame_number
+                            effect_data.effect_state = effect.qua.ubercam_effect_state
+                            effect_data.size_scale = effect.scale[0]
+                            effect_data.function_a = function_a_string
+                            effect_data.function_b = function_b_string
+                            effect_data.looping = effect.qua.ubercam_looping
+
+                            shot_effects.append(effect_data)
+
+                    QUA.shots.append(QUAAsset.Shots(frames=action_tranforms, audio_data_version=3, audio_data=sound_data, custom_script_data_version=1, 
+                                                    custom_script_data=custom_scripts, effect_data_version=4, effect_data=shot_effects))
 
             for extra_camera_ob in extra_cameras:
                 extra_shots = []
@@ -147,7 +248,7 @@ def process_scene(context, game_title, qua_version, strip_identifier, hidden_geo
                         for frame in range(first_frame, last_frame):
                             extra_action_tranforms.append(get_camera_frame(context, frame, extra_camera_ob, qua_version))
 
-                        extra_shots.append(QUAAsset.Shots(extra_action_tranforms, []))
+                        extra_shots.append(QUAAsset.Shots(frames=extra_action_tranforms, audio_data=[]))
 
                     extra_camera_name = "none"
                     if not global_functions.string_empty_check(extra_camera_ob.name):
@@ -162,37 +263,57 @@ def process_scene(context, game_title, qua_version, strip_identifier, hidden_geo
             for armature in armatures:
                 ubercam_object_type = UbercamObjectTypeEnum(int(armature.ass_jms.ubercam_object_type))
                 qua_object = QUAAsset.Object()
-                qua_object.name = "none"
+                qua_object.export_name = "none"
+                qua_object.animation_id = "none"
+                qua_object.animation_path = "none"
+                qua_object.object_path = "none"
                 if not global_functions.string_empty_check(armature.name):
-                    qua_object.name = armature.name
+                    qua_object.export_name = armature.name
 
-                qua_object.path = "none"
-                if not global_functions.string_empty_check(armature.ass_jms.ubercam_object_animation):
-                    qua_object.path = os.path.abspath(bpy.path.abspath(armature.ass_jms.ubercam_object_animation))
-                    if strip_identifier:
-                        results = qua_object.path.rsplit(".", 1)
-                        if len(results) >= 2:
-                            animation_path = results[0]
-                            extension = results[1]
-                            directory_path = os.path.dirname(animation_path)
-                            file_name = os.path.basename(animation_path)
-                            strip_keyword = ""
-                            strip_valid = True
-                            for char in reversed(file_name):
-                                if char.isdigit():
-                                    strip_keyword += char
-                                else:
-                                    if char == "_":
+                if game_title == "halo3":
+                    if not global_functions.string_empty_check(armature.ass_jms.ubercam_object_animation):
+                        qua_object.object_path = os.path.abspath(bpy.path.abspath(armature.ass_jms.ubercam_object_animation))
+                        if strip_identifier:
+                            results = qua_object.object_path.rsplit(".", 1)
+                            if len(results) >= 2:
+                                animation_path = results[0]
+                                extension = results[1]
+                                directory_path = os.path.dirname(animation_path)
+                                file_name = os.path.basename(animation_path)
+                                strip_keyword = ""
+                                strip_valid = True
+                                for char in reversed(file_name):
+                                    if char.isdigit():
                                         strip_keyword += char
-                                        break
                                     else:
-                                        strip_valid = False
-                                        break
-                                    
-                            strip_keyword = strip_keyword[::-1]
-                            if strip_valid:
-                                stripped_file_name = file_name.rsplit(strip_keyword, 1)[0]
-                                qua_object.path = os.path.join(directory_path, "%s.%s" % (stripped_file_name, extension))
+                                        if char == "_":
+                                            strip_keyword += char
+                                            break
+                                        else:
+                                            strip_valid = False
+                                            break
+                                        
+                                strip_keyword = strip_keyword[::-1]
+                                if strip_valid:
+                                    stripped_file_name = file_name.rsplit(strip_keyword, 1)[0]
+                                    qua_object.object_path = os.path.join(directory_path, "%s.%s" % (stripped_file_name, extension))
+                else:
+                    if not global_functions.string_empty_check(armature.ass_jms.ubercam_animation_name):
+                        qua_object.animation_id = os.path.abspath(bpy.path.abspath(armature.ass_jms.ubercam_animation_name))
+
+                    if not global_functions.string_empty_check(armature.ass_jms.ubercam_object_animation):
+                        ubercam_object_animation_string = os.path.abspath(bpy.path.abspath(armature.ass_jms.ubercam_object_animation))
+                        qua_object.animation_path = ubercam_object_animation_string
+                        if tags_key in ubercam_object_animation_string:
+                            object_animation_string = ubercam_object_animation_string.split(tags_key, 1)[1]
+                            qua_object.animation_path = "%s%s" % (tags_key, object_animation_string)
+
+                    if not global_functions.string_empty_check(armature.ass_jms.ubercam_object_reference):
+                        ubercam_object_reference_string = os.path.abspath(bpy.path.abspath(armature.ass_jms.ubercam_object_reference))
+                        qua_object.object_path = ubercam_object_reference_string
+                        if tags_key in ubercam_object_reference_string:
+                            object_reference_string = ubercam_object_reference_string.split(tags_key, 1)[1]
+                            qua_object.object_path = "%s%s" % (tags_key, object_reference_string)
 
                 qua_object.bits = []
                 for nla_track in ubercam.animation_data.nla_tracks:
@@ -205,12 +326,15 @@ def process_scene(context, game_title, qua_version, strip_identifier, hidden_geo
 
                         qua_object.bits.append(visible_bit)
 
-                if ubercam_object_type == UbercamObjectTypeEnum.unit:
-                    QUA.units.append(qua_object)
-                elif ubercam_object_type == UbercamObjectTypeEnum.scenery:
-                    QUA.scenery.append(qua_object)
-                elif ubercam_object_type == UbercamObjectTypeEnum.effect_scenery:
-                    QUA.effects_scenery.append(qua_object)
+                if game_title == "halo3":
+                    if ubercam_object_type == UbercamObjectTypeEnum.unit:
+                        QUA.units.append(qua_object)
+                    elif ubercam_object_type == UbercamObjectTypeEnum.scenery:
+                        QUA.scenery.append(qua_object)
+                    elif ubercam_object_type == UbercamObjectTypeEnum.effect_scenery:
+                        QUA.effects_scenery.append(qua_object)
+                else:
+                    QUA.objects.append(qua_object)
 
     else:
         raise global_functions.ParseError("No uber camera in your scene. Create a camera and give it & as the prefix for the object name")

@@ -31,10 +31,10 @@ from .process_file import process_file
 from .build_scene import build_scene
 from ..global_functions import global_functions
 
-def load_file(context, filepath, report):
+def load_file(context, game_title, filepath, report):
     QUA = QUAAsset(filepath)
 
-    process_file(QUA, report)
+    process_file(game_title, QUA, report)
     build_scene(context, QUA, report)
 
     return {'FINISHED'}

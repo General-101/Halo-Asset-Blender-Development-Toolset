@@ -31,7 +31,8 @@ from bpy.props import (
         EnumProperty,
         StringProperty,
         BoolProperty,
-        PointerProperty
+        PointerProperty,
+        IntProperty
         )
 from bpy.types import (
     Panel,
@@ -73,6 +74,14 @@ class QUA_SceneProps(Panel):
             row.label(text='QUA Version:')
             row.prop(scene_qua, "qua_version", text='')
 
+        if scene_qua.game_title == "halo4":
+            row = col.row()
+            row.label(text='QUA Type:')
+            row.prop(scene_qua, "qua_type", text='')
+            row = col.row()
+            row.label(text='QUA Revision:')
+            row.prop(scene_qua, "qua_revision", text='')
+
         row = col.row()
         row.label(text='Strip Identifier:')
         row.prop(scene_qua, "strip_identifier", text='')
@@ -94,6 +103,36 @@ class QUA_SceneProps(Panel):
         row.label(text='Use As Default Export Settings:')
         row.prop(scene_qua, "use_scene_properties", text='')
 
+def version_settings_callback(self, context):
+    items=[('1', "1", "Non-functional")]
+
+    print(self.game_title)
+    if self.game_title == "halo3":
+        items.append(('2', "2", "Non-functional"))
+        items.append(('3', "3", "Non-functional"))
+        items.append(('4', "4", "Non-functional"))
+        items.append(('5', "5", "Retail"))
+
+    elif self.game_title == "halor":
+        items.append(('2', "2", "Retail"))
+
+    elif self.game_title == "halo4":
+        items.append(('2', "2", "Non-functional"))
+        items.append(('3', "3", "Non-functional"))
+        items.append(('4', "4", "Retail"))
+
+    return items
+
+def update_version(self, context):
+    if self.game_title == "halo3":
+        self.qua_version = '5'
+
+    elif self.game_title == "halor":
+        self.qua_version = '2'
+
+    else:
+        self.qua_version = '4'
+
 class QUA_ScenePropertiesGroup(PropertyGroup):
     game_title: EnumProperty(
         name="Game Title:",
@@ -101,19 +140,30 @@ class QUA_ScenePropertiesGroup(PropertyGroup):
         items=[ ('halo3', "Halo 3", "Export a QUA intended for Halo 3"),
                 ('halor', "Halo Reach", "Export a QUA intended for Halo Reach"),
                 ('halo4', "Halo 4", "Export a QUA intended for Halo 4"),
-            ]
+            ],
+        update = update_version
         )
 
     qua_version: EnumProperty(
         name="Version:",
         description="What version to use for the Ubercam file",
-        default="5",
-        items=[ ('1', "1", "Non-functional"),
-                ('2', "2", "Non-functional"),
-                ('3', "3", "Non-functional"),
-                ('4', "4", "Non-functional"),
-                ('5', "5", "Retail"),
+        options={'HIDDEN'},
+        items=version_settings_callback,
+        default=4
+        )
+
+    qua_type: EnumProperty(
+        name="Scene Type:",
+        description="What type of scene is the QUA file intended to be",
+        items=[ ('main', "Main", "Export a standard QUA scene"),
+                ('segment', "Segment", "Export a segment QUA scene")
             ]
+        )
+
+    qua_revision: IntProperty(
+        name="Revision",
+        description="Set the file revision for the QUA",
+        default = 0,
         )
 
     strip_identifier: BoolProperty(
@@ -152,19 +202,30 @@ class ExportQUA(Operator, ExportHelper):
         items=[ ('halo3', "Halo 3", "Export a QUA intended for Halo 3"),
                 ('halor', "Halo Reach", "Export a QUA intended for Halo Reach"),
                 ('halo4', "Halo 4", "Export a QUA intended for Halo 4"),
-            ]
+            ],
+        update = update_version
         )
 
     qua_version: EnumProperty(
         name="Version:",
         description="What version to use for the Ubercam file",
-        default="5",
-        items=[ ('1', "1", "Non-functional"),
-                ('2', "2", "Non-functional"),
-                ('3', "3", "Non-functional"),
-                ('4', "4", "Non-functional"),
-                ('5', "5", "Retail"),
+        options={'HIDDEN'},
+        items=version_settings_callback,
+        default=4
+        )
+
+    qua_type: EnumProperty(
+        name="Scene Type:",
+        description="What type of scene is the QUA file intended to be",
+        items=[ ('main', "Main", "Export a standard QUA scene"),
+                ('segment', "Segment", "Export a segment QUA scene")
             ]
+        )
+
+    qua_revision: IntProperty(
+        name="Revision",
+        description="Set the file revision for the QUA",
+        default = 0,
         )
 
     strip_identifier: BoolProperty(
@@ -199,7 +260,7 @@ class ExportQUA(Operator, ExportHelper):
     def execute(self, context):
         from ..file_qua import export_qua
 
-        return global_functions.run_code("export_qua.write_file(context, self.filepath, self.game_title, int(self.qua_version), self.strip_identifier, self.hidden_geo, self.nonrender_geo, self.report)")
+        return global_functions.run_code("export_qua.write_file(context, self.filepath, self.game_title, int(self.qua_version), self.qua_type, self.qua_revision, self.strip_identifier, self.hidden_geo, self.nonrender_geo, self.report)")
 
     def draw(self, context):
         scene = context.scene
@@ -233,6 +294,14 @@ class ExportQUA(Operator, ExportHelper):
             row.enabled = is_enabled
             row.label(text='QUA Version:')
             row.prop(self, "qua_version", text='')
+
+        if self.game_title == "halo4":
+            row = col.row()
+            row.label(text='QUA Type:')
+            row.prop(self, "qua_type", text='')
+            row = col.row()
+            row.label(text='QUA Revision:')
+            row.prop(self, "qua_revision", text='')
 
         row = col.row()
         row.enabled = is_enabled
@@ -270,11 +339,9 @@ try:
         game_title: EnumProperty(
             name="Game Title:",
             description="What game was the cinematic file made for",
-            default="auto",
-            items=[ ('auto', "Auto", "Attempt to guess the game this animation was intended for. Will default to Halo CE if this fails."),
-                    ('halo1', "Halo 1", "Import an animation intended for Halo 1"),
-                    ('halo2', "Halo 2", "Import an animation intended for Halo 2"),
-                    ('halo3', "Halo 3", "Import an animation intended for Halo 3"),
+            items=[ ('halo3', "Halo 3", "Export a QUA intended for Halo 3"),
+                    ('halor', "Halo Reach", "Export a QUA intended for Halo Reach"),
+                    ('halo4', "Halo 4", "Export a QUA intended for Halo 4"),
                 ]
             )
 
@@ -291,7 +358,7 @@ try:
         def execute(self, context):
             from ..file_qua import import_qua
 
-            return global_functions.run_code("import_qua.load_file(context, self.filepath, self.report)")
+            return global_functions.run_code("import_qua.load_file(context, self.game_title, self.filepath, self.report)")
 
         def invoke(self, context, event):
             if self.filepath:
@@ -321,11 +388,9 @@ except ImportError:
         game_title: EnumProperty(
             name="Game Title:",
             description="What game was the cinematic file made for",
-            default="auto",
-            items=[ ('auto', "Auto", "Attempt to guess the game this animation was intended for. Will default to Halo CE if this fails."),
-                    ('halo1', "Halo 1", "Import an animation intended for Halo 1"),
-                    ('halo2', "Halo 2", "Import an animation intended for Halo 2"),
-                    ('halo3', "Halo 3", "Import an animation intended for Halo 3"),
+            items=[ ('halo3', "Halo 3", "Export a QUA intended for Halo 3"),
+                    ('halor', "Halo Reach", "Export a QUA intended for Halo Reach"),
+                    ('halo4', "Halo 4", "Export a QUA intended for Halo 4"),
                 ]
             )
 
@@ -342,7 +407,7 @@ except ImportError:
         def execute(self, context):
             from ..file_qua import import_qua
 
-            return global_functions.run_code("import_qua.load_file(context, self.filepath, self.report)")
+            return global_functions.run_code("import_qua.load_file(context, self.game_title, self.filepath, self.report)")
 
 def menu_func_export(self, context):
     self.layout.operator(ExportQUA.bl_idname, text='Halo Ubercam Animation (.qua)')

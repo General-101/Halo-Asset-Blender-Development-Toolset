@@ -106,11 +106,16 @@ from .object_ui import (
     ASS_JMS_ObjectPropertiesGroup,
     ASS_JMS_MeshPropertiesGroup,
     QUA_ObjectPropertiesGroup,
+    QUA_SpeakerPropertiesGroup,
+    QUA_ScriptPropertiesGroup,
+    QUA_EffectPropertiesGroup,
     Halo_ObjectProps,
     Halo_BoneProps,
     Halo_MeshProps,
     Halo_XREFPath,
-    Halo_CameraProps
+    Halo_CameraProps,
+    Halo_ScriptProps,
+    Halo_EffectProps
 )
 
 from .tag_view import (
@@ -158,6 +163,8 @@ class Halo_ScenePropertiesGroup(PropertyGroup):
         items=[ ('halo1', "Halo 1", "Show properties for Halo Custom Edition Or Halo CE MCC"),
                 ('halo2', "Halo 2", "Show properties for Halo 2 Vista or Halo 2 MCC"),
                 ('halo3', "Halo 3", "Show properties for Halo 3 MCC"),
+                ('halor', "Halo Reach", "Show properties for Halo Reach MCC"),
+                ('halo4', "Halo 4", "Show properties for Halo 4 MCC"),
                ]
         )
 
@@ -172,6 +179,9 @@ classeshalo = (
     ASS_JMS_MeshPropertiesGroup,
     ASS_JMS_MaterialPropertiesGroup,
     QUA_ObjectPropertiesGroup,
+    QUA_SpeakerPropertiesGroup,
+    QUA_ScriptPropertiesGroup,
+    QUA_EffectPropertiesGroup,
     Halo_ObjectProps,
     Halo_BoneProps,
     Halo_MeshProps,
@@ -187,6 +197,8 @@ classeshalo = (
     ASS_JMS_MaterialAttenuationProps,
     ASS_JMS_MaterialFrustumProps,
     Halo_CameraProps,
+    Halo_ScriptProps,
+    Halo_EffectProps,
     Halo_ScenePropertiesGroup,
     Halo_SceneProps,
     Halo_GlobalSettings,
@@ -239,19 +251,42 @@ def register():
     bpy.types.Scene.active_region_list = []
     bpy.types.Object.region_add = region_add
     bpy.types.Mesh.get_custom_attribute = get_custom_attribute
+    bpy.types.Speaker.qua = PointerProperty(type=QUA_SpeakerPropertiesGroup, name="Halo Camera Audio Properties", description="Set sound properties for your speaker")
+    bpy.types.Text.qua = PointerProperty(type=QUA_ScriptPropertiesGroup, name="Halo Script Properties", description="Set script properties for your scene")
+    bpy.types.Object.qua = PointerProperty(type=QUA_EffectPropertiesGroup, name="Halo Camera Effect Properties", description="Set properties for your effect")
 
 def unregister():
     del bpy.types.Light.halo_light
+    del bpy.types.Object.tag_view
     del bpy.types.Object.ass_jms
     del bpy.types.Armature.ass_jms
+    del bpy.types.Bone.ass_jms
     del bpy.types.Mesh.ass_jms
     del bpy.types.Material.ass_jms
     del bpy.types.Scene.halo
+    del bpy.types.Camera.qua
+    del bpy.types.Mesh.halo_valid_surface
+    del bpy.types.Mesh.halo_valid_characters
+    del bpy.types.Mesh.halo_marine
+    del bpy.types.Mesh.halo_elite
+    del bpy.types.Mesh.halo_grunt
+    del bpy.types.Mesh.halo_hunter
+    del bpy.types.Mesh.halo_jackal
+    del bpy.types.Mesh.halo_floodcarrier
+    del bpy.types.Mesh.halo_floodcombat_elite
+    del bpy.types.Mesh.halo_floodcombat_human
+    del bpy.types.Mesh.halo_flood_infection
+    del bpy.types.Mesh.halo_sentinel
+    del bpy.types.Mesh.halo_drinol
+    del bpy.types.Mesh.halo_slug_man
     del bpy.types.Object.region_list
     del bpy.types.Object.active_region
     del bpy.types.Scene.active_region_list
     del bpy.types.Object.region_add
     del bpy.types.Mesh.get_custom_attribute
+    del bpy.types.Speaker.qua
+    del bpy.types.Text.qua
+    del bpy.types.Object.qua
     for clshalo in classeshalo:
         bpy.utils.unregister_class(clshalo)
 

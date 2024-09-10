@@ -172,7 +172,7 @@ def write_materials(output_stream, TAG, materials, materials_header):
         for material_element in materials:
             output_stream.write(struct.pack('>I', len(material_element.material_name)))
             output_stream.write(struct.pack('<H', material_element.material_type))
-            output_stream.write(struct.pack('<H', material_element.damage_section))
+            output_stream.write(struct.pack('<h', material_element.damage_section))
             output_stream.write(struct.pack('<4x'))
             output_stream.write(struct.pack('>I', len(material_element.global_material_name)))
             output_stream.write(struct.pack('<4x'))

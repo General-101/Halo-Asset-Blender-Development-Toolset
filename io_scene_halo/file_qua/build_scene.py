@@ -125,7 +125,7 @@ def build_camera(context, report, scene, view_layer, shots, camera_name, camera_
             speaker = bpy.data.objects.new(speaker_name, speaker_data)
             context.collection.objects.link(speaker)
             for armature in armatures:
-                if armature.name == audio.name:
+                if armature.name == audio.character:
                     speaker.parent = armature
 
             speaker.animation_data_create()
@@ -146,12 +146,12 @@ def build_camera(context, report, scene, view_layer, shots, camera_name, camera_
                 speaker.select_set(False)
                 context.view_layer.objects.active = None
 
-                speaker.data.sound = bpy.data.sounds.load(audio.filepath)
+                speaker.data.sound = bpy.data.sounds.load(audio.audio_filename)
             except:
                 report({'WARNING'}, "No NLA window found. Reimport with the NLA window open or set the details printed to the console manually")
                 print("Object Name: ", speaker_name)
                 print("Starting Frame: ", audio.frame)
-                print("Sound Filepath: ",audio.filepath)
+                print("Sound Filepath: ",audio.audio_filename)
                 print(" ")
 
 def build_scene(context, QUA, report):
@@ -173,23 +173,23 @@ def build_scene(context, QUA, report):
         armatures = []
         for unit in QUA.units:
             armature = build_object(context)
-            armature.name = unit.name
+            armature.name = unit.export_name
             armature.ass_jms.ubercam_object_type = "0"
-            armature.ass_jms.ubercam_object_animation = unit.path
+            armature.ass_jms.ubercam_object_animation = unit.object_path
             armatures.append(armature)
 
         for unit in QUA.scenery:
             armature = build_object(context)
-            armature.name = unit.name
+            armature.name = unit.export_name
             armature.ass_jms.ubercam_object_type = "1"
-            armature.ass_jms.ubercam_object_animation = unit.path
+            armature.ass_jms.ubercam_object_animation = unit.object_path
             armatures.append(armature)
 
         for unit in QUA.effects_scenery:
             armature = build_object(context)
-            armature.name = unit.name
+            armature.name = unit.export_name
             armature.ass_jms.ubercam_object_type = "2"
-            armature.ass_jms.ubercam_object_animation = unit.path
+            armature.ass_jms.ubercam_object_animation = unit.object_path
             armatures.append(armature)
 
         build_camera(context, report, scene, view_layer, QUA.shots, "&ubercam", armatures=armatures)

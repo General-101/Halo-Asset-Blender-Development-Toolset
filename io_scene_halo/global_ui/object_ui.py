@@ -34,7 +34,8 @@ from bpy.props import (
         BoolProperty,
         EnumProperty,
         StringProperty,
-        FloatProperty
+        FloatProperty,
+        IntProperty
         )
 
 class Halo_XREFPath(Operator):
@@ -178,14 +179,24 @@ class Halo_ObjectProps(Panel):
                 row.label(text='Region:')
                 row.prop(ob_ass_jms, "marker_region", text='')
 
-        if scene_halo.game_title == "halo3":
-            if ob.type == 'ARMATURE':
+        if ob.type == 'ARMATURE':
+            if scene_halo.game_title == "halo3":
                 row = col.row()
                 row.label(text='Ubercam Object Type:')
                 row.prop(ob_ass_jms, "ubercam_object_type", text='')
                 row = col.row()
                 row.label(text='Ubercam Object Animation:')
                 row.prop(ob_ass_jms, "ubercam_object_animation", text='')
+            elif scene_halo.game_title == "halo3" or scene_halo.game_title == "halor" or scene_halo.game_title == "halo4":
+                row = col.row()
+                row.label(text='Ubercam Animation Name:')
+                row.prop(ob_ass_jms, "ubercam_animation_name", text='')
+                row = col.row()
+                row.label(text='Ubercam Animation Reference:')
+                row.prop(ob_ass_jms, "ubercam_object_animation", text='')
+                row = col.row()
+                row.label(text='Ubercam Object Reference:')
+                row.prop(ob_ass_jms, "ubercam_object_reference", text='')
 
 class Halo_BoneProps(Panel):
     bl_label = "Halo Bone Properties"
@@ -257,13 +268,58 @@ class ASS_JMS_ObjectPropertiesGroup(PropertyGroup):
             )
         )
 
+    ubercam_animation_name: StringProperty(
+        name="Ubercam Animation ID",
+        description="The name of the animation used by the object",
+        default = "",
+        )
+
     ubercam_object_animation: StringProperty(
-            name = "Ubercam Animation Path",
-            description="Source file for ubercam object animation",
-            default="",
-            maxlen=1024,
-            subtype='FILE_PATH'
+        name = "Ubercam Animation Path",
+        description="Source file for ubercam object animation",
+        default="",
+        maxlen=1024,
+        subtype='FILE_PATH'
     )
+
+    ubercam_object_reference: StringProperty(
+        name = "Ubercam Animation Path",
+        description="Tag file for ubercam object",
+        default="",
+        maxlen=1024,
+        subtype='FILE_PATH'
+    )
+
+class QUA_SpeakerPropertiesGroup(PropertyGroup):
+    ubercam_sound_tag_reference: StringProperty(
+        name = "Ubercam Sound Reference",
+        description="Tag file for the sound",
+        default="",
+        maxlen=1024,
+        subtype='FILE_PATH'
+    )
+
+    ubercam_female_sound_tag_reference: StringProperty(
+        name = "Ubercam Female Sound Reference",
+        description="Tag file for the female version of the sound",
+        default="",
+        maxlen=1024,
+        subtype='FILE_PATH'
+    )
+
+    ubercam_female_sound_file_reference: StringProperty(
+        name = "Ubercam Female Sound Reference",
+        description="Source file for the female version of the sound",
+        default="",
+        maxlen=1024,
+        subtype='FILE_PATH'
+    )
+
+    ubercam_dialog_color: StringProperty(
+        name="Dialog Color",
+        description="???",
+        default = "",
+        )
 
 class QUA_ObjectPropertiesGroup(PropertyGroup):
     ubercam_type: StringProperty(
@@ -295,26 +351,231 @@ class Halo_CameraProps(Panel):
         valid = False
         scene = context.scene
         scene_halo = scene.halo
-        ob_data = context.object.data
+        ob = context.object
+        ob_data = ob.data
 
-        if hasattr(ob_data, 'qua') and scene_halo.game_title == "halo3":
+        if ob.type == 'CAMERA':
+            if hasattr(ob_data, 'qua') and (scene_halo.game_title == "halo3" or scene_halo.game_title == "halor" or scene_halo.game_title == "halo4"):
+                valid = True
+
+        elif ob.type == 'SPEAKER':
+            if hasattr(ob_data, 'qua') and (scene_halo.game_title == "halor" or scene_halo.game_title == "halo4"):
+                valid = True
+
+        return valid
+
+    def draw(self, context):
+        layout = self.layout
+        scene = context.scene
+        scene_halo = scene.halo
+
+        ob = context.object
+        ob_qua = ob.data.qua
+        if ob.type == 'CAMERA':
+            col = layout.column(align=True)
+            row = col.row()
+            row.label(text='Ubercam Type:')
+            row.prop(ob_qua, "ubercam_type", text='')
+            row = col.row()
+            row.label(text='Near Focal Plane Distance:')
+            row.prop(ob_qua, "near_focal_plane_distance", text='')
+            row = col.row()
+            row.label(text='Far Focal Plane Distance:')
+            row.prop(ob_qua, "far_focal_plane_distance", text='')
+
+        elif ob.type == 'SPEAKER' and (scene_halo.game_title == "halor" or scene_halo.game_title == "halo4"):
+            col = layout.column(align=True)
+
+            if scene_halo.game_title == "halo4":
+                row = col.row()
+                row.label(text='Ubercam Sound Tag:')
+                row.prop(ob_qua, "ubercam_sound_tag_reference", text='')
+                row = col.row()
+                row.label(text='Ubercam Female Sound Tag:')
+                row.prop(ob_qua, "ubercam_female_sound_tag_reference", text='')
+
+            row = col.row()
+            row.label(text='Ubercam Female Sound Source File:')
+            row.prop(ob_qua, "ubercam_female_sound_file_reference", text='')
+            row = col.row()
+            row.label(text='Ubercam Dialog Color:')
+            row.prop(ob_qua, "ubercam_dialog_color", text='')
+
+class QUA_ScriptPropertiesGroup(PropertyGroup):
+    ubercam_halo_script: BoolProperty(
+        name ="Export as Ubercam script",
+        description = "Export as Ubercam script",
+        default = False,
+        )
+
+    ubercam_node_id: IntProperty(
+        name="Node ID",
+        description="???",
+        default = 0,
+        )
+
+    ubercam_sequence_id: IntProperty(
+        name="Sequence ID",
+        description="???",
+        default = 0,
+        )
+
+    ubercam_frame_number: IntProperty(
+        name="Frame",
+        description="Starting frame for the given script",
+        default = 0,
+        )
+
+class Halo_ScriptProps(Panel):
+    bl_label = "Halo Script Properties"
+    bl_idname = "HALO_PT_ScriptDetailsPanel"
+    bl_space_type = "TEXT_EDITOR"
+    bl_region_type = "UI"
+
+    @classmethod
+    def poll(self, context):
+        valid = False
+        scene = context.scene
+        scene_halo = scene.halo
+
+        if scene_halo.game_title == "halor" or scene_halo.game_title == "halo4":
             valid = True
 
         return valid
 
     def draw(self, context):
         layout = self.layout
+        space = None
+        for area in context.screen.areas:
+            if area.type == 'TEXT_EDITOR':
+                space = area.spaces.active
+
+        if not space == None:
+            active_text = space.text
+            text_qua = active_text.qua
+
+            col = layout.column(align=True)
+            row = col.row()
+            row.label(text='Export as Halo script:')
+            row.prop(text_qua, "ubercam_halo_script", text='')
+            row = col.row()
+            row.label(text='Node ID:')
+            row.prop(text_qua, "ubercam_node_id", text='')
+            row = col.row()
+            row.label(text='Sequence ID:')
+            row.prop(text_qua, "ubercam_sequence_id", text='')
+            row = col.row()
+            row.label(text='Starting Frame:')
+            row.prop(text_qua, "ubercam_frame_number", text='')
+
+class QUA_EffectPropertiesGroup(PropertyGroup):
+    ubercam_halo_effect: BoolProperty(
+        name ="Export as Ubercam effect",
+        description = "Export as Ubercam effect",
+        default = False,
+        )
+
+    ubercam_node_id: IntProperty(
+        name="Node ID",
+        description="???",
+        default = 0,
+        )
+
+    ubercam_sequence_id: IntProperty(
+        name="Sequence ID",
+        description="???",
+        default = 0,
+        )
+
+    ubercam_effect: StringProperty(
+        name = "Effect",
+        description="???",
+        default="",
+        maxlen=1024,
+        subtype='FILE_PATH'
+    )
+    
+    ubercam_frame_number: IntProperty(
+        name="Frame",
+        description="Starting frame for the given effect",
+        default = 0,
+        )
+    
+    ubercam_effect_state: IntProperty(
+        name="Effect State",
+        description="???",
+        default = 0,
+        )
+    
+    ubercam_function_a: StringProperty(
+        name="Function A",
+        description="???",
+        default = "",
+        )
+    
+    ubercam_function_b: StringProperty(
+        name="Function B",
+        description="???",
+        default = "",
+        )
+
+    ubercam_looping: IntProperty(
+        name="Looping",
+        description="???",
+        default = 0,
+        )
+
+class Halo_EffectProps(Panel):
+    bl_label = "Halo Effect Properties"
+    bl_idname = "HALO_PT_EffectDetailsPanel"
+    bl_space_type = "PROPERTIES"
+    bl_region_type = "WINDOW"
+    bl_context = "object"
+    bl_options = {"DEFAULT_CLOSED"}
+
+    @classmethod
+    def poll(self, context):
+        valid = False
+        ob = context.object
+
+        if hasattr(ob, 'qua'):
+            valid = True
+
+        return valid
+
+    def draw(self, context):
+        layout = self.layout
+        scene = context.scene
+        scene_halo = scene.halo
 
         ob = context.object
-        ob_qua = ob.data.qua
+        ob_qua = ob.qua
 
         col = layout.column(align=True)
         row = col.row()
-        row.label(text='Ubercam Type:')
-        row.prop(ob_qua, "ubercam_type", text='')
+        row.label(text='Export as Effect:')
+        row.prop(ob_qua, "ubercam_halo_effect", text='')
         row = col.row()
-        row.label(text='Near Focal Plane Distance:')
-        row.prop(ob_qua, "near_focal_plane_distance", text='')
+        row.label(text='Node ID:')
+        row.prop(ob_qua, "ubercam_node_id", text='')
         row = col.row()
-        row.label(text='Far Focal Plane Distance:')
-        row.prop(ob_qua, "far_focal_plane_distance", text='')
+        row.label(text='Sequence ID:')
+        row.prop(ob_qua, "ubercam_sequence_id", text='')
+        row = col.row()
+        row.label(text='Effect:')
+        row.prop(ob_qua, "ubercam_effect", text='')
+        row = col.row()
+        row.label(text='Starting Frame:')
+        row.prop(ob_qua, "ubercam_frame_number", text='')
+        row = col.row()
+        row.label(text='Effect State:')
+        row.prop(ob_qua, "ubercam_effect_state", text='')
+        row = col.row()
+        row.label(text='Function A:')
+        row.prop(ob_qua, "ubercam_function_a", text='')
+        row = col.row()
+        row.label(text='Function B:')
+        row.prop(ob_qua, "ubercam_function_b", text='')
+        row = col.row()
+        row.label(text='Looping:')
+        row.prop(ob_qua, "ubercam_looping", text='')
