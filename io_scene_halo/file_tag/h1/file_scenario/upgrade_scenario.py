@@ -1282,7 +1282,9 @@ def get_palette(TAG, palette_list, palette_tag_block, size, tag_group=None):
         tag_group = tag_group_name
         tag_path = palette_element.name
 
-        palette_list.append(TAG.TagRef(tag_group, tag_path, len(tag_path), upgrade_patches=TAG.upgrade_patches))
+        tag_ref = TAG.TagRef(tag_group, tag_path, len(tag_path))
+
+        palette_list.append(tag_ref)
 
     return TAG.TagBlockHeader("tbfd", 0, len(palette_list), size)
 
@@ -2481,5 +2483,61 @@ def upgrade_h2_scenario(H1_ASSET, patch_txt_path, report):
     SCENARIO.scenario_body.shared_references_tag_block = TAG.TagBlock(len(SCENARIO.shared_references))
     SCENARIO.scenario_body.screen_effect_references_tag_block = TAG.TagBlock(len(SCENARIO.screen_effect_references))
     SCENARIO.scenario_body.simulation_definition_table_tag_block = TAG.TagBlock(len(SCENARIO.simulation_definition_table))
+
+    for sky_element in SCENARIO.skies:
+        sky_element.get_patched_tag_ref(TAG.upgrade_patches)
+        sky_element.tag_group = "sky "
+
+    for scenery_palette in SCENARIO.scenery_palette:
+        scenery_palette.get_patched_tag_ref(TAG.upgrade_patches)
+        scenery_palette.tag_group = "scen"
+
+    for biped_palette in SCENARIO.biped_palette:
+        biped_palette.get_patched_tag_ref(TAG.upgrade_patches)
+        biped_palette.tag_group = "bipd"
+
+    for vehicle_palette in SCENARIO.vehicle_palette:
+        vehicle_palette.get_patched_tag_ref(TAG.upgrade_patches)
+        vehicle_palette.tag_group = "vehi"
+
+    for equipment_palette in SCENARIO.equipment_palette:
+        equipment_palette.get_patched_tag_ref(TAG.upgrade_patches)
+        equipment_palette.tag_group = "eqip"
+
+    for weapon_palette in SCENARIO.weapon_palette:
+        weapon_palette.get_patched_tag_ref(TAG.upgrade_patches)
+        weapon_palette.tag_group = "weap"
+
+    for device_machine_palette in SCENARIO.device_machine_palette:
+        device_machine_palette.get_patched_tag_ref(TAG.upgrade_patches)
+        device_machine_palette.tag_group = "mach"
+
+    for device_control_palette in SCENARIO.device_control_palette:
+        device_control_palette.get_patched_tag_ref(TAG.upgrade_patches)
+        device_control_palette.tag_group = "ctrl"
+
+    for device_light_fixtures_palette in SCENARIO.device_light_fixtures_palette:
+        device_light_fixtures_palette.get_patched_tag_ref(TAG.upgrade_patches)
+        device_light_fixtures_palette.tag_group = "lifi"
+
+    for sound_scenery_palette in SCENARIO.sound_scenery_palette:
+        sound_scenery_palette.get_patched_tag_ref(TAG.upgrade_patches)
+        sound_scenery_palette.tag_group = "ssce"
+
+    for decal_palette in SCENARIO.decal_palette:
+        decal_palette.get_patched_tag_ref(TAG.upgrade_patches)
+        decal_palette.tag_group = "deca"
+
+    for detail_object_collection_palette in SCENARIO.detail_object_collection_palette:
+        detail_object_collection_palette.get_patched_tag_ref(TAG.upgrade_patches)
+        detail_object_collection_palette.tag_group = "dobc"
+
+    for character_palette in SCENARIO.character_palette:
+        character_palette.get_patched_tag_ref(TAG.upgrade_patches)
+        character_palette.tag_group = "char"
+
+    for crates_palette in SCENARIO.crates_palette:
+        crates_palette.get_patched_tag_ref(TAG.upgrade_patches)
+        crates_palette.tag_group = "bloc"
 
     return SCENARIO

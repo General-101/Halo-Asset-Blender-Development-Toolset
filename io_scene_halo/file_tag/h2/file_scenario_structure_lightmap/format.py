@@ -104,8 +104,11 @@ class ErrorFlags(Flag):
 class LightmapAsset():
     def __init__(self):
         self.header = None
+        self.lightmap_body_header = None
         self.lightmap_body = None
+        self.lightmap_groups_header = None
         self.lightmap_groups = None
+        self.errors_header = None
         self.errors = None
 
     class LightmapBody:
@@ -130,14 +133,28 @@ class LightmapAsset():
             self.errors_tag_block = errors_tag_block
 
     class LightmapGroup:
-        def __init__(self, group_type=0, group_flags=0, structure_checksum=0, section_palette_tag_block=None, writable_palettes_tag_block=None, bitmap_group_tag_ref=None,
-                     clusters_tag_block=None, cluster_render_info_tag_block=None, poop_definitions_tag_block=None, lighting_environments_tag_block=None, geometry_buckets_tag_block=None,
-                     instance_render_info_tag_block=None, instance_bucket_refs_tag_block=None, scenery_object_info_tag_block=None, scenery_object_bucket_refs_tag_block=None,
-                     section_palette=None, writable_palettes=None, clusters=None, cluster_render_info=None, poop_definitions=None, lighting_environments=None, geometry_buckets=None,
-                     instance_render_info=None, instance_bucket_refs=None, scenery_object_info=None, scenery_object_bucket_refs=None):
+        def __init__(self, group_type=0, group_flags=0, structure_checksum=0, section_palette_header=None, writable_palettes_header=None, clusters_header=None, 
+                     cluster_render_info_header=None, poop_definitions_header=None, lighting_environments_header=None, geometry_buckets_header=None, instance_render_info_header=None, 
+                     instance_bucket_refs_header=None, scenery_object_info_header=None, scenery_object_bucket_refs_header=None, section_palette_tag_block=None, 
+                     writable_palettes_tag_block=None, bitmap_group_tag_ref=None, clusters_tag_block=None, cluster_render_info_tag_block=None, poop_definitions_tag_block=None, 
+                     lighting_environments_tag_block=None, geometry_buckets_tag_block=None, instance_render_info_tag_block=None, instance_bucket_refs_tag_block=None, 
+                     scenery_object_info_tag_block=None, scenery_object_bucket_refs_tag_block=None, section_palette=None, writable_palettes=None, clusters=None, 
+                     cluster_render_info=None, poop_definitions=None, lighting_environments=None, geometry_buckets=None, instance_render_info=None, instance_bucket_refs=None, 
+                     scenery_object_info=None, scenery_object_bucket_refs=None):
             self.group_type = group_type
             self.group_flags = group_flags
             self.structure_checksum = structure_checksum
+            self.section_palette_header = section_palette_header
+            self.writable_palettes_header = writable_palettes_header
+            self.clusters_header = clusters_header
+            self.cluster_render_info_header = cluster_render_info_header
+            self.poop_definitions_header = poop_definitions_header
+            self.lighting_environments_header = lighting_environments_header
+            self.geometry_buckets_header = geometry_buckets_header
+            self.instance_render_info_header = instance_render_info_header
+            self.instance_bucket_refs_header = instance_bucket_refs_header
+            self.scenery_object_info_header = scenery_object_info_header
+            self.scenery_object_bucket_refs_header = scenery_object_bucket_refs_header
             self.section_palette_tag_block = section_palette_tag_block
             self.writable_palettes_tag_block = writable_palettes_tag_block
             self.bitmap_group_tag_ref = bitmap_group_tag_ref
@@ -162,12 +179,18 @@ class LightmapAsset():
             self.scenery_object_info = scenery_object_info
             self.scenery_object_bucket_refs = scenery_object_bucket_refs
 
+    class PaletteColor:
+        def __init__(self, first_palette_color=0, unknown=None):
+            self.first_palette_color = first_palette_color
+            self.unknown = unknown
+
     class Cluster:
         def __init__(self, total_vertex_count=0, total_triangle_count=0, total_part_count=0, shadow_casting_triangle_count=0, shadow_casting_part_count=0, opaque_point_count=0,
-                     opaque_vertex_count=0, opaque_part_count=0, opaque_max_nodes_vertex=0, transparent_max_nodes_vertex=0, shadow_casting_rigid_triangle_count=0,
+                     opaque_vertex_count=0, opaque_part_count=0, opaque_max_nodes_vertex=0, transparent_max_nodes_vertex=0, shadow_casting_rigid_triangle_count=0, unknown=0,
                      geometry_classification=0, geometry_compression_flags=0, compression_info_tag_block=None, hardware_node_count=0, node_map_size=0, software_plane_count=0,
                      total_subpart_count=0, section_lighting_flags=0, cache_data_tag_block=None, block_offset=0, block_size=0, section_data_size=0, resource_data_size=0,
-                     resource_tag_block=None, owner_tag_section_offset=0, compression_info=None, resources=None, cache_data=None):
+                     resource_tag_block=None, owner_tag_section_offset=0, sinf_header=None, compression_info_header=None, blok_header=None, resources_header=None, 
+                     cache_data_header=None, compression_info=None, resources=None, cache_data=None):
             self.total_vertex_count = total_vertex_count
             self.total_triangle_count = total_triangle_count
             self.total_part_count = total_part_count
@@ -179,6 +202,7 @@ class LightmapAsset():
             self.opaque_max_nodes_vertex = opaque_max_nodes_vertex
             self.transparent_max_nodes_vertex = transparent_max_nodes_vertex
             self.shadow_casting_rigid_triangle_count = shadow_casting_rigid_triangle_count
+            self.unknown = unknown
             self.geometry_classification = geometry_classification
             self.geometry_compression_flags = geometry_compression_flags
             self.compression_info_tag_block = compression_info_tag_block
@@ -194,6 +218,11 @@ class LightmapAsset():
             self.resource_tag_block = resource_tag_block
             self.owner_tag_section_offset = owner_tag_section_offset
             self.cache_data_tag_block = cache_data_tag_block
+            self.sinf_header = sinf_header
+            self.compression_info_header = compression_info_header
+            self.blok_header = blok_header
+            self.resources_header = resources_header
+            self.cache_data_header = cache_data_header
             self.compression_info = compression_info
             self.resources = resources
             self.cache_data = cache_data
@@ -218,9 +247,18 @@ class LightmapAsset():
             self.resource_data_offset = resource_data_offset
 
     class CacheData:
-        def __init__(self, parts_tag_block=None, subparts_tag_block=None, visibility_bounds_tag_block=None, raw_vertices_tag_block=None, strip_indices_tag_block=None,
-                     visibility_mopp_code_tag_data=None, mopp_reorder_table_tag_block=None, vertex_buffers_tag_block=None, parts=None, subparts=None, visibility_bounds=None, raw_vertices=None,
-                     strip_indices=None, mopp_reorder_table=None, vertex_buffers=None):
+        def __init__(self, sect_header=None, parts_header=None, subparts_header=None, visibility_bounds_header=None, raw_vertices_header=None, strip_indices_header=None, 
+                     mopp_reorder_table_header=None, vertex_buffers_header=None, parts_tag_block=None, subparts_tag_block=None, visibility_bounds_tag_block=None, 
+                     raw_vertices_tag_block=None, strip_indices_tag_block=None, visibility_mopp_code_tag_data=None, mopp_reorder_table_tag_block=None, vertex_buffers_tag_block=None, 
+                     parts=None, subparts=None, visibility_bounds=None, raw_vertices=None, strip_indices=None, mopp_reorder_table=None, vertex_buffers=None):
+            self.sect_header = sect_header
+            self.parts_header = parts_header
+            self.subparts_header = subparts_header
+            self.visibility_bounds_header = visibility_bounds_header
+            self.raw_vertices_header = raw_vertices_header
+            self.strip_indices_header = strip_indices_header
+            self.mopp_reorder_table_header = mopp_reorder_table_header
+            self.vertex_buffers_header = vertex_buffers_header
             self.parts_tag_block = parts_tag_block
             self.subparts_tag_block = subparts_tag_block
             self.visibility_bounds_tag_block = visibility_bounds_tag_block
@@ -240,7 +278,7 @@ class LightmapAsset():
     class Part:
         def __init__(self, part_type=0, flags=0, material_index=0, strip_start_index=0, strip_length=0, first_subpart_index=0, subpart_count=0,
                      max_nodes_vertex=0, contributing_compound_node_count=0, position=Vector(), node_index_0=0, node_index_1=0, node_index_2=0, node_index_3=0,
-                     node_weight_0=0.0, node_weight_1=0.0, node_weight_2=0.0, lod_mipmap_magic_number=0):
+                     node_weight_0=0.0, node_weight_1=0.0, node_weight_2=0.0, lod_mipmap_magic_number=0, unknown=None):
             self.part_type = part_type
             self.flags = flags
             self.material_index = material_index
@@ -259,6 +297,7 @@ class LightmapAsset():
             self.node_weight_1 = node_weight_1
             self.node_weight_2 = node_weight_2
             self.lod_mipmap_magic_number = lod_mipmap_magic_number
+            self.unknown = unknown
 
     class SubPart:
         def __init__(self, indices_start_index=0, indices_length=0, visibility_bounds_index=0, part_index=0):

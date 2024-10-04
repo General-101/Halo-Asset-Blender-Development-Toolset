@@ -380,7 +380,7 @@ def read_collision_bsps(LEVEL, TAG, input_stream, tag_node, XML_OUTPUT):
 
                     surface = LEVEL.Surface()
                     surface.plane = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(surface_element_node, "plane"))
-                    surface.first_edge = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(surface_element_node, "first edge"))
+                    surface.first_edge = TAG.read_unsigned_short(input_stream, TAG, tag_format.XMLData(surface_element_node, "first edge"))
                     surface.flags = TAG.read_flag_unsigned_byte(input_stream, TAG, tag_format.XMLData(surface_element_node, "flags", SurfaceFlags))
                     surface.breakable_surface = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(surface_element_node, "breakable surface"))
                     surface.material = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(surface_element_node, "material"))
@@ -399,12 +399,12 @@ def read_collision_bsps(LEVEL, TAG, input_stream, tag_node, XML_OUTPUT):
                         edge_node.appendChild(edge_element_node)
 
                     edge = LEVEL.Edge()
-                    edge.start_vertex = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(edge_element_node, "start vertex"))
-                    edge.end_vertex = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(edge_element_node, "end vertex"))
-                    edge.forward_edge = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(edge_element_node, "forward edge"))
-                    edge.reverse_edge = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(edge_element_node, "reverse edge"))
-                    edge.left_surface = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(edge_element_node, "left surface"))
-                    edge.right_surface = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(edge_element_node, "right surface"))
+                    edge.start_vertex = TAG.read_unsigned_short(input_stream, TAG, tag_format.XMLData(edge_element_node, "start vertex"))
+                    edge.end_vertex = TAG.read_unsigned_short(input_stream, TAG, tag_format.XMLData(edge_element_node, "end vertex"))
+                    edge.forward_edge = TAG.read_unsigned_short(input_stream, TAG, tag_format.XMLData(edge_element_node, "forward edge"))
+                    edge.reverse_edge = TAG.read_unsigned_short(input_stream, TAG, tag_format.XMLData(edge_element_node, "reverse edge"))
+                    edge.left_surface = TAG.read_unsigned_short(input_stream, TAG, tag_format.XMLData(edge_element_node, "left surface"))
+                    edge.right_surface = TAG.read_unsigned_short(input_stream, TAG, tag_format.XMLData(edge_element_node, "right surface"))
 
                     collision_bsp.edges.append(edge)
 

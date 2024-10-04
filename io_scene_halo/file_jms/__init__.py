@@ -859,12 +859,12 @@ try:
 
         directory: StringProperty(
             subtype='FILE_PATH', 
-            options={'SKIP_SAVE'}
+            options={'SKIP_SAVE', 'HIDDEN'}
             )
 
         files: CollectionProperty(
             type=OperatorFileListElement, 
-            options={'SKIP_SAVE'}
+            options={'SKIP_SAVE', 'HIDDEN'}
             )
 
         def execute(self, context):
@@ -874,10 +874,14 @@ try:
                 return {'CANCELLED'}
             
             for file in self.files:
-                filepath = os.path.join(self.directory, file.name)
-                global_functions.run_code("import_jms.load_file(context, filepath, self.game_title, self.reuse_armature, self.fix_parents, self.fix_rotations, self.empty_markers, self.report)")
+                if file.name.lower().endswith(".jms"):
+                    filepath = os.path.join(self.directory, file.name)
+                    global_functions.run_code("import_jms.load_file(context, filepath, self.game_title, self.reuse_armature, self.fix_parents, self.fix_rotations, self.empty_markers, self.report)")
 
             return {'FINISHED'}
+
+        def invoke(self, context, event):
+            return self.invoke_popup(context)
 
         def draw(self, context):
             layout = self.layout

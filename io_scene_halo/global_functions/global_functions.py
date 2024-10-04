@@ -683,13 +683,17 @@ def get_parent(armature, node, joined_list, default_parent):
 
                 else:
                     if not string_empty_check(node_parent):
-                        node_parent = armature.data.bones[node_parent]
-                        if node_parent in joined_list and node_parent.use_deform:
-                            valid_parent = node_parent
-                            valid_parent_idx = joined_list.index(node_parent)
+                        node_parent = armature.data.bones.get(node_parent)
+                        if not node_parent == None:
+                            if node_parent in joined_list and node_parent.use_deform:
+                                valid_parent = node_parent
+                                valid_parent_idx = joined_list.index(node_parent)
+
+                            else:
+                                node_parent = node_parent.parent
 
                         else:
-                            node_parent = node_parent.parent
+                            break
 
                     else:
                         break

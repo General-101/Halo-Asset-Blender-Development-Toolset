@@ -70,8 +70,12 @@ def process_mesh(SBSP_ASSET, random_color_gen, tag_block, poop_name, material_co
                     triangle_materials.append(part.material_index)
 
         if len(vertices) > 0:
+            mesh_vertices = []
+            for vertex in vertices:
+                mesh_vertices.append(vertex.position * 100) 
+
             mesh = bpy.data.meshes.new(poop_name)
-            mesh.from_pydata([vertex.position for vertex in vertices], [], triangles)
+            mesh.from_pydata(mesh_vertices, [], triangles)
             for poly in mesh.polygons:
                 poly.use_smooth = True
 

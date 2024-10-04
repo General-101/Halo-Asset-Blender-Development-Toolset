@@ -30,10 +30,7 @@ import copy
 from ....global_functions import tag_format, shader_processing
 from .format import (
         ShaderAsset as H1ShaderAsset,
-        MaterialTypeEnum as H1MaterialTypeEnum,
-        EnvironmentFlags as H1EnvironmentFlags,
-        EnvironmentTypeEnum,
-        DiffuseFlags
+        MaterialTypeEnum as H1MaterialTypeEnum
         )
 
 from ...h2.file_shader.format import (
@@ -134,19 +131,19 @@ def generate_detail_map_parameters(H1_ASSET, TAG, SHADER, template, permutation_
 
             detail_rescale_i = detail_map_scale
             detail_rescale_j = detail_map_scale
-            if base_bitmap_count > 0 and detail_map_count > 0 and DiffuseFlags.rescale_detail_maps in DiffuseFlags(H1_ASSET.shader_body.diffuse_flags):
-                if base_bitmap_count > permutation_index:
-                    base_element = base_bitmap.bitmaps[permutation_index]
-                else:
-                    base_element = base_bitmap.bitmaps[0]
+            #if base_bitmap_count > 0 and detail_map_count > 0 and DiffuseFlags.rescale_detail_maps in DiffuseFlags(H1_ASSET.shader_body.diffuse_flags):
+                #if base_bitmap_count > permutation_index:
+                    #base_element = base_bitmap.bitmaps[permutation_index]
+                #else:
+                    #base_element = base_bitmap.bitmaps[0]
 
-                if detail_map_count > permutation_index:
-                    detail_element = detail_bitmap.bitmaps[permutation_index]
-                else:
-                    detail_element = detail_bitmap.bitmaps[0]
+                #if detail_map_count > permutation_index:
+                    #detail_element = detail_bitmap.bitmaps[permutation_index]
+                #else:
+                    #detail_element = detail_bitmap.bitmaps[0]
 
-                detail_rescale_i *= base_element.width / detail_element.width
-                detail_rescale_j *= base_element.height / detail_element.height
+                #detail_rescale_i *= base_element.width / detail_element.width
+                #detail_rescale_j *= base_element.height / detail_element.height
 
             shader_processing.add_animation_property(SHADER, TAG, parameter.animation_properties, AnimationTypeEnum.bitmap_scale_x, function_type=FunctionTypeEnum.constant, lower_bound=detail_rescale_i)
             shader_processing.add_animation_property(SHADER, TAG, parameter.animation_properties, AnimationTypeEnum.bitmap_scale_y, function_type=FunctionTypeEnum.constant, lower_bound=detail_rescale_j)
@@ -164,19 +161,19 @@ def generate_detail_map_parameters(H1_ASSET, TAG, SHADER, template, permutation_
 
             detail_rescale_i = secondary_detail_map_scale
             detail_rescale_j = secondary_detail_map_scale
-            if base_bitmap_count > 0 and detail_map_count > 0 and DiffuseFlags.rescale_detail_maps in DiffuseFlags(H1_ASSET.shader_body.diffuse_flags):
-                if base_bitmap_count > permutation_index:
-                    base_element = base_bitmap.bitmaps[permutation_index]
-                else:
-                    base_element = base_bitmap.bitmaps[0]
+            #if base_bitmap_count > 0 and detail_map_count > 0 and DiffuseFlags.rescale_detail_maps in DiffuseFlags(H1_ASSET.shader_body.diffuse_flags):
+                #if base_bitmap_count > permutation_index:
+                    #base_element = base_bitmap.bitmaps[permutation_index]
+                #else:
+                    #base_element = base_bitmap.bitmaps[0]
 
-                if secondary_detail_map_count > permutation_index:
-                    detail_element = secondary_detail_bitmap.bitmaps[permutation_index]
-                else:
-                    detail_element = secondary_detail_bitmap.bitmaps[0]
+                #if secondary_detail_map_count > permutation_index:
+                    #detail_element = secondary_detail_bitmap.bitmaps[permutation_index]
+                #else:
+                    #detail_element = secondary_detail_bitmap.bitmaps[0]
 
-                detail_rescale_i *= base_element.width / detail_element.width
-                detail_rescale_j *= base_element.height / detail_element.height
+                #detail_rescale_i *= base_element.width / detail_element.width
+                #detail_rescale_j *= base_element.height / detail_element.height
 
             shader_processing.add_animation_property(SHADER, TAG, parameter.animation_properties, AnimationTypeEnum.bitmap_scale_x, function_type=FunctionTypeEnum.constant, lower_bound=detail_rescale_i)
             shader_processing.add_animation_property(SHADER, TAG, parameter.animation_properties, AnimationTypeEnum.bitmap_scale_y, function_type=FunctionTypeEnum.constant, lower_bound=detail_rescale_j)
@@ -205,18 +202,18 @@ def generate_bump_parameters(H1_ASSET, TAG, SHADER, template, permutation_index)
 
         bump_rescale_i = scale
         bump_rescale_j = scale
-        if base_bitmap_count > 0 and bump_bitmap_count > 0 and DiffuseFlags.rescale_bump_maps in DiffuseFlags(H1_ASSET.shader_body.diffuse_flags):
-            if base_bitmap_count > permutation_index:
-                base_element = base_bitmap.bitmaps[permutation_index]
-            else:
-                base_element = base_bitmap.bitmaps[0]
-            if bump_bitmap_count > permutation_index:
-                bump_element = bump_bitmap.bitmaps[permutation_index]
-            else:
-                bump_element = bump_bitmap.bitmaps[0]
+        #if base_bitmap_count > 0 and bump_bitmap_count > 0 and DiffuseFlags.rescale_bump_maps in DiffuseFlags(H1_ASSET.shader_body.diffuse_flags):
+            #if base_bitmap_count > permutation_index:
+                #base_element = base_bitmap.bitmaps[permutation_index]
+            #else:
+                #base_element = base_bitmap.bitmaps[0]
+            #if bump_bitmap_count > permutation_index:
+                #bump_element = bump_bitmap.bitmaps[permutation_index]
+            #else:
+                #bump_element = bump_bitmap.bitmaps[0]
 
-            bump_rescale_i *= base_element.width / bump_element.width
-            bump_rescale_j *= base_element.height / bump_element.height
+            #bump_rescale_i *= base_element.width / bump_element.width
+            #bump_rescale_j *= base_element.height / bump_element.height
 
         shader_processing.add_animation_property(SHADER, TAG, parameter.animation_properties, AnimationTypeEnum.bitmap_scale_x, function_type=FunctionTypeEnum.constant, lower_bound=bump_rescale_i)
         shader_processing.add_animation_property(SHADER, TAG, parameter.animation_properties, AnimationTypeEnum.bitmap_scale_y, function_type=FunctionTypeEnum.constant, lower_bound=bump_rescale_j)
@@ -318,10 +315,10 @@ def get_template(H1_ASSET):
     has_env_map = False
     if H1_ASSET.shader_body.power > 0.0:
         is_emissive = True
-    if H1EnvironmentFlags.alpha_tested in H1EnvironmentFlags(H1_ASSET.shader_body.environment_flags):
-        has_alpha = True
-    if not EnvironmentTypeEnum(H1_ASSET.shader_body.environment_type) == EnvironmentTypeEnum.normal:
-        is_blended = True
+    #if H1EnvironmentFlags.alpha_tested in H1EnvironmentFlags(H1_ASSET.shader_body.environment_flags):
+       # has_alpha = True
+    #if not EnvironmentTypeEnum(H1_ASSET.shader_body.environment_type) == EnvironmentTypeEnum.normal:
+        #is_blended = True
     if not H1_ASSET.shader_body.base_map.name == "":
         has_diffuse = True
     if not H1_ASSET.shader_body.primary_detail_map.name == "":
@@ -388,18 +385,18 @@ def get_template(H1_ASSET):
 
     if detail_map_count >= 2:
         gathered_template_list = []
-        if is_blended:
-            for valid_shader_template in valid_shader_templates:
-                if "detail_blend" in valid_shader_template.name:
-                    gathered_template_list.append(valid_shader_template)
+        #if is_blended:
+            #for valid_shader_template in valid_shader_templates:
+                #if "detail_blend" in valid_shader_template.name:
+                    #gathered_template_list.append(valid_shader_template)
 
-            valid_shader_templates = gathered_template_list
-        else:
-            for valid_shader_template in valid_shader_templates:
-                if "two_detail" in valid_shader_template.name:
-                    gathered_template_list.append(valid_shader_template)
+            #valid_shader_templates = gathered_template_list
+        #else:
+            #for valid_shader_template in valid_shader_templates:
+                #if "two_detail" in valid_shader_template.name:
+                    #gathered_template_list.append(valid_shader_template)
 
-            valid_shader_templates = gathered_template_list
+            #valid_shader_templates = gathered_template_list
 
     if len(valid_shader_templates) > 0:
         shader_template = valid_shader_templates[0]
