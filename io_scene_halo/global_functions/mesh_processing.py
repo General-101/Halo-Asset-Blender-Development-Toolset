@@ -875,28 +875,15 @@ def process_mesh_export_uv(evaluated_geo, file_type, loop_index, version):
 
     return uv_set
 
-def process_mesh_export_vert(vertex_data, loop_data, loop_normals, file_type, original_geo_matrix, custom_scale):
+def process_mesh_export_vert(vertex_data, file_type, original_geo_matrix, custom_scale):
     if file_type == 'JMS':
         translation = vertex_data.co
         final_translation = original_geo_matrix @ translation
-        if loop_normals:
-            final_normal = (original_geo_matrix.to_3x3() @ loop_data.normal).normalized()
-            if final_normal.length == 0.0:
-                final_normal = (original_geo_matrix.to_3x3() @ vertex_data.normal).normalized()
-
-        else:
-            final_normal = (original_geo_matrix.to_3x3() @ vertex_data.normal).normalized()
 
     else:
         final_translation = custom_scale * vertex_data.co
-        if loop_normals:
-            final_normal = (loop_data.normal).normalized()
-            if final_normal.length == 0.0:
-                final_normal = (vertex_data.normal).normalized()
-        else:
-            final_normal = (vertex_data.normal).normalized()
 
-    return final_translation, final_normal
+    return final_translation
 
 def process_mesh_export_face_set(default_permutation, default_region, game_version, original_geo, region_idx):
     if game_version == "halo1":
