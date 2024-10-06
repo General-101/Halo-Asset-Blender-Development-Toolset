@@ -482,7 +482,7 @@ def process_scene(context, version, game_version, hidden_geo, nonrender_geo, app
                         vertex_data = evaluted_mesh.vertices[loop_data.vertex_index]
 
                         region = region_index
-                        normal = evaluted_mesh.corner_normals[loop_index].vector
+                        normal = evaluted_mesh.corner_normals[loop_index].vector.normalized()
                         scaled_translation = mesh_processing.process_mesh_export_vert(vertex_data, "ASS", object_matrix, custom_scale)
                         uv_set = mesh_processing.process_mesh_export_uv(evaluted_mesh, "ASS", loop_index, version)
                         color = mesh_processing.process_mesh_export_color(evaluted_mesh, loop_index, point_idx)
