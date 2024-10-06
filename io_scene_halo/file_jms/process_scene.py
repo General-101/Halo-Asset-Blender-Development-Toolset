@@ -257,7 +257,7 @@ def process_scene(context, version, game_version, generate_checksum, fix_rotatio
 
                     region = region_index
                     normal = evaluted_mesh.corner_normals[loop_index].vector.normalized()
-                    scaled_translation, normal = mesh_processing.process_mesh_export_vert(vertex_data, "JMS", original_geo_matrix, custom_scale)
+                    scaled_translation = mesh_processing.process_mesh_export_vert(vertex_data, "JMS", original_geo_matrix, custom_scale)
                     uv_set = mesh_processing.process_mesh_export_uv(evaluted_mesh, "JMS", loop_index, version)
                     color = mesh_processing.process_mesh_export_color(evaluted_mesh, loop_index, point_idx)
                     node_influence_count, node_set = mesh_processing.process_mesh_export_weights(vertex_data, blend_scene.armature, original_geo, vertex_groups, joined_list, "JMS")
