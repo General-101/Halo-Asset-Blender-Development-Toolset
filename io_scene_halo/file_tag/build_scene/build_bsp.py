@@ -644,6 +644,38 @@ def build_scene(context, LEVEL, game_version, game_title, file_version, fix_rota
             portal_bm.to_mesh(portal_mesh)
             portal_bm.free()
 
+        for marker in LEVEL.markers:
+            object_name_prefix = '#%s' % marker.name
+            marker_name_override = ""
+            if context.scene.objects.get('#%s' % marker.name):
+                marker_name_override = marker.name
+
+            mesh = bpy.data.meshes.new(object_name_prefix)
+            object_mesh = bpy.data.objects.new(object_name_prefix, mesh)
+            collection.objects.link(object_mesh)
+            object_mesh.hide_set(True)
+            object_mesh.hide_render = True
+
+            object_mesh.ass_jms.name_override = marker_name_override
+
+            bm = bmesh.new()
+            bmesh.ops.create_uvsphere(bm, u_segments=32, v_segments=16, radius=1)
+            bm.to_mesh(mesh)
+            bm.free()
+
+            object_mesh.parent = level_root
+
+            matrix_translate = Matrix.Translation(marker.position)
+            matrix_rotation = marker.rotation.to_matrix().to_4x4()
+
+            transform_matrix = matrix_translate @ matrix_rotation
+            if fix_rotations:
+                transform_matrix = Matrix.Rotation(radians(90.0), 4, 'Z') @ transform_matrix
+
+            object_mesh.matrix_world = transform_matrix
+            object_mesh.data.ass_jms.Object_Type = 'SPHERE'
+            object_mesh.dimensions = (2, 2, 2)
+
     for bsp_idx, bsp in enumerate(LEVEL.collision_bsps):
         collision_name = "level_collision"
         collision_bm = bmesh.new()
