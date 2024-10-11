@@ -68,6 +68,7 @@ from ..file_tag.h2.file_shader.process_file import process_file as process_h2_sh
 from ..file_tag.h2.file_model.process_file import process_file as process_h2_model
 from ..file_tag.h2.file_render_model.process_file import process_file as process_h2_render
 from ..file_tag.h2.file_scenery.process_file import process_file as process_h2_scenery
+from ..file_tag.h2.file_crate.process_file import process_file as process_h2_crate
 from ..file_tag.h2.file_biped.process_file import process_file as process_h2_biped
 from ..file_tag.h2.file_vehicle.process_file import process_file as process_h2_vehicle
 from ..file_tag.h2.file_equipment.process_file import process_file as process_h2_equipment
