@@ -37,7 +37,6 @@ from bpy.props import (
 from bpy.types import (
     Panel,
     Operator,
-    FileHandler,
     PropertyGroup
     )
 
