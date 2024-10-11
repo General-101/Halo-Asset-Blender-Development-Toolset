@@ -109,6 +109,11 @@ from .format import (
         AITriggerFlags,
         RuleTypeEnum,
         ScaleFlags,
+        OverloadTypeEnum,
+        RelevantTeamFlags,
+        RelevantGamesFlags,
+        SpawnZoneFlags,
+        CameraImmersionFlags,
         SALT_SIZE
         )
 
@@ -3524,6 +3529,282 @@ def read_scenario_cluster_data(SCENARIO, TAG, input_stream, tag_node, XML_OUTPUT
 
                     scenario_cluster_data.atmospheric_fog_properties.append(atmospheric_fog_property_index)
 
+def read_spawn_data(SCENARIO, TAG, input_stream, tag_node, XML_OUTPUT):
+    if SCENARIO.scenario_body.spawn_data_tag_block.count > 0:
+        SCENARIO.spawn_data_header = TAG.TagBlockHeader().read(input_stream, TAG)
+        spawn_data_node = tag_format.get_xml_node(XML_OUTPUT, SCENARIO.scenario_body.spawn_data_tag_block.count, tag_node, "name", "spawn data")
+        for spawn_data_idx in range(SCENARIO.scenario_body.spawn_data_tag_block.count):
+            spawn_data_element_node = None
+            if XML_OUTPUT:
+                spawn_data_element_node = TAG.xml_doc.createElement('element')
+                spawn_data_element_node.setAttribute('index', str(spawn_data_idx))
+                spawn_data_node.appendChild(spawn_data_element_node)
+
+            spawn_data = SCENARIO.SpawnData()
+            spawn_data.dynamic_spawn_lower_height = TAG.read_float(input_stream, TAG, tag_format.XMLData(spawn_data_element_node, "dynamic spawn lower height"))
+            spawn_data.dynamic_spawn_upper_height = TAG.read_float(input_stream, TAG, tag_format.XMLData(spawn_data_element_node, "dynamic spawn upper height"))
+            spawn_data.game_object_reset_height = TAG.read_float(input_stream, TAG, tag_format.XMLData(spawn_data_element_node, "game object reset height"))
+            input_stream.read(60) # Padding?
+            spawn_data.dynamic_spawn_overloads_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(spawn_data_element_node, "dynamic spawn overloads"))
+            spawn_data.static_respawn_zones_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(spawn_data_element_node, "static respawn zones"))
+            spawn_data.static_initial_spawn_zones_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(spawn_data_element_node, "static initial spawn zones"))
+
+            SCENARIO.spawn_data.append(spawn_data)
+
+        for spawn_data_idx, spawn_data in enumerate(SCENARIO.spawn_data):
+            spawn_data_element_node = None
+            if XML_OUTPUT:
+                spawn_data_element_node = spawn_data_node.childNodes[spawn_data_idx]
+
+            spawn_data.dynamic_spawn_overloads = []
+            spawn_data.static_respawn_zones = []
+            spawn_data.static_initial_spawn_zones = []
+            if spawn_data.dynamic_spawn_overloads_tag_block.count > 0:
+                spawn_data.dynamic_spawn_overloads_header = TAG.TagBlockHeader().read(input_stream, TAG)
+                dynamic_spawn_overloads_node = tag_format.get_xml_node(XML_OUTPUT, spawn_data.dynamic_spawn_overloads_tag_block.count, spawn_data_element_node, "name", "dynamic spawn overloads")
+                for dynamic_spawn_overload_idx in range(spawn_data.dynamic_spawn_overloads_tag_block.count):
+                    dynamic_spawn_overload_element_node = None
+                    if XML_OUTPUT:
+                        dynamic_spawn_overload_element_node = TAG.xml_doc.createElement('element')
+                        dynamic_spawn_overload_element_node.setAttribute('index', str(dynamic_spawn_overload_idx))
+                        dynamic_spawn_overloads_node.appendChild(dynamic_spawn_overload_element_node)
+
+                    dynamic_spawn_overload = SCENARIO.DynamicSpawnOverload()
+                    dynamic_spawn_overload.overload_type = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(dynamic_spawn_overload_element_node, "overload type", OverloadTypeEnum))
+                    input_stream.read(2) # Padding
+                    dynamic_spawn_overload.inner_radius = TAG.read_float(input_stream, TAG, tag_format.XMLData(dynamic_spawn_overload_element_node, "inner radius"))
+                    dynamic_spawn_overload.outer_radius = TAG.read_float(input_stream, TAG, tag_format.XMLData(dynamic_spawn_overload_element_node, "outer radius"))
+                    dynamic_spawn_overload.weight = TAG.read_float(input_stream, TAG, tag_format.XMLData(dynamic_spawn_overload_element_node, "weight"))
+
+                    spawn_data.dynamic_spawn_overloads.append(dynamic_spawn_overload)
+
+            if spawn_data.static_respawn_zones_tag_block.count > 0:
+                spawn_data.static_respawn_zones_header = TAG.TagBlockHeader().read(input_stream, TAG)
+                static_respawn_zones_node = tag_format.get_xml_node(XML_OUTPUT, spawn_data.static_respawn_zones_tag_block.count, spawn_data_element_node, "name", "static respawn zones")
+                for static_respawn_zone_idx in range(spawn_data.static_respawn_zones_tag_block.count):
+                    static_respawn_zone_element_node = None
+                    if XML_OUTPUT:
+                        static_respawn_zone_element_node = TAG.xml_doc.createElement('element')
+                        static_respawn_zone_element_node.setAttribute('index', str(static_respawn_zone_idx))
+                        static_respawn_zones_node.appendChild(static_respawn_zone_element_node)
+
+                    static_respawn_zone = SCENARIO.StaticSpawnZone()
+
+                    TAG.big_endian = True
+                    input_stream.read(2) # Padding?
+                    static_respawn_zone.name_length = TAG.read_signed_short(input_stream, TAG)
+                    TAG.big_endian = False
+
+                    static_respawn_zone.relevant_teams = TAG.read_flag_unsigned_integer(input_stream, TAG, tag_format.XMLData(static_respawn_zone_element_node, "relevant teams", ObjectFlags))
+                    static_respawn_zone.relevant_games = TAG.read_flag_unsigned_integer(input_stream, TAG, tag_format.XMLData(static_respawn_zone_element_node, "relevant games", ObjectFlags))
+                    static_respawn_zone.flags = TAG.read_flag_unsigned_integer(input_stream, TAG, tag_format.XMLData(static_respawn_zone_element_node, "flags", ObjectFlags))
+                    static_respawn_zone.position = TAG.read_point_3d(input_stream, TAG, tag_format.XMLData(static_respawn_zone_element_node, "position"))
+                    static_respawn_zone.lower_height = TAG.read_float(input_stream, TAG, tag_format.XMLData(static_respawn_zone_element_node, "lower_height"))
+                    static_respawn_zone.upper_height = TAG.read_float(input_stream, TAG, tag_format.XMLData(static_respawn_zone_element_node, "upper_height"))
+                    static_respawn_zone.inner_radius = TAG.read_float(input_stream, TAG, tag_format.XMLData(static_respawn_zone_element_node, "inner radius"))
+                    static_respawn_zone.outer_radius = TAG.read_float(input_stream, TAG, tag_format.XMLData(static_respawn_zone_element_node, "outer_radius"))
+                    static_respawn_zone.weight = TAG.read_float(input_stream, TAG, tag_format.XMLData(static_respawn_zone_element_node, "weight"))
+
+                    spawn_data.static_respawn_zones.append(static_respawn_zone)
+
+                for static_respawn_zone_idx, static_respawn_zone in enumerate(spawn_data.static_respawn_zones):
+                    static_respawn_zone_element_node = None
+                    if XML_OUTPUT:
+                        static_respawn_zone_element_node = static_respawn_zones_node.childNodes[static_respawn_zone_idx]
+
+                    static_respawn_zone.sszd_header = TAG.TagBlockHeader().read(input_stream, TAG)
+                    spawn_name_length = static_respawn_zone.name_length
+                    if spawn_name_length > 0:
+                        static_respawn_zone.variant_name = TAG.read_variable_string_no_terminator(input_stream, spawn_name_length, TAG, tag_format.XMLData(static_respawn_zone_element_node, "name"))
+
+            if spawn_data.static_initial_spawn_zones_tag_block.count > 0:
+                spawn_data.static_initial_spawn_zones_header = TAG.TagBlockHeader().read(input_stream, TAG)
+                static_initial_spawn_zones_node = tag_format.get_xml_node(XML_OUTPUT, spawn_data.static_initial_spawn_zones_tag_block.count, spawn_data_element_node, "name", "static initial spawn zones")
+                for static_initial_spawn_zone_idx in range(spawn_data.static_initial_spawn_zones_tag_block.count):
+                    static_initial_spawn_zone_element_node = None
+                    if XML_OUTPUT:
+                        static_initial_spawn_zone_element_node = TAG.xml_doc.createElement('element')
+                        static_initial_spawn_zone_element_node.setAttribute('index', str(static_initial_spawn_zone_idx))
+                        static_initial_spawn_zones_node.appendChild(static_initial_spawn_zone_element_node)
+
+                    static_initial_spawn_zone = SCENARIO.StaticSpawnZone()
+
+                    TAG.big_endian = True
+                    input_stream.read(2) # Padding?
+                    static_initial_spawn_zone.name_length = TAG.read_signed_short(input_stream, TAG)
+                    TAG.big_endian = False
+
+                    static_initial_spawn_zone.relevant_teams = TAG.read_flag_unsigned_integer(input_stream, TAG, tag_format.XMLData(static_initial_spawn_zone_element_node, "relevant teams", RelevantTeamFlags))
+                    static_initial_spawn_zone.relevant_games = TAG.read_flag_unsigned_integer(input_stream, TAG, tag_format.XMLData(static_initial_spawn_zone_element_node, "relevant games", RelevantGamesFlags))
+                    static_initial_spawn_zone.flags = TAG.read_flag_unsigned_integer(input_stream, TAG, tag_format.XMLData(static_initial_spawn_zone_element_node, "flags", SpawnZoneFlags))
+                    static_initial_spawn_zone.position = TAG.read_point_3d(input_stream, TAG, tag_format.XMLData(static_initial_spawn_zone_element_node, "position"))
+                    static_initial_spawn_zone.lower_height = TAG.read_float(input_stream, TAG, tag_format.XMLData(static_initial_spawn_zone_element_node, "lower_height"))
+                    static_initial_spawn_zone.upper_height = TAG.read_float(input_stream, TAG, tag_format.XMLData(static_initial_spawn_zone_element_node, "upper_height"))
+                    static_initial_spawn_zone.inner_radius = TAG.read_float(input_stream, TAG, tag_format.XMLData(static_initial_spawn_zone_element_node, "inner radius"))
+                    static_initial_spawn_zone.outer_radius = TAG.read_float(input_stream, TAG, tag_format.XMLData(static_initial_spawn_zone_element_node, "outer_radius"))
+                    static_initial_spawn_zone.weight = TAG.read_float(input_stream, TAG, tag_format.XMLData(static_initial_spawn_zone_element_node, "weight"))
+
+                    spawn_data.static_initial_spawn_zones.append(static_initial_spawn_zone)
+
+                for static_initial_spawn_zone_idx, static_initial_spawn_zone in enumerate(spawn_data.static_initial_spawn_zones):
+                    static_initial_spawn_zone_element_node = None
+                    if XML_OUTPUT:
+                        static_initial_spawn_zone_element_node = static_initial_spawn_zones_node.childNodes[static_initial_spawn_zone_idx]
+
+                    static_initial_spawn_zone.sszd_header = TAG.TagBlockHeader().read(input_stream, TAG)
+                    spawn_name_length = static_initial_spawn_zone.name_length
+                    if spawn_name_length > 0:
+                        static_initial_spawn_zone.variant_name = TAG.read_variable_string_no_terminator(input_stream, spawn_name_length, TAG, tag_format.XMLData(static_initial_spawn_zone_element_node, "name"))
+
+def get_crate(input_stream, SCENARIO, TAG, node_element):
+    crate = SCENARIO.Crate()
+    object_helper(crate, TAG, input_stream, SCENARIO, node_element, SCENARIO.scenario_body.crate_palette_tag_block.count, "scenario_crate_palette_block")
+
+    TAG.big_endian = True
+    input_stream.read(2) # Padding?
+    crate.variant_name_length = TAG.read_signed_short(input_stream, TAG)
+    TAG.big_endian = False
+
+    crate.active_change_colors = TAG.read_flag_unsigned_integer(input_stream, TAG, tag_format.XMLData(node_element, "active change colors", ObjectColorChangeFlags))
+    crate.primary_color_BGRA = TAG.read_bgr_byte(input_stream, TAG, tag_format.XMLData(node_element, "primary color"))
+    crate.secondary_color_BGRA = TAG.read_bgr_byte(input_stream, TAG, tag_format.XMLData(node_element, "secondary color"))
+    crate.tertiary_color_BGRA = TAG.read_bgr_byte(input_stream, TAG, tag_format.XMLData(node_element, "tertiary color"))
+    crate.quaternary_color_BGRA = TAG.read_bgr_byte(input_stream, TAG, tag_format.XMLData(node_element, "quaternary color"))
+
+    return crate
+
+def read_crates(SCENARIO, TAG, input_stream, tag_node, XML_OUTPUT):
+    if SCENARIO.scenario_body.crates_tag_block.count > 0:
+        SCENARIO.crates_header = TAG.TagBlockHeader().read(input_stream, TAG)
+        crates_node = tag_format.get_xml_node(XML_OUTPUT, SCENARIO.scenario_body.crates_tag_block.count, tag_node, "name", "crates")
+        for crate_idx in range(SCENARIO.scenario_body.crates_tag_block.count):
+            crate_element_node = None
+            if XML_OUTPUT:
+                crate_element_node = TAG.xml_doc.createElement('element')
+                crate_element_node.setAttribute('index', str(crate_idx))
+                crates_node.appendChild(crate_element_node)
+
+            SCENARIO.crates.append(get_crate(input_stream, SCENARIO, TAG, crate_element_node))
+
+        for crate_idx, crate in enumerate(SCENARIO.crates):
+            crate_element_node = None
+            if XML_OUTPUT:
+                crate_element_node = crates_node.childNodes[crate_idx]
+
+            crate.sobj_header = TAG.TagBlockHeader().read(input_stream, TAG)
+            crate.obj0_header = TAG.TagBlockHeader().read(input_stream, TAG)
+            crate.sper_header = TAG.TagBlockHeader().read(input_stream, TAG)
+            if crate.variant_name_length > 0:
+                crate.variant_name = TAG.read_variable_string_no_terminator(input_stream, crate.variant_name_length, TAG, tag_format.XMLData(crate_element_node, "variant name"))
+
+    palette_helper(input_stream, SCENARIO.scenario_body.crate_palette_tag_block.count, "crate palette", SCENARIO.crates_palette_header, SCENARIO.crates_palette, tag_node, TAG)
+
+def read_atmospheric_fog_palette(SCENARIO, TAG, input_stream, tag_node, XML_OUTPUT):
+    if SCENARIO.scenario_body.atmospheric_fog_palette_tag_block.count > 0:
+        SCENARIO.atmospheric_fog_palette_header = TAG.TagBlockHeader().read(input_stream, TAG)
+        atmospheric_fog_palette_node = tag_format.get_xml_node(XML_OUTPUT, SCENARIO.scenario_body.atmospheric_fog_palette_tag_block.count, tag_node, "name", "atmospheric fog palette")
+        for atmospheric_fog_palette_idx in range(SCENARIO.scenario_body.atmospheric_fog_palette_tag_block.count):
+            atmospheric_fog_palette_element_node = None
+            if XML_OUTPUT:
+                atmospheric_fog_palette_element_node = TAG.xml_doc.createElement('element')
+                atmospheric_fog_palette_element_node.setAttribute('index', str(atmospheric_fog_palette_idx))
+                atmospheric_fog_palette_node.appendChild(atmospheric_fog_palette_element_node)
+
+            atmospheric_fog_palette = SCENARIO.AtmosphericFogPalette()
+
+            TAG.big_endian = True
+            input_stream.read(2) # Padding?
+            atmospheric_fog_palette.name_length = TAG.read_signed_short(input_stream, TAG)
+            TAG.big_endian = False
+
+            atmospheric_fog_palette.atmospheric_fog_color_RGBA = TAG.read_rgb(input_stream, TAG, tag_format.XMLData(atmospheric_fog_palette_element_node, "color"))
+            atmospheric_fog_palette.atmospheric_fog_spread_distance = TAG.read_float(input_stream, TAG, tag_format.XMLData(atmospheric_fog_palette_element_node, "spread distance"))
+            input_stream.read(4) # Padding?
+            atmospheric_fog_palette.atmospheric_fog_maximum_density = TAG.read_float(input_stream, TAG, tag_format.XMLData(atmospheric_fog_palette_element_node, "maximum density"))
+            atmospheric_fog_palette.atmospheric_fog_start_distance = TAG.read_float(input_stream, TAG, tag_format.XMLData(atmospheric_fog_palette_element_node, "start distance"))
+            atmospheric_fog_palette.atmospheric_fog_opaque_distance = TAG.read_float(input_stream, TAG, tag_format.XMLData(atmospheric_fog_palette_element_node, "opaque distance"))
+            atmospheric_fog_palette.secondary_fog_color_RGBA = TAG.read_rgb(input_stream, TAG, tag_format.XMLData(atmospheric_fog_palette_element_node, "color"))
+            input_stream.read(4) # Padding?
+            atmospheric_fog_palette.secondary_fog_maximum_density = TAG.read_float(input_stream, TAG, tag_format.XMLData(atmospheric_fog_palette_element_node, "maximum density"))
+            atmospheric_fog_palette.secondary_fog_start_distance = TAG.read_float(input_stream, TAG, tag_format.XMLData(atmospheric_fog_palette_element_node, "start distance"))
+            atmospheric_fog_palette.secondary_fog_opaque_distance = TAG.read_float(input_stream, TAG, tag_format.XMLData(atmospheric_fog_palette_element_node, "opaque distance"))
+            input_stream.read(4) # Padding?
+            atmospheric_fog_palette.planar_color_RGBA = TAG.read_rgb(input_stream, TAG, tag_format.XMLData(atmospheric_fog_palette_element_node, "planar color"))
+            input_stream.read(4) # Padding?
+            atmospheric_fog_palette.planar_max_density = TAG.read_float(input_stream, TAG, tag_format.XMLData(atmospheric_fog_palette_element_node, "planar max density"))
+            atmospheric_fog_palette.planar_override_amount = TAG.read_float(input_stream, TAG, tag_format.XMLData(atmospheric_fog_palette_element_node, "planar override amount"))
+            atmospheric_fog_palette.planar_min_distance_bias = TAG.read_float(input_stream, TAG, tag_format.XMLData(atmospheric_fog_palette_element_node, "planar min distance bias"))
+            input_stream.read(44) # Padding?
+            atmospheric_fog_palette.patchy_color_RGBA = TAG.read_rgb(input_stream, TAG, tag_format.XMLData(atmospheric_fog_palette_element_node, "planar color"))
+            input_stream.read(8) # Padding?
+            atmospheric_fog_palette.patchy_density = TAG.read_min_max(input_stream, TAG, tag_format.XMLData(atmospheric_fog_palette_element_node, "patchy density"))
+            atmospheric_fog_palette.patchy_distance = TAG.read_min_max(input_stream, TAG, tag_format.XMLData(atmospheric_fog_palette_element_node, "patchy distance"))
+            input_stream.read(32) # Padding?
+            atmospheric_fog_palette.patchy_fog = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(atmospheric_fog_palette_element_node, "patchy fog"))
+            atmospheric_fog_palette.mixers_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(atmospheric_fog_palette_element_node, "mixers"))
+            atmospheric_fog_palette.amount = TAG.read_float(input_stream, TAG, tag_format.XMLData(atmospheric_fog_palette_element_node, "planar max density"))
+            atmospheric_fog_palette.threshold = TAG.read_float(input_stream, TAG, tag_format.XMLData(atmospheric_fog_palette_element_node, "planar max density"))
+            atmospheric_fog_palette.brightness = TAG.read_float(input_stream, TAG, tag_format.XMLData(atmospheric_fog_palette_element_node, "planar max density"))
+            atmospheric_fog_palette.gamma_power = TAG.read_float(input_stream, TAG, tag_format.XMLData(atmospheric_fog_palette_element_node, "planar max density"))
+            atmospheric_fog_palette.camera_immersion_flags = TAG.read_flag_unsigned_short(input_stream, TAG, tag_format.XMLData(atmospheric_fog_palette_element_node, "camera immersion flags", CameraImmersionFlags))
+            input_stream.read(2) # Padding?
+
+            SCENARIO.atmospheric_fog_palette.append(atmospheric_fog_palette)
+
+        for atmospheric_fog_palette_idx, atmospheric_fog_palette in enumerate(SCENARIO.atmospheric_fog_palette):
+            atmospheric_fog_palette_element_node = None
+            if XML_OUTPUT:
+                atmospheric_fog_palette_element_node = atmospheric_fog_palette_node.childNodes[atmospheric_fog_palette_idx]
+
+            name_length = atmospheric_fog_palette.name_length
+            if name_length > 0:
+                atmospheric_fog_palette.name = TAG.read_variable_string_no_terminator(input_stream, name_length, TAG, tag_format.XMLData(atmospheric_fog_palette_element_node, "name"))
+
+            patchy_fog_name_length = atmospheric_fog_palette.patchy_fog.name_length
+            if patchy_fog_name_length > 0:
+                atmospheric_fog_palette.patchy_fog.name = TAG.read_variable_string(input_stream, patchy_fog_name_length, TAG)
+
+            if XML_OUTPUT:
+                patchy_fog_tag_ref_node = tag_format.get_xml_node(XML_OUTPUT, 1, atmospheric_fog_palette_element_node, "name", "patchy fog")
+                atmospheric_fog_palette.patchy_fog.append_xml_attributes(patchy_fog_tag_ref_node)
+
+            atmospheric_fog_palette.mixers = []
+            if atmospheric_fog_palette.mixers_tag_block.count > 0:
+                atmospheric_fog_palette.mixers_header = TAG.TagBlockHeader().read(input_stream, TAG)
+                mixers_node = tag_format.get_xml_node(XML_OUTPUT, atmospheric_fog_palette.mixers_tag_block.count, atmospheric_fog_palette_element_node, "name", "mixers")
+                for mixer_idx in range(atmospheric_fog_palette.mixers_tag_block.count):
+                    mixer_element_node = None
+                    if XML_OUTPUT:
+                        mixer_element_node = TAG.xml_doc.createElement('element')
+                        mixer_element_node.setAttribute('index', str(mixer_idx))
+                        mixers_node.appendChild(mixer_element_node)
+
+                    mixer = SCENARIO.Mixer()
+
+                    input_stream.read(4) # Padding?
+                    TAG.big_endian = True
+                    input_stream.read(2) # Padding?
+                    mixer.atmospheric_fog_source_length = TAG.read_signed_short(input_stream, TAG)
+                    input_stream.read(2) # Padding?
+                    mixer.interpolator_length = TAG.read_signed_short(input_stream, TAG)
+                    TAG.big_endian = False
+                    input_stream.read(4) # Padding?
+
+                    atmospheric_fog_palette.mixers.append(mixer)
+
+                for mixer_idx, mixer in enumerate(atmospheric_fog_palette.mixers):
+                    mixer_element_node = None
+                    if XML_OUTPUT:
+                        mixer_element_node = mixers_node.childNodes[mixer_idx]
+
+                    atmospheric_fog_length = mixer.atmospheric_fog_source_length
+                    interpolator_length = mixer.interpolator_length
+                    if atmospheric_fog_length > 0:
+                        mixer.atmospheric_fog_source = TAG.read_variable_string_no_terminator(input_stream, atmospheric_fog_length, TAG, tag_format.XMLData(mixer_element_node, "atmospheric fog source"))
+
+                    if interpolator_length > 0:
+                        mixer.interpolator = TAG.read_variable_string_no_terminator(input_stream, interpolator_length, TAG, tag_format.XMLData(mixer_element_node, "interpolator"))
+
 def process_file(input_stream, report):
     TAG = tag_format.TagAsset()
     SCENARIO = ScenarioAsset()
@@ -3539,15 +3820,20 @@ def process_file(input_stream, report):
 
     initilize_scenario(SCENARIO)
     read_scenario_body(SCENARIO, TAG, input_stream, tag_node, XML_OUTPUT)
-
     unused_tag_ref = SCENARIO.scenario_body.unused_tag_ref
+    custom_object_names_tag_ref = SCENARIO.scenario_body.custom_object_names_tag_ref
+    chapter_title_text_tag_ref = SCENARIO.scenario_body.chapter_title_text_tag_ref
+    hud_messages_tag_ref = SCENARIO.scenario_body.hud_messages_tag_ref
+    sound_effect_collection_tag_ref = SCENARIO.scenario_body.sound_effect_collection_tag_ref
+    global_lighting_tag_ref = SCENARIO.scenario_body.global_lighting_tag_ref
     unused_name_length = unused_tag_ref.name_length
+    custom_object_names_name_length = custom_object_names_tag_ref.name_length
+    chapter_title_text_name_length = chapter_title_text_tag_ref.name_length
+    hud_messages_name_length = hud_messages_tag_ref.name_length
+    sound_effect_collection_name_length = sound_effect_collection_tag_ref.name_length
+    global_lighting_name_length = global_lighting_tag_ref.name_length
     if unused_name_length > 0:
         unused_tag_ref.name = TAG.read_variable_string(input_stream, unused_name_length, TAG)
-
-    if XML_OUTPUT:
-        unused_node = tag_format.get_xml_node(XML_OUTPUT, 1, tag_node, "name", "unused")
-        unused_tag_ref.append_xml_attributes(unused_node)
 
     read_skies(SCENARIO, TAG, input_stream, tag_node, XML_OUTPUT)
     read_child_scenarios(SCENARIO, TAG, input_stream, tag_node, XML_OUTPUT)
@@ -3599,13 +3885,6 @@ def process_file(input_stream, report):
     read_cutscene_flags(SCENARIO, TAG, input_stream, tag_node, XML_OUTPUT)
     read_cutscene_camera_points(SCENARIO, TAG, input_stream, tag_node, XML_OUTPUT)
     read_cutscene_titles(SCENARIO, TAG, input_stream, tag_node, XML_OUTPUT)
-
-    custom_object_names_tag_ref = SCENARIO.scenario_body.custom_object_names_tag_ref
-    chapter_title_text_tag_ref = SCENARIO.scenario_body.chapter_title_text_tag_ref
-    hud_messages_tag_ref = SCENARIO.scenario_body.hud_messages_tag_ref
-    custom_object_names_name_length = custom_object_names_tag_ref.name_length
-    chapter_title_text_name_length = chapter_title_text_tag_ref.name_length
-    hud_messages_name_length = hud_messages_tag_ref.name_length
     if custom_object_names_name_length > 0:
         custom_object_names_tag_ref.name = TAG.read_variable_string(input_stream, custom_object_names_name_length, TAG)
 
@@ -3614,14 +3893,6 @@ def process_file(input_stream, report):
 
     if hud_messages_name_length > 0:
         hud_messages_tag_ref.name = TAG.read_variable_string(input_stream, hud_messages_name_length, TAG)
-
-    if XML_OUTPUT:
-        custom_object_names_node = tag_format.get_xml_node(XML_OUTPUT, 1, tag_node, "name", "custom object names")
-        chapter_title_text_node = tag_format.get_xml_node(XML_OUTPUT, 1, tag_node, "name", "chapter title text")
-        hud_messages_node = tag_format.get_xml_node(XML_OUTPUT, 1, tag_node, "name", "hud messages")
-        custom_object_names_tag_ref.append_xml_attributes(custom_object_names_node)
-        chapter_title_text_tag_ref.append_xml_attributes(chapter_title_text_node)
-        hud_messages_tag_ref.append_xml_attributes(hud_messages_node)
 
     read_structure_bsps(SCENARIO, TAG, input_stream, tag_node, XML_OUTPUT)
     read_scenario_resoruces(SCENARIO, TAG, input_stream, tag_node, XML_OUTPUT)
@@ -3636,6 +3907,30 @@ def process_file(input_stream, report):
     read_weather_palette(SCENARIO, TAG, input_stream, tag_node, XML_OUTPUT)
     read_scavenger_hunt_objects(SCENARIO, TAG, input_stream, tag_node, XML_OUTPUT)
     read_scenario_cluster_data(SCENARIO, TAG, input_stream, tag_node, XML_OUTPUT)
+    read_spawn_data(SCENARIO, TAG, input_stream, tag_node, XML_OUTPUT)
+    if sound_effect_collection_name_length > 0:
+        sound_effect_collection_tag_ref.name = TAG.read_variable_string(input_stream, sound_effect_collection_name_length, TAG)
+
+    read_crates(SCENARIO, TAG, input_stream, tag_node, XML_OUTPUT)
+    if global_lighting_name_length > 0:
+        global_lighting_tag_ref.name = TAG.read_variable_string(input_stream, global_lighting_name_length, TAG)
+
+    read_atmospheric_fog_palette(SCENARIO, TAG, input_stream, tag_node, XML_OUTPUT)
+
+    if XML_OUTPUT:
+        unused_node = tag_format.get_xml_node(XML_OUTPUT, 1, tag_node, "name", "unused")
+        custom_object_names_node = tag_format.get_xml_node(XML_OUTPUT, 1, tag_node, "name", "custom object names")
+        chapter_title_text_node = tag_format.get_xml_node(XML_OUTPUT, 1, tag_node, "name", "chapter title text")
+        hud_messages_node = tag_format.get_xml_node(XML_OUTPUT, 1, tag_node, "name", "hud messages")
+        sound_effect_collection_node = tag_format.get_xml_node(XML_OUTPUT, 1, tag_node, "name", "sound effect collection")
+        global_lighting_node = tag_format.get_xml_node(XML_OUTPUT, 1, tag_node, "name", "global lighting")
+        unused_tag_ref.append_xml_attributes(unused_node)
+        custom_object_names_tag_ref.append_xml_attributes(custom_object_names_node)
+        chapter_title_text_tag_ref.append_xml_attributes(chapter_title_text_node)
+        hud_messages_tag_ref.append_xml_attributes(hud_messages_node)
+        sound_effect_collection_tag_ref.append_xml_attributes(sound_effect_collection_node)
+        global_lighting_tag_ref.append_xml_attributes(global_lighting_node)
+
 
     current_position = input_stream.tell()
     EOF = input_stream.seek(0, 2)

@@ -30,6 +30,7 @@ import bpy
 from math import degrees
 from .format import ASSAsset
 from ..global_functions import mesh_processing, global_functions, resource_management
+from datetime import datetime
 
 def get_material_strings(material, version):
     material_strings = []
@@ -247,6 +248,9 @@ def process_scene(context, version, game_version, hidden_geo, nonrender_geo, app
 
     instance_ids_original = set()
     instance_ids_full = set()
+    now = datetime.now()
+    checksum = int(now.year) + int(now.month) + int(now.day) + int(now.hour) + int(now.minute) + round(float(now.second))
+    increment_count = 0
     for idx, geometry in enumerate(geometry_list):
         original_geo = geometry[1]
         instance_id = original_geo.ass_jms.unique_id
@@ -255,26 +259,27 @@ def process_scene(context, version, game_version, hidden_geo, nonrender_geo, app
                 instance_ids_original.add(instance_id)
                 instance_ids_full.add(instance_id)
             else:
-                increment_count = 0
-                generated_id = global_functions.node_checksum(original_geo) + (idx + increment_count)
+                generated_id = checksum + (increment_count)
                 while generated_id in instance_ids_original:
                     increment_count += 1
-                    generated_id = global_functions.node_checksum(original_geo) + (idx + increment_count)
+                    generated_id = checksum + (increment_count)
 
                 original_geo.ass_jms.unique_id = str(generated_id)
                 instance_ids_full.add(generated_id)
+                increment_count += 1
 
+    increment_count = 0
     for idx, geometry in enumerate(geometry_list):
         original_geo = geometry[1]
         instance_id = original_geo.ass_jms.unique_id
         if instance_id == "":
-            increment_count = 0
-            generated_id = global_functions.node_checksum(original_geo) + (idx + increment_count)
+            generated_id = checksum + (increment_count)
             while generated_id in instance_ids_full:
                 increment_count += 1
-                generated_id = global_functions.node_checksum(original_geo) + (idx + increment_count)
+                generated_id = checksum + (increment_count)
 
             original_geo.ass_jms.unique_id = str(generated_id)
+            increment_count += 1
 
     ASS.instances.append(ASS.Instance(name='Scene Root', local_transform=ASS.Transform(), pivot_transform=ASS.Transform(), bone_groups=[]))
     for idx, geometry in enumerate(geometry_list):

@@ -220,6 +220,12 @@ def generate_object_elements(level_root, collection_name, palette, tag_block, co
                     RENDER = MODEL.model_body.render_model.parse_tag(report, "halo2", "retail")
                     if not RENDER == None:
                         ob = get_object(asset_collection, RENDER, game_version, object_name, random_color_gen, report)
+            elif collection_name == "Crates":
+                MODEL = ASSET.crate_body.model.parse_tag(report, "halo2", "retail")
+                if not MODEL == None:
+                    RENDER = MODEL.model_body.render_model.parse_tag(report, "halo2", "retail")
+                    if not RENDER == None:
+                        ob = get_object(asset_collection, RENDER, game_version, object_name, random_color_gen, report)
 
         objects_list.append(ob)
 
@@ -509,6 +515,8 @@ def generate_scenario_scene(context, H2_ASSET, game_version, game_title, file_ve
         generate_object_elements(level_root, "Light Fixtures", H2_ASSET.device_light_fixtures_palette, H2_ASSET.device_light_fixtures, context, game_version, file_version, fix_rotations, report, random_color_gen)
     if len(H2_ASSET.sound_scenery) > 0:
         generate_object_elements(level_root, "Sound Scenery", H2_ASSET.sound_scenery_palette, H2_ASSET.sound_scenery, context, game_version, file_version, fix_rotations, report, random_color_gen)
+    if len(H2_ASSET.crates) > 0:
+        generate_object_elements(level_root, "Crates", H2_ASSET.crates_palette, H2_ASSET.crates, context, game_version, file_version, fix_rotations, report, random_color_gen)
     if len(H2_ASSET.player_starting_locations) > 0:
         generate_empties(context, level_root, "Player Starting Locations", H2_ASSET.player_starting_locations)
     if len(H2_ASSET.netgame_flags) > 0:

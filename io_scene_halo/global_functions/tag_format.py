@@ -1035,6 +1035,13 @@ class TagAsset():
                         ASSET = process_h2_scenery(input_stream, report)
                         input_stream.close()
 
+                elif self.tag_group == "bloc":
+                    input_file = os.path.join(config.HALO_2_TAG_PATH, "%s.crate" % self.name)
+                    if os.path.exists(input_file):
+                        input_stream = open(input_file, 'rb')
+                        ASSET = process_h2_crate(input_stream, report)
+                        input_stream.close()
+
                 elif self.tag_group == "bipd":
                     input_file = os.path.join(config.HALO_2_TAG_PATH, "%s.biped" % self.name)
                     if os.path.exists(input_file):

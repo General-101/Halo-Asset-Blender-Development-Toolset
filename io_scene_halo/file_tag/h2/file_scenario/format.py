@@ -716,6 +716,58 @@ class ScaleFlags(Flag):
     use_adjacent_cluster_as_exterior_scale = auto()
     scale_with_weather_intensity = auto()
 
+class OverloadTypeEnum(Enum):
+    enemy = 0
+    friend = auto()
+    enemy_vehicle = auto()
+    friendly_vehicle = auto()
+    empty_vehicle = auto()
+    oddball_inclusion = auto()
+    oddball_exclusion = auto()
+    hill_inclusion = auto()
+    hill_exclusion = auto()
+    last_race_flag = auto()
+    dead_ally = auto()
+    controlled_territory = auto()
+    medic = auto()
+
+class RelevantTeamFlags(Flag):
+    alpha_team = auto()
+    bravo_team = auto()
+    charlie_team = auto()
+    delta_team = auto()
+    echo_team = auto()
+    foxtrot_team = auto()
+    golf_team = auto()
+    hotel_team = auto()
+    neutral = auto()
+
+class RelevantGamesFlags(Flag):
+    all_slayer = auto()
+    all_oddball = auto()
+    all_king = auto()
+    all_ctf = auto()
+    all_race = auto()
+    all_headhunter = auto()
+    all_juggernaut = auto()
+    all_territories = auto()
+    all_medic = auto()
+    all_vip = auto()
+    all_infection = auto()
+
+class SpawnZoneFlags(Flag):
+    disabled_if_flag_home = auto()
+    disabled_if_flag_away = auto()
+    disabled_if_bomb_home = auto()
+    disabled_if_bomb_away = auto()
+
+class CameraImmersionFlags(Flag):
+    disable_atmospheric_fog = auto()
+    disable_secondary_fog = auto()
+    disable_planar_fog = auto()
+    invert_planar_fog_priorities = auto()
+    disable_water = auto()
+
 class ScenarioAsset():
     def __init__(self):
         self.header = None
@@ -2047,6 +2099,46 @@ class ScenarioAsset():
             self.weather_properties = weather_properties
             self.atmospheric_fog_properties = atmospheric_fog_properties
 
+    class SpawnData():
+        def __init__(self, dynamic_spawn_lower_height=0.0, dynamic_spawn_upper_height=0.0, game_object_reset_height=0.0, dynamic_spawn_overloads_header=None, 
+                     static_respawn_zones_header=None, static_initial_spawn_zones_header=None, dynamic_spawn_overloads_tag_block=None, static_respawn_zones_tag_block=None, 
+                     static_initial_spawn_zones_tag_block=None, dynamic_spawn_overloads=None, static_respawn_zones=None, static_initial_spawn_zones=None):
+            self.dynamic_spawn_lower_height = dynamic_spawn_lower_height
+            self.dynamic_spawn_upper_height = dynamic_spawn_upper_height
+            self.game_object_reset_height = game_object_reset_height
+            self.dynamic_spawn_overloads_header = dynamic_spawn_overloads_header
+            self.static_respawn_zones_header = static_respawn_zones_header
+            self.static_initial_spawn_zones_header = static_initial_spawn_zones_header
+            self.dynamic_spawn_overloads_tag_block = dynamic_spawn_overloads_tag_block
+            self.static_respawn_zones_tag_block = static_respawn_zones_tag_block
+            self.static_initial_spawn_zones_tag_block = static_initial_spawn_zones_tag_block
+            self.dynamic_spawn_overloads = dynamic_spawn_overloads
+            self.static_respawn_zones = static_respawn_zones
+            self.static_initial_spawn_zones = static_initial_spawn_zones
+
+    class DynamicSpawnOverload():
+        def __init__(self, overload_type=0, inner_radius=0.0, outer_radius=0.0, weight=0.0):
+            self.overload_type = overload_type
+            self.inner_radius = inner_radius
+            self.outer_radius = outer_radius
+            self.weight = weight
+
+    class StaticSpawnZone():
+        def __init__(self, name="", name_length=0, relevant_teams=0, relevant_games=0, flags=0, position=Vector(), lower_height=0.0, upper_height=0.0, inner_radius=0.0, 
+                     outer_radius=0.0, weight=0.0, sszd_header=None):
+            self.name = name
+            self.name_length = name_length
+            self.relevant_teams = relevant_teams
+            self.relevant_games = relevant_games
+            self.flags = flags
+            self.position = position
+            self.lower_height = lower_height
+            self.upper_height = upper_height
+            self.inner_radius = inner_radius
+            self.outer_radius = outer_radius
+            self.weight = weight
+            self.sszd_header = sszd_header
+
     class Crate(Object):
         def __init__(self, sobj_header=None, obj0_header=None, sper_header=None, variant_name="", variant_name_length=0, active_change_colors=0,
                      primary_color_BGRA=(0, 0, 0, 255), secondary_color_BGRA=(0, 0, 0, 255), tertiary_color_BGRA=(0, 0, 0, 255),
@@ -2062,3 +2154,45 @@ class ScenarioAsset():
             self.secondary_color_BGRA = secondary_color_BGRA
             self.tertiary_color_BGRA = tertiary_color_BGRA
             self.quaternary_color_BGRA = quaternary_color_BGRA
+
+    class AtmosphericFogPalette():
+        def __init__(self, name="", name_length=0, atmospheric_fog_color_RGBA=(0, 0, 0, 255), atmospheric_fog_spread_distance=0.0, atmospheric_fog_maximum_density=0.0, 
+                     atmospheric_fog_start_distance=0.0, atmospheric_fog_opaque_distance=0.0, secondary_fog_color_RGBA=(0, 0, 0, 255), secondary_fog_maximum_density=0.0, 
+                     secondary_fog_start_distance=0.0, secondary_fog_opaque_distance=0.0, planar_color_RGBA=(0, 0, 0, 255), planar_max_density=0.0, planar_override_amount=0.0, 
+                     planar_min_distance_bias=0.0, patchy_color_RGBA=(0, 0, 0, 255), patchy_density=(0.0, 0.0), patchy_distance=(0.0, 0.0), patchy_fog=None, 
+                     mixers_header=None, mixers_tag_block=None, mixers=None, amount=0.0, threshold=0.0, brightness=0.0, gamma_power=0.0, camera_immersion_flags=0):
+            self.name = name
+            self.name_length = name_length
+            self.atmospheric_fog_color_RGBA = atmospheric_fog_color_RGBA
+            self.atmospheric_fog_spread_distance = atmospheric_fog_spread_distance
+            self.atmospheric_fog_maximum_density = atmospheric_fog_maximum_density
+            self.atmospheric_fog_start_distance = atmospheric_fog_start_distance
+            self.atmospheric_fog_opaque_distance = atmospheric_fog_opaque_distance
+            self.secondary_fog_color_RGBA = secondary_fog_color_RGBA
+            self.secondary_fog_maximum_density = secondary_fog_maximum_density
+            self.secondary_fog_start_distance = secondary_fog_start_distance
+            self.secondary_fog_opaque_distance = secondary_fog_opaque_distance
+            self.planar_color_RGBA = planar_color_RGBA
+            self.planar_max_density = planar_max_density
+            self.planar_override_amount = planar_override_amount
+            self.planar_min_distance_bias = planar_min_distance_bias
+            self.patchy_color_RGBA = patchy_color_RGBA
+            self.patchy_density = patchy_density
+            self.patchy_distance = patchy_distance
+            self.patchy_fog = patchy_fog
+            self.mixers_header = mixers_header
+            self.mixers_tag_block = mixers_tag_block
+            self.mixers = mixers
+            self.amount = amount
+            self.threshold = threshold
+            self.brightness = brightness
+            self.gamma_power = gamma_power
+            self.camera_immersion_flags = camera_immersion_flags
+
+    class Mixer():
+        def __init__(self, atmospheric_fog_source="", atmospheric_fog_source_length=0, interpolator="", interpolator_length=0):
+            self.atmospheric_fog_source = atmospheric_fog_source
+            self.atmospheric_fog_source_length = atmospheric_fog_source_length
+            self.interpolator = interpolator
+            self.interpolator_length = interpolator_length
+

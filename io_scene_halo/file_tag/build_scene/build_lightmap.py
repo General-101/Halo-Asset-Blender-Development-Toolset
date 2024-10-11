@@ -27,11 +27,13 @@
 import os
 import bpy
 
+from ... import config
 from mathutils import Matrix
+from ..h2.file_scenario_structure_bsp.format import ClusterPortalFlags as H2ClusterPortalFlags, SurfaceFlags as H2SurfaceFlags, PartFlags, PropertyTypeEnum
 from ..h2.file_scenario_structure_lightmap.format import PartTypeEnum
 from ...global_functions import global_functions
 
-def process_mesh(SBSP_ASSET, random_color_gen, tag_block, poop_name, material_count):
+def process_mesh(SBSP_ASSET, random_color_gen, tag_block, poop_name, material_count, shader_collection_dic):
     mesh = None
     for render_data in tag_block.cache_data:
         vertex_map = [-1 for raw_vertex in render_data.raw_vertices]
@@ -79,10 +81,15 @@ def process_mesh(SBSP_ASSET, random_color_gen, tag_block, poop_name, material_co
             for poly in mesh.polygons:
                 poly.use_smooth = True
 
-            uv_name = 'UVMap_%s' % 0
-            layer_uv = mesh.uv_layers.get(uv_name)
-            if layer_uv is None:
-                layer_uv = mesh.uv_layers.new(name=uv_name)
+            uv_name_render = 'UVMap_Render'
+            uv_name_lightmap = 'UVMap_Lightmap'
+            render_layer_uv = mesh.uv_layers.get(uv_name_render)
+            if render_layer_uv is None:
+                render_layer_uv = mesh.uv_layers.new(name=uv_name_render)
+
+            lightmap_layer_uv = mesh.uv_layers.get(uv_name_lightmap)
+            if lightmap_layer_uv is None:
+                lightmap_layer_uv = mesh.uv_layers.new(name=uv_name_lightmap)
 
             triangle_start = 0
             for part in render_data.parts:
@@ -102,21 +109,46 @@ def process_mesh(SBSP_ASSET, random_color_gen, tag_block, poop_name, material_co
                         for vertex_idx, vertex in enumerate(vertex_list):
                             loop_index = (triangle_start * 3) + triangle_index + vertex_idx
 
-                            U = vertex.primary_lightmap_texcoord[0]
-                            V = vertex.primary_lightmap_texcoord[1]
+                            U0 = vertex.texcoord[0]
+                            V0 = vertex.texcoord[1]
+                            U1 = vertex.primary_lightmap_texcoord[0]
+                            V1 = vertex.primary_lightmap_texcoord[1]
 
-                            layer_uv.data[loop_index].uv = (U, V)
+                            render_layer_uv.data[loop_index].uv = (U0, 1 - V0)
+                            lightmap_layer_uv.data[loop_index].uv = (U1, V1)
 
                     material = None
                     if not part.material_index == -1 and material_count > 0 and part.material_index < material_count:
                         material = SBSP_ASSET.materials[part.material_index]
 
                     if material:
-                        if len(material.shader.name) > 0:
-                            material_name = os.path.basename(material.shader.name)
+                        material_path = material.shader.name
+                        if global_functions.string_empty_check(material_path):
+                            material_path = material.old_shader.name
 
+                        material_directory = os.path.dirname(material_path)
+                        material_name = os.path.basename(material_path)
+
+                        collection_prefix = shader_collection_dic.get(material_directory)
+                        if not collection_prefix == None:
+                            material_name = "%s %s" % (collection_prefix, material_name)
                         else:
-                            material_name = "invalid_material_%s" % part.material_index
+                            print("Could not find a collection for: %s" % material_path)
+
+                        for material_property in material.properties:
+                            property_enum = PropertyTypeEnum(material_property.property_type)
+                            property_value = material_property.real_value
+                            if PropertyTypeEnum.lightmap_resolution == property_enum:
+                                material_name += " lm:%s" % property_value
+
+                            elif PropertyTypeEnum.lightmap_power == property_enum:
+                                material_name += " lp:%s" % property_value
+
+                            elif PropertyTypeEnum.lightmap_half_life == property_enum:
+                                material_name += " hl:%s" % property_value
+
+                            elif PropertyTypeEnum.lightmap_diffuse_scale == property_enum:
+                                material_name += " ds:%s" % property_value
 
                         mat = bpy.data.materials.get(material_name)
                         if mat is None:
@@ -135,7 +167,7 @@ def process_mesh(SBSP_ASSET, random_color_gen, tag_block, poop_name, material_co
 
     return mesh
 
-def build_clusters(lightmap_group, SBSP_ASSET, level_root, random_color_gen, collection):
+def build_clusters(lightmap_group, SBSP_ASSET, level_root, random_color_gen, collection, shader_collection_dic):
     if len(lightmap_group.clusters) > 0:
         material_count = 0
         if not SBSP_ASSET == None:
@@ -143,13 +175,13 @@ def build_clusters(lightmap_group, SBSP_ASSET, level_root, random_color_gen, col
 
         for cluster_idx, cluster in enumerate(lightmap_group.clusters):
             cluster_name = "cluster_%s" % cluster_idx
-            mesh = process_mesh(SBSP_ASSET, random_color_gen, cluster, cluster_name, material_count)
+            mesh = process_mesh(SBSP_ASSET, random_color_gen, cluster, cluster_name, material_count, shader_collection_dic)
             if not mesh == None:
                 object_mesh = bpy.data.objects.new(cluster_name, mesh)
                 collection.objects.link(object_mesh)
                 object_mesh.parent = level_root
 
-def build_poops(lightmap_group, SBSP_ASSET, level_root, random_color_gen, collection):
+def build_poops(lightmap_group, SBSP_ASSET, level_root, random_color_gen, collection, shader_collection_dic):
     lightmap_instance_count = len(lightmap_group.poop_definitions)
     if lightmap_instance_count > 0:
         meshes = []
@@ -159,7 +191,7 @@ def build_poops(lightmap_group, SBSP_ASSET, level_root, random_color_gen, collec
 
         for poop_definition_idx, poop_definition in enumerate(lightmap_group.poop_definitions):
             poop_name = "instanced_geometry_definition_%s" % poop_definition_idx
-            mesh = process_mesh(SBSP_ASSET, random_color_gen, poop_definition, poop_name, material_count)
+            mesh = process_mesh(SBSP_ASSET, random_color_gen, poop_definition, poop_name, material_count, shader_collection_dic)
             meshes.append(mesh)
 
         for instanced_geometry_instance in SBSP_ASSET.instanced_geometry_instances:
@@ -200,6 +232,18 @@ def build_scene(context, LTMP_ASSET, game_version, game_title, file_version, fix
         level_root = bpy.data.objects.new("frame_root", level_mesh)
         collection.objects.link(level_root)
 
+    shader_collection_dic = {}
+    shader_collection_path = os.path.join(config.HALO_2_TAG_PATH, r"scenarios\shaders\shader_collections.shader_collections")
+    if os.path.isfile(shader_collection_path):
+        shader_collection_file = open(shader_collection_path, "r")
+        for line in shader_collection_file.readlines():
+            if not global_functions.string_empty_check(line) and not line.startswith(";"):
+                split_result = line.split()
+                if len(split_result) == 2:
+                    prefix = split_result[0]
+                    path = split_result[1]
+                    shader_collection_dic[path] = prefix
+
     for lightmap_groups_idx, lightmap_group in enumerate(LTMP_ASSET.lightmap_groups):
-        build_clusters(lightmap_group, SBSP_ASSET, level_root, random_color_gen, cluster_collection_override)
-        build_poops(lightmap_group, SBSP_ASSET, level_root, random_color_gen, cluster_collection_override)
+        build_clusters(lightmap_group, SBSP_ASSET, level_root, random_color_gen, cluster_collection_override, shader_collection_dic)
+        build_poops(lightmap_group, SBSP_ASSET, level_root, random_color_gen, cluster_collection_override, shader_collection_dic)
