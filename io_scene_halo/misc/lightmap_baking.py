@@ -292,7 +292,7 @@ def bake_clusters(context, game_title, scenario_path, image_multiplier, report):
                         context.view_layer.objects.active = lightmap_ob
 
                         context.scene.render.engine = 'CYCLES'
-                        bpy.ops.object.bake(type='DIFFUSE', pass_filter={'DIRECT','INDIRECT'}, uv_layer=lightmap_ob.data.uv_layers[0].name)
+                        bpy.ops.object.bake(type='DIFFUSE', pass_filter={'DIRECT','INDIRECT'}, uv_layer=lightmap_ob.data.uv_layers[1].name)
                         lightmap_ob.select_set(False)
                         context.view_layer.objects.active = None
 
