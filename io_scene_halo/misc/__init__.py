@@ -1759,6 +1759,12 @@ class ScenarioTagGroup(PropertyGroup):
         min=1
     )
 
+    is_h2v: BoolProperty(
+        name ="Is H2V",
+        description = "Generates a bitmap for H2V if set. If not set then it's for MCC",
+        default = False,
+    )
+
 class Halo_LightmapBakingPanel(Panel):
     bl_label = "Halo Lightmap Baking"
     bl_idname = "HALO_PT_LightmapBaking"
@@ -1779,6 +1785,9 @@ class Halo_LightmapBakingPanel(Panel):
         row.label(text='Image Multiplier:')
         row.prop(scene_halo_tag, "image_multiplier", text='')
         row = col.row()
+        row.label(text='Is H2V:')
+        row.prop(scene_halo_tag, "is_h2v", text='')
+        row = col.row()
         row.operator(LightmapBaking.bl_idname, text='Bake Lightmaps')
 
 class LightmapBaking(Operator):
@@ -1792,7 +1801,7 @@ class LightmapBaking(Operator):
         scene_halo = context.scene.halo
         scene_halo_tag = context.scene.halo_tag
 
-        return global_functions.run_code("lightmap_baking.bake_clusters(context, scene_halo.game_title, scene_halo_tag.scenario_path, scene_halo_tag.image_multiplier, self.report)")
+        return global_functions.run_code("lightmap_baking.bake_clusters(context, scene_halo.game_title, scene_halo_tag.scenario_path, scene_halo_tag.image_multiplier, self.report, scene_halo_tag.is_h2v)")
 
 classeshalo = (
     Halo_MaterialPropertiesGroup,

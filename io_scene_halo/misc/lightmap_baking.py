@@ -55,7 +55,7 @@ except ModuleNotFoundError:
     print("PIL not found. Unable to create image node.")
     Image = None
 
-def bake_clusters(context, game_title, scenario_path, image_multiplier, report):
+def bake_clusters(context, game_title, scenario_path, image_multiplier, report, H2V=False):
     bpy.ops.object.select_all(action='DESELECT')
     if game_title == "halo1" and Image:
         input_stream = open(scenario_path, "rb")
@@ -332,12 +332,16 @@ def bake_clusters(context, game_title, scenario_path, image_multiplier, report):
 
                 bitmap_count = len(BITMAP.bitmaps)
                 BITMAP.sequence_header = TAG.TagBlockHeader("tbfd", 0, 0, 64)
-                BITMAP.bitmap_header = TAG.TagBlockHeader("tbfd", 2, bitmap_count, 140)
+                if H2V:
+                    BITMAP.bitmap_header = TAG.TagBlockHeader("tbfd", 1, bitmap_count, 116)
+                else:
+                    BITMAP.bitmap_header = TAG.TagBlockHeader("tbfd", 2, bitmap_count, 140)
+
                 BITMAP.bitmap_body.sequences_tag_block = TAG.TagBlock()
                 BITMAP.bitmap_body.bitmaps_tag_block = TAG.TagBlock(bitmap_count)
 
                 output_stream = open(bitmap_path, 'wb')
-                build_h2_bitmap(output_stream, BITMAP, report)
+                build_h2_bitmap(output_stream, BITMAP, report, H2V)
                 output_stream.close()
 
     return {'FINISHED'}

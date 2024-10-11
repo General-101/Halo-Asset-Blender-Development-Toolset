@@ -77,7 +77,25 @@ def write_sequences(output_stream, BITMAP, TAG):
                     output_stream.write(struct.pack('<f', sprite.bottom))
                     output_stream.write(struct.pack('<ff', sprite.registration_point[0], sprite.registration_point[1]))
 
-def write_bitmaps(output_stream, BITMAP, TAG):
+def write_bitmaps_1(output_stream, BITMAP, TAG):
+    if len(BITMAP.bitmaps) > 0:
+        BITMAP.bitmap_header.write(output_stream, TAG, True)
+        for bitmap in BITMAP.bitmaps:
+            output_stream.write(struct.pack('<4s', tag_format.string_to_bytes(bitmap.signature, True)))
+            output_stream.write(struct.pack('<h', bitmap.width))
+            output_stream.write(struct.pack('<h', bitmap.height))
+            output_stream.write(struct.pack('<b', bitmap.depth))
+            output_stream.write(struct.pack('<b', bitmap.more_flags))
+            output_stream.write(struct.pack('<h', bitmap.bitmap_type))
+            output_stream.write(struct.pack('<h', bitmap.bitmap_format))
+            output_stream.write(struct.pack('<h', bitmap.flags))
+            output_stream.write(struct.pack('<hh', bitmap.registration_point[0], bitmap.registration_point[1]))
+            output_stream.write(struct.pack('<h', bitmap.mipmap_count))
+            output_stream.write(struct.pack('<2x'))
+            output_stream.write(struct.pack('<i', bitmap.pixels_offset))
+            output_stream.write(struct.pack('<88x'))
+
+def write_bitmaps_2(output_stream, BITMAP, TAG):
     if len(BITMAP.bitmaps) > 0:
         BITMAP.bitmap_header.write(output_stream, TAG, True)
         for bitmap in BITMAP.bitmaps:
@@ -109,7 +127,7 @@ def write_bitmaps(output_stream, BITMAP, TAG):
                     output_stream.write(struct.pack('<i', native_mipmap_info.pitch_row))
                     output_stream.write(struct.pack('<i', native_mipmap_info.pitch_slice))
 
-def build_asset(output_stream, BITMAP, report):
+def build_asset(output_stream, BITMAP, report, H2V=False):
     TAG = tag_format.TagAsset()
     TAG.big_endian = False
 
@@ -120,4 +138,7 @@ def build_asset(output_stream, BITMAP, report):
     output_stream.write(BITMAP.bitmap_body.processed_pixels)
 
     write_sequences(output_stream, BITMAP, TAG)
-    write_bitmaps(output_stream, BITMAP, TAG)
+    if H2V:
+        write_bitmaps_1(output_stream, BITMAP, TAG)
+    else:
+        write_bitmaps_2(output_stream, BITMAP, TAG)
