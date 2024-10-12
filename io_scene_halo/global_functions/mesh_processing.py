@@ -590,6 +590,10 @@ def generate_mesh_object_retail(asset, object_vertices, object_triangles, object
 
     region_attribute = mesh.get_custom_attribute()
     mesh.normals_split_custom_set_from_vertices(vertex_normals)
+    try:
+        mesh.use_auto_smooth = True
+    except:
+        print()
     for vertex_idx, vertex in enumerate(object_vertices):
         for node_values in vertex.node_set:
             node_index = node_values[0]

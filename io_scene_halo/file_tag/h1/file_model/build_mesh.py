@@ -217,6 +217,11 @@ def build_mesh_layout(asset, geometry, region_name, object_name, game_version, i
         object_mesh.vertex_groups[idx[0]].add([idx[1]], idx[2], 'ADD')
 
     bpy.context.collection.objects.link(object_mesh)
+    try:
+        object_mesh.data.use_auto_smooth = True
+    except:
+        print()
+
 
 def build_object(context, collection, geometry, armature, LOD, region_name, permutation_name, game_version, import_file, is_triangle_list, random_color_gen, materials):
     if region_name == "__unnamed":

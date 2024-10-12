@@ -343,6 +343,11 @@ def build_scene(context, filepath, report):
             instance.ass_jms.name_override = instance_name_override
             instance.ass_jms.unique_id = str(instance_element.unique_id)
 
+            try:
+                instance.data.use_auto_smooth = True
+            except:
+                print()
+
             if not object_setings == None:
                 vertex_weights_sets = object_setings[0]
                 regions = object_setings[1]

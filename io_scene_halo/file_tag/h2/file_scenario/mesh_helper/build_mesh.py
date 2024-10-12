@@ -195,6 +195,11 @@ def get_object(collection, import_file, game_version, object_name, random_color_
     full_mesh = bpy.data.meshes.new(object_name)
     object_mesh = bpy.data.objects.new(object_name, full_mesh)
     collection.objects.link(object_mesh)
+    try:
+        object_mesh.data.use_auto_smooth = True
+    except:
+        print()
+
     for region in import_file.regions:
         region_name = "unnamed"
         if not region_name == "__unnamed":

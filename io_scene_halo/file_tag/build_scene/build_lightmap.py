@@ -181,6 +181,11 @@ def build_clusters(lightmap_group, SBSP_ASSET, level_root, random_color_gen, col
                 collection.objects.link(object_mesh)
                 object_mesh.parent = level_root
 
+                try:
+                    object_mesh.data.use_auto_smooth = True
+                except:
+                    print()
+
 def build_poops(lightmap_group, SBSP_ASSET, level_root, random_color_gen, collection, shader_collection_dic):
     lightmap_instance_count = len(lightmap_group.poop_definitions)
     if lightmap_instance_count > 0:
@@ -215,6 +220,11 @@ def build_poops(lightmap_group, SBSP_ASSET, level_root, random_color_gen, collec
                     matrix_translation = Matrix.Translation(instanced_geometry_instance.position)
                     transform_matrix = (matrix_translation @ matrix_rotation @ matrix_scale)
                     object_mesh.matrix_world = transform_matrix
+
+                    try:
+                        object_mesh.data.use_auto_smooth = True
+                    except:
+                        print()
 
 def build_scene(context, LTMP_ASSET, game_version, game_title, file_version, fix_rotations, empty_markers, report, collection_override=None, cluster_collection_override=None, SBSP_ASSET=None):
     random_color_gen = global_functions.RandomColorGenerator() # generates a random sequence of colors

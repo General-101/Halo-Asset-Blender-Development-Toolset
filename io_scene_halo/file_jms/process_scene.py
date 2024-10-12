@@ -207,6 +207,10 @@ def process_scene(context, version, game_version, generate_checksum, fix_rotatio
         for idx, geometry in enumerate(geometry_list):
             evaluted_mesh = geometry[0]
             original_geo = geometry[1]
+            try: 
+                evaluted_mesh.calc_normals_split()
+            except:
+                print()
             vertex_groups = original_geo.vertex_groups.keys()
             original_geo_matrix = global_functions.get_matrix(original_geo, original_geo, False, blend_scene.armature, joined_list, False, version, "JMS", False, custom_scale, fix_rotations)
             region_count = len(original_geo.region_list)

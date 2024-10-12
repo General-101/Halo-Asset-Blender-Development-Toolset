@@ -265,6 +265,12 @@ def build_scene(context, LEVEL, game_version, game_title, file_version, fix_rota
 
                     object_mesh.parent = level_root
                     cluster_collection_override.objects.link(object_mesh)
+                    
+                    try:
+                        object_mesh.data.use_auto_smooth = True
+                    except:
+                        print()
+                    
                     bm = bmesh.new()
 
                     for material_idx, material in enumerate(lightmap.materials):
@@ -564,6 +570,11 @@ def build_scene(context, LEVEL, game_version, game_title, file_version, fix_rota
 
                 cluster_collection_override.objects.link(object_mesh)
 
+                try:
+                    object_mesh.data.use_auto_smooth = True
+                except:
+                    print()
+
         if len(LEVEL.instanced_geometry_instances) > 0:
             meshes = []
             for instanced_geometry_definition_idx, instanced_geometry_definition in enumerate(LEVEL.instanced_geometry_definition):
@@ -593,6 +604,11 @@ def build_scene(context, LEVEL, game_version, game_title, file_version, fix_rota
                 matrix_translation = Matrix.Translation(instanced_geometry_instance.position)
                 transform_matrix = (matrix_translation @ matrix_rotation @ matrix_scale)
                 object_mesh.matrix_world = transform_matrix
+
+                try:
+                    object_mesh.data.use_auto_smooth = True
+                except:
+                    print()
 
         if len(LEVEL.cluster_portals) > 0:
             portal_bm = bmesh.new()
