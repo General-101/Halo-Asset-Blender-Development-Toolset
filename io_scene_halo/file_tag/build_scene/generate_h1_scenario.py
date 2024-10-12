@@ -34,6 +34,7 @@ from math import radians
 from mathutils import Euler, Matrix
 from . import build_bsp as build_scene_level
 from ...global_functions import global_functions
+from ...global_functions.parse_tags import parse_tag
 from ..h1.file_scenario.mesh_helper.build_mesh import get_object
 from ..h1.file_scenario.format import DataTypesEnum, ObjectFlags, UnitFlags, VehicleFlags
 
@@ -44,7 +45,7 @@ def generate_skies(context, level_root, tag_block, report):
         context.scene.collection.children.link(asset_collection)
 
     for element_idx, element in enumerate(tag_block):
-        ASSET = element.parse_tag(report, "halo1", "retail")
+        ASSET = parse_tag(element, report, "halo1", "retail")
         if not ASSET == None:
             for light_idx, light in enumerate(ASSET.lights):
                 tag_name = os.path.basename(element.name)
@@ -203,42 +204,42 @@ def generate_object_elements(level_root, collection_name, palette, tag_block, co
     for palette_idx, palette_element in enumerate(palette):
         ob = None
         object_name = "temp_%s_%s" % (os.path.basename(palette_element.name), palette_idx)
-        ASSET = palette_element.parse_tag(report, "halo1", "retail")
+        ASSET = parse_tag(palette_element, report, "halo1", "retail")
         if not ASSET == None:
             if collection_name == "Scenery":
-                MODEL = ASSET.scenery_body.model.parse_tag(report, "halo1", "retail")
+                MODEL = parse_tag(ASSET.scenery_body.model, report, "halo1", "retail")
                 if not MODEL == None:
                     ob = get_object(asset_collection, MODEL, game_version, object_name, random_color_gen, report)
             elif collection_name == "Biped":
-                MODEL = ASSET.biped_body.model.parse_tag(report, "halo1", "retail")
+                MODEL = parse_tag(ASSET.biped_body.model, report, "halo1", "retail")
                 if not MODEL == None:
                     ob = get_object(asset_collection, MODEL, game_version, object_name, random_color_gen, report)
             elif collection_name == "Vehicle":
-                MODEL = ASSET.vehicle_body.model.parse_tag(report, "halo1", "retail")
+                MODEL = parse_tag(ASSET.vehicle_body.model, report, "halo1", "retail")
                 if not MODEL == None:
                     ob = get_object(asset_collection, MODEL, game_version, object_name, random_color_gen, report)
             elif collection_name == "Equipment":
-                MODEL = ASSET.equipment_body.model.parse_tag(report, "halo1", "retail")
+                MODEL = parse_tag(ASSET.equipment_body.model, report, "halo1", "retail")
                 if not MODEL == None:
                     ob = get_object(asset_collection, MODEL, game_version, object_name, random_color_gen, report)
             elif collection_name == "Weapons":
-                MODEL = ASSET.model.parse_tag(report, "halo1", "retail")
+                MODEL = parse_tag(ASSET.model, report, "halo1", "retail")
                 if not MODEL == None:
                     ob = get_object(asset_collection, MODEL, game_version, object_name, random_color_gen, report)
             elif collection_name == "Machines":
-                MODEL = ASSET.machine_body.model.parse_tag(report, "halo1", "retail")
+                MODEL = parse_tag(ASSET.machine_body.model, report, "halo1", "retail")
                 if not MODEL == None:
                     ob = get_object(asset_collection, MODEL, game_version, object_name, random_color_gen, report)
             elif collection_name == "Controls":
-                MODEL = ASSET.control_body.model.parse_tag(report, "halo1", "retail")
+                MODEL = parse_tag(ASSET.control_body.model, report, "halo1", "retail")
                 if not MODEL == None:
                     ob = get_object(asset_collection, MODEL, game_version, object_name, random_color_gen, report)
             elif collection_name == "Light Fixtures":
-                MODEL = ASSET.light_fixture.model.parse_tag(report, "halo1", "retail")
+                MODEL = parse_tag(ASSET.light_fixture.model, report, "halo1", "retail")
                 if not MODEL == None:
                     ob = get_object(asset_collection, MODEL, game_version, object_name, random_color_gen, report)
             elif collection_name == "Sound Scenery":
-                MODEL = ASSET.sound_scenery_body.model.parse_tag(report, "halo1", "retail")
+                MODEL = parse_tag(ASSET.sound_scenery_body.model, report, "halo1", "retail")
                 if not MODEL == None:
                     ob = get_object(asset_collection, MODEL, game_version, object_name, random_color_gen, report)
 
@@ -293,17 +294,17 @@ def generate_netgame_equipment_elements(level_root, tag_block, context, game_ver
     for element_idx, element in enumerate(tag_block):
         ob = None
         object_name = "%s_%s" % (os.path.basename(element.item_collection.name), element_idx)
-        ASSET = element.item_collection.parse_tag(report, "halo1", "retail")
+        ASSET = parse_tag(element.item_collection, report, "halo1", "retail")
         if not ASSET == None:
             if len(ASSET.item_permutations) > 0:
                 item_perutation_element = ASSET.item_permutations[0]
-                ITEM = item_perutation_element.item.parse_tag(report, "halo1", "retail")
+                ITEM = parse_tag(item_perutation_element.item, report, "halo1", "retail")
                 if item_perutation_element.item.tag_group == "eqip":
-                    MODEL = ITEM.equipment_body.model.parse_tag(report, "halo1", "retail")
+                    MODEL = parse_tag(ITEM.equipment_body.model, report, "halo1", "retail")
                     if not MODEL == None:
                         ob = get_object(asset_collection, MODEL, game_version, object_name, random_color_gen, report)
                 elif item_perutation_element.item.tag_group == "weap":
-                    MODEL = ITEM.model.parse_tag(report, "halo1", "retail")
+                    MODEL = parse_tag(ITEM.model, report, "halo1", "retail")
                     if not MODEL == None:
                         ob = get_object(asset_collection, MODEL, game_version, object_name, random_color_gen, report)
 
@@ -424,7 +425,7 @@ def generate_scenario_scene(context, H1_ASSET, game_version, game_title, file_ve
         context.scene.collection.children.link(levels_collection)
 
     for bsp_idx, bsp in enumerate(H1_ASSET.structure_bsps):
-        ASSET = bsp.parse_tag(report, "halo1", "retail")
+        ASSET = parse_tag(bsp, report, "halo1", "retail")
         if not ASSET == None:
             level_collection = bpy.data.collections.get("%s_%s" % (os.path.basename(bsp.name), bsp_idx))
             if level_collection == None:

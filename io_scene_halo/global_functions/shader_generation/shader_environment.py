@@ -28,6 +28,7 @@ import bpy
 
 from ... import config
 from mathutils import Vector
+from ...global_functions.parse_tags import parse_tag
 from ...file_tag.h1.file_shader_environment.format import EnvironmentTypeEnum, EnvironmentFlags, DiffuseFlags, ReflectionFlags, FunctionEnum
 from .shader_helper import (
     get_bitmap, 
@@ -230,14 +231,14 @@ def generate_shader_environment(mat, shader, permutation_index, report):
     illum_map, illum_map_name = get_bitmap(shader.shader_body.map, texture_root)
     reflection_map, reflection_map_name = get_bitmap(shader.shader_body.reflection_cube_map, texture_root)
 
-    base_bitmap = shader.shader_body.base_map.parse_tag(report, "halo1", "retail")
-    primary_detail_bitmap = shader.shader_body.primary_detail_map.parse_tag(report, "halo1", "retail")
-    secondary_detail_bitmap = shader.shader_body.secondary_detail_map.parse_tag(report, "halo1", "retail")
-    micro_detail_bitmap = shader.shader_body.micro_detail_map.parse_tag(report, "halo1", "retail")
-    base_bitmap = shader.shader_body.base_map.parse_tag(report, "halo1", "retail")
-    bump_bitmap = shader.shader_body.bump_map.parse_tag(report, "halo1", "retail")
-    illum_bitmap = shader.shader_body.map.parse_tag(report, "halo1", "retail")
-    reflection_bitmap = shader.shader_body.reflection_cube_map.parse_tag(report, "halo1", "retail")
+    base_bitmap = parse_tag(shader.shader_body.base_map, report, "halo1", "retail")
+    primary_detail_bitmap = parse_tag(shader.shader_body.primary_detail_map, report, "halo1", "retail")
+    secondary_detail_bitmap = parse_tag(shader.shader_body.secondary_detail_map, report, "halo1", "retail")
+    micro_detail_bitmap = parse_tag(shader.shader_body.micro_detail_map, report, "halo1", "retail")
+    base_bitmap = parse_tag(shader.shader_body.base_map, report, "halo1", "retail")
+    bump_bitmap = parse_tag(shader.shader_body.bump_map, report, "halo1", "retail")
+    illum_bitmap = parse_tag(shader.shader_body.map, report, "halo1", "retail")
+    reflection_bitmap = parse_tag(shader.shader_body.reflection_cube_map, report, "halo1", "retail")
 
     rescale_detail = DiffuseFlags.rescale_detail_maps in DiffuseFlags(shader.shader_body.diffuse_flags)
     rescale_bump_maps = DiffuseFlags.rescale_bump_maps in DiffuseFlags(shader.shader_body.diffuse_flags)

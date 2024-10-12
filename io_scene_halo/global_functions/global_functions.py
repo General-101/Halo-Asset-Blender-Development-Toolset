@@ -34,8 +34,9 @@ import operator
 
 from decimal import *
 from math import radians
-from io import TextIOWrapper
 from enum import Enum, auto
+from io import TextIOWrapper
+from ..global_functions.parse_tags import parse_tag
 from mathutils import Vector, Euler, Quaternion, Matrix
 
 class ModelTypeEnum(Enum):
@@ -1359,7 +1360,7 @@ def get_transform(import_version, export_version, node, frame, node_list, transf
 def build_bounds_list(SCNR_ASSET, bsp_bounds_list):
     for structure_bsp_element in SCNR_ASSET.structure_bsps:
         bsp_bounds = []
-        BSP_ASSET = structure_bsp_element.structure_bsp.parse_tag(print, "halo2", "retail")
+        BSP_ASSET = parse_tag(structure_bsp_element.structure_bsp, print, "halo2", "retail")
         if BSP_ASSET:
             bsp_bounds.append(BSP_ASSET.level_body.world_bounds_x)
             bsp_bounds.append(BSP_ASSET.level_body.world_bounds_y)

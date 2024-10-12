@@ -148,7 +148,7 @@ def read_bitmaps(BITMAP, TAG, input_stream, tag_node, XML_OUTPUT):
                 bitmap.flags = TAG.read_flag_unsigned_short(input_stream, TAG, tag_format.XMLData(bitmap_element_node, "flags", BitmapFlags))
                 bitmap.registration_point = TAG.read_point_2d_short(input_stream, TAG, tag_format.XMLData(bitmap_element_node, "registration point"))
                 bitmap.mipmap_count = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(bitmap_element_node, "mipmap count"))
-                input_stream.read(2) # Padding
+                bitmap.low_detail_mipmap_count = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(bitmap_element_node, "low detail mipmap count"))
                 bitmap.pixels_offset = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(bitmap_element_node, "pixels offset"))
                 input_stream.read(88) # Padding
                 bitmap.native_mipmap_info_tag_block = TAG.TagBlock()

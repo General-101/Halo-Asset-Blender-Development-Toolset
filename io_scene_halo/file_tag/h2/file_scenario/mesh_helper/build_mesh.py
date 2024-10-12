@@ -199,7 +199,7 @@ def get_object(collection, import_file, game_version, object_name, random_color_
         object_mesh.data.use_auto_smooth = True
     except:
         print()
-
+    
     for region in import_file.regions:
         region_name = "unnamed"
         if not region_name == "__unnamed":

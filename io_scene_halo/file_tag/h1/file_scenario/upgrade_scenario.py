@@ -32,6 +32,7 @@ import random
 
 from .... import config
 from math import radians
+from ....global_functions.parse_tags import parse_tag
 from ....global_functions import tag_format, global_functions
 from ....file_tag.h2.file_scenario.process_file import process_file as process_h2_scenario
 from .format import (
@@ -1012,7 +1013,7 @@ def generate_h2_squads(H1_ASSET, TAG, SCENARIO, report):
         character_tag_paths.append(weapon_tag_path)
 
     for actor in actors_palette_tag_block:
-        actor_tag = actor.parse_tag(report, "halo1", "retail")
+        actor_tag = parse_tag(actor, report, "halo1", "retail")
         if not actor_tag == None:
             actor_weapon_tag = actor_tag.actor_variant_body.weapon
             actor_weapon_name = actor_weapon_tag.name
@@ -2075,7 +2076,7 @@ def merge_encounters(base_encounters, donor_encounters, base_palette, donor_pale
 
 def merge_child_scenarios(TAG, SCENARIO, report):
     for child_scenario_element in SCENARIO.child_scenarios:
-        CHILD = child_scenario_element.parse_tag(report, "halo1", "retail")
+        CHILD = parse_tag(child_scenario_element, report, "halo1", "retail")
 
         merge_by_name(SCENARIO.skies, CHILD.skies)
         merge_by_name(SCENARIO.object_names, CHILD.object_names, 2)

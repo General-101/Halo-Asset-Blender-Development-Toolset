@@ -27,6 +27,7 @@
 import os
 import copy
 
+from ....global_functions.parse_tags import parse_tag
 from ....global_functions import tag_format, shader_processing
 from .format import (
         ShaderAsset as H1ShaderAsset,
@@ -63,10 +64,10 @@ def generate_base_map_parameters(H1_ASSET, TAG, SHADER, template, permutation_in
     return TAG.TagBlock(parameter_count)
 
 def generate_detail_map_parameters(H1_ASSET, TAG, SHADER, template, permutation_index):
-    base_bitmap = H1_ASSET.shader_body.base_map.parse_tag(print, "halo1", "retail")
-    primary_detail_bitmap = H1_ASSET.shader_body.primary_detail_map.parse_tag(print, "halo1", "retail")
-    secondary_detail_bitmap = H1_ASSET.shader_body.secondary_detail_map.parse_tag(print, "halo1", "retail")
-    micro_detail_bitmap = H1_ASSET.shader_body.micro_detail_map.parse_tag(print, "halo1", "retail")
+    base_bitmap = parse_tag(H1_ASSET.shader_body.base_map, print, "halo1", "retail")
+    primary_detail_bitmap = parse_tag(H1_ASSET.shader_body.primary_detail_map, print, "halo1", "retail")
+    secondary_detail_bitmap = parse_tag(H1_ASSET.shader_body.secondary_detail_map, print, "halo1", "retail")
+    micro_detail_bitmap = parse_tag(H1_ASSET.shader_body.micro_detail_map, print, "halo1", "retail")
 
     base_bitmap_count = 0
     primary_detail_bitmap_count = 0
@@ -186,8 +187,8 @@ def generate_detail_map_parameters(H1_ASSET, TAG, SHADER, template, permutation_
         SHADER.parameters.append(parameter)
 
 def generate_bump_parameters(H1_ASSET, TAG, SHADER, template, permutation_index):
-    base_bitmap = H1_ASSET.shader_body.base_map.parse_tag(print, "halo1", "retail")
-    bump_bitmap = H1_ASSET.shader_body.bump_map.parse_tag(print, "halo1", "retail")
+    base_bitmap = parse_tag(H1_ASSET.shader_body.base_map, print, "halo1", "retail")
+    bump_bitmap = parse_tag(H1_ASSET.shader_body.bump_map, print, "halo1", "retail")
 
     base_bitmap_count = 0
     bump_bitmap_count = 0

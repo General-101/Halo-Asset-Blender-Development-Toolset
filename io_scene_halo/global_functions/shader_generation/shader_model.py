@@ -28,8 +28,9 @@ import bpy
 
 from ... import config
 from mathutils import Vector
-from ...file_tag.h1.file_shader_model.format import ModelFlags, DetailFumctionEnum, DetailMaskEnum, FunctionEnum
+from ...global_functions.parse_tags import parse_tag
 from ...file_tag.h1.file_bitmap.format import FormatEnum
+from ...file_tag.h1.file_shader_model.format import ModelFlags, DetailFumctionEnum, DetailMaskEnum, FunctionEnum
 from .shader_helper import (
     get_bitmap, 
     get_output_material_node, 
@@ -201,10 +202,10 @@ def generate_shader_model(mat, shader, report):
     detail_map, detail_map_name = get_bitmap(shader.shader_body.detail_map, texture_root)
     reflection_map, reflection_map_name = get_bitmap(shader.shader_body.reflection_cube_map, texture_root)
 
-    base_bitmap = shader.shader_body.base_map.parse_tag(report, "halo1", "retail")
-    multipurpose_bitmap = shader.shader_body.multipurpose_map.parse_tag(report, "halo1", "retail")
-    detail_bitmap = shader.shader_body.detail_map.parse_tag(report, "halo1", "retail")
-    reflection_bitmap = shader.shader_body.reflection_cube_map.parse_tag(report, "halo1", "retail")
+    base_bitmap = parse_tag(shader.shader_body.base_map, report, "halo1", "retail")
+    multipurpose_bitmap = parse_tag(shader.shader_body.multipurpose_map, report, "halo1", "retail")
+    detail_bitmap = parse_tag(shader.shader_body.detail_map, report, "halo1", "retail")
+    reflection_bitmap = parse_tag(shader.shader_body.reflection_cube_map, report, "halo1", "retail")
 
     for node in mat.node_tree.nodes:
         mat.node_tree.nodes.remove(node)

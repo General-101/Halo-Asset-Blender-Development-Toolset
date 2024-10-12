@@ -91,7 +91,7 @@ def write_bitmaps_1(output_stream, BITMAP, TAG):
             output_stream.write(struct.pack('<h', bitmap.flags))
             output_stream.write(struct.pack('<hh', bitmap.registration_point[0], bitmap.registration_point[1]))
             output_stream.write(struct.pack('<h', bitmap.mipmap_count))
-            output_stream.write(struct.pack('<2x'))
+            output_stream.write(struct.pack('<h', bitmap.low_detail_mipmap_count))
             output_stream.write(struct.pack('<i', bitmap.pixels_offset))
             output_stream.write(struct.pack('<88x'))
 

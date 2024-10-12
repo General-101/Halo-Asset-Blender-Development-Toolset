@@ -49,8 +49,9 @@ from ..file_tag.h2.file_shader.format import (
         TransitionExponentEnum,
         PeriodicExponentEnum,
         )
+from ..global_functions.parse_tags import parse_tag
+from . import tag_format, bitmap_processing, global_functions
 from ..file_tag.h2.file_particle.format import OutputModifierInputEnum
-from . import tag_format
 from .shader_generation.shader_helper import (
     get_bitmap, 
     get_linked_node, 
@@ -78,7 +79,7 @@ def generate_shader_environment_simple(mat, shader, permutation_index, report):
 
     texture_root = config.HALO_1_DATA_PATH
     base_map, base_bitmap_name = get_bitmap(shader.shader_body.base_map, texture_root)
-    base_bitmap = shader.shader_body.base_map.parse_tag(report, "halo1", "retail")
+    base_bitmap = parse_tag(shader.shader_body.base_map, report, "halo1", "retail")
 
     output_material_node = get_output_material_node(mat)
     output_material_node.location = Vector((0.0, 0.0))
@@ -109,7 +110,7 @@ def generate_shader_model_simple(mat, shader, report):
 
     texture_root = config.HALO_1_DATA_PATH
     base_map, base_map_name = get_bitmap(shader.shader_body.base_map, texture_root)
-    base_bitmap = shader.shader_body.base_map.parse_tag(report, "halo1", "retail")
+    base_bitmap = parse_tag(shader.shader_body.base_map, report, "halo1", "retail")
 
     output_material_node = get_output_material_node(mat)
     output_material_node.location = Vector((0.0, 0.0))
@@ -151,7 +152,7 @@ def generate_shader_transparent_chicago_simple(mat, shader, report):
     first_map_name = "White"
     if len(shader.maps) > 0:
         first_map, first_map_name = get_bitmap(shader.maps[0].map, texture_root)
-        first_map_bitmap = shader.maps[0].map.parse_tag(report, "halo1", "retail")
+        first_map_bitmap = parse_tag(shader.maps[0].map, report, "halo1", "retail")
 
     output_material_node = get_output_material_node(mat)
     output_material_node.location = Vector((0.0, 0.0))
@@ -175,7 +176,7 @@ def generate_shader_transparent_chicago_extended_simple(mat, shader, report):
     first_map_name = "White"
     if len(shader._4_stage_maps) > 0:
         first_map, first_map_name = get_bitmap(shader._4_stage_maps[0].map, texture_root)
-        first_map_bitmap = shader._4_stage_maps[0].map.parse_tag(report, "halo1", "retail")
+        first_map_bitmap = parse_tag(shader._4_stage_maps[0].map, report, "halo1", "retail")
 
     output_material_node = get_output_material_node(mat)
     output_material_node.location = Vector((0.0, 0.0))
@@ -199,7 +200,7 @@ def generate_shader_transparent_generic_simple(mat, shader, report):
     first_map_name = "White"
     if len(shader.maps) > 0:
         first_map, first_map_name = get_bitmap(shader.maps[0].map, texture_root)
-        first_map_bitmap = shader.maps[0].map.parse_tag(report, "halo1", "retail")
+        first_map_bitmap = parse_tag(shader.maps[0].map, report, "halo1", "retail")
 
     output_material_node = get_output_material_node(mat)
     output_material_node.location = Vector((0.0, 0.0))
@@ -219,7 +220,7 @@ def generate_shader_transparent_glass_simple(mat, shader, report):
 
     texture_root = config.HALO_1_DATA_PATH
     diffuse_map, diffuse_map_name = get_bitmap(shader.shader_body.diffuse_map, texture_root)
-    diffuse_bitmap = shader.shader_body.diffuse_map.parse_tag(report, "halo1", "retail")
+    diffuse_bitmap = parse_tag(shader.shader_body.diffuse_map, report, "halo1", "retail")
 
     output_material_node = get_output_material_node(mat)
     output_material_node.location = Vector((0.0, 0.0))
@@ -241,7 +242,7 @@ def generate_shader_transparent_meter_simple(mat, shader, report):
 
     texture_root = config.HALO_1_DATA_PATH
     meter_map, meter_map_name = get_bitmap(shader.shader_body.meter_map, texture_root)
-    meter_bitmap = shader.shader_body.meter_map.parse_tag(report, "halo1", "retail")
+    meter_bitmap = parse_tag(shader.shader_body.meter_map, report, "halo1", "retail")
 
     output_material_node = get_output_material_node(mat)
     output_material_node.location = Vector((0.0, 0.0))
@@ -263,7 +264,7 @@ def generate_shader_transparent_plasma_simple(mat, shader, report):
 
     texture_root = config.HALO_1_DATA_PATH
     primary_noise_map, primary_noise_map_name = get_bitmap(shader.shader_body.primary_noise_map, texture_root)
-    primary_noise_bitmap = shader.shader_body.primary_noise_map.parse_tag(report, "halo1", "retail")
+    primary_noise_bitmap = parse_tag(shader.shader_body.primary_noise_map, report, "halo1", "retail")
 
     output_material_node = get_output_material_node(mat)
     output_material_node.location = Vector((0.0, 0.0))
@@ -283,7 +284,7 @@ def generate_shader_transparent_water_simple(mat, shader, report):
 
     texture_root = config.HALO_1_DATA_PATH
     base_map, base_map_name = get_bitmap(shader.shader_body.base_map, texture_root)
-    base_bitmap = shader.shader_body.base_map.parse_tag(report, "halo1", "retail")
+    base_bitmap = parse_tag(shader.shader_body.base_map, report, "halo1", "retail")
 
     output_material_node = get_output_material_node(mat)
     output_material_node.location = Vector((0.0, 0.0))
@@ -303,7 +304,7 @@ def generate_shader_transparent_meter(mat, shader, report):
 
     texture_root = config.HALO_1_DATA_PATH
     meter_map, meter_map_name = get_bitmap(shader.shader_body.meter_map, texture_root)
-    meter_bitmap = shader.shader_body.meter_map.parse_tag(report, "halo1", "retail")
+    meter_bitmap = parse_tag(shader.shader_body.meter_map, report, "halo1", "retail")
 
     output_material_node = get_output_material_node(mat)
     output_material_node.location = Vector((0.0, 0.0))
@@ -356,13 +357,13 @@ def generate_shader_transparent_glass(mat, shader, report):
     specular_map, specular_map_name = get_bitmap(shader.shader_body.specular_map, texture_root)
     specular_detail_map, specular_detail_map_name = get_bitmap(shader.shader_body.specular_detail_map, texture_root)
 
-    background_tint_bitmap = shader.shader_body.background_tint_map.parse_tag(report, "halo1", "retail")
-    reflection_bitmap = shader.shader_body.reflection_map.parse_tag(report, "halo1", "retail")
-    bump_bitmap = shader.shader_body.bump_map.parse_tag(report, "halo1", "retail")
-    diffuse_bitmap = shader.shader_body.diffuse_map.parse_tag(report, "halo1", "retail")
-    diffuse_detail_bitmap = shader.shader_body.diffuse_detail_map.parse_tag(report, "halo1", "retail")
-    specular_bitmap = shader.shader_body.specular_map.parse_tag(report, "halo1", "retail")
-    specular_detail_bitmap = shader.shader_body.specular_detail_map.parse_tag(report, "halo1", "retail")
+    background_tint_bitmap = parse_tag(shader.shader_body.background_tint_map, report, "halo1", "retail")
+    reflection_bitmap = parse_tag(shader.shader_body.reflection_map, report, "halo1", "retail")
+    bump_bitmap = parse_tag(shader.shader_body.bump_map, report, "halo1", "retail")
+    diffuse_bitmap = parse_tag(shader.shader_body.diffuse_map, report, "halo1", "retail")
+    diffuse_detail_bitmap = parse_tag(shader.shader_body.diffuse_detail_map, report, "halo1", "retail")
+    specular_bitmap = parse_tag(shader.shader_body.specular_map, report, "halo1", "retail")
+    specular_detail_bitmap = parse_tag(shader.shader_body.specular_detail_map, report, "halo1", "retail")
 
     output_material_node = get_output_material_node(mat)
     output_material_node.location = Vector((0.0, 0.0))
@@ -513,7 +514,7 @@ def generate_h1_shader(mat, tag_ref, shader_permutation_index, report):
     # 1 = Simple shader generation. Only the base map is generated
     # 2 = Full Shader generation
     if not config.SHADER_GEN == 0:
-        shader = tag_ref.parse_tag(report, "halo1", "retail")
+        shader = parse_tag(tag_ref, report, "halo1", "retail")
         if not shader == None:
             if shader.header.tag_group == "senv":
                 if config.SHADER_GEN == 1:
@@ -593,7 +594,7 @@ def generate_shader_simple(mat, shader, report):
     base_bitmap = None
     if base_parameter:
         base_map, base_map_name = get_bitmap(base_parameter.bitmap, texture_root)
-        base_bitmap = base_parameter.bitmap.parse_tag(report, "halo2", "retail")
+        base_bitmap = parse_tag(base_parameter.bitmap, report, "halo2", "retail")
 
     output_material_node = get_output_material_node(mat)
     output_material_node.location = Vector((0.0, 0.0))
@@ -617,7 +618,7 @@ def generate_h2_shader(mat, tag_ref, report):
     # 1 = Simple shader generation. Only the base map is generated
     # 2 = Full Shader generation
     if not config.SHADER_GEN == 0:
-        shader = tag_ref.parse_tag(report, "halo2", "retail")
+        shader = parse_tag(tag_ref, report, "halo2", "retail")
         if not shader == None:
             if shader.header.tag_group == "shad":
                 if config.SHADER_GEN == 1:

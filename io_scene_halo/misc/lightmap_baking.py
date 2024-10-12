@@ -30,6 +30,7 @@ import bpy
 from .. import config
 from mathutils import Vector
 from ..global_functions import tag_format
+from ..global_functions.parse_tags import parse_tag
 from ..file_tag.h1.file_bitmap.build_asset import build_asset as build_h1_bitmap
 from ..file_tag.h2.file_bitmap.build_asset import build_asset as build_h2_bitmap
 from ..file_tag.h1.file_bitmap.format import (
@@ -72,8 +73,8 @@ def bake_clusters(context, game_title, scenario_path, image_multiplier, report, 
 
             for bsp_idx, bsp_collection in enumerate(levels_collection.children):
                 bsp_element = SCNR_ASSET.structure_bsps[bsp_idx]
-                BSP_ASSET = bsp_element.parse_tag(report, game_title, "retail")
-                BITMAP_ASSET = BSP_ASSET.level_body.lightmap_bitmaps_tag_ref.parse_tag(report, game_title, "retail")
+                BSP_ASSET = parse_tag(bsp_element, report, game_title, "retail")
+                BITMAP_ASSET = parse_tag(BSP_ASSET.level_body.lightmap_bitmaps_tag_ref, report, game_title, "retail")
 
                 bitmap_path = os.path.join(config.HALO_1_TAG_PATH, "%s.bitmap" %  BSP_ASSET.level_body.lightmap_bitmaps_tag_ref.name)
 
@@ -215,9 +216,9 @@ def bake_clusters(context, game_title, scenario_path, image_multiplier, report, 
             lightmap_name = "%s_lightmaps" % bsp_name
             lightmap_collection = bpy.data.collections.get(lightmap_name)
             if not lightmap_collection == None:
-                BSP_ASSET = bsp_element.structure_bsp.parse_tag(report, game_title, "retail")
-                LTMP_ASSET = bsp_element.structure_lightmap.parse_tag(report, game_title, "retail")
-                BITMAP_ASSET = LTMP_ASSET.lightmap_groups[0].bitmap_group_tag_ref.parse_tag(report, game_title, "retail")
+                BSP_ASSET = parse_tag(bsp_element.structure_bsp, report, game_title, "retail")
+                LTMP_ASSET = parse_tag(bsp_element.structure_lightmap, report, game_title, "retail")
+                BITMAP_ASSET = parse_tag(LTMP_ASSET.lightmap_groups[0].bitmap_group_tag_ref, report, game_title, "retail")
 
                 bitmap_path = os.path.join(config.HALO_2_TAG_PATH, "%s.bitmap" %  LTMP_ASSET.lightmap_groups[0].bitmap_group_tag_ref.name)
 

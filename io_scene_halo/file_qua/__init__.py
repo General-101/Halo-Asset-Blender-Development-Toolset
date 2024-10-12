@@ -34,6 +34,7 @@ from bpy.props import (
         PointerProperty,
         IntProperty
         )
+
 from bpy.types import (
     Panel,
     Operator,

@@ -223,9 +223,9 @@ class BitmapAsset():
             self.registration_point = registration_point
 
     class Bitmap:
-        def __init__(self, signature="", width=0, height=0, depth=0, more_flags=0, bitmap_type=0, bitmap_format=0, flags=0, registration_point=(0, 0), mipmap_count=0,
-                     lod_adjust=0, cache_usage=0, pixels_offset=0, native_mipmap_info_tag_block=None, native_mipmap_info_header=None, native_mipmap_info=None, native_size=0,
-                     tile_mode=0, nbmi_header=None):
+        def __init__(self, signature="", width=0, height=0, depth=0, more_flags=0, bitmap_type=0, bitmap_format=0, flags=0, registration_point=(0, 0), mipmap_count=0, 
+                     low_detail_mipmap_count=0, lod_adjust=0, cache_usage=0, pixels_offset=0, native_mipmap_info_tag_block=None, native_mipmap_info_header=None, 
+                     native_mipmap_info=None, native_size=0,tile_mode=0, nbmi_header=None):
             self.signature = signature
             self.width = width
             self.height = height
@@ -236,6 +236,7 @@ class BitmapAsset():
             self.flags = flags
             self.registration_point = registration_point
             self.mipmap_count = mipmap_count
+            self.low_detail_mipmap_count = low_detail_mipmap_count
             self.lod_adjust = lod_adjust
             self.cache_usage = cache_usage
             self.pixels_offset = pixels_offset
