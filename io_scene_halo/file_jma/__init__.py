@@ -576,8 +576,6 @@ class ImportJMA(Operator, ImportHelper):
     def execute(self, context):
         from ..file_jma import import_jma
 
-        int_game_version = int(self.game_version)
-
         return global_functions.run_code("import_jma.load_file(context, self.filepath, self.game_title, self.fix_parents, self.fix_rotations, self.jms_path_a, self.jms_path_b, self.report)")
 
     if (4, 1, 0) <= bpy.app.version:
