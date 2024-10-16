@@ -166,7 +166,6 @@ if (4, 1, 0) <= bpy.app.version:
 
 classeshalo = [
     ImportTag,
-    ImportJSON,
     ExportSCNR
 ]
 
@@ -177,8 +176,7 @@ def menu_func_export(self, context):
     self.layout.operator(ExportSCNR.bl_idname, text="Halo Scenario (.scenario)")
 
 def menu_func_import(self, context):
-    self.layout.operator(ImportJSON.bl_idname, text="Halo JSON (.JSON)")
-    self.layout.operator(ImportTag.bl_idname, text="Halo Tag (mode/mod2/coll/phys/antr/sbsp/isls)")
+    self.layout.operator(ImportTag.bl_idname, text="Halo Tag (mode/mod2/coll/phys/antr/sbsp)")
 
 def register():
     for clshalo in classeshalo:
