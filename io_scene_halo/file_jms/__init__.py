@@ -868,11 +868,6 @@ class ImportJMS(Operator, ImportHelper):
             options={'SKIP_SAVE', 'HIDDEN'}
             )
 
-    def __init__(self):
-        scene = bpy.context.scene
-        scene_jms = scene.jms
-        self.jma_path = scene_jms.jma_path
-
     def execute(self, context):
         if (4, 1, 0) <= bpy.app.version:
             if not self.directory:
