@@ -50,7 +50,7 @@ from ..file_tag.h2.file_shader.format import (
         PeriodicExponentEnum,
         )
 from ..global_functions.parse_tags import parse_tag
-from . import tag_format, bitmap_processing, global_functions
+from . import tag_format, global_functions
 from ..file_tag.h2.file_particle.format import OutputModifierInputEnum
 from .shader_generation.shader_helper import (
     get_bitmap, 
