@@ -521,105 +521,109 @@ class ExportJMA(Operator, ExportHelper):
             row.enabled = is_enabled
             row.prop(self, "scale_float")
 
-try:
+if (4, 1, 0) <= bpy.app.version:
     from bpy.types import FileHandler
 
-    class ImportJMA(Operator, ImportHelper):
-        """Import a JMA file"""
-        bl_idname = "import_scene.jma"
-        bl_label = "Import JMA"
-        filename_ext = '.JMA'
+class ImportJMA(Operator, ImportHelper):
+    """Import a JMA file"""
+    bl_idname = "import_scene.jma"
+    bl_label = "Import JMA"
+    filename_ext = '.JMA'
 
-        game_title: EnumProperty(
-            name="Game Title:",
-            description="What game was the model file made for",
-            default="auto",
-            items=[ ('auto', "Auto", "Attempt to guess the game this animation was intended for. Will default to Halo CE if this fails."),
-                    ('halo1', "Halo 1", "Import an animation intended for Halo 1"),
-                    ('halo2', "Halo 2", "Import an animation intended for Halo 2"),
-                    ('halo3', "Halo 3", "Import an animation intended for Halo 3"),
-                ]
-            )
+    game_title: EnumProperty(
+        name="Game Title:",
+        description="What game was the model file made for",
+        default="auto",
+        items=[ ('auto', "Auto", "Attempt to guess the game this animation was intended for. Will default to Halo CE if this fails."),
+                ('halo1', "Halo 1", "Import an animation intended for Halo 1"),
+                ('halo2', "Halo 2", "Import an animation intended for Halo 2"),
+                ('halo3', "Halo 3", "Import an animation intended for Halo 3"),
+            ]
+        )
 
-        fix_parents: BoolProperty(
-            name ="Force node parents",
-            description = "Force thigh bones to use pelvis and clavicles to use spine1. Used to match node import behavior used by Halo 2, Halo 3, and Halo 3 ODST",
-            default = True,
-            )
+    fix_parents: BoolProperty(
+        name ="Force node parents",
+        description = "Force thigh bones to use pelvis and clavicles to use spine1. Used to match node import behavior used by Halo 2, Halo 3, and Halo 3 ODST",
+        default = True,
+        )
 
-        fix_rotations: BoolProperty(
-            name ="Fix Rotations",
-            description = "Set rotations to match what you would visually see in 3DS Max. Rotates bones by 90 degrees on a local Z axis to match how Blender handles rotations",
-            default = False,
-            )
+    fix_rotations: BoolProperty(
+        name ="Fix Rotations",
+        description = "Set rotations to match what you would visually see in 3DS Max. Rotates bones by 90 degrees on a local Z axis to match how Blender handles rotations",
+        default = False,
+        )
 
-        jms_path_a: StringProperty(
-            name="Primary JMS",
-            description="Select a path to a JMS containing the primary skeleton. Will be used for rest position",
-            )
+    jms_path_a: StringProperty(
+        name="Primary JMS",
+        description="Select a path to a JMS containing the primary skeleton. Will be used for rest position",
+        )
 
-        jms_path_b: StringProperty(
-            name="Secondary JMS",
-            description="Select a path to a JMS containing the secondary skeleton. Will be used for rest position",
-            )
+    jms_path_b: StringProperty(
+        name="Secondary JMS",
+        description="Select a path to a JMS containing the secondary skeleton. Will be used for rest position",
+        )
 
-        filter_glob: StringProperty(
-            default="*.jma;*.jmm;*.jmt;*.jmo;*.jmr;*.jmrx;*.jmh;*.jmz;*.jmw",
-            options={'HIDDEN'},
-            )
+    filter_glob: StringProperty(
+        default="*.jma;*.jmm;*.jmt;*.jmo;*.jmr;*.jmrx;*.jmh;*.jmz;*.jmw",
+        options={'HIDDEN'},
+        )
 
-        filepath: StringProperty(
-            subtype='FILE_PATH', 
-            options={'SKIP_SAVE'}
-            )
+    filepath: StringProperty(
+        subtype='FILE_PATH', 
+        options={'SKIP_SAVE'}
+        )
 
-        def execute(self, context):
-            from ..file_jma import import_jma
+    def execute(self, context):
+        from ..file_jma import import_jma
 
-            return global_functions.run_code("import_jma.load_file(context, self.filepath, self.game_title, self.fix_parents, self.fix_rotations, self.jms_path_a, self.jms_path_b, self.report)")
+        int_game_version = int(self.game_version)
 
+        return global_functions.run_code("import_jma.load_file(context, self.filepath, self.game_title, self.fix_parents, self.fix_rotations, self.jms_path_a, self.jms_path_b, self.report)")
+
+    if (4, 1, 0) <= bpy.app.version:
         def invoke(self, context, event):
             if self.filepath:
                 return self.execute(context)
             context.window_manager.fileselect_add(self)
             return {'RUNNING_MODAL'}
 
-        def draw(self, context):
-            scene = context.scene
-            scene_jma = scene.jma
-            self.jms_path_a = scene_jma.jms_path_a
-            self.jms_path_b = scene_jma.jms_path_b
-            layout = self.layout
+    def draw(self, context):
+        scene = context.scene
+        scene_jma = scene.jma
+        self.jms_path_a = scene_jma.jms_path_a
+        self.jms_path_b = scene_jma.jms_path_b
+        layout = self.layout
 
+        box = layout.box()
+        box.label(text="Version:")
+        col = box.column(align=True)
+        row = col.row()
+        row.label(text='Game Title:')
+        row.prop(self, "game_title", text='')
+        if not self.game_title == "halo1":
             box = layout.box()
-            box.label(text="Version:")
+            box.label(text="Import Options:")
             col = box.column(align=True)
             row = col.row()
-            row.label(text='Game Title:')
-            row.prop(self, "game_title", text='')
-            if not self.game_title == "halo1":
-                box = layout.box()
-                box.label(text="Import Options:")
-                col = box.column(align=True)
-                row = col.row()
-                row.label(text='Force node parents:')
-                row.prop(self, "fix_parents", text='')
+            row.label(text='Force node parents:')
+            row.prop(self, "fix_parents", text='')
 
+        row = col.row()
+        row.label(text='Fix Rotations:')
+        row.prop(self, "fix_rotations", text='')
+
+        box = layout.box()
+        box.label(text="Import:")
+        col = box.column(align=True)
+        row = col.row()
+        row.label(text='Primary JMS:')
+        row.prop(self, "jms_path_a", text='')
+        if ".jms" in self.jms_path_a.lower():
             row = col.row()
-            row.label(text='Fix Rotations:')
-            row.prop(self, "fix_rotations", text='')
+            row.label(text='Secondary JMS:')
+            row.prop(self, "jms_path_b", text='')
 
-            box = layout.box()
-            box.label(text="Import:")
-            col = box.column(align=True)
-            row = col.row()
-            row.label(text='Primary JMS:')
-            row.prop(self, "jms_path_a", text='')
-            if ".jms" in self.jms_path_a.lower():
-                row = col.row()
-                row.label(text='Secondary JMS:')
-                row.prop(self, "jms_path_b", text='')
-
+if (4, 1, 0) <= bpy.app.version:
     class ImportJMA_FileHandler(FileHandler):
         bl_idname = "JMA_FH_import"
         bl_label = "File handler for JMA import"
@@ -629,99 +633,6 @@ try:
         @classmethod
         def poll_drop(cls, context):
             return (context.area and context.area.type == 'VIEW_3D')
-
-except ImportError:
-    print("Blender is out of date. Drag and drop will not function")
-    FileHandler = None
-    class ImportJMA(Operator, ImportHelper):
-        """Import a JMA file"""
-        bl_idname = "import_scene.jma"
-        bl_label = "Import JMA"
-        filename_ext = '.JMA'
-
-        game_title: EnumProperty(
-            name="Game Title:",
-            description="What game was the model file made for",
-            default="auto",
-            items=[ ('auto', "Auto", "Attempt to guess the game this animation was intended for. Will default to Halo CE if this fails."),
-                    ('halo1', "Halo 1", "Import an animation intended for Halo 1"),
-                    ('halo2', "Halo 2", "Import an animation intended for Halo 2"),
-                    ('halo3', "Halo 3", "Import an animation intended for Halo 3"),
-                ]
-            )
-
-        fix_parents: BoolProperty(
-            name ="Force node parents",
-            description = "Force thigh bones to use pelvis and clavicles to use spine1. Used to match node import behavior used by Halo 2, Halo 3, and Halo 3 ODST",
-            default = True,
-            )
-
-        fix_rotations: BoolProperty(
-            name ="Fix Rotations",
-            description = "Set rotations to match what you would visually see in 3DS Max. Rotates bones by 90 degrees on a local Z axis to match how Blender handles rotations",
-            default = False,
-            )
-
-        jms_path_a: StringProperty(
-            name="Primary JMS",
-            description="Select a path to a JMS containing the primary skeleton. Will be used for rest position",
-            )
-
-        jms_path_b: StringProperty(
-            name="Secondary JMS",
-            description="Select a path to a JMS containing the secondary skeleton. Will be used for rest position",
-            )
-
-        filter_glob: StringProperty(
-            default="*.jma;*.jmm;*.jmt;*.jmo;*.jmr;*.jmrx;*.jmh;*.jmz;*.jmw",
-            options={'HIDDEN'},
-            )
-
-        filepath: StringProperty(
-            subtype='FILE_PATH', 
-            options={'SKIP_SAVE'}
-            )
-
-        def execute(self, context):
-            from ..file_jma import import_jma
-
-            return global_functions.run_code("import_jma.load_file(context, self.filepath, self.game_title, self.fix_parents, self.fix_rotations, self.jms_path_a, self.jms_path_b, self.report)")
-
-        def draw(self, context):
-            scene = context.scene
-            scene_jma = scene.jma
-            self.jms_path_a = scene_jma.jms_path_a
-            self.jms_path_b = scene_jma.jms_path_b
-            layout = self.layout
-
-            box = layout.box()
-            box.label(text="Version:")
-            col = box.column(align=True)
-            row = col.row()
-            row.label(text='Game Title:')
-            row.prop(self, "game_title", text='')
-            if not self.game_title == "halo1":
-                box = layout.box()
-                box.label(text="Import Options:")
-                col = box.column(align=True)
-                row = col.row()
-                row.label(text='Force node parents:')
-                row.prop(self, "fix_parents", text='')
-
-            row = col.row()
-            row.label(text='Fix Rotations:')
-            row.prop(self, "fix_rotations", text='')
-
-            box = layout.box()
-            box.label(text="Import:")
-            col = box.column(align=True)
-            row = col.row()
-            row.label(text='Primary JMS:')
-            row.prop(self, "jms_path_a", text='')
-            if ".jms" in self.jms_path_a.lower():
-                row = col.row()
-                row.label(text='Secondary JMS:')
-                row.prop(self, "jms_path_b", text='')
 
 def menu_func_export(self, context):
     self.layout.operator(ExportJMA.bl_idname, text="Halo Jointed Model Animation (.jma)")
@@ -738,7 +649,7 @@ classeshalo = [
     JMS_RestPositionsBDialog,
 ]
 
-if not FileHandler == None:
+if (4, 1, 0) <= bpy.app.version:
     classeshalo.append(ImportJMA_FileHandler)
 
 def register():

@@ -59,39 +59,40 @@ class ExportSCNR(Operator, ExportHelper):
 
         return global_functions.run_code("export_tag.write_file(context, self.filepath, self.report)")
 
-try:
+if (4, 1, 0) <= bpy.app.version:
     from bpy.types import (
         FileHandler,
         OperatorFileListElement
         )
 
-    class ImportTag(Operator, ImportHelper):
-        """Import a tag for various Halo titles"""
-        bl_idname = "import_scene.tag"
-        bl_label = "Import Tag"
+class ImportTag(Operator, ImportHelper):
+    """Import a tag for various Halo titles"""
+    bl_idname = "import_scene.tag"
+    bl_label = "Import Tag"
 
-        game_title: EnumProperty(
-            name="Game:",
-            description="What game does the tag group belong to",
-            items=[ ('auto', "Auto", "Attempt to get the game title automatically. Defaults to Halo 1 if it fails."),
-                    ('halo1', "Halo 1", "Use tag data from Halo 1"),
-                    ('halo2', "Halo 2", "Use tag data from Halo 2"),
-                    ('halo3', "Halo 3", "Use tag data from Halo 3"),
-                ]
-            )
+    game_title: EnumProperty(
+        name="Game:",
+        description="What game does the tag group belong to",
+        items=[ ('auto', "Auto", "Attempt to get the game title automatically. Defaults to Halo 1 if it fails."),
+                ('halo1', "Halo 1", "Use tag data from Halo 1"),
+                ('halo2', "Halo 2", "Use tag data from Halo 2"),
+                ('halo3', "Halo 3", "Use tag data from Halo 3"),
+            ]
+        )
 
-        fix_rotations: BoolProperty(
-            name ="Fix Rotations",
-            description = "Set rotations to match what you would visually see in 3DS Max. Rotates bones by 90 degrees on a local Z axis to match how Blender handles rotations",
-            default = False,
-            )
+    fix_rotations: BoolProperty(
+        name ="Fix Rotations",
+        description = "Set rotations to match what you would visually see in 3DS Max. Rotates bones by 90 degrees on a local Z axis to match how Blender handles rotations",
+        default = False,
+        )
 
-        empty_markers: BoolProperty(
-            name ="Generate Empty Markers",
-            description = "Generate empty markers instead of UV spheres",
-            default = True,
-            )
+    empty_markers: BoolProperty(
+        name ="Generate Empty Markers",
+        description = "Generate empty markers instead of UV spheres",
+        default = True,
+        )
 
+    if (4, 1, 0) <= bpy.app.version:
         directory: StringProperty(
             subtype='FILE_PATH', 
             options={'SKIP_SAVE'}
@@ -102,46 +103,57 @@ try:
             options={'SKIP_SAVE'}
             )
 
-        def execute(self, context):
-            from ..file_tag import import_tag
+    def execute(self, context):
 
+        if (4, 1, 0) <= bpy.app.version:
             if not self.directory:
                 return {'CANCELLED'}
             
             for file in self.files:
                 filepath = os.path.join(self.directory, file.name)
-                print(filepath)
-                global_functions.run_code("import_tag.load_file(context, filepath, self.game_title, self.fix_rotations, self.empty_markers, self.report)")
+                self.run_tag_code(filepath, context)
 
-            return {'FINISHED'}
+        else:
+            self.run_tag_code(self.filepath, context)
 
+        return {'FINISHED'}
+
+    def run_tag_code(self, filepath, context):
+        from ..file_tag import import_tag
+        global_functions.run_code("import_tag.load_file(context, filepath, self.game_title, self.fix_rotations, self.empty_markers, self.report)")
+
+    if (4, 1, 0) <= bpy.app.version:
         def invoke(self, context, event):
-            if self.directory:
-                return self.execute(context)
-            context.window_manager.fileselect_add(self)
-            return {'RUNNING_MODAL'}
+            if (4, 2, 0) <= bpy.app.version:
+                return self.invoke_popup(context)
+            else:
+                if self.directory:
+                    return self.execute(context)
+                context.window_manager.fileselect_add(self)
+                return {'RUNNING_MODAL'}
 
-        def draw(self, context):
-            layout = self.layout
+    def draw(self, context):
+        layout = self.layout
 
-            box = layout.box()
-            box.label(text="Game Title:")
-            col = box.column(align=True)
-            row = col.row()
-            row.prop(self, "game_title", text='')
-            col = box.column(align=True)
+        box = layout.box()
+        box.label(text="Game Title:")
+        col = box.column(align=True)
+        row = col.row()
+        row.prop(self, "game_title", text='')
+        col = box.column(align=True)
 
-            box = layout.box()
-            box.label(text="Import Options:")
-            col = box.column(align=True)
+        box = layout.box()
+        box.label(text="Import Options:")
+        col = box.column(align=True)
 
-            row = col.row()
-            row.label(text='Fix Rotations:')
-            row.prop(self, "fix_rotations", text='')
-            row = col.row()
-            row.label(text='Use Empties For Markers:')
-            row.prop(self, "empty_markers", text='')
+        row = col.row()
+        row.label(text='Fix Rotations:')
+        row.prop(self, "fix_rotations", text='')
+        row = col.row()
+        row.label(text='Use Empties For Markers:')
+        row.prop(self, "empty_markers", text='')
 
+if (4, 1, 0) <= bpy.app.version:
     class ImportTag_FileHandler(FileHandler):
         bl_idname = "TAG_FH_import"
         bl_label = "File handler for tag import"
@@ -152,77 +164,21 @@ try:
         def poll_drop(cls, context):
             return (context.area and context.area.type == 'VIEW_3D')
 
-except ImportError:
-    print("Blender is out of date. Drag and drop will not function")
-    FileHandler = None
-    class ImportTag(Operator, ImportHelper):
-        """Import a tag for various Halo titles"""
-        bl_idname = "import_scene.tag"
-        bl_label = "Import Tag"
-
-        game_title: EnumProperty(
-            name="Game:",
-            description="What game does the tag group belong to",
-            items=[ ('auto', "Auto", "Attempt to get the game title automatically. Defaults to Halo 1 if it fails."),
-                    ('halo1', "Halo 1", "Use tag data from Halo 1"),
-                    ('halo2', "Halo 2", "Use tag data from Halo 2"),
-                    ('halo3', "Halo 3", "Use tag data from Halo 3"),
-                ]
-            )
-
-        fix_rotations: BoolProperty(
-            name ="Fix Rotations",
-            description = "Set rotations to match what you would visually see in 3DS Max. Rotates bones by 90 degrees on a local Z axis to match how Blender handles rotations",
-            default = False,
-            )
-
-        empty_markers: BoolProperty(
-            name ="Generate Empty Markers",
-            description = "Generate empty markers instead of UV spheres",
-            default = True,
-            )
-
-        def execute(self, context):
-            from ..file_tag import import_tag
-
-            global_functions.run_code("import_tag.load_file(context, self.filepath, self.game_title, self.fix_rotations, self.empty_markers, self.report)")
-
-            return {'FINISHED'}
-
-        def draw(self, context):
-            layout = self.layout
-
-            box = layout.box()
-            box.label(text="Game Title:")
-            col = box.column(align=True)
-            row = col.row()
-            row.prop(self, "game_title", text='')
-            col = box.column(align=True)
-
-            box = layout.box()
-            box.label(text="Import Options:")
-            col = box.column(align=True)
-
-            row = col.row()
-            row.label(text='Fix Rotations:')
-            row.prop(self, "fix_rotations", text='')
-            row = col.row()
-            row.label(text='Use Empties For Markers:')
-            row.prop(self, "empty_markers", text='')
-
 classeshalo = [
     ImportTag,
+    ImportJSON,
     ExportSCNR
 ]
 
-if not FileHandler == None:
+if (4, 1, 0) <= bpy.app.version:
     classeshalo.append(ImportTag_FileHandler)
 
 def menu_func_export(self, context):
     self.layout.operator(ExportSCNR.bl_idname, text="Halo Scenario (.scenario)")
 
 def menu_func_import(self, context):
-    self.layout.operator(ImportTag.bl_idname, text="Halo Tag (mode/mod2/coll/phys/antr/sbsp)")
+    self.layout.operator(ImportJSON.bl_idname, text="Halo JSON (.JSON)")
+    self.layout.operator(ImportTag.bl_idname, text="Halo Tag (mode/mod2/coll/phys/antr/sbsp/isls)")
 
 def register():
     for clshalo in classeshalo:

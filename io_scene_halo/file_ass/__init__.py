@@ -494,36 +494,38 @@ class ExportASS(Operator, ExportHelper):
             row.enabled = is_enabled
             row.prop(self, "scale_float")
 
-try:
+if (4, 1, 0) <= bpy.app.version:
     from bpy.types import FileHandler
 
-    class ImportASS(Operator, ImportHelper):
-        """Import an ASS file"""
-        bl_idname = "import_scene.ass"
-        bl_label = "Import ASS"
-        filename_ext = '.ASS'
+class ImportASS(Operator, ImportHelper):
+    """Import an ASS file"""
+    bl_idname = "import_scene.ass"
+    bl_label = "Import ASS"
+    filename_ext = '.ASS'
 
-        filter_glob: StringProperty(
-            default="*.ass",
-            options={'HIDDEN'},
-            )
+    filter_glob: StringProperty(
+        default="*.ass",
+        options={'HIDDEN'},
+        )
 
-        filepath: StringProperty(
-            subtype='FILE_PATH', 
-            options={'SKIP_SAVE'}
-            )
+    filepath: StringProperty(
+        subtype='FILE_PATH', 
+        options={'SKIP_SAVE'}
+        )
 
-        def execute(self, context):
-            from ..file_ass import import_ass
+    def execute(self, context):
+        from ..file_ass import import_ass
 
-            return global_functions.run_code("import_ass.load_file(context, self.filepath, self.report)")
+        return global_functions.run_code("import_ass.load_file(context, self.filepath, self.report)")
 
+    if (4, 1, 0) <= bpy.app.version:
         def invoke(self, context, event):
             if self.filepath:
                 return self.execute(context)
             context.window_manager.fileselect_add(self)
             return {'RUNNING_MODAL'}
 
+if (4, 1, 0) <= bpy.app.version:
     class ImportASS_FileHandler(FileHandler):
         bl_idname = "ASS_FH_import"
         bl_label = "File handler for ASS import"
@@ -533,30 +535,6 @@ try:
         @classmethod
         def poll_drop(cls, context):
             return (context.area and context.area.type == 'VIEW_3D')
-
-except ImportError:
-    print("Blender is out of date. Drag and drop will not function")
-    FileHandler = None
-    class ImportASS(Operator, ImportHelper):
-        """Import an ASS file"""
-        bl_idname = "import_scene.ass"
-        bl_label = "Import ASS"
-        filename_ext = '.ASS'
-
-        filter_glob: StringProperty(
-            default="*.ass",
-            options={'HIDDEN'},
-            )
-
-        filepath: StringProperty(
-            subtype='FILE_PATH', 
-            options={'SKIP_SAVE'}
-            )
-
-        def execute(self, context):
-            from ..file_ass import import_ass
-
-            return global_functions.run_code("import_ass.load_file(context, self.filepath, self.report)")
 
 def menu_func_export(self, context):
     self.layout.operator(ExportASS.bl_idname, text='Halo Amalgam Scene Specification (.ass)')
@@ -571,7 +549,7 @@ classeshalo = [
     ExportASS
 ]
 
-if not FileHandler == None:
+if (4, 1, 0) <= bpy.app.version:
     classeshalo.append(ImportASS_FileHandler)
 
 def register():
