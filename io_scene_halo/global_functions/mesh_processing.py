@@ -31,7 +31,7 @@ import struct
 
 from math import radians
 from mathutils import Vector, Matrix
-from ..global_functions import global_functions, mesh_processing
+from ..global_functions import global_functions, shader_processing, mesh_processing
 from ..file_tag.h2.file_render_model.format import DetailLevelsFlags
 
 
@@ -468,116 +468,10 @@ def generate_marker(context, collection, game_version, game_title, file_version,
     object_mesh.select_set(False)
     armature.select_set(False)
 
-def optimize_geo(object_vertices, object_triangles):
-    # From MEK
-    verts = object_vertices
-    vert_ct = len(verts)
-    # this will map the verts to prune to the vert they are identical to
-    dup_vert_map = {}
-    similar_vert_map = {}
-
-    for vertex_idx, vertex in enumerate(object_vertices):
-        similar_vert_map.setdefault((tuple(vertex.translation)), []).append(vertex_idx)
-
-    # loop over all verts and figure out which ones to replace with others
-    for similar_vert_indices in similar_vert_map.values():
-        for i in range(len(similar_vert_indices) - 1):
-            orig_idx = similar_vert_indices[i]
-            if orig_idx in dup_vert_map:
-                continue
-
-            vert_a = object_vertices[orig_idx]
-            for j in similar_vert_indices[i + 1: ]:
-                if j in dup_vert_map:
-                    continue
-
-                vert_b = object_vertices[j]
-                a_node_influence_count = len(vert_a.node_set)
-                b_node_influence_count = len(vert_b.node_set)
-                a_uv_count = len(vert_a.uv_set)
-                b_uv_count = len(vert_b.uv_set)
-                if vert_a.normal != vert_b.normal:
-                    continue
-
-                elif vert_a.color != vert_b.color:
-                    continue
-
-                matching_node_set = True
-                if a_node_influence_count == b_node_influence_count:
-                    for node_index in range(a_node_influence_count):
-                        if vert_a.node_set[node_index] != vert_b.node_set[node_index]:
-                            matching_node_set = False
-
-                else:
-                    matching_node_set = False
-
-                if not matching_node_set:
-                    continue
-
-                matching_uv_set = True
-                if a_uv_count == b_uv_count:
-                    for uv_index in range(a_uv_count):
-                        if vert_a.uv_set[uv_index] != vert_b.uv_set[uv_index]:
-                            matching_uv_set = False
-
-                else:
-                    matching_uv_set = False
-
-                if not matching_uv_set:
-                    continue
-
-                dup_vert_map[j] = orig_idx
-
-    if not dup_vert_map:
-        new_verts = object_vertices
-        # nothing to optimize away
-        return new_verts, object_triangles
-
-    # remap any duplicate triangle vert indices to the original
-    get_mapped_vert = dup_vert_map.get
-    for tri in object_triangles:
-        tri.v0 = get_mapped_vert(tri.v0, tri.v0)
-        tri.v1 = get_mapped_vert(tri.v1, tri.v1)
-        tri.v2 = get_mapped_vert(tri.v2, tri.v2)
-
-    # copy the verts list so we can modify it without side-effects
-    new_vert_ct = vert_ct - len(dup_vert_map)
-    new_verts = object_vertices[: new_vert_ct]
-
-    shift_map = {}
-    copy_idx = vert_ct - 1
-    # loop over all duplicate vert indices and move any vertices
-    # on the high end of the vert list down to fill in the empty
-    # spaces left by the duplicate verts we're removing.
-    for dup_i in sorted(dup_vert_map):
-        while copy_idx in dup_vert_map:
-            # keep looping until we get to a vert we can move
-            # from its high index to overwrite the low index dup
-            copy_idx -= 1
-
-        if copy_idx <= dup_i or dup_i >= new_vert_ct:
-            # cant copy any lower. all upper index verts are duplicates
-            break
-
-        # move the vert from its high index to the low index dup
-        new_verts[dup_i] = verts[copy_idx]
-        shift_map[copy_idx] = dup_i
-        copy_idx -= 1
-
-    # remap any triangle vert indices
-    get_mapped_vert = shift_map.get
-    for tri in object_triangles:
-        tri.v0 = get_mapped_vert(tri.v0, tri.v0)
-        tri.v1 = get_mapped_vert(tri.v1, tri.v1)
-        tri.v2 = get_mapped_vert(tri.v2, tri.v2)
-
-    return new_verts, object_triangles
-
 def generate_mesh_object_retail(asset, object_vertices, object_triangles, object_name, collection, game_title, random_color_gen, armature, context):
     vertex_groups = []
     active_region_permutations = []
 
-    #object_vertices, object_triangles = optimize_geo(object_vertices, object_triangles)
     verts = [vertex.translation for vertex in object_vertices]
     vertex_normals = [vertex.normal for vertex in object_vertices]
     tris = [(triangles.v0, triangles.v1, triangles.v2) for triangles in object_triangles]
@@ -653,6 +547,14 @@ def generate_mesh_object_retail(asset, object_vertices, object_triangles, object
             mat = bpy.data.materials.get(material_name)
             if mat is None:
                 mat = bpy.data.materials.new(name=material_name)
+                if game_title == "halo1":
+                    shader = shader_processing.find_h1_shader_tag(asset.filepath, material_name)
+                    if not shader == None:
+                        shader_processing.generate_h1_shader(mat, shader, 0, print)
+                elif game_title == "halo2":
+                    shader = shader_processing.find_h2_shader_tag(asset.filepath, material_name)
+                    if not shader == None:
+                        shader_processing.generate_h2_shader(mat, shader, print)
 
             if not material_name in object_mesh.data.materials.keys():
                 object_mesh.data.materials.append(mat)
@@ -684,7 +586,6 @@ def generate_mesh_object_retail(asset, object_vertices, object_triangles, object
     return object_mesh
 
 def generate_mesh_retail(context, asset, object_vertices, object_triangles, object_data, game_title, random_color_gen):
-    #object_vertices, object_triangles = optimize_geo(object_vertices, object_triangles)
     vertices = []
     triangles = []
     for tri_idx, triangle in enumerate(object_triangles):
@@ -745,6 +646,14 @@ def generate_mesh_retail(context, asset, object_vertices, object_triangles, obje
             mat = bpy.data.materials.get(material_name)
             if mat is None:
                 mat = bpy.data.materials.new(name=material_name)
+                if game_title == "halo1":
+                    shader = shader_processing.find_h1_shader_tag(asset.filepath, material_name)
+                    if not shader == None:
+                        shader_processing.generate_h1_shader(mat, shader, 0, print)
+                elif game_title == "halo2":
+                    shader = shader_processing.find_h2_shader_tag(asset.filepath, material_name)
+                    if not shader == None:
+                        shader_processing.generate_h2_shader(mat, shader, print)
 
             if not mat in object_data.materials.values():
                 object_data.materials.append(mat)

@@ -32,6 +32,7 @@ class ASSAsset(global_functions.HaloAsset):
         if filepath:
             super().__init__(filepath)
 
+        self.filepath = filepath
         self.version = 0
         self.materials = []
         self.objects = []
