@@ -597,6 +597,8 @@ def generate_mesh_object_retail(asset, object_vertices, object_triangles, object
     for vertex_idx, vertex in enumerate(object_vertices):
         for node_values in vertex.node_set:
             node_index = node_values[0]
+            if node_index == -1:
+                node_index = 0
             node_weight = node_values[1]
             if not node_index == -1 and not node_index in vertex_groups:
                 vertex_groups.append(node_index)
