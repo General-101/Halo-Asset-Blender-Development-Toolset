@@ -10,6 +10,9 @@ OVERRIDE_USER_DETAILS = False
 USERNAME = "MissingString"
 DEVICE_NAME = "HiddenIntentions"
 
+# 0 = Shader generation is disabled
+# 1 = Simple shader generation. Only the base map is generated
+# 2 = Full Shader generation
 SHADER_GEN = 2
 HALO_1_DATA_PATH = ""
 HALO_1_TAG_PATH = ""
