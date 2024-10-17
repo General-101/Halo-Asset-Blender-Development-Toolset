@@ -28,7 +28,6 @@ import os
 import bpy
 import socket
 
-from .. import config
 from getpass import getuser
 from .process_scene import process_scene
 from ..global_functions import global_functions
@@ -41,9 +40,9 @@ def build_asset(context, filepath, version, game_version, folder_structure, hidd
 
     file = open(os.path.join(root_directory, filename), 'w', encoding='utf_8')
 
-    username = config.USERNAME
-    device_name = config.DEVICE_NAME
-    if not config.OVERRIDE_USER_DETAILS:
+    username = bpy.context.preferences.addons["io_scene_halo"].preferences.username
+    device_name = bpy.context.preferences.addons["io_scene_halo"].preferences.device_name
+    if not bpy.context.preferences.addons["io_scene_halo"].preferences.override_user_details:
         try:
             username = getuser()
 

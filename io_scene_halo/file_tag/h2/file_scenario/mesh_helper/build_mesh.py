@@ -28,7 +28,6 @@ import os
 import bpy
 import bmesh
 
-from ..... import config
 from .....global_functions import shader_processing, global_functions
 from .....file_tag.h2.file_render_model.format import PartFlags, PropertyTypeEnum
 
@@ -147,7 +146,7 @@ def get_object(collection, import_file, game_version, object_name, random_color_
     section_count = len(import_file.sections)
     materials = []
     shader_collection_dic = {}
-    shader_collection_path = os.path.join(config.HALO_2_TAG_PATH, r"scenarios\shaders\shader_collections.shader_collections")
+    shader_collection_path = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path, r"scenarios\shaders\shader_collections.shader_collections")
     if os.path.isfile(shader_collection_path):
         shader_collection_file = open(shader_collection_path, "r")
         for line in shader_collection_file.readlines():

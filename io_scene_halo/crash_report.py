@@ -24,12 +24,16 @@
 #
 # ##### END MIT LICENSE BLOCK #####
 
+
 import io
-import zipfile
-import time
 import os
+import bpy
+import time
+import zipfile
 import pdb, traceback, sys
-from . import config
+
+URL = "https://github.com/General-101/Halo-Asset-Blender-Development-Toolset/issues/new"
+EMAIL = "halo-asset-toolset@protonmail.com"
 
 class CrashReport:
     def __init__(self):
@@ -38,7 +42,7 @@ class CrashReport:
 
         self.add_file("readme.txt",
         f"""Crash report for Halo-Asset-Blender-Development-Toolset
-Please create an issue at {config.URL} or email {config.EMAIL}""")
+Please create an issue at {URL} or email {EMAIL}""")
 
     def add_file(self, name, contents):
         self.zfile.writestr(name, contents)
@@ -58,9 +62,9 @@ Please create an issue at {config.URL} or email {config.EMAIL}""")
 def report_crash():
     info = sys.exc_info()
     traceback.print_exception(info[0], info[1], info[2])
-    if config.ENABLE_DEBUGGING_PM:
+    if bpy.context.preferences.addons["io_scene_halo"].preferences.enable_debugging_pm:
         pdb.post_mortem(info[2])
-    if config.ENABLE_CRASH_REPORT:
+    if bpy.context.preferences.addons["io_scene_halo"].preferences.enable_crash_report:
         report = CrashReport()
         report.add_file("crash/traceback.txt", traceback.format_exc())
         try:

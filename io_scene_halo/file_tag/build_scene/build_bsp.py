@@ -28,7 +28,6 @@ import os
 import bpy
 import bmesh
 
-from ... import config
 from sys import float_info
 from math import radians, log
 from mathutils import Matrix, Vector
@@ -511,7 +510,7 @@ def build_scene(context, LEVEL, game_version, game_title, file_version, fix_rota
 
     else:
         shader_collection_dic = {}
-        shader_collection_path = os.path.join(config.HALO_2_TAG_PATH, r"scenarios\shaders\shader_collections.shader_collections")
+        shader_collection_path = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path, r"scenarios\shaders\shader_collections.shader_collections")
         if os.path.isfile(shader_collection_path):
             shader_collection_file = open(shader_collection_path, "r")
             for line in shader_collection_file.readlines():

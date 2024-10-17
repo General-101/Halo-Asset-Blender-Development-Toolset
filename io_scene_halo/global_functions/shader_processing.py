@@ -26,11 +26,9 @@
 
 import os
 import bpy
-import zlib
 import struct
 import numpy as np
 
-from .. import config
 from mathutils import Vector
 from enum import Flag, Enum, auto
 from ..file_tag.h1.file_shader_environment.format import EnvironmentTypeEnum, EnvironmentFlags, DiffuseFlags, ReflectionFlags
@@ -77,7 +75,7 @@ except ModuleNotFoundError:
 def generate_shader_environment_simple(mat, shader, permutation_index, report):
     mat.use_nodes = True
 
-    texture_root = config.HALO_1_DATA_PATH
+    texture_root = bpy.context.preferences.addons["io_scene_halo"].preferences.halo_1_data_path
     base_map, base_bitmap_name = get_bitmap(shader.shader_body.base_map, texture_root)
     base_bitmap = parse_tag(shader.shader_body.base_map, report, "halo1", "retail")
 
@@ -108,7 +106,7 @@ def generate_shader_environment_simple(mat, shader, permutation_index, report):
 def generate_shader_model_simple(mat, shader, report):
     mat.use_nodes = True
 
-    texture_root = config.HALO_1_DATA_PATH
+    texture_root = bpy.context.preferences.addons["io_scene_halo"].preferences.halo_1_data_path
     base_map, base_map_name = get_bitmap(shader.shader_body.base_map, texture_root)
     base_bitmap = parse_tag(shader.shader_body.base_map, report, "halo1", "retail")
 
@@ -159,6 +157,7 @@ def generate_shader_model_simple(mat, shader, report):
                 ignore_alpha_bitmap = False
                 break
 
+
         ignore_alpha_shader = ModelFlags.not_alpha_tested in shader_model_flags
         if ignore_alpha_shader or ignore_alpha_bitmap:
             base_node.image.alpha_mode = 'NONE'
@@ -176,7 +175,7 @@ def generate_shader_model_simple(mat, shader, report):
 def generate_shader_transparent_chicago_simple(mat, shader, report):
     mat.use_nodes = True
 
-    texture_root = config.HALO_1_DATA_PATH
+    texture_root = bpy.context.preferences.addons["io_scene_halo"].preferences.halo_1_data_path
     first_map = None
     first_map_bitmap = None
     first_map_name = "White"
@@ -200,7 +199,7 @@ def generate_shader_transparent_chicago_simple(mat, shader, report):
 def generate_shader_transparent_chicago_extended_simple(mat, shader, report):
     mat.use_nodes = True
 
-    texture_root = config.HALO_1_DATA_PATH
+    texture_root = bpy.context.preferences.addons["io_scene_halo"].preferences.halo_1_data_path
     first_map = None
     first_map_bitmap = None
     first_map_name = "White"
@@ -224,7 +223,7 @@ def generate_shader_transparent_chicago_extended_simple(mat, shader, report):
 def generate_shader_transparent_generic_simple(mat, shader, report):
     mat.use_nodes = True
 
-    texture_root = config.HALO_1_DATA_PATH
+    texture_root = bpy.context.preferences.addons["io_scene_halo"].preferences.halo_1_data_path
     first_map = None
     first_map_bitmap = None
     first_map_name = "White"
@@ -248,7 +247,7 @@ def generate_shader_transparent_generic_simple(mat, shader, report):
 def generate_shader_transparent_glass_simple(mat, shader, report):
     mat.use_nodes = True
 
-    texture_root = config.HALO_1_DATA_PATH
+    texture_root = bpy.context.preferences.addons["io_scene_halo"].preferences.halo_1_data_path
     diffuse_map, diffuse_map_name = get_bitmap(shader.shader_body.diffuse_map, texture_root)
     diffuse_bitmap = parse_tag(shader.shader_body.diffuse_map, report, "halo1", "retail")
 
@@ -270,7 +269,7 @@ def generate_shader_transparent_glass_simple(mat, shader, report):
 def generate_shader_transparent_meter_simple(mat, shader, report):
     mat.use_nodes = True
 
-    texture_root = config.HALO_1_DATA_PATH
+    texture_root = bpy.context.preferences.addons["io_scene_halo"].preferences.halo_1_data_path
     meter_map, meter_map_name = get_bitmap(shader.shader_body.meter_map, texture_root)
     meter_bitmap = parse_tag(shader.shader_body.meter_map, report, "halo1", "retail")
 
@@ -292,7 +291,7 @@ def generate_shader_transparent_meter_simple(mat, shader, report):
 def generate_shader_transparent_plasma_simple(mat, shader, report):
     mat.use_nodes = True
 
-    texture_root = config.HALO_1_DATA_PATH
+    texture_root = bpy.context.preferences.addons["io_scene_halo"].preferences.halo_1_data_path
     primary_noise_map, primary_noise_map_name = get_bitmap(shader.shader_body.primary_noise_map, texture_root)
     primary_noise_bitmap = parse_tag(shader.shader_body.primary_noise_map, report, "halo1", "retail")
 
@@ -312,7 +311,7 @@ def generate_shader_transparent_plasma_simple(mat, shader, report):
 def generate_shader_transparent_water_simple(mat, shader, report):
     mat.use_nodes = True
 
-    texture_root = config.HALO_1_DATA_PATH
+    texture_root = bpy.context.preferences.addons["io_scene_halo"].preferences.halo_1_data_path
     base_map, base_map_name = get_bitmap(shader.shader_body.base_map, texture_root)
     base_bitmap = parse_tag(shader.shader_body.base_map, report, "halo1", "retail")
 
@@ -332,7 +331,7 @@ def generate_shader_transparent_water_simple(mat, shader, report):
 def generate_shader_transparent_meter(mat, shader, report):
     mat.use_nodes = True
 
-    texture_root = config.HALO_1_DATA_PATH
+    texture_root = bpy.context.preferences.addons["io_scene_halo"].preferences.halo_1_data_path
     meter_map, meter_map_name = get_bitmap(shader.shader_body.meter_map, texture_root)
     meter_bitmap = parse_tag(shader.shader_body.meter_map, report, "halo1", "retail")
 
@@ -378,7 +377,7 @@ def generate_shader_transparent_meter(mat, shader, report):
 def generate_shader_transparent_glass(mat, shader, report):
     mat.use_nodes = True
 
-    texture_root = config.HALO_1_DATA_PATH
+    texture_root = bpy.context.preferences.addons["io_scene_halo"].preferences.halo_1_data_path
     background_tint_map, background_tint_map_name = get_bitmap(shader.shader_body.background_tint_map, texture_root)
     reflection_map, reflection_map_name = get_bitmap(shader.shader_body.reflection_map, texture_root)
     bump_map, bump_map_name = get_bitmap(shader.shader_body.bump_map, texture_root)
@@ -543,63 +542,63 @@ def generate_h1_shader(mat, tag_ref, shader_permutation_index, report):
     # 0 = Shader generation is disabled
     # 1 = Simple shader generation. Only the base map is generated
     # 2 = Full Shader generation
-    if not config.SHADER_GEN == 0:
+    if not int(bpy.context.preferences.addons["io_scene_halo"].preferences.shader_gen) == 0:
         shader = parse_tag(tag_ref, report, "halo1", "retail")
         if not shader == None:
             if shader.header.tag_group == "senv":
-                if config.SHADER_GEN == 1:
+                if int(bpy.context.preferences.addons["io_scene_halo"].preferences.shader_gen) == 1:
                     generate_shader_environment_simple(mat, shader, shader_permutation_index, report)
                 else:
                     generate_shader_environment(mat, shader, shader_permutation_index, report)
 
             elif shader.header.tag_group == "soso":
-                if config.SHADER_GEN == 1:
+                if int(bpy.context.preferences.addons["io_scene_halo"].preferences.shader_gen) == 1:
                     generate_shader_model_simple(mat, shader, report)
                 else:
                     generate_shader_model(mat, shader, report)
 
             elif shader.header.tag_group == "schi":
-                if config.SHADER_GEN == 1:
+                if int(bpy.context.preferences.addons["io_scene_halo"].preferences.shader_gen) == 1:
                     generate_shader_transparent_chicago_simple(mat, shader, report)
                 else:
                     print("Skipping shader_transparent_chicago")
                     #generate_shader_transparent_chicago(mat, shader, report)
 
             elif shader.header.tag_group == "scex":
-                if config.SHADER_GEN == 1:
+                if int(bpy.context.preferences.addons["io_scene_halo"].preferences.shader_gen) == 1:
                     generate_shader_transparent_chicago_extended_simple(mat, shader, report)
                 else:
                     print("Skipping shader_transparent_chicago_extended")
                     #generate_shader_transparent_chicago_extended(mat, shader, report)
 
             elif shader.header.tag_group == "sotr":
-                if config.SHADER_GEN == 1:
+                if int(bpy.context.preferences.addons["io_scene_halo"].preferences.shader_gen) == 1:
                     generate_shader_transparent_generic_simple(mat, shader, report)
                 else:
                     print("Skipping shader_transparent_generic")
                     #generate_shader_transparent_generic(mat, shader, report)
 
             elif shader.header.tag_group == "sgla":
-                if config.SHADER_GEN == 1:
+                if int(bpy.context.preferences.addons["io_scene_halo"].preferences.shader_gen) == 1:
                     generate_shader_transparent_glass_simple(mat, shader, report)
                 else:
                     generate_shader_transparent_glass(mat, shader, report)
 
             elif shader.header.tag_group == "smet":
-                if config.SHADER_GEN == 1:
+                if int(bpy.context.preferences.addons["io_scene_halo"].preferences.shader_gen) == 1:
                     generate_shader_transparent_meter_simple(mat, shader, report)
                 else:
                     generate_shader_transparent_meter(mat, shader, report)
 
             elif shader.header.tag_group == "spla":
-                if config.SHADER_GEN == 1:
+                if int(bpy.context.preferences.addons["io_scene_halo"].preferences.shader_gen) == 1:
                     generate_shader_transparent_plasma_simple(mat, shader, report)
                 else:
                     print("Skipping shader_transparent_plasma")
                     #generate_shader_transparent_plasma(mat, shader, report)
 
             elif shader.header.tag_group == "swat":
-                if config.SHADER_GEN == 1:
+                if int(bpy.context.preferences.addons["io_scene_halo"].preferences.shader_gen) == 1:
                     generate_shader_transparent_water_simple(mat, shader, report)
                 else:
                     print("Skipping shader_transparent_water")
@@ -608,7 +607,7 @@ def generate_h1_shader(mat, tag_ref, shader_permutation_index, report):
 def generate_shader_simple(mat, shader, report):
     mat.use_nodes = True
 
-    texture_root = config.HALO_2_DATA_PATH
+    texture_root = bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_data_path
     base_parameter = None
     if len(shader.parameters) > 0:
         for parameter in shader.parameters:
@@ -647,11 +646,11 @@ def generate_h2_shader(mat, tag_ref, report):
     # 0 = Shader generation is disabled
     # 1 = Simple shader generation. Only the base map is generated
     # 2 = Full Shader generation
-    if not config.SHADER_GEN == 0:
+    if not int(bpy.context.preferences.addons["io_scene_halo"].preferences.shader_gen) == 0:
         shader = parse_tag(tag_ref, report, "halo2", "retail")
         if not shader == None:
             if shader.header.tag_group == "shad":
-                if config.SHADER_GEN == 1:
+                if int(bpy.context.preferences.addons["io_scene_halo"].preferences.shader_gen) == 1:
                     generate_shader_simple(mat, shader, report)
                 else:
                     print("Skipping shader")
@@ -667,16 +666,20 @@ def find_h1_shader_tag(import_filepath, material_name):
                          "shader_transparent_meter",
                          "shader_transparent_plasma", 
                          "shader_transparent_water"]
+
     material_name = material_name.lower()
-    data_path = config.HALO_1_DATA_PATH.lower()
-    tag_path = config.HALO_1_TAG_PATH.lower()
+    data_path = bpy.context.preferences.addons["io_scene_halo"].preferences.halo_1_data_path.lower()
+    tag_path = bpy.context.preferences.addons["io_scene_halo"].preferences.halo_1_tag_path.lower()
+
     shader_path = None
     shader_tag = None
+
     import_directory = os.path.dirname(os.path.dirname(import_filepath)).lower()
-    result = import_directory.split(data_path + os.sep)
+    result = import_directory.split(data_path)
     local_path = None
     if len(result) == 2:
         local_path = result[1]
+
     if local_path:
         import_shader_directory = os.path.join(tag_path, local_path, "shaders")
         if os.path.exists(import_shader_directory):
@@ -687,6 +690,7 @@ def find_h1_shader_tag(import_filepath, material_name):
                 if len(result) == 2:
                     file_name = result[0]
                     extension = result[1]
+
                 if material_name == file_name and extension in shader_extensions:
                     shader_path = os.path.join(import_shader_directory, file)
                     break
@@ -695,46 +699,61 @@ def find_h1_shader_tag(import_filepath, material_name):
         for root, dirs, filenames in os.walk(tag_path):
             for filename in filenames:
                 file = os.path.join(root, filename).lower()
+
                 file_name = os.path.basename(file)
                 extension = None
                 result = file_name.rsplit(".", 1)
                 if len(result) == 2:
                     file_name = result[0]
                     extension = result[1]
+
                 if material_name == file_name and extension in shader_extensions:
                     shader_path = file
                     break
+
     if not shader_path == None:
         tag_group = ""
         if extension == "shader_environment":
             tag_group = "senv"
+
         elif extension == "shader_model":
             tag_group = "soso"
+
         elif extension == "shader_transparent_chicago":
             tag_group = "schi"
+
         elif extension == "shader_transparent_chicago_extended":
             tag_group = "scex"
+
         elif extension == "shader_transparent_generic":
             tag_group = "sotr"
+
         elif extension == "shader_transparent_glass":
             tag_group = "sgla"
+
         elif extension == "shader_transparent_meter":
             tag_group = "smet"
+
         elif extension == "spla":
             tag_group = "shader_transparent_plasma"
+
         elif extension == "swat":
             tag_group = "shader_transparent_water"
-        local_path = shader_path.split(tag_path + os.sep)[1].rsplit(".", 1)[0]
+
+        local_path = shader_path.split(tag_path)[1].rsplit(".", 1)[0]
+
         shader_tag = tag_format.TagAsset.TagRef(tag_group, local_path, len(local_path))
+
     return shader_tag
 
 def find_h2_shader_tag(import_filepath, material_name):
-    data_path = config.HALO_2_DATA_PATH.lower()
-    tag_path = config.HALO_2_TAG_PATH.lower()
+    data_path = bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_data_path.lower()
+    tag_path = bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path.lower()
     shader_path = None
     shader_tag = None
+
     shader_collection_dic = {}
-    shader_collection_path = os.path.join(config.HALO_2_TAG_PATH, r"scenarios\shaders\shader_collections.shader_collections")
+    shader_collection_path = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path, r"scenarios\shaders\shader_collections.shader_collections")
     if os.path.isfile(shader_collection_path):
         shader_collection_file = open(shader_collection_path, "r")
         for line in shader_collection_file.readlines():
@@ -744,6 +763,7 @@ def find_h2_shader_tag(import_filepath, material_name):
                     prefix = split_result[0]
                     path = split_result[1]
                     shader_collection_dic[prefix] = path
+
     processed_name, processed_parameters = mesh_processing.gather_parameters(material_name.lower())
     symbols_list, processed_name = mesh_processing.gather_symbols("", processed_name, "halo2")
     symbols_list, processed_name = mesh_processing.gather_symbols(symbols_list, reversed(processed_name), "halo2")
@@ -756,27 +776,32 @@ def find_h2_shader_tag(import_filepath, material_name):
         shader_name = result[1]
     else:
         shader_name = processed_name
+
     if not collection == None:
         shader_directory = shader_collection_dic.get(collection)
         import_shader_directory = os.path.join(tag_path, shader_directory.lower())
         for root, dirs, filenames in os.walk(import_shader_directory):
             for filename in filenames:
                 file = os.path.join(root, filename).lower()
+
                 file_name = os.path.basename(file)
                 extension = None
                 result = file_name.rsplit(".", 1)
                 if len(result) == 2:
                     file_name = result[0]
                     extension = result[1]
+
                 if shader_name == file_name and extension == "shader":
                     shader_path = file
                     break
+
     if shader_path == None:
         import_directory = os.path.dirname(os.path.dirname(import_filepath)).lower()
-        result = import_directory.split(data_path + os.sep)
+        result = import_directory.split(data_path)
         local_path = None
         if len(result) == 2:
             local_path = result[1]
+
         if local_path:
             import_shader_directory = os.path.join(tag_path, local_path, "shaders")
             if os.path.exists(import_shader_directory):
@@ -787,6 +812,7 @@ def find_h2_shader_tag(import_filepath, material_name):
                     if len(result) == 2:
                         file_name = result[0]
                         extension = result[1]
+
                     if shader_name == file_name and extension in "shader":
                         shader_path = os.path.join(import_shader_directory, file)
                         break
@@ -795,18 +821,23 @@ def find_h2_shader_tag(import_filepath, material_name):
         for root, dirs, filenames in os.walk(tag_path):
             for filename in filenames:
                 file = os.path.join(root, filename).lower()
+
                 file_name = os.path.basename(file)
                 extension = None
                 result = file_name.rsplit(".", 1)
                 if len(result) == 2:
                     file_name = result[0]
                     extension = result[1]
+
                 if shader_name == file_name and extension in "shader":
                     shader_path = file
                     break
+
     if not shader_path == None:
-        local_path = shader_path.split(tag_path + os.sep)[1].rsplit(".", 1)[0]
+        local_path = shader_path.split(tag_path)[1].rsplit(".", 1)[0]
+
         shader_tag = tag_format.TagAsset.TagRef("shad", local_path, len(local_path))
+
     return shader_tag
 
 class OpaqueTemplateEnum(Enum):

@@ -29,9 +29,6 @@ import bpy
 import struct
 import random
 
-
-from .... import config
-from math import radians
 from ....global_functions.parse_tags import parse_tag
 from ....global_functions import tag_format, global_functions
 from ....file_tag.h2.file_scenario.process_file import process_file as process_h2_scenario
@@ -2233,7 +2230,7 @@ def upgrade_h2_scenario(H1_ASSET, patch_txt_path, report):
 
     bsp_bounds_list = []
 
-    h2_scenario_path = os.path.join(config.HALO_2_TAG_PATH, "%s.scenario" % H1_ASSET.header.local_path)
+    h2_scenario_path = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path, "%s.scenario" % H1_ASSET.header.local_path)
     if os.path.isfile(h2_scenario_path):
         input_stream = open(h2_scenario_path, "rb")
         SCNR_ASSET = process_h2_scenario(input_stream, print)

@@ -26,7 +26,6 @@
 
 import bpy
 
-from ... import config
 from mathutils import Vector
 from ...global_functions.parse_tags import parse_tag
 from ...file_tag.h1.file_shader_environment.format import EnvironmentTypeEnum, EnvironmentFlags, DiffuseFlags, ReflectionFlags, FunctionEnum
@@ -222,7 +221,7 @@ def set_illum_scale(shader, mat, self_illumination_node):
 def generate_shader_environment(mat, shader, permutation_index, report):
     mat.use_nodes = True
 
-    texture_root = config.HALO_1_DATA_PATH
+    texture_root = bpy.context.preferences.addons["io_scene_halo"].preferences.halo_1_data_path
     base_map, base_map_name = get_bitmap(shader.shader_body.base_map, texture_root)
     primary_detail_map, primary_detail_map_name = get_bitmap(shader.shader_body.primary_detail_map, texture_root)
     secondary_detail_map, secondary_detail_map_name = get_bitmap(shader.shader_body.secondary_detail_map, texture_root)

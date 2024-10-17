@@ -27,7 +27,6 @@
 import os
 import bpy
 
-from ... import config
 from mathutils import Matrix
 from ..h2.file_scenario_structure_bsp.format import ClusterPortalFlags as H2ClusterPortalFlags, SurfaceFlags as H2SurfaceFlags, PartFlags, PropertyTypeEnum
 from ..h2.file_scenario_structure_lightmap.format import PartTypeEnum
@@ -243,7 +242,7 @@ def build_scene(context, LTMP_ASSET, game_version, game_title, file_version, fix
         collection.objects.link(level_root)
 
     shader_collection_dic = {}
-    shader_collection_path = os.path.join(config.HALO_2_TAG_PATH, r"scenarios\shaders\shader_collections.shader_collections")
+    shader_collection_path = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path, r"scenarios\shaders\shader_collections.shader_collections")
     if os.path.isfile(shader_collection_path):
         shader_collection_file = open(shader_collection_path, "r")
         for line in shader_collection_file.readlines():

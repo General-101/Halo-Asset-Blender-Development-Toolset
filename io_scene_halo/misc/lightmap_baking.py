@@ -27,7 +27,6 @@
 import os
 import bpy
 
-from .. import config
 from mathutils import Vector
 from ..global_functions import tag_format
 from ..global_functions.parse_tags import parse_tag
@@ -76,7 +75,7 @@ def bake_clusters(context, game_title, scenario_path, image_multiplier, report, 
                 BSP_ASSET = parse_tag(bsp_element, report, game_title, "retail")
                 BITMAP_ASSET = parse_tag(BSP_ASSET.level_body.lightmap_bitmaps_tag_ref, report, game_title, "retail")
 
-                bitmap_path = os.path.join(config.HALO_1_TAG_PATH, "%s.bitmap" %  BSP_ASSET.level_body.lightmap_bitmaps_tag_ref.name)
+                bitmap_path = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_1_tag_path, "%s.bitmap" %  BSP_ASSET.level_body.lightmap_bitmaps_tag_ref.name)
 
                 pixel_data = bytes()
                 pixel_offset = 0
@@ -220,7 +219,7 @@ def bake_clusters(context, game_title, scenario_path, image_multiplier, report, 
                 LTMP_ASSET = parse_tag(bsp_element.structure_lightmap, report, game_title, "retail")
                 BITMAP_ASSET = parse_tag(LTMP_ASSET.lightmap_groups[0].bitmap_group_tag_ref, report, game_title, "retail")
 
-                bitmap_path = os.path.join(config.HALO_2_TAG_PATH, "%s.bitmap" %  LTMP_ASSET.lightmap_groups[0].bitmap_group_tag_ref.name)
+                bitmap_path = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path, "%s.bitmap" %  LTMP_ASSET.lightmap_groups[0].bitmap_group_tag_ref.name)
 
                 pixel_data = bytes()
                 pixel_offset = 0

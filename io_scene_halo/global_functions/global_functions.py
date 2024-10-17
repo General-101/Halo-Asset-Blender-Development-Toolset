@@ -1385,13 +1385,12 @@ def get_origin_bsp(bsp_bounds_list, object_element):
     return bsp_index
 
 def run_code(code_string):
-    from .. import config
     def toolset_exec(code):
-        if config.ENABLE_PROFILING:
+        if bpy.context.preferences.addons["io_scene_halo"].preferences.enable_profiling:
             import cProfile
             cProfile.runctx(code, globals(), caller_locals)
 
-        elif config.ENABLE_DEBUG:
+        elif bpy.context.preferences.addons["io_scene_halo"].preferences.enable_debug:
             import pdb
             pdb.runctx(code, globals(), caller_locals)
 

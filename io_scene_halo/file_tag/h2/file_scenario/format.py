@@ -173,7 +173,7 @@ class LightmappingPolicyEnum(Enum):
     per_vertex = auto()
 
 class ObjectGametypeEnum(Flag):
-    ctf = auto()
+    ctf = 0
     slayer = auto()
     oddball = auto()
     king = auto()
@@ -622,7 +622,7 @@ class JustificationEnum(Enum):
     custom_text_entry = auto()
 
 class FontEnum(Enum):
-    terminal_font = auto()
+    terminal_font = 0
     body_text_font = auto()
     title_font = auto()
     super_large_font = auto()
@@ -767,6 +767,63 @@ class CameraImmersionFlags(Flag):
     disable_planar_fog = auto()
     invert_planar_fog_priorities = auto()
     disable_water = auto()
+
+class FlockFlags(Flag):
+    hard_boundaries_on_volume = auto()
+    flock_initially_stopped = auto()
+
+class CacheResourceTypeEnum(Enum):
+    tag_block = 0
+    tag_data = auto()
+    vertex_buffer = auto()
+
+class DecoratorTypeEnum(Enum):
+    model = 0
+    floating_decal = auto()
+    projected_decal = auto()
+    screen_facing_quad = auto()
+    axis_rotating_quad = auto()
+    cross_quad = auto()
+
+class MultiplayerLevelFlags(Flag):
+    unlockable = auto()
+
+class FunctionTypeEnum(Enum):
+    identity = 0
+    constant = auto()
+    transition = auto()
+    periodic = auto()
+    linear = auto()
+    linear_key = auto()
+    multi_linear_key = auto()
+    spline = auto()
+    multi_spline = auto()
+    exponent = auto()
+    spline2 = auto()
+
+class TransitionExponentEnum(Enum):
+    linear = 0
+    early = auto()
+    very_early = auto()
+    late = auto()
+    very_late = auto()
+    cosine = auto()
+    one = auto()
+    zero = auto()
+
+class PeriodicExponentEnum(Enum):
+    one = 0
+    zero = auto()
+    cosine = auto()
+    cosine_variable_period = auto()
+    diagonal_wave = auto()
+    diagonal_wave_variable_period = auto()
+    slide = auto()
+    slide_variable_period = auto()
+    noise = auto()
+    jitter = auto()
+    wander = auto()
+    spark = auto()
 
 class ScenarioAsset():
     def __init__(self):
@@ -2196,3 +2253,289 @@ class ScenarioAsset():
             self.interpolator = interpolator
             self.interpolator_length = interpolator_length
 
+    class PlanarFogPalette():
+        def __init__(self, name="", name_length=0, planar_fog=None):
+            self.name = name
+            self.name_length = name_length
+            self.planar_fog = planar_fog
+
+    class Flock():
+        def __init__(self, bsp=0, bounding_volume=0, flags=0, ecology_margin=0.0, sources_header=None, sources_tag_block=None, sources=None, sinks_header=None, sinks_tag_block=None, 
+                     sinks=None, production_frequency=0.0, scale=(0.0, 0.0), creature=None, boid_count=(0, 0), neighborhood_radius=0.0, avoidance_radius=0.0, forward_scale=0.0, 
+                     alignment_scale=0.0, avoidance_scale=0.0, leveling_force_scale=0.0, sink_scale=0.0, perception_angle=0.0, average_throttle=0.0, maximum_throttle=0.0, 
+                     position_scale=0.0, position_min_radius=0.0, position_max_radius=0.0, movement_weight_threshold=0.0, danger_radius=0.0, danger_scale=0.0, random_offset_scale=0.0, 
+                     random_offset_period=(0.0, 0.0), flock_name="", flock_name_length=0):
+            self.bsp = bsp
+            self.bounding_volume = bounding_volume
+            self.flags = flags
+            self.ecology_margin = ecology_margin
+            self.sources_header = sources_header
+            self.sources_tag_block = sources_tag_block
+            self.sources = sources
+            self.sinks_header = sinks_header
+            self.sinks_tag_block = sinks_tag_block
+            self.sinks = sinks
+            self.production_frequency = production_frequency
+            self.scale = scale
+            self.creature = creature
+            self.boid_count = boid_count
+            self.neighborhood_radius = neighborhood_radius
+            self.avoidance_radius = avoidance_radius
+            self.forward_scale = forward_scale
+            self.alignment_scale = alignment_scale
+            self.avoidance_scale = avoidance_scale
+            self.leveling_force_scale = leveling_force_scale
+            self.sink_scale = sink_scale
+            self.perception_angle = perception_angle
+            self.average_throttle = average_throttle
+            self.maximum_throttle = maximum_throttle
+            self.position_scale = position_scale
+            self.position_min_radius = position_min_radius
+            self.position_max_radius = position_max_radius
+            self.movement_weight_threshold = movement_weight_threshold
+            self.danger_radius = danger_radius
+            self.danger_scale = danger_scale
+            self.random_offset_scale = random_offset_scale
+            self.random_offset_period = random_offset_period
+            self.flock_name = flock_name
+            self.flock_name_length = flock_name_length
+
+    class Source():
+        def __init__(self, position=Vector(), starting_yaw_pitch=(0.0, 0.0), radius=0.0, weight=0.0):
+            self.position = position
+            self.starting_yaw_pitch = starting_yaw_pitch
+            self.radius = radius
+            self.weight = weight
+
+    class Sink():
+        def __init__(self, position=Vector(), radius=0.0):
+            self.position = position
+            self.radius = radius
+
+    class Decorator():
+        def __init__(self, grid_origin=Vector(), cell_count_per_dimension=0, cache_blocks_header=None, cache_blocks_tag_block=None, cache_blocks=None, groups_header=None, 
+                     groups_tag_block=None, groups=None, cells_header=None, cells_tag_block=None, cells=None, decals_header=None, decals_tag_block=None, decals=None):
+            self.grid_origin = grid_origin
+            self.cell_count_per_dimension = cell_count_per_dimension
+            self.cache_blocks_header = cache_blocks_header
+            self.cache_blocks_tag_block = cache_blocks_tag_block
+            self.cache_blocks = cache_blocks
+            self.groups_header = groups_header
+            self.groups_tag_block = groups_tag_block
+            self.groups = groups
+            self.cells_header = cells_header
+            self.cells_tag_block = cells_tag_block
+            self.cells = cells
+            self.decals_header = decals_header
+            self.decals_tag_block = decals_tag_block
+            self.decals = decals
+
+    class CacheBlock():
+        def __init__(self, block_offset=0, block_size=0, section_data_size=0, resource_data_size=0, resources_header=None, resources_tag_block=None, resources=None, 
+                     owner_tag_section_offset=0, cache_block_data_header=None, cache_block_data_tag_block=None, cache_block_data=None, blok_header=None):
+            self.block_offset = block_offset
+            self.block_size = block_size
+            self.section_data_size = section_data_size
+            self.resource_data_size = resource_data_size
+            self.resources_header = resources_header
+            self.resources_tag_block = resources_tag_block
+            self.resources = resources
+            self.owner_tag_section_offset = owner_tag_section_offset
+            self.cache_block_data_header = cache_block_data_header
+            self.cache_block_data_tag_block = cache_block_data_tag_block
+            self.cache_block_data = cache_block_data
+            self.blok_header = blok_header
+
+    class Resource:
+        def __init__(self, resource_type=0, primary_locator=0, secondary_locator=0, resource_data_size=0, resource_data_offset=0):
+            self.resource_type = resource_type
+            self.primary_locator = primary_locator
+            self.secondary_locator = secondary_locator
+            self.resource_data_size = resource_data_size
+            self.resource_data_offset = resource_data_offset
+
+    class CacheBlockData():
+        def __init__(self, placements_header=None, placements_tag_block=None, placements=None, decal_vertices_header=None, decal_vertices_tag_block=None, decal_vertices=None, 
+                     decal_indices_header=None, decal_indices_tag_block=None, decal_indices=None, sprite_vertices_header=None, sprite_vertices_tag_block=None, sprite_vertices=None, 
+                     sprite_indices_header=None, sprite_indices_tag_block=None, sprite_indices=None):
+            self.placements_header = placements_header
+            self.placements_tag_block = placements_tag_block
+            self.placements = placements
+            self.decal_vertices_header = decal_vertices_header
+            self.decal_vertices_tag_block = decal_vertices_tag_block
+            self.decal_vertices = decal_vertices
+            self.decal_indices_header = decal_indices_header
+            self.decal_indices_tag_block = decal_indices_tag_block
+            self.decal_indices = decal_indices
+            self.sprite_vertices_header = sprite_vertices_header
+            self.sprite_vertices_tag_block = sprite_vertices_tag_block
+            self.sprite_vertices = sprite_vertices
+            self.sprite_indices_header = sprite_indices_header
+            self.sprite_indices_tag_block = sprite_indices_tag_block
+            self.sprite_indices = sprite_indices
+
+    class Placement():
+        def __init__(self, internal_data_1=0, compressed_position=0, tint_color=(0, 0, 0, 255), lightmap_color=(0, 0, 0, 255), compressed_light_direction=0, 
+                     compressed_light_2_direction=0):
+            self.internal_data_1 = internal_data_1
+            self.compressed_position = compressed_position
+            self.tint_color = tint_color
+            self.lightmap_color = lightmap_color
+            self.compressed_light_direction = compressed_light_direction
+            self.compressed_light_2_direction = compressed_light_2_direction
+
+    class DecalVertex():
+        def __init__(self, position=Vector(), texcoord_0=(0.0, 0.0), texcoord_1=(0.0, 0.0), color=(0, 0, 0, 255)):
+            self.position = position
+            self.texcoord_0 = texcoord_0
+            self.texcoord_1 = texcoord_1
+            self.color = color
+
+    class SpriteVertex():
+        def __init__(self, position=Vector(), offset=Vector(), axis=Vector(), texcoord=(0.0, 0.0), color=(0, 0, 0, 255)):
+            self.position = position
+            self.offset = offset
+            self.axis = axis
+            self.texcoord = texcoord
+            self.color = color
+
+    class Group():
+        def __init__(self, decorator_set=0, decorator_type=0, shader_index=0, compressed_radius=0, cluster=0, cache_block=0, decorator_start_index=0, decorator_count=0, 
+                     vertex_start_offset=0, vertex_count=0, index_start_offset=0, index_count=0, compressed_bounding_center=0):
+            self.decorator_set = decorator_set
+            self.decorator_type = decorator_type
+            self.shader_index = shader_index
+            self.compressed_radius = compressed_radius
+            self.cluster = cluster
+            self.cache_block = cache_block
+            self.decorator_start_index = decorator_start_index
+            self.decorator_count = decorator_count
+            self.vertex_start_offset = vertex_start_offset
+            self.vertex_count = vertex_count
+            self.index_start_offset = index_start_offset
+            self.index_count = index_count
+            self.compressed_bounding_center = compressed_bounding_center
+
+    class Cell():
+        def __init__(self, child_index_0=0, child_index_1=0, child_index_2=0, child_index_3=0, child_index_4=0, child_index_5=0, child_index_6=0, child_index_7=0, 
+                     cache_block_index=0, group_count=0, group_start_index=0):
+            self.child_index_0 = child_index_0
+            self.child_index_1 = child_index_1
+            self.child_index_2 = child_index_2
+            self.child_index_3 = child_index_3
+            self.child_index_4 = child_index_4
+            self.child_index_5 = child_index_5
+            self.child_index_6 = child_index_6
+            self.child_index_7 = child_index_7
+            self.cache_block_index = cache_block_index
+            self.group_count = group_count
+            self.group_start_index = group_start_index
+
+    class Decal():
+        def __init__(self, decorator_set=0, decorator_class=0, decorator_permutation=0, sprite_index=0, position=Vector(), left=Vector(), up=Vector(), extents=Vector(), 
+                     previous_position=Vector()):
+            self.decorator_set = decorator_set
+            self.decorator_class = decorator_class
+            self.decorator_permutation = decorator_permutation
+            self.sprite_index = sprite_index
+            self.position = position
+            self.left = left
+            self.up = up
+            self.extents = extents
+            self.previous_position = previous_position
+
+    class Creature(Object):
+        def __init__(self, sobj_header=None, obj0_header=None):
+            super().__init__()
+            self.sobj_header = sobj_header
+            self.obj0_header = obj0_header
+
+    class BSPTransitionVolume():
+        def __init__(self, bsp_index_key=0, trigger_volume=0):
+            self.bsp_index_key = bsp_index_key
+            self.trigger_volume = trigger_volume
+
+    class StructureBSPLighting():
+        def __init__(self, bsp=None, lighting_points_header=None, lighting_points_tag_block=None, lighting_points=None):
+            self.bsp = bsp
+            self.lighting_points_header = lighting_points_header
+            self.lighting_points_tag_block = lighting_points_tag_block
+            self.lighting_points = lighting_points
+
+    class EditorFolder():
+        def __init__(self, parent_folder=0, name=""):
+            self.parent_folder = parent_folder
+            self.name = name
+
+    class LevelData():
+        def __init__(self, level_strings=None, campaign_level_data_header=None, campaign_level_data_tag_block=None, campaign_level_data=None, multiplayer_level_data_header=None, 
+                     multiplayer_level_data_tag_block=None, multiplayer_level_data=None):
+            self.level_strings = level_strings
+            self.campaign_level_data_header = campaign_level_data_header
+            self.campaign_level_data_tag_block = campaign_level_data_tag_block
+            self.campaign_level_data = campaign_level_data
+            self.multiplayer_level_data_header = multiplayer_level_data_header
+            self.multiplayer_level_data_tag_block = multiplayer_level_data_tag_block
+            self.multiplayer_level_data = multiplayer_level_data
+
+    class CampaignLevelData():
+        def __init__(self, campaign_id=0, map_id=0, bitmap=None):
+            self.campaign_id = campaign_id
+            self.map_id = map_id
+            self.bitmap = bitmap
+
+    class MultiplayerLevelData():
+        def __init__(self, map_id=0, bitmap=None, path="", sort_order=0, flags=0, max_teams_none=0, max_teams_ctf=0, max_teams_slayer=0, max_teams_oddball=0, max_teams_king=0, 
+                     max_teams_race=0, max_teams_head_hunter=0, max_teams_juggernaut=0, max_teams_territories=0, max_teams_assault=0, max_teams_10_stub=0, max_teams_medic=0, 
+                     max_teams_vip=0, max_teams_infection=0, max_teams_14_stub=0, max_teams_15_stub=0):
+            self.map_id = map_id
+            self.bitmap = bitmap
+            self.path = path
+            self.sort_order = sort_order
+            self.flags = flags
+            self.max_teams_none = max_teams_none
+            self.max_teams_ctf = max_teams_ctf
+            self.max_teams_slayer = max_teams_slayer
+            self.max_teams_oddball = max_teams_oddball
+            self.max_teams_king = max_teams_king
+            self.max_teams_race = max_teams_race
+            self.max_teams_head_hunter = max_teams_head_hunter
+            self.max_teams_juggernaut = max_teams_juggernaut
+            self.max_teams_territories = max_teams_territories
+            self.max_teams_assault = max_teams_assault
+            self.max_teams_10_stub = max_teams_10_stub
+            self.max_teams_medic = max_teams_medic
+            self.max_teams_vip = max_teams_vip
+            self.max_teams_infection = max_teams_infection
+            self.max_teams_14_stub = max_teams_14_stub
+            self.max_teams_15_stub = max_teams_15_stub
+
+    class Interpolator():
+        def __init__(self, name="", name_length=0, accelerator_name="", accelerator_name_length=0, multiplier_name="", multiplier_name_length=0, SCFN_header=None, MAPP_header=None, 
+                     function_header=None, function_type=0, lower_bound=0.0, upper_bound=0.0, min=0.0, max=1.0, exponent=0, frequency=1.0, phase=0.0, points=None):
+            self.name = name
+            self.name_length = name_length
+            self.accelerator_name = accelerator_name
+            self.accelerator_name_length = accelerator_name_length
+            self.multiplier_name = multiplier_name
+            self.multiplier_name_length = multiplier_name_length
+            self.SCFN_header = SCFN_header
+            self.MAPP_header = MAPP_header
+            self.function_header = function_header
+            self.function_type = function_type
+            self.lower_bound = lower_bound
+            self.upper_bound = upper_bound
+            self.min = min
+            self.max = max
+            self.exponent = exponent
+            self.frequency = frequency
+            self.phase = phase
+            self.points = points
+
+    class ScreenEffectReference():
+        def __init__(self, screen_effect=None, primary_input="", primary_input_name_length=0, secondary_input="", secondary_input_name_length=0):
+            self.screen_effect = screen_effect
+            self.primary_input = primary_input
+            self.primary_input_name_length = primary_input_name_length
+            self.secondary_input = secondary_input
+            self.secondary_input_name_length = secondary_input_name_length

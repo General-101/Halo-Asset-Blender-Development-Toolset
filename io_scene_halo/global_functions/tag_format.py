@@ -25,9 +25,9 @@
 # ##### END MIT LICENSE BLOCK #####
 
 import os
+import bpy
 import struct
 
-from .. import config
 from xml.dom import minidom
 from math import degrees, sqrt, radians
 from mathutils import Vector, Quaternion, Euler
@@ -328,6 +328,13 @@ class TagAsset():
 
     def read_unsigned_byte(self, input_stream, big_endian):
         return (struct.unpack('%sB' % get_endian_symbol(big_endian), input_stream.read(1)))[0]
+
+    def read_block_index_signed_byte(self, input_stream, tag, xml_data=None):
+        signed_byte = (struct.unpack('%sb' % get_endian_symbol(tag.big_endian), input_stream.read(1)))[0]
+        if not tag.xml_doc == None and not xml_data == None:
+                        xml_data.xml_node.appendChild(create_xml_node("block_index", [("name", xml_data.element_name), ("type", "char block index"), ("index", str(signed_byte))], get_block_name(signed_byte, xml_data.block_count, xml_data.block_name)))
+
+        return signed_byte
 
     def read_flag_unsigned_byte(self, input_stream, tag, xml_data=None):
         flags = (struct.unpack('%sB' % get_endian_symbol(tag.big_endian), input_stream.read(1)))[0]
@@ -664,9 +671,12 @@ class TagAsset():
             self.count = count
             self.size = size
 
-        def read(self, input_stream, tag):
+        def read(self, input_stream, tag, reverse=True):
             tag_block_header_struct = struct.unpack('%s4s3I' % get_endian_symbol(tag.big_endian), input_stream.read(16))
             self.name = tag_block_header_struct[0]
+            if reverse:
+                self.name = self.name[::-1]
+
             self.version = tag_block_header_struct[1]
             self.count = tag_block_header_struct[2]
             self.size = tag_block_header_struct[3]
@@ -859,10 +869,10 @@ class TagAsset():
             self.engine_tag = engine_tag
 
         def read(self, input_stream, tag):
-            if config.HALO_1_TAG_PATH in input_stream.name:
-                self.local_path = input_stream.name.split("%s%s" % (config.HALO_1_TAG_PATH, os.sep))[1].rsplit(".", 1)[0]
-            elif config.HALO_2_TAG_PATH in input_stream.name:
-                self.local_path = input_stream.name.split("%s%s" % (config.HALO_2_TAG_PATH, os.sep))[1].rsplit(".", 1)[0]
+            if bpy.context.preferences.addons["io_scene_halo"].preferences.halo_1_tag_path in input_stream.name:
+                self.local_path = input_stream.name.split(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_1_tag_path)[1].rsplit(".", 1)[0]
+            elif bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path in input_stream.name:
+                self.local_path = input_stream.name.split(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path)[1].rsplit(".", 1)[0]
             else:
                 self.local_path = input_stream.name.rsplit(".", 1)[0]
 

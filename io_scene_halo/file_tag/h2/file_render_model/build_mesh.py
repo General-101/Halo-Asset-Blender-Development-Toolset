@@ -28,7 +28,6 @@ import os
 import bpy
 import bmesh
 
-from .... import config
 from ....global_functions import shader_processing, global_functions, mesh_processing
 from .format import PartFlags, GeometryClassificationEnum, PropertyTypeEnum
 
@@ -254,7 +253,7 @@ def get_geometry_layout(context, collection, import_file, armature, report):
     random_color_gen = global_functions.RandomColorGenerator() # generates a random sequence of colors
     materials = []
     shader_collection_dic = {}
-    shader_collection_path = os.path.join(config.HALO_2_TAG_PATH, r"scenarios\shaders\shader_collections.shader_collections")
+    shader_collection_path = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path, r"scenarios\shaders\shader_collections.shader_collections")
     if os.path.isfile(shader_collection_path):
         shader_collection_file = open(shader_collection_path, "r")
         for line in shader_collection_file.readlines():

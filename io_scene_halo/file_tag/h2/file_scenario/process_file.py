@@ -114,6 +114,13 @@ from .format import (
         RelevantGamesFlags,
         SpawnZoneFlags,
         CameraImmersionFlags,
+        FlockFlags,
+        DecoratorTypeEnum,
+        CacheResourceTypeEnum,
+        MultiplayerLevelFlags,
+        FunctionTypeEnum,
+        TransitionExponentEnum,
+        PeriodicExponentEnum,
         SALT_SIZE
         )
 
@@ -3595,9 +3602,9 @@ def read_spawn_data(SCENARIO, TAG, input_stream, tag_node, XML_OUTPUT):
                     static_respawn_zone.name_length = TAG.read_signed_short(input_stream, TAG)
                     TAG.big_endian = False
 
-                    static_respawn_zone.relevant_teams = TAG.read_flag_unsigned_integer(input_stream, TAG, tag_format.XMLData(static_respawn_zone_element_node, "relevant teams", ObjectFlags))
-                    static_respawn_zone.relevant_games = TAG.read_flag_unsigned_integer(input_stream, TAG, tag_format.XMLData(static_respawn_zone_element_node, "relevant games", ObjectFlags))
-                    static_respawn_zone.flags = TAG.read_flag_unsigned_integer(input_stream, TAG, tag_format.XMLData(static_respawn_zone_element_node, "flags", ObjectFlags))
+                    static_respawn_zone.relevant_teams = TAG.read_flag_unsigned_integer(input_stream, TAG, tag_format.XMLData(static_respawn_zone_element_node, "relevant teams", RelevantTeamFlags))
+                    static_respawn_zone.relevant_games = TAG.read_flag_unsigned_integer(input_stream, TAG, tag_format.XMLData(static_respawn_zone_element_node, "relevant games", RelevantGamesFlags))
+                    static_respawn_zone.flags = TAG.read_flag_unsigned_integer(input_stream, TAG, tag_format.XMLData(static_respawn_zone_element_node, "flags", SpawnZoneFlags))
                     static_respawn_zone.position = TAG.read_point_3d(input_stream, TAG, tag_format.XMLData(static_respawn_zone_element_node, "position"))
                     static_respawn_zone.lower_height = TAG.read_float(input_stream, TAG, tag_format.XMLData(static_respawn_zone_element_node, "lower_height"))
                     static_respawn_zone.upper_height = TAG.read_float(input_stream, TAG, tag_format.XMLData(static_respawn_zone_element_node, "upper_height"))
@@ -3639,9 +3646,9 @@ def read_spawn_data(SCENARIO, TAG, input_stream, tag_node, XML_OUTPUT):
                     static_initial_spawn_zone.flags = TAG.read_flag_unsigned_integer(input_stream, TAG, tag_format.XMLData(static_initial_spawn_zone_element_node, "flags", SpawnZoneFlags))
                     static_initial_spawn_zone.position = TAG.read_point_3d(input_stream, TAG, tag_format.XMLData(static_initial_spawn_zone_element_node, "position"))
                     static_initial_spawn_zone.lower_height = TAG.read_float(input_stream, TAG, tag_format.XMLData(static_initial_spawn_zone_element_node, "lower_height"))
-                    static_initial_spawn_zone.upper_height = TAG.read_float(input_stream, TAG, tag_format.XMLData(static_initial_spawn_zone_element_node, "upper_height"))
+                    static_initial_spawn_zone.upper_height = TAG.read_float(input_stream, TAG, tag_format.XMLData(static_initial_spawn_zone_element_node, "upper height"))
                     static_initial_spawn_zone.inner_radius = TAG.read_float(input_stream, TAG, tag_format.XMLData(static_initial_spawn_zone_element_node, "inner radius"))
-                    static_initial_spawn_zone.outer_radius = TAG.read_float(input_stream, TAG, tag_format.XMLData(static_initial_spawn_zone_element_node, "outer_radius"))
+                    static_initial_spawn_zone.outer_radius = TAG.read_float(input_stream, TAG, tag_format.XMLData(static_initial_spawn_zone_element_node, "outer radius"))
                     static_initial_spawn_zone.weight = TAG.read_float(input_stream, TAG, tag_format.XMLData(static_initial_spawn_zone_element_node, "weight"))
 
                     spawn_data.static_initial_spawn_zones.append(static_initial_spawn_zone)
@@ -3730,13 +3737,12 @@ def read_atmospheric_fog_palette(SCENARIO, TAG, input_stream, tag_node, XML_OUTP
             atmospheric_fog_palette.secondary_fog_opaque_distance = TAG.read_float(input_stream, TAG, tag_format.XMLData(atmospheric_fog_palette_element_node, "opaque distance"))
             input_stream.read(4) # Padding?
             atmospheric_fog_palette.planar_color_RGBA = TAG.read_rgb(input_stream, TAG, tag_format.XMLData(atmospheric_fog_palette_element_node, "planar color"))
-            input_stream.read(4) # Padding?
             atmospheric_fog_palette.planar_max_density = TAG.read_float(input_stream, TAG, tag_format.XMLData(atmospheric_fog_palette_element_node, "planar max density"))
             atmospheric_fog_palette.planar_override_amount = TAG.read_float(input_stream, TAG, tag_format.XMLData(atmospheric_fog_palette_element_node, "planar override amount"))
             atmospheric_fog_palette.planar_min_distance_bias = TAG.read_float(input_stream, TAG, tag_format.XMLData(atmospheric_fog_palette_element_node, "planar min distance bias"))
             input_stream.read(44) # Padding?
             atmospheric_fog_palette.patchy_color_RGBA = TAG.read_rgb(input_stream, TAG, tag_format.XMLData(atmospheric_fog_palette_element_node, "planar color"))
-            input_stream.read(8) # Padding?
+            input_stream.read(12) # Padding?
             atmospheric_fog_palette.patchy_density = TAG.read_min_max(input_stream, TAG, tag_format.XMLData(atmospheric_fog_palette_element_node, "patchy density"))
             atmospheric_fog_palette.patchy_distance = TAG.read_min_max(input_stream, TAG, tag_format.XMLData(atmospheric_fog_palette_element_node, "patchy distance"))
             input_stream.read(32) # Padding?
@@ -3805,6 +3811,936 @@ def read_atmospheric_fog_palette(SCENARIO, TAG, input_stream, tag_node, XML_OUTP
                     if interpolator_length > 0:
                         mixer.interpolator = TAG.read_variable_string_no_terminator(input_stream, interpolator_length, TAG, tag_format.XMLData(mixer_element_node, "interpolator"))
 
+def read_planar_fog_palette(SCENARIO, TAG, input_stream, tag_node, XML_OUTPUT):
+    if SCENARIO.scenario_body.planar_fog_palette_tag_block.count > 0:
+        SCENARIO.planar_fog_palette_header = TAG.TagBlockHeader().read(input_stream, TAG)
+        planar_fog_palette_node = tag_format.get_xml_node(XML_OUTPUT, SCENARIO.scenario_body.planar_fog_palette_tag_block.count, tag_node, "name", "planar fog palette")
+        for planar_fog_palette_idx in range(SCENARIO.scenario_body.planar_fog_palette_tag_block.count):
+            planar_fog_palette_element_node = None
+            if XML_OUTPUT:
+                planar_fog_palette_element_node = TAG.xml_doc.createElement('element')
+                planar_fog_palette_element_node.setAttribute('index', str(planar_fog_palette_idx))
+                planar_fog_palette_node.appendChild(planar_fog_palette_element_node)
+
+            planar_fog_palette = SCENARIO.PlanarFogPalette()
+
+            TAG.big_endian = True
+            input_stream.read(2) # Padding?
+            planar_fog_palette.name_length = TAG.read_signed_short(input_stream, TAG)
+            TAG.big_endian = False
+
+            planar_fog_palette.planar_fog = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(planar_fog_palette_element_node, "planar fog"))
+            input_stream.read(4) # Padding?
+
+            SCENARIO.planar_fog_palette.append(planar_fog_palette)
+
+        for planar_fog_palette_idx, planar_fog_palette in enumerate(SCENARIO.planar_fog_palette):
+            planar_fog_palette_element_node = None
+            if XML_OUTPUT:
+                planar_fog_palette_element_node = planar_fog_palette_node.childNodes[planar_fog_palette_idx]
+
+            name_length = planar_fog_palette.name_length
+            if name_length > 0:
+                planar_fog_palette.name = TAG.read_variable_string_no_terminator(input_stream, name_length, TAG, tag_format.XMLData(planar_fog_palette_element_node, "name"))
+
+            planar_fog_name_length = planar_fog_palette.planar_fog.name_length
+            if planar_fog_name_length > 0:
+                planar_fog_palette.planar_fog.name = TAG.read_variable_string(input_stream, planar_fog_name_length, TAG)
+
+            if XML_OUTPUT:
+                planar_fog_tag_ref_node = tag_format.get_xml_node(XML_OUTPUT, 1, planar_fog_palette_element_node, "name", "planar fog")
+                planar_fog_palette.planar_fog.append_xml_attributes(planar_fog_tag_ref_node)
+
+def read_flocks(SCENARIO, TAG, input_stream, tag_node, XML_OUTPUT):
+    if SCENARIO.scenario_body.flocks_tag_block.count > 0:
+        SCENARIO.flocks_header = TAG.TagBlockHeader().read(input_stream, TAG)
+        flocks_node = tag_format.get_xml_node(XML_OUTPUT, SCENARIO.scenario_body.flocks_tag_block.count, tag_node, "name", "flocks")
+        for flock_idx in range(SCENARIO.scenario_body.flocks_tag_block.count):
+            flock_element_node = None
+            if XML_OUTPUT:
+                flock_element_node = TAG.xml_doc.createElement('element')
+                flock_element_node.setAttribute('index', str(flock_idx))
+                flocks_node.appendChild(flock_element_node)
+
+            flock = SCENARIO.Flock()
+
+            flock.bsp = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(flock_element_node, "bsp", None, SCENARIO.scenario_body.structure_bsps_tag_block.count, "scenario_bsp_block"))
+            input_stream.read(2) # Padding?
+            flock.bounding_volume = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(flock_element_node, "bounding volume", None, SCENARIO.scenario_body.scenario_kill_triggers_tag_block.count, "scenario_kill_triggers_block"))
+            flock.flags = TAG.read_flag_unsigned_short(input_stream, TAG, tag_format.XMLData(flock_element_node, "flags", FlockFlags))
+            flock.ecology_margin = TAG.read_float(input_stream, TAG, tag_format.XMLData(flock_element_node, "ecology margin"))
+            flock.sources_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(flock_element_node, "sources"))
+            flock.sinks_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(flock_element_node, "sinks"))
+            flock.production_frequency = TAG.read_float(input_stream, TAG, tag_format.XMLData(flock_element_node, "production frequency"))
+            flock.scale = TAG.read_min_max(input_stream, TAG, tag_format.XMLData(flock_element_node, "scale"))
+            flock.creature = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(flock_element_node, "creature"))
+            flock.boid_count = TAG.read_min_max_signed_short(input_stream, TAG, tag_format.XMLData(flock_element_node, "boid count"))
+            flock.neighborhood_radius = TAG.read_float(input_stream, TAG, tag_format.XMLData(flock_element_node, "neighborhood radius"))
+            flock.avoidance_radius = TAG.read_float(input_stream, TAG, tag_format.XMLData(flock_element_node, "avoidance radius"))
+            flock.forward_scale = TAG.read_float(input_stream, TAG, tag_format.XMLData(flock_element_node, "forward scale"))
+            flock.alignment_scale = TAG.read_float(input_stream, TAG, tag_format.XMLData(flock_element_node, "alignment scale"))
+            flock.avoidance_scale = TAG.read_float(input_stream, TAG, tag_format.XMLData(flock_element_node, "avoidance scale"))
+            flock.leveling_force_scale = TAG.read_float(input_stream, TAG, tag_format.XMLData(flock_element_node, "leveling force scale"))
+            flock.sink_scale = TAG.read_float(input_stream, TAG, tag_format.XMLData(flock_element_node, "sink scale"))
+            flock.perception_angle = TAG.read_degree(input_stream, TAG, tag_format.XMLData(flock_element_node, "perception angle"))
+            flock.average_throttle = TAG.read_float(input_stream, TAG, tag_format.XMLData(flock_element_node, "average throttle"))
+            flock.maximum_throttle = TAG.read_float(input_stream, TAG, tag_format.XMLData(flock_element_node, "maximum throttle"))
+            flock.position_scale = TAG.read_float(input_stream, TAG, tag_format.XMLData(flock_element_node, "position scale"))
+            flock.position_min_radius = TAG.read_float(input_stream, TAG, tag_format.XMLData(flock_element_node, "position min radius"))
+            flock.position_max_radius = TAG.read_float(input_stream, TAG, tag_format.XMLData(flock_element_node, "position max radius"))
+            flock.movement_weight_threshold = TAG.read_float(input_stream, TAG, tag_format.XMLData(flock_element_node, "movement weight threshold"))
+            flock.danger_radius = TAG.read_float(input_stream, TAG, tag_format.XMLData(flock_element_node, "danger radius"))
+            flock.danger_scale = TAG.read_float(input_stream, TAG, tag_format.XMLData(flock_element_node, "danger scale"))
+            flock.random_offset_scale = TAG.read_float(input_stream, TAG, tag_format.XMLData(flock_element_node, "random offset scale"))
+            flock.random_offset_period = TAG.read_min_max(input_stream, TAG, tag_format.XMLData(flock_element_node, "random offset period"))
+
+            TAG.big_endian = True
+            input_stream.read(2) # Padding?
+            flock.flock_name_length = TAG.read_signed_short(input_stream, TAG)
+            TAG.big_endian = False
+
+            SCENARIO.flocks.append(flock)
+
+        for flock_idx, flock in enumerate(SCENARIO.flocks):
+            flock_element_node = None
+            if XML_OUTPUT:
+                flock_element_node = flocks_node.childNodes[flock_idx]
+
+            flock.sources = []
+            if flock.sources_tag_block.count > 0:
+                flock.sources_header = TAG.TagBlockHeader().read(input_stream, TAG)
+                sources_node = tag_format.get_xml_node(XML_OUTPUT, flock.sources_tag_block.count, flock_element_node, "name", "sources")
+                for source_idx in range(flock.sources_tag_block.count):
+                    source_element_node = None
+                    if XML_OUTPUT:
+                        source_element_node = TAG.xml_doc.createElement('element')
+                        source_element_node.setAttribute('index', str(source_idx))
+                        sources_node.appendChild(source_element_node)
+
+                    source = SCENARIO.Source()
+
+                    source.position = TAG.read_point_3d(input_stream, TAG, tag_format.XMLData(source_element_node, "position"))
+                    source.starting_yaw_pitch = TAG.read_degree_2d(input_stream, TAG, tag_format.XMLData(source_element_node, "starting yaw pitch"))
+                    source.radius = TAG.read_float(input_stream, TAG, tag_format.XMLData(source_element_node, "radius"))
+                    source.weight = TAG.read_float(input_stream, TAG, tag_format.XMLData(source_element_node, "weight"))
+
+                    flock.sources.append(source)
+
+            flock.sinks = []
+            if flock.sinks_tag_block.count > 0:
+                flock.sinks_header = TAG.TagBlockHeader().read(input_stream, TAG)
+                sinks_node = tag_format.get_xml_node(XML_OUTPUT, flock.sinks_tag_block.count, flock_element_node, "name", "sinks")
+                for sink_idx in range(flock.sinks_tag_block.count):
+                    sink_element_node = None
+                    if XML_OUTPUT:
+                        sink_element_node = TAG.xml_doc.createElement('element')
+                        sink_element_node.setAttribute('index', str(sink_idx))
+                        sinks_node.appendChild(sink_element_node)
+
+                    sink = SCENARIO.Sink()
+
+                    sink.position = TAG.read_point_3d(input_stream, TAG, tag_format.XMLData(sink_element_node, "position"))
+                    sink.radius = TAG.read_float(input_stream, TAG, tag_format.XMLData(sink_element_node, "radius"))
+
+                    flock.sinks.append(sink)
+
+            creature_name_length = flock.creature.name_length
+            if creature_name_length > 0:
+                flock.creature.name = TAG.read_variable_string(input_stream, creature_name_length, TAG)
+
+            if XML_OUTPUT:
+                creature_tag_ref_node = tag_format.get_xml_node(XML_OUTPUT, 1, flock_element_node, "name", "creature")
+                flock.creature.append_xml_attributes(creature_tag_ref_node)
+
+            flock_name_length = flock.flock_name_length
+            if flock_name_length > 0:
+                flock.flock_name = TAG.read_variable_string_no_terminator(input_stream, flock_name_length, TAG, tag_format.XMLData(flock_element_node, "flock name"))
+
+def read_decorators(SCENARIO, TAG, input_stream, tag_node, XML_OUTPUT):
+    if SCENARIO.scenario_body.decorators_tag_block.count > 0:
+        SCENARIO.decorators_header = TAG.TagBlockHeader().read(input_stream, TAG)
+        decorators_node = tag_format.get_xml_node(XML_OUTPUT, SCENARIO.scenario_body.decorators_tag_block.count, tag_node, "name", "decorators")
+        for decorator_idx in range(SCENARIO.scenario_body.decorators_tag_block.count):
+            decorator_element_node = None
+            if XML_OUTPUT:
+                decorator_element_node = TAG.xml_doc.createElement('element')
+                decorator_element_node.setAttribute('index', str(decorator_idx))
+                decorators_node.appendChild(decorator_element_node)
+
+            decorator = SCENARIO.Decorator()
+
+            decorator.grid_origin = TAG.read_point_3d(input_stream, TAG, tag_format.XMLData(decorator_element_node, "grid origin"))
+            decorator.cell_count_per_dimension = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(decorator_element_node, "cell count per dimension"))
+            decorator.cache_blocks_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(decorator_element_node, "cache blocks"))
+            decorator.groups_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(decorator_element_node, "groups"))
+            decorator.cells_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(decorator_element_node, "cells"))
+            decorator.decals_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(decorator_element_node, "decals"))
+
+            SCENARIO.decorators.append(decorator)
+
+        for decorator_idx, decorator in enumerate(SCENARIO.decorators):
+            decorator_element_node = None
+            if XML_OUTPUT:
+                decorator_element_node = decorators_node.childNodes[decorator_idx]
+
+            decorator.cache_blocks = []
+            decorator.groups = []
+            decorator.cells = []
+            decorator.decals = []
+            if decorator.cache_blocks_tag_block.count > 0:
+                decorator.cache_blocks_header = TAG.TagBlockHeader().read(input_stream, TAG)
+                cache_block_node = tag_format.get_xml_node(XML_OUTPUT, decorator.cache_blocks_tag_block.count, decorator_element_node, "name", "cache blocks")
+                for cache_block_idx in range(decorator.cache_blocks_tag_block.count):
+                    cache_block_element_node = None
+                    if XML_OUTPUT:
+                        cache_block_element_node = TAG.xml_doc.createElement('element')
+                        cache_block_element_node.setAttribute('index', str(cache_block_idx))
+                        cache_block_node.appendChild(cache_block_element_node)
+
+                    cache_block = SCENARIO.CacheBlock()
+
+                    cache_block.block_offset = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(cache_block_element_node, "block offset"))
+                    cache_block.block_size = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(cache_block_element_node, "block size"))
+                    cache_block.section_data_size = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(cache_block_element_node, "section data size"))
+                    cache_block.resource_data_size = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(cache_block_element_node, "resource data size"))
+                    cache_block.resources_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(cache_block_element_node, "resources"))
+                    input_stream.read(4) # Padding?
+                    cache_block.owner_tag_section_offset = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(cache_block_element_node, "owner tag section offset"))
+                    input_stream.read(6) # Padding?
+                    cache_block.cache_block_data_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(cache_block_element_node, "cache block data"))
+                    input_stream.read(8) # Padding?
+
+                    decorator.cache_blocks.append(cache_block)
+
+                for cache_block_idx, cache_block in enumerate(decorator.cache_blocks):
+                    cache_block_element_node = None
+                    if XML_OUTPUT:
+                        cache_block_element_node = cache_block_node.childNodes[cache_block_idx]
+
+                    cache_block.blok_header = TAG.TagBlockHeader().read(input_stream, TAG)
+
+                    cache_block.resources = []
+                    cache_block.cache_block_data = []
+                    if cache_block.resources_tag_block.count > 0:
+                        cache_block.resources_header = TAG.TagBlockHeader().read(input_stream, TAG)
+                        resources_node = tag_format.get_xml_node(XML_OUTPUT, cache_block.resources_tag_block.count, cache_block_element_node, "name", "resources")
+                        for resource_idx in range(cache_block.resources_tag_block.count):
+                            resource_element_node = None
+                            if XML_OUTPUT:
+                                resource_element_node = TAG.xml_doc.createElement('element')
+                                resource_element_node.setAttribute('index', str(resource_idx))
+                                resources_node.appendChild(resource_element_node)
+
+                            resource = SCENARIO.Resource()
+                            resource.resource_type = TAG.read_enum_unsigned_byte(input_stream, TAG, tag_format.XMLData(resource_element_node, "resource type", CacheResourceTypeEnum))
+                            input_stream.read(3) # Padding?
+                            resource.primary_locator = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(resource_element_node, "primary locator"))
+                            resource.secondary_locator = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(resource_element_node, "secondary locator"))
+                            resource.resource_data_size = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(resource_element_node, "resource data size"))
+                            resource.resource_data_offset = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(resource_element_node, "resource data offset"))
+
+                            cache_block.resources.append(resource)
+
+                    if cache_block.cache_block_data_tag_block.count > 0:
+                        cache_block.cache_block_data_header = TAG.TagBlockHeader().read(input_stream, TAG)
+                        cache_block_data_node = tag_format.get_xml_node(XML_OUTPUT, cache_block.cache_block_data_tag_block.count, cache_block_element_node, "name", "cache block data")
+                        for cache_block_data_idx in range(cache_block.cache_block_data_tag_block.count):
+                            cache_block_data_element_node = None
+                            if XML_OUTPUT:
+                                cache_block_data_element_node = TAG.xml_doc.createElement('element')
+                                cache_block_data_element_node.setAttribute('index', str(cache_block_data_idx))
+                                cache_block_data_node.appendChild(cache_block_data_element_node)
+
+                            cache_block_data = SCENARIO.CacheBlockData()
+                            cache_block_data.placements_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(cache_block_data_element_node, "placements"))
+                            cache_block_data.decal_vertices_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(cache_block_data_element_node, "decal vertices"))
+                            cache_block_data.decal_indices_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(cache_block_data_element_node, "decal indices"))
+                            input_stream.read(48) # Padding?
+                            cache_block_data.sprite_vertices_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(cache_block_data_element_node, "sprite vertices"))
+                            cache_block_data.sprite_indices_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(cache_block_data_element_node, "sprite indices"))
+                            input_stream.read(48) # Padding?
+
+                            cache_block.cache_block_data.append(cache_block_data)
+
+                        for cache_block_data_idx, cache_block_data in enumerate(cache_block.cache_block_data):
+                            cache_block_data_element_node = None
+                            if XML_OUTPUT:
+                                cache_block_data_element_node = cache_block_data_node.childNodes[cache_block_data_idx]
+
+                            cache_block_data.placements = []
+                            cache_block_data.decal_vertices = []
+                            cache_block_data.decal_indices = []
+                            cache_block_data.sprite_vertices = []
+                            cache_block_data.sprite_indices = []
+                            if cache_block_data.placements_tag_block.count > 0:
+                                cache_block_data.placements_header = TAG.TagBlockHeader().read(input_stream, TAG)
+                                placements_node = tag_format.get_xml_node(XML_OUTPUT, cache_block_data.placements_tag_block.count, cache_block_data_element_node, "name", "placements")
+                                for placement_idx in range(cache_block_data.placements_tag_block.count):
+                                    placement_element_node = None
+                                    if XML_OUTPUT:
+                                        placement_element_node = TAG.xml_doc.createElement('element')
+                                        placement_element_node.setAttribute('index', str(placement_idx))
+                                        placements_node.appendChild(placement_element_node)
+
+                                    placement = SCENARIO.Placement()
+                                    placement.internal_data_1 = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(placement_element_node, "internal data 1"))
+                                    placement.compressed_position = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(placement_element_node, "compressed position"))
+                                    placement.tint_color = TAG.read_bgr_byte(input_stream, TAG, tag_format.XMLData(placement_element_node, "tint color"))
+                                    placement.lightmap_color = TAG.read_bgr_byte(input_stream, TAG, tag_format.XMLData(placement_element_node, "lightmap color"))
+                                    placement.compressed_light_direction = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(placement_element_node, "compressed light direction"))
+                                    placement.compressed_light_2_direction = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(placement_element_node, "compressed light 2 direction"))
+
+                                    cache_block_data.placements.append(placement)
+
+                            if cache_block_data.decal_vertices_tag_block.count > 0:
+                                cache_block_data.decal_vertices_header = TAG.TagBlockHeader().read(input_stream, TAG)
+                                decal_vertices_node = tag_format.get_xml_node(XML_OUTPUT, cache_block_data.decal_vertices_tag_block.count, cache_block_data_element_node, "name", "decal vertices")
+                                for decal_vertex_idx in range(cache_block_data.decal_vertices_tag_block.count):
+                                    decal_vertex_element_node = None
+                                    if XML_OUTPUT:
+                                        decal_vertex_element_node = TAG.xml_doc.createElement('element')
+                                        decal_vertex_element_node.setAttribute('index', str(decal_vertex_idx))
+                                        decal_vertices_node.appendChild(decal_vertex_element_node)
+
+                                    decal_vertex = SCENARIO.DecalVertex()
+                                    decal_vertex.position = TAG.read_point_3d(input_stream, TAG, tag_format.XMLData(decal_vertex_element_node, "position"))
+                                    decal_vertex.texcoord_0 = TAG.read_point_2d(input_stream, TAG, tag_format.XMLData(decal_vertex_element_node, "texcoord 0"))
+                                    decal_vertex.texcoord_1 = TAG.read_point_2d(input_stream, TAG, tag_format.XMLData(decal_vertex_element_node, "texcoord 1"))
+                                    decal_vertex.color = TAG.read_bgr_byte(input_stream, TAG, tag_format.XMLData(decal_vertex_element_node, "color"))
+
+                                    cache_block_data.decal_vertices.append(decal_vertex)
+
+                            if cache_block_data.decal_indices_tag_block.count > 0:
+                                cache_block_data.decal_indices_header = TAG.TagBlockHeader().read(input_stream, TAG)
+                                decal_indices_node = tag_format.get_xml_node(XML_OUTPUT, cache_block_data.decal_indices_tag_block.count, cache_block_data_element_node, "name", "decal indices")
+                                for decal_index_idx in range(cache_block_data.decal_indices_tag_block.count):
+                                    decal_index_element_node = None
+                                    if XML_OUTPUT:
+                                        decal_index_element_node = TAG.xml_doc.createElement('element')
+                                        decal_index_element_node.setAttribute('index', str(decal_index_idx))
+                                        decal_indices_node.appendChild(decal_index_element_node)
+
+                                    index = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(decal_index_element_node, "index"))
+
+                                    cache_block_data.decal_vertices.append(index)
+
+                            if cache_block_data.sprite_vertices_tag_block.count > 0:
+                                cache_block_data.sprite_vertices_header = TAG.TagBlockHeader().read(input_stream, TAG)
+                                sprite_vertices_node = tag_format.get_xml_node(XML_OUTPUT, cache_block_data.sprite_vertices_tag_block.count, cache_block_data_element_node, "name", "sprite vertices")
+                                for sprite_vertex_idx in range(cache_block_data.sprite_vertices_tag_block.count):
+                                    sprite_vertex_element_node = None
+                                    if XML_OUTPUT:
+                                        sprite_vertex_element_node = TAG.xml_doc.createElement('element')
+                                        sprite_vertex_element_node.setAttribute('index', str(sprite_vertex_idx))
+                                        sprite_vertices_node.appendChild(sprite_vertex_element_node)
+
+                                    sprite_vertex = SCENARIO.SpriteVertex()
+                                    sprite_vertex.position = TAG.read_point_3d(input_stream, TAG, tag_format.XMLData(sprite_vertex_element_node, "position"))
+                                    sprite_vertex.offset = TAG.read_vector(input_stream, TAG, tag_format.XMLData(sprite_vertex_element_node, "offset"))
+                                    sprite_vertex.axis = TAG.read_vector(input_stream, TAG, tag_format.XMLData(sprite_vertex_element_node, "axis"))
+                                    sprite_vertex.texcoord = TAG.read_point_2d(input_stream, TAG, tag_format.XMLData(sprite_vertex_element_node, "texcoord"))
+                                    sprite_vertex.color = TAG.read_bgr_byte(input_stream, TAG, tag_format.XMLData(sprite_vertex_element_node, "color"))
+
+                                    cache_block_data.sprite_vertices.append(sprite_vertex)
+
+                            if cache_block_data.sprite_indices_tag_block.count > 0:
+                                cache_block_data.sprite_indices_header = TAG.TagBlockHeader().read(input_stream, TAG)
+                                sprite_indices_node = tag_format.get_xml_node(XML_OUTPUT, cache_block_data.sprite_indices_tag_block.count, cache_block_data_element_node, "name", "sprite indices")
+                                for sprite_index_idx in range(cache_block_data.sprite_indices_tag_block.count):
+                                    sprite_index_element_node = None
+                                    if XML_OUTPUT:
+                                        sprite_index_element_node = TAG.xml_doc.createElement('element')
+                                        sprite_index_element_node.setAttribute('index', str(sprite_index_idx))
+                                        sprite_indices_node.appendChild(sprite_index_element_node)
+
+                                    index = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(sprite_index_element_node, "index"))
+
+                                    cache_block_data.sprite_vertices.append(index)
+
+            if decorator.groups_tag_block.count > 0:
+                decorator.groups_header = TAG.TagBlockHeader().read(input_stream, TAG)
+                groups_node = tag_format.get_xml_node(XML_OUTPUT, decorator.groups_tag_block.count, decorator_element_node, "name", "groups")
+                for group_idx in range(decorator.groups_tag_block.count):
+                    group_element_node = None
+                    if XML_OUTPUT:
+                        group_element_node = TAG.xml_doc.createElement('element')
+                        group_element_node.setAttribute('index', str(group_idx))
+                        groups_node.appendChild(group_element_node)
+
+                    group = SCENARIO.Group()
+
+                    group.decorator_set = TAG.read_block_index_signed_byte(input_stream, TAG, tag_format.XMLData(group_element_node, "decorator set", None, SCENARIO.scenario_body.decorator_palette_tag_block.count, "scenario_decorator_palette_block"))
+                    group.decorator_type = TAG.read_enum_unsigned_byte(input_stream, TAG, tag_format.XMLData(group_element_node, "decorator type", DecoratorTypeEnum))
+                    group.shader_index = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(group_element_node, "shader index"))
+                    group.compressed_radius = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(group_element_node, "compressed radius"))
+                    group.cluster = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(group_element_node, "cluster"))
+                    group.cache_block = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(group_element_node, "cache block", None, decorator.cache_blocks_tag_block.count, "decorator_cache_block"))
+                    group.decorator_start_index = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(group_element_node, "decorator start index"))
+                    group.decorator_count = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(group_element_node, "decorator count"))
+                    group.vertex_start_offset = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(group_element_node, "vertex start offset"))
+                    group.vertex_count = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(group_element_node, "vertex count"))
+                    group.index_start_offset = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(group_element_node, "index start offset"))
+                    group.index_count = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(group_element_node, "index count"))
+                    group.compressed_bounding_center = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(group_element_node, "compressed bounding center"))
+
+                    decorator.groups.append(group)
+
+            if decorator.cells_tag_block.count > 0:
+                decorator.cells_header = TAG.TagBlockHeader().read(input_stream, TAG)
+                cells_node = tag_format.get_xml_node(XML_OUTPUT, decorator.cells_tag_block.count, decorator_element_node, "name", "cells")
+                for cell_idx in range(decorator.cells_tag_block.count):
+                    cell_element_node = None
+                    if XML_OUTPUT:
+                        cell_element_node = TAG.xml_doc.createElement('element')
+                        cell_element_node.setAttribute('index', str(cell_idx))
+                        cells_node.appendChild(cell_element_node)
+
+                    cell = SCENARIO.Cell()
+                    cell.child_index_0 = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(cell_element_node, "child index"))
+                    cell.child_index_1 = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(cell_element_node, "child index"))
+                    cell.child_index_2 = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(cell_element_node, "child index"))
+                    cell.child_index_3 = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(cell_element_node, "child index"))
+                    cell.child_index_4 = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(cell_element_node, "child index"))
+                    cell.child_index_5 = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(cell_element_node, "child index"))
+                    cell.child_index_6 = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(cell_element_node, "child index"))
+                    cell.child_index_7 = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(cell_element_node, "child index"))
+                    cell.cache_block_index = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(cell_element_node, "cache block index", None, decorator.cache_blocks_tag_block.count, "decorator_cache_block"))
+                    cell.group_count = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(cell_element_node, "group count"))
+                    cell.group_start_index = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(cell_element_node, "group start index"))
+
+                    decorator.cells.append(cell)
+
+            if decorator.decals_tag_block.count > 0:
+                decorator.decals_header = TAG.TagBlockHeader().read(input_stream, TAG)
+                decals_node = tag_format.get_xml_node(XML_OUTPUT, decorator.decals_tag_block.count, decorator_element_node, "name", "decals")
+                for decal_idx in range(decorator.decals_tag_block.count):
+                    decal_element_node = None
+                    if XML_OUTPUT:
+                        decal_element_node = TAG.xml_doc.createElement('element')
+                        decal_element_node.setAttribute('index', str(decal_idx))
+                        decals_node.appendChild(decal_element_node)
+
+                    decal = SCENARIO.Decal()
+                    decal.decorator_set = TAG.read_block_index_signed_byte(input_stream, TAG, tag_format.XMLData(decal_element_node, "decorator set", None, SCENARIO.scenario_body.decorator_palette_tag_block.count, "scenario_decorator_palette_block"))
+                    decal.decorator_class = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(decal_element_node, "decorator class"))
+                    decal.decorator_permutation = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(decal_element_node, "decorator permutation"))
+                    decal.sprite_index = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(decal_element_node, "sprite index"))
+                    decal.position = TAG.read_point_3d(input_stream, TAG, tag_format.XMLData(decal_element_node, "position"))
+                    decal.left = TAG.read_vector(input_stream, TAG, tag_format.XMLData(decal_element_node, "left"))
+                    decal.up = TAG.read_vector(input_stream, TAG, tag_format.XMLData(decal_element_node, "up"))
+                    decal.extents = TAG.read_vector(input_stream, TAG, tag_format.XMLData(decal_element_node, "extents"))
+                    decal.previous_position = TAG.read_point_3d(input_stream, TAG, tag_format.XMLData(decal_element_node, "previous position"))
+
+                    decorator.decals.append(decal)
+
+def get_creature(input_stream, SCENARIO, TAG, node_element):
+    creature = SCENARIO.Creature()
+    object_helper(creature, TAG, input_stream, SCENARIO, node_element, SCENARIO.scenario_body.creature_palette_tag_block.count, "scenario_creature_palette_block")
+
+    return creature
+
+def read_creatures(SCENARIO, TAG, input_stream, tag_node, XML_OUTPUT):
+    if SCENARIO.scenario_body.creatures_tag_block.count > 0:
+        SCENARIO.creatures_header = TAG.TagBlockHeader().read(input_stream, TAG)
+        creatures_node = tag_format.get_xml_node(XML_OUTPUT, SCENARIO.scenario_body.creatures_tag_block.count, tag_node, "name", "creatures")
+        for creature_idx in range(SCENARIO.scenario_body.creatures_tag_block.count):
+            creature_element_node = None
+            if XML_OUTPUT:
+                creature_element_node = TAG.xml_doc.createElement('element')
+                creature_element_node.setAttribute('index', str(creature_idx))
+                creatures_node.appendChild(creature_element_node)
+
+            SCENARIO.creatures.append(get_creature(input_stream, SCENARIO, TAG, creature_element_node))
+
+        for creature_idx, creature in enumerate(SCENARIO.creatures):
+            creature_element_node = None
+            if XML_OUTPUT:
+                creature_element_node = creatures_node.childNodes[creature_idx]
+
+            creature.sobj_header = TAG.TagBlockHeader().read(input_stream, TAG)
+            creature.obj0_header = TAG.TagBlockHeader().read(input_stream, TAG)
+
+    palette_helper(input_stream, SCENARIO.scenario_body.creature_palette_tag_block.count, "creatures palette", SCENARIO.creatures_palette_header, SCENARIO.creatures_palette, tag_node, TAG)
+
+def read_decorator_palette(SCENARIO, TAG, input_stream, tag_node, XML_OUTPUT):
+    if SCENARIO.scenario_body.decorator_palette_tag_block.count > 0:
+        SCENARIO.decorator_palette_header = TAG.TagBlockHeader().read(input_stream, TAG)
+        decorator_palette_node = tag_format.get_xml_node(XML_OUTPUT, SCENARIO.scenario_body.decorator_palette_tag_block.count, tag_node, "name", "decorator palette")
+        for decorator_palette_idx in range(SCENARIO.scenario_body.decorator_palette_tag_block.count):
+            decorator_palette_element_node = None
+            if XML_OUTPUT:
+                decorator_palette_element_node = TAG.xml_doc.createElement('element')
+                decorator_palette_element_node.setAttribute('index', str(decorator_palette_idx))
+                decorator_palette_node.appendChild(decorator_palette_element_node)
+
+            SCENARIO.decorator_palette.append(TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(decorator_palette_element_node, "decorator set")))
+
+        for decorator_palette_idx, decorator_palette in enumerate(SCENARIO.decorator_palette):
+            decorator_palette_name_length = decorator_palette.name_length
+            if decorator_palette_name_length > 0:
+                decorator_palette.name = TAG.read_variable_string(input_stream, decorator_palette_name_length, TAG)
+
+            if XML_OUTPUT:
+                decorator_palette_element_node = decorator_palette_node.childNodes[decorator_palette_idx]
+                decorator_palette_tag_ref_node = tag_format.get_xml_node(XML_OUTPUT, 1, decorator_palette_element_node, "name", "decorator set")
+                decorator_palette.append_xml_attributes(decorator_palette_tag_ref_node)
+
+def read_bsp_transition_volumes(SCENARIO, TAG, input_stream, tag_node, XML_OUTPUT):
+    if SCENARIO.scenario_body.bsp_transition_volumes_tag_block.count > 0:
+        SCENARIO.bsp_transition_volumes_header = TAG.TagBlockHeader().read(input_stream, TAG)
+        bsp_transition_volumes_node = tag_format.get_xml_node(XML_OUTPUT, SCENARIO.scenario_body.bsp_transition_volumes_tag_block.count, tag_node, "name", "bsp transition volumes")
+        for bsp_transition_volume_idx in range(SCENARIO.scenario_body.bsp_transition_volumes_tag_block.count):
+            bsp_transition_volume_element_node = None
+            if XML_OUTPUT:
+                bsp_transition_volume_element_node = TAG.xml_doc.createElement('element')
+                bsp_transition_volume_element_node.setAttribute('index', str(bsp_transition_volume_idx))
+                bsp_transition_volumes_node.appendChild(bsp_transition_volume_element_node)
+
+            bsp_transition_volume = SCENARIO.BSPTransitionVolume()
+            bsp_transition_volume.bsp_index_key = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(bsp_transition_volume_element_node, "bsp index key"))
+            bsp_transition_volume.trigger_volume = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(bsp_transition_volume_element_node, "trigger volume", None, SCENARIO.scenario_body.scenario_kill_triggers_tag_block.count, "scenario_kill_triggers_block"))
+            input_stream.read(2) # Padding?
+
+            SCENARIO.bsp_transition_volumes.append(bsp_transition_volume)
+
+def read_structure_bsp_lighting(SCENARIO, TAG, input_stream, tag_node, XML_OUTPUT):
+    if SCENARIO.scenario_body.structure_bsp_lighting_tag_block.count > 0:
+        SCENARIO.structure_bsp_lighting_header = TAG.TagBlockHeader().read(input_stream, TAG)
+        structure_bsp_lighting_node = tag_format.get_xml_node(XML_OUTPUT, SCENARIO.scenario_body.structure_bsp_lighting_tag_block.count, tag_node, "name", "structure bsp lighting")
+        for structure_bsp_lighting_idx in range(SCENARIO.scenario_body.structure_bsp_lighting_tag_block.count):
+            structure_bsp_lighting_element_node = None
+            if XML_OUTPUT:
+                structure_bsp_lighting_element_node = TAG.xml_doc.createElement('element')
+                structure_bsp_lighting_element_node.setAttribute('index', str(structure_bsp_lighting_idx))
+                structure_bsp_lighting_node.appendChild(structure_bsp_lighting_element_node)
+
+            structure_bsp_lighting = SCENARIO.StructureBSPLighting()
+
+            structure_bsp_lighting.bsp = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(structure_bsp_lighting_element_node, "bsp"))
+            structure_bsp_lighting.lighting_points_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(structure_bsp_lighting_element_node, "lighting points"))
+
+            SCENARIO.structure_bsp_lighting.append(structure_bsp_lighting)
+
+        for structure_bsp_lighting_idx, structure_bsp_lighting in enumerate(SCENARIO.structure_bsp_lighting):
+            structure_bsp_lighting_element_node = None
+            if XML_OUTPUT:
+                structure_bsp_lighting_element_node = structure_bsp_lighting_node.childNodes[structure_bsp_lighting_idx]
+
+            bsp_name_length = structure_bsp_lighting.bsp.name_length
+            if bsp_name_length > 0:
+                structure_bsp_lighting.bsp.name = TAG.read_variable_string(input_stream, bsp_name_length, TAG)
+
+            if XML_OUTPUT:
+                bsp_tag_ref_node = tag_format.get_xml_node(XML_OUTPUT, 1, structure_bsp_lighting_element_node, "name", "bsp")
+                structure_bsp_lighting.bsp.append_xml_attributes(bsp_tag_ref_node)
+
+            structure_bsp_lighting.lighting_points = []
+            if structure_bsp_lighting.lighting_points_tag_block.count > 0:
+                structure_bsp_lighting.lighting_points_header = TAG.TagBlockHeader().read(input_stream, TAG)
+                lighting_points_node = tag_format.get_xml_node(XML_OUTPUT, structure_bsp_lighting.lighting_points_tag_block.count, structure_bsp_lighting_element_node, "name", "lighting points")
+                for lighting_point_idx in range(structure_bsp_lighting.lighting_points_tag_block.count):
+                    lighting_point_element_node = None
+                    if XML_OUTPUT:
+                        lighting_point_element_node = TAG.xml_doc.createElement('element')
+                        lighting_point_element_node.setAttribute('index', str(lighting_point_idx))
+                        lighting_points_node.appendChild(lighting_point_element_node)
+
+                    structure_bsp_lighting.lighting_points.append(TAG.read_point_3d(input_stream, TAG, tag_format.XMLData(lighting_point_element_node, "position")))
+
+def read_editor_folders(SCENARIO, TAG, input_stream, tag_node, XML_OUTPUT):
+    if SCENARIO.scenario_body.editor_folders_tag_block.count > 0:
+        SCENARIO.editor_folders_header = TAG.TagBlockHeader().read(input_stream, TAG)
+        editor_folders_node = tag_format.get_xml_node(XML_OUTPUT, SCENARIO.scenario_body.editor_folders_tag_block.count, tag_node, "name", "editor folders")
+        for editor_folder_idx in range(SCENARIO.scenario_body.editor_folders_tag_block.count):
+            editor_folder_element_node = None
+            if XML_OUTPUT:
+                editor_folder_element_node = TAG.xml_doc.createElement('element')
+                editor_folder_element_node.setAttribute('index', str(editor_folder_idx))
+                editor_folders_node.appendChild(editor_folder_element_node)
+
+            editor_folder = SCENARIO.EditorFolder()
+
+            editor_folder.parent_folder = TAG.read_block_index_signed_integer(input_stream, TAG, tag_format.XMLData(editor_folder_element_node, "parent folder", None, SCENARIO.scenario_body.editor_folders_tag_block.count, "scenario_editor_folders_block"))
+            editor_folder.name = TAG.read_string256(input_stream, TAG, tag_format.XMLData(editor_folder_element_node, "name"))
+
+            SCENARIO.editor_folders.append(editor_folder)
+
+def read_level_data(SCENARIO, TAG, input_stream, tag_node, XML_OUTPUT):
+    if SCENARIO.scenario_body.level_data_tag_block.count > 0:
+        SCENARIO.level_data_header = TAG.TagBlockHeader().read(input_stream, TAG)
+        level_data_node = tag_format.get_xml_node(XML_OUTPUT, SCENARIO.scenario_body.level_data_tag_block.count, tag_node, "name", "level data")
+        for level_data_idx in range(SCENARIO.scenario_body.level_data_tag_block.count):
+            level_data_element_node = None
+            if XML_OUTPUT:
+                level_data_element_node = TAG.xml_doc.createElement('element')
+                level_data_element_node.setAttribute('index', str(level_data_idx))
+                level_data_node.appendChild(level_data_element_node)
+
+            level_data = SCENARIO.LevelData()
+            level_data.level_strings = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(level_data_element_node, "level strings"))
+            level_data.campaign_level_data_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(level_data_element_node, "campaign level data"))
+            level_data.multiplayer_level_data_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(level_data_element_node, "multiplayer level data"))
+
+            SCENARIO.level_data.append(level_data)
+
+        for level_data_idx, level_data in enumerate(SCENARIO.level_data):
+            level_data_element_node = None
+            if XML_OUTPUT:
+                level_data_element_node = level_data_node.childNodes[level_data_idx]
+
+            level_strings_name_length = level_data.level_strings.name_length
+            if level_strings_name_length > 0:
+                level_data.level_strings.name = TAG.read_variable_string(input_stream, level_strings_name_length, TAG)
+
+            if XML_OUTPUT:
+                level_strings_tag_ref_node = tag_format.get_xml_node(XML_OUTPUT, 1, level_data_element_node, "name", "level strings")
+                level_data.level_strings.append_xml_attributes(level_strings_tag_ref_node)
+
+            level_data.campaign_level_data = []
+            level_data.multiplayer_level_data = []
+            if level_data.campaign_level_data_tag_block.count > 0:
+                level_data.campaign_level_data_header = TAG.TagBlockHeader().read(input_stream, TAG)
+                campaign_level_data_node = tag_format.get_xml_node(XML_OUTPUT, level_data.campaign_level_data_tag_block.count, level_data_element_node, "name", "campaign level data")
+                for campaign_level_data_idx in range(level_data.campaign_level_data_tag_block.count):
+                    campaign_level_data_element_node = None
+                    if XML_OUTPUT:
+                        campaign_level_data_element_node = TAG.xml_doc.createElement('element')
+                        campaign_level_data_element_node.setAttribute('index', str(campaign_level_data_idx))
+                        campaign_level_data_node.appendChild(campaign_level_data_element_node)
+
+                    campaign_level_data = SCENARIO.CampaignLevelData()
+                    campaign_level_data.campaign_id = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(campaign_level_data_element_node, "campaign id"))
+                    campaign_level_data.map_id = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(campaign_level_data_element_node, "map id"))
+                    campaign_level_data.bitmap = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(campaign_level_data_element_node, "bitmap"))
+                    input_stream.read(2880) # Padding?
+
+                    level_data.campaign_level_data.append(campaign_level_data)
+
+                for campaign_level_data_idx, campaign_level_data in enumerate(level_data.campaign_level_data):
+                    campaign_level_data_element_node = None
+                    if XML_OUTPUT:
+                        campaign_level_data_element_node = campaign_level_data_node.childNodes[campaign_level_data_idx]
+
+                    bitmap_name_length = campaign_level_data.bitmap.name_length
+                    if bitmap_name_length > 0:
+                        campaign_level_data.bitmap.name = TAG.read_variable_string(input_stream, bitmap_name_length, TAG)
+
+                    if XML_OUTPUT:
+                        bitmap_tag_ref_node = tag_format.get_xml_node(XML_OUTPUT, 1, campaign_level_data_element_node, "name", "bitmap")
+                        campaign_level_data.bitmap.append_xml_attributes(bitmap_tag_ref_node)
+
+            if level_data.multiplayer_level_data_tag_block.count > 0:
+                level_data.multiplayer_level_data_header = TAG.TagBlockHeader().read(input_stream, TAG)
+                multiplayer_level_data_node = tag_format.get_xml_node(XML_OUTPUT, level_data.multiplayer_level_data_tag_block.count, level_data_element_node, "name", "multiplayer level data")
+                for multiplayer_level_data_idx in range(level_data.multiplayer_level_data_tag_block.count):
+                    multiplayer_level_data_element_node = None
+                    if XML_OUTPUT:
+                        multiplayer_level_data_element_node = TAG.xml_doc.createElement('element')
+                        multiplayer_level_data_element_node.setAttribute('index', str(multiplayer_level_data_idx))
+                        multiplayer_level_data_node.appendChild(multiplayer_level_data_element_node)
+
+                    multiplayer_level_data = SCENARIO.MultiplayerLevelData()
+                    multiplayer_level_data.map_id = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(multiplayer_level_data_element_node, "map id"))
+                    multiplayer_level_data.bitmap = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(multiplayer_level_data_element_node, "bitmap"))
+                    input_stream.read(2880) # Padding?
+                    multiplayer_level_data.path = TAG.read_string256(input_stream, TAG, tag_format.XMLData(multiplayer_level_data_element_node, "path"))
+                    multiplayer_level_data.sort_order = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(multiplayer_level_data_element_node, "sort order"))
+                    multiplayer_level_data.flags = TAG.read_flag_unsigned_byte(input_stream, TAG, tag_format.XMLData(multiplayer_level_data_element_node, "flags", MultiplayerLevelFlags))
+                    input_stream.read(3) # Padding?
+                    multiplayer_level_data.max_teams_none = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(multiplayer_level_data_element_node, "max teams none"))
+                    multiplayer_level_data.max_teams_ctf = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(multiplayer_level_data_element_node, "max teams ctf"))
+                    multiplayer_level_data.max_teams_slayer = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(multiplayer_level_data_element_node, "max teams slayer"))
+                    multiplayer_level_data.max_teams_oddball = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(multiplayer_level_data_element_node, "max teams oddball"))
+                    multiplayer_level_data.max_teams_king = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(multiplayer_level_data_element_node, "max teams king"))
+                    multiplayer_level_data.max_teams_race = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(multiplayer_level_data_element_node, "max teams race"))
+                    multiplayer_level_data.max_teams_head_hunter = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(multiplayer_level_data_element_node, "max teams head hunter"))
+                    multiplayer_level_data.max_teams_juggernaut = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(multiplayer_level_data_element_node, "max teams juggernaut"))
+                    multiplayer_level_data.max_teams_territories = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(multiplayer_level_data_element_node, "max teams territories"))
+                    multiplayer_level_data.max_teams_assault = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(multiplayer_level_data_element_node, "max teams assault"))
+                    multiplayer_level_data.max_teams_10_stub = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(multiplayer_level_data_element_node, "max teams 10 stub"))
+                    multiplayer_level_data.max_teams_medic = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(multiplayer_level_data_element_node, "max teams medic"))
+                    multiplayer_level_data.max_teams_vip = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(multiplayer_level_data_element_node, "max teams vip"))
+                    multiplayer_level_data.max_teams_infection = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(multiplayer_level_data_element_node, "max teams infection"))
+                    multiplayer_level_data.max_teams_14_stub = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(multiplayer_level_data_element_node, "max teams 14 stub"))
+                    multiplayer_level_data.max_teams_15_stub = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(multiplayer_level_data_element_node, "max teams 15 stub"))
+
+                    level_data.multiplayer_level_data.append(multiplayer_level_data)
+
+                for multiplayer_level_data_idx, multiplayer_level_data in enumerate(level_data.multiplayer_level_data):
+                    multiplayer_level_data_element_node = None
+                    if XML_OUTPUT:
+                        multiplayer_level_data_element_node = multiplayer_level_data_node.childNodes[multiplayer_level_data_idx]
+
+                    bitmap_name_length = multiplayer_level_data.bitmap.name_length
+                    if bitmap_name_length > 0:
+                        multiplayer_level_data.bitmap.name = TAG.read_variable_string(input_stream, bitmap_name_length, TAG)
+
+                    if XML_OUTPUT:
+                        bitmap_tag_ref_node = tag_format.get_xml_node(XML_OUTPUT, 1, multiplayer_level_data_element_node, "name", "bitmap")
+                        multiplayer_level_data.bitmap.append_xml_attributes(bitmap_tag_ref_node)
+
+def read_mission_dialogue(SCENARIO, TAG, input_stream, tag_node, XML_OUTPUT):
+    if SCENARIO.scenario_body.mission_dialogue_tag_block.count > 0:
+        SCENARIO.mission_dialogue_header = TAG.TagBlockHeader().read(input_stream, TAG)
+        mission_dialogue_node = tag_format.get_xml_node(XML_OUTPUT, SCENARIO.scenario_body.mission_dialogue_tag_block.count, tag_node, "name", "mission dialogue")
+        for mission_dialogue_idx in range(SCENARIO.scenario_body.mission_dialogue_tag_block.count):
+            mission_dialogue_element_node = None
+            if XML_OUTPUT:
+                mission_dialogue_element_node = TAG.xml_doc.createElement('element')
+                mission_dialogue_element_node.setAttribute('index', str(mission_dialogue_idx))
+                mission_dialogue_node.appendChild(mission_dialogue_element_node)
+
+            SCENARIO.mission_dialogue.append(TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(mission_dialogue_element_node, "mission dialogue")))
+
+        for mission_dialogue_idx, mission_dialogue in enumerate(SCENARIO.mission_dialogue):
+            mission_dialogue_name_length = mission_dialogue.name_length
+            if mission_dialogue_name_length > 0:
+                mission_dialogue.name = TAG.read_variable_string(input_stream, mission_dialogue_name_length, TAG)
+
+            if XML_OUTPUT:
+                mission_dialogue_element_node = mission_dialogue_node.childNodes[mission_dialogue_idx]
+                mission_dialogue_tag_ref_node = tag_format.get_xml_node(XML_OUTPUT, 1, mission_dialogue_element_node, "name", "mission dialogue")
+                mission_dialogue.append_xml_attributes(mission_dialogue_tag_ref_node)
+
+def read_interpolators(SCENARIO, TAG, input_stream, tag_node, XML_OUTPUT):
+    if SCENARIO.scenario_body.interpolators_tag_block.count > 0:
+        SCENARIO.interpolators_header = TAG.TagBlockHeader().read(input_stream, TAG)
+        interpolators_node = tag_format.get_xml_node(XML_OUTPUT, SCENARIO.scenario_body.interpolators_tag_block.count, tag_node, "name", "interpolators")
+        for interpolators_idx in range(SCENARIO.scenario_body.interpolators_tag_block.count):
+            interpolator_element_node = None
+            if XML_OUTPUT:
+                interpolator_element_node = TAG.xml_doc.createElement('element')
+                interpolator_element_node.setAttribute('index', str(interpolators_idx))
+                interpolators_node.appendChild(interpolator_element_node)
+
+            interpolator = SCENARIO.Interpolator()
+            TAG.big_endian = True
+            input_stream.read(2) # Padding?
+            interpolator.name_length = TAG.read_signed_short(input_stream, TAG)
+            input_stream.read(2) # Padding?
+            interpolator.accelerator_name_length = TAG.read_signed_short(input_stream, TAG)
+            input_stream.read(2) # Padding?
+            interpolator.multiplier_name_length = TAG.read_signed_short(input_stream, TAG)
+            TAG.big_endian = False
+            input_stream.read(16) # Padding?
+
+            SCENARIO.interpolators.append(interpolator)
+
+        for interpolator_idx, interpolator in enumerate(SCENARIO.interpolators):
+            interpolator_element_node = None
+            if XML_OUTPUT:
+                interpolator_element_node = interpolators_node.childNodes[interpolator_idx]
+
+            interpolator_name_length = interpolator.name_length
+            if interpolator_name_length > 0:
+                interpolator.name = TAG.read_variable_string_no_terminator(input_stream, interpolator_name_length, TAG, tag_format.XMLData(interpolator_element_node, "name"))
+
+            accelerator_name_length = interpolator.accelerator_name_length
+            if accelerator_name_length > 0:
+                interpolator.accelerator_name = TAG.read_variable_string_no_terminator(input_stream, accelerator_name_length, TAG, tag_format.XMLData(interpolator_element_node, "accelerator name"))
+
+            multiplier_name_length = interpolator.multiplier_name_length
+            if multiplier_name_length > 0:
+                interpolator.multiplier_name = TAG.read_variable_string_no_terminator(input_stream, multiplier_name_length, TAG, tag_format.XMLData(interpolator_element_node, "multiplier name"))
+
+            interpolator.SCFN_header = TAG.TagBlockHeader().read(input_stream, TAG)
+            interpolator.MAPP_header = TAG.TagBlockHeader().read(input_stream, TAG)
+            interpolator.function_header = TAG.TagBlockHeader().read(input_stream, TAG)
+            interpolator.function_type = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(interpolator_element_node, "function type"))
+            interpolator.points = []
+            if FunctionTypeEnum.identity == FunctionTypeEnum(interpolator.function_type):
+                input_stream.read(2) # Padding?
+                interpolator.lower_bound = TAG.read_float(input_stream, TAG, tag_format.XMLData(interpolator_element_node, "lower bound"))
+                interpolator.upper_bound = TAG.read_float(input_stream, TAG, tag_format.XMLData(interpolator_element_node, "upper bound"))
+                input_stream.read(8) # Padding?
+
+            elif FunctionTypeEnum.constant == FunctionTypeEnum(interpolator.function_type):
+                input_stream.read(2) # Padding?
+                interpolator.lower_bound = TAG.read_float(input_stream, TAG, tag_format.XMLData(interpolator_element_node, "lower bound"))
+                interpolator.upper_bound = TAG.read_float(input_stream, TAG, tag_format.XMLData(interpolator_element_node, "upper bound"))
+                input_stream.read(16) # Padding?
+
+            elif FunctionTypeEnum.transition == FunctionTypeEnum(interpolator.function_type):
+                interpolator.exponent = TAG.read_enum_unsigned_byte(input_stream, TAG, tag_format.XMLData(interpolator_element_node, "exponent", TransitionExponentEnum))
+                input_stream.read(1) # Padding?
+                interpolator.lower_bound = TAG.read_float(input_stream, TAG, tag_format.XMLData(interpolator_element_node, "lower bound"))
+                interpolator.upper_bound = TAG.read_float(input_stream, TAG, tag_format.XMLData(interpolator_element_node, "upper bound"))
+                input_stream.read(8) # Padding?
+                interpolator.min = TAG.read_float(input_stream, TAG, tag_format.XMLData(interpolator_element_node, "min"))
+                interpolator.max = TAG.read_float(input_stream, TAG, tag_format.XMLData(interpolator_element_node, "max"))
+                input_stream.read(8) # Padding?
+
+            elif FunctionTypeEnum.periodic == FunctionTypeEnum(interpolator.function_type):
+                interpolator.exponent = TAG.read_enum_unsigned_byte(input_stream, TAG, tag_format.XMLData(interpolator_element_node, "exponent", TransitionExponentEnum))
+                input_stream.read(1) # Padding?
+                interpolator.lower_bound = TAG.read_float(input_stream, TAG, tag_format.XMLData(interpolator_element_node, "lower bound"))
+                interpolator.upper_bound = TAG.read_float(input_stream, TAG, tag_format.XMLData(interpolator_element_node, "upper bound"))
+                input_stream.read(8) # Padding?
+                interpolator.input_function_data.frequency = TAG.read_float(input_stream, TAG, tag_format.XMLData(interpolator_element_node, "frequency"))
+                interpolator.input_function_data.phase = TAG.read_float(input_stream, TAG, tag_format.XMLData(interpolator_element_node, "phase"))
+                interpolator.input_function_data.min = TAG.read_float(input_stream, TAG, tag_format.XMLData(interpolator_element_node, "min"))
+                interpolator.input_function_data.max = TAG.read_float(input_stream, TAG, tag_format.XMLData(interpolator_element_node, "max"))
+                input_stream.read(16) # Padding?
+
+            elif FunctionTypeEnum.linear == FunctionTypeEnum(interpolator.function_type):
+                input_stream.read(2) # Padding?
+                interpolator.lower_bound = TAG.read_float(input_stream, TAG, tag_format.XMLData(interpolator_element_node, "lower bound"))
+                interpolator.upper_bound = TAG.read_float(input_stream, TAG, tag_format.XMLData(interpolator_element_node, "upper bound"))
+                input_stream.read(8) # Padding?
+                for point_idx in range(2):
+                    interpolator.points.append(TAG.read_point_2d(input_stream, TAG, tag_format.XMLData(interpolator_element_node, "position")))
+
+                input_stream.read(8) # Padding?
+                for point_idx in range(2):
+                    input_stream.read(8) # Padding?
+
+                input_stream.read(8) # Padding?
+
+            elif FunctionTypeEnum.linear_key == FunctionTypeEnum(interpolator.function_type):
+                input_stream.read(2) # Padding?
+                interpolator.lower_bound = TAG.read_float(input_stream, TAG, tag_format.XMLData(interpolator_element_node, "lower bound"))
+                interpolator.upper_bound = TAG.read_float(input_stream, TAG, tag_format.XMLData(interpolator_element_node, "upper bound"))
+                input_stream.read(8) # Padding?
+                for point_idx in range(4):
+                    interpolator.points.append(TAG.read_point_2d(input_stream, TAG, tag_format.XMLData(interpolator_element_node, "position")))
+
+                input_stream.read(48) # Padding?
+                for point_idx in range(4):
+                    input_stream.read(8) # Padding?
+
+                input_stream.read(48) # Padding?
+
+            elif FunctionTypeEnum.multi_linear_key == FunctionTypeEnum(interpolator.function_type):
+                input_stream.read(2) # Padding?
+                interpolator.lower_bound = TAG.read_float(input_stream, TAG, tag_format.XMLData(interpolator_element_node, "lower bound"))
+                interpolator.upper_bound = TAG.read_float(input_stream, TAG, tag_format.XMLData(interpolator_element_node, "upper bound"))
+                input_stream.read(264) # Padding?
+
+            elif FunctionTypeEnum.spline == FunctionTypeEnum(interpolator.function_type):
+                input_stream.read(2) # Padding?
+                interpolator.lower_bound = TAG.read_float(input_stream, TAG, tag_format.XMLData(interpolator_element_node, "lower bound"))
+                interpolator.upper_bound = TAG.read_float(input_stream, TAG, tag_format.XMLData(interpolator_element_node, "upper bound"))
+                input_stream.read(8) # Padding?
+                for point_idx in range(4):
+                    interpolator.points.append(TAG.read_point_2d(input_stream, TAG, tag_format.XMLData(interpolator_element_node, "position")))
+
+                input_stream.read(16) # Padding?
+                for point_idx in range(4):
+                    input_stream.read(8) # Padding?
+
+                input_stream.read(16) # Padding?
+
+            elif FunctionTypeEnum.multi_spline == FunctionTypeEnum(interpolator.function_type):
+                input_stream.read(2) # Padding?
+                interpolator.lower_bound = TAG.read_float(input_stream, TAG, tag_format.XMLData(interpolator_element_node, "lower bound"))
+                interpolator.upper_bound = TAG.read_float(input_stream, TAG, tag_format.XMLData(interpolator_element_node, "upper bound"))
+                input_stream.read(40) # Padding?
+
+            elif FunctionTypeEnum.exponent == FunctionTypeEnum(interpolator.function_type):
+                input_stream.read(2) # Padding?
+                interpolator.lower_bound = TAG.read_float(input_stream, TAG, tag_format.XMLData(interpolator_element_node, "lower bound"))
+                interpolator.upper_bound = TAG.read_float(input_stream, TAG, tag_format.XMLData(interpolator_element_node, "upper bound"))
+                input_stream.read(8) # Padding?
+                interpolator.input_function_data.min = TAG.read_float(input_stream, TAG, tag_format.XMLData(interpolator_element_node, "min"))
+                interpolator.input_function_data.max = TAG.read_float(input_stream, TAG, tag_format.XMLData(interpolator_element_node, "max"))
+                interpolator.input_function_data.exponent = TAG.read_float(input_stream, TAG, tag_format.XMLData(interpolator_element_node, "exponent"))
+                input_stream.read(12) # Padding?
+
+            elif FunctionTypeEnum.spline2 == FunctionTypeEnum(interpolator.function_type):
+                input_stream.read(2) # Padding?
+                interpolator.lower_bound = TAG.read_float(input_stream, TAG, tag_format.XMLData(interpolator_element_node, "lower bound"))
+                interpolator.upper_bound = TAG.read_float(input_stream, TAG, tag_format.XMLData(interpolator_element_node, "upper bound"))
+                input_stream.read(8) # Padding?
+                for point_idx in range(4):
+                    interpolator.points.append(TAG.read_point_2d(input_stream, TAG, tag_format.XMLData(interpolator_element_node, "position")))
+
+                input_stream.read(16) # Padding?
+                for point_idx in range(4):
+                    input_stream.read(8) # Padding?
+
+                input_stream.read(16) # Padding?
+
+def read_shared_references(SCENARIO, TAG, input_stream, tag_node, XML_OUTPUT):
+    if SCENARIO.scenario_body.shared_references_tag_block.count > 0:
+        SCENARIO.shared_references_header = TAG.TagBlockHeader().read(input_stream, TAG)
+        shared_references_node = tag_format.get_xml_node(XML_OUTPUT, SCENARIO.scenario_body.shared_references_tag_block.count, tag_node, "name", "shared references")
+        for shared_reference_idx in range(SCENARIO.scenario_body.shared_references_tag_block.count):
+            shared_reference_element_node = None
+            if XML_OUTPUT:
+                shared_reference_element_node = TAG.xml_doc.createElement('element')
+                shared_reference_element_node.setAttribute('index', str(shared_reference_idx))
+                shared_references_node.appendChild(shared_reference_element_node)
+
+            SCENARIO.shared_references.append(TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(shared_reference_element_node, "reference")))
+
+        for shared_reference_idx, shared_reference in enumerate(SCENARIO.shared_references):
+            shared_reference_name_length = shared_reference.name_length
+            if shared_reference_name_length > 0:
+                shared_reference.name = TAG.read_variable_string(input_stream, shared_reference_name_length, TAG)
+
+            if XML_OUTPUT:
+                shared_reference_element_node = shared_references_node.childNodes[shared_reference_idx]
+                shared_reference_tag_ref_node = tag_format.get_xml_node(XML_OUTPUT, 1, shared_reference_element_node, "name", "reference")
+                shared_reference.append_xml_attributes(shared_reference_tag_ref_node)
+
+def read_screen_effect_references(SCENARIO, TAG, input_stream, tag_node, XML_OUTPUT):
+    if SCENARIO.scenario_body.screen_effect_references_tag_block.count > 0:
+        SCENARIO.screen_effect_references_header = TAG.TagBlockHeader().read(input_stream, TAG)
+        screen_effect_references_node = tag_format.get_xml_node(XML_OUTPUT, SCENARIO.scenario_body.screen_effect_references_tag_block.count, tag_node, "name", "screen effect references")
+        for screen_effect_reference_idx in range(SCENARIO.scenario_body.screen_effect_references_tag_block.count):
+            screen_effect_reference_element_node = None
+            if XML_OUTPUT:
+                screen_effect_reference_element_node = TAG.xml_doc.createElement('element')
+                screen_effect_reference_element_node.setAttribute('index', str(screen_effect_reference_idx))
+                screen_effect_references_node.appendChild(screen_effect_reference_element_node)
+
+            screen_effect_reference = SCENARIO.ScreenEffectReference()
+            input_stream.read(16) # Padding?
+            screen_effect_reference.screen_effect = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(screen_effect_reference_element_node, "screen effect"))
+            TAG.big_endian = True
+            input_stream.read(2) # Padding?
+            screen_effect_reference.primary_input_name_length = TAG.read_signed_short(input_stream, TAG)
+            input_stream.read(2) # Padding?
+            screen_effect_reference.secondary_input_name_length = TAG.read_signed_short(input_stream, TAG)
+            TAG.big_endian = False
+            input_stream.read(4) # Padding?
+
+            SCENARIO.screen_effect_references.append(screen_effect_reference)
+
+        for screen_effect_reference_idx, screen_effect_reference in enumerate(SCENARIO.screen_effect_references):
+            screen_effect_reference_element_node = None
+            if XML_OUTPUT:
+                screen_effect_reference_element_node = screen_effect_references_node.childNodes[screen_effect_reference_idx]
+
+            screen_effect_reference_name_length = screen_effect_reference.screen_effect.name_length
+            if screen_effect_reference_name_length > 0:
+                screen_effect_reference.screen_effect.name = TAG.read_variable_string(input_stream, screen_effect_reference_name_length, TAG)
+
+            if XML_OUTPUT:
+                screen_effect_reference_tag_ref_node = tag_format.get_xml_node(XML_OUTPUT, 1, screen_effect_reference_element_node, "name", "screen effect")
+                screen_effect_reference.screen_effect.append_xml_attributes(screen_effect_reference_tag_ref_node)
+
+            primary_input_name_length = screen_effect_reference.primary_input_name_length
+            if primary_input_name_length > 0:
+                screen_effect_reference.primary_input = TAG.read_variable_string_no_terminator(input_stream, primary_input_name_length, TAG, tag_format.XMLData(screen_effect_reference_element_node, "primary input"))
+
+            secondary_input_name_length = screen_effect_reference.secondary_input_name_length
+            if secondary_input_name_length > 0:
+                screen_effect_reference.secondary_input = TAG.read_variable_string_no_terminator(input_stream, secondary_input_name_length, TAG, tag_format.XMLData(screen_effect_reference_element_node, "secondary input"))
+
+def read_simulation_definition_table(SCENARIO, TAG, input_stream, tag_node, XML_OUTPUT):
+    if SCENARIO.scenario_body.simulation_definition_table_tag_block.count > 0:
+        SCENARIO.simulation_definition_table_header = TAG.TagBlockHeader().read(input_stream, TAG)
+        simulation_definition_table_node = tag_format.get_xml_node(XML_OUTPUT, SCENARIO.scenario_body.simulation_definition_table_tag_block.count, tag_node, "name", "simulation definition table")
+        for simulation_definition_table_idx in range(SCENARIO.scenario_body.simulation_definition_table_tag_block.count):
+            simulation_definition_table_element_node = None
+            if XML_OUTPUT:
+                simulation_definition_table_element_node = TAG.xml_doc.createElement('element')
+                simulation_definition_table_element_node.setAttribute('index', str(simulation_definition_table_idx))
+                simulation_definition_table_node.appendChild(simulation_definition_table_element_node)
+
+            SCENARIO.simulation_definition_table.append(TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(simulation_definition_table_element_node, "tag index")))
+
 def process_file(input_stream, report):
     TAG = tag_format.TagAsset()
     SCENARIO = ScenarioAsset()
@@ -3826,12 +4762,18 @@ def process_file(input_stream, report):
     hud_messages_tag_ref = SCENARIO.scenario_body.hud_messages_tag_ref
     sound_effect_collection_tag_ref = SCENARIO.scenario_body.sound_effect_collection_tag_ref
     global_lighting_tag_ref = SCENARIO.scenario_body.global_lighting_tag_ref
+    subtitles_tag_ref = SCENARIO.scenario_body.subtitles_tag_ref
+    game_engine_strings_tag_ref = SCENARIO.scenario_body.game_engine_strings_tag_ref
+    objectives_tag_ref = SCENARIO.scenario_body.objectives_tag_ref
     unused_name_length = unused_tag_ref.name_length
     custom_object_names_name_length = custom_object_names_tag_ref.name_length
     chapter_title_text_name_length = chapter_title_text_tag_ref.name_length
     hud_messages_name_length = hud_messages_tag_ref.name_length
     sound_effect_collection_name_length = sound_effect_collection_tag_ref.name_length
     global_lighting_name_length = global_lighting_tag_ref.name_length
+    subtitles_name_length = subtitles_tag_ref.name_length
+    game_engine_strings_name_length = game_engine_strings_tag_ref.name_length
+    objectives_name_length = objectives_tag_ref.name_length
     if unused_name_length > 0:
         unused_tag_ref.name = TAG.read_variable_string(input_stream, unused_name_length, TAG)
 
@@ -3916,6 +4858,29 @@ def process_file(input_stream, report):
         global_lighting_tag_ref.name = TAG.read_variable_string(input_stream, global_lighting_name_length, TAG)
 
     read_atmospheric_fog_palette(SCENARIO, TAG, input_stream, tag_node, XML_OUTPUT)
+    read_planar_fog_palette(SCENARIO, TAG, input_stream, tag_node, XML_OUTPUT)
+    read_flocks(SCENARIO, TAG, input_stream, tag_node, XML_OUTPUT)
+    if subtitles_name_length > 0:
+        subtitles_tag_ref.name = TAG.read_variable_string(input_stream, subtitles_name_length, TAG)
+
+    read_decorators(SCENARIO, TAG, input_stream, tag_node, XML_OUTPUT)
+    read_creatures(SCENARIO, TAG, input_stream, tag_node, XML_OUTPUT)
+    read_decorator_palette(SCENARIO, TAG, input_stream, tag_node, XML_OUTPUT)
+    read_bsp_transition_volumes(SCENARIO, TAG, input_stream, tag_node, XML_OUTPUT)
+    read_structure_bsp_lighting(SCENARIO, TAG, input_stream, tag_node, XML_OUTPUT)
+    read_editor_folders(SCENARIO, TAG, input_stream, tag_node, XML_OUTPUT)
+    read_level_data(SCENARIO, TAG, input_stream, tag_node, XML_OUTPUT)
+    if game_engine_strings_name_length > 0:
+        game_engine_strings_tag_ref.name = TAG.read_variable_string(input_stream, game_engine_strings_name_length, TAG)
+
+    read_mission_dialogue(SCENARIO, TAG, input_stream, tag_node, XML_OUTPUT)
+    if objectives_name_length > 0:
+        objectives_tag_ref.name = TAG.read_variable_string(input_stream, objectives_name_length, TAG)
+
+    read_interpolators(SCENARIO, TAG, input_stream, tag_node, XML_OUTPUT)
+    read_shared_references(SCENARIO, TAG, input_stream, tag_node, XML_OUTPUT)
+    read_screen_effect_references(SCENARIO, TAG, input_stream, tag_node, XML_OUTPUT)
+    read_simulation_definition_table(SCENARIO, TAG, input_stream, tag_node, XML_OUTPUT)
 
     if XML_OUTPUT:
         unused_node = tag_format.get_xml_node(XML_OUTPUT, 1, tag_node, "name", "unused")
@@ -3924,13 +4889,18 @@ def process_file(input_stream, report):
         hud_messages_node = tag_format.get_xml_node(XML_OUTPUT, 1, tag_node, "name", "hud messages")
         sound_effect_collection_node = tag_format.get_xml_node(XML_OUTPUT, 1, tag_node, "name", "sound effect collection")
         global_lighting_node = tag_format.get_xml_node(XML_OUTPUT, 1, tag_node, "name", "global lighting")
+        subtitles_node = tag_format.get_xml_node(XML_OUTPUT, 1, tag_node, "name", "subtitles")
+        game_engine_strings_node = tag_format.get_xml_node(XML_OUTPUT, 1, tag_node, "name", "game engine strings")
+        objectives_node = tag_format.get_xml_node(XML_OUTPUT, 1, tag_node, "name", "objectives")
         unused_tag_ref.append_xml_attributes(unused_node)
         custom_object_names_tag_ref.append_xml_attributes(custom_object_names_node)
         chapter_title_text_tag_ref.append_xml_attributes(chapter_title_text_node)
         hud_messages_tag_ref.append_xml_attributes(hud_messages_node)
         sound_effect_collection_tag_ref.append_xml_attributes(sound_effect_collection_node)
         global_lighting_tag_ref.append_xml_attributes(global_lighting_node)
-
+        subtitles_tag_ref.append_xml_attributes(subtitles_node)
+        game_engine_strings_tag_ref.append_xml_attributes(game_engine_strings_node)
+        objectives_tag_ref.append_xml_attributes(objectives_node)
 
     current_position = input_stream.tell()
     EOF = input_stream.seek(0, 2)
