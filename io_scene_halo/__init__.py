@@ -149,6 +149,18 @@ class HaloAddonPrefs(bpy.types.AddonPreferences):
         subtype="DIR_PATH"
     )
 
+    halo_3_data_path: StringProperty(
+        name="Halo 3 Data Path",
+        description="Path to the data directory",
+        subtype="DIR_PATH"
+    )
+
+    halo_3_tag_path: StringProperty(
+        name="Halo 3 Tag Path",
+        description="Path to the tag directory",
+        subtype="DIR_PATH"
+    )
+
     def draw(self, context):
         layout = self.layout
 
@@ -199,6 +211,12 @@ class HaloAddonPrefs(bpy.types.AddonPreferences):
         row = col.row()
         row.label(text='Halo 2 Tag Path:')
         row.prop(self, "halo_2_tag_path", text='')
+        row = col.row()
+        row.label(text='Halo 3 Data Path:')
+        row.prop(self, "halo_3_data_path", text='')
+        row = col.row()
+        row.label(text='Halo 3 Tag Path:')
+        row.prop(self, "halo_3_tag_path", text='')
 
 def register():
     bpy.utils.register_class(HaloAddonPrefs)

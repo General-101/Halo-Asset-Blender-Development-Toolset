@@ -555,6 +555,10 @@ def generate_mesh_object_retail(asset, object_vertices, object_triangles, object
                     shader = shader_processing.find_h2_shader_tag(asset.filepath, material_name)
                     if not shader == None:
                         shader_processing.generate_h2_shader(mat, shader, print)
+                elif game_title == "halo3":
+                    shader_path = shader_processing.find_h3_shader_tag(asset.filepath, material_name)
+                    if not shader_path == None:
+                        shader_processing.generate_h3_shader(mat, shader_path, print)
 
             if not material_name in object_mesh.data.materials.keys():
                 object_mesh.data.materials.append(mat)
@@ -654,6 +658,11 @@ def generate_mesh_retail(context, asset, object_vertices, object_triangles, obje
                     shader = shader_processing.find_h2_shader_tag(asset.filepath, material_name)
                     if not shader == None:
                         shader_processing.generate_h2_shader(mat, shader, print)
+                elif game_title == "halo3":
+                    shader_path = shader_processing.find_h3_shader_tag(asset.filepath, material_name)
+                    if not shader_path == None:
+                        shader_processing.generate_h3_shader(mat, shader, print)
+
 
             if not mat in object_data.materials.values():
                 object_data.materials.append(mat)

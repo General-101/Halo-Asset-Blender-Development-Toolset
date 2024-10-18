@@ -28,6 +28,7 @@ import os
 import bpy
 import struct
 import numpy as np
+import subprocess
 
 from mathutils import Vector
 from enum import Flag, Enum, auto
@@ -71,6 +72,13 @@ try:
 except ModuleNotFoundError:
     print("PIL not found. Unable to create image node.")
     Image = None
+
+try:
+    import lxml.etree as ET
+except ModuleNotFoundError:
+    print("lxml not found. Unable to generate bitmaps for Halo 3 era imports.")
+    ET = None
+
 
 def generate_shader_environment_simple(mat, shader, permutation_index, report):
     mat.use_nodes = True
@@ -656,6 +664,101 @@ def generate_h2_shader(mat, tag_ref, report):
                     print("Skipping shader")
                     #generate_shader_environment(mat, shader, report)
 
+def generate_h3_shader_simple(mat, shader_path, report):
+    mat.use_nodes = True
+
+    data_directory = bpy.context.preferences.addons["io_scene_halo"].preferences.halo_3_data_path
+    tags_directory = bpy.context.preferences.addons["io_scene_halo"].preferences.halo_3_tag_path
+    bitmap_file = None
+    input_file = ""
+    if not ET == None:
+        tool_directory = os.path.dirname(os.path.dirname(data_directory))
+        output_directory = os.path.join(tool_directory, "blender_dumps")
+        tool_path = os.path.join(tool_directory, "tool.exe")
+
+        local_path_no_ext = shader_path.split(tags_directory.lower(), 1)[1].rsplit(".", 1)[0]
+        xml_output = os.path.join(output_directory, "%s.xml" % local_path_no_ext)
+
+        xml_command = "export-tag-to-xml"
+        args = [tool_path, xml_command, shader_path, xml_output]
+        subprocess.call(args, cwd=tool_directory)
+
+        xmlp = ET.XMLParser(encoding="ISO-8859-10", recover=True)
+        xml = ET.parse(xml_output, parser=xmlp)
+        root = xml.getroot() 
+        bitmap_parameter = None
+        bitmap_path = None
+        for root_fields in root:
+            if root_fields.attrib.get('name') == "parameters":
+                for parameter_fields in root_fields:
+                    if parameter_fields.attrib.get('name') == "base_map":
+                        for field in parameter_fields:
+                            if field.attrib.get('name') == "parameter type" and field.attrib.get('value') == "bitmap":
+                                bitmap_parameter = parameter_fields
+
+                        break
+                    else:
+                        if bitmap_parameter == None:
+                            for field in parameter_fields:
+                                if field.attrib.get('name') == "parameter type" and field.attrib.get('value') == "bitmap":
+                                    bitmap_parameter = parameter_fields
+                        
+        if bitmap_parameter is not None:
+            for field in bitmap_parameter:
+                if field.attrib.get('name') == "bitmap":
+                    bitmap_path = field.attrib.get('value')
+
+        bitmap_command = "export-bitmap-tga"
+        input_file = bitmap_path.rsplit(",", 1)[0]
+        bitmap_directory = os.path.dirname(input_file)
+        bitmap_name = os.path.basename(input_file)
+        bitmap_output = os.path.join(output_directory, bitmap_directory, "pixel_data_")
+        if not os.path.exists(os.path.dirname(bitmap_output)):
+            os.makedirs(os.path.dirname(bitmap_output))
+
+        args = [tool_path, bitmap_command, input_file, bitmap_output]
+
+        subprocess.call(args, cwd=tool_directory)
+
+        bitmap_file = os.path.join(output_directory, bitmap_directory, "pixel_data_%s%s" % (bitmap_name, "_00_00.tga"))
+
+    output_material_node = get_output_material_node(mat)
+    output_material_node.location = Vector((0.0, 0.0))
+    bdsf_principled = get_linked_node(output_material_node, "Surface", "BSDF_PRINCIPLED")
+    if bdsf_principled is None:
+        bdsf_principled = mat.node_tree.nodes.new("ShaderNodeBsdfPrincipled")
+        connect_inputs(mat.node_tree, bdsf_principled, "BSDF", output_material_node, "Surface")
+
+    bdsf_principled.location = Vector((-260.0, 0.0))
+
+    texture_extensions = ("tif", "tiff", "dss")
+    texture_path = None
+    for extension in texture_extensions:
+        check_path = os.path.join(data_directory, "%s.%s" % (input_file, extension))
+        if os.path.isfile(check_path):
+            texture_path = check_path
+            break
+
+    base_node = generate_image_node(mat, texture_path, pixel_data=bitmap_file)
+    if not base_node.image == None:
+        base_node.image.alpha_mode = 'CHANNEL_PACKED'
+
+    base_node.location = Vector((-1600, 500))
+
+    connect_inputs(mat.node_tree, base_node, "Color", bdsf_principled, "Base Color")
+
+def generate_h3_shader(mat, shader_path, report):
+    # 0 = Shader generation is disabled
+    # 1 = Simple shader generation. Only the base map is generated
+    # 2 = Full Shader generation
+    if not int(bpy.context.preferences.addons["io_scene_halo"].preferences.shader_gen) == 0:
+        if not shader_path == None:
+            if int(bpy.context.preferences.addons["io_scene_halo"].preferences.shader_gen) == 1:
+                generate_h3_shader_simple(mat, shader_path, report)
+            else:
+                print("Skipping shader")
+                #generate_shader_environment(mat, shader, report)
+
 def find_h1_shader_tag(import_filepath, material_name):
     shader_extensions = ["shader_environment", 
                          "shader_model", 
@@ -674,128 +777,7 @@ def find_h1_shader_tag(import_filepath, material_name):
     shader_path = None
     shader_tag = None
 
-    import_directory = os.path.dirname(os.path.dirname(import_filepath)).lower()
-    result = import_directory.split(data_path)
-    local_path = None
-    if len(result) == 2:
-        local_path = result[1]
-
-    if local_path:
-        import_shader_directory = os.path.join(tag_path, local_path, "shaders")
-        if os.path.exists(import_shader_directory):
-            for file in os.listdir(import_shader_directory):
-                file_name = os.path.basename(file).lower()
-                extension = None
-                result = file_name.rsplit(".", 1)
-                if len(result) == 2:
-                    file_name = result[0]
-                    extension = result[1]
-
-                if material_name == file_name and extension in shader_extensions:
-                    shader_path = os.path.join(import_shader_directory, file)
-                    break
-                    
-    if shader_path == None:
-        for root, dirs, filenames in os.walk(tag_path):
-            for filename in filenames:
-                file = os.path.join(root, filename).lower()
-
-                file_name = os.path.basename(file)
-                extension = None
-                result = file_name.rsplit(".", 1)
-                if len(result) == 2:
-                    file_name = result[0]
-                    extension = result[1]
-
-                if material_name == file_name and extension in shader_extensions:
-                    shader_path = file
-                    break
-
-    if not shader_path == None:
-        tag_group = ""
-        if extension == "shader_environment":
-            tag_group = "senv"
-
-        elif extension == "shader_model":
-            tag_group = "soso"
-
-        elif extension == "shader_transparent_chicago":
-            tag_group = "schi"
-
-        elif extension == "shader_transparent_chicago_extended":
-            tag_group = "scex"
-
-        elif extension == "shader_transparent_generic":
-            tag_group = "sotr"
-
-        elif extension == "shader_transparent_glass":
-            tag_group = "sgla"
-
-        elif extension == "shader_transparent_meter":
-            tag_group = "smet"
-
-        elif extension == "spla":
-            tag_group = "shader_transparent_plasma"
-
-        elif extension == "swat":
-            tag_group = "shader_transparent_water"
-
-        local_path = shader_path.split(tag_path)[1].rsplit(".", 1)[0]
-
-        shader_tag = tag_format.TagAsset.TagRef(tag_group, local_path, len(local_path))
-
-    return shader_tag
-
-def find_h2_shader_tag(import_filepath, material_name):
-    data_path = bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_data_path.lower()
-    tag_path = bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path.lower()
-    shader_path = None
-    shader_tag = None
-
-    shader_collection_dic = {}
-    shader_collection_path = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path, r"scenarios\shaders\shader_collections.shader_collections")
-    if os.path.isfile(shader_collection_path):
-        shader_collection_file = open(shader_collection_path, "r")
-        for line in shader_collection_file.readlines():
-            if not global_functions.string_empty_check(line) and not line.startswith(";"):
-                split_result = line.split()
-                if len(split_result) == 2:
-                    prefix = split_result[0]
-                    path = split_result[1]
-                    shader_collection_dic[prefix] = path
-
-    processed_name, processed_parameters = mesh_processing.gather_parameters(material_name.lower())
-    symbols_list, processed_name = mesh_processing.gather_symbols("", processed_name, "halo2")
-    symbols_list, processed_name = mesh_processing.gather_symbols(symbols_list, reversed(processed_name), "halo2")
-    processed_name = "".join(reversed(processed_name)).strip()
-    result = processed_name.split(" ", 1)
-    collection = None
-    shader_name = None
-    if len(result) >= 2:
-        collection = result[0]
-        shader_name = result[1]
-    else:
-        shader_name = processed_name
-
-    if not collection == None:
-        shader_directory = shader_collection_dic.get(collection)
-        import_shader_directory = os.path.join(tag_path, shader_directory.lower())
-        for root, dirs, filenames in os.walk(import_shader_directory):
-            for filename in filenames:
-                file = os.path.join(root, filename).lower()
-
-                file_name = os.path.basename(file)
-                extension = None
-                result = file_name.rsplit(".", 1)
-                if len(result) == 2:
-                    file_name = result[0]
-                    extension = result[1]
-
-                if shader_name == file_name and extension == "shader":
-                    shader_path = file
-                    break
-
-    if shader_path == None:
+    if not global_functions.string_empty_check(data_path) and not global_functions.string_empty_check(tag_path):
         import_directory = os.path.dirname(os.path.dirname(import_filepath)).lower()
         result = import_directory.split(data_path)
         local_path = None
@@ -813,32 +795,248 @@ def find_h2_shader_tag(import_filepath, material_name):
                         file_name = result[0]
                         extension = result[1]
 
-                    if shader_name == file_name and extension in "shader":
+                    if material_name == file_name and extension in shader_extensions:
                         shader_path = os.path.join(import_shader_directory, file)
                         break
-                    
-    if shader_path == None:
-        for root, dirs, filenames in os.walk(tag_path):
-            for filename in filenames:
-                file = os.path.join(root, filename).lower()
+                        
+        if shader_path == None:
+            for root, dirs, filenames in os.walk(tag_path):
+                for filename in filenames:
+                    file = os.path.join(root, filename).lower()
 
-                file_name = os.path.basename(file)
-                extension = None
-                result = file_name.rsplit(".", 1)
-                if len(result) == 2:
-                    file_name = result[0]
-                    extension = result[1]
+                    file_name = os.path.basename(file)
+                    extension = None
+                    result = file_name.rsplit(".", 1)
+                    if len(result) == 2:
+                        file_name = result[0]
+                        extension = result[1]
 
-                if shader_name == file_name and extension in "shader":
-                    shader_path = file
-                    break
+                    if material_name == file_name and extension in shader_extensions:
+                        shader_path = file
+                        break
 
-    if not shader_path == None:
-        local_path = shader_path.split(tag_path)[1].rsplit(".", 1)[0]
+        if not shader_path == None:
+            tag_group = ""
+            if extension == "shader_environment":
+                tag_group = "senv"
 
-        shader_tag = tag_format.TagAsset.TagRef("shad", local_path, len(local_path))
+            elif extension == "shader_model":
+                tag_group = "soso"
+
+            elif extension == "shader_transparent_chicago":
+                tag_group = "schi"
+
+            elif extension == "shader_transparent_chicago_extended":
+                tag_group = "scex"
+
+            elif extension == "shader_transparent_generic":
+                tag_group = "sotr"
+
+            elif extension == "shader_transparent_glass":
+                tag_group = "sgla"
+
+            elif extension == "shader_transparent_meter":
+                tag_group = "smet"
+
+            elif extension == "spla":
+                tag_group = "shader_transparent_plasma"
+
+            elif extension == "swat":
+                tag_group = "shader_transparent_water"
+
+            local_path = shader_path.split(tag_path)[1].rsplit(".", 1)[0]
+
+            shader_tag = tag_format.TagAsset.TagRef(tag_group, local_path, len(local_path))
 
     return shader_tag
+
+def find_h2_shader_tag(import_filepath, material_name):
+    data_path = bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_data_path.lower()
+    tag_path = bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path.lower()
+    shader_path = None
+    shader_tag = None
+
+    if not global_functions.string_empty_check(data_path) and not global_functions.string_empty_check(tag_path):
+        shader_collection_dic = {}
+        shader_collection_path = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path, r"scenarios\shaders\shader_collections.shader_collections")
+        if os.path.isfile(shader_collection_path):
+            shader_collection_file = open(shader_collection_path, "r")
+            for line in shader_collection_file.readlines():
+                if not global_functions.string_empty_check(line) and not line.startswith(";"):
+                    split_result = line.split()
+                    if len(split_result) == 2:
+                        prefix = split_result[0]
+                        path = split_result[1]
+                        shader_collection_dic[prefix] = path
+
+        processed_name, processed_parameters = mesh_processing.gather_parameters(material_name.lower())
+        symbols_list, processed_name = mesh_processing.gather_symbols("", processed_name, "halo2")
+        symbols_list, processed_name = mesh_processing.gather_symbols(symbols_list, reversed(processed_name), "halo2")
+        processed_name = "".join(reversed(processed_name)).strip()
+        result = processed_name.split(" ", 1)
+        collection = None
+        shader_name = None
+        if len(result) >= 2:
+            collection = result[0]
+            shader_name = result[1]
+        else:
+            shader_name = processed_name
+
+        if not collection == None:
+            shader_directory = shader_collection_dic.get(collection)
+            import_shader_directory = os.path.join(tag_path, shader_directory.lower())
+            for root, dirs, filenames in os.walk(import_shader_directory):
+                for filename in filenames:
+                    file = os.path.join(root, filename).lower()
+
+                    file_name = os.path.basename(file)
+                    extension = None
+                    result = file_name.rsplit(".", 1)
+                    if len(result) == 2:
+                        file_name = result[0]
+                        extension = result[1]
+
+                    if shader_name == file_name and extension == "shader":
+                        shader_path = file
+                        break
+
+        if shader_path == None:
+            import_directory = os.path.dirname(os.path.dirname(import_filepath)).lower()
+            result = import_directory.split(data_path)
+            local_path = None
+            if len(result) == 2:
+                local_path = result[1]
+
+            if local_path:
+                import_shader_directory = os.path.join(tag_path, local_path, "shaders")
+                if os.path.exists(import_shader_directory):
+                    for file in os.listdir(import_shader_directory):
+                        file_name = os.path.basename(file).lower()
+                        extension = None
+                        result = file_name.rsplit(".", 1)
+                        if len(result) == 2:
+                            file_name = result[0]
+                            extension = result[1]
+
+                        if shader_name == file_name and extension in "shader":
+                            shader_path = os.path.join(import_shader_directory, file)
+                            break
+                        
+        if shader_path == None:
+            for root, dirs, filenames in os.walk(tag_path):
+                for filename in filenames:
+                    file = os.path.join(root, filename).lower()
+
+                    file_name = os.path.basename(file)
+                    extension = None
+                    result = file_name.rsplit(".", 1)
+                    if len(result) == 2:
+                        file_name = result[0]
+                        extension = result[1]
+
+                    if shader_name == file_name and extension in "shader":
+                        shader_path = file
+                        break
+
+        if not shader_path == None:
+            local_path = shader_path.split(tag_path)[1].rsplit(".", 1)[0]
+
+            shader_tag = tag_format.TagAsset.TagRef("shad", local_path, len(local_path))
+
+    return shader_tag
+
+def find_h3_shader_tag(import_filepath, material_name):
+    data_path = bpy.context.preferences.addons["io_scene_halo"].preferences.halo_3_data_path.lower()
+    tag_path = bpy.context.preferences.addons["io_scene_halo"].preferences.halo_3_tag_path.lower()
+    shader_path = None
+    shader_tag = None
+
+    if not global_functions.string_empty_check(data_path) and not global_functions.string_empty_check(tag_path):
+        shader_collection_dic = {}
+        shader_collection_path = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_3_tag_path, r"levels\shader_collections.txt")
+        if os.path.isfile(shader_collection_path):
+            shader_collection_file = open(shader_collection_path, "r")
+            for line in shader_collection_file.readlines():
+                if not global_functions.string_empty_check(line) and not line.startswith(";"):
+                    split_result = line.split()
+                    if len(split_result) == 2:
+                        prefix = split_result[0]
+                        path = split_result[1]
+                        shader_collection_dic[prefix] = path
+
+        processed_name, processed_parameters = mesh_processing.gather_parameters(material_name.lower())
+        symbols_list, processed_name = mesh_processing.gather_symbols("", processed_name, "halo3")
+        symbols_list, processed_name = mesh_processing.gather_symbols(symbols_list, reversed(processed_name), "halo3")
+        processed_name = "".join(reversed(processed_name)).strip()
+        result = processed_name.split(" ", 1)
+        collection = None
+        shader_name = None
+        if len(result) >= 2:
+            collection = result[0]
+            shader_name = result[1]
+        else:
+            shader_name = processed_name
+
+        if not collection == None:
+            shader_directory = shader_collection_dic.get(collection)
+            import_shader_directory = os.path.join(tag_path, shader_directory.lower())
+            for root, dirs, filenames in os.walk(import_shader_directory):
+                for filename in filenames:
+                    file = os.path.join(root, filename).lower()
+
+                    file_name = os.path.basename(file)
+                    extension = None
+                    result = file_name.rsplit(".", 1)
+                    if len(result) == 2:
+                        file_name = result[0]
+                        extension = result[1]
+
+                    if shader_name == file_name and extension == "shader":
+                        shader_path = file
+                        break
+
+        if shader_path == None:
+            import_directory = os.path.dirname(os.path.dirname(import_filepath)).lower()
+            result = import_directory.split(data_path)
+            local_path = None
+            if len(result) == 2:
+                local_path = result[1]
+
+            if local_path:
+                import_shader_directory = os.path.join(tag_path, local_path, "shaders")
+                if os.path.exists(import_shader_directory):
+                    for file in os.listdir(import_shader_directory):
+                        file_name = os.path.basename(file).lower()
+                        extension = None
+                        result = file_name.rsplit(".", 1)
+                        if len(result) == 2:
+                            file_name = result[0]
+                            extension = result[1]
+
+                        if shader_name == file_name and extension in "shader":
+                            shader_path = os.path.join(import_shader_directory, file)
+                            break
+                        
+        if shader_path == None:
+            for root, dirs, filenames in os.walk(tag_path):
+                for filename in filenames:
+                    file = os.path.join(root, filename).lower()
+
+                    file_name = os.path.basename(file)
+                    extension = None
+                    result = file_name.rsplit(".", 1)
+                    if len(result) == 2:
+                        file_name = result[0]
+                        extension = result[1]
+
+                    if shader_name == file_name and extension in "shader":
+                        shader_path = file
+                        break
+
+        if not shader_path == None:
+            local_path = shader_path.split(tag_path)[1].rsplit(".", 1)[0]
+
+    return shader_path
 
 class OpaqueTemplateEnum(Enum):
     active_camo_opaque = r'shaders\shader_templates\opaque\active_camo_opaque'

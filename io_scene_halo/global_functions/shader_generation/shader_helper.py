@@ -88,7 +88,7 @@ def get_linked_node(node, input_name, search_type):
 def connect_inputs(tree, output_node, output_name, input_node, input_name):
     tree.links.new(output_node.outputs[output_name], input_node.inputs[input_name])
 
-def generate_image_node(mat, texture, BITMAP=None, bitmap_name="White", is_env=False):
+def generate_image_node(mat, texture, BITMAP=None, bitmap_name="White", is_env=False, pixel_data=None):
     if is_env:
         image_node = mat.node_tree.nodes.new("ShaderNodeTexEnvironment")
     else:
@@ -126,6 +126,11 @@ def generate_image_node(mat, texture, BITMAP=None, bitmap_name="White", is_env=F
         if not texture == None and os.path.isfile(texture):
             print("No color plate found. Loading texture found in data directory.")
             image = bpy.data.images.load(texture, check_existing=True)
+            image_node.image = image
+
+        elif not pixel_data == None:
+            print("No color plate found. Loading texture dumped from pixel data. Expect quality loss.")
+            image = bpy.data.images.load(pixel_data, check_existing=True)
             image_node.image = image
 
         else:
