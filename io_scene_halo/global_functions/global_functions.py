@@ -976,6 +976,13 @@ def get_game_title(asset_version, filetype):
         else:
             game_title = "halo1"
 
+    elif filetype == "ASS":
+        if asset_version >= 3:
+            game_title = "halo3"
+
+        else:
+            game_title = "halo2"
+
     return game_title
 
 def lim32(n):

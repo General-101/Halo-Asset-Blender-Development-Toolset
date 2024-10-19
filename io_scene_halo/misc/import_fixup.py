@@ -104,10 +104,8 @@ def model_fixup(context, threshold):
                 bpy.ops.object.mode_set(mode = 'OBJECT')
                 mesh_processing.deselect_objects(context)
                 
-                try:
+                if (4, 1, 0) > bpy.app.version:
                     obj.data.use_auto_smooth = False
-                except:
-                    print()
 
     return {'FINISHED'}
 

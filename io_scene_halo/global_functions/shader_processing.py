@@ -612,6 +612,12 @@ def generate_h1_shader(mat, tag_ref, shader_permutation_index, report):
                     print("Skipping shader_transparent_water")
                     #generate_shader_transparent_water(mat, shader, report)
 
+        else:
+            print("Halo 1 parsed shader tag returned as none. Something went horribly wrong")
+
+    else:
+        print("Shader generation is disabled. Skipping")
+
 def generate_shader_simple(mat, shader, report):
     mat.use_nodes = True
 
@@ -664,6 +670,12 @@ def generate_h2_shader(mat, tag_ref, report):
                     print("Skipping shader")
                     #generate_shader_environment(mat, shader, report)
 
+        else:
+            print("Halo 2 parsed shader tag returned as none. Something went horribly wrong")
+
+    else:
+        print("Shader generation is disabled. Skipping")
+
 def generate_h3_shader_simple(mat, shader_path, report):
     mat.use_nodes = True
 
@@ -692,35 +704,60 @@ def generate_h3_shader_simple(mat, shader_path, report):
             if root_fields.attrib.get('name') == "parameters":
                 for parameter_fields in root_fields:
                     if parameter_fields.attrib.get('name') == "base_map":
+                        parameter_type_field = None
+                        bitmap_field = None
                         for field in parameter_fields:
                             if field.attrib.get('name') == "parameter type" and field.attrib.get('value') == "bitmap":
+                                parameter_type_field = field
+                            if field.attrib.get('name') == "bitmap":
+                                bitmap_field = field
+
+                        if parameter_type_field is not None:
+                            bitmap_tag_path = os.path.join(tags_directory, "%s.%s" % (bitmap_field.attrib.get('value').rsplit(",", 1)[0], "bitmap"))
+                            if os.path.isfile(bitmap_tag_path):
                                 bitmap_parameter = parameter_fields
 
-                        break
+                                break
+
                     else:
                         if bitmap_parameter == None:
+                            parameter_type_field = None
+                            bitmap_field = None
                             for field in parameter_fields:
                                 if field.attrib.get('name') == "parameter type" and field.attrib.get('value') == "bitmap":
+                                    parameter_type_field = field
+                                if field.attrib.get('name') == "bitmap":
+                                    bitmap_field = field
+
+                            if parameter_type_field is not None:
+                                bitmap_tag_path = os.path.join(tags_directory, "%s.%s" % (bitmap_field.attrib.get('value').rsplit(",", 1)[0], "bitmap"))
+                                print(bitmap_tag_path)
+                                if os.path.isfile(bitmap_tag_path):
                                     bitmap_parameter = parameter_fields
+
                         
         if bitmap_parameter is not None:
             for field in bitmap_parameter:
                 if field.attrib.get('name') == "bitmap":
                     bitmap_path = field.attrib.get('value')
 
-        bitmap_command = "export-bitmap-tga"
-        input_file = bitmap_path.rsplit(",", 1)[0]
-        bitmap_directory = os.path.dirname(input_file)
-        bitmap_name = os.path.basename(input_file)
-        bitmap_output = os.path.join(output_directory, bitmap_directory, "pixel_data_")
-        if not os.path.exists(os.path.dirname(bitmap_output)):
-            os.makedirs(os.path.dirname(bitmap_output))
+        if bitmap_path is not None:
+            bitmap_command = "export-bitmap-tga"
+            input_file = bitmap_path.rsplit(",", 1)[0]
+            bitmap_directory = os.path.dirname(input_file)
+            bitmap_name = os.path.basename(input_file)
+            bitmap_output = os.path.join(output_directory, bitmap_directory, "pixel_data_")
+            if not os.path.exists(os.path.dirname(bitmap_output)):
+                os.makedirs(os.path.dirname(bitmap_output))
 
-        args = [tool_path, bitmap_command, input_file, bitmap_output]
+            args = [tool_path, bitmap_command, input_file, bitmap_output]
 
-        subprocess.call(args, cwd=tool_directory)
+            subprocess.call(args, cwd=tool_directory)
 
-        bitmap_file = os.path.join(output_directory, bitmap_directory, "pixel_data_%s%s" % (bitmap_name, "_00_00.tga"))
+            bitmap_file = os.path.join(output_directory, bitmap_directory, "pixel_data_%s%s" % (bitmap_name, "_00_00.tga"))
+
+        else:
+            print("No valid bitmap found. Skipping")
 
     output_material_node = get_output_material_node(mat)
     output_material_node.location = Vector((0.0, 0.0))
@@ -759,6 +796,12 @@ def generate_h3_shader(mat, shader_path, report):
                 print("Skipping shader")
                 #generate_shader_environment(mat, shader, report)
 
+        else:
+            print("Halo 3 xml shader path returned as none. Something went horribly wrong")
+
+    else:
+        print("Shader generation is disabled. Skipping")
+
 def find_h1_shader_tag(import_filepath, material_name):
     shader_extensions = ["shader_environment", 
                          "shader_model", 
@@ -771,11 +814,16 @@ def find_h1_shader_tag(import_filepath, material_name):
                          "shader_transparent_water"]
 
     material_name = material_name.lower()
+    symbols_list, processed_name = mesh_processing.gather_symbols("", material_name, "halo1")
+    symbols_list, processed_name = mesh_processing.gather_symbols(symbols_list, reversed(processed_name), "halo1")
+    processed_name, permutation_index = mesh_processing.get_shader_permutation(processed_name)
+
     data_path = bpy.context.preferences.addons["io_scene_halo"].preferences.halo_1_data_path.lower()
     tag_path = bpy.context.preferences.addons["io_scene_halo"].preferences.halo_1_tag_path.lower()
 
     shader_path = None
     shader_tag = None
+    shader_extension = None
 
     if not global_functions.string_empty_check(data_path) and not global_functions.string_empty_check(tag_path):
         import_directory = os.path.dirname(os.path.dirname(import_filepath)).lower()
@@ -789,7 +837,6 @@ def find_h1_shader_tag(import_filepath, material_name):
             if os.path.exists(import_shader_directory):
                 for file in os.listdir(import_shader_directory):
                     file_name = os.path.basename(file).lower()
-                    extension = None
                     result = file_name.rsplit(".", 1)
                     if len(result) == 2:
                         file_name = result[0]
@@ -797,6 +844,7 @@ def find_h1_shader_tag(import_filepath, material_name):
 
                     if material_name == file_name and extension in shader_extensions:
                         shader_path = os.path.join(import_shader_directory, file)
+                        shader_extension = extension
                         break
                         
         if shader_path == None:
@@ -813,40 +861,47 @@ def find_h1_shader_tag(import_filepath, material_name):
 
                     if material_name == file_name and extension in shader_extensions:
                         shader_path = file
+                        shader_extension = extension
                         break
 
         if not shader_path == None:
             tag_group = ""
-            if extension == "shader_environment":
+            if shader_extension == "shader_environment":
                 tag_group = "senv"
 
-            elif extension == "shader_model":
+            elif shader_extension == "shader_model":
                 tag_group = "soso"
 
-            elif extension == "shader_transparent_chicago":
+            elif shader_extension == "shader_transparent_chicago":
                 tag_group = "schi"
 
-            elif extension == "shader_transparent_chicago_extended":
+            elif shader_extension == "shader_transparent_chicago_extended":
                 tag_group = "scex"
 
-            elif extension == "shader_transparent_generic":
+            elif shader_extension == "shader_transparent_generic":
                 tag_group = "sotr"
 
-            elif extension == "shader_transparent_glass":
+            elif shader_extension == "shader_transparent_glass":
                 tag_group = "sgla"
 
-            elif extension == "shader_transparent_meter":
+            elif shader_extension == "shader_transparent_meter":
                 tag_group = "smet"
 
-            elif extension == "spla":
+            elif shader_extension == "spla":
                 tag_group = "shader_transparent_plasma"
 
-            elif extension == "swat":
+            elif shader_extension == "swat":
                 tag_group = "shader_transparent_water"
 
             local_path = shader_path.split(tag_path)[1].rsplit(".", 1)[0]
 
             shader_tag = tag_format.TagAsset.TagRef(tag_group, local_path, len(local_path))
+
+        else:
+            print("Halo 1 Shader path wasn't set. Something went terribly wrong when trying to find %s shader" % material_name)
+
+    else:
+       print("Your Halo 1 data and tag paths are not set. Please set them in preferences and restart Blender") 
 
     return shader_tag
 
@@ -943,13 +998,28 @@ def find_h2_shader_tag(import_filepath, material_name):
 
             shader_tag = tag_format.TagAsset.TagRef("shad", local_path, len(local_path))
 
+        else:
+            print("Halo 2 Shader path wasn't set. Something went terribly wrong when trying to find %s shader" % material_name)
+
+    else:
+       print("Your Halo 2 data and tag paths are not set. Please set them in preferences and restart Blender") 
+
     return shader_tag
 
 def find_h3_shader_tag(import_filepath, material_name):
+    shader_extensions = ["shader", 
+                         "shader_cortana", 
+                         "shader_custom", 
+                         "shader_decal", 
+                         "shader_foliage", 
+                         "shader_halogram", 
+                         "shader_skin",
+                         "shader_terrain", 
+                         "shader_water"]
+
     data_path = bpy.context.preferences.addons["io_scene_halo"].preferences.halo_3_data_path.lower()
     tag_path = bpy.context.preferences.addons["io_scene_halo"].preferences.halo_3_tag_path.lower()
     shader_path = None
-    shader_tag = None
 
     if not global_functions.string_empty_check(data_path) and not global_functions.string_empty_check(tag_path):
         shader_collection_dic = {}
@@ -991,7 +1061,7 @@ def find_h3_shader_tag(import_filepath, material_name):
                         file_name = result[0]
                         extension = result[1]
 
-                    if shader_name == file_name and extension == "shader":
+                    if shader_name == file_name and extension in shader_extensions:
                         shader_path = file
                         break
 
@@ -1013,7 +1083,7 @@ def find_h3_shader_tag(import_filepath, material_name):
                             file_name = result[0]
                             extension = result[1]
 
-                        if shader_name == file_name and extension in "shader":
+                        if shader_name == file_name and extension in shader_extensions:
                             shader_path = os.path.join(import_shader_directory, file)
                             break
                         
@@ -1029,12 +1099,18 @@ def find_h3_shader_tag(import_filepath, material_name):
                         file_name = result[0]
                         extension = result[1]
 
-                    if shader_name == file_name and extension in "shader":
+                    if shader_name == file_name and extension in shader_extensions:
                         shader_path = file
                         break
 
         if not shader_path == None:
             local_path = shader_path.split(tag_path)[1].rsplit(".", 1)[0]
+
+        else:
+            print("Halo 3 Shader path wasn't set. Something went terribly wrong when trying to find %s shader" % material_name)
+
+    else:
+       print("Your Halo 3 data and tag paths are not set. Please set them in preferences and restart Blender") 
 
     return shader_path
 

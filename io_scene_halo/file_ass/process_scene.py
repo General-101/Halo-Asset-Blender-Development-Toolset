@@ -452,10 +452,9 @@ def process_scene(context, version, game_version, hidden_geo, nonrender_geo, app
                     xref_name = os.path.basename(xref_path).rsplit('.', 1)[0]
 
                 vertex_groups = original_geo.vertex_groups.keys()
-                try:
+                if (4, 1, 0) > bpy.app.version:
                     evaluted_mesh.calc_normals_split()
-                except:
-                    print()
+
                 region_attribute = evaluted_mesh.get_custom_attribute()
                 region_count = len(original_geo.region_list)
                 for idx, face in enumerate(evaluted_mesh.polygons):

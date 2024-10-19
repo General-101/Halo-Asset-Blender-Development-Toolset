@@ -115,6 +115,8 @@ def build_scene_retail(context, JMS, filepath, game_version, reuse_armature, fix
     object_name = bpy.path.basename(filepath).rsplit('.', 1)[0]
     random_color_gen = global_functions.RandomColorGenerator() # generates a random sequence of colors
 
+    context.scene.halo.game_title = game_version
+
     mesh_processing.deselect_objects(context)
 
     for obj in object_list:

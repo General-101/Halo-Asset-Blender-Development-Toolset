@@ -24,13 +24,14 @@
 #
 # ##### END MIT LICENSE BLOCK #####
 
+import os
 import bpy
 import bmesh
 
 from math import radians
 from mathutils import Matrix
 from .process_file import process_file
-from ..global_functions import mesh_processing, global_functions
+from ..global_functions import mesh_processing, shader_processing, global_functions
 
 def set_ass_material_properties(ass_mat, mat):
     material_strings = ass_mat.material_strings
@@ -143,6 +144,13 @@ def sort_by_parent(ASS):
 
 def build_scene(context, filepath, report):
     ASS = process_file(filepath)
+    game_title = global_functions.get_game_title(ASS.version, "ASS")
+
+    generate_skeleton = False
+    if os.path.basename(os.path.dirname(filepath)) == "render" and game_title == "halo3":
+        generate_skeleton = True
+
+    context.scene.halo.game_title = game_title
 
     collection = context.collection
     random_color_gen = global_functions.RandomColorGenerator() # generates a random sequence of colors
@@ -156,6 +164,34 @@ def build_scene(context, filepath, report):
         if mat is None:
             mat = bpy.data.materials.new(name=material_name)
 
+            ass_mat_name = ass_mat.name
+            if not global_functions.string_empty_check(ass_mat.asset_name):
+                ass_mat_name = ass_mat.asset_name
+
+            if game_title == "halo1":
+                shader = shader_processing.find_h1_shader_tag(ASS.filepath, ass_mat_name)
+                if not shader == None:
+                    shader_processing.generate_h1_shader(mat, shader, 0, print)
+                else:
+                    print("Halo 1 Shader tag returned as None. Something went terribly wrong")
+
+            elif game_title == "halo2":
+                shader = shader_processing.find_h2_shader_tag(ASS.filepath, ass_mat_name)
+                if not shader == None:
+                    shader_processing.generate_h2_shader(mat, shader, print)
+                else:
+                    print("Halo 2 Shader tag returned as None. Something went terribly wrong")
+
+            elif game_title == "halo3":
+                shader_path = shader_processing.find_h3_shader_tag(ASS.filepath, ass_mat_name)
+                if not shader_path == None:
+                    shader_processing.generate_h3_shader(mat, shader_path, print)
+                else:
+                    print("Halo 3 Shader path returned as None. Something went terribly wrong")
+
+            else:
+                print("Game title is unsupported: %s" % game_title)
+
         set_ass_material_properties(ass_mat, mat)
         mat.ass_jms.name_override = ass_mat.asset_name
         mat.diffuse_color = random_color_gen.next()
@@ -166,7 +202,7 @@ def build_scene(context, filepath, report):
     bone_object_index_list = []
     for instance_idx, instance in enumerate(ordered_instances):
         object_index = instance.object_index
-        if instance.name.startswith(node_prefix_tuple):
+        if generate_skeleton and instance.name.startswith(node_prefix_tuple):
             bone_instance_index_list.append(instance_idx)
             if object_index >= 0 and not object_index in bone_object_index_list:
                 bone_object_index_list.append(object_index)
@@ -343,10 +379,8 @@ def build_scene(context, filepath, report):
             instance.ass_jms.name_override = instance_name_override
             instance.ass_jms.unique_id = str(instance_element.unique_id)
 
-            try:
+            if (4, 1, 0) > bpy.app.version:
                 instance.data.use_auto_smooth = True
-            except:
-                print()
 
             if not object_setings == None:
                 vertex_weights_sets = object_setings[0]

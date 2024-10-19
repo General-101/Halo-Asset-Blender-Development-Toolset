@@ -231,10 +231,9 @@ def build_mesh_layout(context, import_file, geometry, current_region_permutation
 
             object_mesh.vertex_groups[group_index].add([vertex_weights_set_idx], node_weight, 'ADD')
 
-    try:
+    if (4, 1, 0) > bpy.app.version:
         object_mesh.data.use_auto_smooth = True
-    except:
-        print()
+
     object_mesh.parent = armature
     mesh_processing.add_modifier(context, object_mesh, False, None, armature)
 

@@ -80,6 +80,29 @@ def gather_symbols(used_symbols_list, processed_symbol_name, game_version):
 
     return (used_symbols_list, symbol_name)
 
+def get_shader_permutation(processed_name):
+    processed_name = "".join(processed_name)
+    result_string = ""
+    for idx, char in enumerate(processed_name): # loop through the characters in the name
+        if not char.isalpha(): # Check if the character is a number
+            processed_name = processed_name[:idx] + " " + processed_name[idx + 1:]
+            result_string += char
+
+        else:
+            break # We've hit the material name
+
+    processed_name = ("".join(reversed(processed_name))).strip()
+    result_string = "".join(reversed(result_string))
+    permutation_index = ""
+    for idx, char in enumerate(result_string): # loop through the characters in the name
+        if char.isdigit(): # Check if the character is a number
+            permutation_index += char
+
+        else:
+            break # We've hit a non number
+
+    return processed_name, permutation_index
+
 def gather_parameters(name):
     processed_name = name
     processed_parameters = []
@@ -484,10 +507,9 @@ def generate_mesh_object_retail(asset, object_vertices, object_triangles, object
 
     region_attribute = mesh.get_custom_attribute()
     mesh.normals_split_custom_set_from_vertices(vertex_normals)
-    try:
+    if (4, 1, 0) > bpy.app.version:
         mesh.use_auto_smooth = True
-    except:
-        print()
+
     for vertex_idx, vertex in enumerate(object_vertices):
         for node_values in vertex.node_set:
             node_index = node_values[0]
@@ -551,14 +573,25 @@ def generate_mesh_object_retail(asset, object_vertices, object_triangles, object
                     shader = shader_processing.find_h1_shader_tag(asset.filepath, material_name)
                     if not shader == None:
                         shader_processing.generate_h1_shader(mat, shader, 0, print)
+                    else:
+                        print("Halo 1 Shader tag returned as None. Something went terribly wrong")
+
                 elif game_title == "halo2":
                     shader = shader_processing.find_h2_shader_tag(asset.filepath, material_name)
                     if not shader == None:
                         shader_processing.generate_h2_shader(mat, shader, print)
+                    else:
+                        print("Halo 2 Shader tag returned as None. Something went terribly wrong")
+
                 elif game_title == "halo3":
                     shader_path = shader_processing.find_h3_shader_tag(asset.filepath, material_name)
                     if not shader_path == None:
                         shader_processing.generate_h3_shader(mat, shader_path, print)
+                    else:
+                        print("Halo 3 Shader path returned as None. Something went terribly wrong")
+
+                else:
+                    print("Game title is unsupported: %s" % game_title)
 
             if not material_name in object_mesh.data.materials.keys():
                 object_mesh.data.materials.append(mat)
@@ -626,9 +659,9 @@ def generate_mesh_retail(context, asset, object_vertices, object_triangles, obje
 
     for triangle_idx, triangle in enumerate(object_triangles):
         triangle_material_index = triangle.material_index
-        mat = None
+        ass_mat = None
         if not triangle_material_index == -1:
-            mat = asset.materials[triangle_material_index]
+            ass_mat = asset.materials[triangle_material_index]
 
         if game_title == "halo1":
             if asset.version >= 8198:
@@ -640,29 +673,45 @@ def generate_mesh_retail(context, asset, object_vertices, object_triangles, obje
                 current_region_permutation = asset.regions[region].name
 
         elif game_title == "halo2" or game_title == "halo3":
-            current_region_permutation = global_functions.material_definition_helper(triangle_material_index, mat)
+            current_region_permutation = global_functions.material_definition_helper(triangle_material_index, ass_mat)
 
         if not current_region_permutation in region_list:
             region_list.append(current_region_permutation)
 
         if not triangle_material_index == -1:
-            material_name = mat.name
+            material_name = ass_mat.name
+
             mat = bpy.data.materials.get(material_name)
             if mat is None:
                 mat = bpy.data.materials.new(name=material_name)
+
+                ass_mat_name = ass_mat.name
+                if not global_functions.string_empty_check(mat.asset_name):
+                    ass_mat_name = ass_mat.asset_name
+
                 if game_title == "halo1":
-                    shader = shader_processing.find_h1_shader_tag(asset.filepath, material_name)
+                    shader = shader_processing.find_h1_shader_tag(asset.filepath, mat.asset_name)
                     if not shader == None:
                         shader_processing.generate_h1_shader(mat, shader, 0, print)
+                    else:
+                        print("Halo 1 Shader tag returned as None. Something went terribly wrong")
+
                 elif game_title == "halo2":
-                    shader = shader_processing.find_h2_shader_tag(asset.filepath, material_name)
+                    shader = shader_processing.find_h2_shader_tag(asset.filepath, mat.asset_name)
                     if not shader == None:
                         shader_processing.generate_h2_shader(mat, shader, print)
-                elif game_title == "halo3":
-                    shader_path = shader_processing.find_h3_shader_tag(asset.filepath, material_name)
-                    if not shader_path == None:
-                        shader_processing.generate_h3_shader(mat, shader, print)
+                    else:
+                        print("Halo 2 Shader tag returned as None. Something went terribly wrong")
 
+                elif game_title == "halo3":
+                    shader_path = shader_processing.find_h3_shader_tag(asset.filepath, mat.asset_name)
+                    if not shader_path == None:
+                        shader_processing.generate_h3_shader(mat, shader_path, print)
+                    else:
+                        print("Halo 3 Shader path returned as None. Something went terribly wrong")
+
+                else:
+                    print("Game title is unsupported: %s" % game_title)
 
             if not mat in object_data.materials.values():
                 object_data.materials.append(mat)
