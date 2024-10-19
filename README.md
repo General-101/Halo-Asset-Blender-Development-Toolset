@@ -3,6 +3,10 @@
 ## Toolset Description
 The Halo Asset Blender Development Toolset is a Blender addon developed in python to aid with creating assets for multiple Halo titles. This addon requires that you have Blender 4.0.0 or above on your system to function.
 
+Please consider supporting me on KoFi at the following link.
+
+https://ko-fi.com/general101
+
 ## Supported Titles and Features
 The following games are or will be supported by this script:
 
@@ -12,37 +16,32 @@ The following games are or will be supported by this script:
  * Halo 2 Anniversary MCC - Classic
  * Halo 3 MCC
  * Halo 3 ODST MCC
+ * Halo Reach MCC (Cinematic cameras specifically Use Foundry if you want levels and meshes.)
+ * Halo 4 MCC (Cinematic cameras specifically. Use Foundry if you want levels and meshes.)
 
 Script supports the following features:
 
-Feature                     | Halo Custom Edition/Halo Combat Evolved Anniversary MCC - Classic | Halo 2 Vista/Halo 2 Anniversary MCC - Classic  | Halo 3 MCC/ Halo 3 ODST MCC
---------------------------- | ----------------------------------------------------------------- | ---------------------------------------------- | ------------------------------------------
-Levels (JMS)                 | Full Support                                                     | Full Support                                   | N/A
-Levels (ASS)                 | N/A                                                              | Full Support                                   | Partial Support[^1]
-Levels (GR2)                 | N/A                                                              | N/A                                            | N/A
-GBXmodel (JMS)               | Full Support                                                     | N/A                                            | N/A
-Render Model (JMS)           | Full Support                                                     | Full Support                                   | Full Support
-Render Model (GR2)           | N/A                                                              | N/A                                            | N/A
-Collision Geometry (JMS)     | Full Support                                                     | Full Support                                   | Full Support
-Collision Geometry (GR2)     | N/A                                                              | N/A                                            | N/A
-Physics Models (JMS)         | Full Support                                                     | Partial Support[^2]                            | Partial Support[^2]
-Physics Models (GR2)         | N/A                                                              | N/A                                            | N/A
-Animations (JMA)             | Full Support                                                     | Full Support                                   | Full Support
-Animations(GR2)             | N/A                                                               | N/A                                            | N/A
-Cinematics(QUA)             | N/A                                                               | N/A                                            | Partial Support (WIP)
-JMI Exporting               | Full Support                                                      | Full Support                                   | Full Support
-WRL Importing               | Full Support                                                      | Full Support                                   | Full Support
-JMS Importing               | Partial Support[^3]                                               | Partial Support[^2][^3]                        | Partial Support[^2][^3]
-JMA Importing               | Full Support                                                      | Full Support                                   | Full Support
-ASS Importing               | N/A                                                               | Partial Support[^3]                            | Partial Support[^3][^1]
-QUA Importing               | N/A                                                               | N/A                                            | No Support (WIP)
-GR2 Importing               | N/A                                                               | N/A                                            | N/A
-Structure_BSP Tag Importing | Partial Support                                                   | Partial Support                                | No Support (WIP)
-GBXModel Tag Importing      | Full Support                                                      | N/A                                            | N/A
-Model Tag Importing         | Full Support                                                      | Full Support                                   | No Support (WIP)
-Collision Tag Importing     | Full Support                                                      | Full Support                                   | No Support (WIP)
-Animation Tag Importing     | Partial Support[^4]                                               | No Support (WIP)                               | No Support (WIP)
-Camera Track Tag Importing  | Full Support                                                      | Full Support                                   | No Support (WIP)
+Feature                     | Halo Custom Edition/Halo Combat Evolved Anniversary MCC - Classic | Halo 2 Vista/Halo 2 Anniversary MCC - Classic  | Halo 3 MCC/ Halo 3 ODST MCC     | Halo Reach MCC         | Halo 4 MCC
+--------------------------- | ----------------------------------------------------------------- | ---------------------------------------------- | ------------------------------- | ---------------------- | ----------------------
+Levels (ASS)                | N/A                                                               | Full Support                                   | Partial Support[^1]             | N/A                    | N/A
+GBXmodel (JMS)              | Full Support                                                      | N/A                                            | N/A                             | N/A                    | N/A
+Render Model (JMS)          | Full Support                                                      | Full Support                                   | Full Support                    | Full Support           | N/A
+Collision Geometry (JMS)    | Full Support                                                      | Full Support                                   | Full Support                    | Full Support           | N/A
+Physics Models (JMS)        | Full Support                                                      | Partial Support[^2]                            | Partial Support[^2]             | N/A                    | N/A
+Animations (JMA)            | Full Support                                                      | Full Support                                   | Full Support                    | Full Support           | N/A
+Cinematics(QUA)             | N/A                                                               | N/A                                            | Partial Support (WIP)           | Partial Support (WIP)  | Partial Support (WIP)
+JMI Exporting               | Full Support                                                      | Full Support                                   | Full Support                    | Full Support           | N/A
+WRL Importing               | Full Support                                                      | Full Support                                   | Full Support                    | N/A                    | N/A
+JMS Importing               | Partial Support[^3]                                               | Partial Support[^2][^3]                        | Partial Support[^2][^3]         | Full Support           | N/A
+JMA Importing               | Full Support                                                      | Full Support                                   | Full Support                    | Full Support           | N/A
+ASS Importing               | N/A                                                               | Partial Support[^3]                            | Partial Support[^3][^1]         | N/A                    | N/A
+QUA Importing               | N/A                                                               | N/A                                            | Partial Support                 | Partial Support (WIP)  | Partial Support (WIP)
+Structure_BSP Tag Importing | Partial Support                                                   | Partial Support                                | No Support                      | N/A                    | N/A
+GBXModel Tag Importing      | Full Support                                                      | N/A                                            | N/A                             | N/A                    | N/A
+Model Tag Importing         | Full Support                                                      | Full Support                                   | No Support                      | N/A                    | N/A
+Collision Tag Importing     | Full Support                                                      | Full Support                                   | No Support                      | N/A                    | N/A
+Animation Tag Importing     | Partial Support[^4]                                               | No Support                                     | No Support                      | N/A                    | N/A
+Camera Track Tag Importing  | Full Support                                                      | Full Support                                   | No Support                      | N/A                    | N/A
 
 [^1]: Toolset is currently missing support for importing or exporting certain Halo 3 JMS/ASS features such as the W coordinate in UVW.
 [^2]: Car wheel and prismatic constraints are not exported or imported properly. WIP
