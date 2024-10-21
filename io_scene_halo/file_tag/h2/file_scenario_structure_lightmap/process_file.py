@@ -505,11 +505,11 @@ def read_lightmap_groups(LIGHTMAP, TAG, input_stream, tag_node, XML_OUTPUT):
                     resources_count = poop_definition.resource_tag_block.count
                     cache_data_count = poop_definition.cache_data_tag_block.count
 
-                    sinf_tag_block_header = TAG.TagBlockHeader().read(input_stream, TAG)
+                    poop_definition.sinf_header = TAG.TagBlockHeader().read(input_stream, TAG)
 
                     if compression_info_count > 0:
                         compression_info_node = tag_format.get_xml_node(XML_OUTPUT, compression_info_count, poop_definition_element_node, "name", "compression info")
-                        compression_info_tag_block_header = TAG.TagBlockHeader().read(input_stream, TAG)
+                        poop_definition.compression_info_header = TAG.TagBlockHeader().read(input_stream, TAG)
                         for compression_info_idx in range(compression_info_count):
                             compression_info_element_node = None
                             if XML_OUTPUT:
@@ -528,11 +528,11 @@ def read_lightmap_groups(LIGHTMAP, TAG, input_stream, tag_node, XML_OUTPUT):
 
                             poop_definition.compression_info.append(compression_info)
 
-                    blok_tag_block_header = TAG.TagBlockHeader().read(input_stream, TAG)
+                    poop_definition.blok_header = TAG.TagBlockHeader().read(input_stream, TAG)
 
                     if resources_count > 0:
                         resources_node = tag_format.get_xml_node(XML_OUTPUT, resources_count, poop_definition_element_node, "name", "resources")
-                        resources_tag_block_header = TAG.TagBlockHeader().read(input_stream, TAG)
+                        poop_definition.resources_header = TAG.TagBlockHeader().read(input_stream, TAG)
                         for resource_idx in range(resources_count):
                             resource_element_node = None
                             if XML_OUTPUT:
@@ -552,7 +552,7 @@ def read_lightmap_groups(LIGHTMAP, TAG, input_stream, tag_node, XML_OUTPUT):
 
                     if cache_data_count > 0:
                         cache_data_node = tag_format.get_xml_node(XML_OUTPUT, cache_data_count, poop_definition_element_node, "name", "cache data")
-                        cache_data_tag_block_header = TAG.TagBlockHeader().read(input_stream, TAG)
+                        poop_definition.cache_data_header = TAG.TagBlockHeader().read(input_stream, TAG)
                         for cache_data_idx in range(cache_data_count):
                             cache_data_element_node = None
                             if XML_OUTPUT:
@@ -593,11 +593,11 @@ def read_lightmap_groups(LIGHTMAP, TAG, input_stream, tag_node, XML_OUTPUT):
                             mopp_reorder_table_count = cache_data.mopp_reorder_table_tag_block.count
                             vertex_buffers_count = cache_data.vertex_buffers_tag_block.count
 
-                            sect_tag_block_header = TAG.TagBlockHeader().read(input_stream, TAG)
+                            cache_data.sect_header = TAG.TagBlockHeader().read(input_stream, TAG)
 
                             if parts_count > 0:
                                 parts_node = tag_format.get_xml_node(XML_OUTPUT, parts_count, cache_data_element_node, "name", "parts")
-                                parts_tag_block_header = TAG.TagBlockHeader().read(input_stream, TAG)
+                                cache_data.parts_header = TAG.TagBlockHeader().read(input_stream, TAG)
                                 for parts_idx in range(parts_count):
                                     parts_element_node = None
                                     if XML_OUTPUT:
@@ -630,7 +630,7 @@ def read_lightmap_groups(LIGHTMAP, TAG, input_stream, tag_node, XML_OUTPUT):
 
                             if subparts_count > 0:
                                 subparts_node = tag_format.get_xml_node(XML_OUTPUT, subparts_count, cache_data_element_node, "name", "subparts")
-                                subparts_tag_block_header = TAG.TagBlockHeader().read(input_stream, TAG)
+                                cache_data.subparts_header = TAG.TagBlockHeader().read(input_stream, TAG)
                                 for subparts_idx in range(subparts_count):
                                     subparts_element_node = None
                                     if XML_OUTPUT:
@@ -648,7 +648,7 @@ def read_lightmap_groups(LIGHTMAP, TAG, input_stream, tag_node, XML_OUTPUT):
 
                             if visibility_bounds_count > 0:
                                 visibility_bounds_node = tag_format.get_xml_node(XML_OUTPUT, visibility_bounds_count, cache_data_element_node, "name", "visibility bounds")
-                                visibility_bounds_tag_block_header = TAG.TagBlockHeader().read(input_stream, TAG)
+                                cache_data.visibility_bounds_header = TAG.TagBlockHeader().read(input_stream, TAG)
                                 for visibility_bounds_idx in range(visibility_bounds_count):
                                     visibility_bounds_element_node = None
                                     if XML_OUTPUT:
@@ -666,7 +666,7 @@ def read_lightmap_groups(LIGHTMAP, TAG, input_stream, tag_node, XML_OUTPUT):
 
                             if raw_vertices_count > 0:
                                 raw_vertices_node = tag_format.get_xml_node(XML_OUTPUT, raw_vertices_count, cache_data_element_node, "name", "raw vertices")
-                                raw_vertices_tag_block_header = TAG.TagBlockHeader().read(input_stream, TAG)
+                                cache_data.raw_vertices_header = TAG.TagBlockHeader().read(input_stream, TAG)
                                 for raw_vertex_idx in range(raw_vertices_count):
                                     raw_vertex_element_node = None
                                     if XML_OUTPUT:
@@ -705,7 +705,7 @@ def read_lightmap_groups(LIGHTMAP, TAG, input_stream, tag_node, XML_OUTPUT):
 
                             if strip_indices_count > 0:
                                 strip_indices_node = tag_format.get_xml_node(XML_OUTPUT, strip_indices_count, cache_data_element_node, "name", "strip indices")
-                                strip_indices_tag_block_header = TAG.TagBlockHeader().read(input_stream, TAG)
+                                cache_data.strip_indices_header = TAG.TagBlockHeader().read(input_stream, TAG)
                                 for strip_index_idx in range(strip_indices_count):
                                     strip_index_element_node = None
                                     if XML_OUTPUT:
@@ -717,11 +717,11 @@ def read_lightmap_groups(LIGHTMAP, TAG, input_stream, tag_node, XML_OUTPUT):
 
                                     cache_data.strip_indices.append(strip_index)
 
-                            mopp_data = input_stream.read(cache_data.visibility_mopp_code_tag_data.size)
+                            cache_data.visibility_mopp_code_tag_data.data = input_stream.read(cache_data.visibility_mopp_code_tag_data.size)
 
                             if mopp_reorder_table_count > 0:
                                 mopp_reorder_table_node = tag_format.get_xml_node(XML_OUTPUT, mopp_reorder_table_count, cache_data_element_node, "name", "mopp reorder table")
-                                mopp_reorder_table_tag_block_header = TAG.TagBlockHeader().read(input_stream, TAG)
+                                cache_data.mopp_reorder_table_header = TAG.TagBlockHeader().read(input_stream, TAG)
                                 for mopp_reorder_table_idx in range(mopp_reorder_table_count):
                                     mopp_reorder_table_element_node = None
                                     if XML_OUTPUT:
@@ -735,7 +735,7 @@ def read_lightmap_groups(LIGHTMAP, TAG, input_stream, tag_node, XML_OUTPUT):
 
                             if vertex_buffers_count > 0:
                                 vertex_buffers_node = tag_format.get_xml_node(XML_OUTPUT, vertex_buffers_count, cache_data_element_node, "name", "vertex buffers")
-                                vertex_buffers_tag_block_header = TAG.TagBlockHeader().read(input_stream, TAG)
+                                cache_data.vertex_buffers_header = TAG.TagBlockHeader().read(input_stream, TAG)
                                 for vertex_buffer_idx in range(vertex_buffers_count):
                                     vertex_buffer_element_node = None
                                     if XML_OUTPUT:
@@ -743,7 +743,7 @@ def read_lightmap_groups(LIGHTMAP, TAG, input_stream, tag_node, XML_OUTPUT):
                                         vertex_buffer_element_node.setAttribute('index', str(vertex_buffer_idx))
                                         vertex_buffers_node.appendChild(vertex_buffer_element_node)
 
-                                    input_stream.read(32) # Padding?
+                                    cache_data.vertex_buffers.append(input_stream.read(32)) # Padding?
 
             lightmap_group.lighting_environments = []
             lighting_environments_count = lightmap_group.lighting_environments_tag_block.count
@@ -843,7 +843,7 @@ def read_lightmap_groups(LIGHTMAP, TAG, input_stream, tag_node, XML_OUTPUT):
 
                     if raw_vertices_count > 0:
                         raw_vertices_node = tag_format.get_xml_node(XML_OUTPUT, raw_vertices_count, geometry_bucket_element_node, "name", "raw vertices")
-                        raw_vertices_tag_block_header = TAG.TagBlockHeader().read(input_stream, TAG)
+                        geometry_bucket.raw_vertices_header = TAG.TagBlockHeader().read(input_stream, TAG)
                         for raw_vertex_idx in range(raw_vertices_count):
                             raw_vertex_element_node = None
                             if XML_OUTPUT:
@@ -857,12 +857,10 @@ def read_lightmap_groups(LIGHTMAP, TAG, input_stream, tag_node, XML_OUTPUT):
 
                             geometry_bucket.raw_vertices.append(raw_vertex)
 
-
-                    blok_tag_block_header = TAG.TagBlockHeader().read(input_stream, TAG)
-
+                    geometry_bucket.blok_header = TAG.TagBlockHeader().read(input_stream, TAG)
                     if resources_count > 0:
                         resources_node = tag_format.get_xml_node(XML_OUTPUT, resources_count, geometry_bucket_element_node, "name", "resources")
-                        resources_tag_block_header = TAG.TagBlockHeader().read(input_stream, TAG)
+                        geometry_bucket.resources_header = TAG.TagBlockHeader().read(input_stream, TAG)
                         for resource_idx in range(resources_count):
                             resource_element_node = None
                             if XML_OUTPUT:
@@ -882,7 +880,7 @@ def read_lightmap_groups(LIGHTMAP, TAG, input_stream, tag_node, XML_OUTPUT):
 
                     if cache_data_count > 0:
                         cache_data_node = tag_format.get_xml_node(XML_OUTPUT, cache_data_count, geometry_bucket_element_node, "name", "cache data")
-                        cache_data_tag_block_header = TAG.TagBlockHeader().read(input_stream, TAG)
+                        geometry_bucket.cache_data_header = TAG.TagBlockHeader().read(input_stream, TAG)
                         for cache_data_idx in range(cache_data_count):
                             cache_data_element_node = None
                             if XML_OUTPUT:
@@ -905,7 +903,7 @@ def read_lightmap_groups(LIGHTMAP, TAG, input_stream, tag_node, XML_OUTPUT):
 
                             if vertex_buffers_count > 0:
                                 vertex_buffers_node = tag_format.get_xml_node(XML_OUTPUT, vertex_buffers_count, cache_data_element_node, "name", "vertex buffers")
-                                vertex_buffers_tag_block_header = TAG.TagBlockHeader().read(input_stream, TAG)
+                                cache_data.vertex_buffers_header = TAG.TagBlockHeader().read(input_stream, TAG)
                                 for vertex_buffer_idx in range(vertex_buffers_count):
                                     vertex_buffer_element_node = None
                                     if XML_OUTPUT:
@@ -913,7 +911,7 @@ def read_lightmap_groups(LIGHTMAP, TAG, input_stream, tag_node, XML_OUTPUT):
                                         vertex_buffer_element_node.setAttribute('index', str(vertex_buffer_idx))
                                         vertex_buffers_node.appendChild(vertex_buffer_element_node)
 
-                                    input_stream.read(32) # Padding?
+                                    cache_data.vertex_buffers.append(input_stream.read(32)) # Padding?
 
             lightmap_group.instance_render_info = []
             instance_render_info_count = lightmap_group.instance_render_info_tag_block.count
@@ -962,7 +960,7 @@ def read_lightmap_groups(LIGHTMAP, TAG, input_stream, tag_node, XML_OUTPUT):
 
                     if section_offsets_count > 0:
                         section_offsets_node = tag_format.get_xml_node(XML_OUTPUT, section_offsets_count, instance_bucket_ref_element_node, "name", "section offsets")
-                        section_offsets_tag_block_header = TAG.TagBlockHeader().read(input_stream, TAG)
+                        instance_bucket_ref.section_offsets_header = TAG.TagBlockHeader().read(input_stream, TAG)
                         for section_offset_idx in range(section_offsets_count):
                             section_offset_element_node = None
                             if XML_OUTPUT:
@@ -1024,7 +1022,7 @@ def read_lightmap_groups(LIGHTMAP, TAG, input_stream, tag_node, XML_OUTPUT):
 
                     if section_offsets_count > 0:
                         section_offsets_node = tag_format.get_xml_node(XML_OUTPUT, section_offsets_count, scenery_object_bucket_ref_element_node, "name", "section offsets")
-                        section_offsets_tag_block_header = TAG.TagBlockHeader().read(input_stream, TAG)
+                        scenery_object_bucket_ref.section_offsets_header = TAG.TagBlockHeader().read(input_stream, TAG)
                         for section_offset_idx in range(section_offsets_count):
                             section_offset_element_node = None
                             if XML_OUTPUT:

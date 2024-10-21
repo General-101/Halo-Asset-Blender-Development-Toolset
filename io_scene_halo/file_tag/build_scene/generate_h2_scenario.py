@@ -436,6 +436,251 @@ def generate_trigger_volumes(context, level_root, collection_name, tag_block):
 
         asset_collection.objects.link(ob)
 
+def scenario_get_resources(H2_ASSET, report):
+    ai_resource = None
+    bipeds_resource = None
+    cinematics_resource = None
+    cluster_data_resource = None
+    comments_resource = None
+    creature_resource = None
+    decals_resource = None
+    decorators_resource = None
+    devices_resource = None
+    equipment_resource = None
+    lights_resource = None
+    scenery_resource = None
+    sound_scenery_resource = None
+    structure_lighting_resource = None
+    trigger_volumes_resource = None
+    vehicles_resource = None
+    weapons_resource = None
+    for scenario_reference in H2_ASSET.scenario_resources:
+        for reference in scenario_reference.references:
+            if reference.tag_group == "ai**":
+                ai_resource = reference
+            elif reference.tag_group == "*ipd":
+                bipeds_resource = reference
+            elif reference.tag_group == "cin*":
+                cinematics_resource = reference
+            elif reference.tag_group == "clu*":
+                cluster_data_resource = reference
+            elif reference.tag_group == "/**/":
+                comments_resource = reference
+            elif reference.tag_group == "*rea":
+                creature_resource = reference
+            elif reference.tag_group == "dec*":
+                decals_resource = reference
+            elif reference.tag_group == "dc*s":
+                decorators_resource = reference
+            elif reference.tag_group == "dgr*":
+                devices_resource = reference
+            elif reference.tag_group == "*qip":
+                equipment_resource = reference
+            elif reference.tag_group == "*igh":
+                lights_resource = reference
+            elif reference.tag_group == "*cen":
+                scenery_resource = reference
+            elif reference.tag_group == "*sce":
+                sound_scenery_resource = reference
+            elif reference.tag_group == "sslt":
+                structure_lighting_resource = reference
+            elif reference.tag_group == "trg*":
+                trigger_volumes_resource = reference
+            elif reference.tag_group == "*ehi":
+                vehicles_resource = reference
+            elif reference.tag_group == "*eap":
+                weapons_resource = reference
+        for reference in scenario_reference.ai_resources:
+            if reference.tag_group == "ai**":
+                ai_resource = reference
+            elif reference.tag_group == "*ipd":
+                bipeds_resource = reference
+            elif reference.tag_group == "cin*":
+                cinematics_resource = reference
+            elif reference.tag_group == "clu*":
+                cluster_data_resource = reference
+            elif reference.tag_group == "/**/":
+                comments_resource = reference
+            elif reference.tag_group == "*rea":
+                creature_resource = reference
+            elif reference.tag_group == "dec*":
+                decals_resource = reference
+            elif reference.tag_group == "dc*s":
+                decorators_resource = reference
+            elif reference.tag_group == "dgr*":
+                devices_resource = reference
+            elif reference.tag_group == "*qip":
+                equipment_resource = reference
+            elif reference.tag_group == "*igh":
+                lights_resource = reference
+            elif reference.tag_group == "*cen":
+                scenery_resource = reference
+            elif reference.tag_group == "*sce":
+                sound_scenery_resource = reference
+            elif reference.tag_group == "sslt":
+                structure_lighting_resource = reference
+            elif reference.tag_group == "trg*":
+                trigger_volumes_resource = reference
+            elif reference.tag_group == "*ehi":
+                vehicles_resource = reference
+            elif reference.tag_group == "*eap":
+                weapons_resource = reference
+
+    if ai_resource:
+        RESOURCE_ASSET = parse_tag(ai_resource, report, "halo2", "retail")
+        if not RESOURCE_ASSET == None:
+            H2_ASSET.style_palette = RESOURCE_ASSET.style_palette
+            H2_ASSET.squad_groups = RESOURCE_ASSET.squad_groups
+            H2_ASSET.squads = RESOURCE_ASSET.squads
+            H2_ASSET.zones = RESOURCE_ASSET.zones
+            H2_ASSET.character_palette = RESOURCE_ASSET.character_palette
+            H2_ASSET.ai_animation_references = RESOURCE_ASSET.ai_animation_references
+            H2_ASSET.ai_script_references = RESOURCE_ASSET.ai_script_references
+            H2_ASSET.ai_recording_references = RESOURCE_ASSET.ai_recording_references
+            H2_ASSET.ai_conversations = RESOURCE_ASSET.ai_conversations
+            H2_ASSET.scripting_data = RESOURCE_ASSET.scripting_data
+            H2_ASSET.orders = RESOURCE_ASSET.orders
+            H2_ASSET.triggers = RESOURCE_ASSET.triggers
+            H2_ASSET.structure_bsps = RESOURCE_ASSET.structure_bsps
+            H2_ASSET.weapon_palette = RESOURCE_ASSET.weapon_palette
+            H2_ASSET.vehicle_palette = RESOURCE_ASSET.vehicle_palette
+            H2_ASSET.vehicles = RESOURCE_ASSET.vehicles
+            H2_ASSET.mission_scenes = RESOURCE_ASSET.mission_scenes
+            H2_ASSET.flocks = RESOURCE_ASSET.flocks
+            H2_ASSET.trigger_volumes = RESOURCE_ASSET.trigger_volumes
+
+    if bipeds_resource:
+        RESOURCE_ASSET = parse_tag(bipeds_resource, report, "halo2", "retail")
+        if not RESOURCE_ASSET == None:
+            H2_ASSET.object_names = RESOURCE_ASSET.object_names
+            H2_ASSET.structure_bsps = RESOURCE_ASSET.structure_bsps
+            H2_ASSET.biped_palette = RESOURCE_ASSET.biped_palette
+            H2_ASSET.bipeds = RESOURCE_ASSET.bipeds
+            H2_ASSET.editor_folders = RESOURCE_ASSET.editor_folders
+
+    if cinematics_resource:
+        RESOURCE_ASSET = parse_tag(cinematics_resource, report, "halo2", "retail")
+        if not RESOURCE_ASSET == None:
+            H2_ASSET.cutscene_flags = RESOURCE_ASSET.cutscene_flags
+            H2_ASSET.cutscene_camera_points = RESOURCE_ASSET.cutscene_camera_points
+            H2_ASSET.recorded_animations = RESOURCE_ASSET.recorded_animations
+
+    if cluster_data_resource:
+        RESOURCE_ASSET = parse_tag(cluster_data_resource, report, "halo2", "retail")
+        if not RESOURCE_ASSET == None:
+            H2_ASSET.scenario_cluster_data = RESOURCE_ASSET.scenario_cluster_data
+            H2_ASSET.background_sound_palette = RESOURCE_ASSET.background_sound_palette
+            H2_ASSET.sound_environment_palette = RESOURCE_ASSET.sound_environment_palette
+            H2_ASSET.weather_palette = RESOURCE_ASSET.weather_palette
+            H2_ASSET.atmospheric_fog_palette = RESOURCE_ASSET.atmospheric_fog_palette
+
+    if comments_resource:
+        RESOURCE_ASSET = parse_tag(comments_resource, report, "halo2", "retail")
+        if not RESOURCE_ASSET == None:
+            H2_ASSET.comments = RESOURCE_ASSET.comments
+
+    if creature_resource:
+        RESOURCE_ASSET = parse_tag(creature_resource, report, "halo2", "retail")
+        if not RESOURCE_ASSET == None:
+            H2_ASSET.object_names = RESOURCE_ASSET.object_names
+            H2_ASSET.structure_bsps = RESOURCE_ASSET.structure_bsps
+            H2_ASSET.creatures_palette = RESOURCE_ASSET.creatures_palette
+            H2_ASSET.creatures = RESOURCE_ASSET.creatures
+            H2_ASSET.editor_folders = RESOURCE_ASSET.editor_folders
+
+    if decals_resource:
+        RESOURCE_ASSET = parse_tag(decals_resource, report, "halo2", "retail")
+        if not RESOURCE_ASSET == None:
+            H2_ASSET.decal_palette = RESOURCE_ASSET.decal_palette
+            H2_ASSET.decals = RESOURCE_ASSET.decals
+
+    if decorators_resource:
+        RESOURCE_ASSET = parse_tag(decorators_resource, report, "halo2", "retail")
+        if not RESOURCE_ASSET == None:
+            H2_ASSET.decorators = RESOURCE_ASSET.decorators
+            H2_ASSET.decorator_palette = RESOURCE_ASSET.decorator_palette
+
+    if devices_resource:
+        RESOURCE_ASSET = parse_tag(devices_resource, report, "halo2", "retail")
+        if not RESOURCE_ASSET == None:
+            H2_ASSET.object_names = RESOURCE_ASSET.object_names
+            H2_ASSET.structure_bsps = RESOURCE_ASSET.structure_bsps
+            H2_ASSET.device_groups = RESOURCE_ASSET.device_groups
+            H2_ASSET.device_machines = RESOURCE_ASSET.device_machines
+            H2_ASSET.device_machine_palette = RESOURCE_ASSET.device_machine_palette
+            H2_ASSET.device_controls = RESOURCE_ASSET.device_controls
+            H2_ASSET.device_control_palette = RESOURCE_ASSET.device_control_palette
+            H2_ASSET.device_light_fixtures = RESOURCE_ASSET.device_light_fixtures
+            H2_ASSET.device_light_fixtures_palette = RESOURCE_ASSET.device_light_fixtures_palette
+            H2_ASSET.editor_folders = RESOURCE_ASSET.editor_folders
+
+    if equipment_resource:
+        RESOURCE_ASSET = parse_tag(equipment_resource, report, "halo2", "retail")
+        if not RESOURCE_ASSET == None:
+            H2_ASSET.object_names = RESOURCE_ASSET.object_names
+            H2_ASSET.structure_bsps = RESOURCE_ASSET.structure_bsps
+            H2_ASSET.equipment_palette = RESOURCE_ASSET.equipment_palette
+            H2_ASSET.equipment = RESOURCE_ASSET.equipment
+            H2_ASSET.editor_folders = RESOURCE_ASSET.editor_folders
+
+    if lights_resource:
+        RESOURCE_ASSET = parse_tag(lights_resource, report, "halo2", "retail")
+        if not RESOURCE_ASSET == None:
+            H2_ASSET.object_names = RESOURCE_ASSET.object_names
+            H2_ASSET.structure_bsps = RESOURCE_ASSET.structure_bsps
+            H2_ASSET.light_volume_palette = RESOURCE_ASSET.light_volume_palette
+            H2_ASSET.light_volumes = RESOURCE_ASSET.light_volumes
+            H2_ASSET.editor_folders = RESOURCE_ASSET.editor_folders
+
+    if scenery_resource:
+        RESOURCE_ASSET = parse_tag(lights_resource, report, "halo2", "retail")
+        if not RESOURCE_ASSET == None:
+            H2_ASSET.object_names = RESOURCE_ASSET.object_names
+            H2_ASSET.structure_bsps = RESOURCE_ASSET.structure_bsps
+            H2_ASSET.scenery_palette = RESOURCE_ASSET.scenery_palette
+            H2_ASSET.scenery = RESOURCE_ASSET.scenery
+            H2_ASSET.crates_palette = RESOURCE_ASSET.crates_palette
+            H2_ASSET.crates = RESOURCE_ASSET.crates
+            H2_ASSET.editor_folders = RESOURCE_ASSET.editor_folders
+
+    if sound_scenery_resource:
+        RESOURCE_ASSET = parse_tag(sound_scenery_resource, report, "halo2", "retail")
+        if not RESOURCE_ASSET == None:
+            H2_ASSET.object_names = RESOURCE_ASSET.object_names
+            H2_ASSET.structure_bsps = RESOURCE_ASSET.structure_bsps
+            H2_ASSET.sound_scenery_palette = RESOURCE_ASSET.sound_scenery_palette
+            H2_ASSET.sound_scenery = RESOURCE_ASSET.sound_scenery
+            H2_ASSET.editor_folders = RESOURCE_ASSET.editor_folders
+
+    if structure_lighting_resource:
+        RESOURCE_ASSET = parse_tag(structure_lighting_resource, report, "halo2", "retail")
+        if not RESOURCE_ASSET == None:
+            H2_ASSET.structure_bsp_lighting = RESOURCE_ASSET.structure_bsp_lighting
+
+    if trigger_volumes_resource:
+        RESOURCE_ASSET = parse_tag(trigger_volumes_resource, report, "halo2", "retail")
+        if not RESOURCE_ASSET == None:
+            H2_ASSET.trigger_volumes = RESOURCE_ASSET.trigger_volumes
+            H2_ASSET.object_names = RESOURCE_ASSET.object_names
+
+    if vehicles_resource:
+        RESOURCE_ASSET = parse_tag(vehicles_resource, report, "halo2", "retail")
+        if not RESOURCE_ASSET == None:
+            H2_ASSET.object_names = RESOURCE_ASSET.object_names
+            H2_ASSET.structure_bsps = RESOURCE_ASSET.structure_bsps
+            H2_ASSET.vehicle_palette = RESOURCE_ASSET.vehicle_palette
+            H2_ASSET.vehicles = RESOURCE_ASSET.vehicles
+            H2_ASSET.editor_folders = RESOURCE_ASSET.editor_folders
+
+    if weapons_resource:
+        RESOURCE_ASSET = parse_tag(weapons_resource, report, "halo2", "retail")
+        if not RESOURCE_ASSET == None:
+            H2_ASSET.object_names = RESOURCE_ASSET.object_names
+            H2_ASSET.structure_bsps = RESOURCE_ASSET.structure_bsps
+            H2_ASSET.weapon_palette = RESOURCE_ASSET.weapon_palette
+            H2_ASSET.weapons = RESOURCE_ASSET.weapons
+            H2_ASSET.editor_folders = RESOURCE_ASSET.editor_folders
+
 def generate_scenario_scene(context, H2_ASSET, game_version, game_title, file_version, fix_rotations, empty_markers, report):
     random_color_gen = global_functions.RandomColorGenerator() # generates a random sequence of colors
     levels_collection = bpy.data.collections.get("BSPs")
@@ -480,26 +725,13 @@ def generate_scenario_scene(context, H2_ASSET, game_version, game_title, file_ve
         level_root = bpy.data.objects.new("frame_root", level_mesh)
         context.collection.objects.link(level_root)
 
-    scenery_resource = None
-    for scenario_reference in H2_ASSET.scenario_resources:
-        for reference in scenario_reference.references:
-            if reference.tag_group == "*cen":
-                scenery_resource = reference
-
+    scenario_get_resources(H2_ASSET, report)
     if len(H2_ASSET.skies) > 0:
         generate_skies(context, level_root, H2_ASSET.skies, report)
     if len(H2_ASSET.comments) > 0:
         generate_comments(context, level_root, H2_ASSET.comments)
     if len(H2_ASSET.scenery) > 0:
-        scenery_palette = H2_ASSET.scenery_palette
-        scenery = H2_ASSET.scenery
-        if scenery_resource:
-            SCENERY_RESOURCE_ASSET = parse_tag(scenery_resource, report, "halo2", "retail")
-            if not SCENERY_RESOURCE_ASSET == None:
-                scenery_palette = SCENERY_RESOURCE_ASSET.scenery_palette
-                scenery = SCENERY_RESOURCE_ASSET.scenery
-
-        generate_object_elements(level_root, "Scenery", scenery_palette, scenery, context, game_version, file_version, fix_rotations, report, random_color_gen)
+        generate_object_elements(level_root, "Scenery", H2_ASSET.scenery_palette, H2_ASSET.scenery, context, game_version, file_version, fix_rotations, report, random_color_gen)
     if len(H2_ASSET.bipeds) > 0:
         generate_object_elements(level_root, "Biped", H2_ASSET.biped_palette, H2_ASSET.bipeds, context, game_version, file_version, fix_rotations, report, random_color_gen)
     if len(H2_ASSET.vehicles) > 0:
@@ -518,6 +750,8 @@ def generate_scenario_scene(context, H2_ASSET, game_version, game_title, file_ve
         generate_object_elements(level_root, "Sound Scenery", H2_ASSET.sound_scenery_palette, H2_ASSET.sound_scenery, context, game_version, file_version, fix_rotations, report, random_color_gen)
     if len(H2_ASSET.crates) > 0:
         generate_object_elements(level_root, "Crates", H2_ASSET.crates_palette, H2_ASSET.crates, context, game_version, file_version, fix_rotations, report, random_color_gen)
+    if len(H2_ASSET.creatures) > 0:
+        generate_object_elements(level_root, "Creatures", H2_ASSET.creatures_palette, H2_ASSET.creatures, context, game_version, file_version, fix_rotations, report, random_color_gen)
     if len(H2_ASSET.player_starting_locations) > 0:
         generate_empties(context, level_root, "Player Starting Locations", H2_ASSET.player_starting_locations)
     if len(H2_ASSET.netgame_flags) > 0:

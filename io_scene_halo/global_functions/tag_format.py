@@ -288,10 +288,11 @@ def get_xml_path(input_path, tag_group, is_legacy, is_reversed=False):
     if is_reversed:
         tag_group = tag_group[::-1]
 
-    xml_path = os.path.join(os.path.dirname(input_path), "%s_%s.XML" % (tag_name, tag_group))
-    special_characters=['@','#','$','*','&']
+    special_characters=['@','#','$','*','&',"/",os.sep]
     for i in special_characters:
-        xml_path = xml_path.replace(i, " ")
+        tag_group = tag_group.replace(i, "_")
+
+    xml_path = os.path.join(os.path.dirname(input_path), "%s_%s.XML" % (tag_name, tag_group))
 
     return xml_path
 
@@ -300,6 +301,13 @@ def string_to_bytes(string, reverse):
         string = string[::-1]
 
     return bytes(string, 'utf-8')
+
+def string_empty_check(string):
+    is_empty = False
+    if not string == None and (len(string) == 0 or string.isspace()):
+        is_empty = True
+
+    return is_empty
 
 class TagAsset():
     def __init__(self):
@@ -869,10 +877,28 @@ class TagAsset():
             self.engine_tag = engine_tag
 
         def read(self, input_stream, tag):
-            if bpy.context.preferences.addons["io_scene_halo"].preferences.halo_1_tag_path in input_stream.name:
-                self.local_path = input_stream.name.split(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_1_tag_path)[1].rsplit(".", 1)[0]
-            elif bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path in input_stream.name:
-                self.local_path = input_stream.name.split(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path)[1].rsplit(".", 1)[0]
+            h1_path = bpy.context.preferences.addons["io_scene_halo"].preferences.halo_1_tag_path
+            h2_path = bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path
+            if not string_empty_check(h1_path) and h1_path in input_stream.name:
+                result = input_stream.name.split(h1_path)
+                if len(result) > 1:
+                    result = result[1].rsplit(".", 1)[0]
+
+                else:
+                    result = result[0].rsplit(".", 1)[0]
+
+                self.local_path = result
+
+            elif not string_empty_check(h2_path) and h2_path in input_stream.name:
+                result = input_stream.name.split(h2_path)
+                if len(result) > 1:
+                    result = result[1].rsplit(".", 1)[0]
+
+                else:
+                    result = result[0].rsplit(".", 1)[0]
+
+                self.local_path = result
+
             else:
                 self.local_path = input_stream.name.rsplit(".", 1)[0]
 

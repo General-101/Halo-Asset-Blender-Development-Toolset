@@ -31,6 +31,8 @@ class ScenarioAsset(ScenarioAsset):
         super().__init__()
 
     class ScenarioBody(ScenarioAsset.ScenarioBody):
-        def __init__(self, next_object_id_salt=0):
+        def __init__(self, next_machine_id_salt=0, next_control_id_salt=0, next_light_fixture_id_salt=0):
             super().__init__()
-            self.next_object_id_salt = next_object_id_salt
+            self.next_machine_id_salt = next_machine_id_salt
+            self.next_control_id_salt = next_control_id_salt
+            self.next_light_fixture_id_salt = next_light_fixture_id_salt

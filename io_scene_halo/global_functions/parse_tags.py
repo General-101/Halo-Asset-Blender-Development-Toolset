@@ -73,7 +73,24 @@ from ..file_tag.h2.file_control.process_file import process_file as process_h2_c
 from ..file_tag.h2.file_sound_scenery.process_file import process_file as process_h2_sound_scenery
 from ..file_tag.h2.file_item_collection.process_file import process_file as process_h2_item_collection
 from ..file_tag.h2.file_vehicle_collection.process_file import process_file as process_h2_vehicle_collection
+
+from ..file_tag.h2.file_scenario_ai_resource.process_file import process_file as process_h2_scenario_ai_resource
+from ..file_tag.h2.file_scenario_bipeds_resource.process_file import process_file as process_h2_scenario_bipeds_resource
+from ..file_tag.h2.file_scenario_cinematics_resource.process_file import process_file as process_h2_scenario_cinematics_resource
+from ..file_tag.h2.file_scenario_cluster_data_resource.process_file import process_file as process_h2_scenario_cluster_data_resource
+from ..file_tag.h2.file_scenario_comments_resource.process_file import process_file as process_h2_scenario_comments_resource
+from ..file_tag.h2.file_scenario_creature_resource.process_file import process_file as process_h2_scenario_creature_resource
+from ..file_tag.h2.file_scenario_decals_resource.process_file import process_file as process_h2_scenario_decals_resource
+from ..file_tag.h2.file_scenario_decorators_resource.process_file import process_file as process_h2_scenario_decorators_resource
+from ..file_tag.h2.file_scenario_devices_resource.process_file import process_file as process_h2_scenario_devices_resource
+from ..file_tag.h2.file_scenario_equipment_resource.process_file import process_file as process_h2_scenario_equipment_resource
+from ..file_tag.h2.file_scenario_lights_resource.process_file import process_file as process_h2_scenario_lights_resource
 from ..file_tag.h2.file_scenario_scenery_resource.process_file import process_file as process_h2_scenario_scenery_resource
+from ..file_tag.h2.file_scenario_sound_scenery_resource.process_file import process_file as process_h2_scenario_sound_scenery_resource
+from ..file_tag.h2.file_scenario_structure_lighting_resource.process_file import process_file as process_h2_scenario_structure_lighting_resource
+from ..file_tag.h2.file_scenario_trigger_volumes_resource.process_file import process_file as process_h2_scenario_trigger_volumes_resource
+from ..file_tag.h2.file_scenario_vehicles_resource.process_file import process_file as process_h2_scenario_vehicles_resource
+from ..file_tag.h2.file_scenario_weapons_resource.process_file import process_file as process_h2_scenario_weapons_resource
 
 def parse_tag(tagref, report, game_title, game_version):
     ASSET = None
@@ -386,11 +403,123 @@ def parse_tag(tagref, report, game_title, game_version):
                 ASSET = process_h2_vehicle_collection(input_stream, report)
                 input_stream.close()
 
+        elif tagref.tag_group == "ai**":
+            input_file = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path, "%s.scenario_ai_resource" % tagref.name)
+            if os.path.exists(input_file):
+                input_stream = open(input_file, 'rb')
+                ASSET = process_h2_scenario_ai_resource(input_stream, report)
+                input_stream.close()
+
+        elif tagref.tag_group == "*ipd":
+            input_file = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path, "%s.scenario_bipeds_resource" % tagref.name)
+            if os.path.exists(input_file):
+                input_stream = open(input_file, 'rb')
+                ASSET = process_h2_scenario_bipeds_resource(input_stream, report)
+                input_stream.close()
+
+        elif tagref.tag_group == "cin*":
+            input_file = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path, "%s.scenario_cinematics_resource" % tagref.name)
+            if os.path.exists(input_file):
+                input_stream = open(input_file, 'rb')
+                ASSET = process_h2_scenario_cinematics_resource(input_stream, report)
+                input_stream.close()
+
+        elif tagref.tag_group == "clu*":
+            input_file = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path, "%s.scenario_cluster_data_resource" % tagref.name)
+            if os.path.exists(input_file):
+                input_stream = open(input_file, 'rb')
+                ASSET = process_h2_scenario_cluster_data_resource(input_stream, report)
+                input_stream.close()
+
+        elif tagref.tag_group == "/**/":
+            input_file = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path, "%s.scenario_comments_resource" % tagref.name)
+            if os.path.exists(input_file):
+                input_stream = open(input_file, 'rb')
+                ASSET = process_h2_scenario_comments_resource(input_stream, report)
+                input_stream.close()
+
+        elif tagref.tag_group == "*rea":
+            input_file = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path, "%s.scenario_creature_resource" % tagref.name)
+            if os.path.exists(input_file):
+                input_stream = open(input_file, 'rb')
+                ASSET = process_h2_scenario_creature_resource(input_stream, report)
+                input_stream.close()
+
+        elif tagref.tag_group == "dec*":
+            input_file = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path, "%s.scenario_decals_resource" % tagref.name)
+            if os.path.exists(input_file):
+                input_stream = open(input_file, 'rb')
+                ASSET = process_h2_scenario_decals_resource(input_stream, report)
+                input_stream.close()
+
+        elif tagref.tag_group == "dc*s":
+            input_file = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path, "%s.scenario_decorators_resource" % tagref.name)
+            if os.path.exists(input_file):
+                input_stream = open(input_file, 'rb')
+                ASSET = process_h2_scenario_decorators_resource(input_stream, report)
+                input_stream.close()
+
+        elif tagref.tag_group == "dgr*":
+            input_file = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path, "%s.scenario_devices_resource" % tagref.name)
+            if os.path.exists(input_file):
+                input_stream = open(input_file, 'rb')
+                ASSET = process_h2_scenario_devices_resource(input_stream, report)
+                input_stream.close()
+
+        elif tagref.tag_group == "*qip":
+            input_file = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path, "%s.scenario_equipment_resource" % tagref.name)
+            if os.path.exists(input_file):
+                input_stream = open(input_file, 'rb')
+                ASSET = process_h2_scenario_equipment_resource(input_stream, report)
+                input_stream.close()
+
+        elif tagref.tag_group == "*igh":
+            input_file = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path, "%s.scenario_lights_resource" % tagref.name)
+            if os.path.exists(input_file):
+                input_stream = open(input_file, 'rb')
+                ASSET = process_h2_scenario_lights_resource(input_stream, report)
+                input_stream.close()
+
         elif tagref.tag_group == "*cen":
             input_file = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path, "%s.scenario_scenery_resource" % tagref.name)
             if os.path.exists(input_file):
                 input_stream = open(input_file, 'rb')
                 ASSET = process_h2_scenario_scenery_resource(input_stream, report)
+                input_stream.close()
+
+        elif tagref.tag_group == "*sce":
+            input_file = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path, "%s.scenario_sound_scenery_resource" % tagref.name)
+            if os.path.exists(input_file):
+                input_stream = open(input_file, 'rb')
+                ASSET = process_h2_scenario_sound_scenery_resource(input_stream, report)
+                input_stream.close()
+
+        elif tagref.tag_group == "sslt":
+            input_file = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path, "%s.scenario_structure_lighting_resource" % tagref.name)
+            if os.path.exists(input_file):
+                input_stream = open(input_file, 'rb')
+                ASSET = process_h2_scenario_structure_lighting_resource(input_stream, report)
+                input_stream.close()
+
+        elif tagref.tag_group == "trg*":
+            input_file = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path, "%s.scenario_trigger_volumes_resource" % tagref.name)
+            if os.path.exists(input_file):
+                input_stream = open(input_file, 'rb')
+                ASSET = process_h2_scenario_trigger_volumes_resource(input_stream, report)
+                input_stream.close()
+
+        elif tagref.tag_group == "*ehi":
+            input_file = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path, "%s.scenario_vehicles_resource" % tagref.name)
+            if os.path.exists(input_file):
+                input_stream = open(input_file, 'rb')
+                ASSET = process_h2_scenario_vehicles_resource(input_stream, report)
+                input_stream.close()
+
+        elif tagref.tag_group == "*eap":
+            input_file = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path, "%s.scenario_weapons_resource" % tagref.name)
+            if os.path.exists(input_file):
+                input_stream = open(input_file, 'rb')
+                ASSET = process_h2_scenario_weapons_resource(input_stream, report)
                 input_stream.close()
 
     return ASSET

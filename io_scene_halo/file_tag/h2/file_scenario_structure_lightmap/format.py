@@ -401,25 +401,31 @@ class LightmapAsset():
             self.procedural_param1_w = procedural_param1_w
 
     class GeometryBucket:
-        def __init__(self, flags=0, raw_vertices_tag_block=None, block_offset=0, block_size=0, section_data_size=0, resource_data_size=0, resources_tag_block=None,
-                     owner_tag_section_offset=0, cache_data_tag_block=None, raw_vertices=None, resources=None, cache_data=None):
+        def __init__(self, flags=0, raw_vertices_header=None, raw_vertices_tag_block=None, block_offset=0, block_size=0, section_data_size=0, resource_data_size=0, 
+                     blok_header=None, resources_header=None, resources_tag_block=None, owner_tag_section_offset=0, cache_data_header=None, cache_data_tag_block=None, 
+                     raw_vertices=None, resources=None, cache_data=None):
             self.flags = flags
+            self.raw_vertices_header = raw_vertices_header
             self.raw_vertices_tag_block = raw_vertices_tag_block
             self.block_offset = block_offset
             self.block_size = block_size
             self.section_data_size = section_data_size
             self.resource_data_size = resource_data_size
+            self.blok_header = blok_header
+            self.resources_header = resources_header
             self.resources_tag_block = resources_tag_block
             self.owner_tag_section_offset = owner_tag_section_offset
+            self.cache_data_header = cache_data_header
             self.cache_data_tag_block = cache_data_tag_block
             self.raw_vertices = raw_vertices
             self.resources = resources
             self.cache_data = cache_data
 
     class BucketRef:
-        def __init__(self, flags=0, bucket_index=0, section_offsets_tag_block=None, section_offsets=None):
+        def __init__(self, flags=0, bucket_index=0, section_offsets_header=None, section_offsets_tag_block=None, section_offsets=None):
             self.flags = flags
             self.bucket_index = bucket_index
+            self.section_offsets_header = section_offsets_header
             self.section_offsets_tag_block = section_offsets_tag_block
             self.section_offsets = section_offsets
 

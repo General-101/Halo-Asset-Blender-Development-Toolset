@@ -153,12 +153,11 @@ def process_mesh(SBSP_ASSET, random_color_gen, tag_block, poop_name, material_co
                         if mat is None:
                             mat = bpy.data.materials.new(name=material_name)
 
-                        if not material_name in mesh.materials.keys():
+                        if not mat in mesh.materials.values():
                             mesh.materials.append(mat)
 
                         mat.diffuse_color = random_color_gen.next()
-                        material_index = mesh.materials.keys().index(material_name)
-
+                        material_index = mesh.materials.values().index(mat)
                         for triangle_idx in range(triangle_length):
                             mesh.polygons[triangle_start + triangle_idx].material_index = material_index
 
