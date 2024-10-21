@@ -471,7 +471,7 @@ def read_lightmap_groups(LIGHTMAP, TAG, input_stream, tag_node, XML_OUTPUT):
                     poop_definition.opaque_max_nodes_vertex = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(poop_definition_node, "opaque max nodes vertex"))
                     poop_definition.transparent_max_nodes_vertex = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(poop_definition_node, "transparent max nodes vertex"))
                     poop_definition.shadow_casting_rigid_triangle_count = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(poop_definition_node, "shadow casting rigid triangle count"))
-                    input_stream.read(1) # Padding?
+                    poop_definition.unknown = input_stream.read(1)
                     poop_definition.geometry_classification = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(poop_definition_node, "geometry classification", GeometryClassificationEnum))
                     poop_definition.geometry_compression_flags = TAG.read_flag_unsigned_short(input_stream, TAG, tag_format.XMLData(poop_definition_node, "geometry compression flags", GeometryCompressionFlags))
                     poop_definition.compression_info_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(poop_definition_node, "compression info"))
@@ -624,7 +624,7 @@ def read_lightmap_groups(LIGHTMAP, TAG, input_stream, tag_node, XML_OUTPUT):
                                     part.node_weight_1 = TAG.read_float(input_stream, TAG, tag_format.XMLData(parts_element_node, "node weight 1"))
                                     part.node_weight_2 = TAG.read_float(input_stream, TAG, tag_format.XMLData(parts_element_node, "node weight 2"))
                                     part.lod_mipmap_magic_number = TAG.read_float(input_stream, TAG, tag_format.XMLData(parts_element_node, "lod mipmap magic number"))
-                                    input_stream.read(24) # Padding?
+                                    part.unknown = input_stream.read(24) # Padding?
 
                                     cache_data.parts.append(part)
 
@@ -662,7 +662,7 @@ def read_lightmap_groups(LIGHTMAP, TAG, input_stream, tag_node, XML_OUTPUT):
                                     visibility_bounds.node_0 = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(visibility_bounds_element_node, "node 0"))
                                     input_stream.read(2) # Padding?
 
-                                    cache_data.subparts.append(subpart)
+                                    cache_data.visibility_bounds.append(visibility_bounds)
 
                             if raw_vertices_count > 0:
                                 raw_vertices_node = tag_format.get_xml_node(XML_OUTPUT, raw_vertices_count, cache_data_element_node, "name", "raw vertices")

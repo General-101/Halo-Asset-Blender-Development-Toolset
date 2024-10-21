@@ -186,11 +186,11 @@ class LightmapAsset():
 
     class Cluster:
         def __init__(self, total_vertex_count=0, total_triangle_count=0, total_part_count=0, shadow_casting_triangle_count=0, shadow_casting_part_count=0, opaque_point_count=0,
-                     opaque_vertex_count=0, opaque_part_count=0, opaque_max_nodes_vertex=0, transparent_max_nodes_vertex=0, shadow_casting_rigid_triangle_count=0, unknown=0,
-                     geometry_classification=0, geometry_compression_flags=0, compression_info_tag_block=None, hardware_node_count=0, node_map_size=0, software_plane_count=0,
-                     total_subpart_count=0, section_lighting_flags=0, cache_data_tag_block=None, block_offset=0, block_size=0, section_data_size=0, resource_data_size=0,
-                     resource_tag_block=None, owner_tag_section_offset=0, sinf_header=None, compression_info_header=None, blok_header=None, resources_header=None, 
-                     cache_data_header=None, compression_info=None, resources=None, cache_data=None):
+                     opaque_vertex_count=0, opaque_part_count=0, opaque_max_nodes_vertex=0, transparent_max_nodes_vertex=0, shadow_casting_rigid_triangle_count=0, 
+                     unknown=bytes(), geometry_classification=0, geometry_compression_flags=0, compression_info_tag_block=None, hardware_node_count=0, node_map_size=0, 
+                     software_plane_count=0, total_subpart_count=0, section_lighting_flags=0, cache_data_tag_block=None, block_offset=0, block_size=0, section_data_size=0, 
+                     resource_data_size=0, resource_tag_block=None, owner_tag_section_offset=0, sinf_header=None, compression_info_header=None, blok_header=None, 
+                     resources_header=None, cache_data_header=None, compression_info=None, resources=None, cache_data=None):
             self.total_vertex_count = total_vertex_count
             self.total_triangle_count = total_triangle_count
             self.total_part_count = total_part_count
@@ -278,7 +278,7 @@ class LightmapAsset():
     class Part:
         def __init__(self, part_type=0, flags=0, material_index=0, strip_start_index=0, strip_length=0, first_subpart_index=0, subpart_count=0,
                      max_nodes_vertex=0, contributing_compound_node_count=0, position=Vector(), node_index_0=0, node_index_1=0, node_index_2=0, node_index_3=0,
-                     node_weight_0=0.0, node_weight_1=0.0, node_weight_2=0.0, lod_mipmap_magic_number=0, unknown=None):
+                     node_weight_0=0.0, node_weight_1=0.0, node_weight_2=0.0, lod_mipmap_magic_number=0, unknown=bytes()):
             self.part_type = part_type
             self.flags = flags
             self.material_index = material_index

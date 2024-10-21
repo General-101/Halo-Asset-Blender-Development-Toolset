@@ -685,6 +685,7 @@ class TagAsset():
             if reverse:
                 self.name = self.name[::-1]
 
+            self.name = self.name.decode("utf-8")
             self.version = tag_block_header_struct[1]
             self.count = tag_block_header_struct[2]
             self.size = tag_block_header_struct[3]

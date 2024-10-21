@@ -299,7 +299,7 @@ def write_lightmap_groups(output_stream, LIGHTMAP, TAG):
                     output_stream.write(struct.pack('<H', lighting_environment_element.flags))
                     output_stream.write(struct.pack('<fff', *lighting_environment_element.procedural_param0))
                     output_stream.write(struct.pack('<fff', *lighting_environment_element.procedural_param1_xyz))
-                    output_stream.write(struct.pack('<fff', *lighting_environment_element.procedural_param1_w))
+                    output_stream.write(struct.pack('<f', lighting_environment_element.procedural_param1_w))
 
             if len(lightmap_group_element.geometry_buckets) > 0:
                 lightmap_group_element.geometry_buckets_header.write(output_stream, TAG, True)
