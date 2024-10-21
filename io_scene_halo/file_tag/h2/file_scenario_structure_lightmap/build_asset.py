@@ -388,8 +388,198 @@ def write_lightmap_groups(output_stream, LIGHTMAP, TAG):
                         for section_offset in scenery_object_bucket_ref.section_offsets:
                             output_stream.write(struct.pack('<h', section_offset))
 
-def write_errors(output_stream, SCENARIO, TAG):
-    print("TODO")
+def write_errors(output_stream, LIGHTMAP, TAG):
+    if len(LIGHTMAP.errors) > 0:
+        LIGHTMAP.errors_header.write(output_stream, TAG, True)
+        for error in LIGHTMAP.errors:
+            output_stream.write(struct.pack('<255sx', tag_format.string_to_bytes(error.name, False)))
+            output_stream.write(struct.pack('<H', error.report_type))
+            output_stream.write(struct.pack('<H', error.flags))
+            output_stream.write(struct.pack('<408x'))
+            error.reports_tag_block.write(output_stream, False)
+
+        for error in LIGHTMAP.errors:
+            if len(error.reports) > 0:
+                error.reports_header.write(output_stream, TAG, True)
+                for report in error.reports:
+                    output_stream.write(struct.pack('<H', report.type))
+                    output_stream.write(struct.pack('<H', report.flags))
+                    output_stream.write(struct.pack('<h', report.report_length))
+                    output_stream.write(struct.pack('<18x'))
+                    output_stream.write(struct.pack('<31sx', tag_format.string_to_bytes(report.source_filename, False)))
+                    output_stream.write(struct.pack('<i', report.source_line_number))
+                    report.vertices_tag_block.write(output_stream, False)
+                    report.vectors_tag_block.write(output_stream, False)
+                    report.lines_tag_block.write(output_stream, False)
+                    report.triangles_tag_block.write(output_stream, False)
+                    report.quads_tag_block.write(output_stream, False)
+                    report.comments_tag_block.write(output_stream, False)
+                    output_stream.write(struct.pack('<380x'))
+                    output_stream.write(struct.pack('<i', report.report_key))
+                    output_stream.write(struct.pack('<i', report.node_index))
+                    output_stream.write(struct.pack('<ff', *report.bounds_x))
+                    output_stream.write(struct.pack('<ff', *report.bounds_y))
+                    output_stream.write(struct.pack('<ff', *report.bounds_z))
+                    R, G, B, A = report.color
+                    output_stream.write(struct.pack('<ffff', A, R, G, B))
+                    output_stream.write(struct.pack('<84x'))
+
+                for report in error.reports:
+                    if report.report_length > 0:
+                        output_stream.write(struct.pack('<%ssx' % (len(report.text)), tag_format.string_to_bytes(report.text, False)))
+
+                    if len(report.vertices) > 0:
+                        report.vertices_header.write(output_stream, TAG, True)
+                        for vertex in report.vertices:
+                            output_stream.write(struct.pack('<fff', *vertex.position))
+                            output_stream.write(struct.pack('<b', vertex.node_index_0))
+                            output_stream.write(struct.pack('<b', vertex.node_index_1))
+                            output_stream.write(struct.pack('<b', vertex.node_index_2))
+                            output_stream.write(struct.pack('<b', vertex.node_index_3))
+                            output_stream.write(struct.pack('<f', vertex.node_weight_0))
+                            output_stream.write(struct.pack('<f', vertex.node_weight_1))
+                            output_stream.write(struct.pack('<f', vertex.node_weight_2))
+                            output_stream.write(struct.pack('<f', vertex.node_weight_3))
+                            R, G, B, A = vertex.color
+                            output_stream.write(struct.pack('<ffff', A, R, G, B))
+                            output_stream.write(struct.pack('<f', vertex.screen_size))
+
+                    if len(report.vectors) > 0:
+                        report.vectors_header.write(output_stream, TAG, True)
+                        for vector in report.vectors:
+                            output_stream.write(struct.pack('<fff', *vector.position))
+                            output_stream.write(struct.pack('<b', vector.node_index_0))
+                            output_stream.write(struct.pack('<b', vector.node_index_1))
+                            output_stream.write(struct.pack('<b', vector.node_index_2))
+                            output_stream.write(struct.pack('<b', vector.node_index_3))
+                            output_stream.write(struct.pack('<f', vector.node_weight_0))
+                            output_stream.write(struct.pack('<f', vector.node_weight_1))
+                            output_stream.write(struct.pack('<f', vector.node_weight_2))
+                            output_stream.write(struct.pack('<f', vector.node_weight_3))
+                            R, G, B, A = vector.color
+                            output_stream.write(struct.pack('<ffff', A, R, G, B))
+                            output_stream.write(struct.pack('<fff', *vector.normal))
+                            output_stream.write(struct.pack('<f', vector.screen_length))
+
+                    if len(report.lines) > 0:
+                        report.lines_header.write(output_stream, TAG, True)
+                        for line in report.lines:
+                            output_stream.write(struct.pack('<fff', *line.position_a))
+                            output_stream.write(struct.pack('<b', line.node_index_a_0))
+                            output_stream.write(struct.pack('<b', line.node_index_a_1))
+                            output_stream.write(struct.pack('<b', line.node_index_a_2))
+                            output_stream.write(struct.pack('<b', line.node_index_a_3))
+                            output_stream.write(struct.pack('<f', line.node_weight_a_0))
+                            output_stream.write(struct.pack('<f', line.node_weight_a_1))
+                            output_stream.write(struct.pack('<f', line.node_weight_a_2))
+                            output_stream.write(struct.pack('<f', line.node_weight_a_3))
+                            output_stream.write(struct.pack('<fff', *line.position_b))
+                            output_stream.write(struct.pack('<b', line.node_index_b_0))
+                            output_stream.write(struct.pack('<b', line.node_index_b_1))
+                            output_stream.write(struct.pack('<b', line.node_index_b_2))
+                            output_stream.write(struct.pack('<b', line.node_index_b_3))
+                            output_stream.write(struct.pack('<f', line.node_weight_b_0))
+                            output_stream.write(struct.pack('<f', line.node_weight_b_1))
+                            output_stream.write(struct.pack('<f', line.node_weight_b_2))
+                            output_stream.write(struct.pack('<f', line.node_weight_b_3))
+                            R, G, B, A = line.color
+                            output_stream.write(struct.pack('<ffff', A, R, G, B))
+
+                    if len(report.triangles) > 0:
+                        report.triangles_header.write(output_stream, TAG, True)
+                        for triangle in report.triangles:
+                            output_stream.write(struct.pack('<fff', *triangle.position_a))
+                            output_stream.write(struct.pack('<b', triangle.node_index_a_0))
+                            output_stream.write(struct.pack('<b', triangle.node_index_a_1))
+                            output_stream.write(struct.pack('<b', triangle.node_index_a_2))
+                            output_stream.write(struct.pack('<b', triangle.node_index_a_3))
+                            output_stream.write(struct.pack('<f', triangle.node_weight_a_0))
+                            output_stream.write(struct.pack('<f', triangle.node_weight_a_1))
+                            output_stream.write(struct.pack('<f', triangle.node_weight_a_2))
+                            output_stream.write(struct.pack('<f', triangle.node_weight_a_3))
+                            output_stream.write(struct.pack('<fff', *triangle.position_b))
+                            output_stream.write(struct.pack('<b', triangle.node_index_b_0))
+                            output_stream.write(struct.pack('<b', triangle.node_index_b_1))
+                            output_stream.write(struct.pack('<b', triangle.node_index_b_2))
+                            output_stream.write(struct.pack('<b', triangle.node_index_b_3))
+                            output_stream.write(struct.pack('<f', triangle.node_weight_b_0))
+                            output_stream.write(struct.pack('<f', triangle.node_weight_b_1))
+                            output_stream.write(struct.pack('<f', triangle.node_weight_b_2))
+                            output_stream.write(struct.pack('<f', triangle.node_weight_b_3))
+                            output_stream.write(struct.pack('<fff', *triangle.position_c))
+                            output_stream.write(struct.pack('<b', triangle.node_index_c_0))
+                            output_stream.write(struct.pack('<b', triangle.node_index_c_1))
+                            output_stream.write(struct.pack('<b', triangle.node_index_c_2))
+                            output_stream.write(struct.pack('<b', triangle.node_index_c_3))
+                            output_stream.write(struct.pack('<f', triangle.node_weight_c_0))
+                            output_stream.write(struct.pack('<f', triangle.node_weight_c_1))
+                            output_stream.write(struct.pack('<f', triangle.node_weight_c_2))
+                            output_stream.write(struct.pack('<f', triangle.node_weight_c_3))
+                            R, G, B, A = triangle.color
+                            output_stream.write(struct.pack('<ffff', A, R, G, B))
+
+                    if len(report.quads) > 0:
+                        report.quads_header.write(output_stream, TAG, True)
+                        for quad in report.quads:
+                            output_stream.write(struct.pack('<fff', *quad.position_a))
+                            output_stream.write(struct.pack('<b', quad.node_index_a_0))
+                            output_stream.write(struct.pack('<b', quad.node_index_a_1))
+                            output_stream.write(struct.pack('<b', quad.node_index_a_2))
+                            output_stream.write(struct.pack('<b', quad.node_index_a_3))
+                            output_stream.write(struct.pack('<f', quad.node_weight_a_0))
+                            output_stream.write(struct.pack('<f', quad.node_weight_a_1))
+                            output_stream.write(struct.pack('<f', quad.node_weight_a_2))
+                            output_stream.write(struct.pack('<f', quad.node_weight_a_3))
+                            output_stream.write(struct.pack('<fff', *quad.position_b))
+                            output_stream.write(struct.pack('<b', quad.node_index_b_0))
+                            output_stream.write(struct.pack('<b', quad.node_index_b_1))
+                            output_stream.write(struct.pack('<b', quad.node_index_b_2))
+                            output_stream.write(struct.pack('<b', quad.node_index_b_3))
+                            output_stream.write(struct.pack('<f', quad.node_weight_b_0))
+                            output_stream.write(struct.pack('<f', quad.node_weight_b_1))
+                            output_stream.write(struct.pack('<f', quad.node_weight_b_2))
+                            output_stream.write(struct.pack('<f', quad.node_weight_b_3))
+                            output_stream.write(struct.pack('<fff', *quad.position_c))
+                            output_stream.write(struct.pack('<b', quad.node_index_c_0))
+                            output_stream.write(struct.pack('<b', quad.node_index_c_1))
+                            output_stream.write(struct.pack('<b', quad.node_index_c_2))
+                            output_stream.write(struct.pack('<b', quad.node_index_c_3))
+                            output_stream.write(struct.pack('<f', quad.node_weight_c_0))
+                            output_stream.write(struct.pack('<f', quad.node_weight_c_1))
+                            output_stream.write(struct.pack('<f', quad.node_weight_c_2))
+                            output_stream.write(struct.pack('<f', quad.node_weight_c_3))
+                            output_stream.write(struct.pack('<fff', *quad.position_d))
+                            output_stream.write(struct.pack('<b', quad.node_index_d_0))
+                            output_stream.write(struct.pack('<b', quad.node_index_d_1))
+                            output_stream.write(struct.pack('<b', quad.node_index_d_2))
+                            output_stream.write(struct.pack('<b', quad.node_index_d_3))
+                            output_stream.write(struct.pack('<f', quad.node_weight_d_0))
+                            output_stream.write(struct.pack('<f', quad.node_weight_d_1))
+                            output_stream.write(struct.pack('<f', quad.node_weight_d_2))
+                            output_stream.write(struct.pack('<f', quad.node_weight_d_3))
+                            R, G, B, A = quad.color
+                            output_stream.write(struct.pack('<ffff', A, R, G, B))
+
+                    if len(report.comments) > 0:
+                        report.comments_header.write(output_stream, TAG, True)
+                        for comment in report.comments:
+                            output_stream.write(struct.pack('<h', comment.text_length))
+                            output_stream.write(struct.pack('<18x'))
+                            output_stream.write(struct.pack('<fff', *comment.position))
+                            output_stream.write(struct.pack('<b', comment.node_index_0))
+                            output_stream.write(struct.pack('<b', comment.node_index_1))
+                            output_stream.write(struct.pack('<b', comment.node_index_2))
+                            output_stream.write(struct.pack('<b', comment.node_index_3))
+                            output_stream.write(struct.pack('<f', comment.node_weight_0))
+                            output_stream.write(struct.pack('<f', comment.node_weight_1))
+                            output_stream.write(struct.pack('<f', comment.node_weight_2))
+                            output_stream.write(struct.pack('<f', comment.node_weight_3))
+                            R, G, B, A = comment.color
+                            output_stream.write(struct.pack('<ffff', A, R, G, B))
+
+                        for comment in report.comments:
+                            if comment.text_length > 0:
+                                output_stream.write(struct.pack('<%ssx' % (len(comment.text)), tag_format.string_to_bytes(comment.text, False)))
 
 def build_asset(output_stream, LIGHTMAP, report):
     TAG = tag_format.TagAsset()

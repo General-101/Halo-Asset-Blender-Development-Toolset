@@ -438,22 +438,27 @@ class LightmapAsset():
             self.render_model_checksum = render_model_checksum
 
     class Error:
-        def __init__(self, name="", report_type=0, flags=0, reports_tag_block=None, reports=None):
+        def __init__(self, name="", report_type=0, flags=0, reports_header=None, reports_tag_block=None, reports=None):
             self.name = name
             self.report_type = report_type
             self.flags = flags
+            self.reports_header = reports_header
             self.reports_tag_block = reports_tag_block
             self.reports = reports
 
     class Report:
-        def __init__(self, type=0, flags=0, text="", source_filename="", source_line_number=0, vertices_tag_block=None, vectors_tag_block=None,
-                     lines_tag_block=None, triangles_tag_block=None, quads_tag_block=None, comments_tag_block=None, vertices=None, vectors=None, lines=None, triangles=None,
-                     quads=None, comments=None, report_key=0, node_index=0, bounds_x=(0.0, 0.0), bounds_y=(0.0, 0.0), bounds_z=(0.0, 0.0), color=(0.0, 0.0, 0.0, 0.0)):
+        def __init__(self, type=0, flags=0, text="", source_filename="", source_line_number=0, vertices_header=None, vectors_header=None, lines_header=None, triangles_header=None, quads_header=None, comments_header=None, vertices_tag_block=None, vectors_tag_block=None, lines_tag_block=None, triangles_tag_block=None, quads_tag_block=None, comments_tag_block=None, vertices=None, vectors=None, lines=None, triangles=None, quads=None, comments=None, report_key=0, node_index=0, bounds_x=(0.0, 0.0), bounds_y=(0.0, 0.0), bounds_z=(0.0, 0.0), color=(0.0, 0.0, 0.0, 0.0)):
             self.type = type
             self.flags = flags
             self.text = text
             self.source_filename = source_filename
             self.source_line_number = source_line_number
+            self.vertices_header = vertices_header
+            self.vectors_header = vectors_header
+            self.lines_header = lines_header
+            self.triangles_header = triangles_header
+            self.quads_header = quads_header
+            self.comments_header = comments_header
             self.vertices_tag_block = vertices_tag_block
             self.vectors_tag_block = vectors_tag_block
             self.lines_tag_block = lines_tag_block
@@ -607,9 +612,10 @@ class LightmapAsset():
             self.color = color
 
     class ReportComment:
-        def __init__(self, text="", position=Vector(), node_index_0=0, node_index_1=0, node_index_2=0, node_index_3=0, node_weight_0=0.0, node_weight_1=0.0,
+        def __init__(self, text="", text_length=0, position=Vector(), node_index_0=0, node_index_1=0, node_index_2=0, node_index_3=0, node_weight_0=0.0, node_weight_1=0.0,
                      node_weight_2=0.0, node_weight_3=0.0, color=(0.0, 0.0, 0.0, 0.0)):
             self.text = text
+            self.text_length = text_length
             self.position = position
             self.node_index_0 = node_index_0
             self.node_index_1 = node_index_1

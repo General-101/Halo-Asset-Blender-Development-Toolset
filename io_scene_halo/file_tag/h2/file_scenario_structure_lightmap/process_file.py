@@ -1034,27 +1034,28 @@ def read_lightmap_groups(LIGHTMAP, TAG, input_stream, tag_node, XML_OUTPUT):
 
                             scenery_object_bucket_ref.section_offsets.append(section_offset)
 
-def read_errors(LEVEL, TAG, input_stream, tag_node, XML_OUTPUT):
-    if LEVEL.level_body.errors_tag_block.count > 0:
-        errors_node = tag_format.get_xml_node(XML_OUTPUT, LEVEL.level_body.errors_tag_block.count, tag_node, "name", "errors")
-        LEVEL.errors_header = TAG.TagBlockHeader().read(input_stream, TAG)
-        for error_idx in range(LEVEL.level_body.errors_tag_block.count):
+def read_errors(LIGHTMAP, TAG, input_stream, tag_node, XML_OUTPUT):
+    LIGHTMAP.errors = []
+    if LIGHTMAP.lightmap_body.errors_tag_block.count > 0:
+        errors_node = tag_format.get_xml_node(XML_OUTPUT, LIGHTMAP.lightmap_body.errors_tag_block.count, tag_node, "name", "errors")
+        LIGHTMAP.errors_header = TAG.TagBlockHeader().read(input_stream, TAG)
+        for error_idx in range(LIGHTMAP.lightmap_body.errors_tag_block.count):
             error_element_node = None
             if XML_OUTPUT:
                 error_element_node = TAG.xml_doc.createElement('element')
                 error_element_node.setAttribute('index', str(error_idx))
                 errors_node.appendChild(error_element_node)
 
-            error = LEVEL.Error()
+            error = LIGHTMAP.Error()
             error.name = TAG.read_string256(input_stream, TAG, tag_format.XMLData(error_element_node, "name"))
             error.report_type = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(error_element_node, "report type", ReportTypeEnum))
             error.flags = TAG.read_flag_unsigned_short(input_stream, TAG, tag_format.XMLData(error_element_node, "flags", ReportFlags))
             input_stream.read(408) # Padding?
             error.reports_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(error_element_node, "reports"))
 
-            LEVEL.errors.append(error)
+            LIGHTMAP.errors.append(error)
 
-        for error_idx, error in enumerate(LEVEL.errors):
+        for error_idx, error in enumerate(LIGHTMAP.errors):
             error_element_node = None
             if XML_OUTPUT:
                 error_element_node = errors_node.childNodes[error_idx]
@@ -1070,7 +1071,7 @@ def read_errors(LEVEL, TAG, input_stream, tag_node, XML_OUTPUT):
                         report_element_node.setAttribute('index', str(report_idx))
                         report_node.appendChild(report_element_node)
 
-                    report = LEVEL.Report()
+                    report = LIGHTMAP.Report()
                     report.type = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(report_element_node, "report type", ReportTypeEnum))
                     report.flags = TAG.read_flag_unsigned_short(input_stream, TAG, tag_format.XMLData(report_element_node, "flags", ReportFlags))
                     report.report_length = TAG.read_signed_short(input_stream, TAG)
@@ -1118,8 +1119,8 @@ def read_errors(LEVEL, TAG, input_stream, tag_node, XML_OUTPUT):
                                 vertex_element_node.setAttribute('index', str(vertex_idx))
                                 vertices_node.appendChild(vertex_element_node)
 
-                            vertex = LEVEL.ReportVertex()
-                            vertex.position = TAG.read_point_3d(input_stream, TAG, tag_format.XMLData(vertex_element_node, "position"), True)
+                            vertex = LIGHTMAP.ReportVertex()
+                            vertex.position = TAG.read_point_3d(input_stream, TAG, tag_format.XMLData(vertex_element_node, "position"))
                             vertex.node_index_0 = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(vertex_element_node, "node index"))
                             vertex.node_index_1 = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(vertex_element_node, "node index"))
                             vertex.node_index_2 = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(vertex_element_node, "node index"))
@@ -1143,7 +1144,7 @@ def read_errors(LEVEL, TAG, input_stream, tag_node, XML_OUTPUT):
                                 vector_element_node.setAttribute('index', str(vector_idx))
                                 vectors_node.appendChild(vector_element_node)
 
-                            vector = LEVEL.ReportVector()
+                            vector = LIGHTMAP.ReportVector()
                             vector.position = TAG.read_point_3d(input_stream, TAG, tag_format.XMLData(vector_element_node, "position"))
                             vector.node_index_0 = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(vector_element_node, "node index"))
                             vector.node_index_1 = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(vector_element_node, "node index"))
@@ -1169,7 +1170,7 @@ def read_errors(LEVEL, TAG, input_stream, tag_node, XML_OUTPUT):
                                 line_element_node.setAttribute('index', str(line_idx))
                                 lines_node.appendChild(line_element_node)
 
-                            line = LEVEL.ReportLine()
+                            line = LIGHTMAP.ReportLine()
                             line.position_a = TAG.read_point_3d(input_stream, TAG, tag_format.XMLData(line_element_node, "position"))
                             line.node_index_a_0 = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(line_element_node, "node index"))
                             line.node_index_a_1 = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(line_element_node, "node index"))
@@ -1202,7 +1203,7 @@ def read_errors(LEVEL, TAG, input_stream, tag_node, XML_OUTPUT):
                                 triangle_element_node.setAttribute('index', str(triangle_idx))
                                 triangles_node.appendChild(triangle_element_node)
 
-                            triangle = LEVEL.ReportTriangle()
+                            triangle = LIGHTMAP.ReportTriangle()
                             triangle.position_a = TAG.read_point_3d(input_stream, TAG, tag_format.XMLData(triangle_element_node, "position"))
                             triangle.node_index_a_0 = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(triangle_element_node, "node index"))
                             triangle.node_index_a_1 = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(triangle_element_node, "node index"))
@@ -1244,7 +1245,7 @@ def read_errors(LEVEL, TAG, input_stream, tag_node, XML_OUTPUT):
                                 quad_element_node.setAttribute('index', str(quad_idx))
                                 quads_node.appendChild(quad_element_node)
 
-                            quad = LEVEL.ReportQuad()
+                            quad = LIGHTMAP.ReportQuad()
                             quad.position_a = TAG.read_point_3d(input_stream, TAG, tag_format.XMLData(quad_element_node, "position"))
                             quad.node_index_a_0 = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(quad_element_node, "node index"))
                             quad.node_index_a_1 = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(quad_element_node, "node index"))
@@ -1295,7 +1296,7 @@ def read_errors(LEVEL, TAG, input_stream, tag_node, XML_OUTPUT):
                                 comment_element_node.setAttribute('index', str(comment_idx))
                                 comments_node.appendChild(comment_element_node)
 
-                            comment = LEVEL.ReportComment()
+                            comment = LIGHTMAP.ReportComment()
                             comment.text_length = TAG.read_signed_short(input_stream, TAG)
                             input_stream.read(18) # Padding?
                             comment.position = TAG.read_point_3d(input_stream, TAG, tag_format.XMLData(comment_element_node, "position"))
@@ -1357,7 +1358,7 @@ def process_file(input_stream, report):
     input_stream.read(104) # Padding?
 
     read_lightmap_groups(LIGHTMAP, TAG, input_stream, tag_node, XML_OUTPUT)
-    #read_errors(LIGHTMAP, TAG, input_stream, tag_node, XML_OUTPUT)
+    read_errors(LIGHTMAP, TAG, input_stream, tag_node, XML_OUTPUT)
 
     current_position = input_stream.tell()
     EOF = input_stream.seek(0, 2)
