@@ -55,6 +55,70 @@ except ModuleNotFoundError:
     print("PIL not found. Unable to create image node.")
     Image = None
 
+def light_halo_2_mesh(context, lightmap_ob, BITMAP_ASSET, BITMAP, TAG, image_multiplier, lightmap_idx, pixel_offset):
+    lightmap_data = None
+    bitmap_class = None
+    if lightmap_ob.tag_view.instance_lightmap_policy_enum == '0':
+        bitmap_element = BITMAP_ASSET.bitmaps[lightmap_idx]
+        width = int(bitmap_element.width * image_multiplier)
+        height = int(bitmap_element.height * image_multiplier)
+        image = bpy.data.images.get("Lightmap_%s" % lightmap_idx)
+        if not image:
+            image = bpy.data.images.new("Lightmap_%s" % lightmap_idx, width, height)
+        else:
+            image.scale(width, height)
+            image.update()
+
+        for material_slot in lightmap_ob.material_slots:
+            material_slot.material.use_nodes = True
+            material_nodes = material_slot.material.node_tree.nodes
+            image_node = material_nodes.get("Lightmap Texture")
+            if image_node == None:
+                image_node = material_nodes.new("ShaderNodeTexImage")
+                image_node.name = "Lightmap Texture"
+                image_node.location = Vector((-260.0, 280.0))
+
+            image_node.image = image
+
+            for node in material_nodes:
+                node.select = False
+
+            image_node.select = True
+            material_nodes.active = image_node
+
+        lightmap_ob.select_set(True)
+        context.view_layer.objects.active = lightmap_ob
+
+        context.scene.render.engine = 'CYCLES'
+        bpy.ops.object.bake(type='DIFFUSE', pass_filter={'DIRECT','INDIRECT'}, uv_layer=lightmap_ob.data.uv_layers[1].name)
+        lightmap_ob.select_set(False)
+        context.view_layer.objects.active = None
+
+        buf = bytearray([int(p * 255) for p in image.pixels])
+        image = Image.frombytes("RGBA", (width, height), buf, 'raw', "RGBA")
+
+        lightmap_flags = H2BitmapFlags.power_of_two_dimensions.value
+
+        lightmap_image = image.convert('RGBA')
+        r,g,b,a = lightmap_image.split()
+        lightmap_data = Image.merge("RGBA", (b, g, r, a)).tobytes()
+        lightmap_format = H2BitmapFormatEnum.a8r8g8b8.value
+
+        bitmap_class = BITMAP.Bitmap()
+        bitmap_class.signature = "bitm"
+        bitmap_class.width = width
+        bitmap_class.height = height
+        bitmap_class.depth = 1
+        bitmap_class.bitmap_format = lightmap_format
+        bitmap_class.flags = lightmap_flags
+        bitmap_class.pixels_offset = pixel_offset
+        bitmap_class.native_mipmap_info_tag_block = TAG.TagBlock()
+        bitmap_class.native_mipmap_info_header = TAG.TagBlockHeader("tbfd", 0, 0, 12)
+        bitmap_class.native_mipmap_info = []
+        bitmap_class.nbmi_header = TAG.TagBlockHeader("nbmi", 0, 1, 24)
+
+    return lightmap_data, bitmap_class
+
 def bake_clusters(context, game_title, scenario_path, image_multiplier, report, H2V=False):
     bpy.ops.object.select_all(action='DESELECT')
     if game_title == "halo1" and Image:
@@ -213,7 +277,9 @@ def bake_clusters(context, game_title, scenario_path, image_multiplier, report, 
         for bsp_element in SCNR_ASSET.structure_bsps:
             bsp_name = os.path.basename(bsp_element.structure_bsp.name)
             lightmap_name = "%s_lightmaps" % bsp_name
+            lightmap_instances_name = "%s_lightmap_instances" % bsp_name
             lightmap_collection = bpy.data.collections.get(lightmap_name)
+            lightmap_instances_collection = bpy.data.collections.get(lightmap_instances_name)
             if not lightmap_collection == None:
                 BSP_ASSET = parse_tag(bsp_element.structure_bsp, report, game_title, "retail")
                 LTMP_ASSET = parse_tag(bsp_element.structure_lightmap, report, game_title, "retail")
@@ -258,75 +324,25 @@ def bake_clusters(context, game_title, scenario_path, image_multiplier, report, 
 
                 lightmap_idx = 0
                 lightmap_collection.hide_render = False
+                lightmap_instances_collection.hide_render = False
                 for lightmap_ob in lightmap_collection.objects:
+                    cluster_lightmap_data, cluster_bitmap_class = light_halo_2_mesh(context, lightmap_ob, BITMAP_ASSET, BITMAP, TAG, image_multiplier, lightmap_idx, pixel_offset)
                     if lightmap_ob.tag_view.instance_lightmap_policy_enum == '0':
-                        bitmap_element = BITMAP_ASSET.bitmaps[lightmap_idx]
-                        width = int(bitmap_element.width * image_multiplier)
-                        height = int(bitmap_element.height * image_multiplier)
-                        image = bpy.data.images.get("Lightmap_%s" % lightmap_idx)
-                        if not image:
-                            image = bpy.data.images.new("Lightmap_%s" % lightmap_idx, width, height)
-                        else:
-                            image.scale(width, height)
-                            image.update()
-
+                        BITMAP.bitmaps.append(cluster_bitmap_class)
                         lightmap_idx += 1
-                        for material_slot in lightmap_ob.material_slots:
-                            material_slot.material.use_nodes = True
-                            material_nodes = material_slot.material.node_tree.nodes
-                            image_node = material_nodes.get("Lightmap Texture")
-                            if image_node == None:
-                                image_node = material_nodes.new("ShaderNodeTexImage")
-                                image_node.name = "Lightmap Texture"
-                                image_node.location = Vector((-260.0, 280.0))
+                        pixel_data += cluster_lightmap_data
+                        pixel_offset += len(cluster_lightmap_data)
 
-                            image_node.image = image
-
-                            for node in material_nodes:
-                                node.select = False
-
-                            image_node.select = True
-                            material_nodes.active = image_node
-
-                        lightmap_ob.select_set(True)
-                        context.view_layer.objects.active = lightmap_ob
-
-                        context.scene.render.engine = 'CYCLES'
-                        bpy.ops.object.bake(type='DIFFUSE', pass_filter={'DIRECT','INDIRECT'}, uv_layer=lightmap_ob.data.uv_layers[1].name)
-                        lightmap_ob.select_set(False)
-                        context.view_layer.objects.active = None
-
-                        buf = bytearray([int(p * 255) for p in image.pixels])
-                        image = Image.frombytes("RGBA", (width, height), buf, 'raw', "RGBA")
-
-                        bitmap_format = BITMAP.bitmap_body.format
-                        lightmap_flags = H2BitmapFlags.power_of_two_dimensions.value
-
-                        lightmap_image = image.convert('RGBA')
-                        r,g,b,a = lightmap_image.split()
-                        lightmap_data = Image.merge("RGBA", (b, g, r, a)).tobytes()
-                        lightmap_format = H2BitmapFormatEnum.a8r8g8b8.value
-
-                        pixel_data = pixel_data + lightmap_data
-
-                        bitmap_class = BITMAP.Bitmap()
-                        bitmap_class.signature = "bitm"
-                        bitmap_class.width = width
-                        bitmap_class.height = height
-                        bitmap_class.depth = 1
-                        bitmap_class.bitmap_format = lightmap_format
-                        bitmap_class.flags = lightmap_flags
-                        bitmap_class.pixels_offset = pixel_offset
-                        bitmap_class.native_mipmap_info_tag_block = TAG.TagBlock()
-                        bitmap_class.native_mipmap_info_header = TAG.TagBlockHeader("tbfd", 0, 0, 12)
-                        bitmap_class.native_mipmap_info = []
-                        bitmap_class.nbmi_header = TAG.TagBlockHeader("nbmi", 0, 1, 24)
-
-                        BITMAP.bitmaps.append(bitmap_class)
-
-                        pixel_offset += len(lightmap_data)
+                for lightmap_instance_ob in lightmap_instances_collection.objects:
+                    instance_lightmap_data, instance_bitmap_class = light_halo_2_mesh(context, lightmap_instance_ob, BITMAP_ASSET, BITMAP, TAG, image_multiplier, lightmap_idx, pixel_offset)
+                    if lightmap_instance_ob.tag_view.instance_lightmap_policy_enum == '0':
+                        BITMAP.bitmaps.append(instance_bitmap_class)
+                        lightmap_idx += 1
+                        pixel_data += instance_lightmap_data
+                        pixel_offset += len(instance_lightmap_data)
 
                 lightmap_collection.hide_render = True
+                lightmap_instances_collection.hide_render = True
                 BITMAP.bitmap_body.processed_pixel_data = TAG.RawData(len(pixel_data))
                 BITMAP.bitmap_body.processed_pixels = pixel_data
 
@@ -344,6 +360,7 @@ def bake_clusters(context, game_title, scenario_path, image_multiplier, report, 
                 build_h2_bitmap(output_stream, BITMAP, report, H2V)
                 output_stream.close()
 
+    context.scene.halo_tag.image_multiplier = 1
     return {'FINISHED'}
 
 if __name__ == '__main__':

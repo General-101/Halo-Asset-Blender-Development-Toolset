@@ -939,21 +939,22 @@ def find_h2_shader_tag(import_filepath, material_name):
 
         if not collection == None:
             shader_directory = shader_collection_dic.get(collection)
-            import_shader_directory = os.path.join(tag_path, shader_directory.lower())
-            for root, dirs, filenames in os.walk(import_shader_directory):
-                for filename in filenames:
-                    file = os.path.join(root, filename).lower()
+            if not shader_directory == None:
+                import_shader_directory = os.path.join(tag_path, shader_directory.lower())
+                for root, dirs, filenames in os.walk(import_shader_directory):
+                    for filename in filenames:
+                        file = os.path.join(root, filename).lower()
 
-                    file_name = os.path.basename(file)
-                    extension = None
-                    result = file_name.rsplit(".", 1)
-                    if len(result) == 2:
-                        file_name = result[0]
-                        extension = result[1]
+                        file_name = os.path.basename(file)
+                        extension = None
+                        result = file_name.rsplit(".", 1)
+                        if len(result) == 2:
+                            file_name = result[0]
+                            extension = result[1]
 
-                    if shader_name == file_name and extension == "shader":
-                        shader_path = file
-                        break
+                        if shader_name == file_name and extension == "shader":
+                            shader_path = file
+                            break
 
         if shader_path == None:
             import_directory = os.path.dirname(os.path.dirname(import_filepath)).lower()
@@ -1049,21 +1050,22 @@ def find_h3_shader_tag(import_filepath, material_name):
 
         if not collection == None:
             shader_directory = shader_collection_dic.get(collection)
-            import_shader_directory = os.path.join(tag_path, shader_directory.lower())
-            for root, dirs, filenames in os.walk(import_shader_directory):
-                for filename in filenames:
-                    file = os.path.join(root, filename).lower()
+            if not shader_directory == None:
+                import_shader_directory = os.path.join(tag_path, shader_directory.lower())
+                for root, dirs, filenames in os.walk(import_shader_directory):
+                    for filename in filenames:
+                        file = os.path.join(root, filename).lower()
 
-                    file_name = os.path.basename(file)
-                    extension = None
-                    result = file_name.rsplit(".", 1)
-                    if len(result) == 2:
-                        file_name = result[0]
-                        extension = result[1]
+                        file_name = os.path.basename(file)
+                        extension = None
+                        result = file_name.rsplit(".", 1)
+                        if len(result) == 2:
+                            file_name = result[0]
+                            extension = result[1]
 
-                    if shader_name == file_name and extension in shader_extensions:
-                        shader_path = file
-                        break
+                        if shader_name == file_name and extension in shader_extensions:
+                            shader_path = file
+                            break
 
         if shader_path == None:
             import_directory = os.path.dirname(os.path.dirname(import_filepath)).lower()

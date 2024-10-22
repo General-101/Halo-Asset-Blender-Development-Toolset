@@ -571,6 +571,15 @@ def build_scene(context, LEVEL, game_version, game_title, file_version, fix_rota
                     object_mesh.data.use_auto_smooth = True
 
         if len(LEVEL.instanced_geometry_instances) > 0:
+            instance_collection = cluster_collection_override
+            if not cluster_collection_override == None:
+                bsp_name = instance_collection.name.split("_", 1)[0]
+                intances_name = "%s_instances" % bsp_name
+                instance_collection = bpy.data.collections.get(intances_name)
+                if instance_collection == None:
+                    instance_collection = bpy.data.collections.new(intances_name)
+                    cluster_collection_override.children.link(instance_collection)
+
             meshes = []
             for instanced_geometry_definition_idx, instanced_geometry_definition in enumerate(LEVEL.instanced_geometry_definition):
                 cluster_name = "instanced_geometry_definition_%s" % instanced_geometry_definition_idx
@@ -588,7 +597,7 @@ def build_scene(context, LEVEL, game_version, game_title, file_version, fix_rota
                 object_mesh.tag_view.instance_lightmap_policy_enum = str(instanced_geometry_instance.lightmapping_policy)
 
                 object_mesh.parent = level_root
-                cluster_collection_override.objects.link(object_mesh)
+                instance_collection.objects.link(object_mesh)
 
                 matrix_scale = Matrix.Scale(instanced_geometry_instance.scale, 4)
                 matrix_rotation = Matrix()

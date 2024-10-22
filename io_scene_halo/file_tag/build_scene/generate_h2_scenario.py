@@ -708,6 +708,9 @@ def generate_scenario_scene(context, H2_ASSET, game_version, game_title, file_ve
                 clusters_collection = bpy.data.collections.new(cluster_name)
                 level_collection.children.link(clusters_collection)
 
+            clusters_collection.hide_viewport = True
+            clusters_collection.hide_render = True
+
             build_scene_level.build_scene(context, SBSP_ASSET, game_version, game_title, file_version, fix_rotations, empty_markers, report, level_collection, clusters_collection)
 
         if not LTMP_ASSET == None:

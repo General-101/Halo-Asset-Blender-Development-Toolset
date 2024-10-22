@@ -185,6 +185,13 @@ def build_clusters(lightmap_group, SBSP_ASSET, level_root, random_color_gen, col
 def build_poops(lightmap_group, SBSP_ASSET, level_root, random_color_gen, collection, shader_collection_dic):
     lightmap_instance_count = len(lightmap_group.poop_definitions)
     if lightmap_instance_count > 0:
+        bsp_name = collection.name.split("_", 1)[0]
+        intances_name = "%s_lightmap_instances" % bsp_name
+        instance_collection = bpy.data.collections.get(intances_name)
+        if instance_collection == None:
+            instance_collection = bpy.data.collections.new(intances_name)
+            collection.children.link(instance_collection)
+
         meshes = []
         material_count = 0
         if not SBSP_ASSET == None:
@@ -202,7 +209,7 @@ def build_poops(lightmap_group, SBSP_ASSET, level_root, random_color_gen, collec
                 if not mesh == None:
                     object_mesh = bpy.data.objects.new(ob_name, mesh)
                     object_mesh.parent = level_root
-                    collection.objects.link(object_mesh)
+                    instance_collection.objects.link(object_mesh)
 
                     object_mesh.tag_view.data_type_enum = '16'
                     object_mesh.tag_view.instance_lightmap_policy_enum = str(instanced_geometry_instance.lightmapping_policy)
