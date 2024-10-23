@@ -89,13 +89,13 @@ def write_clusters(output_stream, clusters, clusters_header, TAG):
             if len(cluster_element.compression_info) > 0:
                 cluster_element.compression_info_header.write(output_stream, TAG, True)
                 for compression_info_element in cluster_element.compression_info:
-                    output_stream.write(struct.pack('<ff', compression_info_element.position_bounds_x))
-                    output_stream.write(struct.pack('<ff', compression_info_element.position_bounds_y))
-                    output_stream.write(struct.pack('<ff', compression_info_element.position_bounds_z))
-                    output_stream.write(struct.pack('<ff', compression_info_element.texcoord_bounds_x))
-                    output_stream.write(struct.pack('<ff', compression_info_element.texcoord_bounds_y))
-                    output_stream.write(struct.pack('<ff', compression_info_element.secondary_texcoord_bounds_x))
-                    output_stream.write(struct.pack('<ff', compression_info_element.secondary_texcoord_bounds_y))
+                    output_stream.write(struct.pack('<ff', *compression_info_element.position_bounds_x))
+                    output_stream.write(struct.pack('<ff', *compression_info_element.position_bounds_y))
+                    output_stream.write(struct.pack('<ff', *compression_info_element.position_bounds_z))
+                    output_stream.write(struct.pack('<ff', *compression_info_element.texcoord_bounds_x))
+                    output_stream.write(struct.pack('<ff', *compression_info_element.texcoord_bounds_y))
+                    output_stream.write(struct.pack('<ff', *compression_info_element.secondary_texcoord_bounds_x))
+                    output_stream.write(struct.pack('<ff', *compression_info_element.secondary_texcoord_bounds_y))
 
             cluster_element.blok_header.write(output_stream, TAG, True)
             if len(cluster_element.resources) > 0:

@@ -2431,7 +2431,7 @@ class ScenarioAsset():
             self.group_count = group_count
             self.group_start_index = group_start_index
 
-    class Decal():
+    class DecoratorDecal():
         def __init__(self, decorator_set=0, decorator_class=0, decorator_permutation=0, sprite_index=0, position=Vector(), left=Vector(), up=Vector(), extents=Vector(), 
                      previous_position=Vector()):
             self.decorator_set = decorator_set

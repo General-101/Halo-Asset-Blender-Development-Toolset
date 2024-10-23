@@ -35,48 +35,20 @@ from ...global_functions import global_functions
 def process_mesh(SBSP_ASSET, random_color_gen, tag_block, poop_name, material_count, shader_collection_dic):
     mesh = None
     for render_data in tag_block.cache_data:
-        vertex_map = [-1 for raw_vertex in render_data.raw_vertices]
-        vertices = []
         triangles = []
-        triangle_materials = []
-        vertex_idx = 0
-        for part in render_data.parts:
-            if not PartTypeEnum.transparent.value == part.part_type:
-                strip_length = part.strip_length
-                strip_start = part.strip_start_index
+        vertices = [raw_vertex.position * 100 for raw_vertex in render_data.raw_vertices]
 
-                triangle_indices = render_data.strip_indices[strip_start : (strip_start + strip_length)]
-                triangle_length = int(len(triangle_indices) / 3)
-                for idx in range(triangle_length):
-                    triangle_index = (idx * 3)
-                    v0 = triangle_indices[triangle_index]
-                    if vertex_map[v0] == -1:
-                        vertex_map[v0] = vertex_idx
-                        vertices.append(render_data.raw_vertices[v0])
-                        vertex_idx += 1
-
-                    v1 = triangle_indices[triangle_index + 1]
-                    if vertex_map[v1] == -1:
-                        vertex_map[v1] = vertex_idx
-                        vertices.append(render_data.raw_vertices[v1])
-                        vertex_idx += 1
-
-                    v2 = triangle_indices[triangle_index + 2]
-                    if vertex_map[v2] == -1:
-                        vertex_map[v2] = vertex_idx
-                        vertices.append(render_data.raw_vertices[v2])
-                        vertex_idx += 1
-
-                    triangles.append((vertex_map[v0], vertex_map[v1], vertex_map[v2]))
-                    triangle_materials.append(part.material_index)
+        triangle_length = int(len(render_data.strip_indices) / 3)
+        for idx in range(triangle_length):
+            triangle_index = (idx * 3)
+            v0 = render_data.strip_indices[triangle_index]
+            v1 = render_data.strip_indices[triangle_index + 1]
+            v2 = render_data.strip_indices[triangle_index + 2]
+            triangles.append((v0, v1, v2))
 
         if len(vertices) > 0:
-            mesh_vertices = []
-            for vertex in vertices:
-                mesh_vertices.append(vertex.position * 100) 
-
             mesh = bpy.data.meshes.new(poop_name)
-            mesh.from_pydata(mesh_vertices, [], triangles)
+            mesh.from_pydata(vertices, [], triangles)
             for poly in mesh.polygons:
                 poly.use_smooth = True
 
@@ -104,7 +76,7 @@ def process_mesh(SBSP_ASSET, random_color_gen, tag_block, poop_name, material_co
                         v1 = triangle_indices[triangle_index + 1]
                         v2 = triangle_indices[triangle_index + 2]
 
-                        vertex_list = [vertices[vertex_map[v0]], vertices[vertex_map[v1]], vertices[vertex_map[v2]]]
+                        vertex_list = [render_data.raw_vertices[v0], render_data.raw_vertices[v1], render_data.raw_vertices[v2]]
                         for vertex_idx, vertex in enumerate(vertex_list):
                             loop_index = (triangle_start * 3) + triangle_index + vertex_idx
 

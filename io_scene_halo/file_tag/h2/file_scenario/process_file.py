@@ -4220,7 +4220,7 @@ def read_decorators(SCENARIO, TAG, input_stream, tag_node, XML_OUTPUT):
                         decal_element_node.setAttribute('index', str(decal_idx))
                         decals_node.appendChild(decal_element_node)
 
-                    decal = SCENARIO.Decal()
+                    decal = SCENARIO.DecoratorDecal()
                     decal.decorator_set = TAG.read_block_index_signed_byte(input_stream, TAG, tag_format.XMLData(decal_element_node, "decorator set", None, SCENARIO.scenario_body.decorator_palette_tag_block.count, "scenario_decorator_palette_block"))
                     decal.decorator_class = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(decal_element_node, "decorator class"))
                     decal.decorator_permutation = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(decal_element_node, "decorator permutation"))

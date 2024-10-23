@@ -48,12 +48,48 @@ from ..file_tag.h2.file_bitmap.format import (
     )
 from ..file_tag.h1.file_scenario.process_file import process_file as process_h1_scenario
 from ..file_tag.h2.file_scenario.process_file import process_file as process_h2_scenario
+from ..file_tag.h2.file_scenario_structure_lightmap.build_asset import build_asset as build_h2_lightmap
+from ..file_tag.h2.file_scenario_structure_lightmap.format import GeometryBucketFlags
 
 try:
     from PIL import Image
 except ModuleNotFoundError:
     print("PIL not found. Unable to create image node.")
     Image = None
+
+def light_halo_2_dynamic(context, lightmap_ob, uv_index=1):
+    color_attribute = lightmap_ob.data.attributes.active_color
+    if lightmap_ob.data.attributes.active_color == None:
+        color_attribute = lightmap_ob.data.attributes.new(name="Color", type="BYTE_COLOR", domain="POINT")
+
+    lightmap_ob.select_set(True)
+    context.view_layer.objects.active = lightmap_ob
+
+    context.scene.render.engine = 'CYCLES'
+    bpy.ops.object.bake(type='DIFFUSE', 
+                        pass_filter={'DIRECT','INDIRECT'}, 
+                        filepath='', 
+                        width=512, 
+                        height=512, 
+                        margin=16, 
+                        margin_type='EXTEND', 
+                        use_selected_to_active=False, 
+                        max_ray_distance=0.0, 
+                        cage_extrusion=0.0, 
+                        cage_object='', 
+                        normal_space='TANGENT', 
+                        normal_r='POS_X', 
+                        normal_g='POS_Y', 
+                        normal_b='POS_Z', 
+                        target='VERTEX_COLORS', 
+                        save_mode='INTERNAL', 
+                        use_clear=False, 
+                        use_cage=False, 
+                        use_split_materials=False, 
+                        use_automatic_name=False, 
+                        uv_layer=lightmap_ob.data.uv_layers[uv_index].name)
+    lightmap_ob.select_set(False)
+    context.view_layer.objects.active = None
 
 def light_halo_2_mesh(context, lightmap_ob, BITMAP_ASSET, BITMAP, TAG, image_multiplier, lightmap_idx, pixel_offset):
     lightmap_data = None
@@ -90,7 +126,29 @@ def light_halo_2_mesh(context, lightmap_ob, BITMAP_ASSET, BITMAP, TAG, image_mul
         context.view_layer.objects.active = lightmap_ob
 
         context.scene.render.engine = 'CYCLES'
-        bpy.ops.object.bake(type='DIFFUSE', pass_filter={'DIRECT','INDIRECT'}, uv_layer=lightmap_ob.data.uv_layers[1].name)
+        bpy.ops.object.bake(type='DIFFUSE', 
+                            pass_filter={'DIRECT','INDIRECT'}, 
+                            filepath='', 
+                            width=width, 
+                            height=height, 
+                            margin=16, 
+                            margin_type='EXTEND', 
+                            use_selected_to_active=False, 
+                            max_ray_distance=0.0, 
+                            cage_extrusion=0.0, 
+                            cage_object='', 
+                            normal_space='TANGENT', 
+                            normal_r='POS_X', 
+                            normal_g='POS_Y', 
+                            normal_b='POS_Z', 
+                            target='IMAGE_TEXTURES', 
+                            save_mode='INTERNAL', 
+                            use_clear=False, 
+                            use_cage=False, 
+                            use_split_materials=False, 
+                            use_automatic_name=False, 
+                            uv_layer=lightmap_ob.data.uv_layers[1].name)
+        
         lightmap_ob.select_set(False)
         context.view_layer.objects.active = None
 
@@ -117,7 +175,15 @@ def light_halo_2_mesh(context, lightmap_ob, BITMAP_ASSET, BITMAP, TAG, image_mul
         bitmap_class.native_mipmap_info = []
         bitmap_class.nbmi_header = TAG.TagBlockHeader("nbmi", 0, 1, 24)
 
+    else:
+        light_halo_2_dynamic(context, lightmap_ob)
+
     return lightmap_data, bitmap_class
+
+def set_vertex_colors(lightmap_ob, geometry_bucket, section_offset, vertex_count):
+        for vertex_index in range(vertex_count):
+            R, G, B, A = lightmap_ob.data.attributes.active_color.data[vertex_index].color
+            geometry_bucket.raw_vertices[section_offset + vertex_index].primary_lightmap_color_RGBA = (R, G, B, A)
 
 def bake_clusters(context, game_title, scenario_path, image_multiplier, report, H2V=False):
     bpy.ops.object.select_all(action='DESELECT')
@@ -280,12 +346,19 @@ def bake_clusters(context, game_title, scenario_path, image_multiplier, report, 
             lightmap_instances_name = "%s_lightmap_instances" % bsp_name
             lightmap_collection = bpy.data.collections.get(lightmap_name)
             lightmap_instances_collection = bpy.data.collections.get(lightmap_instances_name)
+            scenery_collection = bpy.data.collections.get("Scenery")
             if not lightmap_collection == None:
                 BSP_ASSET = parse_tag(bsp_element.structure_bsp, report, game_title, "retail")
                 LTMP_ASSET = parse_tag(bsp_element.structure_lightmap, report, game_title, "retail")
-                BITMAP_ASSET = parse_tag(LTMP_ASSET.lightmap_groups[0].bitmap_group_tag_ref, report, game_title, "retail")
 
-                bitmap_path = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path, "%s.bitmap" %  LTMP_ASSET.lightmap_groups[0].bitmap_group_tag_ref.name)
+                first_lightmap_group_entry = None
+                for lightmap_group in LTMP_ASSET.lightmap_groups:
+                    first_lightmap_group_entry = lightmap_group
+                    break
+
+                BITMAP_ASSET = parse_tag(first_lightmap_group_entry.bitmap_group_tag_ref, report, game_title, "retail")
+
+                bitmap_path = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path, "%s.bitmap" %  first_lightmap_group_entry.bitmap_group_tag_ref.name)
 
                 pixel_data = bytes()
                 pixel_offset = 0
@@ -341,6 +414,9 @@ def bake_clusters(context, game_title, scenario_path, image_multiplier, report, 
                         pixel_data += instance_lightmap_data
                         pixel_offset += len(instance_lightmap_data)
 
+                for scenery_ob in scenery_collection.objects:
+                    light_halo_2_dynamic(context, scenery_ob, 0)
+
                 lightmap_collection.hide_render = True
                 lightmap_instances_collection.hide_render = True
                 BITMAP.bitmap_body.processed_pixel_data = TAG.RawData(len(pixel_data))
@@ -358,6 +434,29 @@ def bake_clusters(context, game_title, scenario_path, image_multiplier, report, 
 
                 output_stream = open(bitmap_path, 'wb')
                 build_h2_bitmap(output_stream, BITMAP, report, H2V)
+                output_stream.close()
+
+                for instance_idx, instance_bucket_ref in enumerate(first_lightmap_group_entry.instance_bucket_refs):
+                    lightmap_instance_ob = lightmap_instances_collection.objects[instance_idx]
+                    vertex_count = len(lightmap_instance_ob.data.vertices)
+                    bucket_index = instance_bucket_ref.bucket_index
+                    geometry_bucket = first_lightmap_group_entry.geometry_buckets[bucket_index]
+                    if GeometryBucketFlags.color in GeometryBucketFlags(geometry_bucket.flags):
+                        for section_offset in instance_bucket_ref.section_offsets:
+                            set_vertex_colors(lightmap_instance_ob, geometry_bucket, section_offset, vertex_count)
+
+                for scenery_idx, scenery_object_bucket_ref in enumerate(first_lightmap_group_entry.scenery_object_bucket_refs):
+                    scenery_ob = scenery_collection.objects[scenery_idx]
+                    vertex_count = len(scenery_ob.data.vertices)
+                    bucket_index = scenery_object_bucket_ref.bucket_index
+                    geometry_bucket = first_lightmap_group_entry.geometry_buckets[bucket_index]
+                    if GeometryBucketFlags.color in GeometryBucketFlags(geometry_bucket.flags):
+                        for section_offset in scenery_object_bucket_ref.section_offsets:
+                            set_vertex_colors(scenery_ob, geometry_bucket, section_offset, vertex_count)
+
+                lightmap_path = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path, "%s.scenario_structure_lightmap" % bsp_element.structure_lightmap.name)
+                output_stream = open(lightmap_path, 'wb')
+                build_h2_lightmap(output_stream, LTMP_ASSET, report)
                 output_stream.close()
 
     context.scene.halo_tag.image_multiplier = 1

@@ -436,6 +436,42 @@ def generate_trigger_volumes(context, level_root, collection_name, tag_block):
 
         asset_collection.objects.link(ob)
 
+def generate_decals(level_root, collection_name, palette, tag_block, context, game_version, file_version, fix_rotations, report, random_color_gen):
+    asset_collection = bpy.data.collections.get(collection_name)
+    if asset_collection == None:
+        asset_collection = bpy.data.collections.new(collection_name)
+        context.scene.collection.children.link(asset_collection)
+
+    volume_layer_collection = context.view_layer.layer_collection.children[asset_collection.name]
+    context.view_layer.active_layer_collection = volume_layer_collection
+    context.view_layer.active_layer_collection.hide_viewport = True
+    asset_collection.hide_render = True
+
+    for element_idx, element in enumerate(tag_block):  
+        mesh = bpy.data.meshes.new("part_%s" % element_idx)
+        ob = bpy.data.objects.new("decal_%s" % element_idx, mesh)
+        asset_collection.objects.link(ob)
+
+        bm = bmesh.new()
+        vertex1 = bm.verts.new( (-1.0, -1.0, 0.0) )
+        vertex2 = bm.verts.new( (1.0, -1.0, 0.0) )
+        vertex3 = bm.verts.new( (-1.0, 1.0, 0.0) )
+        vertex4 = bm.verts.new( (1.0, 1.0, 0.0) )
+
+        bm.verts.index_update()
+        bm.faces.new( (vertex2, vertex4, vertex3, vertex1) )
+        bm.to_mesh(mesh)
+        bm.free()
+
+        rotation = Euler((radians(0.0), radians(0.0), radians(0.0)), 'XYZ')
+        pitch = Euler((radians(0.0), -radians(element.pitch), radians(0.0)), 'XYZ')
+        yaw = Euler((radians(0.0), radians(0.0), radians(element.yaw)), 'XYZ')
+        rotation.rotate(yaw)
+        rotation.rotate(pitch)
+
+        ob.location = element.position * 100
+        ob.rotation_euler = rotation
+
 def scenario_get_resources(H2_ASSET, report):
     ai_resource = None
     bipeds_resource = None
@@ -700,7 +736,7 @@ def generate_scenario_scene(context, H2_ASSET, game_version, game_title, file_ve
         if level_collection == None:
             level_collection = bpy.data.collections.new(collection_name)
             levels_collection.children.link(level_collection)
-
+            
         if not SBSP_ASSET == None:
             cluster_name = "%s_clusters" % bsp_name
             clusters_collection = bpy.data.collections.get(cluster_name)
@@ -767,3 +803,7 @@ def generate_scenario_scene(context, H2_ASSET, game_version, game_title, file_ve
         generate_camera_flags(context, level_root, "Cutscene Flags", H2_ASSET.cutscene_flags)
     if len(H2_ASSET.cutscene_camera_points) > 0:
         generate_camera_points(context, level_root, H2_ASSET.cutscene_camera_points)
+    if len(H2_ASSET.cutscene_camera_points) > 0:
+        generate_camera_points(context, level_root, H2_ASSET.cutscene_camera_points)
+    if len(H2_ASSET.decals) > 0:
+        generate_decals(level_root, "Decals", H2_ASSET.decal_palette, H2_ASSET.decals, context, game_version, file_version, fix_rotations, report, random_color_gen)
