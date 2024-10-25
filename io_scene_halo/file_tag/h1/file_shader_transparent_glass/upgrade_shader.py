@@ -49,28 +49,28 @@ from ...h2.file_shader.format import (
         )
 
 def generate_env_parameters(H1_ASSET, TAG, SHADER, template, permutation_index):
-    parameter = shader_processing.add_parameter(SHADER, TAG, parameter_name="environment_map", bitmap_name=H1_ASSET.shader_body.reflection_map.name, float_value=0.0)
+    parameter = shader_processing.add_parameter(SHADER, TAG, parameter_name="environment_map", bitmap_name=H1_ASSET.reflection_map.name, float_value=0.0)
     parameter.animation_properties = []
     parameter.animation_properties_header = TAG.TagBlockHeader("tbfd", 0, len(parameter.animation_properties), 28)
     parameter.animation_properties_tag_block = TAG.TagBlock(len(parameter.animation_properties))
     SHADER.parameters.append(parameter)
 
-    SHADER.parameters.append(shader_processing.add_parameter(SHADER, TAG, parameter_name="env_tint_color", enum=TypeEnum.color, rgba=H1_ASSET.shader_body.perpendicular_tint_color))
-    SHADER.parameters.append(shader_processing.add_parameter(SHADER, TAG, parameter_name="env_glancing_tint_color", enum=TypeEnum.color, rgba=H1_ASSET.shader_body.parallel_tint_color))
-    SHADER.parameters.append(shader_processing.add_parameter(SHADER, TAG, parameter_name="env_brightness", enum=TypeEnum._value, float_value=H1_ASSET.shader_body.perpendicular_brightness))
-    SHADER.parameters.append(shader_processing.add_parameter(SHADER, TAG, parameter_name="env_glancing_brightness", enum=TypeEnum._value, float_value=H1_ASSET.shader_body.parallel_brightness))
+    SHADER.parameters.append(shader_processing.add_parameter(SHADER, TAG, parameter_name="env_tint_color", enum=TypeEnum.color, rgba=H1_ASSET.perpendicular_tint_color))
+    SHADER.parameters.append(shader_processing.add_parameter(SHADER, TAG, parameter_name="env_glancing_tint_color", enum=TypeEnum.color, rgba=H1_ASSET.parallel_tint_color))
+    SHADER.parameters.append(shader_processing.add_parameter(SHADER, TAG, parameter_name="env_brightness", enum=TypeEnum._value, float_value=H1_ASSET.perpendicular_brightness))
+    SHADER.parameters.append(shader_processing.add_parameter(SHADER, TAG, parameter_name="env_glancing_brightness", enum=TypeEnum._value, float_value=H1_ASSET.parallel_brightness))
 
-    SHADER.parameters.append(shader_processing.add_parameter(SHADER, TAG, parameter_name="tint_color", enum=TypeEnum.color, rgba=H1_ASSET.shader_body.perpendicular_tint_color))
-    SHADER.parameters.append(shader_processing.add_parameter(SHADER, TAG, parameter_name="glancing_tint_color", enum=TypeEnum.color, rgba=H1_ASSET.shader_body.parallel_tint_color))
-    SHADER.parameters.append(shader_processing.add_parameter(SHADER, TAG, parameter_name="brightness", enum=TypeEnum._value, float_value=H1_ASSET.shader_body.perpendicular_brightness))
-    SHADER.parameters.append(shader_processing.add_parameter(SHADER, TAG, parameter_name="glancing_brightness", enum=TypeEnum._value, float_value=H1_ASSET.shader_body.parallel_brightness))
+    SHADER.parameters.append(shader_processing.add_parameter(SHADER, TAG, parameter_name="tint_color", enum=TypeEnum.color, rgba=H1_ASSET.perpendicular_tint_color))
+    SHADER.parameters.append(shader_processing.add_parameter(SHADER, TAG, parameter_name="glancing_tint_color", enum=TypeEnum.color, rgba=H1_ASSET.parallel_tint_color))
+    SHADER.parameters.append(shader_processing.add_parameter(SHADER, TAG, parameter_name="brightness", enum=TypeEnum._value, float_value=H1_ASSET.perpendicular_brightness))
+    SHADER.parameters.append(shader_processing.add_parameter(SHADER, TAG, parameter_name="glancing_brightness", enum=TypeEnum._value, float_value=H1_ASSET.parallel_brightness))
 
 def generate_bump_parameters(H1_ASSET, TAG, SHADER, template, permutation_index):
-    parameter = shader_processing.add_parameter(SHADER, TAG, parameter_name="bump_map", bitmap_name=H1_ASSET.shader_body.bump_map.name, float_value=0.0)
+    parameter = shader_processing.add_parameter(SHADER, TAG, parameter_name="bump_map", bitmap_name=H1_ASSET.bump_map.name, float_value=0.0)
     parameter.animation_properties = []
-    if H1_ASSET.shader_body.bump_map_scale > 0.0:
-        scale = H1_ASSET.shader_body.bump_map_scale
-        if H1_ASSET.shader_body.bump_map_scale == 0.0:
+    if H1_ASSET.bump_map_scale > 0.0:
+        scale = H1_ASSET.bump_map_scale
+        if H1_ASSET.bump_map_scale == 0.0:
             scale = 1.0
 
         shader_processing.add_animation_property(SHADER, TAG, parameter.animation_properties, AnimationTypeEnum.bitmap_scale_x, function_type=FunctionTypeEnum.constant, lower_bound=scale)
@@ -81,11 +81,11 @@ def generate_bump_parameters(H1_ASSET, TAG, SHADER, template, permutation_index)
     SHADER.parameters.append(parameter)
 
 def generate_specular_parameters(H1_ASSET, TAG, SHADER, template, permutation_index):
-    parameter = shader_processing.add_parameter(SHADER, TAG, parameter_name="specular_map", bitmap_name=H1_ASSET.shader_body.specular_map.name, float_value=0.0)
+    parameter = shader_processing.add_parameter(SHADER, TAG, parameter_name="specular_map", bitmap_name=H1_ASSET.specular_map.name, float_value=0.0)
     parameter.animation_properties = []
-    if H1_ASSET.shader_body.specular_map_scale > 0.0:
-        scale = H1_ASSET.shader_body.specular_map_scale
-        if H1_ASSET.shader_body.specular_map_scale == 0.0:
+    if H1_ASSET.specular_map_scale > 0.0:
+        scale = H1_ASSET.specular_map_scale
+        if H1_ASSET.specular_map_scale == 0.0:
             scale = 1.0
 
         shader_processing.add_animation_property(SHADER, TAG, parameter.animation_properties, AnimationTypeEnum.bitmap_scale_x, function_type=FunctionTypeEnum.constant, lower_bound=scale)
@@ -96,11 +96,11 @@ def generate_specular_parameters(H1_ASSET, TAG, SHADER, template, permutation_in
     SHADER.parameters.append(parameter)
 
 def generate_diffuse_parameters(H1_ASSET, TAG, SHADER, template, permutation_index):
-    parameter = shader_processing.add_parameter(SHADER, TAG, parameter_name="alpha_blend_map", bitmap_name=H1_ASSET.shader_body.diffuse_map.name, float_value=0.0)
+    parameter = shader_processing.add_parameter(SHADER, TAG, parameter_name="alpha_blend_map", bitmap_name=H1_ASSET.diffuse_map.name, float_value=0.0)
     parameter.animation_properties = []
-    if H1_ASSET.shader_body.diffuse_map_scale > 0.0:
-        scale = H1_ASSET.shader_body.diffuse_map_scale
-        if H1_ASSET.shader_body.diffuse_map_scale == 0.0:
+    if H1_ASSET.diffuse_map_scale > 0.0:
+        scale = H1_ASSET.diffuse_map_scale
+        if H1_ASSET.diffuse_map_scale == 0.0:
             scale = 1.0
 
         shader_processing.add_animation_property(SHADER, TAG, parameter.animation_properties, AnimationTypeEnum.bitmap_scale_x, function_type=FunctionTypeEnum.constant, lower_bound=scale)
@@ -112,11 +112,11 @@ def generate_diffuse_parameters(H1_ASSET, TAG, SHADER, template, permutation_ind
 
     SHADER.parameters.append(shader_processing.add_parameter(SHADER, TAG, parameter_name="alpha_blend_opacity", enum=TypeEnum._value, float_value=1.0))
 
-    parameter = shader_processing.add_parameter(SHADER, TAG, parameter_name="lightmap_translucent_map", bitmap_name=H1_ASSET.shader_body.diffuse_map.name, float_value=0.0)
+    parameter = shader_processing.add_parameter(SHADER, TAG, parameter_name="lightmap_translucent_map", bitmap_name=H1_ASSET.diffuse_map.name, float_value=0.0)
     parameter.animation_properties = []
-    if H1_ASSET.shader_body.diffuse_map_scale > 0.0:
-        scale = H1_ASSET.shader_body.diffuse_map_scale
-        if H1_ASSET.shader_body.diffuse_map_scale == 0.0:
+    if H1_ASSET.diffuse_map_scale > 0.0:
+        scale = H1_ASSET.diffuse_map_scale
+        if H1_ASSET.diffuse_map_scale == 0.0:
             scale = 1.0
 
         shader_processing.add_animation_property(SHADER, TAG, parameter.animation_properties, AnimationTypeEnum.bitmap_scale_x, function_type=FunctionTypeEnum.constant, lower_bound=scale)
@@ -127,19 +127,19 @@ def generate_diffuse_parameters(H1_ASSET, TAG, SHADER, template, permutation_ind
     SHADER.parameters.append(parameter)
 
 def generate_illum_parameters(H1_ASSET, TAG, SHADER, template, permutation_index):
-    SHADER.parameters.append(shader_processing.add_parameter(SHADER, TAG, parameter_name="emissive_color", enum=TypeEnum.color, rgba=H1_ASSET.shader_body.color_of_emitted_light))
-    SHADER.parameters.append(shader_processing.add_parameter(SHADER, TAG, parameter_name="emissive_power", enum=TypeEnum._value, float_value= 0.10 * H1_ASSET.shader_body.power))
+    SHADER.parameters.append(shader_processing.add_parameter(SHADER, TAG, parameter_name="emissive_color", enum=TypeEnum.color, rgba=H1_ASSET.color_of_emitted_light))
+    SHADER.parameters.append(shader_processing.add_parameter(SHADER, TAG, parameter_name="emissive_power", enum=TypeEnum._value, float_value= 0.10 * H1_ASSET.power))
 
 def generate_parameters(H1_ASSET, TAG, SHADER, template, permutation_index):
-    if not H1_ASSET.shader_body.reflection_map.name == "":
+    if not H1_ASSET.reflection_map.name == "":
         generate_env_parameters(H1_ASSET, TAG, SHADER, template, permutation_index)
-    if not H1_ASSET.shader_body.bump_map.name == "":
+    if not H1_ASSET.bump_map.name == "":
         generate_bump_parameters(H1_ASSET, TAG, SHADER, template, permutation_index)
-    if not H1_ASSET.shader_body.specular_map.name == "":
+    if not H1_ASSET.specular_map.name == "":
         generate_specular_parameters(H1_ASSET, TAG, SHADER, template, permutation_index)
-    if not H1_ASSET.shader_body.diffuse_map.name == "":
+    if not H1_ASSET.diffuse_map.name == "":
         generate_diffuse_parameters(H1_ASSET, TAG, SHADER, template, permutation_index)
-    if H1_ASSET.shader_body.power > 0.0:
+    if H1_ASSET.power > 0.0:
         generate_illum_parameters(H1_ASSET, TAG, SHADER, template, permutation_index)
 
     for parameter in SHADER.parameters:
@@ -155,7 +155,7 @@ def generate_parameters(H1_ASSET, TAG, SHADER, template, permutation_index):
 
 def get_template(H1_ASSET):
     shader_template = shader_processing.TransparentTemplateEnum.two_alpha_env_illum_bumped_environment_masked
-    if not ReflectionTypeEnum(H1_ASSET.shader_body.reflection_type) == ReflectionTypeEnum.bumped_cube_map:
+    if not ReflectionTypeEnum(H1_ASSET.reflection_type) == ReflectionTypeEnum.bumped_cube_map:
         shader_template = shader_processing.TransparentTemplateEnum.one_alpha_env_illum
 
     return shader_template
@@ -260,23 +260,22 @@ def upgrade_shader(H1_ASSET, patch_txt_path, report, permutation_index=0):
 
     template = get_template(H1_ASSET)
 
-    SHADER.shader_body_header = TAG.TagBlockHeader("tbfd", 0, 1, 128)
-    SHADER.shader_body = SHADER.ShaderBody()
-    SHADER.shader_body.template = TAG.TagRef("stem", template.value, len(template.value))
-    SHADER.shader_body.material_name = get_material_name(H1_ASSET.shader_body.material_type)
-    SHADER.shader_body.runtime_properties_tag_block = TAG.TagBlock()
-    SHADER.shader_body.flags = 0
-    SHADER.shader_body.parameters_tag_block = generate_parameters(H1_ASSET, TAG, SHADER, template, permutation_index)
-    SHADER.shader_body.postprocess_definition_tag_block = TAG.TagBlock()
-    SHADER.shader_body.predicted_resources_tag_block = TAG.TagBlock()
-    SHADER.shader_body.light_response = TAG.TagRef("slit")
-    SHADER.shader_body.shader_lod_bias = 0
-    SHADER.shader_body.specular_type = SpecularTypeEnum.default.value
-    SHADER.shader_body.lightmap_type = LightmapTypeEnum.diffuse.value
-    SHADER.shader_body.lightmap_specular_brightness = 1
-    SHADER.shader_body.lightmap_ambient_bias = 0.0
-    SHADER.shader_body.postprocess_properties_tag_block = TAG.TagBlock()
-    SHADER.shader_body.added_depth_bias_offset = 0.0
-    SHADER.shader_body.added_depth_bias_slope = 0.0
+    SHADER.body_header = TAG.TagBlockHeader("tbfd", 0, 1, 128)
+    SHADER.template = TAG.TagRef("stem", template.value, len(template.value))
+    SHADER.material_name = get_material_name(H1_ASSET.material_type)
+    SHADER.runtime_properties_tag_block = TAG.TagBlock()
+    SHADER.flags = 0
+    SHADER.parameters_tag_block = generate_parameters(H1_ASSET, TAG, SHADER, template, permutation_index)
+    SHADER.postprocess_definition_tag_block = TAG.TagBlock()
+    SHADER.predicted_resources_tag_block = TAG.TagBlock()
+    SHADER.light_response = TAG.TagRef("slit")
+    SHADER.shader_lod_bias = 0
+    SHADER.specular_type = SpecularTypeEnum.default.value
+    SHADER.lightmap_type = LightmapTypeEnum.diffuse.value
+    SHADER.lightmap_specular_brightness = 1
+    SHADER.lightmap_ambient_bias = 0.0
+    SHADER.postprocess_properties_tag_block = TAG.TagBlock()
+    SHADER.added_depth_bias_offset = 0.0
+    SHADER.added_depth_bias_slope = 0.0
 
     return SHADER

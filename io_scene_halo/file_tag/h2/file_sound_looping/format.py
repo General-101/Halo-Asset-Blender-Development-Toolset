@@ -24,28 +24,22 @@
 #
 # ##### END MIT LICENSE BLOCK #####
 
-from mathutils import Vector
-from enum import Flag, Enum, auto
-
 class SoundLoopingAsset():
-    def __init__(self):
-        self.header = None
-        self.sound_looping_body_header = None
-        self.sound_looping_body = None
-        self.tracks_header = None
-        self.tracks = None
-        self.detail_sounds_header = None
-        self.detail_sounds = None
-
-    class SoundLoopingBody:
-        def __init__(self, remastered_looping_sound=None, flags=0, martys_music_time=0.0, unk_0=0.0, unk_1=None, tracks_tag_block=None, detail_sounds_tag_block=None):
-            self.remastered_looping_sound = remastered_looping_sound
-            self.flags = flags
-            self.martys_music_time = martys_music_time
-            self.unk_0 = unk_0
-            self.unk_1 = unk_1
-            self.tracks_tag_block = tracks_tag_block
-            self.detail_sounds_tag_block = detail_sounds_tag_block
+    def __init__(self, header=None, body_header=None, tracks_header=None, tracks=None, detail_sounds_header=None, detail_sounds=None, remastered_looping_sound=None, flags=0, 
+                 martys_music_time=0.0, unk_0=0.0, unk_1=None, tracks_tag_block=None, detail_sounds_tag_block=None):
+        self.header = header
+        self.body_header = body_header
+        self.tracks_header = tracks_header
+        self.tracks = tracks
+        self.detail_sounds_header = detail_sounds_header
+        self.detail_sounds = detail_sounds
+        self.remastered_looping_sound = remastered_looping_sound
+        self.flags = flags
+        self.martys_music_time = martys_music_time
+        self.unk_0 = unk_0
+        self.unk_1 = unk_1
+        self.tracks_tag_block = tracks_tag_block
+        self.detail_sounds_tag_block = detail_sounds_tag_block
 
     class Track:
         def __init__(self, name="", name_length=0, flags=0, gain=0.0, fade_in_duration=0.0, fade_out_duration=0.0, in_sound=None, loop_sound=None, out_sound=None, alt_loop=None,

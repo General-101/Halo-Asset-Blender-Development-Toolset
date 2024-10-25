@@ -25,26 +25,23 @@
 # ##### END MIT LICENSE BLOCK #####
 
 class SoundEnvironmentAsset():
-    def __init__(self):
-        self.header = None
-        self.sound_environment_body_header = None
-        self.sound_environment_body = None
-
-    class SoundEnvironmentBody:
-        def __init__(self, priority=0, room_intensity=0.0, room_intensity_hf=0.0, room_rolloff=0.0, decay_time=0.0, decay_hf_ratio=0.0, reflections_intensity=0.0,
-                     reflections_delay=0.0, reverb_intensity=0.0, reverb_delay=0.0, diffusion=0.0, density=0.0, hf_reference=0.0, reflection_type="", reflection_type_length=0):
-            self.priority = priority
-            self.room_intensity = room_intensity
-            self.room_intensity_hf = room_intensity_hf
-            self.room_rolloff = room_rolloff
-            self.decay_time = decay_time
-            self.decay_hf_ratio = decay_hf_ratio
-            self.reflections_intensity = reflections_intensity
-            self.reflections_delay = reflections_delay
-            self.reverb_intensity = reverb_intensity
-            self.reverb_delay = reverb_delay
-            self.diffusion = diffusion
-            self.density = density
-            self.hf_reference = hf_reference
-            self.reflection_type = reflection_type
-            self.reflection_type_length = reflection_type_length
+    def __init__(self, header=None, body_header=None, priority=0, room_intensity=0.0, room_intensity_hf=0.0, room_rolloff=0.0, decay_time=0.0, decay_hf_ratio=0.0, 
+                 reflections_intensity=0.0, reflections_delay=0.0, reverb_intensity=0.0, reverb_delay=0.0, diffusion=0.0, density=0.0, hf_reference=0.0, reflection_type="", 
+                 reflection_type_length=0):
+        self.header = header
+        self.body_header = body_header
+        self.priority = priority
+        self.room_intensity = room_intensity
+        self.room_intensity_hf = room_intensity_hf
+        self.room_rolloff = room_rolloff
+        self.decay_time = decay_time
+        self.decay_hf_ratio = decay_hf_ratio
+        self.reflections_intensity = reflections_intensity
+        self.reflections_delay = reflections_delay
+        self.reverb_intensity = reverb_intensity
+        self.reverb_delay = reverb_delay
+        self.diffusion = diffusion
+        self.density = density
+        self.hf_reference = hf_reference
+        self.reflection_type = reflection_type
+        self.reflection_type_length = reflection_type_length

@@ -63,35 +63,33 @@ class AnimationFlags(Flag):
     pal_25hz = auto()
 
 class AnimationAsset():
-    def __init__(self):
-        self.header = None
-        self.antr_body = None
-        self.objects = None
-        self.units = None
-        self.weapons = None
-        self.vehicles = None
-        self.devices = None
-        self.unit_damages = None
-        self.first_person_weapons = None
-        self.sound_references = None
-        self.nodes = None
-        self.animations = None
-
-    class AntrBody:
-        def __init__(self, objects_tag_block=None, units_tag_block=None, weapons_tag_block=None, vehicles_tag_block=None, devices_tag_block=None, unit_damage_tag_block=None,
-                     first_person_weapons_tag_block=None, sound_references_tag_block=None, limp_body_node_radius=0.0, flags=0, nodes_tag_block=None, animations_tag_block=None):
-            self.objects_tag_block = objects_tag_block
-            self.units_tag_block = units_tag_block
-            self.weapons_tag_block = weapons_tag_block
-            self.vehicles_tag_block = vehicles_tag_block
-            self.devices_tag_block = devices_tag_block
-            self.unit_damage_tag_block = unit_damage_tag_block
-            self.first_person_weapons_tag_block = first_person_weapons_tag_block
-            self.sound_references_tag_block = sound_references_tag_block
-            self.limp_body_node_radius = limp_body_node_radius
-            self.flags = flags
-            self.nodes_tag_block = nodes_tag_block
-            self.animations_tag_block = animations_tag_block
+    def __init__(self, header=None, objects=None, units=None, weapons=None, vehicles=None, devices=None, unit_damages=None, first_person_weapons=None, sound_references=None, 
+                 nodes=None, animations=None, objects_tag_block=None, units_tag_block=None, weapons_tag_block=None, vehicles_tag_block=None, devices_tag_block=None, 
+                 unit_damage_tag_block=None, first_person_weapons_tag_block=None, sound_references_tag_block=None, limp_body_node_radius=0.0, flags=0, nodes_tag_block=None, 
+                 animations_tag_block=None):
+        self.header = header
+        self.objects = objects
+        self.units = units
+        self.weapons = weapons
+        self.vehicles = vehicles
+        self.devices = devices
+        self.unit_damages = unit_damages
+        self.first_person_weapons = first_person_weapons
+        self.sound_references = sound_references
+        self.nodes = nodes
+        self.animations = animations
+        self.objects_tag_block = objects_tag_block
+        self.units_tag_block = units_tag_block
+        self.weapons_tag_block = weapons_tag_block
+        self.vehicles_tag_block = vehicles_tag_block
+        self.devices_tag_block = devices_tag_block
+        self.unit_damage_tag_block = unit_damage_tag_block
+        self.first_person_weapons_tag_block = first_person_weapons_tag_block
+        self.sound_references_tag_block = sound_references_tag_block
+        self.limp_body_node_radius = limp_body_node_radius
+        self.flags = flags
+        self.nodes_tag_block = nodes_tag_block
+        self.animations_tag_block = animations_tag_block
 
     class Objects:
         def __init__(self, animation=0, function=0, function_controls=0):

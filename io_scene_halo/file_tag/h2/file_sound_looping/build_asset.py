@@ -31,15 +31,15 @@ from ....global_functions import tag_format, shader_processing
 from ....file_tag.h2.file_shader.format import FunctionTypeEnum
 
 def write_body(output_stream, TAG, SOUNDLOOP):
-    SOUNDLOOP.sound_looping_body_header.write(output_stream, TAG, True)
-    SOUNDLOOP.sound_looping_body.remastered_looping_sound.write(output_stream, False, True)
-    output_stream.write(struct.pack('<I', SOUNDLOOP.sound_looping_body.flags))
-    output_stream.write(struct.pack('<f', SOUNDLOOP.sound_looping_body.martys_music_time))
-    output_stream.write(struct.pack('<f', SOUNDLOOP.sound_looping_body.unk_0))
+    SOUNDLOOP.body_header.write(output_stream, TAG, True)
+    SOUNDLOOP.remastered_looping_sound.write(output_stream, False, True)
+    output_stream.write(struct.pack('<I', SOUNDLOOP.flags))
+    output_stream.write(struct.pack('<f', SOUNDLOOP.martys_music_time))
+    output_stream.write(struct.pack('<f', SOUNDLOOP.unk_0))
     output_stream.write(struct.pack('<8x'))
-    SOUNDLOOP.sound_looping_body.unk_1.write(output_stream, False, True)
-    SOUNDLOOP.sound_looping_body.tracks_tag_block.write(output_stream, False)
-    SOUNDLOOP.sound_looping_body.detail_sounds_tag_block.write(output_stream, False)
+    SOUNDLOOP.unk_1.write(output_stream, False, True)
+    SOUNDLOOP.tracks_tag_block.write(output_stream, False)
+    SOUNDLOOP.detail_sounds_tag_block.write(output_stream, False)
 
 def write_tracks(output_stream, TAG, tracks, tracks_header):
     if len(tracks) > 0:
@@ -125,13 +125,13 @@ def build_asset(output_stream, SOUNDLOOP, report):
     SOUNDLOOP.header.write(output_stream, False, True)
     write_body(output_stream, TAG, SOUNDLOOP)
 
-    remastered_looping_sound_length = len(SOUNDLOOP.sound_looping_body.remastered_looping_sound.name)
+    remastered_looping_sound_length = len(SOUNDLOOP.remastered_looping_sound.name)
     if remastered_looping_sound_length > 0:
-        output_stream.write(struct.pack('<%ssx' % remastered_looping_sound_length, TAG.string_to_bytes(SOUNDLOOP.sound_looping_body.remastered_looping_sound.name, False)))
+        output_stream.write(struct.pack('<%ssx' % remastered_looping_sound_length, TAG.string_to_bytes(SOUNDLOOP.remastered_looping_sound.name, False)))
 
-    unk_1_length = len(SOUNDLOOP.sound_looping_body.unk_1.name)
+    unk_1_length = len(SOUNDLOOP.unk_1.name)
     if unk_1_length > 0:
-        output_stream.write(struct.pack('<%ssx' % unk_1_length, TAG.string_to_bytes(SOUNDLOOP.sound_looping_body.unk_1.name, False)))
+        output_stream.write(struct.pack('<%ssx' % unk_1_length, TAG.string_to_bytes(SOUNDLOOP.unk_1.name, False)))
 
     write_tracks(output_stream, TAG, SOUNDLOOP.tracks, SOUNDLOOP.tracks_header)
     write_detail_sounds(output_stream, TAG, SOUNDLOOP.detail_sounds, SOUNDLOOP.detail_sounds_header)

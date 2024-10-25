@@ -27,10 +27,6 @@
 from ..file_scenario.format import ScenarioAsset
 
 class ScenarioAsset(ScenarioAsset):
-    def __init__(self):
+    def __init__(self, next_object_id_salt=0):
         super().__init__()
-
-    class ScenarioBody(ScenarioAsset.ScenarioBody):
-        def __init__(self, next_object_id_salt=0):
-            super().__init__()
-            self.next_object_id_salt = next_object_id_salt
+        self.next_object_id_salt = next_object_id_salt

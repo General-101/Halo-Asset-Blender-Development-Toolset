@@ -102,35 +102,32 @@ class ErrorFlags(Flag):
     report_key_is_valid = auto()
 
 class LightmapAsset():
-    def __init__(self):
-        self.header = None
-        self.lightmap_body_header = None
-        self.lightmap_body = None
-        self.lightmap_groups_header = None
-        self.lightmap_groups = None
-        self.errors_header = None
-        self.errors = None
-
-    class LightmapBody:
-        def __init__(self, search_distance_lower_bound=0.0, search_distance_upper_bound=0.0, luminels_per_world_unit=0.0, output_white_reference=0.0, output_black_reference=0.0,
-                     output_schlick_parameter=0.0, diffuse_map_scale=0.0, sun_scale=0.0, sky_scale=0.0, indirect_scale=0.0, prt_scale=0.0, surface_light_scale=0.0,
-                     scenario_light_scale=0.0, lightprobe_interpolation_override=0.0, lightmap_groups_tag_block=None, errors_tag_block=None):
-            self.search_distance_lower_bound = search_distance_lower_bound
-            self.search_distance_upper_bound = search_distance_upper_bound
-            self.luminels_per_world_unit = luminels_per_world_unit
-            self.output_white_reference = output_white_reference
-            self.output_black_reference = output_black_reference
-            self.output_schlick_parameter = output_schlick_parameter
-            self.diffuse_map_scale = diffuse_map_scale
-            self.sun_scale = sun_scale
-            self.sky_scale = sky_scale
-            self.indirect_scale = indirect_scale
-            self.prt_scale = prt_scale
-            self.surface_light_scale = surface_light_scale
-            self.scenario_light_scale = scenario_light_scale
-            self.lightprobe_interpolation_override = lightprobe_interpolation_override
-            self.lightmap_groups_tag_block = lightmap_groups_tag_block
-            self.errors_tag_block = errors_tag_block
+    def __init__(self, header=None, body_header=None, lightmap_groups_header=None, lightmap_groups=None, errors_header=None, errors=None, search_distance_lower_bound=0.0, 
+                 search_distance_upper_bound=0.0, luminels_per_world_unit=0.0, output_white_reference=0.0, output_black_reference=0.0, output_schlick_parameter=0.0, 
+                 diffuse_map_scale=0.0, sun_scale=0.0, sky_scale=0.0, indirect_scale=0.0, prt_scale=0.0, surface_light_scale=0.0, scenario_light_scale=0.0, 
+                 lightprobe_interpolation_override=0.0, lightmap_groups_tag_block=None, errors_tag_block=None):
+        self.header = header
+        self.body_header = body_header
+        self.lightmap_groups_header = lightmap_groups_header
+        self.lightmap_groups = lightmap_groups
+        self.errors_header = errors_header
+        self.errors = errors
+        self.search_distance_lower_bound = search_distance_lower_bound
+        self.search_distance_upper_bound = search_distance_upper_bound
+        self.luminels_per_world_unit = luminels_per_world_unit
+        self.output_white_reference = output_white_reference
+        self.output_black_reference = output_black_reference
+        self.output_schlick_parameter = output_schlick_parameter
+        self.diffuse_map_scale = diffuse_map_scale
+        self.sun_scale = sun_scale
+        self.sky_scale = sky_scale
+        self.indirect_scale = indirect_scale
+        self.prt_scale = prt_scale
+        self.surface_light_scale = surface_light_scale
+        self.scenario_light_scale = scenario_light_scale
+        self.lightprobe_interpolation_override = lightprobe_interpolation_override
+        self.lightmap_groups_tag_block = lightmap_groups_tag_block
+        self.errors_tag_block = errors_tag_block
 
     class LightmapGroup:
         def __init__(self, group_type=0, group_flags=0, structure_checksum=0, section_palette_header=None, writable_palettes_header=None, clusters_header=None, 

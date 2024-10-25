@@ -27,16 +27,12 @@
 from mathutils import Vector, Quaternion
 
 class CameraTrackAsset():
-    def __init__(self):
-        self.header = None
-        self.camera_track_body_header = None
-        self.camera_track_body = None
-        self.control_points_header = None
-        self.control_points = None
-
-    class CameraTrackBody:
-        def __init__(self, control_points_tag_block=None):
-            self.control_points_tag_block = control_points_tag_block
+    def __init__(self, header=None, body_header=None, control_points_header=None, control_points=None, control_points_tag_block=None):
+        self.header = header
+        self.body_header = body_header
+        self.control_points_header = control_points_header
+        self.control_points = control_points
+        self.control_points_tag_block = control_points_tag_block
 
     class ControlPoint:
         def __init__(self, position=Vector(), orientation=Quaternion()):

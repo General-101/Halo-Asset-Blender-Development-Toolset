@@ -44,97 +44,96 @@ def process_file(input_stream, report):
     if XML_OUTPUT:
         tag_node = TAG.xml_doc.childNodes[0]
 
-    LIGHTFIXTURE.light_fixture = LIGHTFIXTURE.LightFixtureBody()
     input_stream.read(2) # Padding?
-    LIGHTFIXTURE.light_fixture.object_flags = TAG.read_flag_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "flags", ObjectFlags))
-    LIGHTFIXTURE.light_fixture.bounding_radius = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "bounding radius"))
-    LIGHTFIXTURE.light_fixture.bounding_offset = TAG.read_point_3d(input_stream, TAG, tag_format.XMLData(tag_node, "bounding offset"))
-    LIGHTFIXTURE.light_fixture.origin_offset = TAG.read_point_3d(input_stream, TAG, tag_format.XMLData(tag_node, "origin offset"))
-    LIGHTFIXTURE.light_fixture.acceleration_scale = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "acceleration scale"))
+    LIGHTFIXTURE.object_flags = TAG.read_flag_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "flags", ObjectFlags))
+    LIGHTFIXTURE.bounding_radius = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "bounding radius"))
+    LIGHTFIXTURE.bounding_offset = TAG.read_point_3d(input_stream, TAG, tag_format.XMLData(tag_node, "bounding offset"))
+    LIGHTFIXTURE.origin_offset = TAG.read_point_3d(input_stream, TAG, tag_format.XMLData(tag_node, "origin offset"))
+    LIGHTFIXTURE.acceleration_scale = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "acceleration scale"))
     input_stream.read(4) # Padding?
-    LIGHTFIXTURE.light_fixture.model = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "model"))
-    LIGHTFIXTURE.light_fixture.animation_graph = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "animation graph"))
+    LIGHTFIXTURE.model = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "model"))
+    LIGHTFIXTURE.animation_graph = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "animation graph"))
     input_stream.read(40) # Padding?
-    LIGHTFIXTURE.light_fixture.collision_model = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "collision model"))
-    LIGHTFIXTURE.light_fixture.physics = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "physics"))
-    LIGHTFIXTURE.light_fixture.modifier_shader = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "modifier shader"))
-    LIGHTFIXTURE.light_fixture.creation_effect = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "creation effect"))
+    LIGHTFIXTURE.collision_model = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "collision model"))
+    LIGHTFIXTURE.physics = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "physics"))
+    LIGHTFIXTURE.modifier_shader = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "modifier shader"))
+    LIGHTFIXTURE.creation_effect = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "creation effect"))
     input_stream.read(84) # Padding?
-    LIGHTFIXTURE.light_fixture.render_bounding_radius = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "render bounding radius"))
-    LIGHTFIXTURE.light_fixture.object_a_in = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "a in", ObjectFunctionEnum))
-    LIGHTFIXTURE.light_fixture.object_b_in = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "b in", ObjectFunctionEnum))
-    LIGHTFIXTURE.light_fixture.object_c_in = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "c in", ObjectFunctionEnum))
-    LIGHTFIXTURE.light_fixture.object_d_in = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "d in", ObjectFunctionEnum))
+    LIGHTFIXTURE.render_bounding_radius = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "render bounding radius"))
+    LIGHTFIXTURE.object_a_in = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "a in", ObjectFunctionEnum))
+    LIGHTFIXTURE.object_b_in = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "b in", ObjectFunctionEnum))
+    LIGHTFIXTURE.object_c_in = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "c in", ObjectFunctionEnum))
+    LIGHTFIXTURE.object_d_in = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "d in", ObjectFunctionEnum))
     input_stream.read(44) # Padding?
-    LIGHTFIXTURE.light_fixture.hud_text_message_index = TAG.read_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "hud text message index"))
-    LIGHTFIXTURE.light_fixture.forced_shader_permutation_index = TAG.read_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "forced shader_permutation index"))
-    LIGHTFIXTURE.light_fixture.attachments_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "attachments"))
-    LIGHTFIXTURE.light_fixture.widgets_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "widgets"))
-    LIGHTFIXTURE.light_fixture.functions_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "functions"))
-    LIGHTFIXTURE.light_fixture.change_colors_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "change_colors"))
-    LIGHTFIXTURE.light_fixture.predicted_resources_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "predicted_resources"))
+    LIGHTFIXTURE.hud_text_message_index = TAG.read_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "hud text message index"))
+    LIGHTFIXTURE.forced_shader_permutation_index = TAG.read_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "forced shader_permutation index"))
+    LIGHTFIXTURE.attachments_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "attachments"))
+    LIGHTFIXTURE.widgets_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "widgets"))
+    LIGHTFIXTURE.functions_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "functions"))
+    LIGHTFIXTURE.change_colors_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "change_colors"))
+    LIGHTFIXTURE.predicted_resources_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "predicted_resources"))
     input_stream.read(2) # Padding?
-    LIGHTFIXTURE.light_fixture.device_flags = TAG.read_flag_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "flags", DeviceFlags))
-    LIGHTFIXTURE.light_fixture.power_transition_time = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "power transition time"))
-    LIGHTFIXTURE.light_fixture.power_acceleration_time = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "power acceleration time"))
-    LIGHTFIXTURE.light_fixture.position_transition_time = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "position transition time"))
-    LIGHTFIXTURE.light_fixture.position_acceleration_time = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "position acceleration time"))
-    LIGHTFIXTURE.light_fixture.depowered_position_transition_time = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "depowered position transition time"))
-    LIGHTFIXTURE.light_fixture.depowered_position_acceleration_time = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "depowered position acceleration time"))
-    LIGHTFIXTURE.light_fixture.machine_a_in = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "a in", DeviceFunctionEnum))
-    LIGHTFIXTURE.light_fixture.machine_b_in = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "b in", DeviceFunctionEnum))
-    LIGHTFIXTURE.light_fixture.machine_c_in = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "c in", DeviceFunctionEnum))
-    LIGHTFIXTURE.light_fixture.machine_d_in = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "d in", DeviceFunctionEnum))
-    LIGHTFIXTURE.light_fixture.open_up = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "open up"))
-    LIGHTFIXTURE.light_fixture.close_down = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "close down"))
-    LIGHTFIXTURE.light_fixture.opened = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "opened"))
-    LIGHTFIXTURE.light_fixture.closed = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "closed"))
-    LIGHTFIXTURE.light_fixture.depowered = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "depowered"))
-    LIGHTFIXTURE.light_fixture.repowered = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "repowered"))
-    LIGHTFIXTURE.light_fixture.delay_time = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "delay time"))
+    LIGHTFIXTURE.device_flags = TAG.read_flag_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "flags", DeviceFlags))
+    LIGHTFIXTURE.power_transition_time = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "power transition time"))
+    LIGHTFIXTURE.power_acceleration_time = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "power acceleration time"))
+    LIGHTFIXTURE.position_transition_time = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "position transition time"))
+    LIGHTFIXTURE.position_acceleration_time = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "position acceleration time"))
+    LIGHTFIXTURE.depowered_position_transition_time = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "depowered position transition time"))
+    LIGHTFIXTURE.depowered_position_acceleration_time = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "depowered position acceleration time"))
+    LIGHTFIXTURE.machine_a_in = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "a in", DeviceFunctionEnum))
+    LIGHTFIXTURE.machine_b_in = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "b in", DeviceFunctionEnum))
+    LIGHTFIXTURE.machine_c_in = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "c in", DeviceFunctionEnum))
+    LIGHTFIXTURE.machine_d_in = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "d in", DeviceFunctionEnum))
+    LIGHTFIXTURE.open_up = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "open up"))
+    LIGHTFIXTURE.close_down = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "close down"))
+    LIGHTFIXTURE.opened = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "opened"))
+    LIGHTFIXTURE.closed = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "closed"))
+    LIGHTFIXTURE.depowered = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "depowered"))
+    LIGHTFIXTURE.repowered = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "repowered"))
+    LIGHTFIXTURE.delay_time = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "delay time"))
     input_stream.read(8) # Padding?
-    LIGHTFIXTURE.light_fixture.delay_effect = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "delay effect"))
-    LIGHTFIXTURE.light_fixture.automatic_activation_radius = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "automatic activation radius"))
+    LIGHTFIXTURE.delay_effect = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "delay effect"))
+    LIGHTFIXTURE.automatic_activation_radius = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "automatic activation radius"))
     input_stream.read(176) # Padding?
 
-    if LIGHTFIXTURE.light_fixture.model.name_length > 0:
-        LIGHTFIXTURE.light_fixture.model.name = TAG.read_variable_string(input_stream, LIGHTFIXTURE.light_fixture.model.name_length, TAG)
+    if LIGHTFIXTURE.model.name_length > 0:
+        LIGHTFIXTURE.model.name = TAG.read_variable_string(input_stream, LIGHTFIXTURE.model.name_length, TAG)
 
-    if LIGHTFIXTURE.light_fixture.animation_graph.name_length > 0:
-        LIGHTFIXTURE.light_fixture.animation_graph.name = TAG.read_variable_string(input_stream, LIGHTFIXTURE.light_fixture.animation_graph.name_length, TAG)
+    if LIGHTFIXTURE.animation_graph.name_length > 0:
+        LIGHTFIXTURE.animation_graph.name = TAG.read_variable_string(input_stream, LIGHTFIXTURE.animation_graph.name_length, TAG)
 
-    if LIGHTFIXTURE.light_fixture.collision_model.name_length > 0:
-        LIGHTFIXTURE.light_fixture.collision_model.name = TAG.read_variable_string(input_stream, LIGHTFIXTURE.light_fixture.collision_model.name_length, TAG)
+    if LIGHTFIXTURE.collision_model.name_length > 0:
+        LIGHTFIXTURE.collision_model.name = TAG.read_variable_string(input_stream, LIGHTFIXTURE.collision_model.name_length, TAG)
 
-    if LIGHTFIXTURE.light_fixture.physics.name_length > 0:
-        LIGHTFIXTURE.light_fixture.physics.name = TAG.read_variable_string(input_stream, LIGHTFIXTURE.light_fixture.physics.name_length, TAG)
+    if LIGHTFIXTURE.physics.name_length > 0:
+        LIGHTFIXTURE.physics.name = TAG.read_variable_string(input_stream, LIGHTFIXTURE.physics.name_length, TAG)
 
-    if LIGHTFIXTURE.light_fixture.modifier_shader.name_length > 0:
-        LIGHTFIXTURE.light_fixture.modifier_shader.name = TAG.read_variable_string(input_stream, LIGHTFIXTURE.light_fixture.modifier_shader.name_length, TAG)
+    if LIGHTFIXTURE.modifier_shader.name_length > 0:
+        LIGHTFIXTURE.modifier_shader.name = TAG.read_variable_string(input_stream, LIGHTFIXTURE.modifier_shader.name_length, TAG)
 
-    if LIGHTFIXTURE.light_fixture.creation_effect.name_length > 0:
-        LIGHTFIXTURE.light_fixture.creation_effect.name = TAG.read_variable_string(input_stream, LIGHTFIXTURE.light_fixture.creation_effect.name_length, TAG)
+    if LIGHTFIXTURE.creation_effect.name_length > 0:
+        LIGHTFIXTURE.creation_effect.name = TAG.read_variable_string(input_stream, LIGHTFIXTURE.creation_effect.name_length, TAG)
 
-    if LIGHTFIXTURE.light_fixture.open_up.name_length > 0:
-        LIGHTFIXTURE.light_fixture.open_up.name = TAG.read_variable_string(input_stream, LIGHTFIXTURE.light_fixture.open_up.name_length, TAG)
+    if LIGHTFIXTURE.open_up.name_length > 0:
+        LIGHTFIXTURE.open_up.name = TAG.read_variable_string(input_stream, LIGHTFIXTURE.open_up.name_length, TAG)
 
-    if LIGHTFIXTURE.light_fixture.close_down.name_length > 0:
-        LIGHTFIXTURE.light_fixture.close_down.name = TAG.read_variable_string(input_stream, LIGHTFIXTURE.light_fixture.close_down.name_length, TAG)
+    if LIGHTFIXTURE.close_down.name_length > 0:
+        LIGHTFIXTURE.close_down.name = TAG.read_variable_string(input_stream, LIGHTFIXTURE.close_down.name_length, TAG)
 
-    if LIGHTFIXTURE.light_fixture.opened.name_length > 0:
-        LIGHTFIXTURE.light_fixture.opened.name = TAG.read_variable_string(input_stream, LIGHTFIXTURE.light_fixture.opened.name_length, TAG)
+    if LIGHTFIXTURE.opened.name_length > 0:
+        LIGHTFIXTURE.opened.name = TAG.read_variable_string(input_stream, LIGHTFIXTURE.opened.name_length, TAG)
 
-    if LIGHTFIXTURE.light_fixture.closed.name_length > 0:
-        LIGHTFIXTURE.light_fixture.closed.name = TAG.read_variable_string(input_stream, LIGHTFIXTURE.light_fixture.closed.name_length, TAG)
+    if LIGHTFIXTURE.closed.name_length > 0:
+        LIGHTFIXTURE.closed.name = TAG.read_variable_string(input_stream, LIGHTFIXTURE.closed.name_length, TAG)
 
-    if LIGHTFIXTURE.light_fixture.depowered.name_length > 0:
-        LIGHTFIXTURE.light_fixture.depowered.name = TAG.read_variable_string(input_stream, LIGHTFIXTURE.light_fixture.depowered.name_length, TAG)
+    if LIGHTFIXTURE.depowered.name_length > 0:
+        LIGHTFIXTURE.depowered.name = TAG.read_variable_string(input_stream, LIGHTFIXTURE.depowered.name_length, TAG)
 
-    if LIGHTFIXTURE.light_fixture.repowered.name_length > 0:
-        LIGHTFIXTURE.light_fixture.repowered.name = TAG.read_variable_string(input_stream, LIGHTFIXTURE.light_fixture.repowered.name_length, TAG)
+    if LIGHTFIXTURE.repowered.name_length > 0:
+        LIGHTFIXTURE.repowered.name = TAG.read_variable_string(input_stream, LIGHTFIXTURE.repowered.name_length, TAG)
 
-    if LIGHTFIXTURE.light_fixture.delay_effect.name_length > 0:
-        LIGHTFIXTURE.light_fixture.delay_effect.name = TAG.read_variable_string(input_stream, LIGHTFIXTURE.light_fixture.delay_effect.name_length, TAG)
+    if LIGHTFIXTURE.delay_effect.name_length > 0:
+        LIGHTFIXTURE.delay_effect.name = TAG.read_variable_string(input_stream, LIGHTFIXTURE.delay_effect.name_length, TAG)
 
     if XML_OUTPUT:
         model_node = tag_format.get_xml_node(XML_OUTPUT, 1, tag_node, "name", "model")
@@ -150,19 +149,19 @@ def process_file(input_stream, report):
         depowered_node = tag_format.get_xml_node(XML_OUTPUT, 1, tag_node, "name", "depowered")
         repowered_node = tag_format.get_xml_node(XML_OUTPUT, 1, tag_node, "name", "repowered")
         delay_effect_node = tag_format.get_xml_node(XML_OUTPUT, 1, tag_node, "name", "delay effect")
-        LIGHTFIXTURE.light_fixture.model.append_xml_attributes(model_node)
-        LIGHTFIXTURE.light_fixture.animation_graph.append_xml_attributes(animation_graph_node)
-        LIGHTFIXTURE.light_fixture.collision_model.append_xml_attributes(collision_model_node)
-        LIGHTFIXTURE.light_fixture.physics.append_xml_attributes(physics_node)
-        LIGHTFIXTURE.light_fixture.modifier_shader.append_xml_attributes(modifier_shader_node)
-        LIGHTFIXTURE.light_fixture.creation_effect.append_xml_attributes(creation_effect_node)
-        LIGHTFIXTURE.light_fixture.open_up.append_xml_attributes(open_up_node)
-        LIGHTFIXTURE.light_fixture.close_down.append_xml_attributes(close_down_node)
-        LIGHTFIXTURE.light_fixture.opened.append_xml_attributes(opened_node)
-        LIGHTFIXTURE.light_fixture.closed.append_xml_attributes(closed_node)
-        LIGHTFIXTURE.light_fixture.depowered.append_xml_attributes(depowered_node)
-        LIGHTFIXTURE.light_fixture.repowered.append_xml_attributes(repowered_node)
-        LIGHTFIXTURE.light_fixture.delay_effect.append_xml_attributes(delay_effect_node)
+        LIGHTFIXTURE.model.append_xml_attributes(model_node)
+        LIGHTFIXTURE.animation_graph.append_xml_attributes(animation_graph_node)
+        LIGHTFIXTURE.collision_model.append_xml_attributes(collision_model_node)
+        LIGHTFIXTURE.physics.append_xml_attributes(physics_node)
+        LIGHTFIXTURE.modifier_shader.append_xml_attributes(modifier_shader_node)
+        LIGHTFIXTURE.creation_effect.append_xml_attributes(creation_effect_node)
+        LIGHTFIXTURE.open_up.append_xml_attributes(open_up_node)
+        LIGHTFIXTURE.close_down.append_xml_attributes(close_down_node)
+        LIGHTFIXTURE.opened.append_xml_attributes(opened_node)
+        LIGHTFIXTURE.closed.append_xml_attributes(closed_node)
+        LIGHTFIXTURE.depowered.append_xml_attributes(depowered_node)
+        LIGHTFIXTURE.repowered.append_xml_attributes(repowered_node)
+        LIGHTFIXTURE.delay_effect.append_xml_attributes(delay_effect_node)
 
     current_position = input_stream.tell()
     EOF = input_stream.seek(0, 2)

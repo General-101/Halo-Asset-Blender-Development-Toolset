@@ -52,7 +52,7 @@ XML_OUTPUT = False
 
 def read_lightmap_groups(LIGHTMAP, TAG, input_stream, tag_node, XML_OUTPUT):
     LIGHTMAP.lightmap_groups = []
-    lightmap_group_count = LIGHTMAP.lightmap_body.lightmap_groups_tag_block.count
+    lightmap_group_count = LIGHTMAP.lightmap_groups_tag_block.count
     if lightmap_group_count > 0:
         lightmap_group_node = tag_format.get_xml_node(XML_OUTPUT, lightmap_group_count, tag_node, "name", "lightmap groups")
         LIGHTMAP.lightmap_groups_header = TAG.TagBlockHeader().read(input_stream, TAG)
@@ -1036,10 +1036,10 @@ def read_lightmap_groups(LIGHTMAP, TAG, input_stream, tag_node, XML_OUTPUT):
 
 def read_errors(LIGHTMAP, TAG, input_stream, tag_node, XML_OUTPUT):
     LIGHTMAP.errors = []
-    if LIGHTMAP.lightmap_body.errors_tag_block.count > 0:
-        errors_node = tag_format.get_xml_node(XML_OUTPUT, LIGHTMAP.lightmap_body.errors_tag_block.count, tag_node, "name", "errors")
+    if LIGHTMAP.errors_tag_block.count > 0:
+        errors_node = tag_format.get_xml_node(XML_OUTPUT, LIGHTMAP.errors_tag_block.count, tag_node, "name", "errors")
         LIGHTMAP.errors_header = TAG.TagBlockHeader().read(input_stream, TAG)
-        for error_idx in range(LIGHTMAP.lightmap_body.errors_tag_block.count):
+        for error_idx in range(LIGHTMAP.errors_tag_block.count):
             error_element_node = None
             if XML_OUTPUT:
                 error_element_node = TAG.xml_doc.createElement('element')
@@ -1335,26 +1335,25 @@ def process_file(input_stream, report):
     if XML_OUTPUT:
         tag_node = TAG.xml_doc.childNodes[0]
 
-    LIGHTMAP.lightmap_body_header = TAG.TagBlockHeader().read(input_stream, TAG)
-    LIGHTMAP.lightmap_body = LIGHTMAP.LightmapBody()
-    LIGHTMAP.lightmap_body.search_distance_lower_bound = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "search distance lower bound"))
-    LIGHTMAP.lightmap_body.search_distance_upper_bound = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "search distance upper bound"))
-    LIGHTMAP.lightmap_body.luminels_per_world_unit = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "luminels per world unit"))
-    LIGHTMAP.lightmap_body.output_white_reference = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "output white reference"))
-    LIGHTMAP.lightmap_body.output_black_reference = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "output black reference"))
-    LIGHTMAP.lightmap_body.output_schlick_parameter = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "output schlick parameter"))
-    LIGHTMAP.lightmap_body.diffuse_map_scale = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "diffuse map scale"))
-    LIGHTMAP.lightmap_body.sun_scale = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "sun scale"))
-    LIGHTMAP.lightmap_body.sky_scale = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "sky scale"))
-    LIGHTMAP.lightmap_body.indirect_scale = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "indirect scale"))
-    LIGHTMAP.lightmap_body.prt_scale = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "prt scale"))
-    LIGHTMAP.lightmap_body.surface_light_scale = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "surface light scale"))
-    LIGHTMAP.lightmap_body.scenario_light_scale = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "scenario light scale"))
-    LIGHTMAP.lightmap_body.lightprobe_interpolation_override = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "lightprobe interpolation override"))
+    LIGHTMAP.body_header = TAG.TagBlockHeader().read(input_stream, TAG)
+    LIGHTMAP.search_distance_lower_bound = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "search distance lower bound"))
+    LIGHTMAP.search_distance_upper_bound = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "search distance upper bound"))
+    LIGHTMAP.luminels_per_world_unit = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "luminels per world unit"))
+    LIGHTMAP.output_white_reference = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "output white reference"))
+    LIGHTMAP.output_black_reference = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "output black reference"))
+    LIGHTMAP.output_schlick_parameter = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "output schlick parameter"))
+    LIGHTMAP.diffuse_map_scale = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "diffuse map scale"))
+    LIGHTMAP.sun_scale = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "sun scale"))
+    LIGHTMAP.sky_scale = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "sky scale"))
+    LIGHTMAP.indirect_scale = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "indirect scale"))
+    LIGHTMAP.prt_scale = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "prt scale"))
+    LIGHTMAP.surface_light_scale = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "surface light scale"))
+    LIGHTMAP.scenario_light_scale = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "scenario light scale"))
+    LIGHTMAP.lightprobe_interpolation_override = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "lightprobe interpolation override"))
     input_stream.read(72) # Padding?
-    LIGHTMAP.lightmap_body.lightmap_groups_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "lightmap groups"))
+    LIGHTMAP.lightmap_groups_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "lightmap groups"))
     input_stream.read(12) # Padding?
-    LIGHTMAP.lightmap_body.errors_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "errors"))
+    LIGHTMAP.errors_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "errors"))
     input_stream.read(104) # Padding?
 
     read_lightmap_groups(LIGHTMAP, TAG, input_stream, tag_node, XML_OUTPUT)

@@ -49,19 +49,12 @@ class PathfindingPolicyEnum(Enum):
     none = auto()
 
 class MachineAsset(DeviceAsset):
-    def __init__(self):
+    def __init__(self, machine_type=0, machine_flags=0, door_open_time=0.0, door_occlusion_time=(0.0, 0.0), collision_response=0, elevator_node=0, pathfinding_policy=0):
         super().__init__()
-        self.header = None
-        self.machine_body_header = None
-        self.machine_body = None
-
-    class MachineBody(DeviceAsset.DeviceBody):
-        def __init__(self, machine_type=0, machine_flags=0, door_open_time=0.0, door_occlusion_time=(0.0, 0.0), collision_response=0, elevator_node=0, pathfinding_policy=0):
-            super().__init__()
-            self.machine_type = machine_type
-            self.machine_flags = machine_flags
-            self.door_open_time = door_open_time
-            self.door_occlusion_time = door_occlusion_time
-            self.collision_response = collision_response
-            self.elevator_node = elevator_node
-            self.pathfinding_policy = pathfinding_policy
+        self.machine_type = machine_type
+        self.machine_flags = machine_flags
+        self.door_open_time = door_open_time
+        self.door_occlusion_time = door_occlusion_time
+        self.collision_response = collision_response
+        self.elevator_node = elevator_node
+        self.pathfinding_policy = pathfinding_policy

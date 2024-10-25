@@ -826,338 +826,368 @@ class PeriodicExponentEnum(Enum):
     spark = auto()
 
 class ScenarioAsset():
-    def __init__(self):
-        self.header = None
-        self.scenario_body_header = None
-        self.scenario_body = None
-        self.skies_header = None
-        self.skies = None
-        self.child_scenario_header = None
-        self.child_scenarios = None
-        self.predicted_resources_header = None
-        self.predicted_resources = None
-        self.functions_header = None
-        self.functions = None
-        self.editor_scenario_data = None
-        self.comment_header = None
-        self.comments = None
-        self.environment_objects_header = None
-        self.environment_objects = None
-        self.object_name_header = None
-        self.object_names = None
-        self.scenery_header = None
-        self.scenery = None
-        self.scenery_palette_header = None
-        self.scenery_palette = None
-        self.bipeds_header = None
-        self.bipeds = None
-        self.biped_palette_header = None
-        self.biped_palette = None
-        self.vehicles_header = None
-        self.vehicles = None
-        self.vehicle_palette_header = None
-        self.vehicle_palette = None
-        self.equipment_header = None
-        self.equipment = None
-        self.equipment_palette_header = None
-        self.equipment_palette = None
-        self.weapon_header = None
-        self.weapons = None
-        self.weapon_palette_header = None
-        self.weapon_palette = None
-        self.device_group_header = None
-        self.device_groups = None
-        self.device_machine_header = None
-        self.device_machines = None
-        self.device_machine_palette_header = None
-        self.device_machine_palette = None
-        self.device_control_header = None
-        self.device_controls = None
-        self.device_control_palette_header = None
-        self.device_control_palette = None
-        self.device_light_fixture_header = None
-        self.device_light_fixtures = None
-        self.device_light_fixture_palette_header = None
-        self.device_light_fixtures_palette = None
-        self.sound_scenery_header = None
-        self.sound_scenery = None
-        self.sound_scenery_palette_header = None
-        self.sound_scenery_palette = None
-        self.light_volume_header = None
-        self.light_volumes = None
-        self.light_volume_palette_header = None
-        self.light_volume_palette = None
-        self.player_starting_profile_header = None
-        self.player_starting_profiles = None
-        self.player_starting_location_header = None
-        self.player_starting_locations = None
-        self.trigger_volumes_header = None
-        self.trigger_volumes = None
-        self.recorded_animation_header = None
-        self.recorded_animations = None
-        self.netgame_flag_header = None
-        self.netgame_flags = None
-        self.netgame_equipment_header = None
-        self.netgame_equipment = None
-        self.starting_equipment_header = None
-        self.starting_equipment = None
-        self.bsp_switch_trigger_volumes_header = None
-        self.bsp_switch_trigger_volumes = None
-        self.decals_header = None
-        self.decals = None
-        self.decal_palette_header = None
-        self.decal_palette = None
-        self.detail_object_collection_palette_header = None
-        self.detail_object_collection_palette = None
-        self.style_palette_header = None
-        self.style_palette = None
-        self.squad_groups_header = None
-        self.squad_groups = None
-        self.squads_header = None
-        self.squads = None
-        self.zones_header = None
-        self.zones = None
-        self.mission_scenes_header = None
-        self.mission_scenes = None
-        self.character_palette_header = None
-        self.character_palette = None
-        self.ai_pathfinding_data_header = None
-        self.ai_pathfinding_data = None
-        self.ai_animation_references_header = None
-        self.ai_animation_references = None
-        self.ai_script_references_header = None
-        self.ai_script_references = None
-        self.ai_recording_references_header = None
-        self.ai_recording_references = None
-        self.ai_conversations_header = None
-        self.ai_conversations = None
-        self.script_syntax_data = None
-        self.script_string_data = None
-        self.scripts_header = None
-        self.scripts = None
-        self.globals_header = None
-        self.globals = None
-        self.references_header = None
-        self.references = None
-        self.source_files_header = None
-        self.source_files = None
-        self.scripting_data_header = None
-        self.scripting_data = None
-        self.cutscene_flags_header = None
-        self.cutscene_flags = None
-        self.cutscene_camera_points_header = None
-        self.cutscene_camera_points = None
-        self.cutscene_titles_header = None
-        self.cutscene_titles = None
-        self.structure_bsps_header = None
-        self.structure_bsps = None
-        self.scenario_resources_header = None
-        self.scenario_resources = None
-        self.old_structure_physics_header = None
-        self.old_structure_physics = None
-        self.hs_unit_seat_header = None
-        self.hs_unit_seats = None
-        self.scenario_kill_triggers_header = None
-        self.scenario_kill_triggers = None
-        self.hs_syntax_datums_header = None
-        self.hs_syntax_datums = None
-        self.orders_header = None
-        self.orders = None
-        self.triggers_header = None
-        self.triggers = None
-        self.background_sound_palette_header = None
-        self.background_sound_palette = None
-        self.sound_environment_palette_header = None
-        self.sound_environment_palette = None
-        self.weather_palette_header = None
-        self.weather_palette = None
-        self.unused_0_header = None
-        self.unused_0 = None
-        self.unused_1_header = None
-        self.unused_1 = None
-        self.unused_2_header = None
-        self.unused_2 = None
-        self.unused_3_header = None
-        self.unused_3 = None
-        self.scavenger_hunt_objects_header = None
-        self.scavenger_hunt_objects = None
-        self.scenario_cluster_data_header = None
-        self.scenario_cluster_data = None
-        self.spawn_data_header = None
-        self.spawn_data = None
-        self.crates_header = None
-        self.crates = None
-        self.crates_palette_header = None
-        self.crates_palette = None
-        self.atmospheric_fog_palette_header = None
-        self.atmospheric_fog_palette = None
-        self.planar_fog_palette_header = None
-        self.planar_fog_palette = None
-        self.flocks_header = None
-        self.flocks = None
-        self.decorators_header = None
-        self.decorators = None
-        self.creatures_header = None
-        self.creatures = None
-        self.creatures_palette_header = None
-        self.creatures_palette = None
-        self.decorator_palette_header = None
-        self.decorator_palette = None
-        self.bsp_transition_volumes_header = None
-        self.bsp_transition_volumes = None
-        self.structure_bsp_lighting_header = None
-        self.structure_bsp_lighting = None
-        self.editor_folders_header = None
-        self.editor_folders = None
-        self.level_data_header = None
-        self.level_data = None
-        self.mission_dialogue_header = None
-        self.mission_dialogue = None
-        self.interpolators_header = None
-        self.interpolators = None
-        self.shared_references_header = None
-        self.shared_references = None
-        self.screen_effect_references_header = None
-        self.screen_effect_references = None
-        self.simulation_definition_table_header = None
-        self.simulation_definition_table = None
-
-    class ScenarioBody:
-        def __init__(self, unused_tag_ref=None, skies_tag_block=None, scenario_type=0, scenario_flags=0, child_scenarios_tag_block=None, local_north=0.0,
-                     predicted_resources_tag_block=None, functions_tag_block=None, editor_scenario_data=0, comments_tag_block=None, environment_objects_tag_block=None,
-                     object_names_tag_block=None, scenery_tag_block=None, scenery_palette_tag_block=None, bipeds_tag_block=None, biped_palette_tag_block=None,
-                     vehicles_tag_block=None, vehicle_palette_tag_block=None, equipment_tag_block=None, equipment_palette_tag_block=None, weapons_tag_block=None,
-                     weapon_palette_tag_block=None, device_groups_tag_block=None, machines_tag_block=None, machine_palette_tag_block=None, controls_tag_block=None,
-                     control_palette_tag_block=None, light_fixtures_tag_block=None, light_fixtures_palette_tag_block=None, sound_scenery_tag_block=None,
-                     sound_scenery_palette_tag_block=None, light_volumes_tag_block=None, light_volume_palette_tag_block=None, player_starting_profile_tag_block=None,
-                     player_starting_locations_tag_block=None, trigger_volumes_tag_block=None, recorded_animations_tag_block=None, netgame_flags_tag_block=None,
-                     netgame_equipment_tag_block=None, starting_equipment_tag_block=None, bsp_switch_trigger_volumes_tag_block=None, decals_tag_block=None,
-                     decal_palette_tag_block=None, detail_object_collection_palette_tag_block=None, style_palette_tag_block=None, squad_groups_tag_block=None,
-                     squads_tag_block=None, zones_tag_block=None, mission_scenes_tag_block=None, character_palette_tag_block=None, ai_pathfinding_data_tag_block=None,
-                     ai_animation_references_tag_block=None, ai_script_references_tag_block=None, ai_recording_references_tag_block=None, ai_conversations_tag_block=None,
-                     script_syntax_data_tag_data=None, script_string_data_tag_data=None, scripts_tag_block=None, globals_tag_block=None, references_tag_block=None,
-                     source_files_tag_block=None, scripting_data_tag_block=None, cutscene_flags_tag_block=None, cutscene_camera_points_tag_block=None,
-                     cutscene_titles_tag_block=None, custom_object_names_tag_ref=None, chapter_title_text_tag_ref=None, hud_messages_tag_ref=None,
-                     structure_bsps_tag_block=None, scenario_resources_tag_block=None, old_structure_physics_tag_block=None, hs_unit_seats_tag_block=None,
-                     scenario_kill_triggers_tag_block=None, hs_syntax_datums_tag_block=None, orders_tag_block=None, triggers_tag_block=None,
-                     background_sound_palette_tag_block=None, sound_environment_palette_tag_block=None, weather_palette_tag_block=None, unused_0_tag_block=None,
-                     unused_1_tag_block=None, unused_2_tag_block=None, unused_3_tag_block=None, scavenger_hunt_objects_tag_block=None, scenario_cluster_data_tag_block=None,
-                     salt_array=None, spawn_data_tag_block=None, sound_effect_collection_tag_ref=None, crates_tag_block=None, crate_palette_tag_block=None,
-                     global_lighting_tag_ref=None, atmospheric_fog_palette_tag_block=None, planar_fog_palette_tag_block=None, flocks_tag_block=None, subtitles_tag_ref=None,
-                     decorators_tag_block=None, creatures_tag_block=None, creature_palette_tag_block=None, decorator_palette_tag_block=None,
-                     bsp_transition_volumes_tag_block=None, structure_bsp_lighting_tag_block=None, editor_folders_tag_block=None, level_data_tag_block=None,
-                     game_engine_strings_tag_ref=None, mission_dialogue_tag_block=None, objectives_tag_ref=None, interpolators_tag_block=None, shared_references_tag_block=None,
-                     screen_effect_references_tag_block=None, simulation_definition_table_tag_block=None):
-            self.unused_tag_ref = unused_tag_ref
-            self.skies_tag_block = skies_tag_block
-            self.scenario_type = scenario_type
-            self.scenario_flags = scenario_flags
-            self.child_scenarios_tag_block = child_scenarios_tag_block
-            self.local_north = local_north
-            self.predicted_resources_tag_block = predicted_resources_tag_block
-            self.functions_tag_block = functions_tag_block
-            self.editor_scenario_data = editor_scenario_data
-            self.comments_tag_block = comments_tag_block
-            self.environment_objects_tag_block = environment_objects_tag_block
-            self.object_names_tag_block = object_names_tag_block
-            self.scenery_tag_block = scenery_tag_block
-            self.scenery_palette_tag_block = scenery_palette_tag_block
-            self.bipeds_tag_block = bipeds_tag_block
-            self.biped_palette_tag_block = biped_palette_tag_block
-            self.vehicles_tag_block = vehicles_tag_block
-            self.vehicle_palette_tag_block = vehicle_palette_tag_block
-            self.equipment_tag_block = equipment_tag_block
-            self.equipment_palette_tag_block = equipment_palette_tag_block
-            self.weapons_tag_block = weapons_tag_block
-            self.weapon_palette_tag_block = weapon_palette_tag_block
-            self.device_groups_tag_block = device_groups_tag_block
-            self.machines_tag_block = machines_tag_block
-            self.machine_palette_tag_block = machine_palette_tag_block
-            self.controls_tag_block = controls_tag_block
-            self.control_palette_tag_block = control_palette_tag_block
-            self.light_fixtures_tag_block = light_fixtures_tag_block
-            self.light_fixtures_palette_tag_block = light_fixtures_palette_tag_block
-            self.sound_scenery_tag_block = sound_scenery_tag_block
-            self.sound_scenery_palette_tag_block = sound_scenery_palette_tag_block
-            self.light_volumes_tag_block = light_volumes_tag_block
-            self.light_volume_palette_tag_block = light_volume_palette_tag_block
-            self.player_starting_profile_tag_block = player_starting_profile_tag_block
-            self.player_starting_locations_tag_block = player_starting_locations_tag_block
-            self.trigger_volumes_tag_block = trigger_volumes_tag_block
-            self.recorded_animations_tag_block = recorded_animations_tag_block
-            self.netgame_flags_tag_block = netgame_flags_tag_block
-            self.netgame_equipment_tag_block = netgame_equipment_tag_block
-            self.starting_equipment_tag_block = starting_equipment_tag_block
-            self.bsp_switch_trigger_volumes_tag_block = bsp_switch_trigger_volumes_tag_block
-            self.decals_tag_block = decals_tag_block
-            self.decal_palette_tag_block = decal_palette_tag_block
-            self.detail_object_collection_palette_tag_block = detail_object_collection_palette_tag_block
-            self.style_palette_tag_block = style_palette_tag_block
-            self.squad_groups_tag_block = squad_groups_tag_block
-            self.squads_tag_block = squads_tag_block
-            self.zones_tag_block = zones_tag_block
-            self.mission_scenes_tag_block = mission_scenes_tag_block
-            self.character_palette_tag_block = character_palette_tag_block
-            self.ai_pathfinding_data_tag_block = ai_pathfinding_data_tag_block
-            self.ai_animation_references_tag_block = ai_animation_references_tag_block
-            self.ai_script_references_tag_block = ai_script_references_tag_block
-            self.ai_recording_references_tag_block = ai_recording_references_tag_block
-            self.ai_conversations_tag_block = ai_conversations_tag_block
-            self.script_syntax_data_tag_data = script_syntax_data_tag_data
-            self.script_string_data_tag_data = script_string_data_tag_data
-            self.scripts_tag_block = scripts_tag_block
-            self.globals_tag_block = globals_tag_block
-            self.references_tag_block = references_tag_block
-            self.source_files_tag_block = source_files_tag_block
-            self.scripting_data_tag_block = scripting_data_tag_block
-            self.cutscene_flags_tag_block = cutscene_flags_tag_block
-            self.cutscene_camera_points_tag_block = cutscene_camera_points_tag_block
-            self.cutscene_titles_tag_block = cutscene_titles_tag_block
-            self.custom_object_names_tag_ref = custom_object_names_tag_ref
-            self.chapter_title_text_tag_ref = chapter_title_text_tag_ref
-            self.hud_messages_tag_ref = hud_messages_tag_ref
-            self.structure_bsps_tag_block = structure_bsps_tag_block
-            self.scenario_resources_tag_block = scenario_resources_tag_block
-            self.old_structure_physics_tag_block = old_structure_physics_tag_block
-            self.hs_unit_seats_tag_block = hs_unit_seats_tag_block
-            self.scenario_kill_triggers_tag_block = scenario_kill_triggers_tag_block
-            self.hs_syntax_datums_tag_block = hs_syntax_datums_tag_block
-            self.orders_tag_block = orders_tag_block
-            self.triggers_tag_block = triggers_tag_block
-            self.background_sound_palette_tag_block = background_sound_palette_tag_block
-            self.sound_environment_palette_tag_block = sound_environment_palette_tag_block
-            self.weather_palette_tag_block = weather_palette_tag_block
-            self.unused_0_tag_block = unused_0_tag_block
-            self.unused_1_tag_block = unused_1_tag_block
-            self.unused_2_tag_block = unused_2_tag_block
-            self.unused_3_tag_block = unused_3_tag_block
-            self.scavenger_hunt_objects_tag_block = scavenger_hunt_objects_tag_block
-            self.scenario_cluster_data_tag_block = scenario_cluster_data_tag_block
-            self.salt_array = salt_array
-            self.spawn_data_tag_block = spawn_data_tag_block
-            self.sound_effect_collection_tag_ref = sound_effect_collection_tag_ref
-            self.crates_tag_block = crates_tag_block
-            self.crate_palette_tag_block = crate_palette_tag_block
-            self.global_lighting_tag_ref = global_lighting_tag_ref
-            self.atmospheric_fog_palette_tag_block = atmospheric_fog_palette_tag_block
-            self.planar_fog_palette_tag_block = planar_fog_palette_tag_block
-            self.flocks_tag_block = flocks_tag_block
-            self.subtitles_tag_ref = subtitles_tag_ref
-            self.decorators_tag_block = decorators_tag_block
-            self.creatures_tag_block = creatures_tag_block
-            self.creature_palette_tag_block = creature_palette_tag_block
-            self.decorator_palette_tag_block = decorator_palette_tag_block
-            self.bsp_transition_volumes_tag_block = bsp_transition_volumes_tag_block
-            self.structure_bsp_lighting_tag_block = structure_bsp_lighting_tag_block
-            self.editor_folders_tag_block = editor_folders_tag_block
-            self.level_data_tag_block = level_data_tag_block
-            self.game_engine_strings_tag_ref = game_engine_strings_tag_ref
-            self.mission_dialogue_tag_block = mission_dialogue_tag_block
-            self.objectives_tag_ref = objectives_tag_ref
-            self.interpolators_tag_block = interpolators_tag_block
-            self.shared_references_tag_block = shared_references_tag_block
-            self.screen_effect_references_tag_block = screen_effect_references_tag_block
-            self.simulation_definition_table_tag_block = simulation_definition_table_tag_block
+    def __init__(self, header=None, body_header=None, skies_header=None, skies=None, child_scenario_header=None, child_scenarios=None, predicted_resources_header=None, 
+                 predicted_resources=None, functions_header=None, functions=None, editor_scenario_data=None, comment_header=None, comments=None, 
+                 environment_objects_header=None, environment_objects=None, object_name_header=None, object_names=None, scenery_header=None, scenery=None, 
+                 scenery_palette_header=None, scenery_palette=None, bipeds_header=None, bipeds=None, biped_palette_header=None, biped_palette=None, vehicles_header=None, 
+                 vehicles=None, vehicle_palette_header=None, vehicle_palette=None, equipment_header=None, equipment=None, equipment_palette_header=None, 
+                 equipment_palette=None, weapon_header=None, weapons=None, weapon_palette_header=None, weapon_palette=None, device_group_header=None, device_groups=None, 
+                 device_machine_header=None, device_machines=None, device_machine_palette_header=None, device_machine_palette=None, device_control_header=None, 
+                 device_controls=None, device_control_palette_header=None, device_control_palette=None, device_light_fixture_header=None, device_light_fixtures=None, 
+                 device_light_fixture_palette_header=None, device_light_fixtures_palette=None, sound_scenery_header=None, sound_scenery=None, 
+                 sound_scenery_palette_header=None, sound_scenery_palette=None, light_volume_header=None, light_volumes=None, light_volume_palette_header=None, 
+                 light_volume_palette=None, player_starting_profile_header=None, player_starting_profiles=None, player_starting_location_header=None, 
+                 player_starting_locations=None, trigger_volumes_header=None, trigger_volumes=None, recorded_animation_header=None, recorded_animations=None, 
+                 netgame_flag_header=None, netgame_flags=None, netgame_equipment_header=None, netgame_equipment=None, starting_equipment_header=None, 
+                 starting_equipment=None, bsp_switch_trigger_volumes_header=None, bsp_switch_trigger_volumes=None, decals_header=None, decals=None, 
+                 decal_palette_header=None, decal_palette=None, detail_object_collection_palette_header=None, detail_object_collection_palette=None, 
+                 style_palette_header=None, style_palette=None, squad_groups_header=None, squad_groups=None, squads_header=None, squads=None, zones_header=None, zones=None, 
+                 mission_scenes_header=None, mission_scenes=None, character_palette_header=None, character_palette=None, ai_pathfinding_data_header=None, 
+                 ai_pathfinding_data=None, ai_animation_references_header=None, ai_animation_references=None, ai_script_references_header=None, ai_script_references=None, 
+                 ai_recording_references_header=None, ai_recording_references=None, ai_conversations_header=None, ai_conversations=None, script_syntax_data=None, 
+                 script_string_data=None, scripts_header=None, scripts=None, globals_header=None, script_globals=None, references_header=None, references=None, 
+                 source_files_header=None, source_files=None, scripting_data_header=None, scripting_data=None, cutscene_flags_header=None, cutscene_flags=None, 
+                 cutscene_camera_points_header=None, cutscene_camera_points=None, cutscene_titles_header=None, cutscene_titles=None, structure_bsps_header=None, 
+                 structure_bsps=None, scenario_resources_header=None, scenario_resources=None, old_structure_physics_header=None, old_structure_physics=None, 
+                 hs_unit_seat_header=None, hs_unit_seats=None, scenario_kill_triggers_header=None, scenario_kill_triggers=None, hs_syntax_datums_header=None, 
+                 hs_syntax_datums=None, orders_header=None, orders=None, triggers_header=None, triggers=None, background_sound_palette_header=None, 
+                 background_sound_palette=None, sound_environment_palette_header=None, sound_environment_palette=None, weather_palette_header=None, weather_palette=None, 
+                 unused_0_header=None, unused_0=None, unused_1_header=None, unused_1=None, unused_2_header=None, unused_2=None, unused_3_header=None, unused_3=None, 
+                 scavenger_hunt_objects_header=None, scavenger_hunt_objects=None, scenario_cluster_data_header=None, scenario_cluster_data=None, spawn_data_header=None, 
+                 spawn_data=None, crates_header=None, crates=None, crates_palette_header=None, crates_palette=None, atmospheric_fog_palette_header=None, 
+                 atmospheric_fog_palette=None, planar_fog_palette_header=None, planar_fog_palette=None, flocks_header=None, flocks=None, decorators_header=None, 
+                 decorators=None, creatures_header=None, creatures=None, creatures_palette_header=None, creatures_palette=None, decorator_palette_header=None, 
+                 decorator_palette=None, bsp_transition_volumes_header=None, bsp_transition_volumes=None, structure_bsp_lighting_header=None, structure_bsp_lighting=None, 
+                 editor_folders_header=None, editor_folders=None, level_data_header=None, level_data=None, mission_dialogue_header=None, mission_dialogue=None, 
+                 interpolators_header=None, interpolators=None, shared_references_header=None, shared_references=None, screen_effect_references_header=None, 
+                 screen_effect_references=None, simulation_definition_table_header=None, simulation_definition_table=None, unused_tag_ref=None, skies_tag_block=None, 
+                 scenario_type=0, scenario_flags=0, child_scenarios_tag_block=None, local_north=0.0, predicted_resources_tag_block=None, functions_tag_block=None, 
+                 comments_tag_block=None, environment_objects_tag_block=None, object_names_tag_block=None, scenery_tag_block=None, scenery_palette_tag_block=None, 
+                 bipeds_tag_block=None, biped_palette_tag_block=None, vehicles_tag_block=None, vehicle_palette_tag_block=None, equipment_tag_block=None, 
+                 equipment_palette_tag_block=None, weapons_tag_block=None, weapon_palette_tag_block=None, device_groups_tag_block=None, machines_tag_block=None, 
+                 machine_palette_tag_block=None, controls_tag_block=None, control_palette_tag_block=None, light_fixtures_tag_block=None, 
+                 light_fixtures_palette_tag_block=None, sound_scenery_tag_block=None, sound_scenery_palette_tag_block=None, light_volumes_tag_block=None, 
+                 light_volume_palette_tag_block=None, player_starting_profile_tag_block=None, player_starting_locations_tag_block=None, trigger_volumes_tag_block=None, 
+                 recorded_animations_tag_block=None, netgame_flags_tag_block=None, netgame_equipment_tag_block=None, starting_equipment_tag_block=None, 
+                 bsp_switch_trigger_volumes_tag_block=None, decals_tag_block=None, decal_palette_tag_block=None, detail_object_collection_palette_tag_block=None, 
+                 style_palette_tag_block=None, squad_groups_tag_block=None, squads_tag_block=None, zones_tag_block=None, mission_scenes_tag_block=None, 
+                 character_palette_tag_block=None, ai_pathfinding_data_tag_block=None, ai_animation_references_tag_block=None, ai_script_references_tag_block=None, 
+                 ai_recording_references_tag_block=None, ai_conversations_tag_block=None, script_syntax_data_tag_data=None, script_string_data_tag_data=None, 
+                 scripts_tag_block=None, globals_tag_block=None, references_tag_block=None, source_files_tag_block=None, scripting_data_tag_block=None, 
+                 cutscene_flags_tag_block=None, cutscene_camera_points_tag_block=None, cutscene_titles_tag_block=None, custom_object_names_tag_ref=None, 
+                 chapter_title_text_tag_ref=None, hud_messages_tag_ref=None, structure_bsps_tag_block=None, scenario_resources_tag_block=None, 
+                 old_structure_physics_tag_block=None, hs_unit_seats_tag_block=None, scenario_kill_triggers_tag_block=None, hs_syntax_datums_tag_block=None, 
+                 orders_tag_block=None, triggers_tag_block=None, background_sound_palette_tag_block=None, sound_environment_palette_tag_block=None, 
+                 weather_palette_tag_block=None, unused_0_tag_block=None, unused_1_tag_block=None, unused_2_tag_block=None, unused_3_tag_block=None, 
+                 scavenger_hunt_objects_tag_block=None, scenario_cluster_data_tag_block=None, salt_array=None, spawn_data_tag_block=None, 
+                 sound_effect_collection_tag_ref=None, crates_tag_block=None, crate_palette_tag_block=None, global_lighting_tag_ref=None, 
+                 atmospheric_fog_palette_tag_block=None, planar_fog_palette_tag_block=None, flocks_tag_block=None, subtitles_tag_ref=None, decorators_tag_block=None, 
+                 creatures_tag_block=None, creature_palette_tag_block=None, decorator_palette_tag_block=None, bsp_transition_volumes_tag_block=None, 
+                 structure_bsp_lighting_tag_block=None, editor_folders_tag_block=None, level_data_tag_block=None, game_engine_strings_tag_ref=None, 
+                 mission_dialogue_tag_block=None, objectives_tag_ref=None, interpolators_tag_block=None, shared_references_tag_block=None, 
+                 screen_effect_references_tag_block=None, simulation_definition_table_tag_block=None):
+        self.header = header
+        self.body_header = body_header
+        self.skies_header = skies_header
+        self.skies = skies
+        self.child_scenario_header = child_scenario_header
+        self.child_scenarios = child_scenarios
+        self.predicted_resources_header = predicted_resources_header
+        self.predicted_resources = predicted_resources
+        self.functions_header = functions_header
+        self.functions = functions
+        self.editor_scenario_data = editor_scenario_data
+        self.comment_header = comment_header
+        self.comments = comments
+        self.environment_objects_header = environment_objects_header
+        self.environment_objects = environment_objects
+        self.object_name_header = object_name_header
+        self.object_names = object_names
+        self.scenery_header = scenery_header
+        self.scenery = scenery
+        self.scenery_palette_header = scenery_palette_header
+        self.scenery_palette = scenery_palette
+        self.bipeds_header = bipeds_header
+        self.bipeds = bipeds
+        self.biped_palette_header = biped_palette_header
+        self.biped_palette = biped_palette
+        self.vehicles_header = vehicles_header
+        self.vehicles = vehicles
+        self.vehicle_palette_header = vehicle_palette_header
+        self.vehicle_palette = vehicle_palette
+        self.equipment_header = equipment_header
+        self.equipment = equipment
+        self.equipment_palette_header = equipment_palette_header
+        self.equipment_palette = equipment_palette
+        self.weapon_header = weapon_header
+        self.weapons = weapons
+        self.weapon_palette_header = weapon_palette_header
+        self.weapon_palette = weapon_palette
+        self.device_group_header = device_group_header
+        self.device_groups = device_groups
+        self.device_machine_header = device_machine_header
+        self.device_machines = device_machines
+        self.device_machine_palette_header = device_machine_palette_header
+        self.device_machine_palette = device_machine_palette
+        self.device_control_header = device_control_header
+        self.device_controls = device_controls
+        self.device_control_palette_header = device_control_palette_header
+        self.device_control_palette = device_control_palette
+        self.device_light_fixture_header = device_light_fixture_header
+        self.device_light_fixtures = device_light_fixtures
+        self.device_light_fixture_palette_header = device_light_fixture_palette_header
+        self.device_light_fixtures_palette = device_light_fixtures_palette
+        self.sound_scenery_header = sound_scenery_header
+        self.sound_scenery = sound_scenery
+        self.sound_scenery_palette_header = sound_scenery_palette_header
+        self.sound_scenery_palette = sound_scenery_palette
+        self.light_volume_header = light_volume_header
+        self.light_volumes = light_volumes
+        self.light_volume_palette_header = light_volume_palette_header
+        self.light_volume_palette = light_volume_palette
+        self.player_starting_profile_header = player_starting_profile_header
+        self.player_starting_profiles = player_starting_profiles
+        self.player_starting_location_header = player_starting_location_header
+        self.player_starting_locations = player_starting_locations
+        self.trigger_volumes_header = trigger_volumes_header
+        self.trigger_volumes = trigger_volumes
+        self.recorded_animation_header = recorded_animation_header
+        self.recorded_animations = recorded_animations
+        self.netgame_flag_header = netgame_flag_header
+        self.netgame_flags = netgame_flags
+        self.netgame_equipment_header = netgame_equipment_header
+        self.netgame_equipment = netgame_equipment
+        self.starting_equipment_header = starting_equipment_header
+        self.starting_equipment = starting_equipment
+        self.bsp_switch_trigger_volumes_header = bsp_switch_trigger_volumes_header
+        self.bsp_switch_trigger_volumes = bsp_switch_trigger_volumes
+        self.decals_header = decals_header
+        self.decals = decals
+        self.decal_palette_header = decal_palette_header
+        self.decal_palette = decal_palette
+        self.detail_object_collection_palette_header = detail_object_collection_palette_header
+        self.detail_object_collection_palette = detail_object_collection_palette
+        self.style_palette_header = style_palette_header
+        self.style_palette = style_palette
+        self.squad_groups_header = squad_groups_header
+        self.squad_groups = squad_groups
+        self.squads_header = squads_header
+        self.squads = squads
+        self.zones_header = zones_header
+        self.zones = zones
+        self.mission_scenes_header = mission_scenes_header
+        self.mission_scenes = mission_scenes
+        self.character_palette_header = character_palette_header
+        self.character_palette = character_palette
+        self.ai_pathfinding_data_header = ai_pathfinding_data_header
+        self.ai_pathfinding_data = ai_pathfinding_data
+        self.ai_animation_references_header = ai_animation_references_header
+        self.ai_animation_references = ai_animation_references
+        self.ai_script_references_header = ai_script_references_header
+        self.ai_script_references = ai_script_references
+        self.ai_recording_references_header = ai_recording_references_header
+        self.ai_recording_references = ai_recording_references
+        self.ai_conversations_header = ai_conversations_header
+        self.ai_conversations = ai_conversations
+        self.script_syntax_data = script_syntax_data
+        self.script_string_data = script_string_data
+        self.scripts_header = scripts_header
+        self.scripts = scripts
+        self.globals_header = globals_header
+        self.script_globals = script_globals
+        self.references_header = references_header
+        self.references = references
+        self.source_files_header = source_files_header
+        self.source_files = source_files
+        self.scripting_data_header = scripting_data_header
+        self.scripting_data = scripting_data
+        self.cutscene_flags_header = cutscene_flags_header
+        self.cutscene_flags = cutscene_flags
+        self.cutscene_camera_points_header = cutscene_camera_points_header
+        self.cutscene_camera_points = cutscene_camera_points
+        self.cutscene_titles_header = cutscene_titles_header
+        self.cutscene_titles = cutscene_titles
+        self.structure_bsps_header = structure_bsps_header
+        self.structure_bsps = structure_bsps
+        self.scenario_resources_header = scenario_resources_header
+        self.scenario_resources = scenario_resources
+        self.old_structure_physics_header = old_structure_physics_header
+        self.old_structure_physics = old_structure_physics
+        self.hs_unit_seat_header = hs_unit_seat_header
+        self.hs_unit_seats = hs_unit_seats
+        self.scenario_kill_triggers_header = scenario_kill_triggers_header
+        self.scenario_kill_triggers = scenario_kill_triggers
+        self.hs_syntax_datums_header = hs_syntax_datums_header
+        self.hs_syntax_datums = hs_syntax_datums
+        self.orders_header = orders_header
+        self.orders = orders
+        self.triggers_header = triggers_header
+        self.triggers = triggers
+        self.background_sound_palette_header = background_sound_palette_header
+        self.background_sound_palette = background_sound_palette
+        self.sound_environment_palette_header = sound_environment_palette_header
+        self.sound_environment_palette = sound_environment_palette
+        self.weather_palette_header = weather_palette_header
+        self.weather_palette = weather_palette
+        self.unused_0_header = unused_0_header
+        self.unused_0 = unused_0
+        self.unused_1_header = unused_1_header
+        self.unused_1 = unused_1
+        self.unused_2_header = unused_2_header
+        self.unused_2 = unused_2
+        self.unused_3_header = unused_3_header
+        self.unused_3 = unused_3
+        self.scavenger_hunt_objects_header = scavenger_hunt_objects_header
+        self.scavenger_hunt_objects = scavenger_hunt_objects
+        self.scenario_cluster_data_header = scenario_cluster_data_header
+        self.scenario_cluster_data = scenario_cluster_data
+        self.spawn_data_header = spawn_data_header
+        self.spawn_data = spawn_data
+        self.crates_header = crates_header
+        self.crates = crates
+        self.crates_palette_header = crates_palette_header
+        self.crates_palette = crates_palette
+        self.atmospheric_fog_palette_header = atmospheric_fog_palette_header
+        self.atmospheric_fog_palette = atmospheric_fog_palette
+        self.planar_fog_palette_header = planar_fog_palette_header
+        self.planar_fog_palette = planar_fog_palette
+        self.flocks_header = flocks_header
+        self.flocks = flocks
+        self.decorators_header = decorators_header
+        self.decorators = decorators
+        self.creatures_header = creatures_header
+        self.creatures = creatures
+        self.creatures_palette_header = creatures_palette_header
+        self.creatures_palette = creatures_palette
+        self.decorator_palette_header = decorator_palette_header
+        self.decorator_palette = decorator_palette
+        self.bsp_transition_volumes_header = bsp_transition_volumes_header
+        self.bsp_transition_volumes = bsp_transition_volumes
+        self.structure_bsp_lighting_header = structure_bsp_lighting_header
+        self.structure_bsp_lighting = structure_bsp_lighting
+        self.editor_folders_header = editor_folders_header
+        self.editor_folders = editor_folders
+        self.level_data_header = level_data_header
+        self.level_data = level_data
+        self.mission_dialogue_header = mission_dialogue_header
+        self.mission_dialogue = mission_dialogue
+        self.interpolators_header = interpolators_header
+        self.interpolators = interpolators
+        self.shared_references_header = shared_references_header
+        self.shared_references = shared_references
+        self.screen_effect_references_header = screen_effect_references_header
+        self.screen_effect_references = screen_effect_references
+        self.simulation_definition_table_header = simulation_definition_table_header
+        self.simulation_definition_table = simulation_definition_table
+        self.unused_tag_ref = unused_tag_ref
+        self.skies_tag_block = skies_tag_block
+        self.scenario_type = scenario_type
+        self.scenario_flags = scenario_flags
+        self.child_scenarios_tag_block = child_scenarios_tag_block
+        self.local_north = local_north
+        self.predicted_resources_tag_block = predicted_resources_tag_block
+        self.functions_tag_block = functions_tag_block
+        self.comments_tag_block = comments_tag_block
+        self.environment_objects_tag_block = environment_objects_tag_block
+        self.object_names_tag_block = object_names_tag_block
+        self.scenery_tag_block = scenery_tag_block
+        self.scenery_palette_tag_block = scenery_palette_tag_block
+        self.bipeds_tag_block = bipeds_tag_block
+        self.biped_palette_tag_block = biped_palette_tag_block
+        self.vehicles_tag_block = vehicles_tag_block
+        self.vehicle_palette_tag_block = vehicle_palette_tag_block
+        self.equipment_tag_block = equipment_tag_block
+        self.equipment_palette_tag_block = equipment_palette_tag_block
+        self.weapons_tag_block = weapons_tag_block
+        self.weapon_palette_tag_block = weapon_palette_tag_block
+        self.device_groups_tag_block = device_groups_tag_block
+        self.machines_tag_block = machines_tag_block
+        self.machine_palette_tag_block = machine_palette_tag_block
+        self.controls_tag_block = controls_tag_block
+        self.control_palette_tag_block = control_palette_tag_block
+        self.light_fixtures_tag_block = light_fixtures_tag_block
+        self.light_fixtures_palette_tag_block = light_fixtures_palette_tag_block
+        self.sound_scenery_tag_block = sound_scenery_tag_block
+        self.sound_scenery_palette_tag_block = sound_scenery_palette_tag_block
+        self.light_volumes_tag_block = light_volumes_tag_block
+        self.light_volume_palette_tag_block = light_volume_palette_tag_block
+        self.player_starting_profile_tag_block = player_starting_profile_tag_block
+        self.player_starting_locations_tag_block = player_starting_locations_tag_block
+        self.trigger_volumes_tag_block = trigger_volumes_tag_block
+        self.recorded_animations_tag_block = recorded_animations_tag_block
+        self.netgame_flags_tag_block = netgame_flags_tag_block
+        self.netgame_equipment_tag_block = netgame_equipment_tag_block
+        self.starting_equipment_tag_block = starting_equipment_tag_block
+        self.bsp_switch_trigger_volumes_tag_block = bsp_switch_trigger_volumes_tag_block
+        self.decals_tag_block = decals_tag_block
+        self.decal_palette_tag_block = decal_palette_tag_block
+        self.detail_object_collection_palette_tag_block = detail_object_collection_palette_tag_block
+        self.style_palette_tag_block = style_palette_tag_block
+        self.squad_groups_tag_block = squad_groups_tag_block
+        self.squads_tag_block = squads_tag_block
+        self.zones_tag_block = zones_tag_block
+        self.mission_scenes_tag_block = mission_scenes_tag_block
+        self.character_palette_tag_block = character_palette_tag_block
+        self.ai_pathfinding_data_tag_block = ai_pathfinding_data_tag_block
+        self.ai_animation_references_tag_block = ai_animation_references_tag_block
+        self.ai_script_references_tag_block = ai_script_references_tag_block
+        self.ai_recording_references_tag_block = ai_recording_references_tag_block
+        self.ai_conversations_tag_block = ai_conversations_tag_block
+        self.script_syntax_data_tag_data = script_syntax_data_tag_data
+        self.script_string_data_tag_data = script_string_data_tag_data
+        self.scripts_tag_block = scripts_tag_block
+        self.globals_tag_block = globals_tag_block
+        self.references_tag_block = references_tag_block
+        self.source_files_tag_block = source_files_tag_block
+        self.scripting_data_tag_block = scripting_data_tag_block
+        self.cutscene_flags_tag_block = cutscene_flags_tag_block
+        self.cutscene_camera_points_tag_block = cutscene_camera_points_tag_block
+        self.cutscene_titles_tag_block = cutscene_titles_tag_block
+        self.custom_object_names_tag_ref = custom_object_names_tag_ref
+        self.chapter_title_text_tag_ref = chapter_title_text_tag_ref
+        self.hud_messages_tag_ref = hud_messages_tag_ref
+        self.structure_bsps_tag_block = structure_bsps_tag_block
+        self.scenario_resources_tag_block = scenario_resources_tag_block
+        self.old_structure_physics_tag_block = old_structure_physics_tag_block
+        self.hs_unit_seats_tag_block = hs_unit_seats_tag_block
+        self.scenario_kill_triggers_tag_block = scenario_kill_triggers_tag_block
+        self.hs_syntax_datums_tag_block = hs_syntax_datums_tag_block
+        self.orders_tag_block = orders_tag_block
+        self.triggers_tag_block = triggers_tag_block
+        self.background_sound_palette_tag_block = background_sound_palette_tag_block
+        self.sound_environment_palette_tag_block = sound_environment_palette_tag_block
+        self.weather_palette_tag_block = weather_palette_tag_block
+        self.unused_0_tag_block = unused_0_tag_block
+        self.unused_1_tag_block = unused_1_tag_block
+        self.unused_2_tag_block = unused_2_tag_block
+        self.unused_3_tag_block = unused_3_tag_block
+        self.scavenger_hunt_objects_tag_block = scavenger_hunt_objects_tag_block
+        self.scenario_cluster_data_tag_block = scenario_cluster_data_tag_block
+        self.salt_array = salt_array
+        self.spawn_data_tag_block = spawn_data_tag_block
+        self.sound_effect_collection_tag_ref = sound_effect_collection_tag_ref
+        self.crates_tag_block = crates_tag_block
+        self.crate_palette_tag_block = crate_palette_tag_block
+        self.global_lighting_tag_ref = global_lighting_tag_ref
+        self.atmospheric_fog_palette_tag_block = atmospheric_fog_palette_tag_block
+        self.planar_fog_palette_tag_block = planar_fog_palette_tag_block
+        self.flocks_tag_block = flocks_tag_block
+        self.subtitles_tag_ref = subtitles_tag_ref
+        self.decorators_tag_block = decorators_tag_block
+        self.creatures_tag_block = creatures_tag_block
+        self.creature_palette_tag_block = creature_palette_tag_block
+        self.decorator_palette_tag_block = decorator_palette_tag_block
+        self.bsp_transition_volumes_tag_block = bsp_transition_volumes_tag_block
+        self.structure_bsp_lighting_tag_block = structure_bsp_lighting_tag_block
+        self.editor_folders_tag_block = editor_folders_tag_block
+        self.level_data_tag_block = level_data_tag_block
+        self.game_engine_strings_tag_ref = game_engine_strings_tag_ref
+        self.mission_dialogue_tag_block = mission_dialogue_tag_block
+        self.objectives_tag_ref = objectives_tag_ref
+        self.interpolators_tag_block = interpolators_tag_block
+        self.shared_references_tag_block = shared_references_tag_block
+        self.screen_effect_references_tag_block = screen_effect_references_tag_block
+        self.simulation_definition_table_tag_block = simulation_definition_table_tag_block
 
     class PredictedResource:
         def __init__(self, tag_type=0, resource_index=0, tag_index=0):

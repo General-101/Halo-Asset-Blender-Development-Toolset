@@ -48,66 +48,64 @@ def initilize_shader(SHADER):
     SHADER.postprocess_properties = []
 
 def read_shader_body_v0(SHADER, TAG, input_stream, tag_node, XML_OUTPUT):
-    SHADER.shader_body_header = TAG.TagBlockHeader().read(input_stream, TAG)
-    SHADER.shader_body = SHADER.ShaderBody()
-    SHADER.shader_body.template = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "template"))
+    SHADER.body_header = TAG.TagBlockHeader().read(input_stream, TAG)
+    SHADER.template = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "template"))
 
     TAG.big_endian = True
     input_stream.read(2) # Padding?
-    SHADER.shader_body.material_name_length = TAG.read_signed_short(input_stream, TAG)
+    SHADER.material_name_length = TAG.read_signed_short(input_stream, TAG)
     TAG.big_endian = False
 
-    SHADER.shader_body.runtime_properties_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "runtime properties"))
+    SHADER.runtime_properties_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "runtime properties"))
     input_stream.read(2) # Padding?
-    SHADER.shader_body.flags = TAG.read_flag_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "flags", ShaderFlags))
-    SHADER.shader_body.parameters_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "parameters"))
-    SHADER.shader_body.postprocess_definition_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "postprocess definition"))
+    SHADER.flags = TAG.read_flag_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "flags", ShaderFlags))
+    SHADER.parameters_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "parameters"))
+    SHADER.postprocess_definition_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "postprocess definition"))
     input_stream.read(16) # Padding?
-    SHADER.shader_body.predicted_resources_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "predicted resources"))
-    SHADER.shader_body.light_response = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "light response"))
-    SHADER.shader_body.shader_lod_bias = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "shader lod bias", ShaderLODBiasEnum))
-    SHADER.shader_body.specular_type = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "specular type", SpecularTypeEnum))
-    SHADER.shader_body.lightmap_type = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "lightmap type", LightmapTypeEnum))
+    SHADER.predicted_resources_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "predicted resources"))
+    SHADER.light_response = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "light response"))
+    SHADER.shader_lod_bias = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "shader lod bias", ShaderLODBiasEnum))
+    SHADER.specular_type = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "specular type", SpecularTypeEnum))
+    SHADER.lightmap_type = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "lightmap type", LightmapTypeEnum))
     input_stream.read(2) # Padding?
-    SHADER.shader_body.lightmap_specular_brightness = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "lightmap specular brightness"))
-    SHADER.shader_body.lightmap_ambient_bias = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "lightmap ambient bias"))
-    SHADER.shader_body.postprocess_properties_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "predicted resources"))
+    SHADER.lightmap_specular_brightness = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "lightmap specular brightness"))
+    SHADER.lightmap_ambient_bias = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "lightmap ambient bias"))
+    SHADER.postprocess_properties_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "predicted resources"))
 
 
 def read_shader_body_retail(SHADER, TAG, input_stream, tag_node, XML_OUTPUT):
-    SHADER.shader_body_header = TAG.TagBlockHeader().read(input_stream, TAG)
-    SHADER.shader_body = SHADER.ShaderBody()
-    SHADER.shader_body.template = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "template"))
+    SHADER.body_header = TAG.TagBlockHeader().read(input_stream, TAG)
+    SHADER.template = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "template"))
 
     TAG.big_endian = True
     input_stream.read(2) # Padding?
-    SHADER.shader_body.material_name_length = TAG.read_signed_short(input_stream, TAG)
+    SHADER.material_name_length = TAG.read_signed_short(input_stream, TAG)
     TAG.big_endian = False
 
-    SHADER.shader_body.runtime_properties_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "runtime properties"))
+    SHADER.runtime_properties_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "runtime properties"))
     input_stream.read(2) # Padding?
-    SHADER.shader_body.flags = TAG.read_flag_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "flags", ShaderFlags))
-    SHADER.shader_body.parameters_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "parameters"))
-    SHADER.shader_body.postprocess_definition_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "postprocess definition"))
+    SHADER.flags = TAG.read_flag_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "flags", ShaderFlags))
+    SHADER.parameters_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "parameters"))
+    SHADER.postprocess_definition_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "postprocess definition"))
     input_stream.read(4) # Padding?
-    SHADER.shader_body.predicted_resources_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "predicted resources"))
-    SHADER.shader_body.light_response = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "light response"))
-    SHADER.shader_body.shader_lod_bias = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "shader lod bias", ShaderLODBiasEnum))
-    SHADER.shader_body.specular_type = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "specular type", SpecularTypeEnum))
-    SHADER.shader_body.lightmap_type = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "lightmap type", LightmapTypeEnum))
+    SHADER.predicted_resources_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "predicted resources"))
+    SHADER.light_response = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "light response"))
+    SHADER.shader_lod_bias = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "shader lod bias", ShaderLODBiasEnum))
+    SHADER.specular_type = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "specular type", SpecularTypeEnum))
+    SHADER.lightmap_type = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "lightmap type", LightmapTypeEnum))
     input_stream.read(2) # Padding?
-    SHADER.shader_body.lightmap_specular_brightness = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "lightmap specular brightness"))
-    SHADER.shader_body.lightmap_ambient_bias = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "lightmap ambient bias"))
-    SHADER.shader_body.postprocess_properties_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "predicted resources"))
-    if SHADER.shader_body_header.size >= 128:
-        SHADER.shader_body.added_depth_bias_offset = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "added depth bias offset"))
-        SHADER.shader_body.added_depth_bias_slope = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "added depth bias slope"))
+    SHADER.lightmap_specular_brightness = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "lightmap specular brightness"))
+    SHADER.lightmap_ambient_bias = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "lightmap ambient bias"))
+    SHADER.postprocess_properties_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "predicted resources"))
+    if SHADER.body_header.size >= 128:
+        SHADER.added_depth_bias_offset = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "added depth bias offset"))
+        SHADER.added_depth_bias_slope = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "added depth bias slope"))
 
 def read_runtime_properties(SHADER, TAG, input_stream, tag_node, XML_OUTPUT):
-    if SHADER.shader_body.runtime_properties_tag_block.count > 0:
-        runtime_properties_node = tag_format.get_xml_node(XML_OUTPUT, SHADER.shader_body.runtime_properties_tag_block.count, tag_node, "name", "runtime properties")
+    if SHADER.runtime_properties_tag_block.count > 0:
+        runtime_properties_node = tag_format.get_xml_node(XML_OUTPUT, SHADER.runtime_properties_tag_block.count, tag_node, "name", "runtime properties")
         SHADER.runtime_properties_header = TAG.TagBlockHeader().read(input_stream, TAG)
-        for runtime_property_idx in range(SHADER.shader_body.runtime_properties_tag_block.count):
+        for runtime_property_idx in range(SHADER.runtime_properties_tag_block.count):
             runtime_property_element_node = None
             if XML_OUTPUT:
                 runtime_property_element_node = TAG.xml_doc.createElement('element')
@@ -158,10 +156,10 @@ def read_runtime_properties(SHADER, TAG, input_stream, tag_node, XML_OUTPUT):
                 runtime_property.translucent_map.append_xml_attributes(translucent_map_node)
 
 def read_parameters(SHADER, TAG, input_stream, tag_node, XML_OUTPUT):
-    if SHADER.shader_body.parameters_tag_block.count > 0:
-        parameters_node = tag_format.get_xml_node(XML_OUTPUT, SHADER.shader_body.parameters_tag_block.count, tag_node, "name", "parameters")
+    if SHADER.parameters_tag_block.count > 0:
+        parameters_node = tag_format.get_xml_node(XML_OUTPUT, SHADER.parameters_tag_block.count, tag_node, "name", "parameters")
         SHADER.parameters_header = TAG.TagBlockHeader().read(input_stream, TAG)
-        for parameter_idx in range(SHADER.shader_body.parameters_tag_block.count):
+        for parameter_idx in range(SHADER.parameters_tag_block.count):
             parameter_element_node = None
             if XML_OUTPUT:
                 parameter_element_node = TAG.xml_doc.createElement('element')
@@ -414,15 +412,15 @@ def process_file(input_stream, report):
     if SHADER.header.engine_tag == "LAMB":
         read_shader_body_v0(SHADER, TAG, input_stream, tag_node, XML_OUTPUT)
 
-        if SHADER.shader_body.template.name_length > 0:
-            SHADER.shader_body.template.name = TAG.read_variable_string(input_stream, SHADER.shader_body.template.name_length, TAG)
+        if SHADER.template.name_length > 0:
+            SHADER.template.name = TAG.read_variable_string(input_stream, SHADER.template.name_length, TAG)
 
-        if SHADER.shader_body.material_name_length > 0:
-            SHADER.shader_body.material_name = TAG.read_variable_string_no_terminator(input_stream, SHADER.shader_body.material_name_length, TAG, tag_format.XMLData(tag_node, "material name"))
+        if SHADER.material_name_length > 0:
+            SHADER.material_name = TAG.read_variable_string_no_terminator(input_stream, SHADER.material_name_length, TAG, tag_format.XMLData(tag_node, "material name"))
 
         if XML_OUTPUT:
             template_node = tag_format.get_xml_node(XML_OUTPUT, 1, tag_node, "name", "template")
-            SHADER.shader_body.template.append_xml_attributes(template_node)
+            SHADER.template.append_xml_attributes(template_node)
 
         read_runtime_properties(SHADER, TAG, input_stream, tag_node, XML_OUTPUT)
         read_parameters(SHADER, TAG, input_stream, tag_node, XML_OUTPUT)
@@ -430,15 +428,15 @@ def process_file(input_stream, report):
     elif SHADER.header.engine_tag == "MLAB":
         read_shader_body_v0(SHADER, TAG, input_stream, tag_node, XML_OUTPUT)
 
-        if SHADER.shader_body.template.name_length > 0:
-            SHADER.shader_body.template.name = TAG.read_variable_string(input_stream, SHADER.shader_body.template.name_length, TAG)
+        if SHADER.template.name_length > 0:
+            SHADER.template.name = TAG.read_variable_string(input_stream, SHADER.template.name_length, TAG)
 
-        if SHADER.shader_body.material_name_length > 0:
-            SHADER.shader_body.material_name = TAG.read_variable_string_no_terminator(input_stream, SHADER.shader_body.material_name_length, TAG, tag_format.XMLData(tag_node, "material name"))
+        if SHADER.material_name_length > 0:
+            SHADER.material_name = TAG.read_variable_string_no_terminator(input_stream, SHADER.material_name_length, TAG, tag_format.XMLData(tag_node, "material name"))
 
         if XML_OUTPUT:
             template_node = tag_format.get_xml_node(XML_OUTPUT, 1, tag_node, "name", "template")
-            SHADER.shader_body.template.append_xml_attributes(template_node)
+            SHADER.template.append_xml_attributes(template_node)
 
         read_runtime_properties(SHADER, TAG, input_stream, tag_node, XML_OUTPUT)
         read_parameters(SHADER, TAG, input_stream, tag_node, XML_OUTPUT)
@@ -446,15 +444,15 @@ def process_file(input_stream, report):
     elif SHADER.header.engine_tag == "BLM!":
         read_shader_body_retail(SHADER, TAG, input_stream, tag_node, XML_OUTPUT)
 
-        if SHADER.shader_body.template.name_length > 0:
-            SHADER.shader_body.template.name = TAG.read_variable_string(input_stream, SHADER.shader_body.template.name_length, TAG)
+        if SHADER.template.name_length > 0:
+            SHADER.template.name = TAG.read_variable_string(input_stream, SHADER.template.name_length, TAG)
 
-        if SHADER.shader_body.material_name_length > 0:
-            SHADER.shader_body.material_name = TAG.read_variable_string_no_terminator(input_stream, SHADER.shader_body.material_name_length, TAG, tag_format.XMLData(tag_node, "material name"))
+        if SHADER.material_name_length > 0:
+            SHADER.material_name = TAG.read_variable_string_no_terminator(input_stream, SHADER.material_name_length, TAG, tag_format.XMLData(tag_node, "material name"))
 
         if XML_OUTPUT:
             template_node = tag_format.get_xml_node(XML_OUTPUT, 1, tag_node, "name", "template")
-            SHADER.shader_body.template.append_xml_attributes(template_node)
+            SHADER.template.append_xml_attributes(template_node)
 
         read_runtime_properties(SHADER, TAG, input_stream, tag_node, XML_OUTPUT)
         read_parameters(SHADER, TAG, input_stream, tag_node, XML_OUTPUT)

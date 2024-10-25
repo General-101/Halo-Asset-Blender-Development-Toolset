@@ -44,32 +44,31 @@ def process_file(input_stream, report):
     if XML_OUTPUT:
         tag_node = TAG.xml_doc.childNodes[0]
 
-    MODEL.mod2_body = MODEL.ModelBody()
-    MODEL.mod2_body.flags = TAG.read_flag_unsigned_integer(input_stream, TAG, tag_format.XMLData(tag_node, "flags", ModelFlags))
-    MODEL.mod2_body.node_list_checksum = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(tag_node, "node list checksum"))
-    MODEL.mod2_body.superhigh_detail_cutoff = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "super-high detail cutoff"))
-    MODEL.mod2_body.high_detail_cutoff = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "high detail cutoff"))
-    MODEL.mod2_body.medium_detail_cutoff = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "medium detail cutoff"))
-    MODEL.mod2_body.low_detail_cutoff = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "low detail cutoff"))
-    MODEL.mod2_body.superlow_cutoff = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "super-low cutoff"))
-    MODEL.mod2_body.superhigh_detail_nodes = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(tag_node, "super-high detail node count"))
-    MODEL.mod2_body.high_detail_nodes = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(tag_node, "high detail node count"))
-    MODEL.mod2_body.medium_detail_nodes = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(tag_node, "medium detail node count"))
-    MODEL.mod2_body.low_detail_nodes = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(tag_node, "low detail node count"))
-    MODEL.mod2_body.superlow_nodes = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(tag_node, "super-low detail node count"))
+    MODEL.flags = TAG.read_flag_unsigned_integer(input_stream, TAG, tag_format.XMLData(tag_node, "flags", ModelFlags))
+    MODEL.node_list_checksum = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(tag_node, "node list checksum"))
+    MODEL.superhigh_detail_cutoff = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "super-high detail cutoff"))
+    MODEL.high_detail_cutoff = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "high detail cutoff"))
+    MODEL.medium_detail_cutoff = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "medium detail cutoff"))
+    MODEL.low_detail_cutoff = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "low detail cutoff"))
+    MODEL.superlow_cutoff = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "super-low cutoff"))
+    MODEL.superhigh_detail_nodes = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(tag_node, "super-high detail node count"))
+    MODEL.high_detail_nodes = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(tag_node, "high detail node count"))
+    MODEL.medium_detail_nodes = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(tag_node, "medium detail node count"))
+    MODEL.low_detail_nodes = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(tag_node, "low detail node count"))
+    MODEL.superlow_nodes = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(tag_node, "super-low detail node count"))
     input_stream.read(10) # Padding?
-    MODEL.mod2_body.base_map_u_scale = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "base map u-scale"))
-    MODEL.mod2_body.base_map_v_scale = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "base map v-scale"))
+    MODEL.base_map_u_scale = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "base map u-scale"))
+    MODEL.base_map_v_scale = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "base map v-scale"))
     input_stream.read(116) # Padding?
-    MODEL.mod2_body.markers_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "markers"))
-    MODEL.mod2_body.nodes_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "nodes"))
-    MODEL.mod2_body.regions_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "regions"))
-    MODEL.mod2_body.geometries_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "geometries"))
-    MODEL.mod2_body.shaders_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "shaders"))
+    MODEL.markers_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "markers"))
+    MODEL.nodes_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "nodes"))
+    MODEL.regions_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "regions"))
+    MODEL.geometries_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "geometries"))
+    MODEL.shaders_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "shaders"))
 
     MODEL.markers = []
-    marker_node = tag_format.get_xml_node(XML_OUTPUT, MODEL.mod2_body.markers_tag_block.count, tag_node, "name", "markers")
-    for marker_idx in range(MODEL.mod2_body.markers_tag_block.count):
+    marker_node = tag_format.get_xml_node(XML_OUTPUT, MODEL.markers_tag_block.count, tag_node, "name", "markers")
+    for marker_idx in range(MODEL.markers_tag_block.count):
         marker_element_node = None
         if XML_OUTPUT:
             marker_element_node = TAG.xml_doc.createElement('element')
@@ -111,8 +110,8 @@ def process_file(input_stream, report):
     MODEL.nodes = []
     MODEL.transforms = []
     transforms = []
-    bone_node = tag_format.get_xml_node(XML_OUTPUT, MODEL.mod2_body.nodes_tag_block.count, tag_node, "name", "nodes")
-    for node_idx in range(MODEL.mod2_body.nodes_tag_block.count):
+    bone_node = tag_format.get_xml_node(XML_OUTPUT, MODEL.nodes_tag_block.count, tag_node, "name", "nodes")
+    for node_idx in range(MODEL.nodes_tag_block.count):
         bone_element_node = None
         if XML_OUTPUT:
             bone_element_node = TAG.xml_doc.createElement('element')
@@ -122,9 +121,9 @@ def process_file(input_stream, report):
         node = MODEL.Nodes()
         transform = MODEL.Transform()
         node.name = TAG.read_string32(input_stream, TAG, tag_format.XMLData(bone_element_node, "name"))
-        node.sibling = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(bone_element_node, "next sibling node index", None, MODEL.mod2_body.nodes_tag_block.count, "model_node_block"))
-        node.child = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(bone_element_node, "first child node index", None, MODEL.mod2_body.nodes_tag_block.count, "model_node_block"))
-        node.parent = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(bone_element_node, "parent node index", None, MODEL.mod2_body.nodes_tag_block.count, "model_node_block"))
+        node.sibling = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(bone_element_node, "next sibling node index", None, MODEL.nodes_tag_block.count, "model_node_block"))
+        node.child = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(bone_element_node, "first child node index", None, MODEL.nodes_tag_block.count, "model_node_block"))
+        node.parent = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(bone_element_node, "parent node index", None, MODEL.nodes_tag_block.count, "model_node_block"))
         input_stream.read(2) # Padding?
         transform.translation = TAG.read_point_3d(input_stream, TAG,  tag_format.XMLData(bone_element_node, "default translation"), True)
         transform.rotation = TAG.read_quaternion(input_stream, TAG, tag_format.XMLData(bone_element_node, "default rotation"), True)
@@ -138,8 +137,8 @@ def process_file(input_stream, report):
     MODEL.transforms.append(transforms)
 
     MODEL.regions = []
-    region_node = tag_format.get_xml_node(XML_OUTPUT, MODEL.mod2_body.regions_tag_block.count, tag_node, "name", "regions")
-    for region_idx in range(MODEL.mod2_body.regions_tag_block.count):
+    region_node = tag_format.get_xml_node(XML_OUTPUT, MODEL.regions_tag_block.count, tag_node, "name", "regions")
+    for region_idx in range(MODEL.regions_tag_block.count):
         region_element_node = None
         if XML_OUTPUT:
             region_element_node = TAG.xml_doc.createElement('element')
@@ -171,11 +170,11 @@ def process_file(input_stream, report):
             permutation.name = TAG.read_string32(input_stream, TAG, tag_format.XMLData(permutation_element_node, "name"))
             permutation.flags = TAG.read_flag_unsigned_integer(input_stream, TAG, tag_format.XMLData(permutation_element_node, "flags", PermutationFlags))
             input_stream.read(28) # Padding?
-            permutation.superlow_geometry_block = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(permutation_element_node, "super low", None, MODEL.mod2_body.geometries_tag_block.count, "model_geometry_block"))
-            permutation.low_geometry_block = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(permutation_element_node, "low", None, MODEL.mod2_body.geometries_tag_block.count, "model_geometry_block"))
-            permutation.medium_geometry_block = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(permutation_element_node, "medium", None, MODEL.mod2_body.geometries_tag_block.count, "model_geometry_block"))
-            permutation.high_geometry_block = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(permutation_element_node, "high", None, MODEL.mod2_body.geometries_tag_block.count, "model_geometry_block"))
-            permutation.superhigh_geometry_block = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(permutation_element_node, "super high", None, MODEL.mod2_body.geometries_tag_block.count, "model_geometry_block"))
+            permutation.superlow_geometry_block = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(permutation_element_node, "super low", None, MODEL.geometries_tag_block.count, "model_geometry_block"))
+            permutation.low_geometry_block = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(permutation_element_node, "low", None, MODEL.geometries_tag_block.count, "model_geometry_block"))
+            permutation.medium_geometry_block = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(permutation_element_node, "medium", None, MODEL.geometries_tag_block.count, "model_geometry_block"))
+            permutation.high_geometry_block = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(permutation_element_node, "high", None, MODEL.geometries_tag_block.count, "model_geometry_block"))
+            permutation.superhigh_geometry_block = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(permutation_element_node, "super high", None, MODEL.geometries_tag_block.count, "model_geometry_block"))
             input_stream.read(2) # Padding?
             permutation.marker_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(permutation_element_node, "markers"))
 
@@ -197,7 +196,7 @@ def process_file(input_stream, report):
 
                 local_marker = MODEL.Markers()
                 local_marker.name = TAG.read_string32(input_stream, TAG, tag_format.XMLData(marker_element_node, "name"))
-                local_marker.node_index = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(marker_element_node, "node index", None, MODEL.mod2_body.nodes_tag_block.count, "model_node_block"))
+                local_marker.node_index = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(marker_element_node, "node index", None, MODEL.nodes_tag_block.count, "model_node_block"))
                 input_stream.read(2) # Padding?
                 local_marker.rotation = TAG.read_quaternion(input_stream, TAG, tag_format.XMLData(marker_element_node, "rotation"), True)
                 local_marker.translation = TAG.read_point_3d(input_stream, TAG,  tag_format.XMLData(marker_element_node, "translation"), True)
@@ -206,8 +205,8 @@ def process_file(input_stream, report):
                 permutation.local_markers.append(local_marker)
 
     MODEL.geometries = []
-    geometry_node = tag_format.get_xml_node(XML_OUTPUT, MODEL.mod2_body.geometries_tag_block.count, tag_node, "name", "geometries")
-    for geometry_idx in range(MODEL.mod2_body.geometries_tag_block.count):
+    geometry_node = tag_format.get_xml_node(XML_OUTPUT, MODEL.geometries_tag_block.count, tag_node, "name", "geometries")
+    for geometry_idx in range(MODEL.geometries_tag_block.count):
         geometry_element_node = None
         if XML_OUTPUT:
             geometry_element_node = TAG.xml_doc.createElement('element')
@@ -237,7 +236,7 @@ def process_file(input_stream, report):
 
             part = MODEL.Parts()
             part.flags = TAG.read_flag_unsigned_integer(input_stream, TAG, tag_format.XMLData(part_element_node, "flags", PartFlags))
-            part.shader_index = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(part_element_node, "shader index", None, MODEL.mod2_body.shaders_tag_block.count, "model_shader_reference_block"))
+            part.shader_index = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(part_element_node, "shader index", None, MODEL.shaders_tag_block.count, "model_shader_reference_block"))
             part.previous_part_index = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(part_element_node, "prev filthy part index"))
             part.next_part_index = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(part_element_node, "next filthy part index"))
             part.centroid_primary_node = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(part_element_node, "centroid primary node"))
@@ -324,8 +323,8 @@ def process_file(input_stream, report):
                 part.triangles.append(triangle)
 
     MODEL.shaders = []
-    shader_node = tag_format.get_xml_node(XML_OUTPUT, MODEL.mod2_body.shaders_tag_block.count, tag_node, "name", "shaders")
-    for shader_idx in range(MODEL.mod2_body.shaders_tag_block.count):
+    shader_node = tag_format.get_xml_node(XML_OUTPUT, MODEL.shaders_tag_block.count, tag_node, "name", "shaders")
+    for shader_idx in range(MODEL.shaders_tag_block.count):
         shader_element_node = None
         if XML_OUTPUT:
             shader_element_node = TAG.xml_doc.createElement('element')

@@ -43,18 +43,14 @@ class ParticlePhysicsFlags(Flag):
     wind = auto()
 
 class ParticlePhysicsAsset():
-    def __init__(self):
-        self.header = None
-        self.particle_physics_body_header = None
-        self.particle_physics_body = None
-        self.movements_header = None
-        self.movements = None
-
-    class ParticlePhysicsBody:
-        def __init__(self, template=None, flags=0, movements_tag_block=None):
-            self.template = template
-            self.flags = flags
-            self.movements_tag_block = movements_tag_block
+    def __init__(self, header=None, body_header=None, movements_header=None, movements=None, template=None, flags=0, movements_tag_block=None):
+        self.header = header
+        self.body_header = body_header
+        self.movements_header = movements_header
+        self.movements = movements
+        self.template = template
+        self.flags = flags
+        self.movements_tag_block = movements_tag_block
 
     class Movement:
         def __init__(self, movement_type=0, parameters_tag_block=None, parameters_header=None, parameters=None):

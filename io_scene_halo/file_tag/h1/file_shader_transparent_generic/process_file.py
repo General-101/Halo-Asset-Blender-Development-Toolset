@@ -65,39 +65,38 @@ def process_file(input_stream, report):
     if XML_OUTPUT:
         tag_node = TAG.xml_doc.childNodes[0]
 
-    SHADER.shader_body = SHADER.ShaderBody()
-    SHADER.shader_body.radiosity_flags = TAG.read_flag_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "flags", RadiosityFlags))
-    SHADER.shader_body.detail_level = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "detail level", DetailLevelEnum))
-    SHADER.shader_body.power = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "power"))
-    SHADER.shader_body.color_of_emitted_light = TAG.read_rgb(input_stream, TAG, tag_format.XMLData(tag_node, "color of emitted light"))
-    SHADER.shader_body.light_tint_color = TAG.read_rgb(input_stream, TAG, tag_format.XMLData(tag_node, "tint color"))
+    SHADER.radiosity_flags = TAG.read_flag_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "flags", RadiosityFlags))
+    SHADER.detail_level = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "detail level", DetailLevelEnum))
+    SHADER.power = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "power"))
+    SHADER.color_of_emitted_light = TAG.read_rgb(input_stream, TAG, tag_format.XMLData(tag_node, "color of emitted light"))
+    SHADER.light_tint_color = TAG.read_rgb(input_stream, TAG, tag_format.XMLData(tag_node, "tint color"))
     input_stream.read(2) # Padding
-    SHADER.shader_body.material_type = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "material type", MaterialTypeEnum))
+    SHADER.material_type = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "material type", MaterialTypeEnum))
     input_stream.read(4) # Padding
-    SHADER.shader_body.numeric_counter_limit = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(tag_node, "numeric counter limit"))
-    SHADER.shader_body.chicago_flags = TAG.read_flag_unsigned_byte(input_stream, TAG, tag_format.XMLData(tag_node, "flags", GenericFlags))
-    SHADER.shader_body.first_map_type = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "first map type", FirstMapTypeEnum))
-    SHADER.shader_body.framebuffer_blend_function = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "framebuffer blend function", FramebufferBlendFunctionEnum))
-    SHADER.shader_body.framebuffer_fade_mode = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "framebuffer fade mode", FramebufferFadeModeEnum))
-    SHADER.shader_body.framebuffer_fade_source = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "framebuffer fade source", ChannelSourceEnum))
+    SHADER.numeric_counter_limit = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(tag_node, "numeric counter limit"))
+    SHADER.chicago_flags = TAG.read_flag_unsigned_byte(input_stream, TAG, tag_format.XMLData(tag_node, "flags", GenericFlags))
+    SHADER.first_map_type = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "first map type", FirstMapTypeEnum))
+    SHADER.framebuffer_blend_function = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "framebuffer blend function", FramebufferBlendFunctionEnum))
+    SHADER.framebuffer_fade_mode = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "framebuffer fade mode", FramebufferFadeModeEnum))
+    SHADER.framebuffer_fade_source = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "framebuffer fade source", ChannelSourceEnum))
     input_stream.read(2) # Padding
-    SHADER.shader_body.lens_flare_spacing = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "lens flare spacing"))
-    SHADER.shader_body.lens_flare = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "lens flare"))
-    SHADER.shader_body.extra_layers_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "extra layers"))
-    SHADER.shader_body.maps_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "maps"))
-    SHADER.shader_body.stages_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "stages"))
+    SHADER.lens_flare_spacing = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "lens flare spacing"))
+    SHADER.lens_flare = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "lens flare"))
+    SHADER.extra_layers_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "extra layers"))
+    SHADER.maps_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "maps"))
+    SHADER.stages_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "stages"))
 
-    lens_flare_name_length = SHADER.shader_body.lens_flare.name_length
+    lens_flare_name_length = SHADER.lens_flare.name_length
     if lens_flare_name_length > 0:
-        SHADER.shader_body.lens_flare.name = TAG.read_variable_string(input_stream, lens_flare_name_length, TAG)
+        SHADER.lens_flare.name = TAG.read_variable_string(input_stream, lens_flare_name_length, TAG)
 
     if XML_OUTPUT:
         lens_flare_node = tag_format.get_xml_node(XML_OUTPUT, 1, tag_node, "name", "lens flare")
-        SHADER.shader_body.lens_flare.append_xml_attributes(lens_flare_node)
+        SHADER.lens_flare.append_xml_attributes(lens_flare_node)
 
     SHADER.extra_layers = []
-    extra_layers_node = tag_format.get_xml_node(XML_OUTPUT, SHADER.shader_body.extra_layers_tag_block.count, tag_node, "name", "extra layers")
-    for extra_layer_idx in range(SHADER.shader_body.extra_layers_tag_block.count):
+    extra_layers_node = tag_format.get_xml_node(XML_OUTPUT, SHADER.extra_layers_tag_block.count, tag_node, "name", "extra layers")
+    for extra_layer_idx in range(SHADER.extra_layers_tag_block.count):
         extra_layer_element_node = None
         if XML_OUTPUT:
             extra_layer_element_node = TAG.xml_doc.createElement('element')
@@ -119,8 +118,8 @@ def process_file(input_stream, report):
             extra_layer.append_xml_attributes(shader_node)
 
     SHADER.maps = []
-    maps_node = tag_format.get_xml_node(XML_OUTPUT, SHADER.shader_body.maps_tag_block.count, tag_node, "name", "maps")
-    for map_idx in range(SHADER.shader_body.maps_tag_block.count):
+    maps_node = tag_format.get_xml_node(XML_OUTPUT, SHADER.maps_tag_block.count, tag_node, "name", "maps")
+    for map_idx in range(SHADER.maps_tag_block.count):
         map_element_node = None
         if XML_OUTPUT:
             map_element_node = TAG.xml_doc.createElement('element')
@@ -169,8 +168,8 @@ def process_file(input_stream, report):
             map.map.append_xml_attributes(map_node)
 
     SHADER.stages = []
-    stages_node = tag_format.get_xml_node(XML_OUTPUT, SHADER.shader_body.stages_tag_block.count, tag_node, "name", "stages")
-    for stage_idx in range(SHADER.shader_body.stages_tag_block.count):
+    stages_node = tag_format.get_xml_node(XML_OUTPUT, SHADER.stages_tag_block.count, tag_node, "name", "stages")
+    for stage_idx in range(SHADER.stages_tag_block.count):
         stage_element_node = None
         if XML_OUTPUT:
             stage_element_node = TAG.xml_doc.createElement('element')

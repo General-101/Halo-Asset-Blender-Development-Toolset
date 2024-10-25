@@ -39,22 +39,21 @@ def initilize_collision(COLLISION):
     COLLISION.nodes = []
 
 def read_collision_body(COLLISION, TAG, input_stream, tag_node, XML_OUTPUT):
-    COLLISION.collision_body_header = TAG.TagBlockHeader().read(input_stream, TAG)
+    COLLISION.body_header = TAG.TagBlockHeader().read(input_stream, TAG)
 
-    COLLISION.collision_body = COLLISION.CollisionBody()
-    COLLISION.collision_body.import_info_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "import info"))
-    COLLISION.collision_body.errors_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "errors"))
-    COLLISION.collision_body.flags = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(tag_node, "flags", CollisionFlags))
-    COLLISION.collision_body.materials_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "materials"))
-    COLLISION.collision_body.regions_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "regions"))
-    COLLISION.collision_body.pathfinding_spheres_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "pathfinding spheres"))
-    COLLISION.collision_body.nodes_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "nodes"))
+    COLLISION.import_info_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "import info"))
+    COLLISION.errors_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "errors"))
+    COLLISION.flags = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(tag_node, "flags", CollisionFlags))
+    COLLISION.materials_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "materials"))
+    COLLISION.regions_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "regions"))
+    COLLISION.pathfinding_spheres_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "pathfinding spheres"))
+    COLLISION.nodes_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "nodes"))
 
 def read_import_info(COLLISION, TAG, input_stream, tag_node, XML_OUTPUT):
-    if COLLISION.collision_body.import_info_tag_block.count > 0:
-        import_info_node = tag_format.get_xml_node(XML_OUTPUT, COLLISION.collision_body.import_info_tag_block.count, tag_node, "name", "import info")
+    if COLLISION.import_info_tag_block.count > 0:
+        import_info_node = tag_format.get_xml_node(XML_OUTPUT, COLLISION.import_info_tag_block.count, tag_node, "name", "import info")
         COLLISION.import_info_header = TAG.TagBlockHeader().read(input_stream, TAG)
-        for import_info_idx in range(COLLISION.collision_body.import_info_tag_block.count):
+        for import_info_idx in range(COLLISION.import_info_tag_block.count):
             import_info_element_node = None
             if XML_OUTPUT:
                 import_info_element_node = TAG.xml_doc.createElement('element')
@@ -109,10 +108,10 @@ def read_import_info(COLLISION, TAG, input_stream, tag_node, XML_OUTPUT):
                     file.uncompressed_data = input_stream.read(file.zipped_data)
 
 def read_errors(COLLISION, TAG, input_stream, tag_node, XML_OUTPUT):
-    if COLLISION.collision_body.errors_tag_block.count > 0:
-        errors_node = tag_format.get_xml_node(XML_OUTPUT, COLLISION.collision_body.errors_tag_block.count, tag_node, "name", "errors")
+    if COLLISION.errors_tag_block.count > 0:
+        errors_node = tag_format.get_xml_node(XML_OUTPUT, COLLISION.errors_tag_block.count, tag_node, "name", "errors")
         COLLISION.errors_header = TAG.TagBlockHeader().read(input_stream, TAG)
-        for error_idx in range(COLLISION.collision_body.errors_tag_block.count):
+        for error_idx in range(COLLISION.errors_tag_block.count):
             error_element_node = None
             if XML_OUTPUT:
                 error_element_node = TAG.xml_doc.createElement('element')
@@ -394,10 +393,10 @@ def read_errors(COLLISION, TAG, input_stream, tag_node, XML_OUTPUT):
                                 comment.text = TAG.read_variable_string_no_terminator(input_stream, comment.text_length, TAG, tag_format.XMLData(comment_element_node, "text"))
 
 def read_materials(COLLISION, TAG, input_stream, tag_node, XML_OUTPUT):
-    if COLLISION.collision_body.materials_tag_block.count > 0:
-        materials_node = tag_format.get_xml_node(XML_OUTPUT, COLLISION.collision_body.materials_tag_block.count, tag_node, "name", "materials")
+    if COLLISION.materials_tag_block.count > 0:
+        materials_node = tag_format.get_xml_node(XML_OUTPUT, COLLISION.materials_tag_block.count, tag_node, "name", "materials")
         COLLISION.materials_header = TAG.TagBlockHeader().read(input_stream, TAG)
-        for material_idx in range(COLLISION.collision_body.materials_tag_block.count):
+        for material_idx in range(COLLISION.materials_tag_block.count):
             material_element_node = None
             if XML_OUTPUT:
                 material_element_node = TAG.xml_doc.createElement('element')
@@ -422,10 +421,10 @@ def read_materials(COLLISION, TAG, input_stream, tag_node, XML_OUTPUT):
                 material.name = TAG.read_variable_string_no_terminator(input_stream, material.name_length, TAG, tag_format.XMLData(material_element_node, "name"))
 
 def read_regions(COLLISION, TAG, input_stream, tag_node, XML_OUTPUT):
-    if COLLISION.collision_body.regions_tag_block.count > 0:
-        regions_node = tag_format.get_xml_node(XML_OUTPUT, COLLISION.collision_body.regions_tag_block.count, tag_node, "name", "regions")
+    if COLLISION.regions_tag_block.count > 0:
+        regions_node = tag_format.get_xml_node(XML_OUTPUT, COLLISION.regions_tag_block.count, tag_node, "name", "regions")
         COLLISION.materials_header = TAG.TagBlockHeader().read(input_stream, TAG)
-        for region_idx in range(COLLISION.collision_body.regions_tag_block.count):
+        for region_idx in range(COLLISION.regions_tag_block.count):
             region_element_node = None
             if XML_OUTPUT:
                 region_element_node = TAG.xml_doc.createElement('element')
@@ -689,10 +688,10 @@ def read_regions(COLLISION, TAG, input_stream, tag_node, XML_OUTPUT):
                                 bsp_physics.mopp_code_data = input_stream.read(mopp_code_data_size)
 
 def read_pathfinding_spheres(COLLISION, TAG, input_stream, tag_node, XML_OUTPUT):
-    if COLLISION.collision_body.pathfinding_spheres_tag_block.count > 0:
-        pathfinding_spheres_node = tag_format.get_xml_node(XML_OUTPUT, COLLISION.collision_body.pathfinding_spheres_tag_block.count, tag_node, "name", "pathfinding spheres")
+    if COLLISION.pathfinding_spheres_tag_block.count > 0:
+        pathfinding_spheres_node = tag_format.get_xml_node(XML_OUTPUT, COLLISION.pathfinding_spheres_tag_block.count, tag_node, "name", "pathfinding spheres")
         COLLISION.pathfinding_spheres_header = TAG.TagBlockHeader().read(input_stream, TAG)
-        for pathfinding_sphere_idx in range(COLLISION.collision_body.pathfinding_spheres_tag_block.count):
+        for pathfinding_sphere_idx in range(COLLISION.pathfinding_spheres_tag_block.count):
             pathfinding_sphere_element_node = None
             if XML_OUTPUT:
                 pathfinding_sphere_element_node = TAG.xml_doc.createElement('element')
@@ -700,7 +699,7 @@ def read_pathfinding_spheres(COLLISION, TAG, input_stream, tag_node, XML_OUTPUT)
                 pathfinding_spheres_node.appendChild(pathfinding_sphere_element_node)
 
             pathfinding_sphere = COLLISION.PathfindingSphere()
-            pathfinding_sphere.node = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(pathfinding_sphere_element_node, "node", None, COLLISION.collision_body.nodes_tag_block.count, "nodes"))
+            pathfinding_sphere.node = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(pathfinding_sphere_element_node, "node", None, COLLISION.nodes_tag_block.count, "nodes"))
             pathfinding_sphere.flags = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(pathfinding_sphere_element_node, "flags", PathfindingSphereFlags))
             pathfinding_sphere.center = TAG.read_point_3d(input_stream, TAG, tag_format.XMLData(pathfinding_sphere_element_node, "center"), True)
             pathfinding_sphere.radius = TAG.read_float(input_stream, TAG, tag_format.XMLData(pathfinding_sphere_element_node, "radius"), True)
@@ -708,10 +707,10 @@ def read_pathfinding_spheres(COLLISION, TAG, input_stream, tag_node, XML_OUTPUT)
             COLLISION.pathfinding_spheres.append(pathfinding_sphere)
 
 def read_nodes(COLLISION, TAG, input_stream, tag_node, XML_OUTPUT):
-    if COLLISION.collision_body.nodes_tag_block.count > 0:
-        bone_node = tag_format.get_xml_node(XML_OUTPUT, COLLISION.collision_body.nodes_tag_block.count, tag_node, "name", "nodes")
+    if COLLISION.nodes_tag_block.count > 0:
+        bone_node = tag_format.get_xml_node(XML_OUTPUT, COLLISION.nodes_tag_block.count, tag_node, "name", "nodes")
         COLLISION.nodes_header = TAG.TagBlockHeader().read(input_stream, TAG)
-        for node_idx in range(COLLISION.collision_body.nodes_tag_block.count):
+        for node_idx in range(COLLISION.nodes_tag_block.count):
             node_element_node = None
             if XML_OUTPUT:
                 node_element_node = TAG.xml_doc.createElement('element')
@@ -726,9 +725,9 @@ def read_nodes(COLLISION, TAG, input_stream, tag_node, XML_OUTPUT):
             TAG.big_endian = False
 
             input_stream.read(2) # Padding?
-            node.parent = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(node_element_node, "parent node", None, COLLISION.collision_body.nodes_tag_block.count, "nodes"))
-            node.child = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(node_element_node, "child node", None, COLLISION.collision_body.nodes_tag_block.count, "nodes"))
-            node.sibling = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(node_element_node, "sibling node", None, COLLISION.collision_body.nodes_tag_block.count, "nodes"))
+            node.parent = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(node_element_node, "parent node", None, COLLISION.nodes_tag_block.count, "nodes"))
+            node.child = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(node_element_node, "child node", None, COLLISION.nodes_tag_block.count, "nodes"))
+            node.sibling = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(node_element_node, "sibling node", None, COLLISION.nodes_tag_block.count, "nodes"))
 
             COLLISION.nodes.append(node)
 

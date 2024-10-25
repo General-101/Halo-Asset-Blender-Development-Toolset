@@ -151,33 +151,30 @@ class ExtraFlags(Flag):
     custom_edition_blending = auto()
 
 class ShaderAsset():
-    def __init__(self):
-        self.header = None
-        self.shader_body = None
-        self.extra_layers = None
-        self.maps = None
-
-    class ShaderBody:
-        def __init__(self, radiosity_flags=0, detail_level=0, power=0.0, color_of_emitted_light=(0.0, 0.0, 0.0, 1.0), light_tint_color=(0.0, 0.0, 0.0, 1.0), material_type=0,
-                     numeric_counter_limit=0, chicago_flags=0, first_map_type=0, framebuffer_blend_function=0, framebuffer_fade_mode=0, framebuffer_fade_source=0,
-                     lens_flare_spacing=0.0, lens_flare=None, extra_layers_tag_block=None, maps_tag_block=None, extra_flags=0):
-            self.radiosity_flags = radiosity_flags
-            self.detail_level = detail_level
-            self.power = power
-            self.color_of_emitted_light = color_of_emitted_light
-            self.light_tint_color = light_tint_color
-            self.material_type = material_type
-            self.numeric_counter_limit = numeric_counter_limit
-            self.chicago_flags = chicago_flags
-            self.first_map_type = first_map_type
-            self.framebuffer_blend_function = framebuffer_blend_function
-            self.framebuffer_fade_mode = framebuffer_fade_mode
-            self.framebuffer_fade_source = framebuffer_fade_source
-            self.lens_flare_spacing = lens_flare_spacing
-            self.lens_flare = lens_flare
-            self.extra_layers_tag_block = extra_layers_tag_block
-            self.maps_tag_block = maps_tag_block
-            self.extra_flags = extra_flags
+    def __init__(self, header=None, extra_layers=None, maps=None, radiosity_flags=0, detail_level=0, power=0.0, color_of_emitted_light=(0.0, 0.0, 0.0, 1.0), 
+                 light_tint_color=(0.0, 0.0, 0.0, 1.0), material_type=0, numeric_counter_limit=0, chicago_flags=0, first_map_type=0, framebuffer_blend_function=0, 
+                 framebuffer_fade_mode=0, framebuffer_fade_source=0, lens_flare_spacing=0.0, lens_flare=None, extra_layers_tag_block=None, maps_tag_block=None, 
+                 extra_flags=0):
+        self.header = header
+        self.extra_layers = extra_layers
+        self.maps = maps
+        self.radiosity_flags = radiosity_flags
+        self.detail_level = detail_level
+        self.power = power
+        self.color_of_emitted_light = color_of_emitted_light
+        self.light_tint_color = light_tint_color
+        self.material_type = material_type
+        self.numeric_counter_limit = numeric_counter_limit
+        self.chicago_flags = chicago_flags
+        self.first_map_type = first_map_type
+        self.framebuffer_blend_function = framebuffer_blend_function
+        self.framebuffer_fade_mode = framebuffer_fade_mode
+        self.framebuffer_fade_source = framebuffer_fade_source
+        self.lens_flare_spacing = lens_flare_spacing
+        self.lens_flare = lens_flare
+        self.extra_layers_tag_block = extra_layers_tag_block
+        self.maps_tag_block = maps_tag_block
+        self.extra_flags = extra_flags
 
     class Map:
         def __init__(self, flags=0, color_function=0, alpha_function=0, map_u_scale=0.0, map_v_scale=0.0, map_u_offset=0.0, map_v_offset=0.0, map_rotation=0.0, mipmap_bias=0.0,

@@ -79,37 +79,34 @@ class WaterFlags(Flag):
     draw_before_fog = auto()
 
 class ShaderAsset():
-    def __init__(self):
-        self.header = None
-        self.shader_body = None
-        self.ripples = None
-
-    class ShaderBody:
-        def __init__(self, radiosity_flags=0, detail_level=0, power=0.0, color_of_emitted_light=(0.0, 0.0, 0.0, 1.0), light_tint_color=(0.0, 0.0, 0.0, 1.0), material_type=0,
-                     water_flags=0, base_map=None, view_perpendicular_brightness=0.0, view_perpendicular_tint_color=(0.0, 0.0, 0.0, 1.0), view_parallel_brightness=0.0,
-                     view_parallel_tint_color=(0.0, 0.0, 0.0, 1.0), reflection_map=None, ripple_animation_angle=0.0, ripple_animation_velocity=0.0, ripple_scale=0.0,
-                     ripple_maps=None, ripple_mipmap_levels=0, ripple_mipmap_fade_factor=0.0, ripple_mipmap_detail_bias=0.0, ripples_tag_block=None):
-            self.radiosity_flags = radiosity_flags
-            self.detail_level = detail_level
-            self.power = power
-            self.color_of_emitted_light = color_of_emitted_light
-            self.light_tint_color = light_tint_color
-            self.material_type = material_type
-            self.water_flags = water_flags
-            self.base_map = base_map
-            self.view_perpendicular_brightness = view_perpendicular_brightness
-            self.view_perpendicular_tint_color = view_perpendicular_tint_color
-            self.view_parallel_brightness = view_parallel_brightness
-            self.view_parallel_tint_color = view_parallel_tint_color
-            self.reflection_map = reflection_map
-            self.ripple_animation_angle = ripple_animation_angle
-            self.ripple_animation_velocity = ripple_animation_velocity
-            self.ripple_scale = ripple_scale
-            self.ripple_maps = ripple_maps
-            self.ripple_mipmap_levels = ripple_mipmap_levels
-            self.ripple_mipmap_fade_factor = ripple_mipmap_fade_factor
-            self.ripple_mipmap_detail_bias = ripple_mipmap_detail_bias
-            self.ripples_tag_block = ripples_tag_block
+    def __init__(self, header=None, ripples=None, radiosity_flags=0, detail_level=0, power=0.0, color_of_emitted_light=(0.0, 0.0, 0.0, 1.0), 
+                 light_tint_color=(0.0, 0.0, 0.0, 1.0), material_type=0, water_flags=0, base_map=None, view_perpendicular_brightness=0.0, 
+                 view_perpendicular_tint_color=(0.0, 0.0, 0.0, 1.0), view_parallel_brightness=0.0, view_parallel_tint_color=(0.0, 0.0, 0.0, 1.0), reflection_map=None, 
+                 ripple_animation_angle=0.0, ripple_animation_velocity=0.0, ripple_scale=0.0, ripple_maps=None, ripple_mipmap_levels=0, ripple_mipmap_fade_factor=0.0, 
+                 ripple_mipmap_detail_bias=0.0, ripples_tag_block=None):
+        self.header = header
+        self.ripples = ripples
+        self.radiosity_flags = radiosity_flags
+        self.detail_level = detail_level
+        self.power = power
+        self.color_of_emitted_light = color_of_emitted_light
+        self.light_tint_color = light_tint_color
+        self.material_type = material_type
+        self.water_flags = water_flags
+        self.base_map = base_map
+        self.view_perpendicular_brightness = view_perpendicular_brightness
+        self.view_perpendicular_tint_color = view_perpendicular_tint_color
+        self.view_parallel_brightness = view_parallel_brightness
+        self.view_parallel_tint_color = view_parallel_tint_color
+        self.reflection_map = reflection_map
+        self.ripple_animation_angle = ripple_animation_angle
+        self.ripple_animation_velocity = ripple_animation_velocity
+        self.ripple_scale = ripple_scale
+        self.ripple_maps = ripple_maps
+        self.ripple_mipmap_levels = ripple_mipmap_levels
+        self.ripple_mipmap_fade_factor = ripple_mipmap_fade_factor
+        self.ripple_mipmap_detail_bias = ripple_mipmap_detail_bias
+        self.ripples_tag_block = ripples_tag_block
 
     class Ripple:
         def __init__(self, contribution_factor=0.0, animation_angle=0.0, animation_velocity=0.0, map_offset=(0.0, 0.0), map_repeat=0, map_index=0):

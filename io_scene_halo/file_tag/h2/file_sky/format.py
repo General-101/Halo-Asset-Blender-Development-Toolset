@@ -42,54 +42,53 @@ class LightFlags(Flag):
     indirect_illumination_in_lightmaps = auto()
 
 class SkyAsset():
-    def __init__(self):
-        self.header = None
-        self.sky_body_header = None
-        self.sky_body = None
-        self.cubemap_header = None
-        self.cubemap = None
-        self.atmospheric_fog_header = None
-        self.atmospheric_fog = None
-        self.secondary_fog_header = None
-        self.secondary_fog = None
-        self.sky_fog_header = None
-        self.sky_fog = None
-        self.patchy_fog_header = None
-        self.patchy_fog = None
-        self.lights_header = None
-        self.lights = None
-        self.shader_functions_header = None
-        self.shader_functions = None
-        self.animations_header = None
-        self.animations = None
-
-    class SkyBody:
-        def __init__(self, render_model=None, animation_graph=None, flags=0, render_model_scale=0.0, movement_scale=0.0, cubemap_tag_block=None,
-                     indoor_ambient_color=(0.0, 0.0, 0.0, 1.0), outdoor_ambient_color=(0.0, 0.0, 0.0, 1.0), fog_spread_distance=0.0, atmospheric_fog_tag_block=None,
-                     secondary_fog_tag_block=None, sky_fog_tag_block=None, patchy_fog_tag_block=None, amount=0.0, threshold=0.0, brightness=0.0, gamma_power=0.0,
-                     lights_tag_block=None, global_sky_rotation=0.0, shader_functions_tag_block=None, animations_tag_block=None, clear_color=(0.0, 0.0, 0.0, 1.0)):
-            self.render_model = render_model
-            self.animation_graph = animation_graph
-            self.flags = flags
-            self.render_model_scale = render_model_scale
-            self.movement_scale = movement_scale
-            self.cubemap_tag_block = cubemap_tag_block
-            self.indoor_ambient_color = indoor_ambient_color
-            self.outdoor_ambient_color = outdoor_ambient_color
-            self.fog_spread_distance = fog_spread_distance
-            self.atmospheric_fog_tag_block = atmospheric_fog_tag_block
-            self.secondary_fog_tag_block = secondary_fog_tag_block
-            self.sky_fog_tag_block = sky_fog_tag_block
-            self.patchy_fog_tag_block = patchy_fog_tag_block
-            self.amount = amount
-            self.threshold = threshold
-            self.brightness = brightness
-            self.gamma_power = gamma_power
-            self.lights_tag_block = lights_tag_block
-            self.global_sky_rotation = global_sky_rotation
-            self.shader_functions_tag_block = shader_functions_tag_block
-            self.animations_tag_block = animations_tag_block
-            self.clear_color = clear_color
+    def __init__(self, header=None, body_header=None, cubemap_header=None, cubemap=None, atmospheric_fog_header=None, atmospheric_fog=None, secondary_fog_header=None, 
+                 secondary_fog=None, sky_fog_header=None, sky_fog=None, patchy_fog_header=None, patchy_fog=None, lights_header=None, lights=None, 
+                 shader_functions_header=None, shader_functions=None, animations_header=None, animations=None, render_model=None, animation_graph=None, flags=0, 
+                 render_model_scale=0.0, movement_scale=0.0, cubemap_tag_block=None, indoor_ambient_color=(0.0, 0.0, 0.0, 1.0), outdoor_ambient_color=(0.0, 0.0, 0.0, 1.0), 
+                 fog_spread_distance=0.0, atmospheric_fog_tag_block=None, secondary_fog_tag_block=None, sky_fog_tag_block=None, patchy_fog_tag_block=None, amount=0.0, 
+                 threshold=0.0, brightness=0.0, gamma_power=0.0, lights_tag_block=None, global_sky_rotation=0.0, shader_functions_tag_block=None, animations_tag_block=None, 
+                 clear_color=(0.0, 0.0, 0.0, 1.0)):
+        self.header = header
+        self.body_header = body_header
+        self.cubemap_header = cubemap_header
+        self.cubemap = cubemap
+        self.atmospheric_fog_header = atmospheric_fog_header
+        self.atmospheric_fog = atmospheric_fog
+        self.secondary_fog_header = secondary_fog_header
+        self.secondary_fog = secondary_fog
+        self.sky_fog_header = sky_fog_header
+        self.sky_fog = sky_fog
+        self.patchy_fog_header = patchy_fog_header
+        self.patchy_fog = patchy_fog
+        self.lights_header = lights_header
+        self.lights = lights
+        self.shader_functions_header = shader_functions_header
+        self.shader_functions = shader_functions
+        self.animations_header = animations_header
+        self.animations = animations
+        self.render_model = render_model
+        self.animation_graph = animation_graph
+        self.flags = flags
+        self.render_model_scale = render_model_scale
+        self.movement_scale = movement_scale
+        self.cubemap_tag_block = cubemap_tag_block
+        self.indoor_ambient_color = indoor_ambient_color
+        self.outdoor_ambient_color = outdoor_ambient_color
+        self.fog_spread_distance = fog_spread_distance
+        self.atmospheric_fog_tag_block = atmospheric_fog_tag_block
+        self.secondary_fog_tag_block = secondary_fog_tag_block
+        self.sky_fog_tag_block = sky_fog_tag_block
+        self.patchy_fog_tag_block = patchy_fog_tag_block
+        self.amount = amount
+        self.threshold = threshold
+        self.brightness = brightness
+        self.gamma_power = gamma_power
+        self.lights_tag_block = lights_tag_block
+        self.global_sky_rotation = global_sky_rotation
+        self.shader_functions_tag_block = shader_functions_tag_block
+        self.animations_tag_block = animations_tag_block
+        self.clear_color = clear_color
 
     class Cubemap:
         def __init__(self, cubemap_reference=None, power_scale=0.0):

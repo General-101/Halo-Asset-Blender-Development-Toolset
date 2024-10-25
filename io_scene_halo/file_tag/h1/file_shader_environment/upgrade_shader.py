@@ -52,7 +52,7 @@ from ...h2.file_shader.format import (
         )
 
 def generate_base_map_parameters(H1_ASSET, TAG, SHADER, template, permutation_index):
-    parameter = shader_processing.add_parameter(SHADER, TAG, parameter_name="base_map", bitmap_name=H1_ASSET.shader_body.base_map.name, float_value=0.0)
+    parameter = shader_processing.add_parameter(SHADER, TAG, parameter_name="base_map", bitmap_name=H1_ASSET.base_map.name, float_value=0.0)
     parameter.animation_properties = []
     parameter.animation_properties_header = TAG.TagBlockHeader("tbfd", 0, len(parameter.animation_properties), 28)
     parameter.animation_properties_tag_block = TAG.TagBlock(len(parameter.animation_properties))
@@ -64,10 +64,10 @@ def generate_base_map_parameters(H1_ASSET, TAG, SHADER, template, permutation_in
     return TAG.TagBlock(parameter_count)
 
 def generate_detail_map_parameters(H1_ASSET, TAG, SHADER, template, permutation_index):
-    base_bitmap = parse_tag(H1_ASSET.shader_body.base_map, print, "halo1", "retail")
-    primary_detail_bitmap = parse_tag(H1_ASSET.shader_body.primary_detail_map, print, "halo1", "retail")
-    secondary_detail_bitmap = parse_tag(H1_ASSET.shader_body.secondary_detail_map, print, "halo1", "retail")
-    micro_detail_bitmap = parse_tag(H1_ASSET.shader_body.micro_detail_map, print, "halo1", "retail")
+    base_bitmap = parse_tag(H1_ASSET.base_map, print, "halo1", "retail")
+    primary_detail_bitmap = parse_tag(H1_ASSET.primary_detail_map, print, "halo1", "retail")
+    secondary_detail_bitmap = parse_tag(H1_ASSET.secondary_detail_map, print, "halo1", "retail")
+    micro_detail_bitmap = parse_tag(H1_ASSET.micro_detail_map, print, "halo1", "retail")
 
     base_bitmap_count = 0
     primary_detail_bitmap_count = 0
@@ -90,39 +90,39 @@ def generate_detail_map_parameters(H1_ASSET, TAG, SHADER, template, permutation_
     secondary_detail_map_scale = 0.0
     secondary_detail_map_count = 0
     secondary_detail_bitmap = None
-    if not H1_ASSET.shader_body.primary_detail_map.name == "":
+    if not H1_ASSET.primary_detail_map.name == "":
         if detail_map == None:
-            detail_map = H1_ASSET.shader_body.primary_detail_map
-            detail_map_scale = H1_ASSET.shader_body.primary_detail_map_scale
+            detail_map = H1_ASSET.primary_detail_map
+            detail_map_scale = H1_ASSET.primary_detail_map_scale
             detail_map_count = primary_detail_bitmap_count
             detail_bitmap = primary_detail_bitmap
         elif secondary_detail_map == None:
-            secondary_detail_map = H1_ASSET.shader_body.primary_detail_map
-            secondary_detail_map_scale = H1_ASSET.shader_body.primary_detail_map_scale
+            secondary_detail_map = H1_ASSET.primary_detail_map
+            secondary_detail_map_scale = H1_ASSET.primary_detail_map_scale
             secondary_detail_map_count = primary_detail_bitmap_count
             secondary_detail_bitmap = primary_detail_bitmap
 
-    if not H1_ASSET.shader_body.secondary_detail_map.name == "":
+    if not H1_ASSET.secondary_detail_map.name == "":
         if detail_map == None:
-            detail_map = H1_ASSET.shader_body.secondary_detail_map
-            detail_map_scale = H1_ASSET.shader_body.secondary_detail_map_scale
+            detail_map = H1_ASSET.secondary_detail_map
+            detail_map_scale = H1_ASSET.secondary_detail_map_scale
             detail_map_count = secondary_detail_bitmap_count
             detail_bitmap = secondary_detail_bitmap
         elif secondary_detail_map == None:
-            secondary_detail_map = H1_ASSET.shader_body.secondary_detail_map
-            secondary_detail_map_scale = H1_ASSET.shader_body.secondary_detail_map_scale
+            secondary_detail_map = H1_ASSET.secondary_detail_map
+            secondary_detail_map_scale = H1_ASSET.secondary_detail_map_scale
             secondary_detail_map_count = secondary_detail_bitmap_count
             secondary_detail_bitmap = secondary_detail_bitmap
 
-    if not H1_ASSET.shader_body.micro_detail_map.name == "":
+    if not H1_ASSET.micro_detail_map.name == "":
         if detail_map == None:
-            detail_map = H1_ASSET.shader_body.micro_detail_map
-            detail_map_scale = H1_ASSET.shader_body.micro_detail_map_scale
+            detail_map = H1_ASSET.micro_detail_map
+            detail_map_scale = H1_ASSET.micro_detail_map_scale
             detail_map_count = micro_detail_bitmap_count
             detail_bitmap = micro_detail_bitmap
         elif secondary_detail_map == None:
-            secondary_detail_map = H1_ASSET.shader_body.micro_detail_map
-            secondary_detail_map_scale = H1_ASSET.shader_body.micro_detail_map_scale
+            secondary_detail_map = H1_ASSET.micro_detail_map
+            secondary_detail_map_scale = H1_ASSET.micro_detail_map_scale
             secondary_detail_map_count = micro_detail_bitmap_count
             secondary_detail_bitmap = micro_detail_bitmap
 
@@ -135,7 +135,7 @@ def generate_detail_map_parameters(H1_ASSET, TAG, SHADER, template, permutation_
 
             detail_rescale_i = detail_map_scale
             detail_rescale_j = detail_map_scale
-            if base_bitmap_count > 0 and detail_map_count > 0 and DiffuseFlags.rescale_detail_maps in DiffuseFlags(H1_ASSET.shader_body.diffuse_flags):
+            if base_bitmap_count > 0 and detail_map_count > 0 and DiffuseFlags.rescale_detail_maps in DiffuseFlags(H1_ASSET.diffuse_flags):
                 if base_bitmap_count > permutation_index:
                     base_element = base_bitmap.bitmaps[permutation_index]
                 else:
@@ -165,7 +165,7 @@ def generate_detail_map_parameters(H1_ASSET, TAG, SHADER, template, permutation_
 
             detail_rescale_i = secondary_detail_map_scale
             detail_rescale_j = secondary_detail_map_scale
-            if base_bitmap_count > 0 and detail_map_count > 0 and DiffuseFlags.rescale_detail_maps in DiffuseFlags(H1_ASSET.shader_body.diffuse_flags):
+            if base_bitmap_count > 0 and detail_map_count > 0 and DiffuseFlags.rescale_detail_maps in DiffuseFlags(H1_ASSET.diffuse_flags):
                 if base_bitmap_count > permutation_index:
                     base_element = base_bitmap.bitmaps[permutation_index]
                 else:
@@ -187,8 +187,8 @@ def generate_detail_map_parameters(H1_ASSET, TAG, SHADER, template, permutation_
         SHADER.parameters.append(parameter)
 
 def generate_bump_parameters(H1_ASSET, TAG, SHADER, template, permutation_index):
-    base_bitmap = parse_tag(H1_ASSET.shader_body.base_map, print, "halo1", "retail")
-    bump_bitmap = parse_tag(H1_ASSET.shader_body.bump_map, print, "halo1", "retail")
+    base_bitmap = parse_tag(H1_ASSET.base_map, print, "halo1", "retail")
+    bump_bitmap = parse_tag(H1_ASSET.bump_map, print, "halo1", "retail")
 
     base_bitmap_count = 0
     bump_bitmap_count = 0
@@ -197,16 +197,16 @@ def generate_bump_parameters(H1_ASSET, TAG, SHADER, template, permutation_index)
     if bump_bitmap:
         bump_bitmap_count = len(bump_bitmap.bitmaps)
 
-    parameter = shader_processing.add_parameter(SHADER, TAG, parameter_name="bump_map", bitmap_name=H1_ASSET.shader_body.bump_map.name, float_value=0.0)
+    parameter = shader_processing.add_parameter(SHADER, TAG, parameter_name="bump_map", bitmap_name=H1_ASSET.bump_map.name, float_value=0.0)
     parameter.animation_properties = []
-    if H1_ASSET.shader_body.bump_map_scale > 0.0:
-        scale = H1_ASSET.shader_body.bump_map_scale
-        if H1_ASSET.shader_body.bump_map_scale == 0.0:
+    if H1_ASSET.bump_map_scale > 0.0:
+        scale = H1_ASSET.bump_map_scale
+        if H1_ASSET.bump_map_scale == 0.0:
             scale = 1.0
 
         bump_rescale_i = scale
         bump_rescale_j = scale
-        if base_bitmap_count > 0 and bump_bitmap_count > 0 and DiffuseFlags.rescale_bump_maps in DiffuseFlags(H1_ASSET.shader_body.diffuse_flags):
+        if base_bitmap_count > 0 and bump_bitmap_count > 0 and DiffuseFlags.rescale_bump_maps in DiffuseFlags(H1_ASSET.diffuse_flags):
             if base_bitmap_count > permutation_index:
                 base_element = base_bitmap.bitmaps[permutation_index]
             else:
@@ -250,48 +250,48 @@ def generate_channel_parameters(H1_ASSET, TAG, SHADER, template, permutation_ind
     parameter.animation_properties_tag_block = TAG.TagBlock(animation_property_count)
 
 def generate_illum_parameters(H1_ASSET, TAG, SHADER, template, permutation_index):
-    parameter = shader_processing.add_parameter(SHADER, TAG, parameter_name="self_illum_map", bitmap_name=H1_ASSET.shader_body.map.name, float_value=0.0)
+    parameter = shader_processing.add_parameter(SHADER, TAG, parameter_name="self_illum_map", bitmap_name=H1_ASSET.map.name, float_value=0.0)
     parameter.animation_properties = []
-    if H1_ASSET.shader_body.map_scale > 0.0:
-        shader_processing.add_animation_property(SHADER, TAG, parameter.animation_properties, AnimationTypeEnum.bitmap_scale_x, function_type=FunctionTypeEnum.constant, lower_bound=H1_ASSET.shader_body.map_scale)
-        shader_processing.add_animation_property(SHADER, TAG, parameter.animation_properties, AnimationTypeEnum.bitmap_scale_y, function_type=FunctionTypeEnum.constant, lower_bound=H1_ASSET.shader_body.map_scale)
+    if H1_ASSET.map_scale > 0.0:
+        shader_processing.add_animation_property(SHADER, TAG, parameter.animation_properties, AnimationTypeEnum.bitmap_scale_x, function_type=FunctionTypeEnum.constant, lower_bound=H1_ASSET.map_scale)
+        shader_processing.add_animation_property(SHADER, TAG, parameter.animation_properties, AnimationTypeEnum.bitmap_scale_y, function_type=FunctionTypeEnum.constant, lower_bound=H1_ASSET.map_scale)
 
     parameter.animation_properties_header = TAG.TagBlockHeader("tbfd", 0, len(parameter.animation_properties), 28)
     parameter.animation_properties_tag_block = TAG.TagBlock(len(parameter.animation_properties))
     SHADER.parameters.append(parameter)
-    SHADER.parameters.append(shader_processing.add_parameter(SHADER, TAG, parameter_name="lightmap_emmisive_map", bitmap_name=H1_ASSET.shader_body.map.name, float_value=0.0))
+    SHADER.parameters.append(shader_processing.add_parameter(SHADER, TAG, parameter_name="lightmap_emmisive_map", bitmap_name=H1_ASSET.map.name, float_value=0.0))
 
-    SHADER.parameters.append(shader_processing.add_parameter(SHADER, TAG, parameter_name="emissive_color", enum=TypeEnum.color, rgba=H1_ASSET.shader_body.color_of_emitted_light))
-    SHADER.parameters.append(shader_processing.add_parameter(SHADER, TAG, parameter_name="emissive_power", enum=TypeEnum._value, float_value= 0.001 * H1_ASSET.shader_body.power))
+    SHADER.parameters.append(shader_processing.add_parameter(SHADER, TAG, parameter_name="emissive_color", enum=TypeEnum.color, rgba=H1_ASSET.color_of_emitted_light))
+    SHADER.parameters.append(shader_processing.add_parameter(SHADER, TAG, parameter_name="emissive_power", enum=TypeEnum._value, float_value= 0.001 * H1_ASSET.power))
 
 def generate_env_parameters(H1_ASSET, TAG, SHADER, template, permutation_index):
-    parameter = shader_processing.add_parameter(SHADER, TAG, parameter_name="environment_map", bitmap_name=H1_ASSET.shader_body.reflection_cube_map.name, float_value=0.0)
+    parameter = shader_processing.add_parameter(SHADER, TAG, parameter_name="environment_map", bitmap_name=H1_ASSET.reflection_cube_map.name, float_value=0.0)
     parameter.animation_properties = []
     parameter.animation_properties_header = TAG.TagBlockHeader("tbfd", 0, len(parameter.animation_properties), 28)
     parameter.animation_properties_tag_block = TAG.TagBlock(len(parameter.animation_properties))
     SHADER.parameters.append(parameter)
 
-    SHADER.parameters.append(shader_processing.add_parameter(SHADER, TAG, parameter_name="env_tint_color", enum=TypeEnum.color, rgba=H1_ASSET.shader_body.perpendicular_color))
-    SHADER.parameters.append(shader_processing.add_parameter(SHADER, TAG, parameter_name="env_glancing_tint_color", enum=TypeEnum.color, rgba=H1_ASSET.shader_body.parallel_color))
-    SHADER.parameters.append(shader_processing.add_parameter(SHADER, TAG, parameter_name="env_brightness", enum=TypeEnum._value, float_value=H1_ASSET.shader_body.perpendicular_brightness))
-    SHADER.parameters.append(shader_processing.add_parameter(SHADER, TAG, parameter_name="env_glancing_brightness", enum=TypeEnum._value, float_value=H1_ASSET.shader_body.parallel_brightness))
+    SHADER.parameters.append(shader_processing.add_parameter(SHADER, TAG, parameter_name="env_tint_color", enum=TypeEnum.color, rgba=H1_ASSET.perpendicular_color))
+    SHADER.parameters.append(shader_processing.add_parameter(SHADER, TAG, parameter_name="env_glancing_tint_color", enum=TypeEnum.color, rgba=H1_ASSET.parallel_color))
+    SHADER.parameters.append(shader_processing.add_parameter(SHADER, TAG, parameter_name="env_brightness", enum=TypeEnum._value, float_value=H1_ASSET.perpendicular_brightness))
+    SHADER.parameters.append(shader_processing.add_parameter(SHADER, TAG, parameter_name="env_glancing_brightness", enum=TypeEnum._value, float_value=H1_ASSET.parallel_brightness))
 
 def generate_specular_parameters(H1_ASSET, TAG, SHADER, template, permutation_index):
-    SHADER.parameters.append(shader_processing.add_parameter(SHADER, TAG, parameter_name="specular_color", enum=TypeEnum.color, float_value=0.0, rgba=H1_ASSET.shader_body.perpendicular_color))
-    SHADER.parameters.append(shader_processing.add_parameter(SHADER, TAG, parameter_name="specular_glancing_color", enum=TypeEnum.color, float_value=0.0, rgba=H1_ASSET.shader_body.parallel_color))
+    SHADER.parameters.append(shader_processing.add_parameter(SHADER, TAG, parameter_name="specular_color", enum=TypeEnum.color, float_value=0.0, rgba=H1_ASSET.perpendicular_color))
+    SHADER.parameters.append(shader_processing.add_parameter(SHADER, TAG, parameter_name="specular_glancing_color", enum=TypeEnum.color, float_value=0.0, rgba=H1_ASSET.parallel_color))
 
 def generate_parameters(H1_ASSET, TAG, SHADER, template, permutation_index):
-    if not H1_ASSET.shader_body.bump_map.name == "":
+    if not H1_ASSET.bump_map.name == "":
         generate_bump_parameters(H1_ASSET, TAG, SHADER, template, permutation_index)
-    if not H1_ASSET.shader_body.base_map.name == "":
+    if not H1_ASSET.base_map.name == "":
         generate_base_map_parameters(H1_ASSET, TAG, SHADER, template, permutation_index)
-    if not H1_ASSET.shader_body.reflection_cube_map.name == "":
+    if not H1_ASSET.reflection_cube_map.name == "":
         generate_env_parameters(H1_ASSET, TAG, SHADER, template, permutation_index)
-    if H1_ASSET.shader_body.power > 0.0:
+    if H1_ASSET.power > 0.0:
         generate_illum_parameters(H1_ASSET, TAG, SHADER, template, permutation_index)
-    if not H1_ASSET.shader_body.primary_detail_map.name == "" or not H1_ASSET.shader_body.secondary_detail_map.name == "" or not H1_ASSET.shader_body.micro_detail_map.name == "":
+    if not H1_ASSET.primary_detail_map.name == "" or not H1_ASSET.secondary_detail_map.name == "" or not H1_ASSET.micro_detail_map.name == "":
         generate_detail_map_parameters(H1_ASSET, TAG, SHADER, template, permutation_index)
-    if not H1_ASSET.shader_body.map.name == "":
+    if not H1_ASSET.map.name == "":
         generate_channel_parameters(H1_ASSET, TAG, SHADER, template, permutation_index)
 
     generate_specular_parameters(H1_ASSET, TAG, SHADER, template, permutation_index)
@@ -317,25 +317,25 @@ def get_template(H1_ASSET):
     has_bump = False
     has_channels = False
     has_env_map = False
-    if H1_ASSET.shader_body.power > 0.0:
+    if H1_ASSET.power > 0.0:
         is_emissive = True
-    if H1EnvironmentFlags.alpha_tested in H1EnvironmentFlags(H1_ASSET.shader_body.environment_flags):
+    if H1EnvironmentFlags.alpha_tested in H1EnvironmentFlags(H1_ASSET.environment_flags):
         has_alpha = True
-    if not EnvironmentTypeEnum(H1_ASSET.shader_body.environment_type) == EnvironmentTypeEnum.normal:
+    if not EnvironmentTypeEnum(H1_ASSET.environment_type) == EnvironmentTypeEnum.normal:
         is_blended = True
-    if not H1_ASSET.shader_body.base_map.name == "":
+    if not H1_ASSET.base_map.name == "":
         has_diffuse = True
-    if not H1_ASSET.shader_body.primary_detail_map.name == "":
+    if not H1_ASSET.primary_detail_map.name == "":
         detail_map_count += 1
-    if not H1_ASSET.shader_body.secondary_detail_map.name == "":
+    if not H1_ASSET.secondary_detail_map.name == "":
         detail_map_count += 1
-    if not H1_ASSET.shader_body.micro_detail_map.name == "":
+    if not H1_ASSET.micro_detail_map.name == "":
         detail_map_count += 1
-    if not H1_ASSET.shader_body.bump_map.name == "":
+    if not H1_ASSET.bump_map.name == "":
         has_bump = True
-    if not H1_ASSET.shader_body.map.name == "":
+    if not H1_ASSET.map.name == "":
         has_channels = True
-    if not H1_ASSET.shader_body.reflection_cube_map.name == "":
+    if not H1_ASSET.reflection_cube_map.name == "":
         has_env_map = True
 
     valid_shader_templates = [shader_template for shader_template in shader_processing.OpaqueTemplateEnum]
@@ -507,23 +507,22 @@ def upgrade_shader(H1_ASSET, patch_txt_path, report, permutation_index=0):
 
     template = get_template(H1_ASSET)
 
-    SHADER.shader_body_header = TAG.TagBlockHeader("tbfd", 0, 1, 128)
-    SHADER.shader_body = SHADER.ShaderBody()
-    SHADER.shader_body.template = TAG.TagRef("stem", template.value, len(template.value))
-    SHADER.shader_body.material_name = get_material_name(H1_ASSET.shader_body.material_type)
-    SHADER.shader_body.runtime_properties_tag_block = TAG.TagBlock()
-    SHADER.shader_body.flags = 0
-    SHADER.shader_body.parameters_tag_block = generate_parameters(H1_ASSET, TAG, SHADER, template, permutation_index)
-    SHADER.shader_body.postprocess_definition_tag_block = TAG.TagBlock()
-    SHADER.shader_body.predicted_resources_tag_block = TAG.TagBlock()
-    SHADER.shader_body.light_response = TAG.TagRef("slit")
-    SHADER.shader_body.shader_lod_bias = 0
-    SHADER.shader_body.specular_type = SpecularTypeEnum.default.value
-    SHADER.shader_body.lightmap_type = LightmapTypeEnum.diffuse.value
-    SHADER.shader_body.lightmap_specular_brightness = H1_ASSET.shader_body.brightness
-    SHADER.shader_body.lightmap_ambient_bias = 0.0
-    SHADER.shader_body.postprocess_properties_tag_block = TAG.TagBlock()
-    SHADER.shader_body.added_depth_bias_offset = 0.0
-    SHADER.shader_body.added_depth_bias_slope = 0.0
+    SHADER.body_header = TAG.TagBlockHeader("tbfd", 0, 1, 128)
+    SHADER.template = TAG.TagRef("stem", template.value, len(template.value))
+    SHADER.material_name = get_material_name(H1_ASSET.material_type)
+    SHADER.runtime_properties_tag_block = TAG.TagBlock()
+    SHADER.flags = 0
+    SHADER.parameters_tag_block = generate_parameters(H1_ASSET, TAG, SHADER, template, permutation_index)
+    SHADER.postprocess_definition_tag_block = TAG.TagBlock()
+    SHADER.predicted_resources_tag_block = TAG.TagBlock()
+    SHADER.light_response = TAG.TagRef("slit")
+    SHADER.shader_lod_bias = 0
+    SHADER.specular_type = SpecularTypeEnum.default.value
+    SHADER.lightmap_type = LightmapTypeEnum.diffuse.value
+    SHADER.lightmap_specular_brightness = H1_ASSET.brightness
+    SHADER.lightmap_ambient_bias = 0.0
+    SHADER.postprocess_properties_tag_block = TAG.TagBlock()
+    SHADER.added_depth_bias_offset = 0.0
+    SHADER.added_depth_bias_slope = 0.0
 
     return SHADER

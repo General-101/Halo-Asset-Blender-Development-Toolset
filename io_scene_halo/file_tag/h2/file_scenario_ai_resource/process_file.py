@@ -32,45 +32,44 @@ from ..file_scenario.format import ScenarioAsset
 XML_OUTPUT = False
 
 def read_scenario_body(SCENARIO, TAG, input_stream, tag_node, XML_OUTPUT):
-    SCENARIO.scenario_body_header = TAG.TagBlockHeader().read(input_stream, TAG)
-    SCENARIO.scenario_body = SCENARIO.ScenarioBody()
-    SCENARIO.scenario_body.skies_tag_block = TAG.TagBlock()
-    SCENARIO.scenario_body.object_names_tag_block = TAG.TagBlock()
-    SCENARIO.scenario_body.editor_folders_tag_block = TAG.TagBlock()
-    SCENARIO.scenario_body.scenario_kill_triggers_tag_block = TAG.TagBlock()
-    SCENARIO.scenario_body.style_palette_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "style palette"))
-    SCENARIO.scenario_body.squad_groups_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "squad groups"))
-    SCENARIO.scenario_body.squads_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "squads"))
-    SCENARIO.scenario_body.zones_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "zones"))
-    SCENARIO.scenario_body.character_palette_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "character palette"))
-    SCENARIO.scenario_body.ai_animation_references_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "ai animation references"))
-    SCENARIO.scenario_body.ai_script_references_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "ai script references"))
-    SCENARIO.scenario_body.ai_recording_references_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "ai recording references"))
-    SCENARIO.scenario_body.ai_conversations_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "ai conversations"))
-    SCENARIO.scenario_body.scripting_data_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "scripting data"))
-    SCENARIO.scenario_body.orders_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "orders"))
-    SCENARIO.scenario_body.triggers_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "triggers"))
-    SCENARIO.scenario_body.structure_bsps_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "structure bsps"))
-    SCENARIO.scenario_body.weapon_palette_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "weapon palette"))
-    SCENARIO.scenario_body.vehicle_palette_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "vehicles palette"))
-    SCENARIO.scenario_body.vehicles_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "vehicles"))
-    SCENARIO.scenario_body.mission_scenes_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "mission scenes"))
-    SCENARIO.scenario_body.flocks_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "flocks"))
-    SCENARIO.scenario_body.trigger_volumes_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "trigger volumes"))
+    SCENARIO.body_header = TAG.TagBlockHeader().read(input_stream, TAG)
+    SCENARIO.skies_tag_block = TAG.TagBlock()
+    SCENARIO.object_names_tag_block = TAG.TagBlock()
+    SCENARIO.editor_folders_tag_block = TAG.TagBlock()
+    SCENARIO.scenario_kill_triggers_tag_block = TAG.TagBlock()
+    SCENARIO.style_palette_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "style palette"))
+    SCENARIO.squad_groups_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "squad groups"))
+    SCENARIO.squads_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "squads"))
+    SCENARIO.zones_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "zones"))
+    SCENARIO.character_palette_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "character palette"))
+    SCENARIO.ai_animation_references_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "ai animation references"))
+    SCENARIO.ai_script_references_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "ai script references"))
+    SCENARIO.ai_recording_references_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "ai recording references"))
+    SCENARIO.ai_conversations_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "ai conversations"))
+    SCENARIO.scripting_data_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "scripting data"))
+    SCENARIO.orders_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "orders"))
+    SCENARIO.triggers_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "triggers"))
+    SCENARIO.structure_bsps_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "structure bsps"))
+    SCENARIO.weapon_palette_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "weapon palette"))
+    SCENARIO.vehicle_palette_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "vehicles palette"))
+    SCENARIO.vehicles_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "vehicles"))
+    SCENARIO.mission_scenes_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "mission scenes"))
+    SCENARIO.flocks_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "flocks"))
+    SCENARIO.trigger_volumes_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "trigger volumes"))
 
 def read_vehicles(SCENARIO, TAG, input_stream, tag_node, XML_OUTPUT):
-    process_scenario.palette_helper(input_stream, SCENARIO.scenario_body.vehicle_palette_tag_block.count, "vehicles palette", SCENARIO.vehicle_palette_header, SCENARIO.vehicle_palette, tag_node, TAG)
-    if SCENARIO.scenario_body.vehicles_tag_block.count > 0:
+    process_scenario.palette_helper(input_stream, SCENARIO.vehicle_palette_tag_block.count, "vehicles palette", SCENARIO.vehicle_palette_header, SCENARIO.vehicle_palette, tag_node, TAG)
+    if SCENARIO.vehicles_tag_block.count > 0:
         SCENARIO.vehicles_header = TAG.TagBlockHeader().read(input_stream, TAG)
-        vehicle_node = tag_format.get_xml_node(XML_OUTPUT, SCENARIO.scenario_body.vehicles_tag_block.count, tag_node, "name", "vehicles")
-        for vehicle_idx in range(SCENARIO.scenario_body.vehicles_tag_block.count):
+        vehicle_node = tag_format.get_xml_node(XML_OUTPUT, SCENARIO.vehicles_tag_block.count, tag_node, "name", "vehicles")
+        for vehicle_idx in range(SCENARIO.vehicles_tag_block.count):
             vehicle_element_node = None
             if XML_OUTPUT:
                 vehicle_element_node = TAG.xml_doc.createElement('element')
                 vehicle_element_node.setAttribute('index', str(vehicle_idx))
                 vehicle_node.appendChild(vehicle_element_node)
 
-            SCENARIO.vehicles.append(process_scenario.get_units(input_stream, SCENARIO, TAG, vehicle_element_node, SCENARIO.scenario_body.vehicle_palette_tag_block.count, "scenario_vehicle_palette_block"))
+            SCENARIO.vehicles.append(process_scenario.get_units(input_stream, SCENARIO, TAG, vehicle_element_node, SCENARIO.vehicle_palette_tag_block.count, "scenario_vehicle_palette_block"))
 
         for vehicle_idx, vehicle in enumerate(SCENARIO.vehicles):
             vehicle_element_node = None
@@ -114,7 +113,7 @@ def process_file(input_stream, report):
     process_scenario.read_orders(SCENARIO, TAG, input_stream, tag_node, XML_OUTPUT)
     process_scenario.read_triggers(SCENARIO, TAG, input_stream, tag_node, XML_OUTPUT)
     process_scenario.read_structure_bsps(SCENARIO, TAG, input_stream, tag_node, XML_OUTPUT)
-    process_scenario.palette_helper(input_stream, SCENARIO.scenario_body.weapon_palette_tag_block.count, "weapon palette", SCENARIO.weapon_palette_header, SCENARIO.weapon_palette, tag_node, TAG)
+    process_scenario.palette_helper(input_stream, SCENARIO.weapon_palette_tag_block.count, "weapon palette", SCENARIO.weapon_palette_header, SCENARIO.weapon_palette, tag_node, TAG)
     read_vehicles(SCENARIO, TAG, input_stream, tag_node, XML_OUTPUT)
     process_scenario.read_mission_scenes(SCENARIO, TAG, input_stream, tag_node, XML_OUTPUT)
     process_scenario.read_flocks(SCENARIO, TAG, input_stream, tag_node, XML_OUTPUT)

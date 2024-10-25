@@ -29,11 +29,3 @@ from ..file_object.format import ObjectAsset
 class SoundSceneryAsset(ObjectAsset):
     def __init__(self):
         super().__init__()
-        self.header = None
-        self.sound_scenery_body_header = None
-        self.sound_scenery_body = None
-
-    class SoundSceneryBody(ObjectAsset.ObjectBody):
-        def __init__(self):
-            super().__init__()
-

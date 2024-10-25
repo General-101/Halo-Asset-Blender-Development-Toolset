@@ -172,107 +172,102 @@ class SeatFlags(Flag):
     invisible_under_major_damage = auto()
 
 class UnitAsset(ObjectAsset):
-    def __init__(self):
+    def __init__(self, camera_tracks_header=None, camera_tracks=None, postures_header=None, postures=None, new_hud_interface_header=None, new_hud_interface=None, 
+                 dialogue_variants_header=None, dialogue_variants=None, powered_seats_header=None, powered_seats=None, weapons_header=None, weapons=None, seats_header=None, 
+                 seats=None, unit_flags=0, default_team=0, constant_sound_volume=0, integrated_light_toggle=None, camera_field_of_view=0.0, camera_stiffness=0.0, 
+                 camera_marker_name="", camera_marker_name_length=0, camera_submerged_marker_name="", camera_submerged_marker_name_length=0, pitch_auto_level=0.0, 
+                 pitch_range=(0.0, 0.0), camera_tracks_tag_block=None, acceleration_range=Vector(), acceleration_action_scale=0.0, acceleration_attach_scale=0.0, 
+                 soft_ping_threshold=0.0, soft_ping_interrupt_time=0.0, hard_ping_threshold=0.0, hard_ping_interrupt_time=0.0, hard_death_threshold=0.0, 
+                 feign_death_threshold=0.0, feign_death_time=0.0, distance_of_evade_anim=0.0, distance_of_dive_anim=0.0, stunned_movement_threshold=0.0, 
+                 feign_death_chance=0.0, feign_repeat_chance=0.0, spawned_turret_actor=None, spawned_actor_count=(0, 0), spawned_velocity=0.0, aiming_velocity_maximum=0.0, 
+                 aiming_acceleration_maximum=0.0, casual_aiming_modifier=0.0, looking_velocity_maximum=0.0, looking_acceleration_maximum=0.0, right_hand_node="", 
+                 right_hand_node_length=0, left_hand_node="", left_hand_node_length=0, preferred_gun_node="", preferred_gun_node_length=0, melee_damage=None, 
+                 boarding_melee_damage=None, boarding_melee_response=None, landing_melee_damage=None, flurry_melee_damage=None, obstacle_smash_damage=None, 
+                 motion_sensor_blip_size=0, unit_type=0, unit_class=0, postures_tag_block=None, new_hud_interfaces_tag_block=None, dialogue_variants_tag_block=None, 
+                 grenade_velocity=0.0, grenade_type=0, grenade_count=0, powered_seats_tag_block=None, weapons_tag_block=None, seats_tag_block=None, boost_peak_power=0.0, 
+                 boost_rise_power=0.0, boost_peak_time=0.0, boost_fall_power=0.0, dead_time=0.0, attack_weight=0.0, decay_weight=0.0):
         super().__init__()
-        self.header = None
-        self.unit_body_header = None
-        self.unit_body = None
-        self.camera_tracks_header = None
-        self.camera_tracks = None
-        self.postures_header = None
-        self.postures = None
-        self.new_hud_interface_header = None
-        self.new_hud_interface = None
-        self.dialogue_variants_header = None
-        self.dialogue_variants = None
-        self.powered_seats_header = None
-        self.powered_seats = None
-        self.weapons_header = None
-        self.weapons = None
-        self.seats_header = None
-        self.seats = None
-
-    class UnitBody(ObjectAsset.ObjectBody):
-        def __init__(self, unit_flags=0, default_team=0, constant_sound_volume=0, integrated_light_toggle=None, camera_field_of_view=0.0, camera_stiffness=0.0,
-                     camera_marker_name="", camera_marker_name_length=0, camera_submerged_marker_name="", camera_submerged_marker_name_length=0, pitch_auto_level=0.0,
-                     pitch_range=(0.0, 0.0), camera_tracks_tag_block=None, acceleration_range=Vector(), acceleration_action_scale=0.0, acceleration_attach_scale=0.0,
-                     soft_ping_threshold=0.0, soft_ping_interrupt_time=0.0, hard_ping_threshold=0.0, hard_ping_interrupt_time=0.0, hard_death_threshold=0.0,
-                     feign_death_threshold=0.0, feign_death_time=0.0, distance_of_evade_anim=0.0, distance_of_dive_anim=0.0, stunned_movement_threshold=0.0,
-                     feign_death_chance=0.0, feign_repeat_chance=0.0, spawned_turret_actor=None, spawned_actor_count=(0, 0), spawned_velocity=0.0, aiming_velocity_maximum=0.0,
-                     aiming_acceleration_maximum=0.0, casual_aiming_modifier=0.0, looking_velocity_maximum=0.0, looking_acceleration_maximum=0.0, right_hand_node="",
-                     right_hand_node_length=0, left_hand_node="", left_hand_node_length=0, preferred_gun_node="", preferred_gun_node_length=0, melee_damage=None,
-                     boarding_melee_damage=None, boarding_melee_response=None, landing_melee_damage=None, flurry_melee_damage=None, obstacle_smash_damage=None,
-                     motion_sensor_blip_size=0, unit_type=0, unit_class=0, postures_tag_block=None, new_hud_interfaces_tag_block=None, dialogue_variants_tag_block=None,
-                     grenade_velocity=0.0, grenade_type=0, grenade_count=0, powered_seats_tag_block=None, weapons_tag_block=None, seats_tag_block=None, boost_peak_power=0.0,
-                     boost_rise_power=0.0, boost_peak_time=0.0, boost_fall_power=0.0, dead_time=0.0, attack_weight=0.0, decay_weight=0.0):
-            super().__init__()
-            self.unit_flags = unit_flags
-            self.default_team = default_team
-            self.constant_sound_volume = constant_sound_volume
-            self.integrated_light_toggle = integrated_light_toggle
-            self.camera_field_of_view = camera_field_of_view
-            self.camera_stiffness = camera_stiffness
-            self.camera_marker_name = camera_marker_name
-            self.camera_marker_name_length = camera_marker_name_length
-            self.camera_submerged_marker_name = camera_submerged_marker_name
-            self.camera_submerged_marker_name_length = camera_submerged_marker_name_length
-            self.pitch_auto_level = pitch_auto_level
-            self.pitch_range = pitch_range
-            self.camera_tracks_tag_block = camera_tracks_tag_block
-            self.acceleration_range = acceleration_range
-            self.acceleration_action_scale = acceleration_action_scale
-            self.acceleration_attach_scale = acceleration_attach_scale
-            self.soft_ping_threshold = soft_ping_threshold
-            self.soft_ping_interrupt_time = soft_ping_interrupt_time
-            self.hard_ping_threshold = hard_ping_threshold
-            self.hard_ping_interrupt_time = hard_ping_interrupt_time
-            self.hard_death_threshold = hard_death_threshold
-            self.feign_death_threshold = feign_death_threshold
-            self.feign_death_time = feign_death_time
-            self.distance_of_evade_anim = distance_of_evade_anim
-            self.distance_of_dive_anim = distance_of_dive_anim
-            self.stunned_movement_threshold = stunned_movement_threshold
-            self.feign_death_chance = feign_death_chance
-            self.feign_repeat_chance = feign_repeat_chance
-            self.spawned_turret_actor = spawned_turret_actor
-            self.spawned_actor_count = spawned_actor_count
-            self.spawned_velocity = spawned_velocity
-            self.aiming_velocity_maximum = aiming_velocity_maximum
-            self.aiming_acceleration_maximum = aiming_acceleration_maximum
-            self.casual_aiming_modifier = casual_aiming_modifier
-            self.looking_velocity_maximum = looking_velocity_maximum
-            self.looking_acceleration_maximum = looking_acceleration_maximum
-            self.right_hand_node = right_hand_node
-            self.right_hand_node_length = right_hand_node_length
-            self.left_hand_node = left_hand_node
-            self.left_hand_node_length = left_hand_node_length
-            self.preferred_gun_node = preferred_gun_node
-            self.preferred_gun_node_length = preferred_gun_node_length
-            self.melee_damage = melee_damage
-            self.boarding_melee_damage = boarding_melee_damage
-            self.boarding_melee_response = boarding_melee_response
-            self.landing_melee_damage = landing_melee_damage
-            self.flurry_melee_damage = flurry_melee_damage
-            self.obstacle_smash_damage = obstacle_smash_damage
-            self.motion_sensor_blip_size = motion_sensor_blip_size
-            self.unit_type = unit_type
-            self.unit_class = unit_class
-            self.postures_tag_block = postures_tag_block
-            self.new_hud_interfaces_tag_block = new_hud_interfaces_tag_block
-            self.dialogue_variants_tag_block = dialogue_variants_tag_block
-            self.grenade_velocity = grenade_velocity
-            self.grenade_type = grenade_type
-            self.grenade_count = grenade_count
-            self.powered_seats_tag_block = powered_seats_tag_block
-            self.weapons_tag_block = weapons_tag_block
-            self.seats_tag_block = seats_tag_block
-            self.boost_peak_power = boost_peak_power
-            self.boost_rise_power = boost_rise_power
-            self.boost_peak_time = boost_peak_time
-            self.boost_fall_power = boost_fall_power
-            self.dead_time = dead_time
-            self.attack_weight = attack_weight
-            self.decay_weight = decay_weight
+        self.camera_tracks_header = camera_tracks_header
+        self.camera_tracks = camera_tracks
+        self.postures_header = postures_header
+        self.postures = postures
+        self.new_hud_interface_header = new_hud_interface_header
+        self.new_hud_interface = new_hud_interface
+        self.dialogue_variants_header = dialogue_variants_header
+        self.dialogue_variants = dialogue_variants
+        self.powered_seats_header = powered_seats_header
+        self.powered_seats = powered_seats
+        self.weapons_header = weapons_header
+        self.weapons = weapons
+        self.seats_header = seats_header
+        self.seats = seats
+        self.unit_flags = unit_flags
+        self.default_team = default_team
+        self.constant_sound_volume = constant_sound_volume
+        self.integrated_light_toggle = integrated_light_toggle
+        self.camera_field_of_view = camera_field_of_view
+        self.camera_stiffness = camera_stiffness
+        self.camera_marker_name = camera_marker_name
+        self.camera_marker_name_length = camera_marker_name_length
+        self.camera_submerged_marker_name = camera_submerged_marker_name
+        self.camera_submerged_marker_name_length = camera_submerged_marker_name_length
+        self.pitch_auto_level = pitch_auto_level
+        self.pitch_range = pitch_range
+        self.camera_tracks_tag_block = camera_tracks_tag_block
+        self.acceleration_range = acceleration_range
+        self.acceleration_action_scale = acceleration_action_scale
+        self.acceleration_attach_scale = acceleration_attach_scale
+        self.soft_ping_threshold = soft_ping_threshold
+        self.soft_ping_interrupt_time = soft_ping_interrupt_time
+        self.hard_ping_threshold = hard_ping_threshold
+        self.hard_ping_interrupt_time = hard_ping_interrupt_time
+        self.hard_death_threshold = hard_death_threshold
+        self.feign_death_threshold = feign_death_threshold
+        self.feign_death_time = feign_death_time
+        self.distance_of_evade_anim = distance_of_evade_anim
+        self.distance_of_dive_anim = distance_of_dive_anim
+        self.stunned_movement_threshold = stunned_movement_threshold
+        self.feign_death_chance = feign_death_chance
+        self.feign_repeat_chance = feign_repeat_chance
+        self.spawned_turret_actor = spawned_turret_actor
+        self.spawned_actor_count = spawned_actor_count
+        self.spawned_velocity = spawned_velocity
+        self.aiming_velocity_maximum = aiming_velocity_maximum
+        self.aiming_acceleration_maximum = aiming_acceleration_maximum
+        self.casual_aiming_modifier = casual_aiming_modifier
+        self.looking_velocity_maximum = looking_velocity_maximum
+        self.looking_acceleration_maximum = looking_acceleration_maximum
+        self.right_hand_node = right_hand_node
+        self.right_hand_node_length = right_hand_node_length
+        self.left_hand_node = left_hand_node
+        self.left_hand_node_length = left_hand_node_length
+        self.preferred_gun_node = preferred_gun_node
+        self.preferred_gun_node_length = preferred_gun_node_length
+        self.melee_damage = melee_damage
+        self.boarding_melee_damage = boarding_melee_damage
+        self.boarding_melee_response = boarding_melee_response
+        self.landing_melee_damage = landing_melee_damage
+        self.flurry_melee_damage = flurry_melee_damage
+        self.obstacle_smash_damage = obstacle_smash_damage
+        self.motion_sensor_blip_size = motion_sensor_blip_size
+        self.unit_type = unit_type
+        self.unit_class = unit_class
+        self.postures_tag_block = postures_tag_block
+        self.new_hud_interfaces_tag_block = new_hud_interfaces_tag_block
+        self.dialogue_variants_tag_block = dialogue_variants_tag_block
+        self.grenade_velocity = grenade_velocity
+        self.grenade_type = grenade_type
+        self.grenade_count = grenade_count
+        self.powered_seats_tag_block = powered_seats_tag_block
+        self.weapons_tag_block = weapons_tag_block
+        self.seats_tag_block = seats_tag_block
+        self.boost_peak_power = boost_peak_power
+        self.boost_rise_power = boost_rise_power
+        self.boost_peak_time = boost_peak_time
+        self.boost_fall_power = boost_fall_power
+        self.dead_time = dead_time
+        self.attack_weight = attack_weight
+        self.decay_weight = decay_weight
 
     class Posture:
         def __init__(self, name="", name_length=0, pill_offset=Vector()):

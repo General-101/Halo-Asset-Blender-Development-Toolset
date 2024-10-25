@@ -42,159 +42,157 @@ def initilize_CONTROL(CONTROL):
     CONTROL.predicted_resources = []
 
 def read_control_body_v0(CONTROL, TAG, input_stream, tag_node, XML_OUTPUT):
-    CONTROL.control_body_header = TAG.TagBlockHeader().read(input_stream, TAG)
-    CONTROL.control_body = CONTROL.ControlBody()
+    CONTROL.body_header = TAG.TagBlockHeader().read(input_stream, TAG)
     input_stream.read(2) # Padding?
-    CONTROL.control_body.object_flags = TAG.read_flag_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "flags", ObjectFlags))
-    CONTROL.control_body.bounding_radius = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "bounding radius"))
-    CONTROL.control_body.bounding_offset = TAG.read_point_3d(input_stream, TAG, tag_format.XMLData(tag_node, "bounding offset"))
+    CONTROL.object_flags = TAG.read_flag_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "flags", ObjectFlags))
+    CONTROL.bounding_radius = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "bounding radius"))
+    CONTROL.bounding_offset = TAG.read_point_3d(input_stream, TAG, tag_format.XMLData(tag_node, "bounding offset"))
     input_stream.read(12) # Padding?
-    CONTROL.control_body.acceleration_scale = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "acceleration scale"))
-    CONTROL.control_body.lightmap_shadow_mode = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "lightmap shadow mode", LightmapShadowModeEnum))
-    CONTROL.control_body.sweetner_size = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "sweetner size", SweetenerSizeEnum))
+    CONTROL.acceleration_scale = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "acceleration scale"))
+    CONTROL.lightmap_shadow_mode = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "lightmap shadow mode", LightmapShadowModeEnum))
+    CONTROL.sweetner_size = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "sweetner size", SweetenerSizeEnum))
     input_stream.read(36) # Padding?
-    CONTROL.control_body.dynamic_light_sphere_radius = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "dynamic light sphere radius"))
-    CONTROL.control_body.dynamic_light_sphere_offset = TAG.read_point_3d(input_stream, TAG, tag_format.XMLData(tag_node, "dynamic light sphere offset"))
+    CONTROL.dynamic_light_sphere_radius = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "dynamic light sphere radius"))
+    CONTROL.dynamic_light_sphere_offset = TAG.read_point_3d(input_stream, TAG, tag_format.XMLData(tag_node, "dynamic light sphere offset"))
 
     TAG.big_endian = True
     input_stream.read(2) # Padding?
-    CONTROL.control_body.default_model_variant_length = TAG.read_signed_short(input_stream, TAG)
+    CONTROL.default_model_variant_length = TAG.read_signed_short(input_stream, TAG)
     TAG.big_endian = False
 
-    CONTROL.control_body.model = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "model"))
-    CONTROL.control_body.crate_object = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "crate object"))
+    CONTROL.model = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "model"))
+    CONTROL.crate_object = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "crate object"))
     input_stream.read(16) # Padding?
-    CONTROL.control_body.modifier_shader = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "modifier shader"))
-    CONTROL.control_body.creation_effect = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "creation effect"))
-    CONTROL.control_body.material_effects = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "material effects"))
+    CONTROL.modifier_shader = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "modifier shader"))
+    CONTROL.creation_effect = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "creation effect"))
+    CONTROL.material_effects = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "material effects"))
     input_stream.read(24) # Padding?
-    CONTROL.control_body.ai_properties_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "ai properties"))
+    CONTROL.ai_properties_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "ai properties"))
     input_stream.read(24) # Padding?
-    CONTROL.control_body.functions_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "functions"))
+    CONTROL.functions_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "functions"))
     input_stream.read(16) # Padding?
-    CONTROL.control_body.apply_collision_damage_scale = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "apply collision damage scale"))
-    CONTROL.control_body.min_game_acc = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "min game acc"))
-    CONTROL.control_body.max_game_acc = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "max game acc"))
-    CONTROL.control_body.min_game_scale = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "min game scale"))
-    CONTROL.control_body.max_game_scale = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "max game scale"))
-    CONTROL.control_body.min_abs_acc = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "min abs acc"))
-    CONTROL.control_body.max_abs_acc = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "max abs acc"))
-    CONTROL.control_body.min_abs_scale = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "min abs scale"))
-    CONTROL.control_body.max_abs_scale = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "max abs scale"))
-    CONTROL.control_body.hud_text_message_index = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(tag_node, "hud text message index"))
+    CONTROL.apply_collision_damage_scale = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "apply collision damage scale"))
+    CONTROL.min_game_acc = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "min game acc"))
+    CONTROL.max_game_acc = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "max game acc"))
+    CONTROL.min_game_scale = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "min game scale"))
+    CONTROL.max_game_scale = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "max game scale"))
+    CONTROL.min_abs_acc = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "min abs acc"))
+    CONTROL.max_abs_acc = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "max abs acc"))
+    CONTROL.min_abs_scale = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "min abs scale"))
+    CONTROL.max_abs_scale = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "max abs scale"))
+    CONTROL.hud_text_message_index = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(tag_node, "hud text message index"))
     input_stream.read(2) # Padding?
-    CONTROL.control_body.attachments_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "attachments"))
-    CONTROL.control_body.widgets_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "widgets"))
-    CONTROL.control_body.old_functions_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "old functions"))
-    CONTROL.control_body.change_colors_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "change colors"))
-    CONTROL.control_body.predicted_resources_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "predicted resources"))
-    CONTROL.control_body.device_flags = TAG.read_flag_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "flags", DeviceFlags))
+    CONTROL.attachments_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "attachments"))
+    CONTROL.widgets_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "widgets"))
+    CONTROL.old_functions_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "old functions"))
+    CONTROL.change_colors_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "change colors"))
+    CONTROL.predicted_resources_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "predicted resources"))
+    CONTROL.device_flags = TAG.read_flag_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "flags", DeviceFlags))
     input_stream.read(2) # Padding?
-    CONTROL.control_body.power_transition_time = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "power transition time"))
-    CONTROL.control_body.power_acceleration_time = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "power acceleration time"))
-    CONTROL.control_body.position_transition_time = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "position transition time"))
-    CONTROL.control_body.position_acceleration_time = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "position acceleration time"))
-    CONTROL.control_body.depowered_position_transition_time = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "depowered position transition time"))
-    CONTROL.control_body.depowered_position_acceleration_time = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "depowered position acceleration time"))
-    CONTROL.control_body.lightmap_flags = TAG.read_flag_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "lightmap flags", LightmapFlags))
+    CONTROL.power_transition_time = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "power transition time"))
+    CONTROL.power_acceleration_time = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "power acceleration time"))
+    CONTROL.position_transition_time = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "position transition time"))
+    CONTROL.position_acceleration_time = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "position acceleration time"))
+    CONTROL.depowered_position_transition_time = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "depowered position transition time"))
+    CONTROL.depowered_position_acceleration_time = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "depowered position acceleration time"))
+    CONTROL.lightmap_flags = TAG.read_flag_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "lightmap flags", LightmapFlags))
     input_stream.read(6) # Padding?
-    CONTROL.control_body.open_up = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "open"))
-    CONTROL.control_body.close_down = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "close"))
-    CONTROL.control_body.opened = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "opened"))
-    CONTROL.control_body.closed = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "closed"))
-    CONTROL.control_body.depowered = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "depowered"))
-    CONTROL.control_body.repowered = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "repowered"))
-    CONTROL.control_body.delay_time = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "delay time"))
+    CONTROL.open_up = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "open"))
+    CONTROL.close_down = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "close"))
+    CONTROL.opened = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "opened"))
+    CONTROL.closed = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "closed"))
+    CONTROL.depowered = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "depowered"))
+    CONTROL.repowered = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "repowered"))
+    CONTROL.delay_time = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "delay time"))
     input_stream.read(8) # Padding?
-    CONTROL.control_body.delay_effect = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "delay effect"))
-    CONTROL.control_body.automatic_activation_radius = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "automatic activation radius"))
+    CONTROL.delay_effect = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "delay effect"))
+    CONTROL.automatic_activation_radius = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "automatic activation radius"))
     input_stream.read(112) # Padding?
-    CONTROL.control_body.control_type = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "type", ControlTypeEnum))
-    CONTROL.control_body.triggers_when = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "triggers when", TriggersWhenEnum))
-    CONTROL.control_body.call_value = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "call value"))
+    CONTROL.control_type = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "type", ControlTypeEnum))
+    CONTROL.triggers_when = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "triggers when", TriggersWhenEnum))
+    CONTROL.call_value = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "call value"))
 
     TAG.big_endian = True
     input_stream.read(2) # Padding?
-    CONTROL.control_body.action_string_length = TAG.read_signed_short(input_stream, TAG)
+    CONTROL.action_string_length = TAG.read_signed_short(input_stream, TAG)
     TAG.big_endian = False
 
-    CONTROL.control_body.on = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "on"))
-    CONTROL.control_body.off = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "off"))
-    CONTROL.control_body.deny = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "deny"))
+    CONTROL.on = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "on"))
+    CONTROL.off = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "off"))
+    CONTROL.deny = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "deny"))
 
 def read_control_body_retail(CONTROL, TAG, input_stream, tag_node, XML_OUTPUT):
-    CONTROL.control_body_header = TAG.TagBlockHeader().read(input_stream, TAG)
-    CONTROL.control_body = CONTROL.ControlBody()
+    CONTROL.body_header = TAG.TagBlockHeader().read(input_stream, TAG)
     input_stream.read(2) # Padding?
-    CONTROL.control_body.object_flags = TAG.read_flag_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "flags", ObjectFlags))
-    CONTROL.control_body.bounding_radius = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "bounding radius"))
-    CONTROL.control_body.bounding_offset = TAG.read_point_3d(input_stream, TAG, tag_format.XMLData(tag_node, "bounding offset"))
-    CONTROL.control_body.acceleration_scale = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "acceleration scale"))
-    CONTROL.control_body.lightmap_shadow_mode = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "lightmap shadow mode", LightmapShadowModeEnum))
-    CONTROL.control_body.sweetner_size = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "sweetner size", SweetenerSizeEnum))
+    CONTROL.object_flags = TAG.read_flag_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "flags", ObjectFlags))
+    CONTROL.bounding_radius = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "bounding radius"))
+    CONTROL.bounding_offset = TAG.read_point_3d(input_stream, TAG, tag_format.XMLData(tag_node, "bounding offset"))
+    CONTROL.acceleration_scale = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "acceleration scale"))
+    CONTROL.lightmap_shadow_mode = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "lightmap shadow mode", LightmapShadowModeEnum))
+    CONTROL.sweetner_size = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "sweetner size", SweetenerSizeEnum))
     input_stream.read(4) # Padding?
-    CONTROL.control_body.dynamic_light_sphere_radius = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "dynamic light sphere radius"))
-    CONTROL.control_body.dynamic_light_sphere_offset = TAG.read_point_3d(input_stream, TAG, tag_format.XMLData(tag_node, "dynamic light sphere offset"))
+    CONTROL.dynamic_light_sphere_radius = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "dynamic light sphere radius"))
+    CONTROL.dynamic_light_sphere_offset = TAG.read_point_3d(input_stream, TAG, tag_format.XMLData(tag_node, "dynamic light sphere offset"))
 
     TAG.big_endian = True
     input_stream.read(2) # Padding?
-    CONTROL.control_body.default_model_variant_length = TAG.read_signed_short(input_stream, TAG)
+    CONTROL.default_model_variant_length = TAG.read_signed_short(input_stream, TAG)
     TAG.big_endian = False
 
-    CONTROL.control_body.model = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "model"))
-    CONTROL.control_body.crate_object = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "crate object"))
-    CONTROL.control_body.modifier_shader = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "modifier shader"))
-    CONTROL.control_body.creation_effect = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "creation effect"))
-    CONTROL.control_body.material_effects = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "material effects"))
-    CONTROL.control_body.ai_properties_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "ai properties"))
-    CONTROL.control_body.functions_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "functions"))
-    CONTROL.control_body.apply_collision_damage_scale = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "apply collision damage scale"))
-    CONTROL.control_body.min_game_acc = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "min game acc"))
-    CONTROL.control_body.max_game_acc = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "max game acc"))
-    CONTROL.control_body.min_game_scale = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "min game scale"))
-    CONTROL.control_body.max_game_scale = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "max game scale"))
-    CONTROL.control_body.min_abs_acc = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "min abs acc"))
-    CONTROL.control_body.max_abs_acc = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "max abs acc"))
-    CONTROL.control_body.min_abs_scale = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "min abs scale"))
-    CONTROL.control_body.max_abs_scale = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "max abs scale"))
-    CONTROL.control_body.hud_text_message_index = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(tag_node, "hud text message index"))
+    CONTROL.model = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "model"))
+    CONTROL.crate_object = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "crate object"))
+    CONTROL.modifier_shader = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "modifier shader"))
+    CONTROL.creation_effect = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "creation effect"))
+    CONTROL.material_effects = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "material effects"))
+    CONTROL.ai_properties_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "ai properties"))
+    CONTROL.functions_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "functions"))
+    CONTROL.apply_collision_damage_scale = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "apply collision damage scale"))
+    CONTROL.min_game_acc = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "min game acc"))
+    CONTROL.max_game_acc = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "max game acc"))
+    CONTROL.min_game_scale = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "min game scale"))
+    CONTROL.max_game_scale = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "max game scale"))
+    CONTROL.min_abs_acc = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "min abs acc"))
+    CONTROL.max_abs_acc = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "max abs acc"))
+    CONTROL.min_abs_scale = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "min abs scale"))
+    CONTROL.max_abs_scale = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "max abs scale"))
+    CONTROL.hud_text_message_index = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(tag_node, "hud text message index"))
     input_stream.read(2) # Padding?
-    CONTROL.control_body.attachments_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "attachments"))
-    CONTROL.control_body.widgets_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "widgets"))
-    CONTROL.control_body.old_functions_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "old functions"))
-    CONTROL.control_body.change_colors_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "change colors"))
-    CONTROL.control_body.predicted_resources_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "predicted resources"))
-    CONTROL.control_body.device_flags = TAG.read_flag_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "flags", DeviceFlags))
+    CONTROL.attachments_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "attachments"))
+    CONTROL.widgets_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "widgets"))
+    CONTROL.old_functions_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "old functions"))
+    CONTROL.change_colors_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "change colors"))
+    CONTROL.predicted_resources_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "predicted resources"))
+    CONTROL.device_flags = TAG.read_flag_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "flags", DeviceFlags))
     input_stream.read(2) # Padding?
-    CONTROL.control_body.power_transition_time = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "power transition time"))
-    CONTROL.control_body.power_acceleration_time = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "power acceleration time"))
-    CONTROL.control_body.position_transition_time = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "position transition time"))
-    CONTROL.control_body.position_acceleration_time = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "position acceleration time"))
-    CONTROL.control_body.depowered_position_transition_time = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "depowered position transition time"))
-    CONTROL.control_body.depowered_position_acceleration_time = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "depowered position acceleration time"))
-    CONTROL.control_body.lightmap_flags = TAG.read_flag_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "lightmap flags", LightmapFlags))
+    CONTROL.power_transition_time = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "power transition time"))
+    CONTROL.power_acceleration_time = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "power acceleration time"))
+    CONTROL.position_transition_time = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "position transition time"))
+    CONTROL.position_acceleration_time = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "position acceleration time"))
+    CONTROL.depowered_position_transition_time = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "depowered position transition time"))
+    CONTROL.depowered_position_acceleration_time = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "depowered position acceleration time"))
+    CONTROL.lightmap_flags = TAG.read_flag_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "lightmap flags", LightmapFlags))
     input_stream.read(2) # Padding?
-    CONTROL.control_body.open_up = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "open"))
-    CONTROL.control_body.close_down = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "close"))
-    CONTROL.control_body.opened = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "opened"))
-    CONTROL.control_body.closed = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "closed"))
-    CONTROL.control_body.depowered = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "depowered"))
-    CONTROL.control_body.repowered = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "repowered"))
-    CONTROL.control_body.delay_time = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "delay time"))
-    CONTROL.control_body.delay_effect = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "delay effect"))
-    CONTROL.control_body.automatic_activation_radius = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "automatic activation radius"))
-    CONTROL.control_body.control_type = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "type", ControlTypeEnum))
-    CONTROL.control_body.triggers_when = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "triggers when", TriggersWhenEnum))
-    CONTROL.control_body.call_value = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "call value"))
+    CONTROL.open_up = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "open"))
+    CONTROL.close_down = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "close"))
+    CONTROL.opened = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "opened"))
+    CONTROL.closed = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "closed"))
+    CONTROL.depowered = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "depowered"))
+    CONTROL.repowered = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "repowered"))
+    CONTROL.delay_time = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "delay time"))
+    CONTROL.delay_effect = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "delay effect"))
+    CONTROL.automatic_activation_radius = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "automatic activation radius"))
+    CONTROL.control_type = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "type", ControlTypeEnum))
+    CONTROL.triggers_when = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "triggers when", TriggersWhenEnum))
+    CONTROL.call_value = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "call value"))
 
     TAG.big_endian = True
     input_stream.read(2) # Padding?
-    CONTROL.control_body.action_string_length = TAG.read_signed_short(input_stream, TAG)
+    CONTROL.action_string_length = TAG.read_signed_short(input_stream, TAG)
     TAG.big_endian = False
 
-    CONTROL.control_body.on = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "on"))
-    CONTROL.control_body.off = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "off"))
-    CONTROL.control_body.deny = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "deny"))
+    CONTROL.on = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "on"))
+    CONTROL.off = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "off"))
+    CONTROL.deny = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "deny"))
 
 def process_file(input_stream, report):
     TAG = tag_format.TagAsset()
@@ -218,23 +216,23 @@ def process_file(input_stream, report):
     elif CONTROL.header.engine_tag == "BLM!":
         read_control_body_retail(CONTROL, TAG, input_stream, tag_node, XML_OUTPUT)
 
-    if CONTROL.control_body.default_model_variant_length > 0:
-        CONTROL.control_body.default_model_variant = TAG.read_variable_string_no_terminator(input_stream, CONTROL.control_body.default_model_variant_length, TAG, tag_format.XMLData(tag_node, "default model variant"))
+    if CONTROL.default_model_variant_length > 0:
+        CONTROL.default_model_variant = TAG.read_variable_string_no_terminator(input_stream, CONTROL.default_model_variant_length, TAG, tag_format.XMLData(tag_node, "default model variant"))
 
-    if CONTROL.control_body.model.name_length > 0:
-        CONTROL.control_body.model.name = TAG.read_variable_string(input_stream, CONTROL.control_body.model.name_length, TAG)
+    if CONTROL.model.name_length > 0:
+        CONTROL.model.name = TAG.read_variable_string(input_stream, CONTROL.model.name_length, TAG)
 
-    if CONTROL.control_body.crate_object.name_length > 0:
-        CONTROL.control_body.crate_object.name = TAG.read_variable_string(input_stream, CONTROL.control_body.crate_object.name_length, TAG)
+    if CONTROL.crate_object.name_length > 0:
+        CONTROL.crate_object.name = TAG.read_variable_string(input_stream, CONTROL.crate_object.name_length, TAG)
 
-    if CONTROL.control_body.modifier_shader.name_length > 0:
-        CONTROL.control_body.modifier_shader.name = TAG.read_variable_string(input_stream, CONTROL.control_body.modifier_shader.name_length, TAG)
+    if CONTROL.modifier_shader.name_length > 0:
+        CONTROL.modifier_shader.name = TAG.read_variable_string(input_stream, CONTROL.modifier_shader.name_length, TAG)
 
-    if CONTROL.control_body.creation_effect.name_length > 0:
-        CONTROL.control_body.creation_effect.name = TAG.read_variable_string(input_stream, CONTROL.control_body.creation_effect.name_length, TAG)
+    if CONTROL.creation_effect.name_length > 0:
+        CONTROL.creation_effect.name = TAG.read_variable_string(input_stream, CONTROL.creation_effect.name_length, TAG)
 
-    if CONTROL.control_body.material_effects.name_length > 0:
-        CONTROL.control_body.material_effects.name = TAG.read_variable_string(input_stream, CONTROL.control_body.material_effects.name_length, TAG)
+    if CONTROL.material_effects.name_length > 0:
+        CONTROL.material_effects.name = TAG.read_variable_string(input_stream, CONTROL.material_effects.name_length, TAG)
 
     if XML_OUTPUT:
         model_node = tag_format.get_xml_node(XML_OUTPUT, 1, tag_node, "name", "model")
@@ -242,11 +240,11 @@ def process_file(input_stream, report):
         modifier_shader_node = tag_format.get_xml_node(XML_OUTPUT, 1, tag_node, "name", "modifier shader")
         creation_effect_node = tag_format.get_xml_node(XML_OUTPUT, 1, tag_node, "name", "creation effect")
         material_effects_node = tag_format.get_xml_node(XML_OUTPUT, 1, tag_node, "name", "material effects")
-        CONTROL.control_body.model.append_xml_attributes(model_node)
-        CONTROL.control_body.crate_object.append_xml_attributes(crate_object_node)
-        CONTROL.control_body.modifier_shader.append_xml_attributes(modifier_shader_node)
-        CONTROL.control_body.creation_effect.append_xml_attributes(creation_effect_node)
-        CONTROL.control_body.material_effects.append_xml_attributes(material_effects_node)
+        CONTROL.model.append_xml_attributes(model_node)
+        CONTROL.crate_object.append_xml_attributes(crate_object_node)
+        CONTROL.modifier_shader.append_xml_attributes(modifier_shader_node)
+        CONTROL.creation_effect.append_xml_attributes(creation_effect_node)
+        CONTROL.material_effects.append_xml_attributes(material_effects_node)
 
     current_position = input_stream.tell()
     EOF = input_stream.seek(0, 2)

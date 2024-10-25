@@ -30,26 +30,26 @@ from ....global_functions import tag_format, shader_processing
 from ....file_tag.h2.file_shader.format import FunctionTypeEnum
 
 def write_body(output_stream, TAG, PARTICLE):
-    PARTICLE.particle_body_header.write(output_stream, TAG, True)
-    output_stream.write(struct.pack('<I', PARTICLE.particle_body.flags))
-    output_stream.write(struct.pack('<h', PARTICLE.particle_body.particle_billboard_style))
+    PARTICLE.body_header.write(output_stream, TAG, True)
+    output_stream.write(struct.pack('<I', PARTICLE.flags))
+    output_stream.write(struct.pack('<h', PARTICLE.particle_billboard_style))
     output_stream.write(struct.pack('<2x'))
-    output_stream.write(struct.pack('<h', PARTICLE.particle_body.first_sequence_index))
-    output_stream.write(struct.pack('<h', PARTICLE.particle_body.sequence_count))
-    PARTICLE.particle_body.shader_template.write(output_stream, False, True)
-    PARTICLE.particle_body.parameters_tag_block.write(output_stream, False)
-    for particle_property in PARTICLE.particle_body.properties:
+    output_stream.write(struct.pack('<h', PARTICLE.first_sequence_index))
+    output_stream.write(struct.pack('<h', PARTICLE.sequence_count))
+    PARTICLE.shader_template.write(output_stream, False, True)
+    PARTICLE.parameters_tag_block.write(output_stream, False)
+    for particle_property in PARTICLE.properties:
         output_stream.write(struct.pack('<H', particle_property.input_type))
         output_stream.write(struct.pack('<H', particle_property.range_type))
         output_stream.write(struct.pack('<H', particle_property.output_modifier))
         output_stream.write(struct.pack('<H', particle_property.output_modifier_input))
         shader_processing.write_function_size(output_stream, particle_property)
 
-    PARTICLE.particle_body.collision_effect.write(output_stream, False, True)
-    PARTICLE.particle_body.death_effect.write(output_stream, False, True)
-    PARTICLE.particle_body.locations_tag_block.write(output_stream, False)
-    PARTICLE.particle_body.attached_particle_systems_tag_block.write(output_stream, False)
-    PARTICLE.particle_body.shader_postprocess_definitions_tag_block.write(output_stream, False)
+    PARTICLE.collision_effect.write(output_stream, False, True)
+    PARTICLE.death_effect.write(output_stream, False, True)
+    PARTICLE.locations_tag_block.write(output_stream, False)
+    PARTICLE.attached_particle_systems_tag_block.write(output_stream, False)
+    PARTICLE.shader_postprocess_definitions_tag_block.write(output_stream, False)
     output_stream.write(struct.pack('<40x'))
 
 def write_locations(output_stream, TAG, locations, locations_header):
@@ -180,21 +180,21 @@ def build_asset(output_stream, PARTICLE, report):
 
     PARTICLE.header.write(output_stream, False, True)
     write_body(output_stream, TAG, PARTICLE)
-    shader_template_name_length = len(PARTICLE.particle_body.shader_template.name)
+    shader_template_name_length = len(PARTICLE.shader_template.name)
     if shader_template_name_length > 0:
-        output_stream.write(struct.pack('<%ssx' % shader_template_name_length, TAG.string_to_bytes(PARTICLE.particle_body.shader_template.name, False)))
+        output_stream.write(struct.pack('<%ssx' % shader_template_name_length, TAG.string_to_bytes(PARTICLE.shader_template.name, False)))
 
     shader_processing.write_parameters(output_stream, TAG, PARTICLE.parameters, PARTICLE.parameters_header)
-    for particle_property in PARTICLE.particle_body.properties:
+    for particle_property in PARTICLE.properties:
         particle_property.function_header.write(output_stream, TAG, True)
         shader_processing.write_function(output_stream, TAG, particle_property)
 
-    collision_effect_name_length = len(PARTICLE.particle_body.collision_effect.name)
+    collision_effect_name_length = len(PARTICLE.collision_effect.name)
     if collision_effect_name_length > 0:
-        output_stream.write(struct.pack('<%ssx' % collision_effect_name_length, TAG.string_to_bytes(PARTICLE.particle_body.collision_effect.name, False)))
+        output_stream.write(struct.pack('<%ssx' % collision_effect_name_length, TAG.string_to_bytes(PARTICLE.collision_effect.name, False)))
 
-    death_effect_name_length = len(PARTICLE.particle_body.death_effect.name)
+    death_effect_name_length = len(PARTICLE.death_effect.name)
     if death_effect_name_length > 0:
-        output_stream.write(struct.pack('<%ssx' % death_effect_name_length, TAG.string_to_bytes(PARTICLE.particle_body.death_effect.name, False)))
+        output_stream.write(struct.pack('<%ssx' % death_effect_name_length, TAG.string_to_bytes(PARTICLE.death_effect.name, False)))
 
     write_locations(output_stream, TAG, PARTICLE.locations, PARTICLE.locations_header)

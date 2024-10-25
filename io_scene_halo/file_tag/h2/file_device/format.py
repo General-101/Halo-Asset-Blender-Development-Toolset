@@ -38,31 +38,24 @@ class LightmapFlags(Flag):
     dont_use_in_lightprobe = auto()
 
 class DeviceAsset(ObjectAsset):
-    def __init__(self):
+    def __init__(self, device_flags=0, power_transition_time=0.0, power_acceleration_time=0.0, position_transition_time=0.0, position_acceleration_time=0.0, 
+                 depowered_position_transition_time=0.0, depowered_position_acceleration_time=0.0, lightmap_flags=0, open_up=None, close_down=None, opened=None, 
+                 closed=None, depowered=None, repowered=None, delay_time=0.0, delay_effect=None, automatic_activation_radius=0.0):
         super().__init__()
-        self.header = None
-        self.device_body_header = None
-        self.device_body = None
-
-    class DeviceBody(ObjectAsset.ObjectBody):
-        def __init__(self, device_flags=0, power_transition_time=0.0, power_acceleration_time=0.0, position_transition_time=0.0, position_acceleration_time=0.0,
-                     depowered_position_transition_time=0.0, depowered_position_acceleration_time=0.0, lightmap_flags=0, open_up=None, close_down=None, opened=None, closed=None,
-                     depowered=None, repowered=None, delay_time=0.0, delay_effect=None, automatic_activation_radius=0.0):
-            super().__init__()
-            self.device_flags = device_flags
-            self.power_transition_time = power_transition_time
-            self.power_acceleration_time = power_acceleration_time
-            self.position_transition_time = position_transition_time
-            self.position_acceleration_time = position_acceleration_time
-            self.depowered_position_transition_time = depowered_position_transition_time
-            self.depowered_position_acceleration_time = depowered_position_acceleration_time
-            self.lightmap_flags = lightmap_flags
-            self.open_up = open_up
-            self.close_down = close_down
-            self.opened = opened
-            self.closed = closed
-            self.depowered = depowered
-            self.repowered = repowered
-            self.delay_time = delay_time
-            self.delay_effect = delay_effect
-            self.automatic_activation_radius = automatic_activation_radius
+        self.device_flags = device_flags
+        self.power_transition_time = power_transition_time
+        self.power_acceleration_time = power_acceleration_time
+        self.position_transition_time = position_transition_time
+        self.position_acceleration_time = position_acceleration_time
+        self.depowered_position_transition_time = depowered_position_transition_time
+        self.depowered_position_acceleration_time = depowered_position_acceleration_time
+        self.lightmap_flags = lightmap_flags
+        self.open_up = open_up
+        self.close_down = close_down
+        self.opened = opened
+        self.closed = closed
+        self.depowered = depowered
+        self.repowered = repowered
+        self.delay_time = delay_time
+        self.delay_effect = delay_effect
+        self.automatic_activation_radius = automatic_activation_radius

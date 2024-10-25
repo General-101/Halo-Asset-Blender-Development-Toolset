@@ -29,14 +29,14 @@ import struct
 from ....global_functions import tag_format, shader_processing
 
 def write_body(output_stream, TAG, POINTPHYSICS):
-    POINTPHYSICS.point_physics_body_header.write(output_stream, TAG, True)
-    output_stream.write(struct.pack('<i', POINTPHYSICS.point_physics_body.flags))
+    POINTPHYSICS.body_header.write(output_stream, TAG, True)
+    output_stream.write(struct.pack('<i', POINTPHYSICS.flags))
     output_stream.write(struct.pack('<28x'))
-    output_stream.write(struct.pack('<f', POINTPHYSICS.point_physics_body.density))
-    output_stream.write(struct.pack('<f', POINTPHYSICS.point_physics_body.air_friction))
-    output_stream.write(struct.pack('<f', POINTPHYSICS.point_physics_body.water_friction))
-    output_stream.write(struct.pack('<f', POINTPHYSICS.point_physics_body.surface_friction))
-    output_stream.write(struct.pack('<f', POINTPHYSICS.point_physics_body.elasticity))
+    output_stream.write(struct.pack('<f', POINTPHYSICS.density))
+    output_stream.write(struct.pack('<f', POINTPHYSICS.air_friction))
+    output_stream.write(struct.pack('<f', POINTPHYSICS.water_friction))
+    output_stream.write(struct.pack('<f', POINTPHYSICS.surface_friction))
+    output_stream.write(struct.pack('<f', POINTPHYSICS.elasticity))
     output_stream.write(struct.pack('<12x'))
 
 def build_asset(output_stream, POINTPHYSICS, report):

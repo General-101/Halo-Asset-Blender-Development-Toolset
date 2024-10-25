@@ -44,14 +44,13 @@ def process_file(input_stream, report):
     if XML_OUTPUT:
         tag_node = TAG.xml_doc.childNodes[0]
 
-    ITEMCOLLECTION.item_collection_body = ITEMCOLLECTION.ItemCollectionBody()
-    ITEMCOLLECTION.item_collection_body.item_permutations_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "item permutations"))
-    ITEMCOLLECTION.item_collection_body.spawn_time = TAG.read_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "spawn time"))
+    ITEMCOLLECTION.item_permutations_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "item permutations"))
+    ITEMCOLLECTION.spawn_time = TAG.read_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "spawn time"))
     input_stream.read(78) # Padding?
 
     ITEMCOLLECTION.item_permutations = []
-    item_permutations_node = tag_format.get_xml_node(XML_OUTPUT, ITEMCOLLECTION.item_collection_body.item_permutations_tag_block.count, tag_node, "name", "item permutations")
-    for item_permutation_idx in range(ITEMCOLLECTION.item_collection_body.item_permutations_tag_block.count):
+    item_permutations_node = tag_format.get_xml_node(XML_OUTPUT, ITEMCOLLECTION.item_permutations_tag_block.count, tag_node, "name", "item permutations")
+    for item_permutation_idx in range(ITEMCOLLECTION.item_permutations_tag_block.count):
         item_permutation_element_node = None
         if XML_OUTPUT:
             item_permutation_element_node = TAG.xml_doc.createElement('element')

@@ -60,33 +60,31 @@ class PathfindingSphereFlags(Flag):
     with_sector = auto()
 
 class CollisionAsset():
-    def __init__(self):
-        self.header = None
-        self.collision_body_header = None
-        self.collision_body = None
-        self.import_info_header = None
-        self.import_info = None
-        self.errors_header = None
-        self.errors = None
-        self.materials_header = None
-        self.materials = None
-        self.regions_header = None
-        self.regions = None
-        self.pathfinding_spheres_header = None
-        self.pathfinding_spheres = None
-        self.nodes_header = None
-        self.nodes = None
-
-    class CollisionBody:
-        def __init__(self, import_info_tag_block=None, errors_tag_block=None, flags=0, materials_tag_block=None, regions_tag_block=None, pathfinding_spheres_tag_block=None,
-                     nodes_tag_block=None):
-            self.import_info_tag_block = import_info_tag_block
-            self.errors_tag_block = errors_tag_block
-            self.flags = flags
-            self.materials_tag_block = materials_tag_block
-            self.regions_tag_block = regions_tag_block
-            self.pathfinding_spheres_tag_block = pathfinding_spheres_tag_block
-            self.nodes_tag_block = nodes_tag_block
+    def __init__(self, header=None, body_header=None, import_info_header=None, import_info=None, errors_header=None, errors=None, materials_header=None, 
+                 materials=None, regions_header=None, regions=None, pathfinding_spheres_header=None, pathfinding_spheres=None, nodes_header=None, nodes=None, 
+                 import_info_tag_block=None, errors_tag_block=None, flags=0, materials_tag_block=None, regions_tag_block=None, pathfinding_spheres_tag_block=None, 
+                 nodes_tag_block=None):
+        self.header = header
+        self.body_header = body_header
+        self.import_info_header = import_info_header
+        self.import_info = import_info
+        self.errors_header = errors_header
+        self.errors = errors
+        self.materials_header = materials_header
+        self.materials = materials
+        self.regions_header = regions_header
+        self.regions = regions
+        self.pathfinding_spheres_header = pathfinding_spheres_header
+        self.pathfinding_spheres = pathfinding_spheres
+        self.nodes_header = nodes_header
+        self.nodes = nodes
+        self.import_info_tag_block = import_info_tag_block
+        self.errors_tag_block = errors_tag_block
+        self.flags = flags
+        self.materials_tag_block = materials_tag_block
+        self.regions_tag_block = regions_tag_block
+        self.pathfinding_spheres_tag_block = pathfinding_spheres_tag_block
+        self.nodes_tag_block = nodes_tag_block
 
     class ImportInfo:
         def __init__(self, build=0, version="", import_date="", culprit="", import_time="", files_tag_block=None, files=None):

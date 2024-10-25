@@ -34,17 +34,16 @@ def initilize_camera_track(CAMERATRACK):
     CAMERATRACK.control_points = []
 
 def read_camera_track_body_v0(CAMERATRACK, TAG, input_stream, tag_node, XML_OUTPUT):
-    CAMERATRACK.camera_track_body_header = TAG.TagBlockHeader().read(input_stream, TAG)
-    CAMERATRACK.camera_track_body = CAMERATRACK.CameraTrackBody()
+    CAMERATRACK.body_header = TAG.TagBlockHeader().read(input_stream, TAG)
     input_stream.read(4) # Padding?
-    CAMERATRACK.camera_track_body.control_points_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "control points"))
+    CAMERATRACK.control_points_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "control points"))
     input_stream.read(32) # Padding?
 
 def read_control_points_v0(CAMERATRACK, TAG, input_stream, tag_node, XML_OUTPUT):
-    if CAMERATRACK.camera_track_body.control_points_tag_block.count > 0:
-        control_point_node = tag_format.get_xml_node(XML_OUTPUT, CAMERATRACK.camera_track_body.control_points_tag_block.count, tag_node, "name", "control points")
+    if CAMERATRACK.control_points_tag_block.count > 0:
+        control_point_node = tag_format.get_xml_node(XML_OUTPUT, CAMERATRACK.control_points_tag_block.count, tag_node, "name", "control points")
         CAMERATRACK.control_points_header = TAG.TagBlockHeader().read(input_stream, TAG)
-        for control_point_idx in range(CAMERATRACK.camera_track_body.control_points_tag_block.count):
+        for control_point_idx in range(CAMERATRACK.control_points_tag_block.count):
             control_point_element_node = None
             if XML_OUTPUT:
                 control_point_element_node = TAG.xml_doc.createElement('element')
@@ -52,23 +51,22 @@ def read_control_points_v0(CAMERATRACK, TAG, input_stream, tag_node, XML_OUTPUT)
                 control_point_node.appendChild(control_point_element_node)
 
             control_point = CAMERATRACK.ControlPoint()
-            control_point.position = TAG.read_point_3d(input_stream, TAG,  tag_format.XMLData(control_point_element_node, "position"), True)
+            control_point.position = TAG.read_point_3d(input_stream, TAG,  tag_format.XMLData(control_point_element_node, "position")) * 560
             control_point.orientation = TAG.read_quaternion(input_stream, TAG,  tag_format.XMLData(control_point_element_node, "orientation"), True)
             input_stream.read(32) # Padding?
 
             CAMERATRACK.control_points.append(control_point)
 
 def read_camera_track_body_retail(CAMERATRACK, TAG, input_stream, tag_node, XML_OUTPUT):
-    CAMERATRACK.camera_track_body_header = TAG.TagBlockHeader().read(input_stream, TAG)
-    CAMERATRACK.camera_track_body = CAMERATRACK.CameraTrackBody()
+    CAMERATRACK.body_header = TAG.TagBlockHeader().read(input_stream, TAG)
     input_stream.read(4) # Padding?
-    CAMERATRACK.camera_track_body.control_points_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "control points"))
+    CAMERATRACK.control_points_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "control points"))
 
 def read_control_points_retail(CAMERATRACK, TAG, input_stream, tag_node, XML_OUTPUT):
-    if CAMERATRACK.camera_track_body.control_points_tag_block.count > 0:
-        control_point_node = tag_format.get_xml_node(XML_OUTPUT, CAMERATRACK.camera_track_body.control_points_tag_block.count, tag_node, "name", "control points")
+    if CAMERATRACK.control_points_tag_block.count > 0:
+        control_point_node = tag_format.get_xml_node(XML_OUTPUT, CAMERATRACK.control_points_tag_block.count, tag_node, "name", "control points")
         CAMERATRACK.control_points_header = TAG.TagBlockHeader().read(input_stream, TAG)
-        for control_point_idx in range(CAMERATRACK.camera_track_body.control_points_tag_block.count):
+        for control_point_idx in range(CAMERATRACK.control_points_tag_block.count):
             control_point_element_node = None
             if XML_OUTPUT:
                 control_point_element_node = TAG.xml_doc.createElement('element')
@@ -76,7 +74,7 @@ def read_control_points_retail(CAMERATRACK, TAG, input_stream, tag_node, XML_OUT
                 control_point_node.appendChild(control_point_element_node)
 
             control_point = CAMERATRACK.ControlPoint()
-            control_point.position = TAG.read_point_3d(input_stream, TAG,  tag_format.XMLData(control_point_element_node, "position"), True)
+            control_point.position = TAG.read_point_3d(input_stream, TAG,  tag_format.XMLData(control_point_element_node, "position")) * 560
             control_point.orientation = TAG.read_quaternion(input_stream, TAG,  tag_format.XMLData(control_point_element_node, "orientation"), True)
 
             CAMERATRACK.control_points.append(control_point)

@@ -44,90 +44,91 @@ class ClusterPortalFlags(Flag):
     ai_cant_hear_through_this = auto()
 
 class LevelAsset():
-    def __init__(self):
-        self.header = None
-        self.level_body = None
-        self.collision_materials = None
-        self.collision_bsps = None
-        self.nodes = None
-        self.leaves = None
-        self.leaf_surfaces = None
-        self.surfaces = None
-        self.lightmaps = None
-        self.lens_flares = None
-        self.lens_flare_markers = None
-        self.clusters = None
-        self.cluster_data = None
-        self.cluster_portals = None
-        self.breakable_surfaces = None
-        self.fog_planes = None
-        self.fog_regions = None
-        self.fog_palettes = None
-        self.weather_palettes = None
-        self.weather_polyhedras = None
-        self.pathfinding_surfaces = None
-        self.pathfinding_edges = None
-        self.background_sounds_palettes = None
-        self.sound_environments_palettes = None
-        self.markers = None
-        self.detail_objects = None
-        self.leaf_map_leaves = None
-        self.leaf_map_portals = None
-
-    class LevelBody:
-        def __init__(self, lightmap_bitmaps_tag_ref=None, vehicle_floor=0.0, vehicle_ceiling=0.0, default_ambient_color=(0.0, 0.0, 0.0, 0.0),
-                     default_distant_light_0_color=(0.0, 0.0, 0.0, 0.0), default_distant_light_0_direction=Vector(), default_distant_light_1_color=(0.0, 0.0, 0.0, 0.0),
-                     default_distant_light_1_direction=Vector(), default_reflection_tint=(0.0, 0.0, 0.0, 0.0), default_shadow_vector=Vector(),
-                     default_shadow_color=(0.0, 0.0, 0.0, 0.0), collision_materials_tag_block=None, collision_bsps_tag_block=None, nodes_tag_block=None, world_bounds_x=(0.0, 0.0),
-                     world_bounds_y=(0.0, 0.0), world_bounds_z=(0.0, 0.0), leaves_tag_block=None, leaf_surfaces_tag_block=None, surfaces_tag_block=None, lightmaps_tag_block=None,
-                     lens_flares_tag_block=None, lens_flare_markers_tag_block=None, clusters_tag_block=None, cluster_data_raw_data=None, cluster_portals_tag_block=None,
-                     breakable_surfaces_tag_block=None, fog_planes_tag_block=None, fog_regions_tag_block=None, fog_palettes_tag_block=None, weather_palettes_tag_block=None,
-                     weather_polyhedras_tag_block=None, pathfinding_surfaces_tag_block=None, pathfinding_edges_tag_block=None, background_sounds_palette_tag_block=None,
-                     sound_environments_palette_tag_block=None, sound_pas_raw_data=None, unknown_0=0, markers_tag_block=None, detail_objects_tag_block=None,
-                     runtime_decals_tag_block=None, leaf_map_leaves_tag_block=None, leaf_map_portals_tag_block=None):
-            self.lightmap_bitmaps_tag_ref = lightmap_bitmaps_tag_ref
-            self.vehicle_floor = vehicle_floor
-            self.vehicle_ceiling = vehicle_ceiling
-            self.default_ambient_color = default_ambient_color
-            self.default_distant_light_0_color = default_distant_light_0_color
-            self.default_distant_light_0_direction = default_distant_light_0_direction
-            self.default_distant_light_1_color = default_distant_light_1_color
-            self.default_distant_light_1_direction = default_distant_light_1_direction
-            self.default_reflection_tint = default_reflection_tint
-            self.default_shadow_vector = default_shadow_vector
-            self.default_shadow_color = default_shadow_color
-            self.collision_materials_tag_block = collision_materials_tag_block
-            self.collision_bsps_tag_block = collision_bsps_tag_block
-            self.nodes_tag_block = nodes_tag_block
-            self.world_bounds_x = world_bounds_x
-            self.world_bounds_y = world_bounds_y
-            self.world_bounds_z = world_bounds_z
-            self.leaves_tag_block = leaves_tag_block
-            self.leaf_surfaces_tag_block = leaf_surfaces_tag_block
-            self.surfaces_tag_block = surfaces_tag_block
-            self.lightmaps_tag_block = lightmaps_tag_block
-            self.lens_flares_tag_block = lens_flares_tag_block
-            self.lens_flare_markers_tag_block = lens_flare_markers_tag_block
-            self.clusters_tag_block = clusters_tag_block
-            self.cluster_data_raw_data = cluster_data_raw_data
-            self.cluster_portals_tag_block = cluster_portals_tag_block
-            self.breakable_surfaces_tag_block = breakable_surfaces_tag_block
-            self.fog_planes_tag_block = fog_planes_tag_block
-            self.fog_regions_tag_block = fog_regions_tag_block
-            self.fog_palettes_tag_block = fog_palettes_tag_block
-            self.weather_palettes_tag_block = weather_palettes_tag_block
-            self.weather_polyhedras_tag_block = weather_polyhedras_tag_block
-            self.pathfinding_surfaces_tag_block = pathfinding_surfaces_tag_block
-            self.pathfinding_edges_tag_block = pathfinding_edges_tag_block
-            self.background_sounds_palette_tag_block = background_sounds_palette_tag_block
-            self.sound_environments_palette_tag_block = sound_environments_palette_tag_block
-            self.sound_pas_raw_data = sound_pas_raw_data
-            self.unknown_0 = unknown_0
-            self.markers_tag_block = markers_tag_block
-            self.detail_objects_tag_block = detail_objects_tag_block
-            self.runtime_decals_tag_block = runtime_decals_tag_block
-            self.leaf_map_leaves_tag_block = leaf_map_leaves_tag_block
-            self.leaf_map_portals_tag_block = leaf_map_portals_tag_block
+    def __init__(self, header=None, collision_materials=None, collision_bsps=None, nodes=None, leaves=None, leaf_surfaces=None, surfaces=None, lightmaps=None, 
+                 lens_flares=None, lens_flare_markers=None, clusters=None, cluster_data=None, cluster_portals=None, breakable_surfaces=None, fog_planes=None, 
+                 fog_regions=None, fog_palettes=None, weather_palettes=None, weather_polyhedras=None, pathfinding_surfaces=None, pathfinding_edges=None, 
+                 background_sounds_palettes=None, sound_environments_palettes=None, markers=None, detail_objects=None, leaf_map_leaves=None, leaf_map_portals=None, 
+                 lightmap_bitmaps_tag_ref=None, vehicle_floor=0.0, vehicle_ceiling=0.0, default_ambient_color=(0.0, 0.0, 0.0, 0.0), 
+                 default_distant_light_0_color=(0.0, 0.0, 0.0, 0.0), default_distant_light_0_direction=Vector(), default_distant_light_1_color=(0.0, 0.0, 0.0, 0.0), 
+                 default_distant_light_1_direction=Vector(), default_reflection_tint=(0.0, 0.0, 0.0, 0.0), default_shadow_vector=Vector(), 
+                 default_shadow_color=(0.0, 0.0, 0.0, 0.0), collision_materials_tag_block=None, collision_bsps_tag_block=None, nodes_tag_block=None, 
+                 world_bounds_x=(0.0, 0.0), world_bounds_y=(0.0, 0.0), world_bounds_z=(0.0, 0.0), leaves_tag_block=None, leaf_surfaces_tag_block=None, 
+                 surfaces_tag_block=None, lightmaps_tag_block=None, lens_flares_tag_block=None, lens_flare_markers_tag_block=None, clusters_tag_block=None, 
+                 cluster_data_raw_data=None, cluster_portals_tag_block=None, breakable_surfaces_tag_block=None, fog_planes_tag_block=None, fog_regions_tag_block=None, 
+                 fog_palettes_tag_block=None, weather_palettes_tag_block=None, weather_polyhedras_tag_block=None, pathfinding_surfaces_tag_block=None, 
+                 pathfinding_edges_tag_block=None, background_sounds_palette_tag_block=None, sound_environments_palette_tag_block=None, sound_pas_raw_data=None, 
+                 unknown_0=0, markers_tag_block=None, detail_objects_tag_block=None, runtime_decals_tag_block=None, leaf_map_leaves_tag_block=None, 
+                 leaf_map_portals_tag_block=None):
+        self.header = header
+        self.collision_materials = collision_materials
+        self.collision_bsps = collision_bsps
+        self.nodes = nodes
+        self.leaves = leaves
+        self.leaf_surfaces = leaf_surfaces
+        self.surfaces = surfaces
+        self.lightmaps = lightmaps
+        self.lens_flares = lens_flares
+        self.lens_flare_markers = lens_flare_markers
+        self.clusters = clusters
+        self.cluster_data = cluster_data
+        self.cluster_portals = cluster_portals
+        self.breakable_surfaces = breakable_surfaces
+        self.fog_planes = fog_planes
+        self.fog_regions = fog_regions
+        self.fog_palettes = fog_palettes
+        self.weather_palettes = weather_palettes
+        self.weather_polyhedras = weather_polyhedras
+        self.pathfinding_surfaces = pathfinding_surfaces
+        self.pathfinding_edges = pathfinding_edges
+        self.background_sounds_palettes = background_sounds_palettes
+        self.sound_environments_palettes = sound_environments_palettes
+        self.markers = markers
+        self.detail_objects = detail_objects
+        self.leaf_map_leaves = leaf_map_leaves
+        self.leaf_map_portals = leaf_map_portals
+        self.lightmap_bitmaps_tag_ref = lightmap_bitmaps_tag_ref
+        self.vehicle_floor = vehicle_floor
+        self.vehicle_ceiling = vehicle_ceiling
+        self.default_ambient_color = default_ambient_color
+        self.default_distant_light_0_color = default_distant_light_0_color
+        self.default_distant_light_0_direction = default_distant_light_0_direction
+        self.default_distant_light_1_color = default_distant_light_1_color
+        self.default_distant_light_1_direction = default_distant_light_1_direction
+        self.default_reflection_tint = default_reflection_tint
+        self.default_shadow_vector = default_shadow_vector
+        self.default_shadow_color = default_shadow_color
+        self.collision_materials_tag_block = collision_materials_tag_block
+        self.collision_bsps_tag_block = collision_bsps_tag_block
+        self.nodes_tag_block = nodes_tag_block
+        self.world_bounds_x = world_bounds_x
+        self.world_bounds_y = world_bounds_y
+        self.world_bounds_z = world_bounds_z
+        self.leaves_tag_block = leaves_tag_block
+        self.leaf_surfaces_tag_block = leaf_surfaces_tag_block
+        self.surfaces_tag_block = surfaces_tag_block
+        self.lightmaps_tag_block = lightmaps_tag_block
+        self.lens_flares_tag_block = lens_flares_tag_block
+        self.lens_flare_markers_tag_block = lens_flare_markers_tag_block
+        self.clusters_tag_block = clusters_tag_block
+        self.cluster_data_raw_data = cluster_data_raw_data
+        self.cluster_portals_tag_block = cluster_portals_tag_block
+        self.breakable_surfaces_tag_block = breakable_surfaces_tag_block
+        self.fog_planes_tag_block = fog_planes_tag_block
+        self.fog_regions_tag_block = fog_regions_tag_block
+        self.fog_palettes_tag_block = fog_palettes_tag_block
+        self.weather_palettes_tag_block = weather_palettes_tag_block
+        self.weather_polyhedras_tag_block = weather_polyhedras_tag_block
+        self.pathfinding_surfaces_tag_block = pathfinding_surfaces_tag_block
+        self.pathfinding_edges_tag_block = pathfinding_edges_tag_block
+        self.background_sounds_palette_tag_block = background_sounds_palette_tag_block
+        self.sound_environments_palette_tag_block = sound_environments_palette_tag_block
+        self.sound_pas_raw_data = sound_pas_raw_data
+        self.unknown_0 = unknown_0
+        self.markers_tag_block = markers_tag_block
+        self.detail_objects_tag_block = detail_objects_tag_block
+        self.runtime_decals_tag_block = runtime_decals_tag_block
+        self.leaf_map_leaves_tag_block = leaf_map_leaves_tag_block
+        self.leaf_map_portals_tag_block = leaf_map_portals_tag_block
 
     class CollisionMaterial:
         def __init__(self, shader_tag_ref=None, unknown_0=0):

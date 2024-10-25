@@ -50,61 +50,60 @@ def process_file(input_stream, report):
     if XML_OUTPUT:
         tag_node = TAG.xml_doc.childNodes[0]
 
-    SHADER.shader_body = SHADER.ShaderBody()
-    SHADER.shader_body.radiosity_flags = TAG.read_flag_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "flags", RadiosityFlags))
-    SHADER.shader_body.detail_level = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "detail level", DetailLevelEnum))
-    SHADER.shader_body.power = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "power"))
-    SHADER.shader_body.color_of_emitted_light = TAG.read_rgb(input_stream, TAG, tag_format.XMLData(tag_node, "color of emitted light"))
-    SHADER.shader_body.light_tint_color = TAG.read_rgb(input_stream, TAG, tag_format.XMLData(tag_node, "tint color"))
+    SHADER.radiosity_flags = TAG.read_flag_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "flags", RadiosityFlags))
+    SHADER.detail_level = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "detail level", DetailLevelEnum))
+    SHADER.power = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "power"))
+    SHADER.color_of_emitted_light = TAG.read_rgb(input_stream, TAG, tag_format.XMLData(tag_node, "color of emitted light"))
+    SHADER.light_tint_color = TAG.read_rgb(input_stream, TAG, tag_format.XMLData(tag_node, "tint color"))
     input_stream.read(2) # Padding
-    SHADER.shader_body.material_type = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "material type", MaterialTypeEnum))
+    SHADER.material_type = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "material type", MaterialTypeEnum))
     input_stream.read(4) # Padding
-    SHADER.shader_body.water_flags = TAG.read_flag_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "flags", WaterFlags))
+    SHADER.water_flags = TAG.read_flag_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "flags", WaterFlags))
     input_stream.read(34) # Padding
-    SHADER.shader_body.base_map = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "base map"))
+    SHADER.base_map = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "base map"))
     input_stream.read(16) # Padding
-    SHADER.shader_body.view_perpendicular_brightness = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "view perpendicular brightness"))
-    SHADER.shader_body.view_perpendicular_tint_color = TAG.read_rgb(input_stream, TAG, tag_format.XMLData(tag_node, "view perpendicular tint color"))
-    SHADER.shader_body.view_parallel_brightness = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "view parallel brightness"))
-    SHADER.shader_body.view_parallel_tint_color = TAG.read_rgb(input_stream, TAG, tag_format.XMLData(tag_node, "view parallel tint color"))
+    SHADER.view_perpendicular_brightness = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "view perpendicular brightness"))
+    SHADER.view_perpendicular_tint_color = TAG.read_rgb(input_stream, TAG, tag_format.XMLData(tag_node, "view perpendicular tint color"))
+    SHADER.view_parallel_brightness = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "view parallel brightness"))
+    SHADER.view_parallel_tint_color = TAG.read_rgb(input_stream, TAG, tag_format.XMLData(tag_node, "view parallel tint color"))
     input_stream.read(16) # Padding
-    SHADER.shader_body.reflection_map = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "reflection map"))
+    SHADER.reflection_map = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "reflection map"))
     input_stream.read(16) # Padding
-    SHADER.shader_body.ripple_animation_angle = TAG.read_degree(input_stream, TAG, tag_format.XMLData(tag_node, "ripple animation angle"))
-    SHADER.shader_body.ripple_animation_velocity = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "ripple animation velocity"))
-    SHADER.shader_body.ripple_scale = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "ripple scale"))
-    SHADER.shader_body.ripple_maps = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "ripple maps"))
-    SHADER.shader_body.ripple_mipmap_levels = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(tag_node, "ripple mipmap levels"))
+    SHADER.ripple_animation_angle = TAG.read_degree(input_stream, TAG, tag_format.XMLData(tag_node, "ripple animation angle"))
+    SHADER.ripple_animation_velocity = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "ripple animation velocity"))
+    SHADER.ripple_scale = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "ripple scale"))
+    SHADER.ripple_maps = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "ripple maps"))
+    SHADER.ripple_mipmap_levels = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(tag_node, "ripple mipmap levels"))
     input_stream.read(2) # Padding
-    SHADER.shader_body.ripple_mipmap_fade_factor = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "view parallel brightness"))
-    SHADER.shader_body.ripple_mipmap_detail_bias = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "view parallel brightness"))
+    SHADER.ripple_mipmap_fade_factor = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "view parallel brightness"))
+    SHADER.ripple_mipmap_detail_bias = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "view parallel brightness"))
     input_stream.read(64) # Padding
-    SHADER.shader_body.ripples_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "ripples"))
+    SHADER.ripples_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "ripples"))
     input_stream.read(16) # Padding
 
-    base_map_name_length = SHADER.shader_body.base_map.name_length
-    reflection_map_name_length = SHADER.shader_body.reflection_map.name_length
-    ripple_maps_name_length = SHADER.shader_body.ripple_maps.name_length
+    base_map_name_length = SHADER.base_map.name_length
+    reflection_map_name_length = SHADER.reflection_map.name_length
+    ripple_maps_name_length = SHADER.ripple_maps.name_length
     if base_map_name_length > 0:
-        SHADER.shader_body.base_map.name = TAG.read_variable_string(input_stream, base_map_name_length, TAG)
+        SHADER.base_map.name = TAG.read_variable_string(input_stream, base_map_name_length, TAG)
 
     if reflection_map_name_length > 0:
-        SHADER.shader_body.reflection_map.name = TAG.read_variable_string(input_stream, reflection_map_name_length, TAG)
+        SHADER.reflection_map.name = TAG.read_variable_string(input_stream, reflection_map_name_length, TAG)
 
     if ripple_maps_name_length > 0:
-        SHADER.shader_body.ripple_maps.name = TAG.read_variable_string(input_stream, ripple_maps_name_length, TAG)
+        SHADER.ripple_maps.name = TAG.read_variable_string(input_stream, ripple_maps_name_length, TAG)
 
     if XML_OUTPUT:
         base_map_node = tag_format.get_xml_node(XML_OUTPUT, 1, tag_node, "name", "base map")
         reflection_map_node = tag_format.get_xml_node(XML_OUTPUT, 1, tag_node, "name", "reflection map")
         ripple_maps_node = tag_format.get_xml_node(XML_OUTPUT, 1, tag_node, "name", "ripple maps")
-        SHADER.shader_body.base_map.append_xml_attributes(base_map_node)
-        SHADER.shader_body.reflection_map.append_xml_attributes(reflection_map_node)
-        SHADER.shader_body.ripple_maps.append_xml_attributes(ripple_maps_node)
+        SHADER.base_map.append_xml_attributes(base_map_node)
+        SHADER.reflection_map.append_xml_attributes(reflection_map_node)
+        SHADER.ripple_maps.append_xml_attributes(ripple_maps_node)
 
     SHADER.ripples = []
-    ripples_node = tag_format.get_xml_node(XML_OUTPUT, SHADER.shader_body.ripples_tag_block.count, tag_node, "name", "ripples")
-    for ripple_idx in range(SHADER.shader_body.ripples_tag_block.count):
+    ripples_node = tag_format.get_xml_node(XML_OUTPUT, SHADER.ripples_tag_block.count, tag_node, "name", "ripples")
+    for ripple_idx in range(SHADER.ripples_tag_block.count):
         ripple_element_node = None
         if XML_OUTPUT:
             ripple_element_node = TAG.xml_doc.createElement('element')

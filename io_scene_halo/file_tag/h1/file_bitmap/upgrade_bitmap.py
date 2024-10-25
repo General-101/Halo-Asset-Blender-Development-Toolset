@@ -94,16 +94,15 @@ def upgrade_h2_bitmap(H1_ASSET, patch_txt_path, report):
     BITMAP.sequences = []
     BITMAP.bitmaps = []
 
-    BITMAP.bitmap_body_header = TAG.TagBlockHeader("tbfd", 0, 1, 112)
-    BITMAP.bitmap_body = BITMAP.BitmapBody()
-    BITMAP.bitmap_body.type = H1_ASSET.bitmap_body.type
-    BITMAP.bitmap_body.format = convert_format(H1_ASSET.bitmap_body.format)
-    BITMAP.bitmap_body.usage = H1_ASSET.bitmap_body.usage
-    BITMAP.bitmap_body.flags = convert_flags(H1_ASSET.bitmap_body.flags)
-    BITMAP.bitmap_body.detail_fade_factor = H1_ASSET.bitmap_body.detail_fade_factor
-    BITMAP.bitmap_body.sharpen_amount = H1_ASSET.bitmap_body.sharpen_amount
+    BITMAP.body_header = TAG.TagBlockHeader("tbfd", 0, 1, 112)
+    BITMAP.bitmap_type = H1_ASSET.bitmap_type
+    BITMAP.bitmap_format = convert_format(H1_ASSET.bitmap_format)
+    BITMAP.usage = H1_ASSET.usage
+    BITMAP.flags = convert_flags(H1_ASSET.flags)
+    BITMAP.detail_fade_factor = H1_ASSET.detail_fade_factor
+    BITMAP.sharpen_amount = H1_ASSET.sharpen_amount
     repeat_value = 10
-    str_bump_height = str(H1_ASSET.bitmap_body.bump_height).split(".", 1)[1]
+    str_bump_height = str(H1_ASSET.bump_height).split(".", 1)[1]
     for char in str_bump_height:
         if char == "0":
             repeat_value *= 10
@@ -111,26 +110,26 @@ def upgrade_h2_bitmap(H1_ASSET, patch_txt_path, report):
         else:
             break
 
-    BITMAP.bitmap_body.bump_height = H1_ASSET.bitmap_body.bump_height * repeat_value
-    BITMAP.bitmap_body.sprite_budget_size = H1_ASSET.bitmap_body.sprite_budget_size
-    BITMAP.bitmap_body.sprite_budget_count = H1_ASSET.bitmap_body.sprite_budget_count
-    BITMAP.bitmap_body.color_plate_width = 0
-    BITMAP.bitmap_body.color_plate_height = 0
-    BITMAP.bitmap_body.compressed_color_plate_data = TAG.RawData()
-    BITMAP.bitmap_body.processed_pixel_data = TAG.RawData()
-    BITMAP.bitmap_body.compressed_color_plate = bytes()
-    BITMAP.bitmap_body.processed_pixels = bytes()
-    BITMAP.bitmap_body.blur_filter_size = H1_ASSET.bitmap_body.blur_filter_size
-    BITMAP.bitmap_body.alpha_bias = H1_ASSET.bitmap_body.alpha_bias
-    BITMAP.bitmap_body.mipmap_count = H1_ASSET.bitmap_body.mipmap_count
-    BITMAP.bitmap_body.sprite_usage = H1_ASSET.bitmap_body.sprite_usage
-    BITMAP.bitmap_body.sprite_spacing = H1_ASSET.bitmap_body.sprite_spacing
-    BITMAP.bitmap_body.force_format = 0
-    BITMAP.bitmap_body.sequences_tag_block = TAG.TagBlock()
-    BITMAP.bitmap_body.bitmaps_tag_block = TAG.TagBlock()
-    BITMAP.bitmap_body.color_compression_quality = 0
-    BITMAP.bitmap_body.alpha_compression_quality = 0
-    BITMAP.bitmap_body.overlap = 0
-    BITMAP.bitmap_body.color_subsampling = 0
+    BITMAP.bump_height = H1_ASSET.bump_height * repeat_value
+    BITMAP.sprite_budget_size = H1_ASSET.sprite_budget_size
+    BITMAP.sprite_budget_count = H1_ASSET.sprite_budget_count
+    BITMAP.color_plate_width = 0
+    BITMAP.color_plate_height = 0
+    BITMAP.compressed_color_plate_data = TAG.RawData()
+    BITMAP.processed_pixel_data = TAG.RawData()
+    BITMAP.compressed_color_plate = bytes()
+    BITMAP.processed_pixels = bytes()
+    BITMAP.blur_filter_size = H1_ASSET.blur_filter_size
+    BITMAP.alpha_bias = H1_ASSET.alpha_bias
+    BITMAP.mipmap_count = H1_ASSET.mipmap_count
+    BITMAP.sprite_usage = H1_ASSET.sprite_usage
+    BITMAP.sprite_spacing = H1_ASSET.sprite_spacing
+    BITMAP.force_format = 0
+    BITMAP.sequences_tag_block = TAG.TagBlock()
+    BITMAP.bitmaps_tag_block = TAG.TagBlock()
+    BITMAP.color_compression_quality = 0
+    BITMAP.alpha_compression_quality = 0
+    BITMAP.overlap = 0
+    BITMAP.color_subsampling = 0
 
     return BITMAP

@@ -39,20 +39,14 @@ class TriggersWhenEnum(Enum):
     destroyed = auto()
 
 class ControlAsset(DeviceAsset):
-    def __init__(self):
+    def __init__(self, control_type=0, triggers_when=0, call_value=0.0, action_string="", action_string_length=0, on=None, off=None, 
+                 deny=None):
         super().__init__()
-        self.header = None
-        self.control_body_header = None
-        self.control_body = None
-
-    class ControlBody(DeviceAsset.DeviceBody):
-        def __init__(self, control_type=0, triggers_when=0, call_value=0.0, action_string="", action_string_length=0, on=None, off=None, deny=None):
-            super().__init__()
-            self.control_type = control_type
-            self.triggers_when = triggers_when
-            self.call_value = call_value
-            self.action_string = action_string
-            self.action_string_length = action_string_length
-            self.on = on
-            self.off = off
-            self.deny = deny
+        self.control_type = control_type
+        self.triggers_when = triggers_when
+        self.call_value = call_value
+        self.action_string = action_string
+        self.action_string_length = action_string_length
+        self.on = on
+        self.off = off
+        self.deny = deny

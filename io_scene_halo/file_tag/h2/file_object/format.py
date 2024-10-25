@@ -98,6 +98,51 @@ class FunctionFlags(Flag):
     always_active = auto()
     random_time_offset = auto()
 
+class FunctionTypeEnum(Enum):
+    identity = 0
+    constant = auto()
+    transition = auto()
+    periodic = auto()
+    linear = auto()
+    linear_key = auto()
+    multi_linear_key = auto()
+    spline = auto()
+    multi_spline = auto()
+    exponent = auto()
+    spline2 = auto()
+
+class OutputTypeFlags(Flag):
+    scalar_intensity = 0
+    _range = 1
+    constant = 16
+    _2_color = 32
+    _3_color = 48
+    _4_color = 64
+
+class TransitionExponentEnum(Enum):
+    linear = 0
+    early = auto()
+    very_early = auto()
+    late = auto()
+    very_late = auto()
+    cosine = auto()
+    one = auto()
+    zero = auto()
+
+class PeriodicExponentEnum(Enum):
+    one = 0
+    zero = auto()
+    cosine = auto()
+    cosine_variable_period = auto()
+    diagonal_wave = auto()
+    diagonal_wave_variable_period = auto()
+    slide = auto()
+    slide_variable_period = auto()
+    noise = auto()
+    jitter = auto()
+    wander = auto()
+    spark = auto()
+
 class ChangeColorEnum(Enum):
     none = 0
     primary = auto()
@@ -121,61 +166,62 @@ class ResourceTypeEnum(Enum):
     lightmap_instance_bitmaps = auto()
 
 class ObjectAsset():
-    def __init__(self):
-        self.ai_properties_header = None
-        self.ai_properties = None
-        self.functions_header = None
-        self.functions = None
-        self.attachments_header = None
-        self.attachments = None
-        self.widgets_header = None
-        self.widgets = None
-        self.old_functions_header = None
-        self.old_functions = None
-        self.change_colors_header = None
-        self.change_colors = None
-        self.predicted_resources_header = None
-        self.predicted_resources = None
-
-    class ObjectBody:
-        def __init__(self, object_flags=0, bounding_radius=0.0, bounding_offset=Vector(), acceleration_scale=0.0, lightmap_shadow_mode=0, sweetner_size=0,
-                     dynamic_light_sphere_radius=0.0, dynamic_light_sphere_offset=Vector(), default_model_variant="", default_model_variant_length=0, model=None, crate_object=None,
-                     modifier_shader=None, creation_effect=None, material_effects=None, ai_properties_tag_block=None, functions_tag_block=None, apply_collision_damage_scale=0.0,
-                     min_game_acc=0.0, max_game_acc=0.0, min_game_scale=0.0, max_game_scale=0.0, min_abs_acc=0.0, max_abs_acc=0.0, min_abs_scale=0.0, max_abs_scale=0.0,
-                     hud_text_message_index=0, attachments_tag_block=None, widgets_tag_block=None, old_functions_tag_block=None, change_colors_tag_block=None,
-                     predicted_resources_tag_block=None):
-            self.object_flags = object_flags
-            self.bounding_radius = bounding_radius
-            self.bounding_offset = bounding_offset
-            self.acceleration_scale = acceleration_scale
-            self.lightmap_shadow_mode = lightmap_shadow_mode
-            self.sweetner_size = sweetner_size
-            self.dynamic_light_sphere_radius = dynamic_light_sphere_radius
-            self.dynamic_light_sphere_offset = dynamic_light_sphere_offset
-            self.default_model_variant = default_model_variant
-            self.default_model_variant_length = default_model_variant_length
-            self.model = model
-            self.crate_object = crate_object
-            self.modifier_shader = modifier_shader
-            self.creation_effect = creation_effect
-            self.material_effects = material_effects
-            self.ai_properties_tag_block = ai_properties_tag_block
-            self.functions_tag_block = functions_tag_block
-            self.apply_collision_damage_scale = apply_collision_damage_scale
-            self.min_game_acc = min_game_acc
-            self.max_game_acc = max_game_acc
-            self.min_game_scale = min_game_scale
-            self.max_game_scale = max_game_scale
-            self.min_abs_acc = min_abs_acc
-            self.max_abs_acc = max_abs_acc
-            self.min_abs_scale = min_abs_scale
-            self.max_abs_scale = max_abs_scale
-            self.hud_text_message_index = hud_text_message_index
-            self.attachments_tag_block = attachments_tag_block
-            self.widgets_tag_block = widgets_tag_block
-            self.old_functions_tag_block = old_functions_tag_block
-            self.change_colors_tag_block = change_colors_tag_block
-            self.predicted_resources_tag_block = predicted_resources_tag_block
+    def __init__(self, header=None, body_header=None, ai_properties_header=None, ai_properties=None, functions_header=None, functions=None, attachments_header=None, 
+                 attachments=None, widgets_header=None, widgets=None, old_functions_header=None, old_functions=None, change_colors_header=None, change_colors=None, 
+                 predicted_resources_header=None, predicted_resources=None, object_flags=0, bounding_radius=0.0, bounding_offset=Vector(), acceleration_scale=0.0, 
+                 lightmap_shadow_mode=0, sweetner_size=0, dynamic_light_sphere_radius=0.0, dynamic_light_sphere_offset=Vector(), default_model_variant="", 
+                 default_model_variant_length=0, model=None, crate_object=None, modifier_shader=None, creation_effect=None, material_effects=None, 
+                 ai_properties_tag_block=None, functions_tag_block=None, apply_collision_damage_scale=0.0, min_game_acc=0.0, max_game_acc=0.0, min_game_scale=0.0, 
+                 max_game_scale=0.0, min_abs_acc=0.0, max_abs_acc=0.0, min_abs_scale=0.0, max_abs_scale=0.0, hud_text_message_index=0, attachments_tag_block=None, 
+                 widgets_tag_block=None, old_functions_tag_block=None, change_colors_tag_block=None, predicted_resources_tag_block=None):
+        self.header = header
+        self.body_header = body_header
+        self.ai_properties_header = ai_properties_header
+        self.ai_properties = ai_properties
+        self.functions_header = functions_header
+        self.functions = functions
+        self.attachments_header = attachments_header
+        self.attachments = attachments
+        self.widgets_header = widgets_header
+        self.widgets = widgets
+        self.old_functions_header = old_functions_header
+        self.old_functions = old_functions
+        self.change_colors_header = change_colors_header
+        self.change_colors = change_colors
+        self.predicted_resources_header = predicted_resources_header
+        self.predicted_resources = predicted_resources
+        self.object_flags = object_flags
+        self.bounding_radius = bounding_radius
+        self.bounding_offset = bounding_offset
+        self.acceleration_scale = acceleration_scale
+        self.lightmap_shadow_mode = lightmap_shadow_mode
+        self.sweetner_size = sweetner_size
+        self.dynamic_light_sphere_radius = dynamic_light_sphere_radius
+        self.dynamic_light_sphere_offset = dynamic_light_sphere_offset
+        self.default_model_variant = default_model_variant
+        self.default_model_variant_length = default_model_variant_length
+        self.model = model
+        self.crate_object = crate_object
+        self.modifier_shader = modifier_shader
+        self.creation_effect = creation_effect
+        self.material_effects = material_effects
+        self.ai_properties_tag_block = ai_properties_tag_block
+        self.functions_tag_block = functions_tag_block
+        self.apply_collision_damage_scale = apply_collision_damage_scale
+        self.min_game_acc = min_game_acc
+        self.max_game_acc = max_game_acc
+        self.min_game_scale = min_game_scale
+        self.max_game_scale = max_game_scale
+        self.min_abs_acc = min_abs_acc
+        self.max_abs_acc = max_abs_acc
+        self.min_abs_scale = min_abs_scale
+        self.max_abs_scale = max_abs_scale
+        self.hud_text_message_index = hud_text_message_index
+        self.attachments_tag_block = attachments_tag_block
+        self.widgets_tag_block = widgets_tag_block
+        self.old_functions_tag_block = old_functions_tag_block
+        self.change_colors_tag_block = change_colors_tag_block
+        self.predicted_resources_tag_block = predicted_resources_tag_block
 
     class AIProperty:
         def __init__(self, ai_flags=0, ai_type_name="", ai_type_name_length=0, ai_size=0, leap_jump_speed=0):
@@ -186,8 +232,11 @@ class ObjectAsset():
             self.leap_jump_speed = leap_jump_speed
 
     class Function:
-        def __init__(self, flags=0, import_name="", import_name_length=0, export_name="", export_name_length=0, turn_off_with="", turn_off_with_length=0, min_value=0,
-                     function_property=None, scale_by="", scale_by_length=0):
+        def __init__(self, flags=0, import_name="", import_name_length=0, export_name="", export_name_length=0, turn_off_with="", turn_off_with_length=0, min_value=0, 
+                     scale_by="", scale_by_length=0, MAPP_header=None, function_header=None, function_type=0, output_type=0, lower_bound=0.0, upper_bound=0.0, 
+                     function_min=0.0, function_max=0.0, exponent=0.0, frequency=0.0, phase=0.0, points=None, range_function_min=0.0, range_function_max=0.0, 
+                     range_exponent=0.0, range_frequency=0.0, range_phase=0.0, range_points=None, color_a=(0.0, 0.0, 0.0, 1.0), color_b=(0.0, 0.0, 0.0, 1.0), 
+                     color_c=(0.0, 0.0, 0.0, 1.0), color_d=(0.0, 0.0, 0.0, 1.0)):
             self.flags = flags
             self.import_name = import_name
             self.import_name_length = import_name_length
@@ -196,9 +245,30 @@ class ObjectAsset():
             self.turn_off_with = turn_off_with
             self.turn_off_with_length = turn_off_with_length
             self.min_value = min_value
-            self.function_property = function_property
             self.scale_by = scale_by
             self.scale_by_length = scale_by_length
+            self.MAPP_header = MAPP_header
+            self.function_header = function_header
+            self.function_type = function_type
+            self.output_type = output_type
+            self.lower_bound = lower_bound
+            self.upper_bound = upper_bound
+            self.function_min = function_min
+            self.function_max = function_max
+            self.exponent = exponent
+            self.frequency = frequency
+            self.phase = phase
+            self.points = points
+            self.range_function_min = range_function_min
+            self.range_function_max = range_function_max
+            self.range_exponent = range_exponent
+            self.range_frequency = range_frequency
+            self.range_phase = range_phase
+            self.range_points = range_points
+            self.color_a = color_a
+            self.color_b = color_b
+            self.color_c = color_c
+            self.color_d = color_d
 
     class Attachment:
         def __init__(self, attachment_type=None, marker="", marker_length=0, change_color=0, primary_scale="", primary_scale_length=0, secondary_scale="", secondary_scale_length=0):

@@ -32,24 +32,23 @@ from .format import ScenarioAsset
 XML_OUTPUT = False
 
 def read_scenario_body(SCENARIO, TAG, input_stream, tag_node, XML_OUTPUT):
-    SCENARIO.scenario_body_header = TAG.TagBlockHeader().read(input_stream, TAG)
-    SCENARIO.scenario_body = SCENARIO.ScenarioBody()
-    SCENARIO.scenario_body.skies_tag_block = TAG.TagBlock()
-    SCENARIO.scenario_body.object_names_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "object names"))
-    SCENARIO.scenario_body.environment_objects_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "environment objects"))
-    SCENARIO.scenario_body.structure_bsps_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "structure bsps"))
-    SCENARIO.scenario_body.sound_scenery_palette_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "sound scenery palette"))
-    SCENARIO.scenario_body.sound_scenery_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "sound scenery"))
-    SCENARIO.scenario_body.next_object_id_salt = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(tag_node, "next object id salt"))
-    SCENARIO.scenario_body.editor_folders_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "editor folders"))
+    SCENARIO.body_header = TAG.TagBlockHeader().read(input_stream, TAG)
+    SCENARIO.skies_tag_block = TAG.TagBlock()
+    SCENARIO.object_names_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "object names"))
+    SCENARIO.environment_objects_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "environment objects"))
+    SCENARIO.structure_bsps_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "structure bsps"))
+    SCENARIO.sound_scenery_palette_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "sound scenery palette"))
+    SCENARIO.sound_scenery_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "sound scenery"))
+    SCENARIO.next_object_id_salt = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(tag_node, "next object id salt"))
+    SCENARIO.editor_folders_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "editor folders"))
 
 def read_sound_scenery(SCENARIO, TAG, input_stream, tag_node, XML_OUTPUT):
-    process_scenario.palette_helper(input_stream, SCENARIO.scenario_body.sound_scenery_palette_tag_block.count, "sound scenery palette", SCENARIO.sound_scenery_palette_header, SCENARIO.sound_scenery_palette, tag_node, TAG)
+    process_scenario.palette_helper(input_stream, SCENARIO.sound_scenery_palette_tag_block.count, "sound scenery palette", SCENARIO.sound_scenery_palette_header, SCENARIO.sound_scenery_palette, tag_node, TAG)
 
-    if SCENARIO.scenario_body.sound_scenery_tag_block.count > 0:
+    if SCENARIO.sound_scenery_tag_block.count > 0:
         SCENARIO.sound_scenery_header = TAG.TagBlockHeader().read(input_stream, TAG)
-        sound_scenery_node = tag_format.get_xml_node(XML_OUTPUT, SCENARIO.scenario_body.sound_scenery_tag_block.count, tag_node, "name", "sound scenery")
-        for sound_scenery_idx in range(SCENARIO.scenario_body.sound_scenery_tag_block.count):
+        sound_scenery_node = tag_format.get_xml_node(XML_OUTPUT, SCENARIO.sound_scenery_tag_block.count, tag_node, "name", "sound scenery")
+        for sound_scenery_idx in range(SCENARIO.sound_scenery_tag_block.count):
             sound_scenery_element_node = None
             if XML_OUTPUT:
                 sound_scenery_element_node = TAG.xml_doc.createElement('element')

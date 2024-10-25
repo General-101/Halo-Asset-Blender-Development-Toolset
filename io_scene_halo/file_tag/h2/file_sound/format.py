@@ -24,7 +24,6 @@
 #
 # ##### END MIT LICENSE BLOCK #####
 
-from mathutils import Vector
 from enum import Flag, Enum, auto
 
 class SoundFlags(Flag):
@@ -124,68 +123,67 @@ class CompressionEnum(Enum):
     opus = 0
 
 class SoundAsset():
-    def __init__(self):
-        self.header = None
-        self.sound_body_header = None
-        self.sound_body = None
-        self.promotion_rules_header = None
-        self.promotion_rules = None
-        self.runtime_timers_header = None
-        self.runtime_timers = None
-        self.pitch_ranges_header = None
-        self.pitch_ranges = None
-        self.platform_parameters_header = None
-        self.platform_parameters = None
-        self.extra_sound_info_header = None
-        self.extra_sound_info = None
-        self.reflections_header = None
-        self.reflections = None
-
-    class SoundBody:
-        def __init__(self, remastered_sound=None, flags=0, class_type=0, sample_rate=0, output_effect=0, import_type=0, minimum_distance=0.0, maximum_distance=0.0, skip_fraction=0.0,
-                     maximum_bend_per_second=0.0, gain_base=0.0, gain_variance=0.0, random_pitch_bounds=(0, 0), inner_cone_angle=0.0, outer_cone_angle=0.0, outer_cone_gain=0.0,
-                     override_flags=0, azimuth=0.0, positional_gain=0.0, first_person_gain=0.0, gain_modifier=(0.0, 0.0), pitch_modifier=(0, 0), skip_fraction_modifier=(0.0, 0.0),
-                     encoding=0, compression=0, promotion_rules_tag_block=None, runtime_timers_tag_block=None, runtime_active_promotion_index=0, runtime_last_promotion_time=0,
-                     runtime_suppression_timeout=0, inner_silence_distance=0.0, pitch_ranges_tag_block=None, platform_parameters_tag_block=None, extra_sound_info_tag_block=None,
-                     reflections_tag_block=None, low_pass_minimum_distance=0.0, low_pass_maximum_distance=1.0, parameters=None):
-            self.remastered_sound = remastered_sound
-            self.flags = flags
-            self.class_type = class_type
-            self.sample_rate = sample_rate
-            self.output_effect = output_effect
-            self.import_type = import_type
-            self.minimum_distance = minimum_distance
-            self.maximum_distance = maximum_distance
-            self.skip_fraction = skip_fraction
-            self.maximum_bend_per_second = maximum_bend_per_second
-            self.gain_base = gain_base
-            self.gain_variance = gain_variance
-            self.random_pitch_bounds = random_pitch_bounds
-            self.inner_cone_angle = inner_cone_angle
-            self.outer_cone_angle = outer_cone_angle
-            self.outer_cone_gain = outer_cone_gain
-            self.override_flags = override_flags
-            self.azimuth = azimuth
-            self.positional_gain = positional_gain
-            self.first_person_gain = first_person_gain
-            self.gain_modifier = gain_modifier
-            self.pitch_modifier = pitch_modifier
-            self.skip_fraction_modifier = skip_fraction_modifier
-            self.encoding = encoding
-            self.compression = compression
-            self.promotion_rules_tag_block = promotion_rules_tag_block
-            self.runtime_timers_tag_block = runtime_timers_tag_block
-            self.runtime_active_promotion_index = runtime_active_promotion_index
-            self.runtime_last_promotion_time = runtime_last_promotion_time
-            self.runtime_suppression_timeout = runtime_suppression_timeout
-            self.inner_silence_distance = inner_silence_distance
-            self.pitch_ranges_tag_block = pitch_ranges_tag_block
-            self.platform_parameters_tag_block = platform_parameters_tag_block
-            self.extra_sound_info_tag_block = extra_sound_info_tag_block
-            self.reflections_tag_block = reflections_tag_block
-            self.low_pass_minimum_distance = low_pass_minimum_distance
-            self.low_pass_maximum_distance = low_pass_maximum_distance
-            self.parameters = parameters
+    def __init__(self, header=None, body_header=None, promotion_rules_header=None, promotion_rules=None, runtime_timers_header=None, runtime_timers=None, 
+                 pitch_ranges_header=None, pitch_ranges=None, platform_parameters_header=None, platform_parameters=None, extra_sound_info_header=None, extra_sound_info=None, 
+                 reflections_header=None, reflections=None, remastered_sound=None, flags=0, class_type=0, sample_rate=0, output_effect=0, import_type=0, 
+                 minimum_distance=0.0, maximum_distance=0.0, skip_fraction=0.0, maximum_bend_per_second=0.0, gain_base=0.0, gain_variance=0.0, random_pitch_bounds=(0, 0), 
+                 inner_cone_angle=0.0, outer_cone_angle=0.0, outer_cone_gain=0.0, override_flags=0, azimuth=0.0, positional_gain=0.0, first_person_gain=0.0, 
+                 gain_modifier=(0.0, 0.0), pitch_modifier=(0, 0), skip_fraction_modifier=(0.0, 0.0), encoding=0, compression=0, promotion_rules_tag_block=None, 
+                 runtime_timers_tag_block=None, runtime_active_promotion_index=0, runtime_last_promotion_time=0, runtime_suppression_timeout=0, inner_silence_distance=0.0, 
+                 pitch_ranges_tag_block=None, platform_parameters_tag_block=None, extra_sound_info_tag_block=None, reflections_tag_block=None, low_pass_minimum_distance=0.0, 
+                 low_pass_maximum_distance=1.0, parameters=None):
+        self.header = header
+        self.body_header = body_header
+        self.promotion_rules_header = promotion_rules_header
+        self.promotion_rules = promotion_rules
+        self.runtime_timers_header = runtime_timers_header
+        self.runtime_timers = runtime_timers
+        self.pitch_ranges_header = pitch_ranges_header
+        self.pitch_ranges = pitch_ranges
+        self.platform_parameters_header = platform_parameters_header
+        self.platform_parameters = platform_parameters
+        self.extra_sound_info_header = extra_sound_info_header
+        self.extra_sound_info = extra_sound_info
+        self.reflections_header = reflections_header
+        self.reflections = reflections
+        self.remastered_sound = remastered_sound
+        self.flags = flags
+        self.class_type = class_type
+        self.sample_rate = sample_rate
+        self.output_effect = output_effect
+        self.import_type = import_type
+        self.minimum_distance = minimum_distance
+        self.maximum_distance = maximum_distance
+        self.skip_fraction = skip_fraction
+        self.maximum_bend_per_second = maximum_bend_per_second
+        self.gain_base = gain_base
+        self.gain_variance = gain_variance
+        self.random_pitch_bounds = random_pitch_bounds
+        self.inner_cone_angle = inner_cone_angle
+        self.outer_cone_angle = outer_cone_angle
+        self.outer_cone_gain = outer_cone_gain
+        self.override_flags = override_flags
+        self.azimuth = azimuth
+        self.positional_gain = positional_gain
+        self.first_person_gain = first_person_gain
+        self.gain_modifier = gain_modifier
+        self.pitch_modifier = pitch_modifier
+        self.skip_fraction_modifier = skip_fraction_modifier
+        self.encoding = encoding
+        self.compression = compression
+        self.promotion_rules_tag_block = promotion_rules_tag_block
+        self.runtime_timers_tag_block = runtime_timers_tag_block
+        self.runtime_active_promotion_index = runtime_active_promotion_index
+        self.runtime_last_promotion_time = runtime_last_promotion_time
+        self.runtime_suppression_timeout = runtime_suppression_timeout
+        self.inner_silence_distance = inner_silence_distance
+        self.pitch_ranges_tag_block = pitch_ranges_tag_block
+        self.platform_parameters_tag_block = platform_parameters_tag_block
+        self.extra_sound_info_tag_block = extra_sound_info_tag_block
+        self.reflections_tag_block = reflections_tag_block
+        self.low_pass_minimum_distance = low_pass_minimum_distance
+        self.low_pass_maximum_distance = low_pass_maximum_distance
+        self.parameters = parameters
 
     class PitchRange:
         def __init__(self, name="", name_length=0, natural_pitch=0, bend_bounds=(0, 0), unk_0=(0, 0), permutations_tag_block=None, permutations_header=None, permutations=None):

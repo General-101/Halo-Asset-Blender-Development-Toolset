@@ -82,69 +82,66 @@ class ControlFlags(Flag):
     destroyed = auto()
 
 class ControlAsset():
-    def __init__(self):
-        self.header = None
-        self.control_body = None
-        self.attachments = None
-        self.widgets = None
-        self.functions = None
-        self.change_colors = None
-        self.predicted_resources = None
-
-    class ControlBody:
-        def __init__(self, object_flags=0, bounding_radius=0.0, bounding_offset=Vector(), origin_offset=Vector(), acceleration_scale=0.0, model=None, animation_graph=None,
-                     collision_model=None, physics=None, modifier_shader=None, creation_effect=None, render_bounding_radius=0.0, object_a_in=0, object_b_in=0, object_c_in=0,
-                     object_d_in=0, hud_text_message_index=0, forced_shader_permutation_index=0, attachments_tag_block=None, widgets_tag_block=None, functions_tag_block=None,
-                     change_colors_tag_block=None, predicted_resources_tag_block=None, device_flags=0, power_transition_time=0.0, power_acceleration_time=0.0,
-                     position_transition_time=0.0, position_acceleration_time=0.0, depowered_position_transition_time=0.0, depowered_position_acceleration_time=0.0,
-                     machine_a_in=0, machine_b_in=0, machine_c_in=0, machine_d_in=0, open_up=None, close_down=None, opened=None, closed=None, depowered=None, repowered=None,
-                     delay_time=0.0, delay_effect=None, automatic_activation_radius=0.0, control_type=0, control_flags=0, call_value=0, on=None, off=None, delay=None):
-            self.object_flags = object_flags
-            self.bounding_radius = bounding_radius
-            self.bounding_offset = bounding_offset
-            self.origin_offset = origin_offset
-            self.acceleration_scale = acceleration_scale
-            self.model = model
-            self.animation_graph = animation_graph
-            self.collision_model = collision_model
-            self.physics = physics
-            self.modifier_shader = modifier_shader
-            self.creation_effect = creation_effect
-            self.render_bounding_radius = render_bounding_radius
-            self.object_a_in = object_a_in
-            self.object_b_in = object_b_in
-            self.object_c_in = object_c_in
-            self.object_d_in = object_d_in
-            self.hud_text_message_index = hud_text_message_index
-            self.forced_shader_permutation_index = forced_shader_permutation_index
-            self.attachments_tag_block = attachments_tag_block
-            self.widgets_tag_block = widgets_tag_block
-            self.functions_tag_block = functions_tag_block
-            self.change_colors_tag_block = change_colors_tag_block
-            self.predicted_resources_tag_block = predicted_resources_tag_block
-            self.device_flags = device_flags
-            self.power_transition_time = power_transition_time
-            self.power_acceleration_time = power_acceleration_time
-            self.position_transition_time = position_transition_time
-            self.position_acceleration_time = position_acceleration_time
-            self.depowered_position_transition_time = depowered_position_transition_time
-            self.depowered_position_acceleration_time = depowered_position_acceleration_time
-            self.machine_a_in = machine_a_in
-            self.machine_b_in = machine_b_in
-            self.machine_c_in = machine_c_in
-            self.machine_d_in = machine_d_in
-            self.open_up = open_up
-            self.close_down = close_down
-            self.opened = opened
-            self.closed = closed
-            self.depowered = depowered
-            self.repowered = repowered
-            self.delay_time = delay_time
-            self.delay_effect = delay_effect
-            self.automatic_activation_radius = automatic_activation_radius
-            self.control_type = control_type
-            self.control_flags = control_flags
-            self.call_value = call_value
-            self.on = on
-            self.off = off
-            self.delay = delay
+    def __init__(self, header=None, attachments=None, widgets=None, functions=None, change_colors=None, predicted_resources=None, object_flags=0, 
+                 bounding_radius=0.0, bounding_offset=Vector(), origin_offset=Vector(), acceleration_scale=0.0, model=None, animation_graph=None, collision_model=None, 
+                 physics=None, modifier_shader=None, creation_effect=None, render_bounding_radius=0.0, object_a_in=0, object_b_in=0, object_c_in=0, object_d_in=0, 
+                 hud_text_message_index=0, forced_shader_permutation_index=0, attachments_tag_block=None, widgets_tag_block=None, functions_tag_block=None, 
+                 change_colors_tag_block=None, predicted_resources_tag_block=None, device_flags=0, power_transition_time=0.0, power_acceleration_time=0.0, 
+                 position_transition_time=0.0, position_acceleration_time=0.0, depowered_position_transition_time=0.0, depowered_position_acceleration_time=0.0, 
+                 machine_a_in=0, machine_b_in=0, machine_c_in=0, machine_d_in=0, open_up=None, close_down=None, opened=None, closed=None, depowered=None, repowered=None, 
+                 delay_time=0.0, delay_effect=None, automatic_activation_radius=0.0, control_type=0, control_flags=0, call_value=0, on=None, off=None, delay=None):
+        self.header = header
+        self.attachments = attachments
+        self.widgets = widgets
+        self.functions = functions
+        self.change_colors = change_colors
+        self.predicted_resources = predicted_resources
+        self.object_flags = object_flags
+        self.bounding_radius = bounding_radius
+        self.bounding_offset = bounding_offset
+        self.origin_offset = origin_offset
+        self.acceleration_scale = acceleration_scale
+        self.model = model
+        self.animation_graph = animation_graph
+        self.collision_model = collision_model
+        self.physics = physics
+        self.modifier_shader = modifier_shader
+        self.creation_effect = creation_effect
+        self.render_bounding_radius = render_bounding_radius
+        self.object_a_in = object_a_in
+        self.object_b_in = object_b_in
+        self.object_c_in = object_c_in
+        self.object_d_in = object_d_in
+        self.hud_text_message_index = hud_text_message_index
+        self.forced_shader_permutation_index = forced_shader_permutation_index
+        self.attachments_tag_block = attachments_tag_block
+        self.widgets_tag_block = widgets_tag_block
+        self.functions_tag_block = functions_tag_block
+        self.change_colors_tag_block = change_colors_tag_block
+        self.predicted_resources_tag_block = predicted_resources_tag_block
+        self.device_flags = device_flags
+        self.power_transition_time = power_transition_time
+        self.power_acceleration_time = power_acceleration_time
+        self.position_transition_time = position_transition_time
+        self.position_acceleration_time = position_acceleration_time
+        self.depowered_position_transition_time = depowered_position_transition_time
+        self.depowered_position_acceleration_time = depowered_position_acceleration_time
+        self.machine_a_in = machine_a_in
+        self.machine_b_in = machine_b_in
+        self.machine_c_in = machine_c_in
+        self.machine_d_in = machine_d_in
+        self.open_up = open_up
+        self.close_down = close_down
+        self.opened = opened
+        self.closed = closed
+        self.depowered = depowered
+        self.repowered = repowered
+        self.delay_time = delay_time
+        self.delay_effect = delay_effect
+        self.automatic_activation_radius = automatic_activation_radius
+        self.control_type = control_type
+        self.control_flags = control_flags
+        self.call_value = call_value
+        self.on = on
+        self.off = off
+        self.delay = delay

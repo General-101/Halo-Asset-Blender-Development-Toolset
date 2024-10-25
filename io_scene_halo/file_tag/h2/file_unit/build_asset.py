@@ -27,7 +27,6 @@
 import struct
 
 from math import radians
-from ....global_functions import shader_processing
 from ..file_object.build_asset import write_tag_ref
 
 def write_postures(output_stream, TAG, postures, postures_header):

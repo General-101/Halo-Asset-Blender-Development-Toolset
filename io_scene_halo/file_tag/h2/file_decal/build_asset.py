@@ -29,22 +29,22 @@ import struct
 from ....global_functions import tag_format, shader_processing
 
 def write_body(output_stream, TAG, DECAL):
-    DECAL.decal_body_header.write(output_stream, TAG, True)
-    output_stream.write(struct.pack('<H', DECAL.decal_body.flags))
-    output_stream.write(struct.pack('<H', DECAL.decal_body.decal_type))
-    output_stream.write(struct.pack('<H', DECAL.decal_body.layer))
-    output_stream.write(struct.pack('<h', DECAL.decal_body.max_overlapping_count))
-    DECAL.decal_body.next_decal_in_chain.write(output_stream, False, True)
-    output_stream.write(struct.pack('<ff', *DECAL.decal_body.radius))
-    output_stream.write(struct.pack('<f', DECAL.decal_body.radius_overlap_rejection))
-    output_stream.write(struct.pack('<fff', DECAL.decal_body.color_lower_bounds[0], DECAL.decal_body.color_lower_bounds[1], DECAL.decal_body.color_lower_bounds[2]))
-    output_stream.write(struct.pack('<fff', DECAL.decal_body.color_upper_bounds[0], DECAL.decal_body.color_upper_bounds[1], DECAL.decal_body.color_upper_bounds[2]))
-    output_stream.write(struct.pack('<ff', *DECAL.decal_body.lifetime))
-    output_stream.write(struct.pack('<ff', *DECAL.decal_body.decay_time))
+    DECAL.body_header.write(output_stream, TAG, True)
+    output_stream.write(struct.pack('<H', DECAL.flags))
+    output_stream.write(struct.pack('<H', DECAL.decal_type))
+    output_stream.write(struct.pack('<H', DECAL.layer))
+    output_stream.write(struct.pack('<h', DECAL.max_overlapping_count))
+    DECAL.next_decal_in_chain.write(output_stream, False, True)
+    output_stream.write(struct.pack('<ff', *DECAL.radius))
+    output_stream.write(struct.pack('<f', DECAL.radius_overlap_rejection))
+    output_stream.write(struct.pack('<fff', DECAL.color_lower_bounds[0], DECAL.color_lower_bounds[1], DECAL.color_lower_bounds[2]))
+    output_stream.write(struct.pack('<fff', DECAL.color_upper_bounds[0], DECAL.color_upper_bounds[1], DECAL.color_upper_bounds[2]))
+    output_stream.write(struct.pack('<ff', *DECAL.lifetime))
+    output_stream.write(struct.pack('<ff', *DECAL.decay_time))
     output_stream.write(struct.pack('<68x'))
-    DECAL.decal_body.bitmap.write(output_stream, False, True)
+    DECAL.bitmap.write(output_stream, False, True)
     output_stream.write(struct.pack('<20x'))
-    output_stream.write(struct.pack('<f', DECAL.decal_body.maximum_sprite_extent))
+    output_stream.write(struct.pack('<f', DECAL.maximum_sprite_extent))
     output_stream.write(struct.pack('<4x'))
 
 def build_asset(output_stream, DECAL, report):
@@ -55,10 +55,10 @@ def build_asset(output_stream, DECAL, report):
     DECAL.header.write(output_stream, False, True)
     write_body(output_stream, TAG, DECAL)
 
-    next_decal_in_chain_length = len(DECAL.decal_body.next_decal_in_chain.name)
+    next_decal_in_chain_length = len(DECAL.next_decal_in_chain.name)
     if next_decal_in_chain_length > 0:
-        output_stream.write(struct.pack('<%ssx' % next_decal_in_chain_length, TAG.string_to_bytes(DECAL.decal_body.next_decal_in_chain.name, False)))
+        output_stream.write(struct.pack('<%ssx' % next_decal_in_chain_length, TAG.string_to_bytes(DECAL.next_decal_in_chain.name, False)))
 
-    bitmap_length = len(DECAL.decal_body.bitmap.name)
+    bitmap_length = len(DECAL.bitmap.name)
     if bitmap_length > 0:
-        output_stream.write(struct.pack('<%ssx' % bitmap_length, TAG.string_to_bytes(DECAL.decal_body.bitmap.name, False)))
+        output_stream.write(struct.pack('<%ssx' % bitmap_length, TAG.string_to_bytes(DECAL.bitmap.name, False)))

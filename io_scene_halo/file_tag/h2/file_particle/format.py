@@ -125,34 +125,32 @@ class AttachedParticleSystemFlags(Flag):
     expensive_visibility = auto()
 
 class ParticleAsset():
-    def __init__(self):
-        self.header = None
-        self.particle_body_header = None
-        self.particle_body = None
-        self.parameters_header = None
-        self.parameters = None
-        self.locations_header = None
-        self.locations = None
-        self.attached_particle_systems_header = None
-        self.attached_particle_systems = None
-        self.shader_postprocess_definitions_header = None
-        self.shader_postprocess_definitions = None
-
-    class ParticleBody:
-        def __init__(self, flags=0, particle_billboard_style=0, first_sequence_index=0, sequence_count=0, shader_template=None, parameters_tag_block=None, properties=None,
-                     collision_effect=None, death_effect=None, locations_tag_block=None, attached_particle_systems_tag_block=None, shader_postprocess_definitions_tag_block=None):
-            self.flags = flags
-            self.particle_billboard_style = particle_billboard_style
-            self.first_sequence_index = first_sequence_index
-            self.sequence_count = sequence_count
-            self.shader_template = shader_template
-            self.parameters_tag_block = parameters_tag_block
-            self.properties = properties
-            self.collision_effect = collision_effect
-            self.death_effect = death_effect
-            self.locations_tag_block = locations_tag_block
-            self.attached_particle_systems_tag_block = attached_particle_systems_tag_block
-            self.shader_postprocess_definitions_tag_block = shader_postprocess_definitions_tag_block
+    def __init__(self, header=None, body_header=None, parameters_header=None, parameters=None, locations_header=None, locations=None, attached_particle_systems_header=None, 
+                 attached_particle_systems=None, shader_postprocess_definitions_header=None, shader_postprocess_definitions=None, flags=0, particle_billboard_style=0, 
+                 first_sequence_index=0, sequence_count=0, shader_template=None, parameters_tag_block=None, properties=None, collision_effect=None, death_effect=None, 
+                 locations_tag_block=None, attached_particle_systems_tag_block=None, shader_postprocess_definitions_tag_block=None):
+        self.header = header
+        self.body_header = body_header
+        self.parameters_header = parameters_header
+        self.parameters = parameters
+        self.locations_header = locations_header
+        self.locations = locations
+        self.attached_particle_systems_header = attached_particle_systems_header
+        self.attached_particle_systems = attached_particle_systems
+        self.shader_postprocess_definitions_header = shader_postprocess_definitions_header
+        self.shader_postprocess_definitions = shader_postprocess_definitions
+        self.flags = flags
+        self.particle_billboard_style = particle_billboard_style
+        self.first_sequence_index = first_sequence_index
+        self.sequence_count = sequence_count
+        self.shader_template = shader_template
+        self.parameters_tag_block = parameters_tag_block
+        self.properties = properties
+        self.collision_effect = collision_effect
+        self.death_effect = death_effect
+        self.locations_tag_block = locations_tag_block
+        self.attached_particle_systems_tag_block = attached_particle_systems_tag_block
+        self.shader_postprocess_definitions_tag_block = shader_postprocess_definitions_tag_block
 
     class Location:
         def __init__(self, name="", name_length=0):

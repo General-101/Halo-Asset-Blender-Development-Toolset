@@ -25,35 +25,36 @@
 # ##### END MIT LICENSE BLOCK #####
 
 import struct
+
 from ....global_functions import tag_format
 
 def write_body(output_stream, BITMAP, TAG):
-    BITMAP.bitmap_body_header.write(output_stream, TAG, True)
-    output_stream.write(struct.pack('<H', BITMAP.bitmap_body.type))
-    output_stream.write(struct.pack('<H', BITMAP.bitmap_body.format))
-    output_stream.write(struct.pack('<H', BITMAP.bitmap_body.usage))
-    output_stream.write(struct.pack('<H', BITMAP.bitmap_body.flags))
-    output_stream.write(struct.pack('<f', BITMAP.bitmap_body.detail_fade_factor))
-    output_stream.write(struct.pack('<f', BITMAP.bitmap_body.sharpen_amount))
-    output_stream.write(struct.pack('<f', BITMAP.bitmap_body.bump_height))
-    output_stream.write(struct.pack('<H', BITMAP.bitmap_body.sprite_budget_size))
-    output_stream.write(struct.pack('<H', BITMAP.bitmap_body.sprite_budget_count))
-    output_stream.write(struct.pack('<H', BITMAP.bitmap_body.color_plate_width))
-    output_stream.write(struct.pack('<H', BITMAP.bitmap_body.color_plate_height))
-    BITMAP.bitmap_body.compressed_color_plate_data.write(output_stream, False)
-    BITMAP.bitmap_body.processed_pixel_data.write(output_stream, False)
-    output_stream.write(struct.pack('<f', BITMAP.bitmap_body.blur_filter_size))
-    output_stream.write(struct.pack('<f', BITMAP.bitmap_body.alpha_bias))
-    output_stream.write(struct.pack('<H', BITMAP.bitmap_body.mipmap_count))
-    output_stream.write(struct.pack('<H', BITMAP.bitmap_body.sprite_usage))
-    output_stream.write(struct.pack('<H', BITMAP.bitmap_body.sprite_spacing))
-    output_stream.write(struct.pack('<H', BITMAP.bitmap_body.force_format))
-    BITMAP.bitmap_body.sequences_tag_block.write(output_stream, False)
-    BITMAP.bitmap_body.bitmaps_tag_block.write(output_stream, False)
-    output_stream.write(struct.pack('<B', BITMAP.bitmap_body.color_compression_quality))
-    output_stream.write(struct.pack('<B', BITMAP.bitmap_body.alpha_compression_quality))
-    output_stream.write(struct.pack('<B', BITMAP.bitmap_body.overlap))
-    output_stream.write(struct.pack('<B', BITMAP.bitmap_body.color_subsampling))
+    BITMAP.body_header.write(output_stream, TAG, True)
+    output_stream.write(struct.pack('<H', BITMAP.bitmap_type))
+    output_stream.write(struct.pack('<H', BITMAP.bitmap_format))
+    output_stream.write(struct.pack('<H', BITMAP.usage))
+    output_stream.write(struct.pack('<H', BITMAP.flags))
+    output_stream.write(struct.pack('<f', BITMAP.detail_fade_factor))
+    output_stream.write(struct.pack('<f', BITMAP.sharpen_amount))
+    output_stream.write(struct.pack('<f', BITMAP.bump_height))
+    output_stream.write(struct.pack('<H', BITMAP.sprite_budget_size))
+    output_stream.write(struct.pack('<H', BITMAP.sprite_budget_count))
+    output_stream.write(struct.pack('<H', BITMAP.color_plate_width))
+    output_stream.write(struct.pack('<H', BITMAP.color_plate_height))
+    BITMAP.compressed_color_plate_data.write(output_stream, False)
+    BITMAP.processed_pixel_data.write(output_stream, False)
+    output_stream.write(struct.pack('<f', BITMAP.blur_filter_size))
+    output_stream.write(struct.pack('<f', BITMAP.alpha_bias))
+    output_stream.write(struct.pack('<H', BITMAP.mipmap_count))
+    output_stream.write(struct.pack('<H', BITMAP.sprite_usage))
+    output_stream.write(struct.pack('<H', BITMAP.sprite_spacing))
+    output_stream.write(struct.pack('<H', BITMAP.force_format))
+    BITMAP.sequences_tag_block.write(output_stream, False)
+    BITMAP.bitmaps_tag_block.write(output_stream, False)
+    output_stream.write(struct.pack('<B', BITMAP.color_compression_quality))
+    output_stream.write(struct.pack('<B', BITMAP.alpha_compression_quality))
+    output_stream.write(struct.pack('<B', BITMAP.overlap))
+    output_stream.write(struct.pack('<B', BITMAP.color_subsampling))
 
 def write_sequences(output_stream, BITMAP, TAG):
     if len(BITMAP.sequences) > 0:
@@ -134,8 +135,8 @@ def build_asset(output_stream, BITMAP, report, H2V=False):
     BITMAP.header.write(output_stream, TAG.big_endian, True)
     write_body(output_stream, BITMAP, TAG)
 
-    output_stream.write(BITMAP.bitmap_body.compressed_color_plate)
-    output_stream.write(BITMAP.bitmap_body.processed_pixels)
+    output_stream.write(BITMAP.compressed_color_plate)
+    output_stream.write(BITMAP.processed_pixels)
 
     write_sequences(output_stream, BITMAP, TAG)
     if H2V:

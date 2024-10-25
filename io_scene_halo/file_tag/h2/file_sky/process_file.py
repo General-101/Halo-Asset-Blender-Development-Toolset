@@ -45,79 +45,77 @@ def initilize_sky(SKY):
     SKY.animations = []
 
 def read_sky_body_v0(SKY, TAG, input_stream, tag_node, XML_OUTPUT):
-    SKY.sky_body_header = TAG.TagBlockHeader().read(input_stream, TAG)
-    SKY.sky_body = SKY.SkyBody()
-    SKY.sky_body.render_model = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "render model"))
-    SKY.sky_body.animation_graph = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "animation graph"))
-    SKY.sky_body.flags = TAG.read_flag_unsigned_integer(input_stream, TAG, tag_format.XMLData(tag_node, "flags", SkyFlags))
-    SKY.sky_body.render_model_scale = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "bounding radius"))
-    SKY.sky_body.movement_scale = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "bounding radius"))
-    SKY.sky_body.cubemap_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "cubemap"))
-    SKY.sky_body.indoor_ambient_color = TAG.read_rgb(input_stream, TAG, tag_format.XMLData(tag_node, "indoor ambient color"))
+    SKY.body_header = TAG.TagBlockHeader().read(input_stream, TAG)
+    SKY.render_model = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "render model"))
+    SKY.animation_graph = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "animation graph"))
+    SKY.flags = TAG.read_flag_unsigned_integer(input_stream, TAG, tag_format.XMLData(tag_node, "flags", SkyFlags))
+    SKY.render_model_scale = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "bounding radius"))
+    SKY.movement_scale = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "bounding radius"))
+    SKY.cubemap_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "cubemap"))
+    SKY.indoor_ambient_color = TAG.read_rgb(input_stream, TAG, tag_format.XMLData(tag_node, "indoor ambient color"))
     input_stream.read(4) # Padding?
-    SKY.sky_body.outdoor_ambient_color = TAG.read_rgb(input_stream, TAG, tag_format.XMLData(tag_node, "outdoor ambient color"))
+    SKY.outdoor_ambient_color = TAG.read_rgb(input_stream, TAG, tag_format.XMLData(tag_node, "outdoor ambient color"))
     input_stream.read(4) # Padding?
-    SKY.sky_body.fog_spread_distance = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "fog spread distance"))
-    SKY.sky_body.atmospheric_fog_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "atmospheric fog"))
-    SKY.sky_body.secondary_fog_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "secondary fog"))
-    SKY.sky_body.sky_fog_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "sky fog"))
-    SKY.sky_body.patchy_fog_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "patchy fog"))
-    SKY.sky_body.amount = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "amount"))
-    SKY.sky_body.threshold = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "threshold"))
-    SKY.sky_body.brightness = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "brightness"))
-    SKY.sky_body.gamma_power = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "gamma power"))
-    SKY.sky_body.lights_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "lights"))
-    SKY.sky_body.global_sky_rotation = TAG.read_degree(input_stream, TAG, tag_format.XMLData(tag_node, "global sky rotation"))
-    SKY.sky_body.shader_functions_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "shader functions"))
-    SKY.sky_body.animations_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "animations"))
+    SKY.fog_spread_distance = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "fog spread distance"))
+    SKY.atmospheric_fog_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "atmospheric fog"))
+    SKY.secondary_fog_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "secondary fog"))
+    SKY.sky_fog_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "sky fog"))
+    SKY.patchy_fog_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "patchy fog"))
+    SKY.amount = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "amount"))
+    SKY.threshold = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "threshold"))
+    SKY.brightness = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "brightness"))
+    SKY.gamma_power = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "gamma power"))
+    SKY.lights_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "lights"))
+    SKY.global_sky_rotation = TAG.read_degree(input_stream, TAG, tag_format.XMLData(tag_node, "global sky rotation"))
+    SKY.shader_functions_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "shader functions"))
+    SKY.animations_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "animations"))
     input_stream.read(12) # Padding?
 
-    if SKY.sky_body.render_model.name_length > 0:
-        SKY.sky_body.render_model.name = TAG.read_variable_string(input_stream, SKY.sky_body.render_model.name_length, TAG)
+    if SKY.render_model.name_length > 0:
+        SKY.render_model.name = TAG.read_variable_string(input_stream, SKY.render_model.name_length, TAG)
 
-    if SKY.sky_body.animation_graph.name_length > 0:
-        SKY.sky_body.animation_graph.name = TAG.read_variable_string(input_stream, SKY.sky_body.animation_graph.name_length, TAG)
+    if SKY.animation_graph.name_length > 0:
+        SKY.animation_graph.name = TAG.read_variable_string(input_stream, SKY.animation_graph.name_length, TAG)
 
 def read_sky_body_retail(SKY, TAG, input_stream, tag_node, XML_OUTPUT):
-    SKY.sky_body_header = TAG.TagBlockHeader().read(input_stream, TAG)
-    SKY.sky_body = SKY.SkyBody()
-    SKY.sky_body.render_model = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "render model"))
-    SKY.sky_body.animation_graph = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "animation graph"))
-    SKY.sky_body.flags = TAG.read_flag_unsigned_integer(input_stream, TAG, tag_format.XMLData(tag_node, "flags", SkyFlags))
-    SKY.sky_body.render_model_scale = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "bounding radius"))
-    SKY.sky_body.movement_scale = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "bounding radius"))
-    SKY.sky_body.cubemap_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "cubemap"))
-    SKY.sky_body.indoor_ambient_color = TAG.read_rgb(input_stream, TAG, tag_format.XMLData(tag_node, "indoor ambient color"))
+    SKY.body_header = TAG.TagBlockHeader().read(input_stream, TAG)
+    SKY.render_model = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "render model"))
+    SKY.animation_graph = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "animation graph"))
+    SKY.flags = TAG.read_flag_unsigned_integer(input_stream, TAG, tag_format.XMLData(tag_node, "flags", SkyFlags))
+    SKY.render_model_scale = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "bounding radius"))
+    SKY.movement_scale = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "bounding radius"))
+    SKY.cubemap_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "cubemap"))
+    SKY.indoor_ambient_color = TAG.read_rgb(input_stream, TAG, tag_format.XMLData(tag_node, "indoor ambient color"))
     input_stream.read(4) # Padding?
-    SKY.sky_body.outdoor_ambient_color = TAG.read_rgb(input_stream, TAG, tag_format.XMLData(tag_node, "outdoor ambient color"))
+    SKY.outdoor_ambient_color = TAG.read_rgb(input_stream, TAG, tag_format.XMLData(tag_node, "outdoor ambient color"))
     input_stream.read(4) # Padding?
-    SKY.sky_body.fog_spread_distance = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "fog spread distance"))
-    SKY.sky_body.atmospheric_fog_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "atmospheric fog"))
-    SKY.sky_body.secondary_fog_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "secondary fog"))
-    SKY.sky_body.sky_fog_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "sky fog"))
-    SKY.sky_body.patchy_fog_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "patchy fog"))
-    SKY.sky_body.amount = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "amount"))
-    SKY.sky_body.threshold = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "threshold"))
-    SKY.sky_body.brightness = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "brightness"))
-    SKY.sky_body.gamma_power = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "gamma power"))
-    SKY.sky_body.lights_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "lights"))
-    SKY.sky_body.global_sky_rotation = TAG.read_degree(input_stream, TAG, tag_format.XMLData(tag_node, "global sky rotation"))
-    SKY.sky_body.shader_functions_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "shader functions"))
-    SKY.sky_body.animations_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "animations"))
+    SKY.fog_spread_distance = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "fog spread distance"))
+    SKY.atmospheric_fog_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "atmospheric fog"))
+    SKY.secondary_fog_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "secondary fog"))
+    SKY.sky_fog_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "sky fog"))
+    SKY.patchy_fog_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "patchy fog"))
+    SKY.amount = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "amount"))
+    SKY.threshold = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "threshold"))
+    SKY.brightness = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "brightness"))
+    SKY.gamma_power = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "gamma power"))
+    SKY.lights_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "lights"))
+    SKY.global_sky_rotation = TAG.read_degree(input_stream, TAG, tag_format.XMLData(tag_node, "global sky rotation"))
+    SKY.shader_functions_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "shader functions"))
+    SKY.animations_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "animations"))
     input_stream.read(12) # Padding?
-    SKY.sky_body.clear_color = TAG.read_rgb(input_stream, TAG, tag_format.XMLData(tag_node, "clear color"))
+    SKY.clear_color = TAG.read_rgb(input_stream, TAG, tag_format.XMLData(tag_node, "clear color"))
 
-    if SKY.sky_body.render_model.name_length > 0:
-        SKY.sky_body.render_model.name = TAG.read_variable_string(input_stream, SKY.sky_body.render_model.name_length, TAG)
+    if SKY.render_model.name_length > 0:
+        SKY.render_model.name = TAG.read_variable_string(input_stream, SKY.render_model.name_length, TAG)
 
-    if SKY.sky_body.animation_graph.name_length > 0:
-        SKY.sky_body.animation_graph.name = TAG.read_variable_string(input_stream, SKY.sky_body.animation_graph.name_length, TAG)
+    if SKY.animation_graph.name_length > 0:
+        SKY.animation_graph.name = TAG.read_variable_string(input_stream, SKY.animation_graph.name_length, TAG)
 
 def read_cubemaps(SKY, TAG, input_stream, tag_node, XML_OUTPUT):
-    if SKY.sky_body.cubemap_tag_block.count > 0:
-        cubemaps_node = tag_format.get_xml_node(XML_OUTPUT, SKY.sky_body.cubemap_tag_block.count, tag_node, "name", "cubemap")
+    if SKY.cubemap_tag_block.count > 0:
+        cubemaps_node = tag_format.get_xml_node(XML_OUTPUT, SKY.cubemap_tag_block.count, tag_node, "name", "cubemap")
         SKY.cubemap_header = TAG.TagBlockHeader().read(input_stream, TAG)
-        for cubemap_idx in range(SKY.sky_body.cubemap_tag_block.count):
+        for cubemap_idx in range(SKY.cubemap_tag_block.count):
             cubemap_element_node = None
             if XML_OUTPUT:
                 cubemap_element_node = TAG.xml_doc.createElement('element')
@@ -162,10 +160,10 @@ def read_fog(SKY, TAG, input_stream, tag_node, XML_OUTPUT, tag_block_count, tag_
             tag_block.append(fog)
 
 def read_sky_fog(SKY, TAG, input_stream, tag_node, XML_OUTPUT):
-    if SKY.sky_body.sky_fog_tag_block.count > 0:
-        sky_fog_node = tag_format.get_xml_node(XML_OUTPUT, SKY.sky_body.sky_fog_tag_block.count, tag_node, "name", "sky fog")
+    if SKY.sky_fog_tag_block.count > 0:
+        sky_fog_node = tag_format.get_xml_node(XML_OUTPUT, SKY.sky_fog_tag_block.count, tag_node, "name", "sky fog")
         SKY.sky_fog_header = TAG.TagBlockHeader().read(input_stream, TAG)
-        for sky_fog_idx in range(SKY.sky_body.sky_fog_tag_block.count):
+        for sky_fog_idx in range(SKY.sky_fog_tag_block.count):
             sky_fog_element_node = None
             if XML_OUTPUT:
                 sky_fog_element_node = TAG.xml_doc.createElement('element')
@@ -179,10 +177,10 @@ def read_sky_fog(SKY, TAG, input_stream, tag_node, XML_OUTPUT):
             SKY.sky_fog.append(sky_fog)
 
 def read_patchy_fog(SKY, TAG, input_stream, tag_node, XML_OUTPUT):
-    if SKY.sky_body.patchy_fog_tag_block.count > 0:
-        patchy_fog_node = tag_format.get_xml_node(XML_OUTPUT, SKY.sky_body.patchy_fog_tag_block.count, tag_node, "name", "patchy fog")
+    if SKY.patchy_fog_tag_block.count > 0:
+        patchy_fog_node = tag_format.get_xml_node(XML_OUTPUT, SKY.patchy_fog_tag_block.count, tag_node, "name", "patchy fog")
         SKY.patchy_fog_header = TAG.TagBlockHeader().read(input_stream, TAG)
-        for patchy_fog_idx in range(SKY.sky_body.patchy_fog_tag_block.count):
+        for patchy_fog_idx in range(SKY.patchy_fog_tag_block.count):
             patchy_fog_element_node = None
             if XML_OUTPUT:
                 patchy_fog_element_node = TAG.xml_doc.createElement('element')
@@ -212,10 +210,10 @@ def read_patchy_fog(SKY, TAG, input_stream, tag_node, XML_OUTPUT):
                 patchy_fog.patchy_fog.append_xml_attributes(patchy_fog_reference_node)
 
 def read_lights(SKY, TAG, input_stream, tag_node, XML_OUTPUT):
-    if SKY.sky_body.lights_tag_block.count > 0:
-        lights_node = tag_format.get_xml_node(XML_OUTPUT, SKY.sky_body.lights_tag_block.count, tag_node, "name", "lights")
+    if SKY.lights_tag_block.count > 0:
+        lights_node = tag_format.get_xml_node(XML_OUTPUT, SKY.lights_tag_block.count, tag_node, "name", "lights")
         SKY.lights_header = TAG.TagBlockHeader().read(input_stream, TAG)
-        for light_idx in range(SKY.sky_body.lights_tag_block.count):
+        for light_idx in range(SKY.lights_tag_block.count):
             light_element_node = None
             if XML_OUTPUT:
                 light_element_node = TAG.xml_doc.createElement('element')
@@ -312,10 +310,10 @@ def read_lights(SKY, TAG, input_stream, tag_node, XML_OUTPUT):
                     light.radiosity.append(radiosity)
 
 def read_shader_functions(SKY, TAG, input_stream, tag_node, XML_OUTPUT):
-    if SKY.sky_body.shader_functions_tag_block.count > 0:
-        shader_functions_node = tag_format.get_xml_node(XML_OUTPUT, SKY.sky_body.shader_functions_tag_block.count, tag_node, "name", "shader functions")
+    if SKY.shader_functions_tag_block.count > 0:
+        shader_functions_node = tag_format.get_xml_node(XML_OUTPUT, SKY.shader_functions_tag_block.count, tag_node, "name", "shader functions")
         SKY.shader_functions_header = TAG.TagBlockHeader().read(input_stream, TAG)
-        for shader_function_idx in range(SKY.sky_body.shader_functions_tag_block.count):
+        for shader_function_idx in range(SKY.shader_functions_tag_block.count):
             shader_function_element_node = None
             if XML_OUTPUT:
                 shader_function_element_node = TAG.xml_doc.createElement('element')
@@ -328,10 +326,10 @@ def read_shader_functions(SKY, TAG, input_stream, tag_node, XML_OUTPUT):
             SKY.shader_functions.append(shader_function)
 
 def read_animations(SKY, TAG, input_stream, tag_node, XML_OUTPUT):
-    if SKY.sky_body.animations_tag_block.count > 0:
-        animations_node = tag_format.get_xml_node(XML_OUTPUT, SKY.sky_body.animations_tag_block.count, tag_node, "name", "animations")
+    if SKY.animations_tag_block.count > 0:
+        animations_node = tag_format.get_xml_node(XML_OUTPUT, SKY.animations_tag_block.count, tag_node, "name", "animations")
         SKY.animations_header = TAG.TagBlockHeader().read(input_stream, TAG)
-        for animation_idx in range(SKY.sky_body.animations_tag_block.count):
+        for animation_idx in range(SKY.animations_tag_block.count):
             animation_element_node = None
             if XML_OUTPUT:
                 animation_element_node = TAG.xml_doc.createElement('element')
@@ -364,8 +362,8 @@ def process_file(input_stream, report):
         initilize_sky(SKY)
         read_sky_body_v0(SKY, TAG, input_stream, tag_node, XML_OUTPUT)
         read_cubemaps(SKY, TAG, input_stream, tag_node, XML_OUTPUT)
-        read_fog(SKY, TAG, input_stream, tag_node, XML_OUTPUT, SKY.sky_body.atmospheric_fog_tag_block.count, SKY.atmospheric_fog_header, "atmospheric fog", SKY.atmospheric_fog)
-        read_fog(SKY, TAG, input_stream, tag_node, XML_OUTPUT, SKY.sky_body.secondary_fog_tag_block.count, SKY.secondary_fog_header, "secondary fog", SKY.secondary_fog)
+        read_fog(SKY, TAG, input_stream, tag_node, XML_OUTPUT, SKY.atmospheric_fog_tag_block.count, SKY.atmospheric_fog_header, "atmospheric fog", SKY.atmospheric_fog)
+        read_fog(SKY, TAG, input_stream, tag_node, XML_OUTPUT, SKY.secondary_fog_tag_block.count, SKY.secondary_fog_header, "secondary fog", SKY.secondary_fog)
         read_sky_fog(SKY, TAG, input_stream, tag_node, XML_OUTPUT)
         read_patchy_fog(SKY, TAG, input_stream, tag_node, XML_OUTPUT)
         read_lights(SKY, TAG, input_stream, tag_node, XML_OUTPUT)
@@ -375,8 +373,8 @@ def process_file(input_stream, report):
         initilize_sky(SKY)
         read_sky_body_v0(SKY, TAG, input_stream, tag_node, XML_OUTPUT)
         read_cubemaps(SKY, TAG, input_stream, tag_node, XML_OUTPUT)
-        read_fog(SKY, TAG, input_stream, tag_node, XML_OUTPUT, SKY.sky_body.atmospheric_fog_tag_block.count, SKY.atmospheric_fog_header, "atmospheric fog", SKY.atmospheric_fog)
-        read_fog(SKY, TAG, input_stream, tag_node, XML_OUTPUT, SKY.sky_body.secondary_fog_tag_block.count, SKY.secondary_fog_header, "secondary fog", SKY.secondary_fog)
+        read_fog(SKY, TAG, input_stream, tag_node, XML_OUTPUT, SKY.atmospheric_fog_tag_block.count, SKY.atmospheric_fog_header, "atmospheric fog", SKY.atmospheric_fog)
+        read_fog(SKY, TAG, input_stream, tag_node, XML_OUTPUT, SKY.secondary_fog_tag_block.count, SKY.secondary_fog_header, "secondary fog", SKY.secondary_fog)
         read_sky_fog(SKY, TAG, input_stream, tag_node, XML_OUTPUT)
         read_patchy_fog(SKY, TAG, input_stream, tag_node, XML_OUTPUT)
         read_lights(SKY, TAG, input_stream, tag_node, XML_OUTPUT)
@@ -386,8 +384,8 @@ def process_file(input_stream, report):
         initilize_sky(SKY)
         read_sky_body_retail(SKY, TAG, input_stream, tag_node, XML_OUTPUT)
         read_cubemaps(SKY, TAG, input_stream, tag_node, XML_OUTPUT)
-        read_fog(SKY, TAG, input_stream, tag_node, XML_OUTPUT, SKY.sky_body.atmospheric_fog_tag_block.count, SKY.atmospheric_fog_header, "atmospheric fog", SKY.atmospheric_fog)
-        read_fog(SKY, TAG, input_stream, tag_node, XML_OUTPUT, SKY.sky_body.secondary_fog_tag_block.count, SKY.secondary_fog_header, "secondary fog", SKY.secondary_fog)
+        read_fog(SKY, TAG, input_stream, tag_node, XML_OUTPUT, SKY.atmospheric_fog_tag_block.count, SKY.atmospheric_fog_header, "atmospheric fog", SKY.atmospheric_fog)
+        read_fog(SKY, TAG, input_stream, tag_node, XML_OUTPUT, SKY.secondary_fog_tag_block.count, SKY.secondary_fog_header, "secondary fog", SKY.secondary_fog)
         read_sky_fog(SKY, TAG, input_stream, tag_node, XML_OUTPUT)
         read_patchy_fog(SKY, TAG, input_stream, tag_node, XML_OUTPUT)
         read_lights(SKY, TAG, input_stream, tag_node, XML_OUTPUT)

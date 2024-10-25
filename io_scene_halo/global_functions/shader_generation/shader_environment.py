@@ -61,8 +61,8 @@ def set_primary_detail_scale(shader, mat, primary_detail_node, base_bitmap_count
     connect_inputs(mat.node_tree, uv_map_node, "UV", vect_math_node, 0)
     connect_inputs(mat.node_tree, combine_xyz_node, "Vector", vect_math_node, 1)
 
-    scale = shader.shader_body.primary_detail_map_scale
-    if shader.shader_body.primary_detail_map_scale == 0.0:
+    scale = shader.primary_detail_map_scale
+    if shader.primary_detail_map_scale == 0.0:
         scale = 1.0
 
     primary_detail_rescale_i = scale
@@ -99,8 +99,8 @@ def set_secondary_detail_scale(shader, mat, secondary_detail_node, base_bitmap_c
     connect_inputs(mat.node_tree, uv_map_node, "UV", vect_math_node, 0)
     connect_inputs(mat.node_tree, combine_xyz_node, "Vector", vect_math_node, 1)
 
-    scale = shader.shader_body.secondary_detail_map_scale
-    if shader.shader_body.secondary_detail_map_scale == 0.0:
+    scale = shader.secondary_detail_map_scale
+    if shader.secondary_detail_map_scale == 0.0:
         scale = 1.0
 
     secondary_detail_rescale_i = scale
@@ -136,8 +136,8 @@ def set_micro_detail_scale(shader, mat, micro_detail_node, base_bitmap_count, mi
     connect_inputs(mat.node_tree, uv_map_node, "UV", vect_math_node, 0)
     connect_inputs(mat.node_tree, combine_xyz_node, "Vector", vect_math_node, 1)
 
-    scale = shader.shader_body.micro_detail_map_scale
-    if shader.shader_body.micro_detail_map_scale == 0.0:
+    scale = shader.micro_detail_map_scale
+    if shader.micro_detail_map_scale == 0.0:
         scale = 1.0
 
     micro_detail_rescale_i = scale
@@ -173,8 +173,8 @@ def set_bump_scale(shader, mat, bump_node, base_bitmap_count, bump_bitmap_count,
     connect_inputs(mat.node_tree, uv_map_node, "UV", vect_math_node, 0)
     connect_inputs(mat.node_tree, combine_xyz_node, "Vector", vect_math_node, 1)
 
-    scale = shader.shader_body.bump_map_scale
-    if shader.shader_body.bump_map_scale == 0.0:
+    scale = shader.bump_map_scale
+    if shader.bump_map_scale == 0.0:
         scale = 1.0
 
     bump_rescale_i = scale
@@ -210,8 +210,8 @@ def set_illum_scale(shader, mat, self_illumination_node):
     connect_inputs(mat.node_tree, uv_map_node, "UV", vect_math_node, 0)
     connect_inputs(mat.node_tree, combine_xyz_node, "Vector", vect_math_node, 1)
 
-    scale = shader.shader_body.map_scale
-    if shader.shader_body.map_scale == 0.0:
+    scale = shader.map_scale
+    if shader.map_scale == 0.0:
         scale = 1.0
 
     combine_xyz_node.inputs[0].default_value = scale
@@ -222,25 +222,25 @@ def generate_shader_environment(mat, shader, permutation_index, report):
     mat.use_nodes = True
 
     texture_root = bpy.context.preferences.addons["io_scene_halo"].preferences.halo_1_data_path
-    base_map, base_map_name = get_bitmap(shader.shader_body.base_map, texture_root)
-    primary_detail_map, primary_detail_map_name = get_bitmap(shader.shader_body.primary_detail_map, texture_root)
-    secondary_detail_map, secondary_detail_map_name = get_bitmap(shader.shader_body.secondary_detail_map, texture_root)
-    micro_detail_map, micro_detail_map_name = get_bitmap(shader.shader_body.micro_detail_map, texture_root)
-    bump_map, bump_map_name = get_bitmap(shader.shader_body.bump_map, texture_root)
-    illum_map, illum_map_name = get_bitmap(shader.shader_body.map, texture_root)
-    reflection_map, reflection_map_name = get_bitmap(shader.shader_body.reflection_cube_map, texture_root)
+    base_map, base_map_name = get_bitmap(shader.base_map, texture_root)
+    primary_detail_map, primary_detail_map_name = get_bitmap(shader.primary_detail_map, texture_root)
+    secondary_detail_map, secondary_detail_map_name = get_bitmap(shader.secondary_detail_map, texture_root)
+    micro_detail_map, micro_detail_map_name = get_bitmap(shader.micro_detail_map, texture_root)
+    bump_map, bump_map_name = get_bitmap(shader.bump_map, texture_root)
+    illum_map, illum_map_name = get_bitmap(shader.map, texture_root)
+    reflection_map, reflection_map_name = get_bitmap(shader.reflection_cube_map, texture_root)
 
-    base_bitmap = parse_tag(shader.shader_body.base_map, report, "halo1", "retail")
-    primary_detail_bitmap = parse_tag(shader.shader_body.primary_detail_map, report, "halo1", "retail")
-    secondary_detail_bitmap = parse_tag(shader.shader_body.secondary_detail_map, report, "halo1", "retail")
-    micro_detail_bitmap = parse_tag(shader.shader_body.micro_detail_map, report, "halo1", "retail")
-    base_bitmap = parse_tag(shader.shader_body.base_map, report, "halo1", "retail")
-    bump_bitmap = parse_tag(shader.shader_body.bump_map, report, "halo1", "retail")
-    illum_bitmap = parse_tag(shader.shader_body.map, report, "halo1", "retail")
-    reflection_bitmap = parse_tag(shader.shader_body.reflection_cube_map, report, "halo1", "retail")
+    base_bitmap = parse_tag(shader.base_map, report, "halo1", "retail")
+    primary_detail_bitmap = parse_tag(shader.primary_detail_map, report, "halo1", "retail")
+    secondary_detail_bitmap = parse_tag(shader.secondary_detail_map, report, "halo1", "retail")
+    micro_detail_bitmap = parse_tag(shader.micro_detail_map, report, "halo1", "retail")
+    base_bitmap = parse_tag(shader.base_map, report, "halo1", "retail")
+    bump_bitmap = parse_tag(shader.bump_map, report, "halo1", "retail")
+    illum_bitmap = parse_tag(shader.map, report, "halo1", "retail")
+    reflection_bitmap = parse_tag(shader.reflection_cube_map, report, "halo1", "retail")
 
-    rescale_detail = DiffuseFlags.rescale_detail_maps in DiffuseFlags(shader.shader_body.diffuse_flags)
-    rescale_bump_maps = DiffuseFlags.rescale_bump_maps in DiffuseFlags(shader.shader_body.diffuse_flags)
+    rescale_detail = DiffuseFlags.rescale_detail_maps in DiffuseFlags(shader.diffuse_flags)
+    rescale_bump_maps = DiffuseFlags.rescale_bump_maps in DiffuseFlags(shader.diffuse_flags)
 
     base_bitmap_count = 0
     primary_detail_bitmap_count = 0
@@ -330,43 +330,43 @@ def generate_shader_environment(mat, shader, permutation_index, report):
     set_bump_scale(shader, mat, bump_node, base_bitmap_count, bump_bitmap_count, base_bitmap, bump_bitmap, permutation_index, rescale_bump_maps)
     set_illum_scale(shader, mat, self_illumination_node)
 
-    shader_environment_node.inputs["Power"].default_value = shader.shader_body.power
-    shader_environment_node.inputs["Color of Emitted Light"].default_value = shader.shader_body.color_of_emitted_light
-    alpha_shader = EnvironmentFlags.alpha_tested in EnvironmentFlags(shader.shader_body.environment_flags)
+    shader_environment_node.inputs["Power"].default_value = shader.power
+    shader_environment_node.inputs["Color of Emitted Light"].default_value = shader.color_of_emitted_light
+    alpha_shader = EnvironmentFlags.alpha_tested in EnvironmentFlags(shader.environment_flags)
     if alpha_shader:
         shader_environment_node.inputs["Alpha Tested"].default_value = True
         mat.shadow_method = 'CLIP'
         mat.blend_method = 'HASHED'
 
     mat.use_backface_culling = True
-    shader_environment_node.inputs["Blend Type"].default_value = shader.shader_body.environment_type
-    shader_environment_node.inputs["Detail Map Function"].default_value = shader.shader_body.detail_map_function
-    shader_environment_node.inputs["Micro Detail Map Function"].default_value = shader.shader_body.micro_detail_map_function
+    shader_environment_node.inputs["Blend Type"].default_value = shader.environment_type
+    shader_environment_node.inputs["Detail Map Function"].default_value = shader.detail_map_function
+    shader_environment_node.inputs["Micro Detail Map Function"].default_value = shader.micro_detail_map_function
 
     if bump_bitmap:
-        shader_environment_node.inputs["Bump Strength"].default_value = bump_bitmap.bitmap_body.bump_height * 15
+        shader_environment_node.inputs["Bump Strength"].default_value = bump_bitmap.bump_height * 15
 
-    shader_environment_node.inputs["Primary On Color"].default_value = shader.shader_body.primary_on_color
-    shader_environment_node.inputs["Primary Off Color"].default_value = shader.shader_body.primary_off_color
+    shader_environment_node.inputs["Primary On Color"].default_value = shader.primary_on_color
+    shader_environment_node.inputs["Primary Off Color"].default_value = shader.primary_off_color
     shader_environment_node.inputs["Primary Self-Illumination Activation Level"].default_value = 0
-    if not FunctionEnum.one.value == shader.shader_body.primary_animation_function:
+    if not FunctionEnum.one.value == shader.primary_animation_function:
         shader_environment_node.inputs["Primary Self-Illumination Activation Level"].default_value = 1
 
-    shader_environment_node.inputs["Secondary On Color"].default_value = shader.shader_body.secondary_on_color
-    shader_environment_node.inputs["Secondary Off Color"].default_value = shader.shader_body.secondary_off_color
+    shader_environment_node.inputs["Secondary On Color"].default_value = shader.secondary_on_color
+    shader_environment_node.inputs["Secondary Off Color"].default_value = shader.secondary_off_color
     shader_environment_node.inputs["Secondary Self-Illumination Activation Level"].default_value = 0
-    if not FunctionEnum.one.value == shader.shader_body.secondary_animation_function:
+    if not FunctionEnum.one.value == shader.secondary_animation_function:
         shader_environment_node.inputs["Secondary Self-Illumination Activation Level"].default_value = 1
 
-    shader_environment_node.inputs["Plasma On Color"].default_value = shader.shader_body.plasma_on_color
-    shader_environment_node.inputs["Plasma Off Color"].default_value = shader.shader_body.plasma_off_color
+    shader_environment_node.inputs["Plasma On Color"].default_value = shader.plasma_on_color
+    shader_environment_node.inputs["Plasma Off Color"].default_value = shader.plasma_off_color
     shader_environment_node.inputs["Plasma Self-Illumination Activation Level"].default_value = 0
-    if not FunctionEnum.one.value == shader.shader_body.plasma_animation_function:
+    if not FunctionEnum.one.value == shader.plasma_animation_function:
         shader_environment_node.inputs["Plasma Self-Illumination Activation Level"].default_value = 1
 
-    shader_environment_node.inputs["Brightness"].default_value = shader.shader_body.brightness
-    shader_environment_node.inputs["Perpendicular Color"].default_value = shader.shader_body.perpendicular_color
-    shader_environment_node.inputs["Parallel Color"].default_value = shader.shader_body.parallel_color
+    shader_environment_node.inputs["Brightness"].default_value = shader.brightness
+    shader_environment_node.inputs["Perpendicular Color"].default_value = shader.perpendicular_color
+    shader_environment_node.inputs["Parallel Color"].default_value = shader.parallel_color
 
-    shader_environment_node.inputs["Perpendicular Brightness"].default_value = shader.shader_body.perpendicular_brightness
-    shader_environment_node.inputs["Parallel Brightness"].default_value = shader.shader_body.parallel_brightness
+    shader_environment_node.inputs["Perpendicular Brightness"].default_value = shader.perpendicular_brightness
+    shader_environment_node.inputs["Parallel Brightness"].default_value = shader.parallel_brightness

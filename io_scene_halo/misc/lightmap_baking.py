@@ -203,9 +203,9 @@ def bake_clusters(context, game_title, scenario_path, image_multiplier, report, 
             for bsp_idx, bsp_collection in enumerate(levels_collection.children):
                 bsp_element = SCNR_ASSET.structure_bsps[bsp_idx]
                 BSP_ASSET = parse_tag(bsp_element, report, game_title, "retail")
-                BITMAP_ASSET = parse_tag(BSP_ASSET.level_body.lightmap_bitmaps_tag_ref, report, game_title, "retail")
+                BITMAP_ASSET = parse_tag(BSP_ASSET.lightmap_bitmaps_tag_ref, report, game_title, "retail")
 
-                bitmap_path = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_1_tag_path, "%s.bitmap" %  BSP_ASSET.level_body.lightmap_bitmaps_tag_ref.name)
+                bitmap_path = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_1_tag_path, "%s.bitmap" %  BSP_ASSET.lightmap_bitmaps_tag_ref.name)
 
                 pixel_data = bytes()
                 pixel_offset = 0
@@ -228,15 +228,14 @@ def bake_clusters(context, game_title, scenario_path, image_multiplier, report, 
                 BITMAP.header.plugin_handle = -1
                 BITMAP.header.engine_tag = "blam"
 
-                BITMAP.bitmap_body = BITMAP.BitmapBody()
-                BITMAP.bitmap_body.format = BITMAP_ASSET.bitmap_body.format
-                BITMAP.bitmap_body.usage = H1UsageEnum.light_map.value
-                BITMAP.bitmap_body.color_plate_width = 0
-                BITMAP.bitmap_body.color_plate_height = 0
-                BITMAP.bitmap_body.compressed_color_plate_data = TAG.RawData()
-                BITMAP.bitmap_body.compressed_color_plate = bytes()
-                BITMAP.bitmap_body.processed_pixel_data = TAG.RawData()
-                BITMAP.bitmap_body.processed_pixels = bytes()
+                BITMAP.format = BITMAP_ASSET.bitmap_format
+                BITMAP.usage = H1UsageEnum.light_map.value
+                BITMAP.color_plate_width = 0
+                BITMAP.color_plate_height = 0
+                BITMAP.compressed_color_plate_data = TAG.RawData()
+                BITMAP.compressed_color_plate = bytes()
+                BITMAP.processed_pixel_data = TAG.RawData()
+                BITMAP.processed_pixels = bytes()
                 BITMAP.sequences = []
                 BITMAP.bitmaps = []
 
@@ -282,7 +281,7 @@ def bake_clusters(context, game_title, scenario_path, image_multiplier, report, 
                             buf = bytearray([int(p * 255) for p in image.pixels])
                             image = Image.frombytes("RGBA", (width, height), buf, 'raw', "RGBA")
 
-                            bitmap_format = BITMAP.bitmap_body.format
+                            bitmap_format = BITMAP.format
                             lightmap_flags = H1BitmapFlags.power_of_two_dimensions.value
                             if bitmap_format == H1FormatEnum._16bit_color.value:
                                 lightmap_data = image.convert('BGR;16').tobytes()
@@ -318,11 +317,11 @@ def bake_clusters(context, game_title, scenario_path, image_multiplier, report, 
                             pixel_offset += len(lightmap_data)
 
                     cluster_collection.hide_render = True
-                    BITMAP.bitmap_body.processed_pixel_data = TAG.RawData(len(pixel_data))
-                    BITMAP.bitmap_body.processed_pixels = pixel_data
+                    BITMAP.processed_pixel_data = TAG.RawData(len(pixel_data))
+                    BITMAP.processed_pixels = pixel_data
 
-                    BITMAP.bitmap_body.sequences_tag_block = TAG.TagBlock(len(BITMAP.sequences))
-                    BITMAP.bitmap_body.bitmaps_tag_block = TAG.TagBlock(len(BITMAP.bitmaps))
+                    BITMAP.sequences_tag_block = TAG.TagBlock(len(BITMAP.sequences))
+                    BITMAP.bitmaps_tag_block = TAG.TagBlock(len(BITMAP.bitmaps))
 
                     output_stream = open(bitmap_path, 'wb')
                     build_h1_bitmap(output_stream, BITMAP, report)
@@ -382,16 +381,15 @@ def bake_clusters(context, game_title, scenario_path, image_multiplier, report, 
                 BITMAP.header.plugin_handle = -1
                 BITMAP.header.engine_tag = "BLM!"
 
-                BITMAP.bitmap_body_header = TAG.TagBlockHeader("tbfd", 0, 1, 112)
-                BITMAP.bitmap_body = BITMAP.BitmapBody()
-                BITMAP.bitmap_body.format = H2FormatEnum.compressed_with_color_key_transparency.value
-                BITMAP.bitmap_body.usage = H2UsageEnum.alpha_blend.value
-                BITMAP.bitmap_body.color_plate_width = 0
-                BITMAP.bitmap_body.color_plate_height = 0
-                BITMAP.bitmap_body.compressed_color_plate_data = TAG.RawData()
-                BITMAP.bitmap_body.compressed_color_plate = bytes()
-                BITMAP.bitmap_body.processed_pixel_data = TAG.RawData()
-                BITMAP.bitmap_body.processed_pixels = bytes()
+                BITMAP.body_header = TAG.TagBlockHeader("tbfd", 0, 1, 112)
+                BITMAP.bitmap_format = H2FormatEnum.compressed_with_color_key_transparency.value
+                BITMAP.usage = H2UsageEnum.alpha_blend.value
+                BITMAP.color_plate_width = 0
+                BITMAP.color_plate_height = 0
+                BITMAP.compressed_color_plate_data = TAG.RawData()
+                BITMAP.compressed_color_plate = bytes()
+                BITMAP.processed_pixel_data = TAG.RawData()
+                BITMAP.processed_pixels = bytes()
                 BITMAP.sequences = []
                 BITMAP.bitmaps = []
 
@@ -419,8 +417,8 @@ def bake_clusters(context, game_title, scenario_path, image_multiplier, report, 
 
                 lightmap_collection.hide_render = True
                 lightmap_instances_collection.hide_render = True
-                BITMAP.bitmap_body.processed_pixel_data = TAG.RawData(len(pixel_data))
-                BITMAP.bitmap_body.processed_pixels = pixel_data
+                BITMAP.processed_pixel_data = TAG.RawData(len(pixel_data))
+                BITMAP.processed_pixels = pixel_data
 
                 bitmap_count = len(BITMAP.bitmaps)
                 BITMAP.sequence_header = TAG.TagBlockHeader("tbfd", 0, 0, 64)
@@ -429,8 +427,8 @@ def bake_clusters(context, game_title, scenario_path, image_multiplier, report, 
                 else:
                     BITMAP.bitmap_header = TAG.TagBlockHeader("tbfd", 2, bitmap_count, 140)
 
-                BITMAP.bitmap_body.sequences_tag_block = TAG.TagBlock()
-                BITMAP.bitmap_body.bitmaps_tag_block = TAG.TagBlock(bitmap_count)
+                BITMAP.sequences_tag_block = TAG.TagBlock()
+                BITMAP.bitmaps_tag_block = TAG.TagBlock(bitmap_count)
 
                 output_stream = open(bitmap_path, 'wb')
                 build_h2_bitmap(output_stream, BITMAP, report, H2V)

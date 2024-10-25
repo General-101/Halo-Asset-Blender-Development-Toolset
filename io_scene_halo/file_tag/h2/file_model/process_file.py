@@ -47,122 +47,120 @@ def initilize_model(MODEL):
     MODEL.scenario_load_parameters = []
 
 def read_model_body_v0(MODEL, TAG, input_stream, tag_node, XML_OUTPUT):
-    MODEL.model_body_header = TAG.TagBlockHeader().read(input_stream, TAG)
-    MODEL.model_body = MODEL.ModelBody()
-    MODEL.model_body.render_model = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "render model"))
-    MODEL.model_body.collision_model = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "collision model"))
-    MODEL.model_body.animation = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "animation"))
-    MODEL.model_body.physics = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "physics"))
-    MODEL.model_body.physics_model = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "physics model"))
-    MODEL.model_body.disappear_distance = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "disappear distance"))
-    MODEL.model_body.begin_fade_distance = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "begin fade distance"))
+    MODEL.body_header = TAG.TagBlockHeader().read(input_stream, TAG)
+    MODEL.render_model = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "render model"))
+    MODEL.collision_model = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "collision model"))
+    MODEL.animation = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "animation"))
+    MODEL.physics = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "physics"))
+    MODEL.physics_model = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "physics model"))
+    MODEL.disappear_distance = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "disappear distance"))
+    MODEL.begin_fade_distance = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "begin fade distance"))
     input_stream.read(4) # Padding?
-    MODEL.model_body.reduce_to_l1 = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "reduce to l1"))
-    MODEL.model_body.reduce_to_l2 = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "reduce to l2"))
-    MODEL.model_body.reduce_to_l3 = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "reduce to l3"))
-    MODEL.model_body.reduce_to_l4 = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "reduce to l4"))
-    MODEL.model_body.reduce_to_l5 = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "reduce to l5"))
+    MODEL.reduce_to_l1 = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "reduce to l1"))
+    MODEL.reduce_to_l2 = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "reduce to l2"))
+    MODEL.reduce_to_l3 = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "reduce to l3"))
+    MODEL.reduce_to_l4 = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "reduce to l4"))
+    MODEL.reduce_to_l5 = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "reduce to l5"))
     input_stream.read(4) # Padding?
-    MODEL.model_body.shadow_fade_distance = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "shadow fade distance", ShadowFadeDistanceEnum))
+    MODEL.shadow_fade_distance = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "shadow fade distance", ShadowFadeDistanceEnum))
     input_stream.read(2) # Padding?
-    MODEL.model_body.variants_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "variants"))
-    MODEL.model_body.materials_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "materials"))
-    MODEL.model_body.new_damage_info_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "new damage info"))
-    MODEL.model_body.targets_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "targets"))
-    MODEL.model_body.runtime_regions_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "runtime regions"))
-    MODEL.model_body.runtime_nodes_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "runtime nodes"))
+    MODEL.variants_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "variants"))
+    MODEL.materials_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "materials"))
+    MODEL.new_damage_info_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "new damage info"))
+    MODEL.targets_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "targets"))
+    MODEL.runtime_regions_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "runtime regions"))
+    MODEL.runtime_nodes_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "runtime nodes"))
     input_stream.read(4) # Padding?
-    MODEL.model_body.model_object_data_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "model object data"))
+    MODEL.model_object_data_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "model object data"))
 
-    MODEL.model_body.default_dialogue = TAG.TagRef()
-    MODEL.model_body.unused = TAG.TagRef()
-    MODEL.model_body.salt_array = []
-    MODEL.model_body.scenario_load_parameters_tag_block = TAG.TagBlock()
-    MODEL.model_body.hologram_shader = TAG.TagRef()
+    MODEL.default_dialogue = TAG.TagRef()
+    MODEL.unused = TAG.TagRef()
+    MODEL.salt_array = []
+    MODEL.scenario_load_parameters_tag_block = TAG.TagBlock()
+    MODEL.hologram_shader = TAG.TagRef()
 
-    if MODEL.model_body_header.size >= 224:
-        MODEL.model_body.default_dialogue = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "default dialogue"))
+    if MODEL.body_header.size >= 224:
+        MODEL.default_dialogue = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "default dialogue"))
 
-    if MODEL.model_body_header.size >= 240:
-        MODEL.model_body.unused = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "unused"))
+    if MODEL.body_header.size >= 240:
+        MODEL.unused = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "unused"))
 
-    if MODEL.model_body_header.size >= 244:
-        MODEL.model_body.flags = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "flags", ModelFlags))
+    if MODEL.body_header.size >= 244:
+        MODEL.flags = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "flags", ModelFlags))
         input_stream.read(2) # Padding?
 
-    if MODEL.model_body_header.size >= 248:
+    if MODEL.body_header.size >= 248:
         TAG.big_endian = True
         input_stream.read(2) # Padding?
-        MODEL.model_body.default_dialogue_effect_length = TAG.read_signed_short(input_stream, TAG)
+        MODEL.default_dialogue_effect_length = TAG.read_signed_short(input_stream, TAG)
         TAG.big_endian = False
 
-    if MODEL.model_body_header.size >= 316:
+    if MODEL.body_header.size >= 316:
         for salt_idx in range(SALT_SIZE):
-            MODEL.model_body.salt_array.append(TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(tag_node, "salt %s" % salt_idx)))
+            MODEL.salt_array.append(TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(tag_node, "salt %s" % salt_idx)))
 
-        MODEL.model_body.runtime_flags = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "runtime flags", RuntimeFlags))
+        MODEL.runtime_flags = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "runtime flags", RuntimeFlags))
         input_stream.read(2) # Padding?
 
-    if MODEL.model_body_header.size >= 328:
-        MODEL.model_body.scenario_load_parameters_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "scenariom load parameters"))
+    if MODEL.body_header.size >= 328:
+        MODEL.scenario_load_parameters_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "scenariom load parameters"))
 
-    if MODEL.model_body_header.size >= 348:
-        MODEL.model_body.hologram_shader = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "hologram shader"))
+    if MODEL.body_header.size >= 348:
+        MODEL.hologram_shader = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "hologram shader"))
 
         TAG.big_endian = True
         input_stream.read(2) # Padding?
-        MODEL.model_body.hologram_control_function_length = TAG.read_signed_short(input_stream, TAG)
+        MODEL.hologram_control_function_length = TAG.read_signed_short(input_stream, TAG)
         TAG.big_endian = False
 
 def read_model_body_retail(MODEL, TAG, input_stream, tag_node, XML_OUTPUT):
-    MODEL.model_body_header = TAG.TagBlockHeader().read(input_stream, TAG)
-    MODEL.model_body = MODEL.ModelBody()
-    MODEL.model_body.render_model = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "render model"))
-    MODEL.model_body.collision_model = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "collision model"))
-    MODEL.model_body.animation = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "animation"))
-    MODEL.model_body.physics = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "physics"))
-    MODEL.model_body.physics_model = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "physics model"))
-    MODEL.model_body.disappear_distance = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "disappear distance"))
-    MODEL.model_body.begin_fade_distance = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "begin fade distance"))
+    MODEL.body_header = TAG.TagBlockHeader().read(input_stream, TAG)
+    MODEL.render_model = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "render model"))
+    MODEL.collision_model = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "collision model"))
+    MODEL.animation = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "animation"))
+    MODEL.physics = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "physics"))
+    MODEL.physics_model = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "physics model"))
+    MODEL.disappear_distance = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "disappear distance"))
+    MODEL.begin_fade_distance = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "begin fade distance"))
     input_stream.read(4) # Padding?
-    MODEL.model_body.reduce_to_l1 = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "reduce to l1"))
-    MODEL.model_body.reduce_to_l2 = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "reduce to l2"))
-    MODEL.model_body.reduce_to_l3 = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "reduce to l3"))
-    MODEL.model_body.reduce_to_l4 = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "reduce to l4"))
-    MODEL.model_body.reduce_to_l5 = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "reduce to l5"))
+    MODEL.reduce_to_l1 = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "reduce to l1"))
+    MODEL.reduce_to_l2 = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "reduce to l2"))
+    MODEL.reduce_to_l3 = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "reduce to l3"))
+    MODEL.reduce_to_l4 = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "reduce to l4"))
+    MODEL.reduce_to_l5 = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "reduce to l5"))
     input_stream.read(4) # Padding?
-    MODEL.model_body.shadow_fade_distance = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "shadow fade distance", ShadowFadeDistanceEnum))
+    MODEL.shadow_fade_distance = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "shadow fade distance", ShadowFadeDistanceEnum))
     input_stream.read(2) # Padding?
-    MODEL.model_body.variants_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "variants"))
-    MODEL.model_body.materials_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "materials"))
-    MODEL.model_body.new_damage_info_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "new damage info"))
-    MODEL.model_body.targets_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "targets"))
-    MODEL.model_body.runtime_regions_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "runtime regions"))
-    MODEL.model_body.runtime_nodes_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "runtime nodes"))
+    MODEL.variants_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "variants"))
+    MODEL.materials_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "materials"))
+    MODEL.new_damage_info_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "new damage info"))
+    MODEL.targets_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "targets"))
+    MODEL.runtime_regions_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "runtime regions"))
+    MODEL.runtime_nodes_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "runtime nodes"))
     input_stream.read(4) # Padding?
-    MODEL.model_body.model_object_data_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "model object data"))
-    MODEL.model_body.default_dialogue = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "default dialogue"))
-    MODEL.model_body.unused = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "unused"))
-    MODEL.model_body.flags = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "flags", ModelFlags))
+    MODEL.model_object_data_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "model object data"))
+    MODEL.default_dialogue = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "default dialogue"))
+    MODEL.unused = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "unused"))
+    MODEL.flags = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "flags", ModelFlags))
     input_stream.read(2) # Padding?
 
     TAG.big_endian = True
     input_stream.read(2) # Padding?
-    MODEL.model_body.default_dialogue_effect_length = TAG.read_signed_short(input_stream, TAG)
+    MODEL.default_dialogue_effect_length = TAG.read_signed_short(input_stream, TAG)
     TAG.big_endian = False
 
-    MODEL.model_body.salt_array = []
+    MODEL.salt_array = []
     for salt_idx in range(SALT_SIZE):
-        MODEL.model_body.salt_array.append(TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(tag_node, "salt %s" % salt_idx)))
+        MODEL.salt_array.append(TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(tag_node, "salt %s" % salt_idx)))
 
-    MODEL.model_body.runtime_flags = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "runtime flags", RuntimeFlags))
+    MODEL.runtime_flags = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "runtime flags", RuntimeFlags))
     input_stream.read(2) # Padding?
-    MODEL.model_body.scenario_load_parameters_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "scenariom load parameters"))
-    MODEL.model_body.hologram_shader = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "hologram shader"))
+    MODEL.scenario_load_parameters_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "scenariom load parameters"))
+    MODEL.hologram_shader = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "hologram shader"))
 
     TAG.big_endian = True
     input_stream.read(2) # Padding?
-    MODEL.model_body.hologram_control_function_length = TAG.read_signed_short(input_stream, TAG)
+    MODEL.hologram_control_function_length = TAG.read_signed_short(input_stream, TAG)
     TAG.big_endian = False
 
 def process_file(input_stream, report):
@@ -188,35 +186,35 @@ def process_file(input_stream, report):
     elif MODEL.header.engine_tag == "BLM!":
         read_model_body_retail(MODEL, TAG, input_stream, tag_node, XML_OUTPUT)
 
-    if MODEL.model_body.render_model.name_length > 0:
-        MODEL.model_body.render_model.name = TAG.read_variable_string(input_stream, MODEL.model_body.render_model.name_length, TAG)
+    if MODEL.render_model.name_length > 0:
+        MODEL.render_model.name = TAG.read_variable_string(input_stream, MODEL.render_model.name_length, TAG)
 
-    if MODEL.model_body.collision_model.name_length > 0:
-        MODEL.model_body.collision_model.name = TAG.read_variable_string(input_stream, MODEL.model_body.collision_model.name_length, TAG)
+    if MODEL.collision_model.name_length > 0:
+        MODEL.collision_model.name = TAG.read_variable_string(input_stream, MODEL.collision_model.name_length, TAG)
 
-    if MODEL.model_body.animation.name_length > 0:
-        MODEL.model_body.animation.name = TAG.read_variable_string(input_stream, MODEL.model_body.animation.name_length, TAG)
+    if MODEL.animation.name_length > 0:
+        MODEL.animation.name = TAG.read_variable_string(input_stream, MODEL.animation.name_length, TAG)
 
-    if MODEL.model_body.physics.name_length > 0:
-        MODEL.model_body.physics.name = TAG.read_variable_string(input_stream, MODEL.model_body.physics.name_length, TAG)
+    if MODEL.physics.name_length > 0:
+        MODEL.physics.name = TAG.read_variable_string(input_stream, MODEL.physics.name_length, TAG)
 
-    if MODEL.model_body.physics_model.name_length > 0:
-        MODEL.model_body.physics_model.name = TAG.read_variable_string(input_stream, MODEL.model_body.physics_model.name_length, TAG)
+    if MODEL.physics_model.name_length > 0:
+        MODEL.physics_model.name = TAG.read_variable_string(input_stream, MODEL.physics_model.name_length, TAG)
 
-    #if MODEL.model_body.default_dialogue.name_length > 0:
-        #MODEL.model_body.default_dialogue.name = TAG.read_variable_string(input_stream, MODEL.model_body.default_dialogue.name_length, TAG)
+    #if MODEL.default_dialogue.name_length > 0:
+        #MODEL.default_dialogue.name = TAG.read_variable_string(input_stream, MODEL.default_dialogue.name_length, TAG)
 
-    #if MODEL.model_body.unused.name_length > 0:
-        #MODEL.model_body.unused.name = TAG.read_variable_string(input_stream, MODEL.model_body.unused.name_length, TAG)
+    #if MODEL.unused.name_length > 0:
+        #MODEL.unused.name = TAG.read_variable_string(input_stream, MODEL.unused.name_length, TAG)
 
-    #if MODEL.model_body.default_dialogue_effect_length > 0:
-        #MODEL.model_body.default_dialogue_effect = TAG.read_variable_string_no_terminator(input_stream, MODEL.model_body.default_dialogue_effect_length, TAG, tag_format.XMLData(tag_node, "default dialogue effect"))
+    #if MODEL.default_dialogue_effect_length > 0:
+        #MODEL.default_dialogue_effect = TAG.read_variable_string_no_terminator(input_stream, MODEL.default_dialogue_effect_length, TAG, tag_format.XMLData(tag_node, "default dialogue effect"))
 
-    #if MODEL.model_body.hologram_shader.name_length > 0:
-        #MODEL.model_body.hologram_shader.name = TAG.read_variable_string(input_stream, MODEL.model_body.hologram_shader.name_length, TAG)
+    #if MODEL.hologram_shader.name_length > 0:
+        #MODEL.hologram_shader.name = TAG.read_variable_string(input_stream, MODEL.hologram_shader.name_length, TAG)
 
-    #if MODEL.model_body.hologram_control_function_length > 0:
-        #MODEL.model_body.hologram_control_function = TAG.read_variable_string_no_terminator(input_stream, MODEL.model_body.hologram_control_function_length, TAG, tag_format.XMLData(tag_node, "hologram control function"))
+    #if MODEL.hologram_control_function_length > 0:
+        #MODEL.hologram_control_function = TAG.read_variable_string_no_terminator(input_stream, MODEL.hologram_control_function_length, TAG, tag_format.XMLData(tag_node, "hologram control function"))
 
     if XML_OUTPUT:
         render_model_node = tag_format.get_xml_node(XML_OUTPUT, 1, tag_node, "name", "render model")
@@ -227,14 +225,14 @@ def process_file(input_stream, report):
         #default_dialogue_node = tag_format.get_xml_node(XML_OUTPUT, 1, tag_node, "name", "default dialogue")
         #unused_node = tag_format.get_xml_node(XML_OUTPUT, 1, tag_node, "name", "unused")
         #hologram_shader_node = tag_format.get_xml_node(XML_OUTPUT, 1, tag_node, "name", "hologram shader")
-        MODEL.model_body.render_model.append_xml_attributes(render_model_node)
-        MODEL.model_body.collision_model.append_xml_attributes(collision_model_node)
-        MODEL.model_body.animation.append_xml_attributes(animation_node)
-        MODEL.model_body.physics.append_xml_attributes(physics_node)
-        MODEL.model_body.physics_model.append_xml_attributes(physics_model_node)
-        #MODEL.model_body.default_dialogue.append_xml_attributes(default_dialogue_node)
-        #MODEL.model_body.unused.append_xml_attributes(unused_node)
-        #MODEL.model_body.hologram_shader.append_xml_attributes(hologram_shader_node)
+        MODEL.render_model.append_xml_attributes(render_model_node)
+        MODEL.collision_model.append_xml_attributes(collision_model_node)
+        MODEL.animation.append_xml_attributes(animation_node)
+        MODEL.physics.append_xml_attributes(physics_node)
+        MODEL.physics_model.append_xml_attributes(physics_model_node)
+        #MODEL.default_dialogue.append_xml_attributes(default_dialogue_node)
+        #MODEL.unused.append_xml_attributes(unused_node)
+        #MODEL.hologram_shader.append_xml_attributes(hologram_shader_node)
 
     current_position = input_stream.tell()
     EOF = input_stream.seek(0, 2)

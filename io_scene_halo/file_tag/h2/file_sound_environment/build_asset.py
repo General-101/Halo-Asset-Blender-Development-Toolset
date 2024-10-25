@@ -29,23 +29,23 @@ import struct
 from ....global_functions import tag_format, shader_processing
 
 def write_body(output_stream, TAG, SOUNDENV):
-    SOUNDENV.sound_environment_body_header.write(output_stream, TAG, True)
+    SOUNDENV.body_header.write(output_stream, TAG, True)
     output_stream.write(struct.pack('<4x'))
-    output_stream.write(struct.pack('<h', SOUNDENV.sound_environment_body.priority))
+    output_stream.write(struct.pack('<h', SOUNDENV.priority))
     output_stream.write(struct.pack('<2x'))
-    output_stream.write(struct.pack('<f', SOUNDENV.sound_environment_body.room_intensity))
-    output_stream.write(struct.pack('<f', SOUNDENV.sound_environment_body.room_intensity_hf))
-    output_stream.write(struct.pack('<f', SOUNDENV.sound_environment_body.room_rolloff))
-    output_stream.write(struct.pack('<f', SOUNDENV.sound_environment_body.decay_time))
-    output_stream.write(struct.pack('<f', SOUNDENV.sound_environment_body.decay_hf_ratio))
-    output_stream.write(struct.pack('<f', SOUNDENV.sound_environment_body.reflections_intensity))
-    output_stream.write(struct.pack('<f', SOUNDENV.sound_environment_body.reflections_delay))
-    output_stream.write(struct.pack('<f', SOUNDENV.sound_environment_body.reverb_intensity))
-    output_stream.write(struct.pack('<f', SOUNDENV.sound_environment_body.reverb_delay))
-    output_stream.write(struct.pack('<f', SOUNDENV.sound_environment_body.diffusion))
-    output_stream.write(struct.pack('<f', SOUNDENV.sound_environment_body.density))
-    output_stream.write(struct.pack('<f', SOUNDENV.sound_environment_body.hf_reference))
-    output_stream.write(struct.pack('>I', len(SOUNDENV.sound_environment_body.reflection_type)))
+    output_stream.write(struct.pack('<f', SOUNDENV.room_intensity))
+    output_stream.write(struct.pack('<f', SOUNDENV.room_intensity_hf))
+    output_stream.write(struct.pack('<f', SOUNDENV.room_rolloff))
+    output_stream.write(struct.pack('<f', SOUNDENV.decay_time))
+    output_stream.write(struct.pack('<f', SOUNDENV.decay_hf_ratio))
+    output_stream.write(struct.pack('<f', SOUNDENV.reflections_intensity))
+    output_stream.write(struct.pack('<f', SOUNDENV.reflections_delay))
+    output_stream.write(struct.pack('<f', SOUNDENV.reverb_intensity))
+    output_stream.write(struct.pack('<f', SOUNDENV.reverb_delay))
+    output_stream.write(struct.pack('<f', SOUNDENV.diffusion))
+    output_stream.write(struct.pack('<f', SOUNDENV.density))
+    output_stream.write(struct.pack('<f', SOUNDENV.hf_reference))
+    output_stream.write(struct.pack('>I', len(SOUNDENV.reflection_type)))
     output_stream.write(struct.pack('<12x'))
 
 def build_asset(output_stream, SOUNDENV, report):
@@ -56,6 +56,6 @@ def build_asset(output_stream, SOUNDENV, report):
     SOUNDENV.header.write(output_stream, False, True)
     write_body(output_stream, TAG, SOUNDENV)
 
-    reflection_type_length = len(SOUNDENV.sound_environment_body.reflection_type)
+    reflection_type_length = len(SOUNDENV.reflection_type)
     if reflection_type_length > 0:
-        output_stream.write(struct.pack('<%ss' % reflection_type_length, TAG.string_to_bytes(SOUNDENV.sound_environment_body.reflection_type, False)))
+        output_stream.write(struct.pack('<%ss' % reflection_type_length, TAG.string_to_bytes(SOUNDENV.reflection_type, False)))

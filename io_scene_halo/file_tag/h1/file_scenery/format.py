@@ -62,41 +62,38 @@ class SceneryFlags(Flag):
     unused = auto()
 
 class SceneryAsset():
-    def __init__(self):
-        self.header = None
-        self.scenery_body = None
-        self.attachments = None
-        self.widgets = None
-        self.functions = None
-        self.change_colors = None
-        self.predicted_resources = None
-
-    class SceneryBody:
-        def __init__(self, object_flags=0, bounding_radius=0.0, bounding_offset=Vector(), origin_offset=Vector(), acceleration_scale=0.0, model=None, animation_graph=None,
-                     collision_model=None, physics=None, modifier_shader=None, creation_effect=None, render_bounding_radius=0.0, a_in=0, b_in=0, c_in=0, d_in=0,
-                     hud_text_message_index=0, forced_shader_permutation_index=0, attachments_tag_block=None, widgets_tag_block=None, functions_tag_block=None,
-                     change_colors_tag_block=None, predicted_resources_tag_block=None, scenery_flags=0):
-            self.object_flags = object_flags
-            self.bounding_radius = bounding_radius
-            self.bounding_offset = bounding_offset
-            self.origin_offset = origin_offset
-            self.acceleration_scale = acceleration_scale
-            self.model = model
-            self.animation_graph = animation_graph
-            self.collision_model = collision_model
-            self.physics = physics
-            self.modifier_shader = modifier_shader
-            self.creation_effect = creation_effect
-            self.render_bounding_radius = render_bounding_radius
-            self.a_in = a_in
-            self.b_in = b_in
-            self.c_in = c_in
-            self.d_in = d_in
-            self.hud_text_message_index = hud_text_message_index
-            self.forced_shader_permutation_index = forced_shader_permutation_index
-            self.attachments_tag_block = attachments_tag_block
-            self.widgets_tag_block = widgets_tag_block
-            self.functions_tag_block = functions_tag_block
-            self.change_colors_tag_block = change_colors_tag_block
-            self.predicted_resources_tag_block = predicted_resources_tag_block
-            self.scenery_flags = scenery_flags
+    def __init__(self, header=None, attachments=None, widgets=None, functions=None, change_colors=None, predicted_resources=None, object_flags=0, bounding_radius=0.0, 
+                 bounding_offset=Vector(), origin_offset=Vector(), acceleration_scale=0.0, model=None, animation_graph=None, collision_model=None, physics=None, 
+                 modifier_shader=None, creation_effect=None, render_bounding_radius=0.0, a_in=0, b_in=0, c_in=0, d_in=0, hud_text_message_index=0, 
+                 forced_shader_permutation_index=0, attachments_tag_block=None, widgets_tag_block=None, functions_tag_block=None, change_colors_tag_block=None, 
+                 predicted_resources_tag_block=None, scenery_flags=0):
+        self.header = header
+        self.attachments = attachments
+        self.widgets = widgets
+        self.functions = functions
+        self.change_colors = change_colors
+        self.predicted_resources = predicted_resources
+        self.object_flags = object_flags
+        self.bounding_radius = bounding_radius
+        self.bounding_offset = bounding_offset
+        self.origin_offset = origin_offset
+        self.acceleration_scale = acceleration_scale
+        self.model = model
+        self.animation_graph = animation_graph
+        self.collision_model = collision_model
+        self.physics = physics
+        self.modifier_shader = modifier_shader
+        self.creation_effect = creation_effect
+        self.render_bounding_radius = render_bounding_radius
+        self.a_in = a_in
+        self.b_in = b_in
+        self.c_in = c_in
+        self.d_in = d_in
+        self.hud_text_message_index = hud_text_message_index
+        self.forced_shader_permutation_index = forced_shader_permutation_index
+        self.attachments_tag_block = attachments_tag_block
+        self.widgets_tag_block = widgets_tag_block
+        self.functions_tag_block = functions_tag_block
+        self.change_colors_tag_block = change_colors_tag_block
+        self.predicted_resources_tag_block = predicted_resources_tag_block
+        self.scenery_flags = scenery_flags

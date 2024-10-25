@@ -44,14 +44,13 @@ def process_file(input_stream, report):
     if XML_OUTPUT:
         tag_node = TAG.xml_doc.childNodes[0]
 
-    CAMERATRACK.camera_track_body = CAMERATRACK.CameraTrackBody()
     input_stream.read(4) # Padding?
-    CAMERATRACK.camera_track_body.control_points_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "control points"))
+    CAMERATRACK.control_points_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "control points"))
     input_stream.read(32) # Padding?
 
     CAMERATRACK.control_points = []
-    control_point_node = tag_format.get_xml_node(XML_OUTPUT, CAMERATRACK.camera_track_body.control_points_tag_block.count, tag_node, "name", "control points")
-    for control_point_idx in range(CAMERATRACK.camera_track_body.control_points_tag_block.count):
+    control_point_node = tag_format.get_xml_node(XML_OUTPUT, CAMERATRACK.control_points_tag_block.count, tag_node, "name", "control points")
+    for control_point_idx in range(CAMERATRACK.control_points_tag_block.count):
         control_point_element_node = None
         if XML_OUTPUT:
             control_point_element_node = TAG.xml_doc.createElement('element')

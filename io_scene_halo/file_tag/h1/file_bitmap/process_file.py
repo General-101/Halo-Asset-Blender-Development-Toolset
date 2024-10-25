@@ -55,42 +55,41 @@ def process_file(input_stream, report):
     if XML_OUTPUT:
         tag_node = TAG.xml_doc.childNodes[0]
 
-    BITMAP.bitmap_body = BITMAP.BitmapBody()
-    BITMAP.bitmap_body.type = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "type", ImportTypeEnum))
-    BITMAP.bitmap_body.format = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "format", FormatEnum))
-    BITMAP.bitmap_body.usage = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "usage", UsageEnum))
-    BITMAP.bitmap_body.flags = TAG.read_flag_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "flags", ImportFlags))
-    BITMAP.bitmap_body.detail_fade_factor = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "detail fade factor"))
-    BITMAP.bitmap_body.sharpen_amount = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "sharpen amount"))
-    BITMAP.bitmap_body.bump_height = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "bump height"))
-    BITMAP.bitmap_body.sprite_budget_size = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "sprite budget size", SpriteBudgetSizeEnum))
-    BITMAP.bitmap_body.sprite_budget_count = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(tag_node, "sprite budget count"))
-    BITMAP.bitmap_body.color_plate_width = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(tag_node, "color plate width"))
-    BITMAP.bitmap_body.color_plate_height = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(tag_node, "color plate height"))
-    BITMAP.bitmap_body.compressed_color_plate_data = TAG.RawData().read(input_stream, TAG, tag_format.XMLData(tag_node, "compressed color plate data"))
-    BITMAP.bitmap_body.processed_pixel_data = TAG.RawData().read(input_stream, TAG, tag_format.XMLData(tag_node, "processed pixel data"))
-    BITMAP.bitmap_body.blur_filter_size = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "blur filter size"))
-    BITMAP.bitmap_body.alpha_bias = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "alpha bias"))
-    BITMAP.bitmap_body.mipmap_count = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(tag_node, "mipmap count"))
-    BITMAP.bitmap_body.sprite_usage = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "sprite usage", SpriteUsageEnum))
-    BITMAP.bitmap_body.sprite_spacing = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(tag_node, "sprite spacing"))
+    BITMAP.bitmap_type = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "type", ImportTypeEnum))
+    BITMAP.bitmap_format = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "format", FormatEnum))
+    BITMAP.usage = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "usage", UsageEnum))
+    BITMAP.flags = TAG.read_flag_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "flags", ImportFlags))
+    BITMAP.detail_fade_factor = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "detail fade factor"))
+    BITMAP.sharpen_amount = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "sharpen amount"))
+    BITMAP.bump_height = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "bump height"))
+    BITMAP.sprite_budget_size = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "sprite budget size", SpriteBudgetSizeEnum))
+    BITMAP.sprite_budget_count = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(tag_node, "sprite budget count"))
+    BITMAP.color_plate_width = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(tag_node, "color plate width"))
+    BITMAP.color_plate_height = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(tag_node, "color plate height"))
+    BITMAP.compressed_color_plate_data = TAG.RawData().read(input_stream, TAG, tag_format.XMLData(tag_node, "compressed color plate data"))
+    BITMAP.processed_pixel_data = TAG.RawData().read(input_stream, TAG, tag_format.XMLData(tag_node, "processed pixel data"))
+    BITMAP.blur_filter_size = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "blur filter size"))
+    BITMAP.alpha_bias = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "alpha bias"))
+    BITMAP.mipmap_count = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(tag_node, "mipmap count"))
+    BITMAP.sprite_usage = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "sprite usage", SpriteUsageEnum))
+    BITMAP.sprite_spacing = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(tag_node, "sprite spacing"))
     input_stream.read(2) # Padding
-    BITMAP.bitmap_body.sequences_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "sequences"))
-    BITMAP.bitmap_body.bitmaps_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "bitmaps"))
+    BITMAP.sequences_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "sequences"))
+    BITMAP.bitmaps_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "bitmaps"))
 
-    if BITMAP.bitmap_body.compressed_color_plate_data.size > 0:
+    if BITMAP.compressed_color_plate_data.size > 0:
         size = input_stream.read(4) # Padding
-        color_plate_length = BITMAP.bitmap_body.compressed_color_plate_data.size - 4
+        color_plate_length = BITMAP.compressed_color_plate_data.size - 4
         if color_plate_length < 0:
             color_plate_length = 0
 
-        BITMAP.bitmap_body.compressed_color_plate = input_stream.read(color_plate_length)
+        BITMAP.compressed_color_plate = input_stream.read(color_plate_length)
 
-    BITMAP.bitmap_body.processed_pixels = input_stream.read(BITMAP.bitmap_body.processed_pixel_data.size)
+    BITMAP.processed_pixels = input_stream.read(BITMAP.processed_pixel_data.size)
 
     BITMAP.sequences = []
-    sequence_node = tag_format.get_xml_node(XML_OUTPUT, BITMAP.bitmap_body.sequences_tag_block.count, tag_node, "name", "sequences")
-    for sequence_idx in range(BITMAP.bitmap_body.sequences_tag_block.count):
+    sequence_node = tag_format.get_xml_node(XML_OUTPUT, BITMAP.sequences_tag_block.count, tag_node, "name", "sequences")
+    for sequence_idx in range(BITMAP.sequences_tag_block.count):
         sequence_element_node = None
         if XML_OUTPUT:
             sequence_element_node = TAG.xml_doc.createElement('element')
@@ -133,8 +132,8 @@ def process_file(input_stream, report):
             sequence.sprites.append(sprite)
 
     BITMAP.bitmaps = []
-    bitmap_node = tag_format.get_xml_node(XML_OUTPUT, BITMAP.bitmap_body.bitmaps_tag_block.count, tag_node, "name", "bitmaps")
-    for bitmap_idx in range(BITMAP.bitmap_body.bitmaps_tag_block.count):
+    bitmap_node = tag_format.get_xml_node(XML_OUTPUT, BITMAP.bitmaps_tag_block.count, tag_node, "name", "bitmaps")
+    for bitmap_idx in range(BITMAP.bitmaps_tag_block.count):
         bitmap_element_node = None
         if XML_OUTPUT:
             bitmap_element_node = TAG.xml_doc.createElement('element')

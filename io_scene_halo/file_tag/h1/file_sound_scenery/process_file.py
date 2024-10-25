@@ -44,54 +44,53 @@ def process_file(input_stream, report):
     if XML_OUTPUT:
         tag_node = TAG.xml_doc.childNodes[0]
 
-    SOUNDSCENERY.sound_scenery_body = SOUNDSCENERY.SoundSceneryBody()
     input_stream.read(2) # Padding?
-    SOUNDSCENERY.sound_scenery_body.object_flags = TAG.read_flag_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "flags", ObjectFlags))
-    SOUNDSCENERY.sound_scenery_body.bounding_radius = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "bounding radius"))
-    SOUNDSCENERY.sound_scenery_body.bounding_offset = TAG.read_point_3d(input_stream, TAG, tag_format.XMLData(tag_node, "bounding offset"))
-    SOUNDSCENERY.sound_scenery_body.origin_offset = TAG.read_point_3d(input_stream, TAG, tag_format.XMLData(tag_node, "origin offset"))
-    SOUNDSCENERY.sound_scenery_body.acceleration_scale = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "acceleration scale"))
+    SOUNDSCENERY.object_flags = TAG.read_flag_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "flags", ObjectFlags))
+    SOUNDSCENERY.bounding_radius = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "bounding radius"))
+    SOUNDSCENERY.bounding_offset = TAG.read_point_3d(input_stream, TAG, tag_format.XMLData(tag_node, "bounding offset"))
+    SOUNDSCENERY.origin_offset = TAG.read_point_3d(input_stream, TAG, tag_format.XMLData(tag_node, "origin offset"))
+    SOUNDSCENERY.acceleration_scale = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "acceleration scale"))
     input_stream.read(4) # Padding?
-    SOUNDSCENERY.sound_scenery_body.model = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "model"))
-    SOUNDSCENERY.sound_scenery_body.animation_graph = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "animation graph"))
+    SOUNDSCENERY.model = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "model"))
+    SOUNDSCENERY.animation_graph = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "animation graph"))
     input_stream.read(40) # Padding?
-    SOUNDSCENERY.sound_scenery_body.collision_model = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "collision model"))
-    SOUNDSCENERY.sound_scenery_body.physics = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "physics"))
-    SOUNDSCENERY.sound_scenery_body.modifier_shader = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "modifier shader"))
-    SOUNDSCENERY.sound_scenery_body.creation_effect = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "creation effect"))
+    SOUNDSCENERY.collision_model = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "collision model"))
+    SOUNDSCENERY.physics = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "physics"))
+    SOUNDSCENERY.modifier_shader = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "modifier shader"))
+    SOUNDSCENERY.creation_effect = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "creation effect"))
     input_stream.read(84) # Padding?
-    SOUNDSCENERY.sound_scenery_body.render_bounding_radius = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "render bounding radius"))
-    SOUNDSCENERY.sound_scenery_body.a_in = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "a in", ObjectFunctionEnum))
-    SOUNDSCENERY.sound_scenery_body.b_in = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "b in", ObjectFunctionEnum))
-    SOUNDSCENERY.sound_scenery_body.c_in = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "c in", ObjectFunctionEnum))
-    SOUNDSCENERY.sound_scenery_body.d_in = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "d in", ObjectFunctionEnum))
+    SOUNDSCENERY.render_bounding_radius = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "render bounding radius"))
+    SOUNDSCENERY.a_in = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "a in", ObjectFunctionEnum))
+    SOUNDSCENERY.b_in = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "b in", ObjectFunctionEnum))
+    SOUNDSCENERY.c_in = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "c in", ObjectFunctionEnum))
+    SOUNDSCENERY.d_in = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "d in", ObjectFunctionEnum))
     input_stream.read(44) # Padding?
-    SOUNDSCENERY.sound_scenery_body.hud_text_message_index = TAG.read_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "hud text message index"))
-    SOUNDSCENERY.sound_scenery_body.forced_shader_permutation_index = TAG.read_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "forced shader_permutation index"))
-    SOUNDSCENERY.sound_scenery_body.attachments_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "attachments"))
-    SOUNDSCENERY.sound_scenery_body.widgets_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "widgets"))
-    SOUNDSCENERY.sound_scenery_body.functions_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "functions"))
-    SOUNDSCENERY.sound_scenery_body.change_colors_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "change colors"))
-    SOUNDSCENERY.sound_scenery_body.predicted_resources_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "predicted resources"))
+    SOUNDSCENERY.hud_text_message_index = TAG.read_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "hud text message index"))
+    SOUNDSCENERY.forced_shader_permutation_index = TAG.read_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "forced shader_permutation index"))
+    SOUNDSCENERY.attachments_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "attachments"))
+    SOUNDSCENERY.widgets_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "widgets"))
+    SOUNDSCENERY.functions_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "functions"))
+    SOUNDSCENERY.change_colors_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "change colors"))
+    SOUNDSCENERY.predicted_resources_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "predicted resources"))
     input_stream.read(128) # Padding?
 
-    if SOUNDSCENERY.sound_scenery_body.model.name_length > 0:
-        SOUNDSCENERY.sound_scenery_body.model.name = TAG.read_variable_string(input_stream, SOUNDSCENERY.sound_scenery_body.model.name_length, TAG)
+    if SOUNDSCENERY.model.name_length > 0:
+        SOUNDSCENERY.model.name = TAG.read_variable_string(input_stream, SOUNDSCENERY.model.name_length, TAG)
 
-    if SOUNDSCENERY.sound_scenery_body.animation_graph.name_length > 0:
-        SOUNDSCENERY.sound_scenery_body.animation_graph.name = TAG.read_variable_string(input_stream, SOUNDSCENERY.sound_scenery_body.animation_graph.name_length, TAG)
+    if SOUNDSCENERY.animation_graph.name_length > 0:
+        SOUNDSCENERY.animation_graph.name = TAG.read_variable_string(input_stream, SOUNDSCENERY.animation_graph.name_length, TAG)
 
-    if SOUNDSCENERY.sound_scenery_body.collision_model.name_length > 0:
-        SOUNDSCENERY.sound_scenery_body.collision_model.name = TAG.read_variable_string(input_stream, SOUNDSCENERY.sound_scenery_body.collision_model.name_length, TAG)
+    if SOUNDSCENERY.collision_model.name_length > 0:
+        SOUNDSCENERY.collision_model.name = TAG.read_variable_string(input_stream, SOUNDSCENERY.collision_model.name_length, TAG)
 
-    if SOUNDSCENERY.sound_scenery_body.physics.name_length > 0:
-        SOUNDSCENERY.sound_scenery_body.physics.name = TAG.read_variable_string(input_stream, SOUNDSCENERY.sound_scenery_body.physics.name_length, TAG)
+    if SOUNDSCENERY.physics.name_length > 0:
+        SOUNDSCENERY.physics.name = TAG.read_variable_string(input_stream, SOUNDSCENERY.physics.name_length, TAG)
 
-    if SOUNDSCENERY.sound_scenery_body.modifier_shader.name_length > 0:
-        SOUNDSCENERY.sound_scenery_body.modifier_shader.name = TAG.read_variable_string(input_stream, SOUNDSCENERY.sound_scenery_body.modifier_shader.name_length, TAG)
+    if SOUNDSCENERY.modifier_shader.name_length > 0:
+        SOUNDSCENERY.modifier_shader.name = TAG.read_variable_string(input_stream, SOUNDSCENERY.modifier_shader.name_length, TAG)
 
-    if SOUNDSCENERY.sound_scenery_body.creation_effect.name_length > 0:
-        SOUNDSCENERY.sound_scenery_body.creation_effect.name = TAG.read_variable_string(input_stream, SOUNDSCENERY.sound_scenery_body.creation_effect.name_length, TAG)
+    if SOUNDSCENERY.creation_effect.name_length > 0:
+        SOUNDSCENERY.creation_effect.name = TAG.read_variable_string(input_stream, SOUNDSCENERY.creation_effect.name_length, TAG)
 
     if XML_OUTPUT:
         model_node = tag_format.get_xml_node(XML_OUTPUT, 1, tag_node, "name", "model")
@@ -100,12 +99,12 @@ def process_file(input_stream, report):
         physics_node = tag_format.get_xml_node(XML_OUTPUT, 1, tag_node, "name", "physics")
         modifier_shader_node = tag_format.get_xml_node(XML_OUTPUT, 1, tag_node, "name", "modifier shader")
         creation_effect_node = tag_format.get_xml_node(XML_OUTPUT, 1, tag_node, "name", "creation effect")
-        SOUNDSCENERY.sound_scenery_body.model.append_xml_attributes(model_node)
-        SOUNDSCENERY.sound_scenery_body.animation_graph.append_xml_attributes(animation_graph_node)
-        SOUNDSCENERY.sound_scenery_body.collision_model.append_xml_attributes(collision_model_node)
-        SOUNDSCENERY.sound_scenery_body.physics.append_xml_attributes(physics_node)
-        SOUNDSCENERY.sound_scenery_body.modifier_shader.append_xml_attributes(modifier_shader_node)
-        SOUNDSCENERY.sound_scenery_body.creation_effect.append_xml_attributes(creation_effect_node)
+        SOUNDSCENERY.model.append_xml_attributes(model_node)
+        SOUNDSCENERY.animation_graph.append_xml_attributes(animation_graph_node)
+        SOUNDSCENERY.collision_model.append_xml_attributes(collision_model_node)
+        SOUNDSCENERY.physics.append_xml_attributes(physics_node)
+        SOUNDSCENERY.modifier_shader.append_xml_attributes(modifier_shader_node)
+        SOUNDSCENERY.creation_effect.append_xml_attributes(creation_effect_node)
 
     current_position = input_stream.tell()
     EOF = input_stream.seek(0, 2)

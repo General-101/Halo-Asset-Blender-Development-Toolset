@@ -304,9 +304,7 @@ def create_tag(TAG):
     LIGHTMAP.header.plugin_handle = -1
     LIGHTMAP.header.engine_tag = "BLM!"
 
-    LIGHTMAP.lightmap_body_header = TAG.TagBlockHeader("tbfd", 0, 1, 268)
-    LIGHTMAP.lightmap_body = LIGHTMAP.LightmapBody()
-
+    LIGHTMAP.body_header = TAG.TagBlockHeader("tbfd", 0, 1, 268)
     LIGHTMAP.lightmap_groups_header = TAG.TagBlockHeader("tbfd", 0, 1, 156)
     LIGHTMAP.errors_header = TAG.TagBlockHeader("tbfd", 0, 1, 680)
 
@@ -322,7 +320,7 @@ def process_scene(DONOR_ASSET, bsp_index):
     LIGHTMAP.lightmap_groups.append(generate_lightmap_groups(TAG, DONOR_ASSET, bsp_index))
     #generate_errors(TAG, DONOR_ASSET)
 
-    LIGHTMAP.lightmap_body.lightmap_groups_tag_block = TAG.TagBlock(len(LIGHTMAP.lightmap_groups))
-    LIGHTMAP.lightmap_body.errors_tag_block = TAG.TagBlock(len(LIGHTMAP.errors))
+    LIGHTMAP.lightmap_groups_tag_block = TAG.TagBlock(len(LIGHTMAP.lightmap_groups))
+    LIGHTMAP.errors_tag_block = TAG.TagBlock(len(LIGHTMAP.errors))
 
     return LIGHTMAP

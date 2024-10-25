@@ -29,14 +29,14 @@ import struct
 from ....global_functions import tag_format, shader_processing
 
 def write_body(output_stream, TAG, PARTICLEPHYSICS):
-    PARTICLEPHYSICS.particle_physics_body_header.write(output_stream, TAG, True)
-    PARTICLEPHYSICS.particle_physics_body.template.write(output_stream, False, True)
-    output_stream.write(struct.pack('<I', PARTICLEPHYSICS.particle_physics_body.flags))
-    PARTICLEPHYSICS.particle_physics_body.movements_tag_block.write(output_stream, False)
+    PARTICLEPHYSICS.body_header.write(output_stream, TAG, True)
+    PARTICLEPHYSICS.template.write(output_stream, False, True)
+    output_stream.write(struct.pack('<I', PARTICLEPHYSICS.flags))
+    PARTICLEPHYSICS.movements_tag_block.write(output_stream, False)
 
-    template_name_length = len(PARTICLEPHYSICS.particle_physics_body.template.name)
+    template_name_length = len(PARTICLEPHYSICS.template.name)
     if template_name_length > 0:
-        output_stream.write(struct.pack('<%ssx' % template_name_length, TAG.string_to_bytes(PARTICLEPHYSICS.particle_physics_body.template.name, False)))
+        output_stream.write(struct.pack('<%ssx' % template_name_length, TAG.string_to_bytes(PARTICLEPHYSICS.template.name, False)))
 
 def write_movements(output_stream, TAG, movements, movements_header):
     if len(movements) > 0:

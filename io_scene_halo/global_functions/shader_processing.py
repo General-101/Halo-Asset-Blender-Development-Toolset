@@ -84,8 +84,8 @@ def generate_shader_environment_simple(mat, shader, permutation_index, report):
     mat.use_nodes = True
 
     texture_root = bpy.context.preferences.addons["io_scene_halo"].preferences.halo_1_data_path
-    base_map, base_bitmap_name = get_bitmap(shader.shader_body.base_map, texture_root)
-    base_bitmap = parse_tag(shader.shader_body.base_map, report, "halo1", "retail")
+    base_map, base_bitmap_name = get_bitmap(shader.base_map, texture_root)
+    base_bitmap = parse_tag(shader.base_map, report, "halo1", "retail")
 
     output_material_node = get_output_material_node(mat)
     output_material_node.location = Vector((0.0, 0.0))
@@ -102,7 +102,7 @@ def generate_shader_environment_simple(mat, shader, permutation_index, report):
     if not base_node.image == None:
         base_node.image.alpha_mode = 'CHANNEL_PACKED'
 
-    alpha_shader = EnvironmentFlags.alpha_tested in EnvironmentFlags(shader.shader_body.environment_flags)
+    alpha_shader = EnvironmentFlags.alpha_tested in EnvironmentFlags(shader.environment_flags)
     if alpha_shader:
         mat.shadow_method = 'CLIP'
         mat.blend_method = 'CLIP'
@@ -115,8 +115,8 @@ def generate_shader_model_simple(mat, shader, report):
     mat.use_nodes = True
 
     texture_root = bpy.context.preferences.addons["io_scene_halo"].preferences.halo_1_data_path
-    base_map, base_map_name = get_bitmap(shader.shader_body.base_map, texture_root)
-    base_bitmap = parse_tag(shader.shader_body.base_map, report, "halo1", "retail")
+    base_map, base_map_name = get_bitmap(shader.base_map, texture_root)
+    base_bitmap = parse_tag(shader.base_map, report, "halo1", "retail")
 
     output_material_node = get_output_material_node(mat)
     output_material_node.location = Vector((0.0, 0.0))
@@ -132,7 +132,7 @@ def generate_shader_model_simple(mat, shader, report):
         base_node.image.alpha_mode = 'CHANNEL_PACKED'
 
     base_node.location = Vector((-1600, 500))
-    shader_model_flags = ModelFlags(shader.shader_body.model_flags)
+    shader_model_flags = ModelFlags(shader.model_flags)
     if base_bitmap:
         ignore_alpha_bitmap = True
         for bitmap_element in base_bitmap.bitmaps:
@@ -256,8 +256,8 @@ def generate_shader_transparent_glass_simple(mat, shader, report):
     mat.use_nodes = True
 
     texture_root = bpy.context.preferences.addons["io_scene_halo"].preferences.halo_1_data_path
-    diffuse_map, diffuse_map_name = get_bitmap(shader.shader_body.diffuse_map, texture_root)
-    diffuse_bitmap = parse_tag(shader.shader_body.diffuse_map, report, "halo1", "retail")
+    diffuse_map, diffuse_map_name = get_bitmap(shader.diffuse_map, texture_root)
+    diffuse_bitmap = parse_tag(shader.diffuse_map, report, "halo1", "retail")
 
     output_material_node = get_output_material_node(mat)
     output_material_node.location = Vector((0.0, 0.0))
@@ -278,8 +278,8 @@ def generate_shader_transparent_meter_simple(mat, shader, report):
     mat.use_nodes = True
 
     texture_root = bpy.context.preferences.addons["io_scene_halo"].preferences.halo_1_data_path
-    meter_map, meter_map_name = get_bitmap(shader.shader_body.meter_map, texture_root)
-    meter_bitmap = parse_tag(shader.shader_body.meter_map, report, "halo1", "retail")
+    meter_map, meter_map_name = get_bitmap(shader.meter_map, texture_root)
+    meter_bitmap = parse_tag(shader.meter_map, report, "halo1", "retail")
 
     output_material_node = get_output_material_node(mat)
     output_material_node.location = Vector((0.0, 0.0))
@@ -300,8 +300,8 @@ def generate_shader_transparent_plasma_simple(mat, shader, report):
     mat.use_nodes = True
 
     texture_root = bpy.context.preferences.addons["io_scene_halo"].preferences.halo_1_data_path
-    primary_noise_map, primary_noise_map_name = get_bitmap(shader.shader_body.primary_noise_map, texture_root)
-    primary_noise_bitmap = parse_tag(shader.shader_body.primary_noise_map, report, "halo1", "retail")
+    primary_noise_map, primary_noise_map_name = get_bitmap(shader.primary_noise_map, texture_root)
+    primary_noise_bitmap = parse_tag(shader.primary_noise_map, report, "halo1", "retail")
 
     output_material_node = get_output_material_node(mat)
     output_material_node.location = Vector((0.0, 0.0))
@@ -320,8 +320,8 @@ def generate_shader_transparent_water_simple(mat, shader, report):
     mat.use_nodes = True
 
     texture_root = bpy.context.preferences.addons["io_scene_halo"].preferences.halo_1_data_path
-    base_map, base_map_name = get_bitmap(shader.shader_body.base_map, texture_root)
-    base_bitmap = parse_tag(shader.shader_body.base_map, report, "halo1", "retail")
+    base_map, base_map_name = get_bitmap(shader.base_map, texture_root)
+    base_bitmap = parse_tag(shader.base_map, report, "halo1", "retail")
 
     output_material_node = get_output_material_node(mat)
     output_material_node.location = Vector((0.0, 0.0))
@@ -340,8 +340,8 @@ def generate_shader_transparent_meter(mat, shader, report):
     mat.use_nodes = True
 
     texture_root = bpy.context.preferences.addons["io_scene_halo"].preferences.halo_1_data_path
-    meter_map, meter_map_name = get_bitmap(shader.shader_body.meter_map, texture_root)
-    meter_bitmap = parse_tag(shader.shader_body.meter_map, report, "halo1", "retail")
+    meter_map, meter_map_name = get_bitmap(shader.meter_map, texture_root)
+    meter_bitmap = parse_tag(shader.meter_map, report, "halo1", "retail")
 
     output_material_node = get_output_material_node(mat)
     output_material_node.location = Vector((0.0, 0.0))
@@ -377,7 +377,7 @@ def generate_shader_transparent_meter(mat, shader, report):
 
     rgb_node = mat.node_tree.nodes.new("ShaderNodeRGB")
     rgb_node.location = Vector((-725, -125))
-    rgb_node.outputs[0].default_value = shader.shader_body.background_color
+    rgb_node.outputs[0].default_value = shader.background_color
     connect_inputs(mat.node_tree, rgb_node, "Color", gamma_node, "Color")
 
     mat.blend_method = 'BLEND'
@@ -386,21 +386,21 @@ def generate_shader_transparent_glass(mat, shader, report):
     mat.use_nodes = True
 
     texture_root = bpy.context.preferences.addons["io_scene_halo"].preferences.halo_1_data_path
-    background_tint_map, background_tint_map_name = get_bitmap(shader.shader_body.background_tint_map, texture_root)
-    reflection_map, reflection_map_name = get_bitmap(shader.shader_body.reflection_map, texture_root)
-    bump_map, bump_map_name = get_bitmap(shader.shader_body.bump_map, texture_root)
-    diffuse_map, diffuse_map_name = get_bitmap(shader.shader_body.diffuse_map, texture_root)
-    diffuse_detail_map, diffuse_detail_map_name = get_bitmap(shader.shader_body.diffuse_detail_map, texture_root)
-    specular_map, specular_map_name = get_bitmap(shader.shader_body.specular_map, texture_root)
-    specular_detail_map, specular_detail_map_name = get_bitmap(shader.shader_body.specular_detail_map, texture_root)
+    background_tint_map, background_tint_map_name = get_bitmap(shader.background_tint_map, texture_root)
+    reflection_map, reflection_map_name = get_bitmap(shader.reflection_map, texture_root)
+    bump_map, bump_map_name = get_bitmap(shader.bump_map, texture_root)
+    diffuse_map, diffuse_map_name = get_bitmap(shader.diffuse_map, texture_root)
+    diffuse_detail_map, diffuse_detail_map_name = get_bitmap(shader.diffuse_detail_map, texture_root)
+    specular_map, specular_map_name = get_bitmap(shader.specular_map, texture_root)
+    specular_detail_map, specular_detail_map_name = get_bitmap(shader.specular_detail_map, texture_root)
 
-    background_tint_bitmap = parse_tag(shader.shader_body.background_tint_map, report, "halo1", "retail")
-    reflection_bitmap = parse_tag(shader.shader_body.reflection_map, report, "halo1", "retail")
-    bump_bitmap = parse_tag(shader.shader_body.bump_map, report, "halo1", "retail")
-    diffuse_bitmap = parse_tag(shader.shader_body.diffuse_map, report, "halo1", "retail")
-    diffuse_detail_bitmap = parse_tag(shader.shader_body.diffuse_detail_map, report, "halo1", "retail")
-    specular_bitmap = parse_tag(shader.shader_body.specular_map, report, "halo1", "retail")
-    specular_detail_bitmap = parse_tag(shader.shader_body.specular_detail_map, report, "halo1", "retail")
+    background_tint_bitmap = parse_tag(shader.background_tint_map, report, "halo1", "retail")
+    reflection_bitmap = parse_tag(shader.reflection_map, report, "halo1", "retail")
+    bump_bitmap = parse_tag(shader.bump_map, report, "halo1", "retail")
+    diffuse_bitmap = parse_tag(shader.diffuse_map, report, "halo1", "retail")
+    diffuse_detail_bitmap = parse_tag(shader.diffuse_detail_map, report, "halo1", "retail")
+    specular_bitmap = parse_tag(shader.specular_map, report, "halo1", "retail")
+    specular_detail_bitmap = parse_tag(shader.specular_detail_map, report, "halo1", "retail")
 
     output_material_node = get_output_material_node(mat)
     output_material_node.location = Vector((0.0, 0.0))
@@ -433,10 +433,10 @@ def generate_shader_transparent_glass(mat, shader, report):
     connect_inputs(mat.node_tree, height_node, "Normal", bdsf_principled, "Normal")
 
     if bump_bitmap:
-        height_node.inputs[0].default_value = bump_bitmap.bitmap_body.bump_height
+        height_node.inputs[0].default_value = bump_bitmap.bump_height
 
-    scale = shader.shader_body.bump_map_scale
-    if shader.shader_body.bump_map_scale == 0.0:
+    scale = shader.bump_map_scale
+    if shader.bump_map_scale == 0.0:
         scale = 1.0
 
     combine_xyz_node.inputs[0].default_value = scale
@@ -448,7 +448,7 @@ def generate_shader_transparent_glass(mat, shader, report):
     connect_inputs(mat.node_tree, diffuse_node, "Color", bdsf_principled, "Base Color")
 
     if diffuse_bitmap:
-        ignore_alpha_bitmap = diffuse_bitmap.bitmap_body.format is FormatEnum.compressed_with_color_key_transparency.value
+        ignore_alpha_bitmap = diffuse_bitmap.bitmap_format is FormatEnum.compressed_with_color_key_transparency.value
         if ignore_alpha_bitmap:
             diffuse_node.image.alpha_mode = 'NONE'
         else:
@@ -469,8 +469,8 @@ def generate_shader_transparent_glass(mat, shader, report):
     connect_inputs(mat.node_tree, uv_map_node, "UV", vect_math_node, 0)
     connect_inputs(mat.node_tree, combine_xyz_node, "Vector", vect_math_node, 1)
 
-    scale = shader.shader_body.diffuse_map_scale
-    if shader.shader_body.diffuse_map_scale == 0.0:
+    scale = shader.diffuse_map_scale
+    if shader.diffuse_map_scale == 0.0:
         scale = 1.0
 
     combine_xyz_node.inputs[0].default_value = scale
@@ -492,8 +492,8 @@ def generate_shader_transparent_glass(mat, shader, report):
     connect_inputs(mat.node_tree, uv_map_node, "UV", vect_math_node, 0)
     connect_inputs(mat.node_tree, combine_xyz_node, "Vector", vect_math_node, 1)
 
-    scale = shader.shader_body.diffuse_detail_map_scale
-    if shader.shader_body.diffuse_detail_map_scale == 0.0:
+    scale = shader.diffuse_detail_map_scale
+    if shader.diffuse_detail_map_scale == 0.0:
         scale = 1.0
 
     combine_xyz_node.inputs[0].default_value = scale
@@ -515,8 +515,8 @@ def generate_shader_transparent_glass(mat, shader, report):
     connect_inputs(mat.node_tree, uv_map_node, "UV", vect_math_node, 0)
     connect_inputs(mat.node_tree, combine_xyz_node, "Vector", vect_math_node, 1)
 
-    scale = shader.shader_body.specular_map_scale
-    if shader.shader_body.specular_map_scale == 0.0:
+    scale = shader.specular_map_scale
+    if shader.specular_map_scale == 0.0:
         scale = 1.0
 
     combine_xyz_node.inputs[0].default_value = scale
@@ -538,8 +538,8 @@ def generate_shader_transparent_glass(mat, shader, report):
     connect_inputs(mat.node_tree, uv_map_node, "UV", vect_math_node, 0)
     connect_inputs(mat.node_tree, combine_xyz_node, "Vector", vect_math_node, 1)
 
-    scale = shader.shader_body.specular_detail_map_scale
-    if shader.shader_body.specular_detail_map_scale == 0.0:
+    scale = shader.specular_detail_map_scale
+    if shader.specular_detail_map_scale == 0.0:
         scale = 1.0
 
     combine_xyz_node.inputs[0].default_value = scale

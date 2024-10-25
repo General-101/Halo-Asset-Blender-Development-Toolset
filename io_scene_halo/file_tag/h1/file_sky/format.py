@@ -31,37 +31,33 @@ class LightFlags(Flag):
     affects_interiors = auto()
 
 class SkyAsset():
-    def __init__(self):
-        self.header = None
-        self.sky_body = None
-        self.shader_functions = None
-        self.animations = None
-        self.lights = None
-
-    class SkyBody:
-        def __init__(self, model=None, animation_graph=None, indoor_ambient_radiosity_color=(0.0, 0.0, 0.0, 1.0), indoor_ambient_radiosity_power=0.0,
-                     outdoor_ambient_radiosity_color=(0.0, 0.0, 0.0, 1.0), outdoor_ambient_radiosity_power=0.0, outdoor_fog_color=(0.0, 0.0, 0.0, 1.0),
-                     outdoor_fog_maximum_density=0.0, outdoor_fog_start_distance=0.0, outdoor_fog_opaque_distance=0.0, indoor_fog_color=(0.0, 0.0, 0.0, 1.0),
-                     indoor_fog_maximum_density=0.0, indoor_fog_start_distance=0.0, indoor_fog_opaque_distance=0.0, indoor_fog_screen=None, shader_functions=None, animations=None,
-                     lights=None):
-            self.model = model
-            self.animation_graph = animation_graph
-            self.indoor_ambient_radiosity_color = indoor_ambient_radiosity_color
-            self.indoor_ambient_radiosity_power = indoor_ambient_radiosity_power
-            self.outdoor_ambient_radiosity_color = outdoor_ambient_radiosity_color
-            self.outdoor_ambient_radiosity_power = outdoor_ambient_radiosity_power
-            self.outdoor_fog_color = outdoor_fog_color
-            self.outdoor_fog_maximum_density = outdoor_fog_maximum_density
-            self.outdoor_fog_start_distance = outdoor_fog_start_distance
-            self.outdoor_fog_opaque_distance = outdoor_fog_opaque_distance
-            self.indoor_fog_color = indoor_fog_color
-            self.indoor_fog_maximum_density = indoor_fog_maximum_density
-            self.indoor_fog_start_distance = indoor_fog_start_distance
-            self.indoor_fog_opaque_distance = indoor_fog_opaque_distance
-            self.indoor_fog_screen = indoor_fog_screen
-            self.shader_functions = shader_functions
-            self.animations = animations
-            self.lights = lights
+    def __init__(self, header=None, shader_functions=None, animations=None, lights=None, model=None, animation_graph=None, 
+                 indoor_ambient_radiosity_color=(0.0, 0.0, 0.0, 1.0), indoor_ambient_radiosity_power=0.0, outdoor_ambient_radiosity_color=(0.0, 0.0, 0.0, 1.0), 
+                 outdoor_ambient_radiosity_power=0.0, outdoor_fog_color=(0.0, 0.0, 0.0, 1.0), outdoor_fog_maximum_density=0.0, outdoor_fog_start_distance=0.0, 
+                 outdoor_fog_opaque_distance=0.0, indoor_fog_color=(0.0, 0.0, 0.0, 1.0), indoor_fog_maximum_density=0.0, indoor_fog_start_distance=0.0, 
+                 indoor_fog_opaque_distance=0.0, indoor_fog_screen=None, shader_functions_tag_block=None, animations_tag_block=None, lights_tag_block=None):
+        self.header = header
+        self.shader_functions = shader_functions
+        self.animations = animations
+        self.lights = lights
+        self.model = model
+        self.animation_graph = animation_graph
+        self.indoor_ambient_radiosity_color = indoor_ambient_radiosity_color
+        self.indoor_ambient_radiosity_power = indoor_ambient_radiosity_power
+        self.outdoor_ambient_radiosity_color = outdoor_ambient_radiosity_color
+        self.outdoor_ambient_radiosity_power = outdoor_ambient_radiosity_power
+        self.outdoor_fog_color = outdoor_fog_color
+        self.outdoor_fog_maximum_density = outdoor_fog_maximum_density
+        self.outdoor_fog_start_distance = outdoor_fog_start_distance
+        self.outdoor_fog_opaque_distance = outdoor_fog_opaque_distance
+        self.indoor_fog_color = indoor_fog_color
+        self.indoor_fog_maximum_density = indoor_fog_maximum_density
+        self.indoor_fog_start_distance = indoor_fog_start_distance
+        self.indoor_fog_opaque_distance = indoor_fog_opaque_distance
+        self.indoor_fog_screen = indoor_fog_screen
+        self.shader_functions_tag_block = shader_functions_tag_block
+        self.animations_tag_block = animations_tag_block
+        self.lights_tag_block = lights_tag_block
 
     class Animation:
         def __init__(self, animation_index=0, period=0.0):

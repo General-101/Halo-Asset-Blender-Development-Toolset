@@ -176,125 +176,121 @@ class BarrelPredictionEnum(Enum):
     instant = auto()
 
 class WeaponAsset(ItemAsset):
-    def __init__(self):
+    def __init__(self, first_person_header=None, first_person=None, weapon_predicted_resources_header=None, weapon_predicted_resources=None, magazines_header=None, 
+                 magazines=None, new_triggers_header=None, new_triggers=None, barrels_header=None, barrels=None, weapon_flags=0, unknown="", unknown_length=0, 
+                 secondary_trigger_mode=0, maximum_alternate_shots_loaded=0, turn_on_time=0.0, ready_time=0.0, ready_effect=None, ready_damage_effect=None, 
+                 heat_recovery_threshold=0.0, overheated_threshold=0.0, heat_detonation_threshold=0.0, heat_detonation_fraction=0.0, heat_loss_per_second=0.0, 
+                 heat_illumination=0.0, overheated_loss_per_second=0.0, overheated=None, overheated_damage_effect=None, detonation=None, 
+                 weapon_detonation_damage_effect=None, player_melee_damage=None, player_melee_response=None, magnetism_angle=0.0, magnetism_range=0.0, 
+                 throttle_magnitude=0.0, throttle_minimum_distance=0.0, throttle_maximum_adjustment_angle=0.0, damage_pyramid_angles=(0.0, 0.0), damage_pyramid_depth=0.0, 
+                 first_hit_melee_damage=None, first_hit_melee_response=None, second_hit_melee_damage=None, second_hit_melee_response=None, third_hit_melee_damage=None, 
+                 third_hit_melee_response=None, lunge_melee_damage=None, lunge_melee_response=None, melee_damage_reporting_type=0, magnification_levels=0, 
+                 magnification_range=(0.0, 0.0), autoaim_angle=0.0, autoaim_range=0.0, weapon_aim_assist_magnetism_angle=0.0, weapon_aim_assist_magnetism_range=0.0, 
+                 deviation_angle=0.0, movement_penalized=0, forward_movement_penalty=0.0, sideways_movement_penalty=0.0, ai_scariness=0.0, weapon_power_on_time=0.0, 
+                 weapon_power_off_time=0.0, weapon_power_on_effect=None, weapon_power_off_effect=None, age_heat_recovery_penalty=0.0, age_rate_of_fire_penalty=0.0, 
+                 age_misfire_start=0.0, age_misfire_chance=0.0, pickup_sound=None, zoom_in_sound=None, zoom_out_sound=None, active_camo_ding=0.0, 
+                 active_camo_regrowth_rate=0.0, handle_node="", handle_node_length=0, weapon_class="", weapon_class_length=0, weapon_name="", weapon_name_length=0, 
+                 multiplayer_weapon_type=0, weapon_type=0, tracking_type=0, first_person_tag_block=None, new_hud_interface=None, weapon_predicted_resources_tag_block=None, 
+                 magazines_tag_block=None, new_triggers_tag_block=None, barrels_tag_block=None, max_movement_acceleration=0.0, max_movement_velocity=0.0, 
+                 max_turning_acceleration=0.0, max_turning_velocity=0.0, deployed_vehicle=None, age_effect=None, aged_weapon=None, first_person_weapon_offset=Vector(), 
+                 first_person_scope_size=(0.0, 0.0)):
         super().__init__()
-        self.header = None
-        self.weapon_body_header = None
-        self.weapon_body = None
-        self.first_person_header = None
-        self.first_person = None
-        self.weapon_predicted_resources_header = None
-        self.weapon_predicted_resources = None
-        self.magazines_header = None
-        self.magazines = None
-        self.new_triggers_header = None
-        self.new_triggers = None
-        self.barrels_header = None
-        self.barrels = None
-
-    class WeaponBody(ItemAsset.ItemBody):
-        def __init__(self, weapon_flags=0, unknown="", unknown_length=0, secondary_trigger_mode=0, maximum_alternate_shots_loaded=0, turn_on_time=0.0, ready_time=0.0,
-                     ready_effect=None, ready_damage_effect=None, heat_recovery_threshold=0.0, overheated_threshold=0.0, heat_detonation_threshold=0.0, heat_detonation_fraction=0.0,
-                     heat_loss_per_second=0.0, heat_illumination=0.0, overheated_loss_per_second=0.0, overheated=None, overheated_damage_effect=None, detonation=None,
-                     weapon_detonation_damage_effect=None, player_melee_damage=None, player_melee_response=None, magnetism_angle=0.0, magnetism_range=0.0, throttle_magnitude=0.0,
-                     throttle_minimum_distance=0.0, throttle_maximum_adjustment_angle=0.0, damage_pyramid_angles=(0.0, 0.0), damage_pyramid_depth=0.0, first_hit_melee_damage=None,
-                     first_hit_melee_response=None, second_hit_melee_damage=None, second_hit_melee_response=None, third_hit_melee_damage=None, third_hit_melee_response=None,
-                     lunge_melee_damage=None, lunge_melee_response=None, melee_damage_reporting_type=0, magnification_levels=0, magnification_range=(0.0, 0.0), autoaim_angle=0.0,
-                     autoaim_range=0.0, weapon_aim_assist_magnetism_angle=0.0, weapon_aim_assist_magnetism_range=0.0, deviation_angle=0.0, movement_penalized=0,
-                     forward_movement_penalty=0.0, sideways_movement_penalty=0.0, ai_scariness=0.0, weapon_power_on_time=0.0, weapon_power_off_time=0.0, weapon_power_on_effect=None,
-                     weapon_power_off_effect=None, age_heat_recovery_penalty=0.0, age_rate_of_fire_penalty=0.0, age_misfire_start=0.0, age_misfire_chance=0.0, pickup_sound=None,
-                     zoom_in_sound=None, zoom_out_sound=None, active_camo_ding=0.0, active_camo_regrowth_rate=0.0, handle_node="", handle_node_length=0, weapon_class="",
-                     weapon_class_length=0, weapon_name="", weapon_name_length=0, multiplayer_weapon_type=0, weapon_type=0, tracking_type=0, first_person_tag_block=None,
-                     new_hud_interface=None, weapon_predicted_resources_tag_block=None, magazines_tag_block=None, new_triggers_tag_block=None, barrels_tag_block=None,
-                     max_movement_acceleration=0.0, max_movement_velocity=0.0, max_turning_acceleration=0.0, max_turning_velocity=0.0, deployed_vehicle=None, age_effect=None,
-                     aged_weapon=None, first_person_weapon_offset=Vector(), first_person_scope_size=(0.0, 0.0)):
-            super().__init__()
-            self.weapon_flags = weapon_flags
-            self.unknown = unknown
-            self.unknown_length = unknown_length
-            self.secondary_trigger_mode = secondary_trigger_mode
-            self.maximum_alternate_shots_loaded = maximum_alternate_shots_loaded
-            self.turn_on_time = turn_on_time
-            self.ready_time = ready_time
-            self.ready_effect = ready_effect
-            self.ready_damage_effect = ready_damage_effect
-            self.heat_recovery_threshold = heat_recovery_threshold
-            self.overheated_threshold = overheated_threshold
-            self.heat_detonation_threshold = heat_detonation_threshold
-            self.heat_detonation_fraction = heat_detonation_fraction
-            self.heat_loss_per_second = heat_loss_per_second
-            self.heat_illumination = heat_illumination
-            self.overheated_loss_per_second = overheated_loss_per_second
-            self.overheated = overheated
-            self.overheated_damage_effect = overheated_damage_effect
-            self.detonation = detonation
-            self.weapon_detonation_damage_effect = weapon_detonation_damage_effect
-            self.player_melee_damage = player_melee_damage
-            self.player_melee_response = player_melee_response
-            self.magnetism_angle = magnetism_angle
-            self.magnetism_range = magnetism_range
-            self.throttle_magnitude = throttle_magnitude
-            self.throttle_minimum_distance = throttle_minimum_distance
-            self.throttle_maximum_adjustment_angle = throttle_maximum_adjustment_angle
-            self.damage_pyramid_angles = damage_pyramid_angles
-            self.damage_pyramid_depth = damage_pyramid_depth
-            self.first_hit_melee_damage = first_hit_melee_damage
-            self.first_hit_melee_response = first_hit_melee_response
-            self.second_hit_melee_damage = second_hit_melee_damage
-            self.second_hit_melee_response = second_hit_melee_response
-            self.third_hit_melee_damage = third_hit_melee_damage
-            self.third_hit_melee_response = third_hit_melee_response
-            self.lunge_melee_damage = lunge_melee_damage
-            self.lunge_melee_response = lunge_melee_response
-            self.melee_damage_reporting_type = melee_damage_reporting_type
-            self.magnification_levels = magnification_levels
-            self.magnification_range = magnification_range
-            self.autoaim_angle = autoaim_angle
-            self.autoaim_range = autoaim_range
-            self.weapon_aim_assist_magnetism_angle = weapon_aim_assist_magnetism_angle
-            self.weapon_aim_assist_magnetism_range = weapon_aim_assist_magnetism_range
-            self.deviation_angle = deviation_angle
-            self.movement_penalized = movement_penalized
-            self.forward_movement_penalty = forward_movement_penalty
-            self.sideways_movement_penalty = sideways_movement_penalty
-            self.ai_scariness = ai_scariness
-            self.weapon_power_on_time = weapon_power_on_time
-            self.weapon_power_off_time = weapon_power_off_time
-            self.weapon_power_on_effect = weapon_power_on_effect
-            self.weapon_power_off_effect = weapon_power_off_effect
-            self.age_heat_recovery_penalty = age_heat_recovery_penalty
-            self.age_rate_of_fire_penalty = age_rate_of_fire_penalty
-            self.age_misfire_start = age_misfire_start
-            self.age_misfire_chance = age_misfire_chance
-            self.pickup_sound = pickup_sound
-            self.zoom_in_sound = zoom_in_sound
-            self.zoom_out_sound = zoom_out_sound
-            self.active_camo_ding = active_camo_ding
-            self.active_camo_regrowth_rate = active_camo_regrowth_rate
-            self.handle_node = handle_node
-            self.handle_node_length = handle_node_length
-            self.weapon_class = weapon_class
-            self.weapon_class_length = weapon_class_length
-            self.weapon_name = weapon_name
-            self.weapon_name_length = weapon_name_length
-            self.multiplayer_weapon_type = multiplayer_weapon_type
-            self.weapon_type = weapon_type
-            self.tracking_type = tracking_type
-            self.first_person_tag_block = first_person_tag_block
-            self.new_hud_interface = new_hud_interface
-            self.weapon_predicted_resources_tag_block = weapon_predicted_resources_tag_block
-            self.magazines_tag_block = magazines_tag_block
-            self.new_triggers_tag_block = new_triggers_tag_block
-            self.barrels_tag_block = barrels_tag_block
-            self.max_movement_acceleration = max_movement_acceleration
-            self.max_movement_velocity = max_movement_velocity
-            self.max_turning_acceleration = max_turning_acceleration
-            self.max_turning_velocity = max_turning_velocity
-            self.deployed_vehicle = deployed_vehicle
-            self.age_effect = age_effect
-            self.aged_weapon = aged_weapon
-            self.first_person_weapon_offset = first_person_weapon_offset
-            self.first_person_scope_size = first_person_scope_size
+        self.first_person_header = first_person_header
+        self.first_person = first_person
+        self.weapon_predicted_resources_header = weapon_predicted_resources_header
+        self.weapon_predicted_resources = weapon_predicted_resources
+        self.magazines_header = magazines_header
+        self.magazines = magazines
+        self.new_triggers_header = new_triggers_header
+        self.new_triggers = new_triggers
+        self.barrels_header = barrels_header
+        self.barrels = barrels
+        self.weapon_flags = weapon_flags
+        self.unknown = unknown
+        self.unknown_length = unknown_length
+        self.secondary_trigger_mode = secondary_trigger_mode
+        self.maximum_alternate_shots_loaded = maximum_alternate_shots_loaded
+        self.turn_on_time = turn_on_time
+        self.ready_time = ready_time
+        self.ready_effect = ready_effect
+        self.ready_damage_effect = ready_damage_effect
+        self.heat_recovery_threshold = heat_recovery_threshold
+        self.overheated_threshold = overheated_threshold
+        self.heat_detonation_threshold = heat_detonation_threshold
+        self.heat_detonation_fraction = heat_detonation_fraction
+        self.heat_loss_per_second = heat_loss_per_second
+        self.heat_illumination = heat_illumination
+        self.overheated_loss_per_second = overheated_loss_per_second
+        self.overheated = overheated
+        self.overheated_damage_effect = overheated_damage_effect
+        self.detonation = detonation
+        self.weapon_detonation_damage_effect = weapon_detonation_damage_effect
+        self.player_melee_damage = player_melee_damage
+        self.player_melee_response = player_melee_response
+        self.magnetism_angle = magnetism_angle
+        self.magnetism_range = magnetism_range
+        self.throttle_magnitude = throttle_magnitude
+        self.throttle_minimum_distance = throttle_minimum_distance
+        self.throttle_maximum_adjustment_angle = throttle_maximum_adjustment_angle
+        self.damage_pyramid_angles = damage_pyramid_angles
+        self.damage_pyramid_depth = damage_pyramid_depth
+        self.first_hit_melee_damage = first_hit_melee_damage
+        self.first_hit_melee_response = first_hit_melee_response
+        self.second_hit_melee_damage = second_hit_melee_damage
+        self.second_hit_melee_response = second_hit_melee_response
+        self.third_hit_melee_damage = third_hit_melee_damage
+        self.third_hit_melee_response = third_hit_melee_response
+        self.lunge_melee_damage = lunge_melee_damage
+        self.lunge_melee_response = lunge_melee_response
+        self.melee_damage_reporting_type = melee_damage_reporting_type
+        self.magnification_levels = magnification_levels
+        self.magnification_range = magnification_range
+        self.autoaim_angle = autoaim_angle
+        self.autoaim_range = autoaim_range
+        self.weapon_aim_assist_magnetism_angle = weapon_aim_assist_magnetism_angle
+        self.weapon_aim_assist_magnetism_range = weapon_aim_assist_magnetism_range
+        self.deviation_angle = deviation_angle
+        self.movement_penalized = movement_penalized
+        self.forward_movement_penalty = forward_movement_penalty
+        self.sideways_movement_penalty = sideways_movement_penalty
+        self.ai_scariness = ai_scariness
+        self.weapon_power_on_time = weapon_power_on_time
+        self.weapon_power_off_time = weapon_power_off_time
+        self.weapon_power_on_effect = weapon_power_on_effect
+        self.weapon_power_off_effect = weapon_power_off_effect
+        self.age_heat_recovery_penalty = age_heat_recovery_penalty
+        self.age_rate_of_fire_penalty = age_rate_of_fire_penalty
+        self.age_misfire_start = age_misfire_start
+        self.age_misfire_chance = age_misfire_chance
+        self.pickup_sound = pickup_sound
+        self.zoom_in_sound = zoom_in_sound
+        self.zoom_out_sound = zoom_out_sound
+        self.active_camo_ding = active_camo_ding
+        self.active_camo_regrowth_rate = active_camo_regrowth_rate
+        self.handle_node = handle_node
+        self.handle_node_length = handle_node_length
+        self.weapon_class = weapon_class
+        self.weapon_class_length = weapon_class_length
+        self.weapon_name = weapon_name
+        self.weapon_name_length = weapon_name_length
+        self.multiplayer_weapon_type = multiplayer_weapon_type
+        self.weapon_type = weapon_type
+        self.tracking_type = tracking_type
+        self.first_person_tag_block = first_person_tag_block
+        self.new_hud_interface = new_hud_interface
+        self.weapon_predicted_resources_tag_block = weapon_predicted_resources_tag_block
+        self.magazines_tag_block = magazines_tag_block
+        self.new_triggers_tag_block = new_triggers_tag_block
+        self.barrels_tag_block = barrels_tag_block
+        self.max_movement_acceleration = max_movement_acceleration
+        self.max_movement_velocity = max_movement_velocity
+        self.max_turning_acceleration = max_turning_acceleration
+        self.max_turning_velocity = max_turning_velocity
+        self.deployed_vehicle = deployed_vehicle
+        self.age_effect = age_effect
+        self.aged_weapon = aged_weapon
+        self.first_person_weapon_offset = first_person_weapon_offset
+        self.first_person_scope_size = first_person_scope_size
 
     class FirstPerson:
         def __init__(self, first_person_model=None, first_person_animations=None):

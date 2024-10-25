@@ -108,38 +108,35 @@ class BitmapFlags(Flag):
     v16u16 = auto()
 
 class BitmapAsset():
-    def __init__(self):
-        self.header = None
-        self.bitmap_body = None
-        self.sequences = None
-        self.bitmaps = None
-
-    class BitmapBody:
-        def __init__(self, type=0, format=0, usage=0, flags=0, detail_fade_factor=0.0, sharpen_amount=0.0, bump_height=0.0, sprite_budget_size=0, sprite_budget_count=0,
-                     color_plate_width=0, color_plate_height=0, compressed_color_plate_data=None, compressed_color_plate=None, processed_pixel_data=None, processed_pixels=None,
-                     blur_filter_size=0.0, alpha_bias=0.0, mipmap_count=0, sprite_usage=0, sprite_spacing=0, sequences_tag_block=None, bitmaps_tag_block=None):
-            self.type = type
-            self.format = format
-            self.usage = usage
-            self.flags = flags
-            self.detail_fade_factor = detail_fade_factor
-            self.sharpen_amount = sharpen_amount
-            self.bump_height = bump_height
-            self.sprite_budget_size = sprite_budget_size
-            self.sprite_budget_count = sprite_budget_count
-            self.color_plate_width = color_plate_width
-            self.color_plate_height = color_plate_height
-            self.compressed_color_plate_data = compressed_color_plate_data
-            self.compressed_color_plate = compressed_color_plate
-            self.processed_pixel_data = processed_pixel_data
-            self.processed_pixels = processed_pixels
-            self.blur_filter_size = blur_filter_size
-            self.alpha_bias = alpha_bias
-            self.mipmap_count = mipmap_count
-            self.sprite_usage = sprite_usage
-            self.sprite_spacing = sprite_spacing
-            self.sequences_tag_block = sequences_tag_block
-            self.bitmaps_tag_block = bitmaps_tag_block
+    def __init__(self, header=None, sequences=None, bitmaps=None, bitmap_type=0, bitmap_format=0, usage=0, flags=0, detail_fade_factor=0.0, sharpen_amount=0.0, 
+                 bump_height=0.0, sprite_budget_size=0, sprite_budget_count=0, color_plate_width=0, color_plate_height=0, compressed_color_plate_data=None, 
+                 compressed_color_plate=None, processed_pixel_data=None, processed_pixels=None, blur_filter_size=0.0, alpha_bias=0.0, mipmap_count=0, sprite_usage=0, 
+                 sprite_spacing=0, sequences_tag_block=None, bitmaps_tag_block=None):
+        self.header = header
+        self.sequences = sequences
+        self.bitmaps = bitmaps
+        self.bitmap_type = bitmap_type
+        self.bitmap_format = bitmap_format
+        self.usage = usage
+        self.flags = flags
+        self.detail_fade_factor = detail_fade_factor
+        self.sharpen_amount = sharpen_amount
+        self.bump_height = bump_height
+        self.sprite_budget_size = sprite_budget_size
+        self.sprite_budget_count = sprite_budget_count
+        self.color_plate_width = color_plate_width
+        self.color_plate_height = color_plate_height
+        self.compressed_color_plate_data = compressed_color_plate_data
+        self.compressed_color_plate = compressed_color_plate
+        self.processed_pixel_data = processed_pixel_data
+        self.processed_pixels = processed_pixels
+        self.blur_filter_size = blur_filter_size
+        self.alpha_bias = alpha_bias
+        self.mipmap_count = mipmap_count
+        self.sprite_usage = sprite_usage
+        self.sprite_spacing = sprite_spacing
+        self.sequences_tag_block = sequences_tag_block
+        self.bitmaps_tag_block = bitmaps_tag_block
 
     class Sequence:
         def __init__(self, name="", first_bitmap_index=0, bitmap_count=0, sprites_tag_block=None, sprites=None):

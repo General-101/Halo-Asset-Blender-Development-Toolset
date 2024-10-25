@@ -26,8 +26,6 @@
 
 import struct
 
-from ....global_functions import shader_processing
-
 def write_predicted_bitmaps(output_stream, TAG, predicted_bitmaps, predicted_bitmaps_header):
     if len(predicted_bitmaps) > 0:
         predicted_bitmaps_header.write(output_stream, TAG, True)

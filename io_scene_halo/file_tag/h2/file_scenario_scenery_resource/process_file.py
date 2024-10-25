@@ -32,27 +32,26 @@ from .format import ScenarioAsset
 XML_OUTPUT = False
 
 def read_scenario_body(SCENARIO, TAG, input_stream, tag_node, XML_OUTPUT):
-    SCENARIO.scenario_body_header = TAG.TagBlockHeader().read(input_stream, TAG)
-    SCENARIO.scenario_body = SCENARIO.ScenarioBody()
-    SCENARIO.scenario_body.skies_tag_block = TAG.TagBlock()
-    SCENARIO.scenario_body.object_names_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "object names"))
-    SCENARIO.scenario_body.environment_objects_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "environment objects"))
-    SCENARIO.scenario_body.structure_bsps_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "structure bsps"))
-    SCENARIO.scenario_body.scenery_palette_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "scenery palette"))
-    SCENARIO.scenario_body.scenery_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "scenery"))
-    SCENARIO.scenario_body.next_scenery_object_id_salt = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(tag_node, "next scenery object id salt"))
-    SCENARIO.scenario_body.crate_palette_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "crate palette"))
-    SCENARIO.scenario_body.crates_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "crates"))
-    SCENARIO.scenario_body.next_block_object_id_salt = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(tag_node, "next block object id salt"))
-    SCENARIO.scenario_body.editor_folders_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "editor folders"))
+    SCENARIO.body_header = TAG.TagBlockHeader().read(input_stream, TAG)
+    SCENARIO.skies_tag_block = TAG.TagBlock()
+    SCENARIO.object_names_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "object names"))
+    SCENARIO.environment_objects_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "environment objects"))
+    SCENARIO.structure_bsps_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "structure bsps"))
+    SCENARIO.scenery_palette_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "scenery palette"))
+    SCENARIO.scenery_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "scenery"))
+    SCENARIO.next_scenery_object_id_salt = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(tag_node, "next scenery object id salt"))
+    SCENARIO.crate_palette_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "crate palette"))
+    SCENARIO.crates_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "crates"))
+    SCENARIO.next_block_object_id_salt = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(tag_node, "next block object id salt"))
+    SCENARIO.editor_folders_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "editor folders"))
 
 def read_scenery(SCENARIO, TAG, input_stream, tag_node, XML_OUTPUT):
-    process_scenario.palette_helper(input_stream, SCENARIO.scenario_body.scenery_palette_tag_block.count, "scenery palette", SCENARIO.scenery_palette_header, SCENARIO.scenery_palette, tag_node, TAG)
+    process_scenario.palette_helper(input_stream, SCENARIO.scenery_palette_tag_block.count, "scenery palette", SCENARIO.scenery_palette_header, SCENARIO.scenery_palette, tag_node, TAG)
 
-    if SCENARIO.scenario_body.scenery_tag_block.count > 0:
+    if SCENARIO.scenery_tag_block.count > 0:
         SCENARIO.scenery_header = TAG.TagBlockHeader().read(input_stream, TAG)
-        scenery_node = tag_format.get_xml_node(XML_OUTPUT, SCENARIO.scenario_body.scenery_tag_block.count, tag_node, "name", "scenery")
-        for scenery_idx in range(SCENARIO.scenario_body.scenery_tag_block.count):
+        scenery_node = tag_format.get_xml_node(XML_OUTPUT, SCENARIO.scenery_tag_block.count, tag_node, "name", "scenery")
+        for scenery_idx in range(SCENARIO.scenery_tag_block.count):
             scenery_element_node = None
             if XML_OUTPUT:
                 scenery_element_node = TAG.xml_doc.createElement('element')
@@ -92,12 +91,12 @@ def read_scenery(SCENARIO, TAG, input_stream, tag_node, XML_OUTPUT):
                     scenery.pathfinding_references.append(pathfinding_reference)
 
 def read_crates(SCENARIO, TAG, input_stream, tag_node, XML_OUTPUT):
-    process_scenario.palette_helper(input_stream, SCENARIO.scenario_body.crate_palette_tag_block.count, "crate palette", SCENARIO.crates_palette_header, SCENARIO.crates_palette, tag_node, TAG)
+    process_scenario.palette_helper(input_stream, SCENARIO.crate_palette_tag_block.count, "crate palette", SCENARIO.crates_palette_header, SCENARIO.crates_palette, tag_node, TAG)
 
-    if SCENARIO.scenario_body.crates_tag_block.count > 0:
+    if SCENARIO.crates_tag_block.count > 0:
         SCENARIO.crates_header = TAG.TagBlockHeader().read(input_stream, TAG)
-        crates_node = tag_format.get_xml_node(XML_OUTPUT, SCENARIO.scenario_body.crates_tag_block.count, tag_node, "name", "crates")
-        for crate_idx in range(SCENARIO.scenario_body.crates_tag_block.count):
+        crates_node = tag_format.get_xml_node(XML_OUTPUT, SCENARIO.crates_tag_block.count, tag_node, "name", "crates")
+        for crate_idx in range(SCENARIO.crates_tag_block.count):
             crate_element_node = None
             if XML_OUTPUT:
                 crate_element_node = TAG.xml_doc.createElement('element')

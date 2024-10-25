@@ -43,15 +43,8 @@ class LightmappingPolicyEnum(Enum):
     dynamic = auto()
 
 class SceneryAsset(ObjectAsset):
-    def __init__(self):
+    def __init__(self, pathfinding_policy=0, scenery_flags=0, lightmapping_policy=0):
         super().__init__()
-        self.header = None
-        self.scenery_body_header = None
-        self.scenery_body = None
-
-    class SceneryBody(ObjectAsset.ObjectBody):
-        def __init__(self, pathfinding_policy=0, scenery_flags=0, lightmapping_policy=0):
-            super().__init__()
-            self.pathfinding_policy = pathfinding_policy
-            self.scenery_flags = scenery_flags
-            self.lightmapping_policy = lightmapping_policy
+        self.pathfinding_policy = pathfinding_policy
+        self.scenery_flags = scenery_flags
+        self.lightmapping_policy = lightmapping_policy

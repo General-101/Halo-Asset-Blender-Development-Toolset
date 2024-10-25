@@ -32,13 +32,6 @@ class CrateFlags(Flag):
     does_not_block_aoe = auto()
 
 class CrateAsset(ObjectAsset):
-    def __init__(self):
+    def __init__(self, crate_flags=0):
         super().__init__()
-        self.header = None
-        self.crate_body_header = None
-        self.crate_body = None
-
-    class CrateBody(ObjectAsset.ObjectBody):
-        def __init__(self, crate_flags=0):
-            super().__init__()
-            self.crate_flags = crate_flags
+        self.crate_flags = crate_flags

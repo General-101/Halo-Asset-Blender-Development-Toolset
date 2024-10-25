@@ -34,17 +34,16 @@ def initilize_collection(COLLECTION):
     COLLECTION.permutations = []
 
 def read_collection_body(COLLECTION, TAG, input_stream, tag_node, XML_OUTPUT):
-    COLLECTION.collection_body_header = TAG.TagBlockHeader().read(input_stream, TAG)
-    COLLECTION.collection_body = COLLECTION.CollectionBody()
-    COLLECTION.collection_body.permutations_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "vehicle permutations"))
-    COLLECTION.collection_body.spawn_time = TAG.read_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "spawn time"))
+    COLLECTION.body_header = TAG.TagBlockHeader().read(input_stream, TAG)
+    COLLECTION.permutations_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "vehicle permutations"))
+    COLLECTION.spawn_time = TAG.read_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "spawn time"))
     input_stream.read(2) # Padding?
 
 def read_permutations(COLLECTION, TAG, input_stream, tag_node, XML_OUTPUT):
-    if COLLECTION.collection_body.permutations_tag_block.count > 0:
+    if COLLECTION.permutations_tag_block.count > 0:
         COLLECTION.permutations_header = TAG.TagBlockHeader().read(input_stream, TAG)
-        permutations_node = tag_format.get_xml_node(XML_OUTPUT, COLLECTION.collection_body.permutations_tag_block.count, tag_node, "name", "vehicle permutations")
-        for permutation_idx in range(COLLECTION.collection_body.permutations_tag_block.count):
+        permutations_node = tag_format.get_xml_node(XML_OUTPUT, COLLECTION.permutations_tag_block.count, tag_node, "name", "vehicle permutations")
+        for permutation_idx in range(COLLECTION.permutations_tag_block.count):
             permutation_element_node = None
             if XML_OUTPUT:
                 permutation_element_node = TAG.xml_doc.createElement('element')

@@ -29,42 +29,42 @@ import struct
 from ....global_functions import tag_format
 
 def write_body(output_stream, TAG, MODEL):
-    MODEL.model_body_header.write(output_stream, TAG, True)
-    MODEL.model_body.render_model.write(output_stream, False, True)
-    MODEL.model_body.collision_model.write(output_stream, False, True)
-    MODEL.model_body.animation.write(output_stream, False, True)
-    MODEL.model_body.physics.write(output_stream, False, True)
-    MODEL.model_body.physics_model.write(output_stream, False, True)
-    output_stream.write(struct.pack('<f', MODEL.model_body.disappear_distance))
-    output_stream.write(struct.pack('<f', MODEL.model_body.begin_fade_distance))
+    MODEL.body_header.write(output_stream, TAG, True)
+    MODEL.render_model.write(output_stream, False, True)
+    MODEL.collision_model.write(output_stream, False, True)
+    MODEL.animation.write(output_stream, False, True)
+    MODEL.physics.write(output_stream, False, True)
+    MODEL.physics_model.write(output_stream, False, True)
+    output_stream.write(struct.pack('<f', MODEL.disappear_distance))
+    output_stream.write(struct.pack('<f', MODEL.begin_fade_distance))
     output_stream.write(struct.pack('<4x'))
-    output_stream.write(struct.pack('<f', MODEL.model_body.reduce_to_l1))
-    output_stream.write(struct.pack('<f', MODEL.model_body.reduce_to_l2))
-    output_stream.write(struct.pack('<f', MODEL.model_body.reduce_to_l3))
-    output_stream.write(struct.pack('<f', MODEL.model_body.reduce_to_l4))
-    output_stream.write(struct.pack('<f', MODEL.model_body.reduce_to_l5))
+    output_stream.write(struct.pack('<f', MODEL.reduce_to_l1))
+    output_stream.write(struct.pack('<f', MODEL.reduce_to_l2))
+    output_stream.write(struct.pack('<f', MODEL.reduce_to_l3))
+    output_stream.write(struct.pack('<f', MODEL.reduce_to_l4))
+    output_stream.write(struct.pack('<f', MODEL.reduce_to_l5))
     output_stream.write(struct.pack('<4x'))
-    output_stream.write(struct.pack('<H', MODEL.model_body.shadow_fade_distance))
+    output_stream.write(struct.pack('<H', MODEL.shadow_fade_distance))
     output_stream.write(struct.pack('<2x'))
-    MODEL.model_body.variants_tag_block.write(output_stream, False)
-    MODEL.model_body.materials_tag_block.write(output_stream, False)
-    MODEL.model_body.new_damage_info_tag_block.write(output_stream, False)
-    MODEL.model_body.targets_tag_block.write(output_stream, False)
-    MODEL.model_body.runtime_regions_tag_block.write(output_stream, False)
-    MODEL.model_body.runtime_nodes_tag_block.write(output_stream, False)
+    MODEL.variants_tag_block.write(output_stream, False)
+    MODEL.materials_tag_block.write(output_stream, False)
+    MODEL.new_damage_info_tag_block.write(output_stream, False)
+    MODEL.targets_tag_block.write(output_stream, False)
+    MODEL.runtime_regions_tag_block.write(output_stream, False)
+    MODEL.runtime_nodes_tag_block.write(output_stream, False)
     output_stream.write(struct.pack('<4x'))
-    MODEL.model_body.model_object_data_tag_block.write(output_stream, False)
-    MODEL.model_body.default_dialogue.write(output_stream, False, True)
-    MODEL.model_body.unused.write(output_stream, False, True)
-    output_stream.write(struct.pack('<I', MODEL.model_body.flags))
-    output_stream.write(struct.pack('>I', len(MODEL.model_body.default_dialogue_effect)))
-    for salt_element in MODEL.model_body.salt_array:
+    MODEL.model_object_data_tag_block.write(output_stream, False)
+    MODEL.default_dialogue.write(output_stream, False, True)
+    MODEL.unused.write(output_stream, False, True)
+    output_stream.write(struct.pack('<I', MODEL.flags))
+    output_stream.write(struct.pack('>I', len(MODEL.default_dialogue_effect)))
+    for salt_element in MODEL.salt_array:
         output_stream.write(struct.pack('<b', salt_element))
 
-    output_stream.write(struct.pack('<I', MODEL.model_body.runtime_flags))
-    MODEL.model_body.scenario_load_parameters_tag_block.write(output_stream, False)
-    MODEL.model_body.hologram_shader.write(output_stream, False, True)
-    output_stream.write(struct.pack('>I', len(MODEL.model_body.hologram_control_function)))
+    output_stream.write(struct.pack('<I', MODEL.runtime_flags))
+    MODEL.scenario_load_parameters_tag_block.write(output_stream, False)
+    MODEL.hologram_shader.write(output_stream, False, True)
+    output_stream.write(struct.pack('>I', len(MODEL.hologram_control_function)))
 
 def write_variants(output_stream, TAG, variants, variants_header):
     if len(variants) > 0:
@@ -359,25 +359,25 @@ def build_asset(output_stream, MODEL, report):
     MODEL.header.write(output_stream, False, True)
     write_body(output_stream, TAG, MODEL)
 
-    render_model_length = len(MODEL.model_body.render_model.name)
+    render_model_length = len(MODEL.render_model.name)
     if render_model_length > 0:
-        output_stream.write(struct.pack('<%ssx' % render_model_length, TAG.string_to_bytes(MODEL.model_body.render_model.name, False)))
+        output_stream.write(struct.pack('<%ssx' % render_model_length, TAG.string_to_bytes(MODEL.render_model.name, False)))
 
-    collision_model_length = len(MODEL.model_body.collision_model.name)
+    collision_model_length = len(MODEL.collision_model.name)
     if collision_model_length > 0:
-        output_stream.write(struct.pack('<%ssx' % collision_model_length, TAG.string_to_bytes(MODEL.model_body.collision_model.name, False)))
+        output_stream.write(struct.pack('<%ssx' % collision_model_length, TAG.string_to_bytes(MODEL.collision_model.name, False)))
 
-    animation_length = len(MODEL.model_body.animation.name)
+    animation_length = len(MODEL.animation.name)
     if animation_length > 0:
-        output_stream.write(struct.pack('<%ssx' % animation_length, TAG.string_to_bytes(MODEL.model_body.animation.name, False)))
+        output_stream.write(struct.pack('<%ssx' % animation_length, TAG.string_to_bytes(MODEL.animation.name, False)))
 
-    physics_length = len(MODEL.model_body.physics.name)
+    physics_length = len(MODEL.physics.name)
     if physics_length > 0:
-        output_stream.write(struct.pack('<%ssx' % physics_length, TAG.string_to_bytes(MODEL.model_body.physics.name, False)))
+        output_stream.write(struct.pack('<%ssx' % physics_length, TAG.string_to_bytes(MODEL.physics.name, False)))
 
-    physics_model_length = len(MODEL.model_body.physics_model.name)
+    physics_model_length = len(MODEL.physics_model.name)
     if physics_model_length > 0:
-        output_stream.write(struct.pack('<%ssx' % physics_model_length, TAG.string_to_bytes(MODEL.model_body.physics_model.name, False)))
+        output_stream.write(struct.pack('<%ssx' % physics_model_length, TAG.string_to_bytes(MODEL.physics_model.name, False)))
 
     write_variants(output_stream, TAG, MODEL.variants, MODEL.variants_header)
     write_materials(output_stream, TAG, MODEL.materials, MODEL.materials_header)

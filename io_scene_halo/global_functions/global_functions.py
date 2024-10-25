@@ -1369,9 +1369,9 @@ def build_bounds_list(SCNR_ASSET, bsp_bounds_list):
         bsp_bounds = []
         BSP_ASSET = parse_tag(structure_bsp_element.structure_bsp, print, "halo2", "retail")
         if BSP_ASSET:
-            bsp_bounds.append(BSP_ASSET.level_body.world_bounds_x)
-            bsp_bounds.append(BSP_ASSET.level_body.world_bounds_y)
-            bsp_bounds.append(BSP_ASSET.level_body.world_bounds_z)
+            bsp_bounds.append(BSP_ASSET.world_bounds_x)
+            bsp_bounds.append(BSP_ASSET.world_bounds_y)
+            bsp_bounds.append(BSP_ASSET.world_bounds_z)
 
             bsp_bounds_list.append(bsp_bounds)
 

@@ -40,41 +40,37 @@ class PartFlags(Flag):
     zoner = auto()
 
 class ModelAsset():
-    def __init__(self):
-        self.version = 8200 # This is just here so that I don't have to rework parts of the mesh_processing code. Make me care.
-        self.header = None
-        self.mode_body = None
-        self.mod2_body = None
-        self.markers = None
-        self.nodes = None
-        self.transforms = None
-        self.regions = None
-        self.geometries = None
-        self.shaders = None
-
-    class ModelBody:
-        def __init__(self, flags=0, node_list_checksum=0, superhigh_detail_cutoff=0.0, high_detail_cutoff=0.0, medium_detail_cutoff=0.0, low_detail_cutoff=0.0,
-                     superlow_cutoff=0.0, superhigh_detail_nodes=0, high_detail_nodes=0, medium_detail_nodes=0, low_detail_nodes=0, superlow_nodes=0, base_map_u_scale=0.0,
-                     base_map_v_scale=0.0, markers_tag_block=None, nodes_tag_block=None, regions_tag_block=None, geometries_tag_block=None, shaders_tag_block=None):
-            self.flags = flags
-            self.node_list_checksum = node_list_checksum
-            self.superhigh_detail_cutoff = superhigh_detail_cutoff
-            self.high_detail_cutoff = high_detail_cutoff
-            self.medium_detail_cutoff = medium_detail_cutoff
-            self.low_detail_cutoff = low_detail_cutoff
-            self.superlow_cutoff = superlow_cutoff
-            self.superhigh_detail_nodes = superhigh_detail_nodes
-            self.high_detail_nodes = high_detail_nodes
-            self.medium_detail_nodes = medium_detail_nodes
-            self.low_detail_nodes = low_detail_nodes
-            self.superlow_nodes = superlow_nodes
-            self.base_map_u_scale = base_map_u_scale
-            self.base_map_v_scale = base_map_v_scale
-            self.markers_tag_block = markers_tag_block
-            self.nodes_tag_block = nodes_tag_block
-            self.regions_tag_block = regions_tag_block
-            self.geometries_tag_block = geometries_tag_block
-            self.shaders_tag_block = shaders_tag_block
+    def __init__(self, version=8200, header=None, markers=None, nodes=None, transforms=None, regions=None, geometries=None, shaders=None, flags=0, node_list_checksum=0, 
+                 superhigh_detail_cutoff=0.0, high_detail_cutoff=0.0, medium_detail_cutoff=0.0, low_detail_cutoff=0.0, superlow_cutoff=0.0, superhigh_detail_nodes=0, 
+                 high_detail_nodes=0, medium_detail_nodes=0, low_detail_nodes=0, superlow_nodes=0, base_map_u_scale=0.0, base_map_v_scale=0.0, markers_tag_block=None, 
+                 nodes_tag_block=None, regions_tag_block=None, geometries_tag_block=None, shaders_tag_block=None):
+        self.version = version
+        self.header = header
+        self.markers = markers
+        self.nodes = nodes
+        self.transforms = transforms
+        self.regions = regions
+        self.geometries = geometries
+        self.shaders = shaders
+        self.flags = flags
+        self.node_list_checksum = node_list_checksum
+        self.superhigh_detail_cutoff = superhigh_detail_cutoff
+        self.high_detail_cutoff = high_detail_cutoff
+        self.medium_detail_cutoff = medium_detail_cutoff
+        self.low_detail_cutoff = low_detail_cutoff
+        self.superlow_cutoff = superlow_cutoff
+        self.superhigh_detail_nodes = superhigh_detail_nodes
+        self.high_detail_nodes = high_detail_nodes
+        self.medium_detail_nodes = medium_detail_nodes
+        self.low_detail_nodes = low_detail_nodes
+        self.superlow_nodes = superlow_nodes
+        self.base_map_u_scale = base_map_u_scale
+        self.base_map_v_scale = base_map_v_scale
+        self.markers_tag_block = markers_tag_block
+        self.nodes_tag_block = nodes_tag_block
+        self.regions_tag_block = regions_tag_block
+        self.geometries_tag_block = geometries_tag_block
+        self.shaders_tag_block = shaders_tag_block
 
     class StubbsUnknown:
         def __init__(self, name="", unknown0=1.0, unknown1=1.0):

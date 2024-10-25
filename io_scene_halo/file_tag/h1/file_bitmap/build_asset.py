@@ -28,27 +28,27 @@ import struct
 from ....global_functions import tag_format
 
 def write_body(output_stream, BITMAP):
-    output_stream.write(struct.pack('>H', BITMAP.bitmap_body.type))
-    output_stream.write(struct.pack('>H', BITMAP.bitmap_body.format))
-    output_stream.write(struct.pack('>H', BITMAP.bitmap_body.usage))
-    output_stream.write(struct.pack('>H', BITMAP.bitmap_body.flags))
-    output_stream.write(struct.pack('>f', BITMAP.bitmap_body.detail_fade_factor))
-    output_stream.write(struct.pack('>f', BITMAP.bitmap_body.sharpen_amount))
-    output_stream.write(struct.pack('>f', BITMAP.bitmap_body.bump_height))
-    output_stream.write(struct.pack('>H', BITMAP.bitmap_body.sprite_budget_size))
-    output_stream.write(struct.pack('>H', BITMAP.bitmap_body.sprite_budget_count))
-    output_stream.write(struct.pack('>H', BITMAP.bitmap_body.color_plate_width))
-    output_stream.write(struct.pack('>H', BITMAP.bitmap_body.color_plate_height))
-    BITMAP.bitmap_body.compressed_color_plate_data.write(output_stream, True)
-    BITMAP.bitmap_body.processed_pixel_data.write(output_stream, True)
-    output_stream.write(struct.pack('>f', BITMAP.bitmap_body.blur_filter_size))
-    output_stream.write(struct.pack('>f', BITMAP.bitmap_body.alpha_bias))
-    output_stream.write(struct.pack('>H', BITMAP.bitmap_body.mipmap_count))
-    output_stream.write(struct.pack('>H', BITMAP.bitmap_body.sprite_usage))
-    output_stream.write(struct.pack('>H', BITMAP.bitmap_body.sprite_spacing))
+    output_stream.write(struct.pack('>H', BITMAP.type))
+    output_stream.write(struct.pack('>H', BITMAP.format))
+    output_stream.write(struct.pack('>H', BITMAP.usage))
+    output_stream.write(struct.pack('>H', BITMAP.flags))
+    output_stream.write(struct.pack('>f', BITMAP.detail_fade_factor))
+    output_stream.write(struct.pack('>f', BITMAP.sharpen_amount))
+    output_stream.write(struct.pack('>f', BITMAP.bump_height))
+    output_stream.write(struct.pack('>H', BITMAP.sprite_budget_size))
+    output_stream.write(struct.pack('>H', BITMAP.sprite_budget_count))
+    output_stream.write(struct.pack('>H', BITMAP.color_plate_width))
+    output_stream.write(struct.pack('>H', BITMAP.color_plate_height))
+    BITMAP.compressed_color_plate_data.write(output_stream, True)
+    BITMAP.processed_pixel_data.write(output_stream, True)
+    output_stream.write(struct.pack('>f', BITMAP.blur_filter_size))
+    output_stream.write(struct.pack('>f', BITMAP.alpha_bias))
+    output_stream.write(struct.pack('>H', BITMAP.mipmap_count))
+    output_stream.write(struct.pack('>H', BITMAP.sprite_usage))
+    output_stream.write(struct.pack('>H', BITMAP.sprite_spacing))
     output_stream.write(struct.pack('>2x'))
-    BITMAP.bitmap_body.sequences_tag_block.write(output_stream, True)
-    BITMAP.bitmap_body.bitmaps_tag_block.write(output_stream, True)
+    BITMAP.sequences_tag_block.write(output_stream, True)
+    BITMAP.bitmaps_tag_block.write(output_stream, True)
 
 def write_sequences(output_stream, BITMAP):
     for sequence in BITMAP.sequences:
@@ -87,8 +87,8 @@ def build_asset(output_stream, BITMAP, report):
     BITMAP.header.write(output_stream, True)
     write_body(output_stream, BITMAP)
 
-    output_stream.write(BITMAP.bitmap_body.compressed_color_plate)
-    output_stream.write(BITMAP.bitmap_body.processed_pixels)
+    output_stream.write(BITMAP.compressed_color_plate)
+    output_stream.write(BITMAP.processed_pixels)
 
     write_sequences(output_stream, BITMAP)
 

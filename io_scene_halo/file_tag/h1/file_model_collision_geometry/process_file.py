@@ -45,76 +45,75 @@ def process_file(input_stream, report):
     if XML_OUTPUT:
         tag_node = TAG.xml_doc.childNodes[0]
 
-    COLLISION.coll_body = COLLISION.CollBody()
-    COLLISION.coll_body.flags = TAG.read_flag_unsigned_integer(input_stream, TAG, tag_format.XMLData(tag_node, "flags", CollisionFlags))
-    COLLISION.coll_body.indirect_damage_material = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(tag_node, "indirect damage material", None, 1, "collision_material_block"))
+    COLLISION.flags = TAG.read_flag_unsigned_integer(input_stream, TAG, tag_format.XMLData(tag_node, "flags", CollisionFlags))
+    COLLISION.indirect_damage_material = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(tag_node, "indirect damage material", None, 1, "collision_material_block"))
     input_stream.read(2) # Padding?
-    COLLISION.coll_body.maximum_body_vitality = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "maximum body vitality"))
-    COLLISION.coll_body.body_system_shock = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "body system shock"))
+    COLLISION.maximum_body_vitality = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "maximum body vitality"))
+    COLLISION.body_system_shock = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "body system shock"))
     input_stream.read(52) # Padding?
-    COLLISION.coll_body.friendly_damage_resistance = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "friendly damage resistance"))
+    COLLISION.friendly_damage_resistance = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "friendly damage resistance"))
     input_stream.read(40) # Padding?
-    COLLISION.coll_body.localized_damage_effect = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "localized damage effect"))
-    COLLISION.coll_body.area_damage_effect_threshold = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "area damage effect threshold"))
-    COLLISION.coll_body.area_damage_effect = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "area damage effect"))
-    COLLISION.coll_body.body_damaged_threshold = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "body damaged threshold"))
-    COLLISION.coll_body.body_damaged_effect = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "body damaged effect"))
-    COLLISION.coll_body.body_depleted_effect = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "body depleted effect"))
-    COLLISION.coll_body.body_destroyed_threshold = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "body destroyed threshold"))
-    COLLISION.coll_body.body_destroyed_effect = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "body destroyed effect"))
-    COLLISION.coll_body.maximum_shield_vitality = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "maximum shield vitality"))
+    COLLISION.localized_damage_effect = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "localized damage effect"))
+    COLLISION.area_damage_effect_threshold = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "area damage effect threshold"))
+    COLLISION.area_damage_effect = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "area damage effect"))
+    COLLISION.body_damaged_threshold = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "body damaged threshold"))
+    COLLISION.body_damaged_effect = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "body damaged effect"))
+    COLLISION.body_depleted_effect = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "body depleted effect"))
+    COLLISION.body_destroyed_threshold = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "body destroyed threshold"))
+    COLLISION.body_destroyed_effect = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "body destroyed effect"))
+    COLLISION.maximum_shield_vitality = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "maximum shield vitality"))
     input_stream.read(2) # Padding?
-    COLLISION.coll_body.shield_material_type = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "shield material type", MaterialTypeEnum))
+    COLLISION.shield_material_type = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "shield material type", MaterialTypeEnum))
     input_stream.read(24) # Padding?
-    COLLISION.coll_body.shield_failure_function = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "shield failure function", ShieldFailureFunctionEnum))
+    COLLISION.shield_failure_function = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "shield failure function", ShieldFailureFunctionEnum))
     input_stream.read(2) # Padding?
-    COLLISION.coll_body.shield_failure_threshold = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "shield failure threshold"))
-    COLLISION.coll_body.shield_failing_leak_fraction = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "shield failing leak fraction"))
+    COLLISION.shield_failure_threshold = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "shield failure threshold"))
+    COLLISION.shield_failing_leak_fraction = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "shield failing leak fraction"))
     input_stream.read(16) # Padding?
-    COLLISION.coll_body.minimum_stun_damage = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "minimum stun damage"))
-    COLLISION.coll_body.stun_time = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "stun time"))
-    COLLISION.coll_body.recharge_time = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "recharge time"))
+    COLLISION.minimum_stun_damage = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "minimum stun damage"))
+    COLLISION.stun_time = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "stun time"))
+    COLLISION.recharge_time = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "recharge time"))
     input_stream.read(112) # Padding?
-    COLLISION.coll_body.shield_damaged_threshold = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "shield damaged threshold"))
-    COLLISION.coll_body.shield_damaged_effect = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "shield damaged effect"))
-    COLLISION.coll_body.shield_depleted_effect = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "shield depleted effect"))
-    COLLISION.coll_body.shield_recharging_effect = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "shield recharging effect"))
+    COLLISION.shield_damaged_threshold = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "shield damaged threshold"))
+    COLLISION.shield_damaged_effect = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "shield damaged effect"))
+    COLLISION.shield_depleted_effect = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "shield depleted effect"))
+    COLLISION.shield_recharging_effect = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "shield recharging effect"))
     input_stream.read(8) # Padding?
-    COLLISION.coll_body.shield_recharge_rate = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "shield recharge rate"))
+    COLLISION.shield_recharge_rate = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "shield recharge rate"))
     input_stream.read(112) # Padding?
-    COLLISION.coll_body.materials_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "materials"))
-    COLLISION.coll_body.regions_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "regions"))
-    COLLISION.coll_body.modifiers_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "modifiers"))
+    COLLISION.materials_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "materials"))
+    COLLISION.regions_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "regions"))
+    COLLISION.modifiers_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "modifiers"))
     input_stream.read(16) # Padding?
-    COLLISION.coll_body.pathfinding_box_x = TAG.read_min_max(input_stream, TAG, tag_format.XMLData(tag_node, "x"))
-    COLLISION.coll_body.pathfinding_box_y = TAG.read_min_max(input_stream, TAG, tag_format.XMLData(tag_node, "y"))
-    COLLISION.coll_body.pathfinding_box_z = TAG.read_min_max(input_stream, TAG, tag_format.XMLData(tag_node, "z"))
-    COLLISION.coll_body.pathfinding_spheres_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "pathfinding spheres"))
-    COLLISION.coll_body.nodes_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "nodes"))
+    COLLISION.pathfinding_box_x = TAG.read_min_max(input_stream, TAG, tag_format.XMLData(tag_node, "x"))
+    COLLISION.pathfinding_box_y = TAG.read_min_max(input_stream, TAG, tag_format.XMLData(tag_node, "y"))
+    COLLISION.pathfinding_box_z = TAG.read_min_max(input_stream, TAG, tag_format.XMLData(tag_node, "z"))
+    COLLISION.pathfinding_spheres_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "pathfinding spheres"))
+    COLLISION.nodes_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "nodes"))
 
-    if COLLISION.coll_body.localized_damage_effect.name_length > 0:
-        COLLISION.coll_body.localized_damage_effect.name = TAG.read_variable_string(input_stream, COLLISION.coll_body.localized_damage_effect.name_length, TAG)
+    if COLLISION.localized_damage_effect.name_length > 0:
+        COLLISION.localized_damage_effect.name = TAG.read_variable_string(input_stream, COLLISION.localized_damage_effect.name_length, TAG)
 
-    if COLLISION.coll_body.area_damage_effect.name_length > 0:
-        COLLISION.coll_body.area_damage_effect.name = TAG.read_variable_string(input_stream, COLLISION.coll_body.area_damage_effect.name_length, TAG)
+    if COLLISION.area_damage_effect.name_length > 0:
+        COLLISION.area_damage_effect.name = TAG.read_variable_string(input_stream, COLLISION.area_damage_effect.name_length, TAG)
 
-    if COLLISION.coll_body.body_damaged_effect.name_length > 0:
-        COLLISION.coll_body.body_damaged_effect.name = TAG.read_variable_string(input_stream, COLLISION.coll_body.body_damaged_effect.name_length, TAG)
+    if COLLISION.body_damaged_effect.name_length > 0:
+        COLLISION.body_damaged_effect.name = TAG.read_variable_string(input_stream, COLLISION.body_damaged_effect.name_length, TAG)
 
-    if COLLISION.coll_body.body_depleted_effect.name_length > 0:
-        COLLISION.coll_body.body_depleted_effect.name = TAG.read_variable_string(input_stream, COLLISION.coll_body.body_depleted_effect.name_length, TAG)
+    if COLLISION.body_depleted_effect.name_length > 0:
+        COLLISION.body_depleted_effect.name = TAG.read_variable_string(input_stream, COLLISION.body_depleted_effect.name_length, TAG)
 
-    if COLLISION.coll_body.body_destroyed_effect.name_length > 0:
-        COLLISION.coll_body.body_destroyed_effect.name = TAG.read_variable_string(input_stream, COLLISION.coll_body.body_destroyed_effect.name_length, TAG)
+    if COLLISION.body_destroyed_effect.name_length > 0:
+        COLLISION.body_destroyed_effect.name = TAG.read_variable_string(input_stream, COLLISION.body_destroyed_effect.name_length, TAG)
 
-    if COLLISION.coll_body.shield_damaged_effect.name_length > 0:
-        COLLISION.coll_body.shield_damaged_effect.name = TAG.read_variable_string(input_stream, COLLISION.coll_body.shield_damaged_effect.name_length, TAG)
+    if COLLISION.shield_damaged_effect.name_length > 0:
+        COLLISION.shield_damaged_effect.name = TAG.read_variable_string(input_stream, COLLISION.shield_damaged_effect.name_length, TAG)
 
-    if COLLISION.coll_body.shield_depleted_effect.name_length > 0:
-        COLLISION.coll_body.shield_depleted_effect.name = TAG.read_variable_string(input_stream, COLLISION.coll_body.shield_depleted_effect.name_length, TAG)
+    if COLLISION.shield_depleted_effect.name_length > 0:
+        COLLISION.shield_depleted_effect.name = TAG.read_variable_string(input_stream, COLLISION.shield_depleted_effect.name_length, TAG)
 
-    if COLLISION.coll_body.shield_recharging_effect.name_length > 0:
-        COLLISION.coll_body.shield_recharging_effect.name = TAG.read_variable_string(input_stream, COLLISION.coll_body.shield_recharging_effect.name_length, TAG)
+    if COLLISION.shield_recharging_effect.name_length > 0:
+        COLLISION.shield_recharging_effect.name = TAG.read_variable_string(input_stream, COLLISION.shield_recharging_effect.name_length, TAG)
 
     if XML_OUTPUT:
         localized_damage_effect_node = tag_format.get_xml_node(XML_OUTPUT, 1, tag_node, "name", "localized damage effect")
@@ -125,18 +124,18 @@ def process_file(input_stream, report):
         shield_damaged_effect_node = tag_format.get_xml_node(XML_OUTPUT, 1, tag_node, "name", "shield damaged effect")
         shield_depleted_effect_node = tag_format.get_xml_node(XML_OUTPUT, 1, tag_node, "name", "shield depleted effect")
         shield_recharging_effect_node = tag_format.get_xml_node(XML_OUTPUT, 1, tag_node, "name", "shield recharging effect")
-        COLLISION.coll_body.localized_damage_effect.append_xml_attributes(localized_damage_effect_node)
-        COLLISION.coll_body.area_damage_effect.append_xml_attributes(area_damage_effect_node)
-        COLLISION.coll_body.body_damaged_effect.append_xml_attributes(body_damaged_effect_node)
-        COLLISION.coll_body.body_depleted_effect.append_xml_attributes(body_depleted_effect_node)
-        COLLISION.coll_body.body_destroyed_effect.append_xml_attributes(body_destroyed_effect_node)
-        COLLISION.coll_body.shield_damaged_effect.append_xml_attributes(shield_damaged_effect_node)
-        COLLISION.coll_body.shield_depleted_effect.append_xml_attributes(shield_depleted_effect_node)
-        COLLISION.coll_body.shield_recharging_effect.append_xml_attributes(shield_recharging_effect_node)
+        COLLISION.localized_damage_effect.append_xml_attributes(localized_damage_effect_node)
+        COLLISION.area_damage_effect.append_xml_attributes(area_damage_effect_node)
+        COLLISION.body_damaged_effect.append_xml_attributes(body_damaged_effect_node)
+        COLLISION.body_depleted_effect.append_xml_attributes(body_depleted_effect_node)
+        COLLISION.body_destroyed_effect.append_xml_attributes(body_destroyed_effect_node)
+        COLLISION.shield_damaged_effect.append_xml_attributes(shield_damaged_effect_node)
+        COLLISION.shield_depleted_effect.append_xml_attributes(shield_depleted_effect_node)
+        COLLISION.shield_recharging_effect.append_xml_attributes(shield_recharging_effect_node)
 
     COLLISION.materials = []
-    material_node = tag_format.get_xml_node(XML_OUTPUT, COLLISION.coll_body.materials_tag_block.count, tag_node, "name", "materials")
-    for materials_idx in range(COLLISION.coll_body.materials_tag_block.count):
+    material_node = tag_format.get_xml_node(XML_OUTPUT, COLLISION.materials_tag_block.count, tag_node, "name", "materials")
+    for materials_idx in range(COLLISION.materials_tag_block.count):
         material_element_node = None
         if XML_OUTPUT:
             material_element_node = TAG.xml_doc.createElement('element')
@@ -162,8 +161,8 @@ def process_file(input_stream, report):
         COLLISION.materials.append(material)
 
     COLLISION.regions = []
-    region_node = tag_format.get_xml_node(XML_OUTPUT, COLLISION.coll_body.regions_tag_block.count, tag_node, "name", "regions")
-    for region_idx in range(COLLISION.coll_body.regions_tag_block.count):
+    region_node = tag_format.get_xml_node(XML_OUTPUT, COLLISION.regions_tag_block.count, tag_node, "name", "regions")
+    for region_idx in range(COLLISION.regions_tag_block.count):
         region_element_node = None
         if XML_OUTPUT:
             region_element_node = TAG.xml_doc.createElement('element')
@@ -228,12 +227,12 @@ def process_file(input_stream, report):
 
             region.permutations.append(permutation)
 
-    for modifier_idx in range(COLLISION.coll_body.modifiers_tag_block.count):
+    for modifier_idx in range(COLLISION.modifiers_tag_block.count):
         input_stream.read(52) # Padding?
 
     COLLISION.pathfinding_spheres = []
-    pathfinding_sphere_node = tag_format.get_xml_node(XML_OUTPUT, COLLISION.coll_body.pathfinding_spheres_tag_block.count, tag_node, "name", "pathfinding spheres")
-    for pathfinding_sphere_idx in range(COLLISION.coll_body.pathfinding_spheres_tag_block.count):
+    pathfinding_sphere_node = tag_format.get_xml_node(XML_OUTPUT, COLLISION.pathfinding_spheres_tag_block.count, tag_node, "name", "pathfinding spheres")
+    for pathfinding_sphere_idx in range(COLLISION.pathfinding_spheres_tag_block.count):
         pathfinding_sphere_element_node = None
         if XML_OUTPUT:
             pathfinding_sphere_element_node = TAG.xml_doc.createElement('element')
@@ -241,7 +240,7 @@ def process_file(input_stream, report):
             pathfinding_sphere_node.appendChild(pathfinding_sphere_element_node)
 
         pathfinding_sphere = COLLISION.PathfindingSphere()
-        pathfinding_sphere.node = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(pathfinding_sphere_element_node, "node", None, COLLISION.coll_body.nodes_tag_block.count, "collision_node_block"))
+        pathfinding_sphere.node = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(pathfinding_sphere_element_node, "node", None, COLLISION.nodes_tag_block.count, "collision_node_block"))
         input_stream.read(14) # Padding?
         pathfinding_sphere.center = TAG.read_point_3d(input_stream, TAG, tag_format.XMLData(pathfinding_sphere_element_node, "center"), True)
         pathfinding_sphere.radius = TAG.read_float(input_stream, TAG, tag_format.XMLData(pathfinding_sphere_element_node, "radius"), True)
@@ -249,8 +248,8 @@ def process_file(input_stream, report):
         COLLISION.pathfinding_spheres.append(pathfinding_sphere)
 
     COLLISION.nodes = []
-    bone_node = tag_format.get_xml_node(XML_OUTPUT, COLLISION.coll_body.nodes_tag_block.count, tag_node, "name", "nodes")
-    for node_idx in range(COLLISION.coll_body.nodes_tag_block.count):
+    bone_node = tag_format.get_xml_node(XML_OUTPUT, COLLISION.nodes_tag_block.count, tag_node, "name", "nodes")
+    for node_idx in range(COLLISION.nodes_tag_block.count):
         bone_element_node = None
         if XML_OUTPUT:
             bone_element_node = TAG.xml_doc.createElement('element')
@@ -259,10 +258,10 @@ def process_file(input_stream, report):
 
         node = COLLISION.Node()
         node.name = TAG.read_string32(input_stream, TAG, tag_format.XMLData(bone_element_node, "name"))
-        node.region = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(bone_element_node, "region", None, COLLISION.coll_body.regions_tag_block.count, "collision_region_block"))
-        node.parent = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(bone_element_node, "parent node", None, COLLISION.coll_body.nodes_tag_block.count, "collision_node_block"))
-        node.sibling = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(bone_element_node, "next sibling node", None, COLLISION.coll_body.nodes_tag_block.count, "collision_node_block"))
-        node.child = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(bone_element_node, "first child node", None, COLLISION.coll_body.nodes_tag_block.count, "collision_node_block"))
+        node.region = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(bone_element_node, "region", None, COLLISION.regions_tag_block.count, "collision_region_block"))
+        node.parent = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(bone_element_node, "parent node", None, COLLISION.nodes_tag_block.count, "collision_node_block"))
+        node.sibling = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(bone_element_node, "next sibling node", None, COLLISION.nodes_tag_block.count, "collision_node_block"))
+        node.child = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(bone_element_node, "first child node", None, COLLISION.nodes_tag_block.count, "collision_node_block"))
         input_stream.read(12) # Padding?
         node.bsps_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(bone_element_node, "bsps"))
 

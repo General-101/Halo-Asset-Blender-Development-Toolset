@@ -83,26 +83,22 @@ class ParticleSystemFlags(Flag):
     expensive_visibility = auto()
 
 class EffectAsset():
-    def __init__(self):
-        self.header = None
-        self.effect_body_header = None
-        self.effect_body = None
-        self.locations_header = None
-        self.locations = None
-        self.events_header = None
-        self.events = None
-
-    class EffectBody:
-        def __init__(self, flags=0, loop_start_event=0, locations_tag_block=None, events_tag_block=None, looping_sound=None, location=0, always_play_distance=0.0,
-                     never_play_distance=0.0):
-            self.flags = flags
-            self.loop_start_event = loop_start_event
-            self.locations_tag_block = locations_tag_block
-            self.events_tag_block = events_tag_block
-            self.looping_sound = looping_sound
-            self.location = location
-            self.always_play_distance = always_play_distance
-            self.never_play_distance = never_play_distance
+    def __init__(self, header=None, body_header=None, locations_header=None, locations=None, events_header=None, events=None, flags=0, loop_start_event=0, 
+                 locations_tag_block=None, events_tag_block=None, looping_sound=None, location=0, always_play_distance=0.0, never_play_distance=0.0):
+        self.header = header
+        self.body_header = body_header
+        self.locations_header = locations_header
+        self.locations = locations
+        self.events_header = events_header
+        self.events = events
+        self.flags = flags
+        self.loop_start_event = loop_start_event
+        self.locations_tag_block = locations_tag_block
+        self.events_tag_block = events_tag_block
+        self.looping_sound = looping_sound
+        self.location = location
+        self.always_play_distance = always_play_distance
+        self.never_play_distance = never_play_distance
 
     class Location:
         def __init__(self, name="", name_length=0):

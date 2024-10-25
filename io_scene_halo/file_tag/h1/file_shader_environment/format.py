@@ -123,76 +123,72 @@ class ReflectionTypeEnum(Enum):
     bumped_radiosity = auto()
 
 class ShaderAsset():
-    def __init__(self):
-        self.header = None
-        self.shader_body = None
-
-    class ShaderBody:
-        def __init__(self, radiosity_flags=0, detail_level=0, power=0.0, color_of_emitted_light=(0.0, 0.0, 0.0, 1.0), tint_color=(0.0, 0.0, 0.0, 1.0), material_type=0,
-                     environment_flags=0, environment_type=0, lens_flare_spacing=0.0, lens_flare=None, diffuse_flags=0, base_map=None, detail_map_function=0,
-                     primary_detail_map_scale=0.0, primary_detail_map=None, secondary_detail_map_scale=0.0, secondary_detail_map=None, micro_detail_map_function=0,
-                     micro_detail_map_scale=0.0, micro_detail_map=None, material_color=(0.0, 0.0, 0.0, 1.0), bump_map_scale=0.0, bump_map=None, u_animation_function=0,
-                     u_animation_period=0.0, u_animation_scale=0.0, v_animation_function=0, v_animation_period=0.0, v_animation_scale=0.0, self_illumination_flags=0,
-                     primary_on_color=(0.0, 0.0, 0.0, 1.0), primary_off_color=(0.0, 0.0, 0.0, 1.0), primary_animation_function=0, primary_animation_period=0.0,
-                     primary_animation_phase=0.0, secondary_on_color=(0.0, 0.0, 0.0, 1.0), secondary_off_color=(0.0, 0.0, 0.0, 1.0), secondary_animation_function=0,
-                     secondary_animation_period=0.0, secondary_animation_phase=0.0, plasma_on_color=(0.0, 0.0, 0.0, 1.0), plasma_off_color=(0.0, 0.0, 0.0, 1.0),
-                     plasma_animation_function=0, plasma_animation_period=0.0, plasma_animation_phase=0.0, map_scale=0.0, map=None, specular_flags=0, brightness=0,
-                     perpendicular_color=(0.0, 0.0, 0.0, 1.0), parallel_color=(0.0, 0.0, 0.0, 1.0), reflection_flags=0, reflection_type=0, lightmap_brightness_scale=0.0,
-                     perpendicular_brightness=0.0, parallel_brightness=0.0, reflection_cube_map=None):
-            self.radiosity_flags = radiosity_flags
-            self.detail_level = detail_level
-            self.power = power
-            self.color_of_emitted_light = color_of_emitted_light
-            self.tint_color = tint_color
-            self.material_type = material_type
-            self.environment_flags = environment_flags
-            self.environment_type = environment_type
-            self.lens_flare_spacing = lens_flare_spacing
-            self.lens_flare = lens_flare
-            self.diffuse_flags = diffuse_flags
-            self.base_map = base_map
-            self.detail_map_function = detail_map_function
-            self.primary_detail_map_scale = primary_detail_map_scale
-            self.primary_detail_map = primary_detail_map
-            self.secondary_detail_map_scale = secondary_detail_map_scale
-            self.secondary_detail_map = secondary_detail_map
-            self.micro_detail_map_function = micro_detail_map_function
-            self.micro_detail_map_scale = micro_detail_map_scale
-            self.micro_detail_map = micro_detail_map
-            self.material_color = material_color
-            self.bump_map_scale = bump_map_scale
-            self.bump_map = bump_map
-            self.u_animation_function = u_animation_function
-            self.u_animation_period = u_animation_period
-            self.u_animation_scale = u_animation_scale
-            self.v_animation_function =  v_animation_function
-            self.v_animation_period = v_animation_period
-            self.v_animation_scale = v_animation_scale
-            self.self_illumination_flags = self_illumination_flags
-            self.primary_on_color = primary_on_color
-            self.primary_off_color = primary_off_color
-            self.primary_animation_function = primary_animation_function
-            self.primary_animation_period = primary_animation_period
-            self.primary_animation_phase = primary_animation_phase
-            self.secondary_on_color = secondary_on_color
-            self.secondary_off_color = secondary_off_color
-            self.secondary_animation_function = secondary_animation_function
-            self.secondary_animation_period = secondary_animation_period
-            self.secondary_animation_phase = secondary_animation_phase
-            self.plasma_on_color = plasma_on_color
-            self.plasma_off_color = plasma_off_color
-            self.plasma_animation_function = plasma_animation_function
-            self.plasma_animation_period = plasma_animation_period
-            self.plasma_animation_phase = plasma_animation_phase
-            self.map_scale = map_scale
-            self.map = map
-            self.specular_flags = specular_flags
-            self.brightness = brightness
-            self.perpendicular_color = perpendicular_color
-            self.parallel_color = parallel_color
-            self.reflection_flags = reflection_flags
-            self.reflection_type = reflection_type
-            self.lightmap_brightness_scale = lightmap_brightness_scale
-            self.perpendicular_brightness = perpendicular_brightness
-            self.parallel_brightness = parallel_brightness
-            self.reflection_cube_map = reflection_cube_map
+    def __init__(self, header=None, radiosity_flags=0, detail_level=0, power=0.0, color_of_emitted_light=(0.0, 0.0, 0.0, 1.0), tint_color=(0.0, 0.0, 0.0, 1.0), 
+                 material_type=0, environment_flags=0, environment_type=0, lens_flare_spacing=0.0, lens_flare=None, diffuse_flags=0, base_map=None, detail_map_function=0, 
+                 primary_detail_map_scale=0.0, primary_detail_map=None, secondary_detail_map_scale=0.0, secondary_detail_map=None, micro_detail_map_function=0, 
+                 micro_detail_map_scale=0.0, micro_detail_map=None, material_color=(0.0, 0.0, 0.0, 1.0), bump_map_scale=0.0, bump_map=None, u_animation_function=0, 
+                 u_animation_period=0.0, u_animation_scale=0.0, v_animation_function=0, v_animation_period=0.0, v_animation_scale=0.0, self_illumination_flags=0, 
+                 primary_on_color=(0.0, 0.0, 0.0, 1.0), primary_off_color=(0.0, 0.0, 0.0, 1.0), primary_animation_function=0, primary_animation_period=0.0, 
+                 primary_animation_phase=0.0, secondary_on_color=(0.0, 0.0, 0.0, 1.0), secondary_off_color=(0.0, 0.0, 0.0, 1.0), secondary_animation_function=0, 
+                 secondary_animation_period=0.0, secondary_animation_phase=0.0, plasma_on_color=(0.0, 0.0, 0.0, 1.0), plasma_off_color=(0.0, 0.0, 0.0, 1.0), 
+                 plasma_animation_function=0, plasma_animation_period=0.0, plasma_animation_phase=0.0, map_scale=0.0, map=None, specular_flags=0, brightness=0, 
+                 perpendicular_color=(0.0, 0.0, 0.0, 1.0), parallel_color=(0.0, 0.0, 0.0, 1.0), reflection_flags=0, reflection_type=0, lightmap_brightness_scale=0.0, 
+                 perpendicular_brightness=0.0, parallel_brightness=0.0, reflection_cube_map=None):
+        self.header = header
+        self.radiosity_flags = radiosity_flags
+        self.detail_level = detail_level
+        self.power = power
+        self.color_of_emitted_light = color_of_emitted_light
+        self.tint_color = tint_color
+        self.material_type = material_type
+        self.environment_flags = environment_flags
+        self.environment_type = environment_type
+        self.lens_flare_spacing = lens_flare_spacing
+        self.lens_flare = lens_flare
+        self.diffuse_flags = diffuse_flags
+        self.base_map = base_map
+        self.detail_map_function = detail_map_function
+        self.primary_detail_map_scale = primary_detail_map_scale
+        self.primary_detail_map = primary_detail_map
+        self.secondary_detail_map_scale = secondary_detail_map_scale
+        self.secondary_detail_map = secondary_detail_map
+        self.micro_detail_map_function = micro_detail_map_function
+        self.micro_detail_map_scale = micro_detail_map_scale
+        self.micro_detail_map = micro_detail_map
+        self.material_color = material_color
+        self.bump_map_scale = bump_map_scale
+        self.bump_map = bump_map
+        self.u_animation_function = u_animation_function
+        self.u_animation_period = u_animation_period
+        self.u_animation_scale = u_animation_scale
+        self.v_animation_function =  v_animation_function
+        self.v_animation_period = v_animation_period
+        self.v_animation_scale = v_animation_scale
+        self.self_illumination_flags = self_illumination_flags
+        self.primary_on_color = primary_on_color
+        self.primary_off_color = primary_off_color
+        self.primary_animation_function = primary_animation_function
+        self.primary_animation_period = primary_animation_period
+        self.primary_animation_phase = primary_animation_phase
+        self.secondary_on_color = secondary_on_color
+        self.secondary_off_color = secondary_off_color
+        self.secondary_animation_function = secondary_animation_function
+        self.secondary_animation_period = secondary_animation_period
+        self.secondary_animation_phase = secondary_animation_phase
+        self.plasma_on_color = plasma_on_color
+        self.plasma_off_color = plasma_off_color
+        self.plasma_animation_function = plasma_animation_function
+        self.plasma_animation_period = plasma_animation_period
+        self.plasma_animation_phase = plasma_animation_phase
+        self.map_scale = map_scale
+        self.map = map
+        self.specular_flags = specular_flags
+        self.brightness = brightness
+        self.perpendicular_color = perpendicular_color
+        self.parallel_color = parallel_color
+        self.reflection_flags = reflection_flags
+        self.reflection_type = reflection_type
+        self.lightmap_brightness_scale = lightmap_brightness_scale
+        self.perpendicular_brightness = perpendicular_brightness
+        self.parallel_brightness = parallel_brightness
+        self.reflection_cube_map = reflection_cube_map

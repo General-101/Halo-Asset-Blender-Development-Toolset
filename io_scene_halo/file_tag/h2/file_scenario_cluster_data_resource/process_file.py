@@ -32,13 +32,12 @@ from ..file_scenario.format import ScenarioAsset
 XML_OUTPUT = False
 
 def read_scenario_body(SCENARIO, TAG, input_stream, tag_node, XML_OUTPUT):
-    SCENARIO.scenario_body_header = TAG.TagBlockHeader().read(input_stream, TAG)
-    SCENARIO.scenario_body = SCENARIO.ScenarioBody()
-    SCENARIO.scenario_body.scenario_cluster_data_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "scenario cluster data"))
-    SCENARIO.scenario_body.background_sound_palette_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "background sound palette"))
-    SCENARIO.scenario_body.sound_environment_palette_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "sound environment palette"))
-    SCENARIO.scenario_body.weather_palette_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "weather palette"))
-    SCENARIO.scenario_body.atmospheric_fog_palette_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "atmospheric fog palette"))
+    SCENARIO.body_header = TAG.TagBlockHeader().read(input_stream, TAG)
+    SCENARIO.scenario_cluster_data_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "scenario cluster data"))
+    SCENARIO.background_sound_palette_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "background sound palette"))
+    SCENARIO.sound_environment_palette_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "sound environment palette"))
+    SCENARIO.weather_palette_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "weather palette"))
+    SCENARIO.atmospheric_fog_palette_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "atmospheric fog palette"))
 
 def process_file(input_stream, report):
     TAG = tag_format.TagAsset()

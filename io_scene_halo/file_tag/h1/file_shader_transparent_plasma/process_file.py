@@ -50,53 +50,52 @@ def process_file(input_stream, report):
     if XML_OUTPUT:
         tag_node = TAG.xml_doc.childNodes[0]
 
-    SHADER.shader_body = SHADER.ShaderBody()
-    SHADER.shader_body.radiosity_flags = TAG.read_flag_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "flags", RadiosityFlags))
-    SHADER.shader_body.detail_level = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "detail level", DetailLevelEnum))
-    SHADER.shader_body.power = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "power"))
-    SHADER.shader_body.color_of_emitted_light = TAG.read_rgb(input_stream, TAG, tag_format.XMLData(tag_node, "color of emitted light"))
-    SHADER.shader_body.light_tint_color = TAG.read_rgb(input_stream, TAG, tag_format.XMLData(tag_node, "tint color"))
+    SHADER.radiosity_flags = TAG.read_flag_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "flags", RadiosityFlags))
+    SHADER.detail_level = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "detail level", DetailLevelEnum))
+    SHADER.power = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "power"))
+    SHADER.color_of_emitted_light = TAG.read_rgb(input_stream, TAG, tag_format.XMLData(tag_node, "color of emitted light"))
+    SHADER.light_tint_color = TAG.read_rgb(input_stream, TAG, tag_format.XMLData(tag_node, "tint color"))
     input_stream.read(2) # Padding
-    SHADER.shader_body.material_type = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "material type", MaterialTypeEnum))
+    SHADER.material_type = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "material type", MaterialTypeEnum))
     input_stream.read(8) # Padding
-    SHADER.shader_body.intensity_source = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "intensity source", ChannelSourceEnum))
+    SHADER.intensity_source = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "intensity source", ChannelSourceEnum))
     input_stream.read(2) # Padding
-    SHADER.shader_body.intensity_exponent = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "intensity exponent"))
-    SHADER.shader_body.offset_source = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "offset source", ChannelSourceEnum))
+    SHADER.intensity_exponent = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "intensity exponent"))
+    SHADER.offset_source = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "offset source", ChannelSourceEnum))
     input_stream.read(2) # Padding
-    SHADER.shader_body.offset_amount = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "offset amount"))
-    SHADER.shader_body.offset_exponent = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "offset exponent"))
+    SHADER.offset_amount = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "offset amount"))
+    SHADER.offset_exponent = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "offset exponent"))
     input_stream.read(32) # Padding
-    SHADER.shader_body.perpendicular_brightness = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "perpendicular brightness"))
-    SHADER.shader_body.perpendicular_tint_color = TAG.read_rgb(input_stream, TAG, tag_format.XMLData(tag_node, "perpendicular tint color"))
-    SHADER.shader_body.parallel_brightness = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "parallel brightness"))
-    SHADER.shader_body.parallel_tint_color = TAG.read_rgb(input_stream, TAG, tag_format.XMLData(tag_node, "parallel tint color"))
-    SHADER.shader_body.tint_color_source = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "tint color source", ChannelSourceEnum))
+    SHADER.perpendicular_brightness = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "perpendicular brightness"))
+    SHADER.perpendicular_tint_color = TAG.read_rgb(input_stream, TAG, tag_format.XMLData(tag_node, "perpendicular tint color"))
+    SHADER.parallel_brightness = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "parallel brightness"))
+    SHADER.parallel_tint_color = TAG.read_rgb(input_stream, TAG, tag_format.XMLData(tag_node, "parallel tint color"))
+    SHADER.tint_color_source = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "tint color source", ChannelSourceEnum))
     input_stream.read(62) # Padding
-    SHADER.shader_body.primary_animation_period = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "primary animation period"))
-    SHADER.shader_body.primary_animation_direction = TAG.read_vector(input_stream, TAG, tag_format.XMLData(tag_node, "primary animation direction"))
-    SHADER.shader_body.primary_noise_map_scale = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "primary noise map scale"))
-    SHADER.shader_body.primary_noise_map = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "primary noise map"))
+    SHADER.primary_animation_period = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "primary animation period"))
+    SHADER.primary_animation_direction = TAG.read_vector(input_stream, TAG, tag_format.XMLData(tag_node, "primary animation direction"))
+    SHADER.primary_noise_map_scale = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "primary noise map scale"))
+    SHADER.primary_noise_map = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "primary noise map"))
     input_stream.read(36) # Padding
-    SHADER.shader_body.secondary_animation_period = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "secondary animation period"))
-    SHADER.shader_body.secondary_animation_direction = TAG.read_vector(input_stream, TAG, tag_format.XMLData(tag_node, "secondary animation direction"))
-    SHADER.shader_body.secondary_noise_map_scale = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "secondary noise map scale"))
-    SHADER.shader_body.secondary_noise_map = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "secondary noise map"))
+    SHADER.secondary_animation_period = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "secondary animation period"))
+    SHADER.secondary_animation_direction = TAG.read_vector(input_stream, TAG, tag_format.XMLData(tag_node, "secondary animation direction"))
+    SHADER.secondary_noise_map_scale = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "secondary noise map scale"))
+    SHADER.secondary_noise_map = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "secondary noise map"))
     input_stream.read(32) # Padding
 
-    primary_noise_map_name_length = SHADER.shader_body.primary_noise_map.name_length
-    secondary_noise_map_name_length = SHADER.shader_body.secondary_noise_map.name_length
+    primary_noise_map_name_length = SHADER.primary_noise_map.name_length
+    secondary_noise_map_name_length = SHADER.secondary_noise_map.name_length
     if primary_noise_map_name_length > 0:
-        SHADER.shader_body.primary_noise_map.name = TAG.read_variable_string(input_stream, primary_noise_map_name_length, TAG)
+        SHADER.primary_noise_map.name = TAG.read_variable_string(input_stream, primary_noise_map_name_length, TAG)
 
     if secondary_noise_map_name_length > 0:
-        SHADER.shader_body.secondary_noise_map.name = TAG.read_variable_string(input_stream, secondary_noise_map_name_length, TAG)
+        SHADER.secondary_noise_map.name = TAG.read_variable_string(input_stream, secondary_noise_map_name_length, TAG)
 
     if XML_OUTPUT:
         primary_noise_map_node = tag_format.get_xml_node(XML_OUTPUT, 1, tag_node, "name", "primary noise map")
         secondary_noise_map_node = tag_format.get_xml_node(XML_OUTPUT, 1, tag_node, "name", "secondary noise map")
-        SHADER.shader_body.primary_noise_map.append_xml_attributes(primary_noise_map_node)
-        SHADER.shader_body.secondary_noise_map.append_xml_attributes(secondary_noise_map_node)
+        SHADER.primary_noise_map.append_xml_attributes(primary_noise_map_node)
+        SHADER.secondary_noise_map.append_xml_attributes(secondary_noise_map_node)
 
     current_position = input_stream.tell()
     EOF = input_stream.seek(0, 2)

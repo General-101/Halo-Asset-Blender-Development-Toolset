@@ -30,19 +30,19 @@ from math import radians
 from ....global_functions import tag_format
 
 def write_body(output_stream, ANIMATION):
-    ANIMATION.antr_body.objects_tag_block.write(output_stream, True)
-    ANIMATION.antr_body.units_tag_block.write(output_stream, True)
-    ANIMATION.antr_body.weapons_tag_block.write(output_stream, True)
-    ANIMATION.antr_body.vehicles_tag_block.write(output_stream, True)
-    ANIMATION.antr_body.devices_tag_block.write(output_stream, True)
-    ANIMATION.antr_body.unit_damage_tag_block.write(output_stream, True)
-    ANIMATION.antr_body.first_person_weapons_tag_block.write(output_stream, True)
-    ANIMATION.antr_body.sound_references_tag_block.write(output_stream, True)
-    output_stream.write(struct.pack('>f', ANIMATION.antr_body.limp_body_node_radius))
-    output_stream.write(struct.pack('>H',ANIMATION.antr_body.flags))
+    ANIMATION.objects_tag_block.write(output_stream, True)
+    ANIMATION.units_tag_block.write(output_stream, True)
+    ANIMATION.weapons_tag_block.write(output_stream, True)
+    ANIMATION.vehicles_tag_block.write(output_stream, True)
+    ANIMATION.devices_tag_block.write(output_stream, True)
+    ANIMATION.unit_damage_tag_block.write(output_stream, True)
+    ANIMATION.first_person_weapons_tag_block.write(output_stream, True)
+    ANIMATION.sound_references_tag_block.write(output_stream, True)
+    output_stream.write(struct.pack('>f', ANIMATION.limp_body_node_radius))
+    output_stream.write(struct.pack('>H',ANIMATION.flags))
     output_stream.write(struct.pack('>2x'))
-    ANIMATION.antr_body.nodes_tag_block.write(output_stream, True)
-    ANIMATION.antr_body.animations_tag_block.write(output_stream, True)
+    ANIMATION.nodes_tag_block.write(output_stream, True)
+    ANIMATION.animations_tag_block.write(output_stream, True)
 
 def write_objects(output_stream, ANIMATION):
     for object_element in ANIMATION.objects:

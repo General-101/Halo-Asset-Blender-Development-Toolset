@@ -26,14 +26,12 @@
 
 import struct
 
-from math import radians
-from ....global_functions import tag_format, shader_processing
-from ....file_tag.h2.file_shader.format import FunctionTypeEnum
+from ....global_functions import tag_format
 
 def write_body(output_stream, TAG, CAMERATRACK):
-    CAMERATRACK.camera_track_body_header.write(output_stream, TAG, True)
+    CAMERATRACK.body_header.write(output_stream, TAG, True)
     output_stream.write(struct.pack('<4x'))
-    CAMERATRACK.camera_track_body.control_points_tag_block.write(output_stream, False)
+    CAMERATRACK.control_points_tag_block.write(output_stream, False)
 
 def write_control_points(output_stream, TAG, control_points, control_points_header):
     if len(control_points) > 0:

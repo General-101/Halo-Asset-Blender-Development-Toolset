@@ -25,17 +25,13 @@
 # ##### END MIT LICENSE BLOCK #####
 
 class CollectionAsset():
-    def __init__(self):
-        self.header = None
-        self.collection_body_header = None
-        self.collection_body = None
-        self.permutations_header = None
-        self.permutations = None
-
-    class CollectionBody:
-        def __init__(self, permutations_tag_block=None, spawn_time=0):
-            self.permutations_tag_block = permutations_tag_block
-            self.spawn_time = spawn_time
+    def __init__(self, header=None, body_header=None, permutations_header=None, permutations=None, permutations_tag_block=None, spawn_time=0):
+        self.header = header
+        self.body_header = body_header
+        self.permutations_header = permutations_header
+        self.permutations = permutations
+        self.permutations_tag_block = permutations_tag_block
+        self.spawn_time = spawn_time
 
     class Permutation:
         def __init__(self, weight=0, item=None, variant="", variant_length=0):

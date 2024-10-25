@@ -30,75 +30,75 @@ from math import radians
 from ....global_functions import tag_format
 
 def write_body(output_stream, SCENARIO):
-    SCENARIO.scenario_body.dont_use_tag_ref.write(output_stream, True)
-    SCENARIO.scenario_body.wont_use_tag_ref.write(output_stream, True)
-    SCENARIO.scenario_body.cant_use_tag_ref.write(output_stream, True)
-    SCENARIO.scenario_body.skies_tag_block.write(output_stream, True)
-    output_stream.write(struct.pack('>HH', SCENARIO.scenario_body.scenario_type, SCENARIO.scenario_body.scenario_flags))
-    SCENARIO.scenario_body.child_scenarios_tag_block.write(output_stream, True)
-    output_stream.write(struct.pack('>f', radians(SCENARIO.scenario_body.local_north)))
+    SCENARIO.dont_use_tag_ref.write(output_stream, True)
+    SCENARIO.wont_use_tag_ref.write(output_stream, True)
+    SCENARIO.cant_use_tag_ref.write(output_stream, True)
+    SCENARIO.skies_tag_block.write(output_stream, True)
+    output_stream.write(struct.pack('>HH', SCENARIO.scenario_type, SCENARIO.scenario_flags))
+    SCENARIO.child_scenarios_tag_block.write(output_stream, True)
+    output_stream.write(struct.pack('>f', radians(SCENARIO.local_north)))
     output_stream.write(struct.pack('>156x'))
-    SCENARIO.scenario_body.predicted_resources_tag_block.write(output_stream, True)
-    SCENARIO.scenario_body.functions_tag_block.write(output_stream, True)
-    SCENARIO.scenario_body.editor_scenario_data.write(output_stream, True)
-    SCENARIO.scenario_body.comments_tag_block.write(output_stream, True)
-    SCENARIO.scenario_body.scavenger_hunt_objects_tag_block.write(output_stream, True)
+    SCENARIO.predicted_resources_tag_block.write(output_stream, True)
+    SCENARIO.functions_tag_block.write(output_stream, True)
+    SCENARIO.editor_scenario_data.write(output_stream, True)
+    SCENARIO.comments_tag_block.write(output_stream, True)
+    SCENARIO.scavenger_hunt_objects_tag_block.write(output_stream, True)
     output_stream.write(struct.pack('>212x'))
-    SCENARIO.scenario_body.object_names_tag_block.write(output_stream, True)
-    SCENARIO.scenario_body.scenery_tag_block.write(output_stream, True)
-    SCENARIO.scenario_body.scenery_palette_tag_block.write(output_stream, True)
-    SCENARIO.scenario_body.bipeds_tag_block.write(output_stream, True)
-    SCENARIO.scenario_body.biped_palette_tag_block.write(output_stream, True)
-    SCENARIO.scenario_body.vehicles_tag_block.write(output_stream, True)
-    SCENARIO.scenario_body.vehicle_palette_tag_block.write(output_stream, True)
-    SCENARIO.scenario_body.equipment_tag_block.write(output_stream, True)
-    SCENARIO.scenario_body.equipment_palette_tag_block.write(output_stream, True)
-    SCENARIO.scenario_body.weapons_tag_block.write(output_stream, True)
-    SCENARIO.scenario_body.weapon_palette_tag_block.write(output_stream, True)
-    SCENARIO.scenario_body.device_groups_tag_block.write(output_stream, True)
-    SCENARIO.scenario_body.machines_tag_block.write(output_stream, True)
-    SCENARIO.scenario_body.machine_palette_tag_block.write(output_stream, True)
-    SCENARIO.scenario_body.controls_tag_block.write(output_stream, True)
-    SCENARIO.scenario_body.control_palette_tag_block.write(output_stream, True)
-    SCENARIO.scenario_body.light_fixtures_tag_block.write(output_stream, True)
-    SCENARIO.scenario_body.light_fixtures_palette_tag_block.write(output_stream, True)
-    SCENARIO.scenario_body.sound_scenery_tag_block.write(output_stream, True)
-    SCENARIO.scenario_body.sound_scenery_palette_tag_block.write(output_stream, True)
+    SCENARIO.object_names_tag_block.write(output_stream, True)
+    SCENARIO.scenery_tag_block.write(output_stream, True)
+    SCENARIO.scenery_palette_tag_block.write(output_stream, True)
+    SCENARIO.bipeds_tag_block.write(output_stream, True)
+    SCENARIO.biped_palette_tag_block.write(output_stream, True)
+    SCENARIO.vehicles_tag_block.write(output_stream, True)
+    SCENARIO.vehicle_palette_tag_block.write(output_stream, True)
+    SCENARIO.equipment_tag_block.write(output_stream, True)
+    SCENARIO.equipment_palette_tag_block.write(output_stream, True)
+    SCENARIO.weapons_tag_block.write(output_stream, True)
+    SCENARIO.weapon_palette_tag_block.write(output_stream, True)
+    SCENARIO.device_groups_tag_block.write(output_stream, True)
+    SCENARIO.machines_tag_block.write(output_stream, True)
+    SCENARIO.machine_palette_tag_block.write(output_stream, True)
+    SCENARIO.controls_tag_block.write(output_stream, True)
+    SCENARIO.control_palette_tag_block.write(output_stream, True)
+    SCENARIO.light_fixtures_tag_block.write(output_stream, True)
+    SCENARIO.light_fixtures_palette_tag_block.write(output_stream, True)
+    SCENARIO.sound_scenery_tag_block.write(output_stream, True)
+    SCENARIO.sound_scenery_palette_tag_block.write(output_stream, True)
     output_stream.write(struct.pack('>84x'))
-    SCENARIO.scenario_body.player_starting_profile_tag_block.write(output_stream, True)
-    SCENARIO.scenario_body.player_starting_locations_tag_block.write(output_stream, True)
-    SCENARIO.scenario_body.trigger_volumes_tag_block.write(output_stream, True)
-    SCENARIO.scenario_body.recorded_animations_tag_block.write(output_stream, True)
-    SCENARIO.scenario_body.netgame_flags_tag_block.write(output_stream, True)
-    SCENARIO.scenario_body.netgame_equipment_tag_block.write(output_stream, True)
-    SCENARIO.scenario_body.starting_equipment_tag_block.write(output_stream, True)
-    SCENARIO.scenario_body.bsp_switch_trigger_volumes_tag_block.write(output_stream, True)
-    SCENARIO.scenario_body.decals_tag_block.write(output_stream, True)
-    SCENARIO.scenario_body.decal_palette_tag_block.write(output_stream, True)
-    SCENARIO.scenario_body.detail_object_collection_palette_tag_block.write(output_stream, True)
+    SCENARIO.player_starting_profile_tag_block.write(output_stream, True)
+    SCENARIO.player_starting_locations_tag_block.write(output_stream, True)
+    SCENARIO.trigger_volumes_tag_block.write(output_stream, True)
+    SCENARIO.recorded_animations_tag_block.write(output_stream, True)
+    SCENARIO.netgame_flags_tag_block.write(output_stream, True)
+    SCENARIO.netgame_equipment_tag_block.write(output_stream, True)
+    SCENARIO.starting_equipment_tag_block.write(output_stream, True)
+    SCENARIO.bsp_switch_trigger_volumes_tag_block.write(output_stream, True)
+    SCENARIO.decals_tag_block.write(output_stream, True)
+    SCENARIO.decal_palette_tag_block.write(output_stream, True)
+    SCENARIO.detail_object_collection_palette_tag_block.write(output_stream, True)
     output_stream.write(struct.pack('>84x'))
-    SCENARIO.scenario_body.actor_palette_tag_block.write(output_stream, True)
-    SCENARIO.scenario_body.encounters_tag_block.write(output_stream, True)
-    SCENARIO.scenario_body.command_lists_tag_block.write(output_stream, True)
-    SCENARIO.scenario_body.ai_animation_references_tag_block.write(output_stream, True)
-    SCENARIO.scenario_body.ai_script_references_tag_block.write(output_stream, True)
-    SCENARIO.scenario_body.ai_recording_references_tag_block.write(output_stream, True)
-    SCENARIO.scenario_body.ai_conversations_tag_block.write(output_stream, True)
-    SCENARIO.scenario_body.script_syntax_data_tag_data.write(output_stream, True)
-    SCENARIO.scenario_body.script_string_data_tag_data.write(output_stream, True)
-    SCENARIO.scenario_body.scripts_tag_block.write(output_stream, True)
-    SCENARIO.scenario_body.globals_tag_block.write(output_stream, True)
-    SCENARIO.scenario_body.references_tag_block.write(output_stream, True)
-    SCENARIO.scenario_body.source_files_tag_block.write(output_stream, True)
+    SCENARIO.actor_palette_tag_block.write(output_stream, True)
+    SCENARIO.encounters_tag_block.write(output_stream, True)
+    SCENARIO.command_lists_tag_block.write(output_stream, True)
+    SCENARIO.ai_animation_references_tag_block.write(output_stream, True)
+    SCENARIO.ai_script_references_tag_block.write(output_stream, True)
+    SCENARIO.ai_recording_references_tag_block.write(output_stream, True)
+    SCENARIO.ai_conversations_tag_block.write(output_stream, True)
+    SCENARIO.script_syntax_data_tag_data.write(output_stream, True)
+    SCENARIO.script_string_data_tag_data.write(output_stream, True)
+    SCENARIO.scripts_tag_block.write(output_stream, True)
+    SCENARIO.globals_tag_block.write(output_stream, True)
+    SCENARIO.references_tag_block.write(output_stream, True)
+    SCENARIO.source_files_tag_block.write(output_stream, True)
     output_stream.write(struct.pack('>24x'))
-    SCENARIO.scenario_body.cutscene_flags_tag_block.write(output_stream, True)
-    SCENARIO.scenario_body.cutscene_camera_points_tag_block.write(output_stream, True)
-    SCENARIO.scenario_body.cutscene_titles_tag_block.write(output_stream, True)
+    SCENARIO.cutscene_flags_tag_block.write(output_stream, True)
+    SCENARIO.cutscene_camera_points_tag_block.write(output_stream, True)
+    SCENARIO.cutscene_titles_tag_block.write(output_stream, True)
     output_stream.write(struct.pack('>108x'))
-    SCENARIO.scenario_body.custom_object_names_tag_ref.write(output_stream, True)
-    SCENARIO.scenario_body.chapter_title_text_tag_ref.write(output_stream, True)
-    SCENARIO.scenario_body.hud_messages_tag_ref.write(output_stream, True)
-    SCENARIO.scenario_body.structure_bsps_tag_block.write(output_stream, True)
+    SCENARIO.custom_object_names_tag_ref.write(output_stream, True)
+    SCENARIO.chapter_title_text_tag_ref.write(output_stream, True)
+    SCENARIO.hud_messages_tag_ref.write(output_stream, True)
+    SCENARIO.structure_bsps_tag_block.write(output_stream, True)
 
 def write_predicted_resources(output_stream, SCENARIO):
     for predicted_resource_element in SCENARIO.predicted_resources:
@@ -633,7 +633,7 @@ def write_scripts(output_stream, SCENARIO):
             output_stream.write(struct.pack('>2x'))
 
 def write_globals(output_stream, SCENARIO):
-    for global_element in SCENARIO.globals:
+    for global_element in SCENARIO.script_globals:
         output_stream.write(struct.pack('>31sx', tag_format.string_to_bytes(global_element.name, False)))
         output_stream.write(struct.pack('>h', global_element.return_type))
         output_stream.write(struct.pack('>6x'))
@@ -719,17 +719,17 @@ def build_asset(output_stream, SCENARIO, report):
     SCENARIO.header.write(output_stream, True)
     write_body(output_stream, SCENARIO)
 
-    dont_use_length = SCENARIO.scenario_body.dont_use_tag_ref.name_length
+    dont_use_length = SCENARIO.dont_use_tag_ref.name_length
     if dont_use_length > 0:
-        output_stream.write(struct.pack('>%ssx' % dont_use_length, tag_format.string_to_bytes(SCENARIO.scenario_body.dont_use_tag_ref.name, False)))
+        output_stream.write(struct.pack('>%ssx' % dont_use_length, tag_format.string_to_bytes(SCENARIO.dont_use_tag_ref.name, False)))
 
-    wont_use_length = SCENARIO.scenario_body.wont_use_tag_ref.name_length
+    wont_use_length = SCENARIO.wont_use_tag_ref.name_length
     if wont_use_length > 0:
-        output_stream.write(struct.pack('>%ssx' % wont_use_length, tag_format.string_to_bytes(SCENARIO.scenario_body.wont_use_tag_ref.name, False)))
+        output_stream.write(struct.pack('>%ssx' % wont_use_length, tag_format.string_to_bytes(SCENARIO.wont_use_tag_ref.name, False)))
 
-    cant_use_length = SCENARIO.scenario_body.cant_use_tag_ref.name_length
+    cant_use_length = SCENARIO.cant_use_tag_ref.name_length
     if cant_use_length > 0:
-        output_stream.write(struct.pack('>%ssx' % cant_use_length, tag_format.string_to_bytes(SCENARIO.scenario_body.cant_use_tag_ref.name, False)))
+        output_stream.write(struct.pack('>%ssx' % cant_use_length, tag_format.string_to_bytes(SCENARIO.cant_use_tag_ref.name, False)))
 
     write_palette(output_stream, SCENARIO.skies, 0)
 
@@ -739,7 +739,7 @@ def build_asset(output_stream, SCENARIO, report):
 
     write_functions(output_stream, SCENARIO)
 
-    output_stream.write(SCENARIO.editor_scenario_data)
+    output_stream.write(SCENARIO.editor_scenario_data.data)
 
     write_comments(output_stream, SCENARIO.comments)
 
@@ -828,16 +828,16 @@ def build_asset(output_stream, SCENARIO, report):
 
     write_cutscene_titles(output_stream, SCENARIO)
 
-    custom_object_names_length = SCENARIO.scenario_body.custom_object_names_tag_ref.name_length
+    custom_object_names_length = SCENARIO.custom_object_names_tag_ref.name_length
     if custom_object_names_length > 0:
-        output_stream.write(struct.pack('>%ssx' % custom_object_names_length, tag_format.string_to_bytes(SCENARIO.scenario_body.custom_object_names_tag_ref.name, False)))
+        output_stream.write(struct.pack('>%ssx' % custom_object_names_length, tag_format.string_to_bytes(SCENARIO.custom_object_names_tag_ref.name, False)))
 
-    chapter_title_text_length = SCENARIO.scenario_body.chapter_title_text_tag_ref.name_length
+    chapter_title_text_length = SCENARIO.chapter_title_text_tag_ref.name_length
     if chapter_title_text_length > 0:
-        output_stream.write(struct.pack('>%ssx' % chapter_title_text_length, tag_format.string_to_bytes(SCENARIO.scenario_body.chapter_title_text_tag_ref.name, False)))
+        output_stream.write(struct.pack('>%ssx' % chapter_title_text_length, tag_format.string_to_bytes(SCENARIO.chapter_title_text_tag_ref.name, False)))
 
-    hud_messages_length = SCENARIO.scenario_body.hud_messages_tag_ref.name_length
+    hud_messages_length = SCENARIO.hud_messages_tag_ref.name_length
     if hud_messages_length > 0:
-        output_stream.write(struct.pack('>%ssx' % hud_messages_length, tag_format.string_to_bytes(SCENARIO.scenario_body.hud_messages_tag_ref.name, False)))
+        output_stream.write(struct.pack('>%ssx' % hud_messages_length, tag_format.string_to_bytes(SCENARIO.hud_messages_tag_ref.name, False)))
 
     write_structure_bsps(output_stream, SCENARIO)

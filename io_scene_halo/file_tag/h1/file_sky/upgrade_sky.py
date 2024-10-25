@@ -30,10 +30,10 @@ from ....file_tag.h2.file_sky.format import SkyAsset
 
 def generate_atmospheric_fog(H1_ASSET, TAG, SKY):
     fog = SKY.Fog()
-    fog.color = H1_ASSET.sky_body.outdoor_fog_color
-    fog.maximum_density = H1_ASSET.sky_body.outdoor_fog_maximum_density
-    fog.start_distance = H1_ASSET.sky_body.outdoor_fog_start_distance
-    fog.opaque_distance = H1_ASSET.sky_body.outdoor_fog_opaque_distance
+    fog.color = H1_ASSET.outdoor_fog_color
+    fog.maximum_density = H1_ASSET.outdoor_fog_maximum_density
+    fog.start_distance = H1_ASSET.outdoor_fog_start_distance
+    fog.opaque_distance = H1_ASSET.outdoor_fog_opaque_distance
 
     SKY.atmospheric_fog.append(fog)
 
@@ -109,29 +109,28 @@ def upgrade_sky(H1_ASSET, patch_txt_path, report):
     SKY.shader_functions = []
     SKY.animations = []
 
-    SKY.sky_body_header = TAG.TagBlockHeader("tbfd", 0, 1, 220)
-    SKY.sky_body = SKY.SkyBody()
-    SKY.sky_body.render_model = H1_ASSET.sky_body.model
-    SKY.sky_body.animation_graph = H1_ASSET.sky_body.animation_graph
-    SKY.sky_body.flags = 0
-    SKY.sky_body.render_model_scale = 1
-    SKY.sky_body.movement_scale = -1
-    SKY.sky_body.cubemap_tag_block = TAG.TagBlock()
-    SKY.sky_body.indoor_ambient_color = H1_ASSET.sky_body.indoor_ambient_radiosity_color
-    SKY.sky_body.outdoor_ambient_color = H1_ASSET.sky_body.outdoor_ambient_radiosity_color
-    SKY.sky_body.fog_spread_distance = 0.0
-    SKY.sky_body.atmospheric_fog_tag_block = generate_atmospheric_fog(H1_ASSET, TAG, SKY)
-    SKY.sky_body.secondary_fog_tag_block = TAG.TagBlock()
-    SKY.sky_body.sky_fog_tag_block = TAG.TagBlock()
-    SKY.sky_body.patchy_fog_tag_block = TAG.TagBlock()
-    SKY.sky_body.amount = 0.0
-    SKY.sky_body.threshold = 0.0
-    SKY.sky_body.brightness = 0.0
-    SKY.sky_body.gamma_power = 0.0
-    SKY.sky_body.lights_tag_block = generate_lights(H1_ASSET, TAG, SKY)
-    SKY.sky_body.global_sky_rotation = 0.0
-    SKY.sky_body.shader_functions_tag_block = TAG.TagBlock()
-    SKY.sky_body.animations_tag_block = TAG.TagBlock()
-    SKY.sky_body.clear_color = (0.0, 0.0, 0.0, 1.0)
+    SKY.body_header = TAG.TagBlockHeader("tbfd", 0, 1, 220)
+    SKY.render_model = H1_ASSET.model
+    SKY.animation_graph = H1_ASSET.animation_graph
+    SKY.flags = 0
+    SKY.render_model_scale = 1
+    SKY.movement_scale = -1
+    SKY.cubemap_tag_block = TAG.TagBlock()
+    SKY.indoor_ambient_color = H1_ASSET.indoor_ambient_radiosity_color
+    SKY.outdoor_ambient_color = H1_ASSET.outdoor_ambient_radiosity_color
+    SKY.fog_spread_distance = 0.0
+    SKY.atmospheric_fog_tag_block = generate_atmospheric_fog(H1_ASSET, TAG, SKY)
+    SKY.secondary_fog_tag_block = TAG.TagBlock()
+    SKY.sky_fog_tag_block = TAG.TagBlock()
+    SKY.patchy_fog_tag_block = TAG.TagBlock()
+    SKY.amount = 0.0
+    SKY.threshold = 0.0
+    SKY.brightness = 0.0
+    SKY.gamma_power = 0.0
+    SKY.lights_tag_block = generate_lights(H1_ASSET, TAG, SKY)
+    SKY.global_sky_rotation = 0.0
+    SKY.shader_functions_tag_block = TAG.TagBlock()
+    SKY.animations_tag_block = TAG.TagBlock()
+    SKY.clear_color = (0.0, 0.0, 0.0, 1.0)
 
     return SKY

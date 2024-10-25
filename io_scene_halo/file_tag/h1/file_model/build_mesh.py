@@ -59,10 +59,8 @@ def build_mesh_layout(asset, geometry, region_name, object_name, game_version, i
     shader_count = len(asset.shaders)
 
     uses_local_nodes = False
-    model_body = asset.mode_body
     if asset.header.tag_group == "mod2":
-        uses_local_nodes = ModelFlags.parts_have_local_nodes in ModelFlags(asset.mod2_body.flags)
-        model_body = asset.mod2_body
+        uses_local_nodes = ModelFlags.parts_have_local_nodes in ModelFlags(asset.flags)
 
     full_mesh = bpy.data.meshes.new(object_name)
     object_mesh = bpy.data.objects.new(object_name, full_mesh)
@@ -194,11 +192,11 @@ def build_mesh_layout(asset, geometry, region_name, object_name, game_version, i
 
                 U = vertex.UV[0]
                 V = vertex.UV[1]
-                if not model_body.base_map_u_scale == 0.0:
-                    U = model_body.base_map_u_scale * U
+                if not asset.base_map_u_scale == 0.0:
+                    U = asset.base_map_u_scale * U
 
-                if not model_body.base_map_v_scale == 0.0:
-                    V =  model_body.base_map_v_scale * V
+                if not asset.base_map_v_scale == 0.0:
+                    V =  asset.base_map_v_scale * V
 
                 layer_uv.data[loop_index].uv = (U, 1 - V)
 

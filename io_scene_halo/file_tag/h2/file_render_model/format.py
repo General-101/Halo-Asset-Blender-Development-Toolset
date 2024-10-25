@@ -106,69 +106,69 @@ class ReportFlags(Flag):
     report_key_is_valid = auto()
 
 class RenderAsset():
-    def __init__(self):
-        self.version = 8210 # This is just here so that I don't have to rework parts of the mesh_processing code. Make me care.
-        self.header = None
-        self.render_body_header = None
-        self.render_body = None
-        self.import_info_header = None
-        self.import_info = None
-        self.compression_info_header = None
-        self.compression_info = None
-        self.region_header = None
-        self.regions = None
-        self.section_header = None
-        self.sections = None
-        self.invalid_section_pair_bits_header = None
-        self.invalid_section_pair_bits = None
-        self.section_groups_header = None
-        self.section_groups = None
-        self.nodes_header = None
-        self.nodes = None
-        self.node_map_header = None
-        self.node_map = None
-        self.transforms = None
-        self.marker_group_header = None
-        self.marker_groups = None
-        self.material_header = None
-        self.materials = None
-        self.errors_header = None
-        self.errors = None
-        self.prt_info_header = None
-        self.prt_info = None
-        self.section_render_leaves_header = None
-        self.section_render_leaves = None
-
-    class RenderBody:
-        def __init__(self, name="", name_length=0, flags=0, import_info_tag_block=None, compression_info_tag_block=None, regions_tag_block=None, sections_tag_block=None,
-                     invalid_section_pair_bits_tag_block=None, section_groups_tag_block=None, l1_section_group_index=0, l2_section_group_index=0, l3_section_group_index=0,
-                     l4_section_group_index=0, l5_section_group_index=0, l6_section_group_index=0, node_list_checksum=0, nodes_tag_block=None, node_map_tag_block=None,
-                     marker_groups_tag_block=None, materials_tag_block=None, errors_tag_block=None, dont_draw_over_camera_cosine_angle=0.0, prt_info_tag_block=None,
-                     section_render_leaves_tag_block=None):
-            self.name = name
-            self.name_length = name_length
-            self.flags = flags
-            self.import_info_tag_block = import_info_tag_block
-            self.compression_info_tag_block = compression_info_tag_block
-            self.regions_tag_block = regions_tag_block
-            self.sections_tag_block = sections_tag_block
-            self.invalid_section_pair_bits_tag_block = invalid_section_pair_bits_tag_block
-            self.section_groups_tag_block = section_groups_tag_block
-            self.l1_section_group_index = l1_section_group_index
-            self.l2_section_group_index = l2_section_group_index
-            self.l3_section_group_index = l3_section_group_index
-            self.l4_section_group_index = l4_section_group_index
-            self.l5_section_group_index = l5_section_group_index
-            self.l6_section_group_index = l6_section_group_index
-            self.node_list_checksum = node_list_checksum
-            self.nodes_tag_block = nodes_tag_block
-            self.node_map_tag_block = node_map_tag_block
-            self.marker_groups_tag_block = marker_groups_tag_block
-            self.materials_tag_block = materials_tag_block
-            self.errors_tag_block = errors_tag_block
-            self.dont_draw_over_camera_cosine_angle = dont_draw_over_camera_cosine_angle
-            self.prt_info_tag_block = prt_info_tag_block
-            self.section_render_leaves_tag_block = section_render_leaves_tag_block
+    def __init__(self, version=8210, header=None, body_header=None, import_info_header=None, import_info=None, compression_info_header=None, compression_info=None, 
+                 region_header=None, regions=None, section_header=None, sections=None, invalid_section_pair_bits_header=None, invalid_section_pair_bits=None, 
+                 section_groups_header=None, section_groups=None, nodes_header=None, nodes=None, node_map_header=None, node_map=None, transforms=None, 
+                 marker_group_header=None, marker_groups=None, material_header=None, materials=None, errors_header=None, errors=None, prt_info_header=None, prt_info=None, 
+                 section_render_leaves_header=None, section_render_leaves=None, name="", name_length=0, flags=0, import_info_tag_block=None, compression_info_tag_block=None, 
+                 regions_tag_block=None, sections_tag_block=None, invalid_section_pair_bits_tag_block=None, section_groups_tag_block=None, l1_section_group_index=0, 
+                 l2_section_group_index=0, l3_section_group_index=0, l4_section_group_index=0, l5_section_group_index=0, l6_section_group_index=0, node_list_checksum=0, 
+                 nodes_tag_block=None, node_map_tag_block=None, marker_groups_tag_block=None, materials_tag_block=None, errors_tag_block=None, 
+                 dont_draw_over_camera_cosine_angle=0.0, prt_info_tag_block=None, section_render_leaves_tag_block=None):
+        self.version = version
+        self.header = header
+        self.body_header = body_header
+        self.import_info_header = import_info_header
+        self.import_info = import_info
+        self.compression_info_header = compression_info_header
+        self.compression_info = compression_info
+        self.region_header = region_header
+        self.regions = regions
+        self.section_header = section_header
+        self.sections = sections
+        self.invalid_section_pair_bits_header = invalid_section_pair_bits_header
+        self.invalid_section_pair_bits = invalid_section_pair_bits
+        self.section_groups_header = section_groups_header
+        self.section_groups = section_groups
+        self.nodes_header = nodes_header
+        self.nodes = nodes
+        self.node_map_header = node_map_header
+        self.node_map = node_map
+        self.transforms = transforms
+        self.marker_group_header = marker_group_header
+        self.marker_groups = marker_groups
+        self.material_header = material_header
+        self.materials = materials
+        self.errors_header = errors_header
+        self.errors = errors
+        self.prt_info_header = prt_info_header
+        self.prt_info = prt_info
+        self.section_render_leaves_header = section_render_leaves_header
+        self.section_render_leaves = section_render_leaves
+        self.name = name
+        self.name_length = name_length
+        self.flags = flags
+        self.import_info_tag_block = import_info_tag_block
+        self.compression_info_tag_block = compression_info_tag_block
+        self.regions_tag_block = regions_tag_block
+        self.sections_tag_block = sections_tag_block
+        self.invalid_section_pair_bits_tag_block = invalid_section_pair_bits_tag_block
+        self.section_groups_tag_block = section_groups_tag_block
+        self.l1_section_group_index = l1_section_group_index
+        self.l2_section_group_index = l2_section_group_index
+        self.l3_section_group_index = l3_section_group_index
+        self.l4_section_group_index = l4_section_group_index
+        self.l5_section_group_index = l5_section_group_index
+        self.l6_section_group_index = l6_section_group_index
+        self.node_list_checksum = node_list_checksum
+        self.nodes_tag_block = nodes_tag_block
+        self.node_map_tag_block = node_map_tag_block
+        self.marker_groups_tag_block = marker_groups_tag_block
+        self.materials_tag_block = materials_tag_block
+        self.errors_tag_block = errors_tag_block
+        self.dont_draw_over_camera_cosine_angle = dont_draw_over_camera_cosine_angle
+        self.prt_info_tag_block = prt_info_tag_block
+        self.section_render_leaves_tag_block = section_render_leaves_tag_block
 
     class ImportInfo:
         def __init__(self, build=0, version="", import_date="", culprit="", import_time="", files_tag_block=None, files=None):

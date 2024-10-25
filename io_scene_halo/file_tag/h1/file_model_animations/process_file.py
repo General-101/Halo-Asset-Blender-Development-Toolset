@@ -684,24 +684,23 @@ def initilize_animation(ANIMATION):
     ANIMATION.animations = []
 
 def read_animation_body(input_stream, ANIMATION, TAG, node_element):
-    ANIMATION.antr_body = ANIMATION.AntrBody()
-    ANIMATION.antr_body.objects_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(node_element, "objects"))
-    ANIMATION.antr_body.units_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(node_element, "units"))
-    ANIMATION.antr_body.weapons_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(node_element, "weapons"))
-    ANIMATION.antr_body.vehicles_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(node_element, "vehicles"))
-    ANIMATION.antr_body.devices_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(node_element, "devices"))
-    ANIMATION.antr_body.unit_damage_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(node_element, "unit damage"))
-    ANIMATION.antr_body.first_person_weapons_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(node_element, "first person weapons"))
-    ANIMATION.antr_body.sound_references_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(node_element, "sound references"))
-    ANIMATION.antr_body.limp_body_node_radius = TAG.read_float(input_stream, TAG, tag_format.XMLData(node_element, "limp body node radius"))
-    ANIMATION.antr_body.flags = TAG.read_flag_unsigned_short(input_stream, TAG, tag_format.XMLData(node_element, "flags", AnimationTagFlags))
+    ANIMATION.objects_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(node_element, "objects"))
+    ANIMATION.units_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(node_element, "units"))
+    ANIMATION.weapons_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(node_element, "weapons"))
+    ANIMATION.vehicles_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(node_element, "vehicles"))
+    ANIMATION.devices_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(node_element, "devices"))
+    ANIMATION.unit_damage_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(node_element, "unit damage"))
+    ANIMATION.first_person_weapons_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(node_element, "first person weapons"))
+    ANIMATION.sound_references_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(node_element, "sound references"))
+    ANIMATION.limp_body_node_radius = TAG.read_float(input_stream, TAG, tag_format.XMLData(node_element, "limp body node radius"))
+    ANIMATION.flags = TAG.read_flag_unsigned_short(input_stream, TAG, tag_format.XMLData(node_element, "flags", AnimationTagFlags))
     input_stream.read(2) # Padding?
-    ANIMATION.antr_body.nodes_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(node_element, "nodes"))
-    ANIMATION.antr_body.animations_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(node_element, "animations"))
+    ANIMATION.nodes_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(node_element, "nodes"))
+    ANIMATION.animations_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(node_element, "animations"))
 
 def read_objects(input_stream, ANIMATION, TAG, node_element):
-    object_node = tag_format.get_xml_node(XML_OUTPUT, ANIMATION.antr_body.objects_tag_block.count, node_element, "name", "objects")
-    for objects_idx in range(ANIMATION.antr_body.objects_tag_block.count):
+    object_node = tag_format.get_xml_node(XML_OUTPUT, ANIMATION.objects_tag_block.count, node_element, "name", "objects")
+    for objects_idx in range(ANIMATION.objects_tag_block.count):
         object_element_node = None
         if XML_OUTPUT:
             object_element_node = TAG.xml_doc.createElement('element')
@@ -709,7 +708,7 @@ def read_objects(input_stream, ANIMATION, TAG, node_element):
             object_node.appendChild(object_element_node)
 
         object = ANIMATION.Objects()
-        object.animation = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(object_element_node, "animation", None, ANIMATION.antr_body.animations_tag_block.count, "animation_block"))
+        object.animation = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(object_element_node, "animation", None, ANIMATION.animations_tag_block.count, "animation_block"))
         object.function = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(object_element_node, "function", FunctionEnum))
         object.function_controls = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(object_element_node, "function controls", FunctionControlsEnum))
         input_stream.read(14) # Padding?
@@ -717,8 +716,8 @@ def read_objects(input_stream, ANIMATION, TAG, node_element):
         ANIMATION.objects.append(object)
 
 def read_units(input_stream, ANIMATION, TAG, node_element):
-    unit_node = tag_format.get_xml_node(XML_OUTPUT, ANIMATION.antr_body.units_tag_block.count, node_element, "name", "units")
-    for unit_idx in range(ANIMATION.antr_body.units_tag_block.count):
+    unit_node = tag_format.get_xml_node(XML_OUTPUT, ANIMATION.units_tag_block.count, node_element, "name", "units")
+    for unit_idx in range(ANIMATION.units_tag_block.count):
         unit_element_node = None
         if XML_OUTPUT:
             unit_element_node = TAG.xml_doc.createElement('element')
@@ -760,7 +759,7 @@ def read_units(input_stream, ANIMATION, TAG, node_element):
                 unit_animation_element_node.setAttribute('index', str(unit_animation_idx))
                 animation_node.appendChild(unit_animation_element_node)
 
-            unit.animations.append(TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(unit_animation_element_node, "animation", None, ANIMATION.antr_body.animations_tag_block.count, "animation_block")))
+            unit.animations.append(TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(unit_animation_element_node, "animation", None, ANIMATION.animations_tag_block.count, "animation_block")))
 
         for unit_ik_point_idx in range(unit.ik_points_tag_block.count):
             ik_point_element_node = None
@@ -819,7 +818,7 @@ def read_units(input_stream, ANIMATION, TAG, node_element):
                     weapon_animation_element_node.setAttribute('index', str(weapon_animation_idx))
                     animation_node.appendChild(weapon_animation_element_node)
 
-                unit_weapon.animations.append(TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(weapon_animation_element_node, "animation", None, ANIMATION.antr_body.animations_tag_block.count, "animation_block")))
+                unit_weapon.animations.append(TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(weapon_animation_element_node, "animation", None, ANIMATION.animations_tag_block.count, "animation_block")))
 
             for weapon_ik_point_idx in range(unit_weapon.ik_points_tag_block.count):
                 weapon_ik_point_element_node = None
@@ -862,11 +861,11 @@ def read_units(input_stream, ANIMATION, TAG, node_element):
                         weapon_type_animation_element_node.setAttribute('index', str(weapon_type_animation_idx))
                         animation_node.appendChild(weapon_type_animation_element_node)
 
-                    weapon_type.animations.append(TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(weapon_type_animation_element_node, "animation", None, ANIMATION.antr_body.animations_tag_block.count, "animation_block")))
+                    weapon_type.animations.append(TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(weapon_type_animation_element_node, "animation", None, ANIMATION.animations_tag_block.count, "animation_block")))
 
 def read_weapons(input_stream, ANIMATION, TAG, node_element):
-    weapon_node = tag_format.get_xml_node(XML_OUTPUT, ANIMATION.antr_body.weapons_tag_block.count, node_element, "name", "weapons")
-    for weapon_idx in range(ANIMATION.antr_body.weapons_tag_block.count):
+    weapon_node = tag_format.get_xml_node(XML_OUTPUT, ANIMATION.weapons_tag_block.count, node_element, "name", "weapons")
+    for weapon_idx in range(ANIMATION.weapons_tag_block.count):
         weapon_element_node = None
         if XML_OUTPUT:
             weapon_element_node = TAG.xml_doc.createElement('element')
@@ -893,12 +892,12 @@ def read_weapons(input_stream, ANIMATION, TAG, node_element):
                 weapon_animation_element_node.setAttribute('index', str(weapon_animation_idx))
                 animation_node.appendChild(weapon_animation_element_node)
 
-            weapon.animations.append(TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(weapon_animation_element_node, "animation", None, ANIMATION.antr_body.animations_tag_block.count, "animation_block")))
+            weapon.animations.append(TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(weapon_animation_element_node, "animation", None, ANIMATION.animations_tag_block.count, "animation_block")))
 
 def read_vehicles(input_stream, ANIMATION, TAG, node_element):
     ANIMATION.vehicles = []
-    vehicle_node = tag_format.get_xml_node(XML_OUTPUT, ANIMATION.antr_body.vehicles_tag_block.count, node_element, "name", "vehicles")
-    for vehicle_idx in range(ANIMATION.antr_body.vehicles_tag_block.count):
+    vehicle_node = tag_format.get_xml_node(XML_OUTPUT, ANIMATION.vehicles_tag_block.count, node_element, "name", "vehicles")
+    for vehicle_idx in range(ANIMATION.vehicles_tag_block.count):
         vehicle_element_node = None
         if XML_OUTPUT:
             vehicle_element_node = TAG.xml_doc.createElement('element')
@@ -936,7 +935,7 @@ def read_vehicles(input_stream, ANIMATION, TAG, node_element):
                 vehicle_animation_element_node.setAttribute('index', str(vehicle_animation_idx))
                 animation_node.appendChild(vehicle_animation_element_node)
 
-            vehicle.animations.append(TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(vehicle_animation_element_node, "animation", None, ANIMATION.antr_body.animations_tag_block.count, "animation_block")))
+            vehicle.animations.append(TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(vehicle_animation_element_node, "animation", None, ANIMATION.animations_tag_block.count, "animation_block")))
 
         for vehicle_suspension_animation_idx in range(vehicle.suspension_animations_tag_block.count):
             vehicle_suspension_animation_element_node = None
@@ -947,7 +946,7 @@ def read_vehicles(input_stream, ANIMATION, TAG, node_element):
 
             vehicle_suspension = ANIMATION.AnimationSuspension()
             vehicle_suspension.mass_point_index = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(vehicle_suspension_animation_element_node, "mass point index"))
-            vehicle_suspension.animation = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(vehicle_suspension_animation_element_node, "animation", None, ANIMATION.antr_body.animations_tag_block.count, "animation_block"))
+            vehicle_suspension.animation = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(vehicle_suspension_animation_element_node, "animation", None, ANIMATION.animations_tag_block.count, "animation_block"))
             vehicle_suspension.full_extension_ground_depth = TAG.read_float(input_stream, TAG, tag_format.XMLData(vehicle_suspension_animation_element_node, "full extension ground_depth"))
             vehicle_suspension.full_compression_ground_depth = TAG.read_float(input_stream, TAG, tag_format.XMLData(vehicle_suspension_animation_element_node, "full compression ground_depth"))
             input_stream.read(8) # Padding?
@@ -955,8 +954,8 @@ def read_vehicles(input_stream, ANIMATION, TAG, node_element):
             vehicle.suspension_animations.append(vehicle_suspension)
 
 def read_devices(input_stream, ANIMATION, TAG, node_element):
-    device_node = tag_format.get_xml_node(XML_OUTPUT, ANIMATION.antr_body.devices_tag_block.count, node_element, "name", "devices")
-    for devices_idx in range(ANIMATION.antr_body.devices_tag_block.count):
+    device_node = tag_format.get_xml_node(XML_OUTPUT, ANIMATION.devices_tag_block.count, node_element, "name", "devices")
+    for devices_idx in range(ANIMATION.devices_tag_block.count):
         device_element_node = None
         if XML_OUTPUT:
             device_element_node = TAG.xml_doc.createElement('element')
@@ -983,22 +982,22 @@ def read_devices(input_stream, ANIMATION, TAG, node_element):
                 device_animation_element_node.setAttribute('index', str(device_animation_idx))
                 animation_node.appendChild(device_animation_element_node)
 
-            device.animations.append(TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(device_animation_element_node, "animation", None, ANIMATION.antr_body.animations_tag_block.count, "animation_block")))
+            device.animations.append(TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(device_animation_element_node, "animation", None, ANIMATION.animations_tag_block.count, "animation_block")))
 
 def read_unit_damage(input_stream, ANIMATION, TAG, node_element):
-    unit_damage_node = tag_format.get_xml_node(XML_OUTPUT, ANIMATION.antr_body.unit_damage_tag_block.count, node_element, "name", "unit damage")
-    for unit_damage_idx in range(ANIMATION.antr_body.unit_damage_tag_block.count):
+    unit_damage_node = tag_format.get_xml_node(XML_OUTPUT, ANIMATION.unit_damage_tag_block.count, node_element, "name", "unit damage")
+    for unit_damage_idx in range(ANIMATION.unit_damage_tag_block.count):
         unit_damage_element_node = None
         if XML_OUTPUT:
             unit_damage_element_node = TAG.xml_doc.createElement('element')
             unit_damage_element_node.setAttribute('index', str(unit_damage_idx))
             unit_damage_node.appendChild(unit_damage_element_node)
 
-        ANIMATION.unit_damages.append(TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(unit_damage_element_node, "animation", None, ANIMATION.antr_body.animations_tag_block.count, "animation_block")))
+        ANIMATION.unit_damages.append(TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(unit_damage_element_node, "animation", None, ANIMATION.animations_tag_block.count, "animation_block")))
 
 def read_first_person_weapon(input_stream, ANIMATION, TAG, node_element):
-    first_person_weapon_node = tag_format.get_xml_node(XML_OUTPUT, ANIMATION.antr_body.first_person_weapons_tag_block.count, node_element, "name", "first person weapons")
-    for first_person_weapon_idx in range(ANIMATION.antr_body.first_person_weapons_tag_block.count):
+    first_person_weapon_node = tag_format.get_xml_node(XML_OUTPUT, ANIMATION.first_person_weapons_tag_block.count, node_element, "name", "first person weapons")
+    for first_person_weapon_idx in range(ANIMATION.first_person_weapons_tag_block.count):
         first_person_weapon_element_node = None
         if XML_OUTPUT:
             first_person_weapon_element_node = TAG.xml_doc.createElement('element')
@@ -1025,11 +1024,11 @@ def read_first_person_weapon(input_stream, ANIMATION, TAG, node_element):
                 first_person_weapon_animation_element_node.setAttribute('index', str(first_person_weapon_animation_idx))
                 animation_node.appendChild(first_person_weapon_animation_element_node)
 
-            first_person_weapon.animations.append(TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(first_person_weapon_animation_element_node, "animation", None, ANIMATION.antr_body.animations_tag_block.count, "animation_block")))
+            first_person_weapon.animations.append(TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(first_person_weapon_animation_element_node, "animation", None, ANIMATION.animations_tag_block.count, "animation_block")))
 
 def read_sound_reference(input_stream, ANIMATION, TAG, node_element):
-    sound_reference_node = tag_format.get_xml_node(XML_OUTPUT, ANIMATION.antr_body.sound_references_tag_block.count, node_element, "name", "sound references")
-    for sound_reference_idx in range(ANIMATION.antr_body.sound_references_tag_block.count):
+    sound_reference_node = tag_format.get_xml_node(XML_OUTPUT, ANIMATION.sound_references_tag_block.count, node_element, "name", "sound references")
+    for sound_reference_idx in range(ANIMATION.sound_references_tag_block.count):
         sound_reference_element_node = None
         if XML_OUTPUT:
             sound_reference_element_node = TAG.xml_doc.createElement('element')
@@ -1051,8 +1050,8 @@ def read_sound_reference(input_stream, ANIMATION, TAG, node_element):
             sound_reference.create_xml_node(tag_format.XMLData(sound_reference_element_node, "sound"))
 
 def read_nodes(input_stream, ANIMATION, TAG, node_element):
-    bone_node = tag_format.get_xml_node(XML_OUTPUT, ANIMATION.antr_body.nodes_tag_block.count, node_element, "name", "nodes")
-    for node_idx in range(ANIMATION.antr_body.nodes_tag_block.count):
+    bone_node = tag_format.get_xml_node(XML_OUTPUT, ANIMATION.nodes_tag_block.count, node_element, "name", "nodes")
+    for node_idx in range(ANIMATION.nodes_tag_block.count):
         node_element_node = None
         if XML_OUTPUT:
             node_element_node = TAG.xml_doc.createElement('element')
@@ -1061,9 +1060,9 @@ def read_nodes(input_stream, ANIMATION, TAG, node_element):
 
         node = ANIMATION.Nodes()
         node.name = TAG.read_string32(input_stream, TAG, tag_format.XMLData(node_element_node, "name"))
-        node.sibling = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(node_element_node, "next sibling node index", None, ANIMATION.antr_body.nodes_tag_block.count, "animation_graph_node_block"))
-        node.child = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(node_element_node, "first child node index", None, ANIMATION.antr_body.nodes_tag_block.count, "animation_graph_node_block"))
-        node.parent = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(node_element_node, "parent node index", None, ANIMATION.antr_body.nodes_tag_block.count, "animation_graph_node_block"))
+        node.sibling = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(node_element_node, "next sibling node index", None, ANIMATION.nodes_tag_block.count, "animation_graph_node_block"))
+        node.child = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(node_element_node, "first child node index", None, ANIMATION.nodes_tag_block.count, "animation_graph_node_block"))
+        node.parent = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(node_element_node, "parent node index", None, ANIMATION.nodes_tag_block.count, "animation_graph_node_block"))
         input_stream.read(2) # Padding?
         node.flags = TAG.read_flag_unsigned_integer(input_stream, TAG, tag_format.XMLData(node_element_node, "node joint flags", NodeJointFlags))
         node.base_vector = TAG.read_vector(input_stream, TAG, tag_format.XMLData(node_element_node, "base vector"))
@@ -1073,8 +1072,8 @@ def read_nodes(input_stream, ANIMATION, TAG, node_element):
         ANIMATION.nodes.append(node)
 
 def read_animations(input_stream, ANIMATION, TAG, node_element):
-    animation_node = tag_format.get_xml_node(XML_OUTPUT, ANIMATION.antr_body.animations_tag_block.count, node_element, "name", "animations")
-    for animation_idx in range(ANIMATION.antr_body.animations_tag_block.count):
+    animation_node = tag_format.get_xml_node(XML_OUTPUT, ANIMATION.animations_tag_block.count, node_element, "name", "animations")
+    for animation_idx in range(ANIMATION.animations_tag_block.count):
         animation_element_node = None
         if XML_OUTPUT:
             animation_element_node = TAG.xml_doc.createElement('element')
@@ -1093,9 +1092,9 @@ def read_animations(input_stream, ANIMATION, TAG, node_element):
         animation.weight = TAG.read_float(input_stream, TAG, tag_format.XMLData(animation_element_node, "weight"))
         animation.key_frame_index = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(animation_element_node, "key frame index"))
         animation.second_key_frame_index = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(animation_element_node, "second key frame index"))
-        animation.next_animation = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(animation_element_node, "next animation", None, ANIMATION.antr_body.animations_tag_block.count, "animation_block"))
+        animation.next_animation = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(animation_element_node, "next animation", None, ANIMATION.animations_tag_block.count, "animation_block"))
         animation.flags = TAG.read_flag_unsigned_short(input_stream, TAG, tag_format.XMLData(animation_element_node, "flags", AnimationFlags))
-        animation.sound = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(animation_element_node, "sound", None, ANIMATION.antr_body.sound_references_tag_block.count, "animation_graph_sound_reference_block"))
+        animation.sound = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(animation_element_node, "sound", None, ANIMATION.sound_references_tag_block.count, "animation_graph_sound_reference_block"))
         animation.sound_frame_index = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(animation_element_node, "sound frame index"))
         animation.left_foot_frame_index = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(animation_element_node, "left foot frame index"))
         animation.right_foot_frame_index = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(animation_element_node, "right foot frame index"))
@@ -1191,7 +1190,7 @@ def get_animation_data(input_stream, ANIMATION, TAG, node_element, transforms):
             apply_root_node_info_to_states(animation_element)
 
 def process_xml_data(ANIMATION, node_element):
-    unit_node = tag_format.get_xml_node(XML_OUTPUT, ANIMATION.antr_body.units_tag_block.count, node_element, "name", "units")
+    unit_node = tag_format.get_xml_node(XML_OUTPUT, ANIMATION.units_tag_block.count, node_element, "name", "units")
     for unit_idx, unit in enumerate(ANIMATION.units):
         unit_element_node = None
         if XML_OUTPUT:

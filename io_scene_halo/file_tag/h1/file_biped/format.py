@@ -201,154 +201,153 @@ class BipedFunctionEnum(Enum):
     flying_velocity = auto()
 
 class BipedAsset():
-    def __init__(self):
-        self.header = None
-        self.biped_body = None
-        self.attachments = None
-        self.widgets = None
-        self.functions = None
-        self.change_colors = None
-        self.predicted_resources = None
-        self.camera_tracks = None
-        self.new_hud_interface = None
-        self.dialogue_variants = None
-        self.powered_seats = None
-        self.weapons = None
-        self.seats = None
-        self.contact_points = None
-
-    class BipedBody:
-        def __init__(self, object_flags=0, bounding_radius=0.0, bounding_offset=Vector(), origin_offset=Vector(), acceleration_scale=0.0, model=None, animation_graph=None,
-                     collision_model=None, physics=None, modifier_shader=None, creation_effect=None, render_bounding_radius=0.0, object_a_in=0, object_b_in=0, object_c_in=0,
-                     object_d_in=0, hud_text_message_index=0, forced_shader_permutation_index=0, attachments_tag_block=None, widgets_tag_block=None, functions_tag_block=None,
-                     change_colors_tag_block=None, predicted_resources_tag_block=None, unit_flags=0, default_team=0, constant_sound_volume=0, rider_damage_fraction=0.0,
-                     integrated_light_toggle=None, unit_a_in=0, unit_b_in=0, unit_c_in=0, unit_d_in=0, camera_field_of_view=0.0, camera_stiffness=0.0, camera_marker_name="",
-                     camera_submerged_marker_name="", pitch_auto_level=0.0, pitch_range=(0.0, 0.0), camera_tracks_tag_block=None, seat_acceleration_scale=Vector(),
-                     soft_ping_threshold=0.0, soft_ping_interrupt_time=0.0, hard_ping_threshold=0.0, hard_ping_interrupt_time=0.0, hard_death_threshold=0.0, feign_death_threshold=0.0,
-                     feign_death_time=0.0, distance_of_evade_anim=0.0, distance_of_dive_anim=0.0, stunned_movement_threshold=0.0, feign_death_chance=0.0, feign_repeat_chance=0.0,
-                     spawned_actor=None, spawned_actor_count=(0, 0), spawned_velocity=0.0, aiming_velocity_maximum=0.0, aiming_acceleration_maximum=0.0, casual_aiming_modifier=0.0,
-                     looking_velocity_maximum=0.0, looking_acceleration_maximum=0.0, ai_vehicle_radius=0.0, ai_danger_radius=0.0, melee_damage=None, motion_sensor_blip_size=0,
-                     metagame_type=0, metagame_class=0, new_hud_interfaces_tag_block=None, dialogue_variants_tag_block=None, grenade_velocity=0.0, grenade_type=0, grenade_count=0,
-                     powered_seats_tag_block=None, weapons_tag_block=None, seats_tag_block=None, moving_turning_speed=0.0, biped_flags=0, stationary_turning_threshold=0.0,
-                     biped_a_in=0, biped_b_in=0, biped_c_in=0, biped_d_in=0, dont_use=None, bank_angle=0.0, bank_apply_time=0.0, bank_decay_time=0.0, pitch_ratio=0.0, max_velocity=0.0,
-                     max_sidestep_velocity=0.0, acceleration=0.0, deceleration=0.0, angular_velocity_maximum=0.0, angular_acceleration_maximum=0.0, crouch_velocity_modifier=0.0,
-                     maximum_slope_angle=0.0, downhill_falloff_angle=0.0, downhill_cuttoff_angle=0.0, downhill_velocity_scale=0.0, uphill_falloff_angle=0.0, uphill_cuttoff_angle=0.0,
-                     uphill_velocity_scale=0.0, footsteps=None, jump_velocity=0.0, maximum_soft_landing_time=0.0, maximum_hard_landing_time=0.0, minimum_soft_landing_velocity=0.0,
-                     minimum_hard_landing_velocity=0.0, maximum_hard_landing_velocity=0.0, death_hard_landing_velocity=0.0, standing_camera_height=0.0, crouching_camera_height=0.0,
-                     crouch_transition_time=0.0, standing_collision_height=0.0, crouching_collision_height=0.0, collision_radius=0.0, autoaim_width=0.0, contact_points_tag_block=None):
-            self.object_flags = object_flags
-            self.bounding_radius = bounding_radius
-            self.bounding_offset = bounding_offset
-            self.origin_offset = origin_offset
-            self.acceleration_scale = acceleration_scale
-            self.model = model
-            self.animation_graph = animation_graph
-            self.collision_model = collision_model
-            self.physics = physics
-            self.modifier_shader = modifier_shader
-            self.creation_effect = creation_effect
-            self.render_bounding_radius = render_bounding_radius
-            self.object_a_in = object_a_in
-            self.object_b_in = object_b_in
-            self.object_c_in = object_c_in
-            self.object_d_in = object_d_in
-            self.hud_text_message_index = hud_text_message_index
-            self.forced_shader_permutation_index = forced_shader_permutation_index
-            self.attachments_tag_block = attachments_tag_block
-            self.widgets_tag_block = widgets_tag_block
-            self.functions_tag_block = functions_tag_block
-            self.change_colors_tag_block = change_colors_tag_block
-            self.predicted_resources_tag_block = predicted_resources_tag_block
-            self.unit_flags = unit_flags
-            self.default_team = default_team
-            self.constant_sound_volume = constant_sound_volume
-            self.rider_damage_fraction = rider_damage_fraction
-            self.integrated_light_toggle = integrated_light_toggle
-            self.unit_a_in = unit_a_in
-            self.unit_b_in = unit_b_in
-            self.unit_c_in = unit_c_in
-            self.unit_d_in = unit_d_in
-            self.camera_field_of_view = camera_field_of_view
-            self.camera_stiffness = camera_stiffness
-            self.camera_marker_name = camera_marker_name
-            self.camera_submerged_marker_name = camera_submerged_marker_name
-            self.pitch_auto_level = pitch_auto_level
-            self.pitch_range = pitch_range
-            self.camera_tracks_tag_block = camera_tracks_tag_block
-            self.seat_acceleration_scale = seat_acceleration_scale
-            self.soft_ping_threshold = soft_ping_threshold
-            self.soft_ping_interrupt_time = soft_ping_interrupt_time
-            self.hard_ping_threshold = hard_ping_threshold
-            self.hard_ping_interrupt_time = hard_ping_interrupt_time
-            self.hard_death_threshold = hard_death_threshold
-            self.feign_death_threshold = feign_death_threshold
-            self.feign_death_time = feign_death_time
-            self.distance_of_evade_anim = distance_of_evade_anim
-            self.distance_of_dive_anim = distance_of_dive_anim
-            self.stunned_movement_threshold = stunned_movement_threshold
-            self.feign_death_chance = feign_death_chance
-            self.feign_repeat_chance = feign_repeat_chance
-            self.spawned_actor = spawned_actor
-            self.spawned_actor_count = spawned_actor_count
-            self.spawned_velocity = spawned_velocity
-            self.aiming_velocity_maximum = aiming_velocity_maximum
-            self.aiming_acceleration_maximum = aiming_acceleration_maximum
-            self.casual_aiming_modifier = casual_aiming_modifier
-            self.looking_velocity_maximum = looking_velocity_maximum
-            self.looking_acceleration_maximum = looking_acceleration_maximum
-            self.ai_vehicle_radius = ai_vehicle_radius
-            self.ai_danger_radius = ai_danger_radius
-            self.melee_damage = melee_damage
-            self.motion_sensor_blip_size = motion_sensor_blip_size
-            self.metagame_type = metagame_type
-            self.metagame_class = metagame_class
-            self.new_hud_interfaces_tag_block = new_hud_interfaces_tag_block
-            self.dialogue_variants_tag_block = dialogue_variants_tag_block
-            self.grenade_velocity = grenade_velocity
-            self.grenade_type = grenade_type
-            self.grenade_count = grenade_count
-            self.powered_seats_tag_block = powered_seats_tag_block
-            self.weapons_tag_block = weapons_tag_block
-            self.seats_tag_block = seats_tag_block
-            self.moving_turning_speed = moving_turning_speed
-            self.biped_flags = biped_flags
-            self.stationary_turning_threshold = stationary_turning_threshold
-            self.biped_a_in = biped_a_in
-            self.biped_b_in = biped_b_in
-            self.biped_c_in = biped_c_in
-            self.biped_d_in = biped_d_in
-            self.dont_use = dont_use
-            self.bank_angle = bank_angle
-            self.bank_apply_time = bank_apply_time
-            self.bank_decay_time = bank_decay_time
-            self.pitch_ratio = pitch_ratio
-            self.max_velocity = max_velocity
-            self.max_sidestep_velocity = max_sidestep_velocity
-            self.acceleration = acceleration
-            self.deceleration = deceleration
-            self.angular_velocity_maximum = angular_velocity_maximum
-            self.angular_acceleration_maximum = angular_acceleration_maximum
-            self.crouch_velocity_modifier = crouch_velocity_modifier
-            self.maximum_slope_angle = maximum_slope_angle
-            self.downhill_falloff_angle = downhill_falloff_angle
-            self.downhill_cuttoff_angle = downhill_cuttoff_angle
-            self.downhill_velocity_scale = downhill_velocity_scale
-            self.uphill_falloff_angle = uphill_falloff_angle
-            self.uphill_cuttoff_angle = uphill_cuttoff_angle
-            self.uphill_velocity_scale = uphill_velocity_scale
-            self.footsteps = footsteps
-            self.jump_velocity = jump_velocity
-            self.maximum_soft_landing_time = maximum_soft_landing_time
-            self.maximum_hard_landing_time = maximum_hard_landing_time
-            self.minimum_soft_landing_velocity = minimum_soft_landing_velocity
-            self.minimum_hard_landing_velocity = minimum_hard_landing_velocity
-            self.maximum_hard_landing_velocity = maximum_hard_landing_velocity
-            self.death_hard_landing_velocity = death_hard_landing_velocity
-            self.standing_camera_height = standing_camera_height
-            self.crouching_camera_height = crouching_camera_height
-            self.crouch_transition_time = crouch_transition_time
-            self.standing_collision_height = standing_collision_height
-            self.crouching_collision_height = crouching_collision_height
-            self.collision_radius = collision_radius
-            self.autoaim_width = autoaim_width
-            self.contact_points_tag_block = contact_points_tag_block
+    def __init__(self, header=None, attachments=None, widgets=None, functions=None, change_colors=None, predicted_resources=None, camera_tracks=None, new_hud_interface=None, 
+                 dialogue_variants=None, powered_seats=None, weapons=None, seats=None, contact_points=None, object_flags=0, bounding_radius=0.0, bounding_offset=Vector(), 
+                 origin_offset=Vector(), acceleration_scale=0.0, model=None, animation_graph=None, collision_model=None, physics=None, modifier_shader=None, 
+                 creation_effect=None, render_bounding_radius=0.0, object_a_in=0, object_b_in=0, object_c_in=0, object_d_in=0, hud_text_message_index=0, 
+                 forced_shader_permutation_index=0, attachments_tag_block=None, widgets_tag_block=None, functions_tag_block=None, change_colors_tag_block=None, 
+                 predicted_resources_tag_block=None, unit_flags=0, default_team=0, constant_sound_volume=0, rider_damage_fraction=0.0, integrated_light_toggle=None, 
+                 unit_a_in=0, unit_b_in=0, unit_c_in=0, unit_d_in=0, camera_field_of_view=0.0, camera_stiffness=0.0, camera_marker_name="", camera_submerged_marker_name="", 
+                 pitch_auto_level=0.0, pitch_range=(0.0, 0.0), camera_tracks_tag_block=None, seat_acceleration_scale=Vector(), soft_ping_threshold=0.0, 
+                 soft_ping_interrupt_time=0.0, hard_ping_threshold=0.0, hard_ping_interrupt_time=0.0, hard_death_threshold=0.0, feign_death_threshold=0.0, 
+                 feign_death_time=0.0, distance_of_evade_anim=0.0, distance_of_dive_anim=0.0, stunned_movement_threshold=0.0, feign_death_chance=0.0, 
+                 feign_repeat_chance=0.0, spawned_actor=None, spawned_actor_count=(0, 0), spawned_velocity=0.0, aiming_velocity_maximum=0.0, aiming_acceleration_maximum=0.0, 
+                 casual_aiming_modifier=0.0, looking_velocity_maximum=0.0, looking_acceleration_maximum=0.0, ai_vehicle_radius=0.0, ai_danger_radius=0.0, melee_damage=None, 
+                 motion_sensor_blip_size=0, metagame_type=0, metagame_class=0, new_hud_interfaces_tag_block=None, dialogue_variants_tag_block=None, grenade_velocity=0.0, 
+                 grenade_type=0, grenade_count=0, powered_seats_tag_block=None, weapons_tag_block=None, seats_tag_block=None, moving_turning_speed=0.0, biped_flags=0, 
+                 stationary_turning_threshold=0.0, biped_a_in=0, biped_b_in=0, biped_c_in=0, biped_d_in=0, dont_use=None, bank_angle=0.0, bank_apply_time=0.0, 
+                 bank_decay_time=0.0, pitch_ratio=0.0, max_velocity=0.0, max_sidestep_velocity=0.0, acceleration=0.0, deceleration=0.0, angular_velocity_maximum=0.0, 
+                 angular_acceleration_maximum=0.0, crouch_velocity_modifier=0.0, maximum_slope_angle=0.0, downhill_falloff_angle=0.0, downhill_cuttoff_angle=0.0, 
+                 downhill_velocity_scale=0.0, uphill_falloff_angle=0.0, uphill_cuttoff_angle=0.0, uphill_velocity_scale=0.0, footsteps=None, jump_velocity=0.0, 
+                 maximum_soft_landing_time=0.0, maximum_hard_landing_time=0.0, minimum_soft_landing_velocity=0.0, minimum_hard_landing_velocity=0.0, 
+                 maximum_hard_landing_velocity=0.0, death_hard_landing_velocity=0.0, standing_camera_height=0.0, crouching_camera_height=0.0, crouch_transition_time=0.0, 
+                 standing_collision_height=0.0, crouching_collision_height=0.0, collision_radius=0.0, autoaim_width=0.0, contact_points_tag_block=None):
+        self.header = header
+        self.attachments = attachments
+        self.widgets = widgets
+        self.functions = functions
+        self.change_colors = change_colors
+        self.predicted_resources = predicted_resources
+        self.camera_tracks = camera_tracks
+        self.new_hud_interface = new_hud_interface
+        self.dialogue_variants = dialogue_variants
+        self.powered_seats = powered_seats
+        self.weapons = weapons
+        self.seats = seats
+        self.contact_points = contact_points
+        self.object_flags = object_flags
+        self.bounding_radius = bounding_radius
+        self.bounding_offset = bounding_offset
+        self.origin_offset = origin_offset
+        self.acceleration_scale = acceleration_scale
+        self.model = model
+        self.animation_graph = animation_graph
+        self.collision_model = collision_model
+        self.physics = physics
+        self.modifier_shader = modifier_shader
+        self.creation_effect = creation_effect
+        self.render_bounding_radius = render_bounding_radius
+        self.object_a_in = object_a_in
+        self.object_b_in = object_b_in
+        self.object_c_in = object_c_in
+        self.object_d_in = object_d_in
+        self.hud_text_message_index = hud_text_message_index
+        self.forced_shader_permutation_index = forced_shader_permutation_index
+        self.attachments_tag_block = attachments_tag_block
+        self.widgets_tag_block = widgets_tag_block
+        self.functions_tag_block = functions_tag_block
+        self.change_colors_tag_block = change_colors_tag_block
+        self.predicted_resources_tag_block = predicted_resources_tag_block
+        self.unit_flags = unit_flags
+        self.default_team = default_team
+        self.constant_sound_volume = constant_sound_volume
+        self.rider_damage_fraction = rider_damage_fraction
+        self.integrated_light_toggle = integrated_light_toggle
+        self.unit_a_in = unit_a_in
+        self.unit_b_in = unit_b_in
+        self.unit_c_in = unit_c_in
+        self.unit_d_in = unit_d_in
+        self.camera_field_of_view = camera_field_of_view
+        self.camera_stiffness = camera_stiffness
+        self.camera_marker_name = camera_marker_name
+        self.camera_submerged_marker_name = camera_submerged_marker_name
+        self.pitch_auto_level = pitch_auto_level
+        self.pitch_range = pitch_range
+        self.camera_tracks_tag_block = camera_tracks_tag_block
+        self.seat_acceleration_scale = seat_acceleration_scale
+        self.soft_ping_threshold = soft_ping_threshold
+        self.soft_ping_interrupt_time = soft_ping_interrupt_time
+        self.hard_ping_threshold = hard_ping_threshold
+        self.hard_ping_interrupt_time = hard_ping_interrupt_time
+        self.hard_death_threshold = hard_death_threshold
+        self.feign_death_threshold = feign_death_threshold
+        self.feign_death_time = feign_death_time
+        self.distance_of_evade_anim = distance_of_evade_anim
+        self.distance_of_dive_anim = distance_of_dive_anim
+        self.stunned_movement_threshold = stunned_movement_threshold
+        self.feign_death_chance = feign_death_chance
+        self.feign_repeat_chance = feign_repeat_chance
+        self.spawned_actor = spawned_actor
+        self.spawned_actor_count = spawned_actor_count
+        self.spawned_velocity = spawned_velocity
+        self.aiming_velocity_maximum = aiming_velocity_maximum
+        self.aiming_acceleration_maximum = aiming_acceleration_maximum
+        self.casual_aiming_modifier = casual_aiming_modifier
+        self.looking_velocity_maximum = looking_velocity_maximum
+        self.looking_acceleration_maximum = looking_acceleration_maximum
+        self.ai_vehicle_radius = ai_vehicle_radius
+        self.ai_danger_radius = ai_danger_radius
+        self.melee_damage = melee_damage
+        self.motion_sensor_blip_size = motion_sensor_blip_size
+        self.metagame_type = metagame_type
+        self.metagame_class = metagame_class
+        self.new_hud_interfaces_tag_block = new_hud_interfaces_tag_block
+        self.dialogue_variants_tag_block = dialogue_variants_tag_block
+        self.grenade_velocity = grenade_velocity
+        self.grenade_type = grenade_type
+        self.grenade_count = grenade_count
+        self.powered_seats_tag_block = powered_seats_tag_block
+        self.weapons_tag_block = weapons_tag_block
+        self.seats_tag_block = seats_tag_block
+        self.moving_turning_speed = moving_turning_speed
+        self.biped_flags = biped_flags
+        self.stationary_turning_threshold = stationary_turning_threshold
+        self.biped_a_in = biped_a_in
+        self.biped_b_in = biped_b_in
+        self.biped_c_in = biped_c_in
+        self.biped_d_in = biped_d_in
+        self.dont_use = dont_use
+        self.bank_angle = bank_angle
+        self.bank_apply_time = bank_apply_time
+        self.bank_decay_time = bank_decay_time
+        self.pitch_ratio = pitch_ratio
+        self.max_velocity = max_velocity
+        self.max_sidestep_velocity = max_sidestep_velocity
+        self.acceleration = acceleration
+        self.deceleration = deceleration
+        self.angular_velocity_maximum = angular_velocity_maximum
+        self.angular_acceleration_maximum = angular_acceleration_maximum
+        self.crouch_velocity_modifier = crouch_velocity_modifier
+        self.maximum_slope_angle = maximum_slope_angle
+        self.downhill_falloff_angle = downhill_falloff_angle
+        self.downhill_cuttoff_angle = downhill_cuttoff_angle
+        self.downhill_velocity_scale = downhill_velocity_scale
+        self.uphill_falloff_angle = uphill_falloff_angle
+        self.uphill_cuttoff_angle = uphill_cuttoff_angle
+        self.uphill_velocity_scale = uphill_velocity_scale
+        self.footsteps = footsteps
+        self.jump_velocity = jump_velocity
+        self.maximum_soft_landing_time = maximum_soft_landing_time
+        self.maximum_hard_landing_time = maximum_hard_landing_time
+        self.minimum_soft_landing_velocity = minimum_soft_landing_velocity
+        self.minimum_hard_landing_velocity = minimum_hard_landing_velocity
+        self.maximum_hard_landing_velocity = maximum_hard_landing_velocity
+        self.death_hard_landing_velocity = death_hard_landing_velocity
+        self.standing_camera_height = standing_camera_height
+        self.crouching_camera_height = crouching_camera_height
+        self.crouch_transition_time = crouch_transition_time
+        self.standing_collision_height = standing_collision_height
+        self.crouching_collision_height = crouching_collision_height
+        self.collision_radius = collision_radius
+        self.autoaim_width = autoaim_width
+        self.contact_points_tag_block = contact_points_tag_block

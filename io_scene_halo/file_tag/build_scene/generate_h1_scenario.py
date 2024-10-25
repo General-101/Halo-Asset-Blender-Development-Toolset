@@ -207,19 +207,19 @@ def generate_object_elements(level_root, collection_name, palette, tag_block, co
         ASSET = parse_tag(palette_element, report, "halo1", "retail")
         if not ASSET == None:
             if collection_name == "Scenery":
-                MODEL = parse_tag(ASSET.scenery_body.model, report, "halo1", "retail")
+                MODEL = parse_tag(ASSET.model, report, "halo1", "retail")
                 if not MODEL == None:
                     ob = get_object(asset_collection, MODEL, game_version, object_name, random_color_gen, report)
             elif collection_name == "Biped":
-                MODEL = parse_tag(ASSET.biped_body.model, report, "halo1", "retail")
+                MODEL = parse_tag(ASSET.model, report, "halo1", "retail")
                 if not MODEL == None:
                     ob = get_object(asset_collection, MODEL, game_version, object_name, random_color_gen, report)
             elif collection_name == "Vehicle":
-                MODEL = parse_tag(ASSET.vehicle_body.model, report, "halo1", "retail")
+                MODEL = parse_tag(ASSET.model, report, "halo1", "retail")
                 if not MODEL == None:
                     ob = get_object(asset_collection, MODEL, game_version, object_name, random_color_gen, report)
             elif collection_name == "Equipment":
-                MODEL = parse_tag(ASSET.equipment_body.model, report, "halo1", "retail")
+                MODEL = parse_tag(ASSET.model, report, "halo1", "retail")
                 if not MODEL == None:
                     ob = get_object(asset_collection, MODEL, game_version, object_name, random_color_gen, report)
             elif collection_name == "Weapons":
@@ -227,19 +227,19 @@ def generate_object_elements(level_root, collection_name, palette, tag_block, co
                 if not MODEL == None:
                     ob = get_object(asset_collection, MODEL, game_version, object_name, random_color_gen, report)
             elif collection_name == "Machines":
-                MODEL = parse_tag(ASSET.machine_body.model, report, "halo1", "retail")
+                MODEL = parse_tag(ASSET.model, report, "halo1", "retail")
                 if not MODEL == None:
                     ob = get_object(asset_collection, MODEL, game_version, object_name, random_color_gen, report)
             elif collection_name == "Controls":
-                MODEL = parse_tag(ASSET.control_body.model, report, "halo1", "retail")
+                MODEL = parse_tag(ASSET.model, report, "halo1", "retail")
                 if not MODEL == None:
                     ob = get_object(asset_collection, MODEL, game_version, object_name, random_color_gen, report)
             elif collection_name == "Light Fixtures":
-                MODEL = parse_tag(ASSET.light_fixture.model, report, "halo1", "retail")
+                MODEL = parse_tag(ASSET.model, report, "halo1", "retail")
                 if not MODEL == None:
                     ob = get_object(asset_collection, MODEL, game_version, object_name, random_color_gen, report)
             elif collection_name == "Sound Scenery":
-                MODEL = parse_tag(ASSET.sound_scenery_body.model, report, "halo1", "retail")
+                MODEL = parse_tag(ASSET.model, report, "halo1", "retail")
                 if not MODEL == None:
                     ob = get_object(asset_collection, MODEL, game_version, object_name, random_color_gen, report)
 
@@ -300,7 +300,7 @@ def generate_netgame_equipment_elements(level_root, tag_block, context, game_ver
                 item_perutation_element = ASSET.item_permutations[0]
                 ITEM = parse_tag(item_perutation_element.item, report, "halo1", "retail")
                 if item_perutation_element.item.tag_group == "eqip":
-                    MODEL = parse_tag(ITEM.equipment_body.model, report, "halo1", "retail")
+                    MODEL = parse_tag(ITEM.model, report, "halo1", "retail")
                     if not MODEL == None:
                         ob = get_object(asset_collection, MODEL, game_version, object_name, random_color_gen, report)
                 elif item_perutation_element.item.tag_group == "weap":

@@ -94,14 +94,14 @@ def generate_image_node(mat, texture, BITMAP=None, bitmap_name="White", is_env=F
     else:
         image_node = mat.node_tree.nodes.new("ShaderNodeTexImage")
 
-    if BITMAP and Image and BITMAP.bitmap_body.compressed_color_plate_data.size > 0:
+    if BITMAP and Image and BITMAP.compressed_color_plate_data.size > 0:
         image = bpy.data.images.get(bitmap_name)
         if not image:
-            x = BITMAP.bitmap_body.color_plate_width
-            y = BITMAP.bitmap_body.color_plate_height
+            x = BITMAP.color_plate_width
+            y = BITMAP.color_plate_height
 
             image = bpy.data.images.new(bitmap_name, x, y, alpha = True)
-            decompressed_data = zlib.decompress(BITMAP.bitmap_body.compressed_color_plate)
+            decompressed_data = zlib.decompress(BITMAP.compressed_color_plate)
             pil_image = Image.frombytes("RGBA", (x, y), decompressed_data, 'raw', "BGRA").transpose(method=Image.Transpose.FLIP_TOP_BOTTOM)
             pixels = list(pil_image.getdata())
             background_color = pixels[0][:3]
@@ -632,11 +632,11 @@ def generate_detail_logic_node(tree, shader):
         output_node.location = Vector((0, 0))
 
         detail_before_function_node = None
-        if shader.shader_body.detail_function == DetailFumctionEnum.double_biased_multiply.value:
+        if shader.detail_function == DetailFumctionEnum.double_biased_multiply.value:
             detail_before_function_node = generate_biased_multiply_node(detail_logic_group)
-        elif shader.shader_body.detail_function == DetailFumctionEnum.multiply.value:
+        elif shader.detail_function == DetailFumctionEnum.multiply.value:
             detail_before_function_node = generate_multiply_node(detail_logic_group)
-        elif shader.shader_body.detail_function == DetailFumctionEnum.double_biased_add.value:
+        elif shader.detail_function == DetailFumctionEnum.double_biased_add.value:
             detail_before_function_node = generate_biased_add_node(detail_logic_group)
 
         detail_before_function_node.location = Vector((-1250.0, -400.0))
@@ -686,11 +686,11 @@ def generate_detail_logic_node(tree, shader):
         connect_inputs(detail_logic_group, detail_seperate_before_node, "Blue", detail_multiply_node_before_2, 1)
 
         detail_after_function_node = None
-        if shader.shader_body.detail_function == DetailFumctionEnum.double_biased_multiply.value:
+        if shader.detail_function == DetailFumctionEnum.double_biased_multiply.value:
             detail_after_function_node = generate_biased_multiply_node(detail_logic_group)
-        elif shader.shader_body.detail_function == DetailFumctionEnum.multiply.value:
+        elif shader.detail_function == DetailFumctionEnum.multiply.value:
             detail_after_function_node = generate_multiply_node(detail_logic_group)
-        elif shader.shader_body.detail_function == DetailFumctionEnum.double_biased_add.value:
+        elif shader.detail_function == DetailFumctionEnum.double_biased_add.value:
             detail_after_function_node = generate_biased_add_node(detail_logic_group)
 
         detail_after_function_node.location = Vector((-1025, 225))

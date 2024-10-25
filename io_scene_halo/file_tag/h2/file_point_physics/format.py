@@ -25,16 +25,12 @@
 # ##### END MIT LICENSE BLOCK #####
 
 class PointPhysicsAsset():
-    def __init__(self):
-        self.header = None
-        self.point_physics_body_header = None
-        self.point_physics_body = None
-
-    class PointPhysicsBody:
-        def __init__(self, flags=0, density=0.0, air_friction=0.0, water_friction=0.0, surface_friction=0.0, elasticity=0.0):
-            self.flags = flags
-            self.density = density
-            self.air_friction = air_friction
-            self.water_friction = water_friction
-            self.surface_friction = surface_friction
-            self.elasticity = elasticity
+    def __init__(self, header=None, body_header=None, flags=0, density=0.0, air_friction=0.0, water_friction=0.0, surface_friction=0.0, elasticity=0.0):
+        self.header = header
+        self.body_header = body_header
+        self.flags = flags
+        self.density = density
+        self.air_friction = air_friction
+        self.water_friction = water_friction
+        self.surface_friction = surface_friction
+        self.elasticity = elasticity

@@ -168,63 +168,63 @@ def generate_object_elements(level_root, collection_name, palette, tag_block, co
         ASSET = parse_tag(palette_element, report, "halo2", "retail")
         if not ASSET == None:
             if collection_name == "Scenery":
-                MODEL = parse_tag(ASSET.scenery_body.model, report, "halo2", "retail")
+                MODEL = parse_tag(ASSET.model, report, "halo2", "retail")
                 if not MODEL == None:
-                    RENDER = parse_tag(MODEL.model_body.render_model, report, "halo2", "retail")
+                    RENDER = parse_tag(MODEL.render_model, report, "halo2", "retail")
                     if not RENDER == None:
                         ob = get_object(asset_collection, RENDER, game_version, object_name, random_color_gen, report)
             elif collection_name == "Biped":
-                MODEL = parse_tag(ASSET.biped_body.model, report, "halo2", "retail")
+                MODEL = parse_tag(ASSET.model, report, "halo2", "retail")
                 if not MODEL == None:
-                    RENDER = parse_tag(MODEL.model_body.render_model, report, "halo2", "retail")
+                    RENDER = parse_tag(MODEL.render_model, report, "halo2", "retail")
                     if not RENDER == None:
                         ob = get_object(asset_collection, RENDER, game_version, object_name, random_color_gen, report)
             elif collection_name == "Vehicle":
-                MODEL = parse_tag(ASSET.vehicle_body.model, report, "halo2", "retail")
+                MODEL = parse_tag(ASSET.model, report, "halo2", "retail")
                 if not MODEL == None:
-                    RENDER = parse_tag(MODEL.model_body.render_model, report, "halo2", "retail")
+                    RENDER = parse_tag(MODEL.render_model, report, "halo2", "retail")
                     if not RENDER == None:
                         ob = get_object(asset_collection, RENDER, game_version, object_name, random_color_gen, report)
             elif collection_name == "Equipment":
-                MODEL = parse_tag(ASSET.equipment_body.model, report, "halo2", "retail")
+                MODEL = parse_tag(ASSET.model, report, "halo2", "retail")
                 if not MODEL == None:
-                    RENDER = parse_tag(MODEL.model_body.render_model, report, "halo2", "retail")
+                    RENDER = parse_tag(MODEL.render_model, report, "halo2", "retail")
                     if not RENDER == None:
                         ob = get_object(asset_collection, RENDER, game_version, object_name, random_color_gen, report)
             elif collection_name == "Weapons":
-                MODEL = parse_tag(ASSET.weapon_body.model, report, "halo2", "retail")
+                MODEL = parse_tag(ASSET.model, report, "halo2", "retail")
                 if not MODEL == None:
-                    RENDER = parse_tag(MODEL.model_body.render_model, report, "halo2", "retail")
+                    RENDER = parse_tag(MODEL.render_model, report, "halo2", "retail")
                     if not RENDER == None:
                         ob = get_object(asset_collection, RENDER, game_version, object_name, random_color_gen, report)
             elif collection_name == "Machines":
-                MODEL = parse_tag(ASSET.machine_body.model, report, "halo2", "retail")
+                MODEL = parse_tag(ASSET.model, report, "halo2", "retail")
                 if not MODEL == None:
-                    RENDER = parse_tag(MODEL.model_body.render_model, report, "halo2", "retail")
+                    RENDER = parse_tag(MODEL.render_model, report, "halo2", "retail")
                     if not RENDER == None:
                         ob = get_object(asset_collection, RENDER, game_version, object_name, random_color_gen, report)
             elif collection_name == "Controls":
-                MODEL = parse_tag(ASSET.control_body.model, report, "halo2", "retail")
+                MODEL = parse_tag(ASSET.model, report, "halo2", "retail")
                 if not MODEL == None:
-                    RENDER = parse_tag(MODEL.model_body.render_model, report, "halo2", "retail")
+                    RENDER = parse_tag(MODEL.render_model, report, "halo2", "retail")
                     if not RENDER == None:
                         ob = get_object(asset_collection, RENDER, game_version, object_name, random_color_gen, report)
             elif collection_name == "Light Fixtures":
-                MODEL = parse_tag(ASSET.light_fixture.model, report, "halo2", "retail")
+                MODEL = parse_tag(ASSET.model, report, "halo2", "retail")
                 if not MODEL == None:
-                    RENDER = parse_tag(MODEL.model_body.render_model, report, "halo2", "retail")
+                    RENDER = parse_tag(MODEL.render_model, report, "halo2", "retail")
                     if not RENDER == None:
                         ob = get_object(asset_collection, RENDER, game_version, object_name, random_color_gen, report)
             elif collection_name == "Sound Scenery":
-                MODEL = parse_tag(ASSET.sound_scenery_body.model, report, "halo2", "retail")
+                MODEL = parse_tag(ASSET.model, report, "halo2", "retail")
                 if not MODEL == None:
-                    RENDER = parse_tag(MODEL.model_body.render_model, report, "halo2", "retail")
+                    RENDER = parse_tag(MODEL.render_model, report, "halo2", "retail")
                     if not RENDER == None:
                         ob = get_object(asset_collection, RENDER, game_version, object_name, random_color_gen, report)
             elif collection_name == "Crates":
-                MODEL = parse_tag(ASSET.crate_body.model, report, "halo2", "retail")
+                MODEL = parse_tag(ASSET.model, report, "halo2", "retail")
                 if not MODEL == None:
-                    RENDER = parse_tag(MODEL.model_body.render_model, report, "halo2", "retail")
+                    RENDER = parse_tag(MODEL.render_model, report, "halo2", "retail")
                     if not RENDER == None:
                         ob = get_object(asset_collection, RENDER, game_version, object_name, random_color_gen, report)
 
@@ -295,24 +295,24 @@ def generate_netgame_equipment_elements(level_root, tag_block, context, game_ver
                     ITEM = parse_tag(perutation_element.item, report, "halo2", "retail")
                     if not ITEM == None:
                         if perutation_element.item.tag_group == "eqip":
-                            MODEL = parse_tag(ITEM.equipment_body.model, report, "halo2", "retail")
+                            MODEL = parse_tag(ITEM.model, report, "halo2", "retail")
                             if not MODEL == None:
-                                RENDER = parse_tag(MODEL.model_body.render_model, report, "halo2", "retail")
+                                RENDER = parse_tag(MODEL.render_model, report, "halo2", "retail")
                                 if not RENDER == None:
                                     ob = get_object(asset_collection, RENDER, game_version, object_name, random_color_gen, report)
                         elif perutation_element.item.tag_group == "weap":
-                            MODEL = parse_tag(ITEM.weapon_body.model, report, "halo2", "retail")
+                            MODEL = parse_tag(ITEM.model, report, "halo2", "retail")
                             if not MODEL == None:
-                                RENDER = parse_tag(MODEL.model_body.render_model, report, "halo2", "retail")
+                                RENDER = parse_tag(MODEL.render_model, report, "halo2", "retail")
                                 if not RENDER == None:
                                     ob = get_object(asset_collection, RENDER, game_version, object_name, random_color_gen, report)
 
                 elif element.item_vehicle_collection.tag_group == "vehc":
                     VEHICLE = parse_tag(perutation_element.item, report, "halo2", "retail")
                     if not VEHICLE == None:
-                        MODEL = parse_tag(VEHICLE.vehicle_body.model, report, "halo2", "retail")
+                        MODEL = parse_tag(VEHICLE.model, report, "halo2", "retail")
                         if not MODEL == None:
-                            RENDER = parse_tag(MODEL.model_body.render_model, report, "halo2", "retail")
+                            RENDER = parse_tag(MODEL.render_model, report, "halo2", "retail")
                             if not RENDER == None:
                                 ob = get_object(asset_collection, RENDER, game_version, object_name, random_color_gen, report)
 

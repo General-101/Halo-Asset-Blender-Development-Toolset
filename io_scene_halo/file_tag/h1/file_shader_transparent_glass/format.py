@@ -84,39 +84,35 @@ class ReflectionTypeEnum(Enum):
     dynamic_mirror = auto()
 
 class ShaderAsset():
-    def __init__(self):
-        self.header = None
-        self.shader_body = None
-
-    class ShaderBody:
-        def __init__(self, radiosity_flags=0, detail_level=0, power=0.0, color_of_emitted_light=(0.0, 0.0, 0.0, 1.0), light_tint_color=(0.0, 0.0, 0.0, 1.0), material_type=0,
-                     glass_flags=0, background_tint_color=(0.0, 0.0, 0.0, 1.0), background_tint_map_scale=0.0, background_tint_map=None, reflection_type=0,
-                     perpendicular_brightness=0.0, perpendicular_tint_color=(0.0, 0.0, 0.0, 1.0), parallel_brightness=0.0, parallel_tint_color=(0.0, 0.0, 0.0, 1.0),
-                     reflection_map=None, bump_map_scale=0.0, bump_map=None, diffuse_map_scale=0.0, diffuse_map=None, diffuse_detail_map_scale=0.0, diffuse_detail_map=None,
-                     specular_map_scale=0.0, specular_map=None, specular_detail_map_scale=0.0, specular_detail_map=None):
-            self.radiosity_flags = radiosity_flags
-            self.detail_level = detail_level
-            self.power = power
-            self.color_of_emitted_light = color_of_emitted_light
-            self.light_tint_color = light_tint_color
-            self.material_type = material_type
-            self.glass_flags = glass_flags
-            self.background_tint_color = background_tint_color
-            self.background_tint_map_scale = background_tint_map_scale
-            self.background_tint_map = background_tint_map
-            self.reflection_type = reflection_type
-            self.perpendicular_brightness = perpendicular_brightness
-            self.perpendicular_tint_color = perpendicular_tint_color
-            self.parallel_brightness = parallel_brightness
-            self.parallel_tint_color = parallel_tint_color
-            self.reflection_map = reflection_map
-            self.bump_map_scale = bump_map_scale
-            self.bump_map = bump_map
-            self.diffuse_map_scale = diffuse_map_scale
-            self.diffuse_map = diffuse_map
-            self.diffuse_detail_map_scale = diffuse_detail_map_scale
-            self.diffuse_detail_map = diffuse_detail_map
-            self.specular_map_scale = specular_map_scale
-            self.specular_map = specular_map
-            self.specular_detail_map_scale = specular_detail_map_scale
-            self.specular_detail_map = specular_detail_map
+    def __init__(self, header=None, radiosity_flags=0, detail_level=0, power=0.0, color_of_emitted_light=(0.0, 0.0, 0.0, 1.0), light_tint_color=(0.0, 0.0, 0.0, 1.0), 
+                 material_type=0, glass_flags=0, background_tint_color=(0.0, 0.0, 0.0, 1.0), background_tint_map_scale=0.0, background_tint_map=None, reflection_type=0, 
+                 perpendicular_brightness=0.0, perpendicular_tint_color=(0.0, 0.0, 0.0, 1.0), parallel_brightness=0.0, parallel_tint_color=(0.0, 0.0, 0.0, 1.0), 
+                 reflection_map=None, bump_map_scale=0.0, bump_map=None, diffuse_map_scale=0.0, diffuse_map=None, diffuse_detail_map_scale=0.0, diffuse_detail_map=None, 
+                 specular_map_scale=0.0, specular_map=None, specular_detail_map_scale=0.0, specular_detail_map=None):
+        self.header = header
+        self.radiosity_flags = radiosity_flags
+        self.detail_level = detail_level
+        self.power = power
+        self.color_of_emitted_light = color_of_emitted_light
+        self.light_tint_color = light_tint_color
+        self.material_type = material_type
+        self.glass_flags = glass_flags
+        self.background_tint_color = background_tint_color
+        self.background_tint_map_scale = background_tint_map_scale
+        self.background_tint_map = background_tint_map
+        self.reflection_type = reflection_type
+        self.perpendicular_brightness = perpendicular_brightness
+        self.perpendicular_tint_color = perpendicular_tint_color
+        self.parallel_brightness = parallel_brightness
+        self.parallel_tint_color = parallel_tint_color
+        self.reflection_map = reflection_map
+        self.bump_map_scale = bump_map_scale
+        self.bump_map = bump_map
+        self.diffuse_map_scale = diffuse_map_scale
+        self.diffuse_map = diffuse_map
+        self.diffuse_detail_map_scale = diffuse_detail_map_scale
+        self.diffuse_detail_map = diffuse_detail_map
+        self.specular_map_scale = specular_map_scale
+        self.specular_map = specular_map
+        self.specular_detail_map_scale = specular_detail_map_scale
+        self.specular_detail_map = specular_detail_map

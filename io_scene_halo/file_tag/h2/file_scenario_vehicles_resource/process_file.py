@@ -32,31 +32,30 @@ from .format import ScenarioAsset
 XML_OUTPUT = False
 
 def read_scenario_body(SCENARIO, TAG, input_stream, tag_node, XML_OUTPUT):
-    SCENARIO.scenario_body_header = TAG.TagBlockHeader().read(input_stream, TAG)
-    SCENARIO.scenario_body = SCENARIO.ScenarioBody()
-    SCENARIO.scenario_body.skies_tag_block = TAG.TagBlock()
-    SCENARIO.scenario_body.object_names_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "object names"))
-    SCENARIO.scenario_body.environment_objects_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "environment objects"))
-    SCENARIO.scenario_body.structure_bsps_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "structure bsps"))
-    SCENARIO.scenario_body.vehicle_palette_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "vehicles palette"))
-    SCENARIO.scenario_body.vehicles_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "vehicles"))
-    SCENARIO.scenario_body.next_object_id_salt = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(tag_node, "next object id salt"))
-    SCENARIO.scenario_body.editor_folders_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "editor folders"))
+    SCENARIO.body_header = TAG.TagBlockHeader().read(input_stream, TAG)
+    SCENARIO.skies_tag_block = TAG.TagBlock()
+    SCENARIO.object_names_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "object names"))
+    SCENARIO.environment_objects_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "environment objects"))
+    SCENARIO.structure_bsps_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "structure bsps"))
+    SCENARIO.vehicle_palette_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "vehicles palette"))
+    SCENARIO.vehicles_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "vehicles"))
+    SCENARIO.next_object_id_salt = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(tag_node, "next object id salt"))
+    SCENARIO.editor_folders_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "editor folders"))
 
 def read_vehicles(SCENARIO, TAG, input_stream, tag_node, XML_OUTPUT):
-    process_scenario.palette_helper(input_stream, SCENARIO.scenario_body.vehicle_palette_tag_block.count, "vehicles palette", SCENARIO.vehicle_palette_header, SCENARIO.vehicle_palette, tag_node, TAG)
+    process_scenario.palette_helper(input_stream, SCENARIO.vehicle_palette_tag_block.count, "vehicles palette", SCENARIO.vehicle_palette_header, SCENARIO.vehicle_palette, tag_node, TAG)
 
-    if SCENARIO.scenario_body.vehicles_tag_block.count > 0:
+    if SCENARIO.vehicles_tag_block.count > 0:
         SCENARIO.vehicles_header = TAG.TagBlockHeader().read(input_stream, TAG)
-        vehicle_node = tag_format.get_xml_node(XML_OUTPUT, SCENARIO.scenario_body.vehicles_tag_block.count, tag_node, "name", "vehicles")
-        for vehicle_idx in range(SCENARIO.scenario_body.vehicles_tag_block.count):
+        vehicle_node = tag_format.get_xml_node(XML_OUTPUT, SCENARIO.vehicles_tag_block.count, tag_node, "name", "vehicles")
+        for vehicle_idx in range(SCENARIO.vehicles_tag_block.count):
             vehicle_element_node = None
             if XML_OUTPUT:
                 vehicle_element_node = TAG.xml_doc.createElement('element')
                 vehicle_element_node.setAttribute('index', str(vehicle_idx))
                 vehicle_node.appendChild(vehicle_element_node)
 
-            SCENARIO.vehicles.append(process_scenario.get_units(input_stream, SCENARIO, TAG, vehicle_element_node, SCENARIO.scenario_body.vehicle_palette_tag_block.count, "scenario_vehicle_palette_block"))
+            SCENARIO.vehicles.append(process_scenario.get_units(input_stream, SCENARIO, TAG, vehicle_element_node, SCENARIO.vehicle_palette_tag_block.count, "scenario_vehicle_palette_block"))
 
         for vehicle_idx, vehicle in enumerate(SCENARIO.vehicles):
             vehicle_element_node = None

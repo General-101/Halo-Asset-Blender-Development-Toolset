@@ -81,37 +81,33 @@ class ChannelSourceEnum(Enum):
     d_out = auto()
 
 class ShaderAsset():
-    def __init__(self):
-        self.header = None
-        self.shader_body = None
-
-    class ShaderBody:
-        def __init__(self, radiosity_flags=0, detail_level=0, power=0.0, color_of_emitted_light=(0.0, 0.0, 0.0, 1.0), light_tint_color=(0.0, 0.0, 0.0, 1.0), material_type=0,
-                     intensity_source=0, intensity_exponent=0.0, offset_source=0, offset_amount=0.0, offset_exponent=0.0, perpendicular_brightness=0.0,
-                     perpendicular_tint_color=(0.0, 0.0, 0.0, 1.0), parallel_brightness=0.0, parallel_tint_color=(0.0, 0.0, 0.0, 1.0), tint_color_source=0,
-                     primary_animation_period=0.0, primary_animation_direction=Vector(), primary_noise_map_scale=0.0, primary_noise_map=None,
-                     secondary_animation_period=0.0, secondary_animation_direction=Vector(), secondary_noise_map_scale=0.0, secondary_noise_map=None):
-            self.radiosity_flags = radiosity_flags
-            self.detail_level = detail_level
-            self.power = power
-            self.color_of_emitted_light = color_of_emitted_light
-            self.light_tint_color = light_tint_color
-            self.material_type = material_type
-            self.intensity_source = intensity_source
-            self.intensity_exponent = intensity_exponent
-            self.offset_source = offset_source
-            self.offset_amount = offset_amount
-            self.offset_exponent = offset_exponent
-            self.perpendicular_brightness = perpendicular_brightness
-            self.perpendicular_tint_color = perpendicular_tint_color
-            self.parallel_brightness = parallel_brightness
-            self.parallel_tint_color = parallel_tint_color
-            self.tint_color_source = tint_color_source
-            self.primary_animation_period = primary_animation_period
-            self.primary_animation_direction = primary_animation_direction
-            self.primary_noise_map_scale = primary_noise_map_scale
-            self.primary_noise_map = primary_noise_map
-            self.secondary_animation_period = secondary_animation_period
-            self.secondary_animation_direction = secondary_animation_direction
-            self.secondary_noise_map_scale = secondary_noise_map_scale
-            self.secondary_noise_map = secondary_noise_map
+    def __init__(self, header=None, radiosity_flags=0, detail_level=0, power=0.0, color_of_emitted_light=(0.0, 0.0, 0.0, 1.0), light_tint_color=(0.0, 0.0, 0.0, 1.0), 
+                 material_type=0, intensity_source=0, intensity_exponent=0.0, offset_source=0, offset_amount=0.0, offset_exponent=0.0, perpendicular_brightness=0.0, 
+                 perpendicular_tint_color=(0.0, 0.0, 0.0, 1.0), parallel_brightness=0.0, parallel_tint_color=(0.0, 0.0, 0.0, 1.0), tint_color_source=0, 
+                 primary_animation_period=0.0, primary_animation_direction=Vector(), primary_noise_map_scale=0.0, primary_noise_map=None, secondary_animation_period=0.0, 
+                 secondary_animation_direction=Vector(), secondary_noise_map_scale=0.0, secondary_noise_map=None):
+        self.header = header
+        self.radiosity_flags = radiosity_flags
+        self.detail_level = detail_level
+        self.power = power
+        self.color_of_emitted_light = color_of_emitted_light
+        self.light_tint_color = light_tint_color
+        self.material_type = material_type
+        self.intensity_source = intensity_source
+        self.intensity_exponent = intensity_exponent
+        self.offset_source = offset_source
+        self.offset_amount = offset_amount
+        self.offset_exponent = offset_exponent
+        self.perpendicular_brightness = perpendicular_brightness
+        self.perpendicular_tint_color = perpendicular_tint_color
+        self.parallel_brightness = parallel_brightness
+        self.parallel_tint_color = parallel_tint_color
+        self.tint_color_source = tint_color_source
+        self.primary_animation_period = primary_animation_period
+        self.primary_animation_direction = primary_animation_direction
+        self.primary_noise_map_scale = primary_noise_map_scale
+        self.primary_noise_map = primary_noise_map
+        self.secondary_animation_period = secondary_animation_period
+        self.secondary_animation_direction = secondary_animation_direction
+        self.secondary_noise_map_scale = secondary_noise_map_scale
+        self.secondary_noise_map = secondary_noise_map

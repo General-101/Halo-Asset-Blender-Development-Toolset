@@ -38,64 +38,60 @@ class ResponseEnum(Enum):
     fizzle_ricochet = auto()
 
 class ProjectileAsset(ObjectAsset):
-    def __init__(self):
+    def __init__(self, header=None, body_header=None, material_responses_header=None, material_responses=None, projectile_flags=0, detonation_timer_starts=0, impact_noise=0, 
+                 ai_perception_radius=0.0, collision_radius=0.0, arming_time=0.0, danger_radius=0.0, timer=(0.0, 0.0), minimum_velocity=0.0, maximum_range=0.0, 
+                 detonation_noise=0, super_detonation_projectile_count=0, detonation_started=None, detonation_effect_airborne=None, detonation_effect_ground=None, 
+                 detonation_damage=None, attached_detonation_damage=None, super_detonation=None, super_detonation_damage=None, detonation_sound=None, 
+                 damage_reporting_type=0, super_attached_detonation_damage_effect=None, material_effect_radius=0.0, flyby_sound=None, impact_effect=None, impact_damage=None, 
+                 boarding_detonation_time=0.0, boarding_detonation_damage_effect=None, boarding_attached_detonation_damage_effect=None, air_gravity_scale=0.0, 
+                 air_damage_range=(0.0, 0.0), water_gravity_scale=0.0, water_damage_range=(0.0, 0.0), initial_velocity=0.0, final_velocity=0.0, 
+                 guided_angular_velocity_lower=0.0, guided_angular_velocity_upper=0.0, acceleration_range=(0.0, 0.0), targeted_leading_fraction=0.0, 
+                 material_responses_tag_block=None):
         super().__init__()
-        self.header = None
-        self.projectile_body_header = None
-        self.projectile_body = None
-        self.material_responses_header = None
-        self.material_responses = None
-
-    class ProjectileBody(ObjectAsset.ObjectBody):
-        def __init__(self, projectile_flags=0, detonation_timer_starts=0, impact_noise=0, ai_perception_radius=0.0, collision_radius=0.0, arming_time=0.0, danger_radius=0.0,
-                     timer=(0.0, 0.0), minimum_velocity=0.0, maximum_range=0.0, detonation_noise=0, super_detonation_projectile_count=0, detonation_started=None,
-                     detonation_effect_airborne=None, detonation_effect_ground=None, detonation_damage=None, attached_detonation_damage=None, super_detonation=None,
-                     super_detonation_damage=None, detonation_sound=None, damage_reporting_type=0, super_attached_detonation_damage_effect=None, material_effect_radius=0.0,
-                     flyby_sound=None, impact_effect=None, impact_damage=None, boarding_detonation_time=0.0, boarding_detonation_damage_effect=None,
-                     boarding_attached_detonation_damage_effect=None, air_gravity_scale=0.0, air_damage_range=(0.0, 0.0), water_gravity_scale=0.0, water_damage_range=(0.0, 0.0),
-                     initial_velocity=0.0, final_velocity=0.0, guided_angular_velocity_lower=0.0, guided_angular_velocity_upper=0.0, acceleration_range=(0.0, 0.0),
-                     targeted_leading_fraction=0.0, material_responses_tag_block=None):
-            super().__init__()
-            self.projectile_flags = projectile_flags
-            self.detonation_timer_starts = detonation_timer_starts
-            self.impact_noise = impact_noise
-            self.ai_perception_radius = ai_perception_radius
-            self.collision_radius = collision_radius
-            self.arming_time = arming_time
-            self.danger_radius = danger_radius
-            self.timer = timer
-            self.minimum_velocity = minimum_velocity
-            self.maximum_range = maximum_range
-            self.detonation_noise = detonation_noise
-            self.super_detonation_projectile_count = super_detonation_projectile_count
-            self.detonation_started = detonation_started
-            self.detonation_effect_airborne = detonation_effect_airborne
-            self.detonation_effect_ground = detonation_effect_ground
-            self.detonation_damage = detonation_damage
-            self.attached_detonation_damage = attached_detonation_damage
-            self.super_detonation = super_detonation
-            self.super_detonation_damage = super_detonation_damage
-            self.detonation_sound = detonation_sound
-            self.damage_reporting_type = damage_reporting_type
-            self.super_attached_detonation_damage_effect = super_attached_detonation_damage_effect
-            self.material_effect_radius = material_effect_radius
-            self.flyby_sound = flyby_sound
-            self.impact_effect = impact_effect
-            self.impact_damage = impact_damage
-            self.boarding_detonation_time = boarding_detonation_time
-            self.boarding_detonation_damage_effect = boarding_detonation_damage_effect
-            self.boarding_attached_detonation_damage_effect = boarding_attached_detonation_damage_effect
-            self.air_gravity_scale = air_gravity_scale
-            self.air_damage_range = air_damage_range
-            self.water_gravity_scale = water_gravity_scale
-            self.water_damage_range = water_damage_range
-            self.initial_velocity = initial_velocity
-            self.final_velocity = final_velocity
-            self.guided_angular_velocity_lower = guided_angular_velocity_lower
-            self.guided_angular_velocity_upper = guided_angular_velocity_upper
-            self.acceleration_range = acceleration_range
-            self.targeted_leading_fraction = targeted_leading_fraction
-            self.material_responses_tag_block = material_responses_tag_block
+        self.header = header
+        self.body_header = body_header
+        self.material_responses_header = material_responses_header
+        self.material_responses = material_responses
+        self.projectile_flags = projectile_flags
+        self.detonation_timer_starts = detonation_timer_starts
+        self.impact_noise = impact_noise
+        self.ai_perception_radius = ai_perception_radius
+        self.collision_radius = collision_radius
+        self.arming_time = arming_time
+        self.danger_radius = danger_radius
+        self.timer = timer
+        self.minimum_velocity = minimum_velocity
+        self.maximum_range = maximum_range
+        self.detonation_noise = detonation_noise
+        self.super_detonation_projectile_count = super_detonation_projectile_count
+        self.detonation_started = detonation_started
+        self.detonation_effect_airborne = detonation_effect_airborne
+        self.detonation_effect_ground = detonation_effect_ground
+        self.detonation_damage = detonation_damage
+        self.attached_detonation_damage = attached_detonation_damage
+        self.super_detonation = super_detonation
+        self.super_detonation_damage = super_detonation_damage
+        self.detonation_sound = detonation_sound
+        self.damage_reporting_type = damage_reporting_type
+        self.super_attached_detonation_damage_effect = super_attached_detonation_damage_effect
+        self.material_effect_radius = material_effect_radius
+        self.flyby_sound = flyby_sound
+        self.impact_effect = impact_effect
+        self.impact_damage = impact_damage
+        self.boarding_detonation_time = boarding_detonation_time
+        self.boarding_detonation_damage_effect = boarding_detonation_damage_effect
+        self.boarding_attached_detonation_damage_effect = boarding_attached_detonation_damage_effect
+        self.air_gravity_scale = air_gravity_scale
+        self.air_damage_range = air_damage_range
+        self.water_gravity_scale = water_gravity_scale
+        self.water_damage_range = water_damage_range
+        self.initial_velocity = initial_velocity
+        self.final_velocity = final_velocity
+        self.guided_angular_velocity_lower = guided_angular_velocity_lower
+        self.guided_angular_velocity_upper = guided_angular_velocity_upper
+        self.acceleration_range = acceleration_range
+        self.targeted_leading_fraction = targeted_leading_fraction
+        self.material_responses_tag_block = material_responses_tag_block
 
     class MaterialResponse:
         def __init__(self, flags=0, result_response=0, result_effect=None, material_name="", material_name_length=0, potential_result_response=0, potential_result_flags=0,

@@ -32,23 +32,22 @@ from .format import ScenarioAsset
 XML_OUTPUT = False
 
 def read_scenario_body(SCENARIO, TAG, input_stream, tag_node, XML_OUTPUT):
-    SCENARIO.scenario_body_header = TAG.TagBlockHeader().read(input_stream, TAG)
-    SCENARIO.scenario_body = SCENARIO.ScenarioBody()
-    SCENARIO.scenario_body.skies_tag_block = TAG.TagBlock()
-    SCENARIO.scenario_body.object_names_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "object names"))
-    SCENARIO.scenario_body.environment_objects_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "environment objects"))
-    SCENARIO.scenario_body.structure_bsps_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "structure bsps"))
-    SCENARIO.scenario_body.creature_palette_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "creatures palette"))
-    SCENARIO.scenario_body.creatures_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "creatures"))
-    SCENARIO.scenario_body.next_object_id_salt = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(tag_node, "next object id salt"))
-    SCENARIO.scenario_body.editor_folders_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "editor folders"))
+    SCENARIO.body_header = TAG.TagBlockHeader().read(input_stream, TAG)
+    SCENARIO.skies_tag_block = TAG.TagBlock()
+    SCENARIO.object_names_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "object names"))
+    SCENARIO.environment_objects_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "environment objects"))
+    SCENARIO.structure_bsps_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "structure bsps"))
+    SCENARIO.creature_palette_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "creatures palette"))
+    SCENARIO.creatures_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "creatures"))
+    SCENARIO.next_object_id_salt = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(tag_node, "next object id salt"))
+    SCENARIO.editor_folders_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "editor folders"))
 
 def read_creatures(SCENARIO, TAG, input_stream, tag_node, XML_OUTPUT):
-    process_scenario.palette_helper(input_stream, SCENARIO.scenario_body.creature_palette_tag_block.count, "creatures palette", SCENARIO.creatures_palette_header, SCENARIO.creatures_palette, tag_node, TAG)
-    if SCENARIO.scenario_body.creatures_tag_block.count > 0:
+    process_scenario.palette_helper(input_stream, SCENARIO.creature_palette_tag_block.count, "creatures palette", SCENARIO.creatures_palette_header, SCENARIO.creatures_palette, tag_node, TAG)
+    if SCENARIO.creatures_tag_block.count > 0:
         SCENARIO.creatures_header = TAG.TagBlockHeader().read(input_stream, TAG)
-        creatures_node = tag_format.get_xml_node(XML_OUTPUT, SCENARIO.scenario_body.creatures_tag_block.count, tag_node, "name", "creatures")
-        for creature_idx in range(SCENARIO.scenario_body.creatures_tag_block.count):
+        creatures_node = tag_format.get_xml_node(XML_OUTPUT, SCENARIO.creatures_tag_block.count, tag_node, "name", "creatures")
+        for creature_idx in range(SCENARIO.creatures_tag_block.count):
             creature_element_node = None
             if XML_OUTPUT:
                 creature_element_node = TAG.xml_doc.createElement('element')

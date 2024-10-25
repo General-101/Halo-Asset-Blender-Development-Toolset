@@ -489,144 +489,149 @@ class TextFlags(Flag):
     bottom_justify = auto()
 
 class ScenarioAsset():
-    def __init__(self):
-        self.header = None
-        self.scenario_body = None
-        self.skies = None
-        self.child_scenarios = None
-        self.predicted_resources = None
-        self.functions = None
-        self.editor_scenario_data = None
-        self.comments = None
-        self.scavenger_hunt_objects = None
-        self.object_names = None
-        self.scenery = None
-        self.scenery_palette = None
-        self.bipeds = None
-        self.biped_palette = None
-        self.vehicles = None
-        self.vehicle_palette = None
-        self.equipment = None
-        self.equipment_palette = None
-        self.weapons = None
-        self.weapon_palette = None
-        self.device_groups = None
-        self.device_machines = None
-        self.device_machine_palette = None
-        self.device_controls = None
-        self.device_control_palette = None
-        self.device_light_fixtures = None
-        self.device_light_fixtures_palette = None
-        self.sound_scenery = None
-        self.sound_scenery_palette = None
-        self.player_starting_profiles = None
-        self.player_starting_locations = None
-        self.trigger_volumes = None
-        self.recorded_animations = None
-        self.netgame_flags = None
-        self.netgame_equipment = None
-        self.starting_equipment = None
-        self.bsp_switch_trigger_volumes = None
-        self.decals = None
-        self.decal_palette = None
-        self.detail_object_collection_palette  = None
-        self.actor_palette = None
-        self.encounters = None
-        self.command_lists = None
-        self.ai_animation_references = None
-        self.ai_script_references = None
-        self.ai_recording_references = None
-        self.ai_conversations = None
-        self.script_syntax_data = None
-        self.script_string_data = None
-        self.scripts = None
-        self.globals = None
-        self.references = None
-        self.source_files = None
-        self.cutscene_flags = None
-        self.cutscene_camera_points = None
-        self.cutscene_titles = None
-        self.structure_bsps = None
-
-    class ScenarioBody:
-        def __init__(self, dont_use_tag_ref=None, wont_use_tag_ref=None, cant_use_tag_ref=None, skies_tag_block=None, scenario_type=0, scenario_flags=0,
-                     child_scenarios_tag_block=None, local_north=0.0, predicted_resources_tag_block=None, functions_tag_block=None, editor_scenario_data=0,
-                     comments_tag_block=None, scavenger_hunt_objects_tag_block=None, object_names_tag_block=None, scenery_tag_block=None, scenery_palette_tag_block=None,
-                     bipeds_tag_block=None, biped_palette_tag_block=None, vehicles_tag_block=None, vehicle_palette_tag_block=None, equipment_tag_block=None,
-                     equipment_palette_tag_block=None, weapons_tag_block=None, weapon_palette_tag_block=None, device_groups_tag_block=None, machines_tag_block=None,
-                     machine_palette_tag_block=None, controls_tag_block=None, control_palette_tag_block=None, light_fixtures_tag_block=None,
-                     light_fixtures_palette_tag_block=None, sound_scenery_tag_block=None, sound_scenery_palette_tag_block=None, player_starting_profile_tag_block=None,
-                     player_starting_locations_tag_block=None, trigger_volumes_tag_block=None, recorded_animations_tag_block=None, netgame_flags_tag_block=None,
-                     netgame_equipment_tag_block=None, starting_equipment_tag_block=None, bsp_switch_trigger_volumes_tag_block=None, decals_tag_block=None,
-                     decal_palette_tag_block=None, detail_object_collection_palette_tag_block=None, actor_palette_tag_block=None, encounters_tag_block=None,
-                     command_lists_tag_block=None, ai_animation_references_tag_block=None, ai_script_references_tag_block=None, ai_recording_references_tag_block=None,
-                     ai_conversations_tag_block=None, script_syntax_data_tag_data=None, script_string_data_tag_data=None, scripts_tag_block=None, globals_tag_block=None,
-                     references_tag_block=None, source_files_tag_block=None, cutscene_flags_tag_block=None, cutscene_camera_points_tag_block=None, cutscene_titles_tag_block=None,
-                     custom_object_names_tag_ref=None, chapter_title_text_tag_ref=None, hud_messages_tag_ref=None, structure_bsps_tag_block=None):
-            self.dont_use_tag_ref = dont_use_tag_ref
-            self.wont_use_tag_ref = wont_use_tag_ref
-            self.cant_use_tag_ref = cant_use_tag_ref
-            self.skies_tag_block = skies_tag_block
-            self.scenario_type = scenario_type
-            self.scenario_flags = scenario_flags
-            self.child_scenarios_tag_block = child_scenarios_tag_block
-            self.local_north = local_north
-            self.predicted_resources_tag_block = predicted_resources_tag_block
-            self.functions_tag_block = functions_tag_block
-            self.editor_scenario_data = editor_scenario_data
-            self.comments_tag_block = comments_tag_block
-            self.scavenger_hunt_objects_tag_block = scavenger_hunt_objects_tag_block
-            self.object_names_tag_block = object_names_tag_block
-            self.scenery_tag_block = scenery_tag_block
-            self.scenery_palette_tag_block = scenery_palette_tag_block
-            self.bipeds_tag_block = bipeds_tag_block
-            self.biped_palette_tag_block = biped_palette_tag_block
-            self.vehicles_tag_block = vehicles_tag_block
-            self.vehicle_palette_tag_block = vehicle_palette_tag_block
-            self.equipment_tag_block = equipment_tag_block
-            self.equipment_palette_tag_block = equipment_palette_tag_block
-            self.weapons_tag_block = weapons_tag_block
-            self.weapon_palette_tag_block = weapon_palette_tag_block
-            self.device_groups_tag_block = device_groups_tag_block
-            self.machines_tag_block = machines_tag_block
-            self.machine_palette_tag_block = machine_palette_tag_block
-            self.controls_tag_block = controls_tag_block
-            self.control_palette_tag_block = control_palette_tag_block
-            self.light_fixtures_tag_block = light_fixtures_tag_block
-            self.light_fixtures_palette_tag_block = light_fixtures_palette_tag_block
-            self.sound_scenery_tag_block = sound_scenery_tag_block
-            self.sound_scenery_palette_tag_block = sound_scenery_palette_tag_block
-            self.player_starting_profile_tag_block = player_starting_profile_tag_block
-            self.player_starting_locations_tag_block = player_starting_locations_tag_block
-            self.trigger_volumes_tag_block = trigger_volumes_tag_block
-            self.recorded_animations_tag_block = recorded_animations_tag_block
-            self.netgame_flags_tag_block = netgame_flags_tag_block
-            self.netgame_equipment_tag_block = netgame_equipment_tag_block
-            self.starting_equipment_tag_block = starting_equipment_tag_block
-            self.bsp_switch_trigger_volumes_tag_block = bsp_switch_trigger_volumes_tag_block
-            self.decals_tag_block = decals_tag_block
-            self.decal_palette_tag_block = decal_palette_tag_block
-            self.detail_object_collection_palette_tag_block = detail_object_collection_palette_tag_block
-            self.actor_palette_tag_block = actor_palette_tag_block
-            self.encounters_tag_block = encounters_tag_block
-            self.command_lists_tag_block = command_lists_tag_block
-            self.ai_animation_references_tag_block = ai_animation_references_tag_block
-            self.ai_script_references_tag_block = ai_script_references_tag_block
-            self.ai_recording_references_tag_block = ai_recording_references_tag_block
-            self.ai_conversations_tag_block = ai_conversations_tag_block
-            self.script_syntax_data_tag_data = script_syntax_data_tag_data
-            self.script_string_data_tag_data = script_string_data_tag_data
-            self.scripts_tag_block = scripts_tag_block
-            self.globals_tag_block = globals_tag_block
-            self.references_tag_block = references_tag_block
-            self.source_files_tag_block = source_files_tag_block
-            self.cutscene_flags_tag_block = cutscene_flags_tag_block
-            self.cutscene_camera_points_tag_block = cutscene_camera_points_tag_block
-            self.cutscene_titles_tag_block = cutscene_titles_tag_block
-            self.custom_object_names_tag_ref = custom_object_names_tag_ref
-            self.chapter_title_text_tag_ref = chapter_title_text_tag_ref
-            self.hud_messages_tag_ref = hud_messages_tag_ref
-            self.structure_bsps_tag_block = structure_bsps_tag_block
+    def __init__(self, header=None, skies=None, child_scenarios=None, predicted_resources=None, functions=None, editor_scenario_data=None, comments=None, 
+                 scavenger_hunt_objects=None, object_names=None, scenery=None, scenery_palette=None, bipeds=None, biped_palette=None, vehicles=None, vehicle_palette=None, 
+                 equipment=None, equipment_palette=None, weapons=None, weapon_palette=None, device_groups=None, device_machines=None, device_machine_palette=None, 
+                 device_controls=None, device_control_palette=None, device_light_fixtures=None, device_light_fixtures_palette=None, sound_scenery=None, 
+                 sound_scenery_palette=None, player_starting_profiles=None, player_starting_locations=None, trigger_volumes=None, recorded_animations=None, 
+                 netgame_flags=None, netgame_equipment=None, starting_equipment=None, bsp_switch_trigger_volumes=None, decals=None, decal_palette=None, 
+                 detail_object_collection_palette =None, actor_palette=None, encounters=None, command_lists=None, ai_animation_references=None, ai_script_references=None, 
+                 ai_recording_references=None, ai_conversations=None, script_syntax_data=None, script_string_data=None, scripts=None, script_globals=None, references=None, 
+                 source_files=None, cutscene_flags=None, cutscene_camera_points=None, cutscene_titles=None, structure_bsps=None, dont_use_tag_ref=None, 
+                 wont_use_tag_ref=None, cant_use_tag_ref=None, skies_tag_block=None, scenario_type=0, scenario_flags=0, child_scenarios_tag_block=None, local_north=0.0, 
+                 predicted_resources_tag_block=None, functions_tag_block=None, comments_tag_block=None, scavenger_hunt_objects_tag_block=None, 
+                 object_names_tag_block=None, scenery_tag_block=None, scenery_palette_tag_block=None, bipeds_tag_block=None, biped_palette_tag_block=None, 
+                 vehicles_tag_block=None, vehicle_palette_tag_block=None, equipment_tag_block=None, equipment_palette_tag_block=None, weapons_tag_block=None, 
+                 weapon_palette_tag_block=None, device_groups_tag_block=None, machines_tag_block=None, machine_palette_tag_block=None, controls_tag_block=None, 
+                 control_palette_tag_block=None, light_fixtures_tag_block=None, light_fixtures_palette_tag_block=None, sound_scenery_tag_block=None, 
+                 sound_scenery_palette_tag_block=None, player_starting_profile_tag_block=None, player_starting_locations_tag_block=None, trigger_volumes_tag_block=None, 
+                 recorded_animations_tag_block=None, netgame_flags_tag_block=None, netgame_equipment_tag_block=None, starting_equipment_tag_block=None, 
+                 bsp_switch_trigger_volumes_tag_block=None, decals_tag_block=None, decal_palette_tag_block=None, detail_object_collection_palette_tag_block=None, 
+                 actor_palette_tag_block=None, encounters_tag_block=None, command_lists_tag_block=None, ai_animation_references_tag_block=None, 
+                 ai_script_references_tag_block=None, ai_recording_references_tag_block=None, ai_conversations_tag_block=None, script_syntax_data_tag_data=None, 
+                 script_string_data_tag_data=None, scripts_tag_block=None, globals_tag_block=None, references_tag_block=None, source_files_tag_block=None, 
+                 cutscene_flags_tag_block=None, cutscene_camera_points_tag_block=None, cutscene_titles_tag_block=None, custom_object_names_tag_ref=None, 
+                 chapter_title_text_tag_ref=None, hud_messages_tag_ref=None, structure_bsps_tag_block=None):
+        self.header = header
+        self.skies = skies
+        self.child_scenarios = child_scenarios
+        self.predicted_resources = predicted_resources
+        self.functions = functions
+        self.editor_scenario_data = editor_scenario_data
+        self.comments = comments
+        self.scavenger_hunt_objects = scavenger_hunt_objects
+        self.object_names = object_names
+        self.scenery = scenery
+        self.scenery_palette = scenery_palette
+        self.bipeds = bipeds
+        self.biped_palette = biped_palette
+        self.vehicles = vehicles
+        self.vehicle_palette = vehicle_palette
+        self.equipment = equipment
+        self.equipment_palette = equipment_palette
+        self.weapons = weapons
+        self.weapon_palette = weapon_palette
+        self.device_groups = device_groups
+        self.device_machines = device_machines
+        self.device_machine_palette = device_machine_palette
+        self.device_controls = device_controls
+        self.device_control_palette = device_control_palette
+        self.device_light_fixtures = device_light_fixtures
+        self.device_light_fixtures_palette = device_light_fixtures_palette
+        self.sound_scenery = sound_scenery
+        self.sound_scenery_palette = sound_scenery_palette
+        self.player_starting_profiles = player_starting_profiles
+        self.player_starting_locations = player_starting_locations
+        self.trigger_volumes = trigger_volumes
+        self.recorded_animations = recorded_animations
+        self.netgame_flags = netgame_flags
+        self.netgame_equipment = netgame_equipment
+        self.starting_equipment = starting_equipment
+        self.bsp_switch_trigger_volumes = bsp_switch_trigger_volumes
+        self.decals = decals
+        self.decal_palette = decal_palette
+        self.detail_object_collection_palette  = detail_object_collection_palette
+        self.actor_palette = actor_palette
+        self.encounters = encounters
+        self.command_lists = command_lists
+        self.ai_animation_references = ai_animation_references
+        self.ai_script_references = ai_script_references
+        self.ai_recording_references = ai_recording_references
+        self.ai_conversations = ai_conversations
+        self.script_syntax_data = script_syntax_data
+        self.script_string_data = script_string_data
+        self.scripts = scripts
+        self.script_globals = script_globals
+        self.references = references
+        self.source_files = source_files
+        self.cutscene_flags = cutscene_flags
+        self.cutscene_camera_points = cutscene_camera_points
+        self.cutscene_titles = cutscene_titles
+        self.structure_bsps = structure_bsps
+        self.dont_use_tag_ref = dont_use_tag_ref
+        self.wont_use_tag_ref = wont_use_tag_ref
+        self.cant_use_tag_ref = cant_use_tag_ref
+        self.skies_tag_block = skies_tag_block
+        self.scenario_type = scenario_type
+        self.scenario_flags = scenario_flags
+        self.child_scenarios_tag_block = child_scenarios_tag_block
+        self.local_north = local_north
+        self.predicted_resources_tag_block = predicted_resources_tag_block
+        self.functions_tag_block = functions_tag_block
+        self.editor_scenario_data = editor_scenario_data
+        self.comments_tag_block = comments_tag_block
+        self.scavenger_hunt_objects_tag_block = scavenger_hunt_objects_tag_block
+        self.object_names_tag_block = object_names_tag_block
+        self.scenery_tag_block = scenery_tag_block
+        self.scenery_palette_tag_block = scenery_palette_tag_block
+        self.bipeds_tag_block = bipeds_tag_block
+        self.biped_palette_tag_block = biped_palette_tag_block
+        self.vehicles_tag_block = vehicles_tag_block
+        self.vehicle_palette_tag_block = vehicle_palette_tag_block
+        self.equipment_tag_block = equipment_tag_block
+        self.equipment_palette_tag_block = equipment_palette_tag_block
+        self.weapons_tag_block = weapons_tag_block
+        self.weapon_palette_tag_block = weapon_palette_tag_block
+        self.device_groups_tag_block = device_groups_tag_block
+        self.machines_tag_block = machines_tag_block
+        self.machine_palette_tag_block = machine_palette_tag_block
+        self.controls_tag_block = controls_tag_block
+        self.control_palette_tag_block = control_palette_tag_block
+        self.light_fixtures_tag_block = light_fixtures_tag_block
+        self.light_fixtures_palette_tag_block = light_fixtures_palette_tag_block
+        self.sound_scenery_tag_block = sound_scenery_tag_block
+        self.sound_scenery_palette_tag_block = sound_scenery_palette_tag_block
+        self.player_starting_profile_tag_block = player_starting_profile_tag_block
+        self.player_starting_locations_tag_block = player_starting_locations_tag_block
+        self.trigger_volumes_tag_block = trigger_volumes_tag_block
+        self.recorded_animations_tag_block = recorded_animations_tag_block
+        self.netgame_flags_tag_block = netgame_flags_tag_block
+        self.netgame_equipment_tag_block = netgame_equipment_tag_block
+        self.starting_equipment_tag_block = starting_equipment_tag_block
+        self.bsp_switch_trigger_volumes_tag_block = bsp_switch_trigger_volumes_tag_block
+        self.decals_tag_block = decals_tag_block
+        self.decal_palette_tag_block = decal_palette_tag_block
+        self.detail_object_collection_palette_tag_block = detail_object_collection_palette_tag_block
+        self.actor_palette_tag_block = actor_palette_tag_block
+        self.encounters_tag_block = encounters_tag_block
+        self.command_lists_tag_block = command_lists_tag_block
+        self.ai_animation_references_tag_block = ai_animation_references_tag_block
+        self.ai_script_references_tag_block = ai_script_references_tag_block
+        self.ai_recording_references_tag_block = ai_recording_references_tag_block
+        self.ai_conversations_tag_block = ai_conversations_tag_block
+        self.script_syntax_data_tag_data = script_syntax_data_tag_data
+        self.script_string_data_tag_data = script_string_data_tag_data
+        self.scripts_tag_block = scripts_tag_block
+        self.globals_tag_block = globals_tag_block
+        self.references_tag_block = references_tag_block
+        self.source_files_tag_block = source_files_tag_block
+        self.cutscene_flags_tag_block = cutscene_flags_tag_block
+        self.cutscene_camera_points_tag_block = cutscene_camera_points_tag_block
+        self.cutscene_titles_tag_block = cutscene_titles_tag_block
+        self.custom_object_names_tag_ref = custom_object_names_tag_ref
+        self.chapter_title_text_tag_ref = chapter_title_text_tag_ref
+        self.hud_messages_tag_ref = hud_messages_tag_ref
+        self.structure_bsps_tag_block = structure_bsps_tag_block
 
     class PredictedResource:
         def __init__(self, tag_type=0, resource_index=0, tag_index=0):

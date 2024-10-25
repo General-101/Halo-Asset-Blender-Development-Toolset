@@ -24,17 +24,8 @@
 #
 # ##### END MIT LICENSE BLOCK #####
 
-from mathutils import Vector
-from enum import Flag, Enum, auto
 from ..file_item.format import ItemAsset
 
 class GarbageAsset(ItemAsset):
     def __init__(self):
         super().__init__()
-        self.header = None
-        self.garbage_body_header = None
-        self.garbage_body = None
-
-    class GarbageBody(ItemAsset.ItemBody):
-        def __init__(self, ):
-            super().__init__()

@@ -222,144 +222,152 @@ class LightmappingPolicyEnum(Enum):
     per_vertex = auto()
 
 class LevelAsset():
-    def __init__(self):
-        self.header = None
-        self.level_header = None
-        self.level_body = None
-        self.import_info_header = None
-        self.import_info = None
-        self.collision_materials_header = None
-        self.collision_materials = None
-        self.collision_bsp_header = None
-        self.collision_bsps = None
-        self.unused_nodes_header = None
-        self.unused_nodes = None
-        self.leaves_header = None
-        self.leaves = None
-        self.surface_references_header = None
-        self.surface_references = None
-        self.cluster_data = None
-        self.cluster_portals_header = None
-        self.cluster_portals = None
-        self.fog_planes_header = None
-        self.fog_planes = None
-        self.weather_palette_header = None
-        self.weather_palette = None
-        self.weather_polyhedra_header = None
-        self.weather_polyhedra = None
-        self.detail_objects_header = None
-        self.detail_objects = None
-        self.clusters_header = None
-        self.clusters = None
-        self.material_header = None
-        self.materials = None
-        self.sky_owner_cluster_header = None
-        self.sky_owner_cluster = None
-        self.conveyor_surfaces_header = None
-        self.conveyor_surfaces = None
-        self.breakable_surfaces_header = None
-        self.breakable_surfaces = None
-        self.pathfinding_data_header = None
-        self.pathfinding_data = None
-        self.pathfinding_edges_header = None
-        self.pathfinding_edges = None
-        self.background_sound_palette_header = None
-        self.background_sound_palette = None
-        self.sound_environment_palette_header = None
-        self.sound_environment_palette = None
-        self.sound_pas_data = None
-        self.markers_header = None
-        self.markers = None
-        self.runtime_decals_header = None
-        self.runtime_decals = None
-        self.environment_object_palette_header = None
-        self.environment_object_palette = None
-        self.environment_objects_header = None
-        self.environment_objects = None
-        self.lightmaps_header = None
-        self.lightmaps = None
-        self.leaf_map_leaves_header = None
-        self.leaf_map_leaves = None
-        self.leaf_map_connections_header = None
-        self.leaf_map_connections = None
-        self.errors_header = None
-        self.errors = None
-        self.precomputed_lighting_header = None
-        self.precomputed_lighting = None
-        self.instanced_geometry_definition_header = None
-        self.instanced_geometry_definition = None
-        self.instanced_geometry_instances_header = None
-        self.instanced_geometry_instances = None
-
-    class LevelBody:
-        def __init__(self, import_info_tag_block=None, collision_materials_tag_block=None, collision_bsps_tag_block=None, vehicle_floor=0.0, vehicle_ceiling=0.0,
-                     unused_nodes_tag_block=None, leaves_tag_block=None, world_bounds_x=(0.0, 0.0), world_bounds_y=(0.0, 0.0), world_bounds_z=(0.0, 0.0),
-                     surface_references_tag_block=None, cluster_raw_data=None, cluster_portals_tag_block=None, fog_planes_tag_block=None, weather_palette_tag_block=None,
-                     weather_polyhedra_tag_block=None, detail_objects_tag_block=None, clusters_tag_block=None, materials_tag_block=None, sky_owner_cluster_tag_block=None,
-                     conveyor_surfaces_tag_block=None, breakable_surfaces_tag_block=None, pathfinding_data_tag_block=None, pathfinding_edges_tag_block=None,
-                     background_sound_palette_tag_block=None, sound_environment_palette_tag_block=None, sound_pas_raw_data=None, markers_tag_block=None,
-                     runtime_decals_tag_block=None, environment_object_palette_tag_block=None, environment_objects_tag_block=None, lightmaps_tag_block=None,
-                     leaf_map_leaves_tag_block=None, leaf_map_connections_tag_block=None, errors_tag_block=None, precomputed_lighting_tag_block=None,
-                     instanced_geometry_definition_tag_block=None, instanced_geometry_instances_tag_block=None, ambience_sound_clusters_tag_block=None,
-                     reverb_sound_clusters_tag_block=None, transparent_planes_tag_block=None, vehicle_spherical_limit_radius=0.0, vehicle_spherical_limit_center=Vector(),
-                     debug_info_tag_block=None, decorators_bitmaps_tag_ref=None, decorators_0_raw_data=None, decorators_0_vector=Vector(), decorators_1_vector=Vector(),
-                     decorators_1_raw_data=None, breakable_surface_tag_block=None, water_definitions_tag_block=None, portal_device_mapping_tag_block=None,
-                     audibility_tag_block=None, object_fake_lightprobes_tag_block=None, decorators_tag_block=None):
-            self.import_info_tag_block = import_info_tag_block
-            self.collision_materials_tag_block = collision_materials_tag_block
-            self.collision_bsps_tag_block = collision_bsps_tag_block
-            self.vehicle_floor = vehicle_floor
-            self.vehicle_ceiling = vehicle_ceiling
-            self.unused_nodes_tag_block = unused_nodes_tag_block
-            self.leaves_tag_block = leaves_tag_block
-            self.world_bounds_x = world_bounds_x
-            self.world_bounds_y = world_bounds_y
-            self.world_bounds_z = world_bounds_z
-            self.surface_references_tag_block = surface_references_tag_block
-            self.cluster_raw_data = cluster_raw_data
-            self.cluster_portals_tag_block = cluster_portals_tag_block
-            self.fog_planes_tag_block = fog_planes_tag_block
-            self.weather_palette_tag_block = weather_palette_tag_block
-            self.weather_polyhedra_tag_block = weather_polyhedra_tag_block
-            self.detail_objects_tag_block = detail_objects_tag_block
-            self.clusters_tag_block = clusters_tag_block
-            self.materials_tag_block = materials_tag_block
-            self.sky_owner_cluster_tag_block = sky_owner_cluster_tag_block
-            self.conveyor_surfaces_tag_block = conveyor_surfaces_tag_block
-            self.breakable_surfaces_tag_block = breakable_surfaces_tag_block
-            self.pathfinding_data_tag_block = pathfinding_data_tag_block
-            self.pathfinding_edges_tag_block = pathfinding_edges_tag_block
-            self.background_sound_palette_tag_block = background_sound_palette_tag_block
-            self.sound_environment_palette_tag_block = sound_environment_palette_tag_block
-            self.sound_pas_raw_data = sound_pas_raw_data
-            self.markers_tag_block = markers_tag_block
-            self.runtime_decals_tag_block = runtime_decals_tag_block
-            self.environment_object_palette_tag_block = environment_object_palette_tag_block
-            self.environment_objects_tag_block = environment_objects_tag_block
-            self.lightmaps_tag_block = lightmaps_tag_block
-            self.leaf_map_leaves_tag_block = leaf_map_leaves_tag_block
-            self.leaf_map_connections_tag_block = leaf_map_connections_tag_block
-            self.errors_tag_block = errors_tag_block
-            self.precomputed_lighting_tag_block = precomputed_lighting_tag_block
-            self.instanced_geometry_definition_tag_block = instanced_geometry_definition_tag_block
-            self.instanced_geometry_instances_tag_block = instanced_geometry_instances_tag_block
-            self.ambience_sound_clusters_tag_block = ambience_sound_clusters_tag_block
-            self.reverb_sound_clusters_tag_block = reverb_sound_clusters_tag_block
-            self.transparent_planes_tag_block = transparent_planes_tag_block
-            self.vehicle_spherical_limit_radius = vehicle_spherical_limit_radius
-            self.vehicle_spherical_limit_center = vehicle_spherical_limit_center
-            self.debug_info_tag_block = debug_info_tag_block
-            self.decorators_bitmaps_tag_ref = decorators_bitmaps_tag_ref
-            self.decorators_0_raw_data = decorators_0_raw_data
-            self.decorators_0_vector = decorators_0_vector
-            self.decorators_1_vector = decorators_1_vector
-            self.decorators_1_raw_data = decorators_1_raw_data
-            self.breakable_surface_tag_block = breakable_surface_tag_block
-            self.water_definitions_tag_block = water_definitions_tag_block
-            self.portal_device_mapping_tag_block = portal_device_mapping_tag_block
-            self.audibility_tag_block = audibility_tag_block
-            self.object_fake_lightprobes_tag_block = object_fake_lightprobes_tag_block
-            self.decorators_tag_block = decorators_tag_block
+    def __init__(self, header=None, level_header=None, import_info_header=None, import_info=None, collision_materials_header=None, collision_materials=None, 
+                 collision_bsp_header=None, collision_bsps=None, unused_nodes_header=None, unused_nodes=None, leaves_header=None, leaves=None, 
+                 surface_references_header=None, surface_references=None, cluster_data=None, cluster_portals_header=None, cluster_portals=None, fog_planes_header=None, 
+                 fog_planes=None, weather_palette_header=None, weather_palette=None, weather_polyhedra_header=None, weather_polyhedra=None, detail_objects_header=None, 
+                 detail_objects=None, clusters_header=None, clusters=None, material_header=None, materials=None, sky_owner_cluster_header=None, sky_owner_cluster=None, 
+                 conveyor_surfaces_header=None, conveyor_surfaces=None, breakable_surfaces_header=None, breakable_surfaces=None, pathfinding_data_header=None, 
+                 pathfinding_data=None, pathfinding_edges_header=None, pathfinding_edges=None, background_sound_palette_header=None, background_sound_palette=None, 
+                 sound_environment_palette_header=None, sound_environment_palette=None, sound_pas_data=None, markers_header=None, markers=None, runtime_decals_header=None, 
+                 runtime_decals=None, environment_object_palette_header=None, environment_object_palette=None, environment_objects_header=None, environment_objects=None, 
+                 lightmaps_header=None, lightmaps=None, leaf_map_leaves_header=None, leaf_map_leaves=None, leaf_map_connections_header=None, leaf_map_connections=None, 
+                 errors_header=None, errors=None, precomputed_lighting_header=None, precomputed_lighting=None, instanced_geometry_definition_header=None, 
+                 instanced_geometry_definition=None, instanced_geometry_instances_header=None, instanced_geometry_instances=None, import_info_tag_block=None, 
+                 collision_materials_tag_block=None, collision_bsps_tag_block=None, vehicle_floor=0.0, vehicle_ceiling=0.0, unused_nodes_tag_block=None, 
+                 leaves_tag_block=None, world_bounds_x=(0.0, 0.0), world_bounds_y=(0.0, 0.0), world_bounds_z=(0.0, 0.0), surface_references_tag_block=None, 
+                 cluster_raw_data=None, cluster_portals_tag_block=None, fog_planes_tag_block=None, weather_palette_tag_block=None, weather_polyhedra_tag_block=None, 
+                 detail_objects_tag_block=None, clusters_tag_block=None, materials_tag_block=None, sky_owner_cluster_tag_block=None, conveyor_surfaces_tag_block=None, 
+                 breakable_surfaces_tag_block=None, pathfinding_data_tag_block=None, pathfinding_edges_tag_block=None, background_sound_palette_tag_block=None, 
+                 sound_environment_palette_tag_block=None, sound_pas_raw_data=None, markers_tag_block=None, runtime_decals_tag_block=None, 
+                 environment_object_palette_tag_block=None, environment_objects_tag_block=None, lightmaps_tag_block=None, leaf_map_leaves_tag_block=None, 
+                 leaf_map_connections_tag_block=None, errors_tag_block=None, precomputed_lighting_tag_block=None, instanced_geometry_definition_tag_block=None, 
+                 instanced_geometry_instances_tag_block=None, ambience_sound_clusters_tag_block=None, reverb_sound_clusters_tag_block=None, 
+                 transparent_planes_tag_block=None, vehicle_spherical_limit_radius=0.0, vehicle_spherical_limit_center=Vector(), debug_info_tag_block=None, 
+                 decorators_bitmaps_tag_ref=None, decorators_0_raw_data=None, decorators_0_vector=Vector(), decorators_1_vector=Vector(), decorators_1_raw_data=None, 
+                 breakable_surface_tag_block=None, water_definitions_tag_block=None, portal_device_mapping_tag_block=None, audibility_tag_block=None, 
+                 object_fake_lightprobes_tag_block=None, decorators_tag_block=None):
+        self.header = header
+        self.level_header = level_header
+        self.import_info_header = import_info_header
+        self.import_info = import_info
+        self.collision_materials_header = collision_materials_header
+        self.collision_materials = collision_materials
+        self.collision_bsp_header = collision_bsp_header
+        self.collision_bsps = collision_bsps
+        self.unused_nodes_header = unused_nodes_header
+        self.unused_nodes = unused_nodes
+        self.leaves_header = leaves_header
+        self.leaves = leaves
+        self.surface_references_header = surface_references_header
+        self.surface_references = surface_references
+        self.cluster_data = cluster_data
+        self.cluster_portals_header = cluster_portals_header
+        self.cluster_portals = cluster_portals
+        self.fog_planes_header = fog_planes_header
+        self.fog_planes = fog_planes
+        self.weather_palette_header = weather_palette_header
+        self.weather_palette = weather_palette
+        self.weather_polyhedra_header = weather_polyhedra_header
+        self.weather_polyhedra = weather_polyhedra
+        self.detail_objects_header = detail_objects_header
+        self.detail_objects = detail_objects
+        self.clusters_header = clusters_header
+        self.clusters = clusters
+        self.material_header = material_header
+        self.materials = materials
+        self.sky_owner_cluster_header = sky_owner_cluster_header
+        self.sky_owner_cluster = sky_owner_cluster
+        self.conveyor_surfaces_header = conveyor_surfaces_header
+        self.conveyor_surfaces = conveyor_surfaces
+        self.breakable_surfaces_header = breakable_surfaces_header
+        self.breakable_surfaces = breakable_surfaces
+        self.pathfinding_data_header = pathfinding_data_header
+        self.pathfinding_data = pathfinding_data
+        self.pathfinding_edges_header = pathfinding_edges_header
+        self.pathfinding_edges = pathfinding_edges
+        self.background_sound_palette_header = background_sound_palette_header
+        self.background_sound_palette = background_sound_palette
+        self.sound_environment_palette_header = sound_environment_palette_header
+        self.sound_environment_palette = sound_environment_palette
+        self.sound_pas_data = sound_pas_data
+        self.markers_header = markers_header
+        self.markers = markers
+        self.runtime_decals_header = runtime_decals_header
+        self.runtime_decals = runtime_decals
+        self.environment_object_palette_header = environment_object_palette_header
+        self.environment_object_palette = environment_object_palette
+        self.environment_objects_header = environment_objects_header
+        self.environment_objects = environment_objects
+        self.lightmaps_header = lightmaps_header
+        self.lightmaps = lightmaps
+        self.leaf_map_leaves_header = leaf_map_leaves_header
+        self.leaf_map_leaves = leaf_map_leaves
+        self.leaf_map_connections_header = leaf_map_connections_header
+        self.leaf_map_connections = leaf_map_connections
+        self.errors_header = errors_header
+        self.errors = errors
+        self.precomputed_lighting_header = precomputed_lighting_header
+        self.precomputed_lighting = precomputed_lighting
+        self.instanced_geometry_definition_header = instanced_geometry_definition_header
+        self.instanced_geometry_definition = instanced_geometry_definition
+        self.instanced_geometry_instances_header = instanced_geometry_instances_header
+        self.instanced_geometry_instances = instanced_geometry_instances
+        self.import_info_tag_block = import_info_tag_block
+        self.collision_materials_tag_block = collision_materials_tag_block
+        self.collision_bsps_tag_block = collision_bsps_tag_block
+        self.vehicle_floor = vehicle_floor
+        self.vehicle_ceiling = vehicle_ceiling
+        self.unused_nodes_tag_block = unused_nodes_tag_block
+        self.leaves_tag_block = leaves_tag_block
+        self.world_bounds_x = world_bounds_x
+        self.world_bounds_y = world_bounds_y
+        self.world_bounds_z = world_bounds_z
+        self.surface_references_tag_block = surface_references_tag_block
+        self.cluster_raw_data = cluster_raw_data
+        self.cluster_portals_tag_block = cluster_portals_tag_block
+        self.fog_planes_tag_block = fog_planes_tag_block
+        self.weather_palette_tag_block = weather_palette_tag_block
+        self.weather_polyhedra_tag_block = weather_polyhedra_tag_block
+        self.detail_objects_tag_block = detail_objects_tag_block
+        self.clusters_tag_block = clusters_tag_block
+        self.materials_tag_block = materials_tag_block
+        self.sky_owner_cluster_tag_block = sky_owner_cluster_tag_block
+        self.conveyor_surfaces_tag_block = conveyor_surfaces_tag_block
+        self.breakable_surfaces_tag_block = breakable_surfaces_tag_block
+        self.pathfinding_data_tag_block = pathfinding_data_tag_block
+        self.pathfinding_edges_tag_block = pathfinding_edges_tag_block
+        self.background_sound_palette_tag_block = background_sound_palette_tag_block
+        self.sound_environment_palette_tag_block = sound_environment_palette_tag_block
+        self.sound_pas_raw_data = sound_pas_raw_data
+        self.markers_tag_block = markers_tag_block
+        self.runtime_decals_tag_block = runtime_decals_tag_block
+        self.environment_object_palette_tag_block = environment_object_palette_tag_block
+        self.environment_objects_tag_block = environment_objects_tag_block
+        self.lightmaps_tag_block = lightmaps_tag_block
+        self.leaf_map_leaves_tag_block = leaf_map_leaves_tag_block
+        self.leaf_map_connections_tag_block = leaf_map_connections_tag_block
+        self.errors_tag_block = errors_tag_block
+        self.precomputed_lighting_tag_block = precomputed_lighting_tag_block
+        self.instanced_geometry_definition_tag_block = instanced_geometry_definition_tag_block
+        self.instanced_geometry_instances_tag_block = instanced_geometry_instances_tag_block
+        self.ambience_sound_clusters_tag_block = ambience_sound_clusters_tag_block
+        self.reverb_sound_clusters_tag_block = reverb_sound_clusters_tag_block
+        self.transparent_planes_tag_block = transparent_planes_tag_block
+        self.vehicle_spherical_limit_radius = vehicle_spherical_limit_radius
+        self.vehicle_spherical_limit_center = vehicle_spherical_limit_center
+        self.debug_info_tag_block = debug_info_tag_block
+        self.decorators_bitmaps_tag_ref = decorators_bitmaps_tag_ref
+        self.decorators_0_raw_data = decorators_0_raw_data
+        self.decorators_0_vector = decorators_0_vector
+        self.decorators_1_vector = decorators_1_vector
+        self.decorators_1_raw_data = decorators_1_raw_data
+        self.breakable_surface_tag_block = breakable_surface_tag_block
+        self.water_definitions_tag_block = water_definitions_tag_block
+        self.portal_device_mapping_tag_block = portal_device_mapping_tag_block
+        self.audibility_tag_block = audibility_tag_block
+        self.object_fake_lightprobes_tag_block = object_fake_lightprobes_tag_block
+        self.decorators_tag_block = decorators_tag_block
 
     class ImportInfo:
         def __init__(self, build=0, version="", import_date="", culprit="", import_time="", files_tag_block=None, files_header=None, files=None):

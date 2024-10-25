@@ -119,42 +119,41 @@ class PeriodicExponentEnum(Enum):
     spark = auto()
 
 class ShaderAsset():
-    def __init__(self):
-        self.header = None
-        self.shader_body_header = None
-        self.shader_body = None
-        self.runtime_properties_header = None
-        self.runtime_properties = None
-        self.parameters_header = None
-        self.parameters = None
-        self.postprocess_definition_header = None
-        self.postprocess_definition = None
-        self.predicted_resources_header = None
-        self.predicted_resources = None
-        self.postprocess_properties_header = None
-        self.postprocess_properties = None
-
-    class ShaderBody:
-        def __init__(self, template=None, material_name="", material_name_length=0, runtime_properties_tag_block=None, flags=0, parameters_tag_block=None,
-                     postprocess_definition_tag_block=None, predicted_resources_tag_block=None, light_response=None, shader_lod_bias=0, specular_type=0, lightmap_type=0,
-                     lightmap_specular_brightness=0.0, lightmap_ambient_bias=0.0, postprocess_properties_tag_block=None, added_depth_bias_offset=0.0, added_depth_bias_slope=0.0):
-            self.template = template
-            self.material_name = material_name
-            self.material_name_length = material_name_length
-            self.runtime_properties_tag_block = runtime_properties_tag_block
-            self.flags = flags
-            self.parameters_tag_block = parameters_tag_block
-            self.postprocess_definition_tag_block = postprocess_definition_tag_block
-            self.predicted_resources_tag_block = predicted_resources_tag_block
-            self.light_response = light_response
-            self.shader_lod_bias = shader_lod_bias
-            self.specular_type = specular_type
-            self.lightmap_type = lightmap_type
-            self.lightmap_specular_brightness = lightmap_specular_brightness
-            self.lightmap_ambient_bias = lightmap_ambient_bias
-            self.postprocess_properties_tag_block = postprocess_properties_tag_block
-            self.added_depth_bias_offset = added_depth_bias_offset
-            self.added_depth_bias_slope = added_depth_bias_slope
+    def __init__(self, header=None, body_header=None, runtime_properties_header=None, runtime_properties=None, parameters_header=None, parameters=None, 
+                 postprocess_definition_header=None, postprocess_definition=None, predicted_resources_header=None, predicted_resources=None, 
+                 postprocess_properties_header=None, postprocess_properties=None, template=None, material_name="", material_name_length=0, runtime_properties_tag_block=None, 
+                 flags=0, parameters_tag_block=None, postprocess_definition_tag_block=None, predicted_resources_tag_block=None, light_response=None, shader_lod_bias=0, 
+                 specular_type=0, lightmap_type=0, lightmap_specular_brightness=0.0, lightmap_ambient_bias=0.0, postprocess_properties_tag_block=None, 
+                 added_depth_bias_offset=0.0, added_depth_bias_slope=0.0):
+        self.header = header
+        self.body_header = body_header
+        self.runtime_properties_header = runtime_properties_header
+        self.runtime_properties = runtime_properties
+        self.parameters_header = parameters_header
+        self.parameters = parameters
+        self.postprocess_definition_header = postprocess_definition_header
+        self.postprocess_definition = postprocess_definition
+        self.predicted_resources_header = predicted_resources_header
+        self.predicted_resources = predicted_resources
+        self.postprocess_properties_header = postprocess_properties_header
+        self.postprocess_properties = postprocess_properties
+        self.template = template
+        self.material_name = material_name
+        self.material_name_length = material_name_length
+        self.runtime_properties_tag_block = runtime_properties_tag_block
+        self.flags = flags
+        self.parameters_tag_block = parameters_tag_block
+        self.postprocess_definition_tag_block = postprocess_definition_tag_block
+        self.predicted_resources_tag_block = predicted_resources_tag_block
+        self.light_response = light_response
+        self.shader_lod_bias = shader_lod_bias
+        self.specular_type = specular_type
+        self.lightmap_type = lightmap_type
+        self.lightmap_specular_brightness = lightmap_specular_brightness
+        self.lightmap_ambient_bias = lightmap_ambient_bias
+        self.postprocess_properties_tag_block = postprocess_properties_tag_block
+        self.added_depth_bias_offset = added_depth_bias_offset
+        self.added_depth_bias_slope = added_depth_bias_slope
 
     class RuntimeProperty:
         def __init__(self, diffuse_map=None, lightmap_emissive_map=None, lightmap_emissive_color=(0.0, 0.0, 0.0, 1.0), lightmap_emissive_power=0.0, lightmap_resolution_scale=0.0,

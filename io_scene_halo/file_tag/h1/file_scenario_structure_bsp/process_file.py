@@ -67,62 +67,61 @@ def process_file(input_stream, report):
     if XML_OUTPUT:
         tag_node = TAG.xml_doc.childNodes[0]
 
-    LEVEL.level_body = LEVEL.LevelBody()
-    LEVEL.level_body.lightmap_bitmaps_tag_ref = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "lightmap bitmaps"))
-    LEVEL.level_body.vehicle_floor = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "vehicle floor"))
-    LEVEL.level_body.vehicle_ceiling = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "vehicle ceiling"))
+    LEVEL.lightmap_bitmaps_tag_ref = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "lightmap bitmaps"))
+    LEVEL.vehicle_floor = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "vehicle floor"))
+    LEVEL.vehicle_ceiling = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "vehicle ceiling"))
     input_stream.read(20) # Padding?
-    LEVEL.level_body.default_ambient_color = TAG.read_rgb(input_stream, TAG, tag_format.XMLData(tag_node, "default ambient color"))
+    LEVEL.default_ambient_color = TAG.read_rgb(input_stream, TAG, tag_format.XMLData(tag_node, "default ambient color"))
     input_stream.read(4) # Padding?
-    LEVEL.level_body.default_distant_light_0_color = TAG.read_rgb(input_stream, TAG, tag_format.XMLData(tag_node, "default distant light 0 color"))
-    LEVEL.level_body.default_distant_light_0_direction = TAG.read_vector(input_stream, TAG, tag_format.XMLData(tag_node, "default distant light 0 direction"))
-    LEVEL.level_body.default_distant_light_1_color = TAG.read_rgb(input_stream, TAG, tag_format.XMLData(tag_node, "default distant light 1 color"))
-    LEVEL.level_body.default_distant_light_1_direction = TAG.read_vector(input_stream, TAG, tag_format.XMLData(tag_node, "default distant light 1 direction"))
+    LEVEL.default_distant_light_0_color = TAG.read_rgb(input_stream, TAG, tag_format.XMLData(tag_node, "default distant light 0 color"))
+    LEVEL.default_distant_light_0_direction = TAG.read_vector(input_stream, TAG, tag_format.XMLData(tag_node, "default distant light 0 direction"))
+    LEVEL.default_distant_light_1_color = TAG.read_rgb(input_stream, TAG, tag_format.XMLData(tag_node, "default distant light 1 color"))
+    LEVEL.default_distant_light_1_direction = TAG.read_vector(input_stream, TAG, tag_format.XMLData(tag_node, "default distant light 1 direction"))
     input_stream.read(12) # Padding?
-    LEVEL.level_body.default_reflection_tint = TAG.read_argb(input_stream, TAG, tag_format.XMLData(tag_node, "default reflection tint"))
-    LEVEL.level_body.default_shadow_vector = TAG.read_vector(input_stream, TAG, tag_format.XMLData(tag_node, "default shadow vector"))
-    LEVEL.level_body.default_shadow_color = TAG.read_rgb(input_stream, TAG, tag_format.XMLData(tag_node, "default shadow color"))
+    LEVEL.default_reflection_tint = TAG.read_argb(input_stream, TAG, tag_format.XMLData(tag_node, "default reflection tint"))
+    LEVEL.default_shadow_vector = TAG.read_vector(input_stream, TAG, tag_format.XMLData(tag_node, "default shadow vector"))
+    LEVEL.default_shadow_color = TAG.read_rgb(input_stream, TAG, tag_format.XMLData(tag_node, "default shadow color"))
     input_stream.read(4) # Padding?
-    LEVEL.level_body.collision_materials_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "collision materials"))
-    LEVEL.level_body.collision_bsps_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "collision bsp"))
-    LEVEL.level_body.nodes_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "nodes"))
-    LEVEL.level_body.world_bounds_x = TAG.read_min_max(input_stream, TAG, tag_format.XMLData(tag_node, "world bounds x"))
-    LEVEL.level_body.world_bounds_y = TAG.read_min_max(input_stream, TAG, tag_format.XMLData(tag_node, "world bounds y"))
-    LEVEL.level_body.world_bounds_z = TAG.read_min_max(input_stream, TAG, tag_format.XMLData(tag_node, "world bounds z"))
-    LEVEL.level_body.leaves_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "leaves"))
-    LEVEL.level_body.leaf_surfaces_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "leaf surfaces"))
-    LEVEL.level_body.surfaces_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "surfaces"))
-    LEVEL.level_body.lightmaps_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "lightmaps"))
+    LEVEL.collision_materials_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "collision materials"))
+    LEVEL.collision_bsps_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "collision bsp"))
+    LEVEL.nodes_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "nodes"))
+    LEVEL.world_bounds_x = TAG.read_min_max(input_stream, TAG, tag_format.XMLData(tag_node, "world bounds x"))
+    LEVEL.world_bounds_y = TAG.read_min_max(input_stream, TAG, tag_format.XMLData(tag_node, "world bounds y"))
+    LEVEL.world_bounds_z = TAG.read_min_max(input_stream, TAG, tag_format.XMLData(tag_node, "world bounds z"))
+    LEVEL.leaves_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "leaves"))
+    LEVEL.leaf_surfaces_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "leaf surfaces"))
+    LEVEL.surfaces_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "surfaces"))
+    LEVEL.lightmaps_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "lightmaps"))
     input_stream.read(12) # Padding?
-    LEVEL.level_body.lens_flares_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "lens flares"))
-    LEVEL.level_body.lens_flare_markers_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "lens flare markers"))
-    LEVEL.level_body.clusters_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "clusters"))
-    LEVEL.level_body.cluster_data_raw_data = TAG.RawData().read(input_stream, TAG, tag_format.XMLData(tag_node, "cluster data"))
-    LEVEL.level_body.cluster_portals_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "cluster portals"))
+    LEVEL.lens_flares_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "lens flares"))
+    LEVEL.lens_flare_markers_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "lens flare markers"))
+    LEVEL.clusters_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "clusters"))
+    LEVEL.cluster_data_raw_data = TAG.RawData().read(input_stream, TAG, tag_format.XMLData(tag_node, "cluster data"))
+    LEVEL.cluster_portals_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "cluster portals"))
     input_stream.read(12) # Padding?
-    LEVEL.level_body.breakable_surfaces_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "breakable surfaces"))
-    LEVEL.level_body.fog_planes_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "fog planes"))
-    LEVEL.level_body.fog_regions_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "fog regions"))
-    LEVEL.level_body.fog_palettes_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "fog palettes"))
+    LEVEL.breakable_surfaces_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "breakable surfaces"))
+    LEVEL.fog_planes_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "fog planes"))
+    LEVEL.fog_regions_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "fog regions"))
+    LEVEL.fog_palettes_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "fog palettes"))
     input_stream.read(24) # Padding?
-    LEVEL.level_body.weather_palettes_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "weather palettes"))
-    LEVEL.level_body.weather_polyhedras_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "weather polyhedras"))
+    LEVEL.weather_palettes_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "weather palettes"))
+    LEVEL.weather_polyhedras_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "weather polyhedras"))
     input_stream.read(24) # Padding?
-    LEVEL.level_body.pathfinding_surfaces_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "pathfinding surfaces"))
-    LEVEL.level_body.pathfinding_edges_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "pathfinding edges"))
-    LEVEL.level_body.background_sounds_palette_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "background sounds palette"))
-    LEVEL.level_body.sound_environments_palette_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "sound environments palette"))
-    LEVEL.level_body.sound_pas_raw_data = TAG.RawData().read(input_stream, TAG, tag_format.XMLData(tag_node, "sound pas data"))
-    LEVEL.level_body.unknown_0 = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(tag_node, "unknown 0"))
+    LEVEL.pathfinding_surfaces_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "pathfinding surfaces"))
+    LEVEL.pathfinding_edges_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "pathfinding edges"))
+    LEVEL.background_sounds_palette_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "background sounds palette"))
+    LEVEL.sound_environments_palette_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "sound environments palette"))
+    LEVEL.sound_pas_raw_data = TAG.RawData().read(input_stream, TAG, tag_format.XMLData(tag_node, "sound pas data"))
+    LEVEL.unknown_0 = TAG.read_signed_integer(input_stream, TAG, tag_format.XMLData(tag_node, "unknown 0"))
     input_stream.read(20) # Padding?
-    LEVEL.level_body.markers_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "markers"))
-    LEVEL.level_body.detail_objects_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "detail objects"))
-    LEVEL.level_body.runtime_decals_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "runtime decals"))
+    LEVEL.markers_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "markers"))
+    LEVEL.detail_objects_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "detail objects"))
+    LEVEL.runtime_decals_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "runtime decals"))
     input_stream.read(12) # Padding?
-    LEVEL.level_body.leaf_map_leaves_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "leaf map leaves"))
-    LEVEL.level_body.leaf_map_portals_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "leaf map portals"))
+    LEVEL.leaf_map_leaves_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "leaf map leaves"))
+    LEVEL.leaf_map_portals_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "leaf map portals"))
 
-    lightmap_bitmaps_tag_ref = LEVEL.level_body.lightmap_bitmaps_tag_ref
+    lightmap_bitmaps_tag_ref = LEVEL.lightmap_bitmaps_tag_ref
     lightmap_bitmaps_name_length = lightmap_bitmaps_tag_ref.name_length
     if lightmap_bitmaps_name_length > 0:
         lightmap_bitmaps_tag_ref.name = TAG.read_variable_string(input_stream, lightmap_bitmaps_name_length, TAG)
@@ -158,8 +157,8 @@ def process_file(input_stream, report):
     LEVEL.leaf_map_leaves = []
     LEVEL.leaf_map_portals = []
 
-    collision_material_node = tag_format.get_xml_node(XML_OUTPUT, LEVEL.level_body.collision_materials_tag_block.count, tag_node, "name", "collision materials")
-    for collision_material_idx in range(LEVEL.level_body.collision_materials_tag_block.count):
+    collision_material_node = tag_format.get_xml_node(XML_OUTPUT, LEVEL.collision_materials_tag_block.count, tag_node, "name", "collision materials")
+    for collision_material_idx in range(LEVEL.collision_materials_tag_block.count):
         collision_material_element_node = None
         if XML_OUTPUT:
             collision_material_element_node = TAG.xml_doc.createElement('element')
@@ -178,8 +177,8 @@ def process_file(input_stream, report):
             control_palette_tag_ref_node = tag_format.get_xml_node(XML_OUTPUT, 1, collision_material_element_node, "name", "shader")
             collision_material.shader_tag_ref.append_xml_attributes(control_palette_tag_ref_node)
 
-    collision_bsp_node = tag_format.get_xml_node(XML_OUTPUT, LEVEL.level_body.collision_bsps_tag_block.count, tag_node, "name", "collision bsp")
-    for collision_bsp_idx in range(LEVEL.level_body.collision_bsps_tag_block.count):
+    collision_bsp_node = tag_format.get_xml_node(XML_OUTPUT, LEVEL.collision_bsps_tag_block.count, tag_node, "name", "collision bsp")
+    for collision_bsp_idx in range(LEVEL.collision_bsps_tag_block.count):
         collision_bsp_element_node = None
         if XML_OUTPUT:
             collision_bsp_element_node = TAG.xml_doc.createElement('element')
@@ -319,8 +318,8 @@ def process_file(input_stream, report):
 
             collision_bsp.vertices.append(vertex)
 
-    nodes_node = tag_format.get_xml_node(XML_OUTPUT, LEVEL.level_body.nodes_tag_block.count, tag_node, "name", "nodes")
-    for node_idx in range(LEVEL.level_body.nodes_tag_block.count):
+    nodes_node = tag_format.get_xml_node(XML_OUTPUT, LEVEL.nodes_tag_block.count, tag_node, "name", "nodes")
+    for node_idx in range(LEVEL.nodes_tag_block.count):
         node_element_node = None
         if XML_OUTPUT:
             node_element_node = TAG.xml_doc.createElement('element')
@@ -337,8 +336,8 @@ def process_file(input_stream, report):
 
         LEVEL.nodes.append(node)
 
-    cluster_leaf_node = tag_format.get_xml_node(XML_OUTPUT, LEVEL.level_body.leaves_tag_block.count, tag_node, "name", "leaves")
-    for cluster_leaf_idx in range(LEVEL.level_body.leaves_tag_block.count):
+    cluster_leaf_node = tag_format.get_xml_node(XML_OUTPUT, LEVEL.leaves_tag_block.count, tag_node, "name", "leaves")
+    for cluster_leaf_idx in range(LEVEL.leaves_tag_block.count):
         cluster_leaf_element_node = None
         if XML_OUTPUT:
             cluster_leaf_element_node = TAG.xml_doc.createElement('element')
@@ -356,8 +355,8 @@ def process_file(input_stream, report):
 
         LEVEL.leaves.append(cluster_leaf)
 
-    leaf_surface_node = tag_format.get_xml_node(XML_OUTPUT, LEVEL.level_body.leaf_surfaces_tag_block.count, tag_node, "name", "leaf surfaces")
-    for leaf_surface_idx in range(LEVEL.level_body.leaf_surfaces_tag_block.count):
+    leaf_surface_node = tag_format.get_xml_node(XML_OUTPUT, LEVEL.leaf_surfaces_tag_block.count, tag_node, "name", "leaf surfaces")
+    for leaf_surface_idx in range(LEVEL.leaf_surfaces_tag_block.count):
         leaf_surface_element_node = None
         if XML_OUTPUT:
             leaf_surface_element_node = TAG.xml_doc.createElement('element')
@@ -370,8 +369,8 @@ def process_file(input_stream, report):
 
         LEVEL.leaf_surfaces.append(leaf_surface)
 
-    surface_node = tag_format.get_xml_node(XML_OUTPUT, LEVEL.level_body.surfaces_tag_block.count, tag_node, "name", "surfaces")
-    for surface_idx in range(LEVEL.level_body.surfaces_tag_block.count):
+    surface_node = tag_format.get_xml_node(XML_OUTPUT, LEVEL.surfaces_tag_block.count, tag_node, "name", "surfaces")
+    for surface_idx in range(LEVEL.surfaces_tag_block.count):
         surface_element_node = None
         if XML_OUTPUT:
             surface_element_node = TAG.xml_doc.createElement('element')
@@ -384,8 +383,8 @@ def process_file(input_stream, report):
         surface.v2 = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(surface_element_node, "v2"))
         LEVEL.surfaces.append(surface)
 
-    lightmap_node = tag_format.get_xml_node(XML_OUTPUT, LEVEL.level_body.lightmaps_tag_block.count, tag_node, "name", "lightmaps")
-    for lightmap_idx in range(LEVEL.level_body.lightmaps_tag_block.count):
+    lightmap_node = tag_format.get_xml_node(XML_OUTPUT, LEVEL.lightmaps_tag_block.count, tag_node, "name", "lightmaps")
+    for lightmap_idx in range(LEVEL.lightmaps_tag_block.count):
         lightmap_element_node = None
         if XML_OUTPUT:
             lightmap_element_node = TAG.xml_doc.createElement('element')
@@ -543,15 +542,15 @@ def process_file(input_stream, report):
 
             TAG.big_endian = True
 
-    for lens_flare_idx in range(LEVEL.level_body.lens_flares_tag_block.count):
+    for lens_flare_idx in range(LEVEL.lens_flares_tag_block.count):
         LEVEL.lens_flares.append(TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(material_element_node, "lensflare")))
 
     for lens_flare in LEVEL.lens_flares:
         if lens_flare.name_length > 0:
             lens_flare.name = TAG.read_variable_string(input_stream, lens_flare.name_length, TAG)
 
-    lens_flare_marker_node = tag_format.get_xml_node(XML_OUTPUT, LEVEL.level_body.lens_flare_markers_tag_block.count, tag_node, "name", "lens flare markers")
-    for lens_flare_marker_idx in range(LEVEL.level_body.lens_flare_markers_tag_block.count):
+    lens_flare_marker_node = tag_format.get_xml_node(XML_OUTPUT, LEVEL.lens_flare_markers_tag_block.count, tag_node, "name", "lens flare markers")
+    for lens_flare_marker_idx in range(LEVEL.lens_flare_markers_tag_block.count):
         lens_flare_marker_element_node = None
         if XML_OUTPUT:
             lens_flare_marker_element_node = TAG.xml_doc.createElement('element')
@@ -567,7 +566,7 @@ def process_file(input_stream, report):
 
         LEVEL.lens_flare_markers.append(lens_flare_marker)
 
-    for cluster_idx in range(LEVEL.level_body.clusters_tag_block.count):
+    for cluster_idx in range(LEVEL.clusters_tag_block.count):
         cluster_struct = struct.unpack('>hhhhhHHH24xiIIiIIhhiIIiIIiII', input_stream.read(104))
         cluster = LEVEL.Cluster()
         cluster.sky = cluster_struct[0]
@@ -663,9 +662,9 @@ def process_file(input_stream, report):
         cluster.mirrors = mirrors
         cluster.portals = portals
 
-    cluster_data_size = LEVEL.level_body.cluster_data_raw_data.size
+    cluster_data_size = LEVEL.cluster_data_raw_data.size
     if cluster_data_size > 0:
-        cluster_raw_data = input_stream.read(LEVEL.level_body.cluster_data_raw_data.size)
+        cluster_raw_data = input_stream.read(LEVEL.cluster_data_raw_data.size)
         data_set = 0
         for cluster in LEVEL.clusters:
             cluster_data = LEVEL.ClusterData()
@@ -677,7 +676,7 @@ def process_file(input_stream, report):
 
             LEVEL.cluster_data.append(cluster_data)
 
-    for cluster_portal_idx in range(LEVEL.level_body.cluster_portals_tag_block.count):
+    for cluster_portal_idx in range(LEVEL.cluster_portals_tag_block.count):
         cluster_portal_struct = struct.unpack('>hhiffffi24xiII', input_stream.read(64))
         cluster_portal = LEVEL.ClusterPortal()
         cluster_portal.front_cluster = cluster_portal_struct[0]
@@ -701,7 +700,7 @@ def process_file(input_stream, report):
 
         cluster_portal.vertices = vertices
 
-    for breakable_surface_idx in range(LEVEL.level_body.breakable_surfaces_tag_block.count):
+    for breakable_surface_idx in range(LEVEL.breakable_surfaces_tag_block.count):
         breakable_surface_struct = struct.unpack('>ffffi28x', input_stream.read(48))
         breakable_surface = LEVEL.BreakableSurfaces()
         breakable_surface.centroid = Vector((breakable_surface_struct[0], breakable_surface_struct[1], breakable_surface_struct[2]))
@@ -710,7 +709,7 @@ def process_file(input_stream, report):
 
         LEVEL.breakable_surfaces.append(breakable_surface)
 
-    for fog_plane_idx in range(LEVEL.level_body.fog_planes_tag_block.count):
+    for fog_plane_idx in range(LEVEL.fog_planes_tag_block.count):
         fog_plane_struct = struct.unpack('>hhffffiII', input_stream.read(32))
         fog_plane = LEVEL.FogPlane()
         fog_plane.front_region = fog_plane_struct[0]
@@ -732,7 +731,7 @@ def process_file(input_stream, report):
 
         fog_plane.vertices = vertices
 
-    for fog_region_idx in range(LEVEL.level_body.fog_regions_tag_block.count):
+    for fog_region_idx in range(LEVEL.fog_regions_tag_block.count):
         fog_region_struct = struct.unpack('>36xhh', input_stream.read(40))
         fog_region = LEVEL.FogRegion()
         fog_region.fog_palette = fog_region_struct[0]
@@ -740,7 +739,7 @@ def process_file(input_stream, report):
 
         LEVEL.fog_regions.append(fog_region)
 
-    for fog_palette_idx in range(LEVEL.level_body.fog_palettes_tag_block.count):
+    for fog_palette_idx in range(LEVEL.fog_palettes_tag_block.count):
         fog_palette_struct = struct.unpack('>32s4siiI4x32s52x', input_stream.read(136))
         fog_palette = LEVEL.FogPalette()
         fog_palette.name = fog_palette_struct[0].decode().rstrip('\x00')
@@ -754,7 +753,7 @@ def process_file(input_stream, report):
             tag_path = struct.unpack('>%ssx' % fog_palette.fog_tag_ref.name_length, input_stream.read(fog_palette.fog_tag_ref.name_length  + 1))
             fog_palette.fog_tag_ref.name = tag_path[0].decode().rstrip('\x00')
 
-    for weather_palette_idx in range(LEVEL.level_body.weather_palettes_tag_block.count):
+    for weather_palette_idx in range(LEVEL.weather_palettes_tag_block.count):
         weather_palette_struct = struct.unpack('>32s4siiI4x32s44x4siiIffff4x32s44x', input_stream.read(240))
         weather_palette = LEVEL.WeatherPalette()
         weather_palette.name = weather_palette_struct[0].decode().rstrip('\x00')
@@ -776,7 +775,7 @@ def process_file(input_stream, report):
             tag_path = struct.unpack('>%ssx' % weather_palette.wind_tag_ref.name_length, input_stream.read(weather_palette.wind_tag_ref.name_length + 1))
             weather_palette.wind_tag_ref.name = tag_path[0].decode().rstrip('\x00')
 
-    for weather_polyhedra_idx in range(LEVEL.level_body.weather_polyhedras_tag_block.count):
+    for weather_polyhedra_idx in range(LEVEL.weather_polyhedras_tag_block.count):
         weather_polyhedra_struct = struct.unpack('>ffff4xiII', input_stream.read(32))
         weather_polyhedra = LEVEL.WeatherPolyhedras()
         weather_polyhedra.bounding_sphere_center = Vector((weather_polyhedra_struct[0], weather_polyhedra_struct[1], weather_polyhedra_struct[2]))
@@ -797,17 +796,17 @@ def process_file(input_stream, report):
 
         weather_polyhedra.planes = planes
 
-    for pathfinding_surface_idx in range(LEVEL.level_body.pathfinding_surfaces_tag_block.count):
+    for pathfinding_surface_idx in range(LEVEL.pathfinding_surfaces_tag_block.count):
         pathfinding_surface_struct = struct.unpack('>B', input_stream.read(1))
 
         LEVEL.pathfinding_surfaces.append(pathfinding_surface_struct[0])
 
-    for pathfinding_edge_idx in range(LEVEL.level_body.pathfinding_edges_tag_block.count):
+    for pathfinding_edge_idx in range(LEVEL.pathfinding_edges_tag_block.count):
         pathfinding_edge_struct = struct.unpack('>B', input_stream.read(1))
 
         LEVEL.pathfinding_edges.append(pathfinding_edge_struct[0])
 
-    for background_sounds_palette_idx in range(LEVEL.level_body.background_sounds_palette_tag_block.count):
+    for background_sounds_palette_idx in range(LEVEL.background_sounds_palette_tag_block.count):
         background_sounds_palette_struct = struct.unpack('>32s4siiI4x32s32x', input_stream.read(116))
         background_sounds_palette = LEVEL.BackgroundSoundsPalette()
         background_sounds_palette.name = background_sounds_palette_struct[0].decode().rstrip('\x00')
@@ -821,7 +820,7 @@ def process_file(input_stream, report):
             tag_path = struct.unpack('>%ssx' % background_sounds_palette.background_sound_tag_ref.name_length, input_stream.read(background_sounds_palette.background_sound_tag_ref.name_length + 1))
             background_sounds_palette.background_sound_tag_ref.name = tag_path[0].decode().rstrip('\x00')
 
-    for sound_environments_palette_idx in range(LEVEL.level_body.sound_environments_palette_tag_block.count):
+    for sound_environments_palette_idx in range(LEVEL.sound_environments_palette_tag_block.count):
         sound_environments_palette_struct = struct.unpack('>32s4siiI32x', input_stream.read(80))
         sound_environments_palette = LEVEL.SoundEnvironmentsPalette()
         sound_environments_palette.name = sound_environments_palette_struct[0].decode().rstrip('\x00')
@@ -834,11 +833,11 @@ def process_file(input_stream, report):
             tag_path = struct.unpack('>%ssx' % sound_environments_palette.sound_environment_tag_ref.name_length, input_stream.read(sound_environments_palette.sound_environment_tag_ref.name_length + 1))
             sound_environments_palette.sound_environment_tag_ref.name = tag_path[0].decode().rstrip('\x00')
 
-    sound_pas_raw_data_size = LEVEL.level_body.sound_pas_raw_data.size
+    sound_pas_raw_data_size = LEVEL.sound_pas_raw_data.size
     if cluster_data_size > 0:
         cluster_raw_data = input_stream.read(sound_pas_raw_data_size)
 
-    for marker_idx in range(LEVEL.level_body.markers_tag_block.count):
+    for marker_idx in range(LEVEL.markers_tag_block.count):
         marker_struct = struct.unpack('>32sfffffff', input_stream.read(60))
         marker = LEVEL.Markers()
         marker.name = marker_struct[0].decode().rstrip('\x00')
@@ -847,7 +846,7 @@ def process_file(input_stream, report):
 
         LEVEL.markers.append(marker)
 
-    for detail_object_idx in range(LEVEL.level_body.detail_objects_tag_block.count):
+    for detail_object_idx in range(LEVEL.detail_objects_tag_block.count):
         detail_object_struct = struct.unpack('>iIIiIIiIIiIIb15x', input_stream.read(64))
         detail_object = LEVEL.DetailObject()
         detail_object.cells_tag_block = TAG.TagBlock(detail_object_struct[0], 262144, detail_object_struct[1], detail_object_struct[2])
@@ -901,10 +900,10 @@ def process_file(input_stream, report):
         detail_object.counts = counts
         detail_object.z_reference_vectors = z_reference_vectors
 
-    for runtime_decals_idx in range(LEVEL.level_body.runtime_decals_tag_block.count):
+    for runtime_decals_idx in range(LEVEL.runtime_decals_tag_block.count):
         input_stream.read(16)
 
-    for leaf_map_leaf_idx in range(LEVEL.level_body.leaf_map_leaves_tag_block.count):
+    for leaf_map_leaf_idx in range(LEVEL.leaf_map_leaves_tag_block.count):
         leaf_map_leaf_struct = struct.unpack('>iIIiII', input_stream.read(24))
         leaf_map_leaf = LEVEL.LeafMapLeaf()
         leaf_map_leaf.faces_tag_block = TAG.TagBlock(leaf_map_leaf_struct[0], 256, leaf_map_leaf_struct[1], leaf_map_leaf_struct[2])
@@ -939,7 +938,7 @@ def process_file(input_stream, report):
         leaf_map_leaf.faces = faces
         leaf_map_leaf.portal_indices = portal_indices
 
-    for leaf_map_portal_idx in range(LEVEL.level_body.leaf_map_portals_tag_block.count):
+    for leaf_map_portal_idx in range(LEVEL.leaf_map_portals_tag_block.count):
         leaf_map_portal_struct = struct.unpack('>iiiiII', input_stream.read(24))
         leaf_map_portal = LEVEL.LeafMapPortal()
         leaf_map_portal.plane_index = leaf_map_portal_struct[0]

@@ -122,66 +122,63 @@ class DetailMaskEnum(Enum):
     multipurpose_map_alpha = auto()
 
 class ShaderAsset():
-    def __init__(self):
-        self.header = None
-        self.shader_body = None
-
-    class ShaderBody:
-        def __init__(self, radiosity_flags=0, detail_level=0, power=0.0, color_of_emitted_light=(0.0, 0.0, 0.0, 1.0), tint_color=(0.0, 0.0, 0.0, 1.0), material_type=0, model_flags=0,
-                     translucency=0.0, change_color_source=0, self_illumination_flags=0, self_illumination_color_source=0, self_illumination_animation_function=0,
-                     self_illumination_animation_period=0.0, self_illumination_animation_color_lower_bound=(0.0, 0.0, 0.0, 1.0),
-                     self_illumination_animation_color_upper_bound=(0.0, 0.0, 0.0, 1.0), map_u_scale=0.0, map_v_scale=0.0, base_map=None, multipurpose_map=None, detail_function=0,
-                     detail_mask=0, detail_map_scale=0.0, detail_map=None, detail_map_v_scale=0.0, u_animation_source=0, u_animation_function=0, u_animation_period=0.0,
-                     u_animation_phase=0.0, u_animation_scale=0.0, v_animation_source=0, v_animation_function=0, v_animation_period=0.0, v_animation_phase=0.0, v_animation_scale=0.0,
-                     rotation_animation_source=0, rotation_animation_function=0, rotation_animation_period=0.0, rotation_animation_phase=0.0, rotation_animation_scale=0.0,
-                     rotation_animation_center=(0.0, 0.0), reflection_falloff_distance=0.0, reflection_cutoff_distance=0.0, perpendicular_brightness=0.0,
-                     perpendicular_tint_color=(0.0, 0.0, 0.0, 1.0), parallel_brightness=0.0, parallel_tint_color=(0.0, 0.0, 0.0, 1.0), reflection_cube_map=None, bump_scale=1.0, bump_map=None):
-            self.radiosity_flags = radiosity_flags
-            self.detail_level = detail_level
-            self.power = power
-            self.color_of_emitted_light = color_of_emitted_light
-            self.tint_color = tint_color
-            self.material_type = material_type
-            self.model_flags = model_flags
-            self.translucency = translucency
-            self.change_color_source = change_color_source
-            self.self_illumination_flags = self_illumination_flags
-            self.self_illumination_color_source = self_illumination_color_source
-            self.self_illumination_animation_function = self_illumination_animation_function
-            self.self_illumination_animation_period = self_illumination_animation_period
-            self.self_illumination_animation_color_lower_bound = self_illumination_animation_color_lower_bound
-            self.self_illumination_animation_color_upper_bound = self_illumination_animation_color_upper_bound
-            self.map_u_scale = map_u_scale
-            self.map_v_scale = map_v_scale
-            self.base_map = base_map
-            self.multipurpose_map = multipurpose_map
-            self.detail_function = detail_function
-            self.detail_mask = detail_mask
-            self.detail_map_scale = detail_map_scale
-            self.detail_map = detail_map
-            self.detail_map_v_scale = detail_map_v_scale
-            self.u_animation_source = u_animation_source
-            self.u_animation_function = u_animation_function
-            self.u_animation_period = u_animation_period
-            self.u_animation_phase = u_animation_phase
-            self.u_animation_scale = u_animation_scale
-            self.v_animation_source = v_animation_source
-            self.v_animation_function = v_animation_function
-            self.v_animation_period = v_animation_period
-            self.v_animation_phase = v_animation_phase
-            self.v_animation_scale = v_animation_scale
-            self.rotation_animation_source = rotation_animation_source
-            self.rotation_animation_function = rotation_animation_function
-            self.rotation_animation_period = rotation_animation_period
-            self.rotation_animation_phase = rotation_animation_phase
-            self.rotation_animation_scale = rotation_animation_scale
-            self.rotation_animation_center = rotation_animation_center
-            self.reflection_falloff_distance = reflection_falloff_distance
-            self.reflection_cutoff_distance = reflection_cutoff_distance
-            self.perpendicular_brightness = perpendicular_brightness
-            self.perpendicular_tint_color = perpendicular_tint_color
-            self.parallel_brightness = parallel_brightness
-            self.parallel_tint_color = parallel_tint_color
-            self.reflection_cube_map = reflection_cube_map
-            self.bump_scale = bump_scale
-            self.bump_map = bump_map
+    def __init__(self, header=None, radiosity_flags=0, detail_level=0, power=0.0, color_of_emitted_light=(0.0, 0.0, 0.0, 1.0), tint_color=(0.0, 0.0, 0.0, 1.0), 
+                 material_type=0, model_flags=0, translucency=0.0, change_color_source=0, self_illumination_flags=0, self_illumination_color_source=0, 
+                 self_illumination_animation_function=0, self_illumination_animation_period=0.0, self_illumination_animation_color_lower_bound=(0.0, 0.0, 0.0, 1.0), 
+                 self_illumination_animation_color_upper_bound=(0.0, 0.0, 0.0, 1.0), map_u_scale=0.0, map_v_scale=0.0, base_map=None, multipurpose_map=None, 
+                 detail_function=0, detail_mask=0, detail_map_scale=0.0, detail_map=None, detail_map_v_scale=0.0, u_animation_source=0, u_animation_function=0, 
+                 u_animation_period=0.0, u_animation_phase=0.0, u_animation_scale=0.0, v_animation_source=0, v_animation_function=0, v_animation_period=0.0, 
+                 v_animation_phase=0.0, v_animation_scale=0.0, rotation_animation_source=0, rotation_animation_function=0, rotation_animation_period=0.0, 
+                 rotation_animation_phase=0.0, rotation_animation_scale=0.0, rotation_animation_center=(0.0, 0.0), reflection_falloff_distance=0.0, 
+                 reflection_cutoff_distance=0.0, perpendicular_brightness=0.0, perpendicular_tint_color=(0.0, 0.0, 0.0, 1.0), parallel_brightness=0.0, 
+                 parallel_tint_color=(0.0, 0.0, 0.0, 1.0), reflection_cube_map=None, bump_scale=1.0, bump_map=None):
+        self.header = header
+        self.radiosity_flags = radiosity_flags
+        self.detail_level = detail_level
+        self.power = power
+        self.color_of_emitted_light = color_of_emitted_light
+        self.tint_color = tint_color
+        self.material_type = material_type
+        self.model_flags = model_flags
+        self.translucency = translucency
+        self.change_color_source = change_color_source
+        self.self_illumination_flags = self_illumination_flags
+        self.self_illumination_color_source = self_illumination_color_source
+        self.self_illumination_animation_function = self_illumination_animation_function
+        self.self_illumination_animation_period = self_illumination_animation_period
+        self.self_illumination_animation_color_lower_bound = self_illumination_animation_color_lower_bound
+        self.self_illumination_animation_color_upper_bound = self_illumination_animation_color_upper_bound
+        self.map_u_scale = map_u_scale
+        self.map_v_scale = map_v_scale
+        self.base_map = base_map
+        self.multipurpose_map = multipurpose_map
+        self.detail_function = detail_function
+        self.detail_mask = detail_mask
+        self.detail_map_scale = detail_map_scale
+        self.detail_map = detail_map
+        self.detail_map_v_scale = detail_map_v_scale
+        self.u_animation_source = u_animation_source
+        self.u_animation_function = u_animation_function
+        self.u_animation_period = u_animation_period
+        self.u_animation_phase = u_animation_phase
+        self.u_animation_scale = u_animation_scale
+        self.v_animation_source = v_animation_source
+        self.v_animation_function = v_animation_function
+        self.v_animation_period = v_animation_period
+        self.v_animation_phase = v_animation_phase
+        self.v_animation_scale = v_animation_scale
+        self.rotation_animation_source = rotation_animation_source
+        self.rotation_animation_function = rotation_animation_function
+        self.rotation_animation_period = rotation_animation_period
+        self.rotation_animation_phase = rotation_animation_phase
+        self.rotation_animation_scale = rotation_animation_scale
+        self.rotation_animation_center = rotation_animation_center
+        self.reflection_falloff_distance = reflection_falloff_distance
+        self.reflection_cutoff_distance = reflection_cutoff_distance
+        self.perpendicular_brightness = perpendicular_brightness
+        self.perpendicular_tint_color = perpendicular_tint_color
+        self.parallel_brightness = parallel_brightness
+        self.parallel_tint_color = parallel_tint_color
+        self.reflection_cube_map = reflection_cube_map
+        self.bump_scale = bump_scale
+        self.bump_map = bump_map

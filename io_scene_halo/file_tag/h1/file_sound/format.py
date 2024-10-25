@@ -99,39 +99,36 @@ class CompressionEnum(Enum):
     ogg = auto()
 
 class SoundAsset():
-    def __init__(self):
-        self.header = None
-        self.sound_body = None
-        self.pitch_ranges = None
-
-    class SoundBody:
-        def __init__(self, flags=0, class_type=0, sample_rate=0, minimum_distance=0.0, maximum_distance=0.0, skip_fraction=0.0, random_pitch_bounds=(0.0, 0.0),
-                     inner_cone_angle=0.0, outer_cone_angle=0.0, outer_cone_gain=0.0, randomization_gain_modifier=0.0, maximum_bend_per_second=0.0,
-                     scale_zero_skip_fraction_modifier=0.0, scale_zero_gain_modifier=0.0, scale_zero_pitch_modifier=0.0, scale_one_skip_fraction_modifier=0.0,
-                     scale_one_gain_modifier=0.0, scale_one_pitch_modifier=0.0, encoding=0, compression=0, promotion_sound=None, promotion_count=0, pitch_ranges_tag_block=None):
-            self.flags = flags
-            self.class_type = class_type
-            self.sample_rate = sample_rate
-            self.minimum_distance = minimum_distance
-            self.maximum_distance = maximum_distance
-            self.skip_fraction = skip_fraction
-            self.random_pitch_bounds = random_pitch_bounds
-            self.inner_cone_angle = inner_cone_angle
-            self.outer_cone_angle = outer_cone_angle
-            self.outer_cone_gain = outer_cone_gain
-            self.randomization_gain_modifier = randomization_gain_modifier
-            self.maximum_bend_per_second = maximum_bend_per_second
-            self.scale_zero_skip_fraction_modifier = scale_zero_skip_fraction_modifier
-            self.scale_zero_gain_modifier = scale_zero_gain_modifier
-            self.scale_zero_pitch_modifier = scale_zero_pitch_modifier
-            self.scale_one_skip_fraction_modifier = scale_one_skip_fraction_modifier
-            self.scale_one_gain_modifier = scale_one_gain_modifier
-            self.scale_one_pitch_modifier = scale_one_pitch_modifier
-            self.encoding = encoding
-            self.compression = compression
-            self.promotion_sound = promotion_sound
-            self.promotion_count = promotion_count
-            self.pitch_ranges_tag_block = pitch_ranges_tag_block
+    def __init__(self, header=None, pitch_ranges=None, flags=0, class_type=0, sample_rate=0, minimum_distance=0.0, maximum_distance=0.0, skip_fraction=0.0, 
+                 random_pitch_bounds=(0.0, 0.0), inner_cone_angle=0.0, outer_cone_angle=0.0, outer_cone_gain=0.0, randomization_gain_modifier=0.0, 
+                 maximum_bend_per_second=0.0, scale_zero_skip_fraction_modifier=0.0, scale_zero_gain_modifier=0.0, scale_zero_pitch_modifier=0.0, 
+                 scale_one_skip_fraction_modifier=0.0, scale_one_gain_modifier=0.0, scale_one_pitch_modifier=0.0, encoding=0, compression=0, promotion_sound=None, 
+                 promotion_count=0, pitch_ranges_tag_block=None):
+        self.header = header
+        self.pitch_ranges = pitch_ranges
+        self.flags = flags
+        self.class_type = class_type
+        self.sample_rate = sample_rate
+        self.minimum_distance = minimum_distance
+        self.maximum_distance = maximum_distance
+        self.skip_fraction = skip_fraction
+        self.random_pitch_bounds = random_pitch_bounds
+        self.inner_cone_angle = inner_cone_angle
+        self.outer_cone_angle = outer_cone_angle
+        self.outer_cone_gain = outer_cone_gain
+        self.randomization_gain_modifier = randomization_gain_modifier
+        self.maximum_bend_per_second = maximum_bend_per_second
+        self.scale_zero_skip_fraction_modifier = scale_zero_skip_fraction_modifier
+        self.scale_zero_gain_modifier = scale_zero_gain_modifier
+        self.scale_zero_pitch_modifier = scale_zero_pitch_modifier
+        self.scale_one_skip_fraction_modifier = scale_one_skip_fraction_modifier
+        self.scale_one_gain_modifier = scale_one_gain_modifier
+        self.scale_one_pitch_modifier = scale_one_pitch_modifier
+        self.encoding = encoding
+        self.compression = compression
+        self.promotion_sound = promotion_sound
+        self.promotion_count = promotion_count
+        self.pitch_ranges_tag_block = pitch_ranges_tag_block
 
     class PitchRange:
         def __init__(self, name="", natural_pitch=0.0, bend_bounds=(0.0, 0.0), actual_permutation_count=0, permutations_tag_block=None, permutations=None):

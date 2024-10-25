@@ -24,19 +24,25 @@
 #
 # ##### END MIT LICENSE BLOCK #####
 
+import re
 import bpy
 import bmesh
 
-from ....global_functions import global_functions, mesh_processing
+from ....global_functions import global_functions
 from .format import SurfaceFlags
 
 def build_collision(context, armature, COLLISION, game_version):
+    node_prefix_tuple = ('b ', 'b_', 'bone ', 'bone_', 'frame ', 'frame_', 'bip01 ', 'bip01_')
     collection = context.collection
     random_color_gen = global_functions.RandomColorGenerator() # generates a random sequence of colors
     for region_idx, region in enumerate(COLLISION.regions):
         for permutation_idx, permutation in enumerate(region.permutations):
             for bsp_idx, bsp in enumerate(permutation.bsps):
                 parent_name = COLLISION.nodes[bsp.node_index].name
+                for node_prefix in node_prefix_tuple:
+                    if parent_name.lower().startswith(node_prefix):
+                        parent_name = re.split(node_prefix, parent_name, maxsplit=1, flags=re.IGNORECASE)[1]
+
                 active_region_permutations = []
 
                 region_name = region.name

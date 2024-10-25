@@ -24,7 +24,6 @@
 #
 # ##### END MIT LICENSE BLOCK #####
 
-from mathutils import Vector
 from enum import Flag, Enum, auto
 from ..file_item.format import ItemAsset
 
@@ -42,16 +41,9 @@ class GrenadeTypeEnum(Enum):
     covenant_plasma = auto()
 
 class EquipmentAsset(ItemAsset):
-    def __init__(self):
+    def __init__(self, powerup_type=0, grenade_type=0, powerup_time=0.0, pickup_sound=None):
         super().__init__()
-        self.header = None
-        self.equipment_body_header = None
-        self.equipment_body = None
-
-    class EquipmentBody(ItemAsset.ItemBody):
-        def __init__(self, powerup_type=0, grenade_type=0, powerup_time=0.0, pickup_sound=None):
-            super().__init__()
-            self.powerup_type = powerup_type
-            self.grenade_type = grenade_type
-            self.powerup_time = powerup_time
-            self.pickup_sound = pickup_sound
+        self.powerup_type = powerup_type
+        self.grenade_type = grenade_type
+        self.powerup_time = powerup_time
+        self.pickup_sound = pickup_sound

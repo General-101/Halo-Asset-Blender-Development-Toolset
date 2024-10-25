@@ -31,17 +31,17 @@ from ....global_functions import tag_format, shader_processing
 from ....file_tag.h2.file_shader.format import FunctionTypeEnum
 
 def write_body(output_stream, TAG, EFFECT):
-    EFFECT.effect_body_header.write(output_stream, TAG, True)
-    output_stream.write(struct.pack('<I', EFFECT.effect_body.flags))
-    output_stream.write(struct.pack('<h', EFFECT.effect_body.loop_start_event))
+    EFFECT.body_header.write(output_stream, TAG, True)
+    output_stream.write(struct.pack('<I', EFFECT.flags))
+    output_stream.write(struct.pack('<h', EFFECT.loop_start_event))
     output_stream.write(struct.pack('<6x'))
-    EFFECT.effect_body.locations_tag_block.write(output_stream, False)
-    EFFECT.effect_body.events_tag_block.write(output_stream, False)
-    EFFECT.effect_body.looping_sound.write(output_stream, False, True)
-    output_stream.write(struct.pack('<h', EFFECT.effect_body.location))
+    EFFECT.locations_tag_block.write(output_stream, False)
+    EFFECT.events_tag_block.write(output_stream, False)
+    EFFECT.looping_sound.write(output_stream, False, True)
+    output_stream.write(struct.pack('<h', EFFECT.location))
     output_stream.write(struct.pack('<2x'))
-    output_stream.write(struct.pack('<f', EFFECT.effect_body.always_play_distance))
-    output_stream.write(struct.pack('<f', EFFECT.effect_body.never_play_distance))
+    output_stream.write(struct.pack('<f', EFFECT.always_play_distance))
+    output_stream.write(struct.pack('<f', EFFECT.never_play_distance))
 
 def write_locations(output_stream, TAG, locations, locations_header):
     if len(locations) > 0:
@@ -181,6 +181,6 @@ def build_asset(output_stream, EFFECT, report):
     write_locations(output_stream, TAG, EFFECT.locations, EFFECT.locations_header)
     write_events(output_stream, TAG, EFFECT.events, EFFECT.events_header)
 
-    looping_sound_name_length = len(EFFECT.effect_body.looping_sound.name)
+    looping_sound_name_length = len(EFFECT.looping_sound.name)
     if looping_sound_name_length > 0:
-        output_stream.write(struct.pack('<%ssx' % looping_sound_name_length, TAG.string_to_bytes(EFFECT.effect_body.looping_sound.name, False)))
+        output_stream.write(struct.pack('<%ssx' % looping_sound_name_length, TAG.string_to_bytes(EFFECT.looping_sound.name, False)))

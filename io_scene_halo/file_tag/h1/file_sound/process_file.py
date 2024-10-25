@@ -41,34 +41,33 @@ def initilize_sound(SOUND):
     SOUND.pitch_ranges = []
 
 def read_sound_body(SOUND, TAG, input_stream, tag_node, XML_OUTPUT):
-    SOUND.sound_body = SOUND.SoundBody()
-    SOUND.sound_body.flags = TAG.read_flag_unsigned_integer(input_stream, TAG, tag_format.XMLData(tag_node, "flags", SoundFlags))
-    SOUND.sound_body.class_type = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "class", ClassEnum))
-    SOUND.sound_body.sample_rate = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "sample rate", SampleRateEnum))
-    SOUND.sound_body.minimum_distance = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "minimum distance"))
-    SOUND.sound_body.maximum_distance = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "maximum distance"))
-    SOUND.sound_body.skip_fraction = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "skip fraction"))
-    SOUND.sound_body.random_pitch_bounds = TAG.read_min_max(input_stream, TAG, tag_format.XMLData(tag_node, "random pitch bounds"))
-    SOUND.sound_body.inner_cone_angle = TAG.read_degree(input_stream, TAG, tag_format.XMLData(tag_node, "inner cone angle"))
-    SOUND.sound_body.outer_cone_angle = TAG.read_degree(input_stream, TAG, tag_format.XMLData(tag_node, "outer cone angle"))
-    SOUND.sound_body.outer_cone_gain = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "maximum distance"))
-    SOUND.sound_body.randomization_gain_modifier = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "gain modifier"))
-    SOUND.sound_body.maximum_bend_per_second = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "maximum bend per second"))
-    SOUND.sound_body.scale_zero_skip_fraction_modifier = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "skip fraction modifier"))
-    SOUND.sound_body.scale_zero_gain_modifier = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "gain modifier"))
-    SOUND.sound_body.scale_zero_pitch_modifier = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "pitch modifier"))
-    SOUND.sound_body.scale_one_skip_fraction_modifier = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "skip fraction modifier"))
-    SOUND.sound_body.scale_one_gain_modifier = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "gain modifier"))
-    SOUND.sound_body.scale_one_pitch_modifier = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "pitch modifier"))
-    SOUND.sound_body.encoding = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "encoding", EncodingEnum))
-    SOUND.sound_body.compression = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "compression", CompressionEnum))
-    SOUND.sound_body.promotion_sound = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "promotion sound"))
-    SOUND.sound_body.promotion_count = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(tag_node, "promotion count"))
-    SOUND.sound_body.pitch_ranges_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "pitch ranges"))
+    SOUND.flags = TAG.read_flag_unsigned_integer(input_stream, TAG, tag_format.XMLData(tag_node, "flags", SoundFlags))
+    SOUND.class_type = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "class", ClassEnum))
+    SOUND.sample_rate = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "sample rate", SampleRateEnum))
+    SOUND.minimum_distance = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "minimum distance"))
+    SOUND.maximum_distance = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "maximum distance"))
+    SOUND.skip_fraction = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "skip fraction"))
+    SOUND.random_pitch_bounds = TAG.read_min_max(input_stream, TAG, tag_format.XMLData(tag_node, "random pitch bounds"))
+    SOUND.inner_cone_angle = TAG.read_degree(input_stream, TAG, tag_format.XMLData(tag_node, "inner cone angle"))
+    SOUND.outer_cone_angle = TAG.read_degree(input_stream, TAG, tag_format.XMLData(tag_node, "outer cone angle"))
+    SOUND.outer_cone_gain = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "maximum distance"))
+    SOUND.randomization_gain_modifier = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "gain modifier"))
+    SOUND.maximum_bend_per_second = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "maximum bend per second"))
+    SOUND.scale_zero_skip_fraction_modifier = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "skip fraction modifier"))
+    SOUND.scale_zero_gain_modifier = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "gain modifier"))
+    SOUND.scale_zero_pitch_modifier = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "pitch modifier"))
+    SOUND.scale_one_skip_fraction_modifier = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "skip fraction modifier"))
+    SOUND.scale_one_gain_modifier = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "gain modifier"))
+    SOUND.scale_one_pitch_modifier = TAG.read_float(input_stream, TAG, tag_format.XMLData(tag_node, "pitch modifier"))
+    SOUND.encoding = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "encoding", EncodingEnum))
+    SOUND.compression = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(tag_node, "compression", CompressionEnum))
+    SOUND.promotion_sound = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(tag_node, "promotion sound"))
+    SOUND.promotion_count = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(tag_node, "promotion count"))
+    SOUND.pitch_ranges_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(tag_node, "pitch ranges"))
 
 def read_pitch_ranges(SOUND, TAG, input_stream, tag_node, XML_OUTPUT):
-    pitch_ranges_node = tag_format.get_xml_node(XML_OUTPUT, SOUND.sound_body.pitch_ranges_tag_block.count, tag_node, "name", "pitch ranges")
-    for pitch_range_idx in range(SOUND.sound_body.pitch_ranges_tag_block.count):
+    pitch_ranges_node = tag_format.get_xml_node(XML_OUTPUT, SOUND.pitch_ranges_tag_block.count, tag_node, "name", "pitch ranges")
+    for pitch_range_idx in range(SOUND.pitch_ranges_tag_block.count):
         pitch_range_element_node = None
         if XML_OUTPUT:
             pitch_range_element_node = TAG.xml_doc.createElement('element')
@@ -135,12 +134,12 @@ def process_file(input_stream, report):
 
     initilize_sound(SOUND)
     read_sound_body(SOUND, TAG, input_stream, tag_node, XML_OUTPUT)
-    if SOUND.sound_body.promotion_sound.name_length > 0:
-        SOUND.sound_body.promotion_sound.name = TAG.read_variable_string(input_stream, SOUND.sound_body.promotion_sound.name_length, TAG)
+    if SOUND.promotion_sound.name_length > 0:
+        SOUND.promotion_sound.name = TAG.read_variable_string(input_stream, SOUND.promotion_sound.name_length, TAG)
 
     if XML_OUTPUT:
         promotion_sound_node = tag_format.get_xml_node(XML_OUTPUT, 1, tag_node, "name", "promotion sound")
-        SOUND.sound_body.promotion_sound.append_xml_attributes(promotion_sound_node)
+        SOUND.promotion_sound.append_xml_attributes(promotion_sound_node)
 
     read_pitch_ranges(SOUND, TAG, input_stream, tag_node, XML_OUTPUT)
 

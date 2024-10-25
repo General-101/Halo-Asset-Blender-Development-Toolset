@@ -74,65 +74,63 @@ class DamageSectionFlags(Flag):
     ignores_shields = auto()
 
 class ModelAsset():
-    def __init__(self):
-        self.header = None
-        self.model_body_header = None
-        self.model_body = None
-        self.variants_header = None
-        self.variants = None
-        self.materials_header = None
-        self.materials = None
-        self.new_damage_info_header = None
-        self.new_damage_info = None
-        self.targets_header = None
-        self.targets = None
-        self.runtime_regions_header = None
-        self.runtime_regions = None
-        self.runtime_nodes_header = None
-        self.runtime_nodes = None
-        self.model_object_data_header = None
-        self.model_object_data = None
-        self.scenario_load_parameters_header = None
-        self.scenario_load_parameters = None
-
-    class ModelBody:
-        def __init__(self, render_model=None, collision_model=None, animation=None, physics=None, physics_model=None, disappear_distance=0.0, begin_fade_distance=0.0,
-                     reduce_to_l1=0.0, reduce_to_l2=0.0, reduce_to_l3=0.0, reduce_to_l4=0.0, reduce_to_l5=0.0, shadow_fade_distance=0, variants_tag_block=None,
-                     materials_tag_block=None, new_damage_info_tag_block=None, targets_tag_block=None, runtime_regions_tag_block=None, runtime_nodes_tag_block=None,
-                     model_object_data_tag_block=None, default_dialogue=None, unused=None, flags=0, default_dialogue_effect="", default_dialogue_effect_length=0,
-                     salt_array=None, runtime_flags=0, scenario_load_parameters_tag_block=None, hologram_shader=None, hologram_control_function="",
-                     hologram_control_function_length=0):
-            self.render_model = render_model
-            self.collision_model = collision_model
-            self.animation = animation
-            self.physics = physics
-            self.physics_model = physics_model
-            self.disappear_distance = disappear_distance
-            self.begin_fade_distance = begin_fade_distance
-            self.reduce_to_l1 = reduce_to_l1
-            self.reduce_to_l2 = reduce_to_l2
-            self.reduce_to_l3 = reduce_to_l3
-            self.reduce_to_l4 = reduce_to_l4
-            self.reduce_to_l5 = reduce_to_l5
-            self.shadow_fade_distance = shadow_fade_distance
-            self.variants_tag_block = variants_tag_block
-            self.materials_tag_block = materials_tag_block
-            self.new_damage_info_tag_block = new_damage_info_tag_block
-            self.targets_tag_block = targets_tag_block
-            self.runtime_regions_tag_block = runtime_regions_tag_block
-            self.runtime_nodes_tag_block = runtime_nodes_tag_block
-            self.model_object_data_tag_block = model_object_data_tag_block
-            self.default_dialogue = default_dialogue
-            self.unused = unused
-            self.flags = flags
-            self.default_dialogue_effect = default_dialogue_effect
-            self.default_dialogue_effect_length = default_dialogue_effect_length
-            self.salt_array = salt_array
-            self.runtime_flags = runtime_flags
-            self.scenario_load_parameters_tag_block = scenario_load_parameters_tag_block
-            self.hologram_shader = hologram_shader
-            self.hologram_control_function = hologram_control_function
-            self.hologram_control_function_length = hologram_control_function_length
+    def __init__(self, header=None, body_header=None, variants_header=None, variants=None, materials_header=None, materials=None, new_damage_info_header=None, 
+                 new_damage_info=None, targets_header=None, targets=None, runtime_regions_header=None, runtime_regions=None, runtime_nodes_header=None, runtime_nodes=None, 
+                 model_object_data_header=None, model_object_data=None, scenario_load_parameters_header=None, scenario_load_parameters=None, render_model=None, 
+                 collision_model=None, animation=None, physics=None, physics_model=None, disappear_distance=0.0, begin_fade_distance=0.0, reduce_to_l1=0.0, reduce_to_l2=0.0, 
+                 reduce_to_l3=0.0, reduce_to_l4=0.0, reduce_to_l5=0.0, shadow_fade_distance=0, variants_tag_block=None, materials_tag_block=None, 
+                 new_damage_info_tag_block=None, targets_tag_block=None, runtime_regions_tag_block=None, runtime_nodes_tag_block=None, model_object_data_tag_block=None, 
+                 default_dialogue=None, unused=None, flags=0, default_dialogue_effect="", default_dialogue_effect_length=0, salt_array=None, runtime_flags=0, 
+                 scenario_load_parameters_tag_block=None, hologram_shader=None, hologram_control_function="", hologram_control_function_length=0):
+        self.header = header
+        self.body_header = body_header
+        self.variants_header = variants_header
+        self.variants = variants
+        self.materials_header = materials_header
+        self.materials = materials
+        self.new_damage_info_header = new_damage_info_header
+        self.new_damage_info = new_damage_info
+        self.targets_header = targets_header
+        self.targets = targets
+        self.runtime_regions_header = runtime_regions_header
+        self.runtime_regions = runtime_regions
+        self.runtime_nodes_header = runtime_nodes_header
+        self.runtime_nodes = runtime_nodes
+        self.model_object_data_header = model_object_data_header
+        self.model_object_data = model_object_data
+        self.scenario_load_parameters_header = scenario_load_parameters_header
+        self.scenario_load_parameters = scenario_load_parameters
+        self.render_model = render_model
+        self.collision_model = collision_model
+        self.animation = animation
+        self.physics = physics
+        self.physics_model = physics_model
+        self.disappear_distance = disappear_distance
+        self.begin_fade_distance = begin_fade_distance
+        self.reduce_to_l1 = reduce_to_l1
+        self.reduce_to_l2 = reduce_to_l2
+        self.reduce_to_l3 = reduce_to_l3
+        self.reduce_to_l4 = reduce_to_l4
+        self.reduce_to_l5 = reduce_to_l5
+        self.shadow_fade_distance = shadow_fade_distance
+        self.variants_tag_block = variants_tag_block
+        self.materials_tag_block = materials_tag_block
+        self.new_damage_info_tag_block = new_damage_info_tag_block
+        self.targets_tag_block = targets_tag_block
+        self.runtime_regions_tag_block = runtime_regions_tag_block
+        self.runtime_nodes_tag_block = runtime_nodes_tag_block
+        self.model_object_data_tag_block = model_object_data_tag_block
+        self.default_dialogue = default_dialogue
+        self.unused = unused
+        self.flags = flags
+        self.default_dialogue_effect = default_dialogue_effect
+        self.default_dialogue_effect_length = default_dialogue_effect_length
+        self.salt_array = salt_array
+        self.runtime_flags = runtime_flags
+        self.scenario_load_parameters_tag_block = scenario_load_parameters_tag_block
+        self.hologram_shader = hologram_shader
+        self.hologram_control_function = hologram_control_function
+        self.hologram_control_function_length = hologram_control_function_length
 
     class Variant:
         def __init__(self, name="", name_length=0, regions_tag_block=None, regions_header=None, regions=None, objects_tag_block=None, objects_header=None,

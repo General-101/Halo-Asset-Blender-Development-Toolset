@@ -102,90 +102,85 @@ class FrictionTypeEnum(Enum):
     forward = auto()
 
 class VehicleAsset(UnitAsset):
-    def __init__(self):
+    def __init__(self, gears_header=None, gears=None, anti_gravity_point_header=None, anti_gravity_point=None, friction_points_header=None, friction_points=None, 
+                 phantom_shapes_header=None, phantom_shapes=None, vehicle_flags=0, vehicle_type=0, vehicle_control=0, maximum_forward_speed=0.0, maximum_reverse_speed=0.0, 
+                 speed_acceleration=0.0, speed_deceleration=0.0, maximum_left_turn=0.0, maximum_right_turn=0.0, wheel_circumference=0.0, turn_rate=0.0, blur_speed=0.0, 
+                 specific_type=0, player_training_vehicle_type=0, flip_message="", flip_message_length=0, turn_scale=0.0, speed_turn_penalty_power=0.0, 
+                 speed_turn_penalty=0.0, maximum_left_slide=0.0, maximum_right_slide=0.0, slide_acceleration=0.0, slide_deceleration=0.0, 
+                 minimum_flipping_angular_velocity=0.0, maximum_flipping_angular_velocity=0.0, vehicle_size=0, fixed_gun_yaw=0.0, fixed_gun_pitch=0.0, 
+                 overdampen_cusp_angle=0.0, overdampen_exponent=0.0, crouch_transition_time=0.0, engine_moment=0.0, engine_max_angular_velocity=0.0, gears_tag_block=None, 
+                 flying_torque_scale=0.0, seat_enterance_acceleration_scale=0.0, seat_exit_acceleration_scale=0.0, air_friction_deceleration=0.0, thrust_scale=0.0, 
+                 suspension_sound=None, crash_sound=None, unused=None, special_effect=None, unused_effect=None, physics_flags=0, ground_fricton=0.0, ground_depth=0.0, 
+                 ground_damp_factor=0.0, ground_moving_friction=0.0, ground_maximum_slope_0=0.0, ground_maximum_slope_1=0.0, anti_gravity_bank_lift=0.0, 
+                 steering_bank_reaction_scale=0.0, gravity_scale=0.0, radius=0.0, anti_gravity_point_tag_block=None, friction_points_tag_block=None, 
+                 phantom_shapes_tag_block=None):
         super().__init__()
-        self.header = None
-        self.vehicle_body_header = None
-        self.vehicle_body = None
-        self.gears_header = None
-        self.gears = None
-        self.anti_gravity_point_header = None
-        self.anti_gravity_point = None
-        self.friction_points_header = None
-        self.friction_points = None
-        self.phantom_shapes_header = None
-        self.phantom_shapes = None
-
-    class VehicleBody(UnitAsset.UnitBody):
-        def __init__(self, vehicle_flags=0, vehicle_type=0, vehicle_control=0, maximum_forward_speed=0.0, maximum_reverse_speed=0.0, speed_acceleration=0.0, speed_deceleration=0.0,
-                     maximum_left_turn=0.0, maximum_right_turn=0.0, wheel_circumference=0.0, turn_rate=0.0, blur_speed=0.0, specific_type=0, player_training_vehicle_type=0,
-                     flip_message="", flip_message_length=0, turn_scale=0.0, speed_turn_penalty_power=0.0, speed_turn_penalty=0.0, maximum_left_slide=0.0, maximum_right_slide=0.0,
-                     slide_acceleration=0.0, slide_deceleration=0.0, minimum_flipping_angular_velocity=0.0, maximum_flipping_angular_velocity=0.0, vehicle_size=0,
-                     fixed_gun_yaw=0.0, fixed_gun_pitch=0.0, overdampen_cusp_angle=0.0, overdampen_exponent=0.0, crouch_transition_time=0.0, engine_moment=0.0,
-                     engine_max_angular_velocity=0.0, gears_tag_block=None, flying_torque_scale=0.0, seat_enterance_acceleration_scale=0.0, seat_exit_acceleration_scale=0.0,
-                     air_friction_deceleration=0.0, thrust_scale=0.0, suspension_sound=None, crash_sound=None, unused=None, special_effect=None, unused_effect=None,
-                     physics_flags=0, ground_fricton=0.0, ground_depth=0.0, ground_damp_factor=0.0, ground_moving_friction=0.0, ground_maximum_slope_0=0.0,
-                     ground_maximum_slope_1=0.0, anti_gravity_bank_lift=0.0, steering_bank_reaction_scale=0.0, gravity_scale=0.0, radius=0.0, anti_gravity_point_tag_block=None,
-                     friction_points_tag_block=None, phantom_shapes_tag_block=None):
-            super().__init__()
-            self.vehicle_flags = vehicle_flags
-            self.vehicle_type = vehicle_type
-            self.vehicle_control = vehicle_control
-            self.maximum_forward_speed = maximum_forward_speed
-            self.maximum_reverse_speed = maximum_reverse_speed
-            self.speed_acceleration = speed_acceleration
-            self.speed_deceleration = speed_deceleration
-            self.maximum_left_turn = maximum_left_turn
-            self.maximum_right_turn = maximum_right_turn
-            self.wheel_circumference = wheel_circumference
-            self.turn_rate = turn_rate
-            self.blur_speed = blur_speed
-            self.specific_type = specific_type
-            self.player_training_vehicle_type = player_training_vehicle_type
-            self.flip_message = flip_message
-            self.flip_message_length = flip_message_length
-            self.turn_scale = turn_scale
-            self.speed_turn_penalty_power = speed_turn_penalty_power
-            self.speed_turn_penalty = speed_turn_penalty
-            self.maximum_left_slide = maximum_left_slide
-            self.maximum_right_slide = maximum_right_slide
-            self.slide_acceleration = slide_acceleration
-            self.slide_deceleration = slide_deceleration
-            self.minimum_flipping_angular_velocity = minimum_flipping_angular_velocity
-            self.maximum_flipping_angular_velocity = maximum_flipping_angular_velocity
-            self.vehicle_size = vehicle_size
-            self.fixed_gun_yaw = fixed_gun_yaw
-            self.fixed_gun_pitch = fixed_gun_pitch
-            self.overdampen_cusp_angle = overdampen_cusp_angle
-            self.overdampen_exponent = overdampen_exponent
-            self.crouch_transition_time = crouch_transition_time
-            self.engine_moment = engine_moment
-            self.engine_max_angular_velocity = engine_max_angular_velocity
-            self.gears_tag_block = gears_tag_block
-            self.flying_torque_scale = flying_torque_scale
-            self.seat_enterance_acceleration_scale = seat_enterance_acceleration_scale
-            self.seat_exit_acceleration_scale = seat_exit_acceleration_scale
-            self.air_friction_deceleration = air_friction_deceleration
-            self.thrust_scale = thrust_scale
-            self.suspension_sound = suspension_sound
-            self.crash_sound = crash_sound
-            self.unused = unused
-            self.special_effect = special_effect
-            self.unused_effect = unused_effect
-            self.physics_flags = physics_flags
-            self.ground_fricton = ground_fricton
-            self.ground_depth = ground_depth
-            self.ground_damp_factor = ground_damp_factor
-            self.ground_moving_friction = ground_moving_friction
-            self.ground_maximum_slope_0 = ground_maximum_slope_0
-            self.ground_maximum_slope_1 = ground_maximum_slope_1
-            self.anti_gravity_bank_lift = anti_gravity_bank_lift
-            self.steering_bank_reaction_scale = steering_bank_reaction_scale
-            self.gravity_scale = gravity_scale
-            self.radius = radius
-            self.anti_gravity_point_tag_block = anti_gravity_point_tag_block
-            self.friction_points_tag_block = friction_points_tag_block
-            self.phantom_shapes_tag_block = phantom_shapes_tag_block
+        self.gears_header = gears_header
+        self.gears = gears
+        self.anti_gravity_point_header = anti_gravity_point_header
+        self.anti_gravity_point = anti_gravity_point
+        self.friction_points_header = friction_points_header
+        self.friction_points = friction_points
+        self.phantom_shapes_header = phantom_shapes_header
+        self.phantom_shapes = phantom_shapes
+        self.vehicle_flags = vehicle_flags
+        self.vehicle_type = vehicle_type
+        self.vehicle_control = vehicle_control
+        self.maximum_forward_speed = maximum_forward_speed
+        self.maximum_reverse_speed = maximum_reverse_speed
+        self.speed_acceleration = speed_acceleration
+        self.speed_deceleration = speed_deceleration
+        self.maximum_left_turn = maximum_left_turn
+        self.maximum_right_turn = maximum_right_turn
+        self.wheel_circumference = wheel_circumference
+        self.turn_rate = turn_rate
+        self.blur_speed = blur_speed
+        self.specific_type = specific_type
+        self.player_training_vehicle_type = player_training_vehicle_type
+        self.flip_message = flip_message
+        self.flip_message_length = flip_message_length
+        self.turn_scale = turn_scale
+        self.speed_turn_penalty_power = speed_turn_penalty_power
+        self.speed_turn_penalty = speed_turn_penalty
+        self.maximum_left_slide = maximum_left_slide
+        self.maximum_right_slide = maximum_right_slide
+        self.slide_acceleration = slide_acceleration
+        self.slide_deceleration = slide_deceleration
+        self.minimum_flipping_angular_velocity = minimum_flipping_angular_velocity
+        self.maximum_flipping_angular_velocity = maximum_flipping_angular_velocity
+        self.vehicle_size = vehicle_size
+        self.fixed_gun_yaw = fixed_gun_yaw
+        self.fixed_gun_pitch = fixed_gun_pitch
+        self.overdampen_cusp_angle = overdampen_cusp_angle
+        self.overdampen_exponent = overdampen_exponent
+        self.crouch_transition_time = crouch_transition_time
+        self.engine_moment = engine_moment
+        self.engine_max_angular_velocity = engine_max_angular_velocity
+        self.gears_tag_block = gears_tag_block
+        self.flying_torque_scale = flying_torque_scale
+        self.seat_enterance_acceleration_scale = seat_enterance_acceleration_scale
+        self.seat_exit_acceleration_scale = seat_exit_acceleration_scale
+        self.air_friction_deceleration = air_friction_deceleration
+        self.thrust_scale = thrust_scale
+        self.suspension_sound = suspension_sound
+        self.crash_sound = crash_sound
+        self.unused = unused
+        self.special_effect = special_effect
+        self.unused_effect = unused_effect
+        self.physics_flags = physics_flags
+        self.ground_fricton = ground_fricton
+        self.ground_depth = ground_depth
+        self.ground_damp_factor = ground_damp_factor
+        self.ground_moving_friction = ground_moving_friction
+        self.ground_maximum_slope_0 = ground_maximum_slope_0
+        self.ground_maximum_slope_1 = ground_maximum_slope_1
+        self.anti_gravity_bank_lift = anti_gravity_bank_lift
+        self.steering_bank_reaction_scale = steering_bank_reaction_scale
+        self.gravity_scale = gravity_scale
+        self.radius = radius
+        self.anti_gravity_point_tag_block = anti_gravity_point_tag_block
+        self.friction_points_tag_block = friction_points_tag_block
+        self.phantom_shapes_tag_block = phantom_shapes_tag_block
 
     class Gear:
         def __init__(self, a_min_torque=0.0, a_max_torque=0.0, a_peak_torque_scale=0.0, a_past_peak_torque_exponent=0.0, a_torque_at_max_angular_velocity=0.0,
