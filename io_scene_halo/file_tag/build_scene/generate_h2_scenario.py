@@ -34,7 +34,7 @@ from mathutils import Euler, Matrix
 from . import build_bsp as build_scene_level
 from ...global_functions import global_functions
 from ...global_functions.parse_tags import parse_tag
-from ..h2.file_scenario.format import DataTypesEnum, ObjectFlags, ClassificationEnum
+from ..h2.file_scenario.format import DataTypesEnum, ObjectFlags, ClassificationEnum, LightFlags, LightmapTypeEnum
 from . import build_lightmap as build_scene_lightmap
 from ..h2.file_scenario.mesh_helper.build_mesh import get_object
 from ...file_tag.h2.file_light.format import ShapeTypeEnum, DefaultLightmapSettingEnum
@@ -281,33 +281,63 @@ def generate_light_volumes_elements(level_root, collection_name, palette, tag_bl
 
     asset_collection.hide_render = False
 
-    light_data = []
     light_tags = []
     for palette_idx, palette_element in enumerate(palette):
-        light_name = "%s_%s" % (os.path.basename(palette_element.name), palette_idx)
         ASSET = parse_tag(palette_element, report, "halo2", "retail")
-        light_shape_type = ShapeTypeEnum(ASSET.shape_type)
-        if light_shape_type == ShapeTypeEnum.sphere:
-            light_type = "POINT"
-        elif light_shape_type == ShapeTypeEnum.orthogonal:
-            light_type = "AREA"
-        else:
-            light_type = "SPOT"
-
-        light = bpy.data.lights.new(light_name, light_type)
-        if light_shape_type == ShapeTypeEnum.orthogonal:
-            light.shape = 'SQUARE'
-
-        light_data.append(light)
         light_tags.append(ASSET)
 
     for element in tag_block:
-        pallete_item = light_tags[element.palette_index]
-        emission_setting = DefaultLightmapSettingEnum(pallete_item.default_lightmap_setting)
-        if not emission_setting == DefaultLightmapSettingEnum.dynamic_only:
-            light_name = "%s_%s" % (os.path.basename(palette_element.name), palette_idx)
+        pallete_item = palette[element.palette_index]
+        light_tag = light_tags[element.palette_index]
+        
+        scnr_light_flags = LightFlags(element.flags_1)
+        emission_setting = LightmapTypeEnum(element.lightmap_type)
 
-            light_data_element = light_data[element.palette_index]
+        light_name = "%s_%s" % (os.path.basename(pallete_item.name), element.palette_index)
+        
+        light_shape_type = ShapeTypeEnum(light_tag.shape_type)
+        if LightFlags.custom_geometry in scnr_light_flags:
+            light_shape_type = ShapeTypeEnum(element.shape_type)
+
+        generate_light = False
+        if LightmapTypeEnum.use_light_tag_settings == emission_setting:
+            emission_setting = DefaultLightmapSettingEnum(pallete_item.default_lightmap_setting)
+            if not emission_setting == DefaultLightmapSettingEnum.dynamic_only:
+                generate_light = True
+        else:
+            if emission_setting == LightmapTypeEnum.lightmaps_only or emission_setting == LightmapTypeEnum.dynamic_with_lightmaps :
+                generate_light = True
+
+        if generate_light:
+            if light_shape_type == ShapeTypeEnum.sphere:
+                light_type = "POINT"
+            elif light_shape_type == ShapeTypeEnum.orthogonal:
+                light_type = "AREA"
+            else:
+                light_type = "SPOT"
+
+            light_data_element = bpy.data.lights.new(light_name, light_type)
+            if light_shape_type == ShapeTypeEnum.orthogonal:
+                light_data_element.shape = 'SQUARE'
+
+            R, G, B, A = light_tag.diffuse_upper_bound
+            light_data_element.color = (R, G, B)
+
+            tag_light_size_min = light_tag.size_modifier[0]
+            if tag_light_size_min == 0.0:
+                tag_light_size_min= 1.0
+            tag_light_size_max = light_tag.size_modifier[1]
+            if tag_light_size_max == 0.0:
+                tag_light_size_max= 1.0
+            scnr_light_scale = element.lightmap_light_scale
+            if scnr_light_scale == 0.0:
+                scnr_light_scale = 1.0
+
+            light_size = max(tag_light_size_min, tag_light_size_max)
+            light_size *= scnr_light_scale
+
+            light_data_element.energy = (100 * light_size)
+
             root = bpy.data.objects.new(light_name, light_data_element)
             asset_collection.objects.link(root)
 
