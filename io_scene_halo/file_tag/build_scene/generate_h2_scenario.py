@@ -37,6 +37,7 @@ from ...global_functions.parse_tags import parse_tag
 from ..h2.file_scenario.format import DataTypesEnum, ObjectFlags, ClassificationEnum
 from . import build_lightmap as build_scene_lightmap
 from ..h2.file_scenario.mesh_helper.build_mesh import get_object
+from ...file_tag.h2.file_light.format import ShapeTypeEnum, DefaultLightmapSettingEnum
 
 def generate_skies(context, level_root, tag_block, report):
     asset_collection = bpy.data.collections.get("Skies")
@@ -271,6 +272,60 @@ def generate_object_elements(level_root, collection_name, palette, tag_block, co
     for ob in objects_list:
         if not ob == None:
             bpy.data.objects.remove(ob, do_unlink=True)
+
+def generate_light_volumes_elements(level_root, collection_name, palette, tag_block, context, game_version, file_version, fix_rotations, report, random_color_gen):
+    asset_collection = bpy.data.collections.get(collection_name)
+    if asset_collection == None:
+        asset_collection = bpy.data.collections.new(collection_name)
+        context.scene.collection.children.link(asset_collection)
+
+    asset_collection.hide_render = False
+
+    light_data = []
+    light_tags = []
+    for palette_idx, palette_element in enumerate(palette):
+        light_name = "%s_%s" % (os.path.basename(palette_element.name), palette_idx)
+        ASSET = parse_tag(palette_element, report, "halo2", "retail")
+        light_shape_type = ShapeTypeEnum(ASSET.shape_type)
+        if light_shape_type == ShapeTypeEnum.sphere:
+            light_type = "POINT"
+        elif light_shape_type == ShapeTypeEnum.orthogonal:
+            light_type = "AREA"
+        else:
+            light_type = "SPOT"
+
+        light = bpy.data.lights.new(light_name, light_type)
+        if light_shape_type == ShapeTypeEnum.orthogonal:
+            light.shape = 'SQUARE'
+
+        light_data.append(light)
+        light_tags.append(ASSET)
+
+    for element in tag_block:
+        pallete_item = light_tags[element.palette_index]
+        emission_setting = DefaultLightmapSettingEnum(pallete_item.default_lightmap_setting)
+        if not emission_setting == DefaultLightmapSettingEnum.dynamic_only:
+            light_name = "%s_%s" % (os.path.basename(palette_element.name), palette_idx)
+
+            light_data_element = light_data[element.palette_index]
+            root = bpy.data.objects.new(light_name, light_data_element)
+            asset_collection.objects.link(root)
+
+            root.parent = level_root
+            root.location = element.position * 100
+            ob_scale = element.scale
+            if ob_scale > 0.0:
+                root.scale = (ob_scale, ob_scale, ob_scale)
+
+            rotation = Euler((radians(0.0), radians(0.0), radians(0.0)), 'XYZ')
+            roll = Euler((radians(element.rotation[2]), radians(0.0), radians(0.0)), 'XYZ')
+            pitch = Euler((radians(0.0), -radians(element.rotation[1]), radians(0.0)), 'XYZ')
+            yaw = Euler((radians(0.0), radians(0.0), radians(element.rotation[0])), 'XYZ')
+            rotation.rotate(yaw)
+            rotation.rotate(pitch)
+            rotation.rotate(roll)
+
+            root.rotation_euler = rotation
 
 def generate_netgame_equipment_elements(level_root, tag_block, context, game_version, file_version, fix_rotations, report, random_color_gen):
     asset_collection = bpy.data.collections.get("Netgame Equipment")
@@ -791,6 +846,8 @@ def generate_scenario_scene(context, H2_ASSET, game_version, game_title, file_ve
         generate_object_elements(level_root, "Crates", H2_ASSET.crates_palette, H2_ASSET.crates, context, game_version, file_version, fix_rotations, report, random_color_gen)
     if len(H2_ASSET.creatures) > 0:
         generate_object_elements(level_root, "Creatures", H2_ASSET.creatures_palette, H2_ASSET.creatures, context, game_version, file_version, fix_rotations, report, random_color_gen)
+    if len(H2_ASSET.light_volumes) > 0:
+        generate_light_volumes_elements(level_root, "Lights", H2_ASSET.light_volume_palette, H2_ASSET.light_volumes, context, game_version, file_version, fix_rotations, report, random_color_gen)
     if len(H2_ASSET.player_starting_locations) > 0:
         generate_empties(context, level_root, "Player Starting Locations", H2_ASSET.player_starting_locations)
     if len(H2_ASSET.netgame_flags) > 0:

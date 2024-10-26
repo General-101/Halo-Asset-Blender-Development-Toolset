@@ -30,6 +30,7 @@ from ..file_object.format import ObjectFlags, LightmapShadowModeEnum, SweetenerS
 from .format import SceneryAsset, PathfindingPolicyEnum, SceneryFlags, LightmappingPolicyEnum
 from ....file_tag.h2.file_object.process_file import (read_ai_properties_retail, 
                                                       read_functions_retail, 
+                                                      read_attachments_v0, 
                                                       read_attachments_retail,
                                                       read_widgets_retail,
                                                       read_old_functions_retail)
@@ -182,11 +183,24 @@ def process_file(input_stream, report):
     if SCENERY.material_effects.name_length > 0:
         SCENERY.material_effects.name = TAG.read_variable_string(input_stream, SCENERY.material_effects.name_length, TAG)
 
-    read_ai_properties_retail(SCENERY, TAG, input_stream, tag_node, XML_OUTPUT)
-    read_functions_retail(SCENERY, TAG, input_stream, tag_node, XML_OUTPUT)
-    read_attachments_retail(SCENERY, TAG, input_stream, tag_node, XML_OUTPUT)
-    read_widgets_retail(SCENERY, TAG, input_stream, tag_node, XML_OUTPUT)
-    read_old_functions_retail(SCENERY, TAG, input_stream, tag_node, XML_OUTPUT)
+    if SCENERY.header.engine_tag == "LAMB":
+        read_ai_properties_retail(SCENERY, TAG, input_stream, tag_node, XML_OUTPUT)
+        read_functions_retail(SCENERY, TAG, input_stream, tag_node, XML_OUTPUT)
+        read_attachments_v0(SCENERY, TAG, input_stream, tag_node, XML_OUTPUT)
+        read_widgets_retail(SCENERY, TAG, input_stream, tag_node, XML_OUTPUT)
+        read_old_functions_retail(SCENERY, TAG, input_stream, tag_node, XML_OUTPUT)
+    elif SCENERY.header.engine_tag == "MLAB":
+        read_ai_properties_retail(SCENERY, TAG, input_stream, tag_node, XML_OUTPUT)
+        read_functions_retail(SCENERY, TAG, input_stream, tag_node, XML_OUTPUT)
+        read_attachments_v0(SCENERY, TAG, input_stream, tag_node, XML_OUTPUT)
+        read_widgets_retail(SCENERY, TAG, input_stream, tag_node, XML_OUTPUT)
+        read_old_functions_retail(SCENERY, TAG, input_stream, tag_node, XML_OUTPUT)
+    elif SCENERY.header.engine_tag == "BLM!":
+        read_ai_properties_retail(SCENERY, TAG, input_stream, tag_node, XML_OUTPUT)
+        read_functions_retail(SCENERY, TAG, input_stream, tag_node, XML_OUTPUT)
+        read_attachments_retail(SCENERY, TAG, input_stream, tag_node, XML_OUTPUT)
+        read_widgets_retail(SCENERY, TAG, input_stream, tag_node, XML_OUTPUT)
+        read_old_functions_retail(SCENERY, TAG, input_stream, tag_node, XML_OUTPUT)
 
     if XML_OUTPUT:
         model_node = tag_format.get_xml_node(XML_OUTPUT, 1, tag_node, "name", "model")

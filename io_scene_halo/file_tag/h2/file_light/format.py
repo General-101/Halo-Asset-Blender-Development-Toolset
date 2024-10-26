@@ -24,7 +24,6 @@
 #
 # ##### END MIT LICENSE BLOCK #####
 
-from mathutils import Vector
 from enum import Flag, Enum, auto
 
 class LightFlags(Flag):
@@ -100,16 +99,6 @@ class DefaultLightmapSettingEnum(Enum):
     dynamic_only = 0
     dynamic_with_lightmaps = auto()
     lightmaps_only = auto()
-
-class EffectFalloffFunctionEnum(Enum):
-    linear = 0
-    late = auto()
-    very_late = auto()
-    early = auto()
-    very_early = auto()
-    cosine = auto()
-    zero = auto()
-    one = auto()
 
 class EffectFalloffFunctionEnum(Enum):
     linear = 0

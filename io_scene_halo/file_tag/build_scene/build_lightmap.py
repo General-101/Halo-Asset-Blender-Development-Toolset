@@ -64,76 +64,75 @@ def process_mesh(SBSP_ASSET, random_color_gen, tag_block, poop_name, material_co
 
             triangle_start = 0
             for part in render_data.parts:
-                if not PartTypeEnum.transparent.value == part.part_type:
-                    strip_length = part.strip_length
-                    strip_start = part.strip_start_index
+                strip_length = part.strip_length
+                strip_start = part.strip_start_index
 
-                    triangle_indices = render_data.strip_indices[strip_start : (strip_start + strip_length)]
-                    triangle_length = int(len(triangle_indices) / 3)
-                    for idx in range(triangle_length):
-                        triangle_index = (idx * 3)
-                        v0 = triangle_indices[triangle_index]
-                        v1 = triangle_indices[triangle_index + 1]
-                        v2 = triangle_indices[triangle_index + 2]
+                triangle_indices = render_data.strip_indices[strip_start : (strip_start + strip_length)]
+                triangle_length = int(len(triangle_indices) / 3)
+                for idx in range(triangle_length):
+                    triangle_index = (idx * 3)
+                    v0 = triangle_indices[triangle_index]
+                    v1 = triangle_indices[triangle_index + 1]
+                    v2 = triangle_indices[triangle_index + 2]
 
-                        vertex_list = [render_data.raw_vertices[v0], render_data.raw_vertices[v1], render_data.raw_vertices[v2]]
-                        for vertex_idx, vertex in enumerate(vertex_list):
-                            loop_index = (triangle_start * 3) + triangle_index + vertex_idx
+                    vertex_list = [render_data.raw_vertices[v0], render_data.raw_vertices[v1], render_data.raw_vertices[v2]]
+                    for vertex_idx, vertex in enumerate(vertex_list):
+                        loop_index = (triangle_start * 3) + triangle_index + vertex_idx
 
-                            U0 = vertex.texcoord[0]
-                            V0 = vertex.texcoord[1]
-                            U1 = vertex.primary_lightmap_texcoord[0]
-                            V1 = vertex.primary_lightmap_texcoord[1]
+                        U0 = vertex.texcoord[0]
+                        V0 = vertex.texcoord[1]
+                        U1 = vertex.primary_lightmap_texcoord[0]
+                        V1 = vertex.primary_lightmap_texcoord[1]
 
-                            render_layer_uv.data[loop_index].uv = (U0, 1 - V0)
-                            lightmap_layer_uv.data[loop_index].uv = (U1, V1)
+                        render_layer_uv.data[loop_index].uv = (U0, 1 - V0)
+                        lightmap_layer_uv.data[loop_index].uv = (U1, V1)
 
-                    material = None
-                    if not part.material_index == -1 and material_count > 0 and part.material_index < material_count:
-                        material = SBSP_ASSET.materials[part.material_index]
+                material = None
+                if not part.material_index == -1 and material_count > 0 and part.material_index < material_count:
+                    material = SBSP_ASSET.materials[part.material_index]
 
-                    if material:
-                        material_path = material.shader.name
-                        if global_functions.string_empty_check(material_path):
-                            material_path = material.old_shader.name
+                if material:
+                    material_path = material.shader.name
+                    if global_functions.string_empty_check(material_path):
+                        material_path = material.old_shader.name
 
-                        material_directory = os.path.dirname(material_path)
-                        material_name = os.path.basename(material_path)
+                    material_directory = os.path.dirname(material_path)
+                    material_name = os.path.basename(material_path)
 
-                        collection_prefix = shader_collection_dic.get(material_directory)
-                        if not collection_prefix == None:
-                            material_name = "%s %s" % (collection_prefix, material_name)
-                        else:
-                            print("Could not find a collection for: %s" % material_path)
+                    collection_prefix = shader_collection_dic.get(material_directory)
+                    if not collection_prefix == None:
+                        material_name = "%s %s" % (collection_prefix, material_name)
+                    else:
+                        print("Could not find a collection for: %s" % material_path)
 
-                        for material_property in material.properties:
-                            property_enum = PropertyTypeEnum(material_property.property_type)
-                            property_value = material_property.real_value
-                            if PropertyTypeEnum.lightmap_resolution == property_enum:
-                                material_name += " lm:%s" % property_value
+                    for material_property in material.properties:
+                        property_enum = PropertyTypeEnum(material_property.property_type)
+                        property_value = material_property.real_value
+                        if PropertyTypeEnum.lightmap_resolution == property_enum:
+                            material_name += " lm:%s" % property_value
 
-                            elif PropertyTypeEnum.lightmap_power == property_enum:
-                                material_name += " lp:%s" % property_value
+                        elif PropertyTypeEnum.lightmap_power == property_enum:
+                            material_name += " lp:%s" % property_value
 
-                            elif PropertyTypeEnum.lightmap_half_life == property_enum:
-                                material_name += " hl:%s" % property_value
+                        elif PropertyTypeEnum.lightmap_half_life == property_enum:
+                            material_name += " hl:%s" % property_value
 
-                            elif PropertyTypeEnum.lightmap_diffuse_scale == property_enum:
-                                material_name += " ds:%s" % property_value
+                        elif PropertyTypeEnum.lightmap_diffuse_scale == property_enum:
+                            material_name += " ds:%s" % property_value
 
-                        mat = bpy.data.materials.get(material_name)
-                        if mat is None:
-                            mat = bpy.data.materials.new(name=material_name)
+                    mat = bpy.data.materials.get(material_name)
+                    if mat is None:
+                        mat = bpy.data.materials.new(name=material_name)
 
-                        if not mat in mesh.materials.values():
-                            mesh.materials.append(mat)
+                    if not mat in mesh.materials.values():
+                        mesh.materials.append(mat)
 
-                        mat.diffuse_color = random_color_gen.next()
-                        material_index = mesh.materials.values().index(mat)
-                        for triangle_idx in range(triangle_length):
-                            mesh.polygons[triangle_start + triangle_idx].material_index = material_index
+                    mat.diffuse_color = random_color_gen.next()
+                    material_index = mesh.materials.values().index(mat)
+                    for triangle_idx in range(triangle_length):
+                        mesh.polygons[triangle_start + triangle_idx].material_index = material_index
 
-                    triangle_start += triangle_length
+                triangle_start += triangle_length
 
     return mesh
 

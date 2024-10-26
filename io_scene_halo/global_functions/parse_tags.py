@@ -73,7 +73,8 @@ from ..file_tag.h2.file_control.process_file import process_file as process_h2_c
 from ..file_tag.h2.file_sound_scenery.process_file import process_file as process_h2_sound_scenery
 from ..file_tag.h2.file_item_collection.process_file import process_file as process_h2_item_collection
 from ..file_tag.h2.file_vehicle_collection.process_file import process_file as process_h2_vehicle_collection
-
+from ..file_tag.h2.file_vehicle_collection.process_file import process_file as process_h2_vehicle_collection
+from ..file_tag.h2.file_light.process_file import process_file as process_h2_light
 from ..file_tag.h2.file_scenario_ai_resource.process_file import process_file as process_h2_scenario_ai_resource
 from ..file_tag.h2.file_scenario_bipeds_resource.process_file import process_file as process_h2_scenario_bipeds_resource
 from ..file_tag.h2.file_scenario_cinematics_resource.process_file import process_file as process_h2_scenario_cinematics_resource
@@ -401,6 +402,13 @@ def parse_tag(tagref, report, game_title, game_version):
             if os.path.exists(input_file):
                 input_stream = open(input_file, 'rb')
                 ASSET = process_h2_vehicle_collection(input_stream, report)
+                input_stream.close()
+
+        elif tagref.tag_group == "ligh":
+            input_file = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path, "%s.light" % tagref.name)
+            if os.path.exists(input_file):
+                input_stream = open(input_file, 'rb')
+                ASSET = process_h2_light(input_stream, report)
                 input_stream.close()
 
         elif tagref.tag_group == "ai**":

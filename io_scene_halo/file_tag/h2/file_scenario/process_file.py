@@ -4007,7 +4007,8 @@ def read_decorators(SCENARIO, TAG, input_stream, tag_node, XML_OUTPUT):
                     cache_block.owner_tag_section_offset = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(cache_block_element_node, "owner tag section offset"))
                     input_stream.read(6) # Padding?
                     cache_block.cache_block_data_tag_block = TAG.TagBlock().read(input_stream, TAG, tag_format.XMLData(cache_block_element_node, "cache block data"))
-                    input_stream.read(8) # Padding?
+                    if decorator.cache_blocks_header.size == 60:
+                        input_stream.read(8) # Padding?
 
                     decorator.cache_blocks.append(cache_block)
 

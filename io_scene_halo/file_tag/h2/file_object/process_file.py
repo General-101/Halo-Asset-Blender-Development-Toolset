@@ -224,6 +224,26 @@ def read_functions_retail(OBJECT, TAG, input_stream, tag_node, XML_OUTPUT):
             if function.scale_by_length > 0:
                 function.scale_by = TAG.read_variable_string_no_terminator(input_stream, function.scale_by_length, TAG, tag_format.XMLData(tag_node, "scale by"))
 
+def read_attachments_v0(OBJECT, TAG, input_stream, tag_node, XML_OUTPUT):
+    if OBJECT.attachments_tag_block.count > 0:
+        OBJECT.ai_properties_header = TAG.TagBlockHeader().read(input_stream, TAG)
+        attachments_node = tag_format.get_xml_node(XML_OUTPUT, OBJECT.attachments_tag_block.count, tag_node, "name", "attachments")
+        for attachment_idx in range(OBJECT.attachments_tag_block.count):
+            attachment_element_node = None
+            if XML_OUTPUT:
+                attachment_element_node = TAG.xml_doc.createElement('element')
+                attachment_element_node.setAttribute('index', str(attachment_idx))
+                attachments_node.appendChild(attachment_element_node)
+
+            attachment = OBJECT.Attachment()
+            attachment.attachment_type = TAG.TagRef().read(input_stream, TAG, tag_format.XMLData(attachment_element_node, "type"))
+
+            input_stream.read(8) # Padding?
+            attachment.change_color = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(attachment_element_node, "change color", ChangeColorEnum))
+            input_stream.read(18) # Padding?
+
+            OBJECT.attachments.append(attachment)
+
 def read_attachments_retail(OBJECT, TAG, input_stream, tag_node, XML_OUTPUT):
     if OBJECT.attachments_tag_block.count > 0:
         OBJECT.ai_properties_header = TAG.TagBlockHeader().read(input_stream, TAG)
