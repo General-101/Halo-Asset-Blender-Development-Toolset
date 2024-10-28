@@ -30,6 +30,7 @@ import zlib
 import numpy as np
 
 from mathutils import Vector
+from ...global_functions.parse_tags import parse_tag
 from ...global_functions import global_functions
 from ...file_tag.h1.file_shader_model.format import ModelFlags, DetailFumctionEnum, DetailMaskEnum, FunctionEnum
 try:
@@ -39,12 +40,13 @@ except ModuleNotFoundError:
     Image = None
 
 HALO_1_SHADER_RESOURCES = os.path.join(os.path.dirname(os.path.realpath(__file__)), "halo_1_shader_resources.blend")
+HALO_2_SHADER_RESOURCES = os.path.join(os.path.dirname(os.path.realpath(__file__)), "halo_2_shader_resources.blend")
 
 def get_bitmap(tag_ref, texture_root):
     texture_extensions = ("tif", "tiff")
     texture_path = None
     bitmap_name = "White"
-    if tag_ref.name_length > 0:
+    if not tag_ref == None and tag_ref.name_length > 0:
         bitmap_name = "%s_%s" % (global_functions.string_checksum(tag_ref.name, checksum = 0), os.path.basename(tag_ref.name))
         for extension in texture_extensions:
             check_path = os.path.join(texture_root, "%s.%s" % (tag_ref.name, extension))
@@ -59,6 +61,30 @@ def get_bitmap(tag_ref, texture_root):
         print("No bitmap was set")
 
     return texture_path, bitmap_name
+
+def get_h2_bitmap(tag_ref, texture_root, report):
+    texture_extensions = ("tif", "tiff")
+    texture_path = None
+    bitmap_name = "White"
+    bitmap_tag = None
+    if not tag_ref == None and tag_ref.name_length > 0:
+        bitmap_name = "%s_%s" % (global_functions.string_checksum(tag_ref.name, checksum = 0), os.path.basename(tag_ref.name))
+        for extension in texture_extensions:
+            check_path = os.path.join(texture_root, "%s.%s" % (tag_ref.name, extension))
+            if os.path.isfile(check_path):
+                texture_path = check_path
+                break
+
+        if not texture_path:
+            print("data texture for the following bitmap was not found")
+            print(tag_ref.name)
+
+        bitmap_tag = parse_tag(tag_ref, report, "halo2", "retail")
+
+    else:
+        print("No bitmap was set")
+
+    return texture_path, bitmap_name, bitmap_tag
 
 def get_output_material_node(mat):
     output_material_node = None

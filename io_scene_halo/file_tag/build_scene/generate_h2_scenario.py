@@ -34,10 +34,11 @@ from mathutils import Euler, Matrix
 from . import build_bsp as build_scene_level
 from ...global_functions import global_functions
 from ...global_functions.parse_tags import parse_tag
-from ..h2.file_scenario.format import DataTypesEnum, ObjectFlags, ClassificationEnum, LightFlags, LightmapTypeEnum
+from ..h2.file_scenario.format import DataTypesEnum, ObjectFlags, ClassificationEnum, LightFlags, LightmapTypeEnum, LightmappingPolicyEnum as SCNRLightmappingPolicyEnum
 from . import build_lightmap as build_scene_lightmap
 from ..h2.file_scenario.mesh_helper.build_mesh import get_object
 from ...file_tag.h2.file_light.format import ShapeTypeEnum, DefaultLightmapSettingEnum
+from ...file_tag.h2.file_scenery.format import LightmappingPolicyEnum
 
 def generate_skies(context, level_root, tag_block, report):
     asset_collection = bpy.data.collections.get("Skies")
@@ -163,6 +164,7 @@ def generate_object_elements(level_root, collection_name, palette, tag_block, co
     if collection_name == "Scenery":
         asset_collection.hide_render = False
 
+    object_tags = []
     for palette_idx, palette_element in enumerate(palette):
         ob = None
         object_name = "temp_%s_%s" % (os.path.basename(palette_element.name), palette_idx)
@@ -229,6 +231,7 @@ def generate_object_elements(level_root, collection_name, palette, tag_block, co
                     if not RENDER == None:
                         ob = get_object(asset_collection, RENDER, game_version, object_name, random_color_gen, report)
 
+        object_tags.append(ASSET)
         objects_list.append(ob)
 
     for element_idx, element in enumerate(tag_block):
@@ -265,9 +268,24 @@ def generate_object_elements(level_root, collection_name, palette, tag_block, co
 
         root.rotation_euler = rotation
 
-        if collection_name == "Scenery" and ObjectFlags.not_automatically in ObjectFlags(element.placement_flags):
-            root.hide_set(True)
-            root.hide_render = True
+        if collection_name == "Scenery":
+            pallete_tag = object_tags[element.palette_index]
+            hidden_in_render = False
+            if ObjectFlags.not_automatically in ObjectFlags(element.placement_flags):
+                hidden_in_render = True
+
+            lightmap_policy = SCNRLightmappingPolicyEnum(element.lightmap_policy)
+            if lightmap_policy == SCNRLightmappingPolicyEnum.tag_default:
+                if not pallete_tag == None:
+                    scenery_policy = LightmappingPolicyEnum(pallete_tag.lightmapping_policy)
+                    if scenery_policy == LightmappingPolicyEnum.dynamic:
+                        hidden_in_render = True
+            else:
+                if lightmap_policy == SCNRLightmappingPolicyEnum.dynamic:
+                    hidden_in_render = True
+        
+            root.hide_set(hidden_in_render)
+            root.hide_render = hidden_in_render
 
     for ob in objects_list:
         if not ob == None:

@@ -59,6 +59,7 @@ from ..file_tag.h2.file_sky.process_file import process_file as process_h2_sky
 from ..file_tag.h2.file_scenario_structure_bsp.process_file import process_file as process_h2_structure_bsp
 from ..file_tag.h2.file_scenario_structure_lightmap.process_file import process_file as process_h2_structure_lightmap
 from ..file_tag.h2.file_bitmap.process_file import process_file as process_h2_bitmap
+from ..file_tag.h2.file_shader_template.process_file import process_file as process_h2_shader_template
 from ..file_tag.h2.file_shader.process_file import process_file as process_h2_shader
 from ..file_tag.h2.file_model.process_file import process_file as process_h2_model
 from ..file_tag.h2.file_render_model.process_file import process_file as process_h2_render
@@ -311,6 +312,13 @@ def parse_tag(tagref, report, game_title, game_version):
             if os.path.exists(input_file):
                 input_stream = open(input_file, 'rb')
                 ASSET = process_h2_shader(input_stream, report)
+                input_stream.close()
+
+        elif tagref.tag_group == "stem":
+            input_file = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path, "%s.shader_template" % tagref.name)
+            if os.path.exists(input_file):
+                input_stream = open(input_file, 'rb')
+                ASSET = process_h2_shader_template(input_stream, report)
                 input_stream.close()
 
         elif tagref.tag_group == "hlmt":

@@ -304,9 +304,3 @@ def generate_shader_model(mat, shader, report):
         else:
             mat.shadow_method = 'CLIP'
             mat.blend_method = 'HASHED'
-
-
-
-
-
-
