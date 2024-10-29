@@ -36,6 +36,17 @@ from .shader_helper import (
     )
 
 from ...file_tag.h2.file_shader.format import AnimationTypeEnum
+from ...file_tag.h2.file_shader_template.format import TypeEnum
+
+class ParameterSettings():
+    def __init__(self, name="", bitmap=None, translation=Vector(), scale=Vector(), rotation=Vector(), color=(0.0, 0.0, 0.0, 1.0), value=0.0):
+        self.name = name
+        self.bitmap = bitmap
+        self.translation = translation
+        self.scale = scale
+        self.rotation = rotation
+        self.color = color
+        self.value = value
 
 def get_shader_node(tree, shader_name):
     if not bpy.data.node_groups.get(shader_name):
@@ -47,7 +58,7 @@ def get_shader_node(tree, shader_name):
 
     return tex_bump_node
 
-def set_image_scale(mat, image_node, image_parameter, default_scale):
+def set_image_scale(mat, image_node, image_scale):
     vect_math_node = mat.node_tree.nodes.new("ShaderNodeVectorMath")
     vect_math_node.operation = 'MULTIPLY'
     vect_math_node.location = Vector((-200, -125)) + image_node.location
@@ -61,23 +72,165 @@ def set_image_scale(mat, image_node, image_parameter, default_scale):
     connect_inputs(mat.node_tree, uv_map_node, "UV", vect_math_node, 0)
     connect_inputs(mat.node_tree, combine_xyz_node, "Vector", vect_math_node, 1)
 
-    x_scale = default_scale
-    y_scale = default_scale
-    if not image_parameter == None:
-        for animation_property in image_parameter.animation_properties:
-            property_type = AnimationTypeEnum(animation_property.type)
-            if property_type == AnimationTypeEnum.bitmap_scale_x and not animation_property.lower_bound == 0.0:
-                x_scale = animation_property.lower_bound
+    combine_xyz_node.inputs[0].default_value = image_scale[0]
+    combine_xyz_node.inputs[1].default_value = image_scale[1]
+    combine_xyz_node.inputs[2].default_value = image_scale[2]
 
-            elif property_type == AnimationTypeEnum.bitmap_scale_y and not animation_property.lower_bound == 0.0:
-                y_scale = animation_property.lower_bound
+def generate_parameters(shader, shader_template, parameter_keys):
+    parameters = []
+    for category in shader_template.categories:
+        for parameter in category.parameters:
+            if parameter.name in parameter_keys:
+                parameter_settings = ParameterSettings()
+                parameter_settings.name = parameter.name
+                parameter_settings.bitmap = parameter.default_bitmap
+                parameter_settings.value = parameter.default_const_value
+                parameter_settings.color = parameter.default_const_color
+                image_scale = 1.0
+                if not parameter.bitmap_scale == 0.0:
+                    image_scale = parameter.bitmap_scale
 
-    combine_xyz_node.inputs[0].default_value = x_scale
-    combine_xyz_node.inputs[1].default_value = y_scale
-    combine_xyz_node.inputs[2].default_value = 1
+                parameter_settings.scale = Vector((image_scale, image_scale, image_scale))
+
+                parameters.append(parameter_settings)
+
+    for parameter in shader.parameters:
+        for default_parameter in parameters:
+            if default_parameter.name == parameter.name:
+                default_parameter.bitmap = parameter.bitmap
+                default_parameter.value = parameter.const_value
+                default_parameter.color = parameter.const_color
+                for animation_property in parameter.animation_properties:
+                    property_type = AnimationTypeEnum(animation_property.type)
+                    if property_type == AnimationTypeEnum.bitmap_scale_uniform and not animation_property.lower_bound == 0.0:
+                        default_parameter.scale = Vector((animation_property.lower_bound, animation_property.lower_bound, animation_property.lower_bound))
+
+                    elif property_type == AnimationTypeEnum.bitmap_scale_x and not animation_property.lower_bound == 0.0:
+                        default_parameter.scale[0] = animation_property.lower_bound
+
+                    elif property_type == AnimationTypeEnum.bitmap_scale_y and not animation_property.lower_bound == 0.0:
+                        default_parameter.scale[1] = animation_property.lower_bound
+
+                    elif property_type == AnimationTypeEnum.bitmap_scale_z and not animation_property.lower_bound == 0.0:
+                        default_parameter.scale[2] = animation_property.lower_bound
+
+                    elif property_type == AnimationTypeEnum.color:
+                        default_parameter.color = animation_property.color_a
+
+                break
+
+    return parameters
+
+def generate_shader_bloom(mat, shader, shader_template, report):
+    mat.use_nodes = True
+
+    parameter_keys = ["lightmap_emissive_map", "lightmap_emissive_color", "lightmap_emissive_power"]
+    parameters = generate_parameters(shader, shader_template, parameter_keys)
+
+    lightmap_emissive_parameter = None
+    lightmap_emissive_color_parameter = None
+    lightmap_emissive_power_parameter = None
+    for parameter in parameters:
+        if parameter.name == "lightmap_emissive_map":
+            lightmap_emissive_parameter = parameter
+        elif parameter.name == "lightmap_emissive_color":
+            lightmap_emissive_color_parameter = parameter
+        elif parameter.name == "lightmap_emissive_power":
+            lightmap_emissive_power_parameter = parameter
+    texture_root = bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_data_path
+    for node in mat.node_tree.nodes:
+        mat.node_tree.nodes.remove(node)
+
+    output_material_node = get_output_material_node(mat)
+    output_material_node.location = Vector((0.0, 0.0))
+
+    shader_node = get_shader_node(mat.node_tree, "bloom")
+    shader_node.location = Vector((-450.0, -20.0))
+    shader_node.name = "Bloom"
+    shader_node.width = 400.0
+    shader_node.height = 100.0
+
+    connect_inputs(mat.node_tree, shader_node, "Shader", output_material_node, "Surface")
+
+    if not lightmap_emissive_parameter == None:
+        lightmap_emissive_map, lightmap_emissive_map_name, lightmap_emissive_bitmap = get_h2_bitmap(lightmap_emissive_parameter.bitmap, texture_root, report)
+        lightmap_emissive_node = generate_image_node(mat, lightmap_emissive_map, lightmap_emissive_bitmap, lightmap_emissive_map_name)
+        lightmap_emissive_node.name = "Lightmap Emissive Map"
+        lightmap_emissive_node.location = Vector((-900, 525))
+        if not lightmap_emissive_node.image == None:
+            lightmap_emissive_node.image.alpha_mode = 'CHANNEL_PACKED'
+
+        connect_inputs(mat.node_tree, lightmap_emissive_node, "Color", shader_node, "Lightmap Emissive Map")
+        shader_node.inputs["Lightmap Emissive Color"].default_value = lightmap_emissive_color_parameter.color
+        shader_node.inputs["Lightmap Emissive Power"].default_value = lightmap_emissive_power_parameter.value * 100
+
+def generate_shader_illum(mat, shader, shader_template, report):
+    mat.use_nodes = True
+
+    parameter_keys = ["lightmap_emissive_map", "lightmap_emissive_color", "lightmap_emissive_power", "self_illum_map", "self_illum_color"]
+    parameters = generate_parameters(shader, shader_template, parameter_keys)
+
+    lightmap_emissive_parameter = None
+    lightmap_emissive_color_parameter = None
+    lightmap_emissive_power_parameter = None
+    self_illum_parameter = None
+    self_illum_color_parameter = None
+    for parameter in parameters:
+        if parameter.name == "lightmap_emissive_map":
+            lightmap_emissive_parameter = parameter
+        elif parameter.name == "lightmap_emissive_color":
+            lightmap_emissive_color_parameter = parameter
+        elif parameter.name == "lightmap_emissive_power":
+            lightmap_emissive_power_parameter = parameter
+        elif parameter.name == "self_illum_map":
+            self_illum_parameter = parameter
+        elif parameter.name == "self_illum_color":
+            self_illum_color_parameter = parameter
+
+    texture_root = bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_data_path
+    for node in mat.node_tree.nodes:
+        mat.node_tree.nodes.remove(node)
+
+    output_material_node = get_output_material_node(mat)
+    output_material_node.location = Vector((0.0, 0.0))
+
+    shader_node = get_shader_node(mat.node_tree, "illum")
+    shader_node.location = Vector((-450.0, -20.0))
+    shader_node.name = "Illum"
+    shader_node.width = 400.0
+    shader_node.height = 100.0
+
+    connect_inputs(mat.node_tree, shader_node, "Shader", output_material_node, "Surface")
+    if not lightmap_emissive_parameter == None:
+        lightmap_emissive_map, lightmap_emissive_map_name, lightmap_emissive_bitmap = get_h2_bitmap(lightmap_emissive_parameter.bitmap, texture_root, report)
+        lightmap_emissive_node = generate_image_node(mat, lightmap_emissive_map, lightmap_emissive_bitmap, lightmap_emissive_map_name)
+        lightmap_emissive_node.name = "Lightmap Emissive Map"
+        lightmap_emissive_node.location = Vector((-900, 525))
+        if not lightmap_emissive_node.image == None:
+            lightmap_emissive_node.image.alpha_mode = 'CHANNEL_PACKED'
+
+        connect_inputs(mat.node_tree, lightmap_emissive_node, "Color", shader_node, "Lightmap Emissive Map")
+        shader_node.inputs["Lightmap Emissive Color"].default_value = lightmap_emissive_color_parameter.color
+        shader_node.inputs["Lightmap Emissive Power"].default_value = lightmap_emissive_power_parameter.value * 100
+
+    if not self_illum_parameter == None:
+        self_illum_map, self_illum_map_name, self_illum_bitmap = get_h2_bitmap(self_illum_parameter.bitmap, texture_root, report)
+        self_illum_node = generate_image_node(mat, self_illum_map, self_illum_bitmap, self_illum_map_name)
+        self_illum_node.name = "Self Illum Map"
+        self_illum_node.location = Vector((-900, 525))
+        if not self_illum_node.image == None:
+            self_illum_node.image.alpha_mode = 'CHANNEL_PACKED'
+
+        connect_inputs(mat.node_tree, self_illum_node, "Color", shader_node, "Self Illum Map")
+        if not self_illum_color_parameter == None:
+            shader_node.inputs["Self Illum Color"].default_value = self_illum_color_parameter.color
+
 
 def generate_shader_tex_bump(mat, shader, shader_template, report):
     mat.use_nodes = True
+
+    parameter_keys = ["bump_map", "lightmap_alphatest_map", "base_map", "detail_map", "specular_color", "specular_glancing_color"]
+    parameters = generate_parameters(shader, shader_template, parameter_keys)
 
     bump_parameter = None
     alpha_parameter = None
@@ -85,44 +238,19 @@ def generate_shader_tex_bump(mat, shader, shader_template, report):
     detail_parameter = None
     specular_parameter = None
     specular_glancing_parameter = None
-
-    bump_value = None
-    base_value = None
-    detail_value = None
-    specular_value = None
-    specular_glancing_value = None
-    for parameter in shader.parameters:
+    for parameter in parameters:
         if parameter.name == "bump_map":
             bump_parameter = parameter
-            bump_value = parameter.bitmap
         elif parameter.name == "lightmap_alphatest_map":
             alpha_parameter = parameter
-            alpha_value = parameter.bitmap
         elif parameter.name == "base_map":
             base_parameter = parameter
-            base_value = parameter.bitmap
         elif parameter.name == "detail_map":
             detail_parameter = parameter
-            detail_value = parameter.bitmap
         elif parameter.name == "specular_color":
             specular_parameter = parameter
-            specular_value = parameter.const_color
         elif parameter.name == "specular_glancing_color":
             specular_glancing_parameter = parameter
-            specular_glancing_value = parameter.const_color
-
-    for category in shader_template.categories:
-        for parameter in category.parameters:
-            if parameter.name == "bump_map" and bump_value == None:
-                bump_value = parameter.default_bitmap
-            elif parameter.name == "base_map" and base_value == None:
-                base_value = parameter.default_bitmap
-            elif parameter.name == "detail_map" and detail_value == None:
-                detail_value = parameter.default_bitmap
-            elif parameter.name == "specular_color" and specular_value == None:
-                specular_value = parameter.default_const_color
-            elif parameter.name == "specular_glancing_color" and specular_glancing_value == None:
-                specular_glancing_value = parameter.default_const_color
 
     texture_root = bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_data_path
     for node in mat.node_tree.nodes:
@@ -139,8 +267,8 @@ def generate_shader_tex_bump(mat, shader, shader_template, report):
 
     connect_inputs(mat.node_tree, tex_bump_node, "Shader", output_material_node, "Surface")
 
-    if not bump_value == None:
-        bump_map, bump_map_name, bump_bitmap = get_h2_bitmap(bump_value, texture_root, report)
+    if not bump_parameter == None:
+        bump_map, bump_map_name, bump_bitmap = get_h2_bitmap(bump_parameter.bitmap, texture_root, report)
         bump_node = generate_image_node(mat, bump_map, bump_bitmap, bump_map_name)
         bump_node.name = "Bump Map"
         bump_node.location = Vector((-900, 525))
@@ -150,11 +278,12 @@ def generate_shader_tex_bump(mat, shader, shader_template, report):
             bump_node.image.alpha_mode = 'CHANNEL_PACKED'
 
         connect_inputs(mat.node_tree, bump_node, "Color", tex_bump_node, "Bump Map")
-        set_image_scale(mat, bump_node, bump_parameter, 1)
+        set_image_scale(mat, bump_node, bump_parameter.scale)
         if bump_bitmap:
             height_value = 0.0
             if not bump_bitmap.bump_height == 0.0:
                 height_value = bump_bitmap.bump_height / 10
+
             tex_bump_node.inputs["Bump Map Repeat"].default_value = height_value
 
     if not alpha_parameter == None:
@@ -167,8 +296,8 @@ def generate_shader_tex_bump(mat, shader, shader_template, report):
 
         connect_inputs(mat.node_tree, alpha_node, "Alpha", tex_bump_node, "Lightmap Alphatest Map")
 
-    if not base_value == None:
-        base_map, base_map_name, base_bitmap = get_h2_bitmap(base_value, texture_root, report)
+    if not base_parameter == None:
+        base_map, base_map_name, base_bitmap = get_h2_bitmap(base_parameter.bitmap, texture_root, report)
         base_node = generate_image_node(mat, base_map, base_bitmap, base_map_name)
         base_node.name = "Base Map"
         base_node.location = Vector((-900, -75))
@@ -177,10 +306,10 @@ def generate_shader_tex_bump(mat, shader, shader_template, report):
 
         connect_inputs(mat.node_tree, base_node, "Color", tex_bump_node, "Base Map")
         connect_inputs(mat.node_tree, base_node, "Alpha", tex_bump_node, "Base Map Alpha")
-        set_image_scale(mat, base_node, base_parameter, 1)
+        set_image_scale(mat, base_node, base_parameter.scale)
 
-    if not detail_value == None:
-        detail_map, detail_map_name, detail_bitmap = get_h2_bitmap(detail_value, texture_root, report)
+    if not detail_parameter == None:
+        detail_map, detail_map_name, detail_bitmap = get_h2_bitmap(detail_parameter.bitmap, texture_root, report)
         detail_node = generate_image_node(mat, detail_map, detail_bitmap, detail_map_name)
         detail_node.name = "Detail Map"
         detail_node.location = Vector((-900, -375))
@@ -189,70 +318,142 @@ def generate_shader_tex_bump(mat, shader, shader_template, report):
             detail_node.image.alpha_mode = 'CHANNEL_PACKED'
 
         connect_inputs(mat.node_tree, detail_node, "Color", tex_bump_node, "Detail Map")
-        set_image_scale(mat, detail_node, detail_parameter, 16)
+        set_image_scale(mat, detail_node, detail_parameter.scale)
 
-    if not specular_value == None:
-        tex_bump_node.inputs["Specular Color"].default_value = specular_value
-    if not specular_glancing_value == None:
-        tex_bump_node.inputs["Specular Glancing Color"].default_value = specular_glancing_value
+    if not specular_parameter == None:
+        tex_bump_node.inputs["Specular Color"].default_value = specular_parameter.color
+    if not specular_glancing_parameter == None:
+        tex_bump_node.inputs["Specular Glancing Color"].default_value = specular_glancing_parameter.color
+
+def generate_shader_tex_bump_detail_blend(mat, shader, shader_template, report):
+    mat.use_nodes = True
+
+    parameter_keys = ["bump_map", "base_map", "detail_map", "secondary_detail_map", "specular_color", "specular_glancing_color"]
+    parameters = generate_parameters(shader, shader_template, parameter_keys)
+
+    bump_parameter = None
+    base_parameter = None
+    detail_parameter = None
+    secondary_detail_parameter = None
+    specular_parameter = None
+    specular_glancing_parameter = None
+    for parameter in parameters:
+        if parameter.name == "bump_map":
+            bump_parameter = parameter
+        elif parameter.name == "base_map":
+            base_parameter = parameter
+        elif parameter.name == "detail_map":
+            detail_parameter = parameter
+        elif parameter.name == "secondary_detail_map":
+            secondary_detail_parameter = parameter
+        elif parameter.name == "specular_color":
+            specular_parameter = parameter
+        elif parameter.name == "specular_glancing_color":
+            specular_glancing_parameter = parameter
+
+    texture_root = bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_data_path
+    for node in mat.node_tree.nodes:
+        mat.node_tree.nodes.remove(node)
+
+    output_material_node = get_output_material_node(mat)
+    output_material_node.location = Vector((0.0, 0.0))
+
+    tex_bump_node = get_shader_node(mat.node_tree, "tex_bump_detail_blend")
+    tex_bump_node.location = Vector((-450.0, -20.0))
+    tex_bump_node.name = "Tex Bump Detail Blend"
+    tex_bump_node.width = 400.0
+    tex_bump_node.height = 100.0
+
+    connect_inputs(mat.node_tree, tex_bump_node, "Shader", output_material_node, "Surface")
+
+    if not bump_parameter == None:
+        bump_map, bump_map_name, bump_bitmap = get_h2_bitmap(bump_parameter.bitmap, texture_root, report)
+        bump_node = generate_image_node(mat, bump_map, bump_bitmap, bump_map_name)
+        bump_node.name = "Bump Map"
+        bump_node.location = Vector((-900, 525))
+        bump_node.interpolation = 'Cubic'
+        if not bump_node.image == None:
+            bump_node.image.colorspace_settings.name = 'Non-Color'
+            bump_node.image.alpha_mode = 'CHANNEL_PACKED'
+
+        connect_inputs(mat.node_tree, bump_node, "Color", tex_bump_node, "Bump Map")
+        set_image_scale(mat, bump_node, bump_parameter.scale)
+        if bump_bitmap:
+            height_value = 0.0
+            if not bump_bitmap.bump_height == 0.0:
+                height_value = bump_bitmap.bump_height / 10
+
+            tex_bump_node.inputs["Bump Map Repeat"].default_value = height_value
+
+    if not base_parameter == None:
+        base_map, base_map_name, base_bitmap = get_h2_bitmap(base_parameter.bitmap, texture_root, report)
+        base_node = generate_image_node(mat, base_map, base_bitmap, base_map_name)
+        base_node.name = "Base Map"
+        base_node.location = Vector((-900, -75))
+        if not base_node.image == None:
+            base_node.image.alpha_mode = 'CHANNEL_PACKED'
+
+        connect_inputs(mat.node_tree, base_node, "Color", tex_bump_node, "Base Map")
+        connect_inputs(mat.node_tree, base_node, "Alpha", tex_bump_node, "Base Map Alpha")
+        set_image_scale(mat, base_node, base_parameter.scale)
+
+    if not detail_parameter == None:
+        detail_map, detail_map_name, detail_bitmap = get_h2_bitmap(detail_parameter.bitmap, texture_root, report)
+        detail_node = generate_image_node(mat, detail_map, detail_bitmap, detail_map_name)
+        detail_node.name = "Detail Map"
+        detail_node.location = Vector((-900, -375))
+        if not detail_node.image == None:
+            detail_node.image.colorspace_settings.name = 'Non-Color'
+            detail_node.image.alpha_mode = 'CHANNEL_PACKED'
+
+        connect_inputs(mat.node_tree, detail_node, "Color", tex_bump_node, "Detail Map")
+        set_image_scale(mat, detail_node, detail_parameter.scale)
+
+    if not secondary_detail_parameter == None:
+        detail_map, detail_map_name, detail_bitmap = get_h2_bitmap(secondary_detail_parameter.bitmap, texture_root, report)
+        detail_node = generate_image_node(mat, detail_map, detail_bitmap, detail_map_name)
+        detail_node.name = "Secondary Detail Map"
+        detail_node.location = Vector((-900, -375))
+        if not detail_node.image == None:
+            detail_node.image.colorspace_settings.name = 'Non-Color'
+            detail_node.image.alpha_mode = 'CHANNEL_PACKED'
+
+        connect_inputs(mat.node_tree, detail_node, "Color", tex_bump_node, "Secondary Detail Map")
+        set_image_scale(mat, detail_node, secondary_detail_parameter)
+
+    if not specular_parameter == None:
+        tex_bump_node.inputs["Specular Color"].default_value = specular_parameter.color
+    if not specular_glancing_parameter == None:
+        tex_bump_node.inputs["Specular Glancing Color"].default_value = specular_glancing_parameter.color
 
 def generate_shader_tex_bump_detail_blend_detail(mat, shader, shader_template, report):
     mat.use_nodes = True
 
+    parameter_keys = ["bump_map", "base_map", "blend_detail_map_1", "blend_detail_map_2", "overlay_detail_map", "specular_color", "specular_glancing_color"]
+    parameters = generate_parameters(shader, shader_template, parameter_keys)
+
     bump_parameter = None
     base_parameter = None
-    detail_1_parameter = None
-    detail_2_parameter = None
-    overlay_parameter = None
+    blend_detail_map_1_parameter = None
+    blend_detail_map_2_parameter = None
+    overlay_detail_map_parameter = None
     specular_parameter = None
     specular_glancing_parameter = None
-
-    bump_value = None
-    base_value = None
-    detail_1_value = None
-    detail_2_value = None
-    overlay_value = None
-    specular_value = None
-    specular_glancing_value = None
-    for parameter in shader.parameters:
+    for parameter in parameters:
         if parameter.name == "bump_map":
             bump_parameter = parameter
-            bump_value = parameter.bitmap
         elif parameter.name == "base_map":
             base_parameter = parameter
-            base_value = parameter.bitmap
         elif parameter.name == "blend_detail_map_1":
-            detail_1_parameter = parameter
-            detail_1_value = parameter.bitmap
+            blend_detail_map_1_parameter = parameter
         elif parameter.name == "blend_detail_map_2":
-            detail_2_parameter = parameter
-            detail_2_value = parameter.bitmap
+            blend_detail_map_2_parameter = parameter
         elif parameter.name == "overlay_detail_map":
-            overlay_parameter = parameter
-            overlay_value = parameter.bitmap
+            overlay_detail_map_parameter = parameter
         elif parameter.name == "specular_color":
             specular_parameter = parameter
-            specular_value = parameter.const_color
         elif parameter.name == "specular_glancing_color":
             specular_glancing_parameter = parameter
-            specular_glancing_value = parameter.const_color
-
-    for category in shader_template.categories:
-        for parameter in category.parameters:
-            if parameter.name == "bump_map" and bump_value == None:
-                bump_value = parameter.default_bitmap
-            elif parameter.name == "base_map" and base_value == None:
-                base_value = parameter.default_bitmap
-            elif parameter.name == "blend_detail_map_1" and detail_1_value == None:
-                detail_1_value = parameter.default_bitmap
-            elif parameter.name == "blend_detail_map_2" and detail_2_value == None:
-                detail_2_value = parameter.default_bitmap
-            elif parameter.name == "overlay_detail_map" and overlay_value == None:
-                overlay_value = parameter.default_bitmap
-            elif parameter.name == "specular_color" and specular_value == None:
-                specular_value = parameter.default_const_color
-            elif parameter.name == "specular_glancing_color" and specular_glancing_value == None:
-                specular_glancing_value = parameter.default_const_color
 
     texture_root = bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_data_path
     for node in mat.node_tree.nodes:
@@ -269,8 +470,8 @@ def generate_shader_tex_bump_detail_blend_detail(mat, shader, shader_template, r
 
     connect_inputs(mat.node_tree, tex_bump_node, "Shader", output_material_node, "Surface")
 
-    if not bump_value == None:
-        bump_map, bump_map_name, bump_bitmap = get_h2_bitmap(bump_value, texture_root, report)
+    if not bump_parameter == None:
+        bump_map, bump_map_name, bump_bitmap = get_h2_bitmap(bump_parameter.bitmap, texture_root, report)
         bump_node = generate_image_node(mat, bump_map, bump_bitmap, bump_map_name)
         bump_node.name = "Bump Map"
         bump_node.location = Vector((-900, 525))
@@ -280,15 +481,16 @@ def generate_shader_tex_bump_detail_blend_detail(mat, shader, shader_template, r
             bump_node.image.alpha_mode = 'CHANNEL_PACKED'
 
         connect_inputs(mat.node_tree, bump_node, "Color", tex_bump_node, "Bump Map")
-        set_image_scale(mat, bump_node, bump_parameter, 1)
+        set_image_scale(mat, bump_node, bump_parameter.scale)
         if bump_bitmap:
             height_value = 0.0
             if not bump_bitmap.bump_height == 0.0:
                 height_value = bump_bitmap.bump_height / 10
+
             tex_bump_node.inputs["Bump Map Repeat"].default_value = height_value
 
-    if not base_value == None:
-        base_map, base_map_name, base_bitmap = get_h2_bitmap(base_value, texture_root, report)
+    if not base_parameter == None:
+        base_map, base_map_name, base_bitmap = get_h2_bitmap(base_parameter.bitmap, texture_root, report)
         base_node = generate_image_node(mat, base_map, base_bitmap, base_map_name)
         base_node.name = "Base Map"
         base_node.location = Vector((-900, -75))
@@ -297,10 +499,10 @@ def generate_shader_tex_bump_detail_blend_detail(mat, shader, shader_template, r
 
         connect_inputs(mat.node_tree, base_node, "Color", tex_bump_node, "Base Map")
         connect_inputs(mat.node_tree, base_node, "Alpha", tex_bump_node, "Base Map Alpha")
-        set_image_scale(mat, base_node, base_parameter, 1)
+        set_image_scale(mat, base_node, base_parameter.scale)
 
-    if not detail_1_value == None:
-        detail_map, detail_map_name, detail_bitmap = get_h2_bitmap(detail_1_value, texture_root, report)
+    if not blend_detail_map_1_parameter == None:
+        detail_map, detail_map_name, detail_bitmap = get_h2_bitmap(blend_detail_map_1_parameter.bitmap, texture_root, report)
         detail_node = generate_image_node(mat, detail_map, detail_bitmap, detail_map_name)
         detail_node.name = "Detail Map 1"
         detail_node.location = Vector((-900, -375))
@@ -309,10 +511,10 @@ def generate_shader_tex_bump_detail_blend_detail(mat, shader, shader_template, r
             detail_node.image.alpha_mode = 'CHANNEL_PACKED'
 
         connect_inputs(mat.node_tree, detail_node, "Color", tex_bump_node, "Detail Map 1")
-        set_image_scale(mat, detail_node, detail_1_parameter, 16)
+        set_image_scale(mat, detail_node, blend_detail_map_1_parameter.scale)
 
-    if not detail_2_value == None:
-        detail_map, detail_map_name, detail_bitmap = get_h2_bitmap(detail_2_value, texture_root, report)
+    if not blend_detail_map_2_parameter == None:
+        detail_map, detail_map_name, detail_bitmap = get_h2_bitmap(blend_detail_map_2_parameter.bitmap, texture_root, report)
         detail_node = generate_image_node(mat, detail_map, detail_bitmap, detail_map_name)
         detail_node.name = "Detail Map 1"
         detail_node.location = Vector((-900, -375))
@@ -321,10 +523,10 @@ def generate_shader_tex_bump_detail_blend_detail(mat, shader, shader_template, r
             detail_node.image.alpha_mode = 'CHANNEL_PACKED'
 
         connect_inputs(mat.node_tree, detail_node, "Color", tex_bump_node, "Detail Map 2")
-        set_image_scale(mat, detail_node, detail_2_parameter, 16)
+        set_image_scale(mat, detail_node, blend_detail_map_2_parameter.scale)
 
-    if not overlay_value == None:
-        detail_map, detail_map_name, detail_bitmap = get_h2_bitmap(overlay_value, texture_root, report)
+    if not overlay_detail_map_parameter == None:
+        detail_map, detail_map_name, detail_bitmap = get_h2_bitmap(overlay_detail_map_parameter.bitmap, texture_root, report)
         detail_node = generate_image_node(mat, detail_map, detail_bitmap, detail_map_name)
         detail_node.name = "Overlay Detail Map"
         detail_node.location = Vector((-900, -375))
@@ -333,9 +535,9 @@ def generate_shader_tex_bump_detail_blend_detail(mat, shader, shader_template, r
             detail_node.image.alpha_mode = 'CHANNEL_PACKED'
 
         connect_inputs(mat.node_tree, detail_node, "Color", tex_bump_node, "Overlay Detail Map")
-        set_image_scale(mat, detail_node, overlay_parameter, 16)
+        set_image_scale(mat, detail_node, overlay_detail_map_parameter.scale)
 
-    if not specular_value == None:
-        tex_bump_node.inputs["Specular Color"].default_value = specular_value
-    if not specular_glancing_value == None:
-        tex_bump_node.inputs["Specular Glancing Color"].default_value = specular_glancing_value
+    if not specular_parameter == None:
+        tex_bump_node.inputs["Specular Color"].default_value = specular_parameter.color
+    if not specular_glancing_parameter == None:
+        tex_bump_node.inputs["Specular Glancing Color"].default_value = specular_glancing_parameter.color

@@ -602,11 +602,16 @@ class TagAsset():
         return (rgb[0], rgb[1], rgb[2], 1)
 
     def read_bgr_byte(self, input_stream, tag, xml_data=None):
-        bgr = struct.unpack('%s4b' % get_endian_symbol(tag.big_endian), input_stream.read(4))
+        bgr = struct.unpack('%s4B' % get_endian_symbol(tag.big_endian), input_stream.read(4))
         if not tag.xml_doc == None and not xml_data == None:
             xml_data.xml_node.appendChild(create_xml_node("field", [("name", xml_data.element_name), ("type", "rgb color")], xml_vector_short((bgr[2], bgr[1], bgr[0]))))
 
-        return (bgr[2], bgr[1], bgr[0], 1) # Order is the way it is cause Halo stores color as BGR while Blender is RGBA. - General_101
+        R = bgr[2] / 255
+        G = bgr[1] / 255
+        B = bgr[0] / 255
+        A = 1.0
+
+        return (R, G, B, A) # Order is the way it is cause Halo stores color as BGR while Blender is RGBA. - General_101
 
     def read_argb(self, input_stream, tag, xml_data=None):
         argb = struct.unpack('%s4f' % get_endian_symbol(tag.big_endian), input_stream.read(16))
@@ -620,7 +625,7 @@ class TagAsset():
         if not tag.xml_doc == None and not xml_data == None:
             xml_data.xml_node.appendChild(create_xml_node("field", [("name", xml_data.element_name), ("type", "argb color")], xml_tuple_short(argb)))
 
-        return (argb[1], argb[2], argb[3], argb[0]) # Order is the way it is cause Halo stores color as ARGB while Blender is RGBA. - General_101
+        return (argb[1] / 255, argb[2] / 255, argb[3] / 255, argb[0] / 255) # Order is the way it is cause Halo stores color as ARGB while Blender is RGBA. - General_101
 
     def read_rectangle(self, input_stream, tag, xml_data=None):
         rec2d = struct.unpack('%s4h' % get_endian_symbol(tag.big_endian), input_stream.read(8))

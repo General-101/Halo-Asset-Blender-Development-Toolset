@@ -46,7 +46,7 @@ from .format import (
     DistributionFunctionEnum
     )
 
-XML_OUTPUT = True
+XML_OUTPUT = False
 
 def read_weapon_predicted_resources(WEAPON, TAG, input_stream, tag_node, XML_OUTPUT):
     predicted_resources_node = tag_format.get_xml_node(XML_OUTPUT, WEAPON.weapon_predicted_resources_tag_block.count, tag_node, "name", "weapon predicted resources")

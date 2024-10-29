@@ -138,11 +138,6 @@ def generate_image_node(mat, texture, BITMAP=None, bitmap_name="White", is_env=F
             
             blender_pixels = (np.asarray(pil_image.convert('RGBA'),dtype=np.float32) * normalized).ravel()
 
-            if not background_color == divider_color:
-                print(background_color)
-                print(divider_color)
-                print("%s has a color plate" % bitmap_name)
-
             image.pixels[:] = blender_pixels
             image.pack()
 

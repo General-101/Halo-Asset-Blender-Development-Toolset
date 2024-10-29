@@ -26,6 +26,7 @@
 
 from xml.dom import minidom
 from ....global_functions import tag_format
+from ....file_tag.h2.file_functions.process_file import read_function
 from .format import (
         AIFlags,
         AISizeEnum,
@@ -85,7 +86,7 @@ def read_functions_retail(OBJECT, TAG, input_stream, tag_node, XML_OUTPUT):
                 function_element_node.setAttribute('index', str(function_idx))
                 functions_node.appendChild(function_element_node)
 
-            function = OBJECT.Function()
+            function = OBJECT.ObjectFunction()
             function.flags = TAG.read_flag_unsigned_integer(input_stream, TAG, tag_format.XMLData(tag_node, "flags", FunctionFlags))
 
             TAG.big_endian = True
@@ -107,122 +108,24 @@ def read_functions_retail(OBJECT, TAG, input_stream, tag_node, XML_OUTPUT):
 
             OBJECT.functions.append(function)
 
-        for function_idx, function in enumerate(OBJECT.functions):
+        for function_idx, object_function in enumerate(OBJECT.functions):
             function_element_node = None
             if XML_OUTPUT:
                 function_element_node = functions_node.childNodes[function_idx]
 
-            if function.import_name_length > 0:
-                function.import_name = TAG.read_variable_string_no_terminator(input_stream, function.import_name_length, TAG, tag_format.XMLData(tag_node, "import name"))
+            if object_function.import_name_length > 0:
+                object_function.import_name = TAG.read_variable_string_no_terminator(input_stream, object_function.import_name_length, TAG, tag_format.XMLData(function_element_node, "import name"))
 
-            if function.export_name_length > 0:
-                function.export_name = TAG.read_variable_string_no_terminator(input_stream, function.export_name_length, TAG, tag_format.XMLData(tag_node, "export name"))
+            if object_function.export_name_length > 0:
+                object_function.export_name = TAG.read_variable_string_no_terminator(input_stream, object_function.export_name_length, TAG, tag_format.XMLData(function_element_node, "export name"))
 
-            if function.turn_off_with_length > 0:
-                function.turn_off_with = TAG.read_variable_string_no_terminator(input_stream, function.turn_off_with_length, TAG, tag_format.XMLData(tag_node, "turn off with"))
+            if object_function.turn_off_with_length > 0:
+                object_function.turn_off_with = TAG.read_variable_string_no_terminator(input_stream, object_function.turn_off_with_length, TAG, tag_format.XMLData(function_element_node, "turn off with"))
 
-            function.MAPP_header = TAG.TagBlockHeader().read(input_stream, TAG)
-            function.function_header = TAG.TagBlockHeader().read(input_stream, TAG)
-
-            function.function_type = TAG.read_enum_unsigned_byte(input_stream, TAG, tag_format.XMLData(function_element_node, "function type", FunctionTypeEnum))
-            function.output_type = TAG.read_flag_unsigned_byte(input_stream, TAG, tag_format.XMLData(function_element_node, "output type", OutputTypeFlags))
-            output_type_flags = OutputTypeFlags(function.output_type)
-            function.points = []
-            function.range_points = []
-            function.exponent = TAG.read_enum_unsigned_byte(input_stream, TAG, tag_format.XMLData(function_element_node, "exponent", TransitionExponentEnum))
-            function.range_exponent = TAG.read_enum_unsigned_byte(input_stream, TAG, tag_format.XMLData(function_element_node, "exponent", TransitionExponentEnum))
-            if OutputTypeFlags._2_color in output_type_flags:
-                function.color_a = TAG.read_bgr_byte(input_stream, TAG, tag_format.XMLData(function_element_node, "color a"))
-                input_stream.read(8) # Padding?
-                function.color_b = TAG.read_bgr_byte(input_stream, TAG, tag_format.XMLData(function_element_node, "color b"))
-            elif OutputTypeFlags._3_color in output_type_flags:
-                function.color_a = TAG.read_bgr_byte(input_stream, TAG, tag_format.XMLData(function_element_node, "color a"))
-                function.color_b = TAG.read_bgr_byte(input_stream, TAG, tag_format.XMLData(function_element_node, "color b"))
-                input_stream.read(4) # Padding?
-                function.color_c = TAG.read_bgr_byte(input_stream, TAG, tag_format.XMLData(function_element_node, "color c"))
-            elif OutputTypeFlags._4_color in output_type_flags:
-                function.color_a = TAG.read_bgr_byte(input_stream, TAG, tag_format.XMLData(function_element_node, "color a"))
-                function.color_b = TAG.read_bgr_byte(input_stream, TAG, tag_format.XMLData(function_element_node, "color b"))
-                function.color_c = TAG.read_bgr_byte(input_stream, TAG, tag_format.XMLData(function_element_node, "color c"))
-                function.color_d = TAG.read_bgr_byte(input_stream, TAG, tag_format.XMLData(function_element_node, "color d"))
-            else:
-                function.lower_bound = TAG.read_float(input_stream, TAG, tag_format.XMLData(function_element_node, "lower bound"))
-                function.upper_bound = TAG.read_float(input_stream, TAG, tag_format.XMLData(function_element_node, "upper bound"))
-                input_stream.read(8) # Padding?
-
-            if FunctionTypeEnum.constant == FunctionTypeEnum(function.function_type):
-                input_stream.read(8) # Padding?
-            elif FunctionTypeEnum.transition == FunctionTypeEnum(function.function_type):
-                function.function_min = TAG.read_float(input_stream, TAG, tag_format.XMLData(function_element_node, "min"))
-                function.function_max = TAG.read_float(input_stream, TAG, tag_format.XMLData(function_element_node, "max"))
-                function.range_function_min = TAG.read_float(input_stream, TAG, tag_format.XMLData(function_element_node, "min"))
-                function.range_function_max = TAG.read_float(input_stream, TAG, tag_format.XMLData(function_element_node, "max"))
-            elif FunctionTypeEnum.periodic == FunctionTypeEnum(function.function_type):
-                function.frequency = TAG.read_float(input_stream, TAG, tag_format.XMLData(function_element_node, "frequency"))
-                function.phase = TAG.read_float(input_stream, TAG, tag_format.XMLData(function_element_node, "phase"))
-                function.function_min = TAG.read_float(input_stream, TAG, tag_format.XMLData(function_element_node, "min"))
-                function.function_max = TAG.read_float(input_stream, TAG, tag_format.XMLData(function_element_node, "max"))
-                function.range_frequency = TAG.read_float(input_stream, TAG, tag_format.XMLData(function_element_node, "frequency"))
-                function.range_phase = TAG.read_float(input_stream, TAG, tag_format.XMLData(function_element_node, "phase"))
-                function.range_function_min = TAG.read_float(input_stream, TAG, tag_format.XMLData(function_element_node, "min"))
-                function.range_function_max = TAG.read_float(input_stream, TAG, tag_format.XMLData(function_element_node, "max"))
-            elif FunctionTypeEnum.linear == FunctionTypeEnum(function.function_type):
-                for point_idx in range(2):
-                    function.points.append(TAG.read_point_2d(input_stream, TAG, tag_format.XMLData(function_element_node, "position")))
-
-                input_stream.read(8) # Padding?
-                for point_idx in range(2):
-                    function.range_points.append(TAG.read_point_2d(input_stream, TAG, tag_format.XMLData(function_element_node, "position")))
-
-                input_stream.read(8) # Padding?
-
-            elif FunctionTypeEnum.linear_key == FunctionTypeEnum(function.function_type):
-                for point_idx in range(4):
-                    function.input_function_data.points.append(TAG.read_point_2d(input_stream, TAG, tag_format.XMLData(function_element_node, "position")))
-
-                input_stream.read(48) # Padding?
-                for point_idx in range(4):
-                    function.range_function_data.points.append(TAG.read_point_2d(input_stream, TAG, tag_format.XMLData(function_element_node, "position")))
-
-                input_stream.read(48) # Padding?
-
-            elif FunctionTypeEnum.multi_linear_key == FunctionTypeEnum(function.function_type):
-                input_stream.read(256) # Padding?
-
-            elif FunctionTypeEnum.spline == FunctionTypeEnum(function.function_type):
-                for point_idx in range(4):
-                    function.input_function_data.points.append(TAG.read_point_2d(input_stream, TAG, tag_format.XMLData(function_element_node, "position")))
-
-                input_stream.read(16) # Padding?
-                for point_idx in range(4):
-                    function.range_function_data.points.append(TAG.read_point_2d(input_stream, TAG, tag_format.XMLData(function_element_node, "position")))
-
-                input_stream.read(16) # Padding?
-
-            elif FunctionTypeEnum.multi_spline == FunctionTypeEnum(function.function_type):
-                input_stream.read(40) # Padding?
-
-            elif FunctionTypeEnum.exponent == FunctionTypeEnum(function.function_type):
-                function.input_function_data.min = TAG.read_float(input_stream, TAG, tag_format.XMLData(function_element_node, "min"))
-                function.input_function_data.max = TAG.read_float(input_stream, TAG, tag_format.XMLData(function_element_node, "max"))
-                function.input_function_data.exponent = TAG.read_float(input_stream, TAG, tag_format.XMLData(function_element_node, "exponent"))
-
-                function.range_function_data.min = TAG.read_float(input_stream, TAG, tag_format.XMLData(function_element_node, "min"))
-                function.range_function_data.max = TAG.read_float(input_stream, TAG, tag_format.XMLData(function_element_node, "max"))
-                function.range_function_data.exponent = TAG.read_float(input_stream, TAG, tag_format.XMLData(function_element_node, "exponent"))
-
-            elif FunctionTypeEnum.spline2 == FunctionTypeEnum(function.function_type):
-                for point_idx in range(4):
-                    function.input_function_data.points.append(TAG.read_point_2d(input_stream, TAG, tag_format.XMLData(function_element_node, "position")))
-
-                input_stream.read(16) # Padding?
-                for point_idx in range(4):
-                    function.range_function_data.points.append(TAG.read_point_2d(input_stream, TAG, tag_format.XMLData(function_element_node, "position")))
-
-                input_stream.read(16) # Padding?
+            read_function(TAG, input_stream, function_element_node, object_function)
 
             if function.scale_by_length > 0:
-                function.scale_by = TAG.read_variable_string_no_terminator(input_stream, function.scale_by_length, TAG, tag_format.XMLData(tag_node, "scale by"))
+                function.scale_by = TAG.read_variable_string_no_terminator(input_stream, function.scale_by_length, TAG, tag_format.XMLData(function_element_node, "scale by"))
 
 def read_attachments_v0(OBJECT, TAG, input_stream, tag_node, XML_OUTPUT):
     if OBJECT.attachments_tag_block.count > 0:

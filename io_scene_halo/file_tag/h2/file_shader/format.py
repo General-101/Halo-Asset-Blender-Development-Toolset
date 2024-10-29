@@ -25,6 +25,7 @@
 # ##### END MIT LICENSE BLOCK #####
 
 from enum import Flag, Enum, auto
+from ....file_tag.h2.file_functions.format import Function
 
 class ShaderFlags(Flag):
     water = auto()
@@ -185,11 +186,10 @@ class ShaderAsset():
             self.animation_properties_header = animation_properties_header
             self.animation_properties = animation_properties
 
-    class AnimationProperty:
+    class AnimationProperty(Function):
         def __init__(self, type=0, input_name="", input_name_length=0, input_type=0, range_name="", range_name_length=0, range_type=0, time_period=0.0, output_modifier=0,
-                     output_modifier_input=0, map_property_header=None, function_header=None, function_type=0, range_check=False, input_function_data=None, range_function_data=None,
-                     output_type=0, upper_bound=1.0, lower_bound=0.0, range_upper_bound=1.0, range_lower_bound=1.0, color_a=(0.0, 0.0, 0.0, 1.0), color_b=(0.0, 0.0, 0.0, 1.0),
-                     color_c=(0.0, 0.0, 0.0, 1.0), color_d=(0.0, 0.0, 0.0, 1.0)):
+                     output_modifier_input=0):
+            super().__init__()
             self.type = type
             self.input_name = input_name
             self.input_name_length = input_name_length
@@ -200,21 +200,6 @@ class ShaderAsset():
             self.time_period = time_period
             self.output_modifier = output_modifier
             self.output_modifier_input = output_modifier_input
-            self.map_property_header = map_property_header
-            self.function_header = function_header
-            self.function_type = function_type
-            self.range_check = range_check
-            self.input_function_data = input_function_data
-            self.range_function_data = range_function_data
-            self.output_type = output_type
-            self.upper_bound = upper_bound
-            self.lower_bound = lower_bound
-            self.range_upper_bound = range_upper_bound
-            self.range_lower_bound = range_lower_bound
-            self.color_a = color_a
-            self.color_b = color_b
-            self.color_c = color_c
-            self.color_d = color_d
 
     class FunctionData:
         def __init__(self, min=0.0, max=1.0, exponent=0, frequency=1.0, phase=0.0, points=None):

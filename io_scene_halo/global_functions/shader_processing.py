@@ -35,6 +35,7 @@ from enum import Flag, Enum, auto
 from ..file_tag.h1.file_shader_environment.format import EnvironmentTypeEnum, EnvironmentFlags, DiffuseFlags, ReflectionFlags
 from ..file_tag.h1.file_shader_model.format import ModelFlags, DetailFumctionEnum, DetailMaskEnum, FunctionEnum
 from ..file_tag.h1.file_bitmap.format import FormatEnum, BitmapFormatEnum
+from ..file_tag.h2.file_functions.format import OutputTypeFlags
 from ..file_tag.h2.file_shader.format import (
         ShaderAsset,
         ShaderFlags,
@@ -44,7 +45,6 @@ from ..file_tag.h2.file_shader.format import (
         LightmapTypeEnum,
         AnimationTypeEnum,
         FunctionTypeEnum,
-        OutputTypeFlags,
         TransitionExponentEnum,
         PeriodicExponentEnum,
         )
@@ -674,7 +674,7 @@ def generate_h2_shader(mat, tag_ref, report):
                         if shader_name == "active_camo_opaque":
                             shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
                         elif shader_name == "bloom":
-                            shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
+                            shader_opaque.generate_shader_bloom(mat, shader, shader_template, report)
                         elif shader_name == "decal_simple":
                             shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
                         elif shader_name == "emblem_flag":
@@ -686,33 +686,33 @@ def generate_h2_shader(mat, tag_ref, report):
                         elif shader_name == "emblem_overlay_simple":
                             shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
                         elif shader_name == "illum":
-                            shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
+                            shader_opaque.generate_shader_illum(mat, shader, shader_template, report)
                         elif shader_name == "illum_3_channel":
-                            shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
+                            shader_opaque.generate_shader_illum(mat, shader, shader_template, report)
                         elif shader_name == "illum_3_channel_opaque":
-                            shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
+                            shader_opaque.generate_shader_illum(mat, shader, shader_template, report)
                         elif shader_name == "illum_3_channel_plasma":
-                            shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
+                            shader_opaque.generate_shader_illum(mat, shader, shader_template, report)
                         elif shader_name == "illum_bloom":
-                            shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
+                            shader_opaque.generate_shader_illum(mat, shader, shader_template, report)
                         elif shader_name == "illum_bloom_3_channel":
-                            shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
+                            shader_opaque.generate_shader_illum(mat, shader, shader_template, report)
                         elif shader_name == "illum_bloom_3_channel_opaque":
-                            shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
+                            shader_opaque.generate_shader_illum(mat, shader, shader_template, report)
                         elif shader_name == "illum_bloom_masked":
-                            shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
+                            shader_opaque.generate_shader_illum(mat, shader, shader_template, report)
                         elif shader_name == "illum_bloom_opaque":
-                            shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
+                            shader_opaque.generate_shader_illum(mat, shader, shader_template, report)
                         elif shader_name == "illum_clamped":
-                            shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
+                            shader_opaque.generate_shader_illum(mat, shader, shader_template, report)
                         elif shader_name == "illum_detail":
-                            shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
+                            shader_opaque.generate_shader_illum(mat, shader, shader_template, report)
                         elif shader_name == "illum_opaque":
-                            shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
+                            shader_opaque.generate_shader_illum(mat, shader, shader_template, report)
                         elif shader_name == "illum_opaque_index":
-                            shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
+                            shader_opaque.generate_shader_illum(mat, shader, shader_template, report)
                         elif shader_name == "illum_wrap":
-                            shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
+                            shader_opaque.generate_shader_illum(mat, shader, shader_template, report)
                         elif shader_name == "overlay":
                             shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
                         elif shader_name == "prt_lightmap":
@@ -748,15 +748,15 @@ def generate_h2_shader(mat, tag_ref, report):
                         elif shader_name == "tex_bump_clamped_multiply_map":
                             shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
                         elif shader_name == "tex_bump_detail_blend":
-                            shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
+                            shader_opaque.generate_shader_tex_bump_detail_blend(mat, shader, shader_template, report)
                         elif shader_name == "tex_bump_detail_blend_detail":
                             shader_opaque.generate_shader_tex_bump_detail_blend_detail(mat, shader, shader_template, report)
                         elif shader_name == "tex_bump_detail_blend_specular":
-                            shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
+                            shader_opaque.generate_shader_tex_bump_detail_blend(mat, shader, shader_template, report)
                         elif shader_name == "tex_bump_detail_blend_specular_combined":
-                            shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
+                            shader_opaque.generate_shader_tex_bump_detail_blend(mat, shader, shader_template, report)
                         elif shader_name == "tex_bump_detail_blend_specular_dblmult":
-                            shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
+                            shader_opaque.generate_shader_tex_bump_detail_blend(mat, shader, shader_template, report)
                         elif shader_name == "tex_bump_detail_keep":
                             shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
                         elif shader_name == "tex_bump_detail_keep_blend":
@@ -788,9 +788,9 @@ def generate_h2_shader(mat, tag_ref, report):
                         elif shader_name == "tex_bump_env_dbl_spec":
                             shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
                         elif shader_name == "tex_bump_env_detail_blend":
-                            shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
+                            shader_opaque.generate_shader_tex_bump_detail_blend(mat, shader, shader_template, report)
                         elif shader_name == "tex_bump_env_detail_blend_specular":
-                            shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
+                            shader_opaque.generate_shader_tex_bump_detail_blend(mat, shader, shader_template, report)
                         elif shader_name == "tex_bump_env_detail_mask":
                             shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
                         elif shader_name == "tex_bump_env_detail_mask_combined":
@@ -916,7 +916,7 @@ def generate_h2_shader(mat, tag_ref, report):
                         elif shader_name == "tex_bump_two_detail_tint":
                             shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
                         elif shader_name == "tex_detail_blend":
-                            shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
+                            shader_opaque.generate_shader_tex_bump_detail_blend(mat, shader, shader_template, report)
                         elif shader_name == "tex_env":
                             shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
                         elif shader_name == "tex_env_3_channel_illum":
@@ -1845,12 +1845,24 @@ def convert_legacy_function(PARTICLE, TAG, properties, input_type=0, range_type=
                            material_colors=colors, lower_bound=value_0, upper_bound=value_1, input_function=input_function, range_function=range_function, range_lower_bound=value_2,
                            range_upper_bound=value_3)
 
+def function_uses_color(shader_function):
+    uses_color = False
+    if OutputTypeFlags._2_color in OutputTypeFlags(shader_function.output_type):
+        uses_color = True
+    elif OutputTypeFlags._3_color in OutputTypeFlags(shader_function.output_type):
+        uses_color = True
+    elif OutputTypeFlags._4_color in OutputTypeFlags(shader_function.output_type):
+        uses_color = True
+
+    return uses_color
+
 def write_identity(output_stream, TAG, animation_properties):
-    output_stream.write(struct.pack('<4s3I', TAG.string_to_bytes("tbfd", True), 0, 20, 1))
+    animation_properties.function_header.write(output_stream, TAG, True)
     output_stream.write(struct.pack('<B', animation_properties.function_type))
-    output_stream.write(struct.pack('<B', animation_properties.range_check))
-    output_stream.write(struct.pack('<2x'))
-    if animation_properties.range_check > 1:
+    output_stream.write(struct.pack('<B', animation_properties.output_type))
+    output_stream.write(struct.pack('<B', animation_properties.input_function_data.exponent))
+    output_stream.write(struct.pack('<B', animation_properties.range_function_data.exponent))
+    if function_uses_color(animation_properties):
         output_stream.write(struct.pack('<BBBB', animation_properties.color_a[0], animation_properties.color_a[1], animation_properties.color_a[2], animation_properties.color_a[3]))
         output_stream.write(struct.pack('<BBBB', animation_properties.color_b[0], animation_properties.color_b[1], animation_properties.color_b[2], animation_properties.color_b[3]))
         output_stream.write(struct.pack('<BBBB', animation_properties.color_c[0], animation_properties.color_c[1], animation_properties.color_c[2], animation_properties.color_c[3]))
@@ -1862,11 +1874,12 @@ def write_identity(output_stream, TAG, animation_properties):
         output_stream.write(struct.pack('<8x'))
 
 def write_constant(output_stream, TAG, animation_properties):
-    output_stream.write(struct.pack('<4s3I', TAG.string_to_bytes("tbfd", True), 0, 28, 1))
+    animation_properties.function_header.write(output_stream, TAG, True)
     output_stream.write(struct.pack('<B', animation_properties.function_type))
-    output_stream.write(struct.pack('<B', animation_properties.range_check))
-    output_stream.write(struct.pack('<2x'))
-    if animation_properties.range_check > 1:
+    output_stream.write(struct.pack('<B', animation_properties.output_type))
+    output_stream.write(struct.pack('<B', animation_properties.input_function_data.exponent))
+    output_stream.write(struct.pack('<B', animation_properties.range_function_data.exponent))
+    if function_uses_color(animation_properties):
         output_stream.write(struct.pack('<BBBB', animation_properties.color_a[0], animation_properties.color_a[1], animation_properties.color_a[2], animation_properties.color_a[3]))
         output_stream.write(struct.pack('<BBBB', animation_properties.color_b[0], animation_properties.color_b[1], animation_properties.color_b[2], animation_properties.color_b[3]))
         output_stream.write(struct.pack('<BBBB', animation_properties.color_c[0], animation_properties.color_c[1], animation_properties.color_c[2], animation_properties.color_c[3]))
@@ -1877,16 +1890,15 @@ def write_constant(output_stream, TAG, animation_properties):
         output_stream.write(struct.pack('<f', animation_properties.upper_bound))
         output_stream.write(struct.pack('<8x'))
 
-    output_stream.write(struct.pack('<f', animation_properties.range_lower_bound))
-    output_stream.write(struct.pack('<f', animation_properties.range_upper_bound))
+    output_stream.write(struct.pack('<8x'))
 
 def write_transition(output_stream, TAG, animation_properties):
-    output_stream.write(struct.pack('<4s3I', TAG.string_to_bytes("tbfd", True), 0, 36, 1))
+    animation_properties.function_header.write(output_stream, TAG, True)
     output_stream.write(struct.pack('<B', animation_properties.function_type))
-    output_stream.write(struct.pack('<B', animation_properties.range_check))
+    output_stream.write(struct.pack('<B', animation_properties.output_type))
     output_stream.write(struct.pack('<B', animation_properties.input_function_data.exponent))
     output_stream.write(struct.pack('<B', animation_properties.range_function_data.exponent))
-    if animation_properties.range_check > 1:
+    if function_uses_color(animation_properties):
         output_stream.write(struct.pack('<BBBB', animation_properties.color_a[0], animation_properties.color_a[1], animation_properties.color_a[2], animation_properties.color_a[3]))
         output_stream.write(struct.pack('<BBBB', animation_properties.color_b[0], animation_properties.color_b[1], animation_properties.color_b[2], animation_properties.color_b[3]))
         output_stream.write(struct.pack('<BBBB', animation_properties.color_c[0], animation_properties.color_c[1], animation_properties.color_c[2], animation_properties.color_c[3]))
@@ -1897,18 +1909,18 @@ def write_transition(output_stream, TAG, animation_properties):
         output_stream.write(struct.pack('<f', animation_properties.upper_bound))
         output_stream.write(struct.pack('<8x'))
 
-    output_stream.write(struct.pack('<f', animation_properties.input_function_data.min))
-    output_stream.write(struct.pack('<f', animation_properties.input_function_data.max))
-    output_stream.write(struct.pack('<f', animation_properties.range_function_data.min))
-    output_stream.write(struct.pack('<f', animation_properties.range_function_data.max))
+    output_stream.write(struct.pack('<f', animation_properties.input_function_data.function_min))
+    output_stream.write(struct.pack('<f', animation_properties.input_function_data.function_max))
+    output_stream.write(struct.pack('<f', animation_properties.range_function_data.function_min))
+    output_stream.write(struct.pack('<f', animation_properties.range_function_data.function_max))
 
 def write_periodic(output_stream, TAG, animation_properties):
-    output_stream.write(struct.pack('<4s3I', TAG.string_to_bytes("tbfd", True), 0, 52, 1))
+    animation_properties.function_header.write(output_stream, TAG, True)
     output_stream.write(struct.pack('<B', animation_properties.function_type))
-    output_stream.write(struct.pack('<B', animation_properties.range_check))
+    output_stream.write(struct.pack('<B', animation_properties.output_type))
     output_stream.write(struct.pack('<B', animation_properties.input_function_data.exponent))
     output_stream.write(struct.pack('<B', animation_properties.range_function_data.exponent))
-    if animation_properties.range_check > 1:
+    if function_uses_color(animation_properties):
         output_stream.write(struct.pack('<BBBB', animation_properties.color_a[0], animation_properties.color_a[1], animation_properties.color_a[2], animation_properties.color_a[3]))
         output_stream.write(struct.pack('<BBBB', animation_properties.color_b[0], animation_properties.color_b[1], animation_properties.color_b[2], animation_properties.color_b[3]))
         output_stream.write(struct.pack('<BBBB', animation_properties.color_c[0], animation_properties.color_c[1], animation_properties.color_c[2], animation_properties.color_c[3]))
@@ -1921,20 +1933,20 @@ def write_periodic(output_stream, TAG, animation_properties):
 
     output_stream.write(struct.pack('<f', animation_properties.input_function_data.frequency))
     output_stream.write(struct.pack('<f', animation_properties.input_function_data.phase))
-    output_stream.write(struct.pack('<f', animation_properties.input_function_data.min))
-    output_stream.write(struct.pack('<f', animation_properties.input_function_data.max))
+    output_stream.write(struct.pack('<f', animation_properties.input_function_data.function_min))
+    output_stream.write(struct.pack('<f', animation_properties.input_function_data.function_max))
     output_stream.write(struct.pack('<f', animation_properties.range_function_data.frequency))
     output_stream.write(struct.pack('<f', animation_properties.range_function_data.phase))
-    output_stream.write(struct.pack('<f', animation_properties.range_function_data.min))
-    output_stream.write(struct.pack('<f', animation_properties.range_function_data.max))
+    output_stream.write(struct.pack('<f', animation_properties.range_function_data.function_min))
+    output_stream.write(struct.pack('<f', animation_properties.range_function_data.function_max))
 
 def write_linear(output_stream, TAG, animation_properties):
-    output_stream.write(struct.pack('<4s3I', TAG.string_to_bytes("tbfd", True), 0, 68, 1))
+    animation_properties.function_header.write(output_stream, TAG, True)
     output_stream.write(struct.pack('<B', animation_properties.function_type))
-    output_stream.write(struct.pack('<B', animation_properties.range_check))
+    output_stream.write(struct.pack('<B', animation_properties.output_type))
     output_stream.write(struct.pack('<B', animation_properties.input_function_data.exponent))
     output_stream.write(struct.pack('<B', animation_properties.range_function_data.exponent))
-    if animation_properties.range_check > 1:
+    if function_uses_color(animation_properties):
         output_stream.write(struct.pack('<BBBB', animation_properties.color_a[0], animation_properties.color_a[1], animation_properties.color_a[2], animation_properties.color_a[3]))
         output_stream.write(struct.pack('<BBBB', animation_properties.color_b[0], animation_properties.color_b[1], animation_properties.color_b[2], animation_properties.color_b[3]))
         output_stream.write(struct.pack('<BBBB', animation_properties.color_c[0], animation_properties.color_c[1], animation_properties.color_c[2], animation_properties.color_c[3]))
@@ -1955,12 +1967,12 @@ def write_linear(output_stream, TAG, animation_properties):
     output_stream.write(struct.pack('<8x'))
 
 def write_linear_key(output_stream, TAG, animation_properties):
-    output_stream.write(struct.pack('<4s3I', TAG.string_to_bytes("tbfd", True), 0, 180, 1))
+    animation_properties.function_header.write(output_stream, TAG, True)
     output_stream.write(struct.pack('<B', animation_properties.function_type))
-    output_stream.write(struct.pack('<B', animation_properties.range_check))
+    output_stream.write(struct.pack('<B', animation_properties.output_type))
     output_stream.write(struct.pack('<B', animation_properties.input_function_data.exponent))
     output_stream.write(struct.pack('<B', animation_properties.range_function_data.exponent))
-    if animation_properties.range_check > 1:
+    if function_uses_color(animation_properties):
         output_stream.write(struct.pack('<BBBB', animation_properties.color_a[0], animation_properties.color_a[1], animation_properties.color_a[2], animation_properties.color_a[3]))
         output_stream.write(struct.pack('<BBBB', animation_properties.color_b[0], animation_properties.color_b[1], animation_properties.color_b[2], animation_properties.color_b[3]))
         output_stream.write(struct.pack('<BBBB', animation_properties.color_c[0], animation_properties.color_c[1], animation_properties.color_c[2], animation_properties.color_c[3]))
@@ -1981,11 +1993,12 @@ def write_linear_key(output_stream, TAG, animation_properties):
     output_stream.write(struct.pack('<48x'))
 
 def write_multi_linear_key(output_stream, TAG, animation_properties):
-    output_stream.write(struct.pack('<4s3I', TAG.string_to_bytes("tbfd", True), 0, 276, 1))
+    animation_properties.function_header.write(output_stream, TAG, True)
     output_stream.write(struct.pack('<B', animation_properties.function_type))
-    output_stream.write(struct.pack('<B', animation_properties.range_check))
-    output_stream.write(struct.pack('<2x'))
-    if animation_properties.range_check > 1:
+    output_stream.write(struct.pack('<B', animation_properties.output_type))
+    output_stream.write(struct.pack('<B', animation_properties.input_function_data.exponent))
+    output_stream.write(struct.pack('<B', animation_properties.range_function_data.exponent))
+    if function_uses_color(animation_properties):
         output_stream.write(struct.pack('<BBBB', animation_properties.color_a[0], animation_properties.color_a[1], animation_properties.color_a[2], animation_properties.color_a[3]))
         output_stream.write(struct.pack('<BBBB', animation_properties.color_b[0], animation_properties.color_b[1], animation_properties.color_b[2], animation_properties.color_b[3]))
         output_stream.write(struct.pack('<BBBB', animation_properties.color_c[0], animation_properties.color_c[1], animation_properties.color_c[2], animation_properties.color_c[3]))
@@ -1999,12 +2012,12 @@ def write_multi_linear_key(output_stream, TAG, animation_properties):
     output_stream.write(struct.pack('<256x'))
 
 def write_spline(output_stream, TAG, animation_properties):
-    output_stream.write(struct.pack('<4s3I', TAG.string_to_bytes("tbfd", True), 0, 116, 1))
+    animation_properties.function_header.write(output_stream, TAG, True)
     output_stream.write(struct.pack('<B', animation_properties.function_type))
-    output_stream.write(struct.pack('<B', animation_properties.range_check))
-    output_stream.write(struct.pack('<B', 4))
-    output_stream.write(struct.pack('<B', 4))
-    if animation_properties.range_check > 1:
+    output_stream.write(struct.pack('<B', animation_properties.output_type))
+    output_stream.write(struct.pack('<B', animation_properties.input_function_data.exponent))
+    output_stream.write(struct.pack('<B', animation_properties.range_function_data.exponent))
+    if function_uses_color(animation_properties):
         output_stream.write(struct.pack('<BBBB', animation_properties.color_a[0], animation_properties.color_a[1], animation_properties.color_a[2], animation_properties.color_a[3]))
         output_stream.write(struct.pack('<BBBB', animation_properties.color_b[0], animation_properties.color_b[1], animation_properties.color_b[2], animation_properties.color_b[3]))
         output_stream.write(struct.pack('<BBBB', animation_properties.color_c[0], animation_properties.color_c[1], animation_properties.color_c[2], animation_properties.color_c[3]))
@@ -2025,11 +2038,12 @@ def write_spline(output_stream, TAG, animation_properties):
     output_stream.write(struct.pack('<16x'))
 
 def write_multi_spline(output_stream, TAG, animation_properties):
-    output_stream.write(struct.pack('<4s3I', TAG.string_to_bytes("tbfd", True), 0, 52, 1))
+    animation_properties.function_header.write(output_stream, TAG, True)
     output_stream.write(struct.pack('<B', animation_properties.function_type))
-    output_stream.write(struct.pack('<B', animation_properties.range_check))
-    output_stream.write(struct.pack('<2x'))
-    if animation_properties.range_check > 1:
+    output_stream.write(struct.pack('<B', animation_properties.output_type))
+    output_stream.write(struct.pack('<B', animation_properties.input_function_data.exponent))
+    output_stream.write(struct.pack('<B', animation_properties.range_function_data.exponent))
+    if function_uses_color(animation_properties):
         output_stream.write(struct.pack('<BBBB', animation_properties.color_a[0], animation_properties.color_a[1], animation_properties.color_a[2], animation_properties.color_a[3]))
         output_stream.write(struct.pack('<BBBB', animation_properties.color_b[0], animation_properties.color_b[1], animation_properties.color_b[2], animation_properties.color_b[3]))
         output_stream.write(struct.pack('<BBBB', animation_properties.color_c[0], animation_properties.color_c[1], animation_properties.color_c[2], animation_properties.color_c[3]))
@@ -2121,7 +2135,7 @@ def write_function_size(output_stream, function_property):
     output_stream.write(struct.pack('<8x'))
 
 def write_function(output_stream, TAG, function_property):
-    function_property.map_property_header.write(output_stream, TAG, True)
+    function_property.MAPP_header.write(output_stream, TAG, True)
     function_type = FunctionTypeEnum(function_property.function_type)
     if FunctionTypeEnum.identity == function_type:
         write_identity(output_stream, TAG, function_property)

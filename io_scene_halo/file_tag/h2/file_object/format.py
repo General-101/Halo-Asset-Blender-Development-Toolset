@@ -27,6 +27,8 @@
 from mathutils import Vector
 from enum import Flag, Enum, auto
 
+from ....file_tag.h2.file_functions.format import Function
+
 class ObjectFlags(Flag):
     does_not_cast_shadow = auto()
     search_cardinal_direction_lightmaps_on_failure = auto()
@@ -231,12 +233,10 @@ class ObjectAsset():
             self.ai_size = ai_size
             self.leap_jump_speed = leap_jump_speed
 
-    class Function:
+    class ObjectFunction(Function):
         def __init__(self, flags=0, import_name="", import_name_length=0, export_name="", export_name_length=0, turn_off_with="", turn_off_with_length=0, min_value=0, 
-                     scale_by="", scale_by_length=0, MAPP_header=None, function_header=None, function_type=0, output_type=0, lower_bound=0.0, upper_bound=0.0, 
-                     function_min=0.0, function_max=0.0, exponent=0.0, frequency=0.0, phase=0.0, points=None, range_function_min=0.0, range_function_max=0.0, 
-                     range_exponent=0.0, range_frequency=0.0, range_phase=0.0, range_points=None, color_a=(0.0, 0.0, 0.0, 1.0), color_b=(0.0, 0.0, 0.0, 1.0), 
-                     color_c=(0.0, 0.0, 0.0, 1.0), color_d=(0.0, 0.0, 0.0, 1.0)):
+                     scale_by="", scale_by_length=0):
+            super().__init__()
             self.flags = flags
             self.import_name = import_name
             self.import_name_length = import_name_length
@@ -247,28 +247,6 @@ class ObjectAsset():
             self.min_value = min_value
             self.scale_by = scale_by
             self.scale_by_length = scale_by_length
-            self.MAPP_header = MAPP_header
-            self.function_header = function_header
-            self.function_type = function_type
-            self.output_type = output_type
-            self.lower_bound = lower_bound
-            self.upper_bound = upper_bound
-            self.function_min = function_min
-            self.function_max = function_max
-            self.exponent = exponent
-            self.frequency = frequency
-            self.phase = phase
-            self.points = points
-            self.range_function_min = range_function_min
-            self.range_function_max = range_function_max
-            self.range_exponent = range_exponent
-            self.range_frequency = range_frequency
-            self.range_phase = range_phase
-            self.range_points = range_points
-            self.color_a = color_a
-            self.color_b = color_b
-            self.color_c = color_c
-            self.color_d = color_d
 
     class Attachment:
         def __init__(self, attachment_type=None, marker="", marker_length=0, change_color=0, primary_scale="", primary_scale_length=0, secondary_scale="", secondary_scale_length=0):
@@ -304,7 +282,7 @@ class ObjectAsset():
             self.variant_name = variant_name
             self.variant_name_length = variant_name_length
 
-    class Function:
+    class ColorFunction():
         def __init__(self, scale_flags=0, color_lower_bound=(0, 0, 0, 0), color_upper_bound=(0, 0, 0, 0), darken_by="", darken_by_length=0, scale_by="", scale_by_length=0):
             self.scale_flags = scale_flags
             self.color_lower_bound = color_lower_bound

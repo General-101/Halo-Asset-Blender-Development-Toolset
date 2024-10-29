@@ -37,7 +37,7 @@ from .format import (
     BitmapAnimationFlags
     )
 
-XML_OUTPUT = True
+XML_OUTPUT = False
 
 def initilize_shader_template(SHADERTEMPLATE):
     SHADERTEMPLATE.properties = []

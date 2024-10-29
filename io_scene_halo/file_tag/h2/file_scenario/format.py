@@ -27,6 +27,8 @@
 from enum import Flag, Enum, auto
 from mathutils import Vector, Euler
 
+from ....file_tag.h2.file_functions.format import Function
+
 SALT_SIZE = 32
 
 class DataTypesEnum(Enum):
@@ -2540,27 +2542,15 @@ class ScenarioAsset():
             self.max_teams_14_stub = max_teams_14_stub
             self.max_teams_15_stub = max_teams_15_stub
 
-    class Interpolator():
-        def __init__(self, name="", name_length=0, accelerator_name="", accelerator_name_length=0, multiplier_name="", multiplier_name_length=0, SCFN_header=None, MAPP_header=None, 
-                     function_header=None, function_type=0, lower_bound=0.0, upper_bound=0.0, min=0.0, max=1.0, exponent=0, frequency=1.0, phase=0.0, points=None):
+    class Interpolator(Function):
+        def __init__(self, name="", name_length=0, accelerator_name="", accelerator_name_length=0, multiplier_name="", multiplier_name_length=0):
+            super().__init__()
             self.name = name
             self.name_length = name_length
             self.accelerator_name = accelerator_name
             self.accelerator_name_length = accelerator_name_length
             self.multiplier_name = multiplier_name
             self.multiplier_name_length = multiplier_name_length
-            self.SCFN_header = SCFN_header
-            self.MAPP_header = MAPP_header
-            self.function_header = function_header
-            self.function_type = function_type
-            self.lower_bound = lower_bound
-            self.upper_bound = upper_bound
-            self.min = min
-            self.max = max
-            self.exponent = exponent
-            self.frequency = frequency
-            self.phase = phase
-            self.points = points
 
     class ScreenEffectReference():
         def __init__(self, screen_effect=None, primary_input="", primary_input_name_length=0, secondary_input="", secondary_input_name_length=0):

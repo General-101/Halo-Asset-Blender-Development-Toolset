@@ -41,7 +41,7 @@ from .format import (LightAsset,
                      FadeEnum,
                      AnimationFlags)
 
-XML_OUTPUT = True
+XML_OUTPUT = False
 
 def initilize_light(LIGHT):
     LIGHT.brightness_animation = []

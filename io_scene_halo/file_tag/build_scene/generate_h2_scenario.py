@@ -64,7 +64,7 @@ def generate_skies(context, level_root, tag_block, report):
                 ob = bpy.data.objects.new(name, light_data)
 
                 ob.data.color = (radiosity_color[0], radiosity_color[1], radiosity_color[2])
-                ob.data.energy = radiosity_power
+                ob.data.energy = radiosity_power * 10
                 ob.parent = level_root
 
                 rotation = Euler((radians(0.0), radians(90.0), radians(0.0)), 'XYZ')
@@ -354,7 +354,7 @@ def generate_light_volumes_elements(level_root, collection_name, palette, tag_bl
             light_size = max(tag_light_size_min, tag_light_size_max)
             light_size *= scnr_light_scale
 
-            light_data_element.energy = (100 * light_size)
+            light_data_element.energy = (100 * light_size) * 1000
 
             root = bpy.data.objects.new(light_name, light_data_element)
             asset_collection.objects.link(root)

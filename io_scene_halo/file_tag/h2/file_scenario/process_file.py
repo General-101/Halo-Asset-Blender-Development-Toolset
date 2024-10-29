@@ -26,6 +26,7 @@
 
 from xml.dom import minidom
 from ....global_functions import tag_format
+from ....file_tag.h2.file_functions.process_file import read_function
 from .format import (
         ScenarioAsset,
         ScenarioTypeEnum,
@@ -4543,122 +4544,7 @@ def read_interpolators(SCENARIO, TAG, input_stream, tag_node, XML_OUTPUT):
             if multiplier_name_length > 0:
                 interpolator.multiplier_name = TAG.read_variable_string_no_terminator(input_stream, multiplier_name_length, TAG, tag_format.XMLData(interpolator_element_node, "multiplier name"))
 
-            interpolator.SCFN_header = TAG.TagBlockHeader().read(input_stream, TAG)
-            interpolator.MAPP_header = TAG.TagBlockHeader().read(input_stream, TAG)
-            interpolator.function_header = TAG.TagBlockHeader().read(input_stream, TAG)
-            interpolator.function_type = TAG.read_signed_short(input_stream, TAG, tag_format.XMLData(interpolator_element_node, "function type"))
-            interpolator.points = []
-            if FunctionTypeEnum.identity == FunctionTypeEnum(interpolator.function_type):
-                input_stream.read(2) # Padding?
-                interpolator.lower_bound = TAG.read_float(input_stream, TAG, tag_format.XMLData(interpolator_element_node, "lower bound"))
-                interpolator.upper_bound = TAG.read_float(input_stream, TAG, tag_format.XMLData(interpolator_element_node, "upper bound"))
-                input_stream.read(8) # Padding?
-
-            elif FunctionTypeEnum.constant == FunctionTypeEnum(interpolator.function_type):
-                input_stream.read(2) # Padding?
-                interpolator.lower_bound = TAG.read_float(input_stream, TAG, tag_format.XMLData(interpolator_element_node, "lower bound"))
-                interpolator.upper_bound = TAG.read_float(input_stream, TAG, tag_format.XMLData(interpolator_element_node, "upper bound"))
-                input_stream.read(16) # Padding?
-
-            elif FunctionTypeEnum.transition == FunctionTypeEnum(interpolator.function_type):
-                interpolator.exponent = TAG.read_enum_unsigned_byte(input_stream, TAG, tag_format.XMLData(interpolator_element_node, "exponent", TransitionExponentEnum))
-                input_stream.read(1) # Padding?
-                interpolator.lower_bound = TAG.read_float(input_stream, TAG, tag_format.XMLData(interpolator_element_node, "lower bound"))
-                interpolator.upper_bound = TAG.read_float(input_stream, TAG, tag_format.XMLData(interpolator_element_node, "upper bound"))
-                input_stream.read(8) # Padding?
-                interpolator.min = TAG.read_float(input_stream, TAG, tag_format.XMLData(interpolator_element_node, "min"))
-                interpolator.max = TAG.read_float(input_stream, TAG, tag_format.XMLData(interpolator_element_node, "max"))
-                input_stream.read(8) # Padding?
-
-            elif FunctionTypeEnum.periodic == FunctionTypeEnum(interpolator.function_type):
-                interpolator.exponent = TAG.read_enum_unsigned_byte(input_stream, TAG, tag_format.XMLData(interpolator_element_node, "exponent", TransitionExponentEnum))
-                input_stream.read(1) # Padding?
-                interpolator.lower_bound = TAG.read_float(input_stream, TAG, tag_format.XMLData(interpolator_element_node, "lower bound"))
-                interpolator.upper_bound = TAG.read_float(input_stream, TAG, tag_format.XMLData(interpolator_element_node, "upper bound"))
-                input_stream.read(8) # Padding?
-                interpolator.input_function_data.frequency = TAG.read_float(input_stream, TAG, tag_format.XMLData(interpolator_element_node, "frequency"))
-                interpolator.input_function_data.phase = TAG.read_float(input_stream, TAG, tag_format.XMLData(interpolator_element_node, "phase"))
-                interpolator.input_function_data.min = TAG.read_float(input_stream, TAG, tag_format.XMLData(interpolator_element_node, "min"))
-                interpolator.input_function_data.max = TAG.read_float(input_stream, TAG, tag_format.XMLData(interpolator_element_node, "max"))
-                input_stream.read(16) # Padding?
-
-            elif FunctionTypeEnum.linear == FunctionTypeEnum(interpolator.function_type):
-                input_stream.read(2) # Padding?
-                interpolator.lower_bound = TAG.read_float(input_stream, TAG, tag_format.XMLData(interpolator_element_node, "lower bound"))
-                interpolator.upper_bound = TAG.read_float(input_stream, TAG, tag_format.XMLData(interpolator_element_node, "upper bound"))
-                input_stream.read(8) # Padding?
-                for point_idx in range(2):
-                    interpolator.points.append(TAG.read_point_2d(input_stream, TAG, tag_format.XMLData(interpolator_element_node, "position")))
-
-                input_stream.read(8) # Padding?
-                for point_idx in range(2):
-                    input_stream.read(8) # Padding?
-
-                input_stream.read(8) # Padding?
-
-            elif FunctionTypeEnum.linear_key == FunctionTypeEnum(interpolator.function_type):
-                input_stream.read(2) # Padding?
-                interpolator.lower_bound = TAG.read_float(input_stream, TAG, tag_format.XMLData(interpolator_element_node, "lower bound"))
-                interpolator.upper_bound = TAG.read_float(input_stream, TAG, tag_format.XMLData(interpolator_element_node, "upper bound"))
-                input_stream.read(8) # Padding?
-                for point_idx in range(4):
-                    interpolator.points.append(TAG.read_point_2d(input_stream, TAG, tag_format.XMLData(interpolator_element_node, "position")))
-
-                input_stream.read(48) # Padding?
-                for point_idx in range(4):
-                    input_stream.read(8) # Padding?
-
-                input_stream.read(48) # Padding?
-
-            elif FunctionTypeEnum.multi_linear_key == FunctionTypeEnum(interpolator.function_type):
-                input_stream.read(2) # Padding?
-                interpolator.lower_bound = TAG.read_float(input_stream, TAG, tag_format.XMLData(interpolator_element_node, "lower bound"))
-                interpolator.upper_bound = TAG.read_float(input_stream, TAG, tag_format.XMLData(interpolator_element_node, "upper bound"))
-                input_stream.read(264) # Padding?
-
-            elif FunctionTypeEnum.spline == FunctionTypeEnum(interpolator.function_type):
-                input_stream.read(2) # Padding?
-                interpolator.lower_bound = TAG.read_float(input_stream, TAG, tag_format.XMLData(interpolator_element_node, "lower bound"))
-                interpolator.upper_bound = TAG.read_float(input_stream, TAG, tag_format.XMLData(interpolator_element_node, "upper bound"))
-                input_stream.read(8) # Padding?
-                for point_idx in range(4):
-                    interpolator.points.append(TAG.read_point_2d(input_stream, TAG, tag_format.XMLData(interpolator_element_node, "position")))
-
-                input_stream.read(16) # Padding?
-                for point_idx in range(4):
-                    input_stream.read(8) # Padding?
-
-                input_stream.read(16) # Padding?
-
-            elif FunctionTypeEnum.multi_spline == FunctionTypeEnum(interpolator.function_type):
-                input_stream.read(2) # Padding?
-                interpolator.lower_bound = TAG.read_float(input_stream, TAG, tag_format.XMLData(interpolator_element_node, "lower bound"))
-                interpolator.upper_bound = TAG.read_float(input_stream, TAG, tag_format.XMLData(interpolator_element_node, "upper bound"))
-                input_stream.read(40) # Padding?
-
-            elif FunctionTypeEnum.exponent == FunctionTypeEnum(interpolator.function_type):
-                input_stream.read(2) # Padding?
-                interpolator.lower_bound = TAG.read_float(input_stream, TAG, tag_format.XMLData(interpolator_element_node, "lower bound"))
-                interpolator.upper_bound = TAG.read_float(input_stream, TAG, tag_format.XMLData(interpolator_element_node, "upper bound"))
-                input_stream.read(8) # Padding?
-                interpolator.input_function_data.min = TAG.read_float(input_stream, TAG, tag_format.XMLData(interpolator_element_node, "min"))
-                interpolator.input_function_data.max = TAG.read_float(input_stream, TAG, tag_format.XMLData(interpolator_element_node, "max"))
-                interpolator.input_function_data.exponent = TAG.read_float(input_stream, TAG, tag_format.XMLData(interpolator_element_node, "exponent"))
-                input_stream.read(12) # Padding?
-
-            elif FunctionTypeEnum.spline2 == FunctionTypeEnum(interpolator.function_type):
-                input_stream.read(2) # Padding?
-                interpolator.lower_bound = TAG.read_float(input_stream, TAG, tag_format.XMLData(interpolator_element_node, "lower bound"))
-                interpolator.upper_bound = TAG.read_float(input_stream, TAG, tag_format.XMLData(interpolator_element_node, "upper bound"))
-                input_stream.read(8) # Padding?
-                for point_idx in range(4):
-                    interpolator.points.append(TAG.read_point_2d(input_stream, TAG, tag_format.XMLData(interpolator_element_node, "position")))
-
-                input_stream.read(16) # Padding?
-                for point_idx in range(4):
-                    input_stream.read(8) # Padding?
-
-                input_stream.read(16) # Padding?
+            read_function(TAG, input_stream, interpolator_element_node, interpolator)
 
 def read_shared_references(SCENARIO, TAG, input_stream, tag_node, XML_OUTPUT):
     if SCENARIO.shared_references_tag_block.count > 0:

@@ -25,6 +25,7 @@
 # ##### END MIT LICENSE BLOCK #####
 
 from xml.dom import minidom
+from ....file_tag.h2.file_functions.process_file import read_function
 from ....global_functions import tag_format
 from .format import (
     ShaderAsset,
@@ -38,7 +39,7 @@ from .format import (
     TransitionExponentEnum
     )
 
-XML_OUTPUT = True
+XML_OUTPUT = False
 
 def initilize_shader(SHADER):
     SHADER.runtime_properties = []
@@ -234,165 +235,7 @@ def read_parameters(SHADER, TAG, input_stream, tag_node, XML_OUTPUT):
                     if animation_property.range_name_length > 0:
                         animation_property.range_name = TAG.read_variable_string_no_terminator(input_stream, animation_property.range_name_length, TAG, tag_format.XMLData(animation_property_element_node, "range name"))
 
-                    animation_property.map_property_header = TAG.TagBlockHeader().read(input_stream, TAG)
-                    animation_property.function_header = TAG.TagBlockHeader().read(input_stream, TAG)
-                    animation_property.function_type = TAG.read_enum_unsigned_byte(input_stream, TAG, tag_format.XMLData(animation_property_element_node, "type", FunctionTypeEnum))
-                    animation_property.range_check = bool(TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(animation_property_element_node, "range")))
-                    if FunctionTypeEnum.identity == FunctionTypeEnum(animation_property.function_type):
-                        input_stream.read(2) # Padding?
-                        animation_property.lower_bound = TAG.read_float(input_stream, TAG, tag_format.XMLData(animation_property_element_node, "lower bound"))
-                        animation_property.upper_bound = TAG.read_float(input_stream, TAG, tag_format.XMLData(animation_property_element_node, "upper bound"))
-                        input_stream.read(8) # Padding?
-                    elif FunctionTypeEnum.constant == FunctionTypeEnum(animation_property.function_type):
-                        input_stream.read(2) # Padding?
-                        animation_property.lower_bound = TAG.read_float(input_stream, TAG, tag_format.XMLData(animation_property_element_node, "lower bound"))
-                        animation_property.upper_bound = TAG.read_float(input_stream, TAG, tag_format.XMLData(animation_property_element_node, "upper bound"))
-                        input_stream.read(16) # Padding?
-
-                    elif FunctionTypeEnum.transition == FunctionTypeEnum(animation_property.function_type):
-                        animation_property.input_function_data = SHADER.FunctionData()
-                        animation_property.range_function_data = SHADER.FunctionData()
-                        animation_property.input_function_data.points = []
-                        animation_property.range_function_data.points = []
-
-                        animation_property.input_function_data.exponent = TAG.read_enum_unsigned_byte(input_stream, TAG, tag_format.XMLData(animation_property_element_node, "exponent", TransitionExponentEnum))
-                        animation_property.range_function_data.exponent = TAG.read_enum_unsigned_byte(input_stream, TAG, tag_format.XMLData(animation_property_element_node, "function", TransitionExponentEnum))
-                        animation_property.lower_bound = TAG.read_float(input_stream, TAG, tag_format.XMLData(animation_property_element_node, "lower bound"))
-                        animation_property.upper_bound = TAG.read_float(input_stream, TAG, tag_format.XMLData(animation_property_element_node, "upper bound"))
-                        input_stream.read(8) # Padding?
-                        animation_property.input_function_data.min = TAG.read_float(input_stream, TAG, tag_format.XMLData(animation_property_element_node, "min"))
-                        animation_property.input_function_data.max = TAG.read_float(input_stream, TAG, tag_format.XMLData(animation_property_element_node, "max"))
-                        animation_property.range_function_data.min = TAG.read_float(input_stream, TAG, tag_format.XMLData(animation_property_element_node, "min"))
-                        animation_property.range_function_data.max = TAG.read_float(input_stream, TAG, tag_format.XMLData(animation_property_element_node, "max"))
-
-                    elif FunctionTypeEnum.periodic == FunctionTypeEnum(animation_property.function_type):
-                        animation_property.input_function_data = SHADER.FunctionData()
-                        animation_property.range_function_data = SHADER.FunctionData()
-                        animation_property.input_function_data.points = []
-                        animation_property.range_function_data.points = []
-
-                        animation_property.input_function_data.exponent = TAG.read_enum_unsigned_byte(input_stream, TAG, tag_format.XMLData(animation_property_element_node, "exponent", TransitionExponentEnum))
-                        animation_property.range_function_data.exponent = TAG.read_enum_unsigned_byte(input_stream, TAG, tag_format.XMLData(animation_property_element_node, "function", TransitionExponentEnum))
-                        animation_property.lower_bound = TAG.read_float(input_stream, TAG, tag_format.XMLData(animation_property_element_node, "lower bound"))
-                        animation_property.upper_bound = TAG.read_float(input_stream, TAG, tag_format.XMLData(animation_property_element_node, "upper bound"))
-                        input_stream.read(8) # Padding?
-
-                        animation_property.input_function_data.frequency = TAG.read_float(input_stream, TAG, tag_format.XMLData(animation_property_element_node, "frequency"))
-                        animation_property.input_function_data.phase = TAG.read_float(input_stream, TAG, tag_format.XMLData(animation_property_element_node, "phase"))
-                        animation_property.input_function_data.min = TAG.read_float(input_stream, TAG, tag_format.XMLData(animation_property_element_node, "min"))
-                        animation_property.input_function_data.max = TAG.read_float(input_stream, TAG, tag_format.XMLData(animation_property_element_node, "max"))
-
-                        animation_property.range_function_data.frequency = TAG.read_float(input_stream, TAG, tag_format.XMLData(animation_property_element_node, "frequency"))
-                        animation_property.range_function_data.phase = TAG.read_float(input_stream, TAG, tag_format.XMLData(animation_property_element_node, "phase"))
-                        animation_property.range_function_data.min = TAG.read_float(input_stream, TAG, tag_format.XMLData(animation_property_element_node, "min"))
-                        animation_property.range_function_data.max = TAG.read_float(input_stream, TAG, tag_format.XMLData(animation_property_element_node, "max"))
-
-                    elif FunctionTypeEnum.linear == FunctionTypeEnum(animation_property.function_type):
-                        animation_property.input_function_data = SHADER.FunctionData()
-                        animation_property.range_function_data = SHADER.FunctionData()
-                        animation_property.input_function_data.points = []
-                        animation_property.range_function_data.points = []
-
-                        input_stream.read(2) # Padding?
-                        animation_property.lower_bound = TAG.read_float(input_stream, TAG, tag_format.XMLData(animation_property_element_node, "lower bound"))
-                        animation_property.upper_bound = TAG.read_float(input_stream, TAG, tag_format.XMLData(animation_property_element_node, "upper bound"))
-                        input_stream.read(8) # Padding?
-                        for point_idx in range(2):
-                            animation_property.input_function_data.points.append(TAG.read_point_2d(input_stream, TAG, tag_format.XMLData(animation_property_element_node, "position")))
-
-                        input_stream.read(8) # Padding?
-                        for point_idx in range(2):
-                            animation_property.range_function_data.points.append(TAG.read_point_2d(input_stream, TAG, tag_format.XMLData(animation_property_element_node, "position")))
-
-                        input_stream.read(8) # Padding?
-
-                    elif FunctionTypeEnum.linear_key == FunctionTypeEnum(animation_property.function_type):
-                        animation_property.input_function_data = SHADER.FunctionData()
-                        animation_property.range_function_data = SHADER.FunctionData()
-                        animation_property.input_function_data.points = []
-                        animation_property.range_function_data.points = []
-
-                        input_stream.read(2) # Padding?
-                        animation_property.lower_bound = TAG.read_float(input_stream, TAG, tag_format.XMLData(animation_property_element_node, "lower bound"))
-                        animation_property.upper_bound = TAG.read_float(input_stream, TAG, tag_format.XMLData(animation_property_element_node, "upper bound"))
-                        input_stream.read(8) # Padding?
-                        for point_idx in range(4):
-                            animation_property.input_function_data.points.append(TAG.read_point_2d(input_stream, TAG, tag_format.XMLData(animation_property_element_node, "position")))
-
-                        input_stream.read(48) # Padding?
-                        for point_idx in range(4):
-                            animation_property.range_function_data.points.append(TAG.read_point_2d(input_stream, TAG, tag_format.XMLData(animation_property_element_node, "position")))
-
-                        input_stream.read(48) # Padding?
-
-                    elif FunctionTypeEnum.multi_linear_key == FunctionTypeEnum(animation_property.function_type):
-                        input_stream.read(2) # Padding?
-                        animation_property.lower_bound = TAG.read_float(input_stream, TAG, tag_format.XMLData(animation_property_element_node, "lower bound"))
-                        animation_property.upper_bound = TAG.read_float(input_stream, TAG, tag_format.XMLData(animation_property_element_node, "upper bound"))
-                        input_stream.read(264) # Padding?
-
-                    elif FunctionTypeEnum.spline == FunctionTypeEnum(animation_property.function_type):
-                        animation_property.input_function_data = SHADER.FunctionData()
-                        animation_property.range_function_data = SHADER.FunctionData()
-                        animation_property.input_function_data.points = []
-                        animation_property.range_function_data.points = []
-
-                        input_stream.read(2) # Padding?
-                        animation_property.lower_bound = TAG.read_float(input_stream, TAG, tag_format.XMLData(animation_property_element_node, "lower bound"))
-                        animation_property.upper_bound = TAG.read_float(input_stream, TAG, tag_format.XMLData(animation_property_element_node, "upper bound"))
-                        input_stream.read(8) # Padding?
-                        for point_idx in range(4):
-                            animation_property.input_function_data.points.append(TAG.read_point_2d(input_stream, TAG, tag_format.XMLData(animation_property_element_node, "position")))
-
-                        input_stream.read(16) # Padding?
-                        for point_idx in range(4):
-                            animation_property.range_function_data.points.append(TAG.read_point_2d(input_stream, TAG, tag_format.XMLData(animation_property_element_node, "position")))
-
-                        input_stream.read(16) # Padding?
-
-                    elif FunctionTypeEnum.multi_spline == FunctionTypeEnum(animation_property.function_type):
-                        input_stream.read(2) # Padding?
-                        animation_property.lower_bound = TAG.read_float(input_stream, TAG, tag_format.XMLData(animation_property_element_node, "lower bound"))
-                        animation_property.upper_bound = TAG.read_float(input_stream, TAG, tag_format.XMLData(animation_property_element_node, "upper bound"))
-                        input_stream.read(40) # Padding?
-
-                    elif FunctionTypeEnum.exponent == FunctionTypeEnum(animation_property.function_type):
-                        animation_property.input_function_data = SHADER.FunctionData()
-                        animation_property.range_function_data = SHADER.FunctionData()
-                        animation_property.input_function_data.points = []
-                        animation_property.range_function_data.points = []
-
-                        input_stream.read(2) # Padding?
-                        animation_property.lower_bound = TAG.read_float(input_stream, TAG, tag_format.XMLData(animation_property_element_node, "lower bound"))
-                        animation_property.upper_bound = TAG.read_float(input_stream, TAG, tag_format.XMLData(animation_property_element_node, "upper bound"))
-                        input_stream.read(8) # Padding?
-
-                        animation_property.input_function_data.min = TAG.read_float(input_stream, TAG, tag_format.XMLData(animation_property_element_node, "min"))
-                        animation_property.input_function_data.max = TAG.read_float(input_stream, TAG, tag_format.XMLData(animation_property_element_node, "max"))
-                        animation_property.input_function_data.exponent = TAG.read_float(input_stream, TAG, tag_format.XMLData(animation_property_element_node, "exponent"))
-
-                        animation_property.range_function_data.min = TAG.read_float(input_stream, TAG, tag_format.XMLData(animation_property_element_node, "min"))
-                        animation_property.range_function_data.max = TAG.read_float(input_stream, TAG, tag_format.XMLData(animation_property_element_node, "max"))
-                        animation_property.range_function_data.exponent = TAG.read_float(input_stream, TAG, tag_format.XMLData(animation_property_element_node, "exponent"))
-
-                    elif FunctionTypeEnum.spline2 == FunctionTypeEnum(animation_property.function_type):
-                        animation_property.input_function_data = SHADER.FunctionData()
-                        animation_property.range_function_data = SHADER.FunctionData()
-                        animation_property.input_function_data.points = []
-                        animation_property.range_function_data.points = []
-
-                        input_stream.read(2) # Padding?
-                        animation_property.lower_bound = TAG.read_float(input_stream, TAG, tag_format.XMLData(animation_property_element_node, "lower bound"))
-                        animation_property.upper_bound = TAG.read_float(input_stream, TAG, tag_format.XMLData(animation_property_element_node, "upper bound"))
-                        input_stream.read(8) # Padding?
-                        for point_idx in range(4):
-                            animation_property.input_function_data.points.append(TAG.read_point_2d(input_stream, TAG, tag_format.XMLData(animation_property_element_node, "position")))
-
-                        input_stream.read(16) # Padding?
-                        for point_idx in range(4):
-                            animation_property.range_function_data.points.append(TAG.read_point_2d(input_stream, TAG, tag_format.XMLData(animation_property_element_node, "position")))
-
-                        input_stream.read(16) # Padding?
+                    read_function(TAG, input_stream, animation_property_element_node, animation_property)
 
 def process_file(input_stream, report):
     TAG = tag_format.TagAsset()
