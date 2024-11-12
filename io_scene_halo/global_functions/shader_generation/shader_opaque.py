@@ -419,7 +419,7 @@ def generate_shader_tex_bump_detail_blend(mat, shader, shader_template, report):
             detail_node.image.alpha_mode = 'CHANNEL_PACKED'
 
         connect_inputs(mat.node_tree, detail_node, "Color", tex_bump_node, "Secondary Detail Map")
-        set_image_scale(mat, detail_node, secondary_detail_parameter)
+        set_image_scale(mat, detail_node, secondary_detail_parameter.scale)
 
     if not specular_parameter == None:
         tex_bump_node.inputs["Specular Color"].default_value = specular_parameter.color

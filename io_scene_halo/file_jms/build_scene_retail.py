@@ -214,7 +214,7 @@ def build_scene_retail(context, JMS, filepath, game_version, reuse_armature, fix
             if 'collision' in filepath:
                 object_name = '@%s' % object_name
 
-        object_mesh = mesh_processing.generate_mesh_object_retail(JMS, JMS.vertices, JMS.triangles, object_name, collection, game_version, random_color_gen, armature, context)
+        mesh_processing.generate_mesh_object_retail(JMS, JMS.vertices, JMS.triangles, object_name, collection, game_version, random_color_gen, armature, context)
 
     primitive_shapes = []
     for sphere in JMS.spheres:

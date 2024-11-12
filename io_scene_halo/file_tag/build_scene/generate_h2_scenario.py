@@ -161,7 +161,7 @@ def generate_object_elements(level_root, collection_name, palette, tag_block, co
         context.scene.collection.children.link(asset_collection)
 
     asset_collection.hide_render = True
-    if collection_name == "Scenery":
+    if collection_name == "Scenery" or collection_name == "Lights" :
         asset_collection.hide_render = False
 
     object_tags = []
@@ -307,73 +307,73 @@ def generate_light_volumes_elements(level_root, collection_name, palette, tag_bl
     for element in tag_block:
         pallete_item = palette[element.palette_index]
         light_tag = light_tags[element.palette_index]
-        
-        scnr_light_flags = LightFlags(element.flags_1)
-        emission_setting = LightmapTypeEnum(element.lightmap_type)
+        if light_tag and pallete_item: 
+            scnr_light_flags = LightFlags(element.flags_1)
+            emission_setting = LightmapTypeEnum(element.lightmap_type)
 
-        light_name = "%s_%s" % (os.path.basename(pallete_item.name), element.palette_index)
-        
-        light_shape_type = ShapeTypeEnum(light_tag.shape_type)
-        if LightFlags.custom_geometry in scnr_light_flags:
-            light_shape_type = ShapeTypeEnum(element.shape_type)
+            light_name = "%s_%s" % (os.path.basename(pallete_item.name), element.palette_index)
+            
+            light_shape_type = ShapeTypeEnum(light_tag.shape_type)
+            if LightFlags.custom_geometry in scnr_light_flags:
+                light_shape_type = ShapeTypeEnum(element.shape_type)
 
-        generate_light = False
-        if LightmapTypeEnum.use_light_tag_settings == emission_setting:
-            emission_setting = DefaultLightmapSettingEnum(pallete_item.default_lightmap_setting)
-            if not emission_setting == DefaultLightmapSettingEnum.dynamic_only:
-                generate_light = True
-        else:
-            if emission_setting == LightmapTypeEnum.lightmaps_only or emission_setting == LightmapTypeEnum.dynamic_with_lightmaps :
-                generate_light = True
-
-        if generate_light:
-            if light_shape_type == ShapeTypeEnum.sphere:
-                light_type = "POINT"
-            elif light_shape_type == ShapeTypeEnum.orthogonal:
-                light_type = "AREA"
+            generate_light = False
+            if LightmapTypeEnum.use_light_tag_settings == emission_setting:
+                emission_setting = DefaultLightmapSettingEnum(light_tag.default_lightmap_setting)
+                if not emission_setting == DefaultLightmapSettingEnum.dynamic_only:
+                    generate_light = True
             else:
-                light_type = "SPOT"
+                if emission_setting == LightmapTypeEnum.lightmaps_only or emission_setting == LightmapTypeEnum.dynamic_with_lightmaps :
+                    generate_light = True
 
-            light_data_element = bpy.data.lights.new(light_name, light_type)
-            if light_shape_type == ShapeTypeEnum.orthogonal:
-                light_data_element.shape = 'SQUARE'
+            if generate_light:
+                if light_shape_type == ShapeTypeEnum.sphere:
+                    light_type = "POINT"
+                elif light_shape_type == ShapeTypeEnum.orthogonal:
+                    light_type = "AREA"
+                else:
+                    light_type = "SPOT"
 
-            R, G, B, A = light_tag.diffuse_upper_bound
-            light_data_element.color = (R, G, B)
+                light_data_element = bpy.data.lights.new(light_name, light_type)
+                if light_shape_type == ShapeTypeEnum.orthogonal:
+                    light_data_element.shape = 'SQUARE'
 
-            tag_light_size_min = light_tag.size_modifier[0]
-            if tag_light_size_min == 0.0:
-                tag_light_size_min= 1.0
-            tag_light_size_max = light_tag.size_modifier[1]
-            if tag_light_size_max == 0.0:
-                tag_light_size_max= 1.0
-            scnr_light_scale = element.lightmap_light_scale
-            if scnr_light_scale == 0.0:
-                scnr_light_scale = 1.0
+                R, G, B, A = light_tag.diffuse_upper_bound
+                light_data_element.color = (R, G, B)
 
-            light_size = max(tag_light_size_min, tag_light_size_max)
-            light_size *= scnr_light_scale
+                tag_light_size_min = light_tag.size_modifier[0]
+                if tag_light_size_min == 0.0:
+                    tag_light_size_min= 1.0
+                tag_light_size_max = light_tag.size_modifier[1]
+                if tag_light_size_max == 0.0:
+                    tag_light_size_max= 1.0
+                scnr_light_scale = element.lightmap_light_scale
+                if scnr_light_scale == 0.0:
+                    scnr_light_scale = 1.0
 
-            light_data_element.energy = (100 * light_size) * 1000
+                light_size = max(tag_light_size_min, tag_light_size_max)
+                light_size *= scnr_light_scale
 
-            root = bpy.data.objects.new(light_name, light_data_element)
-            asset_collection.objects.link(root)
+                light_data_element.energy = (100 * light_size) * 1000
 
-            root.parent = level_root
-            root.location = element.position * 100
-            ob_scale = element.scale
-            if ob_scale > 0.0:
-                root.scale = (ob_scale, ob_scale, ob_scale)
+                root = bpy.data.objects.new(light_name, light_data_element)
+                asset_collection.objects.link(root)
 
-            rotation = Euler((radians(0.0), radians(0.0), radians(0.0)), 'XYZ')
-            roll = Euler((radians(element.rotation[2]), radians(0.0), radians(0.0)), 'XYZ')
-            pitch = Euler((radians(0.0), -radians(element.rotation[1]), radians(0.0)), 'XYZ')
-            yaw = Euler((radians(0.0), radians(0.0), radians(element.rotation[0])), 'XYZ')
-            rotation.rotate(yaw)
-            rotation.rotate(pitch)
-            rotation.rotate(roll)
+                root.parent = level_root
+                root.location = element.position * 100
+                ob_scale = element.scale
+                if ob_scale > 0.0:
+                    root.scale = (ob_scale, ob_scale, ob_scale)
 
-            root.rotation_euler = rotation
+                rotation = Euler((radians(0.0), radians(0.0), radians(0.0)), 'XYZ')
+                roll = Euler((radians(element.rotation[2]), radians(0.0), radians(0.0)), 'XYZ')
+                pitch = Euler((radians(0.0), -radians(element.rotation[1]), radians(0.0)), 'XYZ')
+                yaw = Euler((radians(0.0), radians(0.0), radians(element.rotation[0])), 'XYZ')
+                rotation.rotate(yaw)
+                rotation.rotate(pitch)
+                rotation.rotate(roll)
+
+                root.rotation_euler = rotation
 
 def generate_netgame_equipment_elements(level_root, tag_block, context, game_version, file_version, fix_rotations, report, random_color_gen):
     asset_collection = bpy.data.collections.get("Netgame Equipment")
@@ -906,8 +906,6 @@ def generate_scenario_scene(context, H2_ASSET, game_version, game_title, file_ve
         generate_trigger_volumes(context, level_root, "Trigger Volumes", H2_ASSET.trigger_volumes)
     if len(H2_ASSET.cutscene_flags) > 0:
         generate_camera_flags(context, level_root, "Cutscene Flags", H2_ASSET.cutscene_flags)
-    if len(H2_ASSET.cutscene_camera_points) > 0:
-        generate_camera_points(context, level_root, H2_ASSET.cutscene_camera_points)
     if len(H2_ASSET.cutscene_camera_points) > 0:
         generate_camera_points(context, level_root, H2_ASSET.cutscene_camera_points)
     if len(H2_ASSET.decals) > 0:
