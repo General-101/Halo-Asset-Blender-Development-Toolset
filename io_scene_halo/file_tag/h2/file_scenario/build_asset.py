@@ -177,10 +177,10 @@ def write_object(output_stream, scenery_element):
 
 def write_color_change(output_stream, scenery_element):
     output_stream.write(struct.pack('>I', scenery_element.active_change_colors))
-    output_stream.write(struct.pack('<bbbx', scenery_element.primary_color_BGRA[0], scenery_element.primary_color_BGRA[1], scenery_element.primary_color_BGRA[2]))
-    output_stream.write(struct.pack('<bbbx', scenery_element.secondary_color_BGRA[0], scenery_element.secondary_color_BGRA[1], scenery_element.secondary_color_BGRA[2]))
-    output_stream.write(struct.pack('<bbbx', scenery_element.tertiary_color_BGRA[0], scenery_element.tertiary_color_BGRA[1], scenery_element.tertiary_color_BGRA[2]))
-    output_stream.write(struct.pack('<bbbx', scenery_element.quaternary_color_BGRA[0], scenery_element.quaternary_color_BGRA[1], scenery_element.quaternary_color_BGRA[2]))
+    output_stream.write(struct.pack('<BBBx', scenery_element.primary_color_BGRA[0], scenery_element.primary_color_BGRA[1], scenery_element.primary_color_BGRA[2]))
+    output_stream.write(struct.pack('<BBBx', scenery_element.secondary_color_BGRA[0], scenery_element.secondary_color_BGRA[1], scenery_element.secondary_color_BGRA[2]))
+    output_stream.write(struct.pack('<BBBx', scenery_element.tertiary_color_BGRA[0], scenery_element.tertiary_color_BGRA[1], scenery_element.tertiary_color_BGRA[2]))
+    output_stream.write(struct.pack('<BBBx', scenery_element.quaternary_color_BGRA[0], scenery_element.quaternary_color_BGRA[1], scenery_element.quaternary_color_BGRA[2]))
 
 def write_scenery(output_stream, SCENARIO, TAG):
     if len(SCENARIO.scenery) > 0:

@@ -514,8 +514,6 @@ def generate_mesh_object_retail(asset, object_vertices, object_triangles, object
         region_tris = []
         vert_map = {}
         region_verts = []
-        region_normals = []
-        used_vert_indices = []
         for triangle in object_triangles:
             if game_title == "halo1":
                 region_index = triangle.region
