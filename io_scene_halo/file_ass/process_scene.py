@@ -492,10 +492,10 @@ def process_scene(context, version, game_version, hidden_geo, nonrender_geo, app
                         region = region_index
                         normal = evaluted_mesh.corner_normals[loop_index].vector.normalized()
                         if not loop_normals:
-                            normal = (object_matrix.to_3x3() @ vertex_data.normal).normalized()
+                            normal = vertex_data.normal.normalized()
 
                         if normal.length <= 0.0:
-                            normal = (object_matrix.to_3x3() @ face.normal).normalized()
+                            normal = face.normal.normalized()
 
                         scaled_translation = mesh_processing.process_mesh_export_vert(vertex_data, "ASS", object_matrix, custom_scale)
                         uv_set = mesh_processing.process_mesh_export_uv(evaluted_mesh, "ASS", loop_index, version)
