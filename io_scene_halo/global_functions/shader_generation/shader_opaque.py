@@ -420,10 +420,10 @@ def generate_shader_tex_bump_illum(mat, shader, shader_template, report):
     if not self_illum_color_parameter == None:
         tex_bump_illum_node.inputs["Self Illum Color"].default_value = self_illum_color_parameter.color
 
-    if not self_illum_color_parameter == None:
+    if not emissive_color_parameter == None:
         tex_bump_illum_node.inputs["Emissive Color"].default_value = emissive_color_parameter.color
 
-    if not self_illum_color_parameter == None:
+    if not emissive_power_parameter == None:
         tex_bump_illum_node.inputs["Emissive Power"].default_value = emissive_power_parameter.value * 100
 
     if not detail_parameter == None:
