@@ -379,7 +379,7 @@ def build_scene(context, filepath, report):
             instance.ass_jms.name_override = instance_name_override
             instance.ass_jms.unique_id = str(instance_element.unique_id)
 
-            if (4, 1, 0) > bpy.app.version:
+            if (4, 1, 0) > bpy.app.version and instance.type == 'MESH':
                 instance.data.use_auto_smooth = True
 
             if not object_setings == None:

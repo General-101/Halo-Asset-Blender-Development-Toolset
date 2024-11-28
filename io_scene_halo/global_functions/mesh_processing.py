@@ -739,25 +739,25 @@ def generate_mesh_retail(context, asset, object_vertices, object_triangles, obje
                 mat = bpy.data.materials.new(name=material_name)
 
                 ass_mat_name = ass_mat.name
-                if not global_functions.string_empty_check(mat.asset_name):
+                if not global_functions.string_empty_check(ass_mat.asset_name):
                     ass_mat_name = ass_mat.asset_name
 
                 if game_title == "halo1":
-                    shader = shader_processing.find_h1_shader_tag(asset.filepath, mat.asset_name)
+                    shader = shader_processing.find_h1_shader_tag(asset.filepath, ass_mat_name)
                     if not shader == None:
                         shader_processing.generate_h1_shader(mat, shader, 0, print)
                     else:
                         print("Halo 1 Shader tag returned as None. Something went terribly wrong")
 
                 elif game_title == "halo2":
-                    shader = shader_processing.find_h2_shader_tag(asset.filepath, mat.asset_name)
+                    shader = shader_processing.find_h2_shader_tag(asset.filepath, ass_mat_name)
                     if not shader == None:
                         shader_processing.generate_h2_shader(mat, shader, print)
                     else:
                         print("Halo 2 Shader tag returned as None. Something went terribly wrong")
 
                 elif game_title == "halo3":
-                    shader_path = shader_processing.find_h3_shader_tag(asset.filepath, mat.asset_name)
+                    shader_path = shader_processing.find_h3_shader_tag(asset.filepath, ass_mat_name)
                     if not shader_path == None:
                         shader_processing.generate_h3_shader(mat, shader_path, print)
                     else:
