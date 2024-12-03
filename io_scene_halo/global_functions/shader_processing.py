@@ -1046,10 +1046,11 @@ def generate_h3_shader(mat, shader_path, report):
     # 2 = Full Shader generation
     if not int(bpy.context.preferences.addons["io_scene_halo"].preferences.shader_gen) == 0:
         if not shader_path == None:
-            if int(bpy.context.preferences.addons["io_scene_halo"].preferences.shader_gen) == 1:
-                generate_h3_shader_simple(mat, shader_path, report)
-            else:
-                print("Skipping shader")
+            generate_h3_shader_simple(mat, shader_path, report)
+            #if int(bpy.context.preferences.addons["io_scene_halo"].preferences.shader_gen) == 1:
+                #generate_h3_shader_simple(mat, shader_path, report)
+            #else:
+                #print("Skipping shader")
                 #generate_shader_environment(mat, shader, report)
 
         else:

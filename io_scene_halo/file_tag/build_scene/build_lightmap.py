@@ -37,6 +37,7 @@ def process_mesh(SBSP_ASSET, random_color_gen, tag_block, poop_name, material_co
     for render_data in tag_block.cache_data:
         triangles = []
         vertices = [raw_vertex.position * 100 for raw_vertex in render_data.raw_vertices]
+        normals = [raw_vertex.normal for raw_vertex in render_data.raw_vertices]
 
         triangle_length = int(len(render_data.strip_indices) / 3)
         for idx in range(triangle_length):
@@ -52,6 +53,7 @@ def process_mesh(SBSP_ASSET, random_color_gen, tag_block, poop_name, material_co
             for poly in mesh.polygons:
                 poly.use_smooth = True
 
+            mesh.normals_split_custom_set_from_vertices(normals)
             uv_name_render = 'UVMap_Render'
             uv_name_lightmap = 'UVMap_Lightmap'
             render_layer_uv = mesh.uv_layers.get(uv_name_render)

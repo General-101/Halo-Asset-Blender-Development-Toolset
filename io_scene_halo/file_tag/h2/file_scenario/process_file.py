@@ -4544,6 +4544,7 @@ def read_interpolators(SCENARIO, TAG, input_stream, tag_node, XML_OUTPUT):
             if multiplier_name_length > 0:
                 interpolator.multiplier_name = TAG.read_variable_string_no_terminator(input_stream, multiplier_name_length, TAG, tag_format.XMLData(interpolator_element_node, "multiplier name"))
 
+            interpolator.SCFN_header = TAG.TagBlockHeader().read(input_stream, TAG)
             read_function(TAG, input_stream, interpolator_element_node, interpolator)
 
 def read_shared_references(SCENARIO, TAG, input_stream, tag_node, XML_OUTPUT):

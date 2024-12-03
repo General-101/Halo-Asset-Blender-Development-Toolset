@@ -27,7 +27,7 @@
 from enum import Flag, Enum, auto
 from mathutils import Vector, Euler
 
-from ....file_tag.h2.file_functions.format import Function
+from ....file_tag.h2.file_functions.format import Function as ShaderFunction
 
 SALT_SIZE = 32
 
@@ -2542,7 +2542,7 @@ class ScenarioAsset():
             self.max_teams_14_stub = max_teams_14_stub
             self.max_teams_15_stub = max_teams_15_stub
 
-    class Interpolator(Function):
+    class Interpolator(ShaderFunction):
         def __init__(self, name="", name_length=0, accelerator_name="", accelerator_name_length=0, multiplier_name="", multiplier_name_length=0):
             super().__init__()
             self.name = name
