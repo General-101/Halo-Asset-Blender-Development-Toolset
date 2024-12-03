@@ -73,7 +73,7 @@ def generate_scenery(TAG, SCENARIO):
     if scenery_collection:
         for ob in scenery_collection.objects:
             scenery = SCENARIO.Object()
-            scenery.type_index = get_palette_index(TAG, SCENARIO, "scen", ob.ass_jms.tag_path, SCENARIO.scenery_palette)
+            scenery.type_index = get_palette_index(TAG, SCENARIO, "scen", ob.tag_view.tag_path, SCENARIO.scenery_palette)
             scenery.name_index = -1
             scenery.placement_flags = 0
             scenery.desired_permutation = 0
@@ -87,13 +87,13 @@ def generate_scenery(TAG, SCENARIO):
     SCENARIO.scenery = blender_scenery
 
 def generate_bipeds(TAG, SCENARIO):
-    biped_collection = bpy.data.collections.get("Bipeds")
+    biped_collection = bpy.data.collections.get("Biped")
     blender_bipeds = []
     ob_index = 0
     if biped_collection:
         for ob in biped_collection.objects:
             biped = SCENARIO.Unit()
-            biped.type_index = get_palette_index(TAG, SCENARIO, "bipd", ob.ass_jms.tag_path, SCENARIO.biped_palette)
+            biped.type_index = get_palette_index(TAG, SCENARIO, "bipd", ob.tag_view.tag_path, SCENARIO.biped_palette)
             biped.name_index = -1
             biped.placement_flags = 0
             biped.desired_permutation = 0
@@ -109,18 +109,18 @@ def generate_bipeds(TAG, SCENARIO):
     SCENARIO.bipeds = blender_bipeds
 
 def generate_vehicles(TAG, SCENARIO):
-    vehicle_collection = bpy.data.collections.get("Vehicles")
+    vehicle_collection = bpy.data.collections.get("Vehicle")
     blender_vehicles = []
     ob_index = 0
     if vehicle_collection:
         for ob in vehicle_collection.objects:
             vehicle = SCENARIO.Vehicle()
-            vehicle.type_index = get_palette_index(TAG, SCENARIO, "vehi", ob.ass_jms.tag_path, SCENARIO.vehicle_palette)
+            vehicle.type_index = get_palette_index(TAG, SCENARIO, "vehi", ob.tag_view.tag_path, SCENARIO.vehicle_palette)
             vehicle.name_index = -1
             vehicle.placement_flags = 0
             vehicle.desired_permutation = 0
             vehicle.position = ob.location / 100
-            rot = ob.matrix_world.to_euler
+            rot = ob.rotation_euler
             vehicle.rotation = (get_half_angle(degrees(rot[2])), get_half_angle(degrees(-rot[0])), get_half_angle(degrees(-rot[1])))
             vehicle.appearance_player_index = 0
             vehicle.body_vitality = 0.0
@@ -139,7 +139,7 @@ def generate_equipment(TAG, SCENARIO):
     if equipment_collection:
         for ob in equipment_collection.objects:
             equipment = SCENARIO.Equipment()
-            equipment.type_index = get_palette_index(TAG, SCENARIO, "eqip", ob.ass_jms.tag_path, SCENARIO.equipment_palette)
+            equipment.type_index = get_palette_index(TAG, SCENARIO, "eqip", ob.tag_view.tag_path, SCENARIO.equipment_palette)
             equipment.name_index = -1
             equipment.placement_flags = 0
             equipment.desired_permutation = 0
@@ -160,7 +160,7 @@ def generate_weapons(TAG, SCENARIO):
     if weapon_collection:
         for ob in weapon_collection.objects:
             weapon = SCENARIO.Weapon()
-            weapon.type_index = get_palette_index(TAG, SCENARIO, "weap", ob.ass_jms.tag_path, SCENARIO.weapon_palette)
+            weapon.type_index = get_palette_index(TAG, SCENARIO, "weap", ob.tag_view.tag_path, SCENARIO.weapon_palette)
             weapon.name_index = -1
             weapon.placement_flags = 0
             weapon.desired_permutation = 0
@@ -183,7 +183,7 @@ def generate_machines(TAG, SCENARIO):
     if machines_collection:
         for ob in machines_collection.objects:
             machine = SCENARIO.DeviceMachine()
-            machine.type_index = get_palette_index(TAG, SCENARIO, "mach", ob.ass_jms.tag_path, SCENARIO.device_machine_palette)
+            machine.type_index = get_palette_index(TAG, SCENARIO, "mach", ob.tag_view.tag_path, SCENARIO.device_machine_palette)
             machine.name_index = -1
             machine.placement_flags = 0
             machine.desired_permutation = 0
@@ -207,7 +207,7 @@ def generate_controls(TAG, SCENARIO):
     if controls_collection:
         for ob in controls_collection.objects:
             control = SCENARIO.DeviceMachine()
-            control.type_index = get_palette_index(TAG, SCENARIO, "ctrl", ob.ass_jms.tag_path, SCENARIO.device_control_palette)
+            control.type_index = get_palette_index(TAG, SCENARIO, "ctrl", ob.tag_view.tag_path, SCENARIO.device_control_palette)
             control.name_index = -1
             control.placement_flags = 0
             control.desired_permutation = 0
@@ -232,7 +232,7 @@ def generate_light_fixtures(TAG, SCENARIO):
     if light_fixtures_collection:
         for ob in light_fixtures_collection.objects:
             light_fixture = SCENARIO.DeviceLightFixture()
-            light_fixture.type_index = get_palette_index(TAG, SCENARIO, "lifi", ob.ass_jms.tag_path, SCENARIO.device_light_fixtures_palette)
+            light_fixture.type_index = get_palette_index(TAG, SCENARIO, "lifi", ob.tag_view.tag_path, SCENARIO.device_light_fixtures_palette)
             light_fixture.name_index = -1
             light_fixture.placement_flags = 0
             light_fixture.desired_permutation = 0
@@ -259,13 +259,13 @@ def generate_sound_scenery(TAG, SCENARIO):
     if sound_scenery_collection:
         for ob in sound_scenery_collection.objects:
             sound_scenery = SCENARIO.Object()
-            sound_scenery.type_index = get_palette_index(TAG, SCENARIO, "ssce", ob.ass_jms.tag_path, SCENARIO.sound_scenery_palette)
+            sound_scenery.type_index = get_palette_index(TAG, SCENARIO, "ssce", ob.tag_view.tag_path, SCENARIO.sound_scenery_palette)
             sound_scenery.name_index = -1
             sound_scenery.placement_flags = 0
             sound_scenery.desired_permutation = 0
             sound_scenery.position = ob.location / 100
             rot = ob.rotation_euler
-            rot.rotation = (get_half_angle(degrees(rot[2])), get_half_angle(degrees(-rot[0])), get_half_angle(degrees(-rot[1])))
+            sound_scenery.rotation = (get_half_angle(degrees(rot[2])), get_half_angle(degrees(-rot[0])), get_half_angle(degrees(-rot[1])))
             sound_scenery.appearance_player_index = 0
 
             blender_sound_scenery.append(sound_scenery)
@@ -471,6 +471,7 @@ def generate_scenario_scene(DONOR_ASSET):
     generate_player_starting_locations(TAG, DONOR_ASSET)
     generate_trigger_volumes(TAG, DONOR_ASSET)
 
+    DONOR_ASSET.comments_tag_block = TAG.TagBlock(len(DONOR_ASSET.comments))
     DONOR_ASSET.scenery_tag_block = TAG.TagBlock(len(DONOR_ASSET.scenery))
     DONOR_ASSET.scenery_palette_tag_block = TAG.TagBlock(len(DONOR_ASSET.scenery_palette))
     DONOR_ASSET.bipeds_tag_block = TAG.TagBlock(len(DONOR_ASSET.bipeds))

@@ -932,6 +932,30 @@ def generate_h2_shader(mat, tag_ref, report):
     else:
         print("Shader generation is disabled. Skipping")
 
+def config_is_valid(data_directory, tags_directory):
+    is_valid = True
+    if ET == None:
+        is_valid = False
+        print("You are missing required libraries. Please instal lxml and Pillow. No textures will be imported")
+        print(" ")
+    if not os.path.isdir(data_directory):
+        is_valid = False
+        print("Your defined data directory does not exist. No textures will be imported")
+        print(data_directory)
+        print(" ")
+    if not os.path.isdir(tags_directory):
+        is_valid = False
+        print("Your defined tags directory does not exist. No textures will be imported")
+        print(tags_directory)
+        print(" ")
+    if not os.path.isfile(os.path.join(os.path.dirname(os.path.dirname(data_directory)), "tool.exe")):
+        is_valid = False
+        print("Tool.exe not found at the following path. No textures will be imported")
+        print(os.path.join(os.path.dirname(os.path.dirname(data_directory)), "tool.exe"))
+        print(" ")
+
+    return is_valid
+
 def generate_h3_shader_simple(mat, shader_path, report):
     mat.use_nodes = True
 
@@ -939,7 +963,7 @@ def generate_h3_shader_simple(mat, shader_path, report):
     tags_directory = bpy.context.preferences.addons["io_scene_halo"].preferences.halo_3_tag_path
     bitmap_file = None
     input_file = ""
-    if not ET == None:
+    if config_is_valid(data_directory, tags_directory):
         tool_directory = os.path.dirname(os.path.dirname(data_directory))
         output_directory = os.path.join(tool_directory, "blender_dumps")
         tool_path = os.path.join(tool_directory, "tool.exe")
@@ -948,7 +972,9 @@ def generate_h3_shader_simple(mat, shader_path, report):
         xml_output = os.path.join(output_directory, "%s.xml" % local_path_no_ext)
 
         xml_command = "export-tag-to-xml"
+
         args = [tool_path, xml_command, shader_path, xml_output]
+        print(args)
         subprocess.call(args, cwd=tool_directory)
 
         xmlp = ET.XMLParser(encoding="ISO-8859-10", recover=True)
@@ -1007,13 +1033,10 @@ def generate_h3_shader_simple(mat, shader_path, report):
                 os.makedirs(os.path.dirname(bitmap_output))
 
             args = [tool_path, bitmap_command, input_file, bitmap_output]
-
+            print(args)
             subprocess.call(args, cwd=tool_directory)
 
             bitmap_file = os.path.join(output_directory, bitmap_directory, "pixel_data_%s%s" % (bitmap_name, "_00_00.tga"))
-
-        else:
-            print("No valid bitmap found. Skipping")
 
     output_material_node = get_output_material_node(mat)
     output_material_node.location = Vector((0.0, 0.0))
