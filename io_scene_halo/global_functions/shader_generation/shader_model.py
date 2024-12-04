@@ -302,5 +302,6 @@ def generate_shader_model(mat, shader, report):
         if ignore_alpha_bitmap or (ignore_alpha_shader and not is_blended_decal):
             base_node.image.alpha_mode = 'NONE'
         else:
-            mat.shadow_method = 'CLIP'
+            if bpy.app.version <= (4, 2, 0):
+                mat.shadow_method = 'CLIP'
             mat.blend_method = 'HASHED'

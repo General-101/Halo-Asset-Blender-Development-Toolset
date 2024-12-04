@@ -105,7 +105,8 @@ def generate_shader_environment_simple(mat, shader, permutation_index, report):
 
     alpha_shader = EnvironmentFlags.alpha_tested in EnvironmentFlags(shader.environment_flags)
     if alpha_shader:
-        mat.shadow_method = 'CLIP'
+        if bpy.app.version <= (4, 2, 0):
+            mat.shadow_method = 'CLIP'
         mat.blend_method = 'CLIP'
 
     mat.use_backface_culling = True
@@ -172,7 +173,8 @@ def generate_shader_model_simple(mat, shader, report):
             base_node.image.alpha_mode = 'NONE'
         else:
             connect_inputs(mat.node_tree, base_node, "Alpha", bdsf_principled, "Alpha")
-            mat.shadow_method = 'CLIP'
+            if bpy.app.version <= (4, 2, 0):
+                mat.shadow_method = 'CLIP'
             mat.blend_method = 'CLIP'
 
     mat.use_backface_culling = False
@@ -454,7 +456,8 @@ def generate_shader_transparent_glass(mat, shader, report):
             diffuse_node.image.alpha_mode = 'NONE'
         else:
             connect_inputs(mat.node_tree, diffuse_node, "Alpha", bdsf_principled, "Alpha")
-            mat.shadow_method = 'CLIP'
+            if bpy.app.version <= (4, 2, 0):
+                mat.shadow_method = 'CLIP'
             mat.blend_method = 'BLEND'
 
     vect_math_node = mat.node_tree.nodes.new("ShaderNodeVectorMath")

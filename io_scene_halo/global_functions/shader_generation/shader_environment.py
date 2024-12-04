@@ -335,7 +335,8 @@ def generate_shader_environment(mat, shader, permutation_index, report):
     alpha_shader = EnvironmentFlags.alpha_tested in EnvironmentFlags(shader.environment_flags)
     if alpha_shader:
         shader_environment_node.inputs["Alpha Tested"].default_value = True
-        mat.shadow_method = 'CLIP'
+        if bpy.app.version <= (4, 2, 0):
+            mat.shadow_method = 'CLIP'
         mat.blend_method = 'HASHED'
 
     mat.use_backface_culling = True
