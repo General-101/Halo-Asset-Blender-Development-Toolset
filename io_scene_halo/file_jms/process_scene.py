@@ -259,7 +259,7 @@ def process_scene(context, version, game_version, generate_checksum, fix_rotatio
                     vertex_data = evaluted_mesh.vertices[loop_data.vertex_index]
 
                     region = region_index
-                    normal = evaluted_mesh.corner_normals[loop_index].vector.normalized()
+                    normal = (original_geo_matrix.to_3x3() @ evaluted_mesh.corner_normals[loop_index].vector).normalized()
                     if not loop_normals:
                         normal = (original_geo_matrix.to_3x3() @ vertex_data.normal).normalized()
 

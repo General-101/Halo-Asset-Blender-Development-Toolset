@@ -27,7 +27,7 @@
 import bpy
 
 from math import degrees
-from .format import ScenarioAsset
+from .format import ScenarioAsset, ObjectFlags, UnitFlags, VehicleFlags, ItemFlags
 from ....global_functions import global_functions, tag_format
 
 def get_palette_index(TAG, SCENARIO, tag_group, tag_path, palette_tag_block):
@@ -51,10 +51,87 @@ def get_half_angle(angle):
 
     return angle
 
+def get_object_name_index(SCENARIO, object_name):
+    object_name_index = -1
+    if not global_functions.string_empty_check(object_name):
+        if not object_name in SCENARIO.object_names:
+            SCENARIO.object_names.append(object_name)
+
+        object_name_index = SCENARIO.object_names.index(object_name)
+
+    return object_name_index
+
+def get_object_flags(ob):
+    object_flags = 0
+    if ob.tag_view.automatically:
+        object_flags += ObjectFlags.automatically.value
+    if ob.tag_view.on_easy:
+        object_flags += ObjectFlags.on_easy.value
+    if ob.tag_view.on_normal:
+        object_flags += ObjectFlags.on_normal.value
+    if ob.tag_view.on_hard:
+        object_flags += ObjectFlags.on_hard.value
+    if ob.tag_view.use_player_appearance:
+        object_flags += ObjectFlags.use_player_appearance.value
+    return object_flags
+
+def get_unit_flags(ob):
+    unit_flags = 0
+    if ob.tag_view.unit_dead:
+        unit_flags += UnitFlags.dead.value
+    return unit_flags
+
+def get_vehicle_flags(ob):
+    vehicle_flags = 0
+    if ob.tag_view.slayer_default:
+        vehicle_flags += VehicleFlags.slayer_default.value
+    if ob.tag_view.ctf_default:
+        vehicle_flags += VehicleFlags.ctf_default.value
+    if ob.tag_view.king_default:
+        vehicle_flags += VehicleFlags.king_default.value
+    if ob.tag_view.oddball_default:
+        vehicle_flags += VehicleFlags.oddball_default.value
+    if ob.tag_view.unused_0:
+        vehicle_flags += VehicleFlags.unused0.value
+    if ob.tag_view.unused_1:
+        vehicle_flags += VehicleFlags.unused1.value
+    if ob.tag_view.unused_2:
+        vehicle_flags += VehicleFlags.unused2.value
+    if ob.tag_view.unused_3:
+        vehicle_flags += VehicleFlags.unused3.value
+    if ob.tag_view.slayer_allowed:
+        vehicle_flags += VehicleFlags.slayer_allowed.value
+    if ob.tag_view.ctf_allowed:
+        vehicle_flags += VehicleFlags.ctf_allowed.value
+    if ob.tag_view.king_allowed:
+        vehicle_flags += VehicleFlags.king_allowed.value
+    if ob.tag_view.oddball_allowed:
+        vehicle_flags += VehicleFlags.oddball_allowed.value
+    if ob.tag_view.unused_4:
+        vehicle_flags += VehicleFlags.unused4.value
+    if ob.tag_view.unused_5:
+        vehicle_flags += VehicleFlags.unused5.value
+    if ob.tag_view.unused_6:
+        vehicle_flags += VehicleFlags.unused6.value
+    if ob.tag_view.unused_7:
+        vehicle_flags += VehicleFlags.unused7.value
+
+    return vehicle_flags
+
+def get_item_flags(ob):
+    item_flags = 0
+    if ob.tag_view.initially_at_rest:
+        item_flags += ItemFlags.initially_at_rest_doesnt_fall.value
+    if ob.tag_view.obsolete:
+        item_flags += ItemFlags.obsolete.value
+    if ob.tag_view.does_accelerate:
+        item_flags += ItemFlags.does_accelerate_moves_due_to_explosions.value
+
+    return item_flags
+
 def generate_comments(TAG, SCENARIO):
     comment_collection = bpy.data.collections.get("Comments")
     blender_comments = []
-    ob_index = 0
     if comment_collection:
         for ob in comment_collection.objects:
             comment = SCENARIO.Comment()
@@ -69,18 +146,17 @@ def generate_comments(TAG, SCENARIO):
 def generate_scenery(TAG, SCENARIO):
     scenery_collection = bpy.data.collections.get("Scenery")
     blender_scenery = []
-    ob_index = 0
     if scenery_collection:
         for ob in scenery_collection.objects:
             scenery = SCENARIO.Object()
             scenery.type_index = get_palette_index(TAG, SCENARIO, "scen", ob.tag_view.tag_path, SCENARIO.scenery_palette)
-            scenery.name_index = -1
-            scenery.placement_flags = 0
-            scenery.desired_permutation = 0
+            scenery.name_index = get_object_name_index(SCENARIO, ob.tag_view.object_name)
+            scenery.placement_flags = get_object_flags(ob)
+            scenery.desired_permutation = ob.tag_view.desired_permutation
             scenery.position = ob.location / 100
             rot = ob.rotation_euler
             scenery.rotation = (get_half_angle(degrees(rot[2])), get_half_angle(degrees(-rot[0])), get_half_angle(degrees(-rot[1])))
-            scenery.appearance_player_index = 0
+            scenery.appearance_player_index = ob.tag_view.appearance_player_index
 
             blender_scenery.append(scenery)
 
@@ -89,20 +165,19 @@ def generate_scenery(TAG, SCENARIO):
 def generate_bipeds(TAG, SCENARIO):
     biped_collection = bpy.data.collections.get("Biped")
     blender_bipeds = []
-    ob_index = 0
     if biped_collection:
         for ob in biped_collection.objects:
             biped = SCENARIO.Unit()
             biped.type_index = get_palette_index(TAG, SCENARIO, "bipd", ob.tag_view.tag_path, SCENARIO.biped_palette)
-            biped.name_index = -1
-            biped.placement_flags = 0
-            biped.desired_permutation = 0
+            biped.name_index = get_object_name_index(SCENARIO, ob.tag_view.object_name)
+            biped.placement_flags = get_object_flags(ob)
+            biped.desired_permutation = ob.tag_view.desired_permutation
             biped.position = ob.location / 100
             rot = ob.rotation_euler
             biped.rotation = (get_half_angle(degrees(rot[2])), get_half_angle(degrees(-rot[0])), get_half_angle(degrees(-rot[1])))
-            biped.appearance_player_index = 0
-            biped.body_vitality = 0.0
-            biped.flags = 0
+            biped.appearance_player_index = ob.tag_view.appearance_player_index
+            biped.body_vitality = ob.tag_view.unit_vitality
+            biped.flags = get_unit_flags(ob)
 
             blender_bipeds.append(biped)
 
@@ -111,22 +186,21 @@ def generate_bipeds(TAG, SCENARIO):
 def generate_vehicles(TAG, SCENARIO):
     vehicle_collection = bpy.data.collections.get("Vehicle")
     blender_vehicles = []
-    ob_index = 0
     if vehicle_collection:
         for ob in vehicle_collection.objects:
             vehicle = SCENARIO.Vehicle()
             vehicle.type_index = get_palette_index(TAG, SCENARIO, "vehi", ob.tag_view.tag_path, SCENARIO.vehicle_palette)
-            vehicle.name_index = -1
-            vehicle.placement_flags = 0
-            vehicle.desired_permutation = 0
+            vehicle.name_index = get_object_name_index(SCENARIO, ob.tag_view.object_name)
+            vehicle.placement_flags = get_object_flags(ob)
+            vehicle.desired_permutation = ob.tag_view.desired_permutation
             vehicle.position = ob.location / 100
             rot = ob.rotation_euler
             vehicle.rotation = (get_half_angle(degrees(rot[2])), get_half_angle(degrees(-rot[0])), get_half_angle(degrees(-rot[1])))
-            vehicle.appearance_player_index = 0
-            vehicle.body_vitality = 0.0
-            vehicle.flags = 0
-            vehicle.multiplayer_team_index = 0
-            vehicle.multiplayer_spawn_flags = 0
+            vehicle.appearance_player_index = ob.tag_view.appearance_player_index
+            vehicle.body_vitality = ob.tag_view.unit_vitality
+            vehicle.flags = get_unit_flags(ob)
+            vehicle.multiplayer_team_index = ob.tag_view.multiplayer_team_index
+            vehicle.multiplayer_spawn_flags = get_vehicle_flags(ob)
 
             blender_vehicles.append(vehicle)
 
@@ -135,19 +209,18 @@ def generate_vehicles(TAG, SCENARIO):
 def generate_equipment(TAG, SCENARIO):
     equipment_collection = bpy.data.collections.get("Equipment")
     blender_equipment = []
-    ob_index = 0
     if equipment_collection:
         for ob in equipment_collection.objects:
             equipment = SCENARIO.Equipment()
             equipment.type_index = get_palette_index(TAG, SCENARIO, "eqip", ob.tag_view.tag_path, SCENARIO.equipment_palette)
-            equipment.name_index = -1
-            equipment.placement_flags = 0
-            equipment.desired_permutation = 0
+            equipment.name_index = get_object_name_index(SCENARIO, ob.tag_view.object_name)
+            equipment.placement_flags = get_object_flags(ob)
+            equipment.desired_permutation = ob.tag_view.desired_permutation
             equipment.position = ob.location / 100
             rot = ob.rotation_euler
             equipment.rotation = (get_half_angle(degrees(rot[2])), get_half_angle(degrees(-rot[0])), get_half_angle(degrees(-rot[1])))
-            equipment.appearance_player_index = 0
-            equipment.misc_flags = 0
+            equipment.appearance_player_index = ob.tag_view.appearance_player_index
+            equipment.misc_flags = get_item_flags(ob)
 
             blender_equipment.append(equipment)
 
@@ -156,21 +229,20 @@ def generate_equipment(TAG, SCENARIO):
 def generate_weapons(TAG, SCENARIO):
     weapon_collection = bpy.data.collections.get("Weapons")
     blender_weapons = []
-    ob_index = 0
     if weapon_collection:
         for ob in weapon_collection.objects:
             weapon = SCENARIO.Weapon()
             weapon.type_index = get_palette_index(TAG, SCENARIO, "weap", ob.tag_view.tag_path, SCENARIO.weapon_palette)
-            weapon.name_index = -1
-            weapon.placement_flags = 0
-            weapon.desired_permutation = 0
+            weapon.name_index = get_object_name_index(SCENARIO, ob.tag_view.object_name)
+            weapon.placement_flags = get_object_flags(ob)
+            weapon.desired_permutation = ob.tag_view.desired_permutation
             weapon.position = ob.location / 100
             rot = ob.rotation_euler
             weapon.rotation = (get_half_angle(degrees(rot[2])), get_half_angle(degrees(-rot[0])), get_half_angle(degrees(-rot[1])))
-            weapon.appearance_player_index = 0
-            weapon.rounds_left = 0
-            weapon.rounds_loaded = 0
-            weapon.flags = 0
+            weapon.appearance_player_index = ob.tag_view.appearance_player_index
+            weapon.rounds_left = ob.tag_view.rounds_left
+            weapon.rounds_loaded = ob.tag_view.rounds_loaded
+            weapon.flags = get_item_flags(ob)
 
             blender_weapons.append(weapon)
 
@@ -179,18 +251,17 @@ def generate_weapons(TAG, SCENARIO):
 def generate_machines(TAG, SCENARIO):
     machines_collection = bpy.data.collections.get("Machines")
     blender_machines = []
-    ob_index = 0
     if machines_collection:
         for ob in machines_collection.objects:
             machine = SCENARIO.DeviceMachine()
             machine.type_index = get_palette_index(TAG, SCENARIO, "mach", ob.tag_view.tag_path, SCENARIO.device_machine_palette)
-            machine.name_index = -1
-            machine.placement_flags = 0
-            machine.desired_permutation = 0
+            machine.name_index = get_object_name_index(SCENARIO, ob.tag_view.object_name)
+            machine.placement_flags = get_object_flags(ob)
+            machine.desired_permutation = ob.tag_view.desired_permutation
             machine.position = ob.location / 100
             rot = ob.rotation_euler
             machine.rotation = (get_half_angle(degrees(rot[2])), get_half_angle(degrees(-rot[0])), get_half_angle(degrees(-rot[1])))
-            machine.appearance_player_index = 0
+            machine.appearance_player_index = ob.tag_view.appearance_player_index
             machine.power_group_index = 0
             machine.position_group_index = 0
             machine.flags_0 = 0
@@ -203,18 +274,17 @@ def generate_machines(TAG, SCENARIO):
 def generate_controls(TAG, SCENARIO):
     controls_collection = bpy.data.collections.get("Controls")
     blender_controls = []
-    ob_index = 0
     if controls_collection:
         for ob in controls_collection.objects:
             control = SCENARIO.DeviceMachine()
             control.type_index = get_palette_index(TAG, SCENARIO, "ctrl", ob.tag_view.tag_path, SCENARIO.device_control_palette)
-            control.name_index = -1
-            control.placement_flags = 0
-            control.desired_permutation = 0
+            control.name_index = get_object_name_index(SCENARIO, ob.tag_view.object_name)
+            control.placement_flags = get_object_flags(ob)
+            control.desired_permutation = ob.tag_view.desired_permutation
             control.position = ob.location / 100
             rot = ob.rotation_euler
             control.rotation = (get_half_angle(degrees(rot[2])), get_half_angle(degrees(-rot[0])), get_half_angle(degrees(-rot[1])))
-            control.appearance_player_index = 0
+            control.appearance_player_index = ob.tag_view.appearance_player_index
             control.power_group_index = 0
             control.position_group_index = 0
             control.flags_0 = 0
@@ -228,18 +298,17 @@ def generate_controls(TAG, SCENARIO):
 def generate_light_fixtures(TAG, SCENARIO):
     light_fixtures_collection = bpy.data.collections.get("Light Fixtures")
     blender_light_fixtures = []
-    ob_index = 0
     if light_fixtures_collection:
         for ob in light_fixtures_collection.objects:
             light_fixture = SCENARIO.DeviceLightFixture()
             light_fixture.type_index = get_palette_index(TAG, SCENARIO, "lifi", ob.tag_view.tag_path, SCENARIO.device_light_fixtures_palette)
-            light_fixture.name_index = -1
-            light_fixture.placement_flags = 0
-            light_fixture.desired_permutation = 0
+            light_fixture.name_index = get_object_name_index(SCENARIO, ob.tag_view.object_name)
+            light_fixture.placement_flags = get_object_flags(ob)
+            light_fixture.desired_permutation = ob.tag_view.desired_permutation
             light_fixture.position = ob.location / 100
             rot = ob.rotation_euler
             light_fixture.rotation = (get_half_angle(degrees(rot[2])), get_half_angle(degrees(-rot[0])), get_half_angle(degrees(-rot[1])))
-            light_fixture.appearance_player_index = 0
+            light_fixture.appearance_player_index = ob.tag_view.appearance_player_index
             light_fixture.power_group_index = 0
             light_fixture.position_group_index = 0
             light_fixture.flags = 0
@@ -255,18 +324,17 @@ def generate_light_fixtures(TAG, SCENARIO):
 def generate_sound_scenery(TAG, SCENARIO):
     sound_scenery_collection = bpy.data.collections.get("Sound Scenery")
     blender_sound_scenery = []
-    ob_index = 0
     if sound_scenery_collection:
         for ob in sound_scenery_collection.objects:
             sound_scenery = SCENARIO.Object()
             sound_scenery.type_index = get_palette_index(TAG, SCENARIO, "ssce", ob.tag_view.tag_path, SCENARIO.sound_scenery_palette)
-            sound_scenery.name_index = -1
-            sound_scenery.placement_flags = 0
-            sound_scenery.desired_permutation = 0
+            sound_scenery.name_index = get_object_name_index(SCENARIO, ob.tag_view.object_name)
+            sound_scenery.placement_flags = get_object_flags(ob)
+            sound_scenery.desired_permutation = ob.tag_view.desired_permutation
             sound_scenery.position = ob.location / 100
             rot = ob.rotation_euler
             sound_scenery.rotation = (get_half_angle(degrees(rot[2])), get_half_angle(degrees(-rot[0])), get_half_angle(degrees(-rot[1])))
-            sound_scenery.appearance_player_index = 0
+            sound_scenery.appearance_player_index = ob.tag_view.appearance_player_index
 
             blender_sound_scenery.append(sound_scenery)
 
@@ -275,7 +343,6 @@ def generate_sound_scenery(TAG, SCENARIO):
 def generate_player_starting_locations(TAG, SCENARIO):
     player_starting_locations_collection = bpy.data.collections.get("Player Starting Locations")
     blender_player_starting_locations = []
-    ob_index = 0
     if player_starting_locations_collection:
         for ob in player_starting_locations_collection.objects:
             player_starting_location = SCENARIO.PlayerStartingLocation()
@@ -297,7 +364,6 @@ def generate_player_starting_locations(TAG, SCENARIO):
 def generate_trigger_volumes(TAG, SCENARIO):
     trigger_volumes_collection = bpy.data.collections.get("Trigger Volumes")
     blender_trigger_volumes = []
-    ob_index = 0
     if trigger_volumes_collection:
         for ob in trigger_volumes_collection.objects:
             trigger_volume = SCENARIO.TriggerVolume()

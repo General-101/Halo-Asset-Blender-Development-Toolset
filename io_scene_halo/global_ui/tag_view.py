@@ -170,6 +170,30 @@ class HALO_PropertiesGroup(PropertyGroup):
         default = False,
         )
 
+    unused_0: BoolProperty(
+        name ="Unused 0",
+        description = "Unused",
+        default = False,
+        )
+
+    unused_1: BoolProperty(
+        name ="Unused 1",
+        description = "Unused",
+        default = False,
+        )
+
+    unused_2: BoolProperty(
+        name ="Unused 2",
+        description = "Unused",
+        default = False,
+        )
+
+    unused_3: BoolProperty(
+        name ="Unused 3",
+        description = "Unused",
+        default = False,
+        )
+
     slayer_allowed: BoolProperty(
         name ="Slayer Allowed",
         description = "I have no idea what this is",
@@ -191,6 +215,30 @@ class HALO_PropertiesGroup(PropertyGroup):
     oddball_allowed: BoolProperty(
         name ="Oddball Allowed",
         description = "I have no idea what this is",
+        default = False,
+        )
+
+    unused_4: BoolProperty(
+        name ="Unused 4",
+        description = "Unused",
+        default = False,
+        )
+
+    unused_5: BoolProperty(
+        name ="Unused 5",
+        description = "Unused",
+        default = False,
+        )
+
+    unused_6: BoolProperty(
+        name ="Unused 6",
+        description = "Unused",
+        default = False,
+        )
+
+    unused_7: BoolProperty(
+        name ="Unused 7",
+        description = "Unused",
         default = False,
         )
 
@@ -224,12 +272,16 @@ class HALO_PropertiesGroup(PropertyGroup):
 
     power_group: IntProperty(
         name = "Power Group",
-        description = "Power group index"
+        default = -1,
+        description = "Power group index",
+        min = -1
         )
 
     position_group: IntProperty(
         name = "Position Group",
-        description = "Position group index"
+        default = -1,
+        description = "Position group index",
+        min = -1
         )
 
     initially_open: BoolProperty(
@@ -290,6 +342,11 @@ class HALO_PropertiesGroup(PropertyGroup):
         name ="Usuable From Both Sides",
         description = "Control ignores forward vector",
         default = False,
+        )
+
+    control_value: IntProperty(
+        name = "Unknown",
+        description = "Unknown",
         )
 
     color: FloatVectorProperty(
@@ -403,6 +460,14 @@ def render_vehicle(layout, tag_view):
     row_flags = col_flags.row()
     row_flags.prop(tag_view, "oddball_default")
     row_flags = col_flags.row()
+    row_flags.prop(tag_view, "unused_0")
+    row_flags = col_flags.row()
+    row_flags.prop(tag_view, "unused_1")
+    row_flags = col_flags.row()
+    row_flags.prop(tag_view, "unused_2")
+    row_flags = col_flags.row()
+    row_flags.prop(tag_view, "unused_3")
+    row_flags = col_flags.row()
     row_flags.prop(tag_view, "slayer_allowed")
     row_flags = col_flags.row()
     row_flags.prop(tag_view, "ctf_allowed")
@@ -410,6 +475,14 @@ def render_vehicle(layout, tag_view):
     row_flags.prop(tag_view, "king_allowed")
     row_flags = col_flags.row()
     row_flags.prop(tag_view, "oddball_allowed")
+    row_flags = col_flags.row()
+    row_flags.prop(tag_view, "unused_4")
+    row_flags = col_flags.row()
+    row_flags.prop(tag_view, "unused_5")
+    row_flags = col_flags.row()
+    row_flags.prop(tag_view, "unused_6")
+    row_flags = col_flags.row()
+    row_flags.prop(tag_view, "unused_7")
 
 def render_equipment(layout, tag_view):
     box = layout.split()
@@ -506,6 +579,11 @@ def render_control(layout, tag_view):
     col_flags = box_flags.column(align=True)
     row_flags = col_flags.row()
     row_flags.prop(tag_view, "usuable_from_both_sides")
+
+    box = layout.split()
+    col = box.column(align=True)
+    row = col.row()
+    row.prop(tag_view, "control_value")
 
 def render_light_fixture(layout, tag_view):
     box = layout.split()

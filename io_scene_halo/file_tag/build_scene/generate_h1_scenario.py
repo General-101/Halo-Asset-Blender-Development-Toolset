@@ -36,7 +36,7 @@ from . import build_bsp as build_scene_level
 from ...global_functions import global_functions
 from ...global_functions.parse_tags import parse_tag
 from ..h1.file_scenario.mesh_helper.build_mesh import get_object
-from ..h1.file_scenario.format import DataTypesEnum, ObjectFlags, UnitFlags, VehicleFlags
+from ..h1.file_scenario.format import DataTypesEnum, ObjectFlags, UnitFlags, VehicleFlags, ItemFlags, DeviceFlags, MachineFlags, ControlFlags
 
 def generate_skies(context, level_root, tag_block, report):
     asset_collection = bpy.data.collections.get("Skies")
@@ -88,10 +88,15 @@ def generate_comments(context, level_root, comment_tag_block):
         font_ob.location = comment_element.position * 100
         comment_collection.objects.link(font_ob)
 
-def set_object_data(ob, tag_path, element):
+def set_object_data(ob, tag_path, element, object_name_tag_block):
     element_flags = ObjectFlags(element.placement_flags)
 
+    object_name = ""
+    if element.name_index >= 0:
+        object_name = object_name_tag_block[element.name_index]
+        
     ob.tag_view.tag_path = tag_path
+    ob.tag_view.object_name = object_name
     ob.tag_view.automatically = ObjectFlags.automatically in element_flags
     ob.tag_view.on_easy = ObjectFlags.on_easy in element_flags
     ob.tag_view.on_normal = ObjectFlags.on_normal in element_flags
@@ -114,57 +119,114 @@ def set_vehicle_data(ob, element):
     ob.tag_view.ctf_default = VehicleFlags.ctf_default in element_flags
     ob.tag_view.king_default = VehicleFlags.king_default in element_flags
     ob.tag_view.oddball_default = VehicleFlags.oddball_default in element_flags
+    ob.tag_view.unused_0 = VehicleFlags.unused0 in element_flags
+    ob.tag_view.unused_1 = VehicleFlags.unused1 in element_flags
+    ob.tag_view.unused_2 = VehicleFlags.unused2 in element_flags
+    ob.tag_view.unused_3 = VehicleFlags.unused3 in element_flags
     ob.tag_view.slayer_allowed = VehicleFlags.slayer_allowed in element_flags
     ob.tag_view.ctf_allowed = VehicleFlags.ctf_allowed in element_flags
     ob.tag_view.king_allowed = VehicleFlags.king_allowed in element_flags
     ob.tag_view.oddball_allowed = VehicleFlags.oddball_allowed in element_flags
+    ob.tag_view.unused_4 = VehicleFlags.unused4 in element_flags
+    ob.tag_view.unused_5 = VehicleFlags.unused5 in element_flags
+    ob.tag_view.unused_6 = VehicleFlags.unused6 in element_flags
+    ob.tag_view.unused_7 = VehicleFlags.unused7 in element_flags
 
-def get_data_type(collection_name, root, tag_path, element):
+def set_item_data(ob, element_flags):
+    item_flags = ItemFlags(element_flags)
+
+    ob.tag_view.initially_at_rest = ItemFlags.initially_at_rest_doesnt_fall in item_flags
+    ob.tag_view.obsolete = ItemFlags.obsolete in item_flags
+    ob.tag_view.does_accelerate = ItemFlags.does_accelerate_moves_due_to_explosions in item_flags
+
+def set_device_data(ob, element_flags):
+    device_flags = DeviceFlags(element_flags)
+
+    ob.tag_view.initially_open = DeviceFlags.initially_open_1_0 in device_flags
+    ob.tag_view.initially_off = DeviceFlags.initially_off_0_0 in device_flags
+    ob.tag_view.can_change_only_once = DeviceFlags.can_change_only_once in device_flags
+    ob.tag_view.position_reversed = DeviceFlags.position_reversed in device_flags
+    ob.tag_view.not_usable_from_any_side = DeviceFlags.not_usable_from_any_side in device_flags
+
+def set_machine_data(ob, element_flags):
+    machine_flags = MachineFlags(element_flags)
+
+    ob.tag_view.does_not_operate_automatically = MachineFlags.does_not_operate_automatically in machine_flags
+    ob.tag_view.one_sided = MachineFlags.one_sided in machine_flags
+    ob.tag_view.never_appears_locked = MachineFlags.never_appears_locked in machine_flags
+    ob.tag_view.opened_by_melee_attack = MachineFlags.opened_by_melee_attack in machine_flags
+
+def set_control_data(ob, element_flags):
+    control_flags = ControlFlags(element_flags)
+
+    ob.tag_view.usuable_from_both_sides = ControlFlags.usable_from_both_sides in control_flags
+
+def get_data_type(collection_name, root, tag_path, element, object_name_tag_block):
         if collection_name == "BSPs":
             root.tag_view.data_type_enum = str(DataTypesEnum.clusters.value)
             root.tag_view.lightmap_index = -1
 
         elif collection_name == "Scenery":
             root.tag_view.data_type_enum = str(DataTypesEnum.scenery.value)
-            set_object_data(root, tag_path, element)
+            set_object_data(root, tag_path, element, object_name_tag_block)
 
         elif collection_name == "Biped":
             root.lock_rotation[0] = True
             root.lock_rotation[1] = True
 
             root.tag_view.data_type_enum = str(DataTypesEnum.bipeds.value)
-            set_object_data(root, tag_path, element)
+            set_object_data(root, tag_path, element, object_name_tag_block)
             set_unit_data(root, element)
 
         elif collection_name == "Vehicle":
             root.tag_view.data_type_enum = str(DataTypesEnum.vehicles.value)
-            set_object_data(root, tag_path, element)
+            set_object_data(root, tag_path, element, object_name_tag_block)
             set_unit_data(root, element)
             set_vehicle_data(root, element)
 
         elif collection_name == "Equipment":
             root.tag_view.data_type_enum = str(DataTypesEnum.equipment.value)
-            set_object_data(root, tag_path, element)
+            set_object_data(root, tag_path, element, object_name_tag_block)
+            set_item_data(root, element.misc_flags)
 
         elif collection_name == "Weapons":
             root.tag_view.data_type_enum = str(DataTypesEnum.weapons.value)
-            set_object_data(root, tag_path, element)
+            set_object_data(root, tag_path, element, object_name_tag_block)
+            root.tag_view.rounds_left = element.rounds_left
+            root.tag_view.rounds_loaded = element.rounds_loaded
+            set_item_data(root, element.flags)
 
         elif collection_name == "Machines":
             root.tag_view.data_type_enum = str(DataTypesEnum.machines.value)
-            set_object_data(root, tag_path, element)
+            set_object_data(root, tag_path, element, object_name_tag_block)
+            root.tag_view.power_group = element.power_group_index
+            root.tag_view.position_group = element.position_group_index
+            set_device_data(root, element.flags_0)
+            set_machine_data(root, element.flags_1)
 
         elif collection_name == "Controls":
             root.tag_view.data_type_enum = str(DataTypesEnum.controls.value)
-            set_object_data(root, tag_path, element)
+            set_object_data(root, tag_path, element, object_name_tag_block)
+            root.tag_view.power_group = element.power_group_index
+            root.tag_view.position_group = element.position_group_index
+            set_device_data(root, element.flags_0)
+            set_control_data(root, element.flags_1)
+            root.tag_view.control_value = element.unknown
 
         elif collection_name == "Light Fixtures":
             root.tag_view.data_type_enum = str(DataTypesEnum.light_fixtures.value)
-            set_object_data(root, tag_path, element)
+            set_object_data(root, tag_path, element, object_name_tag_block)
+            root.tag_view.power_group = element.power_group_index
+            root.tag_view.position_group = element.position_group_index
+            set_device_data(root, element.flags)
+            root.tag_view.color = element.intensity
+            root.tag_view.intensity = element.intensity
+            root.tag_view.falloff_angle = element.falloff_angle
+            root.tag_view.cutoff_angle = element.cutoff_angle
 
         elif collection_name == "Sound Scenery":
             root.tag_view.data_type_enum = str(DataTypesEnum.sound_scenery.value)
-            set_object_data(root, tag_path, element)
+            set_object_data(root, tag_path, element, object_name_tag_block)
 
         elif collection_name == "Player Starting Locations":
             root.tag_view.data_type_enum = str(DataTypesEnum.player_starting_locations.value)
@@ -175,7 +237,7 @@ def get_data_type(collection_name, root, tag_path, element):
         elif collection_name == "Netgame Equipment":
             root.tag_view.data_type_enum = str(DataTypesEnum.netgame_equipment.value)
 
-def generate_object_elements(level_root, collection_name, palette, tag_block, context, game_version, file_version, fix_rotations, report, random_color_gen):
+def generate_object_elements(level_root, collection_name, object_name_tag_block, palette, tag_block, context, game_version, file_version, fix_rotations, report, random_color_gen):
     objects_list = []
     asset_collection = bpy.data.collections.get(collection_name)
     if asset_collection == None:
@@ -264,7 +326,7 @@ def generate_object_elements(level_root, collection_name, palette, tag_block, co
         root.parent = level_root
         root.location = element.position * 100
 
-        get_data_type(collection_name, root, pallete_item.name, element)
+        get_data_type(collection_name, root, pallete_item.name, element, object_name_tag_block)
 
         rotation = Euler((radians(0.0), radians(0.0), radians(0.0)), 'XYZ')
         roll = Euler((radians(element.rotation[2]), radians(0.0), radians(0.0)), 'XYZ')
@@ -447,23 +509,23 @@ def generate_scenario_scene(context, H1_ASSET, game_version, game_title, file_ve
     if len(H1_ASSET.comments) > 0:
         generate_comments(context, level_root, H1_ASSET.comments)
     if len(H1_ASSET.scenery) > 0:
-        generate_object_elements(level_root, "Scenery", H1_ASSET.scenery_palette, H1_ASSET.scenery, context, game_version, file_version, fix_rotations, report, random_color_gen)
+        generate_object_elements(level_root, "Scenery", H1_ASSET.object_names, H1_ASSET.scenery_palette, H1_ASSET.scenery, context, game_version, file_version, fix_rotations, report, random_color_gen)
     if len(H1_ASSET.bipeds) > 0:
-        generate_object_elements(level_root, "Biped", H1_ASSET.biped_palette, H1_ASSET.bipeds, context, game_version, file_version, fix_rotations, report, random_color_gen)
+        generate_object_elements(level_root, "Biped", H1_ASSET.object_names, H1_ASSET.biped_palette, H1_ASSET.bipeds, context, game_version, file_version, fix_rotations, report, random_color_gen)
     if len(H1_ASSET.vehicles) > 0:
-        generate_object_elements(level_root, "Vehicle", H1_ASSET.vehicle_palette, H1_ASSET.vehicles, context, game_version, file_version, fix_rotations, report, random_color_gen)
+        generate_object_elements(level_root, "Vehicle", H1_ASSET.object_names, H1_ASSET.vehicle_palette, H1_ASSET.vehicles, context, game_version, file_version, fix_rotations, report, random_color_gen)
     if len(H1_ASSET.equipment) > 0:
-        generate_object_elements(level_root, "Equipment", H1_ASSET.equipment_palette, H1_ASSET.equipment, context, game_version, file_version, fix_rotations, report, random_color_gen)
+        generate_object_elements(level_root, "Equipment", H1_ASSET.object_names, H1_ASSET.equipment_palette, H1_ASSET.equipment, context, game_version, file_version, fix_rotations, report, random_color_gen)
     if len(H1_ASSET.weapons) > 0:
-        generate_object_elements(level_root, "Weapons", H1_ASSET.weapon_palette, H1_ASSET.weapons, context, game_version, file_version, fix_rotations, report, random_color_gen)
+        generate_object_elements(level_root, "Weapons", H1_ASSET.object_names, H1_ASSET.weapon_palette, H1_ASSET.weapons, context, game_version, file_version, fix_rotations, report, random_color_gen)
     if len(H1_ASSET.device_machines) > 0:
-        generate_object_elements(level_root, "Machines", H1_ASSET.device_machine_palette, H1_ASSET.device_machines, context, game_version, file_version, fix_rotations, report, random_color_gen)
+        generate_object_elements(level_root, "Machines", H1_ASSET.object_names, H1_ASSET.device_machine_palette, H1_ASSET.device_machines, context, game_version, file_version, fix_rotations, report, random_color_gen)
     if len(H1_ASSET.device_controls) > 0:
-        generate_object_elements(level_root, "Controls", H1_ASSET.device_control_palette, H1_ASSET.device_controls, context, game_version, file_version, fix_rotations, report, random_color_gen)
+        generate_object_elements(level_root, "Controls", H1_ASSET.object_names, H1_ASSET.device_control_palette, H1_ASSET.device_controls, context, game_version, file_version, fix_rotations, report, random_color_gen)
     if len(H1_ASSET.device_light_fixtures) > 0:
-        generate_object_elements(level_root, "Light Fixtures", H1_ASSET.device_light_fixtures_palette, H1_ASSET.device_light_fixtures, context, game_version, file_version, fix_rotations, report, random_color_gen)
+        generate_object_elements(level_root, "Light Fixtures", H1_ASSET.object_names, H1_ASSET.device_light_fixtures_palette, H1_ASSET.device_light_fixtures, context, game_version, file_version, fix_rotations, report, random_color_gen)
     if len(H1_ASSET.sound_scenery) > 0:
-        generate_object_elements(level_root, "Sound Scenery", H1_ASSET.sound_scenery_palette, H1_ASSET.sound_scenery, context, game_version, file_version, fix_rotations, report, random_color_gen)
+        generate_object_elements(level_root, "Sound Scenery", H1_ASSET.object_names, H1_ASSET.sound_scenery_palette, H1_ASSET.sound_scenery, context, game_version, file_version, fix_rotations, report, random_color_gen)
     if len(H1_ASSET.player_starting_locations) > 0:
         generate_empties(context, level_root, "Player Starting Locations", H1_ASSET.player_starting_locations)
     if len(H1_ASSET.netgame_flags) > 0:
